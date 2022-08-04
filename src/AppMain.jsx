@@ -1,8 +1,7 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import WalletView from "./components/views/WalletView.jsx";
 
-export default function App() {
+export default function AppMain() {
   return (
     <View style={styles.container}>
       <WalletView />
@@ -14,7 +13,5 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
   },
 });
