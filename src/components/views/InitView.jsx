@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Button } from "react-native";
+import { View, Button, Text } from "react-native";
 
 //import bchLogo from "@assets/bchLogo.png";
 
@@ -10,6 +10,7 @@ function InitView() {
       <View>
         <Button title="New Wallet" />
         <Button title="Restore Wallet" />
+        <Text>Help me decide</Text>
       </View>
     </View>
   )
