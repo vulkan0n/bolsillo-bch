@@ -1,4 +1,4 @@
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from "react-native";
 import WalletView from "./components/views/WalletView.jsx";
 
 export default function AppMain() {
@@ -12,6 +12,8 @@ export default function AppMain() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
+    justifyContent: "center",
+    alignContent: "center",
   },
 });
