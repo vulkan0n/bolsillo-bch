@@ -6,7 +6,6 @@ import InitView from "./src/components/views/InitView";
 import WalletView from "./src/components/views/WalletView";
 import COLOURS from "./src/design/colours";
 import TYPOGRAPHY from "./src/design/typography";
-import AppLoading from "expo-app-loading";
 import {
   useFonts,
   Montserrat_400Regular,
@@ -30,7 +29,7 @@ export default function App() {
   });
 
   if (!fontsLoaded) {
-    return <AppLoading />;
+    return null;
   }
 
   return (
