@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import { View, Text, Pressable, Button } from "react-native";
-
-//import bchLogo from "@assets/bchLogo.png";
-//
+import { View, Text, Pressable, Image } from "react-native";
+import TYPOGRAPHY from "../../../design/typography";
+import Button from "../../../components/atoms/Button";
+import styles from "./styles";
 
 const SATOSHI = 100000000;
 const MAX_SATOSHI = 21000000 * SATOSHI;
@@ -97,22 +97,59 @@ function WalletView() {
   const satoshiBalance = 21.14358274 * SATOSHI;
 
   return (
-    <View>
+    <View style={styles.container}>
+      <Image
+        style={styles.logo}
+        source={require("../../../assets/images/logo.jpg")}
+      />
+
       {/*<View>
-        <Button title="Menu" />
         <Button title="Scan QR Code" />
         <Button title="Transaction History" />
       </View>*/}
 
-      <SatoshiInputWidget availableBalance={satoshiBalance} />
-
-      <View>
-        <Button title="Send" />
-        <Button title="Receive" />
+      <View style={styles.primaryTitlesWrapper}>
+        {/* <Text style={TYPOGRAPHY.h1}>
+          ₿ {formatSats(satoshiBalance)} Available
+        </Text> */}
+        <Text style={TYPOGRAPHY.h1}>XX.xx mBCH</Text>
+        <Text style={TYPOGRAPHY.h2}>USD $XX.xx</Text>
       </View>
 
-      <View>
-        <Text>₿ {formatSats(satoshiBalance)} Available</Text>
+      <View style={styles.inputBackground}>
+        <View style={styles.secondaryTitlesWrapper}>
+          <Text style={TYPOGRAPHY.h1black}>0 mBCH</Text>
+          <Text style={TYPOGRAPHY.h2black}>USD $0</Text>
+        </View>
+        <View style={styles.numPad}>
+          {/* <SatoshiInputWidget availableBalance={satoshiBalance} /> */}
+          <View style={styles.numPadRow}>
+            <Text style={TYPOGRAPHY.h1black}>1</Text>
+            <Text style={TYPOGRAPHY.h1black}>2</Text>
+            <Text style={TYPOGRAPHY.h1black}>3</Text>
+          </View>
+          <View style={styles.numPadRow}>
+            <Text style={TYPOGRAPHY.h1black}>4</Text>
+            <Text style={TYPOGRAPHY.h1black}>5</Text>
+            <Text style={TYPOGRAPHY.h1black}>6</Text>
+          </View>
+          <View style={styles.numPadRow}>
+            <Text style={TYPOGRAPHY.h1black}>7</Text>
+            <Text style={TYPOGRAPHY.h1black}>8</Text>
+            <Text style={TYPOGRAPHY.h1black}>9</Text>
+          </View>
+          <View style={styles.numPadRow}>
+            <Text style={TYPOGRAPHY.h1black}>{"<"}</Text>
+            <Text style={TYPOGRAPHY.h1black}>0</Text>
+            <Text style={TYPOGRAPHY.h1black}>.</Text>
+          </View>
+        </View>
+        <View style={styles.buttonContainer}>
+          <Button isSmall>Send</Button>
+          <Button variant="secondary" isSmall>
+            Receive
+          </Button>
+        </View>
       </View>
     </View>
   );
