@@ -5,6 +5,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import InitView from "./src/components/views/InitView";
 import WalletView from "./src/components/views/WalletView";
 import MenuView from "./src/components/views/MenuView";
+import DevelopersView from "./src/components/views/menu/DevelopersView";
 import COLOURS from "./src/design/colours";
 import TYPOGRAPHY from "./src/design/typography";
 import {
@@ -122,6 +123,18 @@ export default function App() {
             <Stack.Screen
               name="Menu"
               component={MenuView}
+              options={{
+                headerStyle: {
+                  backgroundColor: COLOURS.black,
+                },
+                headerTitle: (props) => (
+                  <Text style={TYPOGRAPHY.header}>Menu</Text>
+                ),
+              }}
+            />
+            <Stack.Screen
+              name="Developers"
+              component={DevelopersView}
               options={{
                 headerStyle: {
                   backgroundColor: COLOURS.black,
