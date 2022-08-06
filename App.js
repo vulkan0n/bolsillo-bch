@@ -75,6 +75,10 @@ export default function App() {
       true; // note: this is required, or you'll sometimes get silent failures
 `;
 
+  const state = store?.getState();
+  const isExistingWallet = Object.keys(state.wallet).length > 0;
+  console.log({ state, isExistingWallet });
+
   return (
     <Provider store={store}>
       <PersistGate loading={<Text>Loading...</Text>} persistor={persistor}>
@@ -88,19 +92,21 @@ export default function App() {
         </View>
         <NavigationContainer>
           <Stack.Navigator>
-            <Stack.Screen
-              name="Start"
-              component={InitView}
-              initialParams={{
-                emit,
-              }}
-              options={{
-                headerStyle: {
-                  backgroundColor: COLOURS.black,
-                },
-                headerTitle: (props) => <View />,
-              }}
-            />
+            {!isExistingWallet && (
+              <Stack.Screen
+                name="Start"
+                component={InitView}
+                initialParams={{
+                  emit,
+                }}
+                options={{
+                  headerStyle: {
+                    backgroundColor: COLOURS.black,
+                  },
+                  headerTitle: (props) => <View />,
+                }}
+              />
+            )}
             <Stack.Screen
               name="Wallet"
               component={WalletView}
