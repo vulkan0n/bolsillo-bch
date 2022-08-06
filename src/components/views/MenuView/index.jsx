@@ -4,11 +4,16 @@ import TYPOGRAPHY from "../../../design/typography";
 import styles from "./styles";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faCode } from "@fortawesome/free-solid-svg-icons/faCode";
+import { faGears } from "@fortawesome/free-solid-svg-icons/faGears";
 import COLOURS from "../../../design/colours";
 
 function MenuView({ navigation }) {
   const onPressDevs = () => {
     navigation.navigate("Developers");
+  };
+
+  const onPressSettings = () => {
+    navigation.navigate("Settings");
   };
 
   return (
@@ -28,9 +33,17 @@ function MenuView({ navigation }) {
               <Text style={TYPOGRAPHY.p}>Credit, code & donations!</Text>
             </View>
           </Pressable>
-          <Pressable>
+          <Pressable onPress={onPressSettings}>
             <View style={styles.pressableCard}>
-              <Text>TBC</Text>
+              <View style={styles.iconWrapper}>
+                <FontAwesomeIcon
+                  icon={faGears}
+                  size={45}
+                  color={COLOURS.black}
+                />
+              </View>
+              <Text style={TYPOGRAPHY.menuHeaderGreen}>Settings</Text>
+              <Text style={TYPOGRAPHY.p}>Currency, unit display, etc.</Text>
             </View>
           </Pressable>
         </View>
