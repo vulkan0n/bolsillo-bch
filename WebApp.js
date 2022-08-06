@@ -4,19 +4,25 @@ import {
   emit,
   useNativeMessage,
 } from "react-native-react-bridge/lib/web";
+import MainNet from "mainnet-js";
 
 const Root = () => {
+  console.log({ MainNet });
+
   const [data, setData] = useState("");
   // useNativeMessage hook receives message from React Native
   useNativeMessage((message) => {
+    console.log("got back message: ", { message });
     if (message.type === "success") {
       setData(message.data);
     }
   });
   return (
     <div>
-      <div>{data}</div>
+      <h1>Test</h1>
+      <h2>{data}</h2>
       <button
+        title="Clickable button"
         onClick={() => {
           // emit sends message to React Native
           //   type: event name

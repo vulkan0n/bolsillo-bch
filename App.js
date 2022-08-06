@@ -37,6 +37,7 @@ export default function App() {
     // emit sends message to React
     //   type: event name
     //   data: some data which will be serialized by JSON.stringify
+    console.log(" React native receiving message ", { message });
     if (message.type === "hello" && message.data === 123) {
       emit({ type: "success", data: "succeeded!" });
     }
