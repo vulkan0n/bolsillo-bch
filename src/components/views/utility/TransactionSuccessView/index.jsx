@@ -1,12 +1,20 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { View, Image, Text } from "react-native";
 import TYPOGRAPHY from "../../../../design/typography";
 import styles from "./styles";
 import { connect } from "react-redux";
+import ACTION_TYPES from "../../../../redux/actionTypes";
 
-function TransactionSuccessView({ tempTxId, navigation }) {
+function TransactionSuccessView({ tempTxId, navigation, dispatch }) {
   useEffect(() => {
     setTimeout(() => {
+      dispatch({
+        type: ACTION_TYPES.UPDATE_TEMP_TXID,
+        payload: {
+          tempTxId: "",
+        },
+      });
+
       navigation.reset({
         index: 0,
         routes: [{ name: "Wallet" }],
@@ -27,5 +35,7 @@ function TransactionSuccessView({ tempTxId, navigation }) {
 }
 
 const mapStateToProps = ({ tempTxId }) => ({ tempTxId });
+
+const mapDispatchToProps = (dispatch) => dispatch;
 
 export default connect(mapStateToProps)(TransactionSuccessView);

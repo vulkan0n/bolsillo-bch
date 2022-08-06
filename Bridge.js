@@ -52,9 +52,6 @@ const Bridge = () => {
           message?.data?.derivationPath
         );
 
-        const sendCoinsBalance = await walletSendCoins.getBalance();
-        console.log("Retrieved balance:");
-        console.log({ balance: sendCoinsBalance });
         const testNetFaucet =
           "bchtest:qzl7ex0q35q2d6aljhlhzwramp09n06fry8ssqu0qp";
         const txResponse = await walletSendCoins.send([

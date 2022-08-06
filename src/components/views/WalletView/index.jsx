@@ -119,7 +119,7 @@ function WalletView({ wallet, balance, tempTxId, route, navigation }) {
 
     navigation.reset({
       index: 0,
-      routes: [{ name: "Transaction Success!" }],
+      routes: [{ name: "Transaction Success" }],
     });
   }, [tempTxId]);
 
