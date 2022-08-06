@@ -17,7 +17,7 @@ import {
 import WebView from "react-native-webview";
 import { useWebViewMessage } from "react-native-react-bridge";
 import webApp from "./WebApp";
-import RESPONSE_MESSAGE_TYPES from "./src/utils/bridgeMessages";
+import { RESPONSE_MESSAGE_TYPES } from "./src/utils/bridgeMessages";
 
 const Stack = createNativeStackNavigator();
 
