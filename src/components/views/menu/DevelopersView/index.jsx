@@ -23,6 +23,7 @@ function DevelopersView() {
       <Text style={TYPOGRAPHY.pWhite}>PRs always welcome!</Text>
       <View style={TYPOGRAPHY.spacer}></View>
       <Text style={TYPOGRAPHY.h2}>Donations:</Text>
+      <Text style={TYPOGRAPHY.h2}>-- TBC --</Text>
     </View>
   );
 }

@@ -2,6 +2,9 @@ import React from "react";
 import { View, Image, Pressable, Text } from "react-native";
 import TYPOGRAPHY from "../../../design/typography";
 import styles from "./styles";
+import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+import { faMugSaucer } from "@fortawesome/free-solid-svg-icons/faMugSaucer";
+import COLOURS from "../../../design/colours";
 
 function MenuView({ navigation }) {
   const onPressDevs = () => {
@@ -14,7 +17,14 @@ function MenuView({ navigation }) {
         <View style={styles.menuRow}>
           <Pressable onPress={onPressDevs}>
             <View style={styles.pressableCard}>
-              <Text style={TYPOGRAPHY.h2green}>Devs</Text>
+              <View style={styles.iconWrapper}>
+                <FontAwesomeIcon
+                  icon={faMugSaucer}
+                  size={45}
+                  color={COLOURS.black}
+                />
+              </View>
+              <Text style={TYPOGRAPHY.menuHeaderGreen}>Devs</Text>
               <Text style={TYPOGRAPHY.p}>Credit, code & donations!</Text>
             </View>
           </Pressable>

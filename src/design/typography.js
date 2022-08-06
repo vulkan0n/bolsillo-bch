@@ -59,12 +59,11 @@ const TYPOGRAPHY = {
     fontSize: 22,
     marginBottom: SPACING.ten,
   },
-  h2green: {
+  menuHeaderGreen: {
     fontFamily: "Montserrat_500Medium",
     textAlign: "center",
     color: COLOURS.bchGreen,
     fontSize: 22,
-    marginBottom: SPACING.ten,
   },
   p: {
     fontFamily: "Montserrat_500Medium",

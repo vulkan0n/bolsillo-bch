@@ -50,6 +50,14 @@ const styles = {
     // Android drop shadow
     elevation: 3,
   },
+  iconWrapper: {
+    flex: 1,
+    width: "100%",
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: SPACING.ten,
+    marginBottom: SPACING.ten,
+  },
 };
 
 export default styles;
