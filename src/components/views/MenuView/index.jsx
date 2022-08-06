@@ -3,7 +3,7 @@ import { View, Image, Pressable, Text } from "react-native";
 import TYPOGRAPHY from "../../../design/typography";
 import styles from "./styles";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { faMugSaucer } from "@fortawesome/free-solid-svg-icons/faMugSaucer";
+import { faCode } from "@fortawesome/free-solid-svg-icons/faCode";
 import COLOURS from "../../../design/colours";
 
 function MenuView({ navigation }) {
@@ -19,7 +19,7 @@ function MenuView({ navigation }) {
             <View style={styles.pressableCard}>
               <View style={styles.iconWrapper}>
                 <FontAwesomeIcon
-                  icon={faMugSaucer}
+                  icon={faCode}
                   size={45}
                   color={COLOURS.black}
                 />
