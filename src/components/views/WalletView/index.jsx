@@ -129,7 +129,15 @@ function WalletView({ wallet, balance, route, navigation }) {
       return "USD $0.00";
     }
 
-    return `${Number(stringVal).toFixed(2)}`;
+    return `USD $${Number(stringVal).toFixed(2)}`;
+  };
+
+  const displaySat = (stringVal) => {
+    if (!stringVal) {
+      return "0 satoshis";
+    }
+
+    return `${Number(stringVal)} sats`;
   };
 
   return (
@@ -155,7 +163,7 @@ function WalletView({ wallet, balance, route, navigation }) {
           {/* <Text style={TYPOGRAPHY.h1}>
           ₿ {formatSats(satoshiBalance)} Available
         </Text> */}
-          <Text style={TYPOGRAPHY.h1}>{mBchBalance} mBCH</Text>
+          <Text style={TYPOGRAPHY.h1}>{displaySat(balance?.sat)}</Text>
           <Text style={TYPOGRAPHY.h2}>{displayUsd(balance?.usd)}</Text>
         </View>
       </Pressable>

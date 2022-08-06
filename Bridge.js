@@ -31,21 +31,13 @@ const Bridge = () => {
         });
         break;
       case BRIDGE_MESSAGE_TYPES.REQUEST_BALANCE:
-        console.log("received request message");
-        console.log({ message });
         const walletRequestBalance = await TestNetWallet.fromSeed(
           message?.data?.mnemonic,
           message?.data?.derivationPath
         );
 
-        console.log("walletRequestBalance");
-        console.log({ walletRequestBalance });
-        console.log("getting tesnet sats");
-        // const txid = await walletRequestBalance.getTestnetSatoshis();
-        // console.log({ txid });
-
         const balance = await walletRequestBalance.getBalance();
-        console.log("retrieved balance");
+        console.log("Retrieved balance:");
         console.log({ balance });
         emit({
           type: RESPONSE_MESSAGE_TYPES.REQUEST_BALANCE_RESPONSE,
