@@ -54,11 +54,27 @@ export default function App() {
           },
         });
         break;
+
       case RESPONSE_MESSAGE_TYPES.REQUEST_BALANCE_RESPONSE:
         store.dispatch({
           type: ACTION_TYPES.UPDATE_BALANCE,
           payload: {
             balance: message.data.balance,
+          },
+        });
+        break;
+
+      case RESPONSE_MESSAGE_TYPES.SEND_COINS_RESPONSE:
+        store.dispatch({
+          type: ACTION_TYPES.UPDATE_BALANCE,
+          payload: {
+            balance: message.data.balance,
+          },
+        });
+        store.dispatch({
+          type: ACTION_TYPES.UPDATE_TEMP_TXID,
+          payload: {
+            balance: message.data.tempTxId,
           },
         });
         break;

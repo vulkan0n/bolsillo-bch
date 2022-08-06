@@ -30,6 +30,7 @@ const Bridge = () => {
           data: { wallet },
         });
         break;
+
       case BRIDGE_MESSAGE_TYPES.REQUEST_BALANCE:
         const walletRequestBalance = await TestNetWallet.fromSeed(
           message?.data?.mnemonic,
@@ -44,6 +45,36 @@ const Bridge = () => {
           data: { balance },
         });
         break;
+
+      case BRIDGE_MESSAGE_TYPES.SEND_COINS:
+        const walletSendCoins = await TestNetWallet.fromSeed(
+          message?.data?.mnemonic,
+          message?.data?.derivationPath
+        );
+
+        const sendCoinsBalance = await walletSendCoins.getBalance();
+        console.log("Retrieved balance:");
+        console.log({ balance: sendCoinsBalance });
+        const testNetFaucet =
+          "bchtest:qzl7ex0q35q2d6aljhlhzwramp09n06fry8ssqu0qp";
+        const txResponse = await walletSendCoins.send([
+          {
+            cashaddr: testNetFaucet,
+            value: 100,
+            unit: "sat",
+          },
+        ]);
+        console.log("sent coins!");
+        console.log({ txResponse });
+        emit({
+          type: RESPONSE_MESSAGE_TYPES.SEND_COINS_RESPONSE,
+          data: {
+            balance: txResponse?.balance,
+            tempTxId: txResponse?.txId,
+          },
+        });
+        break;
+
       default:
         console.log("NOTE: Message type not recognised!!");
         break;

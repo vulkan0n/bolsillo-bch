@@ -1,7 +1,7 @@
 import initialState from "./initialState";
 import ACTION_TYPES from "./actionTypes";
 
-const { STORE_WALLET, UPDATE_BALANCE } = ACTION_TYPES;
+const { STORE_WALLET, UPDATE_BALANCE, UPDATE_TEMP_TXID } = ACTION_TYPES;
 
 export default function rootReducer(state = initialState, action) {
   console.log({ state, action });
@@ -15,6 +15,11 @@ export default function rootReducer(state = initialState, action) {
       return {
         ...state,
         balance: action.payload.balance,
+      };
+    case UPDATE_TEMP_TXID:
+      return {
+        ...state,
+        tempTxId: action.payload.tempTxId,
       };
     default:
       return state;

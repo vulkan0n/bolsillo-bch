@@ -122,6 +122,16 @@ function WalletView({ wallet, balance, route, navigation }) {
     });
   };
 
+  const onPressSend = () => {
+    emit({
+      type: BRIDGE_MESSAGE_TYPES.SEND_COINS,
+      data: {
+        mnemonic: wallet?.mnemonic,
+        derivationPath: wallet?.derivationPath,
+      },
+    });
+  };
+
   const mBchBalance = balance?.sat / 100000 ?? 0;
 
   const displayUsd = (stringVal) => {
@@ -197,7 +207,9 @@ function WalletView({ wallet, balance, route, navigation }) {
           </View>
         </View>
         <View style={styles.buttonContainer}>
-          <Button isSmall>Send</Button>
+          <Button onPress={onPressSend} isSmall>
+            Send
+          </Button>
           <Button variant="secondary" isSmall>
             Receive
           </Button>
