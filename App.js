@@ -2,7 +2,6 @@ import * as React from "react";
 import { View, Text } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import InitView from "./src/components/views/InitView";
 import WalletView from "./src/components/views/WalletView";
 import MenuView from "./src/components/views/MenuView";
 import LearnView from "./src/components/views/menu/LearnView";
@@ -80,9 +79,6 @@ export default function App() {
       true; // note: this is required, or you'll sometimes get silent failures
 `;
 
-  const state = store?.getState();
-  const isExistingWallet = Object.keys(state.wallet).length > 0;
-
   return (
     <Provider store={store}>
       <PersistGate loading={<Text>Loading...</Text>} persistor={persistor}>
@@ -96,21 +92,6 @@ export default function App() {
         </View>
         <NavigationContainer>
           <Stack.Navigator>
-            {!isExistingWallet && (
-              <Stack.Screen
-                name="Start"
-                component={InitView}
-                initialParams={{
-                  emit,
-                }}
-                options={{
-                  headerStyle: {
-                    backgroundColor: COLOURS.black,
-                  },
-                  headerTitle: (props) => <View />,
-                }}
-              />
-            )}
             <Stack.Screen
               name="Wallet"
               component={WalletView}
