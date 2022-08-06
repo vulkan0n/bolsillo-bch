@@ -140,7 +140,7 @@ export default function App() {
                   backgroundColor: COLOURS.black,
                 },
                 headerTitle: (props) => (
-                  <Text style={TYPOGRAPHY.header}>Menu</Text>
+                  <Text style={TYPOGRAPHY.header}>Devs</Text>
                 ),
               }}
             />

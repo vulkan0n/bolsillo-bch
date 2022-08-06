@@ -34,6 +34,7 @@ const styles = {
   },
   pressableCard: {
     margin: 10,
+    padding: 10,
     height: 150,
     width: 150,
     backgroundColor: COLOURS.white,

@@ -59,6 +59,13 @@ const TYPOGRAPHY = {
     fontSize: 22,
     marginBottom: SPACING.ten,
   },
+  p: {
+    fontFamily: "Montserrat_500Medium",
+    textAlign: "center",
+    color: COLOURS.black,
+    fontSize: 16,
+    marginBottom: SPACING.ten,
+  },
 };
 
 export default TYPOGRAPHY;
