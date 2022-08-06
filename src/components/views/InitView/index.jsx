@@ -3,11 +3,12 @@ import { View, Text, Image } from "react-native";
 import Button from "../../atoms/Button/index";
 import styles from "./styles";
 import TYPOGRAPHY from "../../../design/typography";
+import { BRIDGE_MESSAGE_TYPES } from "../../../utils/bridgeMessages";
 
 function InitView({ navigation, route }) {
   const onPressNewWallet = () => {
     const { emit } = route.params;
-    emit({ type: "success", data: "succeeded!" });
+    emit({ type: BRIDGE_MESSAGE_TYPES.CREATE_WALLET, data: null });
     navigation.navigate("Wallet");
   };
 

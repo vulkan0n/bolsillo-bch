@@ -17,6 +17,7 @@ import {
 import WebView from "react-native-webview";
 import { useWebViewMessage } from "react-native-react-bridge";
 import webApp from "./WebApp";
+import RESPONSE_MESSAGE_TYPES from "./src/utils/bridgeMessages";
 
 const Stack = createNativeStackNavigator();
 
@@ -34,12 +35,17 @@ export default function App() {
   // useWebViewMessage hook create props for WebView and handle communication
   // The argument is callback to receive message from React
   const { ref, onMessage, emit } = useWebViewMessage((message) => {
-    // emit sends message to React
-    //   type: event name
-    //   data: some data which will be serialized by JSON.stringify
-    console.log(" React native receiving message ", { message });
-    if (message.type === "hello" && message.data === 123) {
-      emit({ type: "success", data: "succeeded!" });
+    console.log("Bridge Response Message: ", message);
+
+    switch (message.type) {
+      case RESPONSE_MESSAGE_TYPES.CREATE_WALLET_RESPONSE:
+        console.log("created wallet: ");
+        console.log("do something...");
+        console.log("store seed...");
+        break;
+      default:
+        break;
+      // code block
     }
   });
 
@@ -66,8 +72,8 @@ export default function App() {
     <>
       <WebView
         ref={ref}
-        source={{ html: webApp }}
         onMessage={onMessage}
+        source={{ html: webApp }}
         injectedJavaScript={preloadMainNetScript}
       />
       <NavigationContainer>

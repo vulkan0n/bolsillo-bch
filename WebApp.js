@@ -1,39 +1,36 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   webViewRender,
   emit,
   useNativeMessage,
 } from "react-native-react-bridge/lib/web";
+import {
+  BRIDGE_MESSAGE_TYPES,
+  RESPONSE_MESSAGE_TYPES,
+} from "./src/utils/bridgeMessages";
 
 const Root = () => {
-  const [data, setData] = useState("");
   // useNativeMessage hook receives message from React Native
-  useNativeMessage((message) => {
-    console.log("got back message: ", { message });
-    if (message.type === "success") {
-      setData(message.data);
+  useNativeMessage(async (message) => {
+    console.log("Bridge received: ", message);
+
+    switch (message.type) {
+      case BRIDGE_MESSAGE_TYPES.CREATE_WALLET:
+        console.log("created wallet: ");
+        const wallet = await TestNetWallet.newRandom();
+        emit({
+          type: RESPONSE_MESSAGE_TYPES.CREATE_RESPONSE,
+          data: { wallet },
+        });
+        break;
+      default:
+        console.log("NOTE: Message type not recognised!!");
+        break;
+      // code block
     }
   });
 
-  return (
-    <div>
-      <h1>Test</h1>
-      <h2>{data}</h2>
-      <button
-        title="Clickable button"
-        onClick={async () => {
-          const wallet = await TestNetWallet.newRandom();
-          const mnemonic = wallet?.mnemonic;
-          console.log({ wallet, mnemonic });
-          console.log("clicked!! sent from webview");
-          // emit sends message to React Native
-          //   type: event name
-          //   data: some data which will be serialized by JSON.stringify
-          emit({ type: "createdWallet", data: { mnemonic } });
-        }}
-      />
-    </div>
-  );
+  return <div></div>;
 };
 
 // This statement is detected by babelTransformer as an entry point
