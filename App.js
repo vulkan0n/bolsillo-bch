@@ -95,6 +95,9 @@ export default function App() {
             <Stack.Screen
               name="Wallet"
               component={WalletView}
+              initialParams={{
+                emit,
+              }}
               options={{
                 headerStyle: {
                   backgroundColor: COLOURS.black,

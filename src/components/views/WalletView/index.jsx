@@ -94,8 +94,15 @@ function SatoshiInputWidget({ availableBalance }) {
   );
 }
 
-function WalletView({ wallet, navigation }) {
+function WalletView({ wallet, route, navigation }) {
   const satoshiBalance = 21.14358274 * SATOSHI;
+
+  useEffect(() => {
+    if (!wallet) {
+      const { emit } = route.params;
+      emit({ type: BRIDGE_MESSAGE_TYPES.CREATE_WALLET, data: null });
+    }
+  }, []);
 
   return (
     <View style={styles.container}>
