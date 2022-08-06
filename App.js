@@ -6,6 +6,7 @@ import InitView from "./src/components/views/InitView";
 import WalletView from "./src/components/views/WalletView";
 import MenuView from "./src/components/views/MenuView";
 import DevelopersView from "./src/components/views/menu/DevelopersView";
+import SettingsView from "./src/components/views/menu/SettingsView";
 import COLOURS from "./src/design/colours";
 import TYPOGRAPHY from "./src/design/typography";
 import {
@@ -141,6 +142,18 @@ export default function App() {
                 },
                 headerTitle: (props) => (
                   <Text style={TYPOGRAPHY.header}>Devs</Text>
+                ),
+              }}
+            />
+            <Stack.Screen
+              name="Settings"
+              component={SettingsView}
+              options={{
+                headerStyle: {
+                  backgroundColor: COLOURS.black,
+                },
+                headerTitle: (props) => (
+                  <Text style={TYPOGRAPHY.header}>Settings</Text>
                 ),
               }}
             />
