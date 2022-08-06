@@ -20,7 +20,7 @@ import {
 } from "@expo-google-fonts/montserrat";
 import WebView from "react-native-webview";
 import { useWebViewMessage } from "react-native-react-bridge";
-import webApp from "./WebApp";
+import Bridge from "./Bridge";
 import { RESPONSE_MESSAGE_TYPES } from "./src/utils/bridgeMessages";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
@@ -86,7 +86,7 @@ export default function App() {
           <WebView
             ref={ref}
             onMessage={onMessage}
-            source={{ html: webApp }}
+            source={{ html: Bridge }}
             injectedJavaScript={preloadMainNetScript}
           />
         </View>

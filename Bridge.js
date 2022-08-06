@@ -9,7 +9,7 @@ import {
   RESPONSE_MESSAGE_TYPES,
 } from "./src/utils/bridgeMessages";
 
-const Root = () => {
+const Bridge = () => {
   // useNativeMessage hook receives message from React Native
   useNativeMessage(async (message) => {
     console.log("Bridge received: ", message);
@@ -34,4 +34,4 @@ const Root = () => {
 
 // This statement is detected by babelTransformer as an entry point
 // All dependencies are resolved, compressed and stringified into one file
-export default webViewRender(<Root />);
+export default webViewRender(<Bridge />);

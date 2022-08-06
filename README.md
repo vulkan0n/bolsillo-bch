@@ -15,4 +15,4 @@ $ expo start --tunnel
 
 # Bridge
 
-To watch the console.logs from inside the WebApp bridge, see: https://stackoverflow.com/a/48573345
+To watch the console.logs from inside the Bridge bridge, see: https://stackoverflow.com/a/48573345
