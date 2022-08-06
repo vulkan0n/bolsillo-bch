@@ -9,6 +9,9 @@ const styles = {
     justifyContent: "start",
     alignItems: "center",
   },
+  iconContainer: {
+    marginBottom: SPACING.ten,
+  },
   mnemonicContainer: {
     padding: SPACING.ten,
     margin: SPACING.ten,

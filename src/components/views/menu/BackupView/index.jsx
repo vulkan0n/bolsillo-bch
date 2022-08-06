@@ -4,6 +4,9 @@ import { connect } from "react-redux";
 import Button from "../../../atoms/Button";
 import TYPOGRAPHY from "../../../../design/typography";
 import styles from "./styles";
+import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+import { faPiggyBank } from "@fortawesome/free-solid-svg-icons/faPiggyBank";
+import COLOURS from "../../../../design/colours";
 
 function BackupView({ wallet }) {
   const [isMnemonicVisible, setIsMnemonicVisible] = useState(false);
@@ -14,14 +17,12 @@ function BackupView({ wallet }) {
 
   return (
     <View style={styles.container}>
-      <Image
-        style={styles.logo}
-        source={require("../../../../assets/images/logo.jpg")}
-      />
-      <Text style={TYPOGRAPHY.h1}>Backup</Text>
-      <Text style={TYPOGRAPHY.h2}>Mnemonic phrase</Text>
+      <View style={styles.iconContainer}>
+        <FontAwesomeIcon icon={faPiggyBank} size={75} color={COLOURS.white} />
+      </View>
+      <Text style={TYPOGRAPHY.h1}>Mnemonic phrase</Text>
       <Text style={TYPOGRAPHY.pWhite}>
-        With the mnemonic phrase, you can restore your wallet if your phone is
+        With your mnemonic phrase, you can restore your wallet if your phone is
         ever lost or broken.
       </Text>
       <Text style={TYPOGRAPHY.pWhite}>
