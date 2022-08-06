@@ -22,6 +22,7 @@ function InitView({ navigation, route, wallet }) {
       const { emit } = route.params;
       emit({ type: BRIDGE_MESSAGE_TYPES.CREATE_WALLET, data: null });
     }
+
     navigation.reset({
       index: 0,
       routes: [{ name: "Wallet" }],

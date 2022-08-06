@@ -4,6 +4,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import InitView from "./src/components/views/InitView";
 import WalletView from "./src/components/views/WalletView";
+import MenuView from "./src/components/views/MenuView";
 import COLOURS from "./src/design/colours";
 import TYPOGRAPHY from "./src/design/typography";
 import {
@@ -115,6 +116,18 @@ export default function App() {
                 },
                 headerTitle: (props) => (
                   <Text style={TYPOGRAPHY.header}>Wallet</Text>
+                ),
+              }}
+            />
+            <Stack.Screen
+              name="Menu"
+              component={MenuView}
+              options={{
+                headerStyle: {
+                  backgroundColor: COLOURS.black,
+                },
+                headerTitle: (props) => (
+                  <Text style={TYPOGRAPHY.header}>Menu</Text>
                 ),
               }}
             />

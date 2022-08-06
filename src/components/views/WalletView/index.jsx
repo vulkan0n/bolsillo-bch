@@ -94,15 +94,21 @@ function SatoshiInputWidget({ availableBalance }) {
   );
 }
 
-function WalletView({ wallet }) {
+function WalletView({ wallet, navigation }) {
   const satoshiBalance = 21.14358274 * SATOSHI;
 
   return (
     <View style={styles.container}>
-      <Image
-        style={styles.logo}
-        source={require("../../../assets/images/logo.jpg")}
-      />
+      <Pressable
+        onPress={() => {
+          navigation.navigate("Menu");
+        }}
+      >
+        <Image
+          style={styles.logo}
+          source={require("../../../assets/images/logo.jpg")}
+        />
+      </Pressable>
 
       {/*<View>
         <Button title="Scan QR Code" />
