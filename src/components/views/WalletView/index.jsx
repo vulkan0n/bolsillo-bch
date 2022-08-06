@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text, Pressable, Image } from "react-native";
 import { connect } from "react-redux";
 import TYPOGRAPHY from "../../../design/typography";
@@ -94,7 +94,7 @@ function SatoshiInputWidget({ availableBalance }) {
   );
 }
 
-function WalletView({ wallet, route, navigation }) {
+function WalletView({ wallet, balance, route, navigation }) {
   const satoshiBalance = 21.14358274 * SATOSHI;
 
   useEffect(() => {
@@ -103,6 +103,16 @@ function WalletView({ wallet, route, navigation }) {
       emit({ type: BRIDGE_MESSAGE_TYPES.CREATE_WALLET, data: null });
     }
   }, []);
+
+  const mBchBalance = balance?.sat / 100000 ?? 0;
+
+  const displayUsd = (stringVal) => {
+    if (!stringVal) {
+      return "USD $0.00";
+    }
+
+    return `${Number(stringVal).toFixed(2)}`;
+  };
 
   return (
     <View style={styles.container}>
@@ -126,8 +136,8 @@ function WalletView({ wallet, route, navigation }) {
         {/* <Text style={TYPOGRAPHY.h1}>
           ₿ {formatSats(satoshiBalance)} Available
         </Text> */}
-        <Text style={TYPOGRAPHY.h1}>XX.xx mBCH</Text>
-        <Text style={TYPOGRAPHY.h2}>USD $XX.xx</Text>
+        <Text style={TYPOGRAPHY.h1}>{mBchBalance} mBCH</Text>
+        <Text style={TYPOGRAPHY.h2}>{displayUsd(balance?.usd)}</Text>
       </View>
 
       <View style={styles.inputBackground}>
@@ -169,8 +179,9 @@ function WalletView({ wallet, route, navigation }) {
   );
 }
 
-const mapStateToProps = ({ wallet }) => ({
+const mapStateToProps = ({ wallet, balance }) => ({
   wallet,
+  balance,
 });
 
 export default connect(mapStateToProps)(WalletView);
