@@ -77,7 +77,6 @@ export default function App() {
 
   const state = store?.getState();
   const isExistingWallet = Object.keys(state.wallet).length > 0;
-  console.log({ state, isExistingWallet });
 
   return (
     <Provider store={store}>
