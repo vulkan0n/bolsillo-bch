@@ -18,6 +18,10 @@ import WebView from "react-native-webview";
 import { useWebViewMessage } from "react-native-react-bridge";
 import webApp from "./WebApp";
 import { RESPONSE_MESSAGE_TYPES } from "./src/utils/bridgeMessages";
+import { Provider } from "react-redux";
+import { PersistGate } from "redux-persist/integration/react";
+import store from "./src/redux/store";
+import persistor from "./src/redux/persistor";
 
 const Stack = createNativeStackNavigator();
 
@@ -69,44 +73,46 @@ export default function App() {
 `;
 
   return (
-    <>
-      <View style={{ height: 0 }}>
-        <WebView
-          ref={ref}
-          onMessage={onMessage}
-          source={{ html: webApp }}
-          injectedJavaScript={preloadMainNetScript}
-        />
-      </View>
-      <NavigationContainer>
-        <Stack.Navigator>
-          <Stack.Screen
-            name="Start"
-            component={InitView}
-            initialParams={{
-              emit,
-            }}
-            options={{
-              headerStyle: {
-                backgroundColor: COLOURS.black,
-              },
-              headerTitle: (props) => <View />,
-            }}
+    <Provider store={store}>
+      <PersistGate loading={<Text>Loading...</Text>} persistor={persistor}>
+        <View style={{ height: 0 }}>
+          <WebView
+            ref={ref}
+            onMessage={onMessage}
+            source={{ html: webApp }}
+            injectedJavaScript={preloadMainNetScript}
           />
-          <Stack.Screen
-            name="Wallet"
-            component={WalletView}
-            options={{
-              headerStyle: {
-                backgroundColor: COLOURS.black,
-              },
-              headerTitle: (props) => (
-                <Text style={TYPOGRAPHY.header}>Wallet</Text>
-              ),
-            }}
-          />
-        </Stack.Navigator>
-      </NavigationContainer>
-    </>
+        </View>
+        <NavigationContainer>
+          <Stack.Navigator>
+            <Stack.Screen
+              name="Start"
+              component={InitView}
+              initialParams={{
+                emit,
+              }}
+              options={{
+                headerStyle: {
+                  backgroundColor: COLOURS.black,
+                },
+                headerTitle: (props) => <View />,
+              }}
+            />
+            <Stack.Screen
+              name="Wallet"
+              component={WalletView}
+              options={{
+                headerStyle: {
+                  backgroundColor: COLOURS.black,
+                },
+                headerTitle: (props) => (
+                  <Text style={TYPOGRAPHY.header}>Wallet</Text>
+                ),
+              }}
+            />
+          </Stack.Navigator>
+        </NavigationContainer>
+      </PersistGate>
+    </Provider>
   );
 }

@@ -1,7 +1,7 @@
 import { applyMiddleware, createStore, compose } from "redux";
 import { persistReducer } from "redux-persist";
 import autoMergeLevel2 from "redux-persist/lib/stateReconciler/autoMergeLevel2";
-import storage from "redux-persist/lib/storage"; // defaults to localStorage for web and AsyncStorage for react-native
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import rootReducer from "./rootReducer";
 import initialState from "./initialState";
@@ -11,7 +11,7 @@ const store = createStore(
   persistReducer(
     {
       key: "root",
-      storage,
+      storage: AsyncStorage,
       stateReconciler: autoMergeLevel2,
     },
     rootReducer
