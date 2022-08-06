@@ -15,11 +15,14 @@ function DevelopersView() {
         Made with love for the BCH community by Kallisti & Jeremy (from The
         Bitcoin Cash Podcast).
       </Text>
+      <View style={TYPOGRAPHY.spacer}></View>
       <Text style={TYPOGRAPHY.h2}>Open source code:</Text>
       <Text style={TYPOGRAPHY.pWhite}>
         https://gitlab.com/selene.cash/selene-wallet
       </Text>
       <Text style={TYPOGRAPHY.pWhite}>PRs always welcome!</Text>
+      <View style={TYPOGRAPHY.spacer}></View>
+      <Text style={TYPOGRAPHY.h2}>Donations:</Text>
     </View>
   );
 }

@@ -80,6 +80,9 @@ const TYPOGRAPHY = {
     fontSize: 16,
     marginBottom: SPACING.ten,
   },
+  spacer: {
+    height: SPACING.fifteen,
+  },
 };
 
 export default TYPOGRAPHY;
