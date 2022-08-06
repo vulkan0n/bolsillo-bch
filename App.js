@@ -54,6 +54,14 @@ export default function App() {
           },
         });
         break;
+      case RESPONSE_MESSAGE_TYPES.REQUEST_BALANCE_RESPONSE:
+        store.dispatch({
+          type: ACTION_TYPES.UPDATE_BALANCE,
+          payload: {
+            balance: message.data.balance,
+          },
+        });
+        break;
       default:
         break;
       // code block
