@@ -70,12 +70,14 @@ export default function App() {
 
   return (
     <>
-      <WebView
-        ref={ref}
-        onMessage={onMessage}
-        source={{ html: webApp }}
-        injectedJavaScript={preloadMainNetScript}
-      />
+      <View style={{ height: 0 }}>
+        <WebView
+          ref={ref}
+          onMessage={onMessage}
+          source={{ html: webApp }}
+          injectedJavaScript={preloadMainNetScript}
+        />
+      </View>
       <NavigationContainer>
         <Stack.Navigator>
           <Stack.Screen

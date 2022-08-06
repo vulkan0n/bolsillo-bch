@@ -30,7 +30,7 @@ const Root = () => {
     }
   });
 
-  return <div></div>;
+  return <div style={{ height: 0 }}></div>;
 };
 
 // This statement is detected by babelTransformer as an entry point
