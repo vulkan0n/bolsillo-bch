@@ -134,11 +134,14 @@ function WalletView({ wallet, balance, tempTxId, route, navigation }) {
   };
 
   const onPressSend = () => {
+    const testNetFaucet = "bchtest:qzl7ex0q35q2d6aljhlhzwramp09n06fry8ssqu0qp";
     emit({
       type: BRIDGE_MESSAGE_TYPES.SEND_COINS,
       data: {
         mnemonic: wallet?.mnemonic,
         derivationPath: wallet?.derivationPath,
+        recipientCashAddr: testNetFaucet,
+        satsToSend: "100",
       },
     });
   };

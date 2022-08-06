@@ -52,12 +52,10 @@ const Bridge = () => {
           message?.data?.derivationPath
         );
 
-        const testNetFaucet =
-          "bchtest:qzl7ex0q35q2d6aljhlhzwramp09n06fry8ssqu0qp";
         const txResponse = await walletSendCoins.send([
           {
-            cashaddr: testNetFaucet,
-            value: 100,
+            cashaddr: message?.data?.recipientCashAddr,
+            value: parseInt(message?.data?.satsToSend),
             unit: "sat",
           },
         ]);
