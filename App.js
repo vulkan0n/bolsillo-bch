@@ -22,6 +22,7 @@ import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 import store from "./src/redux/store";
 import persistor from "./src/redux/persistor";
+import ACTION_TYPES from "./src/redux/actionTypes";
 
 const Stack = createNativeStackNavigator();
 
@@ -39,13 +40,15 @@ export default function App() {
   // useWebViewMessage hook create props for WebView and handle communication
   // The argument is callback to receive message from React
   const { ref, onMessage, emit } = useWebViewMessage((message) => {
-    console.log("Bridge Response Message: ", message);
-
+    // console.log("Bridge Response Message: ", message);
     switch (message.type) {
       case RESPONSE_MESSAGE_TYPES.CREATE_WALLET_RESPONSE:
-        console.log("created wallet: ");
-        console.log("do something...");
-        console.log("store seed...");
+        store.dispatch({
+          type: ACTION_TYPES.STORE_WALLET,
+          payload: {
+            wallet: message.data.wallet,
+          },
+        });
         break;
       default:
         break;

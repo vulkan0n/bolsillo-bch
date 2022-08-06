@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { View, Text, Pressable, Image } from "react-native";
+import { connect } from "react-redux";
 import TYPOGRAPHY from "../../../design/typography";
 import Button from "../../../components/atoms/Button";
 import styles from "./styles";
@@ -93,11 +94,12 @@ function SatoshiInputWidget({ availableBalance }) {
   );
 }
 
-function WalletView() {
+function WalletView({ wallet }) {
   const satoshiBalance = 21.14358274 * SATOSHI;
 
   return (
     <View style={styles.container}>
+      <Text style={{ color: "white" }}>{JSON.stringify(wallet)}</Text>
       <Image
         style={styles.logo}
         source={require("../../../assets/images/logo.jpg")}
@@ -155,4 +157,11 @@ function WalletView() {
   );
 }
 
-export default WalletView;
+const mapStateToProps = (state) => {
+  console.log({ state });
+  return {
+    wallet: state?.wallet,
+  };
+};
+
+export default connect(mapStateToProps)(WalletView);

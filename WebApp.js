@@ -16,10 +16,9 @@ const Root = () => {
 
     switch (message.type) {
       case BRIDGE_MESSAGE_TYPES.CREATE_WALLET:
-        console.log("created wallet: ");
         const wallet = await TestNetWallet.newRandom();
         emit({
-          type: RESPONSE_MESSAGE_TYPES.CREATE_RESPONSE,
+          type: RESPONSE_MESSAGE_TYPES.CREATE_WALLET_RESPONSE,
           data: { wallet },
         });
         break;
