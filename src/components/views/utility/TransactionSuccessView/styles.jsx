@@ -10,6 +10,12 @@ const styles = {
     alignItems: "center",
     paddingBottom: SPACING.twentyFive,
   },
+  iconWrapper: {
+    marginBottom: SPACING.twentyFive,
+  },
+  textWrapper: {
+    paddingBottom: SPACING.fifty,
+  },
 };
 
 export default styles;

@@ -1,9 +1,12 @@
 import React, { useEffect } from "react";
-import { View, Image, Text } from "react-native";
+import { View, Text } from "react-native";
 import TYPOGRAPHY from "../../../../design/typography";
 import styles from "./styles";
 import { connect } from "react-redux";
 import ACTION_TYPES from "../../../../redux/actionTypes";
+import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+import { faCircleCheck } from "@fortawesome/free-solid-svg-icons/faCircleCheck";
+import COLOURS from "../../../../design/colours";
 
 function TransactionSuccessView({ tempTxId, navigation, dispatch }) {
   useEffect(() => {
@@ -24,8 +27,17 @@ function TransactionSuccessView({ tempTxId, navigation, dispatch }) {
 
   return (
     <View style={styles.container}>
-      <Text style={TYPOGRAPHY.h1}>Transaction success!</Text>
-      <Text style={TYPOGRAPHY.h1}>{tempTxId}</Text>
+      <View style={styles.iconWrapper}>
+        <FontAwesomeIcon
+          icon={faCircleCheck}
+          size={150}
+          color={COLOURS.black}
+        />
+      </View>
+      <View style={styles.textWrapper}>
+        <Text style={TYPOGRAPHY.h1}>Sent!</Text>
+      </View>
+      {/* <Text style={TYPOGRAPHY.h1}>{tempTxId}</Text> */}
     </View>
   );
 }
