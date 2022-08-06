@@ -4,6 +4,7 @@ import { connect } from "react-redux";
 import TYPOGRAPHY from "../../../design/typography";
 import Button from "../../../components/atoms/Button";
 import styles from "./styles";
+import { BRIDGE_MESSAGE_TYPES } from "../../../utils/bridgeMessages";
 
 const SATOSHI = 100000000;
 const MAX_SATOSHI = 21000000 * SATOSHI;
@@ -95,14 +96,21 @@ function SatoshiInputWidget({ availableBalance }) {
 }
 
 function WalletView({ wallet, balance, route, navigation }) {
-  const satoshiBalance = 21.14358274 * SATOSHI;
+  const { emit } = route.params;
 
   useEffect(() => {
     if (!wallet) {
-      const { emit } = route.params;
       emit({ type: BRIDGE_MESSAGE_TYPES.CREATE_WALLET, data: null });
     }
   }, []);
+
+  useEffect(() => {
+    if (!wallet) {
+      return;
+    }
+
+    emit({ type: BRIDGE_MESSAGE_TYPES.REQUEST_BALANCE, data: null });
+  }, [wallet]);
 
   const mBchBalance = balance?.sat / 100000 ?? 0;
 
