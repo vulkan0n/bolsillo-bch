@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Image } from "react-native";
+import { View, Image, Pressable, Text } from "react-native";
 import styles from "./styles";
 
 function MenuView() {
@@ -9,6 +9,32 @@ function MenuView() {
         style={styles.logo}
         source={require("../../../assets/images/logo.jpg")}
       />
+      <View style={styles.menuContainer}>
+        <View style={styles.menuRow}>
+          <Pressable>
+            <View style={styles.pressableCard}>
+              <Text>Developers</Text>
+            </View>
+          </Pressable>
+          <Pressable>
+            <View style={styles.pressableCard}>
+              <Text>Developers</Text>
+            </View>
+          </Pressable>
+        </View>
+        <View style={styles.menuRow}>
+          <Pressable>
+            <View style={styles.pressableCard}>
+              <Text>Developers</Text>
+            </View>
+          </Pressable>
+          <Pressable>
+            <View style={styles.pressableCard}>
+              <Text>Developers</Text>
+            </View>
+          </Pressable>
+        </View>
+      </View>
     </View>
   );
 }
