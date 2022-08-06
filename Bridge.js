@@ -33,7 +33,7 @@ const Bridge = () => {
       case BRIDGE_MESSAGE_TYPES.REQUEST_BALANCE:
         console.log("received request message");
         console.log({ message });
-        const walletRequestBalance = await Wallet.fromSeed(
+        const walletRequestBalance = await TestNetWallet.fromSeed(
           message?.data?.mnemonic,
           message?.data?.derivationPath
         );
