@@ -34,13 +34,14 @@ const Root = () => {
           <button
             title="Clickable button"
             onClick={async () => {
-              //   const wallet = await TestNetWallet.newRandom();
-              //   console.log({ wallet });
+              const wallet = await TestNetWallet.newRandom();
+              const mnemonic = wallet?.mnemonic;
+              console.log({ wallet, mnemonic });
               console.log("clicked!! sent from webview");
               // emit sends message to React Native
               //   type: event name
               //   data: some data which will be serialized by JSON.stringify
-              emit({ type: "hello", data: 123 });
+              emit({ type: "createdWallet", data: { mnemonic } });
             }}
           />
         </div>
