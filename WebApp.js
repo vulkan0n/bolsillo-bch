@@ -4,11 +4,8 @@ import {
   emit,
   useNativeMessage,
 } from "react-native-react-bridge/lib/web";
-// import MainNet from "mainnet-js";
 
 const Root = () => {
-  //   console.log({ MainNet });
-
   const [data, setData] = useState("");
   // useNativeMessage hook receives message from React Native
   useNativeMessage((message) => {

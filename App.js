@@ -47,21 +47,8 @@ export default function App() {
     return null;
   }
 
-  const jsCode = `(function() {
-                    console.log('hello')
-                    var originalPostMessage = window.ReactNativeWebView.postMessage;
-                    var patchedPostMessage = function(message, targetOrigin, transfer) {
-                      originalPostMessage(message, targetOrigin, transfer);
-                    };
-                    patchedPostMessage.toString = function() {
-                      return String(Object.hasOwnProperty).replace('hasOwnProperty', 'postMessage');
-                    };
-                    window.ReactNativeWebView.postMessage = patchedPostMessage;
-                  })();`;
-
   const runFirst = `      
-      console.log('firstRun')
-
+      console.log('Loading up the Mainnet.cash script...')
 
       async function loadScript(url) {
         let response = await fetch(url);
@@ -78,13 +65,10 @@ export default function App() {
   return (
     <>
       <WebView
-        // ref, source and onMessage must be passed to react-native-webview
         ref={ref}
-        // Pass the source code of React app
         source={{ html: webApp }}
         onMessage={onMessage}
-        injectedJavaScriptBeforeContentLoaded={runFirst}
-        injectedJavaScript={jsCode}
+        injectedJavaScript={runFirst}
       />
       <NavigationContainer>
         <Stack.Navigator>
