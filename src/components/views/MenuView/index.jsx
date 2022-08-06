@@ -18,7 +18,7 @@ function MenuView({ navigation }) {
         <View style={styles.menuRow}>
           <Pressable onPress={onPressDevs}>
             <View style={styles.pressableCard}>
-              <Text style={TYPOGRAPHY.h2black}>Devs</Text>
+              <Text style={TYPOGRAPHY.h2green}>Devs</Text>
               <Text style={TYPOGRAPHY.p}>Credit, code & donations!</Text>
             </View>
           </Pressable>

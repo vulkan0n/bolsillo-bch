@@ -39,6 +39,8 @@ const styles = {
     width: 150,
     backgroundColor: COLOURS.white,
     borderRadius: SPACING.borderRadius,
+    borderWidth: 2,
+    borderColor: COLOURS.bchGreen,
     // iOS drop shadow
     shadowColor: COLOURS.black,
     shadowOffset: { width: -2, height: 4 },
