@@ -9,6 +9,13 @@ const styles = {
     justifyContent: "start",
     alignItems: "center",
   },
+  mnemonicContainer: {
+    padding: SPACING.ten,
+    margin: SPACING.ten,
+    borderColor: COLOURS.white,
+    borderWidth: 2,
+    borderRadius: SPACING.borderRadius,
+  },
   logo: {
     width: 75,
     height: 75,
