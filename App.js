@@ -47,7 +47,7 @@ export default function App() {
     return null;
   }
 
-  const runFirst = `      
+  const preloadMainNetScript = `      
       console.log('Loading up the Mainnet.cash script...')
 
       async function loadScript(url) {
@@ -68,13 +68,16 @@ export default function App() {
         ref={ref}
         source={{ html: webApp }}
         onMessage={onMessage}
-        injectedJavaScript={runFirst}
+        injectedJavaScript={preloadMainNetScript}
       />
       <NavigationContainer>
         <Stack.Navigator>
           <Stack.Screen
             name="Start"
             component={InitView}
+            initialParams={{
+              emit,
+            }}
             options={{
               headerStyle: {
                 backgroundColor: COLOURS.black,
