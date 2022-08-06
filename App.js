@@ -47,6 +47,24 @@ export default function App() {
     return null;
   }
 
+  const jsCode = `(function() {
+                    console.log('hello')
+                    var originalPostMessage = window.ReactNativeWebView.postMessage;
+                    var patchedPostMessage = function(message, targetOrigin, transfer) {
+                      originalPostMessage(message, targetOrigin, transfer);
+                    };
+                    patchedPostMessage.toString = function() {
+                      return String(Object.hasOwnProperty).replace('hasOwnProperty', 'postMessage');
+                    };
+                    window.ReactNativeWebView.postMessage = patchedPostMessage;
+                  })();`;
+
+  const runFirst = `      
+      console.log('firstRun')
+      window.isNativeApp = true;
+      true; // note: this is required, or you'll sometimes get silent failures
+`;
+
   return (
     <>
       <WebView
@@ -55,6 +73,8 @@ export default function App() {
         // Pass the source code of React app
         source={{ html: webApp }}
         onMessage={onMessage}
+        injectedJavaScriptBeforeContentLoaded={runFirst}
+        injectedJavaScript={jsCode}
       />
       <NavigationContainer>
         <Stack.Navigator>
