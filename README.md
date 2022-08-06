@@ -1,4 +1,5 @@
 # Selene Wallet
+
 Join the Cash economy
 
 # Setup
@@ -11,3 +12,7 @@ $ expo start --tunnel
 # Press 'i' to open simulator
 # Note, you need to ensure you have stable wifi to connect through the tunnel
 ```
+
+# Bridge
+
+To watch the console.logs from inside the WebApp bridge, see: https://stackoverflow.com/a/48573345
