@@ -12,7 +12,6 @@ const styles = {
   logo: {
     width: 75,
     height: 75,
-    marginTop: SPACING.five,
     marginBottom: SPACING.ten,
   },
   primaryTitlesWrapper: {

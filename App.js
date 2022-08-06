@@ -119,7 +119,7 @@ export default function App() {
                   backgroundColor: COLOURS.black,
                 },
                 headerTitle: (props) => (
-                  <Text style={TYPOGRAPHY.header}>Wallet</Text>
+                  <Text style={TYPOGRAPHY.header}>Selene Wallet</Text>
                 ),
               }}
             />
