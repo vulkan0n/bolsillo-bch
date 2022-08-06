@@ -18,7 +18,11 @@ function BackupView({ wallet }) {
   return (
     <View style={styles.container}>
       <View style={styles.iconContainer}>
-        <FontAwesomeIcon icon={faPiggyBank} size={75} color={COLOURS.white} />
+        <FontAwesomeIcon
+          icon={faPiggyBank}
+          size={75}
+          color={COLOURS.bchGreen}
+        />
       </View>
       <Text style={TYPOGRAPHY.h1}>Mnemonic phrase</Text>
       <Text style={TYPOGRAPHY.pWhite}>

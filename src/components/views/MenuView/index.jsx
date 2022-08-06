@@ -36,11 +36,11 @@ function MenuView({ navigation }) {
                 <FontAwesomeIcon
                   icon={faBookOpenReader}
                   size={45}
-                  color={COLOURS.black}
+                  color={COLOURS.bchGreen}
                 />
               </View>
               <Text style={TYPOGRAPHY.menuHeaderGreen}>Learn</Text>
-              <Text style={TYPOGRAPHY.p}>Understand Bitcoin Cash.</Text>
+              <Text style={TYPOGRAPHY.pWhite}>Understand Bitcoin Cash.</Text>
             </View>
           </Pressable>
           <Pressable onPress={onPressBackup}>
@@ -49,11 +49,11 @@ function MenuView({ navigation }) {
                 <FontAwesomeIcon
                   icon={faPiggyBank}
                   size={45}
-                  color={COLOURS.black}
+                  color={COLOURS.bchGreen}
                 />
               </View>
               <Text style={TYPOGRAPHY.menuHeaderGreen}>Backup</Text>
-              <Text style={TYPOGRAPHY.p}>Keep your money safe!</Text>
+              <Text style={TYPOGRAPHY.pWhite}>Keep your money safe!</Text>
             </View>
           </Pressable>
         </View>
@@ -64,11 +64,11 @@ function MenuView({ navigation }) {
                 <FontAwesomeIcon
                   icon={faCode}
                   size={45}
-                  color={COLOURS.black}
+                  color={COLOURS.bchGreen}
                 />
               </View>
               <Text style={TYPOGRAPHY.menuHeaderGreen}>Devs</Text>
-              <Text style={TYPOGRAPHY.p}>Credit, code & donations!</Text>
+              <Text style={TYPOGRAPHY.pWhite}>Credit, code & donations!</Text>
             </View>
           </Pressable>
           <Pressable onPress={onPressSettings}>
@@ -77,11 +77,13 @@ function MenuView({ navigation }) {
                 <FontAwesomeIcon
                   icon={faGears}
                   size={45}
-                  color={COLOURS.black}
+                  color={COLOURS.bchGreen}
                 />
               </View>
               <Text style={TYPOGRAPHY.menuHeaderGreen}>Settings</Text>
-              <Text style={TYPOGRAPHY.p}>Currency, unit display, etc.</Text>
+              <Text style={TYPOGRAPHY.pWhite}>
+                Currency, unit display, etc.
+              </Text>
             </View>
           </Pressable>
         </View>

@@ -16,7 +16,7 @@ const styles = {
     marginBottom: SPACING.twentyFive,
   },
   menuContainer: {
-    backgroundColor: COLOURS.white,
+    backgroundColor: COLOURS.black,
     padding: SPACING.ten,
     flex: 1,
     justifyContent: "start",
@@ -38,12 +38,12 @@ const styles = {
     padding: 10,
     height: 150,
     width: 150,
-    backgroundColor: COLOURS.white,
+    backgroundColor: COLOURS.black,
     borderRadius: SPACING.borderRadius,
     borderWidth: 2,
     borderColor: COLOURS.bchGreen,
     // iOS drop shadow
-    shadowColor: COLOURS.black,
+    shadowColor: COLOURS.bchGreen,
     shadowOffset: { width: -2, height: 4 },
     shadowOpacity: 0.2,
     shadowRadius: 3,
