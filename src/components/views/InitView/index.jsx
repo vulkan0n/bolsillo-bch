@@ -4,12 +4,28 @@ import Button from "../../atoms/Button/index";
 import styles from "./styles";
 import TYPOGRAPHY from "../../../design/typography";
 import { BRIDGE_MESSAGE_TYPES } from "../../../utils/bridgeMessages";
+import { connect } from "react-redux";
+import { useEffect } from "react";
 
-function InitView({ navigation, route }) {
+function InitView({ navigation, route, wallet }) {
+  useEffect(() => {
+    if (wallet) {
+      navigation.reset({
+        index: 0,
+        routes: [{ name: "Wallet" }],
+      });
+    }
+  }, []);
+
   const onPressNewWallet = () => {
-    const { emit } = route.params;
-    emit({ type: BRIDGE_MESSAGE_TYPES.CREATE_WALLET, data: null });
-    navigation.navigate("Wallet");
+    if (!wallet) {
+      const { emit } = route.params;
+      emit({ type: BRIDGE_MESSAGE_TYPES.CREATE_WALLET, data: null });
+    }
+    navigation.reset({
+      index: 0,
+      routes: [{ name: "Wallet" }],
+    });
   };
 
   return (
@@ -32,4 +48,9 @@ function InitView({ navigation, route }) {
     </View>
   );
 }
-export default InitView;
+
+const mapStateToProps = ({ wallet }) => ({
+  wallet,
+});
+
+export default connect(mapStateToProps)(InitView);

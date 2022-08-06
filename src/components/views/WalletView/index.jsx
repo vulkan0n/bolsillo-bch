@@ -99,7 +99,6 @@ function WalletView({ wallet }) {
 
   return (
     <View style={styles.container}>
-      <Text style={{ color: "white" }}>{JSON.stringify(wallet)}</Text>
       <Image
         style={styles.logo}
         source={require("../../../assets/images/logo.jpg")}
@@ -157,11 +156,8 @@ function WalletView({ wallet }) {
   );
 }
 
-const mapStateToProps = (state) => {
-  console.log({ state });
-  return {
-    wallet: state?.wallet,
-  };
-};
+const mapStateToProps = ({ wallet }) => ({
+  wallet,
+});
 
 export default connect(mapStateToProps)(WalletView);
