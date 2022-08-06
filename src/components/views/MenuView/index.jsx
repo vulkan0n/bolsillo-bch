@@ -3,11 +3,16 @@ import { View, Image, Pressable, Text } from "react-native";
 import TYPOGRAPHY from "../../../design/typography";
 import styles from "./styles";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+import { faPiggyBank } from "@fortawesome/free-solid-svg-icons/faPiggyBank";
 import { faCode } from "@fortawesome/free-solid-svg-icons/faCode";
 import { faGears } from "@fortawesome/free-solid-svg-icons/faGears";
 import COLOURS from "../../../design/colours";
 
 function MenuView({ navigation }) {
+  const onPressBackup = () => {
+    navigation.navigate("Backup");
+  };
+
   const onPressDevs = () => {
     navigation.navigate("Developers");
   };
@@ -19,6 +24,26 @@ function MenuView({ navigation }) {
   return (
     <View style={styles.container}>
       <View style={styles.menuContainer}>
+        <View style={styles.menuRow}>
+          <Pressable onPress={onPressBackup}>
+            <View style={styles.pressableCard}>
+              <View style={styles.iconWrapper}>
+                <FontAwesomeIcon
+                  icon={faPiggyBank}
+                  size={45}
+                  color={COLOURS.black}
+                />
+              </View>
+              <Text style={TYPOGRAPHY.menuHeaderGreen}>Backup</Text>
+              <Text style={TYPOGRAPHY.p}>Keep your money safe!</Text>
+            </View>
+          </Pressable>
+          <Pressable>
+            <View style={styles.pressableCard}>
+              <Text>TBC</Text>
+            </View>
+          </Pressable>
+        </View>
         <View style={styles.menuRow}>
           <Pressable onPress={onPressDevs}>
             <View style={styles.pressableCard}>
@@ -44,18 +69,6 @@ function MenuView({ navigation }) {
               </View>
               <Text style={TYPOGRAPHY.menuHeaderGreen}>Settings</Text>
               <Text style={TYPOGRAPHY.p}>Currency, unit display, etc.</Text>
-            </View>
-          </Pressable>
-        </View>
-        <View style={styles.menuRow}>
-          <Pressable>
-            <View style={styles.pressableCard}>
-              <Text>TBC</Text>
-            </View>
-          </Pressable>
-          <Pressable>
-            <View style={styles.pressableCard}>
-              <Text>TBC</Text>
             </View>
           </Pressable>
         </View>
