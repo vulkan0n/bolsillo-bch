@@ -113,7 +113,13 @@ function WalletView({ wallet, balance, route, navigation }) {
   }, [wallet]);
 
   const onPressBalance = () => {
-    emit({ type: BRIDGE_MESSAGE_TYPES.REQUEST_BALANCE, data: null });
+    emit({
+      type: BRIDGE_MESSAGE_TYPES.REQUEST_BALANCE,
+      data: {
+        mnemonic: wallet?.mnemonic,
+        derivationPath: wallet?.derivationPath,
+      },
+    });
   };
 
   const mBchBalance = balance?.sat / 100000 ?? 0;

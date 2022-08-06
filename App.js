@@ -88,6 +88,9 @@ export default function App() {
             onMessage={onMessage}
             source={{ html: Bridge }}
             injectedJavaScript={preloadMainNetScript}
+            allowFileAccess={true}
+            javaScriptEnabled={true}
+            domStorageEnabled={true}
           />
         </View>
         <NavigationContainer>

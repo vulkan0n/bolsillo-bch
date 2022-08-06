@@ -11,10 +11,16 @@ import {
 // import { connect } from "react-redux";
 
 const Bridge = () => {
-  console.log("bridge loaded");
+  console.log("Bridge loaded.");
   // useNativeMessage hook receives message from React Native
+
+  // wallet.named(x) is unavailable
+  // Safari (has to be used for iOS debugging)
+  // Unfortunately, Safari is also non standard,
+  // and it does not allow access to IndexedDB in an iframe/WebView
+  // Thus wallet needs to be retrieve from seed phrase every time
   useNativeMessage(async (message) => {
-    console.log("Bridge received: ", message);
+    console.log("Bridge received message: ", message);
 
     switch (message.type) {
       case BRIDGE_MESSAGE_TYPES.CREATE_WALLET:
@@ -26,8 +32,14 @@ const Bridge = () => {
         break;
       case BRIDGE_MESSAGE_TYPES.REQUEST_BALANCE:
         console.log("received request message");
-        const walletRequestBalance = await TestNetWallet.namedExists("Default");
-        const balance = await wallet.getBalance();
+        console.log({ message });
+        const walletRequestBalance = await Wallet.fromSeed(
+          message?.data?.mnemonic,
+          message?.data?.derivationPath
+        );
+        console.log("walletRequestBalance");
+        console.log({ walletRequestBalance });
+        const balance = await walletRequestBalance.getBalance();
         console.log("retrieved balance");
         console.log({ balance });
         emit({
