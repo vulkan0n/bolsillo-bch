@@ -201,11 +201,9 @@ export default function App() {
               component={TransactionSuccessView}
               options={{
                 headerStyle: {
-                  backgroundColor: COLOURS.black,
+                  backgroundColor: COLOURS.bchGreen,
                 },
-                headerTitle: (props) => (
-                  <Text style={TYPOGRAPHY.header}>Transaction Success!</Text>
-                ),
+                headerTitle: (props) => <Text style={TYPOGRAPHY.header}></Text>,
               }}
             />
           </Stack.Navigator>

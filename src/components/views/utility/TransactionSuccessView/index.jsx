@@ -15,19 +15,15 @@ function TransactionSuccessView({ tempTxId, navigation, dispatch }) {
         },
       });
 
-      navigation.reset({
-        index: 0,
-        routes: [{ name: "Wallet" }],
-      });
+      // navigation.reset({
+      //   index: 0,
+      //   routes: [{ name: "Wallet" }],
+      // });
     }, 5000);
   }, []);
 
   return (
     <View style={styles.container}>
-      <Image
-        style={styles.logo}
-        source={require("../../../../assets/images/logo.jpg")}
-      />
       <Text style={TYPOGRAPHY.h1}>Transaction success!</Text>
       <Text style={TYPOGRAPHY.h1}>{tempTxId}</Text>
     </View>

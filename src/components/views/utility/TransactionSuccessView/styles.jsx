@@ -3,17 +3,12 @@ import SPACING from "../../../../design/spacing";
 
 const styles = {
   container: {
-    backgroundColor: COLOURS.black,
+    backgroundColor: COLOURS.bchGreen,
     padding: SPACING.twentyFive,
     flex: 1,
-    justifyContent: "start",
+    justifyContent: "center",
     alignItems: "center",
-  },
-  logo: {
-    width: 75,
-    height: 75,
-    marginTop: SPACING.five,
-    marginBottom: SPACING.ten,
+    paddingBottom: SPACING.twentyFive,
   },
 };
 
