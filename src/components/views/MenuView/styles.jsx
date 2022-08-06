@@ -12,8 +12,8 @@ const styles = {
   logo: {
     width: 75,
     height: 75,
-    marginTop: SPACING.five,
-    marginBottom: SPACING.ten,
+    marginTop: SPACING.twentyFive,
+    marginBottom: SPACING.twentyFive,
   },
   menuContainer: {
     backgroundColor: COLOURS.white,
@@ -22,7 +22,8 @@ const styles = {
     justifyContent: "start",
     alignItems: "center",
     borderRadius: SPACING.borderRadius,
-    margin: SPACING.fifteen,
+    marginLeft: SPACING.fifteen,
+    marginRight: SPACING.fifteen,
     width: "100%",
   },
   menuRow: {

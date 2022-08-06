@@ -10,10 +10,6 @@ function MenuView({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <Image
-        style={styles.logo}
-        source={require("../../../assets/images/logo.jpg")}
-      />
       <View style={styles.menuContainer}>
         <View style={styles.menuRow}>
           <Pressable onPress={onPressDevs}>
@@ -41,6 +37,10 @@ function MenuView({ navigation }) {
           </Pressable>
         </View>
       </View>
+      <Image
+        style={styles.logo}
+        source={require("../../../assets/images/logo.jpg")}
+      />
     </View>
   );
 }
