@@ -5,6 +5,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import InitView from "./src/components/views/InitView";
 import WalletView from "./src/components/views/WalletView";
 import MenuView from "./src/components/views/MenuView";
+import LearnView from "./src/components/views/menu/LearnView";
 import BackupView from "./src/components/views/menu/BackupView";
 import DevelopersView from "./src/components/views/menu/DevelopersView";
 import SettingsView from "./src/components/views/menu/SettingsView";
@@ -131,6 +132,18 @@ export default function App() {
                 },
                 headerTitle: (props) => (
                   <Text style={TYPOGRAPHY.header}>Menu</Text>
+                ),
+              }}
+            />
+            <Stack.Screen
+              name="Learn"
+              component={LearnView}
+              options={{
+                headerStyle: {
+                  backgroundColor: COLOURS.black,
+                },
+                headerTitle: (props) => (
+                  <Text style={TYPOGRAPHY.header}>Learn</Text>
                 ),
               }}
             />
