@@ -8,6 +8,7 @@ import LearnView from "./src/components/views/menu/LearnView";
 import BackupView from "./src/components/views/menu/BackupView";
 import DevelopersView from "./src/components/views/menu/DevelopersView";
 import SettingsView from "./src/components/views/menu/SettingsView";
+import TransactionSuccessView from "./src/components/views/utility/TransactionSuccessView";
 import COLOURS from "./src/design/colours";
 import TYPOGRAPHY from "./src/design/typography";
 import {
@@ -74,7 +75,7 @@ export default function App() {
         store.dispatch({
           type: ACTION_TYPES.UPDATE_TEMP_TXID,
           payload: {
-            balance: message.data.tempTxId,
+            tempTxId: message.data.tempTxId,
           },
         });
         break;
@@ -191,6 +192,18 @@ export default function App() {
                 },
                 headerTitle: (props) => (
                   <Text style={TYPOGRAPHY.header}>Settings</Text>
+                ),
+              }}
+            />
+            <Stack.Screen
+              name="Transaction Success"
+              component={TransactionSuccessView}
+              options={{
+                headerStyle: {
+                  backgroundColor: COLOURS.black,
+                },
+                headerTitle: (props) => (
+                  <Text style={TYPOGRAPHY.header}>Transaction Success!</Text>
                 ),
               }}
             />

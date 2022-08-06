@@ -95,7 +95,7 @@ function SatoshiInputWidget({ availableBalance }) {
   );
 }
 
-function WalletView({ wallet, balance, route, navigation }) {
+function WalletView({ wallet, balance, tempTxId, route, navigation }) {
   const { emit } = route.params;
 
   useEffect(() => {
@@ -111,6 +111,17 @@ function WalletView({ wallet, balance, route, navigation }) {
 
     emit({ type: BRIDGE_MESSAGE_TYPES.REQUEST_BALANCE, data: null });
   }, [wallet]);
+
+  useEffect(() => {
+    if (!tempTxId) {
+      return;
+    }
+
+    navigation.reset({
+      index: 0,
+      routes: [{ name: "Transaction Success!" }],
+    });
+  }, [tempTxId]);
 
   const onPressBalance = () => {
     emit({
@@ -219,9 +230,10 @@ function WalletView({ wallet, balance, route, navigation }) {
   );
 }
 
-const mapStateToProps = ({ wallet, balance }) => ({
+const mapStateToProps = ({ wallet, balance, tempTxId }) => ({
   wallet,
   balance,
+  tempTxId,
 });
 
 export default connect(mapStateToProps)(WalletView);
