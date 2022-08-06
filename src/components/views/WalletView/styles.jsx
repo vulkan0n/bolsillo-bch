@@ -14,6 +14,9 @@ const styles = {
     height: 75,
     marginBottom: SPACING.ten,
   },
+  widePressable: {
+    width: "100%",
+  },
   primaryTitlesWrapper: {
     marginBottom: SPACING.five,
   },

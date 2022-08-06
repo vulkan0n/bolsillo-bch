@@ -112,6 +112,10 @@ function WalletView({ wallet, balance, route, navigation }) {
     emit({ type: BRIDGE_MESSAGE_TYPES.REQUEST_BALANCE, data: null });
   }, [wallet]);
 
+  const onPressBalance = () => {
+    emit({ type: BRIDGE_MESSAGE_TYPES.REQUEST_BALANCE, data: null });
+  };
+
   const mBchBalance = balance?.sat / 100000 ?? 0;
 
   const displayUsd = (stringVal) => {
@@ -140,13 +144,15 @@ function WalletView({ wallet, balance, route, navigation }) {
         <Button title="Transaction History" />
       </View>*/}
 
-      <View style={styles.primaryTitlesWrapper}>
-        {/* <Text style={TYPOGRAPHY.h1}>
+      <Pressable onPress={onPressBalance} style={styles.widePressable}>
+        <View style={styles.primaryTitlesWrapper}>
+          {/* <Text style={TYPOGRAPHY.h1}>
           ₿ {formatSats(satoshiBalance)} Available
         </Text> */}
-        <Text style={TYPOGRAPHY.h1}>{mBchBalance} mBCH</Text>
-        <Text style={TYPOGRAPHY.h2}>{displayUsd(balance?.usd)}</Text>
-      </View>
+          <Text style={TYPOGRAPHY.h1}>{mBchBalance} mBCH</Text>
+          <Text style={TYPOGRAPHY.h2}>{displayUsd(balance?.usd)}</Text>
+        </View>
+      </Pressable>
 
       <View style={styles.inputBackground}>
         <View style={styles.secondaryTitlesWrapper}>

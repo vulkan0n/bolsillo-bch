@@ -8,18 +8,31 @@ import {
   BRIDGE_MESSAGE_TYPES,
   RESPONSE_MESSAGE_TYPES,
 } from "./src/utils/bridgeMessages";
+// import { connect } from "react-redux";
 
 const Bridge = () => {
+  console.log("bridge loaded");
   // useNativeMessage hook receives message from React Native
   useNativeMessage(async (message) => {
     console.log("Bridge received: ", message);
 
     switch (message.type) {
       case BRIDGE_MESSAGE_TYPES.CREATE_WALLET:
-        const wallet = await TestNetWallet.newRandom();
+        const wallet = await TestNetWallet.named("Default");
         emit({
           type: RESPONSE_MESSAGE_TYPES.CREATE_WALLET_RESPONSE,
           data: { wallet },
+        });
+        break;
+      case BRIDGE_MESSAGE_TYPES.REQUEST_BALANCE:
+        console.log("received request message");
+        const walletRequestBalance = await TestNetWallet.namedExists("Default");
+        const balance = await wallet.getBalance();
+        console.log("retrieved balance");
+        console.log({ balance });
+        emit({
+          type: RESPONSE_MESSAGE_TYPES.REQUEST_BALANCE_RESPONSE,
+          data: { balance },
         });
         break;
       default:
