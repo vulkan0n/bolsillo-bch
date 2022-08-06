@@ -4,9 +4,9 @@ import SPACING from "../../../../design/spacing";
 const styles = {
   container: {
     backgroundColor: COLOURS.black,
-    padding: SPACING.ten,
+    padding: SPACING.twentyFive,
     flex: 1,
-    justifyContent: "center",
+    justifyContent: "start",
     alignItems: "center",
   },
   logo: {
