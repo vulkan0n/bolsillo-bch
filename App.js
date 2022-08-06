@@ -14,6 +14,9 @@ import {
   Montserrat_700Bold,
   Montserrat_800ExtraBold,
 } from "@expo-google-fonts/montserrat";
+import WebView from "react-native-webview";
+import { useWebViewMessage } from "react-native-react-bridge";
+import webApp from "./WebApp";
 
 const Stack = createNativeStackNavigator();
 
@@ -28,36 +31,56 @@ export default function App() {
     Montserrat_800ExtraBold,
   });
 
+  // useWebViewMessage hook create props for WebView and handle communication
+  // The argument is callback to receive message from React
+  const { ref, onMessage, emit } = useWebViewMessage((message) => {
+    // emit sends message to React
+    //   type: event name
+    //   data: some data which will be serialized by JSON.stringify
+    if (message.type === "hello" && message.data === 123) {
+      emit({ type: "success", data: "succeeded!" });
+    }
+  });
+
   if (!fontsLoaded) {
     return null;
   }
 
   return (
-    <NavigationContainer>
-      <Stack.Navigator>
-        <Stack.Screen
-          name="Start"
-          component={InitView}
-          options={{
-            headerStyle: {
-              backgroundColor: COLOURS.black,
-            },
-            headerTitle: (props) => <View />,
-          }}
-        />
-        <Stack.Screen
-          name="Wallet"
-          component={WalletView}
-          options={{
-            headerStyle: {
-              backgroundColor: COLOURS.black,
-            },
-            headerTitle: (props) => (
-              <Text style={TYPOGRAPHY.header}>Wallet</Text>
-            ),
-          }}
-        />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <>
+      <WebView
+        // ref, source and onMessage must be passed to react-native-webview
+        ref={ref}
+        // Pass the source code of React app
+        source={{ html: webApp }}
+        onMessage={onMessage}
+      />
+      <NavigationContainer>
+        <Stack.Navigator>
+          <Stack.Screen
+            name="Start"
+            component={InitView}
+            options={{
+              headerStyle: {
+                backgroundColor: COLOURS.black,
+              },
+              headerTitle: (props) => <View />,
+            }}
+          />
+          <Stack.Screen
+            name="Wallet"
+            component={WalletView}
+            options={{
+              headerStyle: {
+                backgroundColor: COLOURS.black,
+              },
+              headerTitle: (props) => (
+                <Text style={TYPOGRAPHY.header}>Wallet</Text>
+              ),
+            }}
+          />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </>
   );
 }
