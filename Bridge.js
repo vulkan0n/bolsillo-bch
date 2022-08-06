@@ -37,8 +37,13 @@ const Bridge = () => {
           message?.data?.mnemonic,
           message?.data?.derivationPath
         );
+
         console.log("walletRequestBalance");
         console.log({ walletRequestBalance });
+        console.log("getting tesnet sats");
+        // const txid = await walletRequestBalance.getTestnetSatoshis();
+        // console.log({ txid });
+
         const balance = await walletRequestBalance.getBalance();
         console.log("retrieved balance");
         console.log({ balance });
