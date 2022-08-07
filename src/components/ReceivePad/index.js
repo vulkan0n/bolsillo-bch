@@ -6,15 +6,13 @@ import Button from "../atoms/Button";
 import TYPOGRAPHY from "../../design/typography";
 import { displaySats, displaySatsAsUsd } from "../../utils/formatting";
 import { BRIDGE_MESSAGE_TYPES } from "../../utils/bridgeMessages";
-import ACTION_TYPES from "../../redux/actionTypes";
 
-const NumPad = ({
+const ReceivePad = ({
   isCryptoDenominated,
   wallet,
   balance,
   navigation,
   emit,
-  dispatch,
 }) => {
   const [inputBalance, setInputBalance] = useState("0");
   const [inputError, setInputError] = useState("");
@@ -77,15 +75,6 @@ const NumPad = ({
     });
   };
 
-  const onPressReceive = () => {
-    dispatch({
-      type: ACTION_TYPES.UPDATE_TRANSACTION_PAD_STATE,
-      payload: {
-        transactionPadState: "Receive",
-      },
-    });
-  };
-
   const InputButton = ({ n }) => {
     return (
       <Pressable
@@ -111,46 +100,22 @@ const NumPad = ({
         </Text>
         {!!inputError && <Text style={styles.inputError}>{inputError}</Text>}
       </View>
-      <View style={styles.numPad}>
-        <View style={styles.numPadRow}>
-          <InputButton n={"1"} />
-          <InputButton n={"2"} />
-          <InputButton n={"3"} />
-        </View>
-        <View style={styles.numPadRow}>
-          <InputButton n={"4"} />
-          <InputButton n={"5"} />
-          <InputButton n={"6"} />
-        </View>
-        <View style={styles.numPadRow}>
-          <InputButton n={"7"} />
-          <InputButton n={"8"} />
-          <InputButton n={"9"} />
-        </View>
-        <View style={styles.numPadRow}>
-          <InputButton n={"<"} />
-          <InputButton n={"0"} />
-          <InputButton n={isSatoshiDenominated ? "" : "."} />
-        </View>
-      </View>
+      <View style={styles.numPad}></View>
       <View style={styles.buttonContainer}>
         <Button onPress={onPressSend} isSmall>
           Send
         </Button>
-        <Button variant="secondary" onPress={onPressReceive} isSmall>
+        <Button variant="secondary" isSmall>
           Receive
         </Button>
       </View>
     </View>
   );
 };
-
 const mapStateToProps = ({ wallet, balance, isCryptoDenominated }) => ({
   wallet,
   balance,
   isCryptoDenominated,
 });
 
-const mapDispatchToProps = (dispatch) => ({ dispatch });
-
-export default connect(mapStateToProps, mapDispatchToProps)(NumPad);
+export default connect(mapStateToProps)(ReceivePad);

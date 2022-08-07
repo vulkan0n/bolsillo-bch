@@ -3,13 +3,14 @@ import { View, Text, Pressable } from "react-native";
 import { connect } from "react-redux";
 import styles from "./styles";
 import NumPad from "../NumPad";
+import ReceivePad from "../ReceivePad";
 
 const TransactionPad = ({ transactionPadState, emit }) => {
   console.log({ transactionPadState });
   const component = () => {
     switch (transactionPadState) {
       case "Receive":
-        return <NumPad emit={emit} />;
+        return <ReceivePad emit={emit} />;
       case "":
         return <NumPad emit={emit} />;
       default:
