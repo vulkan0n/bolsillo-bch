@@ -20,6 +20,7 @@ import persistor from "./src/redux/persistor";
 import ACTION_TYPES from "./src/redux/actionTypes";
 import Toast from "react-native-toast-message";
 import toastConfig from "./src/config/toast";
+import preloadMainNetScript from "./src/config/preloadMainNetScript";
 
 export default function App() {
   // For the list of possible font faces
@@ -89,21 +90,6 @@ export default function App() {
   if (!fontsLoaded) {
     return null;
   }
-
-  const preloadMainNetScript = `      
-      console.log('Loading up the Mainnet.cash script...')
-
-      async function loadScript(url) {
-        let response = await fetch(url);
-        let script = await response.text();
-        eval(script);
-      }
-
-      let scriptUrl = 'https://cdn.mainnet.cash/mainnet-0.1.7.js'
-      loadScript(scriptUrl);
-
-      true; // note: this is required, or you'll sometimes get silent failures
-`;
 
   return (
     <Provider store={store}>
