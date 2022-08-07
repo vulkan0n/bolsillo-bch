@@ -25,7 +25,7 @@ const Bridge = () => {
     try {
       switch (message.type) {
         case BRIDGE_MESSAGE_TYPES.CREATE_WALLET:
-          const wallet = await TestNetWallet.named("Default");
+          const wallet = await TestNetWallet.getNewRandom();
           emit({
             type: RESPONSE_MESSAGE_TYPES.CREATE_WALLET_RESPONSE,
             data: { wallet },
@@ -78,7 +78,8 @@ const Bridge = () => {
           console.log("NOTE: Message type not recognised!!");
           break;
       }
-    } catch {
+    } catch (error) {
+      console.log({ error });
       emit({
         type: RESPONSE_MESSAGE_TYPES.ERROR,
         data: {

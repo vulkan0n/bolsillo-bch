@@ -1,4 +1,5 @@
-// https://cdn.mainnet.cash/mainnet-0.1.7.js
+// https://mainnet.cash/tutorial/#let-s-get-programming
+// https://cdn.mainnet.cash/mainnet-0.5.4.js
 // Retrieved 7th Aug 2022
 const mainNetScript = <script src="mainNetScript.txt"></script>;
 
