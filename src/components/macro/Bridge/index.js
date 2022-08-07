@@ -27,8 +27,7 @@ const Bridge = () => {
 
       switch (message.type) {
         case BRIDGE_MESSAGE_TYPES.CREATE_WALLET:
-          // const test = await Wallet.
-          const wallet = await WalletObject.getNewRandom();
+          const wallet = await WalletObject.newRandom();
           emit({
             type: RESPONSE_MESSAGE_TYPES.CREATE_WALLET_RESPONSE,
             data: { wallet },
@@ -45,7 +44,6 @@ const Bridge = () => {
 
           console.log("Retrieved balance:");
           console.log({ balance });
-          console.log({ walletRequestBalance });
 
           emit({
             type: RESPONSE_MESSAGE_TYPES.REQUEST_BALANCE_RESPONSE,
@@ -53,6 +51,7 @@ const Bridge = () => {
               balance,
             },
           });
+
           // Refetch wallet info with balance
           // Temporary kludge until importing from Seed can be
           // emit({
