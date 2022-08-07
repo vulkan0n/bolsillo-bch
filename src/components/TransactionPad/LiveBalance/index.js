@@ -7,14 +7,13 @@ import { displaySats, displaySatsAsUsd } from "../../../utils/formatting";
 import ACTION_TYPES from "../../../redux/actionTypes";
 
 const DisplayedBalance = ({
-  balance,
   transactionPadBalance,
   transactionPadError,
   isCryptoDenominated,
   dispatch,
 }) => {
-  const satBalance = displaySats(balance?.sat);
-  const usdBalance = displaySatsAsUsd(balance?.sat);
+  const satBalance = displaySats(transactionPadBalance);
+  const usdBalance = displaySatsAsUsd(transactionPadBalance);
 
   useEffect(() => {
     setTimeout(() => {
@@ -32,24 +31,19 @@ const DisplayedBalance = ({
   return (
     <View style={styles.secondaryTitlesWrapper}>
       <Text style={TYPOGRAPHY.h1black}>
-        {displaySats(transactionPadBalance)}
-        {/* {isCryptoDenominated ? satBalance : usdBalance} */}
+        {isCryptoDenominated ? satBalance : usdBalance}
       </Text>
       <Text style={TYPOGRAPHY.h2black}>
-        {" "}
         {isCryptoDenominated ? usdBalance : satBalance}
       </Text>
-      {!!inputError && <Text style={styles.inputError}>{inputError}</Text>}
+      {!!transactionPadError && (
+        <Text style={styles.transactionPadError}>{transactionPadError}</Text>
+      )}
     </View>
   );
 };
 
-const mapStateToProps = ({
-  balance,
-  transactionPadBalance,
-  isCryptoDenominated,
-}) => ({
-  balance,
+const mapStateToProps = ({ transactionPadBalance, isCryptoDenominated }) => ({
   transactionPadBalance,
   isCryptoDenominated,
 });

@@ -4,6 +4,7 @@ import { connect } from "react-redux";
 import styles from "./styles";
 import NumPad from "./NumPad";
 import ReceivePad from "./ReceivePad";
+import LiveBalance from "./LiveBalance";
 
 const TransactionPad = ({ transactionPadState, emit }) => {
   const component = () => {
@@ -17,7 +18,12 @@ const TransactionPad = ({ transactionPadState, emit }) => {
     }
   };
 
-  return <View style={styles.transactionPad}>{component()}</View>;
+  return (
+    <View style={styles.transactionPad}>
+      <LiveBalance />
+      {component()}
+    </View>
+  );
 };
 const mapStateToProps = ({ transactionPadState }) => ({
   transactionPadState,

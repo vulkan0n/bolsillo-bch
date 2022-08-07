@@ -20,11 +20,6 @@ const styles = {
     margin: SPACING.fifteen,
     borderRadius: SPACING.borderRadius,
   },
-  inputError: {
-    color: COLOURS.errorRed,
-    fontSize: 18,
-    textAlign: "center",
-  },
   numPadRow: {
     flex: 1,
     flexDirection: "row",

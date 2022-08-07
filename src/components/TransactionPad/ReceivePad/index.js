@@ -5,7 +5,6 @@ import styles from "./styles";
 import Button from "../../atoms/Button";
 import Toast from "react-native-toast-message";
 import ACTION_TYPES from "../../../redux/actionTypes";
-import LiveBalance from "../LiveBalance";
 
 const ReceivePad = ({ dispatch }) => {
   const onPressShare = () => {
@@ -29,7 +28,6 @@ const ReceivePad = ({ dispatch }) => {
 
   return (
     <View style={styles.inputBackground}>
-      <LiveBalance />
       <View style={styles.receivePad}></View>
       <View style={styles.buttonContainer}>
         <Button onPress={onPressShare} isSmall>

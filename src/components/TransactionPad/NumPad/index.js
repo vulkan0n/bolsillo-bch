@@ -1,10 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { View, Text, Pressable } from "react-native";
 import { connect } from "react-redux";
 import styles from "./styles";
 import Button from "../../atoms/Button";
 import TYPOGRAPHY from "../../../design/typography";
-import { displaySats, displaySatsAsUsd } from "../../../utils/formatting";
 import { BRIDGE_MESSAGE_TYPES } from "../../../utils/bridgeMessages";
 import ACTION_TYPES from "../../../redux/actionTypes";
 
