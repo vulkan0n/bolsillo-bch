@@ -14,6 +14,8 @@ const NumPad = ({ isCryptoDenominated, balance, navigation }) => {
   const [inputBalance, setInputBalance] = useState("0");
   const [inputError, setInputError] = useState("");
   const isSatoshiDenominated = true;
+  const availableBalance = balance?.sat;
+  console.log({ balance });
 
   useEffect(() => {
     setTimeout(() => {
@@ -34,6 +36,11 @@ const NumPad = ({ isCryptoDenominated, balance, navigation }) => {
     }
     if (n === "." && inputBalance.includes(".")) {
       setInputError("Already used decimal point.");
+      return;
+    }
+
+    if (parseFloat(inputBalance + n) > parseFloat(availableBalance)) {
+      setInputError("Insuffient balance.");
       return;
     }
 

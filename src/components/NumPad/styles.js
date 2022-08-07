@@ -24,6 +24,8 @@ const styles = {
   },
   inputError: {
     color: COLOURS.errorRed,
+    fontSize: 18,
+    textAlign: "center",
   },
   numPadRow: {
     flex: 1,
