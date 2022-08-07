@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import { View, Text, Pressable, Image } from "react-native";
 import { connect } from "react-redux";
-import NumPad from "../../NumPad";
+import TransactionPad from "../../TransactionPad";
 import TYPOGRAPHY from "../../../design/typography";
 import styles from "./styles";
 import { BRIDGE_MESSAGE_TYPES } from "../../../utils/bridgeMessages";
@@ -79,7 +79,7 @@ function WalletView({
         </View>
       </Pressable>
 
-      <NumPad emit={emit} />
+      <TransactionPad emit={emit} />
     </View>
   );
 }

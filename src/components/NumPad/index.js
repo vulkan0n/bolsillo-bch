@@ -12,7 +12,6 @@ const NumPad = ({ isCryptoDenominated, wallet, balance, navigation, emit }) => {
   const [inputError, setInputError] = useState("");
   const isSatoshiDenominated = true;
   const availableBalance = balance?.sat;
-  console.log({ balance });
 
   const satBalance = displaySats(balance?.sat);
   const usdBalance = displaySatsAsUsd(balance?.sat);

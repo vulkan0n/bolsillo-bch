@@ -8,8 +8,6 @@ const styles = {
     justifyContent: "start",
     alignItems: "center",
     width: "100%",
-    padding: SPACING.ten,
-    marginBottom: SPACING.twentyFive,
     borderRadius: SPACING.borderRadius,
   },
   numPad: {
