@@ -38,6 +38,13 @@ const TYPOGRAPHY = {
     fontSize: 28,
     marginBottom: SPACING.ten,
   },
+  h1black: {
+    fontFamily: "Montserrat_600SemiBold",
+    textAlign: "center",
+    color: COLOURS.black,
+    fontSize: 28,
+    marginBottom: SPACING.ten,
+  },
   h2: {
     fontFamily: "Montserrat_500Medium",
     textAlign: "center",
@@ -45,11 +52,11 @@ const TYPOGRAPHY = {
     fontSize: 22,
     marginBottom: SPACING.ten,
   },
-  h1black: {
-    fontFamily: "Montserrat_600SemiBold",
-    textAlign: "center",
-    color: COLOURS.black,
-    fontSize: 28,
+  h2Left: {
+    fontFamily: "Montserrat_500Medium",
+    textAlign: "left",
+    color: COLOURS.white,
+    fontSize: 22,
     marginBottom: SPACING.ten,
   },
   h2black: {
@@ -75,6 +82,13 @@ const TYPOGRAPHY = {
   pWhite: {
     fontFamily: "Montserrat_500Medium",
     textAlign: "center",
+    color: COLOURS.white,
+    fontSize: 16,
+    marginBottom: SPACING.ten,
+  },
+  pWhiteLeft: {
+    fontFamily: "Montserrat_500Medium",
+    textAlign: "left",
     color: COLOURS.white,
     fontSize: 16,
     marginBottom: SPACING.ten,

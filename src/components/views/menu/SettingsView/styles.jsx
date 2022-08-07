@@ -4,10 +4,20 @@ import SPACING from "../../../../design/spacing";
 const styles = {
   container: {
     backgroundColor: COLOURS.black,
-    padding: SPACING.twentyFive,
+    paddingLeft: SPACING.twentyFive,
+    paddingRight: SPACING.twentyFive,
     flex: 1,
     justifyContent: "start",
     alignItems: "center",
+  },
+  optionRow: {
+    margin: SPACING.twentyFive,
+    padding: SPACING.ten,
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  control: {
+    marginLeft: SPACING.fifteen,
   },
   logo: {
     width: 75,
