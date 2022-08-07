@@ -6,10 +6,16 @@ import COLOURS from "../../../../design/colours";
 import { connect } from "react-redux";
 import ACTION_TYPES from "../../../../redux/actionTypes";
 
-function SettingsView({ isCryptoDenominated, dispatch }) {
+function SettingsView({ isCryptoDenominated, isTestNet, dispatch }) {
   const toggleIsCryptoDenominated = () => {
     dispatch({
       type: ACTION_TYPES.TOGGLE_IS_CRYPTO_DENOMINATED,
+    });
+  };
+
+  const toggleIsTestNet = () => {
+    dispatch({
+      type: ACTION_TYPES.TOGGLE_IS_TEST_NET,
     });
   };
 
@@ -41,6 +47,31 @@ function SettingsView({ isCryptoDenominated, dispatch }) {
           />
         </View>
       </View>
+      <View style={styles.optionRow}>
+        <View style={styles.optionText}>
+          <Text style={TYPOGRAPHY.h2Left}>Test Net</Text>
+          {isTestNet && (
+            <Text style={TYPOGRAPHY.pWhiteLeft}>
+              Connected to the BCH TestNet.
+            </Text>
+          )}
+          {!isTestNet && (
+            <Text style={TYPOGRAPHY.pWhiteLeft}>
+              Currently connected to BCH main network. If you don't know about
+              TestNet, don't change this.
+            </Text>
+          )}
+        </View>
+        <View style={styles.control}>
+          <Switch
+            trackColor={{ true: COLOURS.bchGreen, false: COLOURS.white }}
+            thumbColor={isTestNet ? COLOURS.white : COLOURS.black}
+            ios_backgroundColor={COLOURS.lightGrey}
+            onValueChange={toggleIsTestNet}
+            value={isTestNet}
+          />
+        </View>
+      </View>
       <Image
         style={styles.logo}
         source={require("../../../../assets/images/logo.jpg")}
@@ -49,7 +80,10 @@ function SettingsView({ isCryptoDenominated, dispatch }) {
   );
 }
 
-const mapStateToProps = ({ isCryptoDenominated }) => ({ isCryptoDenominated });
+const mapStateToProps = ({ isCryptoDenominated, isTestNet }) => ({
+  isCryptoDenominated,
+  isTestNet,
+});
 
 const mapDispatchToProps = (dispatch) => ({ dispatch });
 

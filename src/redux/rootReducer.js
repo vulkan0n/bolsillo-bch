@@ -9,6 +9,7 @@ const {
   UPDATE_TRANSACTION_PAD_STATE,
   UPDATE_TRANSACTION_PAD_ERROR,
   TOGGLE_IS_CRYPTO_DENOMINATED,
+  TOGGLE_IS_TEST_NET,
 } = ACTION_TYPES;
 
 export default function rootReducer(state = initialState, action) {
@@ -48,6 +49,11 @@ export default function rootReducer(state = initialState, action) {
       return {
         ...state,
         isCryptoDenominated: !state?.isCryptoDenominated,
+      };
+    case TOGGLE_IS_TEST_NET:
+      return {
+        ...state,
+        isTestNet: !state?.isTestNet,
       };
     default:
       return state;
