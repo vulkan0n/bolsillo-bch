@@ -165,7 +165,7 @@ function WalletView({
 
   const displaySat = (stringVal) => {
     if (!stringVal) {
-      return "0 satoshis";
+      return "0 sats";
     }
 
     return `${Number(stringVal)} sats`;
@@ -174,8 +174,8 @@ function WalletView({
   const satBalance = displaySat(balance?.sat);
   const usdBalance = displayUsd(balance?.usd);
 
-  const primaryDenomination = isCryptoDenominated ? satBalance : usdBalance;
-  const secondaryDenomination = isCryptoDenominated ? usdBalance : satBalance;
+  const numPadSatBalance = displaySat(0);
+  const numPadUsdBalance = displayUsd(0);
 
   return (
     <View style={styles.container}>
@@ -200,15 +200,24 @@ function WalletView({
           {/* <Text style={TYPOGRAPHY.h1}>
           ₿ {formatSats(satoshiBalance)} Available
         </Text> */}
-          <Text style={TYPOGRAPHY.h1}>{primaryDenomination}</Text>
-          <Text style={TYPOGRAPHY.h2}>{secondaryDenomination}</Text>
+          <Text style={TYPOGRAPHY.h1}>
+            {isCryptoDenominated ? satBalance : usdBalance}
+          </Text>
+          <Text style={TYPOGRAPHY.h2}>
+            {isCryptoDenominated ? usdBalance : satBalance}
+          </Text>
         </View>
       </Pressable>
 
       <View style={styles.inputBackground}>
         <View style={styles.secondaryTitlesWrapper}>
-          <Text style={TYPOGRAPHY.h1black}>0 mBCH</Text>
-          <Text style={TYPOGRAPHY.h2black}>USD $0</Text>
+          <Text style={TYPOGRAPHY.h1black}>
+            {isCryptoDenominated ? numPadSatBalance : numPadUsdBalance}
+          </Text>
+          <Text style={TYPOGRAPHY.h2black}>
+            {" "}
+            {isCryptoDenominated ? numPadUsdBalance : numPadSatBalance}
+          </Text>
         </View>
         <View style={styles.numPad}>
           {/* <SatoshiInputWidget availableBalance={satoshiBalance} /> */}

@@ -17,7 +17,7 @@ function SettingsView({ isCryptoDenominated, dispatch }) {
     <View style={styles.container}>
       <View style={styles.optionRow}>
         <View style={styles.optionText}>
-          <Text style={TYPOGRAPHY.h2Left}>Crypto Primary</Text>
+          <Text style={TYPOGRAPHY.h2Left}>Crypto Denominated</Text>
           {isCryptoDenominated && (
             <Text style={TYPOGRAPHY.pWhiteLeft}>
               Display balances in crypto (BCH). Fiat (USD) equivalent displayed
