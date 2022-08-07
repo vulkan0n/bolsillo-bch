@@ -2,10 +2,10 @@ import React from "react";
 import { View, Text, Pressable } from "react-native";
 import { connect } from "react-redux";
 import styles from "./styles";
-import Button from "../../atoms/Button";
-import TYPOGRAPHY from "../../../design/typography";
-import { BRIDGE_MESSAGE_TYPES } from "../../../utils/bridgeMessages";
-import ACTION_TYPES from "../../../redux/actionTypes";
+import Button from "../../../../atoms/Button";
+import TYPOGRAPHY from "../../../../../design/typography";
+import { BRIDGE_MESSAGE_TYPES } from "../../../../../utils/bridgeMessages";
+import ACTION_TYPES from "../../../../../redux/actionTypes";
 
 const NumPad = ({ transactionPadBalance, wallet, balance, emit, dispatch }) => {
   const isSatoshiDenominated = true;

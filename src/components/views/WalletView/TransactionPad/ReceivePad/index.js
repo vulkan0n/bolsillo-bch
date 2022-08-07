@@ -2,9 +2,9 @@ import React from "react";
 import { View } from "react-native";
 import { connect } from "react-redux";
 import styles from "./styles";
-import Button from "../../atoms/Button";
+import Button from "../../../../atoms/Button";
 import Toast from "react-native-toast-message";
-import ACTION_TYPES from "../../../redux/actionTypes";
+import ACTION_TYPES from "../../../../../redux/actionTypes";
 
 const ReceivePad = ({ dispatch }) => {
   const onPressShare = () => {

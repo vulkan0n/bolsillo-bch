@@ -2,9 +2,9 @@ import React, { useEffect } from "react";
 import { View, Text } from "react-native";
 import { connect } from "react-redux";
 import styles from "./styles";
-import TYPOGRAPHY from "../../../design/typography";
-import { displaySats, displaySatsAsUsd } from "../../../utils/formatting";
-import ACTION_TYPES from "../../../redux/actionTypes";
+import TYPOGRAPHY from "../../../../../design/typography";
+import { displaySats, displaySatsAsUsd } from "../../../../../utils/formatting";
+import ACTION_TYPES from "../../../../../redux/actionTypes";
 
 const DisplayedBalance = ({
   transactionPadBalance,
