@@ -8,7 +8,7 @@ import LearnView from "../../views/menu/LearnView";
 import BackupView from "../../views/menu/BackupView";
 import DevelopersView from "../../views/menu/DevelopersView";
 import SettingsView from "../../views/menu/SettingsView";
-import TransactionSuccessView from "../../views/utility/TransactionSuccessView";
+import TransactionSuccessView from "../../views/TransactionSuccessView";
 import COLOURS from "../../../design/colours";
 import TYPOGRAPHY from "../../../design/typography";
 
