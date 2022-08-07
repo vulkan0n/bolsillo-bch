@@ -4,18 +4,18 @@ import { connect } from "react-redux";
 import styles from "./styles";
 import Button from "../atoms/Button";
 import TYPOGRAPHY from "../../design/typography";
-import { displaySats, displayUsd } from "../../utils/formatting";
+import { displaySats, displaySatsAsUsd } from "../../utils/formatting";
 import { BRIDGE_MESSAGE_TYPES } from "../../utils/bridgeMessages";
 
 const NumPad = ({ isCryptoDenominated, balance, navigation }) => {
-  const numPadSatBalance = displaySats(0);
-  const numPadUsdBalance = displayUsd(0);
-
   const [inputBalance, setInputBalance] = useState("0");
   const [inputError, setInputError] = useState("");
   const isSatoshiDenominated = true;
   const availableBalance = balance?.sat;
   console.log({ balance });
+
+  const satBalance = displaySats(balance?.sat);
+  const usdBalance = displaySatsAsUsd(balance?.sat);
 
   useEffect(() => {
     setTimeout(() => {
@@ -87,11 +87,11 @@ const NumPad = ({ isCryptoDenominated, balance, navigation }) => {
       <View style={styles.secondaryTitlesWrapper}>
         <Text style={TYPOGRAPHY.h1black}>
           {inputBalance} sats
-          {/* {isCryptoDenominated ? numPadSatBalance : numPadUsdBalance} */}
+          {/* {isCryptoDenominated ? satBalance : usdBalance} */}
         </Text>
         <Text style={TYPOGRAPHY.h2black}>
           {" "}
-          {isCryptoDenominated ? numPadUsdBalance : numPadSatBalance}
+          {isCryptoDenominated ? usdBalance : satBalance}
         </Text>
         {!!inputError && <Text style={styles.inputError}>{inputError}</Text>}
       </View>

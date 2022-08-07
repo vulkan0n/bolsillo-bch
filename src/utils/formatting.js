@@ -5,7 +5,10 @@ export const displayUsd = (stringVal) => {
     return "USD $0.00";
   }
 
-  return `USD $${Number(stringVal).toFixed(2)}`;
+  // 2 decimal places, rounding down
+  const res = Math.floor(parseFloat(stringVal) * 100) / 100;
+
+  return `USD $${res.toFixed(2)}`;
 };
 
 export const displaySats = (stringVal) => {
@@ -13,9 +16,9 @@ export const displaySats = (stringVal) => {
     return "0 sats";
   }
 
-  return `${Number(stringVal)} sats`;
+  return `${parseFloat(stringVal)} sats`;
 };
 
-export const displaySatssAsUsd = (stringVal) => {
+export const displaySatsAsUsd = (stringVal) => {
   return displayUsd(convertSatsToUsd(stringVal));
 };

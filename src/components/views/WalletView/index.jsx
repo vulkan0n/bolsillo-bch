@@ -5,7 +5,7 @@ import NumPad from "../../NumPad";
 import TYPOGRAPHY from "../../../design/typography";
 import styles from "./styles";
 import { BRIDGE_MESSAGE_TYPES } from "../../../utils/bridgeMessages";
-import { displaySats, displaySatssAsUsd } from "../../../utils/formatting";
+import { displaySats, displaySatsAsUsd } from "../../../utils/formatting";
 
 function WalletView({
   wallet,
@@ -57,7 +57,7 @@ function WalletView({
   };
 
   const satBalance = displaySats(balance?.sat);
-  const usdBalance = displaySatssAsUsd(balance?.sat);
+  const usdBalance = displaySatsAsUsd(balance?.sat);
 
   return (
     <View style={styles.container}>
