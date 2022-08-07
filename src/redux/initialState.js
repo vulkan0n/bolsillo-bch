@@ -6,6 +6,8 @@ const initialState = {
     sat: "0",
   },
   tempTxId: "",
+  // Settings
+  isCryptoDenominated: true,
 };
 
 export default initialState;

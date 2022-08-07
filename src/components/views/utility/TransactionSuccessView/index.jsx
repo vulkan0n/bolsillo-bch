@@ -51,6 +51,9 @@ function TransactionSuccessView({ tempTxId, navigation, dispatch }) {
 
 const mapStateToProps = ({ tempTxId }) => ({ tempTxId });
 
-const mapDispatchToProps = (dispatch) => dispatch;
+const mapDispatchToProps = (dispatch) => ({ dispatch });
 
-export default connect(mapStateToProps)(TransactionSuccessView);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(TransactionSuccessView);

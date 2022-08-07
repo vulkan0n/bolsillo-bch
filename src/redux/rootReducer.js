@@ -1,7 +1,12 @@
 import initialState from "./initialState";
 import ACTION_TYPES from "./actionTypes";
 
-const { STORE_WALLET, UPDATE_BALANCE, UPDATE_TEMP_TXID } = ACTION_TYPES;
+const {
+  STORE_WALLET,
+  UPDATE_BALANCE,
+  UPDATE_TEMP_TXID,
+  TOGGLE_IS_CRYPTO_DENOMINATED,
+} = ACTION_TYPES;
 
 export default function rootReducer(state = initialState, action) {
   console.log({ state, action });
@@ -20,6 +25,11 @@ export default function rootReducer(state = initialState, action) {
       return {
         ...state,
         tempTxId: action.payload.tempTxId,
+      };
+    case TOGGLE_IS_CRYPTO_DENOMINATED:
+      return {
+        ...state,
+        isCryptoDenominated: !state?.isCryptoDenominated,
       };
     default:
       return state;
