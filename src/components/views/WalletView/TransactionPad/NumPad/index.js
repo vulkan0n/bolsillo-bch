@@ -7,7 +7,14 @@ import TYPOGRAPHY from "../../../../../design/typography";
 import { BRIDGE_MESSAGE_TYPES } from "../../../../../utils/bridgeMessages";
 import ACTION_TYPES from "../../../../../redux/actionTypes";
 
-const NumPad = ({ transactionPadBalance, wallet, balance, emit, dispatch }) => {
+const NumPad = ({
+  transactionPadBalance,
+  wallet,
+  balance,
+  isTestNet,
+  emit,
+  dispatch,
+}) => {
   const isSatoshiDenominated = true;
   const availableBalance = balance?.sat;
 
@@ -84,6 +91,7 @@ const NumPad = ({ transactionPadBalance, wallet, balance, emit, dispatch }) => {
         derivationPath: wallet?.derivationPath,
         recipientCashAddr: testNetFaucet,
         satsToSend: "100",
+        isTestNet,
       },
     });
   };
@@ -145,10 +153,16 @@ const NumPad = ({ transactionPadBalance, wallet, balance, emit, dispatch }) => {
   );
 };
 
-const mapStateToProps = ({ wallet, balance, transactionPadBalance }) => ({
+const mapStateToProps = ({
   wallet,
   balance,
   transactionPadBalance,
+  isTestNet,
+}) => ({
+  wallet,
+  balance,
+  transactionPadBalance,
+  isTestNet,
 });
 
 const mapDispatchToProps = (dispatch) => ({ dispatch });

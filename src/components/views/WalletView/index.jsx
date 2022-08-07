@@ -12,14 +12,27 @@ function WalletView({
   balance,
   tempTxId,
   isCryptoDenominated,
+  isTestNet,
   route,
   navigation,
 }) {
   const { emit } = route.params;
 
+  console.log("in WalletView", { isTestNet });
+
+  const requestBalance = () =>
+    emit({
+      type: BRIDGE_MESSAGE_TYPES.REQUEST_BALANCE,
+      data: {
+        mnemonic: wallet?.mnemonic,
+        derivationPath: wallet?.derivationPath,
+        isTestNet,
+      },
+    });
+
   useEffect(() => {
     if (!wallet) {
-      emit({ type: BRIDGE_MESSAGE_TYPES.CREATE_WALLET, data: null });
+      emit({ type: BRIDGE_MESSAGE_TYPES.CREATE_WALLET, data: { isTestNet } });
     }
   }, []);
 
@@ -28,7 +41,7 @@ function WalletView({
       return;
     }
 
-    emit({ type: BRIDGE_MESSAGE_TYPES.REQUEST_BALANCE, data: null });
+    requestBalance();
   }, [wallet]);
 
   useEffect(() => {
@@ -47,13 +60,7 @@ function WalletView({
   };
 
   const onPressBalance = () => {
-    emit({
-      type: BRIDGE_MESSAGE_TYPES.REQUEST_BALANCE,
-      data: {
-        mnemonic: wallet?.mnemonic,
-        derivationPath: wallet?.derivationPath,
-      },
-    });
+    requestBalance();
   };
 
   const satBalance = displaySats(balance?.sat);
@@ -89,11 +96,13 @@ const mapStateToProps = ({
   balance,
   tempTxId,
   isCryptoDenominated,
+  isTestNet,
 }) => ({
   wallet,
   balance,
   tempTxId,
   isCryptoDenominated,
+  isTestNet,
 });
 
 export default connect(mapStateToProps)(WalletView);

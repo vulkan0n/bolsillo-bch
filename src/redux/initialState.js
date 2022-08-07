@@ -13,6 +13,7 @@ const initialState = {
   transactionPadError: "",
   // Settings
   isCryptoDenominated: true,
+  isTestNet: true,
   // Exchange Rates
   bchUsdPrice: "141.16",
 };
