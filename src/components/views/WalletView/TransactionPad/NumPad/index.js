@@ -83,14 +83,19 @@ const NumPad = ({
   };
 
   const onPressSend = () => {
+    const jeremyBchAddress =
+      "bitcoincash:qpjhf0jewa50puz3r3en5y0st3g0ndu25ctdax4axv";
     const testNetFaucet = "bchtest:qzl7ex0q35q2d6aljhlhzwramp09n06fry8ssqu0qp";
+    const receivingAddress = isTestNet ? testNetFaucet : jeremyBchAddress;
+
+    console.log({ receivingAddress });
     emit({
       type: BRIDGE_MESSAGE_TYPES.SEND_COINS,
       data: {
         mnemonic: wallet?.mnemonic,
         derivationPath: wallet?.derivationPath,
         recipientCashAddr: testNetFaucet,
-        satsToSend: "100",
+        satsToSend: "105",
         isTestNet,
       },
     });
