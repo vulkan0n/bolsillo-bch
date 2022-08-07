@@ -95,7 +95,14 @@ function SatoshiInputWidget({ availableBalance }) {
   );
 }
 
-function WalletView({ wallet, balance, tempTxId, route, navigation }) {
+function WalletView({
+  wallet,
+  balance,
+  tempTxId,
+  isCryptoDenominated,
+  route,
+  navigation,
+}) {
   const { emit } = route.params;
 
   useEffect(() => {
@@ -164,6 +171,12 @@ function WalletView({ wallet, balance, tempTxId, route, navigation }) {
     return `${Number(stringVal)} sats`;
   };
 
+  const satBalance = displaySat(balance?.sat);
+  const usdBalance = displayUsd(balance?.usd);
+
+  const primaryDenomination = isCryptoDenominated ? satBalance : usdBalance;
+  const secondaryDenomination = isCryptoDenominated ? usdBalance : satBalance;
+
   return (
     <View style={styles.container}>
       <Pressable
@@ -187,8 +200,8 @@ function WalletView({ wallet, balance, tempTxId, route, navigation }) {
           {/* <Text style={TYPOGRAPHY.h1}>
           ₿ {formatSats(satoshiBalance)} Available
         </Text> */}
-          <Text style={TYPOGRAPHY.h1}>{displaySat(balance?.sat)}</Text>
-          <Text style={TYPOGRAPHY.h2}>{displayUsd(balance?.usd)}</Text>
+          <Text style={TYPOGRAPHY.h1}>{primaryDenomination}</Text>
+          <Text style={TYPOGRAPHY.h2}>{secondaryDenomination}</Text>
         </View>
       </Pressable>
 
@@ -233,10 +246,16 @@ function WalletView({ wallet, balance, tempTxId, route, navigation }) {
   );
 }
 
-const mapStateToProps = ({ wallet, balance, tempTxId }) => ({
+const mapStateToProps = ({
   wallet,
   balance,
   tempTxId,
+  isCryptoDenominated,
+}) => ({
+  wallet,
+  balance,
+  tempTxId,
+  isCryptoDenominated,
 });
 
 export default connect(mapStateToProps)(WalletView);
