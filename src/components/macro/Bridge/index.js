@@ -22,71 +22,71 @@ const Bridge = () => {
   useNativeMessage(async (message) => {
     console.log("Bridge received message: ", message);
 
-    try {
-      switch (message.type) {
-        case BRIDGE_MESSAGE_TYPES.CREATE_WALLET:
-          const wallet = await TestNetWallet.named("Default");
-          emit({
-            type: RESPONSE_MESSAGE_TYPES.CREATE_WALLET_RESPONSE,
-            data: { wallet },
-          });
-          break;
+    // try {
+    switch (message.type) {
+      case BRIDGE_MESSAGE_TYPES.CREATE_WALLET:
+        const wallet = await TestNetWallet.named("Default");
+        emit({
+          type: RESPONSE_MESSAGE_TYPES.CREATE_WALLET_RESPONSE,
+          data: { wallet },
+        });
+        break;
 
-        case BRIDGE_MESSAGE_TYPES.REQUEST_BALANCE:
-          const walletRequestBalance = await TestNetWallet.fromSeed(
-            message?.data?.mnemonic,
-            message?.data?.derivationPath
-          );
+      case BRIDGE_MESSAGE_TYPES.REQUEST_BALANCE:
+        const walletRequestBalance = await TestNetWallet.fromSeed(
+          message?.data?.mnemonic,
+          message?.data?.derivationPath
+        );
 
-          const balance = await walletRequestBalance.getBalance();
+        const balance = await walletRequestBalance.getBalance();
 
-          console.log("Retrieved balance:");
-          console.log({ balance });
-          emit({
-            type: RESPONSE_MESSAGE_TYPES.REQUEST_BALANCE_RESPONSE,
-            data: {
-              balance,
-            },
-          });
-          break;
+        console.log("Retrieved balance:");
+        console.log({ balance });
+        emit({
+          type: RESPONSE_MESSAGE_TYPES.REQUEST_BALANCE_RESPONSE,
+          data: {
+            balance,
+          },
+        });
+        break;
 
-        case BRIDGE_MESSAGE_TYPES.SEND_COINS:
-          const walletSendCoins = await TestNetWallet.fromSeed(
-            message?.data?.mnemonic,
-            message?.data?.derivationPath
-          );
+      case BRIDGE_MESSAGE_TYPES.SEND_COINS:
+        const walletSendCoins = await TestNetWallet.fromSeed(
+          message?.data?.mnemonic,
+          message?.data?.derivationPath
+        );
 
-          const txResponse = await walletSendCoins.send([
-            {
-              cashaddr: message?.data?.recipientCashAddr,
-              value: parseInt(message?.data?.satsToSend),
-              unit: "sat",
-            },
-          ]);
-          console.log("sent coins!");
-          console.log({ txResponse });
-          emit({
-            type: RESPONSE_MESSAGE_TYPES.SEND_COINS_RESPONSE,
-            data: {
-              balance: txResponse?.balance,
-              tempTxId: txResponse?.txId,
-            },
-          });
-          break;
+        const txResponse = await walletSendCoins.send([
+          {
+            cashaddr: message?.data?.recipientCashAddr,
+            value: parseInt(message?.data?.satsToSend),
+            unit: "sat",
+          },
+        ]);
+        console.log("sent coins!");
+        console.log({ txResponse });
+        emit({
+          type: RESPONSE_MESSAGE_TYPES.SEND_COINS_RESPONSE,
+          data: {
+            balance: txResponse?.balance,
+            tempTxId: txResponse?.txId,
+          },
+        });
+        break;
 
-        default:
-          console.log("NOTE: Message type not recognised!!");
-          break;
-      }
-    } catch {
-      emit({
-        type: RESPONSE_MESSAGE_TYPES.ERROR,
-        data: {
-          title: "❌ No connection 📶",
-          text: "Check that your Internet is online.",
-        },
-      });
+      default:
+        console.log("NOTE: Message type not recognised!!");
+        break;
     }
+    // } catch {
+    //   emit({
+    //     type: RESPONSE_MESSAGE_TYPES.ERROR,
+    //     data: {
+    //       title: "❌ No connection 📶",
+    //       text: "Check that your Internet is online.",
+    //     },
+    //   });
+    // }
   });
 
   return <div style={{ height: 0 }}></div>;
