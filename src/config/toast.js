@@ -8,16 +8,22 @@ const toastConfig = {
   customError: ({ props: { title, text }, ...props }) => (
     <View
       style={{
-        backgroundColor: COLOURS.white,
+        backgroundColor: COLOURS.black,
         margin: SPACING.fifteen,
         padding: SPACING.fifteen,
         borderRadius: SPACING.borderRadius,
         borderLeftWidth: SPACING.five,
         borderLeftColor: COLOURS.errorRed,
+        borderRightWidth: 1,
+        borderRightColor: COLOURS.white,
+        borderTopWidth: 1,
+        borderTopColor: COLOURS.white,
+        borderBottomWidth: 1,
+        borderBottomColor: COLOURS.white,
       }}
     >
-      <Text style={TYPOGRAPHY.h2black}>{title}</Text>
-      <Text style={TYPOGRAPHY.p}>{text}</Text>
+      <Text style={TYPOGRAPHY.h2}>{title}</Text>
+      <Text style={TYPOGRAPHY.pWhite}>{text}</Text>
     </View>
   ),
 };
