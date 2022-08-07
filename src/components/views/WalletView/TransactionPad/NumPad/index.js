@@ -88,14 +88,14 @@ const NumPad = ({
     const testNetFaucet = "bchtest:qzl7ex0q35q2d6aljhlhzwramp09n06fry8ssqu0qp";
     const receivingAddress = isTestNet ? testNetFaucet : jeremyBchAddress;
 
-    console.log({ receivingAddress });
+    console.log({ isTestNet, receivingAddress });
     emit({
       type: BRIDGE_MESSAGE_TYPES.SEND_COINS,
       data: {
         mnemonic: wallet?.mnemonic,
         derivationPath: wallet?.derivationPath,
         recipientCashAddr: testNetFaucet,
-        satsToSend: "105",
+        satsToSend: "1599",
         isTestNet,
       },
     });

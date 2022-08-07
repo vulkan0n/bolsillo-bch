@@ -91,6 +91,21 @@ const Bridge = () => {
       }
     } catch (error) {
       console.log({ error });
+      // Insufficient balance
+      // E.g. Amount required was not met, 1971 satoshis needed, 1785 satoshis available
+      if (error.toString()?.includes("Amount required was not met")) {
+        const errorSegments = error?.toString()?.split(", ");
+        const returnMessage = `${errorSegments?.[1]}, ${errorSegments?.[2]}.`;
+        emit({
+          type: RESPONSE_MESSAGE_TYPES.ERROR,
+          data: {
+            title: "❌ Not enough satoshis",
+            text: `Once transaction fee is added. ${returnMessage}`,
+          },
+        });
+        return;
+      }
+
       emit({
         type: RESPONSE_MESSAGE_TYPES.ERROR,
         data: {
