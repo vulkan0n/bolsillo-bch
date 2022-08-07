@@ -1,16 +1,5 @@
 import * as React from "react";
 import { View, Text } from "react-native";
-import { NavigationContainer } from "@react-navigation/native";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import WalletView from "./src/components/views/WalletView";
-import MenuView from "./src/components/views/MenuView";
-import LearnView from "./src/components/views/menu/LearnView";
-import BackupView from "./src/components/views/menu/BackupView";
-import DevelopersView from "./src/components/views/menu/DevelopersView";
-import SettingsView from "./src/components/views/menu/SettingsView";
-import TransactionSuccessView from "./src/components/views/utility/TransactionSuccessView";
-import COLOURS from "./src/design/colours";
-import TYPOGRAPHY from "./src/design/typography";
 import {
   useFonts,
   Montserrat_400Regular,
@@ -21,6 +10,7 @@ import {
 } from "@expo-google-fonts/montserrat";
 import WebView from "react-native-webview";
 import { useWebViewMessage } from "react-native-react-bridge";
+import NavigationTree from "./src/components/macro/NavigationTree";
 import Bridge from "./Bridge";
 import { RESPONSE_MESSAGE_TYPES } from "./src/utils/bridgeMessages";
 import { Provider } from "react-redux";
@@ -28,8 +18,6 @@ import { PersistGate } from "redux-persist/integration/react";
 import store from "./src/redux/store";
 import persistor from "./src/redux/persistor";
 import ACTION_TYPES from "./src/redux/actionTypes";
-
-const Stack = createNativeStackNavigator();
 
 export default function App() {
   // For the list of possible font faces
@@ -119,96 +107,7 @@ export default function App() {
             domStorageEnabled={true}
           />
         </View>
-        <NavigationContainer>
-          <Stack.Navigator>
-            <Stack.Screen
-              name="Wallet"
-              component={WalletView}
-              initialParams={{
-                emit,
-              }}
-              options={{
-                headerStyle: {
-                  backgroundColor: COLOURS.black,
-                },
-                headerTitle: (props) => (
-                  <Text style={TYPOGRAPHY.header}>Selene Wallet</Text>
-                ),
-              }}
-            />
-            <Stack.Screen
-              name="Menu"
-              component={MenuView}
-              options={{
-                headerStyle: {
-                  backgroundColor: COLOURS.black,
-                },
-                headerTitle: (props) => (
-                  <Text style={TYPOGRAPHY.header}>Menu</Text>
-                ),
-              }}
-            />
-            <Stack.Screen
-              name="Learn"
-              component={LearnView}
-              options={{
-                headerStyle: {
-                  backgroundColor: COLOURS.black,
-                },
-                headerTitle: (props) => (
-                  <Text style={TYPOGRAPHY.header}>Learn</Text>
-                ),
-              }}
-            />
-            <Stack.Screen
-              name="Backup"
-              component={BackupView}
-              options={{
-                headerStyle: {
-                  backgroundColor: COLOURS.black,
-                },
-                headerTitle: (props) => (
-                  <Text style={TYPOGRAPHY.header}>Backup</Text>
-                ),
-              }}
-            />
-            <Stack.Screen
-              name="Developers"
-              component={DevelopersView}
-              options={{
-                headerStyle: {
-                  backgroundColor: COLOURS.black,
-                },
-                headerTitle: (props) => (
-                  <Text style={TYPOGRAPHY.header}>Devs</Text>
-                ),
-              }}
-            />
-            <Stack.Screen
-              name="Settings"
-              component={SettingsView}
-              options={{
-                headerStyle: {
-                  backgroundColor: COLOURS.black,
-                },
-                headerTitle: (props) => (
-                  <Text style={TYPOGRAPHY.header}>Settings</Text>
-                ),
-              }}
-            />
-            <Stack.Screen
-              name="Transaction Success"
-              component={TransactionSuccessView}
-              options={{
-                presentation: "modal",
-                headerStyle: {
-                  backgroundColor: COLOURS.bchGreen,
-                },
-                headerTitle: (props) => <Text style={TYPOGRAPHY.header}></Text>,
-              }}
-            />
-          </Stack.Navigator>
-        </NavigationContainer>
+        <NavigationTree emit={emit} />
       </PersistGate>
     </Provider>
   );

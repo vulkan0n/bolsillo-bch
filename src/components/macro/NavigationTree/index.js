@@ -1,0 +1,108 @@
+import React from "react";
+import { Text } from "react-native";
+import { NavigationContainer } from "@react-navigation/native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import WalletView from "../../views/WalletView";
+import MenuView from "../../views/MenuView";
+import LearnView from "../../views/menu/LearnView";
+import BackupView from "../../views/menu/BackupView";
+import DevelopersView from "../../views/menu/DevelopersView";
+import SettingsView from "../../views/menu/SettingsView";
+import TransactionSuccessView from "../../views/utility/TransactionSuccessView";
+import COLOURS from "../../../design/colours";
+import TYPOGRAPHY from "../../../design/typography";
+
+const Stack = createNativeStackNavigator();
+
+const NavigationTree = ({ emit }) => {
+  return (
+    <NavigationContainer>
+      <Stack.Navigator>
+        <Stack.Screen
+          name="Wallet"
+          component={WalletView}
+          initialParams={{
+            emit,
+          }}
+          options={{
+            headerStyle: {
+              backgroundColor: COLOURS.black,
+            },
+            headerTitle: (props) => (
+              <Text style={TYPOGRAPHY.header}>Selene Wallet</Text>
+            ),
+          }}
+        />
+        <Stack.Screen
+          name="Menu"
+          component={MenuView}
+          options={{
+            headerStyle: {
+              backgroundColor: COLOURS.black,
+            },
+            headerTitle: (props) => <Text style={TYPOGRAPHY.header}>Menu</Text>,
+          }}
+        />
+        <Stack.Screen
+          name="Learn"
+          component={LearnView}
+          options={{
+            headerStyle: {
+              backgroundColor: COLOURS.black,
+            },
+            headerTitle: (props) => (
+              <Text style={TYPOGRAPHY.header}>Learn</Text>
+            ),
+          }}
+        />
+        <Stack.Screen
+          name="Backup"
+          component={BackupView}
+          options={{
+            headerStyle: {
+              backgroundColor: COLOURS.black,
+            },
+            headerTitle: (props) => (
+              <Text style={TYPOGRAPHY.header}>Backup</Text>
+            ),
+          }}
+        />
+        <Stack.Screen
+          name="Developers"
+          component={DevelopersView}
+          options={{
+            headerStyle: {
+              backgroundColor: COLOURS.black,
+            },
+            headerTitle: (props) => <Text style={TYPOGRAPHY.header}>Devs</Text>,
+          }}
+        />
+        <Stack.Screen
+          name="Settings"
+          component={SettingsView}
+          options={{
+            headerStyle: {
+              backgroundColor: COLOURS.black,
+            },
+            headerTitle: (props) => (
+              <Text style={TYPOGRAPHY.header}>Settings</Text>
+            ),
+          }}
+        />
+        <Stack.Screen
+          name="Transaction Success"
+          component={TransactionSuccessView}
+          options={{
+            presentation: "modal",
+            headerStyle: {
+              backgroundColor: COLOURS.bchGreen,
+            },
+            headerTitle: (props) => <Text style={TYPOGRAPHY.header}></Text>,
+          }}
+        />
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+};
+
+export default NavigationTree;
