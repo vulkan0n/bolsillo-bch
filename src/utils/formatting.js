@@ -1,3 +1,5 @@
+import { convertSatsToUsd } from "./exchangeRates";
+
 export const displayUsd = (stringVal) => {
   if (!stringVal) {
     return "USD $0.00";
@@ -6,10 +8,14 @@ export const displayUsd = (stringVal) => {
   return `USD $${Number(stringVal).toFixed(2)}`;
 };
 
-export const displaySat = (stringVal) => {
+export const displaySats = (stringVal) => {
   if (!stringVal) {
     return "0 sats";
   }
 
   return `${Number(stringVal)} sats`;
+};
+
+export const displaySatssAsUsd = (stringVal) => {
+  return displayUsd(convertSatsToUsd(stringVal));
 };

@@ -8,6 +8,8 @@ const initialState = {
   tempTxId: "",
   // Settings
   isCryptoDenominated: true,
+  // Exchange Rates
+  bchUsdPrice: "141.16",
 };
 
 export default initialState;

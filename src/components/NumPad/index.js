@@ -4,11 +4,11 @@ import { connect } from "react-redux";
 import styles from "./styles";
 import Button from "../atoms/Button";
 import TYPOGRAPHY from "../../design/typography";
-import { displaySat, displayUsd } from "../../utils/formatting";
+import { displaySats, displayUsd } from "../../utils/formatting";
 import { BRIDGE_MESSAGE_TYPES } from "../../utils/bridgeMessages";
 
 const NumPad = ({ isCryptoDenominated, balance, navigation }) => {
-  const numPadSatBalance = displaySat(0);
+  const numPadSatBalance = displaySats(0);
   const numPadUsdBalance = displayUsd(0);
 
   const [inputBalance, setInputBalance] = useState("0");
