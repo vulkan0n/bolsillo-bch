@@ -18,7 +18,7 @@ const preloadMainNetScript = `
     eval(script);
   }
 
-  let scriptUrl = "https://cdn.mainnet.cash/mainnet-0.1.7.js";
+  let scriptUrl = "https://cdn.mainnet.cash/mainnet-0.5.4.js";
   loadScript(scriptUrl);
   true; // note: this is required, or you'll sometimes get silent failures
 `;
@@ -29,7 +29,7 @@ const preloadMainNetScript = `
 //   eval(script);
 // }
 
-// let scriptUrl = "https://cdn.mainnet.cash/mainnet-0.1.7.js";
+// let scriptUrl = "https://cdn.mainnet.cash/mainnet-0.5.4.js";
 // loadScript(scriptUrl);
 
 export default preloadMainNetScript;

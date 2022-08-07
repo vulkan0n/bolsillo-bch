@@ -23,9 +23,12 @@ const Bridge = () => {
     console.log("Bridge received message: ", message);
 
     try {
+      const WalletObject = message?.data?.isTestNet ? TestNetWallet : Wallet;
+
       switch (message.type) {
         case BRIDGE_MESSAGE_TYPES.CREATE_WALLET:
-          const wallet = await TestNetWallet.getNewRandom();
+          // const test = await Wallet.
+          const wallet = await WalletObject.getNewRandom();
           emit({
             type: RESPONSE_MESSAGE_TYPES.CREATE_WALLET_RESPONSE,
             data: { wallet },
@@ -33,7 +36,7 @@ const Bridge = () => {
           break;
 
         case BRIDGE_MESSAGE_TYPES.REQUEST_BALANCE:
-          const walletRequestBalance = await TestNetWallet.fromSeed(
+          const walletRequestBalance = await WalletObject.fromSeed(
             message?.data?.mnemonic,
             message?.data?.derivationPath
           );
@@ -42,16 +45,24 @@ const Bridge = () => {
 
           console.log("Retrieved balance:");
           console.log({ balance });
+          console.log({ walletRequestBalance });
+
           emit({
             type: RESPONSE_MESSAGE_TYPES.REQUEST_BALANCE_RESPONSE,
             data: {
               balance,
             },
           });
+          // Refetch wallet info with balance
+          // Temporary kludge until importing from Seed can be
+          // emit({
+          //   type: RESPONSE_MESSAGE_TYPES.CREATE_WALLET_RESPONSE,
+          //   data: { wallet: walletRequestBalance },
+          // });
           break;
 
         case BRIDGE_MESSAGE_TYPES.SEND_COINS:
-          const walletSendCoins = await TestNetWallet.fromSeed(
+          const walletSendCoins = await WalletObject.fromSeed(
             message?.data?.mnemonic,
             message?.data?.derivationPath
           );
