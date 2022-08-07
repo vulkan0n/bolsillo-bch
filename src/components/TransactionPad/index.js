@@ -5,11 +5,19 @@ import styles from "./styles";
 import NumPad from "../NumPad";
 
 const TransactionPad = ({ transactionPadState, emit }) => {
-  return (
-    <View style={styles.transactionPad}>
-      <NumPad emit={emit} />
-    </View>
-  );
+  console.log({ transactionPadState });
+  const component = () => {
+    switch (transactionPadState) {
+      case "Receive":
+        return <NumPad emit={emit} />;
+      case "":
+        return <NumPad emit={emit} />;
+      default:
+        return <NumPad emit={emit} />;
+    }
+  };
+
+  return <View style={styles.transactionPad}>{component()}</View>;
 };
 const mapStateToProps = ({ transactionPadState }) => ({
   transactionPadState,
