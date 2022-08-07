@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, Pressable } from "react-native";
 import { connect } from "react-redux";
 import styles from "./styles";
@@ -19,23 +19,30 @@ const NumPad = ({ isCryptoDenominated, navigation }) => {
   const numPadSatBalance = displaySat(0);
   const numPadUsdBalance = displayUsd(0);
 
-  const [inputSatoshi, setInputSatoshi] = useState("0");
+  const [inputBalance, setInputBalance] = useState("0");
+  const [inputError, setInputError] = useState("");
+  const isSatoshiDenominated = true;
+
+  useEffect(() => {
+    setTimeout(() => {
+      if (inputError) {
+        setInputError("");
+      }
+    }, 2000);
+  }, [inputError]);
 
   function InputButton({ n }) {
     const onPress = () => {
-      console.log({ inputSatoshi });
       if (n === "<") {
-        console.log("this");
-        handleSatoshiInputDelete();
+        handleInputDelete();
       } else {
-        console.log("that");
-        handleSatoshiInput(n);
+        handleInput(n);
       }
     };
 
     const onLongPress = () => {
       if (n === "<") {
-        handleSatoshiInputClear();
+        handleInputClear();
       }
     };
 
@@ -46,37 +53,38 @@ const NumPad = ({ isCryptoDenominated, navigation }) => {
     );
   }
 
-  function handleSatoshiInputDelete() {
-    console.log({ inputSatoshi });
-    const tryInput = inputSatoshi.slice(0, inputSatoshi.length);
-    if (parseFloat(tryInput) >= 0) {
-      setInputSatoshi(tryInput);
+  function handleInputDelete() {
+    if (inputBalance?.length > 1) {
+      setInputBalance(inputBalance?.slice(0, inputBalance?.length - 1));
     } else {
-      setInputSatoshi("0");
+      setInputBalance("0");
     }
   }
 
-  function handleSatoshiInputClear() {
-    setInputSatoshi("0");
+  function handleInputClear() {
+    setInputBalance("0");
   }
 
-  function handleSatoshiInput(n) {
-    console.log("onto", { n });
-    const sats = parseInt(inputSatoshi + n);
-    if (inputSatoshi === "0") {
+  function handleInput(n) {
+    const sats = parseInt(inputBalance + n);
+    if (inputBalance === "0") {
       if (n === ".") {
-        setInputSatoshi("0" + n);
+        setInputBalance("0" + n);
       } else {
-        setInputSatoshi(n);
+        setInputBalance(n);
       }
     } else if (sats <= MAX_SATOSHI && sats <= availableBalance) {
-      console.log("hit n", { n });
-      if (inputSatoshi.includes(".") && n !== ".") {
-        const satSplit = inputSatoshi.split(".");
+      if (n === "." && inputBalance.includes(".")) {
+        setInputError("Already used decimal point.");
+        return;
+      }
+
+      if (inputBalance.includes(".") && n !== ".") {
+        const satSplit = inputBalance.split(".");
         const trySats = satSplit[0] + "." + satSplit[1].substring(0, 7) + n;
-        setInputSatoshi(trySats);
+        setInputBalance(trySats);
       } else {
-        setInputSatoshi(inputSatoshi + n);
+        setInputBalance(inputBalance + n);
       }
     }
   }
@@ -98,16 +106,17 @@ const NumPad = ({ isCryptoDenominated, navigation }) => {
     <View style={styles.inputBackground}>
       <View style={styles.secondaryTitlesWrapper}>
         <Text style={TYPOGRAPHY.h1black}>
-          {inputSatoshi}
+          {inputBalance}
           {/* {isCryptoDenominated ? numPadSatBalance : numPadUsdBalance} */}
         </Text>
         <Text style={TYPOGRAPHY.h2black}>
           {" "}
           {isCryptoDenominated ? numPadUsdBalance : numPadSatBalance}
         </Text>
+        {!!inputError && <Text style={styles.inputError}>{inputError}</Text>}
       </View>
       <View style={styles.numPad}>
-        {/* <SatoshiInputWidget availableBalance={satoshiBalance} /> */}
+        {/* <InputWidget availableBalance={satoshiBalance} /> */}
         <View style={styles.numPadRow}>
           <InputButton n={"1"} />
           <InputButton n={"2"} />
@@ -126,7 +135,7 @@ const NumPad = ({ isCryptoDenominated, navigation }) => {
         <View style={styles.numPadRow}>
           <InputButton n={"<"} />
           <InputButton n={"0"} />
-          <InputButton n={"."} />
+          <InputButton n={isSatoshiDenominated ? "" : "."} />
         </View>
       </View>
       <View style={styles.buttonContainer}>
