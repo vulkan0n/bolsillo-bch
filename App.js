@@ -68,6 +68,11 @@ export default function App() {
         });
         break;
 
+      case RESPONSE_MESSAGE_TYPES.ERROR:
+        console.log("error!");
+        console.log(message?.data?.errorMessage);
+        break;
+
       default:
         break;
       // code block
