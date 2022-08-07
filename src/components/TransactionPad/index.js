@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from "react";
-import { View, Text, Pressable } from "react-native";
+import React from "react";
+import { View } from "react-native";
 import { connect } from "react-redux";
 import styles from "./styles";
-import NumPad from "../NumPad";
-import ReceivePad from "../ReceivePad";
+import NumPad from "./NumPad";
+import ReceivePad from "./ReceivePad";
 
 const TransactionPad = ({ transactionPadState, emit }) => {
   const component = () => {

@@ -20,9 +20,6 @@ const styles = {
   primaryTitlesWrapper: {
     marginBottom: SPACING.five,
   },
-  secondaryTitlesWrapper: {
-    marginTop: SPACING.five,
-  },
 };
 
 export default styles;

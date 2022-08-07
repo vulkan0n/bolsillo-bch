@@ -1,5 +1,5 @@
-import COLOURS from "../../design/colours";
-import SPACING from "../../design/spacing";
+import COLOURS from "../../../design/colours";
+import SPACING from "../../../design/spacing";
 
 const styles = {
   inputBackground: {
@@ -10,7 +10,7 @@ const styles = {
     width: "100%",
     borderRadius: SPACING.borderRadius,
   },
-  numPad: {
+  receivePad: {
     backgroundColor: COLOURS.lightGrey,
     flex: 1,
     justifyContent: "center",

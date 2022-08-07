@@ -38,6 +38,11 @@ export default function rootReducer(state = initialState, action) {
         ...state,
         transactionPadState: action.payload.transactionPadState,
       };
+    case UPDATE_TRANSACTION_PAD_ERROR:
+      return {
+        ...state,
+        transactionPadError: action.payload.transactionPadError,
+      };
     case TOGGLE_IS_CRYPTO_DENOMINATED:
       return {
         ...state,

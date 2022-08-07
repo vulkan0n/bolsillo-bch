@@ -2,13 +2,13 @@ import React, { useEffect, useState } from "react";
 import { View, Text, Pressable } from "react-native";
 import { connect } from "react-redux";
 import styles from "./styles";
-import Button from "../atoms/Button";
-import TYPOGRAPHY from "../../design/typography";
-import { displaySats, displaySatsAsUsd } from "../../utils/formatting";
+import Button from "../../atoms/Button";
+import TYPOGRAPHY from "../../../design/typography";
+import { displaySats, displaySatsAsUsd } from "../../../utils/formatting";
 import Toast from "react-native-toast-message";
-import ACTION_TYPES from "../../redux/actionTypes";
+import ACTION_TYPES from "../../../redux/actionTypes";
 
-const ReceivePad = ({
+const DisplayedBalance = ({
   balance,
   transactionPadBalance,
   isCryptoDenominated,
@@ -48,7 +48,7 @@ const ReceivePad = ({
           {isCryptoDenominated ? usdBalance : satBalance}
         </Text>
       </View>
-      <View style={styles.numPad}></View>
+      <View style={styles.receivePad}></View>
       <View style={styles.buttonContainer}>
         <Button onPress={onPressShare} isSmall>
           Share

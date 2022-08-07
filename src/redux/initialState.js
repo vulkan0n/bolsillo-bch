@@ -10,6 +10,7 @@ const initialState = {
   // Locally relevant stuff
   transactionPadBalance: "0",
   transactionPadState: "", // Enum: '', 'Receive'
+  transactionPadError: "",
   // Settings
   isCryptoDenominated: true,
   // Exchange Rates

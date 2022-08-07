@@ -2,34 +2,15 @@ import React, { useEffect, useState } from "react";
 import { View, Text, Pressable } from "react-native";
 import { connect } from "react-redux";
 import styles from "./styles";
-import Button from "../atoms/Button";
-import TYPOGRAPHY from "../../design/typography";
-import { displaySats, displaySatsAsUsd } from "../../utils/formatting";
-import { BRIDGE_MESSAGE_TYPES } from "../../utils/bridgeMessages";
-import ACTION_TYPES from "../../redux/actionTypes";
+import Button from "../../atoms/Button";
+import TYPOGRAPHY from "../../../design/typography";
+import { displaySats, displaySatsAsUsd } from "../../../utils/formatting";
+import { BRIDGE_MESSAGE_TYPES } from "../../../utils/bridgeMessages";
+import ACTION_TYPES from "../../../redux/actionTypes";
 
-const NumPad = ({
-  isCryptoDenominated,
-  transactionPadBalance,
-  wallet,
-  balance,
-  emit,
-  dispatch,
-}) => {
-  const [inputError, setInputError] = useState("");
+const NumPad = ({ transactionPadBalance, wallet, balance, emit, dispatch }) => {
   const isSatoshiDenominated = true;
   const availableBalance = balance?.sat;
-
-  const satBalance = displaySats(transactionPadBalance);
-  const usdBalance = displaySatsAsUsd(transactionPadBalance);
-
-  useEffect(() => {
-    setTimeout(() => {
-      if (inputError) {
-        setInputError("");
-      }
-    }, 2000);
-  }, [inputError]);
 
   const onPress = (n) => {
     if (n === "<") {
@@ -56,12 +37,22 @@ const NumPad = ({
       return;
     }
     if (n === "." && transactionPadBalance.includes(".")) {
-      setInputError("Already used decimal point.");
+      dispatch({
+        type: ACTION_TYPES.UPDATE_TRANSACTION_PAD_ERROR,
+        payload: {
+          transactionPadError: "Already used decimal point.",
+        },
+      });
       return;
     }
 
     if (parseFloat(transactionPadBalance + n) > parseFloat(availableBalance)) {
-      setInputError("Insuffient balance.");
+      dispatch({
+        type: ACTION_TYPES.UPDATE_TRANSACTION_PAD_ERROR,
+        payload: {
+          transactionPadError: "Insuffient balance.",
+        },
+      });
       return;
     }
 
@@ -121,17 +112,6 @@ const NumPad = ({
 
   return (
     <View style={styles.inputBackground}>
-      <View style={styles.secondaryTitlesWrapper}>
-        <Text style={TYPOGRAPHY.h1black}>
-          {displaySats(transactionPadBalance)}
-          {/* {isCryptoDenominated ? satBalance : usdBalance} */}
-        </Text>
-        <Text style={TYPOGRAPHY.h2black}>
-          {" "}
-          {isCryptoDenominated ? usdBalance : satBalance}
-        </Text>
-        {!!inputError && <Text style={styles.inputError}>{inputError}</Text>}
-      </View>
       <View style={styles.numPad}>
         <View style={styles.numPadRow}>
           <InputButton n={"1"} />
@@ -166,16 +146,10 @@ const NumPad = ({
   );
 };
 
-const mapStateToProps = ({
+const mapStateToProps = ({ wallet, balance, transactionPadBalance }) => ({
   wallet,
   balance,
   transactionPadBalance,
-  isCryptoDenominated,
-}) => ({
-  wallet,
-  balance,
-  transactionPadBalance,
-  isCryptoDenominated,
 });
 
 const mapDispatchToProps = (dispatch) => ({ dispatch });
