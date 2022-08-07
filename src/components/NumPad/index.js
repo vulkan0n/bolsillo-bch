@@ -15,7 +15,7 @@ function formatSats(sats) {
 }
 
 const NumPad = ({ isCryptoDenominated, navigation }) => {
-  const availableBalance = 3.2342;
+  const availableBalance = 32342;
   const numPadSatBalance = displaySat(0);
   const numPadUsdBalance = displayUsd(0);
 
@@ -23,9 +23,12 @@ const NumPad = ({ isCryptoDenominated, navigation }) => {
 
   function InputButton({ n }) {
     const onPress = () => {
+      console.log({ inputSatoshi });
       if (n === "<") {
+        console.log("this");
         handleSatoshiInputDelete();
       } else {
+        console.log("that");
         handleSatoshiInput(n);
       }
     };
@@ -44,7 +47,8 @@ const NumPad = ({ isCryptoDenominated, navigation }) => {
   }
 
   function handleSatoshiInputDelete() {
-    const tryInput = inputSatoshi.substr(0, inputSatoshi.length - 1);
+    console.log({ inputSatoshi });
+    const tryInput = inputSatoshi.slice(0, inputSatoshi.length);
     if (parseFloat(tryInput) >= 0) {
       setInputSatoshi(tryInput);
     } else {
@@ -57,7 +61,8 @@ const NumPad = ({ isCryptoDenominated, navigation }) => {
   }
 
   function handleSatoshiInput(n) {
-    const sats = parseInt(parseFloat(inputSatoshi + n) * SATOSHI);
+    console.log("onto", { n });
+    const sats = parseInt(inputSatoshi + n);
     if (inputSatoshi === "0") {
       if (n === ".") {
         setInputSatoshi("0" + n);
@@ -65,6 +70,7 @@ const NumPad = ({ isCryptoDenominated, navigation }) => {
         setInputSatoshi(n);
       }
     } else if (sats <= MAX_SATOSHI && sats <= availableBalance) {
+      console.log("hit n", { n });
       if (inputSatoshi.includes(".") && n !== ".") {
         const satSplit = inputSatoshi.split(".");
         const trySats = satSplit[0] + "." + satSplit[1].substring(0, 7) + n;
@@ -92,7 +98,8 @@ const NumPad = ({ isCryptoDenominated, navigation }) => {
     <View style={styles.inputBackground}>
       <View style={styles.secondaryTitlesWrapper}>
         <Text style={TYPOGRAPHY.h1black}>
-          {isCryptoDenominated ? numPadSatBalance : numPadUsdBalance}
+          {inputSatoshi}
+          {/* {isCryptoDenominated ? numPadSatBalance : numPadUsdBalance} */}
         </Text>
         <Text style={TYPOGRAPHY.h2black}>
           {" "}
@@ -102,23 +109,23 @@ const NumPad = ({ isCryptoDenominated, navigation }) => {
       <View style={styles.numPad}>
         {/* <SatoshiInputWidget availableBalance={satoshiBalance} /> */}
         <View style={styles.numPadRow}>
-          <InputButton n={1} />
-          <InputButton n={2} />
-          <InputButton n={3} />
+          <InputButton n={"1"} />
+          <InputButton n={"2"} />
+          <InputButton n={"3"} />
         </View>
         <View style={styles.numPadRow}>
-          <InputButton n={4} />
-          <InputButton n={5} />
-          <InputButton n={6} />
+          <InputButton n={"4"} />
+          <InputButton n={"5"} />
+          <InputButton n={"6"} />
         </View>
         <View style={styles.numPadRow}>
-          <InputButton n={7} />
-          <InputButton n={8} />
-          <InputButton n={9} />
+          <InputButton n={"7"} />
+          <InputButton n={"8"} />
+          <InputButton n={"9"} />
         </View>
         <View style={styles.numPadRow}>
           <InputButton n={"<"} />
-          <InputButton n={0} />
+          <InputButton n={"0"} />
           <InputButton n={"."} />
         </View>
       </View>
