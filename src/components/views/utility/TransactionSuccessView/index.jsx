@@ -7,6 +7,7 @@ import ACTION_TYPES from "../../../../redux/actionTypes";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faCircleCheck } from "@fortawesome/free-solid-svg-icons/faCircleCheck";
 import COLOURS from "../../../../design/colours";
+import { MotiView } from "moti";
 
 function TransactionSuccessView({ tempTxId, navigation, dispatch }) {
   useEffect(() => {
@@ -27,17 +28,23 @@ function TransactionSuccessView({ tempTxId, navigation, dispatch }) {
 
   return (
     <View style={styles.container}>
-      <View style={styles.iconWrapper}>
-        <FontAwesomeIcon
-          icon={faCircleCheck}
-          size={150}
-          color={COLOURS.black}
-        />
-      </View>
-      <View style={styles.textWrapper}>
-        <Text style={TYPOGRAPHY.h1}>Sent!</Text>
-      </View>
-      {/* <Text style={TYPOGRAPHY.h1}>{tempTxId}</Text> */}
+      <MotiView
+        from={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ type: "timing" }}
+      >
+        <View style={styles.iconWrapper}>
+          <FontAwesomeIcon
+            icon={faCircleCheck}
+            size={150}
+            color={COLOURS.black}
+          />
+        </View>
+        <View style={styles.textWrapper}>
+          <Text style={TYPOGRAPHY.h1}>Sent!</Text>
+        </View>
+        {/* <Text style={TYPOGRAPHY.h1}>{tempTxId}</Text> */}
+      </MotiView>
     </View>
   );
 }
