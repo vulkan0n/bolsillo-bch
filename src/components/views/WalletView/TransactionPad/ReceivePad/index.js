@@ -36,7 +36,9 @@ const ReceivePad = ({ wallet, dispatch }) => {
         <View style={styles.qrBorder}>
           <QRCode value={`${wallet?.cashaddr}`} />
         </View>
-        <Text style={TYPOGRAPHY.p}>{wallet?.cashaddr}</Text>
+        <Text selectable style={TYPOGRAPHY.p}>
+          {wallet?.cashaddr}
+        </Text>
       </View>
       <View style={styles.buttonContainer}>
         <Button onPress={onPressShare} isSmall>
