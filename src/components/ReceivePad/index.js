@@ -51,7 +51,7 @@ const ReceivePad = ({
       <View style={styles.numPad}></View>
       <View style={styles.buttonContainer}>
         <Button onPress={onPressShare} isSmall>
-          Send
+          Share
         </Button>
         <Button variant="secondary" onPress={onPressBack} isSmall>
           Back

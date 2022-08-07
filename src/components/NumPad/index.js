@@ -156,7 +156,7 @@ const NumPad = ({
       </View>
       <View style={styles.buttonContainer}>
         <Button onPress={onPressSend} isSmall>
-          Share
+          Send
         </Button>
         <Button variant="secondary" onPress={onPressReceive} isSmall>
           Receive
