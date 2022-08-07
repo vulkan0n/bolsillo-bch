@@ -7,7 +7,7 @@ import {
 import {
   BRIDGE_MESSAGE_TYPES,
   RESPONSE_MESSAGE_TYPES,
-} from "./src/utils/bridgeMessages";
+} from "../../../utils/bridgeMessages";
 // import { connect } from "react-redux";
 
 const Bridge = () => {

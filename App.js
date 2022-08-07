@@ -11,7 +11,7 @@ import {
 import WebView from "react-native-webview";
 import { useWebViewMessage } from "react-native-react-bridge";
 import NavigationTree from "./src/components/macro/NavigationTree";
-import Bridge from "./Bridge";
+import Bridge from "./src/components/macro/Bridge";
 import { RESPONSE_MESSAGE_TYPES } from "./src/utils/bridgeMessages";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
