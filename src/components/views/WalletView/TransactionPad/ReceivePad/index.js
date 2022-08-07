@@ -1,12 +1,15 @@
 import React from "react";
-import { View } from "react-native";
+import { View, Text, Pressable } from "react-native";
 import { connect } from "react-redux";
 import styles from "./styles";
 import Button from "../../../../atoms/Button";
 import Toast from "react-native-toast-message";
 import ACTION_TYPES from "../../../../../redux/actionTypes";
+import TYPOGRAPHY from "../../../../../design/typography";
 
-const ReceivePad = ({ dispatch }) => {
+const ReceivePad = ({ wallet, dispatch }) => {
+  console.log({ wallet });
+
   const onPressShare = () => {
     Toast.show({
       type: "customError",
@@ -28,7 +31,9 @@ const ReceivePad = ({ dispatch }) => {
 
   return (
     <View style={styles.inputBackground}>
-      <View style={styles.receivePad}></View>
+      <View style={styles.receivePad}>
+        <Text style={TYPOGRAPHY.p}>{wallet?.cashaddr}</Text>
+      </View>
       <View style={styles.buttonContainer}>
         <Button onPress={onPressShare} isSmall>
           Share
@@ -41,7 +46,7 @@ const ReceivePad = ({ dispatch }) => {
   );
 };
 
-const mapStateToProps = ({}) => ({});
+const mapStateToProps = ({ wallet }) => ({ wallet });
 
 const mapDispatchToProps = (dispatch) => ({ dispatch });
 
