@@ -24,3 +24,13 @@ To watch the console.logs from inside the Bridge, see: https://stackoverflow.com
 ## Conventions
 
 This is a BCH standard app. Think in terms of BCH satoshis, stored as strings, then use the formatting and exchange rate helpers. All other exchange rates and balances are transformations of the satoshi value.
+
+## Testing
+
+To run Electron Cash on testnet:
+
+```
+$ /Applications/Electron-Cash.app/Contents/MacOS/Electron-Cash --testnet
+```
+
+And note that mainnet.cash uses `m/44/0'/0'` for mainnet derivative path and `m/44/1'/0'` for testnet.
