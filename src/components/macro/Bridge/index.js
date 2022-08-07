@@ -44,7 +44,9 @@ const Bridge = () => {
           console.log({ balance });
           emit({
             type: RESPONSE_MESSAGE_TYPES.REQUEST_BALANCE_RESPONSE,
-            data: { balance },
+            data: {
+              balance,
+            },
           });
           break;
 
@@ -80,8 +82,8 @@ const Bridge = () => {
       emit({
         type: RESPONSE_MESSAGE_TYPES.ERROR,
         data: {
-          errorMessage:
-            "Connection could not be established. Check that your Internet is online.",
+          title: "❌ No connection 📶",
+          text: "Check that your Internet is online.",
         },
       });
     }

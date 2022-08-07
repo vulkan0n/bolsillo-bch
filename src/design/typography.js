@@ -45,6 +45,13 @@ const TYPOGRAPHY = {
     fontSize: 28,
     marginBottom: SPACING.ten,
   },
+  h1red: {
+    fontFamily: "Montserrat_600SemiBold",
+    textAlign: "center",
+    color: COLOURS.errorRed,
+    fontSize: 28,
+    marginBottom: SPACING.ten,
+  },
   h2: {
     fontFamily: "Montserrat_500Medium",
     textAlign: "center",

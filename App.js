@@ -13,11 +13,33 @@ import { useWebViewMessage } from "react-native-react-bridge";
 import NavigationTree from "./src/components/macro/NavigationTree";
 import Bridge from "./src/components/macro/Bridge";
 import { RESPONSE_MESSAGE_TYPES } from "./src/utils/bridgeMessages";
-import { Provider } from "react-redux";
+import { batch, Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 import store from "./src/redux/store";
 import persistor from "./src/redux/persistor";
 import ACTION_TYPES from "./src/redux/actionTypes";
+import Toast from "react-native-toast-message";
+import TYPOGRAPHY from "./src/design/typography";
+import COLOURS from "./src/design/colours";
+import SPACING from "./src/design/spacing";
+
+const toastConfig = {
+  customError: ({ props: { title, text }, ...props }) => (
+    <View
+      style={{
+        backgroundColor: COLOURS.white,
+        margin: SPACING.fifteen,
+        padding: SPACING.fifteen,
+        borderRadius: SPACING.borderRadius,
+        borderLeftWidth: SPACING.five,
+        borderLeftColor: COLOURS.errorRed,
+      }}
+    >
+      <Text style={TYPOGRAPHY.h2black}>{title}</Text>
+      <Text style={TYPOGRAPHY.p}>{text}</Text>
+    </View>
+  ),
+};
 
 export default function App() {
   // For the list of possible font faces
@@ -51,6 +73,7 @@ export default function App() {
             balance: message.data.balance,
           },
         });
+        console.log({ message });
         break;
 
       case RESPONSE_MESSAGE_TYPES.SEND_COINS_RESPONSE:
@@ -71,6 +94,14 @@ export default function App() {
       case RESPONSE_MESSAGE_TYPES.ERROR:
         console.log("error!");
         console.log(message?.data?.errorMessage);
+
+        Toast.show({
+          type: "customError",
+          props: {
+            title: message?.data?.title,
+            text: message?.data?.text,
+          },
+        });
         break;
 
       default:
@@ -113,6 +144,7 @@ export default function App() {
           />
         </View>
         <NavigationTree emit={emit} />
+        <Toast config={toastConfig} />
       </PersistGate>
     </Provider>
   );
