@@ -122,16 +122,6 @@ export default function App() {
         <NavigationContainer>
           <Stack.Navigator>
             <Stack.Screen
-              name="Transaction Success"
-              component={TransactionSuccessView}
-              options={{
-                headerStyle: {
-                  backgroundColor: COLOURS.bchGreen,
-                },
-                headerTitle: (props) => <Text style={TYPOGRAPHY.header}></Text>,
-              }}
-            />
-            <Stack.Screen
               name="Wallet"
               component={WalletView}
               initialParams={{
@@ -204,6 +194,17 @@ export default function App() {
                 headerTitle: (props) => (
                   <Text style={TYPOGRAPHY.header}>Settings</Text>
                 ),
+              }}
+            />
+            <Stack.Screen
+              name="Transaction Success"
+              component={TransactionSuccessView}
+              options={{
+                presentation: "modal",
+                headerStyle: {
+                  backgroundColor: COLOURS.bchGreen,
+                },
+                headerTitle: (props) => <Text style={TYPOGRAPHY.header}></Text>,
               }}
             />
           </Stack.Navigator>

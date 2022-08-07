@@ -23,7 +23,7 @@ function TransactionSuccessView({ tempTxId, navigation, dispatch }) {
         index: 0,
         routes: [{ name: "Wallet" }],
       });
-    }, 2500);
+    }, 3000);
   }, []);
 
   return (
