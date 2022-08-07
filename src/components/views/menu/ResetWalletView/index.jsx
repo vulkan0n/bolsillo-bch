@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { View, Image, Text, Pressable } from "react-native";
+import React from "react";
+import { View, Text } from "react-native";
 import { connect } from "react-redux";
 import Button from "../../../atoms/Button";
 import TYPOGRAPHY from "../../../../design/typography";
@@ -7,9 +7,25 @@ import styles from "./styles";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faPiggyBank } from "@fortawesome/free-solid-svg-icons/faPiggyBank";
 import COLOURS from "../../../../design/colours";
+import Toast from "react-native-toast-message";
+import { BRIDGE_MESSAGE_TYPES } from "../../../../utils/bridgeMessages";
 
-function ResetWalletView({ emit, navigation }) {
+function ResetWalletView({ isTestNet, navigation, route }) {
+  const { emit } = route?.params;
+
   const onResetWallet = () => {
+    emit({
+      type: BRIDGE_MESSAGE_TYPES.CREATE_WALLET,
+      data: { isTestNet },
+    });
+
+    Toast.show({
+      type: "customSuccess",
+      props: {
+        title: "Wallet Reset",
+        text: "Generated new mnemonic phrase.",
+      },
+    });
     navigation.goBack();
   };
 
@@ -33,6 +49,6 @@ function ResetWalletView({ emit, navigation }) {
   );
 }
 
-const mapStateToProps = ({}) => ({});
+const mapStateToProps = ({ isTestNet }) => ({ isTestNet });
 
 export default connect(mapStateToProps)(ResetWalletView);

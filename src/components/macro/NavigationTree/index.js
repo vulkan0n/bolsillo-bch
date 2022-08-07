@@ -93,6 +93,9 @@ const NavigationTree = ({ emit }) => {
         <Stack.Screen
           name="Reset Wallet"
           component={ResetWalletView}
+          initialParams={{
+            emit,
+          }}
           options={{
             headerStyle: {
               backgroundColor: COLOURS.black,
