@@ -68,16 +68,8 @@ function WalletView({
         />
       </Pressable>
 
-      {/*<View>
-        <Button title="Scan QR Code" />
-        <Button title="Transaction History" />
-      </View>*/}
-
       <Pressable onPress={onPressBalance} style={styles.widePressable}>
         <View style={styles.primaryTitlesWrapper}>
-          {/* <Text style={TYPOGRAPHY.h1}>
-          ₿ {formatSats(satoshiBalance)} Available
-        </Text> */}
           <Text style={TYPOGRAPHY.h1}>
             {isCryptoDenominated ? satBalance : usdBalance}
           </Text>

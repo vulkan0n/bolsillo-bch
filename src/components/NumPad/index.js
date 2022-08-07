@@ -1,5 +1,5 @@
-import React from "react";
-import { View, Text } from "react-native";
+import React, { useState } from "react";
+import { View, Text, Pressable } from "react-native";
 import { connect } from "react-redux";
 import styles from "./styles";
 import Button from "../atoms/Button";
@@ -14,12 +14,16 @@ function formatSats(sats) {
   return parseFloat(parseInt(sats) / SATOSHI).toFixed(8);
 }
 
-function SatoshiInputWidget({ availableBalance }) {
+const NumPad = ({ isCryptoDenominated, navigation }) => {
+  const availableBalance = 3.2342;
+  const numPadSatBalance = displaySat(0);
+  const numPadUsdBalance = displayUsd(0);
+
   const [inputSatoshi, setInputSatoshi] = useState("0");
 
-  function SatoshiInputButton({ n }) {
+  function InputButton({ n }) {
     const onPress = () => {
-      if (n === "X") {
+      if (n === "<") {
         handleSatoshiInputDelete();
       } else {
         handleSatoshiInput(n);
@@ -27,16 +31,14 @@ function SatoshiInputWidget({ availableBalance }) {
     };
 
     const onLongPress = () => {
-      if (n === "X") {
+      if (n === "<") {
         handleSatoshiInputClear();
       }
     };
 
     return (
       <Pressable onPress={onPress} onLongPress={onLongPress}>
-        <View>
-          <Text>{n}</Text>
-        </View>
+        <Text style={TYPOGRAPHY.h1black}>{n}</Text>
       </Pressable>
     );
   }
@@ -73,33 +75,6 @@ function SatoshiInputWidget({ availableBalance }) {
     }
   }
 
-  return (
-    <View>
-      <View>
-        <Text>₿ {inputSatoshi}</Text>
-      </View>
-      <View>
-        <SatoshiInputButton n="7" />
-        <SatoshiInputButton n="8" />
-        <SatoshiInputButton n="9" />
-        <SatoshiInputButton n="4" />
-        <SatoshiInputButton n="5" />
-        <SatoshiInputButton n="6" />
-        <SatoshiInputButton n="1" />
-        <SatoshiInputButton n="2" />
-        <SatoshiInputButton n="3" />
-        <SatoshiInputButton n="X" />
-        <SatoshiInputButton n="0" />
-        <SatoshiInputButton n="." />
-      </View>
-    </View>
-  );
-}
-
-const NumPad = ({ isCryptoDenominated, navigation }) => {
-  const numPadSatBalance = displaySat(0);
-  const numPadUsdBalance = displayUsd(0);
-
   const onPressSend = () => {
     const testNetFaucet = "bchtest:qzl7ex0q35q2d6aljhlhzwramp09n06fry8ssqu0qp";
     emit({
@@ -127,24 +102,24 @@ const NumPad = ({ isCryptoDenominated, navigation }) => {
       <View style={styles.numPad}>
         {/* <SatoshiInputWidget availableBalance={satoshiBalance} /> */}
         <View style={styles.numPadRow}>
-          <Text style={TYPOGRAPHY.h1black}>1</Text>
-          <Text style={TYPOGRAPHY.h1black}>2</Text>
-          <Text style={TYPOGRAPHY.h1black}>3</Text>
+          <InputButton n={1} />
+          <InputButton n={2} />
+          <InputButton n={3} />
         </View>
         <View style={styles.numPadRow}>
-          <Text style={TYPOGRAPHY.h1black}>4</Text>
-          <Text style={TYPOGRAPHY.h1black}>5</Text>
-          <Text style={TYPOGRAPHY.h1black}>6</Text>
+          <InputButton n={4} />
+          <InputButton n={5} />
+          <InputButton n={6} />
         </View>
         <View style={styles.numPadRow}>
-          <Text style={TYPOGRAPHY.h1black}>7</Text>
-          <Text style={TYPOGRAPHY.h1black}>8</Text>
-          <Text style={TYPOGRAPHY.h1black}>9</Text>
+          <InputButton n={7} />
+          <InputButton n={8} />
+          <InputButton n={9} />
         </View>
         <View style={styles.numPadRow}>
-          <Text style={TYPOGRAPHY.h1black}>{"<"}</Text>
-          <Text style={TYPOGRAPHY.h1black}>0</Text>
-          <Text style={TYPOGRAPHY.h1black}>.</Text>
+          <InputButton n={"<"} />
+          <InputButton n={0} />
+          <InputButton n={"."} />
         </View>
       </View>
       <View style={styles.buttonContainer}>
