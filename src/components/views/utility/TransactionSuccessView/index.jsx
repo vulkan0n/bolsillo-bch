@@ -19,19 +19,19 @@ function TransactionSuccessView({ tempTxId, navigation, dispatch }) {
         },
       });
 
-      // navigation.reset({
-      //   index: 0,
-      //   routes: [{ name: "Wallet" }],
-      // });
-    }, 5000);
+      navigation.reset({
+        index: 0,
+        routes: [{ name: "Wallet" }],
+      });
+    }, 2500);
   }, []);
 
   return (
     <View style={styles.container}>
       <MotiView
-        from={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ type: "timing" }}
+        from={{ opacity: 0, translateY: 35 }}
+        animate={{ opacity: 1, translateY: 0 }}
+        transition={{ type: "timing", duration: 1200 }}
       >
         <View style={styles.iconWrapper}>
           <FontAwesomeIcon
