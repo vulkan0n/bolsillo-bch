@@ -5,7 +5,7 @@ const styles = {
   secondaryTitlesWrapper: {
     marginTop: SPACING.five,
   },
-  transactionPadError: {
+  padError: {
     color: COLOURS.errorRed,
     fontSize: 18,
     textAlign: "center",

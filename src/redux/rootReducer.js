@@ -12,7 +12,7 @@ const {
 } = ACTION_TYPES;
 
 export default function rootReducer(state = initialState, action) {
-  console.log({ state, action });
+  // console.log({ state, action });
   switch (action.type) {
     case UDPATE_WALLET:
       return {

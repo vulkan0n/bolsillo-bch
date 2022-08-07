@@ -18,7 +18,7 @@ const store = createStore(
     rootReducer
   ),
   initialState,
-  compose(applyMiddleware(logger))
+  compose(applyMiddleware()) // logger
 );
 
 export default store; // Alow other methods to import store for '.getState()' purposes

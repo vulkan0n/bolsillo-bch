@@ -1,12 +1,12 @@
 import React, { useEffect } from "react";
 import { View, Text } from "react-native";
-import TYPOGRAPHY from "../../../../design/typography";
+import TYPOGRAPHY from "../../../design/typography";
 import styles from "./styles";
 import { connect } from "react-redux";
-import ACTION_TYPES from "../../../../redux/actionTypes";
+import ACTION_TYPES from "../../../redux/actionTypes";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faCircleCheck } from "@fortawesome/free-solid-svg-icons/faCircleCheck";
-import COLOURS from "../../../../design/colours";
+import COLOURS from "../../../design/colours";
 import { MotiView } from "moti";
 
 function TransactionSuccessView({ tempTxId, navigation, dispatch }) {

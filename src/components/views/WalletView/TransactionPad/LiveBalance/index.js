@@ -37,14 +37,19 @@ const DisplayedBalance = ({
         {isCryptoDenominated ? usdBalance : satBalance}
       </Text>
       {!!transactionPadError && (
-        <Text style={styles.transactionPadError}>{transactionPadError}</Text>
+        <Text style={styles.padError}>{transactionPadError}</Text>
       )}
     </View>
   );
 };
 
-const mapStateToProps = ({ transactionPadBalance, isCryptoDenominated }) => ({
+const mapStateToProps = ({
   transactionPadBalance,
+  transactionPadError,
+  isCryptoDenominated,
+}) => ({
+  transactionPadBalance,
+  transactionPadError,
   isCryptoDenominated,
 });
 
