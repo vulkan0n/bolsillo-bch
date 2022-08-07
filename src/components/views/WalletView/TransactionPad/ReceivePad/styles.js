@@ -20,20 +20,10 @@ const styles = {
     margin: SPACING.fifteen,
     borderRadius: SPACING.borderRadius,
   },
-  numPadRow: {
-    flex: 1,
-    flexDirection: "row",
-    justifyContent: "space-around",
-    alignItems: "center",
-    width: "100%",
-    margin: SPACING.five,
-  },
-  inputButton: {
-    minWidth: 50,
-    minHeight: 70,
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+  qrBorder: {
+    margin: SPACING.fifteen,
+    borderWidth: 5,
+    borderColor: COLOURS.bchGreen,
   },
   buttonContainer: {
     flexDirection: "row",

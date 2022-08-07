@@ -6,6 +6,7 @@ import Button from "../../../../atoms/Button";
 import Toast from "react-native-toast-message";
 import ACTION_TYPES from "../../../../../redux/actionTypes";
 import TYPOGRAPHY from "../../../../../design/typography";
+import QRCode from "react-qr-code";
 
 const ReceivePad = ({ wallet, dispatch }) => {
   console.log({ wallet });
@@ -32,6 +33,9 @@ const ReceivePad = ({ wallet, dispatch }) => {
   return (
     <View style={styles.inputBackground}>
       <View style={styles.receivePad}>
+        <View style={styles.qrBorder}>
+          <QRCode value={`${wallet?.cashaddr}`} />
+        </View>
         <Text style={TYPOGRAPHY.p}>{wallet?.cashaddr}</Text>
       </View>
       <View style={styles.buttonContainer}>
