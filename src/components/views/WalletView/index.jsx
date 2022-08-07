@@ -79,7 +79,7 @@ function WalletView({
         </View>
       </Pressable>
 
-      <NumPad />
+      <NumPad emit={emit} />
     </View>
   );
 }

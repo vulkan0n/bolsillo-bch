@@ -7,7 +7,7 @@ import TYPOGRAPHY from "../../design/typography";
 import { displaySats, displaySatsAsUsd } from "../../utils/formatting";
 import { BRIDGE_MESSAGE_TYPES } from "../../utils/bridgeMessages";
 
-const NumPad = ({ isCryptoDenominated, balance, navigation }) => {
+const NumPad = ({ isCryptoDenominated, wallet, balance, navigation, emit }) => {
   const [inputBalance, setInputBalance] = useState("0");
   const [inputError, setInputError] = useState("");
   const isSatoshiDenominated = true;
@@ -128,7 +128,8 @@ const NumPad = ({ isCryptoDenominated, balance, navigation }) => {
     </View>
   );
 };
-const mapStateToProps = ({ balance, isCryptoDenominated }) => ({
+const mapStateToProps = ({ wallet, balance, isCryptoDenominated }) => ({
+  wallet,
   balance,
   isCryptoDenominated,
 });
