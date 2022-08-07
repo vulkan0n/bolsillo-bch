@@ -8,6 +8,7 @@ import LearnView from "../../views/menu/LearnView";
 import BackupView from "../../views/menu/BackupView";
 import DevelopersView from "../../views/menu/DevelopersView";
 import SettingsView from "../../views/menu/SettingsView";
+import ResetWalletView from "../../views/menu/ResetWalletView";
 import TransactionSuccessView from "../../views/TransactionSuccessView";
 import COLOURS from "../../../design/colours";
 import TYPOGRAPHY from "../../../design/typography";
@@ -86,6 +87,18 @@ const NavigationTree = ({ emit }) => {
             },
             headerTitle: (props) => (
               <Text style={TYPOGRAPHY.header}>Settings</Text>
+            ),
+          }}
+        />
+        <Stack.Screen
+          name="Reset Wallet"
+          component={ResetWalletView}
+          options={{
+            headerStyle: {
+              backgroundColor: COLOURS.black,
+            },
+            headerTitle: (props) => (
+              <Text style={TYPOGRAPHY.header}>Reset Wallet</Text>
             ),
           }}
         />

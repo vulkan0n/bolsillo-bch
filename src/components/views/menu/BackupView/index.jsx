@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Image, Text, Pressable } from "react-native";
+import { View, Text, Pressable } from "react-native";
 import { connect } from "react-redux";
 import Button from "../../../atoms/Button";
 import TYPOGRAPHY from "../../../../design/typography";
@@ -8,11 +8,15 @@ import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faPiggyBank } from "@fortawesome/free-solid-svg-icons/faPiggyBank";
 import COLOURS from "../../../../design/colours";
 
-function BackupView({ wallet }) {
+function BackupView({ wallet, navigation }) {
   const [isMnemonicVisible, setIsMnemonicVisible] = useState(false);
 
   const toggleIsMnemonicVisible = () => {
     setIsMnemonicVisible(!isMnemonicVisible);
+  };
+
+  const onPressResetWallet = () => {
+    navigation.navigate("Reset Wallet");
   };
 
   return (
@@ -54,6 +58,9 @@ function BackupView({ wallet }) {
       )}
       <Text style={TYPOGRAPHY.h2}>Derivation path</Text>
       <Text style={TYPOGRAPHY.pWhite}>{wallet?.derivationPath}</Text>
+      <Pressable onPress={onPressResetWallet}>
+        <Text style={TYPOGRAPHY.pWhite}>Reset Wallet</Text>
+      </Pressable>
     </View>
   );
 }
