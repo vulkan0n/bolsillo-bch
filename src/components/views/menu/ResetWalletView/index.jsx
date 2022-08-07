@@ -22,7 +22,7 @@ function ResetWalletView({ isTestNet, navigation, route }) {
     Toast.show({
       type: "customSuccess",
       props: {
-        title: "Wallet Reset",
+        title: "New wallet created",
         text: "Generated new mnemonic phrase.",
       },
     });
