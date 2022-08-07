@@ -72,7 +72,11 @@ const NumPad = ({ isCryptoDenominated, balance, navigation }) => {
 
   const InputButton = ({ n }) => {
     return (
-      <Pressable onPress={() => onPress(n)} onLongPress={() => onLongPress(n)}>
+      <Pressable
+        style={styles.inputButton}
+        onPress={() => onPress(n)}
+        onLongPress={() => onLongPress(n)}
+      >
         <Text style={TYPOGRAPHY.h1black}>{n}</Text>
       </Pressable>
     );
@@ -82,7 +86,7 @@ const NumPad = ({ isCryptoDenominated, balance, navigation }) => {
     <View style={styles.inputBackground}>
       <View style={styles.secondaryTitlesWrapper}>
         <Text style={TYPOGRAPHY.h1black}>
-          {inputBalance}
+          {inputBalance} sats
           {/* {isCryptoDenominated ? numPadSatBalance : numPadUsdBalance} */}
         </Text>
         <Text style={TYPOGRAPHY.h2black}>

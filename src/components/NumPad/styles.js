@@ -35,6 +35,13 @@ const styles = {
     width: "100%",
     margin: SPACING.five,
   },
+  inputButton: {
+    minWidth: 50,
+    minHeight: 70,
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
   buttonContainer: {
     flexDirection: "row",
     justifyContent: "space-around",
