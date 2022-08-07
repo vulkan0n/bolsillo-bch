@@ -2,16 +2,17 @@ import initialState from "./initialState";
 import ACTION_TYPES from "./actionTypes";
 
 const {
-  STORE_WALLET,
+  UDPATE_WALLET,
   UPDATE_BALANCE,
   UPDATE_TEMP_TXID,
   TOGGLE_IS_CRYPTO_DENOMINATED,
+  UPDATE_TRANSACTION_PAD_STATE,
 } = ACTION_TYPES;
 
 export default function rootReducer(state = initialState, action) {
   console.log({ state, action });
   switch (action.type) {
-    case STORE_WALLET:
+    case UDPATE_WALLET:
       return {
         ...state,
         wallet: action.payload.wallet,
@@ -25,6 +26,11 @@ export default function rootReducer(state = initialState, action) {
       return {
         ...state,
         tempTxId: action.payload.tempTxId,
+      };
+    case UPDATE_TRANSACTION_PAD_STATE:
+      return {
+        ...state,
+        transactionPadState: action.payload.transactionPadState,
       };
     case TOGGLE_IS_CRYPTO_DENOMINATED:
       return {

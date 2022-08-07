@@ -40,7 +40,7 @@ export default function App() {
     switch (message.type) {
       case RESPONSE_MESSAGE_TYPES.CREATE_WALLET_RESPONSE:
         store.dispatch({
-          type: ACTION_TYPES.STORE_WALLET,
+          type: ACTION_TYPES.UDPATE_WALLET,
           payload: {
             wallet: message.data.wallet,
           },
