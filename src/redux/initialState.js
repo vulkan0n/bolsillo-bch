@@ -8,6 +8,7 @@ const initialState = {
   },
   tempTxId: "",
   // Locally relevant stuff
+  transactionPadBalance: "0",
   transactionPadState: "", // Enum: '', 'Receive'
   // Settings
   isCryptoDenominated: true,

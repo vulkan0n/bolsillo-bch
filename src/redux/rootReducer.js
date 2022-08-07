@@ -5,8 +5,9 @@ const {
   UDPATE_WALLET,
   UPDATE_BALANCE,
   UPDATE_TEMP_TXID,
-  TOGGLE_IS_CRYPTO_DENOMINATED,
+  UPDATE_TRANSACTION_PAD_BALANCE,
   UPDATE_TRANSACTION_PAD_STATE,
+  TOGGLE_IS_CRYPTO_DENOMINATED,
 } = ACTION_TYPES;
 
 export default function rootReducer(state = initialState, action) {
@@ -26,6 +27,11 @@ export default function rootReducer(state = initialState, action) {
       return {
         ...state,
         tempTxId: action.payload.tempTxId,
+      };
+    case UPDATE_TRANSACTION_PAD_BALANCE:
+      return {
+        ...state,
+        transactionPadBalance: action.payload.transactionPadBalance,
       };
     case UPDATE_TRANSACTION_PAD_STATE:
       return {

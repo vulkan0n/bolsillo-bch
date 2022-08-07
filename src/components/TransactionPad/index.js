@@ -6,7 +6,6 @@ import NumPad from "../NumPad";
 import ReceivePad from "../ReceivePad";
 
 const TransactionPad = ({ transactionPadState, emit }) => {
-  console.log({ transactionPadState });
   const component = () => {
     switch (transactionPadState) {
       case "Receive":

@@ -10,19 +10,18 @@ import ACTION_TYPES from "../../redux/actionTypes";
 
 const NumPad = ({
   isCryptoDenominated,
+  transactionPadBalance,
   wallet,
   balance,
-  navigation,
   emit,
   dispatch,
 }) => {
-  const [inputBalance, setInputBalance] = useState("0");
   const [inputError, setInputError] = useState("");
   const isSatoshiDenominated = true;
   const availableBalance = balance?.sat;
 
-  const satBalance = displaySats(balance?.sat);
-  const usdBalance = displaySatsAsUsd(balance?.sat);
+  const satBalance = displaySats(transactionPadBalance);
+  const usdBalance = displaySatsAsUsd(transactionPadBalance);
 
   useEffect(() => {
     setTimeout(() => {
@@ -34,33 +33,55 @@ const NumPad = ({
 
   const onPress = (n) => {
     if (n === "<") {
-      if (inputBalance?.length > 1) {
-        setInputBalance(inputBalance?.slice(0, inputBalance?.length - 1));
+      if (transactionPadBalance?.length > 1) {
+        const newBalance = transactionPadBalance?.slice(
+          0,
+          transactionPadBalance?.length - 1
+        );
+
+        dispatch({
+          type: ACTION_TYPES.UPDATE_TRANSACTION_PAD_BALANCE,
+          payload: {
+            transactionPadBalance: newBalance,
+          },
+        });
       } else {
-        setInputBalance("0");
+        dispatch({
+          type: ACTION_TYPES.UPDATE_TRANSACTION_PAD_BALANCE,
+          payload: {
+            transactionPadBalance: "0",
+          },
+        });
       }
       return;
     }
-    if (n === "." && inputBalance.includes(".")) {
+    if (n === "." && transactionPadBalance.includes(".")) {
       setInputError("Already used decimal point.");
       return;
     }
 
-    if (parseFloat(inputBalance + n) > parseFloat(availableBalance)) {
+    if (parseFloat(transactionPadBalance + n) > parseFloat(availableBalance)) {
       setInputError("Insuffient balance.");
       return;
     }
 
-    if (inputBalance === "0") {
-      setInputBalance(n);
-    } else {
-      setInputBalance(inputBalance + n);
-    }
+    dispatch({
+      type: ACTION_TYPES.UPDATE_TRANSACTION_PAD_BALANCE,
+      payload: {
+        transactionPadBalance:
+          transactionPadBalance === "0" ? n : transactionPadBalance + n,
+      },
+    });
   };
 
   const onLongPress = ({ n }) => {
     if (n === "<") {
-      setInputBalance("0");
+      dispatch({
+        type: ACTION_TYPES.UPDATE_TRANSACTION_PAD_BALANCE,
+        payload: {
+          transactionPadBalance: "0",
+        },
+      });
     }
   };
 
@@ -102,7 +123,7 @@ const NumPad = ({
     <View style={styles.inputBackground}>
       <View style={styles.secondaryTitlesWrapper}>
         <Text style={TYPOGRAPHY.h1black}>
-          {inputBalance} sats
+          {displaySats(transactionPadBalance)}
           {/* {isCryptoDenominated ? satBalance : usdBalance} */}
         </Text>
         <Text style={TYPOGRAPHY.h2black}>
@@ -135,7 +156,7 @@ const NumPad = ({
       </View>
       <View style={styles.buttonContainer}>
         <Button onPress={onPressSend} isSmall>
-          Send
+          Share
         </Button>
         <Button variant="secondary" onPress={onPressReceive} isSmall>
           Receive
@@ -145,9 +166,15 @@ const NumPad = ({
   );
 };
 
-const mapStateToProps = ({ wallet, balance, isCryptoDenominated }) => ({
+const mapStateToProps = ({
   wallet,
   balance,
+  transactionPadBalance,
+  isCryptoDenominated,
+}) => ({
+  wallet,
+  balance,
+  transactionPadBalance,
   isCryptoDenominated,
 });
 

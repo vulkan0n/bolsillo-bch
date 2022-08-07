@@ -5,117 +5,74 @@ import styles from "./styles";
 import Button from "../atoms/Button";
 import TYPOGRAPHY from "../../design/typography";
 import { displaySats, displaySatsAsUsd } from "../../utils/formatting";
-import { BRIDGE_MESSAGE_TYPES } from "../../utils/bridgeMessages";
+import Toast from "react-native-toast-message";
+import ACTION_TYPES from "../../redux/actionTypes";
 
 const ReceivePad = ({
-  isCryptoDenominated,
-  wallet,
   balance,
-  navigation,
-  emit,
+  transactionPadBalance,
+  isCryptoDenominated,
+  dispatch,
 }) => {
-  const [inputBalance, setInputBalance] = useState("0");
-  const [inputError, setInputError] = useState("");
-  const isSatoshiDenominated = true;
-  const availableBalance = balance?.sat;
-
   const satBalance = displaySats(balance?.sat);
   const usdBalance = displaySatsAsUsd(balance?.sat);
 
-  useEffect(() => {
-    setTimeout(() => {
-      if (inputError) {
-        setInputError("");
-      }
-    }, 2000);
-  }, [inputError]);
-
-  const onPress = (n) => {
-    if (n === "<") {
-      if (inputBalance?.length > 1) {
-        setInputBalance(inputBalance?.slice(0, inputBalance?.length - 1));
-      } else {
-        setInputBalance("0");
-      }
-      return;
-    }
-    if (n === "." && inputBalance.includes(".")) {
-      setInputError("Already used decimal point.");
-      return;
-    }
-
-    if (parseFloat(inputBalance + n) > parseFloat(availableBalance)) {
-      setInputError("Insuffient balance.");
-      return;
-    }
-
-    if (inputBalance === "0") {
-      setInputBalance(n);
-    } else {
-      setInputBalance(inputBalance + n);
-    }
-  };
-
-  const onLongPress = ({ n }) => {
-    if (n === "<") {
-      setInputBalance("0");
-    }
-  };
-
-  const onPressSend = () => {
-    const testNetFaucet = "bchtest:qzl7ex0q35q2d6aljhlhzwramp09n06fry8ssqu0qp";
-    emit({
-      type: BRIDGE_MESSAGE_TYPES.SEND_COINS,
-      data: {
-        mnemonic: wallet?.mnemonic,
-        derivationPath: wallet?.derivationPath,
-        recipientCashAddr: testNetFaucet,
-        satsToSend: "100",
+  const onPressShare = () => {
+    Toast.show({
+      type: "customError",
+      props: {
+        title: "TODO",
+        text: "Implement share feature",
       },
     });
   };
 
-  const InputButton = ({ n }) => {
-    return (
-      <Pressable
-        style={styles.inputButton}
-        onPress={() => onPress(n)}
-        onLongPress={() => onLongPress(n)}
-      >
-        <Text style={TYPOGRAPHY.h1black}>{n}</Text>
-      </Pressable>
-    );
+  const onPressBack = () => {
+    dispatch({
+      type: ACTION_TYPES.UPDATE_TRANSACTION_PAD_STATE,
+      payload: {
+        transactionPadState: "",
+      },
+    });
   };
 
   return (
     <View style={styles.inputBackground}>
       <View style={styles.secondaryTitlesWrapper}>
         <Text style={TYPOGRAPHY.h1black}>
-          {inputBalance} sats
+          {displaySats(transactionPadBalance)}
           {/* {isCryptoDenominated ? satBalance : usdBalance} */}
         </Text>
         <Text style={TYPOGRAPHY.h2black}>
           {" "}
           {isCryptoDenominated ? usdBalance : satBalance}
         </Text>
-        {!!inputError && <Text style={styles.inputError}>{inputError}</Text>}
       </View>
       <View style={styles.numPad}></View>
       <View style={styles.buttonContainer}>
-        <Button onPress={onPressSend} isSmall>
+        <Button onPress={onPressShare} isSmall>
           Send
         </Button>
-        <Button variant="secondary" isSmall>
-          Receive
+        <Button variant="secondary" onPress={onPressBack} isSmall>
+          Back
         </Button>
       </View>
     </View>
   );
 };
-const mapStateToProps = ({ wallet, balance, isCryptoDenominated }) => ({
+
+const mapStateToProps = ({
   wallet,
   balance,
+  transactionPadBalance,
+  isCryptoDenominated,
+}) => ({
+  wallet,
+  balance,
+  transactionPadBalance,
   isCryptoDenominated,
 });
 
-export default connect(mapStateToProps)(ReceivePad);
+const mapDispatchToProps = (dispatch) => ({ dispatch });
+
+export default connect(mapStateToProps, mapDispatchToProps)(ReceivePad);
