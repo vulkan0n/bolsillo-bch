@@ -108,36 +108,36 @@ const NumPad = ({ wallet, balance, emit }) => {
         onPress={() => onPress(n)}
         onLongPress={() => onLongPress(n)}
       >
-        <Text style={TYPOGRAPHY.h1black}>{n}</Text>
+        <Text style={TYPOGRAPHY.h1black as any}>{n}</Text>
       </Pressable>
     );
   };
 
   return (
-    <View style={styles.inputBackground}>
-      <View style={styles.numPad}>
-        <View style={styles.numPadRow}>
+    <View style={styles.inputBackground as any}>
+      <View style={styles.numPad as any}>
+        <View style={styles.numPadRow as any}>
           <InputButton n={"1"} />
           <InputButton n={"2"} />
           <InputButton n={"3"} />
         </View>
-        <View style={styles.numPadRow}>
+        <View style={styles.numPadRow as any}>
           <InputButton n={"4"} />
           <InputButton n={"5"} />
           <InputButton n={"6"} />
         </View>
-        <View style={styles.numPadRow}>
+        <View style={styles.numPadRow as any}>
           <InputButton n={"7"} />
           <InputButton n={"8"} />
           <InputButton n={"9"} />
         </View>
-        <View style={styles.numPadRow}>
+        <View style={styles.numPadRow as any}>
           <InputButton n={"<"} />
           <InputButton n={"0"} />
           <InputButton n={isSatoshiDenominated ? "" : "."} />
         </View>
       </View>
-      <View style={styles.buttonContainer}>
+      <View style={styles.buttonContainer as any}>
         <Button onPress={onPressSend} isSmall>
           Send
         </Button>

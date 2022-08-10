@@ -31,7 +31,7 @@ const ReceivePad = ({ wallet }) => {
   };
 
   return (
-    <View style={styles.inputBackground}>
+    <View style={styles.inputBackground as any}>
       <View style={styles.receivePad}>
         <View style={styles.qrBorder}>
           <QRCode value={`${wallet?.cashaddr}`} />
@@ -40,7 +40,7 @@ const ReceivePad = ({ wallet }) => {
           {wallet?.cashaddr}
         </Text>
       </View>
-      <View style={styles.buttonContainer}>
+      <View style={styles.buttonContainer as any}>
         <Button onPress={onPressShare} isSmall>
           Share
         </Button>

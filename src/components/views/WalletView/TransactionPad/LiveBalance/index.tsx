@@ -28,13 +28,13 @@ const DisplayedBalance = () => {
 
   return (
     <View style={styles.secondaryTitlesWrapper}>
-      <Text style={TYPOGRAPHY.h1black}>
+      <Text style={TYPOGRAPHY.h1black as any}>
         {isCryptoDenominated ? satBalance : usdBalance}
       </Text>
-      <Text style={TYPOGRAPHY.h2black}>
+      <Text style={TYPOGRAPHY.h2black as any}>
         {isCryptoDenominated ? usdBalance : satBalance}
       </Text>
-      {!!error && <Text style={styles.padError}>{error}</Text>}
+      {!!error && <Text style={styles.padError as any}>{error}</Text>}
     </View>
   );
 };
