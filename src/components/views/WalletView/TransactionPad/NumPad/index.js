@@ -6,79 +6,71 @@ import Button from "../../../../atoms/Button";
 import TYPOGRAPHY from "../../../../../design/typography";
 import { BRIDGE_MESSAGE_TYPES } from "../../../../../utils/bridgeMessages";
 import ACTION_TYPES from "../../../../../redux/actionTypes";
+import { useSelector, useDispatch } from "react-redux";
+import {
+  updateTransactionPadBalance,
+  updateTransactionPadView,
+  updateTransactionPadError,
+} from "../../../../../redux/reducers/transactionPadReducer";
 
-const NumPad = ({
-  transactionPadBalance,
-  wallet,
-  balance,
-  isTestNet,
-  emit,
-  dispatch,
-}) => {
+const NumPad = ({ wallet, balance, emit }) => {
+  const dispatch = useDispatch();
+  const { isTestNet } = useSelector((state) => state.settings);
+  const { padBalance } = useSelector((state) => state.transactionPad);
   const isSatoshiDenominated = true;
   const availableBalance = balance?.sat;
 
   const onPress = (n) => {
     if (n === "<") {
-      if (transactionPadBalance?.length > 1) {
-        const newBalance = transactionPadBalance?.slice(
-          0,
-          transactionPadBalance?.length - 1
-        );
+      if (padBalance?.length > 1) {
+        const newBalance = padBalance?.slice(0, padBalance?.length - 1);
 
-        dispatch({
-          type: ACTION_TYPES.UPDATE_TRANSACTION_PAD_BALANCE,
-          payload: {
-            transactionPadBalance: newBalance,
-          },
-        });
+        dispatch(
+          updateTransactionPadBalance({
+            padBalance: newBalance,
+          })
+        );
       } else {
-        dispatch({
-          type: ACTION_TYPES.UPDATE_TRANSACTION_PAD_BALANCE,
-          payload: {
-            transactionPadBalance: "0",
-          },
-        });
+        dispatch(
+          updateTransactionPadBalance({
+            padBalance: "0",
+          })
+        );
       }
       return;
     }
-    if (n === "." && transactionPadBalance.includes(".")) {
-      dispatch({
-        type: ACTION_TYPES.UPDATE_TRANSACTION_PAD_ERROR,
-        payload: {
-          transactionPadError: "Already used decimal point.",
-        },
-      });
+    if (n === "." && padBalance.includes(".")) {
+      dispatch(
+        updateTransactionPadError({
+          error: "Already used decimal point.",
+        })
+      );
       return;
     }
 
-    if (parseFloat(transactionPadBalance + n) > parseFloat(availableBalance)) {
-      dispatch({
-        type: ACTION_TYPES.UPDATE_TRANSACTION_PAD_ERROR,
-        payload: {
-          transactionPadError: "Insuffient balance.",
-        },
-      });
+    if (parseFloat(padBalance + n) > parseFloat(availableBalance)) {
+      dispatch(
+        updateTransactionPadError({
+          error: "Insuffient balance.",
+        })
+      );
       return;
     }
 
-    dispatch({
-      type: ACTION_TYPES.UPDATE_TRANSACTION_PAD_BALANCE,
-      payload: {
-        transactionPadBalance:
-          transactionPadBalance === "0" ? n : transactionPadBalance + n,
-      },
-    });
+    dispatch(
+      updateTransactionPadBalance({
+        padBalance: padBalance === "0" ? n : padBalance + n,
+      })
+    );
   };
 
   const onLongPress = ({ n }) => {
     if (n === "<") {
-      dispatch({
-        type: ACTION_TYPES.UPDATE_TRANSACTION_PAD_BALANCE,
-        payload: {
-          transactionPadBalance: "0",
-        },
-      });
+      dispatch(
+        updateTransactionPadBalance({
+          padBalance: "0",
+        })
+      );
     }
   };
 
@@ -102,12 +94,11 @@ const NumPad = ({
   };
 
   const onPressReceive = () => {
-    dispatch({
-      type: ACTION_TYPES.UPDATE_TRANSACTION_PAD_STATE,
-      payload: {
-        transactionPadState: "Receive",
-      },
-    });
+    dispatch(
+      updateTransactionPadView({
+        view: "Receive",
+      })
+    );
   };
 
   const InputButton = ({ n }) => {
@@ -158,16 +149,9 @@ const NumPad = ({
   );
 };
 
-const mapStateToProps = ({
-  root: { wallet, balance, transactionPadBalance },
-  settings: { isTestNet },
-}) => ({
+const mapStateToProps = ({ root: { wallet, balance } }) => ({
   wallet,
   balance,
-  transactionPadBalance,
-  isTestNet,
 });
 
-const mapDispatchToProps = (dispatch) => ({ dispatch });
-
-export default connect(mapStateToProps, mapDispatchToProps)(NumPad);
+export default connect(mapStateToProps)(NumPad);

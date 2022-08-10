@@ -1,16 +1,10 @@
+import { combineReducers } from "redux";
 import initialState from "./initialState";
 import ACTION_TYPES from "./actionTypes";
 import settingsReducer from "./reducers/settingsReducer";
-import { combineReducers } from "redux";
+import transactionPadReducer from "./reducers/transactionPadReducer";
 
-const {
-  UDPATE_WALLET,
-  UPDATE_BALANCE,
-  UPDATE_TEMP_TXID,
-  UPDATE_TRANSACTION_PAD_BALANCE,
-  UPDATE_TRANSACTION_PAD_STATE,
-  UPDATE_TRANSACTION_PAD_ERROR,
-} = ACTION_TYPES;
+const { UDPATE_WALLET, UPDATE_BALANCE, UPDATE_TEMP_TXID } = ACTION_TYPES;
 
 interface WalletType {
   mnemonic: string;
@@ -22,9 +16,6 @@ interface UpdateWalletAction {
     wallet?: WalletType;
     balance?: string;
     tempTxId?: string;
-    transactionPadBalance?: string;
-    transactionPadState?: "" | "Receive";
-    transactionPadError?: string;
   };
 }
 
@@ -46,21 +37,7 @@ function rootReducer(state = initialState, action: UpdateWalletAction) {
         ...state,
         tempTxId: action.payload.tempTxId,
       };
-    case UPDATE_TRANSACTION_PAD_BALANCE:
-      return {
-        ...state,
-        transactionPadBalance: action.payload.transactionPadBalance,
-      };
-    case UPDATE_TRANSACTION_PAD_STATE:
-      return {
-        ...state,
-        transactionPadState: action.payload.transactionPadState,
-      };
-    case UPDATE_TRANSACTION_PAD_ERROR:
-      return {
-        ...state,
-        transactionPadError: action.payload.transactionPadError,
-      };
+
     default:
       return state;
   }
@@ -68,6 +45,7 @@ function rootReducer(state = initialState, action: UpdateWalletAction) {
 
 const mergedReducer = combineReducers({
   root: rootReducer,
+  transactionPad: transactionPadReducer,
   settings: settingsReducer,
 });
 

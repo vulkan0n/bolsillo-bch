@@ -7,10 +7,6 @@ const initialState = {
     sat: "0",
   },
   tempTxId: "",
-  // Locally relevant stuff
-  transactionPadBalance: "0",
-  transactionPadState: "",
-  transactionPadError: "",
   // Exchange Rates
   bchUsdPrice: "141.16",
 };

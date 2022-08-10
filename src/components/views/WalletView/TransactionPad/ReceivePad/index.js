@@ -4,12 +4,13 @@ import { connect } from "react-redux";
 import styles from "./styles";
 import Button from "../../../../atoms/Button";
 import Toast from "react-native-toast-message";
-import ACTION_TYPES from "../../../../../redux/actionTypes";
 import TYPOGRAPHY from "../../../../../design/typography";
 import QRCode from "react-qr-code";
+import { useDispatch } from "react-redux";
+import { updateTransactionPadView } from "../../../../../redux/reducers/transactionPadReducer";
 
-const ReceivePad = ({ wallet, dispatch }) => {
-  console.log({ wallet });
+const ReceivePad = ({ wallet }) => {
+  const dispatch = useDispatch();
 
   const onPressShare = () => {
     Toast.show({
@@ -22,12 +23,11 @@ const ReceivePad = ({ wallet, dispatch }) => {
   };
 
   const onPressBack = () => {
-    dispatch({
-      type: ACTION_TYPES.UPDATE_TRANSACTION_PAD_STATE,
-      payload: {
-        transactionPadState: "",
-      },
-    });
+    dispatch(
+      updateTransactionPadView({
+        view: "",
+      })
+    );
   };
 
   return (
@@ -54,6 +54,4 @@ const ReceivePad = ({ wallet, dispatch }) => {
 
 const mapStateToProps = ({ root: { wallet } }) => ({ wallet });
 
-const mapDispatchToProps = (dispatch) => ({ dispatch });
-
-export default connect(mapStateToProps, mapDispatchToProps)(ReceivePad);
+export default connect(mapStateToProps)(ReceivePad);

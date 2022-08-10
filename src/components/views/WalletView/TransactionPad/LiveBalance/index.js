@@ -6,6 +6,7 @@ import TYPOGRAPHY from "../../../../../design/typography";
 import { displaySats, displaySatsAsUsd } from "../../../../../utils/formatting";
 import ACTION_TYPES from "../../../../../redux/actionTypes";
 
+
 const DisplayedBalance = ({
   transactionPadBalance,
   transactionPadError,

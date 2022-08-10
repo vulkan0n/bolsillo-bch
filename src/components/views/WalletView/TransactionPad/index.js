@@ -1,14 +1,16 @@
 import React from "react";
 import { View } from "react-native";
-import { connect } from "react-redux";
 import styles from "./styles";
 import NumPad from "./NumPad";
 import ReceivePad from "./ReceivePad";
 import LiveBalance from "./LiveBalance";
+import { useSelector } from "react-redux";
 
-const TransactionPad = ({ transactionPadState, emit }) => {
+const TransactionPad = ({ emit }) => {
+  const { view } = useSelector((state) => state.transactionPad);
+
   const component = () => {
-    switch (transactionPadState) {
+    switch (view) {
       case "Receive":
         return <ReceivePad emit={emit} />;
       case "":
@@ -25,8 +27,5 @@ const TransactionPad = ({ transactionPadState, emit }) => {
     </View>
   );
 };
-const mapStateToProps = ({ transactionPadState }) => ({
-  transactionPadState,
-});
 
-export default connect(mapStateToProps)(TransactionPad);
+export default TransactionPad;
