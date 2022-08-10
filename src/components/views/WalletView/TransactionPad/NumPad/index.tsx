@@ -93,8 +93,8 @@ const NumPad = ({ emit }: Props) => {
       data: {
         mnemonic: wallet?.mnemonic,
         derivationPath: wallet?.derivationPath,
-        recipientCashAddr: testNetFaucet,
-        satsToSend: "1599",
+        recipientCashAddr: receivingAddress,
+        satsToSend: isTestNet ? "1099" : "10599",
         isTestNet,
       },
     });

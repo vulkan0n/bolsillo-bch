@@ -67,6 +67,8 @@ function WalletView({ route, navigation }) {
       return;
     }
 
+    console.log("sent tx id!!");
+    console.log({ tempTxId });
     navigation.reset({
       index: 0,
       routes: [{ name: "Transaction Success" }],
