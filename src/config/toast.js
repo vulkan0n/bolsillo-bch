@@ -23,7 +23,7 @@ const toastConfig = {
       }}
     >
       <Text style={TYPOGRAPHY.h2}>{title}</Text>
-      <Text style={TYPOGRAPHY.pWhite as any}>{text}</Text>
+      <Text style={TYPOGRAPHY.pWhite}>{text}</Text>
     </View>
   ),
   customError: ({ props: { title, text }, ...props }) => (
@@ -44,7 +44,7 @@ const toastConfig = {
       }}
     >
       <Text style={TYPOGRAPHY.h2}>{title}</Text>
-      <Text style={TYPOGRAPHY.pWhite as any}>{text}</Text>
+      <Text style={TYPOGRAPHY.pWhite}>{text}</Text>
     </View>
   ),
 };
