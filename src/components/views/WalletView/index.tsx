@@ -29,7 +29,7 @@ function WalletView({ route, navigation }) {
     });
 
   useEffect(() => {
-    if (!wallet) {
+    if (!wallet?.mnemonic) {
       emit({ type: BRIDGE_MESSAGE_TYPES.CREATE_WALLET, data: { isTestNet } });
     }
   }, []);
@@ -40,7 +40,7 @@ function WalletView({ route, navigation }) {
     }
 
     requestBalance();
-  }, [wallet]);
+  }, [wallet, wallet?.mnemonic, wallet?.cashaddr]);
 
   useEffect(() => {
     if (!tempTxId) {

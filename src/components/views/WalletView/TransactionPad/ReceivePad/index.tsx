@@ -14,6 +14,8 @@ const ReceivePad = () => {
   const dispatch = useDispatch();
   const { wallet } = useSelector((state: ReduxState) => state.bridge);
 
+  console.log({ wallet });
+
   const onPressShare = () => {
     Toast.show({
       type: "customError",
