@@ -9,10 +9,11 @@ import COLOURS from "../../../../design/colours";
 import Toast from "react-native-toast-message";
 import { BRIDGE_MESSAGE_TYPES } from "../../../../utils/bridgeMessages";
 import { useSelector } from "react-redux";
+import { ReduxState } from "../../../../redux/rootReducer";
 
 const ResetWalletView = ({ navigation, route }) => {
   const { emit } = route?.params;
-  const { isTestNet } = useSelector((state) => state.settings);
+  const { isTestNet } = useSelector((state: ReduxState) => state.settings);
 
   const onResetWallet = () => {
     emit({

@@ -8,11 +8,14 @@ import {
   toggleIsTestNet,
 } from "../../../../redux/reducers/settingsReducer";
 import { useSelector, useDispatch } from "react-redux";
+import { ReduxState } from "../../../../redux/rootReducer";
 
 const SettingsView = () => {
   const dispatch = useDispatch();
-  const { isCryptoDenominated } = useSelector((state) => state.settings);
-  const { isTestNet } = useSelector((state) => state.settings);
+  const { isCryptoDenominated } = useSelector(
+    (state: ReduxState) => state.settings
+  );
+  const { isTestNet } = useSelector((state: ReduxState) => state.settings);
 
   const handleToggleIsCryptoDenominated = () => {
     dispatch(toggleIsCryptoDenominated());
