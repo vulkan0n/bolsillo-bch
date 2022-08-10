@@ -4,19 +4,18 @@ import TYPOGRAPHY from "../../../../design/typography";
 import styles from "./styles";
 import COLOURS from "../../../../design/colours";
 import { connect } from "react-redux";
-import ACTION_TYPES from "../../../../redux/actionTypes";
+import {
+  toggleIsCryptoDenominated,
+  toggleIsTestNet,
+} from "../../../../redux/settingsReducer";
 
 function SettingsView({ isCryptoDenominated, isTestNet, dispatch }) {
-  const toggleIsCryptoDenominated = () => {
-    dispatch({
-      type: ACTION_TYPES.TOGGLE_IS_CRYPTO_DENOMINATED,
-    });
+  const handleToggleIsCryptoDenominated = () => {
+    dispatch(toggleIsCryptoDenominated());
   };
 
-  const toggleIsTestNet = () => {
-    dispatch({
-      type: ACTION_TYPES.TOGGLE_IS_TEST_NET,
-    });
+  const handleToggleIsTestNet = () => {
+    dispatch(toggleIsTestNet());
   };
 
   return (
@@ -42,7 +41,7 @@ function SettingsView({ isCryptoDenominated, isTestNet, dispatch }) {
             trackColor={{ true: COLOURS.bchGreen, false: COLOURS.white }}
             thumbColor={isCryptoDenominated ? COLOURS.white : COLOURS.black}
             ios_backgroundColor={COLOURS.lightGrey}
-            onValueChange={toggleIsCryptoDenominated}
+            onValueChange={handleToggleIsCryptoDenominated}
             value={isCryptoDenominated}
           />
         </View>
@@ -67,7 +66,7 @@ function SettingsView({ isCryptoDenominated, isTestNet, dispatch }) {
             trackColor={{ true: COLOURS.bchGreen, false: COLOURS.white }}
             thumbColor={isTestNet ? COLOURS.white : COLOURS.black}
             ios_backgroundColor={COLOURS.lightGrey}
-            onValueChange={toggleIsTestNet}
+            onValueChange={handleToggleIsTestNet}
             value={isTestNet}
           />
         </View>
