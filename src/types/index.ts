@@ -13,4 +13,5 @@ export interface ReduxState {
 export interface WalletType {
   mnemonic: string;
   derivationPath: string;
+  cashaddr: string;
 }

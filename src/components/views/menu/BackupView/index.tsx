@@ -1,14 +1,16 @@
 import React, { useState } from "react";
 import { View, Text, Pressable } from "react-native";
-import { connect } from "react-redux";
+import { useSelector } from "react-redux";
 import Button from "../../../atoms/Button";
 import TYPOGRAPHY from "../../../../design/typography";
 import styles from "./styles";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faPiggyBank } from "@fortawesome/free-solid-svg-icons/faPiggyBank";
 import COLOURS from "../../../../design/colours";
+import { ReduxState } from "../../../../types";
 
-function BackupView({ wallet, navigation }) {
+function BackupView({ navigation }) {
+  const { wallet } = useSelector((state: ReduxState) => state.bridge);
   const [isMnemonicVisible, setIsMnemonicVisible] = useState(false);
 
   const toggleIsMnemonicVisible = () => {
@@ -65,6 +67,4 @@ function BackupView({ wallet, navigation }) {
   );
 }
 
-const mapStateToProps = ({ root: { wallet } }) => ({ wallet });
-
-export default connect(mapStateToProps)(BackupView);
+export default BackupView;

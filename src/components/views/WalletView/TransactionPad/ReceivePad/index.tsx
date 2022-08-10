@@ -1,6 +1,6 @@
 import React from "react";
-import { View, Text, Pressable } from "react-native";
-import { connect } from "react-redux";
+import { View, Text } from "react-native";
+import { useSelector } from "react-redux";
 import styles from "./styles";
 import Button from "../../../../atoms/Button";
 import Toast from "react-native-toast-message";
@@ -8,9 +8,11 @@ import TYPOGRAPHY from "../../../../../design/typography";
 import QRCode from "react-qr-code";
 import { useDispatch } from "react-redux";
 import { updateTransactionPadView } from "../../../../../redux/reducers/transactionPadReducer";
+import { ReduxState } from "../../../../../types";
 
-const ReceivePad = ({ wallet }) => {
+const ReceivePad = () => {
   const dispatch = useDispatch();
+  const { wallet } = useSelector((state: ReduxState) => state.bridge);
 
   const onPressShare = () => {
     Toast.show({
@@ -52,6 +54,4 @@ const ReceivePad = ({ wallet }) => {
   );
 };
 
-const mapStateToProps = ({ root: { wallet } }) => ({ wallet });
-
-export default connect(mapStateToProps)(ReceivePad);
+export default ReceivePad;

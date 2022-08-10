@@ -1,6 +1,5 @@
 import React from "react";
 import { View, Text, Pressable } from "react-native";
-import { connect } from "react-redux";
 import styles from "./styles";
 import Button from "../../../../atoms/Button";
 import TYPOGRAPHY from "../../../../../design/typography";
@@ -11,20 +10,16 @@ import {
   updateTransactionPadView,
   updateTransactionPadError,
 } from "../../../../../redux/reducers/transactionPadReducer";
-import { ReduxState, WalletType } from "../../../../../types";
+import { ReduxState } from "../../../../../types";
 
 interface Props {
-  wallet: WalletType;
-  balance: {
-    usd: string;
-    sat: string;
-    bch: string;
-  };
   emit: ({}) => {};
 }
 
-const NumPad = ({ wallet, balance, emit }: Props) => {
+const NumPad = ({ emit }: Props) => {
   const dispatch = useDispatch();
+  const { wallet } = useSelector((state: ReduxState) => state.bridge);
+  const { balance } = useSelector((state: ReduxState) => state.bridge);
   const { isTestNet } = useSelector((state: ReduxState) => state.settings);
   const { padBalance } = useSelector(
     (state: ReduxState) => state.transactionPad
@@ -161,9 +156,4 @@ const NumPad = ({ wallet, balance, emit }: Props) => {
   );
 };
 
-const mapStateToProps = ({ root: { wallet, balance } }) => ({
-  wallet,
-  balance,
-});
-
-export default connect(mapStateToProps)(NumPad);
+export default NumPad;
