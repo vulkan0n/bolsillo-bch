@@ -25,6 +25,7 @@ import {
   updateBridgeTempTxId,
   updateBridgeWallet,
 } from "./src/redux/reducers/bridgeReducer";
+import { WalletType } from "./src/types";
 
 export default function App() {
   // For the list of possible font faces
@@ -40,7 +41,7 @@ export default function App() {
   interface BridgeResponseMessage {
     type: string;
     data: {
-      wallet?: {};
+      wallet?: WalletType;
       balance?: string;
       tempTxId?: string;
       title?: string;
@@ -97,9 +98,8 @@ export default function App() {
     }
   );
 
-  DeviceEventEmitter.addListener("event.emitEvent", (event) => {
-    emit(event);
-  });
+  // Listens for components that need to send a message to the Bridge
+  DeviceEventEmitter.addListener("event.emitEvent", (event) => emit(event));
 
   if (!fontsLoaded) {
     return null;
