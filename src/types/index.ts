@@ -9,5 +9,5 @@ export interface ReduxState {
 
 export interface WalletType {
   mnemonic: string;
-  derivativePath: string;
+  derivationPath: string;
 }

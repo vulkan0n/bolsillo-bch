@@ -5,17 +5,16 @@ import styles from "./styles";
 import Button from "../../../../atoms/Button";
 import TYPOGRAPHY from "../../../../../design/typography";
 import { BRIDGE_MESSAGE_TYPES } from "../../../../../utils/bridgeMessages";
-import ACTION_TYPES from "../../../../../redux/actionTypes";
 import { useSelector, useDispatch } from "react-redux";
 import {
   updateTransactionPadBalance,
   updateTransactionPadView,
   updateTransactionPadError,
 } from "../../../../../redux/reducers/transactionPadReducer";
-import { ReduxState } from "../../../../../types";
+import { ReduxState, WalletType } from "../../../../../types";
 
 interface Props {
-  wallet: {};
+  wallet: WalletType;
   balance: {
     usd: string;
     sat: string;
