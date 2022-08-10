@@ -7,8 +7,6 @@ const initialState = {
     sat: "0",
   },
   tempTxId: "",
-  // Exchange Rates
-  bchUsdPrice: "141.16",
 };
 
 export default initialState;

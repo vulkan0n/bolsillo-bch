@@ -1,8 +1,9 @@
 import { combineReducers } from "redux";
 import initialState from "./initialState";
 import ACTION_TYPES from "./actionTypes";
-import settingsReducer from "./reducers/settingsReducer";
 import transactionPadReducer from "./reducers/transactionPadReducer";
+import exchangeRatesReducer from "./reducers/exchangeRatesReducer";
+import settingsReducer from "./reducers/settingsReducer";
 import { WalletType } from "../types";
 
 const { UDPATE_WALLET, UPDATE_BALANCE, UPDATE_TEMP_TXID } = ACTION_TYPES;
@@ -43,6 +44,7 @@ function rootReducer(state = initialState, action: UpdateWalletAction) {
 const mergedReducer = combineReducers({
   root: rootReducer,
   transactionPad: transactionPadReducer,
+  exchangeRates: exchangeRatesReducer,
   settings: settingsReducer,
 });
 
