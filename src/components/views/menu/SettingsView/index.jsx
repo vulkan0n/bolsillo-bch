@@ -1,15 +1,19 @@
-import React, { useState } from "react";
+import React from "react";
 import { View, Image, Text, Switch } from "react-native";
 import TYPOGRAPHY from "../../../../design/typography";
 import styles from "./styles";
 import COLOURS from "../../../../design/colours";
-import { connect } from "react-redux";
 import {
   toggleIsCryptoDenominated,
   toggleIsTestNet,
 } from "../../../../redux/reducers/settingsReducer";
+import { useSelector, useDispatch } from "react-redux";
 
-function SettingsView({ isCryptoDenominated, isTestNet, dispatch }) {
+function SettingsView() {
+  const dispatch = useDispatch();
+  const { isCryptoDenominated } = useSelector((state) => state.settings);
+  const { isTestNet } = useSelector((state) => state.settings);
+
   const handleToggleIsCryptoDenominated = () => {
     dispatch(toggleIsCryptoDenominated());
   };
@@ -79,11 +83,4 @@ function SettingsView({ isCryptoDenominated, isTestNet, dispatch }) {
   );
 }
 
-const mapStateToProps = ({ settings: { isCryptoDenominated, isTestNet } }) => ({
-  isCryptoDenominated,
-  isTestNet,
-});
-
-const mapDispatchToProps = (dispatch) => ({ dispatch });
-
-export default connect(mapStateToProps, mapDispatchToProps)(SettingsView);
+export default SettingsView;
