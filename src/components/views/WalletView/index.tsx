@@ -1,24 +1,16 @@
 import React, { useEffect } from "react";
 import { View, Text, Pressable, Image } from "react-native";
-import { connect } from "react-redux";
+import { connect, useSelector } from "react-redux";
 import TransactionPad from "./TransactionPad";
 import TYPOGRAPHY from "../../../design/typography";
 import styles from "./styles";
 import { BRIDGE_MESSAGE_TYPES } from "../../../utils/bridgeMessages";
 import { displaySats, displaySatsAsUsd } from "../../../utils/formatting";
 
-function WalletView({
-  wallet,
-  balance,
-  tempTxId,
-  isCryptoDenominated,
-  isTestNet,
-  route,
-  navigation,
-}) {
+function WalletView({ wallet, balance, tempTxId, route, navigation }) {
   const { emit } = route.params;
-
-  console.log("in WalletView", { isTestNet });
+  const { isTestNet } = useSelector((state) => state.settings);
+  const { isCryptoDenominated } = useSelector((state) => state.settings);
 
   const requestBalance = () =>
     emit({
@@ -91,21 +83,10 @@ function WalletView({
   );
 }
 
-const mapStateToProps = (state) => {
-  // console.log({ state });
-  console.log("state.settings: ", state.settings);
-  return {};
-};
-
-// const mapStateToProps = ({
-//   root: { wallet, balance, tempTxId },
-//   settings: { isCryptoDenominated, isTestNet },
-// }) => ({
-//   wallet,
-//   balance,
-//   tempTxId,
-//   isCryptoDenominated,
-//   isTestNet,
-// });
+const mapStateToProps = ({ root: { wallet, balance, tempTxId } }) => ({
+  wallet,
+  balance,
+  tempTxId,
+});
 
 export default connect(mapStateToProps)(WalletView);
