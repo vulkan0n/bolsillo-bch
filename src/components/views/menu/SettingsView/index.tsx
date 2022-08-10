@@ -9,7 +9,7 @@ import {
 } from "../../../../redux/reducers/settingsReducer";
 import { useSelector, useDispatch } from "react-redux";
 
-function SettingsView() {
+const SettingsView = () => {
   const dispatch = useDispatch();
   const { isCryptoDenominated } = useSelector((state) => state.settings);
   const { isTestNet } = useSelector((state) => state.settings);
@@ -81,6 +81,6 @@ function SettingsView() {
       />
     </View>
   );
-}
+};
 
 export default SettingsView;

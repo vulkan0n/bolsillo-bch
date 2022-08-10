@@ -1,6 +1,5 @@
 import React from "react";
 import { View, Text } from "react-native";
-import { connect } from "react-redux";
 import Button from "../../../atoms/Button";
 import TYPOGRAPHY from "../../../../design/typography";
 import styles from "./styles";
@@ -9,9 +8,11 @@ import { faPiggyBank } from "@fortawesome/free-solid-svg-icons/faPiggyBank";
 import COLOURS from "../../../../design/colours";
 import Toast from "react-native-toast-message";
 import { BRIDGE_MESSAGE_TYPES } from "../../../../utils/bridgeMessages";
+import { useSelector } from "react-redux";
 
-function ResetWalletView({ isTestNet, navigation, route }) {
+const ResetWalletView = ({ navigation, route }) => {
   const { emit } = route?.params;
+  const { isTestNet } = useSelector((state) => state.settings);
 
   const onResetWallet = () => {
     emit({
@@ -47,8 +48,6 @@ function ResetWalletView({ isTestNet, navigation, route }) {
       <Button onPress={onResetWallet}>Create new wallet</Button>
     </View>
   );
-}
+};
 
-const mapStateToProps = ({ settings: { isTestNet } }) => ({ isTestNet });
-
-export default connect(mapStateToProps)(ResetWalletView);
+export default ResetWalletView;

@@ -2,14 +2,16 @@ import React, { useEffect } from "react";
 import { View, Text } from "react-native";
 import TYPOGRAPHY from "../../../design/typography";
 import styles from "./styles";
-import { connect } from "react-redux";
 import ACTION_TYPES from "../../../redux/actionTypes";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faCircleCheck } from "@fortawesome/free-solid-svg-icons/faCircleCheck";
 import COLOURS from "../../../design/colours";
 import { MotiView } from "moti";
+import { useDispatch } from "react-redux";
 
-function TransactionSuccessView({ tempTxId, navigation, dispatch }) {
+function TransactionSuccessView({ navigation }) {
+  const dispatch = useDispatch();
+
   useEffect(() => {
     setTimeout(() => {
       dispatch({
@@ -43,17 +45,9 @@ function TransactionSuccessView({ tempTxId, navigation, dispatch }) {
         <View style={styles.textWrapper}>
           <Text style={TYPOGRAPHY.h1}>Sent!</Text>
         </View>
-        {/* <Text style={TYPOGRAPHY.h1}>{tempTxId}</Text> */}
       </MotiView>
     </View>
   );
 }
 
-const mapStateToProps = ({ root: { tempTxId } }) => ({ tempTxId });
-
-const mapDispatchToProps = (dispatch) => ({ dispatch });
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(TransactionSuccessView);
+export default TransactionSuccessView;

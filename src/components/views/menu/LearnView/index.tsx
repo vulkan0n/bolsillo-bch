@@ -3,7 +3,7 @@ import { View, Image, Text } from "react-native";
 import TYPOGRAPHY from "../../../../design/typography";
 import styles from "./styles";
 
-function LearnView() {
+const LearnView = () => {
   return (
     <View style={styles.container}>
       <Image
@@ -13,6 +13,6 @@ function LearnView() {
       <Text style={TYPOGRAPHY.h1}>Learn</Text>
     </View>
   );
-}
+};
 
 export default LearnView;
