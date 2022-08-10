@@ -1,33 +1,30 @@
 import React, { useEffect } from "react";
 import { View, Text } from "react-native";
-import { connect } from "react-redux";
 import styles from "./styles";
 import TYPOGRAPHY from "../../../../../design/typography";
 import { displaySats, displaySatsAsUsd } from "../../../../../utils/formatting";
-import ACTION_TYPES from "../../../../../redux/actionTypes";
+import { useDispatch, useSelector } from "react-redux";
+import { updateTransactionPadError } from "../../../../../redux/reducers/transactionPadReducer";
 
-
-const DisplayedBalance = ({
-  transactionPadBalance,
-  transactionPadError,
-  isCryptoDenominated,
-  dispatch,
-}) => {
-  const satBalance = displaySats(transactionPadBalance);
-  const usdBalance = displaySatsAsUsd(transactionPadBalance);
+const DisplayedBalance = () => {
+  const dispatch = useDispatch();
+  const { padBalance } = useSelector((state) => state.transactionPad);
+  const { error } = useSelector((state) => state.transactionPad);
+  const { isCryptoDenominated } = useSelector((state) => state.settings);
+  const satBalance = displaySats(padBalance);
+  const usdBalance = displaySatsAsUsd(padBalance);
 
   useEffect(() => {
     setTimeout(() => {
-      if (transactionPadError) {
-        dispatch({
-          type: ACTION_TYPES.UPDATE_TRANSACTION_PAD_ERROR,
-          payload: {
-            transactionPadError: "",
-          },
-        });
+      if (error) {
+        dispatch(
+          updateTransactionPadError({
+            error: "",
+          })
+        );
       }
     }, 2000);
-  }, [transactionPadError]);
+  }, [error]);
 
   return (
     <View style={styles.secondaryTitlesWrapper}>
@@ -37,22 +34,9 @@ const DisplayedBalance = ({
       <Text style={TYPOGRAPHY.h2black}>
         {isCryptoDenominated ? usdBalance : satBalance}
       </Text>
-      {!!transactionPadError && (
-        <Text style={styles.padError}>{transactionPadError}</Text>
-      )}
+      {!!error && <Text style={styles.padError}>{error}</Text>}
     </View>
   );
 };
 
-const mapStateToProps = ({
-  root: { transactionPadBalance, transactionPadError },
-  settings: { isCryptoDenominated },
-}) => ({
-  transactionPadBalance,
-  transactionPadError,
-  isCryptoDenominated,
-});
-
-const mapDispatchToProps = (dispatch) => ({ dispatch });
-
-export default connect(mapStateToProps, mapDispatchToProps)(DisplayedBalance);
+export default DisplayedBalance;
