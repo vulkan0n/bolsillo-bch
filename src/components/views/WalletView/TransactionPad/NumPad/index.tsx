@@ -12,11 +12,14 @@ import {
   updateTransactionPadView,
   updateTransactionPadError,
 } from "../../../../../redux/reducers/transactionPadReducer";
+import { ReduxState } from "../../../../../redux/rootReducer";
 
 const NumPad = ({ wallet, balance, emit }) => {
   const dispatch = useDispatch();
-  const { isTestNet } = useSelector((state) => state.settings);
-  const { padBalance } = useSelector((state) => state.transactionPad);
+  const { isTestNet } = useSelector((state: ReduxState) => state.settings);
+  const { padBalance } = useSelector(
+    (state: ReduxState) => state.transactionPad
+  );
   const isSatoshiDenominated = true;
   const availableBalance = balance?.sat;
 

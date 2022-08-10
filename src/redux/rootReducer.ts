@@ -1,10 +1,17 @@
 import { combineReducers } from "redux";
 import initialState from "./initialState";
 import ACTION_TYPES from "./actionTypes";
-import settingsReducer from "./reducers/settingsReducer";
-import transactionPadReducer from "./reducers/transactionPadReducer";
+import settingsReducer, { SettingsState } from "./reducers/settingsReducer";
+import transactionPadReducer, {
+  TransactionPadState,
+} from "./reducers/transactionPadReducer";
 
 const { UDPATE_WALLET, UPDATE_BALANCE, UPDATE_TEMP_TXID } = ACTION_TYPES;
+
+export interface ReduxState {
+  transactionPad: TransactionPadState;
+  settings: SettingsState;
+}
 
 interface WalletType {
   mnemonic: string;

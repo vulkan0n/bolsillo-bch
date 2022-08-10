@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-interface SettingsState {
+export interface SettingsState {
   isCryptoDenominated: boolean;
   isTestNet: boolean;
 }

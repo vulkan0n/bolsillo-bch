@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-interface TransactionPadState {
+export interface TransactionPadState {
   padBalance: string;
   view: "" | "Receive";
   error: string;
