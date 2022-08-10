@@ -38,12 +38,17 @@ const Bridge = () => {
           break;
 
         case BRIDGE_MESSAGE_TYPES.REFRESH_WALLET:
-          const walletRefreshWallet = await WalletObject.fromSeed(
-            message?.data?.mnemonic,
-            message?.data?.derivationPath
-          );
+          // const walletRefreshWallet = await WalletObject.fromSeed(
+          //   message?.data?.mnemonic,
+          //   message?.data?.derivationPath
+          // );
 
-          console.log("Refreshed Wallet!");
+          // console.log("Refreshed Wallet!");
+          // console.log({ walletRefreshWallet });
+
+          // const walletRefreshWallet = await WalletObject.newRandom();
+
+          console.log("Created/Refreshed!! Wallet!");
           console.log({ walletRefreshWallet });
 
           emit({
