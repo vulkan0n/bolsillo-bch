@@ -1,6 +1,6 @@
 import initialState from "./initialState";
 import ACTION_TYPES from "./actionTypes";
-import settingsReducer from "./settingsReducer";
+import settingsReducer from "./reducers/settingsReducer";
 import { combineReducers } from "redux";
 
 const {

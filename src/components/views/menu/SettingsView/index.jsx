@@ -7,7 +7,7 @@ import { connect } from "react-redux";
 import {
   toggleIsCryptoDenominated,
   toggleIsTestNet,
-} from "../../../../redux/settingsReducer";
+} from "../../../../redux/reducers/settingsReducer";
 
 function SettingsView({ isCryptoDenominated, isTestNet, dispatch }) {
   const handleToggleIsCryptoDenominated = () => {
