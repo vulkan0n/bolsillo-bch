@@ -1,5 +1,5 @@
-import React from "react";
-import { View, Text } from "react-native";
+import React, { useEffect } from "react";
+import { View, Text, DeviceEventEmitter } from "react-native";
 import Button from "../../../atoms/Button";
 import TYPOGRAPHY from "../../../../design/typography";
 import styles from "./styles";
@@ -9,11 +9,19 @@ import COLOURS from "../../../../design/colours";
 import Toast from "react-native-toast-message";
 import { BRIDGE_MESSAGE_TYPES } from "../../../../utils/bridgeMessages";
 import { useSelector } from "react-redux";
-import { ReduxState } from "../../../../types";
+import { EmitEvent, ReduxState } from "../../../../types";
 
 const ResetWalletView = ({ navigation, route }) => {
-  const { emit } = route?.params;
   const { isTestNet } = useSelector((state: ReduxState) => state.settings);
+
+  const emit = (event: EmitEvent) =>
+    DeviceEventEmitter.emit("event.emitEvent", event);
+
+  useEffect(() => {
+    return () => {
+      DeviceEventEmitter.removeAllListeners("event.emitEvent");
+    };
+  }, []);
 
   const onResetWallet = () => {
     emit({

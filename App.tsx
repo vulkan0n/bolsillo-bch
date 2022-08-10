@@ -97,8 +97,8 @@ export default function App() {
     }
   );
 
-  DeviceEventEmitter.addListener("event.emitEvent", ({ eventData }) => {
-    emit(eventData);
+  DeviceEventEmitter.addListener("event.emitEvent", (event) => {
+    emit(event);
   });
 
   if (!fontsLoaded) {

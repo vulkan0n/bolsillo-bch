@@ -17,8 +17,8 @@ function WalletView({ route, navigation }) {
     (state: ReduxState) => state.settings
   );
 
-  const emit = (eventData: EmitEvent) =>
-    DeviceEventEmitter.emit("event.emitEvent", { eventData });
+  const emit = (event: EmitEvent) =>
+    DeviceEventEmitter.emit("event.emitEvent", event);
 
   useEffect(() => {
     return () => {
