@@ -6,7 +6,7 @@ import TYPOGRAPHY from "../../../design/typography";
 import styles from "./styles";
 import { BRIDGE_MESSAGE_TYPES } from "../../../utils/bridgeMessages";
 import { displaySats, displaySatsAsUsd } from "../../../utils/formatting";
-import { ReduxState } from "../../../redux/rootReducer";
+import { ReduxState } from "../../../types";
 
 function WalletView({ wallet, balance, tempTxId, route, navigation }) {
   const { emit } = route.params;
