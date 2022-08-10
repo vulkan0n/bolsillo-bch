@@ -21,7 +21,7 @@ $ npx tsc # type check
 
 ## Bridge
 
-In order to run mainnet.cash and other browser JS libraries through React Native, a hacky WebView with the mainnet script `eval`d as a `<script>` tag is implemented. State is all stored on the React Native side (in persisted Redux), and it communicates to the mainnet.cash library through the "Bridge" like it was an external API by using the "emit" method to send messages back and forth.
+In order to run mainnet.cash and other browser JS libraries through React Native, a hacky WebView with the mainnet script `eval`d as a `<script>` tag is implemented. State is all stored on the React Native side (in persisted Redux), and it communicates to the mainnet.cash library through the "Bridge" like it was an external API by using the DeviceEventMitter to send "emitEvent" methods from components, then forwarded from `App.tsx`, to send messages back and forth.
 
 Note that this has some limitations, as WebView browser doesn't have access to everything a regular browser does.
 
