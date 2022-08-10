@@ -2,24 +2,23 @@ import React, { useEffect } from "react";
 import { View, Text } from "react-native";
 import TYPOGRAPHY from "../../../design/typography";
 import styles from "./styles";
-import ACTION_TYPES from "../../../redux/actionTypes";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faCircleCheck } from "@fortawesome/free-solid-svg-icons/faCircleCheck";
 import COLOURS from "../../../design/colours";
 import { MotiView } from "moti";
 import { useDispatch } from "react-redux";
+import { updateBridgeTempTxId } from "../../../redux/reducers/bridgeReducer";
 
 function TransactionSuccessView({ navigation }) {
   const dispatch = useDispatch();
 
   useEffect(() => {
     setTimeout(() => {
-      dispatch({
-        type: ACTION_TYPES.UPDATE_TEMP_TXID,
-        payload: {
+      dispatch(
+        updateBridgeTempTxId({
           tempTxId: "",
-        },
-      });
+        })
+      );
 
       navigation.reset({
         index: 0,

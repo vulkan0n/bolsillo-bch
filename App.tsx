@@ -17,10 +17,14 @@ import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 import store from "./src/redux/store";
 import persistor from "./src/redux/persistor";
-import ACTION_TYPES from "./src/redux/actionTypes";
 import Toast from "react-native-toast-message";
 import toastConfig from "./src/config/toast";
 import preloadMainNetScript from "./src/config/preloadMainNetScript";
+import {
+  updateBridgeBalance,
+  updateBridgeTempTxId,
+  updateBridgeWallet,
+} from "./src/redux/reducers/bridgeReducer";
 
 export default function App() {
   // For the list of possible font faces
@@ -51,37 +55,23 @@ export default function App() {
       // console.log("Bridge Response Message: ", message);
       switch (message.type) {
         case RESPONSE_MESSAGE_TYPES.CREATE_WALLET_RESPONSE:
-          store.dispatch({
-            type: ACTION_TYPES.UDPATE_WALLET,
-            payload: {
-              wallet: message.data.wallet,
-            },
-          });
+          store.dispatch(updateBridgeWallet({ wallet: message.data.wallet }));
           break;
 
         case RESPONSE_MESSAGE_TYPES.REQUEST_BALANCE_RESPONSE:
-          store.dispatch({
-            type: ACTION_TYPES.UPDATE_BALANCE,
-            payload: {
-              balance: message.data.balance,
-            },
-          });
+          store.dispatch(
+            updateBridgeBalance({ balance: message.data.balance })
+          );
           console.log({ message });
           break;
 
         case RESPONSE_MESSAGE_TYPES.SEND_COINS_RESPONSE:
-          store.dispatch({
-            type: ACTION_TYPES.UPDATE_BALANCE,
-            payload: {
-              balance: message.data.balance,
-            },
-          });
-          store.dispatch({
-            type: ACTION_TYPES.UPDATE_TEMP_TXID,
-            payload: {
-              tempTxId: message.data.tempTxId,
-            },
-          });
+          store.dispatch(
+            updateBridgeBalance({ balance: message.data.balance })
+          );
+          store.dispatch(
+            updateBridgeTempTxId({ tempTxId: message.data.tempTxId })
+          );
           break;
 
         case RESPONSE_MESSAGE_TYPES.ERROR:
