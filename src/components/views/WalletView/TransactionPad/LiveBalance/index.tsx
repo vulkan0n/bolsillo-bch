@@ -5,7 +5,7 @@ import TYPOGRAPHY from "../../../../../design/typography";
 import { displaySats, displaySatsAsUsd } from "../../../../../utils/formatting";
 import { useDispatch, useSelector } from "react-redux";
 import { updateTransactionPadError } from "../../../../../redux/reducers/transactionPadReducer";
-import { ReduxState } from "../../../../../redux/rootReducer";
+import { ReduxState } from "../../../../../types";
 
 const DisplayedBalance = () => {
   const dispatch = useDispatch();

@@ -12,9 +12,19 @@ import {
   updateTransactionPadView,
   updateTransactionPadError,
 } from "../../../../../redux/reducers/transactionPadReducer";
-import { ReduxState } from "../../../../../redux/rootReducer";
+import { ReduxState } from "../../../../../types";
 
-const NumPad = ({ wallet, balance, emit }) => {
+interface Props {
+  wallet: {};
+  balance: {
+    usd: string;
+    sat: string;
+    bch: string;
+  };
+  emit: ({}) => {};
+}
+
+const NumPad = ({ wallet, balance, emit }: Props) => {
   const dispatch = useDispatch();
   const { isTestNet } = useSelector((state: ReduxState) => state.settings);
   const { padBalance } = useSelector(

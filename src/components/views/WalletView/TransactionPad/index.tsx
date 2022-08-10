@@ -5,7 +5,7 @@ import NumPad from "./NumPad";
 import ReceivePad from "./ReceivePad";
 import LiveBalance from "./LiveBalance";
 import { useSelector } from "react-redux";
-import { ReduxState } from "../../../../redux/rootReducer";
+import { ReduxState } from "../../../../types";
 
 const TransactionPad = ({ emit }) => {
   const { view } = useSelector((state: ReduxState) => state.transactionPad);
@@ -13,7 +13,7 @@ const TransactionPad = ({ emit }) => {
   const component = () => {
     switch (view) {
       case "Receive":
-        return <ReceivePad emit={emit} />;
+        return <ReceivePad />;
       case "":
         return <NumPad emit={emit} />;
       default:

@@ -8,7 +8,7 @@ import {
   toggleIsTestNet,
 } from "../../../../redux/reducers/settingsReducer";
 import { useSelector, useDispatch } from "react-redux";
-import { ReduxState } from "../../../../redux/rootReducer";
+import { ReduxState } from "../../../../types";
 
 const SettingsView = () => {
   const dispatch = useDispatch();
