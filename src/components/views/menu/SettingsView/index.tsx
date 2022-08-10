@@ -23,18 +23,18 @@ const SettingsView = () => {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.optionRow}>
-        <View style={styles.optionText}>
-          <Text style={TYPOGRAPHY.h2Left}>Crypto Denominated</Text>
+    <View style={styles.container as any}>
+      <View style={styles.optionRow as any}>
+        <View>
+          <Text style={TYPOGRAPHY.h2Left as any}>Crypto Denominated</Text>
           {isCryptoDenominated && (
-            <Text style={TYPOGRAPHY.pWhiteLeft}>
+            <Text style={TYPOGRAPHY.pWhiteLeft as any}>
               Display balances in crypto (BCH). Fiat (USD) equivalent displayed
               beneath.
             </Text>
           )}
           {!isCryptoDenominated && (
-            <Text style={TYPOGRAPHY.pWhiteLeft}>
+            <Text style={TYPOGRAPHY.pWhiteLeft as any}>
               Display balances in fiat (USD). Crypto (BCH) equivalent displayed
               beneath.
             </Text>
@@ -50,16 +50,16 @@ const SettingsView = () => {
           />
         </View>
       </View>
-      <View style={styles.optionRow}>
-        <View style={styles.optionText}>
-          <Text style={TYPOGRAPHY.h2Left}>Test Net</Text>
+      <View style={styles.optionRow as any}>
+        <View>
+          <Text style={TYPOGRAPHY.h2Left as any}>Test Net</Text>
           {isTestNet && (
-            <Text style={TYPOGRAPHY.pWhiteLeft}>
+            <Text style={TYPOGRAPHY.pWhiteLeft as any}>
               Connected to the BCH TestNet.
             </Text>
           )}
           {!isTestNet && (
-            <Text style={TYPOGRAPHY.pWhiteLeft}>
+            <Text style={TYPOGRAPHY.pWhiteLeft as any}>
               Currently connected to BCH main network. If you don't know about
               TestNet, don't change this.
             </Text>
