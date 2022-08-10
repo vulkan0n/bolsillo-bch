@@ -13,6 +13,12 @@ $ expo start
 # Note, you need to ensure you have stable wifi to connect through the tunnel
 ```
 
+## Development
+
+```
+$ npx tsc # type check
+```
+
 ## Bridge
 
 In order to run mainnet.cash and other browser JS libraries through React Native, a hacky WebView with the mainnet script `eval`d as a `<script>` tag is implemented. State is all stored on the React Native side (in persisted Redux), and it communicates to the mainnet.cash library through the "Bridge" like it was an external API by using the "emit" method to send messages back and forth.
