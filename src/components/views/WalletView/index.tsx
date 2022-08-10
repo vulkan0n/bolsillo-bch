@@ -86,10 +86,4 @@ function WalletView({ wallet, balance, tempTxId, route, navigation }) {
   );
 }
 
-const mapStateToProps = ({ root: { wallet, balance, tempTxId } }) => ({
-  wallet,
-  balance,
-  tempTxId,
-});
-
 export default connect(mapStateToProps)(WalletView);

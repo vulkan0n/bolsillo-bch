@@ -11,7 +11,7 @@ import {
   REGISTER,
 } from "redux-persist";
 
-import rootReducer from "./rootReducer";
+import rootReducer from "./mergedReducer";
 
 const persistedReducer = persistReducer(
   {
