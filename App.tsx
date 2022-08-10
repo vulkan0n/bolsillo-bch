@@ -33,59 +33,72 @@ export default function App() {
     Montserrat_800ExtraBold,
   });
 
+  interface BridgeResponseMessage {
+    type: string;
+    data: {
+      wallet?: {};
+      balance?: string;
+      tempTxId?: string;
+      title?: string;
+      text?: string;
+    };
+  }
+
   // useWebViewMessage hook create props for WebView and handle communication
   // The argument is callback to receive message from React
-  const { ref, onMessage, emit } = useWebViewMessage((message) => {
-    // console.log("Bridge Response Message: ", message);
-    switch (message.type) {
-      case RESPONSE_MESSAGE_TYPES.CREATE_WALLET_RESPONSE:
-        store.dispatch({
-          type: ACTION_TYPES.UDPATE_WALLET,
-          payload: {
-            wallet: message.data.wallet,
-          },
-        });
-        break;
+  const { ref, onMessage, emit } = useWebViewMessage(
+    (message: BridgeResponseMessage) => {
+      // console.log("Bridge Response Message: ", message);
+      switch (message.type) {
+        case RESPONSE_MESSAGE_TYPES.CREATE_WALLET_RESPONSE:
+          store.dispatch({
+            type: ACTION_TYPES.UDPATE_WALLET,
+            payload: {
+              wallet: message.data.wallet,
+            },
+          });
+          break;
 
-      case RESPONSE_MESSAGE_TYPES.REQUEST_BALANCE_RESPONSE:
-        store.dispatch({
-          type: ACTION_TYPES.UPDATE_BALANCE,
-          payload: {
-            balance: message.data.balance,
-          },
-        });
-        console.log({ message });
-        break;
+        case RESPONSE_MESSAGE_TYPES.REQUEST_BALANCE_RESPONSE:
+          store.dispatch({
+            type: ACTION_TYPES.UPDATE_BALANCE,
+            payload: {
+              balance: message.data.balance,
+            },
+          });
+          console.log({ message });
+          break;
 
-      case RESPONSE_MESSAGE_TYPES.SEND_COINS_RESPONSE:
-        store.dispatch({
-          type: ACTION_TYPES.UPDATE_BALANCE,
-          payload: {
-            balance: message.data.balance,
-          },
-        });
-        store.dispatch({
-          type: ACTION_TYPES.UPDATE_TEMP_TXID,
-          payload: {
-            tempTxId: message.data.tempTxId,
-          },
-        });
-        break;
+        case RESPONSE_MESSAGE_TYPES.SEND_COINS_RESPONSE:
+          store.dispatch({
+            type: ACTION_TYPES.UPDATE_BALANCE,
+            payload: {
+              balance: message.data.balance,
+            },
+          });
+          store.dispatch({
+            type: ACTION_TYPES.UPDATE_TEMP_TXID,
+            payload: {
+              tempTxId: message.data.tempTxId,
+            },
+          });
+          break;
 
-      case RESPONSE_MESSAGE_TYPES.ERROR:
-        Toast.show({
-          type: "customError",
-          props: {
-            title: message?.data?.title,
-            text: message?.data?.text,
-          },
-        });
-        break;
+        case RESPONSE_MESSAGE_TYPES.ERROR:
+          Toast.show({
+            type: "customError",
+            props: {
+              title: message?.data?.title,
+              text: message?.data?.text,
+            },
+          });
+          break;
 
-      default:
-        break;
+        default:
+          break;
+      }
     }
-  });
+  );
 
   if (!fontsLoaded) {
     return null;

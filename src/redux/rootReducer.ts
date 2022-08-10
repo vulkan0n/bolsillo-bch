@@ -12,7 +12,26 @@ const {
   TOGGLE_IS_TEST_NET,
 } = ACTION_TYPES;
 
-export default function rootReducer(state = initialState, action) {
+interface WalletType {
+  mnemonic: string;
+}
+
+interface UpdateWalletAction {
+  type: "UPDATE_WALLET";
+  payload: {
+    wallet?: WalletType;
+    balance?: string;
+    tempTxId?: string;
+    transactionPadBalance?: string;
+    transactionPadState?: "" | "Receive";
+    transactionPadError?: string;
+  };
+}
+
+export default function rootReducer(
+  state = initialState,
+  action: UpdateWalletAction
+) {
   // console.log({ state, action });
   switch (action.type) {
     case UDPATE_WALLET:
