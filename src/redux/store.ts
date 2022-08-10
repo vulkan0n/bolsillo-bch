@@ -1,9 +1,7 @@
 import autoMergeLevel2 from "redux-persist/lib/stateReconciler/autoMergeLevel2";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import logger from "redux-logger";
 import { configureStore } from "@reduxjs/toolkit";
 import {
-  persistStore,
   persistReducer,
   FLUSH,
   REHYDRATE,
@@ -14,7 +12,6 @@ import {
 } from "redux-persist";
 
 import rootReducer from "./rootReducer";
-import initialState from "./initialState";
 
 const persistedReducer = persistReducer(
   {
