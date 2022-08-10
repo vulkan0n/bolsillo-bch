@@ -91,18 +91,21 @@ function WalletView({
   );
 }
 
-const mapStateToProps = ({
-  wallet,
-  balance,
-  tempTxId,
-  isCryptoDenominated,
-  isTestNet,
-}) => ({
-  wallet,
-  balance,
-  tempTxId,
-  isCryptoDenominated,
-  isTestNet,
-});
+const mapStateToProps = (state) => {
+  // console.log({ state });
+  console.log("state.settings: ", state.settings);
+  return {};
+};
+
+// const mapStateToProps = ({
+//   root: { wallet, balance, tempTxId },
+//   settings: { isCryptoDenominated, isTestNet },
+// }) => ({
+//   wallet,
+//   balance,
+//   tempTxId,
+//   isCryptoDenominated,
+//   isTestNet,
+// });
 
 export default connect(mapStateToProps)(WalletView);

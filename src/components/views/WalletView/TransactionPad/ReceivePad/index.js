@@ -52,7 +52,7 @@ const ReceivePad = ({ wallet, dispatch }) => {
   );
 };
 
-const mapStateToProps = ({ wallet }) => ({ wallet });
+const mapStateToProps = ({ root: { wallet } }) => ({ wallet });
 
 const mapDispatchToProps = (dispatch) => ({ dispatch });
 

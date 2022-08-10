@@ -44,9 +44,8 @@ const DisplayedBalance = ({
 };
 
 const mapStateToProps = ({
-  transactionPadBalance,
-  transactionPadError,
-  isCryptoDenominated,
+  root: { transactionPadBalance, transactionPadError },
+  settings: { isCryptoDenominated },
 }) => ({
   transactionPadBalance,
   transactionPadError,

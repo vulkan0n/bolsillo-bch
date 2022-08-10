@@ -49,7 +49,7 @@ function TransactionSuccessView({ tempTxId, navigation, dispatch }) {
   );
 }
 
-const mapStateToProps = ({ tempTxId }) => ({ tempTxId });
+const mapStateToProps = ({ root: { tempTxId } }) => ({ tempTxId });
 
 const mapDispatchToProps = (dispatch) => ({ dispatch });
 

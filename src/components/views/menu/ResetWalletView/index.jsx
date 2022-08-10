@@ -49,6 +49,6 @@ function ResetWalletView({ isTestNet, navigation, route }) {
   );
 }
 
-const mapStateToProps = ({ isTestNet }) => ({ isTestNet });
+const mapStateToProps = ({ settings: { isTestNet } }) => ({ isTestNet });
 
 export default connect(mapStateToProps)(ResetWalletView);

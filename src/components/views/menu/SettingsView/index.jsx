@@ -80,7 +80,7 @@ function SettingsView({ isCryptoDenominated, isTestNet, dispatch }) {
   );
 }
 
-const mapStateToProps = ({ isCryptoDenominated, isTestNet }) => ({
+const mapStateToProps = ({ settings: { isCryptoDenominated, isTestNet } }) => ({
   isCryptoDenominated,
   isTestNet,
 });

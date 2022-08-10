@@ -65,6 +65,6 @@ function BackupView({ wallet, navigation }) {
   );
 }
 
-const mapStateToProps = ({ wallet }) => ({ wallet });
+const mapStateToProps = ({ root: { wallet } }) => ({ wallet });
 
 export default connect(mapStateToProps)(BackupView);

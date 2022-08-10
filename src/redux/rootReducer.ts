@@ -1,5 +1,7 @@
 import initialState from "./initialState";
 import ACTION_TYPES from "./actionTypes";
+import settingsReducer from "./settingsReducer";
+import { combineReducers } from "redux";
 
 const {
   UDPATE_WALLET,
@@ -8,8 +10,6 @@ const {
   UPDATE_TRANSACTION_PAD_BALANCE,
   UPDATE_TRANSACTION_PAD_STATE,
   UPDATE_TRANSACTION_PAD_ERROR,
-  TOGGLE_IS_CRYPTO_DENOMINATED,
-  TOGGLE_IS_TEST_NET,
 } = ACTION_TYPES;
 
 interface WalletType {
@@ -28,10 +28,7 @@ interface UpdateWalletAction {
   };
 }
 
-export default function rootReducer(
-  state = initialState,
-  action: UpdateWalletAction
-) {
+function rootReducer(state = initialState, action: UpdateWalletAction) {
   // console.log({ state, action });
   switch (action.type) {
     case UDPATE_WALLET:
@@ -64,17 +61,14 @@ export default function rootReducer(
         ...state,
         transactionPadError: action.payload.transactionPadError,
       };
-    case TOGGLE_IS_CRYPTO_DENOMINATED:
-      return {
-        ...state,
-        isCryptoDenominated: !state?.isCryptoDenominated,
-      };
-    case TOGGLE_IS_TEST_NET:
-      return {
-        ...state,
-        isTestNet: !state?.isTestNet,
-      };
     default:
       return state;
   }
 }
+
+const mergedReducer = combineReducers({
+  root: rootReducer,
+  settings: settingsReducer,
+});
+
+export default mergedReducer;

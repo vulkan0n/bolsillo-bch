@@ -159,10 +159,8 @@ const NumPad = ({
 };
 
 const mapStateToProps = ({
-  wallet,
-  balance,
-  transactionPadBalance,
-  isTestNet,
+  root: { wallet, balance, transactionPadBalance },
+  settings: { isTestNet },
 }) => ({
   wallet,
   balance,
