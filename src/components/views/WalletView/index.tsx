@@ -6,11 +6,14 @@ import TYPOGRAPHY from "../../../design/typography";
 import styles from "./styles";
 import { BRIDGE_MESSAGE_TYPES } from "../../../utils/bridgeMessages";
 import { displaySats, displaySatsAsUsd } from "../../../utils/formatting";
+import { ReduxState } from "../../../redux/rootReducer";
 
 function WalletView({ wallet, balance, tempTxId, route, navigation }) {
   const { emit } = route.params;
-  const { isTestNet } = useSelector((state) => state.settings);
-  const { isCryptoDenominated } = useSelector((state) => state.settings);
+  const { isTestNet } = useSelector((state: ReduxState) => state.settings);
+  const { isCryptoDenominated } = useSelector(
+    (state: ReduxState) => state.settings
+  );
 
   const requestBalance = () =>
     emit({
@@ -72,7 +75,7 @@ function WalletView({ wallet, balance, tempTxId, route, navigation }) {
           <Text style={TYPOGRAPHY.h1 as any}>
             {isCryptoDenominated ? satBalance : usdBalance}
           </Text>
-          <Text style={TYPOGRAPHY.h2}>
+          <Text style={TYPOGRAPHY.h2 as any}>
             {isCryptoDenominated ? usdBalance : satBalance}
           </Text>
         </View>

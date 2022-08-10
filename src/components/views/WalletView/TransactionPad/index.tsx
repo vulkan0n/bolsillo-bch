@@ -5,9 +5,10 @@ import NumPad from "./NumPad";
 import ReceivePad from "./ReceivePad";
 import LiveBalance from "./LiveBalance";
 import { useSelector } from "react-redux";
+import { ReduxState } from "../../../../redux/rootReducer";
 
 const TransactionPad = ({ emit }) => {
-  const { view } = useSelector((state) => state.transactionPad);
+  const { view } = useSelector((state: ReduxState) => state.transactionPad);
 
   const component = () => {
     switch (view) {
@@ -21,7 +22,7 @@ const TransactionPad = ({ emit }) => {
   };
 
   return (
-    <View style={styles.transactionPad}>
+    <View style={styles.transactionPad as any}>
       <LiveBalance />
       {component()}
     </View>

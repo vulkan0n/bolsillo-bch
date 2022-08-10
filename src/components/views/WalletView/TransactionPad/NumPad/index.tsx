@@ -107,7 +107,7 @@ const NumPad = ({ wallet, balance, emit }) => {
   const InputButton = ({ n }) => {
     return (
       <Pressable
-        style={styles.inputButton}
+        style={styles.inputButton as any}
         onPress={() => onPress(n)}
         onLongPress={() => onLongPress(n)}
       >
