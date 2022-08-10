@@ -20,7 +20,7 @@ function BackupView({ wallet, navigation }) {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={styles.container as any}>
       <View style={styles.iconContainer}>
         <FontAwesomeIcon
           icon={faPiggyBank}
@@ -28,20 +28,20 @@ function BackupView({ wallet, navigation }) {
           color={COLOURS.bchGreen}
         />
       </View>
-      <Text style={TYPOGRAPHY.h1}>Mnemonic phrase</Text>
-      <Text style={TYPOGRAPHY.pWhite}>
+      <Text style={TYPOGRAPHY.h1 as any}>Mnemonic phrase</Text>
+      <Text style={TYPOGRAPHY.pWhite as any}>
         With your mnemonic phrase, you can restore your wallet if your phone is
         ever lost or broken.
       </Text>
-      <Text style={TYPOGRAPHY.pWhite}>
+      <Text style={TYPOGRAPHY.pWhite as any}>
         It is recommended to make two backups of your phrase in safe locations
         such as a locked box or password manager. Do NOT store it as a
         screenshot!
       </Text>
-      <Text style={TYPOGRAPHY.pWhite}>
+      <Text style={TYPOGRAPHY.pWhite as any}>
         The order of the words is important.
       </Text>
-      <Text style={TYPOGRAPHY.pWhite}>
+      <Text style={TYPOGRAPHY.pWhite as any}>
         NEVER tell anyone your mnemonic, if they have these words they can TAKE
         ALL YOUR MONEY!!
       </Text>
@@ -53,13 +53,13 @@ function BackupView({ wallet, navigation }) {
           onPress={toggleIsMnemonicVisible}
           style={styles.mnemonicContainer}
         >
-          <Text style={TYPOGRAPHY.pWhite}>{wallet?.mnemonic}</Text>
+          <Text style={TYPOGRAPHY.pWhite as any}>{wallet?.mnemonic}</Text>
         </Pressable>
       )}
-      <Text style={TYPOGRAPHY.h2}>Derivation path</Text>
-      <Text style={TYPOGRAPHY.pWhite}>{wallet?.derivationPath}</Text>
+      <Text style={TYPOGRAPHY.h2 as any}>Derivation path</Text>
+      <Text style={TYPOGRAPHY.pWhite as any}>{wallet?.derivationPath}</Text>
       <Pressable onPress={onPressResetWallet}>
-        <Text style={TYPOGRAPHY.pWhite}>Reset Wallet</Text>
+        <Text style={TYPOGRAPHY.pWhite as any}>Reset Wallet</Text>
       </Pressable>
     </View>
   );

@@ -5,12 +5,12 @@ import styles from "./styles";
 
 const LearnView = () => {
   return (
-    <View style={styles.container}>
+    <View style={styles.container as any}>
       <Image
         style={styles.logo}
         source={require("../../../../assets/images/logo.jpg")}
       />
-      <Text style={TYPOGRAPHY.h1}>Learn</Text>
+      <Text style={TYPOGRAPHY.h1 as any}>Learn</Text>
     </View>
   );
 };

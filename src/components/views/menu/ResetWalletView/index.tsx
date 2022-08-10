@@ -31,20 +31,22 @@ const ResetWalletView = ({ navigation, route }) => {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.iconContainer}>
+    <View style={styles.container as any}>
+      <View style={styles.iconContainer as any}>
         <FontAwesomeIcon
           icon={faPiggyBank}
           size={75}
           color={COLOURS.bchGreen}
         />
       </View>
-      <Text style={TYPOGRAPHY.h1}>Reset Wallet</Text>
-      <Text style={TYPOGRAPHY.pWhite}>
+      <Text style={TYPOGRAPHY.h1 as any}>Reset Wallet</Text>
+      <Text style={TYPOGRAPHY.pWhite as any}>
         Note, this will erase all of your current data, including your mnemonic
         phrase!!
       </Text>
-      <Text style={TYPOGRAPHY.pWhite}>Ensure you have a backup first.</Text>
+      <Text style={TYPOGRAPHY.pWhite as any}>
+        Ensure you have a backup first.
+      </Text>
       <Button onPress={onResetWallet}>Create new wallet</Button>
     </View>
   );

@@ -59,7 +59,7 @@ function WalletView({ wallet, balance, tempTxId, route, navigation }) {
   const usdBalance = displaySatsAsUsd(balance?.sat);
 
   return (
-    <View style={styles.container}>
+    <View style={styles.container as any}>
       <Pressable onPress={onPressLogo}>
         <Image
           style={styles.logo}
@@ -69,7 +69,7 @@ function WalletView({ wallet, balance, tempTxId, route, navigation }) {
 
       <Pressable onPress={onPressBalance} style={styles.widePressable}>
         <View style={styles.primaryTitlesWrapper}>
-          <Text style={TYPOGRAPHY.h1}>
+          <Text style={TYPOGRAPHY.h1 as any}>
             {isCryptoDenominated ? satBalance : usdBalance}
           </Text>
           <Text style={TYPOGRAPHY.h2}>

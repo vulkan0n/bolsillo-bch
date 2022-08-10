@@ -27,61 +27,67 @@ function MenuView({ navigation }) {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.menuContainer}>
-        <View style={styles.menuRow}>
+    <View style={styles.container as any}>
+      <View style={styles.menuContainer as any}>
+        <View style={styles.menuRow as any}>
           <Pressable onPress={onPressLearn}>
             <View style={styles.pressableCard}>
-              <View style={styles.iconWrapper}>
+              <View style={styles.iconWrapper as any}>
                 <FontAwesomeIcon
                   icon={faBookOpenReader}
                   size={45}
                   color={COLOURS.bchGreen}
                 />
               </View>
-              <Text style={TYPOGRAPHY.menuHeaderGreen}>Learn</Text>
-              <Text style={TYPOGRAPHY.pWhite}>Understand Bitcoin Cash.</Text>
+              <Text style={TYPOGRAPHY.menuHeaderGreen as any}>Learn</Text>
+              <Text style={TYPOGRAPHY.pWhite as any}>
+                Understand Bitcoin Cash.
+              </Text>
             </View>
           </Pressable>
           <Pressable onPress={onPressBackup}>
             <View style={styles.pressableCard}>
-              <View style={styles.iconWrapper}>
+              <View style={styles.iconWrapper as any}>
                 <FontAwesomeIcon
                   icon={faPiggyBank}
                   size={45}
                   color={COLOURS.bchGreen}
                 />
               </View>
-              <Text style={TYPOGRAPHY.menuHeaderGreen}>Backup</Text>
-              <Text style={TYPOGRAPHY.pWhite}>Keep your money safe!</Text>
+              <Text style={TYPOGRAPHY.menuHeaderGreen as any}>Backup</Text>
+              <Text style={TYPOGRAPHY.pWhite as any}>
+                Keep your money safe!
+              </Text>
             </View>
           </Pressable>
         </View>
-        <View style={styles.menuRow}>
+        <View style={styles.menuRow as any}>
           <Pressable onPress={onPressDevs}>
             <View style={styles.pressableCard}>
-              <View style={styles.iconWrapper}>
+              <View style={styles.iconWrapper as any}>
                 <FontAwesomeIcon
                   icon={faCode}
                   size={45}
                   color={COLOURS.bchGreen}
                 />
               </View>
-              <Text style={TYPOGRAPHY.menuHeaderGreen}>Devs</Text>
-              <Text style={TYPOGRAPHY.pWhite}>Credit, code & donations!</Text>
+              <Text style={TYPOGRAPHY.menuHeaderGreen as any}>Devs</Text>
+              <Text style={TYPOGRAPHY.pWhite as any}>
+                Credit, code & donations!
+              </Text>
             </View>
           </Pressable>
           <Pressable onPress={onPressSettings}>
             <View style={styles.pressableCard}>
-              <View style={styles.iconWrapper}>
+              <View style={styles.iconWrapper as any}>
                 <FontAwesomeIcon
                   icon={faGears}
                   size={45}
                   color={COLOURS.bchGreen}
                 />
               </View>
-              <Text style={TYPOGRAPHY.menuHeaderGreen}>Settings</Text>
-              <Text style={TYPOGRAPHY.pWhite}>
+              <Text style={TYPOGRAPHY.menuHeaderGreen as any}>Settings</Text>
+              <Text style={TYPOGRAPHY.pWhite as any}>
                 Currency, unit display, etc.
               </Text>
             </View>

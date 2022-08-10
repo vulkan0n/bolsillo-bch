@@ -29,13 +29,13 @@ function TransactionSuccessView({ navigation }) {
   }, []);
 
   return (
-    <View style={styles.container}>
+    <View style={styles.container as any}>
       <MotiView
         from={{ opacity: 0, translateY: 35 }}
         animate={{ opacity: 1, translateY: 0 }}
         transition={{ type: "timing", duration: 1200 }}
       >
-        <View style={styles.iconWrapper}>
+        <View style={styles.iconWrapper as any}>
           <FontAwesomeIcon
             icon={faCircleCheck}
             size={150}
@@ -43,7 +43,7 @@ function TransactionSuccessView({ navigation }) {
           />
         </View>
         <View style={styles.textWrapper}>
-          <Text style={TYPOGRAPHY.h1}>Sent!</Text>
+          <Text style={TYPOGRAPHY.h1 as any}>Sent!</Text>
         </View>
       </MotiView>
     </View>
