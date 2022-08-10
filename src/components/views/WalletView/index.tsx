@@ -1,15 +1,14 @@
 import React, { useEffect } from "react";
-import { View, Text, Pressable, Image } from "react-native";
+import { View, Text, Pressable, Image, DeviceEventEmitter } from "react-native";
 import { useSelector } from "react-redux";
 import TransactionPad from "./TransactionPad";
 import TYPOGRAPHY from "../../../design/typography";
 import styles from "./styles";
 import { BRIDGE_MESSAGE_TYPES } from "../../../utils/bridgeMessages";
 import { displaySats, displaySatsAsUsd } from "../../../utils/formatting";
-import { ReduxState } from "../../../types";
+import { EmitEvent, ReduxState } from "../../../types";
 
 function WalletView({ route, navigation }) {
-  const { emit } = route.params;
   const { wallet } = useSelector((state: ReduxState) => state.bridge);
   const { balance } = useSelector((state: ReduxState) => state.bridge);
   const { tempTxId } = useSelector((state: ReduxState) => state.bridge);
@@ -17,6 +16,15 @@ function WalletView({ route, navigation }) {
   const { isCryptoDenominated } = useSelector(
     (state: ReduxState) => state.settings
   );
+
+  const emit = (eventData: EmitEvent) =>
+    DeviceEventEmitter.emit("event.emitEvent", { eventData });
+
+  useEffect(() => {
+    return () => {
+      DeviceEventEmitter.removeAllListeners("event.emitEvent");
+    };
+  }, []);
 
   const requestBalance = () =>
     emit({

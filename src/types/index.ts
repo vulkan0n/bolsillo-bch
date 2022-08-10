@@ -15,3 +15,8 @@ export interface WalletType {
   derivationPath: string;
   cashaddr: string;
 }
+
+export interface EmitEvent {
+  type: string;
+  data: {};
+}

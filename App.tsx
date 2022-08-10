@@ -1,5 +1,5 @@
 import * as React from "react";
-import { View, Text } from "react-native";
+import { DeviceEventEmitter, View, Text } from "react-native";
 import {
   useFonts,
   Montserrat_400Regular,
@@ -97,6 +97,10 @@ export default function App() {
     }
   );
 
+  DeviceEventEmitter.addListener("event.emitEvent", ({ eventData }) => {
+    emit(eventData);
+  });
+
   if (!fontsLoaded) {
     return null;
   }
@@ -115,7 +119,7 @@ export default function App() {
             domStorageEnabled={true}
           />
         </View>
-        <NavigationTree emit={emit} />
+        <NavigationTree />
         <Toast config={toastConfig} />
       </PersistGate>
     </Provider>

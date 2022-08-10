@@ -15,16 +15,13 @@ import TYPOGRAPHY from "../../../design/typography";
 
 const Stack = createNativeStackNavigator();
 
-const NavigationTree = ({ emit }) => {
+const NavigationTree = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator>
         <Stack.Screen
           name="Wallet"
           component={WalletView}
-          initialParams={{
-            emit,
-          }}
           options={{
             headerStyle: {
               backgroundColor: COLOURS.black,
@@ -93,9 +90,6 @@ const NavigationTree = ({ emit }) => {
         <Stack.Screen
           name="Reset Wallet"
           component={ResetWalletView}
-          initialParams={{
-            emit,
-          }}
           options={{
             headerStyle: {
               backgroundColor: COLOURS.black,

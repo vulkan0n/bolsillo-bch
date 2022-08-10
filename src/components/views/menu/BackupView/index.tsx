@@ -13,6 +13,8 @@ function BackupView({ navigation }) {
   const { wallet } = useSelector((state: ReduxState) => state.bridge);
   const [isMnemonicVisible, setIsMnemonicVisible] = useState(false);
 
+  console.log({ wallet });
+
   const toggleIsMnemonicVisible = () => {
     setIsMnemonicVisible(!isMnemonicVisible);
   };

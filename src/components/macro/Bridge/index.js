@@ -27,6 +27,10 @@ const Bridge = () => {
       switch (message.type) {
         case BRIDGE_MESSAGE_TYPES.CREATE_WALLET:
           const wallet = await WalletObject.newRandom();
+
+          console.log("Created Wallet!");
+          console.log({ wallet });
+
           emit({
             type: RESPONSE_MESSAGE_TYPES.CREATE_WALLET_RESPONSE,
             data: { wallet },
@@ -38,6 +42,9 @@ const Bridge = () => {
             message?.data?.mnemonic,
             message?.data?.derivationPath
           );
+
+          console.log("Refreshed Wallet!");
+          console.log({ walletRefreshWallet });
 
           emit({
             type: RESPONSE_MESSAGE_TYPES.REFRESH_WALLET_RESPONSE,
