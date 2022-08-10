@@ -8,7 +8,6 @@ import {
   BRIDGE_MESSAGE_TYPES,
   RESPONSE_MESSAGE_TYPES,
 } from "../../../utils/bridgeMessages";
-// import { connect } from "react-redux";
 
 const Bridge = () => {
   console.log("Bridge loaded.");
@@ -31,6 +30,18 @@ const Bridge = () => {
           emit({
             type: RESPONSE_MESSAGE_TYPES.CREATE_WALLET_RESPONSE,
             data: { wallet },
+          });
+          break;
+
+        case BRIDGE_MESSAGE_TYPES.REFRESH_WALLET:
+          const walletRefreshWallet = await WalletObject.fromSeed(
+            message?.data?.mnemonic,
+            message?.data?.derivationPath
+          );
+
+          emit({
+            type: RESPONSE_MESSAGE_TYPES.REFRESH_WALLET_RESPONSE,
+            data: { wallet: walletRefreshWallet },
           });
           break;
 
@@ -91,7 +102,7 @@ const Bridge = () => {
     } catch (error) {
       console.log({ error });
       // Insufficient balance
-      // E.g. Amount required was not met, 1971 satoshis needed, 1785 satoshis available
+      // Error is: Amount required was not met, 1971 satoshis needed, 1785 satoshis available
       if (error.toString()?.includes("Amount required was not met")) {
         const errorSegments = error?.toString()?.split(", ");
         const returnMessage = `${errorSegments?.[1]}, ${errorSegments?.[2]}.`;

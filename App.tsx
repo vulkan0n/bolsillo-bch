@@ -58,6 +58,13 @@ export default function App() {
           store.dispatch(updateBridgeWallet({ wallet: message.data.wallet }));
           break;
 
+        // Note: Responds the same as CREATE_WALLET_RESPONSE
+        // The difference is on the other side of the bridge
+        // Generating a new seed vs refreshing from seed
+        case RESPONSE_MESSAGE_TYPES.REFRESH_WALLET_RESPONSE:
+          store.dispatch(updateBridgeWallet({ wallet: message.data.wallet }));
+          break;
+
         case RESPONSE_MESSAGE_TYPES.REQUEST_BALANCE_RESPONSE:
           store.dispatch(
             updateBridgeBalance({ balance: message.data.balance })

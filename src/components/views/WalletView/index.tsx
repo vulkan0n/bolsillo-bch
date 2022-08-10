@@ -28,11 +28,22 @@ function WalletView({ route, navigation }) {
       },
     });
 
+  // Create a wallet if none exists
+  // I.e. first time app is opened
   useEffect(() => {
     if (!wallet?.mnemonic) {
       emit({ type: BRIDGE_MESSAGE_TYPES.CREATE_WALLET, data: { isTestNet } });
     }
   }, []);
+
+  // Refresh wallet when toggling to/from test net
+  useEffect(() => {
+    console.log("triggering refresh");
+    emit({
+      type: BRIDGE_MESSAGE_TYPES.REFRESH_WALLET,
+      data: { wallet, isTestNet },
+    });
+  }, [isTestNet]);
 
   useEffect(() => {
     if (!wallet) {
@@ -42,6 +53,7 @@ function WalletView({ route, navigation }) {
     requestBalance();
   }, [wallet, wallet?.mnemonic, wallet?.cashaddr]);
 
+  // Transaction id set to non null means new transaction just completed
   useEffect(() => {
     if (!tempTxId) {
       return;
