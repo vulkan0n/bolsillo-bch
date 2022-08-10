@@ -11,7 +11,7 @@ import {
   REGISTER,
 } from "redux-persist";
 
-import rootReducer from "./mergedReducer";
+import mergedReducer from "./mergedReducer";
 
 const persistedReducer = persistReducer(
   {
@@ -19,7 +19,7 @@ const persistedReducer = persistReducer(
     storage: AsyncStorage,
     stateReconciler: autoMergeLevel2,
   },
-  rootReducer
+  mergedReducer
 );
 
 const store = configureStore({
