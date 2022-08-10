@@ -32,11 +32,11 @@ const ReceivePad = ({ wallet }) => {
 
   return (
     <View style={styles.inputBackground as any}>
-      <View style={styles.receivePad}>
+      <View style={styles.receivePad as any}>
         <View style={styles.qrBorder}>
           <QRCode value={`${wallet?.cashaddr}`} />
         </View>
-        <Text selectable style={TYPOGRAPHY.p}>
+        <Text selectable style={TYPOGRAPHY.p as any}>
           {wallet?.cashaddr}
         </Text>
       </View>
