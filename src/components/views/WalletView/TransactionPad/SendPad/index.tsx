@@ -10,6 +10,7 @@ import {
   updateTransactionPadView,
 } from "../../../../../redux/reducers/transactionPadReducer";
 import { EmitEvent, ReduxState } from "../../../../../types";
+import { formatStringToCashAddress } from "../../../../../utils/formatting";
 
 const SendPad = () => {
   const dispatch = useDispatch();
@@ -54,7 +55,7 @@ const SendPad = () => {
   const onChangeTextInput = (value) => {
     dispatch(
       updateTransactionPadSendToAddress({
-        sendToAddress: value.trim(),
+        sendToAddress: formatStringToCashAddress(value),
       })
     );
   };

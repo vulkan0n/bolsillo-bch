@@ -10,7 +10,7 @@ interface Props {
 const TextInput = ({ text = "", onChange = () => {} }: Props) => {
   return (
     <RNTextInput
-      style={styles({}).input as any}
+      style={styles.input as any}
       onChangeText={onChange}
       value={text}
     />
