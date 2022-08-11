@@ -17,7 +17,9 @@ const NumPad = () => {
   const { padBalance } = useSelector(
     (state: ReduxState) => state.transactionPad
   );
-  const isSatoshiDenominated = true;
+  const { isCryptoDenominated } = useSelector(
+    (state: ReduxState) => state.settings
+  );
   const availableBalance = balance?.sat;
 
   const isSendDisabled = padBalance === "0";
@@ -125,7 +127,7 @@ const NumPad = () => {
         <View style={styles.numPadRow as any}>
           <InputButton n={"<"} />
           <InputButton n={"0"} />
-          <InputButton n={isSatoshiDenominated ? "" : "."} />
+          <InputButton n={isCryptoDenominated ? "" : "."} />
         </View>
       </View>
       <View style={styles.buttonContainer as any}>
