@@ -1,16 +1,12 @@
-import React from "react";
-import { View, Text, Pressable } from "react-native";
+import React, { useEffect } from "react";
+import { View, Text, DeviceEventEmitter } from "react-native";
 import styles from "./styles";
 import Button from "../../../../atoms/Button";
 import TYPOGRAPHY from "../../../../../design/typography";
 import { BRIDGE_MESSAGE_TYPES } from "../../../../../utils/bridgeMessages";
 import { useSelector, useDispatch } from "react-redux";
-import {
-  updateTransactionPadBalance,
-  updateTransactionPadView,
-  updateTransactionPadError,
-} from "../../../../../redux/reducers/transactionPadReducer";
-import { ReduxState } from "../../../../../types";
+import { updateTransactionPadView } from "../../../../../redux/reducers/transactionPadReducer";
+import { EmitEvent, ReduxState } from "../../../../../types";
 
 const SendPad = () => {
   const dispatch = useDispatch();
@@ -21,22 +17,32 @@ const SendPad = () => {
     (state: ReduxState) => state.transactionPad
   );
 
+  const emit = (event: EmitEvent) =>
+    DeviceEventEmitter.emit("event.emitEvent", event);
+
+  useEffect(() => {
+    return () => {
+      DeviceEventEmitter.removeAllListeners("event.emitEvent");
+    };
+  }, []);
+
   const onPressSend = () => {
-    // const jeremyBchAddress =
-    //   "bitcoincash:qpjhf0jewa50puz3r3en5y0st3g0ndu25ctdax4axv";
-    // const testNetFaucet = "bchtest:qzl7ex0q35q2d6aljhlhzwramp09n06fry8ssqu0qp";
-    // const receivingAddress = isTestNet ? testNetFaucet : jeremyBchAddress;
-    // console.log({ isTestNet, receivingAddress });
-    // emit({
-    //   type: BRIDGE_MESSAGE_TYPES.SEND_COINS,
-    //   data: {
-    //     mnemonic: wallet?.mnemonic,
-    //     derivationPath: wallet?.derivationPath,
-    //     recipientCashAddr: receivingAddress,
-    //     satsToSend: isTestNet ? "1099" : "10599",
-    //     isTestNet,
-    //   },
-    // });
+    const jeremyBchAddress =
+      "bitcoincash:qpjhf0jewa50puz3r3en5y0st3g0ndu25ctdax4axv";
+    const testNetFaucet = "bchtest:qzl7ex0q35q2d6aljhlhzwramp09n06fry8ssqu0qp";
+    const receivingAddress = isTestNet ? testNetFaucet : jeremyBchAddress;
+    console.log({ isTestNet, receivingAddress, padBalance });
+
+    emit({
+      type: BRIDGE_MESSAGE_TYPES.SEND_COINS,
+      data: {
+        mnemonic: wallet?.mnemonic,
+        derivationPath: wallet?.derivationPath,
+        recipientCashAddr: receivingAddress,
+        satsToSend: padBalance,
+        isTestNet,
+      },
+    });
   };
 
   const onPressBack = () => {
@@ -50,7 +56,12 @@ const SendPad = () => {
   return (
     <View style={styles.inputBackground as any}>
       <View style={styles.numPad as any}>
-        <View style={styles.numPadRow as any}></View>
+        <View style={styles.numPadRow as any}>
+          <Text>QR scanner</Text>
+        </View>
+        <View style={styles.numPadRow as any}>
+          <Text>Paste address</Text>
+        </View>
       </View>
       <View style={styles.buttonContainer as any}>
         <Button onPress={onPressSend} isSmall>
