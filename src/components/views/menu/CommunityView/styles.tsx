@@ -24,6 +24,9 @@ const styles = {
     alignItems: "center",
     width: "100%",
   },
+  icon: {
+    marginBottom: SPACING.ten,
+  },
 };
 
 export default styles;

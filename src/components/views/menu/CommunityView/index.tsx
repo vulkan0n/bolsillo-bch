@@ -3,6 +3,10 @@ import { View, Image, Text } from "react-native";
 import TYPOGRAPHY from "../../../../design/typography";
 import Divider from "../../../atoms/Divider";
 import styles from "./styles";
+import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+import { faHashtag } from "@fortawesome/free-solid-svg-icons/faHashtag";
+import { faMessage } from "@fortawesome/free-solid-svg-icons/faMessage";
+import COLOURS from "../../../../design/colours";
 
 const CommunityView = () => {
   return (
@@ -14,6 +18,14 @@ const CommunityView = () => {
       <Text style={TYPOGRAPHY.h1 as any}>BCH Community</Text>
       <View style={styles.background as any}>
         <Text style={TYPOGRAPHY.h2black as any}>Reddit</Text>
+        {/* TODO: Get better icon */}
+        <FontAwesomeIcon
+          style={styles.icon}
+          icon={faMessage}
+          size={45}
+          color={COLOURS.bchGreen}
+        />
+
         <Text style={TYPOGRAPHY.p as any}>/r/btc</Text>
         <Text style={TYPOGRAPHY.p as any}>
           Home of big-block Bitcoin discussion since before the BTC/BCH split.
@@ -24,7 +36,14 @@ const CommunityView = () => {
         </Text>
 
         <Divider />
+        {/* TODO: Get better icon */}
         <Text style={TYPOGRAPHY.h2black as any}>Twitter</Text>
+        <FontAwesomeIcon
+          style={styles.icon}
+          icon={faHashtag}
+          size={45}
+          color={COLOURS.bchGreen}
+        />
         <Text style={TYPOGRAPHY.p as any}>#BitcoinCash</Text>
         <Text>Top follows:</Text>
         <Text>@TheBCHPodcast</Text>
