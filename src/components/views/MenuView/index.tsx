@@ -3,6 +3,7 @@ import { View, Image, Pressable, Text } from "react-native";
 import TYPOGRAPHY from "../../../design/typography";
 import styles from "./styles";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+import { faUsers } from "@fortawesome/free-solid-svg-icons/faUsers";
 import { faBookOpenReader } from "@fortawesome/free-solid-svg-icons/faBookOpenReader";
 import { faPiggyBank } from "@fortawesome/free-solid-svg-icons/faPiggyBank";
 import { faCode } from "@fortawesome/free-solid-svg-icons/faCode";
@@ -10,6 +11,10 @@ import { faGears } from "@fortawesome/free-solid-svg-icons/faGears";
 import COLOURS from "../../../design/colours";
 
 function MenuView({ navigation }) {
+  const onPressCommunity = () => {
+    navigation.navigate("Community");
+  };
+
   const onPressLearn = () => {
     navigation.navigate("Learn");
   };
@@ -30,18 +35,19 @@ function MenuView({ navigation }) {
     <View style={styles.container as any}>
       <View style={styles.menuContainer as any}>
         <View style={styles.menuRow as any}>
-          <Pressable onPress={onPressLearn}>
+          <Pressable onPress={onPressCommunity}>
             <View style={styles.pressableCardWide}>
               <View style={styles.iconWrapper as any}>
                 <FontAwesomeIcon
-                  icon={faBookOpenReader}
+                  icon={faUsers}
                   size={45}
                   color={COLOURS.bchGreen}
                 />
               </View>
               <Text style={TYPOGRAPHY.menuHeaderGreen as any}>Community</Text>
               <Text style={TYPOGRAPHY.pWhite as any}>
-                Discussion, social media, art, music, podcasts and earning BCH.
+                Discussion, social media, art, music, podcasts, meetups and
+                more.
               </Text>
             </View>
           </Pressable>
