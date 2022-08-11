@@ -11,6 +11,7 @@ import songs from "./songs";
 const CommunityView = () => {
   return (
     <View style={styles.container as any}>
+      {/* TODO: Get better icon */}
       <FontAwesomeIcon
         style={styles.icon}
         icon={faMessage}
@@ -18,12 +19,8 @@ const CommunityView = () => {
         color={COLOURS.bchGreen}
       />
       <View style={styles.background as any}>
-        {/* TODO: Get better icon */}
-
-        <Text style={TYPOGRAPHY.h2black as any}>Reddit</Text>
-
-        <Text style={TYPOGRAPHY.p as any}>Music</Text>
         <FlatList
+          style={{ width: "100%" }}
           // ItemSeparatorComponent={<Divider />}
           data={songs}
           renderItem={({ item, index, separators }) => (
@@ -35,6 +32,8 @@ const CommunityView = () => {
             >
               <View style={{ backgroundColor: "white" }}>
                 <Text>{item.title}</Text>
+                <Text>{item.artist}</Text>
+                <Divider />
               </View>
             </TouchableHighlight>
           )}
