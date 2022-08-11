@@ -20,12 +20,6 @@ function WalletView({ route, navigation }) {
   const emit = (event: EmitEvent) =>
     DeviceEventEmitter.emit("event.emitEvent", event);
 
-  useEffect(() => {
-    return () => {
-      DeviceEventEmitter.removeAllListeners("event.emitEvent");
-    };
-  }, []);
-
   const requestBalance = () =>
     emit({
       type: BRIDGE_MESSAGE_TYPES.REQUEST_BALANCE,

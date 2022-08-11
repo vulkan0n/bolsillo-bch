@@ -17,12 +17,6 @@ const ResetWalletView = ({ navigation, route }) => {
   const emit = (event: EmitEvent) =>
     DeviceEventEmitter.emit("event.emitEvent", event);
 
-  useEffect(() => {
-    return () => {
-      DeviceEventEmitter.removeAllListeners("event.emitEvent");
-    };
-  }, []);
-
   const onResetWallet = () => {
     emit({
       type: BRIDGE_MESSAGE_TYPES.CREATE_WALLET,
