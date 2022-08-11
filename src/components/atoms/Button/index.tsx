@@ -3,6 +3,7 @@ import { View, Text, Pressable } from "react-native";
 import styles from "./styles";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faPaperPlane } from "@fortawesome/free-solid-svg-icons/faPaperPlane";
+import { faBitcoinSign } from "@fortawesome/free-solid-svg-icons/faBitcoinSign";
 import COLOURS from "../../../design/colours";
 
 interface Props {
@@ -11,7 +12,7 @@ interface Props {
   variant?: "primary" | "secondary";
   isSmall?: boolean;
   isDisabled?: boolean;
-  icon?: "" | "faPaperPlane";
+  icon?: "" | "faPaperPlane" | "faBitcoinSign";
 }
 
 const Button = ({
@@ -41,6 +42,8 @@ const Button = ({
     switch (icon) {
       case "faPaperPlane":
         return faPaperPlane;
+      case "faBitcoinSign":
+        return faBitcoinSign;
       default:
         return null;
     }

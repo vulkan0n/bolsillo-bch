@@ -131,10 +131,20 @@ const NumPad = () => {
         </View>
       </View>
       <View style={styles.buttonContainer as any}>
-        <Button onPress={onPressSend} isSmall isDisabled={isSendDisabled}>
+        <Button
+          icon={"faPaperPlane"}
+          onPress={onPressSend}
+          isSmall
+          isDisabled={isSendDisabled}
+        >
           Send
         </Button>
-        <Button variant="secondary" onPress={onPressReceive} isSmall>
+        <Button
+          icon={"faBitcoinSign"}
+          variant="secondary"
+          onPress={onPressReceive}
+          isSmall
+        >
           Receive
         </Button>
       </View>
