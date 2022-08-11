@@ -70,9 +70,12 @@ const styles = ({ variant = "primary", isSmall = false, isDisabled }) => {
       // Android drop shadow
       elevation: isDisabled ? 0 : 3,
     },
+    iconContainer: {
+      marginRight: SPACING.five,
+    },
     buttonText: {
       fontFamily: "Montserrat_500Medium",
-      fontSize: 28,
+      fontSize: 24,
       color: textColor(),
     },
   };

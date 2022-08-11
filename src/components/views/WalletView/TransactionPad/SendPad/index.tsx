@@ -86,7 +86,7 @@ const SendPad = () => {
         </View>
       </View>
       <View style={styles.buttonContainer as any}>
-        <Button onPress={onPressSend} isSmall>
+        <Button icon={"faPaperPlane"} onPress={onPressSend} isSmall>
           Send
         </Button>
         <Button variant="secondary" onPress={onPressBack} isSmall>
