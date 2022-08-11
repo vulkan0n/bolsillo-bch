@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { View, Text, DeviceEventEmitter } from "react-native";
 import styles from "./styles";
 import Button from "../../../../atoms/Button";
@@ -10,8 +10,9 @@ import {
   updateTransactionPadView,
   updateTransactionPadBalance,
 } from "../../../../../redux/reducers/transactionPadReducer";
-import { EmitEvent, ReduxState } from "../../../../../types";
+import { ReduxState } from "../../../../../types";
 import { formatStringToCashAddress } from "../../../../../utils/formatting";
+import emit from "../../../../../utils/emit";
 
 const SendPad = () => {
   const dispatch = useDispatch();
@@ -23,9 +24,6 @@ const SendPad = () => {
   const { sendToAddress } = useSelector(
     (state: ReduxState) => state.transactionPad
   );
-
-  const emit = (event: EmitEvent) =>
-    DeviceEventEmitter.emit("event.emitEvent", event);
 
   const onPressSend = () => {
     console.log("pressed send!!");
