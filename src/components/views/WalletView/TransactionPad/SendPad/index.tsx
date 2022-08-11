@@ -26,7 +26,6 @@ const SendPad = () => {
   );
 
   const onPressSend = () => {
-    console.log("pressed send!!");
     emit({
       type: BRIDGE_MESSAGE_TYPES.SEND_COINS,
       data: {
@@ -45,6 +44,11 @@ const SendPad = () => {
     );
     dispatch(
       updateTransactionPadSendToAddress({
+        sendToAddress: "",
+      })
+    );
+    dispatch(
+      updateTransactionPadView({
         sendToAddress: "",
       })
     );
