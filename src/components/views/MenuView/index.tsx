@@ -31,6 +31,23 @@ function MenuView({ navigation }) {
       <View style={styles.menuContainer as any}>
         <View style={styles.menuRow as any}>
           <Pressable onPress={onPressLearn}>
+            <View style={styles.pressableCardWide}>
+              <View style={styles.iconWrapper as any}>
+                <FontAwesomeIcon
+                  icon={faBookOpenReader}
+                  size={45}
+                  color={COLOURS.bchGreen}
+                />
+              </View>
+              <Text style={TYPOGRAPHY.menuHeaderGreen as any}>Community</Text>
+              <Text style={TYPOGRAPHY.pWhite as any}>
+                Discuss, learn, podcasts, music, media and earning BCH.
+              </Text>
+            </View>
+          </Pressable>
+        </View>
+        <View style={styles.menuRow as any}>
+          <Pressable onPress={onPressLearn}>
             <View style={styles.pressableCard}>
               <View style={styles.iconWrapper as any}>
                 <FontAwesomeIcon
