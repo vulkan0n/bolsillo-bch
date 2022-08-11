@@ -1,7 +1,7 @@
 import SPACING from "../../../design/spacing";
 import COLOURS from "../../../design/colours";
 
-const styles = ({ variant = "primary", isSmall }) => {
+const styles = ({ variant = "primary", isSmall = false }) => {
   const borderColor = () => {
     switch (variant) {
       case "primary":
@@ -16,7 +16,7 @@ const styles = ({ variant = "primary", isSmall }) => {
   const backgroundColor = () => {
     switch (variant) {
       case "primary":
-        return COLOURS.bchGreen;
+        return COLOURS.white;
       case "secondary":
         return COLOURS.white;
       default:
@@ -27,7 +27,7 @@ const styles = ({ variant = "primary", isSmall }) => {
   const textColor = () => {
     switch (variant) {
       case "primary":
-        return COLOURS.white;
+        return COLOURS.bchGreen;
       case "secondary":
         return COLOURS.bchGreen;
       default:
@@ -36,10 +36,15 @@ const styles = ({ variant = "primary", isSmall }) => {
   };
 
   return {
-    button: {
+    input: {
+      fontFamily: "Montserrat_500Medium",
+      fontSize: 28,
+      color: textColor(),
       marginLeft: isSmall ? 0 : SPACING.fifteen,
       marginRight: isSmall ? 0 : SPACING.fifteen,
       marginBottom: isSmall ? 0 : SPACING.fifteen,
+      paddingLeft: SPACING.fifteen,
+      paddingRight: SPACING.fifteen,
       borderWidth: 2,
       borderRadius: SPACING.borderRadius,
       backgroundColor: backgroundColor(),
@@ -57,11 +62,6 @@ const styles = ({ variant = "primary", isSmall }) => {
       shadowRadius: 3,
       // Android drop shadow
       elevation: 3,
-    },
-    buttonText: {
-      fontFamily: "Montserrat_500Medium",
-      fontSize: 28,
-      color: textColor(),
     },
   };
 };

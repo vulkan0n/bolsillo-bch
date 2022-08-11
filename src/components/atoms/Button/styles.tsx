@@ -1,7 +1,7 @@
 import SPACING from "../../../design/spacing";
 import COLOURS from "../../../design/colours";
 
-const styles = ({ variant = "primary", isSmall }) => {
+const styles = ({ variant = "primary", isSmall = false }) => {
   const borderColor = () => {
     switch (variant) {
       case "primary":

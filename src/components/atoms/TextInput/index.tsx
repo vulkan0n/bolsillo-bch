@@ -1,20 +1,19 @@
 import React from "react";
-import { Text, TouchableOpacity } from "react-native";
+import { TextInput as RNTextInput } from "react-native";
 import styles from "./styles";
 
 interface Props {
-  onPress?: () => void;
-  onChange: () => void;
+  text: string;
+  onChange?: (value: string) => void;
 }
 
-const TextInput = ({ onPress = () => {}, onChange = () => {} }: Props) => {
+const TextInput = ({ text = "", onChange = () => {} }: Props) => {
   return (
-    <TouchableOpacity
-      onPress={onPress}
-      style={styles({ variant, isSmall }).button as any}
-    >
-      <Text style={styles({ variant, isSmall }).buttonText}>{children}</Text>
-    </TouchableOpacity>
+    <RNTextInput
+      style={styles({}).input as any}
+      onChangeText={onChange}
+      value={text}
+    />
   );
 };
 

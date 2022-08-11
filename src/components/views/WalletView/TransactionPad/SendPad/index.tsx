@@ -2,10 +2,13 @@ import React, { useEffect } from "react";
 import { View, Text, DeviceEventEmitter } from "react-native";
 import styles from "./styles";
 import Button from "../../../../atoms/Button";
-import TYPOGRAPHY from "../../../../../design/typography";
+import TextInput from "../../../../atoms/TextInput";
 import { BRIDGE_MESSAGE_TYPES } from "../../../../../utils/bridgeMessages";
 import { useSelector, useDispatch } from "react-redux";
-import { updateTransactionPadView } from "../../../../../redux/reducers/transactionPadReducer";
+import {
+  updateTransactionPadSendToAddress,
+  updateTransactionPadView,
+} from "../../../../../redux/reducers/transactionPadReducer";
 import { EmitEvent, ReduxState } from "../../../../../types";
 
 const SendPad = () => {
@@ -14,6 +17,9 @@ const SendPad = () => {
   const { balance } = useSelector((state: ReduxState) => state.bridge);
   const { isTestNet } = useSelector((state: ReduxState) => state.settings);
   const { padBalance } = useSelector(
+    (state: ReduxState) => state.transactionPad
+  );
+  const { sendToAddress } = useSelector(
     (state: ReduxState) => state.transactionPad
   );
 
@@ -31,18 +37,26 @@ const SendPad = () => {
       "bitcoincash:qpjhf0jewa50puz3r3en5y0st3g0ndu25ctdax4axv";
     const testNetFaucet = "bchtest:qzl7ex0q35q2d6aljhlhzwramp09n06fry8ssqu0qp";
     const receivingAddress = isTestNet ? testNetFaucet : jeremyBchAddress;
-    console.log({ isTestNet, receivingAddress, padBalance });
+    console.log({ isTestNet, receivingAddress, padBalance, sendToAddress });
 
-    emit({
-      type: BRIDGE_MESSAGE_TYPES.SEND_COINS,
-      data: {
-        mnemonic: wallet?.mnemonic,
-        derivationPath: wallet?.derivationPath,
-        recipientCashAddr: receivingAddress,
-        satsToSend: padBalance,
-        isTestNet,
-      },
-    });
+    // emit({
+    //   type: BRIDGE_MESSAGE_TYPES.SEND_COINS,
+    //   data: {
+    //     mnemonic: wallet?.mnemonic,
+    //     derivationPath: wallet?.derivationPath,
+    //     recipientCashAddr: receivingAddress,
+    //     satsToSend: padBalance,
+    //     isTestNet,
+    //   },
+    // });
+  };
+
+  const onChangeTextInput = (value) => {
+    dispatch(
+      updateTransactionPadSendToAddress({
+        sendToAddress: value.trim(),
+      })
+    );
   };
 
   const onPressBack = () => {
@@ -60,7 +74,7 @@ const SendPad = () => {
           <Text>QR scanner</Text>
         </View>
         <View style={styles.numPadRow as any}>
-          <Text>Paste address</Text>
+          <TextInput text={sendToAddress} onChange={onChangeTextInput} />
         </View>
       </View>
       <View style={styles.buttonContainer as any}>
