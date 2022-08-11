@@ -41,7 +41,7 @@ function MenuView({ navigation }) {
               </View>
               <Text style={TYPOGRAPHY.menuHeaderGreen as any}>Community</Text>
               <Text style={TYPOGRAPHY.pWhite as any}>
-                Discuss, learn, podcasts, music, media and earning BCH.
+                Discussion, social media, art, music, podcasts and earning BCH.
               </Text>
             </View>
           </Pressable>
