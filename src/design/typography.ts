@@ -83,7 +83,19 @@ const TYPOGRAPHY = {
     fontFamily: "Montserrat_500Medium",
     textAlign: "center",
     color: COLOURS.white,
-    fontSize: 18,
+    fontSize: 16,
+  },
+  subMenuHeaderWhite14: {
+    fontFamily: "Montserrat_500Medium",
+    textAlign: "center",
+    color: COLOURS.white,
+    fontSize: 14,
+  },
+  subMenuHeaderWhite12: {
+    fontFamily: "Montserrat_500Medium",
+    textAlign: "center",
+    color: COLOURS.white,
+    fontSize: 12,
   },
   p: {
     fontFamily: "Montserrat_500Medium",

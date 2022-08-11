@@ -70,6 +70,11 @@ const CommunityView = () => {
         <Divider />
       </View>
       <View style={styles.menuRow as any}>
+        <View>
+          <Text style={TYPOGRAPHY.pWhite as any}>Up Arrow ^</Text>
+        </View>
+      </View>
+      <View style={styles.menuRow as any}>
         <Pressable onPress={() => {}}>
           <View style={styles.pressableCard as any}>
             <View style={styles.iconWrapper as any}>
@@ -79,7 +84,7 @@ const CommunityView = () => {
                 color={COLOURS.bchGreen}
               />
             </View>
-            <Text style={TYPOGRAPHY.subMenuHeaderWhite as any}>Twitter</Text>
+            <Text style={TYPOGRAPHY.subMenuHeaderWhite as any}>Home</Text>
           </View>
         </Pressable>
         <Pressable onPress={() => {}}>
@@ -91,7 +96,7 @@ const CommunityView = () => {
                 color={COLOURS.bchGreen}
               />
             </View>
-            <Text style={TYPOGRAPHY.subMenuHeaderWhite as any}>Twitter</Text>
+            <Text style={TYPOGRAPHY.subMenuHeaderWhite as any}>Music</Text>
           </View>
         </Pressable>
         <Pressable onPress={() => {}}>
@@ -103,7 +108,7 @@ const CommunityView = () => {
                 color={COLOURS.bchGreen}
               />
             </View>
-            <Text style={TYPOGRAPHY.subMenuHeaderWhite as any}>Twitter</Text>
+            <Text style={TYPOGRAPHY.subMenuHeaderWhite as any}>Memes</Text>
           </View>
         </Pressable>
         <Pressable onPress={() => {}}>
@@ -115,7 +120,7 @@ const CommunityView = () => {
                 color={COLOURS.bchGreen}
               />
             </View>
-            <Text style={TYPOGRAPHY.subMenuHeaderWhite as any}>Twitter</Text>
+            <Text style={TYPOGRAPHY.subMenuHeaderWhite14 as any}>Podcasts</Text>
           </View>
         </Pressable>
       </View>
@@ -129,7 +134,7 @@ const CommunityView = () => {
                 color={COLOURS.bchGreen}
               />
             </View>
-            <Text style={TYPOGRAPHY.subMenuHeaderWhite as any}>Twitter</Text>
+            <Text style={TYPOGRAPHY.subMenuHeaderWhite14 as any}>Youtube</Text>
           </View>
         </Pressable>
         <Pressable onPress={() => {}}>
@@ -153,7 +158,7 @@ const CommunityView = () => {
                 color={COLOURS.bchGreen}
               />
             </View>
-            <Text style={TYPOGRAPHY.subMenuHeaderWhite as any}>Twitter</Text>
+            <Text style={TYPOGRAPHY.subMenuHeaderWhite as any}>Reddit</Text>
           </View>
         </Pressable>
         <Pressable onPress={() => {}}>
@@ -165,21 +170,60 @@ const CommunityView = () => {
                 color={COLOURS.bchGreen}
               />
             </View>
-            <Text style={TYPOGRAPHY.subMenuHeaderWhite as any}>Twitter</Text>
+            <Text style={TYPOGRAPHY.subMenuHeaderWhite12 as any}>Telegram</Text>
           </View>
         </Pressable>
       </View>
-
-      {/* Home */}
-      {/* Reddit */}
-      {/* Twitter */}
-      {/* Telegram */}
-      {/* Youtube */}
-      {/* Podcasts */}
-      {/* Music */}
-      {/* Art */}
-      {/* Memes */}
-      {/* Meetups */}
+      <View style={styles.menuRow as any}>
+        <Pressable onPress={() => {}}>
+          <View style={styles.pressableCard as any}>
+            <View style={styles.iconWrapper as any}>
+              <FontAwesomeIcon
+                icon={faHashtag}
+                size={25}
+                color={COLOURS.bchGreen}
+              />
+            </View>
+            <Text style={TYPOGRAPHY.subMenuHeaderWhite14 as any}>Insta</Text>
+          </View>
+        </Pressable>
+        <Pressable onPress={() => {}}>
+          <View style={styles.pressableCard as any}>
+            <View style={styles.iconWrapper as any}>
+              <FontAwesomeIcon
+                icon={faHashtag}
+                size={25}
+                color={COLOURS.bchGreen}
+              />
+            </View>
+            <Text style={TYPOGRAPHY.subMenuHeaderWhite as any}>X</Text>
+          </View>
+        </Pressable>
+        <Pressable onPress={() => {}}>
+          <View style={styles.pressableCard as any}>
+            <View style={styles.iconWrapper as any}>
+              <FontAwesomeIcon
+                icon={faHashtag}
+                size={25}
+                color={COLOURS.bchGreen}
+              />
+            </View>
+            <Text style={TYPOGRAPHY.subMenuHeaderWhite as any}>X</Text>
+          </View>
+        </Pressable>
+        <Pressable onPress={() => {}}>
+          <View style={styles.pressableCard as any}>
+            <View style={styles.iconWrapper as any}>
+              <FontAwesomeIcon
+                icon={faHashtag}
+                size={25}
+                color={COLOURS.bchGreen}
+              />
+            </View>
+            <Text style={TYPOGRAPHY.subMenuHeaderWhite12 as any}>X</Text>
+          </View>
+        </Pressable>
+      </View>
     </View>
   );
 };
