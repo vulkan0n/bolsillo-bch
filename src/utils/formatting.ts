@@ -50,8 +50,10 @@ export const displaySatsAsUsd = (sats: string): string => {
   return displayUsd(convertSatsToUsd(sats));
 };
 
-export const formatStringToCashAddress = (string: string): string => {
-  const { isTestNet } = useSelector((state: ReduxState) => state.settings);
+export const formatStringToCashAddress = (
+  string: string,
+  isTestNet: boolean = false
+): string => {
   const testNetPrefix = "bchtest:";
   const mainNetPrefix = "bitcoincash:";
   const isPrefix =

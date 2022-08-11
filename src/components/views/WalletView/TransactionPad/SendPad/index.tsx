@@ -55,7 +55,7 @@ const SendPad = () => {
   const onChangeTextInput = (value) => {
     dispatch(
       updateTransactionPadSendToAddress({
-        sendToAddress: formatStringToCashAddress(value),
+        sendToAddress: formatStringToCashAddress(value, isTestNet),
       })
     );
   };
@@ -75,7 +75,11 @@ const SendPad = () => {
           <Text>QR scanner</Text>
         </View>
         <View style={styles.numPadRow as any}>
-          <TextInput text={sendToAddress} onChange={onChangeTextInput} />
+          <TextInput
+            text={sendToAddress}
+            onChange={onChangeTextInput}
+            isSmallText
+          />
         </View>
       </View>
       <View style={styles.buttonContainer as any}>

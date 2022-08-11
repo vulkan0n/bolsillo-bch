@@ -5,12 +5,17 @@ import styles from "./styles";
 interface Props {
   text: string;
   onChange?: (value: string) => void;
+  isSmallText?: boolean;
 }
 
-const TextInput = ({ text = "", onChange = () => {} }: Props) => {
+const TextInput = ({
+  text = "",
+  onChange = () => {},
+  isSmallText = false,
+}: Props) => {
   return (
     <RNTextInput
-      style={styles.input as any}
+      style={styles({ isSmallText }).input as any}
       onChangeText={onChange}
       value={text}
     />
