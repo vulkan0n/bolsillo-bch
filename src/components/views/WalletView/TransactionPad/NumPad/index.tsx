@@ -22,6 +22,8 @@ const NumPad = () => {
   const isSatoshiDenominated = true;
   const availableBalance = balance?.sat;
 
+  const isSendDisabled = padBalance === "0";
+
   const onPress = (n) => {
     if (n === "<") {
       if (padBalance?.length > 1) {
@@ -129,7 +131,7 @@ const NumPad = () => {
         </View>
       </View>
       <View style={styles.buttonContainer as any}>
-        <Button onPress={onPressSend} isSmall isDisabled={true}>
+        <Button onPress={onPressSend} isSmall isDisabled={isSendDisabled}>
           Send
         </Button>
         <Button variant="secondary" onPress={onPressReceive} isSmall>
