@@ -87,9 +87,7 @@ function MenuView({ navigation }) {
                 />
               </View>
               <Text style={TYPOGRAPHY.menuHeaderGreen as any}>Settings</Text>
-              <Text style={TYPOGRAPHY.pWhite as any}>
-                Currency, unit display, etc.
-              </Text>
+              <Text style={TYPOGRAPHY.pWhite as any}>Customise your app.</Text>
             </View>
           </Pressable>
         </View>
