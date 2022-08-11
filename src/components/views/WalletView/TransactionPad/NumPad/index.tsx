@@ -13,9 +13,7 @@ import { ReduxState } from "../../../../../types";
 
 const NumPad = () => {
   const dispatch = useDispatch();
-  const { wallet } = useSelector((state: ReduxState) => state.bridge);
   const { balance } = useSelector((state: ReduxState) => state.bridge);
-  const { isTestNet } = useSelector((state: ReduxState) => state.settings);
   const { padBalance } = useSelector(
     (state: ReduxState) => state.transactionPad
   );
