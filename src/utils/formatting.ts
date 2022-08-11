@@ -2,17 +2,6 @@ import { convertSatsToUsd } from "./exchangeRates";
 import { useSelector } from "react-redux";
 import { ReduxState } from "../types";
 
-export const displayUsd = (sats: string): string => {
-  if (!sats) {
-    return "USD $0.00";
-  }
-
-  // 2 decimal places, rounding down
-  const res = Math.floor(parseFloat(sats) * 100) / 100;
-
-  return `USD $${res.toFixed(2)}`;
-};
-
 // Split string into groups of 3 characters, starting from right side
 // https://stackoverflow.com/a/63716019
 function chunkRight(str, size = 3) {
@@ -28,6 +17,22 @@ function chunkRight(str, size = 3) {
     return chunks;
   }
 }
+
+export const displayUsd = (sats: string): string => {
+  if (!sats) {
+    return "USD $0.00";
+  }
+
+  // 2 decimal places, rounding down
+  const decmialisedUsd = (Math.floor(parseFloat(sats) * 100) / 100).toFixed(2);
+
+  // Split pre-decimal number into chunks of 3, starting from right
+  const splitString = decmialisedUsd.toString().split(".");
+  const preDecimal = chunkRight(splitString?.[0]);
+  const postDecimal = splitString?.[1];
+
+  return `USD $${preDecimal}.${postDecimal}`;
+};
 
 export const displaySats = (sats: string): string => {
   if (!sats) {
