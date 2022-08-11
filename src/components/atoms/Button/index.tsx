@@ -4,6 +4,7 @@ import styles from "./styles";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faPaperPlane } from "@fortawesome/free-solid-svg-icons/faPaperPlane";
 import { faBitcoinSign } from "@fortawesome/free-solid-svg-icons/faBitcoinSign";
+import { faChevronLeft } from "@fortawesome/free-solid-svg-icons/faChevronLeft";
 import COLOURS from "../../../design/colours";
 
 interface Props {
@@ -12,7 +13,7 @@ interface Props {
   variant?: "primary" | "secondary";
   isSmall?: boolean;
   isDisabled?: boolean;
-  icon?: "" | "faPaperPlane" | "faBitcoinSign";
+  icon?: "" | "faPaperPlane" | "faBitcoinSign" | "faChevronLeft";
 }
 
 const Button = ({
@@ -44,24 +45,26 @@ const Button = ({
         return faPaperPlane;
       case "faBitcoinSign":
         return faBitcoinSign;
+      case "faChevronLeft":
+        return faChevronLeft;
       default:
         return null;
     }
   };
 
+  const buttonStyle = styles({ variant, isSmall, isDisabled });
+
   return (
     <Pressable
       onPress={isDisabled ? () => {} : onPress}
-      style={styles({ variant, isSmall, isDisabled }).button as any}
+      style={buttonStyle.button as any}
     >
       {!!icon && (
-        <View style={styles({}).iconContainer}>
+        <View style={buttonStyle.iconContainer}>
           <FontAwesomeIcon icon={iconImport()} size={20} color={iconColour()} />
         </View>
       )}
-      <Text style={styles({ variant, isSmall, isDisabled }).buttonText}>
-        {children}
-      </Text>
+      <Text style={buttonStyle.buttonText}>{children}</Text>
     </Pressable>
   );
 };

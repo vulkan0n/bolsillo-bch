@@ -89,7 +89,12 @@ const SendPad = () => {
         <Button icon={"faPaperPlane"} onPress={onPressSend} isSmall>
           Send
         </Button>
-        <Button variant="secondary" onPress={onPressBack} isSmall>
+        <Button
+          icon={"faChevronLeft"}
+          variant="secondary"
+          onPress={onPressBack}
+          isSmall
+        >
           Back
         </Button>
       </View>

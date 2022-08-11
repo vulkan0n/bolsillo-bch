@@ -48,7 +48,12 @@ const ReceivePad = () => {
         <Button onPress={onPressShare} isSmall>
           Share
         </Button>
-        <Button variant="secondary" onPress={onPressBack} isSmall>
+        <Button
+          icon={"faChevronLeft"}
+          variant="secondary"
+          onPress={onPressBack}
+          isSmall
+        >
           Back
         </Button>
       </View>
