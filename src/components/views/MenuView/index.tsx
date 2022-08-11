@@ -73,7 +73,7 @@ function MenuView({ navigation }) {
               </View>
               <Text style={TYPOGRAPHY.menuHeaderGreen as any}>Devs</Text>
               <Text style={TYPOGRAPHY.pWhite as any}>
-                Credit, code & donations!
+                Credit, code & donations.
               </Text>
             </View>
           </Pressable>
