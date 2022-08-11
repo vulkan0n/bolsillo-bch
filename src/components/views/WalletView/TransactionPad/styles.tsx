@@ -5,7 +5,7 @@ const styles = {
   transactionPad: {
     backgroundColor: COLOURS.white,
     flex: 1,
-    justifyContent: "start",
+    justifyContent: "flex-start",
     alignItems: "center",
     width: "100%",
     padding: SPACING.ten,

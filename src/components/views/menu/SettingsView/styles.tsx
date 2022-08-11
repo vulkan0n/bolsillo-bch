@@ -7,7 +7,7 @@ const styles = {
     paddingLeft: SPACING.twentyFive,
     paddingRight: SPACING.twentyFive,
     flex: 1,
-    justifyContent: "start",
+    justifyContent: "flex-start",
     alignItems: "center",
   },
   optionRow: {

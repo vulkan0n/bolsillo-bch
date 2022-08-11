@@ -19,7 +19,7 @@ const styles = {
     backgroundColor: COLOURS.black,
     padding: SPACING.ten,
     flex: 1,
-    justifyContent: "start",
+    justifyContent: "flex-start",
     alignItems: "center",
     borderRadius: SPACING.borderRadius,
     marginLeft: SPACING.fifteen,

@@ -86,7 +86,7 @@ function WalletView({ route, navigation }) {
         />
       </Pressable>
 
-      {/*<Pressable onPress={onPressBalance} style={styles.widePressable}>
+      <Pressable onPress={onPressBalance} style={styles.widePressable}>
         <View style={styles.primaryTitlesWrapper}>
           <Text style={TYPOGRAPHY.h1 as any}>
             {isCryptoDenominated ? satBalance : usdBalance}
@@ -97,7 +97,7 @@ function WalletView({ route, navigation }) {
         </View>
       </Pressable>
 
-      <TransactionPad /> */}
+      <TransactionPad />
     </View>
   );
 }

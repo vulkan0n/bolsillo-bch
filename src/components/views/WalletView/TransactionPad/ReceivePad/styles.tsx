@@ -5,7 +5,7 @@ const styles = {
   inputBackground: {
     backgroundColor: COLOURS.white,
     flex: 1,
-    justifyContent: "start",
+    justifyContent: "flex-start",
     alignItems: "center",
     width: "100%",
     borderRadius: SPACING.borderRadius,

@@ -6,7 +6,7 @@ const styles = {
     backgroundColor: COLOURS.black,
     padding: SPACING.twentyFive,
     flex: 1,
-    justifyContent: "start",
+    justifyContent: "flex-start",
     alignItems: "center",
   },
   iconContainer: {

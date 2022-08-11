@@ -26,10 +26,12 @@ const TransactionPad = () => {
     }
   };
 
+  //
+
   return (
     <View style={styles.transactionPad as any}>
-      <LiveBalance />
-      {component()}
+      {/* <LiveBalance /> */}
+      {/* {component()} */}
     </View>
   );
 };
