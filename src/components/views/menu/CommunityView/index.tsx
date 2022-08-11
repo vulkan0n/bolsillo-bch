@@ -9,7 +9,11 @@ import { faMessage } from "@fortawesome/free-solid-svg-icons/faMessage";
 import COLOURS from "../../../../design/colours";
 import Button from "../../../atoms/Button";
 
-const CommunityView = () => {
+const CommunityView = ({ navigation }) => {
+  const onPressMusic = () => {
+    navigation.navigate("Music");
+  };
+
   return (
     <View style={styles.container as any}>
       <View style={styles.background as any}>
@@ -87,7 +91,7 @@ const CommunityView = () => {
             <Text style={TYPOGRAPHY.subMenuHeaderWhite as any}>Home</Text>
           </View>
         </Pressable>
-        <Pressable onPress={() => {}}>
+        <Pressable onPress={onPressMusic}>
           <View style={styles.pressableCard as any}>
             <View style={styles.iconWrapper as any}>
               <FontAwesomeIcon
@@ -196,7 +200,7 @@ const CommunityView = () => {
                 color={COLOURS.bchGreen}
               />
             </View>
-            <Text style={TYPOGRAPHY.subMenuHeaderWhite as any}>X</Text>
+            <Text style={TYPOGRAPHY.subMenuHeaderWhite as any}>Read</Text>
           </View>
         </Pressable>
         <Pressable onPress={() => {}}>
@@ -208,7 +212,7 @@ const CommunityView = () => {
                 color={COLOURS.bchGreen}
               />
             </View>
-            <Text style={TYPOGRAPHY.subMenuHeaderWhite as any}>X</Text>
+            <Text style={TYPOGRAPHY.subMenuHeaderWhite as any}>Noise</Text>
           </View>
         </Pressable>
         <Pressable onPress={() => {}}>

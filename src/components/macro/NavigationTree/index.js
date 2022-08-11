@@ -11,6 +11,7 @@ import DevelopersView from "../../views/menu/DevelopersView";
 import SettingsView from "../../views/menu/SettingsView";
 import ResetWalletView from "../../views/menu/ResetWalletView";
 import TransactionSuccessView from "../../views/TransactionSuccessView";
+import MusicView from "../../views/menu/CommunityView/MusicView";
 import COLOURS from "../../../design/colours";
 import TYPOGRAPHY from "../../../design/typography";
 
@@ -121,6 +122,18 @@ const NavigationTree = () => {
               backgroundColor: COLOURS.bchGreen,
             },
             headerTitle: (props) => <Text style={TYPOGRAPHY.header}></Text>,
+          }}
+        />
+        <Stack.Screen
+          name="Music"
+          component={MusicView}
+          options={{
+            headerStyle: {
+              backgroundColor: COLOURS.black,
+            },
+            headerTitle: (props) => (
+              <Text style={TYPOGRAPHY.header}>Music</Text>
+            ),
           }}
         />
       </Stack.Navigator>

@@ -48,8 +48,7 @@ function MenuView({ navigation }) {
                 BCH Community
               </Text>
               <Text style={TYPOGRAPHY.pWhite as any}>
-                Discussion, social media, art, music, podcasts, meetups and
-                more.
+                Discussion, social media, art, music, podcasts, memes and more.
               </Text>
             </View>
           </Pressable>
