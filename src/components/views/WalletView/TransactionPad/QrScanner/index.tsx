@@ -2,10 +2,13 @@ import React, { useState, useEffect } from "react";
 import { Text, View, StyleSheet, Button } from "react-native";
 import { BarCodeScanner } from "expo-barcode-scanner";
 import styles from "./styles";
+import { useDispatch } from "react-redux";
+import { updateTransactionPadSendToAddress } from "../../../../../redux/reducers/transactionPadReducer";
+import { isValidBchAddress } from "../../../../../utils/utils";
 
 function QrScanner() {
+  const dispatch = useDispatch();
   const [hasPermission, setHasPermission] = useState(null);
-  const [scanned, setScanned] = useState(false);
 
   useEffect(() => {
     const getBarCodeScannerPermissions = async () => {
@@ -17,8 +20,10 @@ function QrScanner() {
   }, []);
 
   const handleBarCodeScanned = ({ type, data }) => {
-    setScanned(true);
-    alert(`Bar code with type ${type} and data ${data} has been scanned!`);
+    const isBchAddress = isValidBchAddress(data);
+    if (isBchAddress) {
+      dispatch(updateTransactionPadSendToAddress({ sendToAddress: data }));
+    }
   };
 
   if (hasPermission === null) {
@@ -31,12 +36,9 @@ function QrScanner() {
   return (
     <View style={styles.container as any}>
       <BarCodeScanner
-        onBarCodeScanned={scanned ? null : handleBarCodeScanned}
+        onBarCodeScanned={handleBarCodeScanned}
         style={styles.qrScanner as any}
       />
-      {scanned && (
-        <Button title={"Tap to Scan Again"} onPress={() => setScanned(false)} />
-      )}
     </View>
   );
 }
