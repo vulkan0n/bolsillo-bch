@@ -46,7 +46,6 @@ function WalletView({ route, navigation }) {
 
   // Refresh wallet when toggling to/from test net
   useEffect(() => {
-    console.log("triggering refresh");
     emit({
       type: BRIDGE_MESSAGE_TYPES.REFRESH_WALLET,
       data: { wallet, isTestNet },

@@ -61,5 +61,5 @@ export const formatStringToCashAddress = (
     (!isTestNet && string.includes(mainNetPrefix));
   const prefix = isTestNet ? testNetPrefix : mainNetPrefix;
   const address = string.trim().toLowerCase();
-  return `${isPrefix ? prefix : ""}${address}`;
+  return `${isPrefix ? "" : prefix}${address}`;
 };
