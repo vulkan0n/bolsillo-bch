@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, DeviceEventEmitter } from "react-native";
+import { View } from "react-native";
 import styles from "./styles";
 import Button from "../../../../atoms/Button";
 import TextInput from "../../../../atoms/TextInput";
@@ -13,6 +13,7 @@ import {
 import { ReduxState } from "../../../../../types";
 import { formatStringToCashAddress } from "../../../../../utils/formatting";
 import emit from "../../../../../utils/emit";
+import QrScanner from "../QrScanner";
 
 const SendPad = () => {
   const dispatch = useDispatch();
@@ -73,8 +74,8 @@ const SendPad = () => {
   return (
     <View style={styles.inputBackground as any}>
       <View style={styles.numPad as any}>
-        <View style={styles.numPadRow as any}>
-          <Text>QR scanner</Text>
+        <View style={styles.qrScannerRow as any}>
+          <QrScanner />
         </View>
         <View style={styles.numPadRow as any}>
           <TextInput
