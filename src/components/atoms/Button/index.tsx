@@ -1,5 +1,5 @@
 import React from "react";
-import { Text, TouchableOpacity } from "react-native";
+import { Text, Pressable } from "react-native";
 import styles from "./styles";
 
 interface Props {
@@ -16,12 +16,12 @@ const Button = ({
   onPress = () => {},
 }: Props) => {
   return (
-    <TouchableOpacity
+    <Pressable
       onPress={onPress}
       style={styles({ variant, isSmall }).button as any}
     >
       <Text style={styles({ variant, isSmall }).buttonText}>{children}</Text>
-    </TouchableOpacity>
+    </Pressable>
   );
 };
 
