@@ -15,6 +15,15 @@ const styles = {
     marginTop: SPACING.five,
     marginBottom: SPACING.ten,
   },
+  background: {
+    backgroundColor: COLOURS.white,
+    padding: SPACING.twentyFive,
+    borderRadius: SPACING.borderRadius,
+    flex: 1,
+    justifyContent: "flex-start",
+    alignItems: "center",
+    width: "100%",
+  },
 };
 
 export default styles;
