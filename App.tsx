@@ -99,7 +99,10 @@ export default function App() {
   );
 
   // Listens for components that need to send a message to the Bridge
-  DeviceEventEmitter.addListener("event.emitEvent", (event) => emit(event));
+  DeviceEventEmitter.addListener("event.emitEvent", (event) => {
+    console.log("sending to bridge", { event });
+    emit(event);
+  });
 
   if (!fontsLoaded) {
     return null;

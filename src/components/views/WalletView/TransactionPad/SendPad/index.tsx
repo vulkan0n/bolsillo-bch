@@ -8,6 +8,7 @@ import { useSelector, useDispatch } from "react-redux";
 import {
   updateTransactionPadSendToAddress,
   updateTransactionPadView,
+  updateTransactionPadBalance,
 } from "../../../../../redux/reducers/transactionPadReducer";
 import { EmitEvent, ReduxState } from "../../../../../types";
 import { formatStringToCashAddress } from "../../../../../utils/formatting";
@@ -15,7 +16,6 @@ import { formatStringToCashAddress } from "../../../../../utils/formatting";
 const SendPad = () => {
   const dispatch = useDispatch();
   const { wallet } = useSelector((state: ReduxState) => state.bridge);
-  const { balance } = useSelector((state: ReduxState) => state.bridge);
   const { isTestNet } = useSelector((state: ReduxState) => state.settings);
   const { padBalance } = useSelector(
     (state: ReduxState) => state.transactionPad
@@ -34,22 +34,28 @@ const SendPad = () => {
   }, []);
 
   const onPressSend = () => {
-    const jeremyBchAddress =
-      "bitcoincash:qpjhf0jewa50puz3r3en5y0st3g0ndu25ctdax4axv";
-    const testNetFaucet = "bchtest:qzl7ex0q35q2d6aljhlhzwramp09n06fry8ssqu0qp";
-    const receivingAddress = isTestNet ? testNetFaucet : jeremyBchAddress;
-    console.log({ isTestNet, receivingAddress, padBalance, sendToAddress });
+    console.log("pressed send!!");
+    emit({
+      type: BRIDGE_MESSAGE_TYPES.SEND_COINS,
+      data: {
+        mnemonic: wallet?.mnemonic,
+        derivationPath: wallet?.derivationPath,
+        recipientCashAddr: sendToAddress,
+        satsToSend: padBalance,
+        isTestNet,
+      },
+    });
 
-    // emit({
-    //   type: BRIDGE_MESSAGE_TYPES.SEND_COINS,
-    //   data: {
-    //     mnemonic: wallet?.mnemonic,
-    //     derivationPath: wallet?.derivationPath,
-    //     recipientCashAddr: receivingAddress,
-    //     satsToSend: padBalance,
-    //     isTestNet,
-    //   },
-    // });
+    dispatch(
+      updateTransactionPadBalance({
+        padBalance: "",
+      })
+    );
+    dispatch(
+      updateTransactionPadSendToAddress({
+        sendToAddress: "",
+      })
+    );
   };
 
   const onChangeTextInput = (value) => {
