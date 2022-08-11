@@ -11,10 +11,6 @@ import COLOURS from "../../../../design/colours";
 const CommunityView = () => {
   return (
     <View style={styles.container as any}>
-      <Image
-        style={styles.logo}
-        source={require("../../../../assets/images/logo.jpg")}
-      />
       <Text style={TYPOGRAPHY.h1 as any}>BCH Community</Text>
       <View style={styles.background as any}>
         <Text style={TYPOGRAPHY.h2black as any}>Reddit</Text>
@@ -31,9 +27,7 @@ const CommunityView = () => {
           Home of big-block Bitcoin discussion since before the BTC/BCH split.
         </Text>
         <Text style={TYPOGRAPHY.p as any}>/r/Bitcoincash</Text>
-        <Text style={TYPOGRAPHY.p as any}>
-          /r/btc minus the historical context
-        </Text>
+        <Text style={TYPOGRAPHY.p as any}>Just BCH, no Bitcoin debates.</Text>
 
         <Divider />
         {/* TODO: Get better icon */}
