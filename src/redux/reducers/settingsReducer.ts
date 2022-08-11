@@ -7,7 +7,7 @@ export interface SettingsState {
 
 const initialState = {
   isCryptoDenominated: true,
-  isTestNet: true,
+  isTestNet: false,
 } as SettingsState;
 
 const settingsSlice = createSlice({
