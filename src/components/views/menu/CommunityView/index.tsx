@@ -1,6 +1,7 @@
 import React from "react";
 import { View, Image, Text } from "react-native";
 import TYPOGRAPHY from "../../../../design/typography";
+import Divider from "../../../atoms/Divider";
 import styles from "./styles";
 
 const CommunityView = () => {
