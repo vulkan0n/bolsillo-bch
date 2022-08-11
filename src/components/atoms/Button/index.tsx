@@ -4,23 +4,27 @@ import styles from "./styles";
 
 interface Props {
   children: any;
+  onPress: () => void;
   variant?: "primary" | "secondary";
   isSmall?: boolean;
-  onPress: () => void;
+  isDisabled?: boolean;
 }
 
 const Button = ({
   children,
-  variant = "primary",
-  isSmall,
   onPress = () => {},
+  variant = "primary",
+  isSmall = false,
+  isDisabled = false,
 }: Props) => {
   return (
     <Pressable
-      onPress={onPress}
-      style={styles({ variant, isSmall }).button as any}
+      onPress={isDisabled ? () => {} : onPress}
+      style={styles({ variant, isSmall, isDisabled }).button as any}
     >
-      <Text style={styles({ variant, isSmall }).buttonText}>{children}</Text>
+      <Text style={styles({ variant, isSmall, isDisabled }).buttonText}>
+        {children}
+      </Text>
     </Pressable>
   );
 };

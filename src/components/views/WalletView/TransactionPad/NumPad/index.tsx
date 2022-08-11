@@ -129,7 +129,7 @@ const NumPad = () => {
         </View>
       </View>
       <View style={styles.buttonContainer as any}>
-        <Button onPress={onPressSend} isSmall>
+        <Button onPress={onPressSend} isSmall isDisabled={true}>
           Send
         </Button>
         <Button variant="secondary" onPress={onPressReceive} isSmall>

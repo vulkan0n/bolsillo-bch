@@ -1,8 +1,12 @@
 import SPACING from "../../../design/spacing";
 import COLOURS from "../../../design/colours";
 
-const styles = ({ variant = "primary", isSmall = false }) => {
+const styles = ({ variant = "primary", isSmall = false, isDisabled }) => {
   const borderColor = () => {
+    if (isDisabled) {
+      return COLOURS.lightGrey;
+    }
+
     switch (variant) {
       case "primary":
         return COLOURS.bchGreen;
@@ -14,6 +18,10 @@ const styles = ({ variant = "primary", isSmall = false }) => {
   };
 
   const backgroundColor = () => {
+    if (isDisabled) {
+      return COLOURS.white;
+    }
+
     switch (variant) {
       case "primary":
         return COLOURS.bchGreen;
@@ -25,6 +33,10 @@ const styles = ({ variant = "primary", isSmall = false }) => {
   };
 
   const textColor = () => {
+    if (isDisabled) {
+      return COLOURS.lightGrey;
+    }
+
     switch (variant) {
       case "primary":
         return COLOURS.white;
@@ -53,10 +65,10 @@ const styles = ({ variant = "primary", isSmall = false }) => {
       // iOS drop shadow
       shadowColor: COLOURS.black,
       shadowOffset: { width: -2, height: 4 },
-      shadowOpacity: 0.2,
-      shadowRadius: 3,
+      shadowOpacity: isDisabled ? 0 : 0.2,
+      shadowRadius: isDisabled ? 0 : 3,
       // Android drop shadow
-      elevation: 3,
+      elevation: isDisabled ? 0 : 3,
     },
     buttonText: {
       fontFamily: "Montserrat_500Medium",
