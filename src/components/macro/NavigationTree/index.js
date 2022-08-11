@@ -27,7 +27,7 @@ const NavigationTree = () => {
               backgroundColor: COLOURS.black,
             },
             headerTitle: (props) => (
-              <Text style={TYPOGRAPHY.header}>Selene Wallet</Text>
+              <Text style={TYPOGRAPHY.header}>Selene BCH Wallet</Text>
             ),
           }}
         />
