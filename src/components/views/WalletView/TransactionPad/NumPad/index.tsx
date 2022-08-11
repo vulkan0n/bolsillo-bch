@@ -3,7 +3,6 @@ import { View, Text, Pressable } from "react-native";
 import styles from "./styles";
 import Button from "../../../../atoms/Button";
 import TYPOGRAPHY from "../../../../../design/typography";
-import { BRIDGE_MESSAGE_TYPES } from "../../../../../utils/bridgeMessages";
 import { useSelector, useDispatch } from "react-redux";
 import {
   updateTransactionPadBalance,
@@ -12,11 +11,7 @@ import {
 } from "../../../../../redux/reducers/transactionPadReducer";
 import { ReduxState } from "../../../../../types";
 
-interface Props {
-  emit: ({}) => {};
-}
-
-const NumPad = ({ emit }: Props) => {
+const NumPad = () => {
   const dispatch = useDispatch();
   const { wallet } = useSelector((state: ReduxState) => state.bridge);
   const { balance } = useSelector((state: ReduxState) => state.bridge);
@@ -82,22 +77,11 @@ const NumPad = ({ emit }: Props) => {
   };
 
   const onPressSend = () => {
-    const jeremyBchAddress =
-      "bitcoincash:qpjhf0jewa50puz3r3en5y0st3g0ndu25ctdax4axv";
-    const testNetFaucet = "bchtest:qzl7ex0q35q2d6aljhlhzwramp09n06fry8ssqu0qp";
-    const receivingAddress = isTestNet ? testNetFaucet : jeremyBchAddress;
-
-    console.log({ isTestNet, receivingAddress });
-    emit({
-      type: BRIDGE_MESSAGE_TYPES.SEND_COINS,
-      data: {
-        mnemonic: wallet?.mnemonic,
-        derivationPath: wallet?.derivationPath,
-        recipientCashAddr: receivingAddress,
-        satsToSend: isTestNet ? "1099" : "10599",
-        isTestNet,
-      },
-    });
+    dispatch(
+      updateTransactionPadView({
+        view: "Send",
+      })
+    );
   };
 
   const onPressReceive = () => {

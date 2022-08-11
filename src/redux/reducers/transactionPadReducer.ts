@@ -2,13 +2,13 @@ import { createSlice } from "@reduxjs/toolkit";
 
 export interface TransactionPadState {
   padBalance: string;
-  view: "" | "Receive";
+  view: "" | "NumPad" | "Send" | "Receive";
   error: string;
 }
 
 const initialState = {
   padBalance: "0",
-  view: "",
+  view: "NumPad",
   error: "",
 } as TransactionPadState;
 
