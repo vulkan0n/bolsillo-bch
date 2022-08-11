@@ -27,6 +27,38 @@ const styles = {
   icon: {
     marginBottom: SPACING.ten,
   },
+  menuRow: {
+    height: 100,
+    width: "100%",
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  pressableCard: {
+    margin: 10,
+    padding: 5,
+    height: 80,
+    width: 80,
+    backgroundColor: COLOURS.black,
+    borderRadius: SPACING.borderRadius,
+    borderWidth: 2,
+    borderColor: COLOURS.bchGreen,
+    // iOS drop shadow
+    shadowColor: COLOURS.bchGreen,
+    shadowOffset: { width: -2, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
+    // Android drop shadow
+    elevation: 3,
+  },
+  iconWrapper: {
+    flex: 1,
+    width: "100%",
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: SPACING.five,
+    marginBottom: SPACING.ten,
+  },
 };
 
 export default styles;

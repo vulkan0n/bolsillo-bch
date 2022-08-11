@@ -79,6 +79,12 @@ const TYPOGRAPHY = {
     color: COLOURS.bchGreen,
     fontSize: 22,
   },
+  subMenuHeaderWhite: {
+    fontFamily: "Montserrat_500Medium",
+    textAlign: "center",
+    color: COLOURS.white,
+    fontSize: 18,
+  },
   p: {
     fontFamily: "Montserrat_500Medium",
     textAlign: "center",
