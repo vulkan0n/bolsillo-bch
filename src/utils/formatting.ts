@@ -47,6 +47,8 @@ export const displaySats = (sats: string): string => {
 };
 
 export const displaySatsAsUsd = (sats: string): string => {
+  console.log("displaySatsAsUsd");
+  console.log({ sats });
   return displayUsd(convertSatsToUsd(sats));
 };
 

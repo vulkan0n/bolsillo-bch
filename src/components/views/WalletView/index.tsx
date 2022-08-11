@@ -7,6 +7,7 @@ import styles from "./styles";
 import { BRIDGE_MESSAGE_TYPES } from "../../../utils/bridgeMessages";
 import { displaySats, displaySatsAsUsd } from "../../../utils/formatting";
 import { ReduxState } from "../../../types";
+import emit from "../../../utils/emit";
 
 function WalletView({ route, navigation }) {
   const { wallet } = useSelector((state: ReduxState) => state.bridge);
@@ -96,7 +97,7 @@ function WalletView({ route, navigation }) {
         </View>
       </Pressable>
 
-      <TransactionPad emit={emit} />
+      <TransactionPad />
     </View>
   );
 }

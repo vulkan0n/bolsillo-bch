@@ -40,7 +40,7 @@ const SendPad = () => {
 
     dispatch(
       updateTransactionPadBalance({
-        padBalance: "",
+        padBalance: "0",
       })
     );
     dispatch(
