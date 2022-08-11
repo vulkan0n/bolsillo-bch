@@ -44,7 +44,9 @@ function MenuView({ navigation }) {
                   color={COLOURS.bchGreen}
                 />
               </View>
-              <Text style={TYPOGRAPHY.menuHeaderGreen as any}>Community</Text>
+              <Text style={TYPOGRAPHY.menuHeaderGreen as any}>
+                BCH Community
+              </Text>
               <Text style={TYPOGRAPHY.pWhite as any}>
                 Discussion, social media, art, music, podcasts, meetups and
                 more.

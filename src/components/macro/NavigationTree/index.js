@@ -4,6 +4,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import WalletView from "../../views/WalletView";
 import MenuView from "../../views/MenuView";
+import CommunityView from "../../views/menu/CommunityView";
 import LearnView from "../../views/menu/LearnView";
 import BackupView from "../../views/menu/BackupView";
 import DevelopersView from "../../views/menu/DevelopersView";
@@ -39,6 +40,18 @@ const NavigationTree = () => {
               backgroundColor: COLOURS.black,
             },
             headerTitle: (props) => <Text style={TYPOGRAPHY.header}>Menu</Text>,
+          }}
+        />
+        <Stack.Screen
+          name="Community"
+          component={CommunityView}
+          options={{
+            headerStyle: {
+              backgroundColor: COLOURS.black,
+            },
+            headerTitle: (props) => (
+              <Text style={TYPOGRAPHY.header}>BCH Community</Text>
+            ),
           }}
         />
         <Stack.Screen
