@@ -56,7 +56,13 @@ function MenuView({ navigation }) {
         </View>
         <View style={styles.menuRow as any}>
           <PressableCard
-            title={"BCH Community"}
+            title={"Learn"}
+            text={"Understand Bitcoin Cash"}
+            onPress={onPressLearn}
+            icon={faBookOpenReader}
+          />
+          <PressableCard
+            title={"Backup"}
             text={"Keep your money safe!"}
             onPress={onPressBackup}
             icon={faPiggyBank}
