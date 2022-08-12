@@ -3,7 +3,7 @@ import { View, Text } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import WalletView from "../../views/WalletView";
-import MenuView from "../../views/MenuView";
+import IrlView from "../../views/IrlView";
 import DevelopersView from "../../views/menu/DevelopersView";
 import TransactionSuccessView from "../../views/TransactionSuccessView";
 import MusicView from "../../views/menu/CommunityView/MusicView";
@@ -77,7 +77,7 @@ const NavigationTree = () => {
         />
         <Tab.Screen
           name="IRL"
-          component={MenuView}
+          component={IrlView}
           options={{
             headerStyle: {
               backgroundColor: COLOURS.black,
@@ -151,7 +151,7 @@ const NavigationTree = () => {
         />
         <Stack.Screen
           name="Menu"
-          component={MenuView}
+          component={IrlView}
           options={{
             headerStyle: {
               backgroundColor: COLOURS.black,
