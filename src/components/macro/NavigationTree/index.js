@@ -1,5 +1,5 @@
 import React from "react";
-import { Text } from "react-native";
+import { View, Text } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import WalletView from "../../views/WalletView";
@@ -17,6 +17,7 @@ import TYPOGRAPHY from "../../../design/typography";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { iconImport } from "../../../design/icons";
+import SPACING from "../../../design/spacing";
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -58,6 +59,7 @@ const NavigationTree = () => {
           tabBarInactiveTintColor: COLOURS.white,
           tabBarStyle: {
             backgroundColor: COLOURS.black,
+            borderTopWidth: 0,
           },
           headerShadowVisible: false,
         })}
@@ -70,13 +72,106 @@ const NavigationTree = () => {
               backgroundColor: COLOURS.black,
             },
             headerTitle: (props) => (
-              <Text style={TYPOGRAPHY.header}>Selene BCH Wallet</Text>
+              <View
+                style={{
+                  flex: 1,
+                  flexDirection: "row",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <FontAwesomeIcon
+                  icon={iconImport("faWallet")}
+                  size={20}
+                  color={COLOURS.white}
+                  style={{ marginRight: SPACING.ten }}
+                />
+                <Text style={TYPOGRAPHY.header}>Wallet</Text>
+              </View>
             ),
           }}
         />
-        <Tab.Screen name="IRL" component={MenuView} />
-        <Tab.Screen name="Online" component={MenuView} />
-        <Tab.Screen name="More" component={MenuView} />
+        <Tab.Screen
+          name="IRL"
+          component={MenuView}
+          options={{
+            headerStyle: {
+              backgroundColor: COLOURS.black,
+            },
+            headerTitle: (props) => (
+              <View
+                style={{
+                  flex: 1,
+                  flexDirection: "row",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <FontAwesomeIcon
+                  icon={iconImport("faEarthAmericas")}
+                  size={20}
+                  color={COLOURS.white}
+                  style={{ marginRight: SPACING.ten }}
+                />
+                <Text style={TYPOGRAPHY.header}>IRL</Text>
+              </View>
+            ),
+          }}
+        />
+        <Tab.Screen
+          name="Online"
+          component={MenuView}
+          options={{
+            headerStyle: {
+              backgroundColor: COLOURS.black,
+            },
+            headerTitle: (props) => (
+              <View
+                style={{
+                  flex: 1,
+                  flexDirection: "row",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <FontAwesomeIcon
+                  icon={iconImport("faUsers")}
+                  size={20}
+                  color={COLOURS.white}
+                  style={{ marginRight: SPACING.ten }}
+                />
+                <Text style={TYPOGRAPHY.header}>Online</Text>
+              </View>
+            ),
+          }}
+        />
+        <Tab.Screen
+          name="More"
+          component={MenuView}
+          options={{
+            headerStyle: {
+              backgroundColor: COLOURS.black,
+            },
+            headerTitle: (props) => (
+              <View
+                style={{
+                  flex: 1,
+                  flexDirection: "row",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <FontAwesomeIcon
+                  icon={iconImport("faGears")}
+                  size={20}
+                  color={COLOURS.white}
+                  style={{ marginRight: SPACING.ten }}
+                />
+                <Text style={TYPOGRAPHY.header}>More</Text>
+              </View>
+            ),
+          }}
+        />
       </Tab.Navigator>
       {/* <Stack.Navigator>
         <Stack.Screen
