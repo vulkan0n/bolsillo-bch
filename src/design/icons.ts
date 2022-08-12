@@ -9,6 +9,7 @@ import { faGears } from "@fortawesome/free-solid-svg-icons/faGears";
 import { faWallet } from "@fortawesome/free-solid-svg-icons/faWallet";
 import { faEarthAmericas } from "@fortawesome/free-solid-svg-icons/faEarthAmericas";
 import { faScrewdriverWrench } from "@fortawesome/free-solid-svg-icons/faScrewdriverWrench";
+import { faBarsStaggered } from "@fortawesome/free-solid-svg-icons/faBarsStaggered";
 
 export type IconType =
   | ""
@@ -22,7 +23,8 @@ export type IconType =
   | "faGears"
   | "faWallet"
   | "faEarthAmericas"
-  | "faScrewdriverWrench";
+  | "faScrewdriverWrench"
+  | "faBarsStaggered";
 
 export const iconImport = (icon: IconType) => {
   switch (icon) {
@@ -48,6 +50,8 @@ export const iconImport = (icon: IconType) => {
       return faEarthAmericas;
     case "faScrewdriverWrench":
       return faScrewdriverWrench;
+    case "faBarsStaggered":
+      return faBarsStaggered;
     default:
       return null;
   }

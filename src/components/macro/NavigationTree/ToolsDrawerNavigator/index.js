@@ -8,6 +8,7 @@ import { getHeaderTitle } from "@react-navigation/elements";
 import { View, Text, Pressable } from "react-native";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { iconImport } from "../../../../design/icons";
+import SPACING from "../../../../design/spacing";
 
 const Drawer = createDrawerNavigator();
 
@@ -39,24 +40,36 @@ function ToolsDrawerNavigator() {
             >
               <Pressable
                 style={{
-                  backgroundColor: "blue",
                   height: "100%",
                   width: 50,
+                  justifyContent: "center",
+                  alignItems: "center",
+                  paddingLeft: SPACING.ten,
+                }}
+                onPress={() => navigation.openDrawer()}
+              >
+                <FontAwesomeIcon
+                  icon={iconImport("faBarsStaggered")}
+                  size={30}
+                  color={COLOURS.bchGreen}
+                />
+              </Pressable>
+              <View
+                style={{
+                  flex: 1,
+                  flexDirection: "row",
                   justifyContent: "center",
                   alignItems: "center",
                 }}
               >
                 <FontAwesomeIcon
                   icon={iconImport("faBookOpenReader")}
-                  size={25}
-                  color={COLOURS.white}
-                />
-              </Pressable>
-              <View>
-                <FontAwesomeIcon
-                  icon={iconImport("faBookOpenReader")}
                   size={20}
                   color={COLOURS.white}
+                  style={{
+                    marginRight: SPACING.ten,
+                    marginBottom: SPACING.ten,
+                  }}
                 />
                 <Text style={TYPOGRAPHY.h1}>{title}</Text>
               </View>
