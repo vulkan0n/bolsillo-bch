@@ -10,6 +10,9 @@ function OnlineDrawerNavigator() {
       screenOptions={{
         drawerType: "front",
         drawerActiveTintColor: COLOURS.bchGreen,
+        headerStyle: {
+          height: 70, // Specify the height of your custom header
+        },
       }}
     >
       <Drawer.Screen name="Community" component={CommunityView} />

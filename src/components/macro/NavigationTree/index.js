@@ -40,8 +40,8 @@ const NavigationTree = () => {
                 case "Online":
                   return "faUsers";
                   break;
-                case "More":
-                  return "faGears";
+                case "Tools":
+                  return "faScrewdriverWrench";
                   break;
                 default:
                   return "";
@@ -123,7 +123,7 @@ const NavigationTree = () => {
           }}
         />
         <Tab.Screen
-          name="More"
+          name="Tools"
           component={MenuView}
           options={{
             headerStyle: {
@@ -132,12 +132,12 @@ const NavigationTree = () => {
             headerTitle: (props) => (
               <View style={styles.header}>
                 <FontAwesomeIcon
-                  icon={iconImport("faGears")}
+                  icon={iconImport("faScrewdriverWrench")}
                   size={20}
                   color={COLOURS.white}
                   style={{ marginRight: SPACING.ten }}
                 />
-                <Text style={TYPOGRAPHY.header}>More</Text>
+                <Text style={TYPOGRAPHY.header}>Tools</Text>
               </View>
             ),
           }}
