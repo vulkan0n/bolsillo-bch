@@ -11,6 +11,7 @@ interface Props {
   title: string;
   text: string;
   icon?: IconType;
+  variant?: "wide";
 }
 
 const PressableCard = ({
@@ -18,11 +19,14 @@ const PressableCard = ({
   title = "",
   text = "",
   icon = "",
+  variant = "",
 }: Props) => {
+  const cardStyles = styles({ variant });
+
   return (
     <Pressable onPress={onPress}>
-      <View style={styles.pressableCard as any}>
-        <View style={styles.iconWrapper as any}>
+      <View style={cardStyles.pressableCard as any}>
+        <View style={cardStyles.iconWrapper as any}>
           <FontAwesomeIcon
             icon={iconImport(icon)}
             size={45}

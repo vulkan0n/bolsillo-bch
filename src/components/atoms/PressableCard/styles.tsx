@@ -1,12 +1,12 @@
 import SPACING from "../../../design/spacing";
 import COLOURS from "../../../design/colours";
 
-const styles = {
+const styles = ({ variant = "" }) => ({
   pressableCard: {
     margin: 10,
     padding: 10,
     height: 150,
-    width: 150,
+    width: variant === "wide" ? 320 : 150,
     backgroundColor: COLOURS.black,
     borderRadius: SPACING.borderRadius,
     borderWidth: 2,
@@ -27,6 +27,6 @@ const styles = {
     marginTop: SPACING.ten,
     marginBottom: SPACING.ten,
   },
-};
+});
 
 export default styles;

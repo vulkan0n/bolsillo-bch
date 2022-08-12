@@ -32,23 +32,15 @@ function MenuView({ navigation }) {
     <View style={styles.container as any}>
       <View style={styles.menuContainer as any}>
         <View style={styles.menuRow as any}>
-          <Pressable onPress={onPressCommunity}>
-            <View style={styles.pressableCardWide}>
-              <View style={styles.iconWrapper as any}>
-                <FontAwesomeIcon
-                  icon={faUsers}
-                  size={45}
-                  color={COLOURS.bchGreen}
-                />
-              </View>
-              <Text style={TYPOGRAPHY.menuHeaderGreen as any}>
-                BCH Community
-              </Text>
-              <Text style={TYPOGRAPHY.pWhite as any}>
-                Discussion, social media, art, music, podcasts, memes and more.
-              </Text>
-            </View>
-          </Pressable>
+          <PressableCard
+            title={"BCH Community"}
+            text={
+              "Discussion, social media, art, music, podcasts, memes and more."
+            }
+            onPress={onPressCommunity}
+            icon={"faUsers"}
+            variant={"wide"}
+          />
         </View>
         <View style={styles.menuRow as any}>
           <PressableCard
