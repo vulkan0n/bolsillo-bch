@@ -10,7 +10,7 @@ function DevelopersView() {
         style={styles.logo}
         source={require("../../../../assets/images/logo.jpg")}
       />
-      <Text style={TYPOGRAPHY.h1 as any}>SELENE</Text>
+      <Text style={TYPOGRAPHY.h1 as any}>Selene Wallet</Text>
       <Text style={TYPOGRAPHY.h2 as any}>
         Made with love for the BCH community by Kallisti & Jeremy (from The
         Bitcoin Cash Podcast).
