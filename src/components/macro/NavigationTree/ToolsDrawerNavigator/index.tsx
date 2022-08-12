@@ -1,56 +1,32 @@
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import COLOURS from "../../../../design/colours";
-import LearnView from "../../../views/menu/LearnView";
-import BackupView from "../../../views/menu/BackupView";
-import SettingsView from "../../../views/menu/SettingsView";
+import LearnView from "../../../views/ToolsView/LearnView";
+import BackupView from "../../../views/ToolsView/BackupView";
+import SettingsView from "../../../views/ToolsView/SettingsView";
 import TYPOGRAPHY from "../../../../design/typography";
 import { getHeaderTitle } from "@react-navigation/elements";
 import { View, Text, Pressable } from "react-native";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { iconImport } from "../../../../design/icons";
-import SPACING from "../../../../design/spacing";
+import styles from "./styles";
 
 const Drawer = createDrawerNavigator();
-
-const HEADER_HEIGHT = 60;
 
 function ToolsDrawerNavigator() {
   return (
     <Drawer.Navigator
       screenOptions={{
         drawerType: "front",
-        drawerLabelStyle: {
-          color: COLOURS.white,
-          ...TYPOGRAPHY.pWhiteLeft,
-        },
+        drawerLabelStyle: styles.drawerLabelStyle as any,
         drawerActiveTintColor: COLOURS.bchGreen,
-        drawerContentStyle: {
-          backgroundColor: COLOURS.black,
-        },
+        drawerContentStyle: styles.drawerContentStyle as any,
         header: ({ navigation, route, options }) => {
           const title = getHeaderTitle(options, route.name);
 
           return (
-            <View
-              style={{
-                height: HEADER_HEIGHT,
-                backgroundColor: COLOURS.black,
-                justifyContent: "space-between",
-                alignItems: "flex-end",
-                flexDirection: "row",
-                borderColor: COLOURS.white,
-                borderBottomWidth: 1,
-                paddingLeft: SPACING.fifteen,
-                paddingRight: SPACING.fifteen,
-              }}
-            >
+            <View style={styles.headerContainer as any}>
               <Pressable
-                style={{
-                  height: "100%",
-                  width: 50,
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
+                style={styles.drawerButton as any}
                 onPress={() => navigation.openDrawer()}
               >
                 <FontAwesomeIcon
@@ -59,15 +35,8 @@ function ToolsDrawerNavigator() {
                   color={COLOURS.bchGreen}
                 />
               </Pressable>
-              <View
-                style={{
-                  flex: 1,
-                  flexDirection: "row",
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
-                <FontAwesomeIcon
+              <View style={styles.titleContentContainer as any}>
+                {/* <FontAwesomeIcon
                   icon={iconImport("faBookOpenReader")}
                   size={20}
                   color={COLOURS.white}
@@ -75,16 +44,14 @@ function ToolsDrawerNavigator() {
                     marginRight: SPACING.ten,
                     marginBottom: SPACING.ten,
                   }}
-                />
-                <Text style={TYPOGRAPHY.h1}>{title}</Text>
+                /> */}
+                <Text style={TYPOGRAPHY.h1 as any}>{title}</Text>
               </View>
-              <View style={{ width: 50 }}></View>
+              <View style={styles.spacer as any}></View>
             </View>
           );
         },
-        headerStyle: {
-          height: HEADER_HEIGHT, // Specify the height of your custom header
-        },
+        headerStyle: styles.headerStyle,
       }}
     >
       <Drawer.Screen name="Learn" component={LearnView} />
