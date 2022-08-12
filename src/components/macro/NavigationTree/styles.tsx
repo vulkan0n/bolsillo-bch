@@ -1,0 +1,17 @@
+import COLOURS from "../../../design/colours";
+import SPACING from "../../../design/spacing";
+
+const styles = {
+  tabBar: {
+    backgroundColor: COLOURS.black,
+    borderTopWidth: 0,
+  },
+  header: {
+    flex: 1,
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+};
+
+export default styles;

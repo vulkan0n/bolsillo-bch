@@ -18,6 +18,7 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { iconImport } from "../../../design/icons";
 import SPACING from "../../../design/spacing";
+import styles from "./styles";
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -57,10 +58,7 @@ const NavigationTree = () => {
           },
           tabBarActiveTintColor: COLOURS.bchGreen,
           tabBarInactiveTintColor: COLOURS.white,
-          tabBarStyle: {
-            backgroundColor: COLOURS.black,
-            borderTopWidth: 0,
-          },
+          tabBarStyle: styles.tabBar,
           headerShadowVisible: false,
         })}
       >
@@ -72,14 +70,7 @@ const NavigationTree = () => {
               backgroundColor: COLOURS.black,
             },
             headerTitle: (props) => (
-              <View
-                style={{
-                  flex: 1,
-                  flexDirection: "row",
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
+              <View style={styles.header}>
                 <FontAwesomeIcon
                   icon={iconImport("faWallet")}
                   size={20}
@@ -99,14 +90,7 @@ const NavigationTree = () => {
               backgroundColor: COLOURS.black,
             },
             headerTitle: (props) => (
-              <View
-                style={{
-                  flex: 1,
-                  flexDirection: "row",
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
+              <View style={styles.header}>
                 <FontAwesomeIcon
                   icon={iconImport("faEarthAmericas")}
                   size={20}
@@ -126,14 +110,7 @@ const NavigationTree = () => {
               backgroundColor: COLOURS.black,
             },
             headerTitle: (props) => (
-              <View
-                style={{
-                  flex: 1,
-                  flexDirection: "row",
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
+              <View style={styles.header}>
                 <FontAwesomeIcon
                   icon={iconImport("faUsers")}
                   size={20}
@@ -153,14 +130,7 @@ const NavigationTree = () => {
               backgroundColor: COLOURS.black,
             },
             headerTitle: (props) => (
-              <View
-                style={{
-                  flex: 1,
-                  flexDirection: "row",
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
+              <View style={styles.header}>
                 <FontAwesomeIcon
                   icon={iconImport("faGears")}
                   size={20}
