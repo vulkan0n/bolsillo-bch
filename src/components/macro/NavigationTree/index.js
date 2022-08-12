@@ -27,10 +27,29 @@ const NavigationTree = () => {
       <Tab.Navigator
         screenOptions={({ route }) => ({
           tabBarIcon: ({ focused, color, size }) => {
+            const icon = () => {
+              switch (route?.name) {
+                case "Wallet":
+                  return "faWallet";
+                  break;
+                case "IRL":
+                  return "faEarthAmericas";
+                  break;
+                case "Online":
+                  return "faUsers";
+                  break;
+                case "More":
+                  return "faGears";
+                  break;
+                default:
+                  return "";
+              }
+            };
+
             return (
               <FontAwesomeIcon
-                icon={iconImport("faUsers")}
-                size={25}
+                icon={iconImport(icon())}
+                size={20}
                 color={focused ? COLOURS.bchGreen : COLOURS.white}
               />
             );

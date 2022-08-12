@@ -6,6 +6,8 @@ import { faBookOpenReader } from "@fortawesome/free-solid-svg-icons/faBookOpenRe
 import { faPiggyBank } from "@fortawesome/free-solid-svg-icons/faPiggyBank";
 import { faCode } from "@fortawesome/free-solid-svg-icons/faCode";
 import { faGears } from "@fortawesome/free-solid-svg-icons/faGears";
+import { faWallet } from "@fortawesome/free-solid-svg-icons/faWallet";
+import { faEarthAmericas } from "@fortawesome/free-solid-svg-icons/faEarthAmericas";
 
 export type IconType =
   | ""
@@ -16,7 +18,9 @@ export type IconType =
   | "faBookOpenReader"
   | "faPiggyBank"
   | "faCode"
-  | "faGears";
+  | "faGears"
+  | "faWallet"
+  | "faEarthAmericas";
 
 export const iconImport = (icon: IconType) => {
   switch (icon) {
@@ -36,6 +40,10 @@ export const iconImport = (icon: IconType) => {
       return faCode;
     case "faGears":
       return faGears;
+    case "faWallet":
+      return faWallet;
+    case "faEarthAmericas":
+      return faEarthAmericas;
     default:
       return null;
   }
