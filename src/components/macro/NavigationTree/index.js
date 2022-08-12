@@ -4,7 +4,6 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import WalletView from "../../views/WalletView";
 import MenuView from "../../views/MenuView";
-import CommunityView from "../../views/menu/CommunityView";
 import LearnView from "../../views/menu/LearnView";
 import BackupView from "../../views/menu/BackupView";
 import DevelopersView from "../../views/menu/DevelopersView";
@@ -19,6 +18,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { iconImport } from "../../../design/icons";
 import SPACING from "../../../design/spacing";
 import styles from "./styles";
+import OnlineDrawerNavigator from "./OnlineDrawerNavigator";
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -104,7 +104,7 @@ const NavigationTree = () => {
         />
         <Tab.Screen
           name="Online"
-          component={MenuView}
+          component={OnlineDrawerNavigator}
           options={{
             headerStyle: {
               backgroundColor: COLOURS.black,
