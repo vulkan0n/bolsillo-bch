@@ -91,7 +91,7 @@ const NavigationTree = () => {
                   color={COLOURS.white}
                   style={{ marginRight: SPACING.ten }}
                 />
-                <Text style={TYPOGRAPHY.header}>IRL</Text>
+                <Text style={TYPOGRAPHY.header as any}>IRL</Text>
               </View>
             ),
           }}
@@ -111,7 +111,7 @@ const NavigationTree = () => {
                   color={COLOURS.white}
                   style={{ marginRight: SPACING.ten }}
                 />
-                <Text style={TYPOGRAPHY.header}>Online</Text>
+                <Text style={TYPOGRAPHY.header as any}>Online</Text>
               </View>
             ),
           }}

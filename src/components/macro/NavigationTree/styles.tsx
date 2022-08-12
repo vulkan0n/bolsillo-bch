@@ -5,6 +5,7 @@ const styles = {
   tabBar: {
     backgroundColor: COLOURS.black,
     borderTopWidth: 0,
+    paddingTop: SPACING.ten,
   },
   header: {
     flex: 1,

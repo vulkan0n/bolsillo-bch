@@ -9,11 +9,8 @@ const styles = {
     justifyContent: "flex-start",
     alignItems: "center",
   },
-  logo: {
-    width: 75,
-    height: 75,
-    marginTop: SPACING.five,
-    marginBottom: SPACING.ten,
+  iconContainer: {
+    marginBottom: SPACING.fifteen,
   },
 };
 
