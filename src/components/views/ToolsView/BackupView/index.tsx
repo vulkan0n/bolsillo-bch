@@ -62,7 +62,7 @@ function BackupView({ navigation }) {
       <Text style={TYPOGRAPHY.h2 as any}>Derivation path</Text>
       <Text style={TYPOGRAPHY.pWhite as any}>{wallet?.derivationPath}</Text>
       <Pressable onPress={onPressResetWallet}>
-        <Text style={TYPOGRAPHY.pWhite as any}>Reset Wallet</Text>
+        <Text style={TYPOGRAPHY.pWhiteUnderlined as any}>Reset Wallet</Text>
       </Pressable>
     </View>
   );
