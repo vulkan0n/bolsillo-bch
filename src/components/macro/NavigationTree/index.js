@@ -14,13 +14,58 @@ import TransactionSuccessView from "../../views/TransactionSuccessView";
 import MusicView from "../../views/menu/CommunityView/MusicView";
 import COLOURS from "../../../design/colours";
 import TYPOGRAPHY from "../../../design/typography";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+import { iconImport } from "../../../design/icons";
 
+const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
 const NavigationTree = () => {
   return (
     <NavigationContainer>
-      <Stack.Navigator>
+      <Tab.Navigator
+        screenOptions={({ route }) => ({
+          tabBarIcon: ({ focused, color, size }) => {
+            let iconName;
+
+            if (route.name === "Home") {
+              iconName = focused
+                ? "ios-information-circle"
+                : "ios-information-circle-outline";
+            } else if (route.name === "Settings") {
+              iconName = focused ? "ios-list-box" : "ios-list";
+            }
+
+            // You can return any component that you like here!
+            return (
+              <FontAwesomeIcon
+                icon={iconImport("faUsers")}
+                size={25}
+                color={focused ? COLOURS.bchGreen : COLOURS.white}
+              />
+            );
+          },
+          tabBarActiveTintColor: COLOURS.bchGreen,
+          tabBarInactiveTintColor: COLOURS.white,
+          tabBarStyle: { backgroundColor: COLOURS.black },
+        })}
+      >
+        <Tab.Screen
+          name="Wallet"
+          component={WalletView}
+          options={{
+            headerStyle: {
+              backgroundColor: COLOURS.black,
+            },
+            headerTitle: (props) => (
+              <Text style={TYPOGRAPHY.header}>Selene BCH Wallet</Text>
+            ),
+          }}
+        />
+        <Tab.Screen name="Menu" component={MenuView} />
+      </Tab.Navigator>
+      {/* <Stack.Navigator>
         <Stack.Screen
           name="Wallet"
           component={WalletView}
@@ -136,7 +181,7 @@ const NavigationTree = () => {
             ),
           }}
         />
-      </Stack.Navigator>
+      </Stack.Navigator> */}
     </NavigationContainer>
   );
 };
