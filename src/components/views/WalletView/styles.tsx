@@ -7,7 +7,6 @@ const styles = {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    paddingTop: SPACING.ten,
   },
   logo: {
     width: 75,

@@ -56,7 +56,10 @@ const NavigationTree = () => {
           },
           tabBarActiveTintColor: COLOURS.bchGreen,
           tabBarInactiveTintColor: COLOURS.white,
-          tabBarStyle: { backgroundColor: COLOURS.black },
+          tabBarStyle: {
+            backgroundColor: COLOURS.black,
+          },
+          headerShadowVisible: false,
         })}
       >
         <Tab.Screen
