@@ -9,6 +9,7 @@ import { faPiggyBank } from "@fortawesome/free-solid-svg-icons/faPiggyBank";
 import { faCode } from "@fortawesome/free-solid-svg-icons/faCode";
 import { faGears } from "@fortawesome/free-solid-svg-icons/faGears";
 import COLOURS from "../../../design/colours";
+import PressableCard from "../../atoms/PressableCard";
 
 function MenuView({ navigation }) {
   const onPressCommunity = () => {
@@ -54,36 +55,12 @@ function MenuView({ navigation }) {
           </Pressable>
         </View>
         <View style={styles.menuRow as any}>
-          <Pressable onPress={onPressLearn}>
-            <View style={styles.pressableCard}>
-              <View style={styles.iconWrapper as any}>
-                <FontAwesomeIcon
-                  icon={faBookOpenReader}
-                  size={45}
-                  color={COLOURS.bchGreen}
-                />
-              </View>
-              <Text style={TYPOGRAPHY.menuHeaderGreen as any}>Learn</Text>
-              <Text style={TYPOGRAPHY.pWhite as any}>
-                Understand Bitcoin Cash.
-              </Text>
-            </View>
-          </Pressable>
-          <Pressable onPress={onPressBackup}>
-            <View style={styles.pressableCard}>
-              <View style={styles.iconWrapper as any}>
-                <FontAwesomeIcon
-                  icon={faPiggyBank}
-                  size={45}
-                  color={COLOURS.bchGreen}
-                />
-              </View>
-              <Text style={TYPOGRAPHY.menuHeaderGreen as any}>Backup</Text>
-              <Text style={TYPOGRAPHY.pWhite as any}>
-                Keep your money safe!
-              </Text>
-            </View>
-          </Pressable>
+          <PressableCard
+            title={"BCH Community"}
+            text={"Keep your money safe!"}
+            onPress={onPressBackup}
+            icon={faPiggyBank}
+          />
         </View>
         <View style={styles.menuRow as any}>
           <Pressable onPress={onPressDevs}>
