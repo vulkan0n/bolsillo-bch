@@ -11,10 +11,13 @@ const styles = {
     alignItems: "center",
   },
   optionRow: {
-    margin: SPACING.twentyFive,
-    padding: SPACING.ten,
+    marginRight: SPACING.fifteen,
+    marginLeft: SPACING.fifteen,
+    marginTop: SPACING.fifteen,
     flexDirection: "row",
-    alignItems: "center",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+    width: "100%",
   },
   control: {
     marginLeft: SPACING.fifteen,

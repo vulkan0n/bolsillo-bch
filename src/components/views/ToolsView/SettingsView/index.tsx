@@ -28,7 +28,7 @@ const SettingsView = () => {
   return (
     <View style={styles.container as any}>
       <View style={styles.optionRow as any}>
-        <View>
+        <View style={{ width: 250 }}>
           <Text style={TYPOGRAPHY.h2Left as any}>Crypto Denominated</Text>
           {isCryptoDenominated && (
             <Text style={TYPOGRAPHY.pWhiteLeft as any}>
@@ -54,7 +54,7 @@ const SettingsView = () => {
         </View>
       </View>
       <View style={styles.optionRow as any}>
-        <View>
+        <View style={{ width: 250 }}>
           <Text style={TYPOGRAPHY.h2Left as any}>Test Net</Text>
           {isTestNet && (
             <Text style={TYPOGRAPHY.pWhiteLeft as any}>
