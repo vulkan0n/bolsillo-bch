@@ -1,9 +1,9 @@
 import React from "react";
 import { View, Image, Text } from "react-native";
-import TYPOGRAPHY from "../../../design/typography";
+import TYPOGRAPHY from "../../../../design/typography";
 import styles from "./styles";
 
-const ToolsView = () => {
+const ToolsHomeView = () => {
   return (
     <View style={styles.container as any}>
       <Image
@@ -15,4 +15,4 @@ const ToolsView = () => {
   );
 };
 
-export default ToolsView;
+export default ToolsHomeView;
