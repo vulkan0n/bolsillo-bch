@@ -4,10 +4,6 @@ import TYPOGRAPHY from "../../../design/typography";
 import styles from "./styles";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faUsers } from "@fortawesome/free-solid-svg-icons/faUsers";
-import { faBookOpenReader } from "@fortawesome/free-solid-svg-icons/faBookOpenReader";
-import { faPiggyBank } from "@fortawesome/free-solid-svg-icons/faPiggyBank";
-import { faCode } from "@fortawesome/free-solid-svg-icons/faCode";
-import { faGears } from "@fortawesome/free-solid-svg-icons/faGears";
 import COLOURS from "../../../design/colours";
 import PressableCard from "../../atoms/PressableCard";
 

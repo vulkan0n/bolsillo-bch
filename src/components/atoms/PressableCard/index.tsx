@@ -4,13 +4,13 @@ import styles from "./styles";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import COLOURS from "../../../design/colours";
 import TYPOGRAPHY from "../../../design/typography";
-import { iconImport } from "../../../design/icons";
+import { iconImport, IconType } from "../../../design/icons";
 
 interface Props {
   onPress: () => void;
   title: string;
   text: string;
-  icon?: string;
+  icon?: IconType;
 }
 
 const PressableCard = ({
