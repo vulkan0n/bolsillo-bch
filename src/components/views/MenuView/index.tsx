@@ -59,13 +59,13 @@ function MenuView({ navigation }) {
             title={"Learn"}
             text={"Understand Bitcoin Cash"}
             onPress={onPressLearn}
-            icon={faBookOpenReader}
+            icon={"faBookOpenReader"}
           />
           <PressableCard
             title={"Backup"}
             text={"Keep your money safe!"}
             onPress={onPressBackup}
-            icon={faPiggyBank}
+            icon={"faPiggyBank"}
           />
         </View>
         <View style={styles.menuRow as any}>
@@ -73,13 +73,13 @@ function MenuView({ navigation }) {
             title={"Devs"}
             text={"Credit, code & donations."}
             onPress={onPressDevs}
-            icon={faCode}
+            icon={"faCode"}
           />
           <PressableCard
             title={"Settings"}
             text={"Customise your app."}
             onPress={onPressSettings}
-            icon={faGears}
+            icon={"faGears"}
           />
         </View>
       </View>
