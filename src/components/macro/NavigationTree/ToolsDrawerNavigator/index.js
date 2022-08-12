@@ -12,6 +12,8 @@ import SPACING from "../../../../design/spacing";
 
 const Drawer = createDrawerNavigator();
 
+const HEADER_HEIGHT = 60;
+
 function ToolsDrawerNavigator() {
   return (
     <Drawer.Navigator
@@ -31,11 +33,15 @@ function ToolsDrawerNavigator() {
           return (
             <View
               style={{
-                height: 50,
+                height: HEADER_HEIGHT,
                 backgroundColor: COLOURS.black,
                 justifyContent: "space-between",
                 alignItems: "flex-end",
                 flexDirection: "row",
+                borderColor: COLOURS.white,
+                borderBottomWidth: 1,
+                paddingLeft: SPACING.fifteen,
+                paddingRight: SPACING.fifteen,
               }}
             >
               <Pressable
@@ -44,7 +50,6 @@ function ToolsDrawerNavigator() {
                   width: 50,
                   justifyContent: "center",
                   alignItems: "center",
-                  paddingLeft: SPACING.ten,
                 }}
                 onPress={() => navigation.openDrawer()}
               >
@@ -78,7 +83,7 @@ function ToolsDrawerNavigator() {
           );
         },
         headerStyle: {
-          height: 50, // Specify the height of your custom header
+          height: HEADER_HEIGHT, // Specify the height of your custom header
         },
       }}
     >
