@@ -4,10 +4,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import WalletView from "../../views/WalletView";
 import MenuView from "../../views/MenuView";
-import LearnView from "../../views/menu/LearnView";
-import BackupView from "../../views/menu/BackupView";
 import DevelopersView from "../../views/menu/DevelopersView";
-import SettingsView from "../../views/menu/SettingsView";
 import ResetWalletView from "../../views/menu/ResetWalletView";
 import TransactionSuccessView from "../../views/TransactionSuccessView";
 import MusicView from "../../views/menu/CommunityView/MusicView";
@@ -19,6 +16,7 @@ import { iconImport } from "../../../design/icons";
 import SPACING from "../../../design/spacing";
 import styles from "./styles";
 import OnlineDrawerNavigator from "./OnlineDrawerNavigator";
+import ToolsDrawerNavigator from "./ToolsDrawerNavigator";
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -33,16 +31,12 @@ const NavigationTree = () => {
               switch (route?.name) {
                 case "Wallet":
                   return "faWallet";
-                  break;
                 case "IRL":
                   return "faEarthAmericas";
-                  break;
                 case "Online":
                   return "faUsers";
-                  break;
                 case "Tools":
                   return "faScrewdriverWrench";
-                  break;
                 default:
                   return "";
               }
@@ -124,7 +118,7 @@ const NavigationTree = () => {
         />
         <Tab.Screen
           name="Tools"
-          component={MenuView}
+          component={ToolsDrawerNavigator}
           options={{
             headerStyle: {
               backgroundColor: COLOURS.black,
