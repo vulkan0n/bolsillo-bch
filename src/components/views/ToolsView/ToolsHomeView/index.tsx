@@ -6,11 +6,14 @@ import styles from "./styles";
 const ToolsHomeView = () => {
   return (
     <View style={styles.container as any}>
-      <Image
-        style={styles.logo}
-        source={require("../../../../assets/images/logo.jpg")}
-      />
-      <Text style={TYPOGRAPHY.h1 as any}>Tools</Text>
+      <Text style={TYPOGRAPHY.pWhite as any}>
+        Your Selene wallet is your rocket ship, carefully engineered to be
+        simple but packed with immense power.
+      </Text>
+      <Text style={TYPOGRAPHY.pWhite as any}>
+        Your Selene wallet is your rocket ship, carefully engineered to be
+        simple but packed with immense power.
+      </Text>
     </View>
   );
 };

@@ -28,11 +28,10 @@ function BackupView({ navigation }) {
       <View style={styles.iconContainer}>
         <FontAwesomeIcon
           icon={faPiggyBank}
-          size={75}
+          size={50}
           color={COLOURS.bchGreen}
         />
       </View>
-      <Text style={TYPOGRAPHY.h1 as any}>Mnemonic phrase</Text>
       <Text style={TYPOGRAPHY.pWhite as any}>
         With your mnemonic phrase, you can restore your wallet if your phone is
         ever lost or broken.

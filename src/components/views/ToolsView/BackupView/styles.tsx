@@ -4,13 +4,16 @@ import SPACING from "../../../../design/spacing";
 const styles = {
   container: {
     backgroundColor: COLOURS.black,
-    padding: SPACING.twentyFive,
+    paddingTop: SPACING.fifteen,
+    paddingLeft: SPACING.twentyFive,
+    paddingRight: SPACING.twentyFive,
+    paddingBottom: SPACING.twentyFive,
     flex: 1,
     justifyContent: "flex-start",
     alignItems: "center",
   },
   iconContainer: {
-    marginBottom: SPACING.ten,
+    marginBottom: SPACING.fifteen,
   },
   mnemonicContainer: {
     padding: SPACING.ten,
