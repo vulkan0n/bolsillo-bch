@@ -5,7 +5,6 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import WalletView from "../../views/WalletView";
 import MenuView from "../../views/MenuView";
 import DevelopersView from "../../views/menu/DevelopersView";
-import ResetWalletView from "../../views/ToolsView/ResetWalletView";
 import TransactionSuccessView from "../../views/TransactionSuccessView";
 import MusicView from "../../views/menu/CommunityView/MusicView";
 import COLOURS from "../../../design/colours";
@@ -215,18 +214,6 @@ const NavigationTree = () => {
             },
             headerTitle: (props) => (
               <Text style={TYPOGRAPHY.header}>Settings</Text>
-            ),
-          }}
-        />
-        <Stack.Screen
-          name="Reset Wallet"
-          component={ResetWalletView}
-          options={{
-            headerStyle: {
-              backgroundColor: COLOURS.black,
-            },
-            headerTitle: (props) => (
-              <Text style={TYPOGRAPHY.header}>Reset Wallet</Text>
             ),
           }}
         />

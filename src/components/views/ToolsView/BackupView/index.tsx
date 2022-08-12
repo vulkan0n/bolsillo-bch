@@ -20,7 +20,7 @@ function BackupView({ navigation }) {
   };
 
   const onPressResetWallet = () => {
-    navigation.navigate("Reset Wallet");
+    navigation.navigate("Reset");
   };
 
   return (
