@@ -1,8 +1,6 @@
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import COLOURS from "../../../../design/colours";
 import ToolsHomeView from "../../../views/ToolsView/ToolsHomeView";
-import LearnView from "../../../views/ToolsView/LearnView";
-import BackupView from "../../../views/ToolsView/BackupView";
 import SettingsView from "../../../views/ToolsView/SettingsView";
 import TYPOGRAPHY from "../../../../design/typography";
 import { getHeaderTitle } from "@react-navigation/elements";
@@ -10,35 +8,10 @@ import { View, Text, Pressable } from "react-native";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { iconImport } from "../../../../design/icons";
 import styles from "./styles";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import ResetWalletView from "../../../views/ToolsView/BackupView/ResetWalletView";
+import LearnStack from "./LearnStack";
+import BackupStack from "./BackupStack";
 
 const Drawer = createDrawerNavigator();
-const Stack = createNativeStackNavigator();
-
-const BackupStack = () => (
-  <Stack.Navigator>
-    <Stack.Screen
-      name="Mnemonic"
-      component={BackupView}
-      options={{
-        headerStyle: {
-          // backgroundColor: "red",
-        },
-        headerTitle: (props) => null,
-      }}
-    />
-    <Stack.Screen
-      name="Reset"
-      component={ResetWalletView}
-      options={{
-        headerStyle: {
-          // backgroundColor: "red",
-        },
-      }}
-    />
-  </Stack.Navigator>
-);
 
 function ToolsDrawerNavigator() {
   return (
@@ -83,7 +56,7 @@ function ToolsDrawerNavigator() {
       }}
     >
       <Drawer.Screen name="Home" component={ToolsHomeView} />
-      <Drawer.Screen name="Learn" component={LearnView} />
+      <Drawer.Screen name="Learn" component={LearnStack} />
       <Drawer.Screen name="Backup" component={BackupStack} />
       <Drawer.Screen name="Settings" component={SettingsView} />
     </Drawer.Navigator>

@@ -172,18 +172,6 @@ const NavigationTree = () => {
           }}
         />
         <Stack.Screen
-          name="Learn"
-          component={LearnView}
-          options={{
-            headerStyle: {
-              backgroundColor: COLOURS.black,
-            },
-            headerTitle: (props) => (
-              <Text style={TYPOGRAPHY.header}>Learn</Text>
-            ),
-          }}
-        />
-        <Stack.Screen
           name="Backup"
           component={BackupView}
           options={{
