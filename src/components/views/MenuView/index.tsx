@@ -69,34 +69,18 @@ function MenuView({ navigation }) {
           />
         </View>
         <View style={styles.menuRow as any}>
-          <Pressable onPress={onPressDevs}>
-            <View style={styles.pressableCard}>
-              <View style={styles.iconWrapper as any}>
-                <FontAwesomeIcon
-                  icon={faCode}
-                  size={45}
-                  color={COLOURS.bchGreen}
-                />
-              </View>
-              <Text style={TYPOGRAPHY.menuHeaderGreen as any}>Devs</Text>
-              <Text style={TYPOGRAPHY.pWhite as any}>
-                Credit, code & donations.
-              </Text>
-            </View>
-          </Pressable>
-          <Pressable onPress={onPressSettings}>
-            <View style={styles.pressableCard}>
-              <View style={styles.iconWrapper as any}>
-                <FontAwesomeIcon
-                  icon={faGears}
-                  size={45}
-                  color={COLOURS.bchGreen}
-                />
-              </View>
-              <Text style={TYPOGRAPHY.menuHeaderGreen as any}>Settings</Text>
-              <Text style={TYPOGRAPHY.pWhite as any}>Customise your app.</Text>
-            </View>
-          </Pressable>
+          <PressableCard
+            title={"Devs"}
+            text={"Credit, code & donations."}
+            onPress={onPressDevs}
+            icon={faCode}
+          />
+          <PressableCard
+            title={"Settings"}
+            text={"Customise your app."}
+            onPress={onPressSettings}
+            icon={faGears}
+          />
         </View>
       </View>
       <Image
