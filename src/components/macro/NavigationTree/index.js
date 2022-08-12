@@ -27,17 +27,6 @@ const NavigationTree = () => {
       <Tab.Navigator
         screenOptions={({ route }) => ({
           tabBarIcon: ({ focused, color, size }) => {
-            let iconName;
-
-            if (route.name === "Home") {
-              iconName = focused
-                ? "ios-information-circle"
-                : "ios-information-circle-outline";
-            } else if (route.name === "Settings") {
-              iconName = focused ? "ios-list-box" : "ios-list";
-            }
-
-            // You can return any component that you like here!
             return (
               <FontAwesomeIcon
                 icon={iconImport("faUsers")}
@@ -63,7 +52,9 @@ const NavigationTree = () => {
             ),
           }}
         />
-        <Tab.Screen name="Menu" component={MenuView} />
+        <Tab.Screen name="IRL" component={MenuView} />
+        <Tab.Screen name="Online" component={MenuView} />
+        <Tab.Screen name="More" component={MenuView} />
       </Tab.Navigator>
       {/* <Stack.Navigator>
         <Stack.Screen
