@@ -64,14 +64,14 @@ const NavigationTree = () => {
               backgroundColor: COLOURS.black,
             },
             headerTitle: (props) => (
-              <View style={styles.header}>
+              <View style={styles.header as any}>
                 <FontAwesomeIcon
                   icon={iconImport("faWallet")}
                   size={20}
                   color={COLOURS.white}
                   style={{ marginRight: SPACING.ten }}
                 />
-                <Text style={TYPOGRAPHY.header}>Wallet</Text>
+                <Text style={TYPOGRAPHY.header as any}>Wallet</Text>
               </View>
             ),
           }}
@@ -84,7 +84,7 @@ const NavigationTree = () => {
               backgroundColor: COLOURS.black,
             },
             headerTitle: (props) => (
-              <View style={styles.header}>
+              <View style={styles.header as any}>
                 <FontAwesomeIcon
                   icon={iconImport("faEarthAmericas")}
                   size={20}
@@ -104,7 +104,7 @@ const NavigationTree = () => {
               backgroundColor: COLOURS.black,
             },
             headerTitle: (props) => (
-              <View style={styles.header}>
+              <View style={styles.header as any}>
                 <FontAwesomeIcon
                   icon={iconImport("faUsers")}
                   size={20}
@@ -124,14 +124,14 @@ const NavigationTree = () => {
               backgroundColor: COLOURS.black,
             },
             headerTitle: (props) => (
-              <View style={styles.header}>
+              <View style={styles.header as any}>
                 <FontAwesomeIcon
                   icon={iconImport("faScrewdriverWrench")}
                   size={20}
                   color={COLOURS.white}
                   style={{ marginRight: SPACING.ten }}
                 />
-                <Text style={TYPOGRAPHY.header}>Tools</Text>
+                <Text style={TYPOGRAPHY.header as any}>Tools</Text>
               </View>
             ),
           }}
