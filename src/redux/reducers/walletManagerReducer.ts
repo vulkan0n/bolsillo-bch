@@ -56,6 +56,17 @@ const walletMangerSlice = createSlice({
       state.scratchPad.derivationPath = action.payload.derivationPath;
       state.scratchPad.cashAddr = action.payload.cashAddr;
     },
+    createDefaultWallet(state, action) {
+      const newWallet = {
+        name: "My first wallet",
+        description: "A Bitcoin Cash wallet",
+        mnemonic: action.payload.mnemonic,
+        derivationPath: action.payload.derivationPath,
+        cashAddr: action.payload.cashAddr,
+        balance: "0",
+      };
+      state.wallets = [...state.wallets, newWallet];
+    },
     createWalletFromScratchPad(state) {
       state.wallets = [...state.wallets, { ...state.scratchPad, balance: "0" }];
       state.activeWalletName = state.scratchPad.name;
@@ -93,6 +104,7 @@ export const {
   updateImportWalletScratchPadMnemonic,
   updateImportWalletScratchPadDerivationPath,
   updateNewWalletScratchPadDetails,
+  createDefaultWallet,
   createWalletFromScratchPad,
   clearWalletScratchPad,
   deleteWallet,

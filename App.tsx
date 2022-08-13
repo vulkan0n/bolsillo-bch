@@ -27,6 +27,7 @@ import {
 } from "./src/redux/reducers/bridgeReducer";
 import { WalletType } from "./src/types";
 import {
+  createDefaultWallet,
   updateNewWalletScratchPadDetails,
   updateWalletBalance,
 } from "./src/redux/reducers/walletManagerReducer";
@@ -61,7 +62,13 @@ export default function App() {
       // console.log("Bridge Response Message: ", message);
       switch (message.type) {
         case RESPONSE_MESSAGE_TYPES.CREATE_WALLET_RESPONSE:
-          store.dispatch(updateBridgeWallet({ wallet: message.data.wallet }));
+          store.dispatch(
+            createDefaultWallet({
+              mnemonic: message.data.wallet.mnemonic,
+              derivationPath: message.data.wallet.derivationPath,
+              cashAddr: message.data.wallet.cashaddr,
+            })
+          );
           break;
 
         // Note: Responds the same as CREATE_WALLET_RESPONSE
