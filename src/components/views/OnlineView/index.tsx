@@ -2,7 +2,7 @@ import React from "react";
 import { View, Text } from "react-native";
 import styles from "./styles";
 
-function IrlView({ navigation }) {
+function OnlineView({ navigation }) {
   return (
     <View style={styles.container as any}>
       <Text style={{ color: "white" }}>To do...</Text>
@@ -10,4 +10,4 @@ function IrlView({ navigation }) {
   );
 }
 
-export default IrlView;
+export default OnlineView;

@@ -1,6 +1,6 @@
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import COLOURS from "../../../../design/colours";
-import CommunityView from "../../../views/menu/CommunityView";
+import OnlineView from "../../../views/OnlineView";
 
 const Drawer = createDrawerNavigator();
 
@@ -15,9 +15,9 @@ function OnlineDrawerNavigator() {
         },
       }}
     >
-      <Drawer.Screen name="Community" component={CommunityView} />
-      <Drawer.Screen name="Reddit" component={CommunityView} />
-      <Drawer.Screen name="Twitter" component={CommunityView} />
+      <Drawer.Screen name="Community" component={OnlineView} />
+      <Drawer.Screen name="Reddit" component={OnlineView} />
+      <Drawer.Screen name="Twitter" component={OnlineView} />
     </Drawer.Navigator>
   );
 }
