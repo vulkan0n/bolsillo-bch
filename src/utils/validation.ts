@@ -1,6 +1,6 @@
 export const validateWalletName = (
   name: string,
-  existingNames: string[]
+  existingWalletNames: string[]
 ): string => {
   if (name?.length === 0) {
     return "Can't be empty.";
@@ -10,7 +10,7 @@ export const validateWalletName = (
     return "Can't be more than 30 characters.";
   }
 
-  if (existingNames?.includes(name)) {
+  if (existingWalletNames?.includes(name)) {
     return "Name already in use.";
   }
 
