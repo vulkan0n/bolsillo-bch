@@ -11,6 +11,7 @@ import { ReduxState } from "../../../../../types";
 import { faWallet } from "@fortawesome/free-solid-svg-icons";
 import { displaySats, displayUsd } from "../../../../../utils/formatting";
 import Divider from "../../../../atoms/Divider";
+import SPACING from "../../../../../design/spacing";
 
 function ManageWalletsView({ navigation }) {
   const { wallet } = useSelector((state: ReduxState) => state.bridge);
@@ -66,31 +67,43 @@ function ManageWalletsView({ navigation }) {
         alignItems: "center",
       }}
     >
-      <View>
+      <View style={{ width: 30 }}>
+        <FontAwesomeIcon
+          icon={faWallet}
+          size={isActive ? 30 : 20}
+          color={isActive ? COLOURS.bchGreen : COLOURS.white}
+        />
+      </View>
+      <View
+        style={{ flex: 1, paddingLeft: SPACING.ten, paddingRight: SPACING.ten }}
+      >
         <Text style={TYPOGRAPHY.h2Left as any}>{name}</Text>
         <Text style={TYPOGRAPHY.pWhiteLeft as any}>{description}</Text>
         <Text style={TYPOGRAPHY.pWhiteLeft as any}>{displaySats(balance)}</Text>
         <Text style={TYPOGRAPHY.pWhiteLeft as any}>{displayUsd(balance)}</Text>
       </View>
       <View style={{ width: 100 }}>
-        <Pressable>
-          <Text style={TYPOGRAPHY.pWhiteUnderlined as any}>Activate</Text>
-        </Pressable>
+        {!isActive && (
+          <Pressable>
+            <Text style={TYPOGRAPHY.pWhiteUnderlined as any}>Activate</Text>
+          </Pressable>
+        )}
         <Pressable>
           <Text style={TYPOGRAPHY.pWhiteUnderlined as any}>Backup</Text>
         </Pressable>
-        <Pressable>
-          <Text style={TYPOGRAPHY.pWhiteUnderlined as any}>Delete</Text>
-        </Pressable>
+        {!isActive && (
+          <Pressable>
+            <Text style={TYPOGRAPHY.pWhiteUnderlined as any}>Delete</Text>
+          </Pressable>
+        )}
       </View>
     </View>
   );
 
   return (
     <View style={styles.container as any}>
-      <View style={styles.iconContainer}>
-        <FontAwesomeIcon icon={faWallet} size={50} color={COLOURS.bchGreen} />
-      </View>
+      {/* <View style={styles.iconContainer}>
+      </View> */}
       <FlatList
         style={
           {
@@ -100,7 +113,7 @@ function ManageWalletsView({ navigation }) {
           } as any
         }
         ItemSeparatorComponent={() => <Divider />}
-        data={inactiveWallets}
+        data={wallets}
         renderItem={renderInactiveWallet}
         keyExtractor={({ name }) => name}
       />
