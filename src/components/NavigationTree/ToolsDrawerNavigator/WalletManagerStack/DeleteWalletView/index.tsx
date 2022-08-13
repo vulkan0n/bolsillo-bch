@@ -39,7 +39,9 @@ const DeleteWalletView = ({ navigation }) => {
   return (
     <View style={styles.container as any}>
       <Text style={TYPOGRAPHY.h2 as any}>{name}</Text>
-      <Text style={TYPOGRAPHY.pWhite as any}>{description}</Text>
+      {!!description && (
+        <Text style={TYPOGRAPHY.pWhite as any}>{description}</Text>
+      )}
       <Divider />
       <Text style={TYPOGRAPHY.pWhite as any}>
         Note, this will erase all of this wallet's:
