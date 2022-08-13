@@ -11,6 +11,10 @@ const SettingsView = () => {
       <CryptoDenominated />
       <RightHandedMode />
       <TestNet />
+      <TestNet />
+      <TestNet />
+      <TestNet />
+      <TestNet />
     </View>
   );
 };
