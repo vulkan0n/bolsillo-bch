@@ -56,6 +56,7 @@ const walletMangerSlice = createSlice({
 export const {
   updateNewWalletScratchPadName,
   updateNewWalletScratchPadDescription,
+  updateNewWalletScratchPadDetails,
   addWallet,
   updateActiveWalletName,
 } = walletMangerSlice.actions;

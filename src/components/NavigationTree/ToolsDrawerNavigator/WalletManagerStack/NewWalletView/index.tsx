@@ -4,8 +4,6 @@ import { useDispatch, useSelector } from "react-redux";
 import Button from "../../../../atoms/Button";
 import TYPOGRAPHY from "../../../../../design/typography";
 import styles from "./styles";
-import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { faWallet } from "@fortawesome/free-solid-svg-icons/faWallet";
 import COLOURS from "../../../../../design/colours";
 import { ReduxState } from "../../../../../types";
 import {

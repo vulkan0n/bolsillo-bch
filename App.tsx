@@ -26,6 +26,7 @@ import {
   updateBridgeWallet,
 } from "./src/redux/reducers/bridgeReducer";
 import { WalletType } from "./src/types";
+import { updateNewWalletScratchPadDetails } from "./src/redux/reducers/walletManagerReducer";
 
 export default function App() {
   // For the list of possible font faces
@@ -64,6 +65,16 @@ export default function App() {
         // Generating a new seed vs refreshing from seed
         case RESPONSE_MESSAGE_TYPES.REFRESH_WALLET_RESPONSE:
           store.dispatch(updateBridgeWallet({ wallet: message.data.wallet }));
+          break;
+
+        case RESPONSE_MESSAGE_TYPES.CREATE_WALLET_SCRATCHPAD_RESPONSE:
+          store.dispatch(
+            updateNewWalletScratchPadDetails({
+              mnemonic: message.data.wallet.mnemonic,
+              derivationPath: message.data.wallet.derivationPath,
+              cashAddr: message.data.wallet.cashaddr,
+            })
+          );
           break;
 
         case RESPONSE_MESSAGE_TYPES.REQUEST_BALANCE_RESPONSE:

@@ -57,6 +57,15 @@ const Bridge = () => {
           });
           break;
 
+        case BRIDGE_MESSAGE_TYPES.CREATE_WALLET_SCRATCHPAD:
+          const walletScratchPad = await WalletObject.newRandom();
+
+          emit({
+            type: RESPONSE_MESSAGE_TYPES.CREATE_WALLET_SCRATCHPAD_RESPONSE,
+            data: { wallet },
+          });
+          break;
+
         case BRIDGE_MESSAGE_TYPES.REQUEST_BALANCE:
           const walletRequestBalance = await WalletObject.fromSeed(
             message?.data?.mnemonic,
