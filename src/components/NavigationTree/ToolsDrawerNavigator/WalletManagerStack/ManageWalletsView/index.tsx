@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { View, Text, Pressable, FlatList } from "react-native";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Button from "../../../../atoms/Button";
 import TYPOGRAPHY from "../../../../../design/typography";
 import styles from "./styles";
@@ -11,26 +11,19 @@ import { faWallet } from "@fortawesome/free-solid-svg-icons";
 import { displaySats, displayUsd } from "../../../../../utils/formatting";
 import Divider from "../../../../atoms/Divider";
 import SPACING from "../../../../../design/spacing";
+import { updateBackupWalletName } from "../../../../../redux/reducers/walletManagerReducer";
 
 function ManageWalletsView({ navigation }) {
   const { activeWalletName } = useSelector(
     (state: ReduxState) => state.walletManager
   );
   const { wallets } = useSelector((state: ReduxState) => state.walletManager);
-  const [isMnemonicVisible, setIsMnemonicVisible] = useState(false);
+  const dispatch = useDispatch();
 
   console.log({ activeWalletName, wallets });
 
-  const toggleIsMnemonicVisible = () => {
-    setIsMnemonicVisible(!isMnemonicVisible);
-  };
-
-  // TODO: Clean up once Reset is linked somewhere else
-  // const onPressResetWallet = () => {
-  //   navigation.navigate("Reset");
-  // };
-
-  const onPressBackup = (walletName) => {
+  const onPressBackup = (backupWalletName) => {
+    dispatch(updateBackupWalletName({ backupWalletName }));
     navigation.navigate("Backup");
   };
 

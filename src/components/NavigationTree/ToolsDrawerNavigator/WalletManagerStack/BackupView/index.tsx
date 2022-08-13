@@ -10,15 +10,16 @@ import COLOURS from "../../../../../design/colours";
 import { ReduxState } from "../../../../../types";
 
 function BackupView({ navigation }) {
-  const { wallet } = useSelector((state: ReduxState) => state.bridge);
+  const { backupWalletName } = useSelector(
+    (state: ReduxState) => state.walletManager
+  );
+  const { mnemonic, derivationPath } = useSelector((state: ReduxState) =>
+    state.walletManager.wallets?.find(({ name }) => name === backupWalletName)
+  );
   const [isMnemonicVisible, setIsMnemonicVisible] = useState(false);
 
   const toggleIsMnemonicVisible = () => {
     setIsMnemonicVisible(!isMnemonicVisible);
-  };
-
-  const onPressResetWallet = () => {
-    navigation.navigate("Reset");
   };
 
   return (
@@ -54,14 +55,11 @@ function BackupView({ navigation }) {
           onPress={toggleIsMnemonicVisible}
           style={styles.mnemonicContainer}
         >
-          <Text style={TYPOGRAPHY.pWhite as any}>{wallet?.mnemonic}</Text>
+          <Text style={TYPOGRAPHY.pWhite as any}>{mnemonic}</Text>
         </Pressable>
       )}
       <Text style={TYPOGRAPHY.h2 as any}>Derivation path</Text>
-      <Text style={TYPOGRAPHY.pWhite as any}>{wallet?.derivationPath}</Text>
-      <Pressable onPress={onPressResetWallet}>
-        <Text style={TYPOGRAPHY.pWhiteUnderlined as any}>Reset Wallet</Text>
-      </Pressable>
+      <Text style={TYPOGRAPHY.pWhite as any}>{derivationPath}</Text>
     </View>
   );
 }
