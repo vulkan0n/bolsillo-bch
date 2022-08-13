@@ -1,23 +1,22 @@
 import React from "react";
-import { View, Text, DeviceEventEmitter } from "react-native";
+import { View, Text } from "react-native";
 import Button from "../../../../atoms/Button";
 import TYPOGRAPHY from "../../../../../design/typography";
 import styles from "./styles";
-import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { faPiggyBank } from "@fortawesome/free-solid-svg-icons/faPiggyBank";
-import COLOURS from "../../../../../design/colours";
 import Toast from "react-native-toast-message";
-import { BRIDGE_MESSAGE_TYPES } from "../../../../../utils/bridgeMessages";
 import { useSelector } from "react-redux";
 import { ReduxState } from "../../../../../types";
-import emit from "../../../../../utils/emit";
 
-const DeleteWalletView = ({ navigation, route }) => {
+const DeleteWalletView = ({ navigation }) => {
   const { navigatedWalletName } = useSelector(
     (state: ReduxState) => state.walletManager
   );
 
-  const onDeleteWallet = () => {
+  const onPressBackup = () => {
+    navigation.navigate("Backup");
+  };
+
+  const onPressDelete = () => {
     deleteWallet({
       name: navigatedWalletName,
     });
@@ -42,7 +41,12 @@ const DeleteWalletView = ({ navigation, route }) => {
       <Text style={TYPOGRAPHY.pWhite as any}>
         Ensure you have your mnemonic backup saved first!!
       </Text>
-      <Button onPress={onDeleteWallet}>Delete</Button>
+      <Button icon={"faPiggyBank"} onPress={onPressBackup}>
+        Backup
+      </Button>
+      <Button icon={"faTrashCan"} variant="danger" onPress={onPressDelete}>
+        Delete forever
+      </Button>
     </View>
   );
 };

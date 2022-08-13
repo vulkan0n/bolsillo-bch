@@ -13,6 +13,7 @@ import { faBarsStaggered } from "@fortawesome/free-solid-svg-icons/faBarsStagger
 import { faMoon } from "@fortawesome/free-solid-svg-icons/faMoon";
 import { faPlusCircle } from "@fortawesome/free-solid-svg-icons/faPlusCircle";
 import { faFileImport } from "@fortawesome/free-solid-svg-icons/faFileImport";
+import { faTrashCan } from "@fortawesome/free-solid-svg-icons/faTrashCan";
 
 export type IconType =
   | ""
@@ -30,7 +31,8 @@ export type IconType =
   | "faBarsStaggered"
   | "faMoon"
   | "faPlusCircle"
-  | "faFileImport";
+  | "faFileImport"
+  | "faTrashCan";
 
 export const iconImport = (icon: IconType) => {
   switch (icon) {
@@ -64,6 +66,8 @@ export const iconImport = (icon: IconType) => {
       return faPlusCircle;
     case "faFileImport":
       return faFileImport;
+    case "faTrashCan":
+      return faTrashCan;
     default:
       return null;
   }

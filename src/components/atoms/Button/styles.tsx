@@ -14,6 +14,8 @@ const styles = ({ variant = "primary", isSmall = false, isDisabled }) => {
         return COLOURS.bchGreen;
       case "blackOutlined":
         return COLOURS.white;
+      case "danger":
+        return COLOURS.errorRed;
       default:
         return COLOURS.bchGreen;
     }
@@ -30,6 +32,8 @@ const styles = ({ variant = "primary", isSmall = false, isDisabled }) => {
       case "secondary":
         return COLOURS.white;
       case "blackOutlined":
+        return COLOURS.black;
+      case "danger":
         return COLOURS.black;
       default:
         return COLOURS.white;
@@ -48,6 +52,8 @@ const styles = ({ variant = "primary", isSmall = false, isDisabled }) => {
         return COLOURS.bchGreen;
       case "blackOutlined":
         return COLOURS.bchGreen;
+      case "danger":
+        return COLOURS.errorRed;
       default:
         return COLOURS.bchGreen;
     }
@@ -65,6 +71,8 @@ const styles = ({ variant = "primary", isSmall = false, isDisabled }) => {
         return COLOURS.bchGreen;
       case "blackOutlined":
         return COLOURS.white;
+      case "danger":
+        return COLOURS.errorRed;
       default:
         return COLOURS.black;
     }
