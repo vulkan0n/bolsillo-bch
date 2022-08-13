@@ -58,7 +58,7 @@ const NumPad = () => {
     if (parseFloat(padBalance + n) > parseFloat(availableBalance)) {
       dispatch(
         updateTransactionPadError({
-          error: "Insuffient balance.",
+          error: "Insufficient balance.",
         })
       );
       return;

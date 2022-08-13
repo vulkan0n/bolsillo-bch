@@ -37,13 +37,13 @@ const RightHandedMode = () => {
         {isRightHandedMode && (
           <Text style={TYPOGRAPHY.pWhiteLeft as any}>
             Interactive components tend to appear on right of screen for easy
-            thumb access. Change if left-hand dominated.
+            thumb access. Change if left-hand dominant.
           </Text>
         )}
         {!isRightHandedMode && (
           <Text style={TYPOGRAPHY.pWhiteLeft as any}>
             Interactive components tend to appear on left of screen for easy
-            thumb access. Change if right-hand dominated.
+            thumb access. Change if right-hand dominant.
           </Text>
         )}
       </View>
