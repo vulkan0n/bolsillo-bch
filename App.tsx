@@ -10,8 +10,8 @@ import {
 } from "@expo-google-fonts/montserrat";
 import WebView from "react-native-webview";
 import { useWebViewMessage } from "react-native-react-bridge";
-import NavigationTree from "./src/components/macro/NavigationTree";
-import Bridge from "./src/components/macro/Bridge";
+import NavigationTree from "./src/components/NavigationTree";
+import Bridge from "./src/components/Bridge";
 import { RESPONSE_MESSAGE_TYPES } from "./src/utils/bridgeMessages";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
