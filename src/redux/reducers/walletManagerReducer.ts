@@ -58,8 +58,9 @@ const walletMangerSlice = createSlice({
     },
     createDefaultWallet(state, action) {
       if (state.wallets.length === 0) {
+        const walletName = "My first wallet";
         const newWallet = {
-          name: "My first wallet",
+          name: walletName,
           description: "A Bitcoin Cash wallet",
           mnemonic: action.payload.mnemonic,
           derivationPath: action.payload.derivationPath,
@@ -67,6 +68,7 @@ const walletMangerSlice = createSlice({
           balance: "0",
         };
         state.wallets = [newWallet];
+        state.activeWalletName = walletName;
       }
     },
     createWalletFromScratchPad(state) {

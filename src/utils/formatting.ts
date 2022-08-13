@@ -31,6 +31,7 @@ export const displayUsd = (sats: string): string => {
   const splitString = decmialisedUsd.toString().split(".");
   const preDecimal = chunkRight(splitString?.[0]);
   const postDecimal = splitString?.[1];
+  console.log({ decmialisedUsd, sats, splitString, preDecimal, postDecimal });
 
   return `USD $${preDecimal}.${postDecimal}`;
 };
@@ -48,6 +49,7 @@ export const displaySats = (sats: string): string => {
 };
 
 export const displaySatsAsUsd = (sats: string): string => {
+  console.log({ sats });
   return displayUsd(convertSatsToUsd(sats));
 };
 

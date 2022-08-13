@@ -33,6 +33,7 @@ function AvailableBalance() {
     setIsDisplayHideNotice(false);
   };
 
+  console.log("wallet?.balance", wallet?.balance)
   const satBalance = displaySats(wallet?.balance);
   const usdBalance = displaySatsAsUsd(wallet?.balance);
 
