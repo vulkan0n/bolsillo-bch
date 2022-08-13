@@ -55,6 +55,12 @@ const walletMangerSlice = createSlice({
       state.activeWalletName = state.scratchPad.name;
       state.scratchPad = BLANK_SCRATCH_PAD;
     },
+    deleteWallet(state, action) {
+      state.wallets = state.wallets.filter(
+        ({ name }) => name !== action.payload.name
+      );
+      state.navigatedWalletName = "";
+    },
   },
 });
 
@@ -65,5 +71,6 @@ export const {
   updateNewWalletScratchPadDescription,
   updateNewWalletScratchPadDetails,
   addWallet,
+  deleteWallet,
 } = walletMangerSlice.actions;
 export default walletMangerSlice.reducer;

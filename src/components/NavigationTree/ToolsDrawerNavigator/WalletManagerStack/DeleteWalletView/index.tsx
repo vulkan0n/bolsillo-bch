@@ -4,12 +4,13 @@ import Button from "../../../../atoms/Button";
 import TYPOGRAPHY from "../../../../../design/typography";
 import styles from "./styles";
 import Toast from "react-native-toast-message";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { ReduxState } from "../../../../../types";
 import Divider from "../../../../atoms/Divider";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import COLOURS from "../../../../../design/colours";
 import { faTrashCan } from "@fortawesome/free-solid-svg-icons/faTrashCan";
+import { deleteWallet } from "../../../../../redux/reducers/walletManagerReducer";
 
 const DeleteWalletView = ({ navigation }) => {
   const { navigatedWalletName } = useSelector(
@@ -20,16 +21,19 @@ const DeleteWalletView = ({ navigation }) => {
       ({ name }) => name === navigatedWalletName
     )
   );
+  const dispatch = useDispatch();
 
   const onPressBackup = () => {
     navigation.navigate("Backup");
   };
 
   const onPressDelete = () => {
-    deleteWallet({
-      name: navigatedWalletName,
-    });
     navigation.navigate("Manage");
+    dispatch(
+      deleteWallet({
+        name: navigatedWalletName,
+      })
+    );
     Toast.show({
       type: "customSuccess",
       props: {
