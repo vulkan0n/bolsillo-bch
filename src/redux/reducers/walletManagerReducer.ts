@@ -43,7 +43,7 @@ const walletMangerSlice = createSlice({
       state.scratchPad.cashAddr = action.payload.cashAddr;
     },
     addWallet(state) {
-      state.wallets = state.wallets.push({ ...state.scratchPad, balance: "0" });
+      state.wallets = [...state.wallets, { ...state.scratchPad, balance: "0" }];
       state.activeWalletName = state.scratchPad.name;
       state.scratchPad = BLANK_SCRATCH_PAD;
     },

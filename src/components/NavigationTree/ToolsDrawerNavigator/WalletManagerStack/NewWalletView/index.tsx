@@ -12,6 +12,8 @@ import {
   updateNewWalletScratchPadName,
 } from "../../../../../redux/reducers/walletManagerReducer";
 import TextInput from "../../../../atoms/TextInput";
+import emit from "../../../../../utils/emit";
+import { BRIDGE_MESSAGE_TYPES } from "../../../../../utils/bridgeMessages";
 
 function NewWalletView({ navigation }) {
   const dispatch = useDispatch();
@@ -23,7 +25,10 @@ function NewWalletView({ navigation }) {
 
   useEffect(() => {
     if (!mnemonic || !derivationPath) {
-      console.log("its happening");
+      emit({
+        type: BRIDGE_MESSAGE_TYPES.CREATE_WALLET_SCRATCHPAD,
+        data: {},
+      });
     }
   }, []);
 
