@@ -19,6 +19,7 @@ function NewWalletView({ navigation }) {
     (state: ReduxState) => state.walletManager.scratchPad
   );
   const [isMnemonicVisible, setIsMnemonicVisible] = useState(false);
+  const [isStartedEditing, setIsStartedEditing] = useState(false);
 
   useEffect(() => {
     if (!mnemonic || !derivationPath) {
@@ -51,6 +52,7 @@ function NewWalletView({ navigation }) {
   };
 
   const onChangeName = (name: string) => {
+    setIsStartedEditing(true);
     dispatch(
       updateNewWalletScratchPadName({
         name,
@@ -67,6 +69,7 @@ function NewWalletView({ navigation }) {
   };
 
   const onPressCreate = () => {
+    setIsStartedEditing(false);
     dispatch(addWallet());
     navigation.navigate("Wallets");
   };
@@ -78,7 +81,7 @@ function NewWalletView({ navigation }) {
     <View style={styles.container as any}>
       <Text style={TYPOGRAPHY.h2 as any}>Name</Text>
       <TextInput isSmallText text={name} onChange={onChangeName} />
-      {nameValidationError && (
+      {isStartedEditing && nameValidationError && (
         <Text style={TYPOGRAPHY.pRed as any}>{nameValidationError}</Text>
       )}
       <Text style={TYPOGRAPHY.h2 as any}>Description</Text>
@@ -106,7 +109,11 @@ function NewWalletView({ navigation }) {
       )}
       <Text style={TYPOGRAPHY.h2 as any}>Derivation path</Text>
       <Text style={TYPOGRAPHY.pWhite as any}>{derivationPath}</Text>
-      <Button onPress={onPressCreate} icon={"faPlusCircle"}>
+      <Button
+        isDisabled={!!nameValidationError}
+        onPress={onPressCreate}
+        icon={"faPlusCircle"}
+      >
         Create wallet
       </Button>
     </View>
