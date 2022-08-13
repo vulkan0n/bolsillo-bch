@@ -11,10 +11,16 @@ import { iconImport } from "../../../../design/icons";
 import styles from "./styles";
 import LearnStack from "./LearnStack";
 import BackupStack from "./BackupStack";
+import { useSelector } from "react-redux";
+import { ReduxState } from "../../../../types";
 
 const Drawer = createDrawerNavigator();
 
 function ToolsDrawerNavigator() {
+  const { isRightHandedMode } = useSelector(
+    (state: ReduxState) => state.settings
+  );
+
   return (
     <Drawer.Navigator
       screenOptions={{
@@ -22,21 +28,28 @@ function ToolsDrawerNavigator() {
         drawerLabelStyle: styles.drawerLabelStyle as any,
         drawerActiveTintColor: COLOURS.bchGreen,
         drawerContentStyle: styles.drawerContentStyle as any,
+        drawerPosition: isRightHandedMode ? "right" : "left",
         header: ({ navigation, route, options }) => {
           const title = getHeaderTitle(options, route.name);
 
+          const DrawerButton = (
+            <Pressable
+              style={styles.drawerButton as any}
+              onPress={() => navigation.openDrawer()}
+            >
+              <FontAwesomeIcon
+                icon={iconImport("faBarsStaggered")}
+                size={30}
+                color={COLOURS.bchGreen}
+              />
+            </Pressable>
+          );
+
+          const Spacer = <View style={styles.spacer as any}></View>;
+
           return (
             <View style={styles.headerContainer as any}>
-              <Pressable
-                style={styles.drawerButton as any}
-                onPress={() => navigation.openDrawer()}
-              >
-                <FontAwesomeIcon
-                  icon={iconImport("faBarsStaggered")}
-                  size={30}
-                  color={COLOURS.bchGreen}
-                />
-              </Pressable>
+              {isRightHandedMode ? Spacer : DrawerButton}
               <View style={styles.titleContentContainer as any}>
                 {/* <FontAwesomeIcon
                   icon={iconImport("faBookOpenReader")}
@@ -49,7 +62,7 @@ function ToolsDrawerNavigator() {
                 /> */}
                 <Text style={TYPOGRAPHY.h1 as any}>{title}</Text>
               </View>
-              <View style={styles.spacer as any}></View>
+              {isRightHandedMode ? DrawerButton : Spacer}
             </View>
           );
         },
