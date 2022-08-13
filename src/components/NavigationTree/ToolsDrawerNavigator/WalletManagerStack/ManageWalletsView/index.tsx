@@ -116,7 +116,7 @@ function ManageWalletsView({ navigation }) {
         <Button variant={"blackOutlined"} isSmall icon={"faPlusCircle"}>
           New
         </Button>
-        <Button variant={"blackOutlined"} isSmall>
+        <Button variant={"blackOutlined"} isSmall icon={"faFileImport"}>
           Import
         </Button>
       </View>

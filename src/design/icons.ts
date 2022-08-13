@@ -12,6 +12,7 @@ import { faScrewdriverWrench } from "@fortawesome/free-solid-svg-icons/faScrewdr
 import { faBarsStaggered } from "@fortawesome/free-solid-svg-icons/faBarsStaggered";
 import { faMoon } from "@fortawesome/free-solid-svg-icons/faMoon";
 import { faPlusCircle } from "@fortawesome/free-solid-svg-icons/faPlusCircle";
+import { faFileImport } from "@fortawesome/free-solid-svg-icons/faFileImport";
 
 export type IconType =
   | ""
@@ -28,7 +29,8 @@ export type IconType =
   | "faScrewdriverWrench"
   | "faBarsStaggered"
   | "faMoon"
-  | "faPlusCircle";
+  | "faPlusCircle"
+  | "faFileImport";
 
 export const iconImport = (icon: IconType) => {
   switch (icon) {
@@ -60,6 +62,8 @@ export const iconImport = (icon: IconType) => {
       return faMoon;
     case "faPlusCircle":
       return faPlusCircle;
+    case "faFileImport":
+      return faFileImport;
     default:
       return null;
   }
