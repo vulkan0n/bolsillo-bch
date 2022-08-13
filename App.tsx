@@ -78,7 +78,7 @@ export default function App() {
           store.dispatch(updateBridgeWallet({ wallet: message.data.wallet }));
           break;
 
-        case RESPONSE_MESSAGE_TYPES.CREATE_DEFAULT_WALLET_SCRATCHPAD_RESPONSE:
+        case RESPONSE_MESSAGE_TYPES.CREATE_SCRATCHPAD_WALLET_RESPONSE:
           store.dispatch(
             updateNewWalletScratchPadDetails({
               mnemonic: message.data.wallet.mnemonic,

@@ -55,11 +55,11 @@ const Bridge = () => {
           });
           break;
 
-        case BRIDGE_MESSAGE_TYPES.CREATE_DEFAULT_WALLET_SCRATCHPAD:
+        case BRIDGE_MESSAGE_TYPES.CREATE_SCRATCHPAD_WALLET:
           const walletScratchPad = await WalletObject.newRandom();
 
           emit({
-            type: RESPONSE_MESSAGE_TYPES.CREATE_DEFAULT_WALLET_SCRATCHPAD_RESPONSE,
+            type: RESPONSE_MESSAGE_TYPES.CREATE_SCRATCHPAD_WALLET_RESPONSE,
             data: { wallet: walletScratchPad },
           });
           break;

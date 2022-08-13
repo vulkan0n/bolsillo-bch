@@ -35,7 +35,7 @@ function NewWalletView({ navigation }) {
   useEffect(() => {
     if (!mnemonic || !derivationPath) {
       emit({
-        type: BRIDGE_MESSAGE_TYPES.CREATE_DEFAULT_WALLET_SCRATCHPAD,
+        type: BRIDGE_MESSAGE_TYPES.CREATE_SCRATCHPAD_WALLET,
         data: {},
       });
     }
