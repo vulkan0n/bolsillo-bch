@@ -1,6 +1,7 @@
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import COLOURS from "../../../../design/colours";
 import ToolsHomeView from "../../../views/ToolsView/ToolsHomeView";
+import DevelopersView from "../../../views/ToolsView/DevelopersView";
 import SettingsView from "../../../views/ToolsView/SettingsView";
 import TYPOGRAPHY from "../../../../design/typography";
 import { getHeaderTitle } from "@react-navigation/elements";
@@ -58,6 +59,7 @@ function ToolsDrawerNavigator() {
       <Drawer.Screen name="Home" component={ToolsHomeView} />
       <Drawer.Screen name="Learn" component={LearnStack} />
       <Drawer.Screen name="Backup" component={BackupStack} />
+      <Drawer.Screen name="Developers" component={DevelopersView} />
       <Drawer.Screen name="Settings" component={SettingsView} />
     </Drawer.Navigator>
   );
