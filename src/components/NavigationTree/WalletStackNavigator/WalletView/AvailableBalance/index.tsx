@@ -9,9 +9,12 @@ import { toggleIsShowAvailableBalance } from "../../../../../redux/reducers/sett
 
 function AvailableBalance() {
   const [isDisplayHideNotice, setIsDisplayHideNotice] = useState(false);
-  const { wallet } = useSelector((state: ReduxState) => state.bridge);
-  const { balance } = useSelector((state: ReduxState) => state.bridge);
-  const { isCryptoDenominated } = useSelector(
+  const wallet = useSelector((state: ReduxState) =>
+    state.walletManager?.wallets?.find(
+      ({ name }) => name === state.walletManager?.activeWalletName
+    )
+  );
+  const { balance } = wallet;  const { isCryptoDenominated } = useSelector(
     (state: ReduxState) => state.settings
   );
   const dispatch = useDispatch()

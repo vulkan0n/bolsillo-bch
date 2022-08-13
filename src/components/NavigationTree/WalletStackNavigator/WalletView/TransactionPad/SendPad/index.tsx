@@ -17,7 +17,11 @@ import QrScanner from "../QrScanner";
 
 const SendPad = () => {
   const dispatch = useDispatch();
-  const { wallet } = useSelector((state: ReduxState) => state.bridge);
+  const wallet = useSelector((state: ReduxState) =>
+    state.walletManager?.wallets?.find(
+      ({ name }) => name === state.walletManager?.activeWalletName
+    )
+  );
   const { padBalance } = useSelector(
     (state: ReduxState) => state.transactionPad
   );

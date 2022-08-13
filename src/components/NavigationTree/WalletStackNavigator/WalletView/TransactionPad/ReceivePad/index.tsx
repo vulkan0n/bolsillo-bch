@@ -12,7 +12,11 @@ import { ReduxState } from "../../../../../../types";
 
 const ReceivePad = () => {
   const dispatch = useDispatch();
-  const { wallet } = useSelector((state: ReduxState) => state.bridge);
+  const wallet = useSelector((state: ReduxState) =>
+    state.walletManager?.wallets?.find(
+      ({ name }) => name === state.walletManager?.activeWalletName
+    )
+  );
   const { isRightHandedMode } = useSelector(
     (state: ReduxState) => state.settings
   );

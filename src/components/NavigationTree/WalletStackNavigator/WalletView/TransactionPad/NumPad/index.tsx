@@ -14,7 +14,12 @@ import TRANSACTION_PAD_ERRORS from "../errors";
 
 const NumPad = () => {
   const dispatch = useDispatch();
-  const { balance } = useSelector((state: ReduxState) => state.bridge);
+  const wallet = useSelector((state: ReduxState) =>
+    state.walletManager?.wallets?.find(
+      ({ name }) => name === state.walletManager?.activeWalletName
+    )
+  );
+  const { balance } = wallet;
   const { padBalance } = useSelector(
     (state: ReduxState) => state.transactionPad
   );
