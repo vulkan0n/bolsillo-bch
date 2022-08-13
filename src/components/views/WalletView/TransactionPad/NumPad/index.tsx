@@ -20,6 +20,9 @@ const NumPad = () => {
   const { isCryptoDenominated } = useSelector(
     (state: ReduxState) => state.settings
   );
+  const { isRightHandedMode } = useSelector(
+    (state: ReduxState) => state.settings
+  );
   const availableBalance = balance?.sat;
 
   const isSendDisabled = padBalance === "0";
@@ -106,6 +109,17 @@ const NumPad = () => {
     );
   };
 
+  const SendButton = (
+    <Button
+      icon={"faPaperPlane"}
+      onPress={onPressSend}
+      isSmall
+      isDisabled={isSendDisabled}
+    >
+      Send
+    </Button>
+  );
+
   return (
     <View style={styles.inputBackground as any}>
       <View style={styles.numPad as any}>
@@ -131,14 +145,7 @@ const NumPad = () => {
         </View>
       </View>
       <View style={styles.buttonContainer as any}>
-        <Button
-          icon={"faPaperPlane"}
-          onPress={onPressSend}
-          isSmall
-          isDisabled={isSendDisabled}
-        >
-          Send
-        </Button>
+        {isRightHandedMode && SendButton}
         <Button
           icon={"faBitcoinSign"}
           variant="secondary"
@@ -147,6 +154,7 @@ const NumPad = () => {
         >
           Receive
         </Button>
+        {!isRightHandedMode && SendButton}
       </View>
     </View>
   );
