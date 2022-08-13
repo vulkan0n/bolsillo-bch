@@ -5,6 +5,7 @@ import styles from "./styles";
 import COLOURS from "../../../../design/colours";
 import {
   toggleIsCryptoDenominated,
+  toggleIsRightHandedMode,
   toggleIsTestNet,
 } from "../../../../redux/reducers/settingsReducer";
 import { useSelector, useDispatch } from "react-redux";
@@ -15,10 +16,17 @@ const SettingsView = () => {
   const { isCryptoDenominated } = useSelector(
     (state: ReduxState) => state.settings
   );
+  const { isRightHandedMode } = useSelector(
+    (state: ReduxState) => state.settings
+  );
   const { isTestNet } = useSelector((state: ReduxState) => state.settings);
 
   const handleToggleIsCryptoDenominated = () => {
     dispatch(toggleIsCryptoDenominated());
+  };
+
+  const handleToggleIsRightHandedMode = () => {
+    dispatch(toggleIsRightHandedMode());
   };
 
   const handleToggleIsTestNet = () => {
@@ -50,6 +58,32 @@ const SettingsView = () => {
             ios_backgroundColor={COLOURS.lightGrey}
             onValueChange={handleToggleIsCryptoDenominated}
             value={isCryptoDenominated}
+          />
+        </View>
+      </View>
+      <View style={styles.optionRow as any}>
+        <View style={{ width: 250 }}>
+          <Text style={TYPOGRAPHY.h2Left as any}>Right Handed Mode</Text>
+          {isRightHandedMode && (
+            <Text style={TYPOGRAPHY.pWhiteLeft as any}>
+              Interactive components tend to appear on right of screen for easy
+              thumb access. Change if left-hand dominated.
+            </Text>
+          )}
+          {!isRightHandedMode && (
+            <Text style={TYPOGRAPHY.pWhiteLeft as any}>
+              Interactive components tend to appear on left of screen for easy
+              thumb access. Change if right-hand dominated.
+            </Text>
+          )}
+        </View>
+        <View style={styles.control}>
+          <Switch
+            trackColor={{ true: COLOURS.bchGreen, false: COLOURS.white }}
+            thumbColor={isRightHandedMode ? COLOURS.white : COLOURS.black}
+            ios_backgroundColor={COLOURS.lightGrey}
+            onValueChange={handleToggleIsRightHandedMode}
+            value={isRightHandedMode}
           />
         </View>
       </View>
