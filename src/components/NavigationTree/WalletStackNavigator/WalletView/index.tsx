@@ -26,6 +26,7 @@ function WalletView({ route, navigation }) {
     emit({
       type: BRIDGE_MESSAGE_TYPES.REQUEST_BALANCE,
       data: {
+        name: wallet?.name,
         mnemonic: wallet?.mnemonic,
         derivationPath: wallet?.derivationPath,
         isTestNet,

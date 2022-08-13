@@ -70,6 +70,18 @@ const walletMangerSlice = createSlice({
       );
       state.navigatedWalletName = "";
     },
+    updateWalletBalance(state, action) {
+      const wallet = state.wallets.find(
+        ({ name }) => name === action.payload.name
+      );
+      wallet.balance = action.payload.balance;
+    },
+    updateWalletCashAddr(state, action) {
+      const wallet = state.wallets.find(
+        ({ name }) => name === action.payload.name
+      );
+      wallet.cashAddr = action.payload.cashAddr;
+    },
   },
 });
 
@@ -84,5 +96,7 @@ export const {
   addWallet,
   clearWalletScratchPad,
   deleteWallet,
+  updateWalletBalance,
+  updateWalletCashAddr,
 } = walletMangerSlice.actions;
 export default walletMangerSlice.reducer;

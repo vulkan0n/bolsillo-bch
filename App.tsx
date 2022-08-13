@@ -26,7 +26,10 @@ import {
   updateBridgeWallet,
 } from "./src/redux/reducers/bridgeReducer";
 import { WalletType } from "./src/types";
-import { updateNewWalletScratchPadDetails } from "./src/redux/reducers/walletManagerReducer";
+import {
+  updateNewWalletScratchPadDetails,
+  updateWalletBalance,
+} from "./src/redux/reducers/walletManagerReducer";
 
 export default function App() {
   // For the list of possible font faces
@@ -42,6 +45,7 @@ export default function App() {
   interface BridgeResponseMessage {
     type: string;
     data: {
+      name?: string;
       wallet?: WalletType;
       balance?: string;
       tempTxId?: string;
@@ -79,7 +83,10 @@ export default function App() {
 
         case RESPONSE_MESSAGE_TYPES.REQUEST_BALANCE_RESPONSE:
           store.dispatch(
-            updateBridgeBalance({ balance: message.data.balance })
+            updateWalletBalance({
+              name: message.data.name,
+              balance: message.data.balance,
+            })
           );
           console.log({ message });
           break;

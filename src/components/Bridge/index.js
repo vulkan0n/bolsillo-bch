@@ -80,6 +80,7 @@ const Bridge = () => {
           emit({
             type: RESPONSE_MESSAGE_TYPES.REQUEST_BALANCE_RESPONSE,
             data: {
+              name: message?.data?.name,
               balance,
             },
           });
