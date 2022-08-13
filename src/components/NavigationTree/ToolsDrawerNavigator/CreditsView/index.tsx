@@ -3,7 +3,7 @@ import { View, Image, Text } from "react-native";
 import TYPOGRAPHY from "../../../../design/typography";
 import styles from "./styles";
 
-function DevelopersView() {
+function CreditsView() {
   return (
     <View style={styles.container as any}>
       <Image
@@ -28,4 +28,4 @@ function DevelopersView() {
   );
 }
 
-export default DevelopersView;
+export default CreditsView;

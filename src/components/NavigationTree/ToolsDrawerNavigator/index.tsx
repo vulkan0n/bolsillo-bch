@@ -1,6 +1,6 @@
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import ToolsHomeView from "./ToolsHomeView";
-import DevelopersView from "./DevelopersView";
+import CreditsView from "./CreditsView";
 import SettingsView from "./SettingsView";
 import DrawerNavigator from "../../atoms/DrawerNavigator";
 import LearnStack from "./LearnStack";
@@ -14,7 +14,7 @@ function ToolsDrawerNavigator() {
       <Drawer.Screen name="Home" component={ToolsHomeView} />
       <Drawer.Screen name="Learn" component={LearnStack} />
       <Drawer.Screen name="Backup" component={BackupStack} />
-      <Drawer.Screen name="Developers" component={DevelopersView} />
+      <Drawer.Screen name="Credits" component={CreditsView} />
       <Drawer.Screen name="Settings" component={SettingsView} />
     </DrawerNavigator>
   );
