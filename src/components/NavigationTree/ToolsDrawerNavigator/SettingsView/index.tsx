@@ -10,20 +10,14 @@ import {
 } from "../../../../redux/reducers/settingsReducer";
 import { useSelector, useDispatch } from "react-redux";
 import { ReduxState } from "../../../../types";
+import CryptoDenominated from "./CryptoDenominated";
 
 const SettingsView = () => {
   const dispatch = useDispatch();
-  const { isCryptoDenominated } = useSelector(
-    (state: ReduxState) => state.settings
-  );
   const { isRightHandedMode } = useSelector(
     (state: ReduxState) => state.settings
   );
   const { isTestNet } = useSelector((state: ReduxState) => state.settings);
-
-  const handleToggleIsCryptoDenominated = () => {
-    dispatch(toggleIsCryptoDenominated());
-  };
 
   const handleToggleIsRightHandedMode = () => {
     dispatch(toggleIsRightHandedMode());
@@ -32,18 +26,6 @@ const SettingsView = () => {
   const handleToggleIsTestNet = () => {
     dispatch(toggleIsTestNet());
   };
-
-  const CryptoDenominatedSwitch = (
-    <View style={styles.control as any}>
-      <Switch
-        trackColor={{ true: COLOURS.bchGreen, false: COLOURS.white }}
-        thumbColor={isCryptoDenominated ? COLOURS.white : COLOURS.black}
-        ios_backgroundColor={COLOURS.lightGrey}
-        onValueChange={handleToggleIsCryptoDenominated}
-        value={isCryptoDenominated}
-      />
-    </View>
-  );
 
   const RightHandedModeSwitch = (
     <View style={styles.control}>
@@ -71,25 +53,7 @@ const SettingsView = () => {
 
   return (
     <View style={styles.container as any}>
-      <View style={styles.optionRow as any}>
-        {!isRightHandedMode && CryptoDenominatedSwitch}
-        <View style={{ width: 250 }}>
-          <Text style={TYPOGRAPHY.h2Left as any}>Crypto Denominated</Text>
-          {isCryptoDenominated && (
-            <Text style={TYPOGRAPHY.pWhiteLeft as any}>
-              Display balances in crypto (BCH). Fiat (USD) equivalent displayed
-              beneath.
-            </Text>
-          )}
-          {!isCryptoDenominated && (
-            <Text style={TYPOGRAPHY.pWhiteLeft as any}>
-              Display balances in fiat (USD). Crypto (BCH) equivalent displayed
-              beneath.
-            </Text>
-          )}
-        </View>
-        {isRightHandedMode && CryptoDenominatedSwitch}
-      </View>
+      <CryptoDenominated />
 
       <View style={styles.optionRow as any}>
         {!isRightHandedMode && RightHandedModeSwitch}
