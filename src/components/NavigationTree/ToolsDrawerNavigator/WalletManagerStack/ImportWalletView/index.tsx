@@ -7,7 +7,7 @@ import styles from "./styles";
 import COLOURS from "../../../../../design/colours";
 import { ReduxState } from "../../../../../types";
 import {
-  addWallet,
+  createWalletFromScratchPad,
   clearWalletScratchPad,
   updateNewWalletScratchPadName,
   updateNewWalletScratchPadDescription,
@@ -76,7 +76,7 @@ function ImportWalletView({ navigation }) {
     setIsStartedEditingName(false);
     setIsStartedEditingMnemonic(false);
 
-    dispatch(addWallet());
+    dispatch(createWalletFromScratchPad());
     navigation.navigate("Manage");
 
     Toast.show({

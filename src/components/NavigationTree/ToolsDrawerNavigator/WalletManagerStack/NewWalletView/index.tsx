@@ -7,7 +7,7 @@ import styles from "./styles";
 import COLOURS from "../../../../../design/colours";
 import { ReduxState } from "../../../../../types";
 import {
-  addWallet,
+  createWalletFromScratchPad,
   updateNewWalletScratchPadDescription,
   updateNewWalletScratchPadName,
 } from "../../../../../redux/reducers/walletManagerReducer";
@@ -64,7 +64,7 @@ function NewWalletView({ navigation }) {
 
   const onPressCreate = () => {
     setIsStartedEditing(false);
-    dispatch(addWallet());
+    dispatch(createWalletFromScratchPad());
     navigation.navigate("Manage");
     Toast.show({
       type: "customSuccess",

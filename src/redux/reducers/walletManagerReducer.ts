@@ -56,7 +56,7 @@ const walletMangerSlice = createSlice({
       state.scratchPad.derivationPath = action.payload.derivationPath;
       state.scratchPad.cashAddr = action.payload.cashAddr;
     },
-    addWallet(state) {
+    createWalletFromScratchPad(state) {
       state.wallets = [...state.wallets, { ...state.scratchPad, balance: "0" }];
       state.activeWalletName = state.scratchPad.name;
       state.scratchPad = BLANK_SCRATCH_PAD;
@@ -93,7 +93,7 @@ export const {
   updateImportWalletScratchPadMnemonic,
   updateImportWalletScratchPadDerivationPath,
   updateNewWalletScratchPadDetails,
-  addWallet,
+  createWalletFromScratchPad,
   clearWalletScratchPad,
   deleteWallet,
   updateWalletBalance,
