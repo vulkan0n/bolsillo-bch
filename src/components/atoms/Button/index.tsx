@@ -8,7 +8,7 @@ import { iconImport, IconType } from "../../../design/icons";
 interface Props {
   children: any;
   onPress: () => void;
-  variant?: "primary" | "secondary";
+  variant?: "primary" | "secondary" | "blackOutlined";
   isSmall?: boolean;
   isDisabled?: boolean;
   icon?: IconType;
@@ -31,6 +31,8 @@ const Button = ({
       case "primary":
         return COLOURS.white;
       case "secondary":
+        return COLOURS.bchGreen;
+      case "blackOutlined":
         return COLOURS.bchGreen;
       default:
         return COLOURS.bchGreen;

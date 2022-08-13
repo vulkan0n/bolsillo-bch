@@ -5,7 +5,6 @@ import Button from "../../../../atoms/Button";
 import TYPOGRAPHY from "../../../../../design/typography";
 import styles from "./styles";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { faPiggyBank } from "@fortawesome/free-solid-svg-icons/faPiggyBank";
 import COLOURS from "../../../../../design/colours";
 import { ReduxState } from "../../../../../types";
 import { faWallet } from "@fortawesome/free-solid-svg-icons";
@@ -27,83 +26,104 @@ function ManageWalletsView({ navigation }) {
     navigation.navigate("Reset");
   };
 
+  const activeWalletName = "My wallet";
   const wallets = [
     {
       name: "My wallet",
       description: "Use for good stuff",
       mnemonic: "asdfasdfas",
       balance: "1234",
-      isActive: true,
     },
     {
       name: "My wallet 2",
       description: "Use for dodgy stuff",
       mnemonic: "another mnemonic",
       balance: "1234567",
-      isActive: false,
     },
     {
       name: "My wallet 3",
       description: "Use for dodgy stuff",
       mnemonic: "another mnemonic xxxxx",
       balance: "1234567",
-      isActive: false,
     },
   ];
 
-  const activeWallet = wallets?.find(({ isActive }) => isActive);
-  const inactiveWallets = wallets?.filter(
-    ({ name }) => name !== activeWallet?.name
-  );
-
-  const renderInactiveWallet = ({
-    item: { name, description, mnemonic, balance, isActive },
-  }) => (
-    <View
-      style={{
-        flex: 1,
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "center",
-      }}
-    >
-      <View style={{ width: 30 }}>
-        <FontAwesomeIcon
-          icon={faWallet}
-          size={isActive ? 30 : 20}
-          color={isActive ? COLOURS.bchGreen : COLOURS.white}
-        />
-      </View>
+  const renderWallets = ({ item: { name, description, balance } }) => {
+    const isActive = activeWalletName === name;
+    return (
       <View
-        style={{ flex: 1, paddingLeft: SPACING.ten, paddingRight: SPACING.ten }}
+        style={{
+          flex: 1,
+          flexDirection: "row",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
       >
-        <Text style={TYPOGRAPHY.h2Left as any}>{name}</Text>
-        <Text style={TYPOGRAPHY.pWhiteLeft as any}>{description}</Text>
-        <Text style={TYPOGRAPHY.pWhiteLeft as any}>{displaySats(balance)}</Text>
-        <Text style={TYPOGRAPHY.pWhiteLeft as any}>{displayUsd(balance)}</Text>
+        <View style={{ width: 30 }}>
+          <FontAwesomeIcon
+            icon={faWallet}
+            size={isActive ? 30 : 20}
+            color={isActive ? COLOURS.bchGreen : COLOURS.white}
+          />
+        </View>
+        <View
+          style={{
+            flex: 1,
+            paddingLeft: SPACING.ten,
+            paddingRight: SPACING.ten,
+          }}
+        >
+          <Text style={TYPOGRAPHY.h2Left as any}>{name}</Text>
+          <Text style={TYPOGRAPHY.pWhiteLeft as any}>{description}</Text>
+          <Text style={TYPOGRAPHY.pWhiteLeft as any}>
+            {displaySats(balance)}
+          </Text>
+          <Text style={TYPOGRAPHY.pWhiteLeft as any}>
+            {displayUsd(balance)}
+          </Text>
+        </View>
+        <View style={{ width: 100 }}>
+          {!isActive && (
+            <Pressable>
+              <Text style={TYPOGRAPHY.pWhiteUnderlined as any}>Activate</Text>
+            </Pressable>
+          )}
+          <Pressable>
+            <Text style={TYPOGRAPHY.pWhiteUnderlined as any}>Backup</Text>
+          </Pressable>
+          {!isActive && (
+            <Pressable>
+              <Text style={TYPOGRAPHY.pWhiteUnderlined as any}>Delete</Text>
+            </Pressable>
+          )}
+        </View>
       </View>
-      <View style={{ width: 100 }}>
-        {!isActive && (
-          <Pressable>
-            <Text style={TYPOGRAPHY.pWhiteUnderlined as any}>Activate</Text>
-          </Pressable>
-        )}
-        <Pressable>
-          <Text style={TYPOGRAPHY.pWhiteUnderlined as any}>Backup</Text>
-        </Pressable>
-        {!isActive && (
-          <Pressable>
-            <Text style={TYPOGRAPHY.pWhiteUnderlined as any}>Delete</Text>
-          </Pressable>
-        )}
+    );
+  };
+
+  const WalletActions = (
+    <View>
+      <Divider />
+
+      <View
+        style={{
+          flexDirection: "row",
+          justifyContent: "space-around",
+          width: "100%",
+        }}
+      >
+        <Button variant={"blackOutlined"} isSmall>
+          New
+        </Button>
+        <Button variant={"blackOutlined"} isSmall>
+          Import
+        </Button>
       </View>
     </View>
   );
 
   return (
     <View style={styles.container as any}>
-      {/* <View style={styles.iconContainer}>
-      </View> */}
       <FlatList
         style={
           {
@@ -114,8 +134,9 @@ function ManageWalletsView({ navigation }) {
         }
         ItemSeparatorComponent={() => <Divider />}
         data={wallets}
-        renderItem={renderInactiveWallet}
+        renderItem={renderWallets}
         keyExtractor={({ name }) => name}
+        ListFooterComponent={WalletActions}
       />
     </View>
   );

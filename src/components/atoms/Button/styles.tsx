@@ -12,6 +12,8 @@ const styles = ({ variant = "primary", isSmall = false, isDisabled }) => {
         return COLOURS.bchGreen;
       case "secondary":
         return COLOURS.bchGreen;
+      case "blackOutlined":
+        return COLOURS.white;
       default:
         return COLOURS.bchGreen;
     }
@@ -27,6 +29,8 @@ const styles = ({ variant = "primary", isSmall = false, isDisabled }) => {
         return COLOURS.bchGreen;
       case "secondary":
         return COLOURS.white;
+      case "blackOutlined":
+        return COLOURS.black;
       default:
         return COLOURS.white;
     }
@@ -41,6 +45,8 @@ const styles = ({ variant = "primary", isSmall = false, isDisabled }) => {
       case "primary":
         return COLOURS.white;
       case "secondary":
+        return COLOURS.bchGreen;
+      case "blackOutlined":
         return COLOURS.bchGreen;
       default:
         return COLOURS.bchGreen;
