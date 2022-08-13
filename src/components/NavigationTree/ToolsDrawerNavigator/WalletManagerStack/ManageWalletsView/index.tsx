@@ -13,7 +13,8 @@ import Divider from "../../../../atoms/Divider";
 import SPACING from "../../../../../design/spacing";
 import {
   updateActiveWalletName,
-  updateBackupWalletName,
+  updateNavigatedWalletName,
+  updateDeleteWalletName,
 } from "../../../../../redux/reducers/walletManagerReducer";
 
 function ManageWalletsView({ navigation }) {
@@ -30,8 +31,17 @@ function ManageWalletsView({ navigation }) {
   };
 
   const onPressBackup = (backupWalletName) => {
-    dispatch(updateBackupWalletName({ backupWalletName }));
+    dispatch(
+      updateNavigatedWalletName({ navigatedWalletName: backupWalletName })
+    );
     navigation.navigate("Backup");
+  };
+
+  const onPressDelete = (deleteWalletName) => {
+    dispatch(
+      updateNavigatedWalletName({ navigatedWalletName: deleteWalletName })
+    );
+    navigation.navigate("Delete");
   };
 
   const onPressNew = () => {
@@ -93,7 +103,7 @@ function ManageWalletsView({ navigation }) {
             <Text style={TYPOGRAPHY.pWhiteUnderlined as any}>Backup</Text>
           </Pressable>
           {!isActive && (
-            <Pressable>
+            <Pressable onPress={() => onPressDelete(name)}>
               <Text style={TYPOGRAPHY.pWhiteUnderlined as any}>Delete</Text>
             </Pressable>
           )}

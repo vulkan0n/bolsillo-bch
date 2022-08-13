@@ -12,29 +12,29 @@ import { useSelector } from "react-redux";
 import { ReduxState } from "../../../../../types";
 import emit from "../../../../../utils/emit";
 
-const ResetWalletView = ({ navigation, route }) => {
-  const { isTestNet } = useSelector((state: ReduxState) => state.settings);
+const DeleteWalletView = ({ navigation, route }) => {
+  const { navigatedWalletName } = useSelector(
+    (state: ReduxState) => state.walletManager
+  );
 
-  const onResetWallet = () => {
-    emit({
-      type: BRIDGE_MESSAGE_TYPES.CREATE_WALLET,
-      data: { isTestNet },
+  const onDeleteWallet = () => {
+    deleteWallet({
+      name: navigatedWalletName,
     });
-
+    navigation.navigate("Manage");
     Toast.show({
       type: "customSuccess",
       props: {
-        title: "New wallet created",
-        text: "Generated new mnemonic phrase.",
+        title: "Wallet deleted",
+        text: "Goodbye wallet.",
       },
     });
-    navigation.goBack();
   };
 
   return (
     <View style={styles.container as any}>
       <Text style={TYPOGRAPHY.pWhite as any}>
-        Note, this will erase all of your current data:
+        Note, this will erase all of this wallet's:
       </Text>
       <Text style={TYPOGRAPHY.pWhite as any}>- Wallet data</Text>
       <Text style={TYPOGRAPHY.pWhite as any}>- Settings</Text>
@@ -42,9 +42,9 @@ const ResetWalletView = ({ navigation, route }) => {
       <Text style={TYPOGRAPHY.pWhite as any}>
         Ensure you have your mnemonic backup saved first!!
       </Text>
-      <Button onPress={onResetWallet}>Create new wallet</Button>
+      <Button onPress={onDeleteWallet}>Delete</Button>
     </View>
   );
 };
 
-export default ResetWalletView;
+export default DeleteWalletView;

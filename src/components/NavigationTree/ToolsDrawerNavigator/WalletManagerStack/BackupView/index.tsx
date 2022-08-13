@@ -10,11 +10,13 @@ import COLOURS from "../../../../../design/colours";
 import { ReduxState } from "../../../../../types";
 
 function BackupView({ navigation }) {
-  const { backupWalletName } = useSelector(
+  const { navigatedWalletName } = useSelector(
     (state: ReduxState) => state.walletManager
   );
   const { mnemonic, derivationPath } = useSelector((state: ReduxState) =>
-    state.walletManager.wallets?.find(({ name }) => name === backupWalletName)
+    state.walletManager.wallets?.find(
+      ({ name }) => name === navigatedWalletName
+    )
   );
   const [isMnemonicVisible, setIsMnemonicVisible] = useState(false);
 

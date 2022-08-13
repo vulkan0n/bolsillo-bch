@@ -11,7 +11,7 @@ const BLANK_SCRATCH_PAD = {
 
 export interface WalletManagerState {
   activeWalletName: string;
-  backupWalletName: string;
+  navigatedWalletName: string;
   wallets: [SeleneWalletType?];
   scratchPad: {
     name?: string;
@@ -24,7 +24,7 @@ export interface WalletManagerState {
 
 const initialState = {
   activeWalletName: "",
-  backupWalletName: "",
+  navigatedWalletName: "",
   wallets: [],
   scratchPad: BLANK_SCRATCH_PAD,
 } as WalletManagerState;
@@ -36,8 +36,8 @@ const walletMangerSlice = createSlice({
     updateActiveWalletName(state, action) {
       state.activeWalletName = action.payload.activeWalletName;
     },
-    updateBackupWalletName(state, action) {
-      state.backupWalletName = action.payload.backupWalletName;
+    updateNavigatedWalletName(state, action) {
+      state.navigatedWalletName = action.payload.navigatedWalletName;
     },
     updateNewWalletScratchPadName(state, action) {
       state.scratchPad.name = action.payload.name;
@@ -60,7 +60,7 @@ const walletMangerSlice = createSlice({
 
 export const {
   updateActiveWalletName,
-  updateBackupWalletName,
+  updateNavigatedWalletName,
   updateNewWalletScratchPadName,
   updateNewWalletScratchPadDescription,
   updateNewWalletScratchPadDetails,
