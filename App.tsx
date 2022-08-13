@@ -61,7 +61,7 @@ export default function App() {
     (message: BridgeResponseMessage) => {
       // console.log("Bridge Response Message: ", message);
       switch (message.type) {
-        case RESPONSE_MESSAGE_TYPES.CREATE_WALLET_RESPONSE:
+        case RESPONSE_MESSAGE_TYPES.CREATE_DEFAULT_WALLET_RESPONSE:
           store.dispatch(
             createDefaultWallet({
               mnemonic: message.data.wallet.mnemonic,
@@ -71,14 +71,14 @@ export default function App() {
           );
           break;
 
-        // Note: Responds the same as CREATE_WALLET_RESPONSE
+        // Note: Responds the same as CREATE_DEFAULT_WALLET_RESPONSE
         // The difference is on the other side of the bridge
         // Generating a new seed vs refreshing from seed
         case RESPONSE_MESSAGE_TYPES.REFRESH_WALLET_RESPONSE:
           store.dispatch(updateBridgeWallet({ wallet: message.data.wallet }));
           break;
 
-        case RESPONSE_MESSAGE_TYPES.CREATE_WALLET_SCRATCHPAD_RESPONSE:
+        case RESPONSE_MESSAGE_TYPES.CREATE_DEFAULT_WALLET_SCRATCHPAD_RESPONSE:
           store.dispatch(
             updateNewWalletScratchPadDetails({
               mnemonic: message.data.wallet.mnemonic,

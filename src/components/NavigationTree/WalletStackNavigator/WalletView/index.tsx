@@ -4,18 +4,19 @@ import { useSelector } from "react-redux";
 import TransactionPad from "./TransactionPad";
 import styles from "./styles";
 import { BRIDGE_MESSAGE_TYPES } from "../../../../utils/bridgeMessages";
-import { displaySats, displaySatsAsUsd } from "../../../../utils/formatting";
 import { ReduxState } from "../../../../types";
 import emit from "../../../../utils/emit";
 import AvailableBalance from "./AvailableBalance";
 
 function WalletView({ route, navigation }) {
+  const numWallets = useSelector(
+    (state: ReduxState) => state.walletManager?.wallets?.length
+  );
   const wallet = useSelector((state: ReduxState) =>
     state.walletManager?.wallets?.find(
       ({ name }) => name === state.walletManager?.activeWalletName
     )
   );
-  const { balance } = wallet;
   const { tempTxId } = useSelector((state: ReduxState) => state.bridge);
   const { isTestNet } = useSelector((state: ReduxState) => state.settings);
   const { isShowAvailableBalance } = useSelector(
@@ -36,8 +37,11 @@ function WalletView({ route, navigation }) {
   // Create a wallet if none exists
   // I.e. first time app is opened
   useEffect(() => {
-    if (!wallet?.mnemonic) {
-      emit({ type: BRIDGE_MESSAGE_TYPES.CREATE_WALLET, data: { isTestNet } });
+    if (numWallets === 0) {
+      emit({
+        type: BRIDGE_MESSAGE_TYPES.CREATE_DEFAULT_WALLET,
+        data: { isTestNet },
+      });
     }
   }, []);
 
@@ -75,9 +79,6 @@ function WalletView({ route, navigation }) {
   const onPressLogo = () => {
     navigation.navigate("Menu");
   };
-
-  const satBalance = displaySats(balance);
-  const usdBalance = displaySatsAsUsd(balance);
 
   return (
     <View style={styles.container as any}>

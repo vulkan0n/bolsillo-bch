@@ -25,14 +25,14 @@ const Bridge = () => {
       const WalletObject = message?.data?.isTestNet ? TestNetWallet : Wallet;
 
       switch (message.type) {
-        case BRIDGE_MESSAGE_TYPES.CREATE_WALLET:
+        case BRIDGE_MESSAGE_TYPES.CREATE_DEFAULT_WALLET:
           const wallet = await WalletObject.newRandom();
 
           console.log("Created Wallet!");
           console.log({ wallet });
 
           emit({
-            type: RESPONSE_MESSAGE_TYPES.CREATE_WALLET_RESPONSE,
+            type: RESPONSE_MESSAGE_TYPES.CREATE_DEFAULT_WALLET_RESPONSE,
             data: { wallet },
           });
           break;
@@ -55,11 +55,11 @@ const Bridge = () => {
           });
           break;
 
-        case BRIDGE_MESSAGE_TYPES.CREATE_WALLET_SCRATCHPAD:
+        case BRIDGE_MESSAGE_TYPES.CREATE_DEFAULT_WALLET_SCRATCHPAD:
           const walletScratchPad = await WalletObject.newRandom();
 
           emit({
-            type: RESPONSE_MESSAGE_TYPES.CREATE_WALLET_SCRATCHPAD_RESPONSE,
+            type: RESPONSE_MESSAGE_TYPES.CREATE_DEFAULT_WALLET_SCRATCHPAD_RESPONSE,
             data: { wallet: walletScratchPad },
           });
           break;
