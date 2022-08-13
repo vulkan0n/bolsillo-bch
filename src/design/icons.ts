@@ -14,6 +14,7 @@ import { faMoon } from "@fortawesome/free-solid-svg-icons/faMoon";
 import { faPlusCircle } from "@fortawesome/free-solid-svg-icons/faPlusCircle";
 import { faFileImport } from "@fortawesome/free-solid-svg-icons/faFileImport";
 import { faTrashCan } from "@fortawesome/free-solid-svg-icons/faTrashCan";
+import { faEye } from "@fortawesome/free-solid-svg-icons/faEye";
 
 export type IconType =
   | ""
@@ -32,7 +33,8 @@ export type IconType =
   | "faMoon"
   | "faPlusCircle"
   | "faFileImport"
-  | "faTrashCan";
+  | "faTrashCan"
+  | "faEye";
 
 export const iconImport = (icon: IconType) => {
   switch (icon) {
@@ -68,6 +70,8 @@ export const iconImport = (icon: IconType) => {
       return faFileImport;
     case "faTrashCan":
       return faTrashCan;
+    case "faEye":
+      return faEye;
     default:
       return null;
   }

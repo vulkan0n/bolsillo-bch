@@ -108,7 +108,11 @@ function NewWalletView({ navigation }) {
       )}
       <Text style={TYPOGRAPHY.h2 as any}>Mnemonic</Text>
       {!isMnemonicVisible && (
-        <Button variant="blackOutlined" onPress={toggleIsMnemonicVisible}>
+        <Button
+          icon={"faEye"}
+          variant="blackOutlined"
+          onPress={toggleIsMnemonicVisible}
+        >
           Reveal mnemonic
         </Button>
       )}

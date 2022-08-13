@@ -58,7 +58,7 @@ function BackupView({ navigation }) {
           TAKE ALL YOUR MONEY!!
         </Text>
         {!isMnemonicVisible && (
-          <Button onPress={toggleIsMnemonicVisible}>Reveal mnemonic</Button>
+          <Button icon={"faEye"} onPress={toggleIsMnemonicVisible}>Reveal mnemonic</Button>
         )}
         {isMnemonicVisible && (
           <Pressable
