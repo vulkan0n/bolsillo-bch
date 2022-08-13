@@ -11,43 +11,29 @@ import { faWallet } from "@fortawesome/free-solid-svg-icons";
 import { displaySats, displayUsd } from "../../../../../utils/formatting";
 import Divider from "../../../../atoms/Divider";
 import SPACING from "../../../../../design/spacing";
-import { iconImport } from "../../../../../design/icons";
 
 function ManageWalletsView({ navigation }) {
-  const { wallet } = useSelector((state: ReduxState) => state.bridge);
+  const { activeWalletName } = useSelector(
+    (state: ReduxState) => state.walletManager
+  );
+  const { wallets } = useSelector((state: ReduxState) => state.walletManager);
   const [isMnemonicVisible, setIsMnemonicVisible] = useState(false);
 
-  console.log({ wallet });
+  console.log({ activeWalletName, wallets });
 
   const toggleIsMnemonicVisible = () => {
     setIsMnemonicVisible(!isMnemonicVisible);
   };
 
-  const onPressResetWallet = () => {
-    navigation.navigate("Reset");
-  };
+  // TODO: Clean up once Reset is linked somewhere else
+  // const onPressResetWallet = () => {
+  //   navigation.navigate("Reset");
+  // };
 
-  const activeWalletName = "My wallet";
-  const wallets = [
-    {
-      name: "My wallet",
-      description: "Use for good stuff",
-      mnemonic: "asdfasdfas",
-      balance: "1234",
-    },
-    {
-      name: "My wallet 2",
-      description: "Use for dodgy stuff",
-      mnemonic: "another mnemonic",
-      balance: "1234567",
-    },
-    {
-      name: "My wallet 3",
-      description: "Use for dodgy stuff",
-      mnemonic: "another mnemonic xxxxx",
-      balance: "1234567",
-    },
-  ];
+  const onPressNew = () => {
+    // TODO: Finish this method
+    //   navigation.navigate("Reset");
+  };
 
   const renderWallets = ({ item: { name, description, balance } }) => {
     const isActive = activeWalletName === name;
@@ -113,7 +99,12 @@ function ManageWalletsView({ navigation }) {
           width: "100%",
         }}
       >
-        <Button variant={"blackOutlined"} isSmall icon={"faPlusCircle"}>
+        <Button
+          onPress={onPressNew}
+          variant={"blackOutlined"}
+          isSmall
+          icon={"faPlusCircle"}
+        >
           New
         </Button>
         <Button variant={"blackOutlined"} isSmall icon={"faFileImport"}>
