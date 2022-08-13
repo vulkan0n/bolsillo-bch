@@ -30,6 +30,10 @@ function ManageWalletsView({ navigation }) {
   //   navigation.navigate("Reset");
   // };
 
+  const onPressBackup = (walletName) => {
+    navigation.navigate("Backup");
+  };
+
   const onPressNew = () => {
     navigation.navigate("New Wallet");
   };
@@ -81,7 +85,7 @@ function ManageWalletsView({ navigation }) {
               <Text style={TYPOGRAPHY.pWhiteUnderlined as any}>Activate</Text>
             </Pressable>
           )}
-          <Pressable>
+          <Pressable onPress={() => onPressBackup(name)}>
             <Text style={TYPOGRAPHY.pWhiteUnderlined as any}>Backup</Text>
           </Pressable>
           {!isActive && (

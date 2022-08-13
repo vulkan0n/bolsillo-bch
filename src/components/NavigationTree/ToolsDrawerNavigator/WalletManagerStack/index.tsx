@@ -9,7 +9,7 @@ const Stack = createNativeStackNavigator();
 const WalletManagerStack = () => (
   <Stack.Navigator>
     <Stack.Screen
-      name="Manage Wallets"
+      name="Manage"
       component={ManageWalletsView}
       options={{
         headerStyle: {
@@ -29,7 +29,7 @@ const WalletManagerStack = () => (
       }}
     />
     <Stack.Screen
-      name="Mnemonic"
+      name="Backup"
       component={BackupView}
       options={{
         headerStyle: {

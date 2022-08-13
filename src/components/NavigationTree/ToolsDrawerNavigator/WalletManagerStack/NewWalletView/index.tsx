@@ -76,7 +76,7 @@ function NewWalletView({ navigation }) {
   const onPressCreate = () => {
     setIsStartedEditing(false);
     dispatch(addWallet());
-    navigation.navigate("Manage Wallets");
+    navigation.navigate("Manage");
   };
 
   const nameValidationError = validateName();
