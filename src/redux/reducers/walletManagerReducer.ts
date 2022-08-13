@@ -57,15 +57,17 @@ const walletMangerSlice = createSlice({
       state.scratchPad.cashAddr = action.payload.cashAddr;
     },
     createDefaultWallet(state, action) {
-      const newWallet = {
-        name: "My first wallet",
-        description: "A Bitcoin Cash wallet",
-        mnemonic: action.payload.mnemonic,
-        derivationPath: action.payload.derivationPath,
-        cashAddr: action.payload.cashAddr,
-        balance: "0",
-      };
-      state.wallets = [...state.wallets, newWallet];
+      if (state.wallets.length === 0) {
+        const newWallet = {
+          name: "My first wallet",
+          description: "A Bitcoin Cash wallet",
+          mnemonic: action.payload.mnemonic,
+          derivationPath: action.payload.derivationPath,
+          cashAddr: action.payload.cashAddr,
+          balance: "0",
+        };
+        state.wallets = [newWallet];
+      }
     },
     createWalletFromScratchPad(state) {
       state.wallets = [...state.wallets, { ...state.scratchPad, balance: "0" }];

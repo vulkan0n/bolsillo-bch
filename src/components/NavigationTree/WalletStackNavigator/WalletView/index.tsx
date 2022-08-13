@@ -39,16 +39,11 @@ function WalletView({ route, navigation }) {
   // Create a wallet if none exists
   // I.e. first time app is opened
   useEffect(() => {
-    // setInterval(() => {
-    //   if (isNoWallet) {
-    //     console.log("trigger");
-    //     console.log({ isNoWallet });
-    //     emit({
-    //       type: BRIDGE_MESSAGE_TYPES.CREATE_DEFAULT_WALLET,
-    //       data: { isTestNet },
-    //     });
-    //   }
-    // }, 5000);
+    console.log("creating wallet");
+    emit({
+      type: BRIDGE_MESSAGE_TYPES.CREATE_DEFAULT_WALLET,
+      data: { isTestNet },
+    });
   }, []);
 
   // Refresh wallet when toggling to/from test net
