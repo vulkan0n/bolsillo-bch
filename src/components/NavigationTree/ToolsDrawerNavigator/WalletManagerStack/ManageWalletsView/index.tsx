@@ -35,6 +35,11 @@ function ManageWalletsView({ navigation }) {
     //   navigation.navigate("Reset");
   };
 
+  const onPressImport = () => {
+    // TODO: Finish this method
+    //   navigation.navigate("Reset");
+  };
+
   const renderWallets = ({ item: { name, description, balance } }) => {
     const isActive = activeWalletName === name;
     return (

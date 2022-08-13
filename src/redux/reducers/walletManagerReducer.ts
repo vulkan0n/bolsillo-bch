@@ -15,11 +15,14 @@ const walletMangerSlice = createSlice({
   name: "walletManager",
   initialState,
   reducers: {
-    updateActiveWallet(state, action) {
+    addWallet(state, action) {
+      state.wallets = state.wallets.push(action.payload.wallet);
+    },
+    updateActiveWalletName(state, action) {
       state.activeWalletName = action.payload.activeWalletName;
     },
   },
 });
 
-export const { updateActiveWallet } = walletMangerSlice.actions;
+export const { addWallet, updateActiveWalletName } = walletMangerSlice.actions;
 export default walletMangerSlice.reducer;

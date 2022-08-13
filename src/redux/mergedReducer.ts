@@ -9,7 +9,7 @@ const mergedReducer = combineReducers({
   bridge: bridgeReducer,
   transactionPad: transactionPadReducer,
   exchangeRates: exchangeRatesReducer,
-  walletsManager: walletManagerReducer,
+  walletManager: walletManagerReducer,
   settings: settingsReducer,
 });
 
