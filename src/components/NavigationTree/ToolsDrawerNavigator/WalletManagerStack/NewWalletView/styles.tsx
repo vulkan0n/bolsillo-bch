@@ -2,6 +2,9 @@ import COLOURS from "../../../../../design/colours";
 import SPACING from "../../../../../design/spacing";
 
 const styles = {
+  scrollView: {
+    backgroundColor: COLOURS.black,
+  },
   container: {
     backgroundColor: COLOURS.black,
     paddingTop: SPACING.fifteen,
