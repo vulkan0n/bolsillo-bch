@@ -15,6 +15,8 @@ const styles = {
   },
   widePressable: {
     width: "100%",
+    paddingRight: SPACING.fifteen,
+    paddingLeft: SPACING.fifteen,
   },
   primaryTitlesWrapper: {
     marginBottom: SPACING.five,
