@@ -78,10 +78,6 @@ const SettingsView = () => {
           />
         </View>
       </View>
-      <Image
-        style={styles.logo}
-        source={require("../../../../assets/images/logo.jpg")}
-      />
     </View>
   );
 };
