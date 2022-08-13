@@ -10,8 +10,12 @@ import emit from "../../../../utils/emit";
 import AvailableBalance from "./AvailableBalance";
 
 function WalletView({ route, navigation }) {
-  const { wallet } = useSelector((state: ReduxState) => state.bridge);
-  const { balance } = useSelector((state: ReduxState) => state.bridge);
+  const wallet = useSelector((state: ReduxState) =>
+    state.walletManager?.wallets?.find(
+      ({ name }) => name === state.walletManager?.activeWalletName
+    )
+  );
+  const { balance } = wallet;
   const { tempTxId } = useSelector((state: ReduxState) => state.bridge);
   const { isTestNet } = useSelector((state: ReduxState) => state.settings);
   const { isShowAvailableBalance } = useSelector(
