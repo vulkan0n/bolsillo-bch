@@ -11,7 +11,10 @@ import { faWallet } from "@fortawesome/free-solid-svg-icons";
 import { displaySats, displayUsd } from "../../../../../utils/formatting";
 import Divider from "../../../../atoms/Divider";
 import SPACING from "../../../../../design/spacing";
-import { updateBackupWalletName } from "../../../../../redux/reducers/walletManagerReducer";
+import {
+  updateActiveWalletName,
+  updateBackupWalletName,
+} from "../../../../../redux/reducers/walletManagerReducer";
 
 function ManageWalletsView({ navigation }) {
   const { activeWalletName } = useSelector(
@@ -21,6 +24,10 @@ function ManageWalletsView({ navigation }) {
   const dispatch = useDispatch();
 
   console.log({ activeWalletName, wallets });
+
+  const onPressActivate = (newActiveWalletName) => {
+    dispatch(updateActiveWalletName({ activeWalletName: newActiveWalletName }));
+  };
 
   const onPressBackup = (backupWalletName) => {
     dispatch(updateBackupWalletName({ backupWalletName }));
@@ -74,7 +81,11 @@ function ManageWalletsView({ navigation }) {
         </View>
         <View style={{ width: 100 }}>
           {!isActive && (
-            <Pressable>
+            <Pressable
+              onPress={() => {
+                onPressActivate(name);
+              }}
+            >
               <Text style={TYPOGRAPHY.pWhiteUnderlined as any}>Activate</Text>
             </Pressable>
           )}
