@@ -10,16 +10,14 @@ const ToolsHomeView = () => {
   return (
     <View style={styles.container as any}>
       <Text style={TYPOGRAPHY.pWhite as any}>
-        Your Selene wallet is your rocket ship, carefully engineered to be
-        simple but packed with immense power.
+        Your Selene wallet is your cryptocurrency rocket ship, precisely
+        engineered to be simple but packed with immense power.
       </Text>
-      <View style={styles.iconContainer}>
-        <FontAwesomeIcon
-          icon={iconImport("faMoon")}
-          size={50}
-          color={COLOURS.bchGreen}
-        />
-      </View>
+      <Text style={TYPOGRAPHY.pWhite as any}>
+        Explore the Tools section to learn more about Bitcoin Cash &
+        cryptocurrency, customize your wallet and backup your money in case of
+        disaster!
+      </Text>
     </View>
   );
 };

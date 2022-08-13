@@ -9,9 +9,6 @@ const styles = {
     justifyContent: "flex-start",
     alignItems: "center",
   },
-  iconContainer: {
-    marginBottom: SPACING.fifteen,
-  },
 };
 
 export default styles;
