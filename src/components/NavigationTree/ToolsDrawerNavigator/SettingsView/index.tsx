@@ -1,30 +1,22 @@
 import React from "react";
-import { View, Image, Text, Switch } from "react-native";
+import { View, Text, Switch } from "react-native";
 import TYPOGRAPHY from "../../../../design/typography";
 import styles from "./styles";
 import COLOURS from "../../../../design/colours";
-import {
-  toggleIsCryptoDenominated,
-  toggleIsRightHandedMode,
-  toggleIsTestNet,
-} from "../../../../redux/reducers/settingsReducer";
+import { toggleIsRightHandedMode } from "../../../../redux/reducers/settingsReducer";
 import { useSelector, useDispatch } from "react-redux";
 import { ReduxState } from "../../../../types";
 import CryptoDenominated from "./CryptoDenominated";
+import TestNet from "./TestNet";
 
 const SettingsView = () => {
   const dispatch = useDispatch();
   const { isRightHandedMode } = useSelector(
     (state: ReduxState) => state.settings
   );
-  const { isTestNet } = useSelector((state: ReduxState) => state.settings);
 
   const handleToggleIsRightHandedMode = () => {
     dispatch(toggleIsRightHandedMode());
-  };
-
-  const handleToggleIsTestNet = () => {
-    dispatch(toggleIsTestNet());
   };
 
   const RightHandedModeSwitch = (
@@ -35,18 +27,6 @@ const SettingsView = () => {
         ios_backgroundColor={COLOURS.lightGrey}
         onValueChange={handleToggleIsRightHandedMode}
         value={isRightHandedMode}
-      />
-    </View>
-  );
-
-  const TestNetSwitch = (
-    <View style={styles.control}>
-      <Switch
-        trackColor={{ true: COLOURS.bchGreen, false: COLOURS.white }}
-        thumbColor={isTestNet ? COLOURS.white : COLOURS.black}
-        ios_backgroundColor={COLOURS.lightGrey}
-        onValueChange={handleToggleIsTestNet}
-        value={isTestNet}
       />
     </View>
   );
@@ -75,24 +55,7 @@ const SettingsView = () => {
         {isRightHandedMode && RightHandedModeSwitch}
       </View>
 
-      <View style={styles.optionRow as any}>
-        {!isRightHandedMode && TestNetSwitch}
-        <View style={{ width: 250 }}>
-          <Text style={TYPOGRAPHY.h2Left as any}>Test Net</Text>
-          {isTestNet && (
-            <Text style={TYPOGRAPHY.pWhiteLeft as any}>
-              Connected to the BCH TestNet.
-            </Text>
-          )}
-          {!isTestNet && (
-            <Text style={TYPOGRAPHY.pWhiteLeft as any}>
-              Currently connected to BCH main network. If you don't know about
-              TestNet, don't change this.
-            </Text>
-          )}
-        </View>
-        {isRightHandedMode && TestNetSwitch}
-      </View>
+      <TestNet />
     </View>
   );
 };
