@@ -12,6 +12,7 @@ import {
   updateNewWalletScratchPadName,
   updateNewWalletScratchPadDescription,
   updateImportWalletScratchPadMnemonic,
+  updateImportWalletScratchPadDerivationPath,
 } from "../../../../../redux/reducers/walletManagerReducer";
 import TextInput from "../../../../atoms/TextInput";
 import emit from "../../../../../utils/emit";
@@ -38,6 +39,11 @@ function ImportWalletView({ navigation }) {
 
   useEffect(() => {
     dispatch(clearWalletScratchPad());
+    dispatch(
+      updateImportWalletScratchPadDerivationPath({
+        derivationPath: DEFAULT_DERIVATION_PATH,
+      })
+    );
   }, []);
 
   const onChangeName = (newName: string) => {

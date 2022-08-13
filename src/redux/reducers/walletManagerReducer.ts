@@ -48,6 +48,9 @@ const walletMangerSlice = createSlice({
     updateImportWalletScratchPadMnemonic(state, action) {
       state.scratchPad.mnemonic = action.payload.mnemonic;
     },
+    updateImportWalletScratchPadDerivationPath(state, action) {
+      state.scratchPad.derivationPath = action.payload.derivationPath;
+    },
     updateNewWalletScratchPadDetails(state, action) {
       state.scratchPad.mnemonic = action.payload.mnemonic;
       state.scratchPad.derivationPath = action.payload.derivationPath;
@@ -76,6 +79,7 @@ export const {
   updateNewWalletScratchPadName,
   updateNewWalletScratchPadDescription,
   updateImportWalletScratchPadMnemonic,
+  updateImportWalletScratchPadDerivationPath,
   updateNewWalletScratchPadDetails,
   addWallet,
   clearWalletScratchPad,
