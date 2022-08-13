@@ -65,7 +65,9 @@ function ManageWalletsView({ navigation }) {
           }}
         >
           <Text style={TYPOGRAPHY.h2Left as any}>{name}</Text>
-          <Text style={TYPOGRAPHY.pWhiteLeft as any}>{description}</Text>
+          {!!description && (
+            <Text style={TYPOGRAPHY.pWhiteLeft as any}>{description}</Text>
+          )}
           <Text style={TYPOGRAPHY.pWhiteLeft as any}>
             {displaySats(balance)}
           </Text>
