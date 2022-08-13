@@ -19,7 +19,7 @@ const WalletManagerStack = () => (
       }}
     />
     <Stack.Screen
-      name="New Wallet"
+      name="New"
       component={NewWalletView}
       options={{
         headerStyle: {

@@ -35,7 +35,7 @@ function ManageWalletsView({ navigation }) {
   };
 
   const onPressNew = () => {
-    navigation.navigate("New Wallet");
+    navigation.navigate("New");
   };
 
   const onPressImport = () => {
