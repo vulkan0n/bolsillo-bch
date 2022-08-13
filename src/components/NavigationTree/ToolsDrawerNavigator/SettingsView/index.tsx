@@ -33,9 +33,46 @@ const SettingsView = () => {
     dispatch(toggleIsTestNet());
   };
 
+  const CryptoDenominatedSwitch = (
+    <View style={styles.control as any}>
+      <Switch
+        trackColor={{ true: COLOURS.bchGreen, false: COLOURS.white }}
+        thumbColor={isCryptoDenominated ? COLOURS.white : COLOURS.black}
+        ios_backgroundColor={COLOURS.lightGrey}
+        onValueChange={handleToggleIsCryptoDenominated}
+        value={isCryptoDenominated}
+      />
+    </View>
+  );
+
+  const RightHandedModeSwitch = (
+    <View style={styles.control}>
+      <Switch
+        trackColor={{ true: COLOURS.bchGreen, false: COLOURS.white }}
+        thumbColor={isRightHandedMode ? COLOURS.white : COLOURS.black}
+        ios_backgroundColor={COLOURS.lightGrey}
+        onValueChange={handleToggleIsRightHandedMode}
+        value={isRightHandedMode}
+      />
+    </View>
+  );
+
+  const TestNetSwitch = (
+    <View style={styles.control}>
+      <Switch
+        trackColor={{ true: COLOURS.bchGreen, false: COLOURS.white }}
+        thumbColor={isTestNet ? COLOURS.white : COLOURS.black}
+        ios_backgroundColor={COLOURS.lightGrey}
+        onValueChange={handleToggleIsTestNet}
+        value={isTestNet}
+      />
+    </View>
+  );
+
   return (
     <View style={styles.container as any}>
       <View style={styles.optionRow as any}>
+        {!isRightHandedMode && CryptoDenominatedSwitch}
         <View style={{ width: 250 }}>
           <Text style={TYPOGRAPHY.h2Left as any}>Crypto Denominated</Text>
           {isCryptoDenominated && (
@@ -51,17 +88,11 @@ const SettingsView = () => {
             </Text>
           )}
         </View>
-        <View style={styles.control}>
-          <Switch
-            trackColor={{ true: COLOURS.bchGreen, false: COLOURS.white }}
-            thumbColor={isCryptoDenominated ? COLOURS.white : COLOURS.black}
-            ios_backgroundColor={COLOURS.lightGrey}
-            onValueChange={handleToggleIsCryptoDenominated}
-            value={isCryptoDenominated}
-          />
-        </View>
+        {isRightHandedMode && CryptoDenominatedSwitch}
       </View>
+
       <View style={styles.optionRow as any}>
+        {!isRightHandedMode && RightHandedModeSwitch}
         <View style={{ width: 250 }}>
           <Text style={TYPOGRAPHY.h2Left as any}>Right Handed Mode</Text>
           {isRightHandedMode && (
@@ -77,17 +108,11 @@ const SettingsView = () => {
             </Text>
           )}
         </View>
-        <View style={styles.control}>
-          <Switch
-            trackColor={{ true: COLOURS.bchGreen, false: COLOURS.white }}
-            thumbColor={isRightHandedMode ? COLOURS.white : COLOURS.black}
-            ios_backgroundColor={COLOURS.lightGrey}
-            onValueChange={handleToggleIsRightHandedMode}
-            value={isRightHandedMode}
-          />
-        </View>
+        {isRightHandedMode && RightHandedModeSwitch}
       </View>
+
       <View style={styles.optionRow as any}>
+        {!isRightHandedMode && TestNetSwitch}
         <View style={{ width: 250 }}>
           <Text style={TYPOGRAPHY.h2Left as any}>Test Net</Text>
           {isTestNet && (
@@ -102,15 +127,7 @@ const SettingsView = () => {
             </Text>
           )}
         </View>
-        <View style={styles.control}>
-          <Switch
-            trackColor={{ true: COLOURS.bchGreen, false: COLOURS.white }}
-            thumbColor={isTestNet ? COLOURS.white : COLOURS.black}
-            ios_backgroundColor={COLOURS.lightGrey}
-            onValueChange={handleToggleIsTestNet}
-            value={isTestNet}
-          />
-        </View>
+        {isRightHandedMode && TestNetSwitch}
       </View>
     </View>
   );
