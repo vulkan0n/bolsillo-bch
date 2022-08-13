@@ -1,69 +1,116 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, Pressable } from "react-native";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Button from "../../../../atoms/Button";
 import TYPOGRAPHY from "../../../../../design/typography";
 import styles from "./styles";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { faPiggyBank } from "@fortawesome/free-solid-svg-icons/faPiggyBank";
+import { faWallet } from "@fortawesome/free-solid-svg-icons/faWallet";
 import COLOURS from "../../../../../design/colours";
 import { ReduxState } from "../../../../../types";
+import {
+  addWallet,
+  updateNewWalletScratchPadDescription,
+  updateNewWalletScratchPadName,
+} from "../../../../../redux/reducers/walletManagerReducer";
+import TextInput from "../../../../atoms/TextInput";
 
 function NewWalletView({ navigation }) {
-  const { wallet } = useSelector((state: ReduxState) => state.bridge);
+  const dispatch = useDispatch();
+  const { name, description, mnemonic, derivationPath } = useSelector(
+    (state: ReduxState) => state.walletManager.scratchPad
+  );
   const [isMnemonicVisible, setIsMnemonicVisible] = useState(false);
 
-  console.log({ wallet });
+  useEffect(() => {
+    if (!mnemonic || !derivationPath) {
+      console.log("its happening");
+    }
+  }, []);
+
+  const validateName = () => {
+    if (name.length === 0) {
+      return "Can't be empty.";
+    }
+
+    if (name.length > 30) {
+      return "Can't be more than 30 characters.";
+    }
+
+    return null;
+  };
+
+  const validateDescription = () => {
+    if (description.length > 100) {
+      return "Can't be more than 100 characters.";
+    }
+
+    return null;
+  };
 
   const toggleIsMnemonicVisible = () => {
     setIsMnemonicVisible(!isMnemonicVisible);
   };
 
-  const onPressResetWallet = () => {
-    navigation.navigate("Reset");
+  const onChangeName = (name: string) => {
+    dispatch(
+      updateNewWalletScratchPadName({
+        name,
+      })
+    );
   };
+
+  const onChangeDescription = (description: string) => {
+    dispatch(
+      updateNewWalletScratchPadDescription({
+        description,
+      })
+    );
+  };
+
+  const onPressCreate = () => {
+    dispatch(addWallet());
+    navigation.navigate("Wallets");
+  };
+
+  const nameValidationError = validateName();
+  const descriptionValidationError = validateDescription();
 
   return (
     <View style={styles.container as any}>
-      <View style={styles.iconContainer}>
-        <FontAwesomeIcon
-          icon={faPiggyBank}
-          size={50}
-          color={COLOURS.bchGreen}
-        />
-      </View>
-      <Text style={TYPOGRAPHY.pWhite as any}>
-        With your mnemonic phrase, you can restore your wallet if your phone is
-        ever lost or broken.
-      </Text>
-      <Text style={TYPOGRAPHY.pWhite as any}>
-        It is recommended to make two backups of your phrase in safe locations
-        such as a locked box or password manager. Do NOT store it as a
-        screenshot!
-      </Text>
-      <Text style={TYPOGRAPHY.pWhite as any}>
-        The order of the words is important.
-      </Text>
-      <Text style={TYPOGRAPHY.pWhite as any}>
-        NEVER tell anyone your mnemonic, if they have these words they can TAKE
-        ALL YOUR MONEY!!
-      </Text>
+      <Text style={TYPOGRAPHY.h2 as any}>Name</Text>
+      <TextInput isSmallText text={name} onChange={onChangeName} />
+      {nameValidationError && (
+        <Text style={TYPOGRAPHY.pRed as any}>{nameValidationError}</Text>
+      )}
+      <Text style={TYPOGRAPHY.h2 as any}>Description</Text>
+      <TextInput
+        isSmallText
+        text={description}
+        onChange={onChangeDescription}
+      />
+      {descriptionValidationError && (
+        <Text style={TYPOGRAPHY.pRed as any}>{descriptionValidationError}</Text>
+      )}
+      <Text style={TYPOGRAPHY.h2 as any}>Mnemonic</Text>
       {!isMnemonicVisible && (
-        <Button onPress={toggleIsMnemonicVisible}>Reveal mnemonic</Button>
+        <Button variant="blackOutlined" onPress={toggleIsMnemonicVisible}>
+          Reveal mnemonic
+        </Button>
       )}
       {isMnemonicVisible && (
         <Pressable
           onPress={toggleIsMnemonicVisible}
           style={styles.mnemonicContainer}
         >
-          <Text style={TYPOGRAPHY.pWhite as any}>{wallet?.mnemonic}</Text>
+          <Text style={TYPOGRAPHY.pWhite as any}>{mnemonic}</Text>
         </Pressable>
       )}
       <Text style={TYPOGRAPHY.h2 as any}>Derivation path</Text>
-      <Text style={TYPOGRAPHY.pWhite as any}>{wallet?.derivationPath}</Text>
-      <Pressable onPress={onPressResetWallet}>
-        <Text style={TYPOGRAPHY.pWhiteUnderlined as any}>Reset Wallet</Text>
-      </Pressable>
+      <Text style={TYPOGRAPHY.pWhite as any}>{derivationPath}</Text>
+      <Button onPress={onPressCreate} icon={"faPlusCircle"}>
+        Create wallet
+      </Button>
     </View>
   );
 }

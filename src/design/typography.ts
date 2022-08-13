@@ -126,6 +126,13 @@ const TYPOGRAPHY = {
     fontSize: 16,
     marginBottom: SPACING.ten,
   },
+  pRed: {
+    fontFamily: "Montserrat_500Medium",
+    textAlign: "center",
+    color: COLOURS.errorRed,
+    fontSize: 16,
+    marginBottom: SPACING.ten,
+  },
   spacer: {
     height: SPACING.fifteen,
   },
