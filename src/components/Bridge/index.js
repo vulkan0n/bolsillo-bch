@@ -62,7 +62,7 @@ const Bridge = () => {
 
           emit({
             type: RESPONSE_MESSAGE_TYPES.CREATE_WALLET_SCRATCHPAD_RESPONSE,
-            data: { wallet },
+            data: { wallet: walletScratchPad },
           });
           break;
 
