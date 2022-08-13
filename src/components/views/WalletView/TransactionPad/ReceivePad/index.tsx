@@ -13,8 +13,9 @@ import { ReduxState } from "../../../../../types";
 const ReceivePad = () => {
   const dispatch = useDispatch();
   const { wallet } = useSelector((state: ReduxState) => state.bridge);
-
-  console.log({ wallet });
+  const { isRightHandedMode } = useSelector(
+    (state: ReduxState) => state.settings
+  );
 
   const onPressShare = () => {
     Toast.show({
@@ -34,6 +35,12 @@ const ReceivePad = () => {
     );
   };
 
+  const ShareButton = (
+    <Button onPress={onPressShare} isSmall>
+      Share
+    </Button>
+  );
+
   return (
     <View style={styles.inputBackground as any}>
       <View style={styles.receivePad as any}>
@@ -45,9 +52,7 @@ const ReceivePad = () => {
         </Text>
       </View>
       <View style={styles.buttonContainer as any}>
-        <Button onPress={onPressShare} isSmall>
-          Share
-        </Button>
+        {isRightHandedMode && ShareButton}
         <Button
           icon={"faChevronLeft"}
           variant="secondary"
@@ -56,6 +61,7 @@ const ReceivePad = () => {
         >
           Back
         </Button>
+        {!isRightHandedMode && ShareButton}
       </View>
     </View>
   );

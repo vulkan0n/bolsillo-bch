@@ -18,13 +18,16 @@ import QrScanner from "../QrScanner";
 const SendPad = () => {
   const dispatch = useDispatch();
   const { wallet } = useSelector((state: ReduxState) => state.bridge);
-  const { isTestNet } = useSelector((state: ReduxState) => state.settings);
   const { padBalance } = useSelector(
     (state: ReduxState) => state.transactionPad
   );
   const { sendToAddress } = useSelector(
     (state: ReduxState) => state.transactionPad
   );
+  const { isRightHandedMode } = useSelector(
+    (state: ReduxState) => state.settings
+  );
+  const { isTestNet } = useSelector((state: ReduxState) => state.settings);
 
   const onPressSend = () => {
     emit({
@@ -71,6 +74,12 @@ const SendPad = () => {
     );
   };
 
+  const SendButton = (
+    <Button icon={"faPaperPlane"} onPress={onPressSend} isSmall>
+      Send
+    </Button>
+  );
+
   return (
     <View style={styles.inputBackground as any}>
       <View style={styles.numPad as any}>
@@ -86,9 +95,7 @@ const SendPad = () => {
         </View>
       </View>
       <View style={styles.buttonContainer as any}>
-        <Button icon={"faPaperPlane"} onPress={onPressSend} isSmall>
-          Send
-        </Button>
+        {isRightHandedMode && SendButton}
         <Button
           icon={"faChevronLeft"}
           variant="secondary"
@@ -97,6 +104,7 @@ const SendPad = () => {
         >
           Back
         </Button>
+        {!isRightHandedMode && SendButton}
       </View>
     </View>
   );
