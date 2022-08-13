@@ -54,8 +54,9 @@ function WalletView({ route, navigation }) {
       return;
     }
 
+    console.log("triggering");
     requestBalance();
-  }, [wallet, wallet?.mnemonic, wallet?.cashaddr]);
+  }, [wallet?.name, wallet?.mnemonic, wallet?.cashaddr]);
 
   // Transaction id set to non null means new transaction just completed
   useEffect(() => {
@@ -73,10 +74,6 @@ function WalletView({ route, navigation }) {
 
   const onPressLogo = () => {
     navigation.navigate("Menu");
-  };
-
-  const onPressBalance = () => {
-    // requestBalance();
   };
 
   const satBalance = displaySats(balance?.sat);

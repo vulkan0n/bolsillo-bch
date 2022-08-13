@@ -38,15 +38,13 @@ const Bridge = () => {
           break;
 
         case BRIDGE_MESSAGE_TYPES.REFRESH_WALLET:
-          // const walletRefreshWallet = await WalletObject.fromSeed(
-          //   message?.data?.mnemonic,
-          //   message?.data?.derivationPath
-          // );
+          const walletRefreshWallet = await WalletObject.fromSeed(
+            message?.data?.mnemonic,
+            message?.data?.derivationPath
+          );
 
           // console.log("Refreshed Wallet!");
           // console.log({ walletRefreshWallet });
-
-          // const walletRefreshWallet = await WalletObject.newRandom();
 
           console.log("Created/Refreshed!! Wallet!");
           console.log({ walletRefreshWallet });
@@ -81,16 +79,9 @@ const Bridge = () => {
             type: RESPONSE_MESSAGE_TYPES.REQUEST_BALANCE_RESPONSE,
             data: {
               name: message?.data?.name,
-              balance,
+              balance: balance?.sat.toString(),
             },
           });
-
-          // Refetch wallet info with balance
-          // Temporary kludge until importing from Seed can be
-          // emit({
-          //   type: RESPONSE_MESSAGE_TYPES.CREATE_WALLET_RESPONSE,
-          //   data: { wallet: walletRequestBalance },
-          // });
           break;
 
         case BRIDGE_MESSAGE_TYPES.SEND_COINS:
