@@ -19,22 +19,28 @@ import Toast from "react-native-toast-message";
 import {
   validateWalletName,
   validateWalletDescription,
+  validateWalletMnemonic,
 } from "../../../../../utils/validation";
+import { DEFAULT_DERIVATION_PATH } from "../../../../../utils/consts";
 
 function ImportWalletView({ navigation }) {
   const dispatch = useDispatch();
   const { name, description, mnemonic, derivationPath } = useSelector(
     (state: ReduxState) => state.walletManager.scratchPad
   );
-  const [isStartedEditing, setIsStartedEditing] = useState(false);
+  const existingWalletNames = useSelector((state: ReduxState) =>
+    state.walletManager.wallets?.map?.(({ name }) => name)
+  );
+  const [isStartedEditingName, setIsStartedEditingName] = useState(false);
+  const [isStartedEditingMnemonic, setIsStartedEditingMnemonic] =
+    useState(false);
 
   useEffect(() => {
-    console.log("clearing scratchpad");
     dispatch(clearWalletScratchPad());
   }, []);
 
   const onChangeName = (newName: string) => {
-    setIsStartedEditing(true);
+    setIsStartedEditingName(true);
     dispatch(
       updateNewWalletScratchPadName({
         name: newName,
@@ -51,6 +57,7 @@ function ImportWalletView({ navigation }) {
   };
 
   const onChangeMnemonic = (newMnemonic: string) => {
+    setIsStartedEditingMnemonic(true);
     dispatch(
       updateNewWalletScratchPadDescription({
         mnemonic: newMnemonic,
@@ -59,9 +66,12 @@ function ImportWalletView({ navigation }) {
   };
 
   const onPressCreate = () => {
-    setIsStartedEditing(false);
+    setIsStartedEditingName(false);
+    setIsStartedEditingMnemonic(false);
+
     dispatch(addWallet());
     navigation.navigate("Manage");
+
     Toast.show({
       type: "customSuccess",
       props: {
@@ -71,14 +81,19 @@ function ImportWalletView({ navigation }) {
     });
   };
 
-  const nameValidationError = validateWalletName(name);
+  const nameValidationError = validateWalletName(name, existingWalletNames);
   const descriptionValidationError = validateWalletDescription(description);
+  const mnemonicValidationError = validateWalletMnemonic(mnemonic);
+  const isImportDisabled =
+    !!nameValidationError ||
+    !!descriptionValidationError ||
+    !!mnemonicValidationError;
 
   return (
     <View style={styles.container as any}>
       <Text style={TYPOGRAPHY.h2 as any}>Name</Text>
       <TextInput isSmallText text={name} onChange={onChangeName} />
-      {isStartedEditing && nameValidationError && (
+      {isStartedEditingName && nameValidationError && (
         <Text style={TYPOGRAPHY.pRed as any}>{nameValidationError}</Text>
       )}
       <Text style={TYPOGRAPHY.h2 as any}>Description</Text>
@@ -92,10 +107,13 @@ function ImportWalletView({ navigation }) {
       )}
       <Text style={TYPOGRAPHY.h2 as any}>Mnemonic</Text>
       <TextInput isSmallText text={mnemonic} onChange={onChangeMnemonic} />
+      {isStartedEditingMnemonic && mnemonicValidationError && (
+        <Text style={TYPOGRAPHY.pRed as any}>{mnemonicValidationError}</Text>
+      )}
       <Text style={TYPOGRAPHY.h2 as any}>Derivation path</Text>
-      <Text style={TYPOGRAPHY.pWhite as any}>{derivationPath}</Text>
+      <Text style={TYPOGRAPHY.pWhite as any}>{DEFAULT_DERIVATION_PATH}</Text>
       <Button
-        isDisabled={!!nameValidationError}
+        isDisabled={isImportDisabled}
         onPress={onPressCreate}
         icon={"faFileImport"}
       >

@@ -25,6 +25,9 @@ function NewWalletView({ navigation }) {
   const { name, description, mnemonic, derivationPath } = useSelector(
     (state: ReduxState) => state.walletManager.scratchPad
   );
+  const existingWalletNames = useSelector((state: ReduxState) =>
+    state.walletManager.wallets?.map?.(({ name }) => name)
+  );
   const [isMnemonicVisible, setIsMnemonicVisible] = useState(false);
   const [isStartedEditing, setIsStartedEditing] = useState(false);
 
@@ -71,8 +74,10 @@ function NewWalletView({ navigation }) {
     });
   };
 
-  const nameValidationError = validateWalletName(name);
+  const nameValidationError = validateWalletName(name, existingWalletNames);
   const descriptionValidationError = validateWalletDescription(description);
+  const isCreateDisabled =
+    !!nameValidationError || !!descriptionValidationError;
 
   return (
     <View style={styles.container as any}>
@@ -111,7 +116,7 @@ function NewWalletView({ navigation }) {
       <Text style={TYPOGRAPHY.h2 as any}>Derivation path</Text>
       <Text style={TYPOGRAPHY.pWhite as any}>{derivationPath}</Text>
       <Button
-        isDisabled={!!nameValidationError}
+        isDisabled={isCreateDisabled}
         onPress={onPressCreate}
         icon={"faPlusCircle"}
       >
