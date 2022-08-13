@@ -32,8 +32,8 @@ function AvailableBalance() {
     setIsDisplayHideNotice(false);
   };
 
-  const satBalance = displaySats(balance?.sat);
-  const usdBalance = displaySatsAsUsd(balance?.sat);
+  const satBalance = displaySats(balance);
+  const usdBalance = displaySatsAsUsd(balance);
 
   if (isDisplayHideNotice) {
     return (

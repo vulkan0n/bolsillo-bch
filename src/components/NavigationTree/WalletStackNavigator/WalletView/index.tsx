@@ -76,8 +76,8 @@ function WalletView({ route, navigation }) {
     navigation.navigate("Menu");
   };
 
-  const satBalance = displaySats(balance?.sat);
-  const usdBalance = displaySatsAsUsd(balance?.sat);
+  const satBalance = displaySats(balance);
+  const usdBalance = displaySatsAsUsd(balance);
 
   return (
     <View style={styles.container as any}>
