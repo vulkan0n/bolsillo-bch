@@ -4,7 +4,7 @@ import { SeleneWalletType } from "../../types";
 const BLANK_SCRATCH_PAD = {
   name: "",
   description: "",
-  menemonic: "",
+  mnemonic: "",
   derivationPath: "",
   cashAddr: "",
 };
