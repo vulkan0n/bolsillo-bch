@@ -53,6 +53,23 @@ const styles = ({ variant = "primary", isSmall = false, isDisabled }) => {
     }
   };
 
+  const shadowColour = () => {
+    if (isDisabled) {
+      return COLOURS.lightGrey;
+    }
+
+    switch (variant) {
+      case "primary":
+        return COLOURS.black;
+      case "secondary":
+        return COLOURS.bchGreen;
+      case "blackOutlined":
+        return COLOURS.white;
+      default:
+        return COLOURS.black;
+    }
+  };
+
   return {
     button: {
       marginLeft: isSmall ? 0 : SPACING.fifteen,
@@ -69,7 +86,7 @@ const styles = ({ variant = "primary", isSmall = false, isDisabled }) => {
       justifyContent: "center",
       alignItems: "center",
       // iOS drop shadow
-      shadowColor: COLOURS.black,
+      shadowColor: shadowColour(),
       shadowOffset: { width: -2, height: 4 },
       shadowOpacity: isDisabled ? 0 : 0.2,
       shadowRadius: isDisabled ? 0 : 3,
