@@ -49,8 +49,7 @@ function ManageWalletsView({ navigation }) {
   };
 
   const onPressImport = () => {
-    // TODO: Finish this method
-    //   navigation.navigate("Reset");
+    navigation.navigate("Reset");
   };
 
   const renderWallets = ({ item: { name, description, balance } }) => {
@@ -68,7 +67,7 @@ function ManageWalletsView({ navigation }) {
           <FontAwesomeIcon
             icon={faWallet}
             size={isActive ? 30 : 20}
-            color={isActive ? COLOURS.bchGreen : COLOURS.white}
+            color={COLOURS.white}
           />
         </View>
         <View
@@ -131,7 +130,12 @@ function ManageWalletsView({ navigation }) {
         >
           New
         </Button>
-        <Button variant={"blackOutlined"} isSmall icon={"faFileImport"}>
+        <Button
+          onPress={onPressImport}
+          variant={"blackOutlined"}
+          isSmall
+          icon={"faFileImport"}
+        >
           Import
         </Button>
       </View>
