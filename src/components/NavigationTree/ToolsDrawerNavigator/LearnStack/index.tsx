@@ -17,7 +17,9 @@ const BackupStack = () => (
         headerStyle: {
           backgroundColor: COLOURS.white,
         },
-        headerTitle: (props) => <Text style={TYPOGRAPHY.header}>Learn</Text>,
+        headerTitle: (props) => (
+          <Text style={TYPOGRAPHY.header as any}>Learn</Text>
+        ),
       }}
     />
     <Stack.Screen
