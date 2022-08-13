@@ -6,7 +6,7 @@ import ResetWalletView from "./ResetWalletView";
 
 const Stack = createNativeStackNavigator();
 
-const BackupStack = () => (
+const WalletManagerStack = () => (
   <Stack.Navigator>
     <Stack.Screen
       name="Manage Wallets"
@@ -40,4 +40,4 @@ const BackupStack = () => (
   </Stack.Navigator>
 );
 
-export default BackupStack;
+export default WalletManagerStack;

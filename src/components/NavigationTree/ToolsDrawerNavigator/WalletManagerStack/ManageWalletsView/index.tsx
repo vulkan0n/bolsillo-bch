@@ -11,6 +11,7 @@ import { faWallet } from "@fortawesome/free-solid-svg-icons";
 import { displaySats, displayUsd } from "../../../../../utils/formatting";
 import Divider from "../../../../atoms/Divider";
 import SPACING from "../../../../../design/spacing";
+import { iconImport } from "../../../../../design/icons";
 
 function ManageWalletsView({ navigation }) {
   const { wallet } = useSelector((state: ReduxState) => state.bridge);
@@ -112,7 +113,7 @@ function ManageWalletsView({ navigation }) {
           width: "100%",
         }}
       >
-        <Button variant={"blackOutlined"} isSmall>
+        <Button variant={"blackOutlined"} isSmall icon={"faPlusCircle"}>
           New
         </Button>
         <Button variant={"blackOutlined"} isSmall>
