@@ -14,7 +14,6 @@ import SPACING from "../../../../../design/spacing";
 import {
   updateActiveWalletName,
   updateNavigatedWalletName,
-  updateDeleteWalletName,
 } from "../../../../../redux/reducers/walletManagerReducer";
 
 function ManageWalletsView({ navigation }) {

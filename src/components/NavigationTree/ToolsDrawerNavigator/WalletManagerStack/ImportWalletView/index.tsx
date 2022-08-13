@@ -20,7 +20,7 @@ import {
   validateWalletDescription,
 } from "../../../../../utils/validation";
 
-function NewWalletView({ navigation }) {
+function ImportWalletView({ navigation }) {
   const dispatch = useDispatch();
   const { name, description, mnemonic, derivationPath } = useSelector(
     (state: ReduxState) => state.walletManager.scratchPad
@@ -115,10 +115,10 @@ function NewWalletView({ navigation }) {
         onPress={onPressCreate}
         icon={"faPlusCircle"}
       >
-        Create wallet
+        Import wallet
       </Button>
     </View>
   );
 }
 
-export default NewWalletView;
+export default ImportWalletView;

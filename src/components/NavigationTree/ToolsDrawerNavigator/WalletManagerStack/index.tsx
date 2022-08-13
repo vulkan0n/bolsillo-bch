@@ -1,6 +1,7 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import ManageWalletsView from "./ManageWalletsView";
 import NewWalletView from "./NewWalletView";
+import ImportWalletView from "./ImportWalletView";
 import BackupView from "./BackupView";
 import DeleteWalletView from "./DeleteWalletView";
 
@@ -21,6 +22,16 @@ const WalletManagerStack = () => (
     <Stack.Screen
       name="New"
       component={NewWalletView}
+      options={{
+        headerStyle: {
+          // backgroundColor: "red",
+        },
+        headerTitle: (props) => null,
+      }}
+    />
+    <Stack.Screen
+      name="Import"
+      component={ImportWalletView}
       options={{
         headerStyle: {
           // backgroundColor: "red",
