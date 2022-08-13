@@ -2,10 +2,14 @@ import React, { useEffect } from "react";
 import { View, Text } from "react-native";
 import styles from "./styles";
 import TYPOGRAPHY from "../../../../../../design/typography";
-import { displaySats, displaySatsAsUsd } from "../../../../../../utils/formatting";
+import {
+  displaySats,
+  displaySatsAsUsd,
+} from "../../../../../../utils/formatting";
 import { useDispatch, useSelector } from "react-redux";
 import { updateTransactionPadError } from "../../../../../../redux/reducers/transactionPadReducer";
 import { ReduxState } from "../../../../../../types";
+import TRANSACTION_PAD_ERRORS from "../errors";
 
 const DisplayedBalance = () => {
   const dispatch = useDispatch();
@@ -20,16 +24,12 @@ const DisplayedBalance = () => {
   const usdBalance = displaySatsAsUsd(padBalance);
 
   useEffect(() => {
-    setTimeout(() => {
-      if (error) {
-        dispatch(
-          updateTransactionPadError({
-            error: "",
-          })
-        );
-      }
-    }, 2000);
-  }, [error]);
+    dispatch(
+      updateTransactionPadError({
+        error: "",
+      })
+    );
+  }, [padBalance]);
 
   return (
     <View style={styles.secondaryTitlesWrapper}>

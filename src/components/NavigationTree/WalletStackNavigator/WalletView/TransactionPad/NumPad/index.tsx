@@ -10,6 +10,7 @@ import {
   updateTransactionPadError,
 } from "../../../../../../redux/reducers/transactionPadReducer";
 import { ReduxState } from "../../../../../../types";
+import TRANSACTION_PAD_ERRORS from "../errors";
 
 const NumPad = () => {
   const dispatch = useDispatch();
@@ -49,7 +50,7 @@ const NumPad = () => {
     if (n === "." && padBalance.includes(".")) {
       dispatch(
         updateTransactionPadError({
-          error: "Already used decimal point.",
+          error: TRANSACTION_PAD_ERRORS.ALREADY_USED_DECIMAL,
         })
       );
       return;
@@ -58,7 +59,7 @@ const NumPad = () => {
     if (parseFloat(padBalance + n) > parseFloat(availableBalance)) {
       dispatch(
         updateTransactionPadError({
-          error: "Insufficient balance.",
+          error: TRANSACTION_PAD_ERRORS.INSUFFICIENT_BALANCE,
         })
       );
       return;
