@@ -41,19 +41,19 @@ function NewWalletView({ navigation }) {
     setIsMnemonicVisible(!isMnemonicVisible);
   };
 
-  const onChangeName = (name: string) => {
+  const onChangeName = (newName: string) => {
     setIsStartedEditing(true);
     dispatch(
       updateNewWalletScratchPadName({
-        name,
+        name: newName,
       })
     );
   };
 
-  const onChangeDescription = (description: string) => {
+  const onChangeDescription = (newDescription: string) => {
     dispatch(
       updateNewWalletScratchPadDescription({
-        description,
+        description: newDescription,
       })
     );
   };

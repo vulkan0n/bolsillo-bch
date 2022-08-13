@@ -8,6 +8,7 @@ import COLOURS from "../../../../../design/colours";
 import { ReduxState } from "../../../../../types";
 import {
   addWallet,
+  clearWalletScratchPad,
   updateNewWalletScratchPadDescription,
   updateNewWalletScratchPadName,
 } from "../../../../../redux/reducers/walletManagerReducer";
@@ -28,27 +29,31 @@ function ImportWalletView({ navigation }) {
   const [isStartedEditing, setIsStartedEditing] = useState(false);
 
   useEffect(() => {
-    if (!mnemonic || !derivationPath) {
-      emit({
-        type: BRIDGE_MESSAGE_TYPES.CREATE_WALLET_SCRATCHPAD,
-        data: {},
-      });
-    }
+    console.log("clearing scratchpad");
+    dispatch(clearWalletScratchPad());
   }, []);
 
-  const onChangeName = (name: string) => {
+  const onChangeName = (newName: string) => {
     setIsStartedEditing(true);
     dispatch(
       updateNewWalletScratchPadName({
-        name,
+        name: newName,
       })
     );
   };
 
-  const onChangeDescription = (description: string) => {
+  const onChangeDescription = (newDescription: string) => {
     dispatch(
       updateNewWalletScratchPadDescription({
-        description,
+        description: newDescription,
+      })
+    );
+  };
+
+  const onChangeMnemonic = (newMnemonic: string) => {
+    dispatch(
+      updateNewWalletScratchPadDescription({
+        mnemonic: newMnemonic,
       })
     );
   };
@@ -86,12 +91,7 @@ function ImportWalletView({ navigation }) {
         <Text style={TYPOGRAPHY.pRed as any}>{descriptionValidationError}</Text>
       )}
       <Text style={TYPOGRAPHY.h2 as any}>Mnemonic</Text>
-      <TextInput
-        isSmallText
-        text={description}
-        onChange={onChangeDescription}
-      />
-
+      <TextInput isSmallText text={mnemonic} onChange={onChangeMnemonic} />
       <Text style={TYPOGRAPHY.h2 as any}>Derivation path</Text>
       <Text style={TYPOGRAPHY.pWhite as any}>{derivationPath}</Text>
       <Button

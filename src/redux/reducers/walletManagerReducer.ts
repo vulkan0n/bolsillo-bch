@@ -45,6 +45,9 @@ const walletMangerSlice = createSlice({
     updateNewWalletScratchPadDescription(state, action) {
       state.scratchPad.description = action.payload.description;
     },
+    updateImportWalletScratchPadMnemonic(state, action) {
+      state.scratchPad.mnemonic = action.payload.mnemonic;
+    },
     updateNewWalletScratchPadDetails(state, action) {
       state.scratchPad.mnemonic = action.payload.mnemonic;
       state.scratchPad.derivationPath = action.payload.derivationPath;
@@ -53,6 +56,9 @@ const walletMangerSlice = createSlice({
     addWallet(state) {
       state.wallets = [...state.wallets, { ...state.scratchPad, balance: "0" }];
       state.activeWalletName = state.scratchPad.name;
+      state.scratchPad = BLANK_SCRATCH_PAD;
+    },
+    clearWalletScratchPad(state) {
       state.scratchPad = BLANK_SCRATCH_PAD;
     },
     deleteWallet(state, action) {
@@ -69,8 +75,10 @@ export const {
   updateNavigatedWalletName,
   updateNewWalletScratchPadName,
   updateNewWalletScratchPadDescription,
+  updateImportWalletScratchPadMnemonic,
   updateNewWalletScratchPadDetails,
   addWallet,
+  clearWalletScratchPad,
   deleteWallet,
 } = walletMangerSlice.actions;
 export default walletMangerSlice.reducer;
