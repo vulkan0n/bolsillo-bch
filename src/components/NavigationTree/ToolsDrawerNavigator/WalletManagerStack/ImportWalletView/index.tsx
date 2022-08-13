@@ -25,7 +25,6 @@ function ImportWalletView({ navigation }) {
   const { name, description, mnemonic, derivationPath } = useSelector(
     (state: ReduxState) => state.walletManager.scratchPad
   );
-  const [isMnemonicVisible, setIsMnemonicVisible] = useState(false);
   const [isStartedEditing, setIsStartedEditing] = useState(false);
 
   useEffect(() => {
@@ -36,10 +35,6 @@ function ImportWalletView({ navigation }) {
       });
     }
   }, []);
-
-  const toggleIsMnemonicVisible = () => {
-    setIsMnemonicVisible(!isMnemonicVisible);
-  };
 
   const onChangeName = (name: string) => {
     setIsStartedEditing(true);
@@ -91,29 +86,18 @@ function ImportWalletView({ navigation }) {
         <Text style={TYPOGRAPHY.pRed as any}>{descriptionValidationError}</Text>
       )}
       <Text style={TYPOGRAPHY.h2 as any}>Mnemonic</Text>
-      {!isMnemonicVisible && (
-        <Button
-          icon={"faEye"}
-          variant="blackOutlined"
-          onPress={toggleIsMnemonicVisible}
-        >
-          Reveal mnemonic
-        </Button>
-      )}
-      {isMnemonicVisible && (
-        <Pressable
-          onPress={toggleIsMnemonicVisible}
-          style={styles.mnemonicContainer}
-        >
-          <Text style={TYPOGRAPHY.pWhite as any}>{mnemonic}</Text>
-        </Pressable>
-      )}
+      <TextInput
+        isSmallText
+        text={description}
+        onChange={onChangeDescription}
+      />
+
       <Text style={TYPOGRAPHY.h2 as any}>Derivation path</Text>
       <Text style={TYPOGRAPHY.pWhite as any}>{derivationPath}</Text>
       <Button
         isDisabled={!!nameValidationError}
         onPress={onPressCreate}
-        icon={"faPlusCircle"}
+        icon={"faFileImport"}
       >
         Import wallet
       </Button>

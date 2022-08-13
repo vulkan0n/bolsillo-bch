@@ -48,7 +48,7 @@ function ManageWalletsView({ navigation }) {
   };
 
   const onPressImport = () => {
-    navigation.navigate("Reset");
+    navigation.navigate("Import");
   };
 
   const renderWallets = ({ item: { name, description, balance } }) => {
