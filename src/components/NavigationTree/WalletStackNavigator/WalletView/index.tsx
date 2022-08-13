@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { View, Pressable, Image } from "react-native";
+import { View, Pressable, Image, Text } from "react-native";
 import { useSelector } from "react-redux";
 import TransactionPad from "./TransactionPad";
 import styles from "./styles";
@@ -7,11 +7,13 @@ import { BRIDGE_MESSAGE_TYPES } from "../../../../utils/bridgeMessages";
 import { ReduxState } from "../../../../types";
 import emit from "../../../../utils/emit";
 import AvailableBalance from "./AvailableBalance";
+import TYPOGRAPHY from "../../../../design/typography";
 
 function WalletView({ route, navigation }) {
-  const numWallets = useSelector(
-    (state: ReduxState) => state.walletManager?.wallets?.length
+  const isNoWallet = useSelector(
+    (state: ReduxState) => state.walletManager?.wallets?.length === 0
   );
+
   const wallet = useSelector((state: ReduxState) =>
     state.walletManager?.wallets?.find(
       ({ name }) => name === state.walletManager?.activeWalletName
@@ -37,12 +39,16 @@ function WalletView({ route, navigation }) {
   // Create a wallet if none exists
   // I.e. first time app is opened
   useEffect(() => {
-    if (numWallets === 0) {
-      emit({
-        type: BRIDGE_MESSAGE_TYPES.CREATE_DEFAULT_WALLET,
-        data: { isTestNet },
-      });
-    }
+    // setInterval(() => {
+    //   if (isNoWallet) {
+    //     console.log("trigger");
+    //     console.log({ isNoWallet });
+    //     emit({
+    //       type: BRIDGE_MESSAGE_TYPES.CREATE_DEFAULT_WALLET,
+    //       data: { isTestNet },
+    //     });
+    //   }
+    // }, 5000);
   }, []);
 
   // Refresh wallet when toggling to/from test net
@@ -79,6 +85,14 @@ function WalletView({ route, navigation }) {
   const onPressLogo = () => {
     navigation.navigate("Menu");
   };
+
+  if (isNoWallet) {
+    return (
+      <View style={styles.container as any}>
+        <Text style={TYPOGRAPHY.h1 as any}>Creating wallet...</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container as any}>

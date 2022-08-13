@@ -19,7 +19,6 @@ const NumPad = () => {
       ({ name }) => name === state.walletManager?.activeWalletName
     )
   );
-  const { balance } = wallet;
   const { padBalance } = useSelector(
     (state: ReduxState) => state.transactionPad
   );
@@ -29,7 +28,7 @@ const NumPad = () => {
   const { isRightHandedMode } = useSelector(
     (state: ReduxState) => state.settings
   );
-  const availableBalance = balance?.sat;
+  const availableBalance = wallet?.balance;
 
   const isSendDisabled = padBalance === "0";
 

@@ -14,7 +14,8 @@ function AvailableBalance() {
       ({ name }) => name === state.walletManager?.activeWalletName
     )
   );
-  const { balance } = wallet;  const { isCryptoDenominated } = useSelector(
+  
+  const { isCryptoDenominated } = useSelector(
     (state: ReduxState) => state.settings
   );
   const dispatch = useDispatch()
@@ -32,8 +33,8 @@ function AvailableBalance() {
     setIsDisplayHideNotice(false);
   };
 
-  const satBalance = displaySats(balance);
-  const usdBalance = displaySatsAsUsd(balance);
+  const satBalance = displaySats(wallet?.balance);
+  const usdBalance = displaySatsAsUsd(wallet?.balance);
 
   if (isDisplayHideNotice) {
     return (
