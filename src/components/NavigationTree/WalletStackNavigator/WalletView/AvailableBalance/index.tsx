@@ -39,7 +39,7 @@ function AvailableBalance() {
           <Text style={TYPOGRAPHY.h2 as any}>
             Hide Available balance?
           </Text>
-          <Text style={TYPOGRAPHY.pWhite as any}>Tap again to hide. Re-enable in Tools > Settings any time.</Text>
+          <Text style={TYPOGRAPHY.pWhite as any}>Tap again to hide or wait 10 seconds to cancel. Re-enable in Tools > Settings any time.</Text>
         </View>
       </Pressable>
     );
