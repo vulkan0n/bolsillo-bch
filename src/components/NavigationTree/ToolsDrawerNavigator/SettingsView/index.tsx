@@ -12,8 +12,8 @@ const SettingsView = () => {
       <View style={styles.container as any}>
         <CryptoDenominated />
         <RightHandedMode />
-        <TestNet />
         <ShowAvailableBalance />
+        <TestNet />
       </View>
     </ScrollView>
   );

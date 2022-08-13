@@ -36,7 +36,7 @@ const CryptoDenominated = () => {
     <View style={styles.optionRow as any}>
       {!isRightHandedMode && CryptoDenominatedSwitch}
       <View style={{ width: 250 }}>
-        <Text style={TYPOGRAPHY.h2Left as any}>Crypto Denominated</Text>
+        <Text style={TYPOGRAPHY.h2Left as any}>Show Available Balance</Text>
         {isShowAvailableBalance && (
           <Text style={TYPOGRAPHY.pWhiteLeft as any}>
             Show total available balance on Wallet screen.
