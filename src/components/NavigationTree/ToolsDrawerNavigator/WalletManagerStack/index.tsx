@@ -1,6 +1,6 @@
-import { createDrawerNavigator } from "@react-navigation/drawer";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import ManageWalletsView from "./ManageWalletsView";
+import NewWalletView from "./NewWalletView";
 import BackupView from "./BackupView";
 import ResetWalletView from "./ResetWalletView";
 
@@ -11,6 +11,16 @@ const WalletManagerStack = () => (
     <Stack.Screen
       name="Manage Wallets"
       component={ManageWalletsView}
+      options={{
+        headerStyle: {
+          // backgroundColor: "red",
+        },
+        headerTitle: (props) => null,
+      }}
+    />
+    <Stack.Screen
+      name="New Wallet"
+      component={NewWalletView}
       options={{
         headerStyle: {
           // backgroundColor: "red",

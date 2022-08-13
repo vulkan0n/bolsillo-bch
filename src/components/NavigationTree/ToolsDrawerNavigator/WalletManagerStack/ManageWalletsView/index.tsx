@@ -31,8 +31,7 @@ function ManageWalletsView({ navigation }) {
   // };
 
   const onPressNew = () => {
-    // TODO: Finish this method
-    //   navigation.navigate("Reset");
+    navigation.navigate("New Wallet");
   };
 
   const onPressImport = () => {
