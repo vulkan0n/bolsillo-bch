@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, Pressable } from "react-native";
+import { View, Text } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import Button from "../../../../atoms/Button";
 import TYPOGRAPHY from "../../../../../design/typography";
@@ -9,8 +9,9 @@ import { ReduxState } from "../../../../../types";
 import {
   addWallet,
   clearWalletScratchPad,
-  updateNewWalletScratchPadDescription,
   updateNewWalletScratchPadName,
+  updateNewWalletScratchPadDescription,
+  updateImportWalletScratchPadMnemonic,
 } from "../../../../../redux/reducers/walletManagerReducer";
 import TextInput from "../../../../atoms/TextInput";
 import emit from "../../../../../utils/emit";
@@ -59,7 +60,7 @@ function ImportWalletView({ navigation }) {
   const onChangeMnemonic = (newMnemonic: string) => {
     setIsStartedEditingMnemonic(true);
     dispatch(
-      updateNewWalletScratchPadDescription({
+      updateImportWalletScratchPadMnemonic({
         mnemonic: newMnemonic,
       })
     );
