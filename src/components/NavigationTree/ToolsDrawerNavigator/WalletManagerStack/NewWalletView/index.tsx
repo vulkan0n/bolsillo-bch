@@ -14,6 +14,7 @@ import {
 import TextInput from "../../../../atoms/TextInput";
 import emit from "../../../../../utils/emit";
 import { BRIDGE_MESSAGE_TYPES } from "../../../../../utils/bridgeMessages";
+import Toast from "react-native-toast-message";
 
 function NewWalletView({ navigation }) {
   const dispatch = useDispatch();
@@ -77,6 +78,13 @@ function NewWalletView({ navigation }) {
     setIsStartedEditing(false);
     dispatch(addWallet());
     navigation.navigate("Manage");
+    Toast.show({
+      type: "customSuccess",
+      props: {
+        title: "New wallet created",
+        text: "Ready for transactions.",
+      },
+    });
   };
 
   const nameValidationError = validateName();
