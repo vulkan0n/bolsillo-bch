@@ -68,7 +68,7 @@ export default function App() {
             createDefaultWallet({
               mnemonic: message.data.wallet.mnemonic,
               derivationPath: message.data.wallet.derivationPath,
-              cashAddr: message.data.wallet.cashaddr,
+              cashaddr: message.data.wallet.cashaddr,
             })
           );
           break;
@@ -85,7 +85,7 @@ export default function App() {
             updateNewWalletScratchPadDetails({
               mnemonic: message.data.wallet.mnemonic,
               derivationPath: message.data.wallet.derivationPath,
-              cashAddr: message.data.wallet.cashaddr,
+              cashaddr: message.data.wallet.cashaddr,
             })
           );
           break;
@@ -100,7 +100,7 @@ export default function App() {
           store.dispatch(
             updateWalletCashAddr({
               name: message.data.name,
-              cashAddr: message.data.cashAddr,
+              cashaddr: message.data.cashaddr,
             })
           );
           console.log({ message });

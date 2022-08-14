@@ -82,7 +82,7 @@ const Bridge = () => {
             data: {
               name: message?.data?.name,
               balance: balance?.sat.toString(),
-              cashAddr: walletRequestBalance?.cashaddr,
+              cashaddr: walletRequestBalance?.cashaddr,
             },
           });
           break;

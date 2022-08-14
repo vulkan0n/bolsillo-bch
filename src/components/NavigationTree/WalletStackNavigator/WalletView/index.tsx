@@ -62,7 +62,7 @@ function WalletView({ route, navigation }) {
 
     console.log("triggering");
     requestBalance();
-  }, [wallet?.name, wallet?.mnemonic, wallet?.cashAddr]);
+  }, [wallet?.name, wallet?.mnemonic, wallet?.cashaddr]);
 
   // Transaction id set to non null means new transaction just completed
   useEffect(() => {

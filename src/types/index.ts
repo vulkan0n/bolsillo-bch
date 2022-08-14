@@ -15,7 +15,7 @@ export interface ReduxState {
 export interface WalletType {
   mnemonic: string;
   derivationPath: string;
-  cashAddr: string;
+  cashaddr: string;
 }
 
 export interface SeleneWalletType {
@@ -24,7 +24,7 @@ export interface SeleneWalletType {
   balance: string;
   mnemonic: string;
   derivationPath: string;
-  cashAddr: string;
+  cashaddr: string;
 }
 
 export interface EmitEvent {

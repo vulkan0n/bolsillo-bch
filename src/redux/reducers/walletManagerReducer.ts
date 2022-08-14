@@ -7,7 +7,7 @@ const BLANK_SCRATCH_PAD = {
   description: "",
   mnemonic: "",
   derivationPath: "",
-  cashAddr: "",
+  cashaddr: "",
 };
 
 export interface WalletManagerState {
@@ -19,7 +19,7 @@ export interface WalletManagerState {
     description?: string;
     mnemonic?: string;
     derivationPath?: string;
-    cashAddr?: string;
+    cashaddr?: string;
   };
 }
 
@@ -55,7 +55,7 @@ const walletMangerSlice = createSlice({
     updateNewWalletScratchPadDetails(state, action) {
       state.scratchPad.mnemonic = action.payload.mnemonic;
       state.scratchPad.derivationPath = action.payload.derivationPath;
-      state.scratchPad.cashAddr = action.payload.cashAddr;
+      state.scratchPad.cashaddr = action.payload.cashaddr;
     },
     createDefaultWallet(state, action) {
       if (state.wallets.length === 0) {
@@ -65,7 +65,7 @@ const walletMangerSlice = createSlice({
           description: "A Bitcoin Cash wallet",
           mnemonic: action.payload.mnemonic,
           derivationPath: action.payload.derivationPath,
-          cashAddr: action.payload.cashAddr,
+          cashaddr: action.payload.cashaddr,
           balance: "0",
         };
         state.wallets = [newWallet];
@@ -96,7 +96,7 @@ const walletMangerSlice = createSlice({
       const wallet = state.wallets.find(
         ({ name }) => name === action.payload.name
       );
-      wallet.cashAddr = action.payload.cashAddr;
+      wallet.cashaddr = action.payload.cashaddr;
     },
   },
   extraReducers: (builder) => {
