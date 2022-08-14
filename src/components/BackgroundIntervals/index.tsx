@@ -29,15 +29,19 @@ const BackgroundIntervals = () => {
 
   const fetchPriceData = async () => {
     console.log("fetching price data");
-    const baseUrl = "https://reqres.in";
+    // https://www.coingecko.com/en/api/documentation
+    const coingeckoUrl = "https://api.coingecko.com";
+    const BCH_ID = 1542;
 
     // Passing configuration object to axios
     const res = await axios({
       method: "get",
-      url: `${baseUrl}/api/users/1`,
+      url: `${coingeckoUrl}/api/v3/coins/bitcoin-cash`,
     });
 
-    console.log({ res });
+    // console.log({ res });
+    const usdPrice = res?.data?.market_data?.current_price?.usd;
+    console.log({ usdPrice });
   };
 
   const ping = () => {
