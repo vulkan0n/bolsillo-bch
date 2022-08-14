@@ -12,7 +12,7 @@ import COLOURS from "../../../../../design/colours";
 import { faTrashCan } from "@fortawesome/free-solid-svg-icons/faTrashCan";
 import { deleteWallet } from "../../../../../redux/reducers/walletManagerReducer";
 
-const ResetAppView = ({ navigation }) => {
+const ResetView = ({ navigation }) => {
   const { navigatedWalletName } = useSelector(
     (state: ReduxState) => state.walletManager
   );
@@ -79,4 +79,4 @@ const ResetAppView = ({ navigation }) => {
   );
 };
 
-export default ResetAppView;
+export default ResetView;

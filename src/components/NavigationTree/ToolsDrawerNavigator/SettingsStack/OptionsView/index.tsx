@@ -9,7 +9,7 @@ import TYPOGRAPHY from "../../../../../design/typography";
 
 const OptionsView = ({ navigation }) => {
   const onPressReset = () => {
-    navigation.navigate("Reset App");
+    navigation.navigate("Reset");
   };
 
   return (

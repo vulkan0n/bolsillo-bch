@@ -1,6 +1,6 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import OptionsView from "./OptionsView";
-import ResetAppView from "./ResetAppView";
+import ResetView from "./ResetView";
 
 const Stack = createNativeStackNavigator();
 
@@ -17,8 +17,8 @@ const SettingsStack = () => (
       }}
     />
     <Stack.Screen
-      name="Reset App"
-      component={ResetAppView}
+      name="Reset"
+      component={ResetView}
       options={{
         headerStyle: {
           // backgroundColor: "red",
