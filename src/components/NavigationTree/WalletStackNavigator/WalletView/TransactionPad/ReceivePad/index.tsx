@@ -17,6 +17,12 @@ const ReceivePad = () => {
       ({ name }) => name === state.walletManager?.activeWalletName
     )
   );
+  console.log("!!!!!!");
+  console.log("!!!!!!");
+  console.log("!!!!!!");
+  console.log("!!!!!!");
+  console.log({ wallet });
+
   const { isRightHandedMode } = useSelector(
     (state: ReduxState) => state.settings
   );
@@ -49,10 +55,10 @@ const ReceivePad = () => {
     <View style={styles.inputBackground as any}>
       <View style={styles.receivePad as any}>
         <View style={styles.qrBorder}>
-          <QRCode size={200} value={`${wallet?.cashaddr}`} />
+          <QRCode size={200} value={`${wallet?.cashAddr}`} />
         </View>
         <Text selectable style={TYPOGRAPHY.p as any}>
-          {wallet?.cashaddr}
+          {wallet?.cashAddr}
         </Text>
       </View>
       <View style={styles.buttonContainer as any}>
