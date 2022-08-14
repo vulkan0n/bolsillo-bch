@@ -27,7 +27,7 @@ function WalletView({ route, navigation }) {
 
   const requestBalance = () =>
     emit({
-      type: BRIDGE_MESSAGE_TYPES.REQUEST_BALANCE,
+      type: BRIDGE_MESSAGE_TYPES.REQUEST_BALANCE_AND_ADDRESS,
       data: {
         name: wallet?.name,
         mnemonic: wallet?.mnemonic,

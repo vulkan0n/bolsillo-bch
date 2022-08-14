@@ -11,6 +11,7 @@ import {
 import WebView from "react-native-webview";
 import { useWebViewMessage } from "react-native-react-bridge";
 import NavigationTree from "./src/components/NavigationTree";
+import BackgroundIntervals from "./src/components/BackgroundIntervals";
 import Bridge from "./src/components/Bridge";
 import { RESPONSE_MESSAGE_TYPES } from "./src/utils/bridgeMessages";
 import { Provider } from "react-redux";
@@ -88,11 +89,12 @@ export default function App() {
           );
           break;
 
-        case RESPONSE_MESSAGE_TYPES.REQUEST_BALANCE_RESPONSE:
+        case RESPONSE_MESSAGE_TYPES.REQUEST_BALANCE_AND_ADDRESS_RESPONSE:
           store.dispatch(
             updateWalletBalance({
               name: message.data.name,
               balance: message.data.balance,
+              cashAddr: message.data.cashAddr,
             })
           );
           console.log({ message });
@@ -144,6 +146,7 @@ export default function App() {
             domStorageEnabled={true}
           />
         </View>
+        <BackgroundIntervals />
         <NavigationTree />
         <Toast config={toastConfig} />
       </PersistGate>

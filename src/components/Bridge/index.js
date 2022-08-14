@@ -64,7 +64,7 @@ const Bridge = () => {
           });
           break;
 
-        case BRIDGE_MESSAGE_TYPES.REQUEST_BALANCE:
+        case BRIDGE_MESSAGE_TYPES.REQUEST_BALANCE_AND_ADDRESS:
           const walletRequestBalance = await WalletObject.fromSeed(
             message?.data?.mnemonic,
             message?.data?.derivationPath
@@ -74,12 +74,15 @@ const Bridge = () => {
 
           console.log("Retrieved balance:");
           console.log({ balance });
+          console.log("cash addr");
+          console.log(walletRequestBalance?.cashaddr);
 
           emit({
-            type: RESPONSE_MESSAGE_TYPES.REQUEST_BALANCE_RESPONSE,
+            type: RESPONSE_MESSAGE_TYPES.REQUEST_BALANCE_AND_ADDRESS_RESPONSE,
             data: {
               name: message?.data?.name,
               balance: balance?.sat.toString(),
+              cashAddr: walletRequestBalance?.cashaddr,
             },
           });
           break;
