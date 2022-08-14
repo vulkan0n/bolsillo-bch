@@ -39,8 +39,6 @@ function WalletView({ route, navigation }) {
   // Create a wallet if none exists
   // I.e. first time app is opened
   useEffect(() => {
-    console.log("creating wallet");
-    console.log({ isNoWallet });
     if (isNoWallet) {
       emit({
         type: BRIDGE_MESSAGE_TYPES.CREATE_DEFAULT_WALLET,

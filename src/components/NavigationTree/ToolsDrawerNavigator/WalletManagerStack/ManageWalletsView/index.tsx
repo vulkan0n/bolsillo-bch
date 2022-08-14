@@ -8,7 +8,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import COLOURS from "../../../../../design/colours";
 import { ReduxState } from "../../../../../types";
 import { faWallet } from "@fortawesome/free-solid-svg-icons";
-import { displaySats, displayUsd } from "../../../../../utils/formatting";
+import { displaySats, displaySatsAsUsd } from "../../../../../utils/formatting";
 import Divider from "../../../../atoms/Divider";
 import SPACING from "../../../../../design/spacing";
 import {
@@ -84,7 +84,7 @@ function ManageWalletsView({ navigation }) {
             {displaySats(balance)}
           </Text>
           <Text style={TYPOGRAPHY.pWhiteLeft as any}>
-            {displayUsd(balance)}
+            {displaySatsAsUsd(balance)}
           </Text>
         </View>
         <View style={{ width: 100 }}>

@@ -25,13 +25,12 @@ export const displayUsd = (sats: string): string => {
   }
 
   // 2 decimal places, rounding down
-  const decmialisedUsd = (Math.floor(parseFloat(sats) * 100) / 100).toFixed(2);
+  const decimalised = (Math.floor(parseFloat(sats) * 100) / 100).toFixed(2);
 
   // Split pre-decimal number into chunks of 3, starting from right
-  const splitString = decmialisedUsd.toString().split(".");
+  const splitString = decimalised.toString().split(".");
   const preDecimal = chunkRight(splitString?.[0]);
   const postDecimal = splitString?.[1];
-  console.log({ decmialisedUsd, sats, splitString, preDecimal, postDecimal });
 
   return `USD $${preDecimal}.${postDecimal}`;
 };
