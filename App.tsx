@@ -136,7 +136,7 @@ export default function App() {
             type: "customSuccess",
             props: {
               title: "Received Bitcoin Cash",
-              text: "Getting rich!!!",
+              text: "Thanks Satoshi.",
             },
           });
           break;

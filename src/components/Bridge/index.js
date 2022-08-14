@@ -72,14 +72,10 @@ const Bridge = () => {
 
           const balance = await walletRequestBalance.getBalance();
 
-          console.log("Retrieved balance v2:");
-          console.log({ balance });
-          console.log("cash addr");
-          console.log(walletRequestBalance?.cashaddr);
-
-          console.log("triggered WATCH setup");
           const cancelWatch = walletRequestBalance.watchBalance(
             async (newBalance) => {
+              // newBalance hasn't registered the included new transaction
+              // So need to grab balance again
               const freshBalance = await walletRequestBalance.getBalance();
 
               emit({
@@ -89,14 +85,13 @@ const Bridge = () => {
                   balance: freshBalance?.sat,
                 },
               });
-
-              console.log(newBalance);
-              // Can't cancel watch because the watch needs to stay open
-              // As multiple transactions can come in during the period
-              // between request balance refreshes
-              // await cancelWatch();
             }
           );
+
+          // Kill previous listeners once a 30s window has allowed another round of listeners to be set up
+          setTimeout(async () => {
+            await cancelWatch();
+          }, 35000);
 
           emit({
             type: RESPONSE_MESSAGE_TYPES.REQUEST_BALANCE_AND_ADDRESS_RESPONSE,
