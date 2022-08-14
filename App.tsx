@@ -31,6 +31,7 @@ import {
   createDefaultWallet,
   updateNewWalletScratchPadDetails,
   updateWalletBalance,
+  updateWalletCashAddr,
 } from "./src/redux/reducers/walletManagerReducer";
 
 export default function App() {
@@ -94,6 +95,11 @@ export default function App() {
             updateWalletBalance({
               name: message.data.name,
               balance: message.data.balance,
+            })
+          );
+          store.dispatch(
+            updateWalletCashAddr({
+              name: message.data.name,
               cashAddr: message.data.cashAddr,
             })
           );
