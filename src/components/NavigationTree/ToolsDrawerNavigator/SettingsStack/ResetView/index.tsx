@@ -3,12 +3,10 @@ import { View, Text, ScrollView } from "react-native";
 import Button from "../../../../atoms/Button";
 import TYPOGRAPHY from "../../../../../design/typography";
 import styles from "./styles";
-import Toast from "react-native-toast-message";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import COLOURS from "../../../../../design/colours";
 import { faPowerOff } from "@fortawesome/free-solid-svg-icons/faPowerOff";
 import persistor from "../../../../../redux/persistor";
-import RNRestart from "react-native-restart";
 
 const ResetView = ({ navigation }) => {
   const onPressReset = () => {
@@ -17,14 +15,6 @@ const ResetView = ({ navigation }) => {
       index: 0,
       routes: [{ name: "Wallet" }],
     });
-    Toast.show({
-      type: "customSuccess",
-      props: {
-        title: "App reset",
-        text: "All gone.",
-      },
-    });
-    RNRestart.Restart();
   };
 
   return (

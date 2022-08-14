@@ -1,4 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { PURGE } from "redux-persist";
 
 export interface TransactionPadState {
   view: "" | "NumPad" | "Send" | "Receive";
@@ -30,6 +31,9 @@ const transactionPadSlice = createSlice({
     updateTransactionPadError(state, action) {
       state.error = action.payload.error;
     },
+  },
+  extraReducers: (builder) => {
+    builder.addCase(PURGE, () => initialState);
   },
 });
 

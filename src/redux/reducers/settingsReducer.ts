@@ -1,4 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { PURGE } from "redux-persist";
 
 export interface SettingsState {
   isCryptoDenominated: boolean;
@@ -30,6 +31,9 @@ const settingsSlice = createSlice({
     toggleIsTestNet(state) {
       state.isTestNet = !state.isTestNet;
     },
+  },
+  extraReducers: (builder) => {
+    builder.addCase(PURGE, () => initialState);
   },
 });
 

@@ -1,5 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { WalletType } from "../../types";
+import { PURGE } from "redux-persist";
 
 export interface BridgeState {
   wallet: WalletType;
@@ -34,6 +35,9 @@ const bridgeSlice = createSlice({
     updateBridgeTempTxId(state, action) {
       state.tempTxId = action.payload.tempTxId;
     },
+  },
+  extraReducers: (builder) => {
+    builder.addCase(PURGE, () => initialState);
   },
 });
 

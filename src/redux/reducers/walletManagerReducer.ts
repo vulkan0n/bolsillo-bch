@@ -1,5 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { SeleneWalletType } from "../../types";
+import { PURGE } from "redux-persist";
 
 const BLANK_SCRATCH_PAD = {
   name: "",
@@ -97,6 +98,9 @@ const walletMangerSlice = createSlice({
       );
       wallet.cashAddr = action.payload.cashAddr;
     },
+  },
+  extraReducers: (builder) => {
+    builder.addCase(PURGE, () => initialState);
   },
 });
 
