@@ -9,7 +9,6 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { updateTransactionPadError } from "../../../../../../redux/reducers/transactionPadReducer";
 import { ReduxState } from "../../../../../../types";
-import TRANSACTION_PAD_ERRORS from "../errors";
 
 const DisplayedBalance = () => {
   const dispatch = useDispatch();

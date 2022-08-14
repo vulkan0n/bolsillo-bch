@@ -72,7 +72,7 @@ const Bridge = () => {
 
           const balance = await walletRequestBalance.getBalance();
 
-          console.log("Retrieved balance:");
+          console.log("Retrieved balance v2:");
           console.log({ balance });
           console.log("cash addr");
           console.log(walletRequestBalance?.cashaddr);
@@ -80,16 +80,21 @@ const Bridge = () => {
           console.log("triggered WATCH setup");
           const cancelWatch = walletRequestBalance.watchBalance(
             async (newBalance) => {
-              console.log("!!!!!!!!!!!");
-              console.log("!!!!!!!!!!!");
-              console.log("Recognised a new incoming transaction");
+              const freshBalance = await walletRequestBalance.getBalance();
+
               emit({
                 type: RESPONSE_MESSAGE_TYPES.RECEIVED_COINS,
-                data: { balance: newBalance?.sat },
+                data: {
+                  name: message?.data?.name,
+                  balance: freshBalance?.sat,
+                },
               });
 
               console.log(newBalance);
-              await cancelWatch();
+              // Can't cancel watch because the watch needs to stay open
+              // As multiple transactions can come in during the period
+              // between request balance refreshes
+              // await cancelWatch();
             }
           );
 
