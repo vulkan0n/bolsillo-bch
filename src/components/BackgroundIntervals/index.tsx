@@ -3,7 +3,7 @@ import { View } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { ReduxState } from "../../types";
 import { BRIDGE_MESSAGE_TYPES } from "../../utils/bridgeMessages";
-import { TEN_SECONDS } from "../../utils/consts";
+import { THIRTY_SECONDS } from "../../utils/consts";
 import emit from "../../utils/emit";
 import axios from "axios";
 import { updateBchUsdPrice } from "../../redux/reducers/exchangeRatesReducer";
@@ -58,7 +58,7 @@ const BackgroundIntervals = () => {
 
     const interval = setInterval(() => {
       ping();
-    }, TEN_SECONDS);
+    }, THIRTY_SECONDS);
 
     return () => clearInterval(interval);
   }, []);
