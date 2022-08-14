@@ -19,13 +19,13 @@ function chunkRight(str, size = 3) {
   }
 }
 
-export const displayUsd = (sats: string): string => {
-  if (!sats) {
+export const displayUsd = (value: string): string => {
+  if (!value) {
     return "USD $0.00";
   }
 
   // 2 decimal places, rounding down
-  const decimalised = (Math.floor(parseFloat(sats) * 100) / 100).toFixed(2);
+  const decimalised = (Math.floor(parseFloat(value) * 100) / 100).toFixed(2);
 
   // Split pre-decimal number into chunks of 3, starting from right
   const splitString = decimalised.toString().split(".");
