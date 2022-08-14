@@ -5,6 +5,7 @@ import { ReduxState } from "../../types";
 import { BRIDGE_MESSAGE_TYPES } from "../../utils/bridgeMessages";
 import { TEN_SECONDS } from "../../utils/consts";
 import emit from "../../utils/emit";
+import axios from "axios";
 
 const BackgroundIntervals = () => {
   const wallet = useSelector((state: ReduxState) =>
@@ -26,8 +27,17 @@ const BackgroundIntervals = () => {
     });
   };
 
-  const fetchPriceData = () => {
+  const fetchPriceData = async () => {
     console.log("fetching price data");
+    const baseUrl = "https://reqres.in";
+
+    // Passing configuration object to axios
+    const res = await axios({
+      method: "get",
+      url: `${baseUrl}/api/users/1`,
+    });
+
+    console.log({ res });
   };
 
   const ping = () => {
