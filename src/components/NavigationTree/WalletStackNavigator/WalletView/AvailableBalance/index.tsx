@@ -3,7 +3,7 @@ import { View, Text, Pressable } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import TYPOGRAPHY from "../../../../../design/typography";
 import styles from "../styles";
-import { displaySats, displaySatsAsUsd } from "../../../../../utils/formatting";
+import { displaySats, displaySatsAsBits, displaySatsAsUsd, displaySatsInDenomination } from "../../../../../utils/formatting";
 import { ReduxState } from "../../../../../types";
 import { toggleIsShowAvailableBalance } from "../../../../../redux/reducers/settingsReducer";
 
@@ -16,6 +16,9 @@ function AvailableBalance() {
   );
   
   const { isCryptoDenominated } = useSelector(
+    (state: ReduxState) => state.settings
+  );
+  const { bitcoinDenomination } = useSelector(
     (state: ReduxState) => state.settings
   );
   const dispatch = useDispatch()
@@ -33,7 +36,7 @@ function AvailableBalance() {
     setIsDisplayHideNotice(false);
   };
 
-  const satBalance = displaySats(wallet?.balance);
+  const satBalance = displaySatsInDenomination(wallet?.balance, bitcoinDenomination)
   const usdBalance = displaySatsAsUsd(wallet?.balance);
 
   if (isDisplayHideNotice) {

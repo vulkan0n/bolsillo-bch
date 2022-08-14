@@ -1,7 +1,13 @@
 import { convertSatsToUsd } from "./exchangeRates";
 import { useSelector } from "react-redux";
 import { ReduxState } from "../types";
-import { MAIN_NET_PREFIX, TEST_NET_PREFIX } from "./consts";
+import {
+  MAIN_NET_PREFIX,
+  TEST_NET_PREFIX,
+  ONE_HUNDRED,
+  ONE_HUNDRED_THOUSAND,
+  ONE_HUNDRED_MILLION,
+} from "./consts";
 
 // Split string into groups of 3 characters, starting from right side
 // https://stackoverflow.com/a/63716019
@@ -19,6 +25,28 @@ function chunkRight(str, size = 3) {
   }
 }
 
+export const prettifyRawCurrencyValue = (
+  value: string,
+  currency: string
+): string => {
+  const rawValue = value ?? "0";
+
+  switch (currency) {
+    case "usd":
+      return `USD $${rawValue}`;
+    case "bitcoins":
+      return `₿ ${rawValue} BCH`;
+    case "millibits":
+      return `₿ ${rawValue} mBCH`;
+    case "bits":
+      return `₿ ${rawValue} bits`;
+    case "satoshis":
+      return `₿ ${rawValue} sats`;
+    default:
+      return value;
+  }
+};
+
 export const displayUsd = (value: string): string => {
   if (!value) {
     return "USD $0.00";
@@ -26,13 +54,8 @@ export const displayUsd = (value: string): string => {
 
   // 2 decimal places, rounding down
   const decimalised = (Math.floor(parseFloat(value) * 100) / 100).toFixed(2);
-
-  // Split pre-decimal number into chunks of 3, starting from right
-  const splitString = decimalised.toString().split(".");
-  const preDecimal = chunkRight(splitString?.[0]);
-  const postDecimal = splitString?.[1];
-
-  return `USD $${preDecimal}.${postDecimal}`;
+  const chunkedRawValue = chunkPreDecimalInto3s(decimalised.toString());
+  return prettifyRawCurrencyValue(chunkedRawValue, "usd");
 };
 
 export const displaySats = (sats: string): string => {
@@ -45,6 +68,34 @@ export const displaySats = (sats: string): string => {
   const spacedChunks = chunkRight(floatSats.toString()).join(" ");
 
   return `₿ ${spacedChunks} sats`;
+};
+
+export const chunkPreDecimalInto3s = (value: string): string => {
+  // Split pre-decimal number into chunks of 3, starting from right
+  const splitString = value.split(".");
+  const preDecimal = chunkRight(splitString?.[0]);
+  const postDecimal = splitString?.[1];
+  return `${preDecimal}.${postDecimal}`;
+};
+
+export const displaySatsInDenomination = (
+  sats: string,
+  denomination: string
+): string => {
+  switch (denomination) {
+    case "bitcoins":
+      const bitcoinRawValue = `${parseFloat(sats) / ONE_HUNDRED_MILLION}`;
+      return prettifyRawCurrencyValue(bitcoinRawValue, "bitcoins");
+    case "millibits":
+      const millibitsRawValue = `${parseFloat(sats) / ONE_HUNDRED_THOUSAND}`;
+      return prettifyRawCurrencyValue(millibitsRawValue, "millibits");
+    case "bits":
+      return `₿ ${parseFloat(sats) / ONE_HUNDRED} bits`;
+    case "satoshis":
+      return prettifyRawCurrencyValue(sats, "satoshis");
+    default:
+      return displaySats(sats);
+  }
 };
 
 export const displaySatsAsUsd = (sats: string): string => {

@@ -1,10 +1,11 @@
 import store from "../redux/store";
 import { useSelector } from "react-redux";
 import { ReduxState } from "../types";
-
-const ONE_HUNDRED_MILLION = 100000000; // Sats per BCH
-const ONE_HUNDRED_THOUSAND = 100000; // Sats per mBCH
-const ONE_HUNDRED = 100; // Sats per bit
+import {
+  ONE_HUNDRED,
+  ONE_HUNDRED_THOUSAND,
+  ONE_HUNDRED_MILLION,
+} from "./consts";
 
 export const convertPadBalanceInDenominationToSats = (
   padBalance: string,
