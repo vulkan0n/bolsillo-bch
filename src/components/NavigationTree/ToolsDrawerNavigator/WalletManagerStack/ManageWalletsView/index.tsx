@@ -1,7 +1,6 @@
-import React, { useState } from "react";
+import React from "react";
 import { View, Text, Pressable, FlatList } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
-import Button from "../../../../atoms/Button";
 import TYPOGRAPHY from "../../../../../design/typography";
 import styles from "./styles";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
@@ -9,12 +8,12 @@ import COLOURS from "../../../../../design/colours";
 import { ReduxState } from "../../../../../types";
 import { faWallet } from "@fortawesome/free-solid-svg-icons";
 import { displaySats, displaySatsAsUsd } from "../../../../../utils/formatting";
-import Divider from "../../../../atoms/Divider";
 import SPACING from "../../../../../design/spacing";
 import {
   updateActiveWalletName,
   updateNavigatedWalletName,
 } from "../../../../../redux/reducers/walletManagerReducer";
+import WalletActions from "./WalletActions";
 
 function ManageWalletsView({ navigation }) {
   const { activeWalletName } = useSelector(
@@ -41,14 +40,6 @@ function ManageWalletsView({ navigation }) {
       updateNavigatedWalletName({ navigatedWalletName: deleteWalletName })
     );
     navigation.navigate("Delete");
-  };
-
-  const onPressNew = () => {
-    navigation.navigate("New");
-  };
-
-  const onPressImport = () => {
-    navigation.navigate("Import");
   };
 
   const renderWallets = ({ item: { name, description, balance } }) => {
@@ -110,37 +101,6 @@ function ManageWalletsView({ navigation }) {
     );
   };
 
-  const WalletActions = (
-    <View>
-      <Divider />
-
-      <View
-        style={{
-          flexDirection: "row",
-          justifyContent: "space-around",
-          width: "100%",
-        }}
-      >
-        <Button
-          onPress={onPressNew}
-          variant={"blackOutlined"}
-          isSmall
-          icon={"faPlusCircle"}
-        >
-          New
-        </Button>
-        <Button
-          onPress={onPressImport}
-          variant={"blackOutlined"}
-          isSmall
-          icon={"faFileImport"}
-        >
-          Import
-        </Button>
-      </View>
-    </View>
-  );
-
   return (
     <View style={styles.container as any}>
       <FlatList
@@ -155,7 +115,7 @@ function ManageWalletsView({ navigation }) {
         data={wallets}
         renderItem={renderWallets}
         keyExtractor={({ name }) => name}
-        ListFooterComponent={WalletActions}
+        ListFooterComponent={<WalletActions navigation={navigation} />}
       />
     </View>
   );
