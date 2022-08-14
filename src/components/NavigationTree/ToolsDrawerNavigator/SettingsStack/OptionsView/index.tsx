@@ -6,6 +6,7 @@ import TestNet from "./TestNet";
 import RightHandedMode from "./RightHandedMode";
 import ShowAvailableBalance from "./ShowAvailableBalance";
 import TYPOGRAPHY from "../../../../../design/typography";
+import Divider from "../../../../atoms/Divider";
 
 const OptionsView = ({ navigation }) => {
   const onPressReset = () => {
@@ -19,6 +20,10 @@ const OptionsView = ({ navigation }) => {
         <RightHandedMode />
         <ShowAvailableBalance />
         <TestNet />
+        <Divider />
+        <Text style={TYPOGRAPHY.pWhite as any}>
+          Fiat price data retrieved from CoinGecko.
+        </Text>
         <Pressable onPress={onPressReset}>
           <Text style={TYPOGRAPHY.pWhiteUnderlined as any}>Reset app</Text>
         </Pressable>
