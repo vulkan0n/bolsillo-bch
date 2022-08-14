@@ -77,6 +77,22 @@ const Bridge = () => {
           console.log("cash addr");
           console.log(walletRequestBalance?.cashaddr);
 
+          console.log("triggered WATCH setup");
+          const cancelWatch = walletRequestBalance.watchBalance(
+            async (newBalance) => {
+              console.log("!!!!!!!!!!!");
+              console.log("!!!!!!!!!!!");
+              console.log("Recognised a new incoming transaction");
+              emit({
+                type: RESPONSE_MESSAGE_TYPES.RECEIVED_COINS,
+                data: { balance: newBalance?.sat },
+              });
+
+              console.log(newBalance);
+              await cancelWatch();
+            }
+          );
+
           emit({
             type: RESPONSE_MESSAGE_TYPES.REQUEST_BALANCE_AND_ADDRESS_RESPONSE,
             data: {

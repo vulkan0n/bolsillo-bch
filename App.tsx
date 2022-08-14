@@ -61,7 +61,7 @@ export default function App() {
   // The argument is callback to receive message from React
   const { ref, onMessage, emit } = useWebViewMessage(
     (message: BridgeResponseMessage) => {
-      // console.log("Bridge Response Message: ", message);
+      console.log("Bridge Response Message: ", message);
       switch (message.type) {
         case RESPONSE_MESSAGE_TYPES.CREATE_DEFAULT_WALLET_RESPONSE:
           store.dispatch(
@@ -103,7 +103,6 @@ export default function App() {
               cashaddr: message.data.cashaddr,
             })
           );
-          console.log({ message });
           break;
 
         case RESPONSE_MESSAGE_TYPES.SEND_COINS_RESPONSE:
@@ -121,6 +120,16 @@ export default function App() {
             props: {
               title: message?.data?.title,
               text: message?.data?.text,
+            },
+          });
+          break;
+
+        case RESPONSE_MESSAGE_TYPES.RECEIVED_COINS:
+          Toast.show({
+            type: "customSuccess",
+            props: {
+              title: "Received Bitcoin Cash",
+              text: "Getting rich!!!",
             },
           });
           break;

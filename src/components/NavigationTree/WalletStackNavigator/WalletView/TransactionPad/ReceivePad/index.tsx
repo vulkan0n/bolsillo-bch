@@ -17,11 +17,6 @@ const ReceivePad = () => {
       ({ name }) => name === state.walletManager?.activeWalletName
     )
   );
-  console.log("!!!!!!");
-  console.log("!!!!!!");
-  console.log("!!!!!!");
-  console.log("!!!!!!");
-  console.log({ wallet });
 
   const { isRightHandedMode } = useSelector(
     (state: ReduxState) => state.settings
