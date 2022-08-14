@@ -40,11 +40,14 @@ function WalletView({ route, navigation }) {
   // I.e. first time app is opened
   useEffect(() => {
     console.log("creating wallet");
-    emit({
-      type: BRIDGE_MESSAGE_TYPES.CREATE_DEFAULT_WALLET,
-      data: { isTestNet },
-    });
-  }, []);
+    console.log({ isNoWallet });
+    if (isNoWallet) {
+      emit({
+        type: BRIDGE_MESSAGE_TYPES.CREATE_DEFAULT_WALLET,
+        data: { isTestNet },
+      });
+    }
+  });
 
   // Refresh wallet when toggling to/from test net
   useEffect(() => {
