@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, Switch } from "react-native";
+import { View, Text, Switch, Pressable } from "react-native";
 import TYPOGRAPHY from "../../../../../../design/typography";
 import styles from "../styles";
 import COLOURS from "../../../../../../design/colours";
@@ -31,7 +31,7 @@ const TestNet = () => {
   );
 
   return (
-    <View style={styles.optionRow as any}>
+    <Pressable onPress={handleToggleIsTestNet} style={styles.optionRow as any}>
       {!isRightHandedMode && TestNetSwitch}
       <View style={{ width: 250 }}>
         <Text style={TYPOGRAPHY.h2Left as any}>Test Net</Text>
@@ -48,7 +48,7 @@ const TestNet = () => {
         )}
       </View>
       {isRightHandedMode && TestNetSwitch}
-    </View>
+    </Pressable>
   );
 };
 
