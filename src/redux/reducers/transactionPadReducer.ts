@@ -1,5 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { PURGE } from "redux-persist";
+import { updateBitcoinDenomination } from "./settingsReducer";
 
 export interface TransactionPadState {
   view: "" | "NumPad" | "Send" | "Receive";
@@ -33,7 +34,11 @@ const transactionPadSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    builder.addCase(PURGE, () => initialState);
+    builder
+      .addCase(updateBitcoinDenomination, (state) => {
+        state.padBalance = "0";
+      })
+      .addCase(PURGE, () => initialState);
   },
 });
 
