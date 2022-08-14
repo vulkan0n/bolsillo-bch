@@ -48,7 +48,7 @@ const BackgroundIntervals = () => {
   };
 
   const ping = () => {
-    console.log("ping!");
+    // console.log("ping!");
     fetchActiveWalletBalance();
     fetchPriceData();
   };
