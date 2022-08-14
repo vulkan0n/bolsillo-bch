@@ -7,10 +7,16 @@ import Toast from "react-native-toast-message";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import COLOURS from "../../../../../design/colours";
 import { faPowerOff } from "@fortawesome/free-solid-svg-icons/faPowerOff";
+import persistor from "../../../../../redux/persistor";
+import RNRestart from "react-native-restart";
 
 const ResetView = ({ navigation }) => {
   const onPressReset = () => {
-    console.log("reset");
+    persistor.purge();
+    navigation.reset({
+      index: 0,
+      routes: [{ name: "Wallet" }],
+    });
     Toast.show({
       type: "customSuccess",
       props: {
@@ -18,6 +24,7 @@ const ResetView = ({ navigation }) => {
         text: "All gone.",
       },
     });
+    RNRestart.Restart();
   };
 
   return (
