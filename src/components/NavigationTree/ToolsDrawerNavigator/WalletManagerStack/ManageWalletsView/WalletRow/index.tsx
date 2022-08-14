@@ -10,11 +10,11 @@ import {
   displaySats,
   displaySatsAsUsd,
 } from "../../../../../../utils/formatting";
-import SPACING from "../../../../../../design/spacing";
 import {
   updateActiveWalletName,
   updateNavigatedWalletName,
 } from "../../../../../../redux/reducers/walletManagerReducer";
+import styles from "./styles";
 
 const WalletRow = ({ navigation, name, description, balance }) => {
   const dispatch = useDispatch();
@@ -43,14 +43,7 @@ const WalletRow = ({ navigation, name, description, balance }) => {
   };
 
   return (
-    <View
-      style={{
-        flex: 1,
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "center",
-      }}
-    >
+    <View style={styles.container as any}>
       <View style={{ width: 30 }}>
         <FontAwesomeIcon
           icon={faWallet}
@@ -58,13 +51,7 @@ const WalletRow = ({ navigation, name, description, balance }) => {
           color={COLOURS.white}
         />
       </View>
-      <View
-        style={{
-          flex: 1,
-          paddingLeft: SPACING.ten,
-          paddingRight: SPACING.ten,
-        }}
-      >
+      <View style={styles.padding as any}>
         <Text style={TYPOGRAPHY.h2Left as any}>{name}</Text>
         {!!description && (
           <Text style={TYPOGRAPHY.pWhiteLeft as any}>{description}</Text>
@@ -74,7 +61,7 @@ const WalletRow = ({ navigation, name, description, balance }) => {
           {displaySatsAsUsd(balance)}
         </Text>
       </View>
-      <View style={{ width: 100 }}>
+      <View style={styles.fixedWidth as any}>
         {!isActive && (
           <Pressable
             onPress={() => {
