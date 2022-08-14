@@ -51,7 +51,7 @@ function AvailableBalance() {
 
   return (
     <Pressable onPress={onPressBalance} style={styles.widePressable}>
-      <Text style={TYPOGRAPHY.pWhite}>Available Balance</Text>
+      <Text style={TYPOGRAPHY.pWhite as any}>Available Balance</Text>
       <View style={styles.primaryTitlesWrapper}>
         <Text style={TYPOGRAPHY.h1 as any}>
           {isCryptoDenominated ? satBalance : usdBalance}

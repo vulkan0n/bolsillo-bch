@@ -18,7 +18,7 @@ const OptionsView = ({ navigation }) => {
     <ScrollView style={styles.scrollView as any}>
       <View style={styles.container as any}>
         <CryptoDenominated />
-        <BitcoinDenomination />
+        <BitcoinDenomination navigation={navigation} />
         <RightHandedMode />
         <ShowAvailableBalance />
         <TestNet />

@@ -11,6 +11,7 @@ export interface SettingsState {
 
 const initialState = {
   isCryptoDenominated: true,
+  bitcoinDenomination: "satoshis",
   isRightHandedMode: true,
   isShowAvailableBalance: true,
   isTestNet: false,
