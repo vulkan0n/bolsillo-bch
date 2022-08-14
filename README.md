@@ -31,6 +31,10 @@ To watch the console.logs from inside the Bridge, see: https://stackoverflow.com
 
 This is a BCH standard app. Think in terms of BCH satoshis, stored as strings, then use the formatting and exchange rate helpers. All other exchange rates and balances are transformations of the satoshi value.
 
+## Gotchas
+
+Be careful that `wallet.balance` on the bridge side is `{ bch: '0', usd: '0', sat: '0' }` but in the rest of the app `wallet.balance` is just `0`, a string value in satoshis.
+
 ## Testing
 
 To run Electron Cash on testnet:
