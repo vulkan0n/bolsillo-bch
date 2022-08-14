@@ -4,41 +4,18 @@ import Button from "../../../../atoms/Button";
 import TYPOGRAPHY from "../../../../../design/typography";
 import styles from "./styles";
 import Toast from "react-native-toast-message";
-import { useDispatch, useSelector } from "react-redux";
-import { ReduxState } from "../../../../../types";
-import Divider from "../../../../atoms/Divider";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import COLOURS from "../../../../../design/colours";
-import { faTrashCan } from "@fortawesome/free-solid-svg-icons/faTrashCan";
-import { deleteWallet } from "../../../../../redux/reducers/walletManagerReducer";
+import { faPowerOff } from "@fortawesome/free-solid-svg-icons/faPowerOff";
 
 const ResetView = ({ navigation }) => {
-  const { navigatedWalletName } = useSelector(
-    (state: ReduxState) => state.walletManager
-  );
-  const { name, description } = useSelector((state: ReduxState) =>
-    state.walletManager.wallets?.find(
-      ({ name }) => name === navigatedWalletName
-    )
-  );
-  const dispatch = useDispatch();
-
-  const onPressBackup = () => {
-    navigation.navigate("Backup");
-  };
-
-  const onPressDelete = () => {
-    navigation.navigate("Manage");
-    dispatch(
-      deleteWallet({
-        name: navigatedWalletName,
-      })
-    );
+  const onPressReset = () => {
+    console.log("reset");
     Toast.show({
       type: "customSuccess",
       props: {
-        title: "Wallet deleted",
-        text: "Goodbye wallet.",
+        title: "App reset",
+        text: "All gone.",
       },
     });
   };
@@ -48,30 +25,30 @@ const ResetView = ({ navigation }) => {
       <View style={styles.container as any}>
         <View style={styles.iconContainer}>
           <FontAwesomeIcon
-            icon={faTrashCan}
+            icon={faPowerOff}
             size={50}
             color={COLOURS.bchGreen}
           />
         </View>
-        <Text style={TYPOGRAPHY.h2 as any}>{name}</Text>
-        {!!description && (
-          <Text style={TYPOGRAPHY.pWhite as any}>{description}</Text>
-        )}
-        <Divider />
+        <Text style={TYPOGRAPHY.h2 as any}>Reset</Text>
         <Text style={TYPOGRAPHY.pWhite as any}>
-          Note, this will erase all of this wallet's:
+          Reset your Selene wallet to a freshly installed state.
+        </Text>
+        <Text style={TYPOGRAPHY.pWhite as any}>
+          This will erase everything in the app:
         </Text>
         <Text style={TYPOGRAPHY.pWhite as any}>- Wallet data</Text>
         <Text style={TYPOGRAPHY.pWhite as any}>- Settings</Text>
-        <Text style={TYPOGRAPHY.pWhite as any}>- Mnemonic phrase</Text>
+        <Text style={TYPOGRAPHY.pWhite as any}>- Mnemonic phrases</Text>
+        <Text style={TYPOGRAPHY.pWhite as any}>This cannot be undone.</Text>
         <Text style={TYPOGRAPHY.pWhite as any}>
-          You will lose access to any future coins sent to addresses in this
-          wallet!!
+          You will lose access to any future coins sent to addresses in those
+          wallets!!
         </Text>
         <Text style={TYPOGRAPHY.pWhite as any}>
-          Ensure you have your mnemonic backup saved first!!
+          Ensure you have your mnemonic backups saved first!!
         </Text>
-        <Button icon={"faTrashCan"} variant="danger" onPress={onPressDelete}>
+        <Button icon={"faPowerOff"} variant="danger" onPress={onPressReset}>
           Reset app
         </Button>
       </View>

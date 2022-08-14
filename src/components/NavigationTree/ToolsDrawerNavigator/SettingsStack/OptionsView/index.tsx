@@ -20,7 +20,7 @@ const OptionsView = ({ navigation }) => {
         <ShowAvailableBalance />
         <TestNet />
         <Pressable onPress={onPressReset}>
-          <Text style={TYPOGRAPHY.pWhiteUnderlined as any}>Reset wallet</Text>
+          <Text style={TYPOGRAPHY.pWhiteUnderlined as any}>Reset app</Text>
         </Pressable>
       </View>
     </ScrollView>
