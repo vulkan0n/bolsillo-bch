@@ -12,22 +12,6 @@ const styles = {
     justifyContent: "flex-start",
     alignItems: "center",
   },
-  iconContainer: {
-    marginBottom: SPACING.fifteen,
-  },
-  mnemonicContainer: {
-    padding: SPACING.ten,
-    margin: SPACING.ten,
-    borderColor: COLOURS.white,
-    borderWidth: 2,
-    borderRadius: SPACING.borderRadius,
-  },
-  logo: {
-    width: 75,
-    height: 75,
-    marginTop: SPACING.five,
-    marginBottom: SPACING.ten,
-  },
 };
 
 export default styles;
