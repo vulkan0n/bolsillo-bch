@@ -2,9 +2,10 @@ import React from "react";
 import { View, ScrollView, Pressable, Text } from "react-native";
 import styles from "./styles";
 import CryptoDenominated from "./CryptoDenominated";
-import TestNet from "./TestNet";
+import BitcoinDenomination from "./BitcoinDenomination";
 import RightHandedMode from "./RightHandedMode";
 import ShowAvailableBalance from "./ShowAvailableBalance";
+import TestNet from "./TestNet";
 import TYPOGRAPHY from "../../../../../design/typography";
 import Divider from "../../../../atoms/Divider";
 
@@ -17,6 +18,7 @@ const OptionsView = ({ navigation }) => {
     <ScrollView style={styles.scrollView as any}>
       <View style={styles.container as any}>
         <CryptoDenominated />
+        <BitcoinDenomination />
         <RightHandedMode />
         <ShowAvailableBalance />
         <TestNet />
