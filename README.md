@@ -13,6 +13,8 @@ $ expo start
 # Note, you need to ensure you have stable wifi to connect through the tunnel
 ```
 
+For price feed data, you will need an API key for Coinmarketcap. Sign up at `https://pro.coinmarketcap.com`, and add it to `.env`
+
 ## Development
 
 ```
