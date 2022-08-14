@@ -18,16 +18,16 @@ const BitcoinDenominated = ({ navigation }) => {
   };
 
   const BitcoinDenominationIndicator = (
-    <Pressable
-      onPress={onPressBitcoinDenomination}
-      style={styles.control as any}
-    >
+    <View style={styles.control as any}>
       <Text style={TYPOGRAPHY.pWhite as any}>{bitcoinDenomination}</Text>
-    </Pressable>
+    </View>
   );
 
   return (
-    <View style={styles.optionRow as any}>
+    <Pressable
+      onPress={onPressBitcoinDenomination}
+      style={styles.optionRow as any}
+    >
       {!isRightHandedMode && BitcoinDenominationIndicator}
       <View style={{ width: 250 }}>
         <Text style={TYPOGRAPHY.h2Left as any}>Bitcoin Denomination</Text>
@@ -38,7 +38,7 @@ const BitcoinDenominated = ({ navigation }) => {
         )}
       </View>
       {isRightHandedMode && BitcoinDenominationIndicator}
-    </View>
+    </Pressable>
   );
 };
 

@@ -44,6 +44,7 @@ const settingsSlice = createSlice({
 
 export const {
   toggleIsCryptoDenominated,
+  updateBitcoinDenomination,
   toggleIsRightHandedMode,
   toggleIsShowAvailableBalance,
   toggleIsTestNet,

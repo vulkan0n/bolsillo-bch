@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { ScrollView, View, Text, Pressable } from "react-native";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Button from "../../../../atoms/Button";
 import TYPOGRAPHY from "../../../../../design/typography";
 import styles from "./styles";
@@ -10,10 +10,12 @@ import COLOURS from "../../../../../design/colours";
 import { ReduxState } from "../../../../../types";
 import Divider from "../../../../atoms/Divider";
 import SPACING from "../../../../../design/spacing";
+import { updateBitcoinDenomination } from "../../../../../redux/reducers/settingsReducer";
 
 function DenominationView() {
-  const { navigatedWalletName } = useSelector(
-    (state: ReduxState) => state.walletManager
+  const dispatch = useDispatch();
+  const { bitcoinDenomination } = useSelector(
+    (state: ReduxState) => state.settings
   );
 
   const denominations = [
@@ -21,21 +23,25 @@ function DenominationView() {
       units: "1",
       abbreviation: "BCH",
       name: "(Bitcoin Cash)",
+      setting: "bitcoins",
     },
     {
       units: "1 000",
       abbreviation: "mBCH",
       name: "(millibits)",
+      setting: "millibits",
     },
     {
       units: "1 000 000",
       abbreviation: "bits",
-      name: "",
+      name: "(bits)",
+      setting: "bits",
     },
     {
       units: "100 000 000",
       abbreviation: "sats",
       name: "(satoshis)",
+      setting: "satoshis",
     },
   ];
 
@@ -49,67 +55,73 @@ function DenominationView() {
         <Text style={TYPOGRAPHY.pWhite as any}>
           The smallest unit of a bitcoin is a satoshi, named after the
           currency's creator. Like there are 100 cents in a US dollar, there are
-          100 million satoshis (sats) in a bitcoin.
+          100 million sats (satoshis) in a bitcoin.
         </Text>
         <Divider />
         <Text style={TYPOGRAPHY.pWhite as any}>Display 1 bitcoin as:</Text>
-        {denominations.map(({ name, abbreviation, units }) => (
-          <View
-            style={
-              {
-                flex: 1,
-                flexDirection: "row",
-                borderColor: COLOURS.white,
-                justifyContent: "space-between",
-                alignItems: "flex-start",
-                width: "100%",
-                backgroundColor: "red",
-              } as any
-            }
-          >
-            <Text
+        {denominations.map(({ name, abbreviation, units, setting }) => {
+          const isSelected = setting === bitcoinDenomination;
+          const onPress = () => {
+            dispatch(
+              updateBitcoinDenomination({ bitcoinDenomination: setting })
+            );
+          };
+
+          return (
+            <Pressable
+              onPress={onPress}
               style={
                 {
-                  ...TYPOGRAPHY.h2,
-                  textAlign: "right",
                   flex: 1,
-                  backgroundColor: "blue",
-                  marginRight: SPACING.five,
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  alignItems: "flex-start",
+                  width: "100%",
                 } as any
               }
             >
-              {units}
-            </Text>
-            <View style={{ flex: 1 }}>
               <Text
                 style={
                   {
                     ...TYPOGRAPHY.h2,
-                    textAlign: "left",
-                    marginLeft: SPACING.five,
-                    flex: 8,
-                    backgroundColor: "green",
+                    textAlign: "right",
+                    flex: 1,
+                    paddingRight: SPACING.five,
+                    color: isSelected ? COLOURS.bchGreen : COLOURS.white,
                   } as any
                 }
               >
-                {abbreviation}
+                {units}
               </Text>
-              <Text
-                style={
-                  {
-                    ...TYPOGRAPHY.pWhite,
-                    textAlign: "left",
-                    marginLeft: SPACING.five,
-                    flex: 20,
-                    backgroundColor: "green",
-                  } as any
-                }
-              >
-                {name}
-              </Text>
-            </View>
-          </View>
-        ))}
+              <View style={{ flex: 1 }}>
+                <Text
+                  style={
+                    {
+                      ...TYPOGRAPHY.h2,
+                      textAlign: "left",
+                      paddingLeft: SPACING.five,
+                      color: isSelected ? COLOURS.bchGreen : COLOURS.white,
+                    } as any
+                  }
+                >
+                  {abbreviation}
+                </Text>
+                <Text
+                  style={
+                    {
+                      ...TYPOGRAPHY.pWhite,
+                      textAlign: "left",
+                      marginLeft: SPACING.five,
+                      color: isSelected ? COLOURS.bchGreen : COLOURS.white,
+                    } as any
+                  }
+                >
+                  {name}
+                </Text>
+              </View>
+            </Pressable>
+          );
+        })}
       </View>
     </ScrollView>
   );
