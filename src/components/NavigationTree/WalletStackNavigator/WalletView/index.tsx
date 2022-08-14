@@ -9,7 +9,7 @@ import emit from "../../../../utils/emit";
 import AvailableBalance from "./AvailableBalance";
 import TYPOGRAPHY from "../../../../design/typography";
 
-function WalletView({ route, navigation }) {
+function WalletView({ navigation }) {
   const isNoWallet = useSelector(
     (state: ReduxState) => state.walletManager?.wallets?.length === 0
   );
@@ -24,17 +24,6 @@ function WalletView({ route, navigation }) {
   const { isShowAvailableBalance } = useSelector(
     (state: ReduxState) => state.settings
   );
-
-  const requestBalance = () =>
-    emit({
-      type: BRIDGE_MESSAGE_TYPES.REQUEST_BALANCE_AND_ADDRESS,
-      data: {
-        name: wallet?.name,
-        mnemonic: wallet?.mnemonic,
-        derivationPath: wallet?.derivationPath,
-        isTestNet,
-      },
-    });
 
   // Create a wallet if none exists
   // I.e. first time app is opened
@@ -54,15 +43,6 @@ function WalletView({ route, navigation }) {
       data: { wallet, isTestNet },
     });
   }, [isTestNet]);
-
-  useEffect(() => {
-    if (!wallet) {
-      return;
-    }
-
-    console.log("triggering");
-    requestBalance();
-  }, [wallet?.name, wallet?.mnemonic, wallet?.cashaddr]);
 
   // Transaction id set to non null means new transaction just completed
   useEffect(() => {
