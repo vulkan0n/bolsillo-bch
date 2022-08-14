@@ -1,13 +1,15 @@
 import React, { useEffect } from "react";
 import { View } from "react-native";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { ReduxState } from "../../types";
 import { BRIDGE_MESSAGE_TYPES } from "../../utils/bridgeMessages";
 import { TEN_SECONDS } from "../../utils/consts";
 import emit from "../../utils/emit";
 import axios from "axios";
+import { updateBchUsdPrice } from "../../redux/reducers/exchangeRatesReducer";
 
 const BackgroundIntervals = () => {
+  const dispatch = useDispatch();
   const wallet = useSelector((state: ReduxState) =>
     state.walletManager?.wallets?.find(
       ({ name }) => name === state.walletManager?.activeWalletName
@@ -28,20 +30,21 @@ const BackgroundIntervals = () => {
   };
 
   const fetchPriceData = async () => {
-    console.log("fetching price data");
     // https://www.coingecko.com/en/api/documentation
     const coingeckoUrl = "https://api.coingecko.com";
-    const BCH_ID = 1542;
 
-    // Passing configuration object to axios
     const res = await axios({
       method: "get",
       url: `${coingeckoUrl}/api/v3/coins/bitcoin-cash`,
     });
 
-    // console.log({ res });
-    const usdPrice = res?.data?.market_data?.current_price?.usd;
-    console.log({ usdPrice });
+    const bchUsdPrice = res?.data?.market_data?.current_price?.usd;
+
+    dispatch(
+      updateBchUsdPrice({
+        bchUsdPrice,
+      })
+    );
   };
 
   const ping = () => {
