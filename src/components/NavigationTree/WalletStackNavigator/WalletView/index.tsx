@@ -58,10 +58,6 @@ function WalletView({ navigation }) {
     });
   }, [tempTxId]);
 
-  const onPressLogo = () => {
-    navigation.navigate("Menu");
-  };
-
   if (isNoWallet) {
     return (
       <View style={styles.container as any}>
@@ -72,12 +68,10 @@ function WalletView({ navigation }) {
 
   return (
     <View style={styles.container as any}>
-      <Pressable onPress={onPressLogo}>
-        <Image
-          style={styles.logo}
-          source={require("../../../../assets/images/logo.jpg")}
-        />
-      </Pressable>
+      <Image
+        style={styles.logo}
+        source={require("../../../../assets/images/logo.jpg")}
+      />
 
       {isShowAvailableBalance && <AvailableBalance />}
       <TransactionPad />
