@@ -4,7 +4,6 @@ import { useDispatch, useSelector } from "react-redux";
 import Button from "../../../../atoms/Button";
 import TYPOGRAPHY from "../../../../../design/typography";
 import styles from "./styles";
-import COLOURS from "../../../../../design/colours";
 import { ReduxState } from "../../../../../types";
 import {
   createWalletFromScratchPad,
@@ -33,6 +32,7 @@ function NewWalletView({ navigation }) {
   const [isStartedEditing, setIsStartedEditing] = useState(false);
 
   useEffect(() => {
+    console.log("triggering effect", { mnemonic, derivationPath });
     if (!mnemonic || !derivationPath) {
       emit({
         type: BRIDGE_MESSAGE_TYPES.CREATE_SCRATCHPAD_WALLET,

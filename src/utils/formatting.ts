@@ -37,14 +37,14 @@ export const displayUsd = (value: string): string => {
 
 export const displaySats = (sats: string): string => {
   if (!sats) {
-    return "0 sats";
+    return "₿ 0 sats";
   }
 
   const floatSats = parseFloat(sats);
   // i.e. '1 000 120' not `1000120`
   const spacedChunks = chunkRight(floatSats.toString()).join(" ");
 
-  return `${spacedChunks} sats`;
+  return `₿ ${spacedChunks} sats`;
 };
 
 export const displaySatsAsUsd = (sats: string): string => {
