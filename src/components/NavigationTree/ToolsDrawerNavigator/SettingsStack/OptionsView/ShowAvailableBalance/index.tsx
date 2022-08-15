@@ -7,7 +7,7 @@ import { toggleIsShowAvailableBalance } from "../../../../../../redux/reducers/s
 import { useSelector, useDispatch } from "react-redux";
 import { ReduxState } from "../../../../../../types";
 
-const CryptoDenominated = () => {
+const BchDenominated = () => {
   const dispatch = useDispatch();
   const { isShowAvailableBalance } = useSelector(
     (state: ReduxState) => state.settings
@@ -20,7 +20,7 @@ const CryptoDenominated = () => {
     dispatch(toggleIsShowAvailableBalance());
   };
 
-  const CryptoDenominatedSwitch = (
+  const BchDenominatedSwitch = (
     <View style={styles.control as any}>
       <Switch
         trackColor={{ true: COLOURS.bchGreen, false: COLOURS.white }}
@@ -37,7 +37,7 @@ const CryptoDenominated = () => {
       onPress={handleToggleIsShowAvailableBalance}
       style={styles.optionRow as any}
     >
-      {!isRightHandedMode && CryptoDenominatedSwitch}
+      {!isRightHandedMode && BchDenominatedSwitch}
       <View style={{ width: 250 }}>
         <Text style={TYPOGRAPHY.h2Left as any}>Show Available Balance</Text>
         {isShowAvailableBalance && (
@@ -51,9 +51,9 @@ const CryptoDenominated = () => {
           </Text>
         )}
       </View>
-      {isRightHandedMode && CryptoDenominatedSwitch}
+      {isRightHandedMode && BchDenominatedSwitch}
     </Pressable>
   );
 };
 
-export default CryptoDenominated;
+export default BchDenominated;

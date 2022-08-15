@@ -3,59 +3,59 @@ import { View, Text, Switch, Pressable } from "react-native";
 import TYPOGRAPHY from "../../../../../../design/typography";
 import styles from "../styles";
 import COLOURS from "../../../../../../design/colours";
-import { toggleIsCryptoDenominated } from "../../../../../../redux/reducers/settingsReducer";
+import { toggleIsBchDenominated } from "../../../../../../redux/reducers/settingsReducer";
 import { useSelector, useDispatch } from "react-redux";
 import { ReduxState } from "../../../../../../types";
 
-const CryptoDenominated = () => {
+const BchDenominated = () => {
   const dispatch = useDispatch();
-  const { isCryptoDenominated } = useSelector(
+  const { isBchDenominated } = useSelector(
     (state: ReduxState) => state.settings
   );
   const { isRightHandedMode } = useSelector(
     (state: ReduxState) => state.settings
   );
 
-  const handleToggleIsCryptoDenominated = () => {
-    dispatch(toggleIsCryptoDenominated());
+  const handleToggleIsBchDenominated = () => {
+    dispatch(toggleIsBchDenominated());
   };
 
-  const CryptoDenominatedSwitch = (
+  const BchDenominatedSwitch = (
     <View style={styles.control as any}>
       <Switch
         trackColor={{ true: COLOURS.bchGreen, false: COLOURS.white }}
-        thumbColor={isCryptoDenominated ? COLOURS.white : COLOURS.black}
+        thumbColor={isBchDenominated ? COLOURS.white : COLOURS.black}
         ios_backgroundColor={COLOURS.lightGrey}
-        onValueChange={handleToggleIsCryptoDenominated}
-        value={isCryptoDenominated}
+        onValueChange={handleToggleIsBchDenominated}
+        value={isBchDenominated}
       />
     </View>
   );
 
   return (
     <Pressable
-      onPress={handleToggleIsCryptoDenominated}
+      onPress={handleToggleIsBchDenominated}
       style={styles.optionRow as any}
     >
-      {!isRightHandedMode && CryptoDenominatedSwitch}
+      {!isRightHandedMode && BchDenominatedSwitch}
       <View style={{ width: 250 }}>
-        <Text style={TYPOGRAPHY.h2Left as any}>Crypto Denominated</Text>
-        {isCryptoDenominated && (
+        <Text style={TYPOGRAPHY.h2Left as any}>BCH Denominated</Text>
+        {isBchDenominated && (
           <Text style={TYPOGRAPHY.pWhiteLeft as any}>
-            Display balances in crypto (BCH). Fiat (USD) equivalent displayed
-            beneath.
+            Display balances in BCH. Secondary currency equivalent (USD)
+            displayed beneath.
           </Text>
         )}
-        {!isCryptoDenominated && (
+        {!isBchDenominated && (
           <Text style={TYPOGRAPHY.pWhiteLeft as any}>
-            Display balances in fiat (USD). Crypto (BCH) equivalent displayed
-            beneath.
+            Display balances in secondary currency (USD). BCH equivalent
+            displayed beneath.
           </Text>
         )}
       </View>
-      {isRightHandedMode && CryptoDenominatedSwitch}
+      {isRightHandedMode && BchDenominatedSwitch}
     </Pressable>
   );
 };
 
-export default CryptoDenominated;
+export default BchDenominated;

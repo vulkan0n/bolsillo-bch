@@ -1,7 +1,7 @@
 import React from "react";
 import { View, ScrollView, Pressable, Text } from "react-native";
 import styles from "./styles";
-import CryptoDenominated from "./CryptoDenominated";
+import BchDenominated from "./BchDenominated";
 import BitcoinDenomination from "./BitcoinDenomination";
 import RightHandedMode from "./RightHandedMode";
 import ShowAvailableBalance from "./ShowAvailableBalance";
@@ -17,7 +17,7 @@ const OptionsView = ({ navigation }) => {
   return (
     <ScrollView style={styles.scrollView as any}>
       <View style={styles.container as any}>
-        <CryptoDenominated />
+        <BchDenominated />
         <BitcoinDenomination navigation={navigation} />
         <RightHandedMode />
         <ShowAvailableBalance />

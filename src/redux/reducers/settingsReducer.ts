@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import { PURGE } from "redux-persist";
 
 export interface SettingsState {
-  isCryptoDenominated: boolean;
+  isBchDenominated: boolean;
   bitcoinDenomination: "bitcoins" | "millibits" | "bits" | "satoshis";
   isRightHandedMode: boolean;
   isShowAvailableBalance: boolean;
@@ -10,7 +10,7 @@ export interface SettingsState {
 }
 
 const initialState = {
-  isCryptoDenominated: true,
+  isBchDenominated: true,
   bitcoinDenomination: "satoshis",
   isRightHandedMode: true,
   isShowAvailableBalance: true,
@@ -21,8 +21,8 @@ const settingsSlice = createSlice({
   name: "settings",
   initialState,
   reducers: {
-    toggleIsCryptoDenominated(state) {
-      state.isCryptoDenominated = !state.isCryptoDenominated;
+    toggleIsBchDenominated(state) {
+      state.isBchDenominated = !state.isBchDenominated;
     },
     updateBitcoinDenomination(state, action) {
       state.bitcoinDenomination = action.payload.bitcoinDenomination;
@@ -43,7 +43,7 @@ const settingsSlice = createSlice({
 });
 
 export const {
-  toggleIsCryptoDenominated,
+  toggleIsBchDenominated,
   updateBitcoinDenomination,
   toggleIsRightHandedMode,
   toggleIsShowAvailableBalance,

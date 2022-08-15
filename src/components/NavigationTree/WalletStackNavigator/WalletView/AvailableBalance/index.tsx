@@ -15,7 +15,7 @@ function AvailableBalance() {
     )
   );
   
-  const { isCryptoDenominated } = useSelector(
+  const { isBchDenominated } = useSelector(
     (state: ReduxState) => state.settings
   );
   const { bitcoinDenomination } = useSelector(
@@ -57,10 +57,10 @@ function AvailableBalance() {
       <Text style={TYPOGRAPHY.pWhite as any}>Available Balance</Text>
       <View style={styles.primaryTitlesWrapper}>
         <Text style={TYPOGRAPHY.h1 as any}>
-          {isCryptoDenominated ? satBalance : usdBalance}
+          {isBchDenominated ? satBalance : usdBalance}
         </Text>
         <Text style={TYPOGRAPHY.h2 as any}>
-          {isCryptoDenominated ? usdBalance : satBalance}
+          {isBchDenominated ? usdBalance : satBalance}
         </Text>
       </View>
     </Pressable>

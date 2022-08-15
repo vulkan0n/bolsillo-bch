@@ -22,7 +22,7 @@ const NumPad = () => {
   const { padBalance } = useSelector(
     (state: ReduxState) => state.transactionPad
   );
-  const { isCryptoDenominated } = useSelector(
+  const { isBchDenominated } = useSelector(
     (state: ReduxState) => state.settings
   );
   const { isRightHandedMode } = useSelector(
@@ -146,7 +146,7 @@ const NumPad = () => {
         <View style={styles.numPadRow as any}>
           <InputButton n={"<"} />
           <InputButton n={"0"} />
-          <InputButton n={isCryptoDenominated ? "" : "."} />
+          <InputButton n={isBchDenominated ? "" : "."} />
         </View>
       </View>
       <View style={styles.buttonContainer as any}>

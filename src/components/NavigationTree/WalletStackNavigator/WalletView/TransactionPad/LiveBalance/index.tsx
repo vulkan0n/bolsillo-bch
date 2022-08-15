@@ -16,7 +16,7 @@ const DisplayedBalance = () => {
     (state: ReduxState) => state.transactionPad
   );
   const { error } = useSelector((state: ReduxState) => state.transactionPad);
-  const { isCryptoDenominated } = useSelector(
+  const { isBchDenominated } = useSelector(
     (state: ReduxState) => state.settings
   );
   const satBalance = displaySats(padBalance);
@@ -33,10 +33,10 @@ const DisplayedBalance = () => {
   return (
     <View style={styles.secondaryTitlesWrapper}>
       <Text style={TYPOGRAPHY.h1black as any}>
-        {isCryptoDenominated ? satBalance : usdBalance}
+        {isBchDenominated ? satBalance : usdBalance}
       </Text>
       <Text style={TYPOGRAPHY.h2black as any}>
-        {isCryptoDenominated ? usdBalance : satBalance}
+        {isBchDenominated ? usdBalance : satBalance}
       </Text>
       {!!error && <Text style={styles.padError as any}>{error}</Text>}
     </View>
