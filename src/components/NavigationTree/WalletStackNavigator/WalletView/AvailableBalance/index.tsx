@@ -3,7 +3,7 @@ import { View, Text, Pressable } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import TYPOGRAPHY from "../../../../../design/typography";
 import styles from "../styles";
-import { displaySatsAsUsd, padBalanceToBchDisplay } from "../../../../../utils/formatting";
+import { displaySatsAsUsd, satoshiBalanceToBchDisplay } from "../../../../../utils/formatting";
 import { ReduxState } from "../../../../../types";
 import { toggleIsShowAvailableBalance } from "../../../../../redux/reducers/settingsReducer";
 
@@ -36,7 +36,7 @@ function AvailableBalance() {
     setIsDisplayHideNotice(false);
   };
 
-  const bchBalance = padBalanceToBchDisplay(wallet?.balance, bitcoinDenomination);
+  const bchBalance = satoshiBalanceToBchDisplay(wallet?.balance, bitcoinDenomination);
   const usdBalance = displaySatsAsUsd(wallet?.balance);
 
   if (isDisplayHideNotice) {

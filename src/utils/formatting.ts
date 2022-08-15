@@ -9,6 +9,21 @@ import {
   ONE_HUNDRED_MILLION,
 } from "./consts";
 
+// Note on how this file works
+// All values are passed between functions as strings
+// satBalance is an integer number up to 10 digits
+// E.g. "100345" (satoshis)
+// rawValue is a decimalised representation of the currency
+// Decimals depend on the convention of the denomination/currency
+// I.e. USD = 2dp, bits = 2dp, bitcoins = 8dp
+// E.g. "1003.45" (bits)
+// chunkedValue is rawValue, but with pre-decimal amount
+// spaced in groups of 3
+// E.g. "1 003.45" (bits)
+// prettyValue is chunkedValue, but wrapped with currency symbol
+// prefix and suffix
+// E.g. "₿ 1 003.45 bits"
+
 // Split string into groups of 3 characters, starting from right side
 // https://stackoverflow.com/a/63716019
 function chunkRight(str, size = 3) {
@@ -38,15 +53,6 @@ export const chunkPreDecimalInto3s = (value: string): string => {
   return `${preDecimal}.${postDecimal}`;
 };
 
-export const padBalanceToBchDisplay = (
-  padBalance: string,
-  bitcoinDenomination: BitcoinDenominationTypes
-): string => {
-  const finalValue = prettifyRawCurrencyValue(padBalance, bitcoinDenomination);
-  console.log({ padBalance, bitcoinDenomination, finalValue });
-  return finalValue;
-};
-
 export const prettifyRawCurrencyValue = (
   value: string,
   currency: string
@@ -70,6 +76,37 @@ export const prettifyRawCurrencyValue = (
     default:
       return chunkedValue;
   }
+};
+
+export const convertSatBalanceToRawDenomination = (
+  satBalance: string,
+  bitcoinDenomination: BitcoinDenominationTypes
+): string => {
+  switch (bitcoinDenomination) {
+    case "bitcoins":
+      return `${parseFloat(satBalance) / ONE_HUNDRED_MILLION}`;
+    case "millibits":
+      return `${parseFloat(satBalance) / ONE_HUNDRED_THOUSAND}`;
+    case "bits":
+      return `${parseFloat(satBalance) / ONE_HUNDRED}`;
+    case "satoshis":
+      return satBalance;
+    default:
+      return satBalance;
+  }
+};
+
+export const satoshiBalanceToBchDisplay = (
+  satBalance: string,
+  bitcoinDenomination: BitcoinDenominationTypes
+): string => {
+  const rawValue = convertSatBalanceToRawDenomination(
+    satBalance,
+    bitcoinDenomination
+  );
+  const finalValue = prettifyRawCurrencyValue(rawValue, bitcoinDenomination);
+  console.log({ rawValue, satBalance, bitcoinDenomination, finalValue });
+  return finalValue;
 };
 
 export const displayUsd = (value: string): string => {
