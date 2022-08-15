@@ -44,7 +44,7 @@ import { MAIN_NET_PREFIX, TEST_NET_PREFIX } from "./consts";
 // prefix and suffix
 // E.g. "₿ 100 345.10 bits"
 
-const allowedDecimalPlaces = (
+export const allowedDecimalPlaces = (
   currency: BitcoinDenominationTypes | SupportedCurrencyTypes
 ): number => {
   switch (currency) {

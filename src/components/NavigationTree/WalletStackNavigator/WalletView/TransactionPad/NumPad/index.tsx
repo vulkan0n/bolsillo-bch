@@ -11,7 +11,10 @@ import {
 } from "../../../../../../redux/reducers/transactionPadReducer";
 import { ReduxState } from "../../../../../../types";
 import TRANSACTION_PAD_ERRORS from "../errors";
-import { convertRawCurrencyToRawSats } from "../../../../../../utils/formatting";
+import {
+  allowedDecimalPlaces,
+  convertRawCurrencyToRawSats,
+} from "../../../../../../utils/formatting";
 
 const NumPad = () => {
   const dispatch = useDispatch();
@@ -59,6 +62,7 @@ const NumPad = () => {
       }
       return;
     }
+
     if (n === "." && padBalance.includes(".")) {
       dispatch(
         updateTransactionPadError({
@@ -71,6 +75,16 @@ const NumPad = () => {
     const inputCurrency = isBchDenominated
       ? bitcoinDenomination
       : contrastCurrency;
+    const decimalPlaces = padBalance.split(".")?.[1]?.length || 0;
+    if (decimalPlaces + 1 > allowedDecimalPlaces(inputCurrency)) {
+      dispatch(
+        updateTransactionPadError({
+          error: TRANSACTION_PAD_ERRORS.MAXIMUM_DECIMAL_PLACES,
+        })
+      );
+      return;
+    }
+
     const proposedBalance = `${padBalance}${n}`;
     const proposedBalanceInSats = convertRawCurrencyToRawSats(
       proposedBalance,
@@ -84,6 +98,7 @@ const NumPad = () => {
       availableRawSats,
       proposedBalance,
       proposedBalanceInSats,
+      decimalPlaces,
     });
     if (isInsufficientBalance) {
       dispatch(
