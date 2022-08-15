@@ -53,8 +53,8 @@ function OnlineView({ navigation }) {
       <Text style={TYPOGRAPHY.pWhite as any}>Last year: X Bitcoiners</Text> */}
       <Text style={TYPOGRAPHY.h2 as any}>Get involved!</Text>
       <Text style={TYPOGRAPHY.pWhite as any}>
-        Use the menu bar to learn more about Bitcoin Cash and connect with other
-        Bitcoiners on social media.
+        Use the menu bar to learn more about Bitcoin Cash, connect and trade
+        with other Bitcoiners.
       </Text>
     </View>
   );
