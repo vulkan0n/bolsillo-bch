@@ -1,70 +1,48 @@
 import React, { useState } from "react";
 import { ScrollView, View, Text, Pressable } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
-import Button from "../../../../atoms/Button";
 import TYPOGRAPHY from "../../../../../design/typography";
 import styles from "./styles";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { faCoins } from "@fortawesome/free-solid-svg-icons/faCoins";
+import { faMoneyBillWave } from "@fortawesome/free-solid-svg-icons/faMoneyBillWave";
 import COLOURS from "../../../../../design/colours";
 import { ReduxState } from "../../../../../types";
 import Divider from "../../../../atoms/Divider";
 import SPACING from "../../../../../design/spacing";
-import { updateBitcoinDenomination } from "../../../../../redux/reducers/settingsReducer";
+import { updateContrastCurrency } from "../../../../../redux/reducers/settingsReducer";
+import { SUPPORTED_CURRENCIES } from "../../../../../utils/consts";
 
 function ContrastCurrencyView() {
   const dispatch = useDispatch();
-  const { bitcoinDenomination } = useSelector(
+  const { contrastCurrency } = useSelector(
     (state: ReduxState) => state.settings
   );
-
-  const denominations = [
-    {
-      units: "1",
-      abbreviation: "BCH",
-      name: "(Bitcoin Cash)",
-      setting: "bitcoins",
-    },
-    {
-      units: "1 000",
-      abbreviation: "mBCH",
-      name: "(millibits)",
-      setting: "millibits",
-    },
-    {
-      units: "1 000 000",
-      abbreviation: "bits",
-      name: "(bits)",
-      setting: "bits",
-    },
-    {
-      units: "100 000 000",
-      abbreviation: "sats",
-      name: "(satoshis)",
-      setting: "satoshis",
-    },
-  ];
 
   return (
     <ScrollView style={styles.scrollView}>
       <View style={styles.container as any}>
         <View style={styles.iconContainer}>
-          <FontAwesomeIcon icon={faCoins} size={50} color={COLOURS.bchGreen} />
+          <FontAwesomeIcon
+            icon={faMoneyBillWave}
+            size={50}
+            color={COLOURS.bchGreen}
+          />
         </View>
-        <Text style={TYPOGRAPHY.h2 as any}>Denomination</Text>
+        <Text style={TYPOGRAPHY.h2 as any}>Contrast Currency</Text>
         <Text style={TYPOGRAPHY.pWhite as any}>
-          The smallest unit of a bitcoin is a satoshi, named after the
-          currency's creator. Like there are 100 cents in a US dollar, there are
-          100 million sats (satoshis) in a bitcoin.
+          Transacting and thinking in Bitcoin Cash becomes natural over time via
+          exposure to the Bitcoin Cash economy. However it's still helpful to
+          retain a reference to other currencies for interacting with legacy
+          financial systems or new BCH adopters.
         </Text>
         <Divider />
-        <Text style={TYPOGRAPHY.pWhite as any}>Display 1 bitcoin as:</Text>
-        {denominations.map(({ name, abbreviation, units, setting }) => {
-          const isSelected = setting === bitcoinDenomination;
+        <Text style={TYPOGRAPHY.pWhite as any}>
+          Contrast BCH prices with the:
+        </Text>
+        {SUPPORTED_CURRENCIES.map(({ code, fullName }) => {
+          const isSelected = code === contrastCurrency;
           const onPress = () => {
-            dispatch(
-              updateBitcoinDenomination({ bitcoinDenomination: setting })
-            );
+            dispatch(updateContrastCurrency({ contrastCurrency: code }));
           };
 
           return (
@@ -91,34 +69,21 @@ function ContrastCurrencyView() {
                   } as any
                 }
               >
-                {units}
+                {code.toUpperCase()}
               </Text>
-              <View style={{ flex: 1 }}>
-                <Text
-                  style={
-                    {
-                      ...TYPOGRAPHY.h2,
-                      textAlign: "left",
-                      paddingLeft: SPACING.five,
-                      color: isSelected ? COLOURS.bchGreen : COLOURS.white,
-                    } as any
-                  }
-                >
-                  {abbreviation}
-                </Text>
-                <Text
-                  style={
-                    {
-                      ...TYPOGRAPHY.pWhite,
-                      textAlign: "left",
-                      marginLeft: SPACING.five,
-                      color: isSelected ? COLOURS.bchGreen : COLOURS.white,
-                    } as any
-                  }
-                >
-                  {name}
-                </Text>
-              </View>
+              <Text
+                style={
+                  {
+                    ...TYPOGRAPHY.h2,
+                    flex: 3,
+                    textAlign: "left",
+                    paddingLeft: SPACING.five,
+                    color: isSelected ? COLOURS.bchGreen : COLOURS.white,
+                  } as any
+                }
+              >
+                {fullName}
+              </Text>
             </Pressable>
           );
         })}

@@ -17,13 +17,13 @@ const ContrastCurrency = ({ navigation }) => {
     navigation.navigate("Contrast Currency");
   };
 
+  const uppercaseContrastCurrency = contrastCurrency.toUpperCase();
+
   const ContrastCurrencyDisplay = (
     <View style={styles.control as any}>
-      <Text style={TYPOGRAPHY.pWhite as any}>{contrastCurrency}</Text>
+      <Text style={TYPOGRAPHY.pWhite as any}>{uppercaseContrastCurrency}</Text>
     </View>
   );
-
-  console.log({ contrastCurrency });
 
   return (
     <Pressable
@@ -35,7 +35,7 @@ const ContrastCurrency = ({ navigation }) => {
         <Text style={TYPOGRAPHY.h2Left as any}>Contrast Currency</Text>
         {contrastCurrency && (
           <Text style={TYPOGRAPHY.pWhiteLeft as any}>
-            Display comparison prices in {contrastCurrency}.
+            Display comparison prices in {uppercaseContrastCurrency}.
           </Text>
         )}
       </View>
