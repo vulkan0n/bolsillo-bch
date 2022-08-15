@@ -28,7 +28,7 @@ const TransactionPad = () => {
 
   return (
     <View style={styles.transactionPad as any}>
-      <LiveBalance />
+      {view !== "Receive" && <LiveBalance />}
       {component()}
     </View>
   );
