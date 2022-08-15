@@ -17,36 +17,24 @@ export const convertRawMbchToRawSats = (mbch: string): string =>
 export const convertRawBchToRawSats = (bch: string): string =>
   `${parseFloat(bch) * ONE_HUNDRED_MILLION}`;
 
-export const convertRawAudToSats = (aud: string): string => {
-  const audBchPrice = store?.getState()?.exchangeRates?.audBchPrice;
-  const audSatPrice = ONE_HUNDRED_MILLION / parseFloat(audBchPrice);
-
-  const equivalentSats = Math.floor(parseFloat(aud) * audSatPrice);
+const convertRawValueToSats = (rawValue: string, exchangeRateKey: string) => {
+  const price = store?.getState()?.exchangeRates?.[exchangeRateKey];
+  const satPrice = ONE_HUNDRED_MILLION / parseFloat(price);
+  const equivalentSats = Math.floor(parseFloat(rawValue) * satPrice);
   return `${equivalentSats}`;
 };
 
-export const convertRawBtcToSats = (btc: string): string => {
-  const btcBchPrice = store?.getState()?.exchangeRates?.btcBchPrice;
-  const btcSatPrice = ONE_HUNDRED_MILLION / parseFloat(btcBchPrice);
+export const convertRawAudToSats = (aud: string): string =>
+  convertRawValueToSats(aud, "audBchPrice");
 
-  const equivalentSats = Math.floor(parseFloat(btc) * btcSatPrice);
-  return `${equivalentSats}`;
-};
+export const convertRawBtcToSats = (btc: string): string =>
+  convertRawValueToSats(btc, "btcBchPrice");
 
-export const convertRawEurToSats = (eur: string): string => {
-  const eurBchPrice = store?.getState()?.exchangeRates?.eurBchPrice;
-  const eurSatPrice = ONE_HUNDRED_MILLION / parseFloat(eurBchPrice);
+export const convertRawEurToSats = (eur: string): string =>
+  convertRawValueToSats(eur, "eurBchPrice");
 
-  const equivalentSats = Math.floor(parseFloat(eur) * eurSatPrice);
-  return `${equivalentSats}`;
-};
-
-export const convertRawUsdToSats = (usd: string): string => {
-  const usdBchPrice = store?.getState()?.exchangeRates?.usdBchPrice;
-  const usdSatPrice = ONE_HUNDRED_MILLION / parseFloat(usdBchPrice);
-  const equivalentSats = Math.floor(parseFloat(usd) * usdSatPrice);
-  return `${equivalentSats}`;
-};
+export const convertRawUsdToSats = (usd: string): string =>
+  convertRawValueToSats(usd, "usdBchPrice");
 
 // Sats in
 export const convertRawSatsToRawBits = (sats: string): string =>
