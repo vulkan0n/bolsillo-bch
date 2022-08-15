@@ -29,12 +29,14 @@ export const convertRawAudToSats = (aud: string): string => {
   const audSatPrice = parseFloat(audBchPrice) / ONE_HUNDRED_MILLION;
 
   const equivalentSats = parseFloat(aud) * audSatPrice;
-  console.log({
-    aud,
-    audBchPrice,
-    audSatPrice,
-    equivalentSats,
-  });
+  return `${equivalentSats}`;
+};
+
+export const convertRawEurToSats = (eur: string): string => {
+  const eurBchPrice = store?.getState()?.exchangeRates?.eurBchPrice;
+  const eurSatPrice = parseFloat(eurBchPrice) / ONE_HUNDRED_MILLION;
+
+  const equivalentSats = parseFloat(eur) * eurSatPrice;
   return `${equivalentSats}`;
 };
 
@@ -54,6 +56,15 @@ export const convertRawSatsToRawAud = (sats: string): string => {
   );
   const equivalentAud =
     (parseFloat(sats) / ONE_HUNDRED_MILLION) * parseFloat(audBchPrice);
+  return `${equivalentAud}`;
+};
+
+export const convertRawSatsToRawEur = (sats: string): string => {
+  const { eurBchPrice } = useSelector(
+    (state: ReduxState) => state.exchangeRates
+  );
+  const equivalentAud =
+    (parseFloat(sats) / ONE_HUNDRED_MILLION) * parseFloat(eurBchPrice);
   return `${equivalentAud}`;
 };
 

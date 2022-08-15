@@ -2,13 +2,15 @@ import {
   convertRawBitsToRawSats,
   convertRawMbchToRawSats,
   convertRawBchToRawSats,
-  convertRawUsdToSats,
   convertRawAudToSats,
+  convertRawEurToSats,
+  convertRawUsdToSats,
   convertRawSatsToRawBits,
   convertRawSatsToRawMbch,
   convertRawSatsToRawBch,
-  convertRawSatsToRawUsd,
   convertRawSatsToRawAud,
+  convertRawSatsToRawEur,
+  convertRawSatsToRawUsd,
 } from "./exchangeRates";
 import { BitcoinDenominationTypes, SupportedCurrencyTypes } from "../types";
 import { MAIN_NET_PREFIX, TEST_NET_PREFIX } from "./consts";
@@ -48,9 +50,11 @@ export const allowedDecimalPlaces = (
   currency: BitcoinDenominationTypes | SupportedCurrencyTypes
 ): number => {
   switch (currency) {
-    case "usd":
-      return 2;
     case "aud":
+      return 2;
+    case "eur":
+      return 2;
+    case "usd":
       return 2;
     case "bitcoins":
       return 8;
@@ -116,9 +120,11 @@ const stripTrailingZeros = (
   currency: SupportedCurrencyTypes | BitcoinDenominationTypes
 ): string => {
   switch (currency) {
-    case "usd":
-      return rawCurrency;
     case "aud":
+      return rawCurrency;
+    case "eur":
+      return rawCurrency;
+    case "usd":
       return rawCurrency;
     case "bitcoins":
       return parseFloat(rawCurrency).toString();
@@ -146,10 +152,12 @@ export const prettifyRawCurrency = (
   const chunkedValue = chunkPreDecimalInto3s(roundedValue);
 
   switch (currency) {
-    case "usd":
-      return `USD $${chunkedValue}`;
     case "aud":
       return `AUD $${chunkedValue}`;
+    case "eur":
+      return `EUR €${chunkedValue}`;
+    case "usd":
+      return `USD $${chunkedValue}`;
     case "bitcoins":
       return `₿ ${chunkedValue} BCH`;
     case "millibits":
@@ -172,10 +180,12 @@ export const prettifyPadBalance = (
   const chunkedValue = chunkPreDecimalInto3s(value, true);
 
   switch (currency) {
-    case "usd":
-      return `USD $${chunkedValue}`;
     case "aud":
       return `AUD $${chunkedValue}`;
+    case "eur":
+      return `EUR €${chunkedValue}`;
+    case "usd":
+      return `USD $${chunkedValue}`;
     case "bitcoins":
       return `₿ ${chunkedValue} BCH`;
     case "millibits":
@@ -194,10 +204,12 @@ export const convertRawSatsToRawCurrency = (
   currency: SupportedCurrencyTypes | BitcoinDenominationTypes
 ): string => {
   switch (currency) {
-    case "usd":
-      return convertRawSatsToRawUsd(rawSats);
     case "aud":
       return convertRawSatsToRawAud(rawSats);
+    case "eur":
+      return convertRawSatsToRawEur(rawSats);
+    case "usd":
+      return convertRawSatsToRawUsd(rawSats);
     case "bitcoins":
       return convertRawSatsToRawBch(rawSats);
     case "millibits":
@@ -226,10 +238,12 @@ export const convertRawCurrencyToRawSats = (
   currency: SupportedCurrencyTypes | BitcoinDenominationTypes
 ): string => {
   switch (currency) {
-    case "usd":
-      return convertRawUsdToSats(rawCurrency);
     case "aud":
       return convertRawAudToSats(rawCurrency);
+    case "eur":
+      return convertRawEurToSats(rawCurrency);
+    case "usd":
+      return convertRawUsdToSats(rawCurrency);
     case "bitcoins":
       return convertRawBchToRawSats(rawCurrency);
     case "millibits":

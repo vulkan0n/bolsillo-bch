@@ -20,6 +20,10 @@ export const SUPPORTED_CURRENCIES: SupportedCurrency[] = [
     fullName: "Australian Dollar",
   },
   {
+    code: "eur",
+    fullName: "The Euro",
+  },
+  {
     code: "usd",
     fullName: "United States Dollar",
   },
