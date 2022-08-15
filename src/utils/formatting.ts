@@ -10,19 +10,8 @@ import {
   convertRawSatsToRawUsd,
   convertRawSatsToRawAud,
 } from "./exchangeRates";
-import { useSelector } from "react-redux";
-import {
-  BitcoinDenominationTypes,
-  ReduxState,
-  SupportedCurrencyTypes,
-} from "../types";
-import {
-  MAIN_NET_PREFIX,
-  TEST_NET_PREFIX,
-  ONE_HUNDRED,
-  ONE_HUNDRED_THOUSAND,
-  ONE_HUNDRED_MILLION,
-} from "./consts";
+import { BitcoinDenominationTypes, SupportedCurrencyTypes } from "../types";
+import { MAIN_NET_PREFIX, TEST_NET_PREFIX } from "./consts";
 
 // Note on how this file works
 // All values are passed between functions as strings

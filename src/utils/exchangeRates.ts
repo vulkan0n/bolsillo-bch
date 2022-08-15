@@ -7,30 +7,30 @@ import {
 } from "./consts";
 
 // Sats out
-export const convertRawBitsToRawSats = (rawBits: string): string =>
-  `${parseFloat(rawBits) * ONE_HUNDRED}`;
+export const convertRawBitsToRawSats = (bits: string): string =>
+  `${parseFloat(bits) * ONE_HUNDRED}`;
 
-export const convertRawMbchToRawSats = (rawMbch: string): string =>
-  `${parseFloat(rawMbch) * ONE_HUNDRED_THOUSAND}`;
+export const convertRawMbchToRawSats = (mbch: string): string =>
+  `${parseFloat(mbch) * ONE_HUNDRED_THOUSAND}`;
 
-export const convertRawBchToRawSats = (rawBch: string): string =>
-  `${parseFloat(rawBch) * ONE_HUNDRED_MILLION}`;
+export const convertRawBchToRawSats = (bch: string): string =>
+  `${parseFloat(bch) * ONE_HUNDRED_MILLION}`;
 
-export const convertRawUsdToSats = (rawUsd: string): string => {
+export const convertRawUsdToSats = (usd: string): string => {
   const { bchUsdPrice } = useSelector(
     (state: ReduxState) => state.exchangeRates
   );
   const satUsdPrice = parseFloat(bchUsdPrice) * ONE_HUNDRED_MILLION;
-  const equivalentSats = parseFloat(rawUsd) * satUsdPrice;
+  const equivalentSats = parseFloat(usd) * satUsdPrice;
   return `${equivalentSats}`;
 };
 
-export const convertRawAudToSats = (rawAud: string): string => {
+export const convertRawAudToSats = (aud: string): string => {
   const { bchAudPrice } = useSelector(
     (state: ReduxState) => state.exchangeRates
   );
   const satUsdPrice = parseFloat(bchAudPrice) * ONE_HUNDRED_MILLION;
-  const equivalentSats = parseFloat(rawAud) * satUsdPrice;
+  const equivalentSats = parseFloat(aud) * satUsdPrice;
   return `${equivalentSats}`;
 };
 
