@@ -9,7 +9,7 @@ import LiveBalance from "./LiveBalance";
 import { useSelector } from "react-redux";
 import { ReduxState } from "../../../../../types";
 
-const TransactionPad = () => {
+const TransactionPad = ({ navigation }) => {
   const { view } = useSelector((state: ReduxState) => state.transactionPad);
 
   const component = () => {
@@ -21,7 +21,7 @@ const TransactionPad = () => {
       case "NumPad":
         return <NumPad />;
       case "Confirm":
-        return <Confirm />;
+        return <Confirm navigation={navigation} />;
       case "":
         return <NumPad />;
       default:

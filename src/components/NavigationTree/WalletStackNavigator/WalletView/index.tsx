@@ -45,18 +45,18 @@ function WalletView({ navigation }) {
   }, [isTestNet]);
 
   // Transaction id set to non null means new transaction just completed
-  useEffect(() => {
-    if (!tempTxId) {
-      return;
-    }
+  // useEffect(() => {
+  //   if (!tempTxId) {
+  //     return;
+  //   }
 
-    console.log("sent tx id!!");
-    console.log({ tempTxId });
-    navigation.reset({
-      index: 0,
-      routes: [{ name: "Transaction Success" }],
-    });
-  }, [tempTxId]);
+  //   console.log("sent tx id!!");
+  //   console.log({ tempTxId });
+  //   navigation.reset({
+  //     index: 0,
+  //     routes: [{ name: "Transaction Success" }],
+  //   });
+  // }, [tempTxId]);
 
   if (isNoWallet) {
     return (
@@ -74,7 +74,7 @@ function WalletView({ navigation }) {
       />
 
       {isShowAvailableBalance && <AvailableBalance />}
-      <TransactionPad />
+      <TransactionPad navigation={navigation} />
     </View>
   );
 }

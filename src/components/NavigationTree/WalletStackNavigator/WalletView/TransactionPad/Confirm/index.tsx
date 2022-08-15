@@ -10,13 +10,10 @@ import {
   updateTransactionPadBalance,
 } from "../../../../../../redux/reducers/transactionPadReducer";
 import { ReduxState } from "../../../../../../types";
-import {
-  convertRawCurrencyToRawSats,
-  formatStringToCashAddress,
-} from "../../../../../../utils/formatting";
+import { convertRawCurrencyToRawSats } from "../../../../../../utils/formatting";
 import emit from "../../../../../../utils/emit";
 
-const SendPad = () => {
+const Confirm = ({ navigation }) => {
   const dispatch = useDispatch();
   const wallet = useSelector((state: ReduxState) =>
     state.walletManager?.wallets?.find(
@@ -64,6 +61,8 @@ const SendPad = () => {
         sendToAddress: "",
       })
     );
+
+    navigation.navigate("Transaction Success");
   };
 
   const onPressBack = () => {
@@ -99,4 +98,4 @@ const SendPad = () => {
   );
 };
 
-export default SendPad;
+export default Confirm;
