@@ -1,6 +1,4 @@
 import store from "../redux/store";
-import { useSelector } from "react-redux";
-import { ReduxState } from "../types";
 import {
   ONE_HUNDRED,
   ONE_HUNDRED_THOUSAND,
@@ -46,30 +44,23 @@ export const convertRawSatsToRawMbch = (sats: string): string =>
 export const convertRawSatsToRawBch = (sats: string): string =>
   `${parseFloat(sats) / ONE_HUNDRED_MILLION}`;
 
-export const convertRawSatsToRawAud = (sats: string): string => {
-  const audBchPrice = store?.getState()?.exchangeRates?.audBchPrice;
-  const equivalentAud =
-    (parseFloat(sats) / ONE_HUNDRED_MILLION) * parseFloat(audBchPrice);
-  return `${equivalentAud}`;
+export const convertRawSatsToRawValue = (
+  sats: string,
+  exchangeRateKey: string
+): string => {
+  const price = store?.getState()?.exchangeRates?.[exchangeRateKey];
+  const value = (parseFloat(sats) / ONE_HUNDRED_MILLION) * parseFloat(price);
+  return `${value}`;
 };
 
-export const convertRawSatsToRawBtc = (sats: string): string => {
-  const btcBchPrice = store?.getState()?.exchangeRates?.btcBchPrice;
-  const equivalentBtc =
-    (parseFloat(sats) / ONE_HUNDRED_MILLION) * parseFloat(btcBchPrice);
-  return `${equivalentBtc}`;
-};
+export const convertRawSatsToRawAud = (sats: string): string =>
+  convertRawSatsToRawValue(sats, "audBchPrice");
 
-export const convertRawSatsToRawEur = (sats: string): string => {
-  const eurBchPrice = store?.getState()?.exchangeRates?.eurBchPrice;
-  const equivalentEur =
-    (parseFloat(sats) / ONE_HUNDRED_MILLION) * parseFloat(eurBchPrice);
-  return `${equivalentEur}`;
-};
+export const convertRawSatsToRawBtc = (sats: string): string =>
+  convertRawSatsToRawValue(sats, "btcBchPrice");
 
-export const convertRawSatsToRawUsd = (sats: string): string => {
-  const usdBchPrice = store?.getState()?.exchangeRates?.usdBchPrice;
-  const equivalentUsd =
-    (parseFloat(sats) / ONE_HUNDRED_MILLION) * parseFloat(usdBchPrice);
-  return `${equivalentUsd}`;
-};
+export const convertRawSatsToRawEur = (sats: string): string =>
+  convertRawSatsToRawValue(sats, "eurBchPrice");
+
+export const convertRawSatsToRawUsd = (sats: string): string =>
+  convertRawSatsToRawValue(sats, "usdBchPrice");
