@@ -96,7 +96,7 @@ const NumPad = () => {
 
     dispatch(
       updateTransactionPadBalance({
-        padBalance: padBalance === "0" ? n : padBalance + n,
+        padBalance: padBalance === "0" && n !== "." ? n : padBalance + n,
       })
     );
   };
