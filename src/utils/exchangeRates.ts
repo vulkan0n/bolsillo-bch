@@ -1,3 +1,4 @@
+import store from "../redux/store";
 import { useSelector } from "react-redux";
 import { ReduxState } from "../types";
 import {
@@ -17,18 +18,14 @@ export const convertRawBchToRawSats = (bch: string): string =>
   `${parseFloat(bch) * ONE_HUNDRED_MILLION}`;
 
 export const convertRawUsdToSats = (usd: string): string => {
-  const { bchUsdPrice } = useSelector(
-    (state: ReduxState) => state.exchangeRates
-  );
+  const bchUsdPrice = store?.getState()?.exchangeRates?.bchUsdPrice;
   const satUsdPrice = parseFloat(bchUsdPrice) * ONE_HUNDRED_MILLION;
   const equivalentSats = parseFloat(usd) * satUsdPrice;
   return `${equivalentSats}`;
 };
 
 export const convertRawAudToSats = (aud: string): string => {
-  const { bchAudPrice } = useSelector(
-    (state: ReduxState) => state.exchangeRates
-  );
+  const bchAudPrice = store?.getState()?.exchangeRates?.bchAudPrice;
   const satUsdPrice = parseFloat(bchAudPrice) * ONE_HUNDRED_MILLION;
   const equivalentSats = parseFloat(aud) * satUsdPrice;
   return `${equivalentSats}`;
