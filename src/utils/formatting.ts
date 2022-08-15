@@ -1,5 +1,11 @@
 import {
+  convertRawBitsToRawSats,
+  convertRawMbchToRawSats,
+  convertRawBchToRawSats,
   convertRawUsdToSats,
+  convertRawAudToSats,
+  convertRawSatsToRawBits,
+  convertRawSatsToRawMbch,
   convertRawSatsToRawBch,
   convertRawSatsToRawUsd,
   convertRawSatsToRawAud,
@@ -8,7 +14,7 @@ import { useSelector } from "react-redux";
 import {
   BitcoinDenominationTypes,
   ReduxState,
-  SupportedCurrency,
+  SupportedCurrencyTypes,
 } from "../types";
 import {
   MAIN_NET_PREFIX,
@@ -78,12 +84,12 @@ export const chunkPreDecimalInto3s = (value: string): string => {
   return `${preDecimal}.${postDecimal}`;
 };
 
-export const prettifyRawCurrencyValue = (
-  value: string,
-  currency: string
+export const prettifyRawCurrency = (
+  rawCurrency: string,
+  currency: SupportedCurrencyTypes | BitcoinDenominationTypes
 ): string => {
-  const rawValue = value ?? "0";
-  const chunkedValue = chunkPreDecimalInto3s(rawValue);
+  const value = rawCurrency ?? "0";
+  const chunkedValue = chunkPreDecimalInto3s(value);
 
   switch (currency) {
     case "usd":
@@ -103,29 +109,9 @@ export const prettifyRawCurrencyValue = (
   }
 };
 
-export const convertPadBalanceToRawSats = (
-  padBalance: string,
-  currency: SupportedCurrency | BitcoinDenominationTypes
-): string => {
-  switch (currency) {
-    // case "usd":
-    //   return convertRawUsdToSats(`${parseFloat(padBalance)}`);
-    case "bitcoins":
-      return `${parseFloat(padBalance) * ONE_HUNDRED_MILLION}`;
-    case "millibits":
-      return `${parseFloat(padBalance) * ONE_HUNDRED_THOUSAND}`;
-    case "bits":
-      return `${parseFloat(padBalance) * ONE_HUNDRED}`;
-    case "satoshis":
-      return padBalance;
-    default:
-      return padBalance;
-  }
-};
-
 export const convertRawSatsToRawCurrency = (
   rawSats: string,
-  currency: SupportedCurrency | BitcoinDenominationTypes
+  currency: SupportedCurrencyTypes | BitcoinDenominationTypes
 ): string => {
   switch (currency) {
     case "usd":
@@ -135,9 +121,9 @@ export const convertRawSatsToRawCurrency = (
     case "bitcoins":
       return convertRawSatsToRawBch(rawSats);
     case "millibits":
-      return `${parseFloat(rawSats) / ONE_HUNDRED_THOUSAND}`;
+      return convertRawSatsToRawMbch(rawSats);
     case "bits":
-      return `${parseFloat(rawSats) / ONE_HUNDRED}`;
+      return convertRawSatsToRawBits(rawSats);
     case "satoshis":
       return rawSats;
     default:
@@ -145,22 +131,47 @@ export const convertRawSatsToRawCurrency = (
   }
 };
 
-export const satoshiBalanceToCurrencyDisplay = (
+export const rawSatsToCurrencyDisplay = (
   rawSats: string,
-  currency: SupportedCurrency | BitcoinDenominationTypes
+  currency: SupportedCurrencyTypes | BitcoinDenominationTypes
 ): string => {
-  const rawValue = convertRawSatsToRawCurrency(rawSats, currency);
-  const finalValue = prettifyRawCurrencyValue(rawValue, currency);
-  console.log({ rawValue, rawSats, currency, finalValue });
-  return finalValue;
+  return prettifyRawCurrency(
+    convertRawSatsToRawCurrency(rawSats, currency),
+    currency
+  );
 };
 
-export const bchPadBalanceToBchDisplay = (
+export const convertRawCurrencyToRawSats = (
+  rawCurrency: string,
+  currency: SupportedCurrencyTypes | BitcoinDenominationTypes
+): string => {
+  switch (currency) {
+    case "usd":
+      return convertRawUsdToSats(rawCurrency);
+    case "aud":
+      return convertRawAudToSats(rawCurrency);
+    case "bitcoins":
+      return convertRawBchToRawSats(rawCurrency);
+    case "millibits":
+      return convertRawMbchToRawSats(rawCurrency);
+    case "bits":
+      return convertRawBitsToRawSats(rawCurrency);
+    case "satoshis":
+      return rawCurrency;
+    default:
+      return rawCurrency;
+  }
+};
+
+export const padBalanceToDisplay = (
   padBalance: string,
-  bitcoinDenomination: BitcoinDenominationTypes
+  inputCurrency: SupportedCurrencyTypes | BitcoinDenominationTypes,
+  outputCurrency: SupportedCurrencyTypes | BitcoinDenominationTypes
 ) => {
-  const rawSats = convertPadBalanceToRawSats(padBalance, bitcoinDenomination);
-  return satoshiBalanceToCurrencyDisplay(rawSats, bitcoinDenomination);
+  const rawCurrency = `${parseFloat(padBalance)}`;
+  console.log({ rawCurrency });
+  const rawSats = convertRawCurrencyToRawSats(rawCurrency, inputCurrency);
+  return rawSatsToCurrencyDisplay(rawSats, outputCurrency);
 };
 
 export const displayUsd = (value: string): string => {
@@ -170,7 +181,7 @@ export const displayUsd = (value: string): string => {
 
   // 2 decimal places, rounding down
   const decimalised = (Math.floor(parseFloat(value) * 100) / 100).toFixed(2);
-  return prettifyRawCurrencyValue(decimalised.toString(), "usd");
+  return prettifyRawCurrency(decimalised.toString(), "usd");
 };
 
 export const displaySats = (sats: string): string => {
@@ -183,26 +194,6 @@ export const displaySats = (sats: string): string => {
   const spacedChunks = chunkRight(floatSats.toString()).join(" ");
 
   return `₿ ${spacedChunks} sats`;
-};
-
-export const displaySatsInDenomination = (
-  sats: string,
-  denomination: string
-): string => {
-  switch (denomination) {
-    case "bitcoins":
-      const bitcoinRawValue = `${parseFloat(sats) / ONE_HUNDRED_MILLION}`;
-      return prettifyRawCurrencyValue(bitcoinRawValue, "bitcoins");
-    case "millibits":
-      const millibitsRawValue = `${parseFloat(sats) / ONE_HUNDRED_THOUSAND}`;
-      return prettifyRawCurrencyValue(millibitsRawValue, "millibits");
-    case "bits":
-      return `₿ ${parseFloat(sats) / ONE_HUNDRED} bits`;
-    case "satoshis":
-      return prettifyRawCurrencyValue(sats, "satoshis");
-    default:
-      return displaySats(sats);
-  }
 };
 
 export const displaySatsAsUsd = (sats: string): string => {

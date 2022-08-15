@@ -3,7 +3,7 @@ import { View, Text } from "react-native";
 import styles from "./styles";
 import TYPOGRAPHY from "../../../../../../design/typography";
 import {
-  bchPadBalanceToBchDisplay,
+  padBalanceToDisplay,
   displaySatsAsUsd,
 } from "../../../../../../utils/formatting";
 import { useDispatch, useSelector } from "react-redux";
@@ -26,7 +26,7 @@ const DisplayedBalance = () => {
     (state: ReduxState) => state.settings
   );
 
-  const bchBalance = bchPadBalanceToBchDisplay(padBalance, bitcoinDenomination);
+  const bchBalance = padBalanceToDisplay(padBalance, bitcoinDenomination);
 
   const usdBalance = displaySatsAsUsd(padBalance);
 
