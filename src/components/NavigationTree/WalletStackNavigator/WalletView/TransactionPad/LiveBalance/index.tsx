@@ -7,7 +7,6 @@ import {
   prettifyPadBalance,
 } from "../../../../../../utils/formatting";
 import { useDispatch, useSelector } from "react-redux";
-import { updateTransactionPadError } from "../../../../../../redux/reducers/transactionPadReducer";
 import { ReduxState } from "../../../../../../types";
 
 const DisplayedBalance = () => {
@@ -50,21 +49,6 @@ const DisplayedBalance = () => {
   const secondaryBalance = isBchDenominated
     ? secondaryContrastBalance
     : secondaryBchBalance;
-
-  console.log({
-    contrastBalance,
-    padBalance,
-    inputCurrency,
-    contrastCurrency,
-  });
-
-  useEffect(() => {
-    dispatch(
-      updateTransactionPadError({
-        error: "",
-      })
-    );
-  }, [padBalance]);
 
   return (
     <View style={styles.secondaryTitlesWrapper}>

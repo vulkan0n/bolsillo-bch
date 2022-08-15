@@ -41,9 +41,16 @@ const NumPad = () => {
 
   const availableRawSats = wallet?.balance;
   const isSendDisabled = padBalance === "0";
-  const isHideDecimal = bitcoinDenomination === "satoshis";
+  const isHideDecimal =
+    padBalance.includes(".") || bitcoinDenomination === "satoshis";
 
   const onPress = (n) => {
+    dispatch(
+      updateTransactionPadError({
+        error: "",
+      })
+    );
+
     if (n === "<") {
       if (padBalance?.length > 1) {
         const newBalance = padBalance?.slice(0, padBalance?.length - 1);
