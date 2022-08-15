@@ -70,19 +70,19 @@ const Bridge = () => {
             message?.data?.derivationPath
           );
 
-          const balance = await walletRequestBalance.getBalance();
+          const balance = await walletRequestBalance.getBalance("sat");
 
           const cancelWatch = walletRequestBalance.watchBalance(
             async (newBalance) => {
               // newBalance hasn't registered the included new transaction
               // So need to grab balance again
-              const freshBalance = await walletRequestBalance.getBalance();
+              const freshBalance = await walletRequestBalance.getBalance("sat");
 
               emit({
                 type: RESPONSE_MESSAGE_TYPES.RECEIVED_COINS,
                 data: {
                   name: message?.data?.name,
-                  balance: freshBalance?.sat,
+                  balance: freshBalance,
                 },
               });
             }
