@@ -97,7 +97,7 @@ const Bridge = () => {
             type: RESPONSE_MESSAGE_TYPES.REQUEST_BALANCE_AND_ADDRESS_RESPONSE,
             data: {
               name: message?.data?.name,
-              balance: balance?.sat.toString(),
+              balance: balance,
               cashaddr: walletRequestBalance?.cashaddr,
             },
           });
@@ -114,6 +114,9 @@ const Bridge = () => {
               cashaddr: message?.data?.recipientCashAddr,
               value: parseInt(message?.data?.satsToSend),
               unit: "sat",
+            },
+            {
+              feePaidBy: "changeThenAny",
             },
           ]);
           console.log("sent coins!");
