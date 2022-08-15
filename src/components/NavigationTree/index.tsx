@@ -89,7 +89,7 @@ const NavigationTree = () => {
               </View>
             ),
           }}
-        />
+        />*/}
         <Tab.Screen
           name="Online"
           component={OnlineDrawerNavigator}
@@ -109,7 +109,7 @@ const NavigationTree = () => {
               </View>
             ),
           }}
-        /> */}
+        />
         <Tab.Screen
           name="Tools"
           component={ToolsDrawerNavigator}

@@ -4,7 +4,7 @@ import SPACING from "../../../../design/spacing";
 const styles = {
   container: {
     backgroundColor: COLOURS.black,
-    padding: SPACING.ten,
+    padding: SPACING.fifteen,
     flex: 1,
     justifyContent: "center",
     alignItems: "center",

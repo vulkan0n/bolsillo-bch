@@ -8,8 +8,8 @@ function OnlineDrawerNavigator() {
   return (
     <DrawerNavigator>
       <Drawer.Screen name="Community" component={OnlineView} />
-      <Drawer.Screen name="Reddit" component={OnlineView} />
-      <Drawer.Screen name="Twitter" component={OnlineView} />
+      {/* <Drawer.Screen name="Reddit" component={OnlineView} />
+      <Drawer.Screen name="Twitter" component={OnlineView} /> */}
     </DrawerNavigator>
   );
 }
