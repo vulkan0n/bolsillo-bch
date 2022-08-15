@@ -31,3 +31,11 @@ export interface EmitEvent {
   type: string;
   data: {};
 }
+
+export type BitcoinDenominationTypes =
+  | "bitcoins"
+  | "millibits"
+  | "bits"
+  | "satoshis";
+
+export type SupportedCurrencyTypes = "usd" | "aud";

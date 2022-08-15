@@ -1,9 +1,11 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { PURGE } from "redux-persist";
+import { BitcoinDenominationTypes, SupportedCurrencyTypes } from "../../types";
 
 export interface SettingsState {
   isBchDenominated: boolean;
-  bitcoinDenomination: "bitcoins" | "millibits" | "bits" | "satoshis";
+  contrastCurrency: SupportedCurrencyTypes;
+  bitcoinDenomination: BitcoinDenominationTypes;
   isRightHandedMode: boolean;
   isShowAvailableBalance: boolean;
   isTestNet: boolean;
@@ -11,6 +13,7 @@ export interface SettingsState {
 
 const initialState = {
   isBchDenominated: true,
+  contrastCurrency: "usd",
   bitcoinDenomination: "satoshis",
   isRightHandedMode: true,
   isShowAvailableBalance: true,
@@ -23,6 +26,9 @@ const settingsSlice = createSlice({
   reducers: {
     toggleIsBchDenominated(state) {
       state.isBchDenominated = !state.isBchDenominated;
+    },
+    updateContrastCurrency(state, action) {
+      state.contrastCurrency = action.payload.contrastCurrency;
     },
     updateBitcoinDenomination(state, action) {
       state.bitcoinDenomination = action.payload.bitcoinDenomination;
@@ -44,6 +50,7 @@ const settingsSlice = createSlice({
 
 export const {
   toggleIsBchDenominated,
+  updateContrastCurrency,
   updateBitcoinDenomination,
   toggleIsRightHandedMode,
   toggleIsShowAvailableBalance,
