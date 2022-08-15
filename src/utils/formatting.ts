@@ -58,7 +58,23 @@ export const allowedDecimalPlaces = (
       return 2;
     case "btc":
       return 8;
+    case "cad":
+      return 2;
+    case "cny":
+      return 2;
+    case "eth":
+      return 8;
     case "eur":
+      return 2;
+    case "gbp":
+      return 2;
+    case "jpy":
+      return 0;
+    case "php":
+      return 2;
+    case "rub":
+      return 2;
+    case "thb":
       return 2;
     case "usd":
       return 2;
@@ -121,32 +137,6 @@ const roundDownToXDecimalPlaces = (input: string, x: number): string => {
   return fixedDecimals.toString();
 };
 
-const stripTrailingZeros = (
-  rawCurrency: string,
-  currency: SupportedCurrencyTypes | BitcoinDenominationTypes
-): string => {
-  switch (currency) {
-    case "aud":
-      return rawCurrency;
-    case "btc":
-      return rawCurrency;
-    case "eur":
-      return rawCurrency;
-    case "usd":
-      return rawCurrency;
-    case "bitcoins":
-      return parseFloat(rawCurrency).toString();
-    case "millibits":
-      return parseFloat(rawCurrency).toString();
-    case "bits":
-      return parseFloat(rawCurrency).toString();
-    case "satoshis":
-      return parseFloat(rawCurrency).toString();
-    default:
-      return parseFloat(rawCurrency).toString();
-  }
-};
-
 export const prettifyRawCurrency = (
   rawCurrency: string,
   currency: SupportedCurrencyTypes | BitcoinDenominationTypes
@@ -164,8 +154,24 @@ export const prettifyRawCurrency = (
       return `AUD $${chunkedValue}`;
     case "btc":
       return `₿ ${chunkedValue} BTC`;
+    case "cad":
+      return `CAD $${chunkedValue}`;
+    case "cny":
+      return `CNY ¥${chunkedValue}`;
+    case "eth":
+      return `ETH ${chunkedValue}`;
     case "eur":
       return `EUR €${chunkedValue}`;
+    case "gbp":
+      return `GBP £${chunkedValue}`;
+    case "jpy":
+      return `JPY ¥${chunkedValue}`;
+    case "php":
+      return `PHP ₱${chunkedValue}`;
+    case "rub":
+      return `RUB ₽${chunkedValue}`;
+    case "thb":
+      return `THB ฿${chunkedValue}`;
     case "usd":
       return `USD $${chunkedValue}`;
     case "bitcoins":
