@@ -3,9 +3,13 @@ import { View, Text } from "react-native";
 import COLOURS from "../../../../design/colours";
 import SPACING from "../../../../design/spacing";
 import TYPOGRAPHY from "../../../../design/typography";
+import { ONE_HUNDRED, TEN_MILLION } from "../../../../utils/consts";
 import styles from "./styles";
 
 function OnlineView({ navigation }) {
+  const activeBitcoiners = 1;
+  const missionPercentage = (ONE_HUNDRED / TEN_MILLION) * activeBitcoiners;
+
   return (
     <View style={styles.container as any}>
       <Text style={TYPOGRAPHY.h1 as any}>Welcome to the BCH community!</Text>
@@ -33,15 +37,17 @@ function OnlineView({ navigation }) {
             } as any
           }
         >
-          X Active Bitcoiners
+          {activeBitcoiners} Active Bitcoiners
         </Text>
-        <Text style={TYPOGRAPHY.pWhite as any}>0.00000X% of 10 000 000</Text>
+        <Text
+          style={TYPOGRAPHY.pWhite as any}
+        >{`${missionPercentage}% of 10 000 000`}</Text>
+        <Text style={TYPOGRAPHY.pWhiteUnderlined as any}>More stats</Text>
       </View>
       <Text style={TYPOGRAPHY.pWhite as any}>
         10 million daily active Bitcoiners will form a vibrant economy larger
         than many countries, and quickly snowball to the rest of the world.
       </Text>
-      <Text style={TYPOGRAPHY.pWhiteUnderlined as any}>More stats</Text>
       {/* <Text style={TYPOGRAPHY.pWhite as any}>Last week: X Bitcoiners</Text>
       <Text style={TYPOGRAPHY.pWhite as any}>Last month: X Bitcoiners</Text>
       <Text style={TYPOGRAPHY.pWhite as any}>Last year: X Bitcoiners</Text> */}

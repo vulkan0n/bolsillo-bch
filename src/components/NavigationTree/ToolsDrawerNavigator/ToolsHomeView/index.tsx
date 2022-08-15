@@ -14,9 +14,8 @@ const ToolsHomeView = () => {
         engineered to be simple but packed with immense power.
       </Text>
       <Text style={TYPOGRAPHY.pWhite as any}>
-        Explore the Tools section to learn more about Bitcoin Cash &
-        cryptocurrency, customize your wallet and backup your money in case of
-        disaster!
+        Explore the Tools section to customize your wallet and backup your money
+        in case of disaster!
       </Text>
     </View>
   );

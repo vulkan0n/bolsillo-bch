@@ -13,6 +13,9 @@ export const ONE_HUNDRED_MILLION: number = 100000000; // Sats per BCH
 export const ONE_HUNDRED_THOUSAND: number = 100000; // Sats per mBCH
 export const ONE_HUNDRED: number = 100; // Sats per bit
 
+// Other
+export const TEN_MILLION: number = 10000000; // Daily active users target
+
 // Organize alphabetically please!
 export const SUPPORTED_CURRENCIES: SupportedCurrency[] = [
   {
