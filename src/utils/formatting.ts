@@ -14,8 +14,10 @@ import {
 // satBalance is an integer number up to 10 digits
 // E.g. "100345" (satoshis)
 // rawValue is a decimalised representation of the currency
-// Decimals depend on the convention of the denomination/currency
-// I.e. USD = 2dp, bits = 2dp, bitcoins = 8dp
+// Decimal places depend on the convention of the denomination/currency
+// I.e. usd = 2dp, aud = 2dp
+// satoshis = 0dp, bits = 2dp,
+// milliibts = 5dp, bitcoins = 8dp
 // E.g. "1003.45" (bits)
 // chunkedValue is rawValue, but with pre-decimal amount
 // spaced in groups of 3
