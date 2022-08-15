@@ -78,6 +78,13 @@ const NumPad = () => {
     );
     const isInsufficientBalance =
       parseFloat(proposedBalanceInSats) > parseFloat(availableRawSats);
+
+    console.log({
+      padBalance,
+      availableRawSats,
+      proposedBalance,
+      proposedBalanceInSats,
+    });
     if (isInsufficientBalance) {
       dispatch(
         updateTransactionPadError({

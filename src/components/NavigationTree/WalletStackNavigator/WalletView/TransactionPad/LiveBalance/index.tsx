@@ -39,6 +39,13 @@ const DisplayedBalance = () => {
     contrastCurrency
   );
 
+  console.log({
+    contrastBalance,
+    padBalance,
+    inputCurrency,
+    contrastCurrency,
+  });
+
   useEffect(() => {
     dispatch(
       updateTransactionPadError({
