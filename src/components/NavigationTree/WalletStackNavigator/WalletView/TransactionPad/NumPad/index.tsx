@@ -46,7 +46,9 @@ const NumPad = () => {
   const availableRawSats = wallet?.balance;
   const isSendDisabled = padBalance === "0";
   const isDisableDecimal =
-    padBalance.includes(".") || bitcoinDenomination === "satoshis";
+    padBalance.includes(".") ||
+    (isBchDenominated && bitcoinDenomination === "satoshis");
+
   const inputCurrency = isBchDenominated
     ? bitcoinDenomination
     : contrastCurrency;
@@ -108,7 +110,6 @@ const NumPad = () => {
       return;
     }
 
- 
     if (checkInsufficientBalance(n, inputCurrency)) {
       dispatch(
         updateTransactionPadError({
