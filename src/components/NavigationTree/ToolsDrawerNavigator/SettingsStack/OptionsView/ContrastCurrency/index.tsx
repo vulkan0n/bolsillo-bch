@@ -6,7 +6,7 @@ import { useSelector } from "react-redux";
 import { ReduxState } from "../../../../../../types";
 
 const ContrastCurrency = ({ navigation }) => {
-  const { bitcoinDenomination } = useSelector(
+  const { contrastCurrency } = useSelector(
     (state: ReduxState) => state.settings
   );
   const { isRightHandedMode } = useSelector(
@@ -14,30 +14,32 @@ const ContrastCurrency = ({ navigation }) => {
   );
 
   const onPressBitcoinDenomination = () => {
-    navigation.navigate("Denomination");
+    navigation.navigate("Contrast Currency");
   };
 
-  const BitcoinDenominationIndicator = (
+  const ContrastCurrencyDisplay = (
     <View style={styles.control as any}>
-      <Text style={TYPOGRAPHY.pWhite as any}>{bitcoinDenomination}</Text>
+      <Text style={TYPOGRAPHY.pWhite as any}>{contrastCurrency}</Text>
     </View>
   );
+
+  console.log({ contrastCurrency });
 
   return (
     <Pressable
       onPress={onPressBitcoinDenomination}
       style={styles.optionRow as any}
     >
-      {!isRightHandedMode && BitcoinDenominationIndicator}
+      {!isRightHandedMode && ContrastCurrencyDisplay}
       <View style={{ width: 250 }}>
-        <Text style={TYPOGRAPHY.h2Left as any}>Bitcoin Denomination</Text>
-        {bitcoinDenomination && (
+        <Text style={TYPOGRAPHY.h2Left as any}>Contrast Currency</Text>
+        {contrastCurrency && (
           <Text style={TYPOGRAPHY.pWhiteLeft as any}>
-            Display BCH amounts in {bitcoinDenomination}.
+            Display comparison prices in {contrastCurrency}.
           </Text>
         )}
       </View>
-      {isRightHandedMode && BitcoinDenominationIndicator}
+      {isRightHandedMode && ContrastCurrencyDisplay}
     </Pressable>
   );
 };

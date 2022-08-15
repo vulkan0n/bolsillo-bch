@@ -26,7 +26,7 @@ const OptionsView = ({ navigation }) => {
         <TestNet />
         <Divider />
         <Text style={TYPOGRAPHY.pWhite as any}>
-          Fiat price data retrieved from CoinGecko.
+          Price data retrieved from CoinGecko.
         </Text>
         <Pressable onPress={onPressReset}>
           <Text style={TYPOGRAPHY.pWhiteUnderlined as any}>Reset app</Text>
