@@ -81,17 +81,25 @@ function chunkRight(str, size = 3) {
   }
 }
 
-export const chunkPreDecimalInto3s = (value: string): string => {
+export const chunkPreDecimalInto3s = (
+  value: string,
+  isPreserveTrailingDigits: boolean = false
+): string => {
   // Split pre-decimal number into chunks of 3, starting from right
+  const isDot = value.includes(".");
   const splitString = value.split(".");
   const preDecimal = chunkRight(splitString?.[0]).join(" ");
   const postDecimal = splitString?.[1];
 
-  if (!postDecimal) {
+  if (!postDecimal && !isPreserveTrailingDigits) {
     return `${preDecimal}`;
   }
 
-  return `${preDecimal}.${postDecimal}`;
+  // Allow "0" to be shown
+  const postDecimalDisplay = postDecimal === undefined ? "" : postDecimal;
+  const dotDisplay = isDot ? "." : "";
+
+  return `${preDecimal}${dotDisplay}${postDecimalDisplay}`;
 };
 
 const roundDownToXDecimalPlaces = (input: string, x: number): string => {
@@ -136,6 +144,32 @@ export const prettifyRawCurrency = (
     allowedDecimalPlaces(currency)
   );
   const chunkedValue = chunkPreDecimalInto3s(roundedValue);
+
+  switch (currency) {
+    case "usd":
+      return `USD $${chunkedValue}`;
+    case "aud":
+      return `AUD $${chunkedValue}`;
+    case "bitcoins":
+      return `₿ ${chunkedValue} BCH`;
+    case "millibits":
+      return `₿ ${chunkedValue} mBCH`;
+    case "bits":
+      return `₿ ${chunkedValue} bits`;
+    case "satoshis":
+      return `₿ ${chunkedValue} sats`;
+    default:
+      return chunkedValue;
+  }
+};
+
+export const prettifyPadBalance = (
+  padBalance: string,
+  currency: SupportedCurrencyTypes | BitcoinDenominationTypes
+): string => {
+  const value = padBalance ?? "0";
+
+  const chunkedValue = chunkPreDecimalInto3s(value, true);
 
   switch (currency) {
     case "usd":
