@@ -19,6 +19,7 @@ import {
   allowedDecimalPlaces,
   convertRawCurrencyToRawSats,
 } from "../../../../../../utils/formatting";
+import { countDecimalPlaces } from "../../../../../../utils/utils";
 
 const NumPad = () => {
   const dispatch = useDispatch();
@@ -30,18 +31,12 @@ const NumPad = () => {
   const { padBalance } = useSelector(
     (state: ReduxState) => state.transactionPad
   );
-  const { bitcoinDenomination } = useSelector(
-    (state: ReduxState) => state.settings
-  );
-  const { contrastCurrency } = useSelector(
-    (state: ReduxState) => state.settings
-  );
-  const { isBchDenominated } = useSelector(
-    (state: ReduxState) => state.settings
-  );
-  const { isRightHandedMode } = useSelector(
-    (state: ReduxState) => state.settings
-  );
+  const {
+    bitcoinDenomination,
+    contrastCurrency,
+    isBchDenominated,
+    isRightHandedMode,
+  } = useSelector((state: ReduxState) => state.settings);
 
   const availableRawSats = wallet?.balance;
   const isSendDisabled = padBalance === "0";
@@ -64,6 +59,9 @@ const NumPad = () => {
     );
     return parseFloat(proposedBalanceInSats) > parseFloat(availableRawSats);
   };
+
+  const isMaxDecimals =
+    countDecimalPlaces(padBalance) + 1 > allowedDecimalPlaces(inputCurrency);
 
   const onPress = (n) => {
     dispatch(
@@ -100,8 +98,7 @@ const NumPad = () => {
       return;
     }
 
-    const decimalPlaces = padBalance.split(".")?.[1]?.length || 0;
-    if (decimalPlaces + 1 > allowedDecimalPlaces(inputCurrency)) {
+    if (isMaxDecimals) {
       dispatch(
         updateTransactionPadError({
           error: TRANSACTION_PAD_ERRORS.MAXIMUM_DECIMAL_PLACES,
@@ -193,48 +190,66 @@ const NumPad = () => {
         <View style={styles.numPadRow as any}>
           <InputButton
             n={"1"}
-            isDisabled={checkInsufficientBalance("1", inputCurrency)}
+            isDisabled={
+              isMaxDecimals || checkInsufficientBalance("1", inputCurrency)
+            }
           />
           <InputButton
             n={"2"}
-            isDisabled={checkInsufficientBalance("2", inputCurrency)}
+            isDisabled={
+              isMaxDecimals || checkInsufficientBalance("2", inputCurrency)
+            }
           />
           <InputButton
             n={"3"}
-            isDisabled={checkInsufficientBalance("3", inputCurrency)}
+            isDisabled={
+              isMaxDecimals || checkInsufficientBalance("3", inputCurrency)
+            }
           />
         </View>
         <View style={styles.numPadRow as any}>
           <InputButton
             n={"4"}
-            isDisabled={checkInsufficientBalance("4", inputCurrency)}
+            isDisabled={
+              isMaxDecimals || checkInsufficientBalance("4", inputCurrency)
+            }
           />
           <InputButton
             n={"5"}
-            isDisabled={checkInsufficientBalance("5", inputCurrency)}
+            isDisabled={
+              isMaxDecimals || checkInsufficientBalance("5", inputCurrency)
+            }
           />
           <InputButton
             n={"6"}
-            isDisabled={checkInsufficientBalance("6", inputCurrency)}
+            isDisabled={
+              isMaxDecimals || checkInsufficientBalance("6", inputCurrency)
+            }
           />
         </View>
         <View style={styles.numPadRow as any}>
           <InputButton
             n={"7"}
-            isDisabled={checkInsufficientBalance("7", inputCurrency)}
+            isDisabled={
+              isMaxDecimals || checkInsufficientBalance("7", inputCurrency)
+            }
           />
           <InputButton
             n={"8"}
-            isDisabled={checkInsufficientBalance("8", inputCurrency)}
+            isDisabled={
+              isMaxDecimals || checkInsufficientBalance("8", inputCurrency)
+            }
           />
           <InputButton
             n={"9"}
-            isDisabled={checkInsufficientBalance("9", inputCurrency)}
+            isDisabled={
+              isMaxDecimals || checkInsufficientBalance("9", inputCurrency)
+            }
           />
         </View>
         <View style={styles.numPadRow as any}>
           <InputButton n={"<"} />
-          <InputButton n={"0"} />
+          <InputButton n={"0"} isDisabled={isMaxDecimals} />
           <InputButton n={"."} isDisabled={isDisableDecimal} />
         </View>
       </View>

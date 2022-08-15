@@ -9,3 +9,6 @@ export const isValidBchAddress = (
     !isTestNet && address?.includes(MAIN_NET_PREFIX);
   return isValidTestNetAddress || isValidMainNetAddress;
 };
+
+export const countDecimalPlaces = (input: string): number =>
+  input?.split(".")?.[1]?.length || 0;
