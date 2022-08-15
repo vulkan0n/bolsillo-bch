@@ -353,32 +353,6 @@ export const convertBalanceToDisplay = (
   return rawSatsToCurrencyDisplay(rawSats, outputCurrency);
 };
 
-export const displayUsd = (value: string): string => {
-  if (!value) {
-    return "USD $0.00";
-  }
-
-  // 2 decimal places, rounding down
-  const decimalised = (Math.floor(parseFloat(value) * 100) / 100).toFixed(2);
-  return prettifyRawCurrency(decimalised.toString(), "usd");
-};
-
-export const displaySats = (sats: string): string => {
-  if (!sats) {
-    return "₿ 0 sats";
-  }
-
-  const floatSats = parseFloat(sats);
-  // i.e. '1 000 120' not `1000120`
-  const spacedChunks = chunkRight(floatSats.toString()).join(" ");
-
-  return `₿ ${spacedChunks} sats`;
-};
-
-export const displaySatsAsUsd = (sats: string): string => {
-  return displayUsd(convertRawSatsToRawUsd(sats));
-};
-
 export const formatStringToCashAddress = (
   string: string,
   isTestNet: boolean = false

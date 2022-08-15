@@ -6,11 +6,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import COLOURS from "../../../../../../design/colours";
 import { ReduxState } from "../../../../../../types";
 import { faWallet } from "@fortawesome/free-solid-svg-icons";
-import {
-  convertBalanceToDisplay,
-  displaySats,
-  displaySatsAsUsd,
-} from "../../../../../../utils/formatting";
+import { convertBalanceToDisplay } from "../../../../../../utils/formatting";
 import {
   updateActiveWalletName,
   updateNavigatedWalletName,
