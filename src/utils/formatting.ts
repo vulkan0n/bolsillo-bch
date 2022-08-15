@@ -1,6 +1,6 @@
 import { convertSatsToUsd } from "./exchangeRates";
 import { useSelector } from "react-redux";
-import { ReduxState } from "../types";
+import { BitcoinDenominationTypes, ReduxState } from "../types";
 import {
   MAIN_NET_PREFIX,
   TEST_NET_PREFIX,
@@ -25,25 +25,50 @@ function chunkRight(str, size = 3) {
   }
 }
 
+export const chunkPreDecimalInto3s = (value: string): string => {
+  // Split pre-decimal number into chunks of 3, starting from right
+  const splitString = value.split(".");
+  const preDecimal = chunkRight(splitString?.[0]).join(" ");
+  const postDecimal = splitString?.[1];
+
+  if (!postDecimal) {
+    return `${preDecimal}`;
+  }
+
+  return `${preDecimal}.${postDecimal}`;
+};
+
+export const padBalanceToBchDisplay = (
+  padBalance: string,
+  bitcoinDenomination: BitcoinDenominationTypes
+): string => {
+  const finalValue = prettifyRawCurrencyValue(padBalance, bitcoinDenomination);
+  console.log({ padBalance, bitcoinDenomination, finalValue });
+  return finalValue;
+};
+
 export const prettifyRawCurrencyValue = (
   value: string,
   currency: string
 ): string => {
   const rawValue = value ?? "0";
+  const chunkedValue = chunkPreDecimalInto3s(rawValue);
 
   switch (currency) {
     case "usd":
-      return `USD $${rawValue}`;
+      return `USD $${chunkedValue}`;
+    case "aud":
+      return `AUD $${chunkedValue}`;
     case "bitcoins":
-      return `₿ ${rawValue} BCH`;
+      return `₿ ${chunkedValue} BCH`;
     case "millibits":
-      return `₿ ${rawValue} mBCH`;
+      return `₿ ${chunkedValue} mBCH`;
     case "bits":
-      return `₿ ${rawValue} bits`;
+      return `₿ ${chunkedValue} bits`;
     case "satoshis":
-      return `₿ ${rawValue} sats`;
+      return `₿ ${chunkedValue} sats`;
     default:
-      return value;
+      return chunkedValue;
   }
 };
 
@@ -68,14 +93,6 @@ export const displaySats = (sats: string): string => {
   const spacedChunks = chunkRight(floatSats.toString()).join(" ");
 
   return `₿ ${spacedChunks} sats`;
-};
-
-export const chunkPreDecimalInto3s = (value: string): string => {
-  // Split pre-decimal number into chunks of 3, starting from right
-  const splitString = value.split(".");
-  const preDecimal = chunkRight(splitString?.[0]);
-  const postDecimal = splitString?.[1];
-  return `${preDecimal}.${postDecimal}`;
 };
 
 export const displaySatsInDenomination = (

@@ -39,7 +39,6 @@ const BackgroundIntervals = () => {
     });
 
     const currentPrices = res?.data?.market_data?.current_price;
-    console.log({ currentPrices });
 
     const bchUsdPrice = currentPrices?.usd;
     const bchAudPrice = currentPrices?.aud;
@@ -53,7 +52,7 @@ const BackgroundIntervals = () => {
   };
 
   const ping = () => {
-    console.log("ping!");
+    // console.log("ping!");
     fetchActiveWalletBalance();
     fetchPriceData();
   };

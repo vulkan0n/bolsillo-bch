@@ -3,7 +3,7 @@ import { View, Text, Pressable } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import TYPOGRAPHY from "../../../../../design/typography";
 import styles from "../styles";
-import { displaySats, displaySatsAsBits, displaySatsAsUsd, displaySatsInDenomination } from "../../../../../utils/formatting";
+import { displaySatsAsUsd, padBalanceToBchDisplay } from "../../../../../utils/formatting";
 import { ReduxState } from "../../../../../types";
 import { toggleIsShowAvailableBalance } from "../../../../../redux/reducers/settingsReducer";
 
@@ -36,7 +36,7 @@ function AvailableBalance() {
     setIsDisplayHideNotice(false);
   };
 
-  const satBalance = displaySatsInDenomination(wallet?.balance, bitcoinDenomination)
+  const bchBalance = padBalanceToBchDisplay(wallet?.balance, bitcoinDenomination);
   const usdBalance = displaySatsAsUsd(wallet?.balance);
 
   if (isDisplayHideNotice) {
@@ -57,10 +57,10 @@ function AvailableBalance() {
       <Text style={TYPOGRAPHY.pWhite as any}>Available Balance</Text>
       <View style={styles.primaryTitlesWrapper}>
         <Text style={TYPOGRAPHY.h1 as any}>
-          {isBchDenominated ? satBalance : usdBalance}
+          {isBchDenominated ? bchBalance : usdBalance}
         </Text>
         <Text style={TYPOGRAPHY.h2 as any}>
-          {isBchDenominated ? usdBalance : satBalance}
+          {isBchDenominated ? usdBalance : bchBalance}
         </Text>
       </View>
     </Pressable>

@@ -3,7 +3,7 @@ import { View, Text } from "react-native";
 import styles from "./styles";
 import TYPOGRAPHY from "../../../../../../design/typography";
 import {
-  displaySats,
+  padBalanceToBchDisplay,
   displaySatsAsUsd,
 } from "../../../../../../utils/formatting";
 import { useDispatch, useSelector } from "react-redux";
@@ -19,7 +19,15 @@ const DisplayedBalance = () => {
   const { isBchDenominated } = useSelector(
     (state: ReduxState) => state.settings
   );
-  const satBalance = displaySats(padBalance);
+  const { bitcoinDenomination } = useSelector(
+    (state: ReduxState) => state.settings
+  );
+  const { contrastCurrency } = useSelector(
+    (state: ReduxState) => state.settings
+  );
+
+  const bchBalance = "XX"; // padBalanceToBchDisplay(padBalance, bitcoinDenomination);
+
   const usdBalance = displaySatsAsUsd(padBalance);
 
   useEffect(() => {
@@ -33,10 +41,10 @@ const DisplayedBalance = () => {
   return (
     <View style={styles.secondaryTitlesWrapper}>
       <Text style={TYPOGRAPHY.h1black as any}>
-        {isBchDenominated ? satBalance : usdBalance}
+        {isBchDenominated ? bchBalance : usdBalance}
       </Text>
       <Text style={TYPOGRAPHY.h2black as any}>
-        {isBchDenominated ? usdBalance : satBalance}
+        {isBchDenominated ? usdBalance : bchBalance}
       </Text>
       {!!error && <Text style={styles.padError as any}>{error}</Text>}
     </View>
