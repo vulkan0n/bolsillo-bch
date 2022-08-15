@@ -3,18 +3,21 @@ import { PURGE } from "redux-persist";
 
 export interface ExchangeRatesState {
   bchUsdPrice: string;
+  bchAudPrice: string;
 }
 
 const initialState = {
   bchUsdPrice: "0.00",
+  bchAudPrice: "0.00",
 } as ExchangeRatesState;
 
 const exchangeRatesSlice = createSlice({
   name: "exchangeRates",
   initialState,
   reducers: {
-    updateBchUsdPrice(state, action) {
+    updateBchPrices(state, action) {
       state.bchUsdPrice = action.payload.bchUsdPrice;
+      state.bchAudPrice = action.payload.bchAudPrice;
     },
   },
   extraReducers: (builder) => {
@@ -22,5 +25,5 @@ const exchangeRatesSlice = createSlice({
   },
 });
 
-export const { updateBchUsdPrice } = exchangeRatesSlice.actions;
+export const { updateBchPrices } = exchangeRatesSlice.actions;
 export default exchangeRatesSlice.reducer;

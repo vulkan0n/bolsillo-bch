@@ -6,7 +6,7 @@ import { BRIDGE_MESSAGE_TYPES } from "../../utils/bridgeMessages";
 import { THIRTY_SECONDS } from "../../utils/consts";
 import emit from "../../utils/emit";
 import axios from "axios";
-import { updateBchUsdPrice } from "../../redux/reducers/exchangeRatesReducer";
+import { updateBchPrices } from "../../redux/reducers/exchangeRatesReducer";
 
 const BackgroundIntervals = () => {
   const dispatch = useDispatch();
@@ -38,17 +38,22 @@ const BackgroundIntervals = () => {
       url: `${coingeckoUrl}/api/v3/coins/bitcoin-cash`,
     });
 
-    const bchUsdPrice = res?.data?.market_data?.current_price?.usd;
+    const currentPrices = res?.data?.market_data?.current_price;
+    console.log({ currentPrices });
+
+    const bchUsdPrice = currentPrices?.usd;
+    const bchAudPrice = currentPrices?.aud;
 
     dispatch(
-      updateBchUsdPrice({
+      updateBchPrices({
         bchUsdPrice,
+        bchAudPrice,
       })
     );
   };
 
   const ping = () => {
-    // console.log("ping!");
+    console.log("ping!");
     fetchActiveWalletBalance();
     fetchPriceData();
   };
