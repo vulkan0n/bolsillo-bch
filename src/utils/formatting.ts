@@ -44,6 +44,26 @@ import { MAIN_NET_PREFIX, TEST_NET_PREFIX } from "./consts";
 // prefix and suffix
 // E.g. "₿ 100 345.10 bits"
 
+const allowedDecimalPlaces = (
+  currency: BitcoinDenominationTypes | SupportedCurrencyTypes
+): number => {
+    switch (currency) {
+    case "usd":
+      return 2;
+    case "aud":
+      return 2;
+    case "bitcoins":
+      return 8;
+    case "millibits":
+      return 5;
+    case "bits":
+      return 2;
+    case "satoshis":
+      return 0;
+    default:
+      return 2;
+};
+
 // Split string into groups of 3 characters, starting from right side
 // https://stackoverflow.com/a/63716019
 function chunkRight(str, size = 3) {
