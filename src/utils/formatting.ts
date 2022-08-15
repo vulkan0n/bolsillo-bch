@@ -11,20 +11,34 @@ import {
 
 // Note on how this file works
 // All values are passed between functions as strings
-// satBalance is an integer number up to 10 digits
-// E.g. "100345" (satoshis)
-// rawValue is a decimalised representation of the currency
+
 // Decimal places depend on the convention of the denomination/currency
 // I.e. usd = 2dp, aud = 2dp
 // satoshis = 0dp, bits = 2dp,
 // milliibts = 5dp, bitcoins = 8dp
-// E.g. "1003.45" (bits)
+
+// padBalance is the string the user has typed into the NumPad
+// It may or may not have a decimal place, and may or may not have
+// trailing values if so
+// The user expectation of what denomination or currency they are
+// typing in and how many decimals it can have also varies
+// according to their setting
+// E.g. "100345.1" (bits)
+
+// satBalance is an integer-style string with no max length
+// (There are 21 quadrillion satoshis possible on the BCH blockchain)
+// E.g. "10034510" (satoshis)
+
+// rawValue is a correctly decimalised representation of the currency
+// E.g. "100345.10" (bits)
+
 // chunkedValue is rawValue, but with pre-decimal amount
 // spaced in groups of 3
-// E.g. "1 003.45" (bits)
+// E.g. "100 345.10" (bits)
+
 // prettyValue is chunkedValue, but wrapped with currency symbol
 // prefix and suffix
-// E.g. "₿ 1 003.45 bits"
+// E.g. "₿ 100 345.10 bits"
 
 // Split string into groups of 3 characters, starting from right side
 // https://stackoverflow.com/a/63716019
@@ -80,6 +94,24 @@ export const prettifyRawCurrencyValue = (
   }
 };
 
+export const convertDenominatedPadBalanceToRawSatoshis = (
+  padBalance: string,
+  bitcoinDenomination: BitcoinDenominationTypes
+): string => {
+  switch (bitcoinDenomination) {
+    case "bitcoins":
+      return `${parseFloat(padBalance) * ONE_HUNDRED_MILLION}`;
+    case "millibits":
+      return `${parseFloat(padBalance) * ONE_HUNDRED_THOUSAND}`;
+    case "bits":
+      return `${parseFloat(padBalance) * ONE_HUNDRED}`;
+    case "satoshis":
+      return padBalance;
+    default:
+      return padBalance;
+  }
+};
+
 export const convertSatBalanceToRawDenomination = (
   satBalance: string,
   bitcoinDenomination: BitcoinDenominationTypes
@@ -109,6 +141,17 @@ export const satoshiBalanceToBchDisplay = (
   const finalValue = prettifyRawCurrencyValue(rawValue, bitcoinDenomination);
   console.log({ rawValue, satBalance, bitcoinDenomination, finalValue });
   return finalValue;
+};
+
+export const bchPadBalanceToBchDisplay = (
+  padBalance: string,
+  bitcoinDenomination: BitcoinDenominationTypes
+) => {
+  const satBalance = convertDenominatedPadBalanceToRawSatoshis(
+    padBalance,
+    bitcoinDenomination
+  );
+  return satoshiBalanceToBchDisplay(satBalance, bitcoinDenomination);
 };
 
 export const displayUsd = (value: string): string => {

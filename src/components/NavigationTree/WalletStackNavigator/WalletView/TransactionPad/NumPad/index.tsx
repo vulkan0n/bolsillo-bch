@@ -22,7 +22,7 @@ const NumPad = () => {
   const { padBalance } = useSelector(
     (state: ReduxState) => state.transactionPad
   );
-  const { isBchDenominated } = useSelector(
+  const { bitcoinDenomination } = useSelector(
     (state: ReduxState) => state.settings
   );
   const { isRightHandedMode } = useSelector(
@@ -31,6 +31,7 @@ const NumPad = () => {
   const availableBalance = wallet?.balance;
 
   const isSendDisabled = padBalance === "0";
+  const isHideDecimal = bitcoinDenomination === "satoshis";
 
   const onPress = (n) => {
     if (n === "<") {
@@ -146,7 +147,7 @@ const NumPad = () => {
         <View style={styles.numPadRow as any}>
           <InputButton n={"<"} />
           <InputButton n={"0"} />
-          <InputButton n={isBchDenominated ? "" : "."} />
+          <InputButton n={isHideDecimal ? "" : "."} />
         </View>
       </View>
       <View style={styles.buttonContainer as any}>
