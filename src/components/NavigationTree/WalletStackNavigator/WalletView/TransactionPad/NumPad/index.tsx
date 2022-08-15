@@ -108,13 +108,7 @@ const NumPad = () => {
       return;
     }
 
-    console.log({
-      padBalance,
-      // availableRawSats,
-      // proposedBalance,
-      // proposedBalanceInSats,
-      // decimalPlaces,
-    });
+ 
     if (checkInsufficientBalance(n, inputCurrency)) {
       dispatch(
         updateTransactionPadError({

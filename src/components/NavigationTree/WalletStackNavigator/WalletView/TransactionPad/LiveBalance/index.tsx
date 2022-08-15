@@ -20,12 +20,6 @@ const DisplayedBalance = () => {
     ? bitcoinDenomination
     : contrastCurrency;
 
-  console.log({
-    padBalance,
-    inputCurrency,
-    bitcoinDenomination,
-  });
-
   const primaryBalance = prettifyPadBalance(
     padBalance,
     isBchDenominated ? bitcoinDenomination : contrastCurrency
