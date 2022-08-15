@@ -70,7 +70,7 @@ const NavigationTree = () => {
             ),
           }}
         />
-        <Tab.Screen
+        {/* <Tab.Screen
           name="IRL"
           component={IrlView}
           options={{
@@ -109,7 +109,7 @@ const NavigationTree = () => {
               </View>
             ),
           }}
-        />
+        /> */}
         <Tab.Screen
           name="Tools"
           component={ToolsDrawerNavigator}
