@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { View, Text } from "react-native";
 import styles from "./styles";
 import TYPOGRAPHY from "../../../../../../design/typography";
-import { convertPadBalanceToDisplay } from "../../../../../../utils/formatting";
+import { convertBalanceToDisplay } from "../../../../../../utils/formatting";
 import { useDispatch, useSelector } from "react-redux";
 import { updateTransactionPadError } from "../../../../../../redux/reducers/transactionPadReducer";
 import { ReduxState } from "../../../../../../types";
@@ -27,13 +27,13 @@ const DisplayedBalance = () => {
     ? bitcoinDenomination
     : contrastCurrency;
 
-  const bchBalance = convertPadBalanceToDisplay(
+  const bchBalance = convertBalanceToDisplay(
     padBalance,
     inputCurrency,
     bitcoinDenomination
   );
 
-  const contrastBalance = convertPadBalanceToDisplay(
+  const contrastBalance = convertBalanceToDisplay(
     padBalance,
     inputCurrency,
     contrastCurrency

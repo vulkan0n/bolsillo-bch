@@ -11,6 +11,7 @@ import {
 } from "../../../../../../redux/reducers/transactionPadReducer";
 import { ReduxState } from "../../../../../../types";
 import TRANSACTION_PAD_ERRORS from "../errors";
+import { convertRawCurrencyToRawSats } from "../../../../../../utils/formatting";
 
 const NumPad = () => {
   const dispatch = useDispatch();
@@ -25,11 +26,17 @@ const NumPad = () => {
   const { bitcoinDenomination } = useSelector(
     (state: ReduxState) => state.settings
   );
+  const { contrastCurrency } = useSelector(
+    (state: ReduxState) => state.settings
+  );
+  const { isBchDenominated } = useSelector(
+    (state: ReduxState) => state.settings
+  );
   const { isRightHandedMode } = useSelector(
     (state: ReduxState) => state.settings
   );
-  const availableBalance = wallet?.balance;
 
+  const availableRawSats = wallet?.balance;
   const isSendDisabled = padBalance === "0";
   const isHideDecimal = bitcoinDenomination === "satoshis";
 
@@ -61,7 +68,17 @@ const NumPad = () => {
       return;
     }
 
-    if (parseFloat(padBalance + n) > parseFloat(availableBalance)) {
+    const inputCurrency = isBchDenominated
+      ? bitcoinDenomination
+      : contrastCurrency;
+    const proposedBalance = `${padBalance}${n}`;
+    const proposedBalanceInSats = convertRawCurrencyToRawSats(
+      proposedBalance,
+      inputCurrency
+    );
+    const isInsufficientBalance =
+      parseFloat(proposedBalanceInSats) > parseFloat(availableRawSats);
+    if (isInsufficientBalance) {
       dispatch(
         updateTransactionPadError({
           error: TRANSACTION_PAD_ERRORS.INSUFFICIENT_BALANCE,

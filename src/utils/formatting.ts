@@ -152,7 +152,7 @@ export const convertRawCurrencyToRawSats = (
   }
 };
 
-export const convertPadBalanceToDisplay = (
+export const convertBalanceToDisplay = (
   padBalance: string,
   inputCurrency: SupportedCurrencyTypes | BitcoinDenominationTypes,
   outputCurrency: SupportedCurrencyTypes | BitcoinDenominationTypes
