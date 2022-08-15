@@ -36,9 +36,7 @@ function ContrastCurrencyView() {
           financial systems or new BCH adopters.
         </Text>
         <Divider />
-        <Text style={TYPOGRAPHY.pWhite as any}>
-          Contrast BCH prices with the:
-        </Text>
+        <Text style={TYPOGRAPHY.pWhite as any}>Contrast BCH prices with:</Text>
         {SUPPORTED_CURRENCIES.map(({ code, fullName }) => {
           const isSelected = code === contrastCurrency;
           const onPress = () => {

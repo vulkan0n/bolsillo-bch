@@ -30,7 +30,7 @@ const BitcoinDenomination = ({ navigation }) => {
     >
       {!isRightHandedMode && BitcoinDenominationIndicator}
       <View style={{ width: 250 }}>
-        <Text style={TYPOGRAPHY.h2Left as any}>Bitcoin Denomination</Text>
+        <Text style={TYPOGRAPHY.h2Left as any}>BCH Denomination</Text>
         {bitcoinDenomination && (
           <Text style={TYPOGRAPHY.pWhiteLeft as any}>
             Display BCH amounts in {bitcoinDenomination}.
