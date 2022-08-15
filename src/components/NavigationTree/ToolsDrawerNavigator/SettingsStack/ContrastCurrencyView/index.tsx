@@ -47,6 +47,7 @@ function ContrastCurrencyView() {
 
           return (
             <Pressable
+              key={code}
               onPress={onPress}
               style={
                 {
