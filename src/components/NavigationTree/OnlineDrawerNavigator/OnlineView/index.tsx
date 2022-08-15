@@ -48,9 +48,6 @@ function OnlineView({ navigation }) {
         10 million daily active Bitcoiners will form a vibrant economy larger
         than many countries, and quickly snowball to the rest of the world.
       </Text>
-      {/* <Text style={TYPOGRAPHY.pWhite as any}>Last week: X Bitcoiners</Text>
-      <Text style={TYPOGRAPHY.pWhite as any}>Last month: X Bitcoiners</Text>
-      <Text style={TYPOGRAPHY.pWhite as any}>Last year: X Bitcoiners</Text> */}
       <Text style={TYPOGRAPHY.h2 as any}>Get involved!</Text>
       <Text style={TYPOGRAPHY.pWhite as any}>
         Use the menu bar to learn more about Bitcoin Cash, connect and trade
