@@ -3,7 +3,10 @@ import { Text, View, StyleSheet, Button } from "react-native";
 import { BarCodeScanner } from "expo-barcode-scanner";
 import styles from "./styles";
 import { useDispatch } from "react-redux";
-import { updateTransactionPadSendToAddress } from "../../../../../../redux/reducers/transactionPadReducer";
+import {
+  updateTransactionPadSendToAddress,
+  updateTransactionPadView,
+} from "../../../../../../redux/reducers/transactionPadReducer";
 import { isValidBchAddress } from "../../../../../../utils/utils";
 
 function QrScanner() {
@@ -23,6 +26,9 @@ function QrScanner() {
     const isBchAddress = isValidBchAddress(data);
     if (isBchAddress) {
       dispatch(updateTransactionPadSendToAddress({ sendToAddress: data }));
+      updateTransactionPadView({
+        view: "Confirm",
+      });
     }
   };
 

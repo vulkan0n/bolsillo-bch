@@ -1,8 +1,7 @@
 import React from "react";
-import { View } from "react-native";
+import { View, Text } from "react-native";
 import styles from "./styles";
 import Button from "../../../../../atoms/Button";
-import TextInput from "../../../../../atoms/TextInput";
 import { BRIDGE_MESSAGE_TYPES } from "../../../../../../utils/bridgeMessages";
 import { useSelector, useDispatch } from "react-redux";
 import {
@@ -16,7 +15,6 @@ import {
   formatStringToCashAddress,
 } from "../../../../../../utils/formatting";
 import emit from "../../../../../../utils/emit";
-import QrScanner from "../QrScanner";
 
 const SendPad = () => {
   const dispatch = useDispatch();
@@ -45,17 +43,25 @@ const SendPad = () => {
   const rawSatsToSend = convertRawCurrencyToRawSats(padBalance, inputCurrency);
 
   const onPressSend = () => {
+    emit({
+      type: BRIDGE_MESSAGE_TYPES.SEND_COINS,
+      data: {
+        mnemonic: wallet?.mnemonic,
+        derivationPath: wallet?.derivationPath,
+        recipientCashAddr: sendToAddress,
+        satsToSend: rawSatsToSend,
+        isTestNet,
+      },
+    });
+
     dispatch(
-      updateTransactionPadView({
-        view: "Confirm",
+      updateTransactionPadBalance({
+        padBalance: "0",
       })
     );
-  };
-
-  const onChangeTextInput = (value) => {
     dispatch(
       updateTransactionPadSendToAddress({
-        sendToAddress: formatStringToCashAddress(value, isTestNet),
+        sendToAddress: "",
       })
     );
   };
@@ -63,7 +69,7 @@ const SendPad = () => {
   const onPressBack = () => {
     dispatch(
       updateTransactionPadView({
-        view: "NumPad",
+        view: "Send",
       })
     );
   };
@@ -76,18 +82,7 @@ const SendPad = () => {
 
   return (
     <View style={styles.inputBackground as any}>
-      <View style={styles.numPad as any}>
-        <View style={styles.qrScannerRow as any}>
-          <QrScanner />
-        </View>
-        <View style={styles.numPadRow as any}>
-          <TextInput
-            text={sendToAddress}
-            onChange={onChangeTextInput}
-            isSmallText
-          />
-        </View>
-      </View>
+      <Text>Confirm?</Text>
       <View style={styles.buttonContainer as any}>
         {isRightHandedMode && SendButton}
         <Button

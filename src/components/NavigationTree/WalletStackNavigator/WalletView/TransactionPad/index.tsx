@@ -4,6 +4,7 @@ import styles from "./styles";
 import NumPad from "./NumPad";
 import SendPad from "./SendPad";
 import ReceivePad from "./ReceivePad";
+import Confirm from "./Confirm";
 import LiveBalance from "./LiveBalance";
 import { useSelector } from "react-redux";
 import { ReduxState } from "../../../../../types";
@@ -19,6 +20,8 @@ const TransactionPad = () => {
         return <ReceivePad />;
       case "NumPad":
         return <NumPad />;
+      case "Confirm":
+        return <Confirm />;
       case "":
         return <NumPad />;
       default:

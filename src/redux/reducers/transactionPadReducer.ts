@@ -7,7 +7,7 @@ import {
 } from "./settingsReducer";
 
 export interface TransactionPadState {
-  view: "" | "NumPad" | "Send" | "Receive";
+  view: "" | "NumPad" | "Send" | "Receive" | "Confirm";
   padBalance: string;
   sendToAddress: string;
   error: string;
