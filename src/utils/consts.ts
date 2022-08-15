@@ -24,8 +24,36 @@ export const SUPPORTED_CURRENCIES: SupportedCurrency[] = [
     fullName: "Bitcoin (Core)",
   },
   {
+    code: "cad",
+    fullName: "Canadian Dollar",
+  },
+  {
+    code: "eth",
+    fullName: "Ethereum",
+  },
+  {
     code: "eur",
     fullName: "The Euro",
+  },
+  {
+    code: "gbp",
+    fullName: "Great British Pound",
+  },
+  {
+    code: "jpy",
+    fullName: "Japanese Yen",
+  },
+  {
+    code: "php",
+    fullName: "Phillipine Peso",
+  },
+  {
+    code: "rub",
+    fullName: "Russian Ruble",
+  },
+  {
+    code: "thb",
+    fullName: "Thai Baht",
   },
   {
     code: "usd",

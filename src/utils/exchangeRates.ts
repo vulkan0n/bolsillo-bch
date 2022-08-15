@@ -28,8 +28,32 @@ export const convertRawAudToSats = (aud: string): string =>
 export const convertRawBtcToSats = (btc: string): string =>
   convertRawValueToSats(btc, "btcBchPrice");
 
+export const convertRawCadToSats = (cad: string): string =>
+  convertRawValueToSats(cad, "cadBchPrice");
+
+export const convertRawCnyToSats = (cny: string): string =>
+  convertRawValueToSats(cny, "cnyBchPrice");
+
+export const convertRawEthToSats = (eth: string): string =>
+  convertRawValueToSats(eth, "ethBchPrice");
+
 export const convertRawEurToSats = (eur: string): string =>
   convertRawValueToSats(eur, "eurBchPrice");
+
+export const convertRawGbpToSats = (gbp: string): string =>
+  convertRawValueToSats(gbp, "gbpBchPrice");
+
+export const convertRawJpyToSats = (jpy: string): string =>
+  convertRawValueToSats(jpy, "gbpBchPrice");
+
+export const convertRawPhpToSats = (php: string): string =>
+  convertRawValueToSats(php, "phpBchPrice");
+
+export const convertRawRubToSats = (rub: string): string =>
+  convertRawValueToSats(rub, "phpBchPrice");
+
+export const convertRawThbToSats = (thb: string): string =>
+  convertRawValueToSats(thb, "phpBchPrice");
 
 export const convertRawUsdToSats = (usd: string): string =>
   convertRawValueToSats(usd, "usdBchPrice");
@@ -59,8 +83,32 @@ export const convertRawSatsToRawAud = (sats: string): string =>
 export const convertRawSatsToRawBtc = (sats: string): string =>
   convertRawSatsToRawValue(sats, "btcBchPrice");
 
+export const convertRawSatsToRawCad = (sats: string): string =>
+  convertRawSatsToRawValue(sats, "cadBchPrice");
+
+export const convertRawSatsToRawCny = (sats: string): string =>
+  convertRawSatsToRawValue(sats, "cnyBchPrice");
+
+export const convertRawSatsToRawEth = (sats: string): string =>
+  convertRawSatsToRawValue(sats, "ethBchPrice");
+
 export const convertRawSatsToRawEur = (sats: string): string =>
   convertRawSatsToRawValue(sats, "eurBchPrice");
+
+export const convertRawSatsToRawGbp = (sats: string): string =>
+  convertRawSatsToRawValue(sats, "gbpBchPrice");
+
+export const convertRawSatsToRawJpy = (sats: string): string =>
+  convertRawSatsToRawValue(sats, "jpyBchPrice");
+
+export const convertRawSatsToRawPhp = (sats: string): string =>
+  convertRawSatsToRawValue(sats, "phpBchPrice");
+
+export const convertRawSatsToRawRub = (sats: string): string =>
+  convertRawSatsToRawValue(sats, "rubBchPrice");
+
+export const convertRawSatsToRawThb = (sats: string): string =>
+  convertRawSatsToRawValue(sats, "thbBchPrice");
 
 export const convertRawSatsToRawUsd = (sats: string): string =>
   convertRawSatsToRawValue(sats, "usdBchPrice");
