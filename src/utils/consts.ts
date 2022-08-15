@@ -39,22 +39,27 @@ export const SUPPORTED_CURRENCIES: SupportedCurrency[] = [
     code: "gbp",
     fullName: "Great British Pound",
   },
-  {
-    code: "jpy",
-    fullName: "Japanese Yen",
-  },
+  // There is some kind of bug with commented out currencies
+  // Their live balance doesn't work as well as it should
+  // Exchange rate seems off, using complete balance comes out way
+  // out of whack. Perhaps a rounding or precision error for these
+  // very weak currencies?
+  // {
+  //   code: "jpy",
+  //   fullName: "Japanese Yen",
+  // },
   {
     code: "php",
     fullName: "Phillipine Peso",
   },
-  {
-    code: "rub",
-    fullName: "Russian Ruble",
-  },
-  {
-    code: "thb",
-    fullName: "Thai Baht",
-  },
+  // {
+  //   code: "rub",
+  //   fullName: "Russian Ruble",
+  // },
+  // {
+  //   code: "thb",
+  //   fullName: "Thai Baht",
+  // },
   {
     code: "usd",
     fullName: "United States Dollar",

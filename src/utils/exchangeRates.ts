@@ -18,7 +18,7 @@ export const convertRawBchToRawSats = (bch: string): string =>
 const convertRawValueToSats = (rawValue: string, exchangeRateKey: string) => {
   const price = store?.getState()?.exchangeRates?.[exchangeRateKey];
   const satPrice = ONE_HUNDRED_MILLION / parseFloat(price);
-  const equivalentSats = Math.floor(parseFloat(rawValue) * satPrice);
+  const equivalentSats = Math.round(parseFloat(rawValue) * satPrice);
   return `${equivalentSats}`;
 };
 

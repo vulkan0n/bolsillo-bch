@@ -61,6 +61,7 @@ const NumPad = () => {
   };
 
   const isMaxDecimals =
+    padBalance.includes(".") &&
     countDecimalPlaces(padBalance) + 1 > allowedDecimalPlaces(inputCurrency);
 
   const onPress = (n) => {
