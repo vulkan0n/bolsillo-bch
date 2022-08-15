@@ -4,14 +4,30 @@ import {
   convertRawBchToRawSats,
   convertRawAudToSats,
   convertRawBtcToSats,
+  convertRawCadToSats,
+  convertRawCnyToSats,
+  convertRawEthToSats,
   convertRawEurToSats,
+  convertRawGbpToSats,
+  convertRawJpyToSats,
+  convertRawPhpToSats,
+  convertRawRubToSats,
+  convertRawThbToSats,
   convertRawUsdToSats,
   convertRawSatsToRawBits,
   convertRawSatsToRawMbch,
   convertRawSatsToRawBch,
   convertRawSatsToRawAud,
   convertRawSatsToRawBtc,
+  convertRawSatsToRawCad,
+  convertRawSatsToRawCny,
+  convertRawSatsToRawEth,
   convertRawSatsToRawEur,
+  convertRawSatsToRawGbp,
+  convertRawSatsToRawJpy,
+  convertRawSatsToRawPhp,
+  convertRawSatsToRawRub,
+  convertRawSatsToRawThb,
   convertRawSatsToRawUsd,
 } from "./exchangeRates";
 import { BitcoinDenominationTypes, SupportedCurrencyTypes } from "../types";
@@ -200,8 +216,24 @@ export const prettifyPadBalance = (
       return `AUD $${chunkedValue}`;
     case "btc":
       return `₿ ${chunkedValue} BTC`;
+    case "cad":
+      return `CAD $${chunkedValue}`;
+    case "cny":
+      return `CNY ¥${chunkedValue}`;
+    case "eth":
+      return `ETH ${chunkedValue}`;
     case "eur":
       return `EUR €${chunkedValue}`;
+    case "gbp":
+      return `GBP £${chunkedValue}`;
+    case "jpy":
+      return `JPY ¥${chunkedValue}`;
+    case "php":
+      return `PHP ₱${chunkedValue}`;
+    case "rub":
+      return `RUB ₽${chunkedValue}`;
+    case "thb":
+      return `THB ฿${chunkedValue}`;
     case "usd":
       return `USD $${chunkedValue}`;
     case "bitcoins":
@@ -226,8 +258,24 @@ export const convertRawSatsToRawCurrency = (
       return convertRawSatsToRawAud(rawSats);
     case "btc":
       return convertRawSatsToRawBtc(rawSats);
+    case "cad":
+      return convertRawSatsToRawCad(rawSats);
+    case "cny":
+      return convertRawSatsToRawCny(rawSats);
+    case "eth":
+      return convertRawSatsToRawEth(rawSats);
     case "eur":
       return convertRawSatsToRawEur(rawSats);
+    case "gbp":
+      return convertRawSatsToRawGbp(rawSats);
+    case "jpy":
+      return convertRawSatsToRawJpy(rawSats);
+    case "php":
+      return convertRawSatsToRawPhp(rawSats);
+    case "rub":
+      return convertRawSatsToRawRub(rawSats);
+    case "thb":
+      return convertRawSatsToRawThb(rawSats);
     case "usd":
       return convertRawSatsToRawUsd(rawSats);
     case "bitcoins":
@@ -262,8 +310,24 @@ export const convertRawCurrencyToRawSats = (
       return convertRawAudToSats(rawCurrency);
     case "btc":
       return convertRawBtcToSats(rawCurrency);
+    case "cad":
+      return convertRawCadToSats(rawCurrency);
+    case "cny":
+      return convertRawCnyToSats(rawCurrency);
+    case "eth":
+      return convertRawEthToSats(rawCurrency);
     case "eur":
       return convertRawEurToSats(rawCurrency);
+    case "gbp":
+      return convertRawGbpToSats(rawCurrency);
+    case "jpy":
+      return convertRawJpyToSats(rawCurrency);
+    case "php":
+      return convertRawPhpToSats(rawCurrency);
+    case "rub":
+      return convertRawRubToSats(rawCurrency);
+    case "thb":
+      return convertRawThbToSats(rawCurrency);
     case "usd":
       return convertRawUsdToSats(rawCurrency);
     case "bitcoins":
