@@ -47,7 +47,7 @@ import { MAIN_NET_PREFIX, TEST_NET_PREFIX } from "./consts";
 const allowedDecimalPlaces = (
   currency: BitcoinDenominationTypes | SupportedCurrencyTypes
 ): number => {
-    switch (currency) {
+  switch (currency) {
     case "usd":
       return 2;
     case "aud":
@@ -62,6 +62,7 @@ const allowedDecimalPlaces = (
       return 0;
     default:
       return 2;
+  }
 };
 
 // Split string into groups of 3 characters, starting from right side
