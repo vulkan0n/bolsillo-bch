@@ -1,6 +1,6 @@
 import React from "react";
 import { View, Text, Pressable } from "react-native";
-import styles from "./styles";
+import styles, { inputButtonStyles } from "./styles";
 import Button from "../../../../../atoms/Button";
 import TYPOGRAPHY from "../../../../../../design/typography";
 import { useSelector, useDispatch } from "react-redux";
@@ -149,14 +149,26 @@ const NumPad = () => {
     );
   };
 
-  const InputButton = ({ n }) => {
+  const InputButton = ({ n, isDisabled = false }) => {
     return (
       <Pressable
         style={styles.inputButton as any}
-        onPress={() => onPress(n)}
-        onLongPress={() => onLongPress(n)}
+        onPress={() => {
+          if (isDisabled) {
+            return;
+          }
+          onPress(n);
+        }}
+        onLongPress={() => {
+          if (isDisabled) {
+            return;
+          }
+          onLongPress(n);
+        }}
       >
-        <Text style={TYPOGRAPHY.h1black as any}>{n}</Text>
+        <Text style={isDisabled ? TYPOGRAPHY.h1 : (TYPOGRAPHY.h1black as any)}>
+          {n}
+        </Text>
       </Pressable>
     );
   };
@@ -176,7 +188,7 @@ const NumPad = () => {
     <View style={styles.inputBackground as any}>
       <View style={styles.numPad as any}>
         <View style={styles.numPadRow as any}>
-          <InputButton n={"1"} />
+          <InputButton n={"1"} isDisabled />
           <InputButton n={"2"} />
           <InputButton n={"3"} />
         </View>

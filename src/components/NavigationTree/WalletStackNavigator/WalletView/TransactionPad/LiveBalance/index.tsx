@@ -10,7 +10,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { ReduxState } from "../../../../../../types";
 
 const DisplayedBalance = () => {
-  const dispatch = useDispatch();
   const { padBalance } = useSelector(
     (state: ReduxState) => state.transactionPad
   );
