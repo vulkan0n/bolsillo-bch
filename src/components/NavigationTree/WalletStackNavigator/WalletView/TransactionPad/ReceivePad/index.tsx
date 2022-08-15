@@ -77,7 +77,7 @@ const ReceivePad = () => {
         />
       </Pressable>
       <View style={styles.buttonContainer as any}>
-        {isRightHandedMode && ShareButton}
+        {/* {isRightHandedMode && ShareButton} */}
         <Button
           icon={"faChevronLeft"}
           variant="secondary"
@@ -86,7 +86,7 @@ const ReceivePad = () => {
         >
           Back
         </Button>
-        {!isRightHandedMode && ShareButton}
+        {/* {!isRightHandedMode && ShareButton} */}
       </View>
     </View>
   );
