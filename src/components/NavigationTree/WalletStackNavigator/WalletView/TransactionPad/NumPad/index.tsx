@@ -9,7 +9,11 @@ import {
   updateTransactionPadView,
   updateTransactionPadError,
 } from "../../../../../../redux/reducers/transactionPadReducer";
-import { ReduxState } from "../../../../../../types";
+import {
+  BitcoinDenominationTypes,
+  ReduxState,
+  SupportedCurrencyTypes,
+} from "../../../../../../types";
 import TRANSACTION_PAD_ERRORS from "../errors";
 import {
   allowedDecimalPlaces,
@@ -41,8 +45,23 @@ const NumPad = () => {
 
   const availableRawSats = wallet?.balance;
   const isSendDisabled = padBalance === "0";
-  const isHideDecimal =
+  const isDisableDecimal =
     padBalance.includes(".") || bitcoinDenomination === "satoshis";
+  const inputCurrency = isBchDenominated
+    ? bitcoinDenomination
+    : contrastCurrency;
+
+  const checkInsufficientBalance = (
+    n: string,
+    inputCurrency: SupportedCurrencyTypes | BitcoinDenominationTypes
+  ): boolean => {
+    const proposedBalance = `${padBalance}${n}`;
+    const proposedBalanceInSats = convertRawCurrencyToRawSats(
+      proposedBalance,
+      inputCurrency
+    );
+    return parseFloat(proposedBalanceInSats) > parseFloat(availableRawSats);
+  };
 
   const onPress = (n) => {
     dispatch(
@@ -79,9 +98,6 @@ const NumPad = () => {
       return;
     }
 
-    const inputCurrency = isBchDenominated
-      ? bitcoinDenomination
-      : contrastCurrency;
     const decimalPlaces = padBalance.split(".")?.[1]?.length || 0;
     if (decimalPlaces + 1 > allowedDecimalPlaces(inputCurrency)) {
       dispatch(
@@ -92,22 +108,14 @@ const NumPad = () => {
       return;
     }
 
-    const proposedBalance = `${padBalance}${n}`;
-    const proposedBalanceInSats = convertRawCurrencyToRawSats(
-      proposedBalance,
-      inputCurrency
-    );
-    const isInsufficientBalance =
-      parseFloat(proposedBalanceInSats) > parseFloat(availableRawSats);
-
     console.log({
       padBalance,
-      availableRawSats,
-      proposedBalance,
-      proposedBalanceInSats,
-      decimalPlaces,
+      // availableRawSats,
+      // proposedBalance,
+      // proposedBalanceInSats,
+      // decimalPlaces,
     });
-    if (isInsufficientBalance) {
+    if (checkInsufficientBalance(n, inputCurrency)) {
       dispatch(
         updateTransactionPadError({
           error: TRANSACTION_PAD_ERRORS.INSUFFICIENT_BALANCE,
@@ -188,24 +196,51 @@ const NumPad = () => {
     <View style={styles.inputBackground as any}>
       <View style={styles.numPad as any}>
         <View style={styles.numPadRow as any}>
-          <InputButton n={"1"} isDisabled />
-          <InputButton n={"2"} />
-          <InputButton n={"3"} />
+          <InputButton
+            n={"1"}
+            isDisabled={checkInsufficientBalance("1", inputCurrency)}
+          />
+          <InputButton
+            n={"2"}
+            isDisabled={checkInsufficientBalance("2", inputCurrency)}
+          />
+          <InputButton
+            n={"3"}
+            isDisabled={checkInsufficientBalance("3", inputCurrency)}
+          />
         </View>
         <View style={styles.numPadRow as any}>
-          <InputButton n={"4"} />
-          <InputButton n={"5"} />
-          <InputButton n={"6"} />
+          <InputButton
+            n={"4"}
+            isDisabled={checkInsufficientBalance("4", inputCurrency)}
+          />
+          <InputButton
+            n={"5"}
+            isDisabled={checkInsufficientBalance("5", inputCurrency)}
+          />
+          <InputButton
+            n={"6"}
+            isDisabled={checkInsufficientBalance("6", inputCurrency)}
+          />
         </View>
         <View style={styles.numPadRow as any}>
-          <InputButton n={"7"} />
-          <InputButton n={"8"} />
-          <InputButton n={"9"} />
+          <InputButton
+            n={"7"}
+            isDisabled={checkInsufficientBalance("7", inputCurrency)}
+          />
+          <InputButton
+            n={"8"}
+            isDisabled={checkInsufficientBalance("8", inputCurrency)}
+          />
+          <InputButton
+            n={"9"}
+            isDisabled={checkInsufficientBalance("9", inputCurrency)}
+          />
         </View>
         <View style={styles.numPadRow as any}>
           <InputButton n={"<"} />
           <InputButton n={"0"} />
-          <InputButton n={isHideDecimal ? "" : "."} />
+          <InputButton n={"."} isDisabled={isDisableDecimal} />
         </View>
       </View>
       <View style={styles.buttonContainer as any}>
