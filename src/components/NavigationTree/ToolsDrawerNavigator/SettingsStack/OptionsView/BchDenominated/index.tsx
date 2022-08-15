@@ -12,6 +12,9 @@ const BchDenominated = () => {
   const { isBchDenominated } = useSelector(
     (state: ReduxState) => state.settings
   );
+  const { contrastCurrency } = useSelector(
+    (state: ReduxState) => state.settings
+  );
   const { isRightHandedMode } = useSelector(
     (state: ReduxState) => state.settings
   );
@@ -32,6 +35,8 @@ const BchDenominated = () => {
     </View>
   );
 
+  const uppercaseContrastCurrency = contrastCurrency.toUpperCase();
+
   return (
     <Pressable
       onPress={handleToggleIsBchDenominated}
@@ -42,14 +47,14 @@ const BchDenominated = () => {
         <Text style={TYPOGRAPHY.h2Left as any}>BCH Denominated</Text>
         {isBchDenominated && (
           <Text style={TYPOGRAPHY.pWhiteLeft as any}>
-            Display balances in BCH. Secondary currency equivalent (USD)
-            displayed beneath.
+            Display balances in BCH. Contrast currency equivalent (
+            {uppercaseContrastCurrency}) displayed beneath.
           </Text>
         )}
         {!isBchDenominated && (
           <Text style={TYPOGRAPHY.pWhiteLeft as any}>
-            Display balances in secondary currency (USD). BCH equivalent
-            displayed beneath.
+            Display balances in contrast currency ({uppercaseContrastCurrency}).
+            BCH equivalent displayed beneath.
           </Text>
         )}
       </View>
