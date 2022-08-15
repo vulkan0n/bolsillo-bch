@@ -73,12 +73,21 @@ export const chunkPreDecimalInto3s = (value: string): string => {
   return `${preDecimal}.${postDecimal}`;
 };
 
+const roundDownTo2DecimalPlaces = (input: string): string => {
+  const inputAsFloat = parseFloat(input);
+  const fixedDecimals = (Math.floor(inputAsFloat * 100) / 100).toFixed(2);
+  return fixedDecimals.toString();
+};
+
 export const prettifyRawCurrency = (
   rawCurrency: string,
   currency: SupportedCurrencyTypes | BitcoinDenominationTypes
 ): string => {
   const value = rawCurrency ?? "0";
-  const chunkedValue = chunkPreDecimalInto3s(value);
+
+  const is2dpCurrency = ["usd", "aud"].includes(currency);
+  const roundedValue = is2dpCurrency ? roundDownTo2DecimalPlaces(value) : value;
+  const chunkedValue = chunkPreDecimalInto3s(roundedValue);
 
   switch (currency) {
     case "usd":
@@ -158,7 +167,6 @@ export const convertBalanceToDisplay = (
   outputCurrency: SupportedCurrencyTypes | BitcoinDenominationTypes
 ) => {
   const rawCurrency = `${parseFloat(padBalance)}`;
-  console.log({ rawCurrency });
   const rawSats = convertRawCurrencyToRawSats(rawCurrency, inputCurrency);
   return rawSatsToCurrencyDisplay(rawSats, outputCurrency);
 };
