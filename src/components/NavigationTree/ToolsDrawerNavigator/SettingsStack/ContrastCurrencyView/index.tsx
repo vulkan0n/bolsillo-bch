@@ -12,7 +12,7 @@ import Divider from "../../../../atoms/Divider";
 import SPACING from "../../../../../design/spacing";
 import { updateBitcoinDenomination } from "../../../../../redux/reducers/settingsReducer";
 
-function DenominationView() {
+function ContrastCurrencyView() {
   const dispatch = useDispatch();
   const { bitcoinDenomination } = useSelector(
     (state: ReduxState) => state.settings
@@ -69,7 +69,6 @@ function DenominationView() {
 
           return (
             <Pressable
-              key={abbreviation}
               onPress={onPress}
               style={
                 {
@@ -128,4 +127,4 @@ function DenominationView() {
   );
 }
 
-export default DenominationView;
+export default ContrastCurrencyView;

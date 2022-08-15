@@ -2,10 +2,10 @@ import React from "react";
 import { View, Text, Pressable } from "react-native";
 import TYPOGRAPHY from "../../../../../../design/typography";
 import styles from "../styles";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import { ReduxState } from "../../../../../../types";
 
-const BitcoinDenomination = ({ navigation }) => {
+const ContrastCurrency = ({ navigation }) => {
   const { bitcoinDenomination } = useSelector(
     (state: ReduxState) => state.settings
   );
@@ -42,4 +42,4 @@ const BitcoinDenomination = ({ navigation }) => {
   );
 };
 
-export default BitcoinDenomination;
+export default ContrastCurrency;
