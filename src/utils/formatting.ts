@@ -279,7 +279,9 @@ export const convertBalanceToDisplay = (
   outputCurrency: SupportedCurrencyTypes | BitcoinDenominationTypes
 ) => {
   const rawCurrency = `${parseFloat(padBalance)}`;
+  console.log({ rawCurrency });
   const rawSats = convertRawCurrencyToRawSats(rawCurrency, inputCurrency);
+  console.log({ rawSats, outputCurrency });
   return rawSatsToCurrencyDisplay(rawSats, outputCurrency);
 };
 

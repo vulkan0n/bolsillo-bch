@@ -14,40 +14,27 @@ const DisplayedBalance = () => {
     (state: ReduxState) => state.transactionPad
   );
   const { error } = useSelector((state: ReduxState) => state.transactionPad);
-  const { isBchDenominated } = useSelector(
-    (state: ReduxState) => state.settings
-  );
-  const { bitcoinDenomination } = useSelector(
-    (state: ReduxState) => state.settings
-  );
-  const { contrastCurrency } = useSelector(
-    (state: ReduxState) => state.settings
-  );
-
+  const { isBchDenominated, bitcoinDenomination, contrastCurrency } =
+    useSelector((state: ReduxState) => state.settings);
   const inputCurrency = isBchDenominated
     ? bitcoinDenomination
     : contrastCurrency;
 
-  const bchBalance = prettifyPadBalance(padBalance, bitcoinDenomination);
-
-  const contrastBalance = prettifyPadBalance(padBalance, contrastCurrency);
-
-  const secondaryBchBalance = convertBalanceToDisplay(
+  console.log({
     padBalance,
     inputCurrency,
-    bitcoinDenomination
-  );
+    bitcoinDenomination,
+  });
 
-  const secondaryContrastBalance = convertBalanceToDisplay(
+  const primaryBalance = prettifyPadBalance(
+    padBalance,
+    isBchDenominated ? bitcoinDenomination : contrastCurrency
+  );
+  const secondaryBalance = convertBalanceToDisplay(
     padBalance,
     inputCurrency,
-    contrastCurrency
+    isBchDenominated ? contrastCurrency : bitcoinDenomination
   );
-
-  const primaryBalance = isBchDenominated ? bchBalance : contrastBalance;
-  const secondaryBalance = isBchDenominated
-    ? secondaryContrastBalance
-    : secondaryBchBalance;
 
   return (
     <View style={styles.secondaryTitlesWrapper}>

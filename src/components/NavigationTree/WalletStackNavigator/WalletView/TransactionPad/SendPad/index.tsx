@@ -11,7 +11,10 @@ import {
   updateTransactionPadBalance,
 } from "../../../../../../redux/reducers/transactionPadReducer";
 import { ReduxState } from "../../../../../../types";
-import { formatStringToCashAddress } from "../../../../../../utils/formatting";
+import {
+  convertRawCurrencyToRawSats,
+  formatStringToCashAddress,
+} from "../../../../../../utils/formatting";
 import emit from "../../../../../../utils/emit";
 import QrScanner from "../QrScanner";
 
@@ -25,6 +28,9 @@ const SendPad = () => {
   const { padBalance } = useSelector(
     (state: ReduxState) => state.transactionPad
   );
+  const { isBchDenominated, bitcoinDenomination, contrastCurrency } =
+    useSelector((state: ReduxState) => state.settings);
+
   const { sendToAddress } = useSelector(
     (state: ReduxState) => state.transactionPad
   );
@@ -33,6 +39,13 @@ const SendPad = () => {
   );
   const { isTestNet } = useSelector((state: ReduxState) => state.settings);
 
+  const inputCurrency = isBchDenominated
+    ? bitcoinDenomination
+    : contrastCurrency;
+  const rawSatsToSend = convertRawCurrencyToRawSats(padBalance, inputCurrency);
+
+  console.log({ padBalance, inputCurrency, rawSatsToSend });
+
   const onPressSend = () => {
     emit({
       type: BRIDGE_MESSAGE_TYPES.SEND_COINS,
@@ -40,7 +53,7 @@ const SendPad = () => {
         mnemonic: wallet?.mnemonic,
         derivationPath: wallet?.derivationPath,
         recipientCashAddr: sendToAddress,
-        satsToSend: padBalance,
+        satsToSend: rawSatsToSend,
         isTestNet,
       },
     });
