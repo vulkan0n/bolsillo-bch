@@ -2,10 +2,7 @@ import React, { useEffect } from "react";
 import { View, Text } from "react-native";
 import styles from "./styles";
 import TYPOGRAPHY from "../../../../../../design/typography";
-import {
-  padBalanceToDisplay,
-  displaySatsAsUsd,
-} from "../../../../../../utils/formatting";
+import { convertPadBalanceToDisplay } from "../../../../../../utils/formatting";
 import { useDispatch, useSelector } from "react-redux";
 import { updateTransactionPadError } from "../../../../../../redux/reducers/transactionPadReducer";
 import { ReduxState } from "../../../../../../types";
@@ -26,9 +23,21 @@ const DisplayedBalance = () => {
     (state: ReduxState) => state.settings
   );
 
-  const bchBalance = padBalanceToDisplay(padBalance, bitcoinDenomination);
+  const inputCurrency = isBchDenominated
+    ? bitcoinDenomination
+    : contrastCurrency;
 
-  const usdBalance = displaySatsAsUsd(padBalance);
+  const bchBalance = convertPadBalanceToDisplay(
+    padBalance,
+    inputCurrency,
+    bitcoinDenomination
+  );
+
+  const contrastBalance = convertPadBalanceToDisplay(
+    padBalance,
+    inputCurrency,
+    contrastCurrency
+  );
 
   useEffect(() => {
     dispatch(
@@ -41,10 +50,10 @@ const DisplayedBalance = () => {
   return (
     <View style={styles.secondaryTitlesWrapper}>
       <Text style={TYPOGRAPHY.h1black as any}>
-        {isBchDenominated ? bchBalance : usdBalance}
+        {isBchDenominated ? bchBalance : contrastBalance}
       </Text>
       <Text style={TYPOGRAPHY.h2black as any}>
-        {isBchDenominated ? usdBalance : bchBalance}
+        {isBchDenominated ? contrastBalance : bchBalance}
       </Text>
       {!!error && <Text style={styles.padError as any}>{error}</Text>}
     </View>
