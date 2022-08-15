@@ -1,6 +1,6 @@
 import React from "react";
 import { View, Text, Pressable } from "react-native";
-import styles, { inputButtonStyles } from "./styles";
+import styles from "./styles";
 import Button from "../../../../../atoms/Button";
 import TYPOGRAPHY from "../../../../../../design/typography";
 import { useSelector, useDispatch } from "react-redux";

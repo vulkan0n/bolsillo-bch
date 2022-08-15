@@ -21,7 +21,7 @@ export const convertRawAudToSats = (aud: string): string => {
   const audBchPrice = store?.getState()?.exchangeRates?.audBchPrice;
   const audSatPrice = ONE_HUNDRED_MILLION / parseFloat(audBchPrice);
 
-  const equivalentSats = parseFloat(aud) * audSatPrice;
+  const equivalentSats = Math.floor(parseFloat(aud) * audSatPrice);
   return `${equivalentSats}`;
 };
 
@@ -29,7 +29,7 @@ export const convertRawBtcToSats = (btc: string): string => {
   const btcBchPrice = store?.getState()?.exchangeRates?.btcBchPrice;
   const btcSatPrice = ONE_HUNDRED_MILLION / parseFloat(btcBchPrice);
 
-  const equivalentSats = parseFloat(btc) * btcSatPrice;
+  const equivalentSats = Math.floor(parseFloat(btc) * btcSatPrice);
   return `${equivalentSats}`;
 };
 
@@ -37,14 +37,14 @@ export const convertRawEurToSats = (eur: string): string => {
   const eurBchPrice = store?.getState()?.exchangeRates?.eurBchPrice;
   const eurSatPrice = ONE_HUNDRED_MILLION / parseFloat(eurBchPrice);
 
-  const equivalentSats = parseFloat(eur) * eurSatPrice;
+  const equivalentSats = Math.floor(parseFloat(eur) * eurSatPrice);
   return `${equivalentSats}`;
 };
 
 export const convertRawUsdToSats = (usd: string): string => {
   const usdBchPrice = store?.getState()?.exchangeRates?.usdBchPrice;
   const usdSatPrice = ONE_HUNDRED_MILLION / parseFloat(usdBchPrice);
-  const equivalentSats = parseFloat(usd) * usdSatPrice;
+  const equivalentSats = Math.floor(parseFloat(usd) * usdSatPrice);
   return `${equivalentSats}`;
 };
 
