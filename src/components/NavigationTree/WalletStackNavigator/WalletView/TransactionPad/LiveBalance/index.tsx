@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { View, Text } from "react-native";
 import styles from "./styles";
 import TYPOGRAPHY from "../../../../../../design/typography";
@@ -6,7 +6,7 @@ import {
   convertBalanceToDisplay,
   prettifyPadBalance,
 } from "../../../../../../utils/formatting";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { ReduxState } from "../../../../../../types";
 
 const DisplayedBalance = () => {
