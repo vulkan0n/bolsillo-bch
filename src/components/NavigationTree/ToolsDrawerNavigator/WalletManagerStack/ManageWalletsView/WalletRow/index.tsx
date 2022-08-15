@@ -7,6 +7,7 @@ import COLOURS from "../../../../../../design/colours";
 import { ReduxState } from "../../../../../../types";
 import { faWallet } from "@fortawesome/free-solid-svg-icons";
 import {
+  convertBalanceToDisplay,
   displaySats,
   displaySatsAsUsd,
 } from "../../../../../../utils/formatting";
@@ -21,6 +22,8 @@ const WalletRow = ({ navigation, name, description, balance }) => {
   const { activeWalletName } = useSelector(
     (state: ReduxState) => state.walletManager
   );
+  const { isBchDenominated, bitcoinDenomination, contrastCurrency } =
+    useSelector((state: ReduxState) => state.settings);
 
   const isActive = activeWalletName === name;
 
@@ -42,6 +45,21 @@ const WalletRow = ({ navigation, name, description, balance }) => {
     navigation.navigate("Delete");
   };
 
+  const bitcoinBalance = convertBalanceToDisplay(
+    balance,
+    "satoshis",
+    bitcoinDenomination
+  );
+
+  const contrastBalance = convertBalanceToDisplay(
+    balance,
+    "satoshis",
+    contrastCurrency
+  );
+
+  const primaryBalance = isBchDenominated ? bitcoinBalance : contrastBalance;
+  const secondaryBalance = isBchDenominated ? contrastBalance : bitcoinBalance;
+
   return (
     <View style={styles.container as any}>
       <View style={{ width: 30 }}>
@@ -56,10 +74,8 @@ const WalletRow = ({ navigation, name, description, balance }) => {
         {!!description && (
           <Text style={TYPOGRAPHY.pWhiteLeft as any}>{description}</Text>
         )}
-        <Text style={TYPOGRAPHY.pWhiteLeft as any}>{displaySats(balance)}</Text>
-        <Text style={TYPOGRAPHY.pWhiteLeft as any}>
-          {displaySatsAsUsd(balance)}
-        </Text>
+        <Text style={TYPOGRAPHY.pWhiteLeft as any}>{primaryBalance}</Text>
+        <Text style={TYPOGRAPHY.pWhiteLeft as any}>{secondaryBalance}</Text>
       </View>
       <View style={styles.fixedWidth as any}>
         {!isActive && (
