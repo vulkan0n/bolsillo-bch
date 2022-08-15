@@ -103,6 +103,28 @@ const roundDownToXDecimalPlaces = (input: string, x: number): string => {
   return fixedDecimals.toString();
 };
 
+const stripTrailingZeros = (
+  rawCurrency: string,
+  currency: SupportedCurrencyTypes | BitcoinDenominationTypes
+): string => {
+  switch (currency) {
+    case "usd":
+      return rawCurrency;
+    case "aud":
+      return rawCurrency;
+    case "bitcoins":
+      return parseFloat(rawCurrency).toString();
+    case "millibits":
+      return parseFloat(rawCurrency).toString();
+    case "bits":
+      return parseFloat(rawCurrency).toString();
+    case "satoshis":
+      return parseFloat(rawCurrency).toString();
+    default:
+      return parseFloat(rawCurrency).toString();
+  }
+};
+
 export const prettifyRawCurrency = (
   rawCurrency: string,
   currency: SupportedCurrencyTypes | BitcoinDenominationTypes
