@@ -41,12 +41,14 @@ const BackgroundIntervals = () => {
     const currentPrices = res?.data?.market_data?.current_price;
 
     const audBchPrice = currentPrices?.aud;
+    const btcBchPrice = currentPrices?.btc;
     const eurBchPrice = currentPrices?.eur;
     const usdBchPrice = currentPrices?.usd;
 
     dispatch(
       updateBchPrices({
         audBchPrice,
+        btcBchPrice,
         eurBchPrice,
         usdBchPrice,
       })

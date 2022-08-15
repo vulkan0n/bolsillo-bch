@@ -3,12 +3,14 @@ import {
   convertRawMbchToRawSats,
   convertRawBchToRawSats,
   convertRawAudToSats,
+  convertRawBtcToSats,
   convertRawEurToSats,
   convertRawUsdToSats,
   convertRawSatsToRawBits,
   convertRawSatsToRawMbch,
   convertRawSatsToRawBch,
   convertRawSatsToRawAud,
+  convertRawSatsToRawBtc,
   convertRawSatsToRawEur,
   convertRawSatsToRawUsd,
 } from "./exchangeRates";
@@ -20,6 +22,8 @@ import { MAIN_NET_PREFIX, TEST_NET_PREFIX } from "./consts";
 
 // Decimal places depend on the convention of the denomination/currency
 // I.e. usd = 2dp, aud = 2dp
+// btc = 2dp,
+// BCH denominations
 // satoshis = 0dp, bits = 2dp,
 // milliibts = 5dp, bitcoins = 8dp
 
@@ -52,6 +56,8 @@ export const allowedDecimalPlaces = (
   switch (currency) {
     case "aud":
       return 2;
+    case "btc":
+      return 8;
     case "eur":
       return 2;
     case "usd":
@@ -122,6 +128,8 @@ const stripTrailingZeros = (
   switch (currency) {
     case "aud":
       return rawCurrency;
+    case "btc":
+      return rawCurrency;
     case "eur":
       return rawCurrency;
     case "usd":
@@ -154,6 +162,8 @@ export const prettifyRawCurrency = (
   switch (currency) {
     case "aud":
       return `AUD $${chunkedValue}`;
+    case "btc":
+      return `₿ ${chunkedValue} BTC`;
     case "eur":
       return `EUR €${chunkedValue}`;
     case "usd":
@@ -182,6 +192,8 @@ export const prettifyPadBalance = (
   switch (currency) {
     case "aud":
       return `AUD $${chunkedValue}`;
+    case "btc":
+      return `₿ ${chunkedValue} BTC`;
     case "eur":
       return `EUR €${chunkedValue}`;
     case "usd":
@@ -206,6 +218,8 @@ export const convertRawSatsToRawCurrency = (
   switch (currency) {
     case "aud":
       return convertRawSatsToRawAud(rawSats);
+    case "btc":
+      return convertRawSatsToRawBtc(rawSats);
     case "eur":
       return convertRawSatsToRawEur(rawSats);
     case "usd":
@@ -240,6 +254,8 @@ export const convertRawCurrencyToRawSats = (
   switch (currency) {
     case "aud":
       return convertRawAudToSats(rawCurrency);
+    case "btc":
+      return convertRawBtcToSats(rawCurrency);
     case "eur":
       return convertRawEurToSats(rawCurrency);
     case "usd":

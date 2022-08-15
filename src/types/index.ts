@@ -38,7 +38,7 @@ export type BitcoinDenominationTypes =
   | "bits"
   | "satoshis";
 
-export type SupportedCurrencyTypes = "aud" | "eur" | "usd";
+export type SupportedCurrencyTypes = "aud" | "btc" | "eur" | "usd";
 
 export interface SupportedCurrency {
   code: SupportedCurrencyTypes;
