@@ -94,9 +94,12 @@ export const chunkPreDecimalInto3s = (value: string): string => {
   return `${preDecimal}.${postDecimal}`;
 };
 
-const roundDownTo2DecimalPlaces = (input: string): string => {
+const roundDownToXDecimalPlaces = (input: string, x: number): string => {
   const inputAsFloat = parseFloat(input);
-  const fixedDecimals = (Math.floor(inputAsFloat * 100) / 100).toFixed(2);
+  const TenToPowerX = 10 ** x;
+  const fixedDecimals = (
+    Math.floor(inputAsFloat * TenToPowerX) / TenToPowerX
+  ).toFixed(x);
   return fixedDecimals.toString();
 };
 
@@ -106,8 +109,10 @@ export const prettifyRawCurrency = (
 ): string => {
   const value = rawCurrency ?? "0";
 
-  const is2dpCurrency = ["usd", "aud"].includes(currency);
-  const roundedValue = is2dpCurrency ? roundDownTo2DecimalPlaces(value) : value;
+  const roundedValue = roundDownToXDecimalPlaces(
+    value,
+    allowedDecimalPlaces(currency)
+  );
   const chunkedValue = chunkPreDecimalInto3s(roundedValue);
 
   switch (currency) {
