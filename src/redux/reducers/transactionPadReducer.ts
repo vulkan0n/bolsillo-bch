@@ -1,6 +1,10 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { PURGE } from "redux-persist";
-import { updateBitcoinDenomination } from "./settingsReducer";
+import {
+  toggleIsBchDenominated,
+  updateBitcoinDenomination,
+  updateContrastCurrency,
+} from "./settingsReducer";
 
 export interface TransactionPadState {
   view: "" | "NumPad" | "Send" | "Receive";
@@ -35,6 +39,12 @@ const transactionPadSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+      .addCase(toggleIsBchDenominated, (state) => {
+        state.padBalance = "0";
+      })
+      .addCase(updateContrastCurrency, (state) => {
+        state.padBalance = "0";
+      })
       .addCase(updateBitcoinDenomination, (state) => {
         state.padBalance = "0";
       })
