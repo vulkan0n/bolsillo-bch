@@ -109,15 +109,18 @@ const Bridge = () => {
             message?.data?.derivationPath
           );
 
+          console.log("SENDING!!!");
+          console.log(message?.data);
+
           const txResponse = await walletSendCoins.send([
             {
               cashaddr: message?.data?.recipientCashAddr,
               value: parseInt(message?.data?.satsToSend),
               unit: "sat",
             },
-            {
-              feePaidBy: "changeThenAny",
-            },
+            // {
+            //   feePaidBy: "changeThenAny",
+            // },
           ]);
           console.log("sent coins!");
           console.log({ txResponse });
