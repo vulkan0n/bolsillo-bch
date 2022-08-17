@@ -8,7 +8,7 @@ import {
   updateTransactionPadSendToAddress,
   updateTransactionPadView,
   updateTransactionPadBalance,
-  updateIsSendingCoins,
+  updateTransactionPadIsSendingCoins,
 } from "../../../../../../redux/reducers/transactionPadReducer";
 import { ReduxState } from "../../../../../../types";
 import { convertRawCurrencyToRawSats } from "../../../../../../utils/formatting";
@@ -54,7 +54,7 @@ const Confirm = ({ navigation }) => {
     });
 
     dispatch(
-      updateIsSendingCoins({
+      updateTransactionPadIsSendingCoins({
         isSendingCoins: true,
       })
     );
@@ -62,7 +62,7 @@ const Confirm = ({ navigation }) => {
 
   const onPressCancelLoading = () => {
     dispatch(
-      updateIsSendingCoins({
+      updateTransactionPadIsSendingCoins({
         isSendingCoins: false,
       })
     );

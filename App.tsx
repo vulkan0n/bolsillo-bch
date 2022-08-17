@@ -33,7 +33,13 @@ import {
   updateWalletBalance,
   updateWalletCashAddr,
 } from "./src/redux/reducers/walletManagerReducer";
-import { updateIsSendingCoins } from "./src/redux/reducers/transactionPadReducer";
+import {
+  updateTransactionPadIsSendingCoins,
+  updateTransactionPadBalance,
+  updateTransactionPadSendToAddress,
+  updateTransactionPadView,
+  clearTransactionPad,
+} from "./src/redux/reducers/transactionPadReducer";
 
 export default function App() {
   // For the list of possible font faces
@@ -122,24 +128,28 @@ export default function App() {
             name: message.data.name,
             balance: message.data.balance,
           });
+
           // store.dispatch(
           //   updateBridgeTempTxId({ tempTxId: message.data.tempTxId })
           // );
-          store.dispatch(
-            updateIsSendingCoins({
-              isSendingCoins: false,
-            })
-          );
+
+          store.dispatch(clearTransactionPad());
           break;
 
         case RESPONSE_MESSAGE_TYPES.SEND_COINS_RESPONSE_FAIL:
           store.dispatch(
-            updateIsSendingCoins({
+            updateTransactionPadIsSendingCoins({
               isSendingCoins: false,
             })
           );
 
-          // TODO: Some kind of navigation or output here??
+          Toast.show({
+            type: "customError",
+            props: {
+              title: "Transaction failed",
+              text: message?.data?.text,
+            },
+          });
           break;
 
         case RESPONSE_MESSAGE_TYPES.ERROR:

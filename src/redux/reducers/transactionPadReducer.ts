@@ -35,12 +35,14 @@ const transactionPadSlice = createSlice({
     updateTransactionPadSendToAddress(state, action) {
       state.sendToAddress = action.payload.sendToAddress;
     },
-    updateIsSendingCoins(state, action) {
-      console.log("updating isSendingCoins", action.payload.isSendingCoins);
+    updateTransactionPadIsSendingCoins(state, action) {
       state.isSendingCoins = action.payload.isSendingCoins;
     },
     updateTransactionPadError(state, action) {
       state.error = action.payload.error;
+    },
+    clearTransactionPad(state) {
+      state = initialState;
     },
   },
   extraReducers: (builder) => {
@@ -62,7 +64,8 @@ export const {
   updateTransactionPadView,
   updateTransactionPadBalance,
   updateTransactionPadSendToAddress,
-  updateIsSendingCoins,
+  updateTransactionPadIsSendingCoins,
   updateTransactionPadError,
+  clearTransactionPad,
 } = transactionPadSlice.actions;
 export default transactionPadSlice.reducer;

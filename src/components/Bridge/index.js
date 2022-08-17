@@ -125,38 +125,40 @@ const Bridge = () => {
             data: {},
           });
 
-          // try {
-          const txResponse = await walletSendCoins.send([
-            {
-              cashaddr: message?.data?.recipientCashAddr,
-              value: parseInt(message?.data?.satsToSend),
-              unit: "sat",
-            },
-            // {
-            //   feePaidBy: "changeThenAny",
-            // },
-          ]);
+          try {
+            const txResponse = await walletSendCoins.send([
+              {
+                cashaddr: message?.data?.recipientCashAddr,
+                value: parseInt(message?.data?.satsToSend),
+                unit: "sat",
+              },
+              // {
+              //   feePaidBy: "changeThenAny",
+              // },
+            ]);
 
-          console.log("sent coins!");
-          console.log({ txResponse });
+            console.log("sent coins!");
+            console.log({ txResponse });
 
-          emit({
-            type: RESPONSE_MESSAGE_TYPES.SEND_COINS_RESPONSE_SUCCESS,
-            data: {
-              name: message?.data?.name,
-              balance: txResponse?.balance,
-              tempTxId: txResponse?.txId,
-            },
-          });
-          // } catch (sendError) {
-          //   console.log("!!!!!!!!");
-          //   console.log({ sendError });
+            emit({
+              type: RESPONSE_MESSAGE_TYPES.SEND_COINS_RESPONSE_SUCCESS,
+              data: {
+                name: message?.data?.name,
+                balance: txResponse?.balance?.sat,
+                tempTxId: txResponse?.txId,
+              },
+            });
+          } catch (sendError) {
+            console.log("!!!!!!!!");
+            console.log({ sendError });
 
-          //   emit({
-          //     type: RESPONSE_MESSAGE_TYPES.SEND_COINS_RESPONSE_FAIL,
-          //     data: {},
-          //   });
-          // }
+            emit({
+              type: RESPONSE_MESSAGE_TYPES.SEND_COINS_RESPONSE_FAIL,
+              data: {
+                text: sendError,
+              },
+            });
+          }
 
           break;
 
