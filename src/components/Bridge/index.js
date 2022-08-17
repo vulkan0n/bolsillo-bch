@@ -78,13 +78,19 @@ const Bridge = () => {
               // So need to grab balance again
               const freshBalance = await walletRequestBalance.getBalance("sat");
 
-              emit({
-                type: RESPONSE_MESSAGE_TYPES.RECEIVED_COINS,
-                data: {
-                  name: message?.data?.name,
-                  balance: freshBalance,
-                },
-              });
+              // Balance changed upwards = coins received
+              // Balance changed downwards = coins sent
+              const isReceivedCoins =
+                parseInt(freshBalance) > parseInt(balance);
+              if (isReceivedCoins) {
+                emit({
+                  type: RESPONSE_MESSAGE_TYPES.RECEIVED_COINS,
+                  data: {
+                    name: message?.data?.name,
+                    balance: freshBalance,
+                  },
+                });
+              }
             }
           );
 

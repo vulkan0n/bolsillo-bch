@@ -40,6 +40,8 @@ const Confirm = ({ navigation }) => {
     : contrastCurrency;
   const rawSatsToSend = convertRawCurrencyToRawSats(padBalance, inputCurrency);
 
+  console.log({ isSendingCoins });
+
   const onPressSend = () => {
     emit({
       type: BRIDGE_MESSAGE_TYPES.SEND_COINS,
@@ -75,9 +77,11 @@ const Confirm = ({ navigation }) => {
   );
 
   if (isSendingCoins) {
-    <View style={styles.inputBackground as any}>
-      <Text>Sending...</Text>
-    </View>;
+    return (
+      <View style={styles.inputBackground as any}>
+        <Text>Sending...</Text>
+      </View>
+    );
   }
 
   return (

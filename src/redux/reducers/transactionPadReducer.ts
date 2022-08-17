@@ -36,6 +36,7 @@ const transactionPadSlice = createSlice({
       state.sendToAddress = action.payload.sendToAddress;
     },
     updateIsSendingCoins(state, action) {
+      console.log("updating isSendingCoins", action.payload.isSendingCoins);
       state.isSendingCoins = action.payload.isSendingCoins;
     },
     updateTransactionPadError(state, action) {
