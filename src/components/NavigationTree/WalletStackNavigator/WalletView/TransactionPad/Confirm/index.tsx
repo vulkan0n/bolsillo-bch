@@ -8,6 +8,7 @@ import {
   updateTransactionPadSendToAddress,
   updateTransactionPadView,
   updateTransactionPadBalance,
+  updateIsSendingCoins,
 } from "../../../../../../redux/reducers/transactionPadReducer";
 import { ReduxState } from "../../../../../../types";
 import { convertRawCurrencyToRawSats } from "../../../../../../utils/formatting";
@@ -26,7 +27,7 @@ const Confirm = ({ navigation }) => {
   const { isBchDenominated, bitcoinDenomination, contrastCurrency } =
     useSelector((state: ReduxState) => state.settings);
 
-  const { sendToAddress } = useSelector(
+  const { sendToAddress, isSendingCoins } = useSelector(
     (state: ReduxState) => state.transactionPad
   );
   const { isRightHandedMode } = useSelector(
@@ -52,15 +53,20 @@ const Confirm = ({ navigation }) => {
     });
 
     dispatch(
-      updateTransactionPadBalance({
-        padBalance: "0",
+      updateIsSendingCoins({
+        isSendingCoins: true,
       })
     );
-    dispatch(
-      updateTransactionPadSendToAddress({
-        sendToAddress: "",
-      })
-    );
+    // dispatch(
+    //   updateTransactionPadBalance({
+    //     padBalance: "0",
+    //   })
+    // );
+    // dispatch(
+    //   updateTransactionPadSendToAddress({
+    //     sendToAddress: "",
+    //   })
+    // );
 
     navigation.navigate("Transaction Success");
   };
@@ -78,6 +84,12 @@ const Confirm = ({ navigation }) => {
       Send
     </Button>
   );
+
+  if (isSendingCoins) {
+    <View style={styles.inputBackground as any}>
+      <Text>Sending...</Text>
+    </View>;
+  }
 
   return (
     <View style={styles.inputBackground as any}>

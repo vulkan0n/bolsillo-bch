@@ -10,6 +10,7 @@ export interface TransactionPadState {
   view: "" | "NumPad" | "Send" | "Receive" | "Confirm";
   padBalance: string;
   sendToAddress: string;
+  isSendingCoins: boolean;
   error: string;
 }
 
@@ -17,6 +18,7 @@ const initialState = {
   view: "NumPad",
   padBalance: "0",
   sendToAddress: "",
+  isSendingCoins: false,
   error: "",
 } as TransactionPadState;
 
@@ -32,6 +34,9 @@ const transactionPadSlice = createSlice({
     },
     updateTransactionPadSendToAddress(state, action) {
       state.sendToAddress = action.payload.sendToAddress;
+    },
+    updateIsSendingCoins(state, action) {
+      state.isSendingCoins = action.payload.isSendingCoins;
     },
     updateTransactionPadError(state, action) {
       state.error = action.payload.error;
@@ -56,6 +61,7 @@ export const {
   updateTransactionPadView,
   updateTransactionPadBalance,
   updateTransactionPadSendToAddress,
+  updateIsSendingCoins,
   updateTransactionPadError,
 } = transactionPadSlice.actions;
 export default transactionPadSlice.reducer;
