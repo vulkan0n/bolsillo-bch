@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { ReduxState } from "../../types";
 import { BRIDGE_MESSAGE_TYPES } from "../../utils/bridgeMessages";
 import { THIRTY_SECONDS } from "../../utils/consts";
-import emit from "../../utils/emit";
+import emitMessage from "../../utils/emit";
 import axios from "axios";
 import { updateBchPrices } from "../../redux/reducers/exchangeRatesReducer";
 
@@ -18,7 +18,9 @@ const BackgroundIntervals = () => {
   const { isTestNet } = useSelector((state: ReduxState) => state.settings);
 
   const fetchActiveWalletBalance = () => {
-    emit({
+    console.log("----------");
+    console.log("trigger fetchActiveWalletBalance");
+    emitMessage({
       type: BRIDGE_MESSAGE_TYPES.REQUEST_BALANCE_AND_ADDRESS,
       data: {
         name: wallet?.name,

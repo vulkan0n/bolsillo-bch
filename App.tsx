@@ -175,8 +175,19 @@ export default function App() {
     }
   );
 
-  // Listens for components that need to send a message to the Bridge
-  DeviceEventEmitter.addListener("event.emitEvent", (event) => emit(event));
+  React.useEffect(() => {
+    // Listens for components that need to send a message to the Bridge
+    DeviceEventEmitter.addListener("event.emitEvent", (event) => {
+      console.log("DeviceEventEmiiter", { event });
+      emit(event);
+    });
+
+    const unsubscribe = () => {
+      DeviceEventEmitter.removeAllListeners();
+    };
+
+    return () => unsubscribe();
+  }, []);
 
   if (!fontsLoaded) {
     return null;
