@@ -41,8 +41,8 @@ const transactionPadSlice = createSlice({
     updateTransactionPadError(state, action) {
       state.error = action.payload.error;
     },
-    clearTransactionPad(state) {
-      state = initialState;
+    clearTransactionPad() {
+      return initialState;
     },
   },
   extraReducers: (builder) => {
