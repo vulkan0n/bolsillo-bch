@@ -44,6 +44,7 @@ const Confirm = ({ navigation }) => {
     emit({
       type: BRIDGE_MESSAGE_TYPES.SEND_COINS,
       data: {
+        name: wallet?.name,
         mnemonic: wallet?.mnemonic,
         derivationPath: wallet?.derivationPath,
         recipientCashAddr: sendToAddress,
@@ -57,18 +58,6 @@ const Confirm = ({ navigation }) => {
         isSendingCoins: true,
       })
     );
-    // dispatch(
-    //   updateTransactionPadBalance({
-    //     padBalance: "0",
-    //   })
-    // );
-    // dispatch(
-    //   updateTransactionPadSendToAddress({
-    //     sendToAddress: "",
-    //   })
-    // );
-
-    navigation.navigate("Transaction Success");
   };
 
   const onPressBack = () => {

@@ -33,6 +33,7 @@ import {
   updateWalletBalance,
   updateWalletCashAddr,
 } from "./src/redux/reducers/walletManagerReducer";
+import { updateIsSendingCoins } from "./src/redux/reducers/transactionPadReducer";
 
 export default function App() {
   // For the list of possible font faces
@@ -105,13 +106,32 @@ export default function App() {
           );
           break;
 
-        case RESPONSE_MESSAGE_TYPES.SEND_COINS_RESPONSE:
+        case RESPONSE_MESSAGE_TYPES.SEND_COINS_RESPONSE_LOADING:
+          // TODO: Fill out
+          break;
+
+        case RESPONSE_MESSAGE_TYPES.SEND_COINS_RESPONSE_SUCCESS:
+          // store.dispatch(
+          //   updateBridgeBalance({ balance: message.data.balance })
+          // );
+          // store.dispatch(
+          //   updateBridgeTempTxId({ tempTxId: message.data.tempTxId })
+          // );
           store.dispatch(
-            updateBridgeBalance({ balance: message.data.balance })
+            updateIsSendingCoins({
+              isSendingCoins: false,
+            })
           );
+          break;
+
+        case RESPONSE_MESSAGE_TYPES.SEND_COINS_RESPONSE_FAIL:
           store.dispatch(
-            updateBridgeTempTxId({ tempTxId: message.data.tempTxId })
+            updateIsSendingCoins({
+              isSendingCoins: false,
+            })
           );
+
+          // TODO: Some kind of navigation or output here??
           break;
 
         case RESPONSE_MESSAGE_TYPES.ERROR:
