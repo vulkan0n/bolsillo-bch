@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text } from "react-native";
+import { View, Text, Pressable } from "react-native";
 import styles from "./styles";
 import Button from "../../../../../atoms/Button";
 import { BRIDGE_MESSAGE_TYPES } from "../../../../../../utils/bridgeMessages";
@@ -62,6 +62,14 @@ const Confirm = ({ navigation }) => {
     );
   };
 
+  const onPressCancelLoading = () => {
+    dispatch(
+      updateIsSendingCoins({
+        isSendingCoins: false,
+      })
+    );
+  };
+
   const onPressBack = () => {
     dispatch(
       updateTransactionPadView({
@@ -78,9 +86,12 @@ const Confirm = ({ navigation }) => {
 
   if (isSendingCoins) {
     return (
-      <View style={styles.inputBackground as any}>
+      <Pressable
+        onPress={onPressCancelLoading}
+        style={styles.inputBackground as any}
+      >
         <Text>Sending...</Text>
-      </View>
+      </Pressable>
     );
   }
 
