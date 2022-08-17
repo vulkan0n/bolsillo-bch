@@ -32,7 +32,6 @@ function NewWalletView({ navigation }) {
   const [isStartedEditing, setIsStartedEditing] = useState(false);
 
   useEffect(() => {
-    console.log("triggering effect", { mnemonic, derivationPath });
     if (!mnemonic || !derivationPath) {
       emit({
         type: BRIDGE_MESSAGE_TYPES.CREATE_SCRATCHPAD_WALLET,
