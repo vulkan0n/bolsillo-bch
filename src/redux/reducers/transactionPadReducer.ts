@@ -48,13 +48,13 @@ const transactionPadSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(toggleIsBchDenominated, (state) => {
-        state.padBalance = "0";
+        return initialState;
       })
       .addCase(updateContrastCurrency, (state) => {
-        state.padBalance = "0";
+        return initialState;
       })
       .addCase(updateBitcoinDenomination, (state) => {
-        state.padBalance = "0";
+        return initialState;
       })
       .addCase(PURGE, () => initialState);
   },

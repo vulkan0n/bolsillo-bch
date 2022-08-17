@@ -34,7 +34,6 @@ const DisplayedBalance = () => {
   );
 
   const onPressSwapDenomination = () => {
-    dispatch(clearTransactionPad());
     dispatch(toggleIsBchDenominated());
   };
 
