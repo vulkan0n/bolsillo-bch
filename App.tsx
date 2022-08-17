@@ -111,9 +111,17 @@ export default function App() {
           break;
 
         case RESPONSE_MESSAGE_TYPES.SEND_COINS_RESPONSE_SUCCESS:
-          // store.dispatch(
-          //   updateBridgeBalance({ balance: message.data.balance })
-          // );
+          store.dispatch(
+            updateWalletBalance({
+              name: message.data.name,
+              balance: message.data.balance,
+            })
+          );
+
+          console.log("name and new balance", {
+            name: message.data.name,
+            balance: message.data.balance,
+          });
           // store.dispatch(
           //   updateBridgeTempTxId({ tempTxId: message.data.tempTxId })
           // );
