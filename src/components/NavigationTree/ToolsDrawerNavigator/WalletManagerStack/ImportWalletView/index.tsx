@@ -67,7 +67,7 @@ function ImportWalletView({ navigation }) {
     setIsStartedEditingMnemonic(true);
     dispatch(
       updateImportWalletScratchPadMnemonic({
-        mnemonic: newMnemonic,
+        mnemonic: newMnemonic.toLowerCase(),
       })
     );
   };
