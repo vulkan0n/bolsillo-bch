@@ -22,7 +22,7 @@ function TransactionSuccessView({ navigation }) {
 
       navigation.reset({
         index: 0,
-        routes: [{ name: "Wallet" }],
+        routes: [{ name: "Tab Navigator" }],
       });
     }, 3000);
   }, []);

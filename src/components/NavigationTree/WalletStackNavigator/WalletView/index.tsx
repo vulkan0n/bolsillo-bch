@@ -37,12 +37,15 @@ function WalletView({ navigation }) {
   });
 
   // Refresh wallet when toggling to/from test net
-  useEffect(() => {
-    emit({
-      type: BRIDGE_MESSAGE_TYPES.REFRESH_WALLET,
-      data: { wallet, isTestNet },
-    });
-  }, [isTestNet]);
+  // useEffect(() => {
+  //   // Triggers when modal for transaction success is shown
+  //   // TODO: This needs investigation and work
+
+  //   emit({
+  //     type: BRIDGE_MESSAGE_TYPES.REFRESH_WALLET,
+  //     data: { wallet, isTestNet },
+  //   });
+  // }, [isTestNet]);
 
   // Transaction id set to non null means new transaction just completed
   // useEffect(() => {

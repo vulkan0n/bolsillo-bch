@@ -135,6 +135,7 @@ export default function App() {
           // );
 
           store.dispatch(clearTransactionPad());
+
           reset({
             index: 0,
             routes: [{ name: "Transaction Success" }],
