@@ -178,7 +178,6 @@ export default function App() {
   React.useEffect(() => {
     // Listens for components that need to send a message to the Bridge
     DeviceEventEmitter.addListener("event.emitEvent", (event) => {
-      console.log("DeviceEventEmiiter", { event });
       emit(event);
     });
 
