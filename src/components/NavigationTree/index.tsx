@@ -14,7 +14,7 @@ import OnlineDrawerNavigator from "./OnlineDrawerNavigator";
 import ToolsDrawerNavigator from "./ToolsDrawerNavigator";
 import { navigationRef } from "./rootNavigation";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import TransactionSuccessView from "./WalletStackNavigator/TransactionSuccessView";
+import TransactionSuccessView from "./TransactionSuccessView";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
