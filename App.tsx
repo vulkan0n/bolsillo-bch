@@ -40,6 +40,7 @@ import {
   updateTransactionPadView,
   clearTransactionPad,
 } from "./src/redux/reducers/transactionPadReducer";
+import { reset } from "./src/components/NavigationTree/rootNavigation";
 
 export default function App() {
   // For the list of possible font faces
@@ -134,6 +135,10 @@ export default function App() {
           // );
 
           store.dispatch(clearTransactionPad());
+          reset({
+            index: 0,
+            routes: [{ name: "Transaction Success" }],
+          });
           break;
 
         case RESPONSE_MESSAGE_TYPES.SEND_COINS_RESPONSE_FAIL:
