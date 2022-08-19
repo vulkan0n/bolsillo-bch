@@ -119,6 +119,14 @@ const TYPOGRAPHY = {
     marginBottom: SPACING.ten,
     textDecorationLine: "underline",
   },
+  pGreenUnderlined: {
+    fontFamily: "Montserrat_500Medium",
+    textAlign: "center",
+    color: COLOURS.bchGreen,
+    fontSize: 16,
+    marginBottom: SPACING.ten,
+    textDecorationLine: "underline",
+  },
   pWhiteLeft: {
     fontFamily: "Montserrat_500Medium",
     textAlign: "left",

@@ -7,7 +7,7 @@ import { useNavigation } from "@react-navigation/native";
 
 interface Props {
   title: string;
-  isBackButton: boolean;
+  isBackButton?: boolean;
 }
 
 const StackSubheader = ({ title, isBackButton = false }: Props) => {
@@ -19,20 +19,37 @@ const StackSubheader = ({ title, isBackButton = false }: Props) => {
 
   return (
     <View
-      style={{
-        width: "100%",
-        height: 40,
-        backgroundColor: COLOURS.black,
-        flexDirection: "row",
-        justifyContent: "center",
-        alignItems: "center",
-      }}
+      style={
+        {
+          width: "100%",
+          height: 40,
+          backgroundColor: COLOURS.black,
+          flexDirection: "row",
+          justifyContent: "space-between",
+          alignItems: "center",
+        } as any
+      }
     >
-      {isBackButton && (
-        <Pressable onPress={onPressBack}>
-          <Text style={TYPOGRAPHY.pWhiteUnderlined as any}>Back</Text>
-        </Pressable>
-      )}
+      <View
+        style={{
+          width: 60,
+          height: "100%",
+          marginLeft: SPACING.fifteen,
+        }}
+      >
+        {isBackButton && (
+          <Pressable
+            style={{
+              flex: 1,
+              justifyContent: "flex-end",
+            }}
+            onPress={onPressBack}
+          >
+            <Text style={TYPOGRAPHY.pGreenUnderlined as any}>{"< "}Back</Text>
+          </Pressable>
+        )}
+      </View>
+
       <Text
         style={
           {
@@ -44,6 +61,7 @@ const StackSubheader = ({ title, isBackButton = false }: Props) => {
       >
         {title}
       </Text>
+      <View style={{ width: 60, margin: SPACING.ten }}></View>
     </View>
   );
 };
