@@ -21,8 +21,8 @@ const RightHandedMode = () => {
     <View style={styles.control}>
       <Switch
         trackColor={{ true: COLOURS.bchGreen, false: COLOURS.white }}
-        thumbColor={isRightHandedMode ? COLOURS.white : COLOURS.black}
-        ios_backgroundColor={COLOURS.lightGrey}
+        thumbColor={isRightHandedMode ? COLOURS.white : COLOURS.bchGreen}
+        ios_backgroundColor={COLOURS.white}
         onValueChange={handleToggleIsRightHandedMode}
         value={isRightHandedMode}
       />

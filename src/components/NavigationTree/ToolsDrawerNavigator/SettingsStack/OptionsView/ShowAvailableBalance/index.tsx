@@ -24,8 +24,8 @@ const BchDenominated = () => {
     <View style={styles.control as any}>
       <Switch
         trackColor={{ true: COLOURS.bchGreen, false: COLOURS.white }}
-        thumbColor={isShowAvailableBalance ? COLOURS.white : COLOURS.black}
-        ios_backgroundColor={COLOURS.lightGrey}
+        thumbColor={isShowAvailableBalance ? COLOURS.white : COLOURS.bchGreen}
+        ios_backgroundColor={COLOURS.white}
         onValueChange={handleToggleIsShowAvailableBalance}
         value={isShowAvailableBalance}
       />
