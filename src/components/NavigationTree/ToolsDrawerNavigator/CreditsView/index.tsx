@@ -22,8 +22,7 @@ function CreditsView() {
       </Text>
       <Text style={TYPOGRAPHY.pWhite as any}>PRs always welcome!</Text>
       <View style={TYPOGRAPHY.spacer as any}></View>
-      <Text style={TYPOGRAPHY.h2 as any}>Donations:</Text>
-      <Text style={TYPOGRAPHY.h2 as any}>-- TBC --</Text>
+      <Text style={TYPOGRAPHY.pWhite as any}>v0.1.0</Text>
     </View>
   );
 }

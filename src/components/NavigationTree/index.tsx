@@ -92,7 +92,7 @@ const TabNavigator = () => (
             ),
           }}
         />*/}
-    <Tab.Screen
+    {/* <Tab.Screen
       name="Online"
       component={OnlineDrawerNavigator}
       options={{
@@ -111,7 +111,7 @@ const TabNavigator = () => (
           </View>
         ),
       }}
-    />
+    /> */}
     <Tab.Screen
       name="Tools"
       component={ToolsDrawerNavigator}
