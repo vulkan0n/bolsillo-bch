@@ -3,27 +3,13 @@ import { View, Text, Pressable } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import TYPOGRAPHY from "../../../../../design/typography";
 import styles from "../styles";
-import { convertBalanceToDisplay } from "../../../../../utils/formatting";
-import { ReduxState } from "../../../../../types";
 import { toggleIsShowAvailableBalance } from "../../../../../redux/reducers/settingsReducer";
+import useActiveWalletBalance from "../../../../../hooks/useActiveWalletBalance";
 
 function AvailableBalance() {
   const [isDisplayHideNotice, setIsDisplayHideNotice] = useState(false);
-  const wallet = useSelector((state: ReduxState) =>
-    state.walletManager?.wallets?.find(
-      ({ name }) => name === state.walletManager?.activeWalletName
-    )
-  );
-  
-  const { isBchDenominated } = useSelector(
-    (state: ReduxState) => state.settings
-  );
-  const { bitcoinDenomination } = useSelector(
-    (state: ReduxState) => state.settings
-  );
-  const { contrastCurrency } = useSelector(
-    (state: ReduxState) => state.settings
-  );
+  const { primaryBalance, secondaryBalance } = useActiveWalletBalance()
+
   const dispatch = useDispatch()
 
   const onPressBalance = () => {
@@ -38,18 +24,6 @@ function AvailableBalance() {
     dispatch(toggleIsShowAvailableBalance())
     setIsDisplayHideNotice(false);
   };
-
-  const bchBalance = convertBalanceToDisplay(
-    wallet?.balance,
-    "satoshis",
-    bitcoinDenomination
-  );
-
-  const contrastBalance = convertBalanceToDisplay(
-    wallet?.balance,
-    "satoshis",
-    contrastCurrency
-  );
 
   if (isDisplayHideNotice) {
     return (
@@ -69,10 +43,10 @@ function AvailableBalance() {
       <Text style={TYPOGRAPHY.pWhite as any}>Available Balance</Text>
       <View style={styles.primaryTitlesWrapper}>
         <Text style={TYPOGRAPHY.h1 as any}>
-          {isBchDenominated ? bchBalance : contrastBalance}
+          {primaryBalance}
         </Text>
         <Text style={TYPOGRAPHY.h2 as any}>
-          {isBchDenominated ? contrastBalance : bchBalance}
+          {secondaryBalance}
         </Text>
       </View>
     </Pressable>
