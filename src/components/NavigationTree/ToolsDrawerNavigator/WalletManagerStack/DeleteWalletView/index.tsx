@@ -11,6 +11,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import COLOURS from "../../../../../design/colours";
 import { faTrashCan } from "@fortawesome/free-solid-svg-icons/faTrashCan";
 import { deleteWallet } from "../../../../../redux/reducers/walletManagerReducer";
+import StackSubheader from "../../../../atoms/StackSubheader";
 
 const DeleteWalletView = ({ navigation }) => {
   const { navigatedWalletName } = useSelector(
@@ -44,41 +45,44 @@ const DeleteWalletView = ({ navigation }) => {
   };
 
   return (
-    <ScrollView style={styles.scrollView}>
-      <View style={styles.container as any}>
-        <View style={styles.iconContainer}>
-          <FontAwesomeIcon
-            icon={faTrashCan}
-            size={50}
-            color={COLOURS.bchGreen}
-          />
+    <View style={{ flex: 1 }}>
+      <StackSubheader title={"Delete"} isBackButton />
+      <ScrollView style={styles.scrollView}>
+        <View style={styles.container as any}>
+          <View style={styles.iconContainer}>
+            <FontAwesomeIcon
+              icon={faTrashCan}
+              size={50}
+              color={COLOURS.bchGreen}
+            />
+          </View>
+          <Text style={TYPOGRAPHY.h2 as any}>{name}</Text>
+          {!!description && (
+            <Text style={TYPOGRAPHY.pWhite as any}>{description}</Text>
+          )}
+          <Divider />
+          <Text style={TYPOGRAPHY.pWhite as any}>
+            Note, this will erase all of this wallet's:
+          </Text>
+          <Text style={TYPOGRAPHY.pWhite as any}>- Wallet data</Text>
+          <Text style={TYPOGRAPHY.pWhite as any}>- Settings</Text>
+          <Text style={TYPOGRAPHY.pWhite as any}>- Mnemonic phrase</Text>
+          <Text style={TYPOGRAPHY.pWhite as any}>
+            You will lose access to any future coins sent to addresses in this
+            wallet!!
+          </Text>
+          <Text style={TYPOGRAPHY.pWhite as any}>
+            Ensure you have your mnemonic backup saved first!!
+          </Text>
+          <Button icon={"faPiggyBank"} onPress={onPressBackup}>
+            Backup
+          </Button>
+          <Button icon={"faTrashCan"} variant="danger" onPress={onPressDelete}>
+            Delete forever
+          </Button>
         </View>
-        <Text style={TYPOGRAPHY.h2 as any}>{name}</Text>
-        {!!description && (
-          <Text style={TYPOGRAPHY.pWhite as any}>{description}</Text>
-        )}
-        <Divider />
-        <Text style={TYPOGRAPHY.pWhite as any}>
-          Note, this will erase all of this wallet's:
-        </Text>
-        <Text style={TYPOGRAPHY.pWhite as any}>- Wallet data</Text>
-        <Text style={TYPOGRAPHY.pWhite as any}>- Settings</Text>
-        <Text style={TYPOGRAPHY.pWhite as any}>- Mnemonic phrase</Text>
-        <Text style={TYPOGRAPHY.pWhite as any}>
-          You will lose access to any future coins sent to addresses in this
-          wallet!!
-        </Text>
-        <Text style={TYPOGRAPHY.pWhite as any}>
-          Ensure you have your mnemonic backup saved first!!
-        </Text>
-        <Button icon={"faPiggyBank"} onPress={onPressBackup}>
-          Backup
-        </Button>
-        <Button icon={"faTrashCan"} variant="danger" onPress={onPressDelete}>
-          Delete forever
-        </Button>
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </View>
   );
 };
 

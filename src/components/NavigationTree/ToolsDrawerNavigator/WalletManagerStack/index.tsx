@@ -30,29 +30,21 @@ const WalletManagerStack = () => (
       name="Import"
       component={ImportWalletView}
       options={{
-        headerStyle: {
-          // backgroundColor: "red",
-        },
-        headerTitle: (props) => null,
+        headerShown: false,
       }}
     />
     <Stack.Screen
       name="Backup"
       component={BackupView}
       options={{
-        headerStyle: {
-          // backgroundColor: "red",
-        },
-        headerTitle: (props) => null,
+        headerShown: false,
       }}
     />
     <Stack.Screen
       name="Delete"
       component={DeleteWalletView}
       options={{
-        headerStyle: {
-          // backgroundColor: "red",
-        },
+        headerShown: false,
       }}
     />
   </Stack.Navigator>
