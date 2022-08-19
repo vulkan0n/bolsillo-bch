@@ -46,15 +46,6 @@ function DrawerNavigator({ children }) {
             <View style={styles.headerContainer as any}>
               {isRightHandedMode ? Spacer : DrawerButton}
               <View style={styles.titleContentContainer as any}>
-                {/* <FontAwesomeIcon
-                  icon={iconImport("faBookOpenReader")}
-                  size={20}
-                  color={COLOURS.white}
-                  style={{
-                    marginRight: SPACING.ten,
-                    marginBottom: SPACING.ten,
-                  }}
-                /> */}
                 <Text style={TYPOGRAPHY.h1 as any}>{title}</Text>
               </View>
               {isRightHandedMode ? DrawerButton : Spacer}
