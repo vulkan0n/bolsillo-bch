@@ -19,6 +19,7 @@ import {
   validateWalletDescription,
 } from "../../../../../utils/validation";
 import { ScrollView } from "react-native-gesture-handler";
+import StackSubheader from "../../../../atoms/StackSubheader";
 
 function NewWalletView({ navigation }) {
   const dispatch = useDispatch();
@@ -80,53 +81,56 @@ function NewWalletView({ navigation }) {
     !!nameValidationError || !!descriptionValidationError;
 
   return (
-    <ScrollView style={styles.scrollView}>
-      <View style={styles.container as any}>
-        <Text style={TYPOGRAPHY.h2 as any}>Name</Text>
-        <TextInput isSmallText text={name} onChange={onChangeName} />
-        {isStartedEditing && nameValidationError && (
-          <Text style={TYPOGRAPHY.pRed as any}>{nameValidationError}</Text>
-        )}
-        <Text style={TYPOGRAPHY.h2 as any}>Description</Text>
-        <TextInput
-          isSmallText
-          text={description}
-          onChange={onChangeDescription}
-        />
-        {descriptionValidationError && (
-          <Text style={TYPOGRAPHY.pRed as any}>
-            {descriptionValidationError}
-          </Text>
-        )}
-        <Text style={TYPOGRAPHY.h2 as any}>Mnemonic</Text>
-        {!isMnemonicVisible && (
+    <View style={{ flex: 1 }}>
+      <StackSubheader title={"New"} isBackButton />
+      <ScrollView style={styles.scrollView}>
+        <View style={styles.container as any}>
+          <Text style={TYPOGRAPHY.h2 as any}>Name</Text>
+          <TextInput isSmallText text={name} onChange={onChangeName} />
+          {isStartedEditing && nameValidationError && (
+            <Text style={TYPOGRAPHY.pRed as any}>{nameValidationError}</Text>
+          )}
+          <Text style={TYPOGRAPHY.h2 as any}>Description</Text>
+          <TextInput
+            isSmallText
+            text={description}
+            onChange={onChangeDescription}
+          />
+          {descriptionValidationError && (
+            <Text style={TYPOGRAPHY.pRed as any}>
+              {descriptionValidationError}
+            </Text>
+          )}
+          <Text style={TYPOGRAPHY.h2 as any}>Mnemonic</Text>
+          {!isMnemonicVisible && (
+            <Button
+              icon={"faEye"}
+              variant="blackOutlined"
+              onPress={toggleIsMnemonicVisible}
+            >
+              Reveal mnemonic
+            </Button>
+          )}
+          {isMnemonicVisible && (
+            <Pressable
+              onPress={toggleIsMnemonicVisible}
+              style={styles.mnemonicContainer}
+            >
+              <Text style={TYPOGRAPHY.pWhite as any}>{mnemonic}</Text>
+            </Pressable>
+          )}
+          <Text style={TYPOGRAPHY.h2 as any}>Derivation path</Text>
+          <Text style={TYPOGRAPHY.pWhite as any}>{derivationPath}</Text>
           <Button
-            icon={"faEye"}
-            variant="blackOutlined"
-            onPress={toggleIsMnemonicVisible}
+            isDisabled={isCreateDisabled}
+            onPress={onPressCreate}
+            icon={"faPlusCircle"}
           >
-            Reveal mnemonic
+            Create wallet
           </Button>
-        )}
-        {isMnemonicVisible && (
-          <Pressable
-            onPress={toggleIsMnemonicVisible}
-            style={styles.mnemonicContainer}
-          >
-            <Text style={TYPOGRAPHY.pWhite as any}>{mnemonic}</Text>
-          </Pressable>
-        )}
-        <Text style={TYPOGRAPHY.h2 as any}>Derivation path</Text>
-        <Text style={TYPOGRAPHY.pWhite as any}>{derivationPath}</Text>
-        <Button
-          isDisabled={isCreateDisabled}
-          onPress={onPressCreate}
-          icon={"faPlusCircle"}
-        >
-          Create wallet
-        </Button>
-      </View>
-    </ScrollView>
+        </View>
+      </ScrollView>
+    </View>
   );
 }
 
