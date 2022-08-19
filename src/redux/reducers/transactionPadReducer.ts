@@ -5,6 +5,7 @@ import {
   updateBitcoinDenomination,
   updateContrastCurrency,
 } from "./settingsReducer";
+import { updateActiveWalletName } from "./walletManagerReducer";
 
 export interface TransactionPadState {
   view: "" | "NumPad" | "Send" | "Receive" | "Confirm";
@@ -47,13 +48,16 @@ const transactionPadSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(toggleIsBchDenominated, (state) => {
+      .addCase(toggleIsBchDenominated, () => {
         return initialState;
       })
-      .addCase(updateContrastCurrency, (state) => {
+      .addCase(updateContrastCurrency, () => {
         return initialState;
       })
-      .addCase(updateBitcoinDenomination, (state) => {
+      .addCase(updateBitcoinDenomination, () => {
+        return initialState;
+      })
+      .addCase(updateActiveWalletName, () => {
         return initialState;
       })
       .addCase(PURGE, () => initialState);
