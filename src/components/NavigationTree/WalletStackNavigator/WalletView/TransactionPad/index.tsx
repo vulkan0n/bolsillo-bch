@@ -37,7 +37,7 @@ const TransactionPad = ({ navigation }) => {
 
   return (
     <View style={styles.transactionPad as any}>
-      {view !== "Receive" && <LiveBalance />}
+      {view !== "Receive" && !isZeroBalance && <LiveBalance />}
       {component()}
     </View>
   );

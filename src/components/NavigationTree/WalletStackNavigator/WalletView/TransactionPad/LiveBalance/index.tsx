@@ -9,7 +9,6 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { ReduxState } from "../../../../../../types";
 import { toggleIsBchDenominated } from "../../../../../../redux/reducers/settingsReducer";
-import { clearTransactionPad } from "../../../../../../redux/reducers/transactionPadReducer";
 
 const DisplayedBalance = () => {
   const dispatch = useDispatch();
