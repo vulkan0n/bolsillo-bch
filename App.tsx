@@ -21,11 +21,6 @@ import persistor from "./src/redux/persistor";
 import Toast from "react-native-toast-message";
 import toastConfig from "./src/config/toast";
 import preloadMainNetScript from "./src/config/preloadMainNetScript";
-import {
-  updateBridgeBalance,
-  updateBridgeTempTxId,
-  updateBridgeWallet,
-} from "./src/redux/reducers/bridgeReducer";
 import { WalletType } from "./src/types";
 import {
   createDefaultWallet,
@@ -35,9 +30,6 @@ import {
 } from "./src/redux/reducers/walletManagerReducer";
 import {
   updateTransactionPadIsSendingCoins,
-  updateTransactionPadBalance,
-  updateTransactionPadSendToAddress,
-  updateTransactionPadView,
   clearTransactionPad,
 } from "./src/redux/reducers/transactionPadReducer";
 import { reset } from "./src/components/NavigationTree/rootNavigation";
@@ -85,7 +77,9 @@ export default function App() {
         // The difference is on the other side of the bridge
         // Generating a new seed vs refreshing from seed
         case RESPONSE_MESSAGE_TYPES.REFRESH_WALLET_RESPONSE:
-          store.dispatch(updateBridgeWallet({ wallet: message.data.wallet }));
+          // TODO: Fix this to work with the wallet manager
+          // instead of the deprecated bridge
+          // store.dispatch(updateBridgeWallet({ wallet: message.data.wallet }));
           break;
 
         case RESPONSE_MESSAGE_TYPES.CREATE_SCRATCHPAD_WALLET_RESPONSE:
@@ -129,10 +123,6 @@ export default function App() {
             name: message.data.name,
             balance: message.data.balance,
           });
-
-          // store.dispatch(
-          //   updateBridgeTempTxId({ tempTxId: message.data.tempTxId })
-          // );
 
           store.dispatch(clearTransactionPad());
 

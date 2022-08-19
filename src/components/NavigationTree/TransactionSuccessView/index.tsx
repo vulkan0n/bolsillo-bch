@@ -6,20 +6,10 @@ import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faCircleCheck } from "@fortawesome/free-solid-svg-icons/faCircleCheck";
 import COLOURS from "../../../design/colours";
 import { MotiView } from "moti";
-import { useDispatch } from "react-redux";
-import { updateBridgeTempTxId } from "../../../redux/reducers/bridgeReducer";
 
 function TransactionSuccessView({ navigation }) {
-  const dispatch = useDispatch();
-
   useEffect(() => {
     setTimeout(() => {
-      dispatch(
-        updateBridgeTempTxId({
-          tempTxId: "",
-        })
-      );
-
       navigation.reset({
         index: 0,
         routes: [{ name: "Tab Navigator" }],
