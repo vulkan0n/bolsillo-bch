@@ -13,6 +13,7 @@ import * as Clipboard from "expo-clipboard";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import COLOURS from "../../../../../../design/colours";
 import { iconImport } from "../../../../../../design/icons";
+import useActiveWalletBalance from "../../../../../../hooks/useActiveWalletBalance";
 
 const ReceivePad = () => {
   const dispatch = useDispatch();
@@ -25,6 +26,8 @@ const ReceivePad = () => {
   const { isRightHandedMode } = useSelector(
     (state: ReduxState) => state.settings
   );
+
+  const { isZeroBalance } = useActiveWalletBalance();
 
   const onPressClipboard = async () => {
     await Clipboard.setStringAsync(wallet?.cashaddr);
@@ -76,18 +79,20 @@ const ReceivePad = () => {
           color={COLOURS.black}
         />
       </Pressable>
-      <View style={styles.buttonContainer as any}>
-        {/* {isRightHandedMode && ShareButton} */}
-        <Button
-          icon={"faChevronLeft"}
-          variant="secondary"
-          onPress={onPressBack}
-          isSmall
-        >
-          Back
-        </Button>
-        {/* {!isRightHandedMode && ShareButton} */}
-      </View>
+      {!isZeroBalance && (
+        <View style={styles.buttonContainer as any}>
+          {/* {isRightHandedMode && ShareButton} */}
+          <Button
+            icon={"faChevronLeft"}
+            variant="secondary"
+            onPress={onPressBack}
+            isSmall
+          >
+            Back
+          </Button>
+          {/* {!isRightHandedMode && ShareButton} */}
+        </View>
+      )}
     </View>
   );
 };

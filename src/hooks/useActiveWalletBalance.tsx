@@ -23,10 +23,12 @@ const useActiveWalletBalance = () => {
     contrastCurrency
   );
 
+  const isZeroBalance = parseInt(wallet?.balance) === 0;
   const primaryBalance = isBchDenominated ? bchBalance : contrastBalance;
   const secondaryBalance = isBchDenominated ? contrastBalance : bchBalance;
 
   return {
+    isZeroBalance,
     bchBalance,
     contrastBalance,
     primaryBalance,
