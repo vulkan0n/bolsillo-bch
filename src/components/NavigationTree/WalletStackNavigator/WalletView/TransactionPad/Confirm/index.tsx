@@ -13,6 +13,7 @@ import {
 import { ReduxState } from "../../../../../../types";
 import { convertRawCurrencyToRawSats } from "../../../../../../utils/formatting";
 import emit from "../../../../../../utils/emit";
+import TYPOGRAPHY from "../../../../../../design/typography";
 
 const Confirm = ({ navigation }) => {
   const dispatch = useDispatch();
@@ -95,7 +96,10 @@ const Confirm = ({ navigation }) => {
 
   return (
     <View style={styles.inputBackground as any}>
-      <Text>Confirm?</Text>
+      <Text style={TYPOGRAPHY.h2black as any}>to</Text>
+      <Text style={TYPOGRAPHY.p as any}>{sendToAddress}</Text>
+      <Text style={TYPOGRAPHY.p as any}>Swipe to send</Text>
+
       <View style={styles.buttonContainer as any}>
         {isRightHandedMode && SendButton}
         <Button
