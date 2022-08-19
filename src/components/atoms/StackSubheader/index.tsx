@@ -1,9 +1,8 @@
 import React from "react";
 import { View, Text, Pressable } from "react-native";
-import COLOURS from "../../../design/colours";
-import SPACING from "../../../design/spacing";
 import TYPOGRAPHY from "../../../design/typography";
 import { useNavigation } from "@react-navigation/native";
+import styles from "./styles";
 
 interface Props {
   title: string;
@@ -18,50 +17,16 @@ const StackSubheader = ({ title, isBackButton = false }: Props) => {
   };
 
   return (
-    <View
-      style={
-        {
-          width: "100%",
-          height: 40,
-          backgroundColor: COLOURS.black,
-          flexDirection: "row",
-          justifyContent: "space-between",
-          alignItems: "center",
-        } as any
-      }
-    >
-      <View
-        style={{
-          width: 60,
-          height: "100%",
-          marginLeft: SPACING.fifteen,
-        }}
-      >
+    <View style={styles.wrapper as any}>
+      <View style={styles.left}>
         {isBackButton && (
-          <Pressable
-            style={{
-              flex: 1,
-              justifyContent: "flex-end",
-            }}
-            onPress={onPressBack}
-          >
+          <Pressable style={styles.pressable as any} onPress={onPressBack}>
             <Text style={TYPOGRAPHY.pGreenUnderlined as any}>{"< "}Back</Text>
           </Pressable>
         )}
       </View>
-
-      <Text
-        style={
-          {
-            ...TYPOGRAPHY.h2,
-            marginBottom: 0,
-            marginTop: SPACING.five,
-          } as any
-        }
-      >
-        {title}
-      </Text>
-      <View style={{ width: 60, margin: SPACING.ten }}></View>
+      <Text style={styles.title as any}>{title}</Text>
+      <View style={styles.right as any}></View>
     </View>
   );
 };
