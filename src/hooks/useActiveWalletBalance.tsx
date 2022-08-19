@@ -8,6 +8,10 @@ const useActiveWalletBalance = () => {
     ({ name }) => name === state.walletManager?.activeWalletName
   );
 
+  console.log("'''''''''");
+  console.log({ wallet });
+  console.log("'''''''''");
+
   const { isBchDenominated, bitcoinDenomination, contrastCurrency } =
     state.settings;
 

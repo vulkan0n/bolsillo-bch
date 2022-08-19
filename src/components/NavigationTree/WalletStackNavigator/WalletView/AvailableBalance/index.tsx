@@ -10,6 +10,8 @@ function AvailableBalance() {
   const [isDisplayHideNotice, setIsDisplayHideNotice] = useState(false);
   const { primaryBalance, secondaryBalance } = useActiveWalletBalance()
 
+  console.log({ primaryBalance, secondaryBalance })
+
   const dispatch = useDispatch()
 
   const onPressBalance = () => {
