@@ -16,7 +16,7 @@ export interface TransactionPadState {
 }
 
 const initialState = {
-  view: "NumPad",
+  view: "Receive",
   padBalance: "0",
   sendToAddress: "",
   isSendingCoins: false,
