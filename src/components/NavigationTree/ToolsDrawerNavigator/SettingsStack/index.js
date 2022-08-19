@@ -12,40 +12,28 @@ const SettingsStack = () => (
       name="Options"
       component={OptionsView}
       options={{
-        headerStyle: {
-          // backgroundColor: "red",
-        },
-        headerTitle: (props) => null,
+        headerShown: false,
       }}
     />
     <Stack.Screen
       name="Contrast Currency"
       component={ContrastCurrencyView}
       options={{
-        headerStyle: {
-          // backgroundColor: "red",
-        },
-        headerTitle: (props) => null,
+        headerShown: false,
       }}
     />
     <Stack.Screen
       name="Denomination"
       component={DenominationView}
       options={{
-        headerStyle: {
-          // backgroundColor: "red",
-        },
-        headerTitle: (props) => null,
+        headerShown: false,
       }}
     />
     <Stack.Screen
       name="Reset"
       component={ResetView}
       options={{
-        headerStyle: {
-          // backgroundColor: "red",
-        },
-        headerTitle: (props) => null,
+        headerShown: false,
       }}
     />
   </Stack.Navigator>
