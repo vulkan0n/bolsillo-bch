@@ -11,6 +11,7 @@ import Divider from "../../../../atoms/Divider";
 import SPACING from "../../../../../design/spacing";
 import { updateContrastCurrency } from "../../../../../redux/reducers/settingsReducer";
 import { SUPPORTED_CURRENCIES } from "../../../../../utils/consts";
+import StackSubheader from "../../../../atoms/StackSubheader";
 
 function ContrastCurrencyView() {
   const dispatch = useDispatch();
@@ -19,75 +20,79 @@ function ContrastCurrencyView() {
   );
 
   return (
-    <ScrollView style={styles.scrollView}>
-      <View style={styles.container as any}>
-        <View style={styles.iconContainer}>
-          <FontAwesomeIcon
-            icon={faMoneyBillWave}
-            size={50}
-            color={COLOURS.bchGreen}
-          />
-        </View>
-        <Text style={TYPOGRAPHY.h2 as any}>Contrast Currency</Text>
-        <Text style={TYPOGRAPHY.pWhite as any}>
-          Transacting and thinking in Bitcoin Cash becomes natural over time via
-          exposure to the Bitcoin Cash economy. However it's still helpful to
-          retain a reference to other currencies for interacting with legacy
-          financial systems or new BCH adopters.
-        </Text>
-        <Divider />
-        <Text style={TYPOGRAPHY.pWhite as any}>Contrast BCH prices with:</Text>
-        {SUPPORTED_CURRENCIES.map(({ code, fullName }) => {
-          const isSelected = code === contrastCurrency;
-          const onPress = () => {
-            dispatch(updateContrastCurrency({ contrastCurrency: code }));
-          };
+    <View style={{ flex: 1 }}>
+      <StackSubheader title={"Contrast Currency"} isBackButton />
+      <ScrollView style={styles.scrollView}>
+        <View style={styles.container as any}>
+          <View style={styles.iconContainer}>
+            <FontAwesomeIcon
+              icon={faMoneyBillWave}
+              size={50}
+              color={COLOURS.bchGreen}
+            />
+          </View>
+          <Text style={TYPOGRAPHY.pWhite as any}>
+            Time and familiarity makes transacting and thinking in Bitcoin Cash
+            natural eventually. However it's still helpful to retain a reference
+            to other currencies for interacting with legacy financial systems or
+            new BCH adopters.
+          </Text>
+          <Divider />
+          <Text style={TYPOGRAPHY.pWhite as any}>
+            Contrast BCH prices with:
+          </Text>
+          {SUPPORTED_CURRENCIES.map(({ code, fullName }) => {
+            const isSelected = code === contrastCurrency;
+            const onPress = () => {
+              dispatch(updateContrastCurrency({ contrastCurrency: code }));
+            };
 
-          return (
-            <Pressable
-              key={code}
-              onPress={onPress}
-              style={
-                {
-                  flex: 1,
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                  alignItems: "flex-start",
-                  width: "100%",
-                } as any
-              }
-            >
-              <Text
+            return (
+              <Pressable
+                key={code}
+                onPress={onPress}
                 style={
                   {
-                    ...TYPOGRAPHY.h2,
-                    textAlign: "right",
                     flex: 1,
-                    paddingRight: SPACING.five,
-                    color: isSelected ? COLOURS.bchGreen : COLOURS.white,
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    alignItems: "flex-start",
+                    width: "100%",
                   } as any
                 }
               >
-                {code.toUpperCase()}
-              </Text>
-              <Text
-                style={
-                  {
-                    ...TYPOGRAPHY.h2,
-                    flex: 3,
-                    textAlign: "left",
-                    paddingLeft: SPACING.five,
-                    color: isSelected ? COLOURS.bchGreen : COLOURS.white,
-                  } as any
-                }
-              >
-                {fullName}
-              </Text>
-            </Pressable>
-          );
-        })}
-      </View>
-    </ScrollView>
+                <Text
+                  style={
+                    {
+                      ...TYPOGRAPHY.h2,
+                      textAlign: "right",
+                      flex: 1,
+                      paddingRight: SPACING.five,
+                      color: isSelected ? COLOURS.bchGreen : COLOURS.white,
+                    } as any
+                  }
+                >
+                  {code.toUpperCase()}
+                </Text>
+                <Text
+                  style={
+                    {
+                      ...TYPOGRAPHY.h2,
+                      flex: 3,
+                      textAlign: "left",
+                      paddingLeft: SPACING.five,
+                      color: isSelected ? COLOURS.bchGreen : COLOURS.white,
+                    } as any
+                  }
+                >
+                  {fullName}
+                </Text>
+              </Pressable>
+            );
+          })}
+        </View>
+      </ScrollView>
+    </View>
   );
 }
 

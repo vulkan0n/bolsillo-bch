@@ -6,7 +6,6 @@ import COLOURS from "../../../design/colours";
 import { iconImport } from "../../../design/icons";
 import SPACING from "../../../design/spacing";
 import TYPOGRAPHY from "../../../design/typography";
-import TransactionSuccessView from "./TransactionSuccessView";
 import WalletView from "./WalletView";
 import styles from "./styles";
 
@@ -34,17 +33,6 @@ const WalletStack = () => (
             </View>
           );
         },
-      }}
-    />
-    <Stack.Screen
-      name="Transaction Success"
-      component={TransactionSuccessView}
-      options={{
-        presentation: "modal",
-        headerStyle: {
-          backgroundColor: COLOURS.bchGreen,
-        },
-        headerTitle: (props) => <Text style={TYPOGRAPHY.header as any}></Text>,
       }}
     />
   </Stack.Navigator>

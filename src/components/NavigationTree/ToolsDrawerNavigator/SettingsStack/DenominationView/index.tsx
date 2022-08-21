@@ -11,6 +11,7 @@ import { ReduxState } from "../../../../../types";
 import Divider from "../../../../atoms/Divider";
 import SPACING from "../../../../../design/spacing";
 import { updateBitcoinDenomination } from "../../../../../redux/reducers/settingsReducer";
+import StackSubheader from "../../../../atoms/StackSubheader";
 
 function DenominationView() {
   const dispatch = useDispatch();
@@ -46,85 +47,91 @@ function DenominationView() {
   ];
 
   return (
-    <ScrollView style={styles.scrollView}>
-      <View style={styles.container as any}>
-        <View style={styles.iconContainer}>
-          <FontAwesomeIcon icon={faCoins} size={50} color={COLOURS.bchGreen} />
-        </View>
-        <Text style={TYPOGRAPHY.h2 as any}>Denomination</Text>
-        <Text style={TYPOGRAPHY.pWhite as any}>
-          The smallest unit of a bitcoin is a satoshi, named after the
-          currency's creator. Like there are 100 cents in a US dollar, there are
-          100 million sats (satoshis) in a bitcoin.
-        </Text>
-        <Divider />
-        <Text style={TYPOGRAPHY.pWhite as any}>Display 1 bitcoin as:</Text>
-        {denominations.map(({ name, abbreviation, units, setting }) => {
-          const isSelected = setting === bitcoinDenomination;
-          const onPress = () => {
-            dispatch(
-              updateBitcoinDenomination({ bitcoinDenomination: setting })
-            );
-          };
+    <View style={{ flex: 1 }}>
+      <StackSubheader title={"Denomination"} isBackButton />
+      <ScrollView style={styles.scrollView}>
+        <View style={styles.container as any}>
+          <View style={styles.iconContainer}>
+            <FontAwesomeIcon
+              icon={faCoins}
+              size={50}
+              color={COLOURS.bchGreen}
+            />
+          </View>
+          <Text style={TYPOGRAPHY.pWhite as any}>
+            The smallest unit of a bitcoin is a satoshi, named after the
+            currency's creator. Like there are 100 cents in a US dollar, there
+            are 100 million sats (satoshis) in a bitcoin.
+          </Text>
+          <Divider />
+          <Text style={TYPOGRAPHY.pWhite as any}>Display 1 bitcoin as:</Text>
+          {denominations.map(({ name, abbreviation, units, setting }) => {
+            const isSelected = setting === bitcoinDenomination;
+            const onPress = () => {
+              dispatch(
+                updateBitcoinDenomination({ bitcoinDenomination: setting })
+              );
+            };
 
-          return (
-            <Pressable
-              key={abbreviation}
-              onPress={onPress}
-              style={
-                {
-                  flex: 1,
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                  alignItems: "flex-start",
-                  width: "100%",
-                } as any
-              }
-            >
-              <Text
+            return (
+              <Pressable
+                key={abbreviation}
+                onPress={onPress}
                 style={
                   {
-                    ...TYPOGRAPHY.h2,
-                    textAlign: "right",
                     flex: 1,
-                    paddingRight: SPACING.five,
-                    color: isSelected ? COLOURS.bchGreen : COLOURS.white,
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    alignItems: "flex-start",
+                    width: "100%",
                   } as any
                 }
               >
-                {units}
-              </Text>
-              <View style={{ flex: 1 }}>
                 <Text
                   style={
                     {
                       ...TYPOGRAPHY.h2,
-                      textAlign: "left",
-                      paddingLeft: SPACING.five,
+                      textAlign: "right",
+                      flex: 1,
+                      paddingRight: SPACING.five,
                       color: isSelected ? COLOURS.bchGreen : COLOURS.white,
                     } as any
                   }
                 >
-                  {abbreviation}
+                  {units}
                 </Text>
-                <Text
-                  style={
-                    {
-                      ...TYPOGRAPHY.pWhite,
-                      textAlign: "left",
-                      marginLeft: SPACING.five,
-                      color: isSelected ? COLOURS.bchGreen : COLOURS.white,
-                    } as any
-                  }
-                >
-                  {name}
-                </Text>
-              </View>
-            </Pressable>
-          );
-        })}
-      </View>
-    </ScrollView>
+                <View style={{ flex: 1 }}>
+                  <Text
+                    style={
+                      {
+                        ...TYPOGRAPHY.h2,
+                        textAlign: "left",
+                        paddingLeft: SPACING.five,
+                        color: isSelected ? COLOURS.bchGreen : COLOURS.white,
+                      } as any
+                    }
+                  >
+                    {abbreviation}
+                  </Text>
+                  <Text
+                    style={
+                      {
+                        ...TYPOGRAPHY.pWhite,
+                        textAlign: "left",
+                        marginLeft: SPACING.five,
+                        color: isSelected ? COLOURS.bchGreen : COLOURS.white,
+                      } as any
+                    }
+                  >
+                    {name}
+                  </Text>
+                </View>
+              </Pressable>
+            );
+          })}
+        </View>
+      </ScrollView>
+    </View>
   );
 }
 

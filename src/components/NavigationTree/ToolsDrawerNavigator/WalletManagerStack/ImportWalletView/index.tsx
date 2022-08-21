@@ -24,6 +24,7 @@ import {
   validateWalletMnemonic,
 } from "../../../../../utils/validation";
 import { DEFAULT_DERIVATION_PATH } from "../../../../../utils/consts";
+import StackSubheader from "../../../../atoms/StackSubheader";
 
 function ImportWalletView({ navigation }) {
   const dispatch = useDispatch();
@@ -67,7 +68,7 @@ function ImportWalletView({ navigation }) {
     setIsStartedEditingMnemonic(true);
     dispatch(
       updateImportWalletScratchPadMnemonic({
-        mnemonic: newMnemonic,
+        mnemonic: newMnemonic.toLowerCase(),
       })
     );
   };
@@ -97,40 +98,47 @@ function ImportWalletView({ navigation }) {
     !!mnemonicValidationError;
 
   return (
-    <ScrollView style={styles.scrollView}>
-      <View style={styles.container as any}>
-        <Text style={TYPOGRAPHY.h2 as any}>Name</Text>
-        <TextInput isSmallText text={name} onChange={onChangeName} />
-        {isStartedEditingName && nameValidationError && (
-          <Text style={TYPOGRAPHY.pRed as any}>{nameValidationError}</Text>
-        )}
-        <Text style={TYPOGRAPHY.h2 as any}>Description</Text>
-        <TextInput
-          isSmallText
-          text={description}
-          onChange={onChangeDescription}
-        />
-        {descriptionValidationError && (
-          <Text style={TYPOGRAPHY.pRed as any}>
-            {descriptionValidationError}
+    <View style={{ flex: 1 }}>
+      <StackSubheader title={"Import"} isBackButton />
+      <ScrollView style={styles.scrollView}>
+        <View style={styles.container as any}>
+          <Text style={TYPOGRAPHY.h2 as any}>Name</Text>
+          <TextInput isSmallText text={name} onChange={onChangeName} />
+          {isStartedEditingName && nameValidationError && (
+            <Text style={TYPOGRAPHY.pRed as any}>{nameValidationError}</Text>
+          )}
+          <Text style={TYPOGRAPHY.h2 as any}>Description</Text>
+          <TextInput
+            isSmallText
+            text={description}
+            onChange={onChangeDescription}
+          />
+          {descriptionValidationError && (
+            <Text style={TYPOGRAPHY.pRed as any}>
+              {descriptionValidationError}
+            </Text>
+          )}
+          <Text style={TYPOGRAPHY.h2 as any}>Mnemonic</Text>
+          <TextInput isSmallText text={mnemonic} onChange={onChangeMnemonic} />
+          {isStartedEditingMnemonic && mnemonicValidationError && (
+            <Text style={TYPOGRAPHY.pRed as any}>
+              {mnemonicValidationError}
+            </Text>
+          )}
+          <Text style={TYPOGRAPHY.h2 as any}>Derivation path</Text>
+          <Text style={TYPOGRAPHY.pWhite as any}>
+            {DEFAULT_DERIVATION_PATH}
           </Text>
-        )}
-        <Text style={TYPOGRAPHY.h2 as any}>Mnemonic</Text>
-        <TextInput isSmallText text={mnemonic} onChange={onChangeMnemonic} />
-        {isStartedEditingMnemonic && mnemonicValidationError && (
-          <Text style={TYPOGRAPHY.pRed as any}>{mnemonicValidationError}</Text>
-        )}
-        <Text style={TYPOGRAPHY.h2 as any}>Derivation path</Text>
-        <Text style={TYPOGRAPHY.pWhite as any}>{DEFAULT_DERIVATION_PATH}</Text>
-        <Button
-          isDisabled={isImportDisabled}
-          onPress={onPressCreate}
-          icon={"faFileImport"}
-        >
-          Import wallet
-        </Button>
-      </View>
-    </ScrollView>
+          <Button
+            isDisabled={isImportDisabled}
+            onPress={onPressCreate}
+            icon={"faFileImport"}
+          >
+            Import wallet
+          </Button>
+        </View>
+      </ScrollView>
+    </View>
   );
 }
 

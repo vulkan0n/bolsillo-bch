@@ -13,7 +13,7 @@ const BLANK_SCRATCH_PAD = {
 export interface WalletManagerState {
   activeWalletName: string;
   navigatedWalletName: string;
-  wallets: [SeleneWalletType?];
+  wallets: SeleneWalletType[];
   scratchPad: {
     name?: string;
     description?: string;

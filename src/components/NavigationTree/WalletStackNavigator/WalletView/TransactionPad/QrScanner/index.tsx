@@ -26,9 +26,11 @@ function QrScanner() {
     const isBchAddress = isValidBchAddress(data);
     if (isBchAddress) {
       dispatch(updateTransactionPadSendToAddress({ sendToAddress: data }));
-      updateTransactionPadView({
-        view: "Confirm",
-      });
+      dispatch(
+        updateTransactionPadView({
+          view: "Confirm",
+        })
+      );
     }
   };
 

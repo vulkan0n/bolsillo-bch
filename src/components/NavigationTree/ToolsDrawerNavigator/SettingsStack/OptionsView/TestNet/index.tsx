@@ -22,8 +22,8 @@ const TestNet = () => {
     <View style={styles.control}>
       <Switch
         trackColor={{ true: COLOURS.bchGreen, false: COLOURS.white }}
-        thumbColor={isTestNet ? COLOURS.white : COLOURS.black}
-        ios_backgroundColor={COLOURS.lightGrey}
+        thumbColor={isTestNet ? COLOURS.white : COLOURS.bchGreen}
+        ios_backgroundColor={COLOURS.white}
         onValueChange={handleToggleIsTestNet}
         value={isTestNet}
       />

@@ -78,13 +78,21 @@ const Bridge = () => {
               // So need to grab balance again
               const freshBalance = await walletRequestBalance.getBalance("sat");
 
-              emit({
-                type: RESPONSE_MESSAGE_TYPES.RECEIVED_COINS,
-                data: {
-                  name: message?.data?.name,
-                  balance: freshBalance,
-                },
-              });
+              // Balance changed upwards = coins received
+              // Balance changed downwards = coins sent
+              const isReceivedCoins =
+                parseInt(freshBalance) > parseInt(balance);
+              console.log("Did I receive coins?");
+              console.log({ freshBalance, balance, isReceivedCoins });
+              if (isReceivedCoins) {
+                emit({
+                  type: RESPONSE_MESSAGE_TYPES.RECEIVED_COINS,
+                  data: {
+                    name: message?.data?.name,
+                    balance: freshBalance,
+                  },
+                });
+              }
             }
           );
 
@@ -112,25 +120,46 @@ const Bridge = () => {
           console.log("SENDING!!!");
           console.log(message?.data);
 
-          const txResponse = await walletSendCoins.send([
-            {
-              cashaddr: message?.data?.recipientCashAddr,
-              value: parseInt(message?.data?.satsToSend),
-              unit: "sat",
-            },
-            // {
-            //   feePaidBy: "changeThenAny",
-            // },
-          ]);
-          console.log("sent coins!");
-          console.log({ txResponse });
           emit({
-            type: RESPONSE_MESSAGE_TYPES.SEND_COINS_RESPONSE,
-            data: {
-              balance: txResponse?.balance,
-              tempTxId: txResponse?.txId,
-            },
+            type: RESPONSE_MESSAGE_TYPES.SEND_COINS_RESPONSE_LOADING,
+            data: {},
           });
+
+          try {
+            const txResponse = await walletSendCoins.send([
+              {
+                cashaddr: message?.data?.recipientCashAddr,
+                value: parseInt(message?.data?.satsToSend),
+                unit: "sat",
+              },
+              // {
+              //   feePaidBy: "changeThenAny",
+              // },
+            ]);
+
+            console.log("sent coins!");
+            console.log({ txResponse });
+
+            emit({
+              type: RESPONSE_MESSAGE_TYPES.SEND_COINS_RESPONSE_SUCCESS,
+              data: {
+                name: message?.data?.name,
+                balance: txResponse?.balance?.sat,
+                tempTxId: txResponse?.txId,
+              },
+            });
+          } catch (sendError) {
+            console.log("!!!!!!!!");
+            console.log({ sendError });
+
+            emit({
+              type: RESPONSE_MESSAGE_TYPES.SEND_COINS_RESPONSE_FAIL,
+              data: {
+                text: sendError,
+              },
+            });
+          }
+
           break;
 
         default:

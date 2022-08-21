@@ -4,6 +4,9 @@ import NewWalletView from "./NewWalletView";
 import ImportWalletView from "./ImportWalletView";
 import BackupView from "./BackupView";
 import DeleteWalletView from "./DeleteWalletView";
+import { View, Text } from "react-native";
+import TYPOGRAPHY from "../../../../design/typography";
+import COLOURS from "../../../../design/colours";
 
 const Stack = createNativeStackNavigator();
 
@@ -13,49 +16,35 @@ const WalletManagerStack = () => (
       name="Manage"
       component={ManageWalletsView}
       options={{
-        headerStyle: {
-          // backgroundColor: "red",
-        },
-        headerTitle: (props) => null,
+        headerShown: false,
       }}
     />
     <Stack.Screen
       name="New"
       component={NewWalletView}
       options={{
-        headerStyle: {
-          // backgroundColor: "red",
-        },
-        headerTitle: (props) => null,
+        headerShown: false,
       }}
     />
     <Stack.Screen
       name="Import"
       component={ImportWalletView}
       options={{
-        headerStyle: {
-          // backgroundColor: "red",
-        },
-        headerTitle: (props) => null,
+        headerShown: false,
       }}
     />
     <Stack.Screen
       name="Backup"
       component={BackupView}
       options={{
-        headerStyle: {
-          // backgroundColor: "red",
-        },
-        headerTitle: (props) => null,
+        headerShown: false,
       }}
     />
     <Stack.Screen
       name="Delete"
       component={DeleteWalletView}
       options={{
-        headerStyle: {
-          // backgroundColor: "red",
-        },
+        headerShown: false,
       }}
     />
   </Stack.Navigator>

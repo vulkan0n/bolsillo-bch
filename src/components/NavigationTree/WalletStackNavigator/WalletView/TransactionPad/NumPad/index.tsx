@@ -250,7 +250,12 @@ const NumPad = () => {
         </View>
         <View style={styles.numPadRow as any}>
           <InputButton n={"<"} />
-          <InputButton n={"0"} isDisabled={isMaxDecimals} />
+          <InputButton
+            n={"0"}
+            isDisabled={
+              isMaxDecimals || checkInsufficientBalance("0", inputCurrency)
+            }
+          />
           <InputButton n={"."} isDisabled={isDisableDecimal} />
         </View>
       </View>

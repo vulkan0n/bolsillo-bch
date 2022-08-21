@@ -21,11 +21,6 @@ import persistor from "./src/redux/persistor";
 import Toast from "react-native-toast-message";
 import toastConfig from "./src/config/toast";
 import preloadMainNetScript from "./src/config/preloadMainNetScript";
-import {
-  updateBridgeBalance,
-  updateBridgeTempTxId,
-  updateBridgeWallet,
-} from "./src/redux/reducers/bridgeReducer";
 import { WalletType } from "./src/types";
 import {
   createDefaultWallet,
@@ -33,6 +28,11 @@ import {
   updateWalletBalance,
   updateWalletCashAddr,
 } from "./src/redux/reducers/walletManagerReducer";
+import {
+  updateTransactionPadIsSendingCoins,
+  clearTransactionPad,
+} from "./src/redux/reducers/transactionPadReducer";
+import { reset } from "./src/components/NavigationTree/rootNavigation";
 
 export default function App() {
   // For the list of possible font faces
@@ -61,7 +61,7 @@ export default function App() {
   // The argument is callback to receive message from React
   const { ref, onMessage, emit } = useWebViewMessage(
     (message: BridgeResponseMessage) => {
-      // console.log("Bridge Response Message: ", message);
+      console.log("Bridge Response Message: ", message);
       switch (message.type) {
         case RESPONSE_MESSAGE_TYPES.CREATE_DEFAULT_WALLET_RESPONSE:
           store.dispatch(
@@ -77,7 +77,9 @@ export default function App() {
         // The difference is on the other side of the bridge
         // Generating a new seed vs refreshing from seed
         case RESPONSE_MESSAGE_TYPES.REFRESH_WALLET_RESPONSE:
-          store.dispatch(updateBridgeWallet({ wallet: message.data.wallet }));
+          // TODO: Fix this to work with the wallet manager
+          // instead of the deprecated bridge
+          // store.dispatch(updateBridgeWallet({ wallet: message.data.wallet }));
           break;
 
         case RESPONSE_MESSAGE_TYPES.CREATE_SCRATCHPAD_WALLET_RESPONSE:
@@ -105,13 +107,45 @@ export default function App() {
           );
           break;
 
-        case RESPONSE_MESSAGE_TYPES.SEND_COINS_RESPONSE:
+        case RESPONSE_MESSAGE_TYPES.SEND_COINS_RESPONSE_LOADING:
+          // TODO: Fill out
+          break;
+
+        case RESPONSE_MESSAGE_TYPES.SEND_COINS_RESPONSE_SUCCESS:
           store.dispatch(
-            updateBridgeBalance({ balance: message.data.balance })
+            updateWalletBalance({
+              name: message.data.name,
+              balance: message.data.balance,
+            })
           );
+
+          console.log("name and new balance", {
+            name: message.data.name,
+            balance: message.data.balance,
+          });
+
+          store.dispatch(clearTransactionPad());
+
+          reset({
+            index: 0,
+            routes: [{ name: "Transaction Success" }],
+          });
+          break;
+
+        case RESPONSE_MESSAGE_TYPES.SEND_COINS_RESPONSE_FAIL:
           store.dispatch(
-            updateBridgeTempTxId({ tempTxId: message.data.tempTxId })
+            updateTransactionPadIsSendingCoins({
+              isSendingCoins: false,
+            })
           );
+
+          Toast.show({
+            type: "customError",
+            props: {
+              title: "Transaction failed",
+              text: message?.data?.text,
+            },
+          });
           break;
 
         case RESPONSE_MESSAGE_TYPES.ERROR:
@@ -147,8 +181,18 @@ export default function App() {
     }
   );
 
-  // Listens for components that need to send a message to the Bridge
-  DeviceEventEmitter.addListener("event.emitEvent", (event) => emit(event));
+  React.useEffect(() => {
+    // Listens for components that need to send a message to the Bridge
+    DeviceEventEmitter.addListener("event.emitEvent", (event) => {
+      emit(event);
+    });
+
+    const unsubscribe = () => {
+      DeviceEventEmitter.removeAllListeners();
+    };
+
+    return () => unsubscribe();
+  }, []);
 
   if (!fontsLoaded) {
     return null;

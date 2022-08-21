@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { View, Pressable, Image, Text } from "react-native";
+import { View, Image, Text } from "react-native";
 import { useSelector } from "react-redux";
 import TransactionPad from "./TransactionPad";
 import styles from "./styles";
@@ -13,13 +13,6 @@ function WalletView({ navigation }) {
   const isNoWallet = useSelector(
     (state: ReduxState) => state.walletManager?.wallets?.length === 0
   );
-
-  const wallet = useSelector((state: ReduxState) =>
-    state.walletManager?.wallets?.find(
-      ({ name }) => name === state.walletManager?.activeWalletName
-    )
-  );
-  const { tempTxId } = useSelector((state: ReduxState) => state.bridge);
   const { isTestNet } = useSelector((state: ReduxState) => state.settings);
   const { isShowAvailableBalance } = useSelector(
     (state: ReduxState) => state.settings
@@ -35,28 +28,6 @@ function WalletView({ navigation }) {
       });
     }
   });
-
-  // Refresh wallet when toggling to/from test net
-  useEffect(() => {
-    emit({
-      type: BRIDGE_MESSAGE_TYPES.REFRESH_WALLET,
-      data: { wallet, isTestNet },
-    });
-  }, [isTestNet]);
-
-  // Transaction id set to non null means new transaction just completed
-  // useEffect(() => {
-  //   if (!tempTxId) {
-  //     return;
-  //   }
-
-  //   console.log("sent tx id!!");
-  //   console.log({ tempTxId });
-  //   navigation.reset({
-  //     index: 0,
-  //     routes: [{ name: "Transaction Success" }],
-  //   });
-  // }, [tempTxId]);
 
   if (isNoWallet) {
     return (

@@ -9,6 +9,7 @@ import ShowAvailableBalance from "./ShowAvailableBalance";
 import TestNet from "./TestNet";
 import TYPOGRAPHY from "../../../../../design/typography";
 import Divider from "../../../../atoms/Divider";
+import StackSubheader from "../../../../atoms/StackSubheader";
 
 const OptionsView = ({ navigation }) => {
   const onPressReset = () => {
@@ -16,23 +17,26 @@ const OptionsView = ({ navigation }) => {
   };
 
   return (
-    <ScrollView style={styles.scrollView as any}>
-      <View style={styles.container as any}>
-        <BchDenominated />
-        <ContrastCurrency navigation={navigation} />
-        <BitcoinDenomination navigation={navigation} />
-        <RightHandedMode />
-        <ShowAvailableBalance />
-        <TestNet />
-        <Divider />
-        <Text style={TYPOGRAPHY.pWhite as any}>
-          Price data retrieved from CoinGecko.
-        </Text>
-        <Pressable onPress={onPressReset}>
-          <Text style={TYPOGRAPHY.pWhiteUnderlined as any}>Reset app</Text>
-        </Pressable>
-      </View>
-    </ScrollView>
+    <View style={{ flex: 1 }}>
+      <StackSubheader title={"Options"} isBackButton />
+      <ScrollView style={styles.scrollView as any}>
+        <View style={styles.container as any}>
+          <BchDenominated />
+          <ContrastCurrency navigation={navigation} />
+          <BitcoinDenomination navigation={navigation} />
+          <RightHandedMode />
+          <ShowAvailableBalance />
+          <TestNet />
+          <Divider />
+          <Text style={TYPOGRAPHY.pWhite as any}>
+            Price data retrieved from CoinGecko.
+          </Text>
+          <Pressable onPress={onPressReset}>
+            <Text style={TYPOGRAPHY.pWhiteUnderlined as any}>Reset app</Text>
+          </Pressable>
+        </View>
+      </ScrollView>
+    </View>
   );
 };
 

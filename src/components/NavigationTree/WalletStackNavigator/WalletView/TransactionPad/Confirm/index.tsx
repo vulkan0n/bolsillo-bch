@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text } from "react-native";
+import { View, Text, Pressable } from "react-native";
 import styles from "./styles";
 import Button from "../../../../../atoms/Button";
 import { BRIDGE_MESSAGE_TYPES } from "../../../../../../utils/bridgeMessages";
@@ -8,10 +8,12 @@ import {
   updateTransactionPadSendToAddress,
   updateTransactionPadView,
   updateTransactionPadBalance,
+  updateTransactionPadIsSendingCoins,
 } from "../../../../../../redux/reducers/transactionPadReducer";
 import { ReduxState } from "../../../../../../types";
 import { convertRawCurrencyToRawSats } from "../../../../../../utils/formatting";
 import emit from "../../../../../../utils/emit";
+import TYPOGRAPHY from "../../../../../../design/typography";
 
 const Confirm = ({ navigation }) => {
   const dispatch = useDispatch();
@@ -26,7 +28,7 @@ const Confirm = ({ navigation }) => {
   const { isBchDenominated, bitcoinDenomination, contrastCurrency } =
     useSelector((state: ReduxState) => state.settings);
 
-  const { sendToAddress } = useSelector(
+  const { sendToAddress, isSendingCoins } = useSelector(
     (state: ReduxState) => state.transactionPad
   );
   const { isRightHandedMode } = useSelector(
@@ -43,6 +45,7 @@ const Confirm = ({ navigation }) => {
     emit({
       type: BRIDGE_MESSAGE_TYPES.SEND_COINS,
       data: {
+        name: wallet?.name,
         mnemonic: wallet?.mnemonic,
         derivationPath: wallet?.derivationPath,
         recipientCashAddr: sendToAddress,
@@ -52,17 +55,18 @@ const Confirm = ({ navigation }) => {
     });
 
     dispatch(
-      updateTransactionPadBalance({
-        padBalance: "0",
+      updateTransactionPadIsSendingCoins({
+        isSendingCoins: true,
       })
     );
-    dispatch(
-      updateTransactionPadSendToAddress({
-        sendToAddress: "",
-      })
-    );
+  };
 
-    navigation.navigate("Transaction Success");
+  const onPressCancelLoading = () => {
+    dispatch(
+      updateTransactionPadIsSendingCoins({
+        isSendingCoins: false,
+      })
+    );
   };
 
   const onPressBack = () => {
@@ -79,9 +83,22 @@ const Confirm = ({ navigation }) => {
     </Button>
   );
 
+  if (isSendingCoins) {
+    return (
+      <Pressable
+        onPress={onPressCancelLoading}
+        style={styles.inputBackground as any}
+      >
+        <Text>Sending...</Text>
+      </Pressable>
+    );
+  }
+
   return (
     <View style={styles.inputBackground as any}>
-      <Text>Confirm?</Text>
+      <Text style={TYPOGRAPHY.h2black as any}>to</Text>
+      <Text style={TYPOGRAPHY.p as any}>{sendToAddress}</Text>
+
       <View style={styles.buttonContainer as any}>
         {isRightHandedMode && SendButton}
         <Button

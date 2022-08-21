@@ -5,11 +5,13 @@ import {
   updateBitcoinDenomination,
   updateContrastCurrency,
 } from "./settingsReducer";
+import { updateActiveWalletName } from "./walletManagerReducer";
 
 export interface TransactionPadState {
   view: "" | "NumPad" | "Send" | "Receive" | "Confirm";
   padBalance: string;
   sendToAddress: string;
+  isSendingCoins: boolean;
   error: string;
 }
 
@@ -17,6 +19,7 @@ const initialState = {
   view: "NumPad",
   padBalance: "0",
   sendToAddress: "",
+  isSendingCoins: false,
   error: "",
 } as TransactionPadState;
 
@@ -33,20 +36,29 @@ const transactionPadSlice = createSlice({
     updateTransactionPadSendToAddress(state, action) {
       state.sendToAddress = action.payload.sendToAddress;
     },
+    updateTransactionPadIsSendingCoins(state, action) {
+      state.isSendingCoins = action.payload.isSendingCoins;
+    },
     updateTransactionPadError(state, action) {
       state.error = action.payload.error;
+    },
+    clearTransactionPad() {
+      return initialState;
     },
   },
   extraReducers: (builder) => {
     builder
-      .addCase(toggleIsBchDenominated, (state) => {
-        state.padBalance = "0";
+      .addCase(toggleIsBchDenominated, () => {
+        return initialState;
       })
-      .addCase(updateContrastCurrency, (state) => {
-        state.padBalance = "0";
+      .addCase(updateContrastCurrency, () => {
+        return initialState;
       })
-      .addCase(updateBitcoinDenomination, (state) => {
-        state.padBalance = "0";
+      .addCase(updateBitcoinDenomination, () => {
+        return initialState;
+      })
+      .addCase(updateActiveWalletName, () => {
+        return initialState;
       })
       .addCase(PURGE, () => initialState);
   },
@@ -56,6 +68,8 @@ export const {
   updateTransactionPadView,
   updateTransactionPadBalance,
   updateTransactionPadSendToAddress,
+  updateTransactionPadIsSendingCoins,
   updateTransactionPadError,
+  clearTransactionPad,
 } = transactionPadSlice.actions;
 export default transactionPadSlice.reducer;

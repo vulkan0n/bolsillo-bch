@@ -11,13 +11,18 @@ import { updateBchPrices } from "../../redux/reducers/exchangeRatesReducer";
 const BackgroundIntervals = () => {
   const dispatch = useDispatch();
   const wallet = useSelector((state: ReduxState) =>
-    state.walletManager?.wallets?.find(
-      ({ name }) => name === state.walletManager?.activeWalletName
-    )
+    state.walletManager?.wallets?.find(({ name }) => {
+      console.log({ state });
+      return name === state.walletManager?.activeWalletName;
+    })
   );
   const { isTestNet } = useSelector((state: ReduxState) => state.settings);
 
   const fetchActiveWalletBalance = () => {
+    console.log("emitting fetchActiveWalletBaslance", {
+      wallet,
+      isTestNet,
+    });
     emit({
       type: BRIDGE_MESSAGE_TYPES.REQUEST_BALANCE_AND_ADDRESS,
       data: {
