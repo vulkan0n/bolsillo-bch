@@ -18,15 +18,15 @@ export const selectActiveWalletBalance = createSelector(
   (state) => state.settings.isBchDenominated,
   (state) => state.settings.bitcoinDenomination,
   (state) => state.settings.contrastCurrency,
-  (wallet, isBchDenominated, bitcoinDenomination, contrastCurrency) => {
+  (activeWallet, isBchDenominated, bitcoinDenomination, contrastCurrency) => {
     const bchBalance = convertBalanceToDisplay(
-      wallet?.balance,
+      activeWallet?.balance,
       "satoshis",
       bitcoinDenomination
     );
 
     const contrastBalance = convertBalanceToDisplay(
-      wallet?.balance,
+      activeWallet?.balance,
       "satoshis",
       contrastCurrency
     );
