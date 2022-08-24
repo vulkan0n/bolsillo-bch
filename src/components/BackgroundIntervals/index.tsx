@@ -7,15 +7,11 @@ import { ONE_SECOND, THIRTY_SECONDS } from "../../utils/consts";
 import emit from "../../utils/emit";
 import axios from "axios";
 import { updateBchPrices } from "../../redux/reducers/exchangeRatesReducer";
+import { selectActiveWallet } from "../../redux/selectors";
 
 const BackgroundIntervals = () => {
   const dispatch = useDispatch();
-  const wallet = useSelector((state: ReduxState) =>
-    state.walletManager?.wallets?.find(({ name }) => {
-      // console.log({ state });
-      return name === state.walletManager?.activeWalletName;
-    })
-  );
+  const wallet = useSelector((state: ReduxState) => selectActiveWallet(state));
 
   const isNoWallet = useSelector(
     (state: ReduxState) => state.walletManager?.wallets?.length === 0

@@ -3,33 +3,17 @@ import { View } from "react-native";
 import styles from "./styles";
 import Button from "../../../../../atoms/Button";
 import TextInput from "../../../../../atoms/TextInput";
-import { BRIDGE_MESSAGE_TYPES } from "../../../../../../utils/bridgeMessages";
 import { useSelector, useDispatch } from "react-redux";
 import {
   updateTransactionPadSendToAddress,
   updateTransactionPadView,
-  updateTransactionPadBalance,
 } from "../../../../../../redux/reducers/transactionPadReducer";
 import { ReduxState } from "../../../../../../types";
-import {
-  convertRawCurrencyToRawSats,
-  formatStringToCashAddress,
-} from "../../../../../../utils/formatting";
-import emit from "../../../../../../utils/emit";
+import { formatStringToCashAddress } from "../../../../../../utils/formatting";
 import QrScanner from "../QrScanner";
 
 const SendPad = () => {
   const dispatch = useDispatch();
-  const wallet = useSelector((state: ReduxState) =>
-    state.walletManager?.wallets?.find(
-      ({ name }) => name === state.walletManager?.activeWalletName
-    )
-  );
-  const { padBalance } = useSelector(
-    (state: ReduxState) => state.transactionPad
-  );
-  const { isBchDenominated, bitcoinDenomination, contrastCurrency } =
-    useSelector((state: ReduxState) => state.settings);
 
   const { sendToAddress } = useSelector(
     (state: ReduxState) => state.transactionPad
@@ -38,11 +22,6 @@ const SendPad = () => {
     (state: ReduxState) => state.settings
   );
   const { isTestNet } = useSelector((state: ReduxState) => state.settings);
-
-  const inputCurrency = isBchDenominated
-    ? bitcoinDenomination
-    : contrastCurrency;
-  const rawSatsToSend = convertRawCurrencyToRawSats(padBalance, inputCurrency);
 
   const onPressSend = () => {
     dispatch(
