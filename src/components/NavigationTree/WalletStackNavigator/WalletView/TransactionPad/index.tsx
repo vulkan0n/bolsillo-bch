@@ -8,11 +8,13 @@ import Confirm from "./Confirm";
 import LiveBalance from "./LiveBalance";
 import { useSelector } from "react-redux";
 import { ReduxState } from "../../../../../types";
-import useActiveWalletBalance from "../../../../../hooks/useActiveWalletBalance";
+import { selectActiveWalletBalance } from "../../../../../redux/selectors";
 
 const TransactionPad = ({ navigation }) => {
   const { view } = useSelector((state: ReduxState) => state.transactionPad);
-  const { isZeroBalance } = useActiveWalletBalance();
+  const { isZeroBalance } = useSelector((state: ReduxState) =>
+    selectActiveWalletBalance(state)
+  );
 
   const component = () => {
     if (isZeroBalance) {

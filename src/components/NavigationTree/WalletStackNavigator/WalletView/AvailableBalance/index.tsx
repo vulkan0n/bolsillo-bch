@@ -10,7 +10,7 @@ import { selectActiveWalletBalance } from "../../../../../redux/selectors";
 function AvailableBalance() {
   const [isDisplayHideNotice, setIsDisplayHideNotice] = useState(false);
 
-  const { primaryBalance, secondaryBalance } = useSelector(state => selectActiveWalletBalance(state))
+  const { primaryBalance, secondaryBalance } = useSelector((state: ReduxState) => selectActiveWalletBalance(state))
 
   const dispatch = useDispatch()
 
