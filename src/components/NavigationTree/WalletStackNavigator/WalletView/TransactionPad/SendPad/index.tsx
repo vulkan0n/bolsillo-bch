@@ -17,6 +17,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { iconImport } from "../../../../../../design/icons";
 import COLOURS from "../../../../../../design/colours";
 import Toast from "react-native-toast-message";
+import ButtonColumn from "./ButtonColumn";
 
 const SendPad = () => {
   const dispatch = useDispatch();
@@ -46,30 +47,6 @@ const SendPad = () => {
         text,
       },
     });
-  };
-
-  const onPressText = () => {
-    dispatch(
-      updateTransactionPadSendToAddressEntry({
-        sendToAddressEntry: "Text",
-      })
-    );
-  };
-
-  const onPressScan = () => {
-    dispatch(
-      updateTransactionPadSendToAddressEntry({
-        sendToAddressEntry: "Scan",
-      })
-    );
-  };
-
-  const onPressImage = () => {
-    dispatch(
-      updateTransactionPadSendToAddressEntry({
-        sendToAddressEntry: "Image",
-      })
-    );
   };
 
   const onPressSend = () => {
@@ -146,38 +123,12 @@ const SendPad = () => {
     }
   };
 
-  const ButtonColumn = (
-    <View style={styles.buttonContainerColumn as any}>
-      <Button
-        icon="faKeyboard"
-        variant={sendToAddressEntry === "Text" ? "primary" : "secondary"}
-        onPress={onPressText}
-      >
-        Text
-      </Button>
-      <Button
-        icon="faQrcode"
-        variant={sendToAddressEntry === "Scan" ? "primary" : "secondary"}
-        onPress={onPressScan}
-      >
-        Scan
-      </Button>
-      <Button
-        icon="faImage"
-        variant={sendToAddressEntry === "Image" ? "primary" : "secondary"}
-        onPress={onPressImage}
-      >
-        Img
-      </Button>
-    </View>
-  );
-
   return (
     <View style={styles.inputBackground as any}>
       <View style={styles.numPad as any}>
-        {!isRightHandedMode && ButtonColumn}
+        {!isRightHandedMode && <ButtonColumn />}
         {AddressEntry()}
-        {isRightHandedMode && ButtonColumn}
+        {isRightHandedMode && <ButtonColumn />}
       </View>
       <View style={styles.buttonContainer as any}>
         {isRightHandedMode && SendButton}

@@ -48,13 +48,6 @@ const styles = {
     justifyContent: "space-around",
     width: "100%",
   },
-  buttonContainerColumn: {
-    flex: 1,
-    flexDirection: "column",
-    justifyContent: "center",
-    alignItems: "center",
-    height: "100%%",
-  },
 };
 
 export default styles;
