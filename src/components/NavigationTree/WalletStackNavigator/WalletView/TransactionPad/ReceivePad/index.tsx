@@ -26,7 +26,7 @@ const ReceivePad = () => {
     (state: ReduxState) => state.settings
   );
 
-  const isZeroBalance = useSelector((state) =>
+  const isZeroBalance = useSelector((state: ReduxState) =>
     selectActiveWalletIsZeroBalance(state)
   );
 
