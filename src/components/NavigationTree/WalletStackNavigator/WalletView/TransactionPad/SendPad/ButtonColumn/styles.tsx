@@ -5,7 +5,7 @@ const styles = {
   buttonContainerColumn: {
     flex: 1,
     flexDirection: "column",
-    justifyContent: "center",
+    justifyContent: "flex-end",
     alignItems: "center",
     height: "100%%",
   },
