@@ -9,6 +9,7 @@ import { updateActiveWalletName } from "./walletManagerReducer";
 
 export interface TransactionPadState {
   view: "" | "NumPad" | "Send" | "Receive" | "Confirm";
+  sendToAddressEntry: "Text" | "Scan" | "Image";
   padBalance: string;
   sendToAddress: string;
   isSendingCoins: boolean;
@@ -17,6 +18,7 @@ export interface TransactionPadState {
 
 const initialState = {
   view: "NumPad",
+  sendToAddressEntry: "Scan",
   padBalance: "0",
   sendToAddress: "",
   isSendingCoins: false,
@@ -29,6 +31,9 @@ const transactionPadSlice = createSlice({
   reducers: {
     updateTransactionPadView(state, action) {
       state.view = action.payload.view;
+    },
+    updateTransactionPadSendToAddressEntry(state, action) {
+      state.sendToAddressEntry = action.payload.sendToAddressEntry;
     },
     updateTransactionPadBalance(state, action) {
       state.padBalance = action.payload.padBalance;
@@ -66,6 +71,7 @@ const transactionPadSlice = createSlice({
 
 export const {
   updateTransactionPadView,
+  updateTransactionPadSendToAddressEntry,
   updateTransactionPadBalance,
   updateTransactionPadSendToAddress,
   updateTransactionPadIsSendingCoins,

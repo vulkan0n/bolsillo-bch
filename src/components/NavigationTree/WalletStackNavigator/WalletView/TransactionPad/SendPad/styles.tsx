@@ -13,14 +13,14 @@ const styles = {
   numPad: {
     backgroundColor: COLOURS.lightGrey,
     flex: 1,
-    justifyContent: "center",
+    justifyContent: "flex-end",
     alignItems: "center",
     width: "100%",
     padding: SPACING.fifteen,
     margin: SPACING.fifteen,
     borderRadius: SPACING.borderRadius,
   },
-  qrScannerRow: {
+  entryRow: {
     flex: 1,
     flexDirection: "row",
     justifyContent: "center",
@@ -28,13 +28,12 @@ const styles = {
     width: "100%",
     margin: SPACING.five,
   },
-  numPadRow: {
-    flexDirection: "row",
-    justifyContent: "space-around",
+  entryColumn: {
+    flex: 1,
+    justifyContent: "center",
     alignItems: "center",
     width: "100%",
-    marginRight: SPACING.five,
-    marginLeft: SPACING.five,
+    margin: SPACING.five,
   },
   inputButton: {
     minWidth: 50,

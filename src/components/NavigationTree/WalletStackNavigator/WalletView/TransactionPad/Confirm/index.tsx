@@ -102,7 +102,7 @@ const Confirm = ({ navigation }) => {
           icon={"faChevronLeft"}
           variant="secondary"
           onPress={onPressBack}
-          isSmall
+          size={"small"}
         >
           Back
         </Button>

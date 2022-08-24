@@ -1,6 +1,6 @@
 # Selene Wallet
 
-Join the Cash economy
+Join the Cash economy.
 
 ## Setup
 
@@ -11,6 +11,9 @@ $ expo start
 # You will need to have XCode setup to run the iOS simulator
 # Press 'i' to open simulator
 # Note, you need to ensure you have stable wifi to connect through the tunnel
+# Alternatively:
+$ npm run ios
+$ npm run android
 ```
 
 ## Development
@@ -44,3 +47,11 @@ $ /Applications/Electron-Cash.app/Contents/MacOS/Electron-Cash --testnet
 ```
 
 And note that mainnet.cash uses `m/44/0'/0'` for mainnet derivative path and `m/44/1'/0'` for testnet.
+
+# Builds
+
+```
+$ eas build
+# Wait 20 minutes for build to finish
+$ eas update --auto
+```

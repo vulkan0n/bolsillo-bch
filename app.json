@@ -1,11 +1,12 @@
 {
   "expo": {
-    "name": "selene-wallet",
-    "slug": "selene-wallet",
+    "name": "selene-app",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
+    "owner": "selene-wallet",
+    "slug": "selene-app",
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
@@ -14,18 +15,27 @@
     "updates": {
       "fallbackToCacheTimeout": 0
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.jte.seleneapp"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#1C1E21"
-      }
+      },
+      "package": "com.jte.seleneapp"
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "e00fb2ba-7d2f-4fb2-a6c7-472931f3ab2a"
+      }
     }
   }
 }

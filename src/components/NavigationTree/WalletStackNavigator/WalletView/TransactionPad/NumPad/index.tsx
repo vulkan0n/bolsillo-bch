@@ -175,7 +175,7 @@ const NumPad = () => {
     <Button
       icon={"faPaperPlane"}
       onPress={onPressSend}
-      isSmall
+      size={"small"}
       isDisabled={isSendDisabled}
     >
       Send
@@ -262,7 +262,7 @@ const NumPad = () => {
           icon={"faBitcoinSign"}
           variant="secondary"
           onPress={onPressReceive}
-          isSmall
+          size={"small"}
         >
           Receive
         </Button>

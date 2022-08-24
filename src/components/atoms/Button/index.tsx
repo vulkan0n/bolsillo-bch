@@ -9,7 +9,7 @@ interface Props {
   children: any;
   onPress: () => void;
   variant?: "primary" | "secondary" | "blackOutlined" | "danger";
-  isSmall?: boolean;
+  size?: "regular" | "small";
   isDisabled?: boolean;
   icon?: IconType;
 }
@@ -18,10 +18,12 @@ const Button = ({
   children,
   onPress = () => {},
   variant = "primary",
-  isSmall = false,
+  size = "regular",
   isDisabled = false,
   icon = "",
 }: Props) => {
+  const isSmall = size === "small";
+
   const iconColour = () => {
     if (isDisabled) {
       return COLOURS.lightGrey;

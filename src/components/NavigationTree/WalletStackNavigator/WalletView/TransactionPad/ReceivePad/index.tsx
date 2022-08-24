@@ -60,7 +60,7 @@ const ReceivePad = () => {
   };
 
   const ShareButton = (
-    <Button onPress={onPressShare} isSmall>
+    <Button onPress={onPressShare} size={"small"}>
       Share
     </Button>
   );
@@ -87,7 +87,7 @@ const ReceivePad = () => {
             icon={"faChevronLeft"}
             variant="secondary"
             onPress={onPressBack}
-            isSmall
+            size={"small"}
           >
             Back
           </Button>
