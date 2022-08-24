@@ -57,4 +57,7 @@ And note that mainnet.cash uses `m/44/0'/0'` for mainnet derivative path and `m/
 $ eas build
 # Wait 20 minutes for build to finish
 $ eas update --auto
+
+# Android test release build
+$ eas build --profile preview --platform android
 ```
