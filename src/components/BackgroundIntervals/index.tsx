@@ -3,7 +3,7 @@ import { View } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { ReduxState } from "../../types";
 import { BRIDGE_MESSAGE_TYPES } from "../../utils/bridgeMessages";
-import { THIRTY_SECONDS } from "../../utils/consts";
+import { ONE_SECOND, THIRTY_SECONDS } from "../../utils/consts";
 import emit from "../../utils/emit";
 import axios from "axios";
 import { updateBchPrices } from "../../redux/reducers/exchangeRatesReducer";
@@ -12,9 +12,12 @@ const BackgroundIntervals = () => {
   const dispatch = useDispatch();
   const wallet = useSelector((state: ReduxState) =>
     state.walletManager?.wallets?.find(({ name }) => {
-      console.log({ state });
+      // console.log({ state });
       return name === state.walletManager?.activeWalletName;
     })
+  );
+  const isNoWallet = useSelector(
+    (state: ReduxState) => state.walletManager?.wallets?.length === 0
   );
   const { isTestNet } = useSelector((state: ReduxState) => state.settings);
 
@@ -84,6 +87,19 @@ const BackgroundIntervals = () => {
     }
     fetchPriceData();
   };
+
+  // Create a wallet if none exists
+  // I.e. first time app is opened
+  if (isNoWallet) {
+    // Need to delay by 1 sec to give time for the Bridge to load
+    // Otherwise the message doesn't fire properly
+    setTimeout(() => {
+      emit({
+        type: BRIDGE_MESSAGE_TYPES.CREATE_DEFAULT_WALLET,
+        data: { isTestNet },
+      });
+    }, ONE_SECOND);
+  }
 
   useEffect(() => {
     ping();
