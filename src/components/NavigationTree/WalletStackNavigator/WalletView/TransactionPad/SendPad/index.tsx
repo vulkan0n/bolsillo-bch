@@ -1,66 +1,28 @@
 import React from "react";
-import { View, Pressable, Text } from "react-native";
+import { View, Text } from "react-native";
 import styles from "./styles";
 import Button from "../../../../../atoms/Button";
-import TextInput from "../../../../../atoms/TextInput";
 import { useSelector, useDispatch } from "react-redux";
-import {
-  updateTransactionPadSendToAddress,
-  updateTransactionPadSendToAddressEntry,
-  updateTransactionPadView,
-} from "../../../../../../redux/reducers/transactionPadReducer";
+import { updateTransactionPadView } from "../../../../../../redux/reducers/transactionPadReducer";
 import { ReduxState } from "../../../../../../types";
-import { formatStringToCashAddress } from "../../../../../../utils/formatting";
 import QrScanner from "../QrScanner";
-import * as Clipboard from "expo-clipboard";
-import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { iconImport } from "../../../../../../design/icons";
-import COLOURS from "../../../../../../design/colours";
-import Toast from "react-native-toast-message";
 import ButtonColumn from "./ButtonColumn";
+import TextEntry from "./TextEntry";
 
 const SendPad = () => {
   const dispatch = useDispatch();
 
-  const { sendToAddress, sendToAddressEntry } = useSelector(
+  const { sendToAddressEntry } = useSelector(
     (state: ReduxState) => state.transactionPad
   );
   const { isRightHandedMode } = useSelector(
     (state: ReduxState) => state.settings
   );
-  const { isTestNet } = useSelector((state: ReduxState) => state.settings);
-
-  const onPressPaste = async () => {
-    const clipboardString = await Clipboard.getStringAsync();
-    const text = formatStringToCashAddress(clipboardString);
-
-    dispatch(
-      updateTransactionPadSendToAddress({
-        sendToAddress: text,
-      })
-    );
-
-    Toast.show({
-      type: "customSuccess",
-      props: {
-        title: "Pasted from clipboard",
-        text,
-      },
-    });
-  };
 
   const onPressSend = () => {
     dispatch(
       updateTransactionPadView({
         view: "Confirm",
-      })
-    );
-  };
-
-  const onChangeTextInput = (value) => {
-    dispatch(
-      updateTransactionPadSendToAddress({
-        sendToAddress: formatStringToCashAddress(value, isTestNet),
       })
     );
   };
@@ -79,24 +41,6 @@ const SendPad = () => {
     </Button>
   );
 
-  const TextEntry = (
-    <View style={styles.entryColumn as any}>
-      <TextInput
-        placeholder={"bitcoincash:"}
-        text={sendToAddress}
-        onChange={onChangeTextInput}
-        isSmallText
-      />
-      <Pressable onPress={onPressPaste}>
-        <FontAwesomeIcon
-          icon={iconImport("faPaste")}
-          size={30}
-          color={COLOURS.black}
-        />
-      </Pressable>
-    </View>
-  );
-
   const ScanEntry = (
     <View style={styles.entryRow as any}>
       <QrScanner />
@@ -112,7 +56,7 @@ const SendPad = () => {
   const AddressEntry = () => {
     switch (sendToAddressEntry) {
       case "Text":
-        return TextEntry;
+        return <TextEntry />;
       case "Scan":
         return ScanEntry;
       case "Image":
