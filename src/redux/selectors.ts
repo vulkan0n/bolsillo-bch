@@ -1,24 +1,40 @@
 import { createSelector } from "@reduxjs/toolkit";
+import {
+  BitcoinDenominationTypes,
+  ReduxState,
+  SeleneWalletType,
+  SupportedCurrencyTypes,
+} from "../types";
 import { convertBalanceToDisplay } from "../utils/formatting";
 
 export const selectActiveWallet = createSelector(
-  (state) => state.walletManager?.wallets,
-  (state) => state.walletManager?.activeWalletName,
-  (wallets, activeWalletName) =>
+  (state: ReduxState): SeleneWalletType[] => state.walletManager?.wallets,
+  (state: ReduxState): string => state.walletManager?.activeWalletName,
+  (wallets: SeleneWalletType[], activeWalletName: string): SeleneWalletType =>
     wallets?.find(({ name }) => name === activeWalletName)
 );
 
 export const selectActiveWalletIsZeroBalance = createSelector(
   selectActiveWallet,
-  (wallet) => parseInt(wallet?.balance) === 0
+  (wallet: SeleneWalletType): boolean => parseInt(wallet?.balance) === 0
 );
 
 export const selectActiveWalletBalance = createSelector(
   selectActiveWallet,
-  (state) => state.settings.isBchDenominated,
-  (state) => state.settings.bitcoinDenomination,
-  (state) => state.settings.contrastCurrency,
-  (activeWallet, isBchDenominated, bitcoinDenomination, contrastCurrency) => {
+  (state: ReduxState): Boolean => state.settings.isBchDenominated,
+  (state: ReduxState): BitcoinDenominationTypes =>
+    state.settings.bitcoinDenomination,
+  (state: ReduxState): SupportedCurrencyTypes =>
+    state.settings.contrastCurrency,
+  (
+    activeWallet: SeleneWalletType,
+    isBchDenominated: Boolean,
+    bitcoinDenomination: BitcoinDenominationTypes,
+    contrastCurrency: SupportedCurrencyTypes
+  ): {
+    primaryBalance: String;
+    secondaryBalance: String;
+  } => {
     const bchBalance = convertBalanceToDisplay(
       activeWallet?.balance,
       "satoshis",
