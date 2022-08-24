@@ -16,13 +16,14 @@ const BackgroundIntervals = () => {
       return name === state.walletManager?.activeWalletName;
     })
   );
+
   const isNoWallet = useSelector(
     (state: ReduxState) => state.walletManager?.wallets?.length === 0
   );
   const { isTestNet } = useSelector((state: ReduxState) => state.settings);
 
   const fetchActiveWalletBalance = () => {
-    console.log("emitting fetchActiveWalletBaslance", {
+    console.log("emitting fetchActiveWalletBalance", {
       wallet,
       isTestNet,
     });
@@ -101,6 +102,13 @@ const BackgroundIntervals = () => {
     }, ONE_SECOND);
   }
 
+  // Recheck balance when active wallet changes
+  // Including importing a new wallet
+  useEffect(() => {
+    fetchActiveWalletBalance();
+  }, [wallet]);
+
+  // Run regular checks every 30s
   useEffect(() => {
     ping();
 
