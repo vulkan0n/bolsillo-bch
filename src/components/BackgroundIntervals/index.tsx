@@ -79,14 +79,7 @@ const BackgroundIntervals = () => {
   const ping = () => {
     // console.log("ping!");
 
-    // Create a wallet if none exists
-    // I.e. first time app is opened
-    if (!wallet) {
-      emit({
-        type: BRIDGE_MESSAGE_TYPES.CREATE_DEFAULT_WALLET,
-        data: { isTestNet },
-      });
-    } else {
+    if (wallet) {
       fetchActiveWalletBalance();
     }
     fetchPriceData();

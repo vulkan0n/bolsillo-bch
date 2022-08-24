@@ -6,6 +6,7 @@ export const MAIN_NET_PREFIX: string = "bitcoincash:";
 export const DEFAULT_DERIVATION_PATH: string = "m/44'/0'/0'/0/0";
 
 // Time
+export const ONE_SECOND: number = 1000; // in milliseconds
 export const THIRTY_SECONDS: number = 30000; // in milliseconds
 
 // Denominations

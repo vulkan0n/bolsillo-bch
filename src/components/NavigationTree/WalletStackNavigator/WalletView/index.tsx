@@ -8,6 +8,7 @@ import { ReduxState } from "../../../../types";
 import emit from "../../../../utils/emit";
 import AvailableBalance from "./AvailableBalance";
 import TYPOGRAPHY from "../../../../design/typography";
+import { ONE_SECOND } from "../../../../utils/consts";
 
 function WalletView({ navigation }) {
   const isNoWallet = useSelector(
@@ -16,6 +17,20 @@ function WalletView({ navigation }) {
   const { isShowAvailableBalance } = useSelector(
     (state: ReduxState) => state.settings
   );
+  const { isTestNet } = useSelector((state: ReduxState) => state.settings);
+
+  // Create a wallet if none exists
+  // I.e. first time app is opened
+  if (isNoWallet) {
+    // Need to delay by 1 sec to give time for the Bridge to load
+    // Otherwise the message doesn't fire properly
+    setTimeout(() => {
+      emit({
+        type: BRIDGE_MESSAGE_TYPES.CREATE_DEFAULT_WALLET,
+        data: { isTestNet },
+      });
+    }, ONE_SECOND);
+  }
 
   if (isNoWallet) {
     return (
