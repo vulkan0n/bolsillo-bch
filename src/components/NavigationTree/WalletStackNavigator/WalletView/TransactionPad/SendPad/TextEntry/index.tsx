@@ -56,6 +56,8 @@ const TextEntry = () => {
         text={sendToAddress}
         onChange={onChangeTextInput}
         isSmallText
+        isMultiline
+        numberOfLines={3}
       />
       <Pressable onPress={onPressPaste}>
         <FontAwesomeIcon

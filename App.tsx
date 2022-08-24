@@ -126,10 +126,10 @@ export default function App() {
 
           store.dispatch(clearTransactionPad());
 
-          reset({
-            index: 0,
-            routes: [{ name: "Transaction Success" }],
-          });
+          // reset({
+          //   index: 0,
+          //   routes: [{ name: "Transaction Success" }],
+          // });
           break;
 
         case RESPONSE_MESSAGE_TYPES.SEND_COINS_RESPONSE_FAIL:
