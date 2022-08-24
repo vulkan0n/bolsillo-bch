@@ -152,6 +152,7 @@ const SendPad = () => {
         {AddressEntry()}
         <View style={styles.buttonContainer as any}>
           <Button
+            icon="faKeyboard"
             variant={sendToAddressEntry === "Text" ? "primary" : "secondary"}
             size={"small"}
             onPress={onPressText}
@@ -159,6 +160,7 @@ const SendPad = () => {
             Text
           </Button>
           <Button
+            icon="faQrcode"
             variant={sendToAddressEntry === "Scan" ? "primary" : "secondary"}
             size={"small"}
             onPress={onPressScan}
@@ -166,6 +168,7 @@ const SendPad = () => {
             Scan
           </Button>
           <Button
+            icon="faImage"
             variant={sendToAddressEntry === "Image" ? "primary" : "secondary"}
             size={"small"}
             onPress={onPressImage}
