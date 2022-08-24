@@ -13,7 +13,8 @@ const styles = {
   numPad: {
     backgroundColor: COLOURS.lightGrey,
     flex: 1,
-    justifyContent: "flex-end",
+    flexDirection: "row",
+    justifyContent: "center",
     alignItems: "center",
     width: "100%",
     padding: SPACING.fifteen,
@@ -21,18 +22,18 @@ const styles = {
     borderRadius: SPACING.borderRadius,
   },
   entryRow: {
-    flex: 1,
+    flex: 2,
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    width: "100%",
+    height: "100%",
     margin: SPACING.five,
   },
   entryColumn: {
-    flex: 1,
+    flex: 2,
     justifyContent: "center",
     alignItems: "center",
-    width: "100%",
+    height: "100%",
     margin: SPACING.five,
   },
   inputButton: {
@@ -46,6 +47,13 @@ const styles = {
     flexDirection: "row",
     justifyContent: "space-around",
     width: "100%",
+  },
+  buttonContainerColumn: {
+    flex: 1,
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center",
+    height: "100%%",
   },
 };
 

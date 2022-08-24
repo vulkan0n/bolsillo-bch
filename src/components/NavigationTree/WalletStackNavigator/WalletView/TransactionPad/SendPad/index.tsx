@@ -146,36 +146,38 @@ const SendPad = () => {
     }
   };
 
+  const ButtonColumn = (
+    <View style={styles.buttonContainerColumn as any}>
+      <Button
+        icon="faKeyboard"
+        variant={sendToAddressEntry === "Text" ? "primary" : "secondary"}
+        onPress={onPressText}
+      >
+        Text
+      </Button>
+      <Button
+        icon="faQrcode"
+        variant={sendToAddressEntry === "Scan" ? "primary" : "secondary"}
+        onPress={onPressScan}
+      >
+        Scan
+      </Button>
+      <Button
+        icon="faImage"
+        variant={sendToAddressEntry === "Image" ? "primary" : "secondary"}
+        onPress={onPressImage}
+      >
+        Img
+      </Button>
+    </View>
+  );
+
   return (
     <View style={styles.inputBackground as any}>
       <View style={styles.numPad as any}>
+        {!isRightHandedMode && ButtonColumn}
         {AddressEntry()}
-        <View style={styles.buttonContainer as any}>
-          <Button
-            icon="faKeyboard"
-            variant={sendToAddressEntry === "Text" ? "primary" : "secondary"}
-            size={"small"}
-            onPress={onPressText}
-          >
-            Text
-          </Button>
-          <Button
-            icon="faQrcode"
-            variant={sendToAddressEntry === "Scan" ? "primary" : "secondary"}
-            size={"small"}
-            onPress={onPressScan}
-          >
-            Scan
-          </Button>
-          <Button
-            icon="faImage"
-            variant={sendToAddressEntry === "Image" ? "primary" : "secondary"}
-            size={"small"}
-            onPress={onPressImage}
-          >
-            Image
-          </Button>
-        </View>
+        {isRightHandedMode && ButtonColumn}
       </View>
       <View style={styles.buttonContainer as any}>
         {isRightHandedMode && SendButton}
