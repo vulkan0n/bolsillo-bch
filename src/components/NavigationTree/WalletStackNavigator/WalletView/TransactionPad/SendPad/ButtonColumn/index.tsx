@@ -46,18 +46,18 @@ const ButtonColumn = () => {
         Text
       </Button>
       <Button
-        icon="faQrcode"
-        variant={sendToAddressEntry === "Scan" ? "primary" : "secondary"}
-        onPress={onPressScan}
-      >
-        Scan
-      </Button>
-      <Button
         icon="faImage"
         variant={sendToAddressEntry === "Image" ? "primary" : "secondary"}
         onPress={onPressImage}
       >
         Img
+      </Button>
+      <Button
+        icon="faQrcode"
+        variant={sendToAddressEntry === "Scan" ? "primary" : "secondary"}
+        onPress={onPressScan}
+      >
+        Scan
       </Button>
     </View>
   );
