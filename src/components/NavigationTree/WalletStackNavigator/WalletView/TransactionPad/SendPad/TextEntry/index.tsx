@@ -11,6 +11,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { iconImport } from "../../../../../../../design/icons";
 import COLOURS from "../../../../../../../design/colours";
 import Toast from "react-native-toast-message";
+import SPACING from "../../../../../../../design/spacing";
 
 const TextEntry = () => {
   const dispatch = useDispatch();
@@ -49,7 +50,7 @@ const TextEntry = () => {
   };
 
   return (
-    <View style={styles.entryColumn as any}>
+    <View style={{ ...styles.entryColumn, paddingRight: SPACING.ten } as any}>
       <TextInput
         placeholder={"bitcoincash:"}
         text={sendToAddress}
