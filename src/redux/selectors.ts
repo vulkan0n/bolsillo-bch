@@ -21,19 +21,19 @@ export const selectActiveWalletIsZeroBalance = createSelector(
 
 export const selectActiveWalletBalance = createSelector(
   selectActiveWallet,
-  (state: ReduxState): Boolean => state.settings.isBchDenominated,
+  (state: ReduxState): boolean => state.settings.isBchDenominated,
   (state: ReduxState): BitcoinDenominationTypes =>
     state.settings.bitcoinDenomination,
   (state: ReduxState): SupportedCurrencyTypes =>
     state.settings.contrastCurrency,
   (
     activeWallet: SeleneWalletType,
-    isBchDenominated: Boolean,
+    isBchDenominated: boolean,
     bitcoinDenomination: BitcoinDenominationTypes,
     contrastCurrency: SupportedCurrencyTypes
   ): {
-    primaryBalance: String;
-    secondaryBalance: String;
+    primaryBalance: string;
+    secondaryBalance: string;
   } => {
     const bchBalance = convertBalanceToDisplay(
       activeWallet?.balance,
