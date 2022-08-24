@@ -14,14 +14,11 @@ import { ReduxState } from "../../../../../../types";
 import { convertRawCurrencyToRawSats } from "../../../../../../utils/formatting";
 import emit from "../../../../../../utils/emit";
 import TYPOGRAPHY from "../../../../../../design/typography";
+import { selectActiveWallet } from "../../../../../../redux/selectors";
 
 const Confirm = ({ navigation }) => {
   const dispatch = useDispatch();
-  const wallet = useSelector((state: ReduxState) =>
-    state.walletManager?.wallets?.find(
-      ({ name }) => name === state.walletManager?.activeWalletName
-    )
-  );
+  const wallet = useSelector((state: ReduxState) => selectActiveWallet(state));
   const { padBalance } = useSelector(
     (state: ReduxState) => state.transactionPad
   );

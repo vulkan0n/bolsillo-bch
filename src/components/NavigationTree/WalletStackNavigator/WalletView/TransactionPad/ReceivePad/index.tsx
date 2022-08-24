@@ -13,21 +13,22 @@ import * as Clipboard from "expo-clipboard";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import COLOURS from "../../../../../../design/colours";
 import { iconImport } from "../../../../../../design/icons";
-import useActiveWalletBalance from "../../../../../../hooks/useActiveWalletBalance";
+import {
+  selectActiveWallet,
+  selectActiveWalletIsZeroBalance,
+} from "../../../../../../redux/selectors";
 
 const ReceivePad = () => {
   const dispatch = useDispatch();
-  const wallet = useSelector((state: ReduxState) =>
-    state.walletManager?.wallets?.find(
-      ({ name }) => name === state.walletManager?.activeWalletName
-    )
-  );
+  const wallet = useSelector((state: ReduxState) => selectActiveWallet(state));
 
   const { isRightHandedMode } = useSelector(
     (state: ReduxState) => state.settings
   );
 
-  const { isZeroBalance } = useActiveWalletBalance();
+  const isZeroBalance = useSelector((state: ReduxState) =>
+    selectActiveWalletIsZeroBalance(state)
+  );
 
   const onPressClipboard = async () => {
     await Clipboard.setStringAsync(wallet?.cashaddr);

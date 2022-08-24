@@ -7,25 +7,22 @@ import { ONE_SECOND, THIRTY_SECONDS } from "../../utils/consts";
 import emit from "../../utils/emit";
 import axios from "axios";
 import { updateBchPrices } from "../../redux/reducers/exchangeRatesReducer";
+import { selectActiveWallet } from "../../redux/selectors";
 
 const BackgroundIntervals = () => {
   const dispatch = useDispatch();
-  const wallet = useSelector((state: ReduxState) =>
-    state.walletManager?.wallets?.find(({ name }) => {
-      // console.log({ state });
-      return name === state.walletManager?.activeWalletName;
-    })
-  );
+  const wallet = useSelector((state: ReduxState) => selectActiveWallet(state));
+
   const isNoWallet = useSelector(
     (state: ReduxState) => state.walletManager?.wallets?.length === 0
   );
   const { isTestNet } = useSelector((state: ReduxState) => state.settings);
 
   const fetchActiveWalletBalance = () => {
-    console.log("emitting fetchActiveWalletBaslance", {
-      wallet,
-      isTestNet,
-    });
+    // console.log("emitting fetchActiveWalletBalance", {
+    //   wallet,
+    //   isTestNet,
+    // });
     emit({
       type: BRIDGE_MESSAGE_TYPES.REQUEST_BALANCE_AND_ADDRESS,
       data: {
@@ -101,6 +98,13 @@ const BackgroundIntervals = () => {
     }, ONE_SECOND);
   }
 
+  // Recheck balance when active wallet changes
+  // Including importing a new wallet
+  useEffect(() => {
+    fetchActiveWalletBalance();
+  }, [wallet]);
+
+  // Run regular checks every 30s
   useEffect(() => {
     ping();
 

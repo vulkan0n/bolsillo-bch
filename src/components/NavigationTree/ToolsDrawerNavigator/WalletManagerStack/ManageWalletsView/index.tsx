@@ -14,7 +14,7 @@ import StackSubheader from "../../../../atoms/StackSubheader";
 function ManageWalletsView({ navigation }) {
   const { wallets } = useSelector((state: ReduxState) => state.walletManager);
 
-  console.log({ wallets });
+  // console.log({ wallets });
 
   const renderWallets = ({ item: { name, description, balance } }) => (
     <WalletRow

@@ -20,14 +20,11 @@ import {
   convertRawCurrencyToRawSats,
 } from "../../../../../../utils/formatting";
 import { countDecimalPlaces } from "../../../../../../utils/utils";
+import { selectActiveWallet } from "../../../../../../redux/selectors";
 
 const NumPad = () => {
   const dispatch = useDispatch();
-  const wallet = useSelector((state: ReduxState) =>
-    state.walletManager?.wallets?.find(
-      ({ name }) => name === state.walletManager?.activeWalletName
-    )
-  );
+  const wallet = useSelector((state: ReduxState) => selectActiveWallet(state));
   const { padBalance } = useSelector(
     (state: ReduxState) => state.transactionPad
   );
