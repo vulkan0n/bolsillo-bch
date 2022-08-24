@@ -51,7 +51,8 @@
     "redux-logger": "^3.0.6",
     "redux-persist": "^6.0.0",
     "typescript": "~4.3.5",
-    "expo-clipboard": "~3.0.1"
+    "expo-clipboard": "~3.0.1",
+    "expo-updates": "~0.13.4"
   },
   "devDependencies": {
     "@types/react": "~17.0.21"

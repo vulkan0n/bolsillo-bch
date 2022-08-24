@@ -51,6 +51,9 @@ And note that mainnet.cash uses `m/44/0'/0'` for mainnet derivative path and `m/
 # Builds
 
 ```
+# Update app version number on Credits page
+# Update `app.json`, `version` and `runtimeVersion`
+# git commit
 $ eas build
 # Wait 20 minutes for build to finish
 $ eas update --auto
