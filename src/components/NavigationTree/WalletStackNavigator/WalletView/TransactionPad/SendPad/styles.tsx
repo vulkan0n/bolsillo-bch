@@ -28,13 +28,7 @@ const styles = {
     alignItems: "center",
     height: "100%",
     margin: SPACING.five,
-  },
-  entryColumn: {
-    flex: 2,
-    justifyContent: "center",
-    alignItems: "center",
-    height: "100%",
-    margin: SPACING.five,
+    marginRight: SPACING.fifteen,
   },
   inputButton: {
     minWidth: 50,

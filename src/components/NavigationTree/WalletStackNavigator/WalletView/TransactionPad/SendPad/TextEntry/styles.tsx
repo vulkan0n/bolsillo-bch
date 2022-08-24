@@ -7,6 +7,7 @@ const styles = {
     alignItems: "center",
     height: "100%",
     margin: SPACING.five,
+    marginRight: SPACING.fifteen,
   },
 };
 

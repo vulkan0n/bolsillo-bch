@@ -50,7 +50,7 @@ const TextEntry = () => {
   };
 
   return (
-    <View style={{ ...styles.entryColumn, paddingRight: SPACING.ten } as any}>
+    <View style={styles.entryColumn as any}>
       <TextInput
         placeholder={"bitcoincash:"}
         text={sendToAddress}
