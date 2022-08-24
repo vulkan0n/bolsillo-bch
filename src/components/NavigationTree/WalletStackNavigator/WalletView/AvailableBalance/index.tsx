@@ -5,12 +5,21 @@ import TYPOGRAPHY from "../../../../../design/typography";
 import styles from "../styles";
 import { toggleIsShowAvailableBalance } from "../../../../../redux/reducers/settingsReducer";
 import useActiveWalletBalance from "../../../../../hooks/useActiveWalletBalance";
+import { createSelector } from "@reduxjs/toolkit";
 
 function AvailableBalance() {
   const [isDisplayHideNotice, setIsDisplayHideNotice] = useState(false);
   const { primaryBalance, secondaryBalance } = useActiveWalletBalance()
+  const selectActiveWallet = createSelector(
+  state => state.walletManager?.wallets,
+  state => state.walletManager?.activeWalletName,
+  (wallets, activeWalletName) => wallets?.find(
+    ({ name }) => name === activeWalletName
+  )
+  )
+  const activeWallet = useSelector(state => selectActiveWallet(state))
 
-  console.log({ primaryBalance, secondaryBalance })
+  console.log({ activeWallet, primaryBalance, secondaryBalance })
 
   const dispatch = useDispatch()
 

@@ -23,10 +23,10 @@ const BackgroundIntervals = () => {
   const { isTestNet } = useSelector((state: ReduxState) => state.settings);
 
   const fetchActiveWalletBalance = () => {
-    console.log("emitting fetchActiveWalletBalance", {
-      wallet,
-      isTestNet,
-    });
+    // console.log("emitting fetchActiveWalletBalance", {
+    //   wallet,
+    //   isTestNet,
+    // });
     emit({
       type: BRIDGE_MESSAGE_TYPES.REQUEST_BALANCE_AND_ADDRESS,
       data: {
