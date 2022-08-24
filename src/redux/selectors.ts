@@ -8,6 +8,11 @@ export const selectActiveWallet = createSelector(
     wallets?.find(({ name }) => name === activeWalletName)
 );
 
+export const selectActiveWalletIsZeroBalance = createSelector(
+  selectActiveWallet,
+  (wallet) => parseInt(wallet?.balance) === 0
+);
+
 export const selectActiveWalletBalance = createSelector(
   selectActiveWallet,
   (state) => state.settings.isBchDenominated,
@@ -26,12 +31,10 @@ export const selectActiveWalletBalance = createSelector(
       contrastCurrency
     );
 
-    const isZeroBalance = parseInt(wallet?.balance) === 0;
     const primaryBalance = isBchDenominated ? bchBalance : contrastBalance;
     const secondaryBalance = isBchDenominated ? contrastBalance : bchBalance;
 
     return {
-      isZeroBalance,
       primaryBalance,
       secondaryBalance,
     };
