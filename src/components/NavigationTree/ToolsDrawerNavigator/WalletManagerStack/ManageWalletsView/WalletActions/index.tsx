@@ -26,7 +26,7 @@ const WalletActions = ({ navigation }) => {
         <Button
           onPress={onPressNew}
           variant={"blackOutlined"}
-          isSmall
+          size={"small"}
           icon={"faPlusCircle"}
         >
           New
@@ -34,7 +34,7 @@ const WalletActions = ({ navigation }) => {
         <Button
           onPress={onPressImport}
           variant={"blackOutlined"}
-          isSmall
+          size={"small"}
           icon={"faFileImport"}
         >
           Import

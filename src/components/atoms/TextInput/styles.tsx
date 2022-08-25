@@ -5,12 +5,12 @@ interface Props {
   isSmallText?: boolean;
 }
 
-const styles = ({ isSmallText = false }) => {
+const styles = ({ isSmallText = false, isPlaceholder = false }) => {
   return {
     input: {
       fontFamily: "Montserrat_500Medium",
       fontSize: isSmallText ? 16 : 28,
-      color: COLOURS.black,
+      color: isPlaceholder ? COLOURS.lightGrey : COLOURS.black,
       marginLeft: SPACING.fifteen,
       marginRight: SPACING.fifteen,
       marginBottom: SPACING.fifteen,

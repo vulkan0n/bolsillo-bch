@@ -34,6 +34,18 @@ import {
 } from "./src/redux/reducers/transactionPadReducer";
 import { reset } from "./src/components/NavigationTree/rootNavigation";
 
+interface BridgeResponseMessage {
+  type: string;
+  data: {
+    name?: string;
+    wallet?: WalletType;
+    balance?: string;
+    tempTxId?: string;
+    title?: string;
+    text?: string;
+  };
+}
+
 export default function App() {
   // For the list of possible font faces
   // https://github.com/expo/google-fonts/tree/master/font-packages/montserrat
@@ -44,18 +56,6 @@ export default function App() {
     Montserrat_700Bold,
     Montserrat_800ExtraBold,
   });
-
-  interface BridgeResponseMessage {
-    type: string;
-    data: {
-      name?: string;
-      wallet?: WalletType;
-      balance?: string;
-      tempTxId?: string;
-      title?: string;
-      text?: string;
-    };
-  }
 
   // useWebViewMessage hook create props for WebView and handle communication
   // The argument is callback to receive message from React
@@ -126,10 +126,10 @@ export default function App() {
 
           store.dispatch(clearTransactionPad());
 
-          reset({
-            index: 0,
-            routes: [{ name: "Transaction Success" }],
-          });
+          // reset({
+          //   index: 0,
+          //   routes: [{ name: "Transaction Success" }],
+          // });
           break;
 
         case RESPONSE_MESSAGE_TYPES.SEND_COINS_RESPONSE_FAIL:
@@ -181,6 +181,8 @@ export default function App() {
     }
   );
 
+  const [isWebViewLoaded, setIsWebViewLoaded] = React.useState(false);
+
   React.useEffect(() => {
     // Listens for components that need to send a message to the Bridge
     DeviceEventEmitter.addListener("event.emitEvent", (event) => {
@@ -193,6 +195,10 @@ export default function App() {
 
     return () => unsubscribe();
   }, []);
+
+  const onWebViewLoad = () => {
+    setIsWebViewLoaded(true);
+  };
 
   if (!fontsLoaded) {
     return null;
@@ -210,9 +216,10 @@ export default function App() {
             allowFileAccess={true}
             javaScriptEnabled={true}
             domStorageEnabled={true}
+            onLoad={onWebViewLoad}
           />
         </View>
-        <BackgroundIntervals />
+        {isWebViewLoaded && <BackgroundIntervals />}
         <NavigationTree />
         <Toast config={toastConfig} />
       </PersistGate>

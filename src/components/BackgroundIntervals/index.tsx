@@ -19,10 +19,6 @@ const BackgroundIntervals = () => {
   const { isTestNet } = useSelector((state: ReduxState) => state.settings);
 
   const fetchActiveWalletBalance = () => {
-    // console.log("emitting fetchActiveWalletBalance", {
-    //   wallet,
-    //   isTestNet,
-    // });
     emit({
       type: BRIDGE_MESSAGE_TYPES.REQUEST_BALANCE_AND_ADDRESS,
       data: {
@@ -88,14 +84,10 @@ const BackgroundIntervals = () => {
   // Create a wallet if none exists
   // I.e. first time app is opened
   if (isNoWallet) {
-    // Need to delay by 1 sec to give time for the Bridge to load
-    // Otherwise the message doesn't fire properly
-    setTimeout(() => {
-      emit({
-        type: BRIDGE_MESSAGE_TYPES.CREATE_DEFAULT_WALLET,
-        data: { isTestNet },
-      });
-    }, ONE_SECOND);
+    emit({
+      type: BRIDGE_MESSAGE_TYPES.CREATE_DEFAULT_WALLET,
+      data: { isTestNet },
+    });
   }
 
   // Recheck balance when active wallet changes

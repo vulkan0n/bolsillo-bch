@@ -17,6 +17,9 @@ import { faTrashCan } from "@fortawesome/free-solid-svg-icons/faTrashCan";
 import { faEye } from "@fortawesome/free-solid-svg-icons/faEye";
 import { faPowerOff } from "@fortawesome/free-solid-svg-icons/faPowerOff";
 import { faPaste } from "@fortawesome/free-solid-svg-icons/faPaste";
+import { faQrcode } from "@fortawesome/free-solid-svg-icons/faQrcode";
+import { faImage } from "@fortawesome/free-solid-svg-icons/faImage";
+import { faKeyboard } from "@fortawesome/free-solid-svg-icons/faKeyboard";
 
 export type IconType =
   | ""
@@ -38,7 +41,10 @@ export type IconType =
   | "faTrashCan"
   | "faEye"
   | "faPowerOff"
-  | "faPaste";
+  | "faPaste"
+  | "faQrcode"
+  | "faImage"
+  | "faKeyboard";
 
 export const iconImport = (icon: IconType) => {
   switch (icon) {
@@ -80,6 +86,12 @@ export const iconImport = (icon: IconType) => {
       return faPowerOff;
     case "faPaste":
       return faPaste;
+    case "faQrcode":
+      return faQrcode;
+    case "faImage":
+      return faImage;
+    case "faKeyboard":
+      return faKeyboard;
     default:
       return null;
   }
