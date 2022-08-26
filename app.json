@@ -2,20 +2,15 @@
   "expo": {
     "name": "selene-app",
     "version": "0.0.2",
-    "runtimeVersion": "0.0002",
+    "sdkVersion": "46.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
-    "owner": "selene-wallet",
     "slug": "selene-app",
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#1C1E21"
-    },
-    "updates": {
-      "url": "https://u.expo.dev/e00fb2ba-7d2f-4fb2-a6c7-472931f3ab2a",
-      "fallbackToCacheTimeout": 0
     },
     "assetBundlePatterns": ["**/*"],
     "ios": {
