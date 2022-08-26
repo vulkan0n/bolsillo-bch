@@ -6,7 +6,6 @@
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
-    "owner": "selene-wallet",
     "slug": "selene-app",
     "splash": {
       "image": "./assets/splash.png",

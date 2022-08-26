@@ -207,8 +207,8 @@ export default function App() {
   return (
     <Provider store={store}>
       <PersistGate loading={<Text>Loading...</Text>} persistor={persistor}>
-        <View style={{ height: 0 }}>
-          <WebView
+        {/* <View style={{ height: 0 }}> */}
+        {/* <WebView
             ref={ref}
             onMessage={onMessage}
             source={{ html: Bridge }}
@@ -221,7 +221,7 @@ export default function App() {
         </View>
         {isWebViewLoaded && <BackgroundIntervals />}
         <NavigationTree />
-        <Toast config={toastConfig} />
+        <Toast config={toastConfig} /> */}
       </PersistGate>
     </Provider>
   );
