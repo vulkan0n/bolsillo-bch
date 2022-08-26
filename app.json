@@ -2,6 +2,7 @@
   "expo": {
     "name": "selene-app",
     "version": "0.0.2",
+    "sdkVersion": "46.0.0",
     "runtimeVersion": "0.0002",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -11,10 +12,6 @@
       "image": "./assets/splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#1C1E21"
-    },
-    "updates": {
-      "url": "https://u.expo.dev/e00fb2ba-7d2f-4fb2-a6c7-472931f3ab2a",
-      "fallbackToCacheTimeout": 0
     },
     "assetBundlePatterns": ["**/*"],
     "ios": {
