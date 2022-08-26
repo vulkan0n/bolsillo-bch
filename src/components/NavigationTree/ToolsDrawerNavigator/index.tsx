@@ -1,7 +1,7 @@
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import ToolsHomeView from "./ToolsHomeView";
 import CreditsView from "./CreditsView";
-import DrawerNavigator from "../../atoms/DrawerNavigator";
+import DrawerNavigator from "@atoms/DrawerNavigator";
 import WalletManagerStack from "./WalletManagerStack";
 import SettingsStack from "./SettingsStack";
 

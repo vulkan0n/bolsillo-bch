@@ -1,5 +1,5 @@
 import { createDrawerNavigator } from "@react-navigation/drawer";
-import DrawerNavigator from "../../atoms/DrawerNavigator";
+import DrawerNavigator from "@atoms/DrawerNavigator";
 import OnlineView from "./OnlineView";
 
 const Drawer = createDrawerNavigator();

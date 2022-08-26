@@ -1,3 +1,5 @@
+import { TEST_NET_PREFIX, MAIN_NET_PREFIX } from "./consts";
+
 export const validateWalletName = (
   name: string,
   existingWalletNames: string[]
@@ -32,3 +34,41 @@ export const validateWalletMnemonic = (menemonic: string): string => {
 
   return null;
 };
+
+const isValidTestNetCashAddress = (address: string): boolean => {
+  if (address.length !== 50) {
+    return false;
+  }
+
+  const startString = address.substring(0, 9);
+  const isMatchPrefix = startString === `${TEST_NET_PREFIX}q`;
+
+  if (!isMatchPrefix) {
+    return false;
+  }
+
+  return true;
+};
+
+const isValidMainNetCashAddress = (address: string): boolean => {
+  if (address.length !== 54) {
+    return false;
+  }
+
+  const startString = address.substring(0, 13);
+  const isMatchPrefix = startString === `${MAIN_NET_PREFIX}q`;
+
+  if (!isMatchPrefix) {
+    return false;
+  }
+
+  return true;
+};
+
+export const isValidCashAddress = (
+  address: string,
+  isTestNet: boolean = false
+): boolean =>
+  isTestNet
+    ? isValidTestNetCashAddress(address)
+    : isValidMainNetCashAddress(address);

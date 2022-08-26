@@ -1,11 +1,11 @@
-import COLOURS from "../../../../../../design/colours";
-import SPACING from "../../../../../../design/spacing";
+import COLOURS from "@design/colours";
+import SPACING from "@design/spacing";
 
 const styles = {
   inputBackground: {
     backgroundColor: COLOURS.white,
     flex: 1,
-    justifyContent: "flex-start",
+    justifyContent: "center",
     alignItems: "center",
     width: "100%",
     borderRadius: SPACING.borderRadius,
@@ -44,6 +44,7 @@ const styles = {
     alignItems: "center",
   },
   buttonContainer: {
+    marginTop: SPACING.fifteen,
     flexDirection: "row",
     justifyContent: "space-around",
     width: "100%",

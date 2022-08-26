@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { PURGE } from "redux-persist";
-import { BitcoinDenominationTypes, SupportedCurrencyTypes } from "../../types";
+import { BitcoinDenominationTypes, SupportedCurrencyTypes } from "@types";
 
 export interface SettingsState {
   isBchDenominated: boolean;

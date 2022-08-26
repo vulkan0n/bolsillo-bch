@@ -1,13 +1,13 @@
 import { createDrawerNavigator } from "@react-navigation/drawer";
-import COLOURS from "../../../design/colours";
-import TYPOGRAPHY from "../../../design/typography";
+import COLOURS from "@design/colours";
+import TYPOGRAPHY from "@design/typography";
 import { getHeaderTitle } from "@react-navigation/elements";
 import { View, Text, Pressable } from "react-native";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { iconImport } from "../../../design/icons";
+import { iconImport } from "@design/icons";
 import styles from "./styles";
 import { useSelector } from "react-redux";
-import { ReduxState } from "../../../types";
+import { ReduxState } from "@types";
 
 const Drawer = createDrawerNavigator();
 

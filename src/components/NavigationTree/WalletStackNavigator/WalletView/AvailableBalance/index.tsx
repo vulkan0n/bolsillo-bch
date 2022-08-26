@@ -1,10 +1,10 @@
 import React, {  useState } from "react";
 import { View, Text, Pressable } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
-import TYPOGRAPHY from "../../../../../design/typography";
+import TYPOGRAPHY from "@design/typography";
 import styles from "../styles";
-import { toggleIsShowAvailableBalance } from "../../../../../redux/reducers/settingsReducer";
-import { selectActiveWalletBalance } from "../../../../../redux/selectors";
+import { toggleIsShowAvailableBalance } from "@redux/reducers/settingsReducer";
+import { selectActiveWalletBalance } from "@redux/selectors";
 
 
 function AvailableBalance() {

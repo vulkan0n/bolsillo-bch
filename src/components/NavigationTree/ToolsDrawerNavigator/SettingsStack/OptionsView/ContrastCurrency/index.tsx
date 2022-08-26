@@ -1,9 +1,9 @@
 import React from "react";
 import { View, Text, Pressable } from "react-native";
-import TYPOGRAPHY from "../../../../../../design/typography";
+import TYPOGRAPHY from "@design/typography";
 import styles from "../styles";
 import { useSelector } from "react-redux";
-import { ReduxState } from "../../../../../../types";
+import { ReduxState } from "@types";
 
 const ContrastCurrency = ({ navigation }) => {
   const { contrastCurrency } = useSelector(

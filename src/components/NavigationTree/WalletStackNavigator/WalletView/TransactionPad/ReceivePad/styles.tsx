@@ -1,5 +1,5 @@
-import COLOURS from "../../../../../../design/colours";
-import SPACING from "../../../../../../design/spacing";
+import COLOURS from "@design/colours";
+import SPACING from "@design/spacing";
 
 const styles = {
   inputBackground: {
@@ -22,8 +22,8 @@ const styles = {
   },
   qrBorder: {
     margin: SPACING.fifteen,
-    borderWidth: 5,
-    borderColor: COLOURS.bchGreen,
+    borderWidth: 10,
+    borderColor: COLOURS.white,
   },
   buttonContainer: {
     flexDirection: "row",

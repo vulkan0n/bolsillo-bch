@@ -1,17 +1,17 @@
 import React from "react";
 import { View, Text, ScrollView } from "react-native";
-import Button from "../../../../atoms/Button";
-import TYPOGRAPHY from "../../../../../design/typography";
+import Button from "@atoms/Button";
+import TYPOGRAPHY from "@design/typography";
 import styles from "./styles";
 import Toast from "react-native-toast-message";
 import { useDispatch, useSelector } from "react-redux";
-import { ReduxState } from "../../../../../types";
-import Divider from "../../../../atoms/Divider";
+import { ReduxState } from "@types";
+import Divider from "@atoms/Divider";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import COLOURS from "../../../../../design/colours";
+import COLOURS from "@design/colours";
 import { faTrashCan } from "@fortawesome/free-solid-svg-icons/faTrashCan";
-import { deleteWallet } from "../../../../../redux/reducers/walletManagerReducer";
-import StackSubheader from "../../../../atoms/StackSubheader";
+import { deleteWallet } from "@redux/reducers/walletManagerReducer";
+import StackSubheader from "@atoms/StackSubheader";
 
 const DeleteWalletView = ({ navigation }) => {
   const { navigatedWalletName } = useSelector(

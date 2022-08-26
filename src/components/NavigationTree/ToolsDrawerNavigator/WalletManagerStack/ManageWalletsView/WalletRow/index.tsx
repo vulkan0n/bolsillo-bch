@@ -1,16 +1,16 @@
 import React from "react";
 import { View, Text, Pressable } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
-import TYPOGRAPHY from "../../../../../../design/typography";
+import TYPOGRAPHY from "@design/typography";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import COLOURS from "../../../../../../design/colours";
-import { ReduxState } from "../../../../../../types";
+import COLOURS from "@design/colours";
+import { ReduxState } from "@types";
 import { faWallet } from "@fortawesome/free-solid-svg-icons";
-import { convertBalanceToDisplay } from "../../../../../../utils/formatting";
+import { convertBalanceToDisplay } from "@utils/formatting";
 import {
   updateActiveWalletName,
   updateNavigatedWalletName,
-} from "../../../../../../redux/reducers/walletManagerReducer";
+} from "@redux/reducers/walletManagerReducer";
 import styles from "./styles";
 
 const WalletRow = ({ navigation, name, description, balance }) => {

@@ -1,26 +1,26 @@
 import React from "react";
 import { View, Text, Pressable } from "react-native";
 import styles from "./styles";
-import Button from "../../../../../atoms/Button";
-import TYPOGRAPHY from "../../../../../../design/typography";
+import Button from "@atoms/Button";
+import TYPOGRAPHY from "@design/typography";
 import { useSelector, useDispatch } from "react-redux";
 import {
   updateTransactionPadBalance,
   updateTransactionPadView,
   updateTransactionPadError,
-} from "../../../../../../redux/reducers/transactionPadReducer";
+} from "@redux/reducers/transactionPadReducer";
 import {
   BitcoinDenominationTypes,
   ReduxState,
   SupportedCurrencyTypes,
-} from "../../../../../../types";
+} from "@types";
 import TRANSACTION_PAD_ERRORS from "../errors";
 import {
   allowedDecimalPlaces,
   convertRawCurrencyToRawSats,
-} from "../../../../../../utils/formatting";
-import { countDecimalPlaces } from "../../../../../../utils/utils";
-import { selectActiveWallet } from "../../../../../../redux/selectors";
+} from "@utils/formatting";
+import { countDecimalPlaces } from "@utils/utils";
+import { selectActiveWallet } from "@redux/selectors";
 
 const NumPad = () => {
   const dispatch = useDispatch();

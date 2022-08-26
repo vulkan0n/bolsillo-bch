@@ -1,6 +1,6 @@
 import React from "react";
 import { View, Text } from "react-native";
-import TYPOGRAPHY from "../../../../design/typography";
+import TYPOGRAPHY from "@design/typography";
 import styles from "./styles";
 
 const ToolsHomeView = () => {

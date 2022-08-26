@@ -1,10 +1,10 @@
 import React from "react";
 import { View, Pressable, Text } from "react-native";
 import styles from "./styles";
-import Button from "../../../../../../atoms/Button";
+import Button from "@atoms/Button";
 import { useSelector, useDispatch } from "react-redux";
-import { updateTransactionPadSendToAddressEntry } from "../../../../../../../redux/reducers/transactionPadReducer";
-import { ReduxState } from "../../../../../../../types";
+import { updateTransactionPadSendToAddressEntry } from "@redux/reducers/transactionPadReducer";
+import { ReduxState } from "@types";
 
 const ButtonColumn = () => {
   const dispatch = useDispatch();
@@ -54,7 +54,11 @@ const ButtonColumn = () => {
       </Button>
       <Button
         icon="faQrcode"
-        variant={sendToAddressEntry === "Scan" ? "primary" : "secondary"}
+        variant={
+          sendToAddressEntry === "Scan" || sendToAddressEntry === ""
+            ? "primary"
+            : "secondary"
+        }
         onPress={onPressScan}
       >
         Scan

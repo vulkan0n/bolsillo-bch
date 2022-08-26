@@ -7,6 +7,7 @@ interface Props {
   placeholder?: string;
   onChange?: (value: string) => void;
   isSmallText?: boolean;
+  isDisableAutoComplete?: boolean;
   isMultiline?: boolean;
   numberOfLines?: number;
 }
@@ -16,6 +17,7 @@ const TextInput = ({
   placeholder = "",
   onChange = () => {},
   isSmallText = false,
+  isDisableAutoComplete = false,
   isMultiline = false,
   numberOfLines = 1, // use with isMultiline
 }: Props) => {
@@ -29,6 +31,9 @@ const TextInput = ({
       value={value}
       multiline={isMultiline}
       numberOfLines={numberOfLines}
+      autoCapitalize={isDisableAutoComplete ? "none" : "sentences"}
+      autoComplete={isDisableAutoComplete ? "off" : null}
+      autoCorrect={!isDisableAutoComplete}
     />
   );
 };

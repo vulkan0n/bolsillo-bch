@@ -1,5 +1,5 @@
-import COLOURS from "../../../../../design/colours";
-import SPACING from "../../../../../design/spacing";
+import COLOURS from "@design/colours";
+import SPACING from "@design/spacing";
 
 const styles = {
   container: {

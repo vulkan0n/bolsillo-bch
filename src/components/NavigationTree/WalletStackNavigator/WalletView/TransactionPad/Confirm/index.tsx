@@ -1,20 +1,22 @@
 import React from "react";
 import { View, Text, Pressable } from "react-native";
 import styles from "./styles";
-import Button from "../../../../../atoms/Button";
-import { BRIDGE_MESSAGE_TYPES } from "../../../../../../utils/bridgeMessages";
+import Button from "@atoms/Button";
+import { BRIDGE_MESSAGE_TYPES } from "@utils/bridgeMessages";
 import { useSelector, useDispatch } from "react-redux";
 import {
   updateTransactionPadSendToAddress,
   updateTransactionPadView,
   updateTransactionPadBalance,
   updateTransactionPadIsSendingCoins,
-} from "../../../../../../redux/reducers/transactionPadReducer";
-import { ReduxState } from "../../../../../../types";
-import { convertRawCurrencyToRawSats } from "../../../../../../utils/formatting";
-import emit from "../../../../../../utils/emit";
-import TYPOGRAPHY from "../../../../../../design/typography";
-import { selectActiveWallet } from "../../../../../../redux/selectors";
+} from "@redux/reducers/transactionPadReducer";
+import { ReduxState } from "@types";
+import { convertRawCurrencyToRawSats } from "@utils/formatting";
+import emit from "@utils/emit";
+import TYPOGRAPHY from "@design/typography";
+import { selectActiveWallet } from "@redux/selectors";
+import { updateTransactionPadSendToAddressEntry } from "../../../../../../redux/reducers/transactionPadReducer";
+import LiveBalance from "../LiveBalance";
 
 const Confirm = ({ navigation }) => {
   const dispatch = useDispatch();
@@ -68,6 +70,11 @@ const Confirm = ({ navigation }) => {
 
   const onPressBack = () => {
     dispatch(
+      updateTransactionPadSendToAddress({
+        sendToAddress: "",
+      })
+    );
+    dispatch(
       updateTransactionPadView({
         view: "Send",
       })
@@ -86,28 +93,30 @@ const Confirm = ({ navigation }) => {
         onPress={onPressCancelLoading}
         style={styles.inputBackground as any}
       >
-        <Text>Sending...</Text>
+        <Text style={TYPOGRAPHY.h1 as any}>Sending...</Text>
       </Pressable>
     );
   }
 
   return (
     <View style={styles.inputBackground as any}>
+      <Text style={TYPOGRAPHY.h2black as any}>Sending</Text>
+      <LiveBalance />
       <Text style={TYPOGRAPHY.h2black as any}>to</Text>
       <Text style={TYPOGRAPHY.p as any}>{sendToAddress}</Text>
 
       <View style={styles.buttonContainer as any}>
         {isRightHandedMode && SendButton}
-        <Button
-          icon={"faChevronLeft"}
-          variant="secondary"
-          onPress={onPressBack}
-          size={"small"}
-        >
-          Back
-        </Button>
         {!isRightHandedMode && SendButton}
       </View>
+      <Button
+        icon={"faChevronLeft"}
+        variant="secondary"
+        onPress={onPressBack}
+        size={"small"}
+      >
+        Back
+      </Button>
     </View>
   );
 };

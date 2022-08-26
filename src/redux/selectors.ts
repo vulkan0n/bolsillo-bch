@@ -4,8 +4,8 @@ import {
   ReduxState,
   SeleneWalletType,
   SupportedCurrencyTypes,
-} from "../types";
-import { convertBalanceToDisplay } from "../utils/formatting";
+} from "@types";
+import { convertBalanceToDisplay } from "@utils/formatting";
 
 interface ActiveWalletBalance {
   primaryBalance: string;
