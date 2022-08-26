@@ -66,21 +66,24 @@ const ReceivePad = () => {
   );
 
   const logo = require("../../../../../../assets/images/bch.png");
+  const isAddress = wallet?.cashaddr;
 
   return (
     <View style={styles.inputBackground as any}>
       <Pressable onPress={onPressClipboard} style={styles.receivePad as any}>
         <View style={styles.qrBorder}>
-          <QRCode
-            size={225}
-            value={`${wallet?.cashaddr}`}
-            color={COLOURS.black}
-            logo={logo}
-            logoSize={60}
-          />
+          {isAddress && (
+            <QRCode
+              size={225}
+              value={`${wallet?.cashaddr}`}
+              color={COLOURS.black}
+              logo={logo}
+              logoSize={60}
+            />
+          )}
         </View>
         <Text selectable style={TYPOGRAPHY.p as any}>
-          {wallet?.cashaddr}
+          {isAddress ? wallet?.cashaddr : "Address loading..."}
         </Text>
         <FontAwesomeIcon
           icon={iconImport("faPaste")}
