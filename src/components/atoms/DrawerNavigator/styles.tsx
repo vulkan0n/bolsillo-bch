@@ -1,6 +1,6 @@
-import COLOURS from "../../../design/colours";
-import SPACING from "../../../design/spacing";
-import TYPOGRAPHY from "../../../design/typography";
+import COLOURS from "@design/colours";
+import SPACING from "@design/spacing";
+import TYPOGRAPHY from "@design/typography";
 
 const HEADER_HEIGHT = 60;
 

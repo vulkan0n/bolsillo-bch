@@ -1,18 +1,16 @@
-import COLOURS from "@design/colours";
 import SPACING from "@design/spacing";
 
 const styles = {
-  tabBar: {
-    backgroundColor: COLOURS.black,
-    borderTopWidth: 0,
-    paddingTop: SPACING.ten,
-  },
-  header: {
-    flex: 1,
+  entryRow: {
+    flex: 2,
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
+    height: "100%",
+    margin: SPACING.five,
+    marginRight: SPACING.fifteen,
   },
+  container: { flex: 1 },
 };
 
 export default styles;

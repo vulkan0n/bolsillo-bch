@@ -1,11 +1,12 @@
 import React from "react";
 import { View, Text } from "react-native";
 import styles from "./styles";
-import Button from "../../../../../atoms/Button";
+import Button from "@atoms/Button";
 import { useSelector, useDispatch } from "react-redux";
-import { updateTransactionPadView } from "../../../../../../redux/reducers/transactionPadReducer";
-import { ReduxState } from "../../../../../../types";
-import QrScanner from "../QrScanner";
+import { updateTransactionPadView } from "@redux/reducers/transactionPadReducer";
+import { ReduxState } from "@types";
+import ScanEntry from "./ScanEntry";
+import ImageEntry from "./ImageEntry";
 import ButtonColumn from "./ButtonColumn";
 import TextEntry from "./TextEntry";
 
@@ -19,14 +20,6 @@ const SendPad = () => {
     (state: ReduxState) => state.settings
   );
 
-  const onPressSend = () => {
-    dispatch(
-      updateTransactionPadView({
-        view: "Confirm",
-      })
-    );
-  };
-
   const onPressBack = () => {
     dispatch(
       updateTransactionPadView({
@@ -35,34 +28,16 @@ const SendPad = () => {
     );
   };
 
-  const SendButton = (
-    <Button icon={"faPaperPlane"} onPress={onPressSend} size="small">
-      Send
-    </Button>
-  );
-
-  const ScanEntry = (
-    <View style={styles.entryRow as any}>
-      <QrScanner />
-    </View>
-  );
-
-  const ImageEntry = (
-    <View style={styles.entryRow as any}>
-      <Text>Image entry</Text>
-    </View>
-  );
-
   const AddressEntry = () => {
     switch (sendToAddressEntry) {
       case "Text":
         return <TextEntry />;
       case "Scan":
-        return ScanEntry;
+        return <ScanEntry />;
       case "Image":
-        return ImageEntry;
+        return <ImageEntry />;
       default:
-        return ScanEntry;
+        return <ScanEntry />;
         break;
     }
   };
@@ -75,7 +50,6 @@ const SendPad = () => {
         {isRightHandedMode && <ButtonColumn />}
       </View>
       <View style={styles.buttonContainer as any}>
-        {isRightHandedMode && SendButton}
         <Button
           icon={"faChevronLeft"}
           variant="secondary"
@@ -84,7 +58,6 @@ const SendPad = () => {
         >
           Back
         </Button>
-        {!isRightHandedMode && SendButton}
       </View>
     </View>
   );

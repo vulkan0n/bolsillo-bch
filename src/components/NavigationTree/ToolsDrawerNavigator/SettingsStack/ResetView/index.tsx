@@ -1,13 +1,13 @@
 import React from "react";
 import { View, Text, ScrollView } from "react-native";
-import Button from "../../../../atoms/Button";
-import TYPOGRAPHY from "../../../../../design/typography";
+import Button from "@atoms/Button";
+import TYPOGRAPHY from "@design/typography";
 import styles from "./styles";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import COLOURS from "../../../../../design/colours";
+import COLOURS from "@design/colours";
 import { faPowerOff } from "@fortawesome/free-solid-svg-icons/faPowerOff";
-import persistor from "../../../../../redux/persistor";
-import StackSubheader from "../../../../atoms/StackSubheader";
+import persistor from "@redux/persistor";
+import StackSubheader from "@atoms/StackSubheader";
 
 const ResetView = ({ navigation }) => {
   const onPressReset = () => {

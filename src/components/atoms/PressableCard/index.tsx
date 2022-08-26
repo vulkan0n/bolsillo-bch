@@ -2,9 +2,9 @@ import React from "react";
 import { View, Text, Pressable } from "react-native";
 import styles from "./styles";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import COLOURS from "../../../design/colours";
-import TYPOGRAPHY from "../../../design/typography";
-import { iconImport, IconType } from "../../../design/icons";
+import COLOURS from "@design/colours";
+import TYPOGRAPHY from "@design/typography";
+import { iconImport, IconType } from "@design/icons";
 
 interface Props {
   onPress: () => void;

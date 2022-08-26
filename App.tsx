@@ -13,7 +13,7 @@ import { useWebViewMessage } from "react-native-react-bridge";
 import NavigationTree from "./src/components/NavigationTree";
 import BackgroundIntervals from "./src/components/BackgroundIntervals";
 import Bridge from "./src/components/Bridge";
-import { RESPONSE_MESSAGE_TYPES } from "./src/utils/bridgeMessages";
+import { RESPONSE_MESSAGE_TYPES } from "@utils/bridgeMessages";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 import store from "./src/redux/store";

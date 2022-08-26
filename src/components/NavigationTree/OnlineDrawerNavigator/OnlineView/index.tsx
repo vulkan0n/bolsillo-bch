@@ -1,9 +1,9 @@
 import React from "react";
 import { View, Text, ScrollView } from "react-native";
-import COLOURS from "../../../../design/colours";
-import SPACING from "../../../../design/spacing";
-import TYPOGRAPHY from "../../../../design/typography";
-import { ONE_HUNDRED, TEN_MILLION } from "../../../../utils/consts";
+import COLOURS from "@design/colours";
+import SPACING from "@design/spacing";
+import TYPOGRAPHY from "@design/typography";
+import { ONE_HUNDRED, TEN_MILLION } from "@utils/consts";
 import styles from "./styles";
 
 function OnlineView({ navigation }) {

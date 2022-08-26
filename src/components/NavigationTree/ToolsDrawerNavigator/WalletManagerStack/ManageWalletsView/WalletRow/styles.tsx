@@ -1,4 +1,4 @@
-import SPACING from "../../../../../../design/spacing";
+import SPACING from "@design/spacing";
 
 const styles = {
   container: {

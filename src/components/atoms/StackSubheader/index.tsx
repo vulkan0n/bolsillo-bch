@@ -1,6 +1,6 @@
 import React from "react";
 import { View, Text, Pressable } from "react-native";
-import TYPOGRAPHY from "../../../design/typography";
+import TYPOGRAPHY from "@design/typography";
 import { useNavigation } from "@react-navigation/native";
 import styles from "./styles";
 

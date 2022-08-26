@@ -1,15 +1,15 @@
 import React, { useState } from "react";
 import { ScrollView, View, Text, Pressable } from "react-native";
 import { useSelector } from "react-redux";
-import Button from "../../../../atoms/Button";
-import TYPOGRAPHY from "../../../../../design/typography";
+import Button from "@atoms/Button";
+import TYPOGRAPHY from "@design/typography";
 import styles from "./styles";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faPiggyBank } from "@fortawesome/free-solid-svg-icons/faPiggyBank";
-import COLOURS from "../../../../../design/colours";
-import { ReduxState } from "../../../../../types";
-import Divider from "../../../../atoms/Divider";
-import StackSubheader from "../../../../atoms/StackSubheader";
+import COLOURS from "@design/colours";
+import { ReduxState } from "@types";
+import Divider from "@atoms/Divider";
+import StackSubheader from "@atoms/StackSubheader";
 
 function BackupView({ navigation }) {
   const { navigatedWalletName } = useSelector(

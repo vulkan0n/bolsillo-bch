@@ -1,25 +1,25 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, Pressable } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
-import Button from "../../../../atoms/Button";
-import TYPOGRAPHY from "../../../../../design/typography";
+import Button from "@atoms/Button";
+import TYPOGRAPHY from "@design/typography";
 import styles from "./styles";
-import { ReduxState } from "../../../../../types";
+import { ReduxState } from "@types";
 import {
   createWalletFromScratchPad,
   updateNewWalletScratchPadDescription,
   updateNewWalletScratchPadName,
-} from "../../../../../redux/reducers/walletManagerReducer";
-import TextInput from "../../../../atoms/TextInput";
-import emit from "../../../../../utils/emit";
-import { BRIDGE_MESSAGE_TYPES } from "../../../../../utils/bridgeMessages";
+} from "@redux/reducers/walletManagerReducer";
+import TextInput from "@atoms/TextInput";
+import emit from "@utils/emit";
+import { BRIDGE_MESSAGE_TYPES } from "@utils/bridgeMessages";
 import Toast from "react-native-toast-message";
 import {
   validateWalletName,
   validateWalletDescription,
-} from "../../../../../utils/validation";
+} from "@utils/validation";
 import { ScrollView } from "react-native-gesture-handler";
-import StackSubheader from "../../../../atoms/StackSubheader";
+import StackSubheader from "@atoms/StackSubheader";
 
 function NewWalletView({ navigation }) {
   const dispatch = useDispatch();

@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { ScrollView, View, Text } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
-import Button from "../../../../atoms/Button";
-import TYPOGRAPHY from "../../../../../design/typography";
+import Button from "@atoms/Button";
+import TYPOGRAPHY from "@design/typography";
 import styles from "./styles";
-import COLOURS from "../../../../../design/colours";
-import { ReduxState } from "../../../../../types";
+import COLOURS from "@design/colours";
+import { ReduxState } from "@types";
 import {
   createWalletFromScratchPad,
   clearWalletScratchPad,
@@ -13,22 +13,22 @@ import {
   updateNewWalletScratchPadDescription,
   updateImportWalletScratchPadMnemonic,
   updateImportWalletScratchPadDerivationPath,
-} from "../../../../../redux/reducers/walletManagerReducer";
-import TextInput from "../../../../atoms/TextInput";
-import emit from "../../../../../utils/emit";
-import { BRIDGE_MESSAGE_TYPES } from "../../../../../utils/bridgeMessages";
+} from "@redux/reducers/walletManagerReducer";
+import TextInput from "@atoms/TextInput";
+import emit from "@utils/emit";
+import { BRIDGE_MESSAGE_TYPES } from "@utils/bridgeMessages";
 import Toast from "react-native-toast-message";
 import {
   validateWalletName,
   validateWalletDescription,
   validateWalletMnemonic,
-} from "../../../../../utils/validation";
-import { DEFAULT_DERIVATION_PATH } from "../../../../../utils/consts";
-import StackSubheader from "../../../../atoms/StackSubheader";
+} from "@utils/validation";
+import { DEFAULT_DERIVATION_PATH } from "@utils/consts";
+import StackSubheader from "@atoms/StackSubheader";
 
 function ImportWalletView({ navigation }) {
   const dispatch = useDispatch();
-  const { name, description, mnemonic, derivationPath } = useSelector(
+  const { name, description, mnemonic } = useSelector(
     (state: ReduxState) => state.walletManager.scratchPad
   );
   const existingWalletNames = useSelector((state: ReduxState) =>
@@ -68,7 +68,7 @@ function ImportWalletView({ navigation }) {
     setIsStartedEditingMnemonic(true);
     dispatch(
       updateImportWalletScratchPadMnemonic({
-        mnemonic: newMnemonic.toLowerCase(),
+        mnemonic: newMnemonic,
       })
     );
   };
@@ -119,7 +119,12 @@ function ImportWalletView({ navigation }) {
             </Text>
           )}
           <Text style={TYPOGRAPHY.h2 as any}>Mnemonic</Text>
-          <TextInput isSmallText text={mnemonic} onChange={onChangeMnemonic} />
+          <TextInput
+            isSmallText
+            isDisableAutoComplete
+            text={mnemonic}
+            onChange={onChangeMnemonic}
+          />
           {isStartedEditingMnemonic && mnemonicValidationError && (
             <Text style={TYPOGRAPHY.pRed as any}>
               {mnemonicValidationError}

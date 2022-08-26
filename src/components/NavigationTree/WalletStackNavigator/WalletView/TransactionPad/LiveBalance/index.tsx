@@ -1,14 +1,11 @@
 import React from "react";
 import { Pressable, Text } from "react-native";
 import styles from "./styles";
-import TYPOGRAPHY from "../../../../../../design/typography";
-import {
-  convertBalanceToDisplay,
-  prettifyPadBalance,
-} from "../../../../../../utils/formatting";
+import TYPOGRAPHY from "@design/typography";
+import { convertBalanceToDisplay, prettifyPadBalance } from "@utils/formatting";
 import { useDispatch, useSelector } from "react-redux";
-import { ReduxState } from "../../../../../../types";
-import { toggleIsBchDenominated } from "../../../../../../redux/reducers/settingsReducer";
+import { ReduxState } from "@types";
+import { toggleIsBchDenominated } from "@redux/reducers/settingsReducer";
 
 const DisplayedBalance = () => {
   const dispatch = useDispatch();

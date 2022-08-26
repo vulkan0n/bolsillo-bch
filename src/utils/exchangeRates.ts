@@ -1,4 +1,4 @@
-import store from "../redux/store";
+import store from "@redux/store";
 import {
   ONE_HUNDRED,
   ONE_HUNDRED_THOUSAND,

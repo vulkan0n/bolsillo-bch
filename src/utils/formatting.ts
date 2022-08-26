@@ -30,7 +30,7 @@ import {
   convertRawSatsToRawThb,
   convertRawSatsToRawUsd,
 } from "./exchangeRates";
-import { BitcoinDenominationTypes, SupportedCurrencyTypes } from "../types";
+import { BitcoinDenominationTypes, SupportedCurrencyTypes } from "@types";
 import { MAIN_NET_PREFIX, TEST_NET_PREFIX } from "./consts";
 
 // Note on how this file works

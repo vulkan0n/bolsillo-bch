@@ -7,9 +7,9 @@ import BitcoinDenomination from "./BitcoinDenomination";
 import RightHandedMode from "./RightHandedMode";
 import ShowAvailableBalance from "./ShowAvailableBalance";
 import TestNet from "./TestNet";
-import TYPOGRAPHY from "../../../../../design/typography";
-import Divider from "../../../../atoms/Divider";
-import StackSubheader from "../../../../atoms/StackSubheader";
+import TYPOGRAPHY from "@design/typography";
+import Divider from "@atoms/Divider";
+import StackSubheader from "@atoms/StackSubheader";
 
 const OptionsView = ({ navigation }) => {
   const onPressReset = () => {

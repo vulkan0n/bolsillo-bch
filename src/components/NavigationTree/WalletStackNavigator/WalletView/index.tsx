@@ -3,12 +3,12 @@ import { View, Image, Text } from "react-native";
 import { useSelector } from "react-redux";
 import TransactionPad from "./TransactionPad";
 import styles from "./styles";
-import { BRIDGE_MESSAGE_TYPES } from "../../../../utils/bridgeMessages";
-import { ReduxState } from "../../../../types";
-import emit from "../../../../utils/emit";
+import { BRIDGE_MESSAGE_TYPES } from "@utils/bridgeMessages";
+import { ReduxState } from "@types";
+import emit from "@utils/emit";
 import AvailableBalance from "./AvailableBalance";
-import TYPOGRAPHY from "../../../../design/typography";
-import { ONE_SECOND } from "../../../../utils/consts";
+import TYPOGRAPHY from "@design/typography";
+import { ONE_SECOND } from "@utils/consts";
 
 function WalletView({ navigation }) {
   const isNoWallet = useSelector(

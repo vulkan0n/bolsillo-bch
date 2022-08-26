@@ -7,7 +7,7 @@ import {
 import {
   BRIDGE_MESSAGE_TYPES,
   RESPONSE_MESSAGE_TYPES,
-} from "../../utils/bridgeMessages";
+} from "@utils/bridgeMessages";
 
 const Bridge = () => {
   console.log("Bridge loaded.");

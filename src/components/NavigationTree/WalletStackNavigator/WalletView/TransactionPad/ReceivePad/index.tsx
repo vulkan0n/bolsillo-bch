@@ -2,21 +2,21 @@ import React from "react";
 import { View, Text, Pressable } from "react-native";
 import { useSelector } from "react-redux";
 import styles from "./styles";
-import Button from "../../../../../atoms/Button";
+import Button from "@atoms/Button";
 import Toast from "react-native-toast-message";
-import TYPOGRAPHY from "../../../../../../design/typography";
-import QRCode from "react-qr-code";
+import TYPOGRAPHY from "@design/typography";
+import QRCode from "react-native-qrcode-svg";
 import { useDispatch } from "react-redux";
-import { updateTransactionPadView } from "../../../../../../redux/reducers/transactionPadReducer";
-import { ReduxState } from "../../../../../../types";
+import { updateTransactionPadView } from "@redux/reducers/transactionPadReducer";
+import { ReduxState } from "@types";
 import * as Clipboard from "expo-clipboard";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import COLOURS from "../../../../../../design/colours";
-import { iconImport } from "../../../../../../design/icons";
+import COLOURS from "@design/colours";
+import { iconImport } from "@design/icons";
 import {
   selectActiveWallet,
   selectActiveWalletIsZeroBalance,
-} from "../../../../../../redux/selectors";
+} from "@redux/selectors";
 
 const ReceivePad = () => {
   const dispatch = useDispatch();
@@ -65,11 +65,19 @@ const ReceivePad = () => {
     </Button>
   );
 
+  const logo = require("../../../../../../assets/images/bch.png");
+
   return (
     <View style={styles.inputBackground as any}>
       <Pressable onPress={onPressClipboard} style={styles.receivePad as any}>
         <View style={styles.qrBorder}>
-          <QRCode size={200} value={`${wallet?.cashaddr}`} />
+          <QRCode
+            size={225}
+            value={`${wallet?.cashaddr}`}
+            color={COLOURS.black}
+            logo={logo}
+            logoSize={60}
+          />
         </View>
         <Text selectable style={TYPOGRAPHY.p as any}>
           {wallet?.cashaddr}

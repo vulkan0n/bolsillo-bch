@@ -1,13 +1,13 @@
 import React, { useEffect } from "react";
 import { View } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
-import { ReduxState } from "../../types";
-import { BRIDGE_MESSAGE_TYPES } from "../../utils/bridgeMessages";
-import { ONE_SECOND, THIRTY_SECONDS } from "../../utils/consts";
-import emit from "../../utils/emit";
+import { ReduxState } from "@types";
+import { BRIDGE_MESSAGE_TYPES } from "@utils/bridgeMessages";
+import { ONE_SECOND, THIRTY_SECONDS } from "@utils/consts";
+import emit from "@utils/emit";
 import axios from "axios";
-import { updateBchPrices } from "../../redux/reducers/exchangeRatesReducer";
-import { selectActiveWallet } from "../../redux/selectors";
+import { updateBchPrices } from "@redux/reducers/exchangeRatesReducer";
+import { selectActiveWallet } from "@redux/selectors";
 
 const BackgroundIntervals = () => {
   const dispatch = useDispatch();
@@ -84,16 +84,28 @@ const BackgroundIntervals = () => {
   // Create a wallet if none exists
   // I.e. first time app is opened
   if (isNoWallet) {
-    emit({
-      type: BRIDGE_MESSAGE_TYPES.CREATE_DEFAULT_WALLET,
-      data: { isTestNet },
-    });
+    // Add 1 second delay to allow internet connection time
+    // to load and reduce No Connection errors
+    setTimeout(() => {
+      emit({
+        type: BRIDGE_MESSAGE_TYPES.CREATE_DEFAULT_WALLET,
+        data: { isTestNet },
+      });
+    }, ONE_SECOND);
   }
 
   // Recheck balance when active wallet changes
   // Including importing a new wallet
   useEffect(() => {
-    fetchActiveWalletBalance();
+    if (!wallet) {
+      return;
+    }
+
+    // Add 1 second delay to allow internet connection time
+    // to load and reduce No Connection errors
+    setTimeout(() => {
+      fetchActiveWalletBalance();
+    }, ONE_SECOND);
   }, [wallet]);
 
   // Run regular checks every 30s

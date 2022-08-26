@@ -7,8 +7,8 @@ import ReceivePad from "./ReceivePad";
 import Confirm from "./Confirm";
 import LiveBalance from "./LiveBalance";
 import { useSelector } from "react-redux";
-import { ReduxState } from "../../../../../types";
-import { selectActiveWalletIsZeroBalance } from "../../../../../redux/selectors";
+import { ReduxState } from "@types";
+import { selectActiveWalletIsZeroBalance } from "@redux/selectors";
 
 const TransactionPad = ({ navigation }) => {
   const { view } = useSelector((state: ReduxState) => state.transactionPad);
@@ -39,7 +39,9 @@ const TransactionPad = ({ navigation }) => {
 
   return (
     <View style={styles.transactionPad as any}>
-      {view !== "Receive" && !isZeroBalance && <LiveBalance />}
+      {view !== "Receive" && view !== "Confirm" && !isZeroBalance && (
+        <LiveBalance />
+      )}
       {component()}
     </View>
   );

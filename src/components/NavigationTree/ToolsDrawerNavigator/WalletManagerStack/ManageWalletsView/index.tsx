@@ -2,14 +2,14 @@ import React from "react";
 import { View, Text, FlatList } from "react-native";
 import { useSelector } from "react-redux";
 import styles from "./styles";
-import { ReduxState } from "../../../../../types";
+import { ReduxState } from "@types";
 import WalletActions from "./WalletActions";
 import WalletRow from "./WalletRow";
-import Divider from "../../../../atoms/Divider";
-import TYPOGRAPHY from "../../../../../design/typography";
-import COLOURS from "../../../../../design/colours";
-import SPACING from "../../../../../design/spacing";
-import StackSubheader from "../../../../atoms/StackSubheader";
+import Divider from "@atoms/Divider";
+import TYPOGRAPHY from "@design/typography";
+import COLOURS from "@design/colours";
+import SPACING from "@design/spacing";
+import StackSubheader from "@atoms/StackSubheader";
 
 function ManageWalletsView({ navigation }) {
   const { wallets } = useSelector((state: ReduxState) => state.walletManager);

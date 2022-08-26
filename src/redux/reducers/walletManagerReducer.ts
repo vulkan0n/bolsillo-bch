@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { SeleneWalletType } from "../../types";
+import { SeleneWalletType } from "@types";
 import { PURGE } from "redux-persist";
 
 const BLANK_SCRATCH_PAD = {
@@ -47,7 +47,8 @@ const walletMangerSlice = createSlice({
       state.scratchPad.description = action.payload.description;
     },
     updateImportWalletScratchPadMnemonic(state, action) {
-      state.scratchPad.mnemonic = action.payload.mnemonic;
+      const lowerCaseMnemonic = action.payload.mnemonic.toLowerCase();
+      state.scratchPad.mnemonic = lowerCaseMnemonic;
     },
     updateImportWalletScratchPadDerivationPath(state, action) {
       state.scratchPad.derivationPath = action.payload.derivationPath;

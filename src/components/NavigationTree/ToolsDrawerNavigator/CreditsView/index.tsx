@@ -1,7 +1,8 @@
 import React from "react";
 import { View, Image, Text } from "react-native";
-import TYPOGRAPHY from "../../../../design/typography";
+import TYPOGRAPHY from "@design/typography";
 import styles from "./styles";
+import * as Application from "expo-application";
 
 function CreditsView() {
   return (
@@ -22,7 +23,9 @@ function CreditsView() {
       </Text>
       <Text style={TYPOGRAPHY.pWhite as any}>PRs always welcome!</Text>
       <View style={TYPOGRAPHY.spacer as any}></View>
-      <Text style={TYPOGRAPHY.pWhite as any}>v0.0.2</Text>
+      <Text style={TYPOGRAPHY.pWhite as any}>
+        {Application?.nativeApplicationVersion || "web"}
+      </Text>
     </View>
   );
 }

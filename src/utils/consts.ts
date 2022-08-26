@@ -1,4 +1,4 @@
-import { SupportedCurrency } from "../types";
+import { SupportedCurrency } from "@types";
 
 // Address formats
 export const TEST_NET_PREFIX: string = "bchtest:";
@@ -7,7 +7,7 @@ export const DEFAULT_DERIVATION_PATH: string = "m/44'/0'/0'/0/0";
 
 // Time
 export const ONE_SECOND: number = 1000; // in milliseconds
-export const THIRTY_SECONDS: number = 30000; // in milliseconds
+export const THIRTY_SECONDS: number = ONE_SECOND * 30; // in milliseconds
 
 // Denominations
 export const ONE_HUNDRED_MILLION: number = 100000000; // Sats per BCH
