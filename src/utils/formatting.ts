@@ -32,6 +32,7 @@ import {
 } from "./exchangeRates";
 import { BitcoinDenominationTypes, SupportedCurrencyTypes } from "@types";
 import { MAIN_NET_PREFIX, TEST_NET_PREFIX } from "./consts";
+import { CurrencyOrDenominationType } from "../types";
 
 // Note on how this file works
 // All values are passed between functions as strings
@@ -153,17 +154,25 @@ const roundDownToXDecimalPlaces = (input: string, x: number): string => {
   return fixedDecimals.toString();
 };
 
-export const prettifyRawCurrency = (
-  rawCurrency: string,
-  currency: SupportedCurrencyTypes | BitcoinDenominationTypes
+export const roundAndChunkRawBalance = (
+  rawValue: string,
+  currency: CurrencyOrDenominationType,
+  isPreserveTrailingDigits: boolean = false
 ): string => {
-  const value = rawCurrency ?? "0";
+  const value = rawValue ?? "0";
 
   const roundedValue = roundDownToXDecimalPlaces(
     value,
     allowedDecimalPlaces(currency)
   );
-  const chunkedValue = chunkPreDecimalInto3s(roundedValue);
+  return chunkPreDecimalInto3s(roundedValue, isPreserveTrailingDigits);
+};
+
+export const prettifyRawCurrency = (
+  rawCurrency: string,
+  currency: SupportedCurrencyTypes | BitcoinDenominationTypes
+): string => {
+  const chunkedValue = roundAndChunkRawBalance(rawCurrency, currency);
 
   switch (currency) {
     case "aud":
@@ -209,6 +218,9 @@ export const prettifyPadBalance = (
 ): string => {
   const value = padBalance ?? "0";
 
+  // Note, deliberately not rounded
+  // To preserve ability to have "33." entered or "33.1"
+  // instead of forcefit to "33.10"
   const chunkedValue = chunkPreDecimalInto3s(value, true);
 
   switch (currency) {
@@ -289,6 +301,14 @@ export const convertRawSatsToRawCurrency = (
     default:
       return rawSats;
   }
+};
+
+export const convertRawSatsToRawCurrencyRounded = (
+  rawSats: string,
+  currency: SupportedCurrencyTypes | BitcoinDenominationTypes
+): string => {
+  const value = convertRawSatsToRawCurrency(rawSats, currency);
+  return roundDownToXDecimalPlaces(value, allowedDecimalPlaces(currency));
 };
 
 export const rawSatsToCurrencyDisplay = (

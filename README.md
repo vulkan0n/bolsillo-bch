@@ -36,7 +36,15 @@ Bridge actions are driven by the native app, which sends a `BRIDGE_MESSAGE_TYPE`
 
 This is a BCH standard app. Think in terms of BCH satoshis, stored as strings, then use the formatting and exchange rate helpers. All other exchange rates and balances are transformations of the satoshi value.
 
+Exception: wallet.balance stored as an integer, in satoshis.
+
 Bitcoin denominations are treated as separate currencies with a fixed exchange rate.
+
+Transaction histories are stored in reverse-chronological (descending block height) order.
+
+## Dev Notes
+
+Be careful with using `navigation.reset`, as it can mess around with the loading of the root <Toast> component and cause React to blow up on finding Toast calls with props that are objects (and therefore not renderable) instead of strings. `navigation.reset` is used in `Reset app` to completely purge all data, but should otherwise perhaps be avoided.
 
 ## Testing
 
@@ -51,6 +59,7 @@ And note that mainnet.cash uses `m/44/0'/0'` for mainnet derivative path and `m/
 # Builds
 
 ```
+# Update app version on Credits page
 # Update `app.json` `version`, `ios.buildNumber`, `android.versionCode`
 # git commit
 $ eas build

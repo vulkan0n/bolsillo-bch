@@ -1,6 +1,9 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { SeleneWalletType } from "@types";
 import { PURGE } from "redux-persist";
+import * as R from "ramda";
+import { TransactionType } from "../../types";
+import { replace } from "immutable-replace";
 
 const BLANK_SCRATCH_PAD = {
   name: "",
@@ -8,6 +11,7 @@ const BLANK_SCRATCH_PAD = {
   mnemonic: "",
   derivationPath: "",
   cashaddr: "",
+  transactions: [],
 };
 
 export interface WalletManagerState {
@@ -68,6 +72,7 @@ const walletMangerSlice = createSlice({
           derivationPath: action.payload.derivationPath,
           cashaddr: action.payload.cashaddr,
           balance: "0",
+          transactions: [],
         };
         state.wallets = [newWallet];
         state.activeWalletName = walletName;
@@ -99,6 +104,40 @@ const walletMangerSlice = createSlice({
       );
       wallet.cashaddr = action.payload.cashaddr;
     },
+    importWalletTransactionHistory(state, action) {
+      const wallet = state.wallets.find(
+        ({ name }) => name === action.payload.name
+      );
+
+      const byHeightDescend = R.descend(R.prop("height"));
+      const equalByTxHash = R.eqBy(R.prop("tx_hash"));
+      const transactionHistory = R.unionWith(
+        equalByTxHash,
+        wallet.transactions,
+        action.payload.transactionHistory
+      );
+      const transactionsByHeight = R.sort(byHeightDescend, transactionHistory);
+      wallet.transactions = transactionsByHeight;
+    },
+    updateTransactionNote(state, action) {
+      const inputTxHash = action.payload.tx_hash;
+      const note = action.payload.note;
+
+      const findTxHashInWallet = (wallet: SeleneWalletType): TransactionType =>
+        wallet?.transactions?.find(({ tx_hash }) => tx_hash === inputTxHash);
+
+      const wallet: SeleneWalletType = state.wallets.find(findTxHashInWallet);
+      const transaction: TransactionType = findTxHashInWallet(wallet);
+      const newTransaction: TransactionType = {
+        ...transaction,
+        note,
+      };
+
+      const newWallet = replace(transaction).with(newTransaction).in(wallet);
+      const newWallets = replace(wallet).with(newWallet).in(state.wallets);
+
+      state.wallets = newWallets;
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(PURGE, () => initialState);
@@ -119,5 +158,7 @@ export const {
   deleteWallet,
   updateWalletBalance,
   updateWalletCashAddr,
+  importWalletTransactionHistory,
+  updateTransactionNote,
 } = walletMangerSlice.actions;
 export default walletMangerSlice.reducer;

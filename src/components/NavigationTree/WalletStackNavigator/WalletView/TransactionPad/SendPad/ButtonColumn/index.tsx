@@ -5,6 +5,7 @@ import Button from "@atoms/Button";
 import { useSelector, useDispatch } from "react-redux";
 import { updateTransactionPadSendToAddressEntry } from "@redux/reducers/transactionPadReducer";
 import { ReduxState } from "@types";
+import pickImage from "../pickImage";
 
 const ButtonColumn = () => {
   const dispatch = useDispatch();
@@ -29,11 +30,7 @@ const ButtonColumn = () => {
   };
 
   const onPressImage = () => {
-    dispatch(
-      updateTransactionPadSendToAddressEntry({
-        sendToAddressEntry: "Image",
-      })
-    );
+    pickImage(dispatch);
   };
 
   return (

@@ -27,12 +27,19 @@ import {
   updateNewWalletScratchPadDetails,
   updateWalletBalance,
   updateWalletCashAddr,
+  importWalletTransactionHistory,
 } from "./src/redux/reducers/walletManagerReducer";
 import {
   updateTransactionPadIsSendingCoins,
   clearTransactionPad,
 } from "./src/redux/reducers/transactionPadReducer";
-import { reset } from "./src/components/NavigationTree/rootNavigation";
+import { navigate } from "./src/components/NavigationTree/rootNavigation";
+import { updateLocalLastSentTxHash } from "./src/redux/reducers/localReducer";
+
+interface TransactionHistoryTxType {
+  height: number;
+  tx_hash: string;
+}
 
 interface BridgeResponseMessage {
   type: string;
@@ -40,9 +47,10 @@ interface BridgeResponseMessage {
     name?: string;
     wallet?: WalletType;
     balance?: string;
-    tempTxId?: string;
+    lastSentTransactionHash?: string;
     title?: string;
     text?: string;
+    transactionHistory?: TransactionHistoryTxType[];
   };
 }
 
@@ -112,10 +120,17 @@ export default function App() {
           break;
 
         case RESPONSE_MESSAGE_TYPES.SEND_COINS_RESPONSE_SUCCESS:
+          console.log({ message });
           store.dispatch(
             updateWalletBalance({
               name: message.data.name,
               balance: message.data.balance,
+            })
+          );
+
+          store.dispatch(
+            updateLocalLastSentTxHash({
+              lastSeenTransactionHash: message.data.lastSentTransactionHash,
             })
           );
 
@@ -126,10 +141,7 @@ export default function App() {
 
           store.dispatch(clearTransactionPad());
 
-          // reset({
-          //   index: 0,
-          //   routes: [{ name: "Transaction Success" }],
-          // });
+          navigate("Transaction Success");
           break;
 
         case RESPONSE_MESSAGE_TYPES.SEND_COINS_RESPONSE_FAIL:
@@ -143,17 +155,26 @@ export default function App() {
             type: "customError",
             props: {
               title: "Transaction failed",
-              text: message?.data?.text,
+              text: message?.data?.text || "",
             },
           });
+          break;
+
+        case RESPONSE_MESSAGE_TYPES.GET_WALLET_HISTORY_RESPONSE:
+          store.dispatch(
+            importWalletTransactionHistory({
+              name: message?.data?.name,
+              transactionHistory: message?.data?.transactionHistory,
+            })
+          );
           break;
 
         case RESPONSE_MESSAGE_TYPES.ERROR:
           Toast.show({
             type: "customError",
             props: {
-              title: message?.data?.title,
-              text: message?.data?.text,
+              title: message?.data?.title || "",
+              text: message?.data?.text || "",
             },
           });
           break;

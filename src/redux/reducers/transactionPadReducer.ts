@@ -9,7 +9,7 @@ import { updateActiveWalletName } from "./walletManagerReducer";
 
 export interface TransactionPadState {
   view: "" | "NumPad" | "Send" | "Receive" | "Confirm";
-  sendToAddressEntry: "Text" | "Scan" | "Image";
+  sendToAddressEntry: "Text" | "Scan";
   padBalance: string;
   sendToAddress: string;
   isSendingCoins: boolean;

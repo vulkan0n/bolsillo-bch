@@ -73,6 +73,13 @@ const TYPOGRAPHY = {
     fontSize: 22,
     marginBottom: SPACING.ten,
   },
+  h2Green: {
+    fontFamily: "Montserrat_500Medium",
+    textAlign: "center",
+    color: COLOURS.bchGreen,
+    fontSize: 22,
+    marginBottom: SPACING.ten,
+  },
   menuHeaderGreen: {
     fontFamily: "Montserrat_500Medium",
     textAlign: "center",
@@ -100,6 +107,13 @@ const TYPOGRAPHY = {
   p: {
     fontFamily: "Montserrat_500Medium",
     textAlign: "center",
+    color: COLOURS.black,
+    fontSize: 16,
+    marginBottom: SPACING.ten,
+  },
+  pLeft: {
+    fontFamily: "Montserrat_500Medium",
+    textAlign: "left",
     color: COLOURS.black,
     fontSize: 16,
     marginBottom: SPACING.ten,

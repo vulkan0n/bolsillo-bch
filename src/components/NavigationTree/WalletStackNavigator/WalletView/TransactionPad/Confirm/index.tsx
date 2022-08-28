@@ -1,5 +1,5 @@
-import React from "react";
-import { View, Text, Pressable } from "react-native";
+import React, { useState } from "react";
+import { View, Text, Pressable, ActivityIndicator } from "react-native";
 import styles from "./styles";
 import Button from "@atoms/Button";
 import { BRIDGE_MESSAGE_TYPES } from "@utils/bridgeMessages";
@@ -15,8 +15,10 @@ import { convertRawCurrencyToRawSats } from "@utils/formatting";
 import emit from "@utils/emit";
 import TYPOGRAPHY from "@design/typography";
 import { selectActiveWallet } from "@redux/selectors";
-import { updateTransactionPadSendToAddressEntry } from "../../../../../../redux/reducers/transactionPadReducer";
+import { updateTransactionPadSendToAddressEntry } from "@redux/reducers/transactionPadReducer";
 import LiveBalance from "../LiveBalance";
+import COLOURS from "@design/colours";
+import { TEN_SECONDS } from "@utils/consts";
 
 const Confirm = ({ navigation }) => {
   const dispatch = useDispatch();
@@ -40,6 +42,8 @@ const Confirm = ({ navigation }) => {
     : contrastCurrency;
   const rawSatsToSend = convertRawCurrencyToRawSats(padBalance, inputCurrency);
 
+  const [isStuck, setIsStuck] = useState(false);
+
   const onPressSend = () => {
     emit({
       type: BRIDGE_MESSAGE_TYPES.SEND_COINS,
@@ -58,14 +62,25 @@ const Confirm = ({ navigation }) => {
         isSendingCoins: true,
       })
     );
+
+    setTimeout(() => {
+      setIsStuck(true);
+    }, TEN_SECONDS);
   };
 
   const onPressCancelLoading = () => {
-    dispatch(
-      updateTransactionPadIsSendingCoins({
-        isSendingCoins: false,
-      })
-    );
+    if (isStuck) {
+      dispatch(
+        updateTransactionPadIsSendingCoins({
+          isSendingCoins: false,
+        })
+      );
+      dispatch(
+        updateTransactionPadView({
+          view: "NumPad",
+        })
+      );
+    }
   };
 
   const onPressBack = () => {
@@ -93,7 +108,15 @@ const Confirm = ({ navigation }) => {
         onPress={onPressCancelLoading}
         style={styles.inputBackground as any}
       >
-        <Text style={TYPOGRAPHY.h1 as any}>Sending...</Text>
+        <View style={styles.inputBackground as any}>
+          <Text style={TYPOGRAPHY.h1black as any}>Sending...</Text>
+          <ActivityIndicator
+            style={styles.activityIndicator}
+            size="large"
+            color={COLOURS.black}
+          />
+          {isStuck && <Text style={TYPOGRAPHY.p as any}>(Tap if stuck)</Text>}
+        </View>
       </Pressable>
     );
   }

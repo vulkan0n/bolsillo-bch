@@ -6,6 +6,7 @@ import {
   SupportedCurrencyTypes,
 } from "@types";
 import { convertBalanceToDisplay } from "@utils/formatting";
+import { CurrencyOrDenominationType } from "../types";
 
 interface ActiveWalletBalance {
   primaryBalance: string;
@@ -61,4 +62,20 @@ export const selectActiveWalletBalance: (
       secondaryBalance,
     };
   }
+);
+
+export const selectPrimaryCurrencyOrDenomination: (
+  state: ReduxState
+) => CurrencyOrDenominationType = createSelector(
+  (state: ReduxState): boolean => state.settings.isBchDenominated,
+  (state: ReduxState): BitcoinDenominationTypes =>
+    state.settings.bitcoinDenomination,
+  (state: ReduxState): SupportedCurrencyTypes =>
+    state.settings.contrastCurrency,
+  (
+    isBchDenominated: boolean,
+    bitcoinDenomination: BitcoinDenominationTypes,
+    contrastCurrency: SupportedCurrencyTypes
+  ): CurrencyOrDenominationType =>
+    isBchDenominated ? bitcoinDenomination : contrastCurrency
 );

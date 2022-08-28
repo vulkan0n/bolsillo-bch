@@ -26,7 +26,7 @@ const TextInput = ({
 
   return (
     <RNTextInput
-      style={styles({ isSmallText, isPlaceholder }).input as any}
+      style={styles({ isMultiline, isSmallText, isPlaceholder }).input as any}
       onChangeText={onChange}
       value={value}
       multiline={isMultiline}

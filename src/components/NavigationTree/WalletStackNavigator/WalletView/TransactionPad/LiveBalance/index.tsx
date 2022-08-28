@@ -7,7 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { ReduxState } from "@types";
 import { toggleIsBchDenominated } from "@redux/reducers/settingsReducer";
 
-const DisplayedBalance = () => {
+const LiveBalance = () => {
   const dispatch = useDispatch();
   const { padBalance } = useSelector(
     (state: ReduxState) => state.transactionPad
@@ -45,4 +45,4 @@ const DisplayedBalance = () => {
   );
 };
 
-export default DisplayedBalance;
+export default LiveBalance;

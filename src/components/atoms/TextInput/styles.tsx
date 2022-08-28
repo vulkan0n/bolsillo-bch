@@ -2,10 +2,16 @@ import SPACING from "@design/spacing";
 import COLOURS from "@design/colours";
 
 interface Props {
+  isMultiline?: boolean;
   isSmallText?: boolean;
+  isPlaceholder: boolean;
 }
 
-const styles = ({ isSmallText = false, isPlaceholder = false }) => {
+const styles = ({
+  isMultiline = false,
+  isSmallText = false,
+  isPlaceholder = false,
+}: Props) => {
   return {
     input: {
       fontFamily: "Montserrat_500Medium",
@@ -20,9 +26,11 @@ const styles = ({ isSmallText = false, isPlaceholder = false }) => {
       borderRadius: SPACING.borderRadius,
       backgroundColor: COLOURS.white,
       borderColor: COLOURS.bchGreen,
+      height: isMultiline ? 80 : 65,
+      maxHeight: isMultiline ? 80 : 65,
       width: "100%",
-      height: 65,
       display: "flex",
+      flex: 1,
       flexDirection: "row",
       justifyContent: "center",
       alignItems: "center",

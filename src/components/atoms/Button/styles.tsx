@@ -12,6 +12,8 @@ const styles = ({ variant = "primary", isSmall = false, isDisabled }) => {
         return COLOURS.bchGreen;
       case "secondary":
         return COLOURS.bchGreen;
+      case "secondaryOnGreen":
+        return COLOURS.white;
       case "blackOutlined":
         return COLOURS.white;
       case "danger":
@@ -22,6 +24,10 @@ const styles = ({ variant = "primary", isSmall = false, isDisabled }) => {
   };
 
   const backgroundColor = () => {
+    if (isDisabled && variant === "blackOutlined") {
+      return COLOURS.black;
+    }
+
     if (isDisabled) {
       return COLOURS.white;
     }
@@ -30,6 +36,8 @@ const styles = ({ variant = "primary", isSmall = false, isDisabled }) => {
       case "primary":
         return COLOURS.bchGreen;
       case "secondary":
+        return COLOURS.white;
+      case "secondaryOnGreen":
         return COLOURS.white;
       case "blackOutlined":
         return COLOURS.black;
@@ -50,6 +58,8 @@ const styles = ({ variant = "primary", isSmall = false, isDisabled }) => {
         return COLOURS.white;
       case "secondary":
         return COLOURS.bchGreen;
+      case "secondaryOnGreen":
+        return COLOURS.bchGreen;
       case "blackOutlined":
         return COLOURS.bchGreen;
       case "danger":
@@ -69,6 +79,8 @@ const styles = ({ variant = "primary", isSmall = false, isDisabled }) => {
         return COLOURS.black;
       case "secondary":
         return COLOURS.bchGreen;
+      case "secondaryOnGreen":
+        return COLOURS.black;
       case "blackOutlined":
         return COLOURS.white;
       case "danger":
@@ -80,16 +92,18 @@ const styles = ({ variant = "primary", isSmall = false, isDisabled }) => {
 
   return {
     button: {
-      marginLeft: isSmall ? 0 : SPACING.fifteen,
-      marginRight: isSmall ? 0 : SPACING.fifteen,
+      marginLeft: isSmall ? 5 : SPACING.fifteen,
+      marginRight: isSmall ? 5 : SPACING.fifteen,
       marginBottom: isSmall ? 0 : SPACING.fifteen,
       borderWidth: 2,
       borderRadius: SPACING.borderRadius,
       backgroundColor: backgroundColor(),
       borderColor: borderColor(),
-      width: isSmall ? "45%" : "100%",
       height: 65,
+      maxHeight: 65,
+      width: "100%",
       display: "flex",
+      flex: 1,
       flexDirection: "row",
       justifyContent: "center",
       alignItems: "center",
@@ -100,6 +114,7 @@ const styles = ({ variant = "primary", isSmall = false, isDisabled }) => {
       shadowRadius: isDisabled ? 0 : 3,
       // Android drop shadow
       elevation: isDisabled ? 0 : 3,
+      opacity: isDisabled && variant === "blackOutlined" ? 0.5 : 1,
     },
     iconContainer: {
       marginRight: SPACING.five,

@@ -8,6 +8,7 @@ import {
   BRIDGE_MESSAGE_TYPES,
   RESPONSE_MESSAGE_TYPES,
 } from "@utils/bridgeMessages";
+import { sendCoins, getWalletHistory } from "./actions";
 
 const Bridge = () => {
   console.log("Bridge loaded.");
@@ -112,54 +113,11 @@ const Bridge = () => {
           break;
 
         case BRIDGE_MESSAGE_TYPES.SEND_COINS:
-          const walletSendCoins = await WalletObject.fromSeed(
-            message?.data?.mnemonic,
-            message?.data?.derivationPath
-          );
+          await sendCoins(WalletObject, message);
+          break;
 
-          console.log("SENDING!!!");
-          console.log(message?.data);
-
-          emit({
-            type: RESPONSE_MESSAGE_TYPES.SEND_COINS_RESPONSE_LOADING,
-            data: {},
-          });
-
-          try {
-            const txResponse = await walletSendCoins.send([
-              {
-                cashaddr: message?.data?.recipientCashAddr,
-                value: parseInt(message?.data?.satsToSend),
-                unit: "sat",
-              },
-              // {
-              //   feePaidBy: "changeThenAny",
-              // },
-            ]);
-
-            console.log("sent coins!");
-            console.log({ txResponse });
-
-            emit({
-              type: RESPONSE_MESSAGE_TYPES.SEND_COINS_RESPONSE_SUCCESS,
-              data: {
-                name: message?.data?.name,
-                balance: txResponse?.balance?.sat,
-                tempTxId: txResponse?.txId,
-              },
-            });
-          } catch (sendError) {
-            console.log("!!!!!!!!");
-            console.log({ sendError });
-
-            emit({
-              type: RESPONSE_MESSAGE_TYPES.SEND_COINS_RESPONSE_FAIL,
-              data: {
-                text: sendError,
-              },
-            });
-          }
-
+        case BRIDGE_MESSAGE_TYPES.GET_WALLET_HISTORY:
+          await getWalletHistory(WalletObject, message);
           break;
 
         default:

@@ -49,6 +49,10 @@ const styles = {
     justifyContent: "space-around",
     width: "100%",
   },
+  activityIndicator: {
+    marginTop: SPACING.fifteen,
+    marginBottom: SPACING.fifteen,
+  },
 };
 
 export default styles;

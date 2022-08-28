@@ -18,7 +18,7 @@ const OptionsView = ({ navigation }) => {
 
   return (
     <View style={{ flex: 1 }}>
-      <StackSubheader title={"Options"} isBackButton />
+      <StackSubheader title={"Options"} />
       <ScrollView style={styles.scrollView as any}>
         <View style={styles.container as any}>
           <BchDenominated />

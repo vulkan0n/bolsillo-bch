@@ -20,6 +20,7 @@ import { faPaste } from "@fortawesome/free-solid-svg-icons/faPaste";
 import { faQrcode } from "@fortawesome/free-solid-svg-icons/faQrcode";
 import { faImage } from "@fortawesome/free-solid-svg-icons/faImage";
 import { faKeyboard } from "@fortawesome/free-solid-svg-icons/faKeyboard";
+import { faCircleCheck } from "@fortawesome/free-solid-svg-icons/faCircleCheck";
 
 export type IconType =
   | ""
@@ -44,7 +45,8 @@ export type IconType =
   | "faPaste"
   | "faQrcode"
   | "faImage"
-  | "faKeyboard";
+  | "faKeyboard"
+  | "faCircleCheck";
 
 export const iconImport = (icon: IconType) => {
   switch (icon) {
@@ -92,6 +94,8 @@ export const iconImport = (icon: IconType) => {
       return faImage;
     case "faKeyboard":
       return faKeyboard;
+    case "faCircleCheck":
+      return faCircleCheck;
     default:
       return null;
   }
