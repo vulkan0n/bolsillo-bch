@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import TYPOGRAPHY from "@design/typography";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import COLOURS from "@design/colours";
+import SPACING from "@design/spacing";
 import { ReduxState } from "@types";
 import { faWallet } from "@fortawesome/free-solid-svg-icons";
 import { convertBalanceToDisplay } from "@utils/formatting";
@@ -13,7 +14,7 @@ import {
 } from "@redux/reducers/walletManagerReducer";
 import styles from "./styles";
 
-const WalletRow = ({ navigation, name, description, balance }) => {
+const WalletRow = ({ navigation, name, description, balance, transactions }) => {
   const dispatch = useDispatch();
   const { activeWalletName } = useSelector(
     (state: ReduxState) => state.walletManager
@@ -27,18 +28,11 @@ const WalletRow = ({ navigation, name, description, balance }) => {
     dispatch(updateActiveWalletName({ activeWalletName: newActiveWalletName }));
   };
 
-  const onPressBackup = (backupWalletName) => {
+  const onPressTransactions = (transactionsWalletName) => {
     dispatch(
-      updateNavigatedWalletName({ navigatedWalletName: backupWalletName })
+      updateNavigatedWalletName({ navigatedWalletName: transactionsWalletName })
     );
-    navigation.navigate("Backup");
-  };
-
-  const onPressDelete = (deleteWalletName) => {
-    dispatch(
-      updateNavigatedWalletName({ navigatedWalletName: deleteWalletName })
-    );
-    navigation.navigate("Delete");
+    navigation.navigate("Transactions");
   };
 
   const bitcoinBalance = convertBalanceToDisplay(
@@ -55,24 +49,33 @@ const WalletRow = ({ navigation, name, description, balance }) => {
 
   const primaryBalance = isBchDenominated ? bitcoinBalance : contrastBalance;
   const secondaryBalance = isBchDenominated ? contrastBalance : bitcoinBalance;
+  const transactionCount = transactions?.length
+  const s = transactions?.length === 1 ? '' : 's'
 
   return (
     <View style={styles.container as any}>
-      <View style={{ width: 30 }}>
+      <Pressable
+        onPress={() => onPressTransactions(name)}
+        style={{ width: 30 }}
+      >
         <FontAwesomeIcon
           icon={faWallet}
           size={isActive ? 30 : 20}
           color={COLOURS.white}
         />
-      </View>
-      <View style={styles.padding as any}>
+      </Pressable>
+      <Pressable
+        onPress={() => onPressTransactions(name)}
+        style={styles.padding as any}
+      >
         <Text style={TYPOGRAPHY.h2Left as any}>{name}</Text>
         {!!description && (
           <Text style={TYPOGRAPHY.pWhiteLeft as any}>{description}</Text>
         )}
+        <Text style={TYPOGRAPHY.pWhiteLeft as any}>{transactionCount} transaction{s}</Text>
         <Text style={TYPOGRAPHY.pWhiteLeft as any}>{primaryBalance}</Text>
         <Text style={TYPOGRAPHY.pWhiteLeft as any}>{secondaryBalance}</Text>
-      </View>
+      </Pressable>
       <View style={styles.fixedWidth as any}>
         {!isActive && (
           <Pressable
@@ -80,17 +83,30 @@ const WalletRow = ({ navigation, name, description, balance }) => {
               onPressActivate(name);
             }}
           >
-            <Text style={TYPOGRAPHY.pWhiteUnderlined as any}>Activate</Text>
+            <Text
+              style={
+                {
+                  ...TYPOGRAPHY.pGreenUnderlined,
+                  paddingBottom: SPACING.ten,
+                } as any
+              }
+            >
+              Activate
+            </Text>
           </Pressable>
         )}
-        <Pressable onPress={() => onPressBackup(name)}>
-          <Text style={TYPOGRAPHY.pWhiteUnderlined as any}>Backup</Text>
+        <Pressable onPress={() => onPressTransactions(name)}>
+          <Text
+            style={
+              {
+                ...TYPOGRAPHY.pGreenUnderlined,
+                paddingBottom: SPACING.ten,
+              } as any
+            }
+          >
+            More >
+          </Text>
         </Pressable>
-        {!isActive && (
-          <Pressable onPress={() => onPressDelete(name)}>
-            <Text style={TYPOGRAPHY.pWhiteUnderlined as any}>Delete</Text>
-          </Pressable>
-        )}
       </View>
     </View>
   );

@@ -1,57 +1,74 @@
-import React, {  useState } from "react";
-import { View, Text, Pressable } from "react-native";
+import React from "react";
+import { Pressable, View, Text } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import TYPOGRAPHY from "@design/typography";
-import styles from "../styles";
-import { toggleIsShowAvailableBalance } from "@redux/reducers/settingsReducer";
-import { selectActiveWalletBalance } from "@redux/selectors";
-
+import styles from "./styles";
+import {
+  selectActiveWallet,
+  selectActiveWalletBalance,
+  selectPrimaryCurrencyOrDenomination,
+} from "@redux/selectors";
+import {} from "@redux/selectors";
+import {
+  convertRawSatsToRawCurrency,
+  convertRawSatsToRawCurrencyRounded,
+} from "@utils/formatting";
+import { updateTransactionPadBalance } from "@redux/reducers/transactionPadReducer";
 
 function AvailableBalance() {
-  const [isDisplayHideNotice, setIsDisplayHideNotice] = useState(false);
+  const dispatch = useDispatch();
+  const { primaryBalance, secondaryBalance } = useSelector(
+    (state: ReduxState) => selectActiveWalletBalance(state)
+  );
+  const primaryCurrency = useSelector((state: ReduxState) =>
+    selectPrimaryCurrencyOrDenomination(state)
+  );
+  const wallet = useSelector((state: ReduxState) => selectActiveWallet(state));
+  const { padBalance } = useSelector(
+    (state: ReduxState) => state.transactionPad
+  );
 
-  const { primaryBalance, secondaryBalance } = useSelector((state: ReduxState) => selectActiveWalletBalance(state))
+  selectPrimaryCurrencyOrDenomination;
 
-  const dispatch = useDispatch()
+  const { isRightHandedMode } = useSelector(
+    (state: ReduxState) => state.settings
+  );
 
-  const onPressBalance = () => {
-    setIsDisplayHideNotice(true);
-    setTimeout(() => {
-      setIsDisplayHideNotice(false)
-    }, 10000)
-  };
-
-  const onPressHideNotice = () => {
-    // Toggle hide available balance
-    dispatch(toggleIsShowAvailableBalance())
-    setIsDisplayHideNotice(false);
-  };
-
-  if (isDisplayHideNotice) {
-    return (
-      <Pressable onPress={onPressHideNotice} style={styles.widePressable}>
-        <View style={styles.primaryTitlesWrapper}>
-          <Text style={TYPOGRAPHY.h2 as any}>
-            Hide Available balance?
-          </Text>
-          <Text style={TYPOGRAPHY.pWhite as any}>Tap again to hide or wait 10 seconds to cancel. Re-enable in Tools > Settings any time.</Text>
-        </View>
-      </Pressable>
+  const onPressMax = () => {
+    const availableSats = wallet.balance.toString();
+    const newPadBalance = convertRawSatsToRawCurrencyRounded(
+      availableSats,
+      primaryCurrency
     );
-  }
+    dispatch(
+      updateTransactionPadBalance({
+        padBalance: newPadBalance,
+      })
+    );
+  };
+
+  const EmptyBlock = <View style={styles.sideBlock as any}></View>;
+
+  const MaxBlock = (
+    <View style={styles.sideBlock as any}>
+      <Pressable onPress={onPressMax}>
+        <Text style={TYPOGRAPHY.h2Green}>MAX</Text>
+      </Pressable>
+    </View>
+  );
 
   return (
-    <Pressable onPress={onPressBalance} style={styles.widePressable}>
-      <Text style={TYPOGRAPHY.pWhite as any}>Available Balance</Text>
-      <View style={styles.primaryTitlesWrapper}>
-        <Text style={TYPOGRAPHY.h1 as any}>
-          {primaryBalance}
-        </Text>
-        <Text style={TYPOGRAPHY.h2 as any}>
-          {secondaryBalance}
-        </Text>
+    <View style={styles.container as any}>
+      {isRightHandedMode ? EmptyBlock : MaxBlock}
+      <View style={styles.centalContainer as any}>
+        <Text style={TYPOGRAPHY.pWhite as any}>Available Balance</Text>
+        <View style={styles.primaryTitlesWrapper}>
+          <Text style={TYPOGRAPHY.h1 as any}>{primaryBalance}</Text>
+          <Text style={TYPOGRAPHY.h2 as any}>{secondaryBalance}</Text>
+        </View>
       </View>
-    </Pressable>
+      {isRightHandedMode ? MaxBlock : EmptyBlock}
+    </View>
   );
 }
 

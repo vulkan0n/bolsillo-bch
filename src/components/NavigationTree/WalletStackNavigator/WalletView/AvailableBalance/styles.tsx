@@ -4,8 +4,8 @@ import SPACING from "@design/spacing";
 const styles = {
   container: {
     backgroundColor: COLOURS.black,
-    flex: 1,
-    justifyContent: "center",
+    flexDirection: "row",
+    justifyContent: "space-between",
     alignItems: "center",
   },
   logo: {
@@ -13,13 +13,16 @@ const styles = {
     height: 75,
     marginBottom: SPACING.ten,
   },
-  centalContainer: {
-    width: "100%",
-    paddingRight: SPACING.fifteen,
-    paddingLeft: SPACING.fifteen,
-  },
+  centalContainer: {},
   primaryTitlesWrapper: {
     marginBottom: SPACING.five,
+  },
+  sideBlock: {
+    width: 70,
+    marginRight: SPACING.fifteen,
+    marginLeft: SPACING.fifteen,
+    justifyContent: "center",
+    alignItems: "center",
   },
 };
 

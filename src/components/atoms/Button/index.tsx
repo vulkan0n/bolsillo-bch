@@ -8,7 +8,12 @@ import { iconImport, IconType } from "@design/icons";
 interface Props {
   children: any;
   onPress: () => void;
-  variant?: "primary" | "secondary" | "blackOutlined" | "danger";
+  variant?:
+    | "primary"
+    | "secondary"
+    | "secondaryOnGreen"
+    | "blackOutlined"
+    | "danger";
   size?: "regular" | "small";
   isDisabled?: boolean;
   icon?: IconType;

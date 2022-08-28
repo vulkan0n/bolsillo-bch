@@ -4,17 +4,32 @@ import SPACING from "@design/spacing";
 const styles = {
   container: {
     backgroundColor: COLOURS.bchGreen,
-    padding: SPACING.twentyFive,
+    padding: SPACING.fifteen,
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
     paddingBottom: SPACING.twentyFive,
   },
+  motiView: {
+    flex: 1,
+    width: "100%",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  contentWrapper: {
+    height: 300,
+    width: "100%",
+    justifyContent: "center",
+    alignItems: "center",
+  },
   iconWrapper: {
     marginBottom: SPACING.twentyFive,
   },
-  textWrapper: {
-    paddingBottom: SPACING.fifty,
+  objectWrapper: {
+    flex: 1,
+    flexDirection: "row",
+    height: 80,
+    minHeight: 100,
   },
 };
 

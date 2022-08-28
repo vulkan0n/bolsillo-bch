@@ -7,6 +7,7 @@ export const DEFAULT_DERIVATION_PATH: string = "m/44'/0'/0'/0/0";
 
 // Time
 export const ONE_SECOND: number = 1000; // in milliseconds
+export const TEN_SECONDS: number = ONE_SECOND * 10; // in milliseconds
 export const THIRTY_SECONDS: number = ONE_SECOND * 30; // in milliseconds
 
 // Denominations

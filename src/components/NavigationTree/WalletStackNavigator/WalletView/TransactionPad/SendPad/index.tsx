@@ -6,7 +6,6 @@ import { useSelector, useDispatch } from "react-redux";
 import { updateTransactionPadView } from "@redux/reducers/transactionPadReducer";
 import { ReduxState } from "@types";
 import ScanEntry from "./ScanEntry";
-import ImageEntry from "./ImageEntry";
 import ButtonColumn from "./ButtonColumn";
 import TextEntry from "./TextEntry";
 
@@ -34,11 +33,8 @@ const SendPad = () => {
         return <TextEntry />;
       case "Scan":
         return <ScanEntry />;
-      case "Image":
-        return <ImageEntry />;
       default:
         return <ScanEntry />;
-        break;
     }
   };
 

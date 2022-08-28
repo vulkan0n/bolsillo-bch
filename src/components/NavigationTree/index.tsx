@@ -10,7 +10,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { iconImport } from "@design/icons";
 import SPACING from "@design/spacing";
 import styles from "./styles";
-import OnlineDrawerNavigator from "./OnlineDrawerNavigator";
+import CommunityDrawerNavigator from "./CommunityDrawerNavigator";
 import ToolsDrawerNavigator from "./ToolsDrawerNavigator";
 import { navigationRef } from "./rootNavigation";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -29,12 +29,12 @@ const TabNavigator = () => (
               return "faWallet";
             case "IRL":
               return "faEarthAmericas";
-            case "Online":
+            case "Community":
               return "faUsers";
             case "Tools":
               return "faScrewdriverWrench";
             default:
-              return "";
+              return "faBitcoinSign";
           }
         };
 
@@ -93,8 +93,8 @@ const TabNavigator = () => (
           }}
         />*/}
     {/* <Tab.Screen
-      name="Online"
-      component={OnlineDrawerNavigator}
+      name="Community"
+      component={CommunityDrawerNavigator}
       options={{
         headerStyle: {
           backgroundColor: COLOURS.black,
@@ -107,7 +107,7 @@ const TabNavigator = () => (
               color={COLOURS.white}
               style={{ marginRight: SPACING.ten }}
             />
-            <Text style={TYPOGRAPHY.header as any}>Online</Text>
+            <Text style={TYPOGRAPHY.header as any}>Community</Text>
           </View>
         ),
       }}

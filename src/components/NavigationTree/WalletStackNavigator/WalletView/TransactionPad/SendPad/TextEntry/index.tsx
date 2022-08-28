@@ -22,9 +22,6 @@ const TextEntry = () => {
     (state: ReduxState) => state.transactionPad
   );
 
-  console.log("text entry");
-  console.log({ sendToAddress });
-
   const { isTestNet } = useSelector((state: ReduxState) => state.settings);
 
   useEffect(() => {
@@ -46,14 +43,6 @@ const TextEntry = () => {
         sendToAddress: text,
       })
     );
-
-    Toast.show({
-      type: "customSuccess",
-      props: {
-        title: "Pasted from clipboard",
-        text,
-      },
-    });
   };
 
   const onChangeTextInput = (value) => {

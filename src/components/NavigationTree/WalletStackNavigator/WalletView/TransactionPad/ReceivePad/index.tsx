@@ -36,7 +36,7 @@ const ReceivePad = () => {
       type: "customSuccess",
       props: {
         title: "Copied to clipboard",
-        text: wallet?.cashaddr,
+        text: wallet?.cashaddr || "",
       },
     });
   };
