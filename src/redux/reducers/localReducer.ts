@@ -13,7 +13,7 @@ const localSlice = createSlice({
   name: "local",
   initialState,
   reducers: {
-    updateLocalLastSentTxHash(state, action) {
+    updateLocalLastSentTransactionHash(state, action) {
       state.lastSentTransactionHash = action.payload.lastSentTransactionHash;
     },
   },
@@ -22,5 +22,5 @@ const localSlice = createSlice({
   },
 });
 
-export const { updateLocalLastSentTxHash } = localSlice.actions;
+export const { updateLocalLastSentTransactionHash } = localSlice.actions;
 export default localSlice.reducer;

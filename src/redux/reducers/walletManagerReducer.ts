@@ -109,22 +109,51 @@ const walletMangerSlice = createSlice({
         ({ name }) => name === action.payload.name
       );
 
-      const byHeightDescend = R.descend(R.prop("height"));
       const equalByTxHash = R.eqBy(R.prop("tx_hash"));
-      const transactionHistory = R.unionWith(
+
+      const incomingTransactions = action.payload.transactionHistory;
+      const walletTransactions = wallet?.transactions;
+
+      const newTransactions = R.differenceWith(
         equalByTxHash,
-        wallet.transactions,
-        action.payload.transactionHistory
+        incomingTransactions,
+        walletTransactions
       );
-      const transactionsByHeight = R.sort(byHeightDescend, transactionHistory);
-      wallet.transactions = transactionsByHeight;
+
+      const newTransactionsWithNotes = newTransactions.map((t) => ({
+        ...t,
+        note: "",
+      }));
+
+      const updatedTransactions = walletTransactions.map((w) => {
+        const match = incomingTransactions.find(
+          (i) => i?.tx_hash === w?.tx_hash
+        );
+        const updated = {
+          ...w,
+          height: match?.height,
+        };
+        return updated;
+      });
+
+      const byHeightDescend = R.descend(R.prop("height"));
+      const transactionsByHeight = R.sort(byHeightDescend, updatedTransactions);
+      const merged = [...newTransactionsWithNotes, ...transactionsByHeight];
+      const replacedWallet = replace(wallet.transactions)
+        .with(merged)
+        .in(wallet);
+      const newWallets = replace(wallet).with(replacedWallet).in(state.wallets);
+
+      state.wallets = newWallets;
     },
     updateTransactionNote(state, action) {
-      const inputTxHash = action.payload.tx_hash;
+      const inputTransactionHash = action.payload?.tx_hash ?? "";
       const note = action.payload.note;
 
       const findTxHashInWallet = (wallet: SeleneWalletType): TransactionType =>
-        wallet?.transactions?.find(({ tx_hash }) => tx_hash === inputTxHash);
+        wallet?.transactions?.find(
+          ({ tx_hash }) => tx_hash === inputTransactionHash
+        );
 
       const wallet: SeleneWalletType = state.wallets.find(findTxHashInWallet);
       const transaction: TransactionType = findTxHashInWallet(wallet);

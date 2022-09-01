@@ -34,7 +34,7 @@ import {
   clearTransactionPad,
 } from "./src/redux/reducers/transactionPadReducer";
 import { navigate } from "./src/components/NavigationTree/rootNavigation";
-import { updateLocalLastSentTxHash } from "./src/redux/reducers/localReducer";
+import { updateLocalLastSentTransactionHash } from "./src/redux/reducers/localReducer";
 
 interface TransactionHistoryTxType {
   height: number;
@@ -115,35 +115,6 @@ export default function App() {
           );
           break;
 
-        case RESPONSE_MESSAGE_TYPES.SEND_COINS_RESPONSE_LOADING:
-          // TODO: Fill out
-          break;
-
-        case RESPONSE_MESSAGE_TYPES.SEND_COINS_RESPONSE_SUCCESS:
-          console.log({ message });
-          store.dispatch(
-            updateWalletBalance({
-              name: message.data.name,
-              balance: message.data.balance,
-            })
-          );
-
-          store.dispatch(
-            updateLocalLastSentTxHash({
-              lastSeenTransactionHash: message.data.lastSentTransactionHash,
-            })
-          );
-
-          console.log("name and new balance", {
-            name: message.data.name,
-            balance: message.data.balance,
-          });
-
-          store.dispatch(clearTransactionPad());
-
-          navigate("Transaction Success");
-          break;
-
         case RESPONSE_MESSAGE_TYPES.SEND_COINS_RESPONSE_FAIL:
           store.dispatch(
             updateTransactionPadIsSendingCoins({
@@ -151,11 +122,12 @@ export default function App() {
             })
           );
 
+          const text = message?.data?.text ?? "";
           Toast.show({
             type: "customError",
             props: {
               title: "Transaction failed",
-              text: message?.data?.text || "",
+              text,
             },
           });
           break;
@@ -173,20 +145,20 @@ export default function App() {
           Toast.show({
             type: "customError",
             props: {
-              title: message?.data?.title || "",
-              text: message?.data?.text || "",
+              title: message?.data?.title ?? "",
+              text: message?.data?.text ?? "",
             },
           });
           break;
 
         case RESPONSE_MESSAGE_TYPES.RECEIVED_COINS:
-          console.log("received message data RECEIVED_COINS:", message.data);
           store.dispatch(
             updateWalletBalance({
               name: message.data.name,
               balance: message.data.balance,
             })
           );
+
           Toast.show({
             type: "customSuccess",
             props: {
@@ -194,6 +166,36 @@ export default function App() {
               text: "Thanks Satoshi.",
             },
           });
+          break;
+
+        case RESPONSE_MESSAGE_TYPES.SEND_COINS_RESPONSE_DETECTED:
+          store.dispatch(
+            updateWalletBalance({
+              name: message.data.name,
+              balance: message.data.balance,
+            })
+          );
+
+          store.dispatch(
+            importWalletTransactionHistory({
+              name: message?.data?.name,
+              transactionHistory: message?.data?.transactionHistory,
+            })
+          );
+
+          const history = message?.data?.transactionHistory;
+          const lastTransaction = history?.[history.length - 1];
+          const lastTransactionHash = lastTransaction?.tx_hash;
+
+          store.dispatch(
+            updateLocalLastSentTransactionHash({
+              lastSentTransactionHash: lastTransactionHash || "",
+            })
+          );
+
+          store.dispatch(clearTransactionPad());
+
+          navigate("Transaction Success");
           break;
 
         default:

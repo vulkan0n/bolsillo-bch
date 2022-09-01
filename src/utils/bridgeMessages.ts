@@ -10,17 +10,20 @@ export const BRIDGE_MESSAGE_TYPES = {
 
 // Message types sent from Bridge.js / React -> App.js / React Native
 export const RESPONSE_MESSAGE_TYPES = {
+  // Paired directly with their input BRDIGE_MESSAGE_TYPES
   CREATE_DEFAULT_WALLET_RESPONSE: "CREATE_DEFAULT_WALLET_RESPONSE",
   REFRESH_WALLET_RESPONSE: "REFRESH_WALLET_RESPONSE",
   CREATE_SCRATCHPAD_WALLET_RESPONSE: "CREATE_SCRATCHPAD_WALLET_RESPONSE",
   REQUEST_BALANCE_AND_ADDRESS_RESPONSE: "REQUEST_BALANCE_AND_ADDRESS_RESPONSE",
-  // SEND_COINS message generates two of the following three messages
-  SEND_COINS_RESPONSE_LOADING: "SEND_COINS_RESPONSE_LOADING",
-  SEND_COINS_RESPONSE_SUCCESS: "SEND_COINS_RESPONSE_SUCCESS",
-  SEND_COINS_RESPONSE_FAIL: "SEND_COINS_RESPONSE_FAIL",
   GET_WALLET_HISTORY_RESPONSE: "GET_WALLET_HISTORY_RESPONSE",
-  ERROR: "ERROR", // Can be returned in response to any message
-  RECEIVED_COINS: "RECEIVED_COINS", // Special response type, not paired with or triggered by an incoming BRIDGE_MESSAGE_TYPE
+  // Only appears from SEND_COINS response in case of error
+  SEND_COINS_RESPONSE_FAIL: "SEND_COINS_RESPONSE_FAIL",
+  // Can be returned in response to any message
+  ERROR: "ERROR",
+  // Special response type, not paired with or triggered by an incoming BRIDGE_MESSAGE_TYPE
+  RECEIVED_COINS: "RECEIVED_COINS",
+  // Triggered by SEND_COINS, but only indirectly via a detected balance change
+  SEND_COINS_RESPONSE_DETECTED: "SEND_COINS_RESPONSE_DETECTED",
 };
 
 export default {

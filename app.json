@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "Selene Wallet",
-    "version": "0.0.4",
+    "version": "0.0.5",
     "sdkVersion": "46.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -17,13 +17,13 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.jte.seleneapp",
-      "buildNumber": 3
+      "buildNumber": 4
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#1C1E21",
-        "versionCode": 3
+        "versionCode": 4
       },
       "package": "com.jte.seleneapp"
     },

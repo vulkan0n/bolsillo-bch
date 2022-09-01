@@ -10,6 +10,18 @@ const styles = {
     fontSize: 18,
     textAlign: "center",
   },
+  sideBlock: {
+    width: 70,
+    marginRight: SPACING.fifteen,
+    marginLeft: SPACING.fifteen,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  container: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
 };
 
 export default styles;

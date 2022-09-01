@@ -7,16 +7,8 @@ export const sendCoins = async (WalletObject, message) => {
     message?.data?.derivationPath
   );
 
-  console.log("SENDING!!!");
-  console.log(message?.data);
-
-  emit({
-    type: RESPONSE_MESSAGE_TYPES.SEND_COINS_RESPONSE_LOADING,
-    data: {},
-  });
-
   try {
-    const txResponse = await walletSendCoins.send([
+    await walletSendCoins.send([
       {
         cashaddr: message?.data?.recipientCashAddr,
         value: parseInt(message?.data?.satsToSend),
@@ -27,17 +19,9 @@ export const sendCoins = async (WalletObject, message) => {
       // },
     ]);
 
-    console.log("sent coins!");
-    console.log({ txResponse });
-
-    emit({
-      type: RESPONSE_MESSAGE_TYPES.SEND_COINS_RESPONSE_SUCCESS,
-      data: {
-        name: message?.data?.name,
-        balance: txResponse?.balance?.sat,
-        lastSentTransactionHash: txResponse?.txId,
-      },
-    });
+    // Note: Monitoring .send() response for send confirmation
+    // is unreliable and buggy
+    // Instead, successful sends are detected by balance changes
   } catch (sendError) {
     console.log("!!!!!!!!");
     console.log({ sendError });
@@ -45,7 +29,7 @@ export const sendCoins = async (WalletObject, message) => {
     emit({
       type: RESPONSE_MESSAGE_TYPES.SEND_COINS_RESPONSE_FAIL,
       data: {
-        text: sendError,
+        text: sendError ?? "",
       },
     });
   }

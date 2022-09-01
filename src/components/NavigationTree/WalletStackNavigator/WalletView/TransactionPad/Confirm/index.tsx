@@ -124,7 +124,7 @@ const Confirm = ({ navigation }) => {
   return (
     <View style={styles.inputBackground as any}>
       <Text style={TYPOGRAPHY.h2black as any}>Sending</Text>
-      <LiveBalance />
+      <LiveBalance isHideMaxButton />
       <Text style={TYPOGRAPHY.h2black as any}>to</Text>
       <Text style={TYPOGRAPHY.p as any}>{sendToAddress}</Text>
 
