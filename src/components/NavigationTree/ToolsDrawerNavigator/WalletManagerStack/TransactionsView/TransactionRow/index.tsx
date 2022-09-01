@@ -5,12 +5,26 @@ import TextInput from "@atoms/TextInput";
 import Button from "@atoms/Button";
 import { useDispatch } from "react-redux";
 import { updateTransactionNote } from "@redux/reducers/walletManagerReducer";
+import * as Clipboard from "expo-clipboard";
+import Toast from "react-native-toast-message";
 
 const TransactionRow = ({ transaction, editNoteHash, setEditNoteHash }) => {
   const { height, tx_hash, note } = transaction;
   const dispatch = useDispatch();
 
-  const onPressTransaction = () => setEditNoteHash(tx_hash);
+  const onPressTransactionHash = async () => {
+    await Clipboard.setStringAsync(tx_hash);
+
+    Toast.show({
+      type: "customSuccess",
+      props: {
+        title: "Copied transaction hash.",
+        text: tx_hash ?? "",
+      },
+    });
+  };
+
+  const onPressNote = () => setEditNoteHash(tx_hash);
 
   const onChange = (newNote: string) => {
     dispatch(
@@ -26,9 +40,13 @@ const TransactionRow = ({ transaction, editNoteHash, setEditNoteHash }) => {
   const isEditing = editNoteHash === tx_hash;
 
   return (
-    <Pressable onPress={onPressTransaction}>
-      <Text style={TYPOGRAPHY.pWhiteLeft as any}>Height: {height}</Text>
-      <Text style={TYPOGRAPHY.pWhiteLeft as any}>Hash: {tx_hash}</Text>
+    <View>
+      <Text style={TYPOGRAPHY.pWhiteLeft as any}>
+        Height: {height >= 1 ? height : "Unconfirmed"}
+      </Text>
+      <Pressable onPress={onPressTransactionHash}>
+        <Text style={TYPOGRAPHY.pWhiteLeft as any}>Hash: {tx_hash}</Text>
+      </Pressable>
       {isEditing && (
         <View
           style={{
@@ -45,9 +63,11 @@ const TransactionRow = ({ transaction, editNoteHash, setEditNoteHash }) => {
         </View>
       )}
       {!isEditing && (
-        <Text style={TYPOGRAPHY.pWhiteLeft as any}>Note: {note ?? "-"}</Text>
+        <Pressable onPress={onPressNote}>
+          <Text style={TYPOGRAPHY.pWhiteLeft as any}>Note: {note ?? "-"}</Text>
+        </Pressable>
       )}
-    </Pressable>
+    </View>
   );
 };
 

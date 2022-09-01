@@ -13,16 +13,8 @@ const styles = {
     height: 75,
     marginBottom: SPACING.ten,
   },
-  centalContainer: {},
   primaryTitlesWrapper: {
     marginBottom: SPACING.five,
-  },
-  sideBlock: {
-    width: 70,
-    marginRight: SPACING.fifteen,
-    marginLeft: SPACING.fifteen,
-    justifyContent: "center",
-    alignItems: "center",
   },
 };
 

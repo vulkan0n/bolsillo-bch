@@ -35,8 +35,8 @@ const ReceivePad = () => {
     Toast.show({
       type: "customSuccess",
       props: {
-        title: "Copied to clipboard",
-        text: wallet?.cashaddr || "",
+        title: "Copied address.",
+        text: wallet?.cashaddr ?? "",
       },
     });
   };

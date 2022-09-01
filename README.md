@@ -60,7 +60,8 @@ And note that mainnet.cash uses `m/44/0'/0'` for mainnet derivative path and `m/
 
 ```
 # Update app version on Credits page
-# Update `app.json` `version`, `ios.buildNumber`, `android.versionCode`
+# Update app version in `package.json`
+# Update `app.json` `version`, bump `ios.buildNumber` & `android.versionCode`
 # git commit
 $ eas build
 # Wait 20 minutes for build to finish

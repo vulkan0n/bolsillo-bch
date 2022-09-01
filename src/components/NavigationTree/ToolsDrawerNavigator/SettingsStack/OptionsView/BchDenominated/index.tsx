@@ -52,10 +52,16 @@ const BchDenominated = () => {
           </Text>
         )}
         {!isBchDenominated && (
-          <Text style={TYPOGRAPHY.pWhiteLeft as any}>
-            Display balances in contrast currency ({uppercaseContrastCurrency}).
-            BCH equivalent displayed beneath.
-          </Text>
+          <>
+            <Text style={TYPOGRAPHY.pWhiteLeft as any}>
+              Display balances in contrast currency ({uppercaseContrastCurrency}
+              ). BCH equivalent displayed beneath.
+            </Text>
+            <Text style={TYPOGRAPHY.pWhiteLeft as any}>
+              NOTE: Send "MAX" will only manage the closest approximate. To send
+              every satoshi, switch back to BCH denomination.
+            </Text>
+          </>
         )}
       </View>
       {isRightHandedMode && BchDenominatedSwitch}

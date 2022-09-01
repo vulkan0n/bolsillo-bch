@@ -8,7 +8,7 @@ import COLOURS from "@design/colours";
 import { MotiView } from "moti";
 import { iconImport } from "@design/icons";
 import { updateTransactionNote } from "@redux/reducers/walletManagerReducer";
-import { updateLocalLastSentTxHash } from "@redux/reducers/localReducer";
+import { updateLocalLastSentTransactionHash } from "@redux/reducers/localReducer";
 import { useDispatch, useSelector } from "react-redux";
 import TextInput from "@atoms/TextInput";
 import { State } from "react-native-gesture-handler";
@@ -23,16 +23,11 @@ function TransactionSuccessView({ navigation }) {
     (state: ReduxState) => state.local
   );
 
-  console.log(lastSentTransactionHash);
-
   // Clear last sent transaction hash on unmounting
   useEffect(() => {
-    console.log("setting useEffect");
-
     return () => {
-      console.log("unmounting screen");
       dispatch(
-        updateLocalLastSentTxHash({
+        updateLocalLastSentTransactionHash({
           lastSentTransactionHash: "",
         })
       );
@@ -47,7 +42,7 @@ function TransactionSuccessView({ navigation }) {
     setNoteText(newNote);
     dispatch(
       updateTransactionNote({
-        lastSentTransactionHash,
+        tx_hash: lastSentTransactionHash,
         note: newNote,
       })
     );
