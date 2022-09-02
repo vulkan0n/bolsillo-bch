@@ -11,13 +11,14 @@ const styles = {
     textAlign: "center",
   },
   sideBlock: {
-    width: 70,
-    marginRight: SPACING.fifteen,
-    marginLeft: SPACING.fifteen,
+    width: 75,
+    marginRight: SPACING.ten,
+    marginLeft: SPACING.ten,
     justifyContent: "center",
     alignItems: "center",
   },
   container: {
+    width: "100%",
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",

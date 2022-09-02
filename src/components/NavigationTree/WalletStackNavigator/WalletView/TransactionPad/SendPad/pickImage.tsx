@@ -1,19 +1,9 @@
-import React from "react";
-import { Pressable, Text, View } from "react-native";
 import * as ImagePicker from "expo-image-picker";
-import styles from "./ImageEntry/styles";
-import TYPOGRAPHY from "@design/typography";
 import { BarCodeScanner } from "expo-barcode-scanner";
 import Toast from "react-native-toast-message";
-import { formatStringToCashAddress } from "@utils/formatting";
-import { isValidCashAddress } from "@utils/validation";
-import { useDispatch } from "react-redux";
-import {
-  updateTransactionPadSendToAddress,
-  updateTransactionPadView,
-} from "@redux/reducers/transactionPadReducer";
+import { processRequestString } from "./utils";
 
-const pickImage = async (dispatch) => {
+const pickImage = async ({ dispatch, primaryCurrency, isTestNet }) => {
   // No permissions request is necessary for launching the image library
   const result = await ImagePicker.launchImageLibraryAsync({
     mediaTypes: ImagePicker.MediaTypeOptions.All,
@@ -35,22 +25,14 @@ const pickImage = async (dispatch) => {
         },
       });
     } else if (results.length === 1) {
-      const potentialAddress = results?.[0]?.data;
-      const formattedAddress = formatStringToCashAddress(potentialAddress);
-      const isValidAddress = isValidCashAddress(formattedAddress);
+      const { isValid } = processRequestString({
+        dispatch,
+        primaryCurrency,
+        requestString: results?.[0]?.data,
+        isTestNet,
+      });
 
-      if (isValidAddress) {
-        dispatch(
-          updateTransactionPadSendToAddress({
-            sendToAddress: formattedAddress,
-          })
-        );
-        dispatch(
-          updateTransactionPadView({
-            view: "Confirm",
-          })
-        );
-      } else {
+      if (!isValid) {
         Toast.show({
           type: "customError",
           props: {

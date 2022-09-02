@@ -20,46 +20,47 @@ import {
   convertRawCurrencyToRawSats,
 } from "@utils/formatting";
 import { countDecimalPlaces } from "@utils/utils";
-import { selectActiveWallet } from "@redux/selectors";
+import {
+  selectActiveWallet,
+  selectPrimaryCurrencyOrDenomination,
+  selectIsActiveWalletZeroBalance,
+} from "@redux/selectors";
 
 const NumPad = () => {
   const dispatch = useDispatch();
   const wallet = useSelector((state: ReduxState) => selectActiveWallet(state));
+  const primaryCurrency = useSelector((state: ReduxState) =>
+    selectPrimaryCurrencyOrDenomination(state)
+  );
   const { padBalance } = useSelector(
     (state: ReduxState) => state.transactionPad
   );
-  const {
-    bitcoinDenomination,
-    contrastCurrency,
-    isBchDenominated,
-    isRightHandedMode,
-  } = useSelector((state: ReduxState) => state.settings);
+  const { bitcoinDenomination, isBchDenominated, isRightHandedMode } =
+    useSelector((state: ReduxState) => state.settings);
+  const isZeroActiveWalletBalance = useSelector((state: ReduxState) =>
+    selectIsActiveWalletZeroBalance(state)
+  );
 
   const availableRawSats = wallet?.balance;
-  const isSendDisabled = padBalance === "0";
   const isDisableDecimal =
     padBalance.includes(".") ||
     (isBchDenominated && bitcoinDenomination === "satoshis");
 
-  const inputCurrency = isBchDenominated
-    ? bitcoinDenomination
-    : contrastCurrency;
-
   const checkInsufficientBalance = (
     n: string,
-    inputCurrency: SupportedCurrencyTypes | BitcoinDenominationTypes
+    primaryCurrency: SupportedCurrencyTypes | BitcoinDenominationTypes
   ): boolean => {
     const proposedBalance = `${padBalance}${n}`;
     const proposedBalanceInSats = convertRawCurrencyToRawSats(
       proposedBalance,
-      inputCurrency
+      primaryCurrency
     );
     return parseFloat(proposedBalanceInSats) > parseFloat(availableRawSats);
   };
 
   const isMaxDecimals =
     padBalance.includes(".") &&
-    countDecimalPlaces(padBalance) + 1 > allowedDecimalPlaces(inputCurrency);
+    countDecimalPlaces(padBalance) + 1 > allowedDecimalPlaces(primaryCurrency);
 
   const onPress = (n) => {
     dispatch(
@@ -105,7 +106,7 @@ const NumPad = () => {
       return;
     }
 
-    if (checkInsufficientBalance(n, inputCurrency)) {
+    if (checkInsufficientBalance(n, primaryCurrency)) {
       dispatch(
         updateTransactionPadError({
           error: TRANSACTION_PAD_ERRORS.INSUFFICIENT_BALANCE,
@@ -114,6 +115,9 @@ const NumPad = () => {
       return;
     }
 
+    // NB: padBalance must be the EXACT string "0"
+    // So cannot use isPadZeroBalance
+    // As that will include "0." and cause bugs
     dispatch(
       updateTransactionPadBalance({
         padBalance: padBalance === "0" && n !== "." ? n : padBalance + n,
@@ -176,7 +180,7 @@ const NumPad = () => {
       icon={"faPaperPlane"}
       onPress={onPressSend}
       size={"small"}
-      isDisabled={isSendDisabled}
+      isDisabled={isZeroActiveWalletBalance}
     >
       Send
     </Button>
@@ -189,19 +193,19 @@ const NumPad = () => {
           <InputButton
             n={"1"}
             isDisabled={
-              isMaxDecimals || checkInsufficientBalance("1", inputCurrency)
+              isMaxDecimals || checkInsufficientBalance("1", primaryCurrency)
             }
           />
           <InputButton
             n={"2"}
             isDisabled={
-              isMaxDecimals || checkInsufficientBalance("2", inputCurrency)
+              isMaxDecimals || checkInsufficientBalance("2", primaryCurrency)
             }
           />
           <InputButton
             n={"3"}
             isDisabled={
-              isMaxDecimals || checkInsufficientBalance("3", inputCurrency)
+              isMaxDecimals || checkInsufficientBalance("3", primaryCurrency)
             }
           />
         </View>
@@ -209,19 +213,19 @@ const NumPad = () => {
           <InputButton
             n={"4"}
             isDisabled={
-              isMaxDecimals || checkInsufficientBalance("4", inputCurrency)
+              isMaxDecimals || checkInsufficientBalance("4", primaryCurrency)
             }
           />
           <InputButton
             n={"5"}
             isDisabled={
-              isMaxDecimals || checkInsufficientBalance("5", inputCurrency)
+              isMaxDecimals || checkInsufficientBalance("5", primaryCurrency)
             }
           />
           <InputButton
             n={"6"}
             isDisabled={
-              isMaxDecimals || checkInsufficientBalance("6", inputCurrency)
+              isMaxDecimals || checkInsufficientBalance("6", primaryCurrency)
             }
           />
         </View>
@@ -229,28 +233,28 @@ const NumPad = () => {
           <InputButton
             n={"7"}
             isDisabled={
-              isMaxDecimals || checkInsufficientBalance("7", inputCurrency)
+              isMaxDecimals || checkInsufficientBalance("7", primaryCurrency)
             }
           />
           <InputButton
             n={"8"}
             isDisabled={
-              isMaxDecimals || checkInsufficientBalance("8", inputCurrency)
+              isMaxDecimals || checkInsufficientBalance("8", primaryCurrency)
             }
           />
           <InputButton
             n={"9"}
             isDisabled={
-              isMaxDecimals || checkInsufficientBalance("9", inputCurrency)
+              isMaxDecimals || checkInsufficientBalance("9", primaryCurrency)
             }
           />
         </View>
         <View style={styles.numPadRow as any}>
-          <InputButton n={"<"} />
+          <InputButton n={"<"} isDisabled={padBalance === "0"} />
           <InputButton
             n={"0"}
             isDisabled={
-              isMaxDecimals || checkInsufficientBalance("0", inputCurrency)
+              isMaxDecimals || checkInsufficientBalance("0", primaryCurrency)
             }
           />
           <InputButton n={"."} isDisabled={isDisableDecimal} />

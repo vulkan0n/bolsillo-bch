@@ -10,28 +10,26 @@ import * as Clipboard from "expo-clipboard";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { iconImport } from "@design/icons";
 import COLOURS from "@design/colours";
-import Toast from "react-native-toast-message";
-import SPACING from "@design/spacing";
-import { isValidCashAddress } from "../../../../../../../utils/validation";
-import { updateTransactionPadView } from "../../../../../../../redux/reducers/transactionPadReducer";
+import { selectPrimaryCurrencyOrDenomination } from "@redux/selectors";
+import { processRequestString } from "../utils";
 
 const TextEntry = () => {
   const dispatch = useDispatch();
-
+  const primaryCurrency = useSelector((state: ReduxState) =>
+    selectPrimaryCurrencyOrDenomination(state)
+  );
   const { sendToAddress } = useSelector(
     (state: ReduxState) => state.transactionPad
   );
-
   const { isTestNet } = useSelector((state: ReduxState) => state.settings);
 
   useEffect(() => {
-    if (isValidCashAddress(sendToAddress, isTestNet)) {
-      dispatch(
-        updateTransactionPadView({
-          view: "Confirm",
-        })
-      );
-    }
+    processRequestString({
+      dispatch,
+      primaryCurrency,
+      requestString: sendToAddress,
+      isTestNet,
+    });
   }, [sendToAddress]);
 
   const onPressPaste = async () => {

@@ -16,8 +16,8 @@ const styles = {
     justifyContent: "center",
     alignItems: "center",
     width: "100%",
-    padding: SPACING.fifteen,
-    margin: SPACING.fifteen,
+    padding: SPACING.five,
+    margin: SPACING.five,
     borderRadius: SPACING.borderRadius,
   },
   qrBorder: {

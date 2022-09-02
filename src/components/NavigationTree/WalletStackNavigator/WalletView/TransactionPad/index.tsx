@@ -8,16 +8,22 @@ import Confirm from "./Confirm";
 import LiveBalance from "./LiveBalance";
 import { useSelector } from "react-redux";
 import { ReduxState } from "@types";
-import { selectActiveWalletIsZeroBalance } from "@redux/selectors";
+import {
+  selectIsActiveWalletZeroBalance,
+  selectIsPadZeroBalance,
+} from "@redux/selectors";
 
 const TransactionPad = ({ navigation }) => {
   const { view } = useSelector((state: ReduxState) => state.transactionPad);
-  const isZeroBalance = useSelector((state: ReduxState) =>
-    selectActiveWalletIsZeroBalance(state)
+  const isZeroActiveWalletBalance = useSelector((state: ReduxState) =>
+    selectIsActiveWalletZeroBalance(state)
+  );
+  const isPadZeroBalance = useSelector((state: ReduxState) =>
+    selectIsPadZeroBalance(state)
   );
 
   const component = () => {
-    if (isZeroBalance) {
+    if (isZeroActiveWalletBalance) {
       return <ReceivePad />;
     }
 
@@ -37,10 +43,16 @@ const TransactionPad = ({ navigation }) => {
     }
   };
 
+  const isHideLiveButton =
+    view === "Confirm" ||
+    isZeroActiveWalletBalance ||
+    (view === "Receive" && isPadZeroBalance);
+  const isHideActionButtons = view !== "NumPad" && view !== "";
+
   return (
     <View style={styles.transactionPad as any}>
-      {view !== "Receive" && view !== "Confirm" && !isZeroBalance && (
-        <LiveBalance />
+      {!isHideLiveButton && (
+        <LiveBalance isHideActionButtons={isHideActionButtons} />
       )}
       {component()}
     </View>

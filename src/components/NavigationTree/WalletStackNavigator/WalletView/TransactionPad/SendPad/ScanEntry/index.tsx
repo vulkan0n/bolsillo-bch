@@ -2,16 +2,18 @@ import React, { useState, useEffect } from "react";
 import { Text, View, Pressable } from "react-native";
 import { BarCodeScanner } from "expo-barcode-scanner";
 import styles from "./styles";
-import { useDispatch } from "react-redux";
-import {
-  updateTransactionPadSendToAddress,
-  updateTransactionPadView,
-} from "@redux/reducers/transactionPadReducer";
-import { isValidCashAddress } from "@utils/validation";
+import { useSelector, useDispatch } from "react-redux";
 import TYPOGRAPHY from "../../../../../../../design/typography";
+import { processRequestString } from "../utils";
+import { selectPrimaryCurrencyOrDenomination } from "@redux/selectors";
+import { ReduxState } from "@types";
 
 function QrScanner() {
   const dispatch = useDispatch();
+  const primaryCurrency = useSelector((state: ReduxState) =>
+    selectPrimaryCurrencyOrDenomination(state)
+  );
+  const { isTestNet } = useSelector((state: ReduxState) => state.settings);
   const [hasPermission, setHasPermission] = useState(null);
 
   const requestBarCodeScannerPermissions = async () => {
@@ -24,16 +26,13 @@ function QrScanner() {
     requestBarCodeScannerPermissions();
   }, []);
 
-  const handleBarCodeScanned = ({ type, data }) => {
-    const isValidAddress = isValidCashAddress(data);
-    if (isValidAddress) {
-      dispatch(updateTransactionPadSendToAddress({ sendToAddress: data }));
-      dispatch(
-        updateTransactionPadView({
-          view: "Confirm",
-        })
-      );
-    }
+  const handleBarCodeScanned = ({ data }) => {
+    processRequestString({
+      dispatch,
+      primaryCurrency,
+      requestString: data,
+      isTestNet,
+    });
   };
 
   if (hasPermission === null) {

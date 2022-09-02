@@ -1,4 +1,10 @@
-import { TEST_NET_PREFIX, MAIN_NET_PREFIX } from "./consts";
+import {
+  TEST_NET_PREFIX,
+  MAIN_NET_PREFIX,
+  ONE_HUNDRED_MILLION,
+  TOTAL_SATOSHI_SUPPLY,
+} from "./consts";
+import { formatStringToCashAddress } from "./formatting";
 
 export const validateWalletName = (
   name: string,
@@ -72,3 +78,61 @@ export const isValidCashAddress = (
   isTestNet
     ? isValidTestNetCashAddress(address)
     : isValidMainNetCashAddress(address);
+
+type ValidateRequestType = {
+  isValid: Boolean;
+  address: String;
+  rawSatAmount: String;
+};
+
+// Example request
+// "bitcoincash:qpgtjfxyp2hlwn28754xm46f55p57tzlgq8tkjju7r?amount=0.00099423"
+export const validateRequestString = (
+  request: string,
+  isTestNet: boolean = false
+): ValidateRequestType => {
+  const addressPrefix = formatStringToCashAddress(
+    request.split("?")?.[0] ?? ""
+  );
+  const amountSuffix = request.split("?")?.[1];
+  const isValidAddress = isValidCashAddress(addressPrefix, isTestNet);
+
+  if (!isValidAddress) {
+    return {
+      isValid: false,
+      address: "",
+      rawSatAmount: "",
+    };
+  }
+
+  if (!amountSuffix) {
+    return {
+      isValid: true,
+      address: addressPrefix,
+      rawSatAmount: "",
+    };
+  }
+
+  const AMOUNT_INSTRUCTION = "amount";
+  const amountText = amountSuffix.split("=")?.[0] ?? "";
+  const bchAmount = parseFloat(amountSuffix.split("=")?.[1]);
+  const isAmountInstruction = amountText === AMOUNT_INSTRUCTION;
+  // JS can have small imperfections in the float this returns
+  const satAmount = Math.floor(bchAmount * ONE_HUNDRED_MILLION);
+  const isValidSuffix =
+    isAmountInstruction && satAmount > 0 && satAmount <= TOTAL_SATOSHI_SUPPLY;
+
+  if (!isValidSuffix) {
+    return {
+      isValid: false,
+      address: addressPrefix,
+      rawSatAmount: "",
+    };
+  }
+
+  return {
+    isValid: true,
+    address: addressPrefix,
+    rawSatAmount: `${satAmount}`,
+  };
+};

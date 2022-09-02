@@ -15,38 +15,37 @@ import COLOURS from "@design/colours";
 import { iconImport } from "@design/icons";
 import {
   selectActiveWallet,
-  selectActiveWalletIsZeroBalance,
+  selectIsActiveWalletZeroBalance,
+  selectPadBalanceInRawSats,
 } from "@redux/selectors";
+import { ONE_HUNDRED_MILLION } from "../../../../../../utils/consts";
 
 const ReceivePad = () => {
   const dispatch = useDispatch();
   const wallet = useSelector((state: ReduxState) => selectActiveWallet(state));
-
-  const { isRightHandedMode } = useSelector(
-    (state: ReduxState) => state.settings
+  const padBalanceInSats = useSelector((state: ReduxState) =>
+    selectPadBalanceInRawSats(state)
   );
 
   const isZeroBalance = useSelector((state: ReduxState) =>
-    selectActiveWalletIsZeroBalance(state)
+    selectIsActiveWalletZeroBalance(state)
   );
 
+  const logo = require("../../../../../../assets/images/bch.png");
+  const isAddress = wallet?.cashaddr;
+  const isReceiveAmount = padBalanceInSats !== "0";
+  const receiveAmountInBch = padBalanceInSats / ONE_HUNDRED_MILLION;
+  const qrValue = `${wallet?.cashaddr}${
+    isReceiveAmount ? `?amount=${receiveAmountInBch}` : ""
+  }`;
+
   const onPressClipboard = async () => {
-    await Clipboard.setStringAsync(wallet?.cashaddr);
+    await Clipboard.setStringAsync(qrValue);
     Toast.show({
       type: "customSuccess",
       props: {
-        title: "Copied address.",
-        text: wallet?.cashaddr ?? "",
-      },
-    });
-  };
-
-  const onPressShare = () => {
-    Toast.show({
-      type: "customError",
-      props: {
-        title: "TODO",
-        text: "Implement share feature",
+        title: "Copied request.",
+        text: qrValue ?? "",
       },
     });
   };
@@ -59,23 +58,14 @@ const ReceivePad = () => {
     );
   };
 
-  const ShareButton = (
-    <Button onPress={onPressShare} size={"small"}>
-      Share
-    </Button>
-  );
-
-  const logo = require("../../../../../../assets/images/bch.png");
-  const isAddress = wallet?.cashaddr;
-
   return (
     <View style={styles.inputBackground as any}>
       <Pressable onPress={onPressClipboard} style={styles.receivePad as any}>
         <View style={styles.qrBorder}>
           {isAddress && (
             <QRCode
-              size={225}
-              value={`${wallet?.cashaddr}`}
+              size={200}
+              value={qrValue}
               color={COLOURS.black}
               logo={logo}
               logoSize={60}
@@ -83,7 +73,7 @@ const ReceivePad = () => {
           )}
         </View>
         <Text selectable style={TYPOGRAPHY.p as any}>
-          {isAddress ? wallet?.cashaddr : "Address loading..."}
+          {isAddress ? qrValue : "Address loading..."}
         </Text>
         <FontAwesomeIcon
           icon={iconImport("faPaste")}
@@ -93,7 +83,6 @@ const ReceivePad = () => {
       </Pressable>
       {!isZeroBalance && (
         <View style={styles.buttonContainer as any}>
-          {/* {isRightHandedMode && ShareButton} */}
           <Button
             icon={"faChevronLeft"}
             variant="secondary"
@@ -102,7 +91,6 @@ const ReceivePad = () => {
           >
             Back
           </Button>
-          {/* {!isRightHandedMode && ShareButton} */}
         </View>
       )}
     </View>
