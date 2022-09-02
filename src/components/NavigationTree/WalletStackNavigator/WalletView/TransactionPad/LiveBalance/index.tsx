@@ -9,39 +9,42 @@ import { toggleIsBchDenominated } from "@redux/reducers/settingsReducer";
 import {
   selectActiveWallet,
   selectPrimaryCurrencyOrDenomination,
+  selectPadPrimaryBalance,
+  selectPadSecondaryBalance,
 } from "@redux/selectors";
 import { convertRawSatsToRawCurrencyRounded } from "@utils/formatting";
 import { updateTransactionPadBalance } from "@redux/reducers/transactionPadReducer";
+import COLOURS from "../../../../../../design/colours";
+import {
+  convertRawCurrencyToRawSats,
+  prettifyRawCurrency,
+} from "@utils/formatting";
 
 interface Props {
-  isHideMaxButton?: boolean;
+  isHideActionButtons?: boolean;
 }
 
-const LiveBalance = ({ isHideMaxButton = false }: Props) => {
+const LiveBalance = ({ isHideActionButtons = false }: Props) => {
   const dispatch = useDispatch();
   const wallet = useSelector((state: ReduxState) => selectActiveWallet(state));
   const { padBalance } = useSelector(
     (state: ReduxState) => state.transactionPad
   );
   const { error } = useSelector((state: ReduxState) => state.transactionPad);
-  const { isBchDenominated, bitcoinDenomination, contrastCurrency } =
-    useSelector((state: ReduxState) => state.settings);
-  const inputCurrency = isBchDenominated
-    ? bitcoinDenomination
-    : contrastCurrency;
-
-  const primaryBalance = prettifyPadBalance(
-    padBalance,
-    isBchDenominated ? bitcoinDenomination : contrastCurrency
-  );
-  const secondaryBalance = convertBalanceToDisplay(
-    padBalance,
-    inputCurrency,
-    isBchDenominated ? contrastCurrency : bitcoinDenomination
-  );
-
   const primaryCurrency = useSelector((state: ReduxState) =>
     selectPrimaryCurrencyOrDenomination(state)
+  );
+  const primaryBalance = useSelector((state: ReduxState) =>
+    selectPadPrimaryBalance(state)
+  );
+  const secondaryBalance = useSelector((state: ReduxState) =>
+    selectPadSecondaryBalance(state)
+  );
+
+  const availableSats = wallet.balance.toString();
+  const maxPadBalance = convertRawSatsToRawCurrencyRounded(
+    availableSats,
+    primaryCurrency
   );
 
   const onPressSwapDenomination = () => {
@@ -52,34 +55,56 @@ const LiveBalance = ({ isHideMaxButton = false }: Props) => {
     (state: ReduxState) => state.settings
   );
 
-  const onPressMax = () => {
-    const availableSats = wallet.balance.toString();
-    const newPadBalance = convertRawSatsToRawCurrencyRounded(
-      availableSats,
-      primaryCurrency
-    );
+  const onPressZero = () => {
     dispatch(
       updateTransactionPadBalance({
-        padBalance: newPadBalance,
+        padBalance: "0",
+      })
+    );
+  };
+
+  const onPressMax = () => {
+    dispatch(
+      updateTransactionPadBalance({
+        padBalance: maxPadBalance,
       })
     );
   };
 
   const EmptyBlock = <View style={styles.sideBlock as any}></View>;
 
-  const MaxBlock = isHideMaxButton ? (
+  const actionStyle = (isDisabled: boolean) => ({
+    ...TYPOGRAPHY.h2black,
+    color: isDisabled ? COLOURS.lightGrey : COLOURS.bchGreen,
+  });
+  const isMaxDisabled =
+    primaryBalance === prettifyRawCurrency(maxPadBalance, primaryCurrency);
+  const zeroBalance = convertRawCurrencyToRawSats(padBalance, primaryCurrency);
+  const isZeroDisabled = zeroBalance === "0";
+
+  const ZeroBlock = isHideActionButtons ? (
+    EmptyBlock
+  ) : (
+    <View style={styles.sideBlock as any}>
+      <Pressable onPress={onPressZero}>
+        <Text style={actionStyle(isZeroDisabled)}>ZERO</Text>
+      </Pressable>
+    </View>
+  );
+
+  const MaxBlock = isHideActionButtons ? (
     EmptyBlock
   ) : (
     <View style={styles.sideBlock as any}>
       <Pressable onPress={onPressMax}>
-        <Text style={TYPOGRAPHY.h2Green}>MAX</Text>
+        <Text style={actionStyle(isMaxDisabled)}>MAX</Text>
       </Pressable>
     </View>
   );
 
   return (
     <View style={styles.container as any}>
-      {isRightHandedMode ? EmptyBlock : MaxBlock}
+      {isRightHandedMode ? ZeroBlock : MaxBlock}
       <Pressable
         onPress={onPressSwapDenomination}
         style={styles.secondaryTitlesWrapper}
@@ -88,7 +113,7 @@ const LiveBalance = ({ isHideMaxButton = false }: Props) => {
         <Text style={TYPOGRAPHY.h2black as any}>{secondaryBalance}</Text>
         {!!error && <Text style={styles.padError as any}>{error}</Text>}
       </Pressable>
-      {isRightHandedMode ? MaxBlock : EmptyBlock}
+      {isRightHandedMode ? MaxBlock : ZeroBlock}
     </View>
   );
 };

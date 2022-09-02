@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, Pressable, ActivityIndicator } from "react-native";
 import styles from "./styles";
 import Button from "@atoms/Button";
@@ -7,42 +7,47 @@ import { useSelector, useDispatch } from "react-redux";
 import {
   updateTransactionPadSendToAddress,
   updateTransactionPadView,
-  updateTransactionPadBalance,
   updateTransactionPadIsSendingCoins,
 } from "@redux/reducers/transactionPadReducer";
 import { ReduxState } from "@types";
-import { convertRawCurrencyToRawSats } from "@utils/formatting";
 import emit from "@utils/emit";
 import TYPOGRAPHY from "@design/typography";
-import { selectActiveWallet } from "@redux/selectors";
-import { updateTransactionPadSendToAddressEntry } from "@redux/reducers/transactionPadReducer";
+import {
+  selectActiveWallet,
+  selectPadBalanceInRawSats,
+} from "@redux/selectors";
 import LiveBalance from "../LiveBalance";
 import COLOURS from "@design/colours";
 import { TEN_SECONDS } from "@utils/consts";
+import { selectIsPadZeroBalance } from "../../../../../../redux/selectors";
 
 const Confirm = ({ navigation }) => {
   const dispatch = useDispatch();
   const wallet = useSelector((state: ReduxState) => selectActiveWallet(state));
-  const { padBalance } = useSelector(
-    (state: ReduxState) => state.transactionPad
+  const rawSatsToSend = useSelector((state: ReduxState) =>
+    selectPadBalanceInRawSats(state)
   );
-  const { isBchDenominated, bitcoinDenomination, contrastCurrency } =
-    useSelector((state: ReduxState) => state.settings);
+  const isPadZeroBalance = useSelector((state: ReduxState) =>
+    selectIsPadZeroBalance(state)
+  );
 
   const { sendToAddress, isSendingCoins } = useSelector(
     (state: ReduxState) => state.transactionPad
   );
-  const { isRightHandedMode } = useSelector(
-    (state: ReduxState) => state.settings
-  );
+
   const { isTestNet } = useSelector((state: ReduxState) => state.settings);
 
-  const inputCurrency = isBchDenominated
-    ? bitcoinDenomination
-    : contrastCurrency;
-  const rawSatsToSend = convertRawCurrencyToRawSats(padBalance, inputCurrency);
-
   const [isStuck, setIsStuck] = useState(false);
+
+  useEffect(() => {
+    if (!isSendingCoins) {
+      return;
+    }
+
+    setTimeout(() => {
+      setIsStuck(true);
+    }, TEN_SECONDS);
+  }, [isSendingCoins]);
 
   const onPressSend = () => {
     emit({
@@ -62,10 +67,14 @@ const Confirm = ({ navigation }) => {
         isSendingCoins: true,
       })
     );
+  };
 
-    setTimeout(() => {
-      setIsStuck(true);
-    }, TEN_SECONDS);
+  const onPressEnterAmount = () => {
+    dispatch(
+      updateTransactionPadView({
+        view: "NumPad",
+      })
+    );
   };
 
   const onPressCancelLoading = () => {
@@ -96,12 +105,6 @@ const Confirm = ({ navigation }) => {
     );
   };
 
-  const SendButton = (
-    <Button icon={"faPaperPlane"} onPress={onPressSend} isSmall>
-      Send
-    </Button>
-  );
-
   if (isSendingCoins) {
     return (
       <Pressable
@@ -124,14 +127,20 @@ const Confirm = ({ navigation }) => {
   return (
     <View style={styles.inputBackground as any}>
       <Text style={TYPOGRAPHY.h2black as any}>Sending</Text>
-      <LiveBalance isHideMaxButton />
+      <LiveBalance isHideActionButtons />
       <Text style={TYPOGRAPHY.h2black as any}>to</Text>
       <Text style={TYPOGRAPHY.p as any}>{sendToAddress}</Text>
 
-      <View style={styles.buttonContainer as any}>
-        {isRightHandedMode && SendButton}
-        {!isRightHandedMode && SendButton}
-      </View>
+      {!isPadZeroBalance && (
+        <Button icon={"faPaperPlane"} onPress={onPressSend} isSmall>
+          Send
+        </Button>
+      )}
+      {isPadZeroBalance && (
+        <Button icon={"faBitcoinSign"} onPress={onPressEnterAmount} isSmall>
+          Enter amount
+        </Button>
+      )}
       <Button
         icon={"faChevronLeft"}
         variant="secondary"

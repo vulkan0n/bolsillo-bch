@@ -155,13 +155,15 @@ const Bridge = () => {
         return;
       }
 
-      emit({
-        type: RESPONSE_MESSAGE_TYPES.ERROR,
-        data: {
-          title: "❌ No connection 📶",
-          text: "Check that your Internet is online.",
-        },
-      });
+      // Generic connection errors were just annoying and often inconsequential
+      // due to unreliable bridge
+      // emit({
+      //   type: RESPONSE_MESSAGE_TYPES.ERROR,
+      //   data: {
+      //     title: "❌ No connection 📶",
+      //     text: "Check that your Internet is online.",
+      //   },
+      // });
     }
   });
 

@@ -14,6 +14,9 @@ export const THIRTY_SECONDS: number = ONE_SECOND * 30; // in milliseconds
 export const ONE_HUNDRED_MILLION: number = 100000000; // Sats per BCH
 export const ONE_HUNDRED_THOUSAND: number = 100000; // Sats per mBCH
 export const ONE_HUNDRED: number = 100; // Sats per bit
+// Total Bitcoin Satoshi supply
+// A little less than 21 quadrillion
+export const TOTAL_SATOSHI_SUPPLY: number = 2099999997690000;
 
 // Other
 export const TEN_MILLION: number = 10000000; // Daily active users target

@@ -4,7 +4,7 @@ import TYPOGRAPHY from "@design/typography";
 import styles from "./styles";
 
 function CreditsView() {
-  const version = "v0.0.5";
+  const version = "v0.0.6";
   const gitlabUrl = "https://gitlab.com/selene.cash/selene-wallet";
 
   const onPressUrl = () => {
