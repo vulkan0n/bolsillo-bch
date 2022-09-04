@@ -69,4 +69,6 @@ $ eas update --auto
 
 # Android test release build
 $ eas build --profile preview --platform android
+# Prod build
+$ eas build --profile production --platform android
 ```
