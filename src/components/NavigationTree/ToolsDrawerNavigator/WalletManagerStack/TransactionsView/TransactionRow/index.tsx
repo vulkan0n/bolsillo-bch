@@ -1,27 +1,19 @@
 import React from "react";
-import { Pressable, View, Text } from "react-native";
+import { Pressable, View, Text, Linking } from "react-native";
 import TYPOGRAPHY from "@design/typography";
 import TextInput from "@atoms/TextInput";
 import Button from "@atoms/Button";
 import { useDispatch } from "react-redux";
 import { updateTransactionNote } from "@redux/reducers/walletManagerReducer";
-import * as Clipboard from "expo-clipboard";
-import Toast from "react-native-toast-message";
 
 const TransactionRow = ({ transaction, editNoteHash, setEditNoteHash }) => {
   const { height, tx_hash, note } = transaction;
   const dispatch = useDispatch();
 
-  const onPressTransactionHash = async () => {
-    await Clipboard.setStringAsync(tx_hash);
+  const blockchairUrl = `https://blockchair.com/bitcoin-cash/transaction/${tx_hash}`;
 
-    Toast.show({
-      type: "customSuccess",
-      props: {
-        title: "Copied transaction hash.",
-        text: tx_hash ?? "",
-      },
-    });
+  const onPressTransactionHash = async () => {
+    Linking.openURL(blockchairUrl);
   };
 
   const onPressNote = () => setEditNoteHash(tx_hash);
@@ -39,13 +31,13 @@ const TransactionRow = ({ transaction, editNoteHash, setEditNoteHash }) => {
 
   const isEditing = editNoteHash === tx_hash;
 
-  return (
+  https: return (
     <View>
       <Text style={TYPOGRAPHY.pWhiteLeft as any}>
         Height: {height >= 1 ? height : "Unconfirmed"}
       </Text>
       <Pressable onPress={onPressTransactionHash}>
-        <Text style={TYPOGRAPHY.pWhiteLeft as any}>Hash: {tx_hash}</Text>
+        <Text style={TYPOGRAPHY.pWhiteUnderlined as any}>Hash: {tx_hash}</Text>
       </Pressable>
       {isEditing && (
         <View

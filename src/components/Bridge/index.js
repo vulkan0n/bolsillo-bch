@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   webViewRender,
   emit,
@@ -12,6 +12,7 @@ import { sendCoins, getWalletHistory } from "./actions";
 
 const Bridge = () => {
   console.log("Bridge loaded.");
+  const [balanceWatchWalletName, setBalanceWatchWalletName] = useState("");
   // useNativeMessage hook receives message from React Native
 
   // wallet.named(x) is unavailable
@@ -38,24 +39,6 @@ const Bridge = () => {
           });
           break;
 
-        case BRIDGE_MESSAGE_TYPES.REFRESH_WALLET:
-          const walletRefreshWallet = await WalletObject.fromSeed(
-            message?.data?.mnemonic,
-            message?.data?.derivationPath
-          );
-
-          // console.log("Refreshed Wallet!");
-          // console.log({ walletRefreshWallet });
-
-          console.log("Created/Refreshed!! Wallet!");
-          console.log({ walletRefreshWallet });
-
-          emit({
-            type: RESPONSE_MESSAGE_TYPES.REFRESH_WALLET_RESPONSE,
-            data: { wallet: walletRefreshWallet },
-          });
-          break;
-
         case BRIDGE_MESSAGE_TYPES.CREATE_SCRATCHPAD_WALLET:
           const walletScratchPad = await WalletObject.newRandom();
 
@@ -71,56 +54,74 @@ const Bridge = () => {
             message?.data?.derivationPath
           );
 
-          const balance = await walletRequestBalance.getBalance("sat");
-
-          const cancelWatch = walletRequestBalance.watchBalance(
-            async (newBalance) => {
-              // newBalance hasn't registered the included new transaction
-              // So need to grab balance again
-              const freshBalance = await walletRequestBalance.getBalance("sat");
-
-              // Balance changed upwards = coins received
-              // Balance changed downwards = coins sent
-              const isReceivedCoins =
-                parseInt(freshBalance) > parseInt(balance);
-              console.log("Did I receive coins?");
-              console.log({ freshBalance, balance, isReceivedCoins });
-              if (isReceivedCoins) {
-                emit({
-                  type: RESPONSE_MESSAGE_TYPES.RECEIVED_COINS,
-                  data: {
-                    name: message?.data?.name,
-                    balance: freshBalance,
-                  },
-                });
-              } else {
-                // Balance change caused by sending coins
-                console.log("registering successful send");
-                const transactionHistory =
-                  await walletRequestBalance.getHistory();
-
-                emit({
-                  type: RESPONSE_MESSAGE_TYPES.SEND_COINS_RESPONSE_DETECTED,
-                  data: {
-                    name: message?.data?.name,
-                    balance: freshBalance,
-                    transactionHistory,
-                  },
-                });
-              }
-            }
+          const maxBalanceRequest =
+            await walletRequestBalance.getMaxAmountToSend();
+          const maxBalance = maxBalanceRequest?.sat;
+          const isActiveWatcher =
+            message?.data?.name === balanceWatchWalletName;
+          console.log(
+            {
+              isActiveWatcher,
+              balanceWatchWalletName,
+            },
+            "message?.data?.name",
+            message?.data?.name
           );
 
-          // Kill previous listeners once a 30s window has allowed another round of listeners to be set up
-          setTimeout(async () => {
-            await cancelWatch();
-          }, 35000);
+          if (!isActiveWatcher) {
+            console.log("setting up new balance watcher");
+            const cancelWatch = walletRequestBalance.watchBalance(
+              async (newBalance) => {
+                // newBalance hasn't registered the included new transaction
+                // So need to grab balance again
+                const freshBalanceRequest =
+                  await walletRequestBalance.getMaxAmountToSend();
+                const freshBalance = freshBalanceRequest?.sat;
+
+                // Balance changed upwards = coins received
+                // Balance changed downwards = coins sent
+                const isReceivedCoins =
+                  parseInt(freshBalance) > parseInt(maxBalance);
+                console.log("Did I receive coins?");
+                console.log({
+                  freshBalance,
+                  maxBalance,
+                  isReceivedCoins,
+                });
+                if (isReceivedCoins) {
+                  emit({
+                    type: RESPONSE_MESSAGE_TYPES.RECEIVED_COINS,
+                    data: {
+                      name: message?.data?.name,
+                      balance: freshBalance,
+                    },
+                  });
+                } else {
+                  // Balance change caused by sending coins
+                  console.log("registering successful send");
+                  const transactionHistory =
+                    await walletRequestBalance.getHistory();
+
+                  emit({
+                    type: RESPONSE_MESSAGE_TYPES.SEND_COINS_RESPONSE_DETECTED,
+                    data: {
+                      name: message?.data?.name,
+                      balance: freshBalance,
+                      transactionHistory,
+                    },
+                  });
+                }
+              }
+            );
+
+            setBalanceWatchWalletName(message?.data?.name);
+          }
 
           emit({
             type: RESPONSE_MESSAGE_TYPES.REQUEST_BALANCE_AND_ADDRESS_RESPONSE,
             data: {
               name: message?.data?.name,
-              balance: balance,
+              balance: maxBalance,
               cashaddr: walletRequestBalance?.cashaddr,
             },
           });

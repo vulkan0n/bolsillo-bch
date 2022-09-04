@@ -1,7 +1,7 @@
 import React from "react";
 import { View, Text } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
-import WalletView from "./WalletStackNavigator/WalletView";
+import WalletTabNavigator from "./WalletTabNavigator";
 import IrlView from "./IrlView";
 import COLOURS from "@design/colours";
 import TYPOGRAPHY from "@design/typography";
@@ -54,7 +54,7 @@ const TabNavigator = () => (
   >
     <Tab.Screen
       name="Wallet"
-      component={WalletView}
+      component={WalletTabNavigator}
       options={{
         headerStyle: {
           backgroundColor: COLOURS.black,
