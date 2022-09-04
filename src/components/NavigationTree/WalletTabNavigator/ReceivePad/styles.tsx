@@ -1,0 +1,38 @@
+import COLOURS from "@design/colours";
+import SPACING from "@design/spacing";
+
+const styles = {
+  inputBackground: {
+    backgroundColor: COLOURS.white,
+    flex: 1,
+    justifyContent: "flex-start",
+    alignItems: "center",
+    width: "100%",
+    paddingLeft: SPACING.twentyFive,
+    paddingRight: SPACING.twentyFive,
+    borderRadius: SPACING.borderRadius,
+  },
+  receivePad: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    width: "100%",
+    padding: SPACING.five,
+    margin: SPACING.five,
+    borderRadius: SPACING.borderRadius,
+  },
+  qrBorder: {
+    margin: SPACING.fifteen,
+    padding: SPACING.fifteen,
+    borderWidth: 5,
+    borderColor: COLOURS.lightGrey,
+  },
+  buttonContainer: {
+    margin: SPACING.ten,
+    flexDirection: "row",
+    justifyContent: "space-around",
+    width: "100%",
+  },
+};
+
+export default styles;

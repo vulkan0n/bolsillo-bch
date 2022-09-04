@@ -13,7 +13,9 @@ interface Props {
     | "secondary"
     | "secondaryOnGreen"
     | "blackOutlined"
-    | "danger";
+    | "danger"
+    | "smallActionBlack"
+    | "smallActionGreen";
   size?: "regular" | "small";
   isDisabled?: boolean;
   icon?: IconType;
@@ -43,6 +45,10 @@ const Button = ({
         return COLOURS.bchGreen;
       case "danger":
         return COLOURS.errorRed;
+      case "smallActionBlack":
+        return COLOURS.black;
+      case "smallActionGreen":
+        return COLOURS.bchGreen;
       default:
         return COLOURS.bchGreen;
     }

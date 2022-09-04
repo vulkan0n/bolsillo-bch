@@ -2,6 +2,9 @@ import SPACING from "@design/spacing";
 import COLOURS from "@design/colours";
 
 const styles = ({ variant = "primary", isSmall = false, isDisabled }) => {
+  const isSmallAction =
+    variant === "smallActionBlack" || variant === "smallActionGreen";
+
   const borderColor = () => {
     if (isDisabled) {
       return COLOURS.lightGrey;
@@ -18,6 +21,10 @@ const styles = ({ variant = "primary", isSmall = false, isDisabled }) => {
         return COLOURS.white;
       case "danger":
         return COLOURS.errorRed;
+      case "smallActionBlack":
+        return COLOURS.white;
+      case "smallActionGreen":
+        return COLOURS.white;
       default:
         return COLOURS.bchGreen;
     }
@@ -43,6 +50,10 @@ const styles = ({ variant = "primary", isSmall = false, isDisabled }) => {
         return COLOURS.black;
       case "danger":
         return COLOURS.black;
+      case "smallActionBlack":
+        return COLOURS.white;
+      case "smallActionGreen":
+        return COLOURS.white;
       default:
         return COLOURS.white;
     }
@@ -64,6 +75,10 @@ const styles = ({ variant = "primary", isSmall = false, isDisabled }) => {
         return COLOURS.bchGreen;
       case "danger":
         return COLOURS.errorRed;
+      case "smallActionBlack":
+        return COLOURS.black;
+      case "smallActionGreen":
+        return COLOURS.black;
       default:
         return COLOURS.bchGreen;
     }
@@ -85,6 +100,10 @@ const styles = ({ variant = "primary", isSmall = false, isDisabled }) => {
         return COLOURS.white;
       case "danger":
         return COLOURS.errorRed;
+      case "smallActionBlack":
+        return COLOURS.white;
+      case "smallActionGreen":
+        return COLOURS.white;
       default:
         return COLOURS.black;
     }
@@ -101,10 +120,10 @@ const styles = ({ variant = "primary", isSmall = false, isDisabled }) => {
       borderColor: borderColor(),
       height: 65,
       maxHeight: 65,
-      width: "100%",
+      width: isSmallAction ? 80 : "100%",
       display: "flex",
       flex: 1,
-      flexDirection: "row",
+      flexDirection: isSmallAction ? "column" : "row",
       justifyContent: "center",
       alignItems: "center",
       // iOS drop shadow
