@@ -15,6 +15,7 @@ import { useSelector } from "react-redux";
 import { ReduxState } from "../../../types";
 import { selectIsActiveWallet } from "../../../redux/selectors";
 import CreatingWallet from "./CreatingWallet";
+import SPACING from "../../../design/spacing";
 
 const Stack = createNativeStackNavigator();
 
@@ -60,6 +61,17 @@ function MyTabBar({ state, descriptors, navigation, position }) {
           outputRange: inputRange.map((i) => (i === index ? 1 : 0)),
         });
 
+        const icon = () => {
+          switch (route?.name) {
+            case "Send":
+              return "faPaperPlane";
+            case "Receive":
+              return "faBitcoinSign";
+            default:
+              return "faBitcoinSign";
+          }
+        };
+
         return (
           <TouchableOpacity
             accessibilityRole="button"
@@ -68,9 +80,41 @@ function MyTabBar({ state, descriptors, navigation, position }) {
             testID={options.tabBarTestID}
             onPress={onPress}
             onLongPress={onLongPress}
-            style={{ flex: 1 }}
+            style={{
+              flex: 1,
+              flexDirection: "row",
+              justifyContent: "center",
+              alignItems: "center",
+              paddingVertical: SPACING.five,
+              height: 50,
+            }}
           >
-            <Animated.Text style={{ opacity }}>{label}</Animated.Text>
+            <View
+              style={{
+                marginRight: SPACING.five,
+                justifyContent: "center",
+              }}
+            >
+              <FontAwesomeIcon
+                icon={iconImport(icon())}
+                size={20}
+                // Unusual double negative, but it makes the animation
+                // slightly smoother in this component
+                color={isFocused ? COLOURS.bchGreen : COLOURS.black}
+              />
+            </View>
+
+            <Text
+              style={{
+                ...TYPOGRAPHY.p,
+                marginBottom: 0,
+                color: isFocused ? COLOURS.bchGreen : COLOURS.black,
+                textTransform: "capitalise",
+                marginLeft: SPACING.five,
+              }}
+            >
+              {label}
+            </Text>
           </TouchableOpacity>
         );
       })}
