@@ -109,7 +109,6 @@ function MyTabBar({ state, descriptors, navigation, position }) {
                 ...TYPOGRAPHY.p,
                 marginBottom: 0,
                 color: isFocused ? COLOURS.bchGreen : COLOURS.black,
-                textTransform: "capitalise",
                 marginLeft: SPACING.five,
               }}
             >
@@ -127,43 +126,6 @@ function WalletTabNavigator() {
     <Tab.Navigator
       tabBar={(props) => <MyTabBar {...props} />}
       initialRouteName={"Receive"}
-      // screenOptions={({ route, navigation }) => {
-      //   const isFocused = navigation.isFocused();
-      //   return {
-      //     tabBarIcon: ({ focused, color, size }) => {
-      //       const icon = () => {
-      //         switch (route?.name) {
-      //           case "Send":
-      //             return "faPaperPlane";
-      //           case "Receive":
-      //             return "faBitcoinSign";
-      //           default:
-      //             return "faBitcoinSign";
-      //         }
-      //       };
-
-      //       return (
-      //         <FontAwesomeIcon
-      //           icon={iconImport(icon())}
-      //           size={20}
-      //           // Unusual double negative, but it makes the animation
-      //           // slightly smoother in this component
-      //           color={!focused ? COLOURS.bchGreen : COLOURS.black}
-      //         />
-      //       );
-      //     },
-      //     tabBarActiveTintColor: COLOURS.black,
-      //     tabBarInactiveTintColor: COLOURS.bchGreen,
-      //     tabBarStyle: styles.tabBar,
-      //     headerShadowVisible: false,
-      //     tabBarLabelStyle: {
-      //       ...TYPOGRAPHY.p,
-      //       marginBottom: 0,
-      //       color: isFocused ? COLOURS.black : COLOURS.bchGreen,
-      //       textTransform: "capitalise",
-      //     },
-      //   };
-      // }}
     >
       <Tab.Screen
         name="Send"
