@@ -22,7 +22,7 @@ const styles = {
     borderRadius: SPACING.borderRadius,
   },
   qrBorder: {
-    margin: SPACING.fifteen,
+    margin: SPACING.five,
     padding: SPACING.fifteen,
     borderWidth: 5,
     borderColor: COLOURS.lightGrey,
