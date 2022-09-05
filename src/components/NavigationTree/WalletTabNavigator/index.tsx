@@ -23,7 +23,11 @@ const Tab = createMaterialTopTabNavigator();
 
 function MyTabBar({ state, descriptors, navigation, position }) {
   return (
-    <View style={{ flexDirection: "row" }}>
+    <View
+      style={{
+        flexDirection: "row",
+      }}
+    >
       {state.routes.map((route, index) => {
         const { options } = descriptors[route.key];
         const label =
