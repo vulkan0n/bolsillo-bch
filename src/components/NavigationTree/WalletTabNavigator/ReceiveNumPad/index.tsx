@@ -14,15 +14,6 @@ const ReceiveNumPad = ({ navigation }) => {
     navigation.navigate("Wallet Home");
   };
 
-  const onPressCancel = () => {
-    dispatch(
-      updateTransactionPadBalance({
-        padBalance: "0",
-      })
-    );
-    navigation.navigate("Wallet Home");
-  };
-
   return (
     <View style={styles.inputBackground as any}>
       <LiveBalance isHideMaxButton isHideZeroButton />
@@ -35,16 +26,6 @@ const ReceiveNumPad = ({ navigation }) => {
           size={"small"}
         >
           Add
-        </Button>
-      </View>
-      <View style={styles.buttonContainer as any}>
-        <Button
-          icon={"faXmarkCircle"}
-          variant="secondary"
-          onPress={onPressCancel}
-          size={"small"}
-        >
-          Cancel
         </Button>
       </View>
     </View>

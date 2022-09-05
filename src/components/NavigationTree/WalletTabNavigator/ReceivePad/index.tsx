@@ -94,7 +94,7 @@ const ReceivePad = ({ navigation }) => {
         <View style={styles.qrBorder}>
           {isAddress && (
             <QRCode
-              size={215}
+              size={200}
               value={qrValue}
               color={COLOURS.black}
               logo={logo}
