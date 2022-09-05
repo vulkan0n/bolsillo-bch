@@ -7,15 +7,12 @@ import { ONE_SECOND, THIRTY_SECONDS } from "@utils/consts";
 import emit from "@utils/emit";
 import axios from "axios";
 import { updateBchPrices } from "@redux/reducers/exchangeRatesReducer";
-import { selectActiveWallet, selectIsActiveWallet } from "@redux/selectors";
+import { selectActiveWallet } from "@redux/selectors";
 
 const BackgroundIntervals = () => {
   const dispatch = useDispatch();
   const wallet = useSelector((state: ReduxState) => selectActiveWallet(state));
 
-  const isWallet = useSelector((state: ReduxState) =>
-    selectIsActiveWallet(state)
-  );
   const { isTestNet } = useSelector((state: ReduxState) => state.settings);
 
   const fetchActiveWalletBalance = () => {
@@ -81,35 +78,15 @@ const BackgroundIntervals = () => {
     fetchPriceData();
   };
 
-  // Create a wallet if none exists
-  // I.e. first time app is opened
-  if (!isWallet) {
-    // Add 1 second delay to allow internet connection time
-    // to load and reduce No Connection errors
-    setTimeout(() => {
-      setInterval(() => {
-        // console.log("triggering create wallet stuff");
-        // console.log({ isNoWallet });
-        // if (!isNoWallet) {
-        //   return;
-        // }
-        emit({
-          type: BRIDGE_MESSAGE_TYPES.CREATE_DEFAULT_WALLET,
-          data: { isTestNet },
-        });
-      }, ONE_SECOND * 3);
-    }, ONE_SECOND);
-  }
-
   // Recheck balance when active wallet changes
   // Including importing a new wallet
+  // Add 1 second delay to allow internet connection time
+  // to load and reduce No Connection errors
   useEffect(() => {
     if (!wallet) {
       return;
     }
 
-    // Add 1 second delay to allow internet connection time
-    // to load and reduce No Connection errors
     setTimeout(() => {
       fetchActiveWalletBalance();
     }, ONE_SECOND);

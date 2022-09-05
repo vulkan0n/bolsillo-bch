@@ -14,6 +14,7 @@ import AvailableBalance from "./SendView/AvailableBalance";
 import { useSelector } from "react-redux";
 import { ReduxState } from "../../../types";
 import { selectIsActiveWallet } from "../../../redux/selectors";
+import CreatingWallet from "./CreatingWallet";
 
 const Stack = createNativeStackNavigator();
 
@@ -82,11 +83,7 @@ const WalletStack = () => {
   );
 
   if (!isActiveWallet) {
-    return (
-      <View style={styles.container as any}>
-        <Text style={TYPOGRAPHY.h1 as any}>Creating wallet...</Text>
-      </View>
-    );
+    return <CreatingWallet />;
   }
 
   return (
