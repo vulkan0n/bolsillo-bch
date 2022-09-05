@@ -40,7 +40,9 @@ function WalletTabNavigator() {
               <FontAwesomeIcon
                 icon={iconImport(icon())}
                 size={20}
-                color={focused ? COLOURS.black : COLOURS.bchGreen}
+                // Unusual double negative, but it makes the animation
+                // slightly smoother in this component
+                color={!focused ? COLOURS.bchGreen : COLOURS.black}
               />
             );
           },
