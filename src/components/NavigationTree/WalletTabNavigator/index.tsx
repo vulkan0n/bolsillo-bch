@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { View, Text } from "react-native";
+import { View, Animated, TouchableOpacity, Text } from "react-native";
 import COLOURS from "@design/colours";
 import { iconImport } from "@design/icons";
 import TYPOGRAPHY from "@design/typography";
@@ -20,47 +20,106 @@ const Stack = createNativeStackNavigator();
 
 const Tab = createMaterialTopTabNavigator();
 
+function MyTabBar({ state, descriptors, navigation, position }) {
+  return (
+    <View style={{ flexDirection: "row" }}>
+      {state.routes.map((route, index) => {
+        const { options } = descriptors[route.key];
+        const label =
+          options.tabBarLabel !== undefined
+            ? options.tabBarLabel
+            : options.title !== undefined
+            ? options.title
+            : route.name;
+
+        const isFocused = state.index === index;
+
+        const onPress = () => {
+          const event = navigation.emit({
+            type: "tabPress",
+            target: route.key,
+            canPreventDefault: true,
+          });
+
+          if (!isFocused && !event.defaultPrevented) {
+            // The `merge: true` option makes sure that the params inside the tab screen are preserved
+            navigation.navigate({ name: route.name, merge: true });
+          }
+        };
+
+        const onLongPress = () => {
+          navigation.emit({
+            type: "tabLongPress",
+            target: route.key,
+          });
+        };
+
+        const inputRange = state.routes.map((_, i) => i);
+        const opacity = position.interpolate({
+          inputRange,
+          outputRange: inputRange.map((i) => (i === index ? 1 : 0)),
+        });
+
+        return (
+          <TouchableOpacity
+            accessibilityRole="button"
+            accessibilityState={isFocused ? { selected: true } : {}}
+            accessibilityLabel={options.tabBarAccessibilityLabel}
+            testID={options.tabBarTestID}
+            onPress={onPress}
+            onLongPress={onLongPress}
+            style={{ flex: 1 }}
+          >
+            <Animated.Text style={{ opacity }}>{label}</Animated.Text>
+          </TouchableOpacity>
+        );
+      })}
+    </View>
+  );
+}
+
 function WalletTabNavigator() {
   return (
     <Tab.Navigator
+      tabBar={(props) => <MyTabBar {...props} />}
       initialRouteName={"Receive"}
-      screenOptions={({ route, navigation }) => {
-        const isFocused = navigation.isFocused();
-        return {
-          tabBarIcon: ({ focused, color, size }) => {
-            const icon = () => {
-              switch (route?.name) {
-                case "Send":
-                  return "faPaperPlane";
-                case "Receive":
-                  return "faBitcoinSign";
-                default:
-                  return "faBitcoinSign";
-              }
-            };
+      // screenOptions={({ route, navigation }) => {
+      //   const isFocused = navigation.isFocused();
+      //   return {
+      //     tabBarIcon: ({ focused, color, size }) => {
+      //       const icon = () => {
+      //         switch (route?.name) {
+      //           case "Send":
+      //             return "faPaperPlane";
+      //           case "Receive":
+      //             return "faBitcoinSign";
+      //           default:
+      //             return "faBitcoinSign";
+      //         }
+      //       };
 
-            return (
-              <FontAwesomeIcon
-                icon={iconImport(icon())}
-                size={20}
-                // Unusual double negative, but it makes the animation
-                // slightly smoother in this component
-                color={!focused ? COLOURS.bchGreen : COLOURS.black}
-              />
-            );
-          },
-          tabBarActiveTintColor: COLOURS.black,
-          tabBarInactiveTintColor: COLOURS.bchGreen,
-          tabBarStyle: styles.tabBar,
-          headerShadowVisible: false,
-          tabBarLabelStyle: {
-            ...TYPOGRAPHY.p,
-            marginBottom: 0,
-            color: isFocused ? COLOURS.black : COLOURS.bchGreen,
-            textTransform: "capitalise",
-          },
-        };
-      }}
+      //       return (
+      //         <FontAwesomeIcon
+      //           icon={iconImport(icon())}
+      //           size={20}
+      //           // Unusual double negative, but it makes the animation
+      //           // slightly smoother in this component
+      //           color={!focused ? COLOURS.bchGreen : COLOURS.black}
+      //         />
+      //       );
+      //     },
+      //     tabBarActiveTintColor: COLOURS.black,
+      //     tabBarInactiveTintColor: COLOURS.bchGreen,
+      //     tabBarStyle: styles.tabBar,
+      //     headerShadowVisible: false,
+      //     tabBarLabelStyle: {
+      //       ...TYPOGRAPHY.p,
+      //       marginBottom: 0,
+      //       color: isFocused ? COLOURS.black : COLOURS.bchGreen,
+      //       textTransform: "capitalise",
+      //     },
+      //   };
+      // }}
     >
       <Tab.Screen
         name="Send"
