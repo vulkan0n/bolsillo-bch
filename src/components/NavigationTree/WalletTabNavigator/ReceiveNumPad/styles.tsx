@@ -27,11 +27,9 @@ const styles = {
     borderColor: COLOURS.lightGrey,
   },
   buttonContainer: {
-    marginTop: SPACING.ten,
     flexDirection: "row",
     justifyContent: "space-around",
     width: "100%",
-    marginBottom: SPACING.ten,
   },
 };
 

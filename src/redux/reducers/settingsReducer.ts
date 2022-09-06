@@ -8,6 +8,7 @@ export interface SettingsState {
   bitcoinDenomination: BitcoinDenominationTypes;
   isRightHandedMode: boolean;
   isShowAvailableBalance: boolean;
+  isShowCommunityTab: boolean;
   isTestNet: boolean;
 }
 
@@ -17,6 +18,7 @@ const initialState = {
   bitcoinDenomination: "satoshis",
   isRightHandedMode: true,
   isShowAvailableBalance: true,
+  isShowCommunityTab: true,
   isTestNet: false,
 } as SettingsState;
 
@@ -39,6 +41,9 @@ const settingsSlice = createSlice({
     toggleIsShowAvailableBalance(state) {
       state.isShowAvailableBalance = !state.isShowAvailableBalance;
     },
+    toggleIsShowCommunityTab(state) {
+      state.isShowCommunityTab = !state.isShowCommunityTab;
+    },
     toggleIsTestNet(state) {
       state.isTestNet = !state.isTestNet;
     },
@@ -54,6 +59,7 @@ export const {
   updateBitcoinDenomination,
   toggleIsRightHandedMode,
   toggleIsShowAvailableBalance,
+  toggleIsShowCommunityTab,
   toggleIsTestNet,
 } = settingsSlice.actions;
 export default settingsSlice.reducer;

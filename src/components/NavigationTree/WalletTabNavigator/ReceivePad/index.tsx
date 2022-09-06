@@ -10,9 +10,7 @@ import { useDispatch } from "react-redux";
 import { updateTransactionPadView } from "@redux/reducers/transactionPadReducer";
 import { ReduxState } from "@types";
 import * as Clipboard from "expo-clipboard";
-import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import COLOURS from "@design/colours";
-import { iconImport } from "@design/icons";
 import {
   selectActiveWallet,
   selectIsActiveWalletZeroBalance,
@@ -32,9 +30,6 @@ const ReceivePad = ({ navigation }) => {
 
   const isZeroPadBalance = useSelector((state: ReduxState) =>
     selectIsPadZeroBalance(state)
-  );
-  const isZeroActiveWalletBalance = useSelector((state: ReduxState) =>
-    selectIsActiveWalletZeroBalance(state)
   );
 
   const logo = require("../../../../assets/images/bch.png");
@@ -68,25 +63,6 @@ const ReceivePad = ({ navigation }) => {
     navigation.navigate("Receive Num Pad");
   };
 
-  const onPressSend = () => {
-    dispatch(
-      updateTransactionPadView({
-        view: "Send",
-      })
-    );
-  };
-
-  const SendButton = (
-    <Button
-      icon={"faPaperPlane"}
-      onPress={onPressSend}
-      size={"small"}
-      isDisabled={isZeroActiveWalletBalance}
-    >
-      Send
-    </Button>
-  );
-
   return (
     <View style={styles.inputBackground as any}>
       <View style={styles.receivePad as any}>
@@ -94,7 +70,7 @@ const ReceivePad = ({ navigation }) => {
         <View style={styles.qrBorder}>
           {isAddress && (
             <QRCode
-              size={215}
+              size={200}
               value={qrValue}
               color={COLOURS.black}
               logo={logo}

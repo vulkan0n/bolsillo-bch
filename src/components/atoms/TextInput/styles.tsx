@@ -1,5 +1,6 @@
 import SPACING from "@design/spacing";
 import COLOURS from "@design/colours";
+import SHADOW from "@design/shadow";
 
 interface Props {
   isMultiline?: boolean;
@@ -34,13 +35,7 @@ const styles = ({
       flexDirection: "row",
       justifyContent: "center",
       alignItems: "center",
-      // iOS drop shadow
-      shadowColor: COLOURS.black,
-      shadowOffset: { width: -2, height: 4 },
-      shadowOpacity: 0.2,
-      shadowRadius: 3,
-      // Android drop shadow
-      elevation: 3,
+      ...SHADOW,
     },
   };
 };

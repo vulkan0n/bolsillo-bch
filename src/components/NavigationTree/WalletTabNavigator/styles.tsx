@@ -12,6 +12,12 @@ const styles = {
     justifyContent: "center",
     alignItems: "center",
   },
+  container: {
+    backgroundColor: COLOURS.black,
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
 };
 
 export default styles;

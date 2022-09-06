@@ -14,7 +14,7 @@ const styles = {
   },
   receivePad: {
     flex: 1,
-    justifyContent: "center",
+    justifyContent: "space-around",
     alignItems: "center",
     width: "100%",
     padding: SPACING.five,
@@ -22,7 +22,7 @@ const styles = {
     borderRadius: SPACING.borderRadius,
   },
   qrBorder: {
-    margin: SPACING.fifteen,
+    margin: SPACING.five,
     padding: SPACING.fifteen,
     borderWidth: 5,
     borderColor: COLOURS.lightGrey,
