@@ -10,69 +10,68 @@ import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { iconImport } from "@design/icons";
 import SPACING from "@design/spacing";
 import styles from "./styles";
-import CommunityDrawerNavigator from "./CommunityDrawerNavigator";
+import CommunityTabNavigator from "./CommunityTabNavigator";
 import ToolsDrawerNavigator from "./ToolsDrawerNavigator";
 import { navigationRef } from "./rootNavigation";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import TransactionSuccessView from "./TransactionSuccessView";
+import { useSelector } from "react-redux";
+import { ReduxState } from "@types";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
-const TabNavigator = () => (
-  <Tab.Navigator
-    screenOptions={({ route }) => ({
-      tabBarIcon: ({ focused, color, size }) => {
-        const icon = () => {
-          switch (route?.name) {
-            case "Wallet":
-              return "faWallet";
-            case "IRL":
-              return "faEarthAmericas";
-            case "Community":
-              return "faUsers";
-            case "Tools":
-              return "faScrewdriverWrench";
-            default:
-              return "faBitcoinSign";
-          }
-        };
+const headerStyle = {
+  backgroundColor: COLOURS.black,
+};
 
-        return (
-          <FontAwesomeIcon
-            icon={iconImport(icon())}
-            size={20}
-            color={focused ? COLOURS.bchGreen : COLOURS.white}
-          />
-        );
-      },
-      tabBarActiveTintColor: COLOURS.bchGreen,
-      tabBarInactiveTintColor: COLOURS.white,
-      tabBarStyle: styles.tabBar,
-      headerShadowVisible: false,
-    })}
-  >
-    <Tab.Screen
-      name="Wallet"
-      component={WalletTabNavigator}
-      options={{
-        headerStyle: {
-          backgroundColor: COLOURS.black,
-        },
-        headerTitle: (props) => (
-          <View style={styles.header as any}>
+const TabNavigator = () => {
+  const { isShowCommunityTab } = useSelector(
+    (state: ReduxState) => state.settings
+  );
+
+  return (
+    <Tab.Navigator
+      screenOptions={({ route }) => ({
+        tabBarIcon: ({ focused, color, size }) => {
+          const icon = () => {
+            switch (route?.name) {
+              case "Wallet":
+                return "faWallet";
+              case "IRL":
+                return "faEarthAmericas";
+              case "Community":
+                return "faUsers";
+              case "Tools":
+                return "faScrewdriverWrench";
+              default:
+                return "faBitcoinSign";
+            }
+          };
+
+          return (
             <FontAwesomeIcon
-              icon={iconImport("faWallet")}
+              icon={iconImport(icon())}
               size={20}
-              color={COLOURS.white}
-              style={{ marginRight: SPACING.ten }}
+              color={focused ? COLOURS.bchGreen : COLOURS.white}
             />
-            <Text style={TYPOGRAPHY.header as any}>Wallet</Text>
-          </View>
-        ),
-      }}
-    />
-    {/* <Tab.Screen
+          );
+        },
+        tabBarActiveTintColor: COLOURS.bchGreen,
+        tabBarInactiveTintColor: COLOURS.white,
+        tabBarStyle: styles.tabBar,
+        headerShadowVisible: false,
+      })}
+    >
+      <Tab.Screen
+        name="Wallet"
+        component={WalletTabNavigator}
+        options={{
+          headerStyle,
+          headerStatusBarHeight: 0,
+        }}
+      />
+      {/* <Tab.Screen
           name="IRL"
           component={IrlView}
           options={{
@@ -92,48 +91,27 @@ const TabNavigator = () => (
             ),
           }}
         />*/}
-    {/* <Tab.Screen
-      name="Community"
-      component={CommunityDrawerNavigator}
-      options={{
-        headerStyle: {
-          backgroundColor: COLOURS.black,
-        },
-        headerTitle: (props) => (
-          <View style={styles.header as any}>
-            <FontAwesomeIcon
-              icon={iconImport("faUsers")}
-              size={20}
-              color={COLOURS.white}
-              style={{ marginRight: SPACING.ten }}
-            />
-            <Text style={TYPOGRAPHY.header as any}>Community</Text>
-          </View>
-        ),
-      }}
-    /> */}
-    <Tab.Screen
-      name="Tools"
-      component={ToolsDrawerNavigator}
-      options={{
-        headerStyle: {
-          backgroundColor: COLOURS.black,
-        },
-        headerTitle: (props) => (
-          <View style={styles.header as any}>
-            <FontAwesomeIcon
-              icon={iconImport("faScrewdriverWrench")}
-              size={20}
-              color={COLOURS.white}
-              style={{ marginRight: SPACING.ten }}
-            />
-            <Text style={TYPOGRAPHY.header as any}>Tools</Text>
-          </View>
-        ),
-      }}
-    />
-  </Tab.Navigator>
-);
+      {isShowCommunityTab && (
+        <Tab.Screen
+          name="Community"
+          component={CommunityTabNavigator}
+          options={{
+            headerStyle,
+            headerStatusBarHeight: 0,
+          }}
+        />
+      )}
+      <Tab.Screen
+        name="Tools"
+        component={ToolsDrawerNavigator}
+        options={{
+          headerStyle,
+          headerStatusBarHeight: 0,
+        }}
+      />
+    </Tab.Navigator>
+  );
+};
 
 // Hidden stack navigator for pop up modal screens
 // Wraps the visible Tab navigator
@@ -154,9 +132,7 @@ const NavigationTree = () => {
             headerStyle: {
               backgroundColor: COLOURS.bchGreen,
             },
-            headerTitle: (props) => (
-              <Text style={TYPOGRAPHY.header as any}></Text>
-            ),
+            headerTitle: (props) => <Text></Text>,
           }}
         />
       </Stack.Navigator>

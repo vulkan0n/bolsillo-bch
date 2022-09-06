@@ -1,21 +1,22 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { View, Animated, TouchableOpacity, Text } from "react-native";
+import { TouchableOpacity, Text } from "react-native";
 import COLOURS from "@design/colours";
 import { iconImport } from "@design/icons";
 import TYPOGRAPHY from "@design/typography";
-import styles from "./styles";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { View } from "react-native";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import ReceivePad from "./ReceivePad";
 import ReceiveNumPad from "./ReceiveNumPad";
 import SendView from "./SendView";
 import AvailableBalance from "./SendView/AvailableBalance";
 import { useSelector } from "react-redux";
-import { ReduxState } from "../../../types";
-import { selectIsActiveWallet } from "../../../redux/selectors";
-import CreatingWallet from "./CreatingWallet";
 import SPACING from "../../../design/spacing";
+import { ReduxState } from "@types";
+import { selectIsActiveWallet } from "@redux/selectors";
+import CreatingWallet from "./CreatingWallet";
+import TabBar from "@atoms/TabBar";
 
 const Stack = createNativeStackNavigator();
 
@@ -128,19 +129,10 @@ function MyTabBar({ state, descriptors, navigation, position }) {
 function WalletTabNavigator() {
   return (
     <Tab.Navigator
-      tabBar={(props) => <MyTabBar {...props} />}
+      tabBar={(props) => <TabBar {...props} />}
       initialRouteName={"Receive"}
     >
-      <Tab.Screen
-        name="Send"
-        component={SendView}
-        options={{
-          headerTitleStyle: {
-            fontWeight: "bold",
-            fontSize: 100,
-          },
-        }}
-      />
+      <Tab.Screen name="Send" component={SendView} />
       <Tab.Screen name="Receive" component={ReceivePad} />
     </Tab.Navigator>
   );
@@ -163,24 +155,8 @@ const WalletStack = () => {
           header: () => false,
         })}
       >
-        <Stack.Screen
-          name="Wallet Home"
-          component={WalletTabNavigator}
-          options={{
-            headerTitle: (props) => {
-              return <View style={{ height: 0 }}></View>;
-            },
-          }}
-        />
-        <Stack.Screen
-          name="Receive Num Pad"
-          component={ReceiveNumPad}
-          options={{
-            headerTitle: (props) => {
-              return <View style={{ height: 0 }}></View>;
-            },
-          }}
-        />
+        <Stack.Screen name="Wallet Home" component={WalletTabNavigator} />
+        <Stack.Screen name="Receive Num Pad" component={ReceiveNumPad} />
       </Stack.Navigator>
     </>
   );

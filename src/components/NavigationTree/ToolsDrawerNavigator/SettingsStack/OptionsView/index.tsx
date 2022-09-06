@@ -6,6 +6,7 @@ import ContrastCurrency from "./ContrastCurrency";
 import BitcoinDenomination from "./BitcoinDenomination";
 import RightHandedMode from "./RightHandedMode";
 import ShowAvailableBalance from "./ShowAvailableBalance";
+import ShowCommunityTab from "./ShowCommunityTab";
 import TestNet from "./TestNet";
 import TYPOGRAPHY from "@design/typography";
 import Divider from "@atoms/Divider";
@@ -26,6 +27,7 @@ const OptionsView = ({ navigation }) => {
           <ContrastCurrency navigation={navigation} />
           <RightHandedMode />
           <ShowAvailableBalance />
+          <ShowCommunityTab />
           <TestNet />
           <Divider />
           <Text style={TYPOGRAPHY.pWhite as any}>
