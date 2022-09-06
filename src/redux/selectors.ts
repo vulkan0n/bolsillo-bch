@@ -25,6 +25,12 @@ export const selectActiveWallet: (state: ReduxState) => SeleneWalletType =
       wallets?.find(({ name }) => name === activeWalletName)
   );
 
+export const selectIsActiveWallet: (state: ReduxState) => SeleneWalletType =
+  createSelector(
+    selectActiveWallet,
+    (activeWallet: SeleneWalletType[]): Boolean => !!activeWallet
+  );
+
 export const selectIsActiveWalletZeroBalance: (state: ReduxState) => boolean =
   createSelector(
     selectActiveWallet,

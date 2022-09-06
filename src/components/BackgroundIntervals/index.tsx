@@ -13,9 +13,6 @@ const BackgroundIntervals = () => {
   const dispatch = useDispatch();
   const wallet = useSelector((state: ReduxState) => selectActiveWallet(state));
 
-  const isNoWallet = useSelector(
-    (state: ReduxState) => state.walletManager?.wallets?.length === 0
-  );
   const { isTestNet } = useSelector((state: ReduxState) => state.settings);
 
   const fetchActiveWalletBalance = () => {
@@ -81,28 +78,15 @@ const BackgroundIntervals = () => {
     fetchPriceData();
   };
 
-  // Create a wallet if none exists
-  // I.e. first time app is opened
-  if (isNoWallet) {
-    // Add 1 second delay to allow internet connection time
-    // to load and reduce No Connection errors
-    setTimeout(() => {
-      emit({
-        type: BRIDGE_MESSAGE_TYPES.CREATE_DEFAULT_WALLET,
-        data: { isTestNet },
-      });
-    }, ONE_SECOND);
-  }
-
   // Recheck balance when active wallet changes
   // Including importing a new wallet
+  // Add 1 second delay to allow internet connection time
+  // to load and reduce No Connection errors
   useEffect(() => {
     if (!wallet) {
       return;
     }
 
-    // Add 1 second delay to allow internet connection time
-    // to load and reduce No Connection errors
     setTimeout(() => {
       fetchActiveWalletBalance();
     }, ONE_SECOND);
