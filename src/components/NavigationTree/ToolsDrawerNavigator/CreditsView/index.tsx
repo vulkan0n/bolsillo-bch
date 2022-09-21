@@ -22,12 +22,14 @@ function CreditsView() {
         Made with love for the BCH community by Jeremy from The Bitcoin Cash
         Podcast.
       </Text>
-      <Text style={TYPOGRAPHY.pWhite as any}>Other contributions:</Text>
+      <Text style={TYPOGRAPHY.pWhite as any}>Thanks to:</Text>
       <Text style={TYPOGRAPHY.pWhite as any}>Kallisti (inspiration)</Text>
+      <Text style={TYPOGRAPHY.pWhite as any}>2_qx (Mainnet.cash)</Text>
+      <Text style={TYPOGRAPHY.pWhite as any}>Jason Dreyzehner (Libauth)</Text>
       <Text style={TYPOGRAPHY.pWhite as any}>Testers:</Text>
-      <Text style={TYPOGRAPHY.pWhite as any}>Bitcoin Jason</Text>
-      <Text style={TYPOGRAPHY.pWhite as any}>fshinetop</Text>
-      <Text style={TYPOGRAPHY.pWhite as any}>Jett Scythe</Text>
+      <Text style={TYPOGRAPHY.pWhite as any}>
+        Bitcoin Jason, fshinetop, Jett Scythe
+      </Text>
       <View style={TYPOGRAPHY.spacer as any}></View>
       <Text style={TYPOGRAPHY.h2 as any}>Source code:</Text>
       <Pressable onPress={onPressUrl}>
