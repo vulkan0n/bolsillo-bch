@@ -46,11 +46,17 @@ function ContentCard({
         borderRadius: SPACING.borderRadius,
       }}
     >
-      <Text style={TYPOGRAPHY.h2black as any}>{title}</Text>
-      <Text style={TYPOGRAPHY.p as any}>{creator}</Text>
-      <Text style={TYPOGRAPHY.p as any}>
-        {moment(publicationDate).format("ll")}
-      </Text>
+      <View
+        style={{
+          marginHorizontal: SPACING.ten,
+        }}
+      >
+        <Text style={TYPOGRAPHY.h2black as any}>{title}</Text>
+        <Text style={TYPOGRAPHY.p as any}>{creator}</Text>
+        <Text style={TYPOGRAPHY.p as any}>
+          {moment(publicationDate).format("ll")}
+        </Text>
+      </View>
       <YoutubePlayer height={240} videoId={videoId} onReady={onReady} />
       <Text style={TYPOGRAPHY.p as any}>{description}</Text>
     </View>

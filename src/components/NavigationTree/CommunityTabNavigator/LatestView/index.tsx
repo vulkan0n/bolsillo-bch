@@ -12,6 +12,15 @@ import ContentCard from "./ContentCard";
 const CONTENT = [
   {
     key: 1,
+    title: "#59: Listener Survey 2022 & Political change",
+    creator: "The Bitcoin Cash Podcast",
+    publicationDate: new Date(2022, 8, 13),
+    videoId: "qyUKMhARnps",
+    description:
+      "Jett and I discuss all of the listener survey results and feedback, testing out the Alpha release of AnyHedge, the AVAX drama and the changing political tides around the world..",
+  },
+  {
+    key: 2,
     title: "Who Killed Bitcoin?",
     creator: "La Eterna Vigilante",
     publicationDate: new Date(2022, 0, 11),
