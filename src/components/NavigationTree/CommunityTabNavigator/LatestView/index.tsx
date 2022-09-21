@@ -56,7 +56,7 @@ function LatestView({ navigation }) {
           Welcome to Bitcoin Cash!
         </Text>
         <Text style={TYPOGRAPHY.p as any}>
-          Get up to speed with the latest from the BCH community.
+          Get all the latest from the BCH community.
         </Text>
         {CONTENT.map(
           ({

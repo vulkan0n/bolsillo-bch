@@ -42,7 +42,6 @@ function ContentCard({
       return;
     }
 
-    console.log("tipping", donationBchAddress);
     emit({
       type: BRIDGE_MESSAGE_TYPES.SEND_COINS,
       data: {
@@ -104,7 +103,6 @@ function ContentCard({
           >
             Tip 100 000 sats
           </Button>
-          <Text style={{ textAlign: "center" }}>{donationBchAddress}</Text>
         </View>
       )}
     </View>
