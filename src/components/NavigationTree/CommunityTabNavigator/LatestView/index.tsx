@@ -14,6 +14,7 @@ const CONTENT = [
     key: 1,
     title: "Who Killed Bitcoin?",
     creator: "La Eterna Vigilante",
+    publicationDate: new Date(2022, 0, 11),
     videoId: "eafzIW52Rgc",
     description:
       "A 45 minute documentary explaining money, power and the history of Bitcoin.",
@@ -46,15 +47,18 @@ function LatestView({ navigation }) {
         <Text style={TYPOGRAPHY.p as any}>
           Get up to speed with the latest from the BCH community.
         </Text>
-        {CONTENT.map(({ key, title, creator, videoId, description }) => (
-          <ContentCard
-            key={key}
-            title={title}
-            creator={creator}
-            videoId={videoId}
-            description={description}
-          />
-        ))}
+        {CONTENT.map(
+          ({ key, title, creator, publicationDate, videoId, description }) => (
+            <ContentCard
+              key={key}
+              title={title}
+              creator={creator}
+              publicationDate={publicationDate}
+              videoId={videoId}
+              description={description}
+            />
+          )
+        )}
       </View>
     </ScrollView>
   );

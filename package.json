@@ -40,6 +40,7 @@
     "immutable-replace": "^1.1.17",
     "mainnet-js": "^0.2.0",
     "metro-react-native-babel-preset": "^0.72.1",
+    "moment": "^2.29.4",
     "moti": "^0.18.0",
     "ramda": "^0.28.0",
     "react": "18.0.0",
