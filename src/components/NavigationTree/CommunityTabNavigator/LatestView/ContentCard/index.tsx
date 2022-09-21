@@ -5,6 +5,7 @@ import SPACING from "@design/spacing";
 import TYPOGRAPHY from "@design/typography";
 import YoutubePlayer from "react-native-youtube-iframe";
 import moment from "moment";
+import Button from "../../../../atoms/Button";
 
 interface Props {
   title: string;
@@ -12,6 +13,7 @@ interface Props {
   publicationDate: Date;
   videoId: string;
   description: string;
+  donationBchAddress?: string;
 }
 
 function ContentCard({
@@ -20,11 +22,16 @@ function ContentCard({
   publicationDate = new Date(),
   videoId = "",
   description = "",
+  donationBchAddress,
 }) {
   const [isLoaded, setIsLoaded] = useState(false);
 
   const onReady = () => {
     setIsLoaded(true);
+  };
+
+  const onPressTipBch = () => {
+    console.log("tipping", donationBchAddress);
   };
 
   if (!isLoaded) {
@@ -59,6 +66,25 @@ function ContentCard({
       </View>
       <YoutubePlayer height={240} videoId={videoId} onReady={onReady} />
       <Text style={TYPOGRAPHY.p as any}>{description}</Text>
+      {!!donationBchAddress && (
+        <View
+          style={{
+            alignSelf: "center",
+            justifyContent: "center",
+            alignItems: "center",
+            width: 300,
+          }}
+        >
+          <Button
+            onPress={onPressTipBch}
+            variant="primary"
+            icon={"faBitcoinSign"}
+          >
+            Tip BCH
+          </Button>
+          <Text style={{ textAlign: "center" }}>{donationBchAddress}</Text>
+        </View>
+      )}
     </View>
   );
 }

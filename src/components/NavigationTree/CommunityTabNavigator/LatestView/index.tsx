@@ -18,6 +18,8 @@ const CONTENT = [
     videoId: "qyUKMhARnps",
     description:
       "Jett and I discuss all of the listener survey results and feedback, testing out the Alpha release of AnyHedge, the AVAX drama and the changing political tides around the world..",
+    donationBchAddress:
+      "bitcoincash:qpagvpjs32etwhv2hn75vdqyhckqs83w4unacjfjsa",
   },
   {
     key: 2,
@@ -57,7 +59,15 @@ function LatestView({ navigation }) {
           Get up to speed with the latest from the BCH community.
         </Text>
         {CONTENT.map(
-          ({ key, title, creator, publicationDate, videoId, description }) => (
+          ({
+            key,
+            title,
+            creator,
+            publicationDate,
+            videoId,
+            description,
+            donationBchAddress,
+          }) => (
             <ContentCard
               key={key}
               title={title}
@@ -65,6 +75,7 @@ function LatestView({ navigation }) {
               publicationDate={publicationDate}
               videoId={videoId}
               description={description}
+              donationBchAddress={donationBchAddress}
             />
           )
         )}
