@@ -19,9 +19,15 @@ function CreditsView() {
       />
       <Text style={TYPOGRAPHY.h1 as any}>Selene Wallet</Text>
       <Text style={TYPOGRAPHY.h2 as any}>
-        Made with love for the BCH community by Kallisti & Jeremy (from The
-        Bitcoin Cash Podcast).
+        Made with love for the BCH community by Jeremy from The Bitcoin Cash
+        Podcast.
       </Text>
+      <Text style={TYPOGRAPHY.pWhite as any}>Other contributions:</Text>
+      <Text style={TYPOGRAPHY.pWhite as any}>Kallisti (inspiration)</Text>
+      <Text style={TYPOGRAPHY.pWhite as any}>Testers:</Text>
+      <Text style={TYPOGRAPHY.pWhite as any}>Bitcoin Jason</Text>
+      <Text style={TYPOGRAPHY.pWhite as any}>fshinetop</Text>
+      <Text style={TYPOGRAPHY.pWhite as any}>Jett Scythe</Text>
       <View style={TYPOGRAPHY.spacer as any}></View>
       <Text style={TYPOGRAPHY.h2 as any}>Source code:</Text>
       <Pressable onPress={onPressUrl}>
