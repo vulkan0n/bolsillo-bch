@@ -27,7 +27,7 @@ const OptionsView = ({ navigation }) => {
           <ContrastCurrency navigation={navigation} />
           <RightHandedMode />
           <ShowAvailableBalance />
-          <ShowCommunityTab />
+          {/* <ShowCommunityTab /> */}
           <TestNet />
           <Divider />
           <Text style={TYPOGRAPHY.pWhite as any}>

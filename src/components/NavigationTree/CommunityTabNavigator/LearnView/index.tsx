@@ -54,7 +54,7 @@ function LearnView({ navigation }) {
             Bitcoin.
           </Text>
         </View>
-        <YoutubePlayer height={300} videoId={"qxsRnsDzz4A"} onReady={onReady} />
+        {/* <YoutubePlayer height={300} videoId={"qxsRnsDzz4A"} onReady={onReady} /> */}
       </View>
     </ScrollView>
   );
