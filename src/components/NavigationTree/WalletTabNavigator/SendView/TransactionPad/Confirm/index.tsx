@@ -5,7 +5,6 @@ import Button from "@atoms/Button";
 import { BRIDGE_MESSAGE_TYPES } from "@utils/bridgeMessages";
 import { useSelector, useDispatch } from "react-redux";
 import {
-  updateTransactionPadSendToAddress,
   updateTransactionPadView,
   updateTransactionPadIsSendingCoins,
 } from "@redux/reducers/transactionPadReducer";

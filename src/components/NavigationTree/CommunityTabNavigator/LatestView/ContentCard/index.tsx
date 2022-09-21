@@ -5,7 +5,12 @@ import SPACING from "@design/spacing";
 import TYPOGRAPHY from "@design/typography";
 import YoutubePlayer from "react-native-youtube-iframe";
 import moment from "moment";
-import Button from "../../../../atoms/Button";
+import Button from "@atoms/Button";
+import emit from "@utils/emit";
+import { BRIDGE_MESSAGE_TYPES } from "@utils/bridgeMessages";
+import { ReduxState } from "@types";
+import { useSelector } from "react-redux";
+import { selectActiveWallet } from "@redux/selectors";
 
 interface Props {
   title: string;
@@ -25,13 +30,30 @@ function ContentCard({
   donationBchAddress,
 }) {
   const [isLoaded, setIsLoaded] = useState(false);
+  const wallet = useSelector((state: ReduxState) => selectActiveWallet(state));
+  const { isTestNet } = useSelector((state: ReduxState) => state.settings);
 
   const onReady = () => {
     setIsLoaded(true);
   };
 
   const onPressTipBch = () => {
+    if (!donationBchAddress) {
+      return;
+    }
+
     console.log("tipping", donationBchAddress);
+    emit({
+      type: BRIDGE_MESSAGE_TYPES.SEND_COINS,
+      data: {
+        name: wallet?.name,
+        mnemonic: wallet?.mnemonic,
+        derivationPath: wallet?.derivationPath,
+        recipientCashAddr: donationBchAddress,
+        satsToSend: 100000,
+        isTestNet,
+      },
+    });
   };
 
   if (!isLoaded) {
@@ -80,7 +102,7 @@ function ContentCard({
             variant="primary"
             icon={"faBitcoinSign"}
           >
-            Tip BCH
+            Tip 100 000 sats
           </Button>
           <Text style={{ textAlign: "center" }}>{donationBchAddress}</Text>
         </View>
