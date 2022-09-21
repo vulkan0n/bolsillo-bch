@@ -91,7 +91,7 @@ const TabNavigator = () => {
             ),
           }}
         />*/}
-      {/* {isShowCommunityTab && (
+      {isShowCommunityTab && (
         <Tab.Screen
           name="Community"
           component={CommunityTabNavigator}
@@ -100,7 +100,7 @@ const TabNavigator = () => {
             headerStatusBarHeight: 0,
           }}
         />
-      )} */}
+      )}
       <Tab.Screen
         name="Tools"
         component={ToolsDrawerNavigator}

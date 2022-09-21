@@ -3,7 +3,7 @@ import { createDrawerNavigator } from "@react-navigation/drawer";
 import DrawerNavigator from "@atoms/DrawerNavigator";
 import RoadmapView from "./RoadmapView";
 import NewView from "./NewView";
-import LearnView from "./LearnView";
+import LatestView from "./LatestView";
 
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { View } from "react-native";
@@ -18,10 +18,10 @@ function CommunityTabNavigator() {
   return (
     <Tab.Navigator
       tabBar={(props) => <TabBar isDarkMode {...props} />}
-      initialRouteName={"Learn"}
+      initialRouteName={"Latest"}
     >
       {/* <Tab.Screen name="New" component={NewView} /> */}
-      <Tab.Screen name="Learn" component={LearnView} />
+      <Tab.Screen name="Latest" component={LatestView} />
       {/* <Tab.Screen name="Connect" component={RoadmapView} />
       <Tab.Screen name="Stats" component={RoadmapView} />
       <Tab.Screen name="Learn" component={RoadmapView} /> */}
