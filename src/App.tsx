@@ -1,5 +1,5 @@
 import * as React from "react";
-import { DeviceEventEmitter, View, Text } from "react-native";
+import { DeviceEventEmitter, View, Text, Platform } from "react-native";
 import {
   useFonts,
   Montserrat_400Regular,
@@ -214,38 +214,32 @@ export default function App() {
     setIsWebViewLoaded(true);
   };
 
-  console.log("its happening 1");
+  const isWeb = Platform.OS === "web";
 
-  // if (!fontsLoaded) {
-  //   return null;
-  // }
-
-  console.log("its happening 2");
+  // Only app versions need to be empty while waiting for fonts to load
+  if (!isWeb && !fontsLoaded) {
+    return null;
+  }
 
   return (
-    <View style={{ height: 100, backgroundColor: "red" }}>
-      <Text style={{ marginTop: 50, marginLeft: 50, color: "white" }}>
-        test
-      </Text>
-      {/* <Provider store={store}>
-        <PersistGate loading={<Text>Loading...</Text>} persistor={persistor}>
-          <View style={{ height: 0 }}>
-            <WebView
-              ref={ref}
-              onMessage={onMessage}
-              source={{ html: Bridge }}
-              injectedJavaScript={preloadMainNetScript}
-              allowFileAccess={true}
-              javaScriptEnabled={true}
-              domStorageEnabled={true}
-              onLoad={onWebViewLoad}
-            />
-          </View>
-          {isWebViewLoaded && <BackgroundIntervals />}
-          <NavigationTree />
-          <Toast config={toastConfig} />
-        </PersistGate>
-      </Provider> */}
-    </View>
+    <Provider store={store}>
+      <PersistGate loading={<Text>Loading...</Text>} persistor={persistor}>
+        <View style={{ height: 0 }}>
+          <WebView
+            ref={ref}
+            onMessage={onMessage}
+            source={{ html: Bridge }}
+            injectedJavaScript={preloadMainNetScript}
+            allowFileAccess={true}
+            javaScriptEnabled={true}
+            domStorageEnabled={true}
+            onLoad={onWebViewLoad}
+          />
+        </View>
+        {isWebViewLoaded && <BackgroundIntervals />}
+        <NavigationTree />
+        <Toast config={toastConfig} />
+      </PersistGate>
+    </Provider>
   );
 }
