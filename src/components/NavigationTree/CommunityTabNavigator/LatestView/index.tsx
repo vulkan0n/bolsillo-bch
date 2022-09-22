@@ -4,9 +4,6 @@ import COLOURS from "@design/colours";
 import SPACING from "@design/spacing";
 import TYPOGRAPHY from "@design/typography";
 import styles from "./styles";
-import YoutubePlayer from "react-native-youtube-iframe";
-import Button from "@atoms/Button";
-import SHADOW from "../../../../design/shadow";
 import ContentCard from "./ContentCard";
 
 const CONTENT = [
