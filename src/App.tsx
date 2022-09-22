@@ -1,5 +1,5 @@
 import * as React from "react";
-import { DeviceEventEmitter, View, Text, Platform } from "react-native";
+import { DeviceEventEmitter, View, Text } from "react-native";
 import {
   useFonts,
   Montserrat_400Regular,
@@ -35,6 +35,7 @@ import {
 } from "./redux/reducers/transactionPadReducer";
 import { navigate } from "./components/NavigationTree/rootNavigation";
 import { updateLocalLastSentTransactionHash } from "./redux/reducers/localReducer";
+import { IS_WEB } from "@utils/consts";
 
 interface TransactionHistoryTxType {
   height: number;
@@ -214,10 +215,8 @@ export default function App() {
     setIsWebViewLoaded(true);
   };
 
-  const isWeb = Platform.OS === "web";
-
   // Only app versions need to be empty while waiting for fonts to load
-  if (!isWeb && !fontsLoaded) {
+  if (!IS_WEB && !fontsLoaded) {
     return null;
   }
 

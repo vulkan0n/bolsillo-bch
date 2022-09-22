@@ -2,14 +2,15 @@
 // Combined with need to run on web
 // https://github.com/expo/expo/issues/18485#issuecomment-1221353737
 import "expo/build/Expo.fx";
-import { AppRegistry, Platform } from "react-native";
+import { AppRegistry } from "react-native";
 import withExpoRoot from "expo/build/launch/withExpoRoot";
+import { IS_WEB } from "@utils/consts";
 
 import App from "./App";
 import { createRoot } from "react-dom/client";
 
 AppRegistry.registerComponent("main", () => withExpoRoot(App));
-if (Platform.OS === "web") {
+if (IS_WEB) {
   const rootTag = createRoot(
     document.getElementById("root") ?? document.getElementById("main")
   );
