@@ -201,6 +201,8 @@ export default function App() {
   React.useEffect(() => {
     // Listens for components that need to send a message to the Bridge
     DeviceEventEmitter.addListener("event.emitEvent", (event) => {
+      console.log("emit has happened");
+      console.log({ event });
       emit(event);
     });
 
@@ -224,16 +226,18 @@ export default function App() {
     <Provider store={store}>
       <PersistGate loading={<Text>Loading...</Text>} persistor={persistor}>
         <View style={{ height: 0 }}>
-          <WebView
-            ref={ref}
-            onMessage={onMessage}
-            source={{ html: Bridge }}
-            injectedJavaScript={preloadMainNetScript}
-            allowFileAccess={true}
-            javaScriptEnabled={true}
-            domStorageEnabled={true}
-            onLoad={onWebViewLoad}
-          />
+          {!IS_WEB && (
+            <WebView
+              ref={ref}
+              onMessage={onMessage}
+              source={{ html: Bridge }}
+              injectedJavaScript={preloadMainNetScript}
+              allowFileAccess={true}
+              javaScriptEnabled={true}
+              domStorageEnabled={true}
+              onLoad={onWebViewLoad}
+            />
+          )}
         </View>
         {isWebViewLoaded && <BackgroundIntervals />}
         <NavigationTree />
