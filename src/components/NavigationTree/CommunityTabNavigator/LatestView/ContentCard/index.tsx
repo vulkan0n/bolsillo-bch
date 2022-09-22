@@ -3,7 +3,7 @@ import { View, ActivityIndicator, ScrollView, Text } from "react-native";
 import COLOURS from "@design/colours";
 import SPACING from "@design/spacing";
 import TYPOGRAPHY from "@design/typography";
-// import YoutubePlayer from "react-native-youtube-iframe";
+import YoutubePlayer from "react-native-youtube-iframe";
 import moment from "moment";
 import Button from "@atoms/Button";
 import emit from "@utils/emit";
@@ -85,7 +85,7 @@ function ContentCard({
           {moment(publicationDate).format("ll")}
         </Text>
       </View>
-      {/* <YoutubePlayer height={240} videoId={videoId} onReady={onReady} /> */}
+      <YoutubePlayer height={240} videoId={videoId} onReady={onReady} />
       <Text style={TYPOGRAPHY.p as any}>{description}</Text>
       {!!donationBchAddress && (
         <View
