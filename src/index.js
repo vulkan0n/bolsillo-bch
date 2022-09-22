@@ -7,6 +7,7 @@ import withExpoRoot from "expo/build/launch/withExpoRoot";
 
 import App from "./App";
 import { createRoot } from "react-dom/client";
+import { View, Text } from "react-native";
 
 AppRegistry.registerComponent("main", () => withExpoRoot(App));
 if (Platform.OS === "web") {
@@ -15,4 +16,11 @@ if (Platform.OS === "web") {
   );
   const RootComponent = withExpoRoot(App);
   rootTag.render(<RootComponent />);
+  //   rootTag.render(
+  //     <View style={{ height: 100, backgroundColor: "red" }}>
+  //       <Text style={{ marginTop: 50, marginLeft: 50, color: "white" }}>
+  //         test
+  //       </Text>
+  //     </View>
+  //   );
 }

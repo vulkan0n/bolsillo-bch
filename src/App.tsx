@@ -214,29 +214,38 @@ export default function App() {
     setIsWebViewLoaded(true);
   };
 
-  if (!fontsLoaded) {
-    return null;
-  }
+  console.log("its happening 1");
+
+  // if (!fontsLoaded) {
+  //   return null;
+  // }
+
+  console.log("its happening 2");
 
   return (
-    <Provider store={store}>
-      <PersistGate loading={<Text>Loading...</Text>} persistor={persistor}>
-        <View style={{ height: 0 }}>
-          <WebView
-            ref={ref}
-            onMessage={onMessage}
-            source={{ html: Bridge }}
-            injectedJavaScript={preloadMainNetScript}
-            allowFileAccess={true}
-            javaScriptEnabled={true}
-            domStorageEnabled={true}
-            onLoad={onWebViewLoad}
-          />
-        </View>
-        {isWebViewLoaded && <BackgroundIntervals />}
-        <NavigationTree />
-        <Toast config={toastConfig} />
-      </PersistGate>
-    </Provider>
+    <View style={{ height: 100, backgroundColor: "red" }}>
+      <Text style={{ marginTop: 50, marginLeft: 50, color: "white" }}>
+        test
+      </Text>
+      {/* <Provider store={store}>
+        <PersistGate loading={<Text>Loading...</Text>} persistor={persistor}>
+          <View style={{ height: 0 }}>
+            <WebView
+              ref={ref}
+              onMessage={onMessage}
+              source={{ html: Bridge }}
+              injectedJavaScript={preloadMainNetScript}
+              allowFileAccess={true}
+              javaScriptEnabled={true}
+              domStorageEnabled={true}
+              onLoad={onWebViewLoad}
+            />
+          </View>
+          {isWebViewLoaded && <BackgroundIntervals />}
+          <NavigationTree />
+          <Toast config={toastConfig} />
+        </PersistGate>
+      </Provider> */}
+    </View>
   );
 }
