@@ -1,4 +1,18 @@
-import { registerRootComponent } from "expo";
-import App from "./App";
+// Compensate for lagging Expo support for React 18 createRoot syntax
+// Combined with need to run on web
+// https://github.com/expo/expo/issues/18485#issuecomment-1221353737
+import "expo/build/Expo.fx";
+import { AppRegistry, Platform } from "react-native";
+import withExpoRoot from "expo/build/launch/withExpoRoot";
 
-registerRootComponent(App);
+import App from "./App";
+import { createRoot } from "react-dom/client";
+
+AppRegistry.registerComponent("main", () => withExpoRoot(App));
+if (Platform.OS === "web") {
+  const rootTag = createRoot(
+    document.getElementById("root") ?? document.getElementById("main")
+  );
+  const RootComponent = withExpoRoot(App);
+  rootTag.render(<RootComponent />);
+}
