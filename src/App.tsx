@@ -10,31 +10,31 @@ import {
 } from "@expo-google-fonts/montserrat";
 import WebView from "react-native-webview";
 import { useWebViewMessage } from "react-native-react-bridge";
-import NavigationTree from "./src/components/NavigationTree";
-import BackgroundIntervals from "./src/components/BackgroundIntervals";
-import Bridge from "./src/components/Bridge";
+import NavigationTree from "./components/NavigationTree";
+import BackgroundIntervals from "./components/BackgroundIntervals";
+import Bridge from "./components/Bridge";
 import { RESPONSE_MESSAGE_TYPES } from "@utils/bridgeMessages";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
-import store from "./src/redux/store";
-import persistor from "./src/redux/persistor";
+import store from "./redux/store";
+import persistor from "./redux/persistor";
 import Toast from "react-native-toast-message";
-import toastConfig from "./src/config/toast";
-import preloadMainNetScript from "./src/config/preloadMainNetScript";
-import { WalletType } from "./src/types";
+import toastConfig from "./config/toast";
+import preloadMainNetScript from "./config/preloadMainNetScript";
+import { WalletType } from "./types";
 import {
   createDefaultWallet,
   updateNewWalletScratchPadDetails,
   updateWalletBalance,
   updateWalletCashAddr,
   importWalletTransactionHistory,
-} from "./src/redux/reducers/walletManagerReducer";
+} from "./redux/reducers/walletManagerReducer";
 import {
   updateTransactionPadIsSendingCoins,
   clearTransactionPad,
-} from "./src/redux/reducers/transactionPadReducer";
-import { navigate } from "./src/components/NavigationTree/rootNavigation";
-import { updateLocalLastSentTransactionHash } from "./src/redux/reducers/localReducer";
+} from "./redux/reducers/transactionPadReducer";
+import { navigate } from "./components/NavigationTree/rootNavigation";
+import { updateLocalLastSentTransactionHash } from "./redux/reducers/localReducer";
 
 interface TransactionHistoryTxType {
   height: number;

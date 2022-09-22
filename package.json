@@ -1,7 +1,7 @@
 {
   "name": "selene-wallet",
   "version": "0.0.8",
-  "main": "node_modules/expo/AppEntry.js",
+  "main": "src/index.js",
   "scripts": {
     "start": "expo start",
     "android": "expo start --android",
@@ -28,7 +28,7 @@
     "@types/react": "~18.0.15",
     "@types/react-native": "~0.69.1",
     "axios": "^0.27.2",
-    "expo": "^46.0.0",
+    "expo": "^46.0.10",
     "expo-app-loading": "~2.1.0",
     "expo-application": "~4.2.2",
     "expo-barcode-scanner": "~11.4.0",
