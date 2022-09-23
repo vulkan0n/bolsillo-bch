@@ -8,6 +8,7 @@ import emit from "@utils/emit";
 import axios from "axios";
 import { updateBchPrices } from "@redux/reducers/exchangeRatesReducer";
 import { selectActiveWallet } from "@redux/selectors";
+import { updateTransactionPadIsSendingCoins } from "../../redux/reducers/transactionPadReducer";
 
 const BackgroundIntervals = () => {
   const dispatch = useDispatch();
@@ -94,6 +95,14 @@ const BackgroundIntervals = () => {
 
   // Run regular checks every 30s
   useEffect(() => {
+    // Clear any temporary variables from last session
+    // When app loads
+    dispatch(
+      updateTransactionPadIsSendingCoins({
+        isSendingCoins: false,
+      })
+    );
+
     ping();
 
     const interval = setInterval(() => {
