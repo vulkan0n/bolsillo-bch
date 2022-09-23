@@ -2,6 +2,8 @@ import React from "react";
 import { Pressable, View, Image, Text, Linking } from "react-native";
 import TYPOGRAPHY from "@design/typography";
 import styles from "./styles";
+import TipWidget from "@atoms/TipWidget";
+import { DEVELOPER_DONATION_ADDRESS } from "@utils/consts";
 
 function CreditsView() {
   const version = "v0.0.9";
@@ -22,6 +24,7 @@ function CreditsView() {
         Made with love for the BCH community by Jeremy from The Bitcoin Cash
         Podcast.
       </Text>
+      <TipWidget donationBchAddress={DEVELOPER_DONATION_ADDRESS} />
       <Text style={TYPOGRAPHY.pWhite as any}>Thanks to:</Text>
       <Text style={TYPOGRAPHY.pWhite as any}>Kallisti (inspiration)</Text>
       <Text style={TYPOGRAPHY.pWhite as any}>2_qx (Mainnet.cash)</Text>

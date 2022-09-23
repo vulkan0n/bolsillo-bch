@@ -56,6 +56,8 @@ function TipWidget({ donationBchAddress }: Props) {
       style={{
         paddingTop: SPACING.five,
         marginVertical: SPACING.five,
+        height: 65,
+        minHeight: 65,
       }}
     >
       <View
@@ -64,6 +66,8 @@ function TipWidget({ donationBchAddress }: Props) {
           justifyContent: "center",
           alignItems: "center",
           width: 300,
+          height: 65,
+          minHeight: 65,
         }}
       >
         <Button

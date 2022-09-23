@@ -73,3 +73,7 @@ export const SUPPORTED_CURRENCIES: SupportedCurrency[] = [
     fullName: "United States Dollar",
   },
 ];
+
+// BCH stuff
+export const DEVELOPER_DONATION_ADDRESS =
+  "bitcoincash:qpjhf0jewa50puz3r3en5y0st3g0ndu25ctdax4axv";
