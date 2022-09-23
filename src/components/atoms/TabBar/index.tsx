@@ -13,6 +13,10 @@ function TabBar({ state, descriptors, navigation, position, isDarkMode }) {
         return "faPaperPlane";
       case "Receive":
         return "faBitcoinSign";
+      case "Latest":
+        return "faPhotoFilm";
+      case "Connect":
+        return "faHandshake";
       default:
         return "faBitcoinSign";
     }

@@ -23,6 +23,8 @@ import { faKeyboard } from "@fortawesome/free-solid-svg-icons/faKeyboard";
 import { faCircleCheck } from "@fortawesome/free-solid-svg-icons/faCircleCheck";
 import { faXmark } from "@fortawesome/free-solid-svg-icons/faXmark";
 import { faXmarkCircle } from "@fortawesome/free-solid-svg-icons/faXmarkCircle";
+import { faPhotoFilm } from "@fortawesome/free-solid-svg-icons/faPhotoFilm";
+import { faHandshake } from "@fortawesome/free-solid-svg-icons/faHandshake";
 
 export type IconType =
   | ""
@@ -50,7 +52,9 @@ export type IconType =
   | "faKeyboard"
   | "faCircleCheck"
   | "faXmark"
-  | "faXmarkCircle";
+  | "faXmarkCircle"
+  | "faPhotoFilm"
+  | "faHandshake";
 
 export const iconImport = (icon: IconType) => {
   switch (icon) {
@@ -104,6 +108,10 @@ export const iconImport = (icon: IconType) => {
       return faXmark;
     case "faXmarkCircle":
       return faXmarkCircle;
+    case "faPhotoFilm":
+      return faPhotoFilm;
+    case "faHandshake":
+      return faHandshake;
     default:
       return null;
   }
