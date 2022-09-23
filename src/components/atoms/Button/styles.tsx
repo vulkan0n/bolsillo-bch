@@ -143,6 +143,7 @@ const styles = ({ variant = "primary", isSmall = false, isDisabled }) => {
       fontSize: 24,
       color: textColor(),
     },
+    activityIndicatorColor: textColor(),
   };
 };
 

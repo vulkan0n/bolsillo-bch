@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, Pressable } from "react-native";
+import { View, Text, Pressable, ActivityIndicator } from "react-native";
 import styles from "./styles";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import COLOURS from "@design/colours";
@@ -18,6 +18,7 @@ interface Props {
     | "smallActionGreen";
   size?: "regular" | "small";
   isDisabled?: boolean;
+  isLoading?: boolean;
   icon?: IconType;
 }
 
@@ -27,6 +28,7 @@ const Button = ({
   variant = "primary",
   size = "regular",
   isDisabled = false,
+  isLoading = false,
   icon = "",
 }: Props) => {
   const isSmall = size === "small";
@@ -61,7 +63,10 @@ const Button = ({
       onPress={isDisabled ? () => {} : onPress}
       style={buttonStyle.button as any}
     >
-      {!!icon && (
+      {isLoading && (
+        <ActivityIndicator color={buttonStyle.activityIndicatorColor} />
+      )}
+      {!isLoading && !!icon && (
         <View style={buttonStyle.iconContainer}>
           <FontAwesomeIcon
             icon={iconImport(icon)}
@@ -70,7 +75,7 @@ const Button = ({
           />
         </View>
       )}
-      <Text style={buttonStyle.buttonText}>{children}</Text>
+      {!isLoading && <Text style={buttonStyle.buttonText}>{children}</Text>}
     </Pressable>
   );
 };

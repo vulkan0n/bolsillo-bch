@@ -9,8 +9,9 @@ import Button from "@atoms/Button";
 import emit from "@utils/emit";
 import { BRIDGE_MESSAGE_TYPES } from "@utils/bridgeMessages";
 import { ReduxState } from "@types";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { selectActiveWallet } from "@redux/selectors";
+import { updateTransactionPadIsSendingCoins } from "@redux/reducers/transactionPadReducer";
 
 interface Props {
   title: string;
@@ -32,6 +33,10 @@ function ContentCard({
   const [isLoaded, setIsLoaded] = useState(false);
   const wallet = useSelector((state: ReduxState) => selectActiveWallet(state));
   const { isTestNet } = useSelector((state: ReduxState) => state.settings);
+  const dispatch = useDispatch();
+  const { isSendingCoins } = useSelector(
+    (state: ReduxState) => state.transactionPad
+  );
 
   const onReady = () => {
     setIsLoaded(true);
@@ -53,6 +58,12 @@ function ContentCard({
         isTestNet,
       },
     });
+
+    dispatch(
+      updateTransactionPadIsSendingCoins({
+        isSendingCoins: true,
+      })
+    );
   };
 
   if (!isLoaded) {
@@ -100,6 +111,7 @@ function ContentCard({
             onPress={onPressTipBch}
             variant="primary"
             icon={"faBitcoinSign"}
+            isLoading={isSendingCoins}
           >
             Tip 100 000 sats
           </Button>
