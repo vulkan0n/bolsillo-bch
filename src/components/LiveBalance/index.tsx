@@ -6,7 +6,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { ReduxState } from "@types";
 import { toggleIsBchDenominated } from "@redux/reducers/settingsReducer";
 import {
-  selectActiveWallet,
   selectPrimaryCurrencyOrDenomination,
   selectPadPrimaryBalance,
   selectPadSecondaryBalance,
@@ -30,7 +29,6 @@ const LiveBalance = ({
   isHideZeroButton = false,
 }: Props) => {
   const dispatch = useDispatch();
-  const wallet = useSelector((state: ReduxState) => selectActiveWallet(state));
   const { padBalance } = useSelector(
     (state: ReduxState) => state.transactionPad
   );
@@ -45,11 +43,9 @@ const LiveBalance = ({
     selectPadSecondaryBalance(state)
   );
 
-  const {
-    primaryBalance: activeWalletPrimaryBalance,
-    secondaryBalance: activeWalletSecondaryBalance,
-    availableRawSats,
-  } = useSelector((state: ReduxState) => selectActiveWalletBalance(state));
+  const { availableRawSats } = useSelector((state: ReduxState) =>
+    selectActiveWalletBalance(state)
+  );
 
   const maxPadBalance = convertRawSatsToRawCurrencyRounded(
     availableRawSats,

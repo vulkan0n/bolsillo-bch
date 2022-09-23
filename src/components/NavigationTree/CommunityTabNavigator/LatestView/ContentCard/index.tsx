@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState } from "react";
 import { View, ActivityIndicator, ScrollView, Text } from "react-native";
 import COLOURS from "@design/colours";
 import SPACING from "@design/spacing";
@@ -34,6 +34,7 @@ function ContentCard({
   description = "",
   donationBchAddress,
 }) {
+  const [tipAmountInIntSats, setTipAmountInIntSats] = useState(100000);
   const [isLoaded, setIsLoaded] = useState(false);
   const wallet = useSelector((state: ReduxState) => selectActiveWallet(state));
   const { isTestNet } = useSelector((state: ReduxState) => state.settings);
@@ -61,7 +62,7 @@ function ContentCard({
         mnemonic: wallet?.mnemonic,
         derivationPath: wallet?.derivationPath,
         recipientCashAddr: donationBchAddress,
-        satsToSend: 100000,
+        satsToSend: tipAmountInIntSats,
         isTestNet,
       },
     });
@@ -72,8 +73,6 @@ function ContentCard({
       })
     );
   };
-
-  const tipAmountInRawSats = 100000;
 
   if (!isLoaded) {
     <ActivityIndicator
@@ -121,9 +120,9 @@ function ContentCard({
             variant="primary"
             icon={"faBitcoinSign"}
             isLoading={isSendingCoins}
-            isDisabled={tipAmountInRawSats > parseInt(availableRawSats)}
+            isDisabled={tipAmountInIntSats > parseInt(availableRawSats)}
           >
-            Tip 100 000 sats
+            Tip {`${tipAmountInIntSats}`} sats
           </Button>
         </View>
       )}
