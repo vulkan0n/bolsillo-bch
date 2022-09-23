@@ -48,11 +48,11 @@ const LiveBalance = ({
   const {
     primaryBalance: activeWalletPrimaryBalance,
     secondaryBalance: activeWalletSecondaryBalance,
+    availableRawSats,
   } = useSelector((state: ReduxState) => selectActiveWalletBalance(state));
 
-  const availableSats = wallet.balance.toString();
   const maxPadBalance = convertRawSatsToRawCurrencyRounded(
-    availableSats,
+    availableRawSats,
     primaryCurrency
   );
 

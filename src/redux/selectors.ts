@@ -15,6 +15,7 @@ import { CurrencyOrDenominationType } from "../types";
 interface ActiveWalletBalance {
   primaryBalance: string;
   secondaryBalance: string;
+  availableSats: string;
 }
 
 export const selectActiveWallet: (state: ReduxState) => SeleneWalletType =
@@ -66,10 +67,12 @@ export const selectActiveWalletBalance: (
 
     const primaryBalance = isBchDenominated ? bchBalance : contrastBalance;
     const secondaryBalance = isBchDenominated ? contrastBalance : bchBalance;
+    const availableRawSats = activeWallet?.balance?.toString();
 
     return {
       primaryBalance,
       secondaryBalance,
+      availableRawSats,
     };
   }
 );

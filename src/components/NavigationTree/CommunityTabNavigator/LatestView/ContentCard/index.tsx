@@ -12,6 +12,10 @@ import { ReduxState } from "@types";
 import { useSelector, useDispatch } from "react-redux";
 import { selectActiveWallet } from "@redux/selectors";
 import { updateTransactionPadIsSendingCoins } from "@redux/reducers/transactionPadReducer";
+import {
+  selectPrimaryCurrencyOrDenomination,
+  selectActiveWalletBalance,
+} from "@redux/selectors";
 
 interface Props {
   title: string;
@@ -36,6 +40,9 @@ function ContentCard({
   const dispatch = useDispatch();
   const { isSendingCoins } = useSelector(
     (state: ReduxState) => state.transactionPad
+  );
+  const { availableRawSats } = useSelector((state: ReduxState) =>
+    selectActiveWalletBalance(state)
   );
 
   const onReady = () => {
@@ -65,6 +72,8 @@ function ContentCard({
       })
     );
   };
+
+  const tipAmountInRawSats = 100000;
 
   if (!isLoaded) {
     <ActivityIndicator
@@ -112,6 +121,7 @@ function ContentCard({
             variant="primary"
             icon={"faBitcoinSign"}
             isLoading={isSendingCoins}
+            isDisabled={tipAmountInRawSats > parseInt(availableRawSats)}
           >
             Tip 100 000 sats
           </Button>
