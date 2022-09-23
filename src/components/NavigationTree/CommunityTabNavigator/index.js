@@ -4,9 +4,9 @@ import DrawerNavigator from "@atoms/DrawerNavigator";
 import RoadmapView from "./RoadmapView";
 import NewView from "./NewView";
 import LatestView from "./LatestView";
+import ConnectView from "./ConnectView";
 
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { View } from "react-native";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import TabBar from "@atoms/TabBar";
 
@@ -22,6 +22,7 @@ function CommunityTabNavigator() {
     >
       {/* <Tab.Screen name="New" component={NewView} /> */}
       <Tab.Screen name="Latest" component={LatestView} />
+      <Tab.Screen name="Connect" component={ConnectView} />
       {/* <Tab.Screen name="Connect" component={RoadmapView} />
       <Tab.Screen name="Stats" component={RoadmapView} />
       <Tab.Screen name="Learn" component={RoadmapView} /> */}
