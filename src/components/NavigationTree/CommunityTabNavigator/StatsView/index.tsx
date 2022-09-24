@@ -6,6 +6,7 @@ import TYPOGRAPHY from "@design/typography";
 import { ONE_HUNDRED, TEN_MILLION } from "@utils/consts";
 import styles from "./styles";
 import Button from "@atoms/Button";
+import DailyActiveBitcoinersChart from "./DailyActiveBitcoinersChart";
 
 function StatsView({ navigation }) {
   const activeBitcoiners = 1;
@@ -36,9 +37,7 @@ function StatsView({ navigation }) {
             style={TYPOGRAPHY.pWhite as any}
           >{`${missionPercentage}% of 10 000 000 target`}</Text>
         </View>
-        <View>
-          <Text>Daily Active Bitcoiners Chart</Text>
-        </View>
+        <DailyActiveBitcoinersChart />
         <Text style={TYPOGRAPHY.p as any}>
           10 million daily active Bitcoiners will form a vibrant economy larger
           than many countries, and quickly snowball to the rest of the world.
