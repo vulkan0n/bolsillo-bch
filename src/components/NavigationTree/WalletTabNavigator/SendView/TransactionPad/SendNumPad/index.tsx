@@ -16,7 +16,7 @@ import {
   selectActiveWallet,
   selectPadBalanceInRawSats,
 } from "@redux/selectors";
-import LiveBalance from "@components/LiveBalance";
+import LiveBalance from "@atoms/LiveBalance";
 import COLOURS from "@design/colours";
 import { TEN_SECONDS } from "@utils/consts";
 import { selectIsPadZeroBalance } from "../../../../../../redux/selectors";

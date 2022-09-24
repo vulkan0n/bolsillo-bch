@@ -17,7 +17,7 @@ import {
   selectPadBalanceInRawSats,
 } from "@redux/selectors";
 import { ONE_HUNDRED_MILLION } from "@utils/consts";
-import LiveBalance from "@components/LiveBalance";
+import LiveBalance from "@atoms/LiveBalance";
 import { updateTransactionPadBalance } from "@redux/reducers/transactionPadReducer";
 import { selectIsPadZeroBalance } from "@redux/selectors";
 

@@ -20,10 +20,9 @@ const styles = {
     marginBottom: SPACING.twentyFive,
   },
   objectWrapper: {
-    flex: 1,
     flexDirection: "row",
     height: 80,
-    minHeight: 100,
+    minHeight: 80,
   },
 };
 

@@ -3,7 +3,7 @@ import { View } from "react-native";
 import styles from "./styles";
 import Button from "@atoms/Button";
 import { useDispatch } from "react-redux";
-import LiveBalance from "@components/LiveBalance";
+import LiveBalance from "@atoms/LiveBalance";
 import { updateTransactionPadBalance } from "@redux/reducers/transactionPadReducer";
 import NumPad from "../../../atoms/NumPad";
 
