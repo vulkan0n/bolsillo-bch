@@ -40,7 +40,7 @@ function NumPadModal({ navigation }) {
           <Button
             icon={"faCircleCheck"}
             onPress={onPressOk}
-            variant={"secondaryOnGreen"}
+            variant={"primary"}
           >
             Ok
           </Button>
