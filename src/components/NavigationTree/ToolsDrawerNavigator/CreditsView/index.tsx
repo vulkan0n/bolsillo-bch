@@ -24,7 +24,7 @@ function CreditsView() {
         Made with love for the BCH community by Jeremy from The Bitcoin Cash
         Podcast.
       </Text>
-      <TipWidget donationBchAddress={DEVELOPER_DONATION_ADDRESS} />
+      <TipWidget donationBchAddress={DEVELOPER_DONATION_ADDRESS} isWhiteText />
       <Text style={TYPOGRAPHY.pWhite as any}>Thanks to:</Text>
       <Text style={TYPOGRAPHY.pWhite as any}>Kallisti (inspiration)</Text>
       <Text style={TYPOGRAPHY.pWhite as any}>2_qx (Mainnet.cash)</Text>

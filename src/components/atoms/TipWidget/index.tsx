@@ -1,7 +1,6 @@
 import React, { useState } from "react";
-import { View } from "react-native";
+import { View, Pressable, Text } from "react-native";
 import COLOURS from "@design/colours";
-import SPACING from "@design/spacing";
 import Button from "@atoms/Button";
 import emit from "@utils/emit";
 import { BRIDGE_MESSAGE_TYPES } from "@utils/bridgeMessages";
@@ -10,12 +9,15 @@ import { useSelector, useDispatch } from "react-redux";
 import { selectActiveWallet } from "@redux/selectors";
 import { updateTransactionPadIsSendingCoins } from "@redux/reducers/transactionPadReducer";
 import { selectActiveWalletBalance } from "@redux/selectors";
+import TYPOGRAPHY from "@design/typography";
+import styles from "./styles";
 
 interface Props {
   donationBchAddress: string;
+  isWhiteText: boolean;
 }
 
-function TipWidget({ donationBchAddress }: Props) {
+function TipWidget({ donationBchAddress, isWhiteText = false }: Props) {
   const [tipAmountInIntSats, setTipAmountInIntSats] = useState(100000);
   const wallet = useSelector((state: ReduxState) => selectActiveWallet(state));
   const { isTestNet } = useSelector((state: ReduxState) => state.settings);
@@ -51,25 +53,13 @@ function TipWidget({ donationBchAddress }: Props) {
     );
   };
 
+  const onPressCustomAmount = () => {
+    console.log("custom amount");
+  };
+
   return (
-    <View
-      style={{
-        paddingTop: SPACING.five,
-        marginVertical: SPACING.five,
-        height: 65,
-        minHeight: 65,
-      }}
-    >
-      <View
-        style={{
-          alignSelf: "center",
-          justifyContent: "center",
-          alignItems: "center",
-          width: 300,
-          height: 65,
-          minHeight: 65,
-        }}
-      >
+    <View style={styles.container}>
+      <View style={styles.wrapper}>
         <Button
           onPress={onPressTipBch}
           variant="primary"
@@ -79,6 +69,13 @@ function TipWidget({ donationBchAddress }: Props) {
         >
           Tip {`${tipAmountInIntSats}`} sats
         </Button>
+        <Pressable onPress={onPressCustomAmount}>
+          <Text
+            style={isWhiteText ? TYPOGRAPHY.pWhiteUnderlined : TYPOGRAPHY.p}
+          >
+            Custom amount
+          </Text>
+        </Pressable>
       </View>
     </View>
   );

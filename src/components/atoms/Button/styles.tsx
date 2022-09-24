@@ -118,6 +118,7 @@ const styles = ({ variant = "primary", isSmall = false, isDisabled }) => {
       borderRadius: SPACING.borderRadius,
       backgroundColor: backgroundColor(),
       borderColor: borderColor(),
+      minHeight: 45,
       height: 65,
       maxHeight: 65,
       width: isSmallAction ? 80 : "100%",

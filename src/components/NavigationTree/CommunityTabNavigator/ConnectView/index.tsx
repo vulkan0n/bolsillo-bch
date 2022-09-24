@@ -10,7 +10,14 @@ function ConnectView({ navigation }) {
 
   return (
     <ScrollView style={styles.scrollView as any}>
-      <View style={styles.container as any}></View>
+      <View style={styles.container as any}>
+        <Text style={{ ...TYPOGRAPHY.h1black, marginTop: SPACING.ten } as any}>
+          Find 
+        </Text>
+        <Text style={TYPOGRAPHY.p as any}>
+          Get all the latest from the BCH community.
+        </Text>
+      </View>
     </ScrollView>
   );
 }

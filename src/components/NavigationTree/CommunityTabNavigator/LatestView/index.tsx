@@ -32,21 +32,7 @@ const CONTENT = [
   },
 ];
 
-function LatestView({ navigation }) {
-  const [isLoaded, setIsLoaded] = useState(false);
-
-  const onReady = () => {
-    setIsLoaded(true);
-  };
-
-  if (!isLoaded) {
-    <ActivityIndicator
-      style={{ height: 50 }}
-      size="large"
-      color={COLOURS.black}
-    />;
-  }
-
+function LatestView() {
   return (
     <ScrollView style={styles.scrollView as any}>
       <View style={styles.container as any}>
