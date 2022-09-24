@@ -15,6 +15,8 @@ import { selectActiveWalletBalance } from "@redux/selectors";
 import TYPOGRAPHY from "@design/typography";
 import styles from "./styles";
 import { navigate } from "@components/NavigationTree/rootNavigation";
+import { BITCOIN_DENOMINATIONS } from "@utils/consts";
+import { convertBalanceToDisplay } from "@utils/formatting";
 
 interface Props {
   donationBchAddress: string;
@@ -22,7 +24,6 @@ interface Props {
 }
 
 function TipWidget({ donationBchAddress, isWhiteText = false }: Props) {
-  const tipAmountInIntSats = 100000;
   const wallet = useSelector((state: ReduxState) => selectActiveWallet(state));
   const { isTestNet } = useSelector((state: ReduxState) => state.settings);
   const dispatch = useDispatch();
@@ -31,6 +32,12 @@ function TipWidget({ donationBchAddress, isWhiteText = false }: Props) {
   );
   const { availableRawSats } = useSelector((state: ReduxState) =>
     selectActiveWalletBalance(state)
+  );
+  const tipAmountInIntSats = 100000;
+  const displayTipAmount = convertBalanceToDisplay(
+    `${tipAmountInIntSats}`,
+    BITCOIN_DENOMINATIONS.satoshis,
+    "usd"
   );
 
   const onPressTipBch = () => {
@@ -75,11 +82,10 @@ function TipWidget({ donationBchAddress, isWhiteText = false }: Props) {
         <Button
           onPress={onPressTipBch}
           variant="primary"
-          icon={"faBitcoinSign"}
           isLoading={isSendingCoins}
           isDisabled={tipAmountInIntSats > parseInt(availableRawSats)}
         >
-          Tip {`${tipAmountInIntSats}`} sats
+          Tip {displayTipAmount}
         </Button>
         <Pressable onPress={onPressCustomAmount}>
           <Text
