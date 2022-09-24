@@ -7,7 +7,10 @@ import { BRIDGE_MESSAGE_TYPES } from "@utils/bridgeMessages";
 import { ReduxState } from "@types";
 import { useSelector, useDispatch } from "react-redux";
 import { selectActiveWallet } from "@redux/selectors";
-import { updateTransactionPadIsSendingCoins } from "@redux/reducers/transactionPadReducer";
+import {
+  updateTransactionPadIsSendingCoins,
+  updateTransactionPadBalance,
+} from "@redux/reducers/transactionPadReducer";
 import { selectActiveWalletBalance } from "@redux/selectors";
 import TYPOGRAPHY from "@design/typography";
 import styles from "./styles";
@@ -54,12 +57,18 @@ function TipWidget({ donationBchAddress, isWhiteText = false }: Props) {
   };
 
   const onPressCustomAmount = () => {
+    dispatch(
+      updateTransactionPadBalance({
+        padBalance: "0",
+      })
+    );
+
     console.log("custom amount");
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.wrapper}>
+    <View style={styles.container as any}>
+      <View style={styles.wrapper as any}>
         <Button
           onPress={onPressTipBch}
           variant="primary"
@@ -71,7 +80,9 @@ function TipWidget({ donationBchAddress, isWhiteText = false }: Props) {
         </Button>
         <Pressable onPress={onPressCustomAmount}>
           <Text
-            style={isWhiteText ? TYPOGRAPHY.pWhiteUnderlined : TYPOGRAPHY.p}
+            style={
+              isWhiteText ? TYPOGRAPHY.pWhiteUnderlined : TYPOGRAPHY.pUnderlined
+            }
           >
             Custom amount
           </Text>

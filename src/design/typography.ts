@@ -125,6 +125,14 @@ const TYPOGRAPHY = {
     fontSize: 16,
     marginBottom: SPACING.ten,
   },
+  pUnderlined: {
+    fontFamily: "Montserrat_500Medium",
+    textAlign: "center",
+    color: COLOURS.black,
+    fontSize: 16,
+    marginBottom: SPACING.ten,
+    textDecorationLine: "underline",
+  },
   pWhiteUnderlined: {
     fontFamily: "Montserrat_500Medium",
     textAlign: "center",
