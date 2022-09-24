@@ -39,6 +39,14 @@ import { updateLocalLastSentTransactionHash } from "./src/redux/reducers/localRe
 interface TransactionHistoryTxType {
   blockheight: number;
   txn: string;
+  txId: string;
+  balance: number;
+  fee: number;
+  from: string;
+  to: string;
+  index: number;
+  unit: string;
+  value: number;
 }
 
 interface BridgeResponseMessage {
@@ -50,7 +58,9 @@ interface BridgeResponseMessage {
     lastSentTransactionHash?: string;
     title?: string;
     text?: string;
-    transactionHistory?: TransactionHistoryTxType[];
+    transactionHistory?: {
+      transactions: TransactionHistoryTxType[];
+    };
   };
 }
 
