@@ -22,7 +22,7 @@ interface Props {
 }
 
 function TipWidget({ donationBchAddress, isWhiteText = false }: Props) {
-  const [tipAmountInIntSats, setTipAmountInIntSats] = useState(100000);
+  const tipAmountInIntSats = 100000;
   const wallet = useSelector((state: ReduxState) => selectActiveWallet(state));
   const { isTestNet } = useSelector((state: ReduxState) => state.settings);
   const dispatch = useDispatch();

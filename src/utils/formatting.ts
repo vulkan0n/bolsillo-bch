@@ -31,7 +31,11 @@ import {
   convertRawSatsToRawUsd,
 } from "./exchangeRates";
 import { BitcoinDenominationTypes, SupportedCurrencyTypes } from "@types";
-import { MAIN_NET_PREFIX, TEST_NET_PREFIX } from "./consts";
+import {
+  MAIN_NET_PREFIX,
+  TEST_NET_PREFIX,
+  BITCOIN_DENOMINATIONS,
+} from "./consts";
 import { CurrencyOrDenominationType } from "../types";
 
 // Note on how this file works
@@ -95,13 +99,13 @@ export const allowedDecimalPlaces = (
       return 2;
     case "usd":
       return 2;
-    case "bitcoins":
+    case BITCOIN_DENOMINATIONS.bitcoins:
       return 8;
-    case "millibits":
+    case BITCOIN_DENOMINATIONS.millibits:
       return 5;
-    case "bits":
+    case BITCOIN_DENOMINATIONS.bits:
       return 2;
-    case "satoshis":
+    case BITCOIN_DENOMINATIONS.satoshis:
       return 0;
     default:
       return 2;
@@ -199,13 +203,13 @@ export const prettifyRawCurrency = (
       return `THB ฿${chunkedValue}`;
     case "usd":
       return `USD $${chunkedValue}`;
-    case "bitcoins":
+    case BITCOIN_DENOMINATIONS.bitcoins:
       return `₿ ${chunkedValue} BCH`;
-    case "millibits":
+    case BITCOIN_DENOMINATIONS.millibits:
       return `₿ ${chunkedValue} mBCH`;
-    case "bits":
+    case BITCOIN_DENOMINATIONS.bits:
       return `₿ ${chunkedValue} bits`;
-    case "satoshis":
+    case BITCOIN_DENOMINATIONS.satoshis:
       return `₿ ${chunkedValue} sats`;
     default:
       return chunkedValue;
@@ -248,13 +252,13 @@ export const prettifyPadBalance = (
       return `THB ฿${chunkedValue}`;
     case "usd":
       return `USD $${chunkedValue}`;
-    case "bitcoins":
+    case BITCOIN_DENOMINATIONS.bitcoins:
       return `₿ ${chunkedValue} BCH`;
-    case "millibits":
+    case BITCOIN_DENOMINATIONS.millibits:
       return `₿ ${chunkedValue} mBCH`;
-    case "bits":
+    case BITCOIN_DENOMINATIONS.bits:
       return `₿ ${chunkedValue} bits`;
-    case "satoshis":
+    case BITCOIN_DENOMINATIONS.satoshis:
       return `₿ ${chunkedValue} sats`;
     default:
       return chunkedValue;
@@ -290,13 +294,13 @@ export const convertRawSatsToRawCurrency = (
       return convertRawSatsToRawThb(rawSats);
     case "usd":
       return convertRawSatsToRawUsd(rawSats);
-    case "bitcoins":
+    case BITCOIN_DENOMINATIONS.bitcoins:
       return convertRawSatsToRawBch(rawSats);
-    case "millibits":
+    case BITCOIN_DENOMINATIONS.millibits:
       return convertRawSatsToRawMbch(rawSats);
-    case "bits":
+    case BITCOIN_DENOMINATIONS.bits:
       return convertRawSatsToRawBits(rawSats);
-    case "satoshis":
+    case BITCOIN_DENOMINATIONS.satoshis:
       return rawSats;
     default:
       return rawSats;
@@ -350,13 +354,13 @@ export const convertRawCurrencyToRawSats = (
       return convertRawThbToSats(rawCurrency);
     case "usd":
       return convertRawUsdToSats(rawCurrency);
-    case "bitcoins":
+    case BITCOIN_DENOMINATIONS.bitcoins:
       return convertRawBchToRawSats(rawCurrency);
-    case "millibits":
+    case BITCOIN_DENOMINATIONS.millibits:
       return convertRawMbchToRawSats(rawCurrency);
-    case "bits":
+    case BITCOIN_DENOMINATIONS.bits:
       return convertRawBitsToRawSats(rawCurrency);
-    case "satoshis":
+    case BITCOIN_DENOMINATIONS.satoshis:
       return rawCurrency;
     default:
       return rawCurrency;

@@ -1,4 +1,4 @@
-import { SupportedCurrency } from "@types";
+import { SupportedCurrency, BitcoinDenominationTypes } from "@types";
 
 // Address formats
 export const TEST_NET_PREFIX: string = "bchtest:";
@@ -17,6 +17,12 @@ export const ONE_HUNDRED: number = 100; // Sats per bit
 // Total Bitcoin Satoshi supply
 // A little less than 21 quadrillion
 export const TOTAL_SATOSHI_SUPPLY: number = 2099999997690000;
+export const BITCOIN_DENOMINATIONS = {
+  bitcoins: "bitcoins",
+  millibits: "millibits",
+  bits: "bits",
+  satoshis: "satoshis",
+};
 
 // Other
 export const TEN_MILLION: number = 10000000; // Daily active users target
