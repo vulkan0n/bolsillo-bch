@@ -135,7 +135,7 @@ const NavigationTree = () => {
           }}
         />
         <Stack.Screen
-          name="NumPad Modal"
+          name="CustomTipModal"
           component={CustomTipModal}
           options={{
             presentation: "modal",

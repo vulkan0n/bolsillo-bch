@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { View, Text, Pressable } from "react-native";
+import React from "react";
+import { View, Pressable } from "react-native";
 import Button from "@atoms/Button";
 import styles from "./styles";
 import { MotiView } from "moti";
@@ -7,14 +7,43 @@ import { useDispatch, useSelector } from "react-redux";
 import NumPad from "@atoms/NumPad";
 import LiveBalance from "@atoms/LiveBalance";
 import AvailableBalance from "../../WalletTabNavigator/SendView/AvailableBalance";
-import { selectPadPrimaryBalance } from "@redux/selectors";
+import { selectPadPrimaryBalance, selectActiveWallet } from "@redux/selectors";
 import { ReduxState } from "@types";
+import emit from "@utils/emit";
+import { updateTransactionPadIsSendingCoins } from "@redux/reducers/transactionPadReducer";
+import { BRIDGE_MESSAGE_TYPES } from "@utils/bridgeMessages";
 
 function CustomTipModal({ navigation }) {
   const dispatch = useDispatch();
   const primaryBalance = useSelector((state: ReduxState) =>
     selectPadPrimaryBalance(state)
   );
+
+  const wallet = useSelector((state: ReduxState) => selectActiveWallet(state));
+  const { isTestNet } = useSelector((state: ReduxState) => state.settings);
+  const { isSendingCoins } = useSelector(
+    (state: ReduxState) => state.transactionPad
+  );
+
+  const onPressTipBch = () => {
+    emit({
+      type: BRIDGE_MESSAGE_TYPES.SEND_COINS,
+      data: {
+        name: wallet?.name,
+        mnemonic: wallet?.mnemonic,
+        derivationPath: wallet?.derivationPath,
+        recipientCashAddr: donationBchAddress,
+        satsToSend: tipAmountInIntSats,
+        isTestNet,
+      },
+    });
+
+    dispatch(
+      updateTransactionPadIsSendingCoins({
+        isSendingCoins: true,
+      })
+    );
+  };
 
   const onPressOk = () => {
     navigation.navigate("Tab Navigator");
@@ -37,7 +66,11 @@ function CustomTipModal({ navigation }) {
           <LiveBalance />
         </View>
         <NumPad isCheckInsufficientBalance />
-        <Button onPress={onPressOk} variant={"primary"}>
+        <Button
+          isLoading={isSendingCoins}
+          onPress={onPressTipBch}
+          variant={"primary"}
+        >
           Tip {primaryBalance}
         </Button>
         <Button icon={"faXmark"} onPress={onPressOk} variant={"secondary"}>

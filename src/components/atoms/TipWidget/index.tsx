@@ -34,10 +34,6 @@ function TipWidget({ donationBchAddress, isWhiteText = false }: Props) {
   );
 
   const onPressTipBch = () => {
-    if (!donationBchAddress) {
-      return;
-    }
-
     emit({
       type: BRIDGE_MESSAGE_TYPES.SEND_COINS,
       data: {
@@ -64,10 +60,12 @@ function TipWidget({ donationBchAddress, isWhiteText = false }: Props) {
       })
     );
 
-    navigate("NumPad Modal");
-
-    console.log("custom amount");
+    navigate("CustomTipModal");
   };
+
+  if (!donationBchAddress) {
+    return null;
+  }
 
   return (
     <View style={styles.container as any}>
