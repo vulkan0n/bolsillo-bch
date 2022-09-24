@@ -3,7 +3,7 @@ import SPACING from "@design/spacing";
 
 const styles = {
   container: {
-    backgroundColor: COLOURS.white,
+    backgroundColor: COLOURS.black,
     padding: SPACING.fifteen,
     flex: 1,
     justifyContent: "center",
@@ -16,8 +16,9 @@ const styles = {
     justifyContent: "center",
     alignItems: "center",
   },
-  iconWrapper: {
-    marginBottom: SPACING.twentyFive,
+  whiteWrapper: {
+    backgroundColor: COLOURS.white,
+    borderRadius: SPACING.borderRadius,
   },
   objectWrapper: {
     flexDirection: "row",

@@ -13,7 +13,7 @@ import ToolsDrawerNavigator from "./ToolsDrawerNavigator";
 import { navigationRef } from "./rootNavigation";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import TransactionSuccessModal from "./modals/TransactionSuccessModal";
-import NumPadModal from "./modals/NumPadModal";
+import CustomTipModal from "./modals/CustomTipModal";
 import { useSelector } from "react-redux";
 import { ReduxState } from "@types";
 
@@ -136,7 +136,7 @@ const NavigationTree = () => {
         />
         <Stack.Screen
           name="NumPad Modal"
-          component={NumPadModal}
+          component={CustomTipModal}
           options={{
             presentation: "modal",
             headerTitle: (props) => <Text></Text>,

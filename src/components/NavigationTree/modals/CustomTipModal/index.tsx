@@ -3,12 +3,18 @@ import { View, Text, Pressable } from "react-native";
 import Button from "@atoms/Button";
 import styles from "./styles";
 import { MotiView } from "moti";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import NumPad from "@atoms/NumPad";
-import LiveBalance from "../../../atoms/LiveBalance";
+import LiveBalance from "@atoms/LiveBalance";
+import AvailableBalance from "../../WalletTabNavigator/SendView/AvailableBalance";
+import { selectPadPrimaryBalance } from "@redux/selectors";
+import { ReduxState } from "@types";
 
-function NumPadModal({ navigation }) {
+function CustomTipModal({ navigation }) {
   const dispatch = useDispatch();
+  const primaryBalance = useSelector((state: ReduxState) =>
+    selectPadPrimaryBalance(state)
+  );
 
   const onPressOk = () => {
     navigation.navigate("Tab Navigator");
@@ -26,10 +32,13 @@ function NumPadModal({ navigation }) {
         transition={{ type: "timing", duration: 1200 }}
         style={styles.motiView as any}
       >
-        <LiveBalance />
+        <AvailableBalance />
+        <View style={styles.whiteWrapper}>
+          <LiveBalance />
+        </View>
         <NumPad isCheckInsufficientBalance />
-        <Button icon={"faCircleCheck"} onPress={onPressOk} variant={"primary"}>
-          Ok
+        <Button onPress={onPressOk} variant={"primary"}>
+          Tip {primaryBalance}
         </Button>
         <Button icon={"faXmark"} onPress={onPressOk} variant={"secondary"}>
           Cancel
@@ -39,4 +48,4 @@ function NumPadModal({ navigation }) {
   );
 }
 
-export default NumPadModal;
+export default CustomTipModal;
