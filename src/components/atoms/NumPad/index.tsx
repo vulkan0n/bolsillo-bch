@@ -14,7 +14,7 @@ import {
   ReduxState,
   SupportedCurrencyTypes,
 } from "@types";
-import TRANSACTION_PAD_ERRORS from "../SendView/TransactionPad/errors";
+import TRANSACTION_PAD_ERRORS from "../../NavigationTree/WalletTabNavigator/SendView/TransactionPad/errors";
 import {
   allowedDecimalPlaces,
   convertRawCurrencyToRawSats,

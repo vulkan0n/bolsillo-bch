@@ -20,7 +20,7 @@ import LiveBalance from "@components/LiveBalance";
 import COLOURS from "@design/colours";
 import { TEN_SECONDS } from "@utils/consts";
 import { selectIsPadZeroBalance } from "../../../../../../redux/selectors";
-import NumPad from "../../../NumPad";
+import NumPad from "../../../../../atoms/NumPad";
 import {
   clearTransactionPad,
   updateTransactionPadBalance,

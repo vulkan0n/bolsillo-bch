@@ -3,7 +3,7 @@ import SPACING from "@design/spacing";
 
 const styles = {
   container: {
-    backgroundColor: COLOURS.bchGreen,
+    backgroundColor: COLOURS.white,
     padding: SPACING.fifteen,
     flex: 1,
     justifyContent: "center",
@@ -12,12 +12,6 @@ const styles = {
   },
   motiView: {
     flex: 1,
-    width: "100%",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  contentWrapper: {
-    height: 300,
     width: "100%",
     justifyContent: "center",
     alignItems: "center",

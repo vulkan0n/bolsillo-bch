@@ -5,7 +5,7 @@ import Button from "@atoms/Button";
 import { useDispatch } from "react-redux";
 import LiveBalance from "@components/LiveBalance";
 import { updateTransactionPadBalance } from "@redux/reducers/transactionPadReducer";
-import NumPad from "../NumPad";
+import NumPad from "../../../atoms/NumPad";
 
 const ReceiveNumPad = ({ navigation }) => {
   const dispatch = useDispatch();
