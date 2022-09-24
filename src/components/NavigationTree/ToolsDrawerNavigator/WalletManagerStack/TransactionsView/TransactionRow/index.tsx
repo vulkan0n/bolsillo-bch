@@ -7,7 +7,7 @@ import { useDispatch } from "react-redux";
 import { updateTransactionNote } from "@redux/reducers/walletManagerReducer";
 import COLOURS from "@design/colours";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { iconImport } from "../../../../../../design/icons";
+import { iconImport } from "@design/icons";
 
 const TransactionRow = ({ transaction, editNoteHash, setEditNoteHash }) => {
   const { blockheight, txn, note, balance, fee, from, to, value } = transaction;
