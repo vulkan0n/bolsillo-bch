@@ -17,6 +17,8 @@ function TabBar({ state, descriptors, navigation, position, isDarkMode }) {
         return "faPhotoFilm";
       case "Connect":
         return "faHandshake";
+      case "Stats":
+        return "faChartLine";
       default:
         return "faBitcoinSign";
     }

@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Pressable } from "react-native";
+import { View } from "react-native";
 import Button from "@atoms/Button";
 import styles from "./styles";
 import { MotiView } from "moti";
@@ -14,7 +14,10 @@ import {
 } from "@redux/selectors";
 import { ReduxState } from "@types";
 import emit from "@utils/emit";
-import { updateTransactionPadIsSendingCoins } from "@redux/reducers/transactionPadReducer";
+import {
+  updateTransactionPadIsSendingCoins,
+  updateTransactionPadBalance,
+} from "@redux/reducers/transactionPadReducer";
 import { BRIDGE_MESSAGE_TYPES } from "@utils/bridgeMessages";
 
 function CustomTipModal({ navigation, route }) {
@@ -56,6 +59,12 @@ function CustomTipModal({ navigation, route }) {
   };
 
   const onPressCancel = () => {
+    dispatch(
+      updateTransactionPadBalance({
+        padBalance: "0",
+      })
+    );
+
     navigation.navigate("Tab Navigator");
   };
 
