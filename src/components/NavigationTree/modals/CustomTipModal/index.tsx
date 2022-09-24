@@ -7,16 +7,24 @@ import { useDispatch, useSelector } from "react-redux";
 import NumPad from "@atoms/NumPad";
 import LiveBalance from "@atoms/LiveBalance";
 import AvailableBalance from "../../WalletTabNavigator/SendView/AvailableBalance";
-import { selectPadPrimaryBalance, selectActiveWallet } from "@redux/selectors";
+import {
+  selectPadBalanceInRawSats,
+  selectPadPrimaryBalance,
+  selectActiveWallet,
+} from "@redux/selectors";
 import { ReduxState } from "@types";
 import emit from "@utils/emit";
 import { updateTransactionPadIsSendingCoins } from "@redux/reducers/transactionPadReducer";
 import { BRIDGE_MESSAGE_TYPES } from "@utils/bridgeMessages";
 
-function CustomTipModal({ navigation }) {
+function CustomTipModal({ navigation, route }) {
+  const { donationBchAddress } = route?.params;
   const dispatch = useDispatch();
   const primaryBalance = useSelector((state: ReduxState) =>
     selectPadPrimaryBalance(state)
+  );
+  const padBalanceInRawSats = useSelector((state: ReduxState) =>
+    selectPadBalanceInRawSats(state)
   );
 
   const wallet = useSelector((state: ReduxState) => selectActiveWallet(state));
@@ -24,6 +32,8 @@ function CustomTipModal({ navigation }) {
   const { isSendingCoins } = useSelector(
     (state: ReduxState) => state.transactionPad
   );
+
+  const tipAmountInIntSats = parseInt(padBalanceInRawSats);
 
   const onPressTipBch = () => {
     emit({
@@ -45,16 +55,12 @@ function CustomTipModal({ navigation }) {
     );
   };
 
-  const onPressOk = () => {
-    navigation.navigate("Tab Navigator");
-  };
-
-  const onPressBack = () => {
+  const onPressCancel = () => {
     navigation.navigate("Tab Navigator");
   };
 
   return (
-    <Pressable onPress={onPressOk} style={styles.container as any}>
+    <View style={styles.container as any}>
       <MotiView
         from={{ opacity: 0, translateY: 35 }}
         animate={{ opacity: 1, translateY: 0 }}
@@ -73,11 +79,11 @@ function CustomTipModal({ navigation }) {
         >
           Tip {primaryBalance}
         </Button>
-        <Button icon={"faXmark"} onPress={onPressOk} variant={"secondary"}>
+        <Button icon={"faXmark"} onPress={onPressCancel} variant={"secondary"}>
           Cancel
         </Button>
       </MotiView>
-    </Pressable>
+    </View>
   );
 }
 

@@ -60,7 +60,9 @@ function TipWidget({ donationBchAddress, isWhiteText = false }: Props) {
       })
     );
 
-    navigate("CustomTipModal");
+    navigate("CustomTipModal", {
+      donationBchAddress,
+    });
   };
 
   if (!donationBchAddress) {
