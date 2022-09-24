@@ -82,6 +82,7 @@ function CustomTipModal({ navigation, route }) {
         </View>
         <NumPad isCheckInsufficientBalance />
         <Button
+          isDisabled={tipAmountInIntSats === 0}
           isLoading={isSendingCoins}
           onPress={onPressTipBch}
           variant={"primary"}
