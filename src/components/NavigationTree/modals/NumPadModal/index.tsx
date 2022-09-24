@@ -13,7 +13,7 @@ import { useDispatch, useSelector } from "react-redux";
 import TextInput from "@atoms/TextInput";
 import { ReduxState } from "@types";
 
-function TransactionSuccessModal({ navigation }) {
+function NumPadModal({ navigation }) {
   // Temporary storage of this text
   const [noteText, setNoteText] = useState("");
   const dispatch = useDispatch();
@@ -37,16 +37,6 @@ function TransactionSuccessModal({ navigation }) {
     navigation.navigate("Tab Navigator");
   };
 
-  const onChange = (newNote: string) => {
-    setNoteText(newNote);
-    dispatch(
-      updateTransactionNote({
-        tx_hash: lastSentTransactionHash,
-        note: newNote,
-      })
-    );
-  };
-
   return (
     <Pressable onPress={onPressOk} style={styles.container as any}>
       <MotiView
@@ -63,17 +53,8 @@ function TransactionSuccessModal({ navigation }) {
               color={COLOURS.white}
             />
           </View>
-          <Text style={TYPOGRAPHY.h1 as any}>Sent!</Text>
-          <Text style={TYPOGRAPHY.h2 as any}>Note:</Text>
-          <View style={styles.objectWrapper as any}>
-            <TextInput
-              text={noteText}
-              isSmallText
-              isMultiline
-              numberOfLines={5}
-              onChange={onChange}
-            />
-          </View>
+          <Text style={TYPOGRAPHY.h1 as any}>NumPadModal</Text>
+
           <View style={styles.objectWrapper as any}>
             <Button
               icon={"faCircleCheck"}
@@ -89,4 +70,4 @@ function TransactionSuccessModal({ navigation }) {
   );
 }
 
-export default TransactionSuccessModal;
+export default NumPadModal;

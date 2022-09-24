@@ -186,7 +186,7 @@ export default function App() {
 
           store.dispatch(clearTransactionPad());
 
-          navigate("Transaction Success");
+          navigate("Transaction Success Modal");
           break;
 
         default:

@@ -1,20 +1,19 @@
 import React from "react";
-import { View, Text } from "react-native";
+import { Text } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import WalletTabNavigator from "./WalletTabNavigator";
 import IrlView from "./IrlView";
 import COLOURS from "@design/colours";
-import TYPOGRAPHY from "@design/typography";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { iconImport } from "@design/icons";
-import SPACING from "@design/spacing";
 import styles from "./styles";
 import CommunityTabNavigator from "./CommunityTabNavigator";
 import ToolsDrawerNavigator from "./ToolsDrawerNavigator";
 import { navigationRef } from "./rootNavigation";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import TransactionSuccessModal from "./modals/TransactionSuccessModal";
+import NumPadModal from "./modals/NumPadModal";
 import { useSelector } from "react-redux";
 import { ReduxState } from "@types";
 
@@ -125,13 +124,21 @@ const NavigationTree = () => {
       >
         <Stack.Screen name="Tab Navigator" component={TabNavigator} />
         <Stack.Screen
-          name="Transaction Success"
+          name="Transaction Success Modal"
           component={TransactionSuccessModal}
           options={{
             presentation: "modal",
             headerStyle: {
               backgroundColor: COLOURS.bchGreen,
             },
+            headerTitle: (props) => <Text></Text>,
+          }}
+        />
+        <Stack.Screen
+          name="NumPad Modal"
+          component={NumPadModal}
+          options={{
+            presentation: "modal",
             headerTitle: (props) => <Text></Text>,
           }}
         />

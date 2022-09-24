@@ -14,6 +14,7 @@ import {
 import { selectActiveWalletBalance } from "@redux/selectors";
 import TYPOGRAPHY from "@design/typography";
 import styles from "./styles";
+import { navigate } from "@components/NavigationTree/rootNavigation";
 
 interface Props {
   donationBchAddress: string;
@@ -62,6 +63,8 @@ function TipWidget({ donationBchAddress, isWhiteText = false }: Props) {
         padBalance: "0",
       })
     );
+
+    navigate("NumPad Modal");
 
     console.log("custom amount");
   };
