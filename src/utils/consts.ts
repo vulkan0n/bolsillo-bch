@@ -76,4 +76,4 @@ export const SUPPORTED_CURRENCIES: SupportedCurrency[] = [
 
 // BCH stuff
 export const DEVELOPER_DONATION_ADDRESS =
-  "bitcoincash:qpjhf0jewa50puz3r3en5y0st3g0ndu25ctdax4axv";
+  "bitcoincash:qrer20k4s5emsm5a2xnsy2r2f7xz3veqwuktrmwfxq";
