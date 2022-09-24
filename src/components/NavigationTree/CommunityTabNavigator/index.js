@@ -1,8 +1,7 @@
 import React from "react";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import DrawerNavigator from "@atoms/DrawerNavigator";
-import RoadmapView from "./RoadmapView";
-import NewView from "./NewView";
+import StatsView from "./StatsView";
 import LatestView from "./LatestView";
 import ConnectView from "./ConnectView";
 
@@ -20,12 +19,9 @@ function CommunityTabNavigator() {
       tabBar={(props) => <TabBar isDarkMode {...props} />}
       initialRouteName={"Latest"}
     >
-      {/* <Tab.Screen name="New" component={NewView} /> */}
+      <Tab.Screen name="Stats" component={StatsView} />
       <Tab.Screen name="Latest" component={LatestView} />
       <Tab.Screen name="Connect" component={ConnectView} />
-      {/* <Tab.Screen name="Connect" component={RoadmapView} />
-      <Tab.Screen name="Stats" component={RoadmapView} />
-      <Tab.Screen name="Learn" component={RoadmapView} /> */}
     </Tab.Navigator>
   );
 }
