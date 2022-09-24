@@ -1,31 +1,12 @@
-import React, { useEffect, useState } from "react";
-import { View, Text, Pressable, ActivityIndicator } from "react-native";
+import React from "react";
+import { View } from "react-native";
 import styles from "./styles";
 import Button from "@atoms/Button";
-import { BRIDGE_MESSAGE_TYPES } from "@utils/bridgeMessages";
-import { useSelector, useDispatch } from "react-redux";
-import {
-  updateTransactionPadSendToAddress,
-  updateTransactionPadView,
-  updateTransactionPadIsSendingCoins,
-} from "@redux/reducers/transactionPadReducer";
-import { ReduxState } from "@types";
-import emit from "@utils/emit";
-import TYPOGRAPHY from "@design/typography";
-import {
-  selectActiveWallet,
-  selectPadBalanceInRawSats,
-} from "@redux/selectors";
+import { useDispatch } from "react-redux";
+import { updateTransactionPadView } from "@redux/reducers/transactionPadReducer";
 import LiveBalance from "@atoms/LiveBalance";
-import COLOURS from "@design/colours";
-import { TEN_SECONDS } from "@utils/consts";
-import { selectIsPadZeroBalance } from "../../../../../../redux/selectors";
 import NumPad from "../../../../../atoms/NumPad";
-import {
-  clearTransactionPad,
-  updateTransactionPadBalance,
-} from "../../../../../../redux/reducers/transactionPadReducer";
-import AvailableBalance from "../../AvailableBalance";
+import { clearTransactionPad } from "@redux/reducers/transactionPadReducer";
 
 const SendNumPad = ({ navigation }) => {
   const dispatch = useDispatch();

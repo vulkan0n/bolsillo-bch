@@ -1,9 +1,10 @@
 import React from "react";
-import { View, Text, Pressable, ActivityIndicator } from "react-native";
+import { View, Text, Pressable } from "react-native";
 import styles from "./styles";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import COLOURS from "@design/colours";
 import { iconImport, IconType } from "@design/icons";
+import { BallIndicator } from "react-native-indicators";
 
 interface Props {
   children: any;
@@ -64,7 +65,7 @@ const Button = ({
       style={buttonStyle.button as any}
     >
       {isLoading && (
-        <ActivityIndicator color={buttonStyle.activityIndicatorColor} />
+        <BallIndicator size={30} color={buttonStyle.activityIndicatorColor} />
       )}
       {!isLoading && !!icon && (
         <View style={buttonStyle.iconContainer}>

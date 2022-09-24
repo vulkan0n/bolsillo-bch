@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, Pressable, ActivityIndicator } from "react-native";
+import { View, Text, Pressable } from "react-native";
 import styles from "./styles";
 import Button from "@atoms/Button";
 import { BRIDGE_MESSAGE_TYPES } from "@utils/bridgeMessages";
@@ -19,6 +19,7 @@ import LiveBalance from "@atoms/LiveBalance";
 import COLOURS from "@design/colours";
 import { TEN_SECONDS } from "@utils/consts";
 import { selectIsPadZeroBalance } from "@redux/selectors";
+import { BallIndicator } from "react-native-indicators";
 
 const Confirm = ({ navigation }) => {
   const dispatch = useDispatch();
@@ -107,9 +108,9 @@ const Confirm = ({ navigation }) => {
       >
         <View style={styles.inputBackground as any}>
           <Text style={TYPOGRAPHY.h1black as any}>Sending...</Text>
-          <ActivityIndicator
+          <BallIndicator
             style={styles.activityIndicator}
-            size="large"
+            size={30}
             color={COLOURS.black}
           />
           {isStuck && <Text style={TYPOGRAPHY.p as any}>(Tap if stuck)</Text>}

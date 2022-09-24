@@ -1,12 +1,8 @@
-import React, { useState, useCallback } from "react";
-import { View, ActivityIndicator, ScrollView, Text } from "react-native";
-import COLOURS from "@design/colours";
+import React from "react";
+import { View, ScrollView, Text } from "react-native";
 import SPACING from "@design/spacing";
 import TYPOGRAPHY from "@design/typography";
 import styles from "./styles";
-import YoutubePlayer from "react-native-youtube-iframe";
-import Button from "@atoms/Button";
-import SHADOW from "../../../../design/shadow";
 import ContentCard from "./ContentCard";
 
 const CONTENT = [

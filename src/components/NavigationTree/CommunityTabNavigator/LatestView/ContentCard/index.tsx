@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, ActivityIndicator, ScrollView, Text } from "react-native";
+import { View, Text } from "react-native";
 import COLOURS from "@design/colours";
 import SPACING from "@design/spacing";
 import TYPOGRAPHY from "@design/typography";
@@ -13,6 +13,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { selectActiveWallet } from "@redux/selectors";
 import { updateTransactionPadIsSendingCoins } from "@redux/reducers/transactionPadReducer";
 import { selectActiveWalletBalance } from "@redux/selectors";
+import { BallIndicator } from "react-native-indicators";
 
 interface Props {
   title: string;
@@ -72,11 +73,7 @@ function ContentCard({
   };
 
   if (!isLoaded) {
-    <ActivityIndicator
-      style={{ height: 50 }}
-      size="large"
-      color={COLOURS.black}
-    />;
+    <BallIndicator size={30} style={{ height: 50 }} color={COLOURS.black} />;
   }
 
   return (
