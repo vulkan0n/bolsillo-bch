@@ -11,11 +11,12 @@ import {
   prettifyPadBalance,
 } from "@utils/formatting";
 import { CurrencyOrDenominationType } from "../types";
+import { BITCOIN_DENOMINATIONS } from "@utils/consts";
 
 interface ActiveWalletBalance {
   primaryBalance: string;
   secondaryBalance: string;
-  availableSats: string;
+  availableRawSats: string;
 }
 
 export const selectActiveWallet: (state: ReduxState) => SeleneWalletType =
@@ -55,13 +56,13 @@ export const selectActiveWalletBalance: (
   ): ActiveWalletBalance => {
     const bchBalance = convertBalanceToDisplay(
       activeWallet?.balance,
-      "satoshis",
+      BITCOIN_DENOMINATIONS.satoshis,
       bitcoinDenomination
     );
 
     const contrastBalance = convertBalanceToDisplay(
       activeWallet?.balance,
-      "satoshis",
+      BITCOIN_DENOMINATIONS.satoshis,
       contrastCurrency
     );
 

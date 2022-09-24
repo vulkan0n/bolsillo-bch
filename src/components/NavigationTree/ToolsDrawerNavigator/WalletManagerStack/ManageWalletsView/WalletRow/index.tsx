@@ -13,6 +13,7 @@ import {
   updateNavigatedWalletName,
 } from "@redux/reducers/walletManagerReducer";
 import styles from "./styles";
+import { BITCOIN_DENOMINATIONS } from "@utils/consts";
 
 const WalletRow = ({ navigation, name, description, balance, transactions }) => {
   const dispatch = useDispatch();
@@ -37,13 +38,13 @@ const WalletRow = ({ navigation, name, description, balance, transactions }) => 
 
   const bitcoinBalance = convertBalanceToDisplay(
     balance,
-    "satoshis",
+    BITCOIN_DENOMINATIONS.satoshis,
     bitcoinDenomination
   );
 
   const contrastBalance = convertBalanceToDisplay(
     balance,
-    "satoshis",
+    BITCOIN_DENOMINATIONS.satoshis,
     contrastCurrency
   );
 

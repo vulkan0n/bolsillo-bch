@@ -20,6 +20,7 @@ import {
   convertRawCurrencyToRawSats,
 } from "@utils/formatting";
 import { countDecimalPlaces } from "@utils/utils";
+import { BITCOIN_DENOMINATIONS } from "@utils/consts";
 import {
   selectActiveWallet,
   selectPrimaryCurrencyOrDenomination,
@@ -44,7 +45,8 @@ const NumPad = ({ isCheckInsufficientBalance = false }) => {
   const availableRawSats = wallet?.balance;
   const isDisableDecimal =
     padBalance.includes(".") ||
-    (isBchDenominated && bitcoinDenomination === "satoshis");
+    (isBchDenominated &&
+      bitcoinDenomination === BITCOIN_DENOMINATIONS.satoshis);
 
   const checkInsufficientBalance = (
     n: string,

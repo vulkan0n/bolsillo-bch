@@ -12,6 +12,7 @@ import Divider from "@atoms/Divider";
 import SPACING from "@design/spacing";
 import { updateBitcoinDenomination } from "@redux/reducers/settingsReducer";
 import StackSubheader from "@atoms/StackSubheader";
+import { BITCOIN_DENOMINATIONS } from "@utils/consts";
 
 function DenominationView() {
   const dispatch = useDispatch();
@@ -24,25 +25,25 @@ function DenominationView() {
       units: "1",
       abbreviation: "BCH",
       name: "(Bitcoin Cash)",
-      setting: "bitcoins",
+      setting: BITCOIN_DENOMINATIONS.bitcoins,
     },
     {
       units: "1 000",
       abbreviation: "mBCH",
       name: "(millibits)",
-      setting: "millibits",
+      setting: BITCOIN_DENOMINATIONS.millibits,
     },
     {
       units: "1 000 000",
       abbreviation: "bits",
       name: "(bits)",
-      setting: "bits",
+      setting: BITCOIN_DENOMINATIONS.bits,
     },
     {
       units: "100 000 000",
       abbreviation: "sats",
       name: "(satoshis)",
-      setting: "satoshis",
+      setting: BITCOIN_DENOMINATIONS.satoshis,
     },
   ];
 
