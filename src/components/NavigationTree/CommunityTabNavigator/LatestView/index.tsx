@@ -38,7 +38,8 @@ function LatestView() {
           Welcome to Bitcoin Cash!
         </Text>
         <Text style={TYPOGRAPHY.p as any}>
-          Get all the latest from the BCH community.
+          Catch the latest discussions, podcasts, art, music and memes from the
+          BCH community.
         </Text>
         {CONTENT.map(
           ({

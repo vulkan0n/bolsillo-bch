@@ -72,10 +72,6 @@ function ContentCard({
     );
   };
 
-  if (!isLoaded) {
-    <BallIndicator size={30} style={{ height: 50 }} color={COLOURS.black} />;
-  }
-
   return (
     <View
       style={{
@@ -98,7 +94,22 @@ function ContentCard({
           {moment(publicationDate).format("ll")}
         </Text>
       </View>
-      <YoutubePlayer height={240} videoId={videoId} onReady={onReady} />
+      <YoutubePlayer
+        height={isLoaded ? 240 : 0}
+        videoId={videoId}
+        onReady={onReady}
+      />
+      {!isLoaded && (
+        <BallIndicator
+          size={30}
+          style={{
+            height: 225,
+            backgroundColor: COLOURS.black,
+            marginBottom: 15,
+          }}
+          color={COLOURS.white}
+        />
+      )}
       <Text style={TYPOGRAPHY.p as any}>{description}</Text>
       {!!donationBchAddress && (
         <TipWidget donationBchAddress={donationBchAddress} />
