@@ -14,7 +14,7 @@ import TextInput from "@atoms/TextInput";
 import { State } from "react-native-gesture-handler";
 import { ReduxState } from "@types";
 
-function TransactionSuccessView({ navigation }) {
+function TransactionSuccessModal({ navigation }) {
   // Temporary storage of this text
   const [noteText, setNoteText] = useState("");
   const dispatch = useDispatch();
@@ -90,4 +90,4 @@ function TransactionSuccessView({ navigation }) {
   );
 }
 
-export default TransactionSuccessView;
+export default TransactionSuccessModal;

@@ -14,7 +14,7 @@ import CommunityTabNavigator from "./CommunityTabNavigator";
 import ToolsDrawerNavigator from "./ToolsDrawerNavigator";
 import { navigationRef } from "./rootNavigation";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import TransactionSuccessView from "./TransactionSuccessView";
+import TransactionSuccessModal from "./modals/TransactionSuccessModal";
 import { useSelector } from "react-redux";
 import { ReduxState } from "@types";
 
@@ -126,7 +126,7 @@ const NavigationTree = () => {
         <Stack.Screen name="Tab Navigator" component={TabNavigator} />
         <Stack.Screen
           name="Transaction Success"
-          component={TransactionSuccessView}
+          component={TransactionSuccessModal}
           options={{
             presentation: "modal",
             headerStyle: {
