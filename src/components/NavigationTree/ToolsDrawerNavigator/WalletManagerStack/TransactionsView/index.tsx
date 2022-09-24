@@ -82,7 +82,7 @@ function TransactionsView({ navigation }) {
               setEditNoteHash={setEditNoteHash}
             />
           )}
-          keyExtractor={({ tx_hash }) => tx_hash}
+          keyExtractor={({ txn }) => txn}
         />
         <WalletActions navigation={navigation} />
       </View>

@@ -7,21 +7,21 @@ import { useDispatch } from "react-redux";
 import { updateTransactionNote } from "@redux/reducers/walletManagerReducer";
 
 const TransactionRow = ({ transaction, editNoteHash, setEditNoteHash }) => {
-  const { height, tx_hash, note } = transaction;
+  const { blockheight, txn, note } = transaction;
   const dispatch = useDispatch();
 
-  const blockchairUrl = `https://blockchair.com/bitcoin-cash/transaction/${tx_hash}`;
+  const blockchairUrl = `https://blockchair.com/bitcoin-cash/transaction/${txn}`;
 
   const onPressTransactionHash = async () => {
     Linking.openURL(blockchairUrl);
   };
 
-  const onPressNote = () => setEditNoteHash(tx_hash);
+  const onPressNote = () => setEditNoteHash(txn);
 
   const onChange = (newNote: string) => {
     dispatch(
       updateTransactionNote({
-        tx_hash,
+        txn,
         note: newNote,
       })
     );
@@ -29,15 +29,15 @@ const TransactionRow = ({ transaction, editNoteHash, setEditNoteHash }) => {
 
   const onFinishedEditing = () => setEditNoteHash("");
 
-  const isEditing = editNoteHash === tx_hash;
+  const isEditing = editNoteHash === txn;
 
   https: return (
     <View>
       <Text style={TYPOGRAPHY.pWhiteLeft as any}>
-        Height: {height >= 1 ? height : "Unconfirmed"}
+        Height: {blockheight >= 1 ? blockheight : "Unconfirmed"}
       </Text>
       <Pressable onPress={onPressTransactionHash}>
-        <Text style={TYPOGRAPHY.pWhiteUnderlined as any}>Hash: {tx_hash}</Text>
+        <Text style={TYPOGRAPHY.pWhiteUnderlined as any}>Hash: {txn}</Text>
       </Pressable>
       {isEditing && (
         <View

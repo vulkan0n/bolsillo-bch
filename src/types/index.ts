@@ -19,8 +19,8 @@ export interface WalletType {
 }
 
 export interface TransactionType {
-  tx_hash: string;
-  height?: number;
+  txn: string;
+  blockheight?: number;
   note?: string;
 }
 

@@ -37,8 +37,8 @@ import { navigate } from "./src/components/NavigationTree/rootNavigation";
 import { updateLocalLastSentTransactionHash } from "./src/redux/reducers/localReducer";
 
 interface TransactionHistoryTxType {
-  height: number;
-  tx_hash: string;
+  blockheight: number;
+  txn: string;
 }
 
 interface BridgeResponseMessage {
@@ -176,7 +176,7 @@ export default function App() {
 
           const history = message?.data?.transactionHistory;
           const lastTransaction = history?.[history.length - 1];
-          const lastTransactionHash = lastTransaction?.tx_hash;
+          const lastTransactionHash = lastTransaction?.txn;
 
           store.dispatch(
             updateLocalLastSentTransactionHash({

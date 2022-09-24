@@ -109,10 +109,13 @@ const walletMangerSlice = createSlice({
         ({ name }) => name === action.payload.name
       );
 
-      const equalByTxHash = R.eqBy(R.prop("tx_hash"));
+      const equalByTxHash = R.eqBy(R.prop("txn"));
 
-      const incomingTransactions = action.payload.transactionHistory;
+      const incomingTransactions =
+        action.payload.transactionHistory?.transactions;
       const walletTransactions = wallet?.transactions;
+
+      console.log({ incomingTransactions });
 
       const newTransactions = R.differenceWith(
         equalByTxHash,
@@ -126,17 +129,15 @@ const walletMangerSlice = createSlice({
       }));
 
       const updatedTransactions = walletTransactions.map((w) => {
-        const match = incomingTransactions.find(
-          (i) => i?.tx_hash === w?.tx_hash
-        );
+        const match = incomingTransactions.find((i) => i?.txn === w?.txn);
         const updated = {
           ...w,
-          height: match?.height,
+          blockheight: match?.blockheight,
         };
         return updated;
       });
 
-      const byHeightDescend = R.descend(R.prop("height"));
+      const byHeightDescend = R.descend(R.prop("blockheight"));
       const transactionsByHeight = R.sort(byHeightDescend, updatedTransactions);
       const merged = [...newTransactionsWithNotes, ...transactionsByHeight];
       const replacedWallet = replace(wallet.transactions)
@@ -147,13 +148,11 @@ const walletMangerSlice = createSlice({
       state.wallets = newWallets;
     },
     updateTransactionNote(state, action) {
-      const inputTransactionHash = action.payload?.tx_hash ?? "";
+      const inputTransactionHash = action.payload?.txn ?? "";
       const note = action.payload.note;
 
       const findTxHashInWallet = (wallet: SeleneWalletType): TransactionType =>
-        wallet?.transactions?.find(
-          ({ tx_hash }) => tx_hash === inputTransactionHash
-        );
+        wallet?.transactions?.find(({ txn }) => txn === inputTransactionHash);
 
       const wallet: SeleneWalletType = state.wallets.find(findTxHashInWallet);
       const transaction: TransactionType = findTxHashInWallet(wallet);

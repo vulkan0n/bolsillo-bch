@@ -41,7 +41,7 @@ function TransactionSuccessModal({ navigation }) {
     setNoteText(newNote);
     dispatch(
       updateTransactionNote({
-        tx_hash: lastSentTransactionHash,
+        txn: lastSentTransactionHash,
         note: newNote,
       })
     );
