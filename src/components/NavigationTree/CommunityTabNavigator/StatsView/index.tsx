@@ -20,7 +20,9 @@ function StatsView({ navigation }) {
           Selene Wallet is on a mission to make Bitcoin Cash the most used
           currency in the world.
         </Text>
+        <Text style={TYPOGRAPHY.h2black as any}>Daily Active Bitcoiners</Text>
         <DailyActiveBitcoinersChart />
+        <Text>You are untracked. Tap to learn more.</Text>
         <View style={styles.activeBitcoiners}>
           <Text style={TYPOGRAPHY.h2 as any}>Last 24 hours:</Text>
           <Text
