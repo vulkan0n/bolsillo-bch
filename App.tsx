@@ -184,9 +184,14 @@ export default function App() {
             })
           );
 
-          store.dispatch(clearTransactionPad());
+          const isSendingCoins =
+            store.getState()?.transactionPad?.isSendingCoins;
 
-          navigate("Transaction Success Modal");
+          if (isSendingCoins) {
+            navigate("Transaction Success Modal");
+          }
+
+          store.dispatch(clearTransactionPad());
           break;
 
         default:
