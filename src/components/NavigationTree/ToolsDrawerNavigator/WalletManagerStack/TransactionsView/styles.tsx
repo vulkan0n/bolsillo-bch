@@ -8,9 +8,9 @@ const styles = {
   container: {
     backgroundColor: COLOURS.black,
     paddingTop: SPACING.fifteen,
-    paddingLeft: SPACING.twentyFive,
-    paddingRight: SPACING.twentyFive,
-    paddingBottom: SPACING.twentyFive,
+    paddingLeft: SPACING.fifteen,
+    paddingRight: SPACING.fifteen,
+    paddingBottom: SPACING.ten,
     flex: 1,
     justifyContent: "flex-start",
     alignItems: "center",

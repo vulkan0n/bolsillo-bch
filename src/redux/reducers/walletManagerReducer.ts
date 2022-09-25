@@ -115,8 +115,6 @@ const walletMangerSlice = createSlice({
         action.payload.transactionHistory?.transactions;
       const walletTransactions = wallet?.transactions;
 
-      console.log({ incomingTransactions });
-
       const newTransactions = R.differenceWith(
         equalByTxHash,
         incomingTransactions,

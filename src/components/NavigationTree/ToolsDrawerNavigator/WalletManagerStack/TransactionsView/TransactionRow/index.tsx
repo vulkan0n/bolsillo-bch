@@ -3,15 +3,50 @@ import { Pressable, View, Text, Linking } from "react-native";
 import TYPOGRAPHY from "@design/typography";
 import TextInput from "@atoms/TextInput";
 import Button from "@atoms/Button";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { updateTransactionNote } from "@redux/reducers/walletManagerReducer";
 import COLOURS from "@design/colours";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { iconImport } from "@design/icons";
+import { convertBalanceToDisplay } from "../../../../../../utils/formatting";
+import { BITCOIN_DENOMINATIONS } from "../../../../../../utils/consts";
+import { ReduxState } from "../../../../../../types";
+import {
+  selectPrimaryCurrencyOrDenomination,
+  selectSecondaryCurrencyOrDenomination,
+} from "../../../../../../redux/selectors";
+import SPACING from "../../../../../../design/spacing";
 
 const TransactionRow = ({ transaction, editNoteHash, setEditNoteHash }) => {
   const { blockheight, txn, note, balance, fee, from, to, value } = transaction;
   const dispatch = useDispatch();
+  const primaryCurrency = useSelector((state: ReduxState) =>
+    selectPrimaryCurrencyOrDenomination(state)
+  );
+  const secondaryCurrency = useSelector((state: ReduxState) =>
+    selectSecondaryCurrencyOrDenomination(state)
+  );
+  const absoluteValue = Math.abs(value).toString();
+  const primaryValue = convertBalanceToDisplay(
+    absoluteValue,
+    BITCOIN_DENOMINATIONS.satoshis,
+    primaryCurrency
+  );
+  const secondaryValue = convertBalanceToDisplay(
+    absoluteValue,
+    BITCOIN_DENOMINATIONS.satoshis,
+    secondaryCurrency
+  );
+  const primaryBalance = convertBalanceToDisplay(
+    balance,
+    BITCOIN_DENOMINATIONS.satoshis,
+    primaryCurrency
+  );
+  const secondaryBalance = convertBalanceToDisplay(
+    balance,
+    BITCOIN_DENOMINATIONS.satoshis,
+    secondaryCurrency
+  );
 
   const blockchairUrl = `https://blockchair.com/bitcoin-cash/transaction/${txn}`;
 
@@ -37,25 +72,68 @@ const TransactionRow = ({ transaction, editNoteHash, setEditNoteHash }) => {
 
   return (
     <View>
-      <FontAwesomeIcon
-        icon={iconImport(isReceive ? "faBitcoinSign" : "faPaperPlane")}
-        size={20}
-        color={COLOURS.white}
-      />
-      <Text style={TYPOGRAPHY.pWhiteLeft as any}>
-        {isReceive ? "Received" : "Sent"}
-      </Text>
-      <Text style={TYPOGRAPHY.pWhiteLeft as any}>Value {value}</Text>
-      <Text style={TYPOGRAPHY.pWhiteLeft as any}>Balance {balance}</Text>
-      <Text style={TYPOGRAPHY.pWhiteLeft as any}>
-        Height: {blockheight >= 1 ? blockheight : "Unconfirmed"}
-      </Text>
-      <Text style={TYPOGRAPHY.pWhiteLeft as any}>From: {from}</Text>
+      <View
+        style={{
+          flexDirection: "row",
+          paddingBottom: SPACING.five,
+        }}
+      >
+        <View
+          style={{
+            marginTop: SPACING.five,
+            width: 50,
+            justifyContent: "flex-start",
+            alignItems: "center",
+          }}
+        >
+          <FontAwesomeIcon
+            icon={iconImport(isReceive ? "faBitcoinSign" : "faPaperPlane")}
+            size={25}
+            color={COLOURS.white}
+          />
+        </View>
+        <View
+          style={{
+            flexDirection: "column",
+            flex: 1,
+            justifyContent: "flex-start",
+            alignItems: "flex-start",
+          }}
+        >
+          <Text style={TYPOGRAPHY.h2 as any}>
+            {isReceive ? "Received" : "Sent"}
+          </Text>
+          <Text style={TYPOGRAPHY.pWhiteLeft as any}>
+            {`Block: ${blockheight ? `#${blockheight}` : "Unconfirmed"}`}
+          </Text>
+        </View>
+        <View
+          style={{
+            flexDirection: "column",
+            flex: 1,
+            justifyContent: "flex-start",
+            alignItems: "flex-end",
+          }}
+        >
+          <Text style={TYPOGRAPHY.h2 as any}>
+            {isReceive ? "+ " : "- "}
+            {primaryValue}
+          </Text>
+          <Text style={TYPOGRAPHY.pWhiteLeft as any}>{primaryBalance}</Text>
+          <Text style={TYPOGRAPHY.pWhiteLeft as any}>
+            {isReceive ? "+ " : "- "}
+            {secondaryValue}
+          </Text>
+          <Text style={TYPOGRAPHY.pWhiteLeft as any}>{secondaryBalance}</Text>
+        </View>
+
+        {/* <Text style={TYPOGRAPHY.pWhiteLeft as any}>From: {from}</Text>
       <Text style={TYPOGRAPHY.pWhiteLeft as any}>To: {to}</Text>
       <Text style={TYPOGRAPHY.pWhiteLeft as any}>Fee: {fee} satoshis</Text>
       <Pressable onPress={onPressTransactionHash}>
         <Text style={TYPOGRAPHY.pWhiteUnderlined as any}>Hash: {txn}</Text>
-      </Pressable>
+      </Pressable> */}
+      </View>
       {isEditing && (
         <View
           style={{
