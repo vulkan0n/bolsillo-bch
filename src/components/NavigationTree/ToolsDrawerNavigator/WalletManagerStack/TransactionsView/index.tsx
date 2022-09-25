@@ -41,6 +41,8 @@ function TransactionsView({ navigation }) {
 
   const isNoTransactions = transactions?.length === 0;
 
+  console.log(transactions?.length);
+
   return (
     <View style={{ flex: 1 }}>
       <StackSubheader title={name} subtitle={description} isBackButton />

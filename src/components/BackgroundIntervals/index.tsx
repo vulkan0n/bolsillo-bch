@@ -13,8 +13,23 @@ import { updateTransactionPadIsSendingCoins } from "../../redux/reducers/transac
 const BackgroundIntervals = () => {
   const dispatch = useDispatch();
   const wallet = useSelector((state: ReduxState) => selectActiveWallet(state));
+  const { wallets } = useSelector((state: ReduxState) => state.walletManager);
 
   const { isTestNet } = useSelector((state: ReduxState) => state.settings);
+
+  const fetchWalletHistories = () => {
+    wallets.map(({ name, mnemonic, derivationPath }) => {
+      emit({
+        type: BRIDGE_MESSAGE_TYPES.GET_WALLET_HISTORY,
+        data: {
+          name,
+          mnemonic,
+          derivationPath,
+          isTestNet,
+        },
+      });
+    });
+  };
 
   const fetchActiveWalletBalance = () => {
     emit({
@@ -75,6 +90,9 @@ const BackgroundIntervals = () => {
 
     if (wallet) {
       fetchActiveWalletBalance();
+    }
+    if (wallets) {
+      fetchWalletHistories();
     }
     fetchPriceData();
   };

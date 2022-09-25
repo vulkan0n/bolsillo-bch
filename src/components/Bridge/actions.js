@@ -36,12 +36,14 @@ export const sendCoins = async (WalletObject, message) => {
 };
 
 export const getWalletHistory = async (WalletObject, message) => {
+  console.log("calling getWalletHistory");
   const historyWallet = await WalletObject.fromSeed(
     message?.data?.mnemonic,
     message?.data?.derivationPath
   );
 
   const transactionHistory = await historyWallet.getHistory();
+  console.log({ transactionHistory });
   emit({
     type: RESPONSE_MESSAGE_TYPES.GET_WALLET_HISTORY_RESPONSE,
     data: {
