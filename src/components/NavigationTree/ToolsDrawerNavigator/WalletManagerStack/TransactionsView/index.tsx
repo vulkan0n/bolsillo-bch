@@ -8,7 +8,6 @@ import COLOURS from "@design/colours";
 import { ReduxState } from "@types";
 import Divider from "@atoms/Divider";
 import StackSubheader from "@atoms/StackSubheader";
-import { iconImport } from "@design/icons";
 import WalletActions from "./WalletActions";
 import TransactionRow from "./TransactionRow";
 import { BRIDGE_MESSAGE_TYPES } from "@utils/bridgeMessages";

@@ -8,14 +8,14 @@ import { updateTransactionNote } from "@redux/reducers/walletManagerReducer";
 import COLOURS from "@design/colours";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { iconImport } from "@design/icons";
-import { convertBalanceToDisplay } from "../../../../../../utils/formatting";
-import { BITCOIN_DENOMINATIONS } from "../../../../../../utils/consts";
-import { ReduxState } from "../../../../../../types";
+import { convertBalanceToDisplay } from "@utils/formatting";
+import { BITCOIN_DENOMINATIONS } from "@utils/consts";
+import { ReduxState } from "@types";
 import {
   selectPrimaryCurrencyOrDenomination,
   selectSecondaryCurrencyOrDenomination,
-} from "../../../../../../redux/selectors";
-import SPACING from "../../../../../../design/spacing";
+} from "@redux/selectors";
+import SPACING from "@design/spacing";
 
 const TransactionRow = ({ transaction, editNoteHash, setEditNoteHash }) => {
   const { blockheight, txn, note, balance, fee, from, to, value } = transaction;
