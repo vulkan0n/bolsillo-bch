@@ -89,7 +89,7 @@ const TransactionRow = ({ transaction, editNoteHash, setEditNoteHash }) => {
           <FontAwesomeIcon
             icon={iconImport(isReceive ? "faBitcoinSign" : "faPaperPlane")}
             size={25}
-            color={COLOURS.black}
+            color={isReceive ? COLOURS.bchGreen : COLOURS.black}
           />
         </View>
         <View
@@ -99,7 +99,14 @@ const TransactionRow = ({ transaction, editNoteHash, setEditNoteHash }) => {
             alignItems: "flex-start",
           }}
         >
-          <Text style={TYPOGRAPHY.h2black as any}>
+          <Text
+            style={
+              {
+                ...TYPOGRAPHY.h2black,
+                color: isReceive ? COLOURS.bchGreen : COLOURS.black,
+              } as any
+            }
+          >
             {isReceive ? "Received" : "Sent"}
           </Text>
           <Text style={TYPOGRAPHY.pLeft as any}>
@@ -115,7 +122,14 @@ const TransactionRow = ({ transaction, editNoteHash, setEditNoteHash }) => {
             marginRight: SPACING.ten,
           }}
         >
-          <Text style={TYPOGRAPHY.h2black as any}>
+          <Text
+            style={
+              {
+                ...TYPOGRAPHY.h2black,
+                color: isReceive ? COLOURS.bchGreen : COLOURS.black,
+              } as any
+            }
+          >
             {isReceive ? "+ " : "- "}
             {primaryValue}
           </Text>
@@ -126,13 +140,6 @@ const TransactionRow = ({ transaction, editNoteHash, setEditNoteHash }) => {
           </Text>
           <Text style={TYPOGRAPHY.pLeft as any}>{secondaryBalance}</Text>
         </View>
-
-        {/* <Text style={TYPOGRAPHY.pLeft as any}>From: {from}</Text>
-      <Text style={TYPOGRAPHY.pLeft as any}>To: {to}</Text>
-      <Text style={TYPOGRAPHY.pLeft as any}>Fee: {fee} satoshis</Text>
-      <Pressable onPress={onPressTransactionHash}>
-        <Text style={TYPOGRAPHY.pUnderlined as any}>Hash: {txn}</Text>
-      </Pressable> */}
       </View>
       {isEditing && (
         <View
@@ -151,7 +158,9 @@ const TransactionRow = ({ transaction, editNoteHash, setEditNoteHash }) => {
       )}
       {!isEditing && (
         <Pressable onPress={onPressNote}>
-          <Text style={TYPOGRAPHY.pLeft as any}>Note: {note ?? "-"}</Text>
+          <Text style={TYPOGRAPHY.pLeft as any}>
+            Note: {note.trim() ? note : "-"}
+          </Text>
         </Pressable>
       )}
     </View>
