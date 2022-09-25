@@ -44,26 +44,10 @@ function TransactionsView({ navigation }) {
 
   return (
     <View style={{ flex: 1 }}>
-      <StackSubheader title={"Transactions"} isBackButton />
+      <StackSubheader title={name} subtitle={description} isBackButton />
       <View style={styles.container as any}>
-        <View style={styles.headerBox as any}>
-          <View style={styles.iconContainer}>
-            <FontAwesomeIcon
-              icon={iconImport("faWallet")}
-              size={50}
-              color={COLOURS.bchGreen}
-            />
-          </View>
-          <View>
-            <Text style={TYPOGRAPHY.h2 as any}>{name}</Text>
-            {!!description && (
-              <Text style={TYPOGRAPHY.pWhite as any}>{description}</Text>
-            )}
-          </View>
-        </View>
-        <Divider />
         {isNoTransactions && (
-          <Text style={TYPOGRAPHY.pWhite as any}>No transactions.</Text>
+          <Text style={TYPOGRAPHY.p as any}>No transactions.</Text>
         )}
         <FlatList
           style={

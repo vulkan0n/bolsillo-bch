@@ -3,13 +3,13 @@ import SPACING from "@design/spacing";
 
 const styles = {
   scrollView: {
-    backgroundColor: COLOURS.black,
+    backgroundColor: COLOURS.white,
   },
   container: {
-    backgroundColor: COLOURS.black,
+    backgroundColor: COLOURS.white,
     paddingTop: SPACING.fifteen,
-    paddingLeft: SPACING.fifteen,
-    paddingRight: SPACING.fifteen,
+    paddingLeft: SPACING.ten,
+    paddingRight: SPACING.ten,
     paddingBottom: SPACING.ten,
     flex: 1,
     justifyContent: "flex-start",

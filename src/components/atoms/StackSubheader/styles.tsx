@@ -2,14 +2,15 @@ import COLOURS from "@design/colours";
 import SPACING from "@design/spacing";
 import TYPOGRAPHY from "@design/typography";
 
-const styles = {
+const styles = ({ isSubtitle }) => ({
   wrapper: {
     width: "100%",
-    height: 40,
+    height: isSubtitle ? 65 : 45,
     backgroundColor: COLOURS.black,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+    paddingBottom: SPACING.five,
   },
   left: {
     width: 60,
@@ -22,10 +23,10 @@ const styles = {
   },
   title: {
     ...TYPOGRAPHY.h2,
-    marginBottom: 0,
+    marginBottom: SPACING.five,
     marginTop: SPACING.five,
   },
   right: { width: 60, marginRight: SPACING.fifteen },
-};
+});
 
 export default styles;

@@ -27,13 +27,11 @@ const WalletActions = ({ navigation }) => {
   };
 
   return (
-    <View style={{ backgroundColor: COLOURS.black }}>
+    <View style={{ backgroundColor: COLOURS.white }}>
       <Divider />
 
       {isActive && (
-        <Text style={TYPOGRAPHY.pWhite as any}>
-          Can't delete Active wallet.
-        </Text>
+        <Text style={TYPOGRAPHY.p as any}>Can't delete Active wallet.</Text>
       )}
 
       <View
@@ -45,7 +43,7 @@ const WalletActions = ({ navigation }) => {
       >
         <Button
           onPress={onPressBackup}
-          variant={"blackOutlined"}
+          variant={"primary"}
           size={"small"}
           icon={"faPiggyBank"}
         >
@@ -54,7 +52,7 @@ const WalletActions = ({ navigation }) => {
         <Button
           isDisabled={isActive}
           onPress={onPressDelete}
-          variant={"blackOutlined"}
+          variant={"secondary"}
           size={"small"}
           icon={"faTrashCan"}
         >

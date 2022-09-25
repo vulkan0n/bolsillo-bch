@@ -2,16 +2,17 @@ import React from "react";
 import { View, Text, Pressable } from "react-native";
 import TYPOGRAPHY from "@design/typography";
 import { useNavigation } from "@react-navigation/native";
-import styles from "./styles";
+import stylesFunction from "./styles";
 import { useSelector } from "react-redux";
 import { ReduxState } from "@types";
 
 interface Props {
   title: string;
+  subtitle?: string;
   isBackButton?: boolean;
 }
 
-const StackSubheader = ({ title, isBackButton = false }: Props) => {
+const StackSubheader = ({ title, subtitle, isBackButton = false }: Props) => {
   const navigation = useNavigation();
   const { isRightHandedMode } = useSelector(
     (state: ReduxState) => state.settings
@@ -20,6 +21,10 @@ const StackSubheader = ({ title, isBackButton = false }: Props) => {
   const onPressBack = () => {
     navigation.goBack();
   };
+
+  const isSubtitle = !!subtitle;
+
+  const styles = stylesFunction({ isSubtitle });
 
   const BackButton = isBackButton && (
     <Pressable style={styles.pressable as any} onPress={onPressBack}>
@@ -30,7 +35,10 @@ const StackSubheader = ({ title, isBackButton = false }: Props) => {
   return (
     <View style={styles.wrapper as any}>
       <View style={styles.left}>{!isRightHandedMode && BackButton}</View>
-      <Text style={styles.title as any}>{title}</Text>
+      <View>
+        <Text style={styles.title as any}>{title}</Text>
+        {isSubtitle && <Text style={TYPOGRAPHY.pWhite as any}>{subtitle}</Text>}
+      </View>
       <View style={styles.right as any}>{isRightHandedMode && BackButton}</View>
     </View>
   );

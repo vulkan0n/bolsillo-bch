@@ -89,21 +89,20 @@ const TransactionRow = ({ transaction, editNoteHash, setEditNoteHash }) => {
           <FontAwesomeIcon
             icon={iconImport(isReceive ? "faBitcoinSign" : "faPaperPlane")}
             size={25}
-            color={COLOURS.white}
+            color={COLOURS.black}
           />
         </View>
         <View
           style={{
             flexDirection: "column",
-            flex: 1,
             justifyContent: "flex-start",
             alignItems: "flex-start",
           }}
         >
-          <Text style={TYPOGRAPHY.h2 as any}>
+          <Text style={TYPOGRAPHY.h2black as any}>
             {isReceive ? "Received" : "Sent"}
           </Text>
-          <Text style={TYPOGRAPHY.pWhiteLeft as any}>
+          <Text style={TYPOGRAPHY.pLeft as any}>
             {`Block: ${blockheight ? `#${blockheight}` : "Unconfirmed"}`}
           </Text>
         </View>
@@ -113,25 +112,26 @@ const TransactionRow = ({ transaction, editNoteHash, setEditNoteHash }) => {
             flex: 1,
             justifyContent: "flex-start",
             alignItems: "flex-end",
+            marginRight: SPACING.ten,
           }}
         >
-          <Text style={TYPOGRAPHY.h2 as any}>
+          <Text style={TYPOGRAPHY.h2black as any}>
             {isReceive ? "+ " : "- "}
             {primaryValue}
           </Text>
-          <Text style={TYPOGRAPHY.pWhiteLeft as any}>{primaryBalance}</Text>
-          <Text style={TYPOGRAPHY.pWhiteLeft as any}>
+          <Text style={TYPOGRAPHY.pLeft as any}>{primaryBalance}</Text>
+          <Text style={TYPOGRAPHY.pLeft as any}>
             {isReceive ? "+ " : "- "}
             {secondaryValue}
           </Text>
-          <Text style={TYPOGRAPHY.pWhiteLeft as any}>{secondaryBalance}</Text>
+          <Text style={TYPOGRAPHY.pLeft as any}>{secondaryBalance}</Text>
         </View>
 
-        {/* <Text style={TYPOGRAPHY.pWhiteLeft as any}>From: {from}</Text>
-      <Text style={TYPOGRAPHY.pWhiteLeft as any}>To: {to}</Text>
-      <Text style={TYPOGRAPHY.pWhiteLeft as any}>Fee: {fee} satoshis</Text>
+        {/* <Text style={TYPOGRAPHY.pLeft as any}>From: {from}</Text>
+      <Text style={TYPOGRAPHY.pLeft as any}>To: {to}</Text>
+      <Text style={TYPOGRAPHY.pLeft as any}>Fee: {fee} satoshis</Text>
       <Pressable onPress={onPressTransactionHash}>
-        <Text style={TYPOGRAPHY.pWhiteUnderlined as any}>Hash: {txn}</Text>
+        <Text style={TYPOGRAPHY.pUnderlined as any}>Hash: {txn}</Text>
       </Pressable> */}
       </View>
       {isEditing && (
@@ -142,7 +142,7 @@ const TransactionRow = ({ transaction, editNoteHash, setEditNoteHash }) => {
             justifyContent: "center",
           }}
         >
-          <Text style={TYPOGRAPHY.pWhiteLeft as any}>Note:</Text>
+          <Text style={TYPOGRAPHY.pLeft as any}>Note:</Text>
           <TextInput text={note} isSmallText isMultiline onChange={onChange} />
           <Button icon={"faCircleCheck"} onPress={onFinishedEditing}>
             Ok
@@ -151,7 +151,7 @@ const TransactionRow = ({ transaction, editNoteHash, setEditNoteHash }) => {
       )}
       {!isEditing && (
         <Pressable onPress={onPressNote}>
-          <Text style={TYPOGRAPHY.pWhiteLeft as any}>Note: {note ?? "-"}</Text>
+          <Text style={TYPOGRAPHY.pLeft as any}>Note: {note ?? "-"}</Text>
         </Pressable>
       )}
     </View>
