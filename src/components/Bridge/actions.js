@@ -42,8 +42,7 @@ export const getWalletHistory = async (WalletObject, message) => {
     message?.data?.derivationPath
   );
 
-  const transactionHistory = await historyWallet.getHistory();
-  console.log({ transactionHistory });
+  const transactionHistory = await historyWallet.getHistory("sat", 0, 100);
   emit({
     type: RESPONSE_MESSAGE_TYPES.GET_WALLET_HISTORY_RESPONSE,
     data: {

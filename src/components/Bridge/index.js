@@ -100,7 +100,7 @@ const Bridge = () => {
                   // Balance change caused by sending coins
                   console.log("registering successful send");
                   const transactionHistory =
-                    await walletRequestBalance.getHistory();
+                    await walletRequestBalance.getHistory("sat", 0, 100);
 
                   emit({
                     type: RESPONSE_MESSAGE_TYPES.SEND_COINS_RESPONSE_DETECTED,

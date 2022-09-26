@@ -1,6 +1,4 @@
 import React from "react";
-import { createDrawerNavigator } from "@react-navigation/drawer";
-import DrawerNavigator from "@atoms/DrawerNavigator";
 import StatsView from "./StatsView";
 import LatestView from "./LatestView";
 import ConnectView from "./ConnectView";

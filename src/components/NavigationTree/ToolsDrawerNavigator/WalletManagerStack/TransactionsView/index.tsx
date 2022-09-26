@@ -40,8 +40,6 @@ function TransactionsView({ navigation }) {
 
   const isNoTransactions = transactions?.length === 0;
 
-  console.log(transactions?.length);
-
   return (
     <View style={{ flex: 1 }}>
       <StackSubheader title={name} subtitle={description} isBackButton />
@@ -69,7 +67,9 @@ function TransactionsView({ navigation }) {
           keyExtractor={({ txn }) => txn}
           ListFooterComponent={() => {
             return (
-              <Text style={TYPOGRAPHY.p}>Only 250 transactions shown.</Text>
+              <Text style={TYPOGRAPHY.p}>
+                Only latest 100 transactions shown.
+              </Text>
             );
           }}
         />
