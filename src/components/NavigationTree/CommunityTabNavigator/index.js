@@ -21,7 +21,7 @@ function CommunityTabNavigator() {
     >
       <Tab.Screen name="Latest" component={LatestView} />
       <Tab.Screen name="Stats" component={StatsView} />
-      <Tab.Screen name="Connect" component={ConnectView} />
+      {/* <Tab.Screen name="Connect" component={ConnectView} /> */}
     </Tab.Navigator>
   );
 }
