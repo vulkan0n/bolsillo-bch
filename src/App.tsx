@@ -178,22 +178,24 @@ export default function App() {
             })
           );
 
-          store.dispatch(
-            importWalletTransactionHistory({
-              name: message?.data?.name,
-              transactionHistory: message?.data?.transactionHistory,
-            })
-          );
+          if (message?.data?.transactionHistory) {
+            store.dispatch(
+              importWalletTransactionHistory({
+                name: message?.data?.name,
+                transactionHistory: message?.data?.transactionHistory,
+              })
+            );
 
-          const history = message?.data?.transactionHistory;
-          const lastTransaction = history?.[history.length - 1];
-          const lastTransactionHash = lastTransaction?.txn;
+            const history = message?.data?.transactionHistory;
+            const lastTransaction = history?.[history.length - 1];
+            const lastTransactionHash = lastTransaction?.txn;
 
-          store.dispatch(
-            updateLocalLastSentTransactionHash({
-              lastSentTransactionHash: lastTransactionHash || "",
-            })
-          );
+            store.dispatch(
+              updateLocalLastSentTransactionHash({
+                lastSentTransactionHash: lastTransactionHash || "",
+              })
+            );
+          }
 
           const isSendingCoins =
             store.getState()?.transactionPad?.isSendingCoins;

@@ -64,8 +64,8 @@ function TransactionSuccessModal({ navigation }) {
             />
           </View>
           <Text style={TYPOGRAPHY.h1 as any}>Sent!</Text>
-          <Text style={TYPOGRAPHY.h2 as any}>Note:</Text>
-          <View style={styles.objectWrapper as any}>
+          {/* <Text style={TYPOGRAPHY.h2 as any}>Note:</Text> */}
+          {/* <View style={styles.objectWrapper as any}>
             <TextInput
               text={noteText}
               isSmallText
@@ -73,7 +73,7 @@ function TransactionSuccessModal({ navigation }) {
               numberOfLines={5}
               onChange={onChange}
             />
-          </View>
+          </View> */}
           <View style={styles.objectWrapper as any}>
             <Button
               icon={"faCircleCheck"}
