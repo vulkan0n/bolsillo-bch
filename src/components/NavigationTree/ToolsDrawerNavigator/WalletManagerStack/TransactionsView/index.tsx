@@ -4,7 +4,6 @@ import { useSelector } from "react-redux";
 import TYPOGRAPHY from "@design/typography";
 import styles from "./styles";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import COLOURS from "@design/colours";
 import { ReduxState } from "@types";
 import Divider from "@atoms/Divider";
 import StackSubheader from "@atoms/StackSubheader";
@@ -68,6 +67,11 @@ function TransactionsView({ navigation }) {
             />
           )}
           keyExtractor={({ txn }) => txn}
+          ListFooterComponent={() => {
+            return (
+              <Text style={TYPOGRAPHY.p}>Only 250 transactions shown.</Text>
+            );
+          }}
         />
         <WalletActions navigation={navigation} />
       </View>
