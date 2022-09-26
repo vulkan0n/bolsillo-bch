@@ -14,6 +14,9 @@ $ npx expo start
 # Alternatively:
 $ npm run ios
 $ npm run android
+
+# To run the web version
+$ npx expo start --web
 ```
 
 ## Development

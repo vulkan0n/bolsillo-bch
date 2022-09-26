@@ -10,31 +10,32 @@ import {
 } from "@expo-google-fonts/montserrat";
 import WebView from "react-native-webview";
 import { useWebViewMessage } from "react-native-react-bridge";
-import NavigationTree from "./src/components/NavigationTree";
-import BackgroundIntervals from "./src/components/BackgroundIntervals";
-import Bridge from "./src/components/Bridge";
+import NavigationTree from "./components/NavigationTree";
+import BackgroundIntervals from "./components/BackgroundIntervals";
+import Bridge from "./components/Bridge";
 import { RESPONSE_MESSAGE_TYPES } from "@utils/bridgeMessages";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
-import store from "./src/redux/store";
-import persistor from "./src/redux/persistor";
+import store from "./redux/store";
+import persistor from "./redux/persistor";
 import Toast from "react-native-toast-message";
-import toastConfig from "./src/config/toast";
-import preloadMainNetScript from "./src/config/preloadMainNetScript";
-import { WalletType } from "./src/types";
+import toastConfig from "./config/toast";
+import preloadMainNetScript from "./config/preloadMainNetScript";
+import { WalletType } from "./types";
 import {
   createDefaultWallet,
   updateNewWalletScratchPadDetails,
   updateWalletBalance,
   updateWalletCashAddr,
   importWalletTransactionHistory,
-} from "./src/redux/reducers/walletManagerReducer";
+} from "./redux/reducers/walletManagerReducer";
 import {
   updateTransactionPadIsSendingCoins,
   clearTransactionPad,
-} from "./src/redux/reducers/transactionPadReducer";
-import { navigate } from "./src/components/NavigationTree/rootNavigation";
-import { updateLocalLastSentTransactionHash } from "./src/redux/reducers/localReducer";
+} from "./redux/reducers/transactionPadReducer";
+import { navigate } from "./components/NavigationTree/rootNavigation";
+import { updateLocalLastSentTransactionHash } from "./redux/reducers/localReducer";
+import { IS_WEB } from "@utils/consts";
 
 interface TransactionHistoryTxType {
   blockheight: number;
@@ -215,6 +216,8 @@ export default function App() {
   React.useEffect(() => {
     // Listens for components that need to send a message to the Bridge
     DeviceEventEmitter.addListener("event.emitEvent", (event) => {
+      console.log("emit has happened");
+      console.log({ event });
       emit(event);
     });
 
@@ -229,7 +232,8 @@ export default function App() {
     setIsWebViewLoaded(true);
   };
 
-  if (!fontsLoaded) {
+  // Only app versions need to be empty while waiting for fonts to load
+  if (!IS_WEB && !fontsLoaded) {
     return null;
   }
 
@@ -237,16 +241,18 @@ export default function App() {
     <Provider store={store}>
       <PersistGate loading={<Text>Loading...</Text>} persistor={persistor}>
         <View style={{ height: 0 }}>
-          <WebView
-            ref={ref}
-            onMessage={onMessage}
-            source={{ html: Bridge }}
-            injectedJavaScript={preloadMainNetScript}
-            allowFileAccess={true}
-            javaScriptEnabled={true}
-            domStorageEnabled={true}
-            onLoad={onWebViewLoad}
-          />
+          {!IS_WEB && (
+            <WebView
+              ref={ref}
+              onMessage={onMessage}
+              source={{ html: Bridge }}
+              injectedJavaScript={preloadMainNetScript}
+              allowFileAccess={true}
+              javaScriptEnabled={true}
+              domStorageEnabled={true}
+              onLoad={onWebViewLoad}
+            />
+          )}
         </View>
         {isWebViewLoaded && <BackgroundIntervals />}
         <NavigationTree />

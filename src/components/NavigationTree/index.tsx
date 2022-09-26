@@ -112,11 +112,24 @@ const TabNavigator = () => {
   );
 };
 
+const linking = {
+  prefixes: [
+    /* your linking prefixes */
+  ],
+  config: {
+    /* configuration for matching screens with paths */
+  },
+};
+
 // Hidden stack navigator for pop up modal screens
 // Wraps the visible Tab navigator
 const NavigationTree = () => {
   return (
-    <NavigationContainer ref={navigationRef}>
+    <NavigationContainer
+      ref={navigationRef}
+      linking={linking}
+      fallback={<Text>Loading...</Text>}
+    >
       <Stack.Navigator
         screenOptions={{
           headerShown: false,

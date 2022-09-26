@@ -1,7 +1,7 @@
 {
   "name": "selene-wallet",
   "version": "0.0.8",
-  "main": "node_modules/expo/AppEntry.js",
+  "main": "src/index.js",
   "scripts": {
     "start": "expo start",
     "android": "expo start --android",
@@ -13,6 +13,7 @@
     "@babel/core": "^7.18.6",
     "@bitauth/libauth": "^1.19.1",
     "@expo-google-fonts/montserrat": "^0.2.2",
+    "@expo/webpack-config": "^0.17.0",
     "@fortawesome/fontawesome-svg-core": "^6.1.2",
     "@fortawesome/free-brands-svg-icons": "^6.1.2",
     "@fortawesome/free-regular-svg-icons": "^6.1.2",
@@ -28,7 +29,7 @@
     "@types/react": "~18.0.15",
     "@types/react-native": "~0.69.1",
     "axios": "^0.27.2",
-    "expo": "^46.0.0",
+    "expo": "^46.0.10",
     "expo-app-loading": "~2.1.0",
     "expo-application": "~4.2.2",
     "expo-barcode-scanner": "~11.4.0",
@@ -59,6 +60,7 @@
     "react-native-tab-view": "^3.1.1",
     "react-native-toast-message": "^2.1.5",
     "react-native-web": "~0.18.7",
+    "react-native-web-webview": "^1.0.2",
     "react-native-webview": "11.23.0",
     "react-native-youtube-iframe": "^2.2.2",
     "react-redux": "^8.0.2",
