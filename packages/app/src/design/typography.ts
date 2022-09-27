@@ -1,4 +1,4 @@
-import COLOURS from "./colours";
+import { COLOURS } from "@selene/common";
 import SPACING from "./spacing";
 
 const TYPOGRAPHY = {
