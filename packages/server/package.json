@@ -1,0 +1,24 @@
+{
+  "name": "@selene/server",
+  "version": "0.0.1",
+  "description": "Selene node server.",
+  "keywords": [
+    "selene",
+    "bitcoincash",
+    "bch",
+    "bitcoin"
+  ],
+  "homepage": "https://gitlab.com/selene.cash/selene-wallet#readme",
+  "license": "MIT",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@gitlab.com/selene.cash/selene-wallet.git"
+  },
+  "scripts": {
+    "test": "node ./__tests__/server.test.js"
+  },
+  "bugs": {
+    "url": "https://gitlab.com/selene.cash/selene-wallet/issues"
+  }
+}
