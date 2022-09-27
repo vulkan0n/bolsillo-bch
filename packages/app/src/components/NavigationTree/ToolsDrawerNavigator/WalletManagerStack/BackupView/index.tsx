@@ -6,7 +6,7 @@ import TYPOGRAPHY from "@design/typography";
 import styles from "./styles";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faPiggyBank } from "@fortawesome/free-solid-svg-icons/faPiggyBank";
-import COLOURS from "@design/colours";
+import { COLOURS } from "@selene/common";
 import { ReduxState } from "@types";
 import Divider from "@atoms/Divider";
 import StackSubheader from "@atoms/StackSubheader";

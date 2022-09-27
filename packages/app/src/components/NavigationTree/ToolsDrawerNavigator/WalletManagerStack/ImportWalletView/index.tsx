@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import Button from "@atoms/Button";
 import TYPOGRAPHY from "@design/typography";
 import styles from "./styles";
-import COLOURS from "@design/colours";
+import { COLOURS } from "@selene/common";
 import { ReduxState } from "@types";
 import {
   createWalletFromScratchPad,

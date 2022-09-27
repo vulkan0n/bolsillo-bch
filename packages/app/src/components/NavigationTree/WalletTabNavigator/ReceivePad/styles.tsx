@@ -1,4 +1,4 @@
-import COLOURS from "@design/colours";
+import { COLOURS } from "@selene/common";
 import SPACING from "@design/spacing";
 
 const styles = {

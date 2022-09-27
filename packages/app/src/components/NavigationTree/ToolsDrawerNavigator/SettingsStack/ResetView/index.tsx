@@ -4,7 +4,7 @@ import Button from "@atoms/Button";
 import TYPOGRAPHY from "@design/typography";
 import styles from "./styles";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import COLOURS from "@design/colours";
+import { COLOURS } from "@selene/common";
 import { faPowerOff } from "@fortawesome/free-solid-svg-icons/faPowerOff";
 import persistor from "@redux/persistor";
 import StackSubheader from "@atoms/StackSubheader";

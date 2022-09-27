@@ -9,7 +9,7 @@ import { formatStringToCashAddress } from "@utils/formatting";
 import * as Clipboard from "expo-clipboard";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { iconImport } from "@design/icons";
-import COLOURS from "@design/colours";
+import { COLOURS } from "@selene/common";
 import { selectPrimaryCurrencyOrDenomination } from "@redux/selectors";
 import { processRequestString } from "../utils";
 

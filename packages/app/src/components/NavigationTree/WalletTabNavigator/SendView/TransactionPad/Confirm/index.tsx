@@ -16,7 +16,7 @@ import {
   selectPadBalanceInRawSats,
 } from "@redux/selectors";
 import LiveBalance from "@atoms/LiveBalance";
-import COLOURS from "@design/colours";
+import { COLOURS } from "@selene/common";
 import { TEN_SECONDS } from "@utils/consts";
 import { selectIsPadZeroBalance } from "@redux/selectors";
 import { BallIndicator } from "react-native-indicators";

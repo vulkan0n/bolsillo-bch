@@ -1,7 +1,7 @@
 import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { View, TouchableOpacity, Text } from "react-native";
-import COLOURS from "@design/colours";
+import { COLOURS } from "@selene/common";
 import { iconImport } from "@design/icons";
 import TYPOGRAPHY from "@design/typography";
 import SPACING from "../../../design/spacing";

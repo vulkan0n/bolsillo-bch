@@ -4,7 +4,7 @@ import TYPOGRAPHY from "@design/typography";
 import Button from "@atoms/Button";
 import styles from "./styles";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import COLOURS from "@design/colours";
+import { COLOURS } from "@selene/common";
 import { MotiView } from "moti";
 import { iconImport } from "@design/icons";
 import { updateTransactionNote } from "@redux/reducers/walletManagerReducer";

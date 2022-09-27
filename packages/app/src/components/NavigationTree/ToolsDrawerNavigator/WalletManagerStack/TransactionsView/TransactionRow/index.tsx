@@ -5,7 +5,7 @@ import TextInput from "@atoms/TextInput";
 import Button from "@atoms/Button";
 import { useDispatch, useSelector } from "react-redux";
 import { updateTransactionNote } from "@redux/reducers/walletManagerReducer";
-import COLOURS from "@design/colours";
+import { COLOURS } from "@selene/common";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { iconImport } from "@design/icons";
 import { convertBalanceToDisplay } from "@utils/formatting";

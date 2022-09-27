@@ -1,7 +1,7 @@
 import React from "react";
 import { View, Text } from "react-native";
 import TYPOGRAPHY from "@design/typography";
-import COLOURS from "@design/colours";
+import { COLOURS } from "@selene/common";
 import SPACING from "@design/spacing";
 
 const toastConfig = {

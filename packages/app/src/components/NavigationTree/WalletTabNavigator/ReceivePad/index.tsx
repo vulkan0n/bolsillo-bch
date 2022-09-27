@@ -10,7 +10,7 @@ import { useDispatch } from "react-redux";
 import { updateTransactionPadView } from "@redux/reducers/transactionPadReducer";
 import { ReduxState } from "@types";
 import * as Clipboard from "expo-clipboard";
-import COLOURS from "@design/colours";
+import { COLOURS } from "@selene/common";
 import {
   selectActiveWallet,
   selectIsActiveWalletZeroBalance,

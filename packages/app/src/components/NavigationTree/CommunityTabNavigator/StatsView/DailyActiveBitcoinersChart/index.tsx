@@ -8,7 +8,7 @@ import {
   ContributionGraph,
   StackedBarChart,
 } from "react-native-chart-kit";
-import COLOURS from "@design/colours";
+import { COLOURS } from "@selene/common";
 import SPACING from "@design/spacing";
 
 const DailyActiveBitcoinersChart = () => {

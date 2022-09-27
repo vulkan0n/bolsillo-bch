@@ -13,7 +13,7 @@ import {
 } from "@redux/selectors";
 import { convertRawSatsToRawCurrencyRounded } from "@utils/formatting";
 import { updateTransactionPadBalance } from "@redux/reducers/transactionPadReducer";
-import COLOURS from "@design/colours";
+import { COLOURS } from "@selene/common";
 import {
   convertRawCurrencyToRawSats,
   prettifyRawCurrency,

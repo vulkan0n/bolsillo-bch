@@ -8,7 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { ReduxState } from "@types";
 import Divider from "@atoms/Divider";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import COLOURS from "@design/colours";
+import { COLOURS } from "@selene/common";
 import { faTrashCan } from "@fortawesome/free-solid-svg-icons/faTrashCan";
 import { deleteWallet } from "@redux/reducers/walletManagerReducer";
 import StackSubheader from "@atoms/StackSubheader";

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { View, Pressable, Text } from "react-native";
-import COLOURS from "@design/colours";
+import { COLOURS } from "@selene/common";
 import Button from "@atoms/Button";
 import emit from "@utils/emit";
 import { BRIDGE_MESSAGE_TYPES } from "@utils/bridgeMessages";

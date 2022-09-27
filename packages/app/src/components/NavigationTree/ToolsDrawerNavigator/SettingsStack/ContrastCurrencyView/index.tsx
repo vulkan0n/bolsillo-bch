@@ -5,7 +5,7 @@ import TYPOGRAPHY from "@design/typography";
 import styles from "./styles";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faMoneyBillWave } from "@fortawesome/free-solid-svg-icons/faMoneyBillWave";
-import COLOURS from "@design/colours";
+import { COLOURS } from "@selene/common";
 import { ReduxState } from "@types";
 import Divider from "@atoms/Divider";
 import SPACING from "@design/spacing";

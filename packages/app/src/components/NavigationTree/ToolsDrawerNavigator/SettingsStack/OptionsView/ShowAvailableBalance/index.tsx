@@ -2,7 +2,7 @@ import React from "react";
 import { View, Text, Switch, Pressable } from "react-native";
 import TYPOGRAPHY from "@design/typography";
 import styles from "../styles";
-import COLOURS from "@design/colours";
+import { COLOURS } from "@selene/common";
 import { toggleIsShowAvailableBalance } from "@redux/reducers/settingsReducer";
 import { useSelector, useDispatch } from "react-redux";
 import { ReduxState } from "@types";

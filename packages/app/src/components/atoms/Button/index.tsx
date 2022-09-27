@@ -2,7 +2,7 @@ import React from "react";
 import { View, Text, Pressable } from "react-native";
 import styles from "./styles";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import COLOURS from "@design/colours";
+import { COLOURS } from "@selene/common";
 import { iconImport, IconType } from "@design/icons";
 import { BallIndicator } from "react-native-indicators";
 

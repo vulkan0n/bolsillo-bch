@@ -1,5 +1,5 @@
 import SPACING from "@design/spacing";
-import COLOURS from "@design/colours";
+import { COLOURS } from "@selene/common";
 import SHADOW from "@design/shadow";
 
 interface Props {

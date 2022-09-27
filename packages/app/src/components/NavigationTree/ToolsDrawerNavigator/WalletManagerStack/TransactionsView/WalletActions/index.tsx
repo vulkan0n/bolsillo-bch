@@ -6,7 +6,7 @@ import { useSelector } from "react-redux";
 import { ReduxState } from "@types";
 import TYPOGRAPHY from "@design/typography";
 import SPACING from "@design/spacing";
-import COLOURS from "@design/colours";
+import { COLOURS } from "@selene/common";
 
 const WalletActions = ({ navigation }) => {
   const { activeWalletName, navigatedWalletName } = useSelector(
