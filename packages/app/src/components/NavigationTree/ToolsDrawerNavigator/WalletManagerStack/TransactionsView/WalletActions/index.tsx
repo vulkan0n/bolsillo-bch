@@ -5,7 +5,7 @@ import Divider from "@atoms/Divider";
 import { useSelector } from "react-redux";
 import { ReduxState } from "@types";
 import TYPOGRAPHY from "@design/typography";
-import SPACING from "@design/spacing";
+import { SPACING } from "@selene/common";
 import { COLOURS } from "@selene/common";
 
 const WalletActions = ({ navigation }) => {

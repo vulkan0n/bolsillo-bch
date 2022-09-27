@@ -1,5 +1,5 @@
 import { COLOURS } from "@selene/common";
-import SPACING from "@design/spacing";
+import { SPACING } from "@selene/common";
 
 const styles = {
   container: {

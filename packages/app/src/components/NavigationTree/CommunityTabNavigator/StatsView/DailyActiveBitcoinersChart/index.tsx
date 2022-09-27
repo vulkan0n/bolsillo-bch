@@ -9,7 +9,7 @@ import {
   StackedBarChart,
 } from "react-native-chart-kit";
 import { COLOURS } from "@selene/common";
-import SPACING from "@design/spacing";
+import { SPACING } from "@selene/common";
 
 const DailyActiveBitcoinersChart = () => {
   return (

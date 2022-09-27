@@ -2,7 +2,7 @@ import React from "react";
 import { View, Text } from "react-native";
 import TYPOGRAPHY from "@design/typography";
 import { COLOURS } from "@selene/common";
-import SPACING from "@design/spacing";
+import { SPACING } from "@selene/common";
 
 const toastConfig = {
   customSuccess: ({ props: { title, text }, ...props }) => (

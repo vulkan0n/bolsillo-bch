@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import TYPOGRAPHY from "@design/typography";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { COLOURS } from "@selene/common";
-import SPACING from "@design/spacing";
+import { SPACING } from "@selene/common";
 import { ReduxState } from "@types";
 import { faWallet } from "@fortawesome/free-solid-svg-icons";
 import { convertBalanceToDisplay } from "@utils/formatting";

@@ -8,7 +8,7 @@ import { faMoneyBillWave } from "@fortawesome/free-solid-svg-icons/faMoneyBillWa
 import { COLOURS } from "@selene/common";
 import { ReduxState } from "@types";
 import Divider from "@atoms/Divider";
-import SPACING from "@design/spacing";
+import { SPACING } from "@selene/common";
 import { updateContrastCurrency } from "@redux/reducers/settingsReducer";
 import { SUPPORTED_CURRENCIES } from "@utils/consts";
 import StackSubheader from "@atoms/StackSubheader";

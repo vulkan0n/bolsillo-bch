@@ -12,7 +12,7 @@ import ReceiveNumPad from "./ReceiveNumPad";
 import SendView from "./SendView";
 import AvailableBalance from "./SendView/AvailableBalance";
 import { useSelector } from "react-redux";
-import SPACING from "../../../design/spacing";
+import { SPACING } from "@selene/common";
 import { ReduxState } from "@types";
 import { selectIsActiveWallet } from "@redux/selectors";
 import CreatingWallet from "./CreatingWallet";

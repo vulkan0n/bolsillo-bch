@@ -9,7 +9,7 @@ import { faCoins } from "@fortawesome/free-solid-svg-icons/faCoins";
 import { COLOURS } from "@selene/common";
 import { ReduxState } from "@types";
 import Divider from "@atoms/Divider";
-import SPACING from "@design/spacing";
+import { SPACING } from "@selene/common";
 import { updateBitcoinDenomination } from "@redux/reducers/settingsReducer";
 import StackSubheader from "@atoms/StackSubheader";
 import { BITCOIN_DENOMINATIONS } from "@utils/consts";

@@ -1,5 +1,5 @@
 import { COLOURS } from "@selene/common";
-import SPACING from "@design/spacing";
+import { SPACING } from "@selene/common";
 import TYPOGRAPHY from "@design/typography";
 
 const HEADER_HEIGHT = 60;

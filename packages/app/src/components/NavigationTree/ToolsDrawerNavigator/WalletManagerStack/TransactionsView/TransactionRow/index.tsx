@@ -15,7 +15,7 @@ import {
   selectPrimaryCurrencyOrDenomination,
   selectSecondaryCurrencyOrDenomination,
 } from "@redux/selectors";
-import SPACING from "@design/spacing";
+import { SPACING } from "@selene/common";
 
 const TransactionRow = ({ transaction, editNoteHash, setEditNoteHash }) => {
   const { blockheight, txn, note, balance, fee, from, to, value } = transaction;

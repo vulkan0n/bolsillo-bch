@@ -1,5 +1,5 @@
 import { COLOURS } from "@selene/common";
-import SPACING from "./spacing";
+import { SPACING } from "@selene/common";
 
 const TYPOGRAPHY = {
   title: {

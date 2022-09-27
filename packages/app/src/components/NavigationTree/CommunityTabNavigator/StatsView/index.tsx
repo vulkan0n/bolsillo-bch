@@ -1,7 +1,7 @@
 import React from "react";
 import { View, Text, ScrollView } from "react-native";
 import { COLOURS } from "@selene/common";
-import SPACING from "@design/spacing";
+import { SPACING } from "@selene/common";
 import TYPOGRAPHY from "@design/typography";
 import { ONE_HUNDRED, TEN_MILLION } from "@utils/consts";
 import styles from "./styles";

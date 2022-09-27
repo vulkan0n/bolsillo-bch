@@ -1,4 +1,4 @@
-import SPACING from "@design/spacing";
+import { SPACING } from "@selene/common";
 import { COLOURS } from "@selene/common";
 import SHADOW from "@design/shadow";
 

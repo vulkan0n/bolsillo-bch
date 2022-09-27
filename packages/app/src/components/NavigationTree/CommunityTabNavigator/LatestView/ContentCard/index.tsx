@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { View, Text } from "react-native";
 import { COLOURS } from "@selene/common";
-import SPACING from "@design/spacing";
+import { SPACING } from "@selene/common";
 import TYPOGRAPHY from "@design/typography";
 import YoutubePlayer from "react-native-youtube-iframe";
 import moment from "moment";
