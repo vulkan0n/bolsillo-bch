@@ -12,7 +12,7 @@ import {
   updateTransactionPadBalance,
 } from "@redux/reducers/transactionPadReducer";
 import { selectActiveWalletBalance } from "@redux/selectors";
-import TYPOGRAPHY from "@design/typography";
+import { TYPOGRAPHY } from "@selene/common";
 import styles from "./styles";
 import { navigate } from "@components/NavigationTree/rootNavigation";
 import { BITCOIN_DENOMINATIONS } from "@utils/consts";

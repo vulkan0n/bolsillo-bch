@@ -4,7 +4,7 @@ import { useSelector } from "react-redux";
 import styles from "./styles";
 import Button from "@atoms/Button";
 import Toast from "react-native-toast-message";
-import TYPOGRAPHY from "@design/typography";
+import { TYPOGRAPHY } from "@selene/common";
 import QRCode from "react-native-qrcode-svg";
 import { useDispatch } from "react-redux";
 import { updateTransactionPadView } from "@redux/reducers/transactionPadReducer";

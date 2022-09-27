@@ -2,7 +2,7 @@ import React from "react";
 import { View, Text, ScrollView } from "react-native";
 import { COLOURS } from "@selene/common";
 import { SPACING } from "@selene/common";
-import TYPOGRAPHY from "@design/typography";
+import { TYPOGRAPHY } from "@selene/common";
 import { ONE_HUNDRED, TEN_MILLION } from "@utils/consts";
 import styles from "./styles";
 import Button from "@atoms/Button";

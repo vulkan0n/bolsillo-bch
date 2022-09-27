@@ -1,6 +1,6 @@
 import { COLOURS } from "@selene/common";
 import { SPACING } from "@selene/common";
-import TYPOGRAPHY from "@design/typography";
+import { TYPOGRAPHY } from "@selene/common";
 
 const styles = ({ isSubtitle }) => ({
   wrapper: {

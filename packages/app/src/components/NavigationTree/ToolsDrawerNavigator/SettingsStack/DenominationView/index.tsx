@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { ScrollView, View, Text, Pressable } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import Button from "@atoms/Button";
-import TYPOGRAPHY from "@design/typography";
+import { TYPOGRAPHY } from "@selene/common";
 import styles from "./styles";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faCoins } from "@fortawesome/free-solid-svg-icons/faCoins";

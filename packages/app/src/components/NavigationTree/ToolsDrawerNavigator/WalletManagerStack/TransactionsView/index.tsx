@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, FlatList } from "react-native";
 import { useSelector } from "react-redux";
-import TYPOGRAPHY from "@design/typography";
+import { TYPOGRAPHY } from "@selene/common";
 import styles from "./styles";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { ReduxState } from "@types";

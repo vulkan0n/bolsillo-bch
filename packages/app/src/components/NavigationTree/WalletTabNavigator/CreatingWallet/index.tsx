@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { useSelector } from "react-redux";
 import { View, Text } from "react-native";
 import styles from "../styles";
-import TYPOGRAPHY from "@design/typography";
+import { TYPOGRAPHY } from "@selene/common";
 import { selectIsActiveWallet } from "@redux/selectors";
 import { ONE_SECOND } from "@utils/consts";
 import emit from "@utils/emit";

@@ -10,7 +10,7 @@ import {
 } from "@redux/reducers/transactionPadReducer";
 import { ReduxState } from "@types";
 import emit from "@utils/emit";
-import TYPOGRAPHY from "@design/typography";
+import { TYPOGRAPHY } from "@selene/common";
 import {
   selectActiveWallet,
   selectPadBalanceInRawSats,

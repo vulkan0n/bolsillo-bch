@@ -1,6 +1,6 @@
 import React from "react";
 import { View, Text, Switch, Pressable } from "react-native";
-import TYPOGRAPHY from "@design/typography";
+import { TYPOGRAPHY } from "@selene/common";
 import styles from "../styles";
 import { COLOURS } from "@selene/common";
 import { toggleIsShowAvailableBalance } from "@redux/reducers/settingsReducer";

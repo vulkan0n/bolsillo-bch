@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { View, TouchableOpacity, Text } from "react-native";
 import { COLOURS } from "@selene/common";
 import { iconImport } from "@design/icons";
-import TYPOGRAPHY from "@design/typography";
+import { TYPOGRAPHY } from "@selene/common";
 import { SPACING } from "@selene/common";
 
 function TabBar({ state, descriptors, navigation, position, isDarkMode }) {

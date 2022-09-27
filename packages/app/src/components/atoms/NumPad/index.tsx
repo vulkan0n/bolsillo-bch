@@ -2,7 +2,7 @@ import React from "react";
 import { View, Text, Pressable } from "react-native";
 import styles from "./styles";
 import Button from "@atoms/Button";
-import TYPOGRAPHY from "@design/typography";
+import { TYPOGRAPHY } from "@selene/common";
 import { useSelector, useDispatch } from "react-redux";
 import {
   updateTransactionPadBalance,

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, Pressable } from "react-native";
-import TYPOGRAPHY from "@design/typography";
+import { TYPOGRAPHY } from "@selene/common";
 import Button from "@atoms/Button";
 import styles from "./styles";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";

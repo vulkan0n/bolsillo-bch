@@ -8,7 +8,7 @@ import RightHandedMode from "./RightHandedMode";
 import ShowAvailableBalance from "./ShowAvailableBalance";
 import ShowCommunityTab from "./ShowCommunityTab";
 import TestNet from "./TestNet";
-import TYPOGRAPHY from "@design/typography";
+import { TYPOGRAPHY } from "@selene/common";
 import Divider from "@atoms/Divider";
 import StackSubheader from "@atoms/StackSubheader";
 

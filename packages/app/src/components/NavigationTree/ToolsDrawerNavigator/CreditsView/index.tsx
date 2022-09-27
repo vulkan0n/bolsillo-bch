@@ -1,6 +1,6 @@
 import React from "react";
 import { Pressable, View, Image, Text, Linking } from "react-native";
-import TYPOGRAPHY from "@design/typography";
+import { TYPOGRAPHY } from "@selene/common";
 import styles from "./styles";
 import TipWidget from "@atoms/TipWidget";
 import { DEVELOPER_DONATION_ADDRESS } from "@utils/consts";

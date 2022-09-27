@@ -4,7 +4,7 @@ import Button from "@atoms/Button";
 import Divider from "@atoms/Divider";
 import { useSelector } from "react-redux";
 import { ReduxState } from "@types";
-import TYPOGRAPHY from "@design/typography";
+import { TYPOGRAPHY } from "@selene/common";
 import { SPACING } from "@selene/common";
 import { COLOURS } from "@selene/common";
 

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { ScrollView, View, Text, Pressable } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
-import TYPOGRAPHY from "@design/typography";
+import { TYPOGRAPHY } from "@selene/common";
 import styles from "./styles";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faMoneyBillWave } from "@fortawesome/free-solid-svg-icons/faMoneyBillWave";

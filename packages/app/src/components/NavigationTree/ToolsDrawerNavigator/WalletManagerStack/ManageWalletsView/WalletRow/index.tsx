@@ -1,7 +1,7 @@
 import React from "react";
 import { View, Text, Pressable } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
-import TYPOGRAPHY from "@design/typography";
+import { TYPOGRAPHY } from "@selene/common";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { COLOURS } from "@selene/common";
 import { SPACING } from "@selene/common";

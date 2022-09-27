@@ -1,7 +1,7 @@
 import React from "react";
 import { View, Text, ScrollView } from "react-native";
 import Button from "@atoms/Button";
-import TYPOGRAPHY from "@design/typography";
+import { TYPOGRAPHY } from "@selene/common";
 import styles from "./styles";
 import Toast from "react-native-toast-message";
 import { useDispatch, useSelector } from "react-redux";

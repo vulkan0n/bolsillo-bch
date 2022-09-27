@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { TouchableOpacity, Text } from "react-native";
 import { COLOURS } from "@selene/common";
 import { iconImport } from "@design/icons";
-import TYPOGRAPHY from "@design/typography";
+import { TYPOGRAPHY } from "@selene/common";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { View } from "react-native";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";

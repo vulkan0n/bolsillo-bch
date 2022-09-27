@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { View, Text, Pressable } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import Button from "@atoms/Button";
-import TYPOGRAPHY from "@design/typography";
+import { TYPOGRAPHY } from "@selene/common";
 import styles from "./styles";
 import { ReduxState } from "@types";
 import {

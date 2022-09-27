@@ -1,7 +1,7 @@
 import React from "react";
 import { View, Pressable, Text } from "react-native";
 import styles from "./styles";
-import TYPOGRAPHY from "@design/typography";
+import { TYPOGRAPHY } from "@selene/common";
 import { useDispatch, useSelector } from "react-redux";
 import { ReduxState } from "@types";
 import { toggleIsBchDenominated } from "@redux/reducers/settingsReducer";
