@@ -1,7 +1,7 @@
-'use strict';
+"use strict";
 
-module.exports = common;
+import COLOURS from "./design/colours";
 
-function common() {
-    return "Hello from common";
-}
+module.exports = {
+  COLOURS,
+};
