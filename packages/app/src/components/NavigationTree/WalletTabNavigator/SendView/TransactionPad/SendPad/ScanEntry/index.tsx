@@ -3,7 +3,7 @@ import { Text, View, Pressable } from "react-native";
 import { BarCodeScanner } from "expo-barcode-scanner";
 import styles from "./styles";
 import { useSelector, useDispatch } from "react-redux";
-import TYPOGRAPHY from "../../../../../../../design/typography";
+import { TYPOGRAPHY } from "@selene/common";
 import { processRequestString } from "../utils";
 import { selectPrimaryCurrencyOrDenomination } from "@redux/selectors";
 import { ReduxState } from "@types";
