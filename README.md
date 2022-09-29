@@ -1,6 +1,12 @@
 # Selene
 
+Join the Cash economy.
+
 Software to make Bitcoin Cash (BCH) the global reserve currency.
+
+Target is to build up to 10 million daily active users by making joining the BCH economy (from an economic, social and informational perspective) as easy and compelling as possible.
+
+## Packages
 
 - `@selene/app`: iOS/Android React Native wallet application in Expo.
 - `@selene/common`: Shared utilities and code. NOTE that `@selene/web` has to import files from other packages directly, rather than from the default export. This is some kind of webpack or CommonJS issue, but hasn't been solved yet.
