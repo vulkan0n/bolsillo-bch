@@ -28,9 +28,7 @@
       "package": "com.jte.seleneapp"
     },
     "web": {
-      "favicon": "./assets/favicon.png"
-    },
-    "web": {
+      "favicon": "./assets/favicon.png",
       "bundler": "metro"
     },
     "extra": {
