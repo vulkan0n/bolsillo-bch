@@ -1,4 +1,4 @@
-# Selene Wallet
+# @selene/app
 
 Join the Cash economy.
 
@@ -23,6 +23,9 @@ $ npx expo start --web
 
 ```
 $ npx tsc # type check
+
+# Fully purge cache and reinstall
+$ watchman watch-del-all && rm -rf node_modules && npm install && rm -rf /tmp/metro-* && npm run start --reset-cache
 ```
 
 ## Bridge
@@ -65,6 +68,7 @@ And note that mainnet.cash uses `m/44/0'/0'` for mainnet derivative path and `m/
 # Update app version on Credits page
 # Update app version in `package.json`
 # Update `app.json` `version`, bump `ios.buildNumber` & `android.versionCode`
+# Update `package.json`s of other other packages, e.g. `@selene/web` to the new `@selene/app` version and run `lerna bootstrap` at the root level.
 # git commit
 $ eas build
 # Wait 20 minutes for build to finish

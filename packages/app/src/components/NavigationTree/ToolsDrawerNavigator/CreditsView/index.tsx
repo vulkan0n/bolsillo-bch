@@ -6,7 +6,7 @@ import TipWidget from "@atoms/TipWidget";
 import { DEVELOPER_DONATION_ADDRESS } from "@utils/consts";
 
 function CreditsView() {
-  const version = "v0.0.9";
+  const version = "v0.0.10";
   const gitlabUrl = "https://gitlab.com/selene.cash/selene-wallet";
 
   const onPressUrl = () => {
