@@ -1,4 +1,4 @@
-# Selene Wallet
+# @selene/app
 
 Join the Cash economy.
 
