@@ -8,3 +8,14 @@ Software to make Bitcoin Cash (BCH) the global reserve currency.
 - `@selene/web`: React app for web frontend.
 
 See README in each package for futher information.
+
+## Tips
+
+If starting app from Expo window is giving error:
+
+```
+iOS Bundling failed 19ms
+Unable to resolve "../../App" from "node_modules/expo/AppEntry.js"
+```
+
+Make sure you are running `npx expo start` from inside `$ selene-wallet/packages/app` and not `$ selene-wallet` root!
