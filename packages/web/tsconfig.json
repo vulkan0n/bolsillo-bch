@@ -16,5 +16,15 @@
     "noEmit": true,
     "jsx": "react-jsx"
   },
-  "include": ["src"]
+  "include": ["src"],
+  "baseUrl": "./",
+  "paths": {
+    "@src/*": ["@selene/app/src/*"],
+    "@components/*": ["@selene/app/src/components/*"],
+    "@atoms/*": ["@selene/app/src/components/atoms/*"],
+    "@design/*": ["@selene/app/src/design/*"],
+    "@redux/*": ["@selene/app/src/redux/*"],
+    "@types/*": ["@selene/app/src/types/*"],
+    "@utils/*": ["@selene/app/src/utils/*"]
+  }
 }
