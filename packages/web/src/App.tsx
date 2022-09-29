@@ -1,8 +1,5 @@
 import React from "react";
-import logo from "./logo.svg";
 import "./App.css";
-import COLOURS from "@selene/common/design/colours";
-import SPACING from "@selene/common/design/spacing";
 import TYPOGRAPHY from "@selene/common/design/typography";
 import Header from "./components/Header";
 
