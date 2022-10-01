@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import { SeleneWalletType } from "@selene/common/dist/types";
 import { PURGE } from "redux-persist";
 import * as R from "ramda";
-import { TransactionType } from "../../types";
+import { TransactionType } from "@selene/common/dist/types";
 import { replace } from "immutable-replace";
 import { WalletManagerState } from "@selene/common/dist/types/reducers/walletManagerReducer";
 
