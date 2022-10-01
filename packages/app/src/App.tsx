@@ -21,7 +21,7 @@ import persistor from "./redux/persistor";
 import Toast from "react-native-toast-message";
 import toastConfig from "./config/toast";
 import preloadMainNetScript from "./config/preloadMainNetScript";
-import { WalletType } from "./types";
+import { WalletType } from "@selene/common/dist/types";
 import {
   createDefaultWallet,
   updateNewWalletScratchPadDetails,
