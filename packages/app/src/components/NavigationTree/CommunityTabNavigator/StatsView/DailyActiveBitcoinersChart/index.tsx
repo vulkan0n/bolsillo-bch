@@ -1,25 +1,24 @@
 import React from "react";
 import { View, Text, Dimensions } from "react-native";
-import {
-  LineChart,
-  BarChart,
-  PieChart,
-  ProgressChart,
-  ContributionGraph,
-  StackedBarChart,
-} from "react-native-chart-kit";
+import { LineChart } from "react-native-chart-kit";
 import COLOURS from "@selene/common/design/colours";
 import SPACING from "@selene/common/design/spacing";
+import { useQuery } from "@apollo/client";
 
 const DailyActiveBitcoinersChart = () => {
+  // const { loading, error, data } = useQuery();
+
+  const labels = ["23/9", "24/9", "25/9", "26/9"];
+  const dailyActiveUserCount = [1, 5, 10, 10];
+
   return (
     <View>
       <LineChart
         data={{
-          labels: ["23/9", "24/9", "25/9", "26/9"],
+          labels,
           datasets: [
             {
-              data: [1, 5, 10, 10],
+              data: dailyActiveUserCount,
             },
           ],
         }}

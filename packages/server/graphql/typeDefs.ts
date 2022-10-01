@@ -16,10 +16,16 @@ const typeDefs = gql`
     donationBchAddress: String
   }
 
+  type StatAtDate {
+    date: Date
+    count: Int
+  }
+
   # The "Query" type is special: it lists all of the available queries that
   # clients can execute, along with the return type for each.
   type Query {
     content: [ContentItem]
+    dailyActiveBitcoiners: [StatAtDate]
   }
 `;
 

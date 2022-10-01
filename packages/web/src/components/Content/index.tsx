@@ -1,17 +1,10 @@
 import React from "react";
 import styles from "./styles";
-import { useQuery, gql } from "@apollo/client";
-
-const GET_BOOKS = gql`
-  query GetBooks {
-    books {
-      title
-    }
-  }
-`;
+import { useQuery } from "@apollo/client";
+import GET_CONTENT from "@selene/common/dist/graphql/queries/getContent";
 
 const Content = () => {
-  const { loading, error, data } = useQuery(GET_BOOKS);
+  const { loading, error, data } = useQuery(GET_CONTENT);
 
   console.log({ loading, data });
 
@@ -19,8 +12,8 @@ const Content = () => {
 
   return (
     <div style={styles.content as any}>
-      {data.books.map((d) => (
-        <p>{d.title}</p>
+      {data.content.map((c) => (
+        <p>{c.title}</p>
       ))}
     </div>
   );
