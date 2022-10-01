@@ -1,7 +1,7 @@
 const { GraphQLScalarType, Kind } = require("graphql");
 
 // https://www.apollographql.com/docs/apollo-server/schema/custom-scalars/#example-the-date-scalar
-const dateScalar = new GraphQLScalarType({
+const customDate = new GraphQLScalarType({
   name: "Date",
   description: "Date custom scalar type",
   serialize(value) {
@@ -22,5 +22,5 @@ const dateScalar = new GraphQLScalarType({
 });
 
 module.exports = {
-  dateScalar,
+  dateScalar: customDate,
 };

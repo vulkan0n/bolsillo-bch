@@ -10,6 +10,7 @@ const typeDefs = gql`
     key: Int
     title: String
     creator: String
+    publicationDate: Date
     videoId: String
     description: String
     donationBchAddress: String
