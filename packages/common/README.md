@@ -1,11 +1,11 @@
-# `common`
+# `@selene/common`
 
-> TODO: description
+Shared functions and utilities for other libraries.
 
-## Usage
+## Dev
+
+After any changes, need to compile to Typescript
 
 ```
-const common = require('common');
-
-// TODO: DEMONSTRATE API
+$ npx tsc --noEmit false --outDir ./dist
 ```
