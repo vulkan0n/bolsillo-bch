@@ -59,6 +59,7 @@ interface BridgeResponseMessage {
     lastSentTransactionHash?: string;
     title?: string;
     text?: string;
+    cashaddr?: string;
     transactionHistory?: {
       transactions: TransactionHistoryTxType[];
     };
