@@ -1,11 +1,7 @@
-# `server`
+# `@selene/server`
 
-> TODO: description
-
-## Usage
+## Getting Started
 
 ```
-const server = require('server');
-
-// TODO: DEMONSTRATE API
+$ node server.js
 ```
