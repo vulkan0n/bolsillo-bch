@@ -12,7 +12,7 @@ function App() {
       <Content />
       {/* <WebApp /> */}
 
-      <p style={TYPOGRAPHY.h1black}>green text</p>
+      <p style={TYPOGRAPHY.h1black as any}>green text</p>
     </div>
   );
 }

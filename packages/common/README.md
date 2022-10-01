@@ -7,5 +7,5 @@ Shared functions and utilities for other libraries.
 After any changes, need to compile to Typescript
 
 ```
-$ npx tsc --noEmit false --outDir ./dist
+$ rm -rf ./dist && npx tsc --noEmit false --outDir ./dist
 ```
