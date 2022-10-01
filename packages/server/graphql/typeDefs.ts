@@ -16,8 +16,10 @@ const typeDefs = gql`
     donationBchAddress: String
   }
 
+  # Because timezones are tricky to manage, dates are stored
+  # as a 'YYYYMMDD' string to be parsed with moment.js
   type StatAtDate {
-    date: Date
+    date: String
     count: Int
   }
 

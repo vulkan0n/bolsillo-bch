@@ -3,13 +3,29 @@ import { View, Text, Dimensions } from "react-native";
 import { LineChart } from "react-native-chart-kit";
 import COLOURS from "@selene/common/design/colours";
 import SPACING from "@selene/common/design/spacing";
-import { useQuery } from "@apollo/client";
+import { useQuery, gql } from "@apollo/client";
+import moment from "moment";
 
 const DailyActiveBitcoinersChart = () => {
-  // const { loading, error, data } = useQuery();
+  const { loading, error, data } = useQuery(gql`
+    query GetDailyActiveBitcoiners {
+      dailyActiveBitcoiners {
+        date
+        count
+      }
+    }
+  `);
 
-  const labels = ["23/9", "24/9", "25/9", "26/9"];
-  const dailyActiveUserCount = [1, 5, 10, 10];
+  const dailyActiveUserCount = data?.dailyActiveBitcoiners?.map?.(
+    ({ count }) => count
+  );
+  const labels = data?.dailyActiveBitcoiners?.map?.(({ date }) =>
+    moment(date).format("D MMM")
+  );
+
+  if (loading) {
+    return <Text>Loading...</Text>;
+  }
 
   return (
     <View>
