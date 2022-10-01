@@ -1,5 +1,5 @@
-import COLOURS from "@selene/common/design/colours";
-import SPACING from "@selene/common/design/spacing";
+import COLOURS from "@selene/common/dist/design/colours";
+import SPACING from "@selene/common/dist/design/spacing";
 
 const styles = {
   header: {
