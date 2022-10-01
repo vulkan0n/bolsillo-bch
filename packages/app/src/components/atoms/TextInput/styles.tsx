@@ -1,6 +1,6 @@
 import { SPACING } from "@selene/common";
 import { COLOURS } from "@selene/common";
-import SHADOW from "@design/shadow";
+import SHADOW from "@selene/app/src/design/shadow";
 
 interface Props {
   isMultiline?: boolean;

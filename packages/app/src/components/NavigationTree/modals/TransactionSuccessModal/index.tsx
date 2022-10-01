@@ -6,7 +6,7 @@ import styles from "./styles";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { COLOURS } from "@selene/common";
 import { MotiView } from "moti";
-import { iconImport } from "@design/icons";
+import { iconImport } from "@selene/app/src/design/icons";
 import { updateTransactionNote } from "@selene/app/src/redux/reducers/walletManagerReducer";
 import { updateLocalLastSentTransactionHash } from "@selene/app/src/redux/reducers/localReducer";
 import { useDispatch, useSelector } from "react-redux";

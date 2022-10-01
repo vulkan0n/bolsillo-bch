@@ -6,7 +6,7 @@ import IrlView from "./IrlView";
 import { COLOURS } from "@selene/common";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { iconImport } from "@design/icons";
+import { iconImport } from "@selene/app/src/design/icons";
 import styles from "./styles";
 import CommunityTabNavigator from "./CommunityTabNavigator";
 import ToolsDrawerNavigator from "./ToolsDrawerNavigator";

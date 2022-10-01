@@ -8,7 +8,7 @@ import { ReduxState } from "@selene/app/src/types";
 import { formatStringToCashAddress } from "@selene/app/src/utils/formatting";
 import * as Clipboard from "expo-clipboard";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { iconImport } from "@design/icons";
+import { iconImport } from "@selene/app/src/design/icons";
 import { COLOURS } from "@selene/common";
 import { selectPrimaryCurrencyOrDenomination } from "@selene/app/src/redux/selectors";
 import { processRequestString } from "../utils";

@@ -4,7 +4,7 @@ import { TYPOGRAPHY } from "@selene/common";
 import { getHeaderTitle } from "@react-navigation/elements";
 import { View, Text, Pressable } from "react-native";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { iconImport } from "@design/icons";
+import { iconImport } from "@selene/app/src/design/icons";
 import styles from "./styles";
 import { useSelector } from "react-redux";
 import { ReduxState } from "@selene/app/src/types";

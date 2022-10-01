@@ -3,7 +3,7 @@ import { View, Text, Pressable } from "react-native";
 import styles from "./styles";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { COLOURS } from "@selene/common";
-import { iconImport, IconType } from "@design/icons";
+import { iconImport, IconType } from "@selene/app/src/design/icons";
 import { BallIndicator } from "react-native-indicators";
 
 interface Props {

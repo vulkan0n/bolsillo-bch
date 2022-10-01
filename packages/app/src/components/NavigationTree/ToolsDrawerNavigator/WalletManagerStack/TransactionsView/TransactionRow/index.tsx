@@ -7,7 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { updateTransactionNote } from "@selene/app/src/redux/reducers/walletManagerReducer";
 import { COLOURS } from "@selene/common";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { iconImport } from "@design/icons";
+import { iconImport } from "@selene/app/src/design/icons";
 import { convertBalanceToDisplay } from "@selene/app/src/utils/formatting";
 import { BITCOIN_DENOMINATIONS } from "@selene/app/src/utils/consts";
 import { ReduxState } from "@selene/app/src/types";

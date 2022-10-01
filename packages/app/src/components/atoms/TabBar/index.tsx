@@ -2,7 +2,7 @@ import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { View, TouchableOpacity, Text } from "react-native";
 import { COLOURS } from "@selene/common";
-import { iconImport } from "@design/icons";
+import { iconImport } from "@selene/app/src/design/icons";
 import { TYPOGRAPHY } from "@selene/common";
 import { SPACING } from "@selene/common";
 

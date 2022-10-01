@@ -4,7 +4,7 @@ import styles from "./styles";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { COLOURS } from "@selene/common";
 import { TYPOGRAPHY } from "@selene/common";
-import { iconImport, IconType } from "@design/icons";
+import { iconImport, IconType } from "@selene/app/src/design/icons";
 
 interface Props {
   onPress: () => void;
