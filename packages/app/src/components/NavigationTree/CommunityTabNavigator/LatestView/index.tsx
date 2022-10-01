@@ -4,6 +4,15 @@ import SPACING from "@selene/common/design/spacing";
 import TYPOGRAPHY from "@selene/common/design/typography";
 import styles from "./styles";
 import ContentCard from "./ContentCard";
+import { useQuery, gql } from "@apollo/client";
+
+export const GET_BOOKS = gql`
+  query GetBooks {
+    books {
+      title
+    }
+  }
+`;
 
 const CONTENT = [
   {
@@ -29,6 +38,13 @@ const CONTENT = [
 ];
 
 function LatestView() {
+  const { loading, error, data } = useQuery(GET_BOOKS);
+
+  console.log({ loading, error, data });
+
+  if (loading) return <Text>Loading...</Text>;
+  if (error) return <Text>Error :(</Text>;
+
   return (
     <ScrollView style={styles.scrollView as any}>
       <View style={styles.container as any}>
@@ -41,6 +57,10 @@ function LatestView() {
           Catch the latest discussions, podcasts, art, music and memes from the
           BCH community.
         </Text>
+        {data.books.map((d) => (
+          <Text key={d.title}>{JSON.stringify(d)}</Text>
+        ))}
+
         {CONTENT.map(
           ({
             key,

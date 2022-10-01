@@ -48,20 +48,6 @@ const client = new ApolloClient({
   cache: new InMemoryCache(),
 });
 
-client
-
-  .query({
-    query: gql`
-      query GetBooks {
-        books {
-          title
-        }
-      }
-    `,
-  })
-
-  .then((result) => console.log(result));
-
 interface TransactionHistoryTxType {
   blockheight: number;
   txn: string;
@@ -267,23 +253,25 @@ export default function App() {
   return (
     <Provider store={store}>
       <PersistGate loading={<Text>Loading...</Text>} persistor={persistor}>
-        <View style={{ height: 0 }}>
-          {!IS_WEB && (
-            <WebView
-              ref={ref}
-              onMessage={onMessage}
-              source={{ html: Bridge }}
-              injectedJavaScript={preloadMainNetScript}
-              allowFileAccess={true}
-              javaScriptEnabled={true}
-              domStorageEnabled={true}
-              onLoad={onWebViewLoad}
-            />
-          )}
-        </View>
-        {isWebViewLoaded && <BackgroundIntervals />}
-        <NavigationTree />
-        <Toast config={toastConfig} />
+        <ApolloProvider client={client}>
+          <View style={{ height: 0 }}>
+            {!IS_WEB && (
+              <WebView
+                ref={ref}
+                onMessage={onMessage}
+                source={{ html: Bridge }}
+                injectedJavaScript={preloadMainNetScript}
+                allowFileAccess={true}
+                javaScriptEnabled={true}
+                domStorageEnabled={true}
+                onLoad={onWebViewLoad}
+              />
+            )}
+          </View>
+          {isWebViewLoaded && <BackgroundIntervals />}
+          <NavigationTree />
+          <Toast config={toastConfig} />
+        </ApolloProvider>
       </PersistGate>
     </Provider>
   );
