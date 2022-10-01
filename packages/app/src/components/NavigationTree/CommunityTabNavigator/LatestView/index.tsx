@@ -4,22 +4,9 @@ import SPACING from "@selene/common/design/spacing";
 import TYPOGRAPHY from "@selene/common/design/typography";
 import styles from "./styles";
 import ContentCard from "./ContentCard";
-import { useQuery, gql } from "@apollo/client";
+import { useQuery } from "@apollo/client";
 import { BallIndicator } from "react-native-indicators";
-
-export const GET_CONTENT = gql`
-  query GetContent {
-    content {
-      key
-      title
-      creator
-      publicationDate
-      videoId
-      description
-      donationBchAddress
-    }
-  }
-`;
+import GET_CONTENT from "@selene/common/dist/graphql/queries/getContent";
 
 function LatestView() {
   const { loading, error, data } = useQuery(GET_CONTENT);

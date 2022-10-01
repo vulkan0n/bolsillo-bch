@@ -13,15 +13,15 @@ const GET_BOOKS = gql`
 const Content = () => {
   const { loading, error, data } = useQuery(GET_BOOKS);
 
-  // console.log({ loading, data });
+  console.log({ loading, data });
 
-  // if (loading) return <p>Loading...</p>;
+  if (loading) return <p>Loading...</p>;
 
   return (
     <div style={styles.content as any}>
-      {/* {data.books.map((d) => (
+      {data.books.map((d) => (
         <p>{d.title}</p>
-      ))} */}
+      ))}
     </div>
   );
 };
