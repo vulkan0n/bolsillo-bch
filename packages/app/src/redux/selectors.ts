@@ -112,7 +112,7 @@ export const selectSecondaryCurrencyOrDenomination: (
 
 export const selectPadBalanceInRawSats: (state: ReduxState) => string =
   createSelector(
-    (state: ReduxState): boolean => state.transactionPad.padBalance,
+    (state: ReduxState): string => state.transactionPad.padBalance,
     selectPrimaryCurrencyOrDenomination,
     (padBalance, primaryCurrency) =>
       convertRawCurrencyToRawSats(padBalance, primaryCurrency)
@@ -120,7 +120,7 @@ export const selectPadBalanceInRawSats: (state: ReduxState) => string =
 
 export const selectPadPrimaryBalance: (state: ReduxState) => string =
   createSelector(
-    (state: ReduxState): boolean => state.transactionPad.padBalance,
+    (state: ReduxState): string => state.transactionPad.padBalance,
     selectPrimaryCurrencyOrDenomination,
     (padBalance, primaryCurrency) =>
       prettifyPadBalance(padBalance, primaryCurrency)
@@ -128,7 +128,7 @@ export const selectPadPrimaryBalance: (state: ReduxState) => string =
 
 export const selectPadSecondaryBalance: (state: ReduxState) => string =
   createSelector(
-    (state: ReduxState): boolean => state.transactionPad.padBalance,
+    (state: ReduxState): string => state.transactionPad.padBalance,
     selectPrimaryCurrencyOrDenomination,
     selectSecondaryCurrencyOrDenomination,
     (padBalance, primaryCurrency, secondaryCurrency) =>
