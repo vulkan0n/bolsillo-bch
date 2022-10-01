@@ -20,7 +20,7 @@ import { convertBalanceToDisplay } from "@selene/app/src/utils/formatting";
 
 interface Props {
   donationBchAddress: string;
-  isWhiteText: boolean;
+  isWhiteText?: boolean;
 }
 
 function TipWidget({ donationBchAddress, isWhiteText = false }: Props) {

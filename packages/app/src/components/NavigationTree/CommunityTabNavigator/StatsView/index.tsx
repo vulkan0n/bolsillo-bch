@@ -46,9 +46,9 @@ function StatsView({ navigation }) {
         </Text>
         <Text style={TYPOGRAPHY.h2black as any}>Get involved!</Text>
         <Text style={TYPOGRAPHY.p as any}>
-          You are not included in the statistics. Selene respects your
-          privacy. User activity tracking is opt-in and no individual data is
-          collected, only anonymous aggregates.
+          You are not included in the statistics. Selene respects your privacy.
+          User activity tracking is opt-in and no individual data is collected,
+          only anonymous aggregates.
         </Text>
         <Text style={TYPOGRAPHY.p as any}>
           By opting in, you can help the BCH community and Selene developers
@@ -58,7 +58,7 @@ function StatsView({ navigation }) {
           All Selene source code and data is publically available.
         </Text>
         <Text style={TYPOGRAPHY.p as any}>
-          Once activated, you can opt out any time in Tools > Settings.
+          Once activated, you can opt out any time in Tools {">"} Settings.
         </Text>
         <Button>Activate</Button>
         <Button>Read more</Button>
