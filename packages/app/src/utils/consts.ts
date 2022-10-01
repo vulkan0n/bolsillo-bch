@@ -24,7 +24,12 @@ export const ONE_HUNDRED: number = 100; // Sats per bit
 // Total Bitcoin Satoshi supply
 // A little less than 21 quadrillion
 export const TOTAL_SATOSHI_SUPPLY: number = 2099999997690000;
-export const BITCOIN_DENOMINATIONS = {
+export const BITCOIN_DENOMINATIONS: {
+  bitcoins: BitcoinDenominationTypes;
+  millibits: BitcoinDenominationTypes;
+  bits: BitcoinDenominationTypes;
+  satoshis: BitcoinDenominationTypes;
+} = {
   bitcoins: "bitcoins",
   millibits: "millibits",
   bits: "bits",
