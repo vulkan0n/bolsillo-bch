@@ -10,7 +10,7 @@ import {
   convertRawCurrencyToRawSats,
   prettifyPadBalance,
 } from "@selene/app/src/utils/formatting";
-import { CurrencyOrDenominationType } from "../types";
+import { CurrencyOrDenominationType } from "@selene/common/dist/types";
 import { BITCOIN_DENOMINATIONS } from "@selene/app/src/utils/consts";
 
 interface ActiveWalletBalance {

@@ -39,7 +39,7 @@ import {
   TEST_NET_PREFIX,
   BITCOIN_DENOMINATIONS,
 } from "./consts";
-import { CurrencyOrDenominationType } from "../types";
+import { CurrencyOrDenominationType } from "@selene/common/dist/types";
 
 // Note on how this file works
 // All values are passed between functions as strings
