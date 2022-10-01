@@ -132,7 +132,11 @@ const Confirm = ({ navigation }) => {
         </Button>
       )}
       {isPadZeroBalance && (
-        <Button icon={"faBitcoinSign"} onPress={onPressEnterAmount} isSmall>
+        <Button
+          icon={"faBitcoinSign"}
+          onPress={onPressEnterAmount}
+          size="small"
+        >
           Enter amount
         </Button>
       )}
