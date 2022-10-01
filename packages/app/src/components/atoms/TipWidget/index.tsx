@@ -90,7 +90,9 @@ function TipWidget({ donationBchAddress, isWhiteText = false }: Props) {
         <Pressable onPress={onPressCustomAmount}>
           <Text
             style={
-              isWhiteText ? TYPOGRAPHY.pWhiteUnderlined : TYPOGRAPHY.pUnderlined
+              (isWhiteText
+                ? TYPOGRAPHY.pWhiteUnderlined
+                : TYPOGRAPHY.pUnderlined) as any
             }
           >
             Custom amount
