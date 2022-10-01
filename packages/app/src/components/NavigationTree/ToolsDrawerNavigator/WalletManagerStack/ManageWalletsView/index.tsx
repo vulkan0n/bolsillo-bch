@@ -2,11 +2,11 @@ import React from "react";
 import { View, FlatList } from "react-native";
 import { useSelector } from "react-redux";
 import styles from "./styles";
-import { ReduxState } from "@types";
+import { ReduxState } from "@selene/app/src/types";
 import WalletActions from "./WalletActions";
 import WalletRow from "./WalletRow";
-import Divider from "@atoms/Divider";
-import StackSubheader from "@atoms/StackSubheader";
+import Divider from "@selene/app/src/components/atoms/Divider";
+import StackSubheader from "@selene/app/src/components/atoms/StackSubheader";
 
 function ManageWalletsView({ navigation }) {
   const { wallets } = useSelector((state: ReduxState) => state.walletManager);

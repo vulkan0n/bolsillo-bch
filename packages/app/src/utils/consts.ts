@@ -1,4 +1,7 @@
-import { SupportedCurrency, BitcoinDenominationTypes } from "@types";
+import {
+  SupportedCurrency,
+  BitcoinDenominationTypes,
+} from "@selene/app/src/types";
 import { Platform } from "react-native";
 
 // Platform wide utility

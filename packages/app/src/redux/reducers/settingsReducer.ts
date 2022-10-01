@@ -1,7 +1,10 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { PURGE } from "redux-persist";
-import { BitcoinDenominationTypes, SupportedCurrencyTypes } from "@types";
-import { BITCOIN_DENOMINATIONS } from "@utils/consts";
+import {
+  BitcoinDenominationTypes,
+  SupportedCurrencyTypes,
+} from "@selene/app/src/types";
+import { BITCOIN_DENOMINATIONS } from "@selene/app/src/utils/consts";
 
 export interface SettingsState {
   isBchDenominated: boolean;

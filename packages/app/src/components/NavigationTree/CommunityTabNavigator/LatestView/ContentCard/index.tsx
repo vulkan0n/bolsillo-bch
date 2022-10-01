@@ -5,14 +5,14 @@ import { SPACING } from "@selene/common";
 import { TYPOGRAPHY } from "@selene/common";
 import YoutubePlayer from "react-native-youtube-iframe";
 import moment from "moment";
-import TipWidget from "@atoms/TipWidget";
-import emit from "@utils/emit";
-import { BRIDGE_MESSAGE_TYPES } from "@utils/bridgeMessages";
-import { ReduxState } from "@types";
+import TipWidget from "@selene/app/src/components/atoms/TipWidget";
+import emit from "@selene/app/src/utils/emit";
+import { BRIDGE_MESSAGE_TYPES } from "@selene/app/src/utils/bridgeMessages";
+import { ReduxState } from "@selene/app/src/types";
 import { useSelector, useDispatch } from "react-redux";
-import { selectActiveWallet } from "@redux/selectors";
-import { updateTransactionPadIsSendingCoins } from "@redux/reducers/transactionPadReducer";
-import { selectActiveWalletBalance } from "@redux/selectors";
+import { selectActiveWallet } from "@selene/app/src/redux/selectors";
+import { updateTransactionPadIsSendingCoins } from "@selene/app/src/redux/reducers/transactionPadReducer";
+import { selectActiveWalletBalance } from "@selene/app/src/redux/selectors";
 import { BallIndicator } from "react-native-indicators";
 
 interface Props {

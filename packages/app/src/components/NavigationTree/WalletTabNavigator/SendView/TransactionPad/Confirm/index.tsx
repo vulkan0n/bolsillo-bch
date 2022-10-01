@@ -1,24 +1,24 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, Pressable } from "react-native";
 import styles from "./styles";
-import Button from "@atoms/Button";
-import { BRIDGE_MESSAGE_TYPES } from "@utils/bridgeMessages";
+import Button from "@selene/app/src/components/atoms/Button";
+import { BRIDGE_MESSAGE_TYPES } from "@selene/app/src/utils/bridgeMessages";
 import { useSelector, useDispatch } from "react-redux";
 import {
   updateTransactionPadView,
   updateTransactionPadIsSendingCoins,
-} from "@redux/reducers/transactionPadReducer";
-import { ReduxState } from "@types";
-import emit from "@utils/emit";
+} from "@selene/app/src/redux/reducers/transactionPadReducer";
+import { ReduxState } from "@selene/app/src/types";
+import emit from "@selene/app/src/utils/emit";
 import { TYPOGRAPHY } from "@selene/common";
 import {
   selectActiveWallet,
   selectPadBalanceInRawSats,
-} from "@redux/selectors";
-import LiveBalance from "@atoms/LiveBalance";
+} from "@selene/app/src/redux/selectors";
+import LiveBalance from "@selene/app/src/components/atoms/LiveBalance";
 import { COLOURS } from "@selene/common";
-import { TEN_SECONDS } from "@utils/consts";
-import { selectIsPadZeroBalance } from "@redux/selectors";
+import { TEN_SECONDS } from "@selene/app/src/utils/consts";
+import { selectIsPadZeroBalance } from "@selene/app/src/redux/selectors";
 import { BallIndicator } from "react-native-indicators";
 
 const Confirm = ({ navigation }) => {

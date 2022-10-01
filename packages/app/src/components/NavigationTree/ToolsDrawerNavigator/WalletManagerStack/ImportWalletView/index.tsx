@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { ScrollView, View, Text } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
-import Button from "@atoms/Button";
+import Button from "@selene/app/src/components/atoms/Button";
 import { TYPOGRAPHY } from "@selene/common";
 import styles from "./styles";
 import { COLOURS } from "@selene/common";
-import { ReduxState } from "@types";
+import { ReduxState } from "@selene/app/src/types";
 import {
   createWalletFromScratchPad,
   clearWalletScratchPad,
@@ -13,18 +13,18 @@ import {
   updateNewWalletScratchPadDescription,
   updateImportWalletScratchPadMnemonic,
   updateImportWalletScratchPadDerivationPath,
-} from "@redux/reducers/walletManagerReducer";
-import TextInput from "@atoms/TextInput";
-import emit from "@utils/emit";
-import { BRIDGE_MESSAGE_TYPES } from "@utils/bridgeMessages";
+} from "@selene/app/src/redux/reducers/walletManagerReducer";
+import TextInput from "@selene/app/src/components/atoms/TextInput";
+import emit from "@selene/app/src/utils/emit";
+import { BRIDGE_MESSAGE_TYPES } from "@selene/app/src/utils/bridgeMessages";
 import Toast from "react-native-toast-message";
 import {
   validateWalletName,
   validateWalletDescription,
   validateWalletMnemonic,
-} from "@utils/validation";
-import { DEFAULT_DERIVATION_PATH } from "@utils/consts";
-import StackSubheader from "@atoms/StackSubheader";
+} from "@selene/app/src/utils/validation";
+import { DEFAULT_DERIVATION_PATH } from "@selene/app/src/utils/consts";
+import StackSubheader from "@selene/app/src/components/atoms/StackSubheader";
 
 function ImportWalletView({ navigation }) {
   const dispatch = useDispatch();

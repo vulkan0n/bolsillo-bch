@@ -1,20 +1,20 @@
 import React from "react";
 import { Pressable, View, Text, Linking } from "react-native";
 import { TYPOGRAPHY } from "@selene/common";
-import TextInput from "@atoms/TextInput";
-import Button from "@atoms/Button";
+import TextInput from "@selene/app/src/components/atoms/TextInput";
+import Button from "@selene/app/src/components/atoms/Button";
 import { useDispatch, useSelector } from "react-redux";
-import { updateTransactionNote } from "@redux/reducers/walletManagerReducer";
+import { updateTransactionNote } from "@selene/app/src/redux/reducers/walletManagerReducer";
 import { COLOURS } from "@selene/common";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { iconImport } from "@design/icons";
-import { convertBalanceToDisplay } from "@utils/formatting";
-import { BITCOIN_DENOMINATIONS } from "@utils/consts";
-import { ReduxState } from "@types";
+import { convertBalanceToDisplay } from "@selene/app/src/utils/formatting";
+import { BITCOIN_DENOMINATIONS } from "@selene/app/src/utils/consts";
+import { ReduxState } from "@selene/app/src/types";
 import {
   selectPrimaryCurrencyOrDenomination,
   selectSecondaryCurrencyOrDenomination,
-} from "@redux/selectors";
+} from "@selene/app/src/redux/selectors";
 import { SPACING } from "@selene/common";
 
 const TransactionRow = ({ transaction, editNoteHash, setEditNoteHash }) => {

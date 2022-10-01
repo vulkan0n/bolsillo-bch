@@ -1,7 +1,7 @@
 import React from "react";
 import { View } from "react-native";
-import Button from "@atoms/Button";
-import Divider from "@atoms/Divider";
+import Button from "@selene/app/src/components/atoms/Button";
+import Divider from "@selene/app/src/components/atoms/Divider";
 
 const WalletActions = ({ navigation }) => {
   const onPressNew = () => {

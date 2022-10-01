@@ -1,18 +1,18 @@
 import React, { useState } from "react";
 import { ScrollView, View, Text, Pressable } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
-import Button from "@atoms/Button";
+import Button from "@selene/app/src/components/atoms/Button";
 import { TYPOGRAPHY } from "@selene/common";
 import styles from "./styles";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faCoins } from "@fortawesome/free-solid-svg-icons/faCoins";
 import { COLOURS } from "@selene/common";
-import { ReduxState } from "@types";
-import Divider from "@atoms/Divider";
+import { ReduxState } from "@selene/app/src/types";
+import Divider from "@selene/app/src/components/atoms/Divider";
 import { SPACING } from "@selene/common";
-import { updateBitcoinDenomination } from "@redux/reducers/settingsReducer";
-import StackSubheader from "@atoms/StackSubheader";
-import { BITCOIN_DENOMINATIONS } from "@utils/consts";
+import { updateBitcoinDenomination } from "@selene/app/src/redux/reducers/settingsReducer";
+import StackSubheader from "@selene/app/src/components/atoms/StackSubheader";
+import { BITCOIN_DENOMINATIONS } from "@selene/app/src/utils/consts";
 
 function DenominationView() {
   const dispatch = useDispatch();

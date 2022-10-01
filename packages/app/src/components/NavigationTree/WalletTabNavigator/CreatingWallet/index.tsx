@@ -3,11 +3,11 @@ import { useSelector } from "react-redux";
 import { View, Text } from "react-native";
 import styles from "../styles";
 import { TYPOGRAPHY } from "@selene/common";
-import { selectIsActiveWallet } from "@redux/selectors";
-import { ONE_SECOND } from "@utils/consts";
-import emit from "@utils/emit";
-import { ReduxState } from "@types";
-import { BRIDGE_MESSAGE_TYPES } from "@utils/bridgeMessages";
+import { selectIsActiveWallet } from "@selene/app/src/redux/selectors";
+import { ONE_SECOND } from "@selene/app/src/utils/consts";
+import emit from "@selene/app/src/utils/emit";
+import { ReduxState } from "@selene/app/src/types";
+import { BRIDGE_MESSAGE_TYPES } from "@selene/app/src/utils/bridgeMessages";
 
 const CreatingWallet = () => {
   const isWallet = useSelector((state: ReduxState) =>

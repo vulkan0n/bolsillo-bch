@@ -5,15 +5,15 @@ import { TYPOGRAPHY } from "@selene/common";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { COLOURS } from "@selene/common";
 import { SPACING } from "@selene/common";
-import { ReduxState } from "@types";
+import { ReduxState } from "@selene/app/src/types";
 import { faWallet } from "@fortawesome/free-solid-svg-icons";
-import { convertBalanceToDisplay } from "@utils/formatting";
+import { convertBalanceToDisplay } from "@selene/app/src/utils/formatting";
 import {
   updateActiveWalletName,
   updateNavigatedWalletName,
-} from "@redux/reducers/walletManagerReducer";
+} from "@selene/app/src/redux/reducers/walletManagerReducer";
 import styles from "./styles";
-import { BITCOIN_DENOMINATIONS } from "@utils/consts";
+import { BITCOIN_DENOMINATIONS } from "@selene/app/src/utils/consts";
 
 const WalletRow = ({
   navigation,

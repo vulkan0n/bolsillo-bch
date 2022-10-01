@@ -2,8 +2,8 @@ import React from "react";
 import { Pressable, View, Image, Text, Linking } from "react-native";
 import { TYPOGRAPHY } from "@selene/common";
 import styles from "./styles";
-import TipWidget from "@atoms/TipWidget";
-import { DEVELOPER_DONATION_ADDRESS } from "@utils/consts";
+import TipWidget from "@selene/app/src/components/atoms/TipWidget";
+import { DEVELOPER_DONATION_ADDRESS } from "@selene/app/src/utils/consts";
 
 function CreditsView() {
   const version = "v0.0.10";

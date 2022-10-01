@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { SeleneWalletType } from "@types";
+import { SeleneWalletType } from "@selene/app/src/types";
 import { PURGE } from "redux-persist";
 import * as R from "ramda";
 import { TransactionType } from "../../types";

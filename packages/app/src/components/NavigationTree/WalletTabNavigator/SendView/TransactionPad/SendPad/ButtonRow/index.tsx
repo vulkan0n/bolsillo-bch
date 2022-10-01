@@ -1,15 +1,15 @@
 import React from "react";
 import { View } from "react-native";
 import styles from "./styles";
-import Button from "@atoms/Button";
+import Button from "@selene/app/src/components/atoms/Button";
 import { useSelector, useDispatch } from "react-redux";
-import { updateTransactionPadSendInputView } from "@redux/reducers/transactionPadReducer";
-import { ReduxState } from "@types";
+import { updateTransactionPadSendInputView } from "@selene/app/src/redux/reducers/transactionPadReducer";
+import { ReduxState } from "@selene/app/src/types";
 import pickImage from "../pickImage";
 import {
   selectPrimaryCurrencyOrDenomination,
   selectIsPadZeroBalance,
-} from "@redux/selectors";
+} from "@selene/app/src/redux/selectors";
 
 const ButtonRow = () => {
   const dispatch = useDispatch();

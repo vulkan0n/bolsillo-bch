@@ -1,25 +1,25 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, Pressable } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
-import Button from "@atoms/Button";
+import Button from "@selene/app/src/components/atoms/Button";
 import { TYPOGRAPHY } from "@selene/common";
 import styles from "./styles";
-import { ReduxState } from "@types";
+import { ReduxState } from "@selene/app/src/types";
 import {
   createWalletFromScratchPad,
   updateNewWalletScratchPadDescription,
   updateNewWalletScratchPadName,
-} from "@redux/reducers/walletManagerReducer";
-import TextInput from "@atoms/TextInput";
-import emit from "@utils/emit";
-import { BRIDGE_MESSAGE_TYPES } from "@utils/bridgeMessages";
+} from "@selene/app/src/redux/reducers/walletManagerReducer";
+import TextInput from "@selene/app/src/components/atoms/TextInput";
+import emit from "@selene/app/src/utils/emit";
+import { BRIDGE_MESSAGE_TYPES } from "@selene/app/src/utils/bridgeMessages";
 import Toast from "react-native-toast-message";
 import {
   validateWalletName,
   validateWalletDescription,
-} from "@utils/validation";
+} from "@selene/app/src/utils/validation";
 import { ScrollView } from "react-native-gesture-handler";
-import StackSubheader from "@atoms/StackSubheader";
+import StackSubheader from "@selene/app/src/components/atoms/StackSubheader";
 
 function NewWalletView({ navigation }) {
   const dispatch = useDispatch();

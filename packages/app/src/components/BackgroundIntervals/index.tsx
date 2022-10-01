@@ -1,13 +1,13 @@
 import React, { useEffect } from "react";
 import { View } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
-import { ReduxState } from "@types";
-import { BRIDGE_MESSAGE_TYPES } from "@utils/bridgeMessages";
-import { ONE_SECOND, THIRTY_SECONDS } from "@utils/consts";
-import emit from "@utils/emit";
+import { ReduxState } from "@selene/app/src/types";
+import { BRIDGE_MESSAGE_TYPES } from "@selene/app/src/utils/bridgeMessages";
+import { ONE_SECOND, THIRTY_SECONDS } from "@selene/app/src/utils/consts";
+import emit from "@selene/app/src/utils/emit";
 import axios from "axios";
-import { updateBchPrices } from "@redux/reducers/exchangeRatesReducer";
-import { selectActiveWallet } from "@redux/selectors";
+import { updateBchPrices } from "@selene/app/src/redux/reducers/exchangeRatesReducer";
+import { selectActiveWallet } from "@selene/app/src/redux/selectors";
 import { updateTransactionPadIsSendingCoins } from "../../redux/reducers/transactionPadReducer";
 
 const BackgroundIntervals = () => {

@@ -9,8 +9,8 @@ import ShowAvailableBalance from "./ShowAvailableBalance";
 import ShowCommunityTab from "./ShowCommunityTab";
 import TestNet from "./TestNet";
 import { TYPOGRAPHY } from "@selene/common";
-import Divider from "@atoms/Divider";
-import StackSubheader from "@atoms/StackSubheader";
+import Divider from "@selene/app/src/components/atoms/Divider";
+import StackSubheader from "@selene/app/src/components/atoms/StackSubheader";
 
 const OptionsView = ({ navigation }) => {
   const onPressReset = () => {

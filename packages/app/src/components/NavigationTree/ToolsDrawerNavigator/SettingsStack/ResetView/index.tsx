@@ -1,13 +1,13 @@
 import React from "react";
 import { View, Text, ScrollView } from "react-native";
-import Button from "@atoms/Button";
+import Button from "@selene/app/src/components/atoms/Button";
 import { TYPOGRAPHY } from "@selene/common";
 import styles from "./styles";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { COLOURS } from "@selene/common";
 import { faPowerOff } from "@fortawesome/free-solid-svg-icons/faPowerOff";
-import persistor from "@redux/persistor";
-import StackSubheader from "@atoms/StackSubheader";
+import persistor from "@selene/app/src/redux/persistor";
+import StackSubheader from "@selene/app/src/components/atoms/StackSubheader";
 
 const ResetView = ({ navigation }) => {
   const onPressReset = () => {

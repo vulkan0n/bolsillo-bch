@@ -1,8 +1,8 @@
-import { ExchangeRatesState } from "@redux/reducers/exchangeRatesReducer";
-import { SettingsState } from "@redux/reducers/settingsReducer";
-import { TransactionPadState } from "@redux/reducers/transactionPadReducer";
-import { WalletManagerState } from "@redux/reducers/walletManagerReducer";
-import { LocalState } from "@redux/reducers/localReducer";
+import { ExchangeRatesState } from "@selene/app/src/redux/reducers/exchangeRatesReducer";
+import { SettingsState } from "@selene/app/src/redux/reducers/settingsReducer";
+import { TransactionPadState } from "@selene/app/src/redux/reducers/transactionPadReducer";
+import { WalletManagerState } from "@selene/app/src/redux/reducers/walletManagerReducer";
+import { LocalState } from "@selene/app/src/redux/reducers/localReducer";
 
 export interface ReduxState {
   transactionPad: TransactionPadState;

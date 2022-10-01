@@ -1,12 +1,12 @@
 import React from "react";
 import { View } from "react-native";
 import styles from "./styles";
-import Button from "@atoms/Button";
+import Button from "@selene/app/src/components/atoms/Button";
 import { useDispatch } from "react-redux";
-import { updateTransactionPadView } from "@redux/reducers/transactionPadReducer";
-import LiveBalance from "@atoms/LiveBalance";
+import { updateTransactionPadView } from "@selene/app/src/redux/reducers/transactionPadReducer";
+import LiveBalance from "@selene/app/src/components/atoms/LiveBalance";
 import NumPad from "../../../../../atoms/NumPad";
-import { clearTransactionPad } from "@redux/reducers/transactionPadReducer";
+import { clearTransactionPad } from "@selene/app/src/redux/reducers/transactionPadReducer";
 
 const SendNumPad = ({ navigation }) => {
   const dispatch = useDispatch();

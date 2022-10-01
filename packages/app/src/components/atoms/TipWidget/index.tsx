@@ -1,22 +1,22 @@
 import React, { useState } from "react";
 import { View, Pressable, Text } from "react-native";
 import { COLOURS } from "@selene/common";
-import Button from "@atoms/Button";
-import emit from "@utils/emit";
-import { BRIDGE_MESSAGE_TYPES } from "@utils/bridgeMessages";
-import { ReduxState } from "@types";
+import Button from "@selene/app/src/components/atoms/Button";
+import emit from "@selene/app/src/utils/emit";
+import { BRIDGE_MESSAGE_TYPES } from "@selene/app/src/utils/bridgeMessages";
+import { ReduxState } from "@selene/app/src/types";
 import { useSelector, useDispatch } from "react-redux";
-import { selectActiveWallet } from "@redux/selectors";
+import { selectActiveWallet } from "@selene/app/src/redux/selectors";
 import {
   updateTransactionPadIsSendingCoins,
   updateTransactionPadBalance,
-} from "@redux/reducers/transactionPadReducer";
-import { selectActiveWalletBalance } from "@redux/selectors";
+} from "@selene/app/src/redux/reducers/transactionPadReducer";
+import { selectActiveWalletBalance } from "@selene/app/src/redux/selectors";
 import { TYPOGRAPHY } from "@selene/common";
 import styles from "./styles";
 import { navigate } from "@components/NavigationTree/rootNavigation";
-import { BITCOIN_DENOMINATIONS } from "@utils/consts";
-import { convertBalanceToDisplay } from "@utils/formatting";
+import { BITCOIN_DENOMINATIONS } from "@selene/app/src/utils/consts";
+import { convertBalanceToDisplay } from "@selene/app/src/utils/formatting";
 
 interface Props {
   donationBchAddress: string;

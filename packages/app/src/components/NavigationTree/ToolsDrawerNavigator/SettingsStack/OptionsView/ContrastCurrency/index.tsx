@@ -3,7 +3,7 @@ import { View, Text, Pressable } from "react-native";
 import { TYPOGRAPHY } from "@selene/common";
 import styles from "../styles";
 import { useSelector } from "react-redux";
-import { ReduxState } from "@types";
+import { ReduxState } from "@selene/app/src/types";
 
 const ContrastCurrency = ({ navigation }) => {
   const { contrastCurrency } = useSelector(

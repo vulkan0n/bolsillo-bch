@@ -7,7 +7,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { iconImport } from "@design/icons";
 import styles from "./styles";
 import { useSelector } from "react-redux";
-import { ReduxState } from "@types";
+import { ReduxState } from "@selene/app/src/types";
 
 const Drawer = createDrawerNavigator();
 

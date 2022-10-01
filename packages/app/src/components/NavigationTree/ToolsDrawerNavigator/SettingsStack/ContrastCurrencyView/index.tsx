@@ -6,12 +6,12 @@ import styles from "./styles";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faMoneyBillWave } from "@fortawesome/free-solid-svg-icons/faMoneyBillWave";
 import { COLOURS } from "@selene/common";
-import { ReduxState } from "@types";
-import Divider from "@atoms/Divider";
+import { ReduxState } from "@selene/app/src/types";
+import Divider from "@selene/app/src/components/atoms/Divider";
 import { SPACING } from "@selene/common";
-import { updateContrastCurrency } from "@redux/reducers/settingsReducer";
-import { SUPPORTED_CURRENCIES } from "@utils/consts";
-import StackSubheader from "@atoms/StackSubheader";
+import { updateContrastCurrency } from "@selene/app/src/redux/reducers/settingsReducer";
+import { SUPPORTED_CURRENCIES } from "@selene/app/src/utils/consts";
+import StackSubheader from "@selene/app/src/components/atoms/StackSubheader";
 
 function ContrastCurrencyView() {
   const dispatch = useDispatch();

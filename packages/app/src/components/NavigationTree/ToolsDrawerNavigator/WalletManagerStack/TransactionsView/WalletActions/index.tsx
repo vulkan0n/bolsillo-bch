@@ -1,9 +1,9 @@
 import React from "react";
 import { View, Text } from "react-native";
-import Button from "@atoms/Button";
-import Divider from "@atoms/Divider";
+import Button from "@selene/app/src/components/atoms/Button";
+import Divider from "@selene/app/src/components/atoms/Divider";
 import { useSelector } from "react-redux";
-import { ReduxState } from "@types";
+import { ReduxState } from "@selene/app/src/types";
 import { TYPOGRAPHY } from "@selene/common";
 import { SPACING } from "@selene/common";
 import { COLOURS } from "@selene/common";

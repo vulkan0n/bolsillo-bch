@@ -3,9 +3,9 @@ import { View, Text, Switch, Pressable } from "react-native";
 import { TYPOGRAPHY } from "@selene/common";
 import styles from "../styles";
 import { COLOURS } from "@selene/common";
-import { toggleIsBchDenominated } from "@redux/reducers/settingsReducer";
+import { toggleIsBchDenominated } from "@selene/app/src/redux/reducers/settingsReducer";
 import { useSelector, useDispatch } from "react-redux";
-import { ReduxState } from "@types";
+import { ReduxState } from "@selene/app/src/types";
 
 const BchDenominated = () => {
   const dispatch = useDispatch();

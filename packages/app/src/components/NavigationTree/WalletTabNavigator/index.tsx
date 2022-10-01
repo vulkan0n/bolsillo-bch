@@ -13,10 +13,10 @@ import SendView from "./SendView";
 import AvailableBalance from "./SendView/AvailableBalance";
 import { useSelector } from "react-redux";
 import { SPACING } from "@selene/common";
-import { ReduxState } from "@types";
-import { selectIsActiveWallet } from "@redux/selectors";
+import { ReduxState } from "@selene/app/src/types";
+import { selectIsActiveWallet } from "@selene/app/src/redux/selectors";
 import CreatingWallet from "./CreatingWallet";
-import TabBar from "@atoms/TabBar";
+import TabBar from "@selene/app/src/components/atoms/TabBar";
 
 const Stack = createNativeStackNavigator();
 

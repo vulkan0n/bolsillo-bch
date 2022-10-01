@@ -15,7 +15,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import TransactionSuccessModal from "./modals/TransactionSuccessModal";
 import CustomTipModal from "./modals/CustomTipModal";
 import { useSelector } from "react-redux";
-import { ReduxState } from "@types";
+import { ReduxState } from "@selene/app/src/types";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();

@@ -1,17 +1,17 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, Pressable } from "react-native";
 import { TYPOGRAPHY } from "@selene/common";
-import Button from "@atoms/Button";
+import Button from "@selene/app/src/components/atoms/Button";
 import styles from "./styles";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { COLOURS } from "@selene/common";
 import { MotiView } from "moti";
 import { iconImport } from "@design/icons";
-import { updateTransactionNote } from "@redux/reducers/walletManagerReducer";
-import { updateLocalLastSentTransactionHash } from "@redux/reducers/localReducer";
+import { updateTransactionNote } from "@selene/app/src/redux/reducers/walletManagerReducer";
+import { updateLocalLastSentTransactionHash } from "@selene/app/src/redux/reducers/localReducer";
 import { useDispatch, useSelector } from "react-redux";
-import TextInput from "@atoms/TextInput";
-import { ReduxState } from "@types";
+import TextInput from "@selene/app/src/components/atoms/TextInput";
+import { ReduxState } from "@selene/app/src/types";
 
 function TransactionSuccessModal({ navigation }) {
   // Temporary storage of this text

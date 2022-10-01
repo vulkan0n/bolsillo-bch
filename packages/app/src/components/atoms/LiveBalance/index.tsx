@@ -3,21 +3,21 @@ import { View, Pressable, Text } from "react-native";
 import styles from "./styles";
 import { TYPOGRAPHY } from "@selene/common";
 import { useDispatch, useSelector } from "react-redux";
-import { ReduxState } from "@types";
-import { toggleIsBchDenominated } from "@redux/reducers/settingsReducer";
+import { ReduxState } from "@selene/app/src/types";
+import { toggleIsBchDenominated } from "@selene/app/src/redux/reducers/settingsReducer";
 import {
   selectPrimaryCurrencyOrDenomination,
   selectPadPrimaryBalance,
   selectPadSecondaryBalance,
   selectActiveWalletBalance,
-} from "@redux/selectors";
-import { convertRawSatsToRawCurrencyRounded } from "@utils/formatting";
-import { updateTransactionPadBalance } from "@redux/reducers/transactionPadReducer";
+} from "@selene/app/src/redux/selectors";
+import { convertRawSatsToRawCurrencyRounded } from "@selene/app/src/utils/formatting";
+import { updateTransactionPadBalance } from "@selene/app/src/redux/reducers/transactionPadReducer";
 import { COLOURS } from "@selene/common";
 import {
   convertRawCurrencyToRawSats,
   prettifyRawCurrency,
-} from "@utils/formatting";
+} from "@selene/app/src/utils/formatting";
 
 interface Props {
   isHideMaxButton?: boolean;

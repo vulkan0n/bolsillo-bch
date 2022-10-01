@@ -30,7 +30,10 @@ import {
   convertRawSatsToRawThb,
   convertRawSatsToRawUsd,
 } from "./exchangeRates";
-import { BitcoinDenominationTypes, SupportedCurrencyTypes } from "@types";
+import {
+  BitcoinDenominationTypes,
+  SupportedCurrencyTypes,
+} from "@selene/app/src/types";
 import {
   MAIN_NET_PREFIX,
   TEST_NET_PREFIX,

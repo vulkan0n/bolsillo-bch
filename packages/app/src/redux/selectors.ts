@@ -4,14 +4,14 @@ import {
   ReduxState,
   SeleneWalletType,
   SupportedCurrencyTypes,
-} from "@types";
+} from "@selene/app/src/types";
 import {
   convertBalanceToDisplay,
   convertRawCurrencyToRawSats,
   prettifyPadBalance,
-} from "@utils/formatting";
+} from "@selene/app/src/utils/formatting";
 import { CurrencyOrDenominationType } from "../types";
-import { BITCOIN_DENOMINATIONS } from "@utils/consts";
+import { BITCOIN_DENOMINATIONS } from "@selene/app/src/utils/consts";
 
 interface ActiveWalletBalance {
   primaryBalance: string;

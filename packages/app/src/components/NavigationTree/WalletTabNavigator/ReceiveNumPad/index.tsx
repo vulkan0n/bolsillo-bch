@@ -1,10 +1,10 @@
 import React from "react";
 import { View } from "react-native";
 import styles from "./styles";
-import Button from "@atoms/Button";
+import Button from "@selene/app/src/components/atoms/Button";
 import { useDispatch } from "react-redux";
-import LiveBalance from "@atoms/LiveBalance";
-import { updateTransactionPadBalance } from "@redux/reducers/transactionPadReducer";
+import LiveBalance from "@selene/app/src/components/atoms/LiveBalance";
+import { updateTransactionPadBalance } from "@selene/app/src/redux/reducers/transactionPadReducer";
 import NumPad from "../../../atoms/NumPad";
 
 const ReceiveNumPad = ({ navigation }) => {

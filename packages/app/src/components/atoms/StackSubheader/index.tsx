@@ -4,7 +4,7 @@ import { TYPOGRAPHY } from "@selene/common";
 import { useNavigation } from "@react-navigation/native";
 import stylesFunction from "./styles";
 import { useSelector } from "react-redux";
-import { ReduxState } from "@types";
+import { ReduxState } from "@selene/app/src/types";
 
 interface Props {
   title: string;

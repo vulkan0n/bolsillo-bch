@@ -1,6 +1,6 @@
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import CreditsView from "./CreditsView";
-import DrawerNavigator from "@atoms/DrawerNavigator";
+import DrawerNavigator from "@selene/app/src/components/atoms/DrawerNavigator";
 import WalletManagerStack from "./WalletManagerStack";
 import SettingsStack from "./SettingsStack";
 

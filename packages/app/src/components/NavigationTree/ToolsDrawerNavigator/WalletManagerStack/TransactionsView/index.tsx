@@ -4,13 +4,13 @@ import { useSelector } from "react-redux";
 import { TYPOGRAPHY } from "@selene/common";
 import styles from "./styles";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { ReduxState } from "@types";
-import Divider from "@atoms/Divider";
-import StackSubheader from "@atoms/StackSubheader";
+import { ReduxState } from "@selene/app/src/types";
+import Divider from "@selene/app/src/components/atoms/Divider";
+import StackSubheader from "@selene/app/src/components/atoms/StackSubheader";
 import WalletActions from "./WalletActions";
 import TransactionRow from "./TransactionRow";
-import { BRIDGE_MESSAGE_TYPES } from "@utils/bridgeMessages";
-import emit from "@utils/emit";
+import { BRIDGE_MESSAGE_TYPES } from "@selene/app/src/utils/bridgeMessages";
+import emit from "@selene/app/src/utils/emit";
 
 function TransactionsView({ navigation }) {
   const { navigatedWalletName } = useSelector(

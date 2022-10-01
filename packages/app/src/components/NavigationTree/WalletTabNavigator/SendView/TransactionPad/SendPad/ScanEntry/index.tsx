@@ -5,8 +5,8 @@ import styles from "./styles";
 import { useSelector, useDispatch } from "react-redux";
 import { TYPOGRAPHY } from "@selene/common";
 import { processRequestString } from "../utils";
-import { selectPrimaryCurrencyOrDenomination } from "@redux/selectors";
-import { ReduxState } from "@types";
+import { selectPrimaryCurrencyOrDenomination } from "@selene/app/src/redux/selectors";
+import { ReduxState } from "@selene/app/src/types";
 
 function QrScanner() {
   const dispatch = useDispatch();
