@@ -5,6 +5,7 @@ import TYPOGRAPHY from "@selene/common/design/typography";
 import styles from "./styles";
 import ContentCard from "./ContentCard";
 import { useQuery, gql } from "@apollo/client";
+import { BallIndicator } from "react-native-indicators";
 
 export const GET_CONTENT = gql`
   query GetContent {
@@ -23,24 +24,12 @@ export const GET_CONTENT = gql`
 function LatestView() {
   const { loading, error, data } = useQuery(GET_CONTENT);
 
-  console.log({ loading, error, data });
+  const Content = () => {
+    if (loading) return <BallIndicator size={30} />;
+    if (error) return <Text>Error :(</Text>;
 
-  if (loading) return <Text>Loading...</Text>;
-  if (error) return <Text>Error :(</Text>;
-
-  return (
-    <ScrollView style={styles.scrollView as any}>
-      <View style={styles.container as any}>
-        <Text
-          style={{ ...TYPOGRAPHY.h1black, marginTop: SPACING.fifteen } as any}
-        >
-          Welcome to Bitcoin Cash!
-        </Text>
-        <Text style={TYPOGRAPHY.p as any}>
-          Catch the latest discussions, podcasts, art, music and memes from the
-          BCH community.
-        </Text>
-
+    return (
+      <View>
         {data.content.map(
           ({
             key,
@@ -62,6 +51,24 @@ function LatestView() {
             />
           )
         )}
+      </View>
+    );
+  };
+
+  return (
+    <ScrollView style={styles.scrollView as any}>
+      <View style={styles.container as any}>
+        <Text
+          style={{ ...TYPOGRAPHY.h1black, marginTop: SPACING.fifteen } as any}
+        >
+          Welcome to Bitcoin Cash!
+        </Text>
+        <Text style={TYPOGRAPHY.p as any}>
+          Catch the latest discussions, podcasts, art, music and memes from the
+          BCH community.
+        </Text>
+
+        <Content />
       </View>
     </ScrollView>
   );
