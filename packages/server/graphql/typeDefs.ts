@@ -6,6 +6,10 @@ const { gql } = require("apollo-server");
 const typeDefs = gql`
   scalar Date
 
+  type ServerResponse {
+    status: String
+  }
+
   type ContentItem {
     key: Int
     title: String
@@ -28,6 +32,10 @@ const typeDefs = gql`
   type Query {
     content: [ContentItem]
     dailyActiveBitcoiners: [StatAtDate]
+  }
+
+  type Mutation {
+    dailyCheckIn(date: String): ServerResponse
   }
 `;
 

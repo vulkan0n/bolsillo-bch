@@ -9,6 +9,16 @@ import axios from "axios";
 import { updateBchPrices } from "@selene/app/src/redux/reducers/exchangeRatesReducer";
 import { selectActiveWallet } from "@selene/app/src/redux/selectors";
 import { updateTransactionPadIsSendingCoins } from "../../redux/reducers/transactionPadReducer";
+import { gql, useMutation } from "@apollo/client";
+import moment from "moment";
+
+const SEND_DAILY_CHECK_IN = gql`
+  mutation SendDailyCheckIn($date: String!) {
+    dailyCheckIn(date: $date) {
+      status
+    }
+  }
+`;
 
 const BackgroundIntervals = () => {
   const dispatch = useDispatch();
@@ -16,6 +26,8 @@ const BackgroundIntervals = () => {
   const { wallets } = useSelector((state: ReduxState) => state.walletManager);
 
   const { isTestNet } = useSelector((state: ReduxState) => state.settings);
+  const [sendDailyCheckIn, { data, loading, error }] =
+    useMutation(SEND_DAILY_CHECK_IN);
 
   const fetchWalletHistories = () => {
     wallets.map(({ name, mnemonic, derivationPath }) => {
@@ -39,6 +51,15 @@ const BackgroundIntervals = () => {
         mnemonic: wallet?.mnemonic,
         derivationPath: wallet?.derivationPath,
         isTestNet,
+      },
+    });
+  };
+
+  const checkIn = () => {
+    console.log("checking in!");
+    sendDailyCheckIn({
+      variables: {
+        date: "20221009",
       },
     });
   };
@@ -91,10 +112,13 @@ const BackgroundIntervals = () => {
     if (wallet) {
       fetchActiveWalletBalance();
     }
+
     if (wallets) {
       fetchWalletHistories();
     }
+
     fetchPriceData();
+    checkIn();
   };
 
   // Recheck balance when active wallet changes

@@ -1,6 +1,6 @@
 const { dateScalar } = require("./scalars.ts");
 const contentItems = require("./contentItems.ts");
-const moment = require("moment");
+// const moment = require("moment");
 
 const dailyActiveBitcoinersStats = [
   { date: "20221001", count: 1 },
@@ -15,6 +15,12 @@ const resolvers = {
   Query: {
     content: () => contentItems,
     dailyActiveBitcoiners: () => dailyActiveBitcoinersStats,
+  },
+  Mutation: {
+    dailyCheckIn: (_: any, { date }: { date: string }) => {
+      console.log("Daily check in!");
+      console.log({ date });
+    },
   },
 };
 
