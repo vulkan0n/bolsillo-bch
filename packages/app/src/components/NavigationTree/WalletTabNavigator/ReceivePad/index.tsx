@@ -24,7 +24,7 @@ import { selectIsPadZeroBalance } from "@selene/app/src/redux/selectors";
 const ReceivePad = ({ navigation }) => {
   const dispatch = useDispatch();
   const wallet = useSelector((state: ReduxState) => selectActiveWallet(state));
-  const padBalanceInSats = useSelector((state: ReduxState) =>
+  const padBalanceInSats = useSelector((state: ReduxState): string =>
     selectPadBalanceInRawSats(state)
   );
 
@@ -32,10 +32,12 @@ const ReceivePad = ({ navigation }) => {
     selectIsPadZeroBalance(state)
   );
 
+  const padBalanceInIntSats = parseInt(padBalanceInSats);
+
   const logo = require("../../../../assets/images/bch.png");
   const isAddress = wallet?.cashaddr;
   const isReceiveAmount = padBalanceInSats !== "0";
-  const receiveAmountInBch = padBalanceInSats / ONE_HUNDRED_MILLION;
+  const receiveAmountInBch = padBalanceInIntSats / ONE_HUNDRED_MILLION;
   const qrValue = `${wallet?.cashaddr}${
     isReceiveAmount ? `?amount=${receiveAmountInBch}` : ""
   }`;
