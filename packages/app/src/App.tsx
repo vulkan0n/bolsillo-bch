@@ -66,6 +66,7 @@ interface BridgeResponseMessage {
 }
 
 export default function App() {
+  console.log("loading app");
   // For the list of possible font faces
   // https://github.com/expo/google-fonts/tree/master/font-packages/montserrat
   const [fontsLoaded] = useFonts({

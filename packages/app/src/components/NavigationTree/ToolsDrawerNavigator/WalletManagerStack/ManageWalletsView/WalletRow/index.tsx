@@ -15,7 +15,13 @@ import {
 import styles from "./styles";
 import { BITCOIN_DENOMINATIONS } from "@utils/consts";
 
-const WalletRow = ({ navigation, name, description, balance, transactions }) => {
+const WalletRow = ({
+  navigation,
+  name,
+  description,
+  balance,
+  transactions,
+}) => {
   const dispatch = useDispatch();
   const { activeWalletName } = useSelector(
     (state: ReduxState) => state.walletManager
@@ -50,8 +56,8 @@ const WalletRow = ({ navigation, name, description, balance, transactions }) => 
 
   const primaryBalance = isBchDenominated ? bitcoinBalance : contrastBalance;
   const secondaryBalance = isBchDenominated ? contrastBalance : bitcoinBalance;
-  const transactionCount = transactions?.length
-  const s = transactions?.length === 1 ? '' : 's'
+  const transactionCount = transactions?.length;
+  const s = transactions?.length === 1 ? "" : "s";
 
   return (
     <View style={styles.container as any}>
@@ -73,7 +79,9 @@ const WalletRow = ({ navigation, name, description, balance, transactions }) => 
         {!!description && (
           <Text style={TYPOGRAPHY.pWhiteLeft as any}>{description}</Text>
         )}
-        <Text style={TYPOGRAPHY.pWhiteLeft as any}>{transactionCount} transaction{s}</Text>
+        <Text style={TYPOGRAPHY.pWhiteLeft as any}>
+          {transactionCount} transaction{s}
+        </Text>
         <Text style={TYPOGRAPHY.pWhiteLeft as any}>{primaryBalance}</Text>
         <Text style={TYPOGRAPHY.pWhiteLeft as any}>{secondaryBalance}</Text>
       </Pressable>
@@ -105,7 +113,7 @@ const WalletRow = ({ navigation, name, description, balance, transactions }) => 
               } as any
             }
           >
-            More >
+            More {">"}
           </Text>
         </Pressable>
       </View>
