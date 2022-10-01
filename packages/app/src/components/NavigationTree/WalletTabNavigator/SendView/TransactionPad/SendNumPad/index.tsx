@@ -28,7 +28,7 @@ const SendNumPad = ({ navigation }) => {
       <LiveBalance />
       <NumPad isCheckInsufficientBalance />
 
-      <Button icon={"faPaperPlane"} onPress={onPressSend} isSmall>
+      <Button icon={"faPaperPlane"} onPress={onPressSend} size="small">
         Send
       </Button>
       <Button

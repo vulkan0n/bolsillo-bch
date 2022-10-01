@@ -127,7 +127,7 @@ const Confirm = ({ navigation }) => {
       <Text style={TYPOGRAPHY.p as any}>{sendToAddress}</Text>
 
       {!isPadZeroBalance && (
-        <Button icon={"faPaperPlane"} onPress={onPressSend} isSmall>
+        <Button icon={"faPaperPlane"} onPress={onPressSend} size="small">
           Send
         </Button>
       )}
