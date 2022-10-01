@@ -127,7 +127,7 @@ const NavigationTree = () => {
   return (
     <NavigationContainer
       ref={navigationRef}
-      linking={linking}
+      // linking={linking}
       fallback={<Text>Loading...</Text>}
     >
       <Stack.Navigator

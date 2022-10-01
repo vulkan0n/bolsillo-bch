@@ -129,7 +129,7 @@ function MyTabBar({ state, descriptors, navigation, position }) {
 function WalletTabNavigator() {
   return (
     <Tab.Navigator
-      tabBar={(props) => <TabBar {...props} />}
+      tabBar={(props) => <TabBar isDarkMode={false} {...props} />}
       initialRouteName={"Receive"}
     >
       <Tab.Screen name="Send" component={SendView} />
