@@ -36,6 +36,31 @@ import {
 import { navigate } from "./components/NavigationTree/rootNavigation";
 import { updateLocalLastSentTransactionHash } from "./redux/reducers/localReducer";
 import { IS_WEB } from "@selene/app/src/utils/consts";
+import {
+  ApolloClient,
+  InMemoryCache,
+  ApolloProvider,
+  gql,
+} from "@apollo/client";
+
+const client = new ApolloClient({
+  uri: "http://localhost:4000/",
+  cache: new InMemoryCache(),
+});
+
+client
+
+  .query({
+    query: gql`
+      query GetBooks {
+        books {
+          title
+        }
+      }
+    `,
+  })
+
+  .then((result) => console.log(result));
 
 interface TransactionHistoryTxType {
   blockheight: number;
