@@ -11,7 +11,7 @@ interface Props {
   title: string;
   text: string;
   icon?: IconType;
-  variant?: "wide";
+  variant?: "" | "wide";
 }
 
 const PressableCard = ({
