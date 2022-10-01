@@ -80,9 +80,9 @@ export const isValidCashAddress = (
     : isValidMainNetCashAddress(address);
 
 type ValidateRequestType = {
-  isValid: Boolean;
-  address: String;
-  rawSatAmount: String;
+  isValid: boolean;
+  address: string;
+  rawSatAmount: string;
 };
 
 // Example request

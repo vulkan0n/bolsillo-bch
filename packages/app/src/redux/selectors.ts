@@ -30,13 +30,13 @@ export const selectActiveWallet: (state: ReduxState) => SeleneWalletType =
 export const selectIsActiveWallet: (state: ReduxState) => Boolean =
   createSelector(
     selectActiveWallet,
-    (activeWallet: SeleneWalletType): Boolean => !!activeWallet
+    (activeWallet: SeleneWalletType): boolean => !!activeWallet
   );
 
 export const selectIsActiveWalletZeroBalance: (state: ReduxState) => Boolean =
   createSelector(
     selectActiveWallet,
-    (wallet: SeleneWalletType): Boolean => parseInt(wallet?.balance) === 0
+    (wallet: SeleneWalletType): boolean => parseInt(wallet?.balance) === 0
   );
 
 export const selectActiveWalletBalance: (
