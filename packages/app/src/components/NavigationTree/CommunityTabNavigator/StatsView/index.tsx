@@ -60,8 +60,8 @@ function StatsView({ navigation }) {
         <Text style={TYPOGRAPHY.p as any}>
           Once activated, you can opt out any time in Tools {">"} Settings.
         </Text>
-        <Button>Activate</Button>
-        <Button>Read more</Button>
+        <Button onPress={() => {}}>Activate</Button>
+        <Button onPress={() => {}}>Read more</Button>
       </View>
     </ScrollView>
   );
