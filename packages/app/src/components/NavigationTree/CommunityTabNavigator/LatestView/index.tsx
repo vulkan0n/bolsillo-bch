@@ -6,10 +6,15 @@ import styles from "./styles";
 import ContentCard from "./ContentCard";
 import { useQuery, gql } from "@apollo/client";
 
-export const GET_BOOKS = gql`
-  query GetBooks {
-    books {
+export const GET_CONTENT = gql`
+  query GetContent {
+    content {
+      key
       title
+      creator
+      videoId
+      description
+      donationBchAddress
     }
   }
 `;
@@ -38,7 +43,7 @@ const CONTENT = [
 ];
 
 function LatestView() {
-  const { loading, error, data } = useQuery(GET_BOOKS);
+  const { loading, error, data } = useQuery(GET_CONTENT);
 
   console.log({ loading, error, data });
 
@@ -57,11 +62,10 @@ function LatestView() {
           Catch the latest discussions, podcasts, art, music and memes from the
           BCH community.
         </Text>
-        {data.books.map((d) => (
-          <Text key={d.title}>{JSON.stringify(d)}</Text>
-        ))}
 
-        {CONTENT.map(
+
+
+        {data.content.map(
           ({
             key,
             title,
