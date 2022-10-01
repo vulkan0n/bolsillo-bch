@@ -2,8 +2,8 @@ import React from "react";
 import { View, Text, Pressable } from "react-native";
 import styles from "./styles";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { COLOURS } from "@selene/common";
-import { TYPOGRAPHY } from "@selene/common";
+import COLOURS from "@selene/common/design/colours";
+import TYPOGRAPHY from "@selene/common/design/typography";
 import { iconImport, IconType } from "@selene/app/src/design/icons";
 
 interface Props {

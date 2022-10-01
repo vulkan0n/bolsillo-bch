@@ -1,4 +1,4 @@
-import { COLOURS } from "@selene/common";
+import COLOURS from "@selene/common/design/colours";
 
 const SHADOW = {
   // iOS drop shadow

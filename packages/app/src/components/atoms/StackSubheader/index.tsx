@@ -1,6 +1,6 @@
 import React from "react";
 import { View, Text, Pressable } from "react-native";
-import { TYPOGRAPHY } from "@selene/common";
+import TYPOGRAPHY from "@selene/common/design/typography";
 import { useNavigation } from "@react-navigation/native";
 import stylesFunction from "./styles";
 import { useSelector } from "react-redux";

@@ -2,7 +2,7 @@ import React from "react";
 import { View, Text, Pressable } from "react-native";
 import styles from "./styles";
 import Button from "@selene/app/src/components/atoms/Button";
-import { TYPOGRAPHY } from "@selene/common";
+import TYPOGRAPHY from "@selene/common/design/typography";
 import { useSelector, useDispatch } from "react-redux";
 import {
   updateTransactionPadBalance,

@@ -4,13 +4,13 @@ import { useSelector } from "react-redux";
 import styles from "./styles";
 import Button from "@selene/app/src/components/atoms/Button";
 import Toast from "react-native-toast-message";
-import { TYPOGRAPHY } from "@selene/common";
+import TYPOGRAPHY from "@selene/common/design/typography";
 import QRCode from "react-native-qrcode-svg";
 import { useDispatch } from "react-redux";
 import { updateTransactionPadView } from "@selene/app/src/redux/reducers/transactionPadReducer";
 import { ReduxState } from "@selene/app/src/types";
 import * as Clipboard from "expo-clipboard";
-import { COLOURS } from "@selene/common";
+import COLOURS from "@selene/common/design/colours";
 import {
   selectActiveWallet,
   selectIsActiveWalletZeroBalance,

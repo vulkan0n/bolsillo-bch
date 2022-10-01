@@ -4,9 +4,9 @@ import Button from "@selene/app/src/components/atoms/Button";
 import Divider from "@selene/app/src/components/atoms/Divider";
 import { useSelector } from "react-redux";
 import { ReduxState } from "@selene/app/src/types";
-import { TYPOGRAPHY } from "@selene/common";
-import { SPACING } from "@selene/common";
-import { COLOURS } from "@selene/common";
+import TYPOGRAPHY from "@selene/common/design/typography";
+import SPACING from "@selene/common/design/spacing";
+import COLOURS from "@selene/common/design/colours";
 
 const WalletActions = ({ navigation }) => {
   const { activeWalletName, navigatedWalletName } = useSelector(

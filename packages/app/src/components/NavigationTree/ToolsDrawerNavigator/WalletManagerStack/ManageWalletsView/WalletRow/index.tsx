@@ -1,10 +1,10 @@
 import React from "react";
 import { View, Text, Pressable } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
-import { TYPOGRAPHY } from "@selene/common";
+import TYPOGRAPHY from "@selene/common/design/typography";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { COLOURS } from "@selene/common";
-import { SPACING } from "@selene/common";
+import COLOURS from "@selene/common/design/colours";
+import SPACING from "@selene/common/design/spacing";
 import { ReduxState } from "@selene/app/src/types";
 import { faWallet } from "@fortawesome/free-solid-svg-icons";
 import { convertBalanceToDisplay } from "@selene/app/src/utils/formatting";

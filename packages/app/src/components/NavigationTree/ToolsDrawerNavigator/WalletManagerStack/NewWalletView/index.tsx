@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { View, Text, Pressable } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import Button from "@selene/app/src/components/atoms/Button";
-import { TYPOGRAPHY } from "@selene/common";
+import TYPOGRAPHY from "@selene/common/design/typography";
 import styles from "./styles";
 import { ReduxState } from "@selene/app/src/types";
 import {

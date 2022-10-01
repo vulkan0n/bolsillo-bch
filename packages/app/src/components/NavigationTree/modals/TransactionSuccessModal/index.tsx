@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, Pressable } from "react-native";
-import { TYPOGRAPHY } from "@selene/common";
+import TYPOGRAPHY from "@selene/common/design/typography";
 import Button from "@selene/app/src/components/atoms/Button";
 import styles from "./styles";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { COLOURS } from "@selene/common";
+import COLOURS from "@selene/common/design/colours";
 import { MotiView } from "moti";
 import { iconImport } from "@selene/app/src/design/icons";
 import { updateTransactionNote } from "@selene/app/src/redux/reducers/walletManagerReducer";

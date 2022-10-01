@@ -1,6 +1,6 @@
 import React from "react";
 import { Pressable, View, Image, Text, Linking } from "react-native";
-import { TYPOGRAPHY } from "@selene/common";
+import TYPOGRAPHY from "@selene/common/design/typography";
 import styles from "./styles";
 import TipWidget from "@selene/app/src/components/atoms/TipWidget";
 import { DEVELOPER_DONATION_ADDRESS } from "@selene/app/src/utils/consts";

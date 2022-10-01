@@ -1,6 +1,6 @@
 import { createDrawerNavigator } from "@react-navigation/drawer";
-import { COLOURS } from "@selene/common";
-import { TYPOGRAPHY } from "@selene/common";
+import COLOURS from "@selene/common/design/colours";
+import TYPOGRAPHY from "@selene/common/design/typography";
 import { getHeaderTitle } from "@react-navigation/elements";
 import { View, Text, Pressable } from "react-native";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";

@@ -1,14 +1,14 @@
 import React, { useState } from "react";
 import { ScrollView, View, Text, Pressable } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
-import { TYPOGRAPHY } from "@selene/common";
+import TYPOGRAPHY from "@selene/common/design/typography";
 import styles from "./styles";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faMoneyBillWave } from "@fortawesome/free-solid-svg-icons/faMoneyBillWave";
-import { COLOURS } from "@selene/common";
+import COLOURS from "@selene/common/design/colours";
 import { ReduxState } from "@selene/app/src/types";
 import Divider from "@selene/app/src/components/atoms/Divider";
-import { SPACING } from "@selene/common";
+import SPACING from "@selene/common/design/spacing";
 import { updateContrastCurrency } from "@selene/app/src/redux/reducers/settingsReducer";
 import { SUPPORTED_CURRENCIES } from "@selene/app/src/utils/consts";
 import StackSubheader from "@selene/app/src/components/atoms/StackSubheader";

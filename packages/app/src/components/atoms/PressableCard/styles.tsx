@@ -1,5 +1,5 @@
-import { SPACING } from "@selene/common";
-import { COLOURS } from "@selene/common";
+import SPACING from "@selene/common/design/spacing";
+import COLOURS from "@selene/common/design/colours";
 
 const styles = ({ variant = "" }) => ({
   pressableCard: {

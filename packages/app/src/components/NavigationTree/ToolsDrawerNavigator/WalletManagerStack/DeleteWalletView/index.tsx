@@ -1,14 +1,14 @@
 import React from "react";
 import { View, Text, ScrollView } from "react-native";
 import Button from "@selene/app/src/components/atoms/Button";
-import { TYPOGRAPHY } from "@selene/common";
+import TYPOGRAPHY from "@selene/common/design/typography";
 import styles from "./styles";
 import Toast from "react-native-toast-message";
 import { useDispatch, useSelector } from "react-redux";
 import { ReduxState } from "@selene/app/src/types";
 import Divider from "@selene/app/src/components/atoms/Divider";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { COLOURS } from "@selene/common";
+import COLOURS from "@selene/common/design/colours";
 import { faTrashCan } from "@fortawesome/free-solid-svg-icons/faTrashCan";
 import { deleteWallet } from "@selene/app/src/redux/reducers/walletManagerReducer";
 import StackSubheader from "@selene/app/src/components/atoms/StackSubheader";

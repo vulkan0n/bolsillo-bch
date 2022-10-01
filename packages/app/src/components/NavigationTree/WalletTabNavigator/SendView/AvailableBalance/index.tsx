@@ -1,7 +1,7 @@
 import React from "react";
 import { View, Text } from "react-native";
 import { useSelector } from "react-redux";
-import { TYPOGRAPHY } from "@selene/common";
+import TYPOGRAPHY from "@selene/common/design/typography";
 import styles from "./styles";
 import { selectActiveWalletBalance } from "@selene/app/src/redux/selectors";
 import { ReduxState } from "@selene/app/src/types";

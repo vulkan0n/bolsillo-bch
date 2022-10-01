@@ -1,11 +1,11 @@
 import React from "react";
 import { Pressable, View, Text, Linking } from "react-native";
-import { TYPOGRAPHY } from "@selene/common";
+import TYPOGRAPHY from "@selene/common/design/typography";
 import TextInput from "@selene/app/src/components/atoms/TextInput";
 import Button from "@selene/app/src/components/atoms/Button";
 import { useDispatch, useSelector } from "react-redux";
 import { updateTransactionNote } from "@selene/app/src/redux/reducers/walletManagerReducer";
-import { COLOURS } from "@selene/common";
+import COLOURS from "@selene/common/design/colours";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { iconImport } from "@selene/app/src/design/icons";
 import { convertBalanceToDisplay } from "@selene/app/src/utils/formatting";
@@ -15,7 +15,7 @@ import {
   selectPrimaryCurrencyOrDenomination,
   selectSecondaryCurrencyOrDenomination,
 } from "@selene/app/src/redux/selectors";
-import { SPACING } from "@selene/common";
+import SPACING from "@selene/common/design/spacing";
 
 const TransactionRow = ({ transaction, editNoteHash, setEditNoteHash }) => {
   const { blockheight, txn, note, balance, fee, from, to, value } = transaction;

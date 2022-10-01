@@ -8,7 +8,7 @@ import RightHandedMode from "./RightHandedMode";
 import ShowAvailableBalance from "./ShowAvailableBalance";
 import ShowCommunityTab from "./ShowCommunityTab";
 import TestNet from "./TestNet";
-import { TYPOGRAPHY } from "@selene/common";
+import TYPOGRAPHY from "@selene/common/design/typography";
 import Divider from "@selene/app/src/components/atoms/Divider";
 import StackSubheader from "@selene/app/src/components/atoms/StackSubheader";
 

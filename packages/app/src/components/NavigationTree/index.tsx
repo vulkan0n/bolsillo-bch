@@ -3,7 +3,7 @@ import { Text } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import WalletTabNavigator from "./WalletTabNavigator";
 import IrlView from "./IrlView";
-import { COLOURS } from "@selene/common";
+import COLOURS from "@selene/common/design/colours";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { iconImport } from "@selene/app/src/design/icons";

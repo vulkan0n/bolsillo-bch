@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { View, Text } from "react-native";
-import { COLOURS } from "@selene/common";
-import { SPACING } from "@selene/common";
-import { TYPOGRAPHY } from "@selene/common";
+import COLOURS from "@selene/common/design/colours";
+import SPACING from "@selene/common/design/spacing";
+import TYPOGRAPHY from "@selene/common/design/typography";
 import YoutubePlayer from "react-native-youtube-iframe";
 import moment from "moment";
 import TipWidget from "@selene/app/src/components/atoms/TipWidget";

@@ -10,13 +10,13 @@ import {
 } from "@selene/app/src/redux/reducers/transactionPadReducer";
 import { ReduxState } from "@selene/app/src/types";
 import emit from "@selene/app/src/utils/emit";
-import { TYPOGRAPHY } from "@selene/common";
+import TYPOGRAPHY from "@selene/common/design/typography";
 import {
   selectActiveWallet,
   selectPadBalanceInRawSats,
 } from "@selene/app/src/redux/selectors";
 import LiveBalance from "@selene/app/src/components/atoms/LiveBalance";
-import { COLOURS } from "@selene/common";
+import COLOURS from "@selene/common/design/colours";
 import { TEN_SECONDS } from "@selene/app/src/utils/consts";
 import { selectIsPadZeroBalance } from "@selene/app/src/redux/selectors";
 import { BallIndicator } from "react-native-indicators";

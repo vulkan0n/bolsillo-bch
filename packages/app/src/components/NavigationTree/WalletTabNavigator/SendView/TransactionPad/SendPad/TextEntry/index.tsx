@@ -9,7 +9,7 @@ import { formatStringToCashAddress } from "@selene/app/src/utils/formatting";
 import * as Clipboard from "expo-clipboard";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { iconImport } from "@selene/app/src/design/icons";
-import { COLOURS } from "@selene/common";
+import COLOURS from "@selene/common/design/colours";
 import { selectPrimaryCurrencyOrDenomination } from "@selene/app/src/redux/selectors";
 import { processRequestString } from "../utils";
 

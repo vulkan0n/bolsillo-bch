@@ -2,9 +2,9 @@ import React, { useEffect, useState } from "react";
 import { ScrollView, View, Text } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import Button from "@selene/app/src/components/atoms/Button";
-import { TYPOGRAPHY } from "@selene/common";
+import TYPOGRAPHY from "@selene/common/design/typography";
 import styles from "./styles";
-import { COLOURS } from "@selene/common";
+import COLOURS from "@selene/common/design/colours";
 import { ReduxState } from "@selene/app/src/types";
 import {
   createWalletFromScratchPad,

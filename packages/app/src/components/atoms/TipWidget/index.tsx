@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { View, Pressable, Text } from "react-native";
-import { COLOURS } from "@selene/common";
+import COLOURS from "@selene/common/design/colours";
 import Button from "@selene/app/src/components/atoms/Button";
 import emit from "@selene/app/src/utils/emit";
 import { BRIDGE_MESSAGE_TYPES } from "@selene/app/src/utils/bridgeMessages";
@@ -12,7 +12,7 @@ import {
   updateTransactionPadBalance,
 } from "@selene/app/src/redux/reducers/transactionPadReducer";
 import { selectActiveWalletBalance } from "@selene/app/src/redux/selectors";
-import { TYPOGRAPHY } from "@selene/common";
+import TYPOGRAPHY from "@selene/common/design/typography";
 import styles from "./styles";
 import { navigate } from "@selene/app/src/components/NavigationTree/rootNavigation";
 import { BITCOIN_DENOMINATIONS } from "@selene/app/src/utils/consts";

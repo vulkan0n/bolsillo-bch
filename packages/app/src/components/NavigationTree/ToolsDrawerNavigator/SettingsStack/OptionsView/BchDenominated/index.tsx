@@ -1,8 +1,8 @@
 import React from "react";
 import { View, Text, Switch, Pressable } from "react-native";
-import { TYPOGRAPHY } from "@selene/common";
+import TYPOGRAPHY from "@selene/common/design/typography";
 import styles from "../styles";
-import { COLOURS } from "@selene/common";
+import COLOURS from "@selene/common/design/colours";
 import { toggleIsBchDenominated } from "@selene/app/src/redux/reducers/settingsReducer";
 import { useSelector, useDispatch } from "react-redux";
 import { ReduxState } from "@selene/app/src/types";

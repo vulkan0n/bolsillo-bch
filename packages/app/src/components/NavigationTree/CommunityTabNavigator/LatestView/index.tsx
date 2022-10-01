@@ -1,7 +1,7 @@
 import React from "react";
 import { View, ScrollView, Text } from "react-native";
-import { SPACING } from "@selene/common";
-import { TYPOGRAPHY } from "@selene/common";
+import SPACING from "@selene/common/design/spacing";
+import TYPOGRAPHY from "@selene/common/design/typography";
 import styles from "./styles";
 import ContentCard from "./ContentCard";
 

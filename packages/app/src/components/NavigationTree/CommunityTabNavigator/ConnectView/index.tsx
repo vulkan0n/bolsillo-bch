@@ -1,8 +1,8 @@
 import React from "react";
 import { View, Text, ScrollView } from "react-native";
-import { COLOURS } from "@selene/common";
-import { SPACING } from "@selene/common";
-import { TYPOGRAPHY } from "@selene/common";
+import COLOURS from "@selene/common/design/colours";
+import SPACING from "@selene/common/design/spacing";
+import TYPOGRAPHY from "@selene/common/design/typography";
 import styles from "./styles";
 
 function ConnectView({ navigation }) {

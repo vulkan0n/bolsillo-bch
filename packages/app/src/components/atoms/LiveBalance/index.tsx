@@ -1,7 +1,7 @@
 import React from "react";
 import { View, Pressable, Text } from "react-native";
 import styles from "./styles";
-import { TYPOGRAPHY } from "@selene/common";
+import TYPOGRAPHY from "@selene/common/design/typography";
 import { useDispatch, useSelector } from "react-redux";
 import { ReduxState } from "@selene/app/src/types";
 import { toggleIsBchDenominated } from "@selene/app/src/redux/reducers/settingsReducer";
@@ -13,7 +13,7 @@ import {
 } from "@selene/app/src/redux/selectors";
 import { convertRawSatsToRawCurrencyRounded } from "@selene/app/src/utils/formatting";
 import { updateTransactionPadBalance } from "@selene/app/src/redux/reducers/transactionPadReducer";
-import { COLOURS } from "@selene/common";
+import COLOURS from "@selene/common/design/colours";
 import {
   convertRawCurrencyToRawSats,
   prettifyRawCurrency,

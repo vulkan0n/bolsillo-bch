@@ -1,10 +1,10 @@
 import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { View, TouchableOpacity, Text } from "react-native";
-import { COLOURS } from "@selene/common";
+import COLOURS from "@selene/common/design/colours";
 import { iconImport } from "@selene/app/src/design/icons";
-import { TYPOGRAPHY } from "@selene/common";
-import { SPACING } from "@selene/common";
+import TYPOGRAPHY from "@selene/common/design/typography";
+import SPACING from "@selene/common/design/spacing";
 
 function TabBar({ state, descriptors, navigation, position, isDarkMode }) {
   const icon = (route) => {

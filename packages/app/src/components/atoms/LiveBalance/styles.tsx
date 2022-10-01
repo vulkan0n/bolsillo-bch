@@ -1,5 +1,5 @@
-import { COLOURS } from "@selene/common";
-import { SPACING } from "@selene/common";
+import COLOURS from "@selene/common/design/colours";
+import SPACING from "@selene/common/design/spacing";
 
 const styles = {
   secondaryTitlesWrapper: {

@@ -1,4 +1,4 @@
-import { SPACING } from "@selene/common";
+import SPACING from "@selene/common/design/spacing";
 
 const styles = {
   entryRow: {

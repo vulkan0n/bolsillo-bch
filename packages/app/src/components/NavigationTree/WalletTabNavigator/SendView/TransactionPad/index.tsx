@@ -7,7 +7,7 @@ import SendNumPad from "./SendNumPad";
 import { useSelector } from "react-redux";
 import { ReduxState } from "@selene/app/src/types";
 import { selectIsActiveWalletZeroBalance } from "@selene/app/src/redux/selectors";
-import { TYPOGRAPHY } from "@selene/common";
+import TYPOGRAPHY from "@selene/common/design/typography";
 
 const TransactionPad = ({ navigation }) => {
   const { view } = useSelector((state: ReduxState) => state.transactionPad);
