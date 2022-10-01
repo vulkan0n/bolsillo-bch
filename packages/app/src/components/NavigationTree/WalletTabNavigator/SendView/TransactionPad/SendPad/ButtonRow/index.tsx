@@ -54,9 +54,7 @@ const ButtonRow = () => {
       <Button
         icon="faQrcode"
         variant={
-          sendInputView === "Scan" || sendInputView === ""
-            ? "smallActionBlack"
-            : "smallActionGreen"
+          sendInputView === "Scan" ? "smallActionBlack" : "smallActionGreen"
         }
         onPress={onPressScan}
       >
@@ -73,9 +71,7 @@ const ButtonRow = () => {
       </Button>
       <Button
         icon="faImage"
-        variant={
-          sendInputView === "Image" ? "smallActionBlack" : "smallActionGreen"
-        }
+        variant={"smallActionGreen"}
         onPress={onPressImage}
       >
         Img
