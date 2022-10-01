@@ -2,8 +2,8 @@ const { ApolloServer } = require("apollo-server");
 const {
   ApolloServerPluginLandingPageLocalDefault,
 } = require("apollo-server-core");
-const { dateScalar } = require("./apollo/scalars.ts");
-const typeDefs = require("./apollo/typeDefs.ts");
+const { dateScalar } = require("./graphql/scalars.ts");
+const typeDefs = require("./graphql/typeDefs.ts");
 
 const contentItems = [
   {
