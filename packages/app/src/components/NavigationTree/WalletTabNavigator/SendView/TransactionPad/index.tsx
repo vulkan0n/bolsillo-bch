@@ -5,7 +5,7 @@ import SendPad from "./SendPad";
 import Confirm from "./Confirm";
 import SendNumPad from "./SendNumPad";
 import { useSelector } from "react-redux";
-import { ReduxState } from "@selene/app/src/types";
+import { ReduxState } from "@selene/common/dist/types";
 import { selectIsActiveWalletZeroBalance } from "@selene/app/src/redux/selectors";
 import TYPOGRAPHY from "@selene/common/design/typography";
 

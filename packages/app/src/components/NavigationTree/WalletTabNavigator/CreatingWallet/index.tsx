@@ -6,7 +6,7 @@ import TYPOGRAPHY from "@selene/common/design/typography";
 import { selectIsActiveWallet } from "@selene/app/src/redux/selectors";
 import { ONE_SECOND } from "@selene/app/src/utils/consts";
 import emit from "@selene/app/src/utils/emit";
-import { ReduxState } from "@selene/app/src/types";
+import { ReduxState } from "@selene/common/dist/types";
 import { BRIDGE_MESSAGE_TYPES } from "@selene/app/src/utils/bridgeMessages";
 
 const CreatingWallet = () => {

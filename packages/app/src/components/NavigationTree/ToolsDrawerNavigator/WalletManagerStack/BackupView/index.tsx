@@ -7,7 +7,7 @@ import styles from "./styles";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faPiggyBank } from "@fortawesome/free-solid-svg-icons/faPiggyBank";
 import COLOURS from "@selene/common/design/colours";
-import { ReduxState } from "@selene/app/src/types";
+import { ReduxState } from "@selene/common/dist/types";
 import Divider from "@selene/app/src/components/atoms/Divider";
 import StackSubheader from "@selene/app/src/components/atoms/StackSubheader";
 

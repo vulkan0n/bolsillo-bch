@@ -6,7 +6,7 @@ import styles from "./styles";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faMoneyBillWave } from "@fortawesome/free-solid-svg-icons/faMoneyBillWave";
 import COLOURS from "@selene/common/design/colours";
-import { ReduxState } from "@selene/app/src/types";
+import { ReduxState } from "@selene/common/dist/types";
 import Divider from "@selene/app/src/components/atoms/Divider";
 import SPACING from "@selene/common/design/spacing";
 import { updateContrastCurrency } from "@selene/app/src/redux/reducers/settingsReducer";

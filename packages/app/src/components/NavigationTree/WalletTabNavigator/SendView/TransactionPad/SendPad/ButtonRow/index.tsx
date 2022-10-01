@@ -4,7 +4,7 @@ import styles from "./styles";
 import Button from "@selene/app/src/components/atoms/Button";
 import { useSelector, useDispatch } from "react-redux";
 import { updateTransactionPadSendInputView } from "@selene/app/src/redux/reducers/transactionPadReducer";
-import { ReduxState } from "@selene/app/src/types";
+import { ReduxState } from "@selene/common/dist/types";
 import pickImage from "../pickImage";
 import {
   selectPrimaryCurrencyOrDenomination,

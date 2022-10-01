@@ -12,7 +12,7 @@ import {
   selectPadPrimaryBalance,
   selectActiveWallet,
 } from "@selene/app/src/redux/selectors";
-import { ReduxState } from "@selene/app/src/types";
+import { ReduxState } from "@selene/common/dist/types";
 import emit from "@selene/app/src/utils/emit";
 import {
   updateTransactionPadIsSendingCoins,

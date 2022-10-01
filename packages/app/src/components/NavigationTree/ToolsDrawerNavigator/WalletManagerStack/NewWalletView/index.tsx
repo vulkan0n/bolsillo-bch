@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import Button from "@selene/app/src/components/atoms/Button";
 import TYPOGRAPHY from "@selene/common/design/typography";
 import styles from "./styles";
-import { ReduxState } from "@selene/app/src/types";
+import { ReduxState } from "@selene/common/dist/types";
 import {
   createWalletFromScratchPad,
   updateNewWalletScratchPadDescription,

@@ -11,7 +11,7 @@ import { updateTransactionNote } from "@selene/app/src/redux/reducers/walletMana
 import { updateLocalLastSentTransactionHash } from "@selene/app/src/redux/reducers/localReducer";
 import { useDispatch, useSelector } from "react-redux";
 import TextInput from "@selene/app/src/components/atoms/TextInput";
-import { ReduxState } from "@selene/app/src/types";
+import { ReduxState } from "@selene/common/dist/types";
 
 function TransactionSuccessModal({ navigation }) {
   // Temporary storage of this text

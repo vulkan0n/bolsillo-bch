@@ -33,7 +33,7 @@ import {
 import {
   BitcoinDenominationTypes,
   SupportedCurrencyTypes,
-} from "@selene/app/src/types";
+} from "@selene/common/dist/types";
 import {
   MAIN_NET_PREFIX,
   TEST_NET_PREFIX,

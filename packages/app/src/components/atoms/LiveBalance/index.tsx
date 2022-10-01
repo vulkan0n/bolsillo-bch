@@ -3,7 +3,7 @@ import { View, Pressable, Text } from "react-native";
 import styles from "./styles";
 import TYPOGRAPHY from "@selene/common/design/typography";
 import { useDispatch, useSelector } from "react-redux";
-import { ReduxState } from "@selene/app/src/types";
+import { ReduxState } from "@selene/common/dist/types";
 import { toggleIsBchDenominated } from "@selene/app/src/redux/reducers/settingsReducer";
 import {
   selectPrimaryCurrencyOrDenomination,

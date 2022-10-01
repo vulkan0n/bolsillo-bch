@@ -4,7 +4,7 @@ import styles from "./styles";
 import TextInput from "@selene/app/src/components/atoms/TextInput";
 import { useSelector, useDispatch } from "react-redux";
 import { updateTransactionPadSendToAddress } from "@selene/app/src/redux/reducers/transactionPadReducer";
-import { ReduxState } from "@selene/app/src/types";
+import { ReduxState } from "@selene/common/dist/types";
 import { formatStringToCashAddress } from "@selene/app/src/utils/formatting";
 import * as Clipboard from "expo-clipboard";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";

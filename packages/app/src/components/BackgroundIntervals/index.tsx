@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { View } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
-import { ReduxState } from "@selene/app/src/types";
+import { ReduxState } from "@selene/common/dist/types";
 import { BRIDGE_MESSAGE_TYPES } from "@selene/app/src/utils/bridgeMessages";
 import { ONE_SECOND, THIRTY_SECONDS } from "@selene/app/src/utils/consts";
 import emit from "@selene/app/src/utils/emit";

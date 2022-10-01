@@ -8,7 +8,7 @@ import TYPOGRAPHY from "@selene/common/design/typography";
 import QRCode from "react-native-qrcode-svg";
 import { useDispatch } from "react-redux";
 import { updateTransactionPadView } from "@selene/app/src/redux/reducers/transactionPadReducer";
-import { ReduxState } from "@selene/app/src/types";
+import { ReduxState } from "@selene/common/dist/types";
 import * as Clipboard from "expo-clipboard";
 import COLOURS from "@selene/common/design/colours";
 import {

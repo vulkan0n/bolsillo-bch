@@ -4,7 +4,7 @@ import {
   ReduxState,
   SeleneWalletType,
   SupportedCurrencyTypes,
-} from "@selene/app/src/types";
+} from "@selene/common/dist/types";
 import {
   convertBalanceToDisplay,
   convertRawCurrencyToRawSats,

@@ -8,7 +8,7 @@ import moment from "moment";
 import TipWidget from "@selene/app/src/components/atoms/TipWidget";
 import emit from "@selene/app/src/utils/emit";
 import { BRIDGE_MESSAGE_TYPES } from "@selene/app/src/utils/bridgeMessages";
-import { ReduxState } from "@selene/app/src/types";
+import { ReduxState } from "@selene/common/dist/types";
 import { useSelector, useDispatch } from "react-redux";
 import { selectActiveWallet } from "@selene/app/src/redux/selectors";
 import { updateTransactionPadIsSendingCoins } from "@selene/app/src/redux/reducers/transactionPadReducer";

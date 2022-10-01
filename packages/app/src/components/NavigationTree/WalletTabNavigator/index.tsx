@@ -13,7 +13,7 @@ import SendView from "./SendView";
 import AvailableBalance from "./SendView/AvailableBalance";
 import { useSelector } from "react-redux";
 import SPACING from "@selene/common/design/spacing";
-import { ReduxState } from "@selene/app/src/types";
+import { ReduxState } from "@selene/common/dist/types";
 import { selectIsActiveWallet } from "@selene/app/src/redux/selectors";
 import CreatingWallet from "./CreatingWallet";
 import TabBar from "@selene/app/src/components/atoms/TabBar";

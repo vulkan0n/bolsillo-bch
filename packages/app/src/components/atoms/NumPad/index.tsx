@@ -13,7 +13,7 @@ import {
   BitcoinDenominationTypes,
   ReduxState,
   SupportedCurrencyTypes,
-} from "@selene/app/src/types";
+} from "@selene/common/dist/types";
 import TRANSACTION_PAD_ERRORS from "../../NavigationTree/WalletTabNavigator/SendView/TransactionPad/errors";
 import {
   allowedDecimalPlaces,

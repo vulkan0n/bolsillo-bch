@@ -4,7 +4,7 @@ import { useSelector } from "react-redux";
 import TYPOGRAPHY from "@selene/common/design/typography";
 import styles from "./styles";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { ReduxState } from "@selene/app/src/types";
+import { ReduxState } from "@selene/common/dist/types";
 import Divider from "@selene/app/src/components/atoms/Divider";
 import StackSubheader from "@selene/app/src/components/atoms/StackSubheader";
 import WalletActions from "./WalletActions";

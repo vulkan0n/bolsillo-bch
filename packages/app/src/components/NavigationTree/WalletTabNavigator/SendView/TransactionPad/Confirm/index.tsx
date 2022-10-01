@@ -8,7 +8,7 @@ import {
   updateTransactionPadView,
   updateTransactionPadIsSendingCoins,
 } from "@selene/app/src/redux/reducers/transactionPadReducer";
-import { ReduxState } from "@selene/app/src/types";
+import { ReduxState } from "@selene/common/dist/types";
 import emit from "@selene/app/src/utils/emit";
 import TYPOGRAPHY from "@selene/common/design/typography";
 import {

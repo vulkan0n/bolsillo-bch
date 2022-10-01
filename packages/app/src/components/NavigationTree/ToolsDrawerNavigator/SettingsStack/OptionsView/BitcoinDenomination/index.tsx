@@ -3,7 +3,7 @@ import { View, Text, Pressable } from "react-native";
 import TYPOGRAPHY from "@selene/common/design/typography";
 import styles from "../styles";
 import { useSelector, useDispatch } from "react-redux";
-import { ReduxState } from "@selene/app/src/types";
+import { ReduxState } from "@selene/common/dist/types";
 
 const BitcoinDenomination = ({ navigation }) => {
   const { bitcoinDenomination } = useSelector(

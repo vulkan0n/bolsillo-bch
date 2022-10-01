@@ -5,7 +5,7 @@ import TYPOGRAPHY from "@selene/common/design/typography";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import COLOURS from "@selene/common/design/colours";
 import SPACING from "@selene/common/design/spacing";
-import { ReduxState } from "@selene/app/src/types";
+import { ReduxState } from "@selene/common/dist/types";
 import { faWallet } from "@fortawesome/free-solid-svg-icons";
 import { convertBalanceToDisplay } from "@selene/app/src/utils/formatting";
 import {

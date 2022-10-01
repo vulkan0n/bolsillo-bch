@@ -1,5 +1,5 @@
 import { DeviceEventEmitter } from "react-native";
-import { EmitEvent } from "@selene/app/src/types";
+import { EmitEvent } from "@selene/common/dist/types";
 
 const emit = (event: EmitEvent) => {
   DeviceEventEmitter.emit("event.emitEvent", event);

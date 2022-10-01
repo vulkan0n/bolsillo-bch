@@ -5,7 +5,7 @@ import styles from "../styles";
 import COLOURS from "@selene/common/design/colours";
 import { toggleIsRightHandedMode } from "@selene/app/src/redux/reducers/settingsReducer";
 import { useSelector, useDispatch } from "react-redux";
-import { ReduxState } from "@selene/app/src/types";
+import { ReduxState } from "@selene/common/dist/types";
 
 const RightHandedMode = () => {
   const dispatch = useDispatch();
