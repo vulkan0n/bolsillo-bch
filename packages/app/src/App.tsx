@@ -188,7 +188,7 @@ export default function App() {
               })
             );
 
-            const history = message?.data?.transactionHistory;
+            const history = message?.data?.transactionHistory?.transactions;
             const lastTransaction = history?.[history.length - 1];
             const lastTransactionHash = lastTransaction?.txn;
 
