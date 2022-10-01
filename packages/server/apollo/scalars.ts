@@ -1,5 +1,6 @@
 const { GraphQLScalarType, Kind } = require("graphql");
 
+// https://www.apollographql.com/docs/apollo-server/schema/custom-scalars/#example-the-date-scalar
 const dateScalar = new GraphQLScalarType({
   name: "Date",
   description: "Date custom scalar type",
