@@ -25,7 +25,7 @@ $ lerna bootstrap # Install node_modules for all packages, hoisted to root where
 ## Packages
 
 - `@selene/app`: iOS/Android React Native wallet application in Expo.
-- `@selene/common`: Shared utilities and code. NOTE that `@selene/web` has to import files from other packages directly, rather than from the default export. This is some kind of webpack or CommonJS issue, but hasn't been solved yet.
+- `@selene/common`: Shared utilities and code. Any modifications to this require recompiling with TypeScript as other packages import from the `dist` folder directly.
 - `@selene/server`: Backend code and stat tracking.
 - `@selene/web`: React app for web frontend.
 
