@@ -57,11 +57,30 @@ const BackgroundIntervals = () => {
 
   const checkIn = () => {
     console.log("checking in!");
-    sendDailyCheckIn({
-      variables: {
-        date: "20221009",
-      },
+    const lastDailyCheckIn = moment
+      .utc("20220202", "YYYYMMDD")
+      .startOf("day")
+      .subtract(1, "s");
+    const nextDailyCheckIn = lastDailyCheckIn.add(24, "hours").startOf("day");
+
+    const now = moment.utc();
+
+    const isShouldCheckInToday = now.isAfter(nextDailyCheckIn);
+
+    console.log({
+      lastDailyCheckIn,
+      nextDailyCheckIn,
+      now,
+      isShouldCheckInToday,
     });
+
+    if (isShouldCheckInToday) {
+      sendDailyCheckIn({
+        variables: {
+          date: "20221009",
+        },
+      });
+    }
   };
 
   const fetchPriceData = async () => {
