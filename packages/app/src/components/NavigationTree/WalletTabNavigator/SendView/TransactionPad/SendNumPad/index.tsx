@@ -8,7 +8,7 @@ import LiveBalance from "@selene/app/src/components/atoms/LiveBalance";
 import NumPad from "../../../../../atoms/NumPad";
 import { clearTransactionPad } from "@selene/app/src/redux/reducers/transactionPadReducer";
 
-const SendNumPad = ({ navigation }) => {
+const SendNumPad = () => {
   const dispatch = useDispatch();
 
   const onPressSend = () => {
