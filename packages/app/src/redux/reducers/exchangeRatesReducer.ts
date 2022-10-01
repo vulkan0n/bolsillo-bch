@@ -1,20 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { PURGE } from "redux-persist";
-
-export interface ExchangeRatesState {
-  audBchPrice: string;
-  btcBchPrice: string;
-  cadBchPrice: string;
-  cnyBchPrice: string;
-  ethBchPrice: string;
-  eurBchPrice: string;
-  gbpBchPrice: string;
-  jpyBchPrice: string;
-  phpBchPrice: string;
-  rubBchPrice: string;
-  thbBchPrice: string;
-  usdBchPrice: string;
-}
+import { ExchangeRatesState } from "@selene/common/dist/types/reducers/exchangeRatesReducer";
 
 const initialState = {
   audBchPrice: "0.00",

@@ -1,20 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { PURGE } from "redux-persist";
-import {
-  BitcoinDenominationTypes,
-  SupportedCurrencyTypes,
-} from "@selene/app/src/types";
 import { BITCOIN_DENOMINATIONS } from "@selene/app/src/utils/consts";
-
-export interface SettingsState {
-  isBchDenominated: boolean;
-  contrastCurrency: SupportedCurrencyTypes;
-  bitcoinDenomination: BitcoinDenominationTypes;
-  isRightHandedMode: boolean;
-  isShowAvailableBalance: boolean;
-  isShowCommunityTab: boolean;
-  isTestNet: boolean;
-}
+import { SettingsState } from "@selene/common/dist/types/reducers/settingsReducer";
 
 const initialState = {
   isBchDenominated: true,

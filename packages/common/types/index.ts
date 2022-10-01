@@ -1,16 +1,16 @@
-// import { ExchangeRatesState } from "@redux/reducers/exchangeRatesReducer";
-// import { SettingsState } from "@redux/reducers/settingsReducer";
-// import { TransactionPadState } from "@redux/reducers/transactionPadReducer";
-// import { WalletManagerState } from "@redux/reducers/walletManagerReducer";
-// import { LocalState } from "@redux/reducers/localReducer";
+import { ExchangeRatesState } from "./reducers/exchangeRatesReducer";
+import { SettingsState } from "./reducers/settingsReducer";
+import { TransactionPadState } from "./reducers/transactionPadReducer";
+import { WalletManagerState } from "./reducers/walletManagerReducer";
+import { LocalState } from "./reducers/localReducer";
 
-// export interface ReduxState {
-//   transactionPad: TransactionPadState;
-//   exchangeRates: ExchangeRatesState;
-//   walletManager: WalletManagerState;
-//   settings: SettingsState;
-//   local: LocalState;
-// }
+export interface ReduxState {
+  transactionPad: TransactionPadState;
+  exchangeRates: ExchangeRatesState;
+  walletManager: WalletManagerState;
+  settings: SettingsState;
+  local: LocalState;
+}
 
 export interface WalletType {
   mnemonic: string;

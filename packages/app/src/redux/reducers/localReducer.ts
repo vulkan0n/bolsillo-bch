@@ -1,9 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { PURGE } from "redux-persist";
-
-export interface LocalState {
-  lastSentTransactionHash: string;
-}
+import { LocalState } from "@selene/common/dist/types/reducers/localReducer";
 
 const initialState = {
   lastSentTransactionHash: "",

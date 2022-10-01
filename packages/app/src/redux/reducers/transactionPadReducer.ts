@@ -6,15 +6,7 @@ import {
   updateContrastCurrency,
 } from "./settingsReducer";
 import { updateActiveWalletName } from "./walletManagerReducer";
-
-export interface TransactionPadState {
-  view: "" | "NumPad" | "Send" | "Confirm";
-  sendInputView: "Text" | "Scan";
-  padBalance: string;
-  sendToAddress: string;
-  isSendingCoins: boolean;
-  error: string;
-}
+import { TransactionPadState } from "@selene/common/dist/types/reducers/transactionPadReducer";
 
 const initialState = {
   view: "Send",

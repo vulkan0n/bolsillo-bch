@@ -4,6 +4,7 @@ import { PURGE } from "redux-persist";
 import * as R from "ramda";
 import { TransactionType } from "../../types";
 import { replace } from "immutable-replace";
+import { WalletManagerState } from "@selene/common/dist/types/reducers/walletManagerReducer";
 
 const BLANK_SCRATCH_PAD = {
   name: "",
@@ -13,19 +14,6 @@ const BLANK_SCRATCH_PAD = {
   cashaddr: "",
   transactions: [],
 };
-
-export interface WalletManagerState {
-  activeWalletName: string;
-  navigatedWalletName: string;
-  wallets: SeleneWalletType[];
-  scratchPad: {
-    name?: string;
-    description?: string;
-    mnemonic?: string;
-    derivationPath?: string;
-    cashaddr?: string;
-  };
-}
 
 const initialState = {
   activeWalletName: "",
