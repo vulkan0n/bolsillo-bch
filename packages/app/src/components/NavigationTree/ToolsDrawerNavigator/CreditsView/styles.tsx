@@ -2,6 +2,9 @@ import COLOURS from "@selene/common/design/colours";
 import SPACING from "@selene/common/design/spacing";
 
 const styles = {
+  scrollView: {
+    backgroundColor: COLOURS.black,
+  },
   container: {
     backgroundColor: COLOURS.black,
     padding: SPACING.twentyFive,
