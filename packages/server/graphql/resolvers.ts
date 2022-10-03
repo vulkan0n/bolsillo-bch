@@ -1,6 +1,7 @@
 const { dateScalar } = require("./scalars.ts");
 const contentItems = require("./contentItems.ts");
 // const moment = require("moment");
+const prisma = require("../prisma/client");
 
 const dailyActiveBitcoinersStats = [
   { date: "20221001", count: 1 },
@@ -17,9 +18,18 @@ const resolvers = {
     dailyActiveBitcoiners: () => dailyActiveBitcoinersStats,
   },
   Mutation: {
-    dailyCheckIn: (_: any, { date }: { date: string }) => {
+    dailyCheckIn: async (_: any, { date }: { date: string }) => {
       console.log("Daily check in!");
       console.log({ date });
+
+      const checkIn = await prisma.default.checkIn.create({
+        data: {
+          type: "daily",
+          date,
+        },
+      });
+
+      console.log({ checkIn });
     },
   },
 };
