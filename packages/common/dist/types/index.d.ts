@@ -40,3 +40,4 @@ export interface SupportedCurrency {
     code: SupportedCurrencyTypes;
     fullName: string;
 }
+export declare type CheckInTypes = "DAILY" | "WEEKLY" | "MONTHLY" | "YEARLY";

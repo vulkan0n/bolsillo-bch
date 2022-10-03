@@ -11,15 +11,15 @@ datasource db {
 }
 
 enum CheckInType {
-  daily
-  weekly
-  monthly
-  yearly
+  DAILY
+  WEEKLY
+  MONTHLY
+  YEARLY
 }
 
 model CheckIn {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
-  type     CheckInType @default(daily)
+  type     CheckInType @default(DAILY)
   date      String
 }

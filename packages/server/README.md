@@ -21,6 +21,5 @@ DATABASE_URL="postgresql://<Username>:<Username>@localhost:5432/selene-wallet?sc
 
 $ npx prisma generate
 $ npx prisma migrate dev
+$ npx prisma studio # Database browseable at http://localhost:5555
 ```
-
-You can now use `Postico` and connect to `selene-wallet` to browse your new schema!
