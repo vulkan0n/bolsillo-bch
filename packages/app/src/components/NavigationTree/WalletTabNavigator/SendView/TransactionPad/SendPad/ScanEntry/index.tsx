@@ -7,6 +7,8 @@ import TYPOGRAPHY from "@selene/common/design/typography";
 import { processRequestString } from "../utils";
 import { selectPrimaryCurrencyOrDenomination } from "@selene/app/src/redux/selectors";
 import { ReduxState } from "@selene/common/dist/types";
+import { useIsFocused } from "@react-navigation/native";
+import Button from "@selene/app/src/components/atoms/Button";
 
 function QrScanner() {
   const dispatch = useDispatch();
@@ -15,16 +17,22 @@ function QrScanner() {
   );
   const { isTestNet } = useSelector((state: ReduxState) => state.settings);
   const [hasPermission, setHasPermission] = useState(null);
+  const [hasPermissionToAsk, setHasPermissionToAsk] = useState(false);
+  const isFocused = useIsFocused();
 
   const requestBarCodeScannerPermissions = async () => {
     setHasPermission(null);
-    const { status } = await BarCodeScanner.requestPermissionsAsync();
+    const { status, canAskAgain } =
+      await BarCodeScanner.requestPermissionsAsync();
     setHasPermission(status === "granted");
+    setHasPermissionToAsk(canAskAgain);
   };
 
   useEffect(() => {
-    requestBarCodeScannerPermissions();
-  }, []);
+    if (isFocused && !hasPermission) {
+      requestBarCodeScannerPermissions();
+    }
+  }, [isFocused]);
 
   const handleBarCodeScanned = ({ data }) => {
     processRequestString({
@@ -37,7 +45,10 @@ function QrScanner() {
 
   if (hasPermission === null) {
     return (
-      <Pressable onPress={requestBarCodeScannerPermissions}>
+      <Pressable
+        style={styles.entryRow as any}
+        onPress={requestBarCodeScannerPermissions}
+      >
         <Text style={TYPOGRAPHY.h2black as any}>
           Requesting camera permissions.
         </Text>
@@ -47,11 +58,22 @@ function QrScanner() {
 
   if (hasPermission === false) {
     return (
-      <Pressable onPress={requestBarCodeScannerPermissions}>
+      <View style={styles.entryRow as any}>
         <Text style={TYPOGRAPHY.h2black as any}>
-          No permission to access QR scanner camera. Tap to enable.
+          No permission to access QR scanner camera.
+          {!hasPermissionToAsk &&
+            " Go to the Settings app on your device, choose Apps, choose Selene and enable Camera permission to scan QR codes."}
         </Text>
-      </Pressable>
+        {hasPermissionToAsk && (
+          <Button
+            icon={"faCamera"}
+            size="small"
+            onPress={requestBarCodeScannerPermissions}
+          >
+            Enable camera
+          </Button>
+        )}
+      </View>
     );
   }
 
