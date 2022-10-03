@@ -9,3 +9,17 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+enum CheckInType {
+  daily
+  weekly
+  monthly
+  yearly
+}
+
+model CheckIn {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  type     CheckInType @default(daily)
+  date      String
+}

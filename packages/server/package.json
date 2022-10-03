@@ -22,6 +22,7 @@
     "url": "https://gitlab.com/selene.cash/selene-wallet/issues"
   },
   "dependencies": {
+    "@prisma/client": "^4.4.0",
     "apollo-server": "^3.10.2",
     "graphql": "^16.6.0",
     "moment": "^2.29.4"
