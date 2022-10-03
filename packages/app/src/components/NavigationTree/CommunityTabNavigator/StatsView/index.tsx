@@ -20,11 +20,8 @@ function StatsView({ navigation }) {
           Selene Wallet is on a mission to make Bitcoin Cash the most used
           currency in the world.
         </Text>
-        <Text style={TYPOGRAPHY.h2black as any}>Daily Active Bitcoiners</Text>
-        <DailyActiveBitcoinersChart />
-        <Text>You are untracked. Tap to learn more.</Text>
         <View style={styles.activeBitcoiners}>
-          <Text style={TYPOGRAPHY.h2 as any}>Last 24 hours:</Text>
+          <Text style={TYPOGRAPHY.h2black as any}>Last 24 hours:</Text>
           <Text
             style={
               {
@@ -37,13 +34,15 @@ function StatsView({ navigation }) {
             {activeBitcoiners} Active Bitcoiners
           </Text>
           <Text
-            style={TYPOGRAPHY.pWhite as any}
+            style={TYPOGRAPHY.p as any}
           >{`${missionPercentage}% of 10 000 000 target`}</Text>
+          <Text style={TYPOGRAPHY.p as any}>
+            10 million active Bitcoiners will form a vibrant economy larger than
+            many countries, and quickly snowball globally.
+          </Text>
+          <DailyActiveBitcoinersChart />
         </View>
-        <Text style={TYPOGRAPHY.p as any}>
-          10 million daily active Bitcoiners will form a vibrant economy larger
-          than many countries, and quickly snowball to the rest of the world.
-        </Text>
+
         <Text style={TYPOGRAPHY.h2black as any}>Get involved!</Text>
         <Text style={TYPOGRAPHY.p as any}>
           You are not included in the statistics. Selene respects your privacy.

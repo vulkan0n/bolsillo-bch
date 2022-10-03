@@ -38,7 +38,7 @@ const DailyActiveBitcoinersChart = () => {
             },
           ],
         }}
-        width={Dimensions.get("window").width - 40} // from react-native
+        width={Dimensions.get("window").width - 60} // from react-native
         height={220}
         yAxisLabel=""
         yAxisSuffix=""
@@ -59,10 +59,11 @@ const DailyActiveBitcoinersChart = () => {
         bezier
         style={{
           backgroundColor: COLOURS.veryLightGrey,
-          borderColor: COLOURS.lightGrey,
-          borderWidth: 1,
-          borderRadius: SPACING.borderRadius,
-          marginVertical: SPACING.five,
+          // borderColor: COLOURS.lightGrey,
+          // borderWidth: 1,
+          // borderRadius: SPACING.borderRadius,
+          marginTop: SPACING.fifteen,
+          marginBottom: SPACING.five,
         }}
       />
     </View>

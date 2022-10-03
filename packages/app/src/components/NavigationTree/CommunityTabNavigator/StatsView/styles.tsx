@@ -7,19 +7,17 @@ const styles = {
   },
   container: {
     backgroundColor: COLOURS.white,
-    padding: SPACING.fifteen,
-    // justifyContent: "center",
-    // alignItems: "center",
+    padding: SPACING.ten,
     borderRadius: SPACING.borderRadius,
   },
   activeBitcoiners: {
-    backgroundColor: COLOURS.black,
-    borderColor: COLOURS.black,
+    backgroundColor: COLOURS.white,
+    borderColor: COLOURS.lightGrey,
     borderWidth: 2,
     borderRadius: SPACING.borderRadius,
     padding: SPACING.fifteen,
-    margin: SPACING.ten,
-    marginBottom: SPACING.twentyFive,
+    marginTop: SPACING.ten,
+    marginBottom: SPACING.fifteen,
   },
 };
 
