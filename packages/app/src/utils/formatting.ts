@@ -31,10 +31,6 @@ import {
   convertRawSatsToRawUsd,
 } from "./exchangeRates";
 import {
-  BitcoinDenominationTypes,
-  SupportedCurrencyTypes,
-} from "@selene/common/dist/types";
-import {
   MAIN_NET_PREFIX,
   TEST_NET_PREFIX,
   BITCOIN_DENOMINATIONS,
@@ -75,7 +71,7 @@ import { CurrencyOrDenominationType } from "@selene/common/dist/types";
 // E.g. "₿ 100 345.10 bits"
 
 export const allowedDecimalPlaces = (
-  currency: BitcoinDenominationTypes | SupportedCurrencyTypes
+  currency: CurrencyOrDenominationType
 ): number => {
   switch (currency) {
     case "aud":
@@ -177,7 +173,7 @@ export const roundAndChunkRawBalance = (
 
 export const prettifyRawCurrency = (
   rawCurrency: string,
-  currency: SupportedCurrencyTypes | BitcoinDenominationTypes
+  currency: CurrencyOrDenominationType
 ): string => {
   const chunkedValue = roundAndChunkRawBalance(rawCurrency, currency);
 
@@ -221,7 +217,7 @@ export const prettifyRawCurrency = (
 
 export const prettifyPadBalance = (
   padBalance: string,
-  currency: SupportedCurrencyTypes | BitcoinDenominationTypes
+  currency: CurrencyOrDenominationType
 ): string => {
   const value = padBalance ?? "0";
 
@@ -270,7 +266,7 @@ export const prettifyPadBalance = (
 
 export const convertRawSatsToRawCurrency = (
   rawSats: string,
-  currency: SupportedCurrencyTypes | BitcoinDenominationTypes
+  currency: CurrencyOrDenominationType
 ): string => {
   switch (currency) {
     case "aud":
@@ -312,7 +308,7 @@ export const convertRawSatsToRawCurrency = (
 
 export const convertRawSatsToRawCurrencyRounded = (
   rawSats: string,
-  currency: SupportedCurrencyTypes | BitcoinDenominationTypes
+  currency: CurrencyOrDenominationType
 ): string => {
   const value = convertRawSatsToRawCurrency(rawSats, currency);
   return roundDownToXDecimalPlaces(value, allowedDecimalPlaces(currency));
@@ -320,7 +316,7 @@ export const convertRawSatsToRawCurrencyRounded = (
 
 export const rawSatsToCurrencyDisplay = (
   rawSats: string,
-  currency: SupportedCurrencyTypes | BitcoinDenominationTypes
+  currency: CurrencyOrDenominationType
 ): string => {
   return prettifyRawCurrency(
     convertRawSatsToRawCurrency(rawSats, currency),
@@ -330,7 +326,7 @@ export const rawSatsToCurrencyDisplay = (
 
 export const convertRawCurrencyToRawSats = (
   rawCurrency: string,
-  currency: SupportedCurrencyTypes | BitcoinDenominationTypes
+  currency: CurrencyOrDenominationType
 ): string => {
   switch (currency) {
     case "aud":
@@ -372,8 +368,8 @@ export const convertRawCurrencyToRawSats = (
 
 export const convertBalanceToDisplay = (
   padBalance: string,
-  inputCurrency: SupportedCurrencyTypes | BitcoinDenominationTypes,
-  outputCurrency: SupportedCurrencyTypes | BitcoinDenominationTypes
+  inputCurrency: CurrencyOrDenominationType,
+  outputCurrency: CurrencyOrDenominationType
 ) => {
   const rawCurrency = `${parseFloat(padBalance)}`;
   const rawSats = convertRawCurrencyToRawSats(rawCurrency, inputCurrency);

@@ -47,6 +47,7 @@ const resolvers = {
       { type, date }: { type: CheckInTypes; date: string }
     ) => {
       console.log("Daily check in!");
+      console.log({ type, date });
 
       const checkIn = await prisma.default.checkIn.create({
         data: {
