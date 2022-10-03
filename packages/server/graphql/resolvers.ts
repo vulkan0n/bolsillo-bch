@@ -15,12 +15,34 @@ const resolvers = {
   Date: dateScalar,
   Query: {
     content: () => contentItems,
-    dailyActiveBitcoiners: () => dailyActiveBitcoinersStats,
+    dailyActiveBitcoiners: async () => {
+      const dates = ["20221001", "20221002", "20221003", "20221009"];
+
+      const dailyActiveBitcoinersStats = await Promise.all(
+        dates.map(async (date) => {
+          const count = await prisma.default.checkIn.count({
+            where: {
+              type: "daily",
+              date,
+            },
+          });
+
+          return {
+            date,
+            count,
+          };
+        })
+      );
+
+      console.log({ dailyActiveBitcoinersStats });
+
+      return dailyActiveBitcoinersStats;
+    },
   },
   Mutation: {
     dailyCheckIn: async (_: any, { date }: { date: string }) => {
-      console.log("Daily check in!");
-      console.log({ date });
+      // console.log("Daily check in!");
+      // console.log({ date });
 
       const checkIn = await prisma.default.checkIn.create({
         data: {
@@ -29,7 +51,7 @@ const resolvers = {
         },
       });
 
-      console.log({ checkIn });
+      // console.log({ checkIn });
     },
   },
 };

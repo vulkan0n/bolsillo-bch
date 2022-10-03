@@ -16,6 +16,10 @@ const DailyActiveBitcoinersChart = () => {
     }
   `);
 
+  if (loading) {
+    return <Text>Loading...</Text>;
+  }
+
   const dailyActiveUserCount = data?.dailyActiveBitcoiners?.map?.(
     ({ count }) => count
   );
@@ -23,9 +27,7 @@ const DailyActiveBitcoinersChart = () => {
     moment(date).format("D MMM")
   );
 
-  if (loading) {
-    return <Text>Loading...</Text>;
-  }
+  console.log({ data });
 
   return (
     <View>
