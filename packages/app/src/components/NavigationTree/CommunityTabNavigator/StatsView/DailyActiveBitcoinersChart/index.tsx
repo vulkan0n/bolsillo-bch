@@ -42,19 +42,14 @@ const DailyActiveBitcoinersChart = () => {
         height={220}
         yAxisLabel=""
         yAxisSuffix=""
-        yAxisInterval={1} // optional, defaults to 1
+        yAxisInterval={1}
         chartConfig={{
           backgroundColor: COLOURS.white,
-          //   backgroundGradientFrom: "#fb8c00",
-          //   backgroundGradientTo: "#ffa726",
-          decimalPlaces: 0, // optional, defaults to 2dp
-          color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-          labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-          style: {
-            borderRadius: SPACING.borderRadius,
-            borderColor: COLOURS.black,
-            borderWidth: 2,
-          },
+          backgroundGradientFrom: COLOURS.white,
+          backgroundGradientTo: COLOURS.white,
+          decimalPlaces: 0,
+          color: (opacity) => COLOURS.bchGreen,
+          labelColor: (opacity) => COLOURS.black,
           propsForDots: {
             // r: "6",
             // strokeWidth: "2",
@@ -63,8 +58,11 @@ const DailyActiveBitcoinersChart = () => {
         }}
         bezier
         style={{
-          marginVertical: 8,
-          borderRadius: 16,
+          backgroundColor: COLOURS.veryLightGrey,
+          borderColor: COLOURS.lightGrey,
+          borderWidth: 1,
+          borderRadius: SPACING.borderRadius,
+          marginVertical: SPACING.five,
         }}
       />
     </View>
