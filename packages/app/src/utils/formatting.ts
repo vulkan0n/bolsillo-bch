@@ -38,7 +38,7 @@ import {
   MAIN_NET_PREFIX,
   TEST_NET_PREFIX,
   BITCOIN_DENOMINATIONS,
-} from "./consts";
+} from "@selene/common/dist/utils/consts";
 import { CurrencyOrDenominationType } from "@selene/common/dist/types";
 
 // Note on how this file works

@@ -9,7 +9,7 @@ import COLOURS from "@selene/common/design/colours";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { iconImport } from "@selene/app/src/design/icons";
 import { convertBalanceToDisplay } from "@selene/app/src/utils/formatting";
-import { BITCOIN_DENOMINATIONS } from "@selene/app/src/utils/consts";
+import { BITCOIN_DENOMINATIONS } from "@selene/common/dist/utils/consts";
 import { ReduxState } from "@selene/common/dist/types";
 import {
   selectPrimaryCurrencyOrDenomination,

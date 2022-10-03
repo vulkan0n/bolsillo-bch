@@ -35,7 +35,7 @@ const typeDefs = gql`
   }
 
   type Mutation {
-    dailyCheckIn(date: String): ServerResponse
+    sendCheckIn(type: String!, date: String!): ServerResponse
   }
 `;
 

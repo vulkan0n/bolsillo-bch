@@ -3,7 +3,7 @@ import {
   MAIN_NET_PREFIX,
   ONE_HUNDRED_MILLION,
   TOTAL_SATOSHI_SUPPLY,
-} from "./consts";
+} from "@selene/common/dist/utils/consts";
 import { formatStringToCashAddress } from "./formatting";
 
 export const validateWalletName = (

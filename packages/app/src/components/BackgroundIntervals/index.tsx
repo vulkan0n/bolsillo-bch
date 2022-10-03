@@ -3,7 +3,7 @@ import { View } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { ReduxState } from "@selene/common/dist/types";
 import { BRIDGE_MESSAGE_TYPES } from "@selene/app/src/utils/bridgeMessages";
-import { ONE_SECOND, THIRTY_SECONDS } from "@selene/app/src/utils/consts";
+import { ONE_SECOND, THIRTY_SECONDS } from "@selene/common/dist/utils/consts";
 import emit from "@selene/app/src/utils/emit";
 import axios from "axios";
 import { updateBchPrices } from "@selene/app/src/redux/reducers/exchangeRatesReducer";
@@ -11,10 +11,11 @@ import { selectActiveWallet } from "@selene/app/src/redux/selectors";
 import { updateTransactionPadIsSendingCoins } from "../../redux/reducers/transactionPadReducer";
 import { gql, useMutation } from "@apollo/client";
 import moment from "moment";
+import { CHECK_IN_TYPES } from "@selene/common/dist/utils/consts";
 
 const SEND_DAILY_CHECK_IN = gql`
-  mutation SendDailyCheckIn($date: String!) {
-    dailyCheckIn(date: $date) {
+  mutation SendCheckIn($type: String!, $date: Date!) {
+    sendCheckIn(type: $type, date: $date) {
       status
     }
   }
@@ -26,7 +27,7 @@ const BackgroundIntervals = () => {
   const { wallets } = useSelector((state: ReduxState) => state.walletManager);
 
   const { isTestNet } = useSelector((state: ReduxState) => state.settings);
-  const [sendDailyCheckIn, { data, loading, error }] =
+  const [sendCheckIn, { data, loading, error }] =
     useMutation(SEND_DAILY_CHECK_IN);
 
   const fetchWalletHistories = () => {
@@ -75,8 +76,9 @@ const BackgroundIntervals = () => {
     });
 
     if (isShouldCheckInToday) {
-      sendDailyCheckIn({
+      sendCheckIn({
         variables: {
+          type: CHECK_IN_TYPES.daily,
           date: "20221009",
         },
       });

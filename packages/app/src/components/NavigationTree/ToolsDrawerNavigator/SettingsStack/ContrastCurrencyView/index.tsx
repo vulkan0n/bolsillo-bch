@@ -10,7 +10,7 @@ import { ReduxState } from "@selene/common/dist/types";
 import Divider from "@selene/app/src/components/atoms/Divider";
 import SPACING from "@selene/common/design/spacing";
 import { updateContrastCurrency } from "@selene/app/src/redux/reducers/settingsReducer";
-import { SUPPORTED_CURRENCIES } from "@selene/app/src/utils/consts";
+import { SUPPORTED_CURRENCIES } from "@selene/common/dist/utils/consts";
 import StackSubheader from "@selene/app/src/components/atoms/StackSubheader";
 
 function ContrastCurrencyView() {

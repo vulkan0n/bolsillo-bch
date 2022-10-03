@@ -23,7 +23,7 @@ import {
   validateWalletDescription,
   validateWalletMnemonic,
 } from "@selene/app/src/utils/validation";
-import { DEFAULT_DERIVATION_PATH } from "@selene/app/src/utils/consts";
+import { DEFAULT_DERIVATION_PATH } from "@selene/common/dist/utils/consts";
 import StackSubheader from "@selene/app/src/components/atoms/StackSubheader";
 
 function ImportWalletView({ navigation }) {

@@ -16,7 +16,7 @@ import {
   selectIsActiveWalletZeroBalance,
   selectPadBalanceInRawSats,
 } from "@selene/app/src/redux/selectors";
-import { ONE_HUNDRED_MILLION } from "@selene/app/src/utils/consts";
+import { ONE_HUNDRED_MILLION } from "@selene/common/dist/utils/consts";
 import LiveBalance from "@selene/app/src/components/atoms/LiveBalance";
 import { updateTransactionPadBalance } from "@selene/app/src/redux/reducers/transactionPadReducer";
 import { selectIsPadZeroBalance } from "@selene/app/src/redux/selectors";

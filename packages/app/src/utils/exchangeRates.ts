@@ -3,7 +3,7 @@ import {
   ONE_HUNDRED,
   ONE_HUNDRED_THOUSAND,
   ONE_HUNDRED_MILLION,
-} from "./consts";
+} from "@selene/common/dist/utils/consts";
 
 // Sats out
 export const convertRawBitsToRawSats = (bits: string): string =>

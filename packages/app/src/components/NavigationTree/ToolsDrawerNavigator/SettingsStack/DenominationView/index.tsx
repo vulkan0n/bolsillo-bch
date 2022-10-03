@@ -12,7 +12,7 @@ import Divider from "@selene/app/src/components/atoms/Divider";
 import SPACING from "@selene/common/design/spacing";
 import { updateBitcoinDenomination } from "@selene/app/src/redux/reducers/settingsReducer";
 import StackSubheader from "@selene/app/src/components/atoms/StackSubheader";
-import { BITCOIN_DENOMINATIONS } from "@selene/app/src/utils/consts";
+import { BITCOIN_DENOMINATIONS } from "@selene/common/dist/utils/consts";
 
 function DenominationView() {
   const dispatch = useDispatch();

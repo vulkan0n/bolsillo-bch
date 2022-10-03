@@ -3,7 +3,7 @@ import { View, Text, ScrollView } from "react-native";
 import COLOURS from "@selene/common/design/colours";
 import SPACING from "@selene/common/design/spacing";
 import TYPOGRAPHY from "@selene/common/design/typography";
-import { ONE_HUNDRED, TEN_MILLION } from "@selene/app/src/utils/consts";
+import { ONE_HUNDRED, TEN_MILLION } from "@selene/common/dist/utils/consts";
 import styles from "./styles";
 import Button from "@selene/app/src/components/atoms/Button";
 import DailyActiveBitcoinersChart from "./DailyActiveBitcoinersChart";

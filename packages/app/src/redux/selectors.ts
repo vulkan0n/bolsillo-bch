@@ -11,7 +11,7 @@ import {
   prettifyPadBalance,
 } from "@selene/app/src/utils/formatting";
 import { CurrencyOrDenominationType } from "@selene/common/dist/types";
-import { BITCOIN_DENOMINATIONS } from "@selene/app/src/utils/consts";
+import { BITCOIN_DENOMINATIONS } from "@selene/common/dist/utils/consts";
 
 interface ActiveWalletBalance {
   primaryBalance: string;

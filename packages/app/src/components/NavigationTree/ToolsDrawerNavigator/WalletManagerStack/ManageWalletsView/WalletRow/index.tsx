@@ -13,7 +13,7 @@ import {
   updateNavigatedWalletName,
 } from "@selene/app/src/redux/reducers/walletManagerReducer";
 import styles from "./styles";
-import { BITCOIN_DENOMINATIONS } from "@selene/app/src/utils/consts";
+import { BITCOIN_DENOMINATIONS } from "@selene/common/dist/utils/consts";
 
 const WalletRow = ({
   navigation,

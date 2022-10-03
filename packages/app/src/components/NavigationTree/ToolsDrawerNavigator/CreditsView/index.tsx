@@ -10,7 +10,7 @@ import {
 import TYPOGRAPHY from "@selene/common/design/typography";
 import styles from "./styles";
 import TipWidget from "@selene/app/src/components/atoms/TipWidget";
-import { DEVELOPER_DONATION_ADDRESS } from "@selene/app/src/utils/consts";
+import { DEVELOPER_DONATION_ADDRESS } from "@selene/common/dist/utils/consts";
 
 function CreditsView() {
   const version = "v0.0.10";

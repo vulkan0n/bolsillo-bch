@@ -15,7 +15,7 @@ import { selectActiveWalletBalance } from "@selene/app/src/redux/selectors";
 import TYPOGRAPHY from "@selene/common/design/typography";
 import styles from "./styles";
 import { navigate } from "@selene/app/src/components/NavigationTree/rootNavigation";
-import { BITCOIN_DENOMINATIONS } from "@selene/app/src/utils/consts";
+import { BITCOIN_DENOMINATIONS } from "@selene/common/dist/utils/consts";
 import { convertBalanceToDisplay } from "@selene/app/src/utils/formatting";
 
 interface Props {

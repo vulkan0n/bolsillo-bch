@@ -20,7 +20,7 @@ import {
   convertRawCurrencyToRawSats,
 } from "@selene/app/src/utils/formatting";
 import { countDecimalPlaces } from "@selene/app/src/utils/utils";
-import { BITCOIN_DENOMINATIONS } from "@selene/app/src/utils/consts";
+import { BITCOIN_DENOMINATIONS } from "@selene/common/dist/utils/consts";
 import {
   selectActiveWallet,
   selectPrimaryCurrencyOrDenomination,
