@@ -20,6 +20,12 @@ const DailyActiveBitcoinersChart = () => {
     return <Text>Loading...</Text>;
   }
 
+  console.log({ error });
+
+  if (error) {
+    return <Text>Error!</Text>;
+  }
+
   const dailyActiveUserCount = data?.dailyActiveBitcoiners?.map?.(
     ({ count }) => count
   );

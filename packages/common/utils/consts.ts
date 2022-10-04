@@ -3,10 +3,6 @@ import {
   BitcoinDenominationTypes,
   CheckInPeriodTypes,
 } from "@selene/common/types";
-import { Platform } from "react-native";
-
-// Platform wide utility
-export const IS_WEB = Platform.OS === "web";
 
 // Address formats
 export const TEST_NET_PREFIX: string = "bchtest:";

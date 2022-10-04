@@ -4,7 +4,7 @@
 import "expo/build/Expo.fx";
 import { AppRegistry } from "react-native";
 import withExpoRoot from "expo/build/launch/withExpoRoot";
-import { IS_WEB } from "@selene/common/dist/utils/consts";
+import { IS_WEB } from "@selene/app/src/utils/isWeb";
 
 import App from "./App";
 import { createRoot } from "react-dom/client";

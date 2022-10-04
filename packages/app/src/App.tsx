@@ -35,7 +35,7 @@ import {
 } from "./redux/reducers/transactionPadReducer";
 import { navigate } from "./components/NavigationTree/rootNavigation";
 import { updateLocalLastSentTransactionHash } from "./redux/reducers/localReducer";
-import { IS_WEB } from "@selene/common/dist/utils/consts";
+import { IS_WEB } from "@selene/app/src/utils/isWeb";
 import {
   ApolloClient,
   InMemoryCache,
