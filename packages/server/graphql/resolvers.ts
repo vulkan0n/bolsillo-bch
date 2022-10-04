@@ -14,7 +14,7 @@ const resolvers = {
   Query: {
     content: () => contentItems,
     dailyActiveBitcoiners: async () => {
-      // Last two weeks of dates
+      // Last week of dates
       const numberArray = [...Array(7).keys()];
       const dates = numberArray
         .map((n) => moment.utc().subtract(n, "days").format("YYYYMMDD"))
