@@ -65,6 +65,7 @@ const BackgroundIntervals = () => {
     const nextDailyCheckIn = lastDailyCheckIn.add(24, "hours").startOf("day");
 
     const now = moment.utc();
+    const nowFormatted = now.format("YYYYMMDD");
 
     const isShouldCheckInToday = now.isAfter(nextDailyCheckIn);
 
@@ -78,8 +79,8 @@ const BackgroundIntervals = () => {
     if (isShouldCheckInToday) {
       sendCheckIn({
         variables: {
-          type: CHECK_IN_PERIOD_TYPES.daily,
-          date: "20221009",
+          period: CHECK_IN_PERIOD_TYPES.daily,
+          date: nowFormatted,
         },
       });
     }
