@@ -1,7 +1,7 @@
 import {
   SupportedCurrency,
   BitcoinDenominationTypes,
-  CheckInTypes,
+  CheckInPeriodTypes,
 } from "@selene/common/types";
 import { Platform } from "react-native";
 
@@ -98,11 +98,11 @@ export const DEVELOPER_DONATION_ADDRESS =
   "bitcoincash:qrer20k4s5emsm5a2xnsy2r2f7xz3veqwuktrmwfxq";
 
 // Stat tracking
-export const CHECK_IN_TYPES: {
-  daily: CheckInTypes;
-  weekly: CheckInTypes;
-  monthly: CheckInTypes;
-  yearly: CheckInTypes;
+export const CHECK_IN_PERIOD_TYPES: {
+  daily: CheckInPeriodTypes;
+  weekly: CheckInPeriodTypes;
+  monthly: CheckInPeriodTypes;
+  yearly: CheckInPeriodTypes;
 } = {
   daily: "DAILY",
   weekly: "WEEKLY",

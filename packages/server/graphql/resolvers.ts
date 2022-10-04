@@ -1,4 +1,4 @@
-import { CheckInTypes } from "@selene/common/dist/types";
+import { CheckInPeriodTypes } from "@selene/common/dist/types";
 
 const { dateScalar } = require("./scalars.ts");
 const contentItems = require("./contentItems.ts");
@@ -44,14 +44,14 @@ const resolvers = {
   Mutation: {
     sendCheckIn: async (
       _: any,
-      { type, date }: { type: CheckInTypes; date: string }
+      { period, date }: { period: CheckInPeriodTypes; date: string }
     ) => {
       console.log("Daily check in!");
-      console.log({ type, date });
+      console.log({ period, date });
 
       const checkIn = await prisma.default.checkIn.create({
         data: {
-          type,
+          period,
           date,
         },
       });

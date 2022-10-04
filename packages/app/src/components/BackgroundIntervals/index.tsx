@@ -11,11 +11,11 @@ import { selectActiveWallet } from "@selene/app/src/redux/selectors";
 import { updateTransactionPadIsSendingCoins } from "../../redux/reducers/transactionPadReducer";
 import { gql, useMutation } from "@apollo/client";
 import moment from "moment";
-import { CHECK_IN_TYPES } from "@selene/common/dist/utils/consts";
+import { CHECK_IN_PERIOD_TYPES } from "@selene/common/dist/utils/consts";
 
 const SEND_DAILY_CHECK_IN = gql`
-  mutation SendCheckIn($type: String!, $date: Date!) {
-    sendCheckIn(type: $type, date: $date) {
+  mutation SendCheckIn($period: String!, $date: String!) {
+    sendCheckIn(period: $period, date: $date) {
       status
     }
   }
@@ -78,7 +78,7 @@ const BackgroundIntervals = () => {
     if (isShouldCheckInToday) {
       sendCheckIn({
         variables: {
-          type: CHECK_IN_TYPES.daily,
+          type: CHECK_IN_PERIOD_TYPES.daily,
           date: "20221009",
         },
       });

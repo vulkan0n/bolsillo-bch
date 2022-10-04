@@ -35,7 +35,7 @@ const typeDefs = gql`
   }
 
   type Mutation {
-    sendCheckIn(type: String!, date: String!): ServerResponse
+    sendCheckIn(period: String!, date: String!): ServerResponse
   }
 `;
 

@@ -20,6 +20,6 @@ enum CheckInType {
 model CheckIn {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
-  type     CheckInType @default(DAILY)
+  period     CheckInType @default(DAILY)
   date      String
 }
