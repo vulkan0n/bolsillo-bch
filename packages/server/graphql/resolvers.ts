@@ -1,5 +1,6 @@
 import { CheckInPeriodTypes } from "@selene/common/dist/types";
 import { CHECK_IN_PERIOD_TYPES } from "@selene/common/dist/utils/consts";
+import moment from "moment";
 
 const { dateScalar } = require("./scalars.ts");
 const contentItems = require("./contentItems.ts");
@@ -13,7 +14,11 @@ const resolvers = {
   Query: {
     content: () => contentItems,
     dailyActiveBitcoiners: async () => {
-      const dates = ["20221001", "20221002", "20221003", "20221009"];
+      // Last two weeks of dates
+      const numberArray = [...Array(7).keys()];
+      const dates = numberArray
+        .map((n) => moment.utc().subtract(n, "days").format("YYYYMMDD"))
+        .reverse();
 
       const dailyActiveBitcoinersStats = await Promise.all(
         dates.map(async (date) => {
