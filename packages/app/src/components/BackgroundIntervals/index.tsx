@@ -59,10 +59,13 @@ const BackgroundIntervals = () => {
   const checkIn = () => {
     console.log("checking in!");
     const lastDailyCheckIn = moment
-      .utc("20220202", "YYYYMMDD")
+      .utc("20221004", "YYYYMMDD")
       .startOf("day")
-      .subtract(1, "s");
-    const nextDailyCheckIn = lastDailyCheckIn.add(24, "hours").startOf("day");
+      .add(1, "s");
+    const nextDailyCheckIn = lastDailyCheckIn
+      .clone()
+      .add(1, "day")
+      .startOf("day");
 
     const now = moment.utc();
     const nowFormatted = now.format("YYYYMMDD");
