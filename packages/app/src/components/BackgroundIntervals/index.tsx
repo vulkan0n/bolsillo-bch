@@ -8,10 +8,9 @@ import {
   THIRTY_SECONDS,
 } from "@selene-wallet/common/dist/utils/consts";
 import emit from "@selene-wallet/app/src/utils/emit";
-import axios from "axios";
-import { updateBchPrices } from "@selene-wallet/app/src/redux/reducers/exchangeRatesReducer";
 import { selectActiveWallet } from "@selene-wallet/app/src/redux/selectors";
 import { updateTransactionPadIsSendingCoins } from "@selene-wallet/app/src/redux/reducers/transactionPadReducer";
+import fetchPriceData from "./fetchPriceData";
 import checkIn from "./checkIn";
 
 const BackgroundIntervals = () => {
@@ -45,48 +44,6 @@ const BackgroundIntervals = () => {
         isTestNet,
       },
     });
-  };
-
-  const fetchPriceData = async () => {
-    // https://www.coingecko.com/en/api/documentation
-    const coingeckoUrl = "https://api.coingecko.com";
-
-    const res = await axios({
-      method: "get",
-      url: `${coingeckoUrl}/api/v3/coins/bitcoin-cash`,
-    });
-
-    const currentPrices = res?.data?.market_data?.current_price;
-
-    const audBchPrice = currentPrices?.aud;
-    const btcBchPrice = currentPrices?.btc;
-    const cadBchPrice = currentPrices?.cad;
-    const cnyBchPrice = currentPrices?.cny;
-    const ethBchPrice = currentPrices?.eth;
-    const eurBchPrice = currentPrices?.eur;
-    const gbpBchPrice = currentPrices?.gbp;
-    const jpyBchPrice = currentPrices?.jpy;
-    const phpBchPrice = currentPrices?.php;
-    const rubBchPrice = currentPrices?.rub;
-    const thbBchPrice = currentPrices?.thb;
-    const usdBchPrice = currentPrices?.usd;
-
-    dispatch(
-      updateBchPrices({
-        audBchPrice,
-        btcBchPrice,
-        cadBchPrice,
-        cnyBchPrice,
-        ethBchPrice,
-        eurBchPrice,
-        gbpBchPrice,
-        jpyBchPrice,
-        phpBchPrice,
-        rubBchPrice,
-        thbBchPrice,
-        usdBchPrice,
-      })
-    );
   };
 
   const ping = () => {
