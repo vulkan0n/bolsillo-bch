@@ -64,8 +64,8 @@ const BackgroundIntervals = () => {
   };
 
   const checkIn = () => {
-    dailyCheckIn({ lastDailyCheckIn, sendCheckIn });
-    weeklyCheckIn({ lastWeeklyCheckIn, sendCheckIn });
+    dailyCheckIn({ sendCheckIn });
+    weeklyCheckIn({ sendCheckIn });
   };
 
   const fetchPriceData = async () => {

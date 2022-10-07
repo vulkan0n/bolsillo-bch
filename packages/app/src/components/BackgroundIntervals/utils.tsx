@@ -44,8 +44,8 @@ const doCheckIn = ({
   }
 };
 
-const dailyCheckIn = ({ lastDailyCheckIn, sendCheckIn }) => {
-  console.log({ store });
+const dailyCheckIn = ({ sendCheckIn }) => {
+  const lastDailyCheckIn = store.getState().local.lastDailyCheckIn;
 
   return doCheckIn({
     lastCheckIn: lastDailyCheckIn,
@@ -57,8 +57,10 @@ const dailyCheckIn = ({ lastDailyCheckIn, sendCheckIn }) => {
   });
 };
 
-const weeklyCheckIn = ({ lastWeeklyCheckIn, sendCheckIn }) =>
-  doCheckIn({
+const weeklyCheckIn = ({ sendCheckIn }) => {
+  const lastWeeklyCheckIn = store.getState().local.lastWeeklyCheckIn;
+
+  return doCheckIn({
     lastCheckIn: lastWeeklyCheckIn,
     checkInWindow: "week",
     period: CHECK_IN_PERIOD_TYPES.weekly,
@@ -66,5 +68,6 @@ const weeklyCheckIn = ({ lastWeeklyCheckIn, sendCheckIn }) =>
     updateProperty: "lastWeeklyCheckIn",
     sendCheckIn,
   });
+};
 
 export { dailyCheckIn, weeklyCheckIn };
