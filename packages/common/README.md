@@ -1,4 +1,4 @@
-# `@selene/common`
+# `@selene-wallet/common`
 
 Shared functions and utilities for other libraries.
 

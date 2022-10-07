@@ -1,17 +1,17 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, Pressable } from "react-native";
-import TYPOGRAPHY from "@selene/common/design/typography";
-import Button from "@selene/app/src/components/atoms/Button";
+import TYPOGRAPHY from "@selene-wallet/common/design/typography";
+import Button from "@selene-wallet/app/src/components/atoms/Button";
 import styles from "./styles";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import COLOURS from "@selene/common/design/colours";
+import COLOURS from "@selene-wallet/common/design/colours";
 import { MotiView } from "moti";
-import { iconImport } from "@selene/app/src/design/icons";
-import { updateTransactionNote } from "@selene/app/src/redux/reducers/walletManagerReducer";
-import { updateLocalLastSentTransactionHash } from "@selene/app/src/redux/reducers/localReducer";
+import { iconImport } from "@selene-wallet/app/src/design/icons";
+import { updateTransactionNote } from "@selene-wallet/app/src/redux/reducers/walletManagerReducer";
+import { updateLocalLastSentTransactionHash } from "@selene-wallet/app/src/redux/reducers/localReducer";
 import { useDispatch, useSelector } from "react-redux";
-import TextInput from "@selene/app/src/components/atoms/TextInput";
-import { ReduxState } from "@selene/common/dist/types";
+import TextInput from "@selene-wallet/app/src/components/atoms/TextInput";
+import { ReduxState } from "@selene-wallet/common/dist/types";
 
 function TransactionSuccessModal({ navigation }) {
   // Temporary storage of this text

@@ -1,8 +1,8 @@
 import React from "react";
 import { View, Text, Dimensions } from "react-native";
 import { LineChart } from "react-native-chart-kit";
-import COLOURS from "@selene/common/design/colours";
-import SPACING from "@selene/common/design/spacing";
+import COLOURS from "@selene-wallet/common/design/colours";
+import SPACING from "@selene-wallet/common/design/spacing";
 import { useQuery, gql } from "@apollo/client";
 import moment from "moment";
 

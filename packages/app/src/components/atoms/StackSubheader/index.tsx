@@ -1,10 +1,10 @@
 import React from "react";
 import { View, Text, Pressable } from "react-native";
-import TYPOGRAPHY from "@selene/common/design/typography";
+import TYPOGRAPHY from "@selene-wallet/common/design/typography";
 import { useNavigation } from "@react-navigation/native";
 import stylesFunction from "./styles";
 import { useSelector } from "react-redux";
-import { ReduxState } from "@selene/common/dist/types";
+import { ReduxState } from "@selene-wallet/common/dist/types";
 
 interface Props {
   title: string;

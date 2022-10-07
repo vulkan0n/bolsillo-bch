@@ -1,13 +1,13 @@
 import React from "react";
 import { View, Text, ScrollView } from "react-native";
-import Button from "@selene/app/src/components/atoms/Button";
-import TYPOGRAPHY from "@selene/common/design/typography";
+import Button from "@selene-wallet/app/src/components/atoms/Button";
+import TYPOGRAPHY from "@selene-wallet/common/design/typography";
 import styles from "./styles";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import COLOURS from "@selene/common/design/colours";
+import COLOURS from "@selene-wallet/common/design/colours";
 import { faPowerOff } from "@fortawesome/free-solid-svg-icons/faPowerOff";
-import persistor from "@selene/app/src/redux/persistor";
-import StackSubheader from "@selene/app/src/components/atoms/StackSubheader";
+import persistor from "@selene-wallet/app/src/redux/persistor";
+import StackSubheader from "@selene-wallet/app/src/components/atoms/StackSubheader";
 
 const ResetView = ({ navigation }) => {
   const onPressReset = () => {

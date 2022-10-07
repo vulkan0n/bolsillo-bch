@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { ScrollView, View, Text } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
-import Button from "@selene/app/src/components/atoms/Button";
-import TYPOGRAPHY from "@selene/common/design/typography";
+import Button from "@selene-wallet/app/src/components/atoms/Button";
+import TYPOGRAPHY from "@selene-wallet/common/design/typography";
 import styles from "./styles";
-import COLOURS from "@selene/common/design/colours";
-import { ReduxState } from "@selene/common/dist/types";
+import COLOURS from "@selene-wallet/common/design/colours";
+import { ReduxState } from "@selene-wallet/common/dist/types";
 import {
   createWalletFromScratchPad,
   clearWalletScratchPad,
@@ -13,18 +13,18 @@ import {
   updateNewWalletScratchPadDescription,
   updateImportWalletScratchPadMnemonic,
   updateImportWalletScratchPadDerivationPath,
-} from "@selene/app/src/redux/reducers/walletManagerReducer";
-import TextInput from "@selene/app/src/components/atoms/TextInput";
-import emit from "@selene/app/src/utils/emit";
-import { BRIDGE_MESSAGE_TYPES } from "@selene/app/src/utils/bridgeMessages";
+} from "@selene-wallet/app/src/redux/reducers/walletManagerReducer";
+import TextInput from "@selene-wallet/app/src/components/atoms/TextInput";
+import emit from "@selene-wallet/app/src/utils/emit";
+import { BRIDGE_MESSAGE_TYPES } from "@selene-wallet/app/src/utils/bridgeMessages";
 import Toast from "react-native-toast-message";
 import {
   validateWalletName,
   validateWalletDescription,
   validateWalletMnemonic,
-} from "@selene/app/src/utils/validation";
-import { DEFAULT_DERIVATION_PATH } from "@selene/common/dist/utils/consts";
-import StackSubheader from "@selene/app/src/components/atoms/StackSubheader";
+} from "@selene-wallet/app/src/utils/validation";
+import { DEFAULT_DERIVATION_PATH } from "@selene-wallet/common/dist/utils/consts";
+import StackSubheader from "@selene-wallet/app/src/components/atoms/StackSubheader";
 
 function ImportWalletView({ navigation }) {
   const dispatch = useDispatch();

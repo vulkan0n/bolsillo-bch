@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { PURGE } from "redux-persist";
-import { ExchangeRatesState } from "@selene/common/dist/types/reducers/exchangeRatesReducer";
+import { ExchangeRatesState } from "@selene-wallet/common/dist/types/reducers/exchangeRatesReducer";
 
 const initialState = {
   audBchPrice: "0.00",

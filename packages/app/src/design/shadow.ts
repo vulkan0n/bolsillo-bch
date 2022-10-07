@@ -1,4 +1,4 @@
-import COLOURS from "@selene/common/design/colours";
+import COLOURS from "@selene-wallet/common/design/colours";
 
 const SHADOW = {
   // iOS drop shadow

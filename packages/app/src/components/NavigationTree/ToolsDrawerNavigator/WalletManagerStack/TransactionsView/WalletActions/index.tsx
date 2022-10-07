@@ -1,12 +1,12 @@
 import React from "react";
 import { View, Text } from "react-native";
-import Button from "@selene/app/src/components/atoms/Button";
-import Divider from "@selene/app/src/components/atoms/Divider";
+import Button from "@selene-wallet/app/src/components/atoms/Button";
+import Divider from "@selene-wallet/app/src/components/atoms/Divider";
 import { useSelector } from "react-redux";
-import { ReduxState } from "@selene/common/dist/types";
-import TYPOGRAPHY from "@selene/common/design/typography";
-import SPACING from "@selene/common/design/spacing";
-import COLOURS from "@selene/common/design/colours";
+import { ReduxState } from "@selene-wallet/common/dist/types";
+import TYPOGRAPHY from "@selene-wallet/common/design/typography";
+import SPACING from "@selene-wallet/common/design/spacing";
+import COLOURS from "@selene-wallet/common/design/colours";
 
 const WalletActions = ({ navigation }) => {
   const { activeWalletName, navigatedWalletName } = useSelector(

@@ -1,13 +1,13 @@
 import { createDrawerNavigator } from "@react-navigation/drawer";
-import COLOURS from "@selene/common/design/colours";
-import TYPOGRAPHY from "@selene/common/design/typography";
+import COLOURS from "@selene-wallet/common/design/colours";
+import TYPOGRAPHY from "@selene-wallet/common/design/typography";
 import { getHeaderTitle } from "@react-navigation/elements";
 import { View, Text, Pressable } from "react-native";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { iconImport } from "@selene/app/src/design/icons";
+import { iconImport } from "@selene-wallet/app/src/design/icons";
 import styles from "./styles";
 import { useSelector } from "react-redux";
-import { ReduxState } from "@selene/common/dist/types";
+import { ReduxState } from "@selene-wallet/common/dist/types";
 
 const Drawer = createDrawerNavigator();
 

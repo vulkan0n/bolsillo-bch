@@ -1,4 +1,4 @@
-# `@selene/server`
+# `@selene-wallet/server`
 
 ## Getting Started
 

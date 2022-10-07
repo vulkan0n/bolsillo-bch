@@ -1,4 +1,4 @@
-# @selene/web
+# @selene-wallet/web
 
 Web frontend for Selene.
 

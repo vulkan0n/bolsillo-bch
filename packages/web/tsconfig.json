@@ -21,12 +21,12 @@
   "include": ["src"],
   "baseUrl": "./",
   "paths": {
-    "@src/*": ["@selene/app/src/*"],
-    "@components/*": ["@selene/app/src/components/*"],
-    "@atoms/*": ["@selene/app/src/components/atoms/*"],
-    "@design/*": ["@selene/app/src/design/*"],
-    "@redux/*": ["@selene/app/src/redux/*"],
-    "@types/*": ["@selene/app/src/types/*"],
-    "@utils/*": ["@selene/app/src/utils/*"]
+    "@src/*": ["@selene-wallet/app/src/*"],
+    "@components/*": ["@selene-wallet/app/src/components/*"],
+    "@atoms/*": ["@selene-wallet/app/src/components/atoms/*"],
+    "@design/*": ["@selene-wallet/app/src/design/*"],
+    "@redux/*": ["@selene-wallet/app/src/redux/*"],
+    "@types/*": ["@selene-wallet/app/src/types/*"],
+    "@utils/*": ["@selene-wallet/app/src/utils/*"]
   }
 }

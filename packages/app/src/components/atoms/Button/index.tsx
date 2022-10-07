@@ -2,8 +2,8 @@ import React from "react";
 import { View, Text, Pressable } from "react-native";
 import styles from "./styles";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import COLOURS from "@selene/common/design/colours";
-import { iconImport, IconType } from "@selene/app/src/design/icons";
+import COLOURS from "@selene-wallet/common/design/colours";
+import { iconImport, IconType } from "@selene-wallet/app/src/design/icons";
 import { BallIndicator } from "react-native-indicators";
 
 interface Props {

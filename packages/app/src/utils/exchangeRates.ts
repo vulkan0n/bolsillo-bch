@@ -1,9 +1,9 @@
-import store from "@selene/app/src/redux/store";
+import store from "@selene-wallet/app/src/redux/store";
 import {
   ONE_HUNDRED,
   ONE_HUNDRED_THOUSAND,
   ONE_HUNDRED_MILLION,
-} from "@selene/common/dist/utils/consts";
+} from "@selene-wallet/common/dist/utils/consts";
 
 // Sats out
 export const convertRawBitsToRawSats = (bits: string): string =>

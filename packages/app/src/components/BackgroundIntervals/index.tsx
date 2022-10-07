@@ -1,17 +1,20 @@
 import React, { useEffect } from "react";
 import { View } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
-import { ReduxState } from "@selene/common/dist/types";
-import { BRIDGE_MESSAGE_TYPES } from "@selene/app/src/utils/bridgeMessages";
-import { ONE_SECOND, THIRTY_SECONDS } from "@selene/common/dist/utils/consts";
-import emit from "@selene/app/src/utils/emit";
+import { ReduxState } from "@selene-wallet/common/dist/types";
+import { BRIDGE_MESSAGE_TYPES } from "@selene-wallet/app/src/utils/bridgeMessages";
+import {
+  ONE_SECOND,
+  THIRTY_SECONDS,
+} from "@selene-wallet/common/dist/utils/consts";
+import emit from "@selene-wallet/app/src/utils/emit";
 import axios from "axios";
-import { updateBchPrices } from "@selene/app/src/redux/reducers/exchangeRatesReducer";
-import { selectActiveWallet } from "@selene/app/src/redux/selectors";
+import { updateBchPrices } from "@selene-wallet/app/src/redux/reducers/exchangeRatesReducer";
+import { selectActiveWallet } from "@selene-wallet/app/src/redux/selectors";
 import { updateTransactionPadIsSendingCoins } from "../../redux/reducers/transactionPadReducer";
 import { gql, useMutation } from "@apollo/client";
 import moment from "moment";
-import { CHECK_IN_PERIOD_TYPES } from "@selene/common/dist/utils/consts";
+import { CHECK_IN_PERIOD_TYPES } from "@selene-wallet/common/dist/utils/consts";
 
 const SEND_DAILY_CHECK_IN = gql`
   mutation SendCheckIn($period: String!, $date: String!) {

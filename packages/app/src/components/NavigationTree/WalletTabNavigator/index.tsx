@@ -1,9 +1,9 @@
 import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { TouchableOpacity, Text } from "react-native";
-import COLOURS from "@selene/common/design/colours";
-import { iconImport } from "@selene/app/src/design/icons";
-import TYPOGRAPHY from "@selene/common/design/typography";
+import COLOURS from "@selene-wallet/common/design/colours";
+import { iconImport } from "@selene-wallet/app/src/design/icons";
+import TYPOGRAPHY from "@selene-wallet/common/design/typography";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { View } from "react-native";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
@@ -12,11 +12,11 @@ import ReceiveNumPad from "./ReceiveNumPad";
 import SendView from "./SendView";
 import AvailableBalance from "./SendView/AvailableBalance";
 import { useSelector } from "react-redux";
-import SPACING from "@selene/common/design/spacing";
-import { ReduxState } from "@selene/common/dist/types";
-import { selectIsActiveWallet } from "@selene/app/src/redux/selectors";
+import SPACING from "@selene-wallet/common/design/spacing";
+import { ReduxState } from "@selene-wallet/common/dist/types";
+import { selectIsActiveWallet } from "@selene-wallet/app/src/redux/selectors";
 import CreatingWallet from "./CreatingWallet";
-import TabBar from "@selene/app/src/components/atoms/TabBar";
+import TabBar from "@selene-wallet/app/src/components/atoms/TabBar";
 
 const Stack = createNativeStackNavigator();
 

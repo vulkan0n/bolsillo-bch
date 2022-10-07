@@ -1,21 +1,21 @@
 import React from "react";
 import { Pressable, View, Text, Linking } from "react-native";
-import TYPOGRAPHY from "@selene/common/design/typography";
-import TextInput from "@selene/app/src/components/atoms/TextInput";
-import Button from "@selene/app/src/components/atoms/Button";
+import TYPOGRAPHY from "@selene-wallet/common/design/typography";
+import TextInput from "@selene-wallet/app/src/components/atoms/TextInput";
+import Button from "@selene-wallet/app/src/components/atoms/Button";
 import { useDispatch, useSelector } from "react-redux";
-import { updateTransactionNote } from "@selene/app/src/redux/reducers/walletManagerReducer";
-import COLOURS from "@selene/common/design/colours";
+import { updateTransactionNote } from "@selene-wallet/app/src/redux/reducers/walletManagerReducer";
+import COLOURS from "@selene-wallet/common/design/colours";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { iconImport } from "@selene/app/src/design/icons";
-import { convertBalanceToDisplay } from "@selene/app/src/utils/formatting";
-import { BITCOIN_DENOMINATIONS } from "@selene/common/dist/utils/consts";
-import { ReduxState } from "@selene/common/dist/types";
+import { iconImport } from "@selene-wallet/app/src/design/icons";
+import { convertBalanceToDisplay } from "@selene-wallet/app/src/utils/formatting";
+import { BITCOIN_DENOMINATIONS } from "@selene-wallet/common/dist/utils/consts";
+import { ReduxState } from "@selene-wallet/common/dist/types";
 import {
   selectPrimaryCurrencyOrDenomination,
   selectSecondaryCurrencyOrDenomination,
-} from "@selene/app/src/redux/selectors";
-import SPACING from "@selene/common/design/spacing";
+} from "@selene-wallet/app/src/redux/selectors";
+import SPACING from "@selene-wallet/common/design/spacing";
 
 const TransactionRow = ({ transaction, editNoteHash, setEditNoteHash }) => {
   const { blockheight, txn, note, balance, fee, from, to, value } = transaction;

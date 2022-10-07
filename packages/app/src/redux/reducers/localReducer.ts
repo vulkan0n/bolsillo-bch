@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { PURGE } from "redux-persist";
-import { LocalState } from "@selene/common/dist/types/reducers/localReducer";
+import { LocalState } from "@selene-wallet/common/dist/types/reducers/localReducer";
 
 const initialState = {
   lastSentTransactionHash: "",

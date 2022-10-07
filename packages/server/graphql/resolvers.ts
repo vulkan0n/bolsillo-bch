@@ -1,5 +1,5 @@
-import { CheckInPeriodTypes } from "@selene/common/dist/types";
-import { CHECK_IN_PERIOD_TYPES } from "@selene/common/dist/utils/consts";
+import { CheckInPeriodTypes } from "@selene-wallet/common/dist/types";
+import { CHECK_IN_PERIOD_TYPES } from "@selene-wallet/common/dist/utils/consts";
 import moment from "moment";
 
 const { dateScalar } = require("./scalars.ts");

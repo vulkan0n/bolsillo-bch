@@ -1,5 +1,5 @@
 import { emit } from "react-native-react-bridge/lib/web";
-import { RESPONSE_MESSAGE_TYPES } from "@selene/app/src/utils/bridgeMessages";
+import { RESPONSE_MESSAGE_TYPES } from "@selene-wallet/app/src/utils/bridgeMessages";
 
 export const sendCoins = async (WalletObject, message) => {
   const walletSendCoins = await WalletObject.fromSeed(

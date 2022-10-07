@@ -3,12 +3,12 @@ import { Text, View, Pressable } from "react-native";
 import { BarCodeScanner } from "expo-barcode-scanner";
 import styles from "./styles";
 import { useSelector, useDispatch } from "react-redux";
-import TYPOGRAPHY from "@selene/common/design/typography";
+import TYPOGRAPHY from "@selene-wallet/common/design/typography";
 import { processRequestString } from "../utils";
-import { selectPrimaryCurrencyOrDenomination } from "@selene/app/src/redux/selectors";
-import { ReduxState } from "@selene/common/dist/types";
+import { selectPrimaryCurrencyOrDenomination } from "@selene-wallet/app/src/redux/selectors";
+import { ReduxState } from "@selene-wallet/common/dist/types";
 import { useIsFocused } from "@react-navigation/native";
-import Button from "@selene/app/src/components/atoms/Button";
+import Button from "@selene-wallet/app/src/components/atoms/Button";
 
 function QrScanner() {
   const dispatch = useDispatch();

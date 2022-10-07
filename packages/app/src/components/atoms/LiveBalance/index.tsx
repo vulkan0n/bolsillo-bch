@@ -1,23 +1,23 @@
 import React from "react";
 import { View, Pressable, Text } from "react-native";
 import styles from "./styles";
-import TYPOGRAPHY from "@selene/common/design/typography";
+import TYPOGRAPHY from "@selene-wallet/common/design/typography";
 import { useDispatch, useSelector } from "react-redux";
-import { ReduxState } from "@selene/common/dist/types";
-import { toggleIsBchDenominated } from "@selene/app/src/redux/reducers/settingsReducer";
+import { ReduxState } from "@selene-wallet/common/dist/types";
+import { toggleIsBchDenominated } from "@selene-wallet/app/src/redux/reducers/settingsReducer";
 import {
   selectPrimaryCurrencyOrDenomination,
   selectPadPrimaryBalance,
   selectPadSecondaryBalance,
   selectActiveWalletBalance,
-} from "@selene/app/src/redux/selectors";
-import { convertRawSatsToRawCurrencyRounded } from "@selene/app/src/utils/formatting";
-import { updateTransactionPadBalance } from "@selene/app/src/redux/reducers/transactionPadReducer";
-import COLOURS from "@selene/common/design/colours";
+} from "@selene-wallet/app/src/redux/selectors";
+import { convertRawSatsToRawCurrencyRounded } from "@selene-wallet/app/src/utils/formatting";
+import { updateTransactionPadBalance } from "@selene-wallet/app/src/redux/reducers/transactionPadReducer";
+import COLOURS from "@selene-wallet/common/design/colours";
 import {
   convertRawCurrencyToRawSats,
   prettifyRawCurrency,
-} from "@selene/app/src/utils/formatting";
+} from "@selene-wallet/app/src/utils/formatting";
 
 interface Props {
   isHideMaxButton?: boolean;

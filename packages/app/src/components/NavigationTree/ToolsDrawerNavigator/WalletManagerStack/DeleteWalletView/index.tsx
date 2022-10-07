@@ -1,17 +1,17 @@
 import React from "react";
 import { View, Text, ScrollView } from "react-native";
-import Button from "@selene/app/src/components/atoms/Button";
-import TYPOGRAPHY from "@selene/common/design/typography";
+import Button from "@selene-wallet/app/src/components/atoms/Button";
+import TYPOGRAPHY from "@selene-wallet/common/design/typography";
 import styles from "./styles";
 import Toast from "react-native-toast-message";
 import { useDispatch, useSelector } from "react-redux";
-import { ReduxState } from "@selene/common/dist/types";
-import Divider from "@selene/app/src/components/atoms/Divider";
+import { ReduxState } from "@selene-wallet/common/dist/types";
+import Divider from "@selene-wallet/app/src/components/atoms/Divider";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import COLOURS from "@selene/common/design/colours";
+import COLOURS from "@selene-wallet/common/design/colours";
 import { faTrashCan } from "@fortawesome/free-solid-svg-icons/faTrashCan";
-import { deleteWallet } from "@selene/app/src/redux/reducers/walletManagerReducer";
-import StackSubheader from "@selene/app/src/components/atoms/StackSubheader";
+import { deleteWallet } from "@selene-wallet/app/src/redux/reducers/walletManagerReducer";
+import StackSubheader from "@selene-wallet/app/src/components/atoms/StackSubheader";
 
 const DeleteWalletView = ({ navigation }) => {
   const { navigatedWalletName } = useSelector(

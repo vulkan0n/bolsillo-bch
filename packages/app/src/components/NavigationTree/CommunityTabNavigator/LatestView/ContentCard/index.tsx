@@ -1,18 +1,18 @@
 import React, { useState } from "react";
 import { View, Text } from "react-native";
-import COLOURS from "@selene/common/design/colours";
-import SPACING from "@selene/common/design/spacing";
-import TYPOGRAPHY from "@selene/common/design/typography";
+import COLOURS from "@selene-wallet/common/design/colours";
+import SPACING from "@selene-wallet/common/design/spacing";
+import TYPOGRAPHY from "@selene-wallet/common/design/typography";
 import YoutubePlayer from "react-native-youtube-iframe";
 import moment from "moment";
-import TipWidget from "@selene/app/src/components/atoms/TipWidget";
-import emit from "@selene/app/src/utils/emit";
-import { BRIDGE_MESSAGE_TYPES } from "@selene/app/src/utils/bridgeMessages";
-import { ReduxState } from "@selene/common/dist/types";
+import TipWidget from "@selene-wallet/app/src/components/atoms/TipWidget";
+import emit from "@selene-wallet/app/src/utils/emit";
+import { BRIDGE_MESSAGE_TYPES } from "@selene-wallet/app/src/utils/bridgeMessages";
+import { ReduxState } from "@selene-wallet/common/dist/types";
 import { useSelector, useDispatch } from "react-redux";
-import { selectActiveWallet } from "@selene/app/src/redux/selectors";
-import { updateTransactionPadIsSendingCoins } from "@selene/app/src/redux/reducers/transactionPadReducer";
-import { selectActiveWalletBalance } from "@selene/app/src/redux/selectors";
+import { selectActiveWallet } from "@selene-wallet/app/src/redux/selectors";
+import { updateTransactionPadIsSendingCoins } from "@selene-wallet/app/src/redux/reducers/transactionPadReducer";
+import { selectActiveWalletBalance } from "@selene-wallet/app/src/redux/selectors";
 import { BallIndicator } from "react-native-indicators";
 
 interface Props {

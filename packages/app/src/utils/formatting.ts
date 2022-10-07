@@ -34,8 +34,8 @@ import {
   MAIN_NET_PREFIX,
   TEST_NET_PREFIX,
   BITCOIN_DENOMINATIONS,
-} from "@selene/common/dist/utils/consts";
-import { CurrencyOrDenominationType } from "@selene/common/dist/types";
+} from "@selene-wallet/common/dist/utils/consts";
+import { CurrencyOrDenominationType } from "@selene-wallet/common/dist/types";
 
 // Note on how this file works
 // All values are passed between functions as strings

@@ -1,9 +1,9 @@
 import React from "react";
 import "./App.css";
-import TYPOGRAPHY from "@selene/common/dist/design/typography";
+import TYPOGRAPHY from "@selene-wallet/common/dist/design/typography";
 import Header from "./components/Header";
 import Content from "./components/Content";
-// import WebApp from "@selene/app/src/App";
+// import WebApp from "@selene-wallet/app/src/App";
 
 function App() {
   return (

@@ -1,5 +1,5 @@
-import COLOURS from "@selene/common/design/colours";
-import SPACING from "@selene/common/design/spacing";
+import COLOURS from "@selene-wallet/common/design/colours";
+import SPACING from "@selene-wallet/common/design/spacing";
 
 const styles = {
   tabBar: {

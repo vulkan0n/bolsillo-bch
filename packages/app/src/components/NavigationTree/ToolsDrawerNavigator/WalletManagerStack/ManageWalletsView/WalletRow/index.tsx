@@ -1,19 +1,19 @@
 import React from "react";
 import { View, Text, Pressable } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
-import TYPOGRAPHY from "@selene/common/design/typography";
+import TYPOGRAPHY from "@selene-wallet/common/design/typography";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import COLOURS from "@selene/common/design/colours";
-import SPACING from "@selene/common/design/spacing";
-import { ReduxState } from "@selene/common/dist/types";
+import COLOURS from "@selene-wallet/common/design/colours";
+import SPACING from "@selene-wallet/common/design/spacing";
+import { ReduxState } from "@selene-wallet/common/dist/types";
 import { faWallet } from "@fortawesome/free-solid-svg-icons";
-import { convertBalanceToDisplay } from "@selene/app/src/utils/formatting";
+import { convertBalanceToDisplay } from "@selene-wallet/app/src/utils/formatting";
 import {
   updateActiveWalletName,
   updateNavigatedWalletName,
-} from "@selene/app/src/redux/reducers/walletManagerReducer";
+} from "@selene-wallet/app/src/redux/reducers/walletManagerReducer";
 import styles from "./styles";
-import { BITCOIN_DENOMINATIONS } from "@selene/common/dist/utils/consts";
+import { BITCOIN_DENOMINATIONS } from "@selene-wallet/common/dist/utils/consts";
 
 const WalletRow = ({
   navigation,

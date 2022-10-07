@@ -1,10 +1,10 @@
 import React from "react";
 import { View, Text } from "react-native";
 import { useSelector } from "react-redux";
-import TYPOGRAPHY from "@selene/common/design/typography";
+import TYPOGRAPHY from "@selene-wallet/common/design/typography";
 import styles from "./styles";
-import { selectActiveWalletBalance } from "@selene/app/src/redux/selectors";
-import { ReduxState } from "@selene/common/dist/types";
+import { selectActiveWalletBalance } from "@selene-wallet/app/src/redux/selectors";
+import { ReduxState } from "@selene-wallet/common/dist/types";
 
 function AvailableBalance() {
   const { primaryBalance, secondaryBalance } = useSelector(

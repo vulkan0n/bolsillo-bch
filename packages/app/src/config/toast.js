@@ -1,8 +1,8 @@
 import React from "react";
 import { View, Text } from "react-native";
-import TYPOGRAPHY from "@selene/common/design/typography";
-import COLOURS from "@selene/common/design/colours";
-import SPACING from "@selene/common/design/spacing";
+import TYPOGRAPHY from "@selene-wallet/common/design/typography";
+import COLOURS from "@selene-wallet/common/design/colours";
+import SPACING from "@selene-wallet/common/design/spacing";
 
 const toastConfig = {
   customSuccess: ({ props: { title, text }, ...props }) => (

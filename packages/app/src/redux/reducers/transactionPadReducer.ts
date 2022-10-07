@@ -6,7 +6,7 @@ import {
   updateContrastCurrency,
 } from "./settingsReducer";
 import { updateActiveWalletName } from "./walletManagerReducer";
-import { TransactionPadState } from "@selene/common/dist/types/reducers/transactionPadReducer";
+import { TransactionPadState } from "@selene-wallet/common/dist/types/reducers/transactionPadReducer";
 
 const initialState = {
   view: "Send",

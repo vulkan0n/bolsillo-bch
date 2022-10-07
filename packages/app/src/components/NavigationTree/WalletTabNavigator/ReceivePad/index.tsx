@@ -2,24 +2,24 @@ import React, { useState } from "react";
 import { View, Text, Pressable } from "react-native";
 import { useSelector } from "react-redux";
 import styles from "./styles";
-import Button from "@selene/app/src/components/atoms/Button";
+import Button from "@selene-wallet/app/src/components/atoms/Button";
 import Toast from "react-native-toast-message";
-import TYPOGRAPHY from "@selene/common/design/typography";
+import TYPOGRAPHY from "@selene-wallet/common/design/typography";
 import QRCode from "react-native-qrcode-svg";
 import { useDispatch } from "react-redux";
-import { updateTransactionPadView } from "@selene/app/src/redux/reducers/transactionPadReducer";
-import { ReduxState } from "@selene/common/dist/types";
+import { updateTransactionPadView } from "@selene-wallet/app/src/redux/reducers/transactionPadReducer";
+import { ReduxState } from "@selene-wallet/common/dist/types";
 import * as Clipboard from "expo-clipboard";
-import COLOURS from "@selene/common/design/colours";
+import COLOURS from "@selene-wallet/common/design/colours";
 import {
   selectActiveWallet,
   selectIsActiveWalletZeroBalance,
   selectPadBalanceInRawSats,
-} from "@selene/app/src/redux/selectors";
-import { ONE_HUNDRED_MILLION } from "@selene/common/dist/utils/consts";
-import LiveBalance from "@selene/app/src/components/atoms/LiveBalance";
-import { updateTransactionPadBalance } from "@selene/app/src/redux/reducers/transactionPadReducer";
-import { selectIsPadZeroBalance } from "@selene/app/src/redux/selectors";
+} from "@selene-wallet/app/src/redux/selectors";
+import { ONE_HUNDRED_MILLION } from "@selene-wallet/common/dist/utils/consts";
+import LiveBalance from "@selene-wallet/app/src/components/atoms/LiveBalance";
+import { updateTransactionPadBalance } from "@selene-wallet/app/src/redux/reducers/transactionPadReducer";
+import { selectIsPadZeroBalance } from "@selene-wallet/app/src/redux/selectors";
 
 const ReceivePad = ({ navigation }) => {
   const dispatch = useDispatch();

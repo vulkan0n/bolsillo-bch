@@ -7,7 +7,7 @@ import {
 import {
   BRIDGE_MESSAGE_TYPES,
   RESPONSE_MESSAGE_TYPES,
-} from "@selene/app/src/utils/bridgeMessages";
+} from "@selene-wallet/app/src/utils/bridgeMessages";
 import { sendCoins, getWalletHistory } from "./actions";
 
 const Bridge = () => {

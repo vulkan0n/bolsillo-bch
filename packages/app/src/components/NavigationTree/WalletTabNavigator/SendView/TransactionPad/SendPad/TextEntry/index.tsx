@@ -1,16 +1,16 @@
 import React, { useEffect } from "react";
 import { View, Pressable, Text } from "react-native";
 import styles from "./styles";
-import TextInput from "@selene/app/src/components/atoms/TextInput";
+import TextInput from "@selene-wallet/app/src/components/atoms/TextInput";
 import { useSelector, useDispatch } from "react-redux";
-import { updateTransactionPadSendToAddress } from "@selene/app/src/redux/reducers/transactionPadReducer";
-import { ReduxState } from "@selene/common/dist/types";
-import { formatStringToCashAddress } from "@selene/app/src/utils/formatting";
+import { updateTransactionPadSendToAddress } from "@selene-wallet/app/src/redux/reducers/transactionPadReducer";
+import { ReduxState } from "@selene-wallet/common/dist/types";
+import { formatStringToCashAddress } from "@selene-wallet/app/src/utils/formatting";
 import * as Clipboard from "expo-clipboard";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { iconImport } from "@selene/app/src/design/icons";
-import COLOURS from "@selene/common/design/colours";
-import { selectPrimaryCurrencyOrDenomination } from "@selene/app/src/redux/selectors";
+import { iconImport } from "@selene-wallet/app/src/design/icons";
+import COLOURS from "@selene-wallet/common/design/colours";
+import { selectPrimaryCurrencyOrDenomination } from "@selene-wallet/app/src/redux/selectors";
 import { processRequestString } from "../utils";
 
 const TextEntry = () => {

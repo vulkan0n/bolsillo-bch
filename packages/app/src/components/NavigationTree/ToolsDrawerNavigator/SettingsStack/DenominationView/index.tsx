@@ -1,18 +1,18 @@
 import React, { useState } from "react";
 import { ScrollView, View, Text, Pressable } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
-import Button from "@selene/app/src/components/atoms/Button";
-import TYPOGRAPHY from "@selene/common/design/typography";
+import Button from "@selene-wallet/app/src/components/atoms/Button";
+import TYPOGRAPHY from "@selene-wallet/common/design/typography";
 import styles from "./styles";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faCoins } from "@fortawesome/free-solid-svg-icons/faCoins";
-import COLOURS from "@selene/common/design/colours";
-import { ReduxState } from "@selene/common/dist/types";
-import Divider from "@selene/app/src/components/atoms/Divider";
-import SPACING from "@selene/common/design/spacing";
-import { updateBitcoinDenomination } from "@selene/app/src/redux/reducers/settingsReducer";
-import StackSubheader from "@selene/app/src/components/atoms/StackSubheader";
-import { BITCOIN_DENOMINATIONS } from "@selene/common/dist/utils/consts";
+import COLOURS from "@selene-wallet/common/design/colours";
+import { ReduxState } from "@selene-wallet/common/dist/types";
+import Divider from "@selene-wallet/app/src/components/atoms/Divider";
+import SPACING from "@selene-wallet/common/design/spacing";
+import { updateBitcoinDenomination } from "@selene-wallet/app/src/redux/reducers/settingsReducer";
+import StackSubheader from "@selene-wallet/app/src/components/atoms/StackSubheader";
+import { BITCOIN_DENOMINATIONS } from "@selene-wallet/common/dist/utils/consts";
 
 function DenominationView() {
   const dispatch = useDispatch();

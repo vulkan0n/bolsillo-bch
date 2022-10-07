@@ -1,22 +1,22 @@
 import React, { useState } from "react";
 import { View, Pressable, Text } from "react-native";
-import COLOURS from "@selene/common/design/colours";
-import Button from "@selene/app/src/components/atoms/Button";
-import emit from "@selene/app/src/utils/emit";
-import { BRIDGE_MESSAGE_TYPES } from "@selene/app/src/utils/bridgeMessages";
-import { ReduxState } from "@selene/common/dist/types";
+import COLOURS from "@selene-wallet/common/design/colours";
+import Button from "@selene-wallet/app/src/components/atoms/Button";
+import emit from "@selene-wallet/app/src/utils/emit";
+import { BRIDGE_MESSAGE_TYPES } from "@selene-wallet/app/src/utils/bridgeMessages";
+import { ReduxState } from "@selene-wallet/common/dist/types";
 import { useSelector, useDispatch } from "react-redux";
-import { selectActiveWallet } from "@selene/app/src/redux/selectors";
+import { selectActiveWallet } from "@selene-wallet/app/src/redux/selectors";
 import {
   updateTransactionPadIsSendingCoins,
   updateTransactionPadBalance,
-} from "@selene/app/src/redux/reducers/transactionPadReducer";
-import { selectActiveWalletBalance } from "@selene/app/src/redux/selectors";
-import TYPOGRAPHY from "@selene/common/design/typography";
+} from "@selene-wallet/app/src/redux/reducers/transactionPadReducer";
+import { selectActiveWalletBalance } from "@selene-wallet/app/src/redux/selectors";
+import TYPOGRAPHY from "@selene-wallet/common/design/typography";
 import styles from "./styles";
-import { navigate } from "@selene/app/src/components/NavigationTree/rootNavigation";
-import { BITCOIN_DENOMINATIONS } from "@selene/common/dist/utils/consts";
-import { convertBalanceToDisplay } from "@selene/app/src/utils/formatting";
+import { navigate } from "@selene-wallet/app/src/components/NavigationTree/rootNavigation";
+import { BITCOIN_DENOMINATIONS } from "@selene-wallet/common/dist/utils/consts";
+import { convertBalanceToDisplay } from "@selene-wallet/app/src/utils/formatting";
 
 interface Props {
   donationBchAddress: string;

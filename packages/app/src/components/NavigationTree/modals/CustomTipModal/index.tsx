@@ -1,24 +1,24 @@
 import React from "react";
 import { View } from "react-native";
-import Button from "@selene/app/src/components/atoms/Button";
+import Button from "@selene-wallet/app/src/components/atoms/Button";
 import styles from "./styles";
 import { MotiView } from "moti";
 import { useDispatch, useSelector } from "react-redux";
-import NumPad from "@selene/app/src/components/atoms/NumPad";
-import LiveBalance from "@selene/app/src/components/atoms/LiveBalance";
+import NumPad from "@selene-wallet/app/src/components/atoms/NumPad";
+import LiveBalance from "@selene-wallet/app/src/components/atoms/LiveBalance";
 import AvailableBalance from "../../WalletTabNavigator/SendView/AvailableBalance";
 import {
   selectPadBalanceInRawSats,
   selectPadPrimaryBalance,
   selectActiveWallet,
-} from "@selene/app/src/redux/selectors";
-import { ReduxState } from "@selene/common/dist/types";
-import emit from "@selene/app/src/utils/emit";
+} from "@selene-wallet/app/src/redux/selectors";
+import { ReduxState } from "@selene-wallet/common/dist/types";
+import emit from "@selene-wallet/app/src/utils/emit";
 import {
   updateTransactionPadIsSendingCoins,
   updateTransactionPadBalance,
-} from "@selene/app/src/redux/reducers/transactionPadReducer";
-import { BRIDGE_MESSAGE_TYPES } from "@selene/app/src/utils/bridgeMessages";
+} from "@selene-wallet/app/src/redux/reducers/transactionPadReducer";
+import { BRIDGE_MESSAGE_TYPES } from "@selene-wallet/app/src/utils/bridgeMessages";
 
 function CustomTipModal({ navigation, route }) {
   const { donationBchAddress } = route?.params;

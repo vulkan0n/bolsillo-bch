@@ -7,10 +7,10 @@ import {
   Linking,
   ScrollView,
 } from "react-native";
-import TYPOGRAPHY from "@selene/common/design/typography";
+import TYPOGRAPHY from "@selene-wallet/common/design/typography";
 import styles from "./styles";
-import TipWidget from "@selene/app/src/components/atoms/TipWidget";
-import { DEVELOPER_DONATION_ADDRESS } from "@selene/common/dist/utils/consts";
+import TipWidget from "@selene-wallet/app/src/components/atoms/TipWidget";
+import { DEVELOPER_DONATION_ADDRESS } from "@selene-wallet/common/dist/utils/consts";
 
 function CreditsView() {
   const version = "v0.0.10";

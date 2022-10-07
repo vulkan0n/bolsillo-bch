@@ -13,7 +13,7 @@ import { useWebViewMessage } from "react-native-react-bridge";
 import NavigationTree from "./components/NavigationTree";
 import BackgroundIntervals from "./components/BackgroundIntervals";
 import Bridge from "./components/Bridge";
-import { RESPONSE_MESSAGE_TYPES } from "@selene/app/src/utils/bridgeMessages";
+import { RESPONSE_MESSAGE_TYPES } from "@selene-wallet/app/src/utils/bridgeMessages";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 import store from "./redux/store";
@@ -21,7 +21,7 @@ import persistor from "./redux/persistor";
 import Toast from "react-native-toast-message";
 import toastConfig from "./config/toast";
 import preloadMainNetScript from "./config/preloadMainNetScript";
-import { WalletType } from "@selene/common/dist/types";
+import { WalletType } from "@selene-wallet/common/dist/types";
 import {
   createDefaultWallet,
   updateNewWalletScratchPadDetails,
@@ -35,7 +35,7 @@ import {
 } from "./redux/reducers/transactionPadReducer";
 import { navigate } from "./components/NavigationTree/rootNavigation";
 import { updateLocalLastSentTransactionHash } from "./redux/reducers/localReducer";
-import { IS_WEB } from "@selene/app/src/utils/isWeb";
+import { IS_WEB } from "@selene-wallet/app/src/utils/isWeb";
 import {
   ApolloClient,
   InMemoryCache,

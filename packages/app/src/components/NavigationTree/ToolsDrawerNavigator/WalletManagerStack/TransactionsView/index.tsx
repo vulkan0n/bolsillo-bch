@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, FlatList } from "react-native";
 import { useSelector } from "react-redux";
-import TYPOGRAPHY from "@selene/common/design/typography";
+import TYPOGRAPHY from "@selene-wallet/common/design/typography";
 import styles from "./styles";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { ReduxState } from "@selene/common/dist/types";
-import Divider from "@selene/app/src/components/atoms/Divider";
-import StackSubheader from "@selene/app/src/components/atoms/StackSubheader";
+import { ReduxState } from "@selene-wallet/common/dist/types";
+import Divider from "@selene-wallet/app/src/components/atoms/Divider";
+import StackSubheader from "@selene-wallet/app/src/components/atoms/StackSubheader";
 import WalletActions from "./WalletActions";
 import TransactionRow from "./TransactionRow";
-import { BRIDGE_MESSAGE_TYPES } from "@selene/app/src/utils/bridgeMessages";
-import emit from "@selene/app/src/utils/emit";
+import { BRIDGE_MESSAGE_TYPES } from "@selene-wallet/app/src/utils/bridgeMessages";
+import emit from "@selene-wallet/app/src/utils/emit";
 
 function TransactionsView({ navigation }) {
   const { navigatedWalletName } = useSelector(

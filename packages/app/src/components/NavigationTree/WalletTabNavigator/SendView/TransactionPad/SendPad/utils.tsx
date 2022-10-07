@@ -2,9 +2,9 @@ import {
   updateTransactionPadView,
   updateTransactionPadBalance,
   updateTransactionPadSendToAddress,
-} from "@selene/app/src/redux/reducers/transactionPadReducer";
-import { convertRawSatsToRawCurrencyRounded } from "@selene/app/src/utils/formatting";
-import { validateRequestString } from "@selene/app/src/utils/validation";
+} from "@selene-wallet/app/src/redux/reducers/transactionPadReducer";
+import { convertRawSatsToRawCurrencyRounded } from "@selene-wallet/app/src/utils/formatting";
+import { validateRequestString } from "@selene-wallet/app/src/utils/validation";
 
 export const processRequestString = ({
   dispatch,

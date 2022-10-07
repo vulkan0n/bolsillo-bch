@@ -1,5 +1,5 @@
-import SPACING from "@selene/common/design/spacing";
-import COLOURS from "@selene/common/design/colours";
+import SPACING from "@selene-wallet/common/design/spacing";
+import COLOURS from "@selene-wallet/common/design/colours";
 
 const styles = ({ variant = "primary", isSmall = false, isDisabled }) => {
   const isSmallAction =

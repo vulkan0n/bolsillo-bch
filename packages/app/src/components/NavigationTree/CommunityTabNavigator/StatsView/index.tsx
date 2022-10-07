@@ -1,11 +1,14 @@
 import React from "react";
 import { View, Text, ScrollView } from "react-native";
-import COLOURS from "@selene/common/design/colours";
-import SPACING from "@selene/common/design/spacing";
-import TYPOGRAPHY from "@selene/common/design/typography";
-import { ONE_HUNDRED, TEN_MILLION } from "@selene/common/dist/utils/consts";
+import COLOURS from "@selene-wallet/common/design/colours";
+import SPACING from "@selene-wallet/common/design/spacing";
+import TYPOGRAPHY from "@selene-wallet/common/design/typography";
+import {
+  ONE_HUNDRED,
+  TEN_MILLION,
+} from "@selene-wallet/common/dist/utils/consts";
 import styles from "./styles";
-import Button from "@selene/app/src/components/atoms/Button";
+import Button from "@selene-wallet/app/src/components/atoms/Button";
 import DailyActiveBitcoinersChart from "./DailyActiveBitcoinersChart";
 
 function StatsView({ navigation }) {

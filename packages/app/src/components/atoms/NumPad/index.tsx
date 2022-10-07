@@ -1,31 +1,31 @@
 import React from "react";
 import { View, Text, Pressable } from "react-native";
 import styles from "./styles";
-import Button from "@selene/app/src/components/atoms/Button";
-import TYPOGRAPHY from "@selene/common/design/typography";
+import Button from "@selene-wallet/app/src/components/atoms/Button";
+import TYPOGRAPHY from "@selene-wallet/common/design/typography";
 import { useSelector, useDispatch } from "react-redux";
 import {
   updateTransactionPadBalance,
   updateTransactionPadView,
   updateTransactionPadError,
-} from "@selene/app/src/redux/reducers/transactionPadReducer";
+} from "@selene-wallet/app/src/redux/reducers/transactionPadReducer";
 import {
   BitcoinDenominationTypes,
   ReduxState,
   SupportedCurrencyTypes,
-} from "@selene/common/dist/types";
+} from "@selene-wallet/common/dist/types";
 import TRANSACTION_PAD_ERRORS from "../../NavigationTree/WalletTabNavigator/SendView/TransactionPad/errors";
 import {
   allowedDecimalPlaces,
   convertRawCurrencyToRawSats,
-} from "@selene/app/src/utils/formatting";
-import { countDecimalPlaces } from "@selene/app/src/utils/utils";
-import { BITCOIN_DENOMINATIONS } from "@selene/common/dist/utils/consts";
+} from "@selene-wallet/app/src/utils/formatting";
+import { countDecimalPlaces } from "@selene-wallet/app/src/utils/utils";
+import { BITCOIN_DENOMINATIONS } from "@selene-wallet/common/dist/utils/consts";
 import {
   selectActiveWallet,
   selectPrimaryCurrencyOrDenomination,
   selectIsActiveWalletZeroBalance,
-} from "@selene/app/src/redux/selectors";
+} from "@selene-wallet/app/src/redux/selectors";
 
 const NumPad = ({ isCheckInsufficientBalance = false }) => {
   const dispatch = useDispatch();

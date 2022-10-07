@@ -1,7 +1,7 @@
 import React from "react";
 import styles from "./styles";
 import { useQuery } from "@apollo/client";
-import GET_CONTENT from "@selene/common/dist/graphql/queries/getContent";
+import GET_CONTENT from "@selene-wallet/common/dist/graphql/queries/getContent";
 
 const Content = () => {
   const { loading, error, data } = useQuery(GET_CONTENT);

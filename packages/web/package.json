@@ -1,11 +1,11 @@
 {
-  "name": "@selene/web",
+  "name": "@selene-wallet/web",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
     "@apollo/client": "^3.7.0",
-    "@selene/app": "0.0.10",
-    "@selene/common": "0.0.1",
+    "@selene-wallet/app": "0.0.10",
+    "@selene-wallet/common": "0.0.1",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",

@@ -5,7 +5,7 @@ import ConnectView from "./ConnectView";
 
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
-import TabBar from "@selene/app/src/components/atoms/TabBar";
+import TabBar from "@selene-wallet/app/src/components/atoms/TabBar";
 
 const Stack = createNativeStackNavigator();
 

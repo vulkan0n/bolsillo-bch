@@ -1,15 +1,15 @@
 import React, { useState } from "react";
 import { ScrollView, View, Text, Pressable } from "react-native";
 import { useSelector } from "react-redux";
-import Button from "@selene/app/src/components/atoms/Button";
-import TYPOGRAPHY from "@selene/common/design/typography";
+import Button from "@selene-wallet/app/src/components/atoms/Button";
+import TYPOGRAPHY from "@selene-wallet/common/design/typography";
 import styles from "./styles";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faPiggyBank } from "@fortawesome/free-solid-svg-icons/faPiggyBank";
-import COLOURS from "@selene/common/design/colours";
-import { ReduxState } from "@selene/common/dist/types";
-import Divider from "@selene/app/src/components/atoms/Divider";
-import StackSubheader from "@selene/app/src/components/atoms/StackSubheader";
+import COLOURS from "@selene-wallet/common/design/colours";
+import { ReduxState } from "@selene-wallet/common/dist/types";
+import Divider from "@selene-wallet/app/src/components/atoms/Divider";
+import StackSubheader from "@selene-wallet/app/src/components/atoms/StackSubheader";
 
 function BackupView({ navigation }) {
   const { navigatedWalletName } = useSelector(

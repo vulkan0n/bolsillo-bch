@@ -2,7 +2,7 @@ import {
   SupportedCurrency,
   BitcoinDenominationTypes,
   CheckInPeriodTypes,
-} from "@selene/common/types";
+} from "@selene-wallet/common/types";
 
 // Address formats
 export const TEST_NET_PREFIX: string = "bchtest:";

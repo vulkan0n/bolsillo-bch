@@ -8,9 +8,9 @@ import RightHandedMode from "./RightHandedMode";
 import ShowAvailableBalance from "./ShowAvailableBalance";
 import ShowCommunityTab from "./ShowCommunityTab";
 import TestNet from "./TestNet";
-import TYPOGRAPHY from "@selene/common/design/typography";
-import Divider from "@selene/app/src/components/atoms/Divider";
-import StackSubheader from "@selene/app/src/components/atoms/StackSubheader";
+import TYPOGRAPHY from "@selene-wallet/common/design/typography";
+import Divider from "@selene-wallet/app/src/components/atoms/Divider";
+import StackSubheader from "@selene-wallet/app/src/components/atoms/StackSubheader";
 
 const OptionsView = ({ navigation }) => {
   const onPressReset = () => {

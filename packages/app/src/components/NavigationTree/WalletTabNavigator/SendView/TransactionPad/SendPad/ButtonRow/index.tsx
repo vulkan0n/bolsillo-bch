@@ -1,15 +1,15 @@
 import React from "react";
 import { View } from "react-native";
 import styles from "./styles";
-import Button from "@selene/app/src/components/atoms/Button";
+import Button from "@selene-wallet/app/src/components/atoms/Button";
 import { useSelector, useDispatch } from "react-redux";
-import { updateTransactionPadSendInputView } from "@selene/app/src/redux/reducers/transactionPadReducer";
-import { ReduxState } from "@selene/common/dist/types";
+import { updateTransactionPadSendInputView } from "@selene-wallet/app/src/redux/reducers/transactionPadReducer";
+import { ReduxState } from "@selene-wallet/common/dist/types";
 import pickImage from "../pickImage";
 import {
   selectPrimaryCurrencyOrDenomination,
   selectIsPadZeroBalance,
-} from "@selene/app/src/redux/selectors";
+} from "@selene-wallet/app/src/redux/selectors";
 
 const ButtonRow = () => {
   const dispatch = useDispatch();

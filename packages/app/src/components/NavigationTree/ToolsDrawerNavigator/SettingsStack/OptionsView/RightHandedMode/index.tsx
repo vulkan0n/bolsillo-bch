@@ -1,11 +1,11 @@
 import React from "react";
 import { View, Text, Switch, Pressable } from "react-native";
-import TYPOGRAPHY from "@selene/common/design/typography";
+import TYPOGRAPHY from "@selene-wallet/common/design/typography";
 import styles from "../styles";
-import COLOURS from "@selene/common/design/colours";
-import { toggleIsRightHandedMode } from "@selene/app/src/redux/reducers/settingsReducer";
+import COLOURS from "@selene-wallet/common/design/colours";
+import { toggleIsRightHandedMode } from "@selene-wallet/app/src/redux/reducers/settingsReducer";
 import { useSelector, useDispatch } from "react-redux";
-import { ReduxState } from "@selene/common/dist/types";
+import { ReduxState } from "@selene-wallet/common/dist/types";
 
 const RightHandedMode = () => {
   const dispatch = useDispatch();

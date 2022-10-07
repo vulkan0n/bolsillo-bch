@@ -1,12 +1,12 @@
 import React from "react";
 import { View, ScrollView, Text } from "react-native";
-import SPACING from "@selene/common/design/spacing";
-import TYPOGRAPHY from "@selene/common/design/typography";
+import SPACING from "@selene-wallet/common/design/spacing";
+import TYPOGRAPHY from "@selene-wallet/common/design/typography";
 import styles from "./styles";
 import ContentCard from "./ContentCard";
 import { useQuery } from "@apollo/client";
 import { BallIndicator } from "react-native-indicators";
-import GET_CONTENT from "@selene/common/dist/graphql/queries/getContent";
+import GET_CONTENT from "@selene-wallet/common/dist/graphql/queries/getContent";
 
 function LatestView() {
   const { loading, error, data } = useQuery(GET_CONTENT);

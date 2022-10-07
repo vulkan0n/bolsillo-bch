@@ -1,4 +1,4 @@
-import SPACING from "@selene/common/design/spacing";
+import SPACING from "@selene-wallet/common/design/spacing";
 
 const styles = {
   entryRow: {

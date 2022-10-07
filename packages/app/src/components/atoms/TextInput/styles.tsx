@@ -1,6 +1,6 @@
-import SPACING from "@selene/common/design/spacing";
-import COLOURS from "@selene/common/design/colours";
-import SHADOW from "@selene/app/src/design/shadow";
+import SPACING from "@selene-wallet/common/design/spacing";
+import COLOURS from "@selene-wallet/common/design/colours";
+import SHADOW from "@selene-wallet/app/src/design/shadow";
 
 interface Props {
   isMultiline?: boolean;

@@ -1,5 +1,5 @@
 {
-  "name": "@selene/app",
+  "name": "@selene-wallet/app",
   "version": "0.0.10",
   "main": "src/index.js",
   "scripts": {
@@ -27,7 +27,7 @@
     "@react-navigation/native": "^6.0.11",
     "@react-navigation/native-stack": "^6.7.0",
     "@reduxjs/toolkit": "^1.8.3",
-    "@selene/common": "0.0.1",
+    "@selene-wallet/common": "0.0.1",
     "@types/react": "~18.0.15",
     "@types/react-native": "~0.69.1",
     "axios": "^0.27.2",

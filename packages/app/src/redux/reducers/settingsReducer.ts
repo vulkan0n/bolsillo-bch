@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { PURGE } from "redux-persist";
-import { BITCOIN_DENOMINATIONS } from "@selene/common/dist/utils/consts";
-import { SettingsState } from "@selene/common/dist/types/reducers/settingsReducer";
+import { BITCOIN_DENOMINATIONS } from "@selene-wallet/common/dist/utils/consts";
+import { SettingsState } from "@selene-wallet/common/dist/types/reducers/settingsReducer";
 
 const initialState = {
   isBchDenominated: true,
