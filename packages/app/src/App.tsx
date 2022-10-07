@@ -36,17 +36,8 @@ import {
 import { navigate } from "./components/NavigationTree/rootNavigation";
 import { updateLocalLastSentTransactionHash } from "./redux/reducers/localReducer";
 import { IS_WEB } from "@selene-wallet/app/src/utils/isWeb";
-import {
-  ApolloClient,
-  InMemoryCache,
-  ApolloProvider,
-  gql,
-} from "@apollo/client";
-
-const client = new ApolloClient({
-  uri: "http://localhost:4000/",
-  cache: new InMemoryCache(),
-});
+import { ApolloProvider } from "@apollo/client";
+import apolloClient from "./apolloClient";
 
 interface TransactionHistoryTxType {
   blockheight: number;
@@ -252,7 +243,7 @@ export default function App() {
   return (
     <Provider store={store}>
       <PersistGate loading={<Text>Loading...</Text>} persistor={persistor}>
-        <ApolloProvider client={client}>
+        <ApolloProvider client={apolloClient}>
           <View style={{ height: 0 }}>
             {!IS_WEB && (
               <WebView

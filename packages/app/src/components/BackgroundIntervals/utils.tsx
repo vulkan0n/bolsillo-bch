@@ -5,6 +5,16 @@ import {
 } from "@selene-wallet/app/src/redux/reducers/localReducer";
 import { CHECK_IN_PERIOD_TYPES } from "@selene-wallet/common/dist/utils/consts";
 import store from "@selene-wallet/app/src/redux/store";
+import { gql } from "@apollo/client";
+import apolloClient from "../../apolloClient";
+
+const SEND_DAILY_CHECK_IN = gql`
+  mutation SendCheckIn($period: String!, $date: String!) {
+    sendCheckIn(period: $period, date: $date) {
+      status
+    }
+  }
+`;
 
 const doCheckIn = ({
   lastCheckIn,
@@ -12,7 +22,6 @@ const doCheckIn = ({
   period,
   updateMethod,
   updateProperty,
-  sendCheckIn,
 }) => {
   const now = moment.utc();
   const nowFormatted = now.format("YYYYMMDD");
@@ -29,7 +38,8 @@ const doCheckIn = ({
   const isShouldCheckIn = lastCheckIn === "" || now.isAfter(nextCheckIn);
 
   if (isShouldCheckIn) {
-    sendCheckIn({
+    apolloClient.mutate({
+      mutation: SEND_DAILY_CHECK_IN,
       variables: {
         period,
         date: nowFormatted,
@@ -44,7 +54,7 @@ const doCheckIn = ({
   }
 };
 
-const dailyCheckIn = ({ sendCheckIn }) => {
+const dailyCheckIn = () => {
   const lastDailyCheckIn = store.getState().local.lastDailyCheckIn;
 
   return doCheckIn({
@@ -53,11 +63,10 @@ const dailyCheckIn = ({ sendCheckIn }) => {
     period: CHECK_IN_PERIOD_TYPES.daily,
     updateMethod: updateLocalLastDailyCheckIn,
     updateProperty: "lastDailyCheckIn",
-    sendCheckIn,
   });
 };
 
-const weeklyCheckIn = ({ sendCheckIn }) => {
+const weeklyCheckIn = () => {
   const lastWeeklyCheckIn = store.getState().local.lastWeeklyCheckIn;
 
   return doCheckIn({
@@ -66,7 +75,6 @@ const weeklyCheckIn = ({ sendCheckIn }) => {
     period: CHECK_IN_PERIOD_TYPES.weekly,
     updateMethod: updateLocalLastWeeklyCheckIn,
     updateProperty: "lastWeeklyCheckIn",
-    sendCheckIn,
   });
 };
 
