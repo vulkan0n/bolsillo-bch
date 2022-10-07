@@ -11,10 +11,9 @@ import emit from "@selene-wallet/app/src/utils/emit";
 import axios from "axios";
 import { updateBchPrices } from "@selene-wallet/app/src/redux/reducers/exchangeRatesReducer";
 import { selectActiveWallet } from "@selene-wallet/app/src/redux/selectors";
-import { updateTransactionPadIsSendingCoins } from "../../redux/reducers/transactionPadReducer";
+import { updateTransactionPadIsSendingCoins } from "@selene-wallet/app/src/redux/reducers/transactionPadReducer";
 import { gql, useMutation } from "@apollo/client";
-import moment from "moment";
-import { CHECK_IN_PERIOD_TYPES } from "@selene-wallet/common/dist/utils/consts";
+import { dailyCheckIn } from "./utils";
 
 const SEND_DAILY_CHECK_IN = gql`
   mutation SendCheckIn($period: String!, $date: String!) {
@@ -28,6 +27,9 @@ const BackgroundIntervals = () => {
   const dispatch = useDispatch();
   const wallet = useSelector((state: ReduxState) => selectActiveWallet(state));
   const { wallets } = useSelector((state: ReduxState) => state.walletManager);
+  const lastDailyCheckIn = useSelector(
+    (state: ReduxState) => state.local.lastDailyCheckIn
+  );
 
   const { isTestNet } = useSelector((state: ReduxState) => state.settings);
   const [sendCheckIn] = useMutation(SEND_DAILY_CHECK_IN);
@@ -60,35 +62,7 @@ const BackgroundIntervals = () => {
 
   const checkIn = () => {
     console.log("checking in!");
-    const lastDailyCheckIn = moment
-      .utc("20221004", "YYYYMMDD")
-      .startOf("day")
-      .add(1, "s");
-    const nextDailyCheckIn = lastDailyCheckIn
-      .clone()
-      .add(1, "day")
-      .startOf("day");
-
-    const now = moment.utc();
-    const nowFormatted = now.format("YYYYMMDD");
-
-    const isShouldCheckInToday = now.isAfter(nextDailyCheckIn);
-
-    console.log({
-      lastDailyCheckIn,
-      nextDailyCheckIn,
-      now,
-      isShouldCheckInToday,
-    });
-
-    if (isShouldCheckInToday) {
-      sendCheckIn({
-        variables: {
-          period: CHECK_IN_PERIOD_TYPES.daily,
-          date: nowFormatted,
-        },
-      });
-    }
+    dailyCheckIn({ lastDailyCheckIn, dispatch, sendCheckIn });
   };
 
   const fetchPriceData = async () => {

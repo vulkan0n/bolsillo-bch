@@ -18,6 +18,8 @@ const localSlice = createSlice({
       state.lastSentTransactionHash = action.payload.lastSentTransactionHash;
     },
     updateLocalLastDailyCheckIn(state, action) {
+      console.log("hit this last daily check in");
+      console.log(action.payload);
       state.lastDailyCheckIn = action.payload.lastDailyCheckIn;
     },
     updateLocalLastWeeklyCheckIn(state, action) {
