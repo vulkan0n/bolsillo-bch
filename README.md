@@ -31,7 +31,7 @@ $ lerna bootstrap # Install node_modules for all packages, hoisted to root where
 
 See README in each package for futher information.
 
-To publish each repo, go into it separately and run `$ npm publish`, we don't use `lerna publish` at the root level since it apparently doesn't allow individually bumping package versions.
+To publish each repo, go into it separately and run `$ npm publish --access=public`, we don't use `lerna publish` at the root level since it apparently doesn't allow individually bumping package versions.
 
 ## Tips
 
