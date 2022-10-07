@@ -15,8 +15,6 @@ const ActiveBitcoinersChart = ({ data, period, setPeriod }) => {
     )
   );
 
-  console.log({ labels, data });
-
   return (
     <View>
       <Chart data={activeUserCount} labels={labels} />

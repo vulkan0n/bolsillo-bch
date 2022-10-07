@@ -19,8 +19,6 @@ const resolvers = {
 
       const duration = inferCheckInWindow(period);
 
-      console.log({ duration });
-
       // Last week of dates
       const numberArray = [...Array(7).keys()];
       const dates = numberArray
@@ -44,8 +42,6 @@ const resolvers = {
           };
         })
       );
-
-      console.log({ dailyActiveBitcoinersStats });
 
       return dailyActiveBitcoinersStats;
     },
