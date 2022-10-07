@@ -1,37 +1,70 @@
 import moment from "moment";
-import { updateLocalLastDailyCheckIn } from "@selene-wallet/app/src/redux/reducers/localReducer";
+import {
+  updateLocalLastDailyCheckIn,
+  updateLocalLastWeeklyCheckIn,
+} from "@selene-wallet/app/src/redux/reducers/localReducer";
 import { CHECK_IN_PERIOD_TYPES } from "@selene-wallet/common/dist/utils/consts";
+import store from "@selene-wallet/app/src/redux/store";
 
-const dailyCheckIn = ({ lastDailyCheckIn, dispatch, sendCheckIn }) => {
+const doCheckIn = ({
+  lastCheckIn,
+  checkInWindow,
+  period,
+  updateMethod,
+  updateProperty,
+  sendCheckIn,
+}) => {
   const now = moment.utc();
   const nowFormatted = now.format("YYYYMMDD");
 
-  const lastDailyCheckInMoment = moment
-    .utc(lastDailyCheckIn, "YYYYMMDD")
-    .startOf("day")
+  const lastCheckInMoment = moment
+    .utc(lastCheckIn, "YYYYMMDD")
+    .startOf(checkInWindow)
     .add(1, "s");
-  const nextDailyCheckIn = lastDailyCheckInMoment
+  const nextCheckIn = lastCheckInMoment
     .clone()
-    .add(1, "day")
+    .add(1, checkInWindow)
     .startOf("day");
 
-  const isShouldCheckInToday =
-    lastDailyCheckIn === "" || now.isAfter(nextDailyCheckIn);
+  const isShouldCheckIn = lastCheckIn === "" || now.isAfter(nextCheckIn);
 
-  if (isShouldCheckInToday) {
+  if (isShouldCheckIn) {
     sendCheckIn({
       variables: {
-        period: CHECK_IN_PERIOD_TYPES.daily,
+        period,
         date: nowFormatted,
       },
     });
 
-    dispatch(
-      updateLocalLastDailyCheckIn({
-        lastDailyCheckIn: nowFormatted,
+    store.dispatch(
+      updateMethod({
+        [updateProperty]: nowFormatted,
       })
     );
   }
 };
 
-export { dailyCheckIn };
+const dailyCheckIn = ({ lastDailyCheckIn, sendCheckIn }) => {
+  console.log({ store });
+
+  return doCheckIn({
+    lastCheckIn: lastDailyCheckIn,
+    checkInWindow: "day",
+    period: CHECK_IN_PERIOD_TYPES.daily,
+    updateMethod: updateLocalLastDailyCheckIn,
+    updateProperty: "lastDailyCheckIn",
+    sendCheckIn,
+  });
+};
+
+const weeklyCheckIn = ({ lastWeeklyCheckIn, sendCheckIn }) =>
+  doCheckIn({
+    lastCheckIn: lastWeeklyCheckIn,
+    checkInWindow: "week",
+    period: CHECK_IN_PERIOD_TYPES.weekly,
+    updateMethod: updateLocalLastWeeklyCheckIn,
+    updateProperty: "lastWeeklyCheckIn",
+    sendCheckIn,
+  });
+
+export { dailyCheckIn, weeklyCheckIn };

@@ -13,7 +13,7 @@ import { updateBchPrices } from "@selene-wallet/app/src/redux/reducers/exchangeR
 import { selectActiveWallet } from "@selene-wallet/app/src/redux/selectors";
 import { updateTransactionPadIsSendingCoins } from "@selene-wallet/app/src/redux/reducers/transactionPadReducer";
 import { gql, useMutation } from "@apollo/client";
-import { dailyCheckIn } from "./utils";
+import { dailyCheckIn, weeklyCheckIn } from "./utils";
 
 const SEND_DAILY_CHECK_IN = gql`
   mutation SendCheckIn($period: String!, $date: String!) {
@@ -29,6 +29,9 @@ const BackgroundIntervals = () => {
   const { wallets } = useSelector((state: ReduxState) => state.walletManager);
   const lastDailyCheckIn = useSelector(
     (state: ReduxState) => state.local.lastDailyCheckIn
+  );
+  const lastWeeklyCheckIn = useSelector(
+    (state: ReduxState) => state.local.lastWeeklyCheckIn
   );
 
   const { isTestNet } = useSelector((state: ReduxState) => state.settings);
@@ -61,8 +64,8 @@ const BackgroundIntervals = () => {
   };
 
   const checkIn = () => {
-    console.log("checking in!");
-    dailyCheckIn({ lastDailyCheckIn, dispatch, sendCheckIn });
+    dailyCheckIn({ lastDailyCheckIn, sendCheckIn });
+    weeklyCheckIn({ lastWeeklyCheckIn, sendCheckIn });
   };
 
   const fetchPriceData = async () => {
