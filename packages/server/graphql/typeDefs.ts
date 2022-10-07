@@ -31,7 +31,7 @@ const typeDefs = gql`
   # clients can execute, along with the return type for each.
   type Query {
     content: [ContentItem]
-    dailyActiveBitcoiners: [StatAtDate]
+    activeBitcoiners(period: String!): [StatAtDate]
   }
 
   type Mutation {

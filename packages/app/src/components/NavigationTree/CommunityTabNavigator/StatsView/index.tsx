@@ -9,7 +9,7 @@ import {
 } from "@selene-wallet/common/dist/utils/consts";
 import styles from "./styles";
 import Button from "@selene-wallet/app/src/components/atoms/Button";
-import DailyActiveBitcoinersChart from "./DailyActiveBitcoinersChart";
+import ActiveBitcoinersChart from "./ActiveBitcoinersChart";
 
 function StatsView({ navigation }) {
   const activeBitcoiners = 1;
@@ -43,7 +43,7 @@ function StatsView({ navigation }) {
             10 million active Bitcoiners will form a vibrant economy larger than
             many countries, and quickly snowball globally.
           </Text>
-          <DailyActiveBitcoinersChart />
+          <ActiveBitcoinersChart />
         </View>
 
         <Text style={TYPOGRAPHY.h2black as any}>Get involved!</Text>

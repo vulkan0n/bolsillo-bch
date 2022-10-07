@@ -13,7 +13,9 @@ const resolvers = {
   Date: dateScalar,
   Query: {
     content: () => contentItems,
-    dailyActiveBitcoiners: async () => {
+    activeBitcoiners: async (_, { period }) => {
+      console.log({ period });
+
       // Last week of dates
       const numberArray = [...Array(7).keys()];
       const dates = numberArray
@@ -46,9 +48,6 @@ const resolvers = {
       _: any,
       { period, date }: { period: CheckInPeriodTypes; date: string }
     ) => {
-      console.log("Daily check in!");
-      console.log({ period, date });
-
       const checkIn = await prisma.default.checkIn.create({
         data: {
           period,
