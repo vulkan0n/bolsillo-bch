@@ -6,7 +6,7 @@ import {
 import { CHECK_IN_PERIOD_TYPES } from "@selene-wallet/common/dist/utils/consts";
 import store from "@selene-wallet/app/src/redux/store";
 import { gql } from "@apollo/client";
-import apolloClient from "../../apolloClient";
+import apolloClient from "@selene-wallet/app/src/apolloClient";
 
 const SEND_DAILY_CHECK_IN = gql`
   mutation SendCheckIn($period: String!, $date: String!) {
@@ -16,15 +16,26 @@ const SEND_DAILY_CHECK_IN = gql`
   }
 `;
 
-const doCheckIn = ({
-  lastCheckIn,
-  checkInWindow,
-  period,
-  updateMethod,
-  updateProperty,
-}) => {
+const inferCheckInWindow = (period) => {
+  switch (period) {
+    case CHECK_IN_PERIOD_TYPES.daily:
+      return "day";
+    case CHECK_IN_PERIOD_TYPES.weekly:
+      return "week";
+    case CHECK_IN_PERIOD_TYPES.monthly:
+      return "month";
+    case CHECK_IN_PERIOD_TYPES.yearly:
+      return "year";
+    default:
+      return "day";
+  }
+};
+
+const doCheckIn = ({ lastCheckIn, period, updateMethod, updateProperty }) => {
   const now = moment.utc();
   const nowFormatted = now.format("YYYYMMDD");
+
+  const checkInWindow = inferCheckInWindow(period);
 
   const lastCheckInMoment = moment
     .utc(lastCheckIn, "YYYYMMDD")
@@ -59,7 +70,6 @@ const dailyCheckIn = () => {
 
   return doCheckIn({
     lastCheckIn: lastDailyCheckIn,
-    checkInWindow: "day",
     period: CHECK_IN_PERIOD_TYPES.daily,
     updateMethod: updateLocalLastDailyCheckIn,
     updateProperty: "lastDailyCheckIn",
@@ -71,7 +81,6 @@ const weeklyCheckIn = () => {
 
   return doCheckIn({
     lastCheckIn: lastWeeklyCheckIn,
-    checkInWindow: "week",
     period: CHECK_IN_PERIOD_TYPES.weekly,
     updateMethod: updateLocalLastWeeklyCheckIn,
     updateProperty: "lastWeeklyCheckIn",
