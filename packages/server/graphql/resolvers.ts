@@ -1,6 +1,7 @@
 import { CheckInPeriodTypes } from "@selene-wallet/common/dist/types";
 import { CHECK_IN_PERIOD_TYPES } from "@selene-wallet/common/dist/utils/consts";
 import moment from "moment";
+import inferCheckInWindow from "@selene-wallet/common/dist/utils/checkIn";
 
 const { dateScalar } = require("./scalars.ts");
 const contentItems = require("./contentItems.ts");
@@ -16,17 +17,23 @@ const resolvers = {
     activeBitcoiners: async (_, { period }) => {
       console.log({ period });
 
+      const duration = inferCheckInWindow(period);
+
+      console.log({ duration });
+
       // Last week of dates
       const numberArray = [...Array(7).keys()];
       const dates = numberArray
-        .map((n) => moment.utc().subtract(n, "days").format("YYYYMMDD"))
+        .map((n) => moment.utc().subtract(n, duration).format("YYYYMMDD"))
         .reverse();
+
+      console.log({ dates });
 
       const dailyActiveBitcoinersStats = await Promise.all(
         dates.map(async (date) => {
           const count = await prisma.default.checkIn.count({
             where: {
-              period: CHECK_IN_PERIOD_TYPES.daily,
+              period,
               date,
             },
           });

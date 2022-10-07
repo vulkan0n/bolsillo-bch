@@ -6,6 +6,7 @@ import {
   updateLocalLastYearlyCheckIn,
 } from "@selene-wallet/app/src/redux/reducers/localReducer";
 import { CHECK_IN_PERIOD_TYPES } from "@selene-wallet/common/dist/utils/consts";
+import inferCheckInWindow from "@selene-wallet/common/dist/utils/checkIn";
 import store from "@selene-wallet/app/src/redux/store";
 import { gql } from "@apollo/client";
 import apolloClient from "@selene-wallet/app/src/apolloClient";
@@ -17,21 +18,6 @@ const SEND_DAILY_CHECK_IN = gql`
     }
   }
 `;
-
-const inferCheckInWindow = (period) => {
-  switch (period) {
-    case CHECK_IN_PERIOD_TYPES.daily:
-      return "day";
-    case CHECK_IN_PERIOD_TYPES.weekly:
-      return "week";
-    case CHECK_IN_PERIOD_TYPES.monthly:
-      return "month";
-    case CHECK_IN_PERIOD_TYPES.yearly:
-      return "year";
-    default:
-      return "day";
-  }
-};
 
 const doCheckIn = ({ period, updateMethod, updateProperty }) => {
   const now = moment.utc();
