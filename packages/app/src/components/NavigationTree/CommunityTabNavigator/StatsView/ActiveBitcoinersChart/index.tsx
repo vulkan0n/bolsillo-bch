@@ -5,34 +5,7 @@ import moment from "moment";
 import { CHECK_IN_PERIOD_TYPES } from "@selene-wallet/common/dist/utils/consts";
 import Chart from "./Chart";
 
-const GET_ACTIVE_BITCOINERS = gql`
-  query GetActiveBitcoiners($period: String!) {
-    activeBitcoiners(period: $period) {
-      date
-      count
-    }
-  }
-`;
-
-const ActiveBitcoinersChart = () => {
-  const [period, setPeriod] = useState(CHECK_IN_PERIOD_TYPES.daily);
-
-  const { loading, error, data } = useQuery(GET_ACTIVE_BITCOINERS, {
-    variables: {
-      period,
-    },
-  });
-
-  if (loading) {
-    return <Text>Loading...</Text>;
-  }
-
-  console.log({ error });
-
-  if (error) {
-    return <Text>Error!</Text>;
-  }
-
+const ActiveBitcoinersChart = ({ data, period, setPeriod }) => {
   const activeUserCount = data?.activeBitcoiners?.map?.(({ count }) => count);
   const labels = data?.activeBitcoiners?.map?.(({ date }) =>
     moment(date).format("D MMM")

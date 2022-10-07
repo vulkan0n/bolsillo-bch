@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { View, Text, ScrollView } from "react-native";
 import COLOURS from "@selene-wallet/common/design/colours";
 import SPACING from "@selene-wallet/common/design/spacing";
@@ -10,10 +10,54 @@ import {
 import styles from "./styles";
 import Button from "@selene-wallet/app/src/components/atoms/Button";
 import ActiveBitcoinersChart from "./ActiveBitcoinersChart";
+import { useQuery, gql } from "@apollo/client";
+import { CHECK_IN_PERIOD_TYPES } from "@selene-wallet/common/dist/utils/consts";
+
+const GET_ACTIVE_BITCOINERS = gql`
+  query GetActiveBitcoiners($period: String!) {
+    activeBitcoiners(period: $period) {
+      date
+      count
+    }
+  }
+`;
 
 function StatsView({ navigation }) {
-  const activeBitcoiners = 1;
+  const [period, setPeriod] = useState(CHECK_IN_PERIOD_TYPES.daily);
+
+  const { loading, error, data } = useQuery(GET_ACTIVE_BITCOINERS, {
+    variables: {
+      period,
+    },
+  });
+
+  if (loading) {
+    return <Text>Loading...</Text>;
+  }
+
+  console.log({ error });
+
+  if (error) {
+    return <Text>Error!</Text>;
+  }
+
+  const activeBitcoiners =
+    data?.activeBitcoiners?.[data?.activeBitcoiners.length - 1]?.count || 0;
   const missionPercentage = (ONE_HUNDRED / TEN_MILLION) * activeBitcoiners;
+  const title = () => {
+    switch (period) {
+      case CHECK_IN_PERIOD_TYPES.daily:
+        return "Today:";
+      case CHECK_IN_PERIOD_TYPES.weekly:
+        return "This week:";
+      case CHECK_IN_PERIOD_TYPES.monthly:
+        return "This month:";
+      case CHECK_IN_PERIOD_TYPES.yearly:
+        return "This year:";
+      default:
+        return "Today";
+    }
+  };
 
   return (
     <ScrollView style={styles.scrollView as any}>
@@ -24,7 +68,7 @@ function StatsView({ navigation }) {
           currency in the world.
         </Text>
         <View style={styles.activeBitcoiners}>
-          <Text style={TYPOGRAPHY.h2black as any}>Last 24 hours:</Text>
+          <Text style={TYPOGRAPHY.h2black as any}>{title()}</Text>
           <Text
             style={
               {
@@ -43,7 +87,11 @@ function StatsView({ navigation }) {
             10 million active Bitcoiners will form a vibrant economy larger than
             many countries, and quickly snowball globally.
           </Text>
-          <ActiveBitcoinersChart />
+          <ActiveBitcoinersChart
+            data={data}
+            period={period}
+            setPeriod={setPeriod}
+          />
         </View>
 
         <Text style={TYPOGRAPHY.h2black as any}>Get involved!</Text>
