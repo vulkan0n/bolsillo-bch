@@ -8,7 +8,9 @@ import Chart from "./Chart";
 const ActiveBitcoinersChart = ({ data, period, setPeriod }) => {
   const activeUserCount = data?.activeBitcoiners?.map?.(({ count }) => count);
   const labels = data?.activeBitcoiners?.map?.(({ date }) =>
-    moment(date).format("D MMM")
+    moment(date).format(
+      period === CHECK_IN_PERIOD_TYPES.yearly ? "YYYY" : "D MMM"
+    )
   );
 
   console.log({ labels, data });
