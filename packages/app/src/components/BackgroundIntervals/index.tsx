@@ -30,8 +30,7 @@ const BackgroundIntervals = () => {
   const { wallets } = useSelector((state: ReduxState) => state.walletManager);
 
   const { isTestNet } = useSelector((state: ReduxState) => state.settings);
-  const [sendCheckIn, { data, loading, error }] =
-    useMutation(SEND_DAILY_CHECK_IN);
+  const [sendCheckIn] = useMutation(SEND_DAILY_CHECK_IN);
 
   const fetchWalletHistories = () => {
     wallets.map(({ name, mnemonic, derivationPath }) => {

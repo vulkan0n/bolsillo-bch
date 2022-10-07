@@ -4,6 +4,10 @@ import { LocalState } from "@selene-wallet/common/dist/types/reducers/localReduc
 
 const initialState = {
   lastSentTransactionHash: "",
+  lastDailyCheckIn: "",
+  lastWeeklyCheckIn: "",
+  lastMonthlyCheckIn: "",
+  lastYearlyCheckIn: "",
 } as LocalState;
 
 const localSlice = createSlice({
@@ -12,6 +16,18 @@ const localSlice = createSlice({
   reducers: {
     updateLocalLastSentTransactionHash(state, action) {
       state.lastSentTransactionHash = action.payload.lastSentTransactionHash;
+    },
+    updateLocalLastDailyCheckIn(state, action) {
+      state.lastDailyCheckIn = action.payload.lastDailyCheckIn;
+    },
+    updateLocalLastWeeklyCheckIn(state, action) {
+      state.lastWeeklyCheckIn = action.payload.lastWeeklyCheckIn;
+    },
+    updateLocalLastMonthlyCheckIn(state, action) {
+      state.lastMonthlyCheckIn = action.payload.lastMonthlyCheckIn;
+    },
+    updateLocalLastYearlyCheckIn(state, action) {
+      state.lastYearlyCheckIn = action.payload.lastYearlyCheckIn;
     },
   },
   extraReducers: (builder) => {
