@@ -35,5 +35,11 @@ const localSlice = createSlice({
   },
 });
 
-export const { updateLocalLastSentTransactionHash } = localSlice.actions;
+export const {
+  updateLocalLastSentTransactionHash,
+  updateLocalLastDailyCheckIn,
+  updateLocalLastWeeklyCheckIn,
+  updateLocalLastMonthlyCheckIn,
+  updateLocalLastYearlyCheckIn,
+} = localSlice.actions;
 export default localSlice.reducer;
