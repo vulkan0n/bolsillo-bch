@@ -84,8 +84,8 @@ function StatsView({ navigation }) {
             style={TYPOGRAPHY.p as any}
           >{`${missionPercentage}% of 10 000 000 target`}</Text>
           <Text style={TYPOGRAPHY.p as any}>
-            10 million active Bitcoiners will form a vibrant economy larger than
-            many countries, and quickly snowball globally.
+            10 million active Selene Bitcoiners will form a vibrant economy
+            larger than many countries, and quickly snowball globally.
           </Text>
           <ActiveBitcoinersChart
             data={data}
