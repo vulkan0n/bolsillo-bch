@@ -12,7 +12,7 @@ import axios from "axios";
 import { updateBchPrices } from "@selene-wallet/app/src/redux/reducers/exchangeRatesReducer";
 import { selectActiveWallet } from "@selene-wallet/app/src/redux/selectors";
 import { updateTransactionPadIsSendingCoins } from "@selene-wallet/app/src/redux/reducers/transactionPadReducer";
-import { dailyCheckIn, weeklyCheckIn } from "./utils";
+import checkIn from "./checkIn";
 
 const BackgroundIntervals = () => {
   const dispatch = useDispatch();
@@ -45,11 +45,6 @@ const BackgroundIntervals = () => {
         isTestNet,
       },
     });
-  };
-
-  const checkIn = () => {
-    dailyCheckIn();
-    weeklyCheckIn();
   };
 
   const fetchPriceData = async () => {

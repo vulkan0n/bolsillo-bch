@@ -2,6 +2,8 @@ import moment from "moment";
 import {
   updateLocalLastDailyCheckIn,
   updateLocalLastWeeklyCheckIn,
+  updateLocalLastMonthlyCheckIn,
+  updateLocalLastYearlyCheckIn,
 } from "@selene-wallet/app/src/redux/reducers/localReducer";
 import { CHECK_IN_PERIOD_TYPES } from "@selene-wallet/common/dist/utils/consts";
 import store from "@selene-wallet/app/src/redux/store";
@@ -31,11 +33,13 @@ const inferCheckInWindow = (period) => {
   }
 };
 
-const doCheckIn = ({ lastCheckIn, period, updateMethod, updateProperty }) => {
+const doCheckIn = ({ period, updateMethod, updateProperty }) => {
   const now = moment.utc();
   const nowFormatted = now.format("YYYYMMDD");
 
   const checkInWindow = inferCheckInWindow(period);
+
+  const lastCheckIn = store.getState().local[updateProperty] || "";
 
   const lastCheckInMoment = moment
     .utc(lastCheckIn, "YYYYMMDD")
@@ -65,26 +69,39 @@ const doCheckIn = ({ lastCheckIn, period, updateMethod, updateProperty }) => {
   }
 };
 
-const dailyCheckIn = () => {
-  const lastDailyCheckIn = store.getState().local.lastDailyCheckIn;
-
-  return doCheckIn({
-    lastCheckIn: lastDailyCheckIn,
+const dailyCheckIn = () =>
+  doCheckIn({
     period: CHECK_IN_PERIOD_TYPES.daily,
     updateMethod: updateLocalLastDailyCheckIn,
     updateProperty: "lastDailyCheckIn",
   });
-};
 
-const weeklyCheckIn = () => {
-  const lastWeeklyCheckIn = store.getState().local.lastWeeklyCheckIn;
-
-  return doCheckIn({
-    lastCheckIn: lastWeeklyCheckIn,
+const weeklyCheckIn = () =>
+  doCheckIn({
     period: CHECK_IN_PERIOD_TYPES.weekly,
     updateMethod: updateLocalLastWeeklyCheckIn,
     updateProperty: "lastWeeklyCheckIn",
   });
+
+const monthlyCheckIn = () =>
+  doCheckIn({
+    period: CHECK_IN_PERIOD_TYPES.monthly,
+    updateMethod: updateLocalLastMonthlyCheckIn,
+    updateProperty: "lastMonthlyCheckIn",
+  });
+
+const yearlyCheckIn = () =>
+  doCheckIn({
+    period: CHECK_IN_PERIOD_TYPES.yearly,
+    updateMethod: updateLocalLastYearlyCheckIn,
+    updateProperty: "lastYearlyCheckIn",
+  });
+
+const checkIn = () => {
+  dailyCheckIn();
+  weeklyCheckIn();
+  monthlyCheckIn();
+  yearlyCheckIn();
 };
 
-export { dailyCheckIn, weeklyCheckIn };
+export default checkIn;
