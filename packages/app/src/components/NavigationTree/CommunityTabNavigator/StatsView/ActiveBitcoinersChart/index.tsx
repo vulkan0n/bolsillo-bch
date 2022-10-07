@@ -42,34 +42,42 @@ const ActiveBitcoinersChart = () => {
 
   return (
     <View>
-      <Pressable
-        onPress={() => {
-          setPeriod(CHECK_IN_PERIOD_TYPES.daily);
-        }}
-      >
-        <Text>Daily</Text>
-      </Pressable>
-      <Pressable
-        onPress={() => {
-          setPeriod(CHECK_IN_PERIOD_TYPES.weekly);
-        }}
-      >
-        <Text>Weekly</Text>
-      </Pressable>
-      <Pressable
-        onPress={() => {
-          setPeriod(CHECK_IN_PERIOD_TYPES.monthly);
-        }}
-      >
-        <Text>Monthly</Text>
-      </Pressable>
-      <Pressable
-        onPress={() => {
-          setPeriod(CHECK_IN_PERIOD_TYPES.yearly);
-        }}
-      >
-        <Text>Yearly</Text>
-      </Pressable>
+      {period !== CHECK_IN_PERIOD_TYPES.daily && (
+        <Pressable
+          onPress={() => {
+            setPeriod(CHECK_IN_PERIOD_TYPES.daily);
+          }}
+        >
+          <Text>Daily</Text>
+        </Pressable>
+      )}
+      {period !== CHECK_IN_PERIOD_TYPES.weekly && (
+        <Pressable
+          onPress={() => {
+            setPeriod(CHECK_IN_PERIOD_TYPES.weekly);
+          }}
+        >
+          <Text>Weekly</Text>
+        </Pressable>
+      )}
+      {period !== CHECK_IN_PERIOD_TYPES.monthly && (
+        <Pressable
+          onPress={() => {
+            setPeriod(CHECK_IN_PERIOD_TYPES.monthly);
+          }}
+        >
+          <Text>Monthly</Text>
+        </Pressable>
+      )}
+      {period !== CHECK_IN_PERIOD_TYPES.yearly && (
+        <Pressable
+          onPress={() => {
+            setPeriod(CHECK_IN_PERIOD_TYPES.yearly);
+          }}
+        >
+          <Text>Yearly</Text>
+        </Pressable>
+      )}
       <Chart data={activeUserCount} labels={labels} />
     </View>
   );
