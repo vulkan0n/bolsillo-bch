@@ -20,11 +20,11 @@ const ActiveBitcoinersChart = ({ data, period, setPeriod }) => {
       <Chart data={activeUserCount} labels={labels} />
       <View
         style={{
-          height: 50,
+          maxHeight: 50,
           width: "100%",
           borderWidth: 1,
           flexDirection: "row",
-          borderColor: COLOURS.lightGrey,
+          borderColor: COLOURS.bchGreen,
           borderRadius: SPACING.borderRadius,
           justifyContent: "center",
           alignItems: "center",
@@ -37,6 +37,13 @@ const ActiveBitcoinersChart = ({ data, period, setPeriod }) => {
                 ? COLOURS.bchGreen
                 : COLOURS.white,
             flex: 1,
+            height: 48,
+            borderColor:
+              period === CHECK_IN_PERIOD_TYPES.daily
+                ? COLOURS.bchGreen
+                : COLOURS.white,
+            borderRadius: SPACING.borderRadius,
+            borderWidth: 1,
             width: "100%",
             justifyContent: "center",
             alignItems: "center",
@@ -47,7 +54,7 @@ const ActiveBitcoinersChart = ({ data, period, setPeriod }) => {
         >
           <Text
             style={{
-              ...TYPOGRAPHY.p,
+              ...TYPOGRAPHY.pCentered,
               color:
                 period === CHECK_IN_PERIOD_TYPES.daily
                   ? COLOURS.white
@@ -64,6 +71,13 @@ const ActiveBitcoinersChart = ({ data, period, setPeriod }) => {
                 ? COLOURS.bchGreen
                 : COLOURS.white,
             flex: 1,
+            height: 48,
+            borderColor:
+              period === CHECK_IN_PERIOD_TYPES.weekly
+                ? COLOURS.bchGreen
+                : COLOURS.white,
+            borderRadius: SPACING.borderRadius,
+            borderWidth: 1,
             width: "100%",
             justifyContent: "center",
             alignItems: "center",
@@ -74,7 +88,7 @@ const ActiveBitcoinersChart = ({ data, period, setPeriod }) => {
         >
           <Text
             style={{
-              ...TYPOGRAPHY.p,
+              ...TYPOGRAPHY.pCentered,
               color:
                 period === CHECK_IN_PERIOD_TYPES.weekly
                   ? COLOURS.white
@@ -91,6 +105,13 @@ const ActiveBitcoinersChart = ({ data, period, setPeriod }) => {
                 ? COLOURS.bchGreen
                 : COLOURS.white,
             flex: 1,
+            height: 48,
+            borderColor:
+              period === CHECK_IN_PERIOD_TYPES.monthly
+                ? COLOURS.bchGreen
+                : COLOURS.white,
+            borderRadius: SPACING.borderRadius,
+            borderWidth: 1,
             width: "100%",
             justifyContent: "center",
             alignItems: "center",
@@ -101,7 +122,7 @@ const ActiveBitcoinersChart = ({ data, period, setPeriod }) => {
         >
           <Text
             style={{
-              ...TYPOGRAPHY.p,
+              ...TYPOGRAPHY.pCentered,
               color:
                 period === CHECK_IN_PERIOD_TYPES.monthly
                   ? COLOURS.white
@@ -118,6 +139,13 @@ const ActiveBitcoinersChart = ({ data, period, setPeriod }) => {
                 ? COLOURS.bchGreen
                 : COLOURS.white,
             flex: 1,
+            height: 48,
+            borderColor:
+              period === CHECK_IN_PERIOD_TYPES.yearly
+                ? COLOURS.bchGreen
+                : COLOURS.white,
+            borderRadius: SPACING.borderRadius,
+            borderWidth: 1,
             width: "100%",
             justifyContent: "center",
             alignItems: "center",
@@ -128,7 +156,7 @@ const ActiveBitcoinersChart = ({ data, period, setPeriod }) => {
         >
           <Text
             style={{
-              ...TYPOGRAPHY.p,
+              ...TYPOGRAPHY.pCentered,
               color:
                 period === CHECK_IN_PERIOD_TYPES.yearly
                   ? COLOURS.white

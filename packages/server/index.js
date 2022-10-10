@@ -10,7 +10,8 @@ const resolvers = require("./graphql/resolvers.ts");
 const server = new ApolloServer({
   typeDefs,
   resolvers,
-  csrfPrevention: true,
+  csrfPrevention: false, // true,
+  introspection: true,
   cache: "bounded",
 
   /**

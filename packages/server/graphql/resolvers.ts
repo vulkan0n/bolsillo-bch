@@ -14,7 +14,10 @@ const resolvers = {
   Date: dateScalar,
   Query: {
     content: () => contentItems,
-    activeBitcoiners: async (_, { period }) => {
+    activeBitcoiners: async (
+      _: any,
+      { period }: { period: CheckInPeriodTypes }
+    ) => {
       console.log({ period });
 
       const duration = inferCheckInWindow(period);

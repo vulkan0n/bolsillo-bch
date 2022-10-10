@@ -2,6 +2,12 @@
 
 Join the Cash economy.
 
+Note: This repo is part of the Selene monorepo. Refer to the central documentation for more information.
+
+[NPM Packages](https://www.npmjs.com/org/selene-wallet)
+
+[Gitlab source](https://gitlab.com/selene.cash/selene-wallet)
+
 ## Setup
 
 ```

@@ -1,6 +1,12 @@
 # `@selene-wallet/common`
 
-Shared functions and utilities for other libraries.
+Shared functions and utilities for other BCH libraries.
+
+Note: This repo is part of the Selene monorepo. Refer to the central documentation for more information.
+
+[NPM Packages](https://www.npmjs.com/org/selene-wallet)
+
+[Gitlab source](https://gitlab.com/selene.cash/selene-wallet)
 
 ## Dev
 
