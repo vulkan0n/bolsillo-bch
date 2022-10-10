@@ -108,6 +108,12 @@ declare const TYPOGRAPHY: {
         fontSize: number;
         marginBottom: number;
     };
+    pCentered: {
+        fontFamily: string;
+        textAlign: "center";
+        color: string;
+        fontSize: number;
+    };
     pLeft: {
         fontFamily: string;
         textAlign: "left";

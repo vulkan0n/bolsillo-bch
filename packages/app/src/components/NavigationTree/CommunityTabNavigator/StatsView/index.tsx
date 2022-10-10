@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { View, Text, ScrollView } from "react-native";
 import COLOURS from "@selene-wallet/common/design/colours";
-import SPACING from "@selene-wallet/common/design/spacing";
 import TYPOGRAPHY from "@selene-wallet/common/design/typography";
 import {
   ONE_HUNDRED,
@@ -22,7 +21,7 @@ const GET_ACTIVE_BITCOINERS = gql`
   }
 `;
 
-function StatsView({ navigation }) {
+function StatsView() {
   const [period, setPeriod] = useState(CHECK_IN_PERIOD_TYPES.daily);
 
   const { loading, error, data } = useQuery(GET_ACTIVE_BITCOINERS, {
@@ -35,9 +34,9 @@ function StatsView({ navigation }) {
     return <Text>Loading...</Text>;
   }
 
-  console.log({ error });
-
   if (error) {
+    console.log({ error });
+
     return <Text>Error!</Text>;
   }
 

@@ -4,15 +4,15 @@ const { GraphQLScalarType, Kind } = require("graphql");
 const customDate = new GraphQLScalarType({
   name: "Date",
   description: "Date custom scalar type",
-  serialize(value) {
+  serialize(value: any) {
     return value.getTime(); // Convert outgoing Date to integer for JSON
   },
 
-  parseValue(value) {
+  parseValue(value: any) {
     return new Date(value); // Convert incoming integer to Date
   },
 
-  parseLiteral(ast) {
+  parseLiteral(ast: any) {
     if (ast.kind === Kind.INT) {
       return new Date(parseInt(ast.value, 10)); // Convert hard-coded AST string to integer and then to Date
     }

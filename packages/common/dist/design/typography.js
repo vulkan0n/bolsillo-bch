@@ -115,6 +115,12 @@ const TYPOGRAPHY = {
         fontSize: 16,
         marginBottom: spacing_1.default.ten,
     },
+    pCentered: {
+        fontFamily: "Montserrat_500Medium",
+        textAlign: "center",
+        color: colours_1.default.black,
+        fontSize: 16,
+    },
     pLeft: {
         fontFamily: "Montserrat_500Medium",
         textAlign: "left",
