@@ -1,4 +1,5 @@
 import SPACING from "@selene-wallet/common/design/spacing";
+import COLOURS from "@selene-wallet/common/design/colours";
 
 const styles = {
   entryRow: {
@@ -12,8 +13,13 @@ const styles = {
     marginRight: SPACING.twentyFive,
     marginLeft: SPACING.twentyFive,
   },
-  container: { flex: 1 },
-  qrScanner: { height: "100%", width: "100%" },
+  container: { flex: 1, width: "100%" },
+  qrScanner: {
+    height: "100%",
+    width: "100%",
+    marginBottom: SPACING.five,
+    backgroundColor: COLOURS.lightGrey,
+  },
 };
 
 export default styles;

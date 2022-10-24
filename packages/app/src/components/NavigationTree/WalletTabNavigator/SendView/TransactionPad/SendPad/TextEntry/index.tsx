@@ -12,6 +12,7 @@ import { iconImport } from "@selene-wallet/app/src/design/icons";
 import COLOURS from "@selene-wallet/common/design/colours";
 import { selectPrimaryCurrencyOrDenomination } from "@selene-wallet/app/src/redux/selectors";
 import { processRequestString } from "../utils";
+import TYPOGRAPHY from "@selene-wallet/common/design/typography";
 
 const TextEntry = () => {
   const dispatch = useDispatch();
@@ -43,18 +44,18 @@ const TextEntry = () => {
     );
   };
 
-  const onChangeTextInput = (value) => {
+  const onChangeTextInput = (value: string) => {
     dispatch(
       updateTransactionPadSendToAddress({
-        sendToAddress: formatStringToCashAddress(value, isTestNet),
+        sendToAddress: value,
       })
     );
   };
 
   return (
     <View style={styles.entryColumn as any}>
+      <Text style={TYPOGRAPHY.p}>Type or paste bitcoincash: address</Text>
       <TextInput
-        placeholder={"bitcoincash:"}
         text={sendToAddress}
         onChange={onChangeTextInput}
         isSmallText

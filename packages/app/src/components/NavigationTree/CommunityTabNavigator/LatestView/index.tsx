@@ -1,63 +1,70 @@
-import React from "react";
-import { View, ScrollView, Text } from "react-native";
-import SPACING from "@selene-wallet/common/design/spacing";
+import React, { useState } from "react";
+import { View, FlatList, Text } from "react-native";
 import TYPOGRAPHY from "@selene-wallet/common/design/typography";
 import styles from "./styles";
 import ContentCard from "./ContentCard";
 import { useQuery } from "@apollo/client";
-import { BallIndicator } from "react-native-indicators";
 import GET_CONTENT from "@selene-wallet/common/dist/graphql/queries/getContent";
+import Loading from "@selene-wallet/app/src/components/atoms/Loading";
 
 function LatestView() {
+  const [isScrolling, setIsScrolling] = useState(false);
   const { loading, error, data } = useQuery(GET_CONTENT);
 
-  const Content = () => {
-    if (loading) return <BallIndicator size={30} />;
-    if (error) return <Text>Error :(</Text>;
+  if (loading) return <Loading />;
+  if (error) return <Text>Error :(</Text>;
 
-    return (
-      <View>
-        {data.content.map(
-          ({
-            key,
-            title,
-            creator,
-            publicationDate,
-            videoId,
-            description,
-            donationBchAddress,
-          }) => (
-            <ContentCard
-              key={key}
-              title={title}
-              creator={creator}
-              publicationDate={publicationDate}
-              videoId={videoId}
-              description={description}
-              donationBchAddress={donationBchAddress}
-            />
-          )
-        )}
-      </View>
-    );
+  const onScrollBeginDrag = () => {
+    setIsScrolling(true);
   };
 
-  return (
-    <ScrollView style={styles.scrollView as any}>
-      <View style={styles.container as any}>
-        <Text
-          style={{ ...TYPOGRAPHY.h1black, marginTop: SPACING.fifteen } as any}
-        >
-          Welcome to Bitcoin Cash!
-        </Text>
-        <Text style={TYPOGRAPHY.p as any}>
-          Catch the latest discussions, podcasts, art, music and memes from the
-          BCH community.
-        </Text>
+  const onScrollEndDrag = () => {
+    setIsScrolling(false);
+  };
 
-        <Content />
-      </View>
-    </ScrollView>
+  const renderContentCard = ({
+    item: {
+      key,
+      title,
+      creator,
+      publicationDate,
+      videoId,
+      description,
+      donationBchAddress,
+    },
+  }) => (
+    <ContentCard
+      isInteractive={!isScrolling} // Can't tap Youtube player as side effect of scrolling the list
+      key={key}
+      title={title}
+      creator={creator}
+      publicationDate={publicationDate}
+      videoId={videoId}
+      description={description}
+      donationBchAddress={donationBchAddress}
+    />
+  );
+
+  const ListHeader = (
+    <View>
+      <Text style={styles.header as any}>Welcome to Bitcoin Cash!</Text>
+      <Text style={TYPOGRAPHY.p as any}>
+        Catch the latest discussions, podcasts, art, music and memes from the
+        BCH community.
+      </Text>
+    </View>
+  );
+
+  return (
+    <FlatList
+      style={styles.flatList as any}
+      data={data.content}
+      renderItem={renderContentCard}
+      keyExtractor={({ key }) => key}
+      ListHeaderComponent={ListHeader}
+      onScrollBeginDrag={onScrollBeginDrag}
+      onScrollEndDrag={onScrollEndDrag}
+    />
   );
 }
 

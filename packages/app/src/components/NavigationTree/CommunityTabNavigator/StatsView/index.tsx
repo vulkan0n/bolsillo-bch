@@ -7,7 +7,6 @@ import {
   TEN_MILLION,
 } from "@selene-wallet/common/dist/utils/consts";
 import styles from "./styles";
-import Button from "@selene-wallet/app/src/components/atoms/Button";
 import ActiveBitcoinersChart from "./ActiveBitcoinersChart";
 import { useQuery, gql } from "@apollo/client";
 import { CHECK_IN_PERIOD_TYPES } from "@selene-wallet/common/dist/utils/consts";
@@ -21,28 +20,32 @@ const GET_ACTIVE_BITCOINERS = gql`
   }
 `;
 
+interface GraphQlResponse {
+  loading: boolean;
+  error?: ApolloError;
+  data: QueryResult<{
+    activeBitcoiners: TODO;
+  }>;
+}
+
 function StatsView() {
   const [period, setPeriod] = useState(CHECK_IN_PERIOD_TYPES.daily);
 
-  const { loading, error, data } = useQuery(GET_ACTIVE_BITCOINERS, {
-    variables: {
-      period,
-    },
-  });
-
-  if (loading) {
-    return <Text>Loading...</Text>;
-  }
-
-  if (error) {
-    console.log({ error });
-
-    return <Text>Error!</Text>;
-  }
+  const { loading, error, data }: GraphQlResponse = useQuery(
+    GET_ACTIVE_BITCOINERS,
+    {
+      variables: {
+        period,
+      },
+    }
+  );
 
   const activeBitcoiners =
-    data?.activeBitcoiners?.[data?.activeBitcoiners.length - 1]?.count || 0;
-  const missionPercentage = (ONE_HUNDRED / TEN_MILLION) * activeBitcoiners;
+    data?.activeBitcoiners?.[data?.activeBitcoiners.length - 1]?.count || 1;
+  const missionPercentage = parseFloat(
+    ((ONE_HUNDRED / TEN_MILLION) * activeBitcoiners).toFixed(5)
+  );
+
   const title = () => {
     switch (period) {
       case CHECK_IN_PERIOD_TYPES.daily:
@@ -87,30 +90,13 @@ function StatsView() {
             larger than many countries, and quickly snowball globally.
           </Text>
           <ActiveBitcoinersChart
+            loading={loading}
+            error={error}
             data={data}
             period={period}
             setPeriod={setPeriod}
           />
         </View>
-
-        <Text style={TYPOGRAPHY.h2black as any}>Get involved!</Text>
-        <Text style={TYPOGRAPHY.p as any}>
-          You are not included in the statistics. Selene respects your privacy.
-          User activity tracking is opt-in and no individual data is collected,
-          only anonymous aggregates.
-        </Text>
-        <Text style={TYPOGRAPHY.p as any}>
-          By opting in, you can help the BCH community and Selene developers
-          observe growing engagement with the BCH economy.
-        </Text>
-        <Text style={TYPOGRAPHY.p as any}>
-          All Selene source code and data is publically available.
-        </Text>
-        <Text style={TYPOGRAPHY.p as any}>
-          Once activated, you can opt out any time in Tools {">"} Settings.
-        </Text>
-        <Button onPress={() => {}}>Activate</Button>
-        <Button onPress={() => {}}>Read more</Button>
       </View>
     </ScrollView>
   );

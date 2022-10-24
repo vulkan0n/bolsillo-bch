@@ -1,9 +1,7 @@
 import React from "react";
-import { View, Text } from "react-native";
+import { View } from "react-native";
 import styles from "./styles";
-import Button from "@selene-wallet/app/src/components/atoms/Button";
-import { useSelector, useDispatch } from "react-redux";
-import { updateTransactionPadView } from "@selene-wallet/app/src/redux/reducers/transactionPadReducer";
+import { useSelector } from "react-redux";
 import { ReduxState } from "@selene-wallet/common/dist/types";
 import ScanEntry from "./ScanEntry";
 import ButtonRow from "./ButtonRow";

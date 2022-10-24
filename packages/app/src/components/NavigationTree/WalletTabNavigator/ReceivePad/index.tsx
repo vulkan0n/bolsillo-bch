@@ -7,13 +7,12 @@ import Toast from "react-native-toast-message";
 import TYPOGRAPHY from "@selene-wallet/common/design/typography";
 import QRCode from "react-native-qrcode-svg";
 import { useDispatch } from "react-redux";
-import { updateTransactionPadView } from "@selene-wallet/app/src/redux/reducers/transactionPadReducer";
 import { ReduxState } from "@selene-wallet/common/dist/types";
 import * as Clipboard from "expo-clipboard";
 import COLOURS from "@selene-wallet/common/design/colours";
+import SPACING from "@selene-wallet/common/design/spacing";
 import {
   selectActiveWallet,
-  selectIsActiveWalletZeroBalance,
   selectPadBalanceInRawSats,
 } from "@selene-wallet/app/src/redux/selectors";
 import { ONE_HUNDRED_MILLION } from "@selene-wallet/common/dist/utils/consts";
@@ -43,11 +42,12 @@ const ReceivePad = ({ navigation }) => {
   }`;
 
   const onPressClipboard = async () => {
+    const addressOrRequest = isReceiveAmount ? "request" : "address";
     await Clipboard.setStringAsync(qrValue);
     Toast.show({
       type: "customSuccess",
       props: {
-        title: "Copied request.",
+        title: `Copied payment ${addressOrRequest}.`,
         text: qrValue ?? "",
       },
     });
@@ -80,36 +80,30 @@ const ReceivePad = ({ navigation }) => {
             />
           )}
         </View>
-        <Text selectable style={TYPOGRAPHY.p as any}>
-          {isAddress ? qrValue : "Address loading..."}
-        </Text>
-        <View style={styles.buttonContainer as any}>
+        <Pressable onPress={onPressClipboard}>
+          <Text selectable style={TYPOGRAPHY.p as any}>
+            {isAddress ? qrValue : "Address loading..."}
+          </Text>
+          <Text style={TYPOGRAPHY.p as any}>{"(Tap to copy)"}</Text>
+        </Pressable>
+        {isZeroPadBalance && (
           <Button
-            onPress={onPressClipboard}
-            variant={"smallActionGreen"}
-            icon={"faPaste"}
+            onPress={onPressAddAmount}
+            variant={"secondary"}
+            icon={"faPlusCircle"}
           >
-            Copy
+            Add request amount
           </Button>
-          {isZeroPadBalance && (
-            <Button
-              onPress={onPressAddAmount}
-              variant={"smallActionGreen"}
-              icon={"faPlusCircle"}
-            >
-              Amount
-            </Button>
-          )}
-          {!isZeroPadBalance && (
-            <Button
-              onPress={onPressClearAmount}
-              variant={"smallActionGreen"}
-              icon={"faXmarkCircle"}
-            >
-              Clear
-            </Button>
-          )}
-        </View>
+        )}
+        {!isZeroPadBalance && (
+          <Button
+            onPress={onPressClearAmount}
+            variant={"secondary"}
+            icon={"faXmarkCircle"}
+          >
+            Clear amount
+          </Button>
+        )}
       </View>
     </View>
   );

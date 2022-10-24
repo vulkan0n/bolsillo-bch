@@ -6,19 +6,14 @@ import { useSelector, useDispatch } from "react-redux";
 import { updateTransactionPadSendInputView } from "@selene-wallet/app/src/redux/reducers/transactionPadReducer";
 import { ReduxState } from "@selene-wallet/common/dist/types";
 import pickImage from "../pickImage";
-import {
-  selectPrimaryCurrencyOrDenomination,
-  selectIsPadZeroBalance,
-} from "@selene-wallet/app/src/redux/selectors";
+import { selectPrimaryCurrencyOrDenomination } from "@selene-wallet/app/src/redux/selectors";
 
 const ButtonRow = () => {
   const dispatch = useDispatch();
   const primaryCurrency = useSelector((state: ReduxState) =>
     selectPrimaryCurrencyOrDenomination(state)
   );
-  const isZeroPadBalance = useSelector((state: ReduxState) =>
-    selectIsPadZeroBalance(state)
-  );
+
   const { isTestNet } = useSelector((state: ReduxState) => state.settings);
 
   const { sendInputView } = useSelector(

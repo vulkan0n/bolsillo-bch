@@ -1,5 +1,5 @@
 import React from "react";
-import { Text } from "react-native";
+import { Text, Platform } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import WalletTabNavigator from "./WalletTabNavigator";
 import IrlView from "./IrlView";
@@ -20,8 +20,11 @@ import { ReduxState } from "@selene-wallet/common/dist/types";
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
+const isAndroid = Platform.OS === "android";
+
 const headerStyle = {
   backgroundColor: COLOURS.black,
+  height: isAndroid ? 0 : undefined,
 };
 
 const TabNavigator = () => {

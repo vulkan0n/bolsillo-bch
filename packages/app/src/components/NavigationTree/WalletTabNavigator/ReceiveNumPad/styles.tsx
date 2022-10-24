@@ -9,7 +9,7 @@ const styles = {
     alignItems: "center",
     width: "100%",
     borderRadius: SPACING.borderRadius,
-    padding: SPACING.fifteen,
+    paddingHorizontal: SPACING.fifteen,
   },
   receivePad: {
     flex: 1,
