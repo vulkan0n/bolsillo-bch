@@ -28,10 +28,7 @@ const styles = {
     borderColor: COLOURS.lightGrey,
   },
   buttonContainer: {
-    margin: SPACING.ten,
-    flexDirection: "row",
-    justifyContent: "space-around",
-    width: "100%",
+    backgroundColor: "red",
   },
 };
 

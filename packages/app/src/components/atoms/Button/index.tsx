@@ -4,7 +4,7 @@ import styles from "./styles";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import COLOURS from "@selene-wallet/common/design/colours";
 import { iconImport, IconType } from "@selene-wallet/app/src/design/icons";
-import { BallIndicator } from "react-native-indicators";
+import Loading from "@selene-wallet/app/src/components/atoms/Loading";
 
 interface Props {
   children: any;
@@ -64,9 +64,7 @@ const Button = ({
       onPress={isDisabled ? () => {} : onPress}
       style={buttonStyle.button as any}
     >
-      {isLoading && (
-        <BallIndicator size={30} color={buttonStyle.activityIndicatorColor} />
-      )}
+      {isLoading && <Loading color={buttonStyle.activityIndicatorColor} />}
       {!isLoading && !!icon && (
         <View style={buttonStyle.iconContainer}>
           <FontAwesomeIcon

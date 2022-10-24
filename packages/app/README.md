@@ -2,7 +2,7 @@
 
 Join the Cash economy.
 
-Note: This repo is part of the Selene monorepo. Refer to the central documentation for more information.
+Note: This repo is part of the Selene monorepo. Refer to the central documentation for more required information.
 
 [NPM Packages](https://www.npmjs.com/org/selene-wallet)
 
@@ -71,14 +71,13 @@ And note that mainnet.cash uses `m/44/0'/0'` for mainnet derivative path and `m/
 # Builds
 
 ```
+# Ensure packages/app/src/apolloClient.tsx is using PRODUCTION_SERVER
+
 # Update app version on Credits page
 # Update app version in `package.json`
 # Update `app.json` `version`, bump `ios.buildNumber` & `android.versionCode`
 # Update `package.json`s of other other packages, e.g. `@selene-wallet/web` to the new `@selene-wallet/app` version and run `lerna bootstrap` at the root level.
 # git commit
-$ eas build
-# Wait 20 minutes for build to finish
-$ eas update --auto
 
 # Android test release build
 $ eas build --profile preview --platform android

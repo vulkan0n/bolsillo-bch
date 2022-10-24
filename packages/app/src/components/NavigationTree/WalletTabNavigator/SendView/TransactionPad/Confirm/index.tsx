@@ -16,12 +16,11 @@ import {
   selectPadBalanceInRawSats,
 } from "@selene-wallet/app/src/redux/selectors";
 import LiveBalance from "@selene-wallet/app/src/components/atoms/LiveBalance";
-import COLOURS from "@selene-wallet/common/design/colours";
 import { TEN_SECONDS } from "@selene-wallet/common/dist/utils/consts";
 import { selectIsPadZeroBalance } from "@selene-wallet/app/src/redux/selectors";
-import { BallIndicator } from "react-native-indicators";
+import Loading from "@selene-wallet/app/src/components/atoms/Loading";
 
-const Confirm = ({ navigation }) => {
+const Confirm = () => {
   const dispatch = useDispatch();
   const wallet = useSelector((state: ReduxState) => selectActiveWallet(state));
   const rawSatsToSend = useSelector((state: ReduxState) =>
@@ -108,11 +107,7 @@ const Confirm = ({ navigation }) => {
       >
         <View style={styles.inputBackground as any}>
           <Text style={TYPOGRAPHY.h1black as any}>Sending...</Text>
-          <BallIndicator
-            style={styles.activityIndicator}
-            size={30}
-            color={COLOURS.black}
-          />
+          <Loading style={styles.activityIndicator} />
           {isStuck && <Text style={TYPOGRAPHY.p as any}>(Tap if stuck)</Text>}
         </View>
       </Pressable>

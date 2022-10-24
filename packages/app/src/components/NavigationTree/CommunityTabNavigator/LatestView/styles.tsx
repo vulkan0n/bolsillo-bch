@@ -1,24 +1,17 @@
 import COLOURS from "@selene-wallet/common/design/colours";
 import SPACING from "@selene-wallet/common/design/spacing";
+import TYPOGRAPHY from "@selene-wallet/common/design/typography";
 
 const styles = {
-  scrollView: {
-    backgroundColor: COLOURS.black,
-  },
-  container: {
+  flatList: {
+    flex: 1,
+    color: "white",
+    width: "100%",
     backgroundColor: COLOURS.white,
     padding: SPACING.five,
     borderRadius: SPACING.borderRadius,
   },
-  proposalCard: {
-    backgroundColor: COLOURS.white,
-    borderColor: COLOURS.black,
-    borderWidth: 2,
-    borderRadius: SPACING.borderRadius,
-    padding: SPACING.ten,
-    margin: SPACING.five,
-    marginBottom: SPACING.twentyFive,
-  },
+  header: { ...TYPOGRAPHY.h1black, marginTop: SPACING.fifteen },
 };
 
 export default styles;

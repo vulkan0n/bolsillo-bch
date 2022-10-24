@@ -6,8 +6,27 @@ import Chart from "./Chart";
 import COLOURS from "@selene-wallet/common/design/colours";
 import TYPOGRAPHY from "@selene-wallet/common/design/typography";
 import SPACING from "@selene-wallet/common/design/spacing";
+import { CheckInPeriodTypes } from "@selene-wallet/common/dist/types";
+import Loading from "@selene-wallet/app/src/components/atoms/Loading";
 
-const ActiveBitcoinersChart = ({ data, period, setPeriod }) => {
+interface Props {
+  data: TODO[]; // see StatsView
+  period: CheckInPeriodTypes;
+  setPeriod: React.Dispatch<React.SetStateAction<CheckInPeriodTypes>>;
+  error?: TODO; // any? Apollo TS lib GraphQl Error type? Make a custom type?
+  loading?: boolean;
+  children?: any;
+}
+
+export const CHART_HEIGHT = 220;
+
+const ActiveBitcoinersChart = ({
+  data,
+  period,
+  setPeriod,
+  loading,
+  error,
+}: Props) => {
   const activeUserCount = data?.activeBitcoiners?.map?.(({ count }) => count);
   const labels = data?.activeBitcoiners?.map?.(({ date }) =>
     moment(date).format(
@@ -15,9 +34,21 @@ const ActiveBitcoinersChart = ({ data, period, setPeriod }) => {
     )
   );
 
+  if (error) {
+    console.log({ error });
+  }
+
   return (
     <View>
-      <Chart data={activeUserCount} labels={labels} />
+      {loading && <Loading style={{ height: CHART_HEIGHT }} />}
+      {error && <Text>Error! Chart could not be loaded.</Text>}
+      {!loading && !error && (
+        <Chart
+          data={activeUserCount}
+          labels={labels}
+          chartHeight={CHART_HEIGHT}
+        />
+      )}
       <View
         style={{
           maxHeight: 50,

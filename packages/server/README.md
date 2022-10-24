@@ -1,6 +1,6 @@
 # `@selene-wallet/server`
 
-Note: This repo is part of the Selene monorepo. Refer to the central documentation for more information.
+Note: This repo is part of the Selene monorepo. Refer to the central documentation for more required information.
 
 [NPM Packages](https://www.npmjs.com/org/selene-wallet)
 

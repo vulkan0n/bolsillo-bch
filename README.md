@@ -26,6 +26,8 @@ Opinions of this repository.
 
 ```
 $ lerna bootstrap # Install node_modules for all packages, hoisted to root where shared
+# Set `packages/app/src/apolloClient.tsx` to use LOCALHOST_SERVER
+# Set `packages/server/.env` to use local DATABASE_URL
 ```
 
 ## Packages

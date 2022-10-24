@@ -6,14 +6,7 @@ import TYPOGRAPHY from "@selene-wallet/common/design/typography";
 import YoutubePlayer from "react-native-youtube-iframe";
 import moment from "moment";
 import TipWidget from "@selene-wallet/app/src/components/atoms/TipWidget";
-import emit from "@selene-wallet/app/src/utils/emit";
-import { BRIDGE_MESSAGE_TYPES } from "@selene-wallet/app/src/utils/bridgeMessages";
-import { ReduxState } from "@selene-wallet/common/dist/types";
-import { useSelector, useDispatch } from "react-redux";
-import { selectActiveWallet } from "@selene-wallet/app/src/redux/selectors";
-import { updateTransactionPadIsSendingCoins } from "@selene-wallet/app/src/redux/reducers/transactionPadReducer";
-import { selectActiveWalletBalance } from "@selene-wallet/app/src/redux/selectors";
-import { BallIndicator } from "react-native-indicators";
+import Loading from "@selene-wallet/app/src/components/atoms/Loading";
 
 interface Props {
   title: string;
@@ -22,6 +15,7 @@ interface Props {
   videoId: string;
   description: string;
   donationBchAddress?: string;
+  isInteractive?: boolean;
 }
 
 function ContentCard({
@@ -31,45 +25,12 @@ function ContentCard({
   videoId = "",
   description = "",
   donationBchAddress,
-}) {
-  const [tipAmountInIntSats, setTipAmountInIntSats] = useState(100000);
+  isInteractive = true,
+}: Props) {
   const [isLoaded, setIsLoaded] = useState(false);
-  const wallet = useSelector((state: ReduxState) => selectActiveWallet(state));
-  const { isTestNet } = useSelector((state: ReduxState) => state.settings);
-  const dispatch = useDispatch();
-  const { isSendingCoins } = useSelector(
-    (state: ReduxState) => state.transactionPad
-  );
-  const { availableRawSats } = useSelector((state: ReduxState) =>
-    selectActiveWalletBalance(state)
-  );
 
   const onReady = () => {
     setIsLoaded(true);
-  };
-
-  const onPressTipBch = () => {
-    if (!donationBchAddress) {
-      return;
-    }
-
-    emit({
-      type: BRIDGE_MESSAGE_TYPES.SEND_COINS,
-      data: {
-        name: wallet?.name,
-        mnemonic: wallet?.mnemonic,
-        derivationPath: wallet?.derivationPath,
-        recipientCashAddr: donationBchAddress,
-        satsToSend: tipAmountInIntSats,
-        isTestNet,
-      },
-    });
-
-    dispatch(
-      updateTransactionPadIsSendingCoins({
-        isSendingCoins: true,
-      })
-    );
   };
 
   return (
@@ -82,6 +43,7 @@ function ContentCard({
         borderWidth: 2,
         borderRadius: SPACING.borderRadius,
       }}
+      pointerEvents={isInteractive ? "auto" : "none"}
     >
       <View
         style={{
@@ -100,8 +62,7 @@ function ContentCard({
         onReady={onReady}
       />
       {!isLoaded && (
-        <BallIndicator
-          size={30}
+        <Loading
           style={{
             height: 225,
             backgroundColor: COLOURS.black,
