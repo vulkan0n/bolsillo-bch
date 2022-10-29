@@ -8,7 +8,6 @@ const styles = {
     justifyContent: "flex-start",
     alignItems: "center",
     width: "100%",
-    padding: SPACING.ten,
     borderRadius: SPACING.borderRadius,
   },
   emptyPad: {
