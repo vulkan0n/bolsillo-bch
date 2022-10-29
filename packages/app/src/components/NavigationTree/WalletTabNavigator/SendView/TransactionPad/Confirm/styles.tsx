@@ -53,6 +53,45 @@ const styles = {
     marginTop: SPACING.fifteen,
     marginBottom: SPACING.fifteen,
   },
+  sliderContainer: {
+    marginBottom: SPACING.ten,
+    backgroundColor: COLOURS.white,
+    borderRadius: SPACING.borderRadius,
+    height: SPACING.maxButtonHeight,
+    overflow: "hidden",
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 1,
+    borderColor: COLOURS.black,
+  },
+  sliderChildren: { backgroundColor: COLOURS.white, width: "100%" },
+  sliderChildrenWrapper: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  sliderHandle: {
+    width: SPACING.maxButtonHeight - SPACING.ten,
+    margin: SPACING.five,
+    borderRadius: SPACING.borderRadius,
+    height: SPACING.maxButtonHeight - SPACING.ten,
+    backgroundColor: COLOURS.bchGreen,
+    justifyContent: "center",
+    alignItems: "center",
+    borderWidth: 3,
+    borderColor: COLOURS.lightGrey,
+  },
+  sliderText: {
+    fontFamily: "Montserrat_500Medium",
+    fontSize: 24,
+    color: COLOURS.black,
+    textAlign: "center",
+    paddingLeft: 65, // Compensates for width and margin of slider handle
+    backgroundColor: COLOURS.white,
+  },
+  sliderIconContainer: {
+    marginLeft: SPACING.five,
+  },
 };
 
 export default styles;

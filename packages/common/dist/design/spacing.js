@@ -7,6 +7,7 @@ const SPACING = {
     twentyFive: 25,
     fifty: 50,
     borderRadius: 10,
+    maxButtonHeight: 65,
 };
 exports.default = SPACING;
 //# sourceMappingURL=spacing.js.map

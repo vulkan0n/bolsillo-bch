@@ -5,20 +5,12 @@ import TYPOGRAPHY from "@selene-wallet/common/design/typography";
 import {
   ONE_HUNDRED,
   TEN_MILLION,
+  CHECK_IN_PERIOD_TYPES,
 } from "@selene-wallet/common/dist/utils/consts";
 import styles from "./styles";
 import ActiveBitcoinersChart from "./ActiveBitcoinersChart";
-import { useQuery, gql } from "@apollo/client";
-import { CHECK_IN_PERIOD_TYPES } from "@selene-wallet/common/dist/utils/consts";
-
-const GET_ACTIVE_BITCOINERS = gql`
-  query GetActiveBitcoiners($period: String!) {
-    activeBitcoiners(period: $period) {
-      date
-      count
-    }
-  }
-`;
+import { useQuery } from "@apollo/client";
+import GET_ACTIVE_BITCOINERS from "@selene-wallet/common/dist/graphql/queries/getActiveBitcoiners";
 
 interface GraphQlResponse {
   loading: boolean;

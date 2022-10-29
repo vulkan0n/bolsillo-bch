@@ -62,6 +62,7 @@ const TabNavigator = () => {
         tabBarActiveTintColor: COLOURS.bchGreen,
         tabBarInactiveTintColor: COLOURS.white,
         tabBarStyle: styles.tabBar,
+        tabBarLabelStyle: styles.tabBarLabel,
         headerShadowVisible: false,
       })}
     >

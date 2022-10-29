@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CHECK_IN_PERIOD_TYPES = exports.DEVELOPER_DONATION_ADDRESS = exports.SUPPORTED_CURRENCIES = exports.TEN_MILLION = exports.BITCOIN_DENOMINATIONS = exports.TOTAL_SATOSHI_SUPPLY = exports.ONE_HUNDRED = exports.ONE_HUNDRED_THOUSAND = exports.ONE_HUNDRED_MILLION = exports.THIRTY_SECONDS = exports.TEN_SECONDS = exports.ONE_SECOND = exports.DEFAULT_DERIVATION_PATH = exports.MAIN_NET_PREFIX = exports.TEST_NET_PREFIX = void 0;
+exports.CHECK_IN_PERIOD_TYPES = exports.DEVELOPER_DONATION_ADDRESS = exports.SUPPORTED_CURRENCIES = exports.TEN_MILLION = exports.BITCOIN_DENOMINATIONS = exports.MINIMUM_SPENDABLE_SATOSHIS = exports.TOTAL_SATOSHI_SUPPLY = exports.ONE_HUNDRED = exports.ONE_HUNDRED_THOUSAND = exports.ONE_HUNDRED_MILLION = exports.THIRTY_SECONDS = exports.TEN_SECONDS = exports.ONE_SECOND = exports.DEFAULT_DERIVATION_PATH = exports.MAIN_NET_PREFIX = exports.TEST_NET_PREFIX = void 0;
 exports.TEST_NET_PREFIX = "bchtest:";
 exports.MAIN_NET_PREFIX = "bitcoincash:";
 exports.DEFAULT_DERIVATION_PATH = "m/44'/0'/0'/0/0";
@@ -11,6 +11,7 @@ exports.ONE_HUNDRED_MILLION = 100000000;
 exports.ONE_HUNDRED_THOUSAND = 100000;
 exports.ONE_HUNDRED = 100;
 exports.TOTAL_SATOSHI_SUPPLY = 2099999997690000;
+exports.MINIMUM_SPENDABLE_SATOSHIS = 5000;
 exports.BITCOIN_DENOMINATIONS = {
     bitcoins: "bitcoins",
     millibits: "millibits",

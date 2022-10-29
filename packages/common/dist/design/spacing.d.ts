@@ -5,5 +5,6 @@ declare const SPACING: {
     twentyFive: number;
     fifty: number;
     borderRadius: number;
+    maxButtonHeight: number;
 };
 export default SPACING;
