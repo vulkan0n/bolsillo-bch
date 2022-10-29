@@ -45,7 +45,7 @@ const ReceiveNumPad = ({ navigation }) => {
       <View style={styles.buttonContainer as any}>
         {!isRightHandedMode && RequestButton}
         <Button
-          icon={"faChevronLeft"}
+          icon={"faArrowLeft"}
           variant="secondary"
           onPress={onPressBack}
           size={"small"}

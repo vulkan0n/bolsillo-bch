@@ -179,7 +179,7 @@ const Confirm = () => {
         </Button>
       )}
       <Button
-        icon={"faChevronLeft"}
+        icon={"faArrowLeft"}
         variant="secondary"
         onPress={onPressBack}
         size={"small"}

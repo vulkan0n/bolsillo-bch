@@ -34,15 +34,15 @@ const SendNumPad = () => {
       <NumPad isCheckInsufficientBalance />
 
       <Button
-        icon={isBelowMinimumSpendableBalance ? "" : "faCircleCheck"}
+        icon={isBelowMinimumSpendableBalance ? "" : "faArrowRight"}
         isDisabled={isBelowMinimumSpendableBalance}
         onPress={onPressOk}
         size="small"
       >
-        {isBelowMinimumSpendableBalance ? "5 000 satoshi minimum" : "Ok"}
+        {isBelowMinimumSpendableBalance ? "5 000 satoshi minimum" : "Next"}
       </Button>
       <Button
-        icon={"faChevronLeft"}
+        icon={"faArrowLeft"}
         variant="secondary"
         onPress={onPressBack}
         size={"small"}
