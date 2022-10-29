@@ -9,6 +9,7 @@ import { selectPrimaryCurrencyOrDenomination } from "@selene-wallet/app/src/redu
 import { ReduxState } from "@selene-wallet/common/dist/types";
 import { useIsFocused } from "@react-navigation/native";
 import Button from "@selene-wallet/app/src/components/atoms/Button";
+import Loading from "@selene-wallet/app/src/components/atoms/Loading";
 
 function QrScanner() {
   const dispatch = useDispatch();
@@ -49,9 +50,7 @@ function QrScanner() {
         style={styles.entryRow as any}
         onPress={requestBarCodeScannerPermissions}
       >
-        <Text style={TYPOGRAPHY.h2black as any}>
-          Requesting camera permissions.
-        </Text>
+        <Loading />
       </Pressable>
     );
   }
