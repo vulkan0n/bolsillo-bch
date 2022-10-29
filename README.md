@@ -6,7 +6,7 @@ Software to make Bitcoin Cash (BCH) the global reserve currency.
 
 Target is to build up to 10 million daily active users by making joining the BCH economy (from an economic, social and informational perspective) as easy and compelling as possible.
 
-[NPM Packages](https://www.npmjs.com/org/selene-wallet)
+[NPM packages](https://www.npmjs.com/org/selene-wallet)
 
 [Gitlab source](https://gitlab.com/selene.cash/selene-wallet)
 
