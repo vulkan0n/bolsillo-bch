@@ -9,6 +9,7 @@ export declare const ONE_HUNDRED_MILLION: number;
 export declare const ONE_HUNDRED_THOUSAND: number;
 export declare const ONE_HUNDRED: number;
 export declare const TOTAL_SATOSHI_SUPPLY: number;
+export declare const MINIMUM_SPENDABLE_SATOSHIS: number;
 export declare const BITCOIN_DENOMINATIONS: {
     bitcoins: BitcoinDenominationTypes;
     millibits: BitcoinDenominationTypes;

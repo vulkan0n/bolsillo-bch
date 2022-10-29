@@ -2,16 +2,21 @@ import React from "react";
 import { View } from "react-native";
 import styles from "./styles";
 import Button from "@selene-wallet/app/src/components/atoms/Button";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { updateTransactionPadView } from "@selene-wallet/app/src/redux/reducers/transactionPadReducer";
 import LiveBalance from "@selene-wallet/app/src/components/atoms/LiveBalance";
 import NumPad from "../../../../../atoms/NumPad";
 import { clearTransactionPad } from "@selene-wallet/app/src/redux/reducers/transactionPadReducer";
+import { selectIsPadBelowMinimumSpendableBalance } from "@selene-wallet/app/src/redux/selectors";
+import { ReduxState } from "@selene-wallet/common/dist/types";
 
 const SendNumPad = () => {
   const dispatch = useDispatch();
+  const isBelowMinimumSpendableBalance = useSelector((state: ReduxState) =>
+    selectIsPadBelowMinimumSpendableBalance(state)
+  );
 
-  const onPressSend = () => {
+  const onPressOk = () => {
     dispatch(
       updateTransactionPadView({
         view: "Confirm",
@@ -28,8 +33,13 @@ const SendNumPad = () => {
       <LiveBalance />
       <NumPad isCheckInsufficientBalance />
 
-      <Button icon={"faPaperPlane"} onPress={onPressSend} size="small">
-        Send
+      <Button
+        icon={isBelowMinimumSpendableBalance ? "" : "faCircleCheck"}
+        isDisabled={isBelowMinimumSpendableBalance}
+        onPress={onPressOk}
+        size="small"
+      >
+        {isBelowMinimumSpendableBalance ? "5 000 satoshi minimum" : "Ok"}
       </Button>
       <Button
         icon={"faChevronLeft"}

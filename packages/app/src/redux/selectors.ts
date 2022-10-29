@@ -11,7 +11,10 @@ import {
   prettifyPadBalance,
 } from "@selene-wallet/app/src/utils/formatting";
 import { CurrencyOrDenominationType } from "@selene-wallet/common/dist/types";
-import { BITCOIN_DENOMINATIONS } from "@selene-wallet/common/dist/utils/consts";
+import {
+  BITCOIN_DENOMINATIONS,
+  MINIMUM_SPENDABLE_SATOSHIS,
+} from "@selene-wallet/common/dist/utils/consts";
 
 interface ActiveWalletBalance {
   primaryBalance: string;
@@ -137,3 +140,10 @@ export const selectPadSecondaryBalance: (state: ReduxState) => string =
 
 export const selectIsPadZeroBalance: (state: ReduxState) => boolean =
   createSelector(selectPadBalanceInRawSats, (padBalance) => padBalance === "0");
+
+export const selectIsPadBelowMinimumSpendableBalance: (
+  state: ReduxState
+) => boolean = createSelector(
+  selectPadBalanceInRawSats,
+  (padBalance) => parseInt(padBalance) < MINIMUM_SPENDABLE_SATOSHIS
+);

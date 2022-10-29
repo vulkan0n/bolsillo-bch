@@ -27,6 +27,7 @@ import { faPhotoFilm } from "@fortawesome/free-solid-svg-icons/faPhotoFilm";
 import { faHandshake } from "@fortawesome/free-solid-svg-icons/faHandshake";
 import { faChartLine } from "@fortawesome/free-solid-svg-icons/faChartLine";
 import { faCamera } from "@fortawesome/free-solid-svg-icons/faCamera";
+import { faChevronRight } from "@fortawesome/free-solid-svg-icons/faChevronRight";
 
 export type IconType =
   | ""
@@ -58,7 +59,8 @@ export type IconType =
   | "faPhotoFilm"
   | "faHandshake"
   | "faChartLine"
-  | "faCamera";
+  | "faCamera"
+  | "faChevronRight";
 
 export const iconImport = (icon: IconType) => {
   switch (icon) {
@@ -120,6 +122,8 @@ export const iconImport = (icon: IconType) => {
       return faChartLine;
     case "faCamera":
       return faCamera;
+    case "faChevronRight":
+      return faChevronRight;
     default:
       return null;
   }

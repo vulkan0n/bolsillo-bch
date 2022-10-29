@@ -78,6 +78,7 @@ And note that mainnet.cash uses `m/44/0'/0'` for mainnet derivative path and `m/
 # Update `app.json` `version`, bump `ios.buildNumber` & `android.versionCode`
 # Update `package.json`s of other other packages, e.g. `@selene-wallet/web` to the new `@selene-wallet/app` version and run `lerna bootstrap` at the root level.
 # git commit
+# Publish other packages if necessary, e.g. a new version of @selene-wallet common (see root README)
 
 # Android test release build
 $ eas build --profile preview --platform android

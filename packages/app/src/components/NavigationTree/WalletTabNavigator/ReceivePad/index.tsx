@@ -10,7 +10,6 @@ import { useDispatch } from "react-redux";
 import { ReduxState } from "@selene-wallet/common/dist/types";
 import * as Clipboard from "expo-clipboard";
 import COLOURS from "@selene-wallet/common/design/colours";
-import SPACING from "@selene-wallet/common/design/spacing";
 import {
   selectActiveWallet,
   selectPadBalanceInRawSats,

@@ -31,8 +31,7 @@ const CommunityStack = () => {
         header: () => false,
       })}
     >
-      <Stack.Screen name="Wallet Home" component={CommunityTabNavigator} />
-      <Stack.Screen name="Receive Num Pad" component={CommunityTabNavigator} />
+      <Stack.Screen name="Community Tab" component={CommunityTabNavigator} />
     </Stack.Navigator>
   );
 };

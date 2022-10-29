@@ -21,11 +21,15 @@ const TestNet = () => {
   const TestNetSwitch = (
     <View style={styles.control}>
       <Switch
-        trackColor={{ true: COLOURS.bchGreen, false: COLOURS.white }}
-        thumbColor={isTestNet ? COLOURS.white : COLOURS.bchGreen}
-        ios_backgroundColor={COLOURS.white}
+        trackColor={{ true: COLOURS.white, false: COLOURS.black }}
+        thumbColor={isTestNet ? COLOURS.bchGreen : COLOURS.lightGrey}
+        ios_backgroundColor={COLOURS.black}
         onValueChange={handleToggleIsTestNet}
         value={isTestNet}
+        style={{
+          borderColor: COLOURS.bchGreen,
+          borderWidth: 2,
+        }}
       />
     </View>
   );

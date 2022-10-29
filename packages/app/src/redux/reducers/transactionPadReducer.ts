@@ -45,8 +45,8 @@ const transactionPadSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(toggleIsBchDenominated, () => {
-        return initialState;
+      .addCase(toggleIsBchDenominated, (state) => {
+        state.padBalance = "0";
       })
       .addCase(updateContrastCurrency, () => {
         return initialState;

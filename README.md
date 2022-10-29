@@ -43,6 +43,8 @@ To publish each repo, go into it separately and run `$ npm publish --access=publ
 
 ## Tips
 
+### Expo
+
 If starting app from Expo window is giving error:
 
 ```
@@ -51,3 +53,16 @@ Unable to resolve "../../App" from "node_modules/expo/AppEntry.js"
 ```
 
 Make sure you are running `npx expo start` from inside `$ selene-wallet/packages/app` and not `$ selene-wallet` root!
+
+### Postgres
+
+If local Postgres server is not connecting, you may have generated the database with an older version of Postgres.
+
+See links: [here](https://stackoverflow.com/a/29383787/2792268)
+
+```
+# Try to manually start Postgres
+$ pg_ctl -D /usr/local/var/postgres -l /usr/local/var/postgres/server.log start
+# Maybe need to upgrade postgres
+$ brew postgresql-upgrade-database
+```

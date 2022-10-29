@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, Pressable } from "react-native";
+import { View, Text, Pressable, Image, Alert } from "react-native";
+import Slider from "react-native-slide-to-unlock";
 import styles from "./styles";
 import Button from "@selene-wallet/app/src/components/atoms/Button";
 import { BRIDGE_MESSAGE_TYPES } from "@selene-wallet/app/src/utils/bridgeMessages";
@@ -19,6 +20,9 @@ import LiveBalance from "@selene-wallet/app/src/components/atoms/LiveBalance";
 import { TEN_SECONDS } from "@selene-wallet/common/dist/utils/consts";
 import { selectIsPadZeroBalance } from "@selene-wallet/app/src/redux/selectors";
 import Loading from "@selene-wallet/app/src/components/atoms/Loading";
+import COLOURS from "@selene-wallet/common/design/colours";
+import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+import { iconImport } from "@selene-wallet/app/src/design/icons";
 
 const Confirm = () => {
   const dispatch = useDispatch();
@@ -48,7 +52,7 @@ const Confirm = () => {
     }, TEN_SECONDS);
   }, [isSendingCoins]);
 
-  const onPressSend = () => {
+  const onSwipeSend = () => {
     emit({
       type: BRIDGE_MESSAGE_TYPES.SEND_COINS,
       data: {
@@ -122,10 +126,49 @@ const Confirm = () => {
       <Text style={TYPOGRAPHY.p as any}>{sendToAddress}</Text>
 
       {!isPadZeroBalance && (
-        <Button icon={"faPaperPlane"} onPress={onPressSend} size="small">
-          Send
-        </Button>
+        <View style={{ width: "100%" }}>
+          <Slider
+            childrenContainer={styles.sliderChildren as any}
+            onEndReached={onSwipeSend}
+            containerStyle={styles.sliderContainer as any}
+            sliderElement={
+              <View style={styles.sliderHandle as any}>
+                <FontAwesomeIcon
+                  icon={iconImport("faPaperPlane")}
+                  size={35}
+                  color={COLOURS.white}
+                />
+              </View>
+            }
+          >
+            <View style={styles.sliderChildrenWrapper as any}>
+              <Text style={styles.sliderText as any}>{"Slide to send"}</Text>
+              <View style={styles.sliderIconContainer}>
+                <FontAwesomeIcon
+                  icon={iconImport("faChevronRight")}
+                  size={20}
+                  color={COLOURS.black}
+                />
+              </View>
+              <View style={styles.sliderIconContainer}>
+                <FontAwesomeIcon
+                  icon={iconImport("faChevronRight")}
+                  size={20}
+                  color={COLOURS.black}
+                />
+              </View>
+              <View style={styles.sliderIconContainer}>
+                <FontAwesomeIcon
+                  icon={iconImport("faChevronRight")}
+                  size={20}
+                  color={COLOURS.black}
+                />
+              </View>
+            </View>
+          </Slider>
+        </View>
       )}
+
       {isPadZeroBalance && (
         <Button
           icon={"faBitcoinSign"}
