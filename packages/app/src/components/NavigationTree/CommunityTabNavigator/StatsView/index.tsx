@@ -58,7 +58,7 @@ function StatsView() {
       <View style={styles.container as any}>
         <Text style={TYPOGRAPHY.h1black as any}>Stats</Text>
         <Text style={TYPOGRAPHY.p as any}>
-          Selene Wallet is on a mission to make Bitcoin Cash the most used
+          Selene Wallet is on a mission to make Bitcoin Cash the most transacted
           currency in the world.
         </Text>
         <View style={styles.activeBitcoiners}>
@@ -79,7 +79,8 @@ function StatsView() {
           >{`${missionPercentage}% of 10 000 000 target`}</Text>
           <Text style={TYPOGRAPHY.p as any}>
             10 million active Selene Bitcoiners will form a vibrant economy
-            larger than many countries, and quickly snowball globally.
+            larger than many countries, and quickly snowball to make Bitcoin
+            Cash the global reserve currency.
           </Text>
           <ActiveBitcoinersChart
             loading={loading}
