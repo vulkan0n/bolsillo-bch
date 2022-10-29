@@ -26,9 +26,9 @@ const BchDenominated = () => {
   const BchDenominatedSwitch = (
     <View style={styles.control as any}>
       <Switch
-        trackColor={{ true: COLOURS.white, false: COLOURS.black }}
-        thumbColor={isBchDenominated ? COLOURS.bchGreen : COLOURS.lightGrey}
-        ios_backgroundColor={COLOURS.black}
+        trackColor={{ true: COLOURS.bchGreen, false: COLOURS.lightGrey }}
+        thumbColor={COLOURS.white}
+        ios_backgroundColor={COLOURS.lightGrey}
         onValueChange={handleToggleIsBchDenominated}
         value={isBchDenominated}
         style={{
