@@ -10,7 +10,7 @@ Target is to build up to 10 million daily active users by making joining the BCH
 
 [Gitlab source](https://gitlab.com/selene.cash/selene-wallet)
 
-[Docker images](https://hub.docker.com/u/bitcoincashpodast)
+[Docker images](https://hub.docker.com/u/bitcoincashpodcast)
 
 ## Design Philosophy
 

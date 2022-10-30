@@ -8,7 +8,7 @@ Note: This repo is part of the Selene monorepo. Refer to the central documentati
 
 [Gitlab source](https://gitlab.com/selene.cash/selene-wallet)
 
-[Docker images](https://hub.docker.com/u/bitcoincashpodast)
+[Docker images](https://hub.docker.com/u/bitcoincashpodcast)
 
 ## Development
 

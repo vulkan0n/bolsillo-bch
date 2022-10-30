@@ -6,7 +6,7 @@ Note: This repo is part of the Selene monorepo. Refer to the central documentati
 
 [Gitlab source](https://gitlab.com/selene.cash/selene-wallet)
 
-[Docker images](https://hub.docker.com/u/bitcoincashpodast)
+[Docker images](https://hub.docker.com/u/bitcoincashpodcast)
 
 ## Getting Started
 
@@ -74,6 +74,9 @@ $ docker run -p 4000:4000 selene-wallet-server # Test locally
 $ docker login
 $ docker tag selene-wallet-server bitcoincashpodcast/selene-wallet-server
 $ docker push bitcoincashpodcast/selene-wallet-server
+
+# Publish to NPM
+$ npm publish --access=public
 
 # Create local keys (Selene Wallet Server Keys) when prompted, and connect from that folder
 $ ssh -i Selene\ Wallet\ Server\ Keys.pem ubuntu@ec2-54-208-15-113.compute-1.amazonaws.com
