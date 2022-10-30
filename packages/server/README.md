@@ -12,8 +12,8 @@ Note: This repo is part of the Selene monorepo. Refer to the central documentati
 $ npm start
 # Apollo GraphQL sandbox available at http://localhost:4000/
 
-# Database setup with Postgres & Prisma
-$ createdb selene-wallet
+# Local database setup with Postgres & Prisma
+$ createdb selene-wallet-local-db
 # Make a copy of .env-example called .env
 
 # Fill out with the correct values
