@@ -22,8 +22,8 @@ export const ONE_HUNDRED: number = 100; // Sats per bit
 // A little less than 21 quadrillion
 export const TOTAL_SATOSHI_SUPPLY: number = 2099999997690000;
 
-// Minimum send in Satoshis, to be lowered upon substantial price rises
-export const MINIMUM_SPENDABLE_SATOSHIS: number = 5000;
+// Minimum send in Satoshis, BCH dust limit
+export const MINIMUM_SPENDABLE_SATOSHIS: number = 550;
 
 export const BITCOIN_DENOMINATIONS: {
   bitcoins: BitcoinDenominationTypes;

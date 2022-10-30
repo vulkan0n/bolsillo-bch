@@ -53,4 +53,5 @@ export const {
   toggleIsShowCommunityTab,
   toggleIsTestNet,
 } = settingsSlice.actions;
+
 export default settingsSlice.reducer;

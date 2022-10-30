@@ -5,13 +5,18 @@ import Button from "@selene-wallet/app/src/components/atoms/Button";
 import { useDispatch, useSelector } from "react-redux";
 import { updateTransactionPadView } from "@selene-wallet/app/src/redux/reducers/transactionPadReducer";
 import LiveBalance from "@selene-wallet/app/src/components/atoms/LiveBalance";
-import NumPad from "../../../../../atoms/NumPad";
+import NumPad from "@selene-wallet/app/src/components/atoms/NumPad";
 import { clearTransactionPad } from "@selene-wallet/app/src/redux/reducers/transactionPadReducer";
 import { selectIsPadBelowMinimumSpendableBalance } from "@selene-wallet/app/src/redux/selectors";
 import { ReduxState } from "@selene-wallet/common/dist/types";
+import { MINIMUM_SPENDABLE_SATOSHIS } from "@selene-wallet/common/dist/utils/consts";
+import { rawSatsToCurrencyDisplay } from "@selene-wallet/app/src/utils/formatting";
 
 const SendNumPad = () => {
   const dispatch = useDispatch();
+  const bitcoinDenomination = useSelector(
+    (state: ReduxState) => state.settings.bitcoinDenomination
+  );
   const isBelowMinimumSpendableBalance = useSelector((state: ReduxState) =>
     selectIsPadBelowMinimumSpendableBalance(state)
   );
@@ -28,6 +33,11 @@ const SendNumPad = () => {
     dispatch(clearTransactionPad());
   };
 
+  const minimumSpend = rawSatsToCurrencyDisplay(
+    MINIMUM_SPENDABLE_SATOSHIS.toString(),
+    bitcoinDenomination
+  );
+
   return (
     <View style={styles.inputBackground as any}>
       <LiveBalance />
@@ -39,7 +49,7 @@ const SendNumPad = () => {
         onPress={onPressOk}
         size="small"
       >
-        {isBelowMinimumSpendableBalance ? "5 000 satoshi minimum" : "Next"}
+        {isBelowMinimumSpendableBalance ? `${minimumSpend} minimum` : "Next"}
       </Button>
       <Button
         icon={"faArrowLeft"}
