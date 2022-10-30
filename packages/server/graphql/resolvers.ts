@@ -18,48 +18,43 @@ const resolvers = {
       _: any,
       { period }: { period: CheckInPeriodTypes }
     ) => {
-      console.log({ period });
-
       const duration = inferCheckInWindow(period);
 
-      // Last week of dates
       const numberArray = [...Array(7).keys()];
       const now = moment.utc();
-      const dates = numberArray
+      const timeBlocks = numberArray
         .map((n) => {
-          const endPeriod = now
-            .clone()
-            .subtract(n, duration)
-            .format("YYYYMMDD");
-
-          const startPeriod = moment.utc();
+          const anchor = now.clone().subtract(n, duration);
+          const end = anchor.clone().endOf(duration);
+          const start = end.clone().startOf(duration);
 
           return {
-            startPeriod: now.clone().format("YYYYMMDD"),
-            endPeriod,
+            start,
+            end,
           };
         })
         .reverse();
 
-      console.log({ dates });
-
-      const dailyActiveBitcoinersStats = await Promise.all(
-        dates.map(async (date) => {
+      const activeBitcoinerStats = await Promise.all(
+        timeBlocks.map(async ({ start, end }) => {
           const count = await prisma.default.checkIn.count({
             where: {
               period,
-              date,
+              createdAt: {
+                gte: start.format(),
+                lte: end.format(),
+              },
             },
           });
 
           return {
-            date,
+            date: end.format("YYYYMMDD"),
             count,
           };
         })
       );
 
-      return dailyActiveBitcoinersStats;
+      return activeBitcoinerStats;
     },
   },
   Mutation: {
