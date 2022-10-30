@@ -24,8 +24,21 @@ const resolvers = {
 
       // Last week of dates
       const numberArray = [...Array(7).keys()];
+      const now = moment.utc();
       const dates = numberArray
-        .map((n) => moment.utc().subtract(n, duration).format("YYYYMMDD"))
+        .map((n) => {
+          const endPeriod = now
+            .clone()
+            .subtract(n, duration)
+            .format("YYYYMMDD");
+
+          const startPeriod = moment.utc();
+
+          return {
+            startPeriod: now.clone().format("YYYYMMDD"),
+            endPeriod,
+          };
+        })
         .reverse();
 
       console.log({ dates });

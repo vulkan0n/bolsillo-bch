@@ -16,7 +16,7 @@
     "url": "git+ssh://git@gitlab.com/selene.cash/selene-wallet.git"
   },
   "scripts": {
-    "start": "npx ts-node index.js"
+    "start": "npx ts-node-dev index.js"
   },
   "bugs": {
     "url": "https://gitlab.com/selene.cash/selene-wallet/issues"
