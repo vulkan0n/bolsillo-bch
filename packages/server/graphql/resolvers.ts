@@ -4,7 +4,7 @@ import moment from "moment";
 import inferCheckInWindow from "@selene-wallet/common/dist/utils/checkIn";
 
 const { dateScalar } = require("./scalars.ts");
-const contentItems = require("./contentItems.ts");
+const contentItems = require("./query/contentItems.ts");
 // const moment = require("moment");
 const prisma = require("../prisma/client");
 

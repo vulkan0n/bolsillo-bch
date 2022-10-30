@@ -34,8 +34,6 @@ const ActiveBitcoinersChart = ({
     )
   );
 
-  console.log("data", JSON.stringify(data));
-
   if (error) {
     console.log({ error });
   }
