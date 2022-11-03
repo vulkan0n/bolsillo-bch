@@ -18,7 +18,6 @@ const Chart = ({ labels, data, chartHeight }) => (
     height={chartHeight}
     yAxisLabel=""
     yAxisSuffix=""
-    yAxisInterval={1}
     chartConfig={{
       backgroundColor: COLOURS.white,
       backgroundGradientFrom: COLOURS.white,
