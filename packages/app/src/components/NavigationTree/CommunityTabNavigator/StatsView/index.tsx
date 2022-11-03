@@ -19,6 +19,8 @@ interface GraphQlResponse {
   data: QueryResult<{
     activeBitcoiners: TODO;
   }>;
+  startPolling: (interval: number) => void;
+  stopPolling: () => void;
 }
 
 function StatsView() {
