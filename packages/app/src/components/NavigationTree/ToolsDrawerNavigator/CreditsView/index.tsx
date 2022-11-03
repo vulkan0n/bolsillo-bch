@@ -13,7 +13,7 @@ import TipWidget from "@selene-wallet/app/src/components/atoms/TipWidget";
 import { DEVELOPER_DONATION_ADDRESS } from "@selene-wallet/common/dist/utils/consts";
 
 function CreditsView() {
-  const version = "v0.0.13";
+  const version = "v0.1.0";
   const gitlabUrl = "https://gitlab.com/selene.cash/selene-wallet";
 
   const onPressUrl = () => {
