@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, ScrollView } from "react-native";
 import COLOURS from "@selene-wallet/common/design/colours";
 import TYPOGRAPHY from "@selene-wallet/common/design/typography";
@@ -6,6 +6,7 @@ import {
   ONE_HUNDRED,
   TEN_MILLION,
   CHECK_IN_PERIOD_TYPES,
+  THIRTY_SECONDS,
 } from "@selene-wallet/common/dist/utils/consts";
 import styles from "./styles";
 import ActiveBitcoinersChart from "./ActiveBitcoinersChart";
@@ -23,14 +24,18 @@ interface GraphQlResponse {
 function StatsView() {
   const [period, setPeriod] = useState(CHECK_IN_PERIOD_TYPES.daily);
 
-  const { loading, error, data }: GraphQlResponse = useQuery(
-    GET_ACTIVE_BITCOINERS,
-    {
+  const { loading, error, data, startPolling, stopPolling }: GraphQlResponse =
+    useQuery(GET_ACTIVE_BITCOINERS, {
       variables: {
         period,
       },
-    }
-  );
+    });
+
+  useEffect(() => {
+    startPolling(THIRTY_SECONDS);
+
+    return stopPolling;
+  }, []);
 
   const activeBitcoiners =
     data?.activeBitcoiners?.[data?.activeBitcoiners.length - 1]?.count || 1;

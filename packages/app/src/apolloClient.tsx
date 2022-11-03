@@ -6,8 +6,8 @@ const PRODUCTION_SERVER =
 const LOCALHOST_SERVER = "http://localhost:4000/";
 
 const apolloClient = new ApolloClient({
-  uri: LOCALHOST_SERVER,
-  // uri: PRODUCTION_SERVER,
+  // uri: LOCALHOST_SERVER,
+  uri: PRODUCTION_SERVER,
   cache: new InMemoryCache(),
 });
 
