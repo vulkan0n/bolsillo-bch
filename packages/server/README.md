@@ -78,11 +78,11 @@ $ docker push bitcoincashpodcast/selene-wallet-server
 # Publish to NPM
 $ npm publish --access=public
 
-# Create local keys (Selene Wallet Server Keys) when prompted, and connect from that folder
+# Connect from local keys (Selene Wallet Server Keys) folder
 $ ssh -i Selene\ Wallet\ Server\ Keys.pem ubuntu@ec2-54-208-15-113.compute-1.amazonaws.com
 # Replace running Server on AWS instance
 # Note that DATABASE_URL environment variable can only be passed in at container start time
+ubuntu@ $ docker container ps # Get running container ID
+ubuntu@ $ docker container stop <ID>
 ubuntu@ $ docker run -e DATABASE_URL="<DATABASE_URL>" -p 4000:4000 bitcoincashpodcast/selene-wallet-server
-ubuntu@ $ docker container ps # Get container ID
-ubuntu@ $ docker exec npx prisma migrate deploy # Run Prisma migrations
 ```
