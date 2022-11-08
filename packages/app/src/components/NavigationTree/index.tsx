@@ -24,7 +24,6 @@ const isAndroid = Platform.OS === "android";
 
 const headerStyle = {
   backgroundColor: COLOURS.black,
-  height: isAndroid ? 0 : undefined,
 };
 
 const TabNavigator = () => {
@@ -64,13 +63,13 @@ const TabNavigator = () => {
         tabBarStyle: styles.tabBar,
         tabBarLabelStyle: styles.tabBarLabel,
         headerShadowVisible: false,
+        headerShown: false,
       })}
     >
       <Tab.Screen
         name="Wallet"
         component={WalletTabNavigator}
         options={{
-          headerStyle,
           headerStatusBarHeight: 0,
         }}
       />
@@ -99,7 +98,6 @@ const TabNavigator = () => {
           name="Community"
           component={CommunityTabNavigator}
           options={{
-            headerStyle,
             headerStatusBarHeight: 0,
           }}
         />
@@ -108,7 +106,6 @@ const TabNavigator = () => {
         name="Tools"
         component={ToolsDrawerNavigator}
         options={{
-          headerStyle,
           headerStatusBarHeight: 0,
         }}
       />

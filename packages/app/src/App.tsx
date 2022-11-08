@@ -38,6 +38,8 @@ import { updateLocalLastSentTransactionHash } from "./redux/reducers/localReduce
 import { IS_WEB } from "@selene-wallet/app/src/utils/isWeb";
 import { ApolloProvider } from "@apollo/client";
 import apolloClient from "./apolloClient";
+import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
+import COLOURS from "@selene-wallet/common/design/colours";
 
 interface TransactionHistoryTxType {
   blockheight: number;
@@ -244,23 +246,29 @@ export default function App() {
     <Provider store={store}>
       <PersistGate loading={<Text>Loading...</Text>} persistor={persistor}>
         <ApolloProvider client={apolloClient}>
-          <View style={{ height: 0 }}>
-            {!IS_WEB && (
-              <WebView
-                ref={ref}
-                onMessage={onMessage}
-                source={{ html: Bridge }}
-                injectedJavaScript={preloadMainNetScript}
-                allowFileAccess={true}
-                javaScriptEnabled={true}
-                domStorageEnabled={true}
-                onLoad={onWebViewLoad}
-              />
-            )}
+          <View style={{ flex: 1, backgroundColor: COLOURS.black }}>
+            <SafeAreaProvider>
+              <SafeAreaView style={{ flex: 1 }}>
+                <View style={{ height: 0 }}>
+                  {!IS_WEB && (
+                    <WebView
+                      ref={ref}
+                      onMessage={onMessage}
+                      source={{ html: Bridge }}
+                      injectedJavaScript={preloadMainNetScript}
+                      allowFileAccess={true}
+                      javaScriptEnabled={true}
+                      domStorageEnabled={true}
+                      onLoad={onWebViewLoad}
+                    />
+                  )}
+                </View>
+                {isWebViewLoaded && <BackgroundIntervals />}
+                <NavigationTree />
+                <Toast config={toastConfig} />
+              </SafeAreaView>
+            </SafeAreaProvider>
           </View>
-          {isWebViewLoaded && <BackgroundIntervals />}
-          <NavigationTree />
-          <Toast config={toastConfig} />
         </ApolloProvider>
       </PersistGate>
     </Provider>
