@@ -31,6 +31,7 @@ $ npx expo start --web
 
 ```
 $ npx tsc # type check
+$ npm test # Run jest tests
 
 # Fully purge cache and reinstall
 $ watchman watch-del-all && rm -rf node_modules && npm install && rm -rf /tmp/metro-* && npm run start --reset-cache
