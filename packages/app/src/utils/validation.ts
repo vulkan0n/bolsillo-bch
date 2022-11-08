@@ -5,6 +5,7 @@ import {
   TOTAL_SATOSHI_SUPPLY,
 } from "@selene-wallet/common/dist/utils/consts";
 import { formatStringToCashAddress } from "./formatting";
+import { ValidateRequestType } from "@selene-wallet/app/src/types";
 
 export const validateWalletName = (
   name: string,
@@ -78,12 +79,6 @@ export const isValidCashAddress = (
   isTestNet
     ? isValidTestNetCashAddress(address)
     : isValidMainNetCashAddress(address);
-
-type ValidateRequestType = {
-  isValid: boolean;
-  address: string;
-  rawSatAmount: string;
-};
 
 // Example request
 // "bitcoincash:qpgtjfxyp2hlwn28754xm46f55p57tzlgq8tkjju7r?amount=0.00099423"
