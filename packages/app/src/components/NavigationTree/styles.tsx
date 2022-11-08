@@ -6,6 +6,9 @@ const styles = {
     backgroundColor: COLOURS.black,
     borderTopWidth: 0,
     paddingTop: SPACING.ten,
+    paddingBottom: 0,
+    marginBottom: 0,
+    height: SPACING.fifty,
   },
   tabBarLabel: {
     paddingBottom: SPACING.five,

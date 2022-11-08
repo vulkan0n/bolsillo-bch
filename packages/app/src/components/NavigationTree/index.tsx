@@ -1,5 +1,5 @@
 import React from "react";
-import { Text, Platform } from "react-native";
+import { Text } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import WalletTabNavigator from "./WalletTabNavigator";
 import IrlView from "./IrlView";
@@ -19,12 +19,6 @@ import { ReduxState } from "@selene-wallet/common/dist/types";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
-
-const isAndroid = Platform.OS === "android";
-
-const headerStyle = {
-  backgroundColor: COLOURS.black,
-};
 
 const TabNavigator = () => {
   const { isShowCommunityTab } = useSelector(
@@ -77,9 +71,6 @@ const TabNavigator = () => {
           name="IRL"
           component={IrlView}
           options={{
-            headerStyle: {
-              backgroundColor: COLOURS.black,
-            },
             headerTitle: (props) => (
               <View style={styles.header as any}>
                 <FontAwesomeIcon
