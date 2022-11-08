@@ -112,7 +112,7 @@ export const validateRequestString = (
   const amountText = amountSuffix.split("=")?.[0] ?? "";
   const bchAmount = parseFloat(amountSuffix.split("=")?.[1]);
   const isAmountInstruction = amountText === AMOUNT_INSTRUCTION;
-  // JS can have small imperfections in the float this returns
+  // Math.floor to clean up small rounding imperfections in the JS returned float
   const satAmount = Math.floor(bchAmount * ONE_HUNDRED_MILLION);
   const isValidSuffix =
     isAmountInstruction && satAmount > 0 && satAmount <= TOTAL_SATOSHI_SUPPLY;
