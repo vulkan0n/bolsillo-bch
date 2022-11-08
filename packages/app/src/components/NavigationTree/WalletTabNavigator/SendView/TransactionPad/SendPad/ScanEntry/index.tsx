@@ -77,15 +77,13 @@ function QrScanner() {
   }
 
   return (
-    <View style={styles.entryRow as any}>
-      <View style={styles.container as any}>
-        {/* NB: BarCodeScanner doesn't work on iOS simulator or Android emulator. */}
-        {/* Instead it will be just the grey background block. */}
-        <BarCodeScanner
-          onBarCodeScanned={handleBarCodeScanned}
-          style={styles.qrScanner as any}
-        />
-      </View>
+    <View style={styles.container as any}>
+      {/* NB: BarCodeScanner doesn't work on iOS simulator or Android emulator. */}
+      {/* Instead it will be just the grey background block. */}
+      <BarCodeScanner
+        onBarCodeScanned={handleBarCodeScanned}
+        style={styles.qrScanner as any}
+      />
     </View>
   );
 }
