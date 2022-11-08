@@ -10,6 +10,7 @@ import { ReduxState } from "@selene-wallet/common/dist/types";
 import { useIsFocused } from "@react-navigation/native";
 import Button from "@selene-wallet/app/src/components/atoms/Button";
 import Loading from "@selene-wallet/app/src/components/atoms/Loading";
+import Toast from "react-native-toast-message";
 
 function QrScanner() {
   const dispatch = useDispatch();
@@ -36,12 +37,22 @@ function QrScanner() {
   }, [isFocused]);
 
   const handleBarCodeScanned = ({ data }) => {
-    processRequestString({
+    const { isValid } = processRequestString({
       dispatch,
       primaryCurrency,
       requestString: data,
       isTestNet,
     });
+
+    if (!isValid) {
+      Toast.show({
+        type: "customError",
+        props: {
+          title: "QR Code unrecognised",
+          text: "Must be a BCH address/request.",
+        },
+      });
+    }
   };
 
   if (hasPermission === null) {
