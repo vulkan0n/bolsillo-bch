@@ -11,3 +11,5 @@ test("Convert 1 raw bit to 100 raw sats", () => {
 test("Convert 10 raw bits to 1 000 raw sats", () => {
   expect(convertRawBitsToRawSats("10")).toBe("1000");
 });
+
+it.todo("Finish exchangeRates tests");
