@@ -4,7 +4,7 @@ import { BITCOIN_DENOMINATIONS } from "@selene-wallet/common/dist/utils/consts";
 import { SettingsState } from "@selene-wallet/common/dist/types/reducers/settingsReducer";
 
 const initialState = {
-  isBchDenominated: true,
+  isBchDenominated: false,
   contrastCurrency: "usd",
   bitcoinDenomination: BITCOIN_DENOMINATIONS.satoshis,
   isRightHandedMode: true,
