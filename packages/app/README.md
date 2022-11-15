@@ -62,6 +62,10 @@ Transaction histories are stored in reverse-chronological (descending block heig
 
 Be careful with using `navigation.reset`, as it can mess around with the loading of the root <Toast> component and cause React to blow up on finding Toast calls with props that are objects (and therefore not renderable) instead of strings. `navigation.reset` is used in `Reset app` to completely purge all data, but should otherwise perhaps be avoided.
 
+### Upgrading mainnet.cash
+
+Update the `mainnet-js` package in `package.json`, and don't forget to also update to the same version in `src/config/preloadMainNetScript`.
+
 ## Testing
 
 To run Electron Cash on testnet:

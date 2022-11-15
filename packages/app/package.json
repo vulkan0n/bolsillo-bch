@@ -44,7 +44,7 @@
     "expo-updates": "~0.14.6",
     "graphql": "^16.6.0",
     "immutable-replace": "^1.1.17",
-    "mainnet-js": "0.5.8",
+    "mainnet-js": "0.5.9",
     "metro-react-native-babel-preset": "^0.72.1",
     "moment": "^2.29.4",
     "moti": "^0.18.0",

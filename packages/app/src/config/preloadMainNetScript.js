@@ -1,6 +1,6 @@
 // https://mainnet.cash/tutorial/#let-s-get-programming
-// https://cdn.mainnet.cash/mainnet-0.5.8.js
-// Retrieved 24th Sep 2022
+// https://cdn.mainnet.cash/mainnet-0.5.9.js
+// Retrieved 15th Nov 2022
 const mainNetScript = <script src="mainNetScript.txt"></script>;
 
 // TODO: Figure out how to load locally
@@ -18,7 +18,7 @@ const preloadMainNetScript = `
     eval(script);
   }
 
-  let scriptUrl = "https://cdn.mainnet.cash/mainnet-0.5.8.js";
+  let scriptUrl = "https://cdn.mainnet.cash/mainnet-0.5.9.js";
   loadScript(scriptUrl);
   true; // note: this is required, or you'll sometimes get silent failures
 `;
@@ -29,7 +29,7 @@ const preloadMainNetScript = `
 //   eval(script);
 // }
 
-// let scriptUrl = "https://cdn.mainnet.cash/mainnet-0.5.8.js";
+// let scriptUrl = "https://cdn.mainnet.cash/mainnet-0.5.9.js";
 // loadScript(scriptUrl);
 
 export default preloadMainNetScript;
