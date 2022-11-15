@@ -10,16 +10,22 @@ import { ReduxState } from "@selene-wallet/common/dist/types";
 import { selectIsActiveWallet } from "@selene-wallet/app/src/redux/selectors";
 import CreatingWallet from "./CreatingWallet";
 import TabBar from "@selene-wallet/app/src/components/atoms/TabBar";
+import { selectIsActiveWalletZeroBalance } from "@selene-wallet/app/src/redux/selectors";
 
 const Stack = createNativeStackNavigator();
 
 const Tab = createMaterialTopTabNavigator();
 
 function WalletTabNavigator() {
+  const isZeroActiveWalletBalance = useSelector((state: ReduxState) =>
+    selectIsActiveWalletZeroBalance(state)
+  );
+  const initialRouteName = isZeroActiveWalletBalance ? "Receive" : "Send";
+
   return (
     <Tab.Navigator
       tabBar={(props) => <TabBar isDarkMode={false} {...props} />}
-      initialRouteName={"Receive"}
+      initialRouteName={initialRouteName}
     >
       <Tab.Screen name="Send" component={SendView} />
       <Tab.Screen name="Receive" component={ReceivePad} />

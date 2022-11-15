@@ -1,12 +1,10 @@
 import React from "react";
 import { View, Text, Pressable } from "react-native";
 import styles from "./styles";
-import Button from "@selene-wallet/app/src/components/atoms/Button";
 import TYPOGRAPHY from "@selene-wallet/common/design/typography";
 import { useSelector, useDispatch } from "react-redux";
 import {
   updateTransactionPadBalance,
-  updateTransactionPadView,
   updateTransactionPadError,
 } from "@selene-wallet/app/src/redux/reducers/transactionPadReducer";
 import {
@@ -24,7 +22,6 @@ import { BITCOIN_DENOMINATIONS } from "@selene-wallet/common/dist/utils/consts";
 import {
   selectActiveWallet,
   selectPrimaryCurrencyOrDenomination,
-  selectIsActiveWalletZeroBalance,
 } from "@selene-wallet/app/src/redux/selectors";
 
 const NumPad = ({ isCheckInsufficientBalance = false }) => {
@@ -38,9 +35,6 @@ const NumPad = ({ isCheckInsufficientBalance = false }) => {
   );
   const { bitcoinDenomination, isBchDenominated, isRightHandedMode } =
     useSelector((state: ReduxState) => state.settings);
-  const isZeroActiveWalletBalance = useSelector((state: ReduxState) =>
-    selectIsActiveWalletZeroBalance(state)
-  );
 
   const availableRawSats = wallet?.balance;
   const isDisableDecimal =
