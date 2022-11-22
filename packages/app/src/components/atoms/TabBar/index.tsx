@@ -93,10 +93,10 @@ function TabBar({ state, descriptors, navigation, position, isDarkMode }) {
                 size={20}
                 color={
                   isFocused
-                    ? COLOURS.bchGreen
+                    ? COLOURS.black
                     : isDarkMode
                     ? COLOURS.white
-                    : COLOURS.black
+                    : COLOURS.bchGreen
                 }
               />
             </View>
@@ -106,10 +106,10 @@ function TabBar({ state, descriptors, navigation, position, isDarkMode }) {
                 ...TYPOGRAPHY.p,
                 marginBottom: 0,
                 color: isFocused
-                  ? COLOURS.bchGreen
+                  ? COLOURS.black
                   : isDarkMode
                   ? COLOURS.white
-                  : COLOURS.black,
+                  : COLOURS.bchGreen,
                 marginLeft: SPACING.five,
               }}
             >
