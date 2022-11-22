@@ -21,33 +21,8 @@ import { selectIsPadZeroBalance } from "@selene-wallet/app/src/redux/selectors";
 import { iconImport } from "@selene-wallet/app/src/design/icons";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import SPACING from "@selene-wallet/common/design/spacing";
-import { Audio } from "expo-av";
 
 const ReceivePad = ({ navigation }) => {
-  const [sound, setSound] = React.useState();
-
-  async function playSound() {
-    console.log("Loading Sound");
-    const { sound } = await Audio.Sound.createAsync(require("./receive.mp3"));
-    setSound(sound);
-
-    console.log("Playing Sound");
-    await sound.playAsync();
-  }
-
-  React.useEffect(() => {
-    return sound
-      ? () => {
-          console.log("Unloading Sound");
-          sound.unloadAsync();
-        }
-      : undefined;
-  }, [sound]);
-
-  useEffect(() => {
-    playSound();
-  }, []);
-
   const dispatch = useDispatch();
   const wallet = useSelector((state: ReduxState) => selectActiveWallet(state));
   const padBalanceInSats = useSelector((state: ReduxState): string =>

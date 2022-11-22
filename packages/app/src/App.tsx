@@ -40,6 +40,8 @@ import { ApolloProvider } from "@apollo/client";
 import apolloClient from "./apolloClient";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import COLOURS from "@selene-wallet/common/design/colours";
+import { Audio } from "expo-av";
+import { ONE_SECOND } from "@selene-wallet/common/dist/utils/consts";
 
 interface TransactionHistoryTxType {
   blockheight: number;
@@ -84,7 +86,7 @@ export default function App() {
   // useWebViewMessage hook create props for WebView and handle communication
   // The argument is callback to receive message from React
   const { ref, onMessage, emit } = useWebViewMessage(
-    (message: BridgeResponseMessage) => {
+    async (message: BridgeResponseMessage) => {
       // console.log("Bridge Response Message: ", message);
       switch (message.type) {
         case RESPONSE_MESSAGE_TYPES.CREATE_DEFAULT_WALLET_RESPONSE:
@@ -166,13 +168,23 @@ export default function App() {
             })
           );
 
+          const { sound } = await Audio.Sound.createAsync(
+            require("./receive.mp3")
+          );
+          await sound.playAsync();
+          setTimeout(() => {
+            // Unload sound to prevent memory leak
+            sound.unloadAsync();
+          }, ONE_SECOND * 3);
+
           Toast.show({
             type: "customSuccess",
             props: {
               title: "Received Bitcoin Cash",
-              text: "Thanks Satoshi.",
+              text: "Peer-to-peer electronic cash!",
             },
           });
+
           break;
 
         case RESPONSE_MESSAGE_TYPES.SEND_COINS_RESPONSE_DETECTED:
