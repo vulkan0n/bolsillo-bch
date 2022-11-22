@@ -122,10 +122,11 @@ const ReceivePad = ({ navigation }) => {
         }}
       >
         <FontAwesomeIcon
-          icon={iconImport("faPaperPlane")}
+          icon={iconImport("faArrowRight")}
           size={20}
           color={COLOURS.black}
         />
+
         <Text
           style={{
             ...TYPOGRAPHY.p,
@@ -138,7 +139,7 @@ const ReceivePad = ({ navigation }) => {
           Swipe to Send
         </Text>
         <FontAwesomeIcon
-          icon={iconImport("faArrowRight")}
+          icon={iconImport("faPaperPlane")}
           size={20}
           color={COLOURS.black}
         />
