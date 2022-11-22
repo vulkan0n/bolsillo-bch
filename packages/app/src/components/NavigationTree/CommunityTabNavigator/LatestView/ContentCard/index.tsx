@@ -49,9 +49,6 @@ function ContentCard({
         height={isLoaded ? 240 : 0}
         videoId={videoId}
         onReady={onReady}
-        // Prevent Android crashes on scrolling
-        // https://github.com/LonelyCpp/react-native-youtube-iframe/issues/216#issuecomment-1149781026
-        webViewProps={{ androidLayerType: "software" }}
       />
       {!isLoaded && <Loading style={styles.loading} color={COLOURS.white} />}
       <Text style={TYPOGRAPHY.p as any}>{description}</Text>

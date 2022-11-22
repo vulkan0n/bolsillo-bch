@@ -69,6 +69,39 @@ const ReceivePad = ({ navigation }) => {
 
   return (
     <View style={styles.container as any}>
+      <View
+        style={{
+          justifyContent: "center",
+          alignItems: "center",
+          flexDirection: "row",
+          backgroundColor: COLOURS.veryLightGrey,
+          paddingVertical: SPACING.five,
+          width: "100%",
+        }}
+      >
+        <FontAwesomeIcon
+          icon={iconImport("faArrowRight")}
+          size={20}
+          color={COLOURS.black}
+        />
+
+        <Text
+          style={{
+            ...TYPOGRAPHY.p,
+            marginTop: 5,
+            marginBottom: 5,
+            marginLeft: 15,
+            marginRight: 15,
+          }}
+        >
+          Swipe to Send
+        </Text>
+        <FontAwesomeIcon
+          icon={iconImport("faPaperPlane")}
+          size={20}
+          color={COLOURS.black}
+        />
+      </View>
       <View style={styles.inputBackground as any}>
         <View style={styles.receivePad as any}>
           {!isZeroPadBalance && (
@@ -110,39 +143,6 @@ const ReceivePad = ({ navigation }) => {
             </Button>
           )}
         </View>
-      </View>
-      <View
-        style={{
-          justifyContent: "center",
-          alignItems: "center",
-          flexDirection: "row",
-          backgroundColor: COLOURS.veryLightGrey,
-          paddingVertical: SPACING.five,
-          width: "100%",
-        }}
-      >
-        <FontAwesomeIcon
-          icon={iconImport("faArrowRight")}
-          size={20}
-          color={COLOURS.black}
-        />
-
-        <Text
-          style={{
-            ...TYPOGRAPHY.p,
-            marginTop: 5,
-            marginBottom: 5,
-            marginLeft: 15,
-            marginRight: 15,
-          }}
-        >
-          Swipe to Send
-        </Text>
-        <FontAwesomeIcon
-          icon={iconImport("faPaperPlane")}
-          size={20}
-          color={COLOURS.black}
-        />
       </View>
     </View>
   );

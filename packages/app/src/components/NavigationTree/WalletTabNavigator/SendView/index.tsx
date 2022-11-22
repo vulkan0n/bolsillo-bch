@@ -27,7 +27,6 @@ function SendView({ navigation }) {
 
   return (
     <View style={styles.container as any}>
-      <TransactionPad navigation={navigation} />
       <View
         style={{
           justifyContent: "center",
@@ -60,6 +59,7 @@ function SendView({ navigation }) {
           color={COLOURS.black}
         />
       </View>
+      <TransactionPad navigation={navigation} />
     </View>
   );
 }
