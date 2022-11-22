@@ -48,12 +48,12 @@ const TabNavigator = () => {
             <FontAwesomeIcon
               icon={iconImport(icon())}
               size={20}
-              color={focused ? COLOURS.bchGreen : COLOURS.white}
+              color={focused ? COLOURS.white : COLOURS.bchGreen}
             />
           );
         },
-        tabBarActiveTintColor: COLOURS.bchGreen,
-        tabBarInactiveTintColor: COLOURS.white,
+        tabBarActiveTintColor: COLOURS.white,
+        tabBarInactiveTintColor: COLOURS.bchGreen,
         tabBarStyle: styles.tabBar,
         tabBarLabelStyle: styles.tabBarLabel,
         headerShadowVisible: false,
