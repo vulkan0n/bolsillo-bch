@@ -75,7 +75,7 @@ const ReceivePad = ({ navigation }) => {
           alignItems: "center",
           flexDirection: "row",
           backgroundColor: COLOURS.veryLightGrey,
-          paddingBottom: SPACING.five,
+          paddingVertical: SPACING.five,
           width: "100%",
         }}
       >

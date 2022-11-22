@@ -24,7 +24,7 @@ function WalletTabNavigator() {
 
   return (
     <Tab.Navigator
-      tabBar={(props) => <TabBar isDarkMode={false} {...props} />}
+      tabBar={(props) => <TabBar isHideText isDarkMode={false} {...props} />}
       initialRouteName={initialRouteName}
     >
       <Tab.Screen name="Send" component={SendView} />
