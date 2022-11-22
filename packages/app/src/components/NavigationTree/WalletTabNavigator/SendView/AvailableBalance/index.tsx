@@ -21,12 +21,8 @@ function AvailableBalance() {
     dispatch(toggleIsBchDenominated());
   };
 
-  console.log("checking out things");
-  console.log({
-    isShowAvailableBalance,
-  });
   if (!isShowAvailableBalance) {
-    return <View />;
+    return <View style={{ height: 0 }} />;
   }
 
   return (
