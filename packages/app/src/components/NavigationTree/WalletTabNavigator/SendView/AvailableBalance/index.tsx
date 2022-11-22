@@ -13,9 +13,21 @@ function AvailableBalance() {
     (state: ReduxState) => selectActiveWalletBalance(state)
   );
 
+  const { isShowAvailableBalance } = useSelector(
+    (state: ReduxState) => state.settings
+  );
+
   const onPressSwapDenomination = () => {
     dispatch(toggleIsBchDenominated());
   };
+
+  console.log("checking out things");
+  console.log({
+    isShowAvailableBalance,
+  });
+  if (!isShowAvailableBalance) {
+    return <View />;
+  }
 
   return (
     <Pressable
