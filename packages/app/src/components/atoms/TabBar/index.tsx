@@ -3,8 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { View, TouchableOpacity, Text } from "react-native";
 import COLOURS from "@selene-wallet/common/design/colours";
 import { iconImport } from "@selene-wallet/app/src/design/icons";
-import TYPOGRAPHY from "@selene-wallet/common/design/typography";
-import SPACING from "@selene-wallet/common/design/spacing";
+import styles from "./styles";
 
 function TabBar({ state, descriptors, navigation, position, isDarkMode }) {
   const icon = (route) => {
@@ -61,6 +60,24 @@ function TabBar({ state, descriptors, navigation, position, isDarkMode }) {
           });
         };
 
+        const labelBackgroundColor = isDarkMode
+          ? COLOURS.black
+          : COLOURS.veryLightGrey;
+
+        const labelColor = isFocused
+          ? isDarkMode
+            ? COLOURS.white
+            : COLOURS.black
+          : isDarkMode
+          ? COLOURS.bchGreen
+          : COLOURS.bchGreen;
+
+        const tabStyle = styles({
+          labelBackgroundColor,
+          isFocused,
+          isDarkMode,
+        });
+
         return (
           <TouchableOpacity
             key={route?.name}
@@ -70,51 +87,17 @@ function TabBar({ state, descriptors, navigation, position, isDarkMode }) {
             testID={options.tabBarTestID}
             onPress={onPress}
             onLongPress={onLongPress}
-            style={{
-              backgroundColor: isDarkMode
-                ? COLOURS.black
-                : COLOURS.veryLightGrey,
-              flex: 1,
-              flexDirection: "row",
-              justifyContent: "center",
-              alignItems: "center",
-              paddingVertical: SPACING.five,
-              height: 50,
-            }}
+            style={tabStyle.wrapper as any}
           >
-            <View
-              style={{
-                marginRight: SPACING.five,
-                justifyContent: "center",
-              }}
-            >
+            <View style={tabStyle.iconWrapper as any}>
               <FontAwesomeIcon
                 icon={iconImport(icon(route))}
                 size={20}
-                color={
-                  isFocused
-                    ? COLOURS.black
-                    : isDarkMode
-                    ? COLOURS.white
-                    : COLOURS.bchGreen
-                }
+                color={labelColor}
               />
             </View>
 
-            <Text
-              style={{
-                ...TYPOGRAPHY.p,
-                marginBottom: 0,
-                color: isFocused
-                  ? COLOURS.black
-                  : isDarkMode
-                  ? COLOURS.white
-                  : COLOURS.bchGreen,
-                marginLeft: SPACING.five,
-              }}
-            >
-              {label}
-            </Text>
+            <Text style={tabStyle.label as any}>{label}</Text>
           </TouchableOpacity>
         );
       })}
