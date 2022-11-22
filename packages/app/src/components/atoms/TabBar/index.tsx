@@ -72,12 +72,10 @@ function TabBar({
           : COLOURS.veryLightGrey;
 
         const labelColor = isFocused
-          ? isDarkMode
-            ? COLOURS.white
-            : COLOURS.black
-          : isDarkMode
           ? COLOURS.bchGreen
-          : COLOURS.bchGreen;
+          : isDarkMode
+          ? COLOURS.white
+          : COLOURS.black;
 
         const tabStyle = styles({
           labelBackgroundColor,

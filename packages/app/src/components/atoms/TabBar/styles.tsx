@@ -25,10 +25,10 @@ const styles = ({
     ...TYPOGRAPHY.p,
     marginBottom: 0,
     color: isFocused
-      ? isDarkMode
-        ? COLOURS.white
-        : COLOURS.black
-      : COLOURS.bchGreen,
+      ? COLOURS.bchGreen
+      : isDarkMode
+      ? COLOURS.white
+      : COLOURS.black,
     marginLeft: SPACING.five,
   },
 });
