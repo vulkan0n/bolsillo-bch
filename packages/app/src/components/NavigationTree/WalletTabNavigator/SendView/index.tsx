@@ -33,7 +33,7 @@ function SendView({ navigation }) {
           alignItems: "center",
           flexDirection: "row",
           backgroundColor: COLOURS.veryLightGrey,
-          paddingVertical: SPACING.five,
+          paddingBottom: SPACING.five,
           width: "100%",
         }}
       >
