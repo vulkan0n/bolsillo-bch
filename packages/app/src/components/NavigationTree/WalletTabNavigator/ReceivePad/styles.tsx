@@ -2,10 +2,13 @@ import COLOURS from "@selene-wallet/common/design/colours";
 import SPACING from "@selene-wallet/common/design/spacing";
 
 const styles = {
+  container: {
+    flex: 1,
+  },
   inputBackground: {
     backgroundColor: COLOURS.white,
     flex: 1,
-    justifyContent: "flex-start",
+    justifyContent: "space-between",
     alignItems: "center",
     width: "100%",
     paddingLeft: SPACING.twentyFive,

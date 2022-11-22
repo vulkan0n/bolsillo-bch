@@ -5,7 +5,14 @@ import COLOURS from "@selene-wallet/common/design/colours";
 import { iconImport } from "@selene-wallet/app/src/design/icons";
 import styles from "./styles";
 
-function TabBar({ state, descriptors, navigation, position, isDarkMode }) {
+function TabBar({
+  state,
+  descriptors,
+  navigation,
+  position,
+  isDarkMode,
+  isHideText = false,
+}) {
   const icon = (route) => {
     switch (route?.name) {
       case "Send":
@@ -76,6 +83,7 @@ function TabBar({ state, descriptors, navigation, position, isDarkMode }) {
           labelBackgroundColor,
           isFocused,
           isDarkMode,
+          isHideText,
         });
 
         return (
@@ -89,15 +97,17 @@ function TabBar({ state, descriptors, navigation, position, isDarkMode }) {
             onLongPress={onLongPress}
             style={tabStyle.wrapper as any}
           >
-            <View style={tabStyle.iconWrapper as any}>
-              <FontAwesomeIcon
-                icon={iconImport(icon(route))}
-                size={20}
-                color={labelColor}
-              />
-            </View>
+            {!isHideText && (
+              <View style={tabStyle.iconWrapper as any}>
+                <FontAwesomeIcon
+                  icon={iconImport(icon(route))}
+                  size={20}
+                  color={labelColor}
+                />
+              </View>
+            )}
 
-            <Text style={tabStyle.label as any}>{label}</Text>
+            {!isHideText && <Text style={tabStyle.label as any}>{label}</Text>}
           </TouchableOpacity>
         );
       })}

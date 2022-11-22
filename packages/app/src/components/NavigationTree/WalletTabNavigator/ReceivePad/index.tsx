@@ -18,6 +18,9 @@ import { ONE_HUNDRED_MILLION } from "@selene-wallet/common/dist/utils/consts";
 import LiveBalance from "@selene-wallet/app/src/components/atoms/LiveBalance";
 import { updateTransactionPadBalance } from "@selene-wallet/app/src/redux/reducers/transactionPadReducer";
 import { selectIsPadZeroBalance } from "@selene-wallet/app/src/redux/selectors";
+import { iconImport } from "@selene-wallet/app/src/design/icons";
+import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+import SPACING from "@selene-wallet/common/design/spacing";
 
 const ReceivePad = ({ navigation }) => {
   const dispatch = useDispatch();
@@ -65,44 +68,80 @@ const ReceivePad = ({ navigation }) => {
   };
 
   return (
-    <View style={styles.inputBackground as any}>
-      <View style={styles.receivePad as any}>
-        {!isZeroPadBalance && <LiveBalance isHideZeroButton isHideMaxButton />}
-        <View style={styles.qrBorder}>
-          {isAddress && (
-            <QRCode
-              size={200}
-              value={qrValue}
-              color={COLOURS.black}
-              logo={logo}
-              logoSize={60}
-            />
+    <View style={styles.container as any}>
+      <View style={styles.inputBackground as any}>
+        <View style={styles.receivePad as any}>
+          {!isZeroPadBalance && (
+            <LiveBalance isHideZeroButton isHideMaxButton />
+          )}
+          <View style={styles.qrBorder}>
+            {isAddress && (
+              <QRCode
+                size={200}
+                value={qrValue}
+                color={COLOURS.black}
+                logo={logo}
+                logoSize={60}
+              />
+            )}
+          </View>
+          <Pressable onPress={onPressClipboard}>
+            <Text selectable style={TYPOGRAPHY.p as any}>
+              {isAddress ? qrValue : "Address loading..."}
+            </Text>
+            <Text style={TYPOGRAPHY.p as any}>{"(Tap to copy)"}</Text>
+          </Pressable>
+          {isZeroPadBalance && (
+            <Button
+              onPress={onPressAddAmount}
+              variant={"secondary"}
+              icon={"faPlusCircle"}
+            >
+              Add request amount
+            </Button>
+          )}
+          {!isZeroPadBalance && (
+            <Button
+              onPress={onPressClearAmount}
+              variant={"secondary"}
+              icon={"faXmarkCircle"}
+            >
+              Clear amount
+            </Button>
           )}
         </View>
-        <Pressable onPress={onPressClipboard}>
-          <Text selectable style={TYPOGRAPHY.p as any}>
-            {isAddress ? qrValue : "Address loading..."}
-          </Text>
-          <Text style={TYPOGRAPHY.p as any}>{"(Tap to copy)"}</Text>
-        </Pressable>
-        {isZeroPadBalance && (
-          <Button
-            onPress={onPressAddAmount}
-            variant={"secondary"}
-            icon={"faPlusCircle"}
-          >
-            Add request amount
-          </Button>
-        )}
-        {!isZeroPadBalance && (
-          <Button
-            onPress={onPressClearAmount}
-            variant={"secondary"}
-            icon={"faXmarkCircle"}
-          >
-            Clear amount
-          </Button>
-        )}
+      </View>
+      <View
+        style={{
+          justifyContent: "center",
+          alignItems: "center",
+          flexDirection: "row",
+          backgroundColor: COLOURS.veryLightGrey,
+          paddingVertical: SPACING.five,
+          width: "100%",
+        }}
+      >
+        <FontAwesomeIcon
+          icon={iconImport("faPaperPlane")}
+          size={20}
+          color={COLOURS.black}
+        />
+        <Text
+          style={{
+            ...TYPOGRAPHY.p,
+            marginTop: 5,
+            marginBottom: 5,
+            marginLeft: 15,
+            marginRight: 15,
+          }}
+        >
+          Swipe to Send
+        </Text>
+        <FontAwesomeIcon
+          icon={iconImport("faArrowRight")}
+          size={20}
+          color={COLOURS.black}
+        />
       </View>
     </View>
   );

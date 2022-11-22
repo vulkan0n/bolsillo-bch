@@ -2,15 +2,20 @@ import SPACING from "@selene-wallet/common/design/spacing";
 import COLOURS from "@selene-wallet/common/design/colours";
 import TYPOGRAPHY from "@selene-wallet/common/design/typography";
 
-const styles = ({ labelBackgroundColor, isFocused, isDarkMode }) => ({
+const styles = ({
+  labelBackgroundColor,
+  isFocused,
+  isDarkMode,
+  isHideText,
+}) => ({
   wrapper: {
     backgroundColor: labelBackgroundColor,
     flex: 1,
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    paddingVertical: SPACING.five,
-    height: 50,
+    paddingVertical: isHideText ? 0 : SPACING.five,
+    height: isHideText ? 0 : 50,
   },
   iconWrapper: {
     marginRight: SPACING.five,
