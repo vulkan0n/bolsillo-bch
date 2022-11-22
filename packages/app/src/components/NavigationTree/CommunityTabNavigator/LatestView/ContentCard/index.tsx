@@ -49,6 +49,9 @@ function ContentCard({
         height={isLoaded ? 240 : 0}
         videoId={videoId}
         onReady={onReady}
+        initialPlayerParams={{
+          controls: false,
+        }}
       />
       {!isLoaded && <Loading style={styles.loading} color={COLOURS.white} />}
       <Text style={TYPOGRAPHY.p as any}>{description}</Text>
