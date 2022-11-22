@@ -64,6 +64,9 @@ function LatestView() {
       ListHeaderComponent={ListHeader}
       onScrollBeginDrag={onScrollBeginDrag}
       onScrollEndDrag={onScrollEndDrag}
+      // Prevent Android crash on overscrolling
+      // https://github.com/LonelyCpp/react-native-youtube-iframe/issues/216#issuecomment-1011152445
+      overScrollMode="never"
     />
   );
 }
