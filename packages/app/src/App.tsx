@@ -171,11 +171,6 @@ export default function App() {
           const { sound } = await Audio.Sound.createAsync(
             require("./receive.mp3")
           );
-          await sound.playAsync();
-          setTimeout(() => {
-            // Unload sound to prevent memory leak
-            sound.unloadAsync();
-          }, ONE_SECOND * 3);
 
           Toast.show({
             type: "customSuccess",
@@ -184,6 +179,13 @@ export default function App() {
               text: "Peer-to-peer electronic cash!",
             },
           });
+
+          // Sound duration: 1 second
+          await sound.playAsync();
+          setTimeout(() => {
+            // Unload sound to prevent memory leak
+            sound.unloadAsync();
+          }, ONE_SECOND * 3);
 
           break;
 
