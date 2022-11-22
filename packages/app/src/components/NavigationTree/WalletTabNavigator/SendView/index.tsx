@@ -3,7 +3,7 @@ import { View, Text } from "react-native";
 import { useDispatch } from "react-redux";
 import TransactionPad from "./TransactionPad";
 import styles from "./styles";
-import { updateTransactionPadBalance } from "../../../../redux/reducers/transactionPadReducer";
+import { updateTransactionPadBalance } from "@selene-wallet/app/src/redux/reducers/transactionPadReducer";
 import COLOURS from "@selene-wallet/common/design/colours";
 import SPACING from "@selene-wallet/common/design/spacing";
 import TYPOGRAPHY from "@selene-wallet/common/design/typography";
