@@ -4,6 +4,7 @@ import COLOURS from "@selene-wallet/common/design/colours";
 import SPACING from "@selene-wallet/common/design/spacing";
 import TYPOGRAPHY from "@selene-wallet/common/design/typography";
 import styles from "./styles";
+import Divider from "@selene-wallet/app/src/components/atoms/Divider";
 
 interface DiscoverCategory {
   name: String;
@@ -41,6 +42,31 @@ function DiscoverView({ navigation }) {
           Discover
         </Text>
         <Text style={TYPOGRAPHY.p as any}>Explore the BCH ecosystem.</Text>
+        <Divider />
+        {discoverCategories.map((category) => {
+          const s = category.items.length === 1 ? "" : "s";
+          return (
+            <View>
+              <View
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  alignItems: "flex-end",
+                }}
+              >
+                <Text style={TYPOGRAPHY.h2black as any}>{category.name}</Text>
+                <Text style={TYPOGRAPHY.p as any}>
+                  {`${category.items.length} item${s}`}
+                </Text>
+              </View>
+
+              <Text style={TYPOGRAPHY.pLeft as any}>
+                {category.description}
+              </Text>
+            </View>
+          );
+        })}
       </View>
     </ScrollView>
   );
