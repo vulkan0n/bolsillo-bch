@@ -22,6 +22,12 @@ $ lerna bootstrap # Install node_modules for all packages, hoisted to root where
 # Refer to packages/app/README.md to set up app
 ```
 
+Questions: [Telegram group](https://t.me/+MMbV2KEPFt84MDQ8)
+
+Contributors: [Contributing](./docs/CONTRIBUTING.md)
+
+Testers: [Testing document](https://docs.google.com/document/d/1VKXeuwlIPFrudwEBrdtg6zIuC2rSF4QRginuq3C_-ro/edit?usp=sharing)
+
 ## Design Philosophy
 
 Opinions of this repository.

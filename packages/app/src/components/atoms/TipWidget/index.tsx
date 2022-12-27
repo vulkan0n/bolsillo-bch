@@ -1,6 +1,5 @@
-import React, { useState } from "react";
+import React from "react";
 import { View, Pressable, Text } from "react-native";
-import COLOURS from "@selene-wallet/common/design/colours";
 import Button from "@selene-wallet/app/src/components/atoms/Button";
 import emit from "@selene-wallet/app/src/utils/emit";
 import { BRIDGE_MESSAGE_TYPES } from "@selene-wallet/app/src/utils/bridgeMessages";
