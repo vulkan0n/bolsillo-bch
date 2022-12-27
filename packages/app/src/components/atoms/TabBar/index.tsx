@@ -21,10 +21,12 @@ function TabBar({
         return "faBitcoinSign";
       case "Latest":
         return "faPhotoFilm";
-      case "Connect":
-        return "faHandshake";
+      // case "Connect":
+      //   return "faHandshake";
       case "Stats":
         return "faChartLine";
+      case "Discover":
+        return "faEarthAmericas";
       default:
         return "faBitcoinSign";
     }
