@@ -12,6 +12,12 @@ Target is to build up to 10 million daily active users by making joining the BCH
 
 [Docker images](https://hub.docker.com/u/bitcoincashpodast)
 
+Questions: [Telegram group](https://t.me/+MMbV2KEPFt84MDQ8)
+
+Contributors: [Contributing](./docs/CONTRIBUTING.md)
+
+Testers: [Testing document](https://docs.google.com/document/d/1VKXeuwlIPFrudwEBrdtg6zIuC2rSF4QRginuq3C_-ro/edit?usp=sharing)
+
 ## Design Philosophy
 
 Opinions of this repository.
