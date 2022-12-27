@@ -1,7 +1,7 @@
 import React from "react";
 import StatsView from "./StatsView";
 import LatestView from "./LatestView";
-import ConnectView from "./ConnectView";
+import DiscoverView from "./DiscoverView";
 
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
@@ -19,7 +19,7 @@ function CommunityTabNavigator() {
     >
       <Tab.Screen name="Latest" component={LatestView} />
       <Tab.Screen name="Stats" component={StatsView} />
-      {/* <Tab.Screen name="Connect" component={ConnectView} /> */}
+      <Tab.Screen name="Discover" component={DiscoverView} />
     </Tab.Navigator>
   );
 }

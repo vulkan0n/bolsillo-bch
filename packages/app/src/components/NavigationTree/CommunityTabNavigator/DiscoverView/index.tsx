@@ -5,7 +5,7 @@ import SPACING from "@selene-wallet/common/design/spacing";
 import TYPOGRAPHY from "@selene-wallet/common/design/typography";
 import styles from "./styles";
 
-function ConnectView({ navigation }) {
+function DiscoverView({ navigation }) {
   const proposals = [];
 
   return (
@@ -22,4 +22,4 @@ function ConnectView({ navigation }) {
   );
 }
 
-export default ConnectView;
+export default DiscoverView;
