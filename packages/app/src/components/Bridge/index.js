@@ -57,35 +57,43 @@ const Bridge = () => {
           const getHDWalletInfo = async () => {
             // for each address, get its total balance and its raw utxos
             const getWalletInfo = async (index) => {
-              const wallet = await WalletObject.fromSeed(
+              const hdWallet = await WalletObject.fromSeed(
                 message?.data?.mnemonic,
                 `m/44'/0'/0'/0/${index}`
               );
 
-              const coins = (await wallet.getAddressUtxos(wallet.cashaddr)).map(coin => ({
+              const coins = (
+                await hdWallet.getAddressUtxos(hdWallet.cashaddr)
+              ).map((coin) => ({
                 height: coin.height,
                 transactionId: coin.txid,
                 outputIndex: coin.vout,
                 satoshis: coin.satoshis,
-                address: wallet.cashaddr,
+                address: hdWallet.cashaddr,
                 addressIndex: index,
               }));
-              const balance = coins.reduce((prev, curr) => prev + curr.satoshis, 0);
-              return [balance, coins, wallet.cashaddr];
-            }
+              const balance = coins.reduce(
+                (prev, curr) => prev + curr.satoshis,
+                0
+              );
+              return [balance, coins, hdWallet.cashaddr];
+            };
 
             const result = await Promise.all(addressIndices.map(getWalletInfo));
-            const balances = result.map(arrayElement => arrayElement[0]);
-            const coins = result.map(arrayElement => arrayElement[1]);
-            const addresses = result.map(arrayElement => arrayElement[2]).flat(1);
+            const balances = result.map((arrayElement) => arrayElement[0]);
+            const coins = result.map((arrayElement) => arrayElement[1]);
+            const addresses = result
+              .map((arrayElement) => arrayElement[2])
+              .flat(1);
 
             // calculate total balance on all tracked addresses and compare with previously stored
             const totalBalance = balances.reduce((prev, cur) => prev + cur, 0);
 
             return { balances, coins, totalBalance, addresses };
-          }
+          };
 
-          const { balances, coins, totalBalance, addresses } = await getHDWalletInfo();
+          const { balances, coins, totalBalance, addresses } =
+            await getHDWalletInfo();
 
           // find out the latest non empty address and set it as next receiving address
           let nonZeroBalanceAddressIndex = 0;
@@ -93,7 +101,7 @@ const Bridge = () => {
             if (balance > 0) {
               nonZeroBalanceAddressIndex = index;
             }
-          })
+          });
           const depositAddrIndex = nonZeroBalanceAddressIndex + 1;
           const depositWallet = await WalletObject.fromSeed(
             message?.data?.mnemonic,
@@ -154,12 +162,16 @@ const Bridge = () => {
                   },
                 });
               }
-            }
+            };
             // get a transient wallet's provider
             const provider = (await WalletObject.newRandom()).provider;
             // subscribe to all addresses, ignore allocated but not yet used addresses
-            const watchAddresses = addresses.filter((_, index) => index <= depositAddrIndex);
-            watchAddresses.map(address => provider.watchAddressStatus(address, watchAddressCallback));
+            const watchAddresses = addresses.filter(
+              (_, index) => index <= depositAddrIndex
+            );
+            watchAddresses.map((address) =>
+              provider.watchAddressStatus(address, watchAddressCallback)
+            );
 
             setBalanceWatchWalletName(watchKey);
           }
