@@ -29,10 +29,9 @@ function DiscoverView({ navigation }) {
         "The best of Bitcoin. Foundational resources and knowledge for all Bitcoiners.",
       items: [
         {
-          name: "BCHN (Bitcoin Cash Node)",
-          description:
-            "A professional, miner-friendly node that solves practical problems for Bitcoin Cash. Currently the most popular node implementation.",
-          url: "https://bitcoincashnode.org/en/",
+          name: "Bitcoin Whitepaper",
+          description: "Satoshi Nakamoto's original description of Bitcoin.",
+          url: "https://bitcoincashpodcast.com/bitcoin.pdf",
         },
       ],
     },
