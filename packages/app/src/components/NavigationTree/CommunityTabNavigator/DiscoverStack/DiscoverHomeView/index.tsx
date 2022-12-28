@@ -8,14 +8,48 @@ import Divider from "@selene-wallet/app/src/components/atoms/Divider";
 import Card from "@selene-wallet/app/src/components/atoms/Card";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { iconImport } from "@selene-wallet/app/src/design/icons";
-import { DiscoverCategory } from "..";
 
-interface Props {
-  category: DiscoverCategory;
-  navigation: any;
+export interface DiscoverCategory {
+  name: string;
+  description: string;
+  items: DiscoverItem[];
 }
 
-function CategoryView({ category, navigation }: Props) {
+export interface DiscoverItem {
+  name: string;
+  description: string;
+  url: string;
+}
+
+function DiscoverHomeView({ navigation }) {
+  const discoverCategories: DiscoverCategory[] = [
+    {
+      name: "Essential",
+      description:
+        "The best of Bitcoin. Foundational resources and knowledge for all Bitcoiners.",
+      items: [
+        {
+          name: "Bitcoin Whitepaper",
+          description: "Satoshi Nakamoto's original description of Bitcoin.",
+          url: "https://bitcoincashpodcast.com/bitcoin.pdf",
+        },
+      ],
+    },
+    {
+      name: "Full nodes",
+      description:
+        "Software that propogates and validates transactions for Bitcoin miners and nodes.",
+      items: [
+        {
+          name: "BCHN (Bitcoin Cash Node)",
+          description:
+            "A professional, miner-friendly node that solves practical problems for Bitcoin Cash. Currently the most popular node implementation.",
+          url: "https://bitcoincashnode.org/en/",
+        },
+      ],
+    },
+  ];
+
   return (
     <ScrollView style={styles.scrollView as any}>
       <View style={styles.container as any}>
@@ -27,7 +61,7 @@ function CategoryView({ category, navigation }: Props) {
         {discoverCategories.map((category) => {
           const s = category.items.length === 1 ? "" : "s";
           return (
-            <Card>
+            <Card key={category?.name}>
               <Pressable
                 style={{
                   display: "flex",
@@ -35,7 +69,10 @@ function CategoryView({ category, navigation }: Props) {
                   justifyContent: "space-between",
                   alignItems: "center",
                 }}
-                onPress={onPressCategory}
+                onPress={() => {
+                  console.log("pressed");
+                  navigation.navigate("Discover Category");
+                }}
               >
                 <View
                   style={{
@@ -83,4 +120,4 @@ function CategoryView({ category, navigation }: Props) {
   );
 }
 
-export default DiscoverView;
+export default DiscoverHomeView;
