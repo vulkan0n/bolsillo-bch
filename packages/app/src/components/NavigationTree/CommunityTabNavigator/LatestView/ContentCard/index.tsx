@@ -7,6 +7,7 @@ import moment from "moment";
 import TipWidget from "@selene-wallet/app/src/components/atoms/TipWidget";
 import Loading from "@selene-wallet/app/src/components/atoms/Loading";
 import styles from "./styles";
+import Card from "@selene-wallet/app/src/components/atoms/Card";
 
 interface Props {
   title: string;
@@ -34,10 +35,7 @@ function ContentCard({
   };
 
   return (
-    <View
-      style={styles.contentContainer}
-      pointerEvents={isInteractive ? "auto" : "none"}
-    >
+    <Card isInteractive={isInteractive}>
       <View style={styles.textWrapper}>
         <Text style={TYPOGRAPHY.h2black as any}>{title}</Text>
         <Text style={TYPOGRAPHY.p as any}>{creator}</Text>
@@ -58,7 +56,7 @@ function ContentCard({
       {!!donationBchAddress && (
         <TipWidget donationBchAddress={donationBchAddress} />
       )}
-    </View>
+    </Card>
   );
 }
 

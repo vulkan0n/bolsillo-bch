@@ -5,21 +5,37 @@ import SPACING from "@selene-wallet/common/design/spacing";
 import TYPOGRAPHY from "@selene-wallet/common/design/typography";
 import styles from "./styles";
 import Divider from "@selene-wallet/app/src/components/atoms/Divider";
+import Card from "@selene-wallet/app/src/components/atoms/Card";
+import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+import { iconImport } from "@selene-wallet/app/src/design/icons";
 
 interface DiscoverCategory {
-  name: String;
-  description: String;
+  name: string;
+  description: string;
   items: [DiscoverItem];
 }
 
 interface DiscoverItem {
-  name: String;
-  description: String;
-  url: String;
+  name: string;
+  description: string;
+  url: string;
 }
 
 function DiscoverView({ navigation }) {
   const discoverCategories: [DiscoverCategory?] = [
+    {
+      name: "Essential",
+      description:
+        "The best of Bitcoin. Foundational resources and knowledge for all Bitcoiners.",
+      items: [
+        {
+          name: "BCHN (Bitcoin Cash Node)",
+          description:
+            "A professional, miner-friendly node that solves practical problems for Bitcoin Cash. Currently the most popular node implementation.",
+          url: "https://bitcoincashnode.org/en/",
+        },
+      ],
+    },
     {
       name: "Full nodes",
       description:
@@ -46,25 +62,54 @@ function DiscoverView({ navigation }) {
         {discoverCategories.map((category) => {
           const s = category.items.length === 1 ? "" : "s";
           return (
-            <View>
+            <Card>
               <View
                 style={{
                   display: "flex",
                   flexDirection: "row",
                   justifyContent: "space-between",
-                  alignItems: "flex-end",
+                  alignItems: "center",
                 }}
               >
-                <Text style={TYPOGRAPHY.h2black as any}>{category.name}</Text>
-                <Text style={TYPOGRAPHY.p as any}>
-                  {`${category.items.length} item${s}`}
-                </Text>
-              </View>
+                <View
+                  style={{
+                    marginHorizontal: SPACING.ten,
+                    flex: 6,
+                  }}
+                >
+                  <View
+                    style={{
+                      display: "flex",
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                      alignItems: "flex-end",
+                    }}
+                  >
+                    <Text style={TYPOGRAPHY.h2black as any}>
+                      {category.name}
+                    </Text>
+                    <Text style={TYPOGRAPHY.p as any}>
+                      {`${category.items.length} item${s}`}
+                    </Text>
+                  </View>
 
-              <Text style={TYPOGRAPHY.pLeft as any}>
-                {category.description}
-              </Text>
-            </View>
+                  <Text style={TYPOGRAPHY.pLeft as any}>
+                    {category.description}
+                  </Text>
+                </View>
+                <View
+                  style={{
+                    paddingHorizontal: SPACING.ten,
+                  }}
+                >
+                  <FontAwesomeIcon
+                    icon={iconImport("faChevronRight")}
+                    size={20}
+                    color={COLOURS.black}
+                  />
+                </View>
+              </View>
+            </Card>
           );
         })}
       </View>
