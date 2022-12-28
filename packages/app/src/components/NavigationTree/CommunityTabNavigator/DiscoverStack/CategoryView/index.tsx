@@ -12,17 +12,27 @@ import { DiscoverCategory } from "../DiscoverHomeView";
 
 interface Props {
   category: DiscoverCategory;
-  navigation: any;
+  navigation: any; // provided by React Navigation
+  route: any; // provided by React Navigation
 }
 
-function CategoryView({ category, navigation }: Props) {
+function CategoryView({ route, navigation }: Props) {
+  const { category } = route.params;
+
+  const onBack = () => {
+    navigation.goBack();
+  };
+
   return (
     <ScrollView style={styles.scrollView as any}>
       <View style={styles.container as any}>
+        <Pressable onPress={onBack}>
+          <Text>Back to Discover</Text>
+        </Pressable>
         <Text style={{ ...TYPOGRAPHY.h1black, marginTop: SPACING.ten } as any}>
-          Category
+          {category.name}
         </Text>
-        <Text style={TYPOGRAPHY.p as any}>Explore the BCH ecosystem.</Text>
+        <Text style={TYPOGRAPHY.p as any}>{category.description}</Text>
         <Divider />
         {/* {discoverCategories.map((category) => {
           const s = category.items.length === 1 ? "" : "s";
