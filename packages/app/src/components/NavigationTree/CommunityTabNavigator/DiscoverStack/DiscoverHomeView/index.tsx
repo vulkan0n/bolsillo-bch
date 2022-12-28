@@ -6,8 +6,16 @@ import styles from "./styles";
 import Divider from "@selene-wallet/app/src/components/atoms/Divider";
 import CategoryCard from "./CategoryCard";
 import { DiscoverCategory } from "..";
+import { useQuery } from "@apollo/client";
+import GET_DISCOVER_CATEGORIES from "@selene-wallet/common/dist/graphql/queries/getDiscoverCategories";
+import Loading from "@selene-wallet/app/src/components/atoms/Loading";
 
 function DiscoverHomeView({ navigation }) {
+  const { loading, error, data } = useQuery(GET_DISCOVER_CATEGORIES);
+
+  if (loading) return <Loading />;
+  if (error) return <Text>Error :(</Text>;
+
   const discoverCategories: DiscoverCategory[] = [
     {
       name: "Essential",
