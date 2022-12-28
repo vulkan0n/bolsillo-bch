@@ -10,6 +10,7 @@ import {
 import TYPOGRAPHY from "@selene-wallet/common/design/typography";
 import styles from "./styles";
 import TipWidget from "@selene-wallet/app/src/components/atoms/TipWidget";
+import WebLink from "@selene-wallet/app/src/components/atoms/WebLink";
 import { DEVELOPER_DONATION_ADDRESS } from "@selene-wallet/common/dist/utils/consts";
 
 function CreditsView() {
@@ -46,9 +47,7 @@ function CreditsView() {
         </Text>
         <View style={TYPOGRAPHY.spacer as any}></View>
         <Text style={TYPOGRAPHY.h2 as any}>Source code:</Text>
-        <Pressable onPress={onPressUrl}>
-          <Text style={TYPOGRAPHY.pWhiteUnderlined as any}>{gitlabUrl}</Text>
-        </Pressable>
+        <WebLink url={gitlabUrl} isWhite />
         <Text style={TYPOGRAPHY.pWhite as any}>PRs always welcome!</Text>
         <View style={TYPOGRAPHY.spacer as any}></View>
         <Text style={TYPOGRAPHY.pWhite as any}>{version}</Text>
