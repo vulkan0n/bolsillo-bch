@@ -4,12 +4,6 @@ Web frontend for Selene.
 
 Note: This repo is part of the Selene monorepo. Refer to the central documentation for more required information.
 
-[NPM packages](https://www.npmjs.com/org/selene-wallet)
-
-[Gitlab source](https://gitlab.com/selene.cash/selene-wallet)
-
-[Docker images](https://hub.docker.com/u/bitcoincashpodcast)
-
 ## Development
 
 ```

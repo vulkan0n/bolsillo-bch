@@ -16,33 +16,33 @@ function DiscoverHomeView({ navigation }) {
   if (loading) return <Loading />;
   if (error) return <Text>Error :(</Text>;
 
-  const discoverCategories: DiscoverCategory[] = [
-    {
-      name: "Essential",
-      description:
-        "The best of Bitcoin. Foundational resources and knowledge for all Bitcoiners.",
-      items: [
-        {
-          name: "The Bitcoin Whitepaper",
-          description: "Satoshi Nakamoto's original description of Bitcoin.",
-          url: "https://bitcoincashpodcast.com/bitcoin.pdf",
-        },
-      ],
-    },
-    {
-      name: "Full nodes",
-      description:
-        "Software that propogates and validates transactions for Bitcoin miners and nodes.",
-      items: [
-        {
-          name: "BCHN (Bitcoin Cash Node)",
-          description:
-            "A professional, miner-friendly node that solves practical problems for Bitcoin Cash. Currently the most popular node implementation.",
-          url: "https://bitcoincashnode.org/en/",
-        },
-      ],
-    },
-  ];
+  // const discoverCategories: DiscoverCategory[] = [
+  //   {
+  //     name: "Essential",
+  //     description:
+  //       "The best of Bitcoin. Foundational resources and knowledge for all Bitcoiners.",
+  //     items: [
+  //       {
+  //         name: "The Bitcoin Whitepaper",
+  //         description: "Satoshi Nakamoto's original description of Bitcoin.",
+  //         url: "https://bitcoincashpodcast.com/bitcoin.pdf",
+  //       },
+  //     ],
+  //   },
+  //   {
+  //     name: "Full nodes",
+  //     description:
+  //       "Software that propogates and validates transactions for Bitcoin miners and nodes.",
+  //     items: [
+  //       {
+  //         name: "BCHN (Bitcoin Cash Node)",
+  //         description:
+  //           "A professional, miner-friendly node that solves practical problems for Bitcoin Cash. Currently the most popular node implementation.",
+  //         url: "https://bitcoincashnode.org/en/",
+  //       },
+  //     ],
+  //   },
+  // ];
 
   return (
     <ScrollView style={styles.scrollView as any}>
@@ -52,7 +52,7 @@ function DiscoverHomeView({ navigation }) {
         </Text>
         <Text style={TYPOGRAPHY.p as any}>Explore the BCH ecosystem.</Text>
         <Divider />
-        {discoverCategories.map((category) => (
+        {data.discoverCategories.map((category) => (
           <CategoryCard
             key={category?.name}
             category={category}

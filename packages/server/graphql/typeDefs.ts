@@ -20,6 +20,18 @@ const typeDefs = gql`
     donationBchAddress: String
   }
 
+  type DiscoverItem {
+    name: String;
+    description: String;
+    url: String;
+  }
+
+  type DiscoverCategory {
+    name: String;
+    description: String;
+    items: [DiscoverItem];
+  }
+
   # Because timezones are tricky to manage, dates are stored
   # as a 'YYYYMMDD' string to be parsed with moment.js
   type StatAtDate {
@@ -31,6 +43,7 @@ const typeDefs = gql`
   # clients can execute, along with the return type for each.
   type Query {
     content: [ContentItem]
+    categories: [DiscoverCategory]
     activeBitcoiners(period: String!): [StatAtDate]
   }
 
