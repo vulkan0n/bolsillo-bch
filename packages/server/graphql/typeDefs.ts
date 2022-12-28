@@ -21,15 +21,15 @@ const typeDefs = gql`
   }
 
   type DiscoverItem {
-    name: String;
-    description: String;
-    url: String;
+    name: String
+    description: String
+    url: String
   }
 
   type DiscoverCategory {
-    name: String;
-    description: String;
-    items: [DiscoverItem];
+    name: String
+    description: String
+    items: [DiscoverItem]
   }
 
   # Because timezones are tricky to manage, dates are stored
