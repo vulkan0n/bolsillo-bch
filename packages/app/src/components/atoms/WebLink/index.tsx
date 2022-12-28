@@ -1,6 +1,5 @@
 import React from "react";
 import { Pressable, Text, Linking } from "react-native";
-import styles from "./styles";
 import TYPOGRAPHY from "@selene-wallet/common/design/typography";
 
 interface Props {
