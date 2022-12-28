@@ -4,6 +4,7 @@ import SPACING from "@selene-wallet/common/design/spacing";
 import TYPOGRAPHY from "@selene-wallet/common/design/typography";
 import styles from "./styles";
 import Divider from "@selene-wallet/app/src/components/atoms/Divider";
+import WebView from "react-native-webview";
 import { DiscoverCategory } from "..";
 
 interface Props {
@@ -29,7 +30,9 @@ function ItemView({ route, navigation }: Props) {
           {item.name}
         </Text>
         <Text style={TYPOGRAPHY.p as any}>{item.description}</Text>
+        <Text style={TYPOGRAPHY.p as any}>{item.url}</Text>
         <Divider />
+        <WebView style={{ height: 500 }} source={{ uri: item?.url ?? "" }} />
       </View>
     </ScrollView>
   );
