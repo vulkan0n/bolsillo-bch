@@ -22,6 +22,11 @@ const discoverCategories = [
           "A professional, miner-friendly node that solves practical problems for Bitcoin Cash. Currently the most popular node implementation.",
         url: "https://bitcoincashnode.org/en/",
       },
+      {
+        name: "Bitcoin Verde",
+        description: "A Bitcoin Cash full-node written in Java.",
+        url: "https://bitcoinverde.org/",
+      },
     ],
   },
 ];
