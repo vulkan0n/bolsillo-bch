@@ -26,7 +26,7 @@ function DiscoverHomeView({ navigation }) {
         "The best of Bitcoin. Foundational resources and knowledge for all Bitcoiners.",
       items: [
         {
-          name: "Bitcoin Whitepaper",
+          name: "The Bitcoin Whitepaper",
           description: "Satoshi Nakamoto's original description of Bitcoin.",
           url: "https://bitcoincashpodcast.com/bitcoin.pdf",
         },
