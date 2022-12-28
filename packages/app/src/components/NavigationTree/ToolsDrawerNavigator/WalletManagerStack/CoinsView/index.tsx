@@ -10,7 +10,7 @@ import StackSubheader from "@selene-wallet/app/src/components/atoms/StackSubhead
 import styles from "./styles";
 import { fetchActiveWalletBalance } from "@selene-wallet/app/src/components/BackgroundIntervals";
 
-const ReceivePad = ({}) => {
+const CoinsView = ({}) => {
   const wallet = useSelector((state: ReduxState) => selectActiveWallet(state));
   const { isTestNet } = useSelector((state: ReduxState) => state.settings);
 
@@ -51,4 +51,4 @@ const ReceivePad = ({}) => {
   );
 };
 
-export default ReceivePad;
+export default CoinsView;
