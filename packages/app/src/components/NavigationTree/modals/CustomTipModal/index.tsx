@@ -47,6 +47,8 @@ function CustomTipModal({ navigation, route }) {
         derivationPath: wallet?.derivationPath,
         recipientCashAddr: donationBchAddress,
         satsToSend: tipAmountInIntSats,
+        coins: wallet?.coins,
+        changeAddress: wallet?.cashaddr,
         isTestNet,
       },
     });

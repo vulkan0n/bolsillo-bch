@@ -19,6 +19,8 @@ function TabBar({
         return "faPaperPlane";
       case "Receive":
         return "faBitcoinSign";
+      case "Coins":
+        return "faCoins";
       case "Latest":
         return "faPhotoFilm";
       // case "Connect":

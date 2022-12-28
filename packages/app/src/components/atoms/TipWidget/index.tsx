@@ -48,6 +48,8 @@ function TipWidget({ donationBchAddress, isWhiteText = false }: Props) {
         derivationPath: wallet?.derivationPath,
         recipientCashAddr: donationBchAddress,
         satsToSend: tipAmountInIntSats,
+        coins: wallet?.coins,
+        changeAddress: wallet?.cashaddr,
         isTestNet,
       },
     });

@@ -21,13 +21,15 @@ import persistor from "./redux/persistor";
 import Toast from "react-native-toast-message";
 import toastConfig from "./config/toast";
 import preloadMainNetScript from "./config/preloadMainNetScript";
-import { WalletType } from "@selene-wallet/common/dist/types";
+import { WalletType, CoinType } from "@selene-wallet/common/dist/types";
 import {
   createDefaultWallet,
   updateNewWalletScratchPadDetails,
   updateWalletBalance,
   updateWalletCashAddr,
   importWalletTransactionHistory,
+  updateWalletMaxAddressIndex,
+  updateWalletCoins,
 } from "./redux/reducers/walletManagerReducer";
 import {
   updateTransactionPadIsSendingCoins,
@@ -46,7 +48,7 @@ import { ONE_SECOND } from "@selene-wallet/common/dist/utils/consts";
 interface TransactionHistoryTxType {
   blockheight: number;
   txn: string;
-  txId: string;
+  transactionId: string;
   balance: number;
   fee: number;
   from: string;
@@ -66,6 +68,8 @@ interface BridgeResponseMessage {
     title?: string;
     text?: string;
     cashaddr?: string;
+    maxAddressIndex?: number;
+    coins?: CoinType[];
     transactionHistory?: {
       transactions: TransactionHistoryTxType[];
     };
@@ -95,6 +99,7 @@ export default function App() {
               mnemonic: message.data.wallet.mnemonic,
               derivationPath: message.data.wallet.derivationPath,
               cashaddr: message.data.wallet.cashaddr,
+              maxAddressIndex: 0,
             })
           );
           break;
@@ -105,6 +110,7 @@ export default function App() {
               mnemonic: message.data.wallet.mnemonic,
               derivationPath: message.data.wallet.derivationPath,
               cashaddr: message.data.wallet.cashaddr,
+              maxAddressIndex: 0,
             })
           );
           break;
@@ -120,6 +126,18 @@ export default function App() {
             updateWalletCashAddr({
               name: message.data.name,
               cashaddr: message.data.cashaddr,
+            })
+          );
+          store.dispatch(
+            updateWalletMaxAddressIndex({
+              name: message.data.name,
+              maxAddressIndex: message.data.maxAddressIndex,
+            })
+          );
+          store.dispatch(
+            updateWalletCoins({
+              name: message.data.name,
+              coins: message.data?.coins,
             })
           );
           break;

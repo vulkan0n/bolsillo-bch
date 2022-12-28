@@ -61,6 +61,8 @@ const Confirm = () => {
         derivationPath: wallet?.derivationPath,
         recipientCashAddr: sendToAddress,
         satsToSend: rawSatsToSend,
+        coins: wallet?.coins,
+        changeAddress: wallet?.cashaddr,
         isTestNet,
       },
     });

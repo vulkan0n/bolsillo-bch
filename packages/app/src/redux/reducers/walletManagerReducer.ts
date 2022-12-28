@@ -12,6 +12,7 @@ const BLANK_SCRATCH_PAD = {
   mnemonic: "",
   derivationPath: "",
   cashaddr: "",
+  maxAddressIndex: 0,
   transactions: [],
 };
 
@@ -49,6 +50,7 @@ const walletMangerSlice = createSlice({
       state.scratchPad.mnemonic = action.payload.mnemonic;
       state.scratchPad.derivationPath = action.payload.derivationPath;
       state.scratchPad.cashaddr = action.payload.cashaddr;
+      state.scratchPad.maxAddressIndex = action.payload.maxAddressIndex;
     },
     createDefaultWallet(state, action) {
       if (state.wallets.length === 0) {
@@ -91,6 +93,18 @@ const walletMangerSlice = createSlice({
         ({ name }) => name === action.payload.name
       );
       wallet.cashaddr = action.payload.cashaddr;
+    },
+    updateWalletMaxAddressIndex(state, action) {
+      const wallet = state.wallets.find(
+        ({ name }) => name === action.payload.name
+      );
+      wallet.maxAddressIndex = Math.max(wallet.maxAddressIndex, action.payload.maxAddressIndex);
+    },
+    updateWalletCoins(state, action) {
+      const wallet = state.wallets.find(
+        ({ name }) => name === action.payload.name
+      );
+      wallet.coins = action.payload?.coins;
     },
     importWalletTransactionHistory(state, action) {
       const wallet = state.wallets.find(
@@ -172,6 +186,8 @@ export const {
   deleteWallet,
   updateWalletBalance,
   updateWalletCashAddr,
+  updateWalletMaxAddressIndex,
+  updateWalletCoins,
   importWalletTransactionHistory,
   updateTransactionNote,
 } = walletMangerSlice.actions;
