@@ -4,6 +4,8 @@ We love contributors! Welcome!
 
 To get started review the following code style guide and pull request format notes as part of contributing to Selene. Of course if you have any questions, feel free to ask in [the Telegram group](https://t.me/+MMbV2KEPFt84MDQ8).
 
+Note: Please **DO NOT** fork from `main`, instead it's best to fork from the branch for the next upcoming release (which will be named `vX.X.X` and clearly have recent activity). Upcoming release serves as the defacto development branch, and can be noticeably ahead of main.
+
 ## Bounties
 
 There are bounties (in BCH of course) available for some desired features, ask in the Telegram group.
