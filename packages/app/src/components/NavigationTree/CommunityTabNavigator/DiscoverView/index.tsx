@@ -12,7 +12,7 @@ import { iconImport } from "@selene-wallet/app/src/design/icons";
 interface DiscoverCategory {
   name: string;
   description: string;
-  items: [DiscoverItem];
+  items: DiscoverItem[];
 }
 
 interface DiscoverItem {
@@ -22,7 +22,7 @@ interface DiscoverItem {
 }
 
 function DiscoverView({ navigation }) {
-  const discoverCategories: [DiscoverCategory?] = [
+  const discoverCategories: DiscoverCategory[] = [
     {
       name: "Essential",
       description:
