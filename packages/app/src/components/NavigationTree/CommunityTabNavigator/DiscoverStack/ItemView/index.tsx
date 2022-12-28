@@ -5,7 +5,6 @@ import TYPOGRAPHY from "@selene-wallet/common/design/typography";
 import styles from "./styles";
 import Divider from "@selene-wallet/app/src/components/atoms/Divider";
 import { DiscoverCategory } from "..";
-import ItemCard from "./ItemCard";
 
 interface Props {
   category: DiscoverCategory;
@@ -13,9 +12,8 @@ interface Props {
   route: any; // provided by React Navigation
 }
 
-function CategoryView({ route, navigation }: Props) {
-  const { category } = route.params;
-  const { items } = category;
+function ItemView({ route, navigation }: Props) {
+  const { item, categoryName } = route.params;
 
   const onBack = () => {
     navigation.goBack();
@@ -25,24 +23,16 @@ function CategoryView({ route, navigation }: Props) {
     <ScrollView style={styles.scrollView as any}>
       <View style={styles.container as any}>
         <Pressable onPress={onBack}>
-          <Text>Back to Discover</Text>
+          <Text>Back to {categoryName}</Text>
         </Pressable>
         <Text style={{ ...TYPOGRAPHY.h1black, marginTop: SPACING.ten } as any}>
-          {category.name}
+          {item.name}
         </Text>
-        <Text style={TYPOGRAPHY.p as any}>{category.description}</Text>
+        <Text style={TYPOGRAPHY.p as any}>{item.description}</Text>
         <Divider />
-        {items.map((item) => (
-          <ItemCard
-            key={item?.name}
-            item={item}
-            categoryName={category.name}
-            navigation={navigation}
-          />
-        ))}
       </View>
     </ScrollView>
   );
 }
 
-export default CategoryView;
+export default ItemView;

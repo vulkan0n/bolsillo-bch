@@ -5,18 +5,7 @@ import TYPOGRAPHY from "@selene-wallet/common/design/typography";
 import styles from "./styles";
 import Divider from "@selene-wallet/app/src/components/atoms/Divider";
 import CategoryCard from "./CategoryCard";
-
-export interface DiscoverCategory {
-  name: string;
-  description: string;
-  items: DiscoverItem[];
-}
-
-export interface DiscoverItem {
-  name: string;
-  description: string;
-  url: string;
-}
+import { DiscoverCategory } from "..";
 
 function DiscoverHomeView({ navigation }) {
   const discoverCategories: DiscoverCategory[] = [

@@ -6,7 +6,7 @@ import styles from "./styles";
 import Card from "@selene-wallet/app/src/components/atoms/Card";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { iconImport } from "@selene-wallet/app/src/design/icons";
-import { DiscoverCategory } from "..";
+import { DiscoverCategory } from "../..";
 
 interface Props {
   category: DiscoverCategory;

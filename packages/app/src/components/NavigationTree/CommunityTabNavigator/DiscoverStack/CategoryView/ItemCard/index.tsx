@@ -6,16 +6,17 @@ import styles from "./styles";
 import Card from "@selene-wallet/app/src/components/atoms/Card";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { iconImport } from "@selene-wallet/app/src/design/icons";
-import { DiscoverItem } from "..";
+import { DiscoverItem } from "../..";
 
 interface Props {
   item: DiscoverItem;
+  categoryName: String;
   navigation: any; // provided by React Navigation
 }
 
-function ItemCard({ item, navigation }: Props) {
+function ItemCard({ categoryName, item, navigation }: Props) {
   const onPressCategory = () => {
-    navigation.navigate("Discover Category", { category });
+    navigation.navigate("Discover Item", { categoryName, item });
   };
 
   return (
