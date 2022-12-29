@@ -27,17 +27,21 @@ const CoinsView = ({}) => {
     fetchActiveWalletBalance(wallet, isTestNet);
   };
 
+  const utxoCount = wallet?.coins?.length;
+
   return (
     <ScrollView style={styles.scrollView}>
       <StackSubheader title={"Coins"} isBackButton />
       <View style={styles.whiteBackground}>
-        <Text style={TYPOGRAPHY.p}>
-          Tracked addresses: {wallet.maxAddressIndex}
-        </Text>
         <Button onPress={addAddresses} variant={"primary"}>
           Scan 10 more addresses
         </Button>
         <Text style={TYPOGRAPHY.h2black}>Coin UTXOs</Text>
+        <Text style={TYPOGRAPHY.p}>UTXO count: {utxoCount}</Text>
+        <Text style={TYPOGRAPHY.p}>
+          Tracked addresses: {wallet.maxAddressIndex}
+        </Text>
+        <Text style={TYPOGRAPHY.p}>UTXO count: {utxoCount}</Text>
         {wallet.coins &&
           wallet.coins?.map((val) => (
             <View
