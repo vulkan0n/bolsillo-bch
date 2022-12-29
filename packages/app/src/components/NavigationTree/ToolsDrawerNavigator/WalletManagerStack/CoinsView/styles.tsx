@@ -5,13 +5,19 @@ const styles = {
   coinView: {
     height: 80,
     borderColor: COLOURS.lightGrey,
+    backgroundColor: COLOURS.white,
     borderWidth: 5,
     justifyContent: "center",
     alignItems: "left",
-    width: "97%",
     padding: SPACING.five,
     margin: SPACING.five,
     borderRadius: SPACING.borderRadius,
+  },
+  scrollView: {
+    backgroundColor: COLOURS.black,
+  },
+  whiteBackground: {
+    backgroundColor: COLOURS.white,
   },
 };
 

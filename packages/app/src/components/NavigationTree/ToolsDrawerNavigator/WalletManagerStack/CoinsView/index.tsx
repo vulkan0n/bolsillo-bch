@@ -9,6 +9,8 @@ import Button from "@selene-wallet/app/src/components/atoms/Button";
 import StackSubheader from "@selene-wallet/app/src/components/atoms/StackSubheader";
 import styles from "./styles";
 import { fetchActiveWalletBalance } from "@selene-wallet/app/src/components/BackgroundIntervals";
+import { ScrollView } from "react-native-gesture-handler";
+import TYPOGRAPHY from "@selene-wallet/common/design/typography";
 
 const CoinsView = ({}) => {
   const wallet = useSelector((state: ReduxState) => selectActiveWallet(state));
@@ -26,28 +28,33 @@ const CoinsView = ({}) => {
   };
 
   return (
-    <View>
+    <ScrollView style={styles.scrollView}>
       <StackSubheader title={"Coins"} isBackButton />
-      <Text>Tracked addresses: {wallet.maxAddressIndex}</Text>
-      <Button onPress={addAddresses} variant={"primary"}>
-        Scan 10 more addresses
-      </Button>
-      {wallet.coins &&
-        wallet.coins?.map((val) => (
-          <View
-            style={styles.coinView as any}
-            key={`${val?.transactionId}:${val.outputIndex}`}
-          >
-            <Text>Coin index: {val.addressIndex}</Text>
-            <Text>Address: {val.address.split(":")[1].slice(0, 30)}...</Text>
-            <Text>Value: {val.satoshis}</Text>
-            <Text>
-              Outpoint:{" "}
-              {`${val?.transactionId?.slice(0, 30)}...:${val.outputIndex}`}
-            </Text>
-          </View>
-        ))}
-    </View>
+      <View style={styles.whiteBackground}>
+        <Text style={TYPOGRAPHY.p}>
+          Tracked addresses: {wallet.maxAddressIndex}
+        </Text>
+        <Button onPress={addAddresses} variant={"primary"}>
+          Scan 10 more addresses
+        </Button>
+        <Text style={TYPOGRAPHY.h2black}>Coin UTXOs</Text>
+        {wallet.coins &&
+          wallet.coins?.map((val) => (
+            <View
+              style={styles.coinView as any}
+              key={`${val?.transactionId}:${val.outputIndex}`}
+            >
+              <Text>Coin index: {val.addressIndex}</Text>
+              <Text>Address: {val.address.split(":")[1].slice(0, 30)}...</Text>
+              <Text>Value: {val.satoshis}</Text>
+              <Text>
+                Outpoint:{" "}
+                {`${val?.transactionId?.slice(0, 30)}...:${val.outputIndex}`}
+              </Text>
+            </View>
+          ))}
+      </View>
+    </ScrollView>
   );
 };
 
