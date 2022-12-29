@@ -14,7 +14,7 @@ There are bounties (in BCH of course) available for some desired features, ask i
 
 Will be negotiated on a case by case basis, but some requirements for bounty payout that have proven valuable to make explicit from the beginning:
 
-- No degredation in wallet performance, significant bundle size increases or other "anti-progress" in the useability of the software, except where discussed otherwise as relevant to the feature at hand
+- No degredation in wallet performance, responsiveness, maintainability, significant bundle size increases or other "anti-progress" in the useability of the software, except where discussed otherwise as relevant to the feature at hand
 - No introduction of new bugs or regressions
 - Compliance with the project's style and PR guidelines, as specified below. Don't fret, review will help with this!
 - Depending on the quality of code and feature, 1-2 rounds of review (and follow up revisions) should be expected, potentially more.
