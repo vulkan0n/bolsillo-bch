@@ -41,9 +41,15 @@ Opinions of this repository.
 ## Packages
 
 - `@selene-wallet/app`: iOS/Android React Native wallet application in Expo.
-- `@selene-wallet/common`: Shared utilities and code. Any modifications to this require recompiling with TypeScript as other packages import from the `dist` folder directly.
+- `@selene-wallet/common`: Shared utilities and code. Any modifications to this require recompiling with TypeScript (and often re-release to NPM) as other packages import from the `dist` folder directly.
 - `@selene-wallet/server`: Backend code and stat tracking.
 - `@selene-wallet/web`: React app for web frontend.
+
+Some important notes:
+
+- As of Dec 2022, the majority of the work has been in the `app` and `server` packages.
+- `app` runs and works without `server`, send and receive and other functionality is fine. However external content and statistics won't load (the Community tab Latest, Stats & Discover). It won't crash the app though, just display an error notice on those sections, or load perpetually.
+- The `web` package works (as in, it can be `npm start`ed), but it does not contain any functionality. The intent is to build a static marketing page for Selene (with links to the app store), and then extend it to run the entire app (or a port of the app).
 
 See README in each package for futher information.
 
