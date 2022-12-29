@@ -16,12 +16,22 @@ export interface WalletType {
   mnemonic: string;
   derivationPath: string;
   cashaddr: string;
+  maxAddressIndex: number;
 }
 
 export interface TransactionType {
   txn: string;
   blockheight?: number;
   note?: string;
+}
+
+export interface CoinType {
+  height: number;
+  transactionId: string;
+  outputIndex: number;
+  satoshis: number;
+  address: string;
+  addressIndex: string;
 }
 
 export interface SeleneWalletType {
@@ -32,6 +42,8 @@ export interface SeleneWalletType {
   derivationPath: string;
   cashaddr: string;
   transactions: TransactionType[];
+  maxAddressIndex: number;
+  coins: CoinType[];
 }
 
 export interface EmitEvent {

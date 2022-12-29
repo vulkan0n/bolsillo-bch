@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { View } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
-import { ReduxState } from "@selene-wallet/common/dist/types";
+import { ReduxState, SeleneWalletType } from "@selene-wallet/common/dist/types";
 import { BRIDGE_MESSAGE_TYPES } from "@selene-wallet/app/src/utils/bridgeMessages";
 import {
   ONE_SECOND,
@@ -13,6 +13,19 @@ import { updateTransactionPadIsSendingCoins } from "@selene-wallet/app/src/redux
 import fetchPriceData from "./fetchPriceData";
 import checkIn from "./checkIn";
 
+export const fetchActiveWalletBalance = (wallet: SeleneWalletType, isTestNet: boolean) => {
+  emit({
+    type: BRIDGE_MESSAGE_TYPES.REQUEST_BALANCE_AND_ADDRESS,
+    data: {
+      name: wallet?.name,
+      mnemonic: wallet?.mnemonic,
+      derivationPath: wallet?.derivationPath,
+      maxAddressIndex: wallet?.maxAddressIndex,
+      isTestNet,
+    },
+  });
+};
+
 const BackgroundIntervals = () => {
   const dispatch = useDispatch();
   const wallet = useSelector((state: ReduxState) => selectActiveWallet(state));
@@ -21,28 +34,17 @@ const BackgroundIntervals = () => {
   const { isTestNet } = useSelector((state: ReduxState) => state.settings);
 
   const fetchWalletHistories = () => {
-    wallets.map(({ name, mnemonic, derivationPath }) => {
+    wallets.map(({ name, mnemonic, derivationPath, maxAddressIndex }) => {
       emit({
         type: BRIDGE_MESSAGE_TYPES.GET_WALLET_HISTORY,
         data: {
           name,
           mnemonic,
           derivationPath,
+          maxAddressIndex,
           isTestNet,
         },
       });
-    });
-  };
-
-  const fetchActiveWalletBalance = () => {
-    emit({
-      type: BRIDGE_MESSAGE_TYPES.REQUEST_BALANCE_AND_ADDRESS,
-      data: {
-        name: wallet?.name,
-        mnemonic: wallet?.mnemonic,
-        derivationPath: wallet?.derivationPath,
-        isTestNet,
-      },
     });
   };
 
@@ -50,7 +52,7 @@ const BackgroundIntervals = () => {
     // console.log("ping!");
 
     if (wallet) {
-      fetchActiveWalletBalance();
+      fetchActiveWalletBalance(wallet, isTestNet);
     }
 
     if (wallets) {

@@ -10,6 +10,19 @@ Note: Please **DO NOT** fork from `main`, instead it's best to fork from the bra
 
 There are bounties (in BCH of course) available for some desired features, ask in the Telegram group.
 
+### Bounty Specification
+
+Will be negotiated on a case by case basis, but some requirements for bounty payout that have proven valuable to make explicit from the beginning:
+
+- No degredation in wallet performance, responsiveness, maintainability, significant bundle size increases or other "anti-progress" in the useability of the software, except where discussed otherwise as relevant to the feature at hand
+- No introduction of new bugs or regressions
+- Compliance with the project's style and PR guidelines, as specified below. Don't fret, review will help with this!
+- Depending on the quality of code and feature, 1-2 rounds of review (and follow up revisions) should be expected, potentially more.
+
+As relevant to the issue at hand, screen designs or non-functional UI scaffold branches and other specification material will be provided. This is a developing process to determine what is best included.
+
+These points aren't set out to discourage contributors, but to appropriately set expectations that Selene is aiming to maintain a high standard of engineering and bounty payouts will be granted in alignment with that.
+
 ## Code Style Guidelines
 
 - Prefer use of longer, descriptive variable names. E.g. `transactionId` not `txId`. Easier to mentally parse by reducing the cognitive load of (often unspecified or nonstandard) abbreviations.

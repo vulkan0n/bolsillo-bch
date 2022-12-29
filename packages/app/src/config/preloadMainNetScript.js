@@ -1,6 +1,6 @@
 // https://mainnet.cash/tutorial/#let-s-get-programming
-// https://cdn.mainnet.cash/mainnet-0.5.9.js
-// Retrieved 15th Nov 2022
+// https://cdn.mainnet.cash/mainnet-1.0.6.js
+// Retrieved 26th Dec 2022
 const mainNetScript = <script src="mainNetScript.txt"></script>;
 
 // TODO: Figure out how to load locally
@@ -9,16 +9,17 @@ const mainNetScript = <script src="mainNetScript.txt"></script>;
 // To load from a live URL
 // CAUTION: This is a big security risk
 // If remote url gets hacked and fake code inserted, we get hacked too!!!!
-const preloadMainNetScript = `      
+const preloadMainNetScript = `
   console.log('Loading up the Mainnet.cash script...')
 
   async function loadScript(url) {
     let response = await fetch(url);
     let script = await response.text();
     eval(script);
+    Object.assign(globalThis, await __mainnetPromise);
   }
 
-  let scriptUrl = "https://cdn.mainnet.cash/mainnet-0.5.9.js";
+  let scriptUrl = "https://cdn.mainnet.cash/mainnet-1.0.6.js";
   loadScript(scriptUrl);
   true; // note: this is required, or you'll sometimes get silent failures
 `;

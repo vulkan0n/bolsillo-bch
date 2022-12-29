@@ -12,6 +12,7 @@ import { sendCoins, getWalletHistory } from "./actions";
 
 const Bridge = () => {
   console.log("Bridge loaded.");
+  const [previousBalance, setPreviousBalance] = useState(null);
   const [balanceWatchWalletName, setBalanceWatchWalletName] = useState("");
   // useNativeMessage hook receives message from React Native
 
@@ -49,16 +50,67 @@ const Bridge = () => {
           break;
 
         case BRIDGE_MESSAGE_TYPES.REQUEST_BALANCE_AND_ADDRESS:
-          const walletRequestBalance = await WalletObject.fromSeed(
-            message?.data?.mnemonic,
-            message?.data?.derivationPath
-          );
+          // max tracked HD address index
+          const maxIndex = message?.data?.maxAddressIndex || 0;
+          const addressIndices = [...Array(maxIndex + 1).keys()];
 
-          const maxBalanceRequest =
-            await walletRequestBalance.getMaxAmountToSend();
-          const maxBalance = maxBalanceRequest?.sat;
-          const isActiveWatcher =
-            message?.data?.name === balanceWatchWalletName;
+          const getHDWalletInfo = async () => {
+            // for each address, get its total balance and its raw utxos
+            const getWalletInfo = async (index) => {
+              const hdWallet = await WalletObject.fromSeed(
+                message?.data?.mnemonic,
+                `m/44'/0'/0'/0/${index}`
+              );
+
+              const coins = (
+                await hdWallet.getAddressUtxos(hdWallet.cashaddr)
+              ).map((coin) => ({
+                height: coin.height,
+                transactionId: coin.txid,
+                outputIndex: coin.vout,
+                satoshis: coin.satoshis,
+                address: hdWallet.cashaddr,
+                addressIndex: index,
+              }));
+              const balance = coins.reduce(
+                (prev, curr) => prev + curr.satoshis,
+                0
+              );
+              return [balance, coins, hdWallet.cashaddr];
+            };
+
+            const result = await Promise.all(addressIndices.map(getWalletInfo));
+            const balances = result.map((arrayElement) => arrayElement[0]);
+            const coins = result.map((arrayElement) => arrayElement[1]);
+            const addresses = result
+              .map((arrayElement) => arrayElement[2])
+              .flat(1);
+
+            // calculate total balance on all tracked addresses and compare with previously stored
+            const totalBalance = balances.reduce((prev, cur) => prev + cur, 0);
+
+            return { balances, coins, totalBalance, addresses };
+          };
+
+          const { balances, coins, totalBalance, addresses } =
+            await getHDWalletInfo();
+
+          // find out the latest non empty address and set it as next receiving address
+          let nonZeroBalanceAddressIndex = 0;
+          balances.forEach((balance, index) => {
+            if (balance > 0) {
+              nonZeroBalanceAddressIndex = index;
+            }
+          });
+          const depositAddrIndex = nonZeroBalanceAddressIndex + 1;
+          const depositWallet = await WalletObject.fromSeed(
+            message?.data?.mnemonic,
+            `m/44'/0'/0'/0/${depositAddrIndex}`
+          );
+          const depositAddress = depositWallet.cashaddr;
+
+          const watchKey = `${message?.data?.mnemonic}_${message?.data?.depositAddrIndex}`;
+          const isActiveWatcher = watchKey === balanceWatchWalletName;
           console.log(
             {
               isActiveWatcher,
@@ -70,59 +122,69 @@ const Bridge = () => {
 
           if (!isActiveWatcher) {
             console.log("setting up new balance watcher");
-            const cancelWatch = walletRequestBalance.watchBalance(
-              async (newBalance) => {
-                // newBalance hasn't registered the included new transaction
-                // So need to grab balance again
-                const freshBalanceRequest =
-                  await walletRequestBalance.getMaxAmountToSend();
-                const freshBalance = freshBalanceRequest?.sat;
+            // newBalance hasn't registered the included new transaction
+            // So need to grab balance again
 
-                // Balance changed upwards = coins received
-                // Balance changed downwards = coins sent
-                const isReceivedCoins =
-                  parseInt(freshBalance) > parseInt(maxBalance);
-                console.log("Did I receive coins?");
-                console.log({
-                  freshBalance,
-                  maxBalance,
-                  isReceivedCoins,
+            const watchAddressCallback = async () => {
+              const response = await getHDWalletInfo();
+              const freshBalance = response.totalBalance;
+
+              // Balance changed upwards = coins received
+              // Balance changed downwards = coins sent
+              const isReceivedCoins =
+                parseInt(freshBalance) > parseInt(totalBalance);
+              console.log("Did I receive coins?");
+              console.log({
+                freshBalance,
+                totalBalance,
+                isReceivedCoins,
+              });
+              if (isReceivedCoins) {
+                emit({
+                  type: RESPONSE_MESSAGE_TYPES.RECEIVED_COINS,
+                  data: {
+                    name: message?.data?.name,
+                    balance: freshBalance,
+                  },
                 });
-                if (isReceivedCoins) {
-                  emit({
-                    type: RESPONSE_MESSAGE_TYPES.RECEIVED_COINS,
-                    data: {
-                      name: message?.data?.name,
-                      balance: freshBalance,
-                    },
-                  });
-                } else {
-                  // Balance change caused by sending coins
-                  console.log("registering successful send");
-                  // const transactionHistory =
-                  //   await walletRequestBalance.getHistory("sat", 0, 100);
+              } else {
+                // Balance change caused by sending coins
+                console.log("registering successful send");
+                // const transactionHistory =
+                //   await walletRequestBalance.getHistory("sat", 0, 100);
 
-                  emit({
-                    type: RESPONSE_MESSAGE_TYPES.SEND_COINS_RESPONSE_DETECTED,
-                    data: {
-                      name: message?.data?.name,
-                      balance: freshBalance,
-                      // transactionHistory,
-                    },
-                  });
-                }
+                emit({
+                  type: RESPONSE_MESSAGE_TYPES.SEND_COINS_RESPONSE_DETECTED,
+                  data: {
+                    name: message?.data?.name,
+                    balance: freshBalance,
+                    // transactionHistory,
+                  },
+                });
               }
+            };
+            // get a transient wallet's provider
+            const provider = (await WalletObject.newRandom()).provider;
+            // subscribe to all addresses, ignore allocated but not yet used addresses
+            const watchAddresses = addresses.filter(
+              (_, index) => index <= depositAddrIndex
+            );
+            watchAddresses.map((address) =>
+              provider.watchAddressStatus(address, watchAddressCallback)
             );
 
-            setBalanceWatchWalletName(message?.data?.name);
+            setBalanceWatchWalletName(watchKey);
           }
 
+          // update total wallet balance and receive address in UI
           emit({
             type: RESPONSE_MESSAGE_TYPES.REQUEST_BALANCE_AND_ADDRESS_RESPONSE,
             data: {
               name: message?.data?.name,
-              balance: maxBalance,
-              cashaddr: walletRequestBalance?.cashaddr,
+              balance: totalBalance,
+              cashaddr: depositAddress,
+              maxAddressIndex: depositAddrIndex,
+              coins: coins.flat(1),
             },
           });
           break;

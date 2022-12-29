@@ -16,7 +16,7 @@ function TransactionsView({ navigation }) {
   const { navigatedWalletName } = useSelector(
     (state: ReduxState) => state.walletManager
   );
-  const { name, description, mnemonic, derivationPath, transactions } =
+  const { name, description, mnemonic, derivationPath, maxAddressIndex, transactions } =
     useSelector((state: ReduxState) =>
       state.walletManager.wallets?.find(
         ({ name }) => name === navigatedWalletName
@@ -31,6 +31,7 @@ function TransactionsView({ navigation }) {
         name,
         mnemonic,
         derivationPath,
+        maxAddressIndex,
         isTestNet,
       },
     });
