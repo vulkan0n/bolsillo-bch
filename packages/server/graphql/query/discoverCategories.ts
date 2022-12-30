@@ -175,6 +175,34 @@ const discoverCategories = [
       },
     ],
   },
+  {
+    name: "Governance",
+    description: "Bitcoin Cash network direction and consensus.",
+    items: [
+      {
+        name: "FAQ on Network Governance",
+        description: "Summary of BCH Network Governance.",
+        url: "https://bitcoincashpodcast.com/faqs/BCH/how-does-BCH-governance-work",
+      },
+      {
+        name: "CHIPs",
+        description: "Cash Improvement Proposal documents.",
+        url: "https://bch.info/en/chips",
+      },
+      {
+        name: "Bitcoin Cash Network Discussions",
+        description:
+          "Professional meetings. Practical topics. Productive dialogues.",
+        url: "https://bitcoincashnetworkdiscussions.org/",
+      },
+      {
+        name: "Bitcoin Cash Research",
+        description:
+          "Ongoing discussion and research into protocol upgrade proposals.",
+        url: "https://bitcoincashresearch.org/",
+      },
+    ],
+  },
 ];
 
 module.exports = discoverCategories;
