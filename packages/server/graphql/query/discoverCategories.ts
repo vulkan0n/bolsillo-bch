@@ -27,6 +27,29 @@ const discoverCategories = [
         description: "A Bitcoin Cash full-node written in Java.",
         url: "https://bitcoinverde.org/",
       },
+      {
+        name: "Bitcoin Unlimited (BU)",
+        description:
+          "The Peer-to-Peer Electronic Cash System for Planet Earth.",
+        url: "https://www.bitcoinunlimited.info/",
+      },
+      {
+        name: "BCHD",
+        description:
+          "A mature, full node implementation of the Bitcoin Cash protocol written in Go.",
+        url: "https://bchd.cash/",
+      },
+      {
+        name: "Knuth",
+        description: "High performance Bitcoin development platform.",
+        url: "https://github.com/k-nuth/kth",
+      },
+      {
+        name: "Flowee",
+        description:
+          "Flowee is a family of products and our goal is to move the world towards a Bitcoin Cash economy.",
+        url: "https://flowee.org/",
+      },
     ],
   },
 ];
