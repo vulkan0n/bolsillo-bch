@@ -18,9 +18,6 @@ import { ONE_HUNDRED_MILLION } from "@selene-wallet/common/dist/utils/consts";
 import LiveBalance from "@selene-wallet/app/src/components/atoms/LiveBalance";
 import { updateTransactionPadBalance } from "@selene-wallet/app/src/redux/reducers/transactionPadReducer";
 import { selectIsPadZeroBalance } from "@selene-wallet/app/src/redux/selectors";
-import { iconImport } from "@selene-wallet/app/src/design/icons";
-import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import SPACING from "@selene-wallet/common/design/spacing";
 import GreyBar from "@selene-wallet/app/src/components/atoms/GreyBar";
 
 const ReceivePad = ({ navigation }) => {
@@ -68,12 +65,17 @@ const ReceivePad = ({ navigation }) => {
     navigation.navigate("Receive Num Pad");
   };
 
+  const onPressToSend = () => {
+    navigation.navigate("Send");
+  };
+
   return (
     <View style={styles.container as any}>
       <GreyBar
         text={"Swipe to Send"}
         leftIcon="faArrowRight"
         rightIcon={"faPaperPlane"}
+        onPress={onPressToSend}
       />
       <View style={styles.inputBackground as any}>
         <View style={styles.receivePad as any}>

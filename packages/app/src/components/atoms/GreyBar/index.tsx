@@ -9,11 +9,12 @@ interface Props {
   text: string;
   leftIcon?: IconType;
   rightIcon?: IconType;
+  onPress?: () => void;
 }
 
-const GreyBar = ({ text, leftIcon, rightIcon }: Props) => {
+const GreyBar = ({ text, leftIcon, rightIcon, onPress = () => {} }: Props) => {
   return (
-    <View style={styles.container as any}>
+    <Pressable onPress={onPress} style={styles.container as any}>
       {leftIcon && (
         <FontAwesomeIcon
           icon={iconImport(leftIcon)}
@@ -31,7 +32,7 @@ const GreyBar = ({ text, leftIcon, rightIcon }: Props) => {
           color={COLOURS.black}
         />
       )}
-    </View>
+    </Pressable>
   );
 };
 
