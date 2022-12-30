@@ -15,6 +15,29 @@ const discoverCategories = [
         description: "Satoshi Nakamoto's original description of Bitcoin.",
         url: "https://bitcoincashpodcast.com/bitcoin.pdf",
       },
+      {
+        name: "Who Killed Bitcoin?",
+        description:
+          "The best documentary explaining the origins, workings and history of Bitcoin/Cash, in 45 mins.",
+        url: "https://www.youtube.com/watch?v=eafzIW52Rgc",
+      },
+      {
+        name: "FAQs: The Bitcoin Cash Podcast",
+        description:
+          "Answers to many of the most commonly asked Bitcoin Cash questions.",
+        url: "https://bitcoincashpodcast.com/faqs",
+      },
+      {
+        name: "Inflation: The Biggest Scam In The History Of Mankind",
+        description:
+          "Mike Maloney explains the US Federal Reserve system, the existing monetary order BCH is seeking to replace.",
+        url: "https://www.youtube.com/watch?v=iFDe5kUUyT0",
+      },
+      {
+        name: "Satoshi Nakamoto Archive",
+        description: "Archive of Satoshi Nakamoto's emails and posts.",
+        url: "https://www.bitcoin.com/satoshi-archive/",
+      },
     ],
   },
   {
