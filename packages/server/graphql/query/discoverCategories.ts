@@ -1,3 +1,9 @@
+const DEVS_AND_BUILDERS_TELEGRAM = {
+  name: "BCH Devs & Builders",
+  description: "Find engineering resources and help.",
+  url: "https://t.me/bchbuilders",
+};
+
 const discoverCategories = [
   {
     name: "Essential",
@@ -31,9 +37,7 @@ const discoverCategories = [
         url: "https://t.me/thebitcoincashpodcast_discussion",
       },
       {
-        name: "BCH Devs & Builders",
-        description: "Find engineering resources and help.",
-        url: "https://t.me/bchbuilders",
+        ...DEVS_AND_BUILDERS_TELEGRAM,
       },
       {
         name: "SmartBCH",
@@ -92,6 +96,9 @@ const discoverCategories = [
     name: "Engineering Resources",
     description: "Start building on Bitcoin Cash.",
     items: [
+      {
+        ...DEVS_AND_BUILDERS_TELEGRAM,
+      },
       {
         name: "Developers.cash",
         description:
