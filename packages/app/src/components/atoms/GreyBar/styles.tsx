@@ -8,7 +8,7 @@ const styles = {
     alignItems: "center",
     flexDirection: "row",
     backgroundColor: COLOURS.veryLightGrey,
-    paddingVertical: SPACING.five,
+    paddingVertical: SPACING.fifteen,
     width: "100%",
   },
   text: {

@@ -14,7 +14,7 @@ interface Props {
 
 const GreyBar = ({ text, leftIcon, rightIcon, onPress = () => {} }: Props) => (
   <Pressable onPress={onPress} style={styles.container as any}>
-    {leftIcon && (
+    {!!leftIcon && (
       <FontAwesomeIcon
         icon={iconImport(leftIcon)}
         size={20}
@@ -24,7 +24,7 @@ const GreyBar = ({ text, leftIcon, rightIcon, onPress = () => {} }: Props) => (
 
     <Text style={styles.text as any}>{text}</Text>
 
-    {rightIcon && (
+    {!!rightIcon && (
       <FontAwesomeIcon
         icon={iconImport(rightIcon)}
         size={20}

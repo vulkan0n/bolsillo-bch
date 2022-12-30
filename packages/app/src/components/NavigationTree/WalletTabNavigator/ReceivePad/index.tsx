@@ -69,10 +69,14 @@ const ReceivePad = ({ navigation }) => {
     navigation.navigate("Send");
   };
 
+  const onPressToWallets = () => {
+    navigation.navigate("Wallets");
+  };
+
   return (
     <View style={styles.container as any}>
       <GreyBar
-        text={"Swipe to Send"}
+        text={"Swipe right to Send"}
         leftIcon="faArrowRight"
         rightIcon={"faPaperPlane"}
         onPress={onPressToSend}
@@ -119,6 +123,12 @@ const ReceivePad = ({ navigation }) => {
           )}
         </View>
       </View>
+      <GreyBar
+        text={"Tap for more"}
+        leftIcon="faHandPointUp"
+        rightIcon={"faBitcoinSign"}
+        onPress={onPressToWallets}
+      />
     </View>
   );
 };

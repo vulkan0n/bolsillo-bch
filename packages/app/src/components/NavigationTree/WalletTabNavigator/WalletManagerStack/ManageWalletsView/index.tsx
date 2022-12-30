@@ -7,6 +7,7 @@ import WalletActions from "./WalletActions";
 import WalletRow from "./WalletRow";
 import Divider from "@selene-wallet/app/src/components/atoms/Divider";
 import StackSubheader from "@selene-wallet/app/src/components/atoms/StackSubheader";
+import GreyBar from "@selene-wallet/app/src/components/atoms/GreyBar";
 
 function ManageWalletsView({ navigation }) {
   const { wallets } = useSelector((state: ReduxState) => state.walletManager);
@@ -23,9 +24,13 @@ function ManageWalletsView({ navigation }) {
     />
   );
 
+  const onPressToWallets = () => {
+    navigation.goBack();
+  };
+
   return (
     <View style={{ flex: 1 }}>
-      <StackSubheader title={"Manage"} />
+      <StackSubheader title={"Wallets"} />
       <View style={styles.container as any}>
         <FlatList
           style={
@@ -42,6 +47,7 @@ function ManageWalletsView({ navigation }) {
           ListFooterComponent={<WalletActions navigation={navigation} />}
         />
       </View>
+      <GreyBar text={"Back"} onPress={onPressToWallets} />
     </View>
   );
 }

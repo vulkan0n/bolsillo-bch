@@ -30,15 +30,20 @@ function SendView({ navigation }) {
     navigation.navigate("Receive");
   };
 
+  const onPressToWallets = () => {
+    navigation.navigate("Wallets");
+  };
+
   return (
     <View style={styles.container as any}>
       <GreyBar
-        text={"Swipe to Receive"}
+        text={"Swipe left to Receive"}
         leftIcon="faArrowLeft"
         rightIcon={"faBitcoinSign"}
         onPress={onPressToReceive}
       />
       <TransactionPad navigation={navigation} />
+      <GreyBar text={"Tap for More"} onPress={onPressToWallets} />
     </View>
   );
 }
