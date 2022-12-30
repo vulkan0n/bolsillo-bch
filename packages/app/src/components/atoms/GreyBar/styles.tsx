@@ -2,13 +2,13 @@ import COLOURS from "@selene-wallet/common/design/colours";
 import SPACING from "@selene-wallet/common/design/spacing";
 import TYPOGRAPHY from "@selene-wallet/common/design/typography";
 
-const styles = {
+const styles = ({ isThin }) => ({
   container: {
     justifyContent: "center",
     alignItems: "center",
     flexDirection: "row",
     backgroundColor: COLOURS.veryLightGrey,
-    paddingVertical: SPACING.fifteen,
+    paddingVertical: isThin ? SPACING.five : SPACING.fifteen,
     width: "100%",
   },
   text: {
@@ -18,6 +18,6 @@ const styles = {
     marginLeft: 15,
     marginRight: 15,
   },
-};
+});
 
 export default styles;

@@ -20,7 +20,7 @@ import { updateTransactionPadBalance } from "@selene-wallet/app/src/redux/reduce
 import { selectIsPadZeroBalance } from "@selene-wallet/app/src/redux/selectors";
 import GreyBar from "@selene-wallet/app/src/components/atoms/GreyBar";
 
-const ReceivePad = ({ navigation }) => {
+const ReceiveView = ({ navigation }) => {
   const dispatch = useDispatch();
   const wallet = useSelector((state: ReduxState) => selectActiveWallet(state));
   const padBalanceInSats = useSelector((state: ReduxState): string =>
@@ -80,6 +80,7 @@ const ReceivePad = ({ navigation }) => {
         leftIcon="faArrowRight"
         rightIcon={"faPaperPlane"}
         onPress={onPressToSend}
+        isThin
       />
       <View style={styles.inputBackground as any}>
         <View style={styles.receivePad as any}>
@@ -123,14 +124,9 @@ const ReceivePad = ({ navigation }) => {
           )}
         </View>
       </View>
-      <GreyBar
-        text={"Tap for more"}
-        leftIcon="faHandPointUp"
-        rightIcon={"faBitcoinSign"}
-        onPress={onPressToWallets}
-      />
+      <GreyBar text={"Tap for Wallets & History"} onPress={onPressToWallets} />
     </View>
   );
 };
 
-export default ReceivePad;
+export default ReceiveView;

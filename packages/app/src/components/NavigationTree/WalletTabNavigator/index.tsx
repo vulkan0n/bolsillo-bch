@@ -1,7 +1,7 @@
 import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
-import ReceivePad from "./ReceivePad";
+import ReceiveView from "./ReceiveView";
 import ReceiveNumPad from "./ReceiveNumPad";
 import SendView from "./SendView";
 import AvailableBalance from "./SendView/AvailableBalance";
@@ -29,7 +29,7 @@ function WalletTabNavigator() {
       initialRouteName={initialRouteName}
     >
       <Tab.Screen name="Send" component={SendView} />
-      <Tab.Screen name="Receive" component={ReceivePad} />
+      <Tab.Screen name="Receive" component={ReceiveView} />
     </Tab.Navigator>
   );
 }

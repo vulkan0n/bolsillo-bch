@@ -41,9 +41,10 @@ function SendView({ navigation }) {
         leftIcon="faArrowLeft"
         rightIcon={"faBitcoinSign"}
         onPress={onPressToReceive}
+        isThin
       />
       <TransactionPad navigation={navigation} />
-      <GreyBar text={"Tap for More"} onPress={onPressToWallets} />
+      <GreyBar text={"Tap for Wallets & History"} onPress={onPressToWallets} />
     </View>
   );
 }
