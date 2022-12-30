@@ -7,6 +7,7 @@ import Card from "@selene-wallet/app/src/components/atoms/Card";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { iconImport } from "@selene-wallet/app/src/design/icons";
 import { DiscoverItem } from "../..";
+import WebLink from "../../../../../atoms/WebLink";
 
 interface Props {
   item: DiscoverItem;
@@ -27,6 +28,9 @@ function ItemCard({ categoryName, item, navigation }: Props) {
             <Text style={TYPOGRAPHY.h2black as any}>{item.name}</Text>
           </View>
 
+          <View style={styles.textWrapper as any}>
+            <WebLink url={item.url} />
+          </View>
           <Text style={TYPOGRAPHY.pLeft as any}>{item.description}</Text>
         </View>
         <View style={styles.chevronContainer}>
