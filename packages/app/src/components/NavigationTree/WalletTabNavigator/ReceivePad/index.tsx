@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { View, Text, Pressable } from "react-native";
 import { useSelector } from "react-redux";
 import styles from "./styles";
@@ -21,6 +21,7 @@ import { selectIsPadZeroBalance } from "@selene-wallet/app/src/redux/selectors";
 import { iconImport } from "@selene-wallet/app/src/design/icons";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import SPACING from "@selene-wallet/common/design/spacing";
+import GreyBar from "@selene-wallet/app/src/components/atoms/GreyBar";
 
 const ReceivePad = ({ navigation }) => {
   const dispatch = useDispatch();
@@ -69,39 +70,11 @@ const ReceivePad = ({ navigation }) => {
 
   return (
     <View style={styles.container as any}>
-      <View
-        style={{
-          justifyContent: "center",
-          alignItems: "center",
-          flexDirection: "row",
-          backgroundColor: COLOURS.veryLightGrey,
-          paddingVertical: SPACING.five,
-          width: "100%",
-        }}
-      >
-        <FontAwesomeIcon
-          icon={iconImport("faArrowRight")}
-          size={20}
-          color={COLOURS.black}
-        />
-
-        <Text
-          style={{
-            ...TYPOGRAPHY.p,
-            marginTop: 5,
-            marginBottom: 5,
-            marginLeft: 15,
-            marginRight: 15,
-          }}
-        >
-          Swipe to Send
-        </Text>
-        <FontAwesomeIcon
-          icon={iconImport("faPaperPlane")}
-          size={20}
-          color={COLOURS.black}
-        />
-      </View>
+      <GreyBar
+        text={"Swipe to Send"}
+        leftIcon="faArrowRight"
+        rightIcon={"faPaperPlane"}
+      />
       <View style={styles.inputBackground as any}>
         <View style={styles.receivePad as any}>
           {!isZeroPadBalance && (
