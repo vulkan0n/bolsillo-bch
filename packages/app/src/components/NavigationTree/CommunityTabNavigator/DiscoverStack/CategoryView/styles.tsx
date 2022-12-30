@@ -10,6 +10,11 @@ const styles = {
     padding: SPACING.fifteen,
     borderRadius: SPACING.borderRadius,
   },
+  backButton: {
+    flexDirection: "row",
+    justifyContent: "flex-start",
+    alignItems: "center",
+  },
 };
 
 export default styles;

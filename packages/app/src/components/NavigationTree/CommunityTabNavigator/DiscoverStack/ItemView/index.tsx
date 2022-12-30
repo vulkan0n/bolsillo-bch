@@ -7,6 +7,9 @@ import Divider from "@selene-wallet/app/src/components/atoms/Divider";
 import WebLink from "@selene-wallet/app/src/components/atoms/WebLink";
 import WebView from "react-native-webview";
 import { DiscoverCategory } from "..";
+import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+import { iconImport } from "@selene-wallet/app/src/design/icons";
+import COLOURS from "@selene-wallet/common/design/colours";
 
 interface Props {
   category: DiscoverCategory;
@@ -24,8 +27,15 @@ function ItemView({ route, navigation }: Props) {
   return (
     <ScrollView style={styles.scrollView as any}>
       <View style={styles.container as any}>
-        <Pressable onPress={onBack}>
-          <Text>Back to {categoryName}</Text>
+        <Pressable onPress={onBack} style={styles.backButton as any}>
+          <FontAwesomeIcon
+            icon={iconImport("faChevronLeft")}
+            size={20}
+            color={COLOURS.black}
+          />
+          <Text style={{ ...(TYPOGRAPHY.p as any), marginBottom: 0 }}>
+            {categoryName}
+          </Text>
         </Pressable>
         <Text style={{ ...TYPOGRAPHY.h1black, marginTop: SPACING.ten } as any}>
           {item.name}
