@@ -12,6 +12,42 @@ const discoverCategories = [
     ],
   },
   {
+    name: "Telegram Groups",
+    description: "Discuss Bitcoin Cash.",
+    items: [
+      {
+        name: "Bitcoin Cash",
+        description: "General Bitcoin Cash (non price) discussion.",
+        url: "https://t.me/bchchannel",
+      },
+      {
+        name: "BCH (Big Costco Hotdog) Price talk",
+        description: "Price and general Bitcoin Cash / hotdog discussion.",
+        url: "https://t.me/bchpricechannel",
+      },
+      {
+        name: "Bitcoin Cash Podcast",
+        description: "Discuss with listeners of The Bitcoin Cash Podcast.",
+        url: "https://t.me/thebitcoincashpodcast_discussion",
+      },
+      {
+        name: "BCH Devs & Builders",
+        description: "Find engineering resources and help.",
+        url: "https://t.me/bchbuilders",
+      },
+      {
+        name: "SmartBCH",
+        description: "Chat about the SmartBCH sidechain",
+        url: "https://t.me/smartbch_community",
+      },
+      {
+        name: "BCH Argentina",
+        description: "Charlar sobre BCH en Español.",
+        url: "https://t.me/BCHArgentina",
+      },
+    ],
+  },
+  {
     name: "Full nodes",
     description:
       "Software that propogates and validates transactions for Bitcoin miners and nodes.",
@@ -123,6 +159,12 @@ const discoverCategories = [
         description:
           "Decentralized finance using unspent transaction unlocking script. Open source, on-chain, running nativiely & directly on Bitcoin Cash (BCH).",
         url: "https://unspent.app/",
+      },
+      {
+        name: "CashScript Tutorial Series",
+        description:
+          "Learn how to write your very first Bitcoin Cash (BCH) smart contract!",
+        url: "https://www.youtube.com/watch?v=uzzUEQSKTh4",
       },
     ],
   },
