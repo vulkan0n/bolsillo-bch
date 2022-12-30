@@ -11,6 +11,7 @@ import { selectIsActiveWallet } from "@selene-wallet/app/src/redux/selectors";
 import CreatingWallet from "./CreatingWallet";
 import TabBar from "@selene-wallet/app/src/components/atoms/TabBar";
 import { selectIsActiveWalletZeroBalance } from "@selene-wallet/app/src/redux/selectors";
+import WalletManagerStack from "./WalletManagerStack";
 
 const Stack = createNativeStackNavigator();
 
@@ -52,6 +53,7 @@ const WalletStack = () => {
       >
         <Stack.Screen name="Wallet Home" component={WalletTabNavigator} />
         <Stack.Screen name="Receive Num Pad" component={ReceiveNumPad} />
+        <Stack.Screen name="Wallets" component={WalletManagerStack} />
       </Stack.Navigator>
     </>
   );

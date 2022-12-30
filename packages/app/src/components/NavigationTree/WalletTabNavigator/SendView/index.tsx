@@ -9,6 +9,7 @@ import SPACING from "@selene-wallet/common/design/spacing";
 import TYPOGRAPHY from "@selene-wallet/common/design/typography";
 import { iconImport } from "@selene-wallet/app/src/design/icons";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+import GreyBar from "@selene-wallet/app/src/components/atoms/GreyBar";
 
 function SendView({ navigation }) {
   const dispatch = useDispatch();
@@ -25,40 +26,18 @@ function SendView({ navigation }) {
     return unsubscribe;
   }, [navigation]);
 
+  const onPressToReceive = () => {
+    navigation.navigate("Receive");
+  };
+
   return (
     <View style={styles.container as any}>
-      <View
-        style={{
-          justifyContent: "center",
-          alignItems: "center",
-          flexDirection: "row",
-          backgroundColor: COLOURS.veryLightGrey,
-          paddingVertical: SPACING.five,
-          width: "100%",
-        }}
-      >
-        <FontAwesomeIcon
-          icon={iconImport("faArrowLeft")}
-          size={20}
-          color={COLOURS.black}
-        />
-        <Text
-          style={{
-            ...TYPOGRAPHY.p,
-            marginTop: 5,
-            marginBottom: 5,
-            marginLeft: 15,
-            marginRight: 15,
-          }}
-        >
-          Swipe to Receive
-        </Text>
-        <FontAwesomeIcon
-          icon={iconImport("faBitcoinSign")}
-          size={20}
-          color={COLOURS.black}
-        />
-      </View>
+      <GreyBar
+        text={"Swipe to Receive"}
+        leftIcon="faArrowLeft"
+        rightIcon={"faBitcoinSign"}
+        onPress={onPressToReceive}
+      />
       <TransactionPad navigation={navigation} />
     </View>
   );
