@@ -16,6 +16,7 @@ import {
   getWalletSatoshiBalance,
   scanWallet10NewAddresses,
   checkWalletExistingAddresses,
+  checkWalletRecentAddresses,
 } from "@selene-wallet/app/src/utils/wallet";
 import Divider from "@selene-wallet/app/src/components/atoms/Divider";
 
@@ -51,7 +52,14 @@ const CoinsView = ({}) => {
           onPress={() => checkWalletExistingAddresses(wallet, isTestNet)}
           variant={"primary"}
         >
-          Check existing addresses
+          Check all addresses
+        </Button>
+
+        <Button
+          onPress={() => checkWalletRecentAddresses(wallet, isTestNet)}
+          variant={"primary"}
+        >
+          Check recent addresses
         </Button>
 
         <Text style={TYPOGRAPHY.h2black as any}>Balance</Text>

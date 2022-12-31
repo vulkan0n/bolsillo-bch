@@ -145,3 +145,17 @@ export const checkWalletExistingAddresses = (
     scanAddressAtIndex(wallet, i, isTestNet);
   }
 };
+
+// Re-check latest 7 addresses, both used and unused
+// Most likely use: looking for new coins on existing addresses
+export const checkWalletRecentAddresses = (
+  wallet: SeleneWalletType,
+  isTestNet: boolean
+) => {
+  const lastAddressHdIndex = getWalletLastAddressHdIndex(wallet);
+  const startingPoint = lastAddressHdIndex - 7;
+
+  for (let i = startingPoint; i <= lastAddressHdIndex; i++) {
+    scanAddressAtIndex(wallet, i, isTestNet);
+  }
+};
