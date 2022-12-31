@@ -40,7 +40,7 @@ Note that this has some limitations, as WebView browser doesn't have access to e
 
 To watch the console.logs from inside the Bridge, see: https://stackoverflow.com/a/48573345
 
-Bridge actions are driven by the native app, which sends a `BRIDGE_MESSAGE_TYPE` and receives a corresponding paired `RESPONSE_MESSAGE_TYPE`. The only exception is the `RESPONSE_MESSAGE_TYPE.RECEIVED_COINS` which the bridge independently monitors and notifies the main app of unprompted.
+Bridge actions are driven by the native app, which sends a `BRIDGE_MESSAGE_TYPE` and receives a corresponding paired `RESPONSE_MESSAGE_TYPE`.
 
 ## Conventions
 

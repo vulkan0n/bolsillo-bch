@@ -18,8 +18,6 @@ export const RESPONSE_MESSAGE_TYPES = {
   SEND_COINS_RESPONSE_FAIL: "SEND_COINS_RESPONSE_FAIL",
   // Can be returned in response to any message
   ERROR: "ERROR",
-  // Special response type, not paired with or triggered by an incoming BRIDGE_MESSAGE_TYPE
-  RECEIVED_COINS: "RECEIVED_COINS",
   // Triggered by SEND_COINS, but only indirectly via a detected balance change
   SEND_COINS_RESPONSE_DETECTED: "SEND_COINS_RESPONSE_DETECTED",
 };
