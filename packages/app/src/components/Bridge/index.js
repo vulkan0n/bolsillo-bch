@@ -203,7 +203,7 @@ const Bridge = () => {
         //         //   await walletRequestBalance.getHistory("sat", 0, 100);
 
         //         emit({
-        //           type: RESPONSE_MESSAGE_TYPES.SEND_COINS_RESPONSE_DETECTED,
+        //           type: RESPONSE_MESSAGE_TYPES.SEND_COINS_RESPONSE,
         //           data: {
         //             name: message?.data?.name,
         //             balance: freshBalance,

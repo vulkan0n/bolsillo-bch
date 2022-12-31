@@ -107,7 +107,7 @@ export const sendCoins = async (WalletObject, message) => {
     console.log("Sent transaction hash:", { result });
 
     emit({
-      type: RESPONSE_MESSAGE_TYPES.SEND_COINS_RESPONSE_DETECTED,
+      type: RESPONSE_MESSAGE_TYPES.SEND_COINS_RESPONSE,
       data: {
         name: message?.data?.name,
         // transactionHistory,
