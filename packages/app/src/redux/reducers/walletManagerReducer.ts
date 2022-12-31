@@ -106,6 +106,24 @@ const walletMangerSlice = createSlice({
       );
       wallet.coins = action.payload?.coins;
     },
+    mergeSeleneAddressToWallet(state, action) {
+      const wallet = state.wallets.find(
+        ({ name }) => name === action.payload.name
+      );
+      console.log("mergeSeleneAddressToWallet");
+      console.log("action.payload", action.payload);
+      console.log("wallet", wallet);
+      console.log("----");
+
+      const mergedList = [action.payload?.seleneAddress, ...wallet.addresses];
+      const uniqueList = R.uniqBy(
+        (address) => address.hdWalletIndex,
+        mergedList
+      );
+      const diff = R.sortBy(R.prop("hdWalletIndex"));
+      const sortedList = R.sort(diff, uniqueList);
+      wallet.addresses = sortedList;
+    },
     importWalletTransactionHistory(state, action) {
       const wallet = state.wallets.find(
         ({ name }) => name === action.payload.name
@@ -188,6 +206,7 @@ export const {
   updateWalletCashAddr,
   updateWalletMaxAddressIndex,
   updateWalletCoins,
+  mergeSeleneAddressToWallet,
   importWalletTransactionHistory,
   updateTransactionNote,
 } = walletMangerSlice.actions;

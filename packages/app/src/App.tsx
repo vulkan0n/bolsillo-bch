@@ -21,7 +21,11 @@ import persistor from "./redux/persistor";
 import Toast from "react-native-toast-message";
 import toastConfig from "./config/toast";
 import preloadMainNetScript from "./config/preloadMainNetScript";
-import { WalletType, CoinType } from "@selene-wallet/common/dist/types";
+import {
+  WalletType,
+  CoinType,
+  SeleneAddressType,
+} from "@selene-wallet/common/dist/types";
 import {
   createDefaultWallet,
   updateNewWalletScratchPadDetails,
@@ -30,6 +34,7 @@ import {
   importWalletTransactionHistory,
   updateWalletMaxAddressIndex,
   updateWalletCoins,
+  mergeSeleneAddressToWallet,
 } from "./redux/reducers/walletManagerReducer";
 import {
   updateTransactionPadIsSendingCoins,
@@ -73,6 +78,7 @@ interface BridgeResponseMessage {
     transactionHistory?: {
       transactions: TransactionHistoryTxType[];
     };
+    seleneAddress: SeleneAddressType;
   };
 }
 
@@ -111,6 +117,17 @@ export default function App() {
               derivationPath: message.data.wallet.derivationPath,
               cashaddr: message.data.wallet.cashaddr,
               maxAddressIndex: 0,
+            })
+          );
+          break;
+
+        case RESPONSE_MESSAGE_TYPES.SCAN_ADDRESS_AT_INDEX_RESPONSE:
+          console.log("Received back a Selene Address from bridge!");
+          console.log("message.data", message.data);
+          store.dispatch(
+            mergeSeleneAddressToWallet({
+              name: message.data.name,
+              seleneAddress: message.data.seleneAddress,
             })
           );
           break;
