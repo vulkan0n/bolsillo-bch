@@ -1,4 +1,8 @@
-import { SeleneWalletType, CoinType } from "@selene-wallet/common/dist/types";
+import {
+  SeleneWalletType,
+  CoinType,
+  SeleneAddressType,
+} from "@selene-wallet/common/dist/types";
 import { BRIDGE_MESSAGE_TYPES } from "@selene-wallet/app/src/utils/bridgeMessages";
 import emit from "@selene-wallet/app/src/utils/emit";
 
@@ -14,6 +18,13 @@ export const getWalletSatoshiBalance = (wallet: SeleneWalletType): string =>
   getWalletUTXOs(wallet)
     .reduce((sum, utxo) => sum + utxo.satoshis, 0)
     .toString();
+
+export const getWalletLastAddress = (
+  wallet: SeleneWalletType
+): SeleneAddressType => {
+  const walletAddressLength = wallet?.addresses?.length;
+  return wallet?.addresses?.[walletAddressLength - 1];
+};
 
 export const scanAddressAtIndex = (
   wallet: SeleneWalletType,
@@ -32,7 +43,11 @@ export const scanAddressAtIndex = (
   });
 };
 
-export const getWalletDepositAddress = (wallet: SeleneWalletType): string => {
+export const getWalletDepositAddress = (
+  wallet: SeleneWalletType,
+  isTestNet: boolean = false
+): string => {
+  console.log("triggered get wallet address ");
   // Next deposit address is first address
   // without any transaction history or unspent UTXOs
   // It should be impossible to have unspent UTXOs without history
@@ -41,7 +56,21 @@ export const getWalletDepositAddress = (wallet: SeleneWalletType): string => {
   const depositAddressIndex = wallet?.addresses?.findIndex(
     (a) => a?.transactions?.length === 0 && a?.coins?.length === 0
   );
-  return wallet?.addresses?.[depositAddressIndex]?.cashaddr || "";
+  const freshDepositAddress =
+    wallet?.addresses?.[depositAddressIndex]?.cashaddr;
+
+  if (freshDepositAddress) {
+    return freshDepositAddress;
+  }
+
+  // Generate new fresh addresses
+  const lastAddressHdIndex = getWalletLastAddress(wallet)?.hdWalletIndex;
+  scanAddressAtIndex(wallet, lastAddressHdIndex + 1, isTestNet);
+  scanAddressAtIndex(wallet, lastAddressHdIndex + 2, isTestNet);
+  scanAddressAtIndex(wallet, lastAddressHdIndex + 3, isTestNet);
+
+  // In case app is offline, default back to the most recent available address
+  return getWalletLastAddress(wallet)?.cashaddr || "";
 };
 
 // Scan 10 new addresses, starting at index 0
@@ -74,9 +103,7 @@ export const checkWalletExistingAddresses = (
   wallet: SeleneWalletType,
   isTestNet: boolean
 ) => {
-  const walletAddressLength = wallet?.addresses?.length;
-  const walletLastAddress = wallet?.addresses?.[walletAddressLength - 1];
-  const lastAddressHdIndex = walletLastAddress?.hdWalletIndex;
+  const lastAddressHdIndex = getWalletLastAddress(wallet)?.hdWalletIndex;
 
   for (let i = 0; i <= lastAddressHdIndex; i++) {
     scanAddressAtIndex(wallet, i, isTestNet);
