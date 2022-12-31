@@ -27,6 +27,18 @@ const CoinsView = ({}) => {
     fetchActiveWalletBalance(wallet, isTestNet);
   };
 
+  const resetAddresses = () => {
+    console.log("resetting address");
+    store.dispatch(
+      updateWalletMaxAddressIndex({
+        name: wallet.name,
+        maxAddressIndex: 0,
+      })
+    );
+
+    fetchActiveWalletBalance(wallet, isTestNet);
+  };
+
   const utxoCount = wallet?.coins?.length;
 
   return (
@@ -35,6 +47,9 @@ const CoinsView = ({}) => {
       <View style={styles.whiteBackground}>
         <Button onPress={addAddresses} variant={"primary"}>
           Scan 10 more addresses
+        </Button>
+        <Button onPress={resetAddresses} variant={"primary"}>
+          Reset to 0 addresses scanned
         </Button>
         <Text style={TYPOGRAPHY.h2black}>Coin UTXOs</Text>
         <Text style={TYPOGRAPHY.p}>UTXO count: {utxoCount}</Text>

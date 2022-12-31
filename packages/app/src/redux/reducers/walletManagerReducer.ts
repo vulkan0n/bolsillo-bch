@@ -98,7 +98,7 @@ const walletMangerSlice = createSlice({
       const wallet = state.wallets.find(
         ({ name }) => name === action.payload.name
       );
-      wallet.maxAddressIndex = Math.max(wallet.maxAddressIndex, action.payload.maxAddressIndex);
+      wallet.maxAddressIndex = action.payload.maxAddressIndex;
     },
     updateWalletCoins(state, action) {
       const wallet = state.wallets.find(

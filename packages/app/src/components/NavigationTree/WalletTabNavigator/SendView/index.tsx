@@ -1,14 +1,9 @@
 import React, { useEffect } from "react";
-import { View, Text } from "react-native";
+import { View } from "react-native";
 import { useDispatch } from "react-redux";
 import TransactionPad from "./TransactionPad";
 import styles from "./styles";
 import { updateTransactionPadBalance } from "@selene-wallet/app/src/redux/reducers/transactionPadReducer";
-import COLOURS from "@selene-wallet/common/design/colours";
-import SPACING from "@selene-wallet/common/design/spacing";
-import TYPOGRAPHY from "@selene-wallet/common/design/typography";
-import { iconImport } from "@selene-wallet/app/src/design/icons";
-import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import GreyBar from "@selene-wallet/app/src/components/atoms/GreyBar";
 
 function SendView({ navigation }) {

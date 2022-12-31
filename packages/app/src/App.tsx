@@ -116,6 +116,9 @@ export default function App() {
           break;
 
         case RESPONSE_MESSAGE_TYPES.REQUEST_BALANCE_AND_ADDRESS_RESPONSE:
+          console.log("REQUEST_BALANCE_AND_ADDRESS_RESPONSE ----");
+          console.log("message.data: ", message.data);
+          console.log("---");
           store.dispatch(
             updateWalletBalance({
               name: message.data.name,
