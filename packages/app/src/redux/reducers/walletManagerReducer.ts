@@ -5,6 +5,8 @@ import * as R from "ramda";
 import { TransactionType } from "@selene-wallet/common/dist/types";
 import { replace } from "immutable-replace";
 import { WalletManagerState } from "@selene-wallet/common/dist/types/reducers/walletManagerReducer";
+import { getWalletSatoshiBalance } from "@selene-wallet/app/src/utils/wallet";
+import { receiveCoinsEvent } from "@selene-wallet/app/src/utils/receiveCoins";
 
 const BLANK_SCRATCH_PAD = {
   name: "",
@@ -92,6 +94,8 @@ const walletMangerSlice = createSlice({
         ({ name }) => name === action.payload.name
       );
 
+      const existingBalance = getWalletSatoshiBalance(wallet);
+
       const walletAddresses = wallet?.addresses ?? [];
       const mergedList = [action.payload?.seleneAddress, ...walletAddresses];
       const uniqueList = R.uniqBy(
@@ -103,6 +107,12 @@ const walletMangerSlice = createSlice({
       };
       const sortedList = R.sort(orderByAscendingIndex, uniqueList);
       wallet.addresses = sortedList;
+
+      const newBalance = getWalletSatoshiBalance(wallet);
+      // If balance has increased, then coins were received so trigger coin receive action
+      if (newBalance > existingBalance) {
+        receiveCoinsEvent();
+      }
     },
     importWalletTransactionHistory(state, action) {
       const wallet = state.wallets.find(

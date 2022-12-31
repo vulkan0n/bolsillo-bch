@@ -163,30 +163,6 @@ export default function App() {
           });
           break;
 
-        case RESPONSE_MESSAGE_TYPES.RECEIVED_COINS:
-          // TODO: Update UTXO set
-
-          const { sound } = await Audio.Sound.createAsync(
-            require("./receive.mp3")
-          );
-
-          Toast.show({
-            type: "customSuccess",
-            props: {
-              title: "Received Bitcoin Cash",
-              text: "Peer-to-peer electronic cash!",
-            },
-          });
-
-          // Sound duration: 1 second
-          await sound.playAsync();
-          setTimeout(() => {
-            // Unload sound to prevent memory leak
-            sound.unloadAsync();
-          }, ONE_SECOND * 3);
-
-          break;
-
         case RESPONSE_MESSAGE_TYPES.SEND_COINS_RESPONSE_DETECTED:
           if (message?.data?.transactionHistory) {
             store.dispatch(
