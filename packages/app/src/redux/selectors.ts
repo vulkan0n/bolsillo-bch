@@ -10,7 +10,7 @@ import {
   convertRawCurrencyToRawSats,
   prettifyPadBalance,
 } from "@selene-wallet/app/src/utils/formatting";
-import { getWalletSatoshiBalance } from "@selene-wallet/app/src/utils/wallets";
+import { getWalletSatoshiBalance } from "@selene-wallet/app/src/utils/wallet";
 
 import { CurrencyOrDenominationType } from "@selene-wallet/common/dist/types";
 import {

@@ -18,7 +18,7 @@ import {
   getWalletUTXOs,
   getWalletUTXOcount,
   getWalletSatoshiBalance,
-} from "@selene-wallet/app/src/utils/wallets";
+} from "@selene-wallet/app/src/utils/wallet";
 import Divider from "@selene-wallet/app/src/components/atoms/Divider";
 
 const CoinsView = ({}) => {
@@ -49,7 +49,7 @@ const CoinsView = ({}) => {
   };
 
   const scanAddress = () => {
-    scanAddressAtIndex(wallet, 12, isTestNet);
+    scanAddressAtIndex(wallet, 13, isTestNet);
   };
 
   const walletBalance = getWalletSatoshiBalance(wallet);

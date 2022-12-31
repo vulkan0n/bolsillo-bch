@@ -12,3 +12,8 @@ export const getWalletSatoshiBalance = (wallet: SeleneWalletType): string =>
   getWalletUTXOs(wallet)
     .reduce((sum, utxo) => sum + utxo.satoshis, 0)
     .toString();
+
+export const getWalletDepositAddress = (wallet: SeleneWalletType): string => {
+  const lastIndex = wallet?.addresses?.length - 1;
+  return wallet?.addresses?.[lastIndex]?.cashaddr || "";
+};

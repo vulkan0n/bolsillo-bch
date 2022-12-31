@@ -10,6 +10,7 @@ import { useDispatch } from "react-redux";
 import { ReduxState } from "@selene-wallet/common/dist/types";
 import * as Clipboard from "expo-clipboard";
 import COLOURS from "@selene-wallet/common/design/colours";
+import { getWalletDepositAddress } from "@selene-wallet/app/src/utils/wallet";
 import {
   selectActiveWallet,
   selectPadBalanceInRawSats,
@@ -34,10 +35,11 @@ const ReceiveView = ({ navigation }) => {
   const padBalanceInIntSats = parseInt(padBalanceInSats);
 
   const logo = require("../../../../assets/images/bch.png");
-  const isAddress = wallet?.cashaddr;
+  const depositAddress = getWalletDepositAddress(wallet);
+  const isAddress = depositAddress?.length >= 1;
   const isReceiveAmount = padBalanceInSats !== "0";
   const receiveAmountInBch = padBalanceInIntSats / ONE_HUNDRED_MILLION;
-  const qrValue = `${wallet?.cashaddr}${
+  const qrValue = `${depositAddress}${
     isReceiveAmount ? `?amount=${receiveAmountInBch}` : ""
   }`;
 

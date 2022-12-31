@@ -118,10 +118,10 @@ const walletMangerSlice = createSlice({
         (address) => address.hdWalletIndex,
         mergedList
       );
-      const orderByDescendingIndex = (a, b) => {
-        return b.hdWalletIndex - a.hdWalletIndex;
+      const orderByAscendingIndex = (a, b) => {
+        return a.hdWalletIndex - b.hdWalletIndex;
       };
-      const sortedList = R.sort(orderByDescendingIndex, uniqueList);
+      const sortedList = R.sort(orderByAscendingIndex, uniqueList);
       wallet.addresses = sortedList;
     },
     importWalletTransactionHistory(state, action) {
