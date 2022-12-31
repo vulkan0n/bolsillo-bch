@@ -12,6 +12,7 @@ import { selectActiveWallet } from "@selene-wallet/app/src/redux/selectors";
 import { updateTransactionPadIsSendingCoins } from "@selene-wallet/app/src/redux/reducers/transactionPadReducer";
 import fetchPriceData from "./fetchPriceData";
 import checkIn from "./checkIn";
+import { checkWalletExistingAddresses } from "@selene-wallet/app/src/utils/wallet";
 
 export const scanAddressAtIndex = (
   wallet: SeleneWalletType,
@@ -64,19 +65,20 @@ const BackgroundIntervals = () => {
     checkIn();
   };
 
-  // Recheck balance when active wallet changes
+  // Recheck addresses when active wallet changes
+  // Updates balance and transaction histories if any missed
   // Including importing a new wallet
   // Add 1 second delay to allow internet connection time
   // to load and reduce No Connection errors
-  // useEffect(() => {
-  //   if (!wallet) {
-  //     return;
-  //   }
+  useEffect(() => {
+    if (!wallet) {
+      return;
+    }
 
-  //   setTimeout(() => {
-  //     fetchActiveWalletBalance();
-  //   }, ONE_SECOND);
-  // }, [wallet]);
+    setTimeout(() => {
+      checkWalletExistingAddresses(wallet, isTestNet);
+    }, ONE_SECOND);
+  }, [wallet]);
 
   // Run regular checks every 30s
   useEffect(() => {
