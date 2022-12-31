@@ -14,6 +14,13 @@ export const getWalletSatoshiBalance = (wallet: SeleneWalletType): string =>
     .toString();
 
 export const getWalletDepositAddress = (wallet: SeleneWalletType): string => {
-  const lastIndex = wallet?.addresses?.length - 1;
-  return wallet?.addresses?.[lastIndex]?.cashaddr || "";
+  // Next deposit address is first address
+  // without any transaction history or unspent UTXOs
+  // It should be impossible to have unspent UTXOs without history
+  // but recently sent coins may show a UTXO history and transaction history has
+  // not refreshed yet so checking both to be safe
+  const depositAddressIndex = wallet?.addresses?.findIndex(
+    (a) => a?.transactions?.length === 0 && a?.coins?.length === 0
+  );
+  return wallet?.addresses?.[depositAddressIndex]?.cashaddr || "";
 };
