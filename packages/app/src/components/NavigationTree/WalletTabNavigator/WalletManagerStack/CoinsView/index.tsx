@@ -25,8 +25,11 @@ const CoinsView = ({}) => {
   const wallet = useSelector((state: ReduxState) => selectActiveWallet(state));
   const { isTestNet } = useSelector((state: ReduxState) => state.settings);
 
-  // Scan 10 new addresses, starting at index 0 and skipping over any addresses that are already known
-  const addAddresses = () => {
+  // Scan 10 new addresses, starting at index 0
+  // and skipping over any addresses that are already known
+  // Note that new UTXOs (coins) on addresses at known indices
+  // will not be detected
+  const scan10NewAddresses = () => {
     let counter = 0;
     let index = 0;
 
@@ -36,40 +39,12 @@ const CoinsView = ({}) => {
       );
 
       if (!isAddressAtIndex) {
-        console.log("hit an address");
-        console.log({ index });
-        console.log({ counter });
         scanAddressAtIndex(wallet, index, isTestNet);
         counter += 1;
       }
 
       index += 1;
     }
-
-    store.dispatch(
-      updateWalletMaxAddressIndex({
-        name: wallet.name,
-        maxAddressIndex: wallet.maxAddressIndex + 10,
-      })
-    );
-
-    fetchActiveWalletBalance(wallet, isTestNet);
-  };
-
-  const resetAddresses = () => {
-    console.log("resetting address");
-    store.dispatch(
-      updateWalletMaxAddressIndex({
-        name: wallet.name,
-        maxAddressIndex: 0,
-      })
-    );
-
-    fetchActiveWalletBalance(wallet, isTestNet);
-  };
-
-  const scanAddress = () => {
-    scanAddressAtIndex(wallet, 13, isTestNet);
   };
 
   const walletBalance = getWalletSatoshiBalance(wallet);
@@ -81,14 +56,8 @@ const CoinsView = ({}) => {
     <ScrollView style={styles.scrollView}>
       <StackSubheader title={"Coins"} isBackButton />
       <View style={styles.whiteBackground}>
-        <Button onPress={addAddresses} variant={"primary"}>
-          Scan 10 more addresses
-        </Button>
-        <Button onPress={resetAddresses} variant={"primary"}>
-          Reset to 0 addresses scanned
-        </Button>
-        <Button onPress={scanAddress} variant={"primary"}>
-          Scan address
+        <Button onPress={scan10NewAddresses} variant={"primary"}>
+          Scan 10 new addresses
         </Button>
 
         <Text style={TYPOGRAPHY.h2black as any}>Balance</Text>
