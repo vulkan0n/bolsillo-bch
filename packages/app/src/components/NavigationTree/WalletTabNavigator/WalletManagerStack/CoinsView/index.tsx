@@ -14,6 +14,11 @@ import {
 } from "@selene-wallet/app/src/components/BackgroundIntervals";
 import { ScrollView } from "react-native-gesture-handler";
 import TYPOGRAPHY from "@selene-wallet/common/design/typography";
+import {
+  getWalletUTXOs,
+  getWalletUTXOcount,
+  getWalletSatoshiBalance,
+} from "@selene-wallet/app/src/utils/wallets";
 
 const CoinsView = ({}) => {
   const wallet = useSelector((state: ReduxState) => selectActiveWallet(state));
@@ -46,7 +51,10 @@ const CoinsView = ({}) => {
     scanAddressAtIndex(wallet, 12, isTestNet);
   };
 
-  const utxoCount = wallet?.coins?.length;
+  const utxos = getWalletUTXOs(wallet);
+
+  const utxoCount = getWalletUTXOcount(wallet);
+  const walletBalance = getWalletSatoshiBalance(wallet);
 
   return (
     <ScrollView style={styles.scrollView}>
@@ -68,11 +76,21 @@ const CoinsView = ({}) => {
         </Text>
         <Text style={TYPOGRAPHY.p}>UTXO count: {utxoCount}</Text>
 
-        {wallet?.addresses?.map((address) => (
-          <View key={address?.cashaddr}>
-            <Text>Address: {JSON.stringify(address)}</Text>
-          </View>
-        ))}
+        {wallet?.addresses?.map((address) => {
+          const balance = address.coins.reduce(
+            (sum, coin) => sum + coin.satoshis,
+            0
+          );
+
+          return (
+            <View key={address?.cashaddr}>
+              {/* <Text>Address: {JSON.stringify(address)}</Text> */}
+              <Text>#{address.hdWalletIndex}</Text>
+              <Text>{balance}</Text>
+              <Text>{address.cashaddr}</Text>
+            </View>
+          );
+        })}
 
         {wallet.coins &&
           wallet.coins?.map((val) => (

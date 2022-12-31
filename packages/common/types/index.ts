@@ -34,6 +34,12 @@ export interface CoinType {
   addressIndex: string;
 }
 
+export interface SeleneAddressType {
+  hdWalletIndex: number;
+  coins: CoinType[];
+  cashaddr: string;
+}
+
 export interface SeleneWalletType {
   name: string;
   description: string;
@@ -44,6 +50,7 @@ export interface SeleneWalletType {
   transactions: TransactionType[];
   maxAddressIndex: number;
   coins: CoinType[];
+  addresses: SeleneAddressType[];
 }
 
 export interface EmitEvent {
