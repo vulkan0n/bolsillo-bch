@@ -3,10 +3,6 @@ import { RESPONSE_MESSAGE_TYPES } from "@selene-wallet/app/src/utils/bridgeMessa
 
 export const sendCoins = async (WalletObject, message) => {
   console.log("message.data.coins", message?.data?.coins);
-  const walletSendCoins = await WalletObject.fromSeed(
-    message?.data?.mnemonic,
-    message?.data?.derivationPath
-  );
 
   try {
     const suitableCoins = message.data.coins.filter((coin) => !coin.token);
@@ -81,6 +77,7 @@ export const sendCoins = async (WalletObject, message) => {
           script: "unlock",
         },
       });
+
       const inputs = await Promise.all(suitableCoins.map(signCoin));
 
       const result = libauth.generateTransaction({
@@ -106,7 +103,17 @@ export const sendCoins = async (WalletObject, message) => {
 
     // get a transient wallet and send the built transaction
     const tempWallet = await WalletObject.newRandom();
-    await tempWallet.submitTransaction(finalTx, true);
+    const result = await tempWallet.submitTransaction(finalTx, true);
+    console.log({ result });
+
+    emit({
+      type: RESPONSE_MESSAGE_TYPES.SEND_COINS_RESPONSE_DETECTED,
+      data: {
+        name: message?.data?.name,
+        balance: freshBalance,
+        // transactionHistory,
+      },
+    });
 
     // Note: Monitoring .send() response for send confirmation
     // is unreliable and buggy

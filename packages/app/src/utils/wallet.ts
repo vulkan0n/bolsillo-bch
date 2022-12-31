@@ -11,6 +11,26 @@ export const getWalletUTXOs = (wallet: SeleneWalletType): CoinType[] =>
     ?.filter((a) => a?.coins?.length >= 1)
     ?.flatMap((a) => a.coins) ?? [];
 
+export const getWalletUTXOsToSendAmount = (
+  wallet: SeleneWalletType,
+  satoshisToSend: number
+): CoinType[] => {
+  const utxos: CoinType[] = getWalletUTXOs(wallet);
+  const totalSatsRequired: number = satoshisToSend + 2000; // Buffer for fees
+  console.log({ utxos });
+  let total = 0;
+  const sufficientUTXOs: CoinType[] = [];
+  for (let i = 0; i < utxos.length; i++) {
+    if (total < totalSatsRequired) {
+      sufficientUTXOs.push(utxos[i]);
+      total += sufficientUTXOs[i].satoshis;
+      console.log({ i, total, sufficientUTXOs });
+    }
+    break;
+  }
+  return sufficientUTXOs;
+};
+
 export const getWalletUTXOcount = (wallet: SeleneWalletType): number =>
   getWalletUTXOs(wallet)?.length;
 

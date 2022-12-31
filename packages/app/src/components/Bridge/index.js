@@ -132,8 +132,6 @@ const Bridge = () => {
           break;
 
         case BRIDGE_MESSAGE_TYPES.SCAN_ADDRESS_AT_INDEX:
-          console.log("scanning SCAN_ADDRESS_AT_INDEX!!");
-          console.log("message.data", message?.data);
           const { mnemonic, hdWalletIndex } = message?.data;
           const seleneAddress = await getSeleneAddressAtIndex(
             mnemonic,
@@ -145,14 +143,6 @@ const Bridge = () => {
             data: { name: message?.data?.name, seleneAddress },
           });
           break;
-
-        // TODO: Update balance watching
-        // case BRIDGE_MESSAGE_TYPES.REQUEST_BALANCE_AND_ADDRESS:
-        //   // max tracked HD address index
-        //   const maxIndex = message?.data?.maxAddressIndex || 0;
-
-        //   const { balances, coins, totalBalance, addresses } =
-        //     await getHDWalletInfo(maxIndex);
 
         //   // find out the latest non empty address and set it as next receiving address
         //   let nonZeroBalanceAddressIndex = 0;

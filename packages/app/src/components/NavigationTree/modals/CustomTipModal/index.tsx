@@ -21,7 +21,7 @@ import {
 import { BRIDGE_MESSAGE_TYPES } from "@selene-wallet/app/src/utils/bridgeMessages";
 import {
   getWalletDepositAddress,
-  getWalletUTXOs,
+  getWalletUTXOsToSendAmount,
 } from "@selene-wallet/app/src/utils/wallet";
 
 function CustomTipModal({ navigation, route }) {
@@ -51,7 +51,7 @@ function CustomTipModal({ navigation, route }) {
         derivationPath: wallet?.derivationPath,
         recipientCashAddr: donationBchAddress,
         satsToSend: tipAmountInIntSats,
-        coins: getWalletUTXOs(wallet),
+        coins: getWalletUTXOsToSendAmount(wallet, tipAmountInIntSats),
         changeAddress: getWalletDepositAddress(wallet),
         isTestNet,
       },
