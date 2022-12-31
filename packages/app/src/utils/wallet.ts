@@ -1,4 +1,4 @@
-import { SeleneWalletType, CoinType } from "@selene-wallet/common/types";
+import { SeleneWalletType, CoinType } from "@selene-wallet/common/dist/types";
 
 export const getWalletUTXOs = (wallet: SeleneWalletType): CoinType[] =>
   wallet?.addresses
