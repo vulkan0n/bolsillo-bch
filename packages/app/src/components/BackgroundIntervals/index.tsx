@@ -13,6 +13,23 @@ import { updateTransactionPadIsSendingCoins } from "@selene-wallet/app/src/redux
 import fetchPriceData from "./fetchPriceData";
 import checkIn from "./checkIn";
 
+export const scanAddressAtIndex = (
+  wallet: SeleneWalletType,
+  hdWalletIndex: number,
+  isTestNet: boolean
+) => {
+  emit({
+    type: BRIDGE_MESSAGE_TYPES.SCAN_ADDRESS_AT_INDEX,
+    data: {
+      name: wallet?.name,
+      mnemonic: wallet?.mnemonic,
+      derivationPath: wallet?.derivationPath,
+      hdWalletIndex,
+      isTestNet,
+    },
+  });
+};
+
 export const fetchActiveWalletBalance = (
   wallet: SeleneWalletType,
   isTestNet: boolean

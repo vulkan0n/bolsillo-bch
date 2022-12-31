@@ -8,7 +8,10 @@ import { updateWalletMaxAddressIndex } from "@selene-wallet/app/src/redux/reduce
 import Button from "@selene-wallet/app/src/components/atoms/Button";
 import StackSubheader from "@selene-wallet/app/src/components/atoms/StackSubheader";
 import styles from "./styles";
-import { fetchActiveWalletBalance } from "@selene-wallet/app/src/components/BackgroundIntervals";
+import {
+  fetchActiveWalletBalance,
+  scanAddressAtIndex,
+} from "@selene-wallet/app/src/components/BackgroundIntervals";
 import { ScrollView } from "react-native-gesture-handler";
 import TYPOGRAPHY from "@selene-wallet/common/design/typography";
 
@@ -39,6 +42,10 @@ const CoinsView = ({}) => {
     fetchActiveWalletBalance(wallet, isTestNet);
   };
 
+  const scanAddress = () => {
+    scanAddressAtIndex(wallet, 0, isTestNet);
+  };
+
   const utxoCount = wallet?.coins?.length;
 
   return (
@@ -51,12 +58,22 @@ const CoinsView = ({}) => {
         <Button onPress={resetAddresses} variant={"primary"}>
           Reset to 0 addresses scanned
         </Button>
+        <Button onPress={scanAddress} variant={"primary"}>
+          Scan address
+        </Button>
         <Text style={TYPOGRAPHY.h2black}>Coin UTXOs</Text>
         <Text style={TYPOGRAPHY.p}>UTXO count: {utxoCount}</Text>
         <Text style={TYPOGRAPHY.p}>
           Tracked addresses: {wallet.maxAddressIndex}
         </Text>
         <Text style={TYPOGRAPHY.p}>UTXO count: {utxoCount}</Text>
+
+        {wallet?.addresses?.map((address) => (
+          <View>
+            <Text>Address: {JSON.stringify(address)}</Text>
+          </View>
+        ))}
+
         {wallet.coins &&
           wallet.coins?.map((val) => (
             <View

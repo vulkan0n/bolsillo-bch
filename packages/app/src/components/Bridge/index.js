@@ -27,6 +27,34 @@ const Bridge = () => {
     try {
       const WalletObject = message?.data?.isTestNet ? TestNetWallet : Wallet;
 
+      const getSeleneAddressAtIndex = async (mnemonic, hdWalletIndex) => {
+        const hdWallet = await WalletObject.fromSeed(
+          mnemonic,
+          `m/44'/0'/0'/0/${hdWalletIndex}`
+        );
+
+        console.log({ hdWallet });
+
+        const hdWalletUtxos = await hdWallet.getAddressUtxos(hdWallet.cashaddr);
+        console.log({ hdWalletUtxos });
+        const coins = hdWalletUtxos.map((coin) => ({
+          height: coin.height,
+          transactionId: coin.txid,
+          outputIndex: coin.vout,
+          satoshis: coin.satoshis,
+          address: hdWallet.cashaddr,
+          addressIndex: hdWalletIndex,
+        }));
+
+        const balance = coins.reduce((sum, curr) => sum + curr.satoshis, 0);
+        return {
+          hdWalletIndex,
+          cashaddr: hdWallet.cashaddr,
+          balance,
+          coins,
+        };
+      };
+
       const getWalletInfo = async (index) => {
         const hdWallet = await WalletObject.fromSeed(
           message?.data?.mnemonic,
@@ -92,6 +120,21 @@ const Bridge = () => {
           emit({
             type: RESPONSE_MESSAGE_TYPES.CREATE_SCRATCHPAD_WALLET_RESPONSE,
             data: { wallet: walletScratchPad },
+          });
+          break;
+
+        case BRIDGE_MESSAGE_TYPES.SCAN_ADDRESS_AT_INDEX:
+          console.log("scanning SCAN_ADDRESS_AT_INDEX!!");
+          console.log("message.data", message?.data);
+          const { mnemonic, hdWalletIndex } = message?.data;
+          const seleneAddress = await getSeleneAddressAtIndex(
+            mnemonic,
+            hdWalletIndex
+          );
+          console.log({ seleneAddress });
+          emit({
+            type: RESPONSE_MESSAGE_TYPES.SCAN_ADDRESS_AT_INDEX_RESPONSE,
+            data: { name: message?.data?.name, seleneAddress },
           });
           break;
 
