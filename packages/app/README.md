@@ -46,11 +46,13 @@ Bridge actions are driven by the native app, which sends a `BRIDGE_MESSAGE_TYPE`
 
 This is a BCH standard app. Think in terms of BCH satoshis, stored as strings, then use the formatting and exchange rate helpers. All other exchange rates and balances are transformations of the satoshi value.
 
-Exception: wallet.balance stored as an integer, in satoshis.
-
 Bitcoin denominations are treated as separate currencies with a fixed exchange rate.
 
 Transaction histories are stored in reverse-chronological (descending block height) order.
+
+"Coins" and "UTXOs" are sometimes used interchangeably, so be aware of that. Mainnet.cash tends to think of them as "Coins", but Selene sometimes calls them "UTXOs" instead.
+
+Mainnet.cash "wallets", aka on the non-app side of the bridge, are not the same as "Selene Wallets". Mainnet wallets use only a single BCH address, and individually treat each BCH address as a separate wallet with attached UTXOs. To mimic an HD wallet, Selene aggregates those addresses into a single "Selene Wallet", and provides helper methods to extract the next available deposit address (first address with no balance or transaction history), count the outstanding number of UTXOs, sum the UTXO set to get a total wallet balance and so on.
 
 ## Dev Notes
 
