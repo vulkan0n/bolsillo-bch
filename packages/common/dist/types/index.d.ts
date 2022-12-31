@@ -3,6 +3,7 @@ import { SettingsState } from "./reducers/settingsReducer";
 import { TransactionPadState } from "./reducers/transactionPadReducer";
 import { WalletManagerState } from "./reducers/walletManagerReducer";
 import { LocalState } from "./reducers/localReducer";
+
 export interface ReduxState {
     transactionPad: TransactionPadState;
     exchangeRates: ExchangeRatesState;

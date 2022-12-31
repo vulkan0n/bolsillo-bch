@@ -72,34 +72,34 @@ const BackgroundIntervals = () => {
   // Including importing a new wallet
   // Add 1 second delay to allow internet connection time
   // to load and reduce No Connection errors
-  useEffect(() => {
-    if (!wallet) {
-      return;
-    }
+  // useEffect(() => {
+  //   if (!wallet) {
+  //     return;
+  //   }
 
-    setTimeout(() => {
-      fetchActiveWalletBalance();
-    }, ONE_SECOND);
-  }, [wallet]);
+  //   setTimeout(() => {
+  //     fetchActiveWalletBalance();
+  //   }, ONE_SECOND);
+  // }, [wallet]);
 
-  // Run regular checks every 30s
-  useEffect(() => {
-    // Clear any temporary variables from last session
-    // When app loads
-    dispatch(
-      updateTransactionPadIsSendingCoins({
-        isSendingCoins: false,
-      })
-    );
+  // // Run regular checks every 30s
+  // useEffect(() => {
+  //   // Clear any temporary variables from last session
+  //   // When app loads
+  //   dispatch(
+  //     updateTransactionPadIsSendingCoins({
+  //       isSendingCoins: false,
+  //     })
+  //   );
 
-    ping();
+  //   ping();
 
-    const interval = setInterval(() => {
-      ping();
-    }, THIRTY_SECONDS);
+  //   const interval = setInterval(() => {
+  //     ping();
+  //   }, THIRTY_SECONDS);
 
-    return () => clearInterval(interval);
-  }, []);
+  //   return () => clearInterval(interval);
+  // }, []);
 
   return <View />;
 };

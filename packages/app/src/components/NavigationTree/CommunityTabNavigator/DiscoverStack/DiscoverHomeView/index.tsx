@@ -13,7 +13,7 @@ import Loading from "@selene-wallet/app/src/components/atoms/Loading";
 function DiscoverHomeView({ navigation }) {
   const { loading, error, data } = useQuery(GET_DISCOVER_CATEGORIES);
 
-  console.log({ loading, error, data });
+  // console.log({ loading, error, data });
 
   if (loading) return <Loading />;
   if (error) return <Text>Error :(</Text>;

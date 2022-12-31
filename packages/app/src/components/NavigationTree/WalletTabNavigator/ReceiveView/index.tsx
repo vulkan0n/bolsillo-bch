@@ -33,8 +33,6 @@ const ReceiveView = ({ navigation }) => {
 
   const padBalanceInIntSats = parseInt(padBalanceInSats);
 
-  console.log("wallet: ", JSON.stringify(wallet));
-
   const logo = require("../../../../assets/images/bch.png");
   const isAddress = wallet?.cashaddr;
   const isReceiveAmount = padBalanceInSats !== "0";

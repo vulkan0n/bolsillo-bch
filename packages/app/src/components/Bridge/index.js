@@ -33,7 +33,10 @@ const Bridge = () => {
           `m/44'/0'/0'/0/${index}`
         );
 
+        console.log({ hdWallet });
+
         const hdWalletUtxos = await hdWallet.getAddressUtxos(hdWallet.cashaddr);
+        console.log({ hdWalletUtxos });
         const coins = hdWalletUtxos.map((coin) => ({
           height: coin.height,
           transactionId: coin.txid,
@@ -43,13 +46,12 @@ const Bridge = () => {
           addressIndex: index,
         }));
 
-        const balance = coins.reduce((prev, curr) => prev + curr.satoshis, 0);
+        const balance = coins.reduce((sum, curr) => sum + curr.satoshis, 0);
         return [balance, coins, hdWallet.cashaddr];
       };
 
       const getHDWalletInfo = async (maxIndex) => {
         // for each address, get its total balance and its raw utxos
-
         const addressIndices = [...Array(maxIndex + 1).keys()];
         const result = await Promise.all(addressIndices.map(getWalletInfo));
         const balances = result.map((arrayElement) => arrayElement[0]);
