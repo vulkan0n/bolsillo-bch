@@ -78,6 +78,7 @@ const BackgroundIntervals = () => {
     }
 
     if (wallets) {
+      console.log("fetching Wallet histories");
       fetchWalletHistories();
     }
 
@@ -99,24 +100,24 @@ const BackgroundIntervals = () => {
   //   }, ONE_SECOND);
   // }, [wallet]);
 
-  // // Run regular checks every 30s
-  // useEffect(() => {
-  //   // Clear any temporary variables from last session
-  //   // When app loads
-  //   dispatch(
-  //     updateTransactionPadIsSendingCoins({
-  //       isSendingCoins: false,
-  //     })
-  //   );
+  // Run regular checks every 30s
+  useEffect(() => {
+    // Clear any temporary variables from last session
+    // When app loads
+    dispatch(
+      updateTransactionPadIsSendingCoins({
+        isSendingCoins: false,
+      })
+    );
 
-  //   ping();
+    ping();
 
-  //   const interval = setInterval(() => {
-  //     ping();
-  //   }, THIRTY_SECONDS);
+    const interval = setInterval(() => {
+      ping();
+    }, THIRTY_SECONDS);
 
-  //   return () => clearInterval(interval);
-  // }, []);
+    return () => clearInterval(interval);
+  }, []);
 
   return <View />;
 };

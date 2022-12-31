@@ -25,6 +25,8 @@ const CoinsView = ({}) => {
   const wallet = useSelector((state: ReduxState) => selectActiveWallet(state));
   const { isTestNet } = useSelector((state: ReduxState) => state.settings);
 
+  console.log("wallet.transactions", wallet.transactions);
+
   // Scan 10 new addresses, starting at index 0
   // and skipping over any addresses that are already known
   // Note that new UTXOs (coins) on addresses at known indices
