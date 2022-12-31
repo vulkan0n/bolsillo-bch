@@ -46,6 +46,16 @@ const CoinsView = ({}) => {
     }
   };
 
+  const checkExistingAddresses = () => {
+    const walletAddressLength = wallet?.addresses?.length;
+    const walletLastAddress = wallet?.addresses?.[walletAddressLength - 1];
+    const lastAddressHdIndex = walletLastAddress?.hdWalletIndex;
+
+    for (let i = 0; i <= lastAddressHdIndex; i++) {
+      scanAddressAtIndex(wallet, i, isTestNet);
+    }
+  };
+
   const walletBalance = getWalletSatoshiBalance(wallet);
   const addressCount = wallet?.addresses?.length || 0;
   const utxos = getWalletUTXOs(wallet);
@@ -57,6 +67,10 @@ const CoinsView = ({}) => {
       <View style={styles.whiteBackground}>
         <Button onPress={scan10NewAddresses} variant={"primary"}>
           Scan 10 new addresses
+        </Button>
+
+        <Button onPress={checkExistingAddresses} variant={"primary"}>
+          Check existing addresses
         </Button>
 
         <Text style={TYPOGRAPHY.h2black as any}>Balance</Text>
