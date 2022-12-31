@@ -34,9 +34,8 @@ const CoinsView = ({}) => {
     let index = 0;
 
     while (counter < 10) {
-      const isAddressAtIndex = wallet.addresses.find(
-        (a) => a?.hdWalletIndex === index
-      );
+      const isAddressAtIndex =
+        wallet?.addresses?.find((a) => a?.hdWalletIndex === index) || false;
 
       if (!isAddressAtIndex) {
         scanAddressAtIndex(wallet, index, isTestNet);
@@ -48,7 +47,7 @@ const CoinsView = ({}) => {
   };
 
   const walletBalance = getWalletSatoshiBalance(wallet);
-  const addressCount = wallet?.addresses?.length;
+  const addressCount = wallet?.addresses?.length || 0;
   const utxos = getWalletUTXOs(wallet);
   const utxoCount = getWalletUTXOcount(wallet);
 
