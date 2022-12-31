@@ -82,12 +82,6 @@ const walletMangerSlice = createSlice({
       );
       state.navigatedWalletName = "";
     },
-    updateWalletBalance(state, action) {
-      const wallet = state.wallets.find(
-        ({ name }) => name === action.payload.name
-      );
-      wallet.balance = action.payload.balance;
-    },
     updateWalletCashAddr(state, action) {
       const wallet = state.wallets.find(
         ({ name }) => name === action.payload.name
@@ -201,7 +195,6 @@ export const {
   createWalletFromScratchPad,
   clearWalletScratchPad,
   deleteWallet,
-  updateWalletBalance,
   updateWalletCashAddr,
   updateWalletMaxAddressIndex,
   updateWalletCoins,

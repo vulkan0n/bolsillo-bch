@@ -29,7 +29,6 @@ import {
 import {
   createDefaultWallet,
   updateNewWalletScratchPadDetails,
-  updateWalletBalance,
   updateWalletCashAddr,
   importWalletTransactionHistory,
   updateWalletMaxAddressIndex,
@@ -137,12 +136,6 @@ export default function App() {
           // console.log("message.data: ", message.data);
           // console.log("---");
           store.dispatch(
-            updateWalletBalance({
-              name: message.data.name,
-              balance: message.data.balance,
-            })
-          );
-          store.dispatch(
             updateWalletCashAddr({
               name: message.data.name,
               cashaddr: message.data.cashaddr,
@@ -199,12 +192,7 @@ export default function App() {
           break;
 
         case RESPONSE_MESSAGE_TYPES.RECEIVED_COINS:
-          store.dispatch(
-            updateWalletBalance({
-              name: message.data.name,
-              balance: message.data.balance,
-            })
-          );
+          // TODO: Update UTXO set
 
           const { sound } = await Audio.Sound.createAsync(
             require("./receive.mp3")
@@ -228,13 +216,6 @@ export default function App() {
           break;
 
         case RESPONSE_MESSAGE_TYPES.SEND_COINS_RESPONSE_DETECTED:
-          store.dispatch(
-            updateWalletBalance({
-              name: message.data.name,
-              balance: message.data.balance,
-            })
-          );
-
           if (message?.data?.transactionHistory) {
             store.dispatch(
               importWalletTransactionHistory({
