@@ -29,7 +29,6 @@ import {
 import {
   createDefaultWallet,
   updateNewWalletScratchPadDetails,
-  updateWalletCashAddr,
   importWalletTransactionHistory,
   updateWalletMaxAddressIndex,
   updateWalletCoins,
@@ -135,12 +134,6 @@ export default function App() {
           // console.log("REQUEST_BALANCE_AND_ADDRESS_RESPONSE ----");
           // console.log("message.data: ", message.data);
           // console.log("---");
-          store.dispatch(
-            updateWalletCashAddr({
-              name: message.data.name,
-              cashaddr: message.data.cashaddr,
-            })
-          );
           store.dispatch(
             updateWalletMaxAddressIndex({
               name: message.data.name,
