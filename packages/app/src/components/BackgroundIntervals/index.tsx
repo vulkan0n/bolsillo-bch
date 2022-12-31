@@ -14,23 +14,6 @@ import fetchPriceData from "./fetchPriceData";
 import checkIn from "./checkIn";
 import { checkWalletExistingAddresses } from "@selene-wallet/app/src/utils/wallet";
 
-export const scanAddressAtIndex = (
-  wallet: SeleneWalletType,
-  hdWalletIndex: number,
-  isTestNet: boolean
-) => {
-  emit({
-    type: BRIDGE_MESSAGE_TYPES.SCAN_ADDRESS_AT_INDEX,
-    data: {
-      name: wallet?.name,
-      mnemonic: wallet?.mnemonic,
-      derivationPath: wallet?.derivationPath,
-      hdWalletIndex,
-      isTestNet,
-    },
-  });
-};
-
 const BackgroundIntervals = () => {
   const dispatch = useDispatch();
   const wallet = useSelector((state: ReduxState) => selectActiveWallet(state));

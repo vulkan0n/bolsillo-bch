@@ -1,5 +1,6 @@
 import { SeleneWalletType, CoinType } from "@selene-wallet/common/dist/types";
-import { scanAddressAtIndex } from "@selene-wallet/app/src/components/BackgroundIntervals";
+import { BRIDGE_MESSAGE_TYPES } from "@selene-wallet/app/src/utils/bridgeMessages";
+import emit from "@selene-wallet/app/src/utils/emit";
 
 export const getWalletUTXOs = (wallet: SeleneWalletType): CoinType[] =>
   wallet?.addresses
@@ -13,6 +14,23 @@ export const getWalletSatoshiBalance = (wallet: SeleneWalletType): string =>
   getWalletUTXOs(wallet)
     .reduce((sum, utxo) => sum + utxo.satoshis, 0)
     .toString();
+
+export const scanAddressAtIndex = (
+  wallet: SeleneWalletType,
+  hdWalletIndex: number,
+  isTestNet: boolean
+) => {
+  emit({
+    type: BRIDGE_MESSAGE_TYPES.SCAN_ADDRESS_AT_INDEX,
+    data: {
+      name: wallet?.name,
+      mnemonic: wallet?.mnemonic,
+      derivationPath: wallet?.derivationPath,
+      hdWalletIndex,
+      isTestNet,
+    },
+  });
+};
 
 export const getWalletDepositAddress = (wallet: SeleneWalletType): string => {
   // Next deposit address is first address
