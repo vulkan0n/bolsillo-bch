@@ -119,8 +119,6 @@ export default function App() {
           break;
 
         case RESPONSE_MESSAGE_TYPES.SCAN_ADDRESS_AT_INDEX_RESPONSE:
-          console.log("Received back a Selene Address from bridge!");
-          console.log("message.data", message.data);
           store.dispatch(
             mergeSeleneAddressToWallet({
               name: message.data.name,
