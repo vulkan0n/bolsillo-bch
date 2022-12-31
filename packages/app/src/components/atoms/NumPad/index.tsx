@@ -18,6 +18,7 @@ import {
   convertRawCurrencyToRawSats,
 } from "@selene-wallet/app/src/utils/formatting";
 import { countDecimalPlaces } from "@selene-wallet/app/src/utils/utils";
+import { getWalletSatoshiBalance } from "@selene-wallet/app/src/utils/wallet";
 import { BITCOIN_DENOMINATIONS } from "@selene-wallet/common/dist/utils/consts";
 import {
   selectActiveWallet,
@@ -36,7 +37,7 @@ const NumPad = ({ isCheckInsufficientBalance = false }) => {
   const { bitcoinDenomination, isBchDenominated, isRightHandedMode } =
     useSelector((state: ReduxState) => state.settings);
 
-  const availableRawSats = wallet?.balance;
+  const availableRawSats = getWalletSatoshiBalance(wallet);
   const isDisableDecimal =
     padBalance.includes(".") ||
     (isBchDenominated &&
