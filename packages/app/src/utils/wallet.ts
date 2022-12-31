@@ -47,7 +47,6 @@ export const getWalletDepositAddress = (
   wallet: SeleneWalletType,
   isTestNet: boolean = false
 ): string => {
-  console.log("triggered get wallet address ");
   // Next deposit address is first address
   // without any transaction history or unspent UTXOs
   // It should be impossible to have unspent UTXOs without history
@@ -63,7 +62,7 @@ export const getWalletDepositAddress = (
     return freshDepositAddress;
   }
 
-  // Generate new fresh addresses
+  // Generate 3 new fresh addresses
   const lastAddressHdIndex = getWalletLastAddress(wallet)?.hdWalletIndex;
   scanAddressAtIndex(wallet, lastAddressHdIndex + 1, isTestNet);
   scanAddressAtIndex(wallet, lastAddressHdIndex + 2, isTestNet);
