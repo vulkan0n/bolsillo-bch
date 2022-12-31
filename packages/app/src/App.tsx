@@ -164,6 +164,8 @@ export default function App() {
           break;
 
         case RESPONSE_MESSAGE_TYPES.SEND_COINS_RESPONSE_DETECTED:
+          console.log("!!! response detected");
+          console.log("!!! message.data", message?.data);
           if (message?.data?.transactionHistory) {
             store.dispatch(
               importWalletTransactionHistory({

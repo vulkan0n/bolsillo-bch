@@ -2,8 +2,6 @@ import { emit } from "react-native-react-bridge/lib/web";
 import { RESPONSE_MESSAGE_TYPES } from "@selene-wallet/app/src/utils/bridgeMessages";
 
 export const sendCoins = async (WalletObject, message) => {
-  console.log("message.data.coins", message?.data?.coins);
-
   try {
     const suitableCoins = message.data.coins.filter((coin) => !coin.token);
     const satoshiAmountAvailable = suitableCoins.reduce(
@@ -106,7 +104,7 @@ export const sendCoins = async (WalletObject, message) => {
     // get a transient wallet and send the built transaction
     const tempWallet = await WalletObject.newRandom();
     const result = await tempWallet.submitTransaction(finalTx, true);
-    console.log({ result });
+    console.log("Sent transaction hash:", { result });
 
     emit({
       type: RESPONSE_MESSAGE_TYPES.SEND_COINS_RESPONSE_DETECTED,
@@ -115,10 +113,6 @@ export const sendCoins = async (WalletObject, message) => {
         // transactionHistory,
       },
     });
-
-    // Note: Monitoring .send() response for send confirmation
-    // is unreliable and buggy
-    // Instead, successful sends are detected by balance changes
   } catch (sendError) {
     console.trace("!!!!!!!!");
 
