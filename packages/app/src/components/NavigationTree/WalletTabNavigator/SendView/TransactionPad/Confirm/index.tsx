@@ -23,6 +23,10 @@ import Loading from "@selene-wallet/app/src/components/atoms/Loading";
 import COLOURS from "@selene-wallet/common/design/colours";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { iconImport } from "@selene-wallet/app/src/design/icons";
+import {
+  getWalletDepositAddress,
+  getWalletUTXOs,
+} from "@selene-wallet/app/src/utils/wallet";
 
 const Confirm = () => {
   const dispatch = useDispatch();
@@ -61,8 +65,8 @@ const Confirm = () => {
         derivationPath: wallet?.derivationPath,
         recipientCashAddr: sendToAddress,
         satsToSend: rawSatsToSend,
-        coins: wallet?.coins,
-        changeAddress: wallet?.cashaddr,
+        coins: getWalletUTXOs(wallet),
+        changeAddress: getWalletDepositAddress(wallet),
         isTestNet,
       },
     });

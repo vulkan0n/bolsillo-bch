@@ -16,6 +16,10 @@ import styles from "./styles";
 import { navigate } from "@selene-wallet/app/src/components/NavigationTree/rootNavigation";
 import { BITCOIN_DENOMINATIONS } from "@selene-wallet/common/dist/utils/consts";
 import { convertBalanceToDisplay } from "@selene-wallet/app/src/utils/formatting";
+import {
+  getWalletDepositAddress,
+  getWalletUTXOs,
+} from "@selene-wallet/app/src/utils/wallet";
 
 interface Props {
   donationBchAddress: string;
@@ -48,8 +52,8 @@ function TipWidget({ donationBchAddress, isWhiteText = false }: Props) {
         derivationPath: wallet?.derivationPath,
         recipientCashAddr: donationBchAddress,
         satsToSend: tipAmountInIntSats,
-        coins: wallet?.coins,
-        changeAddress: wallet?.cashaddr,
+        coins: getWalletUTXOs(wallet),
+        changeAddress: getWalletDepositAddress(wallet),
         isTestNet,
       },
     });

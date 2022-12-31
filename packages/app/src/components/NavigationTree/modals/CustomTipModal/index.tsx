@@ -19,6 +19,10 @@ import {
   updateTransactionPadBalance,
 } from "@selene-wallet/app/src/redux/reducers/transactionPadReducer";
 import { BRIDGE_MESSAGE_TYPES } from "@selene-wallet/app/src/utils/bridgeMessages";
+import {
+  getWalletDepositAddress,
+  getWalletUTXOs,
+} from "@selene-wallet/app/src/utils/wallet";
 
 function CustomTipModal({ navigation, route }) {
   const { donationBchAddress } = route?.params;
@@ -47,8 +51,8 @@ function CustomTipModal({ navigation, route }) {
         derivationPath: wallet?.derivationPath,
         recipientCashAddr: donationBchAddress,
         satsToSend: tipAmountInIntSats,
-        coins: wallet?.coins,
-        changeAddress: wallet?.cashaddr,
+        coins: getWalletUTXOs(wallet),
+        changeAddress: getWalletDepositAddress(wallet),
         isTestNet,
       },
     });
