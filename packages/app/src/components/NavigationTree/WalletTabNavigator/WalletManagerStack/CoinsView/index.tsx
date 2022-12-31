@@ -19,6 +19,7 @@ import {
   getWalletUTXOcount,
   getWalletSatoshiBalance,
 } from "@selene-wallet/app/src/utils/wallets";
+import Divider from "@selene-wallet/app/src/components/atoms/Divider";
 
 const CoinsView = ({}) => {
   const wallet = useSelector((state: ReduxState) => selectActiveWallet(state));
@@ -51,10 +52,10 @@ const CoinsView = ({}) => {
     scanAddressAtIndex(wallet, 12, isTestNet);
   };
 
-  const utxos = getWalletUTXOs(wallet);
-
-  const utxoCount = getWalletUTXOcount(wallet);
   const walletBalance = getWalletSatoshiBalance(wallet);
+  const addressCount = wallet?.addresses?.length;
+  const utxos = getWalletUTXOs(wallet);
+  const utxoCount = getWalletUTXOcount(wallet);
 
   return (
     <ScrollView style={styles.scrollView}>
@@ -69,12 +70,14 @@ const CoinsView = ({}) => {
         <Button onPress={scanAddress} variant={"primary"}>
           Scan address
         </Button>
-        <Text style={TYPOGRAPHY.h2black}>Coin UTXOs</Text>
-        <Text style={TYPOGRAPHY.p}>UTXO count: {utxoCount}</Text>
-        <Text style={TYPOGRAPHY.p}>
-          Tracked addresses: {wallet.maxAddressIndex}
+
+        <Text style={TYPOGRAPHY.h2black as any}>Balance</Text>
+        <Text style={TYPOGRAPHY.p as any}>{walletBalance} satoshis</Text>
+        <Divider />
+
+        <Text style={TYPOGRAPHY.h2black as any}>
+          Addresses ({addressCount})
         </Text>
-        <Text style={TYPOGRAPHY.p}>UTXO count: {utxoCount}</Text>
 
         {wallet?.addresses?.map((address) => {
           const balance = address.coins.reduce(
@@ -84,29 +87,29 @@ const CoinsView = ({}) => {
 
           return (
             <View key={address?.cashaddr}>
-              {/* <Text>Address: {JSON.stringify(address)}</Text> */}
               <Text>#{address.hdWalletIndex}</Text>
-              <Text>{balance}</Text>
+              <Text>{balance} satoshis</Text>
               <Text>{address.cashaddr}</Text>
             </View>
           );
         })}
+        <Divider />
 
-        {wallet.coins &&
-          wallet.coins?.map((val) => (
-            <View
-              style={styles.coinView as any}
-              key={`${val?.transactionId}:${val.outputIndex}`}
-            >
-              <Text>Coin index: {val.addressIndex}</Text>
-              <Text>Address: {val.address.split(":")[1].slice(0, 30)}...</Text>
-              <Text>Value: {val.satoshis}</Text>
-              <Text>
-                Outpoint:{" "}
-                {`${val?.transactionId?.slice(0, 30)}...:${val.outputIndex}`}
-              </Text>
-            </View>
-          ))}
+        <Text style={TYPOGRAPHY.h2black as any}>UTXOs ({utxoCount})</Text>
+        {utxos?.map((val) => (
+          <View
+            style={styles.coinView as any}
+            key={`${val?.transactionId}:${val.outputIndex}`}
+          >
+            <Text>Coin index: {val.addressIndex}</Text>
+            <Text>Address: {val.address.split(":")[1].slice(0, 30)}...</Text>
+            <Text>Value: {val.satoshis} satoshis</Text>
+            <Text>
+              Outpoint:{" "}
+              {`${val?.transactionId?.slice(0, 30)}...:${val.outputIndex}`}
+            </Text>
+          </View>
+        ))}
       </View>
     </ScrollView>
   );
