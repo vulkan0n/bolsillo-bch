@@ -43,7 +43,7 @@ const CoinsView = ({}) => {
   };
 
   const scanAddress = () => {
-    scanAddressAtIndex(wallet, 0, isTestNet);
+    scanAddressAtIndex(wallet, 11, isTestNet);
   };
 
   const utxoCount = wallet?.coins?.length;
@@ -69,7 +69,7 @@ const CoinsView = ({}) => {
         <Text style={TYPOGRAPHY.p}>UTXO count: {utxoCount}</Text>
 
         {wallet?.addresses?.map((address) => (
-          <View>
+          <View key={address?.cashaddr}>
             <Text>Address: {JSON.stringify(address)}</Text>
           </View>
         ))}

@@ -14,6 +14,7 @@ const BLANK_SCRATCH_PAD = {
   cashaddr: "",
   maxAddressIndex: 0,
   transactions: [],
+  addresses: [],
 };
 
 const initialState = {
@@ -112,16 +113,17 @@ const walletMangerSlice = createSlice({
       );
       console.log("mergeSeleneAddressToWallet");
       console.log("action.payload", action.payload);
-      console.log("wallet", wallet);
+      console.log("wallet.addresses", wallet.addresses);
       console.log("----");
 
-      const mergedList = [action.payload?.seleneAddress, ...wallet.addresses];
+      const walletAddresses = wallet?.addresses ?? [];
+      const mergedList = [action.payload?.seleneAddress, ...walletAddresses];
       const uniqueList = R.uniqBy(
         (address) => address.hdWalletIndex,
         mergedList
       );
       const diff = R.sortBy(R.prop("hdWalletIndex"));
-      const sortedList = R.sort(diff, uniqueList);
+      const sortedList = R.sort(diff, uniqueList).reverse();
       wallet.addresses = sortedList;
     },
     importWalletTransactionHistory(state, action) {
