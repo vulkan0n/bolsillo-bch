@@ -43,7 +43,7 @@ const CoinsView = ({}) => {
   };
 
   const scanAddress = () => {
-    scanAddressAtIndex(wallet, 11, isTestNet);
+    scanAddressAtIndex(wallet, 12, isTestNet);
   };
 
   const utxoCount = wallet?.coins?.length;

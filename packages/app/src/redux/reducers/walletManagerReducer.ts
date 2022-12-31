@@ -111,10 +111,6 @@ const walletMangerSlice = createSlice({
       const wallet = state.wallets.find(
         ({ name }) => name === action.payload.name
       );
-      console.log("mergeSeleneAddressToWallet");
-      console.log("action.payload", action.payload);
-      console.log("wallet.addresses", wallet.addresses);
-      console.log("----");
 
       const walletAddresses = wallet?.addresses ?? [];
       const mergedList = [action.payload?.seleneAddress, ...walletAddresses];
@@ -122,8 +118,10 @@ const walletMangerSlice = createSlice({
         (address) => address.hdWalletIndex,
         mergedList
       );
-      const diff = R.sortBy(R.prop("hdWalletIndex"));
-      const sortedList = R.sort(diff, uniqueList).reverse();
+      const orderByDescendingIndex = (a, b) => {
+        return b.hdWalletIndex - a.hdWalletIndex;
+      };
+      const sortedList = R.sort(orderByDescendingIndex, uniqueList);
       wallet.addresses = sortedList;
     },
     importWalletTransactionHistory(state, action) {
