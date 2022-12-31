@@ -61,7 +61,7 @@ const BackgroundIntervals = () => {
     setTimeout(() => {
       checkWalletExistingAddresses(wallet, isTestNet);
     }, ONE_SECOND);
-  }, [wallet]);
+  }, [wallet?.name]);
 
   // Run regular checks every 30s
   useEffect(() => {

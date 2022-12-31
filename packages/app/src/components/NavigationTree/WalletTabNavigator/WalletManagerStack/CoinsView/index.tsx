@@ -23,7 +23,13 @@ const CoinsView = ({}) => {
   const wallet = useSelector((state: ReduxState) => selectActiveWallet(state));
   const { isTestNet } = useSelector((state: ReduxState) => state.settings);
 
-  console.log("wallet.transactions", wallet.transactions);
+  console.log(
+    "wallet.addresses",
+    wallet.addresses.map(({ hdWalletIndex, cashaddr }) => ({
+      hdWalletIndex,
+      cashaddr,
+    }))
+  );
 
   const walletBalance = getWalletSatoshiBalance(wallet);
   const addressCount = wallet?.addresses?.length || 0;
