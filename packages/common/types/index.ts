@@ -43,13 +43,10 @@ export interface SeleneAddressType {
 export interface SeleneWalletType {
   name: string;
   description: string;
-  balance: string;
   mnemonic: string;
   derivationPath: string;
-  cashaddr: string;
   transactions: TransactionType[];
   maxAddressIndex: number;
-  coins: CoinType[];
   addresses: SeleneAddressType[];
 }
 

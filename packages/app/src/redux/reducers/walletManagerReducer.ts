@@ -11,7 +11,6 @@ const BLANK_SCRATCH_PAD = {
   description: "",
   mnemonic: "",
   derivationPath: "",
-  cashaddr: "",
   maxAddressIndex: 0,
   transactions: [],
   addresses: [],
