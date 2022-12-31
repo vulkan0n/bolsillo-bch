@@ -183,8 +183,11 @@ export default function App() {
             );
           }
 
+          console.log("send coins response detected!!");
+
           const isSendingCoins =
             store.getState()?.transactionPad?.isSendingCoins;
+          console.log(isSendingCoins);
 
           if (isSendingCoins) {
             navigate("Transaction Success Modal");

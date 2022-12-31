@@ -16,18 +16,19 @@ export const getWalletUTXOsToSendAmount = (
   satoshisToSend: number
 ): CoinType[] => {
   const utxos: CoinType[] = getWalletUTXOs(wallet);
-  const totalSatsRequired: number = satoshisToSend + 2000; // Buffer for fees
-  console.log({ utxos });
+  const totalSatsRequired: number = satoshisToSend + 10000; // Buffer for fees
   let total = 0;
   const sufficientUTXOs: CoinType[] = [];
+
   for (let i = 0; i < utxos.length; i++) {
     if (total < totalSatsRequired) {
       sufficientUTXOs.push(utxos[i]);
       total += sufficientUTXOs[i].satoshis;
-      console.log({ i, total, sufficientUTXOs });
+    } else {
+      break;
     }
-    break;
   }
+
   return sufficientUTXOs;
 };
 

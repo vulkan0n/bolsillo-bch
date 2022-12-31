@@ -11,6 +11,8 @@ export const sendCoins = async (WalletObject, message) => {
       0
     );
 
+    console.log({ suitableCoins, satoshiAmountAvailable });
+
     if (message?.data?.satsToSend > satoshiAmountAvailable) {
       throw new Error("Not enough funds");
     }
@@ -110,7 +112,6 @@ export const sendCoins = async (WalletObject, message) => {
       type: RESPONSE_MESSAGE_TYPES.SEND_COINS_RESPONSE_DETECTED,
       data: {
         name: message?.data?.name,
-        balance: freshBalance,
         // transactionHistory,
       },
     });
