@@ -25,7 +25,27 @@ const CoinsView = ({}) => {
   const wallet = useSelector((state: ReduxState) => selectActiveWallet(state));
   const { isTestNet } = useSelector((state: ReduxState) => state.settings);
 
+  // Scan 10 new addresses, starting at index 0 and skipping over any addresses that are already known
   const addAddresses = () => {
+    let counter = 0;
+    let index = 0;
+
+    while (counter < 10) {
+      const isAddressAtIndex = wallet.addresses.find(
+        (a) => a?.hdWalletIndex === index
+      );
+
+      if (!isAddressAtIndex) {
+        console.log("hit an address");
+        console.log({ index });
+        console.log({ counter });
+        scanAddressAtIndex(wallet, index, isTestNet);
+        counter += 1;
+      }
+
+      index += 1;
+    }
+
     store.dispatch(
       updateWalletMaxAddressIndex({
         name: wallet.name,
