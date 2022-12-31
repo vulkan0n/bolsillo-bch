@@ -12,7 +12,10 @@ import { selectActiveWallet } from "@selene-wallet/app/src/redux/selectors";
 import { updateTransactionPadIsSendingCoins } from "@selene-wallet/app/src/redux/reducers/transactionPadReducer";
 import fetchPriceData from "./fetchPriceData";
 import checkIn from "./checkIn";
-import { checkWalletExistingAddresses } from "@selene-wallet/app/src/utils/wallet";
+import {
+  checkWalletExistingAddresses,
+  scanDepositAddress,
+} from "@selene-wallet/app/src/utils/wallet";
 
 const BackgroundIntervals = () => {
   const dispatch = useDispatch();
@@ -78,6 +81,17 @@ const BackgroundIntervals = () => {
     const interval = setInterval(() => {
       ping();
     }, THIRTY_SECONDS);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  // Scan deposit address for incoming transactions every second
+  // TODO: Replace with the watcher methods in mainnet?
+  // Would this make it less reliable, on the other side of the bridge?
+  useEffect(() => {
+    const interval = setInterval(() => {
+      scanDepositAddress(wallet);
+    }, ONE_SECOND);
 
     return () => clearInterval(interval);
   }, []);

@@ -26,6 +26,9 @@ export const getWalletLastAddress = (
   return wallet?.addresses?.[walletAddressLength - 1];
 };
 
+const getWalletLastAddressHdIndex = (wallet: SeleneWalletType): number =>
+  getWalletLastAddress(wallet)?.hdWalletIndex;
+
 export const scanAddressAtIndex = (
   wallet: SeleneWalletType,
   hdWalletIndex: number,
@@ -63,13 +66,26 @@ export const getWalletDepositAddress = (
   }
 
   // Generate 3 new fresh addresses
-  const lastAddressHdIndex = getWalletLastAddress(wallet)?.hdWalletIndex;
+  const lastAddressHdIndex = getWalletLastAddressHdIndex(wallet);
   scanAddressAtIndex(wallet, lastAddressHdIndex + 1, isTestNet);
   scanAddressAtIndex(wallet, lastAddressHdIndex + 2, isTestNet);
   scanAddressAtIndex(wallet, lastAddressHdIndex + 3, isTestNet);
 
   // In case app is offline, default back to the most recent available address
   return getWalletLastAddress(wallet)?.cashaddr || "";
+};
+
+export const scanDepositAddress = (
+  wallet: SeleneWalletType,
+  isTestNet: boolean = false
+): void => {
+  const depositAddressIndex = wallet?.addresses?.findIndex(
+    (a) => a?.transactions?.length === 0 && a?.coins?.length === 0
+  );
+  const freshDepositAddressHdIndex =
+    wallet?.addresses?.[depositAddressIndex]?.hdWalletIndex;
+
+  scanAddressAtIndex(wallet, freshDepositAddressHdIndex, isTestNet);
 };
 
 // Scan 10 new addresses, starting at index 0
@@ -102,7 +118,7 @@ export const checkWalletExistingAddresses = (
   wallet: SeleneWalletType,
   isTestNet: boolean
 ) => {
-  const lastAddressHdIndex = getWalletLastAddress(wallet)?.hdWalletIndex;
+  const lastAddressHdIndex = getWalletLastAddressHdIndex(wallet);
 
   for (let i = 0; i <= lastAddressHdIndex; i++) {
     scanAddressAtIndex(wallet, i, isTestNet);
