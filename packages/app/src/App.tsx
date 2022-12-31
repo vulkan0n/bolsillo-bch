@@ -47,7 +47,7 @@ import COLOURS from "@selene-wallet/common/design/colours";
 import { Audio } from "expo-av";
 import { ONE_SECOND } from "@selene-wallet/common/dist/utils/consts";
 
-interface TransactionHistoryTxType {
+export interface TransactionHistoryTxType {
   blockheight: number;
   txn: string;
   transactionId: string;

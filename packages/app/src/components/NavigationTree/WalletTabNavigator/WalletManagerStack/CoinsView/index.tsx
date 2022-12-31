@@ -79,26 +79,6 @@ const CoinsView = ({}) => {
         <Text style={TYPOGRAPHY.p as any}>{walletBalance} satoshis</Text>
         <Divider />
 
-        <Text style={TYPOGRAPHY.h2black as any}>
-          Addresses ({addressCount})
-        </Text>
-
-        {wallet?.addresses?.map((address) => {
-          const balance = address.coins.reduce(
-            (sum, coin) => sum + coin.satoshis,
-            0
-          );
-
-          return (
-            <View key={address?.cashaddr}>
-              <Text>#{address.hdWalletIndex}</Text>
-              <Text>{balance} satoshis</Text>
-              <Text>{address.cashaddr}</Text>
-            </View>
-          );
-        })}
-        <Divider />
-
         <Text style={TYPOGRAPHY.h2black as any}>UTXOs ({utxoCount})</Text>
         {utxos?.map((val) => (
           <View
@@ -114,6 +94,31 @@ const CoinsView = ({}) => {
             </Text>
           </View>
         ))}
+
+        <Divider />
+
+        <Text style={TYPOGRAPHY.h2black as any}>
+          Addresses ({addressCount})
+        </Text>
+
+        {wallet?.addresses?.map((address) => {
+          const balance = address.coins.reduce(
+            (sum, coin) => sum + coin.satoshis,
+            0
+          );
+
+          return (
+            <View key={address?.cashaddr}>
+              <Text>#{address.hdWalletIndex}</Text>
+              <Text>{balance} satoshis</Text>
+              <Text>{address.cashaddr}</Text>
+              <Text>Transactions COUNT: {address?.transactions?.length}</Text>
+              <Text>Transactions: {JSON.stringify(address?.transactions)}</Text>
+
+              <Divider />
+            </View>
+          );
+        })}
       </View>
     </ScrollView>
   );

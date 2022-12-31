@@ -49,7 +49,6 @@ const walletMangerSlice = createSlice({
     updateNewWalletScratchPadDetails(state, action) {
       state.scratchPad.mnemonic = action.payload.mnemonic;
       state.scratchPad.derivationPath = action.payload.derivationPath;
-      state.scratchPad.cashaddr = action.payload.cashaddr;
       state.scratchPad.maxAddressIndex = action.payload.maxAddressIndex;
     },
     createDefaultWallet(state, action) {

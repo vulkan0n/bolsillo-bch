@@ -33,10 +33,17 @@ const Bridge = () => {
           `m/44'/0'/0'/0/${hdWalletIndex}`
         );
 
-        console.log({ hdWallet });
-
         const hdWalletUtxos = await hdWallet.getAddressUtxos(hdWallet.cashaddr);
-        console.log({ hdWalletUtxos });
+        // Scans only a very short history
+        // Addresses that have a much longer history are then rescanned with a heavier check
+        const shortTransactions = (await hdWallet.getHistory("sat", 0, 5))
+          .transactions;
+
+        const transactions =
+          shortTransactions.length >= 5
+            ? (await hdWallet.getHistory("sat", 0, 100)).transactions
+            : shortTransactions;
+
         const coins = hdWalletUtxos.map((coin) => ({
           height: coin.height,
           transactionId: coin.txid,
@@ -52,6 +59,7 @@ const Bridge = () => {
           cashaddr: hdWallet.cashaddr,
           balance,
           coins,
+          transactions,
         };
       };
 

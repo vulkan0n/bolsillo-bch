@@ -34,8 +34,6 @@ export const fetchActiveWalletBalance = (
   wallet: SeleneWalletType,
   isTestNet: boolean
 ) => {
-  // console.log("fetchActiveWalletBalance");
-  // console.log({ wallet });
   emit({
     type: BRIDGE_MESSAGE_TYPES.REQUEST_BALANCE_AND_ADDRESS,
     data: {
@@ -73,14 +71,14 @@ const BackgroundIntervals = () => {
   const ping = () => {
     // console.log("ping!");
 
-    if (wallet) {
-      fetchActiveWalletBalance(wallet, isTestNet);
-    }
+    // if (wallet) {
+    //   fetchActiveWalletBalance(wallet, isTestNet);
+    // }
 
-    if (wallets) {
-      console.log("fetching Wallet histories");
-      fetchWalletHistories();
-    }
+    // if (wallets) {
+    //   console.log("fetching Wallet histories");
+    //   fetchWalletHistories();
+    // }
 
     fetchPriceData();
     checkIn();
