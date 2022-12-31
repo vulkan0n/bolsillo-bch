@@ -41,7 +41,8 @@ export const selectIsActiveWallet: (state: ReduxState) => Boolean =
 export const selectIsActiveWalletZeroBalance: (state: ReduxState) => Boolean =
   createSelector(
     selectActiveWallet,
-    (wallet: SeleneWalletType): boolean => parseInt(wallet?.balance) === 0
+    (wallet: SeleneWalletType): boolean =>
+      parseInt(getWalletSatoshiBalance(wallet)) === 0
   );
 
 export const selectActiveWalletBalance: (
