@@ -31,7 +31,6 @@ import {
   updateNewWalletScratchPadDetails,
   importWalletTransactionHistory,
   updateWalletMaxAddressIndex,
-  updateWalletCoins,
   mergeSeleneAddressToWallet,
 } from "./redux/reducers/walletManagerReducer";
 import {
@@ -138,12 +137,6 @@ export default function App() {
             updateWalletMaxAddressIndex({
               name: message.data.name,
               maxAddressIndex: message.data.maxAddressIndex,
-            })
-          );
-          store.dispatch(
-            updateWalletCoins({
-              name: message.data.name,
-              coins: message.data?.coins,
             })
           );
           break;

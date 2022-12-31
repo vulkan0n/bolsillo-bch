@@ -88,12 +88,6 @@ const walletMangerSlice = createSlice({
       );
       wallet.maxAddressIndex = action.payload.maxAddressIndex;
     },
-    updateWalletCoins(state, action) {
-      const wallet = state.wallets.find(
-        ({ name }) => name === action.payload.name
-      );
-      wallet.coins = action.payload?.coins;
-    },
     mergeSeleneAddressToWallet(state, action) {
       const wallet = state.wallets.find(
         ({ name }) => name === action.payload.name
@@ -190,7 +184,6 @@ export const {
   clearWalletScratchPad,
   deleteWallet,
   updateWalletMaxAddressIndex,
-  updateWalletCoins,
   mergeSeleneAddressToWallet,
   importWalletTransactionHistory,
   updateTransactionNote,
