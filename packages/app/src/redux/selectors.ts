@@ -10,6 +10,8 @@ import {
   convertRawCurrencyToRawSats,
   prettifyPadBalance,
 } from "@selene-wallet/app/src/utils/formatting";
+import { getWalletSatoshiBalance } from "@selene-wallet/app/src/utils/wallets";
+
 import { CurrencyOrDenominationType } from "@selene-wallet/common/dist/types";
 import {
   BITCOIN_DENOMINATIONS,
@@ -57,26 +59,27 @@ export const selectActiveWalletBalance: (
     bitcoinDenomination: BitcoinDenominationTypes,
     contrastCurrency: SupportedCurrencyTypes
   ): ActiveWalletBalance => {
+    const activeWalletBalance = getWalletSatoshiBalance(activeWallet);
+
     const bchBalance = convertBalanceToDisplay(
-      activeWallet?.balance,
+      activeWalletBalance,
       BITCOIN_DENOMINATIONS.satoshis,
       bitcoinDenomination
     );
 
     const contrastBalance = convertBalanceToDisplay(
-      activeWallet?.balance,
+      activeWalletBalance,
       BITCOIN_DENOMINATIONS.satoshis,
       contrastCurrency
     );
 
     const primaryBalance = isBchDenominated ? bchBalance : contrastBalance;
     const secondaryBalance = isBchDenominated ? contrastBalance : bchBalance;
-    const availableRawSats = activeWallet?.balance?.toString();
 
     return {
       primaryBalance,
       secondaryBalance,
-      availableRawSats,
+      availableRawSats: activeWalletBalance,
     };
   }
 );
