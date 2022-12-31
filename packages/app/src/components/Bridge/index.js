@@ -146,106 +146,107 @@ const Bridge = () => {
           });
           break;
 
-        case BRIDGE_MESSAGE_TYPES.REQUEST_BALANCE_AND_ADDRESS:
-          // max tracked HD address index
-          const maxIndex = message?.data?.maxAddressIndex || 0;
+        // TODO: Update balance watching
+        // case BRIDGE_MESSAGE_TYPES.REQUEST_BALANCE_AND_ADDRESS:
+        //   // max tracked HD address index
+        //   const maxIndex = message?.data?.maxAddressIndex || 0;
 
-          const { balances, coins, totalBalance, addresses } =
-            await getHDWalletInfo(maxIndex);
+        //   const { balances, coins, totalBalance, addresses } =
+        //     await getHDWalletInfo(maxIndex);
 
-          // find out the latest non empty address and set it as next receiving address
-          let nonZeroBalanceAddressIndex = 0;
-          balances.forEach((balance, index) => {
-            if (balance > 0) {
-              nonZeroBalanceAddressIndex = index;
-            }
-          });
-          const depositAddrIndex = nonZeroBalanceAddressIndex + 1;
-          const depositWallet = await WalletObject.fromSeed(
-            message?.data?.mnemonic,
-            `m/44'/0'/0'/0/${depositAddrIndex}`
-          );
-          const depositAddress = depositWallet.cashaddr;
+        //   // find out the latest non empty address and set it as next receiving address
+        //   let nonZeroBalanceAddressIndex = 0;
+        //   balances.forEach((balance, index) => {
+        //     if (balance > 0) {
+        //       nonZeroBalanceAddressIndex = index;
+        //     }
+        //   });
+        //   const depositAddrIndex = nonZeroBalanceAddressIndex + 1;
+        //   const depositWallet = await WalletObject.fromSeed(
+        //     message?.data?.mnemonic,
+        //     `m/44'/0'/0'/0/${depositAddrIndex}`
+        //   );
+        //   const depositAddress = depositWallet.cashaddr;
 
-          const watchKey = `${message?.data?.mnemonic}_${message?.data?.depositAddrIndex}`;
-          const isActiveWatcher = watchKey === balanceWatchWalletName;
-          console.log(
-            {
-              isActiveWatcher,
-              balanceWatchWalletName,
-            },
-            "message?.data?.name",
-            message?.data?.name
-          );
+        //   const watchKey = `${message?.data?.mnemonic}_${message?.data?.depositAddrIndex}`;
+        //   const isActiveWatcher = watchKey === balanceWatchWalletName;
+        //   console.log(
+        //     {
+        //       isActiveWatcher,
+        //       balanceWatchWalletName,
+        //     },
+        //     "message?.data?.name",
+        //     message?.data?.name
+        //   );
 
-          if (!isActiveWatcher) {
-            console.log("setting up new balance watcher");
-            // newBalance hasn't registered the included new transaction
-            // So need to grab balance again
+        //   if (!isActiveWatcher) {
+        //     console.log("setting up new balance watcher");
+        //     // newBalance hasn't registered the included new transaction
+        //     // So need to grab balance again
 
-            const watchAddressCallback = async () => {
-              const response = await getHDWalletInfo();
-              const freshBalance = response.totalBalance;
+        //     const watchAddressCallback = async () => {
+        //       const response = await getHDWalletInfo();
+        //       const freshBalance = response.totalBalance;
 
-              // Balance changed upwards = coins received
-              // Balance changed downwards = coins sent
-              const isReceivedCoins =
-                parseInt(freshBalance) > parseInt(totalBalance);
-              console.log("Did I receive coins?");
-              console.log({
-                freshBalance,
-                totalBalance,
-                isReceivedCoins,
-              });
-              if (isReceivedCoins) {
-                emit({
-                  type: RESPONSE_MESSAGE_TYPES.RECEIVED_COINS,
-                  data: {
-                    name: message?.data?.name,
-                    balance: freshBalance,
-                  },
-                });
-              } else {
-                // Balance change caused by sending coins
-                console.log("registering successful send");
-                // const transactionHistory =
-                //   await walletRequestBalance.getHistory("sat", 0, 100);
+        //       // Balance changed upwards = coins received
+        //       // Balance changed downwards = coins sent
+        //       const isReceivedCoins =
+        //         parseInt(freshBalance) > parseInt(totalBalance);
+        //       console.log("Did I receive coins?");
+        //       console.log({
+        //         freshBalance,
+        //         totalBalance,
+        //         isReceivedCoins,
+        //       });
+        //       if (isReceivedCoins) {
+        //         emit({
+        //           type: RESPONSE_MESSAGE_TYPES.RECEIVED_COINS,
+        //           data: {
+        //             name: message?.data?.name,
+        //             balance: freshBalance,
+        //           },
+        //         });
+        //       } else {
+        //         // Balance change caused by sending coins
+        //         console.log("registering successful send");
+        //         // const transactionHistory =
+        //         //   await walletRequestBalance.getHistory("sat", 0, 100);
 
-                emit({
-                  type: RESPONSE_MESSAGE_TYPES.SEND_COINS_RESPONSE_DETECTED,
-                  data: {
-                    name: message?.data?.name,
-                    balance: freshBalance,
-                    // transactionHistory,
-                  },
-                });
-              }
-            };
-            // get a transient wallet's provider
-            const provider = (await WalletObject.newRandom()).provider;
-            // subscribe to all addresses, ignore allocated but not yet used addresses
-            const watchAddresses = addresses.filter(
-              (_, index) => index <= depositAddrIndex
-            );
-            watchAddresses.map((address) =>
-              provider.watchAddressStatus(address, watchAddressCallback)
-            );
+        //         emit({
+        //           type: RESPONSE_MESSAGE_TYPES.SEND_COINS_RESPONSE_DETECTED,
+        //           data: {
+        //             name: message?.data?.name,
+        //             balance: freshBalance,
+        //             // transactionHistory,
+        //           },
+        //         });
+        //       }
+        //     };
+        //     // get a transient wallet's provider
+        //     const provider = (await WalletObject.newRandom()).provider;
+        //     // subscribe to all addresses, ignore allocated but not yet used addresses
+        //     const watchAddresses = addresses.filter(
+        //       (_, index) => index <= depositAddrIndex
+        //     );
+        //     watchAddresses.map((address) =>
+        //       provider.watchAddressStatus(address, watchAddressCallback)
+        //     );
 
-            setBalanceWatchWalletName(watchKey);
-          }
+        //     setBalanceWatchWalletName(watchKey);
+        //   }
 
-          // update total wallet balance and receive address in UI
-          emit({
-            type: RESPONSE_MESSAGE_TYPES.REQUEST_BALANCE_AND_ADDRESS_RESPONSE,
-            data: {
-              name: message?.data?.name,
-              balance: totalBalance,
-              cashaddr: depositAddress,
-              maxAddressIndex: depositAddrIndex,
-              coins: coins.flat(1),
-            },
-          });
-          break;
+        //   // update total wallet balance and receive address in UI
+        //   emit({
+        //     type: RESPONSE_MESSAGE_TYPES.REQUEST_BALANCE_AND_ADDRESS_RESPONSE,
+        //     data: {
+        //       name: message?.data?.name,
+        //       balance: totalBalance,
+        //       cashaddr: depositAddress,
+        //       maxAddressIndex: depositAddrIndex,
+        //       coins: coins.flat(1),
+        //     },
+        //   });
+        //   break;
 
         case BRIDGE_MESSAGE_TYPES.SEND_COINS:
           await sendCoins(WalletObject, message);

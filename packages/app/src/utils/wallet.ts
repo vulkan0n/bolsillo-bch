@@ -1,4 +1,5 @@
 import { SeleneWalletType, CoinType } from "@selene-wallet/common/dist/types";
+import { scanAddressAtIndex } from "@selene-wallet/app/src/components/BackgroundIntervals";
 
 export const getWalletUTXOs = (wallet: SeleneWalletType): CoinType[] =>
   wallet?.addresses
@@ -23,4 +24,43 @@ export const getWalletDepositAddress = (wallet: SeleneWalletType): string => {
     (a) => a?.transactions?.length === 0 && a?.coins?.length === 0
   );
   return wallet?.addresses?.[depositAddressIndex]?.cashaddr || "";
+};
+
+// Scan 10 new addresses, starting at index 0
+// and skipping over any addresses that are already known
+// Note that new UTXOs (coins) on addresses at known indices
+// will not be detected (use checkWalletExistingAddresses() instead)
+export const scanWallet10NewAddresses = (
+  wallet: SeleneWalletType,
+  isTestNet: boolean
+) => {
+  let counter = 0;
+  let index = 0;
+
+  while (counter < 10) {
+    const isAddressAtIndex =
+      wallet?.addresses?.find((a) => a?.hdWalletIndex === index) || false;
+
+    if (!isAddressAtIndex) {
+      scanAddressAtIndex(wallet, index, isTestNet);
+      counter += 1;
+    }
+
+    index += 1;
+  }
+};
+
+// Re-check all known addresses on a wallet
+// Most likely use: looking for new coins on existing addresses
+export const checkWalletExistingAddresses = (
+  wallet: SeleneWalletType,
+  isTestNet: boolean
+) => {
+  const walletAddressLength = wallet?.addresses?.length;
+  const walletLastAddress = wallet?.addresses?.[walletAddressLength - 1];
+  const lastAddressHdIndex = walletLastAddress?.hdWalletIndex;
+
+  for (let i = 0; i <= lastAddressHdIndex; i++) {
+    scanAddressAtIndex(wallet, i, isTestNet);
+  }
 };

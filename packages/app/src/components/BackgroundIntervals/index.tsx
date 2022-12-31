@@ -30,22 +30,6 @@ export const scanAddressAtIndex = (
   });
 };
 
-export const fetchActiveWalletBalance = (
-  wallet: SeleneWalletType,
-  isTestNet: boolean
-) => {
-  emit({
-    type: BRIDGE_MESSAGE_TYPES.REQUEST_BALANCE_AND_ADDRESS,
-    data: {
-      name: wallet?.name,
-      mnemonic: wallet?.mnemonic,
-      derivationPath: wallet?.derivationPath,
-      maxAddressIndex: wallet?.maxAddressIndex,
-      isTestNet,
-    },
-  });
-};
-
 const BackgroundIntervals = () => {
   const dispatch = useDispatch();
   const wallet = useSelector((state: ReduxState) => selectActiveWallet(state));
@@ -70,10 +54,6 @@ const BackgroundIntervals = () => {
 
   const ping = () => {
     // console.log("ping!");
-
-    // if (wallet) {
-    //   fetchActiveWalletBalance(wallet, isTestNet);
-    // }
 
     // if (wallets) {
     //   console.log("fetching Wallet histories");
