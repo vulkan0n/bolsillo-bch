@@ -58,6 +58,8 @@ Mainnet.cash "wallets", aka on the non-app side of the bridge, are not the same 
 
 Be careful with using `navigation.reset`, as it can mess around with the loading of the root <Toast> component and cause React to blow up on finding Toast calls with props that are objects (and therefore not renderable) instead of strings. `navigation.reset` is used in `Reset app` to completely purge all data, but should otherwise perhaps be avoided.
 
+For performance reasons, .getHistory() calls are only used up to 100 transactions at this point. This could be improved with some pagination or queueing for addresses with more transactions but in general proper fresh address use should mean 99.9% of addresses do not fall into the category of 100+ transactions. The app will report incomplete histories for addresses with hundreds of transactions (or more).
+
 ### Upgrading mainnet.cash
 
 Update the `mainnet-js` package in `package.json`, and don't forget to also update to the same version in `src/config/preloadMainNetScript`.
