@@ -25,6 +25,19 @@ export interface TransactionType {
   note?: string;
 }
 
+export interface TransactionHistoryTxType {
+  blockheight: number;
+  txn: string;
+  transactionId: string;
+  balance: number;
+  fee: number;
+  from: string;
+  to: string;
+  index: number;
+  unit: string;
+  value: number;
+}
+
 export interface CoinType {
   height: number;
   transactionId: string;
@@ -38,6 +51,7 @@ export interface SeleneAddressType {
   hdWalletIndex: number;
   coins: CoinType[];
   cashaddr: string;
+  transactions: TransactionHistoryTxType[];
 }
 
 export interface SeleneWalletType {

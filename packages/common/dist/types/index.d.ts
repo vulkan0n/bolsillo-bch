@@ -3,79 +3,68 @@ import { SettingsState } from "./reducers/settingsReducer";
 import { TransactionPadState } from "./reducers/transactionPadReducer";
 import { WalletManagerState } from "./reducers/walletManagerReducer";
 import { LocalState } from "./reducers/localReducer";
-
 export interface ReduxState {
-  transactionPad: TransactionPadState;
-  exchangeRates: ExchangeRatesState;
-  walletManager: WalletManagerState;
-  settings: SettingsState;
-  local: LocalState;
+    transactionPad: TransactionPadState;
+    exchangeRates: ExchangeRatesState;
+    walletManager: WalletManagerState;
+    settings: SettingsState;
+    local: LocalState;
 }
 export interface WalletType {
-  mnemonic: string;
-  derivationPath: string;
-  cashaddr: string;
-  maxAddressIndex: number;
+    mnemonic: string;
+    derivationPath: string;
+    cashaddr: string;
+    maxAddressIndex: number;
 }
 export interface TransactionType {
-  txn: string;
-  blockheight?: number;
-  note?: string;
+    txn: string;
+    blockheight?: number;
+    note?: string;
+}
+export interface TransactionHistoryTxType {
+    blockheight: number;
+    txn: string;
+    transactionId: string;
+    balance: number;
+    fee: number;
+    from: string;
+    to: string;
+    index: number;
+    unit: string;
+    value: number;
 }
 export interface CoinType {
-  height: number;
-  transactionId: string;
-  outputIndex: number;
-  satoshis: number;
-  address: string;
-  addressIndex: string;
+    height: number;
+    transactionId: string;
+    outputIndex: number;
+    satoshis: number;
+    address: string;
+    addressIndex: string;
 }
 export interface SeleneAddressType {
-  hdWalletIndex: number;
-  coins: CoinType[];
-  cashaddr: string;
-  transactions: TransactionType[];
+    hdWalletIndex: number;
+    coins: CoinType[];
+    cashaddr: string;
+    transactions: TransactionHistoryTxType[];
 }
 export interface SeleneWalletType {
-  name: string;
-  description: string;
-  mnemonic: string;
-  derivationPath: string;
-  transactions: TransactionType[];
-  maxAddressIndex: number;
-  addresses: SeleneAddressType[];
+    name: string;
+    description: string;
+    mnemonic: string;
+    derivationPath: string;
+    transactions: TransactionType[];
+    maxAddressIndex: number;
+    addresses: SeleneAddressType[];
 }
 export interface EmitEvent {
-  type: string;
-  data: {};
+    type: string;
+    data: {};
 }
-export declare type BitcoinDenominationTypes =
-  | "bitcoins"
-  | "millibits"
-  | "bits"
-  | "satoshis";
-export declare type SupportedCurrencyTypes =
-  | "aud"
-  | "btc"
-  | "cad"
-  | "cny"
-  | "eth"
-  | "eur"
-  | "gbp"
-  | "jpy"
-  | "php"
-  | "rub"
-  | "thb"
-  | "usd";
-export declare type CurrencyOrDenominationType =
-  | BitcoinDenominationTypes
-  | SupportedCurrencyTypes;
+export declare type BitcoinDenominationTypes = "bitcoins" | "millibits" | "bits" | "satoshis";
+export declare type SupportedCurrencyTypes = "aud" | "btc" | "cad" | "cny" | "eth" | "eur" | "gbp" | "jpy" | "php" | "rub" | "thb" | "usd";
+export declare type CurrencyOrDenominationType = BitcoinDenominationTypes | SupportedCurrencyTypes;
 export interface SupportedCurrency {
-  code: SupportedCurrencyTypes;
-  fullName: string;
+    code: SupportedCurrencyTypes;
+    fullName: string;
 }
-export declare type CheckInPeriodTypes =
-  | "DAILY"
-  | "WEEKLY"
-  | "MONTHLY"
-  | "YEARLY";
+export declare type CheckInPeriodTypes = "DAILY" | "WEEKLY" | "MONTHLY" | "YEARLY";
