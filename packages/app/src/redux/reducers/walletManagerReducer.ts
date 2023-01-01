@@ -7,6 +7,7 @@ import { replace } from "immutable-replace";
 import { WalletManagerState } from "@selene-wallet/common/dist/types/reducers/walletManagerReducer";
 import { getWalletSatoshiBalance } from "@selene-wallet/app/src/utils/wallet";
 import { receiveCoinsEvent } from "@selene-wallet/app/src/utils/wallet/receiveCoins";
+import { stashSpentUTXOs } from "./transactionPadReducer";
 
 const BLANK_SCRATCH_PAD = {
   name: "",
@@ -70,7 +71,7 @@ const walletMangerSlice = createSlice({
       }
     },
     createWalletFromScratchPad(state) {
-      state.wallets = [...state.wallets, { ...state.scratchPad, balance: "0" }];
+      state.wallets = [...state.wallets, { ...state.scratchPad }];
       state.activeWalletName = state.scratchPad.name;
       state.scratchPad = BLANK_SCRATCH_PAD;
     },
@@ -176,7 +177,42 @@ const walletMangerSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    builder.addCase(PURGE, () => initialState);
+    builder
+      .addCase(stashSpentUTXOs, (state, action) => {
+        // These UTXOs have been submitted to a spend,
+        // so drop them from the spending wallet
+        const spentUTXOs = action.payload.utxos;
+        const spendingWallet = state.wallets.find(
+          ({ name }) => name === action.payload.wallet.name
+        );
+
+        const walletAddresses = spendingWallet.addresses;
+        const filteredAddresses = walletAddresses.map((a) => {
+          a.coins.filter((c) => {
+            const isSpent = R.includes(c, spentUTXOs);
+            return !isSpent;
+          });
+        });
+
+        console.log({ spentUTXOs });
+
+        const newWallet = replace(walletAddresses)
+          .with(filteredAddresses)
+          .in(spendingWallet);
+        const newWallets = replace(spendingWallet)
+          .with(newWallet)
+          .in(state.wallets);
+
+        state.wallets = newWallets;
+
+        // console.log({ state, action });
+        // console.log(
+        //   "UTXOs have been spent, remove them from the sending wallet"
+        // );
+        // // state.padBalance = "0";
+        // state = state;
+      })
+      .addCase(PURGE, () => initialState);
   },
 });
 

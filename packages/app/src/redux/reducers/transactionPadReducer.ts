@@ -41,7 +41,8 @@ const transactionPadSlice = createSlice({
       state.error = action.payload.error;
     },
     stashSpentUTXOs(state, action) {
-      state = state;
+      console.log("transactionPad stashing uxos", action.payload.utxos);
+      state.spentUTXOs = action.payload.utxos;
     },
     clearTransactionPad() {
       return initialState;

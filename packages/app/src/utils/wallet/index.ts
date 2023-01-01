@@ -113,14 +113,15 @@ export const scanDepositAddress = (
 // and skipping over any addresses that are already known
 // Note that new UTXOs (coins) on addresses at known indices
 // will not be detected (use checkWalletExistingAddresses() instead)
-export const scanWallet10NewAddresses = (
+export const scanWalletXNewAddresses = (
   wallet: SeleneWalletType,
+  numberToScan: number,
   isTestNet: boolean
 ) => {
   let counter = 0;
   let index = 0;
 
-  while (counter < 10) {
+  while (counter < numberToScan) {
     const isAddressAtIndex =
       wallet?.addresses?.find((a) => a?.hdWalletIndex === index) || false;
 

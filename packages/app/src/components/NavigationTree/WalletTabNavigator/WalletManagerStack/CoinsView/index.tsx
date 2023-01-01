@@ -14,7 +14,7 @@ import {
   getWalletUTXOs,
   getWalletUTXOcount,
   getWalletSatoshiBalance,
-  scanWallet10NewAddresses,
+  scanWalletXNewAddresses,
   checkWalletExistingAddresses,
   checkWalletRecentAddresses,
 } from "@selene-wallet/app/src/utils/wallet";
@@ -42,7 +42,13 @@ const CoinsView = ({}) => {
       <StackSubheader title={"Coins"} isBackButton />
       <View style={styles.whiteBackground}>
         <Button
-          onPress={() => scanWallet10NewAddresses(wallet, isTestNet)}
+          onPress={() => scanWalletXNewAddresses(wallet, 100, isTestNet)}
+          variant={"primary"}
+        >
+          Scan 100 new addresses
+        </Button>
+        <Button
+          onPress={() => scanWalletXNewAddresses(wallet, 10, isTestNet)}
           variant={"primary"}
         >
           Scan 10 new addresses
@@ -89,16 +95,14 @@ const CoinsView = ({}) => {
         </Text>
 
         {wallet?.addresses?.map((address) => {
-          const balance = address.coins.reduce(
-            (sum, coin) => sum + coin.satoshis,
-            0
-          );
+          const balance =
+            address?.coins?.reduce((sum, coin) => sum + coin.satoshis, 0) ?? 0;
 
           return (
             <View key={address?.cashaddr}>
-              <Text>#{address.hdWalletIndex}</Text>
+              <Text>#{address?.hdWalletIndex}</Text>
               <Text>{balance} satoshis</Text>
-              <Text>{address.cashaddr}</Text>
+              <Text>{address?.cashaddr}</Text>
               <Text>Transactions COUNT: {address?.transactions?.length}</Text>
               {/* <Text>Transactions: {JSON.stringify(address?.transactions)}</Text> */}
 
