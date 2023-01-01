@@ -1,14 +1,31 @@
 import emit from "@selene-wallet/app/src/utils/emit";
 import { BRIDGE_MESSAGE_TYPES } from "@selene-wallet/app/src/utils/bridgeMessages";
-import { SeleneWalletType } from "@selene-wallet/common/dist/types";
+import { CoinType, SeleneWalletType } from "@selene-wallet/common/dist/types";
 import {
   getWalletDepositAddress,
   getWalletUTXOsToSendAmount,
 } from "@selene-wallet/app/src/utils/wallet";
-import { updateTransactionPadIsSendingCoins } from "@selene-wallet/app/src/redux/reducers/transactionPadReducer";
+import {
+  updateTransactionPadIsSendingCoins,
+  stashSpentUTXOs,
+} from "@selene-wallet/app/src/redux/reducers/transactionPadReducer";
 import store from "@selene-wallet/app/src/redux/store";
 
-interface Props {
+interface StashProps {
+  wallet: SeleneWalletType;
+  utxos: CoinType[];
+}
+
+const temporarilyStashSpentUTXOs = async ({ wallet, utxos }: StashProps) => {
+  store.dispatch(
+    stashSpentUTXOs({
+      wallet,
+      utxos,
+    })
+  );
+};
+
+interface SendProps {
   wallet: SeleneWalletType;
   recipientCashAddr: string;
   satsToSend: number;
@@ -18,8 +35,13 @@ export const sendBitcoinCash = async ({
   wallet,
   recipientCashAddr,
   satsToSend,
-}: Props) => {
+}: SendProps) => {
   const isTestNet = store.getState().settings.isTestNet || false;
+  const utxos = getWalletUTXOsToSendAmount(wallet, satsToSend);
+
+  // Stash these UTXOs as sent
+  // If the transaction fails, these UTXOs will be restored
+  temporarilyStashSpentUTXOs({ wallet, utxos });
 
   emit({
     type: BRIDGE_MESSAGE_TYPES.SEND_COINS,
@@ -29,7 +51,7 @@ export const sendBitcoinCash = async ({
       derivationPath: wallet?.derivationPath,
       recipientCashAddr,
       satsToSend,
-      coins: getWalletUTXOsToSendAmount(wallet, satsToSend),
+      coins: utxos,
       changeAddress: getWalletDepositAddress(wallet),
       isTestNet,
     },

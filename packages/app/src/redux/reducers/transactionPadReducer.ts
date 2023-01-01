@@ -15,6 +15,7 @@ const initialState = {
   sendToAddress: "",
   isSendingCoins: false,
   error: "",
+  spentUTXOs: [],
 } as TransactionPadState;
 
 const transactionPadSlice = createSlice({
@@ -38,6 +39,9 @@ const transactionPadSlice = createSlice({
     },
     updateTransactionPadError(state, action) {
       state.error = action.payload.error;
+    },
+    stashSpentUTXOs(state, action) {
+      state = state;
     },
     clearTransactionPad() {
       return initialState;
@@ -68,6 +72,7 @@ export const {
   updateTransactionPadSendToAddress,
   updateTransactionPadIsSendingCoins,
   updateTransactionPadError,
+  stashSpentUTXOs,
   clearTransactionPad,
 } = transactionPadSlice.actions;
 export default transactionPadSlice.reducer;
