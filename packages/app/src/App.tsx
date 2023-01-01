@@ -164,8 +164,6 @@ export default function App() {
           break;
 
         case RESPONSE_MESSAGE_TYPES.SEND_COINS_RESPONSE:
-          console.log("!!! response detected");
-          console.log("!!! message.data", message?.data);
           if (message?.data?.transactionHistory) {
             store.dispatch(
               importWalletTransactionHistory({
@@ -185,11 +183,8 @@ export default function App() {
             );
           }
 
-          console.log("send coins response detected!!");
-
           const isSendingCoins =
             store.getState()?.transactionPad?.isSendingCoins;
-          console.log(isSendingCoins);
 
           if (isSendingCoins) {
             navigate("Transaction Success Modal");
