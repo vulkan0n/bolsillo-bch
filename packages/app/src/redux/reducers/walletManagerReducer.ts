@@ -6,7 +6,7 @@ import { TransactionType } from "@selene-wallet/common/dist/types";
 import { replace } from "immutable-replace";
 import { WalletManagerState } from "@selene-wallet/common/dist/types/reducers/walletManagerReducer";
 import { getWalletSatoshiBalance } from "@selene-wallet/app/src/utils/wallet";
-import { receiveCoinsEvent } from "@selene-wallet/app/src/utils/receiveCoins";
+import { receiveCoinsEvent } from "@selene-wallet/app/src/utils/wallet/receiveCoins";
 
 const BLANK_SCRATCH_PAD = {
   name: "",
