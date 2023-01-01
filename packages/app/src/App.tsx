@@ -30,7 +30,6 @@ import {
   createDefaultWallet,
   updateNewWalletScratchPadDetails,
   importWalletTransactionHistory,
-  updateWalletMaxAddressIndex,
   mergeSeleneAddressToWallet,
 } from "./redux/reducers/walletManagerReducer";
 import {
@@ -44,8 +43,6 @@ import { ApolloProvider } from "@apollo/client";
 import apolloClient from "./apolloClient";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import COLOURS from "@selene-wallet/common/design/colours";
-import { Audio } from "expo-av";
-import { ONE_SECOND } from "@selene-wallet/common/dist/utils/consts";
 
 export interface TransactionHistoryTxType {
   blockheight: number;
