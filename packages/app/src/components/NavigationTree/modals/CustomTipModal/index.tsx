@@ -13,16 +13,8 @@ import {
   selectActiveWallet,
 } from "@selene-wallet/app/src/redux/selectors";
 import { ReduxState } from "@selene-wallet/common/dist/types";
-import emit from "@selene-wallet/app/src/utils/emit";
-import {
-  updateTransactionPadIsSendingCoins,
-  updateTransactionPadBalance,
-} from "@selene-wallet/app/src/redux/reducers/transactionPadReducer";
-import { BRIDGE_MESSAGE_TYPES } from "@selene-wallet/app/src/utils/bridgeMessages";
-import {
-  getWalletDepositAddress,
-  getWalletUTXOsToSendAmount,
-} from "@selene-wallet/app/src/utils/wallet";
+import { updateTransactionPadBalance } from "@selene-wallet/app/src/redux/reducers/transactionPadReducer";
+import { sendBitcoinCash } from "@selene-wallet/app/src/utils/wallet/sendBitcoinCash";
 
 function CustomTipModal({ navigation, route }) {
   const { donationBchAddress } = route?.params;
@@ -35,7 +27,6 @@ function CustomTipModal({ navigation, route }) {
   );
 
   const wallet = useSelector((state: ReduxState) => selectActiveWallet(state));
-  const { isTestNet } = useSelector((state: ReduxState) => state.settings);
   const { isSendingCoins } = useSelector(
     (state: ReduxState) => state.transactionPad
   );
@@ -43,25 +34,11 @@ function CustomTipModal({ navigation, route }) {
   const tipAmountInIntSats = parseInt(padBalanceInRawSats);
 
   const onPressTipBch = () => {
-    emit({
-      type: BRIDGE_MESSAGE_TYPES.SEND_COINS,
-      data: {
-        name: wallet?.name,
-        mnemonic: wallet?.mnemonic,
-        derivationPath: wallet?.derivationPath,
-        recipientCashAddr: donationBchAddress,
-        satsToSend: tipAmountInIntSats,
-        coins: getWalletUTXOsToSendAmount(wallet, tipAmountInIntSats),
-        changeAddress: getWalletDepositAddress(wallet),
-        isTestNet,
-      },
+    sendBitcoinCash({
+      wallet,
+      satsToSend: tipAmountInIntSats,
+      recipientCashAddr: donationBchAddress,
     });
-
-    dispatch(
-      updateTransactionPadIsSendingCoins({
-        isSendingCoins: true,
-      })
-    );
   };
 
   const onPressCancel = () => {

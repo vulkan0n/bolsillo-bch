@@ -3,14 +3,12 @@ import { View, Text, Pressable, Image, Alert } from "react-native";
 import Slider from "react-native-slide-to-unlock";
 import styles from "./styles";
 import Button from "@selene-wallet/app/src/components/atoms/Button";
-import { BRIDGE_MESSAGE_TYPES } from "@selene-wallet/app/src/utils/bridgeMessages";
 import { useSelector, useDispatch } from "react-redux";
 import {
   updateTransactionPadView,
   updateTransactionPadIsSendingCoins,
 } from "@selene-wallet/app/src/redux/reducers/transactionPadReducer";
 import { ReduxState } from "@selene-wallet/common/dist/types";
-import emit from "@selene-wallet/app/src/utils/emit";
 import TYPOGRAPHY from "@selene-wallet/common/design/typography";
 import {
   selectActiveWallet,
@@ -23,10 +21,7 @@ import Loading from "@selene-wallet/app/src/components/atoms/Loading";
 import COLOURS from "@selene-wallet/common/design/colours";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { iconImport } from "@selene-wallet/app/src/design/icons";
-import {
-  getWalletDepositAddress,
-  getWalletUTXOsToSendAmount,
-} from "@selene-wallet/app/src/utils/wallet";
+import { sendBitcoinCash } from "@selene-wallet/app/src/utils/wallet/sendBitcoinCash";
 
 const Confirm = () => {
   const dispatch = useDispatch();
@@ -42,8 +37,6 @@ const Confirm = () => {
     (state: ReduxState) => state.transactionPad
   );
 
-  const { isTestNet } = useSelector((state: ReduxState) => state.settings);
-
   const [isStuck, setIsStuck] = useState(false);
 
   useEffect(() => {
@@ -57,25 +50,11 @@ const Confirm = () => {
   }, [isSendingCoins]);
 
   const onSwipeSend = () => {
-    emit({
-      type: BRIDGE_MESSAGE_TYPES.SEND_COINS,
-      data: {
-        name: wallet?.name,
-        mnemonic: wallet?.mnemonic,
-        derivationPath: wallet?.derivationPath,
-        recipientCashAddr: sendToAddress,
-        satsToSend: rawSatsToSend,
-        coins: getWalletUTXOsToSendAmount(wallet, parseInt(rawSatsToSend)),
-        changeAddress: getWalletDepositAddress(wallet),
-        isTestNet,
-      },
+    sendBitcoinCash({
+      wallet,
+      recipientCashAddr: sendToAddress,
+      satsToSend: parseInt(rawSatsToSend),
     });
-
-    dispatch(
-      updateTransactionPadIsSendingCoins({
-        isSendingCoins: true,
-      })
-    );
   };
 
   const onPressEnterAmount = () => {
