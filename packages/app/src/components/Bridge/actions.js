@@ -110,6 +110,7 @@ export const sendCoins = async (WalletObject, message) => {
       type: RESPONSE_MESSAGE_TYPES.SEND_COINS_RESPONSE,
       data: {
         name: message?.data?.name,
+        utxos: suitableCoins,
         // transactionHistory,
       },
     });

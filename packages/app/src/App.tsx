@@ -31,6 +31,7 @@ import {
   updateNewWalletScratchPadDetails,
   importWalletTransactionHistory,
   mergeSeleneAddressToWallet,
+  dropSpentUTXOs,
 } from "./redux/reducers/walletManagerReducer";
 import {
   updateTransactionPadIsSendingCoins,
@@ -187,6 +188,14 @@ export default function App() {
             navigate("Transaction Success Modal");
           }
 
+          console.log("dropping UTXOS");
+          console.log("message?.data?.utxos");
+          store.dispatch(
+            dropSpentUTXOs({
+              name: message?.data?.name,
+              utxos: message?.data?.utxos,
+            })
+          );
           store.dispatch(clearTransactionPad());
           break;
 

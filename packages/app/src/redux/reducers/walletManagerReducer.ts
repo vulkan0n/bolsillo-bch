@@ -7,7 +7,6 @@ import { replace } from "immutable-replace";
 import { WalletManagerState } from "@selene-wallet/common/dist/types/reducers/walletManagerReducer";
 import { getWalletSatoshiBalance } from "@selene-wallet/app/src/utils/wallet";
 import { receiveCoinsEvent } from "@selene-wallet/app/src/utils/wallet/receiveCoins";
-import { stashSpentUTXOs } from "./transactionPadReducer";
 
 const BLANK_SCRATCH_PAD = {
   name: "",
@@ -175,44 +174,40 @@ const walletMangerSlice = createSlice({
 
       state.wallets = newWallets;
     },
-  },
-  extraReducers: (builder) => {
-    builder
-      .addCase(stashSpentUTXOs, (state, action) => {
-        // These UTXOs have been submitted to a spend,
-        // so drop them from the spending wallet
-        const spentUTXOs = action.payload.utxos;
-        const spendingWallet = state.wallets.find(
-          ({ name }) => name === action.payload.wallet.name
-        );
+    dropSpentUTXOs(state, action) {
+      // These UTXOs have been submitted to a spend,
+      // so drop them from the spending wallet
 
-        const walletAddresses = spendingWallet.addresses;
-        const filteredAddresses = walletAddresses.map((a) => {
-          a.coins.filter((c) => {
+      return;
+
+      const spentUTXOs = action.payload.utxos;
+      const spendingWallet = state.wallets.find(
+        ({ name }) => name === action.payload.name
+      );
+
+      const walletAddresses = spendingWallet.addresses;
+      const filteredAddresses = walletAddresses.map((a) => {
+        return {
+          ...a,
+          coins: a.coins.filter((c) => {
             const isSpent = R.includes(c, spentUTXOs);
             return !isSpent;
-          });
-        });
+          }),
+        };
+      });
 
-        console.log({ spentUTXOs });
+      const newWallet = replace(walletAddresses)
+        .with(filteredAddresses)
+        .in(spendingWallet);
+      const newWallets = replace(spendingWallet)
+        .with(newWallet)
+        .in(state.wallets);
 
-        const newWallet = replace(walletAddresses)
-          .with(filteredAddresses)
-          .in(spendingWallet);
-        const newWallets = replace(spendingWallet)
-          .with(newWallet)
-          .in(state.wallets);
-
-        state.wallets = newWallets;
-
-        // console.log({ state, action });
-        // console.log(
-        //   "UTXOs have been spent, remove them from the sending wallet"
-        // );
-        // // state.padBalance = "0";
-        // state = state;
-      })
-      .addCase(PURGE, () => initialState);
+      state.wallets = newWallets;
+    },
+  },
+  extraReducers: (builder) => {
+    builder.addCase(PURGE, () => initialState);
   },
 });
 
@@ -232,5 +227,6 @@ export const {
   mergeSeleneAddressToWallet,
   importWalletTransactionHistory,
   updateTransactionNote,
+  dropSpentUTXOs,
 } = walletMangerSlice.actions;
 export default walletMangerSlice.reducer;
