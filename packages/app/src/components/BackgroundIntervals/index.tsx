@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { View } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
-import { ReduxState, SeleneWalletType } from "@selene-wallet/common/dist/types";
+import { ReduxState } from "@selene-wallet/common/dist/types";
 import { BRIDGE_MESSAGE_TYPES } from "@selene-wallet/app/src/utils/bridgeMessages";
 import {
   ONE_SECOND,

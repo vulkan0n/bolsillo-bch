@@ -1,25 +1,17 @@
 import React from "react";
 import { View, Pressable, Text } from "react-native";
 import Button from "@selene-wallet/app/src/components/atoms/Button";
-import emit from "@selene-wallet/app/src/utils/emit";
-import { BRIDGE_MESSAGE_TYPES } from "@selene-wallet/app/src/utils/bridgeMessages";
 import { ReduxState } from "@selene-wallet/common/dist/types";
 import { useSelector, useDispatch } from "react-redux";
 import { selectActiveWallet } from "@selene-wallet/app/src/redux/selectors";
-import {
-  updateTransactionPadIsSendingCoins,
-  updateTransactionPadBalance,
-} from "@selene-wallet/app/src/redux/reducers/transactionPadReducer";
+import { updateTransactionPadBalance } from "@selene-wallet/app/src/redux/reducers/transactionPadReducer";
 import { selectActiveWalletBalance } from "@selene-wallet/app/src/redux/selectors";
 import TYPOGRAPHY from "@selene-wallet/common/design/typography";
 import styles from "./styles";
 import { navigate } from "@selene-wallet/app/src/components/NavigationTree/rootNavigation";
 import { BITCOIN_DENOMINATIONS } from "@selene-wallet/common/dist/utils/consts";
 import { convertBalanceToDisplay } from "@selene-wallet/app/src/utils/formatting";
-import {
-  getWalletDepositAddress,
-  getWalletUTXOsToSendAmount,
-} from "@selene-wallet/app/src/utils/wallet";
+import { sendBitcoinCash } from "@selene-wallet/app/src/utils/wallet/sendBitcoinCash";
 
 interface Props {
   donationBchAddress: string;
@@ -28,7 +20,6 @@ interface Props {
 
 function TipWidget({ donationBchAddress, isWhiteText = false }: Props) {
   const wallet = useSelector((state: ReduxState) => selectActiveWallet(state));
-  const { isTestNet } = useSelector((state: ReduxState) => state.settings);
   const dispatch = useDispatch();
   const { isSendingCoins } = useSelector(
     (state: ReduxState) => state.transactionPad
@@ -44,25 +35,11 @@ function TipWidget({ donationBchAddress, isWhiteText = false }: Props) {
   );
 
   const onPressTipBch = () => {
-    emit({
-      type: BRIDGE_MESSAGE_TYPES.SEND_COINS,
-      data: {
-        name: wallet?.name,
-        mnemonic: wallet?.mnemonic,
-        derivationPath: wallet?.derivationPath,
-        recipientCashAddr: donationBchAddress,
-        satsToSend: tipAmountInIntSats,
-        coins: getWalletUTXOsToSendAmount(wallet, tipAmountInIntSats),
-        changeAddress: getWalletDepositAddress(wallet),
-        isTestNet,
-      },
+    sendBitcoinCash({
+      wallet,
+      recipientCashAddr: donationBchAddress,
+      satsToSend: tipAmountInIntSats,
     });
-
-    dispatch(
-      updateTransactionPadIsSendingCoins({
-        isSendingCoins: true,
-      })
-    );
   };
 
   const onPressCustomAmount = () => {
