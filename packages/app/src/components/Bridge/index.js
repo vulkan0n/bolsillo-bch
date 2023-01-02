@@ -91,7 +91,7 @@ const Bridge = () => {
             mnemonic,
             hdWalletIndex
           );
-          console.log({ seleneAddress });
+          // console.log({ seleneAddress });
           emit({
             type: RESPONSE_MESSAGE_TYPES.SCAN_ADDRESS_AT_INDEX_RESPONSE,
             data: { name: message?.data?.name, seleneAddress },

@@ -42,6 +42,8 @@ To watch the console.logs from inside the Bridge, see: https://stackoverflow.com
 
 Bridge actions are driven by the native app, which sends a `BRIDGE_MESSAGE_TYPE` and receives a corresponding paired `RESPONSE_MESSAGE_TYPE`.
 
+Note also that sometimes making code changes to code running inside the bridge won't actually be reflected in the iOS simulator, even after refreshing / reloading the app, or even uninstalling and reinstalling Expo itself. Instead, try and restart the entire computer - and note that when Selene expo app is restarted it will do a "Building JavaScript bundle... 1%" right from 0% over about 30 seconds. That will include any changes just made to bridge code.
+
 ## Conventions
 
 This is a BCH standard app. Think in terms of BCH satoshis, stored as strings, then use the formatting and exchange rate helpers. All other exchange rates and balances are transformations of the satoshi value.

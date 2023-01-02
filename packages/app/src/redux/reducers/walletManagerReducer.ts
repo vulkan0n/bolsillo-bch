@@ -178,8 +178,6 @@ const walletMangerSlice = createSlice({
       // These UTXOs have been submitted to a spend,
       // so drop them from the spending wallet
 
-      return;
-
       const spentUTXOs = action.payload.spentUTXOs;
       const spendingWallet = state.wallets.find(
         ({ name }) => name === action.payload.name

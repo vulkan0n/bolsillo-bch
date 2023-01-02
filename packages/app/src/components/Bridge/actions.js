@@ -87,6 +87,8 @@ export const sendCoins = async (WalletObject, message) => {
         version: 2,
       });
 
+      console.log("libauth generated transaction", result);
+
       if (!result.success) {
         throw "Error building transaction";
       }
@@ -101,12 +103,27 @@ export const sendCoins = async (WalletObject, message) => {
     // rebuild transaction with the estimated fee
     const finalTx = await buildTransaction(fee);
 
+    console.log({ finalTx });
+    console.log("mate this final tx is encoded and we're not getting anywhere");
+
     // get a transient wallet and send the built transaction
     const tempWallet = await WalletObject.newRandom();
     const result = await tempWallet.submitTransaction(finalTx, true);
     console.log("Sent transaction hash:", { result });
-
+    console.log("tempWallet: ", tempWallet);
+    // Grab this new transaction, find the utxo to the change address, and pass that back to the wallet
     const updatedChangeAddress = message?.data?.changeAddress;
+
+    const newHistory = await tempWallet.provider.getHistory(
+      updatedChangeAddress
+    );
+    console.log({ newHistory });
+
+    const newUTXOs = await tempWallet.provider.getRawTransaction(result, true);
+    console.log({ newUTXOs });
+
+    console.log({ updatedChangeAddress });
+    // TODO: Get info from the change address and send it back to slot in as a new UTXOS
 
     emit({
       type: RESPONSE_MESSAGE_TYPES.SEND_COINS_RESPONSE,
