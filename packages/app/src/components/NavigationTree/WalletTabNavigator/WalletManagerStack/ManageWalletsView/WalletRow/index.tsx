@@ -14,14 +14,10 @@ import {
 } from "@selene-wallet/app/src/redux/reducers/walletManagerReducer";
 import styles from "./styles";
 import { BITCOIN_DENOMINATIONS } from "@selene-wallet/common/dist/utils/consts";
+import { getWalletSatoshiBalance } from "@selene-wallet/app/src/utils/wallet";
 
-const WalletRow = ({
-  navigation,
-  name,
-  description,
-  balance,
-  transactions,
-}) => {
+const WalletRow = ({ navigation, wallet }) => {
+  const { name, description, transactions } = wallet;
   const dispatch = useDispatch();
   const { activeWalletName } = useSelector(
     (state: ReduxState) => state.walletManager
@@ -50,13 +46,13 @@ const WalletRow = ({
   };
 
   const bitcoinBalance = convertBalanceToDisplay(
-    balance,
+    getWalletSatoshiBalance(wallet),
     BITCOIN_DENOMINATIONS.satoshis,
     bitcoinDenomination
   );
 
   const contrastBalance = convertBalanceToDisplay(
-    balance,
+    getWalletSatoshiBalance(wallet),
     BITCOIN_DENOMINATIONS.satoshis,
     contrastCurrency
   );

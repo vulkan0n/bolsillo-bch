@@ -12,16 +12,8 @@ import GreyBar from "@selene-wallet/app/src/components/atoms/GreyBar";
 function ManageWalletsView({ navigation }) {
   const { wallets } = useSelector((state: ReduxState) => state.walletManager);
 
-  const renderWallets = ({
-    item: { name, description, balance, transactions },
-  }) => (
-    <WalletRow
-      navigation={navigation}
-      name={name}
-      description={description}
-      balance={balance}
-      transactions={transactions}
-    />
+  const renderWallets = ({ item: wallet }) => (
+    <WalletRow navigation={navigation} wallet={wallet} />
   );
 
   const onPressToWallets = () => {
