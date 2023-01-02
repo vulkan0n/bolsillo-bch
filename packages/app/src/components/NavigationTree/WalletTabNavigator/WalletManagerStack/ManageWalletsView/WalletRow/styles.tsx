@@ -1,4 +1,5 @@
 import SPACING from "@selene-wallet/common/design/spacing";
+import TYPOGRAPHY from "@selene-wallet/common/design/typography";
 
 const styles = {
   container: {
@@ -13,6 +14,10 @@ const styles = {
     paddingRight: SPACING.ten,
   },
   fixedWidth: { width: 100 },
+  coinButton: {
+    ...TYPOGRAPHY.pGreenUnderlined,
+    paddingBottom: SPACING.ten,
+  },
 };
 
 export default styles;

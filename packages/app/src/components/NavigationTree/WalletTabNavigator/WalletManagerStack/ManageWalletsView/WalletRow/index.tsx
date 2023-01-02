@@ -31,18 +31,18 @@ const WalletRow = ({
 
   const isActive = activeWalletName === name;
 
-  const onPressActivate = (newActiveWalletName) => {
+  const onPressActivate = (newActiveWalletName: string) => {
     dispatch(updateActiveWalletName({ activeWalletName: newActiveWalletName }));
   };
 
-  const onPressTransactions = (transactionsWalletName) => {
+  const onPressTransactions = (transactionsWalletName: string) => {
     dispatch(
       updateNavigatedWalletName({ navigatedWalletName: transactionsWalletName })
     );
     navigation.navigate("Transactions");
   };
 
-  const onPressCoins = (transactionsWalletName) => {
+  const onPressCoins = (transactionsWalletName: string) => {
     dispatch(
       updateNavigatedWalletName({ navigatedWalletName: transactionsWalletName })
     );
@@ -99,41 +99,14 @@ const WalletRow = ({
               onPressActivate(name);
             }}
           >
-            <Text
-              style={
-                {
-                  ...TYPOGRAPHY.pGreenUnderlined,
-                  paddingBottom: SPACING.ten,
-                } as any
-              }
-            >
-              Activate
-            </Text>
+            <Text style={styles.coinButton as any}>Activate</Text>
           </Pressable>
         )}
         <Pressable onPress={() => onPressTransactions(name)}>
-          <Text
-            style={
-              {
-                ...TYPOGRAPHY.pGreenUnderlined,
-                paddingBottom: SPACING.ten,
-              } as any
-            }
-          >
-            More {">"}
-          </Text>
+          <Text style={styles.coinButton as any}>More {">"}</Text>
         </Pressable>
         <Pressable onPress={() => onPressCoins(name)}>
-          <Text
-            style={
-              {
-                ...TYPOGRAPHY.pGreenUnderlined,
-                paddingBottom: SPACING.ten,
-              } as any
-            }
-          >
-            Coins {">"}
-          </Text>
+          <Text style={styles.coinButton as any}>Coins {">"}</Text>
         </Pressable>
       </View>
     </View>
