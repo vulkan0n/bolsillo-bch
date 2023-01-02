@@ -193,7 +193,7 @@ export default function App() {
           store.dispatch(
             dropSpentUTXOs({
               name: message?.data?.name,
-              utxos: message?.data?.utxos,
+              spentUTXOs: message?.data?.spentUTXOs,
             })
           );
           store.dispatch(clearTransactionPad());

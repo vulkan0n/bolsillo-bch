@@ -180,7 +180,7 @@ const walletMangerSlice = createSlice({
 
       return;
 
-      const spentUTXOs = action.payload.utxos;
+      const spentUTXOs = action.payload.spentUTXOs;
       const spendingWallet = state.wallets.find(
         ({ name }) => name === action.payload.name
       );

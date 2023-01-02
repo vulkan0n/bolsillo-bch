@@ -106,11 +106,14 @@ export const sendCoins = async (WalletObject, message) => {
     const result = await tempWallet.submitTransaction(finalTx, true);
     console.log("Sent transaction hash:", { result });
 
+    const updatedChangeAddress = message?.data?.changeAddress;
+
     emit({
       type: RESPONSE_MESSAGE_TYPES.SEND_COINS_RESPONSE,
       data: {
         name: message?.data?.name,
-        utxos: suitableCoins,
+        spentUTXOs: suitableCoins,
+        updatedChangeAddress,
         // transactionHistory,
       },
     });
