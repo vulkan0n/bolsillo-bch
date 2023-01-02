@@ -4,6 +4,7 @@ import { CoinType, SeleneWalletType } from "@selene-wallet/common/dist/types";
 import {
   getWalletDepositAddress,
   getWalletUTXOsToSendAmount,
+  getWalletAddressHdIndex,
 } from "@selene-wallet/app/src/utils/wallet";
 import {
   updateTransactionPadIsSendingCoins,
@@ -42,6 +43,8 @@ export const sendBitcoinCash = async ({
   // Stash these UTXOs as sent
   // If the transaction fails, these UTXOs will be restored
   temporarilyStashSpentUTXOs({ wallet, utxos });
+  const changeAddress = getWalletDepositAddress(wallet);
+  const changeAddressHdIndex = getWalletAddressHdIndex(wallet, changeAddress);
 
   emit({
     type: BRIDGE_MESSAGE_TYPES.SEND_COINS,
@@ -52,7 +55,8 @@ export const sendBitcoinCash = async ({
       recipientCashAddr,
       satsToSend,
       coins: utxos,
-      changeAddress: getWalletDepositAddress(wallet),
+      changeAddress,
+      changeAddressHdIndex,
       isTestNet,
     },
   });

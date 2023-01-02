@@ -109,6 +109,24 @@ export const scanDepositAddress = (
   scanAddressAtIndex(wallet, freshDepositAddressHdIndex, isTestNet);
 };
 
+export const getWalletAddressHdIndex = (
+  wallet: SeleneWalletType,
+  address: string
+): number => {
+  const specificAddress = wallet?.addresses?.find(
+    (a) => a?.cashaddr === address
+  );
+  console.log("specificAddress: ", specificAddress);
+
+  if (!specificAddress) {
+    throw Error(
+      `Cannot find address: ${address}" in wallet.name: ${wallet.name}`
+    );
+  }
+
+  return specificAddress?.hdWalletIndex;
+};
+
 // Scan 10 new addresses, starting at index 0
 // and skipping over any addresses that are already known
 // Note that new UTXOs (coins) on addresses at known indices
