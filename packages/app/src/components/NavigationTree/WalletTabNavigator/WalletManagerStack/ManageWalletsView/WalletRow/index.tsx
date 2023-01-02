@@ -4,7 +4,6 @@ import { useDispatch, useSelector } from "react-redux";
 import TYPOGRAPHY from "@selene-wallet/common/design/typography";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import COLOURS from "@selene-wallet/common/design/colours";
-import SPACING from "@selene-wallet/common/design/spacing";
 import { ReduxState } from "@selene-wallet/common/dist/types";
 import { faWallet } from "@fortawesome/free-solid-svg-icons";
 import { convertBalanceToDisplay } from "@selene-wallet/app/src/utils/formatting";

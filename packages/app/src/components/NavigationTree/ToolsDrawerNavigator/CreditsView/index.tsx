@@ -17,10 +17,6 @@ function CreditsView() {
   const version = "v0.1.0";
   const gitlabUrl = "https://gitlab.com/selene.cash/selene-wallet";
 
-  const onPressUrl = () => {
-    Linking.openURL(gitlabUrl);
-  };
-
   return (
     <ScrollView style={styles.scrollView}>
       <View style={styles.container as any}>
@@ -37,20 +33,28 @@ function CreditsView() {
           donationBchAddress={DEVELOPER_DONATION_ADDRESS}
           isWhiteText
         />
-        <Text style={TYPOGRAPHY.pWhite as any}>Thanks to:</Text>
-        <Text style={TYPOGRAPHY.pWhite as any}>Kallisti (inspiration)</Text>
-        <Text style={TYPOGRAPHY.pWhite as any}>2_qx (Mainnet.cash)</Text>
-        <Text style={TYPOGRAPHY.pWhite as any}>Jason Dreyzehner (Libauth)</Text>
-        <Text style={TYPOGRAPHY.pWhite as any}>Testers:</Text>
-        <Text style={TYPOGRAPHY.pWhite as any}>
-          Bitcoin Jason, fshinetop, Jett Scythe
-        </Text>
         <View style={TYPOGRAPHY.spacer as any}></View>
         <Text style={TYPOGRAPHY.h2 as any}>Source code:</Text>
         <WebLink url={gitlabUrl} isWhite />
         <Text style={TYPOGRAPHY.pWhite as any}>PRs always welcome!</Text>
         <View style={TYPOGRAPHY.spacer as any}></View>
         <Text style={TYPOGRAPHY.pWhite as any}>{version}</Text>
+
+        <View style={TYPOGRAPHY.spacer as any}></View>
+        <Text style={TYPOGRAPHY.h2 as any}>Code Contributors:</Text>
+        <Text style={TYPOGRAPHY.pWhite as any}>Kallisti</Text>
+        <Text style={TYPOGRAPHY.pWhite as any}>Pat (Mainnet.cash)</Text>
+        <View style={TYPOGRAPHY.spacer as any}></View>
+
+        <Text style={TYPOGRAPHY.h2 as any}>Thanks to:</Text>
+        <Text style={TYPOGRAPHY.pWhite as any}>2_qx (Mainnet.cash)</Text>
+        <Text style={TYPOGRAPHY.pWhite as any}>Jason Dreyzehner (Libauth)</Text>
+        <View style={TYPOGRAPHY.spacer as any}></View>
+
+        <Text style={TYPOGRAPHY.h2 as any}>Testers:</Text>
+        <Text style={TYPOGRAPHY.pWhite as any}>
+          Bitcoin Jason, fshinetop, Jett Scythe
+        </Text>
       </View>
     </ScrollView>
   );
