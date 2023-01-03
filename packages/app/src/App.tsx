@@ -70,10 +70,12 @@ interface BridgeResponseMessage {
     cashaddr?: string;
     maxAddressIndex?: number;
     coins?: CoinType[];
+    spentUTXOs: CoinType[];
     transactionHistory?: {
       transactions: TransactionHistoryTxType[];
     };
     seleneAddress: SeleneAddressType;
+    updatedChangeAddress: SeleneAddressType;
   };
 }
 
@@ -194,6 +196,7 @@ export default function App() {
             dropSpentUTXOs({
               name: message?.data?.name,
               spentUTXOs: message?.data?.spentUTXOs,
+              updatedChangeAddress: message?.data?.updatedChangeAddress,
             })
           );
           store.dispatch(clearTransactionPad());

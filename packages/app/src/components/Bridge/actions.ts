@@ -161,7 +161,7 @@ export const sendCoins = async (WalletObject, message) => {
     emit({
       type: RESPONSE_MESSAGE_TYPES.SEND_COINS_RESPONSE,
       data: {
-        name: message?.data?.name,
+        name: message?.data?.wallet?.name,
         spentUTXOs: suitableCoins,
         updatedChangeAddress,
         // transactionHistory,

@@ -1,5 +1,8 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { SeleneWalletType } from "@selene-wallet/common/dist/types";
+import {
+  SeleneAddressType,
+  SeleneWalletType,
+} from "@selene-wallet/common/dist/types";
 import { PURGE } from "redux-persist";
 import * as R from "ramda";
 import { TransactionType } from "@selene-wallet/common/dist/types";
@@ -7,6 +10,7 @@ import { replace } from "immutable-replace";
 import { WalletManagerState } from "@selene-wallet/common/dist/types/reducers/walletManagerReducer";
 import { getWalletSatoshiBalance } from "@selene-wallet/app/src/utils/wallet";
 import { receiveCoinsEvent } from "@selene-wallet/app/src/utils/wallet/receiveCoins";
+import { CoinType } from "@selene-wallet/common/types";
 
 const BLANK_SCRATCH_PAD = {
   name: "",
@@ -175,19 +179,21 @@ const walletMangerSlice = createSlice({
       state.wallets = newWallets;
     },
     dropSpentUTXOs(state, action) {
-      // These UTXOs have been submitted to a spend,
-      // so drop them from the spending wallet
-
-      const spentUTXOs = action.payload.spentUTXOs;
-      const spendingWallet = state.wallets.find(
+      const spendingWallet: SeleneWalletType = state.wallets.find(
         ({ name }) => name === action.payload.name
       );
 
-      const walletAddresses = spendingWallet.addresses;
-      const filteredAddresses = walletAddresses.map((a) => {
+      console.log("action.payload.name", action.payload.name);
+      console.log({ spendingWallet });
+      const walletAddresses: SeleneAddressType[] = spendingWallet.addresses;
+
+      // First update UTXOs submitted to a spend,
+      // so drop them from the spending wallet
+      const spentUTXOs: CoinType[] = action.payload.spentUTXOs;
+      const filteredAddresses = walletAddresses.map((a: SeleneAddressType) => {
         return {
           ...a,
-          coins: a.coins.filter((c) => {
+          coins: a.coins.filter((c: CoinType) => {
             const isSpent = R.includes(c, spentUTXOs);
             return !isSpent;
           }),
@@ -197,8 +203,24 @@ const walletMangerSlice = createSlice({
       const newWallet = replace(walletAddresses)
         .with(filteredAddresses)
         .in(spendingWallet);
+
+      // Second update the change address
+      // which has received new utxos and transactions
+      const updatedChangeAddress: SeleneAddressType =
+        action.payload.updatedChangeAddress;
+      const existingChangeAddress = newWallet.addresses.find(
+        (a: SeleneAddressType) => a?.cashaddr === updatedChangeAddress.cashaddr
+      );
+      const newWallet2 = replace(existingChangeAddress)
+        .with(updatedChangeAddress)
+        .in(newWallet);
+
+      console.log({ existingChangeAddress, updatedChangeAddress });
+
+      // Switch out the original Redux wallet state
+      // with the change-address-updated & UTXO-dropped wallet
       const newWallets = replace(spendingWallet)
-        .with(newWallet)
+        .with(newWallet2)
         .in(state.wallets);
 
       state.wallets = newWallets;
