@@ -56,6 +56,7 @@ const Bridge = () => {
         case BRIDGE_MESSAGE_TYPES.SCAN_ADDRESS_AT_INDEX:
           const { mnemonic, hdWalletIndex } = message?.data;
           const seleneAddress = await getSeleneAddressAtIndex(
+            WalletObject,
             mnemonic,
             hdWalletIndex
           );
