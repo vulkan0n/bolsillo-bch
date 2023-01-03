@@ -16,6 +16,7 @@ export const getWalletUTXOsToSendAmount = (
   satoshisToSend: number
 ): CoinType[] => {
   const utxos: CoinType[] = getWalletUTXOs(wallet);
+  console.log("selecting from these UTXOs", utxos);
   const totalSatsRequired: number = satoshisToSend + 10000; // Buffer for fees
   let total = 0;
   const sufficientUTXOs: CoinType[] = [];
@@ -116,8 +117,6 @@ export const getWalletAddressHdIndex = (
   const specificAddress = wallet?.addresses?.find(
     (a) => a?.cashaddr === address
   );
-  console.log("specificAddress: ", specificAddress);
-
   if (!specificAddress) {
     throw Error(
       `Cannot find address: ${address}" in wallet.name: ${wallet.name}`

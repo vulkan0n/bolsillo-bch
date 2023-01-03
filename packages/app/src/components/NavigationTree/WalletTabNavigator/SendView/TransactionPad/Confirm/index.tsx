@@ -26,6 +26,7 @@ import { sendBitcoinCash } from "@selene-wallet/app/src/utils/wallet/sendBitcoin
 const Confirm = () => {
   const dispatch = useDispatch();
   const wallet = useSelector((state: ReduxState) => selectActiveWallet(state));
+  console.log("wallet has been updated in Confirm page");
   const rawSatsToSend = useSelector((state: ReduxState) =>
     selectPadBalanceInRawSats(state)
   );

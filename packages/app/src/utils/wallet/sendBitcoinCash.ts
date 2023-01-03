@@ -46,6 +46,15 @@ export const sendBitcoinCash = async ({
   const changeAddress = getWalletDepositAddress(wallet);
   const changeAddressHdIndex = getWalletAddressHdIndex(wallet, changeAddress);
 
+  console.log("sending!!");
+  console.log({
+    recipientCashAddr,
+    satsToSend,
+    coins: utxos,
+    changeAddress,
+    changeAddressHdIndex,
+  });
+
   emit({
     type: BRIDGE_MESSAGE_TYPES.SEND_COINS,
     data: {

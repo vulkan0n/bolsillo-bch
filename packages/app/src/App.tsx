@@ -31,7 +31,7 @@ import {
   updateNewWalletScratchPadDetails,
   importWalletTransactionHistory,
   mergeSeleneAddressToWallet,
-  dropSpentUTXOs,
+  updateSpendingWalletAddressesAndUTXOs,
 } from "./redux/reducers/walletManagerReducer";
 import {
   updateTransactionPadIsSendingCoins,
@@ -164,6 +164,7 @@ export default function App() {
           break;
 
         case RESPONSE_MESSAGE_TYPES.SEND_COINS_SUBMITTED:
+          console.log("got back send_coins_submitted");
           const isSendingCoins =
             store.getState()?.transactionPad?.isSendingCoins;
 
@@ -180,6 +181,9 @@ export default function App() {
           break;
 
         case RESPONSE_MESSAGE_TYPES.SEND_COINS_RESPONSE:
+          console.log("got back send coins response");
+          console.log("message.data", message?.data);
+
           if (message?.data?.transactionHistory) {
             store.dispatch(
               importWalletTransactionHistory({
@@ -199,11 +203,8 @@ export default function App() {
             );
           }
 
-          console.log("dropping UTXOS");
-          console.log("message?.data?.spentUTXOs", message?.data?.spentUTXOs);
-          console.log("message?.data?.name", message?.data?.name);
           store.dispatch(
-            dropSpentUTXOs({
+            updateSpendingWalletAddressesAndUTXOs({
               name: message?.data?.name,
               spentUTXOs: message?.data?.spentUTXOs,
               updatedChangeAddress: message?.data?.updatedChangeAddress,

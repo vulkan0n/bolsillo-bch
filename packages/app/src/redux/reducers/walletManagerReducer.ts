@@ -178,13 +178,11 @@ const walletMangerSlice = createSlice({
 
       state.wallets = newWallets;
     },
-    dropSpentUTXOs(state, action) {
+    updateSpendingWalletAddressesAndUTXOs(state, action) {
       const spendingWallet: SeleneWalletType = state.wallets.find(
         ({ name }) => name === action.payload.name
       );
 
-      console.log("action.payload.name", action.payload.name);
-      console.log({ spendingWallet });
       const walletAddresses: SeleneAddressType[] = spendingWallet.addresses;
 
       // First update UTXOs submitted to a spend,
@@ -247,6 +245,6 @@ export const {
   mergeSeleneAddressToWallet,
   importWalletTransactionHistory,
   updateTransactionNote,
-  dropSpentUTXOs,
+  updateSpendingWalletAddressesAndUTXOs,
 } = walletMangerSlice.actions;
 export default walletMangerSlice.reducer;
