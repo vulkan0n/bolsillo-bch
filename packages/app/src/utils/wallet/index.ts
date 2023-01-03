@@ -107,6 +107,8 @@ export const scanDepositAddress = (
   const freshDepositAddressHdIndex =
     wallet?.addresses?.[depositAddressIndex]?.hdWalletIndex;
 
+  console.log("scanning at index: ", freshDepositAddressHdIndex);
+
   scanAddressAtIndex(wallet, freshDepositAddressHdIndex, isTestNet);
 };
 

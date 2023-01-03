@@ -3,6 +3,7 @@ import { View } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { ReduxState } from "@selene-wallet/common/dist/types";
 import { BRIDGE_MESSAGE_TYPES } from "@selene-wallet/app/src/utils/bridgeMessages";
+import { getWalletDepositAddress } from "@selene-wallet/app/src/utils/wallet/index";
 import {
   ONE_SECOND,
   THIRTY_SECONDS,
@@ -85,16 +86,18 @@ const BackgroundIntervals = () => {
     return () => clearInterval(interval);
   }, []);
 
+  const depostAddress = getWalletDepositAddress(wallet);
+  console.log({ depostAddress });
   // Scan deposit address for incoming transactions every second
   // TODO: Replace with the watcher methods in mainnet?
   // Would this make it less reliable, on the other side of the bridge?
-  // useEffect(() => {
-  //   const interval = setInterval(() => {
-  //     scanDepositAddress(wallet);
-  //   }, ONE_SECOND);
+  useEffect(() => {
+    const interval = setInterval(() => {
+      scanDepositAddress(wallet);
+    }, ONE_SECOND * 2);
 
-  //   return () => clearInterval(interval);
-  // }, []);
+    return () => clearInterval(interval);
+  }, [depostAddress]);
 
   return <View />;
 };
