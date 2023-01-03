@@ -42,6 +42,7 @@ export const getSeleneAddressAtIndex = async (
 
 export const sendCoins = async (WalletObject, message) => {
   try {
+    console.log("sendCoins 1");
     const suitableCoins: CoinType[] = message.data.coins.filter(
       (coin) => !coin.token
     );
@@ -54,6 +55,7 @@ export const sendCoins = async (WalletObject, message) => {
       throw new Error("Not enough funds");
     }
 
+    console.log("sendCoins 2");
     // initialize libauth template and compiler
     const template = libauth.importAuthenticationTemplate(
       libauth.authenticationTemplateP2pkhNonHd
@@ -118,6 +120,7 @@ export const sendCoins = async (WalletObject, message) => {
       });
 
       const inputs = await Promise.all(suitableCoins.map(signCoin));
+      console.log("sendCoins 3");
 
       const result = libauth.generateTransaction({
         inputs,
@@ -130,6 +133,7 @@ export const sendCoins = async (WalletObject, message) => {
         throw "Error building transaction";
       }
 
+      console.log("sendCoins 4");
       return libauth.encodeTransaction(result.transaction);
     };
 
@@ -139,11 +143,18 @@ export const sendCoins = async (WalletObject, message) => {
 
     // rebuild transaction with the estimated fee
     const finalTx = await buildTransaction(fee);
+    console.log("sendCoins 5");
+    console.log({ finalTx });
 
     // get a transient wallet and send the built transaction
-    const tempWallet = await WalletObject.newRandom();
+    const tempWallet = await WalletObject.fromSeed(
+      message?.data?.wallet?.mnemonic,
+      `m/44'/0'/0'/0/${message?.data?.changeAddressHdIndex}`
+    );
+    console.log({ tempWallet });
     const result = await tempWallet.submitTransaction(finalTx, true);
     console.log("Sent transaction hash:", { result });
+    console.log("sendCoins 6");
 
     if (result) {
       // Transaction was submitted to network, can display success screen
@@ -153,12 +164,16 @@ export const sendCoins = async (WalletObject, message) => {
       });
     }
 
+    console.log("sendCoins 7");
+
     // Pass back the spent UTXOS and updated change address for the wallet
     const updatedChangeAddress = await getSeleneAddressAtIndex(
       WalletObject,
       message?.data?.wallet?.mnemonic,
       message?.data?.changeAddressHdIndex
     );
+
+    console.log("sendCoins 8");
 
     emit({
       type: RESPONSE_MESSAGE_TYPES.SEND_COINS_RESPONSE,

@@ -162,6 +162,7 @@ const Bridge = () => {
         //   break;
 
         case BRIDGE_MESSAGE_TYPES.SEND_COINS:
+          console.log("received bridge SEND_COINS");
           await sendCoins(WalletObject, message);
           break;
 
