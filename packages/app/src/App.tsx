@@ -163,6 +163,22 @@ export default function App() {
           });
           break;
 
+        case RESPONSE_MESSAGE_TYPES.SEND_COINS_SUBMITTED:
+          const isSendingCoins =
+            store.getState()?.transactionPad?.isSendingCoins;
+
+          if (isSendingCoins) {
+            navigate("Transaction Success Modal");
+          }
+
+          store.dispatch(
+            updateTransactionPadIsSendingCoins({
+              isSendingCoins: false,
+            })
+          );
+
+          break;
+
         case RESPONSE_MESSAGE_TYPES.SEND_COINS_RESPONSE:
           if (message?.data?.transactionHistory) {
             store.dispatch(
@@ -181,15 +197,6 @@ export default function App() {
                 lastSentTransactionHash: lastTransactionHash || "",
               })
             );
-          }
-
-          const isSendingCoins =
-            store.getState()?.transactionPad?.isSendingCoins;
-
-          console.log(" RECEIVED message.data!!", message?.data);
-
-          if (isSendingCoins) {
-            navigate("Transaction Success Modal");
           }
 
           console.log("dropping UTXOS");

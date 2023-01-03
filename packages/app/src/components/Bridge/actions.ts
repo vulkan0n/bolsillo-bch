@@ -145,17 +145,19 @@ export const sendCoins = async (WalletObject, message) => {
     const result = await tempWallet.submitTransaction(finalTx, true);
     console.log("Sent transaction hash:", { result });
 
-    // Pass back the updated change address for the wallet
+    if (result) {
+      // Transaction was submitted to network, can display success screen
+      emit({
+        type: RESPONSE_MESSAGE_TYPES.SEND_COINS_SUBMITTED,
+        data: {},
+      });
+    }
+
+    // Pass back the spent UTXOS and updated change address for the wallet
     const updatedChangeAddress = await getSeleneAddressAtIndex(
       WalletObject,
       message?.data?.wallet?.mnemonic,
       message?.data?.changeAddressHdIndex
-    );
-
-    console.log("!!!! message?.data inside bridge", message?.data);
-    console.log(
-      "!!!! message?.data?.wallet?.name inside bridge",
-      message?.data?.wallet?.name
     );
 
     emit({
