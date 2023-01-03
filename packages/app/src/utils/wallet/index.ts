@@ -178,3 +178,7 @@ export const checkWalletRecentAddresses = (
     scanAddressAtIndex(wallet, i, isTestNet);
   }
 };
+
+export const getSatoshiBalanceFromWalletAddress = (
+  address: SeleneAddressType
+): number => address?.coins?.reduce((sum, coin) => sum + coin.satoshis, 0) ?? 0;

@@ -8,7 +8,11 @@ import {
   BRIDGE_MESSAGE_TYPES,
   RESPONSE_MESSAGE_TYPES,
 } from "@selene-wallet/app/src/utils/bridgeMessages";
-import { sendCoins, getWalletHistory } from "./actions";
+import {
+  sendCoins,
+  getWalletHistory,
+  getSeleneAddressAtIndex,
+} from "./actions";
 
 const Bridge = () => {
   console.log("Bridge loaded.");
@@ -26,42 +30,6 @@ const Bridge = () => {
 
     try {
       const WalletObject = message?.data?.isTestNet ? TestNetWallet : Wallet;
-
-      const getSeleneAddressAtIndex = async (mnemonic, hdWalletIndex) => {
-        const hdWallet = await WalletObject.fromSeed(
-          mnemonic,
-          `m/44'/0'/0'/0/${hdWalletIndex}`
-        );
-
-        const hdWalletUtxos = await hdWallet.getAddressUtxos(hdWallet.cashaddr);
-        // Scans only a very short history
-        // Addresses that have a much longer history are then rescanned with a heavier check
-        const shortTransactions = (await hdWallet.getHistory("sat", 0, 5))
-          .transactions;
-
-        const transactions =
-          shortTransactions.length >= 5
-            ? (await hdWallet.getHistory("sat", 0, 100)).transactions
-            : shortTransactions;
-
-        const coins = hdWalletUtxos.map((coin) => ({
-          height: coin.height,
-          transactionId: coin.txid,
-          outputIndex: coin.vout,
-          satoshis: coin.satoshis,
-          address: hdWallet.cashaddr,
-          addressIndex: hdWalletIndex,
-        }));
-
-        const balance = coins.reduce((sum, curr) => sum + curr.satoshis, 0);
-        return {
-          hdWalletIndex,
-          cashaddr: hdWallet.cashaddr,
-          balance,
-          coins,
-          transactions,
-        };
-      };
 
       switch (message.type) {
         case BRIDGE_MESSAGE_TYPES.CREATE_DEFAULT_WALLET:

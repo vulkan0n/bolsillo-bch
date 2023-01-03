@@ -1,10 +1,50 @@
 import { emit } from "react-native-react-bridge/lib/web";
 import { RESPONSE_MESSAGE_TYPES } from "@selene-wallet/app/src/utils/bridgeMessages";
+import { CoinType, SeleneAddressType } from "@selene-wallet/common/dist/types";
+
+export const getSeleneAddressAtIndex = async (
+  mnemonic: string,
+  hdWalletIndex: number
+): Promise<SeleneAddressType> => {
+  const hdWallet = await WalletObject.fromSeed(
+    mnemonic,
+    `m/44'/0'/0'/0/${hdWalletIndex}`
+  );
+
+  const hdWalletUtxos = await hdWallet.getAddressUtxos(hdWallet.cashaddr);
+  // Scans only a very short history
+  // Addresses that have a much longer history are then rescanned with a heavier check
+  const shortTransactions = (await hdWallet.getHistory("sat", 0, 5))
+    .transactions;
+
+  const transactions =
+    shortTransactions.length >= 5
+      ? (await hdWallet.getHistory("sat", 0, 100)).transactions
+      : shortTransactions;
+
+  const coins: CoinType[] = hdWalletUtxos.map((coin) => ({
+    height: coin.height,
+    transactionId: coin.txid,
+    outputIndex: coin.vout,
+    satoshis: coin.satoshis,
+    address: hdWallet.cashaddr,
+    addressIndex: hdWalletIndex,
+  }));
+
+  return {
+    hdWalletIndex,
+    cashaddr: hdWallet.cashaddr,
+    coins,
+    transactions,
+  };
+};
 
 export const sendCoins = async (WalletObject, message) => {
   try {
-    const suitableCoins = message.data.coins.filter((coin) => !coin.token);
-    const satoshiAmountAvailable = suitableCoins.reduce(
+    const suitableCoins: CoinType[] = message.data.coins.filter(
+      (coin) => !coin.token
+    );
+    const satoshiAmountAvailable: number = suitableCoins.reduce(
       (sum, coin) => sum + coin.satoshis,
       0
     );
@@ -33,7 +73,7 @@ export const sendCoins = async (WalletObject, message) => {
     };
 
     // reusable function to build transaction for fee estimation and final transaction given the fee
-    const buildTransaction = async (fee) => {
+    const buildTransaction = async (fee: number) => {
       const changeAmount =
         satoshiAmountAvailable - message?.data?.satsToSend - fee;
       const outputs = [
@@ -66,7 +106,7 @@ export const sendCoins = async (WalletObject, message) => {
               privateKeys: {
                 key: (
                   await WalletObject.fromSeed(
-                    message?.data?.mnemonic,
+                    message?.data?.wallet?.mnemonic,
                     `m/44'/0'/0'/0/${coin.addressIndex}`
                   )
                 ).privateKey,
@@ -112,17 +152,26 @@ export const sendCoins = async (WalletObject, message) => {
     console.log("Sent transaction hash:", { result });
     console.log("tempWallet: ", tempWallet);
     // Grab this new transaction, find the utxo to the change address, and pass that back to the wallet
-    const updatedChangeAddress = message?.data?.changeAddress;
-
-    const newHistory = await tempWallet.provider.getHistory(
-      updatedChangeAddress
+    const updatedChangeAddress = getSeleneAddressAtIndex(
+      message?.data?.wallet?.mnemonic,
+      message?.data?.changeAddressHdIndex
     );
-    console.log({ newHistory });
 
-    const newUTXOs = await tempWallet.provider.getRawTransaction(result, true);
-    console.log({ newUTXOs });
-
+    console.log(
+      " message?.data?.changeAddressHdIndex: ",
+      message?.data?.changeAddressHdIndex
+    );
     console.log({ updatedChangeAddress });
+
+    // const newHistory = await tempWallet.provider.getHistory(
+    //   updatedChangeAddress
+    // );
+    // console.log({ newHistory });
+
+    // const newUTXOs = await tempWallet.provider.getRawTransaction(result, true);
+    // console.log({ newUTXOs });
+
+    // console.log({ updatedChangeAddress });
     // TODO: Get info from the change address and send it back to slot in as a new UTXOS
 
     emit({

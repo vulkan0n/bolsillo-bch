@@ -1,10 +1,11 @@
 import React from "react";
 import { View, Text } from "react-native";
 import { useSelector } from "react-redux";
-import { ReduxState, SeleneWalletType } from "@selene-wallet/common/dist/types";
+import {
+  ReduxState,
+  SeleneAddressType,
+} from "@selene-wallet/common/dist/types";
 import { selectActiveWallet } from "@selene-wallet/app/src/redux/selectors";
-import store from "@selene-wallet/app/src/redux/store";
-import { updateWalletMaxAddressIndex } from "@selene-wallet/app/src/redux/reducers/walletManagerReducer";
 import Button from "@selene-wallet/app/src/components/atoms/Button";
 import StackSubheader from "@selene-wallet/app/src/components/atoms/StackSubheader";
 import styles from "./styles";
@@ -17,6 +18,7 @@ import {
   scanWalletXNewAddresses,
   checkWalletExistingAddresses,
   checkWalletRecentAddresses,
+  getSatoshiBalanceFromWalletAddress,
 } from "@selene-wallet/app/src/utils/wallet";
 import Divider from "@selene-wallet/app/src/components/atoms/Divider";
 
@@ -94,9 +96,8 @@ const CoinsView = ({}) => {
           Addresses ({addressCount})
         </Text>
 
-        {wallet?.addresses?.map((address) => {
-          const balance =
-            address?.coins?.reduce((sum, coin) => sum + coin.satoshis, 0) ?? 0;
+        {wallet?.addresses?.map((address: SeleneAddressType) => {
+          const balance: number = getSatoshiBalanceFromWalletAddress(address);
 
           return (
             <View key={address?.cashaddr}>

@@ -49,9 +49,7 @@ export const sendBitcoinCash = async ({
   emit({
     type: BRIDGE_MESSAGE_TYPES.SEND_COINS,
     data: {
-      name: wallet?.name,
-      mnemonic: wallet?.mnemonic,
-      derivationPath: wallet?.derivationPath,
+      wallet,
       recipientCashAddr,
       satsToSend,
       coins: utxos,
