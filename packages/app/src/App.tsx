@@ -186,12 +186,15 @@ export default function App() {
           const isSendingCoins =
             store.getState()?.transactionPad?.isSendingCoins;
 
+          console.log(" RECEIVED message.data!!", message?.data);
+
           if (isSendingCoins) {
             navigate("Transaction Success Modal");
           }
 
           console.log("dropping UTXOS");
-          console.log("message?.data?.utxos");
+          console.log("message?.data?.spentUTXOs", message?.data?.spentUTXOs);
+          console.log("message?.data?.name", message?.data?.name);
           store.dispatch(
             dropSpentUTXOs({
               name: message?.data?.name,

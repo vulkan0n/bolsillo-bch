@@ -152,11 +152,11 @@ export const sendCoins = async (WalletObject, message) => {
       message?.data?.changeAddressHdIndex
     );
 
+    console.log("!!!! message?.data inside bridge", message?.data);
     console.log(
-      " message?.data?.changeAddressHdIndex: ",
-      message?.data?.changeAddressHdIndex
+      "!!!! message?.data?.wallet?.name inside bridge",
+      message?.data?.wallet?.name
     );
-    console.log({ updatedChangeAddress });
 
     emit({
       type: RESPONSE_MESSAGE_TYPES.SEND_COINS_RESPONSE,
