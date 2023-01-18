@@ -43,10 +43,10 @@ const BackgroundIntervals = () => {
   const ping = () => {
     // console.log("ping!");
 
-    // if (wallets) {
-    //   console.log("fetching Wallet histories");
-    //   fetchWalletHistories();
-    // }
+    if (wallets) {
+      console.log("fetching Wallet histories");
+      fetchWalletHistories();
+    }
 
     fetchPriceData();
     checkIn();
@@ -70,7 +70,7 @@ const BackgroundIntervals = () => {
   // Run regular checks every 30s
   useEffect(() => {
     // Clear any temporary variables from last session
-    // When app loads
+    // when app loads
     dispatch(
       updateTransactionPadIsSendingCoins({
         isSendingCoins: false,
