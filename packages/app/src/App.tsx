@@ -91,6 +91,8 @@ export default function App() {
     Montserrat_800ExtraBold,
   });
 
+  const [isReloading, setIsReloading] = React.useState(false);
+
   // useWebViewMessage hook create props for WebView and handle communication
   // The argument is callback to receive message from React
   const { ref, onMessage, emit } = useWebViewMessage(
@@ -244,16 +246,32 @@ export default function App() {
     return null;
   }
 
+  console.log({ ref });
+
   return (
     <Provider store={store}>
       <PersistGate loading={<Text>Loading...</Text>} persistor={persistor}>
         <ApolloProvider client={apolloClient}>
           <View style={{ flex: 1, backgroundColor: COLOURS.black }}>
             <Text>Time to force some updates</Text>
+            <Button
+              variant="primary"
+              onPress={() => {
+                // console.log("reloading ref");
+                // ref.current.reload();
+
+                setIsReloading(true);
+                setInterval(() => {
+                  setIsReloading(false);
+                }, 10);
+              }}
+            >
+              Reload ref
+            </Button>
             <SafeAreaProvider>
               <SafeAreaView style={{ flex: 1 }}>
                 <View style={{ height: 100, backgroundColor: "#C1C1C1" }}>
-                  {!IS_WEB && (
+                  {!IS_WEB && !isReloading && (
                     <WebView
                       ref={ref} // (r) => (this.ref = r), then this.ref.reload() or other methods
                       onMessage={onMessage}
