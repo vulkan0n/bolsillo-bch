@@ -167,7 +167,6 @@ export default function App() {
           break;
 
         case RESPONSE_MESSAGE_TYPES.SEND_COINS_SUBMITTED:
-          console.log("got back send_coins_submitted");
           const isSendingCoins =
             store.getState()?.transactionPad?.isSendingCoins;
 
@@ -184,9 +183,6 @@ export default function App() {
           break;
 
         case RESPONSE_MESSAGE_TYPES.SEND_COINS_RESPONSE:
-          console.log("got back send coins response");
-          console.log("message.data", message?.data);
-
           if (message?.data?.transactionHistory) {
             store.dispatch(
               importWalletTransactionHistory({
@@ -261,8 +257,6 @@ export default function App() {
   if (!IS_WEB && !fontsLoaded) {
     return null;
   }
-
-  console.log({ ref });
 
   return (
     <Provider store={store}>
