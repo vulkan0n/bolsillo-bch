@@ -3,11 +3,9 @@ import { View, Text, FlatList } from "react-native";
 import { useSelector } from "react-redux";
 import TYPOGRAPHY from "@selene-wallet/common/design/typography";
 import styles from "./styles";
-import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { ReduxState } from "@selene-wallet/common/dist/types";
 import Divider from "@selene-wallet/app/src/components/atoms/Divider";
 import StackSubheader from "@selene-wallet/app/src/components/atoms/StackSubheader";
-import WalletActions from "./WalletActions";
 import TransactionRow from "./TransactionRow";
 import { BRIDGE_MESSAGE_TYPES } from "@selene-wallet/app/src/utils/bridgeMessages";
 import emit from "@selene-wallet/app/src/utils/emit";
@@ -16,12 +14,18 @@ function TransactionsView({ navigation }) {
   const { navigatedWalletName } = useSelector(
     (state: ReduxState) => state.walletManager
   );
-  const { name, description, mnemonic, derivationPath, maxAddressIndex, transactions } =
-    useSelector((state: ReduxState) =>
-      state.walletManager.wallets?.find(
-        ({ name }) => name === navigatedWalletName
-      )
-    );
+  const {
+    name,
+    description,
+    mnemonic,
+    derivationPath,
+    maxAddressIndex,
+    transactions,
+  } = useSelector((state: ReduxState) =>
+    state.walletManager.wallets?.find(
+      ({ name }) => name === navigatedWalletName
+    )
+  );
   const { isTestNet } = useSelector((state: ReduxState) => state.settings);
 
   useEffect(() => {
@@ -74,7 +78,6 @@ function TransactionsView({ navigation }) {
             );
           }}
         />
-        <WalletActions navigation={navigation} />
       </View>
     </View>
   );

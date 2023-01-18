@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, Pressable } from "react-native";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import { ReduxState } from "@selene-wallet/common/dist/types";
 import { selectActiveWallet } from "@selene-wallet/app/src/redux/selectors";
-import Button from "@selene-wallet/app/src/components/atoms/Button";
 import StackSubheader from "@selene-wallet/app/src/components/atoms/StackSubheader";
 import styles from "./styles";
 import { ScrollView } from "react-native-gesture-handler";
@@ -13,6 +12,7 @@ import {
   getWalletSatoshiBalance,
 } from "@selene-wallet/app/src/utils/wallet";
 import Divider from "@selene-wallet/app/src/components/atoms/Divider";
+import WalletActions from "./WalletActions";
 
 const WalletView = ({ navigation }) => {
   const wallet = useSelector((state: ReduxState) => selectActiveWallet(state));
@@ -57,6 +57,8 @@ const WalletView = ({ navigation }) => {
         <Text style={TYPOGRAPHY.h2black as any}>
           Addresses ({addressCount})
         </Text>
+
+        <WalletActions navigation={navigation} />
       </View>
     </ScrollView>
   );
