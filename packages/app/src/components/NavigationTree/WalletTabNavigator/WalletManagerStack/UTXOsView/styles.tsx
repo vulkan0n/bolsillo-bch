@@ -3,7 +3,7 @@ import SPACING from "@selene-wallet/common/design/spacing";
 
 const styles = {
   coinView: {
-    height: 80,
+    height: 220,
     borderColor: COLOURS.lightGrey,
     backgroundColor: COLOURS.white,
     borderWidth: 5,

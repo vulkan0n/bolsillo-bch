@@ -54,7 +54,7 @@ const getWalletLastAddressHdIndex = (wallet: SeleneWalletType): number =>
 export const scanAddressAtIndex = (
   wallet: SeleneWalletType,
   hdWalletIndex: number,
-  isTestNet: boolean
+  isTestNet: boolean = false
 ) => {
   emit({
     type: BRIDGE_MESSAGE_TYPES.SCAN_ADDRESS_AT_INDEX,
