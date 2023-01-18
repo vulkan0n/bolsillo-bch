@@ -33,6 +33,8 @@ const WalletView = ({ navigation }) => {
 
   const walletBalance = getWalletSatoshiBalance(wallet);
   const addressCount = wallet?.addresses?.length || 0;
+  const transactionCount = wallet?.transactions?.length || 0;
+  const isExcessTransactionCount = transactionCount >= 100;
   const utxoCount = getWalletUTXOcount(wallet);
 
   const [minAddressIndex, setMinAddressIndex] = useState("");
@@ -77,7 +79,10 @@ const WalletView = ({ navigation }) => {
         <Divider />
 
         <Pressable onPress={() => onPressTransactions()}>
-          <Text style={TYPOGRAPHY.h2black as any}>Transactions {">"}</Text>
+          <Text style={TYPOGRAPHY.h2black as any}>
+            Transactions ({transactionCount}
+            {isExcessTransactionCount ? "+" : ""}) {">"}
+          </Text>
         </Pressable>
         <Divider />
 
