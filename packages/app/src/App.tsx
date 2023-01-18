@@ -257,9 +257,13 @@ export default function App() {
             <Button
               variant="primary"
               onPress={() => {
-                // console.log("reloading ref");
-                // ref.current.reload();
-
+                // Force reload the bridge
+                // There is some kind of bug that makes the 2nd (but not 1st) send on
+                // the bridge send a transaction but not return a result at
+                // const result = await tempWallet.submitTransaction(finalTx, true);
+                // I cannot figure out why
+                // But reloading the bridge (and thus the injected javascript)
+                // after each successful send confirmation does the job
                 setIsReloading(true);
                 setInterval(() => {
                   setIsReloading(false);
