@@ -7,7 +7,7 @@ import TransactionsView from "./TransactionsView";
 import UTXOsView from "./UTXOsView";
 import BackupView from "./BackupView";
 import DeleteWalletView from "./DeleteWalletView";
-import CoinsView from "./CoinsView";
+import AddressesView from "./AddressesView";
 
 const Stack = createNativeStackNavigator();
 
@@ -56,8 +56,8 @@ const WalletManagerStack = () => (
       }}
     />
     <Stack.Screen
-      name="Coins"
-      component={CoinsView}
+      name="Addresses"
+      component={AddressesView}
       options={{
         headerShown: false,
       }}

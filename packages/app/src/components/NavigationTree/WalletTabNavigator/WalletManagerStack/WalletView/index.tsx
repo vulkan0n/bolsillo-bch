@@ -7,18 +7,24 @@ import StackSubheader from "@selene-wallet/app/src/components/atoms/StackSubhead
 import styles from "./styles";
 import { ScrollView } from "react-native-gesture-handler";
 import TYPOGRAPHY from "@selene-wallet/common/design/typography";
+import Divider from "@selene-wallet/app/src/components/atoms/Divider";
+import WalletActions from "./WalletActions";
+import Loading from "@selene-wallet/app/src/components/atoms/Loading";
 import {
   getWalletUTXOcount,
   getWalletSatoshiBalance,
+  scanWalletXNewAddresses,
+  checkWalletExistingAddresses,
+  checkWalletRecentAddresses,
 } from "@selene-wallet/app/src/utils/wallet";
-import Divider from "@selene-wallet/app/src/components/atoms/Divider";
-import WalletActions from "./WalletActions";
+import Button from "@selene-wallet/app/src/components/atoms/Button";
 
 const WalletView = ({ navigation }) => {
   const wallet = useSelector((state: ReduxState) => selectActiveWallet(state));
   const { name } = wallet;
   const [activityText, setActivityText] = useState("");
   const isActivityText = activityText.length > 0;
+  const { isTestNet } = useSelector((state: ReduxState) => state.settings);
 
   const walletBalance = getWalletSatoshiBalance(wallet);
   const addressCount = wallet?.addresses?.length || 0;
@@ -42,13 +48,14 @@ const WalletView = ({ navigation }) => {
     navigation.navigate("UTXOs");
   };
 
-  const onPressCoins = () => {
-    navigation.navigate("Coins");
+  const onPressAddresses = () => {
+    navigation.navigate("Addresses");
   };
 
   return (
     <ScrollView style={styles.scrollView}>
       <StackSubheader title={"Wallet - " + name} isBackButton />
+
       <View style={styles.whiteBackground}>
         <Text style={TYPOGRAPHY.h2black as any}>Balance</Text>
         <Text style={TYPOGRAPHY.p as any}>{walletBalance} satoshis</Text>
@@ -66,16 +73,63 @@ const WalletView = ({ navigation }) => {
         </Pressable>
         <Divider />
 
-        <Pressable onPress={() => onPressCoins()}>
-          <Text style={TYPOGRAPHY.h2black as any}>Coins {">"}</Text>
+        <Pressable onPress={() => onPressAddresses()}>
+          <Text style={TYPOGRAPHY.h2black as any}>
+            Addresses ({addressCount}) {">"}
+          </Text>
         </Pressable>
-        <Divider />
-
-        <Text style={TYPOGRAPHY.h2black as any}>
-          Addresses ({addressCount})
-        </Text>
 
         <WalletActions navigation={navigation} />
+
+        {isActivityText && (
+          <>
+            <Text style={TYPOGRAPHY.pCentered}>{activityText}</Text>
+            <Loading />
+            <Text style={TYPOGRAPHY.pCentered}>
+              Note: Spinner disappears after 5 seconds even if action still in
+              progress.
+            </Text>
+          </>
+        )}
+
+        <Button
+          onPress={() => {
+            scanWalletXNewAddresses(wallet, 100, isTestNet);
+            setActivityText("Scanning 100 new addresses.");
+          }}
+          variant={"primary"}
+        >
+          Scan 100 new addresses
+        </Button>
+        <Button
+          onPress={() => {
+            scanWalletXNewAddresses(wallet, 10, isTestNet);
+            setActivityText("Scanning 10 new addresses.");
+          }}
+          variant={"primary"}
+        >
+          Scan 10 new addresses
+        </Button>
+
+        <Button
+          onPress={() => {
+            checkWalletExistingAddresses(wallet, isTestNet);
+            setActivityText("Scanning all addresses.");
+          }}
+          variant={"primary"}
+        >
+          Check all addresses
+        </Button>
+
+        <Button
+          onPress={() => {
+            checkWalletRecentAddresses(wallet, isTestNet);
+            setActivityText("Scanning recent addresses.");
+          }}
+          variant={"primary"}
+        >
+          Check recent addresses
+        </Button>
       </View>
     </ScrollView>
   );
