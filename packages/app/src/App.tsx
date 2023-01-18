@@ -213,6 +213,24 @@ export default function App() {
               updatedChangeAddress: message?.data?.updatedChangeAddress,
             })
           );
+
+          console.log("force reloading bridge!!!!");
+          // Force reload the bridge
+          // There is some kind of bug that makes the 2nd (but not 1st) send on
+          // the bridge send a transaction but not return a result at
+          // const result = await tempWallet.submitTransaction(finalTx, true);
+          // I cannot figure out why
+          // But reloading the bridge (and thus the injected javascript)
+          // after each successful send confirmation does the job
+          setIsReloading(true);
+          setInterval(() => {
+            // Wrapping this in an interval ensures
+            // that the isReloading state toggles
+            // are not batched by React
+            setIsReloading(false);
+          }, 10);
+          console.log("done");
+
           store.dispatch(clearTransactionPad());
           break;
 
@@ -253,28 +271,9 @@ export default function App() {
       <PersistGate loading={<Text>Loading...</Text>} persistor={persistor}>
         <ApolloProvider client={apolloClient}>
           <View style={{ flex: 1, backgroundColor: COLOURS.black }}>
-            <Text>Time to force some updates</Text>
-            <Button
-              variant="primary"
-              onPress={() => {
-                // Force reload the bridge
-                // There is some kind of bug that makes the 2nd (but not 1st) send on
-                // the bridge send a transaction but not return a result at
-                // const result = await tempWallet.submitTransaction(finalTx, true);
-                // I cannot figure out why
-                // But reloading the bridge (and thus the injected javascript)
-                // after each successful send confirmation does the job
-                setIsReloading(true);
-                setInterval(() => {
-                  setIsReloading(false);
-                }, 10);
-              }}
-            >
-              Reload ref
-            </Button>
             <SafeAreaProvider>
               <SafeAreaView style={{ flex: 1 }}>
-                <View style={{ height: 100, backgroundColor: "#C1C1C1" }}>
+                <View style={{ height: 0 }}>
                   {!IS_WEB && !isReloading && (
                     <WebView
                       ref={ref} // (r) => (this.ref = r), then this.ref.reload() or other methods
