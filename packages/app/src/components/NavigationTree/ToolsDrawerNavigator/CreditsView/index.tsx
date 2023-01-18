@@ -49,6 +49,9 @@ function CreditsView() {
         <Text style={TYPOGRAPHY.h2 as any}>Thanks to:</Text>
         <Text style={TYPOGRAPHY.pWhite as any}>2_qx (Mainnet.cash)</Text>
         <Text style={TYPOGRAPHY.pWhite as any}>Jason Dreyzehner (Libauth)</Text>
+        <Text style={TYPOGRAPHY.pWhite as any}>
+          Melroy van den Berg (explorer.melroy.org)
+        </Text>
         <View style={TYPOGRAPHY.spacer as any}></View>
 
         <Text style={TYPOGRAPHY.h2 as any}>Testers:</Text>
