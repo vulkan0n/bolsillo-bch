@@ -85,6 +85,17 @@ export const selectActiveWalletBalance: (
   }
 );
 
+export const selectNavigatedWallet: (state: ReduxState) => SeleneWalletType =
+  createSelector(
+    (state: ReduxState): SeleneWalletType[] => state.walletManager?.wallets,
+    (state: ReduxState): string => state.walletManager?.navigatedWalletName,
+    (
+      wallets: SeleneWalletType[],
+      navigatedWalletName: string
+    ): SeleneWalletType =>
+      wallets?.find(({ name }) => name === navigatedWalletName)
+  );
+
 export const selectPrimaryCurrencyOrDenomination: (
   state: ReduxState
 ) => CurrencyOrDenominationType = createSelector(

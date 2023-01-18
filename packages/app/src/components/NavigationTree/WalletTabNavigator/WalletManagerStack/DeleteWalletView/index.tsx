@@ -12,15 +12,11 @@ import COLOURS from "@selene-wallet/common/design/colours";
 import { faTrashCan } from "@fortawesome/free-solid-svg-icons/faTrashCan";
 import { deleteWallet } from "@selene-wallet/app/src/redux/reducers/walletManagerReducer";
 import StackSubheader from "@selene-wallet/app/src/components/atoms/StackSubheader";
+import { selectNavigatedWallet } from "@selene-wallet/app/src/redux/selectors";
 
 const DeleteWalletView = ({ navigation }) => {
-  const { navigatedWalletName } = useSelector(
-    (state: ReduxState) => state.walletManager
-  );
   const { name, description } = useSelector((state: ReduxState) =>
-    state.walletManager.wallets?.find(
-      ({ name }) => name === navigatedWalletName
-    )
+    selectNavigatedWallet(state)
   );
   const dispatch = useDispatch();
 
@@ -32,7 +28,7 @@ const DeleteWalletView = ({ navigation }) => {
     navigation.navigate("Manage");
     dispatch(
       deleteWallet({
-        name: navigatedWalletName,
+        name,
       })
     );
     Toast.show({

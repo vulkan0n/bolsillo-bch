@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { View, Text, Pressable } from "react-native";
 import { useSelector } from "react-redux";
 import { ReduxState } from "@selene-wallet/common/dist/types";
-import { selectActiveWallet } from "@selene-wallet/app/src/redux/selectors";
+import { selectNavigatedWallet } from "@selene-wallet/app/src/redux/selectors";
 import StackSubheader from "@selene-wallet/app/src/components/atoms/StackSubheader";
 import styles from "./styles";
 import { ScrollView } from "react-native-gesture-handler";
@@ -22,7 +22,9 @@ import Button from "@selene-wallet/app/src/components/atoms/Button";
 import IntegerInput from "@selene-wallet/app/src/components/atoms/IntegerInput";
 
 const WalletView = ({ navigation }) => {
-  const wallet = useSelector((state: ReduxState) => selectActiveWallet(state));
+  const wallet = useSelector((state: ReduxState) =>
+    selectNavigatedWallet(state)
+  );
   const { name } = wallet;
   const [activityText, setActivityText] = useState("");
   const isActivityText = activityText.length > 0;

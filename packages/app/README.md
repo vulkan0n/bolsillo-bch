@@ -46,6 +46,8 @@ Note also that sometimes making code changes to code running inside the bridge w
 
 ## Conventions
 
+"ActiveWallet" is the wallet that is currently available to use for transactions and shows up on the Wallets tab default send/receive pages. "NavigatedWallet" is the wallet which the user is currently browsing from the Wallet Manager list, which may or may not be the same as the active wallet (i.e. I can look at the transaction history or UTXOs of my active wallet or of any other wallet without making them active).
+
 This is a BCH standard app. Think in terms of BCH satoshis, stored as strings, then use the formatting and exchange rate helpers. All other exchange rates and balances are transformations of the satoshi value.
 
 Bitcoin denominations are treated as separate currencies with a fixed exchange rate.
