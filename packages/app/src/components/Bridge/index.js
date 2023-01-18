@@ -26,7 +26,7 @@ const Bridge = () => {
   // and it does not allow access to IndexedDB in an iframe/WebView
   // Thus wallet needs to be retrieve from seed phrase every time
   useNativeMessage(async (message) => {
-    // console.log("Bridge received message: ", message);
+    console.log("Bridge received message: ", message);
 
     try {
       const WalletObject = message?.data?.isTestNet ? TestNetWallet : Wallet;

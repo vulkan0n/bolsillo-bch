@@ -13,6 +13,7 @@ import { useWebViewMessage } from "react-native-react-bridge";
 import NavigationTree from "./components/NavigationTree";
 import BackgroundIntervals from "./components/BackgroundIntervals";
 import Bridge from "./components/Bridge";
+import Button from "./components/atoms/Button";
 import { RESPONSE_MESSAGE_TYPES } from "@selene-wallet/app/src/utils/bridgeMessages";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
@@ -89,6 +90,18 @@ export default function App() {
     Montserrat_700Bold,
     Montserrat_800ExtraBold,
   });
+
+  const [isBridgeReloading, setIsBridgeReloading] = React.useState(false);
+  const [bridgeScript, setBridgeScript] = React.useState(preloadMainNetScript);
+  const [, updateState] = React.useState();
+  const forceUpdate = React.useCallback(() => {
+    console.log("forcing an application reset to rerender bridge");
+    updateState({});
+    setIsBridgeReloading(true);
+    setIsBridgeReloading(false);
+    setBridgeScript("");
+    setBridgeScript(preloadMainNetScript);
+  }, []);
 
   // useWebViewMessage hook create props for WebView and handle communication
   // The argument is callback to receive message from React
@@ -238,6 +251,12 @@ export default function App() {
     setIsWebViewLoaded(true);
   };
 
+  const onInjectScript = () => {
+    // this.ref.injectJavaScript({});
+    console.log("this.ref", this.ref);
+    this.ref.injectJavaScript(bridgeScript);
+  };
+
   // Only app versions need to be empty while waiting for fonts to load
   if (!IS_WEB && !fontsLoaded) {
     return null;
@@ -248,15 +267,18 @@ export default function App() {
       <PersistGate loading={<Text>Loading...</Text>} persistor={persistor}>
         <ApolloProvider client={apolloClient}>
           <View style={{ flex: 1, backgroundColor: COLOURS.black }}>
+            <Text>Time to force some updates</Text>
+            <Button onPress={forceUpdate}>Force re-render</Button>
+            <Button onPress={onInjectScript}>Inject script</Button>
             <SafeAreaProvider>
               <SafeAreaView style={{ flex: 1 }}>
-                <View style={{ height: 0 }}>
-                  {!IS_WEB && (
+                <View style={{ height: 100, backgroundColor: "#C1C1C1" }}>
+                  {!IS_WEB && !isBridgeReloading && (
                     <WebView
-                      ref={ref}
+                      ref={(r) => (this.ref = r)}
                       onMessage={onMessage}
                       source={{ html: Bridge }}
-                      injectedJavaScript={preloadMainNetScript}
+                      // injectedJavaScript={bridgeScript}
                       allowFileAccess={true}
                       javaScriptEnabled={true}
                       domStorageEnabled={true}

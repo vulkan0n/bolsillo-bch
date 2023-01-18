@@ -105,11 +105,11 @@ export const scanDepositAddress = (
     (a) => a?.transactions?.length === 0 && a?.coins?.length === 0
   );
 
-  console.log({ depositAddressIndex });
+  // console.log({ depositAddressIndex });
   const freshDepositAddressHdIndex =
     wallet?.addresses?.[depositAddressIndex]?.hdWalletIndex;
 
-  console.log("scanning at index: ", freshDepositAddressHdIndex);
+  // console.log("scanning at index: ", freshDepositAddressHdIndex);
 
   scanAddressAtIndex(wallet, freshDepositAddressHdIndex, isTestNet);
 };
@@ -178,6 +178,19 @@ export const checkWalletRecentAddresses = (
   const startingPoint = lastAddressHdIndex - 10;
 
   for (let i = startingPoint; i <= lastAddressHdIndex; i++) {
+    scanAddressAtIndex(wallet, i, isTestNet);
+  }
+};
+
+// Re-check addresses in a given range
+export const checkWalletAddressRange = (
+  wallet: SeleneWalletType,
+  minAddressIndex: number,
+  maxAddressIndex: number,
+  isTestNet: boolean
+) => {
+  for (let i = minAddressIndex; i <= maxAddressIndex; i++) {
+    console.log("scanning at i: ", i);
     scanAddressAtIndex(wallet, i, isTestNet);
   }
 };

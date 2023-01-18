@@ -16,8 +16,10 @@ import {
   scanWalletXNewAddresses,
   checkWalletExistingAddresses,
   checkWalletRecentAddresses,
+  checkWalletAddressRange,
 } from "@selene-wallet/app/src/utils/wallet";
 import Button from "@selene-wallet/app/src/components/atoms/Button";
+import IntegerInput from "@selene-wallet/app/src/components/atoms/IntegerInput";
 
 const WalletView = ({ navigation }) => {
   const wallet = useSelector((state: ReduxState) => selectActiveWallet(state));
@@ -29,6 +31,16 @@ const WalletView = ({ navigation }) => {
   const walletBalance = getWalletSatoshiBalance(wallet);
   const addressCount = wallet?.addresses?.length || 0;
   const utxoCount = getWalletUTXOcount(wallet);
+
+  const [minAddressIndex, setMinAddressIndex] = useState("");
+  const [maxAddressIndex, setMaxAddressIndex] = useState("");
+
+  const isRangeError =
+    minAddressIndex &&
+    maxAddressIndex &&
+    parseInt(minAddressIndex) >= parseInt(maxAddressIndex);
+  const isRangeScanDisabled =
+    minAddressIndex === "" || maxAddressIndex === "" || isRangeError;
 
   useEffect(() => {
     if (!isActivityText) {
@@ -128,7 +140,44 @@ const WalletView = ({ navigation }) => {
           }}
           variant={"primary"}
         >
-          Check recent addresses
+          Check newest 10 addresses
+        </Button>
+
+        <Text>Min address input</Text>
+        <IntegerInput
+          numberAsString={minAddressIndex}
+          onChange={(value) => {
+            console.log({ value });
+            // Accept digits only
+            setMinAddressIndex(value.replace(/[^0-9]/g, ""));
+          }}
+        />
+
+        <Text>Max address input</Text>
+        <IntegerInput
+          numberAsString={maxAddressIndex}
+          onChange={(value) => {
+            console.log({ value });
+            // Accept digits only
+            setMaxAddressIndex(value.replace(/[^0-9]/g, ""));
+          }}
+        />
+
+        {isRangeError && <Text>Max must be greater than min.</Text>}
+        <Button
+          onPress={() => {
+            checkWalletAddressRange(
+              wallet,
+              parseInt(minAddressIndex),
+              parseInt(maxAddressIndex),
+              isTestNet
+            );
+            setActivityText("Scanning recent addresses.");
+          }}
+          variant={"primary"}
+          isDisabled={isRangeScanDisabled}
+        >
+          Check addresses {minAddressIndex || "?"} to {maxAddressIndex || "?"}
         </Button>
       </View>
     </ScrollView>
