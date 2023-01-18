@@ -104,6 +104,8 @@ export const scanDepositAddress = (
   const depositAddressIndex = wallet?.addresses?.findIndex(
     (a) => a?.transactions?.length === 0 && a?.coins?.length === 0
   );
+
+  console.log({ depositAddressIndex });
   const freshDepositAddressHdIndex =
     wallet?.addresses?.[depositAddressIndex]?.hdWalletIndex;
 

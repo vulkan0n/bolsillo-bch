@@ -88,6 +88,7 @@ const WalletRow = ({ navigation, wallet }) => {
         <Text style={TYPOGRAPHY.pWhiteLeft as any}>{secondaryBalance}</Text>
       </Pressable>
       <View style={styles.fixedWidth as any}>
+        {isActive && <Text style={styles.coinActive as any}>ACTIVE</Text>}
         {!isActive && (
           <Pressable
             onPress={() => {

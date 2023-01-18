@@ -23,6 +23,8 @@ const BackgroundIntervals = () => {
   const wallet = useSelector((state: ReduxState) => selectActiveWallet(state));
   const { wallets } = useSelector((state: ReduxState) => state.walletManager);
 
+  console.log("regrabbed wallet");
+
   const { isTestNet } = useSelector((state: ReduxState) => state.settings);
 
   const fetchWalletHistories = () => {

@@ -18,6 +18,10 @@ const styles = {
     ...TYPOGRAPHY.pGreenUnderlined,
     paddingBottom: SPACING.ten,
   },
+  coinActive: {
+    ...TYPOGRAPHY.pWhite,
+    paddingBottom: SPACING.ten,
+  },
 };
 
 export default styles;
