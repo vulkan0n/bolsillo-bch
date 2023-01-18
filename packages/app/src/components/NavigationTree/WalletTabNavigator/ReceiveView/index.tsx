@@ -20,6 +20,7 @@ import LiveBalance from "@selene-wallet/app/src/components/atoms/LiveBalance";
 import { updateTransactionPadBalance } from "@selene-wallet/app/src/redux/reducers/transactionPadReducer";
 import { selectIsPadZeroBalance } from "@selene-wallet/app/src/redux/selectors";
 import GreyBar from "@selene-wallet/app/src/components/atoms/GreyBar";
+import { deleteWallet } from "@selene-wallet/app/src/redux/reducers/walletManagerReducer";
 
 const ReceiveView = ({ navigation }) => {
   const dispatch = useDispatch();
@@ -27,6 +28,14 @@ const ReceiveView = ({ navigation }) => {
   const padBalanceInSats = useSelector((state: ReduxState): string =>
     selectPadBalanceInRawSats(state)
   );
+
+  if (!wallet.mnemonic && wallet.name) {
+    dispatch(
+      deleteWallet({
+        name: wallet.name,
+      })
+    );
+  }
 
   const isZeroPadBalance = useSelector((state: ReduxState) =>
     selectIsPadZeroBalance(state)
