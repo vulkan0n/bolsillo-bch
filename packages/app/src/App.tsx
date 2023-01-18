@@ -91,18 +91,6 @@ export default function App() {
     Montserrat_800ExtraBold,
   });
 
-  const [isBridgeReloading, setIsBridgeReloading] = React.useState(false);
-  const [bridgeScript, setBridgeScript] = React.useState(preloadMainNetScript);
-  const [, updateState] = React.useState();
-  const forceUpdate = React.useCallback(() => {
-    console.log("forcing an application reset to rerender bridge");
-    updateState({});
-    setIsBridgeReloading(true);
-    setIsBridgeReloading(false);
-    setBridgeScript("");
-    setBridgeScript(preloadMainNetScript);
-  }, []);
-
   // useWebViewMessage hook create props for WebView and handle communication
   // The argument is callback to receive message from React
   const { ref, onMessage, emit } = useWebViewMessage(
@@ -251,12 +239,6 @@ export default function App() {
     setIsWebViewLoaded(true);
   };
 
-  const onInjectScript = () => {
-    // this.ref.injectJavaScript({});
-    console.log("this.ref", this.ref);
-    this.ref.injectJavaScript(bridgeScript);
-  };
-
   // Only app versions need to be empty while waiting for fonts to load
   if (!IS_WEB && !fontsLoaded) {
     return null;
@@ -268,17 +250,15 @@ export default function App() {
         <ApolloProvider client={apolloClient}>
           <View style={{ flex: 1, backgroundColor: COLOURS.black }}>
             <Text>Time to force some updates</Text>
-            <Button onPress={forceUpdate}>Force re-render</Button>
-            <Button onPress={onInjectScript}>Inject script</Button>
             <SafeAreaProvider>
               <SafeAreaView style={{ flex: 1 }}>
                 <View style={{ height: 100, backgroundColor: "#C1C1C1" }}>
-                  {!IS_WEB && !isBridgeReloading && (
+                  {!IS_WEB && (
                     <WebView
-                      ref={(r) => (this.ref = r)}
+                      ref={ref} // (r) => (this.ref = r), then this.ref.reload() or other methods
                       onMessage={onMessage}
                       source={{ html: Bridge }}
-                      // injectedJavaScript={bridgeScript}
+                      injectedJavaScript={preloadMainNetScript}
                       allowFileAccess={true}
                       javaScriptEnabled={true}
                       domStorageEnabled={true}
