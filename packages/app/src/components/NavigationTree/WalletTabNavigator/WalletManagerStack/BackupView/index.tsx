@@ -10,16 +10,11 @@ import COLOURS from "@selene-wallet/common/design/colours";
 import { ReduxState } from "@selene-wallet/common/dist/types";
 import Divider from "@selene-wallet/app/src/components/atoms/Divider";
 import StackSubheader from "@selene-wallet/app/src/components/atoms/StackSubheader";
+import { selectNavigatedWallet } from "@selene-wallet/app/src/redux/selectors";
 
 function BackupView({ navigation }) {
-  const { navigatedWalletName } = useSelector(
-    (state: ReduxState) => state.walletManager
-  );
   const { mnemonic, derivationPath, name, description } = useSelector(
-    (state: ReduxState) =>
-      state.walletManager.wallets?.find(
-        ({ name }) => name === navigatedWalletName
-      )
+    (state: ReduxState) => selectNavigatedWallet(state)
   );
   const [isMnemonicVisible, setIsMnemonicVisible] = useState(false);
 

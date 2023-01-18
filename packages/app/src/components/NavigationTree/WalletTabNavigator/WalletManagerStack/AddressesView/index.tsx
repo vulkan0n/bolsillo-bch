@@ -5,7 +5,7 @@ import {
   ReduxState,
   SeleneAddressType,
 } from "@selene-wallet/common/dist/types";
-import { selectActiveWallet } from "@selene-wallet/app/src/redux/selectors";
+import { selectNavigatedWallet } from "@selene-wallet/app/src/redux/selectors";
 import StackSubheader from "@selene-wallet/app/src/components/atoms/StackSubheader";
 import styles from "./styles";
 import { ScrollView } from "react-native-gesture-handler";
@@ -14,7 +14,9 @@ import { getSatoshiBalanceFromWalletAddress } from "@selene-wallet/app/src/utils
 import Divider from "@selene-wallet/app/src/components/atoms/Divider";
 
 const AddressesView = ({}) => {
-  const wallet = useSelector((state: ReduxState) => selectActiveWallet(state));
+  const wallet = useSelector((state: ReduxState) =>
+    selectNavigatedWallet(state)
+  );
   const addressCount = wallet?.addresses?.length || 0;
 
   return (

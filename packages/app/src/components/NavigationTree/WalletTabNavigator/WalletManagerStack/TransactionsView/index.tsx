@@ -9,11 +9,9 @@ import StackSubheader from "@selene-wallet/app/src/components/atoms/StackSubhead
 import TransactionRow from "./TransactionRow";
 import { BRIDGE_MESSAGE_TYPES } from "@selene-wallet/app/src/utils/bridgeMessages";
 import emit from "@selene-wallet/app/src/utils/emit";
+import { selectNavigatedWallet } from "@selene-wallet/app/src/redux/selectors";
 
 function TransactionsView({}) {
-  const { navigatedWalletName } = useSelector(
-    (state: ReduxState) => state.walletManager
-  );
   const {
     name,
     description,
@@ -21,11 +19,8 @@ function TransactionsView({}) {
     derivationPath,
     maxAddressIndex,
     transactions,
-  } = useSelector((state: ReduxState) =>
-    state.walletManager.wallets?.find(
-      ({ name }) => name === navigatedWalletName
-    )
-  );
+  } = useSelector((state: ReduxState) => selectNavigatedWallet(state));
+
   const { isTestNet } = useSelector((state: ReduxState) => state.settings);
 
   useEffect(() => {

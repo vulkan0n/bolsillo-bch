@@ -2,7 +2,7 @@ import React from "react";
 import { View, Text, Pressable, Linking } from "react-native";
 import { useSelector } from "react-redux";
 import { ReduxState } from "@selene-wallet/common/dist/types";
-import { selectActiveWallet } from "@selene-wallet/app/src/redux/selectors";
+import { selectNavigatedWallet } from "@selene-wallet/app/src/redux/selectors";
 import StackSubheader from "@selene-wallet/app/src/components/atoms/StackSubheader";
 import Divider from "@selene-wallet/app/src/components/atoms/Divider";
 import styles from "./styles";
@@ -18,7 +18,9 @@ import { CoinType } from "@selene-wallet/common/types";
 import { scanAddressAtIndex } from "@selene-wallet/app/src/utils/wallet";
 
 const UTXOsView = ({}) => {
-  const wallet = useSelector((state: ReduxState) => selectActiveWallet(state));
+  const wallet = useSelector((state: ReduxState) =>
+    selectNavigatedWallet(state)
+  );
 
   const utxos = getWalletUTXOs(wallet);
   const utxoCount = getWalletUTXOcount(wallet);
