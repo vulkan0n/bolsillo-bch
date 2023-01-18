@@ -174,7 +174,9 @@ const WalletView = ({ navigation }) => {
               parseInt(maxAddressIndex),
               isTestNet
             );
-            setActivityText("Scanning recent addresses.");
+            setActivityText(
+              `Scanning addresses #${minAddressIndex} - #${maxAddressIndex}.`
+            );
           }}
           variant={"primary"}
           isDisabled={isRangeScanDisabled}
