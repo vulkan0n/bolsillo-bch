@@ -1,10 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { View, Text } from "react-native";
-import { useSelector } from "react-redux";
-import {
-  ReduxState,
-  SeleneAddressType,
-} from "@selene-wallet/common/dist/types";
+import { View, Text, Pressable } from "react-native";
+import { useSelector, useDispatch } from "react-redux";
+import { ReduxState } from "@selene-wallet/common/dist/types";
 import { selectActiveWallet } from "@selene-wallet/app/src/redux/selectors";
 import Button from "@selene-wallet/app/src/components/atoms/Button";
 import StackSubheader from "@selene-wallet/app/src/components/atoms/StackSubheader";
@@ -12,18 +9,14 @@ import styles from "./styles";
 import { ScrollView } from "react-native-gesture-handler";
 import TYPOGRAPHY from "@selene-wallet/common/design/typography";
 import {
-  getWalletUTXOs,
   getWalletUTXOcount,
   getWalletSatoshiBalance,
-  scanWalletXNewAddresses,
-  checkWalletExistingAddresses,
-  checkWalletRecentAddresses,
-  getSatoshiBalanceFromWalletAddress,
 } from "@selene-wallet/app/src/utils/wallet";
 import Divider from "@selene-wallet/app/src/components/atoms/Divider";
-const WalletView = ({}) => {
+
+const WalletView = ({ navigation }) => {
   const wallet = useSelector((state: ReduxState) => selectActiveWallet(state));
-  const { isTestNet } = useSelector((state: ReduxState) => state.settings);
+  const { name } = wallet;
   const [activityText, setActivityText] = useState("");
   const isActivityText = activityText.length > 0;
 
@@ -41,15 +34,24 @@ const WalletView = ({}) => {
     }, 5000);
   }, [activityText]);
 
+  const onPressCoins = (walletName: string) => {
+    navigation.navigate("Coins");
+  };
+
   return (
     <ScrollView style={styles.scrollView}>
-      <StackSubheader title={"Coins"} isBackButton />
+      <StackSubheader title={"Wallet - " + name} isBackButton />
       <View style={styles.whiteBackground}>
         <Text style={TYPOGRAPHY.h2black as any}>Balance</Text>
         <Text style={TYPOGRAPHY.p as any}>{walletBalance} satoshis</Text>
         <Divider />
 
         <Text style={TYPOGRAPHY.h2black as any}>UTXOs ({utxoCount})</Text>
+        <Divider />
+
+        <Pressable onPress={() => onPressCoins(name)}>
+          <Text style={TYPOGRAPHY.h2black as any}>Coins {">"}</Text>
+        </Pressable>
         <Divider />
 
         <Text style={TYPOGRAPHY.h2black as any}>

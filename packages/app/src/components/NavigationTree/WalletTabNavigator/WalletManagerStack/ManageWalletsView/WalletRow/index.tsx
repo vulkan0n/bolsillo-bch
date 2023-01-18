@@ -35,11 +35,6 @@ const WalletRow = ({ navigation, wallet }) => {
     navigation.navigate("Wallet");
   };
 
-  const onPressCoins = (walletName: string) => {
-    dispatch(updateNavigatedWalletName({ navigatedWalletName: walletName }));
-    navigation.navigate("Coins");
-  };
-
   const bitcoinBalance = convertBalanceToDisplay(
     getWalletSatoshiBalance(wallet),
     BITCOIN_DENOMINATIONS.satoshis,
@@ -95,9 +90,6 @@ const WalletRow = ({ navigation, wallet }) => {
         )}
         <Pressable onPress={() => onPressWallet(name)}>
           <Text style={styles.coinButton as any}>More {">"}</Text>
-        </Pressable>
-        <Pressable onPress={() => onPressCoins(name)}>
-          <Text style={styles.coinButton as any}>Coins {">"}</Text>
         </Pressable>
       </View>
     </View>
