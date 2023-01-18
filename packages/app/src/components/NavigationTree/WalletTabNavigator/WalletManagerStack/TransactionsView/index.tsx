@@ -10,7 +10,7 @@ import TransactionRow from "./TransactionRow";
 import { BRIDGE_MESSAGE_TYPES } from "@selene-wallet/app/src/utils/bridgeMessages";
 import emit from "@selene-wallet/app/src/utils/emit";
 
-function TransactionsView({ navigation }) {
+function TransactionsView({}) {
   const { navigatedWalletName } = useSelector(
     (state: ReduxState) => state.walletManager
   );

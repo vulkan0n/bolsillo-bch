@@ -34,7 +34,15 @@ const WalletView = ({ navigation }) => {
     }, 5000);
   }, [activityText]);
 
-  const onPressCoins = (walletName: string) => {
+  const onPressTransactions = () => {
+    navigation.navigate("Transactions");
+  };
+
+  const onPressUTXOs = () => {
+    navigation.navigate("UTXOs");
+  };
+
+  const onPressCoins = () => {
     navigation.navigate("Coins");
   };
 
@@ -46,10 +54,19 @@ const WalletView = ({ navigation }) => {
         <Text style={TYPOGRAPHY.p as any}>{walletBalance} satoshis</Text>
         <Divider />
 
-        <Text style={TYPOGRAPHY.h2black as any}>UTXOs ({utxoCount})</Text>
+        <Pressable onPress={() => onPressTransactions()}>
+          <Text style={TYPOGRAPHY.h2black as any}>Transactions {">"}</Text>
+        </Pressable>
         <Divider />
 
-        <Pressable onPress={() => onPressCoins(name)}>
+        <Pressable onPress={() => onPressUTXOs()}>
+          <Text style={TYPOGRAPHY.h2black as any}>
+            UTXOs ({utxoCount}) {">"}
+          </Text>
+        </Pressable>
+        <Divider />
+
+        <Pressable onPress={() => onPressCoins()}>
           <Text style={TYPOGRAPHY.h2black as any}>Coins {">"}</Text>
         </Pressable>
         <Divider />

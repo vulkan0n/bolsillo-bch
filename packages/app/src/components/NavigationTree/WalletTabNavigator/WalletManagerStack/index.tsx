@@ -4,6 +4,7 @@ import NewWalletView from "./NewWalletView";
 import ImportWalletView from "./ImportWalletView";
 import WalletView from "./WalletView";
 import TransactionsView from "./TransactionsView";
+import UTXOsView from "./UTXOsView";
 import BackupView from "./BackupView";
 import DeleteWalletView from "./DeleteWalletView";
 import CoinsView from "./CoinsView";
@@ -43,6 +44,13 @@ const WalletManagerStack = () => (
     <Stack.Screen
       name="Transactions"
       component={TransactionsView}
+      options={{
+        headerShown: false,
+      }}
+    />
+    <Stack.Screen
+      name="UTXOs"
+      component={UTXOsView}
       options={{
         headerShown: false,
       }}
