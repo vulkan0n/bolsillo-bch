@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text } from "react-native";
 import { useSelector } from "react-redux";
 import {
@@ -21,10 +21,13 @@ import {
   getSatoshiBalanceFromWalletAddress,
 } from "@selene-wallet/app/src/utils/wallet";
 import Divider from "@selene-wallet/app/src/components/atoms/Divider";
+import Loading from "@selene-wallet/app/src/components/atoms/Loading";
 
 const CoinsView = ({}) => {
   const wallet = useSelector((state: ReduxState) => selectActiveWallet(state));
   const { isTestNet } = useSelector((state: ReduxState) => state.settings);
+  const [activityText, setActivityText] = useState("");
+  const isActivityText = activityText.length > 0;
 
   // console.log(
   //   "wallet.addresses",
@@ -39,32 +42,64 @@ const CoinsView = ({}) => {
   const utxos = getWalletUTXOs(wallet);
   const utxoCount = getWalletUTXOcount(wallet);
 
+  useEffect(() => {
+    if (!isActivityText) {
+      return;
+    }
+
+    setTimeout(() => {
+      setActivityText("");
+    }, 5000);
+  }, [activityText]);
+
   return (
     <ScrollView style={styles.scrollView}>
       <StackSubheader title={"Coins"} isBackButton />
       <View style={styles.whiteBackground}>
+        {isActivityText && (
+          <>
+            <Text style={TYPOGRAPHY.pCentered}>{activityText}</Text>
+            <Loading />
+            <Text style={TYPOGRAPHY.pCentered}>
+              Note: Spinner disappears after 5 seconds even if action still in
+              progress.
+            </Text>
+          </>
+        )}
         <Button
-          onPress={() => scanWalletXNewAddresses(wallet, 100, isTestNet)}
+          onPress={() => {
+            scanWalletXNewAddresses(wallet, 100, isTestNet);
+            setActivityText("Scanning 100 new addresses.");
+          }}
           variant={"primary"}
         >
           Scan 100 new addresses
         </Button>
         <Button
-          onPress={() => scanWalletXNewAddresses(wallet, 10, isTestNet)}
+          onPress={() => {
+            scanWalletXNewAddresses(wallet, 10, isTestNet);
+            setActivityText("Scanning 10 new addresses.");
+          }}
           variant={"primary"}
         >
           Scan 10 new addresses
         </Button>
 
         <Button
-          onPress={() => checkWalletExistingAddresses(wallet, isTestNet)}
+          onPress={() => {
+            checkWalletExistingAddresses(wallet, isTestNet);
+            setActivityText("Scanning all addresses.");
+          }}
           variant={"primary"}
         >
           Check all addresses
         </Button>
 
         <Button
-          onPress={() => checkWalletRecentAddresses(wallet, isTestNet)}
+          onPress={() => {
+            checkWalletRecentAddresses(wallet, isTestNet);
+            setActivityText("Scanning recent addresses.");
+          }}
           variant={"primary"}
         >
           Check recent addresses
