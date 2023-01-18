@@ -5,7 +5,6 @@ import Divider from "@selene-wallet/app/src/components/atoms/Divider";
 import { useSelector } from "react-redux";
 import { ReduxState } from "@selene-wallet/common/dist/types";
 import TYPOGRAPHY from "@selene-wallet/common/design/typography";
-import SPACING from "@selene-wallet/common/design/spacing";
 import COLOURS from "@selene-wallet/common/design/colours";
 
 const WalletActions = ({ navigation }) => {

@@ -49,7 +49,7 @@ export const getWalletLastAddress = (
 };
 
 const getWalletLastAddressHdIndex = (wallet: SeleneWalletType): number =>
-  getWalletLastAddress(wallet)?.hdWalletIndex;
+  getWalletLastAddress(wallet)?.hdWalletIndex || 0;
 
 export const scanAddressAtIndex = (
   wallet: SeleneWalletType,
@@ -105,10 +105,11 @@ export const scanDepositAddress = (
     (a) => a?.transactions?.length === 0 && a?.coins?.length === 0
   );
 
+  // Will be 0 if no known addresses
+  const nextWalletHdIndex = getWalletLastAddressHdIndex(wallet) + 1;
   const freshDepositAddressHdIndex =
-    wallet?.addresses?.[depositAddressIndex]?.hdWalletIndex;
-
-  console.log("scanning at index: ", freshDepositAddressHdIndex);
+    wallet?.addresses?.[depositAddressIndex]?.hdWalletIndex ||
+    nextWalletHdIndex;
 
   scanAddressAtIndex(wallet, freshDepositAddressHdIndex, isTestNet);
 };
