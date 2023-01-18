@@ -214,7 +214,6 @@ export default function App() {
             })
           );
 
-          console.log("force reloading bridge!!!!");
           // Force reload the bridge
           // There is some kind of bug that makes the 2nd (but not 1st) send on
           // the bridge send a transaction but not return a result at
@@ -229,7 +228,6 @@ export default function App() {
             // are not batched by React
             setIsReloading(false);
           }, 10);
-          console.log("done");
 
           store.dispatch(clearTransactionPad());
           break;
