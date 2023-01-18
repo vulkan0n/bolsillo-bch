@@ -30,17 +30,13 @@ const WalletRow = ({ navigation, wallet }) => {
     dispatch(updateActiveWalletName({ activeWalletName: newActiveWalletName }));
   };
 
-  const onPressTransactions = (transactionsWalletName: string) => {
-    dispatch(
-      updateNavigatedWalletName({ navigatedWalletName: transactionsWalletName })
-    );
-    navigation.navigate("Transactions");
+  const onPressWallet = (walletName: string) => {
+    dispatch(updateNavigatedWalletName({ navigatedWalletName: walletName }));
+    navigation.navigate("Wallet");
   };
 
-  const onPressCoins = (transactionsWalletName: string) => {
-    dispatch(
-      updateNavigatedWalletName({ navigatedWalletName: transactionsWalletName })
-    );
+  const onPressCoins = (walletName: string) => {
+    dispatch(updateNavigatedWalletName({ navigatedWalletName: walletName }));
     navigation.navigate("Coins");
   };
 
@@ -64,10 +60,7 @@ const WalletRow = ({ navigation, wallet }) => {
 
   return (
     <View style={styles.container as any}>
-      <Pressable
-        onPress={() => onPressTransactions(name)}
-        style={{ width: 30 }}
-      >
+      <Pressable onPress={() => onPressWallet(name)} style={{ width: 30 }}>
         <FontAwesomeIcon
           icon={faWallet}
           size={isActive ? 30 : 20}
@@ -75,7 +68,7 @@ const WalletRow = ({ navigation, wallet }) => {
         />
       </Pressable>
       <Pressable
-        onPress={() => onPressTransactions(name)}
+        onPress={() => onPressWallet(name)}
         style={styles.padding as any}
       >
         <Text style={TYPOGRAPHY.h2Left as any}>{name}</Text>
@@ -100,7 +93,7 @@ const WalletRow = ({ navigation, wallet }) => {
             <Text style={styles.coinButton as any}>Activate</Text>
           </Pressable>
         )}
-        <Pressable onPress={() => onPressTransactions(name)}>
+        <Pressable onPress={() => onPressWallet(name)}>
           <Text style={styles.coinButton as any}>More {">"}</Text>
         </Pressable>
         <Pressable onPress={() => onPressCoins(name)}>
