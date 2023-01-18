@@ -59,6 +59,7 @@ const WalletRow = ({ navigation, wallet }) => {
   const primaryBalance = isBchDenominated ? bitcoinBalance : contrastBalance;
   const secondaryBalance = isBchDenominated ? contrastBalance : bitcoinBalance;
   const transactionCount = transactions?.length;
+  const isTooManyTransactions = transactions?.length >= 100;
   const s = transactions?.length === 1 ? "" : "s";
 
   return (
@@ -82,7 +83,8 @@ const WalletRow = ({ navigation, wallet }) => {
           <Text style={TYPOGRAPHY.pWhiteLeft as any}>{description}</Text>
         )}
         <Text style={TYPOGRAPHY.pWhiteLeft as any}>
-          {transactionCount} transaction{s}
+          {transactionCount}
+          {isTooManyTransactions ? "+" : ""} transaction{s}
         </Text>
         <Text style={TYPOGRAPHY.pWhiteLeft as any}>{primaryBalance}</Text>
         <Text style={TYPOGRAPHY.pWhiteLeft as any}>{secondaryBalance}</Text>
