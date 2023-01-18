@@ -190,7 +190,23 @@ export const checkWalletAddressRange = (
   isTestNet: boolean
 ) => {
   for (let i = minAddressIndex; i <= maxAddressIndex; i++) {
-    console.log("scanning at i: ", i);
+    scanAddressAtIndex(wallet, i, isTestNet);
+  }
+};
+
+// Re-check addresses in a given range
+export const checkWalletMissingAddressesToIndex = (
+  wallet: SeleneWalletType,
+  maxAddressIndex: number,
+  isTestNet: boolean
+) => {
+  const existingIndicies = wallet?.addresses.map(
+    ({ hdWalletIndex }) => hdWalletIndex
+  );
+  for (let i = 0; i <= maxAddressIndex; i++) {
+    if (existingIndicies.includes(i)) {
+      continue;
+    }
     scanAddressAtIndex(wallet, i, isTestNet);
   }
 };

@@ -17,6 +17,7 @@ import {
   checkWalletExistingAddresses,
   checkWalletRecentAddresses,
   checkWalletAddressRange,
+  checkWalletMissingAddressesToIndex,
 } from "@selene-wallet/app/src/utils/wallet";
 import Button from "@selene-wallet/app/src/components/atoms/Button";
 import IntegerInput from "@selene-wallet/app/src/components/atoms/IntegerInput";
@@ -182,6 +183,22 @@ const WalletView = ({ navigation }) => {
           isDisabled={isRangeScanDisabled}
         >
           Check addresses {minAddressIndex || "?"} to {maxAddressIndex || "?"}
+        </Button>
+        <Button
+          onPress={() => {
+            checkWalletMissingAddressesToIndex(
+              wallet,
+              parseInt(maxAddressIndex),
+              isTestNet
+            );
+            setActivityText(
+              `Scanning missing addresses from #0 - #${maxAddressIndex}.`
+            );
+          }}
+          variant={"primary"}
+          isDisabled={maxAddressIndex === ""}
+        >
+          Check missing addresses to {maxAddressIndex || "?"}
         </Button>
       </View>
     </ScrollView>
