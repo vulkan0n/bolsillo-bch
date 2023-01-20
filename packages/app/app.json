@@ -22,9 +22,9 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#1C1E21",
-        "versionCode": "14"
+        "backgroundColor": "#1C1E21"
       },
+      "versionCode": "14",
       "package": "com.jte.seleneapp"
     },
     "web": {
