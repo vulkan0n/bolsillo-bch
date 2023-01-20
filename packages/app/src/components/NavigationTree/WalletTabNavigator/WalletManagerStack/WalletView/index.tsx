@@ -69,9 +69,11 @@ const WalletView = ({ navigation }) => {
     navigation.navigate("Addresses");
   };
 
+  const title = name.length >= 15 ? `${name.substring(0, 14)}...` : name;
+
   return (
     <ScrollView style={styles.scrollView}>
-      <StackSubheader title={"Wallet - " + name} isBackButton />
+      <StackSubheader title={title} isBackButton />
 
       <View style={styles.whiteBackground}>
         <Text style={TYPOGRAPHY.h2black as any}>Balance</Text>
