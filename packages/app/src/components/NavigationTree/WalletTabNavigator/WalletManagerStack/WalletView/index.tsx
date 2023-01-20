@@ -114,6 +114,11 @@ const WalletView = ({ navigation }) => {
           </>
         )}
 
+        <Text style={TYPOGRAPHY.h2black}>Electrum methods</Text>
+
+        <Divider />
+
+        <Text style={TYPOGRAPHY.h2black}>Bridge methods</Text>
         <Button
           onPress={() => {
             scanWalletXNewAddresses(wallet, 100, isTestNet);
