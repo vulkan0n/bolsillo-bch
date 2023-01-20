@@ -48,6 +48,7 @@ import COLOURS from "@selene-wallet/common/design/colours";
 import {
   electrum,
   loadElectrumCash,
+  getCashAddressUTXOs,
 } from "@selene-wallet/app/src/utils/electrum-cash";
 
 export interface TransactionHistoryTxType {
@@ -132,45 +133,6 @@ export default function App() {
           break;
 
         case RESPONSE_MESSAGE_TYPES.GRAB_CASHADDRESS_AT_INDICES_RESPONSE:
-          // Not sure why typescript is messed up here, but it's correct
-          const getAddressTransactionHistory = async (
-            cashaddr: string
-          ): Promise<[{ height: number; tx_hash: string }?]> =>
-            await electrum.request("blockchain.address.get_history", cashaddr);
-
-          const extractTransactionHistory = async (f: {
-            hdWalletIndex: number;
-            cashaddr: string;
-          }): Promise<{
-            hdWalletIndex: number;
-            cashaddr: string;
-            transactions: [{ height: number; tx_hash: string }?];
-          }> => {
-            return {
-              ...f,
-              transactions: await getAddressTransactionHistory(f.cashaddr),
-            };
-          };
-
-          const getTransactionDetails = async (tx_hash: string) =>
-            await electrum.request("blockchain.transaction.get", tx_hash, true);
-
-          const getCashAddressUTXOs = async (
-            cashaddr: string
-          ): Promise<[any?]> =>
-            await electrum.request("blockchain.address.listunspent", cashaddr);
-
-          // const addressWithTransactions = await extractTransactionHistory(
-          //   message?.data?.addressFragments[1]
-          // );
-          // const hash = addressWithTransactions.transactions[0].tx_hash;
-
-          // console.log({ addressWithTransactions, hash });
-
-          // const transactionDetails = await getTransactionDetails(hash);
-
-          // console.log(transactionDetails);
-
           const chosenAddress = message?.data?.addressFragments[0];
 
           const unspentUTXOsRawData = await getCashAddressUTXOs(
@@ -189,41 +151,34 @@ export default function App() {
 
           console.log({ unspentUTXOs });
 
-          const pristineAddress = {
+          const seleneAddress = {
             hdWalletIndex: chosenAddress?.hdWalletIndex,
             cashaddr: chosenAddress.cashaddr,
             coins: unspentUTXOs,
             // await getTransactionDetails(hash)
             // TODO: Import the transaction history from above
+            // const addressWithTransactions = await extractTransactionHistory(
+            //   message?.data?.addressFragments[1]
+            // );
+            // const hash = addressWithTransactions.transactions[0].tx_hash;
+            // console.log({ addressWithTransactions, hash });
+            // const transactionDetails = await getTransactionDetails(hash);
+            // console.log(transactionDetails);
             transactions: [],
           };
 
-          console.log(JSON.stringify(pristineAddress));
-
-          // export interface CoinType {
-          //   height: number;
-          //   transactionId: string;
-          //   outputIndex: number;
-          //   satoshis: number;
-          //   address: string;
-          //   addressIndex: string;
-          // }
-          // export interface SeleneAddressType {
-          //   hdWalletIndex: number;
-          //   coins: CoinType[];
-          //   cashaddr: string;
-          //   transactions: TransactionHistoryTxType[];
-          // }
+          console.log(JSON.stringify(seleneAddress));
 
           // const addressesWithTransactions = await Promise.all(
           //   message?.data?.addressFragments.map()
           // );
-          // store.dispatch(
-          //   mergeSeleneAddressToWallet({
-          //     name: message.data.name,
-          //     seleneAddress: message.data.seleneAddress,
-          //   })
-          // );
+
+          store.dispatch(
+            mergeSeleneAddressToWallet({
+              name: message.data.name,
+              seleneAddress,
+            })
+          );
           break;
 
         case RESPONSE_MESSAGE_TYPES.SCAN_ADDRESS_AT_INDEX_RESPONSE:
