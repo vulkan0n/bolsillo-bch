@@ -1,19 +1,13 @@
 import { ElectrumClient } from "electrum-cash-react-native";
 
-const loadElectrumCash = async () => {
-  const electrum = new ElectrumClient(
-    "Electrum client example",
-    "1.4.1",
-    "bch.imaginary.cash"
-  );
+export const electrum = new ElectrumClient(
+  "Electrum client example",
+  "1.4.1",
+  "bch.imaginary.cash"
+);
 
-  try {
-    const connection = await electrum.connect();
-    console.log({ connection });
-  } catch (e) {
-    console.log("shits fucked");
-    console.log({ e });
-  }
+export const loadElectrumCash = async () => {
+  await electrum.connect();
 
   // Declare an example transaction ID.
   const transactionID =
@@ -36,7 +30,5 @@ const loadElectrumCash = async () => {
   );
   console.log({ myAddress, history });
 
-  await electrum.disconnect();
+  // await electrum.disconnect();
 };
-
-export default loadElectrumCash;

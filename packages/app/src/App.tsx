@@ -1,5 +1,5 @@
 import * as React from "react";
-import { DeviceEventEmitter, View, Text } from "react-native";
+import { DeviceEventEmitter, View, Text, AppState } from "react-native";
 import {
   useFonts,
   Montserrat_400Regular,
@@ -45,9 +45,10 @@ import { ApolloProvider } from "@apollo/client";
 import apolloClient from "./apolloClient";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import COLOURS from "@selene-wallet/common/design/colours";
-import loadElectrumCash from "@selene-wallet/app/src/utils/electrum-cash";
-
-loadElectrumCash();
+import {
+  electrum,
+  loadElectrumCash,
+} from "@selene-wallet/app/src/utils/electrum-cash";
 
 export interface TransactionHistoryTxType {
   blockheight: number;
@@ -251,6 +252,32 @@ export default function App() {
 
     return () => unsubscribe();
   }, []);
+
+  // Establish connection to Electrum Cash network
+  // And close connection when app is closed
+  React.useEffect(() => {
+    console.log("app is opened!");
+    const appStateId = AppState.addEventListener(
+      "change",
+      handleAppStateChange
+    );
+
+    loadElectrumCash();
+
+    return () => {
+      const callback = async () => {
+        console.log("the app is closed");
+        await electrum.disconnect();
+      };
+      appStateId.remove(callback());
+    };
+  }, []);
+
+  const handleAppStateChange = (
+    newAppState: "active" | "inactive" | "background"
+  ) => {
+    console.log(`wow, this is ${newAppState}`);
+  };
 
   const onWebViewLoad = () => {
     setIsWebViewLoaded(true);
