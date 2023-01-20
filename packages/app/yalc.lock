@@ -1,0 +1,9 @@
+{
+  "version": "v1",
+  "packages": {
+    "electrum-cash-react-native": {
+      "signature": "f382ab57c897f2508ca7700804ac6bc3",
+      "file": true
+    }
+  }
+}
