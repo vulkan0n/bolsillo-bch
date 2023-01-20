@@ -5,5 +5,5 @@ export interface LocalState {
     lastWeeklyCheckIn: string;
     lastMonthlyCheckIn: string;
     lastYearlyCheckIn: string;
-    subscribedCashAddress: TaggedCashAddressType[];
+    subscribedCashAddresses: TaggedCashAddressType[];
 }
