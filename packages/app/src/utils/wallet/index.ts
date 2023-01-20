@@ -3,8 +3,6 @@ import {
   CoinType,
   SeleneAddressType,
 } from "@selene-wallet/common/dist/types";
-import { BRIDGE_MESSAGE_TYPES } from "@selene-wallet/app/src/utils/bridgeMessages";
-import emit from "@selene-wallet/app/src/utils/emit";
 
 export const getWalletUTXOs = (wallet: SeleneWalletType): CoinType[] =>
   wallet?.addresses
