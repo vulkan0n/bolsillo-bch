@@ -14,7 +14,7 @@ $ eas build --profile development-simulator --platform ios
 # If you need to dev on a physical iOS/Android device or Android emulator, look into `eas.json` for setting that up.
 # Read the Development build documentation here carefully:
 # https://docs.expo.dev/development/introduction/
-# Once the build is complete (takes about 10 - 15 minutes), Expo will prompt to install on the simulator
+# Once the build is complete (wait until your build gets out of the Free Tier queue, then takes about 10 - 15 minutes to actually build), Expo will prompt to install on the simulator
 # Note that Selene appears as a separate application from Expo Go on the simulator's home screen
 $ npm start
 # You will need to have XCode setup to run the iOS simulator
