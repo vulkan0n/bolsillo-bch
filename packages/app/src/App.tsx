@@ -45,6 +45,9 @@ import { ApolloProvider } from "@apollo/client";
 import apolloClient from "./apolloClient";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import COLOURS from "@selene-wallet/common/design/colours";
+import loadElectrumCash from "@selene-wallet/app/src/utils/electrum-cash";
+
+loadElectrumCash();
 
 export interface TransactionHistoryTxType {
   blockheight: number;
