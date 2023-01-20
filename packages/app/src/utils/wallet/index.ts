@@ -3,6 +3,8 @@ import {
   CoinType,
   SeleneAddressType,
 } from "@selene-wallet/common/dist/types";
+import { subscribeToCashAddress } from "@selene-wallet/app/src/utils/electrum-cash";
+import store from "@selene-wallet/app/src/redux/store";
 
 export const getWalletUTXOs = (wallet: SeleneWalletType): CoinType[] =>
   wallet?.addresses
@@ -14,7 +16,6 @@ export const getWalletUTXOsToSendAmount = (
   satoshisToSend: number
 ): CoinType[] => {
   const utxos: CoinType[] = getWalletUTXOs(wallet);
-  console.log("selecting from these UTXOs", utxos);
   const totalSatsRequired: number = satoshisToSend + 10000; // Buffer for fees
   let total = 0;
   const sufficientUTXOs: CoinType[] = [];
@@ -76,6 +77,8 @@ export const getWalletDepositAddress = (
   // It should be impossible to have unspent UTXOs without history
   // but recently sent coins may show a UTXO history and transaction history has
   // not refreshed yet so checking both to be safe
+  // Also, app internally manages spent UTXOs (speed critical) and
+  // transaction history (often not speed critical) separately
   const depositAddressIndex = wallet?.addresses?.findIndex(
     (a) => a?.transactions?.length === 0 && a?.coins?.length === 0
   );
@@ -83,6 +86,14 @@ export const getWalletDepositAddress = (
     wallet?.addresses?.[depositAddressIndex]?.cashaddr;
 
   if (freshDepositAddress) {
+    const isSubscribed = store
+      .getState()
+      ?.local?.subscribedCashAddresses.includes(freshDepositAddress);
+
+    if (!isSubscribed) {
+      subscribeToCashAddress(freshDepositAddress);
+    }
+
     return freshDepositAddress;
   }
 

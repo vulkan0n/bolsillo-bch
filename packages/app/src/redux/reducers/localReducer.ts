@@ -33,10 +33,8 @@ const localSlice = createSlice({
       state.lastYearlyCheckIn = action.payload.lastYearlyCheckIn;
     },
     addSubscribedCashAddress(state, action) {
-      console.log(
-        "adding new subscribed taggedCashAddress",
-        action.payload.cashaddr
-      );
+      // TODO: Throw out a subscription if more than 10, to make sure we don't keep too many open
+
       state.subscribedCashAddresses = [
         ...state.subscribedCashAddresses,
         action.payload.cashaddr,
