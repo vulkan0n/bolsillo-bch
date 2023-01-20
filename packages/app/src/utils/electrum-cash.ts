@@ -8,27 +8,4 @@ export const electrum = new ElectrumClient(
 
 export const loadElectrumCash = async () => {
   await electrum.connect();
-
-  // Declare an example transaction ID.
-  const transactionID =
-    "4db095f34d632a4daf942142c291f1f2abb5ba2e1ccac919d85bdc2f671fb251";
-
-  // // Request the full transaction hex for the transaction ID.
-  // const transactionHex = await electrum.request(
-  //   "blockchain.transaction.get",
-  //   transactionID
-  // );
-
-  // // Print out the transaction hex.
-  // console.log("got this transaction hex!!");
-  // console.log(transactionHex);
-
-  const myAddress = "bitcoincash:qpm9jd7ac95wph3papmgdkt4tat2wd5a5u76hmff6x";
-  const history = await electrum.request(
-    "blockchain.address.get_history",
-    myAddress
-  );
-  console.log({ myAddress, history });
-
-  // await electrum.disconnect();
 };
