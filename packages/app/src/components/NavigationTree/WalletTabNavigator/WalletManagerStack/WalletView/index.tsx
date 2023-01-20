@@ -45,7 +45,7 @@ const WalletView = ({ navigation }) => {
   const isRangeError =
     minAddressIndex &&
     maxAddressIndex &&
-    parseInt(minAddressIndex) >= parseInt(maxAddressIndex);
+    parseInt(minAddressIndex) > parseInt(maxAddressIndex);
   const isRangeScanDisabled =
     minAddressIndex === "" || maxAddressIndex === "" || isRangeError;
 
@@ -124,15 +124,15 @@ const WalletView = ({ navigation }) => {
               data: {
                 name: wallet.name,
                 mnemonic: wallet.mnemonic,
-                hdWalletIndexMin: 0,
-                hdWalletIndexMax: 9,
+                hdWalletIndexMin: parseInt(minAddressIndex),
+                hdWalletIndexMax: parseInt(maxAddressIndex),
               },
             });
-            setActivityText("Scanning 10 new addresses.");
+            setActivityText("Scanning addresses.");
           }}
           variant={"primary"}
         >
-          Scan 10 new addresses
+          Check addresses {minAddressIndex || "?"} to {maxAddressIndex || "?"}
         </Button>
         <Divider />
 
@@ -180,7 +180,6 @@ const WalletView = ({ navigation }) => {
         <IntegerInput
           numberAsString={minAddressIndex}
           onChange={(value) => {
-            console.log({ value });
             // Accept digits only
             setMinAddressIndex(value.replace(/[^0-9]/g, ""));
           }}
@@ -190,13 +189,12 @@ const WalletView = ({ navigation }) => {
         <IntegerInput
           numberAsString={maxAddressIndex}
           onChange={(value) => {
-            console.log({ value });
             // Accept digits only
             setMaxAddressIndex(value.replace(/[^0-9]/g, ""));
           }}
         />
 
-        {isRangeError && <Text>Max must be greater than min.</Text>}
+        {isRangeError && <Text>Max must be equal or greater than min.</Text>}
         <Button
           onPress={() => {
             checkWalletAddressRange(
