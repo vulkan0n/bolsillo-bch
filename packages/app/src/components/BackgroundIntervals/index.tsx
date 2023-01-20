@@ -90,13 +90,13 @@ const BackgroundIntervals = () => {
   // Scan deposit address for incoming transactions every second
   // TODO: Replace with the watcher methods in mainnet?
   // Would this make it less reliable, on the other side of the bridge?
-  useEffect(() => {
-    const interval = setInterval(() => {
-      scanDepositAddress(wallet);
-    }, ONE_SECOND * 3);
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     scanDepositAddress(wallet);
+  //   }, ONE_SECOND * 3);
 
-    return () => clearInterval(interval);
-  }, [depostAddress]);
+  //   return () => clearInterval(interval);
+  // }, [depostAddress]);
 
   return <View />;
 };

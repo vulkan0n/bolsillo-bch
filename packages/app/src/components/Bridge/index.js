@@ -53,6 +53,33 @@ const Bridge = () => {
           });
           break;
 
+        case BRIDGE_MESSAGE_TYPES.GRAB_CASHADDRESS_AT_INDEX:
+          const { hdWalletIndexMin, hdWalletIndexMax } = message?.data;
+
+          const cashAddresses = await Promise.all(
+            R.range(hdWalletIndexMin, hdWalletIndexMax + 1).map(async (i) => {
+              const hdWallet = await WalletObject.fromSeed(
+                message?.data?.mnemonic,
+                `m/44'/0'/0'/0/${hdWalletIndex}`
+              );
+              const address = {
+                hdWalletIndex: i,
+                cashAddr: hdWallet.cashAddr,
+              };
+              console.log({ address });
+              return address;
+            })
+          );
+
+          console.log(cashAddresses);
+
+          // TODO: Send it back, and fill in with Electrum the rest
+          // emit({
+          //   type: RESPONSE_MESSAGE_TYPES.CREATE_SCRATCHPAD_WALLET_RESPONSE,
+          //   data: { cashAddresses },
+          // });
+          break;
+
         case BRIDGE_MESSAGE_TYPES.SCAN_ADDRESS_AT_INDEX:
           const { mnemonic, hdWalletIndex } = message?.data;
           const seleneAddress = await getSeleneAddressAtIndex(

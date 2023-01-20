@@ -21,6 +21,8 @@ import {
 } from "@selene-wallet/app/src/utils/wallet";
 import Button from "@selene-wallet/app/src/components/atoms/Button";
 import IntegerInput from "@selene-wallet/app/src/components/atoms/IntegerInput";
+import emit from "@selene-wallet/app/src/utils/emit";
+import { BRIDGE_MESSAGE_TYPES } from "@selene-wallet/app/src/utils/bridgeMessages";
 
 const WalletView = ({ navigation }) => {
   const wallet = useSelector((state: ReduxState) =>
@@ -115,7 +117,22 @@ const WalletView = ({ navigation }) => {
         )}
 
         <Text style={TYPOGRAPHY.h2black}>Electrum methods</Text>
-
+        <Button
+          onPress={() => {
+            emit({
+              type: BRIDGE_MESSAGE_TYPES.GRAB_CASHADDRESS_AT_INDEX,
+              data: {
+                mnemonic: wallet.mnemonic,
+                hdWalletIndexMin: 0,
+                hdWalletIndexMax: 10,
+              },
+            });
+            setActivityText("Scanning 10 new addresses.");
+          }}
+          variant={"primary"}
+        >
+          Scan 10 new addresses
+        </Button>
         <Divider />
 
         <Text style={TYPOGRAPHY.h2black}>Bridge methods</Text>
