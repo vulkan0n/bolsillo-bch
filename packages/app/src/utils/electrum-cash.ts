@@ -1,4 +1,4 @@
-import { ElectrumClient } from "electrum-cash";
+import { ElectrumClient } from "electrum-cash-react-native";
 
 const loadElectrumCash = async () => {
   const electrum = new ElectrumClient(

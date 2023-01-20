@@ -24,6 +24,9 @@ const updatedConfig = {
       fs: require.resolve("react-native-tcp-socket"), // qrcode-svg.save
     },
   },
+  // To fix an issue with metro caching of @babel/runtime
+  // https://github.com/facebook/react-native/issues/27712#issuecomment-715780864
+  watchFolders: [`${__dirname}/../..`],
 };
 
 // https://github.com/apollographql/apollo-client/issues/9194#issuecomment-1000850769
