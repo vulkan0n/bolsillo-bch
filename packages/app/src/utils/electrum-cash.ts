@@ -2,6 +2,7 @@ import { ElectrumClient } from "electrum-cash-react-native";
 import { SeleneAddressType } from "@selene-wallet/common/dist/types";
 import store from "@selene-wallet/app/src/redux/store";
 import { mergeSeleneAddressToWallet } from "@selene-wallet/app/src/redux/reducers/walletManagerReducer";
+import { clearSubscribedCashAddresses } from "../redux/reducers/localReducer";
 
 export const electrum = new ElectrumClient(
   "Electrum client example",
@@ -27,34 +28,44 @@ const findWalletNameAndHdIndexOfKnownCashAddress = (
   };
 };
 
+export const subscribeToCashAddress = (cashaddr: string) => {
+  console.log(`Setting up subscription to ${cashaddr}`);
+
+  const newTransactionCallback = async (
+    // Not sure what the second returned value is
+    // Looks like a transaction hash, but it isn't
+    // The docs say it is "state"
+    // It's not really relevant here
+    event: [cashAddr: string, someIdentifier: string]
+  ) => {
+    const cashaddr = event?.[0];
+    const { name, hdWalletIndex } =
+      findWalletNameAndHdIndexOfKnownCashAddress(cashaddr);
+    const seleneAddress = await updateSeleneAddressUTXOsFromAddressFragment({
+      cashaddr,
+      hdWalletIndex: hdWalletIndex.toString(),
+    });
+    store.dispatch(
+      mergeSeleneAddressToWallet({
+        name,
+        seleneAddress,
+      })
+    );
+  };
+
+  electrum.subscribe(
+    newTransactionCallback,
+    "blockchain.address.subscribe",
+    cashaddr
+  );
+};
+
 export const loadElectrumCash = async () => {
+  // Clean up any records of previous subscriptions
+  store.dispatch(clearSubscribedCashAddresses());
   await electrum.connect();
   const testSubscribeAddress =
     "bitcoincash:qpm9jd7ac95wph3papmgdkt4tat2wd5a5u76hmff6x";
-  console.log("setting up subscription");
-  const res = findWalletNameAndHdIndexOfKnownCashAddress(testSubscribeAddress);
-  console.log({ res });
-
-  const notify = await electrum.subscribe(
-    async (event) => {
-      const cashaddr = event?.[0];
-      const { name, hdWalletIndex } =
-        findWalletNameAndHdIndexOfKnownCashAddress(cashaddr);
-      const seleneAddress = await updateSeleneAddressUTXOsFromAddressFragment({
-        cashaddr,
-        hdWalletIndex: hdWalletIndex.toString(),
-      });
-      store.dispatch(
-        mergeSeleneAddressToWallet({
-          name,
-          seleneAddress,
-        })
-      );
-    },
-    "blockchain.address.subscribe",
-    testSubscribeAddress
-  );
-  console.log({ notify });
 };
 
 // Not sure why typescript is messed up here, but it's correct

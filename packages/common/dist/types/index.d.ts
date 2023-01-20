@@ -56,6 +56,11 @@ export interface SeleneWalletType {
     maxAddressIndex: number;
     addresses: SeleneAddressType[];
 }
+export interface TaggedCashAddressType {
+    cashaddr: string;
+    name: string;
+    hdWalletIndex: number;
+}
 export interface EmitEvent {
     type: string;
     data: {};

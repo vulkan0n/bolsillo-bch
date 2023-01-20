@@ -64,6 +64,13 @@ export interface SeleneWalletType {
   addresses: SeleneAddressType[];
 }
 
+// A bundle that makes CashAddresses easier to find
+export interface TaggedCashAddressType {
+  cashaddr: string;
+  name: string; // Name of the wallet that this cashAddress can be found in
+  hdWalletIndex: number; // hdWalletIndex of the cashAddress within its wallet
+}
+
 export interface EmitEvent {
   type: string;
   data: {};

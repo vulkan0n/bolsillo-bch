@@ -8,6 +8,7 @@ const initialState = {
   lastWeeklyCheckIn: "",
   lastMonthlyCheckIn: "",
   lastYearlyCheckIn: "",
+  subscribedCashAddresses: [],
 } as LocalState;
 
 const localSlice = createSlice({
@@ -31,6 +32,15 @@ const localSlice = createSlice({
     updateLocalLastYearlyCheckIn(state, action) {
       state.lastYearlyCheckIn = action.payload.lastYearlyCheckIn;
     },
+    addSubscribedCashAddress(state, action) {
+      state.subscribedCashAddresses = [
+        ...state.subscribedCashAddresses,
+        action.payload.taggedCashAddress,
+      ];
+    },
+    clearSubscribedCashAddresses(state) {
+      state.subscribedCashAddresses = [];
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(PURGE, () => initialState);
@@ -43,5 +53,7 @@ export const {
   updateLocalLastWeeklyCheckIn,
   updateLocalLastMonthlyCheckIn,
   updateLocalLastYearlyCheckIn,
+  addSubscribedCashAddress,
+  clearSubscribedCashAddresses,
 } = localSlice.actions;
 export default localSlice.reducer;
