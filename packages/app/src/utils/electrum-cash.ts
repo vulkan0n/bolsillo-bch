@@ -28,6 +28,15 @@ const loadElectrumCash = async () => {
   // Print out the transaction hex.
   console.log("got this transaction hex!!");
   console.log(transactionHex);
+
+  const myAddress = "bitcoincash:qpm9jd7ac95wph3papmgdkt4tat2wd5a5u76hmff6x";
+  const history = await electrum.request(
+    "blockchain.address.get_history",
+    myAddress
+  );
+  console.log({ myAddress, history });
+
+  await electrum.disconnect();
 };
 
 export default loadElectrumCash;
