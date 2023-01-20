@@ -21,7 +21,7 @@ const updatedConfig = {
       crypto: require.resolve("crypto-browserify"), // bip39
       net: require.resolve("react-native-tcp-socket"), // electrum-cash tcp connections
       tls: require.resolve("react-native-tcp-socket"), // electrum-cash tcp connections
-      fs: false, // qrcode-svg.save
+      fs: require.resolve("react-native-tcp-socket"), // qrcode-svg.save
     },
   },
 };
