@@ -32,6 +32,7 @@ import {
   updateNewWalletScratchPadDetails,
   importWalletTransactionHistory,
   mergeSeleneAddressToWallet,
+  mergeSeleneAddressesToWallet,
   updateSpendingWalletAddressesAndUTXOs,
 } from "./redux/reducers/walletManagerReducer";
 import {
@@ -133,50 +134,54 @@ export default function App() {
           break;
 
         case RESPONSE_MESSAGE_TYPES.GRAB_CASHADDRESS_AT_INDICES_RESPONSE:
-          const chosenAddress = message?.data?.addressFragments[0];
+          const seleneAddresses = await Promise.all(
+            message?.data?.addressFragments.map(async (chosenAddress) => {
+              console.log({ chosenAddress });
+              const unspentUTXOsRawData = await getCashAddressUTXOs(
+                chosenAddress?.cashaddr
+              );
 
-          const unspentUTXOsRawData = await getCashAddressUTXOs(
-            chosenAddress?.cashaddr
+              const unspentUTXOs = unspentUTXOsRawData.map((coin) => ({
+                height: coin.height,
+                transactionId: coin.tx_hash,
+                outputIndex: coin.tx_pos,
+                satoshis: coin.value,
+                address: chosenAddress.cashaddr,
+                addressIndex: chosenAddress.hdWalletIndex,
+              }));
+
+              console.log({ unspentUTXOs });
+
+              const seleneAddress = {
+                hdWalletIndex: chosenAddress?.hdWalletIndex,
+                cashaddr: chosenAddress.cashaddr,
+                coins: unspentUTXOs,
+                // await getTransactionDetails(hash)
+                // TODO: Import the transaction history from above
+                // const addressWithTransactions = await extractTransactionHistory(
+                //   message?.data?.addressFragments[1]
+                // );
+                // const hash = addressWithTransactions.transactions[0].tx_hash;
+                // console.log({ addressWithTransactions, hash });
+                // const transactionDetails = await getTransactionDetails(hash);
+                // console.log(transactionDetails);
+                transactions: [],
+              };
+
+              console.log(JSON.stringify(seleneAddress));
+
+              // const addressesWithTransactions = await Promise.all(
+              //   message?.data?.addressFragments.map()
+              // );
+
+              return seleneAddress;
+            })
           );
-          //  LOG  {"unspentUTXOs": [{"height": 775945, "tx_hash": "361f625b9a1a0bbd288f84b4ecd2612e8d3a7d219573e25538ece9215c2811b2", "tx_pos": 0, "value": 565788}]}
-
-          const unspentUTXOs = unspentUTXOsRawData.map((coin) => ({
-            height: coin.height,
-            transactionId: coin.tx_hash,
-            outputIndex: coin.tx_pos,
-            satoshis: coin.value,
-            address: chosenAddress.cashaddr,
-            addressIndex: chosenAddress.hdWalletIndex,
-          }));
-
-          console.log({ unspentUTXOs });
-
-          const seleneAddress = {
-            hdWalletIndex: chosenAddress?.hdWalletIndex,
-            cashaddr: chosenAddress.cashaddr,
-            coins: unspentUTXOs,
-            // await getTransactionDetails(hash)
-            // TODO: Import the transaction history from above
-            // const addressWithTransactions = await extractTransactionHistory(
-            //   message?.data?.addressFragments[1]
-            // );
-            // const hash = addressWithTransactions.transactions[0].tx_hash;
-            // console.log({ addressWithTransactions, hash });
-            // const transactionDetails = await getTransactionDetails(hash);
-            // console.log(transactionDetails);
-            transactions: [],
-          };
-
-          console.log(JSON.stringify(seleneAddress));
-
-          // const addressesWithTransactions = await Promise.all(
-          //   message?.data?.addressFragments.map()
-          // );
 
           store.dispatch(
-            mergeSeleneAddressToWallet({
+            mergeSeleneAddressesToWallet({
               name: message.data.name,
-              seleneAddress,
+              seleneAddresses,
             })
           );
           break;

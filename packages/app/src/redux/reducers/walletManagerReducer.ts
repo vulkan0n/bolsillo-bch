@@ -150,6 +150,34 @@ const walletMangerSlice = createSlice({
         receiveCoinsEvent();
       }
     },
+    mergeSeleneAddressesToWallet(state, action) {
+      const wallet = state.wallets.find(
+        ({ name }) => name === action.payload.name
+      );
+
+      const existingBalance = getWalletSatoshiBalance(wallet);
+
+      const walletAddresses = wallet?.addresses ?? [];
+      const mergedList = [
+        ...action.payload?.seleneAddresses,
+        ...walletAddresses,
+      ];
+      const uniqueList = R.uniqBy(
+        (address) => address.hdWalletIndex,
+        mergedList
+      );
+      const orderByAscendingIndex = (a, b) => {
+        return a.hdWalletIndex - b.hdWalletIndex;
+      };
+      const sortedList = R.sort(orderByAscendingIndex, uniqueList);
+      wallet.addresses = sortedList;
+
+      const newBalance = getWalletSatoshiBalance(wallet);
+      // If balance has increased, then coins were received so trigger coin receive action
+      if (newBalance > existingBalance) {
+        receiveCoinsEvent();
+      }
+    },
     importWalletTransactionHistory(state, action) {
       const wallet = state.wallets.find(
         ({ name }) => name === action.payload.name
@@ -275,6 +303,7 @@ export const {
   deleteWallet,
   updateWalletMaxAddressIndex,
   mergeSeleneAddressToWallet,
+  mergeSeleneAddressesToWallet,
   importWalletTransactionHistory,
   updateTransactionNote,
   updateSpendingWalletAddressesAndUTXOs,
