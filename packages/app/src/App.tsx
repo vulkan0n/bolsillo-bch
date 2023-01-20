@@ -150,8 +150,6 @@ export default function App() {
                 addressIndex: chosenAddress.hdWalletIndex,
               }));
 
-              console.log({ unspentUTXOs });
-
               const seleneAddress = {
                 hdWalletIndex: chosenAddress?.hdWalletIndex,
                 cashaddr: chosenAddress.cashaddr,
@@ -167,12 +165,6 @@ export default function App() {
                 // console.log(transactionDetails);
                 transactions: [],
               };
-
-              console.log(JSON.stringify(seleneAddress));
-
-              // const addressesWithTransactions = await Promise.all(
-              //   message?.data?.addressFragments.map()
-              // );
 
               return seleneAddress;
             })

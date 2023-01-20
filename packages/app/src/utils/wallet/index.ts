@@ -56,16 +56,17 @@ export const scanAddressAtIndex = (
   hdWalletIndex: number,
   isTestNet: boolean = false
 ) => {
-  emit({
-    type: BRIDGE_MESSAGE_TYPES.SCAN_ADDRESS_AT_INDEX,
-    data: {
-      name: wallet?.name,
-      mnemonic: wallet?.mnemonic,
-      derivationPath: wallet?.derivationPath,
-      hdWalletIndex,
-      isTestNet,
-    },
-  });
+  console.log("halted SCAN_ADDRESS_AT_INDEX");
+  // emit({
+  //   type: BRIDGE_MESSAGE_TYPES.SCAN_ADDRESS_AT_INDEX,
+  //   data: {
+  //     name: wallet?.name,
+  //     mnemonic: wallet?.mnemonic,
+  //     derivationPath: wallet?.derivationPath,
+  //     hdWalletIndex,
+  //     isTestNet,
+  //   },
+  // });
 };
 
 export const getWalletDepositAddress = (
