@@ -1,8 +1,5 @@
 import { ElectrumClient } from "electrum-cash-react-native";
-import {
-  SeleneAddressType,
-  TaggedCashAddressType,
-} from "@selene-wallet/common/dist/types";
+import { SeleneAddressType } from "@selene-wallet/common/dist/types";
 import store from "@selene-wallet/app/src/redux/store";
 import { mergeSeleneAddressToWallet } from "@selene-wallet/app/src/redux/reducers/walletManagerReducer";
 import {
@@ -40,7 +37,7 @@ export const subscribeToCashAddress = (newCashAddr: string) => {
   const newTransactionCallback = async (
     // Not sure what the second returned value is
     // Looks like a transaction hash, but it isn't
-    // The docs say it is "state"
+    // The docs say it is "status"
     // It's not really relevant here
     event: [cashAddr: string, someIdentifier: string]
   ) => {
@@ -73,15 +70,9 @@ export const subscribeToCashAddress = (newCashAddr: string) => {
     newCashAddr
   );
 
-  const { name, hdWalletIndex } =
-    findWalletNameAndHdIndexOfKnownCashAddress(newCashAddr);
   store.dispatch(
     addSubscribedCashAddress({
-      taggedCashAddress: {
-        name,
-        cashaddr: newCashAddr,
-        hdWalletIndex,
-      },
+      cashaddr: newCashAddr,
     })
   );
 };

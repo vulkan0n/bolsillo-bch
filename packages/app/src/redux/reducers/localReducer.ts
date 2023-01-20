@@ -33,14 +33,13 @@ const localSlice = createSlice({
       state.lastYearlyCheckIn = action.payload.lastYearlyCheckIn;
     },
     addSubscribedCashAddress(state, action) {
-      // TaggedCashAddressType
       console.log(
         "adding new subscribed taggedCashAddress",
-        action.payload.taggedCashAddress
+        action.payload.cashaddr
       );
       state.subscribedCashAddresses = [
         ...state.subscribedCashAddresses,
-        action.payload.taggedCashAddress,
+        action.payload.cashaddr,
       ];
     },
     clearSubscribedCashAddresses(state) {
