@@ -7,7 +7,13 @@ const loadElectrumCash = async () => {
     "bch.imaginary.cash"
   );
 
-  await electrum.connect();
+  try {
+    const connection = await electrum.connect();
+    console.log({ connection });
+  } catch (e) {
+    console.log("shits fucked");
+    console.log({ e });
+  }
 
   // // Declare an example transaction ID.
   // const transactionID =
