@@ -133,7 +133,7 @@ export default function App() {
 
         case RESPONSE_MESSAGE_TYPES.GRAB_CASHADDRESS_AT_INDICES_RESPONSE:
           // Not sure why typescript is messed up here, but it's correct
-          const getTransactionHistory = async (
+          const getAddressTransactionHistory = async (
             cashaddr: string
           ): Promise<[{ height: number; tx_hash: string }?]> =>
             await electrum.request("blockchain.address.get_history", cashaddr);
@@ -148,15 +148,23 @@ export default function App() {
           }> => {
             return {
               ...f,
-              transactions: await getTransactionHistory(f.cashaddr),
+              transactions: await getAddressTransactionHistory(f.cashaddr),
             };
           };
 
-          const responseData = message?.data;
-          const datum = await extractTransactionHistory(
-            message?.data?.addressFragments[0]
+          const getTransactionDetails = async (tx_hash: string) =>
+            await electrum.request("blockchain.transaction.get", tx_hash, true);
+
+          const addressWithTransactions = await extractTransactionHistory(
+            message?.data?.addressFragments[1]
           );
-          console.log({ datum });
+          const hash = addressWithTransactions.transactions[0].tx_hash;
+
+          console.log({ addressWithTransactions, hash });
+
+          const transactionDetails = await getTransactionDetails(hash);
+
+          console.log(transactionDetails);
           // const addressesWithTransactions = await Promise.all(
           //   message?.data?.addressFragments.map()
           // );
