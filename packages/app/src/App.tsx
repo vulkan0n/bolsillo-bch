@@ -171,21 +171,34 @@ export default function App() {
 
           // console.log(transactionDetails);
 
-          const unspentUTXOs = await getCashAddressUTXOs(
-            message?.data?.addressFragments[1]?.cashaddr
+          const chosenAddress = message?.data?.addressFragments[0];
+
+          const unspentUTXOsRawData = await getCashAddressUTXOs(
+            chosenAddress?.cashaddr
           );
+          //  LOG  {"unspentUTXOs": [{"height": 775945, "tx_hash": "361f625b9a1a0bbd288f84b4ecd2612e8d3a7d219573e25538ece9215c2811b2", "tx_pos": 0, "value": 565788}]}
+
+          const unspentUTXOs = unspentUTXOsRawData.map((coin) => ({
+            height: coin.height,
+            transactionId: coin.tx_hash,
+            outputIndex: coin.tx_pos,
+            satoshis: coin.value,
+            address: chosenAddress.cashaddr,
+            addressIndex: chosenAddress.hdWalletIndex,
+          }));
 
           console.log({ unspentUTXOs });
 
           const pristineAddress = {
-            hdWalletIndex: addressWithTransactions.hdWalletIndex,
-            cashaddr: addressWithTransactions.cashaddr,
-            // TODO: Fill this up with unspent coins
-            coins: [],
+            hdWalletIndex: chosenAddress?.hdWalletIndex,
+            cashaddr: chosenAddress.cashaddr,
+            coins: unspentUTXOs,
             // await getTransactionDetails(hash)
             // TODO: Import the transaction history from above
             transactions: [],
           };
+
+          console.log(JSON.stringify(pristineAddress));
 
           // export interface CoinType {
           //   height: number;
