@@ -8,7 +8,7 @@ const styles = {
     backgroundColor: COLOURS.white,
     borderWidth: 5,
     justifyContent: "center",
-    alignItems: "left",
+    alignItems: "flex-start",
     padding: SPACING.five,
     margin: SPACING.five,
     borderRadius: SPACING.borderRadius,

@@ -106,7 +106,7 @@ function DenominationView() {
                     style={
                       {
                         ...TYPOGRAPHY.h2,
-                        textAlign: "left",
+                        textAlign: "center",
                         paddingLeft: SPACING.five,
                         color: isSelected ? COLOURS.bchGreen : COLOURS.white,
                       } as any
@@ -118,7 +118,7 @@ function DenominationView() {
                     style={
                       {
                         ...TYPOGRAPHY.pWhite,
-                        textAlign: "left",
+                        textAlign: "center",
                         marginLeft: SPACING.five,
                         color: isSelected ? COLOURS.bchGreen : COLOURS.white,
                       } as any

@@ -155,16 +155,53 @@ export default function App() {
           const getTransactionDetails = async (tx_hash: string) =>
             await electrum.request("blockchain.transaction.get", tx_hash, true);
 
-          const addressWithTransactions = await extractTransactionHistory(
-            message?.data?.addressFragments[1]
+          const getCashAddressUTXOs = async (
+            cashaddr: string
+          ): Promise<[any?]> =>
+            await electrum.request("blockchain.address.listunspent", cashaddr);
+
+          // const addressWithTransactions = await extractTransactionHistory(
+          //   message?.data?.addressFragments[1]
+          // );
+          // const hash = addressWithTransactions.transactions[0].tx_hash;
+
+          // console.log({ addressWithTransactions, hash });
+
+          // const transactionDetails = await getTransactionDetails(hash);
+
+          // console.log(transactionDetails);
+
+          const unspentUTXOs = await getCashAddressUTXOs(
+            message?.data?.addressFragments[1]?.cashaddr
           );
-          const hash = addressWithTransactions.transactions[0].tx_hash;
 
-          console.log({ addressWithTransactions, hash });
+          console.log({ unspentUTXOs });
 
-          const transactionDetails = await getTransactionDetails(hash);
+          const pristineAddress = {
+            hdWalletIndex: addressWithTransactions.hdWalletIndex,
+            cashaddr: addressWithTransactions.cashaddr,
+            // TODO: Fill this up with unspent coins
+            coins: [],
+            // await getTransactionDetails(hash)
+            // TODO: Import the transaction history from above
+            transactions: [],
+          };
 
-          console.log(transactionDetails);
+          // export interface CoinType {
+          //   height: number;
+          //   transactionId: string;
+          //   outputIndex: number;
+          //   satoshis: number;
+          //   address: string;
+          //   addressIndex: string;
+          // }
+          // export interface SeleneAddressType {
+          //   hdWalletIndex: number;
+          //   coins: CoinType[];
+          //   cashaddr: string;
+          //   transactions: TransactionHistoryTxType[];
+          // }
+
           // const addressesWithTransactions = await Promise.all(
           //   message?.data?.addressFragments.map()
           // );

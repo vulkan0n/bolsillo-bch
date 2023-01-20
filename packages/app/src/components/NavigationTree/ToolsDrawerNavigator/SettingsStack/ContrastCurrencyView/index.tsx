@@ -79,7 +79,7 @@ function ContrastCurrencyView() {
                     {
                       ...TYPOGRAPHY.h2,
                       flex: 3,
-                      textAlign: "left",
+                      textAlign: "center",
                       paddingLeft: SPACING.five,
                       color: isSelected ? COLOURS.bchGreen : COLOURS.white,
                     } as any
