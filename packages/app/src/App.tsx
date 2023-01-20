@@ -134,18 +134,18 @@ export default function App() {
           break;
 
         case RESPONSE_MESSAGE_TYPES.GRAB_CASHADDRESS_AT_INDICES_RESPONSE:
-          const seleneAddresses = await Promise.all(
-            message?.data?.addressFragments.map(
-              updateSeleneAddressUTXOsFromAddressFragment
-            )
-          );
+          // const seleneAddresses = await Promise.all(
+          //   message?.data?.addressFragments.map(
+          //     updateSeleneAddressUTXOsFromAddressFragment
+          //   )
+          // );
 
-          store.dispatch(
-            mergeSeleneAddressesToWallet({
-              name: message.data.name,
-              seleneAddresses,
-            })
-          );
+          // store.dispatch(
+          //   mergeSeleneAddressesToWallet({
+          //     name: message.data.name,
+          //     seleneAddresses,
+          //   })
+          // );
           break;
 
         case RESPONSE_MESSAGE_TYPES.SCAN_ADDRESS_AT_INDEX_RESPONSE:

@@ -1,8 +1,14 @@
 import { ElectrumClient } from "electrum-cash-react-native";
-import { SeleneAddressType } from "@selene-wallet/common/dist/types";
+import {
+  SeleneAddressType,
+  TaggedCashAddressType,
+} from "@selene-wallet/common/dist/types";
 import store from "@selene-wallet/app/src/redux/store";
 import { mergeSeleneAddressToWallet } from "@selene-wallet/app/src/redux/reducers/walletManagerReducer";
-import { clearSubscribedCashAddresses } from "../redux/reducers/localReducer";
+import {
+  addSubscribedCashAddress,
+  clearSubscribedCashAddresses,
+} from "@selene-wallet/app/src/redux/reducers/localReducer";
 
 export const electrum = new ElectrumClient(
   "Electrum client example",
@@ -28,8 +34,8 @@ const findWalletNameAndHdIndexOfKnownCashAddress = (
   };
 };
 
-export const subscribeToCashAddress = (cashaddr: string) => {
-  console.log(`Setting up subscription to ${cashaddr}`);
+export const subscribeToCashAddress = (newCashAddr: string) => {
+  console.log(`Setting up subscription to ${newCashAddr}`);
 
   const newTransactionCallback = async (
     // Not sure what the second returned value is
@@ -38,12 +44,20 @@ export const subscribeToCashAddress = (cashaddr: string) => {
     // It's not really relevant here
     event: [cashAddr: string, someIdentifier: string]
   ) => {
+    // The first event listener will return is not the same as subsequent "new transaction" events
+    // The first event is the setup notification of the listener
+    // That event returns a string instead of an array
+    // Ignore that one
+    if (!Array.isArray(event)) {
+      return;
+    }
+
     const cashaddr = event?.[0];
     const { name, hdWalletIndex } =
       findWalletNameAndHdIndexOfKnownCashAddress(cashaddr);
     const seleneAddress = await updateSeleneAddressUTXOsFromAddressFragment({
       cashaddr,
-      hdWalletIndex: hdWalletIndex.toString(),
+      hdWalletIndex,
     });
     store.dispatch(
       mergeSeleneAddressToWallet({
@@ -56,7 +70,19 @@ export const subscribeToCashAddress = (cashaddr: string) => {
   electrum.subscribe(
     newTransactionCallback,
     "blockchain.address.subscribe",
-    cashaddr
+    newCashAddr
+  );
+
+  const { name, hdWalletIndex } =
+    findWalletNameAndHdIndexOfKnownCashAddress(newCashAddr);
+  store.dispatch(
+    addSubscribedCashAddress({
+      taggedCashAddress: {
+        name,
+        cashaddr: newCashAddr,
+        hdWalletIndex,
+      },
+    })
   );
 };
 
@@ -66,6 +92,7 @@ export const loadElectrumCash = async () => {
   await electrum.connect();
   const testSubscribeAddress =
     "bitcoincash:qpm9jd7ac95wph3papmgdkt4tat2wd5a5u76hmff6x";
+  subscribeToCashAddress(testSubscribeAddress);
 };
 
 // Not sure why typescript is messed up here, but it's correct
@@ -97,7 +124,7 @@ export const getCashAddressUTXOs = async (cashaddr: string): Promise<[any?]> =>
 export const updateSeleneAddressUTXOsFromAddressFragment =
   async (chosenAddress: {
     cashaddr: string;
-    hdWalletIndex: string;
+    hdWalletIndex: number;
   }): Promise<SeleneAddressType> => {
     console.log({ chosenAddress });
     const unspentUTXOsRawData = await getCashAddressUTXOs(
@@ -114,7 +141,7 @@ export const updateSeleneAddressUTXOsFromAddressFragment =
     }));
 
     const seleneAddress = {
-      hdWalletIndex: parseInt(chosenAddress?.hdWalletIndex),
+      hdWalletIndex: chosenAddress?.hdWalletIndex,
       cashaddr: chosenAddress.cashaddr,
       coins: unspentUTXOs,
       // await getTransactionDetails(hash)
