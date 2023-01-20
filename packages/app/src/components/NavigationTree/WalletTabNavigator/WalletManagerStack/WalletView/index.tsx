@@ -120,11 +120,12 @@ const WalletView = ({ navigation }) => {
         <Button
           onPress={() => {
             emit({
-              type: BRIDGE_MESSAGE_TYPES.GRAB_CASHADDRESS_AT_INDEX,
+              type: BRIDGE_MESSAGE_TYPES.GRAB_CASHADDRESS_AT_INDICIES,
               data: {
+                name: wallet.name,
                 mnemonic: wallet.mnemonic,
                 hdWalletIndexMin: 0,
-                hdWalletIndexMax: 10,
+                hdWalletIndexMax: 9,
               },
             });
             setActivityText("Scanning 10 new addresses.");

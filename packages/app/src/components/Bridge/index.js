@@ -13,6 +13,7 @@ import {
   getWalletHistory,
   getSeleneAddressAtIndex,
 } from "./actions";
+import * as R from "ramda";
 
 const Bridge = () => {
   console.log("Bridge loaded.");
@@ -53,31 +54,30 @@ const Bridge = () => {
           });
           break;
 
-        case BRIDGE_MESSAGE_TYPES.GRAB_CASHADDRESS_AT_INDEX:
-          const { hdWalletIndexMin, hdWalletIndexMax } = message?.data;
+        case BRIDGE_MESSAGE_TYPES.GRAB_CASHADDRESS_AT_INDICIES:
+          const { name, hdWalletIndexMin, hdWalletIndexMax } = message?.data;
+          const indicies = R.range(hdWalletIndexMin, hdWalletIndexMax + 1);
 
-          const cashAddresses = await Promise.all(
-            R.range(hdWalletIndexMin, hdWalletIndexMax + 1).map(async (i) => {
+          const addressFragments = await Promise.all(
+            indicies.map(async (i) => {
               const hdWallet = await WalletObject.fromSeed(
                 message?.data?.mnemonic,
-                `m/44'/0'/0'/0/${hdWalletIndex}`
+                `m/44'/0'/0'/0/${i}`
               );
-              const address = {
+
+              return {
                 hdWalletIndex: i,
-                cashAddr: hdWallet.cashAddr,
+                cashaddr: hdWallet.cashaddr,
               };
-              console.log({ address });
-              return address;
             })
           );
 
-          console.log(cashAddresses);
+          console.log(addressFragments);
 
-          // TODO: Send it back, and fill in with Electrum the rest
-          // emit({
-          //   type: RESPONSE_MESSAGE_TYPES.CREATE_SCRATCHPAD_WALLET_RESPONSE,
-          //   data: { cashAddresses },
-          // });
+          emit({
+            type: RESPONSE_MESSAGE_TYPES.GRAB_CASHADDRESS_AT_INDICES_RESPONSE,
+            data: { name, addressFragments },
+          });
           break;
 
         case BRIDGE_MESSAGE_TYPES.SCAN_ADDRESS_AT_INDEX:

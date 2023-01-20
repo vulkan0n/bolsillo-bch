@@ -81,6 +81,12 @@ interface BridgeResponseMessage {
     };
     seleneAddress: SeleneAddressType;
     updatedChangeAddress: SeleneAddressType;
+    addressFragments?: [
+      {
+        hdWalletIndex: number;
+        cashaddr: string;
+      }
+    ];
   };
 }
 
@@ -123,6 +129,26 @@ export default function App() {
               maxAddressIndex: 0,
             })
           );
+          break;
+
+        case RESPONSE_MESSAGE_TYPES.GRAB_CASHADDRESS_AT_INDICES_RESPONSE:
+          const getAddress = async (cashaddr: string) =>
+            await electrum.request("blockchain.address.get_history", cashaddr);
+
+          const responseData = message?.data;
+          console.log({ responseData });
+          const addressesWithTransactions = await Promise.all(
+            responseData.addressFragments.map(async (f) => {
+              const transactionHistory = getAddress(f.cashaddr);
+              console.log({ f, transactionHistory });
+            })
+          );
+          // store.dispatch(
+          //   mergeSeleneAddressToWallet({
+          //     name: message.data.name,
+          //     seleneAddress: message.data.seleneAddress,
+          //   })
+          // );
           break;
 
         case RESPONSE_MESSAGE_TYPES.SCAN_ADDRESS_AT_INDEX_RESPONSE:
