@@ -24,7 +24,7 @@ const updatedConfig = {
       fs: require.resolve("react-native-tcp-socket"), // qrcode-svg.save
     },
     // Allow local use of yalc without messing up the build pipeline
-    blacklistRE: exclusionList([/.yalc\/.*/]),
+    blacklistRE: /.yalc\/.*/,
   },
   // To fix an issue with metro caching of @babel/runtime
   // https://github.com/facebook/react-native/issues/27712#issuecomment-715780864
