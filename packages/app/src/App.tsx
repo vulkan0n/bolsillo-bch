@@ -132,17 +132,33 @@ export default function App() {
           break;
 
         case RESPONSE_MESSAGE_TYPES.GRAB_CASHADDRESS_AT_INDICES_RESPONSE:
-          const getAddress = async (cashaddr: string) =>
+          const getTransactionHistory = async (cashaddr: string) =>
             await electrum.request("blockchain.address.get_history", cashaddr);
 
+          const extractTransactionHistory = (f: {
+            hdWalletIndex: number;
+            cashaddr: string;
+          }): {
+            hdWalletIndex: number;
+            cashaddr: string;
+            transactions: [{ height: number; tx_hash: string }];
+          } => {
+            const response = getTransactionHistory(f.cashaddr);
+            const transactions = response.history;
+            return {
+              ...f,
+              transactions,
+            };
+          };
+
           const responseData = message?.data;
-          console.log({ responseData });
-          const addressesWithTransactions = await Promise.all(
-            responseData.addressFragments.map(async (f) => {
-              const transactionHistory = getAddress(f.cashaddr);
-              console.log({ f, transactionHistory });
-            })
+          const datum = extractTransactionHistory(
+            message?.data?.addressFragments[0]
           );
+          console.log({ datum });
+          // const addressesWithTransactions = await Promise.all(
+          //   message?.data?.addressFragments.map()
+          // );
           // store.dispatch(
           //   mergeSeleneAddressToWallet({
           //     name: message.data.name,

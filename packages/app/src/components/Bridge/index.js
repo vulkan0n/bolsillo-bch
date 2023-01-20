@@ -72,8 +72,6 @@ const Bridge = () => {
             })
           );
 
-          console.log(addressFragments);
-
           emit({
             type: RESPONSE_MESSAGE_TYPES.GRAB_CASHADDRESS_AT_INDICES_RESPONSE,
             data: { name, addressFragments },
