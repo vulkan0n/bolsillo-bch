@@ -49,7 +49,7 @@ import COLOURS from "@selene-wallet/common/design/colours";
 import {
   electrum,
   loadElectrumCash,
-  getCashAddressUTXOs,
+  updateSeleneAddressUTXOsFromAddressFragment,
 } from "@selene-wallet/app/src/utils/electrum-cash";
 
 export interface TransactionHistoryTxType {
@@ -135,39 +135,9 @@ export default function App() {
 
         case RESPONSE_MESSAGE_TYPES.GRAB_CASHADDRESS_AT_INDICES_RESPONSE:
           const seleneAddresses = await Promise.all(
-            message?.data?.addressFragments.map(async (chosenAddress) => {
-              console.log({ chosenAddress });
-              const unspentUTXOsRawData = await getCashAddressUTXOs(
-                chosenAddress?.cashaddr
-              );
-
-              const unspentUTXOs = unspentUTXOsRawData.map((coin) => ({
-                height: coin.height,
-                transactionId: coin.tx_hash,
-                outputIndex: coin.tx_pos,
-                satoshis: coin.value,
-                address: chosenAddress.cashaddr,
-                addressIndex: chosenAddress.hdWalletIndex,
-              }));
-
-              const seleneAddress = {
-                hdWalletIndex: chosenAddress?.hdWalletIndex,
-                cashaddr: chosenAddress.cashaddr,
-                coins: unspentUTXOs,
-                // await getTransactionDetails(hash)
-                // TODO: Import the transaction history from above
-                // const addressWithTransactions = await extractTransactionHistory(
-                //   message?.data?.addressFragments[1]
-                // );
-                // const hash = addressWithTransactions.transactions[0].tx_hash;
-                // console.log({ addressWithTransactions, hash });
-                // const transactionDetails = await getTransactionDetails(hash);
-                // console.log(transactionDetails);
-                transactions: [],
-              };
-
-              return seleneAddress;
-            })
+            message?.data?.addressFragments.map(
+              updateSeleneAddressUTXOsFromAddressFragment
+            )
           );
 
           store.dispatch(
