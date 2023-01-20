@@ -9,16 +9,22 @@ Note: This repo is part of the Selene monorepo. Refer to the central documentati
 ```
 $ npm install
 $ npm install --location=global @expo/ngrok@^4.1.0
-$ npx expo start
+# Note that you will need a development build (nonstandard for Expo apps), because Selene is using TCP connections to interact directly with the BCH Network in Electrum Cash, it has to be built outside of the Expo Go sandbox (but Expo still helps to run it on the simulator)
+$ eas build --profile development-simulator --platform ios
+# If you need to dev on a physical iOS/Android device or Android emulator, look into `eas.json` for setting that up.
+# Read the Development build documentation here carefully:
+# https://docs.expo.dev/development/introduction/
+# Once the build is complete (takes about 10 - 15 minutes), Expo will prompt to install on the simulator
+# Note that Selene appears as a separate application from Expo Go on the simulator's home screen
+$ npm start
 # You will need to have XCode setup to run the iOS simulator
 # Press 'i' to open simulator
 # Note, you need to ensure you have stable wifi to connect through the tunnel
-# Alternatively:
-$ npm run ios
-$ npm run android
 
 # To run the web version
-$ npx expo start --web
+$ npm start
+$ press "w"
+# NOTE: Web version is half-functional on some branches, but not a feature of the main branch and not recommended for new developers.
 ```
 
 ## Development
