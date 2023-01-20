@@ -43,10 +43,10 @@ const BackgroundIntervals = () => {
   const ping = () => {
     // console.log("ping!");
 
-    if (wallets) {
-      console.log("fetching Wallet histories");
-      fetchWalletHistories();
-    }
+    // if (wallets) {
+    //   console.log("fetching Wallet histories");
+    //   fetchWalletHistories();
+    // }
 
     fetchPriceData();
     checkIn();

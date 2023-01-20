@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text } from "react-native";
+import { View, Text, Pressable } from "react-native";
 import { useSelector } from "react-redux";
 import {
   ReduxState,
@@ -12,6 +12,7 @@ import { ScrollView } from "react-native-gesture-handler";
 import TYPOGRAPHY from "@selene-wallet/common/design/typography";
 import { getSatoshiBalanceFromWalletAddress } from "@selene-wallet/app/src/utils/wallet";
 import Divider from "@selene-wallet/app/src/components/atoms/Divider";
+import { copyAddressToClipboard } from "@selene-wallet/app/src/utils/clipboard";
 
 const AddressesView = ({}) => {
   const wallet = useSelector((state: ReduxState) =>
@@ -30,8 +31,12 @@ const AddressesView = ({}) => {
         {wallet?.addresses?.map((address: SeleneAddressType) => {
           const balance: number = getSatoshiBalanceFromWalletAddress(address);
 
+          const onPressAddress = async () => {
+            copyAddressToClipboard(address?.cashaddr);
+          };
+
           return (
-            <View key={address?.cashaddr}>
+            <Pressable key={address?.cashaddr} onPress={onPressAddress}>
               <Text>#{address?.hdWalletIndex}</Text>
               <Text>{balance} satoshis</Text>
               <Text>{address?.cashaddr}</Text>
@@ -39,7 +44,7 @@ const AddressesView = ({}) => {
               {/* <Text>Transactions: {JSON.stringify(address?.transactions)}</Text> */}
 
               <Divider />
-            </View>
+            </Pressable>
           );
         })}
       </View>

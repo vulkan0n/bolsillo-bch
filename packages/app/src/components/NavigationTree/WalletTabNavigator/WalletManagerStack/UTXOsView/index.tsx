@@ -12,10 +12,9 @@ import {
   getWalletUTXOs,
   getWalletUTXOcount,
 } from "@selene-wallet/app/src/utils/wallet";
-import * as Clipboard from "expo-clipboard";
-import Toast from "react-native-toast-message";
 import { CoinType } from "@selene-wallet/common/types";
 import { scanAddressAtIndex } from "@selene-wallet/app/src/utils/wallet";
+import { copyAddressToClipboard } from "@selene-wallet/app/src/utils/clipboard";
 
 const UTXOsView = ({}) => {
   const wallet = useSelector((state: ReduxState) =>
@@ -39,15 +38,7 @@ const UTXOsView = ({}) => {
             satoshis,
           }: CoinType) => {
             const onPressAddress = async () => {
-              await Clipboard.setStringAsync(address);
-
-              Toast.show({
-                type: "customSuccess",
-                props: {
-                  title: `Copied payment address.`,
-                  text: address ?? "",
-                },
-              });
+              copyAddressToClipboard(address);
             };
 
             const onPressRescan = async () => {
