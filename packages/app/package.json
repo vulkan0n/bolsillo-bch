@@ -1,6 +1,6 @@
 {
   "name": "@selene-wallet/app",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "main": "src/index.js",
   "scripts": {
     "start": "npx expo start --dev-client",

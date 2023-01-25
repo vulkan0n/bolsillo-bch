@@ -14,7 +14,7 @@ import WebLink from "@selene-wallet/app/src/components/atoms/WebLink";
 import { DEVELOPER_DONATION_ADDRESS } from "@selene-wallet/common/dist/utils/consts";
 
 function CreditsView() {
-  const version = "v0.1.0";
+  const version = "v0.1.1";
   const gitlabUrl = "https://gitlab.com/selene.cash/selene-wallet";
 
   return (
