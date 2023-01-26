@@ -127,7 +127,7 @@ const NavigationTree = () => {
           headerShown: false,
         }}
       >
-        <Stack.Screen name="Tab Navigator" component={TabNavigator} />
+        {/* <Stack.Screen name="Tab Navigator" component={TabNavigator} /> */}
         <Stack.Screen
           name="Transaction Success Modal"
           component={TransactionSuccessModal}

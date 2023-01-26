@@ -70,72 +70,72 @@ export type IconType =
 
 export const iconImport = (icon: IconType) => {
   switch (icon) {
-    // case "faPaperPlane":
-    //   return faPaperPlane;
-    // case "faBitcoinSign":
-    //   return faBitcoinSign;
-    // case "faChevronLeft":
-    //   return faChevronLeft;
-    // case "faUsers":
-    //   return faUsers;
-    // case "faBookOpenReader":
-    //   return faBookOpenReader;
-    // case "faPiggyBank":
-    //   return faPiggyBank;
-    // case "faCode":
-    //   return faCode;
-    // case "faGears":
-    //   return faGears;
-    // case "faWallet":
-    //   return faWallet;
-    // case "faEarthAmericas":
-    //   return faEarthAmericas;
-    // case "faScrewdriverWrench":
-    //   return faScrewdriverWrench;
-    // case "faBarsStaggered":
-    //   return faBarsStaggered;
-    // case "faMoon":
-    //   return faMoon;
-    // case "faPlusCircle":
-    //   return faPlusCircle;
-    // case "faFileImport":
-    //   return faFileImport;
-    // case "faTrashCan":
-    //   return faTrashCan;
-    // case "faEye":
-    //   return faEye;
-    // case "faPowerOff":
-    //   return faPowerOff;
-    // case "faPaste":
-    //   return faPaste;
-    // case "faQrcode":
-    //   return faQrcode;
-    // case "faImage":
-    //   return faImage;
-    // case "faKeyboard":
-    //   return faKeyboard;
-    // case "faCircleCheck":
-    //   return faCircleCheck;
-    // case "faXmark":
-    //   return faXmark;
-    // case "faXmarkCircle":
-    //   return faXmarkCircle;
-    // case "faPhotoFilm":
-    //   return faPhotoFilm;
-    // case "faHandshake":
-    //   return faHandshake;
-    // case "faChartLine":
-    //   return faChartLine;
-    // case "faCamera":
-    //   return faCamera;
-    // case "faChevronRight":
-    //   return faChevronRight;
-    // case "faArrowRight":
-    //   return faArrowRight;
-    // case "faArrowLeft":
-    //   return faArrowLeft;
-    // case "faCoins":
-    //   return faCoins;
+    case "faPaperPlane":
+      return faPaperPlane;
+    case "faBitcoinSign":
+      return faBitcoinSign;
+    case "faChevronLeft":
+      return faChevronLeft;
+    case "faUsers":
+      return faUsers;
+    case "faBookOpenReader":
+      return faBookOpenReader;
+    case "faPiggyBank":
+      return faPiggyBank;
+    case "faCode":
+      return faCode;
+    case "faGears":
+      return faGears;
+    case "faWallet":
+      return faWallet;
+    case "faEarthAmericas":
+      return faEarthAmericas;
+    case "faScrewdriverWrench":
+      return faScrewdriverWrench;
+    case "faBarsStaggered":
+      return faBarsStaggered;
+    case "faMoon":
+      return faMoon;
+    case "faPlusCircle":
+      return faPlusCircle;
+    case "faFileImport":
+      return faFileImport;
+    case "faTrashCan":
+      return faTrashCan;
+    case "faEye":
+      return faEye;
+    case "faPowerOff":
+      return faPowerOff;
+    case "faPaste":
+      return faPaste;
+    case "faQrcode":
+      return faQrcode;
+    case "faImage":
+      return faImage;
+    case "faKeyboard":
+      return faKeyboard;
+    case "faCircleCheck":
+      return faCircleCheck;
+    case "faXmark":
+      return faXmark;
+    case "faXmarkCircle":
+      return faXmarkCircle;
+    case "faPhotoFilm":
+      return faPhotoFilm;
+    case "faHandshake":
+      return faHandshake;
+    case "faChartLine":
+      return faChartLine;
+    case "faCamera":
+      return faCamera;
+    case "faChevronRight":
+      return faChevronRight;
+    case "faArrowRight":
+      return faArrowRight;
+    case "faArrowLeft":
+      return faArrowLeft;
+    case "faCoins":
+      return faCoins;
     default:
       return null;
   }
