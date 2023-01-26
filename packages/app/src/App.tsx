@@ -1,13 +1,13 @@
 import * as React from "react";
 import { DeviceEventEmitter, View, Text, AppState } from "react-native";
-// import {
-//   useFonts,
-//   Montserrat_400Regular,
-//   Montserrat_500Medium,
-//   Montserrat_600SemiBold,
-//   Montserrat_700Bold,
-//   Montserrat_800ExtraBold,
-// } from "@expo-google-fonts/montserrat";
+import {
+  useFonts,
+  Montserrat_400Regular,
+  Montserrat_500Medium,
+  Montserrat_600SemiBold,
+  Montserrat_700Bold,
+  Montserrat_800ExtraBold,
+} from "@expo-google-fonts/montserrat";
 import WebView from "react-native-webview";
 import { useWebViewMessage } from "react-native-react-bridge";
 import NavigationTree from "./components/NavigationTree";
@@ -95,16 +95,17 @@ interface BridgeResponseMessage {
 export default function App() {
   // For the list of possible font faces
   // https://github.com/expo/google-fonts/tree/master/font-packages/montserrat
-  // const [fontsLoaded] = useFonts({
-  //   Montserrat_400Regular,
-  //   Montserrat_500Medium,
-  //   Montserrat_600SemiBold,
-  //   Montserrat_700Bold,
-  //   Montserrat_800ExtraBold,
-  // });
-  const fontsLoaded = true;
+  const [fontsLoaded] = useFonts({
+    Montserrat_400Regular,
+    Montserrat_500Medium,
+    Montserrat_600SemiBold,
+    Montserrat_700Bold,
+    Montserrat_800ExtraBold,
+  });
 
   const [isReloading, setIsReloading] = React.useState(false);
+
+  console.log("loaded 1");
 
   // useWebViewMessage hook create props for WebView and handle communication
   // The argument is callback to receive message from React
