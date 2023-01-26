@@ -68,7 +68,7 @@ const Button = ({
       {!isLoading && !!icon && (
         <View style={buttonStyle.iconContainer}>
           <FontAwesomeIcon
-            icon={iconImport(icon)}
+            // icon={iconImport(icon)}
             size={20}
             color={iconColour()}
           />

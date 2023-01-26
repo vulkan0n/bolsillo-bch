@@ -61,7 +61,7 @@ const TYPOGRAPHY = {
   },
   h2Left: {
     fontFamily: "Montserrat_500Medium",
-    textAlign: "left" as const,
+    textAlign: "flex-start" as const,
     color: COLOURS.white,
     fontSize: 22,
     marginBottom: SPACING.ten,
@@ -119,7 +119,7 @@ const TYPOGRAPHY = {
   },
   pLeft: {
     fontFamily: "Montserrat_500Medium",
-    textAlign: "left" as const,
+    textAlign: "flex-start" as const,
     color: COLOURS.black,
     fontSize: 16,
     marginBottom: SPACING.ten,
@@ -157,7 +157,7 @@ const TYPOGRAPHY = {
   },
   pWhiteLeft: {
     fontFamily: "Montserrat_500Medium",
-    textAlign: "left" as const,
+    textAlign: "flex-start" as const,
     color: COLOURS.white,
     fontSize: 16,
     marginBottom: SPACING.ten,

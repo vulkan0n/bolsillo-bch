@@ -23,7 +23,7 @@ function DrawerNavigator({ children }) {
         drawerLabelStyle: styles.drawerLabelStyle as any,
         drawerActiveTintColor: COLOURS.bchGreen,
         drawerContentStyle: styles.drawerContentStyle as any,
-        drawerPosition: isRightHandedMode ? "right" : "left",
+        drawerPosition: isRightHandedMode ? "right" : "flex-start",
         header: ({ navigation, route, options }) => {
           const title = getHeaderTitle(options, route.name);
 

@@ -17,7 +17,7 @@ import { updateTransactionPadBalance } from "@selene-wallet/app/src/redux/reduce
 import { sendBitcoinCash } from "@selene-wallet/app/src/utils/wallet/sendBitcoinCash";
 
 function CustomTipModal({ navigation, route }) {
-  const { donationBchAddress } = route?.params;
+  const donationBchAddress = route?.params?.donationBchAddress;
   const dispatch = useDispatch();
   const primaryBalance = useSelector((state: ReduxState) =>
     selectPadPrimaryBalance(state)
