@@ -214,6 +214,11 @@
   resolved "https://registry.yarnpkg.com/@bitauth/libauth/-/libauth-2.0.0-alpha.7.tgz#cbdf5d52c74a023ed6ece3bf01e546feb1cd5fb9"
   integrity sha512-FI05AGI/OBX1VaUYibRmULQGRU0U/2M9lsOsFlpGPuqx//vMXasQoBOa463y4rgua5hCTVCtt8LyAd0Y+uXz1A==
 
+"@capacitor/android@^4.6.3":
+  version "4.6.3"
+  resolved "https://registry.yarnpkg.com/@capacitor/android/-/android-4.6.3.tgz#36ecda8cc163d05de7336a5135926274054d6fee"
+  integrity sha512-jYND6OTsvIihxQiox6KARNKzlCHSGnMedXg5DGPZdREM+5F2SIvxBLQxC4/JpFBig2yJCVGsJMmhRkmz12S4FA==
+
 "@capacitor/cli@^4.6.3":
   version "4.6.3"
   resolved "https://registry.yarnpkg.com/@capacitor/cli/-/cli-4.6.3.tgz#1d0a748c14ff5c3053d8b115f3a3a7a9c287fcd8"
@@ -243,6 +248,11 @@
   integrity sha512-VJTUoZWUCVrp1cV1S4rqAwcV1/bF7KSVI4+/YUdVIBoHwnNxVweX15k5/etIeUZYaWxM6jwS2iIK9I86+G7ccQ==
   dependencies:
     tslib "^2.1.0"
+
+"@capacitor/ios@^4.6.3":
+  version "4.6.3"
+  resolved "https://registry.yarnpkg.com/@capacitor/ios/-/ios-4.6.3.tgz#3484006ac410ac33d1dd350a5adcab06a71b6933"
+  integrity sha512-sjvyIx/7U376YnTWIXjIBspzf0e1ZKocVjpTeqtM9AbUg4XtPQZa1Lje/lT6EFQ71bGTcxmq0wylnPRB7LzHNg==
 
 "@esbuild/android-arm64@0.16.17":
   version "0.16.17"

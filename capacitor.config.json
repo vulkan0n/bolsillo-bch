@@ -1,0 +1,6 @@
+{
+  "appId": "cash.selene.app",
+  "appName": "Selene Wallet",
+  "webDir": "dist",
+  "bundledWebRuntime": false
+}
