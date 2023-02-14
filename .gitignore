@@ -22,3 +22,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+android/app/capacitor.build.gradle
+android/capacitor.settings.gradle
