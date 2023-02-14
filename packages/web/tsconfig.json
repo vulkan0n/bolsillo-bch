@@ -1,0 +1,32 @@
+{
+  "compilerOptions": {
+    "target": "es6",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": false,
+    "forceConsistentCasingInFileNames": true,
+    "noFallthroughCasesInSwitch": true,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "react-jsx",
+    "noImplicitReturns": false,
+    "strictNullChecks": false
+  },
+  "include": ["src"],
+  "baseUrl": "./",
+  "paths": {
+    "@src/*": ["@selene-wallet/app/src/*"],
+    "@components/*": ["@selene-wallet/app/src/components/*"],
+    "@atoms/*": ["@selene-wallet/app/src/components/atoms/*"],
+    "@design/*": ["@selene-wallet/app/src/design/*"],
+    "@redux/*": ["@selene-wallet/app/src/redux/*"],
+    "@types/*": ["@selene-wallet/app/src/types/*"],
+    "@utils/*": ["@selene-wallet/app/src/utils/*"]
+  }
+}

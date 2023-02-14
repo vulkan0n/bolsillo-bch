@@ -1,0 +1,36 @@
+{
+  "name": "@selene-wallet/server",
+  "version": "0.0.3",
+  "description": "Selene node server.",
+  "keywords": [
+    "selene",
+    "bitcoincash",
+    "bch",
+    "bitcoin"
+  ],
+  "homepage": "https://gitlab.com/selene.cash/selene-wallet#readme",
+  "license": "MIT",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@gitlab.com/selene.cash/selene-wallet.git"
+  },
+  "scripts": {
+    "start": "npx ts-node-dev index.js"
+  },
+  "bugs": {
+    "url": "https://gitlab.com/selene.cash/selene-wallet/issues"
+  },
+  "dependencies": {
+    "@prisma/client": "^4.5.0",
+    "@selene-wallet/common": "^0.0.1",
+    "apollo-server": "^3.10.2",
+    "graphql": "^16.6.0",
+    "moment": "^2.29.4",
+    "ts-node": "^10.9.1",
+    "ts-node-dev": "^2.0.0"
+  },
+  "devDependencies": {
+    "prisma": "^4.5.0"
+  }
+}

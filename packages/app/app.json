@@ -1,0 +1,45 @@
+{
+  "expo": {
+    "name": "Selene Wallet",
+    "version": "0.1.1",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "owner": "selene-wallet",
+    "slug": "selene-app",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "cover",
+      "backgroundColor": "#1C1E21"
+    },
+    "assetBundlePatterns": ["**/*"],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.jte.seleneapp",
+      "buildNumber": "15"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#1C1E21"
+      },
+      "versionCode": 15,
+      "package": "com.jte.seleneapp"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "e00fb2ba-7d2f-4fb2-a6c7-472931f3ab2a"
+      }
+    },
+    "runtimeVersion": {
+      "policy": "sdkVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/e00fb2ba-7d2f-4fb2-a6c7-472931f3ab2a"
+    }
+  }
+}
