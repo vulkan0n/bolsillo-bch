@@ -3,11 +3,15 @@ import WalletViewBalance from "./walletView/WalletViewBalance";
 import WalletViewReceive from "./walletView/WalletViewReceive";
 import WalletViewSend from "./walletView/WalletViewSend";
 
+import { useWallet } from "../../providers/WalletProvider";
+
 function WalletView() {
+  const wallet = useWallet();
+
   return (
     <>
       <div>
-        <WalletViewBalance />
+        <WalletViewBalance satoshis={wallet.satoshis} />
         <div>
           <Link to="send">Send</Link>
           <Link to="">Receive</Link>

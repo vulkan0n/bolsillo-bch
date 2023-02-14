@@ -1,13 +1,17 @@
 import { useState } from "react";
+import { SATOSHI } from "../../../constants";
 
 // TODO: persist state/settings
-function WalletViewBalance() {
+function WalletViewBalance({satoshis}) {
   const [hideBalance, setHideBalance] = useState(false);
   const [bchFirst, setBchFirst] = useState(true);
 
+  const formatSatoshis = (sats) => `${sats / SATOSHI}`.padEnd(10, "0");
+
+
   const unit = "BCH"; // TODO: "Denomination" setting 
   const localUnit = "USD"; // TODO: "Local Currency" setting
-  const formattedBalance = hideBalance ? `X.XXXXXXXX ${unit}` : `0.00000000 ${unit}`;
+  const formattedBalance = hideBalance ? `X.XXXXXXXX ${unit}` : `${formatSatoshis(satoshis)} ${unit}`;
   const formattedLocalBalance = hideBalance ? `${localUnit} $X.XX` : `${localUnit} $0.00`;
 
   return (
