@@ -1,34 +1,30 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
+import Init from "./components/Init";
+import MainView from "./components/MainView";
+
 import './App.css'
 
-function App() {
-  const [count, setCount] = useState(0)
+/* = Main Menu =
+ * 1. Wallet Manager
+ * 2. Coin Control (later)
+ * 3. Credits
+ * 4. Settings
+ */
 
+/* = Settings =
+ * 1. BCH denomination (BCH/mBCH/bits/sats)
+ * 2. Local Currency (USD by default, includes BTC)
+ * 3. Show Community Tab
+ * 4. Testnet/Chipnet
+ * 5. Reset App
+ */
+
+function App() {
   return (
     <div className="App">
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src="/vite.svg" className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://reactjs.org" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <Init />
+      <MainView />
     </div>
   )
 }
 
-export default App
+export default App;
