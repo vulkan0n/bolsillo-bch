@@ -5,10 +5,12 @@
  *  3. contact list/recent addresses/transaction log
  */
 
-function MainViewSend() {
+function WalletViewSend() {
   return (
     <div>
-      <div><input type="text" placeholder="Enter BCH Address" /></div>
+      <div>
+        <input type="text" placeholder="Enter BCH Address" />
+      </div>
       <div>
         <ul>
           <li>Contact One</li>
@@ -22,4 +24,4 @@ function MainViewSend() {
   );
 }
 
-export default MainViewSend;
+export default WalletViewSend;

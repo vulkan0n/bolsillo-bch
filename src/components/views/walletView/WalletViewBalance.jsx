@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 // TODO: persist state/settings
-function MainViewBalance() {
+function WalletViewBalance() {
   const [hideBalance, setHideBalance] = useState(false);
   const [bchFirst, setBchFirst] = useState(true);
 
@@ -19,4 +19,4 @@ function MainViewBalance() {
   );
 }
 
-export default MainViewBalance;
+export default WalletViewBalance;

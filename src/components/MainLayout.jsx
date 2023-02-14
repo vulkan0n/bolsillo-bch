@@ -5,7 +5,7 @@ function MainLayout() {
     <div className="App">
       <Outlet />
       <div>
-          <Link to="/">Wallet</Link>
+          <Link to="/wallet">Wallet</Link>
           <Link to="/community">Community</Link>
           <Link to="/settings">Settings</Link>
       </div>

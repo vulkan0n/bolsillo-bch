@@ -7,7 +7,7 @@
  * 5. Capacitor clipboard
  */
 
-function MainViewReceive() {
+function WalletViewReceive() {
   const copyAddressToClipboard = () => {
     console.log("copying address to clipboard");
     return;
@@ -29,4 +29,4 @@ function MainViewReceive() {
   );
 }
 
-export default MainViewReceive;
+export default WalletViewReceive;
