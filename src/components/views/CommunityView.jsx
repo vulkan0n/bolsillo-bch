@@ -5,7 +5,9 @@
 
 function CommunityView() {
   return (
-    <div>CommunityView</div>
+    <div>
+      <div>CommunityView</div>
+    </div>
   )
 }
 
