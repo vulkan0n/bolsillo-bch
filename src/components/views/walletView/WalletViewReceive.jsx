@@ -1,12 +1,11 @@
 import { useState } from "react";
 import { Clipboard } from "@capacitor/clipboard";
+import { QRCode } from "react-qrcode-logo";
+
 /*
  * TODO:
- * 1. Get address from wallet manager
- * 2. Generate QR code
  * 3. Capacitor camera
  * 4. Scanner long press
- * 5. Capacitor clipboard
  */
 
 function WalletViewReceive({ addresses }) {
@@ -26,7 +25,9 @@ function WalletViewReceive({ addresses }) {
 
   return (
     <div>
-      <div>QR Code Here</div>
+      <div>
+        <QRCode value={addresses[addressIndex]} />
+      </div>
       <div onClick={copyAddressToClipboard}>{addresses[addressIndex]}</div>
       <div onClick={regenerateAddress}>
         <button>Cycle Address</button>
