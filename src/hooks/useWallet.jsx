@@ -6,22 +6,16 @@ function useWallet(wallet_name) {
   const [wallet, setWallet] = useState(null);
 
   useEffect(() => {
-    const initWallet = async () => {
-      const W = new WalletService();
+    const W = new WalletService();
 
-      let w = await W.loadWallet("Selene Default");
+    let w = W.loadWallet("Selene Default");
 
-      if (w === null) {
-        w = await W.createWallet();
-        console.log("initWallet create", w);
-      }
+    if (w === null) {
+      w = W.createWallet();
+      console.log("initWallet create");
+    }
 
-      console.log("initWallet", w);
-      return w;
-    };
-
-    const w = initWallet();
-    setWallet(w);
+    setWallet({ ...w, ...W });
   }, []);
 
   return wallet;

@@ -8,6 +8,13 @@ import useWallet from "../../hooks/useWallet";
 function WalletView() {
   const wallet = useWallet();
 
+  if (wallet !== null) {
+    const addresses = [...Array(8).keys()].map((i) =>
+      wallet.generateAddress(wallet.hd, i)
+    );
+    console.log(addresses);
+  }
+
   return (
     <>
       <div>

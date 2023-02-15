@@ -6,8 +6,6 @@ import {
   redirect,
 } from "react-router-dom";
 
-import { WalletProvider } from "./providers/WalletProvider";
-
 import "./index.css";
 
 import MainLayout from "./components/MainLayout";
@@ -41,8 +39,6 @@ const router = createBrowserRouter([
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <WalletProvider>
-      <RouterProvider router={router} />
-    </WalletProvider>
+    <RouterProvider router={router} />
   </React.StrictMode>
 );

@@ -1,17 +1,24 @@
 import {
   instantiateSecp256k1,
+  instantiateRipemd160,
+  instantiateSha256,
   instantiateSha512,
   generatePrivateKey,
   deriveHdPrivateNodeFromSeed,
+  deriveHdPrivateNodeChild,
+  encodeCashAddress,
 } from "@bitauth/libauth";
+
+const secp256k1 = await instantiateSecp256k1();
+const ripemd160 = await instantiateRipemd160();
+const sha256 = await instantiateSha256();
+const sha512 = await instantiateSha512();
 
 // WalletService generates wallets and brokers them between the storage layer
 // and the rest of the application
 function WalletService() {
   // create a new wallet object
-  async function createWallet(name) {
-    const secp256k1 = await instantiateSecp256k1();
-
+  function createWallet(name) {
     const k = generatePrivateKey(() =>
       window.crypto.getRandomValues(new Uint8Array(32))
     );
@@ -28,7 +35,8 @@ function WalletService() {
   }
 
   // load a wallet from storage and derive its HD node
-  async function loadWallet(name) {
+  function loadWallet(name) {
+    // TODO: get Wallet from Storage
     const _fakeDb = [
       {
         name: "Selene Default",
@@ -45,15 +53,35 @@ function WalletService() {
       return null;
     }
 
-    const sha512 = await instantiateSha512();
     const hd = deriveHdPrivateNodeFromSeed({ sha512: sha512 }, result.k);
 
     return result ? { ...result, hd } : null;
   }
 
+  function generateAddress(hd, index) {
+    const child = deriveHdPrivateNodeChild(
+      {
+        ripemd160,
+        secp256k1,
+        sha256,
+        sha512,
+      },
+      hd,
+      index
+    );
+
+    const pubKey = secp256k1.derivePublicKeyCompressed(child.privateKey);
+    const hash = ripemd160.hash(sha256.hash(pubKey));
+    const address = encodeCashAddress("bitcoincash", "P2PKH", hash);
+
+    console.log("generateAddress", address, child);
+    return address;
+  }
+
   return {
     createWallet,
     loadWallet,
+    generateAddress,
   };
 }
 
