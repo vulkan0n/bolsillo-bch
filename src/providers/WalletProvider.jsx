@@ -1,5 +1,4 @@
 import { createContext, useContext } from "react";
-import { Wallet, TestNetWallet } from "mainnet-js";
 
 const WalletContext = createContext({
   satoshis: 174634,
