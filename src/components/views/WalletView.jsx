@@ -4,24 +4,21 @@ import WalletViewBalance from "./walletView/WalletViewBalance";
 import WalletViewReceive from "./walletView/WalletViewReceive";
 import WalletViewSend from "./walletView/WalletViewSend";
 
-import WalletService from "../../services/WalletService";
+import WalletService from "@/services/WalletService";
 
 function WalletView() {
-  const [wallet, setWallet] = useState(null);
-
-  useEffect(function loadWallet() {
-    const W = new WalletService();
-    setWallet(W.loadWallet("Selene Default"));
-  }, []);
+  const wallet = new WalletService().loadWallet("Selene Default");
 
   // grab a few addresses after the wallet loads
   // TODO: get these addresses from DB instead
   const addresses = [...Array(8).keys()].map((i) =>
     wallet !== null ? wallet.generateAddress(i) : ""
   );
-  console.log(addresses);
 
   // TODO: subscribe to addresses with electrum
+  console.log(addresses);
+
+  // TODO: get wallet satoshi balance
 
   return (
     <>

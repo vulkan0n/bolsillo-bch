@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { SATOSHI } from "../../../constants";
+import { SATOSHI } from "@/util/constants";
 
 // TODO: persist state/settings
 function WalletViewBalance({satoshis}) {
