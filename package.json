@@ -12,6 +12,7 @@
     "@bitauth/libauth": "^1.19.1",
     "@capacitor-community/sqlite": "^4.6.2-2",
     "@capacitor/android": "^4.6.3",
+    "@capacitor/clipboard": "^4.1.0",
     "@capacitor/core": "^4.6.3",
     "@capacitor/ios": "^4.6.3",
     "bip39": "^3.0.4",
