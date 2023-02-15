@@ -1,19 +1,27 @@
+import { useState, useEffect } from "react";
 import { Link, Routes, Route, Outlet } from "react-router-dom";
 import WalletViewBalance from "./walletView/WalletViewBalance";
 import WalletViewReceive from "./walletView/WalletViewReceive";
 import WalletViewSend from "./walletView/WalletViewSend";
 
-import useWallet from "../../hooks/useWallet";
+import WalletService from "../../services/WalletService";
 
 function WalletView() {
-  const wallet = useWallet();
+  const [wallet, setWallet] = useState(null);
 
-  if (wallet !== null) {
-    const addresses = [...Array(8).keys()].map((i) =>
-      wallet.generateAddress(wallet.hd, i)
-    );
-    console.log(addresses);
-  }
+  useEffect(function loadWallet() {
+    const W = new WalletService();
+
+    let w = W.loadWallet("Selene Default");
+
+    setWallet({ ...w, ...W });
+  }, []);
+
+  console.log(wallet);
+  const addresses = [...Array(8).keys()].map((i) =>
+    wallet !== null ? wallet.generateAddress(wallet.hd, i) : ""
+  );
+  console.log(addresses);
 
   return (
     <>
@@ -27,7 +35,7 @@ function WalletView() {
       </div>
 
       <Routes>
-        <Route path="" element={<WalletViewReceive />} />
+        <Route path="" element={<WalletViewReceive addresses={addresses} />} />
         <Route path="send" element={<WalletViewSend />} />
       </Routes>
     </>

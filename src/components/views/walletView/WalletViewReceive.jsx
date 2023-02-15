@@ -1,3 +1,4 @@
+import { useState } from "react";
 /*
  * TODO:
  * 1. Get address from wallet manager
@@ -7,7 +8,9 @@
  * 5. Capacitor clipboard
  */
 
-function WalletViewReceive() {
+function WalletViewReceive({ addresses }) {
+  const [addressIndex, setAddressIndex] = useState(0);
+
   const copyAddressToClipboard = () => {
     console.log("copying address to clipboard");
     return;
@@ -18,11 +21,15 @@ function WalletViewReceive() {
     return;
   };
 
+  const regenerateAddress = () =>
+    setAddressIndex((addressIndex + 1) % addresses.length);
+
   return (
     <div>
       <div>QR Code Here</div>
-      <div onClick={copyAddressToClipboard}>
-        bitcoincash:qzx12s4ld323luj32u32io20fh2abf8
+      <div onClick={copyAddressToClipboard}>{addresses[addressIndex]}</div>
+      <div onClick={regenerateAddress}>
+        <button>Cycle Address</button>
       </div>
       <div onClick={openScanner}>Scanner</div>
     </div>
