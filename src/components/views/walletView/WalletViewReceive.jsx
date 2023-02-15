@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Clipboard } from "@capacitor/clipboard";
 /*
  * TODO:
  * 1. Get address from wallet manager
@@ -11,9 +12,8 @@ import { useState } from "react";
 function WalletViewReceive({ addresses }) {
   const [addressIndex, setAddressIndex] = useState(0);
 
-  const copyAddressToClipboard = () => {
-    console.log("copying address to clipboard");
-    return;
+  const copyAddressToClipboard = async () => {
+    await Clipboard.write({ string: addresses[addressIndex] });
   };
 
   const openScanner = () => {
