@@ -4,26 +4,22 @@ import WalletViewBalance from "./walletView/WalletViewBalance";
 import WalletViewReceive from "./walletView/WalletViewReceive";
 import WalletViewSend from "./walletView/WalletViewSend";
 
-import WalletService from "@/services/WalletService";
+import useWallet from "@/hooks/useWallet";
 
 function WalletView() {
-  const wallet = new WalletService().loadWallet("Selene Default");
+  // TODO: fetch active wallet from user preferences/DB
+  const activeWalletKey = "Selene Default";
+  const wallet = useWallet(activeWalletKey);
 
-  // grab a few addresses after the wallet loads
-  // TODO: get these addresses from DB instead
-  const addresses = [...Array(8).keys()].map((i) =>
-    wallet !== null ? wallet.generateAddress(i) : ""
-  );
+  const freshAddresses = wallet.getFreshAddresses();
+  const satoshiBalance = wallet.getSatoshiBalance();
 
-  // TODO: subscribe to addresses with electrum
-  console.log(addresses);
-
-  // TODO: get wallet satoshi balance
+  console.log("WalletView addresses", freshAddresses);
 
   return (
     <>
       <div>
-        <WalletViewBalance satoshis={168438374} />
+        <WalletViewBalance satoshis={satoshiBalance} />
         <div>
           <Link to="send">Send</Link>
           <Link to="">Receive</Link>
@@ -32,7 +28,7 @@ function WalletView() {
       </div>
 
       <Routes>
-        <Route path="" element={<WalletViewReceive addresses={addresses} />} />
+        <Route path="" element={<WalletViewReceive addresses={freshAddresses} />} />
         <Route path="send" element={<WalletViewSend />} />
       </Routes>
     </>

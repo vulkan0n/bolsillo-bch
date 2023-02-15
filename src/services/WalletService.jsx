@@ -23,7 +23,21 @@ function WalletService() {
     loadWallet,
   };
 
-  // generate a new wallet (private key)
+  // load a wallet from storage and return a consumable Wallet API
+  // create the wallet if it doesn't exist
+  function loadWallet(name) {
+    const S = new StorageService();
+
+    let key = S.getWalletByName(name);
+    if (!key) {
+      key = generateWallet();
+    }
+
+    // TODO: throw an exception instead of null?
+    return key ? Wallet(name, key.toString()) : null;
+  }
+
+  // raw wallet (private key) generation function
   function generateWallet() {
     const k = generatePrivateKey(() =>
       window.crypto.getRandomValues(new Uint8Array(32))
@@ -32,50 +46,49 @@ function WalletService() {
     return secp256k1.validatePrivateKey(k) ? k : null;
   }
 
-  // load a wallet from storage and derive its HD node
-  // create the wallet if it doesn't exist
-  function loadWallet(name) {
-    const S = new StorageService();
+  function Wallet(name, key) {
+    const hd = deriveHdPrivateNodeFromSeed({ sha512: sha512 }, key);
 
-    let key = S.getWalletByName(name);
-    if (!key) {
-      key = createWallet(name);
+    // raw address generation function
+    function generateAddress(index) {
+      console.log("generating address", index);
+      const child = deriveHdPrivateNodeChild(
+        {
+          ripemd160,
+          secp256k1,
+          sha256,
+          sha512,
+        },
+        hd,
+        index
+      );
+
+      const pubKey = secp256k1.derivePublicKeyCompressed(child.privateKey);
+      const hash = ripemd160.hash(sha256.hash(pubKey));
+      const address = encodeCashAddress("bitcoincash", "P2PKH", hash);
+
+      console.log("generateAddress", index, address);
+      return address;
     }
 
-    // TODO: throw an exception instead of null?
-    return key ? Wallet(name, key.toString()) : null;
+    // returns the top 4 lowest-index unused addresses
+    function getFreshAddresses() {
+      // TODO: scan DB for addresses
+      return [...new Array(4).keys()].map((i) => generateAddress(i));
+    }
+
+    // returns a list of subscribed addresses from the DB
+    function getSubscribedAddresses() {
+      // TODO: scan DB for addresses
+      return [...new Array(4).keys()].map((i) => generateAddress(i));
+    }
+
+    return {
+      generateAddress,
+      getFreshAddresses,
+      getSubscribedAddresses,
+    };
   }
-}
-
-// consumable Wallet API
-function Wallet(name, key) {
-  // derive zeroth node
-  const hd = deriveHdPrivateNodeFromSeed({ sha512: sha512 }, key);
-
-  function generateAddress(index) {
-    const child = deriveHdPrivateNodeChild(
-      {
-        ripemd160,
-        secp256k1,
-        sha256,
-        sha512,
-      },
-      hd,
-      index
-    );
-
-    const pubKey = secp256k1.derivePublicKeyCompressed(child.privateKey);
-    const hash = ripemd160.hash(sha256.hash(pubKey));
-    const address = encodeCashAddress("bitcoincash", "P2PKH", hash);
-
-    // TODO: track index:address map in a database
-    //console.log("generateAddress", address, child);
-    return address;
-  }
-
-  return {
-    generateAddress,
-  };
 }
 
 export default WalletService;
