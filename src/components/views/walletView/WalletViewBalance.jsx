@@ -6,7 +6,7 @@ function WalletViewBalance({satoshis}) {
   const [hideBalance, setHideBalance] = useState(false);
   const [bchFirst, setBchFirst] = useState(true);
 
-  const formatSatoshis = (sats) => `${sats / SATOSHI}`.padEnd(10, "0");
+  const formatSatoshis = (sats) => `${(sats / SATOSHI).toFixed(8)}`;
 
 
   const unit = "BCH"; // TODO: "Denomination" setting 
