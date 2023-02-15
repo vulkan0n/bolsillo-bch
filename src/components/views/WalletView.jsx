@@ -11,17 +11,17 @@ function WalletView() {
 
   useEffect(function loadWallet() {
     const W = new WalletService();
-
-    let w = W.loadWallet("Selene Default");
-
-    setWallet({ ...w, ...W });
+    setWallet(W.loadWallet("Selene Default"));
   }, []);
 
-  console.log(wallet);
+  // grab a few addresses after the wallet loads
+  // TODO: get these addresses from DB instead
   const addresses = [...Array(8).keys()].map((i) =>
-    wallet !== null ? wallet.generateAddress(wallet.hd, i) : ""
+    wallet !== null ? wallet.generateAddress(i) : ""
   );
   console.log(addresses);
+
+  // TODO: subscribe to addresses with electrum
 
   return (
     <>
