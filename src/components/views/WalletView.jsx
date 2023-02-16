@@ -20,12 +20,14 @@ const electrum = new ElectrumClient(
   ElectrumTransport.WSS.Scheme
 );
 
+// TODO: what happens if connection fails?
 await electrum.connect();
 
 function WalletView() {
   const [balanceMap, setBalanceMap] = useState(new Map());
   const [balance, setBalance] = useState(0);
 
+  // TODO: get addresses from db
   const generateDummyAddresses = () => {
     const activeWalletKey = "Selene Default";
     const wallet = new WalletService().loadWallet(activeWalletKey);

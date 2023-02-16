@@ -1,11 +1,8 @@
 import { NavLink } from "react-router-dom";
 
 function BottomNavigation() {
-  const inactiveClass = "";
-  const activeClass = "active";
-
   return (
-    <div className="btm-nav relative btm-nav-sm">
+    <div className="btm-nav btm-nav-sm">
       <NavLink to="/wallet">
         <span className="btm-nav-label">Wallet</span>
       </NavLink>

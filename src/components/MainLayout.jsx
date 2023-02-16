@@ -3,10 +3,10 @@ import BottomNavigation from "./BottomNavigation";
 
 function MainLayout() {
   return (
-    <div>
+    <>
       <Outlet />
       <BottomNavigation />
-    </div>
+    </>
   );
 }
 
