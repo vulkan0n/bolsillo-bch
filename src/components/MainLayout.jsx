@@ -1,14 +1,11 @@
-import { Outlet, Link } from "react-router-dom";
+import { Outlet } from "react-router-dom";
+import BottomNavigation from "./BottomNavigation";
 
 function MainLayout() {
   return (
-    <div className="App">
+    <div className="mx-auto rounded outline-1 outline-slate-800">
       <Outlet />
-      <div>
-          <Link to="/wallet">Wallet</Link>
-          <Link to="/community">Community</Link>
-          <Link to="/settings">Settings</Link>
-      </div>
+      <BottomNavigation />
     </div>
   );
 }
