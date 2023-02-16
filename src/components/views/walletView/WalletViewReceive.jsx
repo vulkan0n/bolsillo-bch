@@ -22,9 +22,9 @@ function WalletViewReceive() {
   const skipAddress = () => setSkip((skip + 1) % 5);
 
   return (
-    <div>
+    <div className="py-2">
       <div className="flex justify-center">
-        <QRCode value={address} size={200} />
+        <QRCode value={address} size={200} quietZone={16} />
       </div>
       <div
         onClick={copyAddressToClipboard}

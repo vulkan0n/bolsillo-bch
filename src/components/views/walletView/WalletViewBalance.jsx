@@ -20,12 +20,12 @@ function WalletViewBalance({ balance }) {
     : `${localUnit} $0.00`;
 
   return (
-    <div className="mx-auto p-3 text-center bg-stone-900">
-      <div className="font-bold text-slate-400 text-md">Available Balance</div>
-      <div onClick={() => setHideBalance(!hideBalance)} className="text-2xl text-slate-200">
+    <div className="mx-auto p-3 text-center bg-zinc-900">
+      <div className="font-bold text-zinc-400 text-md tracking-wide">Available Balance</div>
+      <div onClick={() => setHideBalance(!hideBalance)} className="text-2xl text-zinc-200">
         {bchFirst ? formattedBalance : formattedLocalBalance}
       </div>
-      <div onClick={() => setBchFirst(!bchFirst)} className="text-md text-slate-400">
+      <div onClick={() => setBchFirst(!bchFirst)} className="text-md text-zinc-400">
         {bchFirst ? formattedLocalBalance : formattedBalance}
       </div>
     </div>
