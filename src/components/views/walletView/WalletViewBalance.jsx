@@ -12,20 +12,20 @@ function WalletViewBalance({ balance }) {
   const localUnit = "USD"; // TODO: "Local Currency" setting
 
   const formattedBalance = hideBalance
-    ? `X.XXXXXXXX ${unit}`
-    : `${formatSatoshis(balance)} ${unit}`;
+    ? `₿ x.xxxxxxxx ${unit}`
+    : `₿ ${formatSatoshis(balance)} ${unit}`;
 
   const formattedLocalBalance = hideBalance
-    ? `${localUnit} $X.XX`
+    ? `${localUnit} $x.xx`
     : `${localUnit} $0.00`;
 
   return (
-    <div>
-      <div>Available Balance</div>
-      <div onClick={() => setHideBalance(!hideBalance)}>
+    <div className="mx-auto p-3 text-center bg-stone-900">
+      <div className="font-bold text-slate-400 text-md">Available Balance</div>
+      <div onClick={() => setHideBalance(!hideBalance)} className="text-2xl text-slate-200">
         {bchFirst ? formattedBalance : formattedLocalBalance}
       </div>
-      <div onClick={() => setBchFirst(!bchFirst)}>
+      <div onClick={() => setBchFirst(!bchFirst)} className="text-md text-slate-400">
         {bchFirst ? formattedLocalBalance : formattedBalance}
       </div>
     </div>
