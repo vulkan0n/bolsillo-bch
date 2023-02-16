@@ -1,3 +1,5 @@
+import { useState } from "react";
+import { Link } from "react-router-dom";
 /* = MainView Send Tab =
  * send screen:
  *  1. enter address
@@ -6,10 +8,23 @@
  */
 
 function WalletViewSend() {
+  const [sendAddress, setSendAddress] = useState("");
+  const handleSendAddressChange = (e) => setSendAddress(e.target.value);
+
+  function confirmSend(address) {
+
+  }
+
   return (
     <div>
       <div>
-        <input type="text" placeholder="Enter BCH Address" />
+        <input
+          type="text"
+          placeholder="Enter BCH Address"
+          value={sendAddress}
+          onChange={handleSendAddressChange}
+        />
+        <Link to={`/wallet/send/${sendAddress}`}>Send</Link>
       </div>
       <div>
         <ul>

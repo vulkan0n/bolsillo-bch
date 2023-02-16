@@ -9,6 +9,7 @@ import {
 import WalletViewBalance from "./walletView/WalletViewBalance";
 import WalletViewReceive from "./walletView/WalletViewReceive";
 import WalletViewSend from "./walletView/WalletViewSend";
+import WalletViewSendConfirm from "./walletView/WalletViewSendConfirm";
 import WalletService from "@/services/WalletService";
 
 const electrum = new ElectrumClient(
@@ -99,24 +100,14 @@ function WalletView() {
   );
 
   return (
-    <>
+    <div>
+      <WalletViewBalance balance={balance} />
       <div>
-        <WalletViewBalance balance={balance} />
-        <div>
-          <Link to="send">Send</Link>
-          <Link to="">Receive</Link>
-        </div>
-        <Outlet />
+        <Link to="send">Send</Link>
+        <Link to="">Receive</Link>
       </div>
-
-      <Routes>
-        <Route
-          path=""
-          element={<WalletViewReceive address={getNextReceiveAddress(0)} />}
-        />
-        <Route path="send" element={<WalletViewSend />} />
-      </Routes>
-    </>
+      <Outlet />
+    </div>
   );
 }
 

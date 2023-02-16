@@ -16,7 +16,7 @@ function StorageService() {
 
   function getWalletByName(name) {
     const result = _fakeDb.find((item) => item.name == name);
-    console.log("getWalletByName", name, result);
+    //console.log("getWalletByName", name, result);
     return result || null;
   }
 }
