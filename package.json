@@ -17,6 +17,7 @@
     "@capacitor/ios": "^4.6.3",
     "bip39": "^3.0.4",
     "capacitor-secure-storage-plugin": "^0.8.1",
+    "daisyui": "^2.50.1",
     "electrum-cash": "^2.0.10",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
