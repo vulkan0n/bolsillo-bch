@@ -3,17 +3,5 @@
 @tailwind utilities;
 
 :root {
-  background: #777;
-}
-
-#root {
-  position: relative;
-  max-width: 640px;
-  height: 100vh;
-  max-height: 100vh;
-  margin: 0 auto;
-  border: 1px solid #282828;
-  border-radius: 4px;
-  box-shadow: 0px 8px 6px 5px #222222;
   background: white;
 }

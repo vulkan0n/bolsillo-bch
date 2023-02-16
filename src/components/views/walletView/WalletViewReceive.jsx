@@ -10,6 +10,10 @@ function WalletViewReceive() {
 
   const [skip, setSkip] = useState(0);
   const address = wallet.generateAddress(0 + skip);
+  const formattedAddress = (() => {
+    const split = address.split(":");
+    return split.length > 1 ? split[1] : split[0];
+  })();
 
   const copyAddressToClipboard = async () => {
     await Clipboard.write({ string: address });
@@ -19,11 +23,20 @@ function WalletViewReceive() {
 
   return (
     <div>
-      <div>
-        <QRCode value={address} />
+      <div className="flex justify-center">
+        <QRCode value={address} size={200} />
       </div>
-      <div onClick={copyAddressToClipboard}>{address}</div>
-      <button type="button" onClick={skipAddress}>Cycle Address</button>
+      <div
+        onClick={copyAddressToClipboard}
+        className="text-sm text-center break-all cursor-pointer"
+      >
+        {formattedAddress}
+      </div>
+      <div className="flex justify-center my-1">
+        <button className="btn btn-xs" type="button" onClick={skipAddress}>
+          Cycle Address
+        </button>
+      </div>
     </div>
   );
 }
