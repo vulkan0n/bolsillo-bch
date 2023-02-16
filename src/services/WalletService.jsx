@@ -51,7 +51,6 @@ function WalletService() {
 
     // raw address generation function
     function generateAddress(index) {
-      console.log("generating address", index);
       const child = deriveHdPrivateNodeChild(
         {
           ripemd160,
@@ -67,26 +66,13 @@ function WalletService() {
       const hash = ripemd160.hash(sha256.hash(pubKey));
       const address = encodeCashAddress("bitcoincash", "P2PKH", hash);
 
-      console.log("generateAddress", index, address);
       return address;
-    }
-
-    // returns the top 4 lowest-index unused addresses
-    function getFreshAddresses() {
-      // TODO: scan DB for addresses
-      return [...new Array(4).keys()].map((i) => generateAddress(i));
-    }
-
-    // returns a list of subscribed addresses from the DB
-    function getSubscribedAddresses() {
-      // TODO: scan DB for addresses
-      return [...new Array(4).keys()].map((i) => generateAddress(i));
     }
 
     return {
       generateAddress,
-      getFreshAddresses,
-      getSubscribedAddresses,
+      //signMessage,
+      //signTransaction,
     };
   }
 }
