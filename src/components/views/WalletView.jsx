@@ -23,23 +23,16 @@ const electrum = new ElectrumClient(
 await electrum.connect();
 
 function WalletView() {
-  // TODO: fetch active wallet from user preferences/DB
-  const activeWalletKey = "Selene Default";
-  const wallet = new WalletService().loadWallet(activeWalletKey);
-
   const [balanceMap, setBalanceMap] = useState(new Map());
   const [balance, setBalance] = useState(0);
 
-  const subscribedAddresses = useMemo(() => getSubscribedAddresses());
-
-  function getSubscribedAddresses() {
-    // TODO: fetch subscribed addresses from db
+  const generateDummyAddresses = () => {
+    const activeWalletKey = "Selene Default";
+    const wallet = new WalletService().loadWallet(activeWalletKey);
     return [...new Array(4).keys()].map((i) => wallet.generateAddress(i));
-  }
+  };
 
-  function getNextReceiveAddress(skip) {
-    return wallet.generateAddress(0 + skip);
-  }
+  const subscribedAddresses = useMemo(() => generateDummyAddresses());
 
   async function handleBalanceUpdate(b) {
     if (!Array.isArray(b)) return;
