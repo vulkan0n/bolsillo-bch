@@ -895,6 +895,11 @@ caniuse-lite@^1.0.30001449:
   resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001452.tgz#dff7b8bb834b3a91808f0a9ff0453abb1fbba02a"
   integrity sha512-Lkp0vFjMkBB3GTpLR8zk4NwW5EdRdnitwYJHDOOKIU85x4ckYCPQ+9WlVvSVClHxVReefkUMtWZH2l9KGlD51w==
 
+capacitor-secure-storage-plugin@^0.8.1:
+  version "0.8.1"
+  resolved "https://registry.yarnpkg.com/capacitor-secure-storage-plugin/-/capacitor-secure-storage-plugin-0.8.1.tgz#515528c0821de28c43066d74701e2d26c1cafd70"
+  integrity sha512-PvTMZsjh5NAopdabp7b+zpu6N/zboBfB1dMldI7wbdCGSaH4LZo8cZLp9U2V1i2Y0V3JI1oWR3iysUrG0m7uPQ==
+
 chalk@^2.0.0:
   version "2.4.2"
   resolved "https://registry.yarnpkg.com/chalk/-/chalk-2.4.2.tgz#cd42541677a54333cf541a49108c1432b44c9424"
