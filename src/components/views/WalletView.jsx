@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
-import { Link, Routes, Route, Outlet } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 import {
   ElectrumClient,
   ElectrumCluster,
@@ -7,6 +7,7 @@ import {
 } from "electrum-cash";
 
 import WalletViewBalance from "./walletView/WalletViewBalance";
+import WalletViewTabs from "./walletView/WalletViewTabs";
 import WalletViewReceive from "./walletView/WalletViewReceive";
 import WalletViewSend from "./walletView/WalletViewSend";
 import WalletViewSendConfirm from "./walletView/WalletViewSendConfirm";
@@ -97,10 +98,7 @@ function WalletView() {
   return (
     <div>
       <WalletViewBalance balance={balance} />
-      <div>
-        <Link to="send">Send</Link>
-        <Link to="">Receive</Link>
-      </div>
+      <WalletViewTabs />
       <Outlet />
     </div>
   );
