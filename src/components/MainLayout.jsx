@@ -3,7 +3,7 @@ import BottomNavigation from "./BottomNavigation";
 
 function MainLayout() {
   return (
-    <div className="mx-auto rounded outline-1 outline-slate-800">
+    <div>
       <Outlet />
       <BottomNavigation />
     </div>
