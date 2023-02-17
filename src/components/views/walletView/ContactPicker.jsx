@@ -19,16 +19,13 @@ function ContactPicker() {
       <ContactButton name="bitcoincashautist" onClick={handleSelectContact} />
       <ContactButton name="2qx" onClick={handleSelectContact} />
       <ContactButton name="Mathieu G" onClick={handleSelectContact} />
-      <ContactButton name="Mathieu G" onClick={handleSelectContact} />
-      <ContactButton name="Kallisti" onClick={handleSelectContact} />
-      <ContactButton name="Jeremy" onClick={handleSelectContact} />
-      <ContactButton name="imaginary_username" onClick={handleSelectContact} />
-      <ContactButton name="emergent_reasons" onClick={handleSelectContact} />
-      <ContactButton name="CheapLightning" onClick={handleSelectContact} />
-      <ContactButton name="bitcoincashautist" onClick={handleSelectContact} />
-      <ContactButton name="2qx" onClick={handleSelectContact} />
-      <ContactButton name="Mathieu G" onClick={handleSelectContact} />
-      <ContactButton name="Mathieu G" onClick={handleSelectContact} />
+      <ContactButton name="bitjson" onClick={handleSelectContact} />
+      <ContactButton name="Rowan" onClick={handleSelectContact} />
+      <ContactButton name="Jessquit" onClick={handleSelectContact} />
+      <ContactButton name="Flowee" onClick={handleSelectContact} />
+      <ContactButton name="Johnathan" onClick={handleSelectContact} />
+      <ContactButton name="Sahid" onClick={handleSelectContact} />
+      <ContactButton name="Aaron" onClick={handleSelectContact} />
     </div>
   );
 }

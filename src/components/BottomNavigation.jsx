@@ -2,7 +2,7 @@ import { NavLink } from "react-router-dom";
 
 function BottomNavigation() {
   return (
-    <div className="btm-nav btm-nav-md">
+    <div className="btm-nav btm-nav-sm">
       <NavLink to="/wallet"
         className={({isActive}) => isActive ? "text-primary active" : ""}
       >
