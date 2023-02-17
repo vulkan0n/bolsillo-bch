@@ -5,6 +5,7 @@ import {
   decodeCashAddressFormatWithoutPrefix,
 } from "@bitauth/libauth";
 
+import ContactPicker from "./ContactPicker";
 import TransactionHistory from "./TransactionHistory";
 
 /* = MainView Send Tab =
@@ -32,7 +33,7 @@ function WalletViewSend() {
   };
 
   return (
-    <div>
+    <>
       <div className="form-control">
         <input
           type="text"
@@ -42,21 +43,15 @@ function WalletViewSend() {
           className="input input-md input-ghost w-full"
         />
       </div>
-      <div className="" style={{ maxHeight: "50vh" }}>
-        <ul>
-          <li>Contact One</li>
-          <li>Contact Two</li>
-          <li>Contact Three</li>
-          <li>Contact Four</li>
-          <li>Contact Five</li>
-          <li>Contact Five</li>
-          <li>Contact Five</li>
-        </ul>
+      <div className="flex flex-col justify-between">
+        <div className="flex-1">
+          <ContactPicker />
+        </div>
+        <div className="bg-zinc-800 overflow-y-auto flex-1">
+          <TransactionHistory />
+        </div>
       </div>
-      <div className="bg-zinc-800 overflow-y-auto" style={{ maxHeight: "45.2vh" }}>
-        <TransactionHistory />
-      </div>
-    </div>
+    </>
   );
 }
 
