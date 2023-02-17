@@ -1,11 +1,11 @@
 import { useState } from "react";
-import { useParams, useLocation } from "react-router-dom";
+import { useParams, useSearchParams } from "react-router-dom";
 
 function WalletViewSendConfirm() {
+  const [searchParams, setSearchParams] = useSearchParams();
   const { address } = useParams();
-  const location = useLocation();
 
-  const [amount, setAmount] = useState(location.query);
+  const amount = searchParams.get("amount");
 
   function confirmSend() {
     // sign and broadcast transaction
