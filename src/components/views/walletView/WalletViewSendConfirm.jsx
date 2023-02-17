@@ -24,7 +24,7 @@ function WalletViewSendConfirm() {
       </div>
       <div className="text-center text-3xl mt-0.5 pt-1 pb-1.5 font-medium text-gray-600">{amount} {unit}</div>
 
-      <div class="grid grid-rows-4 h-72 text-center w-full border border-2 rounded-lg border-neutral-800 items-center">
+      <div class="grid grid-rows-4 h-72 text-center w-full border border-4 rounded-lg border-gray-300 items-center">
         <div class="grid grid-cols-3 h-full bg-gray-200 text-zinc-700">
           <div><button className="btn btn-ghost w-full h-full text-xl">7</button></div>
           <div><button className="btn btn-ghost w-full h-full text-xl">8</button></div>
