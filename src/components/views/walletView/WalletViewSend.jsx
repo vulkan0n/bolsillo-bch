@@ -33,8 +33,8 @@ function WalletViewSend() {
   };
 
   return (
-    <>
-      <div className="form-control">
+    <div className="flex flex-col justify-between">
+      <div className="form-control flex-0">
         <input
           type="text"
           placeholder="Enter BCH Address"
@@ -43,15 +43,11 @@ function WalletViewSend() {
           className="input input-md input-ghost w-full"
         />
       </div>
-      <div className="flex flex-col justify-between">
-        <div className="flex-1">
-          <ContactPicker />
-        </div>
-        <div className="bg-zinc-800 overflow-y-auto flex-1">
-          <TransactionHistory />
-        </div>
+      <ContactPicker />
+      <div className="flex-1 p-2 overflow-y-auto">
+        <TransactionHistory />
       </div>
-    </>
+    </div>
   );
 }
 

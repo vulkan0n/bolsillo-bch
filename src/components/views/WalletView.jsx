@@ -96,11 +96,11 @@ function WalletView() {
   );
 
   return (
-    <div>
+    <>
       <WalletViewBalance balance={balance} />
       <WalletViewTabs />
       <Outlet />
-    </div>
+    </>
   );
 }
 

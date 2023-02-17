@@ -1,6 +1,6 @@
 function TransactionHistory() {
   return (
-    <table className="table table-compact w-full rounded-none">
+    <table className="table table-compact w-full h-full">
       <thead>
         <tr>
           <th>Time</th>
@@ -53,11 +53,6 @@ function TransactionHistory() {
           <td>2023-02-12</td>
           <td>qzx5d-5hp9</td>
           <td>-0.00133703</td>
-        </tr>
-        <tr>
-          <td>2023-02-12</td>
-          <td>qq354-9etp</td>
-          <td>-0.42051791</td>
         </tr>
         <tr>
           <td>2023-02-11</td>
