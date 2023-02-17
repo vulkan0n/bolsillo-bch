@@ -63,10 +63,10 @@ function ScannerButton({ onScanStart, onScanEnd }) {
 
   return (
     <>
-      <div className="flex justify-center absolute inset-x-0 bottom-20 mb-1">
-        <div className="rounded-full border border-1 border-zinc-300 relative w-24 h-24 bottom-20 bg-zinc-50">
+      <div className="flex justify-center fixed inset-x-0 bottom-24">
+        <div className="flex items-center rounded-full border border-1 border-zinc-300 w-24 h-24 bg-zinc-50">
           <button
-            className="absolute inset-0"
+            className="w-full h-full"
             type="button"
             onClick={toggleScanner}
           >
