@@ -45,7 +45,7 @@ function ContactButton({ name, onClick }) {
           </div>
         </div>
         <span className="text-xs px-2 -ml-1 border border-1 border-l-0 rounded border-black bg-zinc-100 text-slate-500">
-          {(name.split(" ")[0]).substring(0, 11)}
+          {(name.split(" ")[0]).substring(0, 10)}
         </span>
       </button>
     </div>
