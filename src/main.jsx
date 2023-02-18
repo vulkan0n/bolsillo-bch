@@ -13,7 +13,7 @@ import WalletView from "./components/views/WalletView";
 import WalletViewReceive from "./components/views/walletView/WalletViewReceive";
 import WalletViewSend from "./components/views/walletView/WalletViewSend";
 import WalletViewSendConfirm from "./components/views/walletView/WalletViewSendConfirm";
-import CommunityView from "./components/views/CommunityView";
+import ExploreView from "./components/views/ExploreView";
 import SettingsView from "./components/views/SettingsView";
 
 const router = createBrowserRouter([
@@ -43,8 +43,8 @@ const router = createBrowserRouter([
         ],
       },
       {
-        path: "/community",
-        element: <CommunityView />,
+        path: "/explore",
+        element: <ExploreView />,
       },
       {
         path: "/settings",

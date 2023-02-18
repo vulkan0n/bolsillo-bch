@@ -1,20 +1,31 @@
 import { NavLink } from "react-router-dom";
 
 function BottomNavigation() {
+  const baseClasses = "bg-zinc-900 text-primary border-primary";
+
   return (
-    <div className="btm-nav btm-nav-sm">
-      <NavLink to="/wallet"
-        className={({isActive}) => isActive ? "text-primary active" : ""}
+    <div className="btm-nav btm-nav-sm z-50">
+      <NavLink
+        to="/wallet"
+        className={({ isActive }) =>
+          isActive ? `${baseClasses} active` : `${baseClasses}`
+        }
       >
         <span className="btm-nav-label">Wallet</span>
       </NavLink>
-      <NavLink to="/community"
-        className={({isActive}) => isActive ? "text-primary active" : ""}
+      <NavLink
+        to="/explore"
+        className={({ isActive }) =>
+          isActive ? `${baseClasses} active` : `${baseClasses}`
+        }
       >
-        <span className="btm-nav-label">Community</span>
+        <span className="btm-nav-label">Explore</span>
       </NavLink>
-      <NavLink to="/settings"
-        className={({isActive}) => isActive ? "text-primary active" : ""}
+      <NavLink
+        to="/settings"
+        className={({ isActive }) =>
+          isActive ? `${baseClasses} active` : `${baseClasses}`
+        }
       >
         <span className="btm-nav-label">Settings</span>
       </NavLink>

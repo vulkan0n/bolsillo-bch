@@ -38,7 +38,7 @@ function WalletViewReceive() {
             </div>
             <div
               onClick={copyAddressToClipboard}
-              className="text-sm text-center break-all cursor-pointer"
+              className="text-xs text-center break-all cursor-pointer text-primary"
             >
               {formattedAddress}
             </div>

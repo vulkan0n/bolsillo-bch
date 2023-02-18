@@ -2,11 +2,11 @@ import { NavLink } from "react-router-dom";
 
 function WalletViewTabs() {
   const baseTabClass = "tab tab-lg tab-bordered flex-1";
-  const activeTabClass = "text-primary border-current";
+  const activeTabClass = "text-secondary border-secondary border-b-2";
   const inactiveTabClass = "text-zinc-500";
 
   return (
-    <div className="tabs bg-zinc-300">
+    <div className="tabs bg-zinc-200">
       <NavLink
         to="send"
         className={({ isActive }) =>

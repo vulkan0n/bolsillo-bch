@@ -10,7 +10,7 @@ function ContactPicker() {
   };
 
   return (
-    <div className="px-2 py-2 flex flex-wrap bg-gray-200 justify-around">
+    <div className="px-2 py-2 flex flex-wrap bg-zinc-100 justify-around rounded-lg mx-2">
       <ContactButton name="Kallisti" onClick={handleSelectContact} />
       <ContactButton name="Jeremy" onClick={handleSelectContact} />
       <ContactButton name="imaginary_username" onClick={handleSelectContact} />
@@ -23,9 +23,6 @@ function ContactPicker() {
       <ContactButton name="Rowan" onClick={handleSelectContact} />
       <ContactButton name="Jessquit" onClick={handleSelectContact} />
       <ContactButton name="Flowee" onClick={handleSelectContact} />
-      <ContactButton name="Johnathan" onClick={handleSelectContact} />
-      <ContactButton name="Sahid" onClick={handleSelectContact} />
-      <ContactButton name="Aaron" onClick={handleSelectContact} />
     </div>
   );
 }
@@ -41,7 +38,7 @@ function ContactButton({ name, onClick }) {
             <span className="text-xs">{name.charAt(0)}</span>
           </div>
         </div>
-        <span className="text-xs px-2 -ml-1 border border-1 border-l-0 rounded border-black bg-zinc-100 text-slate-500">
+        <span className="text-xs px-2 -ml-1 border border-1 border-l-0 rounded border-black bg-white text-slate-500">
           {(name.split(" ")[0]).substring(0, 10)}
         </span>
       </button>

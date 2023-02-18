@@ -40,7 +40,7 @@ function WalletViewSend() {
           placeholder="Enter BCH Address"
           value={sendAddress}
           onChange={handleSendAddressChange}
-          className="input input-md input-ghost w-full"
+          className="m-2 p-2 outline-none rounded-lg bg-zinc-100 focus:outline-zinc-300"
         />
       </div>
       <ContactPicker />

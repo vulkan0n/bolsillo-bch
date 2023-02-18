@@ -1,14 +1,14 @@
-/* = Community Tab =
+/* = Explore Tab =
  * 1. Active Bitcoiner stats
  *  a. Daily, Weekly, Monthly, Yearly
  */
 
-function CommunityView() {
+function ExploreView() {
   return (
     <div>
-      <div>CommunityView</div>
+      <div>ExploreView</div>
     </div>
   )
 }
 
-export default CommunityView;
+export default ExploreView;
