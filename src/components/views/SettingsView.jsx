@@ -1,9 +1,10 @@
 function SettingsView() {
   return (
-    <div>
+    <>
       <div className="bg-zinc-900 text-xl text-zinc-200 text-center p-3 font-bold">
         Settings
       </div>
+
       <div className="px-2">
         <div className="m-2 p-2">
           <div className="alert alert-warning p-4 shadow-lg bg-warning text-black rounded-lg text-center">
@@ -36,96 +37,130 @@ function SettingsView() {
           <div className="collapse-title text-lg font-medium p-1">
             Manage Wallets
           </div>
-          <div className="collapse-content bg-zinc-200 text-zinc-700 rounded-sm">
-            <div className="flex items-center">
-              <div className="flex-1 p-2">Selene Default</div>
-              <div className="flex-2 p-2"></div>
-            </div>
-            <div className="flex items-center">
-              <div className="flex-1 p-2">Selene Test</div>
-              <div className="flex-2 p-2"></div>
-            </div>
+          <div className="collapse-content bg-zinc-200 text-zinc-700 rounded-sm divide-y divide-zinc-300">
+            <a
+              href="/settings/wallet/Selene Default"
+              className="w-full block p-2"
+            >
+              Selene Default
+            </a>
+            <a href="/settings/wallet/Selene Test" className="w-full block p-2">
+              Selene Test
+            </a>
           </div>
         </div>
 
         <div
           tabIndex={0}
-          className="bg-zinc-200 rounded-lg p-2 my-1 collapse collapse-arrow"
+          className="bg-zinc-800 rounded-lg p-2 my-1 collapse collapse-arrow text-zinc-200 p-2 my-1"
         >
           <input type="checkbox" />
-          <div className="collapse-title text-lg font-medium">
-            QR Code Settings
-          </div>
-          <div className="collapse-content">
-            <div className="flex items-center">
-              <div className="flex-1 px-2">Logo</div>
-              <div className="flex-2 px-2">
-                <select className="select w-full">
-                  <option>Selene</option>
-                  <option>BCH</option>
-                  <option>None</option>
-                </select>
-              </div>
-            </div>
-            <div className="flex items-center">
-              <div className="flex-1 px-2">Foreground Color</div>
-              <div className="flex-2 px-2"></div>
-            </div>
-            <div className="flex items-center">
-              <div className="flex-1 px-2">Background Color</div>
-              <div className="flex-2 px-2"></div>
-            </div>
-          </div>
-        </div>
-
-        <div
-          tabIndex={0}
-          className="bg-zinc-200 rounded-lg p-2 my-1 collapse collapse-arrow"
-        >
-          <input type="checkbox" />
-          <div className="collapse-title text-lg font-medium">
+          <div className="collapse-title text-lg font-medium p-1">
             Currency Settings
           </div>
-          <div className="collapse-content">
-            <div className="flex items-center">
-              <div className="flex-1 px-2">Logo</div>
-              <div className="flex-2 px-2">
-                <select className="select w-full">
-                  <option>Selene</option>
-                  <option>BCH</option>
-                  <option>None</option>
+          <div className="collapse-content bg-zinc-200 text-zinc-700 rounded-sm divide-y divide-zinc-300">
+            <div className="form-control p-3">
+              <label className="label">
+                <span className="label-text">Local Currency</span>
+                <select className="select">
+                  <option>USD</option>
+                  <option>EUR</option>
+                  <option>CNY</option>
+                  <option>JPY</option>
+                  <option>GBP</option>
+                  <option>CAD</option>
+                  <option>AUD</option>
+                  <option>BTC</option>
                 </select>
-              </div>
+              </label>
+            </div>
+            <div className="form-control p-3">
+              <label className="label cursor-pointer">
+                <span className="label-text">Prefer Local Currency</span>
+                <input type="checkbox" className="toggle" />
+              </label>
+            </div>
+            <div className="form-control p-3">
+              <label className="label cursor-pointer">
+                <span className="label-text">Hide Available Balance</span>
+                <input type="checkbox" className="toggle" />
+              </label>
+            </div>
+            <div className="form-control p-3">
+              <label className="label cursor-pointer">
+                <span className="label-text">BCH Denomination</span>
+                <input type="checkbox" className="toggle" />
+              </label>
             </div>
           </div>
         </div>
 
         <div
           tabIndex={0}
-          className="bg-zinc-200 rounded-lg p-2 my-1 collapse collapse-arrow"
+          className="bg-zinc-800 rounded-lg p-2 my-1 collapse collapse-arrow text-zinc-200 p-2 my-1"
         >
           <input type="checkbox" />
-          <div className="collapse-title text-lg font-medium">
+          <div className="collapse-title text-lg font-medium p-1">
             Payment Settings
           </div>
-          <div className="collapse-content">
-            <div className="flex items-center">
-              <div className="flex-1">Instant Payment Threshold</div>
-              <div className="flex-1">
-                <input type="number" className="input" />
-              </div>
+          <div className="collapse-content bg-zinc-200 text-zinc-700 rounded-sm divide-y divide-zinc-300">
+            <div className="form-control p-3">
+              <label className="label cursor-pointer">
+                <span className="label-text">Allow Instant Pay</span>
+                <input type="checkbox" className="toggle" />
+              </label>
             </div>
-            <div className="flex items-center"></div>
-            <div className="flex items-center">
-              <div className="flex-1 px-2">Donation Amount</div>
-              <div className="flex-1 px-2">
-                <input type="number" className="input" />
-              </div>
+            <div className="form-control p-3">
+              <label className="label">
+                <span className="label-text">Instant Pay Threshold</span>
+                <input
+                  type="number"
+                  min="0"
+                  max="100"
+                  step="0.00001000"
+                  placeholder="0.25000000"
+                  className="input"
+                />
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div
+          tabIndex={0}
+          className="bg-zinc-800 rounded-lg p-2 my-1 collapse collapse-arrow text-zinc-200 p-2 my-1"
+        >
+          <input type="checkbox" />
+          <div className="collapse-title text-lg font-medium p-1">
+            QR Code Settings
+          </div>
+          <div className="collapse-content bg-zinc-200 text-zinc-700 rounded-sm divide-y divide-zinc-300">
+            <div className="form-control p-3">
+              <label className="label">
+                <span className="label-text">Logo</span>
+                <select className="select">
+                  <option>Selene</option>
+                  <option>BCH</option>
+                  <option>None</option>
+                </select>
+              </label>
+            </div>
+            <div className="form-control p-3">
+              <label className="label cursor-pointer">
+                <span className="label-text">Background Color</span>
+                <input type="checkbox" className="toggle" />
+              </label>
+            </div>
+            <div className="form-control p-3">
+              <label className="label cursor-pointer">
+                <span className="label-text">Foreground Color</span>
+                <input type="checkbox" className="toggle" />
+              </label>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
 
