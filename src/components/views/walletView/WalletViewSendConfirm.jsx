@@ -1,17 +1,31 @@
 import { useState } from "react";
-import { useParams, useSearchParams } from "react-router-dom";
+import { useParams, useSearchParams, useOutletContext } from "react-router-dom";
+import { SATOSHI } from "@/util/constants";
+import { Decimal } from "decimal.js";
 
 function WalletViewSendConfirm() {
   const [searchParams, setSearchParams] = useSearchParams();
   const { address } = useParams();
+  const { balance } = useOutletContext();
 
   const [amount, setAmount] = useState(searchParams.get("amount") || "0");
+  const [message, setMessage] = useState("");
 
   function confirmSend() {
+    const satoshis = new Decimal(amount).mul(SATOSHI).toNumber();
+
+    // fail if insufficient funds
+    if (balance < satoshis) {
+      setMessage("Insufficient Funds");
+      return;
+    }
+
     // sign and broadcast transaction
   }
 
   function handleKeypadPress(key) {
+    setMessage("");
+
     switch (key) {
       case "X":
         setAmount(
@@ -59,11 +73,17 @@ function WalletViewSendConfirm() {
 
   return (
     <div className="p-4 pt-2 overflow-y-hidden">
-      <div className="text-center">
-        <div className="text-sm">Sending to</div>
-        <div className="text-sm font-semibold">{formattedAddress}</div>
+      <div className="text-center h-10">
+        {message !== "" ? (
+          <div className="pt-1 text-lg font-semibold">{message}</div>
+        ) : (
+          <>
+            <div className="text-sm">Sending to</div>
+            <div className="text-sm font-semibold">{formattedAddress}</div>
+          </>
+        )}
       </div>
-      <div className="text-center text-3xl mt-0.5 pt-1 pb-1.5 font-medium text-gray-600">
+      <div className="text-center text-3xl pt-1 pb-2 font-medium text-gray-600">
         {amount} {unit}
       </div>
 

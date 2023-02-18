@@ -99,7 +99,7 @@ function WalletView() {
     <>
       <WalletViewBalance balance={balance} />
       <WalletViewTabs />
-      <Outlet />
+      <Outlet context={{balance}} />
     </>
   );
 }
