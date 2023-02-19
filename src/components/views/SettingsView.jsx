@@ -1,4 +1,14 @@
+import usePreferences from "@/hooks/usePreferences";
+
 function SettingsView() {
+  const [preferences, updatePreferences] = usePreferences();
+  console.log("preferences", preferences);
+
+  function handleSettingsUpdate(key, value) {
+    console.log("handleSettingsUpdate", key, value);
+    updatePreferences(key, value);
+  }
+
   return (
     <>
       <div className="bg-zinc-900 text-xl text-zinc-200 text-center p-3 font-bold">
@@ -62,7 +72,13 @@ function SettingsView() {
             <div className="form-control p-3">
               <label className="label">
                 <span className="label-text">Local Currency</span>
-                <select className="select">
+                <select
+                  className="select"
+                  value={preferences["localCurrency"]}
+                  onChange={(event) =>
+                    handleSettingsUpdate("localCurrency", event.target.value)
+                  }
+                >
                   <option>USD</option>
                   <option>EUR</option>
                   <option>CNY</option>
@@ -77,19 +93,46 @@ function SettingsView() {
             <div className="form-control p-3">
               <label className="label cursor-pointer">
                 <span className="label-text">Prefer Local Currency</span>
-                <input type="checkbox" className="toggle" />
+                <input
+                  type="checkbox"
+                  className="toggle"
+                  checked={preferences["preferLocalCurrency"] === "true"}
+                  onChange={(event) =>
+                    handleSettingsUpdate(
+                      "preferLocalCurrency",
+                      event.target.checked
+                    )
+                  }
+                />
               </label>
             </div>
             <div className="form-control p-3">
               <label className="label cursor-pointer">
                 <span className="label-text">Hide Available Balance</span>
-                <input type="checkbox" className="toggle" />
+                <input
+                  type="checkbox"
+                  className="toggle"
+                  checked={preferences["hideAvailableBalance"] === "true"}
+                  onChange={(event) =>
+                    handleSettingsUpdate(
+                      "hideAvailableBalance",
+                      event.target.checked
+                    )
+                  }
+                />
               </label>
             </div>
             <div className="form-control p-3">
               <label className="label cursor-pointer">
                 <span className="label-text">BCH Denomination</span>
-                <input type="checkbox" className="toggle" />
+                <input
+                  type="checkbox"
+                  className="toggle"
+                  checked={preferences["denominateSats"] === "true"}
+                  onChange={(event) =>
+                    handleSettingsUpdate("denominateSats", event.target.checked)
+                  }
+                />
               </label>
             </div>
           </div>
@@ -107,7 +150,17 @@ function SettingsView() {
             <div className="form-control p-3">
               <label className="label cursor-pointer">
                 <span className="label-text">Allow Instant Pay</span>
-                <input type="checkbox" className="toggle" />
+                <input
+                  type="checkbox"
+                  className="toggle"
+                  checked={preferences["allowInstantPay"] === "true"}
+                  onChange={(event) =>
+                    handleSettingsUpdate(
+                      "allowInstantPay",
+                      event.target.checked
+                    )
+                  }
+                />
               </label>
             </div>
             <div className="form-control p-3">
@@ -120,6 +173,13 @@ function SettingsView() {
                   step="0.00001000"
                   placeholder="0.25000000"
                   className="input"
+                  value={preferences["instantPayThreshold"]}
+                  onChange={(event) =>
+                    handleSettingsUpdate(
+                      "instantPayThreshold",
+                      event.target.value
+                    )
+                  }
                 />
               </label>
             </div>
@@ -138,7 +198,13 @@ function SettingsView() {
             <div className="form-control p-3">
               <label className="label">
                 <span className="label-text">Logo</span>
-                <select className="select">
+                <select
+                  className="select"
+                  value={preferences["qrCodeLogo"]}
+                  onChange={(event) =>
+                    handleSettingsUpdate("qrCodeLogo", event.target.value)
+                  }
+                >
                   <option>Selene</option>
                   <option>BCH</option>
                   <option>None</option>
@@ -148,13 +214,27 @@ function SettingsView() {
             <div className="form-control p-3">
               <label className="label cursor-pointer">
                 <span className="label-text">Background Color</span>
-                <input type="checkbox" className="toggle" />
+                <input
+                  type="text"
+                  className="input"
+                  value={preferences["qrCodeBackground"]}
+                  onChange={(event) =>
+                    handleSettingsUpdate("qrCodeBackground", event.target.value)
+                  }
+                />
               </label>
             </div>
             <div className="form-control p-3">
               <label className="label cursor-pointer">
                 <span className="label-text">Foreground Color</span>
-                <input type="checkbox" className="toggle" />
+                <input
+                  type="text"
+                  className="input"
+                  value={preferences["qrCodeForeground"]}
+                  onChange={(event) =>
+                    handleSettingsUpdate("qrCodeForeground", event.target.value)
+                  }
+                />
               </label>
             </div>
           </div>
