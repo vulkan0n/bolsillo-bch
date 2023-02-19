@@ -2,7 +2,6 @@ import { useState, useEffect, useRef } from "react";
 import { Preferences } from "@capacitor/preferences";
 
 function usePreferences() {
-  const [preferences, setPreferences] = useState({});
 
   const defaultPreferences = {
     localCurrency: "USD",
@@ -15,6 +14,8 @@ function usePreferences() {
     qrCodeBackground: "#ffffff",
     qrCodeForeground: "#000000",
   };
+  
+  const [preferences, setPreferences] = useState({});
 
   useEffect(() => {
     retreivePreferences();

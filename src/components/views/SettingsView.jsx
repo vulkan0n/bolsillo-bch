@@ -72,7 +72,7 @@ function SettingsView() {
                 <span className="label-text">Local Currency</span>
                 <select
                   className="select"
-                  value={preferences["localCurrency"]}
+                  value={preferences["localCurrency"] || ""}
                   onChange={(event) =>
                     handleSettingsUpdate("localCurrency", event.target.value)
                   }
@@ -171,7 +171,7 @@ function SettingsView() {
                   step="0.00001000"
                   placeholder="0.25000000"
                   className="input"
-                  value={preferences["instantPayThreshold"]}
+                  value={preferences["instantPayThreshold"] || ""}
                   onChange={(event) =>
                     handleSettingsUpdate(
                       "instantPayThreshold",
@@ -198,7 +198,7 @@ function SettingsView() {
                 <span className="label-text">Logo</span>
                 <select
                   className="select"
-                  value={preferences["qrCodeLogo"]}
+                  value={preferences["qrCodeLogo"] || ""}
                   onChange={(event) =>
                     handleSettingsUpdate("qrCodeLogo", event.target.value)
                   }
@@ -215,7 +215,7 @@ function SettingsView() {
                 <input
                   type="text"
                   className="input"
-                  value={preferences["qrCodeBackground"]}
+                  value={preferences["qrCodeBackground"] || ""}
                   onChange={(event) =>
                     handleSettingsUpdate("qrCodeBackground", event.target.value)
                   }
@@ -228,7 +228,7 @@ function SettingsView() {
                 <input
                   type="text"
                   className="input"
-                  value={preferences["qrCodeForeground"]}
+                  value={preferences["qrCodeForeground"] || ""}
                   onChange={(event) =>
                     handleSettingsUpdate("qrCodeForeground", event.target.value)
                   }
