@@ -30,14 +30,6 @@ function usePreferences() {
     //Preferences.clear();
     let keys = (await Preferences.keys()).keys;
 
-    console.log(
-      "KEYS LENGTH",
-      keys.length,
-      Object.keys(defaultPreferences).length,
-      keys,
-      Object.keys(defaultPreferences)
-    );
-
     if (keys.length !== Object.keys(defaultPreferences).length) {
       console.log("resetting preferences...");
       keys = Object.keys(defaultPreferences);
