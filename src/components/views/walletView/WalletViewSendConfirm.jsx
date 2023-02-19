@@ -1,7 +1,12 @@
-import { useState } from "react";
-import { useParams, useSearchParams, useOutletContext } from "react-router-dom";
-import { SATOSHI } from "@/util/constants";
-import { Decimal } from "decimal.js";
+import { useState, useEffect } from "react";
+import {
+  useParams,
+  useSearchParams,
+  useOutletContext,
+  useNavigate,
+} from "react-router-dom";
+import { bchToSats, satsToBch } from "@/util/sats";
+import usePreferences from "@/hooks/usePreferences";
 
 function WalletViewSendConfirm() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -11,14 +16,53 @@ function WalletViewSendConfirm() {
   const [amount, setAmount] = useState(searchParams.get("amount") || "0");
   const [message, setMessage] = useState("");
 
+  const [preferences] = usePreferences();
+  const navigate = useNavigate();
+
+  const [shouldInstantPay, setShouldInstantPay] = useState(false);
+
+  useEffect(
+    function handleInstantPay() {
+      if (shouldInstantPay) {
+        console.log("instapay!", amount);
+        confirmSend();
+      }
+    },
+    [shouldInstantPay]
+  );
+
+  useEffect(
+    function checkShouldInstantPay() {
+      console.log(preferences);
+      if (preferences["allowInstantPay"] !== "true") {
+        setShouldInstantPay(false);
+        return;
+      }
+
+      const threshold = Number.parseInt(preferences["instantPayThreshold"]);
+      const satoshis = Number.parseInt(
+        bchToSats(searchParams.get("amount") || 0)
+      );
+
+      if (satoshis > 0 && satoshis <= threshold) {
+        console.log("shouldInstantPay", satoshis, threshold);
+        setShouldInstantPay(true);
+      }
+    },
+    [preferences]
+  );
+
   function confirmSend() {
-    const satoshis = new Decimal(amount).mul(SATOSHI).toNumber();
+    const satoshis = Number.parseInt(bchToSats(amount));
 
     // fail if insufficient funds
     if (balance < satoshis) {
       setMessage("Insufficient Funds");
       return;
     }
+
+    console.log("sending transaction...", satoshis);
+    navigate("/wallet/send/success");
 
     // sign and broadcast transaction
   }

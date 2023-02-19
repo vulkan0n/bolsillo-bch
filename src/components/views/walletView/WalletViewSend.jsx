@@ -1,16 +1,9 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import {
-  decodeCashAddress,
-  decodeCashAddressFormatWithoutPrefix,
-} from "@bitauth/libauth";
+import validateInvoiceString from "@/util/invoice";
 
 import ContactPicker from "./ContactPicker";
 import TransactionHistory from "./TransactionHistory";
-
-/* = MainView Send Tab =
- *  2. scan QR from image
- */
 
 function WalletViewSend() {
   const navigate = useNavigate();
@@ -22,16 +15,15 @@ function WalletViewSend() {
     setSendAddress(input);
 
     // go to send screen when valid address is entered
-    const decoded = input.includes(":")
-      ? decodeCashAddress(input)
-      : decodeCashAddressFormatWithoutPrefix(input);
+    const { valid, address, query } = validateInvoiceString(input);
 
     // decoder function returns object on success, string on error
-    if (typeof decoded === "object") {
-      navigate(`/wallet/send/${input}`);
+    if (valid) {
+      navigate(`/wallet/send/${address}${query}`);
     }
   };
 
+  // TODO: Scan QR Code from saved image
   return (
     <div className="flex flex-col justify-between">
       <div className="form-control flex-0">

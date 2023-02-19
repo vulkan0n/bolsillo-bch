@@ -1,10 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { BarcodeScanner } from "@capacitor-community/barcode-scanner";
-import {
-  decodeCashAddress,
-  decodeCashAddressFormatWithoutPrefix,
-} from "@bitauth/libauth";
+import validateInvoiceString from "@/util/invoice";
 
 function ScannerButton({ onScanStart, onScanEnd }) {
   const navigate = useNavigate();
@@ -39,13 +36,10 @@ function ScannerButton({ onScanStart, onScanEnd }) {
       setIsScanning(false);
       onScanEnd();
 
-      const valid =
-        typeof (scanned.includes(":")
-          ? decodeCashAddress(scanned)
-          : decodeCashAddressFormatWithoutPrefix(scanned)) === "object";
+      const { valid, address, query } = validateInvoiceString(result.content);
 
       if (valid) {
-        navigate(`/wallet/send/${scanned}`);
+        navigate(`/wallet/send/${address}${query}`);
       }
     }
   }

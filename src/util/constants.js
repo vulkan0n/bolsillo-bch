@@ -1,2 +1,0 @@
-export const SATOSHI = 100000000;
-export const MAX_SATOSHI = 21000000 * SATOSHI;

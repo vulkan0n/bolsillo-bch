@@ -1,4 +1,5 @@
 import usePreferences from "@/hooks/usePreferences";
+import { bchToSats, satsToBch, DUST_LIMIT } from "@/util/sats";
 
 function SettingsView() {
   const [preferences, setPreference] = usePreferences();
@@ -164,21 +165,37 @@ function SettingsView() {
             <div className="form-control p-3">
               <label className="label">
                 <span className="label-text">Instant Pay Threshold</span>
-                <input
-                  type="number"
-                  min="0"
-                  max="100"
-                  step="0.00001000"
-                  placeholder="0.25000000"
-                  className="input"
-                  value={preferences["instantPayThreshold"] || ""}
-                  onChange={(event) =>
-                    handleSettingsUpdate(
-                      "instantPayThreshold",
-                      event.target.value
-                    )
-                  }
-                />
+                {preferences["denominateSats"] === "true" ? (
+                  <input
+                    type="number"
+                    placeholder="25000000"
+                    min="0"
+                    step="1000"
+                    className="input"
+                    value={preferences["instantPayThreshold"] || "0"}
+                    onChange={(event) =>
+                      handleSettingsUpdate(
+                        "instantPayThreshold",
+                        event.target.value
+                      )
+                    }
+                  />
+                ) : (
+                  <input
+                    type="number"
+                    placeholder="0.25000000"
+                    min="0"
+                    step="0.00001000"
+                    className="input"
+                    value={satsToBch(preferences["instantPayThreshold"] || 0)}
+                    onChange={(event) => {
+                      const satoshis = bchToSats(
+                        event.target.value || satsToBch(DUST_LIMIT)
+                      );
+                      handleSettingsUpdate("instantPayThreshold", satoshis);
+                    }}
+                  />
+                )}
               </label>
             </div>
           </div>

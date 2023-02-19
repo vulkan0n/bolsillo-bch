@@ -13,6 +13,7 @@ import WalletView from "./components/views/WalletView";
 import WalletViewReceive from "./components/views/walletView/WalletViewReceive";
 import WalletViewSend from "./components/views/walletView/WalletViewSend";
 import WalletViewSendConfirm from "./components/views/walletView/WalletViewSendConfirm";
+import WalletViewSendSuccess from "./components/views/walletView/WalletViewSendSuccess";
 import ExploreView from "./components/views/ExploreView";
 import SettingsView from "./components/views/SettingsView";
 
@@ -35,6 +36,10 @@ const router = createBrowserRouter([
           {
             path: "send/:address",
             element: <WalletViewSendConfirm />,
+          },
+          {
+            path: "send/success",
+            element: <WalletViewSendSuccess />,
           },
           {
             index: true,

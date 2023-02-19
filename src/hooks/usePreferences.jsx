@@ -2,19 +2,18 @@ import { useState, useEffect, useRef } from "react";
 import { Preferences } from "@capacitor/preferences";
 
 function usePreferences() {
-
   const defaultPreferences = {
     localCurrency: "USD",
     preferLocalCurrency: "false",
     hideAvailableBalance: "false",
     denominateSats: "false",
     allowInstantPay: "false",
-    instaPayThreshold: "25000000",
+    instantPayThreshold: "25000000",
     qrCodeLogo: "Selene",
     qrCodeBackground: "#ffffff",
     qrCodeForeground: "#000000",
   };
-  
+
   const [preferences, setPreferences] = useState({});
 
   useEffect(() => {
@@ -66,7 +65,7 @@ function usePreferences() {
     setPreferences({ ...preferences, [key]: value.toString() });
   }
 
-  return [preferences, setPreference];
+  return [{ ...preferences }, setPreference];
 }
 
 export default usePreferences;
