@@ -47,7 +47,7 @@ function usePreferences() {
       return { ...acc, ...cur };
     }, {});
 
-    setPreferences(preferences);
+    setPreferences({ ...preferences });
   }
 
   async function updatePreferences(key, value) {
