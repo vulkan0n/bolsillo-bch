@@ -21,7 +21,6 @@ function usePreferences() {
   }, []);
 
   useEffect(() => {
-    console.log("preferences updated", preferences);
     commitPreferences();
   }, [preferences]);
 
@@ -60,7 +59,6 @@ function usePreferences() {
     Object.keys(preferences).forEach(
       async (key) => await Preferences.set({ key, value: preferences[key] })
     );
-    console.log("preferences committed", preferences);
   }
 
   function setPreference(key, value) {
