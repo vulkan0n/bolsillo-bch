@@ -271,6 +271,11 @@
   resolved "https://registry.yarnpkg.com/@capacitor/ios/-/ios-4.6.3.tgz#3484006ac410ac33d1dd350a5adcab06a71b6933"
   integrity sha512-sjvyIx/7U376YnTWIXjIBspzf0e1ZKocVjpTeqtM9AbUg4XtPQZa1Lje/lT6EFQ71bGTcxmq0wylnPRB7LzHNg==
 
+"@capacitor/preferences@^4.0.2":
+  version "4.0.2"
+  resolved "https://registry.yarnpkg.com/@capacitor/preferences/-/preferences-4.0.2.tgz#83bee8cadb3456a4f2a89118b8351d488c20ec77"
+  integrity sha512-HgcRkMdVHSIV3TeQLZFmCaCeMWQ25wLyZZ7dA2f8Rw81Q1Nroxsi7HxTEGNqrWKSN9PNKBJD8vChr6eB2GNtZg==
+
 "@esbuild/android-arm64@0.16.17":
   version "0.16.17"
   resolved "https://registry.yarnpkg.com/@esbuild/android-arm64/-/android-arm64-0.16.17.tgz#cf91e86df127aa3d141744edafcba0abdc577d23"
