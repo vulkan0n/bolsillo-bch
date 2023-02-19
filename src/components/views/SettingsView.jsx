@@ -1,12 +1,12 @@
 import usePreferences from "@/hooks/usePreferences";
 
 function SettingsView() {
-  const [preferences, updatePreferences] = usePreferences();
+  const [preferences, setPreference] = usePreferences();
   console.log("preferences", preferences);
 
   function handleSettingsUpdate(key, value) {
     console.log("handleSettingsUpdate", key, value);
-    updatePreferences(key, value);
+    setPreference(key, value);
   }
 
   return (

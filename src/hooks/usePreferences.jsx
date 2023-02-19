@@ -1,15 +1,16 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Preferences } from "@capacitor/preferences";
 
 function usePreferences() {
   const [preferences, setPreferences] = useState({});
+  const commitRef = useRef(null);
 
   const defaultPreferences = {
     localCurrency: "USD",
-    preferLocalCurrency: false,
-    hideAvailableBalance: false,
-    denominateSats: false,
-    allowInstantPay: false,
+    preferLocalCurrency: "false",
+    hideAvailableBalance: "false",
+    denominateSats: "false",
+    allowInstantPay: "false",
     instaPayThreshold: "25000000",
     qrCodeLogo: "Selene",
     qrCodeBackground: "#ffffff",
@@ -20,10 +21,24 @@ function usePreferences() {
     retreivePreferences();
   }, []);
 
+  useEffect(() => {
+    console.log("preferences updated", preferences);
+    commitPreferences();
+  }, [preferences]);
+
   async function retreivePreferences() {
+    //Preferences.clear();
     let keys = (await Preferences.keys()).keys;
 
-    if (keys.length < Object.keys(defaultPreferences).length) {
+    console.log(
+      "KEYS LENGTH",
+      keys.length,
+      Object.keys(defaultPreferences).length,
+      keys,
+      Object.keys(defaultPreferences)
+    );
+
+    if (keys.length !== Object.keys(defaultPreferences).length) {
       console.log("resetting preferences...");
       keys = Object.keys(defaultPreferences);
       await Preferences.clear();
@@ -50,12 +65,18 @@ function usePreferences() {
     setPreferences({ ...preferences });
   }
 
-  async function updatePreferences(key, value) {
-    await Preferences.set({ key, value });
-    retreivePreferences();
+  function commitPreferences() {
+    Object.keys(preferences).forEach(
+      async (key) => await Preferences.set({ key, value: preferences[key] })
+    );
+    console.log("preferences committed", preferences);
   }
 
-  return [preferences, updatePreferences];
+  function setPreference(key, value) {
+    setPreferences({ ...preferences, [key]: value.toString() });
+  }
+
+  return [preferences, setPreference];
 }
 
 export default usePreferences;

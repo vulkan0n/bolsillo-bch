@@ -3,7 +3,7 @@ import { SATOSHI } from "@/util/constants";
 import usePreferences from "@/hooks/usePreferences";
 
 function WalletViewBalance({ balance }) {
-  const [preferences, updatePreferences] = usePreferences();
+  const [preferences, setPreference] = usePreferences();
 
   const hideBalance = preferences["hideAvailableBalance"] === "true";
   const preferLocal = preferences["preferLocalCurrency"] === "true";
@@ -16,11 +16,11 @@ function WalletViewBalance({ balance }) {
     denominateSats ? sats : `${(sats / SATOSHI).toFixed(8)}`;
 
   const handleHideBalance = () => {
-    updatePreferences("hideAvailableBalance", !hideBalance);
+    setPreference("hideAvailableBalance", !hideBalance);
   };
 
   const handleFlipCurrency = () => {
-    updatePreferences("preferLocalCurrency", !preferLocal);
+    setPreference("preferLocalCurrency", !preferLocal);
   };
 
   const formattedBalance = hideBalance
