@@ -5,7 +5,14 @@ import { QRCode } from "react-qrcode-logo";
 import WalletService from "@/services/WalletService";
 import ScannerButton from "./ScannerButton";
 
+import usePreferences from "@/hooks/usePreferences";
+
+import seleneLogo from "@/assets/selene-logo.png";
+import bchLogo from "@/assets/bch-logo.png";
+
 function WalletViewReceive() {
+  const [preferences] = usePreferences();
+
   // TODO: fetch active wallet from user preferences/DB
   const activeWalletKey = "Selene Default";
   const wallet = new WalletService().loadWallet(activeWalletKey);
@@ -26,6 +33,16 @@ function WalletViewReceive() {
 
   const skipAddress = () => setSkip((skip + 1) % 5);
 
+  const getQrLogoImage = (logo) => {
+    const logoMap = {
+      selene: seleneLogo,
+      bch: bchLogo,
+      none: "",
+    };
+
+    return logo ? logoMap[logo.toLowerCase()] : "";
+  };
+
   return (
     <>
       {!isScanning && (
@@ -33,7 +50,16 @@ function WalletViewReceive() {
           <div className="py-2">
             <div className="flex justify-center">
               <div className="border border-4 border-zinc-300 my-2">
-                <QRCode value={address} size={200} quietZone={16} />
+                <QRCode
+                  value={address}
+                  size={200}
+                  quietZone={16}
+                  bgColor={preferences["qrCodeBackground"]}
+                  fgColor={preferences["qrCodeForeground"]}
+                  logoImage={getQrLogoImage(preferences["qrCodeLogo"])}
+                  logoWidth={58}
+                  logoHeight={58}
+                />
               </div>
             </div>
             <div
