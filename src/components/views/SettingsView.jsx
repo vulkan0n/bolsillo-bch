@@ -124,7 +124,7 @@ function SettingsView() {
             </div>
             <div className="form-control p-3">
               <label className="label cursor-pointer">
-                <span className="label-text">BCH Denomination</span>
+                <span className="label-text">Denominate in Sats</span>
                 <input
                   type="checkbox"
                   className="toggle"

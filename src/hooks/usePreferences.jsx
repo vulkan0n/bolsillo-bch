@@ -9,7 +9,7 @@ function usePreferences() {
     preferLocalCurrency: false,
     hideAvailableBalance: false,
     denominateSats: false,
-    allowInstaPay: false,
+    allowInstantPay: false,
     instaPayThreshold: "25000000",
     qrCodeLogo: "Selene",
     qrCodeBackground: "#ffffff",
