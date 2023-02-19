@@ -3,7 +3,6 @@ import { Preferences } from "@capacitor/preferences";
 
 function usePreferences() {
   const [preferences, setPreferences] = useState({});
-  const commitRef = useRef(null);
 
   const defaultPreferences = {
     localCurrency: "USD",
