@@ -1,5 +1,6 @@
 import usePreferences from "@/hooks/usePreferences";
 import { bchToSats, satsToBch, DUST_LIMIT } from "@/util/sats";
+import StorageService from "@/services/StorageService";
 
 function SettingsView() {
   const [preferences, setPreference] = usePreferences();
@@ -7,6 +8,8 @@ function SettingsView() {
   function handleSettingsUpdate(key, value) {
     setPreference(key, value);
   }
+
+  const wallets = new StorageService().getWallets();
 
   return (
     <>
@@ -47,15 +50,15 @@ function SettingsView() {
             Manage Wallets
           </div>
           <div className="collapse-content bg-zinc-200 text-zinc-700 rounded-sm divide-y divide-zinc-300">
-            <a
-              href="/settings/wallet/Selene Default"
-              className="w-full block p-2"
-            >
-              Selene Default
-            </a>
-            <a href="/settings/wallet/Selene Test" className="w-full block p-2">
-              Selene Test
-            </a>
+            {wallets.map((wallet) => (
+              <a
+                key={wallet.name}
+                href={`/settings/wallet/${wallet.name}`}
+                className="w-full block p-2"
+              >
+                {wallet.name}
+              </a>
+            ))}
           </div>
         </div>
 
