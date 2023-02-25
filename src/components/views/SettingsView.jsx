@@ -1,6 +1,6 @@
 import usePreferences from "@/hooks/usePreferences";
 import { bchToSats, satsToBch, DUST_LIMIT } from "@/util/sats";
-import StorageService from "@/services/StorageService";
+import WalletService from "@/services/WalletService";
 
 function SettingsView() {
   const [preferences, setPreference] = usePreferences();
@@ -9,7 +9,7 @@ function SettingsView() {
     setPreference(key, value);
   }
 
-  const wallets = new StorageService().getWallets();
+  const wallets = new WalletService().getWallets();
 
   return (
     <>
@@ -53,7 +53,7 @@ function SettingsView() {
             {wallets.map((wallet) => (
               <a
                 key={wallet.name}
-                href={`/settings/wallet/${wallet.name}`}
+                href={`/settings/wallet/${wallet.id}`}
                 className="w-full block p-2"
               >
                 {wallet.name}

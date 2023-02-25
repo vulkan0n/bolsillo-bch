@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useOutletContext } from "react-router-dom";
 import { Clipboard } from "@capacitor/clipboard";
 import { QRCode } from "react-qrcode-logo";
 
@@ -12,10 +13,7 @@ import bchLogo from "@/assets/bch-logo.png";
 
 function WalletViewReceive() {
   const [preferences] = usePreferences();
-
-  // TODO: fetch active wallet from user preferences/DB
-  const activeWalletKey = "Selene Default";
-  const wallet = new WalletService().loadWallet(activeWalletKey);
+  const { wallet } = useOutletContext();
 
   const [skip, setSkip] = useState(0);
   const [invoiceAmount, setInvoiceAmount] = useState(0);

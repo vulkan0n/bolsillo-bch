@@ -1,4 +1,4 @@
-import StorageService from "./StorageService.jsx";
+import DatabaseService from "./DatabaseService.jsx";
 
 import {
   instantiateSecp256k1,
@@ -8,57 +8,141 @@ import {
   generatePrivateKey,
   deriveHdPrivateNodeFromSeed,
   deriveHdPrivateNodeChild,
+  deriveHdPath,
   encodeCashAddress,
 } from "@bitauth/libauth";
+
+import {
+  ElectrumClient,
+  ElectrumCluster,
+  ElectrumTransport,
+} from "electrum-cash";
+
+import * as bip39 from "bip39";
 
 const secp256k1 = await instantiateSecp256k1();
 const ripemd160 = await instantiateRipemd160();
 const sha256 = await instantiateSha256();
 const sha512 = await instantiateSha512();
 
-// WalletService generates wallets and brokers them between the storage layer
-// and the rest of the application
+const crypto = {
+  ripemd160,
+  secp256k1,
+  sha256,
+  sha512,
+};
+
+const electrum = new ElectrumClient(
+  "Selene.cash",
+  "1.4",
+  "cashnode.bch.ninja",
+  ElectrumTransport.WSS.Port,
+  ElectrumTransport.WSS.Scheme
+);
+
+// TODO: what happens if connection fails?
+try {
+  await electrum.connect();
+} catch (e) {
+  console.error(e);
+}
+
 function WalletService() {
+  const { db, resultToJson, saveDatabase } = new DatabaseService();
+
   return {
-    loadWallet,
+    boot,
+    createWallet,
+    getWallets,
+    getWalletById,
   };
 
-  // load a wallet from storage and return a consumable Wallet API
-  // create the wallet if it doesn't exist
-  function loadWallet(name) {
-    const S = new StorageService();
+  async function boot(wallet_id) {
+    const wallets = getWallets();
 
-    let key = S.getWalletByName(name);
-    if (!key) {
-      key = generateWallet();
+    if (wallets.length === 0) {
+      await createWallet("Selene Default");
     }
 
-    // TODO: throw an exception instead of null?
-    return key ? Wallet(name, key.toString()) : null;
+    console.log("booting with wallet", wallet_id);
+    const wallet = getWalletById(wallet_id);
+
+    console.log("boot got", wallet);
+    return wallet;
   }
 
-  // raw wallet (private key) generation function
-  function generateWallet() {
-    const k = generatePrivateKey(() =>
-      window.crypto.getRandomValues(new Uint8Array(32))
+  async function createWallet(name, derivation = "m/44'/0'/0'") {
+    const mnemonic = bip39.generateMnemonic();
+
+    const result = db.run(
+      `INSERT INTO wallets (name, mnemonic, derivation) VALUES ("${name}","${mnemonic}","${derivation}") RETURNING *`
     );
 
-    return secp256k1.validatePrivateKey(k) ? k : null;
+    console.log("creating wallet", name, mnemonic, result);
+
+    await saveDatabase();
   }
 
-  function Wallet(name, key) {
-    const hd = deriveHdPrivateNodeFromSeed({ sha512: sha512 }, key);
+  function getWallets() {
+    const result = resultToJson(db.exec("SELECT * FROM wallets"));
+    //console.log("getWallets", result);
+    return result;
+  }
+
+  function getWalletById(id) {
+    const result = resultToJson(
+      db.exec(`SELECT * FROM wallets WHERE id='${id}'`)
+    );
+    //console.log("getWalletById", result);
+    return result.length > 0 ? Wallet(result[0]) : null;
+  }
+
+  async function requestBalance(address) {
+    const { confirmed, unconfirmed } = await electrum.request(
+      "blockchain.address.get_balance",
+      address
+    );
+
+    const total = confirmed + unconfirmed;
+
+    db.run(
+      `UPDATE addresses SET balance="${total}
+      }" WHERE address="${address}"`
+    );
+
+    return total;
+  }
+
+  async function handleBalanceUpdate(update) {
+    if (!Array.isArray(update)) return;
+
+    const address = update[0];
+    const balance = await requestBalance(address);
+  }
+
+  function Wallet(wallet) {
+    console.log("Wallet", wallet);
+    const seed = bip39.mnemonicToSeedSync(wallet.mnemonic);
+    const hdMaster = deriveHdPrivateNodeFromSeed({ sha512: sha512 }, seed);
+    const hdMain = deriveHdPath(crypto, hdMaster, `${wallet.derivation}/0/0`);
+    const hdChange = deriveHdPath(crypto, hdMaster, `${wallet.derivation}/1/0`);
+
+    console.log({ hdMaster, hdMain, hdChange }, `${wallet.derivation}/0/0`);
+
+    return {
+      generateAddress,
+      registerAddress,
+      getUnusedAddress,
+      getReceiveAddresses,
+      getChangeAddresses,
+      getBalance,
+    };
 
     // raw address generation function
-    function generateAddress(index) {
+    function generateAddress(index, change) {
       const child = deriveHdPrivateNodeChild(
-        {
-          ripemd160,
-          secp256k1,
-          sha256,
-          sha512,
-        },
-        hd,
+        crypto,
+        change ? hdChange : hdMain,
         index
       );
 
@@ -69,11 +153,53 @@ function WalletService() {
       return address;
     }
 
-    return {
-      generateAddress,
-      //signMessage,
-      //signTransaction,
-    };
+    function getUnusedAddress(skip) {
+      const result = resultToJson(
+        db.exec(
+          `SELECT address, hd_index FROM addresses WHERE wallet_id=${wallet.id} AND ntxin < 1 AND ntxout < 1 AND change='0' ORDER BY hd_index DESC LIMIT 1`
+        )
+      );
+
+      console.log("getUnusedAddress", getUnusedAddress);
+    }
+
+    function getChangeAddresses() {
+      const result = resultToJson(
+        db.exec(
+          `SELECT address, hd_index FROM addresses WHERE wallet_id=${wallet.id} AND change='1' ORDER BY hd_index DESC`
+        )
+      );
+
+      console.log("getChangeAddresses", getChangeAddresses);
+    }
+
+    function getReceiveAddresses() {
+      const result = resultToJson(
+        db.exec(
+          `SELECT address, hd_index FROM addresses WHERE wallet_id=${wallet.id} AND change='0' ORDER BY hd_index DESC`
+        )
+      );
+
+      console.log("getReceiveAddresses", getReceiveAddresses);
+    }
+
+    function registerAddress(address, index) {
+      electrum.subscribe(
+        handleBalanceUpdate,
+        "blockchain.address.subscribe",
+        address
+      );
+
+      db.run(
+        `INSERT INTO addresses (address, wallet_id, hd_index) VALUES ("${address}", "${wallet.id}", "${index}")`
+      );
+    }
+
+    function getBalance(address) {
+      return resultToJson(
+        db.exec(`SELECT balance FROM addresses WHERE address="${address}"`)
+      );
+    }
   }
 }
 
