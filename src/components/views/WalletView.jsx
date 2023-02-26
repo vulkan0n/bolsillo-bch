@@ -8,25 +8,51 @@ import WalletViewSend from "./walletView/WalletViewSend";
 import WalletViewSendConfirm from "./walletView/WalletViewSendConfirm";
 import WalletService from "@/services/WalletService";
 
-function WalletView() {
+function useActiveWallet() {
   const [wallet, setWallet] = useState(null);
   const [balance, setBalance] = useState(0);
 
-  useEffect(function initHotWallet() {
-    async function setup() {
-      const w = await new WalletService().boot(1);
-      setWallet(w);
-      console.log("initHotWallet", w);
-    }
+  function handleBalanceUpdateEvent(event) {
+    setBalance(event.detail);
+  }
+
+  useEffect(() => {
+    const Wallet = new WalletService();
+
+    const setup = async () => {
+      // TODO: get selected wallet ID from preferences
+      const bootWallet = await Wallet.boot(1);
+      const walletBalance = bootWallet.getWalletBalance();
+
+      document.addEventListener("balanceUpdate", handleBalanceUpdateEvent);
+
+      setWallet(bootWallet);
+      setBalance(walletBalance);
+    };
+
+    const cleanup = () => {
+      document.removeEventListener("balanceUpdate", handleBalanceUpdateEvent);
+
+      if (wallet) {
+        Wallet.cleanup(wallet.id);
+      }
+    };
 
     setup();
+    return cleanup;
   }, []);
+
+  return { wallet, balance };
+}
+
+function WalletView() {
+  const { wallet, balance } = useActiveWallet();
 
   return wallet !== null ? (
     <>
       <WalletViewBalance balance={balance} />
       <WalletViewTabs />
-      <Outlet context={{ wallet, balance }} />
+      <Outlet context={{ wallet }} />
     </>
   ) : null;
 }

@@ -32,6 +32,7 @@ const crypto = {
   sha512,
 };
 
+// TODO: allow user to select electrum server(s)
 const electrum = new ElectrumClient(
   "Selene.cash",
   "1.4",
@@ -52,11 +53,15 @@ function WalletService() {
 
   return {
     boot,
+    cleanup,
     createWallet,
     getWallets,
     getWalletById,
   };
 
+  // ----------------------------
+
+  // called by useWallet hook to load in user's active wallet
   async function boot(wallet_id) {
     const wallets = getWallets();
 
@@ -66,11 +71,43 @@ function WalletService() {
 
     console.log("booting with wallet", wallet_id);
     const wallet = getWalletById(wallet_id);
-
     console.log("boot got", wallet);
+
+    // now let's see if we're already watching some addresses
+    // otherwise let's register the first GAP_LIMIT addresses in db
+    const addresses = wallet.getReceiveAddresses();
+
+    if (addresses.length === 0) {
+      const ADDRESS_GAP_LIMIT = 20; // BIP-44 gap limit
+      for (let i = 0; i < ADDRESS_GAP_LIMIT / 4; i++) {
+        const address = wallet.generateAddress(i);
+        wallet.registerAddress(address, i);
+      }
+      await saveDatabase();
+    } else {
+      addresses.forEach((address) => subscribeToAddress(address));
+    }
+
     return wallet;
   }
 
+  // called by useWallet hook to cleanup electrum subscriptions
+  async function cleanup(wallet_id) {
+    const addresses = getWalletById(wallet_id).getReceiveAddresses();
+    addresses.forEach((address) =>
+      electrum.unsubscribe(
+        handleBalanceUpdate,
+        "blockchain.address.subscribe",
+        address
+      )
+    );
+  }
+
+  // ----------------------------
+
+  // generate a new wallet from a randomly generated seed phrase
+  // persist the new wallet in the database
+  // return consumable Wallet object
   async function createWallet(name, derivation = "m/44'/0'/0'") {
     const mnemonic = bip39.generateMnemonic();
 
@@ -83,12 +120,16 @@ function WalletService() {
     await saveDatabase();
   }
 
+  // ----------------------------
+
+  // return a list of all wallets in the database
   function getWallets() {
     const result = resultToJson(db.exec("SELECT * FROM wallets"));
     //console.log("getWallets", result);
     return result;
   }
 
+  // get a consumable Wallet object from the database
   function getWalletById(id) {
     const result = resultToJson(
       db.exec(`SELECT * FROM wallets WHERE id='${id}'`)
@@ -97,29 +138,65 @@ function WalletService() {
     return result.length > 0 ? Wallet(result[0]) : null;
   }
 
+  // ----------------------------
+
+  // demand the most up-to-date balance information for an address
+  // persist this information to the database
   async function requestBalance(address) {
     const { confirmed, unconfirmed } = await electrum.request(
       "blockchain.address.get_balance",
       address
     );
 
-    const total = confirmed + unconfirmed;
+    const addressBalance = confirmed + unconfirmed;
 
     db.run(
-      `UPDATE addresses SET balance="${total}
-      }" WHERE address="${address}"`
+      `UPDATE addresses SET balance="${addressBalance}" WHERE address="${address}"`
     );
 
-    return total;
+    const wallet_id = resultToJson(
+      db.exec(`SELECT wallet_id FROM addresses WHERE address="${address}"`)
+    )[0].wallet_id;
+
+    const walletBalance = resultToJson(
+      db.exec(
+        `UPDATE wallets SET balance=(SELECT SUM(balance) FROM addresses WHERE wallet_id="${wallet_id}") RETURNING balance`
+      )
+    )[0].balance;
+
+    console.log("requestBalance", address, addressBalance, walletBalance);
+    await saveDatabase();
+
+    return walletBalance;
   }
 
+  // handler function for updates received from electrum subscription
   async function handleBalanceUpdate(update) {
     if (!Array.isArray(update)) return;
 
+    console.log("handleHideBalance", update);
     const address = update[0];
     const balance = await requestBalance(address);
+
+    document.dispatchEvent(
+      new CustomEvent("balanceUpdate", { detail: balance })
+    );
   }
 
+  // listen for balance updates from electrum for an address
+  function subscribeToAddress(address) {
+    console.log("subscribeToAddress", address);
+
+    electrum.subscribe(
+      handleBalanceUpdate,
+      "blockchain.address.subscribe",
+      address
+    );
+  }
+
+  // ----------------------------
+
+  // publicly-consumable Wallet API
   function Wallet(wallet) {
     console.log("Wallet", wallet);
     const seed = bip39.mnemonicToSeedSync(wallet.mnemonic);
@@ -135,7 +212,7 @@ function WalletService() {
       getUnusedAddress,
       getReceiveAddresses,
       getChangeAddresses,
-      getBalance,
+      getWalletBalance,
     };
 
     // raw address generation function
@@ -153,52 +230,56 @@ function WalletService() {
       return address;
     }
 
-    function getUnusedAddress(skip) {
+    // get the lowest-index unused receive address for this wallet
+    function getUnusedAddress(limit = 1) {
       const result = resultToJson(
         db.exec(
-          `SELECT address, hd_index FROM addresses WHERE wallet_id=${wallet.id} AND ntxin < 1 AND ntxout < 1 AND change='0' ORDER BY hd_index DESC LIMIT 1`
+          `SELECT address, hd_index FROM addresses WHERE wallet_id=${wallet.id} AND ntxin < 1 AND ntxout < 1 AND change='0' ORDER BY hd_index ASC LIMIT ${limit}`
         )
       );
 
-      console.log("getUnusedAddress", getUnusedAddress);
+      console.log("getUnusedAddress", result);
     }
 
-    function getChangeAddresses() {
-      const result = resultToJson(
-        db.exec(
-          `SELECT address, hd_index FROM addresses WHERE wallet_id=${wallet.id} AND change='1' ORDER BY hd_index DESC`
-        )
-      );
-
-      console.log("getChangeAddresses", getChangeAddresses);
-    }
-
+    // get all active receive addresses for this wallet
     function getReceiveAddresses() {
       const result = resultToJson(
         db.exec(
-          `SELECT address, hd_index FROM addresses WHERE wallet_id=${wallet.id} AND change='0' ORDER BY hd_index DESC`
+          `SELECT address FROM addresses WHERE wallet_id="${wallet.id}" ORDER BY hd_index`
+        )
+      ).reduce((acc, cur) => [...acc, cur.address], []);
+
+      console.log("getReceiveAddresses", result);
+      return result;
+    }
+
+    // get all active change addresses for this wallet
+    function getChangeAddresses() {
+      const result = resultToJson(
+        db.exec(
+          `SELECT address, hd_index FROM addresses WHERE wallet_id=${wallet.id} AND change='1' ORDER BY hd_index`
         )
       );
 
-      console.log("getReceiveAddresses", getReceiveAddresses);
+      console.log("getChangeAddresses", result);
     }
 
+    // register an address into the database and subscribe to it via electrum
     function registerAddress(address, index) {
-      electrum.subscribe(
-        handleBalanceUpdate,
-        "blockchain.address.subscribe",
-        address
-      );
+      console.log("registerAddress", address, index);
 
       db.run(
         `INSERT INTO addresses (address, wallet_id, hd_index) VALUES ("${address}", "${wallet.id}", "${index}")`
       );
+
+      subscribeToAddress(address);
     }
 
-    function getBalance(address) {
+    // get the wallet's current balance from the database
+    function getWalletBalance() {
       return resultToJson(
-        db.exec(`SELECT balance FROM addresses WHERE address="${address}"`)
-      );
+        db.exec(`SELECT balance FROM wallets WHERE id="${wallet.id}"`)
+      )[0].balance;
     }
   }
 }
