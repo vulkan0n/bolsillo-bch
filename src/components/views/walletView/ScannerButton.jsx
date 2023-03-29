@@ -12,7 +12,11 @@ function ScannerButton({ onScanStart, onScanEnd }) {
 
   useEffect(function prepareScanner() {
     const prepare = async () => {
-      const status = await BarcodeScanner.checkPermission({ force: false });
+      try {
+        const status = await BarcodeScanner.checkPermission({ force: false });
+      } catch (e) {
+        return;
+      }
 
       if (status.granted) {
         BarcodeScanner.prepare();
@@ -29,7 +33,14 @@ function ScannerButton({ onScanStart, onScanEnd }) {
   useEffect(
     function resetScanner() {
       if (!isScanning) {
-        BarcodeScanner.prepare();
+        const prepare = async () => {
+          try {
+            await BarcodeScanner.prepare();
+          } catch (e) {
+            return;
+          }
+        };
+        prepare();
       }
     },
     [isScanning]
@@ -66,8 +77,15 @@ function ScannerButton({ onScanStart, onScanEnd }) {
   }
 
   function stopScan() {
-    BarcodeScanner.showBackground();
-    BarcodeScanner.stopScan();
+    const stop = async () => {
+      try {
+        await BarcodeScanner.showBackground();
+        await BarcodeScanner.stopScan();
+      } catch (e) {
+        return;
+      }
+    };
+    stop();
     setIsScanning(false);
     onScanEnd();
   }
