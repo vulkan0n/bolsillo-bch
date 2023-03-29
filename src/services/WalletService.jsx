@@ -75,10 +75,13 @@ function WalletService() {
 
     // now let's see if we're already watching some addresses
     // otherwise let's register the first GAP_LIMIT addresses in db
-    const addresses = wallet.getReceiveAddresses();
+    const addresses = [
+      ...wallet.getReceiveAddresses(),
+      ...wallet.getChangeAddresses(),
+    ];
 
     if (addresses.length === 0) {
-      const ADDRESS_GAP_LIMIT = 20; // BIP-44 gap limit
+      const ADDRESS_GAP_LIMIT = 20; // BIP-44 gap limit; TODO: move to constants?
       for (let i = 0; i < ADDRESS_GAP_LIMIT / 4; i++) {
         const address = wallet.generateAddress(i);
         wallet.registerAddress(address, i);
@@ -107,7 +110,6 @@ function WalletService() {
 
   // generate a new wallet from a randomly generated seed phrase
   // persist the new wallet in the database
-  // return consumable Wallet object
   async function createWallet(name, derivation = "m/44'/0'/0'") {
     const mnemonic = bip39.generateMnemonic();
 
@@ -172,6 +174,7 @@ function WalletService() {
 
   // handler function for updates received from electrum subscription
   async function handleBalanceUpdate(update) {
+    // TODO: compare initial balance state hash to state hash in DB
     if (!Array.isArray(update)) return;
 
     console.log("handleHideBalance", update);
@@ -245,7 +248,7 @@ function WalletService() {
     function getReceiveAddresses() {
       const result = resultToJson(
         db.exec(
-          `SELECT address FROM addresses WHERE wallet_id="${wallet.id}" ORDER BY hd_index`
+          `SELECT address FROM addresses WHERE wallet_id="${wallet.id}" AND change='0' ORDER BY hd_index`
         )
       ).reduce((acc, cur) => [...acc, cur.address], []);
 
@@ -262,6 +265,7 @@ function WalletService() {
       );
 
       console.log("getChangeAddresses", result);
+      return result;
     }
 
     // register an address into the database and subscribe to it via electrum
