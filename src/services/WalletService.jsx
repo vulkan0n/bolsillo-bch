@@ -179,7 +179,9 @@ function WalletService() {
     // TODO: compare initial balance state hash to state hash in DB
     if (!Array.isArray(update)) {
       console.log("address state update", update);
-      const addressResult = resultToJson(db.exec(`SELECT address FROM addresses WHERE state="${update}"`));
+      const addressResult = resultToJson(
+        db.exec(`SELECT address FROM addresses WHERE state="${update}"`)
+      );
       if (addressResult.length === 0) {
         //fetchAddressHistories();
       }
@@ -236,6 +238,7 @@ function WalletService() {
       getReceiveAddresses,
       getChangeAddresses,
       getWalletBalance,
+      sendToAddress,
     };
 
     // raw address generation function
@@ -304,6 +307,10 @@ function WalletService() {
       return resultToJson(
         db.exec(`SELECT balance FROM wallets WHERE id="${wallet.id}"`)
       )[0].balance;
+    }
+
+    function sendToAddress(address, satoshis) {
+      console.log("sending transaction...", satoshis, address);
     }
   }
 }

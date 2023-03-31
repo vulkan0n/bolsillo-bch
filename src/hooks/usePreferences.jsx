@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { Preferences } from "@capacitor/preferences";
 
 function usePreferences() {
+  // TODO: reduxify this (defaultPreferences is initialState)
   const defaultPreferences = {
     localCurrency: "USD",
     preferLocalCurrency: "false",

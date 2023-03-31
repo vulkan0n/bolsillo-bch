@@ -50,7 +50,7 @@ function DatabaseService() {
 
   function resultToJson(result) {
     if (result.length === 0) {
-      console.log("resultToJson", result);
+      //console.log("resultToJson", result);
       return result;
     }
 

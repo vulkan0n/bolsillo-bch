@@ -21,9 +21,11 @@ function useActiveWallet() {
 
     const setup = async () => {
       // TODO: get selected wallet ID from preferences
+      // TODO: use redux as source of truth for Preferences
       const bootWallet = await Wallet.boot(1);
       const walletBalance = bootWallet.getWalletBalance();
 
+      // TODO: use redux as source of truth for balance...
       document.addEventListener("balanceUpdate", handleBalanceUpdateEvent);
 
       setWallet(bootWallet);
@@ -46,6 +48,7 @@ function useActiveWallet() {
 }
 
 function WalletView() {
+  // TODO: get active wallet from redux instead...
   const { wallet, balance } = useActiveWallet();
 
   return wallet !== null ? (

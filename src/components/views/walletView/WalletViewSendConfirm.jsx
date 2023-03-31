@@ -61,10 +61,14 @@ function WalletViewSendConfirm() {
       return;
     }
 
-    console.log("sending transaction...", satoshis);
-    navigate("/wallet/send/success");
-
     // sign and broadcast transaction
+    const success = wallet.sendToAddress(address, satoshis);
+
+    if (success) {
+      navigate("/wallet/send/success");
+    } else {
+      setMessage("Transaction failed! Try again");
+    }
   }
 
   function handleKeypadPress(key) {
