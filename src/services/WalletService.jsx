@@ -75,10 +75,12 @@ function WalletService() {
 
     // now let's see if we're already watching some addresses
     // otherwise let's register the first GAP_LIMIT addresses in db
-    const addresses = [
-      ...wallet.getReceiveAddresses(),
-      ...wallet.getChangeAddresses(),
-    ];
+    const addresses = wallet.getReceiveAddresses();
+
+    // TODO: only subscribe to addresses with non-null state and top N unused
+    // don't subscribe to change
+    // instead, directly request state per scripthash
+    // get history when there are discrepancies
 
     if (addresses.length === 0) {
       const ADDRESS_GAP_LIMIT = 20; // BIP-44 gap limit; TODO: move to constants?
@@ -175,15 +177,33 @@ function WalletService() {
   // handler function for updates received from electrum subscription
   async function handleBalanceUpdate(update) {
     // TODO: compare initial balance state hash to state hash in DB
-    if (!Array.isArray(update)) return;
+    if (!Array.isArray(update)) {
+      console.log("address state update", update);
+      const addressResult = resultToJson(db.exec(`SELECT address FROM addresses WHERE state="${update}"`));
+      if (addressResult.length === 0) {
+        //fetchAddressHistories();
+      }
+      // `SELECT address,state FROM addresses WHERE state='${update}'`
+      // if result, skip history check for the found address
+      // if no result, download blockchain.address.get_history for all non-null states
+      return;
+    }
 
-    console.log("handleHideBalance", update);
+    console.log("handleBalanceUpdate", update);
     const address = update[0];
+    const addressState = update[1];
+    updateAddressState(address, addressState);
+
     const balance = await requestBalance(address);
 
     document.dispatchEvent(
       new CustomEvent("balanceUpdate", { detail: balance })
     );
+  }
+
+  async function updateAddressState(address, state) {
+    db.run(`UPDATE addresses SET state="${state}" WHERE address="${address}"`);
+    await saveDatabase();
   }
 
   // listen for balance updates from electrum for an address
