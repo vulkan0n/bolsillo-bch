@@ -14,7 +14,7 @@ import { useSelector } from "react-redux";
 import { selectActiveWallet } from "@/redux/wallet";
 
 function WalletViewReceive() {
-  const [preferences] = usePreferences();
+  const { preferences } = usePreferences();
   const wallet = useSelector(selectActiveWallet);
 
   const [skip, setSkip] = useState(0);

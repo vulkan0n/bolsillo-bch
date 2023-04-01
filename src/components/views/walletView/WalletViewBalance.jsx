@@ -9,7 +9,7 @@ function WalletViewBalance() {
   const wallet = useSelector(selectActiveWallet);
   console.log("WalletViewBalance", wallet);
   const balance = wallet.balance;
-  const [preferences, setPreference] = usePreferences();
+  const { preferences, setPreference } = usePreferences();
 
   const hideBalance = preferences["hideAvailableBalance"] === "true";
   const preferLocal = preferences["preferLocalCurrency"] === "true";

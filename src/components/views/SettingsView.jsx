@@ -3,7 +3,7 @@ import { bchToSats, satsToBch, DUST_LIMIT } from "@/util/sats";
 import WalletService from "@/services/WalletService";
 
 function SettingsView() {
-  const [preferences, setPreference] = usePreferences();
+  const { preferences, setPreference } = usePreferences();
 
   function handleSettingsUpdate(key, value) {
     setPreference(key, value);

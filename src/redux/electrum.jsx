@@ -2,6 +2,7 @@ import {
   createAction,
   createAsyncThunk,
   createReducer,
+  createListenerMiddleware,
 } from "@reduxjs/toolkit";
 
 import {
@@ -16,6 +17,8 @@ const initialState = {
   blockheight: 0,
   subscriptions: [],
 };
+
+export const electrumMiddleware = createListenerMiddleware();
 
 export const setIsConnected = createAction("wallet/setIsConnected");
 
