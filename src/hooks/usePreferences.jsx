@@ -1,6 +1,5 @@
 import { useSelector, useDispatch } from "react-redux";
 import { selectPreferences, setPreference } from "@/redux/preferences";
-import { Preferences } from "@capacitor/preferences";
 
 // TODO: delete this; refactor stopgap
 function usePreferences() {

@@ -21,7 +21,8 @@ function WalletViewReceive() {
   const [invoiceAmount, setInvoiceAmount] = useState(0);
   const [isScanning, setIsScanning] = useState(false);
 
-  const address = wallet.generateAddress(0 + skip);
+  const address =
+    wallet.cycleAddresses[(0 + skip) % wallet.cycleAddresses.length].address;
   const formattedAddress = (() => {
     const split = address.split(":");
     return split.length > 1 ? split[1] : split[0];

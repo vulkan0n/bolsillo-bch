@@ -266,6 +266,7 @@ function WalletService() {
       );
 
       console.log("getUnusedAddress", result);
+      return result;
     }
 
     // get all active receive addresses for this wallet
