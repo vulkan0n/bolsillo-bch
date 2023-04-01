@@ -1,17 +1,13 @@
 import { useState, useEffect } from "react";
-import {
-  useParams,
-  useSearchParams,
-  useOutletContext,
-  useNavigate,
-} from "react-router-dom";
+import { useParams, useSearchParams, useNavigate } from "react-router-dom";
 import { bchToSats, satsToBch } from "@/util/sats";
 import usePreferences from "@/hooks/usePreferences";
+import { selectActiveWallet } from "@/redux/wallet";
 
 function WalletViewSendConfirm() {
   const [searchParams, setSearchParams] = useSearchParams();
   const { address } = useParams();
-  const { balance } = useOutletContext();
+  const { balance } = selectActiveWallet();
 
   const [amount, setAmount] = useState(searchParams.get("amount") || "0");
   const [message, setMessage] = useState("");

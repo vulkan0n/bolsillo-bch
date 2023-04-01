@@ -1,14 +1,18 @@
-import { useState, useEffect, useMemo } from "react";
 import { Outlet } from "react-router-dom";
-
 import WalletViewBalance from "./walletView/WalletViewBalance";
 import WalletViewTabs from "./walletView/WalletViewTabs";
-import WalletViewReceive from "./walletView/WalletViewReceive";
-import WalletViewSend from "./walletView/WalletViewSend";
-import WalletViewSendConfirm from "./walletView/WalletViewSendConfirm";
-import WalletService from "@/services/WalletService";
 
-function useActiveWallet() {
+function WalletView() {
+  return (
+    <>
+      <WalletViewBalance />
+      <WalletViewTabs />
+      <Outlet />
+    </>
+  );
+}
+
+/*function useActiveWallet() {
   const [wallet, setWallet] = useState(null);
   const [balance, setBalance] = useState(0);
 
@@ -45,19 +49,6 @@ function useActiveWallet() {
   }, []);
 
   return { wallet, balance };
-}
-
-function WalletView() {
-  // TODO: get active wallet from redux instead...
-  const { wallet, balance } = useActiveWallet();
-
-  return wallet !== null ? (
-    <>
-      <WalletViewBalance balance={balance} />
-      <WalletViewTabs />
-      <Outlet context={{ wallet }} />
-    </>
-  ) : null;
-}
+}*/
 
 export default WalletView;

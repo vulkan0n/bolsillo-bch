@@ -232,6 +232,7 @@ function WalletService() {
     console.log({ hdMaster, hdMain, hdChange }, `${wallet.derivation}/0/0`);
 
     return {
+      id: wallet.id,
       generateAddress,
       registerAddress,
       getUnusedAddress,

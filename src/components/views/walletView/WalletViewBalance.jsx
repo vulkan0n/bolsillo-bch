@@ -2,7 +2,13 @@ import { useState } from "react";
 import { SATOSHI } from "@/util/sats";
 import usePreferences from "@/hooks/usePreferences";
 
-function WalletViewBalance({ balance }) {
+import { useSelector } from "react-redux";
+import { selectActiveWallet } from "@/redux/wallet";
+
+function WalletViewBalance() {
+  const wallet = useSelector(selectActiveWallet);
+  console.log("WalletViewBalance", wallet);
+  const balance = wallet.balance;
   const [preferences, setPreference] = usePreferences();
 
   const hideBalance = preferences["hideAvailableBalance"] === "true";

@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useOutletContext } from "react-router-dom";
 import { Clipboard } from "@capacitor/clipboard";
 import { QRCode } from "react-qrcode-logo";
 
@@ -11,9 +10,12 @@ import usePreferences from "@/hooks/usePreferences";
 import seleneLogo from "@/assets/selene-logo.png";
 import bchLogo from "@/assets/bch-logo.png";
 
+import { useSelector } from "react-redux";
+import { selectActiveWallet } from "@/redux/wallet";
+
 function WalletViewReceive() {
   const [preferences] = usePreferences();
-  const { wallet } = useOutletContext();
+  const wallet = useSelector(selectActiveWallet);
 
   const [skip, setSkip] = useState(0);
   const [invoiceAmount, setInvoiceAmount] = useState(0);
@@ -47,7 +49,10 @@ function WalletViewReceive() {
         <>
           <div className="py-2">
             <div className="flex justify-center">
-              <div className="border border-4 border-zinc-300 my-2">
+              <div
+                className="border border-4 border-zinc-300 my-2"
+                onClick={copyAddressToClipboard}
+              >
                 <QRCode
                   value={address}
                   size={200}
