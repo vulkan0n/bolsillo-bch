@@ -16,7 +16,6 @@ console.log("redux wallet initialState", initialState);
 const updateBalance = createAction("wallet/updateBalance");
 
 export const walletReducer = createReducer(initialState, (builder) => {
-  console.log("walletReducer initialState", initialState);
   builder
     .addCase(updateBalance, (state, action) => {
       state.balance = action.payload;

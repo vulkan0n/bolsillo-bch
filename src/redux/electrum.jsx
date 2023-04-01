@@ -10,17 +10,22 @@ import {
   ElectrumTransport,
 } from "electrum-cash";
 
-export default function reducer(state = initialState, action = {}) {
-  switch (action.type) {
-    default:
-      return state;
-  }
-}
+const initialState = {
+  isConnected: false,
+  server: "cashnode.bch.ninja",
+  blockheight: 0,
+  subscriptions: [],
+};
 
-listenerMiddleware.startListening({
-  actionCreator: connect
+export const setIsConnected = createAction("wallet/setIsConnected");
 
-export const setConnectionState = createAction("wallet/setConnectionState");
+export const electrumReducer = createReducer(initialState, (builder) => {
+  builder
+    .addCase(setIsConnected, (state, action) => {
+      state.isConnected = action.payload;
+    })
+    .addDefaultCase((state, action) => {});
+});
 
 // TODO: allow user to select electrum server(s)
 export const connect = createAsyncThunk("wallet/connect", async () => {
