@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { SATOSHI } from "@/util/sats";
 import usePreferences from "@/hooks/usePreferences";
 

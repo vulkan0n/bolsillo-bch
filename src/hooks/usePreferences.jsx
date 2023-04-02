@@ -6,7 +6,7 @@ function usePreferences() {
   const dispatch = useDispatch();
   const preferences = useSelector(selectPreferences);
 
-  console.log("usePreferences", preferences);
+  //console.log("usePreferences", preferences);
 
   return {
     preferences,

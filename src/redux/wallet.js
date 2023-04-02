@@ -10,9 +10,7 @@ const wallet = await new WalletService().boot(activeWalletId);
 
 const initialState = {
   id: wallet.id,
-  balance: wallet.getWalletBalance(),
-  cycleAddresses: wallet.getUnusedAddress(5),
-  utxos: [], // wallet.getUtxos()?
+  balance: wallet.balance,
 };
 
 console.log("redux wallet initialState", initialState);

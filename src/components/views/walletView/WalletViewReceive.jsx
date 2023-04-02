@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Clipboard } from "@capacitor/clipboard";
 import { QRCode } from "react-qrcode-logo";
 
 import WalletService from "@/services/WalletService";
+import AddressManagerService from "@/services/AddressManagerService";
 import ScannerButton from "./ScannerButton";
 
 import usePreferences from "@/hooks/usePreferences";
@@ -21,8 +22,13 @@ function WalletViewReceive() {
   const [invoiceAmount, setInvoiceAmount] = useState(0);
   const [isScanning, setIsScanning] = useState(false);
 
-  const address =
-    wallet.cycleAddresses[(0 + skip) % wallet.cycleAddresses.length].address;
+  const unusedAddresses = useMemo(
+    () => new AddressManagerService(wallet.id).getUnusedAddresses(),
+    [wallet]
+  );
+
+  const address = unusedAddresses[(0 + skip) % unusedAddresses.length];
+
   const formattedAddress = (() => {
     const split = address.split(":");
     return split.length > 1 ? split[1] : split[0];
@@ -51,7 +57,7 @@ function WalletViewReceive() {
           <div className="py-2">
             <div className="flex justify-center">
               <div
-                className="border border-4 border-zinc-300 my-2"
+                className="border border-4 border-zinc-300 my-2 cursor-pointer"
                 onClick={copyAddressToClipboard}
               >
                 <QRCode
