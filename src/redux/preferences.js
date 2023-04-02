@@ -28,8 +28,13 @@ preferencesMiddleware.startListening({
   actionCreator: setPreference,
   effect: async (action, listenerApi) => {
     listenerApi.cancelActiveListeners();
-    await Preferences.set(action.payload);
-    listenerApi.dispatch(preferencesUpdated(action.payload));
+    const payload = {
+      key: action.payload.key,
+      value: action.payload.value.toString(),
+    };
+    console.log("prefs update:", payload);
+    await Preferences.set(payload);
+    listenerApi.dispatch(preferencesUpdated(payload));
   },
 });
 
@@ -46,4 +51,3 @@ export const selectPreferences = createSelector(
   (state) => state,
   (state) => state.preferences
 );
-

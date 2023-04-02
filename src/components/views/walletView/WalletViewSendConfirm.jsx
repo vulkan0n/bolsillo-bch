@@ -1,18 +1,19 @@
 import { useState, useEffect } from "react";
 import { useParams, useSearchParams, useNavigate } from "react-router-dom";
 import { bchToSats, satsToBch } from "@/util/sats";
-import usePreferences from "@/hooks/usePreferences";
+import { useSelector } from "react-redux";
 import { selectActiveWallet } from "@/redux/wallet";
+import { selectPreferences } from "@/redux/preferences";
 
 function WalletViewSendConfirm() {
   const [searchParams, setSearchParams] = useSearchParams();
   const { address } = useParams();
-  const { balance } = selectActiveWallet();
+  const { balance } = useSelector(selectActiveWallet);
 
   const [amount, setAmount] = useState(searchParams.get("amount") || "0");
   const [message, setMessage] = useState("");
 
-  const [preferences] = usePreferences();
+  const preferences = useSelector(selectPreferences);
   const navigate = useNavigate();
 
   const [shouldInstantPay, setShouldInstantPay] = useState(false);

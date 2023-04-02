@@ -1,12 +1,15 @@
-import usePreferences from "@/hooks/usePreferences";
 import { bchToSats, satsToBch, DUST_LIMIT } from "@/util/sats";
 import WalletService from "@/services/WalletService";
 
+import { useSelector, useDispatch } from "react-redux";
+import { selectPreferences, setPreference } from "@/redux/preferences";
+
 function SettingsView() {
-  const { preferences, setPreference } = usePreferences();
+  const dispatch = useDispatch();
+  const preferences = useSelector(selectPreferences);
 
   function handleSettingsUpdate(key, value) {
-    setPreference(key, value);
+    dispatch(setPreference({ key, value }));
   }
 
   const wallets = new WalletService().getWallets();

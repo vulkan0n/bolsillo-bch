@@ -1,21 +1,21 @@
 import { useState, useMemo } from "react";
+import { useSelector } from "react-redux";
+
 import { Clipboard } from "@capacitor/clipboard";
 import { QRCode } from "react-qrcode-logo";
+
+import { selectActiveWallet } from "@/redux/wallet";
+import { selectPreferences } from "@/redux/preferences";
 
 import WalletService from "@/services/WalletService";
 import AddressManagerService from "@/services/AddressManagerService";
 import ScannerButton from "./ScannerButton";
 
-import usePreferences from "@/hooks/usePreferences";
-
 import seleneLogo from "@/assets/selene-logo.png";
 import bchLogo from "@/assets/bch-logo.png";
 
-import { useSelector } from "react-redux";
-import { selectActiveWallet } from "@/redux/wallet";
-
 function WalletViewReceive() {
-  const { preferences } = usePreferences();
+  const preferences = useSelector(selectPreferences);
   const wallet = useSelector(selectActiveWallet);
 
   const [skip, setSkip] = useState(0);
