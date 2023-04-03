@@ -24,6 +24,8 @@ try {
 function ElectrumService() {
   return {
     subscribeToAddress,
+    requestBalance,
+    requestAddressState,
   };
 
   function handleAddressSubscription(data) {
@@ -44,33 +46,22 @@ function ElectrumService() {
   }
 
   // demand the most up-to-date balance information for an address
-  // persist this information to the database
   async function requestBalance(address) {
     const { confirmed, unconfirmed } = await electrum.request(
       "blockchain.address.get_balance",
       address
     );
 
-    const addressBalance = confirmed + unconfirmed;
+    return confirmed + unconfirmed;
+  }
 
-    db.run(
-      `UPDATE addresses SET balance="${addressBalance}" WHERE address="${address}"`
+  async function requestAddressState(address) {
+    const addressState = await electrum.request(
+      "blockchain.address.subscribe",
+      address
     );
-
-    const wallet_id = resultToJson(
-      db.exec(`SELECT wallet_id FROM addresses WHERE address="${address}"`)
-    )[0].wallet_id;
-
-    const walletBalance = resultToJson(
-      db.exec(
-        `UPDATE wallets SET balance=(SELECT SUM(balance) FROM addresses WHERE wallet_id="${wallet_id}") RETURNING balance`
-      )
-    )[0].balance;
-
-    console.log("requestBalance", address, addressBalance, walletBalance);
-    await saveDatabase();
-
-    return walletBalance;
+    console.log("requestAddressState", address, addressState);
+    return addressState;
   }
 
   // handler function for updates received from electrum subscription
@@ -102,7 +93,6 @@ function ElectrumService() {
       new CustomEvent("balanceUpdate", { detail: balance })
     );
   }
-
 }
 
 export default ElectrumService;

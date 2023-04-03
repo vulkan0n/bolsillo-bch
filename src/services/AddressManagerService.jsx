@@ -13,6 +13,8 @@ function AddressManagerService() {
     getChangeAddresses,
     getUnusedAddresses,
     updateAddressState,
+    updateAddressBalance,
+    getAddressByState,
   };
 
   // --------------------------------
@@ -30,11 +32,11 @@ function AddressManagerService() {
   function getReceiveAddresses() {
     const result = resultToJson(
       db.exec(
-        `SELECT address FROM addresses WHERE wallet_id="${wallet_id}" AND change='0' ORDER BY hd_index`
+        `SELECT * FROM addresses WHERE wallet_id="${wallet_id}" AND change='0' ORDER BY hd_index`
       )
-    ).map((address) => address.address);
+    );
 
-    console.log("getReceiveAddresses", result);
+    //console.log("getReceiveAddresses", result);
     return result;
   }
 
@@ -58,19 +60,44 @@ function AddressManagerService() {
       )
     ).map((address) => address.address);
 
-    console.log("getUnusedAddress", result);
+    //console.log("getUnusedAddress", result);
     return result;
   }
 
   function updateAddressState(address, state) {
     const result = resultToJson(
       db.exec(
-        `UPDATE addresses SET state="${state}" WHERE address="${address}" AND state NOT LIKE "${state}" RETURNING *`
+        `UPDATE addresses SET state="${state}" WHERE address="${address}" RETURNING *`
       )
     );
     saveDatabase();
-    console.log(result);
+    //console.log(result);
     return result.length > 0;
+  }
+
+  function updateAddressBalance(address, balance) {
+    db.run(
+      `UPDATE addresses SET balance="${balance}" WHERE address="${address}"`
+    );
+
+    const walletBalance = resultToJson(
+      db.exec(
+        `UPDATE wallets SET balance=(SELECT SUM(balance) FROM addresses WHERE wallet_id="${wallet_id}") RETURNING balance`
+      )
+    )[0].balance;
+
+    console.log("requestBalance", address, balance, walletBalance);
+    saveDatabase();
+    return walletBalance;
+  }
+
+  function getAddressByState(addressState) {
+    console.log("getAddressByState", addressState);
+    const result = resultToJson(
+      db.exec(`SELECT * FROM addresses WHERE state LIKE "${addressState}"`)
+    );
+
+    return result.length > 0 ? result[0] : null;
   }
 }
 
