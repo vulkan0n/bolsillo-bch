@@ -16,38 +16,22 @@ function WalletViewSendConfirm() {
   const preferences = useSelector(selectPreferences);
   const navigate = useNavigate();
 
-  const [shouldInstantPay, setShouldInstantPay] = useState(false);
+  useEffect(function handleInstantPay() {
+    console.log(preferences);
+    if (preferences["allowInstantPay"] !== "true") {
+      return;
+    }
 
-  useEffect(
-    function handleInstantPay() {
-      if (shouldInstantPay) {
-        console.log("instapay!", amount);
-        confirmSend();
-      }
-    },
-    [shouldInstantPay]
-  );
+    const threshold = Number.parseInt(preferences["instantPayThreshold"]);
+    const invoiceAmount = Number.parseInt(
+      bchToSats(searchParams.get("amount") || 0)
+    );
 
-  useEffect(
-    function checkShouldInstantPay() {
-      console.log(preferences);
-      if (preferences["allowInstantPay"] !== "true") {
-        setShouldInstantPay(false);
-        return;
-      }
-
-      const threshold = Number.parseInt(preferences["instantPayThreshold"]);
-      const satoshis = Number.parseInt(
-        bchToSats(searchParams.get("amount") || 0)
-      );
-
-      if (satoshis > 0 && satoshis <= threshold) {
-        console.log("shouldInstantPay", satoshis, threshold);
-        setShouldInstantPay(true);
-      }
-    },
-    [preferences]
-  );
+    if (invoiceAmount > 0 && invoiceAmount <= threshold) {
+      console.log("instapay!", threshold, amount, invoiceAmount);
+      confirmSend();
+    }
+  }, []);
 
   function confirmSend() {
     const satoshis = Number.parseInt(bchToSats(amount));
