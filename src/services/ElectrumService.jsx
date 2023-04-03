@@ -4,7 +4,9 @@ import {
   ElectrumTransport,
 } from "electrum-cash";
 
-// TODO: allow user to select electrum server(s)
+import { store } from "@/redux";
+import { walletAddressStateUpdate } from "@/redux/wallet";
+
 const electrum = new ElectrumClient(
   "Selene.cash",
   "1.4",
@@ -13,7 +15,6 @@ const electrum = new ElectrumClient(
   ElectrumTransport.WSS.Scheme
 );
 
-// TODO: what happens if connection fails?
 try {
   await electrum.connect();
 } catch (e) {
@@ -21,6 +22,27 @@ try {
 }
 
 function ElectrumService() {
+  return {
+    subscribeToAddress,
+  };
+
+  function handleAddressSubscription(data) {
+    store.dispatch(walletAddressStateUpdate(data));
+  }
+
+  async function subscribeToAddress(address) {
+    try {
+      console.log("subscribing to", address);
+      await electrum.subscribe(
+        handleAddressSubscription,
+        "blockchain.address.subscribe",
+        address
+      );
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
   // demand the most up-to-date balance information for an address
   // persist this information to the database
   async function requestBalance(address) {
@@ -52,6 +74,7 @@ function ElectrumService() {
   }
 
   // handler function for updates received from electrum subscription
+  // handleAddressSubscription
   async function handleBalanceUpdate(update) {
     // TODO: compare initial balance state hash to state hash in DB
     if (!Array.isArray(update)) {

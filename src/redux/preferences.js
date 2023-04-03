@@ -6,6 +6,8 @@ import {
   createListenerMiddleware,
 } from "@reduxjs/toolkit";
 
+// TODO: revive "retreivePreferences" method from old commit...
+// Still need to restore from device, lol.
 const defaultPreferences = {
   activeWalletId: "1",
   localCurrency: "USD",
