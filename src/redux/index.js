@@ -1,5 +1,5 @@
 import { configureStore } from "@reduxjs/toolkit";
-import { walletReducer, walletMiddleware } from "./wallet";
+import { walletReducer, walletMiddleware, walletActivate } from "./wallet";
 import { preferencesReducer, preferencesMiddleware } from "./preferences";
 
 export const store = configureStore({
@@ -12,3 +12,6 @@ export const store = configureStore({
       .prepend(walletMiddleware.middleware)
       .prepend(preferencesMiddleware.middleware)
 });
+
+store.dispatch(walletActivate(store.getState().preferences.activeWalletId));
+

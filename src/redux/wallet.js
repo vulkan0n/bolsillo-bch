@@ -4,7 +4,7 @@ import {
   createSelector,
   createListenerMiddleware,
 } from "@reduxjs/toolkit";
-
+import { store } from "@/redux";
 import ElectrumService from "@/services/ElectrumService";
 import WalletService from "@/services/WalletService";
 import AddressManagerService from "@/services/AddressManagerService";
