@@ -26,6 +26,7 @@ function ElectrumService() {
     subscribeToAddress,
     requestBalance,
     requestAddressState,
+    requestUtxos,
   };
 
   function handleAddressSubscription(data) {
@@ -62,6 +63,17 @@ function ElectrumService() {
     );
 
     return addressState;
+  }
+
+  async function requestUtxos(address) {
+    const utxos = await electrum.request(
+      "blockchain.address.listunspent",
+      address
+    );
+
+    console.log("requestUtxos", address, utxos);
+
+    return utxos;
   }
 }
 

@@ -1,11 +1,13 @@
 import { configureStore } from "@reduxjs/toolkit";
-import { walletReducer, walletMiddleware, walletActivate } from "./wallet";
 import { preferencesReducer, preferencesMiddleware } from "./preferences";
+import { walletReducer, walletMiddleware, walletActivate } from "./wallet";
+import { utxoReducer } from "./utxo";
 
 export const store = configureStore({
   reducer: {
-    wallet: walletReducer,
     preferences: preferencesReducer,
+    wallet: walletReducer,
+    utxo: utxoReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware()
