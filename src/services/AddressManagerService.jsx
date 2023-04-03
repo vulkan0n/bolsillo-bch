@@ -1,13 +1,18 @@
 import DatabaseService from "./DatabaseService.jsx";
+import { store } from "@/redux";
+import { selectActiveWallet } from "@/redux/wallet";
 
-function AddressManagerService(wallet_id) {
+function AddressManagerService() {
   const { db, resultToJson, saveDatabase } = new DatabaseService();
+
+  const wallet_id = selectActiveWallet(store.getState()).id;
 
   return {
     registerAddress,
     getReceiveAddresses,
     getChangeAddresses,
     getUnusedAddresses,
+    updateAddressState,
   };
 
   // --------------------------------
@@ -55,6 +60,17 @@ function AddressManagerService(wallet_id) {
 
     console.log("getUnusedAddress", result);
     return result;
+  }
+
+  function updateAddressState(address, state) {
+    const result = resultToJson(
+      db.exec(
+        `UPDATE addresses SET state="${state}" WHERE address="${address}" AND state NOT LIKE "${state}" RETURNING *`
+      )
+    );
+    saveDatabase();
+    console.log(result);
+    return result.length > 0;
   }
 }
 

@@ -31,9 +31,8 @@ walletMiddleware.startListening({
   actionCreator: walletReady,
   effect: async (action, listenerApi) => {
     // set up initial address subscriptions
-    const addresses = new AddressManagerService(
-      listenerApi.getState().wallet.id
-    ).getReceiveAddresses();
+    const addressManager = new AddressManagerService();
+    const addresses = addressManager.getReceiveAddresses();
     addresses.forEach((address) => Electrum.subscribeToAddress(address));
   },
 });
@@ -42,6 +41,15 @@ walletMiddleware.startListening({
   actionCreator: walletAddressStateUpdate,
   effect: async (action, listenerApi) => {
     console.log("walletAddressStateUpdate", action.payload);
+    if (!Array.isArray(action.payload)) return;
+
+    const address = action.payload[0];
+    const addressState = action.payload[1];
+
+    if (AddressManagerService().updateAddressState(address, addressState)) {
+      // get new utxos, history, balance for address
+      console.log("address state changed for", address);
+    }
   },
 });
 

@@ -103,10 +103,6 @@ function ElectrumService() {
     );
   }
 
-  async function updateAddressState(address, state) {
-    db.run(`UPDATE addresses SET state="${state}" WHERE address="${address}"`);
-    await saveDatabase();
-  }
 }
 
 export default ElectrumService;
