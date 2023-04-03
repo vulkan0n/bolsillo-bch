@@ -6,8 +6,6 @@ import {
   createListenerMiddleware,
 } from "@reduxjs/toolkit";
 
-// TODO: revive "retreivePreferences" method from old commit...
-// Still need to restore from device, lol.
 const defaultPreferences = {
   activeWalletId: "1",
   localCurrency: "USD",
@@ -20,6 +18,34 @@ const defaultPreferences = {
   qrCodeBackground: "#ffffff",
   qrCodeForeground: "#000000",
 };
+
+async function retrievePreferences() {
+  //Preferences.clear();
+  let keys = (await Preferences.keys()).keys;
+  if (keys.length !== Object.keys(defaultPreferences).length) {
+    console.log("resetting preferences...");
+    keys = Object.keys(defaultPreferences);
+    await Preferences.clear();
+  }
+  const preferences = (
+    await Promise.all(
+      await keys.map(async (key) => {
+        const current = (await Preferences.get({ key })).value;
+        if (current === null) {
+          await Preferences.set({ key, value: defaultPreferences[key] });
+          const newest = (await Preferences.get({ key })).value;
+          return { [key]: newest };
+        }
+        return { [key]: current };
+      })
+    )
+  ).reduce((acc, cur) => {
+    return { ...acc, ...cur };
+  }, {});
+  return preferences;
+}
+
+const initialState = await retrievePreferences();
 
 export const setPreference = createAction("preferences/set");
 const preferencesUpdated = createAction("preferences/updated");
@@ -40,14 +66,11 @@ preferencesMiddleware.startListening({
   },
 });
 
-export const preferencesReducer = createReducer(
-  defaultPreferences,
-  (builder) => {
-    builder.addCase("preferences/updated", (state, action) => {
-      state[action.payload.key] = action.payload.value;
-    });
-  }
-);
+export const preferencesReducer = createReducer(initialState, (builder) => {
+  builder.addCase("preferences/updated", (state, action) => {
+    state[action.payload.key] = action.payload.value;
+  });
+});
 
 export const selectPreferences = createSelector(
   (state) => state,
