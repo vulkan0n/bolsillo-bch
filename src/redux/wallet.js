@@ -45,7 +45,6 @@ walletMiddleware.startListening({
 walletMiddleware.startListening({
   actionCreator: walletAddressStateUpdate,
   effect: async (action, listenerApi) => {
-    console.log("walletAddressStateUpdate", action.payload);
     const AddressManager = new AddressManagerService();
 
     if (!Array.isArray(action.payload)) {
@@ -53,9 +52,12 @@ walletMiddleware.startListening({
         const address = AddressManager.getAddressByState(action.payload);
         if (address === null) {
           // one of our addresses changed while we were disconnected
-          console.log("yoink! address updated offline?", address, action.payload);
+          console.log(
+            "yoink! address updated offline?",
+            address,
+            action.payload
+          );
           AddressManager.getReceiveAddresses().forEach(async (address, i) => {
-            console.log("inside non-array state update foreach", i, address);
             const addressState = await Electrum.requestAddressState(
               address.address
             );
@@ -80,7 +82,10 @@ walletMiddleware.startListening({
       console.log("address state changed for", address);
 
       const balance = await Electrum.requestBalance(address);
-      const walletBalance = AddressManager.updateAddressBalance(address, balance);
+      const walletBalance = AddressManager.updateAddressBalance(
+        address,
+        balance
+      );
       listenerApi.dispatch(walletBalanceUpdate(walletBalance));
     }
   },

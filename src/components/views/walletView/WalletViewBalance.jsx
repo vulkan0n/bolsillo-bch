@@ -10,8 +10,6 @@ function WalletViewBalance() {
 
   const dispatch = useDispatch();
 
-  console.log("WalletViewBalance", preferences);
-
   const hideBalance = preferences["hideAvailableBalance"] === "true";
   const preferLocal = preferences["preferLocalCurrency"] === "true";
   const denominateSats = preferences["denominateSats"] === "true";

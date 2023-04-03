@@ -92,7 +92,6 @@ function AddressManagerService() {
   }
 
   function getAddressByState(addressState) {
-    console.log("getAddressByState", addressState);
     const result = resultToJson(
       db.exec(`SELECT * FROM addresses WHERE state LIKE "${addressState}"`)
     );
