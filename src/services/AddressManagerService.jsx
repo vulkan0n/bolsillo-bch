@@ -56,7 +56,7 @@ function AddressManagerService() {
   function getUnusedAddresses(limit = 5) {
     const result = resultToJson(
       db.exec(
-        `SELECT address FROM addresses WHERE wallet_id=${wallet_id} AND ntxin < 1 AND ntxout < 1 AND change='0' ORDER BY hd_index ASC LIMIT ${limit}`
+        `SELECT address FROM addresses WHERE wallet_id=${wallet_id} AND state IS NULL AND change='0' ORDER BY hd_index ASC LIMIT ${limit}`
       )
     ).map((address) => address.address);
 

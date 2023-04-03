@@ -20,12 +20,11 @@ function initializeTables() {
     "CREATE TABLE IF NOT EXISTS wallets (id integer primary key, name text not null, mnemonic text unique not null, derivation text default \"m/44'/0'/0'\", date_created default CURRENT_TIMESTAMP, key_viewed text, key_verified text, balance int default 0);";
   db.run(q);
   q =
-    "CREATE TABLE IF NOT EXISTS addresses (address text primary key, wallet_id int not null, hd_index int not null, balance int default 0, prefix text default 'bitcoincash', ntxout int default 0, ntxin int default 0, change int default 0, state text default null)";
+    "CREATE TABLE IF NOT EXISTS addresses (address text primary key, wallet_id int not null, hd_index int not null, balance int default 0, change int default 0, state text default null)";
   db.run(q);
   q =
-    "CREATE TABLE IF NOT EXISTS utxos (address text not null, txid text not null, outpoint int not null, scriptHash text not null, balance int)";
+    "CREATE TABLE IF NOT EXISTS utxos (address text not null, txid text not null, outpoint int not null, height int not null, balance int)";
   db.run(q);
-
 }
 
 initializeTables();
@@ -37,9 +36,20 @@ function DatabaseService() {
     resultToJson,
   };
 
-  async function saveDatabase() {
+  let flushPending = false;
+  function saveDatabase() {
+    flushPending = true;
+    setTimeout(() => {
+      if (flushPending) {
+        flushDatabase();
+        flushPending = false;
+      }
+    }, 250);
+  }
+
+  async function flushDatabase() {
     const data = db.export();
-    console.log("saveDatabase", data);
+    console.log("flushDatabase", data);
 
     await Filesystem.writeFile({
       path: "db/selene.db",
