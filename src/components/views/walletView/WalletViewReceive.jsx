@@ -1,27 +1,34 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
+import { useSelector } from "react-redux";
+
 import { Clipboard } from "@capacitor/clipboard";
 import { QRCode } from "react-qrcode-logo";
 
-import WalletService from "@/services/WalletService";
-import ScannerButton from "./ScannerButton";
+import { selectActiveWallet } from "@/redux/wallet";
+import { selectPreferences } from "@/redux/preferences";
 
-import usePreferences from "@/hooks/usePreferences";
+import WalletService from "@/services/WalletService";
+import AddressManagerService from "@/services/AddressManagerService";
+import ScannerButton from "./ScannerButton";
 
 import seleneLogo from "@/assets/selene-logo.png";
 import bchLogo from "@/assets/bch-logo.png";
 
 function WalletViewReceive() {
-  const [preferences] = usePreferences();
-
-  // TODO: fetch active wallet from user preferences/DB
-  const activeWalletKey = "Selene Default";
-  const wallet = new WalletService().loadWallet(activeWalletKey);
+  const preferences = useSelector(selectPreferences);
+  const wallet = useSelector(selectActiveWallet);
 
   const [skip, setSkip] = useState(0);
   const [invoiceAmount, setInvoiceAmount] = useState(0);
   const [isScanning, setIsScanning] = useState(false);
 
-  const address = wallet.generateAddress(0 + skip);
+  const unusedAddresses = useMemo(
+    () => new AddressManagerService(wallet.id).getUnusedAddresses(),
+    [wallet]
+  );
+
+  const address = unusedAddresses[(0 + skip) % unusedAddresses.length];
+
   const formattedAddress = (() => {
     const split = address.split(":");
     return split.length > 1 ? split[1] : split[0];
@@ -49,7 +56,10 @@ function WalletViewReceive() {
         <>
           <div className="py-2">
             <div className="flex justify-center">
-              <div className="border border-4 border-zinc-300 my-2">
+              <div
+                className="border border-4 border-zinc-300 my-2 cursor-pointer"
+                onClick={copyAddressToClipboard}
+              >
                 <QRCode
                   value={address}
                   size={200}

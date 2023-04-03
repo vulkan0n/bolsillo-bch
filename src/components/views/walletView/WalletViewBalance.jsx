@@ -1,9 +1,14 @@
-import { useState } from "react";
 import { SATOSHI } from "@/util/sats";
-import usePreferences from "@/hooks/usePreferences";
 
-function WalletViewBalance({ balance }) {
-  const [preferences, setPreference] = usePreferences();
+import { useSelector, useDispatch } from "react-redux";
+import { selectActiveWallet } from "@/redux/wallet";
+import { selectPreferences, setPreference } from "@/redux/preferences";
+
+function WalletViewBalance() {
+  const { balance } = useSelector(selectActiveWallet);
+  const preferences = useSelector(selectPreferences);
+
+  const dispatch = useDispatch();
 
   const hideBalance = preferences["hideAvailableBalance"] === "true";
   const preferLocal = preferences["preferLocalCurrency"] === "true";
@@ -16,11 +21,15 @@ function WalletViewBalance({ balance }) {
     denominateSats ? sats : `${(sats / SATOSHI).toFixed(8)}`;
 
   const handleHideBalance = () => {
-    setPreference("hideAvailableBalance", !hideBalance);
+    dispatch(
+      setPreference({ key: "hideAvailableBalance", value: !hideBalance })
+    );
   };
 
   const handleFlipCurrency = () => {
-    setPreference("preferLocalCurrency", !preferLocal);
+    dispatch(
+      setPreference({ key: "preferLocalCurrency", value: !preferLocal })
+    );
   };
 
   const formattedBalance = hideBalance

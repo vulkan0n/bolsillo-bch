@@ -4,9 +4,10 @@ import {
   decodeCashAddressFormatWithoutPrefix,
 } from "@bitauth/libauth";
 
-function validateInvoiceString(invoice) {
+export function validateInvoiceString(invoice) {
   const address = invoice.split("?")[0];
-  const amount = invoice.match(/amount=([0-9]*\.?[0-9]{0,8})/)[1] || "0";
+  const amountMatch = invoice.match(/amount=([0-9]*\.?[0-9]{0,8})/);
+  const amount = amountMatch === null ? "0" : amountMatch[1];
 
   const valid =
     typeof (address.includes(":")
@@ -17,5 +18,3 @@ function validateInvoiceString(invoice) {
 
   return { valid, address, amount, query };
 }
-
-export default validateInvoiceString;

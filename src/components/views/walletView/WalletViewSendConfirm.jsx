@@ -1,22 +1,19 @@
 import { useState, useEffect } from "react";
-import {
-  useParams,
-  useSearchParams,
-  useOutletContext,
-  useNavigate,
-} from "react-router-dom";
+import { useParams, useSearchParams, useNavigate } from "react-router-dom";
 import { bchToSats, satsToBch } from "@/util/sats";
-import usePreferences from "@/hooks/usePreferences";
+import { useSelector } from "react-redux";
+import { selectActiveWallet } from "@/redux/wallet";
+import { selectPreferences } from "@/redux/preferences";
 
 function WalletViewSendConfirm() {
   const [searchParams, setSearchParams] = useSearchParams();
   const { address } = useParams();
-  const { balance } = useOutletContext();
+  const { balance } = useSelector(selectActiveWallet);
 
   const [amount, setAmount] = useState(searchParams.get("amount") || "0");
   const [message, setMessage] = useState("");
 
-  const [preferences] = usePreferences();
+  const preferences = useSelector(selectPreferences);
   const navigate = useNavigate();
 
   const [shouldInstantPay, setShouldInstantPay] = useState(false);
@@ -61,10 +58,14 @@ function WalletViewSendConfirm() {
       return;
     }
 
-    console.log("sending transaction...", satoshis);
-    navigate("/wallet/send/success");
-
     // sign and broadcast transaction
+    const success = wallet.sendToAddress(address, satoshis);
+
+    if (success) {
+      navigate("/wallet/send/success");
+    } else {
+      setMessage("Transaction failed! Try again");
+    }
   }
 
   function handleKeypadPress(key) {

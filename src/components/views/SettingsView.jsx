@@ -1,12 +1,18 @@
-import usePreferences from "@/hooks/usePreferences";
 import { bchToSats, satsToBch, DUST_LIMIT } from "@/util/sats";
+import WalletService from "@/services/WalletService";
+
+import { useSelector, useDispatch } from "react-redux";
+import { selectPreferences, setPreference } from "@/redux/preferences";
 
 function SettingsView() {
-  const [preferences, setPreference] = usePreferences();
+  const dispatch = useDispatch();
+  const preferences = useSelector(selectPreferences);
 
   function handleSettingsUpdate(key, value) {
-    setPreference(key, value);
+    dispatch(setPreference({ key, value }));
   }
+
+  const wallets = new WalletService().getWallets();
 
   return (
     <>
@@ -47,15 +53,15 @@ function SettingsView() {
             Manage Wallets
           </div>
           <div className="collapse-content bg-zinc-200 text-zinc-700 rounded-sm divide-y divide-zinc-300">
-            <a
-              href="/settings/wallet/Selene Default"
-              className="w-full block p-2"
-            >
-              Selene Default
-            </a>
-            <a href="/settings/wallet/Selene Test" className="w-full block p-2">
-              Selene Test
-            </a>
+            {wallets.map((wallet) => (
+              <a
+                key={wallet.name}
+                href={`/settings/wallet/${wallet.id}`}
+                className="w-full block p-2"
+              >
+                {wallet.name}
+              </a>
+            ))}
           </div>
         </div>
 
