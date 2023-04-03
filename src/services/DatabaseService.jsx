@@ -30,13 +30,14 @@ function initializeTables() {
 initializeTables();
 
 function DatabaseService() {
+  let flushPending = false;
+
   return {
     saveDatabase,
     db,
     resultToJson,
   };
 
-  let flushPending = false;
   function saveDatabase() {
     flushPending = true;
     setTimeout(() => {

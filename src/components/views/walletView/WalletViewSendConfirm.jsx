@@ -95,6 +95,7 @@ function WalletViewSendConfirm() {
     }
   }
 
+  // TODO: allow entry in local currency
   const unit = "BCH";
   const formattedAddress = address.includes(":")
     ? address.split(":")[1]
