@@ -5,10 +5,10 @@ function WalletService() {
   const { db, resultToJson, saveDatabase } = new DatabaseService();
 
   return {
-    boot,
-    createWallet,
     getWallets,
     getWalletById,
+    boot,
+    createWallet,
   };
 
   // ----------------------------
@@ -32,16 +32,21 @@ function WalletService() {
   // ----------------------------
 
   // load a wallet, create a wallet if none exist
-  // TODO: handle no-wallet case better
-  async function boot(wallet_id) {
-    console.log("booting with wallet", wallet_id);
-    const wallets = getWallets();
+  function boot(wallet_id) {
+    const wallet = getWalletById(wallet_id);
 
-    if (wallets.length === 0) {
-      await createWallet("Selene Default");
+    if (wallet === null) {
+      const wallets = getWallets();
+
+      // if no wallet exists, create one and return it
+      if (wallets.length === 0) {
+        return createWallet("Selene Default");
+      }
+
+      // return lowest-index wallet if requested wallet doesn't exist
+      return wallets[0];
     }
 
-    const wallet = getWalletById(wallet_id);
     console.log("boot got", wallet);
     return wallet;
   }
@@ -50,7 +55,7 @@ function WalletService() {
 
   // generate a new wallet from a randomly generated seed phrase
   // persist the new wallet in the database
-  async function createWallet(name, derivation = "m/44'/0'/0'") {
+  function createWallet(name, derivation = "m/44'/0'/0'") {
     const mnemonic = bip39.generateMnemonic();
 
     const result = db.run(
@@ -58,23 +63,19 @@ function WalletService() {
     );
 
     console.log("creating wallet", name, mnemonic, result);
-
-    await saveDatabase();
-
+    saveDatabase();
     return result;
   }
-
-  // ----------------------------
 }
 
 export default WalletService;
 
-// otherwise let's register the first GAP_LIMIT addresses in db
-/*if (addresses.length === 0) {
-      const ADDRESS_GAP_LIMIT = 20; // BIP-44 gap limit; TODO: move to constants?
-      for (let i = 0; i < ADDRESS_GAP_LIMIT / 4; i++) {
-        const address = wallet.generateAddress(i);
-        wallet.registerAddress(address, i);
-      }
-      await saveDatabase();
-    }*/
+/*
+if (addresses.length < 0) {
+    const ADDRESS_GAP_LIMIT = 20 / 4; // BIP-44 gap limit is 20
+    for (let i = 0; i < ADDRESS_GAP_LIMIT / 4; i++) {
+      const address = hdWallet.generateAddress(i);
+      addressManager.registerAddress(address, i);
+    }
+}
+*/

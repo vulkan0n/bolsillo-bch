@@ -7,6 +7,7 @@ import {
 
 import { store } from "@/redux";
 import { utxoRequest } from "@/redux/utxo";
+import { setPreference } from "@/redux/preferences";
 
 import ElectrumService from "@/services/ElectrumService";
 import WalletService from "@/services/WalletService";
@@ -27,7 +28,7 @@ walletMiddleware.startListening({
   effect: async (action, listenerApi) => {
     const wallet_id = action.payload;
     console.log("got walletActivate", wallet_id);
-    const wallet = await new WalletService().boot(wallet_id);
+    const wallet = new WalletService().boot(wallet_id);
     listenerApi.dispatch(walletReady(wallet));
   },
 });
@@ -36,6 +37,12 @@ walletMiddleware.startListening({
 walletMiddleware.startListening({
   actionCreator: walletReady,
   effect: async (action, listenerApi) => {
+    // save active wallet ID to preferences
+    const wallet = action.payload;
+    listenerApi.dispatch(
+      setPreference({ key: "activeWalletId", value: wallet.id })
+    );
+
     // set up initial address subscriptions
     const addresses = new AddressManagerService().getReceiveAddresses();
     addresses.forEach((address) =>
@@ -48,33 +55,36 @@ walletMiddleware.startListening({
 walletMiddleware.startListening({
   actionCreator: walletAddressStateUpdate,
   effect: async (action, listenerApi) => {
-    // handle initial subscription response
+    // initial subscription response doesn't have address for context
     if (!Array.isArray(action.payload)) {
       const payload = handleAddressSubscriptionInit(action.payload);
       if (payload) {
         listenerApi.dispatch(walletAddressStateUpdate(payload));
       }
-    } else {
-      const AddressManager = new AddressManagerService();
-      const [address, addressState] = action.payload;
+      return;
+    }
 
-      if (AddressManager.updateAddressState(address, addressState)) {
-        // get new utxos, history, balance for address
-        console.log("address state changed for", address);
+    const AddressManager = new AddressManagerService();
+    const [address, addressState] = action.payload;
 
-        const balance = await Electrum.requestBalance(address);
-        const walletBalance = AddressManager.updateAddressBalance(
-          address,
-          balance
-        );
-        listenerApi.dispatch(walletBalanceUpdate(walletBalance));
+    // check downloaded state against local state
+    if (AddressManager.updateAddressState(address, addressState)) {
+      // get new utxos, history, balance for address
+      console.log("address state changed for", address);
 
-        listenerApi.dispatch(utxoRequest(address));
-      }
+      const balance = await Electrum.requestBalance(address);
+      const walletBalance = AddressManager.updateAddressBalance(
+        address,
+        balance
+      );
+      listenerApi.dispatch(walletBalanceUpdate(walletBalance));
+
+      listenerApi.dispatch(utxoRequest(address));
     }
   },
 });
 
+// blockchain.address.subscribe
 function handleAddressSubscriptionInit(payload) {
   const AddressManager = new AddressManagerService();
   // if initial subscription is null, address is unused, so don't proceed

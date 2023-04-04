@@ -13,6 +13,8 @@ try {
   console.warn("New Database File");
 }
 
+// TODO: store mnemonics in a separate file so they can be encrypted
+// and not persist in memory unless needed
 let db = new SQL.Database(dbFile.data);
 
 function initializeTables() {
@@ -25,7 +27,10 @@ function initializeTables() {
   q =
     "CREATE TABLE IF NOT EXISTS utxos (address text not null, txid text not null, outpoint int not null, height int not null, balance int)";
   db.run(q);
+
+  q = "CREATE TABLE IF NOT EXISTS transactions (txid text primary key, wallet_id int not null, height int not null, amount int not null, description text)";
 }
+
 
 initializeTables();
 

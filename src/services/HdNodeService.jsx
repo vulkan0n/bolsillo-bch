@@ -1,33 +1,19 @@
 import {
-  instantiateSecp256k1,
-  instantiateRipemd160,
-  instantiateSha256,
-  instantiateSha512,
-  generatePrivateKey,
   deriveHdPrivateNodeFromSeed,
   deriveHdPrivateNodeChild,
   deriveHdPath,
   encodeCashAddress,
 } from "@bitauth/libauth";
 
-const secp256k1 = await instantiateSecp256k1();
-const ripemd160 = await instantiateRipemd160();
-const sha256 = await instantiateSha256();
-const sha512 = await instantiateSha512();
+import { crypto } from "@/util/crypto";
+const { secp256k1, ripemd160, sha256, sha512 } = crypto;
 
-const crypto = {
-  ripemd160,
-  secp256k1,
-  sha256,
-  sha512,
-};
-
-function HotWalletService(wallet) {
-  console.log("HotWalletService", wallet);
-  const seed = bip39.mnemonicToSeedSync(wallet.mnemonic);
+function HdNodeService(mnemonic, derivation = "m/44'/0'/0'") {
+  console.log("HdNodeService", wallet);
+  const seed = bip39.mnemonicToSeedSync(mnemonic);
   const hdMaster = deriveHdPrivateNodeFromSeed({ sha512: sha512 }, seed);
-  const hdMain = deriveHdPath(crypto, hdMaster, `${wallet.derivation}/0/0`);
-  const hdChange = deriveHdPath(crypto, hdMaster, `${wallet.derivation}/1/0`);
+  const hdMain = deriveHdPath(crypto, hdMaster, `${derivation}/0/0`);
+  const hdChange = deriveHdPath(crypto, hdMaster, `${derivation}/1/0`);
 
   return {
     generateAddress,
