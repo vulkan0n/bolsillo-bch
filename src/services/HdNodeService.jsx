@@ -1,3 +1,4 @@
+import * as bip39 from "bip39";
 import {
   deriveHdPrivateNodeFromSeed,
   deriveHdPrivateNodeChild,
@@ -5,11 +6,15 @@ import {
   encodeCashAddress,
 } from "@bitauth/libauth";
 
+import WalletService from "@/services/WalletService";
+
 import { crypto } from "@/util/crypto";
 const { secp256k1, ripemd160, sha256, sha512 } = crypto;
 
-function HdNodeService(mnemonic, derivation = "m/44'/0'/0'") {
-  console.log("HdNodeService", wallet);
+function HdNodeService(wallet_id) {
+  //console.log("HdNodeService", wallet_id);
+  const { mnemonic, derivation } = new WalletService().getWalletById(wallet_id);
+
   const seed = bip39.mnemonicToSeedSync(mnemonic);
   const hdMaster = deriveHdPrivateNodeFromSeed({ sha512: sha512 }, seed);
   const hdMain = deriveHdPath(crypto, hdMaster, `${derivation}/0/0`);
@@ -17,6 +22,7 @@ function HdNodeService(mnemonic, derivation = "m/44'/0'/0'") {
 
   return {
     generateAddress,
+    signTransaction,
     sendToAddress,
   };
 
@@ -32,6 +38,7 @@ function HdNodeService(mnemonic, derivation = "m/44'/0'/0'") {
     const hash = ripemd160.hash(sha256.hash(pubKey));
     const address = encodeCashAddress("bitcoincash", "P2PKH", hash);
 
+    //console.log("generateAddress", index, address);
     return address;
   }
 
@@ -39,4 +46,10 @@ function HdNodeService(mnemonic, derivation = "m/44'/0'/0'") {
   function sendToAddress(address, satoshis) {
     console.log("sending transaction...", satoshis, address);
   }
+
+  function signTransaction(tx_hex) {
+    return tx_hex;
+  }
 }
+
+export default HdNodeService;

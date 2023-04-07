@@ -53,7 +53,7 @@ function WalletViewSendConfirm() {
   }
 
   function goBack() {
-    navigate("/wallet/send");
+    navigate(-1);
   }
 
   function handleSlideToSend(event) {
@@ -247,9 +247,12 @@ function WalletViewSendConfirm() {
           </button>
         </div>
         <div className="flex-1">
-        <button onClick={confirmSend} className="btn bg-secondary text-white w-full h-full">
-          Confirm
-        </button>
+          <button
+            onClick={confirmSend}
+            className="btn bg-secondary text-white w-full h-full"
+          >
+            Confirm
+          </button>
           {/*<SlideToSend onConfirm={confirmSend} />*/}
         </div>
       </div>

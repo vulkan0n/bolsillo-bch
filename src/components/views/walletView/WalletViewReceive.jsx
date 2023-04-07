@@ -27,7 +27,7 @@ function WalletViewReceive() {
     [wallet]
   );
 
-  const address = unusedAddresses[(0 + skip) % unusedAddresses.length];
+  const address = unusedAddresses.length > 0 ? unusedAddresses[(0 + skip) % unusedAddresses.length].address : "";
 
   const formattedAddress = (() => {
     const split = address.split(":");

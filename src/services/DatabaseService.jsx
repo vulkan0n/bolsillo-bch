@@ -1,21 +1,24 @@
 import { Filesystem, Directory, Encoding } from "@capacitor/filesystem";
 import initSqlJs from "sql.js";
 
+const SELENE_DB_FILE = "db/selene.db";
+
 const SQL = await initSqlJs({ locateFile: (file) => "/sql-wasm.wasm" });
-let dbFile = "";
+let db = null;
+
 try {
-  dbFile = await Filesystem.readFile({
-    path: "db/selene.db",
+  // TODO: store mnemonics in a separate file so they can be encrypted
+  // and not persist in memory unless needed
+  const dbFile = await Filesystem.readFile({
+    path: SELENE_DB_FILE,
     directory: Directory.Library,
     encoding: Encoding.UTF8,
   });
+  db = new SQL.Database(dbFile.data.split(","));
 } catch (e) {
   console.warn("New Database File");
+  db = new SQL.Database();
 }
-
-// TODO: store mnemonics in a separate file so they can be encrypted
-// and not persist in memory unless needed
-let db = new SQL.Database(dbFile.data);
 
 function initializeTables() {
   let q =
@@ -28,14 +31,14 @@ function initializeTables() {
     "CREATE TABLE IF NOT EXISTS utxos (address text not null, txid text not null, outpoint int not null, height int not null, balance int)";
   db.run(q);
 
-  q = "CREATE TABLE IF NOT EXISTS transactions (txid text primary key, wallet_id int not null, height int not null, amount int not null, description text)";
+  q =
+    "CREATE TABLE IF NOT EXISTS transactions (txid text primary key, wallet_id int not null, height int not null, amount int not null, description text)";
 }
-
 
 initializeTables();
 
 function DatabaseService() {
-  let flushPending = false;
+  let flushPending = null;
 
   return {
     saveDatabase,
@@ -44,25 +47,25 @@ function DatabaseService() {
   };
 
   function saveDatabase() {
-    flushPending = true;
-    setTimeout(() => {
-      if (flushPending) {
-        flushDatabase();
-        flushPending = false;
-      }
-    }, 250);
+    clearTimeout(flushPending);
+
+    flushPending = setTimeout(async () => {
+      await flushDatabase();
+    }, 300);
   }
 
   async function flushDatabase() {
     const data = db.export();
-    console.log("flushDatabase", data);
 
-    await Filesystem.writeFile({
-      path: "db/selene.db",
-      data: data,
+    const result = await Filesystem.writeFile({
+      path: SELENE_DB_FILE,
+      data: data.toString(),
       directory: Directory.Library,
       encoding: Encoding.UTF8,
+      recursive: true,
     });
+
+    console.log("flushDatabase", result);
   }
 
   function resultToJson(result) {

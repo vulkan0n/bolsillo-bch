@@ -1,14 +1,17 @@
-import DatabaseService from "./DatabaseService.jsx";
+import DatabaseService from "@/services/DatabaseService";
+import HdNodeService from "@/services/HdNodeService";
 import { store } from "@/redux";
 import { selectActiveWallet } from "@/redux/wallet";
 
-function AddressManagerService() {
-  const { db, resultToJson, saveDatabase } = new DatabaseService();
+function AddressManagerService(id) {
+  const wallet_id = id ? id : selectActiveWallet(store.getState()).id;
+  //console.log("AddressManagerService", wallet_id);
 
-  const wallet_id = selectActiveWallet(store.getState()).id;
+  const { db, resultToJson, saveDatabase } = new DatabaseService();
 
   return {
     registerAddress,
+    populateAddresses,
     getReceiveAddresses,
     getChangeAddresses,
     getUnusedAddresses,
@@ -26,17 +29,44 @@ function AddressManagerService() {
     db.run(
       `INSERT INTO addresses (address, wallet_id, hd_index) VALUES ("${address}", "${wallet_id}", "${index}")`
     );
+
+    saveDatabase();
+  }
+
+  function populateAddresses() {
+    /*db.run("DELETE FROM addresses;");
+    saveDatabase();*/
+
+    const ADDRESS_GAP_LIMIT = 20 / 4; // BIP-44 gap limit is 20
+    const unused = getUnusedAddresses(ADDRESS_GAP_LIMIT);
+
+    if (unused.length < ADDRESS_GAP_LIMIT) {
+      const latestAddress = getReceiveAddresses(1)[0] || "";
+      const latestIndex = latestAddress !== "" ? latestAddress.hd_index + 1 : 0;
+
+      const hdWallet = new HdNodeService(wallet_id);
+      for (
+        let i = latestIndex;
+        i < ADDRESS_GAP_LIMIT - unused.length + latestIndex;
+        i++
+      ) {
+        const newAddress = hdWallet.generateAddress(i);
+        registerAddress(newAddress, i);
+      }
+    }
   }
 
   // get all active receive addresses for this wallet
-  function getReceiveAddresses() {
+  function getReceiveAddresses(limit) {
     const result = resultToJson(
       db.exec(
-        `SELECT * FROM addresses WHERE wallet_id="${wallet_id}" AND change='0' ORDER BY hd_index`
+        `SELECT * FROM addresses WHERE wallet_id="${wallet_id}" AND change='0' ORDER BY hd_index DESC ${
+          limit ? `LIMIT ${Number.parseInt(limit)}` : ""
+        }`
       )
     );
 
-    //console.log("getReceiveAddresses", result);
+    //console.log("getReceiveAddresses", result, limit);
     return result;
   }
 
@@ -44,7 +74,7 @@ function AddressManagerService() {
   function getChangeAddresses() {
     const result = resultToJson(
       db.exec(
-        `SELECT address, hd_index FROM addresses WHERE wallet_id=${wallet_id} AND change='1' ORDER BY hd_index`
+        `SELECT address, hd_index FROM addresses WHERE wallet_id=${wallet_id} AND change='1' ORDER BY hd_index DESC`
       )
     );
 
@@ -58,9 +88,9 @@ function AddressManagerService() {
       db.exec(
         `SELECT address FROM addresses WHERE wallet_id=${wallet_id} AND state IS NULL AND change='0' ORDER BY hd_index ASC LIMIT ${limit}`
       )
-    ).map((address) => address.address);
+    ).map((address) => address);
 
-    //console.log("getUnusedAddress", result);
+    //=console.log("getUnusedAddress", result);
     return result;
   }
 

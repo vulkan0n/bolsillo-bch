@@ -44,7 +44,9 @@ walletMiddleware.startListening({
     );
 
     // set up initial address subscriptions
-    const addresses = new AddressManagerService().getReceiveAddresses();
+    const addressManager = new AddressManagerService(wallet.id);
+    const addresses = addressManager.getReceiveAddresses();
+    console.log("walletReady addresses", addresses);
     addresses.forEach((address) =>
       Electrum.subscribeToAddress(address.address)
     );
@@ -57,10 +59,7 @@ walletMiddleware.startListening({
   effect: async (action, listenerApi) => {
     // initial subscription response doesn't have address for context
     if (!Array.isArray(action.payload)) {
-      const payload = handleAddressSubscriptionInit(action.payload);
-      if (payload) {
-        listenerApi.dispatch(walletAddressStateUpdate(payload));
-      }
+      handleAddressSubscriptionInit(action.payload, listenerApi);
       return;
     }
 
@@ -85,7 +84,7 @@ walletMiddleware.startListening({
 });
 
 // blockchain.address.subscribe
-function handleAddressSubscriptionInit(payload) {
+function handleAddressSubscriptionInit(payload, listenerApi) {
   const AddressManager = new AddressManagerService();
   // if initial subscription is null, address is unused, so don't proceed
   if (payload !== null) {
@@ -105,7 +104,9 @@ function handleAddressSubscriptionInit(payload) {
         // don't continue scanning if address is unused
         if (addressState !== null) {
           // return up-to-date address state
-          return [address.address, addressState];
+          listenerApi.dispatch(
+            walletAddressStateUpdate([address.address, addressState])
+          );
         }
       });
     }

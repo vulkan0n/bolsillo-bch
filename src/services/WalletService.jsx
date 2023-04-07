@@ -1,4 +1,5 @@
-import DatabaseService from "./DatabaseService.jsx";
+import DatabaseService from "./DatabaseService";
+import AddressManagerService from "./AddressManagerService";
 import * as bip39 from "bip39";
 
 function WalletService() {
@@ -33,19 +34,22 @@ function WalletService() {
 
   // load a wallet, create a wallet if none exist
   function boot(wallet_id) {
-    const wallet = getWalletById(wallet_id);
+    let wallet = getWalletById(wallet_id);
 
     if (wallet === null) {
       const wallets = getWallets();
 
       // if no wallet exists, create one and return it
       if (wallets.length === 0) {
-        return createWallet("Selene Default");
+        wallet = createWallet("Selene Default");
+      } else {
+        // return lowest-index wallet if requested wallet doesn't exist
+        wallet = wallets[0];
       }
-
-      // return lowest-index wallet if requested wallet doesn't exist
-      return wallets[0];
     }
+
+    const addressManager = new AddressManagerService(wallet_id);
+    addressManager.populateAddresses();
 
     console.log("boot got", wallet);
     return wallet;
@@ -58,11 +62,13 @@ function WalletService() {
   function createWallet(name, derivation = "m/44'/0'/0'") {
     const mnemonic = bip39.generateMnemonic();
 
-    const result = db.run(
-      `INSERT INTO wallets (name, mnemonic, derivation) VALUES ("${name}","${mnemonic}","${derivation}") RETURNING *`
-    );
+    const result = resultToJson(
+      db.exec(
+        `INSERT INTO wallets (name, mnemonic, derivation) VALUES ("${name}","${mnemonic}","${derivation}") RETURNING *`
+      )
+    )[0];
 
-    console.log("creating wallet", name, mnemonic, result);
+    console.log("creating wallet", result);
     saveDatabase();
     return result;
   }
@@ -71,11 +77,4 @@ function WalletService() {
 export default WalletService;
 
 /*
-if (addresses.length < 0) {
-    const ADDRESS_GAP_LIMIT = 20 / 4; // BIP-44 gap limit is 20
-    for (let i = 0; i < ADDRESS_GAP_LIMIT / 4; i++) {
-      const address = hdWallet.generateAddress(i);
-      addressManager.registerAddress(address, i);
-    }
-}
-*/
+ */
