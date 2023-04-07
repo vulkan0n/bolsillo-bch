@@ -17,8 +17,9 @@ Target is to build up to 10 million daily active users by making joining the BCH
 
 ## Building for Android
 1. Install Android Studio
-2. `npx cap sync`
-3. `npx cap run android`
+2. `yarn run build`
+3. `npx cap sync`
+4. `npx cap run android`
 
 ## Building for iOS
 - Coming Soon
