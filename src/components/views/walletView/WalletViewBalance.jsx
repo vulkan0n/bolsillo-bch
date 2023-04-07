@@ -45,11 +45,11 @@ function WalletViewBalance() {
       <div className="font-bold text-zinc-400 text-md tracking-wide">
         Available Balance
       </div>
-      <div onClick={handleHideBalance} className="text-2xl text-zinc-200">
-        {preferLocal ? formattedLocalBalance : formattedBalance}
+      <div className="text-2xl text-zinc-200">
+        <span onClick={handleHideBalance}>{preferLocal ? formattedLocalBalance : formattedBalance}</span>
       </div>
-      <div onClick={handleFlipCurrency} className="text-md text-zinc-400">
-        {preferLocal ? formattedBalance : formattedLocalBalance}
+      <div className="text-md text-zinc-400">
+        <span onClick={handleFlipCurrency}>{preferLocal ? formattedBalance : formattedLocalBalance}</span>
       </div>
     </div>
   );

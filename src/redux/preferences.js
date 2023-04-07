@@ -48,27 +48,24 @@ async function retrievePreferences() {
 const initialState = await retrievePreferences();
 
 export const setPreference = createAction("preferences/set");
-const preferencesUpdated = createAction("preferences/updated");
 
 export const preferencesMiddleware = createListenerMiddleware();
 
 preferencesMiddleware.startListening({
   actionCreator: setPreference,
   effect: async (action, listenerApi) => {
-    listenerApi.cancelActiveListeners();
     const payload = {
       key: action.payload.key,
       value: action.payload.value.toString(),
     };
     console.log("prefs update:", payload);
-    await Preferences.set(payload);
-    listenerApi.dispatch(preferencesUpdated(payload));
+    Preferences.set(payload);
   },
 });
 
 export const preferencesReducer = createReducer(initialState, (builder) => {
-  builder.addCase("preferences/updated", (state, action) => {
-    state[action.payload.key] = action.payload.value;
+  builder.addCase("preferences/set", (state, action) => {
+    state[action.payload.key] = action.payload.value.toString();
   });
 });
 

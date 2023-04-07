@@ -52,6 +52,17 @@ function WalletViewSendConfirm() {
     }
   }
 
+  function goBack() {
+    navigate("/wallet/send");
+  }
+
+  function handleSlideToSend(event) {
+    console.log("handleSlideToSend", event);
+    if (event.target.value >= 100) {
+      confirmSend();
+    }
+  }
+
   function handleKeypadPress(key) {
     setMessage("");
 
@@ -97,6 +108,8 @@ function WalletViewSendConfirm() {
 
   // TODO: allow entry in local currency
   const unit = "BCH";
+
+  // TODO: tap formatted address to toggle long/shortform (preference)
   const formattedAddress = address.includes(":")
     ? address.split(":")[1]
     : address;
@@ -224,13 +237,56 @@ function WalletViewSendConfirm() {
         </div>
       </div>
 
-      <div className="text-center">
-        <button onClick={confirmSend} className="btn btn-primary mt-3 w-full">
+      <div className="flex mt-3 gap-x-1">
+        <div className="basis-1/4">
+          <button
+            onClick={goBack}
+            className="btn text-center border-2 border-zinc-200 w-full"
+          >
+            Back
+          </button>
+        </div>
+        <div className="flex-1">
+        <button onClick={confirmSend} className="btn bg-secondary text-white w-full h-full">
           Confirm
         </button>
+          {/*<SlideToSend onConfirm={confirmSend} />*/}
+        </div>
       </div>
     </div>
   );
 }
 
 export default WalletViewSendConfirm;
+
+function SlideToSend({ onConfirm }) {
+  const [percent, setPercent] = useState(0);
+
+  function handleSlide(event) {
+    setPercent(event.target.value);
+
+    if (event.target.value >= 100) {
+      onConfirm();
+      setPercent(0);
+    }
+  }
+
+  return (
+    <input
+      type="range"
+      min="0"
+      max="100"
+      className="range range-lg justify-center h-full"
+      step="1"
+      value={percent}
+      onChange={handleSlide}
+      onPointerDown={() => setPercent(0)}
+      onPointerUp={() =>
+        setTimeout(() => {
+          console.log("pointerup");
+          setPercent(0);
+        }, 25 + Number.parseInt(percent) * 1.5)
+      }
+    />
+  );
+}
