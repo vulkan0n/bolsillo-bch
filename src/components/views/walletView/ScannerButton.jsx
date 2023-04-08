@@ -10,21 +10,20 @@ function ScannerButton({ onScanStart, onScanEnd }) {
   const navigate = useNavigate();
   const [isScanning, setIsScanning] = useState(false);
 
+  const prepare = async () => {
+    try {
+      const status = await BarcodeScanner.checkPermission({ force: false });
+    } catch (e) {
+      return;
+    }
+
+    if (status.granted) {
+      BarcodeScanner.prepare();
+    }
+  };
+
   useEffect(function prepareScanner() {
-    const prepare = async () => {
-      try {
-        const status = await BarcodeScanner.checkPermission({ force: false });
-      } catch (e) {
-        return;
-      }
-
-      if (status.granted) {
-        BarcodeScanner.prepare();
-      }
-    };
-
     prepare();
-
     return () => {
       stopScan();
     };
@@ -33,13 +32,6 @@ function ScannerButton({ onScanStart, onScanEnd }) {
   useEffect(
     function resetScanner() {
       if (!isScanning) {
-        const prepare = async () => {
-          try {
-            await BarcodeScanner.prepare();
-          } catch (e) {
-            return;
-          }
-        };
         prepare();
       }
     },
@@ -90,7 +82,7 @@ function ScannerButton({ onScanStart, onScanEnd }) {
     onScanEnd();
   }
 
-  const toggleScanner = async () => {
+  const toggleScanner = () => {
     isScanning ? stopScan() : startScan();
   };
 
