@@ -23,7 +23,6 @@ function HdNodeService(wallet_id) {
   return {
     generateAddress,
     signTransaction,
-    sendToAddress,
   };
 
   // raw address generation function
@@ -40,11 +39,6 @@ function HdNodeService(wallet_id) {
 
     //console.log("generateAddress", index, address);
     return address;
-  }
-
-  // cope and seethe
-  function sendToAddress(address, satoshis) {
-    console.log("sending transaction...", satoshis, address);
   }
 
   function signTransaction(tx_hex) {

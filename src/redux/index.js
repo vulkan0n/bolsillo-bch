@@ -1,10 +1,16 @@
 import { configureStore } from "@reduxjs/toolkit";
-import { preferencesReducer, preferencesMiddleware } from "./preferences";
+import {
+  preferencesReducer,
+  preferencesMiddleware,
+  selectActiveWalletId,
+} from "./preferences";
 import { walletReducer, walletMiddleware, walletActivate } from "./wallet";
 import { utxoReducer } from "./utxo";
+import { syncReducer, syncMiddleware } from "./sync";
 
 export const store = configureStore({
   reducer: {
+    sync: syncReducer,
     preferences: preferencesReducer,
     wallet: walletReducer,
     utxo: utxoReducer,
@@ -12,8 +18,8 @@ export const store = configureStore({
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware()
       .prepend(walletMiddleware.middleware)
-      .prepend(preferencesMiddleware.middleware)
+      .prepend(syncMiddleware.middleware)
+      .prepend(preferencesMiddleware.middleware),
 });
 
-store.dispatch(walletActivate(store.getState().preferences.activeWalletId));
-
+store.dispatch(walletActivate(selectActiveWalletId(store.getState())));

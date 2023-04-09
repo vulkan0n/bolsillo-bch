@@ -28,11 +28,11 @@ function initializeTables() {
     "CREATE TABLE IF NOT EXISTS addresses (address text primary key, wallet_id int not null, hd_index int not null, balance int default 0, change int default 0, state text default null)";
   db.run(q);
   q =
-    "CREATE TABLE IF NOT EXISTS utxos (address text not null, txid text not null, outpoint int not null, height int not null, balance int)";
+    "CREATE TABLE IF NOT EXISTS utxos (address text not null, txid text not null, outpoint int not null, balance int not null)";
   db.run(q);
 
   q =
-    "CREATE TABLE IF NOT EXISTS transactions (txid text primary key, wallet_id int not null, height int not null, amount int not null, description text)";
+    "CREATE TABLE IF NOT EXISTS transactions (tx_hash text primary key, wallet_id int not null, height int default 0, amount int not null, description text)";
 }
 
 initializeTables();

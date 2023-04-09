@@ -5,32 +5,59 @@ import {
 } from "electrum-cash";
 
 import { store } from "@/redux";
-import { walletAddressStateUpdate } from "@/redux/wallet";
+import {
+  syncConnectionUp,
+  syncConnectionDown,
+  syncAddressUpdate,
+} from "@/redux/sync";
 
-const electrum = new ElectrumClient(
-  "Selene.cash",
-  "1.4",
-  "cashnode.bch.ninja",
-  ElectrumTransport.WSS.Port,
-  ElectrumTransport.WSS.Scheme
-);
-
-try {
-  await electrum.connect();
-} catch (e) {
-  console.error(e);
-}
+let electrum = null;
 
 function ElectrumService() {
   return {
+    connect,
+    disconnect,
     subscribeToAddress,
     requestBalance,
     requestAddressState,
+    requestAddressHistory,
     requestUtxos,
+    requestTransaction,
   };
 
+  async function connect() {
+    if (store.getState().sync.connected) {
+      return;
+    }
+
+    electrum = new ElectrumClient(
+      "Selene.cash",
+      "1.4",
+      "cashnode.bch.ninja",
+      ElectrumTransport.WSS.Port,
+      ElectrumTransport.WSS.Scheme
+    );
+
+    electrum.addListener("connected", () => {
+      console.log("ELECTRUM CONNECTED");
+      store.dispatch(syncConnectionUp());
+    });
+
+    electrum.addListener("disconnected", () => {
+      console.log("ELECTRUM DISCONNECTED");
+      store.dispatch(syncConnectionDown());
+    });
+
+    return await electrum.connect();
+  }
+
+  async function disconnect(force) {
+    return await electrum.disconnect(force);
+  }
+
+  // named function for address subscription, keeps electrum-cash performant
   function handleAddressSubscription(data) {
-    store.dispatch(walletAddressStateUpdate(data));
+    store.dispatch(syncAddressUpdate(data));
   }
 
   async function subscribeToAddress(address) {
@@ -42,6 +69,7 @@ function ElectrumService() {
         address
       );
     } catch (e) {
+      // throws if electrum is disconnected
       console.error(e);
     }
   }
@@ -65,6 +93,17 @@ function ElectrumService() {
     return addressState;
   }
 
+  async function requestAddressHistory(address) {
+    const history = await electrum.request(
+      "blockchain.address.get_history",
+      address
+    );
+
+    console.log("requestAddressHistory", address, history);
+
+    return history;
+  }
+
   async function requestUtxos(address) {
     const utxos = await electrum.request(
       "blockchain.address.listunspent",
@@ -74,6 +113,16 @@ function ElectrumService() {
     console.log("requestUtxos", address, utxos);
 
     return utxos;
+  }
+
+  async function requestTransaction(txid) {
+    const transaction = await electrum.request(
+      "blockchain.transaction.get",
+      txid,
+      true
+    );
+
+    return transaction;
   }
 }
 

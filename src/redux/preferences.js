@@ -73,3 +73,9 @@ export const selectPreferences = createSelector(
   (state) => state,
   (state) => state.preferences
 );
+
+export const selectActiveWalletId = createSelector(
+  (state) => state,
+  (state) => state.preferences.activeWalletId
+);
+

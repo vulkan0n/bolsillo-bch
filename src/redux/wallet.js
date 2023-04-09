@@ -5,114 +5,43 @@ import {
   createListenerMiddleware,
 } from "@reduxjs/toolkit";
 
-import { store } from "@/redux";
-import { utxoRequest } from "@/redux/utxo";
 import { setPreference } from "@/redux/preferences";
+import { syncConnect } from "@/redux/sync";
 
-import ElectrumService from "@/services/ElectrumService";
 import WalletService from "@/services/WalletService";
-import AddressManagerService from "@/services/AddressManagerService";
-
-const Electrum = new ElectrumService();
-
-export const walletActivate = createAction("wallet/activate");
-export const walletReady = createAction("wallet/ready");
-export const walletAddressStateUpdate = createAction("wallet/addressUpdate");
-export const walletBalanceUpdate = createAction("wallet/balanceUpdate");
 
 export const walletMiddleware = createListenerMiddleware();
 
-// walletActivate: request wallet load
-walletMiddleware.startListening({
-  actionCreator: walletActivate,
-  effect: async (action, listenerApi) => {
-    const wallet_id = action.payload;
-    console.log("got walletActivate", wallet_id);
-    const wallet = new WalletService().boot(wallet_id);
-    listenerApi.dispatch(walletReady(wallet));
-  },
-});
+// --------------------------------
 
-// walletReady: when wallet is loaded from database
+// walletActivate : initialize/load app with wallet_id
+export function walletActivate(wallet_id) {
+  console.log("walletActivate", wallet_id);
+  const wallet = new WalletService().boot(wallet_id);
+
+  return (dispatch, getState) => {
+    dispatch(walletReady(wallet));
+  };
+}
+
+// walletReady: called when wallet is loaded
+export const walletReady = createAction("wallet/ready");
 walletMiddleware.startListening({
   actionCreator: walletReady,
   effect: async (action, listenerApi) => {
-    // save active wallet ID to preferences
     const wallet = action.payload;
+
+    // save active wallet ID to preferences
     listenerApi.dispatch(
       setPreference({ key: "activeWalletId", value: wallet.id })
     );
 
-    // set up initial address subscriptions
-    const addressManager = new AddressManagerService(wallet.id);
-    const addresses = addressManager.getReceiveAddresses();
-    console.log("walletReady addresses", addresses);
-    addresses.forEach((address) =>
-      Electrum.subscribeToAddress(address.address)
-    );
+    // connect to electrum
+    listenerApi.dispatch(syncConnect());
   },
 });
 
-// walletAddressStateUpdate : when data acquired from electrum address subscription
-walletMiddleware.startListening({
-  actionCreator: walletAddressStateUpdate,
-  effect: async (action, listenerApi) => {
-    // initial subscription response doesn't have address for context
-    if (!Array.isArray(action.payload)) {
-      handleAddressSubscriptionInit(action.payload, listenerApi);
-      return;
-    }
-
-    const AddressManager = new AddressManagerService();
-    const [address, addressState] = action.payload;
-
-    // check downloaded state against local state
-    if (AddressManager.updateAddressState(address, addressState)) {
-      // get new utxos, history, balance for address
-      console.log("address state changed for", address);
-
-      const balance = await Electrum.requestBalance(address);
-      const walletBalance = AddressManager.updateAddressBalance(
-        address,
-        balance
-      );
-      listenerApi.dispatch(walletBalanceUpdate(walletBalance));
-
-      listenerApi.dispatch(utxoRequest(address));
-    }
-  },
-});
-
-// blockchain.address.subscribe
-function handleAddressSubscriptionInit(payload, listenerApi) {
-  const AddressManager = new AddressManagerService();
-  // if initial subscription is null, address is unused, so don't proceed
-  if (payload !== null) {
-    // if we find the address by state, the address is up to date
-    const address = AddressManager.getAddressByState(payload);
-    if (address === null) {
-      // one of our addresses changed while we were offline
-      console.log("address update while offline?", address, payload);
-
-      // we don't know which address, so scan them all
-      AddressManager.getReceiveAddresses().forEach(async (address, i) => {
-        const addressState = await Electrum.requestAddressState(
-          address.address
-        );
-        console.log("requested address state", i, address, addressState);
-
-        // don't continue scanning if address is unused
-        if (addressState !== null) {
-          // return up-to-date address state
-          listenerApi.dispatch(
-            walletAddressStateUpdate([address.address, addressState])
-          );
-        }
-      });
-    }
-    console.log("address up-to-date", address);
-  }
-}
+export const walletBalanceUpdate = createAction("wallet/balanceUpdate");
 
 const initialState = {
   id: 0,
