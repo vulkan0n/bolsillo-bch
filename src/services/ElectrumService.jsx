@@ -11,9 +11,11 @@ import {
   syncAddressUpdate,
 } from "@/redux/sync";
 
+// pointer for current ElectrumClient instance
 let electrum = null;
 
-function ElectrumService() {
+// ElectrumService
+export default function ElectrumService() {
   return {
     connect,
     disconnect,
@@ -25,19 +27,35 @@ function ElectrumService() {
     requestTransaction,
   };
 
-  async function connect() {
+  // connect: connect to an Electrum server
+  // Creates a new ElectrumClient every time
+  // Destroys existing ElectrumClient if out of sync with Redux state
+  async function connect(server = "cashnode.bch.ninja") {
+    // using redux connection state guarantees that
+    // we only create new ElectrumClient when necessary
     if (store.getState().sync.connected) {
       return;
     }
 
+    // ensure all references to old ElectrumClient are killed
+    // so that it gets garbage collected
+    if (electrum !== null) {
+      // disconnect(force=true) cleans up all listeners and timeouts
+      await electrum.disconnect(true);
+    }
+
+    // Create a new ElectrumClient every time
+    // This avoids memory leaks from EventEmitter
+    // Also allows us to switch servers on the fly
     electrum = new ElectrumClient(
       "Selene.cash",
       "1.4",
-      "cashnode.bch.ninja",
+      server,
       ElectrumTransport.WSS.Port,
       ElectrumTransport.WSS.Scheme
     );
 
+    // need to establish listeners every time we recreate the ElectrumClient
     electrum.addListener("connected", () => {
       console.log("ELECTRUM CONNECTED");
       store.dispatch(syncConnectionUp());
@@ -51,23 +69,34 @@ function ElectrumService() {
     return await electrum.connect();
   }
 
+  // disconnect: disconnect the Electrum instance
   async function disconnect(force) {
-    return await electrum.disconnect(force);
+    if (electrum !== null) {
+      return await electrum.disconnect(force);
+    }
   }
 
-  // named function for address subscription, keeps electrum-cash performant
-  function handleAddressSubscription(data) {
-    store.dispatch(syncAddressUpdate(data));
-  }
-
+  // listen for updates on an address
   async function subscribeToAddress(address) {
     try {
       //console.log("subscribing to", address);
-      await electrum.subscribe(
-        handleAddressSubscription,
-        "blockchain.address.subscribe",
-        address
-      );
+      if (
+        await electrum.subscribe(
+          handleAddressSubscription,
+          "blockchain.address.subscribe",
+          address
+        )
+      ) {
+        const addressState = await electrum.request(
+          "blockchain.address.subscribe",
+          address
+        );
+
+        // don't emit subscription update for unused (null state) addresses
+        if (addressState !== null) {
+          handleAddressSubscription([address, addressState]);
+        }
+      }
     } catch (e) {
       // throws if electrum is disconnected
       console.error(e);
@@ -84,6 +113,7 @@ function ElectrumService() {
     return confirmed + unconfirmed;
   }
 
+  // request the most up-to-date state hash for an address
   async function requestAddressState(address) {
     const addressState = await electrum.request(
       "blockchain.address.subscribe",
@@ -93,28 +123,27 @@ function ElectrumService() {
     return addressState;
   }
 
+  // request the entire transaction history for an address
   async function requestAddressHistory(address) {
     const history = await electrum.request(
       "blockchain.address.get_history",
       address
     );
 
-    console.log("requestAddressHistory", address, history);
-
     return history;
   }
 
+  // request all current UTXOs for an address
   async function requestUtxos(address) {
     const utxos = await electrum.request(
       "blockchain.address.listunspent",
       address
     );
 
-    console.log("requestUtxos", address, utxos);
-
     return utxos;
   }
 
+  // request a transaction by its txid
   async function requestTransaction(txid) {
     const transaction = await electrum.request(
       "blockchain.transaction.get",
@@ -126,4 +155,9 @@ function ElectrumService() {
   }
 }
 
-export default ElectrumService;
+// named function for address subscription, keeps electrum-cash performant
+// important that the pointer to this function never changes
+// so we define it on top-level
+function handleAddressSubscription(data) {
+  store.dispatch(syncAddressUpdate(data));
+}

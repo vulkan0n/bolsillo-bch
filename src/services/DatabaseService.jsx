@@ -21,18 +21,51 @@ try {
 }
 
 function initializeTables() {
-  let q =
-    "CREATE TABLE IF NOT EXISTS wallets (id integer primary key, name text not null, mnemonic text unique not null, derivation text default \"m/44'/0'/0'\", date_created default CURRENT_TIMESTAMP, key_viewed text, key_verified text, balance int default 0);";
-  db.run(q);
-  q =
-    "CREATE TABLE IF NOT EXISTS addresses (address text primary key, wallet_id int not null, hd_index int not null, balance int default 0, change int default 0, state text default null)";
-  db.run(q);
-  q =
-    "CREATE TABLE IF NOT EXISTS utxos (address text not null, txid text not null, outpoint int not null, balance int not null)";
-  db.run(q);
+  const query = [];
+  query.push(
+    `CREATE TABLE IF NOT EXISTS wallets ( 
+        id integer primary key, 
+        name text not null, 
+        mnemonic text unique not null, 
+        derivation text default "m/44'/0'/0'", 
+        date_created default CURRENT_TIMESTAMP, 
+        key_viewed text, 
+        key_verified text, 
+        balance int default 0
+      );`
+  );
+  query.push(
+    `CREATE TABLE IF NOT EXISTS addresses (
+        address text primary key, 
+        wallet_id int not null, 
+        hd_index int not null, 
+        balance int default 0, 
+        change int default 0, 
+        state text default null
+      );`
+  );
+  query.push(
+    `CREATE TABLE IF NOT EXISTS utxos (
+        address text not null,
+        txid text not null,
+        outpoint int not null,
+        amount int not null, 
+        scriptPubKey text not null, 
+        spent int default 0
+      );`
+  );
+  query.push(
+    `CREATE TABLE IF NOT EXISTS transactions (
+        txid text primary key, 
+        wallet_id int not null, 
+        address text,
+        hex text not null,
+        amount int not null, 
+        description text
+        );`
+  );
 
-  q =
-    "CREATE TABLE IF NOT EXISTS transactions (tx_hash text primary key, wallet_id int not null, height int default 0, amount int not null, description text)";
+  db.run(query.join(""));
 }
 
 initializeTables();

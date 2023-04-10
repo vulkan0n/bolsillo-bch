@@ -1,4 +1,7 @@
 import DatabaseService from "@/services/DatabaseService";
+import AddressManagerService from "@/services/AddressManagerService";
+import ElectrumService from "@/services/ElectrumService";
+
 import { store } from "@/redux";
 import { selectActiveWallet } from "@/redux/wallet";
 
@@ -16,29 +19,52 @@ function TransactionService(id) {
   function registerTransaction(tx, address) {
     console.log("registerTransaction", tx, address);
 
-    const addressManager = new AddressManagerService();
-    const receiveAddresses = addressManager.getReceiveAddresses();
-    const changeAddresses = addressManager.getChangeAddresses();
+    function isMyUtxo(utxo) {
+      const addressManager = new AddressManagerService();
+      const myAddresses = [
+        ...addressManager.getReceiveAddresses(),
+        ...addressManager.getChangeAddresses(),
+      ];
 
-    // if any outputs belong to a receiveAddress, we must have given someone a receive
-    // therefore this is an incoming transaction
-    const myOutputs = tx.vout.filter((utxo) => {
       return (
         utxo.scriptPubKey.addresses.findIndex((address) =>
-          receiveAddresses.includes(address)
+          myAddresses.includes(address)
         ) > -1
       );
+    }
+
+    // any outputs that belong to us are incoming money
+    const myOutputs = tx.vout.filter((utxo) => isMyUtxo(utxo));
+    const receivedAmount = myOutputs.reduce((sum, cur) => sum + cur.amount, 0);
+
+    // any inputs that belong to us are outgoing money
+    const Electrum = new ElectrumService();
+    const myInputs = tx.vin.filter(async (utxo) => {
+      let lookupTx = getTransactionByHash(utxo.txid);
+
+      // the only time the input is ours and this is null is when we don't have
+      // full tx history available
+      if (lookupTx === null) {
+        lookupTx = await Electrum.requestTransaction(utxo.txid);
+      }
+
+      return lookupTx.vout.filter((input) => isMyUtxo(input)).length > 0;
     });
+    const sentAmount = myInputs.reduce((sum, cur) => sum + cur.amount, 0);
 
-    const amount = myOutputs.reduce((sum, cur) => sum + cur.amount);
+    console.log(
+      "registerTransaction 2",
+      `received: ${receivedAmount}`,
+      `sent: ${sentAmount}`
+    );
 
-    /*
+    const amount = receivedAmount - sentAmount;
+
     db.run(
-      `INSERT INTO transactions (tx_hash, address, wallet_id, hex) VALUES ("${tx.hash}", "${address}", "${wallet_id}","${tx.hex}")`
+      `INSERT OR REPLACE INTO transactions (txid, address, wallet_id, hex, amount) VALUES ("${tx.txid}", "${address}", "${wallet_id}","${tx.hex}", "${amount}")`
     );
 
     saveDatabase();
-    */
   }
 
   function getTransactionsByAddress(address) {
@@ -50,10 +76,8 @@ function TransactionService(id) {
   }
 
   function getTransactionByHash(tx_hash) {
-    return null;
-
     const result = resultToJson(
-      db.exec(`SELECT * FROM transactions WHERE tx_hash="${tx_hash}"`)
+      db.exec(`SELECT * FROM transactions WHERE txid="${tx_hash}"`)
     );
 
     return result;
@@ -61,3 +85,12 @@ function TransactionService(id) {
 }
 
 export default TransactionService;
+
+/*
+ * {
+ *  vin: [
+ *      { sequence: 0, txid: "<txhash>", vout: 12, scriptSig: { ... } }
+ *      ...
+ *  ]
+ *}
+ */

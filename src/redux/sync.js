@@ -6,6 +6,9 @@ import {
   createListenerMiddleware,
 } from "@reduxjs/toolkit";
 
+import { walletBalanceUpdate } from "@/redux/wallet";
+import { utxoRequest } from "@/redux/utxo";
+
 import ElectrumService from "@/services/ElectrumService";
 import AddressManagerService from "@/services/AddressManagerService";
 import TransactionService from "@/services/TransactionService";
@@ -22,11 +25,12 @@ export const syncConnect = createAsyncThunk(
     try {
       await Electrum.connect();
     } catch (e) {
+      // if connection fails, destroy the client and try again
       await Electrum.disconnect(true);
       setTimeout(() =>
         thunkApi.dispatch(
           syncConnect(attempts + 1),
-          Math.pow(1000 * attempts, attempts)
+          Math.pow(1000 * attempts, attempts) // exponential backoff
         )
       );
     }
@@ -38,7 +42,6 @@ export const syncConnectionUp = createAction("sync/up");
 syncMiddleware.startListening({
   actionCreator: syncConnectionUp,
   effect: async (action, listenerApi) => {
-    console.log("syncConnectionUp");
     // set up electrum subscriptions
     const AddressManager = new AddressManagerService();
     const addresses = AddressManager.getReceiveAddresses();
@@ -47,7 +50,7 @@ syncMiddleware.startListening({
   },
 });
 
-// syncConnectionDown: fired when electrum connection is down
+// syncConnectionDown: fired if electrum connection goes down
 export const syncConnectionDown = createAction("sync/down");
 syncMiddleware.startListening({
   actionCreator: syncConnectionDown,
@@ -59,14 +62,13 @@ syncMiddleware.startListening({
   },
 });
 
-// syncAddressUpdate: when data acquired from electrum address subscription
+// syncAddressUpdate: fired when data acquired from address subscription
 export const syncAddressUpdate = createAction("sync/addressUpdate");
 syncMiddleware.startListening({
   actionCreator: syncAddressUpdate,
   effect: async (action, listenerApi) => {
     // initial subscription response doesn't have address for context
     if (!Array.isArray(action.payload)) {
-      handleSyncAddressInit(action.payload, listenerApi);
       return;
     }
 
@@ -75,59 +77,49 @@ syncMiddleware.startListening({
 
     // check downloaded state against local state
     if (AddressManager.updateAddressState(address, addressState)) {
-      // if state updated, get new utxos, history, balance for address
+      // if state updated, get utxos for address
       console.log("address state changed for", address);
-      //listenerApi.dispatch(utxoRequest(address));
+      listenerApi.dispatch(utxoRequest(address));
 
       // use local tx history to calculate new state hash
       // if different, we must be missing transactions
       // ask for entire history for address if so
-
-      /*const balance = await Electrum.requestBalance(address);
-      const walletBalance = AddressManager.updateAddressBalance(
-        address,
-        balance
-      );*/
-
-      //listenerApi.dispatch(walletBalanceUpdate(walletBalance));
       //listenerApi.dispatch(walletAddressHistoryScan(address));
+    } else {
+      console.log("address up-to-date", address);
     }
   },
 });
 
-// handle initial response from syncAddressUpdate
-function handleSyncAddressInit(payload, listenerApi) {
-  const AddressManager = new AddressManagerService();
-  // if initial subscription is null, address is unused, so don't proceed
-  if (payload !== null) {
-    // if we find the address by state, the address is up to date
-    const address = AddressManager.getAddressByState(payload);
-    if (address === null) {
-      // one of our addresses changed while we were offline
-      console.log("address update while offline?", address, payload);
+syncMiddleware.startListening({
+  actionCreator: utxoRequest.fulfilled,
+  effect: async (action, listenerApi) => {
+    const { utxos, address } = action.payload;
 
-      // we don't know which address, so scan them all
-      const Electrum = new ElectrumService();
-      AddressManager.getReceiveAddresses().forEach(async (address, i) => {
-        const addressState = await Electrum.requestAddressState(
-          address.address
-        );
-        console.log("requested address state", i, address, addressState);
+    // calculate address balance
+    const AddressManager = new AddressManagerService();
+    const addressBalance = utxos.reduce((sum, cur) => sum + cur.value, 0);
+    const walletBalance = AddressManager.updateAddressBalance(
+      address,
+      addressBalance
+    );
+    listenerApi.dispatch(walletBalanceUpdate(walletBalance));
 
-        // don't continue scanning if address is unused
-        if (addressState !== null) {
-          // return up-to-date address state
-          listenerApi.dispatch(
-            syncAddressUpdate([address.address, addressState])
-          );
-        }
-      });
-    }
-    // listenerApi.dispatch(walletAddressHistoryScan(address));
-    //listenerApi.dispatch(utxoRequest(address.address));
-    console.log("address up-to-date", address);
-  }
-}
+    // sync related transactions for utxo
+    const txService = new TransactionService();
+    const Electrum = new ElectrumService();
+    utxos.forEach(async ({ tx_hash }) => {
+      let tx = txService.getTransactionByHash(tx_hash);
+
+      if (tx === null) {
+        tx = await Electrum.requestTransaction(tx_hash);
+        txService.registerTransaction(tx, address);
+      }
+    });
+
+    console.log("utxoRequest fulfilled", address, utxos);
+  },
+});
 
 const initialState = { connected: false, chaintip: 0 };
 
@@ -158,9 +150,9 @@ syncMiddleware.startListening({
     console.log("get_history", address, history);
     const txService = new TransactionService();
 
-    history.forEach(async ({ tx_hash }) => {
-      const tx = await Electrum.requestTransaction(tx_hash);
-      console.log("requestTransaction", tx_hash, tx);
+    history.forEach(async ({ txid }) => {
+      const tx = await Electrum.requestTransaction(txid);
+      console.log("requestTransaction", txid, tx);
       txService.registerTransaction(tx, address);
     });
   },

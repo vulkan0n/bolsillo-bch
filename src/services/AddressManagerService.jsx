@@ -17,7 +17,6 @@ function AddressManagerService(id) {
     getUnusedAddresses,
     updateAddressState,
     updateAddressBalance,
-    getAddressByState,
   };
 
   // --------------------------------
@@ -33,18 +32,25 @@ function AddressManagerService(id) {
     saveDatabase();
   }
 
+  function clearAddresses() {
+    db.run("DELETE FROM addresses;");
+    saveDatabase();
+  }
+
   function populateAddresses() {
-    /*db.run("DELETE FROM addresses;");
-    saveDatabase();*/
+    //clearAddresses();
+    //return;
 
-    const ADDRESS_GAP_LIMIT = 20 / 4; // BIP-44 gap limit is 20
-    const unused = getUnusedAddresses(ADDRESS_GAP_LIMIT);
+    const ADDRESS_GAP_LIMIT = 20; // BIP-44 gap limit is 20
+    let unused = getUnusedAddresses(ADDRESS_GAP_LIMIT);
+    let addressesGenerated = 0;
 
+    const hdWallet = new HdNodeService(wallet_id);
     if (unused.length < ADDRESS_GAP_LIMIT) {
-      const latestAddress = getReceiveAddresses(1)[0] || "";
-      const latestIndex = latestAddress !== "" ? latestAddress.hd_index + 1 : 0;
+      const latestAddress = getReceiveAddresses(1)[0] || null;
+      const latestIndex =
+        latestAddress !== null ? latestAddress.hd_index + 1 : 0;
 
-      const hdWallet = new HdNodeService(wallet_id);
       for (
         let i = latestIndex;
         i < ADDRESS_GAP_LIMIT - unused.length + latestIndex;
@@ -52,8 +58,11 @@ function AddressManagerService(id) {
       ) {
         const newAddress = hdWallet.generateAddress(i);
         registerAddress(newAddress, i);
+        addressesGenerated = addressesGenerated + 1;
       }
     }
+
+    return addressesGenerated;
   }
 
   // get all active receive addresses for this wallet
@@ -78,7 +87,7 @@ function AddressManagerService(id) {
       )
     );
 
-    console.log("getChangeAddresses", result);
+    //console.log("getChangeAddresses", result);
     return result;
   }
 
@@ -90,19 +99,25 @@ function AddressManagerService(id) {
       )
     ).map((address) => address);
 
-    //=console.log("getUnusedAddress", result);
+    //console.log("getUnusedAddress", result);
     return result;
   }
 
+  // updateAddressState: updates address state in db
+  // returns true if update actually happened, false if up-to-date
   function updateAddressState(address, state) {
     const result = resultToJson(
       db.exec(
-        `UPDATE addresses SET state="${state}" WHERE address="${address}" RETURNING *`
+        `UPDATE addresses SET state="${state}" WHERE address="${address}" AND state IS DISTINCT FROM "${state}" RETURNING *`
       )
     );
-    saveDatabase();
-    //console.log(result);
-    return result.length > 0;
+
+    const didUpdate = result.length > 0;
+    if (didUpdate) {
+      saveDatabase();
+    }
+
+    return didUpdate;
   }
 
   function updateAddressBalance(address, balance) {
@@ -116,17 +131,9 @@ function AddressManagerService(id) {
       )
     )[0].balance;
 
-    console.log("requestBalance", address, balance, walletBalance);
+    console.log("updateAddressBalance", address, balance, walletBalance);
     saveDatabase();
     return walletBalance;
-  }
-
-  function getAddressByState(addressState) {
-    const result = resultToJson(
-      db.exec(`SELECT * FROM addresses WHERE state LIKE "${addressState}"`)
-    );
-
-    return result.length > 0 ? result[0] : null;
   }
 }
 
