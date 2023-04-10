@@ -22,25 +22,36 @@ function AddressManagerService(id) {
   // --------------------------------
 
   // register an address into the database
-  function registerAddress(address, index) {
-    console.log("registerAddress", address, index);
+  function registerAddress(address, hd_index, change = 0) {
+    console.log(`registerAddress${change ? " change" : ""}`, hd_index, address);
 
     db.run(
-      `INSERT INTO addresses (address, wallet_id, hd_index) VALUES ("${address}", "${wallet_id}", "${index}")`
+      `INSERT INTO addresses (
+        address, 
+        wallet_id, 
+        hd_index,
+        change
+      ) 
+      VALUES (
+        "${address}", 
+        "${wallet_id}", 
+        "${hd_index}",
+        "${change}"
+      )`
     );
 
     saveDatabase();
   }
 
+  // clearAddresses: delete all addresses from database
   function clearAddresses() {
     db.run("DELETE FROM addresses;");
     saveDatabase();
   }
 
+  // populateAddresses: generate addresses such that
+  // we always have ADDRESS_GAP_LIMIT unused addresses
   function populateAddresses() {
-    //clearAddresses();
-    //return;
-
     const ADDRESS_GAP_LIMIT = 20; // BIP-44 gap limit is 20
     let unused = getUnusedAddresses(ADDRESS_GAP_LIMIT);
     let addressesGenerated = 0;
@@ -52,13 +63,12 @@ function AddressManagerService(id) {
         latestAddress !== null ? latestAddress.hd_index + 1 : 0;
 
       for (
-        let i = latestIndex;
-        i < ADDRESS_GAP_LIMIT - unused.length + latestIndex;
-        i++
+        let hd_index = latestIndex;
+        hd_index < latestIndex + ADDRESS_GAP_LIMIT - unused.length;
+        hd_index = hd_index + 1
       ) {
-        const newAddress = hdWallet.generateAddress(i);
-        registerAddress(newAddress, i);
-        addressesGenerated = addressesGenerated + 1;
+        const newAddress = hdWallet.generateAddress(hd_index);
+        registerAddress(newAddress, hd_index);
       }
     }
 
@@ -69,25 +79,27 @@ function AddressManagerService(id) {
   function getReceiveAddresses(limit) {
     const result = resultToJson(
       db.exec(
-        `SELECT * FROM addresses WHERE wallet_id="${wallet_id}" AND change='0' ORDER BY hd_index DESC ${
+        `SELECT * FROM addresses WHERE wallet_id="${wallet_id}" AND change='0' ORDER BY hd_index ASC ${
           limit ? `LIMIT ${Number.parseInt(limit)}` : ""
         }`
       )
     );
 
-    //console.log("getReceiveAddresses", result, limit);
+    //console.log("getReceiveAddresses", limit, result);
     return result;
   }
 
   // get all active change addresses for this wallet
-  function getChangeAddresses() {
+  function getChangeAddresses(limit) {
     const result = resultToJson(
       db.exec(
-        `SELECT address, hd_index FROM addresses WHERE wallet_id=${wallet_id} AND change='1' ORDER BY hd_index DESC`
+        `SELECT * FROM addresses WHERE wallet_id=${wallet_id} AND change='1' ORDER BY hd_index DESC ${
+          limit ? `LIMIT ${Number.parseInt(limit)}` : ""
+        }`
       )
     );
 
-    //console.log("getChangeAddresses", result);
+    //console.log("getChangeAddresses", limit, result);
     return result;
   }
 
@@ -95,11 +107,11 @@ function AddressManagerService(id) {
   function getUnusedAddresses(limit = 5) {
     const result = resultToJson(
       db.exec(
-        `SELECT address FROM addresses WHERE wallet_id=${wallet_id} AND state IS NULL AND change='0' ORDER BY hd_index ASC LIMIT ${limit}`
+        `SELECT * FROM addresses WHERE wallet_id=${wallet_id} AND state IS NULL AND change='0' ORDER BY hd_index ASC LIMIT ${limit}`
       )
-    ).map((address) => address);
+    );
 
-    //console.log("getUnusedAddress", result);
+    console.log("getUnusedAddress", limit, result);
     return result;
   }
 
@@ -127,9 +139,13 @@ function AddressManagerService(id) {
 
     const walletBalance = resultToJson(
       db.exec(
-        `UPDATE wallets SET balance=(SELECT SUM(balance) FROM addresses WHERE wallet_id="${wallet_id}") RETURNING balance`
+        `SELECT balance FROM wallet_balance WHERE wallet_id="${wallet_id}"`
       )
     )[0].balance;
+
+    db.run(
+      `UPDATE wallets SET balance="${walletBalance}" WHERE wallet_id="${wallet_id}"`
+    );
 
     console.log("updateAddressBalance", address, balance, walletBalance);
     saveDatabase();

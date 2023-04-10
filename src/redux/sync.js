@@ -7,11 +7,11 @@ import {
 } from "@reduxjs/toolkit";
 
 import { walletBalanceUpdate } from "@/redux/wallet";
-import { utxoRequest } from "@/redux/utxo";
 
 import ElectrumService from "@/services/ElectrumService";
 import AddressManagerService from "@/services/AddressManagerService";
 import TransactionService from "@/services/TransactionService";
+import UtxoService from "@/services/UtxoService";
 
 export const syncMiddleware = createListenerMiddleware();
 
@@ -91,12 +91,29 @@ syncMiddleware.startListening({
   },
 });
 
+// utxoRequest: fired when we learn one of our addresses have changed
+// kick off tx sync processes as needed
+export const utxoRequest = createAsyncThunk(
+  "utxo/request",
+  async (address, thunkApi) => {
+    const Electrum = new ElectrumService();
+    const utxos = await Electrum.requestUtxos(address);
+    return { address, utxos };
+  }
+);
 syncMiddleware.startListening({
   actionCreator: utxoRequest.fulfilled,
   effect: async (action, listenerApi) => {
     const { utxos, address } = action.payload;
 
+    const utxoService = new UtxoService();
+    utxos.forEach((utxo) => {
+      utxoService.registerUtxo(utxo, address);
+      listenerApi.dispatch(txRequest(utxo.tx_hash));
+    });
+
     // calculate address balance
+    // TODO: make this a SQL trigger instead
     const AddressManager = new AddressManagerService();
     const addressBalance = utxos.reduce((sum, cur) => sum + cur.value, 0);
     const walletBalance = AddressManager.updateAddressBalance(
@@ -104,20 +121,30 @@ syncMiddleware.startListening({
       addressBalance
     );
     listenerApi.dispatch(walletBalanceUpdate(walletBalance));
+  },
+});
 
-    // sync related transactions for utxo
+export const txRequest = createAsyncThunk(
+  "transaction/request",
+  async (tx_hash, thunkApi) => {
     const txService = new TransactionService();
-    const Electrum = new ElectrumService();
-    utxos.forEach(async ({ tx_hash }) => {
-      let tx = txService.getTransactionByHash(tx_hash);
+    let transaction = txService.getTransactionByHash(tx_hash);
 
-      if (tx === null) {
-        tx = await Electrum.requestTransaction(tx_hash);
-        txService.registerTransaction(tx, address);
-      }
-    });
+    if (transaction === null || transaction.blockhash === null) {
+      const Electrum = new ElectrumService();
+      transaction = await Electrum.requestTransaction(tx_hash);
+    }
 
-    console.log("utxoRequest fulfilled", address, utxos);
+    return transaction;
+  }
+);
+syncMiddleware.startListening({
+  actionCreator: txRequest.fulfilled,
+  effect: async (action, listenerApi) => {
+    const transaction = action.payload;
+
+    const txService = new TransactionService();
+    txService.registerTransaction(transaction);
   },
 });
 

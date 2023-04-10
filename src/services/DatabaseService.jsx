@@ -5,6 +5,7 @@ const SELENE_DB_FILE = "db/selene.db";
 
 const SQL = await initSqlJs({ locateFile: (file) => "/sql-wasm.wasm" });
 let db = null;
+let flushPending = null;
 
 try {
   // TODO: store mnemonics in a separate file so they can be encrypted
@@ -22,9 +23,10 @@ try {
 
 function initializeTables() {
   const query = [];
+  query.push("PRAGMA foreign_keys = ON;");
   query.push(
     `CREATE TABLE IF NOT EXISTS wallets ( 
-        id integer primary key, 
+        id integer primary key not null, 
         name text not null, 
         mnemonic text unique not null, 
         derivation text default "m/44'/0'/0'", 
@@ -34,9 +36,10 @@ function initializeTables() {
         balance int default 0
       );`
   );
+  query.push("DROP TABLE addresses;");
   query.push(
     `CREATE TABLE IF NOT EXISTS addresses (
-        address text primary key, 
+        address text primary key not null, 
         wallet_id int not null, 
         hd_index int not null, 
         balance int default 0, 
@@ -44,35 +47,58 @@ function initializeTables() {
         state text default null
       );`
   );
+  query.push("DROP TABLE transactions;");
+  query.push(
+    `CREATE TABLE IF NOT EXISTS transactions (
+        txid text primary key not null, 
+        wallet_id int not null, 
+        time_seen default CURRENT_TIMESTAMP,
+        address text,
+        hex text,
+        description text,
+        size int,
+        blockhash text,
+        time int,
+        blocktime int,
+        locktime int,
+        version int,
+        height int
+    );`
+  );
+  query.push("DROP TABLE vins;");
+  query.push(
+    `CREATE TABLE IF NOT EXISTS vins (
+      txid text not null,
+      prevtx text not null,
+      vout int not null,
+      scriptSig text not null
+    );`
+  );
+  query.push("DROP TABLE utxos;");
   query.push(
     `CREATE TABLE IF NOT EXISTS utxos (
-        address text not null,
-        txid text not null,
-        outpoint int not null,
+        tx_hash text not null,
+        tx_pos int not null,
+        address text,
+        scriptPubKey text, 
         amount int not null, 
-        scriptPubKey text not null, 
+        height int,
         spent int default 0
       );`
   );
+  query.push("DROP VIEW wallet_balance;");
   query.push(
-    `CREATE TABLE IF NOT EXISTS transactions (
-        txid text primary key, 
-        wallet_id int not null, 
-        address text,
-        hex text not null,
-        amount int not null, 
-        description text
-        );`
+    `CREATE VIEW IF NOT EXISTS wallet_balance AS SELECT 
+      wallets.id as wallet_id,
+      SUM(addresses.balance) AS balance FROM wallets, addresses
+    ;`
   );
-
   db.run(query.join(""));
 }
 
 initializeTables();
 
-function DatabaseService() {
-  let flushPending = null;
-
+export default function DatabaseService() {
   return {
     saveDatabase,
     db,
@@ -84,7 +110,7 @@ function DatabaseService() {
 
     flushPending = setTimeout(async () => {
       await flushDatabase();
-    }, 300);
+    }, 120);
   }
 
   async function flushDatabase() {
@@ -121,8 +147,6 @@ function DatabaseService() {
     return reduced;
   }
 }
-
-export default DatabaseService;
 
 /*const _fakeDb = [
   {

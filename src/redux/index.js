@@ -5,7 +5,6 @@ import {
   selectActiveWalletId,
 } from "./preferences";
 import { walletReducer, walletMiddleware, walletActivate } from "./wallet";
-import { utxoReducer } from "./utxo";
 import { syncReducer, syncMiddleware } from "./sync";
 
 export const store = configureStore({
@@ -13,7 +12,6 @@ export const store = configureStore({
     sync: syncReducer,
     preferences: preferencesReducer,
     wallet: walletReducer,
-    utxo: utxoReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware()

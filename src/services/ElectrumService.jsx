@@ -144,10 +144,10 @@ export default function ElectrumService() {
   }
 
   // request a transaction by its txid
-  async function requestTransaction(txid) {
+  async function requestTransaction(tx_hash) {
     const transaction = await electrum.request(
       "blockchain.transaction.get",
-      txid,
+      tx_hash,
       true
     );
 

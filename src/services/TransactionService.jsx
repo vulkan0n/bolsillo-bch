@@ -5,20 +5,95 @@ import ElectrumService from "@/services/ElectrumService";
 import { store } from "@/redux";
 import { selectActiveWallet } from "@/redux/wallet";
 
-function TransactionService(id) {
+export default function TransactionService(id) {
   const wallet_id = id ? id : selectActiveWallet(store.getState()).id;
 
   const { db, resultToJson, saveDatabase } = new DatabaseService();
 
   return {
     registerTransaction,
-    getTransactionsByAddress,
     getTransactionByHash,
+    getTransactionsByAddress,
   };
 
   function registerTransaction(tx, address) {
     console.log("registerTransaction", tx, address);
 
+    db.run(
+      `INSERT INTO transactions (
+        txid,
+        wallet_id,
+        address,
+        hex,
+        size,
+        blockhash,
+        time,
+        blocktime,
+        locktime,
+        version
+      )
+      VALUES (
+        "${tx.txid}",
+        "${wallet_id}",
+        "${address}",
+        "${tx.hex}",
+        "${tx.size}",
+        "${tx.blockhash}",
+        "${tx.time}",
+        "${tx.blocktime}",
+        "${tx.locktime}",
+        "${tx.version}"
+      );`
+    );
+
+    tx.vin.forEach((vin) => {
+      db.run(
+        `INSERT INTO vins (
+          txid,
+          prevtx,
+          vout,
+          scriptSig
+        )
+        VALUES (
+          "${tx.txid}",
+          "${vin.txid}",
+          "${vin.vout}",
+          "${vin.scriptSig}"
+        );`
+      );
+    });
+
+    saveDatabase();
+  }
+
+  function getTransactionByHash(tx_hash) {
+    const result = resultToJson(
+      db.exec(`SELECT * FROM transactions WHERE txid="${tx_hash}"`)
+    );
+
+    console.log("getTransactionByHash", tx_hash, result);
+    return result.length > 0 ? result[0] : null;
+  }
+
+  function getTransactionsByAddress(address) {
+    const result = resultToJson(
+      db.exec(`SELECT * FROM transactions WHERE address="${address}"`)
+    );
+
+    return result;
+  }
+}
+
+/*
+ * {
+ *  vin: [
+ *      { sequence: 0, txid: "<txhash>", vout: 12, scriptSig: { ... } }
+ *      ...
+ *  ]
+ *}
+ */
+
+/*
     function isMyUtxo(utxo) {
       const addressManager = new AddressManagerService();
       const myAddresses = [
@@ -59,38 +134,4 @@ function TransactionService(id) {
     );
 
     const amount = receivedAmount - sentAmount;
-
-    db.run(
-      `INSERT OR REPLACE INTO transactions (txid, address, wallet_id, hex, amount) VALUES ("${tx.txid}", "${address}", "${wallet_id}","${tx.hex}", "${amount}")`
-    );
-
-    saveDatabase();
-  }
-
-  function getTransactionsByAddress(address) {
-    const result = resultToJson(
-      db.exec(`SELECT * FROM transactions WHERE address="${address}"`)
-    );
-
-    return result;
-  }
-
-  function getTransactionByHash(tx_hash) {
-    const result = resultToJson(
-      db.exec(`SELECT * FROM transactions WHERE txid="${tx_hash}"`)
-    );
-
-    return result;
-  }
-}
-
-export default TransactionService;
-
-/*
- * {
- *  vin: [
- *      { sequence: 0, txid: "<txhash>", vout: 12, scriptSig: { ... } }
- *      ...
- *  ]
- *}
- */
+*/
