@@ -3,7 +3,7 @@ import {
   createAction,
   createReducer,
   createSelector,
-  createListenerMiddleware,
+  createAsyncThunk,
 } from "@reduxjs/toolkit";
 
 const defaultPreferences = {
@@ -47,24 +47,17 @@ async function retrievePreferences() {
 
 const initialState = await retrievePreferences();
 
-export const setPreference = createAction("preferences/set");
-
-export const preferencesMiddleware = createListenerMiddleware();
-
-preferencesMiddleware.startListening({
-  actionCreator: setPreference,
-  effect: async (action, listenerApi) => {
-    const payload = {
-      key: action.payload.key,
-      value: action.payload.value.toString(),
-    };
-    console.log("prefs update:", payload);
-    Preferences.set(payload);
-  },
-});
+export const setPreference = createAsyncThunk(
+  "preferences/set",
+  async (payload, thunkApi) => {
+    await Preferences.set(payload);
+    const { value } = await Preferences.get({ key: payload.key });
+    return { key: payload.key, value };
+  }
+);
 
 export const preferencesReducer = createReducer(initialState, (builder) => {
-  builder.addCase("preferences/set", (state, action) => {
+  builder.addCase(setPreference.fulfilled, (state, action) => {
     state[action.payload.key] = action.payload.value.toString();
   });
 });
@@ -78,4 +71,3 @@ export const selectActiveWalletId = createSelector(
   (state) => state,
   (state) => state.preferences.activeWalletId
 );
-

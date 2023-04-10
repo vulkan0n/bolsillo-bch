@@ -144,7 +144,7 @@ function AddressManagerService(id) {
     )[0].balance;
 
     db.run(
-      `UPDATE wallets SET balance="${walletBalance}" WHERE wallet_id="${wallet_id}"`
+      `UPDATE wallets SET balance="${walletBalance}" WHERE id="${wallet_id}"`
     );
 
     console.log("updateAddressBalance", address, balance, walletBalance);

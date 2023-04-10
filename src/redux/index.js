@@ -1,9 +1,5 @@
 import { configureStore } from "@reduxjs/toolkit";
-import {
-  preferencesReducer,
-  preferencesMiddleware,
-  selectActiveWalletId,
-} from "./preferences";
+import { preferencesReducer, selectActiveWalletId } from "./preferences";
 import { walletReducer, walletMiddleware, walletActivate } from "./wallet";
 import { syncReducer, syncMiddleware } from "./sync";
 
@@ -16,8 +12,7 @@ export const store = configureStore({
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware()
       .prepend(walletMiddleware.middleware)
-      .prepend(syncMiddleware.middleware)
-      .prepend(preferencesMiddleware.middleware),
+      .prepend(syncMiddleware.middleware),
 });
 
 store.dispatch(walletActivate(selectActiveWalletId(store.getState())));
