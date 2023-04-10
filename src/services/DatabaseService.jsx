@@ -1,8 +1,12 @@
 import { Filesystem, Directory, Encoding } from "@capacitor/filesystem";
 import initSqlJs from "sql.js";
+import { run_migrations } from "@/util/migrations";
 
+// --------------------------------
 const SELENE_DB_FILE = "db/selene.db";
+// --------------------------------
 
+// Connect to SQLite Database
 const SQL = await initSqlJs({ locateFile: (file) => "/sql-wasm.wasm" });
 let db = null;
 let flushPending = null;
@@ -21,110 +25,77 @@ try {
   db = new SQL.Database();
 }
 
-function initializeTables() {
-  const query = [];
+// run schema migrations
+run_migrations(db);
 
-  //*
-  query.push("DROP TABLE addresses;");
-  query.push("DROP TABLE transactions;");
-  query.push("DROP TABLE vins;");
-  query.push("DROP TABLE utxos;");
-  query.push("DROP TRIGGER IF EXISTS balance_update;");
-  /**/
+// --------------------------------
 
-  query.push(
-    `CREATE TABLE IF NOT EXISTS wallets ( 
-      id integer primary key not null, 
-      name text not null, 
-      mnemonic text unique not null, 
-      derivation text default "m/44'/0'/0'", 
-      date_created default CURRENT_TIMESTAMP, 
-      key_viewed text, 
-      key_verified text, 
-      balance int default 0
-    );`
-  );
-  query.push(
-    `CREATE TABLE IF NOT EXISTS addresses (
-      address text primary key not null, 
-      wallet_id int not null, 
-      hd_index int not null, 
-      balance int default 0, 
-      change int default 0, 
-      state text default null
-    );`
-  );
-  query.push(
-    `CREATE TABLE IF NOT EXISTS transactions (
-      txid text primary key not null, 
-      wallet_id int not null, 
-      time_seen default CURRENT_TIMESTAMP,
-      address text,
-      hex text,
-      description text,
-      size int,
-      blockhash text,
-      time int,
-      blocktime int,
-      locktime int,
-      version int,
-      height int
-    );`
-  );
-  query.push(
-    `CREATE TABLE IF NOT EXISTS vins (
-      txid text not null,
-      prevtx text not null,
-      vout int not null,
-      scriptSig text not null
-    );`
-  );
-  query.push(
-    `CREATE TABLE IF NOT EXISTS utxos (
-        tx_hash text not null,
-        tx_pos int not null,
-        address text,
-        scriptPubKey text, 
-        amount int not null, 
-        height int,
-        spent int default 0
-      );`
-  );
-
-  query.push(
-    `CREATE TRIGGER IF NOT EXISTS balance_update AFTER UPDATE ON addresses
-      BEGIN
-        UPDATE wallets SET 
-          balance=(
-            SELECT SUM(balance) FROM addresses 
-            WHERE wallet_id=NEW.wallet_id
-          ) WHERE id=NEW.wallet_id
-        ;
-      END
-    ;`
-  );
-
-  db.run(query.join(""));
-}
-
-initializeTables();
-
+// DatabaseService: brokers interactions with raw SQLite database
 export default function DatabaseService() {
   return {
-    saveDatabase,
     db,
     resultToJson,
+    saveDatabase,
   };
 
+  // resultToJson: turns SQLite result into a consumable object
+  function resultToJson(result) {
+    // result is empty set (empty array)
+    if (result.length === 0) {
+      return result;
+    }
+
+    const mapped = result[0].values.map((val, i) =>
+      result[0].columns.map((col, j) => ({ [result[0].columns[j]]: val[j] }))
+    );
+
+    const reduced = mapped.map((m) =>
+      m.reduce((acc, cur) => ({ ...acc, ...cur }), {})
+    );
+
+    /* result:
+     * [
+     *  {
+     *    columns: ["id", "name", ...],
+     *    values: [
+     *      [1, "Selene", ...],
+     *      [2, ...],
+     *      ...
+     *    ]
+     *  }
+     *]
+     *
+     * mapped:
+     * [
+     *   [ { id: 1 }, { name: "Selene" }, ...],
+     *   [ { id: 2 }, ...],
+     *   ...
+     * ]
+     *
+     * reduced:
+     * [
+     *   { id: 1, name: "Selene", ...},
+     *   { id: 2, ...},
+     *   ...
+     * ]
+     **/
+
+    //console.log("resultToJson", result, mapped, reduced);
+    return reduced;
+  }
+
+  // saveDatabase: schedules a write to disk
+  // sets a timeout to batch writes together
   function saveDatabase() {
     clearTimeout(flushPending);
 
     flushPending = setTimeout(async () => {
-      await flushDatabase();
+      await _flushDatabase();
     }, 120);
   }
 
-  async function flushDatabase() {
+  // _flushDatabase [private]: writes database to disk
+  async function _flushDatabase() {
     const data = db.export();
 
     const result = await Filesystem.writeFile({
@@ -136,26 +107,6 @@ export default function DatabaseService() {
     });
 
     console.log("flushDatabase", result);
-  }
-
-  function resultToJson(result) {
-    if (result.length === 0) {
-      //console.log("resultToJson", result);
-      return result;
-    }
-
-    //console.log("resultToJson", result);
-
-    const mapped = result[0].values.map((val, i) =>
-      result[0].columns.map((col, j) => ({ [result[0].columns[j]]: val[j] }))
-    );
-
-    const reduced = mapped.map((m) =>
-      m.reduce((acc, cur) => ({ ...acc, ...cur }), {})
-    );
-
-    //console.log("resultToJson", result, mapped, reduced);
-    return reduced;
   }
 }
 
