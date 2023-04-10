@@ -23,49 +23,54 @@ try {
 
 function initializeTables() {
   const query = [];
-  query.push("PRAGMA foreign_keys = ON;");
+
+  //*
+  query.push("DROP TABLE addresses;");
+  query.push("DROP TABLE transactions;");
+  query.push("DROP TABLE vins;");
+  query.push("DROP TABLE utxos;");
+  query.push("DROP TRIGGER IF EXISTS balance_update;");
+  /**/
+
   query.push(
     `CREATE TABLE IF NOT EXISTS wallets ( 
-        id integer primary key not null, 
-        name text not null, 
-        mnemonic text unique not null, 
-        derivation text default "m/44'/0'/0'", 
-        date_created default CURRENT_TIMESTAMP, 
-        key_viewed text, 
-        key_verified text, 
-        balance int default 0
-      );`
-  );
-  query.push("DROP TABLE addresses;");
-  query.push(
-    `CREATE TABLE IF NOT EXISTS addresses (
-        address text primary key not null, 
-        wallet_id int not null, 
-        hd_index int not null, 
-        balance int default 0, 
-        change int default 0, 
-        state text default null
-      );`
-  );
-  query.push("DROP TABLE transactions;");
-  query.push(
-    `CREATE TABLE IF NOT EXISTS transactions (
-        txid text primary key not null, 
-        wallet_id int not null, 
-        time_seen default CURRENT_TIMESTAMP,
-        address text,
-        hex text,
-        description text,
-        size int,
-        blockhash text,
-        time int,
-        blocktime int,
-        locktime int,
-        version int,
-        height int
+      id integer primary key not null, 
+      name text not null, 
+      mnemonic text unique not null, 
+      derivation text default "m/44'/0'/0'", 
+      date_created default CURRENT_TIMESTAMP, 
+      key_viewed text, 
+      key_verified text, 
+      balance int default 0
     );`
   );
-  query.push("DROP TABLE vins;");
+  query.push(
+    `CREATE TABLE IF NOT EXISTS addresses (
+      address text primary key not null, 
+      wallet_id int not null, 
+      hd_index int not null, 
+      balance int default 0, 
+      change int default 0, 
+      state text default null
+    );`
+  );
+  query.push(
+    `CREATE TABLE IF NOT EXISTS transactions (
+      txid text primary key not null, 
+      wallet_id int not null, 
+      time_seen default CURRENT_TIMESTAMP,
+      address text,
+      hex text,
+      description text,
+      size int,
+      blockhash text,
+      time int,
+      blocktime int,
+      locktime int,
+      version int,
+      height int
+    );`
+  );
   query.push(
     `CREATE TABLE IF NOT EXISTS vins (
       txid text not null,
@@ -74,7 +79,6 @@ function initializeTables() {
       scriptSig text not null
     );`
   );
-  query.push("DROP TABLE utxos;");
   query.push(
     `CREATE TABLE IF NOT EXISTS utxos (
         tx_hash text not null,
@@ -86,13 +90,20 @@ function initializeTables() {
         spent int default 0
       );`
   );
-  query.push("DROP VIEW wallet_balance;");
+
   query.push(
-    `CREATE VIEW IF NOT EXISTS wallet_balance AS SELECT 
-      wallets.id as wallet_id,
-      SUM(addresses.balance) AS balance FROM wallets, addresses
+    `CREATE TRIGGER IF NOT EXISTS balance_update AFTER UPDATE ON addresses
+      BEGIN
+        UPDATE wallets SET 
+          balance=(
+            SELECT SUM(balance) FROM addresses 
+            WHERE wallet_id=NEW.wallet_id
+          ) WHERE id=NEW.wallet_id
+        ;
+      END
     ;`
   );
+
   db.run(query.join(""));
 }
 

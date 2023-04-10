@@ -53,8 +53,7 @@ export default function TransactionService(id) {
           prevtx,
           vout,
           scriptSig
-        )
-        VALUES (
+        ) VALUES (
           "${tx.txid}",
           "${vin.txid}",
           "${vin.vout}",

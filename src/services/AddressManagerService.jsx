@@ -37,7 +37,7 @@ function AddressManagerService(id) {
         "${wallet_id}", 
         "${hd_index}",
         "${change}"
-      )`
+      );`
     );
 
     saveDatabase();
@@ -75,13 +75,17 @@ function AddressManagerService(id) {
     return addressesGenerated;
   }
 
-  // get all active receive addresses for this wallet
+  // getReceiveAddresses: get all active receive addresses for this wallet
+  // in DESCENDING order so we can get latest index with limit 1
   function getReceiveAddresses(limit) {
     const result = resultToJson(
       db.exec(
-        `SELECT * FROM addresses WHERE wallet_id="${wallet_id}" AND change='0' ORDER BY hd_index ASC ${
-          limit ? `LIMIT ${Number.parseInt(limit)}` : ""
-        }`
+        `SELECT * FROM addresses 
+          WHERE wallet_id="${wallet_id}" 
+          AND change='0' 
+          ORDER BY hd_index DESC 
+          ${limit ? `LIMIT ${Number.parseInt(limit)}` : ""}
+        ;`
       )
     );
 
@@ -89,13 +93,17 @@ function AddressManagerService(id) {
     return result;
   }
 
-  // get all active change addresses for this wallet
+  // getChangeAddresses: get all active change addresses for this wallet
+  // in DESCENDING order so we can get latest index with limit 1
   function getChangeAddresses(limit) {
     const result = resultToJson(
       db.exec(
-        `SELECT * FROM addresses WHERE wallet_id=${wallet_id} AND change='1' ORDER BY hd_index DESC ${
-          limit ? `LIMIT ${Number.parseInt(limit)}` : ""
-        }`
+        `SELECT * FROM addresses 
+          WHERE wallet_id=${wallet_id} 
+          AND change='1' 
+          ORDER BY hd_index DESC 
+          ${limit ? `LIMIT ${Number.parseInt(limit)}` : ""}
+        ;`
       )
     );
 
@@ -103,15 +111,22 @@ function AddressManagerService(id) {
     return result;
   }
 
-  // get the lowest-index unused receive address for this wallet
+  // getUnusedAddresess: get the lowest-index unused recv addresses for wallet
+  // in ASCENDING order so wallet consumes lowest-index first
   function getUnusedAddresses(limit = 5) {
     const result = resultToJson(
       db.exec(
-        `SELECT * FROM addresses WHERE wallet_id=${wallet_id} AND state IS NULL AND change='0' ORDER BY hd_index ASC LIMIT ${limit}`
+        `SELECT * FROM addresses 
+          WHERE wallet_id=${wallet_id} 
+          AND state IS NULL 
+          AND change='0' 
+          ORDER BY hd_index ASC 
+          LIMIT ${limit}
+        ;`
       )
     );
 
-    console.log("getUnusedAddress", limit, result);
+    //console.log("getUnusedAddress", limit, result);
     return result;
   }
 
@@ -120,7 +135,12 @@ function AddressManagerService(id) {
   function updateAddressState(address, state) {
     const result = resultToJson(
       db.exec(
-        `UPDATE addresses SET state="${state}" WHERE address="${address}" AND state IS DISTINCT FROM "${state}" RETURNING *`
+        `UPDATE addresses SET 
+          state="${state}" 
+         WHERE (
+          address="${address}" 
+          AND state IS DISTINCT FROM "${state}" 
+        ) RETURNING *;`
       )
     );
 
@@ -134,18 +154,12 @@ function AddressManagerService(id) {
 
   function updateAddressBalance(address, balance) {
     db.run(
-      `UPDATE addresses SET balance="${balance}" WHERE address="${address}"`
+      `UPDATE addresses SET balance="${balance}" WHERE address="${address}";`
     );
 
     const walletBalance = resultToJson(
-      db.exec(
-        `SELECT balance FROM wallet_balance WHERE wallet_id="${wallet_id}"`
-      )
+      db.exec(`SELECT balance FROM wallets WHERE id="${wallet_id}"`)
     )[0].balance;
-
-    db.run(
-      `UPDATE wallets SET balance="${walletBalance}" WHERE id="${wallet_id}"`
-    );
 
     console.log("updateAddressBalance", address, balance, walletBalance);
     saveDatabase();
