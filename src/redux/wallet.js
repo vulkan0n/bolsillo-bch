@@ -6,42 +6,42 @@ import {
 } from "@reduxjs/toolkit";
 
 import { setPreference } from "@/redux/preferences";
-import { syncConnect } from "@/redux/sync";
+import { syncConnect, syncSubscribeAddress } from "@/redux/sync";
 
 import WalletService from "@/services/WalletService";
+import AddressManagerService from "@/services/AddressManagerService";
 
 export const walletMiddleware = createListenerMiddleware();
 
 // --------------------------------
 
-// walletActivate : initialize/load app with wallet_id
-export function walletActivate(wallet_id) {
-  console.log("walletActivate", wallet_id);
+// walletBoot : initialize/load wallet from preferences.activeWalletId
+export const walletBoot = createAction("wallet/boot", (wallet_id) => {
   const wallet = new WalletService().boot(wallet_id);
-
-  return (dispatch, getState) => {
-    dispatch(walletReady(wallet));
-  };
-}
-
-// walletReady: called when wallet is loaded
-export const walletReady = createAction("wallet/ready");
+  return { payload: wallet };
+});
 walletMiddleware.startListening({
-  actionCreator: walletReady,
+  actionCreator: walletBoot,
   effect: async (action, listenerApi) => {
-    const wallet = action.payload;
-
-    // save active wallet ID to preferences
-    listenerApi.dispatch(
-      setPreference({ key: "activeWalletId", value: wallet.id })
-    );
-
+    console.log("walletBoot", action.payload);
     // connect to electrum
     listenerApi.dispatch(syncConnect());
   },
 });
 
 export const walletBalanceUpdate = createAction("wallet/balanceUpdate");
+walletMiddleware.startListening({
+  actionCreator: walletBalanceUpdate,
+  effect: async (action, listenerApi) => {
+    // generate new addresses when address state updates
+    const generatedAddresses = new AddressManagerService().populateAddresses();
+
+    // subscribe to the new addresses
+    generatedAddresses.forEach((address) =>
+      listenerApi.dispatch(syncSubscribeAddress(address))
+    );
+  },
+});
 
 const initialState = {
   id: 0,
@@ -49,7 +49,7 @@ const initialState = {
 
 export const walletReducer = createReducer(initialState, (builder) => {
   builder
-    .addCase(walletReady, (state, action) => {
+    .addCase("wallet/boot", (state, action) => {
       return action.payload;
     })
     .addCase(walletBalanceUpdate, (state, action) => {

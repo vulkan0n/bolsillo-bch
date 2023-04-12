@@ -9,6 +9,7 @@ import {
   syncConnectionUp,
   syncConnectionDown,
   syncAddressUpdate,
+  syncChaintip,
 } from "@/redux/sync";
 
 // pointer for current ElectrumClient instance
@@ -20,11 +21,13 @@ export default function ElectrumService() {
     connect,
     disconnect,
     subscribeToAddress,
+    subscribeToChaintip,
     requestBalance,
     requestAddressState,
     requestAddressHistory,
     requestUtxos,
     requestTransaction,
+    requestMerkle,
   };
 
   // connect: connect to an Electrum server
@@ -79,7 +82,6 @@ export default function ElectrumService() {
   // listen for updates on an address
   async function subscribeToAddress(address) {
     try {
-      //console.log("subscribing to", address);
       if (
         await electrum.subscribe(
           handleAddressSubscription,
@@ -96,14 +98,30 @@ export default function ElectrumService() {
         if (addressState !== null) {
           handleAddressSubscription([address, addressState]);
         }
+
+        return address;
       }
     } catch (e) {
       // throws if electrum is disconnected
       console.error(e);
+      return false;
     }
   }
 
-  // demand the most up-to-date balance information for an address
+  async function subscribeToChaintip() {
+    try {
+      await electrum.subscribe(
+        handleChaintipSubscription,
+        "blockchain.headers.subscribe"
+      );
+    } catch (e) {
+      // throws if electrum is disconnected
+      console.error(e);
+      return false;
+    }
+  }
+
+  // request the most up-to-date balance information for an address
   async function requestBalance(address) {
     const { confirmed, unconfirmed } = await electrum.request(
       "blockchain.address.get_balance",
@@ -153,6 +171,16 @@ export default function ElectrumService() {
 
     return transaction;
   }
+
+  async function requestMerkle(tx_hash, height) {
+    const merkle = await electrum.request(
+      "blockchain.transaction.get_merkle",
+      tx_hash,
+      height
+    );
+
+    return merkle;
+  }
 }
 
 // named function for address subscription, keeps electrum-cash performant
@@ -160,4 +188,8 @@ export default function ElectrumService() {
 // so we define it on top-level
 function handleAddressSubscription(data) {
   store.dispatch(syncAddressUpdate(data));
+}
+
+function handleChaintipSubscription(data) {
+  store.dispatch(syncChaintip(data[0]));
 }

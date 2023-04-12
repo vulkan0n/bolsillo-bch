@@ -1,9 +1,12 @@
 import DatabaseService from "@/services/DatabaseService";
 import HdNodeService from "@/services/HdNodeService";
+import TransactionManagerService from "@/services/TransactionManagerService";
 import { store } from "@/redux";
 import { selectActiveWallet } from "@/redux/wallet";
+import { crypto } from "@/util/crypto";
+import { toHex } from "@/util/hex";
 
-function AddressManagerService(id) {
+export default function AddressManagerService(id) {
   const wallet_id = id ? id : selectActiveWallet(store.getState()).id;
   //console.log("AddressManagerService", wallet_id);
 
@@ -17,6 +20,8 @@ function AddressManagerService(id) {
     getUnusedAddresses,
     updateAddressState,
     updateAddressBalance,
+    calculateAddressState,
+    registerTransaction,
   };
 
   // --------------------------------
@@ -52,9 +57,9 @@ function AddressManagerService(id) {
   // populateAddresses: generate addresses such that
   // we always have ADDRESS_GAP_LIMIT unused addresses
   function populateAddresses() {
-    const ADDRESS_GAP_LIMIT = 20; // BIP-44 gap limit is 20
+    const ADDRESS_GAP_LIMIT = 20 / 4; // BIP-44 gap limit is 20
     let unused = getUnusedAddresses(ADDRESS_GAP_LIMIT);
-    let addressesGenerated = 0;
+    let generatedAddresses = [];
 
     const hdWallet = new HdNodeService(wallet_id);
     if (unused.length < ADDRESS_GAP_LIMIT) {
@@ -69,10 +74,11 @@ function AddressManagerService(id) {
       ) {
         const newAddress = hdWallet.generateAddress(hd_index);
         registerAddress(newAddress, hd_index);
+        generatedAddresses.push(newAddress);
       }
     }
 
-    return addressesGenerated;
+    return generatedAddresses;
   }
 
   // getReceiveAddresses: get all active receive addresses for this wallet
@@ -161,10 +167,60 @@ function AddressManagerService(id) {
       db.exec(`SELECT balance FROM wallets WHERE id="${wallet_id}"`)
     )[0].balance;
 
-    console.log("updateAddressBalance", address, balance, walletBalance);
+    //console.log("updateAddressBalance", address, balance, walletBalance);
     saveDatabase();
     return walletBalance;
   }
-}
 
-export default AddressManagerService;
+  function calculateAddressState(address) {
+    const TransactionManager = new TransactionManagerService();
+    const localHistory = TransactionManager.getTransactionsByAddress(address);
+
+    // return null if address has no transactions
+    if (
+      localHistory.confirmed.length === 0 &&
+      localHistory.unconfirmed.length === 0
+    ) {
+      return null;
+    }
+
+    const txToState = (tx) => `${tx.txid}:${tx.height}:`;
+
+    const stateString = localHistory.confirmed
+      .map(txToState)
+      .concat(localHistory.unconfirmed.map(txToState))
+      .join("");
+
+    const { sha256 } = crypto;
+    const stateHash = toHex(sha256.hash(new TextEncoder().encode(stateString)));
+
+    //console.log("calculateAddressState", stateHash, stateString, address);
+    return stateHash;
+  }
+
+  function registerTransaction(address, tx) {
+    console.log("AddressManager registerTransaction", tx, address);
+
+    db.run(
+      `INSERT OR IGNORE INTO transactions (
+        txid,
+        wallet_id,
+        address,
+        height
+      ) VALUES (
+        "${tx.tx_hash}",
+        "${wallet_id}",
+        "${address}",
+        "${tx.height}"
+      );`
+    );
+
+    db.run(
+      `UPDATE transactions SET 
+        wallet_id="${wallet_id}",
+        address="${address}",
+        height="${tx.height}"
+      WHERE txid="${tx.txid}";`
+    );
+  }
+}

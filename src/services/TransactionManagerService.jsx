@@ -5,8 +5,8 @@ import ElectrumService from "@/services/ElectrumService";
 import { store } from "@/redux";
 import { selectActiveWallet } from "@/redux/wallet";
 
-export default function TransactionService(id) {
-  const wallet_id = id ? id : selectActiveWallet(store.getState()).id;
+export default function TransactionManagerService() {
+  const wallet_id = selectActiveWallet(store.getState()).id;
 
   const { db, resultToJson, saveDatabase } = new DatabaseService();
 
@@ -16,14 +16,13 @@ export default function TransactionService(id) {
     getTransactionsByAddress,
   };
 
-  function registerTransaction(tx, address) {
-    console.log("registerTransaction", tx, address);
+  function registerTransaction(tx) {
+    console.log("TransactionManager registerTransaction", tx);
 
     db.run(
-      `INSERT INTO transactions (
+      `INSERT OR IGNORE INTO transactions (
         txid,
         wallet_id,
-        address,
         hex,
         size,
         blockhash,
@@ -35,7 +34,6 @@ export default function TransactionService(id) {
       VALUES (
         "${tx.txid}",
         "${wallet_id}",
-        "${address}",
         "${tx.hex}",
         "${tx.size}",
         "${tx.blockhash}",
@@ -44,6 +42,18 @@ export default function TransactionService(id) {
         "${tx.locktime}",
         "${tx.version}"
       );`
+    );
+
+    db.run(
+      `UPDATE transactions SET
+        hex="${tx.hex}",
+        size="${tx.size}",
+        blockhash="${tx.blockhash}",
+        time="${tx.time}",
+        blocktime="${tx.blocktime}",
+        locktime="${tx.locktime}",
+        version="${tx.version}"
+      WHERE txid="${tx.txid}";`
     );
 
     tx.vin.forEach((vin) => {
@@ -75,11 +85,27 @@ export default function TransactionService(id) {
   }
 
   function getTransactionsByAddress(address) {
-    const result = resultToJson(
-      db.exec(`SELECT * FROM transactions WHERE address="${address}"`)
+    const confirmed = resultToJson(
+      db.exec(
+        `SELECT * FROM transactions 
+          WHERE address="${address}"
+          AND height > 0
+          ORDER BY height, block_pos
+        ;`
+      )
     );
 
-    return result;
+    const unconfirmed = resultToJson(
+      db.exec(
+        `SELECT * FROM transactions
+          WHERE address="${address}"
+          AND height <= 0
+        ;`
+      )
+    );
+
+    console.log("getTransactionsByAddress", confirmed, unconfirmed, address);
+    return { confirmed, unconfirmed };
   }
 }
 

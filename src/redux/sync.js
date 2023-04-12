@@ -10,18 +10,19 @@ import { walletBalanceUpdate } from "@/redux/wallet";
 
 import ElectrumService from "@/services/ElectrumService";
 import AddressManagerService from "@/services/AddressManagerService";
-import TransactionService from "@/services/TransactionService";
+import TransactionManagerService from "@/services/TransactionManagerService";
 import UtxoService from "@/services/UtxoService";
+
+const Electrum = new ElectrumService();
 
 export const syncMiddleware = createListenerMiddleware();
 
 // --------------------------------
 
-// syncConnect: request electrum connection
+// syncConnect: request/retry electrum connection
 export const syncConnect = createAsyncThunk(
   "sync/connect",
   async (attempts = 0, thunkApi) => {
-    const Electrum = new ElectrumService();
     try {
       await Electrum.connect();
     } catch (e) {
@@ -30,7 +31,7 @@ export const syncConnect = createAsyncThunk(
       setTimeout(() =>
         thunkApi.dispatch(
           syncConnect(attempts + 1),
-          Math.pow(1000 * attempts, attempts) // exponential backoff
+          Math.pow(1000 * attempts, 2) // exponential backoff
         )
       );
     }
@@ -38,29 +39,43 @@ export const syncConnect = createAsyncThunk(
 );
 
 // syncConnectionUp: fired when electrum connection is up
+// set up electrum subscriptions to all receive addresses
 export const syncConnectionUp = createAction("sync/up");
 syncMiddleware.startListening({
   actionCreator: syncConnectionUp,
   effect: async (action, listenerApi) => {
-    // set up electrum subscriptions
+    // set up subscriptions on connect
     const AddressManager = new AddressManagerService();
     const addresses = AddressManager.getReceiveAddresses();
-    const Electrum = new ElectrumService();
-    addresses.forEach(({ address }) => Electrum.subscribeToAddress(address));
+    addresses.forEach(({ address }) =>
+      listenerApi.dispatch(syncSubscribeAddress(address))
+    );
+
+    Electrum.subscribeToChaintip();
   },
 });
 
 // syncConnectionDown: fired if electrum connection goes down
+// destroy electrum connection and reissue syncConnect action
 export const syncConnectionDown = createAction("sync/down");
 syncMiddleware.startListening({
   actionCreator: syncConnectionDown,
   effect: async (action, listenerApi) => {
-    // cleanup electrum subscriptions
-    // we'll handle resubscribing ourselves
-    new ElectrumService().disconnect(true);
+    // cleanup electrum subscriptions (force=true)
+    Electrum.disconnect(true);
+    // we'll handle reconnecting ourselves
     listenerApi.dispatch(syncConnect());
   },
 });
+
+// syncSubscribeAddress: subscribe to state updates for an address
+// TODO: don't allow duplicate subscriptions
+export const syncSubscribeAddress = createAsyncThunk(
+  "sync/subscribeAddress",
+  async (address, thunkApi) => {
+    return await Electrum.subscribeToAddress(address);
+  }
+);
 
 // syncAddressUpdate: fired when data acquired from address subscription
 export const syncAddressUpdate = createAction("sync/addressUpdate");
@@ -72,50 +87,92 @@ syncMiddleware.startListening({
       return;
     }
 
-    const AddressManager = new AddressManagerService();
+    // get subscription response data from payload
     const [address, addressState] = action.payload;
+
+    // use local tx history to calculate expected state hash
+    // if different than response hash, we must be missing transactions
+    // ask for entire history of address if so
+    const AddressManager = new AddressManagerService();
+    const localAddressState = AddressManager.calculateAddressState(address);
+
+    if (localAddressState !== addressState) {
+      console.log(
+        "missing transactions? attempting sync...",
+        localAddressState,
+        address,
+        addressState
+      );
+
+      // TODO: get tx heights for utxos by verifying merkle branches
+      // instead of downloading entire tx history every time
+      // we shouldn't need entire history every time we receive coins
+      const history = await Electrum.requestAddressHistory(address);
+      history.forEach(({ tx_hash, height }) => {
+        AddressManager.registerTransaction(address, { tx_hash, height });
+        listenerApi.dispatch(syncTxRequest(tx_hash));
+      });
+
+      // try again with updated history
+      listenerApi.dispatch(syncAddressUpdate([address, addressState]));
+      return;
+    }
 
     // check downloaded state against local state
     if (AddressManager.updateAddressState(address, addressState)) {
       // if state updated, get utxos for address
-      console.log("address state changed for", address);
-      listenerApi.dispatch(utxoRequest(address));
-
-      // use local tx history to calculate new state hash
-      // if different, we must be missing transactions
-      // ask for entire history for address if so
-      //listenerApi.dispatch(walletAddressHistoryScan(address));
-    } else {
-      console.log("address up-to-date", address);
+      //console.log("address state changed for", address);
+      listenerApi.dispatch(syncAddressUtxos(address));
     }
   },
 });
 
-// utxoRequest: fired when we learn one of our addresses have changed
-// kick off tx sync processes as needed
-export const utxoRequest = createAsyncThunk(
-  "utxo/request",
+// syncAddressUtxos: fired when we learn one of our addresses have changed
+// requests current utxo set for an address
+export const syncAddressUtxos = createAsyncThunk(
+  "sync/addressUtxos",
   async (address, thunkApi) => {
-    const Electrum = new ElectrumService();
     const utxos = await Electrum.requestUtxos(address);
-    return { address, utxos };
+    const merkles = await Promise.all(
+      utxos.map(
+        async (utxo) => await Electrum.requestMerkle(utxo.tx_hash, utxo.height)
+      )
+    );
+
+    function mergeUtxoMerkle(utxo, merkle) {
+      return {
+        ...utxo,
+        height: utxo.height === merkle.block_height ? utxo.height : null,
+        merkle: merkle.merkle,
+        block_pos: merkle.pos,
+      };
+    }
+
+    const utxosWithMerkle = utxos.map((utxo, i) =>
+      mergeUtxoMerkle(utxo, merkles[i])
+    );
+
+    console.log("sync/addressUtxos", address, utxosWithMerkle);
+    return {
+      address,
+      utxos: utxosWithMerkle,
+    };
   }
 );
 syncMiddleware.startListening({
-  actionCreator: utxoRequest.fulfilled,
+  actionCreator: syncAddressUtxos.fulfilled,
   effect: async (action, listenerApi) => {
     const { utxos, address } = action.payload;
 
     const utxoService = new UtxoService();
     utxos.forEach((utxo) => {
       utxoService.registerUtxo(utxo, address);
-      listenerApi.dispatch(txRequest(utxo.tx_hash));
+      listenerApi.dispatch(syncTxRequest(utxo.tx_hash));
     });
 
     // calculate address balance
-    // TODO: make this a SQL trigger instead
     const AddressManager = new AddressManagerService();
-    const addressBalance = utxos.reduce((sum, cur) => sum + cur.value, 0);
+    const addressBalance = utxos.reduce((sum, utxo) => sum + utxo.value, 0);
     const walletBalance = AddressManager.updateAddressBalance(
       address,
       addressBalance
@@ -124,31 +181,36 @@ syncMiddleware.startListening({
   },
 });
 
-export const txRequest = createAsyncThunk(
-  "transaction/request",
+export const syncTxRequest = createAsyncThunk(
+  "sync/txRequest",
   async (tx_hash, thunkApi) => {
-    const txService = new TransactionService();
-    let transaction = txService.getTransactionByHash(tx_hash);
+    const TransactionManager = new TransactionManagerService();
+    const localTx = TransactionManager.getTransactionByHash(tx_hash);
 
-    if (transaction === null || transaction.blockhash === null) {
-      const Electrum = new ElectrumService();
-      transaction = await Electrum.requestTransaction(tx_hash);
+    // if localTx is null we're requesting this tx for the first time
+    if (localTx === null || localTx.blockhash === null) {
+      const tx = await Electrum.requestTransaction(tx_hash);
+      TransactionManager.registerTransaction(tx);
     }
 
-    return transaction;
+    return TransactionManager.getTransactionByHash(tx_hash);
   }
 );
-syncMiddleware.startListening({
-  actionCreator: txRequest.fulfilled,
-  effect: async (action, listenerApi) => {
-    const transaction = action.payload;
 
-    const txService = new TransactionService();
-    txService.registerTransaction(transaction);
-  },
+// TODO: keep last 4032 blocks (28 days)
+export const syncChaintip = createAction("sync/chaintip");
+syncMiddleware.startListening({
+  actionCreator: syncChaintip,
+  effect: async (action, listenerApi) => {},
 });
 
-const initialState = { connected: false, chaintip: 0 };
+const initialState = {
+  connected: false,
+  chaintip: { height: 0 },
+  subscriptions: [],
+  utxos: [],
+  transactions: {},
+};
 
 export const syncReducer = createReducer(initialState, (builder) => {
   builder
@@ -157,6 +219,21 @@ export const syncReducer = createReducer(initialState, (builder) => {
     })
     .addCase(syncConnectionDown, (state, action) => {
       state.connected = false;
+      state.subscriptions = [];
+    })
+    .addCase(syncChaintip, (state, action) => {
+      state.chaintip = action.payload;
+    })
+    .addCase(syncSubscribeAddress.fulfilled, (state, action) => {
+      state.subscriptions.push(action.payload);
+    })
+    .addCase(syncAddressUtxos.fulfilled, (state, action) => {
+      const { address, utxos } = action.payload;
+      state.utxos.push(...utxos);
+    })
+    .addCase(syncTxRequest.fulfilled, (state, action) => {
+      const tx = action.payload;
+      state.transactions[tx.txid] = tx;
     });
 });
 
@@ -164,23 +241,3 @@ export const selectSyncState = createSelector(
   (state) => state,
   (state) => state.sync
 );
-
-/*export const walletAddressHistoryScan = createAction(
-  "wallet/addressHistoryScan"
-);
-syncMiddleware.startListening({
-  actionCreator: walletAddressHistoryScan,
-  effect: async (action, listenerApi) => {
-    const address = action.payload;
-    const history = await Electrum.requestAddressHistory(address.address);
-
-    console.log("get_history", address, history);
-    const txService = new TransactionService();
-
-    history.forEach(async ({ txid }) => {
-      const tx = await Electrum.requestTransaction(txid);
-      console.log("requestTransaction", txid, tx);
-      txService.registerTransaction(tx, address);
-    });
-  },
-});*/

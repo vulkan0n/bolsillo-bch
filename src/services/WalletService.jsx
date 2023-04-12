@@ -51,7 +51,6 @@ function WalletService() {
     const addressManager = new AddressManagerService(wallet_id);
     addressManager.populateAddresses();
 
-    console.log("boot got", wallet);
     return wallet;
   }
 
