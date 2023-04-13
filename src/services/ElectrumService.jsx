@@ -28,6 +28,7 @@ export default function ElectrumService() {
     requestUtxos,
     requestTransaction,
     requestMerkle,
+    requestBlock,
   };
 
   // connect: connect to an Electrum server
@@ -181,6 +182,22 @@ export default function ElectrumService() {
 
     return merkle;
   }
+
+  async function requestBlock(height, checkpoint_height = 0) {
+    if (height < 0 || checkpoint_height < 0) {
+      throw new Error("height must be non-negative integer");
+    }
+
+    const header = await electrum.request(
+      "blockchain.block.header",
+      height,
+      checkpoint_height
+    );
+
+    console.log("requestBlock", header, height);
+
+    return header;
+  }
 }
 
 // named function for address subscription, keeps electrum-cash performant
@@ -191,5 +208,6 @@ function handleAddressSubscription(data) {
 }
 
 function handleChaintipSubscription(data) {
-  store.dispatch(syncChaintip(data[0]));
+  const chaintip = Array.isArray(data) ? data[0] : data;
+  store.dispatch(syncChaintip(chaintip));
 }

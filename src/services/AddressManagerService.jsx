@@ -4,7 +4,7 @@ import TransactionManagerService from "@/services/TransactionManagerService";
 import { store } from "@/redux";
 import { selectActiveWallet } from "@/redux/wallet";
 import { crypto } from "@/util/crypto";
-import { toHex } from "@/util/hex";
+import { binToHex, hexToBin } from "@/util/hex";
 
 export default function AddressManagerService(id) {
   const wallet_id = id ? id : selectActiveWallet(store.getState()).id;
@@ -192,7 +192,7 @@ export default function AddressManagerService(id) {
       .join("");
 
     const { sha256 } = crypto;
-    const stateHash = toHex(sha256.hash(new TextEncoder().encode(stateString)));
+    const stateHash = binToHex(sha256.hash(new TextEncoder().encode(stateString)));
 
     //console.log("calculateAddressState", stateHash, stateString, address);
     return stateHash;

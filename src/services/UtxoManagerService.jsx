@@ -1,9 +1,7 @@
 import DatabaseService from "@/services/DatabaseService";
 import AddressManagerService from "@/services/AddressManagerService";
 
-import { bchToSats } from "@/util/sats";
-
-export default function UtxoService() {
+export default function UtxoManagerService() {
   const { db, resultToJson, saveDatabase } = new DatabaseService();
 
   return {

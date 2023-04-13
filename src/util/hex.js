@@ -1,4 +1,8 @@
-export function toHex(buffer) {
+import { hexToBin } from "@bitauth/libauth";
+
+// faster binToHex implementation: https://archive.is/2v7QZ
+// libauth uses slower array conversion method
+export function binToHex(buffer) {
   let out = "";
   for (let idx = 0, edx = buffer.length; idx < edx; idx++) {
     out += LUT_HEX_8b[buffer[idx]];
@@ -6,6 +10,10 @@ export function toHex(buffer) {
   return out;
 }
 
+// re-export libauth hexToBin
+export { hexToBin };
+
+// initialize binToHex lookup tables
 const LUT_HEX_4b = [
   "0",
   "1",
