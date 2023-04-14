@@ -93,7 +93,8 @@ const migrations = [
         txid text not null,
         prevtx text not null,
         vout int not null,
-        scriptSig text not null
+        scriptSig text not null,
+        sequence int
       );`
     );
 

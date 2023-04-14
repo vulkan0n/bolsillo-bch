@@ -15,7 +15,7 @@ import {
 // pointer for current ElectrumClient instance
 let electrum = null;
 
-// ElectrumService
+// ElectrumService: brokers interactions with electrum server
 export default function ElectrumService() {
   return {
     connect,
@@ -80,7 +80,7 @@ export default function ElectrumService() {
     }
   }
 
-  // listen for updates on an address
+  // subscribeToAddress: listen for updates on an address
   async function subscribeToAddress(address) {
     try {
       if (

@@ -6,6 +6,7 @@ import { selectActiveWallet } from "@/redux/wallet";
 import { crypto } from "@/util/crypto";
 import { binToHex, hexToBin } from "@/util/hex";
 
+// AddressManagerService: handles most address-related operations
 export default function AddressManagerService(id) {
   const wallet_id = id ? id : selectActiveWallet(store.getState()).id;
   //console.log("AddressManagerService", wallet_id);
@@ -48,14 +49,9 @@ export default function AddressManagerService(id) {
     saveDatabase();
   }
 
-  // clearAddresses: delete all addresses from database
-  function clearAddresses() {
-    db.run("DELETE FROM addresses;");
-    saveDatabase();
-  }
-
   // populateAddresses: generate addresses such that
   // we always have ADDRESS_GAP_LIMIT unused addresses
+  // returns an array of generated addresses
   function populateAddresses() {
     const ADDRESS_GAP_LIMIT = 20 / 4; // BIP-44 gap limit is 20
     let unused = getUnusedAddresses(ADDRESS_GAP_LIMIT);
@@ -158,6 +154,8 @@ export default function AddressManagerService(id) {
     return didUpdate;
   }
 
+  // updateAddressBalance: updates balance for address in database
+  // returns total wallet balance
   function updateAddressBalance(address, balance) {
     db.run(
       `UPDATE addresses SET balance="${balance}" WHERE address="${address}";`
@@ -172,6 +170,7 @@ export default function AddressManagerService(id) {
     return walletBalance;
   }
 
+  // calculateAddressState: calculate electrum address state using local tx history
   function calculateAddressState(address) {
     const TransactionManager = new TransactionManagerService();
     const localHistory = TransactionManager.getTransactionsByAddress(address);
@@ -192,15 +191,16 @@ export default function AddressManagerService(id) {
       .join("");
 
     const { sha256 } = crypto;
-    const stateHash = binToHex(sha256.hash(new TextEncoder().encode(stateString)));
+    const stateHash = binToHex(
+      sha256.hash(new TextEncoder().encode(stateString))
+    );
 
     //console.log("calculateAddressState", stateHash, stateString, address);
     return stateHash;
   }
 
+  // AddressManager.registerTransaction: register a transaction with an address
   function registerTransaction(address, tx) {
-    console.log("AddressManager registerTransaction", tx, address);
-
     db.run(
       `INSERT OR IGNORE INTO transactions (
         txid,

@@ -17,8 +17,6 @@ export default function TransactionManagerService() {
   };
 
   function registerTransaction(tx) {
-    console.log("TransactionManager registerTransaction", tx);
-
     db.run(
       `INSERT OR IGNORE INTO transactions (
         txid,
@@ -56,18 +54,22 @@ export default function TransactionManagerService() {
       WHERE txid="${tx.txid}";`
     );
 
+    console.log("registerTransaction vin", tx.vin);
+
     tx.vin.forEach((vin) => {
       db.run(
         `INSERT INTO vins (
           txid,
           prevtx,
           vout,
-          scriptSig
+          scriptSig,
+          sequence
         ) VALUES (
           "${tx.txid}",
           "${vin.txid}",
           "${vin.vout}",
-          "${vin.scriptSig}"
+          "${vin.scriptSig.hex}",
+          "${vin.sequence}"
         );`
       );
     });
@@ -76,12 +78,22 @@ export default function TransactionManagerService() {
   }
 
   function getTransactionByHash(tx_hash) {
-    const result = resultToJson(
+    const txResult = resultToJson(
       db.exec(`SELECT * FROM transactions WHERE txid="${tx_hash}"`)
     );
 
+    if (txResult.length < 1) {
+      return null;
+    }
+
+    const vin = resultToJson(
+      db.exec(`SELECT * FROM vins WHERE txid="${tx_hash}";`)
+    );
+
+    const result = { ...txResult[0], vin };
+
     console.log("getTransactionByHash", tx_hash, result);
-    return result.length > 0 ? result[0] : null;
+    return result;
   }
 
   function getTransactionsByAddress(address) {

@@ -1,17 +1,9 @@
 import DatabaseService from "@/services/DatabaseService";
 import { crypto } from "@/util/crypto";
 import { hexToBin, binToHex } from "@/util/hex";
+import { swapEndianness } from "@bitauth/libauth";
 
-/*
- * version: 4 bytes int
- * prevBlockhash: 32 bytes block hash
- * merkleRoot: 32 bytes merkle root
- * timestamp: 4 bytes int
- * target: 4 bytes
- * nonce: 4 bytes
- */
-
-// BlockchainService
+// BlockchainService: brokers interactions with the block data
 export default function BlockchainService() {
   const { db, resultToJson, saveDatabase } = new DatabaseService();
 
@@ -19,17 +11,14 @@ export default function BlockchainService() {
     registerBlock,
     getBlockByHash,
     getBlockByHeight,
+    calculateBlockhash,
+    decodeBlockHeader,
     verifyMerkleProof,
   };
 
   // registerBlock: insert a block into the database
   function registerBlock(block) {
-    console.log("registerBlock", block);
-    const blockhash = binToHex(
-      crypto.sha256.hash(crypto.sha256.hash(hexToBin(block.header)))
-    );
-
-    console.log("registerBlock blockhash", blockhash);
+    const blockhash = calculateBlockhash(block.header);
 
     db.run(
       `INSERT OR IGNORE INTO blockchain (
@@ -51,6 +40,15 @@ export default function BlockchainService() {
     );
   }
 
+  // calculateBlockHash: get the sha256 hash of the block header (little-endian)
+  function calculateBlockhash(header) {
+    const blockhash = swapEndianness(
+      binToHex(crypto.sha256.hash(crypto.sha256.hash(hexToBin(header))))
+    );
+
+    return blockhash;
+  }
+
   // getBlockByHash: get block from database by blockhash
   function getBlockByHash(blockhash) {
     const result = resultToJson(
@@ -64,7 +62,22 @@ export default function BlockchainService() {
     const result = resultToJson(
       db.exec(`SELECT * FROM blockchain WHERE height="${height}";`)
     );
+    //console.log("getBlockByHeight", result, height);
     return result.length > 0 ? result[0] : null;
+  }
+
+  // decodeBlockHeader: extracts data from raw block header
+  function decodeBlockHeader(header) {
+    /*
+     * version: 4 bytes int
+     * prevBlockhash: 32 bytes block hash
+     * merkleRoot: 32 bytes merkle root
+     * timestamp: 4 bytes int
+     * target: 4 bytes
+     * nonce: 4 bytes
+     */
+
+    return {};
   }
 
   function verifyMerkleProof(txHash, txIndex, merkleBranch, merkleRoot) {

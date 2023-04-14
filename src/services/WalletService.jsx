@@ -14,14 +14,14 @@ function WalletService() {
 
   // ----------------------------
 
-  // return a list of all wallets in the database
+  // getWallets: return a list of all wallets in the database
   function getWallets() {
     const result = resultToJson(db.exec("SELECT * FROM wallets"));
     //console.log("getWallets", result);
     return result;
   }
 
-  // get a consumable Wallet object from the database
+  // getWalletById: get a consumable Wallet object from the database
   function getWalletById(id) {
     const result = resultToJson(
       db.exec(`SELECT * FROM wallets WHERE id='${id}'`)
@@ -32,7 +32,7 @@ function WalletService() {
 
   // ----------------------------
 
-  // load a wallet, create a wallet if none exist
+  // boot: load a wallet, create a wallet if none exist
   function boot(wallet_id) {
     let wallet = getWalletById(wallet_id);
 
@@ -56,7 +56,7 @@ function WalletService() {
 
   // ----------------------------
 
-  // generate a new wallet from a randomly generated seed phrase
+  // createWallet: generate a new wallet from a randomly generated seed phrase
   // persist the new wallet in the database
   function createWallet(name, derivation = "m/44'/0'/0'") {
     const mnemonic = bip39.generateMnemonic();

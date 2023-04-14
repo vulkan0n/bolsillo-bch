@@ -105,7 +105,7 @@ syncMiddleware.startListening({
 
 // syncAddressUtxos: fired when we learn one of our addresses have changed
 // requests current utxo set for an address
-export const syncAddressUtxos = createAsyncThunk(
+const syncAddressUtxos = createAsyncThunk(
   "sync/addressUtxos",
   async (address, thunkApi) => {
     // we will always need the up-to-date utxo set
@@ -120,8 +120,6 @@ syncMiddleware.startListening({
   actionCreator: syncAddressUtxos.fulfilled,
   effect: async (action, listenerApi) => {
     const { utxos, address } = action.payload;
-
-    console.log("sync/addressUtxos", address, utxos);
 
     const UtxoManager = new UtxoManagerService();
     const AddressManager = new AddressManagerService();
@@ -147,21 +145,6 @@ syncMiddleware.startListening({
   },
 });
 
-export const syncBlock = createAsyncThunk(
-  "sync/block",
-  async (height, thunkApi) => {
-    const Blockchain = new BlockchainService();
-    const localBlock = Blockchain.getBlockByHeight(height);
-
-    if (localBlock === null || localBlock.header === null) {
-      const block = await Electrum.requestBlock(height);
-      Blockchain.registerBlock({ header: block, height: height });
-    }
-
-    return Blockchain.getBlockByHeight(height);
-  }
-);
-
 export const syncTxRequest = createAsyncThunk(
   "sync/txRequest",
   async (tx_hash, thunkApi) => {
@@ -175,6 +158,21 @@ export const syncTxRequest = createAsyncThunk(
     }
 
     return TransactionManager.getTransactionByHash(tx_hash);
+  }
+);
+
+export const syncBlock = createAsyncThunk(
+  "sync/block",
+  async (height, thunkApi) => {
+    const Blockchain = new BlockchainService();
+    const localBlock = Blockchain.getBlockByHeight(height);
+
+    if (localBlock === null || localBlock.header === null) {
+      const block = await Electrum.requestBlock(height);
+      Blockchain.registerBlock({ header: block, height: height });
+    }
+
+    return Blockchain.getBlockByHeight(height);
   }
 );
 
@@ -213,12 +211,19 @@ export const syncReducer = createReducer(initialState, (builder) => {
       state.subscriptions.push(action.payload);
     })
     .addCase(syncChaintip, (state, action) => {
-      const chaintip = action.payload;
+      const chaintip = {
+        blockhash: new BlockchainService().calculateBlockhash(
+          action.payload.hex
+        ),
+        header: action.payload.hex,
+        height: action.payload.height,
+      };
       state.chaintip = chaintip;
       state.blocks[chaintip.height] = chaintip;
     })
-    .addCase(syncBlock, (state, action) => {
-      state.blocks[action.payload.height] = action.payload;
+    .addCase(syncBlock.fulfilled, (state, action) => {
+      const block = action.payload;
+      state.blocks[block.height] = block;
     })
     .addCase(syncAddressUtxos.fulfilled, (state, action) => {
       const { address, utxos } = action.payload;
