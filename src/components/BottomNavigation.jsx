@@ -1,13 +1,17 @@
 import { NavLink } from "react-router-dom";
 import {
   HomeOutlined,
+  HomeFilled,
   AppstoreOutlined,
+  AppstoreFilled,
   SettingOutlined,
+  SettingFilled,
 } from "@ant-design/icons";
 
 function BottomNavigation() {
   const baseClasses = "bg-zinc-900 text-primary border-primary";
   const activeClasses = "active border-t-4";
+  const iconClasses = "text-2xl";
 
   return (
     <div className="btm-nav btm-nav-sm z-50">
@@ -17,9 +21,15 @@ function BottomNavigation() {
           isActive ? `${baseClasses} ${activeClasses}` : `${baseClasses}`
         }
       >
-        <span className="btm-nav-label">
-          <HomeOutlined className="text-2xl" />
-        </span>
+        {({ isActive }) => (
+          <span className="btm-nav-label">
+            {isActive ? (
+              <HomeFilled className={iconClasses} />
+            ) : (
+              <HomeOutlined className={iconClasses} />
+            )}
+          </span>
+        )}
       </NavLink>
       <NavLink
         to="/explore"
@@ -27,9 +37,15 @@ function BottomNavigation() {
           isActive ? `${baseClasses} ${activeClasses}` : `${baseClasses}`
         }
       >
-        <span className="btm-nav-label">
-          <AppstoreOutlined className="text-2xl" />
-        </span>
+        {({ isActive }) => (
+          <span className="btm-nav-label">
+            {isActive ? (
+              <AppstoreFilled className={iconClasses} />
+            ) : (
+              <AppstoreOutlined className={iconClasses} />
+            )}
+          </span>
+        )}
       </NavLink>
       <NavLink
         to="/settings"
@@ -37,9 +53,15 @@ function BottomNavigation() {
           isActive ? `${baseClasses} ${activeClasses}` : `${baseClasses}`
         }
       >
-        <span className="btm-nav-label">
-          <SettingOutlined className="text-2xl" />
-        </span>
+        {({ isActive }) => (
+          <span className="btm-nav-label">
+            {isActive ? (
+              <SettingFilled className={iconClasses} />
+            ) : (
+              <SettingOutlined className={iconClasses} />
+            )}
+          </span>
+        )}
       </NavLink>
     </div>
   );
