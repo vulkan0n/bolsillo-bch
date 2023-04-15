@@ -5,9 +5,12 @@ import {
   RouterProvider,
   Navigate,
 } from "react-router-dom";
-import { Provider } from "react-redux";
 
+import { App } from "@capacitor/app";
+
+import { Provider } from "react-redux";
 import { store } from "./redux";
+
 import "./index.css";
 
 import MainLayout from "./components/MainLayout";
@@ -68,3 +71,20 @@ ReactDOM.createRoot(document.getElementById("root")).render(
     </Provider>
   </React.StrictMode>
 );
+
+App.addListener("backButton", (canGoBack) => {
+  if (!canGoBack) {
+    console.log("can't go back anymore! bye!");
+    App.exitApp();
+    return;
+  }
+
+  const { location, history } = window;
+  if (location.pathname === "/wallet") {
+    console.log("bye!");
+    App.exitApp();
+    return;
+  }
+
+  history.back();
+});
