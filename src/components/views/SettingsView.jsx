@@ -4,6 +4,8 @@ import WalletService from "@/services/WalletService";
 import { useSelector, useDispatch } from "react-redux";
 import { selectPreferences, setPreference } from "@/redux/preferences";
 
+import { SettingOutlined } from "@ant-design/icons";
+
 function SettingsView() {
   const dispatch = useDispatch();
   const preferences = useSelector(selectPreferences);
@@ -17,7 +19,7 @@ function SettingsView() {
   return (
     <>
       <div className="bg-zinc-900 text-xl text-zinc-200 text-center p-3 font-bold">
-        Settings
+        <SettingOutlined className="text-2xl mx-1" />Settings
       </div>
 
       <div className="px-2">

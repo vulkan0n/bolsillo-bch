@@ -1,7 +1,10 @@
+import { AppstoreOutlined } from "@ant-design/icons";
 function ExploreView() {
   return (
     <>
-      <div className="bg-zinc-900 text-xl text-zinc-300 text-center p-3 font-bold">Explore BCH</div>
+      <div className="bg-zinc-900 text-xl text-zinc-300 text-center p-3 font-bold">
+        <AppstoreOutlined className="text-2xl" /> Explore BCH
+      </div>
       <div className="p-2">
         <div className="stats shadow rounded-lg p-3 bg-zinc-800 w-full">
           <div className="stat">

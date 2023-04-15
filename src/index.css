@@ -2,3 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
+.anticon {
+  vertical-align: 0;
+  line-height: 0;
+}

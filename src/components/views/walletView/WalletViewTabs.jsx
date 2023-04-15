@@ -1,4 +1,5 @@
 import { NavLink } from "react-router-dom";
+import { SendOutlined, QrcodeOutlined } from "@ant-design/icons";
 
 function WalletViewTabs() {
   const baseTabClass = "tab tab-lg tab-bordered flex-1";
@@ -13,7 +14,7 @@ function WalletViewTabs() {
           isActive ? `${baseTabClass} ${activeTabClass}` : `${baseTabClass} ${inactiveTabClass}`
         }
       >
-        Send
+        <SendOutlined className="text-xl px-1" />&nbsp;Send
       </NavLink>
       <NavLink
         to=""
@@ -22,7 +23,7 @@ function WalletViewTabs() {
         }
         end
       >
-        Receive
+        <QrcodeOutlined className="text-xl px-1" />&nbsp;Receive
       </NavLink>
     </div>
   );

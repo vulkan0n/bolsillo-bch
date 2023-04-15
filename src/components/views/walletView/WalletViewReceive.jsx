@@ -14,6 +14,8 @@ import ScannerButton from "./ScannerButton";
 import seleneLogo from "@/assets/selene-logo.png";
 import bchLogo from "@/assets/bch-logo.png";
 
+import { FormOutlined, ReloadOutlined, UnorderedListOutlined } from "@ant-design/icons";
+
 function WalletViewReceive() {
   const preferences = useSelector(selectPreferences);
   const wallet = useSelector(selectActiveWallet);
@@ -27,7 +29,10 @@ function WalletViewReceive() {
     [wallet]
   );
 
-  const address = unusedAddresses.length > 0 ? unusedAddresses[(0 + skip) % unusedAddresses.length].address : "";
+  const address =
+    unusedAddresses.length > 0
+      ? unusedAddresses[(0 + skip) % unusedAddresses.length].address
+      : "";
 
   const formattedAddress = (() => {
     const split = address.split(":");
@@ -79,15 +84,15 @@ function WalletViewReceive() {
               {formattedAddress}
             </div>
           </div>
-          <div className="flex justify-center gap-x-6">
+          <div className="flex justify-center gap-x-8 my-1">
             <button className="btn btn-xs" type="button">
-              [Receive Options]
+              <FormOutlined className="text-2xl" />
             </button>
             <button className="btn btn-xs" type="button">
-              [Addresses]
+              <UnorderedListOutlined className="text-2xl" />
             </button>
             <button className="btn btn-xs" type="button" onClick={skipAddress}>
-              [Cycle Address]
+              <ReloadOutlined className="text-2xl" />
             </button>
           </div>
         </>

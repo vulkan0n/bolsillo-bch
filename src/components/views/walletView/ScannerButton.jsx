@@ -5,6 +5,7 @@ import {
   SupportedFormat,
 } from "@capacitor-community/barcode-scanner";
 import { validateInvoiceString } from "@/util/invoice";
+import { ScanOutlined, CloseOutlined } from "@ant-design/icons";
 
 function ScannerButton({ onScanStart, onScanEnd }) {
   const navigate = useNavigate();
@@ -89,13 +90,17 @@ function ScannerButton({ onScanStart, onScanEnd }) {
   return (
     <>
       <div className="flex justify-center fixed inset-x-0 bottom-24">
-        <div className="flex items-center rounded-full border border-1 border-zinc-300 w-24 h-24 bg-zinc-50">
+        <div className="flex items-center rounded-full border border-1 border-zinc-100 w-20 h-20">
           <button
             className="w-full h-full"
             type="button"
             onClick={toggleScanner}
           >
-            {isScanning ? "Close" : "Open"} Scanner
+            {isScanning ? (
+              <CloseOutlined className="text-3xl" style={{ lineHeight: "0" }} />
+            ) : (
+              <ScanOutlined className="text-3xl" style={{ lineHeight: "0" }} />
+            )}
           </button>
         </div>
       </div>
