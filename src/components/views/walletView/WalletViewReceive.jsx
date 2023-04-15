@@ -79,7 +79,7 @@ function WalletViewReceive() {
             </div>
             <div
               onClick={copyAddressToClipboard}
-              className="text-xs text-center break-all cursor-pointer text-primary"
+              className="text-xs text-center break-all cursor-pointer text-primary opacity-70"
             >
               {formattedAddress}
             </div>
