@@ -53,7 +53,7 @@ export default function AddressManagerService(id) {
   // we always have ADDRESS_GAP_LIMIT unused addresses
   // returns an array of generated addresses
   function populateAddresses() {
-    const ADDRESS_GAP_LIMIT = 20 / 4; // BIP-44 gap limit is 20
+    const ADDRESS_GAP_LIMIT = 20; // BIP-44 gap limit is 20
     let unused = getUnusedAddresses(ADDRESS_GAP_LIMIT);
     let generatedAddresses = [];
 

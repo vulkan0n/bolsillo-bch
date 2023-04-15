@@ -9,8 +9,10 @@ export default function BlockchainService() {
 
   return {
     registerBlock,
+    getBlocks,
     getBlockByHash,
     getBlockByHeight,
+    getChaintip,
     calculateBlockhash,
     decodeBlockHeader,
     verifyMerkleProof,
@@ -40,13 +42,11 @@ export default function BlockchainService() {
     );
   }
 
-  // calculateBlockHash: get the sha256 hash of the block header (little-endian)
-  function calculateBlockhash(header) {
-    const blockhash = swapEndianness(
-      binToHex(crypto.sha256.hash(crypto.sha256.hash(hexToBin(header))))
-    );
-
-    return blockhash;
+  // getBlocks: return all known blocks
+  function getBlocks() {
+    const result = resultToJson(db.exec(`SELECT * FROM blockchain;`));
+    console.log("getBlocks", result);
+    return result;
   }
 
   // getBlockByHash: get block from database by blockhash
@@ -64,6 +64,23 @@ export default function BlockchainService() {
     );
     //console.log("getBlockByHeight", result, height);
     return result.length > 0 ? result[0] : null;
+  }
+
+  function getChaintip() {
+    const result = resultToJson(
+      db.exec(`SELECT * FROM blockchain ORDER BY height DESC LIMIT 1`)
+    );
+
+    return result.length > 0 ? result[0] : null;
+  }
+
+  // calculateBlockHash: get the sha256 hash of the block header (little-endian)
+  function calculateBlockhash(header) {
+    const blockhash = swapEndianness(
+      binToHex(crypto.sha256.hash(crypto.sha256.hash(hexToBin(header))))
+    );
+
+    return blockhash;
   }
 
   // decodeBlockHeader: extracts data from raw block header

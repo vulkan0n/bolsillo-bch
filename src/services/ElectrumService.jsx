@@ -183,6 +183,7 @@ export default function ElectrumService() {
     return merkle;
   }
 
+  // requestBlock: request a block by height
   async function requestBlock(height, checkpoint_height = 0) {
     if (height < 0 || checkpoint_height < 0) {
       throw new Error("height must be non-negative integer");
@@ -194,8 +195,7 @@ export default function ElectrumService() {
       checkpoint_height
     );
 
-    console.log("requestBlock", header, height);
-
+    //console.log("requestBlock", header, height);
     return header;
   }
 }

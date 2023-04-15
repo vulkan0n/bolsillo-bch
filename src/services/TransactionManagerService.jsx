@@ -6,12 +6,18 @@ import { store } from "@/redux";
 import { selectActiveWallet } from "@/redux/wallet";
 
 export default function TransactionManagerService() {
-  const wallet_id = selectActiveWallet(store.getState()).id;
+  let wallet_id = 0;
+  try {
+    wallet_id = selectActiveWallet(store.getState()).id;
+  } catch (e) {
+    console.warn(e);
+  }
 
   const { db, resultToJson, saveDatabase } = new DatabaseService();
 
   return {
     registerTransaction,
+    getTransactions,
     getTransactionByHash,
     getTransactionsByAddress,
   };
@@ -44,6 +50,7 @@ export default function TransactionManagerService() {
 
     db.run(
       `UPDATE transactions SET
+        wallet_id="${wallet_id}",
         hex="${tx.hex}",
         size="${tx.size}",
         blockhash="${tx.blockhash}",
@@ -75,6 +82,16 @@ export default function TransactionManagerService() {
     });
 
     saveDatabase();
+  }
+
+  function getTransactions() {
+    const result = resultToJson(
+      db.exec(`SELECT * FROM transactions WHERE wallet_id="${wallet_id}"`)
+    );
+
+    const transactionsByAddress = result.reduce((final, current) => ({...final, [current.txid]: { current } }), {});
+    console.log("getTransactions", result, transactionsByAddress);
+    return transactionsByAddress;
   }
 
   function getTransactionByHash(tx_hash) {

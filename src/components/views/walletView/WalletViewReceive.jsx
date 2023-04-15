@@ -81,10 +81,13 @@ function WalletViewReceive() {
           </div>
           <div className="flex justify-center gap-x-6">
             <button className="btn btn-xs" type="button">
-              Request Amount
+              [Receive Options]
+            </button>
+            <button className="btn btn-xs" type="button">
+              [Addresses]
             </button>
             <button className="btn btn-xs" type="button" onClick={skipAddress}>
-              Cycle Address
+              [Cycle Address]
             </button>
           </div>
         </>

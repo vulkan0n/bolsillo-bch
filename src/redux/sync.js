@@ -97,7 +97,7 @@ syncMiddleware.startListening({
     const AddressManager = new AddressManagerService();
     if (AddressManager.updateAddressState(address, addressState)) {
       // if state updated, get utxos for address
-      //console.log("address state changed for", address);
+      console.log("address state changed for", address);
       listenerApi.dispatch(syncAddressUtxos(address));
     }
   },
@@ -165,14 +165,16 @@ export const syncBlock = createAsyncThunk(
   "sync/block",
   async (height, thunkApi) => {
     const Blockchain = new BlockchainService();
-    const localBlock = Blockchain.getBlockByHeight(height);
+    let block = Blockchain.getBlockByHeight(height);
 
-    if (localBlock === null || localBlock.header === null) {
-      const block = await Electrum.requestBlock(height);
-      Blockchain.registerBlock({ header: block, height: height });
+    if (block === null || block.header === null) {
+      const header = await Electrum.requestBlock(height);
+      Blockchain.registerBlock({ header, height });
+      block = Blockchain.getBlockByHeight(height);
     }
 
-    return Blockchain.getBlockByHeight(height);
+    console.log("sync/block", block);
+    return block;
   }
 );
 
@@ -183,19 +185,13 @@ syncMiddleware.startListening({
   effect: async (action, listenerApi) => {
     const chaintip = action.payload;
     console.log("sync/chaintip", chaintip);
-
-    const Blockchain = new BlockchainService();
-    Blockchain.registerBlock({ header: chaintip.hex, height: chaintip.height });
+    listenerApi.dispatch(syncBlock(chaintip.height));
   },
 });
 
 const initialState = {
   connected: false,
-  chaintip: { height: 0 },
-  blocks: { ...block_checkpoints },
-  subscriptions: [],
-  utxos: [],
-  transactions: {},
+  chaintip: { ...block_checkpoints.first2023 },
 };
 
 export const syncReducer = createReducer(initialState, (builder) => {
@@ -207,31 +203,13 @@ export const syncReducer = createReducer(initialState, (builder) => {
       state.connected = false;
       state.subscriptions = [];
     })
-    .addCase(syncSubscribeAddress.fulfilled, (state, action) => {
-      state.subscriptions.push(action.payload);
-    })
     .addCase(syncChaintip, (state, action) => {
-      const chaintip = {
-        blockhash: new BlockchainService().calculateBlockhash(
-          action.payload.hex
-        ),
-        header: action.payload.hex,
-        height: action.payload.height,
+      const { hex, height } = action.payload;
+      state.chaintip = {
+        blockhash: new BlockchainService().calculateBlockhash(hex),
+        header: hex,
+        height: height,
       };
-      state.chaintip = chaintip;
-      state.blocks[chaintip.height] = chaintip;
-    })
-    .addCase(syncBlock.fulfilled, (state, action) => {
-      const block = action.payload;
-      state.blocks[block.height] = block;
-    })
-    .addCase(syncAddressUtxos.fulfilled, (state, action) => {
-      const { address, utxos } = action.payload;
-      state.utxos.push(...utxos);
-    })
-    .addCase(syncTxRequest.fulfilled, (state, action) => {
-      const tx = action.payload;
-      state.transactions[tx.txid] = tx;
     });
 });
 
