@@ -1,6 +1,6 @@
 import { NavLink } from "react-router-dom";
 import {
-  WalletOutlined,
+  HomeOutlined,
   AppstoreOutlined,
   SettingOutlined,
 } from "@ant-design/icons";
@@ -18,7 +18,7 @@ function BottomNavigation() {
         }
       >
         <span className="btm-nav-label">
-          <WalletOutlined className="text-2xl" />
+          <HomeOutlined className="text-2xl" />
         </span>
       </NavLink>
       <NavLink
