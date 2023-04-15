@@ -20,7 +20,7 @@ const defaultPreferences = {
 };
 
 async function retrievePreferences() {
-  //Preferences.clear();
+  Preferences.clear();
   let keys = (await Preferences.keys()).keys;
   if (keys.length !== Object.keys(defaultPreferences).length) {
     console.log("resetting preferences...");
@@ -29,7 +29,7 @@ async function retrievePreferences() {
   }
   const preferences = (
     await Promise.all(
-      await keys.map(async (key) => {
+      keys.map(async (key) => {
         const current = (await Preferences.get({ key })).value;
         if (current === null) {
           await Preferences.set({ key, value: defaultPreferences[key] });
@@ -50,15 +50,24 @@ const initialState = await retrievePreferences();
 export const setPreference = createAsyncThunk(
   "preferences/set",
   async (payload, thunkApi) => {
-    await Preferences.set(payload);
-    const { value } = await Preferences.get({ key: payload.key });
-    return { key: payload.key, value };
+    const sanitizedPayload = {
+      key: payload.key,
+      value: payload.value.toString(),
+    };
+    await Preferences.set(sanitizedPayload);
+    const result = {
+      key: sanitizedPayload.key,
+      value: (await Preferences.get({ key: sanitizedPayload.key })).value,
+    };
+    console.log("preferences/set", JSON.stringify(result));
+    return result;
   }
 );
 
 export const preferencesReducer = createReducer(initialState, (builder) => {
   builder.addCase(setPreference.fulfilled, (state, action) => {
-    state[action.payload.key] = action.payload.value.toString();
+    console.log("setPreference.fulfilled", JSON.stringify(action));
+    state[action.payload.key] = action.payload.value;
   });
 });
 
