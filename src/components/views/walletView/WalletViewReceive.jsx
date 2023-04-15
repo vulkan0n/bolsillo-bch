@@ -14,7 +14,11 @@ import ScannerButton from "./ScannerButton";
 import seleneLogo from "@/assets/selene-logo.png";
 import bchLogo from "@/assets/bch-logo.png";
 
-import { FormOutlined, ReloadOutlined, UnorderedListOutlined } from "@ant-design/icons";
+import {
+  FormOutlined,
+  ReloadOutlined,
+  UnorderedListOutlined,
+} from "@ant-design/icons";
 
 function WalletViewReceive() {
   const preferences = useSelector(selectPreferences);
@@ -86,13 +90,13 @@ function WalletViewReceive() {
           </div>
           <div className="flex justify-center gap-x-8 my-1">
             <button className="btn btn-xs" type="button">
-              <FormOutlined className="text-2xl" />
+              <FormOutlined className="text-2xl opacity-80" />
             </button>
             <button className="btn btn-xs" type="button">
-              <UnorderedListOutlined className="text-2xl" />
+              <UnorderedListOutlined className="text-2xl opacity-80" />
             </button>
             <button className="btn btn-xs" type="button" onClick={skipAddress}>
-              <ReloadOutlined className="text-2xl" />
+              <ReloadOutlined className="text-2xl opacity-80" />
             </button>
           </div>
         </>
