@@ -4,8 +4,11 @@ import {
   ElectrumTransport,
 } from "electrum-cash";
 
+import { App } from "@capacitor/app";
+
 import { store } from "@/redux";
 import {
+  syncConnect,
   syncConnectionUp,
   syncConnectionDown,
   syncAddressUpdate,
@@ -211,3 +214,5 @@ function handleChaintipSubscription(data) {
   const chaintip = Array.isArray(data) ? data[0] : data;
   store.dispatch(syncChaintip(chaintip));
 }
+
+App.addListener("resume", () => store.dispatch(syncConnect()));

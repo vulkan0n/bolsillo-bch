@@ -20,7 +20,7 @@ const defaultPreferences = {
 };
 
 async function retrievePreferences() {
-  Preferences.clear();
+  //Preferences.clear();
   let keys = (await Preferences.keys()).keys;
   if (keys.length !== Object.keys(defaultPreferences).length) {
     console.log("resetting preferences...");
@@ -59,14 +59,12 @@ export const setPreference = createAsyncThunk(
       key: sanitizedPayload.key,
       value: (await Preferences.get({ key: sanitizedPayload.key })).value,
     };
-    console.log("preferences/set", JSON.stringify(result));
     return result;
   }
 );
 
 export const preferencesReducer = createReducer(initialState, (builder) => {
   builder.addCase(setPreference.fulfilled, (state, action) => {
-    console.log("setPreference.fulfilled", JSON.stringify(action));
     state[action.payload.key] = action.payload.value;
   });
 });
