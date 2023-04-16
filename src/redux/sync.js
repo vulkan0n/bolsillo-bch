@@ -48,7 +48,9 @@ syncMiddleware.startListening({
   actionCreator: syncConnectionUp,
   effect: async (action, listenerApi) => {
     // set up subscriptions on connect
-    const AddressManager = new AddressManagerService();
+    const AddressManager = new AddressManagerService(
+      listenerApi.getState().wallet.id
+    );
     const addresses = AddressManager.getReceiveAddresses();
     addresses.forEach(({ address }) =>
       listenerApi.dispatch(syncSubscribeAddress(address))
@@ -94,7 +96,9 @@ syncMiddleware.startListening({
     const [address, addressState] = action.payload;
 
     // check downloaded state against local state
-    const AddressManager = new AddressManagerService();
+    const AddressManager = new AddressManagerService(
+      listenerApi.getState().wallet.id
+    );
     if (AddressManager.updateAddressState(address, addressState)) {
       // if state updated, get utxos for address
       console.log("address state changed for", address);
@@ -122,7 +126,9 @@ syncMiddleware.startListening({
     const { utxos, address } = action.payload;
 
     const UtxoManager = new UtxoManagerService();
-    const AddressManager = new AddressManagerService();
+    const AddressManager = new AddressManagerService(
+      listenerApi.getState().wallet.id
+    );
 
     utxos.forEach((utxo) => {
       UtxoManager.registerUtxo(utxo, address);
@@ -134,6 +140,30 @@ syncMiddleware.startListening({
       listenerApi.dispatch(syncBlock(utxo.height));
       listenerApi.dispatch(syncTxRequest(utxo.tx_hash));
     });
+
+    // use local tx history to calculate expected state hash
+    // if different than response hash, we must be missing transactions
+    // ask for entire history of address if so
+    const calculatedAddressState = AddressManager.calculateAddressState(address);
+    const storedAddressState = AddressManager.getAddressState(address);
+
+    if (calculatedAddressState !== storedAddressState) {
+      console.log(
+        "missing transactions? attempting sync...",
+        calculatedAddressState,
+        address,
+        storedAddressState
+      );
+
+      // TODO: get tx heights for utxos by verifying merkle branches
+      // instead of downloading entire tx history every time
+      // we shouldn't need entire history every time we receive coins
+      const history = await Electrum.requestAddressHistory(address);
+      history.forEach(({ tx_hash, height }) => {
+        AddressManager.registerTransaction(address, { tx_hash, height });
+        listenerApi.dispatch(syncTxRequest(tx_hash));
+      });
+    }
 
     // calculate address balance
     const addressBalance = utxos.reduce((sum, utxo) => sum + utxo.value, 0);
@@ -154,7 +184,10 @@ export const syncTxRequest = createAsyncThunk(
     // if localTx is null we're requesting this tx for the first time
     if (localTx === null || localTx.blockhash === null) {
       const tx = await Electrum.requestTransaction(tx_hash);
-      TransactionManager.registerTransaction(tx);
+      TransactionManager.registerTransaction({
+        ...tx,
+        wallet_id: thunkApi.getState().wallet.id,
+      });
     }
 
     return TransactionManager.getTransactionByHash(tx_hash);
@@ -201,7 +234,6 @@ export const syncReducer = createReducer(initialState, (builder) => {
     })
     .addCase(syncConnectionDown, (state, action) => {
       state.connected = false;
-      state.subscriptions = [];
     })
     .addCase(syncChaintip, (state, action) => {
       const { hex, height } = action.payload;
@@ -219,38 +251,10 @@ export const selectSyncState = createSelector(
 );
 
 /*
-    // use local tx history to calculate expected state hash
-    // if different than response hash, we must be missing transactions
-    // ask for entire history of address if so
-    const localAddressState = AddressManager.calculateAddressState(address);
-
-    if (localAddressState !== addressState) {
-      console.log(
-        "missing transactions? attempting sync...",
-        localAddressState,
-        address,
-        addressState
-      );
-
-      // TODO: get tx heights for utxos by verifying merkle branches
-      // instead of downloading entire tx history every time
-      // we shouldn't need entire history every time we receive coins
-      const history = await Electrum.requestAddressHistory(address);
-      history.forEach(({ tx_hash, height }) => {
-        AddressManager.registerTransaction(address, { tx_hash, height });
-        listenerApi.dispatch(syncTxRequest(tx_hash));
-      });
-
-      // try again with updated history
-      listenerApi.dispatch(syncAddressUpdate([address, addressState]));
-      return;
-    }
+const mergeUtxoMerkle = (utxo, merkle) => ({
+  ...utxo,
+  height: utxo.height === merkle.block_height ? utxo.height : null,
+  merkle: merkle.merkle,
+  block_pos: merkle.pos,
+});
 */
-/*
-    const mergeUtxoMerkle = (utxo, merkle) => ({
-      ...utxo,
-      height: utxo.height === merkle.block_height ? utxo.height : null,
-      merkle: merkle.merkle,
-      block_pos: merkle.pos,
-    });
-    */

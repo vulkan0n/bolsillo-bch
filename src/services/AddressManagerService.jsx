@@ -7,9 +7,8 @@ import { crypto } from "@/util/crypto";
 import { binToHex, hexToBin } from "@/util/hex";
 
 // AddressManagerService: handles most address-related operations
-export default function AddressManagerService(id) {
-  const wallet_id = id ? id : selectActiveWallet(store.getState()).id;
-  //console.log("AddressManagerService", wallet_id);
+export default function AddressManagerService(wallet_id) {
+  console.log("AddressManagerService", wallet_id);
 
   const { db, resultToJson, saveDatabase } = new DatabaseService();
 
@@ -19,9 +18,10 @@ export default function AddressManagerService(id) {
     getReceiveAddresses,
     getChangeAddresses,
     getUnusedAddresses,
-    updateAddressState,
     updateAddressBalance,
+    updateAddressState,
     calculateAddressState,
+    getAddressState,
     registerTransaction,
   };
 
@@ -197,6 +197,16 @@ export default function AddressManagerService(id) {
 
     //console.log("calculateAddressState", stateHash, stateString, address);
     return stateHash;
+  }
+
+  // getAddressState: get stored state hash for address
+  function getAddressState(address) {
+    const result = resultToJson(
+      db.exec(`SELECT state FROM addresses WHERE address="${address}"`)
+    );
+
+    //console.log("getAddressState", result, address);
+    return result.length > 0 ? result[0].state : null;
   }
 
   // AddressManager.registerTransaction: register a transaction with an address

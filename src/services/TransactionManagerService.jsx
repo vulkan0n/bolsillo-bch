@@ -6,55 +6,48 @@ import { store } from "@/redux";
 import { selectActiveWallet } from "@/redux/wallet";
 
 export default function TransactionManagerService() {
-  let wallet_id = 0;
-  try {
-    wallet_id = selectActiveWallet(store.getState()).id;
-  } catch (e) {
-    console.warn(e);
-  }
-
   const { db, resultToJson, saveDatabase } = new DatabaseService();
 
   return {
     registerTransaction,
-    getTransactions,
     getTransactionByHash,
     getTransactionsByAddress,
+    getTransactionHistory,
   };
 
   function registerTransaction(tx) {
     db.run(
       `INSERT OR IGNORE INTO transactions (
         txid,
-        wallet_id,
         hex,
         size,
         blockhash,
         time,
         blocktime,
         locktime,
-        version
+        version,
+        wallet_id
       )
       VALUES (
         "${tx.txid}",
-        "${wallet_id}",
         "${tx.hex}",
         "${tx.size}",
         "${tx.blockhash}",
         "${tx.time}",
         "${tx.blocktime}",
         "${tx.locktime}",
-        "${tx.version}"
+        "${tx.version}",
+        "${tx.wallet_id}"
       );`
     );
 
     db.run(
       `UPDATE transactions SET
-        wallet_id="${wallet_id}",
+        ${tx.wallet_id ? `wallet_id="${tx.wallet_id}",` : ""}
         hex="${tx.hex}",
         size="${tx.size}",
         blockhash="${tx.blockhash}",
-        time="${tx.time}",
+        time="${tx.time ? tx.time : Math.floor(Date.now() / 1000)}",
         blocktime="${tx.blocktime}",
         locktime="${tx.locktime}",
         version="${tx.version}"
@@ -82,16 +75,6 @@ export default function TransactionManagerService() {
     });
 
     saveDatabase();
-  }
-
-  function getTransactions() {
-    const result = resultToJson(
-      db.exec(`SELECT * FROM transactions WHERE wallet_id="${wallet_id}"`)
-    );
-
-    const transactionsByAddress = result.reduce((final, current) => ({...final, [current.txid]: { current } }), {});
-    console.log("getTransactions", result, transactionsByAddress);
-    return transactionsByAddress;
   }
 
   function getTransactionByHash(tx_hash) {
@@ -136,6 +119,17 @@ export default function TransactionManagerService() {
     console.log("getTransactionsByAddress", confirmed, unconfirmed, address);
     return { confirmed, unconfirmed };
   }
+
+  function getTransactionHistory(wallet_id) {
+    const result = resultToJson(
+      db.exec(
+        `SELECT * FROM transactions WHERE wallet_id="${wallet_id}" ORDER BY time,height,time_seen DESC`
+      )
+    );
+
+    console.log("getTransactionHistory", wallet_id, result);
+    return result;
+  }
 }
 
 /*
@@ -149,10 +143,10 @@ export default function TransactionManagerService() {
 
 /*
     function isMyUtxo(utxo) {
-      const addressManager = new AddressManagerService();
+      const AddressManager = new AddressManagerService(wallet_id);
       const myAddresses = [
-        ...addressManager.getReceiveAddresses(),
-        ...addressManager.getChangeAddresses(),
+        ...AddressManager.getReceiveAddresses(),
+        ...AddressManager.getChangeAddresses(),
       ];
 
       return (

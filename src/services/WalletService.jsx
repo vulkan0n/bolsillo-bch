@@ -48,8 +48,8 @@ function WalletService() {
       }
     }
 
-    const addressManager = new AddressManagerService(wallet_id);
-    addressManager.populateAddresses();
+    const AddressManager = new AddressManagerService(wallet.id);
+    AddressManager.populateAddresses();
 
     return wallet;
   }

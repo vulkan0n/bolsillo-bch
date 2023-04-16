@@ -34,7 +34,9 @@ walletMiddleware.startListening({
   actionCreator: walletBalanceUpdate,
   effect: async (action, listenerApi) => {
     // generate new addresses when address state updates
-    const generatedAddresses = new AddressManagerService().populateAddresses();
+    const generatedAddresses = new AddressManagerService(
+      listenerApi.getState().wallet.id
+    ).populateAddresses();
 
     // subscribe to the new addresses
     generatedAddresses.forEach((address) =>

@@ -2,12 +2,14 @@ import { configureStore } from "@reduxjs/toolkit";
 import { preferencesReducer, selectActiveWalletId } from "./preferences";
 import { walletReducer, walletMiddleware, walletBoot } from "./wallet";
 import { syncReducer, syncMiddleware } from "./sync";
+import { txReducer } from "./transactions";
 
 export const store = configureStore({
   reducer: {
     sync: syncReducer,
     preferences: preferencesReducer,
     wallet: walletReducer,
+    transactions: txReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware()
