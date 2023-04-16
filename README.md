@@ -35,7 +35,7 @@ Testers: [Testing document](https://docs.google.com/document/d/1VKXeuwlIPFrudwEB
 
 Opinions of this repository.
 
-- **Open source**: Required for trustless use by the community. MIT Licensed.
+- **Open source**: Required for trustless use by the community.
 - **BCH only**: Selene is for Bitcoin Cash users. There are enough generic multicoin wallets, mostly useful to speculators trying to maintain a portfolio of lots of frequently traded coins. They do everything at the price of sucking at everything. Ability to fund or send to external chains (e.g. with Sideshift.ai) might be a cool integration, but beyond that other coins are out of scope. Instead that time can be spent on BCH specific apps, integrations and differentiators to make the wallet more compelling both to the BCH community and converts from other coins.
 - **JS primary**: We're already fighting one uphill battle against monetary network effects, no need to add another one on the technology front. Not that other languages can't be useful, but they have to be very compelling to justify inclusion.
 - **Built by power users, preferred by onboarders**: Selene needs to be simple and intuitive for the users discovering Bitcoin for the very first time. Time to first transaction should be optimised to the bare minimum. Later, effective discoverability should help them naturally grow into power users that need all the customization and options that Selene makes available to more advanced users.
