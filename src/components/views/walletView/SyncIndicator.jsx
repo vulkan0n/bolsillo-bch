@@ -56,7 +56,7 @@ function ConnectedIcon() {
         className="text-2xl"
         onPointerDown={() =>
           api.start({
-            from: { opacity: 0.9, scale: 1.1 },
+            from: { opacity: 0.8, scale: 1 },
             to: { opacity: 0.05, scale: 0.75 },
           })
         }
