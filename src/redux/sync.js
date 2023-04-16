@@ -34,7 +34,7 @@ export const syncConnect = createAsyncThunk(
       setTimeout(() =>
         thunkApi.dispatch(
           syncConnect(attempts + 1),
-          Math.pow(1000 * attempts, 2) // exponential backoff
+          Math.min(Math.pow(1000 * attempts, 2), 30 * 1000) // exponential backoff up to 30 seconds
         )
       );
     }
