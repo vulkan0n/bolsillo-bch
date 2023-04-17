@@ -74,6 +74,3 @@ function WalletService() {
 }
 
 export default WalletService;
-
-/*
- */

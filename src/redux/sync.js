@@ -12,6 +12,7 @@ import ElectrumService from "@/services/ElectrumService";
 import BlockchainService from "@/services/BlockchainService";
 import AddressManagerService from "@/services/AddressManagerService";
 import TransactionManagerService from "@/services/TransactionManagerService";
+import TransactionHistoryService from "@/services/TransactionHistoryService";
 import UtxoManagerService from "@/services/UtxoManagerService";
 
 import { block_checkpoints } from "@/util/block_checkpoints";
@@ -124,18 +125,18 @@ syncMiddleware.startListening({
   actionCreator: syncAddressUtxos.fulfilled,
   effect: async (action, listenerApi) => {
     const { utxos, address } = action.payload;
+    const wallet_id = listenerApi.getState().wallet.id;
 
-    const UtxoManager = new UtxoManagerService();
-    const AddressManager = new AddressManagerService(
-      listenerApi.getState().wallet.id
-    );
+    const UtxoManager = new UtxoManagerService(wallet_id);
+    const AddressManager = new AddressManagerService(wallet_id);
 
+    // register each UTXO, add tx to history
     utxos.forEach((utxo) => {
-      UtxoManager.registerUtxo(utxo, address);
       AddressManager.registerTransaction(address, {
         tx_hash: utxo.tx_hash,
         height: utxo.height,
       });
+      UtxoManager.registerUtxo(utxo, address);
 
       listenerApi.dispatch(syncBlock(utxo.height));
       listenerApi.dispatch(syncTxRequest(utxo.tx_hash));
@@ -144,9 +145,12 @@ syncMiddleware.startListening({
     // use local tx history to calculate expected state hash
     // if different than response hash, we must be missing transactions
     // ask for entire history of address if so
-    const calculatedAddressState = AddressManager.calculateAddressState(address);
+    const calculatedAddressState =
+      AddressManager.calculateAddressState(address);
     const storedAddressState = AddressManager.getAddressState(address);
 
+    // UTXO set represents tip of addresses.
+    // If we're still out of sync after applying tip, we must be missing txes
     if (calculatedAddressState !== storedAddressState) {
       console.log(
         "missing transactions? attempting sync...",
@@ -155,9 +159,6 @@ syncMiddleware.startListening({
         storedAddressState
       );
 
-      // TODO: get tx heights for utxos by verifying merkle branches
-      // instead of downloading entire tx history every time
-      // we shouldn't need entire history every time we receive coins
       const history = await Electrum.requestAddressHistory(address);
       history.forEach(({ tx_hash, height }) => {
         AddressManager.registerTransaction(address, { tx_hash, height });
@@ -171,6 +172,8 @@ syncMiddleware.startListening({
       address,
       addressBalance
     );
+
+    // update wallet balance; view re-renders on wallet update
     listenerApi.dispatch(walletBalanceUpdate(walletBalance));
   },
 });
@@ -184,13 +187,22 @@ export const syncTxRequest = createAsyncThunk(
     // if localTx is null we're requesting this tx for the first time
     if (localTx === null || localTx.blockhash === null) {
       const tx = await Electrum.requestTransaction(tx_hash);
-      TransactionManager.registerTransaction({
-        ...tx,
-        wallet_id: thunkApi.getState().wallet.id,
-      });
+      TransactionManager.registerTransaction(tx);
+      thunkApi.dispatch(syncTxAmount(tx));
     }
 
     return TransactionManager.getTransactionByHash(tx_hash);
+  }
+);
+
+export const syncTxAmount = createAsyncThunk(
+  "sync/txAmount",
+  async (tx, thunkApi) => {
+    const wallet_id = thunkApi.getState().wallet.id;
+    await new TransactionHistoryService(
+      wallet_id
+    ).calculateAndUpdateTransactionAmount(tx);
+    return wallet_id;
   }
 );
 

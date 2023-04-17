@@ -30,9 +30,8 @@ const migrations = [
     //query.push("DROP TABLE IF EXISTS wallets;");
     query.push("DROP TABLE IF EXISTS blockchain;");
     query.push("DROP TABLE IF EXISTS addresses;");
-    query.push("DROP TABLE IF EXISTS address_history;");
     query.push("DROP TABLE IF EXISTS transactions;");
-    query.push("DROP TABLE IF EXISTS vins;");
+    query.push("DROP TABLE IF EXISTS address_transactions;");
     query.push("DROP TABLE IF EXISTS utxos;");
     query.push("DROP TRIGGER IF EXISTS balance_update;");
     /**/
@@ -72,29 +71,23 @@ const migrations = [
     query.push(
       `CREATE TABLE IF NOT EXISTS transactions (
         txid text primary key not null, 
-        wallet_id int not null, 
         time_seen default CURRENT_TIMESTAMP,
-        address text,
         hex text,
-        description text,
-        height int,
         size int,
         blockhash text,
-        block_pos int,
         time int,
-        blocktime int,
-        locktime int,
-        version int
+        blocktime int
       );`
     );
 
     query.push(
-      `CREATE TABLE IF NOT EXISTS vins (
-        txid text not null,
-        prevtx text not null,
-        vout int not null,
-        scriptSig text not null,
-        sequence int
+      `CREATE TABLE IF NOT EXISTS address_transactions (
+        txid text primary key not null,
+        height int not null,
+        time text default CURRENT_TIMESTAMP,
+        time_seen default CURRENT_TIMESTAMP,
+        address text not null,
+        amount int 
       );`
     );
 
@@ -103,11 +96,10 @@ const migrations = [
         wallet_id int not null,
         tx_hash text not null,
         tx_pos int not null,
+        height int not null,
+        block_pos int,
         address text not null,
-        scriptPubKey text,
-        amount int not null, 
-        height int,
-        spent int default 0
+        amount int not null
       );`
     );
 
@@ -123,7 +115,6 @@ const migrations = [
         END
       ;`
     );
-
 
     return query.join("");
   },

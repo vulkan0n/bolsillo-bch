@@ -23,7 +23,7 @@ export default function BlockchainService() {
     const blockhash = calculateBlockhash(block.header);
 
     db.run(
-      `INSERT OR IGNORE INTO blockchain (
+      `INSERT INTO blockchain (
         blockhash,
         height,
         header
@@ -31,14 +31,10 @@ export default function BlockchainService() {
         "${blockhash}",
         "${block.height}",
         "${block.header}"
-      );`
-    );
-
-    db.run(
-      `UPDATE blockchain SET
-        height="${block.height}",
-        header="${block.header}"
-       WHERE blockhash="${blockhash}"`
+      ) ON CONFLICT DO 
+        UPDATE SET
+          height="${block.height}"
+        WHERE blockhash="${blockhash}";`
     );
   }
 

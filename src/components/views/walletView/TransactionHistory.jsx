@@ -5,28 +5,14 @@ function TransactionHistory() {
   const transactions = useSelector(selectTransactionHistory);
 
   return (
-    <table className="table table-compact w-full h-full rounded-xl bg-zinc-800 text-zinc-200">
-      <thead>
-        <tr>
-          <th>Time</th>
-          <th>Amount</th>
-        </tr>
-      </thead>
-      <tbody className="bg-zinc-200 text-zinc-600 divide-y divide-zinc-300">
+      <ul className="bg-zinc-200 text-zinc-600 divide-y divide-zinc-300 rounded-lg p-2">
         {transactions.map((tx) => (
-          <tr key={tx.txid}>
-            <td>{new Date(tx.time * 1000).toDateString()}</td>
-            <td className="text-error text-right">-1.45163248</td>
-          </tr>
+          <li key={tx.txid} className="flex p-1">
+            <div className="flex-1">{tx.time}</div>
+            <div className="flex-1 text-error text-right">{tx.amount}</div>
+          </li>
         ))}
-      </tbody>
-      <tfoot>
-        <tr>
-          <th>Prev</th>
-          <th>Next</th>
-        </tr>
-      </tfoot>
-    </table>
+      </ul>
   );
 }
 

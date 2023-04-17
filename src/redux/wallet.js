@@ -46,7 +46,7 @@ walletMiddleware.startListening({
 });
 
 const initialState = {
-  id: 0,
+  id: null,
 };
 
 export const walletReducer = createReducer(initialState, (builder) => {

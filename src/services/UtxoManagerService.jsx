@@ -4,14 +4,7 @@ import { store } from "@/redux";
 import { selectActiveWallet } from "@/redux/wallet";
 
 // UtxoManagerService: brokers interactions with UTXO database
-export default function UtxoManagerService() {
-  let wallet_id = 0;
-  try {
-    const wallet_id = selectActiveWallet(store.getState()).id;
-  } catch (e) {
-    console.warn(e);
-  }
-
+export default function UtxoManagerService(wallet_id) {
   const { db, resultToJson, saveDatabase } = new DatabaseService();
 
   return {
@@ -29,24 +22,20 @@ export default function UtxoManagerService() {
         wallet_id,
         tx_hash, 
         tx_pos, 
+        height,
         address, 
-        amount, 
-        height
+        amount 
       ) VALUES (
         "${wallet_id}",
         "${utxo.tx_hash}", 
         "${utxo.tx_pos}", 
+        "${utxo.height}",
         "${address}", 
-        "${utxo.value}",
-        "${utxo.height}"
-      )`
-    );
-
-    db.run(
-      `UPDATE transactions SET
-        wallet_id="${wallet_id}",
-        block_pos="${utxo.block_pos}"
-       WHERE txid="${utxo.tx_hash}";`
+        "${utxo.value}"
+      ) ON CONFLICT DO 
+        UPDATE SET
+          height="${utxo.height}"
+        WHERE tx_hash="${utxo.tx_hash}";`
     );
 
     saveDatabase();
@@ -64,7 +53,7 @@ export default function UtxoManagerService() {
   // getUtxosByAddress: get all utxos for an address
   function getUtxosByAddress(address) {
     const result = resultToJson(
-      db.exec(`SELECT * FROM utxos WHERE address="${address}" AND spent="0"`)
+      db.exec(`SELECT * FROM utxos WHERE address="${address}"`)
     );
 
     return result;

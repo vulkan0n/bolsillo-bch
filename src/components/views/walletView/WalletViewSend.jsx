@@ -4,7 +4,11 @@ import { Clipboard } from "@capacitor/clipboard";
 
 import { validateInvoiceString } from "@/util/invoice";
 
-import { ReconciliationOutlined } from "@ant-design/icons";
+import {
+  ReconciliationOutlined,
+  ContactsOutlined,
+  GoldOutlined,
+} from "@ant-design/icons";
 
 import ContactPicker from "./ContactPicker";
 import TransactionHistory from "./TransactionHistory";
@@ -51,14 +55,14 @@ function WalletViewSend() {
   // TODO: Scan QR Code from saved image
   return (
     <div>
-      <div className="flex items-center">
+      <div className="flex items-center mt-2">
         <div className="flex-1">
           <input
             type="text"
             placeholder="Enter BCH Address"
             value={sendAddress}
             onChange={handleSendAddressChange}
-            className="my-2 p-2 w-full outline-none rounded-l-lg bg-zinc-100 focus:text-secondary focus:bg-zinc-200"
+            className="p-2 w-full outline-none rounded-l-lg bg-zinc-100 focus:text-secondary focus:bg-zinc-200"
           />
         </div>
         <div
@@ -68,8 +72,7 @@ function WalletViewSend() {
           <ReconciliationOutlined className="text-2xl text-zinc-600 opacity-80" />
         </div>
       </div>
-      <ContactPicker />
-      <div className="flex-1 p-2 overflow-y-auto">
+      <div className="flex-1 p-2">
         <TransactionHistory />
       </div>
     </div>

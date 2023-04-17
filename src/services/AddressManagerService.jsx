@@ -8,7 +8,7 @@ import { binToHex, hexToBin } from "@/util/hex";
 
 // AddressManagerService: handles most address-related operations
 export default function AddressManagerService(wallet_id) {
-  console.log("AddressManagerService", wallet_id);
+  //console.log("AddressManagerService", wallet_id);
 
   const { db, resultToJson, saveDatabase } = new DatabaseService();
 
@@ -20,6 +20,7 @@ export default function AddressManagerService(wallet_id) {
     getUnusedAddresses,
     updateAddressBalance,
     updateAddressState,
+    getAddressTransactions,
     calculateAddressState,
     getAddressState,
     registerTransaction,
@@ -170,10 +171,36 @@ export default function AddressManagerService(wallet_id) {
     return walletBalance;
   }
 
+  function getAddressTransactions(address) {
+    const confirmed = resultToJson(
+      db.exec(
+        `SELECT * FROM address_transactions
+          WHERE address="${address}"
+          AND height > 0
+          ORDER BY height 
+        ;`
+      )
+    );
+
+    const unconfirmed = resultToJson(
+      db.exec(
+        `SELECT * FROM address_transactions
+          WHERE address="${address}"
+          AND height <= 0
+        ;`
+      )
+    );
+
+    //console.log("getAddressTransactions", confirmed, unconfirmed, address);
+    return { confirmed, unconfirmed };
+  }
+
   // calculateAddressState: calculate electrum address state using local tx history
   function calculateAddressState(address) {
     const TransactionManager = new TransactionManagerService();
-    const localHistory = TransactionManager.getTransactionsByAddress(address);
+    const localHistory = new AddressManagerService().getAddressTransactions(
+      address
+    );
 
     // return null if address has no transactions
     if (
@@ -211,26 +238,20 @@ export default function AddressManagerService(wallet_id) {
 
   // AddressManager.registerTransaction: register a transaction with an address
   function registerTransaction(address, tx) {
+    //console.log("AddressManager.registerTransaction", address, tx);
     db.run(
-      `INSERT OR IGNORE INTO transactions (
+      `INSERT INTO address_transactions (
         txid,
-        wallet_id,
-        address,
-        height
+        height,
+        address
       ) VALUES (
         "${tx.tx_hash}",
-        "${wallet_id}",
-        "${address}",
-        "${tx.height}"
-      );`
-    );
-
-    db.run(
-      `UPDATE transactions SET 
-        wallet_id="${wallet_id}",
-        address="${address}",
-        height="${tx.height}"
-      WHERE txid="${tx.txid}";`
+        "${tx.height}",
+        "${address}"
+      ) ON CONFLICT DO 
+        UPDATE SET 
+          height="${tx.height}"
+        WHERE txid="${tx.txid}";`
     );
   }
 }
