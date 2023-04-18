@@ -11,7 +11,7 @@ export default function WalletView() {
         <div className="col-span-4">
           <WalletViewBalance />
         </div>
-        <div className="col-span-1">
+        <div className="col-span-1 flex justify-center items-center">
           <SyncIndicator />
         </div>
       </div>

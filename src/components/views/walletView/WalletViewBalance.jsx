@@ -1,10 +1,12 @@
+import { useEffect } from "react";
 import { SATOSHI } from "@/util/sats";
 
 import { useSelector, useDispatch } from "react-redux";
 import { selectActiveWallet } from "@/redux/wallet";
 import { selectPreferences, setPreference } from "@/redux/preferences";
-
 import { EyeInvisibleOutlined } from "@ant-design/icons";
+
+import { animated, useSpring } from "@react-spring/web";
 
 function WalletViewBalance() {
   const { balance } = useSelector(selectActiveWallet);
@@ -42,8 +44,25 @@ function WalletViewBalance() {
     ? `${localUnit} $X.XX`
     : `${localUnit} $0.00`;
 
+  const [balanceReceivedSpring, receiveSpringApi] = useSpring(() => ({
+    from: { color: "#8dc451" },
+    to: { color: "#e4e4e7" },
+    immediate: true, //strangely, it stops the immediate animation when true, not false.
+    config: {
+      tension: 280,
+      friction: 60,
+    },
+  }));
+
+  useEffect(
+    function animateWalletBalanceOnReceive() {
+      receiveSpringApi.start({ reset: true });
+    },
+    [balance]
+  );
+
   return (
-    <div className="mx-auto p-3 text-center">
+    <div className="py-3 text-center">
       {!hideBalance && (
         <div className="font-bold text-zinc-400 text-md tracking-wide">
           Available Balance
@@ -57,10 +76,14 @@ function WalletViewBalance() {
           &nbsp;
           <span
             className={`${
-              hideBalance ? "blur-sm backdrop-invert backdrop-opacity-60 opacity-25" : ""
+              hideBalance
+                ? "blur-sm backdrop-invert backdrop-opacity-60 opacity-25"
+                : ""
             }`}
           >
-            {preferLocal ? formattedLocalBalance : formattedBalance}
+            <animated.span style={{ ...balanceReceivedSpring }}>
+              {preferLocal ? formattedLocalBalance : formattedBalance}
+            </animated.span>
           </span>
         </span>
       </div>

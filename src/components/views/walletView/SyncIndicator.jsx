@@ -6,21 +6,9 @@ import { animated, useSpring } from "@react-spring/web";
 
 export default function SyncIndicator() {
   const sync = useSelector(selectSyncState);
-
-  return (
-    <div className="flex items-center h-full">
-      <div className="flex-1 text-primary text-center">
-        {!sync.connected && <DisconnectedIcon />}
-        {sync.connected && <ConnectedIcon />}
-      </div>
-    </div>
-  );
-}
-
-function DisconnectedIcon() {
-  const [springs, api] = useSpring(() => ({
+  const [disconnectSprings, disconnectApi] = useSpring(() => ({
     from: { opacity: 0.0333 },
-    to: { opacity: 0.333 },
+    to: { opacity: 0.667 },
     loop: true,
     delay: 3333,
     config: {
@@ -30,18 +18,10 @@ function DisconnectedIcon() {
     },
   }));
 
-  return (
-    <animated.div style={{ ...springs }}>
-      <DisconnectOutlined className="text-error text-2xl" />
-    </animated.div>
-  );
-}
-
-function ConnectedIcon() {
   // connection icon starts bright and dims out
-  const [springs, api] = useSpring(() => ({
-    from: { opacity: 0.5, scale: 0.85 },
-    to: { opacity: 0.05, scale: 0.75 },
+  const [connectSprings, connectApi] = useSpring(() => ({
+    from: { opacity: 0.5, scale: 0.75 },
+    to: { opacity: 0.1, scale: 0.65 },
     config: {
       mass: 1,
       tension: 1.5,
@@ -49,18 +29,37 @@ function ConnectedIcon() {
     },
   }));
 
+  const handlePointerDown = (event) => {
+    if (sync.connected) {
+      connectApi.start({
+        from: { opacity: 0.8, scale: 0.85 },
+        to: { opacity: 0.1, scale: 0.65 },
+      });
+    } else {
+      disconnectApi.start();
+    }
+  };
+
   return (
-    <animated.div style={{ ...springs }}>
-      <CheckCircleFilled
-        style={{ ...springs }}
-        className="text-2xl"
-        onPointerDown={() =>
-          api.start({
-            from: { opacity: 0.8, scale: 1 },
-            to: { opacity: 0.05, scale: 0.75 },
-          })
-        }
-      />
+    <div className="flex-1 text-center" onPointerDown={handlePointerDown}>
+      {!sync.connected && <DisconnectedIcon springs={{ ...disconnectSprings }} />}
+      {sync.connected && <ConnectedIcon springs={{ ...connectSprings }} />}
+    </div>
+  );
+}
+
+function DisconnectedIcon({ springs }) {
+  return (
+    <animated.div style={springs}>
+      <DisconnectOutlined className="text-error text-2xl text-center" />
+    </animated.div>
+  );
+}
+
+function ConnectedIcon({ springs }) {
+  return (
+    <animated.div style={springs}>
+      <CheckCircleFilled className="text-primary text-3xl text-center" />
     </animated.div>
   );
 }

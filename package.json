@@ -21,6 +21,7 @@
     "@capacitor/preferences": "^4.0.2",
     "@react-spring/web": "^9.7.2",
     "@reduxjs/toolkit": "^1.9.3",
+    "@use-gesture/react": "^10.2.26",
     "bip39": "^3.0.4",
     "capacitor-secure-storage-plugin": "^0.8.1",
     "daisyui": "^2.50.1",
