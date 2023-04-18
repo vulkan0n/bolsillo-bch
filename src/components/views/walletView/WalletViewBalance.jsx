@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { SATOSHI } from "@/util/sats";
 
 import { useSelector, useDispatch } from "react-redux";
@@ -9,6 +9,7 @@ import { EyeInvisibleOutlined } from "@ant-design/icons";
 import { animated, useSpring } from "@react-spring/web";
 
 function WalletViewBalance() {
+  const [firstRender, setFirstRender] = useState(true);
   const { balance } = useSelector(selectActiveWallet);
   const preferences = useSelector(selectPreferences);
 
@@ -56,7 +57,11 @@ function WalletViewBalance() {
 
   useEffect(
     function animateWalletBalanceOnReceive() {
-      receiveSpringApi.start({ reset: true });
+      if (!firstRender) {
+        receiveSpringApi.start({ reset: true });
+      }
+
+      setFirstRender(false);
     },
     [balance]
   );
