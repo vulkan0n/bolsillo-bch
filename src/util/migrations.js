@@ -92,18 +92,6 @@ const migrations = [
     );
 
     query.push(
-      `CREATE TABLE IF NOT EXISTS utxos (
-        wallet_id int not null,
-        tx_hash text not null,
-        tx_pos int not null,
-        height int not null,
-        block_pos int,
-        address text not null,
-        amount int not null
-      );`
-    );
-
-    query.push(
       `CREATE TRIGGER IF NOT EXISTS balance_update AFTER UPDATE ON addresses
         BEGIN
           UPDATE wallets SET 

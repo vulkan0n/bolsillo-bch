@@ -48,7 +48,7 @@ export default function TransactionHistoryService(wallet_id) {
 
     // resolve vins to real txos
     const vinTxes = await Promise.all(
-      tx.vin.map(async (vin) => TransactionManager.resolveTransaction(vin.txid))
+      tx.vin.map((vin) => TransactionManager.resolveTransaction(vin.txid))
     );
 
     // for each input tx, get outputs.
