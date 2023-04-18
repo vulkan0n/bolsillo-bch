@@ -55,12 +55,17 @@ export default function AddressManagerService(wallet_id) {
   // returns an array of generated addresses
   function populateAddresses() {
     const ADDRESS_GAP_LIMIT = 20; // BIP-44 gap limit is 20
-    let unused = getUnusedAddresses(ADDRESS_GAP_LIMIT);
+
     let generatedAddresses = [];
 
     const hdWallet = new HdNodeService(wallet_id);
-    if (unused.length < ADDRESS_GAP_LIMIT) {
-      const latestAddress = getReceiveAddresses(1)[0] || null;
+    populate(0);
+    populate(1);
+
+    function populate(change) {
+      const unused = getUnusedAddresses(ADDRESS_GAP_LIMIT, change);
+      const latestAddress =
+        (change ? getChangeAddresses(1)[0] : getReceiveAddresses(1)[0]) || null;
       const latestIndex =
         latestAddress !== null ? latestAddress.hd_index + 1 : 0;
 
@@ -69,8 +74,8 @@ export default function AddressManagerService(wallet_id) {
         hd_index < latestIndex + ADDRESS_GAP_LIMIT - unused.length;
         hd_index = hd_index + 1
       ) {
-        const newAddress = hdWallet.generateAddress(hd_index);
-        registerAddress(newAddress, hd_index);
+        const newAddress = hdWallet.generateAddress(hd_index, change);
+        registerAddress(newAddress, hd_index, change);
         generatedAddresses.push(newAddress);
       }
     }
@@ -116,13 +121,13 @@ export default function AddressManagerService(wallet_id) {
 
   // getUnusedAddresess: get the lowest-index unused recv addresses for wallet
   // in ASCENDING order so wallet consumes lowest-index first
-  function getUnusedAddresses(limit = 5) {
+  function getUnusedAddresses(limit = 5, change = 0) {
     const result = resultToJson(
       db.exec(
         `SELECT * FROM addresses 
-          WHERE wallet_id=${wallet_id} 
+          WHERE wallet_id="${wallet_id}"
           AND state IS NULL 
-          AND change='0' 
+          AND change="${change}"
           ORDER BY hd_index ASC 
           LIMIT ${limit}
         ;`

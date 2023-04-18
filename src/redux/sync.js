@@ -52,7 +52,10 @@ syncMiddleware.startListening({
     const AddressManager = new AddressManagerService(
       listenerApi.getState().wallet.id
     );
-    const addresses = AddressManager.getReceiveAddresses();
+    const addresses = [
+      ...AddressManager.getReceiveAddresses(),
+      ...AddressManager.getChangeAddresses(),
+    ];
     addresses.forEach(({ address }) =>
       listenerApi.dispatch(syncSubscribeAddress(address))
     );
@@ -182,16 +185,9 @@ export const syncTxRequest = createAsyncThunk(
   "sync/txRequest",
   async (tx_hash, thunkApi) => {
     const TransactionManager = new TransactionManagerService();
-    const localTx = TransactionManager.getTransactionByHash(tx_hash);
-
-    // if localTx is null we're requesting this tx for the first time
-    if (localTx === null || localTx.blockhash === null) {
-      const tx = await Electrum.requestTransaction(tx_hash);
-      TransactionManager.registerTransaction(tx);
-      thunkApi.dispatch(syncTxAmount(tx));
-    }
-
-    return TransactionManager.getTransactionByHash(tx_hash);
+    const tx = await TransactionManager.resolveTransaction(tx_hash);
+    thunkApi.dispatch(syncTxAmount(tx));
+    return tx;
   }
 );
 

@@ -1,5 +1,4 @@
 import DatabaseService from "@/services/DatabaseService";
-import ElectrumService from "@/services/ElectrumService";
 import AddressManagerService from "@/services/AddressManagerService";
 import TransactionManagerService from "@/services/TransactionManagerService";
 import { bchToSats } from "@/util/sats";
@@ -20,23 +19,20 @@ export default function TransactionHistoryService(wallet_id) {
       )
     );
 
-    console.log("getTransactionHistory", wallet_id, result);
+    // console.log("getTransactionHistory", wallet_id, result);
     return result;
   }
 
   async function calculateAndUpdateTransactionAmount(tx) {
-    console.log("calculating tx amount:", tx.txid);
-
-    const Electrum = new ElectrumService();
     const AddressManager = new AddressManagerService(wallet_id);
     const TransactionManager = new TransactionManagerService();
 
-    function isMyUtxo(utxo) {
-      const myAddresses = [
-        ...AddressManager.getReceiveAddresses().map((a) => a.address),
-        ...AddressManager.getChangeAddresses().map((a) => a.address),
-      ];
+    const myAddresses = [
+      ...AddressManager.getReceiveAddresses().map((a) => a.address),
+      ...AddressManager.getChangeAddresses().map((a) => a.address),
+    ];
 
+    const isMyUtxo = (utxo) => {
       if (utxo.value === 0) {
         console.log("utxo value === 0", utxo, utxo.tx_hash);
         return false;
@@ -48,30 +44,38 @@ export default function TransactionHistoryService(wallet_id) {
         }) > -1;
 
       return isMine;
-    }
+    };
+
+    // resolve vins to real txos
+    const vinTxes = await Promise.all(
+      tx.vin.map(async (vin) => TransactionManager.resolveTransaction(vin.txid))
+    );
+
+    // for each input tx, get outputs.
+    // for each output, include in result if vin and out match
+    const vinOuts = vinTxes
+      .map((t) =>
+        t.vout.filter(
+          (out) =>
+            tx.vin.findIndex((vin) => vin.txid == t.txid && vin.vout == out.n) >
+            -1
+        )
+      )
+      .flat();
+
+    // any inputs that belong to us are outgoing money
+    const myInputs = vinOuts.filter((out) => isMyUtxo(out));
 
     // any outputs that belong to us are incoming money
     const myOutputs = tx.vout.filter((out) => isMyUtxo(out));
-    const receivedAmount = myOutputs.reduce(
-      (sum, cur) => sum.plus(bchToSats(cur.value)),
-      new Decimal(0)
-    );
 
-    // any inputs that belong to us are outgoing money
-    const myInputs = (
-      await Promise.all(
-        tx.vin.map(async (vin) => {
-          const lookupTx = await Electrum.requestTransaction(vin.txid);
-          return lookupTx.vout.filter((out) => isMyUtxo(out));
-        })
-      )
-    ).flat();
+    // sum reducer function
+    const sumOutputs = (sum, cur) => sum.plus(cur.value);
 
-    const sentAmount = myInputs.reduce(
-      (sum, cur) => sum.plus(bchToSats(cur.value)),
-      new Decimal(0)
-    );
+    const receivedAmount = myOutputs.reduce(sumOutputs, new Decimal(0));
+    const sentAmount = myInputs.reduce(sumOutputs, new Decimal(0));
 
+    // TODO: totalOutput - amount = fee
     const amount = receivedAmount - sentAmount;
 
     console.log(
@@ -79,7 +83,9 @@ export default function TransactionHistoryService(wallet_id) {
       tx.txid,
       `received: ${receivedAmount}`,
       `sent: ${sentAmount}`,
-      `total: ${amount}`
+      `total: ${amount}`,
+      myInputs,
+      myOutputs
     );
 
     db.run(

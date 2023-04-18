@@ -17,8 +17,8 @@ function HdNodeService(wallet_id) {
 
   const seed = bip39.mnemonicToSeedSync(mnemonic);
   const hdMaster = deriveHdPrivateNodeFromSeed({ sha512: sha512 }, seed);
-  const hdMain = deriveHdPath(crypto, hdMaster, `${derivation}/0/0`);
-  const hdChange = deriveHdPath(crypto, hdMaster, `${derivation}/1/0`);
+  const hdMain = deriveHdPath(crypto, hdMaster, `${derivation}/0`);
+  const hdChange = deriveHdPath(crypto, hdMaster, `${derivation}/1`);
 
   return {
     generateAddress,

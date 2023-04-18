@@ -15,12 +15,6 @@ export const selectTransactionHistory = createSelector(
   (state) => state,
   (state) => {
     const txHistory = [...state.transactions];
-    txHistory.sort((a, b) =>
-      !Number.isInteger(Number.parseInt(a.time)) ||
-      !Number.isInteger(Number.parseInt(b.time))
-        ? (a.time_seen > b.time_seen) * -1 + (a.time < b.time) * 1
-        : (a.time > b.time) * -1 + (a.time < b.time) * 1
-    );
     return txHistory;
   }
 );

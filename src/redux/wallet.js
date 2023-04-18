@@ -33,10 +33,11 @@ export const walletBalanceUpdate = createAction("wallet/balanceUpdate");
 walletMiddleware.startListening({
   actionCreator: walletBalanceUpdate,
   effect: async (action, listenerApi) => {
+    const wallet_id = listenerApi.getState().wallet.id;
+    const AddressManager = new AddressManagerService(wallet_id);
+
     // generate new addresses when address state updates
-    const generatedAddresses = new AddressManagerService(
-      listenerApi.getState().wallet.id
-    ).populateAddresses();
+    const generatedAddresses = AddressManager.populateAddresses();
 
     // subscribe to the new addresses
     generatedAddresses.forEach((address) =>

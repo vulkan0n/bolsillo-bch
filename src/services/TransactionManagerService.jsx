@@ -1,4 +1,13 @@
 import DatabaseService from "@/services/DatabaseService";
+import ElectrumService from "@/services/ElectrumService";
+
+import {
+  decodeTransaction,
+  swapEndianness,
+  lockingBytecodeToCashAddress,
+} from "@bitauth/libauth";
+import { hexToBin, binToHex } from "@/util/hex";
+import { Decimal } from "decimal.js";
 
 export default function TransactionManagerService() {
   const { db, resultToJson, saveDatabase } = new DatabaseService();
@@ -6,6 +15,7 @@ export default function TransactionManagerService() {
   return {
     registerTransaction,
     getTransactionByHash,
+    resolveTransaction,
   };
 
   function registerTransaction(tx) {
@@ -49,7 +59,46 @@ export default function TransactionManagerService() {
       db.exec(`SELECT * FROM transactions WHERE txid="${tx_hash}"`)
     );
 
-    //console.log("getTransactionByHash", tx_hash, result[0]);
-    return result.length > 0 ? result[0] : null;
+    if (result.length < 1) {
+      return null;
+    }
+
+    const localTx = result[0];
+    const decodedTx = decodeTransaction(hexToBin(localTx.hex));
+
+    // reconstruct "vin" from raw hex
+    const vin = decodedTx.inputs.map((input) => ({
+      txid: binToHex(input.outpointTransactionHash),
+      vout: input.outpointIndex,
+    }));
+
+    // reconstruct "vout" from raw hex
+    const vout = decodedTx.outputs.map((output, n) => ({
+      n,
+      scriptPubKey: {
+        addresses: [lockingBytecodeToCashAddress(output.lockingBytecode, "bitcoincash")],
+      },
+      value: new Decimal(
+        `0x${swapEndianness(binToHex(output.satoshis))}`
+      ).toNumber(),
+    }));
+
+    const tx = { ...result[0], vin, vout };
+
+    //console.log("getTransactionByHash", tx_hash, decodedTx, tx);
+    return tx;
+  }
+
+  async function resolveTransaction(tx_hash) {
+    const localTx = getTransactionByHash(tx_hash);
+
+    // if localTx is null we're requesting this tx for the first time
+    if (localTx === null || localTx.blockhash === null) {
+      const Electrum = new ElectrumService();
+      const tx = await Electrum.requestTransaction(tx_hash);
+      registerTransaction(tx);
+    }
+
+    return getTransactionByHash(tx_hash);
   }
 }
