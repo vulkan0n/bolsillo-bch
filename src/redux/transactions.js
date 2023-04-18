@@ -1,4 +1,5 @@
 import { createAction, createReducer, createSelector } from "@reduxjs/toolkit";
+import { walletBoot } from "@/redux/wallet";
 import { syncTxAmount } from "@/redux/sync";
 
 import TransactionHistoryService from "@/services/TransactionHistoryService";
@@ -6,15 +7,20 @@ import TransactionHistoryService from "@/services/TransactionHistoryService";
 const initialState = [];
 
 export const txReducer = createReducer(initialState, (builder) => {
-  builder.addCase(syncTxAmount.fulfilled, (state, action) => {
-    return new TransactionHistoryService(action.payload).getTransactionHistory();
-  });
+  builder
+    .addCase(walletBoot, (state, action) => {
+      return new TransactionHistoryService(
+        action.payload.id
+      ).getTransactionHistory();
+    })
+    .addCase(syncTxAmount.fulfilled, (state, action) => {
+      return new TransactionHistoryService(
+        action.payload
+      ).getTransactionHistory();
+    });
 });
 
 export const selectTransactionHistory = createSelector(
   (state) => state,
-  (state) => {
-    const txHistory = [...state.transactions];
-    return txHistory;
-  }
+  (state) => state.transactions
 );

@@ -1,4 +1,6 @@
 import { NavLink } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { selectTransactionHistory } from "@/redux/transactions";
 import { SendOutlined, QrcodeOutlined } from "@ant-design/icons";
 
 function WalletViewTabs() {
@@ -6,24 +8,34 @@ function WalletViewTabs() {
   const activeTabClass = "text-secondary border-secondary border-b-2";
   const inactiveTabClass = "text-zinc-500";
 
+  const txHistory = useSelector(selectTransactionHistory);
+
   return (
     <div className="tabs bg-zinc-200">
-      <NavLink
-        to="send"
-        className={({ isActive }) =>
-          isActive ? `${baseTabClass} ${activeTabClass}` : `${baseTabClass} ${inactiveTabClass}`
-        }
-      >
-        <SendOutlined className="text-xl px-1" />&nbsp;Send
-      </NavLink>
+      {txHistory.length > 0 && (
+        <NavLink
+          to="send"
+          className={({ isActive }) =>
+            isActive
+              ? `${baseTabClass} ${activeTabClass}`
+              : `${baseTabClass} ${inactiveTabClass}`
+          }
+        >
+          <SendOutlined className="text-xl px-1" />
+          &nbsp;Send
+        </NavLink>
+      )}
       <NavLink
         to=""
         className={({ isActive }) =>
-          isActive ? `${baseTabClass} ${activeTabClass}` : `${baseTabClass} ${inactiveTabClass}`
+          isActive
+            ? `${baseTabClass} ${activeTabClass}`
+            : `${baseTabClass} ${inactiveTabClass}`
         }
         end
       >
-        <QrcodeOutlined className="text-xl px-1" />&nbsp;Receive
+        <QrcodeOutlined className="text-xl px-1" />
+        &nbsp;Receive {txHistory.length < 1 && "Bitcoin Cash (BCH)"}
       </NavLink>
     </div>
   );
