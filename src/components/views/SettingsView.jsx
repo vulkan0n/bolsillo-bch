@@ -1,12 +1,28 @@
+import { Link } from "react-router-dom";
 import { bchToSats, satsToBch, DUST_LIMIT } from "@/util/sats";
 import WalletService from "@/services/WalletService";
 
 import { useSelector, useDispatch } from "react-redux";
 import { selectPreferences, setPreference } from "@/redux/preferences";
 
-import { SettingOutlined } from "@ant-design/icons";
+import {
+  SettingOutlined,
+  WalletOutlined,
+  DollarOutlined,
+  EuroOutlined,
+  TransactionOutlined,
+  EyeOutlined,
+  EyeInvisibleOutlined,
+  AccountBookOutlined,
+  SendOutlined,
+  ThunderboltOutlined,
+  PropertySafetyOutlined,
+  QrcodeOutlined,
+} from "@ant-design/icons";
 
-function SettingsView() {
+import ViewHeader from "@/components/views/ViewHeader";
+
+export default function SettingsView() {
   const dispatch = useDispatch();
   const preferences = useSelector(selectPreferences);
 
@@ -18,10 +34,7 @@ function SettingsView() {
 
   return (
     <>
-      <div className="bg-zinc-900 text-xl text-zinc-200 text-center p-3 font-bold">
-        <SettingOutlined className="text-2xl mx-1" />Settings
-      </div>
-
+      <ViewHeader icon={SettingOutlined} title="Settings" />
       <div className="px-2">
         <div className="m-2 p-2">
           <div className="alert alert-warning p-4 shadow-lg bg-warning text-black rounded-lg text-center">
@@ -52,17 +65,17 @@ function SettingsView() {
         >
           <input type="checkbox" />
           <div className="collapse-title text-lg font-medium p-1">
-            Manage Wallets
+            <WalletOutlined className="text-xl text-primary" /> Manage Wallets
           </div>
           <div className="collapse-content bg-zinc-200 text-zinc-700 rounded-sm divide-y divide-zinc-300">
             {wallets.map((wallet) => (
-              <a
+              <Link
                 key={wallet.name}
-                href={`/settings/wallet/${wallet.id}`}
+                to={`/settings/wallet/${wallet.id}`}
                 className="w-full block p-2"
               >
                 {wallet.name}
-              </a>
+              </Link>
             ))}
           </div>
         </div>
@@ -73,12 +86,15 @@ function SettingsView() {
         >
           <input type="checkbox" />
           <div className="collapse-title text-lg font-medium p-1">
-            Currency Settings
+            <DollarOutlined className="text-xl text-primary" /> Currency
+            Settings
           </div>
           <div className="collapse-content bg-zinc-200 text-zinc-700 rounded-sm divide-y divide-zinc-300">
             <div className="form-control p-3">
               <label className="label">
-                <span className="label-text">Local Currency</span>
+                <span className="label-text">
+                  <EuroOutlined className="text-xl" /> Local Currency
+                </span>
                 <select
                   className="select"
                   value={preferences["localCurrency"] || ""}
@@ -99,7 +115,10 @@ function SettingsView() {
             </div>
             <div className="form-control p-3">
               <label className="label cursor-pointer">
-                <span className="label-text">Prefer Local Currency</span>
+                <span className="label-text">
+                  <TransactionOutlined className="text-xl" /> Prefer Local
+                  Currency
+                </span>
                 <input
                   type="checkbox"
                   className="toggle"
@@ -115,7 +134,14 @@ function SettingsView() {
             </div>
             <div className="form-control p-3">
               <label className="label cursor-pointer">
-                <span className="label-text">Hide Available Balance</span>
+                <span className="label-text">
+                  {preferences["hideAvailableBalance"] === "true" ? (
+                    <EyeInvisibleOutlined className="text-xl text-primary" />
+                  ) : (
+                    <EyeOutlined />
+                  )}{" "}
+                  Hide Available Balance
+                </span>
                 <input
                   type="checkbox"
                   className="toggle"
@@ -131,7 +157,9 @@ function SettingsView() {
             </div>
             <div className="form-control p-3">
               <label className="label cursor-pointer">
-                <span className="label-text">Denominate in Sats</span>
+                <span className="label-text">
+                  <AccountBookOutlined className="text-xl" /> Denominate in Sats
+                </span>
                 <input
                   type="checkbox"
                   className="toggle"
@@ -151,12 +179,14 @@ function SettingsView() {
         >
           <input type="checkbox" />
           <div className="collapse-title text-lg font-medium p-1">
-            Payment Settings
+            <SendOutlined className="text-xl text-primary" /> Payment Settings
           </div>
           <div className="collapse-content bg-zinc-200 text-zinc-700 rounded-sm divide-y divide-zinc-300">
             <div className="form-control p-3">
               <label className="label cursor-pointer">
-                <span className="label-text">Allow Instant Pay</span>
+                <span className="label-text">
+                  <ThunderboltOutlined className="text-xl" /> Allow Instant Pay
+                </span>
                 <input
                   type="checkbox"
                   className="toggle"
@@ -172,7 +202,10 @@ function SettingsView() {
             </div>
             <div className="form-control p-3">
               <label className="label">
-                <span className="label-text">Instant Pay Threshold</span>
+                <span className="label-text">
+                  <PropertySafetyOutlined className="text-xl" /> Instant Pay
+                  Threshold
+                </span>
                 {preferences["denominateSats"] === "true" ? (
                   <input
                     type="number"
@@ -215,7 +248,7 @@ function SettingsView() {
         >
           <input type="checkbox" />
           <div className="collapse-title text-lg font-medium p-1">
-            QR Code Settings
+            <QrcodeOutlined className="text-xl text-primary" /> QR Code Settings
           </div>
           <div className="collapse-content bg-zinc-200 text-zinc-700 rounded-sm divide-y divide-zinc-300">
             <div className="form-control p-3">
@@ -266,5 +299,3 @@ function SettingsView() {
     </>
   );
 }
-
-export default SettingsView;
