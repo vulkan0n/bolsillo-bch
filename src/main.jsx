@@ -21,6 +21,7 @@ import WalletViewSendConfirm from "./components/views/walletView/WalletViewSendC
 import WalletViewSendSuccess from "./components/views/walletView/WalletViewSendSuccess";
 import ExploreView from "./components/views/ExploreView";
 import SettingsView from "./components/views/SettingsView";
+import SettingsWalletView from "./components/views/settingsView/SettingsWalletView";
 
 const router = createBrowserRouter([
   {
@@ -59,6 +60,10 @@ const router = createBrowserRouter([
       {
         path: "/settings",
         element: <SettingsView />,
+      },
+      {
+        path: "/settings/wallet/:wallet_id",
+        element: <SettingsWalletView />,
       },
     ],
   },

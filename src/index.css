@@ -3,6 +3,6 @@
 @tailwind utilities;
 
 .anticon {
-  vertical-align: 0;
   line-height: 0;
+  vertical-align: 1px;
 }
