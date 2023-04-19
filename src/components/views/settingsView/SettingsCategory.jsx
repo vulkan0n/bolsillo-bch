@@ -15,7 +15,7 @@ export default function SettingsCategory({ icon, title, children }) {
         onChange={(event) => setIsOpen(event.target.checked)}
       />
       <div className="collapse-title text-lg font-medium p-1">
-        <Icon className="text-xl text-primary" /> {title}
+        <Icon className="text-xl text-primary mr-1.5" />{title}
       </div>
       <div className="collapse-content">
         {isOpen && (
