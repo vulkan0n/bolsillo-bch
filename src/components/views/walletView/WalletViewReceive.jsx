@@ -3,6 +3,7 @@ import { useSelector } from "react-redux";
 
 import { Clipboard } from "@capacitor/clipboard";
 import { QRCode } from "react-qrcode-logo";
+import { useLongPress } from "use-long-press";
 
 import { selectActiveWallet } from "@/redux/wallet";
 import { selectPreferences } from "@/redux/preferences";
@@ -59,6 +60,10 @@ function WalletViewReceive() {
     return logo ? logoMap[logo.toLowerCase()] : "";
   };
 
+  const bindLongPress = useLongPress(() => {
+    console.log("long press detected");
+  });
+
   return (
     <>
       {!isScanning && (
@@ -68,6 +73,7 @@ function WalletViewReceive() {
               <div
                 className="border border-4 border-zinc-300 my-2 cursor-pointer"
                 onClick={copyAddressToClipboard}
+                {...bindLongPress()}
               >
                 <QRCode
                   value={address}
