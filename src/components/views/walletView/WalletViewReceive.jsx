@@ -12,8 +12,7 @@ import WalletService from "@/services/WalletService";
 import AddressManagerService from "@/services/AddressManagerService";
 import ScannerButton from "./ScannerButton";
 
-import seleneLogo from "@/assets/selene-logo.png";
-import bchLogo from "@/assets/bch-logo.png";
+import { logos } from "@/util/logos";
 
 import {
   FormOutlined,
@@ -21,7 +20,7 @@ import {
   UnorderedListOutlined,
 } from "@ant-design/icons";
 
-function WalletViewReceive() {
+export default function WalletViewReceive() {
   const preferences = useSelector(selectPreferences);
   const wallet = useSelector(selectActiveWallet);
 
@@ -50,15 +49,7 @@ function WalletViewReceive() {
 
   const skipAddress = () => setSkip((skip + 1) % 5);
 
-  const getQrLogoImage = (logo) => {
-    const logoMap = {
-      selene: seleneLogo,
-      bch: bchLogo,
-      none: "",
-    };
-
-    return logo ? logoMap[logo.toLowerCase()] : "";
-  };
+  const getQrLogoImage = (logo) => logos[logo.toLowerCase()].img;
 
   const bindLongPress = useLongPress(() => {
     console.log("long press detected");
@@ -114,5 +105,3 @@ function WalletViewReceive() {
     </>
   );
 }
-
-export default WalletViewReceive;

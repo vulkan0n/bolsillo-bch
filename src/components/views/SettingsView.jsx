@@ -19,6 +19,12 @@ import {
   ThunderboltOutlined,
   PropertySafetyOutlined,
   QrcodeOutlined,
+  PlusCircleFilled,
+  CheckCircleOutlined,
+  BorderOuterOutlined,
+  BgColorsOutlined,
+  FormatPainterOutlined,
+  SettingFilled,
 } from "@ant-design/icons";
 
 import ViewHeader from "./ViewHeader";
@@ -26,15 +32,20 @@ import KeyWarning from "./settingsView/KeyWarning";
 import SettingsCategory from "./settingsView/SettingsCategory";
 import SettingsChild from "./settingsView/SettingsChild";
 
+import { logos } from "@/util/logos";
+
 export default function SettingsView() {
   const dispatch = useDispatch();
   const preferences = useSelector(selectPreferences);
+  console.log("SettingsView", preferences);
 
   function handleSettingsUpdate(key, value) {
     dispatch(setPreference({ key, value }));
   }
 
   const walletList = new WalletService().getWallets();
+
+  const logoKey = preferences["qrCodeLogo"].toLowerCase();
 
   return (
     <>
@@ -43,12 +54,19 @@ export default function SettingsView() {
         <KeyWarning />
 
         <SettingsCategory icon={WalletOutlined} title="Wallet Settings">
+          <Link to="/settings/wallet/wizard" className="w-full block p-2">
+            <PlusCircleFilled className="text-xl mr-1" />
+            Create/Import Wallet
+          </Link>
           {walletList.map((wallet) => (
             <Link
               key={wallet.id}
               to={`/settings/wallet/${wallet.id}`}
               className="w-full block p-2"
             >
+              {wallet.id.toString() === preferences["activeWalletId"] && (
+                <CheckCircleOutlined className="text-xl mr-1 text-secondary" />
+              )}
               {wallet.name}
             </Link>
           ))}
@@ -142,7 +160,7 @@ export default function SettingsView() {
                 placeholder="25000000"
                 min="0"
                 step="1000"
-                className="input"
+                className="rounded h-10 w-32 p-2"
                 value={preferences["instantPayThreshold"] || "0"}
                 onChange={(event) =>
                   handleSettingsUpdate(
@@ -157,7 +175,7 @@ export default function SettingsView() {
                 placeholder="0.25000000"
                 min="0"
                 step="0.00001000"
-                className="input"
+                className="rounded h-10 w-32 p-2"
                 value={satsToBch(preferences["instantPayThreshold"] || 0)}
                 onChange={(event) => {
                   const satoshis = bchToSats(
@@ -171,38 +189,55 @@ export default function SettingsView() {
         </SettingsCategory>
 
         <SettingsCategory icon={QrcodeOutlined} title="QR Code Settings">
-          <SettingsChild title="Logo">
-            <select
-              className="select"
-              value={preferences["qrCodeLogo"] || ""}
-              onChange={(event) =>
-                handleSettingsUpdate("qrCodeLogo", event.target.value)
-              }
-            >
-              <option>Selene</option>
-              <option>BCH</option>
-              <option>None</option>
-            </select>
+          <SettingsChild icon={BorderOuterOutlined} label="Logo">
+            <div className="flex items-center">
+              {logoKey !== "none" && (
+                <img src={logos[logoKey].img} className="w-8 h-8 mx-2" />
+              )}
+              <select
+                className="rounded h-10 w-24 p-2 flex-1"
+                value={preferences["qrCodeLogo"] || ""}
+                onChange={(event) =>
+                  handleSettingsUpdate("qrCodeLogo", event.target.value)
+                }
+              >
+                {Object.keys(logos).map((logo) => (
+                  <option key={logo}>{logos[logo].name}</option>
+                ))}
+              </select>
+            </div>
           </SettingsChild>
-          <SettingsChild title="Background Color">
-            <input
-              type="text"
-              className="input"
-              value={preferences["qrCodeBackground"] || ""}
-              onChange={(event) =>
-                handleSettingsUpdate("qrCodeBackground", event.target.value)
-              }
-            />
+          <SettingsChild icon={BgColorsOutlined} label="Background Color">
+            <div className="flex items-center">
+              <SettingFilled
+                className="text-3xl px-2"
+                style={{ color: preferences["qrCodeBackground"] }}
+              />
+              <input
+                type="text"
+                className="rounded h-10 w-24 m-0 p-2"
+                value={preferences["qrCodeBackground"] || ""}
+                onChange={(event) =>
+                  handleSettingsUpdate("qrCodeBackground", event.target.value)
+                }
+              />
+            </div>
           </SettingsChild>
-          <SettingsChild title="Foreground Color">
-            <input
-              type="text"
-              className="input"
-              value={preferences["qrCodeForeground"] || ""}
-              onChange={(event) =>
-                handleSettingsUpdate("qrCodeForeground", event.target.value)
-              }
-            />
+          <SettingsChild icon={FormatPainterOutlined} label="Foreground Color">
+            <div className="flex items-center">
+              <SettingFilled
+                className="text-3xl px-2"
+                style={{ color: preferences["qrCodeForeground"] }}
+              />
+              <input
+                type="text"
+                className="rounded h-10 w-24 m-0 p-2"
+                value={preferences["qrCodeForeground"] || ""}
+                onChange={(event) =>
+                  handleSettingsUpdate("qrCodeForeground", event.target.value)
+                }
+              />
+            </div>
           </SettingsChild>
         </SettingsCategory>
       </div>
