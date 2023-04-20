@@ -2,7 +2,7 @@ import { useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { setPreference, selectActiveWalletId } from "@/redux/preferences";
-import { walletBoot } from "@/redux/wallet";
+import { walletBoot, walletReload } from "@/redux/wallet";
 import {
   WalletOutlined,
   LoginOutlined,
@@ -10,6 +10,7 @@ import {
   CheckCircleOutlined,
   EditOutlined,
   WarningFilled,
+  EyeInvisibleOutlined,
 } from "@ant-design/icons";
 import ViewHeader from "@/components/views/ViewHeader";
 import WalletService from "@/services/WalletService";
@@ -20,6 +21,8 @@ export default function SettingsWalletView() {
 
   const [deleteConfirm, setDeleteConfirm] = useState(0);
   const deleteRef = useRef(null);
+
+  const [showRecoveryPhrase, setShowRecoveryPhrase] = useState(false);
 
   const dispatch = useDispatch();
 
@@ -37,7 +40,6 @@ export default function SettingsWalletView() {
     navigate("/");
   };
 
-  // TODO: "are you sure?" modal
   const handleDeleteWallet = () => {
     setDeleteConfirm((deleteConfirm + 1) % 4);
 
@@ -50,6 +52,16 @@ export default function SettingsWalletView() {
       deleteRef.current = setTimeout(() => {
         setDeleteConfirm(0);
       }, 3000);
+    }
+  };
+
+  const handleShowMnemonic = () => {
+    if (showRecoveryPhrase === false) {
+      setShowRecoveryPhrase(true);
+      WalletManager.updateKeyViewed(wallet_id);
+      dispatch(walletReload());
+    } else {
+      setShowRecoveryPhrase(false);
     }
   };
 
@@ -66,6 +78,7 @@ export default function SettingsWalletView() {
             Created {wallet.date_created}
           </div>
         </div>
+
         <div className="my-2 flex gap-x-2">
           <div className="text-center flex-1">
             <button
@@ -106,12 +119,44 @@ export default function SettingsWalletView() {
                     : deleteConfirm === 1
                     ? "ARE YOU SURE? YOUR MONEY IS AT RISK"
                     : deleteConfirm === 2
-                    ? "YOUR MONEY CAN NOT BE RECOVERED WITHOUT YOUR SEED PHRASE"
+                    ? "MAKE SURE YOU HAVE WRITTEN YOUR RECOVERY PHRASE"
                     : `Yes, I want to delete "${wallet.name}"`}
                 </div>
               </div>
             </button>
           </div>
+        </div>
+        <div
+          className="bg-zinc-700 flex-col rounded-lg flex items-center justify-center my-4 px-2 py-4 cursor-pointer"
+          onClick={handleShowMnemonic}
+        >
+          {showRecoveryPhrase ? (
+            <div className="flex flex-col justify-between items-center">
+              <div className="text-center text-error text-xl font-bold">
+                <WarningFilled className="mr-2 text-warning" />
+                KEEP THIS PHRASE SECRET
+                <WarningFilled className="ml-2 text-warning" />
+              </div>
+              <div className="text-center text-zinc-50 text-xl font-mono py-4">
+                {wallet.mnemonic}
+              </div>
+              <div className="text-center text-error text-xl font-bold">
+                <WarningFilled className="mr-2 text-warning" />
+                DO NOT STORE DIGITALLY
+                <WarningFilled className="ml-2 text-warning" />
+              </div>
+            </div>
+          ) : (
+            <>
+              <EyeInvisibleOutlined className="text-8xl text-zinc-50" />
+              <div className="text-center text-zinc-50 text-xl">
+                View Wallet Recovery Phrase
+              </div>
+              <div className="text-center text-zinc-200 text-lg opacity-90">
+                (Make sure to keep it secret and secure!)
+              </div>
+            </>
+          )}
         </div>
       </div>
     </>

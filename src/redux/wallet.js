@@ -29,6 +29,8 @@ walletMiddleware.startListening({
   },
 });
 
+export const walletReload = createAction("wallet/reload");
+
 export const walletBalanceUpdate = createAction("wallet/balanceUpdate");
 walletMiddleware.startListening({
   actionCreator: walletBalanceUpdate,
@@ -52,11 +54,14 @@ const initialState = {
 
 export const walletReducer = createReducer(initialState, (builder) => {
   builder
-    .addCase("wallet/boot", (state, action) => {
+    .addCase(walletBoot, (state, action) => {
       return action.payload;
     })
     .addCase(walletBalanceUpdate, (state, action) => {
       state.balance = action.payload;
+    })
+    .addCase(walletReload, (state, action) => {
+      return new WalletService().getWalletById(state.id);
     });
 });
 

@@ -11,6 +11,7 @@ function WalletService() {
     boot,
     createWallet,
     deleteWallet,
+    updateKeyViewed,
   };
 
   // ----------------------------
@@ -82,6 +83,14 @@ function WalletService() {
     );
     db.run(`DELETE FROM addresses WHERE wallet_id="${wallet_id}"`);
     db.run(`DELETE FROM wallets WHERE id="${wallet_id}"`);
+
+    saveDatabase();
+  }
+
+  function updateKeyViewed(wallet_id) {
+    db.run(
+      `UPDATE wallets SET key_viewed=datetime('now') WHERE id=${wallet_id}`
+    );
 
     saveDatabase();
   }
