@@ -8,18 +8,21 @@ function TransactionHistory() {
 
   return (
     <ul className="bg-zinc-200 text-zinc-600 divide-y divide-zinc-300 rounded-lg p-2">
-      {transactions.map((tx) => (
-        <li key={tx.txid} className="flex p-1">
-          <div className="flex-1">{tx.time}</div>
-          <div
-            className={`flex-1 text-right ${
-              tx.amount > 0 ? receiveStyle : sendStyle
-            }`}
-          >
-            {tx.amount > 0 && "+"}{tx.amount}
-          </div>
-        </li>
-      ))}
+      {transactions.map((tx, i) =>
+        i < 10 ? (
+          <li key={tx.txid} className="flex p-1">
+            <div className="flex-1">{tx.time}</div>
+            <div
+              className={`flex-1 text-right ${
+                tx.amount > 0 ? receiveStyle : sendStyle
+              }`}
+            >
+              {tx.amount > 0 && "+"}
+              {tx.amount}
+            </div>
+          </li>
+        ) : null
+      )}
     </ul>
   );
 }

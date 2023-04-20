@@ -12,6 +12,7 @@ function WalletService() {
     createWallet,
     deleteWallet,
     updateKeyViewed,
+    setWalletName,
   };
 
   // ----------------------------
@@ -26,7 +27,7 @@ function WalletService() {
   // getWalletById: get a consumable Wallet object from the database
   function getWalletById(id) {
     const result = resultToJson(
-      db.exec(`SELECT * FROM wallets WHERE id='${id}'`)
+      db.exec(`SELECT * FROM wallets WHERE id="${id}"`)
     );
     //console.log("getWalletById", result);
     return result.length > 0 ? result[0] : null;
@@ -65,7 +66,8 @@ function WalletService() {
 
     const result = resultToJson(
       db.exec(
-        `INSERT INTO wallets (name, mnemonic, derivation) VALUES ("${name}","${mnemonic}","${derivation}") RETURNING *`
+        `INSERT INTO wallets (name, mnemonic, derivation) VALUES (?, ?, ?) RETURNING *`,
+        [name, mnemonic, derivation]
       )
     )[0];
 
@@ -92,6 +94,11 @@ function WalletService() {
       `UPDATE wallets SET key_viewed=datetime('now') WHERE id=${wallet_id}`
     );
 
+    saveDatabase();
+  }
+
+  function setWalletName(wallet_id, name) {
+    db.run(`UPDATE wallets SET name=? WHERE id="${wallet_id}"`, [name]);
     saveDatabase();
   }
 }

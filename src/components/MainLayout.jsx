@@ -4,9 +4,9 @@ import BottomNavigation from "./BottomNavigation";
 function MainLayout() {
   return (
     <>
-      <div className="pb-12">
+      <main>
         <Outlet />
-      </div>
+      </main>
       <BottomNavigation />
     </>
   );

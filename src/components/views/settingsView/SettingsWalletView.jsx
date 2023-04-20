@@ -17,17 +17,12 @@ import WalletService from "@/services/WalletService";
 import KeyWarning from "./KeyWarning";
 
 export default function SettingsWalletView() {
-  const { wallet_id } = useParams();
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const [deleteConfirm, setDeleteConfirm] = useState(0);
-  const deleteRef = useRef(null);
-
-  const [showRecoveryPhrase, setShowRecoveryPhrase] = useState(false);
-
-  const dispatch = useDispatch();
-
+  const { wallet_id } = useParams();
   const activeWalletId = useSelector(selectActiveWalletId);
+  const isActiveWallet = wallet_id === activeWalletId;
 
   const WalletManager = new WalletService();
   const wallet = WalletManager.getWalletById(wallet_id);
@@ -35,6 +30,15 @@ export default function SettingsWalletView() {
   if (wallet === null) {
     return null;
   }
+
+  const [deleteConfirm, setDeleteConfirm] = useState(0);
+  const deleteRef = useRef(null);
+  const deleteDisabled = deleteConfirm === 2 && wallet.key_viewed === null;
+
+  const [showRecoveryPhrase, setShowRecoveryPhrase] = useState(false);
+
+  const [editing, setEditing] = useState(false);
+  const [walletEditedName, setWalletEditedName] = useState(wallet.name);
 
   const handleActivateWallet = () => {
     dispatch(walletBoot(wallet.id));
@@ -52,7 +56,7 @@ export default function SettingsWalletView() {
       clearTimeout(deleteRef.current);
       deleteRef.current = setTimeout(() => {
         setDeleteConfirm(0);
-      }, 3000);
+      }, 3250 + (deleteConfirm*600));
     }
   };
 
@@ -66,14 +70,42 @@ export default function SettingsWalletView() {
     }
   };
 
+  const handleEdit = () => {
+    if (editing === true) {
+      WalletManager.setWalletName(wallet_id, walletEditedName);
+      dispatch(walletReload());
+      setEditing(false);
+    } else {
+      setEditing(true);
+    }
+  };
+
+  const handleWalletNameEdit = (event) => {
+    setWalletEditedName(event.target.value);
+  };
+
   return (
     <>
       <ViewHeader icon={WalletOutlined} title="Wallet Settings" />
       <div className="p-2">
         <div className="p-3 rounded-lg bg-zinc-200">
           <div className="text-2xl text-center">
-            {wallet.name}
-            <EditOutlined className="text-2xl ml-2" />
+            {editing ? (
+              <span>
+                <input
+                  type="text"
+                  className="rounded-lg bg-white text-primary w-full p-2"
+                  onChange={handleWalletNameEdit}
+                  value={walletEditedName}
+                />
+                <EditOutlined className="text-2xl ml-2" onClick={handleEdit} />
+              </span>
+            ) : (
+              <span>
+                {wallet.name}
+                <EditOutlined className="text-2xl ml-2" onClick={handleEdit} />
+              </span>
+            )}
           </div>
           <div className="text-lg text-center text-zinc-600">
             Created {wallet.date_created}
@@ -85,8 +117,10 @@ export default function SettingsWalletView() {
             <button
               type="button"
               onClick={handleActivateWallet}
-              className="rounded-lg p-4 bg-primary text-zinc-50 w-full"
-              disabled={wallet_id === activeWalletId}
+              className={`rounded-lg p-4 bg-primary text-zinc-50 w-full ${
+                isActiveWallet ? "saturate-[.80]" : ""
+              }`}
+              disabled={isActiveWallet}
             >
               <div className="flex items-center">
                 {wallet_id === activeWalletId ? (
@@ -95,9 +129,7 @@ export default function SettingsWalletView() {
                   <LoginOutlined className="text-2xl mr-1" />
                 )}
                 <div className="flex-1">
-                  {wallet_id === activeWalletId
-                    ? "Wallet Active"
-                    : "Activate Wallet"}
+                  {isActiveWallet ? "Wallet Active" : "Activate Wallet"}
                 </div>
               </div>
             </button>
@@ -106,7 +138,10 @@ export default function SettingsWalletView() {
             <button
               type="button"
               onClick={handleDeleteWallet}
-              className="rounded-lg p-4 bg-error text-zinc-50 w-full"
+              className={`rounded-lg p-4 bg-error text-zinc-50 w-full ${
+                deleteDisabled ? "saturate-[.60]" : ""
+              }`}
+              disabled={deleteDisabled}
             >
               <div className="flex items-center">
                 {deleteConfirm > 0 ? (
@@ -127,6 +162,7 @@ export default function SettingsWalletView() {
             </button>
           </div>
         </div>
+        <KeyWarning wallet={wallet} />
         <div
           className="bg-zinc-700 flex-col rounded-lg flex items-center justify-center my-4 px-2 py-4 cursor-pointer"
           onClick={handleShowMnemonic}
@@ -159,7 +195,6 @@ export default function SettingsWalletView() {
             </>
           )}
         </div>
-        <KeyWarning wallet={wallet} />
       </div>
     </>
   );

@@ -7,6 +7,7 @@ const SELENE_DB_FILE = "db/selene.db";
 // --------------------------------
 
 // Connect to SQLite Database
+// use top-level pointers to ensure db is only loaded into memory once
 const SQL = await initSqlJs({ locateFile: (file) => "/sql-wasm.wasm" });
 let db = null;
 let flushPending = null;
@@ -14,6 +15,10 @@ let flushPending = null;
 try {
   // TODO: store mnemonics in a separate file so they can be encrypted
   // and not persist in memory unless needed
+
+  // TODO: ensure in-memory DB size stays sane over time
+  // more testing needed but OOM error is a possible risk
+  // split DB into multiple files if needed
   const dbFile = await Filesystem.readFile({
     path: SELENE_DB_FILE,
     directory: Directory.Library,

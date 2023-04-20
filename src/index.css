@@ -2,7 +2,19 @@
 @tailwind components;
 @tailwind utilities;
 
+html,
+body,
+#root,
+main {
+    height: 100%;
+    background: transparent;
+}
+
+main {
+  padding-bottom: 3rem;
+}
+
 .anticon {
-  line-height: 0;
-  vertical-align: 1px;
+    line-height: 0;
+    vertical-align: 1px;
 }
