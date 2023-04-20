@@ -5,6 +5,7 @@ import {
   createSelector,
   createAsyncThunk,
 } from "@reduxjs/toolkit";
+import { walletBoot } from "@/redux/wallet";
 
 const defaultPreferences = {
   activeWalletId: "1",
@@ -66,6 +67,9 @@ export const setPreference = createAsyncThunk(
 export const preferencesReducer = createReducer(initialState, (builder) => {
   builder.addCase(setPreference.fulfilled, (state, action) => {
     state[action.payload.key] = action.payload.value;
+  });
+  builder.addCase(walletBoot, (state, action) => {
+    state["activeWalletId"] = action.payload.id.toString();
   });
 });
 

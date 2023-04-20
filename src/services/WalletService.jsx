@@ -10,6 +10,7 @@ function WalletService() {
     getWalletById,
     boot,
     createWallet,
+    deleteWallet,
   };
 
   // ----------------------------
@@ -70,6 +71,19 @@ function WalletService() {
     console.log("creating wallet", result);
     saveDatabase();
     return result;
+  }
+
+  function deleteWallet(wallet_id) {
+    db.run(
+      `DELETE FROM transactions WHERE txid IN (SELECT txid FROM address_transactions WHERE address IN (SELECT address FROM addresses WHERE wallet_id="${wallet_id}"))`
+    );
+    db.run(
+      `DELETE FROM address_transactions WHERE address IN (SELECT address FROM addresses WHERE wallet_id="${wallet_id}")`
+    );
+    db.run(`DELETE FROM addresses WHERE wallet_id="${wallet_id}"`);
+    db.run(`DELETE FROM wallets WHERE id="${wallet_id}"`);
+
+    saveDatabase();
   }
 }
 

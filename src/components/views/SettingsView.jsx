@@ -25,6 +25,12 @@ import {
   BgColorsOutlined,
   FormatPainterOutlined,
   SettingFilled,
+  HeartOutlined,
+  BarChartOutlined,
+  DashboardOutlined,
+  GiftOutlined,
+  CodeOutlined,
+  CloudServerOutlined,
 } from "@ant-design/icons";
 
 import ViewHeader from "./ViewHeader";
@@ -240,6 +246,48 @@ export default function SettingsView() {
             </div>
           </SettingsChild>
         </SettingsCategory>
+
+        {/*
+        <SettingsCategory icon={BarChartOutlined} title="Analytics Settings">
+          <SettingsChild icon={DashboardOutlined} label="Enable Analytics">
+            <input
+              type="checkbox"
+              className="toggle"
+              onChange={(event) => null}
+            />
+          </SettingsChild>
+        </SettingsCategory>
+
+        <SettingsCategory icon={HeartOutlined} title="Donation Settings">
+          <SettingsChild icon={GiftOutlined} label="Enable Donation Mode">
+            <input
+              type="checkbox"
+              className="toggle"
+              onChange={(event) => null}
+            />
+          </SettingsChild>
+          <SettingsChild
+            icon={CodeOutlined}
+            label="Donate to Selene Developers"
+          >
+            <input
+              type="checkbox"
+              className="toggle"
+              onChange={(event) => null}
+            />
+          </SettingsChild>
+          <SettingsChild
+            icon={CloudServerOutlined}
+            label="Donate to Electrum Server Operator"
+          >
+            <input
+              type="checkbox"
+              className="toggle"
+              onChange={(event) => null}
+            />
+          </SettingsChild>
+        </SettingsCategory>
+        */}
       </div>
     </>
   );
