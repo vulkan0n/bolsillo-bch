@@ -14,6 +14,7 @@ import {
 } from "@ant-design/icons";
 import ViewHeader from "@/components/views/ViewHeader";
 import WalletService from "@/services/WalletService";
+import KeyWarning from "./KeyWarning";
 
 export default function SettingsWalletView() {
   const { wallet_id } = useParams();
@@ -158,6 +159,7 @@ export default function SettingsWalletView() {
             </>
           )}
         </div>
+        <KeyWarning wallet={wallet} />
       </div>
     </>
   );

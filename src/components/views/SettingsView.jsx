@@ -5,6 +5,7 @@ import WalletService from "@/services/WalletService";
 
 import { useSelector, useDispatch } from "react-redux";
 import { selectPreferences, setPreference } from "@/redux/preferences";
+import { selectActiveWallet } from "@/redux/wallet";
 
 import {
   SettingOutlined,
@@ -43,6 +44,7 @@ import { logos } from "@/util/logos";
 export default function SettingsView() {
   const dispatch = useDispatch();
   const preferences = useSelector(selectPreferences);
+  const wallet = useSelector(selectActiveWallet);
   console.log("SettingsView", preferences);
 
   function handleSettingsUpdate(key, value) {
@@ -57,7 +59,7 @@ export default function SettingsView() {
     <>
       <ViewHeader icon={SettingOutlined} title="Settings" />
       <div className="p-1">
-        <KeyWarning />
+        <KeyWarning wallet={wallet} />
 
         <SettingsCategory icon={WalletOutlined} title="Wallet Settings">
           <Link to="/settings/wallet/wizard" className="w-full block p-2">
