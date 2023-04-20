@@ -24,6 +24,7 @@ walletMiddleware.startListening({
   actionCreator: walletBoot,
   effect: async (action, listenerApi) => {
     console.log("walletBoot", action.payload);
+    listenerApi.dispatch(setPreference({key: "activeWalletId", value: action.payload.id}));
     // connect to electrum
     listenerApi.dispatch(syncConnect());
   },

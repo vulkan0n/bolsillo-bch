@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { setPreference, selectActiveWalletId } from "@/redux/preferences";
 import { walletBoot, walletReload } from "@/redux/wallet";
+import { syncReconnect } from "@/redux/sync";
 import {
   WalletOutlined,
   LoginOutlined,
@@ -42,6 +43,7 @@ export default function SettingsWalletView() {
 
   const handleActivateWallet = () => {
     dispatch(walletBoot(wallet.id));
+    dispatch(syncReconnect());
     navigate("/");
   };
 
@@ -56,7 +58,7 @@ export default function SettingsWalletView() {
       clearTimeout(deleteRef.current);
       deleteRef.current = setTimeout(() => {
         setDeleteConfirm(0);
-      }, 3250 + (deleteConfirm*600));
+      }, 3250 + deleteConfirm * 600);
     }
   };
 
@@ -89,22 +91,25 @@ export default function SettingsWalletView() {
       <ViewHeader icon={WalletOutlined} title="Wallet Settings" />
       <div className="p-2">
         <div className="p-3 rounded-lg bg-zinc-200">
-          <div className="text-2xl text-center">
+          <div className="text-2xl">
             {editing ? (
-              <span>
+              <div className="flex items-center">
                 <input
                   type="text"
-                  className="rounded-lg bg-white text-primary w-full p-2"
+                  className="rounded-lg bg-white text-primary p-1 mx-1 w-full text-center"
                   onChange={handleWalletNameEdit}
                   value={walletEditedName}
                 />
                 <EditOutlined className="text-2xl ml-2" onClick={handleEdit} />
-              </span>
+              </div>
             ) : (
-              <span>
-                {wallet.name}
-                <EditOutlined className="text-2xl ml-2" onClick={handleEdit} />
-              </span>
+              <div className="grid grid-cols-6">
+                <div className="col-span-1">&nbsp;</div>
+                <div className="text-center col-span-4">{wallet.name}</div>
+                <div className="col-span-1 flex items-center justify-center opacity-90">
+                  <EditOutlined className="text-2xl" onClick={handleEdit} />
+                </div>
+              </div>
             )}
           </div>
           <div className="text-lg text-center text-zinc-600">

@@ -41,6 +41,14 @@ export const syncConnect = createAsyncThunk(
   }
 );
 
+export const syncReconnect = createAsyncThunk(
+  "sync/reconnect",
+  async (_, thunkApi) => {
+    await Electrum.disconnect(true);
+    thunkApi.dispatch(syncConnect());
+  }
+);
+
 // syncConnectionUp: fired when electrum connection is up
 // set up electrum subscriptions to all receive addresses
 export const syncConnectionUp = createAction("sync/up");
@@ -238,6 +246,9 @@ export const syncReducer = createReducer(initialState, (builder) => {
       state.connected = true;
     })
     .addCase(syncConnectionDown, (state, action) => {
+      state.connected = false;
+    })
+    .addCase(syncReconnect.pending, (state, action) => {
       state.connected = false;
     })
     .addCase(syncChaintip, (state, action) => {

@@ -68,9 +68,6 @@ export const preferencesReducer = createReducer(initialState, (builder) => {
   builder.addCase(setPreference.fulfilled, (state, action) => {
     state[action.payload.key] = action.payload.value;
   });
-  builder.addCase(walletBoot, (state, action) => {
-    state["activeWalletId"] = action.payload.id.toString();
-  });
 });
 
 export const selectPreferences = createSelector(
