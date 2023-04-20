@@ -10,6 +10,7 @@ function WalletService() {
     getWalletById,
     boot,
     createWallet,
+    importWallet,
     deleteWallet,
     updateKeyViewed,
     setWalletName,
@@ -72,6 +73,19 @@ function WalletService() {
     )[0];
 
     console.log("creating wallet", result);
+    saveDatabase();
+    return result;
+  }
+
+  function importWallet(mnemonic, derivation = "m/44'/0'/0'") {
+    const result = resultToJson(
+      db.exec(
+        `INSERT INTO wallets (name, mnemonic, derivation, key_viewed) VALUES (?, ?, ?, datetime("now")) RETURNING *`,
+        ["Imported Wallet", mnemonic, derivation]
+      )
+    )[0];
+
+    console.log("importing wallet", result);
     saveDatabase();
     return result;
   }

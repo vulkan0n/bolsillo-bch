@@ -12,7 +12,7 @@ export default function SettingsWalletWizardInit() {
   };
 
   const handleImportWallet = () => {
-    navigate(`/settings/wallet/wizard/import`);
+    navigate(`/settings/wallet/wizard/import`, { replace: true });
   };
 
   return (
