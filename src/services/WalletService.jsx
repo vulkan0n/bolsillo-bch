@@ -10,6 +10,10 @@ function WalletService() {
     getWalletById,
     boot,
     createWallet,
+    importWallet,
+    deleteWallet,
+    updateKeyViewed,
+    setWalletName,
   };
 
   // ----------------------------
@@ -24,7 +28,7 @@ function WalletService() {
   // getWalletById: get a consumable Wallet object from the database
   function getWalletById(id) {
     const result = resultToJson(
-      db.exec(`SELECT * FROM wallets WHERE id='${id}'`)
+      db.exec(`SELECT * FROM wallets WHERE id="${id}"`)
     );
     //console.log("getWalletById", result);
     return result.length > 0 ? result[0] : null;
@@ -63,13 +67,53 @@ function WalletService() {
 
     const result = resultToJson(
       db.exec(
-        `INSERT INTO wallets (name, mnemonic, derivation) VALUES ("${name}","${mnemonic}","${derivation}") RETURNING *`
+        `INSERT INTO wallets (name, mnemonic, derivation) VALUES (?, ?, ?) RETURNING *`,
+        [name, mnemonic, derivation]
       )
     )[0];
 
     console.log("creating wallet", result);
     saveDatabase();
     return result;
+  }
+
+  function importWallet(mnemonic, derivation = "m/44'/0'/0'") {
+    const result = resultToJson(
+      db.exec(
+        `INSERT INTO wallets (name, mnemonic, derivation, key_viewed) VALUES (?, ?, ?, datetime("now")) RETURNING *`,
+        ["Imported Wallet", mnemonic, derivation]
+      )
+    )[0];
+
+    console.log("importing wallet", result);
+    saveDatabase();
+    return result;
+  }
+
+  function deleteWallet(wallet_id) {
+    db.run(
+      `DELETE FROM transactions WHERE txid IN (SELECT txid FROM address_transactions WHERE address IN (SELECT address FROM addresses WHERE wallet_id="${wallet_id}"))`
+    );
+    db.run(
+      `DELETE FROM address_transactions WHERE address IN (SELECT address FROM addresses WHERE wallet_id="${wallet_id}")`
+    );
+    db.run(`DELETE FROM addresses WHERE wallet_id="${wallet_id}"`);
+    db.run(`DELETE FROM wallets WHERE id="${wallet_id}"`);
+
+    saveDatabase();
+  }
+
+  function updateKeyViewed(wallet_id) {
+    db.run(
+      `UPDATE wallets SET key_viewed=datetime('now') WHERE id=${wallet_id}`
+    );
+
+    saveDatabase();
+  }
+
+  function setWalletName(wallet_id, name) {
+    db.run(`UPDATE wallets SET name=? WHERE id="${wallet_id}"`, [name]);
+    saveDatabase();
   }
 }
 

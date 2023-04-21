@@ -1,22 +1,205 @@
-import { useParams } from "react-router-dom";
-import { WalletOutlined } from "@ant-design/icons";
+import { useState, useRef } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { setPreference, selectActiveWalletId } from "@/redux/preferences";
+import { walletBoot, walletReload } from "@/redux/wallet";
+import { syncReconnect } from "@/redux/sync";
+import {
+  WalletOutlined,
+  LoginOutlined,
+  DeleteOutlined,
+  CheckCircleOutlined,
+  EditOutlined,
+  WarningFilled,
+  EyeInvisibleOutlined,
+} from "@ant-design/icons";
 import ViewHeader from "@/components/views/ViewHeader";
 import WalletService from "@/services/WalletService";
+import KeyWarning from "./KeyWarning";
 
 export default function SettingsWalletView() {
-  const { wallet_id } = useParams();
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-  const wallet = new WalletService().getWalletById(wallet_id);
-  console.log("SettingsWalletView", wallet_id, wallet);
+  const { wallet_id } = useParams();
+  const activeWalletId = useSelector(selectActiveWalletId);
+  const isActiveWallet = wallet_id === activeWalletId;
+
+  const WalletManager = new WalletService();
+  const wallet = WalletManager.getWalletById(wallet_id);
+
+  if (wallet === null) {
+    return null;
+  }
+
+  const [deleteConfirm, setDeleteConfirm] = useState(0);
+  const deleteRef = useRef(null);
+  const deleteDisabled = deleteConfirm === 2 && wallet.key_viewed === null;
+
+  const [showRecoveryPhrase, setShowRecoveryPhrase] = useState(false);
+
+  const [editing, setEditing] = useState(false);
+  const [walletEditedName, setWalletEditedName] = useState(wallet.name);
+
+  const handleActivateWallet = () => {
+    dispatch(walletBoot(wallet.id));
+    dispatch(syncReconnect());
+    navigate("/");
+  };
+
+  const handleDeleteWallet = () => {
+    setDeleteConfirm((deleteConfirm + 1) % 4);
+
+    if (deleteConfirm === 3) {
+      WalletManager.deleteWallet(wallet_id);
+      dispatch(walletBoot(1));
+      navigate("/");
+    } else {
+      clearTimeout(deleteRef.current);
+      deleteRef.current = setTimeout(() => {
+        setDeleteConfirm(0);
+      }, 3250 + deleteConfirm * 600);
+    }
+  };
+
+  const handleShowMnemonic = () => {
+    if (showRecoveryPhrase === false) {
+      setShowRecoveryPhrase(true);
+      WalletManager.updateKeyViewed(wallet_id);
+      dispatch(walletReload());
+    } else {
+      setShowRecoveryPhrase(false);
+    }
+  };
+
+  const handleEdit = () => {
+    if (editing === true) {
+      WalletManager.setWalletName(wallet_id, walletEditedName);
+      dispatch(walletReload());
+      setEditing(false);
+    } else {
+      setEditing(true);
+    }
+  };
+
+  const handleWalletNameEdit = (event) => {
+    setWalletEditedName(event.target.value);
+  };
+
   return (
     <>
       <ViewHeader icon={WalletOutlined} title="Wallet Settings" />
       <div className="p-2">
-        <ul>
-          {Object.keys(wallet).map((key) => (
-            <li key={key}>{`${key}: ${wallet[key]}`}</li>
-          ))}
-        </ul>
+        <div className="p-3 rounded-lg bg-zinc-200">
+          <div className="text-2xl">
+            {editing ? (
+              <div className="flex items-center">
+                <input
+                  type="text"
+                  className="rounded-lg bg-white text-primary p-1 mx-1 w-full text-center"
+                  onChange={handleWalletNameEdit}
+                  value={walletEditedName}
+                />
+                <EditOutlined className="text-2xl ml-2" onClick={handleEdit} />
+              </div>
+            ) : (
+              <div className="grid grid-cols-6">
+                <div className="col-span-1">&nbsp;</div>
+                <div className="text-center col-span-4">{wallet.name}</div>
+                <div className="col-span-1 flex items-center justify-center opacity-90">
+                  <EditOutlined className="text-2xl" onClick={handleEdit} />
+                </div>
+              </div>
+            )}
+          </div>
+          <div className="text-lg text-center text-zinc-600">
+            Created {wallet.date_created}
+          </div>
+        </div>
+
+        <div className="my-2 flex gap-x-2">
+          <div className="text-center flex-1">
+            <button
+              type="button"
+              onClick={handleActivateWallet}
+              className={`rounded-lg p-4 bg-primary text-zinc-50 w-full ${
+                isActiveWallet ? "saturate-[.80]" : ""
+              }`}
+              disabled={isActiveWallet}
+            >
+              <div className="flex items-center">
+                {wallet_id === activeWalletId ? (
+                  <CheckCircleOutlined className="text-white text-2xl" />
+                ) : (
+                  <LoginOutlined className="text-2xl mr-1" />
+                )}
+                <div className="flex-1">
+                  {isActiveWallet ? "Wallet Active" : "Activate Wallet"}
+                </div>
+              </div>
+            </button>
+          </div>
+          <div className="text-center flex-1">
+            <button
+              type="button"
+              onClick={handleDeleteWallet}
+              className={`rounded-lg p-4 bg-error text-zinc-50 w-full ${
+                deleteDisabled ? "saturate-[.60]" : ""
+              }`}
+              disabled={deleteDisabled}
+            >
+              <div className="flex items-center">
+                {deleteConfirm > 0 ? (
+                  <WarningFilled className="text-2xl mr-1 text-yellow-300" />
+                ) : (
+                  <DeleteOutlined className="text-2xl mr-1" />
+                )}
+                <div className="flex-1">
+                  {deleteConfirm === 0
+                    ? "Delete Wallet"
+                    : deleteConfirm === 1
+                    ? "ARE YOU SURE? YOUR MONEY IS AT RISK"
+                    : deleteConfirm === 2
+                    ? "MAKE SURE YOU HAVE WRITTEN YOUR RECOVERY PHRASE"
+                    : `Yes, I want to delete "${wallet.name}"`}
+                </div>
+              </div>
+            </button>
+          </div>
+        </div>
+        <KeyWarning wallet={wallet} />
+        <div
+          className="bg-zinc-700 flex-col rounded-lg flex items-center justify-center my-4 px-2 py-4 cursor-pointer"
+          onClick={handleShowMnemonic}
+        >
+          {showRecoveryPhrase ? (
+            <div className="flex flex-col justify-between items-center">
+              <div className="text-center text-error text-xl font-bold">
+                <WarningFilled className="mr-2 text-warning" />
+                KEEP THIS PHRASE SECRET
+                <WarningFilled className="ml-2 text-warning" />
+              </div>
+              <div className="text-center text-zinc-50 text-xl font-mono py-4">
+                {wallet.mnemonic}
+              </div>
+              <div className="text-center text-error text-xl font-bold">
+                <WarningFilled className="mr-2 text-warning" />
+                DO NOT STORE DIGITALLY
+                <WarningFilled className="ml-2 text-warning" />
+              </div>
+            </div>
+          ) : (
+            <>
+              <EyeInvisibleOutlined className="text-8xl text-zinc-50" />
+              <div className="text-center text-zinc-50 text-xl">
+                View Wallet Recovery Phrase
+              </div>
+              <div className="text-center text-zinc-200 text-lg opacity-90">
+                (Make sure to keep it secret and secure!)
+              </div>
+            </>
+          )}
+        </div>
       </div>
     </>
   );

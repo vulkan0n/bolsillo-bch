@@ -24,10 +24,13 @@ walletMiddleware.startListening({
   actionCreator: walletBoot,
   effect: async (action, listenerApi) => {
     console.log("walletBoot", action.payload);
+    listenerApi.dispatch(setPreference({key: "activeWalletId", value: action.payload.id}));
     // connect to electrum
     listenerApi.dispatch(syncConnect());
   },
 });
+
+export const walletReload = createAction("wallet/reload");
 
 export const walletBalanceUpdate = createAction("wallet/balanceUpdate");
 walletMiddleware.startListening({
@@ -52,11 +55,14 @@ const initialState = {
 
 export const walletReducer = createReducer(initialState, (builder) => {
   builder
-    .addCase("wallet/boot", (state, action) => {
+    .addCase(walletBoot, (state, action) => {
       return action.payload;
     })
     .addCase(walletBalanceUpdate, (state, action) => {
       state.balance = action.payload;
+    })
+    .addCase(walletReload, (state, action) => {
+      return new WalletService().getWalletById(state.id);
     });
 });
 

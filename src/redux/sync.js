@@ -41,6 +41,14 @@ export const syncConnect = createAsyncThunk(
   }
 );
 
+export const syncReconnect = createAsyncThunk(
+  "sync/reconnect",
+  async (_, thunkApi) => {
+    await Electrum.disconnect(true);
+    thunkApi.dispatch(syncConnect());
+  }
+);
+
 // syncConnectionUp: fired when electrum connection is up
 // set up electrum subscriptions to all receive addresses
 export const syncConnectionUp = createAction("sync/up");
@@ -104,7 +112,7 @@ syncMiddleware.startListening({
     );
     if (AddressManager.updateAddressState(address, addressState)) {
       // if state updated, get utxos for address
-      console.log("address state changed for", address);
+      //console.log("address state changed for", address);
       listenerApi.dispatch(syncAddressUtxos(address));
     }
   },
@@ -152,17 +160,20 @@ syncMiddleware.startListening({
     // UTXO set represents tip of addresses.
     // If we're still out of sync after applying tip, we must be missing txes
     if (calculatedAddressState !== storedAddressState) {
-      console.log(
+      /*console.log(
         "missing transactions? attempting sync...",
         calculatedAddressState,
         address,
         storedAddressState
-      );
+      );*/
 
       const history = await Electrum.requestAddressHistory(address);
       history.forEach(({ tx_hash, height }) => {
         AddressManager.registerTransaction(address, { tx_hash, height });
         listenerApi.dispatch(syncTxRequest(tx_hash));
+
+        //if (height > listenerApi.getState().sync.chaintip.height - 12960) {
+        //}
       });
     }
 
@@ -229,6 +240,7 @@ syncMiddleware.startListening({
 
 const initialState = {
   connected: false,
+  isSyncing: false,
   chaintip: { ...block_checkpoints.first2023 },
 };
 
@@ -239,6 +251,27 @@ export const syncReducer = createReducer(initialState, (builder) => {
     })
     .addCase(syncConnectionDown, (state, action) => {
       state.connected = false;
+    })
+    .addCase(syncReconnect.pending, (state, action) => {
+      state.connected = false;
+    })
+    .addCase(syncAddressUtxos.pending, (state, action) => {
+      state.isSyncing = true;
+    })
+    .addCase(syncTxRequest.pending, (state, action) => {
+      state.isSyncing = true;
+    })
+    .addCase(syncTxAmount.pending, (state, action) => {
+      state.isSyncing = true;
+    })
+    .addCase(syncAddressUtxos.fulfilled, (state, action) => {
+      state.isSyncing = false;
+    })
+    .addCase(syncTxRequest.fulfilled, (state, action) => {
+      state.isSyncing = false;
+    })
+    .addCase(syncTxAmount.fulfilled, (state, action) => {
+      state.isSyncing = false;
     })
     .addCase(syncChaintip, (state, action) => {
       const { hex, height } = action.payload;

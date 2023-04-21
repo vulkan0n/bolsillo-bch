@@ -34,7 +34,7 @@ export default function TransactionHistoryService(wallet_id) {
 
     const isMyUtxo = (utxo) => {
       if (utxo.value === 0) {
-        console.log("utxo value === 0", utxo, utxo.tx_hash);
+        //console.log("utxo value === 0; OP_RETURN?", utxo, utxo.tx_hash);
         return false;
       }
 
@@ -78,6 +78,7 @@ export default function TransactionHistoryService(wallet_id) {
     // TODO: totalOutput - amount = fee
     const amount = receivedAmount - sentAmount;
 
+    /*
     console.log(
       "calculateAndUpdateTransactionAmount",
       tx.txid,
@@ -87,6 +88,7 @@ export default function TransactionHistoryService(wallet_id) {
       myInputs,
       myOutputs
     );
+    */
 
     db.run(
       `UPDATE address_transactions SET amount="${amount}" WHERE txid="${tx.txid}"`

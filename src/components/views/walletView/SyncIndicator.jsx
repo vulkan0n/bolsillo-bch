@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { selectSyncState } from "@/redux/sync";
-import { DisconnectOutlined, CheckCircleFilled } from "@ant-design/icons";
+import { DisconnectOutlined, CheckCircleFilled, SyncOutlined } from "@ant-design/icons";
 import { animated, useSpring } from "@react-spring/web";
 
 export default function SyncIndicator() {
@@ -42,8 +42,15 @@ export default function SyncIndicator() {
 
   return (
     <div className="flex-1 text-center" onPointerDown={handlePointerDown}>
-      {!sync.connected && <DisconnectedIcon springs={{ ...disconnectSprings }} />}
-      {sync.connected && <ConnectedIcon springs={{ ...connectSprings }} />}
+      {!sync.connected && (
+        <DisconnectedIcon springs={{ ...disconnectSprings }} />
+      )}
+      {sync.connected &&
+        (sync.isSyncing ? (
+          <SyncOutlined className="text-info text-xl opacity-30" spin />
+        ) : (
+          <ConnectedIcon springs={{ ...connectSprings }} />
+        ))}
     </div>
   );
 }

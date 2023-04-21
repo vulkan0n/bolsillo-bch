@@ -1,15 +1,17 @@
+import { useReducer, useState } from "react";
 import { Link } from "react-router-dom";
 import { bchToSats, satsToBch, DUST_LIMIT } from "@/util/sats";
 import WalletService from "@/services/WalletService";
 
 import { useSelector, useDispatch } from "react-redux";
 import { selectPreferences, setPreference } from "@/redux/preferences";
+import { selectActiveWallet } from "@/redux/wallet";
 
 import {
   SettingOutlined,
   WalletOutlined,
-  DollarOutlined,
-  EuroOutlined,
+  DollarCircleOutlined,
+  EuroCircleOutlined,
   TransactionOutlined,
   EyeOutlined,
   EyeInvisibleOutlined,
@@ -18,290 +20,277 @@ import {
   ThunderboltOutlined,
   PropertySafetyOutlined,
   QrcodeOutlined,
+  PlusCircleFilled,
+  CheckCircleOutlined,
+  BorderOuterOutlined,
+  BgColorsOutlined,
+  FormatPainterOutlined,
+  SettingFilled,
+  HeartOutlined,
+  BarChartOutlined,
+  DashboardOutlined,
+  GiftOutlined,
+  CodeOutlined,
+  CloudServerOutlined,
 } from "@ant-design/icons";
 
-import ViewHeader from "@/components/views/ViewHeader";
+import ViewHeader from "./ViewHeader";
+import KeyWarning from "./settingsView/KeyWarning";
+import SettingsCategory from "./settingsView/SettingsCategory";
+import SettingsChild from "./settingsView/SettingsChild";
+
+import { logos } from "@/util/logos";
 
 export default function SettingsView() {
   const dispatch = useDispatch();
   const preferences = useSelector(selectPreferences);
+  const wallet = useSelector(selectActiveWallet);
+  console.log("SettingsView", preferences);
 
   function handleSettingsUpdate(key, value) {
     dispatch(setPreference({ key, value }));
   }
 
-  const wallets = new WalletService().getWallets();
+  const walletList = new WalletService().getWallets();
+
+  const logoKey = preferences["qrCodeLogo"].toLowerCase();
 
   return (
     <>
       <ViewHeader icon={SettingOutlined} title="Settings" />
-      <KeyWarning />
+      <div className="p-1">
+        <KeyWarning wallet={wallet} />
 
-      <div className="px-1">
-        <div
-          tabIndex={0}
-          className="bg-zinc-800 rounded-lg p-2 my-1 collapse collapse-arrow text-zinc-200"
-        >
-          <input type="checkbox" />
-          <div className="collapse-title text-lg font-medium p-1">
-            <WalletOutlined className="text-xl text-primary" /> Manage Wallets
-          </div>
-          <div className="collapse-content bg-zinc-200 text-zinc-700 rounded-sm divide-y divide-zinc-300">
-            {wallets.map((wallet) => (
-              <Link
-                key={wallet.name}
-                to={`/settings/wallet/${wallet.id}`}
-                className="w-full block p-2"
+        <SettingsCategory icon={WalletOutlined} title="Wallet Settings">
+          <Link to="/settings/wallet/wizard" className="w-full block p-2">
+            <PlusCircleFilled className="text-xl mr-1" />
+            Create/Import Wallet
+          </Link>
+          {walletList.map((wallet) => (
+            <Link
+              key={wallet.id}
+              to={`/settings/wallet/${wallet.id}`}
+              className="w-full block p-2"
+            >
+              {wallet.id.toString() === preferences["activeWalletId"] && (
+                <CheckCircleOutlined className="text-xl mr-1 text-secondary" />
+              )}
+              {wallet.name}
+            </Link>
+          ))}
+        </SettingsCategory>
+
+        <SettingsCategory icon={DollarCircleOutlined} title="Currency Settings">
+          <SettingsChild icon={EuroCircleOutlined} label="Local Currency">
+            <select
+              className="select"
+              value={preferences["localCurrency"] || ""}
+              onChange={(event) =>
+                handleSettingsUpdate("localCurrency", event.target.value)
+              }
+            >
+              <option>USD</option>
+              <option>EUR</option>
+              <option>CNY</option>
+              <option>JPY</option>
+              <option>GBP</option>
+              <option>CAD</option>
+              <option>AUD</option>
+              <option>BTC</option>
+            </select>
+          </SettingsChild>
+          <SettingsChild
+            icon={TransactionOutlined}
+            label="Prefer Local Currency"
+          >
+            <input
+              type="checkbox"
+              className="toggle"
+              checked={preferences["preferLocalCurrency"] === "true"}
+              onChange={(event) =>
+                handleSettingsUpdate(
+                  "preferLocalCurrency",
+                  event.target.checked
+                )
+              }
+            />
+          </SettingsChild>
+          <SettingsChild
+            icon={
+              preferences["hideAvailableBalance"] === "true"
+                ? EyeInvisibleOutlined
+                : EyeOutlined
+            }
+            label="Hide Available Balance"
+          >
+            <input
+              type="checkbox"
+              className="toggle"
+              checked={preferences["hideAvailableBalance"] === "true"}
+              onChange={(event) =>
+                handleSettingsUpdate(
+                  "hideAvailableBalance",
+                  event.target.checked
+                )
+              }
+            />
+          </SettingsChild>
+          <SettingsChild icon={AccountBookOutlined} label="Denominate in Sats">
+            <input
+              type="checkbox"
+              className="toggle"
+              checked={preferences["denominateSats"] === "true"}
+              onChange={(event) =>
+                handleSettingsUpdate("denominateSats", event.target.checked)
+              }
+            />
+          </SettingsChild>
+        </SettingsCategory>
+
+        <SettingsCategory icon={SendOutlined} title="Payment Settings">
+          <SettingsChild icon={ThunderboltOutlined} label="Allow Instant Pay">
+            <input
+              type="checkbox"
+              className="toggle"
+              checked={preferences["allowInstantPay"] === "true"}
+              onChange={(event) =>
+                handleSettingsUpdate("allowInstantPay", event.target.checked)
+              }
+            />
+          </SettingsChild>
+          <SettingsChild
+            icon={PropertySafetyOutlined}
+            label="Instant Pay Threshold"
+          >
+            {preferences["denominateSats"] === "true" ? (
+              <input
+                type="number"
+                placeholder="25000000"
+                min="0"
+                step="1000"
+                className="rounded h-10 w-32 p-2"
+                value={preferences["instantPayThreshold"] || "0"}
+                onChange={(event) =>
+                  handleSettingsUpdate(
+                    "instantPayThreshold",
+                    event.target.value
+                  )
+                }
+              />
+            ) : (
+              <input
+                type="number"
+                placeholder="0.25000000"
+                min="0"
+                step="0.00001000"
+                className="rounded h-10 w-32 p-2"
+                value={satsToBch(preferences["instantPayThreshold"] || 0)}
+                onChange={(event) => {
+                  const satoshis = bchToSats(
+                    event.target.value || satsToBch(DUST_LIMIT)
+                  );
+                  handleSettingsUpdate("instantPayThreshold", satoshis);
+                }}
+              />
+            )}
+          </SettingsChild>
+        </SettingsCategory>
+
+        <SettingsCategory icon={QrcodeOutlined} title="QR Code Settings">
+          <SettingsChild icon={BorderOuterOutlined} label="Logo">
+            <div className="flex items-center">
+              {logoKey !== "none" && (
+                <img src={logos[logoKey].img} className="w-8 h-8 mx-2" />
+              )}
+              <select
+                className="rounded h-10 w-24 p-2 flex-1"
+                value={preferences["qrCodeLogo"] || ""}
+                onChange={(event) =>
+                  handleSettingsUpdate("qrCodeLogo", event.target.value)
+                }
               >
-                {wallet.name}
-              </Link>
-            ))}
-          </div>
-        </div>
+                {Object.keys(logos).map((logo) => (
+                  <option key={logo}>{logos[logo].name}</option>
+                ))}
+              </select>
+            </div>
+          </SettingsChild>
+          <SettingsChild icon={BgColorsOutlined} label="Background Color">
+            <div className="flex items-center">
+              <SettingFilled
+                className="text-3xl px-2"
+                style={{ color: preferences["qrCodeBackground"] }}
+              />
+              <input
+                type="text"
+                className="rounded h-10 w-24 m-0 p-2"
+                value={preferences["qrCodeBackground"] || ""}
+                onChange={(event) =>
+                  handleSettingsUpdate("qrCodeBackground", event.target.value)
+                }
+              />
+            </div>
+          </SettingsChild>
+          <SettingsChild icon={FormatPainterOutlined} label="Foreground Color">
+            <div className="flex items-center">
+              <SettingFilled
+                className="text-3xl px-2"
+                style={{ color: preferences["qrCodeForeground"] }}
+              />
+              <input
+                type="text"
+                className="rounded h-10 w-24 m-0 p-2"
+                value={preferences["qrCodeForeground"] || ""}
+                onChange={(event) =>
+                  handleSettingsUpdate("qrCodeForeground", event.target.value)
+                }
+              />
+            </div>
+          </SettingsChild>
+        </SettingsCategory>
 
-        <div
-          tabIndex={0}
-          className="bg-zinc-800 rounded-lg p-2 my-1 collapse collapse-arrow text-zinc-200 p-2 my-1"
-        >
-          <input type="checkbox" />
-          <div className="collapse-title text-lg font-medium p-1">
-            <DollarOutlined className="text-xl text-primary" /> Currency
-            Settings
-          </div>
-          <div className="collapse-content bg-zinc-200 text-zinc-700 rounded-sm divide-y divide-zinc-300">
-            <div className="form-control p-3">
-              <label className="label">
-                <span className="label-text">
-                  <EuroOutlined className="text-xl" /> Local Currency
-                </span>
-                <select
-                  className="select"
-                  value={preferences["localCurrency"] || ""}
-                  onChange={(event) =>
-                    handleSettingsUpdate("localCurrency", event.target.value)
-                  }
-                >
-                  <option>USD</option>
-                  <option>EUR</option>
-                  <option>CNY</option>
-                  <option>JPY</option>
-                  <option>GBP</option>
-                  <option>CAD</option>
-                  <option>AUD</option>
-                  <option>BTC</option>
-                </select>
-              </label>
-            </div>
-            <div className="form-control p-3">
-              <label className="label cursor-pointer">
-                <span className="label-text">
-                  <TransactionOutlined className="text-xl" /> Prefer Local
-                  Currency
-                </span>
-                <input
-                  type="checkbox"
-                  className="toggle"
-                  checked={preferences["preferLocalCurrency"] === "true"}
-                  onChange={(event) =>
-                    handleSettingsUpdate(
-                      "preferLocalCurrency",
-                      event.target.checked
-                    )
-                  }
-                />
-              </label>
-            </div>
-            <div className="form-control p-3">
-              <label className="label cursor-pointer">
-                <span className="label-text">
-                  {preferences["hideAvailableBalance"] === "true" ? (
-                    <EyeInvisibleOutlined className="text-xl text-primary" />
-                  ) : (
-                    <EyeOutlined />
-                  )}{" "}
-                  Hide Available Balance
-                </span>
-                <input
-                  type="checkbox"
-                  className="toggle"
-                  checked={preferences["hideAvailableBalance"] === "true"}
-                  onChange={(event) =>
-                    handleSettingsUpdate(
-                      "hideAvailableBalance",
-                      event.target.checked
-                    )
-                  }
-                />
-              </label>
-            </div>
-            <div className="form-control p-3">
-              <label className="label cursor-pointer">
-                <span className="label-text">
-                  <AccountBookOutlined className="text-xl" /> Denominate in Sats
-                </span>
-                <input
-                  type="checkbox"
-                  className="toggle"
-                  checked={preferences["denominateSats"] === "true"}
-                  onChange={(event) =>
-                    handleSettingsUpdate("denominateSats", event.target.checked)
-                  }
-                />
-              </label>
-            </div>
-          </div>
-        </div>
+        {/*
+        <SettingsCategory icon={BarChartOutlined} title="Analytics Settings">
+          <SettingsChild icon={DashboardOutlined} label="Enable Analytics">
+            <input
+              type="checkbox"
+              className="toggle"
+              onChange={(event) => null}
+            />
+          </SettingsChild>
+        </SettingsCategory>
 
-        <div
-          tabIndex={0}
-          className="bg-zinc-800 rounded-lg p-2 my-1 collapse collapse-arrow text-zinc-200 p-2 my-1"
-        >
-          <input type="checkbox" />
-          <div className="collapse-title text-lg font-medium p-1">
-            <SendOutlined className="text-xl text-primary" /> Payment Settings
-          </div>
-          <div className="collapse-content bg-zinc-200 text-zinc-700 rounded-sm divide-y divide-zinc-300">
-            <div className="form-control p-3">
-              <label className="label cursor-pointer">
-                <span className="label-text">
-                  <ThunderboltOutlined className="text-xl" /> Allow Instant Pay
-                </span>
-                <input
-                  type="checkbox"
-                  className="toggle"
-                  checked={preferences["allowInstantPay"] === "true"}
-                  onChange={(event) =>
-                    handleSettingsUpdate(
-                      "allowInstantPay",
-                      event.target.checked
-                    )
-                  }
-                />
-              </label>
-            </div>
-            <div className="form-control p-3">
-              <label className="label">
-                <span className="label-text">
-                  <PropertySafetyOutlined className="text-xl" /> Instant Pay
-                  Threshold
-                </span>
-                {preferences["denominateSats"] === "true" ? (
-                  <input
-                    type="number"
-                    placeholder="25000000"
-                    min="0"
-                    step="1000"
-                    className="input"
-                    value={preferences["instantPayThreshold"] || "0"}
-                    onChange={(event) =>
-                      handleSettingsUpdate(
-                        "instantPayThreshold",
-                        event.target.value
-                      )
-                    }
-                  />
-                ) : (
-                  <input
-                    type="number"
-                    placeholder="0.25000000"
-                    min="0"
-                    step="0.00001000"
-                    className="input"
-                    value={satsToBch(preferences["instantPayThreshold"] || 0)}
-                    onChange={(event) => {
-                      const satoshis = bchToSats(
-                        event.target.value || satsToBch(DUST_LIMIT)
-                      );
-                      handleSettingsUpdate("instantPayThreshold", satoshis);
-                    }}
-                  />
-                )}
-              </label>
-            </div>
-          </div>
-        </div>
-
-        <div
-          tabIndex={0}
-          className="bg-zinc-800 rounded-lg p-2 my-1 collapse collapse-arrow text-zinc-200 p-2 my-1"
-        >
-          <input type="checkbox" />
-          <div className="collapse-title text-lg font-medium p-1">
-            <QrcodeOutlined className="text-xl text-primary" /> QR Code Settings
-          </div>
-          <div className="collapse-content bg-zinc-200 text-zinc-700 rounded-sm divide-y divide-zinc-300">
-            <div className="form-control p-3">
-              <label className="label">
-                <span className="label-text">Logo</span>
-                <select
-                  className="select"
-                  value={preferences["qrCodeLogo"] || ""}
-                  onChange={(event) =>
-                    handleSettingsUpdate("qrCodeLogo", event.target.value)
-                  }
-                >
-                  <option>Selene</option>
-                  <option>BCH</option>
-                  <option>None</option>
-                </select>
-              </label>
-            </div>
-            <div className="form-control p-3">
-              <label className="label cursor-pointer">
-                <span className="label-text">Background Color</span>
-                <input
-                  type="text"
-                  className="input"
-                  value={preferences["qrCodeBackground"] || ""}
-                  onChange={(event) =>
-                    handleSettingsUpdate("qrCodeBackground", event.target.value)
-                  }
-                />
-              </label>
-            </div>
-            <div className="form-control p-3">
-              <label className="label cursor-pointer">
-                <span className="label-text">Foreground Color</span>
-                <input
-                  type="text"
-                  className="input"
-                  value={preferences["qrCodeForeground"] || ""}
-                  onChange={(event) =>
-                    handleSettingsUpdate("qrCodeForeground", event.target.value)
-                  }
-                />
-              </label>
-            </div>
-          </div>
-        </div>
+        <SettingsCategory icon={HeartOutlined} title="Donation Settings">
+          <SettingsChild icon={GiftOutlined} label="Enable Donation Mode">
+            <input
+              type="checkbox"
+              className="toggle"
+              onChange={(event) => null}
+            />
+          </SettingsChild>
+          <SettingsChild
+            icon={CodeOutlined}
+            label="Donate to Selene Developers"
+          >
+            <input
+              type="checkbox"
+              className="toggle"
+              onChange={(event) => null}
+            />
+          </SettingsChild>
+          <SettingsChild
+            icon={CloudServerOutlined}
+            label="Donate to Electrum Server Operator"
+          >
+            <input
+              type="checkbox"
+              className="toggle"
+              onChange={(event) => null}
+            />
+          </SettingsChild>
+        </SettingsCategory>
+        */}
       </div>
     </>
-  );
-}
-
-function KeyWarning() {
-  return (
-    <div className="m-2 p-2">
-      <div className="alert alert-warning p-4 shadow-lg bg-warning text-black rounded-lg text-center">
-        <div>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="stroke-red-500 flex-shrink-0 h-6 w-6"
-            fill="none"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
-            />
-          </svg>
-          <span className="text-xl">
-            YOU HAVE NOT BACKED UP YOUR PRIVATE KEY
-          </span>
-        </div>
-      </div>
-    </div>
   );
 }

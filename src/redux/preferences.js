@@ -5,6 +5,7 @@ import {
   createSelector,
   createAsyncThunk,
 } from "@reduxjs/toolkit";
+import { walletBoot } from "@/redux/wallet";
 
 const defaultPreferences = {
   activeWalletId: "1",
