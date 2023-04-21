@@ -73,15 +73,26 @@ export default function TransactionManagerService() {
     }));
 
     // reconstruct "vout" from raw hex
-    const vout = decodedTx.outputs.map((output, n) => ({
-      n,
-      scriptPubKey: {
-        addresses: [lockingBytecodeToCashAddress(output.lockingBytecode, "bitcoincash")],
-      },
-      value: new Decimal(
+    const vout = decodedTx.outputs.map((output, n) => {
+      const value = new Decimal(
         `0x${swapEndianness(binToHex(output.satoshis))}`
-      ).toNumber(),
-    }));
+      ).toNumber();
+
+      return {
+        n,
+        scriptPubKey: {
+          addresses: [
+            value > 0
+              ? lockingBytecodeToCashAddress(
+                  output.lockingBytecode,
+                  "bitcoincash"
+                )
+              : "",
+          ],
+        },
+        value,
+      };
+    });
 
     const tx = { ...result[0], vin, vout };
 

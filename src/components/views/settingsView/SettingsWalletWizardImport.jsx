@@ -27,7 +27,7 @@ export default function SettingsWalletImport() {
     const valid = bip39.validateMnemonic(mnemonicInput);
     if (valid) {
       try {
-        const wallet = new WalletService().importWallet(mnemonicInput);
+        const wallet = new WalletService().importWallet(mnemonicInput, "m/44'/0'/0'");
         navigate(`/settings/wallet/${wallet.id}`, { replace: true });
       } catch (e) {
         setMessage("That wallet has already been imported!");

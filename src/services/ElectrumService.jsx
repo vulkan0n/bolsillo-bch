@@ -166,11 +166,11 @@ export default function ElectrumService() {
   }
 
   // request a transaction by its txid
-  async function requestTransaction(tx_hash) {
+  async function requestTransaction(tx_hash, verbose=true) {
     const transaction = await electrum.request(
       "blockchain.transaction.get",
       tx_hash,
-      true
+      verbose
     );
 
     return transaction;
