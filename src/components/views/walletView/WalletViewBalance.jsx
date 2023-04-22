@@ -8,6 +8,8 @@ import { EyeInvisibleOutlined } from "@ant-design/icons";
 
 import { animated, useSpring } from "@react-spring/web";
 
+import FiatOracleService from "@/services/FiatOracleService";
+
 function WalletViewBalance() {
   const [firstRender, setFirstRender] = useState(true);
   const { balance } = useSelector(selectActiveWallet);
@@ -32,13 +34,15 @@ function WalletViewBalance() {
     );
   };
 
+  const fiatBalance = new FiatOracleService().toFiat(balance);
+
   const formattedBalance = hideBalance
     ? `₿ xxxxxxxxxx`
     : `₿ ${formatSatoshis(balance)}`;
 
   const formattedLocalBalance = hideBalance
     ? `${localUnit} $X.XX`
-    : `${localUnit} $0.00`;
+    : `${localUnit} $${fiatBalance}`;
 
   const [balanceReceivedSpring, receiveSpringApi] = useSpring(() => ({
     from: { color: "#8dc451" },
@@ -68,7 +72,7 @@ function WalletViewBalance() {
           Available Balance
         </div>
       )}
-      <div className="text-2xl text-zinc-200">
+      <div className="text-2xl text-zinc-200 tabular-nums">
         <span onClick={handleHideBalance} className="cursor-pointer">
           {hideBalance && (
             <EyeInvisibleOutlined className="text-zinc-400 opacity-60 px-1" />
