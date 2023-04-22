@@ -26,13 +26,13 @@ const migrations = [
 
     query.push("PRAGMA user_version = 0;");
 
-    /*
+    //*
     //query.push("DROP TABLE IF EXISTS wallets;");
     query.push("DROP TABLE IF EXISTS blockchain;");
     query.push("DROP TABLE IF EXISTS addresses;");
     query.push("DROP TABLE IF EXISTS transactions;");
     query.push("DROP TABLE IF EXISTS address_transactions;");
-    query.push("DROP TABLE IF EXISTS utxos;");
+    query.push("DROP TABLE IF EXISTS address_utxos;");
     query.push("DROP TRIGGER IF EXISTS balance_update;");
     /**/
 
@@ -89,6 +89,16 @@ const migrations = [
         address text not null,
         amount int,
         fiat_amount text
+      );`
+    );
+
+    query.push(
+      `CREATE TABLE IF NOT EXISTS address_utxos (
+        wallet_id int not null,
+        address text not null,
+        txid text not null,
+        outpoint int not null,
+        amount int
       );`
     );
 
