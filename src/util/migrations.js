@@ -87,7 +87,8 @@ const migrations = [
         time text default CURRENT_TIMESTAMP,
         time_seen default CURRENT_TIMESTAMP,
         address text not null,
-        amount int 
+        amount int,
+        fiat_amount text
       );`
     );
 

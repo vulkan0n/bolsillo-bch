@@ -10,7 +10,6 @@ export default function FiatOracleService() {
     USD: "125.02",
     CAD: "125.04",
     EUR: "125.03",
-    BTC: "0.00543210",
   };
 
   return {
@@ -26,13 +25,13 @@ export default function FiatOracleService() {
   }
 
   function toBch(amount) {
-    return new Decimal(satsToBch(toSats(amount))).toDecimalPlaces(8).toString();
+    return new Decimal(satsToBch(toSats(amount))).toFixed(8).toString();
   }
 
   function toFiat(sats) {
     return new Decimal(satsToBch(sats))
       .times(oracles[preferences["localCurrency"]])
-      .toDecimalPlaces(2)
+      .toFixed(2)
       .toString();
   }
 }

@@ -92,7 +92,6 @@ export default function SettingsView() {
               <option>USD</option>
               <option>CAD</option>
               <option>EUR</option>
-              <option>BTC</option>
             </select>
           </SettingsChild>
           <SettingsChild

@@ -3,6 +3,7 @@ import AddressManagerService from "@/services/AddressManagerService";
 import TransactionManagerService from "@/services/TransactionManagerService";
 import { bchToSats } from "@/util/sats";
 import { Decimal } from "decimal.js";
+import FiatOracleService from "@/services/FiatOracleService";
 
 export default function TransactionHistoryService(wallet_id) {
   const { db, resultToJson, saveDatabase } = new DatabaseService();
@@ -91,7 +92,9 @@ export default function TransactionHistoryService(wallet_id) {
     */
 
     db.run(
-      `UPDATE address_transactions SET amount="${amount}" WHERE txid="${tx.txid}"`
+      `UPDATE address_transactions SET amount="${amount}", fiat_amount="${new FiatOracleService().toFiat(
+        amount
+      )}" WHERE txid="${tx.txid}"`
     );
 
     saveDatabase();

@@ -2,6 +2,7 @@ import { useSelector } from "react-redux";
 import { selectPreferences } from "@/redux/preferences";
 import { selectTransactionHistory } from "@/redux/transactions";
 import { formatSatoshis } from "@/util/sats";
+import FiatOracleService from "@/services/FiatOracleService";
 
 function TransactionHistory() {
   const preferences = useSelector(selectPreferences);
@@ -9,6 +10,8 @@ function TransactionHistory() {
 
   const receiveStyle = "text-secondary";
   const sendStyle = "text-error";
+
+  const FiatOracle = new FiatOracleService();
 
   return (
     <>
@@ -29,7 +32,9 @@ function TransactionHistory() {
                   {tx.amount > 0 && "+"}
                   {formatSatoshis(tx.amount)}
                 </div>
-                <div className="text-sm opacity-80">$0.00 {preferences["localCurrency"]}</div>
+                <div className="text-sm opacity-80">
+                  ${tx.fiat_amount || "0.00"} {preferences["localCurrency"]}
+                </div>
               </div>
             </li>
           ) : null
