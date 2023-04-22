@@ -20,7 +20,7 @@ export default function SettingsWalletWizardInit() {
       <button
         type="button"
         onClick={handleCreateWallet}
-        className="bg-secondary text-white w-full rounded p-4 my-3 text-xl"
+        className="bg-primary text-white w-full rounded p-4 my-3 text-xl"
       >
         <PlusCircleOutlined className="mr-2 text-2xl" />
         Create New Wallet
