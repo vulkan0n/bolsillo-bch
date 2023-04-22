@@ -8,10 +8,10 @@ export default function SettingsWalletWizard() {
   return (
     <>
       <ViewHeader icon={PlusCircleOutlined} title="Create/Import Wallet" />
-      <div className="flex items-center justify-center p-8 h-80 bg-zinc-800">
+      <div className="flex items-center justify-center p-4 h-56 bg-zinc-800">
         <img src={logos.selene.img} className="h-full" />
       </div>
-      <div className="p-4 mt-2">
+      <div className="p-4">
         <Outlet />
       </div>
     </>
