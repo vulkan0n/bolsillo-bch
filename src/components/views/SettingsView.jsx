@@ -90,12 +90,8 @@ export default function SettingsView() {
               }
             >
               <option>USD</option>
-              <option>EUR</option>
-              <option>CNY</option>
-              <option>JPY</option>
-              <option>GBP</option>
               <option>CAD</option>
-              <option>AUD</option>
+              <option>EUR</option>
               <option>BTC</option>
             </select>
           </SettingsChild>
