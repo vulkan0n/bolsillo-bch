@@ -32,6 +32,7 @@ export default function ElectrumService() {
     requestTransaction,
     requestMerkle,
     requestBlock,
+    broadcastTransaction,
   };
 
   // connect: connect to an Electrum server
@@ -166,7 +167,7 @@ export default function ElectrumService() {
   }
 
   // request a transaction by its txid
-  async function requestTransaction(tx_hash, verbose=true) {
+  async function requestTransaction(tx_hash, verbose = true) {
     const transaction = await electrum.request(
       "blockchain.transaction.get",
       tx_hash,
@@ -200,6 +201,16 @@ export default function ElectrumService() {
 
     //console.log("requestBlock", header, height);
     return header;
+  }
+
+  async function broadcastTransaction(tx_hex) {
+    const tx_hash = await electrum.request(
+      "blockchain.transaction.broadcast",
+      tx_hex
+    );
+
+    console.log("broadcastTransaction", tx_hash, tx_hex);
+    return tx_hash;
   }
 }
 
