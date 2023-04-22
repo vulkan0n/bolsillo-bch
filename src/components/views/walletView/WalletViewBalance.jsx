@@ -41,8 +41,8 @@ function WalletViewBalance() {
     : `₿ ${formatSatoshis(balance)}`;
 
   const formattedLocalBalance = hideBalance
-    ? `${localUnit} $X.XX`
-    : `${localUnit} $${fiatBalance}`;
+    ? `$X.XX ${localUnit}`
+    : `$${fiatBalance} ${localUnit}`;
 
   const [balanceReceivedSpring, receiveSpringApi] = useSpring(() => ({
     from: { color: "#8dc451" },

@@ -104,7 +104,8 @@ function WalletViewSendConfirm() {
         setAmount(FiatOracle.toBch(amount));
       }
     } else {
-      if (satoshis === "0") {
+      const newAmount = FiatOracle.toFiat(amount);
+      if (newAmount <= "0.01") {
         setAmount("0");
       } else {
         setAmount(FiatOracle.toFiat(satoshis));
