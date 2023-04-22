@@ -18,7 +18,7 @@ function WalletViewSendConfirm() {
   const dispatch = useDispatch();
   const [searchParams, setSearchParams] = useSearchParams();
   const { address } = useParams();
-  const { balance } = useSelector(selectActiveWallet);
+  const wallet = useSelector(selectActiveWallet);
 
   const [amount, setAmount] = useState(searchParams.get("amount") || "0");
   const [message, setMessage] = useState("");
@@ -39,7 +39,7 @@ function WalletViewSendConfirm() {
 
   const fiatAmount = FiatOracle.toFiat(satoshis);
 
-  const isInsufficientFunds = balance < satoshis;
+  const isInsufficientFunds = wallet.balance < satoshis;
 
   //console.log("satoshis", satoshis, "fiatAmount", fiatAmount);
 
@@ -67,21 +67,22 @@ function WalletViewSendConfirm() {
       return;
     }
 
-    /*const TransactionManager = new TransactionManagerService();
+    const TransactionManager = new TransactionManagerService();
 
     // construct transaction
-    const { tx_hash, tx_hex } = TransactionManager.buildTransaction([
-      { address, amount: satoshis },
-    ]);
+    const { tx_hash, tx_hex } = TransactionManager.buildTransaction(
+      [{ address, amount: satoshis }],
+      wallet.id
+    );
 
-    const result = Electrum.broadcastTransaction(tx_hex);
+    /*const result = Electrum.broadcastTransaction(tx_hex);
     const success = result === tx_hash;*/
     const success = false;
 
     if (success) {
       navigate("/wallet/send/success");
     } else {
-      setMessage("Transaction failed! Try again");
+      setMessage(tx_hash);
     }
   }
 
@@ -97,19 +98,16 @@ function WalletViewSendConfirm() {
       setPreference({ key: "preferLocalCurrency", value: !preferLocal })
     );
 
-    if (preferLocal) {
-      if (denominateSats) {
-        setAmount(FiatOracle.toSats(amount));
-      } else {
-        setAmount(FiatOracle.toBch(amount));
-      }
+    const newAmount = preferLocal
+      ? denominateSats
+        ? FiatOracle.toSats(amount)
+        : FiatOracle.toBch(amount)
+      : FiatOracle.toFiat(satoshis);
+
+    if (new Decimal(newAmount).equals(0)) {
+      setAmount("0");
     } else {
-      const newAmount = FiatOracle.toFiat(amount);
-      if (newAmount <= "0.01") {
-        setAmount("0");
-      } else {
-        setAmount(FiatOracle.toFiat(satoshis));
-      }
+      setAmount(newAmount);
     }
   };
 
