@@ -1,5 +1,6 @@
 import { useSelector } from "react-redux";
 import { selectTransactionHistory } from "@/redux/transactions";
+import { formatSatoshis } from "@/util/sats";
 
 function TransactionHistory() {
   const transactions = useSelector(selectTransactionHistory);
@@ -18,7 +19,7 @@ function TransactionHistory() {
               }`}
             >
               {tx.amount > 0 && "+"}
-              {tx.amount}
+              {formatSatoshis(tx.amount)}
             </div>
           </li>
         ) : null
