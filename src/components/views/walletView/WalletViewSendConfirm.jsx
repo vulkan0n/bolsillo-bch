@@ -201,8 +201,8 @@ function WalletViewSendConfirm() {
         <div className="rounded p-1 bg-zinc-50">
           {message === "" ? (
             <>
-              <div className="text-xs">Sending to</div>
-              <div className="text-xs font-semibold font-mono opacity-90 text-secondary">
+              <div className="text-sm">Sending to</div>
+              <div className="text-sm font-semibold font-mono opacity-90 text-secondary">
                 {formattedAddress}
               </div>
             </>
