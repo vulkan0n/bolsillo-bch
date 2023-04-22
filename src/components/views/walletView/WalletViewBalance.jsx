@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { SATOSHI } from "@/util/sats";
+import { formatSatoshis } from "@/util/sats";
 
 import { useSelector, useDispatch } from "react-redux";
 import { selectActiveWallet } from "@/redux/wallet";
@@ -17,13 +17,8 @@ function WalletViewBalance() {
 
   const hideBalance = preferences["hideAvailableBalance"] === "true";
   const preferLocal = preferences["preferLocalCurrency"] === "true";
-  const denominateSats = preferences["denominateSats"] === "true";
 
-  const unit = denominateSats ? "sats" : "BCH";
   const localUnit = preferences["localCurrency"];
-
-  const formatSatoshis = (sats) =>
-    denominateSats ? sats : `${(sats / SATOSHI).toFixed(8)}`;
 
   const handleHideBalance = () => {
     dispatch(
@@ -39,7 +34,7 @@ function WalletViewBalance() {
 
   const formattedBalance = hideBalance
     ? `₿ xxxxxxxxxx`
-    : `₿ ${formatSatoshis(balance)} ${unit}`;
+    : `₿ ${formatSatoshis(balance)}`;
 
   const formattedLocalBalance = hideBalance
     ? `${localUnit} $X.XX`
