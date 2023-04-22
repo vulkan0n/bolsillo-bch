@@ -1,22 +1,27 @@
 import { useState, useEffect } from "react";
 import { useParams, useSearchParams, useNavigate } from "react-router-dom";
-import { bchToSats, satsToBch, MAX_SATOSHI } from "@/util/sats";
+
+import { useSelector, useDispatch } from "react-redux";
+import { selectActiveWallet } from "@/redux/wallet";
+import { selectPreferences, setPreference } from "@/redux/preferences";
+
 import { Decimal } from "decimal.js";
 import { useLongPress } from "use-long-press";
-import { useSelector } from "react-redux";
-import { selectActiveWallet } from "@/redux/wallet";
-import { selectPreferences } from "@/redux/preferences";
+
+import { bchToSats, satsToBch, MAX_SATOSHI } from "@/util/sats";
 import FiatOracleService from "@/services/FiatOracleService";
 import TransactionManagerService from "@/services/TransactionManagerService";
 
+import { TransactionOutlined } from "@ant-design/icons";
+
 function WalletViewSendConfirm() {
+  const dispatch = useDispatch();
   const [searchParams, setSearchParams] = useSearchParams();
   const { address } = useParams();
   const { balance } = useSelector(selectActiveWallet);
 
   const [amount, setAmount] = useState(searchParams.get("amount") || "0");
   const [message, setMessage] = useState("");
-  const [isInsufficientFunds, setIsInsufficientFunds] = useState(false);
 
   const preferences = useSelector(selectPreferences);
   const navigate = useNavigate();
@@ -30,11 +35,13 @@ function WalletViewSendConfirm() {
     ? FiatOracle.toSats(amount)
     : denominateSats
     ? new Decimal(amount)
-    : FiatOracle.toBch(amount);
+    : bchToSats(amount);
 
   const fiatAmount = FiatOracle.toFiat(satoshis);
 
-  console.log("satoshis", satoshis, "fiatAmount", fiatAmount);
+  const isInsufficientFunds = balance < satoshis;
+
+  //console.log("satoshis", satoshis, "fiatAmount", fiatAmount);
 
   useEffect(function handleInstantPay() {
     console.log(preferences);
@@ -85,6 +92,26 @@ function WalletViewSendConfirm() {
     }
   }
 
+  const handleFlipLocalCurrency = () => {
+    dispatch(
+      setPreference({ key: "preferLocalCurrency", value: !preferLocal })
+    );
+
+    if (preferLocal) {
+      if (denominateSats) {
+        setAmount(FiatOracle.toSats(amount));
+      } else {
+        setAmount(FiatOracle.toBch(amount));
+      }
+    } else {
+      if (satoshis === "0") {
+        setAmount("0");
+      } else {
+        setAmount(FiatOracle.toFiat(satoshis));
+      }
+    }
+  };
+
   function handleKeypadPress(key) {
     setMessage("");
 
@@ -123,7 +150,11 @@ function WalletViewSendConfirm() {
             return `${amount}`;
           }
 
-          return `${amount}${key}`;
+          return new Decimal(
+            Array.from(`${amount}${key}`)
+              .filter((char) => char !== ".")
+              .join("")
+          ).toString();
         };
 
         const fiatKeyLogic = (amount) => {
@@ -179,28 +210,57 @@ function WalletViewSendConfirm() {
           )}
         </div>
       </div>
-      {preferLocal ? (
-        <div className="text-center my-2">
-          <div className="text-center text-3xl text-neutral-700 tabular-nums">
-            ${amount}&nbsp;
-            <span className="text-2xl">{preferences["localCurrency"]}</span>
-          </div>
-          <div className="text-center text-neutral-400">
-            ₿&nbsp;{denominateSats ? `${FiatOracle.toSats(amount)} sats` : `${FiatOracle.toBch(amount)} BCH`}
-          </div>
-        </div>
-      ) : (
-        <div className="text-center my-2">
-          <div className="text-center text-3xl text-neutral-700 tabular-nums">
-            <span className="text-2xl">₿</span>&nbsp;
-            {denominateSats ? `${amount}` : `${amount}`}&nbsp;
-            <span className="text-2xl">{denominateSats ? "sats" : "BCH"}</span>
-          </div>
-          <div className="text-center text-neutral-400">
-            ${fiatAmount}&nbsp;{preferences["localCurrency"]}
-          </div>
-        </div>
-      )}
+      <div
+        className={`text-center my-2 ${
+          isInsufficientFunds ? "text-error" : "text-neutral-700"
+        }`}
+      >
+        {preferLocal ? (
+          <>
+            <div className="text-center text-3xl tabular-nums">
+              ${amount}&nbsp;
+              <span className="text-2xl">{preferences["localCurrency"]}</span>
+            </div>
+            <div className="text-neutral-400">
+              <span
+                className="text-left cursor-pointer"
+                onClick={handleFlipLocalCurrency}
+              >
+                ₿&nbsp;
+                {denominateSats
+                  ? `${FiatOracle.toSats(amount)} sats`
+                  : `${FiatOracle.toBch(amount)} BCH`}
+              </span>
+              <TransactionOutlined
+                className="cursor-pointer text-xl ml-2"
+                onClick={handleFlipLocalCurrency}
+              />
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="text-center text-3xl tabular-nums">
+              <span className="text-3xl font-mono">₿</span>&nbsp;
+              {denominateSats ? `${amount}` : `${amount}`}&nbsp;
+              <span className="text-2xl">
+                {denominateSats ? "sats" : "BCH"}
+              </span>
+            </div>
+            <div className="text-center text-neutral-400">
+              <span
+                onClick={handleFlipLocalCurrency}
+                className="cursor-pointer"
+              >
+                ${fiatAmount}&nbsp;{preferences["localCurrency"]}
+              </span>
+              <TransactionOutlined
+                className="cursor-pointer text-xl ml-2"
+                onClick={handleFlipLocalCurrency}
+              />
+            </div>
+          </>
+        )}
+      </div>
 
       <div
         className="grid grid-rows-4 text-center w-full border border-4 rounded-lg border-gray-300 items-center"
@@ -286,7 +346,7 @@ function WalletViewSendConfirm() {
         </div>
         <div className="grid grid-cols-3 h-full bg-gray-200 text-zinc-700">
           <div>
-            {denominateSats ? (
+            {denominateSats && !preferLocal ? (
               <span>&nbsp;</span>
             ) : (
               <button

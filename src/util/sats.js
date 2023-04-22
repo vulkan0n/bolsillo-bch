@@ -11,7 +11,7 @@ export function satsToBch(sats) {
 }
 
 export function bchToSats(bch) {
-  return new Decimal(bch).mul(SATOSHI).toString();
+  return new Decimal(bch).mul(SATOSHI).toDecimalPlaces(0).toString();
 }
 
 export function formatSatoshis(sats) {
