@@ -117,9 +117,11 @@ export default function SettingsWalletView() {
           <div className="text-lg text-center text-zinc-600">
             Created {wallet.date_created}
           </div>
-          <div className="text-lg text-center text-zinc-500">
-            Available Balance: ₿ {formatSatoshis(wallet.balance)}
-          </div>
+          {wallet.balance > 0 && (
+            <div className="text-lg text-center text-zinc-500">
+              Available Balance: ₿ {formatSatoshis(wallet.balance)}
+            </div>
+          )}
         </div>
 
         <div className="my-2 flex gap-x-2">
