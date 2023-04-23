@@ -114,8 +114,9 @@ export default function TransactionManagerService() {
     return getTransactionByHash(tx_hash);
   }
 
-  function buildP2pkhTransaction(recipients, wallet_id) {
-    console.log("buildTx", recipients);
+  function buildP2pkhTransaction(recipients, wallet_id, fee = 0) {
+    console.log("buildTx", recipients, fee);
+
     // helper function returns null if invalid locking bytecode
     const addressToLockingBytecode = (address) => {
       const lockingBytecode = libauth.cashAddressToLockingBytecode(address);
@@ -133,13 +134,13 @@ export default function TransactionManagerService() {
 
     // gather suitable inputs
     const UtxoManager = new UtxoManagerService(wallet_id);
-    const inputs = UtxoManager.selectUtxos(sendTotal);
+    const inputs = UtxoManager.selectUtxos(sendTotal, fee);
     const inputTotal = inputs
       .reduce((sum, cur) => sum.plus(cur.amount), new Decimal(0))
       .toNumber();
 
     // calculate change
-    const changeTotal = inputTotal - sendTotal;
+    const changeTotal = inputTotal - sendTotal - fee;
 
     console.log(
       "buildTransaction: potential inputs",
@@ -151,17 +152,17 @@ export default function TransactionManagerService() {
     // construct tx outputs
     const vout = recipients.map((out) => ({
       lockingBytecode: addressToLockingBytecode(out.address),
-      valueSatoshis: out.amount,
+      valueSatoshis: BigInt(out.amount),
     }));
 
     // construct change outputs
-    if (changeTotal > DUST_LIMIT) {
+    if (changeTotal >= DUST_LIMIT) {
       const AddressManager = new AddressManagerService(wallet_id);
       const changeAddress = AddressManager.getChangeAddresses(1)[0];
 
       vout.push({
         lockingBytecode: addressToLockingBytecode(changeAddress.address),
-        valueSatoshis: changeTotal,
+        valueSatoshis: BigInt(changeTotal),
       });
     }
 
@@ -193,7 +194,25 @@ export default function TransactionManagerService() {
       binToHex(sha256.hash(sha256.hash(tx_raw)))
     );
 
-    console.log("buildTransaction", tx_hash, vout, signedInputs, tx_hex);
+    if (changeTotal < tx_raw.length) {
+      console.log(
+        "Not enough change to fulfill 1 sat/B... try again with higher fee?",
+        changeTotal,
+        fee,
+        tx_raw.length
+      );
+      return buildP2pkhTransaction(recipients, wallet_id, tx_raw.length);
+    }
+
+    console.log(
+      "buildTransaction",
+      tx_hash,
+      vout,
+      signedInputs,
+      tx_hex,
+      tx_raw.length,
+      fee
+    );
 
     return {
       tx_hash,

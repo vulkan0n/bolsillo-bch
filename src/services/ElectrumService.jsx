@@ -15,6 +15,8 @@ import {
   syncChaintip,
 } from "@/redux/sync";
 
+import { bchToSats } from "@/util/sats";
+
 // pointer for current ElectrumClient instance
 let electrum = null;
 
@@ -33,6 +35,7 @@ export default function ElectrumService() {
     requestMerkle,
     requestBlock,
     broadcastTransaction,
+    requestRelayFee,
   };
 
   // connect: connect to an Electrum server
@@ -211,6 +214,14 @@ export default function ElectrumService() {
 
     console.log("broadcastTransaction", tx_hash, tx_hex);
     return tx_hash;
+  }
+
+  async function requestRelayFee() {
+    const result = await electrum.request("blockchain.relayfee");
+
+    const relayFee = bchToSats(result);
+    console.log("requestRelayFee", relayFee);
+    return relayFee;
   }
 }
 

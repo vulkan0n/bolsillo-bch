@@ -1,6 +1,7 @@
 import DatabaseService from "@/services/DatabaseService";
 import TransactionManagerService from "@/services/TransactionManagerService";
 import { DUST_LIMIT } from "@/util/sats";
+import { Decimal } from "decimal.js";
 
 export default function UxtoManagerService(wallet_id) {
   const { db, resultToJson, saveDatabase } = new DatabaseService();
@@ -50,15 +51,16 @@ export default function UxtoManagerService(wallet_id) {
     return result;
   }
 
-  function selectUtxos(amount) {
-    console.log("selectUtxos", amount);
+  function selectUtxos(amount, fee) {
+    const targetAmount = new Decimal(amount).plus(fee).toNumber();
+    console.log("selectUtxos", targetAmount);
 
     // all full address balances >= amount are eligible
     const eligibleAddresses = resultToJson(
       db.exec(
         `SELECT * FROM addresses 
           WHERE 
-            balance >= "${amount}" 
+            balance >= "${targetAmount}" 
             AND wallet_id="${wallet_id}"
           ORDER BY balance ASC`
       )
@@ -68,70 +70,87 @@ export default function UxtoManagerService(wallet_id) {
 
     // 1. if there's a whole address balance that's exact, spend the entire address
     const exactAddresses = eligibleAddresses.filter(
-      (address) => address.balance === amount
+      (address) => address.balance == targetAmount
     );
     if (exactAddresses.length > 0) {
       return getAddressUtxos(exactAddresses[0].address);
     }
 
-    // all UTXOs <= amount are eligible
+    // all UTXOs <= targetAmount are eligible
     const eligibleUtxos = resultToJson(
       db.exec(
         `SELECT * FROM address_utxos 
           WHERE 
-            amount <="${amount}" 
+            amount <= "${targetAmount}" 
             AND wallet_id="${wallet_id}" 
           ORDER BY amount DESC`
       )
     );
 
-    console.log("eligibleUtxos", eligibleUtxos);
-
     // 2. if there's an exact UTXO, use that UTXO and its address-mates
-    const exactUtxos = eligibleUtxos.filter((utxo) => utxo.amount === amount);
+    const exactUtxos = eligibleUtxos.filter(
+      (utxo) => utxo.amount == targetAmount
+    );
     if (exactUtxos.length > 0) {
       return [exactUtxos[0], ...getAddressUtxos(exactUtxos[0].address)];
     }
 
-    // 3. try to consolidate enough UTXOs to make the amount
+    // 3. try to consolidate enough UTXOs to make the targetAmount
     const eligibleSum = eligibleUtxos.reduce((sum, cur) => sum + cur.amount, 0);
 
-    console.log("eligibleSum", eligibleSum);
+    console.log("eligibleUtxos", eligibleSum, ...eligibleUtxos);
 
     // 4. if sum of utxos matches exactly, consolidate the UTXOs
-    if (eligibleSum === amount) {
+    if (eligibleSum == targetAmount) {
       return eligibleUtxos;
     }
 
     // 5. if consolidating won't be enough, use entire balance of next-eligible address
-    if (eligibleSum < amount && eligibleAddresses.length > 0) {
-      return getAddressUtxos(eligibleAddresses[0].address);
+    if (eligibleAddresses.length > 0) {
+      if (eligibleSum < targetAmount) {
+        return getAddressUtxos(eligibleAddresses[0].address);
+      }
     }
 
     // if there's enough change that consolidating will work, find the smallest combo
     const selection = [];
-    let remainingAmount = amount;
-    let i = 0;
+    let remainingAmount = targetAmount;
 
-    while (remainingAmount > DUST_LIMIT && eligibleUtxos.length > 0) {
+    for (
+      let i = 0;
+      remainingAmount > 0  && eligibleUtxos.length > 0;
+      i++
+    ) {
+      console.log("loop remainingAmount", remainingAmount, targetAmount);
+
       const utxo = eligibleUtxos[i];
-      if (utxo.amount <= remainingAmount) {
-        selection.push(eligibleUtxos.shift());
-        remainingAmount -= utxo.amount;
-      } else {
-        if (eligibleUtxos.length === 1) {
-          return selection.push(eligibleUtxos.shift());
-        }
+      if (utxo.amount <= remainingAmount || remainingAmount < DUST_LIMIT) {
+        selection.push(eligibleUtxos[i]);
+        remainingAmount = remainingAmount - utxo.amount;
+        console.log("selecting", i, selection, remainingAmount);
       }
-
-      i = i + (1 % eligibleUtxos.length);
     }
 
-    const eligibleAddress = eligibleAddresses[0];
-    if (eligibleAddress.balance - amount < remainingAmount) {
-      return getAddressUtxos(eligibleAddress.address);
+    const utxoChange = remainingAmount * -1;
+    console.log("utxo change:", utxoChange);
+
+    if (eligibleAddresses.length > 0) {
+      const eligibleAddress = eligibleAddresses[0];
+      const addressChange = eligibleAddress.balance - targetAmount;
+      console.log(
+        "comparing eligible address to consolidated utxos",
+        eligibleAddress,
+        addressChange,
+        utxoChange
+      );
+
+      if (change > DUST_LIMIT && change < remainingAmount) {
+        console.log("returning eligible address");
+        return getAddressUtxos(eligibleAddress.address);
+      }
     }
 
+    console.log("returning utxo selection", selection);
     return selection;
   }
 

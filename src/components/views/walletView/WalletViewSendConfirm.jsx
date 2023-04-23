@@ -60,7 +60,7 @@ function WalletViewSendConfirm() {
     }
   }, []);
 
-  function confirmSend() {
+  async function confirmSend() {
     // fail if insufficient funds
     if (isInsufficientFunds) {
       setMessage("Insufficient Funds");
@@ -75,14 +75,15 @@ function WalletViewSendConfirm() {
       wallet.id
     );
 
-    /*const result = Electrum.broadcastTransaction(tx_hex);
-    const success = result === tx_hash;*/
+    //const result = Electrum.broadcastTransaction(tx_hex);
+    //const success = result === tx_hash;
     const success = false;
 
     if (success) {
       navigate("/wallet/send/success");
     } else {
       setMessage(tx_hash);
+      //setMessage(JSON.stringify(result));
     }
   }
 

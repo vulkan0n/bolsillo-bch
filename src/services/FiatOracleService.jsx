@@ -7,7 +7,7 @@ export default function FiatOracleService() {
   const preferences = selectPreferences(store.getState());
 
   const oracles = {
-    USD: "125.02",
+    USD: "121.71",
     CAD: "125.04",
     EUR: "125.03",
   };
