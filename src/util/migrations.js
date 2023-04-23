@@ -97,8 +97,8 @@ const migrations = [
         wallet_id int not null,
         address text not null,
         txid text not null,
-        outpoint int not null,
-        amount int
+        tx_pos int not null,
+        amount int not null
       );`
     );
 

@@ -3,7 +3,7 @@ import HdNodeService from "@/services/HdNodeService";
 import TransactionManagerService from "@/services/TransactionManagerService";
 import { store } from "@/redux";
 import { selectActiveWallet } from "@/redux/wallet";
-import { crypto } from "@/util/crypto";
+import { sha256 } from "@bitauth/libauth";
 import { binToHex, hexToBin } from "@/util/hex";
 
 // AddressManagerService: handles most address-related operations
@@ -15,6 +15,7 @@ export default function AddressManagerService(wallet_id) {
   return {
     registerAddress,
     populateAddresses,
+    getAddress,
     getReceiveAddresses,
     getChangeAddresses,
     getUnusedAddresses,
@@ -81,6 +82,14 @@ export default function AddressManagerService(wallet_id) {
     }
 
     return generatedAddresses;
+  }
+
+  function getAddress(address) {
+    const result = resultToJson(
+      db.exec(`SELECT * FROM addresses WHERE address="${address}"`)
+    );
+
+    return result.length > 0 ? result[0] : null;
   }
 
   // getReceiveAddresses: get all active receive addresses for this wallet
@@ -222,7 +231,6 @@ export default function AddressManagerService(wallet_id) {
       .concat(localHistory.unconfirmed.map(txToState))
       .join("");
 
-    const { sha256 } = crypto;
     const stateHash = binToHex(
       sha256.hash(new TextEncoder().encode(stateString))
     );

@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@ant-design/icons": "^5.0.1",
-    "@bitauth/libauth": "^1.19.1",
+    "@bitauth/libauth": "2.0.0-alpha.8",
     "@capacitor-community/barcode-scanner": "^3.0.1",
     "@capacitor/android": "^4.6.3",
     "@capacitor/app": "^4.1.1",

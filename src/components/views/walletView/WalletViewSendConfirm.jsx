@@ -70,7 +70,7 @@ function WalletViewSendConfirm() {
     const TransactionManager = new TransactionManagerService();
 
     // construct transaction
-    const { tx_hash, tx_hex } = TransactionManager.buildTransaction(
+    const { tx_hash, tx_hex } = TransactionManager.buildP2pkhTransaction(
       [{ address, amount: satoshis }],
       wallet.id
     );
