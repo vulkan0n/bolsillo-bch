@@ -10,6 +10,7 @@ import { useLongPress } from "use-long-press";
 
 import { bchToSats, satsToBch, MAX_SATOSHI } from "@/util/sats";
 import FiatOracleService from "@/services/FiatOracleService";
+import ElectrumService from "@/services/ElectrumService";
 import TransactionManagerService from "@/services/TransactionManagerService";
 
 import { TransactionOutlined } from "@ant-design/icons";
@@ -82,15 +83,16 @@ function WalletViewSendConfirm() {
 
     const { tx_hash, tx_hex } = transaction;
 
-    //const result = Electrum.broadcastTransaction(tx_hex);
-    //const success = result === tx_hash;
-    const success = false;
+    const Electrum = new ElectrumService();
+    const result = await Electrum.broadcastTransaction(tx_hex);
+    const success = result === tx_hash;
 
     if (success) {
+      console.log("transaction send success!")
       navigate("/wallet/send/success");
     } else {
-      setMessage(tx_hash);
-      //setMessage(JSON.stringify(result));
+      console.warn("transaction send failure", result);
+      setMessage("Transaction failed.");
     }
   }
 

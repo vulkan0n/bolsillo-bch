@@ -39,9 +39,9 @@ export default function HdNodeService(wallet_id) {
     return address;
   }
 
-  function _deriveAddressPrivateKey(address, change) {
+  function _deriveAddressPrivateKey(address) {
     const AddressManager = new AddressManagerService(wallet_id);
-    const { hd_index } = AddressManager.getAddress(address);
+    const { hd_index, change } = AddressManager.getAddress(address);
 
     const privateKey = deriveHdPrivateNodeChild(
       change ? hdChange : hdMain,
