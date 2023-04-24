@@ -26,7 +26,7 @@ const migrations = [
 
     query.push("PRAGMA user_version = 0;");
 
-    //*
+    /*
     //query.push("DROP TABLE IF EXISTS wallets;");
     query.push("DROP TABLE IF EXISTS blockchain;");
     query.push("DROP TABLE IF EXISTS addresses;");
