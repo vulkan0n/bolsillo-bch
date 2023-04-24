@@ -60,7 +60,7 @@ export default function UxtoManagerService(wallet_id) {
       db.exec(
         `SELECT * FROM addresses 
           WHERE 
-            balance >= "${targetAmount}" 
+            balance >= "${targetAmount}"
             AND wallet_id="${wallet_id}"
           ORDER BY balance ASC`
       )
@@ -106,9 +106,12 @@ export default function UxtoManagerService(wallet_id) {
     }
 
     // 5. if consolidating won't be enough, use entire balance of next-eligible address
-    if (eligibleAddresses.length > 0) {
-      if (eligibleSum < targetAmount) {
+    if (eligibleSum < targetAmount) {
+      if (eligibleAddresses.length > 0) {
         return getAddressUtxos(eligibleAddresses[0].address);
+      } else {
+        // if no eligible address, return empty set
+        return [];
       }
     }
 
@@ -116,35 +119,38 @@ export default function UxtoManagerService(wallet_id) {
     const selection = [];
     let remainingAmount = targetAmount;
 
-    for (
-      let i = 0;
-      remainingAmount > 0  && eligibleUtxos.length > 0;
-      i++
-    ) {
+    while (remainingAmount > 0 && eligibleUtxos.length > 0) {
       console.log("loop remainingAmount", remainingAmount, targetAmount);
 
-      const utxo = eligibleUtxos[i];
-      if (utxo.amount <= remainingAmount || remainingAmount < DUST_LIMIT) {
-        selection.push(eligibleUtxos[i]);
-        remainingAmount = remainingAmount - utxo.amount;
-        console.log("selecting", i, selection, remainingAmount);
-      }
+      const utxo = eligibleUtxos.shift();
+      selection.push(utxo);
+      remainingAmount = remainingAmount - utxo.amount;
+      console.log("selecting", utxo, selection, remainingAmount);
     }
 
-    const utxoChange = remainingAmount * -1;
-    console.log("utxo change:", utxoChange);
+    if (remainingAmount > 0) {
+      return [];
+    }
+
+    const utxoChange = remainingAmount * -1 - fee;
+    const utxoFee = utxoChange > DUST_LIMIT ? fee : fee + utxoChange;
+    console.log("utxo change:", utxoChange, utxoFee);
 
     if (eligibleAddresses.length > 0) {
       const eligibleAddress = eligibleAddresses[0];
-      const addressChange = eligibleAddress.balance - targetAmount;
+      const addressChange = eligibleAddress.balance - targetAmount - fee;
+      const addressFee = addressChange > DUST_LIMIT ? fee : fee + addressChange;
+
       console.log(
         "comparing eligible address to consolidated utxos",
         eligibleAddress,
         addressChange,
-        utxoChange
+        utxoChange,
+        addressFee,
+        utxoFee
       );
 
-      if (change > DUST_LIMIT && change < remainingAmount) {
+      if (addressFee < utxoFee) {
         console.log("returning eligible address");
         return getAddressUtxos(eligibleAddress.address);
       }

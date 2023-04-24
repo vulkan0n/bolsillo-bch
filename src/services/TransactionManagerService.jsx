@@ -114,7 +114,7 @@ export default function TransactionManagerService() {
     return getTransactionByHash(tx_hash);
   }
 
-  function buildP2pkhTransaction(recipients, wallet_id, fee = 0) {
+  function buildP2pkhTransaction(recipients, wallet_id, fee = DUST_LIMIT / 3) {
     console.log("buildTx", recipients, fee);
 
     // helper function returns null if invalid locking bytecode
@@ -141,6 +141,11 @@ export default function TransactionManagerService() {
 
     // calculate change
     const changeTotal = inputTotal - sendTotal - fee;
+
+    // insufficient funds
+    if (changeTotal < 0) {
+      return null;
+    }
 
     console.log(
       "buildTransaction: potential inputs",
@@ -185,7 +190,7 @@ export default function TransactionManagerService() {
 
     if (generatedTx.success === false) {
       console.warn("tx generation failed", generatedTx);
-      return;
+      return null;
     }
 
     const tx_raw = libauth.encodeTransaction(generatedTx.transaction);
@@ -194,14 +199,40 @@ export default function TransactionManagerService() {
       binToHex(sha256.hash(sha256.hash(tx_raw)))
     );
 
-    if (changeTotal < tx_raw.length) {
+    // if we didn't reclaim change, add it to total fee
+    const feeTotal = changeTotal >= DUST_LIMIT ? fee : fee + changeTotal;
+    if (feeTotal < tx_raw.length) {
       console.log(
-        "Not enough change to fulfill 1 sat/B... try again with higher fee?",
-        changeTotal,
+        "Fee under 1 sat/B... trying again with byte length",
         fee,
+        feeTotal,
         tx_raw.length
       );
-      return buildP2pkhTransaction(recipients, wallet_id, tx_raw.length);
+      return buildP2pkhTransaction(
+        recipients,
+        wallet_id,
+        tx_raw.length
+      );
+    }
+
+    if (feeTotal > tx_raw.length * 3) {
+      if (fee !== tx_raw.length) {
+        console.log(
+          "Fee greater than 300% of byte length. Can we make it smaller?",
+          fee,
+          feeTotal,
+          tx_raw.length * 3,
+          tx_raw.length
+        );
+        return buildP2pkhTransaction(recipients, wallet_id, tx_raw.length);
+      } else {
+        console.log(
+          "can't make fee any smaller, proceeding...",
+          fee,
+          feeTotal,
+          tx_raw.length
+        );
+      }
     }
 
     console.log(
@@ -211,7 +242,8 @@ export default function TransactionManagerService() {
       signedInputs,
       tx_hex,
       tx_raw.length,
-      fee
+      fee,
+      feeTotal
     );
 
     return {

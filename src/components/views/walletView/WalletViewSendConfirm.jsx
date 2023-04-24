@@ -70,10 +70,17 @@ function WalletViewSendConfirm() {
     const TransactionManager = new TransactionManagerService();
 
     // construct transaction
-    const { tx_hash, tx_hex } = TransactionManager.buildP2pkhTransaction(
+    const transaction = TransactionManager.buildP2pkhTransaction(
       [{ address, amount: satoshis }],
       wallet.id
     );
+
+    if (transaction === null) {
+      setMessage("Transaction Failed: Not enough balance for miner fee");
+      return;
+    }
+
+    const { tx_hash, tx_hex } = transaction;
 
     //const result = Electrum.broadcastTransaction(tx_hex);
     //const success = result === tx_hash;
