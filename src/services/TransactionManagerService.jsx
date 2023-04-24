@@ -19,6 +19,7 @@ export default function TransactionManagerService() {
     getTransactionByHash,
     resolveTransaction,
     buildP2pkhTransaction,
+    sendTransaction,
   };
 
   function registerTransaction(tx) {
@@ -70,13 +71,26 @@ export default function TransactionManagerService() {
     const decodedTx = libauth.decodeTransaction(hexToBin(localTx.hex));
 
     // reconstruct "vin" from raw hex
-    const vin = decodedTx.inputs.map((input) => ({
+    const vin = getVinFromDecodedTransaction(decodedTx);
+
+    // reconstruct "vout" from raw hex
+    const vout = getVoutFromDecodedTransaction(decodedTx);
+
+    const tx = { ...result[0], vin, vout };
+
+    //console.log("getTransactionByHash", tx_hash, decodedTx, tx);
+    return tx;
+  }
+
+  function getVinFromDecodedTransaction(decodedTx) {
+    return decodedTx.inputs.map((input) => ({
       txid: binToHex(input.outpointTransactionHash),
       vout: input.outpointIndex,
     }));
+  }
 
-    // reconstruct "vout" from raw hex
-    const vout = decodedTx.outputs.map((output, n) => {
+  function getVoutFromDecodedTransaction(decodedTx) {
+    return decodedTx.outputs.map((output, n) => {
       const value = new Decimal(output.valueSatoshis.toString()).toNumber();
 
       return {
@@ -94,11 +108,6 @@ export default function TransactionManagerService() {
         value,
       };
     });
-
-    const tx = { ...result[0], vin, vout };
-
-    //console.log("getTransactionByHash", tx_hash, decodedTx, tx);
-    return tx;
   }
 
   async function resolveTransaction(tx_hash) {
@@ -208,11 +217,7 @@ export default function TransactionManagerService() {
         feeTotal,
         tx_raw.length
       );
-      return buildP2pkhTransaction(
-        recipients,
-        wallet_id,
-        tx_raw.length
-      );
+      return buildP2pkhTransaction(recipients, wallet_id, tx_raw.length);
     }
 
     if (feeTotal > tx_raw.length * 3) {
@@ -250,5 +255,25 @@ export default function TransactionManagerService() {
       tx_hash,
       tx_hex,
     };
+  }
+
+  async function sendTransaction({ tx_hash, tx_hex }, wallet_id) {
+    const Electrum = new ElectrumService();
+    const result = await Electrum.broadcastTransaction(tx_hex);
+    const success = result === tx_hash;
+
+    if (success) {
+      const UtxoManager = new UtxoManagerService(wallet_id);
+      const decodedTx = libauth.decodeTransaction(hexToBin(tx_hex));
+      const vin = getVinFromDecodedTransaction(decodedTx);
+
+      vin.forEach((input) => {
+        UtxoManager.discardUtxo({ tx_hash: input.txid, tx_pos: input.vout });
+      });
+    } else {
+      console.warn("transaction send failure", result);
+    }
+
+    return success;
   }
 }

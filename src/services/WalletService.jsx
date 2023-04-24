@@ -98,6 +98,7 @@ function WalletService() {
       `DELETE FROM address_transactions WHERE address IN (SELECT address FROM addresses WHERE wallet_id="${wallet_id}")`
     );
     db.run(`DELETE FROM addresses WHERE wallet_id="${wallet_id}"`);
+    db.run(`DELETE FROM address_utxos WHERE wallet_id="${wallet_id}"`);
     db.run(`DELETE FROM wallets WHERE id="${wallet_id}"`);
 
     saveDatabase();

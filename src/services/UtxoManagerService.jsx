@@ -165,6 +165,8 @@ export default function UxtoManagerService(wallet_id) {
       `DELETE FROM address_utxos WHERE txid="${utxo.tx_hash}" AND tx_pos="${utxo.tx_pos}"`
     );
 
+    console.log("discarded utxo", utxo);
+
     saveDatabase();
   }
 }

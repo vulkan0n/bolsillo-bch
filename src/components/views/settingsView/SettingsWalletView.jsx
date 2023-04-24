@@ -119,7 +119,7 @@ export default function SettingsWalletView() {
           </div>
           {wallet.balance > 0 && (
             <div className="text-lg text-center text-zinc-500">
-              Available Balance: ₿ {formatSatoshis(wallet.balance)}
+              Last Known Balance: ₿ {formatSatoshis(wallet.balance)}
             </div>
           )}
         </div>
