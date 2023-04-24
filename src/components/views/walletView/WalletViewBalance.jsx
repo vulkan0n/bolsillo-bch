@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { SATOSHI } from "@/util/sats";
+import { formatSatoshis } from "@/util/sats";
 
 import { useSelector, useDispatch } from "react-redux";
 import { selectActiveWallet } from "@/redux/wallet";
@@ -7,6 +7,8 @@ import { selectPreferences, setPreference } from "@/redux/preferences";
 import { EyeInvisibleOutlined } from "@ant-design/icons";
 
 import { animated, useSpring } from "@react-spring/web";
+
+import FiatOracleService from "@/services/FiatOracleService";
 
 function WalletViewBalance() {
   const [firstRender, setFirstRender] = useState(true);
@@ -17,13 +19,8 @@ function WalletViewBalance() {
 
   const hideBalance = preferences["hideAvailableBalance"] === "true";
   const preferLocal = preferences["preferLocalCurrency"] === "true";
-  const denominateSats = preferences["denominateSats"] === "true";
 
-  const unit = denominateSats ? "sats" : "BCH";
   const localUnit = preferences["localCurrency"];
-
-  const formatSatoshis = (sats) =>
-    denominateSats ? sats : `${(sats / SATOSHI).toFixed(8)}`;
 
   const handleHideBalance = () => {
     dispatch(
@@ -37,13 +34,15 @@ function WalletViewBalance() {
     );
   };
 
+  const fiatBalance = new FiatOracleService().toFiat(balance);
+
   const formattedBalance = hideBalance
     ? `₿ xxxxxxxxxx`
-    : `₿ ${formatSatoshis(balance)} ${unit}`;
+    : `₿ ${formatSatoshis(balance)}`;
 
   const formattedLocalBalance = hideBalance
-    ? `${localUnit} $X.XX`
-    : `${localUnit} $0.00`;
+    ? `$X.XX ${localUnit}`
+    : `$${fiatBalance} ${localUnit}`;
 
   const [balanceReceivedSpring, receiveSpringApi] = useSpring(() => ({
     from: { color: "#8dc451" },
@@ -73,7 +72,7 @@ function WalletViewBalance() {
           Available Balance
         </div>
       )}
-      <div className="text-2xl text-zinc-200">
+      <div className="text-2xl text-zinc-200 tabular-nums">
         <span onClick={handleHideBalance} className="cursor-pointer">
           {hideBalance && (
             <EyeInvisibleOutlined className="text-zinc-400 opacity-60 px-1" />

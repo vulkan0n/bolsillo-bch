@@ -6,32 +6,30 @@ import {
   encodeCashAddress,
 } from "@bitauth/libauth";
 
+import { hexToBin } from "@/util/hex";
+
 import WalletService from "@/services/WalletService";
+import AddressManagerService from "@/services/AddressManagerService";
 
-import { crypto } from "@/util/crypto";
-const { secp256k1, ripemd160, sha256, sha512 } = crypto;
+import { secp256k1, ripemd160, sha256 } from "@bitauth/libauth";
 
-function HdNodeService(wallet_id) {
+export default function HdNodeService(wallet_id) {
   //console.log("HdNodeService", wallet_id);
   const { mnemonic, derivation } = new WalletService().getWalletById(wallet_id);
 
   const seed = bip39.mnemonicToSeedSync(mnemonic);
-  const hdMaster = deriveHdPrivateNodeFromSeed({ sha512: sha512 }, seed);
-  const hdMain = deriveHdPath(crypto, hdMaster, `${derivation}/0`);
-  const hdChange = deriveHdPath(crypto, hdMaster, `${derivation}/1`);
+  const hdMaster = deriveHdPrivateNodeFromSeed(seed);
+  const hdMain = deriveHdPath(hdMaster, `${derivation}/0`);
+  const hdChange = deriveHdPath(hdMaster, `${derivation}/1`);
 
   return {
     generateAddress,
-    signTransaction,
+    signInputs,
   };
 
   // raw address generation function
   function generateAddress(index, change) {
-    const child = deriveHdPrivateNodeChild(
-      crypto,
-      change ? hdChange : hdMain,
-      index
-    );
+    const child = deriveHdPrivateNodeChild(change ? hdChange : hdMain, index);
 
     const pubKey = secp256k1.derivePublicKeyCompressed(child.privateKey);
     const hash = ripemd160.hash(sha256.hash(pubKey));
@@ -41,9 +39,35 @@ function HdNodeService(wallet_id) {
     return address;
   }
 
-  function signTransaction(tx_hex) {
-    return tx_hex;
+  function _deriveAddressPrivateKey(address) {
+    const AddressManager = new AddressManagerService(wallet_id);
+    const { hd_index, change } = AddressManager.getAddress(address);
+
+    const privateKey = deriveHdPrivateNodeChild(
+      change ? hdChange : hdMain,
+      hd_index
+    ).privateKey;
+
+    return privateKey;
+  }
+
+  function signInputs(inputs, compiler) {
+    return inputs.map((input) => ({
+      outpointTransactionHash: hexToBin(input.txid),
+      outpointIndex: input.tx_pos,
+      sequenceNumber: 0,
+      unlockingBytecode: {
+        compiler,
+        script: "unlock",
+        valueSatoshis: BigInt(input.amount),
+        data: {
+          keys: {
+            privateKeys: {
+              key: _deriveAddressPrivateKey(input.address),
+            },
+          },
+        },
+      },
+    }));
   }
 }
-
-export default HdNodeService;

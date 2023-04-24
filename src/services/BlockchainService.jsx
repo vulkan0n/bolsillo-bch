@@ -1,5 +1,5 @@
 import DatabaseService from "@/services/DatabaseService";
-import { crypto } from "@/util/crypto";
+import { sha256 } from "@bitauth/libauth";
 import { hexToBin, binToHex } from "@/util/hex";
 import { swapEndianness } from "@bitauth/libauth";
 
@@ -73,7 +73,7 @@ export default function BlockchainService() {
   // calculateBlockHash: get the sha256 hash of the block header (little-endian)
   function calculateBlockhash(header) {
     const blockhash = swapEndianness(
-      binToHex(crypto.sha256.hash(crypto.sha256.hash(hexToBin(header))))
+      binToHex(sha256.hash(sha256.hash(hexToBin(header))))
     );
 
     return blockhash;
@@ -103,11 +103,11 @@ export default function BlockchainService() {
       let branchHash = merkleBranch[i];
 
       if (index % 2 === 1) {
-        hash = crypto.sha256.hash(
+        hash = sha256.hash(
           Uint8Array.from([...hexToBin(branchHash), ...hexToBin(hash)])
         );
       } else {
-        hash = crypto.sha256.hash(
+        hash = sha256.hash(
           Uint8Array.from([...hexToBin(hash), ...hexToBin(branchHash)])
         );
       }

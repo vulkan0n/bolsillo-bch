@@ -16,6 +16,7 @@ import {
 import ViewHeader from "@/components/views/ViewHeader";
 import WalletService from "@/services/WalletService";
 import KeyWarning from "./KeyWarning";
+import { formatSatoshis } from "@/util/sats";
 
 export default function SettingsWalletView() {
   const dispatch = useDispatch();
@@ -98,6 +99,7 @@ export default function SettingsWalletView() {
                   type="text"
                   className="rounded-lg bg-white text-primary p-1 mx-1 w-full text-center"
                   onChange={handleWalletNameEdit}
+                  onKeyDown={(e) => e.key === "Enter" && handleEdit()}
                   value={walletEditedName}
                 />
                 <EditOutlined className="text-2xl ml-2" onClick={handleEdit} />
@@ -115,6 +117,11 @@ export default function SettingsWalletView() {
           <div className="text-lg text-center text-zinc-600">
             Created {wallet.date_created}
           </div>
+          {wallet.balance > 0 && (
+            <div className="text-lg text-center text-zinc-500">
+              Last Known Balance: ₿ {formatSatoshis(wallet.balance)}
+            </div>
+          )}
         </div>
 
         <div className="my-2 flex gap-x-2">

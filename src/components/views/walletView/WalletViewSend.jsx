@@ -4,13 +4,8 @@ import { Clipboard } from "@capacitor/clipboard";
 
 import { validateInvoiceString } from "@/util/invoice";
 
-import {
-  ReconciliationOutlined,
-  ContactsOutlined,
-  GoldOutlined,
-} from "@ant-design/icons";
+import { ReconciliationOutlined } from "@ant-design/icons";
 
-import ContactPicker from "./ContactPicker";
 import TransactionHistory from "./TransactionHistory";
 
 function WalletViewSend() {

@@ -2,16 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
-html,
-body,
-#root,
 main {
-    height: 100%;
-    background: transparent;
-}
-
-main {
-  padding-bottom: 3rem;
+  padding-bottom: 3.333rem;
 }
 
 .anticon {

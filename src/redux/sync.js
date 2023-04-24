@@ -13,6 +13,7 @@ import BlockchainService from "@/services/BlockchainService";
 import AddressManagerService from "@/services/AddressManagerService";
 import TransactionManagerService from "@/services/TransactionManagerService";
 import TransactionHistoryService from "@/services/TransactionHistoryService";
+import UtxoManagerService from "@/services/UtxoManagerService";
 
 import { block_checkpoints } from "@/util/block_checkpoints";
 
@@ -138,6 +139,7 @@ syncMiddleware.startListening({
     const wallet_id = listenerApi.getState().wallet.id;
 
     const AddressManager = new AddressManagerService(wallet_id);
+    const UtxoManager = new UtxoManagerService(wallet_id);
 
     // register each UTXO, add tx to history
     utxos.forEach((utxo) => {
@@ -145,6 +147,8 @@ syncMiddleware.startListening({
         tx_hash: utxo.tx_hash,
         height: utxo.height,
       });
+
+      UtxoManager.registerUtxo(address, utxo);
 
       listenerApi.dispatch(syncBlock(utxo.height));
       listenerApi.dispatch(syncTxRequest(utxo.tx_hash));

@@ -1,11 +1,12 @@
 import { useReducer, useState } from "react";
 import { Link } from "react-router-dom";
-import { bchToSats, satsToBch, DUST_LIMIT } from "@/util/sats";
-import WalletService from "@/services/WalletService";
 
 import { useSelector, useDispatch } from "react-redux";
 import { selectPreferences, setPreference } from "@/redux/preferences";
 import { selectActiveWallet } from "@/redux/wallet";
+
+import { bchToSats, satsToBch, DUST_LIMIT } from "@/util/sats";
+import WalletService from "@/services/WalletService";
 
 import {
   SettingOutlined,
@@ -45,7 +46,7 @@ export default function SettingsView() {
   const dispatch = useDispatch();
   const preferences = useSelector(selectPreferences);
   const wallet = useSelector(selectActiveWallet);
-  console.log("SettingsView", preferences);
+  //console.log("SettingsView", preferences);
 
   function handleSettingsUpdate(key, value) {
     dispatch(setPreference({ key, value }));
@@ -90,13 +91,8 @@ export default function SettingsView() {
               }
             >
               <option>USD</option>
-              <option>EUR</option>
-              <option>CNY</option>
-              <option>JPY</option>
-              <option>GBP</option>
               <option>CAD</option>
-              <option>AUD</option>
-              <option>BTC</option>
+              <option>EUR</option>
             </select>
           </SettingsChild>
           <SettingsChild

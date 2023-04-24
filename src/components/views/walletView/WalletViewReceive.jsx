@@ -80,12 +80,12 @@ export default function WalletViewReceive() {
             </div>
             <div
               onClick={copyAddressToClipboard}
-              className="text-xs text-center break-all cursor-pointer text-primary opacity-70"
+              className="text-xs text-center break-all cursor-pointer text-primary opacity-70 slashed-zero"
             >
               {formattedAddress}
             </div>
           </div>
-          <div className="flex justify-center gap-x-8 my-1">
+          {/*<div className="flex justify-center gap-x-8 my-1">
             <button className="btn btn-xs" type="button">
               <FormOutlined className="text-2xl opacity-80" />
             </button>
@@ -95,7 +95,7 @@ export default function WalletViewReceive() {
             <button className="btn btn-xs" type="button" onClick={skipAddress}>
               <ReloadOutlined className="text-2xl opacity-80" />
             </button>
-          </div>
+          </div>*/}
         </>
       )}
       <ScannerButton
