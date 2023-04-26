@@ -14,6 +14,7 @@ function WalletService() {
     deleteWallet,
     updateKeyViewed,
     setWalletName,
+    clearWalletData,
   };
 
   // ----------------------------
@@ -91,14 +92,12 @@ function WalletService() {
   }
 
   function deleteWallet(wallet_id) {
+    clearWalletData(wallet_id);
+
     db.run(
       `DELETE FROM transactions WHERE txid IN (SELECT txid FROM address_transactions WHERE address IN (SELECT address FROM addresses WHERE wallet_id="${wallet_id}"))`
     );
-    db.run(
-      `DELETE FROM address_transactions WHERE address IN (SELECT address FROM addresses WHERE wallet_id="${wallet_id}")`
-    );
-    db.run(`DELETE FROM addresses WHERE wallet_id="${wallet_id}"`);
-    db.run(`DELETE FROM address_utxos WHERE wallet_id="${wallet_id}"`);
+
     db.run(`DELETE FROM wallets WHERE id="${wallet_id}"`);
 
     saveDatabase();
@@ -114,6 +113,16 @@ function WalletService() {
 
   function setWalletName(wallet_id, name) {
     db.run(`UPDATE wallets SET name=? WHERE id="${wallet_id}"`, [name]);
+    saveDatabase();
+  }
+
+  function clearWalletData(wallet_id) {
+    db.run(
+      `DELETE FROM address_transactions WHERE address IN (SELECT address FROM addresses WHERE wallet_id="${wallet_id}")`
+    );
+    db.run(`DELETE FROM addresses WHERE wallet_id="${wallet_id}"`);
+    db.run(`DELETE FROM address_utxos WHERE wallet_id="${wallet_id}"`);
+
     saveDatabase();
   }
 }
