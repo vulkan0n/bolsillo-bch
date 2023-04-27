@@ -1,6 +1,7 @@
 import { NavLink } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { selectTransactionHistory } from "@/redux/transactions";
+import { selectIsScanning } from "@/redux/scanner";
 import { SendOutlined, QrcodeOutlined } from "@ant-design/icons";
 
 function WalletViewTabs() {
@@ -8,6 +9,7 @@ function WalletViewTabs() {
   const activeTabClass = "text-secondary border-secondary border-b-2";
   const inactiveTabClass = "text-zinc-500";
 
+  const isScanning = useSelector(selectIsScanning);
   const txHistory = useSelector(selectTransactionHistory);
 
   return (
@@ -16,7 +18,7 @@ function WalletViewTabs() {
         <NavLink
           to="send"
           className={({ isActive }) =>
-            isActive
+            isActive || isScanning
               ? `${baseTabClass} ${activeTabClass}`
               : `${baseTabClass} ${inactiveTabClass}`
           }
@@ -28,7 +30,7 @@ function WalletViewTabs() {
       <NavLink
         to=""
         className={({ isActive }) =>
-          isActive
+          isActive && !isScanning
             ? `${baseTabClass} ${activeTabClass}`
             : `${baseTabClass} ${inactiveTabClass}`
         }

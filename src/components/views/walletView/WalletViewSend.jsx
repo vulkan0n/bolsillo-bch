@@ -2,14 +2,21 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Clipboard } from "@capacitor/clipboard";
 
+import { useSelector, useDispatch } from "react-redux";
+import { selectIsScanning, setIsScanning } from "@/redux/scanner";
+
+import { ReconciliationOutlined, QrcodeOutlined } from "@ant-design/icons";
+
 import { validateInvoiceString } from "@/util/invoice";
 
-import { ReconciliationOutlined } from "@ant-design/icons";
-
+import ScannerButton from "./ScannerButton";
 import TransactionHistory from "./TransactionHistory";
 
-function WalletViewSend() {
+export default function WalletViewSend() {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  const isScanning = useSelector(selectIsScanning);
 
   const [sendAddress, setSendAddress] = useState("");
 
@@ -48,30 +55,39 @@ function WalletViewSend() {
   };
 
   // TODO: Scan QR Code from saved image
-  return (
+  return isScanning ? (
+    <ScannerButton />
+  ) : (
     <div>
-      <div className="flex items-center mt-2">
-        <div className="flex-1">
-          <input
-            type="text"
-            placeholder="Enter BCH Address"
-            value={sendAddress}
-            onChange={handleSendAddressChange}
-            className="p-2 w-full outline-none rounded-l-lg bg-zinc-100 focus:text-secondary focus:bg-zinc-200"
-          />
-        </div>
-        <div
-          className="rounded-r-md bg-zinc-100 p-2 cursor-pointer"
-          onClick={pasteAddressFromClipboard}
+      <div className="flex items-center bg-primary">
+        <button
+          type="button"
+          className="text-white p-2"
+          onClick={() => dispatch(setIsScanning(true))}
         >
-          <ReconciliationOutlined className="text-2xl text-zinc-600 opacity-80" />
+          <QrcodeOutlined className="text-3xl" />
+        </button>
+        <div className="flex-1 mr-1 py-1">
+          <div className="flex">
+            <input
+              type="text"
+              placeholder="Enter BCH Address"
+              value={sendAddress}
+              onChange={handleSendAddressChange}
+              className="p-2 flex-1 rounded-l-lg outline-none bg-white text-error focus:text-secondary focus:bg-zinc-50"
+            />
+            <div
+              className="rounded-r-md bg-zinc-100 p-2 cursor-pointer"
+              onClick={pasteAddressFromClipboard}
+            >
+              <ReconciliationOutlined className="text-2xl text-zinc-600 opacity-80" />
+            </div>
+          </div>
         </div>
       </div>
-      <div className="flex-1 p-2">
+      <div className="p-2">
         <TransactionHistory />
       </div>
     </div>
   );
 }
-
-export default WalletViewSend;

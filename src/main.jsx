@@ -103,15 +103,17 @@ App.addListener("backButton", (canGoBack) => {
   }
 
   const { location, history } = window;
-  if (location.pathname === "/wallet") {
+  if (location.pathname.includes("/wallet")) {
     if (store.getState().scanner.isScanning) {
       store.dispatch(setIsScanning(false));
       return;
     }
 
-    console.log("bye!");
-    App.exitApp();
-    return;
+    if (location.pathname === "/wallet") {
+      console.log("bye!");
+      App.exitApp();
+      return;
+    }
   }
 
   history.back();
