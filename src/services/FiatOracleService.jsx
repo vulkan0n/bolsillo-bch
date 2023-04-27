@@ -6,21 +6,20 @@ import { store } from "@/redux";
 export default function FiatOracleService() {
   const preferences = selectPreferences(store.getState());
 
-  const oracles = {
-    USD: "121.71",
-    CAD: "125.04",
-    EUR: "125.03",
-  };
+  const oracles = [{ currency: "USD", price: "119.42" }];
 
   return {
     toSats,
     toBch,
     toFiat,
+    getOracles,
   };
 
   function toSats(amount) {
     return bchToSats(
-      new Decimal(1 / oracles[preferences["localCurrency"]]).times(amount)
+      new Decimal(1 / getExchangeRate(preferences["localCurrency"])).times(
+        amount
+      )
     );
   }
 
@@ -30,8 +29,20 @@ export default function FiatOracleService() {
 
   function toFiat(sats) {
     return new Decimal(satsToBch(sats))
-      .times(oracles[preferences["localCurrency"]])
+      .times(getExchangeRate(preferences["localCurrency"]))
       .toFixed(2)
       .toString();
+  }
+
+  function getOracles() {
+    return oracles;
+  }
+
+  function getExchangeRate(currency) {
+    const oracleIndex = oracles.findIndex(
+      (oracle) => (oracle.currency = currency)
+    );
+
+    return oracleIndex > -1 ? oracles[oracleIndex].price : null;
   }
 }

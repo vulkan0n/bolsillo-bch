@@ -14,7 +14,7 @@ import TransactionManagerService from "@/services/TransactionManagerService";
 
 import { TransactionOutlined } from "@ant-design/icons";
 
-function WalletViewSendConfirm() {
+export default function WalletViewSendConfirm() {
   const dispatch = useDispatch();
   const [searchParams, setSearchParams] = useSearchParams();
   const { address } = useParams();
@@ -94,13 +94,6 @@ function WalletViewSendConfirm() {
     }
   }
 
-  function handleSlideToSend(event) {
-    console.log("handleSlideToSend", event);
-    if (event.target.value >= 100) {
-      confirmSend();
-    }
-  }
-
   const handleFlipLocalCurrency = () => {
     dispatch(
       setPreference({ key: "preferLocalCurrency", value: !preferLocal })
@@ -171,6 +164,14 @@ function WalletViewSendConfirm() {
 
           if (minor.length >= 2) {
             return `${major}.${minor.substring(0, 2)}`;
+          }
+
+          if (
+            new Decimal(FiatOracle.toSats(`${amount}${key}`)).greaterThan(
+              MAX_SATOSHI
+            )
+          ) {
+            return `${amount}`;
           }
 
           return `${amount}${key}`;
@@ -400,43 +401,8 @@ function WalletViewSendConfirm() {
           >
             Confirm
           </button>
-          {/*<SlideToSend onConfirm={confirmSend} />*/}
         </div>
       </div>
     </div>
-  );
-}
-
-export default WalletViewSendConfirm;
-
-function SlideToSend({ onConfirm }) {
-  const [percent, setPercent] = useState(0);
-
-  function handleSlide(event) {
-    setPercent(event.target.value);
-
-    if (event.target.value >= 100) {
-      onConfirm();
-      setPercent(0);
-    }
-  }
-
-  return (
-    <input
-      type="range"
-      min="0"
-      max="100"
-      className="range range-lg justify-center h-full"
-      step="1"
-      value={percent}
-      onChange={handleSlide}
-      onPointerDown={() => setPercent(0)}
-      onPointerUp={() =>
-        setTimeout(() => {
-          console.log("pointerup");
-          setPercent(0);
-        }, 25 + Number.parseInt(percent) * 1.5)
-      }
-    />
   );
 }
