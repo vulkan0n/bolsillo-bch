@@ -1,38 +1,48 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+
+import { useSelector, useDispatch } from "react-redux";
+import { selectPreferences } from "@/redux/preferences";
+import { setIsScanning, selectIsScanning } from "@/redux/scanner";
+
 import {
   BarcodeScanner,
   SupportedFormat,
 } from "@capacitor-community/barcode-scanner";
-import { validateInvoiceString } from "@/util/invoice";
+
 import { ScanOutlined, CloseOutlined } from "@ant-design/icons";
 
-function ScannerButton({ onScanStart, onScanEnd }) {
+import { validateInvoiceString } from "@/util/invoice";
+
+export default function ScannerButton() {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [isScanning, setIsScanning] = useState(false);
+  const preferences = useSelector(selectPreferences);
+  const isScanning = useSelector(selectIsScanning);
 
   const prepare = async () => {
     try {
       const status = await BarcodeScanner.checkPermission({ force: false });
+      if (status.granted && preferences["scannerFastMode"] === "true") {
+        BarcodeScanner.prepare();
+      }
     } catch (e) {
       return;
     }
-
-    if (status.granted) {
-      BarcodeScanner.prepare();
-    }
   };
 
-  useEffect(function prepareScanner() {
-    prepare();
+  useEffect(function cleanupScanner() {
     return () => {
-      stopScan();
+      closeScanner();
     };
   }, []);
 
   useEffect(
     function resetScanner() {
-      if (!isScanning) {
+      if (isScanning) {
+        startScan();
+      } else {
+        closeScanner();
         prepare();
       }
     },
@@ -42,14 +52,19 @@ function ScannerButton({ onScanStart, onScanEnd }) {
   async function startScan() {
     const status = await BarcodeScanner.checkPermission({ force: true });
 
-    if (status.denied) {
-      // we hit this code path if user says "never ask again"
-      // TODO: prompt user to BarcodeScanner.openAppSettings();
-      return;
+    if (status.neverAsked) {
+      // TODO: inform user that we will now do a permission check
+      // This hopefully minimizes the chance that user will need to
+      // fiddle with OS-level app settings.
+      // `await informUserAboutPermissions();` - after await, proceed...
     }
 
-    onScanStart();
-    setIsScanning(true);
+    if (status.denied) {
+      // we hit this code path if user says "never ask again or Ask Every Time"
+      // TODO: prompt user before doing this, it's kind of invasive.
+      BarcodeScanner.openAppSettings();
+      return;
+    }
 
     BarcodeScanner.hideBackground();
     const result = await BarcodeScanner.startScan({
@@ -57,9 +72,8 @@ function ScannerButton({ onScanStart, onScanEnd }) {
     });
 
     if (result.hasContent) {
+      dispatch(setIsScanning(false));
       const scanned = result.content;
-      setIsScanning(false);
-      onScanEnd();
 
       const { valid, address, query } = validateInvoiceString(result.content);
 
@@ -69,22 +83,17 @@ function ScannerButton({ onScanStart, onScanEnd }) {
     }
   }
 
-  function stopScan() {
-    const stop = async () => {
-      try {
-        await BarcodeScanner.showBackground();
-        await BarcodeScanner.stopScan();
-      } catch (e) {
-        return;
-      }
-    };
-    stop();
-    setIsScanning(false);
-    onScanEnd();
+  async function closeScanner() {
+    try {
+      await BarcodeScanner.showBackground();
+      await BarcodeScanner.stopScan();
+    } catch (e) {
+      return;
+    }
   }
 
   const toggleScanner = () => {
-    isScanning ? stopScan() : startScan();
+    dispatch(setIsScanning(!isScanning));
   };
 
   return (
@@ -97,9 +106,9 @@ function ScannerButton({ onScanStart, onScanEnd }) {
             onClick={toggleScanner}
           >
             {isScanning ? (
-              <CloseOutlined className="text-3xl" style={{ lineHeight: "0" }} />
+              <CloseOutlined className="text-3xl" />
             ) : (
-              <ScanOutlined className="text-3xl" style={{ lineHeight: "0" }} />
+              <ScanOutlined className="text-3xl" />
             )}
           </button>
         </div>
@@ -107,5 +116,3 @@ function ScannerButton({ onScanStart, onScanEnd }) {
     </>
   );
 }
-
-export default ScannerButton;

@@ -7,6 +7,7 @@ import { useLongPress } from "use-long-press";
 
 import { selectActiveWallet } from "@/redux/wallet";
 import { selectPreferences } from "@/redux/preferences";
+import { selectIsScanning } from "@/redux/scanner";
 
 import WalletService from "@/services/WalletService";
 import AddressManagerService from "@/services/AddressManagerService";
@@ -23,10 +24,10 @@ import {
 export default function WalletViewReceive() {
   const preferences = useSelector(selectPreferences);
   const wallet = useSelector(selectActiveWallet);
+  const isScanning = useSelector(selectIsScanning);
 
   const [skip, setSkip] = useState(0);
   const [invoiceAmount, setInvoiceAmount] = useState(0);
-  const [isScanning, setIsScanning] = useState(false);
 
   const unusedAddresses = useMemo(
     () => new AddressManagerService(wallet.id).getUnusedAddresses(),
@@ -85,7 +86,7 @@ export default function WalletViewReceive() {
               {formattedAddress}
             </div>
           </div>
-          {/*<div className="flex justify-center gap-x-8 my-1">
+          <div className="flex justify-center gap-x-8 my-1">
             <button className="btn btn-xs" type="button">
               <FormOutlined className="text-2xl opacity-80" />
             </button>
@@ -95,13 +96,10 @@ export default function WalletViewReceive() {
             <button className="btn btn-xs" type="button" onClick={skipAddress}>
               <ReloadOutlined className="text-2xl opacity-80" />
             </button>
-          </div>*/}
+          </div>
         </>
       )}
-      <ScannerButton
-        onScanStart={() => setIsScanning(true)}
-        onScanEnd={() => setIsScanning(false)}
-      />
+      <ScannerButton />
     </>
   );
 }

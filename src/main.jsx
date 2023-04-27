@@ -10,6 +10,7 @@ import { App } from "@capacitor/app";
 
 import { Provider } from "react-redux";
 import { store } from "./redux";
+import { setIsScanning } from "@/redux/scanner";
 
 import "./index.css";
 
@@ -103,6 +104,11 @@ App.addListener("backButton", (canGoBack) => {
 
   const { location, history } = window;
   if (location.pathname === "/wallet") {
+    if (store.getState().scanner.isScanning) {
+      store.dispatch(setIsScanning(false));
+      return;
+    }
+
     console.log("bye!");
     App.exitApp();
     return;

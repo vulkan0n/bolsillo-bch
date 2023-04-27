@@ -15,6 +15,7 @@ const defaultPreferences = {
   denominateSats: "false",
   allowInstantPay: "false",
   instantPayThreshold: "25000000",
+  scannerFastMode: "false",
   qrCodeLogo: "Selene",
   qrCodeBackground: "#ffffff",
   qrCodeForeground: "#000000",

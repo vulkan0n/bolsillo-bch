@@ -20,6 +20,7 @@ import {
   SendOutlined,
   ThunderboltOutlined,
   PropertySafetyOutlined,
+  CameraOutlined,
   QrcodeOutlined,
   PlusCircleFilled,
   CheckCircleOutlined,
@@ -189,6 +190,16 @@ export default function SettingsView() {
                 }}
               />
             )}
+          </SettingsChild>
+          <SettingsChild icon={CameraOutlined} label="Enable Fast Scanner">
+            <input
+              type="checkbox"
+              className="toggle"
+              checked={preferences["scannerFastMode"] === "true"}
+              onChange={(event) =>
+                handleSettingsUpdate("scannerFastMode", event.target.checked)
+              }
+            />
           </SettingsChild>
         </SettingsCategory>
 

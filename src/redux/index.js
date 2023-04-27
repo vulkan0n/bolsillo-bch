@@ -3,13 +3,15 @@ import { preferencesReducer, selectActiveWalletId } from "./preferences";
 import { walletReducer, walletMiddleware, walletBoot } from "./wallet";
 import { syncReducer, syncMiddleware } from "./sync";
 import { txReducer } from "./transactions";
+import { scannerReducer } from "./scanner";
 
 export const store = configureStore({
   reducer: {
-    sync: syncReducer,
     preferences: preferencesReducer,
     wallet: walletReducer,
+    sync: syncReducer,
     transactions: txReducer,
+    scanner: scannerReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware()
