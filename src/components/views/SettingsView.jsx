@@ -193,7 +193,7 @@ export default function SettingsView() {
               />
             )}
           </SettingsChild>
-          <SettingsChild icon={CameraOutlined} label="Enable Fast Scanner">
+          <SettingsChild icon={CameraOutlined} label="Enable Fast Scan">
             <input
               type="checkbox"
               className="toggle"
