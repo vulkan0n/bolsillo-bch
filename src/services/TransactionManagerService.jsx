@@ -153,7 +153,8 @@ export default function TransactionManagerService() {
 
     // insufficient funds
     if (changeTotal < 0) {
-      return null;
+      console.log("insufficient funds:", changeTotal, inputTotal, sendTotal, fee);
+      return sendTotal - fee;
     }
 
     console.log(
