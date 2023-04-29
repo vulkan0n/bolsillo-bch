@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useSelector } from "react-redux";
 import { selectSyncState } from "@/redux/sync";
 import { DisconnectOutlined, CheckCircleFilled, SyncOutlined } from "@ant-design/icons";

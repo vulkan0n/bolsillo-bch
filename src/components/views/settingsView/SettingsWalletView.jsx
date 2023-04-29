@@ -46,7 +46,7 @@ export default function SettingsWalletView() {
 
   const [showRecoveryPhrase, setShowRecoveryPhrase] = useState(false);
 
-  const [isEditingWalletName, setisEditingWalletName] = useState(false);
+  const [isEditingWalletName, setIsEditingWalletName] = useState(false);
   const [walletEditedName, setWalletEditedName] = useState(wallet.name);
 
   const handleActivateWallet = () => {

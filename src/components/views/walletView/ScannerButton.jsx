@@ -98,8 +98,11 @@ export default function ScannerButton() {
 
   return (
     <>
-      <div className="flex justify-center fixed inset-x-0 bottom-24">
-        <div className="flex items-center rounded-full border border-1 border-zinc-100 w-20 h-20 bg-white opacity-90">
+      <div
+        className="flex justify-center fixed inset-x-0"
+        style={{ bottom: "calc(100vh - 90%)" }}
+      >
+        <div className="flex items-center rounded-full border border-1 border-zinc-100 bg-white opacity-90" style={{width: "4.5rem", height: "4.5rem"}}>
           <button
             className="w-full h-full"
             type="button"

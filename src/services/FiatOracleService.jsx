@@ -6,13 +6,14 @@ import { store } from "@/redux";
 export default function FiatOracleService() {
   const preferences = selectPreferences(store.getState());
 
-  const oracles = [{ currency: "USD", price: "119.42" }];
+  const oracles = [{ currency: "USD", price: "119.42", symbol: "$" }];
 
   return {
     toSats,
     toBch,
     toFiat,
     getOracles,
+    getSymbol
   };
 
   function toSats(amount) {
@@ -45,4 +46,13 @@ export default function FiatOracleService() {
 
     return oracleIndex > -1 ? oracles[oracleIndex].price : null;
   }
+
+  function getSymbol(currency) {
+    const oracleIndex = oracles.findIndex(
+      (oracle) => (oracle.currency = currency)
+    );
+
+    return oracleIndex > -1 ? oracles[oracleIndex].symbol : null;
+  }
+
 }

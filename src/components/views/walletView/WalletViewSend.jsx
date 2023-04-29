@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Clipboard } from "@capacitor/clipboard";
 
@@ -20,37 +20,31 @@ export default function WalletViewSend() {
 
   const [sendAddress, setSendAddress] = useState("");
 
-  useEffect(
-    function forwardOnValidAddress() {
-      // go to send screen when valid address is entered
-      const { valid, address, query } = validateInvoiceString(sendAddress);
+  function forwardOnValidAddress(input) {
+    // go to send screen when valid address is entered
+    const { valid, address, query } = validateInvoiceString(input);
 
-      // decoder function returns object on success, string on error
-      if (valid) {
-        navigate(`/wallet/send/${address}${query}`);
-      }
-    },
-    [sendAddress]
-  );
+    // decoder function returns object on success, string on error
+    if (valid) {
+      navigate(`/wallet/send/${address}${query}`);
+    }
+
+    return valid;
+  }
 
   const handleSendAddressChange = (e) => {
     const input = e.target.value;
     setSendAddress(input);
+    forwardOnValidAddress(input);
   };
 
   const pasteAddressFromClipboard = async () => {
     const paste = (await Clipboard.read()).value;
-    console.log("attempting paste:", paste);
+    const valid = forwardOnValidAddress(paste);
 
-    // only paste a valid address/invoice
-    const { valid, address, query } = validateInvoiceString(paste);
-    console.log("paste validate got", address, query, valid);
-
-    if (valid) {
-      setSendAddress(paste);
-      // TODO: toast that we pasted
-    } else {
+    if (!valid) {
       // TODO: toast that we can't paste here
+      setSendAddress(paste);
     }
   };
 
