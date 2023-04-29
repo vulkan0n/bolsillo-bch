@@ -113,9 +113,9 @@ export default function WalletViewReceive() {
                   <FormOutlined className="text-2xl opacity-80" />
                 </button>
               </div>
-              <button className="" type="button">
+              {/*<button className="" type="button">
                 <UnorderedListOutlined className="text-2xl opacity-80" />
-              </button>
+              </button>*/}
               <button className="" type="button" onClick={skipAddress}>
                 <ReloadOutlined className="text-2xl opacity-80" />
               </button>

@@ -205,7 +205,7 @@ export default function SettingsView() {
               </select>
             </div>
           </SettingsChild>
-          <SettingsChild icon={BgColorsOutlined} label="Background Color">
+          {/*<SettingsChild icon={BgColorsOutlined} label="Background Color">
             <div className="flex items-center">
               <SettingFilled
                 className="text-3xl px-2"
@@ -236,7 +236,7 @@ export default function SettingsView() {
                 }
               />
             </div>
-          </SettingsChild>
+          </SettingsChild>*/}
         </SettingsCategory>
 
         {/*
