@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Navigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { setPreference, selectActiveWalletId } from "@/redux/preferences";
 import { walletBoot, walletReload } from "@/redux/wallet";
@@ -12,11 +12,17 @@ import {
   EditOutlined,
   WarningFilled,
   EyeInvisibleOutlined,
+  ToolOutlined,
+  MedicineBoxOutlined,
+  KeyOutlined,
 } from "@ant-design/icons";
 import ViewHeader from "@/components/views/ViewHeader";
 import WalletService from "@/services/WalletService";
 import KeyWarning from "./KeyWarning";
 import { formatSatoshis } from "@/util/sats";
+
+import SettingsCategory from "./SettingsCategory";
+import SettingsChild from "./SettingsChild";
 
 export default function SettingsWalletView() {
   const dispatch = useDispatch();
@@ -29,8 +35,9 @@ export default function SettingsWalletView() {
   const WalletManager = new WalletService();
   const wallet = WalletManager.getWalletById(wallet_id);
 
+  // if invalid wallet_id passed via queryparams, redirect back to settings
   if (wallet === null) {
-    return null;
+    return <Navigate to="/settings" />;
   }
 
   const [deleteConfirm, setDeleteConfirm] = useState(0);
@@ -39,7 +46,7 @@ export default function SettingsWalletView() {
 
   const [showRecoveryPhrase, setShowRecoveryPhrase] = useState(false);
 
-  const [editing, setEditing] = useState(false);
+  const [isEditingWalletName, setIsEditingWalletName] = useState(false);
   const [walletEditedName, setWalletEditedName] = useState(wallet.name);
 
   const handleActivateWallet = () => {
@@ -74,17 +81,22 @@ export default function SettingsWalletView() {
   };
 
   const handleEdit = () => {
-    if (editing === true) {
+    if (isEditingWalletName === true) {
       WalletManager.setWalletName(wallet_id, walletEditedName);
       dispatch(walletReload());
-      setEditing(false);
+      setIsEditingWalletName(false);
     } else {
-      setEditing(true);
+      setIsEditingWalletName(true);
     }
   };
 
   const handleWalletNameEdit = (event) => {
     setWalletEditedName(event.target.value);
+  };
+
+  const handleRebuildWallet = () => {
+    WalletManager.clearWalletData(wallet.id);
+    handleActivateWallet();
   };
 
   return (
@@ -93,7 +105,7 @@ export default function SettingsWalletView() {
       <div className="p-2">
         <div className="p-3 rounded-lg bg-zinc-200">
           <div className="text-2xl">
-            {editing ? (
+            {isEditingWalletName ? (
               <div className="flex items-center">
                 <input
                   type="text"
@@ -207,6 +219,26 @@ export default function SettingsWalletView() {
             </>
           )}
         </div>
+        {wallet.key_viewed !== null && isActiveWallet && (
+          <SettingsCategory icon={ToolOutlined} title="Advanced Options">
+            <button
+              type="button"
+              className="w-full block p-2 text-left"
+              onClick={handleRebuildWallet}
+            >
+              <MedicineBoxOutlined className="text-xl mr-1" />
+              Rebuild Wallet
+            </button>
+            {/*<button
+              type="button"
+              className="w-full block p-2 text-left"
+              onClick={null}
+            >
+              <KeyOutlined className="text-xl mr-1" />
+              View xPub/xPriv
+            </button>*/}
+          </SettingsCategory>
+        )}
       </div>
     </>
   );

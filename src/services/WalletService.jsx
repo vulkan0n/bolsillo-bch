@@ -2,7 +2,7 @@ import DatabaseService from "./DatabaseService";
 import AddressManagerService from "./AddressManagerService";
 import * as bip39 from "bip39";
 
-function WalletService() {
+export default function WalletService() {
   const { db, resultToJson, saveDatabase } = new DatabaseService();
 
   return {
@@ -14,6 +14,7 @@ function WalletService() {
     deleteWallet,
     updateKeyViewed,
     setWalletName,
+    clearWalletData,
   };
 
   // ----------------------------
@@ -91,14 +92,12 @@ function WalletService() {
   }
 
   function deleteWallet(wallet_id) {
+    clearWalletData(wallet_id);
+
     db.run(
       `DELETE FROM transactions WHERE txid IN (SELECT txid FROM address_transactions WHERE address IN (SELECT address FROM addresses WHERE wallet_id="${wallet_id}"))`
     );
-    db.run(
-      `DELETE FROM address_transactions WHERE address IN (SELECT address FROM addresses WHERE wallet_id="${wallet_id}")`
-    );
-    db.run(`DELETE FROM addresses WHERE wallet_id="${wallet_id}"`);
-    db.run(`DELETE FROM address_utxos WHERE wallet_id="${wallet_id}"`);
+
     db.run(`DELETE FROM wallets WHERE id="${wallet_id}"`);
 
     saveDatabase();
@@ -116,6 +115,14 @@ function WalletService() {
     db.run(`UPDATE wallets SET name=? WHERE id="${wallet_id}"`, [name]);
     saveDatabase();
   }
-}
 
-export default WalletService;
+  function clearWalletData(wallet_id) {
+    db.run(
+      `DELETE FROM address_transactions WHERE address IN (SELECT address FROM addresses WHERE wallet_id="${wallet_id}")`
+    );
+    db.run(`DELETE FROM addresses WHERE wallet_id="${wallet_id}"`);
+    db.run(`DELETE FROM address_utxos WHERE wallet_id="${wallet_id}"`);
+
+    saveDatabase();
+  }
+}

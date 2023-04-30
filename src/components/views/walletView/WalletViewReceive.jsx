@@ -7,12 +7,15 @@ import { useLongPress } from "use-long-press";
 
 import { selectActiveWallet } from "@/redux/wallet";
 import { selectPreferences } from "@/redux/preferences";
+import { selectScannerIsScanning } from "@/redux/device";
 
 import WalletService from "@/services/WalletService";
 import AddressManagerService from "@/services/AddressManagerService";
 import ScannerButton from "./ScannerButton";
+import SatoshiInput from "@/components/atoms/SatoshiInput";
 
 import { logos } from "@/util/logos";
+import { satsToBch } from "@/util/sats";
 
 import {
   FormOutlined,
@@ -23,10 +26,11 @@ import {
 export default function WalletViewReceive() {
   const preferences = useSelector(selectPreferences);
   const wallet = useSelector(selectActiveWallet);
+  const isScanning = useSelector(selectScannerIsScanning);
 
   const [skip, setSkip] = useState(0);
-  const [invoiceAmount, setInvoiceAmount] = useState(0);
-  const [isScanning, setIsScanning] = useState(false);
+  const [invoiceSats, setInvoiceSats] = useState("0");
+  const [showInvoiceAmount, setShowInvoiceAmount] = useState(false);
 
   const unusedAddresses = useMemo(
     () => new AddressManagerService(wallet.id).getUnusedAddresses(),
@@ -55,11 +59,20 @@ export default function WalletViewReceive() {
     console.log("long press detected");
   });
 
+  const handleInvoiceAmountChange = (satoshis) => {
+    setInvoiceSats(satoshis);
+  };
+
+  const qrInvoice =
+    showInvoiceAmount && invoiceSats > 0
+      ? `${address}?amount=${satsToBch(invoiceSats)}`
+      : address;
+
   return (
     <>
       {!isScanning && (
         <>
-          <div className="py-2">
+          <div className="py-2 z-40">
             <div className="flex justify-center">
               <div
                 className="border border-4 border-zinc-300 my-2 cursor-pointer"
@@ -67,7 +80,7 @@ export default function WalletViewReceive() {
                 {...bindLongPress()}
               >
                 <QRCode
-                  value={address}
+                  value={qrInvoice}
                   size={200}
                   quietZone={16}
                   bgColor={preferences["qrCodeBackground"]}
@@ -85,23 +98,42 @@ export default function WalletViewReceive() {
               {formattedAddress}
             </div>
           </div>
-          {/*<div className="flex justify-center gap-x-8 my-1">
-            <button className="btn btn-xs" type="button">
-              <FormOutlined className="text-2xl opacity-80" />
-            </button>
-            <button className="btn btn-xs" type="button">
-              <UnorderedListOutlined className="text-2xl opacity-80" />
-            </button>
-            <button className="btn btn-xs" type="button" onClick={skipAddress}>
-              <ReloadOutlined className="text-2xl opacity-80" />
-            </button>
-          </div>*/}
+          <div className="mx-8">
+            <div className="flex justify-evenly">
+              <div
+                className={`${
+                  showInvoiceAmount ? "bg-primary text-white rounded-t" : ""
+                }`}
+              >
+                <button
+                  className="w-full h-full py-1 px-2"
+                  type="button"
+                  onClick={() => setShowInvoiceAmount(!showInvoiceAmount)}
+                >
+                  <FormOutlined className="text-2xl opacity-80" />
+                </button>
+              </div>
+              {/*<button className="" type="button">
+                <UnorderedListOutlined className="text-2xl opacity-80" />
+              </button>*/}
+              <button className="" type="button" onClick={skipAddress}>
+                <ReloadOutlined className="text-2xl opacity-80" />
+              </button>
+            </div>
+            {showInvoiceAmount && (
+              <div className="p-1 shadow-sm bg-primary text-white rounded-sm w-5/6 mx-auto">
+                <SatoshiInput
+                  className="p-1 text-sm w-full text-secondary font-mono rounded opacity-80 mx-1"
+                  onChange={handleInvoiceAmountChange}
+                  sats={invoiceSats}
+                  allowFiat
+                />
+              </div>
+            )}
+          </div>
         </>
       )}
-      <ScannerButton
-        onScanStart={() => setIsScanning(true)}
-        onScanEnd={() => setIsScanning(false)}
-      />
+      <ScannerButton />
     </>
   );
 }

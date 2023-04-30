@@ -24,7 +24,9 @@ walletMiddleware.startListening({
   actionCreator: walletBoot,
   effect: async (action, listenerApi) => {
     console.log("walletBoot", action.payload);
-    listenerApi.dispatch(setPreference({key: "activeWalletId", value: action.payload.id}));
+    listenerApi.dispatch(
+      setPreference({ key: "activeWalletId", value: action.payload.id })
+    );
     // connect to electrum
     listenerApi.dispatch(syncConnect());
   },
@@ -51,6 +53,7 @@ walletMiddleware.startListening({
 
 const initialState = {
   id: null,
+  balance: 0,
 };
 
 export const walletReducer = createReducer(initialState, (builder) => {

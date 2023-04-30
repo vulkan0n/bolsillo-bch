@@ -14,7 +14,7 @@ import TransactionManagerService from "@/services/TransactionManagerService";
 
 import { TransactionOutlined } from "@ant-design/icons";
 
-function WalletViewSendConfirm() {
+export default function WalletViewSendConfirm() {
   const dispatch = useDispatch();
   const [searchParams, setSearchParams] = useSearchParams();
   const { address } = useParams();
@@ -75,7 +75,7 @@ function WalletViewSendConfirm() {
       wallet.id
     );
 
-    if (transaction === null) {
+    if (typeof transaction !== "object") {
       setMessage("Transaction Failed: Not enough balance for miner fee");
       return;
     }
@@ -91,13 +91,6 @@ function WalletViewSendConfirm() {
       navigate("/wallet/send/success");
     } else {
       setMessage("Transaction failed.");
-    }
-  }
-
-  function handleSlideToSend(event) {
-    console.log("handleSlideToSend", event);
-    if (event.target.value >= 100) {
-      confirmSend();
     }
   }
 
@@ -117,6 +110,33 @@ function WalletViewSendConfirm() {
     } else {
       setAmount(newAmount);
     }
+  };
+
+  const handleSendMax = () => {
+    let amount = wallet.balance;
+
+    const TransactionManager = new TransactionManagerService();
+
+    let transaction = TransactionManager.buildP2pkhTransaction(
+      [{ address, amount }],
+      wallet.id
+    );
+
+    while (typeof transaction !== "object") {
+      amount = transaction;
+      transaction = TransactionManager.buildP2pkhTransaction(
+        [{ address, amount }],
+        wallet.id
+      );
+    }
+
+    const newAmount = preferLocal
+      ? FiatOracle.toFiat(amount)
+      : denominateSats
+      ? new Decimal(amount)
+      : satsToBch(amount);
+
+    setAmount(newAmount > 0 ? newAmount.toString() : "0");
   };
 
   function handleKeypadPress(key) {
@@ -173,6 +193,14 @@ function WalletViewSendConfirm() {
             return `${major}.${minor.substring(0, 2)}`;
           }
 
+          if (
+            new Decimal(FiatOracle.toSats(`${amount}${key}`)).greaterThan(
+              MAX_SATOSHI
+            )
+          ) {
+            return `${amount}`;
+          }
+
           return `${amount}${key}`;
         };
 
@@ -202,241 +230,218 @@ function WalletViewSendConfirm() {
     : address;
 
   return (
-    <div className="p-2">
-      <div className="text-center">
-        <div className="rounded p-1 bg-zinc-50">
-          {message === "" ? (
-            <>
-              <div className="text-sm">Sending to</div>
-              <div className="text-sm font-semibold font-mono opacity-90 text-secondary">
-                {formattedAddress}
-              </div>
-            </>
-          ) : (
-            <div className="text-error tracking-wide">{message}</div>
-          )}
-        </div>
-      </div>
-      <div
-        className={`text-center my-2 ${
-          isInsufficientFunds ? "text-error" : "text-neutral-700"
-        }`}
-      >
-        {preferLocal ? (
+    <>
+      <div className="rounded-b py-2 px-1 bg-zinc-50 text-center">
+        {message === "" ? (
           <>
-            <div className="text-center text-3xl tabular-nums">
-              ${amount}&nbsp;
-              <span className="text-2xl">{preferences["localCurrency"]}</span>
-            </div>
-            <div className="text-neutral-400">
-              <span
-                className="text-left cursor-pointer"
-                onClick={handleFlipLocalCurrency}
-              >
-                ₿&nbsp;
-                {denominateSats
-                  ? `${FiatOracle.toSats(amount)} sats`
-                  : `${FiatOracle.toBch(amount)} BCH`}
-              </span>
-              <TransactionOutlined
-                className="cursor-pointer text-xl ml-2"
-                onClick={handleFlipLocalCurrency}
-              />
+            <div className="text-sm">Sending to</div>
+            <div className="text-sm font-semibold font-mono opacity-90 text-secondary">
+              {formattedAddress}
             </div>
           </>
         ) : (
-          <>
-            <div className="text-center text-3xl tabular-nums">
-              <span className="text-3xl font-mono">₿</span>&nbsp;
-              {denominateSats ? `${amount}` : `${amount}`}&nbsp;
-              <span className="text-2xl">
-                {denominateSats ? "sats" : "BCH"}
-              </span>
-            </div>
-            <div className="text-center text-neutral-400">
-              <span
-                onClick={handleFlipLocalCurrency}
-                className="cursor-pointer"
-              >
-                ${fiatAmount}&nbsp;{preferences["localCurrency"]}
-              </span>
-              <TransactionOutlined
-                className="cursor-pointer text-xl ml-2"
-                onClick={handleFlipLocalCurrency}
-              />
-            </div>
-          </>
+          <div className="text-error tracking-wide">{message}</div>
         )}
       </div>
+      <div className="mt-2 px-2">
+        <div
+          className={`text-center mb-2 ${
+            isInsufficientFunds ? "text-error" : "text-neutral-700"
+          }`}
+        >
+          {preferLocal ? (
+            <>
+              <div className="text-center text-3xl tabular-nums">
+                ${amount}&nbsp;
+                <span className="text-2xl">{preferences["localCurrency"]}</span>
+              </div>
+              <div className="text-neutral-400 relative">
+                <span
+                  className="cursor-pointer"
+                  onClick={handleFlipLocalCurrency}
+                >
+                  ₿&nbsp;
+                  {denominateSats
+                    ? `${FiatOracle.toSats(amount)} sats`
+                    : `${FiatOracle.toBch(amount)} BCH`}
+                </span>
+                <TransactionOutlined
+                  className="cursor-pointer text-xl ml-2"
+                  onClick={handleFlipLocalCurrency}
+                />
+                <button
+                  className="text-sm spacing-wide font-semibold text-zinc-700 rounded-lg border border-zinc-200 bg-zinc-100 p-1 absolute right-0 opacity-80"
+                  onClick={handleSendMax}
+                >
+                  MAX
+                </button>
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="text-center text-3xl tabular-nums overflow-x-hidden">
+                <span className="text-3xl font-mono">₿</span>&nbsp;
+                {denominateSats ? `${amount}` : `${amount}`}&nbsp;
+                <span className="text-2xl">
+                  {denominateSats ? "sats" : "BCH"}
+                </span>
+              </div>
+              <div className="text-center text-neutral-400 relative">
+                <span
+                  onClick={handleFlipLocalCurrency}
+                  className="cursor-pointer"
+                >
+                  ${fiatAmount}&nbsp;{preferences["localCurrency"]}
+                  <TransactionOutlined
+                    className="cursor-pointer text-xl ml-2"
+                    onClick={handleFlipLocalCurrency}
+                  />
+                </span>
+                <button
+                  className="text-sm spacing-wide font-semibold text-zinc-700 rounded-lg border border-zinc-200 bg-zinc-100 p-1 absolute right-0 opacity-80"
+                  onClick={handleSendMax}
+                >
+                  MAX
+                </button>
+              </div>
+            </>
+          )}
+        </div>
 
-      <div
-        className="grid grid-rows-4 text-center w-full border border-4 rounded-lg border-gray-300 items-center"
-        style={{ height: "16rem" }}
-      >
-        <div className="grid grid-cols-3 h-full bg-gray-200 text-zinc-700">
-          <div>
-            <button
-              className="w-full h-full text-xl"
-              onClick={() => handleKeypadPress(7)}
-            >
-              7
-            </button>
-          </div>
-          <div>
-            <button
-              className="w-full h-full text-xl"
-              onClick={() => handleKeypadPress(8)}
-            >
-              8
-            </button>
-          </div>
-          <div>
-            <button
-              className="w-full h-full text-xl"
-              onClick={() => handleKeypadPress(9)}
-            >
-              9
-            </button>
-          </div>
-        </div>
-        <div className="grid grid-cols-3 h-full bg-gray-200 text-zinc-700">
-          <div>
-            <button
-              className="w-full h-full text-xl"
-              onClick={() => handleKeypadPress(4)}
-            >
-              4
-            </button>
-          </div>
-          <div>
-            <button
-              className="w-full h-full text-xl"
-              onClick={() => handleKeypadPress(5)}
-            >
-              5
-            </button>
-          </div>
-          <div>
-            <button
-              className="w-full h-full text-xl"
-              onClick={() => handleKeypadPress(6)}
-            >
-              6
-            </button>
-          </div>
-        </div>
-        <div className="grid grid-cols-3 h-full bg-gray-200 text-zinc-700">
-          <div>
-            <button
-              className="w-full h-full text-xl"
-              onClick={() => handleKeypadPress(1)}
-            >
-              1
-            </button>
-          </div>
-          <div>
-            <button
-              className="w-full h-full text-xl"
-              onClick={() => handleKeypadPress(2)}
-            >
-              2
-            </button>
-          </div>
-          <div>
-            <button
-              className="w-full h-full text-xl"
-              onClick={() => handleKeypadPress(3)}
-            >
-              3
-            </button>
-          </div>
-        </div>
-        <div className="grid grid-cols-3 h-full bg-gray-200 text-zinc-700">
-          <div>
-            {denominateSats && !preferLocal ? (
-              <span>&nbsp;</span>
-            ) : (
+        <div
+          className="grid grid-rows-4 text-center w-full border border-4 rounded-lg border-gray-300 items-center"
+          style={{ height: "16rem" }}
+        >
+          <div className="grid grid-cols-3 h-full bg-gray-200 text-zinc-700">
+            <div>
               <button
                 className="w-full h-full text-xl"
-                onClick={() => handleKeypadPress(".")}
+                onClick={() => handleKeypadPress(7)}
               >
-                .
+                7
               </button>
-            )}
+            </div>
+            <div>
+              <button
+                className="w-full h-full text-xl"
+                onClick={() => handleKeypadPress(8)}
+              >
+                8
+              </button>
+            </div>
+            <div>
+              <button
+                className="w-full h-full text-xl"
+                onClick={() => handleKeypadPress(9)}
+              >
+                9
+              </button>
+            </div>
           </div>
-          <div>
+          <div className="grid grid-cols-3 h-full bg-gray-200 text-zinc-700">
+            <div>
+              <button
+                className="w-full h-full text-xl"
+                onClick={() => handleKeypadPress(4)}
+              >
+                4
+              </button>
+            </div>
+            <div>
+              <button
+                className="w-full h-full text-xl"
+                onClick={() => handleKeypadPress(5)}
+              >
+                5
+              </button>
+            </div>
+            <div>
+              <button
+                className="w-full h-full text-xl"
+                onClick={() => handleKeypadPress(6)}
+              >
+                6
+              </button>
+            </div>
+          </div>
+          <div className="grid grid-cols-3 h-full bg-gray-200 text-zinc-700">
+            <div>
+              <button
+                className="w-full h-full text-xl"
+                onClick={() => handleKeypadPress(1)}
+              >
+                1
+              </button>
+            </div>
+            <div>
+              <button
+                className="w-full h-full text-xl"
+                onClick={() => handleKeypadPress(2)}
+              >
+                2
+              </button>
+            </div>
+            <div>
+              <button
+                className="w-full h-full text-xl"
+                onClick={() => handleKeypadPress(3)}
+              >
+                3
+              </button>
+            </div>
+          </div>
+          <div className="grid grid-cols-3 h-full bg-gray-200 text-zinc-700">
+            <div>
+              {denominateSats && !preferLocal ? (
+                <span>&nbsp;</span>
+              ) : (
+                <button
+                  className="w-full h-full text-xl"
+                  onClick={() => handleKeypadPress(".")}
+                >
+                  .
+                </button>
+              )}
+            </div>
+            <div>
+              <button
+                className="w-full h-full text-xl"
+                onClick={() => handleKeypadPress(0)}
+              >
+                0
+              </button>
+            </div>
+            <div>
+              <button
+                className="w-full h-full text-xl"
+                onClick={() => handleKeypadPress("X")}
+                {...bindLongPress()}
+              >
+                &lt;
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex mt-3 gap-x-1">
+          <div className="basis-1/4">
             <button
-              className="w-full h-full text-xl"
-              onClick={() => handleKeypadPress(0)}
+              onClick={() => navigate(-1)}
+              className="btn text-center border-2 border-zinc-200 w-full"
             >
-              0
+              Back
             </button>
           </div>
-          <div>
+          <div className="flex-1">
             <button
-              className="w-full h-full text-xl"
-              onClick={() => handleKeypadPress("X")}
-              {...bindLongPress()}
+              onClick={confirmSend}
+              className="btn bg-primary text-white w-full h-full"
             >
-              &lt;
+              Confirm
             </button>
           </div>
         </div>
       </div>
-
-      <div className="flex mt-3 gap-x-1">
-        <div className="basis-1/4">
-          <button
-            onClick={() => navigate(-1)}
-            className="btn text-center border-2 border-zinc-200 w-full"
-          >
-            Back
-          </button>
-        </div>
-        <div className="flex-1">
-          <button
-            onClick={confirmSend}
-            className="btn bg-primary text-white w-full h-full"
-          >
-            Confirm
-          </button>
-          {/*<SlideToSend onConfirm={confirmSend} />*/}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-export default WalletViewSendConfirm;
-
-function SlideToSend({ onConfirm }) {
-  const [percent, setPercent] = useState(0);
-
-  function handleSlide(event) {
-    setPercent(event.target.value);
-
-    if (event.target.value >= 100) {
-      onConfirm();
-      setPercent(0);
-    }
-  }
-
-  return (
-    <input
-      type="range"
-      min="0"
-      max="100"
-      className="range range-lg justify-center h-full"
-      step="1"
-      value={percent}
-      onChange={handleSlide}
-      onPointerDown={() => setPercent(0)}
-      onPointerUp={() =>
-        setTimeout(() => {
-          console.log("pointerup");
-          setPercent(0);
-        }, 25 + Number.parseInt(percent) * 1.5)
-      }
-    />
+    </>
   );
 }

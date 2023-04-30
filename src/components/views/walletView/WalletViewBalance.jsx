@@ -49,8 +49,8 @@ function WalletViewBalance() {
     to: { color: "#e4e4e7" },
     immediate: true, //strangely, it stops the immediate animation when true, not false.
     config: {
-      tension: 280,
-      friction: 60,
+      tension: 270,
+      friction: 112,
     },
   }));
 

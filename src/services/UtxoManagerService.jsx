@@ -12,6 +12,7 @@ export default function UxtoManagerService(wallet_id) {
     getAddressUtxos,
     selectUtxos,
     discardUtxo,
+    discardAddressUtxos,
   };
 
   function registerUtxo(address, utxo) {
@@ -169,4 +170,15 @@ export default function UxtoManagerService(wallet_id) {
 
     saveDatabase();
   }
+
+  function discardAddressUtxos(address) {
+    db.run(
+      `DELETE FROM address_utxos WHERE address="${address}";`
+    );
+
+    console.log("discarded utxos for address", address);
+
+    saveDatabase();
+  }
+
 }

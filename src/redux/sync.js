@@ -141,6 +141,11 @@ syncMiddleware.startListening({
     const AddressManager = new AddressManagerService(wallet_id);
     const UtxoManager = new UtxoManagerService(wallet_id);
 
+    // we need to delete our knowledge of UTXO set
+    // in case some utxos were spent elsewhere
+    // i.e. wallet seed shared on multiple devices
+    UtxoManager.discardAddressUtxos(address);
+
     // register each UTXO, add tx to history
     utxos.forEach((utxo) => {
       AddressManager.registerTransaction(address, {

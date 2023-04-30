@@ -2,5 +2,10 @@
   "appId": "cash.selene.app",
   "appName": "Selene Wallet",
   "webDir": "dist",
-  "bundledWebRuntime": false
+  "bundledWebRuntime": false,
+  "plugins": {
+    "Keyboard": {
+      "resize": "body"
+    }
+  }
 }

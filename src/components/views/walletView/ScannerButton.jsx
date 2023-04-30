@@ -1,38 +1,55 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+
+import { useSelector, useDispatch } from "react-redux";
+import { selectPreferences } from "@/redux/preferences";
+import {
+  setScannerIsScanning,
+  selectScannerIsScanning,
+  selectKeyboardIsOpen,
+  selectDeviceInfo,
+} from "@/redux/device";
+
 import {
   BarcodeScanner,
   SupportedFormat,
 } from "@capacitor-community/barcode-scanner";
-import { validateInvoiceString } from "@/util/invoice";
+
 import { ScanOutlined, CloseOutlined } from "@ant-design/icons";
 
-function ScannerButton({ onScanStart, onScanEnd }) {
+import { validateInvoiceString } from "@/util/invoice";
+
+export default function ScannerButton() {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [isScanning, setIsScanning] = useState(false);
+  const preferences = useSelector(selectPreferences);
+  const deviceInfo = useSelector(selectDeviceInfo);
+  const isScanning = useSelector(selectScannerIsScanning);
+  const keyboardIsOpen = useSelector(selectKeyboardIsOpen);
 
   const prepare = async () => {
-    try {
-      const status = await BarcodeScanner.checkPermission({ force: false });
-    } catch (e) {
+    if (deviceInfo.platform === "web") {
       return;
     }
 
-    if (status.granted) {
+    const status = await BarcodeScanner.checkPermission({ force: false });
+    if (status.granted && preferences["scannerFastMode"] === "true") {
       BarcodeScanner.prepare();
     }
   };
 
-  useEffect(function prepareScanner() {
-    prepare();
+  useEffect(function cleanupScanner() {
     return () => {
-      stopScan();
+      closeScanner();
     };
   }, []);
 
   useEffect(
     function resetScanner() {
-      if (!isScanning) {
+      if (isScanning) {
+        startScan();
+      } else {
+        closeScanner();
         prepare();
       }
     },
@@ -40,16 +57,25 @@ function ScannerButton({ onScanStart, onScanEnd }) {
   );
 
   async function startScan() {
-    const status = await BarcodeScanner.checkPermission({ force: true });
-
-    if (status.denied) {
-      // we hit this code path if user says "never ask again"
-      // TODO: prompt user to BarcodeScanner.openAppSettings();
+    if (deviceInfo.platform === "web") {
       return;
     }
 
-    onScanStart();
-    setIsScanning(true);
+    const status = await BarcodeScanner.checkPermission({ force: true });
+
+    if (status.neverAsked) {
+      // TODO: inform user that we will now do a permission check
+      // This hopefully minimizes the chance that user will need to
+      // fiddle with OS-level app settings.
+      // `await informUserAboutPermissions();` - after await, proceed...
+    }
+
+    if (status.denied) {
+      // we hit this code path if user says "never ask again or Ask Every Time"
+      // TODO: prompt user before doing this, it's kind of invasive.
+      BarcodeScanner.openAppSettings();
+      return;
+    }
 
     BarcodeScanner.hideBackground();
     const result = await BarcodeScanner.startScan({
@@ -57,9 +83,8 @@ function ScannerButton({ onScanStart, onScanEnd }) {
     });
 
     if (result.hasContent) {
+      dispatch(setScannerIsScanning(false));
       const scanned = result.content;
-      setIsScanning(false);
-      onScanEnd();
 
       const { valid, address, query } = validateInvoiceString(result.content);
 
@@ -69,37 +94,38 @@ function ScannerButton({ onScanStart, onScanEnd }) {
     }
   }
 
-  function stopScan() {
-    const stop = async () => {
-      try {
-        await BarcodeScanner.showBackground();
-        await BarcodeScanner.stopScan();
-      } catch (e) {
-        return;
-      }
-    };
-    stop();
-    setIsScanning(false);
-    onScanEnd();
+  async function closeScanner() {
+    if (deviceInfo.platform === "web") {
+      return;
+    }
+
+    await BarcodeScanner.showBackground();
+    await BarcodeScanner.stopScan();
   }
 
   const toggleScanner = () => {
-    isScanning ? stopScan() : startScan();
+    dispatch(setScannerIsScanning(!isScanning));
   };
 
-  return (
+  return keyboardIsOpen ? null : (
     <>
-      <div className="flex justify-center fixed inset-x-0 bottom-24">
-        <div className="flex items-center rounded-full border border-1 border-zinc-100 w-20 h-20 bg-white opacity-90">
+      <div
+        className="flex justify-center fixed inset-x-0"
+        style={{ bottom: "calc(100vh - 90%)" }}
+      >
+        <div
+          className="flex items-center rounded-full border border-1 border-zinc-100 bg-white opacity-90"
+          style={{ width: "4.5rem", height: "4.5rem" }}
+        >
           <button
             className="w-full h-full"
             type="button"
             onClick={toggleScanner}
           >
             {isScanning ? (
-              <CloseOutlined className="text-3xl" style={{ lineHeight: "0" }} />
+              <CloseOutlined className="text-3xl" />
             ) : (
-              <ScanOutlined className="text-3xl" style={{ lineHeight: "0" }} />
+              <ScanOutlined className="text-3xl" />
             )}
           </button>
         </div>
@@ -107,5 +133,3 @@ function ScannerButton({ onScanStart, onScanEnd }) {
     </>
   );
 }
-
-export default ScannerButton;

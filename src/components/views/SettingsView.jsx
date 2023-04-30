@@ -7,6 +7,7 @@ import { selectActiveWallet } from "@/redux/wallet";
 
 import { bchToSats, satsToBch, DUST_LIMIT } from "@/util/sats";
 import WalletService from "@/services/WalletService";
+import FiatOracleService from "@/services/FiatOracleService";
 
 import {
   SettingOutlined,
@@ -20,6 +21,7 @@ import {
   SendOutlined,
   ThunderboltOutlined,
   PropertySafetyOutlined,
+  CameraOutlined,
   QrcodeOutlined,
   PlusCircleFilled,
   CheckCircleOutlined,
@@ -40,6 +42,8 @@ import KeyWarning from "./settingsView/KeyWarning";
 import SettingsCategory from "./settingsView/SettingsCategory";
 import SettingsChild from "./settingsView/SettingsChild";
 
+import SatoshiInput from "@/components/atoms/SatoshiInput";
+
 import { logos } from "@/util/logos";
 
 export default function SettingsView() {
@@ -53,6 +57,7 @@ export default function SettingsView() {
   }
 
   const walletList = new WalletService().getWallets();
+  const fiatOracles = new FiatOracleService().getOracles();
 
   const logoKey = preferences["qrCodeLogo"].toLowerCase();
 
@@ -90,9 +95,9 @@ export default function SettingsView() {
                 handleSettingsUpdate("localCurrency", event.target.value)
               }
             >
-              <option>USD</option>
-              <option>CAD</option>
-              <option>EUR</option>
+              {fiatOracles.map((oracle) => (
+                <option key={oracle.currency}>{oracle.currency}</option>
+              ))}
             </select>
           </SettingsChild>
           <SettingsChild
@@ -158,37 +163,26 @@ export default function SettingsView() {
             icon={PropertySafetyOutlined}
             label="Instant Pay Threshold"
           >
-            {preferences["denominateSats"] === "true" ? (
-              <input
-                type="number"
-                placeholder="25000000"
-                min="0"
-                step="1000"
-                className="rounded h-10 w-32 p-2"
-                value={preferences["instantPayThreshold"] || "0"}
-                onChange={(event) =>
-                  handleSettingsUpdate(
-                    "instantPayThreshold",
-                    event.target.value
-                  )
+            <span className="text-zinc-600">
+              <SatoshiInput
+                sats={preferences["instantPayThreshold"]}
+                className="p-2 w-28 rounded mx-1"
+                onChange={(satoshis) =>
+                  handleSettingsUpdate("instantPayThreshold", satoshis)
                 }
+                allowFiat
               />
-            ) : (
-              <input
-                type="number"
-                placeholder="0.25000000"
-                min="0"
-                step="0.00001000"
-                className="rounded h-10 w-32 p-2"
-                value={satsToBch(preferences["instantPayThreshold"] || 0)}
-                onChange={(event) => {
-                  const satoshis = bchToSats(
-                    event.target.value || satsToBch(DUST_LIMIT)
-                  );
-                  handleSettingsUpdate("instantPayThreshold", satoshis);
-                }}
-              />
-            )}
+            </span>
+          </SettingsChild>
+          <SettingsChild icon={CameraOutlined} label="Enable Fast Scan">
+            <input
+              type="checkbox"
+              className="toggle"
+              checked={preferences["scannerFastMode"] === "true"}
+              onChange={(event) =>
+                handleSettingsUpdate("scannerFastMode", event.target.checked)
+              }
+            />
           </SettingsChild>
         </SettingsCategory>
 
@@ -211,7 +205,7 @@ export default function SettingsView() {
               </select>
             </div>
           </SettingsChild>
-          <SettingsChild icon={BgColorsOutlined} label="Background Color">
+          {/*<SettingsChild icon={BgColorsOutlined} label="Background Color">
             <div className="flex items-center">
               <SettingFilled
                 className="text-3xl px-2"
@@ -242,7 +236,7 @@ export default function SettingsView() {
                 }
               />
             </div>
-          </SettingsChild>
+          </SettingsChild>*/}
         </SettingsCategory>
 
         {/*
