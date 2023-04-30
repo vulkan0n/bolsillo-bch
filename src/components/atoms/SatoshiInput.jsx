@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
+import { Keyboard } from "@capacitor/keyboard";
 import { useSelector, useDispatch } from "react-redux";
 import { selectPreferences, setPreference } from "@/redux/preferences";
+import { selectDeviceInfo } from "@/redux/device";
 import { bchToSats, satsToBch, DUST_LIMIT, MAX_SATOSHI } from "@/util/sats";
 
 import { Decimal } from "decimal.js";
@@ -9,6 +11,8 @@ import FiatOracleService from "@/services/FiatOracleService";
 
 export default function SatoshiInput({ className, allowFiat, onChange, sats }) {
   const preferences = useSelector(selectPreferences);
+  const deviceInfo = useSelector(selectDeviceInfo);
+
   const FiatOracle = new FiatOracleService();
 
   function satsToDisplayAmount() {
@@ -51,6 +55,12 @@ export default function SatoshiInput({ className, allowFiat, onChange, sats }) {
     onChange(sats);
   };
 
+  const handleKeyDown = (event) => {
+    if (deviceInfo.platform !== "web" && event.key === "Enter") {
+      Keyboard.hide();
+    }
+  };
+
   return (
     <div className="flex items-center">
       {preferences["preferLocalCurrency"] === "true" && allowFiat ? (
@@ -79,6 +89,7 @@ export default function SatoshiInput({ className, allowFiat, onChange, sats }) {
                 sats
               );
             }}
+            onKeyDown={handleKeyDown}
           />
           <div className="text-base px-0.5 font-mono font-semibold">
             {preferences["localCurrency"]}
@@ -99,6 +110,7 @@ export default function SatoshiInput({ className, allowFiat, onChange, sats }) {
               const sats = new Decimal(event.target.value || 0).toString();
               handleInputChange(sats, sats);
             }}
+            onKeyDown={handleKeyDown}
           />
           <div className="text-base px-0.5 font-mono font-semibold">sats</div>
         </>
@@ -126,6 +138,7 @@ export default function SatoshiInput({ className, allowFiat, onChange, sats }) {
                 sats
               );
             }}
+            onKeyDown={handleKeyDown}
           />
           <div className="text-base px-0.5 font-mono font-semibold">BCH</div>
         </>

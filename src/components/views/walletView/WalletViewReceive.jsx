@@ -7,7 +7,7 @@ import { useLongPress } from "use-long-press";
 
 import { selectActiveWallet } from "@/redux/wallet";
 import { selectPreferences } from "@/redux/preferences";
-import { selectIsScanning } from "@/redux/scanner";
+import { selectScannerIsScanning } from "@/redux/device";
 
 import WalletService from "@/services/WalletService";
 import AddressManagerService from "@/services/AddressManagerService";
@@ -26,7 +26,7 @@ import {
 export default function WalletViewReceive() {
   const preferences = useSelector(selectPreferences);
   const wallet = useSelector(selectActiveWallet);
-  const isScanning = useSelector(selectIsScanning);
+  const isScanning = useSelector(selectScannerIsScanning);
 
   const [skip, setSkip] = useState(0);
   const [invoiceSats, setInvoiceSats] = useState("0");

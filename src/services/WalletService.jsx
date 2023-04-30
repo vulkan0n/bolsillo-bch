@@ -2,7 +2,7 @@ import DatabaseService from "./DatabaseService";
 import AddressManagerService from "./AddressManagerService";
 import * as bip39 from "bip39";
 
-function WalletService() {
+export default function WalletService() {
   const { db, resultToJson, saveDatabase } = new DatabaseService();
 
   return {
@@ -126,5 +126,3 @@ function WalletService() {
     saveDatabase();
   }
 }
-
-export default WalletService;

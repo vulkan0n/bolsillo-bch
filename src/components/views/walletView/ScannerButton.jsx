@@ -3,7 +3,12 @@ import { useNavigate } from "react-router-dom";
 
 import { useSelector, useDispatch } from "react-redux";
 import { selectPreferences } from "@/redux/preferences";
-import { setIsScanning, selectIsScanning } from "@/redux/scanner";
+import {
+  setScannerIsScanning,
+  selectScannerIsScanning,
+  selectKeyboardIsOpen,
+  selectDeviceInfo,
+} from "@/redux/device";
 
 import {
   BarcodeScanner,
@@ -18,16 +23,18 @@ export default function ScannerButton() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const preferences = useSelector(selectPreferences);
-  const isScanning = useSelector(selectIsScanning);
+  const deviceInfo = useSelector(selectDeviceInfo);
+  const isScanning = useSelector(selectScannerIsScanning);
+  const keyboardIsOpen = useSelector(selectKeyboardIsOpen);
 
   const prepare = async () => {
-    try {
-      const status = await BarcodeScanner.checkPermission({ force: false });
-      if (status.granted && preferences["scannerFastMode"] === "true") {
-        BarcodeScanner.prepare();
-      }
-    } catch (e) {
+    if (deviceInfo.platform === "web") {
       return;
+    }
+
+    const status = await BarcodeScanner.checkPermission({ force: false });
+    if (status.granted && preferences["scannerFastMode"] === "true") {
+      BarcodeScanner.prepare();
     }
   };
 
@@ -50,6 +57,10 @@ export default function ScannerButton() {
   );
 
   async function startScan() {
+    if (deviceInfo.platform === "web") {
+      return;
+    }
+
     const status = await BarcodeScanner.checkPermission({ force: true });
 
     if (status.neverAsked) {
@@ -72,7 +83,7 @@ export default function ScannerButton() {
     });
 
     if (result.hasContent) {
-      dispatch(setIsScanning(false));
+      dispatch(setScannerIsScanning(false));
       const scanned = result.content;
 
       const { valid, address, query } = validateInvoiceString(result.content);
@@ -84,25 +95,28 @@ export default function ScannerButton() {
   }
 
   async function closeScanner() {
-    try {
-      await BarcodeScanner.showBackground();
-      await BarcodeScanner.stopScan();
-    } catch (e) {
+    if (deviceInfo.platform === "web") {
       return;
     }
+
+    await BarcodeScanner.showBackground();
+    await BarcodeScanner.stopScan();
   }
 
   const toggleScanner = () => {
-    dispatch(setIsScanning(!isScanning));
+    dispatch(setScannerIsScanning(!isScanning));
   };
 
-  return (
+  return keyboardIsOpen ? null : (
     <>
       <div
         className="flex justify-center fixed inset-x-0"
         style={{ bottom: "calc(100vh - 90%)" }}
       >
-        <div className="flex items-center rounded-full border border-1 border-zinc-100 bg-white opacity-90" style={{width: "4.5rem", height: "4.5rem"}}>
+        <div
+          className="flex items-center rounded-full border border-1 border-zinc-100 bg-white opacity-90"
+          style={{ width: "4.5rem", height: "4.5rem" }}
+        >
           <button
             className="w-full h-full"
             type="button"

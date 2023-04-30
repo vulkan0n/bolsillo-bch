@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Clipboard } from "@capacitor/clipboard";
 
 import { useSelector, useDispatch } from "react-redux";
-import { selectIsScanning, setIsScanning } from "@/redux/scanner";
+import { selectScannerIsScanning, setScannerIsScanning } from "@/redux/device";
 
 import { ReconciliationOutlined, QrcodeOutlined } from "@ant-design/icons";
 
@@ -16,7 +16,7 @@ export default function WalletViewSend() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const isScanning = useSelector(selectIsScanning);
+  const isScanning = useSelector(selectScannerIsScanning);
 
   const [sendAddress, setSendAddress] = useState("");
 
@@ -57,7 +57,7 @@ export default function WalletViewSend() {
         <button
           type="button"
           className="text-white p-2"
-          onClick={() => dispatch(setIsScanning(true))}
+          onClick={() => dispatch(setScannerIsScanning(true))}
         >
           <QrcodeOutlined className="text-3xl" />
         </button>
