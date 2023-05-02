@@ -30,12 +30,3 @@ Questions: [Telegram group](https://t.me/+MMbV2KEPFt84MDQ8)
 Contributors: [Contributing](./docs/CONTRIBUTING.md)
 
 Testers: [Testing document](https://docs.google.com/document/d/1VKXeuwlIPFrudwEBrdtg6zIuC2rSF4QRginuq3C_-ro/edit?usp=sharing)
-
-## Design Philosophy
-
-Opinions of this repository.
-
-- **Open source**: Required for trustless use by the community.
-- **BCH only**: Selene is for Bitcoin Cash users. BCH-specific apps, integrations and differentiators make the wallet more compelling both to the BCH community and to converts from other coins.
-- **Built by power users, preferred by onboarders**: Selene needs to be simple and intuitive for the users discovering Bitcoin for the very first time. Time to first transaction should be optimised to the bare minimum. Later, effective discoverability should help them naturally grow into power users that need all the customization and options that Selene makes available to more advanced users.
-- **Ecosystem integrated**: As with the focus on feature discoverability, Selene should help a new user join the BCH ecosystem at large. Community discussion forums, online media, local meetups, local merchants and so on should be encountered naturally as part of using Selene.
