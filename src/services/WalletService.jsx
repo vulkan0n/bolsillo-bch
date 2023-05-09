@@ -118,6 +118,9 @@ export default function WalletService() {
 
   function clearWalletData(wallet_id) {
     db.run(
+      `DELETE FROM transactions WHERE txid IN (SELECT txid FROM address_transactions WHERE address IN (SELECT address FROM addresses WHERE wallet_id="${wallet_id}"))`
+    );
+    db.run(
       `DELETE FROM address_transactions WHERE address IN (SELECT address FROM addresses WHERE wallet_id="${wallet_id}")`
     );
     db.run(`DELETE FROM addresses WHERE wallet_id="${wallet_id}"`);

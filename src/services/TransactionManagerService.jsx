@@ -23,6 +23,13 @@ export default function TransactionManagerService() {
   };
 
   function registerTransaction(tx) {
+
+    const blockhash = tx.blockhash ? tx.blockhash : null;
+    const blocktime = tx.blocktime ? tx.blocktime : null;
+    const time = tx.time ? tx.time : null;
+
+    console.log("registerTransaction", tx, time, blockhash);
+
     db.run(
       `INSERT INTO transactions (
         txid,
@@ -36,23 +43,17 @@ export default function TransactionManagerService() {
         "${tx.txid}",
         "${tx.hex}",
         "${tx.size}",
-        "${tx.blockhash}",
-        "${tx.time}",
-        "${tx.blocktime}"
+        "${blockhash}",
+        "${time}",
+        "${blocktime}"
       ) ON CONFLICT DO 
         UPDATE SET
           hex="${tx.hex}",
           size="${tx.size}",
-          blockhash="${tx.blockhash}",
-          time="${tx.time}",
-          blocktime="${tx.blocktime}"
-       WHERE txid="${tx.txid}";`
-    );
-
-    db.run(
-      `UPDATE address_transactions SET time=${
-        tx.time ? `datetime("${tx.time}", "unixepoch")` : "datetime('now')"
-      } WHERE txid="${tx.txid}"`
+          blockhash="${blockhash}",
+          time="${time}",
+          blocktime="${blocktime}";
+      `
     );
 
     saveDatabase();
@@ -114,7 +115,7 @@ export default function TransactionManagerService() {
     const localTx = getTransactionByHash(tx_hash);
 
     // if localTx is null we're requesting this tx for the first time
-    if (localTx === null || localTx.blockhash === null) {
+    if (localTx === null || localTx.blockhash === "null" || localTx.time === "null") {
       const Electrum = new ElectrumService();
       const tx = await Electrum.requestTransaction(tx_hash);
       registerTransaction(tx);
@@ -153,7 +154,13 @@ export default function TransactionManagerService() {
 
     // insufficient funds
     if (changeTotal < 0) {
-      console.log("insufficient funds:", changeTotal, inputTotal, sendTotal, fee);
+      console.log(
+        "insufficient funds:",
+        changeTotal,
+        inputTotal,
+        sendTotal,
+        fee
+      );
       return sendTotal - fee;
     }
 

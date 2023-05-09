@@ -31,7 +31,7 @@ export default function AddressManagerService(wallet_id) {
 
   // register an address into the database
   function registerAddress(address, hd_index, change = 0) {
-    console.log(`registerAddress${change ? " change" : ""}`, hd_index, address);
+    //console.log(`registerAddress${change ? " change" : ""}`, hd_index, address);
 
     db.run(
       `INSERT INTO addresses (
@@ -263,8 +263,8 @@ export default function AddressManagerService(wallet_id) {
         "${address}"
       ) ON CONFLICT DO 
         UPDATE SET 
-          height="${tx.height}"
-        WHERE txid="${tx.txid}";`
+          height="${tx.height}";
+      `
     );
   }
 }

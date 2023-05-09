@@ -33,8 +33,8 @@ export default function BlockchainService() {
         "${block.header}"
       ) ON CONFLICT DO 
         UPDATE SET
-          height="${block.height}"
-        WHERE blockhash="${blockhash}";`
+          height="${block.height}";
+      `
     );
   }
 

@@ -57,18 +57,21 @@ syncMiddleware.startListening({
   actionCreator: syncConnectionUp,
   effect: async (action, listenerApi) => {
     // set up subscriptions on connect
+    Electrum.subscribeToChaintip();
+
     const AddressManager = new AddressManagerService(
       listenerApi.getState().wallet.id
     );
-    const addresses = [
-      ...AddressManager.getReceiveAddresses(),
-      ...AddressManager.getChangeAddresses(),
-    ];
-    addresses.forEach(({ address }) =>
+
+    const subscribeAddresses = AddressManager.getReceiveAddresses();
+    subscribeAddresses.forEach(({ address }) =>
       listenerApi.dispatch(syncSubscribeAddress(address))
     );
 
-    Electrum.subscribeToChaintip();
+    const changeAddresses = AddressManager.getChangeAddresses();
+    changeAddresses.forEach(({ address }) =>
+      listenerApi.dispatch(syncChangeAddress(address))
+    );
   },
 });
 
@@ -87,10 +90,26 @@ syncMiddleware.startListening({
 
 // syncSubscribeAddress: subscribe to state updates for an address
 // TODO: don't allow duplicate subscriptions
+// TODO: check to see if duplicate subscriptions are even a problem...
 export const syncSubscribeAddress = createAsyncThunk(
   "sync/subscribeAddress",
   async (address, thunkApi) => {
     return await Electrum.subscribeToAddress(address);
+  }
+);
+
+// syncChangeAddress: ensure a change address is up to date
+export const syncChangeAddress = createAsyncThunk(
+  "sync/changeAddress",
+  async (address, thunkApi) => {
+    const AddressManager = new AddressManagerService(
+      thunkApi.getState().wallet.id
+    );
+    const addressState = await Electrum.requestAddressState(address);
+
+    if (AddressManager.getAddressState(address) !== addressState) {
+      thunkApi.dispatch(syncAddressUpdate([address, addressState]));
+    }
   }
 );
 

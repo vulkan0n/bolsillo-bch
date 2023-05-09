@@ -21,6 +21,6 @@ export const txReducer = createReducer(initialState, (builder) => {
 });
 
 export const selectTransactionHistory = createSelector(
-  (state) => state,
-  (state) => state.transactions
+  (state) => state.transactions,
+  (state) => state
 );

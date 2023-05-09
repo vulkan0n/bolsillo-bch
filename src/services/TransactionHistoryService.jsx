@@ -20,6 +20,18 @@ export default function TransactionHistoryService(wallet_id) {
       )
     );
 
+    result.sort((a, b) => {
+      if (a.height <= 0) {
+        return -1;
+      }
+
+      if (b.height <= 0) {
+        return 1;
+      }
+
+      return 0;
+    });
+
     // console.log("getTransactionHistory", wallet_id, result);
     return result;
   }
@@ -92,9 +104,15 @@ export default function TransactionHistoryService(wallet_id) {
     */
 
     db.run(
-      `UPDATE address_transactions SET amount="${amount}", fiat_amount="${new FiatOracleService().toFiat(
-        amount
-      )}" WHERE txid="${tx.txid}"`
+      `UPDATE address_transactions SET 
+        amount="${amount}", 
+        fiat_amount="${new FiatOracleService().toFiat(amount)}", 
+        time=${
+          tx.time !== "null"
+            ? `datetime("${tx.time}", "unixepoch")`
+            : `datetime("now")`
+        }
+      WHERE txid="${tx.txid}"`
     );
 
     saveDatabase();
