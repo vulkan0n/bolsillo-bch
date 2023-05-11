@@ -23,12 +23,11 @@ export default function TransactionManagerService() {
   };
 
   function registerTransaction(tx) {
-
     const blockhash = tx.blockhash ? tx.blockhash : null;
     const blocktime = tx.blocktime ? tx.blocktime : null;
     const time = tx.time ? tx.time : null;
 
-    console.log("registerTransaction", tx, time, blockhash);
+    //console.log("registerTransaction", tx, time, blockhash);
 
     db.run(
       `INSERT INTO transactions (
@@ -115,7 +114,11 @@ export default function TransactionManagerService() {
     const localTx = getTransactionByHash(tx_hash);
 
     // if localTx is null we're requesting this tx for the first time
-    if (localTx === null || localTx.blockhash === "null" || localTx.time === "null") {
+    if (
+      localTx === null ||
+      localTx.blockhash === "null" ||
+      localTx.time === "null"
+    ) {
       const Electrum = new ElectrumService();
       const tx = await Electrum.requestTransaction(tx_hash);
       registerTransaction(tx);
@@ -125,8 +128,6 @@ export default function TransactionManagerService() {
   }
 
   function buildP2pkhTransaction(recipients, wallet_id, fee = DUST_LIMIT / 3) {
-    console.log("buildTx", recipients, fee);
-
     // helper function returns null if invalid locking bytecode
     const addressToLockingBytecode = (address) => {
       const lockingBytecode = libauth.cashAddressToLockingBytecode(address);
@@ -140,7 +141,6 @@ export default function TransactionManagerService() {
     const sendTotal = recipients
       .reduce((sum, cur) => sum.plus(cur.amount), new Decimal(0))
       .toNumber();
-    console.log("sendTotal", sendTotal);
 
     // gather suitable inputs
     const UtxoManager = new UtxoManagerService(wallet_id);
@@ -154,22 +154,8 @@ export default function TransactionManagerService() {
 
     // insufficient funds
     if (changeTotal < 0) {
-      console.log(
-        "insufficient funds:",
-        changeTotal,
-        inputTotal,
-        sendTotal,
-        fee
-      );
       return sendTotal - fee;
     }
-
-    console.log(
-      "buildTransaction: potential inputs",
-      sendTotal,
-      inputs,
-      changeTotal
-    );
 
     // construct tx outputs
     const vout = recipients.map((out) => ({
@@ -219,35 +205,21 @@ export default function TransactionManagerService() {
     // if we didn't reclaim change, add it to total fee
     const feeTotal = changeTotal >= DUST_LIMIT ? fee : fee + changeTotal;
     if (feeTotal < tx_raw.length) {
-      console.log(
-        "Fee under 1 sat/B... trying again with byte length",
-        fee,
-        feeTotal,
-        tx_raw.length
-      );
+      // Fee under 1 sat/B... try again with byte length as fee
+      // TODO: use relay fee provided by electrum (futureproofing)
       return buildP2pkhTransaction(recipients, wallet_id, tx_raw.length);
     }
 
     if (feeTotal > tx_raw.length * 3) {
       if (fee !== tx_raw.length) {
-        console.log(
-          "Fee greater than 300% of byte length. Can we make it smaller?",
-          fee,
-          feeTotal,
-          tx_raw.length * 3,
-          tx_raw.length
-        );
+        // Fee greater than 300% of byte length. Can we make it smaller?
         return buildP2pkhTransaction(recipients, wallet_id, tx_raw.length);
-      } else {
-        console.log(
-          "can't make fee any smaller, proceeding...",
-          fee,
-          feeTotal,
-          tx_raw.length
-        );
       }
+
+      // if we're here, fee can't get any smaller. proceed
     }
 
+    /*
     console.log(
       "buildTransaction",
       tx_hash,
@@ -258,6 +230,7 @@ export default function TransactionManagerService() {
       fee,
       feeTotal
     );
+    */
 
     return {
       tx_hash,

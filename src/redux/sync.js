@@ -188,21 +188,7 @@ syncMiddleware.startListening({
     // UTXO set represents tip of addresses.
     // If we're still out of sync after applying tip, we must be missing txes
     if (calculatedAddressState !== storedAddressState) {
-      /*console.log(
-        "missing transactions? attempting sync...",
-        calculatedAddressState,
-        address,
-        storedAddressState
-      );*/
-
-      const history = await Electrum.requestAddressHistory(address);
-      history.forEach(({ tx_hash, height }) => {
-        AddressManager.registerTransaction(address, { tx_hash, height });
-        listenerApi.dispatch(syncTxRequest(tx_hash));
-
-        //if (height > listenerApi.getState().sync.chaintip.height - 12960) {
-        //}
-      });
+      listenerApi.dispatch(syncAddressHistory(address));
     }
 
     // calculate address balance
@@ -216,6 +202,24 @@ syncMiddleware.startListening({
     listenerApi.dispatch(walletBalanceUpdate(walletBalance));
   },
 });
+
+export const syncAddressHistory = createAsyncThunk(
+  "sync/addressHistory",
+  async (address, thunkApi) => {
+    const wallet_id = thunkApi.getState().wallet.id;
+    const AddressManager = new AddressManagerService(wallet_id);
+
+    const history = await Electrum.requestAddressHistory(address);
+    history.forEach(({ tx_hash, height }) => {
+      AddressManager.registerTransaction(address, { tx_hash, height });
+      thunkApi.dispatch(syncTxRequest(tx_hash));
+
+      //if (height > listenerApi.getState().sync.chaintip.height - 12960) {
+      //}
+    });
+    return history;
+  }
+);
 
 export const syncTxRequest = createAsyncThunk(
   "sync/txRequest",
@@ -268,7 +272,12 @@ syncMiddleware.startListening({
 
 const initialState = {
   connected: false,
-  isSyncing: false,
+  syncPending: {
+    utxo: false,
+    history: false,
+    txData: false,
+    txAmount: false,
+  },
   chaintip: { ...block_checkpoints.first2023 },
 };
 
@@ -284,22 +293,28 @@ export const syncReducer = createReducer(initialState, (builder) => {
       state.connected = false;
     })
     .addCase(syncAddressUtxos.pending, (state, action) => {
-      state.isSyncing = true;
-    })
-    .addCase(syncTxRequest.pending, (state, action) => {
-      state.isSyncing = true;
-    })
-    .addCase(syncTxAmount.pending, (state, action) => {
-      state.isSyncing = true;
+      state.syncPending.utxo = true;
     })
     .addCase(syncAddressUtxos.fulfilled, (state, action) => {
-      state.isSyncing = false;
+      state.syncPending.utxo = false;
+    })
+    .addCase(syncAddressHistory.pending, (state, action) => {
+      state.syncPending.history = true;
+    })
+    .addCase(syncAddressHistory.fulfilled, (state, action) => {
+      state.syncPending.history = false;
+    })
+    .addCase(syncTxRequest.pending, (state, action) => {
+      state.syncPending.txRequest = true;
     })
     .addCase(syncTxRequest.fulfilled, (state, action) => {
-      state.isSyncing = false;
+      state.syncPending.txRequest = false;
+    })
+    .addCase(syncTxAmount.pending, (state, action) => {
+      state.syncPending.txAmount = true;
     })
     .addCase(syncTxAmount.fulfilled, (state, action) => {
-      state.isSyncing = false;
+      state.syncPending.txAmount = false;
     })
     .addCase(syncChaintip, (state, action) => {
       const { hex, height } = action.payload;
@@ -312,8 +327,15 @@ export const syncReducer = createReducer(initialState, (builder) => {
 });
 
 export const selectSyncState = createSelector(
-  (state) => state,
-  (state) => state.sync
+  (state) => state.sync,
+  (sync) => ({
+    connected: sync.connected,
+    syncPending: sync.syncPending,
+    isSyncing: Object.keys(sync.syncPending).reduce(
+      (isSyncing, pending) => sync.syncPending[pending] || isSyncing,
+      false
+    ),
+  })
 );
 
 /*

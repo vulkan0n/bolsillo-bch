@@ -212,7 +212,7 @@ export default function ElectrumService() {
       tx_hex
     );
 
-    console.log("broadcastTransaction", tx_hash, tx_hex);
+    //console.log("broadcastTransaction", tx_hash, tx_hex);
     return tx_hash;
   }
 
@@ -220,7 +220,6 @@ export default function ElectrumService() {
     const result = await electrum.request("blockchain.relayfee");
 
     const relayFee = bchToSats(result);
-    console.log("requestRelayFee", relayFee);
     return relayFee;
   }
 }

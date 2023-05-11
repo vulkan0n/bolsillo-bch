@@ -32,7 +32,6 @@ export default function TransactionHistoryService(wallet_id) {
       return 0;
     });
 
-    // console.log("getTransactionHistory", wallet_id, result);
     return result;
   }
 
@@ -47,7 +46,7 @@ export default function TransactionHistoryService(wallet_id) {
 
     const isMyUtxo = (utxo) => {
       if (utxo.value === 0) {
-        //console.log("utxo value === 0; OP_RETURN?", utxo, utxo.tx_hash);
+        // OP_RETURN
         return false;
       }
 

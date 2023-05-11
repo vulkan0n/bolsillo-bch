@@ -16,8 +16,6 @@ export default function UxtoManagerService(wallet_id) {
   };
 
   function registerUtxo(address, utxo) {
-    console.log("registerUtxo", address, utxo);
-
     db.run(
       `INSERT INTO address_utxos (
         wallet_id,
@@ -54,7 +52,6 @@ export default function UxtoManagerService(wallet_id) {
 
   function selectUtxos(amount, fee) {
     const targetAmount = new Decimal(amount).plus(fee).toNumber();
-    console.log("selectUtxos", targetAmount);
 
     // all full address balances >= amount are eligible
     const eligibleAddresses = resultToJson(
@@ -66,8 +63,6 @@ export default function UxtoManagerService(wallet_id) {
           ORDER BY balance ASC`
       )
     );
-
-    console.log("eligibleAddresses", eligibleAddresses);
 
     // 1. if there's a whole address balance that's exact, spend the entire address
     const exactAddresses = eligibleAddresses.filter(
@@ -99,8 +94,6 @@ export default function UxtoManagerService(wallet_id) {
     // 3. try to consolidate enough UTXOs to make the targetAmount
     const eligibleSum = eligibleUtxos.reduce((sum, cur) => sum + cur.amount, 0);
 
-    console.log("eligibleUtxos", eligibleSum, ...eligibleUtxos);
-
     // 4. if sum of utxos matches exactly, consolidate the UTXOs
     if (eligibleSum == targetAmount) {
       return eligibleUtxos;
@@ -121,12 +114,9 @@ export default function UxtoManagerService(wallet_id) {
     let remainingAmount = targetAmount;
 
     while (remainingAmount > 0 && eligibleUtxos.length > 0) {
-      console.log("loop remainingAmount", remainingAmount, targetAmount);
-
       const utxo = eligibleUtxos.shift();
       selection.push(utxo);
       remainingAmount = remainingAmount - utxo.amount;
-      console.log("selecting", utxo, selection, remainingAmount);
     }
 
     if (remainingAmount > 0) {
@@ -135,29 +125,17 @@ export default function UxtoManagerService(wallet_id) {
 
     const utxoChange = remainingAmount * -1 - fee;
     const utxoFee = utxoChange > DUST_LIMIT ? fee : fee + utxoChange;
-    console.log("utxo change:", utxoChange, utxoFee);
 
     if (eligibleAddresses.length > 0) {
       const eligibleAddress = eligibleAddresses[0];
       const addressChange = eligibleAddress.balance - targetAmount - fee;
       const addressFee = addressChange > DUST_LIMIT ? fee : fee + addressChange;
 
-      console.log(
-        "comparing eligible address to consolidated utxos",
-        eligibleAddress,
-        addressChange,
-        utxoChange,
-        addressFee,
-        utxoFee
-      );
-
       if (addressFee < utxoFee) {
-        console.log("returning eligible address");
         return getAddressUtxos(eligibleAddress.address);
       }
     }
 
-    console.log("returning utxo selection", selection);
     return selection;
   }
 
@@ -166,19 +144,12 @@ export default function UxtoManagerService(wallet_id) {
       `DELETE FROM address_utxos WHERE txid="${utxo.tx_hash}" AND tx_pos="${utxo.tx_pos}"`
     );
 
-    console.log("discarded utxo", utxo);
-
     saveDatabase();
   }
 
   function discardAddressUtxos(address) {
-    db.run(
-      `DELETE FROM address_utxos WHERE address="${address}";`
-    );
-
-    console.log("discarded utxos for address", address);
+    db.run(`DELETE FROM address_utxos WHERE address="${address}";`);
 
     saveDatabase();
   }
-
 }

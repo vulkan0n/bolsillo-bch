@@ -1,11 +1,41 @@
-import { useState } from "react";
+import { useRef, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { selectSyncState } from "@/redux/sync";
-import { DisconnectOutlined, CheckCircleFilled, SyncOutlined } from "@ant-design/icons";
+import {
+  DisconnectOutlined,
+  CheckCircleFilled,
+  SyncOutlined,
+} from "@ant-design/icons";
 import { animated, useSpring } from "@react-spring/web";
 
 export default function SyncIndicator() {
   const sync = useSelector(selectSyncState);
+
+  const [syncWait, setSyncWait] = useState(false);
+  const syncTimeout = useRef(null);
+
+  const [syncSprings, syncApi] = useSpring(() => ({
+    from: { opacity: 1, scale: 1.1 },
+    to: { opacity: 0.5, scale: 1.0 },
+    immediate: true,
+  }));
+
+  useEffect(
+    function gracefulSyncIndicator() {
+      if (syncTimeout.current !== null) {
+        clearTimeout(syncTimeout.current);
+      }
+
+      setSyncWait(true);
+
+      syncTimeout.current = setTimeout(() => {
+        setSyncWait(false);
+        syncTimeout.current = null;
+      }, 850);
+    },
+    [sync.syncPending]
+  );
+
   const [disconnectSprings, disconnectApi] = useSpring(() => ({
     from: { opacity: 0.0333 },
     to: { opacity: 0.667 },
@@ -46,8 +76,8 @@ export default function SyncIndicator() {
         <DisconnectedIcon springs={{ ...disconnectSprings }} />
       )}
       {sync.connected &&
-        (sync.isSyncing ? (
-          <SyncOutlined className="text-info text-xl opacity-30" spin />
+        (syncWait ? (
+          <SyncIcon springs={{ ...syncSprings }} />
         ) : (
           <ConnectedIcon springs={{ ...connectSprings }} />
         ))}
@@ -67,6 +97,14 @@ function ConnectedIcon({ springs }) {
   return (
     <animated.div style={springs}>
       <CheckCircleFilled className="text-primary text-3xl text-center" />
+    </animated.div>
+  );
+}
+
+function SyncIcon({ springs }) {
+  return (
+    <animated.div style={springs}>
+      <SyncOutlined className="text-info text-xl opacity-50" spin />
     </animated.div>
   );
 }
