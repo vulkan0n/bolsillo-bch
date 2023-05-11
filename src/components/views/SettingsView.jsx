@@ -161,7 +161,7 @@ export default function SettingsView() {
           </SettingsChild>
           <SettingsChild
             icon={PropertySafetyOutlined}
-            label="Instant Pay Threshold"
+            label="Instant Pay Limit"
           >
             <span className="text-zinc-600">
               <SatoshiInput
