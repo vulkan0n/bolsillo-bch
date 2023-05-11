@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { selectSyncState } from "@/redux/sync";
 import {
@@ -11,8 +11,7 @@ import { animated, useSpring } from "@react-spring/web";
 export default function SyncIndicator() {
   const sync = useSelector(selectSyncState);
 
-  const [syncWait, setSyncWait] = useState(false);
-  const syncTimeout = useRef(null);
+  const [syncTimeout, setSyncTimeout] = useState(null);
 
   const [syncSprings, syncApi] = useSpring(() => ({
     from: { opacity: 1, scale: 1.1 },
@@ -22,18 +21,19 @@ export default function SyncIndicator() {
 
   useEffect(
     function gracefulSyncIndicator() {
-      if (syncTimeout.current !== null) {
-        clearTimeout(syncTimeout.current);
+      if (sync.isSyncing) {
+        if (syncTimeout !== null) {
+          clearTimeout(syncTimeout);
+        }
+
+        setSyncTimeout(
+          setTimeout(() => {
+            setSyncTimeout(null);
+          }, 1600)
+        );
       }
-
-      setSyncWait(true);
-
-      syncTimeout.current = setTimeout(() => {
-        setSyncWait(false);
-        syncTimeout.current = null;
-      }, 850);
     },
-    [sync.syncPending]
+    [sync.isSyncing]
   );
 
   const [disconnectSprings, disconnectApi] = useSpring(() => ({
@@ -76,7 +76,7 @@ export default function SyncIndicator() {
         <DisconnectedIcon springs={{ ...disconnectSprings }} />
       )}
       {sync.connected &&
-        (syncWait ? (
+        (syncTimeout !== null ? (
           <SyncIcon springs={{ ...syncSprings }} />
         ) : (
           <ConnectedIcon springs={{ ...connectSprings }} />
