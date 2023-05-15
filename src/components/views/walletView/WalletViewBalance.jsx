@@ -55,7 +55,7 @@ export default function WalletViewBalance() {
 
   const formattedBalance = useMemo(
     () => formatSatoshis(balance),
-    exchangeRates
+    [exchangeRates, balance]
   );
 
   return (

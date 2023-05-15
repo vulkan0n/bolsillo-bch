@@ -9,7 +9,7 @@ export const MAX_SATOSHI = new Decimal(SATOSHI * 21000000).toString();
 export const DUST_LIMIT = 546; // 3 * minRelayFee (currently 1000 sat/kB on most nodes)
 
 export function satsToBch(sats) {
-  return new Decimal(sats).div(SATOSHI).toDecimalPlaces(8, Decimal.ROUND_DOWN);
+  return new Decimal(sats).div(SATOSHI).toFixed(8, Decimal.ROUND_DOWN);
 }
 
 export function bchToSats(bch) {
@@ -32,11 +32,13 @@ export function formatSatoshis(amount) {
 
   const bchSymbol = denominateSats ? "" : "₿";
   const bchUnit = denominateSats ? "sats" : "BCH";
-  const bchAmount = denominateSats ? amount : satsToBch(amount);
+  const bchAmount = Math.abs(
+    denominateSats ? amount : satsToBch(amount)
+  ).toFixed(8);
 
   const bchDisplay =
     amount < 0
-      ? `-${bchSymbol}${Math.abs(bchAmount)} ${bchUnit}`
+      ? `-${bchSymbol}${bchAmount} ${bchUnit}`
       : `${bchSymbol}${bchAmount} ${bchUnit}`;
 
   const fiatAmount = `${new Number(Currency.satsToFiat(amount)).toLocaleString(
