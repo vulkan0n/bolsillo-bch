@@ -29,7 +29,7 @@ export default function SyncIndicator() {
         setSyncTimeout(
           setTimeout(() => {
             setSyncTimeout(null);
-          }, 1600)
+          }, 1000)
         );
       }
     },
