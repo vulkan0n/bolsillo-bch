@@ -55,7 +55,7 @@ export default function WalletViewBalance() {
 
   const formattedBalance = useMemo(
     () => formatSatoshis(balance),
-    [exchangeRates, balance]
+    [exchangeRates, balance, preferences]
   );
 
   return (
@@ -74,7 +74,7 @@ export default function WalletViewBalance() {
           <span
             className={`${
               hideBalance
-                ? "blur-sm backdrop-invert backdrop-opacity-60 opacity-25"
+                ? "blur-sm backdrop-opacity-60 opacity-25"
                 : ""
             }`}
           >
