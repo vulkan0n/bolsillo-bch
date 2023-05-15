@@ -1,4 +1,4 @@
-import seleneLogo from "@/assets/selene-logo.png";
+import seleneLogo from "@/assets/selene-logo.svg";
 import bchLogo from "@/assets/bch-logo.png";
 
 export const logos = {
