@@ -237,7 +237,7 @@ export const syncTxAmount = createAsyncThunk(
     const wallet_id = thunkApi.getState().wallet.id;
     await new TransactionHistoryService(
       wallet_id
-    ).calculateAndUpdateTransactionAmount(tx);
+    ).calculateAndUpdateTransactionAmount(tx, thunkApi.getState().preferences.localCurrency);
     return wallet_id;
   }
 );

@@ -1,7 +1,7 @@
 import { useState, useRef } from "react";
 import { useParams, useNavigate, Navigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { setPreference, selectActiveWalletId } from "@/redux/preferences";
+import { setPreference, selectActiveWalletId, selectPreferences } from "@/redux/preferences";
 import { walletBoot, walletReload } from "@/redux/wallet";
 import { syncReconnect } from "@/redux/sync";
 import {
@@ -19,10 +19,10 @@ import {
 import ViewHeader from "@/components/views/ViewHeader";
 import WalletService from "@/services/WalletService";
 import KeyWarning from "./KeyWarning";
-import { formatSatoshis } from "@/util/sats";
 
 import SettingsCategory from "./SettingsCategory";
 import SettingsChild from "./SettingsChild";
+import { formatSatoshis } from "@/util/sats";
 
 export default function SettingsWalletView() {
   const dispatch = useDispatch();
@@ -32,6 +32,9 @@ export default function SettingsWalletView() {
   const activeWalletId = useSelector(selectActiveWalletId);
   const isActiveWallet = wallet_id === activeWalletId;
 
+  const preferences = useSelector(selectPreferences);
+  const preferLocal = preferences["preferLocalCurrency"] === "true";
+
   const WalletManager = new WalletService();
   const wallet = WalletManager.getWalletById(wallet_id);
 
@@ -40,36 +43,44 @@ export default function SettingsWalletView() {
     return <Navigate to="/settings" />;
   }
 
+  // toggle visibility for recovery phrase
+  const [showRecoveryPhrase, setShowRecoveryPhrase] = useState(false);
+
+  // toggle editing state for "wallet name"
+  const [isEditingWalletName, setIsEditingWalletName] = useState(false);
+  const [walletEditedName, setWalletEditedName] = useState(wallet.name);
+
+  // user must tap "delete wallet" button multiple times to confirm
   const [deleteConfirm, setDeleteConfirm] = useState(0);
   const deleteRef = useRef(null);
   const deleteDisabled = deleteConfirm === 2 && wallet.key_viewed === null;
 
-  const [showRecoveryPhrase, setShowRecoveryPhrase] = useState(false);
+  // handler for "Delete Wallet" button
+  const handleDeleteWallet = () => {
+    setDeleteConfirm((deleteConfirm + 1) % 4);
 
-  const [isEditingWalletName, setIsEditingWalletName] = useState(false);
-  const [walletEditedName, setWalletEditedName] = useState(wallet.name);
+    // on 4th press, delete wallet and "reboot" app
+    if (deleteConfirm === 3) {
+      WalletManager.deleteWallet(wallet_id);
+      dispatch(walletBoot(1));
+      navigate("/");
+    } else {
+      // if user hesitates, reset the counter
+      clearTimeout(deleteRef.current);
+      deleteRef.current = setTimeout(() => {
+        setDeleteConfirm(0);
+      }, 3250 + deleteConfirm * 600); // give them time to read the prompts though
+    }
+  };
 
+  // handler for "Activate Wallet" button
   const handleActivateWallet = () => {
     dispatch(walletBoot(wallet.id));
     dispatch(syncReconnect());
     navigate("/");
   };
 
-  const handleDeleteWallet = () => {
-    setDeleteConfirm((deleteConfirm + 1) % 4);
-
-    if (deleteConfirm === 3) {
-      WalletManager.deleteWallet(wallet_id);
-      dispatch(walletBoot(1));
-      navigate("/");
-    } else {
-      clearTimeout(deleteRef.current);
-      deleteRef.current = setTimeout(() => {
-        setDeleteConfirm(0);
-      }, 3250 + deleteConfirm * 600);
-    }
-  };
-
+  // handler for mnemonic visibility area
   const handleShowMnemonic = () => {
     if (showRecoveryPhrase === false) {
       setShowRecoveryPhrase(true);
@@ -80,6 +91,7 @@ export default function SettingsWalletView() {
     }
   };
 
+  // handler for wallet name edit button
   const handleEdit = () => {
     if (isEditingWalletName === true) {
       WalletManager.setWalletName(wallet_id, walletEditedName);
@@ -90,10 +102,12 @@ export default function SettingsWalletView() {
     }
   };
 
-  const handleWalletNameEdit = (event) => {
+  // handler for wallet name edit textbox
+  const handleWalletNameTextChange = (event) => {
     setWalletEditedName(event.target.value);
   };
 
+  // handler for "rebuild wallet" button
   const handleRebuildWallet = () => {
     WalletManager.clearWalletData(wallet.id);
     handleActivateWallet();
@@ -110,7 +124,7 @@ export default function SettingsWalletView() {
                 <input
                   type="text"
                   className="rounded-lg bg-white text-primary p-1 mx-1 w-full text-center"
-                  onChange={handleWalletNameEdit}
+                  onChange={handleWalletNameTextChange}
                   onKeyDown={(e) => e.key === "Enter" && handleEdit()}
                   value={walletEditedName}
                 />
@@ -131,7 +145,7 @@ export default function SettingsWalletView() {
           </div>
           {wallet.balance > 0 && (
             <div className="text-lg text-center text-zinc-500">
-              Last Known Balance: ₿ {formatSatoshis(wallet.balance)}
+              Last Known Balance: {formatSatoshis(wallet.balance)[preferLocal ? "fiat" : "bch"]}
             </div>
           )}
         </div>
@@ -219,17 +233,19 @@ export default function SettingsWalletView() {
             </>
           )}
         </div>
-        {wallet.key_viewed !== null && isActiveWallet && (
-          <SettingsCategory icon={ToolOutlined} title="Advanced Options">
-            <button
-              type="button"
-              className="w-full block p-2 text-left"
-              onClick={handleRebuildWallet}
-            >
-              <MedicineBoxOutlined className="text-xl mr-1" />
-              Rebuild Wallet
-            </button>
-            {/*<button
+        {
+          /* Only show "Advanced Options" if user has viewed (TODO: verified) their recovery phrase */
+          wallet.key_viewed !== null && isActiveWallet && (
+            <SettingsCategory icon={ToolOutlined} title="Advanced Options">
+              <button
+                type="button"
+                className="w-full block p-2 text-left"
+                onClick={handleRebuildWallet}
+              >
+                <MedicineBoxOutlined className="text-xl mr-1" />
+                Rebuild Wallet
+              </button>
+              {/*<button
               type="button"
               className="w-full block p-2 text-left"
               onClick={null}
@@ -237,8 +253,9 @@ export default function SettingsWalletView() {
               <KeyOutlined className="text-xl mr-1" />
               View xPub/xPriv
             </button>*/}
-          </SettingsCategory>
-        )}
+            </SettingsCategory>
+          )
+        }
       </div>
     </>
   );

@@ -83,3 +83,8 @@ export const selectDeviceInfo = createSelector(
   (state) => state.device.deviceInfo,
   (deviceInfo) => deviceInfo
 );
+
+export const selectLocale = createSelector(
+  (state) => state.device.locale,
+  (locale) => locale
+);

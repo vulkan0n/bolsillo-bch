@@ -2,23 +2,30 @@ import { useState, useEffect } from "react";
 import { Keyboard } from "@capacitor/keyboard";
 import { useSelector, useDispatch } from "react-redux";
 import { selectPreferences, setPreference } from "@/redux/preferences";
-import { selectDeviceInfo } from "@/redux/device";
+import { selectDeviceInfo, selectLocale } from "@/redux/device";
 import { bchToSats, satsToBch, DUST_LIMIT, MAX_SATOSHI } from "@/util/sats";
 
 import { Decimal } from "decimal.js";
 
-import FiatOracleService from "@/services/FiatOracleService";
+import CurrencyService from "@/services/CurrencyService";
 
 export default function SatoshiInput({ className, allowFiat, onChange, sats }) {
+  const dispatch = useDispatch();
+
   const preferences = useSelector(selectPreferences);
   const deviceInfo = useSelector(selectDeviceInfo);
+  const locale = useSelector(selectLocale);
 
-  const FiatOracle = new FiatOracleService();
+  const localCurrency = preferences["localCurrency"];
+  const preferLocal = preferences["preferLocalCurrency"] === "true";
+  const denominateSats = preferences["denominateSats"] === "true";
+
+  const Currency = new CurrencyService(localCurrency);
 
   function satsToDisplayAmount() {
-    return preferences["preferLocalCurrency"] === "true"
-      ? FiatOracle.toFiat(sats)
-      : preferences["denominateSats"] === "true"
+    return preferLocal
+      ? Currency.satsToFiat(sats)
+      : denominateSats
       ? sats
       : satsToBch(sats);
   }
@@ -28,14 +35,14 @@ export default function SatoshiInput({ className, allowFiat, onChange, sats }) {
     [preferences.preferLocalCurrency, preferences.denominateSats]
   );
 
-  const [displayAmount, setDisplayAmount] = useState(satsToDisplayAmount());
+  const [displayAmount, setDisplayAmount] = useState(
+    satsToDisplayAmount().toString()
+  );
 
   const numDecimalPlaces = (num) => {
     const split = num.split(".");
     const major = split[0];
     const minor = split.length > 1 ? split[1] : "";
-
-    console.log(num, minor.length);
 
     return minor.length;
   };
@@ -47,7 +54,7 @@ export default function SatoshiInput({ className, allowFiat, onChange, sats }) {
     }
 
     if (new Decimal(sats).lessThan(0)) {
-      setDisplayAmount(0);
+      setDisplayAmount("0");
       return;
     }
 
@@ -61,88 +68,71 @@ export default function SatoshiInput({ className, allowFiat, onChange, sats }) {
     }
   };
 
+  const currencySymbol = preferLocal ? Currency.getSymbol(localCurrency) : "₿";
+  const currency = preferLocal
+    ? localCurrency
+    : denominateSats
+    ? "sats"
+    : "BCH";
+
+  const handleClickCurrency = () => {
+    if (!preferLocal) {
+      dispatch(
+        setPreference({ key: "denominateSats", value: !denominateSats })
+      );
+    }
+  };
+
   return (
     <div className="flex items-center">
-      {preferences["preferLocalCurrency"] === "true" && allowFiat ? (
-        <>
-          <div className="text-xl px-0.5 font-mono font-semibold">
-            {FiatOracle.getSymbol(preferences["localCurrency"])}
-          </div>
-          <input
-            type="number"
-            placeholder={FiatOracle.toFiat(2500000)}
-            min="0"
-            max={FiatOracle.toFiat(MAX_SATOSHI)}
-            step="0.01"
-            className={className}
-            value={displayAmount}
-            onChange={(event) => {
-              const amount = event.target.value || "0";
-              const sats = FiatOracle.toSats(amount);
-              const decimals = numDecimalPlaces(amount);
+      <>
+        <div className="text-xl px-0.5 font-mono font-semibold">
+          {currencySymbol}
+        </div>
+        <input
+          type="text"
+          inputMode="numeric"
+          className={className}
+          value={displayAmount}
+          onChange={(event) => {
+            const maxDecimals = preferLocal ? 2 : denominateSats ? 0 : 8;
 
-              handleInputChange(
-                new Decimal(amount).toFixed(
-                  Math.min(decimals, 2),
-                  Decimal.ROUND_DOWN
-                ),
-                sats
-              );
-            }}
-            onKeyDown={handleKeyDown}
-          />
-          <div className="text-base px-0.5 font-mono font-semibold">
-            {preferences["localCurrency"]}
-          </div>
-        </>
-      ) : preferences["denominateSats"] === "true" ? (
-        <>
-          <div className="text-xl px-0.5 font-mono">₿</div>
-          <input
-            type="number"
-            placeholder="25000000"
-            min="0"
-            max={MAX_SATOSHI}
-            step="1000"
-            className={className}
-            value={displayAmount}
-            onChange={(event) => {
-              const sats = new Decimal(event.target.value || 0).toString();
-              handleInputChange(sats, sats);
-            }}
-            onKeyDown={handleKeyDown}
-          />
-          <div className="text-base px-0.5 font-mono font-semibold">sats</div>
-        </>
-      ) : (
-        <>
-          <div className="text-xl px-0.5 font-mono">₿</div>
-          <input
-            type="number"
-            placeholder="0.25000000"
-            min="0"
-            step="0.00001000"
-            max={satsToBch(MAX_SATOSHI)}
-            className={className}
-            value={displayAmount}
-            onChange={(event) => {
-              const amount = event.target.value || "0";
-              const sats = bchToSats(amount);
-              const decimals = numDecimalPlaces(amount);
+            const value =
+              event.target.value === "."
+                ? "0."
+                : !event.target.value
+                ? "0"
+                : event.target.value;
 
-              handleInputChange(
-                new Decimal(amount).toFixed(
-                  Math.min(decimals, 8),
-                  Decimal.ROUND_DOWN
-                ),
-                sats
-              );
-            }}
-            onKeyDown={handleKeyDown}
-          />
-          <div className="text-base px-0.5 font-mono font-semibold">BCH</div>
-        </>
-      )}
+            const amount = new Decimal(Number.parseFloat(value)).toFixed(
+              Math.min(numDecimalPlaces(value), maxDecimals),
+              Decimal.ROUND_DOWN
+            );
+
+            const sats = preferLocal
+              ? Currency.fiatToSats(amount)
+              : denominateSats
+              ? amount
+              : bchToSats(amount);
+
+            const hasEndDecimal =
+              (preferLocal || (!preferLocal && !denominateSats)) &&
+              (value === "0." ||
+                (!displayAmount.toString().includes(".") &&
+                  value.endsWith(".") &&
+                  value.length > 1));
+
+            handleInputChange(`${amount}${hasEndDecimal ? "." : ""}`, sats);
+          }}
+          onKeyDown={handleKeyDown}
+        />
+        <div
+          className="text-base px-0.5 font-mono font-semibold"
+          onClick={handleClickCurrency}
+        >
+          {currency}
+        </div>
+      </>
     </div>
   );
 }

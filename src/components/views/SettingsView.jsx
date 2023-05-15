@@ -7,7 +7,7 @@ import { selectActiveWallet } from "@/redux/wallet";
 
 import { bchToSats, satsToBch, DUST_LIMIT } from "@/util/sats";
 import WalletService from "@/services/WalletService";
-import FiatOracleService from "@/services/FiatOracleService";
+import { currencyList } from "@/util/currency";
 
 import {
   SettingOutlined,
@@ -57,8 +57,6 @@ export default function SettingsView() {
   }
 
   const walletList = new WalletService().getWallets();
-  const fiatOracles = new FiatOracleService().getOracles();
-
   const logoKey = preferences["qrCodeLogo"].toLowerCase();
 
   return (
@@ -95,8 +93,8 @@ export default function SettingsView() {
                 handleSettingsUpdate("localCurrency", event.target.value)
               }
             >
-              {fiatOracles.map((oracle) => (
-                <option key={oracle.currency}>{oracle.currency}</option>
+              {currencyList.map((currency) => (
+                <option key={currency.currency}>{currency.currency}</option>
               ))}
             </select>
           </SettingsChild>

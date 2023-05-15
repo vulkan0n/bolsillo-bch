@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { formatSatoshis } from "@/util/sats";
 
 import { useSelector, useDispatch } from "react-redux";
 import { selectActiveWallet } from "@/redux/wallet";
@@ -7,20 +6,17 @@ import { selectPreferences, setPreference } from "@/redux/preferences";
 import { EyeInvisibleOutlined } from "@ant-design/icons";
 
 import { animated, useSpring } from "@react-spring/web";
+import { formatSatoshis } from "@/util/sats";
 
-import FiatOracleService from "@/services/FiatOracleService";
-
-function WalletViewBalance() {
+export default function WalletViewBalance() {
   const [firstRender, setFirstRender] = useState(true);
   const { balance } = useSelector(selectActiveWallet);
   const preferences = useSelector(selectPreferences);
 
-  const dispatch = useDispatch();
-
   const hideBalance = preferences["hideAvailableBalance"] === "true";
   const preferLocal = preferences["preferLocalCurrency"] === "true";
 
-  const localUnit = preferences["localCurrency"];
+  const dispatch = useDispatch();
 
   const handleHideBalance = () => {
     dispatch(
@@ -33,16 +29,6 @@ function WalletViewBalance() {
       setPreference({ key: "preferLocalCurrency", value: !preferLocal })
     );
   };
-
-  const fiatBalance = new FiatOracleService().toFiat(balance);
-
-  const formattedBalance = hideBalance
-    ? `₿ xxxxxxxxxx`
-    : `₿ ${formatSatoshis(balance)}`;
-
-  const formattedLocalBalance = hideBalance
-    ? `$X.XX ${localUnit}`
-    : `$${fiatBalance} ${localUnit}`;
 
   const [balanceReceivedSpring, receiveSpringApi] = useSpring(() => ({
     from: { color: "#8dc451" },
@@ -86,7 +72,7 @@ function WalletViewBalance() {
             }`}
           >
             <animated.span style={{ ...balanceReceivedSpring }}>
-              {preferLocal ? formattedLocalBalance : formattedBalance}
+              {formatSatoshis(balance)[preferLocal ? "fiat" : "bch"]}
             </animated.span>
           </span>
         </span>
@@ -94,12 +80,10 @@ function WalletViewBalance() {
       {!hideBalance && (
         <div className="text-md text-zinc-400 cursor-pointer">
           <span onClick={handleFlipCurrency}>
-            {preferLocal ? formattedBalance : formattedLocalBalance}
+            {formatSatoshis(balance)[preferLocal ? "bch" : "fiat"]}
           </span>
         </div>
       )}
     </div>
   );
 }
-
-export default WalletViewBalance;

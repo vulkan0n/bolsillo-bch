@@ -9,7 +9,7 @@ import { Decimal } from "decimal.js";
 import { useLongPress } from "use-long-press";
 
 import { bchToSats, satsToBch, MAX_SATOSHI } from "@/util/sats";
-import FiatOracleService from "@/services/FiatOracleService";
+import CurrencyService from "@/services/CurrencyService";
 import TransactionManagerService from "@/services/TransactionManagerService";
 
 import { TransactionOutlined } from "@ant-design/icons";
@@ -29,15 +29,15 @@ export default function WalletViewSendConfirm() {
   const denominateSats = preferences["denominateSats"] === "true";
   const preferLocal = preferences["preferLocalCurrency"] === "true";
 
-  const FiatOracle = new FiatOracleService();
+  const Currency = new CurrencyService(preferences["localCurrency"]);
 
   const satoshis = preferLocal
-    ? FiatOracle.toSats(amount)
+    ? Currency.fiatToSats(amount)
     : denominateSats
     ? new Decimal(amount)
     : bchToSats(amount);
 
-  const fiatAmount = FiatOracle.toFiat(satoshis);
+  const fiatAmount = Currency.satsToFiat(satoshis);
 
   const isInsufficientFunds = wallet.balance < satoshis;
 
@@ -101,9 +101,9 @@ export default function WalletViewSendConfirm() {
 
     const newAmount = preferLocal
       ? denominateSats
-        ? FiatOracle.toSats(amount)
-        : FiatOracle.toBch(amount)
-      : FiatOracle.toFiat(satoshis);
+        ? Currency.fiatToSats(amount)
+        : Currency.fiatToBch(amount)
+      : Currency.satsToFiat(satoshis);
 
     if (new Decimal(newAmount).equals(0)) {
       setAmount("0");
@@ -131,7 +131,7 @@ export default function WalletViewSendConfirm() {
     }
 
     const newAmount = preferLocal
-      ? FiatOracle.toFiat(amount)
+      ? Currency.satsToFiat(amount)
       : denominateSats
       ? new Decimal(amount)
       : satsToBch(amount);
@@ -194,7 +194,7 @@ export default function WalletViewSendConfirm() {
           }
 
           if (
-            new Decimal(FiatOracle.toSats(`${amount}${key}`)).greaterThan(
+            new Decimal(Currency.fiatToSats(`${amount}${key}`)).greaterThan(
               MAX_SATOSHI
             )
           ) {
@@ -262,8 +262,8 @@ export default function WalletViewSendConfirm() {
                 >
                   ₿&nbsp;
                   {denominateSats
-                    ? `${FiatOracle.toSats(amount)} sats`
-                    : `${FiatOracle.toBch(amount)} BCH`}
+                    ? `${Currency.fiatToSats(amount)} sats`
+                    : `${Currency.fiatToBch(amount)} BCH`}
                 </span>
                 <TransactionOutlined
                   className="cursor-pointer text-xl ml-2"

@@ -47,8 +47,13 @@ export default function WalletViewReceive() {
     return split.length > 1 ? split[1] : split[0];
   })();
 
+  const qrInvoice =
+    showInvoiceAmount && invoiceSats > 0
+      ? `${address}?amount=${satsToBch(invoiceSats)}`
+      : address;
+
   const copyAddressToClipboard = async () => {
-    await Clipboard.write({ string: address });
+    await Clipboard.write({ string: qrInvoice });
   };
 
   const skipAddress = () => setSkip((skip + 1) % 5);
@@ -62,11 +67,6 @@ export default function WalletViewReceive() {
   const handleInvoiceAmountChange = (satoshis) => {
     setInvoiceSats(satoshis);
   };
-
-  const qrInvoice =
-    showInvoiceAmount && invoiceSats > 0
-      ? `${address}?amount=${satsToBch(invoiceSats)}`
-      : address;
 
   return (
     <>

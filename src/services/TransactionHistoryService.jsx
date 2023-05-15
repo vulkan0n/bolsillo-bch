@@ -3,7 +3,7 @@ import AddressManagerService from "@/services/AddressManagerService";
 import TransactionManagerService from "@/services/TransactionManagerService";
 import { bchToSats } from "@/util/sats";
 import { Decimal } from "decimal.js";
-import FiatOracleService from "@/services/FiatOracleService";
+import CurrencyService from "@/services/CurrencyService";
 
 export default function TransactionHistoryService(wallet_id) {
   const { db, resultToJson, saveDatabase } = new DatabaseService();
@@ -35,7 +35,7 @@ export default function TransactionHistoryService(wallet_id) {
     return result;
   }
 
-  async function calculateAndUpdateTransactionAmount(tx) {
+  async function calculateAndUpdateTransactionAmount(tx, fiatCurrency) {
     const AddressManager = new AddressManagerService(wallet_id);
     const TransactionManager = new TransactionManagerService();
 
@@ -105,7 +105,7 @@ export default function TransactionHistoryService(wallet_id) {
     db.run(
       `UPDATE address_transactions SET 
         amount="${amount}", 
-        fiat_amount="${new FiatOracleService().toFiat(amount)}", 
+        fiat_amount="${new CurrencyService(fiatCurrency).satsToFiat(amount)}", 
         time=${
           tx.time !== "null"
             ? `datetime("${tx.time}", "unixepoch")`
