@@ -1,8 +1,13 @@
 import { useState, useRef } from "react";
 import { useParams, useNavigate, Navigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { setPreference, selectActiveWalletId, selectPreferences } from "@/redux/preferences";
+import {
+  setPreference,
+  selectActiveWalletId,
+  selectPreferences,
+} from "@/redux/preferences";
 import { walletBoot, walletReload } from "@/redux/wallet";
+import { selectLocale } from "@/redux/device";
 import { syncReconnect } from "@/redux/sync";
 import {
   WalletOutlined,
@@ -27,6 +32,8 @@ import { formatSatoshis } from "@/util/sats";
 export default function SettingsWalletView() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  const locale = useSelector(selectLocale);
 
   const { wallet_id } = useParams();
   const activeWalletId = useSelector(selectActiveWalletId);
@@ -141,11 +148,12 @@ export default function SettingsWalletView() {
             )}
           </div>
           <div className="text-lg text-center text-zinc-600">
-            Created {wallet.date_created}
+            Created {new Date(wallet.date_created).toLocaleString(locale)}
           </div>
           {wallet.balance > 0 && (
             <div className="text-lg text-center text-zinc-500">
-              Last Known Balance: {formatSatoshis(wallet.balance)[preferLocal ? "fiat" : "bch"]}
+              Last Known Balance:{" "}
+              {formatSatoshis(wallet.balance)[preferLocal ? "fiat" : "bch"]}
             </div>
           )}
         </div>

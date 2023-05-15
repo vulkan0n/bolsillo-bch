@@ -108,8 +108,8 @@ export default function TransactionHistoryService(wallet_id) {
         fiat_amount="${new CurrencyService(fiatCurrency).satsToFiat(amount)}", 
         time=${
           tx.time !== "null"
-            ? `datetime("${tx.time}", "unixepoch")`
-            : `datetime("now")`
+            ? `strftime('%Y-%m-%dT%H:%M:%SZ', "${tx.time}", "unixepoch")`
+            : `strftime('%Y-%m-%dT%H:%M:%SZ')`
         }
       WHERE txid="${tx.txid}"`
     );

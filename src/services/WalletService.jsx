@@ -81,7 +81,7 @@ export default function WalletService() {
   function importWallet(mnemonic, derivation = "m/44'/0'/0'") {
     const result = resultToJson(
       db.exec(
-        `INSERT INTO wallets (name, mnemonic, derivation, key_viewed) VALUES (?, ?, ?, datetime("now")) RETURNING *`,
+        `INSERT INTO wallets (name, mnemonic, derivation, key_viewed) VALUES (?, ?, ?, strftime('%Y-%m-%dT%H:%M:%SZ')) RETURNING *`,
         ["Imported Wallet", mnemonic, derivation]
       )
     )[0];

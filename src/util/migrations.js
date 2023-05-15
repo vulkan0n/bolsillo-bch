@@ -3,17 +3,13 @@
 // run_migrations: run all migrations in migrations array sequentially
 export function run_migrations(db) {
   const DB_VERSION = db.exec("PRAGMA user_version")[0].values[0][0];
-
+  console.log("DB_VERSION", DB_VERSION, migrations.length);
   for (
     let version = DB_VERSION;
     version < migrations.length;
     version = version + 1
   ) {
-    console.log(
-      "DB_VERSION",
-      `${DB_VERSION}/${migrations.length - 1}`,
-      version
-    );
+    console.log("DB_VERSION", `${DB_VERSION}/${migrations.length}`, version);
     db.run(migrations[version]());
   }
 }
@@ -22,19 +18,18 @@ export function run_migrations(db) {
 // each entry should represent a new db version
 const migrations = [
   function migrate_v0() {
+    console.log("migrate_v0");
     const query = [];
 
     query.push("PRAGMA user_version = 0;");
 
-    /*
-    //query.push("DROP TABLE IF EXISTS wallets;");
+    query.push("DROP TABLE IF EXISTS wallets;");
     query.push("DROP TABLE IF EXISTS blockchain;");
     query.push("DROP TABLE IF EXISTS addresses;");
     query.push("DROP TABLE IF EXISTS transactions;");
     query.push("DROP TABLE IF EXISTS address_transactions;");
     query.push("DROP TABLE IF EXISTS address_utxos;");
     query.push("DROP TRIGGER IF EXISTS balance_update;");
-    /**/
 
     query.push(
       `CREATE TABLE IF NOT EXISTS wallets ( 
@@ -42,7 +37,7 @@ const migrations = [
         name text not null, 
         mnemonic text unique not null, 
         derivation text default "m/44'/0'/0'", 
-        date_created default CURRENT_TIMESTAMP, 
+        date_created default ( strftime('%Y-%m-%dT%H:%M:%SZ') ),
         key_viewed text, 
         key_verified text, 
         balance int default 0
@@ -71,7 +66,7 @@ const migrations = [
     query.push(
       `CREATE TABLE IF NOT EXISTS transactions (
         txid text primary key not null, 
-        time_seen default CURRENT_TIMESTAMP,
+        time_seen default ( strftime('%Y-%m-%dT%H:%M:%SZ') ),
         hex text,
         size int,
         blockhash text,
@@ -84,8 +79,8 @@ const migrations = [
       `CREATE TABLE IF NOT EXISTS address_transactions (
         txid text primary key not null,
         height int not null,
-        time text default CURRENT_TIMESTAMP,
-        time_seen default CURRENT_TIMESTAMP,
+        time text default ( strftime('%Y-%m-%dT%H:%M:%SZ') ),
+        time_seen default ( strftime('%Y-%m-%dT%H:%M:%SZ') ),
         address text not null,
         amount int,
         fiat_amount text
@@ -115,6 +110,17 @@ const migrations = [
       ;`
     );
 
+    query.push("PRAGMA user_version = 1;");
+
     return query.join("");
   },
+
+  /*function migrate_v1() {
+    console.log("migrate_v1");
+    let query = [];
+
+    query.push("PRAGMA user_version = 0;");
+
+    return query.join("");
+  },*/
 ];

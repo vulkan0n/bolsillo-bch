@@ -7,6 +7,7 @@ import {
 } from "@reduxjs/toolkit";
 
 import { walletBalanceUpdate } from "@/redux/wallet";
+import { fetchExchangeRates } from "@/redux/exchangeRates";
 
 import ElectrumService from "@/services/ElectrumService";
 import BlockchainService from "@/services/BlockchainService";
@@ -237,7 +238,10 @@ export const syncTxAmount = createAsyncThunk(
     const wallet_id = thunkApi.getState().wallet.id;
     await new TransactionHistoryService(
       wallet_id
-    ).calculateAndUpdateTransactionAmount(tx, thunkApi.getState().preferences.localCurrency);
+    ).calculateAndUpdateTransactionAmount(
+      tx,
+      thunkApi.getState().preferences.localCurrency
+    );
     return wallet_id;
   }
 );
@@ -267,6 +271,7 @@ syncMiddleware.startListening({
     const chaintip = action.payload;
     console.log("sync/chaintip", chaintip);
     listenerApi.dispatch(syncBlock(chaintip.height));
+    listenerApi.dispatch(fetchExchangeRates());
   },
 });
 

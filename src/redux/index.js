@@ -4,6 +4,7 @@ import { walletReducer, walletMiddleware, walletBoot } from "./wallet";
 import { syncReducer, syncMiddleware } from "./sync";
 import { txReducer } from "./transactions";
 import { deviceReducer } from "./device";
+import { exchangeRateReducer, fetchExchangeRates } from "./exchangeRates";
 
 export const store = configureStore({
   reducer: {
@@ -12,6 +13,7 @@ export const store = configureStore({
     wallet: walletReducer,
     sync: syncReducer,
     transactions: txReducer,
+    exchangeRates: exchangeRateReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware()
@@ -20,3 +22,4 @@ export const store = configureStore({
 });
 
 store.dispatch(walletBoot(selectActiveWalletId(store.getState())));
+store.dispatch(fetchExchangeRates(store.getState()));

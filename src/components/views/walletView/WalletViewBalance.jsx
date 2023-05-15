@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 
 import { useSelector, useDispatch } from "react-redux";
 import { selectActiveWallet } from "@/redux/wallet";
+import { selectExchangeRates } from "@/redux/exchangeRates";
 import { selectPreferences, setPreference } from "@/redux/preferences";
 import { EyeInvisibleOutlined } from "@ant-design/icons";
 
@@ -11,6 +12,7 @@ import { formatSatoshis } from "@/util/sats";
 export default function WalletViewBalance() {
   const [firstRender, setFirstRender] = useState(true);
   const { balance } = useSelector(selectActiveWallet);
+  const exchangeRates = useSelector(selectExchangeRates);
   const preferences = useSelector(selectPreferences);
 
   const hideBalance = preferences["hideAvailableBalance"] === "true";
@@ -51,6 +53,11 @@ export default function WalletViewBalance() {
     [balance]
   );
 
+  const formattedBalance = useMemo(
+    () => formatSatoshis(balance),
+    exchangeRates
+  );
+
   return (
     <div className="py-3 text-center">
       {!hideBalance && (
@@ -72,7 +79,7 @@ export default function WalletViewBalance() {
             }`}
           >
             <animated.span style={{ ...balanceReceivedSpring }}>
-              {formatSatoshis(balance)[preferLocal ? "fiat" : "bch"]}
+              {formattedBalance[preferLocal ? "fiat" : "bch"]}
             </animated.span>
           </span>
         </span>
@@ -80,7 +87,7 @@ export default function WalletViewBalance() {
       {!hideBalance && (
         <div className="text-md text-zinc-400 cursor-pointer">
           <span onClick={handleFlipCurrency}>
-            {formatSatoshis(balance)[preferLocal ? "bch" : "fiat"]}
+            {formattedBalance[preferLocal ? "bch" : "fiat"]}
           </span>
         </div>
       )}
