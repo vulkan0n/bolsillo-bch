@@ -9,7 +9,6 @@ import { selectActiveWallet } from "@/redux/wallet";
 import { selectPreferences } from "@/redux/preferences";
 import { selectScannerIsScanning } from "@/redux/device";
 
-import WalletService from "@/services/WalletService";
 import AddressManagerService from "@/services/AddressManagerService";
 import ScannerButton from "./ScannerButton";
 import SatoshiInput from "@/components/atoms/SatoshiInput";
@@ -17,11 +16,7 @@ import SatoshiInput from "@/components/atoms/SatoshiInput";
 import { logos } from "@/util/logos";
 import { satsToBch } from "@/util/sats";
 
-import {
-  FormOutlined,
-  ReloadOutlined,
-  UnorderedListOutlined,
-} from "@ant-design/icons";
+import { FormOutlined, ReloadOutlined } from "@ant-design/icons";
 
 export default function WalletViewReceive() {
   const preferences = useSelector(selectPreferences);

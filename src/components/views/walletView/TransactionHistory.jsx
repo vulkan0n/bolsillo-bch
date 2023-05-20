@@ -1,9 +1,8 @@
 import { useSelector } from "react-redux";
 import { selectLocale } from "@/redux/device";
 import { selectPreferences } from "@/redux/preferences";
-import { satsToBch, formatSatoshis } from "@/util/sats";
+import { formatSatoshis } from "@/util/sats";
 import { selectTransactionHistory } from "@/redux/transactions";
-import CurrencyService from "@/services/CurrencyService";
 
 function TransactionHistory() {
   const locale = useSelector(selectLocale);
@@ -13,11 +12,7 @@ function TransactionHistory() {
   const receiveStyle = "text-secondary";
   const sendStyle = "text-error";
 
-  const localCurrency = preferences["localCurrency"];
   const preferLocal = preferences["preferLocalCurrency"] === "true";
-  const denominateSats = preferences["denominateSats"] === "true";
-  const unit = denominateSats ? "sats" : "BCH";
-  const Currency = new CurrencyService(localCurrency);
 
   return (
     <>
