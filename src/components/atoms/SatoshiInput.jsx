@@ -3,7 +3,7 @@ import { Keyboard } from "@capacitor/keyboard";
 import { useSelector, useDispatch } from "react-redux";
 import { selectPreferences, setPreference } from "@/redux/preferences";
 import { selectDeviceInfo, selectLocale } from "@/redux/device";
-import { bchToSats, satsToBch, DUST_LIMIT, MAX_SATOSHI } from "@/util/sats";
+import { bchToSats, satsToBch, MAX_SATOSHI } from "@/util/sats";
 
 import { Decimal } from "decimal.js";
 
