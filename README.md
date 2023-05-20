@@ -1,12 +1,17 @@
 # Selene Wallet
+
 Your Gateway to the Cash Economy.
 
-We are fulfilling the mission of making Bitcoin Cash (BCH) the global reserve currency by building a sleek, robust, user-friendly wallet that makes joining the BCH economy as easy and compelling as possible.
+Website: https://selene.cash
+
+We are fulfilling the mission of making Bitcoin Cash (BCH) the [global reserve currency](https://bitcoincashpodcast.com/faqs/Podcast/what-do-you-mean-global-reserve-currency) by building a sleek, robust, user-friendly wallet that makes joining the BCH economy as easy and compelling as possible.
 
 ## Demo
-- https://app.selene.cash/
+
+- Coming soon
 
 ## Developer Quick Start
+
 1. `git clone https://git.xulu.tech/selene.cash/selene-wallet`
 2. `cd selene-wallet`
 3. `yarn install`
@@ -15,6 +20,7 @@ We are fulfilling the mission of making Bitcoin Cash (BCH) the global reserve cu
 6. https://localhost:5173
 
 ## Building for Android
+
 1. Install Android Studio
 2. `yarn run build`
 3. `npx cap sync`
@@ -22,9 +28,11 @@ We are fulfilling the mission of making Bitcoin Cash (BCH) the global reserve cu
 5. (optional) `npx cap open android` to open the app in android studio
 
 ## Building for iOS
+
 - Coming Soon
 
 ## Contribution and Contact
+
 Questions: [Telegram group](https://t.me/+MMbV2KEPFt84MDQ8)
 
 Contributors: [Contributing](./docs/CONTRIBUTING.md)
