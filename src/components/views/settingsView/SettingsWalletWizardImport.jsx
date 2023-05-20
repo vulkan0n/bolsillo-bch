@@ -13,21 +13,25 @@ export default function SettingsWalletImport() {
   const [message, setMessage] = useState("");
 
   const handleMnemonicInput = (event) => {
-    setMnemonicInput(event.target.value);
+    setMnemonicInput(event.target.value.toLowerCase());
     setMessage("");
   };
 
   const handleImportWallet = () => {
-    const wordCount = mnemonicInput.trim().split(" ").length;
+    const trimmedInput = mnemonicInput.trim();
+    const wordCount = trimmedInput.split(" ").length;
     if (wordCount < 12) {
       setMessage("Recovery phrase must be at least 12 words");
       return;
     }
 
-    const valid = bip39.validateMnemonic(mnemonicInput);
+    const valid = bip39.validateMnemonic(trimmedInput);
     if (valid) {
       try {
-        const wallet = new WalletService().importWallet(mnemonicInput, "m/44'/0'/0'");
+        const wallet = new WalletService().importWallet(
+          trimmedInput,
+          "m/44'/0'/0'"
+        );
         navigate(`/settings/wallet/${wallet.id}`, { replace: true });
       } catch (e) {
         setMessage("That wallet has already been imported!");
