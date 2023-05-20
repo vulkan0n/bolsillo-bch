@@ -10,9 +10,6 @@ import { syncConnect, syncSubscribeAddress } from "@/redux/sync";
 
 import WalletService from "@/services/WalletService";
 import AddressManagerService from "@/services/AddressManagerService";
-import CurrencyService from "@/services/CurrencyService";
-
-import { satsToBch } from "@/util/sats";
 
 export const walletMiddleware = createListenerMiddleware();
 
@@ -76,4 +73,3 @@ export const selectActiveWallet = createSelector(
   (state) => state,
   (state) => state.wallet
 );
-

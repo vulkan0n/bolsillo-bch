@@ -20,11 +20,18 @@ export function bchToSats(bch) {
 }
 
 export function formatSatoshis(amount) {
+  // Can't check for !amount because amount maybe === 0
+  if (amount === null || amount === undefined) {
+    return {
+      bch: "-",
+      fiat: "-",
+    };
+  }
+
   const locale = selectLocale(store.getState());
   const preferences = selectPreferences(store.getState());
 
   const currency = preferences["localCurrency"];
-  const preferLocal = preferences["preferLocalCurrency"] === "true";
   const denominateSats = preferences["denominateSats"] === "true";
   const hideBalance = preferences["hideAvailableBalance"] === "true";
 
