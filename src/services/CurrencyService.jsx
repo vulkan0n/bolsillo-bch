@@ -4,6 +4,38 @@ import { currencyList } from "@/util/currency";
 import { selectExchangeRates } from "@/redux/exchangeRates";
 import { store } from "@/redux";
 
+// ARS (Argentina) has to be calculated from the street rate
+// Rate provided by yadio.io, requested by Argentinian users, standard for Bitcoin apps
+// The "official" coingecko / government ARS rate is not used on the ground
+const replaceOfficialArsRateWithStreetRate = async (rates) => {
+  const yadioApi = "https://api.yadio.io";
+  const yadioRates = await fetch(`${yadioApi}/exrates/USD`, {
+    method: "GET",
+  });
+
+  const yadioData = await yadioRates.json();
+  const yadioUsdToArsRate = yadioData?.USD?.ARS;
+
+  const bchToUsdRate = rates.find((r) => r.currency === "USD")?.price;
+  const bchToUsdRateFloat = parseFloat(bchToUsdRate);
+
+  const realBchToArsPrice = (bchToUsdRateFloat * yadioUsdToArsRate).toString();
+
+  // Swap in the correct ARS rate
+  const adjustedRates = rates.map((r) => {
+    if (r.currency === "ARS") {
+      return {
+        ...r,
+        price: realBchToArsPrice,
+      };
+    }
+
+    return r;
+  });
+
+  return adjustedRates;
+};
+
 export default function CurrencyService(fiatCurrency) {
   return {
     fiatToSats,
@@ -45,7 +77,10 @@ export default function CurrencyService(fiatCurrency) {
         price: data[currency.currency.toLowerCase()].toString(),
       }));
 
-      return rates;
+      // Swap in the correct ARS rate
+      const adjustedRates = await replaceOfficialArsRateWithStreetRate(rates);
+
+      return adjustedRates;
     } catch (e) {
       console.error(e);
     }
