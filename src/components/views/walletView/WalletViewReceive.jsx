@@ -7,7 +7,7 @@ import { useLongPress } from "use-long-press";
 
 import { selectActiveWallet } from "@/redux/wallet";
 import { selectPreferences } from "@/redux/preferences";
-import { selectScannerIsScanning } from "@/redux/device";
+import { selectScannerIsScanning, selectDeviceInfo } from "@/redux/device";
 
 import AddressManagerService from "@/services/AddressManagerService";
 import ScannerButton from "./ScannerButton";
@@ -22,6 +22,7 @@ export default function WalletViewReceive() {
   const preferences = useSelector(selectPreferences);
   const wallet = useSelector(selectActiveWallet);
   const isScanning = useSelector(selectScannerIsScanning);
+  const deviceInfo = useSelector(selectDeviceInfo);
 
   const [skip, setSkip] = useState(0);
   const [invoiceSats, setInvoiceSats] = useState("0");
@@ -62,6 +63,8 @@ export default function WalletViewReceive() {
   const handleInvoiceAmountChange = (satoshis) => {
     setInvoiceSats(satoshis);
   };
+
+  const isWeb = deviceInfo.platform === "web";
 
   return (
     <>
@@ -128,7 +131,7 @@ export default function WalletViewReceive() {
           </div>
         </>
       )}
-      <ScannerButton />
+      {!isWeb && <ScannerButton />}
     </>
   );
 }
