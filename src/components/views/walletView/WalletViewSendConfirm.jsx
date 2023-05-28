@@ -9,6 +9,8 @@ import { Decimal } from "decimal.js";
 import { useLongPress } from "use-long-press";
 
 import { bchToSats, satsToBch, MAX_SATOSHI } from "@/util/sats";
+import { validateInvoiceString } from "@/util/invoice";
+
 import CurrencyService from "@/services/CurrencyService";
 import TransactionManagerService from "@/services/TransactionManagerService";
 
@@ -17,8 +19,13 @@ import { TransactionOutlined } from "@ant-design/icons";
 export default function WalletViewSendConfirm() {
   const dispatch = useDispatch();
   const [searchParams, setSearchParams] = useSearchParams();
-  const { address } = useParams();
+  const params = useParams();
+
   const wallet = useSelector(selectActiveWallet);
+
+  const { isValid, address, isBase58Address } = validateInvoiceString(
+    params.address
+  );
 
   const [amount, setAmount] = useState(searchParams.get("amount") || "0");
   const [message, setMessage] = useState("");
