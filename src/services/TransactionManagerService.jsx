@@ -4,6 +4,7 @@ import UtxoManagerService from "@/services/UtxoManagerService";
 import AddressManagerService from "@/services/AddressManagerService";
 import HdNodeService from "@/services/HdNodeService";
 import { DUST_LIMIT } from "@/util/sats";
+import { validateInvoiceString } from "@/util/invoice";
 
 import * as libauth from "@bitauth/libauth";
 
@@ -129,8 +130,11 @@ export default function TransactionManagerService() {
 
   function buildP2pkhTransaction(recipients, wallet_id, fee = DUST_LIMIT / 3) {
     // helper function returns null if invalid locking bytecode
-    const addressToLockingBytecode = (address) => {
-      const lockingBytecode = libauth.cashAddressToLockingBytecode(address);
+    const addressToLockingBytecode = (addr) => {
+      const { isBase58Address, address } = validateInvoiceString(addr);
+      const lockingBytecode = isBase58Address
+        ? libauth.base58AddressToLockingBytecode(address)
+        : libauth.cashAddressToLockingBytecode(address);
 
       return typeof lockingBytecode === "object"
         ? lockingBytecode.bytecode
