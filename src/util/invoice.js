@@ -1,5 +1,5 @@
 import { Decimal } from "decimal.js";
-import { decodeCashAddress } from "@bitauth/libauth";
+import { decodeCashAddress, decodeBase58Address } from "@bitauth/libauth";
 
 export function validateInvoiceString(invoice) {
   const address = invoice.split("?")[0];
@@ -10,9 +10,25 @@ export function validateInvoiceString(invoice) {
     ? address
     : `bitcoincash:${address}`;
 
-  const valid = typeof decodeCashAddress(prefixedAddress) === "object";
+  const isCashAddress = typeof decodeCashAddress(prefixedAddress) === "object";
+  const isBase58Address =
+    !isCashAddress && typeof decodeBase58Address(address) === "object";
+
+  const isValid = isCashAddress || isBase58Address;
+  const validAddress = isValid
+    ? isCashAddress
+      ? prefixedAddress
+      : address
+    : "";
 
   const query = new Decimal(amount) > 0 ? `?amount=${amount}` : "";
 
-  return { valid, address: prefixedAddress, amount, query };
+  return {
+    address: validAddress,
+    amount,
+    query,
+    isValid,
+    isCashAddress,
+    isBase58Address,
+  };
 }

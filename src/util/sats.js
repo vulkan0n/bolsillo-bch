@@ -39,9 +39,8 @@ export function formatSatoshis(amount) {
 
   const bchSymbol = denominateSats ? "" : "₿";
   const bchUnit = denominateSats ? "sats" : "BCH";
-  const bchAmount = Math.abs(
-    denominateSats ? amount : satsToBch(amount)
-  ).toFixed(8);
+  const satsAmount = Math.abs(amount);
+  const bchAmount = denominateSats ? satsAmount : satsToBch(satsAmount);
 
   const bchDisplay =
     amount < 0

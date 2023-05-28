@@ -22,10 +22,10 @@ export default function WalletViewSend() {
 
   function forwardOnValidAddress(input) {
     // go to send screen when valid address is entered
-    const { valid, address, query } = validateInvoiceString(input);
+    const { isValid, address, query } = validateInvoiceString(input);
 
     // decoder function returns object on success, string on error
-    if (valid) {
+    if (isValid) {
       navigate(`/wallet/send/${address}${query}`);
     }
 
