@@ -86,9 +86,11 @@ export default function ScannerButton() {
       dispatch(setScannerIsScanning(false));
       const scanned = result.content;
 
-      const { valid, address, query } = validateInvoiceString(result.content);
+      const { isCashAddress, address, query } = validateInvoiceString(
+        result.content
+      );
 
-      if (valid) {
+      if (isCashAddress) {
         navigate(`/wallet/send/${address}${query}`);
       }
     }

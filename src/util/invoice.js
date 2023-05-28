@@ -23,5 +23,12 @@ export function validateInvoiceString(invoice) {
 
   const query = new Decimal(amount) > 0 ? `?amount=${amount}` : "";
 
-  return { valid: isValid, address: validAddress, amount, query };
+  return {
+    address: validAddress,
+    amount,
+    query,
+    isValid,
+    isCashAddress,
+    isBase58Address,
+  };
 }
