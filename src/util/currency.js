@@ -41,7 +41,7 @@ export const currencyList = [
   { currency: "TRY", countryCode: "TR", symbol: "₺" },
   { currency: "TWD", countryCode: "TW", symbol: "NT$" },
   { currency: "UAH", countryCode: "UA", symbol: "₴" },
-  { currency: "VEF", countryCode: "VE", symbol: "Bs" },
+  { currency: "VES", countryCode: "VE", symbol: "Bs" },
   { currency: "VND", countryCode: "VN", symbol: "₫" },
   { currency: "ZAR", countryCode: "ZA", symbol: "R" },
 ];
