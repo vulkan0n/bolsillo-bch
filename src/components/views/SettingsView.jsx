@@ -1,11 +1,9 @@
-import { useReducer, useState } from "react";
 import { Link } from "react-router-dom";
 
 import { useSelector, useDispatch } from "react-redux";
 import { selectPreferences, setPreference } from "@/redux/preferences";
 import { selectActiveWallet } from "@/redux/wallet";
 
-import { bchToSats, satsToBch, DUST_LIMIT } from "@/util/sats";
 import WalletService from "@/services/WalletService";
 import { currencyList } from "@/util/currency";
 
@@ -26,15 +24,6 @@ import {
   PlusCircleFilled,
   CheckCircleOutlined,
   BorderOuterOutlined,
-  BgColorsOutlined,
-  FormatPainterOutlined,
-  SettingFilled,
-  HeartOutlined,
-  BarChartOutlined,
-  DashboardOutlined,
-  GiftOutlined,
-  CodeOutlined,
-  CloudServerOutlined,
 } from "@ant-design/icons";
 
 import ViewHeader from "./ViewHeader";
@@ -45,12 +34,12 @@ import SettingsChild from "./settingsView/SettingsChild";
 import SatoshiInput from "@/components/atoms/SatoshiInput";
 
 import { logos } from "@/util/logos";
+import SELENE_WALLET_VERSION from "@/util/version";
 
 export default function SettingsView() {
   const dispatch = useDispatch();
   const preferences = useSelector(selectPreferences);
   const wallet = useSelector(selectActiveWallet);
-  //console.log("SettingsView", preferences);
 
   function handleSettingsUpdate(key, value) {
     dispatch(setPreference({ key, value }));
@@ -278,6 +267,9 @@ export default function SettingsView() {
           </SettingsChild>
         </SettingsCategory>
         */}
+      </div>
+      <div className="text-xs text-center text-zinc-500 opacity-80">
+        Selene Wallet v{SELENE_WALLET_VERSION}
       </div>
     </>
   );

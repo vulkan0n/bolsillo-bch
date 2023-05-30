@@ -6,6 +6,8 @@ import {
   Navigate,
 } from "react-router-dom";
 
+import { Toaster } from "react-hot-toast";
+
 import { Provider } from "react-redux";
 import { store } from "./redux";
 
@@ -87,6 +89,7 @@ const router = createBrowserRouter([
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <Provider store={store}>
+      <Toaster toastOptions={{ duration: 3000 }} />
       <RouterProvider router={router} />
     </Provider>
   </React.StrictMode>

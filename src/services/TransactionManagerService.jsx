@@ -239,6 +239,7 @@ export default function TransactionManagerService() {
     return {
       tx_hash,
       tx_hex,
+      feeTotal
     };
   }
 

@@ -13,7 +13,12 @@ export default function SettingsWalletImport() {
   const [message, setMessage] = useState("");
 
   const handleMnemonicInput = (event) => {
-    setMnemonicInput(event.target.value.toLowerCase());
+    const sanitizedInput = event.target.value
+      .toLowerCase()
+      .replace(/[^a-z ]/g, "") // strip all non a-z
+      .replace(/ {2,}/g, " "); // strip consecutive spaces
+
+    setMnemonicInput(sanitizedInput);
     setMessage("");
   };
 
