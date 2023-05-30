@@ -19,7 +19,7 @@ export function bchToSats(bch) {
     .toString();
 }
 
-export function formatSatoshis(amount) {
+export function formatSatoshis(amount, bypassHidden = false) {
   // Can't check for !amount because amount maybe === 0
   if (amount === null || amount === undefined) {
     return {
@@ -39,13 +39,15 @@ export function formatSatoshis(amount) {
 
   const bchSymbol = denominateSats ? "" : "₿";
   const bchUnit = denominateSats ? "sats" : "BCH";
-  const satsAmount = Math.abs(amount);
-  const bchAmount = denominateSats ? satsAmount : satsToBch(satsAmount);
+  const absoluteSatsAmount = Math.abs(amount);
+  const absoluteBchAmount = denominateSats
+    ? absoluteSatsAmount
+    : satsToBch(absoluteSatsAmount);
 
   const bchDisplay =
     amount < 0
-      ? `-${bchSymbol}${bchAmount} ${bchUnit}`
-      : `${bchSymbol}${bchAmount} ${bchUnit}`;
+      ? `-${bchSymbol}${absoluteBchAmount} ${bchUnit}`
+      : `${bchSymbol}${absoluteBchAmount} ${bchUnit}`;
 
   const fiatAmount = `${new Number(Currency.satsToFiat(amount)).toLocaleString(
     locale,
@@ -62,5 +64,5 @@ export function formatSatoshis(amount) {
     fiat: fiatAmount.replace(/\d/g, "X"),
   };
 
-  return hideBalance ? displayHidden : displayAmount;
+  return hideBalance && !bypassHidden ? displayHidden : displayAmount;
 }
