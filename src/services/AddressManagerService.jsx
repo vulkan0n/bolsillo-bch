@@ -172,6 +172,10 @@ export default function AddressManagerService(wallet_id) {
   // updateAddressBalance: updates balance for address in database
   // returns total wallet balance
   function updateAddressBalance(address, balance) {
+    const previousBalance = resultToJson(
+      db.exec(`SELECT balance FROM wallets WHERE id="${wallet_id}"`)
+    )[0].balance;
+
     db.run(
       `UPDATE addresses SET balance="${balance}" WHERE address="${address}";`
     );
@@ -180,9 +184,8 @@ export default function AddressManagerService(wallet_id) {
       db.exec(`SELECT balance FROM wallets WHERE id="${wallet_id}"`)
     )[0].balance;
 
-    //console.log("updateAddressBalance", address, balance, walletBalance);
     saveDatabase();
-    return walletBalance;
+    return { previousBalance, walletBalance };
   }
 
   function getAddressTransactions(address) {
