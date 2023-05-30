@@ -29,7 +29,7 @@ export default function WalletViewSend() {
       navigate(`/wallet/send/${address}${query}`);
     }
 
-    return valid;
+    return isValid;
   }
 
   const handleSendAddressChange = (e) => {
