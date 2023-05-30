@@ -8,7 +8,7 @@ import { selectPreferences, setPreference } from "@/redux/preferences";
 import { Decimal } from "decimal.js";
 import { useLongPress } from "use-long-press";
 
-import { bchToSats, satsToBch, MAX_SATOSHI } from "@/util/sats";
+import { bchToSats, satsToBch, MAX_SATOSHI, formatSatoshis } from "@/util/sats";
 import { validateInvoiceString } from "@/util/invoice";
 
 import CurrencyService from "@/services/CurrencyService";
@@ -37,14 +37,19 @@ export default function WalletViewSendConfirm() {
 
   const Currency = new CurrencyService(preferences["localCurrency"]);
 
-  const querySats = bchToSats(searchParams.get("amount") || "0");
+  const querySats = searchParams.get("amount")
+    ? bchToSats(searchParams.get("amount"))
+    : "0";
+
   const initialAmount = preferLocal
     ? Currency.satsToFiat(querySats)
     : denominateSats
     ? querySats
     : satsToBch(querySats);
 
-  const [amount, setAmount] = useState(initialAmount);
+  const [amount, setAmount] = useState(
+    new Decimal(initialAmount).greaterThan(0) ? initialAmount : "0"
+  );
 
   const satoshis = preferLocal
     ? Currency.fiatToSats(amount)
@@ -52,7 +57,7 @@ export default function WalletViewSendConfirm() {
     ? new Decimal(amount)
     : bchToSats(amount);
 
-  const fiatAmount = Currency.satsToFiat(satoshis);
+  const displayAmount = formatSatoshis(satoshis, true);
 
   const isInsufficientFunds = wallet.balance < satoshis;
 
@@ -143,11 +148,11 @@ export default function WalletViewSendConfirm() {
       );
     }
 
-    const newAmount = preferLocal
-      ? Currency.satsToFiat(amount)
-      : denominateSats
-      ? new Decimal(amount)
-      : satsToBch(amount);
+    const newAmount = denominateSats ? new Decimal(amount) : satsToBch(amount);
+
+    if (preferLocal) {
+      handleFlipLocalCurrency();
+    }
 
     setAmount(newAmount > 0 ? newAmount.toString() : "0");
   };
@@ -262,63 +267,36 @@ export default function WalletViewSendConfirm() {
             isInsufficientFunds ? "text-error" : "text-neutral-700"
           }`}
         >
-          {preferLocal ? (
-            <>
-              <div className="text-center text-3xl tabular-nums">
-                ${amount}&nbsp;
-                <span className="text-2xl">{preferences["localCurrency"]}</span>
-              </div>
-              <div className="text-neutral-400 relative">
-                <span
-                  className="cursor-pointer"
-                  onClick={handleFlipLocalCurrency}
-                >
-                  ₿&nbsp;
-                  {denominateSats
-                    ? `${Currency.fiatToSats(amount)} sats`
-                    : `${Currency.fiatToBch(amount)} BCH`}
-                </span>
-                <TransactionOutlined
-                  className="cursor-pointer text-xl ml-2"
-                  onClick={handleFlipLocalCurrency}
-                />
-                <button
-                  className="text-sm spacing-wide font-semibold text-zinc-700 rounded-lg border border-zinc-200 bg-zinc-100 p-1 absolute right-0 opacity-80"
-                  onClick={handleSendMax}
-                >
-                  MAX
-                </button>
-              </div>
-            </>
-          ) : (
-            <>
-              <div className="text-center text-3xl tabular-nums overflow-x-hidden">
-                <span className="text-3xl font-mono">₿</span>&nbsp;
-                {denominateSats ? `${amount}` : `${amount}`}&nbsp;
-                <span className="text-2xl">
-                  {denominateSats ? "sats" : "BCH"}
-                </span>
-              </div>
-              <div className="text-center text-neutral-400 relative">
-                <span
-                  onClick={handleFlipLocalCurrency}
-                  className="cursor-pointer"
-                >
-                  ${fiatAmount}&nbsp;{preferences["localCurrency"]}
-                  <TransactionOutlined
-                    className="cursor-pointer text-xl ml-2"
-                    onClick={handleFlipLocalCurrency}
-                  />
-                </span>
-                <button
-                  className="text-sm spacing-wide font-semibold text-zinc-700 rounded-lg border border-zinc-200 bg-zinc-100 p-1 absolute right-0 opacity-80"
-                  onClick={handleSendMax}
-                >
-                  MAX
-                </button>
-              </div>
-            </>
-          )}
+          <div className="text-center text-3xl tabular-nums overflow-x-hidden">
+            <span className="text-3xl">
+              {preferLocal ? (
+                displayAmount.fiat
+              ) : (
+                <>
+                  <span className="text-3xl font-mono">₿</span>
+                  {denominateSats ? `${amount}` : `${amount}`}&nbsp;
+                  <span className="text-2xl">
+                    {denominateSats ? "sats" : "BCH"}
+                  </span>
+                </>
+              )}
+            </span>
+          </div>
+          <div className="text-center text-neutral-400 relative">
+            <span onClick={handleFlipLocalCurrency} className="cursor-pointer">
+              {preferLocal ? displayAmount.bch : displayAmount.fiat}
+              <TransactionOutlined
+                className="cursor-pointer text-xl ml-2"
+                onClick={handleFlipLocalCurrency}
+              />
+            </span>
+            <button
+              className="text-sm spacing-wide font-semibold text-zinc-700 rounded-lg border border-zinc-200 bg-zinc-100 p-1 absolute right-0 opacity-80"
+              onClick={handleSendMax}
+            >
+              MAX
+            </button>
+          </div>
         </div>
 
         <div

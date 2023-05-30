@@ -22,7 +22,7 @@ export const fetchExchangeRates = createAsyncThunk(
 // TODO: persist exchange rates to local DB
 const initialState = currencyList.map((currency) => ({
   ...currency,
-  price: "0.00",
+  price: "1",
 }));
 
 export const exchangeRateReducer = createReducer(initialState, (builder) => {
