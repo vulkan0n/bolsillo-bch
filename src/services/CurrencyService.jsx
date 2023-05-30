@@ -7,7 +7,7 @@ import { store } from "@/redux";
 // ARS (Argentina) has to be calculated from the street rate
 // Rate provided by yadio.io, requested by Argentinian users, standard for Bitcoin apps
 // The "official" coingecko / government ARS rate is not used on the ground
-const replaceOfficialArsRateWithStreetRate = async (rates) => {
+const replaceYadioRates = async (rates) => {
   const yadioApi = "https://api.yadio.io";
   const yadioRates = await fetch(`${yadioApi}/exrates/USD`, {
     method: "GET",
@@ -15,11 +15,13 @@ const replaceOfficialArsRateWithStreetRate = async (rates) => {
 
   const yadioData = await yadioRates.json();
   const yadioUsdToArsRate = yadioData?.USD?.ARS;
+  const yadioUsdToVesRate = yadioData?.USD?.VES;
 
   const bchToUsdRate = rates.find((r) => r.currency === "USD")?.price;
   const bchToUsdRateFloat = parseFloat(bchToUsdRate);
 
   const realBchToArsPrice = (bchToUsdRateFloat * yadioUsdToArsRate).toString();
+  const realBchToVesPrice = (bchToUsdRateFloat * yadioUsdToVesRate).toString();
 
   // Swap in the correct ARS rate
   const adjustedRates = rates.map((r) => {
@@ -27,6 +29,14 @@ const replaceOfficialArsRateWithStreetRate = async (rates) => {
       return {
         ...r,
         price: realBchToArsPrice,
+      };
+    }
+
+    if (r.currency === "VES" || r.currency === "VEF") {
+      return {
+        ...r,
+        currency: "VES",
+        price: realBchToVesPrice,
       };
     }
 
@@ -72,13 +82,19 @@ export default function CurrencyService(fiatCurrency) {
       const json = await response.json();
       const data = json["bitcoin-cash"];
 
-      const rates = currencyList.map((currency) => ({
-        ...currency,
-        price: data[currency.currency.toLowerCase()].toString(),
-      }));
+      const rates = currencyList.map((currency) => {
+        if (!data[currency.currency.toLowerCase()]) {
+          return { ...currency };
+        }
+
+        return {
+          ...currency,
+          price: data[currency.currency.toLowerCase()].toString(),
+        };
+      });
 
       // Swap in the correct ARS rate
-      const adjustedRates = await replaceOfficialArsRateWithStreetRate(rates);
+      const adjustedRates = await replaceYadioRates(rates);
 
       return adjustedRates;
     } catch (e) {
