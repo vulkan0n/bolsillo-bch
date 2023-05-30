@@ -194,13 +194,13 @@ syncMiddleware.startListening({
 
     // calculate address balance
     const addressBalance = utxos.reduce((sum, utxo) => sum + utxo.value, 0);
-    const walletBalance = AddressManager.updateAddressBalance(
+    const balances = AddressManager.updateAddressBalance(
       address,
       addressBalance
     );
 
     // update wallet balance; view re-renders on wallet update
-    listenerApi.dispatch(walletBalanceUpdate(walletBalance));
+    listenerApi.dispatch(walletBalanceUpdate(balances));
   },
 });
 

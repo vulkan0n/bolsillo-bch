@@ -11,6 +11,11 @@ import { syncConnect, syncSubscribeAddress } from "@/redux/sync";
 import WalletService from "@/services/WalletService";
 import AddressManagerService from "@/services/AddressManagerService";
 
+import Decimal from "decimal.js";
+import { formatSatoshis } from "@/util/sats";
+import showToast from "@/util/toast";
+import { logos } from "@/util/logos";
+
 export const walletMiddleware = createListenerMiddleware();
 
 // --------------------------------
@@ -48,6 +53,25 @@ walletMiddleware.startListening({
     generatedAddresses.forEach((address) =>
       listenerApi.dispatch(syncSubscribeAddress(address))
     );
+
+    // show receive notification
+    const { previousBalance, walletBalance } = action.payload;
+    if (walletBalance > previousBalance) {
+      const difference = formatSatoshis(
+        new Decimal(walletBalance).minus(previousBalance)
+      );
+
+      showToast({
+        icon: (
+          <img
+            src={logos.selene.img}
+            style={{ width: "64px", height: "64px" }}
+          />
+        ),
+        title: "Payment received!",
+        description: `+${difference.bch}`,
+      });
+    }
   },
 });
 
@@ -62,7 +86,7 @@ export const walletReducer = createReducer(initialState, (builder) => {
       return action.payload;
     })
     .addCase(walletBalanceUpdate, (state, action) => {
-      state.balance = action.payload;
+      state.balance = action.payload.walletBalance;
     })
     .addCase(walletReload, (state, action) => {
       return new WalletService().getWalletById(state.id);
