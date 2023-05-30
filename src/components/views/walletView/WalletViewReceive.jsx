@@ -16,7 +16,12 @@ import SatoshiInput from "@/components/atoms/SatoshiInput";
 import { logos } from "@/util/logos";
 import { satsToBch } from "@/util/sats";
 
-import { FormOutlined, ReloadOutlined } from "@ant-design/icons";
+import {
+  SnippetsFilled,
+  FormOutlined,
+  ReloadOutlined,
+} from "@ant-design/icons";
+import showToast from "@/util/toast";
 
 export default function WalletViewReceive() {
   const preferences = useSelector(selectPreferences);
@@ -49,6 +54,11 @@ export default function WalletViewReceive() {
       : address;
 
   const copyAddressToClipboard = async () => {
+    showToast({
+      icon: <SnippetsFilled className="text-5xl text-primary" />,
+      title: "Copied to clipboard",
+      description: `${qrInvoice}`,
+    });
     await Clipboard.write({ string: qrInvoice });
   };
 
