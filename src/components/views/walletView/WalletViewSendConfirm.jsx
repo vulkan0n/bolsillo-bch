@@ -27,7 +27,6 @@ export default function WalletViewSendConfirm() {
     params.address
   );
 
-  const [amount, setAmount] = useState(searchParams.get("amount") || "0");
   const [message, setMessage] = useState("");
 
   const preferences = useSelector(selectPreferences);
@@ -38,6 +37,15 @@ export default function WalletViewSendConfirm() {
 
   const Currency = new CurrencyService(preferences["localCurrency"]);
 
+  const querySats = bchToSats(searchParams.get("amount") || "0");
+  const initialAmount = preferLocal
+    ? Currency.satsToFiat(querySats)
+    : denominateSats
+    ? querySats
+    : satsToBch(querySats);
+
+  const [amount, setAmount] = useState(initialAmount);
+
   const satoshis = preferLocal
     ? Currency.fiatToSats(amount)
     : denominateSats
@@ -47,8 +55,6 @@ export default function WalletViewSendConfirm() {
   const fiatAmount = Currency.satsToFiat(satoshis);
 
   const isInsufficientFunds = wallet.balance < satoshis;
-
-  //console.log("satoshis", satoshis, "fiatAmount", fiatAmount);
 
   useEffect(function handleInstantPay() {
     console.log(preferences);
