@@ -4,6 +4,9 @@ const showToast = ({ icon = <></>, title = "", description = "" }) => {
   toast.custom((t) => (
     <div
       className={`animate-enter max-w-md w-full bg-white shadow-lg rounded-lg pointer-events-auto flex ring-1 ring-black ring-opacity-5 p-2`}
+      onClick={() => {
+        toast.remove(t.id);
+      }}
     >
       <div className="flex-shrink-0 my-auto p-1">
         <div className="flex items-center justify-center">{icon}</div>
