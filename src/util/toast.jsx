@@ -3,7 +3,7 @@ import toast from "react-hot-toast";
 const showToast = ({ icon = <></>, title = "", description = "" }) => {
   toast.custom((t) => (
     <div
-      className={`animate-enter max-w-md w-full bg-white shadow-lg rounded-lg pointer-events-auto flex ring-1 ring-black ring-opacity-5 p-2`}
+      className={`opacity-95 animate-enter max-w-md w-full bg-white shadow-lg rounded-lg pointer-events-auto flex ring-1 ring-black ring-opacity-5 p-2`}
       onClick={() => {
         toast.remove(t.id);
       }}
