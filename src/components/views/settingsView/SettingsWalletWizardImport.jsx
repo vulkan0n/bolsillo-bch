@@ -2,7 +2,6 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ImportOutlined } from "@ant-design/icons";
 
-import ViewHeader from "@/components/views/ViewHeader";
 import WalletService from "@/services/WalletService";
 
 import * as bip39 from "bip39";
@@ -25,12 +24,13 @@ export default function SettingsWalletImport() {
   const handleImportWallet = () => {
     const trimmedInput = mnemonicInput.trim();
     const wordCount = trimmedInput.split(" ").length;
-    if (wordCount < 12) {
-      setMessage("Recovery phrase must be at least 12 words");
+    if (wordCount !== 12 && wordCount !== 24) {
+      setMessage("Recovery phrase must be exactly 12 or exactly 24 words.");
       return;
     }
 
     const valid = bip39.validateMnemonic(trimmedInput);
+
     if (valid) {
       try {
         const wallet = new WalletService().importWallet(
@@ -41,6 +41,10 @@ export default function SettingsWalletImport() {
       } catch (e) {
         setMessage("That wallet has already been imported!");
       }
+    } else {
+      setMessage(
+        "Recovery phrase invalid. Ensure all words are correct and in the proper order."
+      );
     }
   };
 
@@ -52,8 +56,8 @@ export default function SettingsWalletImport() {
       <div className="flex justify-center">
         {message === "" ? (
           <ul className="list-disc p-2 text-left text-neutral-700">
-            <li>May also be known as a 'seed phrase'</li>
-            <li>Generally 12 or 24 words long</li>
+            <li>May also be known as a 'seed phrase' or 'mnemonic phrase'.</li>
+            <li>Exactly 12 or exactly 24 words long.</li>
           </ul>
         ) : (
           <div className="text-error p-2">{message}</div>
