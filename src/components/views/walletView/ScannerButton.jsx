@@ -19,6 +19,8 @@ import { ScanOutlined, CloseOutlined } from "@ant-design/icons";
 
 import { validateInvoiceString } from "@/util/invoice";
 
+import Button from "@/components/atoms/Button";
+
 export default function ScannerButton() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -109,29 +111,9 @@ export default function ScannerButton() {
     dispatch(setScannerIsScanning(!isScanning));
   };
 
-  return keyboardIsOpen ? null : (
-    <>
-      <div
-        className="flex justify-center fixed inset-x-0"
-        style={{ bottom: "calc(100vh - 90%)" }}
-      >
-        <div
-          className="flex items-center rounded-full border border-1 border-zinc-100 bg-white opacity-90"
-          style={{ width: "4.5rem", height: "4.5rem" }}
-        >
-          <button
-            className="w-full h-full"
-            type="button"
-            onClick={toggleScanner}
-          >
-            {isScanning ? (
-              <CloseOutlined className="text-3xl" />
-            ) : (
-              <ScanOutlined className="text-3xl" />
-            )}
-          </button>
-        </div>
-      </div>
-    </>
-  );
+  const ScanIcon = isScanning ? CloseOutlined : ScanOutlined;
+  const scanLabel = isScanning ? "Close" : "Scan";
+  const scanLabelColor = isScanning ? "white opacity-80" : undefined;
+
+  return <Button icon={ScanIcon} label={scanLabel} onClick={toggleScanner} labelColor={scanLabelColor} iconSize="4xl" />;
 }

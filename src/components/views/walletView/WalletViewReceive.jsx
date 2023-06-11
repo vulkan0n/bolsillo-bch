@@ -10,8 +10,11 @@ import { selectPreferences } from "@/redux/preferences";
 import { selectScannerIsScanning, selectDeviceInfo } from "@/redux/device";
 
 import AddressManagerService from "@/services/AddressManagerService";
+import SendWidget from "./SendWidget";
 import ScannerButton from "./ScannerButton";
+import ScannerOverlay from "./ScannerOverlay";
 import SatoshiInput from "@/components/atoms/SatoshiInput";
+import Button from "@/components/atoms/Button";
 
 import { logos } from "@/util/logos";
 import { satsToBch } from "@/util/sats";
@@ -20,6 +23,7 @@ import {
   SnippetsFilled,
   FormOutlined,
   ReloadOutlined,
+  UnorderedListOutlined,
 } from "@ant-design/icons";
 import showToast from "@/util/toast";
 
@@ -74,16 +78,16 @@ export default function WalletViewReceive() {
     setInvoiceSats(satoshis);
   };
 
-  const isWeb = deviceInfo.platform === "web";
-
   return (
     <>
-      {!isScanning && (
+      {isScanning ? (
+        <ScannerOverlay />
+      ) : (
         <>
-          <div className="py-2 z-40">
+          <div className="py-2 mb-1 z-40">
             <div className="flex justify-center">
               <div
-                className="border border-4 border-zinc-300 my-2 cursor-pointer"
+                className="border border-4 border-primary/80 my-2 cursor-pointer"
                 onClick={copyAddressToClipboard}
                 {...bindLongPress()}
               >
@@ -101,47 +105,53 @@ export default function WalletViewReceive() {
             </div>
             <div
               onClick={copyAddressToClipboard}
-              className="text-xs text-center break-all cursor-pointer text-primary opacity-70 slashed-zero"
+              className="text-xs font-mono text-center break-all cursor-pointer text-primary opacity-80 slashed-zero select-none"
             >
               {formattedAddress}
             </div>
-          </div>
-          <div className="mx-8">
-            <div className="flex justify-evenly">
-              <div
-                className={`${
-                  showInvoiceAmount ? "bg-primary text-white rounded-t" : ""
-                }`}
-              >
-                <button
-                  className="w-full h-full py-1 px-2"
-                  type="button"
-                  onClick={() => setShowInvoiceAmount(!showInvoiceAmount)}
-                >
-                  <FormOutlined className="text-2xl opacity-80" />
-                </button>
-              </div>
-              {/*<button className="" type="button">
-                <UnorderedListOutlined className="text-2xl opacity-80" />
-              </button>*/}
-              <button className="" type="button" onClick={skipAddress}>
-                <ReloadOutlined className="text-2xl opacity-80" />
-              </button>
-            </div>
             {showInvoiceAmount && (
-              <div className="p-1 shadow-sm bg-primary text-white rounded-sm w-5/6 mx-auto">
-                <SatoshiInput
-                  className="p-1 text-sm w-full text-secondary font-mono rounded opacity-80 mx-1"
-                  onChange={handleInvoiceAmountChange}
-                  sats={invoiceSats}
-                  allowFiat
-                />
+              <div className="my-1 text-white w-5/6 mx-auto">
+                <div className="p-1 w-fit bg-primary rounded-t-sm font-bold text-sm">
+                  Invoice Amount:
+                </div>
+                <div className="bg-primary p-1">
+                  <SatoshiInput
+                    className="p-1 text-sm w-full text-secondary font-mono rounded opacity-80 mx-1"
+                    onChange={handleInvoiceAmountChange}
+                    sats={invoiceSats}
+                    allowFiat
+                  />
+                </div>
               </div>
             )}
           </div>
+          <div className="flex justify-evenly mx-6">
+            <Button
+              icon={FormOutlined}
+              label="Invoice"
+              onClick={() => setShowInvoiceAmount(!showInvoiceAmount)}
+              iconSize="2xl"
+              inverted={showInvoiceAmount}
+            />
+            <Button
+              icon={UnorderedListOutlined}
+              label="Addresses"
+              iconSize="2xl"
+            />
+            <Button
+              icon={ReloadOutlined}
+              label="Cycle"
+              onClick={skipAddress}
+              iconSize="2xl"
+            />
+          </div>
         </>
       )}
-      {!isWeb && <ScannerButton />}
+      {!showInvoiceAmount && (
+        <div className="fixed bottom-24 w-full">
+          <SendWidget />
+        </div>
+      )}
     </>
   );
 }
