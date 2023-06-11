@@ -3,11 +3,26 @@ import { useNavigate } from "react-router-dom";
 import { ImportOutlined } from "@ant-design/icons";
 
 import WalletService from "@/services/WalletService";
-
+import { translate, translations } from "@/util/translations";
+import { selectPreferences } from "@/redux/preferences";
 import * as bip39 from "bip39";
+
+const {
+  exactWordCount,
+  alreadyImported,
+  phraseInvalid,
+  enterRecoveryPhrase,
+  alsoKnownAs,
+  exactly12Or24,
+  importWallet,
+} = translations.views.settingsView.SettingsWalletImport;
 
 export default function SettingsWalletImport() {
   const navigate = useNavigate();
+
+  const preferences = useSelector(selectPreferences);
+  const preferencesLanguageCode = preferences["languageCode"];
+
   const [mnemonicInput, setMnemonicInput] = useState("");
   const [message, setMessage] = useState("");
 
@@ -25,7 +40,7 @@ export default function SettingsWalletImport() {
     const trimmedInput = mnemonicInput.trim();
     const wordCount = trimmedInput.split(" ").length;
     if (wordCount !== 12 && wordCount !== 24) {
-      setMessage("Recovery phrase must be exactly 12 or exactly 24 words.");
+      setMessage(translate(exactWordCount, preferencesLanguageCode));
       return;
     }
 
@@ -39,25 +54,23 @@ export default function SettingsWalletImport() {
         );
         navigate(`/settings/wallet/${wallet.id}`, { replace: true });
       } catch (e) {
-        setMessage("That wallet has already been imported!");
+        setMessage(translate(alreadyImported, preferencesLanguageCode));
       }
     } else {
-      setMessage(
-        "Recovery phrase invalid. Ensure all words are correct and in the proper order."
-      );
+      setMessage(translate(phraseInvalid, preferencesLanguageCode));
     }
   };
 
   return (
     <>
       <div className="text-2xl text-center text-neutral-900">
-        Enter your Recovery Phrase
+        {translate(enterRecoveryPhrase, preferencesLanguageCode)}
       </div>
       <div className="flex justify-center">
         {message === "" ? (
           <ul className="list-disc p-2 text-left text-neutral-700">
-            <li>May also be known as a 'seed phrase' or 'mnemonic phrase'.</li>
-            <li>Exactly 12 or exactly 24 words long.</li>
+            <li>{translate(alsoKnownAs, preferencesLanguageCode)}</li>
+            <li>{translate(exactly12Or24, preferencesLanguageCode)}</li>
           </ul>
         ) : (
           <div className="text-error p-2">{message}</div>
@@ -77,7 +90,8 @@ export default function SettingsWalletImport() {
           className="bg-primary text-white w-full rounded-lg p-2"
           onClick={handleImportWallet}
         >
-          <ImportOutlined className="text-2xl" /> Import Wallet
+          <ImportOutlined className="text-2xl" />{" "}
+          {translate(importWallet, preferencesLanguageCode)}
         </button>
       </div>
     </>

@@ -6,9 +6,12 @@ import { selectActiveWallet } from "@/redux/wallet";
 
 import WalletService from "@/services/WalletService";
 import { currencyList } from "@/util/currency";
+import { languageList } from "@/util/translations";
 
 import {
   SettingOutlined,
+  GlobalOutlined,
+  FlagOutlined,
   WalletOutlined,
   DollarCircleOutlined,
   EuroCircleOutlined,
@@ -36,9 +39,31 @@ import SatoshiInput from "@/components/atoms/SatoshiInput";
 import { logos } from "@/util/logos";
 import SELENE_WALLET_VERSION from "@/util/version";
 
+import { translate, translations } from "@/util/translations";
+
+const {
+  settings,
+  walletSettings,
+  createImportWallet,
+  localizationSettings,
+  language,
+  currencySettings,
+  localCurrency,
+  preferLocalCurrency,
+  hideAvailableBalance,
+  denominateInSats,
+  paymentSettings,
+  allowInstantPay,
+  instantPayLimit,
+  enableFastScan,
+  qrCodeSettings,
+  logo,
+} = translations.views.SettingsView;
+
 export default function SettingsView() {
   const dispatch = useDispatch();
   const preferences = useSelector(selectPreferences);
+  const preferencesLanguageCode = preferences["languageCode"];
   const wallet = useSelector(selectActiveWallet);
 
   function handleSettingsUpdate(key, value) {
@@ -50,14 +75,20 @@ export default function SettingsView() {
 
   return (
     <>
-      <ViewHeader icon={SettingOutlined} title="Settings" />
+      <ViewHeader
+        icon={SettingOutlined}
+        title={translate(settings, preferencesLanguageCode)}
+      />
       <div className="p-1">
         <KeyWarning wallet={wallet} />
 
-        <SettingsCategory icon={WalletOutlined} title="Wallet Settings">
+        <SettingsCategory
+          icon={WalletOutlined}
+          title={translate(walletSettings, preferencesLanguageCode)}
+        >
           <Link to="/settings/wallet/wizard" className="w-full block p-2">
             <PlusCircleFilled className="text-xl mr-1" />
-            Create/Import Wallet
+            {translate(createImportWallet, preferencesLanguageCode)}
           </Link>
           {walletList.map((wallet) => (
             <Link
@@ -73,8 +104,38 @@ export default function SettingsView() {
           ))}
         </SettingsCategory>
 
-        <SettingsCategory icon={DollarCircleOutlined} title="Currency Settings">
-          <SettingsChild icon={EuroCircleOutlined} label="Local Currency">
+        <SettingsCategory
+          icon={GlobalOutlined}
+          title={translate(localizationSettings, preferencesLanguageCode)}
+        >
+          <SettingsChild
+            icon={FlagOutlined}
+            label={translate(language, preferencesLanguageCode)}
+          >
+            <select
+              className="select"
+              value={preferences["languageCode"] || ""}
+              onChange={(event) => {
+                handleSettingsUpdate("languageCode", event.target.value);
+              }}
+            >
+              {languageList.map(({ flag, code, name }) => (
+                <option key={code} value={code}>
+                  {flag} {code.toUpperCase()} - {name}
+                </option>
+              ))}
+            </select>
+          </SettingsChild>
+        </SettingsCategory>
+
+        <SettingsCategory
+          icon={DollarCircleOutlined}
+          title={translate(currencySettings, preferencesLanguageCode)}
+        >
+          <SettingsChild
+            icon={EuroCircleOutlined}
+            label={translate(localCurrency, preferencesLanguageCode)}
+          >
             <select
               className="select"
               value={preferences["localCurrency"] || ""}
@@ -89,7 +150,7 @@ export default function SettingsView() {
           </SettingsChild>
           <SettingsChild
             icon={TransactionOutlined}
-            label="Prefer Local Currency"
+            label={translate(preferLocalCurrency, preferencesLanguageCode)}
           >
             <input
               type="checkbox"
@@ -109,7 +170,7 @@ export default function SettingsView() {
                 ? EyeInvisibleOutlined
                 : EyeOutlined
             }
-            label="Hide Available Balance"
+            label={translate(hideAvailableBalance, preferencesLanguageCode)}
           >
             <input
               type="checkbox"
@@ -123,7 +184,10 @@ export default function SettingsView() {
               }
             />
           </SettingsChild>
-          <SettingsChild icon={AccountBookOutlined} label="Denominate in Sats">
+          <SettingsChild
+            icon={AccountBookOutlined}
+            label={translate(denominateInSats, preferencesLanguageCode)}
+          >
             <input
               type="checkbox"
               className="toggle"
@@ -135,8 +199,14 @@ export default function SettingsView() {
           </SettingsChild>
         </SettingsCategory>
 
-        <SettingsCategory icon={SendOutlined} title="Payment Settings">
-          <SettingsChild icon={ThunderboltOutlined} label="Allow Instant Pay">
+        <SettingsCategory
+          icon={SendOutlined}
+          title={translate(paymentSettings, preferencesLanguageCode)}
+        >
+          <SettingsChild
+            icon={ThunderboltOutlined}
+            label={translate(allowInstantPay, preferencesLanguageCode)}
+          >
             <input
               type="checkbox"
               className="toggle"
@@ -148,7 +218,7 @@ export default function SettingsView() {
           </SettingsChild>
           <SettingsChild
             icon={PropertySafetyOutlined}
-            label="Instant Pay Limit"
+            label={translate(instantPayLimit, preferencesLanguageCode)}
           >
             <span className="text-zinc-600">
               <SatoshiInput
@@ -161,7 +231,10 @@ export default function SettingsView() {
               />
             </span>
           </SettingsChild>
-          <SettingsChild icon={CameraOutlined} label="Enable Fast Scan">
+          <SettingsChild
+            icon={CameraOutlined}
+            label={translate(enableFastScan, preferencesLanguageCode)}
+          >
             <input
               type="checkbox"
               className="toggle"
@@ -173,8 +246,14 @@ export default function SettingsView() {
           </SettingsChild>
         </SettingsCategory>
 
-        <SettingsCategory icon={QrcodeOutlined} title="QR Code Settings">
-          <SettingsChild icon={BorderOuterOutlined} label="Logo">
+        <SettingsCategory
+          icon={QrcodeOutlined}
+          title={translate(qrCodeSettings, preferencesLanguageCode)}
+        >
+          <SettingsChild
+            icon={BorderOuterOutlined}
+            label={translate(logo, preferencesLanguageCode)}
+          >
             <div className="flex items-center">
               {logoKey !== "none" && (
                 <img src={logos[logoKey].img} className="w-8 h-8 mx-2" />
