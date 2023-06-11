@@ -16,8 +16,23 @@ import TransactionManagerService from "@/services/TransactionManagerService";
 
 import { TransactionOutlined } from "@ant-design/icons";
 
+import { translate, translations } from "@/util/translations";
+
+const {
+  insufficientFunds,
+  insufficientMinerFee,
+  transactionFailed,
+  sendingTo,
+  max,
+  back,
+  confirm,
+} = translations.views.walletView.WalletViewSendConfirm;
+
 export default function WalletViewSendConfirm() {
   const dispatch = useDispatch();
+  const preferences = useSelector(selectPreferences);
+  const preferencesLanguageCode = preferences["languageCode"];
+
   const [searchParams, setSearchParams] = useSearchParams();
   const params = useParams();
 
@@ -29,7 +44,6 @@ export default function WalletViewSendConfirm() {
 
   const [message, setMessage] = useState("");
 
-  const preferences = useSelector(selectPreferences);
   const navigate = useNavigate();
 
   const denominateSats = preferences["denominateSats"] === "true";
@@ -81,7 +95,7 @@ export default function WalletViewSendConfirm() {
   async function confirmSend() {
     // fail if insufficient funds
     if (isInsufficientFunds) {
-      setMessage("Insufficient Funds");
+      setMessage(translate(insufficientFunds, preferencesLanguageCode));
       return;
     }
 
@@ -94,7 +108,7 @@ export default function WalletViewSendConfirm() {
     );
 
     if (typeof transaction !== "object") {
-      setMessage("Transaction Failed: Not enough balance for miner fee");
+      setMessage(translate(insufficientMinerFee, preferencesLanguageCode));
       return;
     }
 
@@ -108,7 +122,7 @@ export default function WalletViewSendConfirm() {
       console.log("transaction send success!");
       navigate("/wallet/send/success");
     } else {
-      setMessage("Transaction failed.");
+      setMessage(translate(transactionFailed, preferencesLanguageCode));
     }
   }
 
@@ -252,7 +266,9 @@ export default function WalletViewSendConfirm() {
       <div className="rounded-b py-2 px-1 bg-zinc-50 text-center">
         {message === "" ? (
           <>
-            <div className="text-sm">Sending to</div>
+            <div className="text-sm">
+              {translate(sendingTo, preferencesLanguageCode)}
+            </div>
             <div className="text-sm font-semibold font-mono opacity-90 text-secondary">
               {formattedAddress}
             </div>
@@ -294,7 +310,7 @@ export default function WalletViewSendConfirm() {
               className="text-sm spacing-wide font-semibold text-zinc-700 rounded-lg border border-zinc-200 bg-zinc-100 p-1 absolute right-0 opacity-80"
               onClick={handleSendMax}
             >
-              MAX
+              {translate(max, preferencesLanguageCode)}
             </button>
           </div>
         </div>
@@ -420,7 +436,7 @@ export default function WalletViewSendConfirm() {
               onClick={() => navigate(-1)}
               className="btn text-center border-2 border-zinc-200 w-full"
             >
-              Back
+              {translate(back, preferencesLanguageCode)}
             </button>
           </div>
           <div className="flex-1">
@@ -428,7 +444,7 @@ export default function WalletViewSendConfirm() {
               onClick={confirmSend}
               className="btn bg-primary text-white w-full h-full"
             >
-              Confirm
+              {translate(confirm, preferencesLanguageCode)}
             </button>
           </div>
         </div>

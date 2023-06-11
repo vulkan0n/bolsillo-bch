@@ -3,8 +3,15 @@ import { useSelector } from "react-redux";
 import { selectTransactionHistory } from "@/redux/transactions";
 import { selectScannerIsScanning } from "@/redux/device";
 import { SendOutlined, QrcodeOutlined } from "@ant-design/icons";
+import { translate, translations } from "@/util/translations";
+import { selectPreferences } from "@/redux/preferences";
+
+const { send, receive } = translations.views.walletView.WalletViewTabs;
 
 export default function WalletViewTabs() {
+  const preferences = useSelector(selectPreferences);
+  const preferencesLanguageCode = preferences["languageCode"];
+
   const baseTabClass = "tab tab-lg tab-bordered flex-1";
   const activeTabClass = "text-secondary border-secondary border-b-2";
   const inactiveTabClass = "text-zinc-500";
@@ -24,7 +31,7 @@ export default function WalletViewTabs() {
           }
         >
           <SendOutlined className="text-xl px-1" />
-          &nbsp;Send
+          &nbsp;{translate(send, preferencesLanguageCode)}
         </NavLink>
       )}
       <NavLink
@@ -37,7 +44,8 @@ export default function WalletViewTabs() {
         end
       >
         <QrcodeOutlined className="text-xl px-1" />
-        &nbsp;Receive {txHistory.length < 1 && "Bitcoin Cash (BCH)"}
+        &nbsp;{translate(receive, preferencesLanguageCode)}{" "}
+        {txHistory.length < 1 && "Bitcoin Cash (BCH)"}
       </NavLink>
     </div>
   );
