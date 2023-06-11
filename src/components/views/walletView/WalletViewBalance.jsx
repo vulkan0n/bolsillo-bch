@@ -8,16 +8,12 @@ import { EyeInvisibleOutlined } from "@ant-design/icons";
 
 import { animated, useSpring } from "@react-spring/web";
 import { formatSatoshis } from "@/util/sats";
-import { translate, translations } from "@/util/translations";
-
-const { availableBalance } = translations.views.walletView.WalletViewBalance;
 
 export default function WalletViewBalance() {
   const [firstRender, setFirstRender] = useState(true);
   const { balance } = useSelector(selectActiveWallet);
   const exchangeRates = useSelector(selectExchangeRates);
   const preferences = useSelector(selectPreferences);
-  const preferencesLanguageCode = preferences["languageCode"];
 
   const hideBalance = preferences["hideAvailableBalance"] === "true";
   const preferLocal = preferences["preferLocalCurrency"] === "true";
@@ -66,7 +62,7 @@ export default function WalletViewBalance() {
     <div className="py-3 text-center">
       {!hideBalance && (
         <div className="font-bold text-zinc-400 text-md tracking-wide">
-          {translate(availableBalance, preferencesLanguageCode)}
+          Available Balance
         </div>
       )}
       <div className="text-2xl text-zinc-200 tabular-nums">
@@ -77,7 +73,9 @@ export default function WalletViewBalance() {
           &nbsp;
           <span
             className={`${
-              hideBalance ? "blur-sm backdrop-opacity-60 opacity-25" : ""
+              hideBalance
+                ? "blur-sm backdrop-opacity-60 opacity-25"
+                : ""
             }`}
           >
             <animated.span style={{ ...balanceReceivedSpring }}>

@@ -3,13 +3,10 @@ import { selectLocale } from "@/redux/device";
 import { selectPreferences } from "@/redux/preferences";
 import { formatSatoshis } from "@/util/sats";
 import { selectTransactionHistory } from "@/redux/transactions";
-import { translate, translations } from "@/util/translations";
-const { recentTransactions } = translations.views.walletView.TransactionHistory;
 
 function TransactionHistory() {
   const locale = useSelector(selectLocale);
   const preferences = useSelector(selectPreferences);
-  const preferencesLanguageCode = preferences["languageCode"];
   const transactions = useSelector(selectTransactionHistory);
 
   const receiveStyle = "text-secondary";
@@ -20,7 +17,7 @@ function TransactionHistory() {
   return (
     <>
       <div className="bg-zinc-700 text-zinc-200 rounded-t-lg text-center text-lg p-1 font-semibold drop-shadow">
-        {translate(recentTransactions, preferencesLanguageCode)}
+        Recent Transactions
       </div>
       <ul className="bg-zinc-200 text-zinc-600 divide-y divide-zinc-300 rounded-b-lg px-2 h-[67vh] overflow-y-scroll">
         {transactions.map((tx, i) =>

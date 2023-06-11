@@ -12,15 +12,9 @@ import { validateInvoiceString } from "@/util/invoice";
 import ScannerButton from "./ScannerButton";
 import TransactionHistory from "./TransactionHistory";
 
-import { translate, translations } from "@/util/translations";
-import { selectPreferences } from "@/redux/preferences";
-const { enterBchAddress } = translations.views.walletView.WalletViewSend;
-
 export default function WalletViewSend() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const preferences = useSelector(selectPreferences);
-  const preferencesLanguageCode = preferences["languageCode"];
 
   const isScanning = useSelector(selectScannerIsScanning);
 
@@ -71,7 +65,7 @@ export default function WalletViewSend() {
           <div className="flex">
             <input
               type="text"
-              placeholder={translate(enterBchAddress, preferencesLanguageCode)}
+              placeholder="Enter BCH Address"
               value={sendAddress}
               onChange={handleSendAddressChange}
               className="p-2 flex-1 rounded-l-lg outline-none bg-white text-error focus:text-secondary focus:bg-zinc-50"

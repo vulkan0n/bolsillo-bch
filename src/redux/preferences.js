@@ -9,7 +9,6 @@ import { walletBoot } from "@/redux/wallet";
 
 const defaultPreferences = {
   activeWalletId: "1",
-  languageCode: "", // Default empty = use device language
   localCurrency: "USD",
   preferLocalCurrency: "false",
   hideAvailableBalance: "false",

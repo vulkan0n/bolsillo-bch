@@ -23,14 +23,8 @@ import {
 } from "@ant-design/icons";
 import showToast from "@/util/toast";
 
-import { translate, translations } from "@/util/translations";
-
-const { copiedToClipboard } = translations.views.walletView.WalletViewReceive;
-
 export default function WalletViewReceive() {
   const preferences = useSelector(selectPreferences);
-  const preferencesLanguageCode = preferences["languageCode"];
-
   const wallet = useSelector(selectActiveWallet);
   const isScanning = useSelector(selectScannerIsScanning);
   const deviceInfo = useSelector(selectDeviceInfo);
@@ -62,7 +56,7 @@ export default function WalletViewReceive() {
   const copyAddressToClipboard = async () => {
     showToast({
       icon: <SnippetsFilled className="text-5xl text-primary" />,
-      title: translate(copiedToClipboard, preferencesLanguageCode),
+      title: "Copied to clipboard",
       description: `${qrInvoice}`,
     });
     await Clipboard.write({ string: qrInvoice });

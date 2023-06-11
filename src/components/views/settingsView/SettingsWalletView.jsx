@@ -24,28 +24,10 @@ import {
 import ViewHeader from "@/components/views/ViewHeader";
 import WalletService from "@/services/WalletService";
 import KeyWarning from "./KeyWarning";
+
 import SettingsCategory from "./SettingsCategory";
 import SettingsChild from "./SettingsChild";
 import { formatSatoshis } from "@/util/sats";
-import { translations, translate } from "@/util/translations";
-
-const {
-  walletSettings,
-  advancedOptions,
-  created,
-  lastKnownBalance,
-  walletActive,
-  activateWallet,
-  deleteWallet,
-  areYouSure,
-  ensureRecoveryPhrase,
-  confirmDelete,
-  keepSecret,
-  dontStoreDigitally,
-  viewRecoveryPhrase,
-  secretAndSecure,
-  rebuildWallet,
-} = translations.views.settingsView.SettingsWalletView;
 
 export default function SettingsWalletView() {
   const dispatch = useDispatch();
@@ -59,7 +41,6 @@ export default function SettingsWalletView() {
 
   const preferences = useSelector(selectPreferences);
   const preferLocal = preferences["preferLocalCurrency"] === "true";
-  const preferencesLanguageCode = preferences["languageCode"];
 
   const WalletManager = new WalletService();
   const wallet = WalletManager.getWalletById(wallet_id);
@@ -141,10 +122,7 @@ export default function SettingsWalletView() {
 
   return (
     <>
-      <ViewHeader
-        icon={WalletOutlined}
-        title={translate(walletSettings, preferencesLanguageCode)}
-      />
+      <ViewHeader icon={WalletOutlined} title="Wallet Settings" />
       <div className="p-2">
         <div className="p-3 rounded-lg bg-zinc-200">
           <div className="text-2xl">
@@ -170,12 +148,11 @@ export default function SettingsWalletView() {
             )}
           </div>
           <div className="text-lg text-center text-zinc-600">
-            {translate(created, preferencesLanguageCode)}{" "}
-            {new Date(wallet.date_created).toLocaleString(locale)}
+            Created {new Date(wallet.date_created).toLocaleString(locale)}
           </div>
           {wallet.balance > 0 && (
             <div className="text-lg text-center text-zinc-500">
-              {translate(lastKnownBalance, preferencesLanguageCode)}:{" "}
+              Last Known Balance:{" "}
               {formatSatoshis(wallet.balance)[preferLocal ? "fiat" : "bch"]}
             </div>
           )}
@@ -198,9 +175,7 @@ export default function SettingsWalletView() {
                   <LoginOutlined className="text-2xl mr-1" />
                 )}
                 <div className="flex-1">
-                  {isActiveWallet
-                    ? translate(walletActive, preferencesLanguageCode)
-                    : translate(activateWallet, preferencesLanguageCode)}
+                  {isActiveWallet ? "Wallet Active" : "Activate Wallet"}
                 </div>
               </div>
             </button>
@@ -222,14 +197,12 @@ export default function SettingsWalletView() {
                 )}
                 <div className="flex-1">
                   {deleteConfirm === 0
-                    ? translate(deleteWallet, preferencesLanguageCode)
+                    ? "Delete Wallet"
                     : deleteConfirm === 1
-                    ? translate(areYouSure, preferencesLanguageCode)
+                    ? "ARE YOU SURE? YOUR MONEY IS AT RISK"
                     : deleteConfirm === 2
-                    ? translate(ensureRecoveryPhrase, preferencesLanguageCode)
-                    : `${translate(confirmDelete, preferencesLanguageCode)} "${
-                        wallet.name
-                      }"`}
+                    ? "MAKE SURE YOU HAVE WRITTEN YOUR RECOVERY PHRASE"
+                    : `Yes, I want to delete "${wallet.name}"`}
                 </div>
               </div>
             </button>
@@ -244,7 +217,7 @@ export default function SettingsWalletView() {
             <div className="flex flex-col justify-between items-center">
               <div className="text-center text-error text-xl font-bold">
                 <WarningFilled className="mr-2 text-warning" />
-                {translate(keepSecret, preferencesLanguageCode)}
+                KEEP THIS PHRASE SECRET
                 <WarningFilled className="ml-2 text-warning" />
               </div>
               <div className="text-center text-zinc-50 text-xl font-mono py-4">
@@ -252,7 +225,7 @@ export default function SettingsWalletView() {
               </div>
               <div className="text-center text-error text-xl font-bold">
                 <WarningFilled className="mr-2 text-warning" />
-                {translate(dontStoreDigitally, preferencesLanguageCode)}
+                DO NOT STORE DIGITALLY
                 <WarningFilled className="ml-2 text-warning" />
               </div>
             </div>
@@ -260,10 +233,10 @@ export default function SettingsWalletView() {
             <>
               <EyeInvisibleOutlined className="text-8xl text-zinc-50" />
               <div className="text-center text-zinc-50 text-xl">
-                {translate(viewRecoveryPhrase, preferencesLanguageCode)}
+                View Wallet Recovery Phrase
               </div>
               <div className="text-center text-zinc-200 text-lg opacity-90">
-                ({translate(secretAndSecure, preferencesLanguageCode)})
+                (Make sure to keep it secret and secure!)
               </div>
             </>
           )}
@@ -271,17 +244,14 @@ export default function SettingsWalletView() {
         {
           /* Only show "Advanced Options" if user has viewed (TODO: verified) their recovery phrase */
           wallet.key_viewed !== null && isActiveWallet && (
-            <SettingsCategory
-              icon={ToolOutlined}
-              title={translate(advancedOptions, preferencesLanguageCode)}
-            >
+            <SettingsCategory icon={ToolOutlined} title="Advanced Options">
               <button
                 type="button"
                 className="w-full block p-2 text-left"
                 onClick={handleRebuildWallet}
               >
                 <MedicineBoxOutlined className="text-xl mr-1" />
-                {translate(rebuildWallet, preferencesLanguageCode)}
+                Rebuild Wallet
               </button>
               {/*<button
               type="button"
