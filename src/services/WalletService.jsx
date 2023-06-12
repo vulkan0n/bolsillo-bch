@@ -46,7 +46,7 @@ export default function WalletService() {
 
       // if no wallet exists, create one and return it
       if (wallets.length === 0) {
-        wallet = createWallet("Selene Default");
+        wallet = createWallet("My Selene Wallet");
       } else {
         // return lowest-index wallet if requested wallet doesn't exist
         wallet = wallets[0];
