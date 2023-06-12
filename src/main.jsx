@@ -89,7 +89,8 @@ const router = createBrowserRouter([
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <Provider store={store}>
-      <Toaster toastOptions={{ duration: 3000 }} />
+      {/* Note: Duration has an inbuilt extra 1000ms dismissal delay */}
+      <Toaster toastOptions={{ duration: 1000 }} />
       <RouterProvider router={router} />
     </Provider>
   </React.StrictMode>

@@ -170,7 +170,7 @@ export default function TransactionManagerService() {
     // construct change outputs
     if (changeTotal >= DUST_LIMIT) {
       const AddressManager = new AddressManagerService(wallet_id);
-      const changeAddress = AddressManager.getChangeAddresses(1)[0];
+      const changeAddress = AddressManager.getUnusedAddresses(1, 1)[0];
 
       vout.push({
         lockingBytecode: addressToLockingBytecode(changeAddress.address),
@@ -239,7 +239,7 @@ export default function TransactionManagerService() {
     return {
       tx_hash,
       tx_hex,
-      feeTotal
+      feeTotal,
     };
   }
 

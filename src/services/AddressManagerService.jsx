@@ -112,6 +112,8 @@ export default function AddressManagerService(wallet_id) {
 
   // getChangeAddresses: get all active change addresses for this wallet
   // in DESCENDING order so we can get latest index with limit 1
+  // NB: If you want first UNUSED change address,
+  // instead use getUnusedAddress(limit, 1)
   function getChangeAddresses(limit) {
     const result = resultToJson(
       db.exec(
