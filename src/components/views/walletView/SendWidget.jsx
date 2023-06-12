@@ -3,9 +3,10 @@ import { Link, useNavigate } from "react-router-dom";
 import { Clipboard } from "@capacitor/clipboard";
 import { useSelector, useDispatch } from "react-redux";
 import { selectScannerIsScanning, setScannerIsScanning } from "@/redux/device";
-import { SendOutlined, PictureOutlined } from "@ant-design/icons";
+import { ReconciliationOutlined, PictureOutlined } from "@ant-design/icons";
 import { validateInvoiceString } from "@/util/invoice";
 import Button from "@/components/atoms/Button";
+import HrLabel from "@/components/atoms/HrLabel";
 import ScannerButton from "./ScannerButton";
 
 export default function SendWidget() {
@@ -44,24 +45,29 @@ export default function SendWidget() {
   const selectFromCameraRoll = () => null;
 
   return (
-    <div className="flex items-center w-auto mx-4 justify-evenly">
-      {isScanning ? null : (
-        <Button
-          icon={PictureOutlined}
-          label="Image"
-          onClick={selectFromCameraRoll}
-          iconSize="2xl"
-        />
-      )}
-      <ScannerButton />
-      {isScanning ? null : (
-        <Button
-          icon={SendOutlined}
-          label="Send"
-          onClick={pasteAddressFromClipboard}
-          iconSize="2xl"
-        />
-      )}
-    </div>
+    <>
+      <div className="mb-4">
+        <HrLabel text="Send" />
+      </div>
+      <div className="flex items-center w-auto mx-4 justify-evenly">
+        {isScanning ? null : (
+          <Button
+            icon={PictureOutlined}
+            label="Image"
+            onClick={selectFromCameraRoll}
+            iconSize="2xl"
+          />
+        )}
+        <ScannerButton />
+        {isScanning ? null : (
+          <Button
+            icon={ReconciliationOutlined}
+            label="Paste"
+            onClick={pasteAddressFromClipboard}
+            iconSize="2xl"
+          />
+        )}
+      </div>
+    </>
   );
 }

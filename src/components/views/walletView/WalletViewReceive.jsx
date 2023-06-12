@@ -14,6 +14,7 @@ import SendWidget from "./SendWidget";
 import ScannerButton from "./ScannerButton";
 import ScannerOverlay from "./ScannerOverlay";
 import SatoshiInput from "@/components/atoms/SatoshiInput";
+import HrLabel from "@/components/atoms/HrLabel";
 import Button from "@/components/atoms/Button";
 
 import { logos } from "@/util/logos";
@@ -153,7 +154,7 @@ export default function WalletViewReceive() {
           </div>
         </>
       )}
-      <div className="fixed bottom-24 w-full">
+      <div className="fixed bottom-20 w-full">
         <SendWidget />
       </div>
     </>
