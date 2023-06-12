@@ -84,10 +84,10 @@ export default function WalletViewReceive() {
         <ScannerOverlay />
       ) : (
         <>
-          <div className="py-2 mb-1 z-40">
+          <div className="p-2">
             <div className="flex justify-center">
               <div
-                className="border border-4 border-primary/80 my-2 cursor-pointer"
+                className="w-fit border border-4 border-primary/80 cursor-pointer shadow mx-2"
                 onClick={copyAddressToClipboard}
                 {...bindLongPress()}
               >
@@ -102,19 +102,39 @@ export default function WalletViewReceive() {
                   logoHeight={58}
                 />
               </div>
-            </div>
-            <div
-              onClick={copyAddressToClipboard}
-              className="text-xs font-mono text-center break-all cursor-pointer text-primary opacity-80 slashed-zero select-none"
-            >
-              {formattedAddress}
+              <div className="flex flex-col justify-around ml-2">
+                <Button
+                  icon={HistoryOutlined}
+                  label="History"
+                  onClick={() => null}
+                  size="8"
+                  iconSize="lg"
+                  labelSize="xs"
+                />
+                <Button
+                  icon={UnorderedListOutlined}
+                  label="Addresses"
+                  size="8"
+                  iconSize="lg"
+                  labelSize="xs"
+                />
+                <Button
+                  icon={FormOutlined}
+                  label="Invoice"
+                  onClick={() => setShowInvoiceAmount(!showInvoiceAmount)}
+                  size="8"
+                  iconSize="lg"
+                  labelSize="xs"
+                  inverted={showInvoiceAmount}
+                />
+              </div>
             </div>
             {showInvoiceAmount && (
-              <div className="my-1 text-white w-5/6 mx-auto">
-                <div className="p-1 w-fit bg-primary rounded-t-sm font-bold text-sm">
+              <div className="mt-2 text-white w-5/6 mx-auto">
+                <div className="p-1 w-fit bg-primary rounded-t-sm font-bold text-sm shadow-sm">
                   Invoice Amount:
                 </div>
-                <div className="bg-primary p-1">
+                <div className="bg-primary p-1 shadow-sm rounded-b-sm rounded-r-sm">
                   <SatoshiInput
                     className="p-1 text-sm w-full text-secondary font-mono rounded opacity-80 mx-1"
                     onChange={handleInvoiceAmountChange}
@@ -124,34 +144,18 @@ export default function WalletViewReceive() {
                 </div>
               </div>
             )}
-          </div>
-          <div className="flex justify-evenly mx-6">
-            <Button
-              icon={FormOutlined}
-              label="Invoice"
-              onClick={() => setShowInvoiceAmount(!showInvoiceAmount)}
-              iconSize="2xl"
-              inverted={showInvoiceAmount}
-            />
-            <Button
-              icon={UnorderedListOutlined}
-              label="Addresses"
-              iconSize="2xl"
-            />
-            <Button
-              icon={HistoryOutlined}
-              label="History"
-              onClick={() => null}
-              iconSize="2xl"
-            />
+            <div
+              onClick={copyAddressToClipboard}
+              className="text-xs font-mono text-center break-all cursor-pointer text-primary opacity-80 slashed-zero select-none my-2"
+            >
+              {formattedAddress}
+            </div>
           </div>
         </>
       )}
-      {!showInvoiceAmount && (
-        <div className="fixed bottom-24 w-full">
-          <SendWidget />
-        </div>
-      )}
+      <div className="fixed bottom-24 w-full">
+        <SendWidget />
+      </div>
     </>
   );
 }
