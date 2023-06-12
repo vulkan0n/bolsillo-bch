@@ -1,7 +1,7 @@
 import { NavLink } from "react-router-dom";
 import {
-  HomeOutlined,
-  HomeFilled,
+  WalletOutlined,
+  WalletFilled,
   AppstoreOutlined,
   AppstoreFilled,
   SettingOutlined,
@@ -14,7 +14,7 @@ function BottomNavigation() {
   const iconClasses = "text-2xl";
 
   return (
-    <div className="btm-nav btm-nav-sm z-50">
+    <div className="btm-nav btm-nav-md z-50">
       <NavLink
         to="/wallet"
         className={({ isActive }) =>
@@ -22,31 +22,33 @@ function BottomNavigation() {
         }
       >
         {({ isActive }) => (
-          <span className="btm-nav-label">
+          <>
             {isActive ? (
-              <HomeFilled className={iconClasses} />
+              <WalletFilled className={iconClasses} />
             ) : (
-              <HomeOutlined className={iconClasses} />
+              <WalletOutlined className={iconClasses} />
             )}
-          </span>
+            <span className="btm-nav-label">Wallet</span>
+          </>
         )}
       </NavLink>
-      {/*<NavLink
+      <NavLink
         to="/explore"
         className={({ isActive }) =>
           isActive ? `${baseClasses} ${activeClasses}` : `${baseClasses}`
         }
       >
         {({ isActive }) => (
-          <span className="btm-nav-label">
+          <>
             {isActive ? (
               <AppstoreFilled className={iconClasses} />
             ) : (
               <AppstoreOutlined className={iconClasses} />
             )}
-          </span>
+            <span className="btm-nav-label">Explore</span>
+          </>
         )}
-      </NavLink>*/}
+      </NavLink>
       <NavLink
         to="/settings"
         className={({ isActive }) =>
@@ -54,13 +56,14 @@ function BottomNavigation() {
         }
       >
         {({ isActive }) => (
-          <span className="btm-nav-label">
+          <>
             {isActive ? (
               <SettingFilled className={iconClasses} />
             ) : (
               <SettingOutlined className={iconClasses} />
             )}
-          </span>
+            <span className="btm-nav-label">Settings</span>
+          </>
         )}
       </NavLink>
     </div>
