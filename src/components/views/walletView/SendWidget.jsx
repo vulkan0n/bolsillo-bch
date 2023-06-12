@@ -48,7 +48,7 @@ export default function SendWidget() {
       {isScanning ? null : (
         <Button
           icon={PictureOutlined}
-          label="Import"
+          label="Image"
           onClick={selectFromCameraRoll}
           iconSize="2xl"
         />
