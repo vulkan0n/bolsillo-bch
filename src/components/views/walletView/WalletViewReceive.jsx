@@ -22,7 +22,7 @@ import { satsToBch } from "@/util/sats";
 import {
   SnippetsFilled,
   FormOutlined,
-  ReloadOutlined,
+  HistoryOutlined,
   UnorderedListOutlined,
 } from "@ant-design/icons";
 import showToast from "@/util/toast";
@@ -139,9 +139,9 @@ export default function WalletViewReceive() {
               iconSize="2xl"
             />
             <Button
-              icon={ReloadOutlined}
-              label="Cycle"
-              onClick={skipAddress}
+              icon={HistoryOutlined}
+              label="History"
+              onClick={() => null}
               iconSize="2xl"
             />
           </div>
