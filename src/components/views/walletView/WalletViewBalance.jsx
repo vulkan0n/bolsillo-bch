@@ -11,7 +11,7 @@ import { formatSatoshis } from "@/util/sats";
 
 export default function WalletViewBalance() {
   const [firstRender, setFirstRender] = useState(true);
-  const { balance } = useSelector(selectActiveWallet);
+  const { name: activeWalletName, balance } = useSelector(selectActiveWallet);
   const exchangeRates = useSelector(selectExchangeRates);
   const preferences = useSelector(selectPreferences);
 
@@ -62,7 +62,7 @@ export default function WalletViewBalance() {
     <div className="py-3 text-center">
       {!hideBalance && (
         <div className="font-bold text-zinc-400 text-md tracking-wide">
-          Available Balance
+          {activeWalletName}
         </div>
       )}
       <div className="text-2xl text-zinc-200 tabular-nums">
@@ -73,9 +73,7 @@ export default function WalletViewBalance() {
           &nbsp;
           <span
             className={`${
-              hideBalance
-                ? "blur-sm backdrop-opacity-60 opacity-25"
-                : ""
+              hideBalance ? "blur-sm backdrop-opacity-60 opacity-25" : ""
             }`}
           >
             <animated.span style={{ ...balanceReceivedSpring }}>
