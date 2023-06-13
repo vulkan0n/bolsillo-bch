@@ -1,6 +1,6 @@
 import { NavLink } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { selectKeyboardIsOpen } from "@/redux/device";
+import { selectKeyboardIsOpen, selectScannerIsScanning } from "@/redux/device";
 import {
   WalletOutlined,
   WalletFilled,
@@ -12,13 +12,14 @@ import {
 
 function BottomNavigation() {
   const keyboardIsOpen = useSelector(selectKeyboardIsOpen);
+  const isScanning = useSelector(selectScannerIsScanning);
 
   const baseClasses = "bg-zinc-900 text-primary border-primary";
   const activeClasses = "active border-t-4";
   const iconClasses = "text-2xl";
 
   return (
-    !keyboardIsOpen && (
+    !keyboardIsOpen && !isScanning && (
       <div className="btm-nav btm-nav-md z-50">
         <NavLink
           to="/wallet"
