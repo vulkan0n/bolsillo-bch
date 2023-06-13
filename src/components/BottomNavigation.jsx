@@ -32,7 +32,7 @@ function BottomNavigation() {
           </>
         )}
       </NavLink>
-      <NavLink
+      {/*<NavLink
         to="/explore"
         className={({ isActive }) =>
           isActive ? `${baseClasses} ${activeClasses}` : `${baseClasses}`
@@ -48,7 +48,7 @@ function BottomNavigation() {
             <span className="btm-nav-label">Explore</span>
           </>
         )}
-      </NavLink>
+      </NavLink>*/}
       <NavLink
         to="/settings"
         className={({ isActive }) =>
