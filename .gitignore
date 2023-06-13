@@ -24,5 +24,6 @@ dist-ssr
 *.sln
 *.sw?
 
+android/app/release
 android/app/capacitor.build.gradle
 android/capacitor.settings.gradle

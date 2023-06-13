@@ -8,7 +8,11 @@ import { useLongPress } from "use-long-press";
 
 import { selectActiveWallet } from "@/redux/wallet";
 import { selectPreferences } from "@/redux/preferences";
-import { selectScannerIsScanning, selectDeviceInfo } from "@/redux/device";
+import {
+  selectScannerIsScanning,
+  selectDeviceInfo,
+  selectKeyboardIsOpen,
+} from "@/redux/device";
 
 import AddressManagerService from "@/services/AddressManagerService";
 import SendWidget from "./SendWidget";
@@ -33,6 +37,7 @@ export default function WalletViewHome() {
   const navigate = useNavigate();
   const preferences = useSelector(selectPreferences);
   const wallet = useSelector(selectActiveWallet);
+  const keyboardIsOpen = useSelector(selectKeyboardIsOpen);
   const isScanning = useSelector(selectScannerIsScanning);
   const deviceInfo = useSelector(selectDeviceInfo);
 
@@ -62,8 +67,8 @@ export default function WalletViewHome() {
 
   const copyAddressToClipboard = async () => {
     showToast({
-      icon: <SnippetsFilled className="text-5xl text-primary" />,
-      title: "Copied to clipboard",
+      icon: <SnippetsFilled className="text-4xl text-primary" />,
+      title: "Copied Address to Clipboard",
       description: `${qrInvoice}`,
     });
     await Clipboard.write({ string: qrInvoice });
@@ -91,12 +96,11 @@ export default function WalletViewHome() {
         <ScannerOverlay />
       ) : (
         <>
-          <div className="absolute inset-x-0 top-[18%] px-2 max-w-fit mx-auto">
+          <div className="py-3 px-2 max-w-fit mx-auto">
             <div className="flex justify-center">
-              <div
-                className="w-fit h-fit border border-4 border-primary/80 cursor-pointer shadow"
+              <button
+                className="w-fit h-fit border border-4 border-primary/80 cursor-pointer shadow active:shadow-none active:bg-primary active:shadow-inner"
                 onClick={copyAddressToClipboard}
-                {...bindLongPress()}
               >
                 <QRCode
                   value={qrInvoice}
@@ -108,7 +112,7 @@ export default function WalletViewHome() {
                   logoWidth={58}
                   logoHeight={58}
                 />
-              </div>
+              </button>
               <div className="flex flex-col justify-around ml-5">
                 <Button
                   icon={HistoryOutlined}
@@ -153,16 +157,18 @@ export default function WalletViewHome() {
             )}
             <div
               onClick={copyAddressToClipboard}
-              className="text-xs font-mono text-center break-all cursor-pointer text-primary opacity-80 slashed-zero select-none my-2"
+              className="text-xs font-mono text-center break-all cursor-pointer text-primary slashed-zero select-none my-2 border border-primary/80 rounded p-1 shadow-sm my-2 active:bg-primary active:text-white active:shadow-none active:shadow-inner"
             >
               {formattedAddress}
             </div>
           </div>
         </>
       )}
-      <div className="fixed bottom-20 w-full">
-        <SendWidget />
-      </div>
+      {!keyboardIsOpen && (
+        <div className="fixed bottom-20 w-full">
+          <SendWidget />
+        </div>
+      )}
     </>
   );
 }
