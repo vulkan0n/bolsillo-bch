@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Clipboard } from "@capacitor/clipboard";
 import { Camera } from "@capacitor/camera";
@@ -18,14 +17,7 @@ import ScannerButton from "./ScannerButton";
 export default function SendWidget() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [sendAddress, setSendAddress] = useState("");
   const isScanning = useSelector(selectScannerIsScanning);
-
-  const handleSendAddressChange = (e) => {
-    const input = e.target.value;
-    setSendAddress(input);
-    forwardOnValidAddress(input);
-  };
 
   const pasteAddressFromClipboard = async () => {
     const paste = (await Clipboard.read()).value;
@@ -33,7 +25,6 @@ export default function SendWidget() {
 
     if (!valid) {
       // TODO: toast that we can't paste here
-      setSendAddress(paste);
     }
   };
 
@@ -50,6 +41,30 @@ export default function SendWidget() {
   };
 
   const handleImageSelectButton = async () => {
+    // function to downscale images (helps QR codes read better)
+    const scaleImage = (image) => {
+      const maxWidth = 1920;
+      const maxHeight = 1080;
+      const scaleRatio = Math.min(
+        1,
+        maxWidth / image.naturalWidth,
+        maxHeight / image.naturalHeight
+      );
+
+      const width = image.naturalWidth * scaleRatio;
+      const height = image.naturalHeight * scaleRatio;
+
+      const canvas = document.createElement("canvas");
+      canvas.width = width;
+      canvas.height = height;
+
+      const ctx = canvas.getContext("2d");
+      ctx.drawImage(image, 0, 0, width, height);
+
+      return canvas;
+    };
+
+    // open OS image picker
     const { dataUrl } = await Camera.getPhoto({
       quality: 100,
       allowEditing: false,
@@ -57,13 +72,20 @@ export default function SendWidget() {
       source: "PHOTOS",
     });
 
-    try {
-      const result = await QrScanner.scanImage(dataUrl);
-      forwardOnValidAddress(result);
-      console.log(result);
-    } catch (e) {
-      console.error(e);
-    }
+    // load and scan the chosen image
+    const image = new Image();
+    image.src = dataUrl;
+    image.onload = async () => {
+      const scaledImage = scaleImage(image);
+
+      try {
+        const result = await QrScanner.scanImage(scaledImage);
+        forwardOnValidAddress(result);
+        console.log(result);
+      } catch (e) {
+        console.error(e);
+      }
+    };
   };
 
   return (
