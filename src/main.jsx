@@ -15,8 +15,8 @@ import "./index.css";
 
 import MainLayout from "./components/MainLayout";
 import WalletView from "./components/views/WalletView";
-import WalletViewReceive from "./components/views/walletView/WalletViewReceive";
-import WalletViewSend from "./components/views/walletView/WalletViewSend";
+import WalletViewHome from "./components/views/walletView/WalletViewHome";
+import WalletViewHistory from "./components/views/walletView/WalletViewHistory";
 import WalletViewSendConfirm from "./components/views/walletView/WalletViewSendConfirm";
 import WalletViewSendSuccess from "./components/views/walletView/WalletViewSendSuccess";
 import ExploreView from "./components/views/ExploreView";
@@ -38,10 +38,10 @@ const router = createBrowserRouter([
         path: "/wallet",
         element: <WalletView />,
         children: [
-          {
+          /*{
             path: "send",
             element: <WalletViewSend />,
-          },
+          },*/
           {
             path: "send/:address",
             element: <WalletViewSendConfirm />,
@@ -51,8 +51,12 @@ const router = createBrowserRouter([
             element: <WalletViewSendSuccess />,
           },
           {
+            path: "history",
+            element: <WalletViewHistory />,
+          },
+          {
             index: true,
-            element: <WalletViewReceive />,
+            element: <WalletViewHome />,
           },
         ],
       },
