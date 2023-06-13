@@ -72,11 +72,15 @@ export default function WalletViewReceive() {
   const getQrLogoImage = (logo) => logos[logo.toLowerCase()].img;
 
   const bindLongPress = useLongPress(() => {
-    console.log("long press detected");
+    copyAddressToClipboard();
   });
 
   const handleInvoiceAmountChange = (satoshis) => {
     setInvoiceSats(satoshis);
+  };
+
+  const handleHistoryButton = () => {
+    navigate("/wallet/history");
   };
 
   return (
@@ -85,7 +89,7 @@ export default function WalletViewReceive() {
         <ScannerOverlay />
       ) : (
         <>
-          <div className="p-2">
+          <div className="absolute inset-x-0 top-[18%] px-2">
             <div className="flex justify-center">
               <div
                 className="w-fit border border-4 border-primary/80 cursor-pointer shadow mx-2"
@@ -107,7 +111,7 @@ export default function WalletViewReceive() {
                 <Button
                   icon={HistoryOutlined}
                   label="History"
-                  onClick={() => null}
+                  onClick={handleHistoryButton}
                   size="8"
                   iconSize="lg"
                   labelSize="xs"
