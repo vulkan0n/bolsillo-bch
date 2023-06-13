@@ -19,7 +19,7 @@ export default function Button({
     <div className="text-center">
       <button type="button" onClick={onClick} className={`w-${size} h-${size}`}>
         <div
-          className={`w-full h-full max-w-fit flex items-center justify-center cursor-pointer p-3 mx-auto
+          className={`w-full h-full flex items-center justify-center cursor-pointer p-3 mx-auto
         rounded-full outline outline-2 outline-primary shadow-md border opacity-90 
         ${colorClasses}
         active:shadow-none active:shadow-inner`}

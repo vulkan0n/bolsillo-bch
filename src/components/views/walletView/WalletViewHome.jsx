@@ -1,5 +1,6 @@
 import { useState, useMemo } from "react";
 import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 import { Clipboard } from "@capacitor/clipboard";
 import { QRCode } from "react-qrcode-logo";
@@ -28,7 +29,8 @@ import {
 } from "@ant-design/icons";
 import showToast from "@/util/toast";
 
-export default function WalletViewReceive() {
+export default function WalletViewHome() {
+  const navigate = useNavigate();
   const preferences = useSelector(selectPreferences);
   const wallet = useSelector(selectActiveWallet);
   const isScanning = useSelector(selectScannerIsScanning);
@@ -89,10 +91,10 @@ export default function WalletViewReceive() {
         <ScannerOverlay />
       ) : (
         <>
-          <div className="absolute inset-x-0 top-[18%] px-2">
+          <div className="absolute inset-x-0 top-[18%] px-2 max-w-fit mx-auto">
             <div className="flex justify-center">
               <div
-                className="w-fit border border-4 border-primary/80 cursor-pointer shadow mx-2"
+                className="w-fit border border-4 border-primary/80 cursor-pointer shadow"
                 onClick={copyAddressToClipboard}
                 {...bindLongPress()}
               >
@@ -107,35 +109,35 @@ export default function WalletViewReceive() {
                   logoHeight={58}
                 />
               </div>
-              <div className="flex flex-col justify-around ml-2">
+              <div className="flex flex-col justify-around ml-5">
                 <Button
                   icon={HistoryOutlined}
                   label="History"
                   onClick={handleHistoryButton}
-                  size="8"
-                  iconSize="lg"
+                  size="12"
+                  iconSize="xl"
                   labelSize="xs"
                 />
                 <Button
                   icon={UnorderedListOutlined}
-                  label="Addresses"
-                  size="8"
-                  iconSize="lg"
+                  label="Coins"
+                  size="12"
+                  iconSize="xl"
                   labelSize="xs"
                 />
                 <Button
                   icon={FormOutlined}
                   label="Invoice"
                   onClick={() => setShowInvoiceAmount(!showInvoiceAmount)}
-                  size="8"
-                  iconSize="lg"
+                  size="12"
+                  iconSize="xl"
                   labelSize="xs"
                   inverted={showInvoiceAmount}
                 />
               </div>
             </div>
             {showInvoiceAmount && (
-              <div className="mt-2 text-white w-5/6 mx-auto">
+              <div className="mt-2 text-white">
                 <div className="p-1 w-fit bg-primary rounded-t-sm font-bold text-sm shadow-sm">
                   Invoice Amount:
                 </div>
