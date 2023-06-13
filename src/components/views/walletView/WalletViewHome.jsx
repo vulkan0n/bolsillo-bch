@@ -94,7 +94,7 @@ export default function WalletViewHome() {
           <div className="absolute inset-x-0 top-[18%] px-2 max-w-fit mx-auto">
             <div className="flex justify-center">
               <div
-                className="w-fit border border-4 border-primary/80 cursor-pointer shadow"
+                className="w-fit h-fit border border-4 border-primary/80 cursor-pointer shadow"
                 onClick={copyAddressToClipboard}
                 {...bindLongPress()}
               >
@@ -118,13 +118,13 @@ export default function WalletViewHome() {
                   iconSize="xl"
                   labelSize="xs"
                 />
-                <Button
+                {/*<Button
                   icon={UnorderedListOutlined}
                   label="Coins"
                   size="12"
                   iconSize="xl"
                   labelSize="xs"
-                />
+                />*/}
                 <Button
                   icon={FormOutlined}
                   label="Invoice"
