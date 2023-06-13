@@ -1,16 +1,23 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Clipboard } from "@capacitor/clipboard";
+import { Camera } from "@capacitor/camera";
 import { useSelector, useDispatch } from "react-redux";
 import { selectScannerIsScanning, setScannerIsScanning } from "@/redux/device";
-import { ReconciliationOutlined, PictureOutlined } from "@ant-design/icons";
+import {
+  ReconciliationOutlined,
+  PictureOutlined,
+  SendOutlined,
+} from "@ant-design/icons";
 import { validateInvoiceString } from "@/util/invoice";
+import QrScanner from "qr-scanner";
 import Button from "@/components/atoms/Button";
 import HrLabel from "@/components/atoms/HrLabel";
 import ScannerButton from "./ScannerButton";
 
 export default function SendWidget() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [sendAddress, setSendAddress] = useState("");
   const isScanning = useSelector(selectScannerIsScanning);
 
@@ -42,24 +49,39 @@ export default function SendWidget() {
     return isValid;
   };
 
-  const selectFromCameraRoll = () => null;
+  const handleImageSelectButton = async () => {
+    const { dataUrl } = await Camera.getPhoto({
+      quality: 100,
+      allowEditing: false,
+      resultType: "dataUrl",
+      source: "PHOTOS",
+    });
+
+    try {
+      const result = await QrScanner.scanImage(dataUrl);
+      forwardOnValidAddress(result);
+      console.log(result);
+    } catch (e) {
+      console.error(e);
+    }
+  };
 
   return (
     <>
       <div className="mb-4">
-        <HrLabel text="Send" />
+        {!isScanning && <HrLabel text="Send" icon={SendOutlined} />}
       </div>
       <div className="flex items-center w-auto mx-4 justify-evenly">
-        {isScanning ? null : (
+        {!isScanning && (
           <Button
             icon={PictureOutlined}
             label="Image"
-            onClick={selectFromCameraRoll}
+            onClick={handleImageSelectButton}
             iconSize="2xl"
           />
         )}
         <ScannerButton />
-        {isScanning ? null : (
+        {!isScanning && (
           <Button
             icon={ReconciliationOutlined}
             label="Paste"
