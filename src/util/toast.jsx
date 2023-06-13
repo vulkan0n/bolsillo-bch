@@ -8,12 +8,12 @@ const showToast = ({ icon = <></>, title = "", description = "" }) => {
         toast.remove(t.id);
       }}
     >
-      <div className="flex-shrink-0 my-auto p-1">
+      <div className="flex-shrink-0 my-auto p-2">
         <div className="flex items-center justify-center">{icon}</div>
       </div>
-      <div className="p-2">
-        <p className="text-lg font-medium text-gray-900">{title}</p>
-        <p className="text-md break-all text-zinc-600">{description}</p>
+      <div className="p-1">
+        <p className="text-lg font-bold text-zinc-800">{title}</p>
+        <p className="text-base break-all text-zinc-600">{description}</p>
       </div>
     </div>
   ));
