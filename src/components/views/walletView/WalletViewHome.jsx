@@ -19,19 +19,23 @@ import SendWidget from "./SendWidget";
 import ScannerButton from "./ScannerButton";
 import ScannerOverlay from "./ScannerOverlay";
 import SatoshiInput from "@/components/atoms/SatoshiInput";
-import HrLabel from "@/components/atoms/HrLabel";
 import Button from "@/components/atoms/Button";
-
-import { logos } from "@/util/logos";
-import { satsToBch } from "@/util/sats";
+import Address from "@/components/atoms/Address";
 
 import {
   SnippetsFilled,
   FormOutlined,
   HistoryOutlined,
-  UnorderedListOutlined,
+  CopyOutlined,
+  CaretRightOutlined,
+  CaretDownOutlined,
 } from "@ant-design/icons";
+
 import showToast from "@/util/toast";
+import { logos } from "@/util/logos";
+import { satsToBch } from "@/util/sats";
+
+import { animated, useSpring } from "@react-spring/web";
 
 export default function WalletViewHome() {
   const navigate = useNavigate();
@@ -42,8 +46,8 @@ export default function WalletViewHome() {
   const deviceInfo = useSelector(selectDeviceInfo);
 
   const [skip, setSkip] = useState(0);
-  const [invoiceSats, setInvoiceSats] = useState("");
-  const [showInvoiceAmount, setShowInvoiceAmount] = useState(false);
+  const [requestSats, setRequestSats] = useState("");
+  const [showRequestAmount, setShowRequestAmount] = useState(false);
 
   const unusedAddresses = useMemo(
     () => new AddressManagerService(wallet.id).getUnusedAddresses(),
@@ -55,117 +59,135 @@ export default function WalletViewHome() {
       ? unusedAddresses[(0 + skip) % unusedAddresses.length].address
       : "";
 
-  const formattedAddress = (() => {
-    const split = address.split(":");
-    return split.length > 1 ? split[1] : split[0];
-  })();
-
-  const qrInvoice =
-    showInvoiceAmount && invoiceSats > 0
-      ? `${address}?amount=${satsToBch(invoiceSats)}`
+  const qrRequest =
+    showRequestAmount && requestSats > 0
+      ? `${address}?amount=${satsToBch(requestSats)}`
       : address;
-
-  const copyAddressToClipboard = async () => {
-    showToast({
-      icon: <SnippetsFilled className="text-4xl text-primary" />,
-      title: "Copied Address to Clipboard",
-      description: `${qrInvoice}`,
-    });
-    await Clipboard.write({ string: qrInvoice });
-  };
 
   const skipAddress = () => setSkip((skip + 1) % 5);
 
   const getQrLogoImage = (logo) => logos[logo.toLowerCase()].img;
 
+  const copyAddressToClipboard = async () => {
+    showToast({
+      icon: <SnippetsFilled className="text-4xl text-primary" />,
+      title: "Copied Address to Clipboard",
+      description: `${qrRequest}`,
+    });
+    await Clipboard.write({ string: qrRequest });
+  };
+
   const bindLongPress = useLongPress(() => {
     copyAddressToClipboard();
   });
 
-  const handleInvoiceAmountChange = (satoshis) => {
-    setInvoiceSats(satoshis);
+  const handleRequestAmountChange = (satoshis) => {
+    setRequestSats(satoshis);
   };
 
   const handleHistoryButton = () => {
     navigate("/wallet/history");
   };
 
+  const [requestSprings, requestSpringsApi] = useSpring(() => ({
+    from: { fontSize: "1em" },
+    to: { fontSize: "0.875em" },
+    immediate: true,
+    config: {
+      tension: 500,
+      friction: 25,
+      mass: 0.8,
+    },
+  }));
+
+  const [requestOpenSprings, requestOpenSpringsApi] = useSpring(() => ({
+    from: { opacity: 0, y: -4 },
+    to: { opacity: 1, y: 0, height: 0 },
+    config: {
+      tension: 500,
+      friction: 25,
+      mass: 0.8,
+    },
+    reverse: !showRequestAmount,
+    immediate: true,
+  }));
+
   return (
     <>
       {isScanning ? (
         <ScannerOverlay />
       ) : (
-        <>
-          <div className="py-3 px-2 max-w-fit mx-auto">
-            <div className="flex justify-center">
-              <button
-                className="w-fit h-fit border border-4 border-primary/80 cursor-pointer shadow active:shadow-none active:bg-primary active:shadow-inner"
-                onClick={copyAddressToClipboard}
-              >
-                <QRCode
-                  value={qrInvoice}
-                  size={200}
-                  quietZone={16}
-                  bgColor={preferences["qrCodeBackground"]}
-                  fgColor={preferences["qrCodeForeground"]}
-                  logoImage={getQrLogoImage(preferences["qrCodeLogo"])}
-                  logoWidth={58}
-                  logoHeight={58}
-                />
-              </button>
-              <div className="flex flex-col justify-around ml-5">
-                <Button
-                  icon={HistoryOutlined}
-                  label="History"
-                  onClick={handleHistoryButton}
-                  size="12"
-                  iconSize="xl"
-                  labelSize="xs"
-                />
-                {/*<Button
-                  icon={UnorderedListOutlined}
-                  label="Coins"
-                  size="12"
-                  iconSize="xl"
-                  labelSize="xs"
-                />*/}
-                <Button
-                  icon={FormOutlined}
-                  label="Invoice"
-                  onClick={() => setShowInvoiceAmount(!showInvoiceAmount)}
-                  size="12"
-                  iconSize="xl"
-                  labelSize="xs"
-                  inverted={showInvoiceAmount}
-                />
-              </div>
-            </div>
-            {showInvoiceAmount && (
-              <div className="mt-2 text-white">
-                <div className="p-1 w-fit bg-primary rounded-t-sm font-bold text-sm shadow-sm">
-                  Invoice Amount:
-                </div>
-                <div className="bg-primary p-1 shadow-sm rounded-b-sm rounded-r-sm">
-                  <SatoshiInput
-                    className="p-1 text-sm w-full text-secondary font-mono rounded opacity-80 mx-1"
-                    onChange={handleInvoiceAmountChange}
-                    sats={invoiceSats}
-                    allowFiat
-                  />
-                </div>
-              </div>
-            )}
-            <div
-              onClick={copyAddressToClipboard}
-              className="text-xs font-mono text-center break-all cursor-pointer text-primary slashed-zero select-none my-2 border border-primary/80 rounded p-1 shadow-sm my-2 active:bg-primary active:text-white active:shadow-none active:shadow-inner"
-            >
-              {formattedAddress}
-            </div>
+        <div className="py-3 px-2 text-center">
+          <button
+            className="w-fit h-fit border border-4 border-primary/80 cursor-pointer shadow active:shadow-none active:bg-primary active:shadow-inner"
+            onClick={copyAddressToClipboard}
+          >
+            <QRCode
+              value={qrRequest}
+              size={204}
+              quietZone={16}
+              bgColor={preferences["qrCodeBackground"]}
+              fgColor={preferences["qrCodeForeground"]}
+              logoImage={getQrLogoImage(preferences["qrCodeLogo"])}
+              logoWidth={60}
+              logoHeight={60}
+            />
+          </button>
+          <div
+            onClick={copyAddressToClipboard}
+            className="w-fit mx-auto text-xs font-mono text-center break-all cursor-pointer text-primary slashed-zero select-none my-2 rounded p-1 shadow-sm my-2 active:bg-primary active:text-white active:shadow-none active:shadow-inner"
+          >
+            <CopyOutlined className="mr-1" />
+            <Address address={address} />
           </div>
-        </>
+          <div className="mt-2 mx-auto select-none opacity-90">
+            <animated.div
+              className={`py-1.5 px-2 w-max justify-center shadow-sm outline outline-2 outline-primary flex items-center mx-auto cursor-pointer ${
+                showRequestAmount
+                  ? "rounded-t pb-1 font-semibold bg-primary text-white active:bg-white active:text-primary active:font-normal"
+                  : "rounded bg-white text-zinc-600 active:bg-primary active:text-white active:font-semibold"
+              } active:shadow-none active:shadow-inner`}
+              onClick={() => {
+                requestSpringsApi.start({
+                  to: showRequestAmount
+                    ? { fontSize: "0.875em" }
+                    : { fontSize: "1em" },
+                });
+                requestOpenSpringsApi.start({
+                  to: showRequestAmount
+                    ? { opacity: 0, height: 0 }
+                    : { opacity: 1, height: "max-content" },
+                });
+                setShowRequestAmount(!showRequestAmount);
+              }}
+              style={{ ...requestSprings }}
+            >
+              <FormOutlined className="mr-1" />
+              Request Amount
+              {showRequestAmount ? (
+                <CaretDownOutlined className="ml-1" />
+              ) : (
+                <CaretRightOutlined className="ml-1" />
+              )}
+            </animated.div>
+            <animated.div
+              className="bg-primary text-white p-1.5 shadow-sm rounded max-w-[20.5em] mx-auto"
+              style={{ ...requestOpenSprings }}
+            >
+              {showRequestAmount && (
+                <SatoshiInput
+                  className="p-1 w-full text-black/70 font-mono rounded mx-1"
+                  onChange={handleRequestAmountChange}
+                  sats={requestSats}
+                  allowFiat
+                />
+              )}
+            </animated.div>
+          </div>
+        </div>
       )}
       {!keyboardIsOpen && (
-        <div className="fixed bottom-20 w-full">
+        <div className="absolute bottom-[4.75em] w-full">
           <SendWidget />
         </div>
       )}
