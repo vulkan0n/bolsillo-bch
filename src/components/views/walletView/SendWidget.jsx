@@ -4,9 +4,9 @@ import { Camera } from "@capacitor/camera";
 import { useSelector, useDispatch } from "react-redux";
 import { selectScannerIsScanning, setScannerIsScanning } from "@/redux/device";
 import {
-  ReconciliationOutlined,
   PictureOutlined,
   SendOutlined,
+  HistoryOutlined,
 } from "@ant-design/icons";
 import { validateInvoiceString } from "@/util/invoice";
 import QrScanner from "qr-scanner";
@@ -88,25 +88,27 @@ export default function SendWidget() {
     };
   };
 
+  const handleHistoryButton = () => {
+    navigate("/wallet/history");
+  };
+
   return (
     <>
-      <div className="mb-4">
-        {!isScanning && <HrLabel text="Send" icon={SendOutlined} />}
-      </div>
+      <div className="mb-3.5">{!isScanning && <hr />}</div>
       <div className="flex items-center w-auto mx-4 justify-evenly">
         {!isScanning && (
           <Button
-            icon={PictureOutlined}
-            label="Image"
-            onClick={handleImageSelectButton}
+            icon={HistoryOutlined}
+            label="History"
+            onClick={handleHistoryButton}
             iconSize="2xl"
           />
         )}
         <ScannerButton />
         {!isScanning && (
           <Button
-            icon={ReconciliationOutlined}
-            label="Paste"
+            icon={SendOutlined}
+            label="Send"
             onClick={pasteAddressFromClipboard}
             iconSize="2xl"
           />

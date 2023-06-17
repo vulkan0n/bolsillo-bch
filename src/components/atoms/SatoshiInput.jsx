@@ -96,7 +96,7 @@ export default function SatoshiInput({ className, allowFiat, onChange, sats }) {
         </div>
         <input
           type="text"
-          inputMode="numeric"
+          inputMode="decimal"
           className={className}
           value={displayAmount}
           onChange={(event) => {
