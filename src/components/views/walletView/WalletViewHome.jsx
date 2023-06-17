@@ -42,7 +42,7 @@ export default function WalletViewHome() {
   const deviceInfo = useSelector(selectDeviceInfo);
 
   const [skip, setSkip] = useState(0);
-  const [invoiceSats, setInvoiceSats] = useState("0");
+  const [invoiceSats, setInvoiceSats] = useState("");
   const [showInvoiceAmount, setShowInvoiceAmount] = useState(false);
 
   const unusedAddresses = useMemo(
