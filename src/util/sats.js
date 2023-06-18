@@ -59,9 +59,10 @@ export function formatSatoshis(amount, bypassHidden = false) {
     fiat: fiatAmount,
   };
 
+  // Don't leak number of digits when hiding balance
   const displayHidden = {
-    bch: bchDisplay.replace(/\d/g, "X"),
-    fiat: fiatAmount.replace(/\d/g, "X"),
+    bch: "XXXXXXXXXX",
+    fiat: "XXXXXXXXXX",
   };
 
   return hideBalance && !bypassHidden ? displayHidden : displayAmount;

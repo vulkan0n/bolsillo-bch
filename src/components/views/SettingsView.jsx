@@ -76,7 +76,7 @@ export default function SettingsView() {
         <SettingsCategory icon={DollarCircleOutlined} title="Currency Settings">
           <SettingsChild icon={EuroCircleOutlined} label="Local Currency">
             <select
-              className="select"
+              className="p-2 bg-white rounded h-10 w-24"
               value={preferences["localCurrency"] || ""}
               onChange={(event) =>
                 handleSettingsUpdate("localCurrency", event.target.value)
@@ -180,7 +180,7 @@ export default function SettingsView() {
                 <img src={logos[logoKey].img} className="w-8 h-8 mx-2" />
               )}
               <select
-                className="rounded h-10 w-24 p-2 flex-1"
+                className="rounded h-10 w-24 p-2 flex-1 bg-white"
                 value={preferences["qrCodeLogo"] || ""}
                 onChange={(event) =>
                   handleSettingsUpdate("qrCodeLogo", event.target.value)
@@ -268,7 +268,7 @@ export default function SettingsView() {
         </SettingsCategory>
         */}
       </div>
-      <div className="text-xs text-center text-zinc-500 opacity-80">
+      <div className="text-xs text-center text-zinc-500 opacity-80 mb-3">
         Selene Wallet v{SELENE_WALLET_VERSION}
       </div>
     </>

@@ -1,7 +1,12 @@
 import { NavLink } from "react-router-dom";
+import { useSelector } from "react-redux";
 import {
-  HomeOutlined,
-  HomeFilled,
+  selectKeyboardIsOpen,
+  selectScannerIsScanning,
+} from "@/redux/device";
+import {
+  WalletOutlined,
+  WalletFilled,
   AppstoreOutlined,
   AppstoreFilled,
   SettingOutlined,
@@ -9,61 +14,66 @@ import {
 } from "@ant-design/icons";
 
 function BottomNavigation() {
-  const baseClasses = "bg-zinc-900 text-primary border-primary";
+  const keyboardIsOpen = useSelector(selectKeyboardIsOpen);
+  const isScanning = useSelector(selectScannerIsScanning);
+
+  return (
+    !keyboardIsOpen &&
+    !isScanning && (
+      <>
+        <div className="fixed bottom-0 w-full flex items-center justify-around z-50">
+          <NavButton
+            to="/wallet"
+            activeIcon={WalletFilled}
+            icon={WalletOutlined}
+            label="Wallet"
+          />
+          {/*<NavButton
+            to="/explore"
+            activeIcon={AppstoreFilled}
+            icon={AppstoreOutlined}
+            label="Explore"
+          />*/}
+          <NavButton
+            to="/settings"
+            activeIcon={SettingFilled}
+            icon={SettingOutlined}
+            label="Settings"
+          />
+        </div>
+      </>
+    )
+  );
+}
+
+function NavButton({ to, icon, activeIcon, label }) {
+  const Icon = icon;
+  const ActiveIcon = activeIcon;
+
+  const baseClasses = "bg-zinc-900 text-primary border-primary w-full h-16 p-2";
   const activeClasses = "active border-t-4";
   const iconClasses = "text-2xl";
 
   return (
-    <div className="btm-nav btm-nav-sm z-50">
-      <NavLink
-        to="/wallet"
-        className={({ isActive }) =>
-          isActive ? `${baseClasses} ${activeClasses}` : `${baseClasses}`
-        }
-      >
-        {({ isActive }) => (
-          <span className="btm-nav-label">
+    <NavLink
+      to={to}
+      className={({ isActive }) =>
+        isActive ? `${baseClasses} ${activeClasses}` : `${baseClasses}`
+      }
+    >
+      {({ isActive }) => (
+        <>
+          <div className="text-center">
             {isActive ? (
-              <HomeFilled className={iconClasses} />
+              <ActiveIcon className={iconClasses} />
             ) : (
-              <HomeOutlined className={iconClasses} />
+              <Icon className={iconClasses} />
             )}
-          </span>
-        )}
-      </NavLink>
-      {/*<NavLink
-        to="/explore"
-        className={({ isActive }) =>
-          isActive ? `${baseClasses} ${activeClasses}` : `${baseClasses}`
-        }
-      >
-        {({ isActive }) => (
-          <span className="btm-nav-label">
-            {isActive ? (
-              <AppstoreFilled className={iconClasses} />
-            ) : (
-              <AppstoreOutlined className={iconClasses} />
-            )}
-          </span>
-        )}
-      </NavLink>*/}
-      <NavLink
-        to="/settings"
-        className={({ isActive }) =>
-          isActive ? `${baseClasses} ${activeClasses}` : `${baseClasses}`
-        }
-      >
-        {({ isActive }) => (
-          <span className="btm-nav-label">
-            {isActive ? (
-              <SettingFilled className={iconClasses} />
-            ) : (
-              <SettingOutlined className={iconClasses} />
-            )}
-          </span>
-        )}
-      </NavLink>
-    </div>
+          </div>
+          <div className="text-center text-sm">{label}</div>
+        </>
+      )}
+    </NavLink>
   );
 }
 

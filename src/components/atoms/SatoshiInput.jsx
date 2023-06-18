@@ -23,6 +23,10 @@ export default function SatoshiInput({ className, allowFiat, onChange, sats }) {
   const Currency = new CurrencyService(localCurrency);
 
   function satsToDisplayAmount() {
+    if (!sats) {
+      return "0";
+    }
+
     return preferLocal
       ? Currency.satsToFiat(sats)
       : denominateSats
@@ -54,7 +58,8 @@ export default function SatoshiInput({ className, allowFiat, onChange, sats }) {
     }
 
     if (new Decimal(sats).lessThan(0)) {
-      setDisplayAmount("0");
+      setDisplayAmount("");
+      onChange(0);
       return;
     }
 
@@ -91,20 +96,28 @@ export default function SatoshiInput({ className, allowFiat, onChange, sats }) {
         </div>
         <input
           type="text"
-          inputMode="numeric"
+          inputMode="decimal"
           className={className}
           value={displayAmount}
           onChange={(event) => {
             const maxDecimals = preferLocal ? 2 : denominateSats ? 0 : 8;
 
-            const value =
-              event.target.value === "."
-                ? "0."
-                : !event.target.value
-                ? "0"
-                : event.target.value;
+            let value = event.target.value || "";
 
-            const amount = new Decimal(Number.parseFloat(value)).toFixed(
+            if (event.target.value === ".") {
+              value = "0.";
+            }
+
+            if (
+              event.target.value.endsWith(".") &&
+              displayAmount.endsWith(".")
+            ) {
+              value = new Decimal(
+                event.target.value.substring(0, event.target.value.length - 1)
+              ).toFixed(maxDecimals);
+            }
+
+            const amount = new Decimal(Number.parseFloat(value) || 0).toFixed(
               Math.min(numDecimalPlaces(value), maxDecimals),
               Decimal.ROUND_DOWN
             );
