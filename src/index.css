@@ -23,6 +23,15 @@ body {
     background-color: #111111;
 }
 
+#bottomNav {
+    padding-bottom: env(safe-area-inset-bottom);
+    background-color: #111111;
+}
+
+.toaster {
+    margin-top: env(safe-area-inset-top);
+}
+
 main {
     min-height: 100%;
     position: relative;

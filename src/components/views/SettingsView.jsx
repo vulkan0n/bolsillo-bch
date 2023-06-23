@@ -6,6 +6,10 @@ import { selectActiveWallet } from "@/redux/wallet";
 
 import WalletService from "@/services/WalletService";
 import { currencyList } from "@/util/currency";
+import { satsToDisplayAmount } from "@/util/sats";
+
+import Button from "@/components/atoms/Button";
+import CurrencySymbol from "@/components/atoms/CurrencySymbol";
 
 import {
   SettingOutlined,
@@ -24,6 +28,10 @@ import {
   PlusCircleFilled,
   CheckCircleOutlined,
   BorderOuterOutlined,
+  BgColorsOutlined,
+  SettingFilled,
+  FormatPainterOutlined,
+  UndoOutlined,
 } from "@ant-design/icons";
 
 import ViewHeader from "./ViewHeader";
@@ -48,13 +56,20 @@ export default function SettingsView() {
   const walletList = new WalletService().getWallets();
   const logoKey = preferences["qrCodeLogo"].toLowerCase();
 
+  const handleResetQrColors = () => {
+    handleSettingsUpdate("qrCodeLogo", "selene");
+    handleSettingsUpdate("qrCodeForeground", "#000000");
+    handleSettingsUpdate("qrCodeBackground", "#ffffff");
+  };
+  console.log(JSON.stringify(preferences["instantPayThreshold"]));
+
   return (
     <>
       <ViewHeader icon={SettingOutlined} title="Settings" />
       <div className="p-1">
         <KeyWarning wallet={wallet} />
 
-        <SettingsCategory icon={WalletOutlined} title="Wallet Settings">
+        <SettingsCategory icon={WalletOutlined} title="Wallets">
           <Link to="/settings/wallet/wizard" className="w-full block p-2">
             <PlusCircleFilled className="text-xl mr-1" />
             Create/Import Wallet
@@ -73,7 +88,7 @@ export default function SettingsView() {
           ))}
         </SettingsCategory>
 
-        <SettingsCategory icon={DollarCircleOutlined} title="Currency Settings">
+        <SettingsCategory icon={DollarCircleOutlined} title="Currency">
           <SettingsChild icon={EuroCircleOutlined} label="Local Currency">
             <select
               className="p-2 bg-white rounded h-10 w-24"
@@ -82,9 +97,13 @@ export default function SettingsView() {
                 handleSettingsUpdate("localCurrency", event.target.value)
               }
             >
-              {currencyList.map((currency) => (
-                <option key={currency.currency}>{currency.currency}</option>
-              ))}
+              {currencyList
+                .filter((c) => c.currency !== "BCH")
+                .map((c) => (
+                  <option key={c.currency} value={c.currency}>
+                    {c.currency} {c.symbol}
+                  </option>
+                ))}
             </select>
           </SettingsChild>
           <SettingsChild
@@ -135,7 +154,7 @@ export default function SettingsView() {
           </SettingsChild>
         </SettingsCategory>
 
-        <SettingsCategory icon={SendOutlined} title="Payment Settings">
+        <SettingsCategory icon={SendOutlined} title="Instant Pay">
           <SettingsChild icon={ThunderboltOutlined} label="Allow Instant Pay">
             <input
               type="checkbox"
@@ -151,29 +170,24 @@ export default function SettingsView() {
             label="Instant Pay Limit"
           >
             <span className="text-zinc-600">
+              <CurrencySymbol className="font-bold" />
               <SatoshiInput
-                sats={preferences["instantPayThreshold"]}
+                satoshiInput={{
+                  display: satsToDisplayAmount(
+                    preferences["instantPayThreshold"]
+                  ),
+                  sats: preferences["instantPayThreshold"],
+                }}
                 className="p-2 w-28 rounded mx-1"
-                onChange={(satoshis) =>
-                  handleSettingsUpdate("instantPayThreshold", satoshis)
+                onChange={(satInput) =>
+                  handleSettingsUpdate("instantPayThreshold", satInput.sats)
                 }
-                allowFiat
               />
             </span>
           </SettingsChild>
-          <SettingsChild icon={CameraOutlined} label="Enable Fast Scan">
-            <input
-              type="checkbox"
-              className="toggle"
-              checked={preferences["scannerFastMode"] === "true"}
-              onChange={(event) =>
-                handleSettingsUpdate("scannerFastMode", event.target.checked)
-              }
-            />
-          </SettingsChild>
         </SettingsCategory>
 
-        <SettingsCategory icon={QrcodeOutlined} title="QR Code Settings">
+        <SettingsCategory icon={QrcodeOutlined} title="QR Code">
           <SettingsChild icon={BorderOuterOutlined} label="Logo">
             <div className="flex items-center">
               {logoKey !== "none" && (
@@ -192,14 +206,30 @@ export default function SettingsView() {
               </select>
             </div>
           </SettingsChild>
-          {/*<SettingsChild icon={BgColorsOutlined} label="Background Color">
+          <SettingsChild icon={FormatPainterOutlined} label="Foreground Color">
+            <div className="flex items-center">
+              <SettingFilled
+                className="text-3xl px-2"
+                style={{ color: preferences["qrCodeForeground"] }}
+              />
+              <input
+                type="color"
+                className="rounded h-10 w-24 m-0 p-2"
+                value={preferences["qrCodeForeground"] || ""}
+                onChange={(event) =>
+                  handleSettingsUpdate("qrCodeForeground", event.target.value)
+                }
+              />
+            </div>
+          </SettingsChild>
+          <SettingsChild icon={BgColorsOutlined} label="Background Color">
             <div className="flex items-center">
               <SettingFilled
                 className="text-3xl px-2"
                 style={{ color: preferences["qrCodeBackground"] }}
               />
               <input
-                type="text"
+                type="color"
                 className="rounded h-10 w-24 m-0 p-2"
                 value={preferences["qrCodeBackground"] || ""}
                 onChange={(event) =>
@@ -208,22 +238,19 @@ export default function SettingsView() {
               />
             </div>
           </SettingsChild>
-          <SettingsChild icon={FormatPainterOutlined} label="Foreground Color">
+          <SettingsChild icon={() => null} label="">
             <div className="flex items-center">
-              <SettingFilled
-                className="text-3xl px-2"
-                style={{ color: preferences["qrCodeForeground"] }}
-              />
-              <input
-                type="text"
-                className="rounded h-10 w-24 m-0 p-2"
-                value={preferences["qrCodeForeground"] || ""}
-                onChange={(event) =>
-                  handleSettingsUpdate("qrCodeForeground", event.target.value)
-                }
+              <Button
+                onClick={handleResetQrColors}
+                icon={() => (
+                  <span>
+                    <UndoOutlined className="mr-1" />
+                    Reset Colors
+                  </span>
+                )}
               />
             </div>
-          </SettingsChild>*/}
+          </SettingsChild>
         </SettingsCategory>
 
         {/*
@@ -236,41 +263,16 @@ export default function SettingsView() {
             />
           </SettingsChild>
         </SettingsCategory>
-
-        <SettingsCategory icon={HeartOutlined} title="Donation Settings">
-          <SettingsChild icon={GiftOutlined} label="Enable Donation Mode">
-            <input
-              type="checkbox"
-              className="toggle"
-              onChange={(event) => null}
-            />
-          </SettingsChild>
-          <SettingsChild
-            icon={CodeOutlined}
-            label="Donate to Selene Developers"
-          >
-            <input
-              type="checkbox"
-              className="toggle"
-              onChange={(event) => null}
-            />
-          </SettingsChild>
-          <SettingsChild
-            icon={CloudServerOutlined}
-            label="Donate to Electrum Server Operator"
-          >
-            <input
-              type="checkbox"
-              className="toggle"
-              onChange={(event) => null}
-            />
-          </SettingsChild>
-        </SettingsCategory>
         */}
       </div>
-      <div className="text-xs text-center text-zinc-500 opacity-80 mb-3">
-        Selene Wallet v{SELENE_WALLET_VERSION}
-      </div>
+      <Link to="/credits">
+        <div className="w-fit mx-auto my-2 p-2 flex items-center justify-center shadow-sm rounded-full bg-primary text-white active:bg-white active:text-primary">
+          <img src={logos["selene"].img} className="w-11 h-11 mr-1" />
+          <span className="text-sm font-semibold">
+            Selene Wallet v{SELENE_WALLET_VERSION}
+          </span>
+        </div>
+      </Link>
     </>
   );
 }

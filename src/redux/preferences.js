@@ -80,3 +80,11 @@ export const selectActiveWalletId = createSelector(
   (state) => state,
   (state) => state.preferences.activeWalletId
 );
+
+export const selectLocalCurrency = createSelector(
+  (state) => state.preferences,
+  (preferences) => ({
+    preferLocalCurrency: preferences.preferLocalCurrency === "true",
+    localCurrency: preferences.localCurrency,
+  })
+);

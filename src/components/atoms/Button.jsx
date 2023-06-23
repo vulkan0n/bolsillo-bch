@@ -2,7 +2,6 @@ export default function Button({
   icon,
   label,
   onClick,
-  size = "12",
   iconSize = "2xl",
   labelSize = "sm",
   labelColor = "zinc-700",
@@ -17,7 +16,7 @@ export default function Button({
 
   return (
     <div className="text-center">
-      <button type="button" onClick={onClick} className={`w-${size} h-${size}`}>
+      <button type="button" onClick={onClick} className={`w-full h-full`}>
         <div
           className={`w-full h-full flex items-center justify-center cursor-pointer p-3 mx-auto
         rounded-full outline outline-2 outline-primary shadow-md border opacity-90 
@@ -27,9 +26,13 @@ export default function Button({
           <Icon className={`text-${iconSize}`} />
         </div>
       </button>
-      <div className={`text-${labelSize} text-${labelColor} mt-1 select-none`}>
-        {label}
-      </div>
+      {label && (
+        <div
+          className={`text-${labelSize} text-${labelColor} mt-1 select-none`}
+        >
+          {label}
+        </div>
+      )}
     </div>
   );
 }
