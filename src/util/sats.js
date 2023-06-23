@@ -1,6 +1,6 @@
 import { Decimal } from "decimal.js";
 import { selectLocale } from "@/redux/device";
-import { selectPreferences } from "@/redux/preferences";
+import { selectPreferences, selectLocalCurrency } from "@/redux/preferences";
 import { store } from "@/redux";
 import CurrencyService from "@/services/CurrencyService";
 
@@ -13,13 +13,37 @@ export function satsToBch(sats) {
 }
 
 export function bchToSats(bch) {
-  return new Decimal(bch)
+  const sats = new Decimal(bch)
     .mul(SATOSHI)
-    .toDecimalPlaces(0, Decimal.ROUND_DOWN)
-    .toString();
+    .toDecimalPlaces(0, Decimal.ROUND_DOWN);
+  return sats;
 }
 
-export function formatSatoshis(amount, bypassHidden = false) {
+export function satsToDisplayAmount(sats) {
+  const preferences = selectPreferences(store.getState());
+  const { preferLocalCurrency, localCurrency } = selectLocalCurrency(
+    store.getState()
+  );
+  const Currency = new CurrencyService(localCurrency);
+
+  const denominateSats = preferences["denominateSats"] === "true";
+
+  if (new Decimal(sats).equals(0)) {
+    return "0";
+  }
+
+  if (preferLocalCurrency) {
+    return Currency.satsToFiat(sats);
+  }
+
+  if (denominateSats) {
+    return sats;
+  }
+
+  return satsToBch(sats);
+}
+
+export function formatSatoshis(amount) {
   // Can't check for !amount because amount maybe === 0
   if (amount === null || amount === undefined) {
     return {
@@ -31,39 +55,40 @@ export function formatSatoshis(amount, bypassHidden = false) {
   const locale = selectLocale(store.getState());
   const preferences = selectPreferences(store.getState());
 
-  const currency = preferences["localCurrency"];
+  const { localCurrency } = selectLocalCurrency(store.getState());
   const denominateSats = preferences["denominateSats"] === "true";
   const hideBalance = preferences["hideAvailableBalance"] === "true";
 
-  const Currency = new CurrencyService(currency);
+  const Currency = new CurrencyService(localCurrency);
 
   const bchSymbol = denominateSats ? "" : "₿";
-  const bchUnit = denominateSats ? "sats" : "BCH";
+  const bchUnit = denominateSats ? "sats" : "";
   const absoluteSatsAmount = Math.abs(amount);
   const absoluteBchAmount = denominateSats
     ? absoluteSatsAmount
     : satsToBch(absoluteSatsAmount);
 
+  const sign = amount < 0 ? "-" : "";
   const bchDisplay =
-    amount < 0
-      ? `-${bchSymbol}${absoluteBchAmount} ${bchUnit}`
-      : `${bchSymbol}${absoluteBchAmount} ${bchUnit}`;
+    `${sign}${bchSymbol}${absoluteBchAmount} ${bchUnit}`.trim();
 
-  const fiatAmount = `${new Number(Currency.satsToFiat(amount)).toLocaleString(
+  const fiatDisplay = `${new Number(Currency.satsToFiat(amount)).toLocaleString(
     locale,
-    { style: "currency", currency }
+    { style: "currency", currency: localCurrency }
   )}`;
 
   const displayAmount = {
     bch: bchDisplay,
-    fiat: fiatAmount,
+    fiat: fiatDisplay,
+    sign,
   };
 
   // Don't leak number of digits when hiding balance
   const displayHidden = {
     bch: "XXXXXXXXXX",
     fiat: "XXXXXXXXXX",
+    sign: "",
   };
 
-  return hideBalance && !bypassHidden ? displayHidden : displayAmount;
+  return hideBalance ? displayHidden : displayAmount;
 }

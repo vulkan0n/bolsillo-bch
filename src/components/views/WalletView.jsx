@@ -1,16 +1,17 @@
 import { Outlet } from "react-router-dom";
 import WalletViewBalance from "./walletView/WalletViewBalance";
 import SyncIndicator from "./walletView/SyncIndicator";
+import BalanceHideButton from "./walletView/BalanceHideButton";
 
 export default function WalletView() {
   return (
     <>
-      <div className="grid grid-cols-6 bg-zinc-900">
-        <div className="col-span-1"></div>
-        <div className="col-span-4">
-          <WalletViewBalance />
+      <div className="flex bg-zinc-900 justify-between">
+        <div className="flex flex-col justify-center px-5">
+          <BalanceHideButton className="text-xl text-primary" />
         </div>
-        <div className="col-span-1 flex justify-center items-center">
+        <WalletViewBalance />
+        <div className="flex flex-col justify-center px-5">
           <SyncIndicator />
         </div>
       </div>

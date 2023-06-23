@@ -127,7 +127,7 @@ export default function CurrencyService(fiatCurrency) {
       (exchangeRate) => exchangeRate.currency === currency
     );
 
-    return index > -1 ? exchangeRates[index].price : null;
+    return index > -1 ? exchangeRates[index].price : 1;
   }
 
   function getSymbol(currency) {
@@ -135,6 +135,6 @@ export default function CurrencyService(fiatCurrency) {
       (exchangeRate) => exchangeRate.currency === currency
     );
 
-    return index > -1 ? currencyList[index].symbol : null;
+    return index > -1 ? currencyList[index].symbol : "";
   }
 }

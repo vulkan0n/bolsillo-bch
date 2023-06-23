@@ -52,10 +52,11 @@ export default function SyncIndicator() {
   const [connectSprings, connectApi] = useSpring(() => ({
     from: { opacity: 0.5, scale: 0.75 },
     to: { opacity: 0.1, scale: 0.65 },
+    immediate: true,
     config: {
-      mass: 1,
-      tension: 1.5,
-      friction: 1.75,
+      mass: 0.6,
+      tension: 80,
+      friction: 50,
     },
   }));
 
@@ -71,7 +72,7 @@ export default function SyncIndicator() {
   };
 
   return (
-    <div className="flex-1 text-center" onPointerDown={handlePointerDown}>
+    <div className="cursor-pointer w-10 h-10 flex justify-center items-center" onPointerDown={handlePointerDown}>
       {!sync.connected && (
         <DisconnectedIcon springs={{ ...disconnectSprings }} />
       )}

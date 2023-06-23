@@ -186,8 +186,12 @@ export default function AddressManagerService(wallet_id) {
       db.exec(`SELECT balance FROM wallets WHERE id="${wallet_id}"`)
     )[0].balance;
 
+    const change = resultToJson(
+      db.exec(`SELECT change FROM addresses WHERE address="${address}";`)
+    )[0].change;
+
     saveDatabase();
-    return { previousBalance, walletBalance };
+    return { previousBalance, walletBalance, change };
   }
 
   function getAddressTransactions(address) {

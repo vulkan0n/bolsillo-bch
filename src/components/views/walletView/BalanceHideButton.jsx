@@ -1,0 +1,29 @@
+import { useSelector, useDispatch } from "react-redux";
+import { selectPreferences, setPreference } from "@/redux/preferences";
+import { EyeOutlined, EyeInvisibleOutlined } from "@ant-design/icons";
+
+export default function BalanceHideButton({ className, ...rest }) {
+  const dispatch = useDispatch();
+  const preferences = useSelector(selectPreferences);
+
+  const hideBalance = preferences["hideAvailableBalance"] === "true";
+  const Icon = hideBalance ? EyeInvisibleOutlined : EyeOutlined;
+
+  const hiddenClasses = hideBalance
+    ? "opacity-60"
+    : "opacity-40";
+
+  const handleHideBalance = () => {
+    dispatch(
+      setPreference({ key: "hideAvailableBalance", value: !hideBalance })
+    );
+  };
+
+  return (
+    <Icon
+      className={`cursor-pointer w-10 h-10 flex justify-center items-center ${className} ${hiddenClasses}`}
+      onClick={handleHideBalance}
+      {...rest}
+    />
+  );
+}

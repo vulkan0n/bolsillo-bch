@@ -17,7 +17,7 @@ import MainLayout from "./components/MainLayout";
 import WalletView from "./components/views/WalletView";
 import WalletViewHome from "./components/views/walletView/WalletViewHome";
 import WalletViewHistory from "./components/views/walletView/WalletViewHistory";
-import WalletViewSendConfirm from "./components/views/walletView/WalletViewSendConfirm";
+import WalletViewSend from "./components/views/walletView/WalletViewSend";
 import WalletViewSendSuccess from "./components/views/walletView/WalletViewSendSuccess";
 import ExploreView from "./components/views/ExploreView";
 import SettingsView from "./components/views/SettingsView";
@@ -25,6 +25,7 @@ import SettingsWalletView from "./components/views/settingsView/SettingsWalletVi
 import SettingsWalletWizard from "./components/views/settingsView/SettingsWalletWizard";
 import SettingsWalletWizardInit from "./components/views/settingsView/SettingsWalletWizardInit";
 import SettingsWalletWizardImport from "./components/views/settingsView/SettingsWalletWizardImport";
+import CreditsView from "./components/views/CreditsView";
 
 const router = createBrowserRouter([
   {
@@ -44,7 +45,7 @@ const router = createBrowserRouter([
           },*/
           {
             path: "send/:address",
-            element: <WalletViewSendConfirm />,
+            element: <WalletViewSend />,
           },
           {
             path: "send/success",
@@ -86,6 +87,10 @@ const router = createBrowserRouter([
           },
         ],
       },
+      {
+        path: "/credits",
+        element: <CreditsView />,
+      },
     ],
   },
 ]);
@@ -94,7 +99,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <Provider store={store}>
       {/* Note: Duration has an inbuilt extra 1000ms dismissal delay */}
-      <Toaster toastOptions={{ duration: 1000 }} />
+      <Toaster toastOptions={{ duration: 1000 }} containerClassName="toaster" />
       <RouterProvider router={router} />
     </Provider>
   </React.StrictMode>

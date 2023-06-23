@@ -15,12 +15,14 @@ import {
 } from "@/redux/device";
 
 import AddressManagerService from "@/services/AddressManagerService";
-import SendWidget from "./SendWidget";
+import WalletViewButtons from "./WalletViewButtons";
 import ScannerButton from "./ScannerButton";
 import ScannerOverlay from "./ScannerOverlay";
 import SatoshiInput from "@/components/atoms/SatoshiInput";
 import Button from "@/components/atoms/Button";
 import Address from "@/components/atoms/Address";
+import CurrencySymbol from "@/components/atoms/CurrencySymbol";
+import CurrencyFlip from "@/components/atoms/CurrencyFlip";
 
 import {
   SnippetsFilled,
@@ -48,6 +50,7 @@ export default function WalletViewHome() {
   const [skip, setSkip] = useState(0);
   const [requestSats, setRequestSats] = useState("");
   const [showRequestAmount, setShowRequestAmount] = useState(false);
+  const [satoshiInput, setSatoshiInput] = useState({ display: "0", sats: 0 });
 
   const unusedAddresses = useMemo(
     () => new AddressManagerService(wallet.id).getUnusedAddresses(),
@@ -60,8 +63,8 @@ export default function WalletViewHome() {
       : "";
 
   const qrRequest =
-    showRequestAmount && requestSats > 0
-      ? `${address}?amount=${satsToBch(requestSats)}`
+    showRequestAmount && satoshiInput.sats > 0
+      ? `${address}?amount=${satsToBch(satoshiInput.sats)}`
       : address;
 
   const skipAddress = () => setSkip((skip + 1) % 5);
@@ -72,7 +75,11 @@ export default function WalletViewHome() {
     showToast({
       icon: <SnippetsFilled className="text-4xl text-primary" />,
       title: "Copied Address to Clipboard",
-      description: `${qrRequest}`,
+      description: (
+        <span className="inline-block max-w-[62%] truncate text-sm break-all">
+          {qrRequest}
+        </span>
+      ),
     });
     await Clipboard.write({ string: qrRequest });
   };
@@ -81,8 +88,8 @@ export default function WalletViewHome() {
     copyAddressToClipboard();
   });
 
-  const handleRequestAmountChange = (satoshis) => {
-    setRequestSats(satoshis);
+  const handleRequestAmountChange = (satInput) => {
+    setSatoshiInput(satInput);
   };
 
   const handleHistoryButton = () => {
@@ -90,26 +97,25 @@ export default function WalletViewHome() {
   };
 
   const [requestSprings, requestSpringsApi] = useSpring(() => ({
-    from: { fontSize: "1em" },
-    to: { fontSize: "0.875em" },
+    from: { scale: 1 },
+    to: { scale: 0.875 },
     immediate: true,
     config: {
-      tension: 500,
+      tension: 150,
       friction: 25,
       mass: 0.8,
     },
   }));
 
   const [requestOpenSprings, requestOpenSpringsApi] = useSpring(() => ({
-    from: { opacity: 0, y: -4 },
-    to: { opacity: 1, y: 0, height: 0 },
-    config: {
-      tension: 500,
-      friction: 25,
-      mass: 0.8,
-    },
-    reverse: !showRequestAmount,
+    from: { opacity: 1, y: 0, scaleY: 1, scaleX: 1 },
+    to: { opacity: 0, y: -16, scaleY: 0, scaleX: 0.5 },
     immediate: true,
+    config: {
+      tension: 400,
+      friction: 60,
+      mass: 1,
+    },
   }));
 
   return (
@@ -133,6 +139,7 @@ export default function WalletViewHome() {
               logoHeight={60}
             />
           </button>
+
           <div
             onClick={copyAddressToClipboard}
             className="w-fit mx-auto text-xs font-mono text-center break-all cursor-pointer text-primary slashed-zero select-none my-2 rounded p-1 shadow-sm my-2 active:bg-primary active:text-white active:shadow-none active:shadow-inner"
@@ -140,6 +147,7 @@ export default function WalletViewHome() {
             <CopyOutlined className="mr-1" />
             <Address address={address} />
           </div>
+
           <div className="mt-2 mx-auto select-none opacity-90">
             <animated.div
               className={`py-1.5 px-2 w-max justify-center shadow-sm outline outline-2 outline-primary flex items-center mx-auto cursor-pointer ${
@@ -149,14 +157,15 @@ export default function WalletViewHome() {
               } active:shadow-none active:shadow-inner`}
               onClick={() => {
                 requestSpringsApi.start({
-                  to: showRequestAmount
-                    ? { fontSize: "0.875em" }
-                    : { fontSize: "1em" },
+                  to: showRequestAmount ? { scale: 0.875 } : { scale: 1 },
                 });
                 requestOpenSpringsApi.start({
-                  to: showRequestAmount
-                    ? { opacity: 0, height: 0 }
-                    : { opacity: 1, height: "max-content" },
+                  to: {
+                    opacity: showRequestAmount ? 0 : 1,
+                    scaleY: showRequestAmount ? 0 : 1,
+                    scaleX: showRequestAmount ? 0.5 : 1,
+                    y: showRequestAmount ? -16 : 0,
+                  },
                 });
                 setShowRequestAmount(!showRequestAmount);
               }}
@@ -171,16 +180,21 @@ export default function WalletViewHome() {
               )}
             </animated.div>
             <animated.div
-              className="bg-primary text-white p-1.5 shadow-sm rounded max-w-[20.5em] mx-auto"
+              className="bg-primary text-white p-1.5 shadow-sm rounded min-w-[200px] w-fit max-w-[20.5em] mx-auto flex items-center"
               style={{ ...requestOpenSprings }}
             >
               {showRequestAmount && (
-                <SatoshiInput
-                  className="p-1 w-full text-black/70 font-mono rounded mx-1"
-                  onChange={handleRequestAmountChange}
-                  sats={requestSats}
-                  allowFiat
-                />
+                <>
+                  <CurrencySymbol className="text-xl font-bold font-mono px-0.5" />
+                  <SatoshiInput
+                    onChange={handleRequestAmountChange}
+                    satoshiInput={satoshiInput}
+                    className="p-1 w-fit text-black/70 font-mono rounded mx-1"
+                  />
+                  <div className="w-6 h-8 flex items-center justify-center">
+                    <CurrencyFlip className="text-xl" />
+                  </div>
+                </>
               )}
             </animated.div>
           </div>
@@ -188,7 +202,7 @@ export default function WalletViewHome() {
       )}
       {!keyboardIsOpen && (
         <div className="absolute bottom-[4.75em] w-full">
-          <SendWidget />
+          <WalletViewButtons />
         </div>
       )}
     </>

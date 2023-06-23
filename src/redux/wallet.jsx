@@ -28,7 +28,7 @@ export const walletBoot = createAction("wallet/boot", (wallet_id) => {
 walletMiddleware.startListening({
   actionCreator: walletBoot,
   effect: async (action, listenerApi) => {
-    console.log("walletBoot", action.payload);
+    //console.log("walletBoot", action.payload);
     listenerApi.dispatch(
       setPreference({ key: "activeWalletId", value: action.payload.id })
     );
@@ -55,8 +55,8 @@ walletMiddleware.startListening({
     );
 
     // show receive notification
-    const { previousBalance, walletBalance } = action.payload;
-    if (walletBalance > previousBalance) {
+    const { previousBalance, walletBalance, change } = action.payload;
+    if (walletBalance > previousBalance && change === 0) {
       const difference = formatSatoshis(
         new Decimal(walletBalance).minus(previousBalance)
       );

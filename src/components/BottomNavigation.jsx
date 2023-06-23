@@ -21,7 +21,7 @@ function BottomNavigation() {
     !keyboardIsOpen &&
     !isScanning && (
       <>
-        <div className="fixed bottom-0 w-full flex items-center justify-around z-50">
+        <div className="fixed bottom-0 w-full flex items-center justify-around z-50" id="bottomNav">
           <NavButton
             to="/wallet"
             activeIcon={WalletFilled}

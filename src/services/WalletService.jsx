@@ -73,7 +73,7 @@ export default function WalletService() {
       )
     )[0];
 
-    console.log("creating wallet", result);
+    //console.log("creating wallet", result);
     saveDatabase();
     return result;
   }
@@ -86,7 +86,7 @@ export default function WalletService() {
       )
     )[0];
 
-    console.log("importing wallet", result);
+    //console.log("importing wallet", result);
     saveDatabase();
     return result;
   }
