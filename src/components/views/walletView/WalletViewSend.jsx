@@ -4,6 +4,7 @@ import { useParams, useSearchParams, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { selectActiveWallet } from "@/redux/wallet";
 import { selectPreferences, setPreference } from "@/redux/preferences";
+import { selectKeyboardIsOpen } from "@/redux/device";
 
 import { Decimal } from "decimal.js";
 import { useLongPress } from "use-long-press";
@@ -30,6 +31,10 @@ import CurrencyFlip from "@/components/atoms/CurrencyFlip";
 
 export default function WalletViewSend() {
   const dispatch = useDispatch();
+
+  const isKeyboardOpen = useSelector(selectKeyboardIsOpen);
+  const buttonsPos = isKeyboardOpen ? "bottom-2" : "bottom-[5em]";
+
   const [searchParams, setSearchParams] = useSearchParams();
   const params = useParams();
   const navigate = useNavigate();
@@ -186,7 +191,7 @@ export default function WalletViewSend() {
         </div>
       </div>
 
-      <div className="flex absolute bottom-[5em] w-full justify-around items-center px-2 gap-x-2">
+      <div className={`flex absolute ${buttonsPos} w-full justify-around items-center px-2 gap-x-2`}>
         <div className="mx-2">
           <Button
             onClick={() => navigate(-1)}

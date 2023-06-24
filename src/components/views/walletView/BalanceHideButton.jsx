@@ -21,7 +21,7 @@ export default function BalanceHideButton({ className, ...rest }) {
 
   return (
     <Icon
-      className={`cursor-pointer w-10 h-10 flex justify-center items-center ${className} ${hiddenClasses}`}
+      className={`cursor-pointer w-12 h-12 flex justify-center items-center ${className} ${hiddenClasses}`}
       onClick={handleHideBalance}
       {...rest}
     />
