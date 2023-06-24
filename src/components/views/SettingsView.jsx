@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 
 import { useSelector, useDispatch } from "react-redux";
@@ -49,6 +50,11 @@ export default function SettingsView() {
   const preferences = useSelector(selectPreferences);
   const wallet = useSelector(selectActiveWallet);
 
+  const [instantPaySatInput, setInstantPaySatInput] = useState({
+    display: satsToDisplayAmount(preferences["instantPayThreshold"]),
+    sats: preferences["instantPayThreshold"],
+  });
+
   function handleSettingsUpdate(key, value) {
     dispatch(setPreference({ key, value }));
   }
@@ -61,7 +67,6 @@ export default function SettingsView() {
     handleSettingsUpdate("qrCodeForeground", "#000000");
     handleSettingsUpdate("qrCodeBackground", "#ffffff");
   };
-  console.log(JSON.stringify(preferences["instantPayThreshold"]));
 
   return (
     <>
@@ -172,16 +177,12 @@ export default function SettingsView() {
             <span className="text-zinc-600">
               <CurrencySymbol className="font-bold" />
               <SatoshiInput
-                satoshiInput={{
-                  display: satsToDisplayAmount(
-                    preferences["instantPayThreshold"]
-                  ),
-                  sats: preferences["instantPayThreshold"],
-                }}
+                satoshiInput={instantPaySatInput}
                 className="p-2 w-28 rounded mx-1"
-                onChange={(satInput) =>
-                  handleSettingsUpdate("instantPayThreshold", satInput.sats)
-                }
+                onChange={(satInput) => {
+                  setInstantPaySatInput(satInput);
+                  handleSettingsUpdate("instantPayThreshold", satInput.sats);
+                }}
               />
             </span>
           </SettingsChild>
@@ -265,8 +266,8 @@ export default function SettingsView() {
         </SettingsCategory>
         */}
       </div>
-      <Link to="/credits">
-        <div className="w-fit mx-auto my-2 p-2 flex items-center justify-center shadow-sm rounded-full bg-primary text-white active:bg-white active:text-primary">
+      <Link to="/credits" className="w-fit mx-auto my-2">
+        <div className="w-fit mx-auto p-2 flex items-center justify-center shadow-sm rounded-full bg-primary text-white active:bg-white active:text-primary">
           <img src={logos["selene"].img} className="w-11 h-11 mr-1" />
           <span className="text-sm font-semibold">
             Selene Wallet v{SELENE_WALLET_VERSION}
