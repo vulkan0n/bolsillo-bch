@@ -133,7 +133,7 @@ syncMiddleware.startListening({
     );
     if (AddressManager.updateAddressState(address, addressState)) {
       // if state updated, get utxos for address
-      //console.log("address state changed for", address);
+      // console.log("address state changed for", address);
       listenerApi.dispatch(syncAddressUtxos(address));
     }
   },
@@ -215,8 +215,8 @@ export const syncAddressHistory = createAsyncThunk(
       AddressManager.registerTransaction(address, { tx_hash, height });
       thunkApi.dispatch(syncTxRequest(tx_hash));
 
-      //if (height > listenerApi.getState().sync.chaintip.height - 12960) {
-      //}
+      // if (height > listenerApi.getState().sync.chaintip.height - 12960) {
+      // }
     });
     return history;
   }
@@ -326,7 +326,7 @@ export const syncReducer = createReducer(initialState, (builder) => {
       state.chaintip = {
         blockhash: new BlockchainService().calculateBlockhash(hex),
         header: hex,
-        height: height,
+        height,
       };
     });
 });

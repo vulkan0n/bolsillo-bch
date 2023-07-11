@@ -115,12 +115,12 @@ const migrations = [
     return query.join("");
   },
 
-  /*function migrate_v1() {
+  /* function migrate_v1() {
     console.log("migrate_v1");
     let query = [];
 
     query.push("PRAGMA user_version = 0;");
 
     return query.join("");
-  },*/
+  }, */
 ];

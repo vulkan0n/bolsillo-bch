@@ -26,7 +26,7 @@ export function satsToDisplayAmount(sats) {
   );
   const Currency = new CurrencyService(localCurrency);
 
-  const denominateSats = preferences["denominateSats"] === "true";
+  const denominateSats = preferences.denominateSats === "true";
 
   if (new Decimal(sats).equals(0)) {
     return "0";
@@ -56,8 +56,8 @@ export function formatSatoshis(amount) {
   const preferences = selectPreferences(store.getState());
 
   const { localCurrency } = selectLocalCurrency(store.getState());
-  const denominateSats = preferences["denominateSats"] === "true";
-  const hideBalance = preferences["hideAvailableBalance"] === "true";
+  const denominateSats = preferences.denominateSats === "true";
+  const hideBalance = preferences.hideAvailableBalance === "true";
 
   const Currency = new CurrencyService(localCurrency);
 
