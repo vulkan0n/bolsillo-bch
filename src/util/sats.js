@@ -72,8 +72,8 @@ export function formatSatoshis(amount) {
   const bchDisplay =
     `${sign}${bchSymbol}${absoluteBchAmount} ${bchUnit}`.trim();
 
-  const fiatDisplay = `${new Number(Currency.satsToFiat(amount)).toLocaleString(
-    locale,
+  /* eslint-disable no-new-wrappers */
+  const fiatDisplay = `${new Number(Currency.satsToFiat(amount)).toLocaleString(locale,
     { style: "currency", currency: localCurrency }
   )}`;
 

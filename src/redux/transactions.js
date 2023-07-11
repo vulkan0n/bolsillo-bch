@@ -1,4 +1,4 @@
-import { createAction, createReducer, createSelector } from "@reduxjs/toolkit";
+import { createReducer, createSelector } from "@reduxjs/toolkit";
 import { walletBoot } from "@/redux/wallet";
 import { syncTxAmount } from "@/redux/sync";
 

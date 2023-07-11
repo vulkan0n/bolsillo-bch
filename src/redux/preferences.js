@@ -1,11 +1,9 @@
 import { Preferences } from "@capacitor/preferences";
 import {
-  createAction,
   createReducer,
   createSelector,
   createAsyncThunk,
 } from "@reduxjs/toolkit";
-import { walletBoot } from "@/redux/wallet";
 
 const defaultPreferences = {
   activeWalletId: "1",
