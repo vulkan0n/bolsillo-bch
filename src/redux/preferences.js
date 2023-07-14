@@ -21,7 +21,7 @@ const defaultPreferences = {
 };
 
 async function retrievePreferences() {
-  //Preferences.clear();
+  // Preferences.clear();
   const keys = Object.keys(defaultPreferences);
 
   const preferences = (
