@@ -29,7 +29,11 @@ We are fulfilling the mission of making Bitcoin Cash (BCH) the [global reserve c
 
 ## Building for iOS
 
-- Coming Soon
+1. Install Xcode
+2. `yarn run build`
+3. `npx cap sync`
+4. `npx cap run ios`
+5. (optional) `npx cap open ios` to open the app in Xcode
 
 ## Contribution and Contact
 

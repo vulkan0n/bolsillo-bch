@@ -9,7 +9,9 @@ import { animated, useSpring } from "@react-spring/web";
 import { formatSatoshis } from "@/util/sats";
 
 import CurrencyFlip from "@/components/atoms/CurrencyFlip";
-import { EyeInvisibleOutlined } from "@ant-design/icons";
+import { selectLocale } from "@/redux/device";
+
+import { StockOutlined } from "@ant-design/icons";
 
 export default function WalletViewBalance() {
   const dispatch = useDispatch();
@@ -19,6 +21,8 @@ export default function WalletViewBalance() {
 
   const hideBalance = preferences["hideAvailableBalance"] === "true";
   const preferLocal = preferences["preferLocalCurrency"] === "true";
+  const isDisplayExchangeRate = preferences["displayExchangeRate"] === "true";
+  const locale = useSelector(selectLocale);
 
   const handleFlipCurrency = () => {
     dispatch(
@@ -58,6 +62,15 @@ export default function WalletViewBalance() {
     [exchangeRates, balance, preferences]
   );
 
+  const currency = preferences["localCurrency"];
+
+  const relevantCurrency = exchangeRates.find((e) => e.currency === currency);
+  const price = relevantCurrency?.price || "0";
+  const priceString = `${new Number(price).toLocaleString(locale, {
+    style: "currency",
+    currency,
+  })}`;
+
   return (
     <div className="py-2.5 text-center">
       <div
@@ -80,6 +93,13 @@ export default function WalletViewBalance() {
           <CurrencyFlip className="ml-1" />
         </div>
       </div>
+      {isDisplayExchangeRate && (
+        <div className="text-md text-zinc-400/80 mt-0.5">
+          <StockOutlined className="mr-1" />
+          {priceString}
+          <span className="mx-0.5 text-sm font-mono">/</span>BCH
+        </div>
+      )}
     </div>
   );
 }
