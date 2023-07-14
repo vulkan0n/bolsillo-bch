@@ -2,14 +2,12 @@ import { useEffect } from "react";
 import { Keyboard } from "@capacitor/keyboard";
 import { useSelector, useDispatch } from "react-redux";
 import {
-  setPreference,
   selectLocalCurrency,
   selectDenomination,
 } from "@/redux/preferences";
-import { selectDeviceInfo, selectLocale } from "@/redux/device";
+import { selectDeviceInfo } from "@/redux/device";
 import {
   bchToSats,
-  satsToBch,
   MAX_SATOSHI,
   satsToDisplayAmount,
 } from "@/util/sats";
@@ -25,8 +23,6 @@ export default function SatoshiInput({
   size = 20,
 }) {
   const DECIMAL_KEYS = [".", ",", "_", " "];
-
-  const dispatch = useDispatch();
 
   const deviceInfo = useSelector(selectDeviceInfo);
 
@@ -144,7 +140,7 @@ export default function SatoshiInput({
 
   const handleInputChange = (input) => {
     const decimalInput = input.replace(/[^0-9.]/, ".");
-    
+
     const sats = new Decimal(amountToSats(decimalInput));
     if (sats.greaterThan(MAX_SATOSHI)) {
       return;
