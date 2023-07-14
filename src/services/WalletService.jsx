@@ -22,7 +22,6 @@ export default function WalletService() {
   // getWallets: return a list of all wallets in the database
   function getWallets() {
     const result = resultToJson(db.exec("SELECT * FROM wallets"));
-    //console.log("getWallets", result);
     return result;
   }
 
@@ -31,7 +30,7 @@ export default function WalletService() {
     const result = resultToJson(
       db.exec(`SELECT * FROM wallets WHERE id="${id}"`)
     );
-    //console.log("getWalletById", result);
+
     return result.length > 0 ? result[0] : null;
   }
 
@@ -63,30 +62,28 @@ export default function WalletService() {
 
   // createWallet: generate a new wallet from a randomly generated seed phrase
   // persist the new wallet in the database
-  function createWallet(name, derivation = "m/44'/0'/0'") {
+  function createWallet(name, derivation = "m/44'/145'/0'") {
     const mnemonic = bip39.generateMnemonic();
 
     const result = resultToJson(
       db.exec(
-        `INSERT INTO wallets (name, mnemonic, derivation) VALUES (?, ?, ?) RETURNING *`,
+        "INSERT INTO wallets (name, mnemonic, derivation) VALUES (?, ?, ?) RETURNING *",
         [name, mnemonic, derivation]
       )
     )[0];
 
-    //console.log("creating wallet", result);
     saveDatabase();
     return result;
   }
 
-  function importWallet(mnemonic, derivation = "m/44'/0'/0'") {
+  function importWallet(mnemonic, derivation = "m/44'/145'/0'") {
     const result = resultToJson(
       db.exec(
-        `INSERT INTO wallets (name, mnemonic, derivation, key_viewed) VALUES (?, ?, ?, strftime('%Y-%m-%dT%H:%M:%SZ')) RETURNING *`,
+        "INSERT INTO wallets (name, mnemonic, derivation, key_viewed) VALUES (?, ?, ?, strftime('%Y-%m-%dT%H:%M:%SZ')) RETURNING *",
         ["Imported Wallet", mnemonic, derivation]
       )
     )[0];
 
-    //console.log("importing wallet", result);
     saveDatabase();
     return result;
   }

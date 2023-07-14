@@ -1,22 +1,23 @@
 {
-    "env": {
-        "browser": true,
-        "es2021": true
-    },
-    "extends": ["standard", "plugin:react/recommended"],
-    "parserOptions": {
-        "ecmaVersion": "latest",
-        "sourceType": "module"
-    },
-    "plugins": ["react"],
-    "rules": {
-        "semi": ["error", "always"],
-        "quotes": ["error", "double"],
-        "camelcase": ["warn", { "properties": "always" }],
-        "space-before-function-paren": [
-            "error",
-            { "anonymous": "always", "named": "never", "asyncArrow": "always" }
-        ],
-        "comma-dangle": ["error", "only-multiline"]
-    }
+  "env": {
+    "browser": true,
+    "es2021": true
+  },
+  "extends": ["standard", "plugin:react/recommended"],
+  "parserOptions": {
+    "ecmaVersion": "latest",
+    "sourceType": "module"
+  },
+  "plugins": ["react"],
+  "rules": {
+    "semi": ["error", "always"],
+    "quotes": ["error", "double"],
+    "camelcase": ["off"],
+    "space-before-function-paren": [
+      "error",
+      { "anonymous": "always", "named": "never", "asyncArrow": "always" }
+    ],
+    "comma-dangle": ["error", "only-multiline"],
+    "react/react-in-jsx-scope": ["off"]
+  }
 }
