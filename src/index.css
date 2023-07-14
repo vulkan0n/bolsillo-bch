@@ -54,6 +54,11 @@ main {
   overflow-y: auto;
 }
 
+main.bottomPadding {
+  padding-bottom: calc(env(safe-area-inset-bottom) + 4.2em);
+}
+
+
 .anticon {
   line-height: 0;
   vertical-align: 1px;

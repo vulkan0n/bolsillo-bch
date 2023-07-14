@@ -7,7 +7,7 @@ function MainLayout() {
   const isScanning = useSelector(selectScannerIsScanning);
   const isKeyboardOpen = useSelector(selectKeyboardIsOpen);
   const bgColor = isScanning ? "bg-transparent" : "bg-white";
-  const padding = isKeyboardOpen ? "" : "pb-[4.2em]";
+  const padding = isKeyboardOpen ? "" : "bottomPadding";
 
   return (
     <>

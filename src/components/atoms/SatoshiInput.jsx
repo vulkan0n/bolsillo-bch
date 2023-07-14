@@ -1,10 +1,10 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { Keyboard } from "@capacitor/keyboard";
 import { useSelector, useDispatch } from "react-redux";
 import {
-  selectPreferences,
   setPreference,
   selectLocalCurrency,
+  selectDenomination,
 } from "@/redux/preferences";
 import { selectDeviceInfo, selectLocale } from "@/redux/device";
 import {
@@ -24,22 +24,23 @@ export default function SatoshiInput({
   onChange,
   size = 20,
 }) {
+  const DECIMAL_KEYS = [".", ",", "_", " "];
+
   const dispatch = useDispatch();
 
-  const preferences = useSelector(selectPreferences);
   const deviceInfo = useSelector(selectDeviceInfo);
 
-  const { preferLocalCurrency, localCurrency } =
+  const { preferLocalCurrency: isPreferLocalCurrency, localCurrency } =
     useSelector(selectLocalCurrency);
 
-  const denominateSats = preferences["denominateSats"] === "true";
+  const denominateSats = useSelector(selectDenomination); // TODO: bits, mBCH
 
   const Currency = new CurrencyService(localCurrency);
 
   // get raw satoshi value from any currency input
   const amountToSats = (amount) => {
     // fiat mode
-    if (preferLocalCurrency) {
+    if (isPreferLocalCurrency) {
       return Currency.fiatToSats(amount);
     }
 
@@ -56,10 +57,10 @@ export default function SatoshiInput({
   useEffect(() => {
     const sats = satoshiInput.sats ? satoshiInput.sats : 0;
     onChange({ display: satsToDisplayAmount(sats), sats });
-  }, [preferences.preferLocalCurrency, preferences.denominateSats]);
+  }, [isPreferLocalCurrency, denominateSats]);
 
   const getMaxDecimals = () => {
-    const maxDecimals = preferLocalCurrency ? 2 : denominateSats ? 0 : 8;
+    const maxDecimals = isPreferLocalCurrency ? 2 : denominateSats ? 0 : 8;
 
     return maxDecimals;
   };
@@ -87,34 +88,64 @@ export default function SatoshiInput({
     return amount;
   };
 
-  const handleInputEvent = (event) => {
-    let input = event.target.value || "";
-    const previousInput = satoshiInput.display;
-
-    // "" -> "."
-    if (event.target.value === ".") {
-      input = "0.";
+  // fired BEFORE text input is updated
+  const handleKeyDown = (event) => {
+    // hide keyboard when "Enter" pressed on mobile
+    if (event.key === "Enter" && deviceInfo.platform !== "web") {
+      Keyboard.hide();
+      return;
     }
 
-    // double press "." to pad rest of number with max decimal places
+    // handle all possible decimal keys (i18n)
+    const isDecimalKey =
+      DECIMAL_KEYS.includes(event.key) ||
+      (deviceInfo.platform === "android" && event.keyCode === 229); // android is dumb, so we cope by catching keyCode 229 and hoping for the best
+
+    if (isDecimalKey) {
+      const currentInput = satoshiInput.display;
+      let newInput = currentInput;
+
+      // double press "." to pad rest of number with max decimal places
+      if (currentInput.includes(".")) {
+        const maxDecimals = getMaxDecimals();
+        newInput = new Decimal(currentInput).toFixed(maxDecimals);
+      } else {
+        newInput = `${currentInput}${event.key}`;
+      }
+
+      if (!isPreferLocalCurrency && denominateSats) {
+        newInput = currentInput;
+      }
+
+      handleInputChange(newInput);
+      event.preventDefault();
+      event.stopPropagation();
+    }
+  };
+
+  // fired AFTER text input is updated
+  const handleInputChangeEvent = (event) => {
+    const input = event.target.value || "0";
+    const prevInput = satoshiInput.display || "0";
+
+    const lastChar = input.substring(input.length - 1);
+    const prevLastChar = prevInput.substring(prevInput.length - 1);
+
+    const hasEndDecimal = DECIMAL_KEYS.includes(lastChar);
+    const prevHasEndDecimal = DECIMAL_KEYS.includes(prevLastChar);
+
     if (
-      input.endsWith("..") || // "X.."
-      (previousInput.includes(".") && // "X.xxx."
-        !previousInput.endsWith(".") &&
-        input.endsWith(".") &&
-        input.length > previousInput.length)
+      !hasEndDecimal || // allow dangling decimal (e.g. "123.")
+      (hasEndDecimal && !prevHasEndDecimal) // don't truncate decimals when user is trying to add/remove the decimal
     ) {
-      const maxDecimals = getMaxDecimals();
-      input = new Decimal(input.substring(0, input.length - 1)).toFixed(
-        maxDecimals
-      );
+      handleInputChange(truncateDecimals(input));
     }
+  };
 
-    // limit decimal places appropriately
-    const amount = truncateDecimals(input);
-    const hasEndDecimal = input.endsWith(".");
-
-    const sats = new Decimal(amountToSats(amount));
+  const handleInputChange = (input) => {
+    const decimalInput = input.replace(/[^0-9.]/, ".");
+    
+    const sats = new Decimal(amountToSats(decimalInput));
     if (sats.greaterThan(MAX_SATOSHI)) {
       return;
     }
@@ -124,14 +155,7 @@ export default function SatoshiInput({
       return;
     }
 
-    onChange({ display: `${amount}${hasEndDecimal ? "." : ""}`, sats });
-  };
-
-  // hide keyboard when "Enter" pressed on mobile
-  const handleKeyDown = (event) => {
-    if (deviceInfo.platform !== "web" && event.key === "Enter") {
-      Keyboard.hide();
-    }
+    onChange({ display: decimalInput, sats });
   };
 
   return (
@@ -141,8 +165,8 @@ export default function SatoshiInput({
       className={className}
       size={size}
       value={satoshiInput.display}
-      onChange={handleInputEvent}
       onKeyDown={handleKeyDown}
+      onChange={handleInputChangeEvent}
     />
   );
 }

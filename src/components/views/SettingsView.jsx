@@ -24,11 +24,11 @@ import {
   SendOutlined,
   ThunderboltOutlined,
   PropertySafetyOutlined,
-  CameraOutlined,
   QrcodeOutlined,
   PlusCircleFilled,
   CheckCircleOutlined,
   BorderOuterOutlined,
+  StockOutlined,
   BgColorsOutlined,
   SettingFilled,
   FormatPainterOutlined,
@@ -154,6 +154,16 @@ export default function SettingsView() {
               checked={preferences["denominateSats"] === "true"}
               onChange={(event) =>
                 handleSettingsUpdate("denominateSats", event.target.checked)
+              }
+            />
+          </SettingsChild>
+          <SettingsChild icon={StockOutlined} label="Display Exchange Rate">
+            <input
+              type="checkbox"
+              className="toggle"
+              checked={preferences["displayExchangeRate"] === "true"}
+              onChange={(event) =>
+                handleSettingsUpdate("displayExchangeRate", event.target.checked)
               }
             />
           </SettingsChild>

@@ -12,6 +12,7 @@ const defaultPreferences = {
   localCurrency: "USD",
   preferLocalCurrency: "false",
   hideAvailableBalance: "false",
+  displayExchangeRate: "false",
   denominateSats: "false",
   allowInstantPay: "false",
   instantPayThreshold: "25000000",
@@ -23,12 +24,8 @@ const defaultPreferences = {
 
 async function retrievePreferences() {
   //Preferences.clear();
-  let keys = (await Preferences.keys()).keys;
-  if (keys.length !== Object.keys(defaultPreferences).length) {
-    console.log("resetting preferences...");
-    keys = Object.keys(defaultPreferences);
-    await Preferences.clear();
-  }
+  const keys = Object.keys(defaultPreferences);
+
   const preferences = (
     await Promise.all(
       keys.map(async (key) => {
@@ -87,4 +84,10 @@ export const selectLocalCurrency = createSelector(
     preferLocalCurrency: preferences.preferLocalCurrency === "true",
     localCurrency: preferences.localCurrency,
   })
+);
+
+// TODO: bits, mBCH
+export const selectDenomination = createSelector(
+  (state) => state.preferences,
+  (preferences) => preferences.denominateSats === "true"
 );

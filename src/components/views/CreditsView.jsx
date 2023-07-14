@@ -60,7 +60,7 @@ export default function CreditsView() {
           <li>NeonDaThal</li>
           <li>Johnathan Silverblood</li>
           <li>Mathieu Geukens</li>
-          <li>Jim Hammill</li>
+          <li>Jim Hamill</li>
           <li>Bitcoin Jason</li>
           <li>Sahid Miller</li>
           <li>Ian Blas</li>

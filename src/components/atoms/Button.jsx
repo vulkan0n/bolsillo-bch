@@ -9,9 +9,9 @@ export default function Button({
 }) {
   const Icon = icon;
   const inactiveClasses =
-    "bg-white text-zinc-600 border-zinc-100 active:bg-primary active:border-primary active:text-white";
+    "bg-white text-zinc-600 active:bg-primary active:text-white";
   const activeClasses =
-    "bg-primary border-primary text-white active:bg-white active:text-zinc-600 active:border-zinc-100";
+    "bg-primary text-white active:bg-white active:text-zinc-600";
   const colorClasses = inverted ? activeClasses : inactiveClasses;
 
   return (
@@ -19,7 +19,7 @@ export default function Button({
       <button type="button" onClick={onClick} className={`w-full h-full`}>
         <div
           className={`w-full h-full flex items-center justify-center cursor-pointer p-3 mx-auto
-        rounded-full outline outline-2 outline-primary shadow-md border opacity-90 
+        rounded-full border border-2 border-primary shadow-md opacity-90 
         ${colorClasses}
         active:shadow-none active:shadow-inner`}
         >
