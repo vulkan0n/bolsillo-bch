@@ -12,6 +12,8 @@ PODS:
   - CapacitorCordova (5.0.5)
   - CapacitorDevice (5.0.4):
     - Capacitor
+  - CapacitorDialog (5.0.6):
+    - Capacitor
   - CapacitorFilesystem (5.0.4):
     - Capacitor
   - CapacitorKeyboard (5.0.4):
@@ -31,6 +33,7 @@ DEPENDENCIES:
   - "CapacitorCommunityBarcodeScanner (from `../../node_modules/@capacitor-community/barcode-scanner`)"
   - "CapacitorCordova (from `../../node_modules/@capacitor/ios`)"
   - "CapacitorDevice (from `../../node_modules/@capacitor/device`)"
+  - "CapacitorDialog (from `../../node_modules/@capacitor/dialog`)"
   - "CapacitorFilesystem (from `../../node_modules/@capacitor/filesystem`)"
   - "CapacitorKeyboard (from `../../node_modules/@capacitor/keyboard`)"
   - "CapacitorPreferences (from `../../node_modules/@capacitor/preferences`)"
@@ -55,6 +58,8 @@ EXTERNAL SOURCES:
     :path: "../../node_modules/@capacitor/ios"
   CapacitorDevice:
     :path: "../../node_modules/@capacitor/device"
+  CapacitorDialog:
+    :path: "../../node_modules/@capacitor/dialog"
   CapacitorFilesystem:
     :path: "../../node_modules/@capacitor/filesystem"
   CapacitorKeyboard:
@@ -72,12 +77,13 @@ SPEC CHECKSUMS:
   CapacitorCommunityBarcodeScanner: 7feb206489c8555a8ca0c74c57ddf49ead774eb8
   CapacitorCordova: f8c06b897c74ee8f7701fe10e6443b40822bc83a
   CapacitorDevice: eb4b5e3b42ac35d2527f20aad296b59e0785dc8d
+  CapacitorDialog: 0f3c15dfe9414b83bc64aef4078f1b92bcfead26
   CapacitorFilesystem: e1bdfab09b95b181c844c16abcfda45ec8e8ed6b
   CapacitorKeyboard: d1b25fde6f19744ad09c890862aefc6e2a7ded3d
   CapacitorPreferences: 82a9ecf5355283a3b3cf7ac217d8c5534c4dee8a
   CapacitorSecureStoragePlugin: e91d7df060f2495a1acff9583641a6953e3aacba
   SwiftKeychainWrapper: 807ba1d63c33a7d0613288512399cd1eda1e470c
 
-PODFILE CHECKSUM: b098035369c2b5d4c08a1e1d1888f9b9f05579de
+PODFILE CHECKSUM: 3420afd8843ba106d9bc15a2dbabbd92e2a4a0db
 
 COCOAPODS: 1.11.2

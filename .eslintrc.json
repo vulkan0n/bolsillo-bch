@@ -18,7 +18,7 @@
             { "anonymous": "always", "named": "never", "asyncArrow": "always" }
         ],
         "comma-dangle": ["error", "only-multiline"],
-        "react/react-in-jsx-context": ["off"]
+        "react/react-in-jsx-scope": ["off"]
     },
     "settings": {
         "react": {
