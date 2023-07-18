@@ -18,6 +18,7 @@
     "@capacitor/clipboard": "^5.0.0",
     "@capacitor/core": "^5.0.0",
     "@capacitor/device": "^5.0.0",
+    "@capacitor/dialog": "^5.0.6",
     "@capacitor/filesystem": "^5.0.0",
     "@capacitor/ios": "^5.0.0",
     "@capacitor/keyboard": "^5.0.0",

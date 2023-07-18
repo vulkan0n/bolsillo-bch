@@ -1,12 +1,11 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { Dialog } from "@capacitor/dialog";
 
 import { useSelector, useDispatch } from "react-redux";
-import { selectPreferences } from "@/redux/preferences";
 import {
   setScannerIsScanning,
   selectScannerIsScanning,
-  selectKeyboardIsOpen,
   selectDeviceInfo,
 } from "@/redux/device";
 
@@ -24,21 +23,8 @@ import Button from "@/components/atoms/Button";
 export default function ScannerButton() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const preferences = useSelector(selectPreferences);
   const deviceInfo = useSelector(selectDeviceInfo);
   const isScanning = useSelector(selectScannerIsScanning);
-  const keyboardIsOpen = useSelector(selectKeyboardIsOpen);
-
-  const prepare = async () => {
-    if (deviceInfo.platform === "web") {
-      return;
-    }
-
-    const status = await BarcodeScanner.checkPermission({ force: false });
-    if (status.granted && preferences["scannerFastMode"] === "true") {
-      BarcodeScanner.prepare();
-    }
-  };
 
   useEffect(function cleanupScanner() {
     return () => {
@@ -52,7 +38,6 @@ export default function ScannerButton() {
         startScan();
       } else {
         closeScanner();
-        prepare();
       }
     },
     [isScanning]
@@ -74,9 +59,16 @@ export default function ScannerButton() {
 
     if (status.denied) {
       // we hit this code path if user says "never ask again or Ask Every Time"
-      // TODO: prompt user before doing this, it's kind of invasive.
-      BarcodeScanner.openAppSettings();
-      return;
+      const { value: confirmed } = await Dialog.confirm({
+        title: "Camera Permission Required",
+        message:
+          "Camera Permission is required to use the QR Code scanner. Would you like to open your device settings?",
+      });
+
+      if (confirmed) {
+        BarcodeScanner.openAppSettings();
+        return;
+      }
     }
 
     BarcodeScanner.hideBackground();
@@ -86,7 +78,6 @@ export default function ScannerButton() {
 
     if (result.hasContent) {
       dispatch(setScannerIsScanning(false));
-      const scanned = result.content;
 
       const { isCashAddress, address, query } = validateInvoiceString(
         result.content
@@ -115,5 +106,13 @@ export default function ScannerButton() {
   const scanLabel = isScanning ? "Close" : "Scan";
   const scanLabelColor = isScanning ? "white opacity-80" : undefined;
 
-  return <Button icon={ScanIcon} label={scanLabel} onClick={toggleScanner} labelColor={scanLabelColor} iconSize="4xl" />;
+  return (
+    <Button
+      icon={ScanIcon}
+      label={scanLabel}
+      onClick={toggleScanner}
+      labelColor={scanLabelColor}
+      iconSize="4xl"
+    />
+  );
 }
