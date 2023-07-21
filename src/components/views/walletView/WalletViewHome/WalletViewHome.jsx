@@ -1,25 +1,19 @@
 import { useState, useMemo } from "react";
 import { useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
 
 import { Clipboard } from "@capacitor/clipboard";
 import { QRCode } from "react-qrcode-logo";
-import { useLongPress } from "use-long-press";
 
 import { selectActiveWallet } from "@/redux/wallet";
 import { selectPreferences } from "@/redux/preferences";
-import {
-  selectScannerIsScanning,
-  selectDeviceInfo,
-  selectKeyboardIsOpen,
-} from "@/redux/device";
+import { selectScannerIsScanning, selectKeyboardIsOpen } from "@/redux/device";
+import translations from "./translations";
+import { translate } from "@/util/translations";
 
 import AddressManagerService from "@/services/AddressManagerService";
-import WalletViewButtons from "./WalletViewButtons";
-import ScannerButton from "./ScannerButton";
-import ScannerOverlay from "./ScannerOverlay";
+import WalletViewButtons from "../WalletViewButtons/WalletViewButtons";
+import ScannerOverlay from "../ScannerOverlay";
 import SatoshiInput from "@/components/atoms/SatoshiInput";
-import Button from "@/components/atoms/Button";
 import Address from "@/components/atoms/Address";
 import CurrencySymbol from "@/components/atoms/CurrencySymbol";
 import CurrencyFlip from "@/components/atoms/CurrencyFlip";
@@ -27,7 +21,6 @@ import CurrencyFlip from "@/components/atoms/CurrencyFlip";
 import {
   SnippetsFilled,
   FormOutlined,
-  HistoryOutlined,
   CopyOutlined,
   CaretRightOutlined,
   CaretDownOutlined,
@@ -39,16 +32,16 @@ import { satsToBch } from "@/util/sats";
 
 import { animated, useSpring } from "@react-spring/web";
 
+const { copiedAddress, requestAmount } = translations;
+
 export default function WalletViewHome() {
-  const navigate = useNavigate();
-  const preferences = useSelector(selectPreferences);
   const wallet = useSelector(selectActiveWallet);
   const keyboardIsOpen = useSelector(selectKeyboardIsOpen);
   const isScanning = useSelector(selectScannerIsScanning);
-  const deviceInfo = useSelector(selectDeviceInfo);
+
+  const preferences = useSelector(selectPreferences);
 
   const [skip, setSkip] = useState(0);
-  const [requestSats, setRequestSats] = useState("");
   const [showRequestAmount, setShowRequestAmount] = useState(false);
   const [satoshiInput, setSatoshiInput] = useState({ display: "0", sats: 0 });
 
@@ -72,9 +65,11 @@ export default function WalletViewHome() {
   const getQrLogoImage = (logo) => logos[logo.toLowerCase()].img;
 
   const copyAddressToClipboard = async () => {
+    const titleTranslation = translate(copiedAddress);
+
     showToast({
       icon: <SnippetsFilled className="text-4xl text-primary" />,
-      title: "Copied Address to Clipboard",
+      title: titleTranslation,
       description: (
         <span className="inline-block max-w-[62%] truncate text-sm break-all">
           {qrRequest}
@@ -84,16 +79,8 @@ export default function WalletViewHome() {
     await Clipboard.write({ string: qrRequest });
   };
 
-  const bindLongPress = useLongPress(() => {
-    copyAddressToClipboard();
-  });
-
   const handleRequestAmountChange = (satInput) => {
     setSatoshiInput(satInput);
-  };
-
-  const handleHistoryButton = () => {
-    navigate("/wallet/history");
   };
 
   const [requestSprings, requestSpringsApi] = useSpring(() => ({
@@ -132,9 +119,9 @@ export default function WalletViewHome() {
               value={qrRequest}
               size={204}
               quietZone={16}
-              bgColor={preferences["qrCodeBackground"]}
-              fgColor={preferences["qrCodeForeground"]}
-              logoImage={getQrLogoImage(preferences["qrCodeLogo"])}
+              bgColor={preferences.qrCodeBackground}
+              fgColor={preferences.qrCodeForeground}
+              logoImage={getQrLogoImage(preferences.qrCodeLogo)}
               logoWidth={60}
               logoHeight={60}
             />
@@ -172,7 +159,7 @@ export default function WalletViewHome() {
               style={{ ...requestSprings }}
             >
               <FormOutlined className="mr-1" />
-              Request Amount
+              {translate(requestAmount)}
               {showRequestAmount ? (
                 <CaretDownOutlined className="ml-1" />
               ) : (

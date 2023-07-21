@@ -1,24 +1,29 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Dialog } from "@capacitor/dialog";
-
 import { useSelector, useDispatch } from "react-redux";
-import {
-  setScannerIsScanning,
-  selectScannerIsScanning,
-  selectDeviceInfo,
-} from "@/redux/device";
 
+import { Dialog } from "@capacitor/dialog";
+import { Haptics } from "@capacitor/haptics";
 import {
   BarcodeScanner,
   SupportedFormat,
 } from "@capacitor-community/barcode-scanner";
 
+import {
+  selectDeviceInfo,
+  setScannerIsScanning,
+  selectScannerIsScanning,
+} from "@/redux/device";
+
 import { ScanOutlined, CloseOutlined } from "@ant-design/icons";
+import Button from "@/components/atoms/Button";
 
 import { validateInvoiceString } from "@/util/invoice";
 
-import Button from "@/components/atoms/Button";
+import translations from "./translations";
+import { translate } from "@/util/translations";
+
+const { permissionTitle, permissionMessage, scan, close } = translations;
 
 export default function ScannerButton() {
   const dispatch = useDispatch();
@@ -50,19 +55,11 @@ export default function ScannerButton() {
 
     const status = await BarcodeScanner.checkPermission({ force: true });
 
-    if (status.neverAsked) {
-      // TODO: inform user that we will now do a permission check
-      // This hopefully minimizes the chance that user will need to
-      // fiddle with OS-level app settings.
-      // `await informUserAboutPermissions();` - after await, proceed...
-    }
-
     if (status.denied) {
       // we hit this code path if user says "never ask again or Ask Every Time"
       const { value: confirmed } = await Dialog.confirm({
-        title: "Camera Permission Required",
-        message:
-          "Camera Permission is required to use the QR Code scanner. Would you like to open your device settings?",
+        title: translate(permissionTitle),
+        message: translate(permissionMessage),
       });
 
       if (confirmed) {
@@ -84,7 +81,10 @@ export default function ScannerButton() {
       );
 
       if (isCashAddress) {
+        await Haptics.notification({ type: "SUCCESS" });
         navigate(`/wallet/send/${address}${query}`);
+      } else {
+        await Haptics.notification({ type: "ERROR" });
       }
     }
   }
@@ -103,7 +103,9 @@ export default function ScannerButton() {
   };
 
   const ScanIcon = isScanning ? CloseOutlined : ScanOutlined;
-  const scanLabel = isScanning ? "Close" : "Scan";
+  const closeTranslation = translate(close);
+  const scanTranslation = translate(scan);
+  const scanLabel = isScanning ? closeTranslation : scanTranslation;
   const scanLabelColor = isScanning ? "white opacity-80" : undefined;
 
   return (

@@ -1,24 +1,35 @@
 import ViewHeader from "@/components/views/ViewHeader";
 import { logos } from "@/util/logos";
 import SELENE_WALLET_VERSION from "@/util/version";
+import translations from "./CreditsViewTranslations";
+import { translate } from "@/util/translations";
+
+const {
+  credits,
+  developedWith,
+  contributors,
+  flipstarterContributors,
+  contributingDevelopers,
+  specialThanks,
+} = translations;
 
 export default function CreditsView() {
   return (
     <>
-      <ViewHeader icon={() => null} title="Credits" />
+      <ViewHeader icon={() => null} title={translate(credits)} />
       <div className="bg-primary text-white text-center p-2">
         <div className="flex items-center justify-center h-40">
           <img src={logos.selene.img} className="h-full" />
         </div>
-        <h1 className="text-2xl font-bold">Selene Wallet v{SELENE_WALLET_VERSION}</h1>
-        <h2 className="text-xl font-bold">Developed with 💚 by</h2>
-        <h2 className="text-xl font-semibold p-1">
-          Kallisti and The Bitcoin Cash Podcast
-        </h2>
+        <h1 className="text-2xl font-bold">
+          Selene Wallet v{SELENE_WALLET_VERSION}
+        </h1>
+        <h2 className="text-xl font-bold">{translate(developedWith)}</h2>
+        <h2 className="text-xl font-semibold p-1">{translate(contributors)}</h2>
       </div>
       <div className="p-2 w-5/6 mx-auto">
         <h2 className="text-center font-bold text-2xl">
-          Flipstarter Contributors
+          {translate(flipstarterContributors)}
         </h2>
         <ol className="list-inside list-decimal">
           <li>majamalu</li>
@@ -52,7 +63,16 @@ export default function CreditsView() {
           <li>Anonymous (x5)</li>
         </ol>
 
-        <h2 className="text-center font-bold text-2xl mt-4">Special Thanks</h2>
+        <h2 className="text-center font-bold text-2xl mt-4">
+          {translate(contributingDevelopers)}
+        </h2>
+        <ul className="list-inside list-disc">
+          <li>Prashant Singh Pawar (Gitlab: @prashantpawar)</li>
+        </ul>
+
+        <h2 className="text-center font-bold text-2xl mt-4">
+          {translate(specialThanks)}
+        </h2>
         <ul className="list-inside list-disc">
           <li>Jason Dreyzehner</li>
           <li>vvn</li>

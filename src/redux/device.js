@@ -17,6 +17,7 @@ async function initializeDevice() {
 
   deviceState.deviceInfo = await Device.getInfo();
   deviceState.deviceInfo.deviceId = await Device.getId();
+  deviceState.deviceInfo.languageCode = (await Device.getLanguageCode()).value;
   deviceState.locale = (await Device.getLanguageTag()).value;
 
   if (deviceState.deviceInfo.platform !== "web") {

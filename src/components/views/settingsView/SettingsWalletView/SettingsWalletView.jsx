@@ -2,9 +2,8 @@ import { useState, useRef } from "react";
 import { useParams, useNavigate, Navigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  setPreference,
   selectActiveWalletId,
-  selectPreferences,
+  selectLocalCurrency,
 } from "@/redux/preferences";
 import { walletBoot, walletReload } from "@/redux/wallet";
 import { selectLocale } from "@/redux/device";
@@ -19,15 +18,32 @@ import {
   EyeInvisibleOutlined,
   ToolOutlined,
   MedicineBoxOutlined,
-  KeyOutlined,
 } from "@ant-design/icons";
 import ViewHeader from "@/components/views/ViewHeader";
 import WalletService from "@/services/WalletService";
-import KeyWarning from "./KeyWarning";
-
-import SettingsCategory from "./SettingsCategory";
-import SettingsChild from "./SettingsChild";
+import KeyWarning from "../KeyWarning/KeyWarning";
+import SettingsCategory from "../SettingsCategory";
 import { formatSatoshis } from "@/util/sats";
+import { translate } from "@/util/translations";
+import translations from "./translations";
+
+const {
+  walletSettings,
+  advancedOptions,
+  created,
+  lastKnownBalance,
+  walletActive,
+  activateWallet,
+  deleteWallet,
+  areYouSure,
+  ensureRecoveryPhrase,
+  confirmDelete,
+  keepSecret,
+  dontStoreDigitally,
+  viewRecoveryPhrase,
+  secretAndSecure,
+  rebuildWallet,
+} = translations;
 
 export default function SettingsWalletView() {
   const dispatch = useDispatch();
@@ -39,8 +55,7 @@ export default function SettingsWalletView() {
   const activeWalletId = useSelector(selectActiveWalletId);
   const isActiveWallet = wallet_id === activeWalletId;
 
-  const preferences = useSelector(selectPreferences);
-  const preferLocal = preferences["preferLocalCurrency"] === "true";
+  const { preferLocalCurrency } = useSelector(selectLocalCurrency);
 
   const WalletManager = new WalletService();
   const wallet = WalletManager.getWalletById(wallet_id);
@@ -122,7 +137,7 @@ export default function SettingsWalletView() {
 
   return (
     <>
-      <ViewHeader icon={WalletOutlined} title="Wallet Settings" />
+      <ViewHeader icon={WalletOutlined} title={translate(walletSettings)} />
       <div className="p-2">
         <div className="p-3 rounded-lg bg-zinc-200">
           <div className="text-2xl">
@@ -148,12 +163,13 @@ export default function SettingsWalletView() {
             )}
           </div>
           <div className="text-lg text-center text-zinc-600">
-            Created {new Date(wallet.date_created).toLocaleString(locale)}
+            {translate(created)}{" "}
+            {new Date(wallet.date_created).toLocaleString(locale)}
           </div>
           {wallet.balance > 0 && (
             <div className="text-lg text-center text-zinc-500">
-              Last Known Balance:{" "}
-              {formatSatoshis(wallet.balance)[preferLocal ? "fiat" : "bch"]}
+              {translate(lastKnownBalance)}:{" "}
+              {formatSatoshis(wallet.balance)[preferLocalCurrency ? "fiat" : "bch"]}
             </div>
           )}
         </div>
@@ -175,7 +191,9 @@ export default function SettingsWalletView() {
                   <LoginOutlined className="text-2xl mr-1" />
                 )}
                 <div className="flex-1">
-                  {isActiveWallet ? "Wallet Active" : "Activate Wallet"}
+                  {isActiveWallet
+                    ? translate(walletActive)
+                    : translate(activateWallet)}
                 </div>
               </div>
             </button>
@@ -197,12 +215,12 @@ export default function SettingsWalletView() {
                 )}
                 <div className="flex-1">
                   {deleteConfirm === 0
-                    ? "Delete Wallet"
+                    ? translate(deleteWallet)
                     : deleteConfirm === 1
-                    ? "ARE YOU SURE? YOUR MONEY IS AT RISK"
+                    ? translate(areYouSure)
                     : deleteConfirm === 2
-                    ? "MAKE SURE YOU HAVE WRITTEN YOUR RECOVERY PHRASE"
-                    : `Yes, I want to delete "${wallet.name}"`}
+                    ? translate(ensureRecoveryPhrase)
+                    : `${translate(confirmDelete)} "${wallet.name}"`}
                 </div>
               </div>
             </button>
@@ -217,7 +235,7 @@ export default function SettingsWalletView() {
             <div className="flex flex-col justify-between items-center">
               <div className="text-center text-error text-xl font-bold">
                 <WarningFilled className="mr-2 text-warning" />
-                KEEP THIS PHRASE SECRET
+                {translate(keepSecret)}
                 <WarningFilled className="ml-2 text-warning" />
               </div>
               <div className="text-center text-zinc-50 text-xl font-mono py-4">
@@ -225,7 +243,7 @@ export default function SettingsWalletView() {
               </div>
               <div className="text-center text-error text-xl font-bold">
                 <WarningFilled className="mr-2 text-warning" />
-                DO NOT STORE DIGITALLY
+                {translate(dontStoreDigitally)}
                 <WarningFilled className="ml-2 text-warning" />
               </div>
             </div>
@@ -233,10 +251,10 @@ export default function SettingsWalletView() {
             <>
               <EyeInvisibleOutlined className="text-8xl text-zinc-50" />
               <div className="text-center text-zinc-50 text-xl">
-                View Wallet Recovery Phrase
+                {translate(viewRecoveryPhrase)}
               </div>
               <div className="text-center text-zinc-200 text-lg opacity-90">
-                (Make sure to keep it secret and secure!)
+                ({translate(secretAndSecure)})
               </div>
             </>
           )}
@@ -244,23 +262,18 @@ export default function SettingsWalletView() {
         {
           /* Only show "Advanced Options" if user has viewed (TODO: verified) their recovery phrase */
           wallet.key_viewed !== null && isActiveWallet && (
-            <SettingsCategory icon={ToolOutlined} title="Advanced Options">
+            <SettingsCategory
+              icon={ToolOutlined}
+              title={translate(advancedOptions)}
+            >
               <button
                 type="button"
                 className="w-full block p-2 text-left"
                 onClick={handleRebuildWallet}
               >
                 <MedicineBoxOutlined className="text-xl mr-1" />
-                Rebuild Wallet
+                {translate(rebuildWallet)}
               </button>
-              {/*<button
-              type="button"
-              className="w-full block p-2 text-left"
-              onClick={null}
-            >
-              <KeyOutlined className="text-xl mr-1" />
-              View xPub/xPriv
-            </button>*/}
             </SettingsCategory>
           )
         }

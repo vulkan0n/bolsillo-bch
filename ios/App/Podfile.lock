@@ -16,6 +16,8 @@ PODS:
     - Capacitor
   - CapacitorFilesystem (5.0.4):
     - Capacitor
+  - CapacitorHaptics (5.0.6):
+    - Capacitor
   - CapacitorKeyboard (5.0.4):
     - Capacitor
   - CapacitorPreferences (5.0.4):
@@ -35,6 +37,7 @@ DEPENDENCIES:
   - "CapacitorDevice (from `../../node_modules/@capacitor/device`)"
   - "CapacitorDialog (from `../../node_modules/@capacitor/dialog`)"
   - "CapacitorFilesystem (from `../../node_modules/@capacitor/filesystem`)"
+  - "CapacitorHaptics (from `../../node_modules/@capacitor/haptics`)"
   - "CapacitorKeyboard (from `../../node_modules/@capacitor/keyboard`)"
   - "CapacitorPreferences (from `../../node_modules/@capacitor/preferences`)"
   - CapacitorSecureStoragePlugin (from `../../node_modules/capacitor-secure-storage-plugin`)
@@ -62,6 +65,8 @@ EXTERNAL SOURCES:
     :path: "../../node_modules/@capacitor/dialog"
   CapacitorFilesystem:
     :path: "../../node_modules/@capacitor/filesystem"
+  CapacitorHaptics:
+    :path: "../../node_modules/@capacitor/haptics"
   CapacitorKeyboard:
     :path: "../../node_modules/@capacitor/keyboard"
   CapacitorPreferences:
@@ -79,11 +84,12 @@ SPEC CHECKSUMS:
   CapacitorDevice: eb4b5e3b42ac35d2527f20aad296b59e0785dc8d
   CapacitorDialog: 0f3c15dfe9414b83bc64aef4078f1b92bcfead26
   CapacitorFilesystem: e1bdfab09b95b181c844c16abcfda45ec8e8ed6b
+  CapacitorHaptics: 1fffc1217c7e64a472d7845be50fb0c2f7d4204c
   CapacitorKeyboard: d1b25fde6f19744ad09c890862aefc6e2a7ded3d
   CapacitorPreferences: 82a9ecf5355283a3b3cf7ac217d8c5534c4dee8a
   CapacitorSecureStoragePlugin: e91d7df060f2495a1acff9583641a6953e3aacba
   SwiftKeychainWrapper: 807ba1d63c33a7d0613288512399cd1eda1e470c
 
-PODFILE CHECKSUM: 3420afd8843ba106d9bc15a2dbabbd92e2a4a0db
+PODFILE CHECKSUM: 402747767cd80521c9ead91e186837c2580ccbef
 
 COCOAPODS: 1.11.2

@@ -2,6 +2,10 @@ import { useState, useEffect } from "react";
 import { BarcodeScanner } from "@capacitor-community/barcode-scanner";
 import { BulbOutlined } from "@ant-design/icons";
 import Button from "@/components/atoms/Button";
+import translations from "./translations";
+import { translate } from "@/util/translations";
+
+const { torch } = translations;
 
 export default function TorchButton(props) {
   const [isTorchEnabled, setIsTorchEnabled] = useState(false);
@@ -25,7 +29,7 @@ export default function TorchButton(props) {
   return (
     <Button
       icon={BulbOutlined}
-      label="Torch"
+      label={translate(torch)}
       onClick={handleTorchButton}
       inverted={isTorchEnabled}
       {...props}

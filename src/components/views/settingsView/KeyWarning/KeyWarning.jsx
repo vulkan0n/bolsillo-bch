@@ -1,7 +1,10 @@
 import { Link } from "react-router-dom";
-import { useSelector } from "react-redux";
-import { selectActiveWallet } from "@/redux/wallet";
 import { WarningFilled } from "@ant-design/icons";
+
+import { translate } from "@/util/translations";
+import translations from "./translations";
+
+const { backUpWallet } = translations;
 
 export default function KeyWarning({ wallet }) {
   return wallet.key_viewed === null ? (
@@ -10,7 +13,7 @@ export default function KeyWarning({ wallet }) {
         <div className="alert alert-warning p-2 shadow-lg bg-warning text-black rounded-lg text-center">
           <div className="text-xl">
             <WarningFilled className="text-error text-4xl ml-2" />
-            PLEASE BACK UP YOUR WALLET RECOVERY PHRASE
+            {translate(backUpWallet)}
           </div>
         </div>
       </Link>

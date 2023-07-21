@@ -42,3 +42,13 @@ Questions: [Telegram group](https://t.me/+MMbV2KEPFt84MDQ8)
 Contributors: [Contributing](./docs/CONTRIBUTING.md)
 
 Testers: [Testing document](https://docs.google.com/document/d/1VKXeuwlIPFrudwEBrdtg6zIuC2rSF4QRginuq3C_-ro/edit?usp=sharing)
+
+## For merging from PRs to mirror
+
+```
+$ git remote add gitlabMirror https://gitlab.com/selene.cash/selene-wallet.git
+# Replace the merge request number & choose a branch name
+$ git fetch gitlabMirror merge-requests/1111111/head:MY_NEW_BRANCH
+# Now that branch is local and can be merged as usual
+$ git merge MY_NEW_BRANCH
+```
