@@ -1,0 +1,31 @@
+const translations = {
+  createImportWallet: {
+    bn: "বছর/আমদানি করুন ওয়ালেট",
+    da: "Opret/Importer Tegnebog",
+    de: "Wallet erstellen/importieren",
+    el: "Δημιουργία/Εισαγωγή πορτοφολιού",
+    en: "Create/Import Wallet",
+    es: "Crear/Importar billetera",
+    fr: "Créer/Importer un portefeuille",
+    hi: "नया बटुआ बनाएं/पुराने बटुए को पुनर्स्थापित करे",
+    it: "Crea/Importa portafoglio",
+    ja: "ウォレットの作成/インポート",
+    jv: "Gawe/Impor Wallet",
+    ko: "지갑 생성/가져오기",
+    mr: "वॉलेट तयार करा/आयात करा",
+    ms: "Buat/Import Wallet",
+    nb: "Opprett/Importer Lommebok",
+    pa: "ਵਾਲੇਟ ਬਣਾਓ/ਆਯਾਤ ਕਰੋ",
+    pt: "Criar/Importar carteira",
+    ru: "Создать/Импортировать кошелек",
+    sv: "Skapa/Importera Plånbok",
+    ta: "வலைப்பை உருவாக்கு/இறக்குமதி செய்",
+    te: "వాలెట్ సృష్టించండి/దిగుమతి చేయండి",
+    tr: "Cüzdan Oluştur/İçe Aktar",
+    ur: "والٹ بنائیں/درآمد کریں",
+    vi: "Tạo/Import Ví",
+    zh: "创建/导入钱包",
+  },
+};
+
+export default translations;

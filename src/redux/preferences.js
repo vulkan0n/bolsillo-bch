@@ -7,6 +7,7 @@ import {
 
 const defaultPreferences = {
   activeWalletId: "1",
+  languageCode: "", // Default empty = use device language
   localCurrency: "USD",
   preferLocalCurrency: "false",
   hideAvailableBalance: "false",
@@ -88,4 +89,12 @@ export const selectLocalCurrency = createSelector(
 export const selectDenomination = createSelector(
   (state) => state.preferences,
   (preferences) => preferences.denominateSats === "true"
+);
+
+export const selectInstantPay = createSelector(
+  (state) => state.preferences,
+  (preferences) => ({
+    isInstantPayEnabled: preferences.allowInstantPay === "true",
+    instantPayThreshold: preferences.instantPayThreshold,
+  })
 );

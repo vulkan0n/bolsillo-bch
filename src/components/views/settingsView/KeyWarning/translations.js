@@ -1,0 +1,31 @@
+const translations = {
+  backUpWallet: {
+    bn: "দয়া করে আপনার ওয়ালেট পুনরুদ্ধার ফ্রেজ ব্যাকআপ করুন",
+    da: "VENLIGST SIKKERHEDSKOPIER DIN GENDANNELSESSÆTNING FOR TEGNEBOGEN",
+    de: "BITTE SICHERN SIE IHRE WALLET-WIEDERHERSTELLUNGSPHRASE",
+    el: "ΠΑΡΑΚΑΛΩ ΔΗΜΙΟΥΡΓΗΣΤΕ ΑΝΤΙΓΡΑΦΟ ΑΣΦΑΛΕΙΑΣ ΤΟΥ ΦΡΑΣΗ ΑΝΑΚΤΗΣΗΣ ΤΟΥ ΠΟΡΤΟΦΟΛΙΟΥ ΣΑΣ",
+    en: "PLEASE BACK UP YOUR WALLET RECOVERY PHRASE",
+    es: "POR FAVOR, HAGA UN RESPALDO DE SU FRASE DE RECUPERACIÓN DE BILLETERA",
+    fr: "VEUILLEZ SAUVEGARDER VOTRE PHRASE DE RÉCUPÉRATION DE PORTEFEUILLE",
+    hi: "कृपया अपने बटुए के रिकवरी मंत्र का बैकअप बनाएं",
+    it: "PER FAVORE, ESEGUI UN BACKUP DELLA TUA FRASE DI RECUPERO DEL PORTAFOGLIO",
+    ja: "ウォレットのリカバリーフレーズをバックアップしてください",
+    jv: "MONGGO DUWÉN BACKUP FRASE RECOVERY DOMPET SAMPEYAN",
+    ko: "지갑 복구 구문을 백업해 주세요",
+    mr: "कृपया तुमच्या वॉलेट पुनर्प्राप्तीचा वाक्य बॅकअप करा",
+    ms: "SILA BUAT SANDARAN PULIHAN BEKALANDA WALLET ANDA",
+    nb: "VENNLIGST SIKKERHETSKOPIER DIN GJENOPPRETTINGSFRASE FOR LOMMEBOKEN",
+    pa: "ਕਿਰਪਾ ਕਰਕੇ ਆਪਣੇ ਵਾਲੇਟ ਵੱਪਸੀ ਫ੍ਰੇਜ਼ ਦਾ ਬੈਕਅੱਪ ਬਣਾਉਣ ਲਈ",
+    pt: "POR FAVOR, FAÇA O BACKUP DA SUA FRASE DE RECUPERAÇÃO DE CARTEIRA",
+    ru: "ПОЖАЛУЙСТА, СДЕЛАЙТЕ РЕЗЕРВНУЮ КОПИЮ ВОССТАНОВИТЕЛЬНОЙ ФРАЗЫ ВАШЕГО КОШЕЛЬКА",
+    sv: "VÄNLIGEN SÄKERHETSKOPIERA DIN ÅTERSTÄLLNINGSFRAS FÖR PLÅNBOKEN",
+    ta: "தயவுசெய்து உங்கள் வாலட் மீட்டமைப்பு வாசிப்பை பகுதியாகப் பின்தொடருங்கள்",
+    te: "దయచేసి మీ వాలెట్ రికవరీ ఫ్రేజ్ ని బ్యాకప్ చేయండి",
+    tr: "LÜTFEN CÜZDAN KURTARMA CÜMLENİZİ YEDEKLEYİN",
+    ur: "براہ کرم اپنے والیٹ بحالی جملے کا بیک اپ بنائیں",
+    vi: "VUI LÒNG SAO LƯU CÂU KHÔI PHỤC VÍ CỦA BẠN",
+    zh: "请备份您的钱包恢复短语",
+  },
+};
+
+export default translations;

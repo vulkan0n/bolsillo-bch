@@ -3,11 +3,23 @@ import { useNavigate } from "react-router-dom";
 import { ImportOutlined } from "@ant-design/icons";
 
 import WalletService from "@/services/WalletService";
-
+import { translate } from "@/util/translations";
+import translations from "./translations";
 import * as bip39 from "bip39";
 
-export default function SettingsWalletImport() {
+const {
+  exactWordCount,
+  alreadyImported,
+  phraseInvalid,
+  enterRecoveryPhrase,
+  alsoKnownAs,
+  exactly12Or24,
+  importWallet,
+} = translations;
+
+export default function SettingsWalletWizardImport() {
   const navigate = useNavigate();
+
   const [mnemonicInput, setMnemonicInput] = useState("");
   const [message, setMessage] = useState("");
 
@@ -25,7 +37,7 @@ export default function SettingsWalletImport() {
     const trimmedInput = mnemonicInput.trim();
     const wordCount = trimmedInput.split(" ").length;
     if (wordCount !== 12 && wordCount !== 24) {
-      setMessage("Recovery phrase must be exactly 12 or exactly 24 words.");
+      setMessage(translate(exactWordCount));
       return;
     }
 
@@ -39,25 +51,23 @@ export default function SettingsWalletImport() {
         );
         navigate(`/settings/wallet/${wallet.id}`, { replace: true });
       } catch (e) {
-        setMessage("That wallet has already been imported!");
+        setMessage(translate(alreadyImported));
       }
     } else {
-      setMessage(
-        "Recovery phrase invalid. Ensure all words are correct and in the proper order."
-      );
+      setMessage(translate(phraseInvalid));
     }
   };
 
   return (
     <>
       <div className="text-2xl text-center text-neutral-900">
-        Enter your Recovery Phrase
+        {translate(enterRecoveryPhrase)}
       </div>
       <div className="flex justify-center">
         {message === "" ? (
           <ul className="list-disc p-2 text-left text-neutral-700">
-            <li>May also be known as a 'seed phrase' or 'mnemonic phrase'.</li>
-            <li>Exactly 12 or exactly 24 words long.</li>
+            <li>{translate(alsoKnownAs)}</li>
+            <li>{translate(exactly12Or24)}</li>
           </ul>
         ) : (
           <div className="text-error p-2">{message}</div>
@@ -77,7 +87,7 @@ export default function SettingsWalletImport() {
           className="bg-primary text-white w-full rounded-lg p-2"
           onClick={handleImportWallet}
         >
-          <ImportOutlined className="text-2xl" /> Import Wallet
+          <ImportOutlined className="text-2xl" /> {translate(importWallet)}
         </button>
       </div>
     </>

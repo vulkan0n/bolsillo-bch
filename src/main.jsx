@@ -15,16 +15,16 @@ import "./index.css";
 
 import MainLayout from "./components/MainLayout";
 import WalletView from "./components/views/WalletView";
-import WalletViewHome from "./components/views/walletView/WalletViewHome";
-import WalletViewHistory from "./components/views/walletView/WalletViewHistory";
-import WalletViewSend from "./components/views/walletView/WalletViewSend";
-import WalletViewSendSuccess from "./components/views/walletView/WalletViewSendSuccess";
+import WalletViewHome from "./components/views/walletView/WalletViewHome/WalletViewHome";
+import WalletViewHistory from "./components/views/walletView/WalletViewHistory/WalletViewHistory";
+import WalletViewSend from "./components/views/walletView/WalletViewSend/WalletViewSend";
+import WalletViewSendSuccess from "./components/views/walletView/WalletViewSendSuccess/WalletViewSendSuccess";
 import ExploreView from "./components/views/ExploreView";
 import SettingsView from "./components/views/SettingsView";
-import SettingsWalletView from "./components/views/settingsView/SettingsWalletView";
-import SettingsWalletWizard from "./components/views/settingsView/SettingsWalletWizard";
-import SettingsWalletWizardInit from "./components/views/settingsView/SettingsWalletWizardInit";
-import SettingsWalletWizardImport from "./components/views/settingsView/SettingsWalletWizardImport";
+import SettingsWalletView from "./components/views/settingsView/SettingsWalletView/SettingsWalletView";
+import SettingsWalletWizard from "./components/views/settingsView/SettingsWalletWizard/SettingsWalletWizard";
+import SettingsWalletWizardInit from "./components/views/settingsView/SettingsWalletWizardInit/SettingsWalletWizardInit";
+import SettingsWalletWizardImport from "./components/views/settingsView/SettingsWalletWizardImport/SettingsWalletWizardImport";
 import CreditsView from "./components/views/CreditsView";
 
 const router = createBrowserRouter([

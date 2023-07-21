@@ -1,29 +1,32 @@
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { selectLocale } from "@/redux/device";
-import { selectPreferences } from "@/redux/preferences";
+import { selectLocalCurrency } from "@/redux/preferences";
 import { formatSatoshis } from "@/util/sats";
 import { selectTransactionHistory } from "@/redux/transactions";
+
+import translations from "./translations";
+import { translate } from "@/util/translations";
 
 import { ArrowLeftOutlined } from "@ant-design/icons";
 import Button from "@/components/atoms/Button";
 
+const { recentTransactions, back } = translations;
+
 export default function WalletViewHistory() {
   const navigate = useNavigate();
   const locale = useSelector(selectLocale);
-  const preferences = useSelector(selectPreferences);
   const transactions = useSelector(selectTransactionHistory);
+  const { preferLocalCurrency } = useSelector(selectLocalCurrency);
 
   const receiveStyle = "text-secondary";
   const sendStyle = "text-error";
-
-  const preferLocal = preferences["preferLocalCurrency"] === "true";
 
   return (
     <div className="p-2 pb-0">
       <div className="shadow-sm mb-2.5">
         <div className="bg-zinc-800 text-zinc-200 rounded-t-lg text-center text-lg p-1 font-semibold">
-          Recent Transactions
+          {translate(recentTransactions)}
         </div>
         <ul className="bg-zinc-100 text-zinc-600 divide-y divide-zinc-300 rounded-b px-2 max-h-[58vh] overflow-y-scroll border border-zinc-400 shadow-inner">
           {transactions.map((tx, i) =>
@@ -49,10 +52,18 @@ export default function WalletViewHistory() {
                     }`}
                   >
                     {tx.amount > 0 && "+"}
-                    {formatSatoshis(tx.amount)[preferLocal ? "fiat" : "bch"]}
+                    {
+                      formatSatoshis(tx.amount)[
+                        preferLocalCurrency ? "fiat" : "bch"
+                      ]
+                    }
                   </div>
                   <div className="text-sm opacity-80">
-                    {formatSatoshis(tx.amount)[preferLocal ? "bch" : "fiat"]}
+                    {
+                      formatSatoshis(tx.amount)[
+                        preferLocalCurrency ? "bch" : "fiat"
+                      ]
+                    }
                   </div>
                 </div>
               </li>
@@ -64,7 +75,7 @@ export default function WalletViewHistory() {
         icon={() => (
           <>
             <ArrowLeftOutlined className="mr-1" />
-            Back
+            {translate(back)}
           </>
         )}
         onClick={() => navigate(-1)}

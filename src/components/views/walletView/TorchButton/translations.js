@@ -1,0 +1,31 @@
+const translations = {
+  torch: {
+    bn: "টর্চ",
+    da: "Lommelygte",
+    de: "Taschenlampe",
+    el: "Φακός",
+    en: "Torch",
+    es: "Linterna",
+    fr: "Lampe de poche",
+    hi: "टॉर्च",
+    it: "Torcia",
+    ja: "懐中電灯",
+    jv: "Obor",
+    ko: "손전등",
+    mr: "ताट",
+    ms: "Torch",
+    nb: "Lommelykt",
+    pa: "ਟਾਰਚ",
+    pt: "Lanterna",
+    ru: "Фонарик",
+    sv: "Ficklampa",
+    ta: "டார்ச்",
+    te: "టార్చ్",
+    tr: "Mercek",
+    ur: "ٹارچ",
+    vi: "Đèn pin",
+    zh: "手电筒",
+  },
+};
+
+export default translations;

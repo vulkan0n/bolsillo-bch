@@ -1,7 +1,12 @@
 import { PictureOutlined } from "@ant-design/icons";
 import { Camera } from "@capacitor/camera";
+import { Haptics } from "@capacitor/haptics";
 import QrScanner from "qr-scanner";
 import Button from "@/components/atoms/Button";
+import translations from "./translations";
+import { translate } from "@/util/translations";
+
+const { image } = translations;
 
 export default function ImageSelectButton({ onSelection, ...rest }) {
   // function to downscale images (helps QR codes read better)
@@ -49,6 +54,7 @@ export default function ImageSelectButton({ onSelection, ...rest }) {
         onSelection(result.data);
         console.log(result.data);
       } catch (e) {
+        Haptics.notification({ type: "ERROR" });
         console.error(e);
       }
     };
@@ -57,7 +63,7 @@ export default function ImageSelectButton({ onSelection, ...rest }) {
   return (
     <Button
       icon={PictureOutlined}
-      label="Image"
+      label={translate(image)}
       onClick={handleImageSelectButton}
       {...rest}
     />

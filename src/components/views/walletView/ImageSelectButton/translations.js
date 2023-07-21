@@ -1,0 +1,31 @@
+const translations = {
+  image: {
+    bn: "চিত্র",
+    da: "Billede",
+    de: "Bild",
+    el: "Εικόνα",
+    en: "Image",
+    es: "Imagen",
+    fr: "Image",
+    hi: "इमेज",
+    it: "Immagine",
+    ja: "画像",
+    jv: "Gambar",
+    ko: "이미지",
+    mr: "प्रतिमा",
+    ms: "Imej",
+    nb: "Bilde",
+    pa: "ਚਿੱਤਰ",
+    pt: "Imagem",
+    ru: "Изображение",
+    sv: "Bild",
+    ta: "படம்",
+    te: "ఇమేజ్",
+    tr: "Görüntü",
+    ur: "تصویر",
+    vi: "Hình ảnh",
+    zh: "图像",
+  },
+};
+
+export default translations;

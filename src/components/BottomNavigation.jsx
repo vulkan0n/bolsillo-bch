@@ -1,9 +1,8 @@
 import { NavLink } from "react-router-dom";
 import { useSelector } from "react-redux";
-import {
-  selectKeyboardIsOpen,
-  selectScannerIsScanning,
-} from "@/redux/device";
+import { selectKeyboardIsOpen, selectScannerIsScanning } from "@/redux/device";
+import translations from "./BottomNavigationTranslations";
+import { translate } from "@/util/translations";
 import {
   WalletOutlined,
   WalletFilled,
@@ -13,6 +12,8 @@ import {
   SettingFilled,
 } from "@ant-design/icons";
 
+const { wallet, settings } = translations;
+
 function BottomNavigation() {
   const keyboardIsOpen = useSelector(selectKeyboardIsOpen);
   const isScanning = useSelector(selectScannerIsScanning);
@@ -21,12 +22,15 @@ function BottomNavigation() {
     !keyboardIsOpen &&
     !isScanning && (
       <>
-        <div className="fixed bottom-0 w-full flex items-center justify-around z-50" id="bottomNav">
+        <div
+          className="fixed bottom-0 w-full flex items-center justify-around z-50"
+          id="bottomNav"
+        >
           <NavButton
             to="/wallet"
             activeIcon={WalletFilled}
             icon={WalletOutlined}
-            label="Wallet"
+            label={translate(wallet)}
           />
           {/*<NavButton
             to="/explore"
@@ -38,7 +42,7 @@ function BottomNavigation() {
             to="/settings"
             activeIcon={SettingFilled}
             icon={SettingOutlined}
-            label="Settings"
+            label={translate(settings)}
           />
         </div>
       </>

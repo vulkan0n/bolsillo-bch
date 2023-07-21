@@ -1,24 +1,17 @@
 import { useState, useEffect } from "react";
 import { useParams, useSearchParams, useNavigate } from "react-router-dom";
 
-import { useSelector, useDispatch } from "react-redux";
+import { Haptics } from "@capacitor/haptics";
+
+import { useSelector } from "react-redux";
 import { selectActiveWallet } from "@/redux/wallet";
-import { selectPreferences, setPreference } from "@/redux/preferences";
+import { selectLocalCurrency, selectInstantPay } from "@/redux/preferences";
+
 import { selectKeyboardIsOpen } from "@/redux/device";
 
-import { Decimal } from "decimal.js";
-import { useLongPress } from "use-long-press";
-
-import {
-  bchToSats,
-  satsToBch,
-  MAX_SATOSHI,
-  formatSatoshis,
-  satsToDisplayAmount,
-} from "@/util/sats";
+import { bchToSats, formatSatoshis, satsToDisplayAmount } from "@/util/sats";
 import { validateInvoiceString } from "@/util/invoice";
 
-import CurrencyService from "@/services/CurrencyService";
 import TransactionManagerService from "@/services/TransactionManagerService";
 
 import { ArrowLeftOutlined } from "@ant-design/icons";
@@ -29,30 +22,36 @@ import Address from "@/components/atoms/Address";
 import CurrencySymbol from "@/components/atoms/CurrencySymbol";
 import CurrencyFlip from "@/components/atoms/CurrencyFlip";
 
+import { translate } from "@/util/translations";
+import translations from "./translations";
+
+const {
+  insufficientFunds,
+  notEnoughFee,
+  transactionFailed,
+  sendingTo,
+  back,
+  confirm,
+} = translations;
+
 export default function WalletViewSend() {
-  const dispatch = useDispatch();
+  const [searchParams] = useSearchParams();
+  const params = useParams();
+  const navigate = useNavigate();
 
   const isKeyboardOpen = useSelector(selectKeyboardIsOpen);
   const buttonsPos = isKeyboardOpen ? "bottom-2" : "bottom-[5em]";
 
-  const [searchParams, setSearchParams] = useSearchParams();
-  const params = useParams();
-  const navigate = useNavigate();
-
   const wallet = useSelector(selectActiveWallet);
 
-  const { isValid, address, isBase58Address } = validateInvoiceString(
-    params.address
-  );
+  const { address } = validateInvoiceString(params.address);
 
   const [message, setMessage] = useState("");
 
-  const preferences = useSelector(selectPreferences);
-  const denominateSats = preferences["denominateSats"] === "true";
-  const preferLocal = preferences["preferLocalCurrency"] === "true";
+  const { localCurrency, preferLocalCurrency } =
+    useSelector(selectLocalCurrency);
 
-  const currency = preferLocal ? preferences["localCurrency"] : "BCH";
-  const Currency = new CurrencyService(preferences["localCurrency"]);
+  const currency = preferLocalCurrency ? localCurrency : "BCH";
 
   const querySats = searchParams.get("amount")
     ? bchToSats(searchParams.get("amount"))
@@ -72,12 +71,15 @@ export default function WalletViewSend() {
     setMessage("");
   };
 
+  const { isInstantPayEnabled, instantPayThreshold } =
+    useSelector(selectInstantPay);
+
   useEffect(function handleInstantPay() {
-    if (preferences["allowInstantPay"] !== "true") {
+    if (!isInstantPayEnabled) {
       return;
     }
 
-    const threshold = Number.parseInt(preferences["instantPayThreshold"]);
+    const threshold = Number.parseInt(instantPayThreshold);
     const requestAmount = Number.parseInt(
       bchToSats(searchParams.get("amount") || 0)
     );
@@ -90,7 +92,9 @@ export default function WalletViewSend() {
 
   async function confirmSend() {
     if (isInsufficientFunds) {
-      setMessage("Insufficient Funds");
+      await Haptics.notification({ type: "WARNING" });
+      const insufficientFundsTranslation = translate(insufficientFunds);
+      setMessage(insufficientFundsTranslation);
       return;
     }
 
@@ -102,7 +106,9 @@ export default function WalletViewSend() {
     );
 
     if (typeof transaction !== "object") {
-      setMessage("Transaction Failed: Not enough balance for miner fee");
+      await Haptics.notification({ type: "WARNING" });
+      const notEnoughFeeTranslation = translate(notEnoughFee);
+      setMessage(notEnoughFeeTranslation);
       return;
     }
 
@@ -113,9 +119,12 @@ export default function WalletViewSend() {
     );
 
     if (success) {
+      await Haptics.notification({ type: "SUCCESS" });
       navigate("/wallet/send/success");
     } else {
-      setMessage("Transaction failed.");
+      await Haptics.notification({ type: "ERROR" });
+      const transactionFailedTranslation = translate(transactionFailed);
+      setMessage(transactionFailedTranslation);
     }
   }
 
@@ -137,7 +146,12 @@ export default function WalletViewSend() {
       );
     }
 
-    setSatoshiInput({ display: satsToDisplayAmount(amount), sats: amount });
+    const clampedAmount = Math.max(0, amount);
+
+    setSatoshiInput({
+      display: satsToDisplayAmount(clampedAmount),
+      sats: clampedAmount,
+    });
   };
 
   return (
@@ -145,7 +159,7 @@ export default function WalletViewSend() {
       <div className="tracking-wide text-center text-white">
         {message === "" ? (
           <div className="bg-primary p-2">
-            <div className="text-xl font-bold">Sending to</div>
+            <div className="text-xl font-bold">{translate(sendingTo)}</div>
             <div className="text-sm py-2 font-mono tracking-tight">
               <Address address={address} />
             </div>
@@ -183,7 +197,7 @@ export default function WalletViewSend() {
 
         <div className="p-2 relative text-center w-full">
           <span className="text-2xl font-semibold text-center w-full text-zinc-800/80">
-            {preferLocal ? displayAmount.bch : displayAmount.fiat}
+            {preferLocalCurrency ? displayAmount.bch : displayAmount.fiat}
           </span>
           <div className="absolute top-2 right-2 flex items-center">
             <Button icon={() => <CurrencyFlip className="text-xl" />} />
@@ -191,14 +205,16 @@ export default function WalletViewSend() {
         </div>
       </div>
 
-      <div className={`flex absolute ${buttonsPos} w-full justify-around items-center px-2 gap-x-2`}>
+      <div
+        className={`flex absolute ${buttonsPos} w-full justify-around items-center px-2 gap-x-2`}
+      >
         <div className="mx-2">
           <Button
             onClick={() => navigate(-1)}
             icon={() => (
               <span>
                 <ArrowLeftOutlined className="mr-1" />
-                Back
+                {translate(back)}
               </span>
             )}
           />
@@ -206,7 +222,7 @@ export default function WalletViewSend() {
         <div className="flex-1">
           <Button
             size="full"
-            icon={() => <span className="font-bold">Confirm</span>}
+            icon={() => <span className="font-bold">{translate(confirm)}</span>}
             onClick={confirmSend}
             inverted
           />
