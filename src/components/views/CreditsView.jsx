@@ -67,7 +67,8 @@ export default function CreditsView() {
           {translate(contributingDevelopers)}
         </h2>
         <ul className="list-inside list-disc">
-          <li>Prashant Singh Pawar (Gitlab: @prashantpawar)</li>
+          <li>Marius Kjærstad (GitLab: @sandakersmann)</li>
+          <li>Prashant Singh Pawar (GitLab: @prashantpawar)</li>
         </ul>
 
         <h2 className="text-center font-bold text-2xl mt-4">
