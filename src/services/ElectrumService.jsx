@@ -116,12 +116,11 @@ export default function ElectrumService() {
     } catch (e) {
       // If user has provided an unreachable/invalid custom Electrum Server
       // Alert with toast & fallback to a server from the known list
-      console.log("GODDAMN IT BROKE");
       showToast({
-        title: "ERROR!!",
+        title: "Custom Electrum server failed",
         description: (
           <span className="inline-block max-w-[62%] truncate text-sm break-all">
-            GAAAAH
+            Falling back to known server.
           </span>
         ),
       });

@@ -87,6 +87,11 @@ export default function SettingsView() {
   const preferences = useSelector(selectPreferences);
   const wallet = useSelector(selectActiveWallet);
   const activeWalletId = useSelector(selectActiveWalletId);
+  const [customElectrumServerText, setCustomElectrumServerText] = useState(
+    preferences.customElectrumServer
+  );
+  const [isChangedCustomServerText, setIsChangedCustomServerText] =
+    useState(false);
 
   const { instantPayThreshold } = useSelector(selectInstantPay);
 
@@ -96,7 +101,12 @@ export default function SettingsView() {
   });
 
   function handleSettingsUpdate(key, value) {
+    setIsChangedCustomServerText(false);
     dispatch(setPreference({ key, value }));
+  }
+
+  function handleCustomServerUpdate() {
+    handleSettingsUpdate("customElectrumServer", customElectrumServerText);
   }
 
   const walletList = new WalletService().getWallets();
@@ -400,15 +410,16 @@ export default function SettingsView() {
           <SettingsChild label={"Custom Server"}>
             <input
               type="text"
-              value={preferences.customElectrumServer}
+              value={customElectrumServerText}
               onChange={(event) => {
                 console.log("event.target.value", event.target.value);
-                handleSettingsUpdate(
-                  "customElectrumServer",
-                  event.target.value
-                );
+                setIsChangedCustomServerText(true);
+                setCustomElectrumServerText(event.target.value);
               }}
             />
+            {isChangedCustomServerText && (
+              <button onClick={handleCustomServerUpdate}>SAVE</button>
+            )}
           </SettingsChild>
         </SettingsCategory>
       </div>
