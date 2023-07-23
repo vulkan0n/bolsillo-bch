@@ -16,6 +16,7 @@ import {
 } from "@/redux/sync";
 
 import { bchToSats } from "@/util/sats";
+import { DEFAULT_ELECTRUM_SERVER } from "@/util/consts/recommendedElectrumServers";
 
 // pointer for current ElectrumClient instance
 let electrum = null;
@@ -44,6 +45,14 @@ export default function ElectrumService() {
   async function connect(server = "cashnode.bch.ninja") {
     console.log("connecting!!!");
     console.log("server: ", server);
+
+    console.log("preference: ", store.getState().preferences.electrumServer);
+    const serverPreference =
+      store.getState().preferences?.electrumServer ||
+      server ||
+      DEFAULT_ELECTRUM_SERVER;
+
+    console.log({ serverPreference });
     // using redux connection state guarantees that
     // we only create new ElectrumClient when necessary
     if (store.getState().sync.connected) {
@@ -66,7 +75,7 @@ export default function ElectrumService() {
     electrum = new ElectrumClient(
       "Selene.cash",
       "1.4",
-      server,
+      serverPreference,
       ElectrumTransport.WSS.Port,
       ElectrumTransport.WSS.Scheme
     );
