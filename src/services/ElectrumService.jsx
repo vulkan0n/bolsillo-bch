@@ -5,6 +5,7 @@ import {
 } from "electrum-cash";
 
 import { App } from "@capacitor/app";
+import { Haptics } from "@capacitor/haptics";
 
 import { store } from "@/redux";
 import {
@@ -114,13 +115,17 @@ export default function ElectrumService() {
     try {
       return await firstPreferenceElectrum.connect();
     } catch (e) {
+      await Haptics.notification({ type: "ERROR" });
+
       // If user has provided an unreachable/invalid custom Electrum Server
       // Alert with toast & fallback to a server from the known list
       showToast({
-        title: "Custom Electrum server failed",
+        title: "Custom Electrum server not found",
         description: (
-          <span className="inline-block max-w-[62%] truncate text-sm break-all">
-            Falling back to known server.
+          <span>
+            <div className="inline-block text-sm break-all">
+              Falling back to known server: {`${fallbackServerPreference}`}
+            </div>
           </span>
         ),
       });
