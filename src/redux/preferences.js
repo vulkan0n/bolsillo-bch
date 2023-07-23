@@ -4,6 +4,9 @@ import {
   createSelector,
   createAsyncThunk,
 } from "@reduxjs/toolkit";
+import { syncReconnect, syncConnect } from "@/redux/sync";
+import { store } from "@/redux";
+
 import { DEFAULT_ELECTRUM_SERVER } from "@/util/consts/recommendedElectrumServers";
 
 const defaultPreferences = {
@@ -51,6 +54,7 @@ const initialState = await retrievePreferences();
 export const setPreference = createAsyncThunk(
   "preferences/set",
   async (payload, thunkApi) => {
+    console.log("PREFERENCES SET");
     const sanitizedPayload = {
       key: payload.key,
       value: payload.value.toString(),
@@ -60,18 +64,25 @@ export const setPreference = createAsyncThunk(
       key: sanitizedPayload.key,
       value: (await Preferences.get({ key: sanitizedPayload.key })).value,
     };
+
+    console.log({ payload });
+    // If electrumServer preferences have been changed, reboot ElectrumService
+    if (
+      payload.key === "electrumServer" ||
+      payload.key === "customElectrumServer"
+    ) {
+      console.log("inside");
+      thunkApi.dispatch(syncReconnect());
+    }
+
     return result;
   }
 );
 
 export const preferencesReducer = createReducer(initialState, (builder) => {
-  builder
-    .addCase(setPreference.fulfilled, (state, action) => {
-      state[action.payload.key] = action.payload.value;
-    })
-    .addCase(setPreference, (state, action) => {
-      console.log("triggered setPreference", { state, action });
-    });
+  builder.addCase(setPreference.fulfilled, (state, action) => {
+    state[action.payload.key] = action.payload.value;
+  });
 });
 
 export const selectPreferences = createSelector(

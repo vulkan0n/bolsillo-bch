@@ -42,7 +42,7 @@ export default function ElectrumService() {
   // connect: connect to an Electrum server
   // Creates a new ElectrumClient every time
   // Destroys existing ElectrumClient if out of sync with Redux state
-  async function connect(server = "cashnode.bch.ninja") {
+  async function connect(server = DEFAULT_ELECTRUM_SERVER) {
     console.log("connecting!!!");
     console.log("server: ", server);
 
