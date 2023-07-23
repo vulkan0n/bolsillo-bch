@@ -105,8 +105,8 @@ export default function SettingsView() {
     dispatch(setPreference({ key, value }));
   }
 
-  function handleCustomServerUpdate() {
-    handleSettingsUpdate("customElectrumServer", customElectrumServerText);
+  function handleCustomServerUpdate(server) {
+    handleSettingsUpdate("customElectrumServer", server);
   }
 
   const walletList = new WalletService().getWallets();
@@ -397,6 +397,9 @@ export default function SettingsView() {
               value={preferences.electrumServer || ""}
               onChange={(event) => {
                 console.log("event.target.value", event.target.value);
+                setIsChangedCustomServerText(false);
+                setCustomElectrumServerText("");
+                handleCustomServerUpdate("");
                 handleSettingsUpdate("electrumServer", event.target.value);
               }}
             >
@@ -418,7 +421,13 @@ export default function SettingsView() {
               }}
             />
             {isChangedCustomServerText && (
-              <button onClick={handleCustomServerUpdate}>SAVE</button>
+              <button
+                onClick={() =>
+                  handleCustomServerUpdate(customElectrumServerText)
+                }
+              >
+                SAVE
+              </button>
             )}
           </SettingsChild>
         </SettingsCategory>

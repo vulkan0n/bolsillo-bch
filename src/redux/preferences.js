@@ -69,7 +69,7 @@ export const setPreference = createAsyncThunk(
     // If electrumServer preferences have been changed, reboot ElectrumService
     if (
       payload.key === "electrumServer" ||
-      payload.key === "customElectrumServer"
+      (payload.key === "customElectrumServer" && payload.value.length > 0)
     ) {
       console.log("inside");
       thunkApi.dispatch(syncReconnect());
