@@ -4,6 +4,7 @@ import {
   createSelector,
   createAsyncThunk,
 } from "@reduxjs/toolkit";
+import { DEFAULT_ELECTRUM_SERVER } from "@/util/consts/recommendedElectrumServers";
 
 const defaultPreferences = {
   activeWalletId: "1",
@@ -19,6 +20,7 @@ const defaultPreferences = {
   qrCodeLogo: "Selene",
   qrCodeBackground: "#ffffff",
   qrCodeForeground: "#000000",
+  electrumServer: DEFAULT_ELECTRUM_SERVER,
 };
 
 async function retrievePreferences() {

@@ -42,6 +42,7 @@ import {
   SettingFilled,
   FormatPainterOutlined,
   UndoOutlined,
+  ApiOutlined,
   CloudServerOutlined,
 } from "@ant-design/icons";
 
@@ -56,6 +57,7 @@ import { logos } from "@/util/logos";
 import SELENE_WALLET_VERSION from "@/util/version";
 
 import translations from "./SettingsViewTranslations";
+import { recommendedElectrumServers } from "@/util/consts/recommendedElectrumServers";
 
 const {
   settings,
@@ -362,7 +364,7 @@ export default function SettingsView() {
         </SettingsCategory>
 
         <SettingsCategory
-          icon={GlobalOutlined}
+          icon={ApiOutlined}
           // title={translate(localizationSettings)}
           title={"Network"}
         >
@@ -372,12 +374,13 @@ export default function SettingsView() {
               className="select"
               value={preferences.electrumServer || ""}
               onChange={(event) => {
+                console.log("event.target.value", event.target.value);
                 handleSettingsUpdate("electrumServer", event.target.value);
               }}
             >
-              {languageList.map(({ flag, code, name }) => (
-                <option key={code} value={code}>
-                  {flag} {code.toUpperCase()} - {name}
+              {recommendedElectrumServers.map((server) => (
+                <option key={server} value={server}>
+                  {server}
                 </option>
               ))}
             </select>
