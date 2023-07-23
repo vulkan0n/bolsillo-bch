@@ -11,7 +11,7 @@ import {
 import { selectActiveWallet } from "@/redux/wallet";
 
 import WalletService from "@/services/WalletService";
-import { currencyList } from "@/util/currency";
+import { currencyList } from "@/util/consts/currency";
 import { languageList, translate } from "@/util/translations";
 
 import Button from "@/components/atoms/Button";
@@ -42,6 +42,7 @@ import {
   SettingFilled,
   FormatPainterOutlined,
   UndoOutlined,
+  CloudServerOutlined,
 } from "@ant-design/icons";
 
 import ViewHeader from "./ViewHeader";
@@ -360,17 +361,28 @@ export default function SettingsView() {
           </SettingsChild>
         </SettingsCategory>
 
-        {/*
-        <SettingsCategory icon={BarChartOutlined} title="Analytics Settings">
-          <SettingsChild icon={DashboardOutlined} label="Enable Analytics">
-            <input
-              type="checkbox"
-              className="toggle"
-              onChange={(event) => null}
-            />
+        <SettingsCategory
+          icon={GlobalOutlined}
+          // title={translate(localizationSettings)}
+          title={"Network"}
+        >
+          {/* <SettingsChild icon={FlagOutlined} label={translate(language)}> */}
+          <SettingsChild icon={CloudServerOutlined} label={"Electrum Server"}>
+            <select
+              className="select"
+              value={preferences.electrumServer || ""}
+              onChange={(event) => {
+                handleSettingsUpdate("electrumServer", event.target.value);
+              }}
+            >
+              {languageList.map(({ flag, code, name }) => (
+                <option key={code} value={code}>
+                  {flag} {code.toUpperCase()} - {name}
+                </option>
+              ))}
+            </select>
           </SettingsChild>
         </SettingsCategory>
-        */}
       </div>
       <Link to="/credits" className="w-fit mx-auto my-2">
         <div className="w-fit mx-auto p-2 flex items-center justify-center shadow-sm rounded-full bg-primary text-white active:bg-white active:text-primary">

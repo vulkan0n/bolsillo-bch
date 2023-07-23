@@ -1,6 +1,6 @@
 import { bchToSats, satsToBch } from "@/util/sats";
 import { Decimal } from "decimal.js";
-import { currencyList } from "@/util/currency";
+import { currencyList } from "@/util/consts/currency";
 import { selectExchangeRates } from "@/redux/exchangeRates";
 import { store } from "@/redux";
 

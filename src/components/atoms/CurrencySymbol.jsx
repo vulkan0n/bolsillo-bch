@@ -1,7 +1,7 @@
 import { useSelector, useDispatch } from "react-redux";
 import { selectLocalCurrency } from "@/redux/preferences";
 
-import { currencyList } from "@/util/currency";
+import { currencyList } from "@/util/consts/currency";
 
 export default function CurrencySymbol({ currency, className }) {
   const { localCurrency, preferLocalCurrency } =
