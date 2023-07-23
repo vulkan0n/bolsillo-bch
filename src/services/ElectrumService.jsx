@@ -83,14 +83,14 @@ export default function ElectrumService() {
       await electrum.disconnect(true);
     }
 
-    const createElectrumInstance = (server) => {
+    const createElectrumInstance = (providedServer) => {
       // Create a new ElectrumClient every time
       // This avoids memory leaks from EventEmitter
       // Also allows us to switch servers on the fly
       electrum = new ElectrumClient(
         "Selene.cash",
         "1.4",
-        server,
+        providedServer,
         ElectrumTransport.WSS.Port,
         ElectrumTransport.WSS.Scheme
       );
