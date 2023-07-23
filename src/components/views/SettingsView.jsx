@@ -44,6 +44,7 @@ import {
   UndoOutlined,
   ApiOutlined,
   CloudServerOutlined,
+  CheckOutlined,
 } from "@ant-design/icons";
 
 import ViewHeader from "./ViewHeader";
@@ -421,13 +422,15 @@ export default function SettingsView() {
               }}
             />
             {isChangedCustomServerText && (
-              <button
-                onClick={() =>
-                  handleCustomServerUpdate(customElectrumServerText)
-                }
-              >
-                SAVE
-              </button>
+              <span className="ml-2">
+                <Button
+                  icon={CheckOutlined}
+                  onClick={() =>
+                    handleCustomServerUpdate(customElectrumServerText)
+                  }
+                  iconSize="sm"
+                />
+              </span>
             )}
           </SettingsChild>
         </SettingsCategory>
