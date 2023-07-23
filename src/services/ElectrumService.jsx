@@ -17,6 +17,7 @@ import {
 
 import { bchToSats } from "@/util/sats";
 import { DEFAULT_ELECTRUM_SERVER } from "@/util/consts/recommendedElectrumServers";
+import showToast from "@/util/toast";
 
 // pointer for current ElectrumClient instance
 let electrum = null;
@@ -62,6 +63,8 @@ export default function ElectrumService() {
       electrumServer ||
       server ||
       DEFAULT_ELECTRUM_SERVER;
+    const fallbackServerPreference =
+      electrumServer || server || DEFAULT_ELECTRUM_SERVER;
 
     console.log({ serverPreference });
     // using redux connection state guarantees that
@@ -80,29 +83,52 @@ export default function ElectrumService() {
       await electrum.disconnect(true);
     }
 
-    // Create a new ElectrumClient every time
-    // This avoids memory leaks from EventEmitter
-    // Also allows us to switch servers on the fly
-    electrum = new ElectrumClient(
-      "Selene.cash",
-      "1.4",
-      serverPreference,
-      ElectrumTransport.WSS.Port,
-      ElectrumTransport.WSS.Scheme
-    );
+    const createElectrumInstance = (server) => {
+      // Create a new ElectrumClient every time
+      // This avoids memory leaks from EventEmitter
+      // Also allows us to switch servers on the fly
+      electrum = new ElectrumClient(
+        "Selene.cash",
+        "1.4",
+        server,
+        ElectrumTransport.WSS.Port,
+        ElectrumTransport.WSS.Scheme
+      );
 
-    // need to establish listeners every time we recreate the ElectrumClient
-    electrum.addListener("connected", () => {
-      console.log("ELECTRUM CONNECTED");
-      store.dispatch(syncConnectionUp());
-    });
+      // need to establish listeners every time we recreate the ElectrumClient
+      electrum.addListener("connected", () => {
+        console.log("ELECTRUM CONNECTED");
+        store.dispatch(syncConnectionUp());
+      });
 
-    electrum.addListener("disconnected", () => {
-      console.log("ELECTRUM DISCONNECTED");
-      store.dispatch(syncConnectionDown());
-    });
+      electrum.addListener("disconnected", () => {
+        console.log("ELECTRUM DISCONNECTED");
+        store.dispatch(syncConnectionDown());
+      });
 
-    return await electrum.connect();
+      return electrum;
+    };
+
+    const firstPreferenceElectrum = createElectrumInstance(serverPreference);
+
+    try {
+      return await firstPreferenceElectrum.connect();
+    } catch (e) {
+      // If user has provided an unreachable/invalid custom Electrum Server
+      // Alert with toast & fallback to a server from the known list
+      console.log("GODDAMN IT BROKE");
+      showToast({
+        title: "ERROR!!",
+        description: (
+          <span className="inline-block max-w-[62%] truncate text-sm break-all">
+            GAAAAH
+          </span>
+        ),
+      });
+
+      const fallbackElectrum = createElectrumInstance(fallbackServerPreference);
+      return await fallbackElectrum.connect();
+    }
   }
 
   // disconnect: disconnect the Electrum instance
