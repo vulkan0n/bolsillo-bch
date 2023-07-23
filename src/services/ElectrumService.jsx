@@ -46,9 +46,20 @@ export default function ElectrumService() {
     console.log("connecting!!!");
     console.log("server: ", server);
 
-    console.log("preference: ", store.getState().preferences.electrumServer);
+    console.log(
+      "electrumServer: ",
+      store.getState().preferences.electrumServer
+    );
+    console.log(
+      "customElectrumServer: ",
+      store.getState().preferences.customElectrumServer
+    );
+    const electrumServer = store.getState().preferences?.electrumServer;
+    const customElectrumServer =
+      store.getState().preferences?.customElectrumServer;
     const serverPreference =
-      store.getState().preferences?.electrumServer ||
+      customElectrumServer ||
+      electrumServer ||
       server ||
       DEFAULT_ELECTRUM_SERVER;
 

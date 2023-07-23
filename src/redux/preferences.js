@@ -21,6 +21,7 @@ const defaultPreferences = {
   qrCodeBackground: "#ffffff",
   qrCodeForeground: "#000000",
   electrumServer: DEFAULT_ELECTRUM_SERVER,
+  customElectrumServer: "",
 };
 
 async function retrievePreferences() {
@@ -64,9 +65,13 @@ export const setPreference = createAsyncThunk(
 );
 
 export const preferencesReducer = createReducer(initialState, (builder) => {
-  builder.addCase(setPreference.fulfilled, (state, action) => {
-    state[action.payload.key] = action.payload.value;
-  });
+  builder
+    .addCase(setPreference.fulfilled, (state, action) => {
+      state[action.payload.key] = action.payload.value;
+    })
+    .addCase(setPreference, (state, action) => {
+      console.log("triggered setPreference", { state, action });
+    });
 });
 
 export const selectPreferences = createSelector(

@@ -368,8 +368,20 @@ export default function SettingsView() {
           // title={translate(localizationSettings)}
           title={"Network"}
         >
+          <SettingsChild
+            icon={CloudServerOutlined}
+            label={"Electrum Server"}
+          ></SettingsChild>
+
+          <SettingsChild>
+            <span className="text-zinc-600">
+              Choose an Electrum server from the provided list or override by
+              entering a custom Electrum server name.
+            </span>{" "}
+          </SettingsChild>
+
           {/* <SettingsChild icon={FlagOutlined} label={translate(language)}> */}
-          <SettingsChild icon={CloudServerOutlined} label={"Electrum Server"}>
+          <SettingsChild label={"Server"}>
             <select
               className="select"
               value={preferences.electrumServer || ""}
@@ -384,6 +396,19 @@ export default function SettingsView() {
                 </option>
               ))}
             </select>
+          </SettingsChild>
+          <SettingsChild label={"Custom Server"}>
+            <input
+              type="text"
+              value={preferences.customElectrumServer}
+              onChange={(event) => {
+                console.log("event.target.value", event.target.value);
+                handleSettingsUpdate(
+                  "customElectrumServer",
+                  event.target.value
+                );
+              }}
+            />
           </SettingsChild>
         </SettingsCategory>
       </div>
