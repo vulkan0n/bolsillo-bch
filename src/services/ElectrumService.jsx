@@ -59,11 +59,8 @@ export default function ElectrumService() {
     // using redux connection state guarantees that
     // we only create new ElectrumClient when necessary
     if (store.getState().sync.connected) {
-      console.log("already connected");
       return;
     }
-
-    console.log("connecting...");
 
     // ensure all references to old ElectrumClient are killed
     // so that it gets garbage collected
