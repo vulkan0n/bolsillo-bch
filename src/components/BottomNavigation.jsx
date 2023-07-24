@@ -32,12 +32,12 @@ function BottomNavigation() {
             icon={WalletOutlined}
             label={translate(wallet)}
           />
-          {/*<NavButton
+          <NavButton
             to="/explore"
             activeIcon={AppstoreFilled}
             icon={AppstoreOutlined}
             label="Explore"
-          />*/}
+          />
           <NavButton
             to="/settings"
             activeIcon={SettingFilled}
