@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 
 import { useSelector, useDispatch } from "react-redux";
@@ -45,6 +45,7 @@ import {
   ApiOutlined,
   CloudServerOutlined,
   CheckOutlined,
+  CloseOutlined,
 } from "@ant-design/icons";
 
 import ViewHeader from "./ViewHeader";
@@ -118,6 +119,11 @@ export default function SettingsView() {
     handleSettingsUpdate("qrCodeForeground", "#000000");
     handleSettingsUpdate("qrCodeBackground", "#ffffff");
   };
+
+  useEffect(() => {
+    setIsChangedCustomServerText(false);
+    setCustomElectrumServerText(preferences.customElectrumServer);
+  }, [preferences.customElectrumServer]);
 
   return (
     <>
@@ -393,23 +399,29 @@ export default function SettingsView() {
 
           {/* <SettingsChild icon={FlagOutlined} label={translate(language)}> */}
           <SettingsChild label={"Server"}>
-            <select
-              className="select"
-              value={preferences.electrumServer || ""}
-              onChange={(event) => {
-                console.log("event.target.value", event.target.value);
-                setIsChangedCustomServerText(false);
-                setCustomElectrumServerText("");
-                handleCustomServerUpdate("");
-                handleSettingsUpdate("electrumServer", event.target.value);
-              }}
+            <span
+              className={
+                preferences.customElectrumServer !== "" ? "text-zinc-300" : ""
+              }
             >
-              {recommendedElectrumServers.map((server) => (
-                <option key={server} value={server}>
-                  {server}
-                </option>
-              ))}
-            </select>
+              <select
+                className="select"
+                value={preferences.electrumServer || ""}
+                onChange={(event) => {
+                  console.log("event.target.value", event.target.value);
+                  setIsChangedCustomServerText(false);
+                  setCustomElectrumServerText("");
+                  handleCustomServerUpdate("");
+                  handleSettingsUpdate("electrumServer", event.target.value);
+                }}
+              >
+                {recommendedElectrumServers.map((server) => (
+                  <option key={server} value={server}>
+                    {server}
+                  </option>
+                ))}
+              </select>
+            </span>
           </SettingsChild>
           <SettingsChild label={"Custom Server"}>
             <input
@@ -422,12 +434,23 @@ export default function SettingsView() {
               }}
             />
             {isChangedCustomServerText && (
-              <span className="ml-2">
+              <span className="ml-2 flex flex-row">
                 <Button
                   icon={CheckOutlined}
                   onClick={() =>
                     handleCustomServerUpdate(customElectrumServerText)
                   }
+                  iconSize="sm"
+                />
+                <Button
+                  icon={CloseOutlined}
+                  onClick={() => {
+                    // Cancel without making changes
+                    setCustomElectrumServerText(
+                      preferences.customElectrumServer
+                    );
+                    setIsChangedCustomServerText(false);
+                  }}
                   iconSize="sm"
                 />
               </span>

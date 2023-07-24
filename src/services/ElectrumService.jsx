@@ -20,6 +20,8 @@ import { bchToSats } from "@/util/sats";
 import { DEFAULT_ELECTRUM_SERVER } from "@/util/consts/recommendedElectrumServers";
 import showToast from "@/util/toast";
 
+import { setPreference } from "@/redux/preferences";
+
 // pointer for current ElectrumClient instance
 let electrum = null;
 
@@ -124,11 +126,13 @@ export default function ElectrumService() {
         description: (
           <span>
             <div className="inline-block text-sm break-all">
-              Falling back to known server: {`${fallbackServerPreference}`}
+              Reverting to known server: {`${fallbackServerPreference}`}
             </div>
           </span>
         ),
       });
+
+      store.dispatch(setPreference({ key: "customElectrumServer", value: "" }));
 
       const fallbackElectrum = createElectrumInstance(fallbackServerPreference);
       return await fallbackElectrum.connect();
