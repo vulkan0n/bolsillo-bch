@@ -54,7 +54,6 @@ const initialState = await retrievePreferences();
 export const setPreference = createAsyncThunk(
   "preferences/set",
   async (payload, thunkApi) => {
-    console.log("PREFERENCES SET");
     const sanitizedPayload = {
       key: payload.key,
       value: payload.value.toString(),
@@ -65,13 +64,11 @@ export const setPreference = createAsyncThunk(
       value: (await Preferences.get({ key: sanitizedPayload.key })).value,
     };
 
-    console.log({ payload });
     // If electrumServer preferences have been changed, reboot ElectrumService
     if (
       payload.key === "electrumServer" ||
       (payload.key === "customElectrumServer" && payload.value.length > 0)
     ) {
-      console.log("inside");
       thunkApi.dispatch(syncReconnect());
     }
 
