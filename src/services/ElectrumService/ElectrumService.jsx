@@ -22,6 +22,11 @@ import showToast from "@/util/toast";
 
 import { setPreference } from "@/redux/preferences";
 
+import { translate } from "@/util/translations";
+import translations from "./translations";
+
+const { serverNotFound, revertServer } = translations;
+
 // pointer for current ElectrumClient instance
 let electrum = null;
 
@@ -105,11 +110,11 @@ export default function ElectrumService() {
       // If user has provided an unreachable/invalid custom Electrum Server
       // Alert with toast & fallback to a server from the known list
       showToast({
-        title: "Custom Electrum server not found",
+        title: `${translate(serverNotFound)}: ${serverPreference}`,
         description: (
           <span>
             <div className="inline-block text-sm break-all">
-              Reverting to known server: {`${fallbackServerPreference}`}
+              {`${translate(revertServer)}: ${fallbackServerPreference}`}
             </div>
           </span>
         ),
