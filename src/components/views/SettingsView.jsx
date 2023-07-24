@@ -82,6 +82,11 @@ const {
   foregroundColor,
   backgroundColor,
   resetColors,
+  network,
+  translatedElectrumServer,
+  electrumServerDescription,
+  server,
+  customServer,
 } = translations;
 
 export default function SettingsView() {
@@ -383,22 +388,21 @@ export default function SettingsView() {
         <SettingsCategory
           icon={ApiOutlined}
           // title={translate(localizationSettings)}
-          title={"Network"}
+          title={translate(network)}
         >
           <SettingsChild
             icon={CloudServerOutlined}
-            label={"Electrum Server"}
+            label={translate(translatedElectrumServer)}
           ></SettingsChild>
 
           <SettingsChild>
             <span className="text-zinc-600">
-              Choose an Electrum server from the provided list or override by
-              entering a custom Electrum server name.
-            </span>{" "}
+              {translate(electrumServerDescription)}
+            </span>
           </SettingsChild>
 
           {/* <SettingsChild icon={FlagOutlined} label={translate(language)}> */}
-          <SettingsChild label={"Server"}>
+          <SettingsChild label={translate(server)}>
             <span
               className={
                 preferences.customElectrumServer !== "" ? "text-zinc-300" : ""
@@ -422,7 +426,7 @@ export default function SettingsView() {
               </select>
             </span>
           </SettingsChild>
-          <SettingsChild label={"Custom Server"}>
+          <SettingsChild label={translate(customServer)}>
             <input
               type="text"
               value={customElectrumServerText}
