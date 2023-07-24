@@ -94,7 +94,7 @@ export default function WalletViewButtons() {
         )}
         <ScannerButton />
         {isScanning ? (
-          <TorchButton iconSize="md" labelColor="white opacity-80" />
+          <TorchButton iconSize="2xl" labelColor="white opacity-80" />
         ) : (
           <Button
             icon={SendOutlined}
