@@ -408,7 +408,6 @@ export default function SettingsView() {
                 className="select"
                 value={preferences.electrumServer || ""}
                 onChange={(event) => {
-                  console.log("event.target.value", event.target.value);
                   setIsChangedCustomServerText(false);
                   setCustomElectrumServerText("");
                   handleCustomServerUpdate("");
@@ -428,7 +427,6 @@ export default function SettingsView() {
               type="text"
               value={customElectrumServerText}
               onChange={(event) => {
-                console.log("event.target.value", event.target.value);
                 setIsChangedCustomServerText(true);
                 setCustomElectrumServerText(event.target.value);
               }}
