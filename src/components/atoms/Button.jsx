@@ -6,6 +6,7 @@ export default function Button({
   labelSize = "sm",
   labelColor = "zinc-700",
   inverted,
+  isGreyBorder = false,
 }) {
   const Icon = icon;
   const inactiveClasses =
@@ -13,13 +14,14 @@ export default function Button({
   const activeClasses =
     "bg-primary text-white active:bg-white active:text-zinc-600";
   const colorClasses = inverted ? activeClasses : inactiveClasses;
+  const borderClasses = isGreyBorder ? "border-zinc-400" : "border-primary";
 
   return (
     <div className="text-center">
       <button type="button" onClick={onClick} className={"w-full h-full"}>
         <div
           className={`w-full h-full flex items-center justify-center cursor-pointer p-3 mx-auto
-        rounded-full border border-2 border-primary shadow-md opacity-90 
+        rounded-full border border-2 ${borderClasses} shadow-md opacity-90 
         ${colorClasses}
         active:shadow-none active:shadow-inner`}
         >

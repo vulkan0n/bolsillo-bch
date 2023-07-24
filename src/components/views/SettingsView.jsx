@@ -452,6 +452,7 @@ export default function SettingsView() {
                     setIsChangedCustomServerText(false);
                   }}
                   iconSize="sm"
+                  isGreyBorder
                 />
               </span>
             )}
