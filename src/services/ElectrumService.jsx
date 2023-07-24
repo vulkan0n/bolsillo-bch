@@ -47,29 +47,15 @@ export default function ElectrumService() {
   // Creates a new ElectrumClient every time
   // Destroys existing ElectrumClient if out of sync with Redux state
   async function connect(server = DEFAULT_ELECTRUM_SERVER) {
-    console.log("connecting!!!");
-    console.log("server: ", server);
-
-    console.log(
-      "electrumServer: ",
-      store.getState().preferences.electrumServer
-    );
-    console.log(
-      "customElectrumServer: ",
-      store.getState().preferences.customElectrumServer
-    );
     const electrumServer = store.getState().preferences?.electrumServer;
     const customElectrumServer =
       store.getState().preferences?.customElectrumServer;
-    const serverPreference =
-      customElectrumServer ||
-      electrumServer ||
-      server ||
-      DEFAULT_ELECTRUM_SERVER;
+
     const fallbackServerPreference =
       electrumServer || server || DEFAULT_ELECTRUM_SERVER;
 
-    console.log({ serverPreference });
+    const serverPreference = customElectrumServer || fallbackServerPreference;
+
     // using redux connection state guarantees that
     // we only create new ElectrumClient when necessary
     if (store.getState().sync.connected) {
@@ -77,7 +63,7 @@ export default function ElectrumService() {
       return;
     }
 
-    console.log("connecting..");
+    console.log("connecting...");
 
     // ensure all references to old ElectrumClient are killed
     // so that it gets garbage collected
