@@ -6,6 +6,10 @@ import { useCountdown } from "./useCountdown";
 export default function ExploreView() {
   const midnightUtc = moment().utc().endOf("day");
   const [days, hours, minutes, seconds] = useCountdown(midnightUtc);
+  const tenMillionTarget = 10000000;
+  const dailyActiveUsersToday = 1;
+  const dailyActiveUsersPercentage =
+    (100 / tenMillionTarget) * dailyActiveUsersToday;
 
   return (
     <>
@@ -26,7 +30,8 @@ export default function ExploreView() {
               Today ({hours}h {minutes}m {seconds}s remaining)
             </span>
             <span className="text-sm font-small text-primary">
-              10 of 10 million (45%)
+              {dailyActiveUsersToday} of 10 million (
+              {dailyActiveUsersPercentage}%)
             </span>
           </div>
           <div className="w-full bg-gray-200 rounded-full h-4.5 dark:bg-gray-500">
