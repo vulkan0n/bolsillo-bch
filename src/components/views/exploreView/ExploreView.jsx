@@ -7,9 +7,22 @@ export default function ExploreView() {
   const midnightUtc = moment().utc().endOf("day");
   const [days, hours, minutes, seconds] = useCountdown(midnightUtc);
   const tenMillionTarget = 10000000;
+
   const dailyActiveUsersToday = 1;
-  const dailyActiveUsersPercentage =
+  const dailyActiveUsersTodayPercentage =
     (100 / tenMillionTarget) * dailyActiveUsersToday;
+  // https://stackoverflow.com/a/12830454/2792268
+  // +1 to round up
+  const dailyActiveUsersTodayWidth =
+    (+dailyActiveUsersTodayPercentage.toFixed(2)).toString() + 1;
+
+  const dailyActiveUsersYesterday = 100;
+  const dailyActiveUsersYesterdayPercentage =
+    (100 / tenMillionTarget) * dailyActiveUsersYesterday;
+  // https://stackoverflow.com/a/12830454/2792268
+  // +1 to round up
+  const dailyActiveUsersYesterdayWidth =
+    (+dailyActiveUsersYesterdayPercentage.toFixed(2)).toString() + 1;
 
   return (
     <>
@@ -26,22 +39,27 @@ export default function ExploreView() {
           </div>
 
           <div className="flex justify-between mb-1">
-            <span className="text-base font-small text-primary">
-              Today ({hours}h {minutes}m {seconds}s remaining)
+            <span className="text-base font-small text-zinc-300">
+              <div className="text-primary">Today</div>
+              <div className="text-xs">
+                ({hours}h {minutes}m {seconds}s remaining)
+              </div>
             </span>
-            <span className="text-sm font-small text-primary">
-              {dailyActiveUsersToday} of 10 million (
-              {dailyActiveUsersPercentage}%)
+            <span className="text-sm font-small text-primary mt-5">
+              {dailyActiveUsersToday}{" "}
+              <span className="text-zinc-300">of 10 million (</span>
+              {dailyActiveUsersTodayPercentage}%
+              <span className="text-zinc-300">)</span>
             </span>
           </div>
           <div className="w-full bg-gray-200 rounded-full h-4.5 dark:bg-gray-500">
             <div
               className="bg-green-200 h-2.5 rounded-full"
-              style={{ width: "45%" }}
+              style={{ width: `${dailyActiveUsersTodayWidth}%` }}
             ></div>
             <div
               className="bg-green-500 h-2.5 rounded-full"
-              style={{ width: "85%" }}
+              style={{ width: `${dailyActiveUsersYesterdayWidth}%` }}
             ></div>
           </div>
           <div className="flex justify-between mb-1">
@@ -49,18 +67,11 @@ export default function ExploreView() {
               Yesterday
             </span>
             <span className="text-sm font-medium text-primary">
-              10 of 10 million (45%)
+              {dailyActiveUsersYesterday}{" "}
+              <span className="text-zinc-300">of 10 million (</span>
+              {dailyActiveUsersYesterdayPercentage}%
+              <span className="text-zinc-300">)</span>
             </span>
-          </div>
-
-          <div className="stat">
-            <div className="stat-title font-bold text-zinc-300">
-              Monthly Users
-            </div>
-            <div className="stat-value text-primary text-lg font-semibold">
-              23,505
-            </div>
-            <div className="stat-desc text-xs text-zinc-400">↗︎ 42 (3%)</div>
           </div>
         </div>
       </div>
