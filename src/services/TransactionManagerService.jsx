@@ -1,5 +1,5 @@
 import DatabaseService from "@/services/DatabaseService";
-import ElectrumService from "@/services/ElectrumService";
+import ElectrumService from "@/services/ElectrumService/ElectrumService";
 import UtxoManagerService from "@/services/UtxoManagerService";
 import AddressManagerService from "@/services/AddressManagerService";
 import HdNodeService from "@/services/HdNodeService";
