@@ -19,7 +19,7 @@ import WalletViewHome from "./components/views/walletView/WalletViewHome/WalletV
 import WalletViewHistory from "./components/views/walletView/WalletViewHistory/WalletViewHistory";
 import WalletViewSend from "./components/views/walletView/WalletViewSend/WalletViewSend";
 import WalletViewSendSuccess from "./components/views/walletView/WalletViewSendSuccess/WalletViewSendSuccess";
-import ExploreView from "./components/views/ExploreView";
+import ExploreView from "./components/views/exploreView/ExploreView";
 import SettingsView from "./components/views/SettingsView";
 import SettingsWalletView from "./components/views/settingsView/SettingsWalletView/SettingsWalletView";
 import SettingsWalletWizard from "./components/views/settingsView/SettingsWalletWizard/SettingsWalletWizard";
