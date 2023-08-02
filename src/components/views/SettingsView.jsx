@@ -385,11 +385,7 @@ export default function SettingsView() {
           </SettingsChild>
         </SettingsCategory>
 
-        <SettingsCategory
-          icon={ApiOutlined}
-          // title={translate(localizationSettings)}
-          title={translate(network)}
-        >
+        <SettingsCategory icon={ApiOutlined} title={translate(network)}>
           <SettingsChild
             icon={CloudServerOutlined}
             label={translate(translatedElectrumServer)}
@@ -401,7 +397,6 @@ export default function SettingsView() {
             </span>
           </SettingsChild>
 
-          {/* <SettingsChild icon={FlagOutlined} label={translate(language)}> */}
           <SettingsChild label={translate(server)}>
             <span
               className={
