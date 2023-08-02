@@ -59,7 +59,7 @@ import { logos } from "@/util/logos";
 import SELENE_WALLET_VERSION from "@/util/version";
 
 import translations from "./SettingsViewTranslations";
-import { recommendedElectrumServers } from "@/util/consts/recommendedElectrumServers";
+import { electrumServers } from "@/util/consts/electrum_servers";
 
 const {
   settings,
@@ -413,7 +413,7 @@ export default function SettingsView() {
                   handleSettingsUpdate("electrumServer", event.target.value);
                 }}
               >
-                {recommendedElectrumServers.map((server) => (
+                {electrumServers.map((server) => (
                   <option key={server} value={server}>
                     {server}
                   </option>

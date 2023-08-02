@@ -6,7 +6,7 @@ import {
 } from "@reduxjs/toolkit";
 import { syncReconnect } from "@/redux/sync";
 
-import { DEFAULT_ELECTRUM_SERVER } from "@/util/consts/recommendedElectrumServers";
+import { DEFAULT_ELECTRUM_SERVER } from "@/util/consts/electrum_servers";
 
 const defaultPreferences = {
   activeWalletId: "1",

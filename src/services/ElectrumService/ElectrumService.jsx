@@ -12,7 +12,7 @@ import {
 } from "@/redux/sync";
 
 import { bchToSats } from "@/util/sats";
-import { DEFAULT_ELECTRUM_SERVER } from "@/util/consts/recommendedElectrumServers";
+import { DEFAULT_ELECTRUM_SERVER } from "@/util/consts/electrum_servers";
 import showToast from "@/util/toast";
 
 import { setPreference } from "@/redux/preferences";
