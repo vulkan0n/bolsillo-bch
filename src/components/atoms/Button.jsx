@@ -6,7 +6,7 @@ export default function Button({
   labelSize = "sm",
   labelColor = "zinc-700",
   inverted,
-  isGreyBorder = false,
+  tailwindBorderClass,
 }) {
   const Icon = icon;
   const inactiveClasses =
@@ -14,7 +14,7 @@ export default function Button({
   const activeClasses =
     "bg-primary text-white active:bg-white active:text-zinc-600";
   const colorClasses = inverted ? activeClasses : inactiveClasses;
-  const borderClasses = isGreyBorder ? "border-zinc-400" : "border-primary";
+  const borderClasses = tailwindBorderClass || "border-primary";
 
   return (
     <div className="text-center">

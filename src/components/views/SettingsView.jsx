@@ -454,7 +454,7 @@ export default function SettingsView() {
                     setIsChangedCustomServerText(false);
                   }}
                   iconSize="sm"
-                  isGreyBorder
+                  tailwindBorderClass="border-zinc-400"
                 />
               </span>
             )}

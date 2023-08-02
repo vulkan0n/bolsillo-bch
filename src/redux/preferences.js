@@ -4,8 +4,7 @@ import {
   createSelector,
   createAsyncThunk,
 } from "@reduxjs/toolkit";
-import { syncReconnect, syncConnect } from "@/redux/sync";
-import { store } from "@/redux";
+import { syncReconnect } from "@/redux/sync";
 
 import { DEFAULT_ELECTRUM_SERVER } from "@/util/consts/recommendedElectrumServers";
 
