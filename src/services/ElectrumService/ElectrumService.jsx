@@ -1,11 +1,6 @@
-import {
-  ElectrumClient,
-  ElectrumCluster,
-  ElectrumTransport,
-} from "electrum-cash";
+import { ElectrumClient, ElectrumTransport } from "electrum-cash";
 
 import { App } from "@capacitor/app";
-import { Haptics } from "@capacitor/haptics";
 
 import { store } from "@/redux";
 import {
@@ -105,8 +100,6 @@ export default function ElectrumService() {
     try {
       return await firstPreferenceElectrum.connect();
     } catch (e) {
-      await Haptics.notification({ type: "ERROR" });
-
       // If user has provided an unreachable/invalid custom Electrum Server
       // Alert with toast & fallback to a server from the known list
       showToast({
