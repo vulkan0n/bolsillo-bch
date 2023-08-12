@@ -43,7 +43,9 @@ Contributors: [Contributing](./docs/CONTRIBUTING.md)
 
 Testers: [Testing document](https://docs.google.com/document/d/1VKXeuwlIPFrudwEBrdtg6zIuC2rSF4QRginuq3C_-ro/edit?usp=sharing)
 
-## For merging from PRs to mirror
+## Dev notes
+
+### For merging from PRs to mirror
 
 ```
 $ git remote add gitlabMirror https://gitlab.com/selene.cash/selene-wallet.git
@@ -51,4 +53,45 @@ $ git remote add gitlabMirror https://gitlab.com/selene.cash/selene-wallet.git
 $ git fetch gitlabMirror merge-requests/1111111/head:MY_NEW_BRANCH
 # Now that branch is local and can be merged as usual
 $ git merge MY_NEW_BRANCH
+```
+
+### Auto-translations
+
+Manually managing translations got super tiresome & unwieldy with so many languages, so it has been automated.
+
+Translation files are colocated with the file needing the translation strings. The script scans the entire `src` folder for files that begin exactly `const translations = {`. For every found file, it looks in the **second** layer of the object (first is the string identifier) for the "en" key, translates it into every language key we support (skipping any that are already known), and overwrites the original file with the new values included in alphabetical order by language-key.
+
+Start of a translation file sample:
+
+BEFORE:
+
+```
+const translations = {
+  walletSettings: {
+    da: "Indstillinger for Tegnebog",
+    de: "Wallet-Einstellungen",
+    en: "Wallet Settings",
+    es: "Configuración de la billetera",
+```
+
+AFTER:
+
+```
+const translations = {
+  walletSettings: {
+    ar: "إعدادات المحفظة",
+    bn: "ওয়ালেট সেটিংস",
+    da: "Indstillinger for Tegnebog",
+    de: "Wallet-Einstellungen",
+    el: "Ρυθμίσεις πορτοφολιού",
+    en: "Wallet Settings",
+    es: "Configuración de la billetera",
+    fa: "تنظیمات کیف پول",
+```
+
+Translations are done with Google Cloud Translation API. At the moment it's running on free credits, but even after it isn't it probably shouldn't be that expensive. You can run the script to test, it skips over existing translations and only fills in missing translations, but if you're adding new text please don't run up the bill by running it unnecessarily. Decide on the English versions, then run it once to fill everything out.
+
+```
+# Use a valid API key
+$ GOOGLE_TRANSLATE_API_KEY="XXXXXXXXX" node ./automation/addLanguages.js
 ```
