@@ -1,13 +1,18 @@
 const translations = {
   torch: {
+    ar: "شعلة",
     bn: "টর্চ",
     da: "Lommelygte",
     de: "Taschenlampe",
     el: "Φακός",
     en: "Torch",
     es: "Linterna",
+    fa: "مشعل",
+    fil: "Tanglaw",
     fr: "Lampe de poche",
+    ha: "Tocila",
     hi: "टॉर्च",
+    id: "Obor",
     it: "Torcia",
     ja: "懐中電灯",
     jv: "Obor",
@@ -15,17 +20,23 @@ const translations = {
     mr: "ताट",
     ms: "Torch",
     nb: "Lommelykt",
+    nl: "Fakkel",
     pa: "ਟਾਰਚ",
+    pl: "Latarka",
     pt: "Lanterna",
+    ro: "Torță",
     ru: "Фонарик",
     sv: "Ficklampa",
+    sw: "Mwenge",
     ta: "டார்ச்",
     te: "టార్చ్",
+    th: "คบเพลิง",
     tr: "Mercek",
+    uk: "Факел",
     ur: "ٹارچ",
     vi: "Đèn pin",
-    zh: "手电筒",
-  },
+    zh: "手电筒"
+  }
 };
 
 export default translations;

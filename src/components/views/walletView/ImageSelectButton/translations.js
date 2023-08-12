@@ -1,13 +1,18 @@
 const translations = {
   image: {
+    ar: "صورة",
     bn: "চিত্র",
     da: "Billede",
     de: "Bild",
     el: "Εικόνα",
     en: "Image",
     es: "Imagen",
+    fa: "تصویر",
+    fil: "Imahe",
     fr: "Image",
+    ha: "Hoto",
     hi: "इमेज",
+    id: "Gambar",
     it: "Immagine",
     ja: "画像",
     jv: "Gambar",
@@ -15,17 +20,23 @@ const translations = {
     mr: "प्रतिमा",
     ms: "Imej",
     nb: "Bilde",
+    nl: "Afbeelding",
     pa: "ਚਿੱਤਰ",
+    pl: "Obraz",
     pt: "Imagem",
+    ro: "Imagine",
     ru: "Изображение",
     sv: "Bild",
+    sw: "Picha",
     ta: "படம்",
     te: "ఇమేజ్",
+    th: "ภาพ",
     tr: "Görüntü",
+    uk: "Зображення",
     ur: "تصویر",
     vi: "Hình ảnh",
-    zh: "图像",
-  },
+    zh: "图像"
+  }
 };
 
 export default translations;
