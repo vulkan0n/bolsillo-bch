@@ -35,7 +35,8 @@ const translations = {
     uk: "Налаштування",
     ur: "ترتیبات",
     vi: "Cài đặt",
-    zh: "设置"
+    zh: "设置",
+    zh_TW: "設置"
   },
   walletSettings: {
     ar: "محفظة",
@@ -44,7 +45,7 @@ const translations = {
     de: "Brieftasche",
     el: "Πορτοφόλι",
     en: "Wallet",
-    es: "Cartera",
+    es: "Billetera",
     fa: "کیف پول",
     fil: "Wallet",
     fr: "Portefeuille",
@@ -73,7 +74,8 @@ const translations = {
     uk: "Гаманець",
     ur: "ولیٹ",
     vi: "Ví",
-    zh: "钱包"
+    zh: "钱包",
+    zh_TW: "錢包"
   },
   createImportWallet: {
     ar: "إنشاء / استيراد المحفظة",
@@ -111,7 +113,8 @@ const translations = {
     uk: "Створити/імпортувати гаманець",
     ur: "والیٹ بنائیں/داخل کریں",
     vi: "Tạo/Nhập ví",
-    zh: "创建/导入钱包"
+    zh: "创建/导入钱包",
+    zh_TW: "創建/導入錢包"
   },
   localizationSettings: {
     ar: "الموقع",
@@ -149,7 +152,8 @@ const translations = {
     uk: "Локалізація",
     ur: "مقامی کرنے والا",
     vi: "Địa phương hóa",
-    zh: "本地化"
+    zh: "本地化",
+    zh_TW: "本土化"
   },
   language: {
     ar: "لغة",
@@ -187,7 +191,8 @@ const translations = {
     uk: "Мова",
     ur: "زبان",
     vi: "Ngôn ngữ",
-    zh: "语言"
+    zh: "语言",
+    zh_TW: "語言"
   },
   currencySettings: {
     ar: "عملة",
@@ -225,7 +230,8 @@ const translations = {
     uk: "Валюта",
     ur: "کرنسی",
     vi: "Tiền tệ",
-    zh: "货币"
+    zh: "货币",
+    zh_TW: "貨幣"
   },
   localCurrency: {
     ar: "العملة المحلية",
@@ -263,7 +269,8 @@ const translations = {
     uk: "Місцева валюта",
     ur: "مقامی کرنسی",
     vi: "Tiền tệ địa phương",
-    zh: "本地货币"
+    zh: "本地货币",
+    zh_TW: "當地貨幣"
   },
   preferLocalCurrency: {
     ar: "تفضل العملة المحلية",
@@ -301,7 +308,8 @@ const translations = {
     uk: "Віддавайте перевагу місцевій валюті",
     ur: "مقامی کرنسی کو ترجیح دیں",
     vi: "Ưu tiên tiền tệ địa phương",
-    zh: "优先使用本地货币"
+    zh: "优先使用本地货币",
+    zh_TW: "更喜歡當地貨幣"
   },
   hideAvailableBalance: {
     ar: "إخفاء الرصيد المتاح",
@@ -339,7 +347,8 @@ const translations = {
     uk: "Приховати доступний баланс",
     ur: "دستیاب بقیہ چھپائیں",
     vi: "Ẩn số dư khả dụng",
-    zh: "隐藏可用余额"
+    zh: "隐藏可用余额",
+    zh_TW: "隱藏可用餘額"
   },
   denominateInSats: {
     ar: "تصنيف في ساتس",
@@ -377,7 +386,8 @@ const translations = {
     uk: "Номінал в сац",
     ur: "سیٹس میں تعین کریں",
     vi: "Ghi nhận theo sats",
-    zh: "以sats为单位"
+    zh: "以sats为单位",
+    zh_TW: "以 sat 計價"
   },
   displayExchangeRate: {
     ar: "عرض سعر الصرف",
@@ -415,7 +425,8 @@ const translations = {
     uk: "Показати обмінний курс",
     ur: "تبادلی شرح دکھائیں",
     vi: "Hiển thị tỷ giá hối đoái",
-    zh: "显示汇率"
+    zh: "显示汇率",
+    zh_TW: "顯示匯率"
   },
   paymentSettings: {
     ar: "قسط",
@@ -453,7 +464,8 @@ const translations = {
     uk: "Оплата",
     ur: "ادائیگی",
     vi: "Thanh toán",
-    zh: "付款"
+    zh: "付款",
+    zh_TW: "支付"
   },
   allowInstantPay: {
     ar: "السماح بالدفع الفوري",
@@ -491,7 +503,8 @@ const translations = {
     uk: "Дозволити миттєву оплату",
     ur: "فوری ادائیگی کی اجازت دیں",
     vi: "Cho phép thanh toán nhanh",
-    zh: "允许即时支付"
+    zh: "允许即时支付",
+    zh_TW: "允許即時付款"
   },
   instantPayExplanation: {
     ar: "مسح رمز QR للفاتورة يطلب مبلغًا أقل من حد الدفع الفوري يدفع على الفور دون نقرة إضافية للإرسال.",
@@ -529,7 +542,8 @@ const translations = {
     uk: "Сканування QR-коду рахунка-фактури із запитом на суму, нижчу від порогової суми миттєвого платежу, сплачується негайно без додаткового натискання для надсилання.",
     ur: "انوائس QR کوڈ اسکین کرنے سے مناسبت طلب کی رقم فوری طور پر اضافی ٹیپ کرنے کے بغیر فوری ادائیگی کرتی ہے.",
     vi: "Quét mã QR của hóa đơn yêu cầu số tiền dưới ngưỡng thanh toán tức thì trả ngay mà không cần nhấn thêm để gửi.",
-    zh: "扫描发票二维码，请求金额低于即时支付阈值，立即支付而无需额外点击以发送。"
+    zh: "扫描发票二维码，请求金额低于即时支付阈值，立即支付而无需额外点击以发送。",
+    zh_TW: "掃描發票二維碼並請求低於即時付款閾值的金額即可立即付款，無需額外點擊即可發送。"
   },
   instantPayLimit: {
     ar: "حد الدفع الفوري",
@@ -567,7 +581,8 @@ const translations = {
     uk: "Ліміт миттєвої оплати",
     ur: "فوری ادائیگی حد",
     vi: "Giới hạn thanh toán nhanh",
-    zh: "即时支付限额"
+    zh: "即时支付限额",
+    zh_TW: "即時支付限額"
   },
   qrCodeSettings: {
     ar: "رمز الاستجابة السريعة",
@@ -605,7 +620,8 @@ const translations = {
     uk: "QR-код",
     ur: "کیو آر کوڈ",
     vi: "Mã QR",
-    zh: "二维码"
+    zh: "二维码",
+    zh_TW: "二維碼"
   },
   logo: {
     ar: "شعار",
@@ -643,7 +659,8 @@ const translations = {
     uk: "логотип",
     ur: "لوگو",
     vi: "Logo",
-    zh: "商标"
+    zh: "商标",
+    zh_TW: "標識"
   },
   foregroundColor: {
     ar: "لون المقدمة",
@@ -681,7 +698,8 @@ const translations = {
     uk: "Колір переднього плану",
     ur: "زمینے کا رنگ",
     vi: "Màu nền",
-    zh: "前景色"
+    zh: "前景色",
+    zh_TW: "前景色"
   },
   backgroundColor: {
     ar: "لون الخلفية",
@@ -719,7 +737,8 @@ const translations = {
     uk: "Колір фону",
     ur: "پس زمینہ کا رنگ",
     vi: "Màu nền",
-    zh: "背景色"
+    zh: "背景色",
+    zh_TW: "背景顏色"
   },
   resetColors: {
     ar: "إعادة تعيين الألوان",
@@ -757,7 +776,8 @@ const translations = {
     uk: "Скинути кольори",
     ur: "رنگوں کو دوبارہ ترتیب دیں",
     vi: "Đặt lại Màu sắc",
-    zh: "重置颜色"
+    zh: "重置颜色",
+    zh_TW: "重置顏色"
   }
 };
 

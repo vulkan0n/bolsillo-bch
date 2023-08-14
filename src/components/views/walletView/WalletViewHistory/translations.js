@@ -35,7 +35,8 @@ const translations = {
     uk: "Останні транзакції",
     ur: "حالیہ لین دین",
     vi: "Giao dịch Gần đây",
-    zh: "最近的交易"
+    zh: "最近的交易",
+    zh_TW: "最近交易"
   },
   back: {
     ar: "خلف",
@@ -73,7 +74,8 @@ const translations = {
     uk: "Назад",
     ur: "واپس",
     vi: "Quay lại",
-    zh: "返回"
+    zh: "返回",
+    zh_TW: "後退"
   }
 };
 

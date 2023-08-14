@@ -35,7 +35,8 @@ const translations = {
     uk: "Зображення",
     ur: "تصویر",
     vi: "Hình ảnh",
-    zh: "图像"
+    zh: "图像",
+    zh_TW: "圖像"
   }
 };
 

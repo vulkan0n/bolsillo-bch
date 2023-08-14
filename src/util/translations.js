@@ -168,4 +168,9 @@ export const languageList = [
     name: "中文",
     flag: "🇨🇳",
   },
+  {
+    code: "zh_TW",
+    name: "中文（台灣）",
+    flag: "🇹🇼",
+  },
 ];

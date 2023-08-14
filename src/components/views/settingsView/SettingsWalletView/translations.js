@@ -35,7 +35,8 @@ const translations = {
     uk: "Налаштування гаманця",
     ur: "والیٹ سیٹنگز",
     vi: "Cài đặt Ví tiền",
-    zh: "钱包设置"
+    zh: "钱包设置",
+    zh_TW: "錢包設置"
   },
   advancedOptions: {
     ar: "خيارات متقدمة",
@@ -73,7 +74,8 @@ const translations = {
     uk: "Розширені опції",
     ur: "اعلی تر کارروائیں",
     vi: "Tùy chọn nâng cao",
-    zh: "高级选项"
+    zh: "高级选项",
+    zh_TW: "高級選項"
   },
   created: {
     ar: "مخلوق",
@@ -111,7 +113,8 @@ const translations = {
     uk: "Створено",
     ur: "تخلیق کیا گیا",
     vi: "Đã tạo",
-    zh: "已创建"
+    zh: "已创建",
+    zh_TW: "已創建"
   },
   lastKnownBalance: {
     ar: "آخر رصيد معروف",
@@ -149,7 +152,8 @@ const translations = {
     uk: "Останній відомий баланс",
     ur: "آخری معروف بقیہ",
     vi: "Số dư cuối cùng đã biết",
-    zh: "最后已知余额"
+    zh: "最后已知余额",
+    zh_TW: "最後已知餘額"
   },
   walletActive: {
     ar: "المحفظة نشطة",
@@ -158,7 +162,7 @@ const translations = {
     de: "Aktive Brieftasche",
     el: "Ενεργό πορτοφόλι",
     en: "Wallet Active",
-    es: "Cartera activa",
+    es: "Billetera activa",
     fa: "کیف پول فعال",
     fil: "Aktibo ang Wallet",
     fr: "Portefeuille actif",
@@ -187,7 +191,8 @@ const translations = {
     uk: "Гаманець активний",
     ur: "والٹ سرگرم",
     vi: "Ví hoạt động",
-    zh: "钱包已激活"
+    zh: "钱包已激活",
+    zh_TW: "錢包活躍"
   },
   activateWallet: {
     ar: "تنشيط المحفظة",
@@ -196,7 +201,7 @@ const translations = {
     de: "Wallet aktivieren",
     el: "Ενεργοποίηση πορτοφολιού",
     en: "Activate Wallet",
-    es: "Activar cartera",
+    es: "Activar billetera",
     fa: "کیف پول را فعال کنید",
     fil: "I-activate ang Wallet",
     fr: "Activer le portefeuille",
@@ -225,7 +230,8 @@ const translations = {
     uk: "Активуйте Wallet",
     ur: "والٹ چالو کریں",
     vi: "Kích hoạt ví",
-    zh: "激活钱包"
+    zh: "激活钱包",
+    zh_TW: "激活錢包"
   },
   deleteWallet: {
     ar: "حذف المحفظة",
@@ -234,7 +240,7 @@ const translations = {
     de: "Wallet löschen",
     el: "Διαγραφή πορτοφολιού",
     en: "Delete Wallet",
-    es: "Eliminar cartera",
+    es: "Eliminar billetera",
     fa: "کیف پول را حذف کنید",
     fil: "Tanggalin ang Wallet",
     fr: "Supprimer le portefeuille",
@@ -263,7 +269,8 @@ const translations = {
     uk: "Видалити гаманець",
     ur: "والٹ حذف کریں",
     vi: "Xóa ví",
-    zh: "删除钱包"
+    zh: "删除钱包",
+    zh_TW: "刪除錢包"
   },
   areYouSure: {
     ar: "هل أنت متأكد؟ أموالك في خطر",
@@ -301,7 +308,8 @@ const translations = {
     uk: "ТИ ВПЕВНЕНИЙ? ВАШІ ГРОШІ ПІД РИЗИКОМ",
     ur: "کیا آپ یقینی ہیں؟ آپکا پیسہ خطرے میں ہے",
     vi: "BẠN CHẮC CHẮN? TIỀN CỦA BẠN ĐANG GẶP RỦI RO",
-    zh: "您确定吗？您的资金有风险"
+    zh: "您确定吗？您的资金有风险",
+    zh_TW: "你確定嗎？您的資金面臨風險"
   },
   ensureRecoveryPhrase: {
     ar: "تأكد من كتابة عبارة الاسترداد الخاصة بك",
@@ -339,7 +347,8 @@ const translations = {
     uk: "ПЕРЕКОНАЙТЕСЯ, ЩО ВИ НАПИСАЛИ ФРАЗУ ВІДНОВЛЕННЯ",
     ur: "یقینی بنائیں کہ آپ نے اپنا ریکوری فیز لکھ لیا ہے",
     vi: "HÃY CHẮC CHẮN RẰNG BẠN ĐÃ VIẾT CÂU KHÔI PHỤC CỦA MÌNH",
-    zh: "请确保您已经写下了恢复短语"
+    zh: "请确保您已经写下了恢复短语",
+    zh_TW: "確保您已寫下恢復短語"
   },
   confirmDelete: {
     ar: "نعم ، أريد الحذف",
@@ -377,7 +386,8 @@ const translations = {
     uk: "Так, я хочу видалити",
     ur: "جی ہاں ، میں ڈیلیٹ کرنا چاہتا ہوں",
     vi: "Có, tôi muốn xóa",
-    zh: "是的，我想删除"
+    zh: "是的，我想删除",
+    zh_TW: "是的，我想刪除"
   },
   keepSecret: {
     ar: "احتفظ بهذه الرسالة السرية",
@@ -415,7 +425,8 @@ const translations = {
     uk: "ЗБЕРІГАЙТЕ ЦЮ ФРАЗУ В ТАЄМНІЦІ",
     ur: "اس جملہ کو خفیہ رکھیں",
     vi: "GIỮ BÍ MẬT CÂU NÀY",
-    zh: "保密此短语"
+    zh: "保密此短语",
+    zh_TW: "保守這句話的秘密"
   },
   dontStoreDigitally: {
     ar: "لا تخزن رقميا",
@@ -453,7 +464,8 @@ const translations = {
     uk: "НЕ ЗБЕРІГАЙТЕ В ЦИФРОВОМУ ВИРОБІ",
     ur: "ڈیجیٹل طور پر ذخیرہ نہ کریں",
     vi: "KHÔNG LƯU TRỮ SỐ",
-    zh: "不要以数字形式存储"
+    zh: "不要以数字形式存储",
+    zh_TW: "不要以數字方式存儲"
   },
   viewRecoveryPhrase: {
     ar: "عرض عبارة استرداد المحفظة",
@@ -491,7 +503,8 @@ const translations = {
     uk: "Переглянути фразу відновлення Wallet",
     ur: "والیٹ ریکوری فریز دیکھیں",
     vi: "Xem Cụm từ Khôi phục Ví",
-    zh: "查看钱包恢复短语"
+    zh: "查看钱包恢复短语",
+    zh_TW: "查看錢包恢復短語"
   },
   secretAndSecure: {
     ar: "تأكد من إبقائها سرية وآمنة!",
@@ -529,7 +542,8 @@ const translations = {
     uk: "Зберігайте це в таємниці та надійності!",
     ur: "یقینی بنائیں کہ یہ خفیہ اور محفوظ رکھیں!",
     vi: "Đảm bảo giữ nó bí mật và an toàn!",
-    zh: "确保保密且安全！"
+    zh: "确保保密且安全！",
+    zh_TW: "確保保密且安全！"
   },
   rebuildWallet: {
     ar: "إعادة إنشاء المحفظة",
@@ -567,7 +581,8 @@ const translations = {
     uk: "Відновити гаманець",
     ur: "والیٹ دوبارہ تعمیر کریں",
     vi: "Xây dựng lại Ví tiền",
-    zh: "重建钱包"
+    zh: "重建钱包",
+    zh_TW: "重建錢包"
   }
 };
 

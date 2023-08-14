@@ -6,7 +6,7 @@ const translations = {
     de: "Neue Brieftasche",
     el: "Νέο πορτοφόλι",
     en: "New Wallet",
-    es: "Nuevo monedero",
+    es: "Nuevo billetera",
     fa: "کیف پول جدید",
     fil: "Bagong Wallet",
     fr: "Nouveau portefeuille",
@@ -35,7 +35,8 @@ const translations = {
     uk: "Новий гаманець",
     ur: "نیا والیٹ",
     vi: "Ví mới",
-    zh: "新钱包"
+    zh: "新钱包",
+    zh_TW: "新錢包"
   },
   createNewWallet: {
     ar: "إنشاء محفظة جديدة",
@@ -44,7 +45,7 @@ const translations = {
     de: "Neues Wallet erstellen",
     el: "Δημιουργία νέου πορτοφολιού",
     en: "Create New Wallet",
-    es: "Crear nuevo monedero",
+    es: "Crear nuevo billetera",
     fa: "کیف پول جدید ایجاد کنید",
     fil: "Lumikha ng Bagong Wallet",
     fr: "Créer un nouveau portefeuille",
@@ -73,7 +74,8 @@ const translations = {
     uk: "Створити новий гаманець",
     ur: "نیا والیٹ بنائیں",
     vi: "Tạo Ví Mới",
-    zh: "创建新钱包"
+    zh: "创建新钱包",
+    zh_TW: "創建新錢包"
   },
   importWalletFromPhrase: {
     ar: "استيراد المحفظة من عبارة الاسترداد",
@@ -82,7 +84,7 @@ const translations = {
     de: "Wallet aus dem Wiederherstellungsschlüssel importieren",
     el: "Εισαγωγή πορτοφολιού από το φράση ανάκτησης",
     en: "Import Wallet from Recovery Phrase",
-    es: "Importar monedero desde la frase de recuperación",
+    es: "Importar billetera desde la frase de recuperación",
     fa: "وارد کردن کیف پول از عبارت Recovery",
     fil: "Mag-import ng Wallet mula sa Recovery Phrase",
     fr: "Importer un portefeuille depuis la phrase de récupération",
@@ -111,7 +113,8 @@ const translations = {
     uk: "Імпортувати гаманець із фрази відновлення",
     ur: "ریکووری فیز سے والیٹ واپس لائیں",
     vi: "Nhập Ví từ Cụm từ Khôi phục",
-    zh: "从恢复短语导入钱包"
+    zh: "从恢复短语导入钱包",
+    zh_TW: "從恢復短語導入錢包"
   }
 };
 

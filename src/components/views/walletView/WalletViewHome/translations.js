@@ -35,7 +35,8 @@ const translations = {
     uk: "Адресу скопійовано в буфер обміну",
     ur: "ایڈریس کلپ بورڈ پر کاپی ہوگئی",
     vi: "Đã sao chép địa chỉ vào bộ nhớ tạm",
-    zh: "地址已复制到剪贴板"
+    zh: "地址已复制到剪贴板",
+    zh_TW: "複製地址到剪貼板"
   },
   requestAmount: {
     ar: "طلب المبلغ",
@@ -73,7 +74,8 @@ const translations = {
     uk: "Сума запиту",
     ur: "درخواست کی رقم",
     vi: "Số Tiền Yêu Cầu",
-    zh: "请求金额"
+    zh: "请求金额",
+    zh_TW: "請求金額"
   }
 };
 
