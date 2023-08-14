@@ -35,7 +35,8 @@ const translations = {
     uk: "Адреси BCH не знайдено",
     ur: "کوئی بی سی ایچ پتہ نہیں ملا",
     vi: "Không tìm thấy địa chỉ BCH",
-    zh: "未找到BCH地址"
+    zh: "未找到BCH地址",
+    zh_TW: "未找到 BCH 地址"
   },
   pleaseCopy: {
     ar: "يرجى نسخ عنوان BCH إلى الحافظة الخاصة بك.",
@@ -73,7 +74,8 @@ const translations = {
     uk: "Скопіюйте адресу BCH у буфер обміну.",
     ur: "براہ کرم اپنے کلپ بورڈ میں ایک بی سی ایچ ایڈریس کاپی کریں۔",
     vi: "Vui lòng sao chép địa chỉ BCH vào bộ nhớ tạm của bạn.",
-    zh: "请将BCH地址复制到您的剪贴板上。"
+    zh: "请将BCH地址复制到您的剪贴板上。",
+    zh_TW: "請將 BCH 地址複製到剪貼板。"
   },
   history: {
     ar: "تاريخ",
@@ -111,7 +113,8 @@ const translations = {
     uk: "історія",
     ur: "تاریخ",
     vi: "Lịch sử",
-    zh: "历史"
+    zh: "历史",
+    zh_TW: "歷史"
   },
   send: {
     ar: "يرسل",
@@ -149,7 +152,8 @@ const translations = {
     uk: "Надіслати",
     ur: "بھیجیں",
     vi: "Gửi",
-    zh: "发送"
+    zh: "发送",
+    zh_TW: "發送"
   }
 };
 

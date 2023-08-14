@@ -5,7 +5,7 @@ const translations = {
     de: "Brieftasche",
     el: "Πορτοφόλι",
     en: "Wallet",
-    es: "Cartera",
+    es: "Billetera",
     fr: "Portefeuille",
     hi: "बटुआ",
     it: "Portafoglio",

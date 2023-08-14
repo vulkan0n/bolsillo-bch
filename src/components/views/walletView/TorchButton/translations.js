@@ -35,7 +35,8 @@ const translations = {
     uk: "Факел",
     ur: "ٹارچ",
     vi: "Đèn pin",
-    zh: "手电筒"
+    zh: "手电筒",
+    zh_TW: "火炬"
   }
 };
 

@@ -35,7 +35,8 @@ const translations = {
     uk: "Кредити",
     ur: "کریڈٹ",
     vi: "Tín dụng",
-    zh: "学分"
+    zh: "学分",
+    zh_TW: "製作人員"
   },
   developedWith: {
     ar: "تم تطويره بواسطة 💚 بواسطه",
@@ -73,7 +74,8 @@ const translations = {
     uk: "Розроблено спільно з 💚",
     ur: "💚 کے ساتھ تیار کیا گیا",
     vi: "Phát triển với 💚 bởi",
-    zh: "💚 开发"
+    zh: "💚 开发",
+    zh_TW: "由 💚 開發"
   },
   contributors: {
     ar: "Kallisti و Bitcoin Cash Podcast",
@@ -111,7 +113,8 @@ const translations = {
     uk: "Каллісті та The Bitcoin Cash Podcast",
     ur: "کالسٹی اور دی بٹ کوائن کیش پادکاسٹ",
     vi: "Kallisti và The Bitcoin Cash Podcast",
-    zh: "Kallisti 和比特币现金播客"
+    zh: "Kallisti 和比特币现金播客",
+    zh_TW: "卡利斯提和比特幣現金播客"
   },
   flipstarterContributors: {
     ar: "المساهمون Flipstarter",
@@ -149,7 +152,8 @@ const translations = {
     uk: "Учасники Flipstarter",
     ur: "فلپسٹارٹر کنٹریبیوٹرز",
     vi: "Người đóng góp Flipstarter",
-    zh: "Flipstarter 贡献者"
+    zh: "Flipstarter 贡献者",
+    zh_TW: "Flipstarter 貢獻者"
   },
   contributingDevelopers: {
     ar: "المطورين المساهمين",
@@ -187,7 +191,8 @@ const translations = {
     uk: "Розробники, що вносять внесок",
     ur: "شراکت دار ڈیولپرز",
     vi: "Nhà phát triển đóng góp",
-    zh: "贡献开发者"
+    zh: "贡献开发者",
+    zh_TW: "貢獻開發者"
   },
   specialThanks: {
     ar: "شكر خاص",
@@ -225,7 +230,8 @@ const translations = {
     uk: "Особлива подяка",
     ur: "خصوصی شکرگزاری",
     vi: "Cảm ơn Đặc biệt",
-    zh: "特别感谢"
+    zh: "特别感谢",
+    zh_TW: "特別感謝"
   }
 };
 

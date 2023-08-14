@@ -7,6 +7,9 @@ console.log("Adding additional languages...");
 // the languagesList in src/util/translations.
 // Can't import directly because the node script
 // doesn't understand @/util import paths.
+// For non ISO 639-1 codes (e.g. regional language codes)
+// see the standard used by Java
+// https://www.oracle.com/java/technologies/javase7locales.html
 export const ISO_639_1_LANGUAGES = [
   "ar",
   "bn",
@@ -44,6 +47,7 @@ export const ISO_639_1_LANGUAGES = [
   "ur",
   "vi",
   "zh",
+  "zh_TW",
 ];
 
 if (!process.env?.GOOGLE_TRANSLATE_API_KEY) {
