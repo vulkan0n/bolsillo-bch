@@ -20,7 +20,10 @@ function findFilesWithTranslations(directoryPath) {
 
       if (stat.isDirectory()) {
         checkDirectory(fullPath);
-      } else if (stat.isFile() && file.endsWith(".js")) {
+      } else if (
+        stat.isFile() &&
+        (file.endsWith(".js") || file.endsWith(".jsx"))
+      ) {
         checkFile(fullPath);
       }
     }
