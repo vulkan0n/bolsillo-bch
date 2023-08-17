@@ -6,14 +6,10 @@
 image: node:lts-alpine
 
 stages:
+  - update_version
   - test
   - build
-  - deploy_internal
-  - deploy_trigger
-  - deploy_beta
-  - deploy_prod_trigger
-  - deploy_prod
-
+  
 variables:
   INCREMENT_VERSION:
     value: "patch"
@@ -23,7 +19,17 @@ variables:
       - "major"
     description: "Choose which part of the version to increment"
 
+update_version:
+  when: manual
+  stage: update_version
+  script:
+    - apk add git
+    - git config --global user.email "git@selene.cash"
+    - git config --global user.name "Selene.cash CI/CD"
+    - yarn version --$INCREMENT_VERSION
+
 test:
+  when: always
   stage: test
   script:
     - yarn install
@@ -33,92 +39,5 @@ build_sync:
   stage: build
   script:
     - yarn install
-    - apk add git
-    - git config --global user.email "git@selene.cash"
-    - git config --global user.name "Selene.cash CI/CD"
-    - yarn version --prerelease --no-git-tag-version
     - yarn build
     - npx cap sync
-  artifacts:
-    paths:
-      - dist/
-      - android/
-      - ios/
-
-deploy_internal:
-  image: ruby:alpine
-  stage: deploy_internal
-  tags:
-    - ios
-  script:
-    - echo "Deploying Internal prerelease..."
-    - apk add build-base
-    - cd android
-    - bundle install
-    - bundle exec fastlane internal
-
-deploy_beta_trigger:
-  stage: deploy_trigger
-  when: manual
-  script:
-    - echo "Deploying Testflight build..."
-    - apk add git
-    - git config --global user.email "git@selene.cash"
-    - git config --global user.name "Selene.cash CI/CD"
-    - yarn version --$INCREMENT_VERSION
-    - yarn build
-    - npx cap sync
-  artifacts:
-    paths:
-      - dist/
-      - android/
-      - ios/
-
-deploy_android_beta:
-  image: ruby:alpine
-  stage: deploy_beta
-  script:
-    - echo "Deploying to Google Play Beta Track"
-    - apk add build-base
-    - cd android
-    - bundle install
-    - bundle exec fastlane beta
-  artifacts:
-    paths:
-      - android/app/release/
-
-deploy_ios_beta:
-  image: ruby:alpine
-  stage: deploy_beta
-  tags:
-    - ios
-  script:
-    - echo "Deploying to Apple TestFlight"
-    - cd ios
-    - bundle install
-    - bundle exec fastlane testflight
-
-deploy_prod_trigger:
-  stage: deploy_prod_trigger
-  when: manual
-  script:
-    - echo "Deploying Production build..."
-
-deploy_android_prod:
-  image: ruby:alpine
-  stage: deploy_prod
-  script:
-    - echo "Deploying to Google Play Store"
-    - apk add build-base
-    - cd android
-    - bundle install
-    - bundle exec fastlane prod
-
-deploy_ios_prod:
-  image: ruby:alpine
-  stage: deploy_prod
-  script:
-    - echo "Deploying to Apple App Store"
-    - cd ios
-    - bundle install
-    - bundle exec fastlane prod
