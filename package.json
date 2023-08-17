@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "yarn run eslint src/ && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "jest"
   },
   "dependencies": {
     "@ant-design/icons": "^5.0.1",
