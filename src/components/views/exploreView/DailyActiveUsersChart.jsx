@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -22,24 +22,16 @@ ChartJS.register(
   Legend
 );
 
-const options = {
-  responsive: true,
-  plugins: {
-    legend: {
-      position: "top",
-    },
-    title: {
-      display: false,
-      text: "Chart.js Line Chart",
-    },
-  },
-};
-
 const DailyActiveUsersChart = ({ data }) => {
   const labels = data.activeBitcoiners.map(({ date }) =>
     moment(date).format("ddd Do MMM")
   );
   console.log({ labels });
+  console.log("max count");
+
+  const maxCount = Math.max(
+    ...data.activeBitcoiners.map(({ count }) => parseInt(count))
+  );
 
   const chartData = {
     labels,
@@ -51,6 +43,25 @@ const DailyActiveUsersChart = ({ data }) => {
         backgroundColor: "#8dc451",
       },
     ],
+  };
+
+  const options = {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: "top",
+      },
+      title: {
+        display: false,
+        text: "Chart.js Line Chart",
+      },
+    },
+    scales: {
+      y: {
+        min: 0,
+        max: maxCount,
+      },
+    },
   };
 
   return (
