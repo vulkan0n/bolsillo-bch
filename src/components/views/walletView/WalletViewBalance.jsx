@@ -6,7 +6,7 @@ import { selectExchangeRates } from "@/redux/exchangeRates";
 import { selectPreferences, setPreference } from "@/redux/preferences";
 
 import { animated, useSpring } from "@react-spring/web";
-import { formatSatoshis } from "@/util/sats";
+import { formatSatoshis, stripArsPostDecimal } from "@/util/sats";
 
 import CurrencyFlip from "@/components/atoms/CurrencyFlip";
 import { selectLocale } from "@/redux/device";
@@ -70,6 +70,7 @@ export default function WalletViewBalance() {
     style: "currency",
     currency,
   })}`;
+  const adjustedPriceString = stripArsPostDecimal(currency, priceString);
 
   return (
     <div className="py-2.5 text-center">
@@ -96,7 +97,7 @@ export default function WalletViewBalance() {
       {isDisplayExchangeRate && (
         <div className="text-md text-zinc-400/80 mt-0.5">
           <StockOutlined className="mr-1" />
-          {priceString}
+          {adjustedPriceString}
           <span className="mx-0.5 text-sm font-mono">/</span>BCH
         </div>
       )}
