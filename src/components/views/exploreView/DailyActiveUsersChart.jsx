@@ -28,7 +28,7 @@ const options = {
       position: "top",
     },
     title: {
-      display: true,
+      display: false,
       text: "Chart.js Line Chart",
     },
   },
@@ -40,23 +40,17 @@ const data = {
   labels,
   datasets: [
     {
-      label: "Dataset 1",
+      label: "Daily Active Selene Users",
       data: labels.map((_, i) => i + 100),
-      borderColor: "rgb(255, 99, 132)",
-      backgroundColor: "rgba(255, 99, 132, 0.5)",
-    },
-    {
-      label: "Dataset 2",
-      data: labels.map((_, i) => i * 2),
-      borderColor: "rgb(53, 162, 235)",
-      backgroundColor: "rgba(53, 162, 235, 0.5)",
+      borderColor: "#8dc451",
+      backgroundColor: "#8dc451",
     },
   ],
 };
 
 const DailyActiveUsersChart = () => {
   return (
-    <div>
+    <div className={"flex justify-center align-center"}>
       <Line options={options} data={data} />
     </div>
   );
