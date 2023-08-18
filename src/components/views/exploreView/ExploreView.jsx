@@ -49,6 +49,8 @@ export default function ExploreView() {
     data?.activeBitcoiners?.[data?.activeBitcoiners.length - 1]?.count || 1;
   const dailyActiveUsersTodayPercentage =
     (ONE_HUNDRED / TEN_MILLION) * dailyActiveUsersToday;
+  const fixedDailyActiveUsersTodayPercentage =
+    dailyActiveUsersTodayPercentage.toFixed(5);
   // https://stackoverflow.com/a/12830454/2792268
   // +1 to round up
   const dailyActiveUsersTodayWidth =
@@ -58,6 +60,8 @@ export default function ExploreView() {
     data?.activeBitcoiners?.[data?.activeBitcoiners.length - 2]?.count || 1;
   const dailyActiveUsersYesterdayPercentage =
     (ONE_HUNDRED / TEN_MILLION) * dailyActiveUsersYesterday;
+  const fixedDailyActiveUsersYesterdayPercentage =
+    dailyActiveUsersYesterdayPercentage.toFixed(5);
   // https://stackoverflow.com/a/12830454/2792268
   // +1 to round up
   const dailyActiveUsersYesterdayWidth =
@@ -67,12 +71,12 @@ export default function ExploreView() {
     <>
       <ViewHeader icon={AppstoreOutlined} title="Explore" />
       <div className="p-2">
-        <div className="stats shadow rounded-lg p-3 bg-zinc-800 w-full">
-          <div className="text-2xl font-bold text-zinc-300">
+        <div className="stats shadow rounded-lg p-3 bg-zinc-100 w-full">
+          <div className="text-2xl font-bold text-zinc-800">
             Global Bitcoin Cash Adoption
           </div>
           <div className="stat">
-            <div className="stat-title text-zinc-300">
+            <div className="stat-title text-zinc-800">
               Daily Active Selene Users
             </div>
           </div>
@@ -83,7 +87,7 @@ export default function ExploreView() {
           </div>
 
           <div className="flex justify-between mb-1">
-            <span className="text-base font-small text-zinc-300">
+            <span className="text-base font-small text-zinc-800">
               <div className="text-primary">Today</div>
               <div className="text-xs">
                 ({hours}h {minutes}m {seconds}s remaining)
@@ -91,12 +95,12 @@ export default function ExploreView() {
             </span>
             <span className="text-sm font-small text-primary mt-5">
               {dailyActiveUsersToday}{" "}
-              <span className="text-zinc-300">of 10 million (</span>
-              {dailyActiveUsersTodayPercentage}%
-              <span className="text-zinc-300">)</span>
+              <span className="text-zinc-800">of 10 million (</span>
+              {fixedDailyActiveUsersTodayPercentage}%
+              <span className="text-zinc-800">)</span>
             </span>
           </div>
-          <div className="w-full bg-gray-200 rounded-full h-4.5 dark:bg-gray-500">
+          <div className="w-full bg-gray-200 rounded-full h-4.5 dark:bg-gray-250">
             <div
               className="bg-green-200 h-2.5 rounded-full"
               style={{ width: `${dailyActiveUsersTodayWidth}%` }}
@@ -112,9 +116,9 @@ export default function ExploreView() {
             </span>
             <span className="text-sm font-medium text-primary">
               {dailyActiveUsersYesterday}{" "}
-              <span className="text-zinc-300">of 10 million (</span>
-              {dailyActiveUsersYesterdayPercentage}%
-              <span className="text-zinc-300">)</span>
+              <span className="text-zinc-800">of 10 million (</span>
+              {fixedDailyActiveUsersYesterdayPercentage}%
+              <span className="text-zinc-800">)</span>
             </span>
           </div>
         </div>

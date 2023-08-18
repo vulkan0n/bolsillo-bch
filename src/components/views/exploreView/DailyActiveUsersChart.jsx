@@ -24,7 +24,7 @@ ChartJS.register(
 
 const DailyActiveUsersChart = ({ data }) => {
   const labels = data.activeBitcoiners.map(({ date }) =>
-    moment(date).format("ddd Do MMM")
+    moment(date).format("ddd Do")
   );
 
   const dataPoints = data.activeBitcoiners.map(({ count }) => count);
@@ -32,6 +32,7 @@ const DailyActiveUsersChart = ({ data }) => {
   const maxCount = Math.max(
     ...data.activeBitcoiners.map(({ count }) => parseInt(count))
   );
+  const maxCountRoundedUpToNearest10 = Math.ceil(maxCount / 10) * 10;
 
   const chartData = {
     labels,
@@ -60,7 +61,7 @@ const DailyActiveUsersChart = ({ data }) => {
     scales: {
       y: {
         min: 0,
-        max: maxCount,
+        max: maxCountRoundedUpToNearest10,
       },
     },
   };
