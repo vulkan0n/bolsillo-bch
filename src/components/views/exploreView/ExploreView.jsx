@@ -35,7 +35,7 @@ export default function ExploreView() {
           </div>
           <div className="stat">
             <div className="stat-title text-zinc-300">
-              Selene Daily Active Users
+              Daily Active Selene Users
             </div>
           </div>
 
