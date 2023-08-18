@@ -24,12 +24,15 @@ export const translate = (translationObject) => {
   return translationObject.en;
 };
 
+// NOTE: Keep this list in sync with ISO_639_1_LANGUAGES
+// for automated translation script in automation/addLanguages.js
 export const languageList = [
   {
     code: "",
     name: "Same as device",
     flag: "",
   },
+  { code: "ar", name: "العربية", flag: "🇸🇦" },
   {
     code: "bn",
     name: "বাংলা",
@@ -60,16 +63,20 @@ export const languageList = [
     name: "Español",
     flag: "🇪🇸",
   },
+  { code: "fa", name: "فارسی", flag: "🇮🇷" },
+  { code: "fil", name: "Filipino", flag: "🇵🇭" },
   {
     code: "fr",
     name: "Français",
     flag: "🇫🇷",
   },
+  { code: "ha", name: "Hausa", flag: "🇳🇬" },
   {
     code: "hi",
     name: "हिन्दी",
     flag: "🇮🇳",
   },
+  { code: "id", name: "Bahasa Indonesia", flag: "🇮🇩" },
   {
     code: "it",
     name: "Italiano",
@@ -105,16 +112,19 @@ export const languageList = [
     name: "Norsk Bokmål",
     flag: "🇳🇴️",
   },
+  { code: "nl", name: "Nederlands", flag: "🇳🇱" },
   {
     code: "pa",
     name: "ਪੰਜਾਬੀ",
     flag: "🇮🇳",
   },
+  { code: "pl", name: "Polski", flag: "🇵🇱" },
   {
     code: "pt",
     name: "Português",
     flag: "🇵🇹",
   },
+  { code: "ro", name: "Română", flag: "🇷🇴" },
   {
     code: "ru",
     name: "Русский",
@@ -125,6 +135,7 @@ export const languageList = [
     name: "Svenska",
     flag: "🇸🇪️",
   },
+  { code: "sw", name: "Kiswahili", flag: "🇹🇿" },
   {
     code: "ta",
     name: "தமிழ்",
@@ -135,11 +146,13 @@ export const languageList = [
     name: "తెలుగు",
     flag: "🇮🇳",
   },
+  { code: "th", name: "ไทย", flag: "🇹🇭" },
   {
     code: "tr",
     name: "Türkçe",
     flag: "🇹🇷",
   },
+  { code: "uk", name: "Українська", flag: "🇺🇦" },
   {
     code: "ur",
     name: "اردو",
@@ -154,5 +167,10 @@ export const languageList = [
     code: "zh",
     name: "中文",
     flag: "🇨🇳",
+  },
+  {
+    code: "zh_TW",
+    name: "中文（台灣）",
+    flag: "🇹🇼",
   },
 ];

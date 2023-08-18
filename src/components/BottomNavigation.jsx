@@ -12,11 +12,16 @@ import {
   SettingFilled,
 } from "@ant-design/icons";
 
+import { selectPreferences } from "@/redux/preferences";
+
 const { wallet, settings } = translations;
 
 function BottomNavigation() {
   const keyboardIsOpen = useSelector(selectKeyboardIsOpen);
   const isScanning = useSelector(selectScannerIsScanning);
+  // Unused, but required to ensure component reloads
+  // when language preferences are changed
+  const preferences = useSelector(selectPreferences);
 
   return (
     !keyboardIsOpen &&
