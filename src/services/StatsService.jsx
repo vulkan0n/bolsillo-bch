@@ -1,8 +1,9 @@
-import { store } from "@/redux";
-import apolloClient from "../apolloClient";
-import { gql } from "@apollo/client";
 import moment from "moment";
 import { Device } from "@capacitor/device";
+import { gql } from "@apollo/client";
+
+import { store } from "@/redux";
+import apolloClient from "../apolloClient";
 
 const SEND_DAILY_CHECK_IN = gql`
   mutation SendCheckIn($deviceId: String!, $date: String!) {
@@ -11,13 +12,6 @@ const SEND_DAILY_CHECK_IN = gql`
     }
   }
 `;
-
-const getDeviceId = async () => {
-  const info = await Device.getId();
-
-  console.log(info);
-  return info;
-};
 
 // StatsService: handles submitting daily transactions
 export default function StatsService() {
@@ -29,16 +23,11 @@ export default function StatsService() {
 
   // run a daily check in, if current time UTC is on a date later than previous check in
   async function submitCheckIn() {
-    console.log("checking in");
-
     const now = moment.utc();
     const nowFormatted = now.format("YYYYMMDD");
 
     const DAY = "day";
 
-    // get from Preferences
-    const currentState = store.getState();
-    console.log("currentState", currentState);
     const lastCheckIn = store.getState().preferences.lastCheckIn || "";
 
     const lastCheckInMoment = moment
