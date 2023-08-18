@@ -103,7 +103,8 @@ export default function ExploreView() {
             </span>
           </div>
         </div>
-        <DailyActiveUsersChart />
+        {loading && <p>Loading chart...</p>}
+        {!loading && <DailyActiveUsersChart data={data} />}
       </div>
     </>
   );
