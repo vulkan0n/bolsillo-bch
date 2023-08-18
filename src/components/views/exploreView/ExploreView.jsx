@@ -10,14 +10,17 @@ import { THIRTY_SECONDS } from "@/util/time";
 import { ONE_HUNDRED, TEN_MILLION } from "@/util/numbers";
 
 export default function ExploreView() {
-  const { loading, error, data, startPolling, stopPolling } = useQuery(
-    GET_ACTIVE_BITCOINERS,
-    {
-      variables: {
-        period: "DAILY",
-      },
-    }
-  );
+  const {
+    loading,
+    error,
+    data: originalData,
+    startPolling,
+    stopPolling,
+  } = useQuery(GET_ACTIVE_BITCOINERS, {
+    variables: {
+      period: "DAILY",
+    },
+  });
 
   useEffect(() => {
     startPolling(THIRTY_SECONDS);
@@ -25,7 +28,19 @@ export default function ExploreView() {
     return stopPolling;
   }, []);
 
-  console.log({ data });
+  const data = {
+    activeBitcoiners: [
+      { __typename: "StatAtDate", date: "20230812", count: 10 },
+      { __typename: "StatAtDate", date: "20230813", count: 8 },
+      { __typename: "StatAtDate", date: "20230814", count: 10 },
+      { __typename: "StatAtDate", date: "20230815", count: 10 },
+      { __typename: "StatAtDate", date: "20230816", count: 15 },
+      { __typename: "StatAtDate", date: "20230817", count: "20" },
+      { __typename: "StatAtDate", date: "20230818", count: "33" },
+    ],
+  };
+
+  console.log({ originalData });
 
   const midnightUtc = moment().utc().endOf("day");
   const [days, hours, minutes, seconds] = useCountdown(midnightUtc);
@@ -60,6 +75,11 @@ export default function ExploreView() {
             <div className="stat-title text-zinc-300">
               Daily Active Selene Users
             </div>
+          </div>
+
+          <div className="bg-zinc-200 mt-3 mb-3">
+            {loading && <p>Loading chart...</p>}
+            {!loading && <DailyActiveUsersChart data={data} />}
           </div>
 
           <div className="flex justify-between mb-1">
@@ -98,8 +118,6 @@ export default function ExploreView() {
             </span>
           </div>
         </div>
-        {loading && <p>Loading chart...</p>}
-        {!loading && <DailyActiveUsersChart data={data} />}
       </div>
     </>
   );

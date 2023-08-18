@@ -26,8 +26,8 @@ const DailyActiveUsersChart = ({ data }) => {
   const labels = data.activeBitcoiners.map(({ date }) =>
     moment(date).format("ddd Do MMM")
   );
-  console.log({ labels });
-  console.log("max count");
+
+  const dataPoints = data.activeBitcoiners.map(({ count }) => count);
 
   const maxCount = Math.max(
     ...data.activeBitcoiners.map(({ count }) => parseInt(count))
@@ -38,7 +38,7 @@ const DailyActiveUsersChart = ({ data }) => {
     datasets: [
       {
         label: "Daily Active Selene Users",
-        data: labels.map((_, i) => i + 100),
+        data: dataPoints,
         borderColor: "#8dc451",
         backgroundColor: "#8dc451",
       },
@@ -50,6 +50,7 @@ const DailyActiveUsersChart = ({ data }) => {
     plugins: {
       legend: {
         position: "top",
+        display: false,
       },
       title: {
         display: false,
