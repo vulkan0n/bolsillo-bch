@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { Outlet } from "react-router-dom";
 import BottomNavigation from "./BottomNavigation";
 import { useSelector } from "react-redux";
@@ -9,10 +9,6 @@ function MainLayout() {
   const isKeyboardOpen = useSelector(selectKeyboardIsOpen);
   const bgColor = isScanning ? "bg-transparent" : "bg-white";
   const padding = isKeyboardOpen ? "" : "bottomPadding";
-
-  useEffect(() => {
-    console.log("LOADED!!!");
-  }, []);
 
   return (
     <>
