@@ -43,6 +43,15 @@ export function satsToDisplayAmount(sats) {
   return satsToBch(sats);
 }
 
+export function stripArsPostDecimal(localCurrency, fiatString) {
+  // ARS users prefer not to see irrelevant post decimal values
+  if (localCurrency === "ARS" && fiatString.includes(".")) {
+    return fiatString?.split(".")?.[0];
+  }
+
+  return fiatString;
+}
+
 export function formatSatoshis(amount) {
   // Can't check for !amount because amount maybe === 0
   if (amount === null || amount === undefined) {
@@ -73,13 +82,14 @@ export function formatSatoshis(amount) {
     `${sign}${bchSymbol}${absoluteBchAmount} ${bchUnit}`.trim();
 
   /* eslint-disable no-new-wrappers */
-  const fiatDisplay = `${new Number(Currency.satsToFiat(amount)).toLocaleString(locale,
+  const fiatDisplay = `${new Number(Currency.satsToFiat(amount)).toLocaleString(
+    locale,
     { style: "currency", currency: localCurrency }
   )}`;
 
   const displayAmount = {
     bch: bchDisplay,
-    fiat: fiatDisplay,
+    fiat: stripArsPostDecimal(localCurrency, fiatDisplay),
     sign,
   };
 
