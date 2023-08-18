@@ -40,8 +40,8 @@ const DailyActiveUsersChart = ({ data }) => {
       {
         label: "Daily Active Selene Users",
         data: dataPoints,
-        borderColor: "#8dc451",
-        backgroundColor: "#8dc451",
+        borderColor: "#478559",
+        backgroundColor: "#478559",
       },
     ],
   };

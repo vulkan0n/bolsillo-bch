@@ -88,12 +88,12 @@ export default function ExploreView() {
 
           <div className="flex justify-between mb-1">
             <span className="text-base font-small text-zinc-800">
-              <div className="text-primary">Today</div>
+              <div className="text-secondary">Today</div>
               <div className="text-xs">
                 ({hours}h {minutes}m {seconds}s remaining)
               </div>
             </span>
-            <span className="text-sm font-small text-primary mt-5">
+            <span className="text-sm font-small text-secondary mt-5">
               {dailyActiveUsersToday}{" "}
               <span className="text-zinc-800">of 10 million (</span>
               {fixedDailyActiveUsersTodayPercentage}%
@@ -111,10 +111,10 @@ export default function ExploreView() {
             ></div>
           </div>
           <div className="flex justify-between mb-1">
-            <span className="text-base font-medium text-primary">
+            <span className="text-base font-medium text-secondary">
               Yesterday
             </span>
-            <span className="text-sm font-medium text-primary">
+            <span className="text-sm font-medium text-secondary">
               {dailyActiveUsersYesterday}{" "}
               <span className="text-zinc-800">of 10 million (</span>
               {fixedDailyActiveUsersYesterdayPercentage}%
