@@ -19,6 +19,7 @@ const defaultPreferences = {
   qrCodeLogo: "Selene",
   qrCodeBackground: "#ffffff",
   qrCodeForeground: "#000000",
+  lastCheckIn: "",
 };
 
 async function retrievePreferences() {

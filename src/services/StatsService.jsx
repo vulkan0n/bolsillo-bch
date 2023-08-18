@@ -3,6 +3,7 @@ import { Device } from "@capacitor/device";
 import { gql } from "@apollo/client";
 
 import { store } from "@/redux";
+import { setPreference } from "@/redux/preferences";
 import apolloClient from "../apolloClient";
 
 const SEND_DAILY_CHECK_IN = gql`
@@ -51,12 +52,10 @@ export default function StatsService() {
         },
       });
 
-      // TODO: Update preferences to store latest check in date
-      // store.dispatch(
-      //   updateMethod({
-      //     [updateProperty]: nowFormatted,
-      //   })
-      // );
+      console.log("sending off store.dispatch");
+      store.dispatch(
+        setPreference({ key: "lastCheckIn", value: nowFormatted })
+      );
     }
   }
 }
