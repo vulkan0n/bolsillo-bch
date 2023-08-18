@@ -10,37 +10,20 @@ import { THIRTY_SECONDS } from "@/util/time";
 import { ONE_HUNDRED, TEN_MILLION } from "@/util/numbers";
 
 export default function ExploreView() {
-  const {
-    loading,
-    error,
-    data: originalData,
-    startPolling,
-    stopPolling,
-  } = useQuery(GET_ACTIVE_BITCOINERS, {
-    variables: {
-      period: "DAILY",
-    },
-  });
+  const { loading, data, startPolling, stopPolling } = useQuery(
+    GET_ACTIVE_BITCOINERS,
+    {
+      variables: {
+        period: "DAILY",
+      },
+    }
+  );
 
   useEffect(() => {
     startPolling(THIRTY_SECONDS);
 
     return stopPolling;
   }, []);
-
-  const data = {
-    activeBitcoiners: [
-      { __typename: "StatAtDate", date: "20230812", count: 10 },
-      { __typename: "StatAtDate", date: "20230813", count: 8 },
-      { __typename: "StatAtDate", date: "20230814", count: 10 },
-      { __typename: "StatAtDate", date: "20230815", count: 10 },
-      { __typename: "StatAtDate", date: "20230816", count: 15 },
-      { __typename: "StatAtDate", date: "20230817", count: "20" },
-      { __typename: "StatAtDate", date: "20230818", count: "33" },
-    ],
-  };
-
-  console.log({ originalData });
 
   const midnightUtc = moment().utc().endOf("day");
   const [days, hours, minutes, seconds] = useCountdown(midnightUtc);
