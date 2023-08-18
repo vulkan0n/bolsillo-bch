@@ -27,27 +27,22 @@ export default function ExploreView() {
 
   console.log({ data });
 
-  const activeBitcoiners =
-    data?.activeBitcoiners?.[data?.activeBitcoiners.length - 1]?.count || 1;
-  const missionPercentage = parseFloat(
-    ((ONE_HUNDRED / TEN_MILLION) * activeBitcoiners).toFixed(5)
-  );
-
   const midnightUtc = moment().utc().endOf("day");
   const [days, hours, minutes, seconds] = useCountdown(midnightUtc);
-  const tenMillionTarget = 10000000;
 
-  const dailyActiveUsersToday = 1;
+  const dailyActiveUsersToday =
+    data?.activeBitcoiners?.[data?.activeBitcoiners.length - 1]?.count || 1;
   const dailyActiveUsersTodayPercentage =
-    (100 / tenMillionTarget) * dailyActiveUsersToday;
+    (ONE_HUNDRED / TEN_MILLION) * dailyActiveUsersToday;
   // https://stackoverflow.com/a/12830454/2792268
   // +1 to round up
   const dailyActiveUsersTodayWidth =
     (+dailyActiveUsersTodayPercentage.toFixed(2)).toString() + 1;
 
-  const dailyActiveUsersYesterday = 100;
+  const dailyActiveUsersYesterday =
+    data?.activeBitcoiners?.[data?.activeBitcoiners.length - 2]?.count || 1;
   const dailyActiveUsersYesterdayPercentage =
-    (100 / tenMillionTarget) * dailyActiveUsersYesterday;
+    (ONE_HUNDRED / TEN_MILLION) * dailyActiveUsersYesterday;
   // https://stackoverflow.com/a/12830454/2792268
   // +1 to round up
   const dailyActiveUsersYesterdayWidth =
