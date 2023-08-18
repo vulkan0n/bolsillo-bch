@@ -1,10 +1,38 @@
+import React, { useEffect } from "react";
 import { AppstoreOutlined } from "@ant-design/icons";
 import ViewHeader from "@/components/views/ViewHeader";
 import moment from "moment";
 import { useCountdown } from "./useCountdown";
 import DailyActiveUsersChart from "./DailyActiveUsersChart";
+import { useQuery } from "@apollo/client";
+import GET_ACTIVE_BITCOINERS from "./getActiveBitcoiners";
+import { THIRTY_SECONDS } from "@/util/time";
+import { ONE_HUNDRED, TEN_MILLION } from "@/util/numbers";
 
 export default function ExploreView() {
+  const { loading, error, data, startPolling, stopPolling } = useQuery(
+    GET_ACTIVE_BITCOINERS,
+    {
+      variables: {
+        period: "DAILY",
+      },
+    }
+  );
+
+  useEffect(() => {
+    startPolling(THIRTY_SECONDS);
+
+    return stopPolling;
+  }, []);
+
+  console.log({ data });
+
+  const activeBitcoiners =
+    data?.activeBitcoiners?.[data?.activeBitcoiners.length - 1]?.count || 1;
+  const missionPercentage = parseFloat(
+    ((ONE_HUNDRED / TEN_MILLION) * activeBitcoiners).toFixed(5)
+  );
+
   const midnightUtc = moment().utc().endOf("day");
   const [days, hours, minutes, seconds] = useCountdown(midnightUtc);
   const tenMillionTarget = 10000000;
