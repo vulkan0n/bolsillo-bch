@@ -77,7 +77,7 @@ export default function ElectrumService() {
       store.dispatch(syncConnectionDown());
     });
 
-    return await electrum.connect();
+    return electrum.connect();
   }
 
   // disconnect: disconnect the Electrum instance

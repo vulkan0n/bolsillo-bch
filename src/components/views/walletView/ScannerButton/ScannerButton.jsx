@@ -9,13 +9,13 @@ import {
   SupportedFormat,
 } from "@capacitor-community/barcode-scanner";
 
+import { ScanOutlined, CloseOutlined } from "@ant-design/icons";
 import {
   selectDeviceInfo,
   setScannerIsScanning,
   selectScannerIsScanning,
 } from "@/redux/device";
 
-import { ScanOutlined, CloseOutlined } from "@ant-design/icons";
 import Button from "@/components/atoms/Button";
 
 import { validateInvoiceString } from "@/util/invoice";

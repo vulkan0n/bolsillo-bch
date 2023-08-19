@@ -3,23 +3,6 @@ import { Link } from "react-router-dom";
 
 import { useSelector, useDispatch } from "react-redux";
 import {
-  selectPreferences,
-  setPreference,
-  selectInstantPay,
-  selectActiveWalletId,
-} from "@/redux/preferences";
-import { selectActiveWallet } from "@/redux/wallet";
-
-import WalletService from "@/services/WalletService";
-import { currencyList } from "@/util/currency";
-import { languageList, translate } from "@/util/translations";
-
-import Button from "@/components/atoms/Button";
-import { satsToDisplayAmount } from "@/util/sats";
-
-import CurrencySymbol from "@/components/atoms/CurrencySymbol";
-
-import {
   SettingOutlined,
   GlobalOutlined,
   FlagOutlined,
@@ -43,6 +26,22 @@ import {
   FormatPainterOutlined,
   UndoOutlined,
 } from "@ant-design/icons";
+import {
+  selectPreferences,
+  setPreference,
+  selectInstantPay,
+  selectActiveWalletId,
+} from "@/redux/preferences";
+import { selectActiveWallet } from "@/redux/wallet";
+
+import WalletService from "@/services/WalletService";
+import { currencyList } from "@/util/currency";
+import { languageList, translate } from "@/util/translations";
+
+import Button from "@/components/atoms/Button";
+import { satsToDisplayAmount } from "@/util/sats";
+
+import CurrencySymbol from "@/components/atoms/CurrencySymbol";
 
 import ViewHeader from "./ViewHeader";
 import KeyWarning from "./settingsView/KeyWarning/KeyWarning";

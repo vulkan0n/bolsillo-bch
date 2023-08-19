@@ -1,7 +1,6 @@
+import { sha256, swapEndianness } from "@bitauth/libauth";
 import DatabaseService from "@/services/DatabaseService";
-import { sha256 } from "@bitauth/libauth";
 import { hexToBin, binToHex } from "@/util/hex";
-import { swapEndianness } from "@bitauth/libauth";
 
 // BlockchainService: brokers interactions with the block data
 export default function BlockchainService() {
@@ -100,7 +99,7 @@ export default function BlockchainService() {
     let index = txIndex;
 
     for (let i = 0; i < merkleBranch.length; i++) {
-      let branchHash = merkleBranch[i];
+      const branchHash = merkleBranch[i];
 
       if (index % 2 === 1) {
         hash = sha256.hash(

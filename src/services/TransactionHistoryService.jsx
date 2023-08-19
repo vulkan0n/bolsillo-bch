@@ -1,8 +1,8 @@
+import { Decimal } from "decimal.js";
 import DatabaseService from "@/services/DatabaseService";
 import AddressManagerService from "@/services/AddressManagerService";
 import TransactionManagerService from "@/services/TransactionManagerService";
 import { bchToSats } from "@/util/sats";
-import { Decimal } from "decimal.js";
 import CurrencyService from "@/services/CurrencyService";
 
 export default function TransactionHistoryService(wallet_id) {

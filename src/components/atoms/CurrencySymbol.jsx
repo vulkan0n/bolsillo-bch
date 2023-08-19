@@ -14,7 +14,7 @@ export default function CurrencySymbol({ currency, className }) {
 
   const currencyObj =
     currencyList.find((c) => c.currency === findCurrency) || currencyList[0];
-  const symbol = currencyObj.symbol;
+  const { symbol } = currencyObj;
 
   return <span className={className}>{symbol}</span>;
 }

@@ -2,10 +2,10 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ImportOutlined } from "@ant-design/icons";
 
+import * as bip39 from "bip39";
 import WalletService from "@/services/WalletService";
 import { translate } from "@/util/translations";
 import translations from "./translations";
-import * as bip39 from "bip39";
 
 const {
   exactWordCount,
@@ -79,7 +79,7 @@ export default function SettingsWalletWizardImport() {
           onChange={handleMnemonicInput}
           value={mnemonicInput}
           autoComplete="off"
-        ></textarea>
+        />
       </div>
       <div className="my-2">
         <button

@@ -4,6 +4,7 @@ import { useParams, useSearchParams, useNavigate } from "react-router-dom";
 import { Haptics } from "@capacitor/haptics";
 
 import { useSelector } from "react-redux";
+import { ArrowLeftOutlined } from "@ant-design/icons";
 import { selectActiveWallet } from "@/redux/wallet";
 import { selectLocalCurrency, selectInstantPay } from "@/redux/preferences";
 
@@ -13,8 +14,6 @@ import { bchToSats, formatSatoshis, satsToDisplayAmount } from "@/util/sats";
 import { validateInvoiceString } from "@/util/invoice";
 
 import TransactionManagerService from "@/services/TransactionManagerService";
-
-import { ArrowLeftOutlined } from "@ant-design/icons";
 
 import SatoshiInput from "@/components/atoms/SatoshiInput";
 import Button from "@/components/atoms/Button";

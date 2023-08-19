@@ -1,11 +1,10 @@
 import { useEffect } from "react";
 import { Keyboard } from "@capacitor/keyboard";
 import { useSelector } from "react-redux";
+import { Decimal } from "decimal.js";
 import { selectLocalCurrency, selectDenomination } from "@/redux/preferences";
 import { selectDeviceInfo } from "@/redux/device";
 import { bchToSats, MAX_SATOSHI, satsToDisplayAmount } from "@/util/sats";
-
-import { Decimal } from "decimal.js";
 
 import CurrencyService from "@/services/CurrencyService";
 

@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { selectSyncState } from "@/redux/sync";
 import {
   DisconnectOutlined,
   CheckCircleFilled,
   SyncOutlined,
 } from "@ant-design/icons";
 import { animated, useSpring } from "@react-spring/web";
+import { selectSyncState } from "@/redux/sync";
 
 export default function SyncIndicator() {
   const sync = useSelector(selectSyncState);

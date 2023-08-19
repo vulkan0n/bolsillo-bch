@@ -1,9 +1,9 @@
+import { sha256 } from "@bitauth/libauth";
 import DatabaseService from "@/services/DatabaseService";
 import HdNodeService from "@/services/HdNodeService";
 import TransactionManagerService from "@/services/TransactionManagerService";
 import { store } from "@/redux";
 import { selectActiveWallet } from "@/redux/wallet";
-import { sha256 } from "@bitauth/libauth";
 import { binToHex, hexToBin } from "@/util/hex";
 
 // AddressManagerService: handles most address-related operations
@@ -57,7 +57,7 @@ export default function AddressManagerService(wallet_id) {
   function populateAddresses() {
     const ADDRESS_GAP_LIMIT = 20; // BIP-44 gap limit is 20
 
-    let generatedAddresses = [];
+    const generatedAddresses = [];
 
     const hdWallet = new HdNodeService(wallet_id);
     populate(0);
@@ -73,7 +73,7 @@ export default function AddressManagerService(wallet_id) {
       for (
         let hd_index = latestIndex;
         hd_index < latestIndex + ADDRESS_GAP_LIMIT - unused.length;
-        hd_index = hd_index + 1
+        hd_index += 1
       ) {
         const newAddress = hdWallet.generateAddress(hd_index, change);
         registerAddress(newAddress, hd_index, change);
@@ -186,9 +186,9 @@ export default function AddressManagerService(wallet_id) {
       db.exec(`SELECT balance FROM wallets WHERE id="${wallet_id}"`)
     )[0].balance;
 
-    const change = resultToJson(
+    const { change } = resultToJson(
       db.exec(`SELECT change FROM addresses WHERE address="${address}";`)
-    )[0].change;
+    )[0];
 
     saveDatabase();
     return { previousBalance, walletBalance, change };

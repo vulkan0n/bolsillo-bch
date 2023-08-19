@@ -1,7 +1,7 @@
+import { Decimal } from "decimal.js";
 import DatabaseService from "@/services/DatabaseService";
 import TransactionManagerService from "@/services/TransactionManagerService";
 import { DUST_LIMIT } from "@/util/sats";
-import { Decimal } from "decimal.js";
 
 export default function UxtoManagerService(wallet_id) {
   const { db, resultToJson, saveDatabase } = new DatabaseService();
@@ -103,10 +103,9 @@ export default function UxtoManagerService(wallet_id) {
     if (eligibleSum < targetAmount) {
       if (eligibleAddresses.length > 0) {
         return getAddressUtxos(eligibleAddresses[0].address);
-      } else {
-        // if no eligible address, return empty set
-        return [];
       }
+      // if no eligible address, return empty set
+      return [];
     }
 
     // if there's enough change that consolidating will work, find the smallest combo
@@ -116,7 +115,7 @@ export default function UxtoManagerService(wallet_id) {
     while (remainingAmount > 0 && eligibleUtxos.length > 0) {
       const utxo = eligibleUtxos.shift();
       selection.push(utxo);
-      remainingAmount = remainingAmount - utxo.amount;
+      remainingAmount -= utxo.amount;
     }
 
     if (remainingAmount > 0) {

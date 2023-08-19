@@ -5,13 +5,13 @@ import {
   createListenerMiddleware,
 } from "@reduxjs/toolkit";
 
+import Decimal from "decimal.js";
 import { setPreference } from "@/redux/preferences";
 import { syncConnect, syncSubscribeAddress } from "@/redux/sync";
 
 import WalletService from "@/services/WalletService";
 import AddressManagerService from "@/services/AddressManagerService";
 
-import Decimal from "decimal.js";
 import { formatSatoshis } from "@/util/sats";
 import showToast from "@/util/toast";
 import { logos } from "@/util/logos";

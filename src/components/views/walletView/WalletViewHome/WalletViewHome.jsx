@@ -4,6 +4,14 @@ import { useSelector } from "react-redux";
 import { Clipboard } from "@capacitor/clipboard";
 import { QRCode } from "react-qrcode-logo";
 
+import {
+  SnippetsFilled,
+  FormOutlined,
+  CopyOutlined,
+  CaretRightOutlined,
+  CaretDownOutlined,
+} from "@ant-design/icons";
+import { animated, useSpring } from "@react-spring/web";
 import { selectActiveWallet } from "@/redux/wallet";
 import { selectPreferences } from "@/redux/preferences";
 import { selectScannerIsScanning, selectKeyboardIsOpen } from "@/redux/device";
@@ -18,19 +26,9 @@ import Address from "@/components/atoms/Address";
 import CurrencySymbol from "@/components/atoms/CurrencySymbol";
 import CurrencyFlip from "@/components/atoms/CurrencyFlip";
 
-import {
-  SnippetsFilled,
-  FormOutlined,
-  CopyOutlined,
-  CaretRightOutlined,
-  CaretDownOutlined,
-} from "@ant-design/icons";
-
 import showToast from "@/util/toast";
 import { logos } from "@/util/logos";
 import { satsToBch } from "@/util/sats";
-
-import { animated, useSpring } from "@react-spring/web";
 
 const { copiedAddress, requestAmount } = translations;
 

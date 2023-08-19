@@ -1,17 +1,15 @@
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { Haptics } from "@capacitor/haptics";
-import { selectScannerIsScanning } from "@/redux/device";
-import translations from "./translations";
-import { translate } from "@/util/translations";
-
 import { Clipboard } from "@capacitor/clipboard";
-
 import {
   SendOutlined,
   HistoryOutlined,
   ExclamationCircleFilled,
 } from "@ant-design/icons";
+import { selectScannerIsScanning } from "@/redux/device";
+import translations from "./translations";
+import { translate } from "@/util/translations";
 
 import Button from "@/components/atoms/Button";
 import ScannerButton from "../ScannerButton/ScannerButton";

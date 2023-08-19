@@ -1,6 +1,6 @@
+import * as bip39 from "bip39";
 import DatabaseService from "./DatabaseService";
 import AddressManagerService from "./AddressManagerService";
-import * as bip39 from "bip39";
 
 export default function WalletService() {
   const { db, resultToJson, saveDatabase } = new DatabaseService();

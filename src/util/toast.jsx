@@ -4,7 +4,7 @@ const showToast = ({ icon = <></>, title = "", description = "", options }) => {
   toast.custom(
     (t) => (
       <div
-        className={`opacity-95 w-full bg-white shadow-lg rounded-lg flex ring-1 ring-black ring-opacity-5 p-2`}
+        className="opacity-95 w-full bg-white shadow-lg rounded-lg flex ring-1 ring-black ring-opacity-5 p-2"
         onClick={() => {
           toast.remove(t.id);
         }}

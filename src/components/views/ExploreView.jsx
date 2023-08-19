@@ -1,5 +1,6 @@
 import { AppstoreOutlined } from "@ant-design/icons";
 import ViewHeader from "@/components/views/ViewHeader";
+
 export default function ExploreView() {
   return (
     <>

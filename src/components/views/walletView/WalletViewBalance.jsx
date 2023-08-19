@@ -1,17 +1,16 @@
 import { useEffect, useMemo } from "react";
 
 import { useSelector, useDispatch } from "react-redux";
+import { animated, useSpring } from "@react-spring/web";
+import { StockOutlined } from "@ant-design/icons";
 import { selectActiveWallet } from "@/redux/wallet";
 import { selectExchangeRates } from "@/redux/exchangeRates";
 import { selectPreferences, setPreference } from "@/redux/preferences";
 
-import { animated, useSpring } from "@react-spring/web";
 import { formatSatoshis, stripArsPostDecimal } from "@/util/sats";
 
 import CurrencyFlip from "@/components/atoms/CurrencyFlip";
 import { selectLocale } from "@/redux/device";
-
-import { StockOutlined } from "@ant-design/icons";
 
 export default function WalletViewBalance() {
   const dispatch = useDispatch();
@@ -19,9 +18,9 @@ export default function WalletViewBalance() {
   const { name: activeWalletName, balance } = useSelector(selectActiveWallet);
   const exchangeRates = useSelector(selectExchangeRates);
 
-  const hideBalance = preferences["hideAvailableBalance"] === "true";
-  const preferLocal = preferences["preferLocalCurrency"] === "true";
-  const isDisplayExchangeRate = preferences["displayExchangeRate"] === "true";
+  const hideBalance = preferences.hideAvailableBalance === "true";
+  const preferLocal = preferences.preferLocalCurrency === "true";
+  const isDisplayExchangeRate = preferences.displayExchangeRate === "true";
   const locale = useSelector(selectLocale);
 
   const handleFlipCurrency = () => {
@@ -62,7 +61,7 @@ export default function WalletViewBalance() {
     [exchangeRates, balance, preferences]
   );
 
-  const currency = preferences["localCurrency"];
+  const currency = preferences.localCurrency;
 
   const relevantCurrency = exchangeRates.find((e) => e.currency === currency);
   const price = relevantCurrency?.price || "0";

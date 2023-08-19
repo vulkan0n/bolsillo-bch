@@ -1,10 +1,6 @@
 import { useState, useRef } from "react";
 import { useParams, useNavigate, Navigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { selectActiveWalletId, selectLocalCurrency } from "@/redux/preferences";
-import { walletBoot, walletReload } from "@/redux/wallet";
-import { selectLocale } from "@/redux/device";
-import { syncReconnect } from "@/redux/sync";
 import {
   WalletOutlined,
   LoginOutlined,
@@ -16,6 +12,10 @@ import {
   ToolOutlined,
   MedicineBoxOutlined,
 } from "@ant-design/icons";
+import { selectActiveWalletId, selectLocalCurrency } from "@/redux/preferences";
+import { walletBoot, walletReload } from "@/redux/wallet";
+import { selectLocale } from "@/redux/device";
+import { syncReconnect } from "@/redux/sync";
 import ViewHeader from "@/components/views/ViewHeader";
 import WalletService from "@/services/WalletService";
 import KeyWarning from "../KeyWarning/KeyWarning";

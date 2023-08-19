@@ -4,14 +4,15 @@ import {
   deriveHdPrivateNodeChild,
   deriveHdPath,
   encodeCashAddress,
+  secp256k1,
+  ripemd160,
+  sha256,
 } from "@bitauth/libauth";
 
 import { hexToBin } from "@/util/hex";
 
 import WalletService from "@/services/WalletService";
 import AddressManagerService from "@/services/AddressManagerService";
-
-import { secp256k1, ripemd160, sha256 } from "@bitauth/libauth";
 
 export default function HdNodeService(wallet_id) {
   //console.log("HdNodeService", wallet_id);
@@ -43,10 +44,10 @@ export default function HdNodeService(wallet_id) {
     const AddressManager = new AddressManagerService(wallet_id);
     const { hd_index, change } = AddressManager.getAddress(address);
 
-    const privateKey = deriveHdPrivateNodeChild(
+    const { privateKey } = deriveHdPrivateNodeChild(
       change ? hdChange : hdMain,
       hd_index
-    ).privateKey;
+    );
 
     return privateKey;
   }

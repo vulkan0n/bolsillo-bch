@@ -1,11 +1,11 @@
 import { useDispatch, useSelector } from "react-redux";
-import { selectPreferences, setPreference } from "@/redux/preferences";
 import { TransactionOutlined } from "@ant-design/icons";
+import { selectPreferences, setPreference } from "@/redux/preferences";
 
 export default function CurrencyFlip({ className, ...rest }) {
   const dispatch = useDispatch();
   const preferences = useSelector(selectPreferences);
-  const preferLocal = preferences["preferLocalCurrency"] === "true";
+  const preferLocal = preferences.preferLocalCurrency === "true";
 
   const handleFlipLocalCurrency = () => {
     dispatch(

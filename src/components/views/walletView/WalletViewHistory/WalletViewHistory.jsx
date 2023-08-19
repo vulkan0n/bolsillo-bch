@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
+import { ArrowLeftOutlined } from "@ant-design/icons";
 import { selectLocale } from "@/redux/device";
 import { selectLocalCurrency } from "@/redux/preferences";
 import { formatSatoshis } from "@/util/sats";
@@ -8,7 +9,6 @@ import { selectTransactionHistory } from "@/redux/transactions";
 import translations from "./translations";
 import { translate } from "@/util/translations";
 
-import { ArrowLeftOutlined } from "@ant-design/icons";
 import Button from "@/components/atoms/Button";
 
 const { recentTransactions, back } = translations;
