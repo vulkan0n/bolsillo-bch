@@ -9,9 +9,7 @@ export default function BalanceHideButton({ className, ...rest }) {
   const hideBalance = preferences["hideAvailableBalance"] === "true";
   const Icon = hideBalance ? EyeInvisibleOutlined : EyeOutlined;
 
-  const hiddenClasses = hideBalance
-    ? "opacity-60"
-    : "opacity-40";
+  const hiddenClasses = hideBalance ? "opacity-60" : "opacity-40";
 
   const handleHideBalance = () => {
     dispatch(

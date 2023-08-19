@@ -1,24 +1,9 @@
 // migrations.js: handle sqlite database schema updates
 
-// run_migrations: run all migrations in migrations array sequentially
-export function run_migrations(db) {
-  const DB_VERSION = db.exec("PRAGMA user_version")[0].values[0][0];
-  console.log("DB_VERSION", DB_VERSION, migrations.length);
-  for (
-    let version = DB_VERSION;
-    version < migrations.length;
-    version = version + 1
-  ) {
-    console.log("DB_VERSION", `${DB_VERSION}/${migrations.length}`, version);
-    db.run(migrations[version]());
-  }
-}
-
 // functions in this migrations will be executed sequentially
 // each entry should represent a new db version
 const migrations = [
   function migrate_v0() {
-    console.log("migrate_v0");
     const query = [];
 
     query.push("PRAGMA user_version = 0;");
@@ -124,3 +109,13 @@ const migrations = [
     return query.join("");
   }, */
 ];
+
+// run_migrations: run all migrations in migrations array sequentially
+export function run_migrations(db) {
+  const DB_VERSION = db.exec("PRAGMA user_version")[0].values[0][0];
+  // console.log("DB_VERSION", DB_VERSION, migrations.length);
+  for (let version = DB_VERSION; version < migrations.length; version += 1) {
+    // console.log("DB_VERSION", `${DB_VERSION}/${migrations.length}`, version);
+    db.run(migrations[version]());
+  }
+}

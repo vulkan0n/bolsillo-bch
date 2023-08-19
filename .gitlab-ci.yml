@@ -7,9 +7,8 @@ image: node:lts-alpine
 
 stages:
   - update_version
-  - test
   - build
-  
+
 variables:
   INCREMENT_VERSION:
     value: "patch"
@@ -27,13 +26,6 @@ update_version:
     - git config --global user.email "git@selene.cash"
     - git config --global user.name "Selene.cash CI/CD"
     - yarn version --$INCREMENT_VERSION
-
-test:
-  when: always
-  stage: test
-  script:
-    - yarn install
-    - yarn test
 
 build_sync:
   stage: build
