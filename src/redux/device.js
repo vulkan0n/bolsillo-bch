@@ -9,6 +9,26 @@ export const setScannerIsScanning = createAction(
 );
 export const setKeyboardIsOpen = createAction("scanner/setKeyboardIsOpen");
 
+export const selectScannerIsScanning = createSelector(
+  (state) => state.device.scanner,
+  (scanner) => scanner.isScanning
+);
+
+export const selectKeyboardIsOpen = createSelector(
+  (state) => state.device.keyboard,
+  (keyboard) => keyboard.isOpen
+);
+
+export const selectDeviceInfo = createSelector(
+  (state) => state.device.deviceInfo,
+  (deviceInfo) => deviceInfo
+);
+
+export const selectLocale = createSelector(
+  (state) => state.device.locale,
+  (locale) => locale
+);
+
 async function initializeDevice() {
   const deviceState = {
     scanner: { isScanning: false },
@@ -69,23 +89,3 @@ export const deviceReducer = createReducer(initialState, (builder) => {
       state.keyboard.isOpen = action.payload;
     });
 });
-
-export const selectScannerIsScanning = createSelector(
-  (state) => state.device.scanner,
-  (scanner) => scanner.isScanning
-);
-
-export const selectKeyboardIsOpen = createSelector(
-  (state) => state.device.keyboard,
-  (keyboard) => keyboard.isOpen
-);
-
-export const selectDeviceInfo = createSelector(
-  (state) => state.device.deviceInfo,
-  (deviceInfo) => deviceInfo
-);
-
-export const selectLocale = createSelector(
-  (state) => state.device.locale,
-  (locale) => locale
-);

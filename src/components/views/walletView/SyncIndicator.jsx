@@ -72,7 +72,10 @@ export default function SyncIndicator() {
   };
 
   return (
-    <div className="cursor-pointer w-10 h-10 flex justify-center items-center" onPointerDown={handlePointerDown}>
+    <div
+      className="cursor-pointer w-10 h-10 flex justify-center items-center"
+      onPointerDown={handlePointerDown}
+    >
       {!sync.connected && (
         <DisconnectedIcon springs={{ ...disconnectSprings }} />
       )}

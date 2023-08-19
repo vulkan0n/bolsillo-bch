@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { hexToBin } from "@bitauth/libauth";
 
 // faster binToHex implementation: https://archive.is/2v7QZ

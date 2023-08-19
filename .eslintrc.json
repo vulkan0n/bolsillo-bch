@@ -1,28 +1,57 @@
 {
-    "env": {
-        "browser": true,
-        "es2021": true
-    },
-    "extends": ["standard", "plugin:react/recommended"],
-    "parserOptions": {
-        "ecmaVersion": "latest",
-        "sourceType": "module"
-    },
-    "plugins": ["react"],
-    "rules": {
-        "semi": ["error", "always"],
-        "quotes": ["error", "double"],
-        "camelcase": ["off"],
-        "space-before-function-paren": [
-            "error",
-            { "anonymous": "always", "named": "never", "asyncArrow": "always" }
-        ],
-        "comma-dangle": ["error", "only-multiline"],
-        "react/react-in-jsx-scope": ["off"]
-    },
-    "settings": {
-        "react": {
-            "version": "detect"
-        }
+  "env": {
+    "browser": true,
+    "es2021": true
+  },
+  "extends": [
+    "airbnb",
+    "plugin:prettier/recommended",
+    "plugin:react/recommended",
+    "plugin:react-hooks/recommended",
+    "plugin:jsx-a11y/recommended"
+  ],
+  "parserOptions": {
+    "ecmaVersion": "latest",
+    "sourceType": "module"
+  },
+  "plugins": ["prettier", "react"],
+  "rules": {
+    "prettier/prettier": ["error"],
+    "import/prefer-default-export": ["off"],
+    "import/extensions": [
+      "error",
+      "never",
+      {
+        "svg": "always",
+        "png": "always",
+        "json": "always",
+        "sql": "always"
+      }
+    ],
+    "import/no-unresolved": ["off"],
+    "camelcase": ["off"],
+    "space-before-function-paren": [
+      "error",
+      { "anonymous": "always", "named": "never", "asyncArrow": "always" }
+    ],
+    "no-param-reassign": [
+      "error",
+      { "props": true, "ignorePropertyModificationsFor": ["state"] }
+    ],
+    "no-use-before-define": [
+      "error",
+      {
+        "functions": false,
+        "classes": true,
+        "variables": true,
+        "allowNamedExports": true
+      }
+    ],
+    "react/react-in-jsx-scope": ["off"]
+  },
+  "settings": {
+    "react": {
+      "version": "detect"
     }
+  }
 }

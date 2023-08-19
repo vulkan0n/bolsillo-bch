@@ -52,7 +52,7 @@ const initialState = await retrievePreferences();
 
 export const setPreference = createAsyncThunk(
   "preferences/set",
-  async (payload, thunkApi) => {
+  async (payload) => {
     const sanitizedPayload = {
       key: payload.key,
       value: payload.value.toString(),

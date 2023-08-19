@@ -31,7 +31,9 @@ export default function ExploreView() {
             <div className="stat-value text-primary text-lg font-semibold">
               $142.13
             </div>
-            <div className="stat-desc text-xs text-zinc-400">↗︎ $0.42 (3%)</div>
+            <div className="stat-desc text-xs text-zinc-400">
+              ↗︎ $0.42 (3%)
+            </div>
           </div>
         </div>
       </div>
