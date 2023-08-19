@@ -47,6 +47,7 @@
         "allowNamedExports": true
       }
     ],
+    "spaced-comment": ["off"],
     "react/react-in-jsx-scope": ["off"]
   },
   "settings": {
