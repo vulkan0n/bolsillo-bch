@@ -98,3 +98,8 @@ export const selectInstantPay = createSelector(
     instantPayThreshold: preferences.instantPayThreshold,
   })
 );
+
+export const selectLanguageCode = createSelector(
+  (state) => state.preferences,
+  (preferences) => preferences.languageCode
+);

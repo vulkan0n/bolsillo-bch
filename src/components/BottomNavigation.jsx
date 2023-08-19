@@ -1,8 +1,6 @@
+import PropTypes from "prop-types";
 import { NavLink } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { selectKeyboardIsOpen, selectScannerIsScanning } from "@/redux/device";
-import translations from "./BottomNavigationTranslations";
-import { translate } from "@/util/translations";
 import {
   WalletOutlined,
   WalletFilled,
@@ -12,45 +10,46 @@ import {
   SettingFilled,
 } from "@ant-design/icons";
 
-import { selectPreferences } from "@/redux/preferences";
+import { selectLanguageCode } from "@/redux/preferences";
+import { selectKeyboardIsOpen, selectScannerIsScanning } from "@/redux/device";
+import translations from "./BottomNavigationTranslations";
+import { translate } from "@/util/translations";
 
 const { wallet, settings } = translations;
 
 function BottomNavigation() {
   const keyboardIsOpen = useSelector(selectKeyboardIsOpen);
   const isScanning = useSelector(selectScannerIsScanning);
-  // Unused, but required to ensure component reloads
-  // when language preferences are changed
-  const preferences = useSelector(selectPreferences);
+
+  // Ensure component reloads when language preferences are changed
+  useSelector(selectLanguageCode);
 
   return (
     !keyboardIsOpen &&
     !isScanning && (
-      <>
-        <div
-          className="fixed bottom-0 w-full flex items-center justify-around z-50"
-          id="bottomNav"
-        >
-          <NavButton
-            to="/wallet"
-            activeIcon={WalletFilled}
-            icon={WalletOutlined}
-            label={translate(wallet)}
-          />
-          {/*<NavButton
-            to="/explore"
-            activeIcon={AppstoreFilled}
-            icon={AppstoreOutlined}
-            label="Explore"
-          />*/}
-          <NavButton
-            to="/settings"
-            activeIcon={SettingFilled}
-            icon={SettingOutlined}
-            label={translate(settings)}
-          />
-        </div>
-      </>
+      <div
+        className="fixed bottom-0 w-full flex items-center justify-around z-50"
+        id="bottomNav"
+      >
+        <NavButton
+          to="/wallet"
+          activeIcon={WalletFilled}
+          icon={WalletOutlined}
+          label={translate(wallet)}
+        />
+        <NavButton
+          to="/explore"
+          activeIcon={AppstoreFilled}
+          icon={AppstoreOutlined}
+          label="Explore"
+        />
+        <NavButton
+          to="/settings"
+          activeIcon={SettingFilled}
+          icon={SettingOutlined}
+          label={translate(settings)}
+        />
+      </div>
     )
   );
 }
@@ -85,5 +84,18 @@ function NavButton({ to, icon, activeIcon, label }) {
     </NavLink>
   );
 }
+NavButton.propTypes = {
+  to: PropTypes.string,
+  icon: PropTypes.func,
+  activeIcon: PropTypes.func,
+  label: PropTypes.string,
+};
+
+NavButton.defaultProps = {
+  to: "",
+  icon: () => null,
+  activeIcon: () => null,
+  label: "",
+};
 
 export default BottomNavigation;
