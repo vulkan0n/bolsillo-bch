@@ -25,6 +25,7 @@ import SettingsWalletView from "./components/views/settingsView/SettingsWalletVi
 import SettingsWalletWizard from "./components/views/settingsView/SettingsWalletWizard/SettingsWalletWizard";
 import SettingsWalletWizardInit from "./components/views/settingsView/SettingsWalletWizardInit/SettingsWalletWizardInit";
 import SettingsWalletWizardImport from "./components/views/settingsView/SettingsWalletWizardImport/SettingsWalletWizardImport";
+import SettingsWalletAdditionalInformation from "./components/views/settingsView/SettingsWalletAdditionalInformation/SettingsWalletAdditionalInformation";
 import CreditsView from "./components/views/CreditsView";
 
 const router = createBrowserRouter([
@@ -72,6 +73,10 @@ const router = createBrowserRouter([
       {
         path: "/settings/wallet/:wallet_id",
         element: <SettingsWalletView />,
+      },
+      {
+        path: "/settings/wallet/:wallet_id/additionalInformation",
+        element: <SettingsWalletAdditionalInformation />,
       },
       {
         path: "/settings/wallet/wizard",

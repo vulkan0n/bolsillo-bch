@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { useParams, useNavigate, Navigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { selectActiveWalletId, selectLocalCurrency } from "@/redux/preferences";
 import { walletBoot, walletReload } from "@/redux/wallet";
@@ -15,18 +15,21 @@ import {
   EyeInvisibleOutlined,
   ToolOutlined,
   MedicineBoxOutlined,
+  InfoCircleOutlined,
 } from "@ant-design/icons";
 import ViewHeader from "@/components/views/ViewHeader";
-import WalletService from "@/services/WalletService";
 import KeyWarning from "../KeyWarning/KeyWarning";
 import SettingsCategory from "../SettingsCategory";
+import SettingsChild from "../SettingsChild";
 import { formatSatoshis } from "@/util/sats";
 import { translate } from "@/util/translations";
 import translations from "./translations";
+import WalletService from "@/services/WalletService";
 
 const {
   walletSettings,
   advancedOptions,
+  additionalWalletInformation,
   created,
   lastKnownBalance,
   walletActive,
@@ -52,15 +55,10 @@ export default function SettingsWalletView() {
   const activeWalletId = useSelector(selectActiveWalletId);
   const isActiveWallet = wallet_id === activeWalletId;
 
-  const { preferLocalCurrency } = useSelector(selectLocalCurrency);
-
   const WalletManager = new WalletService();
   const wallet = WalletManager.getWalletById(wallet_id);
 
-  // if invalid wallet_id passed via queryparams, redirect back to settings
-  if (wallet === null) {
-    return <Navigate to="/settings" />;
-  }
+  const { preferLocalCurrency } = useSelector(selectLocalCurrency);
 
   // toggle visibility for recovery phrase
   const [showRecoveryPhrase, setShowRecoveryPhrase] = useState(false);
@@ -133,6 +131,10 @@ export default function SettingsWalletView() {
   const handleRebuildWallet = () => {
     WalletManager.clearWalletData(wallet.id);
     handleActivateWallet();
+  };
+
+  const handleNavigateAdditionalWalletInformation = () => {
+    navigate(`/settings/wallet/${wallet_id}/additionalInformation`);
   };
 
   return (
@@ -230,6 +232,7 @@ export default function SettingsWalletView() {
             </button>
           </div>
         </div>
+
         <KeyWarning wallet={wallet} />
         <div
           className="bg-zinc-700 flex-col rounded-lg flex items-center justify-center my-4 px-2 py-4 cursor-pointer"
@@ -263,6 +266,7 @@ export default function SettingsWalletView() {
             </>
           )}
         </div>
+
         {
           /* Only show "Advanced Options" if user has viewed (TODO: verified) their recovery phrase */
           wallet.key_viewed !== null && isActiveWallet && (
@@ -270,14 +274,26 @@ export default function SettingsWalletView() {
               icon={ToolOutlined}
               title={translate(advancedOptions)}
             >
-              <button
-                type="button"
-                className="w-full block p-2 text-left"
-                onClick={handleRebuildWallet}
-              >
-                <MedicineBoxOutlined className="text-xl mr-1" />
-                {translate(rebuildWallet)}
-              </button>
+              <SettingsChild>
+                <button
+                  type="button"
+                  className="w-full block p-2 text-left"
+                  onClick={handleRebuildWallet}
+                >
+                  <MedicineBoxOutlined className="text-xl mr-1" />
+                  {translate(rebuildWallet)}
+                </button>
+              </SettingsChild>
+              <SettingsChild>
+                <button
+                  type="button"
+                  className="w-full block p-2 text-left"
+                  onClick={handleNavigateAdditionalWalletInformation}
+                >
+                  <InfoCircleOutlined className="text-xl mr-1" />
+                  {translate(additionalWalletInformation)}
+                </button>
+              </SettingsChild>
             </SettingsCategory>
           )
         }
