@@ -82,10 +82,10 @@ export default function TransactionHistoryService(wallet_id) {
     const myOutputs = tx.vout.filter((out) => isMyUtxo(out));
 
     // sum reducer function
-    const sumOutputs = (sum, cur) => sum.plus(cur.value);
+    const sumReducer = (sum, cur) => sum.plus(cur.value);
 
-    const receivedAmount = myOutputs.reduce(sumOutputs, new Decimal(0));
-    const sentAmount = myInputs.reduce(sumOutputs, new Decimal(0));
+    const receivedAmount = myOutputs.reduce(sumReducer, new Decimal(0));
+    const sentAmount = myInputs.reduce(sumReducer, new Decimal(0));
 
     // TODO: totalOutput - amount = fee
     const amount = receivedAmount - sentAmount;
