@@ -43,8 +43,8 @@ const first2023 = {
   nonce: 956307994,
 };
 
-export const block_checkpoints = {
-  0: satoshiGenesis,
-  478558: bchExodus,
-  773409: first2023,
-};
+export const block_checkpoints = new Map(
+  ["0", satoshiGenesis],
+  ["478558", bchExodus],
+  ["773409", first2023]
+);

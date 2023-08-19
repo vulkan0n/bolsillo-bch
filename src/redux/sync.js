@@ -1,4 +1,4 @@
-/* eslint-disable no-use-before-define */
+/* eslint-disable @typescript-eslint/no-use-before-define */
 import {
   createAction,
   createReducer,
@@ -28,7 +28,7 @@ export const syncMiddleware = createListenerMiddleware();
 // syncConnect: request/retry electrum connection
 export const syncConnect = createAsyncThunk(
   "sync/connect",
-  /* eslint-disable default-param-last */
+  /* eslint-disable-next-line @typescript-eslint/default-param-last */
   async (attempts = 0, thunkApi) => {
     try {
       await Electrum.connect();

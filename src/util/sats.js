@@ -26,7 +26,7 @@ export function satsToDisplayAmount(sats) {
   );
   const Currency = new CurrencyService(localCurrency);
 
-  const denominateSats = preferences.denominateSats === "true";
+  const shouldDenominateSats = preferences.shouldDenominateSats === "true";
 
   if (new Decimal(sats).equals(0)) {
     return "0";
@@ -36,7 +36,7 @@ export function satsToDisplayAmount(sats) {
     return Currency.satsToFiat(sats);
   }
 
-  if (denominateSats) {
+  if (shouldDenominateSats) {
     return sats;
   }
 
@@ -65,15 +65,15 @@ export function formatSatoshis(amount) {
   const preferences = selectPreferences(store.getState());
 
   const { localCurrency } = selectLocalCurrency(store.getState());
-  const denominateSats = preferences.denominateSats === "true";
-  const hideBalance = preferences.hideAvailableBalance === "true";
+  const shouldDenominateSats = preferences.shouldDenominateSats === "true";
+  const shouldHideBalance = preferences.hideAvailableBalance === "true";
 
   const Currency = new CurrencyService(localCurrency);
 
-  const bchSymbol = denominateSats ? "" : "₿";
-  const bchUnit = denominateSats ? "sats" : "";
+  const bchSymbol = shouldDenominateSats ? "" : "₿";
+  const bchUnit = shouldDenominateSats ? "sats" : "";
   const absoluteSatsAmount = Math.abs(amount);
-  const absoluteBchAmount = denominateSats
+  const absoluteBchAmount = shouldDenominateSats
     ? absoluteSatsAmount
     : satsToBch(absoluteSatsAmount);
 
@@ -103,5 +103,5 @@ export function formatSatoshis(amount) {
     sign: "",
   };
 
-  return hideBalance ? displayHidden : displayAmount;
+  return shouldHideBalance ? displayHidden : displayAmount;
 }

@@ -5,16 +5,21 @@
   },
   "extends": [
     "airbnb",
+    "airbnb/hooks",
+    "airbnb-typescript",
+    "plugin:@typescript-eslint/recommended",
     "plugin:prettier/recommended",
     "plugin:react/recommended",
     "plugin:react-hooks/recommended",
     "plugin:jsx-a11y/recommended"
   ],
+  "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "ecmaVersion": "latest",
-    "sourceType": "module"
+    "sourceType": "module",
+    "project": "./tsconfig.json"
   },
-  "plugins": ["prettier", "react"],
+  "plugins": ["prettier", "react", "@typescript-eslint"],
   "rules": {
     "prettier/prettier": ["error"],
     "import/prefer-default-export": ["off"],
@@ -29,7 +34,6 @@
       }
     ],
     "import/no-unresolved": ["off"],
-    "camelcase": ["off"],
     "space-before-function-paren": [
       "error",
       { "anonymous": "always", "named": "never", "asyncArrow": "always" }
@@ -38,17 +42,80 @@
       "error",
       { "props": true, "ignorePropertyModificationsFor": ["state"] }
     ],
-    "no-use-before-define": [
+    "spaced-comment": ["off"],
+    "react/react-in-jsx-scope": ["off"],
+    "@typescript-eslint/no-use-before-define": [
       "error",
       {
         "functions": false,
         "classes": true,
         "variables": true,
+        "typedefs": true,
+        "enums": true,
         "allowNamedExports": true
       }
     ],
-    "spaced-comment": ["off"],
-    "react/react-in-jsx-scope": ["off"]
+    "@typescript-eslint/naming-convention": [
+      "error",
+      {
+        "selector": "variable",
+        "format": [
+          "strictCamelCase",
+          "UPPER_CASE",
+          "snake_case",
+          "StrictPascalCase"
+        ]
+      },
+      {
+        "selector": "function",
+        "format": ["strictCamelCase", "snake_case", "StrictPascalCase"]
+      },
+      {
+        "selector": "typeLike",
+        "format": ["StrictPascalCase"]
+      },
+      {
+        "selector": "memberLike",
+        "modifiers": ["private"],
+        "format": ["strictCamelCase"],
+        "leadingUnderscore": "require"
+      },
+      {
+        "selector": "variable",
+        "types": ["boolean"],
+        "format": ["StrictPascalCase"],
+        "prefix": ["is", "should", "has", "can", "did", "will"]
+      },
+      {
+        "selector": "property",
+        "types": ["string"],
+        "filter": {
+          "regex": "_",
+          "match": false
+        },
+        "format": ["strictCamelCase", "snake_case"],
+        "leadingUnderscore": "forbid",
+        "trailingUnderscore": "forbid"
+      },
+      {
+        "selector": "parameter",
+        "format": ["strictCamelCase", "snake_case"],
+        "leadingUnderscore": "forbid",
+        "trailingUnderscore": "forbid",
+        "filter": {
+          "regex": "_",
+          "match": false
+        }
+      },
+      {
+        "selector": "objectLiteralProperty",
+        "filter": {
+          "regex": "[a-z]{2}_[A-Z]{2}",
+          "match": true
+        },
+        "format": null
+      }
+    ]
   },
   "settings": {
     "react": {

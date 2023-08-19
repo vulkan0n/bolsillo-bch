@@ -1,7 +1,7 @@
 import { Outlet } from "react-router-dom";
-import BottomNavigation from "./BottomNavigation";
 import { useSelector } from "react-redux";
 import { selectScannerIsScanning, selectKeyboardIsOpen } from "@/redux/device";
+import BottomNavigation from "./BottomNavigation";
 
 function MainLayout() {
   const isScanning = useSelector(selectScannerIsScanning);
@@ -10,12 +10,10 @@ function MainLayout() {
   const padding = isKeyboardOpen ? "" : "bottomPadding";
 
   return (
-    <>
-      <main className={`${bgColor} ${padding}`}>
-        <Outlet />
-        <BottomNavigation />
-      </main>
-    </>
+    <main className={`${bgColor} ${padding}`}>
+      <Outlet />
+      <BottomNavigation />
+    </main>
   );
 }
 

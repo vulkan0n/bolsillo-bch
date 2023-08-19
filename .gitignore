@@ -27,6 +27,9 @@ dist-ssr
 *.sln
 *.sw?
 
+# Capacitor / Native outputs
+App/output
 android/app/release
 android/app/capacitor.build.gradle
 android/capacitor.settings.gradle
+
