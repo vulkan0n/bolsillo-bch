@@ -15,16 +15,13 @@ export function validateInvoiceString(invoice) {
     !isCashAddress && typeof decodeBase58Address(address) === "object";
 
   const isValid = isCashAddress || isBase58Address;
-  const validAddress = isValid
-    ? isCashAddress
-      ? prefixedAddress
-      : address
-    : "";
+  const validCashAddress = isCashAddress ? prefixedAddress : address;
+  const finalCashAddress = isValid ? validCashAddress : "";
 
   const query = new Decimal(amount) > 0 ? `?amount=${amount}` : "";
 
   return {
-    address: validAddress,
+    address: finalCashAddress,
     amount,
     query,
     isValid,

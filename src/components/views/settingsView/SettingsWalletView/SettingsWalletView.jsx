@@ -1,10 +1,7 @@
 import { useState, useRef } from "react";
 import { useParams, useNavigate, Navigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  selectActiveWalletId,
-  selectLocalCurrency,
-} from "@/redux/preferences";
+import { selectActiveWalletId, selectLocalCurrency } from "@/redux/preferences";
 import { walletBoot, walletReload } from "@/redux/wallet";
 import { selectLocale } from "@/redux/device";
 import { syncReconnect } from "@/redux/sync";
@@ -89,9 +86,12 @@ export default function SettingsWalletView() {
     } else {
       // if user hesitates, reset the counter
       clearTimeout(deleteRef.current);
-      deleteRef.current = setTimeout(() => {
-        setDeleteConfirm(0);
-      }, 3250 + deleteConfirm * 600); // give them time to read the prompts though
+      deleteRef.current = setTimeout(
+        () => {
+          setDeleteConfirm(0);
+        },
+        3250 + deleteConfirm * 600
+      ); // give them time to read the prompts though
     }
   };
 
@@ -169,7 +169,11 @@ export default function SettingsWalletView() {
           {wallet.balance > 0 && (
             <div className="text-lg text-center text-zinc-500">
               {translate(lastKnownBalance)}:{" "}
-              {formatSatoshis(wallet.balance)[preferLocalCurrency ? "fiat" : "bch"]}
+              {
+                formatSatoshis(wallet.balance)[
+                  preferLocalCurrency ? "fiat" : "bch"
+                ]
+              }
             </div>
           )}
         </div>

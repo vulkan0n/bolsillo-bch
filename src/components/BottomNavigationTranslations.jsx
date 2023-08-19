@@ -35,7 +35,7 @@ const translations = {
     uk: "Гаманець",
     ur: "والٹ",
     vi: "Ví",
-    zh: "钱包"
+    zh: "钱包",
   },
   settings: {
     ar: "إعدادات",
@@ -73,8 +73,8 @@ const translations = {
     uk: "Налаштування",
     ur: "ترتیبات",
     vi: "Cài đặt",
-    zh: "设置"
-  }
+    zh: "设置",
+  },
 };
 
 export default translations;

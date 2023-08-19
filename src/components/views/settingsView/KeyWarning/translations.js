@@ -36,8 +36,8 @@ const translations = {
     ur: "براہ کرم اپنے والیٹ بحالی جملے کا بیک اپ بنائیں",
     vi: "VUI LÒNG SAO LƯU CÂU KHÔI PHỤC VÍ CỦA BẠN",
     zh: "请备份您的钱包恢复短语",
-    zh_TW: "請備份您的錢包恢復短語"
-  }
+    zh_TW: "請備份您的錢包恢復短語",
+  },
 };
 
 export default translations;

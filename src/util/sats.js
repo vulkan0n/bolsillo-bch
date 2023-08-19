@@ -84,7 +84,10 @@ export function formatSatoshis(amount) {
   /* eslint-disable no-new-wrappers */
   const fiatDisplay = `${new Number(Currency.satsToFiat(amount)).toLocaleString(
     locale,
-    { style: "currency", currency: localCurrency }
+    {
+      style: "currency",
+      currency: localCurrency,
+    }
   )}`;
 
   const displayAmount = {

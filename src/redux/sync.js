@@ -1,3 +1,4 @@
+/* eslint-disable no-use-before-define */
 import {
   createAction,
   createReducer,
@@ -27,6 +28,7 @@ export const syncMiddleware = createListenerMiddleware();
 // syncConnect: request/retry electrum connection
 export const syncConnect = createAsyncThunk(
   "sync/connect",
+  /* eslint-disable default-param-last */
   async (attempts = 0, thunkApi) => {
     try {
       await Electrum.connect();
@@ -36,7 +38,7 @@ export const syncConnect = createAsyncThunk(
       setTimeout(() =>
         thunkApi.dispatch(
           syncConnect(attempts + 1),
-          Math.min(Math.pow(1000 * attempts, 2), 30 * 1000) // exponential backoff up to 30 seconds
+          Math.min((1000 * attempts) ** 2, 30 * 1000) // exponential backoff up to 30 seconds
         )
       );
     }
@@ -94,8 +96,8 @@ syncMiddleware.startListening({
 // TODO: check to see if duplicate subscriptions are even a problem...
 export const syncSubscribeAddress = createAsyncThunk(
   "sync/subscribeAddress",
-  async (address, thunkApi) => {
-    return await Electrum.subscribeToAddress(address);
+  async (address) => {
+    return Electrum.subscribeToAddress(address);
   }
 );
 
@@ -143,7 +145,7 @@ syncMiddleware.startListening({
 // requests current utxo set for an address
 const syncAddressUtxos = createAsyncThunk(
   "sync/addressUtxos",
-  async (address, thunkApi) => {
+  async (address) => {
     // we will always need the up-to-date utxo set
     const utxos = await Electrum.requestUtxos(address);
     return {
@@ -246,22 +248,19 @@ export const syncTxAmount = createAsyncThunk(
   }
 );
 
-export const syncBlock = createAsyncThunk(
-  "sync/block",
-  async (height, thunkApi) => {
-    const Blockchain = new BlockchainService();
-    let block = Blockchain.getBlockByHeight(height);
+export const syncBlock = createAsyncThunk("sync/block", async (height) => {
+  const Blockchain = new BlockchainService();
+  let block = Blockchain.getBlockByHeight(height);
 
-    if (block === null || block.header === null) {
-      const header = await Electrum.requestBlock(height);
-      Blockchain.registerBlock({ header, height });
-      block = Blockchain.getBlockByHeight(height);
-    }
-
-    console.log("sync/block", block);
-    return block;
+  if (block === null || block.header === null) {
+    const header = await Electrum.requestBlock(height);
+    Blockchain.registerBlock({ header, height });
+    block = Blockchain.getBlockByHeight(height);
   }
-);
+
+  // console.log("sync/block", block);
+  return block;
+});
 
 // TODO: keep last 4032 blocks (28 days)
 export const syncChaintip = createAction("sync/chaintip");
@@ -269,7 +268,7 @@ syncMiddleware.startListening({
   actionCreator: syncChaintip,
   effect: async (action, listenerApi) => {
     const chaintip = action.payload;
-    console.log("sync/chaintip", chaintip);
+    // console.log("sync/chaintip", chaintip);
     listenerApi.dispatch(syncBlock(chaintip.height));
     listenerApi.dispatch(fetchExchangeRates());
   },
@@ -288,37 +287,37 @@ const initialState = {
 
 export const syncReducer = createReducer(initialState, (builder) => {
   builder
-    .addCase(syncConnectionUp, (state, action) => {
+    .addCase(syncConnectionUp, (state) => {
       state.connected = true;
     })
-    .addCase(syncConnectionDown, (state, action) => {
+    .addCase(syncConnectionDown, (state) => {
       state.connected = false;
     })
-    .addCase(syncReconnect.pending, (state, action) => {
+    .addCase(syncReconnect.pending, (state) => {
       state.connected = false;
     })
-    .addCase(syncAddressUtxos.pending, (state, action) => {
+    .addCase(syncAddressUtxos.pending, (state) => {
       state.syncPending.utxo = true;
     })
-    .addCase(syncAddressUtxos.fulfilled, (state, action) => {
+    .addCase(syncAddressUtxos.fulfilled, (state) => {
       state.syncPending.utxo = false;
     })
-    .addCase(syncAddressHistory.pending, (state, action) => {
+    .addCase(syncAddressHistory.pending, (state) => {
       state.syncPending.history = true;
     })
-    .addCase(syncAddressHistory.fulfilled, (state, action) => {
+    .addCase(syncAddressHistory.fulfilled, (state) => {
       state.syncPending.history = false;
     })
-    .addCase(syncTxRequest.pending, (state, action) => {
+    .addCase(syncTxRequest.pending, (state) => {
       state.syncPending.txRequest = true;
     })
-    .addCase(syncTxRequest.fulfilled, (state, action) => {
+    .addCase(syncTxRequest.fulfilled, (state) => {
       state.syncPending.txRequest = false;
     })
-    .addCase(syncTxAmount.pending, (state, action) => {
+    .addCase(syncTxAmount.pending, (state) => {
       state.syncPending.txAmount = true;
     })
-    .addCase(syncTxAmount.fulfilled, (state, action) => {
+    .addCase(syncTxAmount.fulfilled, (state) => {
       state.syncPending.txAmount = false;
     })
     .addCase(syncChaintip, (state, action) => {

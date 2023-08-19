@@ -36,8 +36,8 @@ const translations = {
     ur: "ٹارچ",
     vi: "Đèn pin",
     zh: "手电筒",
-    zh_TW: "火炬"
-  }
+    zh_TW: "火炬",
+  },
 };
 
 export default translations;

@@ -36,8 +36,8 @@ const translations = {
     ur: "والٹ بنائیں/درآمد کریں",
     vi: "Tạo/Import Ví",
     zh: "创建/导入钱包",
-    zh_TW: "創建/導入錢包"
-  }
+    zh_TW: "創建/導入錢包",
+  },
 };
 
 export default translations;
