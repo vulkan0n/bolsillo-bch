@@ -39,8 +39,9 @@ export default function WalletViewHome() {
 
   const preferences = useSelector(selectPreferences);
 
-  const [skip, setSkip] = useState(0);
-  const [showRequestAmount, setShowRequestAmount] = useState(false);
+  //const [skip, setSkip] = useState(0);
+  const skip = 0;
+  const [shouldShowRequestAmount, setShouldShowRequestAmount] = useState(false);
   const [satoshiInput, setSatoshiInput] = useState({ display: "0", sats: 0 });
 
   const unusedAddresses = useMemo(
@@ -54,11 +55,11 @@ export default function WalletViewHome() {
       : "";
 
   const qrRequest =
-    showRequestAmount && satoshiInput.sats > 0
+    shouldShowRequestAmount && satoshiInput.sats > 0
       ? `${address}?amount=${satsToBch(satoshiInput.sats)}`
       : address;
 
-  const skipAddress = () => setSkip((skip + 1) % 5);
+  //const skipAddress = () => setSkip((skip + 1) % 5);
 
   const getQrLogoImage = (logo) => logos[logo.toLowerCase()].img;
 
@@ -110,6 +111,7 @@ export default function WalletViewHome() {
       ) : (
         <div className="py-3 px-2 text-center">
           <button
+            type="button"
             className="w-fit h-fit border border-4 border-primary/80 cursor-pointer shadow active:shadow-none active:bg-primary active:shadow-inner"
             onClick={copyAddressToClipboard}
           >
@@ -125,40 +127,41 @@ export default function WalletViewHome() {
             />
           </button>
 
-          <div
+          <button
+            type="button"
             onClick={copyAddressToClipboard}
             className="w-fit mx-auto text-xs font-mono text-center break-all cursor-pointer text-primary slashed-zero select-none my-2 rounded p-1 shadow-sm my-2 active:bg-primary active:text-white active:shadow-none active:shadow-inner"
           >
             <CopyOutlined className="mr-1" />
             <Address address={address} />
-          </div>
+          </button>
 
           <div className="mt-2 mx-auto select-none opacity-90">
             <animated.div
               className={`py-1.5 px-2 w-max justify-center shadow-sm outline outline-2 outline-primary flex items-center mx-auto cursor-pointer ${
-                showRequestAmount
+                shouldShowRequestAmount
                   ? "rounded-t pb-1 font-semibold bg-primary text-white active:bg-white active:text-primary active:font-normal"
                   : "rounded bg-white text-zinc-600 active:bg-primary active:text-white active:font-semibold"
               } active:shadow-none active:shadow-inner`}
               onClick={() => {
                 requestSpringsApi.start({
-                  to: showRequestAmount ? { scale: 0.875 } : { scale: 1 },
+                  to: shouldShowRequestAmount ? { scale: 0.875 } : { scale: 1 },
                 });
                 requestOpenSpringsApi.start({
                   to: {
-                    opacity: showRequestAmount ? 0 : 1,
-                    scaleY: showRequestAmount ? 0 : 1,
-                    scaleX: showRequestAmount ? 0.5 : 1,
-                    y: showRequestAmount ? -16 : 0,
+                    opacity: shouldShowRequestAmount ? 0 : 1,
+                    scaleY: shouldShowRequestAmount ? 0 : 1,
+                    scaleX: shouldShowRequestAmount ? 0.5 : 1,
+                    y: shouldShowRequestAmount ? -16 : 0,
                   },
                 });
-                setShowRequestAmount(!showRequestAmount);
+                setShouldShowRequestAmount(!shouldShowRequestAmount);
               }}
               style={{ ...requestSprings }}
             >
               <FormOutlined className="mr-1" />
               {translate(requestAmount)}
-              {showRequestAmount ? (
+              {shouldShowRequestAmount ? (
                 <CaretDownOutlined className="ml-1" />
               ) : (
                 <CaretRightOutlined className="ml-1" />
@@ -168,7 +171,7 @@ export default function WalletViewHome() {
               className="bg-primary text-white p-1.5 shadow-sm rounded min-w-[200px] w-fit max-w-[20.5em] mx-auto flex items-center"
               style={{ ...requestOpenSprings }}
             >
-              {showRequestAmount && (
+              {shouldShowRequestAmount && (
                 <>
                   <CurrencySymbol className="text-xl font-bold font-mono px-0.5" />
                   <SatoshiInput

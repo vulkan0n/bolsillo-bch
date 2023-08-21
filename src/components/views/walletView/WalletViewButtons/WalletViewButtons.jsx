@@ -25,35 +25,6 @@ export default function WalletViewButtons() {
   const navigate = useNavigate();
   const isScanning = useSelector(selectScannerIsScanning);
 
-  const pasteAddressFromClipboard = async () => {
-    let valid = false;
-    try {
-      // NOTE: Firefox does not support the Clipboard.read browser API yet!
-      // https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Interact_with_the_clipboard#api.clipboard
-      // Error: Reading from clipboard not supported in this browser
-      // This paste button just won't work on Firefox
-      // And Capacitor does not provide a way to check for individual browsers
-      const paste = (await Clipboard.read()).value;
-      valid = forwardOnValidAddress(paste);
-    } catch (e) {
-      console.warn(e);
-    } finally {
-      const titleTranslation = translate(noBchAddress);
-      const descriptionTranslation = translate(pleaseCopy);
-
-      if (!valid) {
-        showToast({
-          icon: <ExclamationCircleFilled className="text-primary text-4xl" />,
-          title: titleTranslation,
-          description: descriptionTranslation,
-          options: {
-            duration: 2000,
-          },
-        });
-      }
-    }
-  };
-
   const forwardOnValidAddress = (input) => {
     // go to send screen when valid address is entered
     const { isValid, address, query } = validateInvoiceString(input);
@@ -66,6 +37,34 @@ export default function WalletViewButtons() {
     }
 
     return isValid;
+  };
+
+  const pasteAddressFromClipboard = async () => {
+    let isValid = false;
+    try {
+      // NOTE: Firefox does not support the Clipboard.read browser API yet!
+      // https://developer.mozilla.org/en-US/docs/Web/API/Clipboard#clipboard_availability
+      // Error: Reading from clipboard not supported in this browser
+      // Firefox users must set "dom.events.asyncClipboard.read" to "true" in about:config
+      const paste = (await Clipboard.read()).value;
+      isValid = forwardOnValidAddress(paste);
+    } catch (e) {
+      //console.warn(e);
+    } finally {
+      const titleTranslation = translate(noBchAddress);
+      const descriptionTranslation = translate(pleaseCopy);
+
+      if (!isValid) {
+        showToast({
+          icon: <ExclamationCircleFilled className="text-primary text-4xl" />,
+          title: titleTranslation,
+          description: descriptionTranslation,
+          options: {
+            duration: 2000,
+          },
+        });
+      }
+    }
   };
 
   const handleHistoryButton = () => {

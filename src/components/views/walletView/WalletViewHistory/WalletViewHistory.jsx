@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { ArrowLeftOutlined } from "@ant-design/icons";
 import { selectLocale } from "@/redux/device";
-import { selectLocalCurrency } from "@/redux/preferences";
+import { selectCurrencySettings } from "@/redux/preferences";
 import { formatSatoshis } from "@/util/sats";
 import { selectTransactionHistory } from "@/redux/transactions";
 
@@ -17,7 +17,7 @@ export default function WalletViewHistory() {
   const navigate = useNavigate();
   const locale = useSelector(selectLocale);
   const transactions = useSelector(selectTransactionHistory);
-  const { preferLocalCurrency } = useSelector(selectLocalCurrency);
+  const { shouldPreferLocalCurrency } = useSelector(selectCurrencySettings);
 
   const receiveStyle = "text-secondary";
   const sendStyle = "text-error";
@@ -32,9 +32,12 @@ export default function WalletViewHistory() {
           {transactions.map((tx, i) =>
             i < 100 ? (
               <li key={tx.txid} className="flex px-1 py-2">
-                <div
+                <button
+                  type="button"
                   className="flex-1 text-sm"
-                  onClick={() => console.log(tx.time, new Date(tx.time))}
+                  onClick={
+                    () => null /*console.log(tx.time, new Date(tx.time))*/
+                  }
                 >
                   <div
                     className={`${tx.amount > 0 ? receiveStyle : sendStyle}`}
@@ -44,7 +47,7 @@ export default function WalletViewHistory() {
                   <div className="text-sm opacity-80">
                     {new Date(tx.time).toLocaleTimeString(locale)}
                   </div>
-                </div>
+                </button>
                 <div className="flex-1 text-right">
                   <div
                     className={`font-mono ${
@@ -54,14 +57,14 @@ export default function WalletViewHistory() {
                     {tx.amount > 0 && "+"}
                     {
                       formatSatoshis(tx.amount)[
-                        preferLocalCurrency ? "fiat" : "bch"
+                        shouldPreferLocalCurrency ? "fiat" : "bch"
                       ]
                     }
                   </div>
                   <div className="text-sm opacity-80">
                     {
                       formatSatoshis(tx.amount)[
-                        preferLocalCurrency ? "bch" : "fiat"
+                        shouldPreferLocalCurrency ? "bch" : "fiat"
                       ]
                     }
                   </div>
@@ -72,12 +75,17 @@ export default function WalletViewHistory() {
         </ul>
       </div>
       <Button
-        icon={() => (
-          <>
-            <ArrowLeftOutlined className="mr-1" />
-            {translate(back)}
-          </>
-        )}
+        icon={
+          <Button
+            icon={
+              <>
+                <ArrowLeftOutlined className="mr-1" />
+                {translate(back)}
+              </>
+            }
+            onClick={() => navigate(-1)}
+          />
+        }
         onClick={() => navigate(-1)}
       />
     </div>

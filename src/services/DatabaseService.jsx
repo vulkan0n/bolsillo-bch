@@ -8,7 +8,7 @@ const SELENE_DB_FILE = "db/selene.db";
 
 // Connect to SQLite Database
 // use top-level pointers to ensure db is only loaded into memory once
-const SQL = await initSqlJs({ locateFile: (file) => "/sql-wasm.wasm" });
+const SQL = await initSqlJs({ locateFile: () => "/sql-wasm.wasm" });
 let db = null;
 let flushPending = null;
 
@@ -26,7 +26,7 @@ try {
   });
   db = new SQL.Database(dbFile.data.split(","));
 } catch (e) {
-  console.warn("New Database File");
+  //console.warn("New Database File");
   db = new SQL.Database();
 }
 
@@ -50,7 +50,7 @@ export default function DatabaseService() {
       return result;
     }
 
-    const mapped = result[0].values.map((val, i) =>
+    const mapped = result[0].values.map((val) =>
       result[0].columns.map((col, j) => ({ [result[0].columns[j]]: val[j] }))
     );
 
@@ -111,6 +111,7 @@ export default function DatabaseService() {
       recursive: true,
     });
 
+    // eslint-disable-next-line no-console
     console.log("flushDatabase", result);
   }
 }

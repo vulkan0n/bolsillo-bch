@@ -1,6 +1,5 @@
 import { Decimal } from "decimal.js";
 import DatabaseService from "@/services/DatabaseService";
-import TransactionManagerService from "@/services/TransactionManagerService";
 import { DUST_LIMIT } from "@/util/sats";
 
 export default function UxtoManagerService(wallet_id) {
@@ -66,7 +65,7 @@ export default function UxtoManagerService(wallet_id) {
 
     // 1. if there's a whole address balance that's exact, spend the entire address
     const exactAddresses = eligibleAddresses.filter(
-      (address) => address.balance == targetAmount
+      (address) => address.balance === targetAmount
     );
     if (exactAddresses.length > 0) {
       return getAddressUtxos(exactAddresses[0].address);
@@ -85,7 +84,7 @@ export default function UxtoManagerService(wallet_id) {
 
     // 2. if there's an exact UTXO, use that UTXO and its address-mates
     const exactUtxos = eligibleUtxos.filter(
-      (utxo) => utxo.amount == targetAmount
+      (utxo) => utxo.amount === targetAmount
     );
     if (exactUtxos.length > 0) {
       return [exactUtxos[0], ...getAddressUtxos(exactUtxos[0].address)];
@@ -95,7 +94,7 @@ export default function UxtoManagerService(wallet_id) {
     const eligibleSum = eligibleUtxos.reduce((sum, cur) => sum + cur.amount, 0);
 
     // 4. if sum of utxos matches exactly, consolidate the UTXOs
-    if (eligibleSum == targetAmount) {
+    if (eligibleSum === targetAmount) {
       return eligibleUtxos;
     }
 

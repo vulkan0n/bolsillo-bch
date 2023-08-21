@@ -66,6 +66,7 @@ walletMiddleware.startListening({
           <img
             src={logos.selene.img}
             style={{ width: "64px", height: "64px" }}
+            alt=""
           />
         ),
         title: "Payment received!",
@@ -88,7 +89,7 @@ export const walletReducer = createReducer(initialState, (builder) => {
     .addCase(walletBalanceUpdate, (state, action) => {
       state.balance = action.payload.walletBalance;
     })
-    .addCase(walletReload, (state, action) => {
+    .addCase(walletReload, (state) => {
       return new WalletService().getWalletById(state.id);
     });
 });

@@ -1,3 +1,5 @@
+import PropTypes from "prop-types";
+
 export default function Address({ address, short }) {
   const PREFIX_LENGTH = 5;
   const SUFFIX_LENGTH = 5;
@@ -22,3 +24,13 @@ export default function Address({ address, short }) {
     </span>
   );
 }
+
+Address.propTypes = {
+  address: PropTypes.string,
+  short: PropTypes.bool,
+};
+
+Address.defaultProps = {
+  address: "-",
+  short: false,
+};

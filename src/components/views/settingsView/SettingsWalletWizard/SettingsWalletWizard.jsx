@@ -16,7 +16,7 @@ export default function SettingsWalletWizard() {
         title={translate(createImportWallet)}
       />
       <div className="flex items-center justify-center p-4 h-56 bg-zinc-800">
-        <img src={logos.selene.img} className="h-full" />
+        <img src={logos.selene.img} className="h-full" alt="" />
       </div>
       <div className="p-4">
         <Outlet />

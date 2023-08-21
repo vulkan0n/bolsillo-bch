@@ -1,3 +1,5 @@
+/* eslint-disable react/jsx-props-no-spreading */
+import PropTypes from "prop-types";
 import { PictureOutlined } from "@ant-design/icons";
 import { Camera } from "@capacitor/camera";
 import { Haptics } from "@capacitor/haptics";
@@ -6,7 +8,7 @@ import Button from "@/components/atoms/Button";
 import translations from "./translations";
 import { translate } from "@/util/translations";
 
-const { image } = translations;
+const { imageText } = translations;
 
 export default function ImageSelectButton({ onSelection, ...rest }) {
   // function to downscale images (helps QR codes read better)
@@ -52,10 +54,10 @@ export default function ImageSelectButton({ onSelection, ...rest }) {
           returnDetailedScanResult: true,
         });
         onSelection(result.data);
-        console.log(result.data);
+        //console.log(result.data);
       } catch (e) {
         Haptics.notification({ type: "ERROR" });
-        console.error(e);
+        //console.error(e);
       }
     };
   };
@@ -63,9 +65,13 @@ export default function ImageSelectButton({ onSelection, ...rest }) {
   return (
     <Button
       icon={PictureOutlined}
-      label={translate(image)}
+      label={translate(imageText)}
       onClick={handleImageSelectButton}
       {...rest}
     />
   );
 }
+
+ImageSelectButton.propTypes = {
+  onSelection: PropTypes.func.isRequired,
+};

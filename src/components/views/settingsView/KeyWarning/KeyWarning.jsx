@@ -1,3 +1,4 @@
+import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 import { WarningFilled } from "@ant-design/icons";
 
@@ -20,3 +21,10 @@ export default function KeyWarning({ wallet }) {
     </div>
   ) : null;
 }
+
+KeyWarning.propTypes = {
+  wallet: PropTypes.shape({
+    id: PropTypes.number.isRequired,
+    key_viewed: PropTypes.string.isRequired,
+  }).isRequired,
+};

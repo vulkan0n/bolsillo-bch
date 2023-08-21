@@ -195,7 +195,7 @@ export default function TransactionManagerService() {
     });
 
     if (generatedTx.success === false) {
-      console.warn("tx generation failed", generatedTx);
+      console.warn("tx generation failed", generatedTx); // eslint-disable-line no-console
       return null;
     }
 
@@ -245,9 +245,9 @@ export default function TransactionManagerService() {
   async function sendTransaction({ tx_hash, tx_hex }, wallet_id) {
     const Electrum = new ElectrumService();
     const result = await Electrum.broadcastTransaction(tx_hex);
-    const success = result === tx_hash;
+    const isSuccess = result === tx_hash;
 
-    if (success) {
+    if (isSuccess) {
       const UtxoManager = new UtxoManagerService(wallet_id);
       const decodedTx = libauth.decodeTransaction(hexToBin(tx_hex));
       const vin = getVinFromDecodedTransaction(decodedTx);
@@ -256,9 +256,9 @@ export default function TransactionManagerService() {
         UtxoManager.discardUtxo({ tx_hash: input.txid, tx_pos: input.vout });
       });
     } else {
-      console.warn("transaction send failure", result);
+      console.warn("transaction send failure", result); // eslint-disable-line no-console
     }
 
-    return success;
+    return isSuccess;
   }
 }

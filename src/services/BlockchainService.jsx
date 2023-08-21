@@ -35,12 +35,14 @@ export default function BlockchainService() {
           height="${block.height}";
       `
     );
+
+    saveDatabase();
   }
 
   // getBlocks: return all known blocks
   function getBlocks() {
     const result = resultToJson(db.exec(`SELECT * FROM blockchain;`));
-    console.log("getBlocks", result);
+    //console.log("getBlocks", result);
     return result;
   }
 
@@ -79,6 +81,7 @@ export default function BlockchainService() {
   }
 
   // decodeBlockHeader: extracts data from raw block header
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   function decodeBlockHeader(header) {
     /*
      * version: 4 bytes int
@@ -93,12 +96,12 @@ export default function BlockchainService() {
   }
 
   function verifyMerkleProof(txHash, txIndex, merkleBranch, merkleRoot) {
-    console.log("verifyMerkleProof", txHash, txIndex, merkleBranch, merkleRoot);
+    //console.log("verifyMerkleProof", txHash, txIndex, merkleBranch, merkleRoot);
 
     let hash = txHash;
     let index = txIndex;
 
-    for (let i = 0; i < merkleBranch.length; i++) {
+    for (let i = 0; i < merkleBranch.length; i += 1) {
       const branchHash = merkleBranch[i];
 
       if (index % 2 === 1) {

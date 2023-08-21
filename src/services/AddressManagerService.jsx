@@ -1,10 +1,7 @@
 import { sha256 } from "@bitauth/libauth";
 import DatabaseService from "@/services/DatabaseService";
 import HdNodeService from "@/services/HdNodeService";
-import TransactionManagerService from "@/services/TransactionManagerService";
-import { store } from "@/redux";
-import { selectActiveWallet } from "@/redux/wallet";
-import { binToHex, hexToBin } from "@/util/hex";
+import { binToHex } from "@/util/hex";
 
 // AddressManagerService: handles most address-related operations
 export default function AddressManagerService(wallet_id) {
@@ -101,7 +98,7 @@ export default function AddressManagerService(wallet_id) {
           WHERE wallet_id="${wallet_id}" 
           AND change='0' 
           ORDER BY hd_index DESC 
-          ${limit ? `LIMIT ${Number.parseInt(limit)}` : ""}
+          ${limit ? `LIMIT ${Number.parseInt(limit, 10)}` : ""}
         ;`
       )
     );
@@ -121,7 +118,7 @@ export default function AddressManagerService(wallet_id) {
           WHERE wallet_id=${wallet_id} 
           AND change='1' 
           ORDER BY hd_index DESC 
-          ${limit ? `LIMIT ${Number.parseInt(limit)}` : ""}
+          ${limit ? `LIMIT ${Number.parseInt(limit, 10)}` : ""}
         ;`
       )
     );
@@ -220,7 +217,6 @@ export default function AddressManagerService(wallet_id) {
 
   // calculateAddressState: calculate electrum address state using local tx history
   function calculateAddressState(address) {
-    const TransactionManager = new TransactionManagerService();
     const localHistory = new AddressManagerService().getAddressTransactions(
       address
     );

@@ -1,6 +1,6 @@
 import { Decimal } from "decimal.js";
 import { selectLocale } from "@/redux/device";
-import { selectPreferences, selectLocalCurrency } from "@/redux/preferences";
+import { selectPreferences, selectCurrencySettings } from "@/redux/preferences";
 import { store } from "@/redux";
 import CurrencyService from "@/services/CurrencyService";
 
@@ -21,7 +21,7 @@ export function bchToSats(bch) {
 
 export function satsToDisplayAmount(sats) {
   const preferences = selectPreferences(store.getState());
-  const { preferLocalCurrency, localCurrency } = selectLocalCurrency(
+  const { preferLocalCurrency, localCurrency } = selectCurrencySettings(
     store.getState()
   );
   const Currency = new CurrencyService(localCurrency);
@@ -64,7 +64,7 @@ export function formatSatoshis(amount) {
   const locale = selectLocale(store.getState());
   const preferences = selectPreferences(store.getState());
 
-  const { localCurrency } = selectLocalCurrency(store.getState());
+  const { localCurrency } = selectCurrencySettings(store.getState());
   const shouldDenominateSats = preferences.shouldDenominateSats === "true";
   const shouldHideBalance = preferences.hideAvailableBalance === "true";
 

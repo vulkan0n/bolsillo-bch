@@ -1,8 +1,13 @@
+import PropTypes from "prop-types";
+
 import { useEffect } from "react";
 import { Keyboard } from "@capacitor/keyboard";
 import { useSelector } from "react-redux";
 import { Decimal } from "decimal.js";
-import { selectLocalCurrency, selectDenomination } from "@/redux/preferences";
+import {
+  selectCurrencySettings,
+  selectDenomination,
+} from "@/redux/preferences";
 import { selectDeviceInfo } from "@/redux/device";
 import { bchToSats, MAX_SATOSHI, satsToDisplayAmount } from "@/util/sats";
 
@@ -12,14 +17,15 @@ export default function SatoshiInput({
   className,
   satoshiInput,
   onChange,
-  size = 20,
+  size,
 }) {
   const DECIMAL_KEYS = [".", ",", "_", " "];
 
   const deviceInfo = useSelector(selectDeviceInfo);
 
-  const { preferLocalCurrency: isPreferLocalCurrency, localCurrency } =
-    useSelector(selectLocalCurrency);
+  const { shouldPreferLocalCurrency, localCurrency } = useSelector(
+    selectCurrencySettings
+  );
 
   const denominateSats = useSelector(selectDenomination); // TODO: bits, mBCH
 
@@ -28,7 +34,7 @@ export default function SatoshiInput({
   // get raw satoshi value from any currency input
   const amountToSats = (amount) => {
     // fiat mode
-    if (isPreferLocalCurrency) {
+    if (shouldPreferLocalCurrency) {
       return Currency.fiatToSats(amount);
     }
 
@@ -45,17 +51,21 @@ export default function SatoshiInput({
   useEffect(() => {
     const sats = satoshiInput.sats ? satoshiInput.sats : 0;
     onChange({ display: satsToDisplayAmount(sats), sats });
-  }, [isPreferLocalCurrency, denominateSats]);
+  }, [shouldPreferLocalCurrency, denominateSats, satoshiInput.sats, onChange]);
 
   const getMaxDecimals = () => {
-    const maxDecimals = isPreferLocalCurrency ? 2 : denominateSats ? 0 : 8;
+    if (shouldPreferLocalCurrency) {
+      // fiat mode gets 2 decimals
+      return 2;
+    }
 
-    return maxDecimals;
+    // Sats mode has no decimals, BCH mode has 8 decimals
+    return denominateSats ? 0 : 8;
   };
 
   const numDecimalPlaces = (num) => {
     const split = num.split(".");
-    const major = split[0];
+    const major = split[0]; // eslint-disable-line @typescript-eslint/no-unused-vars
     const minor = split.length > 1 ? split[1] : "";
 
     return minor.length;
@@ -74,6 +84,22 @@ export default function SatoshiInput({
     );
 
     return amount;
+  };
+
+  const handleInputChange = (input) => {
+    const decimalInput = input.replace(/[^0-9.]/, ".");
+
+    const sats = new Decimal(amountToSats(decimalInput));
+    if (sats.greaterThan(MAX_SATOSHI)) {
+      return;
+    }
+
+    if (sats.lessThan(0)) {
+      onChange({ display: "0", sats: "0" });
+      return;
+    }
+
+    onChange({ display: decimalInput, sats });
   };
 
   // fired BEFORE text input is updated
@@ -101,7 +127,7 @@ export default function SatoshiInput({
         newInput = `${currentInput}.`;
       }
 
-      if (!isPreferLocalCurrency && denominateSats) {
+      if (!shouldPreferLocalCurrency && denominateSats) {
         newInput = currentInput;
       }
 
@@ -120,30 +146,14 @@ export default function SatoshiInput({
     const prevLastChar = prevInput.substring(prevInput.length - 1);
 
     const hasEndDecimal = DECIMAL_KEYS.includes(lastChar);
-    const prevHasEndDecimal = DECIMAL_KEYS.includes(prevLastChar);
+    const hasPrevEndDecimal = DECIMAL_KEYS.includes(prevLastChar);
 
     if (
       !hasEndDecimal || // allow dangling decimal (e.g. "123.")
-      (hasEndDecimal && !prevHasEndDecimal) // don't truncate decimals when user is trying to add/remove the decimal
+      (hasEndDecimal && !hasPrevEndDecimal) // don't truncate decimals when user is trying to add/remove the decimal
     ) {
       handleInputChange(truncateDecimals(input));
     }
-  };
-
-  const handleInputChange = (input) => {
-    const decimalInput = input.replace(/[^0-9.]/, ".");
-
-    const sats = new Decimal(amountToSats(decimalInput));
-    if (sats.greaterThan(MAX_SATOSHI)) {
-      return;
-    }
-
-    if (sats.lessThan(0)) {
-      onChange({ display: "0", sats: "0" });
-      return;
-    }
-
-    onChange({ display: decimalInput, sats });
   };
 
   return (
@@ -158,3 +168,17 @@ export default function SatoshiInput({
     />
   );
 }
+
+SatoshiInput.propTypes = {
+  className: PropTypes.string,
+  satoshiInput: PropTypes.number,
+  onChange: PropTypes.func,
+  size: PropTypes.number,
+};
+
+SatoshiInput.defaultProps = {
+  className: "",
+  satoshiInput: 0,
+  onChange: () => null,
+  size: 20,
+};

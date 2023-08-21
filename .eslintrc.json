@@ -3,6 +3,7 @@
     "browser": true,
     "es2021": true
   },
+  "ignorePatterns": ["*.test.*"],
   "extends": [
     "airbnb",
     "airbnb/hooks",
@@ -43,6 +44,7 @@
       { "props": true, "ignorePropertyModificationsFor": ["state"] }
     ],
     "spaced-comment": ["off"],
+    "no-underscore-dangle": ["off"],
     "react/react-in-jsx-scope": ["off"],
     "@typescript-eslint/no-use-before-define": [
       "error",
@@ -68,7 +70,8 @@
       },
       {
         "selector": "function",
-        "format": ["strictCamelCase", "snake_case", "StrictPascalCase"]
+        "format": ["strictCamelCase", "snake_case", "StrictPascalCase"],
+        "leadingUnderscore": "allow"
       },
       {
         "selector": "typeLike",
@@ -114,6 +117,20 @@
           "match": true
         },
         "format": null
+      },
+      {
+        "selector": [
+          "classProperty",
+          "objectLiteralProperty",
+          "typeProperty",
+          "classMethod",
+          "objectLiteralMethod",
+          "typeMethod",
+          "accessor",
+          "enumMember"
+        ],
+        "format": null,
+        "modifiers": ["requiresQuotes"]
       }
     ]
   },

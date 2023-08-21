@@ -19,7 +19,11 @@ export default function CreditsView() {
       <ViewHeader icon={() => null} title={translate(credits)} />
       <div className="bg-primary text-white text-center p-2">
         <div className="flex items-center justify-center h-40">
-          <img src={logos.selene.img} className="h-full" />
+          <img
+            src={logos.selene.img}
+            className="h-full"
+            alt="Selene Wallet Logo"
+          />
         </div>
         <h1 className="text-2xl font-bold">
           Selene Wallet v{SELENE_WALLET_VERSION}
@@ -34,11 +38,11 @@ export default function CreditsView() {
         <ol className="list-inside list-decimal">
           <li>majamalu</li>
           <li>toorik</li>
-          <li>"Satoshi Nakamoto"</li>
+          <li>&quot;Satoshi Nakamoto&quot;</li>
           <li>ErdoganTalk</li>
           <li>Mike Komaransky</li>
           <li>Anonymous</li>
-          <li>"Philip J Fry"</li>
+          <li>&quot;Philip J Fry&quot;</li>
           <li>Cheapy</li>
           <li>Jett</li>
           <li>imaginary_username</li>
@@ -48,7 +52,7 @@ export default function CreditsView() {
           <li>Bernanácatl</li>
           <li>pat</li>
           <li>Yasin</li>
-          <li>"ChatGPT"</li>
+          <li>&quot;ChatGPT&quot;</li>
           <li>Bitcoin Out Loud</li>
           <li>zmach1n3</li>
           <li>Omar</li>

@@ -77,11 +77,14 @@ export const selectActiveWalletId = createSelector(
   (state) => state.preferences.activeWalletId
 );
 
-export const selectLocalCurrency = createSelector(
+export const selectCurrencySettings = createSelector(
   (state) => state.preferences,
   (preferences) => ({
-    preferLocalCurrency: preferences.preferLocalCurrency === "true",
     localCurrency: preferences.localCurrency,
+    preferLocalCurrency: preferences.preferLocalCurrency === "true",
+    shouldPreferLocalCurrency: preferences.preferLocalCurrency === "true",
+    shouldHideBalance: preferences.hideAvailableBalance === "true",
+    shouldDisplayExchangeRate: preferences.displayExchangeRate === "true",
   })
 );
 
@@ -91,7 +94,7 @@ export const selectDenomination = createSelector(
   (preferences) => preferences.denominateSats === "true"
 );
 
-export const selectInstantPay = createSelector(
+export const selectInstantPaySettings = createSelector(
   (state) => state.preferences,
   (preferences) => ({
     isInstantPayEnabled: preferences.allowInstantPay === "true",

@@ -84,17 +84,19 @@ function NavButton({ to, icon, activeIcon, label }) {
     </NavLink>
   );
 }
+
+/* eslint-disable react/forbid-prop-types */
 NavButton.propTypes = {
   to: PropTypes.string,
-  icon: PropTypes.func,
-  activeIcon: PropTypes.func,
+  icon: PropTypes.object,
+  activeIcon: PropTypes.object,
   label: PropTypes.string,
 };
 
 NavButton.defaultProps = {
   to: "",
-  icon: () => null,
-  activeIcon: () => null,
+  icon: null,
+  activeIcon: null,
   label: "",
 };
 

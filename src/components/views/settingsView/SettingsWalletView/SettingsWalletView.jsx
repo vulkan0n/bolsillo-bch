@@ -1,6 +1,7 @@
 import { useState, useRef } from "react";
-import { useParams, useNavigate, Navigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
+
 import {
   WalletOutlined,
   LoginOutlined,
@@ -12,14 +13,22 @@ import {
   ToolOutlined,
   MedicineBoxOutlined,
 } from "@ant-design/icons";
-import { selectActiveWalletId, selectLocalCurrency } from "@/redux/preferences";
+
+import {
+  selectActiveWalletId,
+  selectCurrencySettings,
+} from "@/redux/preferences";
 import { walletBoot, walletReload } from "@/redux/wallet";
 import { selectLocale } from "@/redux/device";
 import { syncReconnect } from "@/redux/sync";
+
 import ViewHeader from "@/components/views/ViewHeader";
+
 import WalletService from "@/services/WalletService";
+
 import KeyWarning from "../KeyWarning/KeyWarning";
 import SettingsCategory from "../SettingsCategory";
+
 import { formatSatoshis } from "@/util/sats";
 import { translate } from "@/util/translations";
 import translations from "./translations";
@@ -52,18 +61,14 @@ export default function SettingsWalletView() {
   const activeWalletId = useSelector(selectActiveWalletId);
   const isActiveWallet = wallet_id === activeWalletId;
 
-  const { preferLocalCurrency } = useSelector(selectLocalCurrency);
+  const { preferLocalCurrency } = useSelector(selectCurrencySettings);
 
   const WalletManager = new WalletService();
   const wallet = WalletManager.getWalletById(wallet_id);
 
-  // if invalid wallet_id passed via queryparams, redirect back to settings
-  if (wallet === null) {
-    return <Navigate to="/settings" />;
-  }
-
   // toggle visibility for recovery phrase
-  const [showRecoveryPhrase, setShowRecoveryPhrase] = useState(false);
+  const [shouldShowRecoveryPhrase, setShouldShowRecoveryPhrase] =
+    useState(false);
 
   // toggle editing state for "wallet name"
   const [isEditingWalletName, setIsEditingWalletName] = useState(false);
@@ -72,7 +77,7 @@ export default function SettingsWalletView() {
   // user must tap "delete wallet" button multiple times to confirm
   const [deleteConfirm, setDeleteConfirm] = useState(0);
   const deleteRef = useRef(null);
-  const deleteDisabled = deleteConfirm === 2 && wallet.key_viewed === null;
+  const isDeleteDisabled = deleteConfirm === 2 && wallet.key_viewed === null;
 
   // handler for "Delete Wallet" button
   const handleDeleteWallet = () => {
@@ -104,12 +109,12 @@ export default function SettingsWalletView() {
 
   // handler for mnemonic visibility area
   const handleShowMnemonic = () => {
-    if (showRecoveryPhrase === false) {
-      setShowRecoveryPhrase(true);
+    if (shouldShowRecoveryPhrase === false) {
+      setShouldShowRecoveryPhrase(true);
       WalletManager.updateKeyViewed(wallet_id);
       dispatch(walletReload());
     } else {
-      setShowRecoveryPhrase(false);
+      setShouldShowRecoveryPhrase(false);
     }
   };
 
@@ -207,9 +212,9 @@ export default function SettingsWalletView() {
               type="button"
               onClick={handleDeleteWallet}
               className={`rounded-lg p-4 bg-error text-zinc-50 w-full ${
-                deleteDisabled ? "saturate-[.60]" : ""
+                isDeleteDisabled ? "saturate-[.60]" : ""
               }`}
-              disabled={deleteDisabled}
+              disabled={isDeleteDisabled}
             >
               <div className="flex items-center">
                 {deleteConfirm > 0 ? (
@@ -218,24 +223,29 @@ export default function SettingsWalletView() {
                   <DeleteOutlined className="text-2xl mr-1" />
                 )}
                 <div className="flex-1">
-                  {deleteConfirm === 0
-                    ? translate(deleteWallet)
-                    : deleteConfirm === 1
-                    ? translate(areYouSure)
-                    : deleteConfirm === 2
-                    ? translate(ensureRecoveryPhrase)
-                    : `${translate(confirmDelete)} "${wallet.name}"`}
+                  {
+                    /* eslint-disable no-nested-ternary */
+                    deleteConfirm === 0
+                      ? translate(deleteWallet)
+                      : deleteConfirm === 1
+                      ? translate(areYouSure)
+                      : deleteConfirm === 2
+                      ? translate(ensureRecoveryPhrase)
+                      : `${translate(confirmDelete)} "${wallet.name}"`
+                    /* eslint-enable no-nested-ternary */
+                  }
                 </div>
               </div>
             </button>
           </div>
         </div>
         <KeyWarning wallet={wallet} />
-        <div
-          className="bg-zinc-700 flex-col rounded-lg flex items-center justify-center my-4 px-2 py-4 cursor-pointer"
+        <button
+          type="button"
+          className="w-full bg-zinc-700 flex-col rounded-lg flex items-center justify-center my-4 px-2 py-4 cursor-pointer"
           onClick={handleShowMnemonic}
         >
-          {showRecoveryPhrase ? (
+          {shouldShowRecoveryPhrase ? (
             <div className="flex flex-col justify-between items-center">
               <div className="text-center text-error text-xl font-bold">
                 <WarningFilled className="mr-2 text-warning" />
@@ -262,7 +272,7 @@ export default function SettingsWalletView() {
               </div>
             </>
           )}
-        </div>
+        </button>
         {
           /* Only show "Advanced Options" if user has viewed (TODO: verified) their recovery phrase */
           wallet.key_viewed !== null && isActiveWallet && (
@@ -270,14 +280,16 @@ export default function SettingsWalletView() {
               icon={ToolOutlined}
               title={translate(advancedOptions)}
             >
-              <button
-                type="button"
-                className="w-full block p-2 text-left"
-                onClick={handleRebuildWallet}
-              >
-                <MedicineBoxOutlined className="text-xl mr-1" />
-                {translate(rebuildWallet)}
-              </button>
+              <SettingsCategory.Child icon={() => null} label="">
+                <button
+                  type="button"
+                  className="w-full text-left"
+                  onClick={handleRebuildWallet}
+                >
+                  <MedicineBoxOutlined className="text-xl mr-1" />
+                  {translate(rebuildWallet)}
+                </button>
+              </SettingsCategory.Child>
             </SettingsCategory>
           )
         }

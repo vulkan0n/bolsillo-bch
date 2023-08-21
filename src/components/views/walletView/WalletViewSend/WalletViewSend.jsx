@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import PropTypes from "prop-types";
+import { useState, useEffect, useCallback } from "react";
 import { useParams, useSearchParams, useNavigate } from "react-router-dom";
 
 import { Haptics } from "@capacitor/haptics";
@@ -6,7 +7,10 @@ import { Haptics } from "@capacitor/haptics";
 import { useSelector } from "react-redux";
 import { ArrowLeftOutlined } from "@ant-design/icons";
 import { selectActiveWallet } from "@/redux/wallet";
-import { selectLocalCurrency, selectInstantPay } from "@/redux/preferences";
+import {
+  selectCurrencySettings,
+  selectInstantPaySettings,
+} from "@/redux/preferences";
 
 import { selectKeyboardIsOpen } from "@/redux/device";
 
@@ -47,10 +51,11 @@ export default function WalletViewSend() {
 
   const [message, setMessage] = useState("");
 
-  const { localCurrency, preferLocalCurrency } =
-    useSelector(selectLocalCurrency);
+  const { localCurrency, shouldPreferLocalCurrency } = useSelector(
+    selectCurrencySettings
+  );
 
-  const currency = preferLocalCurrency ? localCurrency : "BCH";
+  const currency = shouldPreferLocalCurrency ? localCurrency : "BCH";
 
   const querySats = searchParams.get("amount")
     ? bchToSats(searchParams.get("amount"))
@@ -65,31 +70,16 @@ export default function WalletViewSend() {
 
   const isInsufficientFunds = wallet.balance < satoshiInput.sats;
 
+  const { isInstantPayEnabled, instantPayThreshold } = useSelector(
+    selectInstantPaySettings
+  );
+
   const handleAmountInput = (satInput) => {
     setSatoshiInput(satInput);
     setMessage("");
   };
 
-  const { isInstantPayEnabled, instantPayThreshold } =
-    useSelector(selectInstantPay);
-
-  useEffect(function handleInstantPay() {
-    if (!isInstantPayEnabled) {
-      return;
-    }
-
-    const threshold = Number.parseInt(instantPayThreshold);
-    const requestAmount = Number.parseInt(
-      bchToSats(searchParams.get("amount") || 0)
-    );
-
-    if (requestAmount > 0 && requestAmount <= threshold) {
-      console.log("instapay!", threshold, requestAmount);
-      confirmSend();
-    }
-  }, []);
-
-  async function confirmSend() {
+  const confirmSend = useCallback(async () => {
     if (isInsufficientFunds) {
       await Haptics.notification({ type: "WARNING" });
       const insufficientFundsTranslation = translate(insufficientFunds);
@@ -125,7 +115,27 @@ export default function WalletViewSend() {
       const transactionFailedTranslation = translate(transactionFailed);
       setMessage(transactionFailedTranslation);
     }
-  }
+  }, [address, isInsufficientFunds, navigate, satoshiInput.sats, wallet.id]);
+
+  useEffect(
+    function handleInstantPay() {
+      if (!isInstantPayEnabled) {
+        return;
+      }
+
+      const threshold = Number.parseInt(instantPayThreshold, 10);
+      const requestAmount = Number.parseInt(
+        bchToSats(searchParams.get("amount") || 0),
+        10
+      );
+
+      if (requestAmount > 0 && requestAmount <= threshold) {
+        //console.log("instapay!", threshold, requestAmount);
+        confirmSend();
+      }
+    },
+    [confirmSend, instantPayThreshold, isInstantPayEnabled, searchParams]
+  );
 
   const handleSendMax = () => {
     let amount = wallet.balance;
@@ -187,7 +197,7 @@ export default function WalletViewSend() {
             />
             <Button
               className="text-xs spacing-wide font-semibold text-zinc-800 rounded-full border border-zinc-200 bg-zinc-100"
-              icon={({ className }) => <span className={className}>MAX</span>}
+              icon={MaxButton}
               iconSize="xs font-bold"
               onClick={handleSendMax}
             />
@@ -196,10 +206,10 @@ export default function WalletViewSend() {
 
         <div className="p-2 relative text-center w-full">
           <span className="text-2xl font-semibold text-center w-full text-zinc-800/80">
-            {preferLocalCurrency ? displayAmount.bch : displayAmount.fiat}
+            {shouldPreferLocalCurrency ? displayAmount.bch : displayAmount.fiat}
           </span>
           <div className="absolute top-2 right-2 flex items-center">
-            <Button icon={() => <CurrencyFlip className="text-xl" />} />
+            <Button icon={<CurrencyFlip className="text-xl" />} />
           </div>
         </div>
       </div>
@@ -210,18 +220,18 @@ export default function WalletViewSend() {
         <div className="mx-2">
           <Button
             onClick={() => navigate(-1)}
-            icon={() => (
+            icon={
               <span>
                 <ArrowLeftOutlined className="mr-1" />
                 {translate(back)}
               </span>
-            )}
+            }
           />
         </div>
         <div className="flex-1">
           <Button
             size="full"
-            icon={() => <span className="font-bold">{translate(confirm)}</span>}
+            icon={<span className="font-bold">{translate(confirm)}</span>}
             onClick={confirmSend}
             inverted
           />
@@ -230,3 +240,15 @@ export default function WalletViewSend() {
     </>
   );
 }
+
+function MaxButton({ className }) {
+  return <span className={className}>MAX</span>;
+}
+
+MaxButton.propTypes = {
+  className: PropTypes.string,
+};
+
+MaxButton.defaultProps = {
+  className: "",
+};

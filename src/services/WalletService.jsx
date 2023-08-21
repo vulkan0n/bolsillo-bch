@@ -49,7 +49,7 @@ export default function WalletService() {
         wallet = createWallet("My Selene Wallet");
       } else {
         // return lowest-index wallet if requested wallet doesn't exist
-        wallet = wallets[0];
+        wallet = wallets.shift();
       }
     }
 

@@ -1,3 +1,5 @@
+import PropTypes from "prop-types";
+
 export default function Button({
   icon,
   label,
@@ -36,3 +38,23 @@ export default function Button({
     </div>
   );
 }
+
+Button.propTypes = {
+  icon: PropTypes.object, // eslint-disable-line react/forbid-prop-types
+  label: PropTypes.string,
+  onClick: PropTypes.func,
+  iconSize: PropTypes.string,
+  labelSize: PropTypes.string,
+  labelColor: PropTypes.string,
+  inverted: PropTypes.bool,
+};
+
+Button.defaultProps = {
+  icon: null,
+  label: "",
+  onClick: () => null,
+  iconSize: "",
+  labelSize: "",
+  labelColor: "",
+  inverted: false,
+};

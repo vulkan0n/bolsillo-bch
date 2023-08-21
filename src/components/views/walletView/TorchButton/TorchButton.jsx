@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-props-no-spreading */
 import { useState, useEffect } from "react";
 import { BarcodeScanner } from "@capacitor-community/barcode-scanner";
 import { BulbOutlined } from "@ant-design/icons";

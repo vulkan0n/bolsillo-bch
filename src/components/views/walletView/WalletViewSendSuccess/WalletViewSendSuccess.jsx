@@ -11,12 +11,13 @@ function WalletViewSendSuccess() {
   const navigate = useNavigate();
 
   return (
-    <div
+    <button
+      type="button"
       className="fixed top-0 left-0 w-screen h-screen z-50 bg-primary text-white"
       onClick={() => navigate("/")}
     >
       <div className="flex items-center justify-center p-4 h-56 bg-zinc-800">
-        <img src={logos.selene.img} className="h-full" />
+        <img src={logos.selene.img} className="h-full" alt="" />
       </div>
       <div className="p-4 text-center font-semibold">
         <div className="text-4xl">{translate(transactionSent)}</div>
@@ -29,7 +30,7 @@ function WalletViewSendSuccess() {
           </div>
         </div>
       </div>
-    </div>
+    </button>
   );
 }
 

@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 
@@ -31,24 +31,32 @@ export default function ScannerButton() {
   const deviceInfo = useSelector(selectDeviceInfo);
   const isScanning = useSelector(selectScannerIsScanning);
 
-  useEffect(function cleanupScanner() {
-    return () => {
-      closeScanner();
-    };
-  }, []);
+  const closeScanner = useCallback(async () => {
+    if (deviceInfo.platform === "web") {
+      return;
+    }
 
-  useEffect(
-    function resetScanner() {
-      if (isScanning) {
-        startScan();
+    await BarcodeScanner.showBackground();
+    await BarcodeScanner.stopScan();
+  }, [deviceInfo.platform]);
+
+  const handleScanContent = useCallback(
+    async (content) => {
+      dispatch(setScannerIsScanning(false));
+
+      const { isCashAddress, address, query } = validateInvoiceString(content);
+
+      if (isCashAddress) {
+        await Haptics.notification({ type: "SUCCESS" });
+        navigate(`/wallet/send/${address}${query}`);
       } else {
-        closeScanner();
+        await Haptics.notification({ type: "ERROR" });
       }
     },
-    [isScanning]
+    [dispatch, navigate]
   );
 
-  async function startScan() {
+  const startScan = useCallback(async () => {
     if (deviceInfo.platform === "web") {
       return;
     }
@@ -57,12 +65,12 @@ export default function ScannerButton() {
 
     if (status.denied) {
       // we hit this code path if user says "never ask again or Ask Every Time"
-      const { value: confirmed } = await Dialog.confirm({
+      const { value: hasConsent } = await Dialog.confirm({
         title: translate(permissionTitle),
         message: translate(permissionMessage),
       });
 
-      if (confirmed) {
+      if (hasConsent) {
         BarcodeScanner.openAppSettings();
         return;
       }
@@ -74,29 +82,29 @@ export default function ScannerButton() {
     });
 
     if (result.hasContent) {
-      dispatch(setScannerIsScanning(false));
+      handleScanContent(result.content);
+    }
+  }, [deviceInfo.platform, handleScanContent]);
 
-      const { isCashAddress, address, query } = validateInvoiceString(
-        result.content
-      );
+  useEffect(
+    function cleanupScanner() {
+      return () => {
+        closeScanner();
+      };
+    },
+    [closeScanner]
+  );
 
-      if (isCashAddress) {
-        await Haptics.notification({ type: "SUCCESS" });
-        navigate(`/wallet/send/${address}${query}`);
+  useEffect(
+    function resetScanner() {
+      if (isScanning) {
+        startScan();
       } else {
-        await Haptics.notification({ type: "ERROR" });
+        closeScanner();
       }
-    }
-  }
-
-  async function closeScanner() {
-    if (deviceInfo.platform === "web") {
-      return;
-    }
-
-    await BarcodeScanner.showBackground();
-    await BarcodeScanner.stopScan();
-  }
+    },
+    [isScanning, closeScanner, startScan]
+  );
 
   const toggleScanner = () => {
     dispatch(setScannerIsScanning(!isScanning));

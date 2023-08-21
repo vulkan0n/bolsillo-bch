@@ -1,9 +1,10 @@
 import toast from "react-hot-toast";
 
-const showToast = ({ icon = <></>, title = "", description = "", options }) => {
+const showToast = ({ icon = null, title = "", description = "", options }) => {
   toast.custom(
     (t) => (
-      <div
+      <button
+        type="button"
         className="opacity-95 w-full bg-white shadow-lg rounded-lg flex ring-1 ring-black ring-opacity-5 p-2"
         onClick={() => {
           toast.remove(t.id);
@@ -16,7 +17,7 @@ const showToast = ({ icon = <></>, title = "", description = "", options }) => {
           <div className="text-lg font-bold text-zinc-800">{title}</div>
           <div className="text-base text-zinc-600">{description}</div>
         </div>
-      </div>
+      </button>
     ),
     options
   );

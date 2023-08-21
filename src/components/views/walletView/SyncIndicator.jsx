@@ -1,3 +1,4 @@
+import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import {
@@ -13,7 +14,7 @@ export default function SyncIndicator() {
 
   const [syncTimeout, setSyncTimeout] = useState(null);
 
-  const [syncSprings, syncApi] = useSpring(() => ({
+  const [syncSprings] = useSpring(() => ({
     from: { opacity: 1, scale: 1.1 },
     to: { opacity: 0.5, scale: 1.0 },
     immediate: true,
@@ -22,18 +23,16 @@ export default function SyncIndicator() {
   useEffect(
     function gracefulSyncIndicator() {
       if (sync.isSyncing) {
-        if (syncTimeout !== null) {
-          clearTimeout(syncTimeout);
+        if (syncTimeout === null) {
+          setSyncTimeout(
+            setTimeout(() => {
+              setSyncTimeout(null);
+            }, 1000)
+          );
         }
-
-        setSyncTimeout(
-          setTimeout(() => {
-            setSyncTimeout(null);
-          }, 1000)
-        );
       }
     },
-    [sync.isSyncing]
+    [sync.isSyncing, syncTimeout]
   );
 
   const [disconnectSprings, disconnectApi] = useSpring(() => ({
@@ -60,7 +59,7 @@ export default function SyncIndicator() {
     },
   }));
 
-  const handlePointerDown = (event) => {
+  const handlePointerDown = () => {
     if (sync.connected) {
       connectApi.start({
         from: { opacity: 0.8, scale: 0.85 },
@@ -89,6 +88,7 @@ export default function SyncIndicator() {
   );
 }
 
+/* eslint-disable react/forbid-prop-types */
 function DisconnectedIcon({ springs }) {
   return (
     <animated.div style={springs}>
@@ -96,6 +96,9 @@ function DisconnectedIcon({ springs }) {
     </animated.div>
   );
 }
+DisconnectedIcon.propTypes = {
+  springs: PropTypes.object.isRequired,
+};
 
 function ConnectedIcon({ springs }) {
   return (
@@ -105,6 +108,10 @@ function ConnectedIcon({ springs }) {
   );
 }
 
+ConnectedIcon.propTypes = {
+  springs: PropTypes.object.isRequired,
+};
+
 function SyncIcon({ springs }) {
   return (
     <animated.div style={springs}>
@@ -112,3 +119,6 @@ function SyncIcon({ springs }) {
     </animated.div>
   );
 }
+SyncIcon.propTypes = {
+  springs: PropTypes.object.isRequired,
+};

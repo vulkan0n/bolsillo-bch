@@ -1,8 +1,5 @@
-import {
-  ElectrumClient,
-  ElectrumCluster,
-  ElectrumTransport,
-} from "electrum-cash";
+/* eslint-disable no-console */
+import { ElectrumClient, ElectrumTransport } from "electrum-cash";
 
 import { App } from "@capacitor/app";
 
@@ -45,7 +42,7 @@ export default function ElectrumService() {
     // using redux connection state guarantees that
     // we only create new ElectrumClient when necessary
     if (store.getState().sync.connected) {
-      return;
+      return Promise.resolve(true);
     }
 
     // ensure all references to old ElectrumClient are killed
@@ -83,8 +80,10 @@ export default function ElectrumService() {
   // disconnect: disconnect the Electrum instance
   async function disconnect(force) {
     if (electrum !== null) {
-      return await electrum.disconnect(force);
+      return electrum.disconnect(force);
     }
+
+    return true;
   }
 
   // subscribeToAddress: listen for updates on an address
@@ -109,6 +108,8 @@ export default function ElectrumService() {
 
         return address;
       }
+
+      return false;
     } catch (e) {
       // throws if electrum is disconnected
       console.error(e);
@@ -118,14 +119,13 @@ export default function ElectrumService() {
 
   async function subscribeToChaintip() {
     try {
-      await electrum.subscribe(
+      return electrum.subscribe(
         handleChaintipSubscription,
         "blockchain.headers.subscribe"
       );
     } catch (e) {
       // throws if electrum is disconnected
-      console.error(e);
-      return false;
+      return Promise.reject(e);
     }
   }
 

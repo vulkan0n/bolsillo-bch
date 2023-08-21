@@ -57,23 +57,20 @@ export default function CurrencyService(fiatCurrency) {
   };
 
   async function fetchExchangeRates() {
-    // https://www.coingecko.com/en/api/documentation
-    const coingeckoUrl = "https://api.coingecko.com";
-
     const currencies = encodeURI(
       currencyList.map((currency) => currency.currency).join(",")
     );
 
+    // https://www.coingecko.com/en/api/documentation
+    const coingeckoUri = `https://api.coingecko.com/api/v3/simple/price?ids=bitcoin-cash&vs_currencies=${currencies}`;
+
     try {
-      const response = await fetch(
-        `https://api.coingecko.com/api/v3/simple/price?ids=bitcoin-cash&vs_currencies=${currencies}`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const response = await fetch(coingeckoUri, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
 
       if (!response.ok) {
         throw new Error(response);
@@ -98,7 +95,8 @@ export default function CurrencyService(fiatCurrency) {
 
       return adjustedRates;
     } catch (e) {
-      console.error(e);
+      //console.error(e);
+      return e;
     }
   }
 

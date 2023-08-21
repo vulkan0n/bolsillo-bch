@@ -2,7 +2,6 @@ import { Decimal } from "decimal.js";
 import DatabaseService from "@/services/DatabaseService";
 import AddressManagerService from "@/services/AddressManagerService";
 import TransactionManagerService from "@/services/TransactionManagerService";
-import { bchToSats } from "@/util/sats";
 import CurrencyService from "@/services/CurrencyService";
 
 export default function TransactionHistoryService(wallet_id) {
@@ -69,8 +68,9 @@ export default function TransactionHistoryService(wallet_id) {
       .map((t) =>
         t.vout.filter(
           (out) =>
-            tx.vin.findIndex((vin) => vin.txid == t.txid && vin.vout == out.n) >
-            -1
+            tx.vin.findIndex(
+              (vin) => vin.txid === t.txid && vin.vout === out.n
+            ) > -1
         )
       )
       .flat();

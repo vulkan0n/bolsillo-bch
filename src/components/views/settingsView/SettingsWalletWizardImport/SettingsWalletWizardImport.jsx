@@ -41,9 +41,9 @@ export default function SettingsWalletWizardImport() {
       return;
     }
 
-    const valid = bip39.validateMnemonic(trimmedInput);
+    const isValidMnemonic = bip39.validateMnemonic(trimmedInput);
 
-    if (valid) {
+    if (isValidMnemonic) {
       try {
         const wallet = new WalletService().importWallet(
           trimmedInput,

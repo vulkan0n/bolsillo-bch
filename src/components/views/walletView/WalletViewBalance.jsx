@@ -5,7 +5,7 @@ import { animated, useSpring } from "@react-spring/web";
 import { StockOutlined } from "@ant-design/icons";
 import { selectActiveWallet } from "@/redux/wallet";
 import { selectExchangeRates } from "@/redux/exchangeRates";
-import { selectPreferences, setPreference } from "@/redux/preferences";
+import { setPreference, selectCurrencySettings } from "@/redux/preferences";
 
 import { formatSatoshis, stripArsPostDecimal } from "@/util/sats";
 
@@ -14,29 +14,35 @@ import { selectLocale } from "@/redux/device";
 
 export default function WalletViewBalance() {
   const dispatch = useDispatch();
-  const preferences = useSelector(selectPreferences);
   const { name: activeWalletName, balance } = useSelector(selectActiveWallet);
   const exchangeRates = useSelector(selectExchangeRates);
 
-  const hideBalance = preferences.hideAvailableBalance === "true";
-  const preferLocal = preferences.preferLocalCurrency === "true";
-  const isDisplayExchangeRate = preferences.displayExchangeRate === "true";
+  const {
+    localCurrency: currency,
+    shouldPreferLocalCurrency,
+    shouldHideBalance,
+    shouldDisplayExchangeRate,
+  } = useSelector(selectCurrencySettings);
+
   const locale = useSelector(selectLocale);
 
   const handleFlipCurrency = () => {
     dispatch(
-      setPreference({ key: "preferLocalCurrency", value: !preferLocal })
+      setPreference({
+        key: "shouldPreferLocalCurrencyCurrency",
+        value: !shouldPreferLocalCurrency,
+      })
     );
   };
 
   const handleHideBalance = () => {
     dispatch(
-      setPreference({ key: "hideAvailableBalance", value: !hideBalance })
+      setPreference({ key: "hideAvailableBalance", value: !shouldHideBalance })
     );
   };
 
   const hiddenBalanceClasses =
-    hideBalance && "blur-sm backdrop-opacity-60 opacity-25";
+    shouldHideBalance && "blur-sm backdrop-opacity-60 opacity-25";
 
   const [balanceReceivedSpring, receiveSpringApi] = useSpring(() => ({
     from: { color: "#8dc451" },
@@ -53,19 +59,14 @@ export default function WalletViewBalance() {
     function animateWalletBalanceOnReceive() {
       receiveSpringApi.start({ reset: true });
     },
-    [balance]
+    [balance, receiveSpringApi]
   );
 
-  const formattedBalance = useMemo(
-    () => formatSatoshis(balance),
-    [exchangeRates, balance, preferences]
-  );
-
-  const currency = preferences.localCurrency;
+  const formattedBalance = useMemo(() => formatSatoshis(balance), [balance]);
 
   const relevantCurrency = exchangeRates.find((e) => e.currency === currency);
   const price = relevantCurrency?.price || "0";
-  const priceString = `${new Number(price).toLocaleString(locale, {
+  const priceString = `${Number(price).toLocaleString(locale, {
     style: "currency",
     currency,
   })}`;
@@ -78,22 +79,23 @@ export default function WalletViewBalance() {
       >
         {activeWalletName}
       </div>
-      <div
+      <button
+        type="button"
         className={`cursor-pointer ${hiddenBalanceClasses}`}
-        onClick={hideBalance ? handleHideBalance : handleFlipCurrency}
+        onClick={shouldHideBalance ? handleHideBalance : handleFlipCurrency}
       >
         <div className="text-2xl text-zinc-200 tabular-nums">
           <animated.span style={{ ...balanceReceivedSpring }}>
-            {formattedBalance[preferLocal ? "fiat" : "bch"]}
+            {formattedBalance[shouldPreferLocalCurrency ? "fiat" : "bch"]}
           </animated.span>
         </div>
 
         <div className="text-md text-zinc-400 flex items-center justify-center">
-          {formattedBalance[preferLocal ? "bch" : "fiat"]}
+          {formattedBalance[shouldPreferLocalCurrency ? "bch" : "fiat"]}
           <CurrencyFlip className="ml-1" />
         </div>
-      </div>
-      {isDisplayExchangeRate && (
+      </button>
+      {shouldDisplayExchangeRate && (
         <div className="text-md text-zinc-400/80 mt-0.5">
           <StockOutlined className="mr-1" />
           {adjustedPriceString}

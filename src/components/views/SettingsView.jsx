@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-
 import { useSelector, useDispatch } from "react-redux";
+
 import {
   SettingOutlined,
   GlobalOutlined,
@@ -26,10 +26,11 @@ import {
   FormatPainterOutlined,
   UndoOutlined,
 } from "@ant-design/icons";
+
 import {
   selectPreferences,
   setPreference,
-  selectInstantPay,
+  selectInstantPaySettings,
   selectActiveWalletId,
 } from "@/redux/preferences";
 import { selectActiveWallet } from "@/redux/wallet";
@@ -46,7 +47,6 @@ import CurrencySymbol from "@/components/atoms/CurrencySymbol";
 import ViewHeader from "./ViewHeader";
 import KeyWarning from "./settingsView/KeyWarning/KeyWarning";
 import SettingsCategory from "./settingsView/SettingsCategory";
-import SettingsChild from "./settingsView/SettingsChild";
 
 import SatoshiInput from "@/components/atoms/SatoshiInput";
 
@@ -84,7 +84,7 @@ export default function SettingsView() {
   const wallet = useSelector(selectActiveWallet);
   const activeWalletId = useSelector(selectActiveWalletId);
 
-  const { instantPayThreshold } = useSelector(selectInstantPay);
+  const { instantPayThreshold } = useSelector(selectInstantPaySettings);
 
   const [instantPaySatInput, setInstantPaySatInput] = useState({
     display: satsToDisplayAmount(instantPayThreshold),
@@ -104,6 +104,11 @@ export default function SettingsView() {
     handleSettingsUpdate("qrCodeBackground", "#ffffff");
   };
 
+  const handleInstantPayInput = (satInput) => {
+    setInstantPaySatInput(satInput);
+    handleSettingsUpdate("instantPayThreshold", satInput.sats);
+  };
+
   return (
     <>
       <ViewHeader icon={SettingOutlined} title={translate(settings)} />
@@ -118,16 +123,16 @@ export default function SettingsView() {
             <PlusCircleFilled className="text-xl mr-1" />
             {translate(createImportWallet)}
           </Link>
-          {walletList.map((wallet) => (
+          {walletList.map((w) => (
             <Link
-              key={wallet.id}
-              to={`/settings/wallet/${wallet.id}`}
+              key={w.id}
+              to={`/settings/wallet/${w.id}`}
               className="w-full block p-2"
             >
-              {wallet.id.toString() === activeWalletId && (
+              {w.id.toString() === activeWalletId && (
                 <CheckCircleOutlined className="text-xl mr-1 text-secondary" />
               )}
-              {wallet.name}
+              {w.name}
             </Link>
           ))}
         </SettingsCategory>
@@ -136,7 +141,7 @@ export default function SettingsView() {
           icon={DollarCircleOutlined}
           title={translate(currencySettings)}
         >
-          <SettingsChild
+          <SettingsCategory.Child
             icon={EuroCircleOutlined}
             label={translate(localCurrency)}
           >
@@ -155,8 +160,8 @@ export default function SettingsView() {
                   </option>
                 ))}
             </select>
-          </SettingsChild>
-          <SettingsChild
+          </SettingsCategory.Child>
+          <SettingsCategory.Child
             icon={TransactionOutlined}
             label={translate(preferLocalCurrency)}
           >
@@ -171,8 +176,8 @@ export default function SettingsView() {
                 )
               }
             />
-          </SettingsChild>
-          <SettingsChild
+          </SettingsCategory.Child>
+          <SettingsCategory.Child
             icon={
               preferences.hideAvailableBalance === "true"
                 ? EyeInvisibleOutlined
@@ -191,8 +196,8 @@ export default function SettingsView() {
                 )
               }
             />
-          </SettingsChild>
-          <SettingsChild
+          </SettingsCategory.Child>
+          <SettingsCategory.Child
             icon={AccountBookOutlined}
             label={translate(denominateInSats)}
           >
@@ -204,8 +209,8 @@ export default function SettingsView() {
                 handleSettingsUpdate("denominateSats", event.target.checked)
               }
             />
-          </SettingsChild>
-          <SettingsChild
+          </SettingsCategory.Child>
+          <SettingsCategory.Child
             icon={StockOutlined}
             label={translate(displayExchangeRate)}
           >
@@ -220,14 +225,14 @@ export default function SettingsView() {
                 )
               }
             />
-          </SettingsChild>
+          </SettingsCategory.Child>
         </SettingsCategory>
 
         <SettingsCategory
           icon={SendOutlined}
           title={translate(paymentSettings)}
         >
-          <SettingsChild
+          <SettingsCategory.Child
             icon={ThunderboltOutlined}
             label={translate(allowInstantPay)}
           >
@@ -239,13 +244,13 @@ export default function SettingsView() {
                 handleSettingsUpdate("allowInstantPay", event.target.checked)
               }
             />
-          </SettingsChild>
-          <SettingsChild>
+          </SettingsCategory.Child>
+          <SettingsCategory.Child>
             <span className="text-zinc-600">
               {translate(instantPayExplanation)}
             </span>
-          </SettingsChild>
-          <SettingsChild
+          </SettingsCategory.Child>
+          <SettingsCategory.Child
             icon={PropertySafetyOutlined}
             label={translate(instantPayLimit)}
           >
@@ -254,23 +259,23 @@ export default function SettingsView() {
               <SatoshiInput
                 satoshiInput={instantPaySatInput}
                 className="p-2 w-28 rounded mx-1"
-                onChange={(satInput) => {
-                  setInstantPaySatInput(satInput);
-                  handleSettingsUpdate("instantPayThreshold", satInput.sats);
-                }}
+                onChange={handleInstantPayInput}
               />
             </span>
-          </SettingsChild>
+          </SettingsCategory.Child>
         </SettingsCategory>
 
         <SettingsCategory
           icon={QrcodeOutlined}
           title={translate(qrCodeSettings)}
         >
-          <SettingsChild icon={BorderOuterOutlined} label={translate(logo)}>
+          <SettingsCategory.Child
+            icon={BorderOuterOutlined}
+            label={translate(logo)}
+          >
             <div className="flex items-center">
               {logoKey !== "none" && (
-                <img src={logos[logoKey].img} className="w-8 h-8 mx-2" />
+                <img src={logos[logoKey].img} className="w-8 h-8 mx-2" alt="" />
               )}
               <select
                 className="rounded h-10 w-24 p-2 flex-1 bg-white"
@@ -279,13 +284,13 @@ export default function SettingsView() {
                   handleSettingsUpdate("qrCodeLogo", event.target.value)
                 }
               >
-                {Object.keys(logos).map((logo) => (
-                  <option key={logo}>{logos[logo].name}</option>
+                {Object.keys(logos).map((l) => (
+                  <option key={l}>{logos[l].name}</option>
                 ))}
               </select>
             </div>
-          </SettingsChild>
-          <SettingsChild
+          </SettingsCategory.Child>
+          <SettingsCategory.Child
             icon={FormatPainterOutlined}
             label={translate(foregroundColor)}
           >
@@ -303,8 +308,8 @@ export default function SettingsView() {
                 }
               />
             </div>
-          </SettingsChild>
-          <SettingsChild
+          </SettingsCategory.Child>
+          <SettingsCategory.Child
             icon={BgColorsOutlined}
             label={translate(backgroundColor)}
           >
@@ -322,27 +327,30 @@ export default function SettingsView() {
                 }
               />
             </div>
-          </SettingsChild>
-          <SettingsChild icon={() => null} label="">
+          </SettingsCategory.Child>
+          <SettingsCategory.Child icon={() => null} label="">
             <div className="flex items-center">
               <Button
                 onClick={handleResetQrColors}
-                icon={() => (
+                icon={
                   <span>
                     <UndoOutlined className="mr-1" />
                     {translate(resetColors)}
                   </span>
-                )}
+                }
               />
             </div>
-          </SettingsChild>
+          </SettingsCategory.Child>
         </SettingsCategory>
 
         <SettingsCategory
           icon={GlobalOutlined}
           title={translate(localizationSettings)}
         >
-          <SettingsChild icon={FlagOutlined} label={translate(language)}>
+          <SettingsCategory.Child
+            icon={FlagOutlined}
+            label={translate(language)}
+          >
             <select
               className="select"
               value={preferences.languageCode || ""}
@@ -356,24 +364,24 @@ export default function SettingsView() {
                 </option>
               ))}
             </select>
-          </SettingsChild>
+          </SettingsCategory.Child>
         </SettingsCategory>
 
         {/*
         <SettingsCategory icon={BarChartOutlined} title="Analytics Settings">
-          <SettingsChild icon={DashboardOutlined} label="Enable Analytics">
+          <SettingsCategory.Child icon={DashboardOutlined} label="Enable Analytics">
             <input
               type="checkbox"
               className="toggle"
               onChange={(event) => null}
             />
-          </SettingsChild>
+          </SettingsCategory.Child>
         </SettingsCategory>
         */}
       </div>
       <Link to="/credits" className="w-fit mx-auto my-2">
         <div className="w-fit mx-auto p-2 flex items-center justify-center shadow-sm rounded-full bg-primary text-white active:bg-white active:text-primary">
-          <img src={logos.selene.img} className="w-11 h-11 mr-1" />
+          <img src={logos.selene.img} className="w-11 h-11 mr-1" alt="" />
           <span className="text-sm font-semibold">
             Selene Wallet v{SELENE_WALLET_VERSION}
           </span>

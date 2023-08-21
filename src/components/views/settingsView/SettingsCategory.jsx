@@ -1,3 +1,4 @@
+import PropTypes from "prop-types";
 import { useState } from "react";
 import { CaretRightOutlined, CaretDownOutlined } from "@ant-design/icons";
 
@@ -6,12 +7,11 @@ export default function SettingsCategory({ icon, title, children }) {
   const Icon = icon;
 
   return (
-    <div
-      tabIndex={0}
-      className="bg-zinc-800 rounded-lg p-2 my-1 text-zinc-200 p-2 my-1"
-    >
-      <div
-        className="text-lg font-medium p-1 flex items-center"
+    <div className="bg-zinc-800 rounded-lg p-2 my-1 text-zinc-200 p-2 my-1">
+      <button
+        type="button"
+        tabIndex={0}
+        className="text-lg font-medium p-1 flex items-center w-full"
         onClick={() => setIsOpen(!isOpen)}
       >
         <span className="flex-1 flex items-center">
@@ -19,7 +19,7 @@ export default function SettingsCategory({ icon, title, children }) {
           <span>{title}</span>
         </span>
         {isOpen ? <CaretDownOutlined /> : <CaretRightOutlined />}
-      </div>
+      </button>
       {isOpen && (
         <div className="mt-1 text-zinc-700 rounded-sm bg-zinc-200 divide-y divide-zinc-300">
           {children}
@@ -28,3 +28,37 @@ export default function SettingsCategory({ icon, title, children }) {
     </div>
   );
 }
+
+function SettingsChild({ icon, label, children }) {
+  const Icon = icon || (() => null);
+  return (
+    <div className="p-3">
+      <div className="flex items-center">
+        <span className="label-text flex-1">
+          <Icon className="text-xl mr-1" />
+          {label}
+        </span>
+        {children}
+      </div>
+    </div>
+  );
+}
+
+SettingsCategory.propTypes = {
+  icon: PropTypes.func.isRequired,
+  title: PropTypes.string.isRequired,
+  children: PropTypes.node.isRequired,
+};
+
+SettingsChild.propTypes = {
+  icon: PropTypes.func,
+  label: PropTypes.string,
+  children: PropTypes.node.isRequired,
+};
+
+SettingsChild.defaultProps = {
+  icon: () => null,
+  label: "",
+};
+
+SettingsCategory.Child = SettingsChild;
