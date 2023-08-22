@@ -46,7 +46,6 @@ const {
 export default function SettingsWalletAdditionalInformation() {
   const { wallet_id } = useParams();
   const activeWalletId = useSelector(selectActiveWalletId);
-  const isActiveWallet = wallet_id === activeWalletId;
 
   const [isShowXpub, setIsShowXpub] = useState(false);
   const [isShowxPrv, setIsShowxPrv] = useState(false);
