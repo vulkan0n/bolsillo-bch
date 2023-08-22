@@ -7,7 +7,7 @@ export default function SettingsCategory({ icon, title, children }) {
   const Icon = icon;
 
   return (
-    <div className="bg-zinc-800 rounded-lg p-2 my-1 text-zinc-200 p-2 my-1">
+    <div className="bg-zinc-800 rounded-lg p-2 my-1 text-zinc-200">
       <button
         type="button"
         tabIndex={0}
@@ -45,20 +45,25 @@ function SettingsChild({ icon, label, children }) {
 }
 
 SettingsCategory.propTypes = {
-  icon: PropTypes.func.isRequired,
+  icon: PropTypes.node,
   title: PropTypes.string.isRequired,
   children: PropTypes.node.isRequired,
 };
 
+SettingsCategory.defaultProps = {
+  icon: () => null,
+};
+
 SettingsChild.propTypes = {
-  icon: PropTypes.func,
+  icon: PropTypes.node,
   label: PropTypes.string,
-  children: PropTypes.node.isRequired,
+  children: PropTypes.node,
 };
 
 SettingsChild.defaultProps = {
-  icon: () => null,
+  icon: "",
   label: "",
+  children: null,
 };
 
 SettingsCategory.Child = SettingsChild;

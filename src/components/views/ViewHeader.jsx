@@ -32,10 +32,10 @@ export default function ViewHeader({ icon, title }) {
 }
 
 ViewHeader.propTypes = {
-  icon: PropTypes.func,
+  icon: PropTypes.object,
   title: PropTypes.string.isRequired,
 };
 
 ViewHeader.defaultProps = {
-  icon: () => null,
+  icon: null,
 };

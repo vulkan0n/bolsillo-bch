@@ -40,8 +40,8 @@ export default function Button({
 }
 
 Button.propTypes = {
-  icon: PropTypes.object, // eslint-disable-line react/forbid-prop-types
-  label: PropTypes.string,
+  icon: PropTypes.node,
+  label: PropTypes.node,
   onClick: PropTypes.func,
   iconSize: PropTypes.string,
   labelSize: PropTypes.string,

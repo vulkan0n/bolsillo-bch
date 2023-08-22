@@ -12,6 +12,7 @@ import {
   EyeInvisibleOutlined,
   ToolOutlined,
   MedicineBoxOutlined,
+  InfoCircleOutlined,
 } from "@ant-design/icons";
 
 import {
@@ -36,6 +37,7 @@ import translations from "./translations";
 const {
   walletSettings,
   advancedOptions,
+  additionalWalletInformation,
   created,
   lastKnownBalance,
   walletActive,
@@ -140,6 +142,10 @@ export default function SettingsWalletView() {
     handleActivateWallet();
   };
 
+  const handleNavigateAdditionalWalletInformation = () => {
+    navigate(`/settings/wallet/${wallet_id}/additionalInformation`);
+  };
+
   return (
     <>
       <ViewHeader icon={WalletOutlined} title={translate(walletSettings)} />
@@ -239,6 +245,7 @@ export default function SettingsWalletView() {
             </button>
           </div>
         </div>
+
         <KeyWarning wallet={wallet} />
         <button
           type="button"
@@ -280,7 +287,7 @@ export default function SettingsWalletView() {
               icon={ToolOutlined}
               title={translate(advancedOptions)}
             >
-              <SettingsCategory.Child icon={() => null} label="">
+              <SettingsCategory.Child icon={null} label="">
                 <button
                   type="button"
                   className="w-full text-left"
@@ -288,6 +295,16 @@ export default function SettingsWalletView() {
                 >
                   <MedicineBoxOutlined className="text-xl mr-1" />
                   {translate(rebuildWallet)}
+                </button>
+              </SettingsCategory.Child>
+              <SettingsCategory.Child icon={null} label="">
+                <button
+                  type="button"
+                  className="w-full block p-2 text-left"
+                  onClick={handleNavigateAdditionalWalletInformation}
+                >
+                  <InfoCircleOutlined className="text-xl mr-1" />
+                  {translate(additionalWalletInformation)}
                 </button>
               </SettingsCategory.Child>
             </SettingsCategory>

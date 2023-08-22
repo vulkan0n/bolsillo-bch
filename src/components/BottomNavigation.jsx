@@ -85,7 +85,6 @@ function NavButton({ to, icon, activeIcon, label }) {
   );
 }
 
-/* eslint-disable react/forbid-prop-types */
 NavButton.propTypes = {
   to: PropTypes.string,
   icon: PropTypes.object,

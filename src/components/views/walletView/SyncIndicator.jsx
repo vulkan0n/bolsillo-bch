@@ -88,7 +88,6 @@ export default function SyncIndicator() {
   );
 }
 
-/* eslint-disable react/forbid-prop-types */
 function DisconnectedIcon({ springs }) {
   return (
     <animated.div style={springs}>

@@ -1,6 +1,7 @@
 import * as bip39 from "bip39";
 import DatabaseService from "./DatabaseService";
 import AddressManagerService from "./AddressManagerService";
+import { SELENE_DEFAULT_DERIVATION_PATH } from "../util/crypto";
 
 export default function WalletService() {
   const { db, resultToJson, saveDatabase } = new DatabaseService();
@@ -63,7 +64,7 @@ export default function WalletService() {
 
   // createWallet: generate a new wallet from a randomly generated seed phrase
   // persist the new wallet in the database
-  function createWallet(name, derivation = "m/44'/0'/0'") {
+  function createWallet(name, derivation = SELENE_DEFAULT_DERIVATION_PATH) {
     const mnemonic = bip39.generateMnemonic();
 
     const result = resultToJson(
