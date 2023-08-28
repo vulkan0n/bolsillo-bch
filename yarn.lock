@@ -599,6 +599,11 @@
   resolved "https://registry.yarnpkg.com/@capacitor/keyboard/-/keyboard-5.0.4.tgz#1f4cca8be2197fb68deb10d0508cad994b7031c1"
   integrity sha512-vIv2NLZRBXgMDkyZurFpANCe7pEbpChdXNGdQFnk1Kg31DFScgwmq4ednZwT4+SHojH6SHCXxaBPg7Y265LWVQ==
 
+"@capacitor/network@^5.0.6":
+  version "5.0.6"
+  resolved "https://registry.yarnpkg.com/@capacitor/network/-/network-5.0.6.tgz#6c109f053bcf6eefbae0337426e8b9e7c2334a3b"
+  integrity sha512-E//cq9NEvFFiLyptK0ha4B8OytdWpSqvtUo5L2uiqcoADWUnl5d7aK45M09eyd347HchICeEdIkO31n6CNxyYA==
+
 "@capacitor/preferences@^5.0.0":
   version "5.0.4"
   resolved "https://registry.yarnpkg.com/@capacitor/preferences/-/preferences-5.0.4.tgz#16226ba0e247705a69a9e59210284af5f2fc58d1"
