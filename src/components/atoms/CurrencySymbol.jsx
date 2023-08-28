@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import { useSelector } from "react-redux";
 import { selectCurrencySettings } from "@/redux/preferences";
 
-import { currencyList } from "@/util/currency";
+import { currencyList } from "@/util/consts/currency";
 
 export default function CurrencySymbol({ currency, className }) {
   const { localCurrency, shouldPreferLocalCurrency } = useSelector(

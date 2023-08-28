@@ -10,7 +10,7 @@ import {
 import { walletBalanceUpdate } from "@/redux/wallet";
 import { fetchExchangeRates } from "@/redux/exchangeRates";
 
-import ElectrumService from "@/services/ElectrumService";
+import ElectrumService from "@/services/ElectrumService/ElectrumService";
 import BlockchainService from "@/services/BlockchainService";
 import AddressManagerService from "@/services/AddressManagerService";
 import TransactionManagerService from "@/services/TransactionManagerService";

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 
@@ -25,18 +25,22 @@ import {
   SettingFilled,
   FormatPainterOutlined,
   UndoOutlined,
+  ApiOutlined,
+  CloudServerOutlined,
+  CheckOutlined,
+  CloseOutlined,
 } from "@ant-design/icons";
 
 import {
   selectPreferences,
   setPreference,
-  selectInstantPaySettings,
+  selectInstantPay,
   selectActiveWalletId,
 } from "@/redux/preferences";
 import { selectActiveWallet } from "@/redux/wallet";
 
 import WalletService from "@/services/WalletService";
-import { currencyList } from "@/util/currency";
+import { currencyList } from "@/util/consts/currency";
 import { languageList, translate } from "@/util/translations";
 
 import Button from "@/components/atoms/Button";
@@ -54,6 +58,7 @@ import { logos } from "@/util/logos";
 import SELENE_WALLET_VERSION from "@/util/version";
 
 import translations from "./SettingsViewTranslations";
+import { electrumServers } from "@/util/consts/electrum_servers";
 
 const {
   settings,
@@ -76,6 +81,11 @@ const {
   foregroundColor,
   backgroundColor,
   resetColors,
+  network,
+  translatedElectrumServer,
+  electrumServerDescription,
+  server,
+  customServer,
 } = translations;
 
 export default function SettingsView() {
@@ -83,6 +93,11 @@ export default function SettingsView() {
   const preferences = useSelector(selectPreferences);
   const wallet = useSelector(selectActiveWallet);
   const activeWalletId = useSelector(selectActiveWalletId);
+  const [customElectrumServerText, setCustomElectrumServerText] = useState(
+    preferences.customElectrumServer
+  );
+  const [isChangedCustomServerText, setIsChangedCustomServerText] =
+    useState(false);
 
   const { instantPayThreshold } = useSelector(selectInstantPaySettings);
 
@@ -92,7 +107,12 @@ export default function SettingsView() {
   });
 
   function handleSettingsUpdate(key, value) {
+    setIsChangedCustomServerText(false);
     dispatch(setPreference({ key, value }));
+  }
+
+  function handleCustomServerUpdate(server) {
+    handleSettingsUpdate("customElectrumServer", server);
   }
 
   const walletList = new WalletService().getWallets();
@@ -108,6 +128,11 @@ export default function SettingsView() {
     setInstantPaySatInput(satInput);
     handleSettingsUpdate("instantPayThreshold", satInput.sats);
   };
+
+  useEffect(() => {
+    setIsChangedCustomServerText(false);
+    setCustomElectrumServerText(preferences.customElectrumServer);
+  }, [preferences.customElectrumServer]);
 
   return (
     <>
@@ -367,17 +392,76 @@ export default function SettingsView() {
           </SettingsCategory.Child>
         </SettingsCategory>
 
-        {/*
-        <SettingsCategory icon={BarChartOutlined} title="Analytics Settings">
-          <SettingsCategory.Child icon={DashboardOutlined} label="Enable Analytics">
+        <SettingsCategory icon={ApiOutlined} title={translate(network)}>
+          <SettingsCategory.Child
+            icon={CloudServerOutlined}
+            label={translate(translatedElectrumServer)}
+          ></SettingsCategory.Child>
+
+          <SettingsCategory.Child>
+            <span className="text-zinc-600">
+              {translate(electrumServerDescription)}
+            </span>
+          </SettingsCategory.Child>
+
+          <SettingsCategory.Child label={translate(server)}>
+            <span
+              className={
+                preferences.customElectrumServer !== "" ? "text-zinc-300" : ""
+              }
+            >
+              <select
+                className="select"
+                value={preferences.electrumServer || ""}
+                onChange={(event) => {
+                  setIsChangedCustomServerText(false);
+                  setCustomElectrumServerText("");
+                  handleCustomServerUpdate("");
+                  handleSettingsUpdate("electrumServer", event.target.value);
+                }}
+              >
+                {electrumServers.map((server) => (
+                  <option key={server} value={server}>
+                    {server}
+                  </option>
+                ))}
+              </select>
+            </span>
+          </SettingsCategory.Child>
+          <SettingsCategory.Child label={translate(customServer)}>
             <input
-              type="checkbox"
-              className="toggle"
-              onChange={(event) => null}
+              type="text"
+              value={customElectrumServerText}
+              onChange={(event) => {
+                setIsChangedCustomServerText(true);
+                setCustomElectrumServerText(event.target.value);
+              }}
             />
+            {isChangedCustomServerText && (
+              <span className="ml-2 flex flex-row">
+                <Button
+                  icon={CheckOutlined}
+                  onClick={() =>
+                    handleCustomServerUpdate(customElectrumServerText)
+                  }
+                  iconSize="sm"
+                />
+                <Button
+                  icon={CloseOutlined}
+                  onClick={() => {
+                    // Cancel without making changes
+                    setCustomElectrumServerText(
+                      preferences.customElectrumServer
+                    );
+                    setIsChangedCustomServerText(false);
+                  }}
+                  iconSize="sm"
+                  tailwindBorderClass="border-zinc-400"
+                />
+              </span>
+            )}
           </SettingsCategory.Child>
         </SettingsCategory>
-        */}
       </div>
       <Link to="/credits" className="w-fit mx-auto my-2">
         <div className="w-fit mx-auto p-2 flex items-center justify-center shadow-sm rounded-full bg-primary text-white active:bg-white active:text-primary">

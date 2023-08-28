@@ -4,6 +4,9 @@ import {
   createSelector,
   createAsyncThunk,
 } from "@reduxjs/toolkit";
+import { syncReconnect } from "@/redux/sync";
+
+import { DEFAULT_ELECTRUM_SERVER } from "@/util/consts/electrum_servers";
 
 const defaultPreferences = {
   activeWalletId: "1",
@@ -19,6 +22,8 @@ const defaultPreferences = {
   qrCodeLogo: "Selene",
   qrCodeBackground: "#ffffff",
   qrCodeForeground: "#000000",
+  electrumServer: DEFAULT_ELECTRUM_SERVER,
+  customElectrumServer: "",
 };
 
 async function retrievePreferences() {
@@ -57,6 +62,15 @@ export const setPreference = createAsyncThunk(
       key: sanitizedPayload.key,
       value: (await Preferences.get({ key: sanitizedPayload.key })).value,
     };
+
+    // If electrumServer preferences have been changed, reboot ElectrumService
+    if (
+      payload.key === "electrumServer" ||
+      (payload.key === "customElectrumServer" && payload.value.length > 0)
+    ) {
+      thunkApi.dispatch(syncReconnect());
+    }
+
     return result;
   }
 );
