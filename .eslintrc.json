@@ -5,13 +5,14 @@
   },
   "ignorePatterns": ["*.test.*"],
   "extends": [
-    "airbnb",
+    "plugin:react/recommended",
+    "plugin:react-hooks/recommended",
+    "airbnb-base",
+    "airbnb/rules/react",
     "airbnb/hooks",
     "airbnb-typescript",
     "plugin:@typescript-eslint/recommended",
-    "plugin:prettier/recommended",
-    "plugin:react/recommended",
-    "plugin:react-hooks/recommended"
+    "plugin:prettier/recommended"
   ],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {

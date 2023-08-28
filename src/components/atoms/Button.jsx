@@ -42,13 +42,14 @@ export default function Button({
 }
 
 Button.propTypes = {
-  icon: PropTypes.object,
+  icon: PropTypes.func,
   label: PropTypes.node,
   onClick: PropTypes.func,
   iconSize: PropTypes.string,
   labelSize: PropTypes.string,
   labelColor: PropTypes.string,
   inverted: PropTypes.bool,
+  tailwindBorderClass: PropTypes.string,
 };
 
 Button.defaultProps = {
@@ -59,4 +60,5 @@ Button.defaultProps = {
   labelSize: "",
   labelColor: "",
   inverted: false,
+  tailwindBorderClass: "",
 };

@@ -10,7 +10,7 @@ import {
 import { walletBalanceUpdate } from "@/redux/wallet";
 import { fetchExchangeRates } from "@/redux/exchangeRates";
 
-import ElectrumService from "@/services/ElectrumService/ElectrumService";
+import ElectrumService from "@/services/ElectrumService";
 import BlockchainService from "@/services/BlockchainService";
 import AddressManagerService from "@/services/AddressManagerService";
 import TransactionManagerService from "@/services/TransactionManagerService";
@@ -28,17 +28,16 @@ export const syncMiddleware = createListenerMiddleware();
 // syncConnect: request/retry electrum connection
 export const syncConnect = createAsyncThunk(
   "sync/connect",
-  /* eslint-disable-next-line @typescript-eslint/default-param-last */
-  async (attempts = 0, thunkApi) => {
+  async (payload, thunkApi) => {
     try {
-      await Electrum.connect();
+      await Electrum.connect(payload.server);
     } catch (e) {
       // if connection fails, destroy the client and try again
       await Electrum.disconnect(true);
       setTimeout(() =>
         thunkApi.dispatch(
-          syncConnect(attempts + 1),
-          Math.min((1000 * attempts) ** 2, 30 * 1000) // exponential backoff up to 30 seconds
+          syncConnect({ attempts: payload.attempts + 1 }),
+          Math.min((1000 * payload.attempts) ** 2, 30 * 1000) // exponential backoff up to 30 seconds
         )
       );
     }
@@ -47,9 +46,9 @@ export const syncConnect = createAsyncThunk(
 
 export const syncReconnect = createAsyncThunk(
   "sync/reconnect",
-  async (_, thunkApi) => {
+  async (server, thunkApi) => {
     await Electrum.disconnect(true);
-    thunkApi.dispatch(syncConnect());
+    thunkApi.dispatch(syncConnect({ server }));
   }
 );
 
@@ -87,7 +86,9 @@ syncMiddleware.startListening({
     // cleanup electrum subscriptions (force=true)
     Electrum.disconnect(true);
     // we'll handle reconnecting ourselves
-    listenerApi.dispatch(syncConnect());
+    listenerApi.dispatch(
+      syncConnect({ server: action.payload.server, attempts: 0 })
+    );
   },
 });
 

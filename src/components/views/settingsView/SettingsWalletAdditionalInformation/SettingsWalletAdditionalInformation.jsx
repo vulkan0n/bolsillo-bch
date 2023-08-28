@@ -15,9 +15,6 @@ import {
   encodeHdPublicKey,
 } from "@bitauth/libauth";
 
-import { useSelector } from "react-redux";
-import { selectActiveWalletId } from "@/redux/preferences";
-
 import WalletService from "@/services/WalletService";
 
 import ViewHeader from "@/components/views/ViewHeader";

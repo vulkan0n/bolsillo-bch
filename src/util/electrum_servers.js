@@ -1,25 +1,18 @@
-export const DEFAULT_ELECTRUM_SERVER = "cashnode.bch.ninja";
-
-export const electrumServers = [
-  DEFAULT_ELECTRUM_SERVER,
+export const electrum_servers = [
+  "cashnode.bch.ninja",
   "fulcrum.jettscythe.xyz",
-  "electrum.imaginary.cash",
   "bch.crypto.mldlabs.com",
   "bch.imaginary.cash",
+  "blackie.c3-soft.com",
   "bch0.kister.net",
   "bch.loping.net",
-  "j2tjfxntnsqpojaamnndgmfrc6lh3thattnlpc2xx53h2ojoi7agccid.onion",
   "bch.soul-dev.com",
-  "blackie.c3-soft.com",
   "electron.jochen-hoenicke.de",
   "electroncash.dk",
   "bch2.electroncash.dk",
   "electrumx-cash.1209k.com",
-  "kisternet5tgeekwidrj7r7yd3n2l5j7y72b74y6xu3q2b6xdjrte6id.onion",
-  "jh3jgcrwweh6yvmprtjnp72u2hqn34nlftlg3msrr4vmlapft4yvt2id.onion",
   "electroncash.de",
   "electrs.electroncash.de",
-  "jktsologn7uprtwn7gsgmwuddj6rxsqmwc2vaug7jwcwzm2bxqnfpwad.onion",
   "electrs.bitcoinunlimited.info",
   "bch.cyberbits.eu",
   "bitcoincash.network",

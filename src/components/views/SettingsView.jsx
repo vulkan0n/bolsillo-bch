@@ -34,13 +34,13 @@ import {
 import {
   selectPreferences,
   setPreference,
-  selectInstantPay,
+  selectInstantPaySettings,
   selectActiveWalletId,
 } from "@/redux/preferences";
 import { selectActiveWallet } from "@/redux/wallet";
 
 import WalletService from "@/services/WalletService";
-import { currencyList } from "@/util/consts/currency";
+import { currencyList } from "@/util/currency";
 import { languageList, translate } from "@/util/translations";
 
 import Button from "@/components/atoms/Button";
@@ -58,35 +58,7 @@ import { logos } from "@/util/logos";
 import SELENE_WALLET_VERSION from "@/util/version";
 
 import translations from "./SettingsViewTranslations";
-import { electrumServers } from "@/util/consts/electrum_servers";
-
-const {
-  settings,
-  walletSettings,
-  createImportWallet,
-  localizationSettings,
-  language,
-  currencySettings,
-  localCurrency,
-  preferLocalCurrency,
-  hideAvailableBalance,
-  denominateInSats,
-  displayExchangeRate,
-  paymentSettings,
-  allowInstantPay,
-  instantPayExplanation,
-  instantPayLimit,
-  qrCodeSettings,
-  logo,
-  foregroundColor,
-  backgroundColor,
-  resetColors,
-  network,
-  translatedElectrumServer,
-  electrumServerDescription,
-  server,
-  customServer,
-} = translations;
+import { electrum_servers } from "@/util/electrum_servers";
 
 export default function SettingsView() {
   const dispatch = useDispatch();
@@ -136,17 +108,20 @@ export default function SettingsView() {
 
   return (
     <>
-      <ViewHeader icon={SettingOutlined} title={translate(settings)} />
+      <ViewHeader
+        icon={SettingOutlined}
+        title={translate(translations.settings)}
+      />
       <div className="p-1">
         <KeyWarning wallet={wallet} />
 
         <SettingsCategory
           icon={WalletOutlined}
-          title={translate(walletSettings)}
+          title={translate(translations.walletSettings)}
         >
           <Link to="/settings/wallet/wizard" className="w-full block p-2">
             <PlusCircleFilled className="text-xl mr-1" />
-            {translate(createImportWallet)}
+            {translate(translations.createImportWallet)}
           </Link>
           {walletList.map((w) => (
             <Link
@@ -164,11 +139,11 @@ export default function SettingsView() {
 
         <SettingsCategory
           icon={DollarCircleOutlined}
-          title={translate(currencySettings)}
+          title={translate(translations.currencySettings)}
         >
           <SettingsCategory.Child
             icon={EuroCircleOutlined}
-            label={translate(localCurrency)}
+            label={translate(translations.localCurrency)}
           >
             <select
               className="p-2 bg-white rounded h-10 w-24"
@@ -188,7 +163,7 @@ export default function SettingsView() {
           </SettingsCategory.Child>
           <SettingsCategory.Child
             icon={TransactionOutlined}
-            label={translate(preferLocalCurrency)}
+            label={translate(translations.preferLocalCurrency)}
           >
             <input
               type="checkbox"
@@ -208,7 +183,7 @@ export default function SettingsView() {
                 ? EyeInvisibleOutlined
                 : EyeOutlined
             }
-            label={translate(hideAvailableBalance)}
+            label={translate(translations.hideAvailableBalance)}
           >
             <input
               type="checkbox"
@@ -224,7 +199,7 @@ export default function SettingsView() {
           </SettingsCategory.Child>
           <SettingsCategory.Child
             icon={AccountBookOutlined}
-            label={translate(denominateInSats)}
+            label={translate(translations.denominateInSats)}
           >
             <input
               type="checkbox"
@@ -237,7 +212,7 @@ export default function SettingsView() {
           </SettingsCategory.Child>
           <SettingsCategory.Child
             icon={StockOutlined}
-            label={translate(displayExchangeRate)}
+            label={translate(translations.displayExchangeRate)}
           >
             <input
               type="checkbox"
@@ -255,11 +230,11 @@ export default function SettingsView() {
 
         <SettingsCategory
           icon={SendOutlined}
-          title={translate(paymentSettings)}
+          title={translate(translations.paymentSettings)}
         >
           <SettingsCategory.Child
             icon={ThunderboltOutlined}
-            label={translate(allowInstantPay)}
+            label={translate(translations.allowInstantPay)}
           >
             <input
               type="checkbox"
@@ -272,12 +247,12 @@ export default function SettingsView() {
           </SettingsCategory.Child>
           <SettingsCategory.Child>
             <span className="text-zinc-600">
-              {translate(instantPayExplanation)}
+              {translate(translations.instantPayExplanation)}
             </span>
           </SettingsCategory.Child>
           <SettingsCategory.Child
             icon={PropertySafetyOutlined}
-            label={translate(instantPayLimit)}
+            label={translate(translations.instantPayLimit)}
           >
             <span className="text-zinc-600">
               <CurrencySymbol className="font-bold" />
@@ -292,11 +267,11 @@ export default function SettingsView() {
 
         <SettingsCategory
           icon={QrcodeOutlined}
-          title={translate(qrCodeSettings)}
+          title={translate(translations.qrCodeSettings)}
         >
           <SettingsCategory.Child
             icon={BorderOuterOutlined}
-            label={translate(logo)}
+            label={translate(translations.logo)}
           >
             <div className="flex items-center">
               {logoKey !== "none" && (
@@ -317,7 +292,7 @@ export default function SettingsView() {
           </SettingsCategory.Child>
           <SettingsCategory.Child
             icon={FormatPainterOutlined}
-            label={translate(foregroundColor)}
+            label={translate(translations.foregroundColor)}
           >
             <div className="flex items-center">
               <SettingFilled
@@ -336,7 +311,7 @@ export default function SettingsView() {
           </SettingsCategory.Child>
           <SettingsCategory.Child
             icon={BgColorsOutlined}
-            label={translate(backgroundColor)}
+            label={translate(translations.backgroundColor)}
           >
             <div className="flex items-center">
               <SettingFilled
@@ -360,7 +335,7 @@ export default function SettingsView() {
                 icon={
                   <span>
                     <UndoOutlined className="mr-1" />
-                    {translate(resetColors)}
+                    {translate(translations.resetColors)}
                   </span>
                 }
               />
@@ -370,11 +345,11 @@ export default function SettingsView() {
 
         <SettingsCategory
           icon={GlobalOutlined}
-          title={translate(localizationSettings)}
+          title={translate(translations.localizationSettings)}
         >
           <SettingsCategory.Child
             icon={FlagOutlined}
-            label={translate(language)}
+            label={translate(translations.language)}
           >
             <select
               className="p-2 bg-white rounded h-10 w-1/2"
@@ -392,43 +367,29 @@ export default function SettingsView() {
           </SettingsCategory.Child>
         </SettingsCategory>
 
-        <SettingsCategory icon={ApiOutlined} title={translate(network)}>
+        <SettingsCategory
+          icon={ApiOutlined}
+          title={translate(translations.network)}
+        >
           <SettingsCategory.Child
             icon={CloudServerOutlined}
-            label={translate(translatedElectrumServer)}
-          ></SettingsCategory.Child>
-
-          <SettingsCategory.Child>
-            <span className="text-zinc-600">
-              {translate(electrumServerDescription)}
-            </span>
-          </SettingsCategory.Child>
-
-          <SettingsCategory.Child label={translate(server)}>
-            <span
-              className={
-                preferences.customElectrumServer !== "" ? "text-zinc-300" : ""
-              }
+            label={translate(translations.translatedElectrumServer)}
+          >
+            <select
+              className="p-2 bg-white rounded h-10"
+              value={preferences.electrumServer || ""}
+              onChange={(event) => {
+                handleSettingsUpdate("electrumServer", event.target.value);
+              }}
             >
-              <select
-                className="select"
-                value={preferences.electrumServer || ""}
-                onChange={(event) => {
-                  setIsChangedCustomServerText(false);
-                  setCustomElectrumServerText("");
-                  handleCustomServerUpdate("");
-                  handleSettingsUpdate("electrumServer", event.target.value);
-                }}
-              >
-                {electrumServers.map((server) => (
-                  <option key={server} value={server}>
-                    {server}
-                  </option>
-                ))}
-              </select>
-            </span>
+              {electrum_servers.map((server) => (
+                <option key={server} value={server}>
+                  {server}
+                </option>
+              ))}
+            </select>
           </SettingsCategory.Child>
-          <SettingsCategory.Child label={translate(customServer)}>
+          <SettingsCategory.Child label={translate(translations.customServer)}>
             <input
               type="text"
               value={customElectrumServerText}

@@ -32,8 +32,8 @@ export default function WalletViewHistory() {
           {transactions.map((tx, i) =>
             i < 100 ? (
               <li key={tx.txid} className="flex px-1 py-2">
-                <button
-                  type="button"
+                <div
+                  type="div"
                   className="flex-1 text-sm"
                   onClick={
                     () => null /*console.log(tx.time, new Date(tx.time))*/
@@ -47,7 +47,7 @@ export default function WalletViewHistory() {
                   <div className="text-sm opacity-80">
                     {new Date(tx.time).toLocaleTimeString(locale)}
                   </div>
-                </button>
+                </div>
                 <div className="flex-1 text-right">
                   <div
                     className={`font-mono ${
@@ -75,17 +75,12 @@ export default function WalletViewHistory() {
         </ul>
       </div>
       <Button
-        icon={
-          <Button
-            icon={
-              <>
-                <ArrowLeftOutlined className="mr-1" />
-                {translate(back)}
-              </>
-            }
-            onClick={() => navigate(-1)}
-          />
-        }
+        icon={() => (
+          <>
+            <ArrowLeftOutlined className="mr-1" />
+            {translate(back)}
+          </>
+        )}
         onClick={() => navigate(-1)}
       />
     </div>

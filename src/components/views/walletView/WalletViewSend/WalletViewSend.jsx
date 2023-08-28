@@ -159,7 +159,7 @@ export default function WalletViewSend() {
 
     setSatoshiInput({
       display: satsToDisplayAmount(clampedAmount),
-      sats: clampedAmount,
+      sats: clampedAmount.toString(),
     });
   };
 
@@ -209,7 +209,7 @@ export default function WalletViewSend() {
             {shouldPreferLocalCurrency ? displayAmount.bch : displayAmount.fiat}
           </span>
           <div className="absolute top-2 right-2 flex items-center">
-            <Button icon={<CurrencyFlip className="text-xl" />} />
+            <Button icon={() => <CurrencyFlip className="text-xl" />} />
           </div>
         </div>
       </div>
@@ -220,18 +220,18 @@ export default function WalletViewSend() {
         <div className="mx-2">
           <Button
             onClick={() => navigate(-1)}
-            icon={
+            icon={() => (
               <span>
                 <ArrowLeftOutlined className="mr-1" />
                 {translate(back)}
               </span>
-            }
+            )}
           />
         </div>
         <div className="flex-1">
           <Button
             size="full"
-            icon={<span className="font-bold">{translate(confirm)}</span>}
+            icon={() => <span className="font-bold">{translate(confirm)}</span>}
             onClick={confirmSend}
             inverted
           />

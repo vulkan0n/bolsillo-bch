@@ -5,7 +5,7 @@ import {
 } from "@reduxjs/toolkit";
 
 import CurrencyService from "@/services/CurrencyService";
-import { currencyList } from "@/util/consts/currency";
+import { currencyList } from "@/util/currency";
 
 export const fetchExchangeRates = createAsyncThunk(
   "exchangeRates/fetch",

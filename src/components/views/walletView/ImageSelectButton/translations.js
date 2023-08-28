@@ -1,5 +1,5 @@
 const translations = {
-  image: {
+  imageText: {
     ar: "صورة",
     bn: "চিত্র",
     da: "Billede",

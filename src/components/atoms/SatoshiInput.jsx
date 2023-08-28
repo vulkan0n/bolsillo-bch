@@ -99,7 +99,7 @@ export default function SatoshiInput({
       return;
     }
 
-    onChange({ display: decimalInput, sats: sats.toNumber() });
+    onChange({ display: decimalInput, sats: sats.toString() });
   };
 
   // fired BEFORE text input is updated
@@ -173,7 +173,7 @@ SatoshiInput.propTypes = {
   className: PropTypes.string,
   satoshiInput: PropTypes.shape({
     display: PropTypes.string.isRequired,
-    sats: PropTypes.number.isRequired,
+    sats: PropTypes.string.isRequired,
   }),
   onChange: PropTypes.func,
   size: PropTypes.number,
