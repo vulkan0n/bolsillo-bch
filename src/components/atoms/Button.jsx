@@ -40,7 +40,7 @@ export default function Button({
 }
 
 Button.propTypes = {
-  icon: PropTypes.node,
+  icon: PropTypes.object,
   label: PropTypes.node,
   onClick: PropTypes.func,
   iconSize: PropTypes.string,

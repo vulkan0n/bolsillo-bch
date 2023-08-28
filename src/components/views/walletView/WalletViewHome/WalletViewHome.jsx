@@ -109,7 +109,7 @@ export default function WalletViewHome() {
       {isScanning ? (
         <ScannerOverlay />
       ) : (
-        <div className="py-3 px-2 text-center">
+        <div className="py-3 px-2 flex flex-col items-center">
           <button
             type="button"
             className="w-fit h-fit border border-4 border-primary/80 cursor-pointer shadow active:shadow-none active:bg-primary active:shadow-inner"
@@ -130,7 +130,7 @@ export default function WalletViewHome() {
           <button
             type="button"
             onClick={copyAddressToClipboard}
-            className="w-fit mx-auto text-xs font-mono text-center break-all cursor-pointer text-primary slashed-zero select-none my-2 rounded p-1 shadow-sm my-2 active:bg-primary active:text-white active:shadow-none active:shadow-inner"
+            className="w-fit mx-auto text-xs font-mono text-center cursor-pointer text-primary slashed-zero select-none my-2 rounded p-1 shadow-sm my-2 active:bg-primary active:text-white active:shadow-none active:shadow-inner"
           >
             <CopyOutlined className="mr-1" />
             <Address address={address} />

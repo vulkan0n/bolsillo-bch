@@ -29,7 +29,7 @@ export default function WalletViewBalance() {
   const handleFlipCurrency = () => {
     dispatch(
       setPreference({
-        key: "shouldPreferLocalCurrencyCurrency",
+        key: "preferLocalCurrency",
         value: !shouldPreferLocalCurrency,
       })
     );

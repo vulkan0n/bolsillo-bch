@@ -352,7 +352,7 @@ export default function SettingsView() {
             label={translate(language)}
           >
             <select
-              className="select"
+              className="p-2 bg-white rounded h-10 w-1/2"
               value={preferences.languageCode || ""}
               onChange={(event) => {
                 handleSettingsUpdate("languageCode", event.target.value);

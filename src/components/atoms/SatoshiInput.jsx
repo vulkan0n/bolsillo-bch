@@ -51,7 +51,7 @@ export default function SatoshiInput({
   useEffect(() => {
     const sats = satoshiInput.sats ? satoshiInput.sats : 0;
     onChange({ display: satsToDisplayAmount(sats), sats });
-  }, [shouldPreferLocalCurrency, denominateSats, satoshiInput.sats, onChange]);
+  }, [shouldPreferLocalCurrency]);
 
   const getMaxDecimals = () => {
     if (shouldPreferLocalCurrency) {
@@ -99,7 +99,7 @@ export default function SatoshiInput({
       return;
     }
 
-    onChange({ display: decimalInput, sats });
+    onChange({ display: decimalInput, sats: sats.toNumber() });
   };
 
   // fired BEFORE text input is updated
@@ -171,7 +171,10 @@ export default function SatoshiInput({
 
 SatoshiInput.propTypes = {
   className: PropTypes.string,
-  satoshiInput: PropTypes.number,
+  satoshiInput: PropTypes.shape({
+    display: PropTypes.string.isRequired,
+    sats: PropTypes.number.isRequired,
+  }),
   onChange: PropTypes.func,
   size: PropTypes.number,
 };
