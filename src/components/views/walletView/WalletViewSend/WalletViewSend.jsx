@@ -1,4 +1,3 @@
-import PropTypes from "prop-types";
 import { useState, useEffect, useCallback } from "react";
 import { useParams, useSearchParams, useNavigate } from "react-router-dom";
 
@@ -27,15 +26,6 @@ import CurrencyFlip from "@/components/atoms/CurrencyFlip";
 
 import { translate } from "@/util/translations";
 import translations from "./translations";
-
-const {
-  insufficientFunds,
-  notEnoughFee,
-  transactionFailed,
-  sendingTo,
-  back,
-  confirm,
-} = translations;
 
 export default function WalletViewSend() {
   const [searchParams] = useSearchParams();
@@ -82,7 +72,9 @@ export default function WalletViewSend() {
   const confirmSend = useCallback(async () => {
     if (isInsufficientFunds) {
       await Haptics.notification({ type: "WARNING" });
-      const insufficientFundsTranslation = translate(insufficientFunds);
+      const insufficientFundsTranslation = translate(
+        translations.insufficientFunds
+      );
       setMessage(insufficientFundsTranslation);
       return;
     }
@@ -96,7 +88,7 @@ export default function WalletViewSend() {
 
     if (typeof transaction !== "object") {
       await Haptics.notification({ type: "WARNING" });
-      const notEnoughFeeTranslation = translate(notEnoughFee);
+      const notEnoughFeeTranslation = translate(translations.notEnoughFee);
       setMessage(notEnoughFeeTranslation);
       return;
     }
@@ -112,7 +104,9 @@ export default function WalletViewSend() {
       navigate("/wallet/send/success");
     } else {
       await Haptics.notification({ type: "ERROR" });
-      const transactionFailedTranslation = translate(transactionFailed);
+      const transactionFailedTranslation = translate(
+        translations.transactionFailed
+      );
       setMessage(transactionFailedTranslation);
     }
   }, [address, isInsufficientFunds, navigate, satoshiInput.sats, wallet.id]);
@@ -168,7 +162,9 @@ export default function WalletViewSend() {
       <div className="tracking-wide text-center text-white">
         {message === "" ? (
           <div className="bg-primary p-2">
-            <div className="text-xl font-bold">{translate(sendingTo)}</div>
+            <div className="text-xl font-bold">
+              {translate(translations.sendingTo)}
+            </div>
             <div className="text-sm py-2 font-mono tracking-tight">
               <Address address={address} />
             </div>
@@ -209,7 +205,7 @@ export default function WalletViewSend() {
             {shouldPreferLocalCurrency ? displayAmount.bch : displayAmount.fiat}
           </span>
           <div className="absolute top-2 right-2 flex items-center">
-            <Button icon={() => <CurrencyFlip className="text-xl" />} />
+            <Button icon={CurrencyFlipIcon} />
           </div>
         </div>
       </div>
@@ -218,20 +214,12 @@ export default function WalletViewSend() {
         className={`flex absolute ${buttonsPos} w-full justify-around items-center px-2 gap-x-2`}
       >
         <div className="mx-2">
-          <Button
-            onClick={() => navigate(-1)}
-            icon={() => (
-              <span>
-                <ArrowLeftOutlined className="mr-1" />
-                {translate(back)}
-              </span>
-            )}
-          />
+          <Button onClick={() => navigate(-1)} icon={BackIcon} />
         </div>
         <div className="flex-1">
           <Button
             size="full"
-            icon={() => <span className="font-bold">{translate(confirm)}</span>}
+            icon={ConfirmIcon}
             onClick={confirmSend}
             inverted
           />
@@ -241,14 +229,23 @@ export default function WalletViewSend() {
   );
 }
 
-function MaxButton({ className }) {
-  return <span className={className}>MAX</span>;
+function MaxButton() {
+  return <span>MAX</span>;
 }
 
-MaxButton.propTypes = {
-  className: PropTypes.string,
-};
+function ConfirmIcon() {
+  return <span className="font-bold">{translate(translations.confirm)}</span>;
+}
 
-MaxButton.defaultProps = {
-  className: "",
-};
+function BackIcon() {
+  return (
+    <span>
+      <ArrowLeftOutlined className="mr-1" />
+      {translate(translations.back)}
+    </span>
+  );
+}
+
+function CurrencyFlipIcon() {
+  return <CurrencyFlip className="text-xl" />;
+}

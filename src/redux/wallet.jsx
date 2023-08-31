@@ -33,7 +33,7 @@ walletMiddleware.startListening({
       setPreference({ key: "activeWalletId", value: action.payload.id })
     );
     // connect to electrum
-    listenerApi.dispatch(syncConnect());
+    listenerApi.dispatch(syncConnect({ attempts: 0 }));
   },
 });
 

@@ -11,8 +11,6 @@ import { translate } from "@/util/translations";
 
 import Button from "@/components/atoms/Button";
 
-const { recentTransactions, back } = translations;
-
 export default function WalletViewHistory() {
   const navigate = useNavigate();
   const locale = useSelector(selectLocale);
@@ -26,7 +24,7 @@ export default function WalletViewHistory() {
     <div className="p-2 pb-0">
       <div className="shadow-sm mb-2.5">
         <div className="bg-zinc-800 text-zinc-200 rounded-t-lg text-center text-lg p-1 font-semibold">
-          {translate(recentTransactions)}
+          {translate(translations.recentTransactions)}
         </div>
         <ul className="bg-zinc-100 text-zinc-600 divide-y divide-zinc-300 rounded-b px-2 max-h-[58vh] overflow-y-scroll border border-zinc-400 shadow-inner">
           {transactions.map((tx, i) =>
@@ -74,15 +72,16 @@ export default function WalletViewHistory() {
           )}
         </ul>
       </div>
-      <Button
-        icon={() => (
-          <>
-            <ArrowLeftOutlined className="mr-1" />
-            {translate(back)}
-          </>
-        )}
-        onClick={() => navigate(-1)}
-      />
+      <Button icon={BackIcon} onClick={() => navigate(-1)} />
     </div>
+  );
+}
+
+function BackIcon() {
+  return (
+    <>
+      <ArrowLeftOutlined className="mr-1" />
+      {translate(translations.back)}
+    </>
   );
 }

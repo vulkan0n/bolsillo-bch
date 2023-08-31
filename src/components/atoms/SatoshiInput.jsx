@@ -1,6 +1,6 @@
 import PropTypes from "prop-types";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Keyboard } from "@capacitor/keyboard";
 import { useSelector } from "react-redux";
 import { Decimal } from "decimal.js";
@@ -27,6 +27,21 @@ export default function SatoshiInput({
     selectCurrencySettings
   );
 
+  const [shouldUpdateDisplay, setShouldUpdateDisplay] = useState(false);
+
+  useEffect(
+    function updateDisplayAmount() {
+      setShouldUpdateDisplay(true);
+    },
+    [shouldPreferLocalCurrency]
+  );
+
+  if (shouldUpdateDisplay) {
+    const sats = satoshiInput.sats ? satoshiInput.sats : 0;
+    onChange({ display: satsToDisplayAmount(sats), sats });
+    setShouldUpdateDisplay(false);
+  }
+
   const denominateSats = useSelector(selectDenomination); // TODO: bits, mBCH
 
   const Currency = new CurrencyService(localCurrency);
@@ -46,12 +61,6 @@ export default function SatoshiInput({
     // bch mode
     return bchToSats(amount);
   };
-
-  // update displayed amount when currency is flipped
-  useEffect(() => {
-    const sats = satoshiInput.sats ? satoshiInput.sats : 0;
-    onChange({ display: satsToDisplayAmount(sats), sats });
-  }, [shouldPreferLocalCurrency]);
 
   const getMaxDecimals = () => {
     if (shouldPreferLocalCurrency) {

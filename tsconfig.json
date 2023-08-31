@@ -2,6 +2,7 @@
   "compilerOptions": {
     "baseUrl": "./src",
     "target": "es2022",
+    "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "checkJs": true,
     "skipLibCheck": true,
@@ -9,6 +10,7 @@
     "strict": true,
     "forceConsistentCasingInFileNames": true,
     "module": "esnext",
+    "moduleResolution": "nodenext",
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
