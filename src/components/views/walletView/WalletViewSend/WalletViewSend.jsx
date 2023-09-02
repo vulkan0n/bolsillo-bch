@@ -220,6 +220,7 @@ export default function WalletViewSend() {
           <Button
             size="full"
             icon={ConfirmIcon}
+            shittyFullWidthHack
             onClick={confirmSend}
             inverted
           />

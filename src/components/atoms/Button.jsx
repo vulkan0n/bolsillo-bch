@@ -9,6 +9,7 @@ export default function Button({
   labelColor = "zinc-700",
   inverted,
   tailwindBorderClass,
+  shittyFullWidthHack,
 }) {
   const Icon = icon;
   const inactiveClasses =
@@ -20,7 +21,11 @@ export default function Button({
 
   return (
     <div className="text-center">
-      <button type="button" onClick={onClick}>
+      <button
+        type="button"
+        onClick={onClick}
+        className={shittyFullWidthHack ? "w-full" : ""}
+      >
         <div
           className={`w-full h-full flex items-center justify-center cursor-pointer p-3 mx-auto
         rounded-full border border-2 ${borderClasses} shadow-md opacity-90 

@@ -300,7 +300,7 @@ export default function SettingsWalletView() {
               <SettingsCategory.Child icon={null} label="">
                 <button
                   type="button"
-                  className="w-full block p-2 text-left"
+                  className="w-full text-left"
                   onClick={handleNavigateAdditionalWalletInformation}
                 >
                   <InfoCircleOutlined className="text-xl mr-1" />

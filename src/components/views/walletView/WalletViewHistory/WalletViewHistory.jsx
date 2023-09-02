@@ -72,7 +72,11 @@ export default function WalletViewHistory() {
           )}
         </ul>
       </div>
-      <Button icon={BackIcon} onClick={() => navigate(-1)} />
+      <Button
+        shittyFullWidthHack
+        icon={BackIcon}
+        onClick={() => navigate(-1)}
+      />
     </div>
   );
 }
