@@ -72,6 +72,7 @@ export default function WalletViewHistory() {
         </ul>
       </div>
       <Button
+        shittyFullWidthHack
         icon={() => (
           <>
             <ArrowLeftOutlined className="mr-1" />

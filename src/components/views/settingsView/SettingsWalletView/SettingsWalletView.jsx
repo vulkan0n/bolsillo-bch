@@ -277,7 +277,7 @@ export default function SettingsWalletView() {
               <SettingsChild>
                 <button
                   type="button"
-                  className="w-full block p-2 text-left"
+                  className="w-full text-left"
                   onClick={handleRebuildWallet}
                 >
                   <MedicineBoxOutlined className="text-xl mr-1" />
@@ -287,7 +287,7 @@ export default function SettingsWalletView() {
               <SettingsChild>
                 <button
                   type="button"
-                  className="w-full block p-2 text-left"
+                  className="w-full text-left"
                   onClick={handleNavigateAdditionalWalletInformation}
                 >
                   <InfoCircleOutlined className="text-xl mr-1" />

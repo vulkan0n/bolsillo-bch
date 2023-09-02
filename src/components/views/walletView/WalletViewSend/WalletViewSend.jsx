@@ -222,6 +222,7 @@ export default function WalletViewSend() {
         <div className="flex-1">
           <Button
             size="full"
+            shittyFullWidthHack
             icon={() => <span className="font-bold">{translate(confirm)}</span>}
             onClick={confirmSend}
             inverted

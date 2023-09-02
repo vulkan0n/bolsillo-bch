@@ -78,8 +78,8 @@ export default function SettingsWalletAdditionalInformation() {
           </div>
         )}
         {isActiveWallet && (
-          <div className="py-1">
-            <div className="card flex bg-zinc-100 shadow-lg rounded-md p-3  m-2">
+          <div className="">
+            <div className="card flex bg-zinc-100 rounded-md p-3  m-2">
               <div className="card-body">
                 <h2 className="card-title">
                   <p className="text-lg mr-2">
@@ -98,7 +98,7 @@ export default function SettingsWalletAdditionalInformation() {
               </div>
             </div>
 
-            <div className="card flex bg-zinc-100 shadow-lg rounded-md p-3  m-2">
+            <div className="card flex bg-zinc-100 rounded-md p-3  m-2">
               <div className="card-body">
                 <h2 className="card-title">
                   <p className="text-lg mr-2">
@@ -146,7 +146,7 @@ export default function SettingsWalletAdditionalInformation() {
               </div>
             </div>
 
-            <div className="card flex bg-zinc-100 shadow-lg rounded-md p-3 m-2">
+            <div className="card flex bg-zinc-100 rounded-md p-3 m-2">
               <div className="card-body">
                 <h2 className="card-title">
                   <p className="text-lg mr-2">
