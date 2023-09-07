@@ -55,6 +55,7 @@ Button.propTypes = {
   labelColor: PropTypes.string,
   inverted: PropTypes.bool,
   tailwindBorderClass: PropTypes.string,
+  shittyFullWidthHack: PropTypes.bool,
 };
 
 Button.defaultProps = {
@@ -66,4 +67,5 @@ Button.defaultProps = {
   labelColor: "",
   inverted: false,
   tailwindBorderClass: "",
+  shittyFullWidthHack: false,
 };
