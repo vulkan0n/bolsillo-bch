@@ -1,5 +1,3 @@
-import PropTypes from "prop-types";
-
 export default function Button({
   icon,
   label,
@@ -45,27 +43,3 @@ export default function Button({
     </div>
   );
 }
-
-Button.propTypes = {
-  icon: PropTypes.func,
-  label: PropTypes.node,
-  onClick: PropTypes.func,
-  iconSize: PropTypes.string,
-  labelSize: PropTypes.string,
-  labelColor: PropTypes.string,
-  inverted: PropTypes.bool,
-  tailwindBorderClass: PropTypes.string,
-  shittyFullWidthHack: PropTypes.bool,
-};
-
-Button.defaultProps = {
-  icon: null,
-  label: "",
-  onClick: () => null,
-  iconSize: "",
-  labelSize: "",
-  labelColor: "",
-  inverted: false,
-  tailwindBorderClass: "",
-  shittyFullWidthHack: false,
-};
