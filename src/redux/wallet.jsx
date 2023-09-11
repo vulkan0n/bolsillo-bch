@@ -6,7 +6,7 @@ import {
 } from "@reduxjs/toolkit";
 
 import Decimal from "decimal.js";
-import { setPreference } from "@/redux/preferences";
+import { setPreference, selectElectrumServer } from "@/redux/preferences";
 import { syncConnect, syncSubscribeAddress } from "@/redux/sync";
 
 import WalletService from "@/services/WalletService";
@@ -33,7 +33,12 @@ walletMiddleware.startListening({
       setPreference({ key: "activeWalletId", value: action.payload.id })
     );
     // connect to electrum
-    listenerApi.dispatch(syncConnect({ attempts: 0 }));
+    listenerApi.dispatch(
+      syncConnect({
+        server: selectElectrumServer(listenerApi.getState()),
+        attempts: 0,
+      })
+    );
   },
 });
 

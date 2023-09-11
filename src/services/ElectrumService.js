@@ -17,6 +17,8 @@ import { electrum_servers } from "@/util/electrum_servers";
 
 const DEFAULT_ELECTRUM_SERVER = electrum_servers[0];
 
+const server_blacklist = [];
+
 // pointer for current ElectrumClient instance
 let electrum = null;
 
@@ -36,6 +38,7 @@ export default function ElectrumService() {
     requestBlock,
     broadcastTransaction,
     requestRelayFee,
+    selectFallbackServer,
   };
 
   // connect: connect to an Electrum server
@@ -54,6 +57,7 @@ export default function ElectrumService() {
       // disconnect(force=true) cleans up all listeners and timeouts
       await electrum.disconnect(true);
     }
+    console.log("Electrum: Connecting to", server);
 
     // Create a new ElectrumClient every time
     // This avoids memory leaks from EventEmitter
@@ -77,7 +81,7 @@ export default function ElectrumService() {
       store.dispatch(syncConnectionDown({ server }));
     });
 
-    return electrum;
+    return electrum.connect();
   }
 
   // disconnect: disconnect the Electrum instance
@@ -225,6 +229,18 @@ export default function ElectrumService() {
     const relayFee = bchToSats(result);
     return relayFee;
   }
+
+  function selectFallbackServer(prevServer) {
+    server_blacklist.push(prevServer);
+
+    let newServer = prevServer;
+    while (server_blacklist.indexOf(newServer) !== -1) {
+      newServer =
+        electrum_servers[Math.floor(Math.random() * electrum_servers.length)];
+    }
+
+    return newServer;
+  }
 }
 
 // named function for address subscription, keeps electrum-cash performant
@@ -239,4 +255,10 @@ function handleChaintipSubscription(data) {
   store.dispatch(syncChaintip(chaintip));
 }
 
-App.addListener("resume", () => store.dispatch(syncConnect()));
+function getElectrumHost() {
+  return electrum && electrum.connection.host;
+}
+
+App.addListener("resume", () =>
+  store.dispatch(syncConnect({ server: getElectrumHost(), attempts: 0 }))
+);

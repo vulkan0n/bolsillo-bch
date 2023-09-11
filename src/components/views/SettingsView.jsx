@@ -38,6 +38,7 @@ import {
   selectActiveWalletId,
 } from "@/redux/preferences";
 import { selectActiveWallet } from "@/redux/wallet";
+import { syncReconnect } from "@/redux/sync";
 
 import WalletService from "@/services/WalletService";
 import { currencyList } from "@/util/currency";
@@ -81,6 +82,11 @@ export default function SettingsView() {
   function handleSettingsUpdate(key, value) {
     setIsChangedCustomServerText(false);
     dispatch(setPreference({ key, value }));
+  }
+
+  function handleElectrumServerUpdate(server) {
+    handleSettingsUpdate("electrumServer", server);
+    dispatch(syncReconnect(server));
   }
 
   function handleCustomServerUpdate(server) {
@@ -328,7 +334,7 @@ export default function SettingsView() {
               />
             </div>
           </SettingsCategory.Child>
-          <SettingsCategory.Child icon={() => null} label="">
+          <SettingsCategory.Child icon={null} label="">
             <div className="flex items-center">
               <Button
                 onClick={handleResetQrColors}
@@ -379,7 +385,7 @@ export default function SettingsView() {
               className="p-2 bg-white rounded h-10"
               value={preferences.electrumServer || ""}
               onChange={(event) => {
-                handleSettingsUpdate("electrumServer", event.target.value);
+                handleElectrumServerUpdate(event.target.value);
               }}
             >
               {electrum_servers.map((server) => (
@@ -389,7 +395,7 @@ export default function SettingsView() {
               ))}
             </select>
           </SettingsCategory.Child>
-          <SettingsCategory.Child label={translate(translations.customServer)}>
+          {/*<SettingsCategory.Child label={translate(translations.customServer)}>
             <input
               type="text"
               value={customElectrumServerText}
@@ -421,7 +427,7 @@ export default function SettingsView() {
                 />
               </span>
             )}
-          </SettingsCategory.Child>
+          </SettingsCategory.Child>*/}
         </SettingsCategory>
       </div>
       <Link to="/credits" className="w-fit mx-auto my-2">

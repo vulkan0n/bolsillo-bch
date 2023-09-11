@@ -9,6 +9,7 @@ import {
 
 import { walletBalanceUpdate } from "@/redux/wallet";
 import { fetchExchangeRates } from "@/redux/exchangeRates";
+import { setPreference } from "@/redux/preferences";
 
 import ElectrumService from "@/services/ElectrumService";
 import BlockchainService from "@/services/BlockchainService";
@@ -30,16 +31,27 @@ export const syncConnect = createAsyncThunk(
   "sync/connect",
   async (payload, thunkApi) => {
     try {
+      console.log("sync/connect", payload);
       await Electrum.connect(payload.server);
     } catch (e) {
       // if connection fails, destroy the client and try again
       await Electrum.disconnect(true);
-      setTimeout(() =>
+
+      if (payload.attempts <= 1) {
+        setTimeout(() =>
+          thunkApi.dispatch(
+            syncConnect({ ...payload, attempts: payload.attempts + 1 }),
+            Math.min(1000 * payload.attempts * 2, 10 * 1000)
+          )
+        );
+      } else {
+        const newServer = Electrum.selectFallbackServer(payload.server);
         thunkApi.dispatch(
-          syncConnect({ attempts: payload.attempts + 1 }),
-          Math.min((1000 * payload.attempts) ** 2, 30 * 1000) // exponential backoff up to 30 seconds
-        )
-      );
+          setPreference({ key: "electrumServer", value: newServer })
+        );
+
+        thunkApi.dispatch(syncConnect({ server: newServer, attempts: 0 }));
+      }
     }
   }
 );

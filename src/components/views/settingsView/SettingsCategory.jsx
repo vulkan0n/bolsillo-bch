@@ -1,4 +1,3 @@
-import PropTypes from "prop-types";
 import { useState } from "react";
 import { CaretRightOutlined, CaretDownOutlined } from "@ant-design/icons";
 
@@ -43,27 +42,5 @@ function SettingsChild({ icon, label, children }) {
     </div>
   );
 }
-
-SettingsCategory.propTypes = {
-  icon: PropTypes.node,
-  title: PropTypes.string.isRequired,
-  children: PropTypes.node.isRequired,
-};
-
-SettingsCategory.defaultProps = {
-  icon: () => null,
-};
-
-SettingsChild.propTypes = {
-  icon: PropTypes.node,
-  label: PropTypes.string,
-  children: PropTypes.node,
-};
-
-SettingsChild.defaultProps = {
-  icon: "",
-  label: "",
-  children: null,
-};
 
 SettingsCategory.Child = SettingsChild;

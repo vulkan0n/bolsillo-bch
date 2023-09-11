@@ -110,3 +110,8 @@ export const selectLanguageCode = createSelector(
   (state) => state.preferences,
   (preferences) => preferences.languageCode
 );
+
+export const selectElectrumServer = createSelector(
+  (state) => state.preferences,
+  (preferences) => preferences.electrumServer
+);
