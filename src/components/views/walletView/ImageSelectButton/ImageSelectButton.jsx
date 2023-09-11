@@ -8,8 +8,6 @@ import Button from "@/components/atoms/Button";
 import translations from "./translations";
 import { translate } from "@/util/translations";
 
-const { imageText } = translations;
-
 export default function ImageSelectButton({ onSelection, ...rest }) {
   // function to downscale images (helps QR codes read better)
   const scaleImage = (image) => {
@@ -65,7 +63,7 @@ export default function ImageSelectButton({ onSelection, ...rest }) {
   return (
     <Button
       icon={PictureOutlined}
-      label={translate(imageText)}
+      label={translate(translations.imageText)}
       onClick={handleImageSelectButton}
       {...rest}
     />

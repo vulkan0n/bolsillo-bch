@@ -21,7 +21,7 @@ export function bchToSats(bch) {
 
 export function satsToDisplayAmount(sats) {
   const preferences = selectPreferences(store.getState());
-  const { preferLocalCurrency, localCurrency } = selectCurrencySettings(
+  const { shouldPreferLocalCurrency, localCurrency } = selectCurrencySettings(
     store.getState()
   );
   const Currency = new CurrencyService(localCurrency);
@@ -32,7 +32,7 @@ export function satsToDisplayAmount(sats) {
     return "0";
   }
 
-  if (preferLocalCurrency) {
+  if (shouldPreferLocalCurrency) {
     return Currency.satsToFiat(sats);
   }
 

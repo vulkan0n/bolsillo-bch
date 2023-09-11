@@ -34,25 +34,6 @@ import { formatSatoshis } from "@/util/sats";
 import { translate } from "@/util/translations";
 import translations from "./translations";
 
-const {
-  walletSettings,
-  advancedOptions,
-  additionalWalletInformation,
-  created,
-  lastKnownBalance,
-  walletActive,
-  activateWallet,
-  deleteWallet,
-  areYouSure,
-  ensureRecoveryPhrase,
-  confirmDelete,
-  keepSecret,
-  dontStoreDigitally,
-  viewRecoveryPhrase,
-  secretAndSecure,
-  rebuildWallet,
-} = translations;
-
 export default function SettingsWalletView() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -63,7 +44,7 @@ export default function SettingsWalletView() {
   const activeWalletId = useSelector(selectActiveWalletId);
   const isActiveWallet = wallet_id === activeWalletId;
 
-  const { preferLocalCurrency } = useSelector(selectCurrencySettings);
+  const { shouldPreferLocalCurrency } = useSelector(selectCurrencySettings);
 
   const WalletManager = new WalletService();
   const wallet = WalletManager.getWalletById(wallet_id);
@@ -148,7 +129,10 @@ export default function SettingsWalletView() {
 
   return (
     <>
-      <ViewHeader icon={WalletOutlined} title={translate(walletSettings)} />
+      <ViewHeader
+        icon={WalletOutlined}
+        title={translate(translations.walletSettings)}
+      />
       <div className="p-2">
         <div className="p-3 rounded-lg bg-zinc-200">
           <div className="text-2xl">
@@ -174,15 +158,15 @@ export default function SettingsWalletView() {
             )}
           </div>
           <div className="text-lg text-center text-zinc-600">
-            {translate(created)}{" "}
+            {translate(translations.created)}{" "}
             {new Date(wallet.date_created).toLocaleString(locale)}
           </div>
           {wallet.balance > 0 && (
             <div className="text-lg text-center text-zinc-500">
-              {translate(lastKnownBalance)}:{" "}
+              {translate(translations.lastKnownBalance)}:{" "}
               {
                 formatSatoshis(wallet.balance)[
-                  preferLocalCurrency ? "fiat" : "bch"
+                  shouldPreferLocalCurrency ? "fiat" : "bch"
                 ]
               }
             </div>
@@ -207,8 +191,8 @@ export default function SettingsWalletView() {
                 )}
                 <div className="flex-1">
                   {isActiveWallet
-                    ? translate(walletActive)
-                    : translate(activateWallet)}
+                    ? translate(translations.walletActive)
+                    : translate(translations.activateWallet)}
                 </div>
               </div>
             </button>
@@ -232,12 +216,14 @@ export default function SettingsWalletView() {
                   {
                     /* eslint-disable no-nested-ternary */
                     deleteConfirm === 0
-                      ? translate(deleteWallet)
+                      ? translate(translations.deleteWallet)
                       : deleteConfirm === 1
-                      ? translate(areYouSure)
+                      ? translate(translations.areYouSure)
                       : deleteConfirm === 2
-                      ? translate(ensureRecoveryPhrase)
-                      : `${translate(confirmDelete)} "${wallet.name}"`
+                      ? translate(translations.ensureRecoveryPhrase)
+                      : `${translate(translations.confirmDelete)} "${
+                          wallet.name
+                        }"`
                     /* eslint-enable no-nested-ternary */
                   }
                 </div>
@@ -256,7 +242,7 @@ export default function SettingsWalletView() {
             <div className="flex flex-col justify-between items-center">
               <div className="text-center text-error text-xl font-bold">
                 <WarningFilled className="mr-2 text-warning" />
-                {translate(keepSecret)}
+                {translate(translations.keepSecret)}
                 <WarningFilled className="ml-2 text-warning" />
               </div>
               <div className="text-center text-zinc-50 text-xl font-mono py-4">
@@ -264,7 +250,7 @@ export default function SettingsWalletView() {
               </div>
               <div className="text-center text-error text-xl font-bold">
                 <WarningFilled className="mr-2 text-warning" />
-                {translate(dontStoreDigitally)}
+                {translate(translations.dontStoreDigitally)}
                 <WarningFilled className="ml-2 text-warning" />
               </div>
             </div>
@@ -272,10 +258,10 @@ export default function SettingsWalletView() {
             <>
               <EyeInvisibleOutlined className="text-8xl text-zinc-50" />
               <div className="text-center text-zinc-50 text-xl">
-                {translate(viewRecoveryPhrase)}
+                {translate(translations.viewRecoveryPhrase)}
               </div>
               <div className="text-center text-zinc-200 text-lg opacity-90">
-                ({translate(secretAndSecure)})
+                ({translate(translations.secretAndSecure)})
               </div>
             </>
           )}
@@ -285,7 +271,7 @@ export default function SettingsWalletView() {
           wallet.key_viewed !== null && isActiveWallet && (
             <SettingsCategory
               icon={ToolOutlined}
-              title={translate(advancedOptions)}
+              title={translate(translations.advancedOptions)}
             >
               <SettingsCategory.Child icon={null} label="">
                 <button
@@ -294,7 +280,7 @@ export default function SettingsWalletView() {
                   onClick={handleRebuildWallet}
                 >
                   <MedicineBoxOutlined className="text-xl mr-1" />
-                  {translate(rebuildWallet)}
+                  {translate(translations.rebuildWallet)}
                 </button>
               </SettingsCategory.Child>
               <SettingsCategory.Child icon={null} label="">
@@ -304,7 +290,7 @@ export default function SettingsWalletView() {
                   onClick={handleNavigateAdditionalWalletInformation}
                 >
                   <InfoCircleOutlined className="text-xl mr-1" />
-                  {translate(additionalWalletInformation)}
+                  {translate(translations.additionalWalletInformation)}
                 </button>
               </SettingsCategory.Child>
             </SettingsCategory>

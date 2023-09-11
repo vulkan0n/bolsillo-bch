@@ -338,12 +338,12 @@ export default function SettingsView() {
             <div className="flex items-center">
               <Button
                 onClick={handleResetQrColors}
-                icon={
+                icon={() => (
                   <span>
                     <UndoOutlined className="mr-1" />
                     {translate(translations.resetColors)}
                   </span>
-                }
+                )}
               />
             </div>
           </SettingsCategory.Child>

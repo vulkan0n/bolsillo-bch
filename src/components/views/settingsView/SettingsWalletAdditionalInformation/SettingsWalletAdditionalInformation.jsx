@@ -24,22 +24,6 @@ import { translate } from "@/util/translations";
 import translations from "./translations";
 import { SELENE_DEFAULT_DERIVATION_PATH } from "@/util/crypto";
 
-const {
-  additionalWalletInformation,
-  derivationPathTitle,
-  derivationPathExplanation,
-  xPubDescription1,
-  xPubDescription2,
-  xPubDescription3,
-  hideXpub,
-  revealXpub,
-  xPrvDescription1,
-  xPrvDescription2,
-  xPrvDescription3,
-  hideXprv,
-  revealXprv,
-} = translations;
-
 export default function SettingsWalletAdditionalInformation() {
   const { wallet_id } = useParams();
 
@@ -67,27 +51,33 @@ export default function SettingsWalletAdditionalInformation() {
     <>
       <ViewHeader
         icon={InfoCircleOutlined}
-        title={translate(additionalWalletInformation)}
+        title={translate(translations.additionalWalletInformation)}
       />
       <div className="p-2">
-        <SettingsCategory title={translate(derivationPathTitle)}>
+        <SettingsCategory
+          icon={() => null}
+          title={translate(translations.derivationPathTitle)}
+        >
           <SettingsCategory.Child label={derivationPath} />
           <SettingsCategory.Child
             label={`${translate(
-              derivationPathExplanation
+              translations.derivationPathExplanation
             )} ${SELENE_DEFAULT_DERIVATION_PATH}`}
           />
         </SettingsCategory>
 
-        <SettingsCategory title="xPub">
-          <SettingsCategory.Child>
-            <div className="flex flex-col gap-y-2">
-              {translate(xPubDescription1)}{" "}
-              <span className="font-bold text-underline">
-                {translate(xPubDescription2)} {translate(xPubDescription3)}
-              </span>
-            </div>
-          </SettingsCategory.Child>
+        <SettingsCategory icon={() => null} title="xPub">
+          <SettingsCategory.Child
+            label={
+              <div className="flex flex-col gap-y-2">
+                {translate(translations.xPubDescription1)}{" "}
+                <span className="font-bold text-underline">
+                  {translate(translations.xPubDescription2)}{" "}
+                  {translate(translations.xPubDescription3)}
+                </span>
+              </div>
+            }
+          />
           <SettingsCategory.Child>
             <div className="flex flex-col gap-y-1 w-full">
               <button
@@ -104,7 +94,9 @@ export default function SettingsWalletAdditionalInformation() {
                     <EyeOutlined className="text-2xl mr-1" />
                   )}
                   <div className="text-lg font-medium flex-1 text-center">
-                    {isShowXpub ? translate(hideXpub) : translate(revealXpub)}
+                    {isShowXpub
+                      ? translate(translations.hideXpub)
+                      : translate(translations.revealXpub)}
                   </div>
                 </div>
               </button>
@@ -118,18 +110,20 @@ export default function SettingsWalletAdditionalInformation() {
           </SettingsCategory.Child>
         </SettingsCategory>
 
-        <SettingsCategory title="xPrv">
-          <SettingsCategory.Child>
-            <div className="flex flex-col gap-y-2">
-              {translate(xPrvDescription1)}{" "}
-              <span className="font-bold text-underline">
-                {translate(xPrvDescription2)}{" "}
-                <span className="text-red-500">
-                  {translate(xPrvDescription3)}
+        <SettingsCategory icon={() => null} title="xPrv">
+          <SettingsCategory.Child
+            label={
+              <div className="flex flex-col gap-y-2">
+                {translate(translations.xPrvDescription1)}{" "}
+                <span className="font-bold text-underline">
+                  {translate(translations.xPrvDescription2)}{" "}
+                  <span className="text-red-500">
+                    {translate(translations.xPrvDescription3)}
+                  </span>
                 </span>
-              </span>
-            </div>
-          </SettingsCategory.Child>
+              </div>
+            }
+          />
 
           <SettingsCategory.Child>
             <div className="flex flex-col gap-y-1 w-full">
@@ -146,7 +140,9 @@ export default function SettingsWalletAdditionalInformation() {
                   )}
                   {!isShowxPrv && <EyeOutlined className="text-2xl mr-1" />}
                   <div className="text-lg font-medium flex-1 text-center">
-                    {isShowxPrv ? translate(hideXprv) : translate(revealXprv)}
+                    {isShowxPrv
+                      ? translate(translations.hideXprv)
+                      : translate(translations.revealXprv)}
                   </div>
                 </div>
               </button>

@@ -85,7 +85,6 @@ export const selectCurrencySettings = createSelector(
   (state) => state.preferences,
   (preferences) => ({
     localCurrency: preferences.localCurrency,
-    preferLocalCurrency: preferences.preferLocalCurrency === "true",
     shouldPreferLocalCurrency: preferences.preferLocalCurrency === "true",
     shouldHideBalance: preferences.hideAvailableBalance === "true",
     shouldDisplayExchangeRate: preferences.displayExchangeRate === "true",

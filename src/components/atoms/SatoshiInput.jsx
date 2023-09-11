@@ -29,6 +29,7 @@ export default function SatoshiInput({
 
   const [shouldUpdateDisplay, setShouldUpdateDisplay] = useState(false);
 
+  // prevent infinite render loops
   useEffect(
     function updateDisplayAmount() {
       setShouldUpdateDisplay(true);
@@ -36,11 +37,16 @@ export default function SatoshiInput({
     [shouldPreferLocalCurrency]
   );
 
-  if (shouldUpdateDisplay) {
-    const sats = satoshiInput.sats ? satoshiInput.sats : 0;
-    onChange({ display: satsToDisplayAmount(sats), sats });
-    setShouldUpdateDisplay(false);
-  }
+  useEffect(
+    function executeUpdateDisplayAmount() {
+      if (shouldUpdateDisplay) {
+        const sats = satoshiInput.sats ? satoshiInput.sats : 0;
+        onChange({ display: satsToDisplayAmount(sats), sats });
+        setShouldUpdateDisplay(false);
+      }
+    },
+    [shouldUpdateDisplay, onChange, satoshiInput.sats]
+  );
 
   const denominateSats = useSelector(selectDenomination); // TODO: bits, mBCH
 
