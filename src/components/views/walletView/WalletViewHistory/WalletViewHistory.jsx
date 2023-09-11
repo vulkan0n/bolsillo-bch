@@ -27,11 +27,15 @@ export default function WalletViewHistory() {
           {translate(translations.recentTransactions)}
         </div>
         <ul className="bg-zinc-100 text-zinc-600 divide-y divide-zinc-300 rounded-b px-2 max-h-[58vh] overflow-y-scroll border border-zinc-400 shadow-inner">
+          {transactions.length === 0 && (
+            <li className="flex px-1 py-2 items-center justify-center tracking-tighter font-bold">
+              ---
+            </li>
+          )}
           {transactions.map((tx, i) =>
             i < 100 ? (
               <li key={tx.txid} className="flex px-1 py-2">
                 <div
-                  type="div"
                   className="flex-1 text-sm"
                   onClick={
                     () => null /*console.log(tx.time, new Date(tx.time))*/
