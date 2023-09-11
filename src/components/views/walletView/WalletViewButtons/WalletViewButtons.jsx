@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { Haptics } from "@capacitor/haptics";
+import { Haptics, NotificationType } from "@capacitor/haptics";
 import { Clipboard } from "@capacitor/clipboard";
 import {
   SendOutlined,
@@ -30,10 +30,10 @@ export default function WalletViewButtons() {
     const { isValid, address, query } = validateInvoiceString(input);
 
     if (isValid) {
-      Haptics.notification({ type: "SUCCESS" });
+      Haptics.notification({ type: NotificationType.Success });
       navigate(`/wallet/send/${address}${query}`);
     } else {
-      Haptics.notification({ type: "ERROR" });
+      Haptics.notification({ type: NotificationType.Error });
     }
 
     return isValid;
