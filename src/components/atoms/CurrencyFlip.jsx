@@ -12,7 +12,7 @@ export default function CurrencyFlip({ className, ...rest }) {
   const handleFlipLocalCurrency = () => {
     dispatch(
       setPreference({
-        key: "shouldPreferLocalCurrency",
+        key: "preferLocalCurrency",
         value: !shouldPreferLocalCurrency,
       })
     );
