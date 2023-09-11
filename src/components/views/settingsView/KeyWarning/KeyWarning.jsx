@@ -1,30 +1,26 @@
-import PropTypes from "prop-types";
+import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { WarningFilled } from "@ant-design/icons";
+
+import { selectActiveWallet } from "@/redux/wallet";
 
 import { translate } from "@/util/translations";
 import translations from "./translations";
 
-const { backUpWallet } = translations;
-
-export default function KeyWarning({ wallet }) {
-  return wallet.key_viewed === null ? (
-    <div className="mb-2 p-2">
-      <Link to={`/settings/wallet/${wallet.id}`}>
-        <div className="alert alert-warning p-2 shadow-lg bg-warning text-black rounded-lg text-center">
-          <div className="text-xl">
-            <WarningFilled className="text-error text-4xl ml-2" />
-            {translate(backUpWallet)}
+export default function KeyWarning() {
+  const wallet = useSelector(selectActiveWallet);
+  return (
+    wallet.key_viewed === null && (
+      <div className="mb-2 p-2">
+        <Link to={`/settings/wallet/${wallet.id}`}>
+          <div className="alert alert-warning p-2 shadow-lg bg-warning text-black rounded-lg text-center">
+            <div className="text-xl">
+              <WarningFilled className="text-error text-4xl ml-2" />
+              {translate(translations.backUpWallet)}
+            </div>
           </div>
-        </div>
-      </Link>
-    </div>
-  ) : null;
+        </Link>
+      </div>
+    )
+  );
 }
-
-KeyWarning.propTypes = {
-  wallet: PropTypes.shape({
-    id: PropTypes.number.isRequired,
-    key_viewed: PropTypes.string.isRequired,
-  }).isRequired,
-};

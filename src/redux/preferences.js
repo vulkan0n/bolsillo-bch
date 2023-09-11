@@ -94,7 +94,7 @@ export const selectCurrencySettings = createSelector(
 // TODO: bits, mBCH
 export const selectDenomination = createSelector(
   (state) => state.preferences,
-  (preferences) => preferences.denominateSats === "true"
+  (preferences) => (preferences.denominateSats === "true" ? "sats" : "bch")
 );
 
 export const selectInstantPaySettings = createSelector(

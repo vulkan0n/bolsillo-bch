@@ -1,7 +1,7 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useSearchParams, useNavigate } from "react-router-dom";
 
-import { Haptics } from "@capacitor/haptics";
+import { Haptics, NotificationType } from "@capacitor/haptics";
 
 import { useSelector } from "react-redux";
 import { ArrowLeftOutlined } from "@ant-design/icons";
@@ -56,7 +56,7 @@ export default function WalletViewSend() {
     display: satsToDisplayAmount(querySats),
   });
 
-  const displayAmount = formatSatoshis(satoshiInput.sats, true);
+  const displayAmount = formatSatoshis(satoshiInput.sats);
 
   const isInsufficientFunds = wallet.balance < satoshiInput.sats;
 
@@ -69,9 +69,9 @@ export default function WalletViewSend() {
     setMessage("");
   };
 
-  const confirmSend = useCallback(async () => {
+  const confirmSend = async () => {
     if (isInsufficientFunds) {
-      await Haptics.notification({ type: "WARNING" });
+      await Haptics.notification({ type: NotificationType.Warning });
       const insufficientFundsTranslation = translate(
         translations.insufficientFunds
       );
@@ -87,9 +87,8 @@ export default function WalletViewSend() {
     );
 
     if (typeof transaction !== "object") {
-      await Haptics.notification({ type: "WARNING" });
-      const notEnoughFeeTranslation = translate(translations.notEnoughFee);
-      setMessage(notEnoughFeeTranslation);
+      await Haptics.notification({ type: NotificationType.Warning });
+      setMessage(translate(translations.notEnoughFee));
       return;
     }
 
@@ -100,36 +99,30 @@ export default function WalletViewSend() {
     );
 
     if (success) {
-      await Haptics.notification({ type: "SUCCESS" });
+      await Haptics.notification({ type: NotificationType.Success });
       navigate("/wallet/send/success");
     } else {
-      await Haptics.notification({ type: "ERROR" });
-      const transactionFailedTranslation = translate(
-        translations.transactionFailed
-      );
-      setMessage(transactionFailedTranslation);
+      await Haptics.notification({ type: NotificationType.Error });
+      setMessage(translate(translations.transactionFailed));
     }
-  }, [address, isInsufficientFunds, navigate, satoshiInput.sats, wallet.id]);
+  };
 
-  useEffect(
-    function handleInstantPay() {
-      if (!isInstantPayEnabled) {
-        return;
-      }
+  useEffect(function handleInstantPay() {
+    if (!isInstantPayEnabled) {
+      return;
+    }
 
-      const threshold = Number.parseInt(instantPayThreshold, 10);
-      const requestAmount = Number.parseInt(
-        bchToSats(searchParams.get("amount") || 0),
-        10
-      );
+    const threshold = Number.parseInt(instantPayThreshold, 10);
+    const requestAmount = Number.parseInt(
+      bchToSats(searchParams.get("amount") || 0),
+      10
+    );
 
-      if (requestAmount > 0 && requestAmount <= threshold) {
-        //console.log("instapay!", threshold, requestAmount);
-        confirmSend();
-      }
-    },
-    [confirmSend, instantPayThreshold, isInstantPayEnabled, searchParams]
-  );
+    if (requestAmount > 0 && requestAmount <= threshold) {
+      //console.log("instapay!", threshold, requestAmount);
+      confirmSend();
+    }
+  });
 
   const handleSendMax = () => {
     let amount = wallet.balance;

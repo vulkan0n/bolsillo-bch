@@ -48,7 +48,7 @@ export default function SatoshiInput({
     [shouldUpdateDisplay, onChange, satoshiInput.sats]
   );
 
-  const denominateSats = useSelector(selectDenomination); // TODO: bits, mBCH
+  const bchDenomination = useSelector(selectDenomination);
 
   const Currency = new CurrencyService(localCurrency);
 
@@ -60,7 +60,7 @@ export default function SatoshiInput({
     }
 
     // sats mode
-    if (denominateSats) {
+    if (bchDenomination === "sats") {
       return amount;
     }
 
@@ -74,8 +74,17 @@ export default function SatoshiInput({
       return 2;
     }
 
-    // Sats mode has no decimals, BCH mode has 8 decimals
-    return denominateSats ? 0 : 8;
+    switch (bchDenomination) {
+      case "sats":
+        return 0;
+      /*case "bits":
+        return 2;
+      case "mbch":
+        return 4;*/
+      case "bch":
+      default:
+        return 8;
+    }
   };
 
   const numDecimalPlaces = (num) => {
@@ -142,7 +151,7 @@ export default function SatoshiInput({
         newInput = `${currentInput}.`;
       }
 
-      if (!shouldPreferLocalCurrency && denominateSats) {
+      if (!shouldPreferLocalCurrency && bchDenomination === "sats") {
         newInput = currentInput;
       }
 
