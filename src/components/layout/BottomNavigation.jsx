@@ -12,7 +12,7 @@ import {
 
 import { selectLanguageCode } from "@/redux/preferences";
 import { selectKeyboardIsOpen, selectScannerIsScanning } from "@/redux/device";
-import translations from "./BottomNavigationTranslations";
+import translations from "./bottomNavigationTranslations";
 import { translate } from "@/util/translations";
 
 const { wallet, settings } = translations;

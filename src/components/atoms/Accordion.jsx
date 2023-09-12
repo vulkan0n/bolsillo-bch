@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { CaretRightOutlined, CaretDownOutlined } from "@ant-design/icons";
 
-export default function SettingsCategory({ icon, title, children }) {
+export default function Accordion({ icon, title, children }) {
   const [isOpen, setIsOpen] = useState(false);
   const Icon = icon;
 
@@ -28,7 +28,7 @@ export default function SettingsCategory({ icon, title, children }) {
   );
 }
 
-function SettingsChild({ icon, label, children }) {
+function AccordionChild({ icon, label, children }) {
   const Icon = icon || (() => null);
   return (
     <div className="p-3">
@@ -43,4 +43,4 @@ function SettingsChild({ icon, label, children }) {
   );
 }
 
-SettingsCategory.Child = SettingsChild;
+Accordion.Child = AccordionChild;
