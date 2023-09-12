@@ -28,7 +28,7 @@ import SettingsWalletWizardImport from "./components/views/settingsView/Settings
 import SettingsWalletAdditionalInformation from "./components/views/settingsView/SettingsWalletAdditionalInformation/SettingsWalletAdditionalInformation";
 import CreditsView from "./components/views/CreditsView";
 
-const router = createBrowserRouter([
+export const routes = [
   {
     element: <MainLayout />,
     children: [
@@ -98,7 +98,9 @@ const router = createBrowserRouter([
       },
     ],
   },
-]);
+];
+
+const router = createBrowserRouter(routes);
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
