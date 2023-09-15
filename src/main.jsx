@@ -21,7 +21,10 @@ import WalletViewHome from "@/views/wallet/WalletViewHome/WalletViewHome";
 import WalletViewHistory from "@/views/wallet/WalletViewHistory/WalletViewHistory";
 import WalletViewSend from "@/views/wallet/WalletViewSend/WalletViewSend";
 import WalletViewSendSuccess from "@/views/wallet/WalletViewSendSuccess/WalletViewSendSuccess";
+
 import ExploreView from "@/views/explore/ExploreView";
+import ExploreStatsView from "@/views/explore/ExploreStatsView";
+
 import SettingsView from "@/views/settings/SettingsView";
 import SettingsWalletView from "@/views/settings/SettingsWalletView/SettingsWalletView";
 import SettingsWalletWizard from "@/views/settings/SettingsWalletWizard/SettingsWalletWizard";
@@ -67,6 +70,12 @@ export const routes = [
       {
         path: "/explore",
         element: <ExploreView />,
+        children: [
+          {
+            path: "stats",
+            element: <ExploreStatsView />,
+          },
+        ],
       },
       {
         path: "/settings",

@@ -1,15 +1,15 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { AppstoreOutlined } from "@ant-design/icons";
-import moment from "moment";
+import luxon from "luxon";
 import { useQuery } from "@apollo/client";
-import ViewHeader from "@/components/views/ViewHeader";
+import ViewHeader from "@/views/ViewHeader";
 import { useCountdown } from "./useCountdown";
 import DailyActiveUsersChart from "./DailyActiveUsersChart";
 import GET_ACTIVE_BITCOINERS from "./getActiveBitcoiners";
 import { THIRTY_SECONDS } from "@/util/time";
 import { ONE_HUNDRED, TEN_MILLION } from "@/util/numbers";
 
-export default function ExploreView() {
+export default function StatsView() {
   const { loading, data, startPolling, stopPolling } = useQuery(
     GET_ACTIVE_BITCOINERS,
     {
@@ -25,7 +25,7 @@ export default function ExploreView() {
     return stopPolling;
   }, []);
 
-  const midnightUtc = moment().utc().endOf("day");
+  const midnightUtc = luxon().utc().endOf("day");
   const [days, hours, minutes, seconds] = useCountdown(midnightUtc);
 
   const dailyActiveUsersToday =
