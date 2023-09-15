@@ -5,6 +5,7 @@ import { syncReducer, syncMiddleware } from "./sync";
 import { txReducer } from "./transactions";
 import { deviceReducer } from "./device";
 import { exchangeRateReducer, fetchExchangeRates } from "./exchangeRates";
+import { triggerCheckIn } from "./stats";
 
 export const store = configureStore({
   reducer: {
@@ -21,5 +22,7 @@ export const store = configureStore({
       .prepend(syncMiddleware.middleware),
 });
 
+// Run actions needed to fire on app load
 store.dispatch(walletBoot(selectActiveWalletId(store.getState())));
 store.dispatch(fetchExchangeRates(store.getState()));
+store.dispatch(triggerCheckIn());

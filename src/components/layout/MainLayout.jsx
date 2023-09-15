@@ -1,3 +1,4 @@
+import React from "react";
 import { Outlet } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { selectScannerIsScanning, selectKeyboardIsOpen } from "@/redux/device";

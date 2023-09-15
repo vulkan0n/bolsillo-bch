@@ -22,6 +22,7 @@ const defaultPreferences = {
   qrCodeBackground: "#ffffff",
   qrCodeForeground: "#000000",
   electrumServer: electrum_servers[0],
+  lastCheckIn: "",
 };
 
 async function retrievePreferences() {
