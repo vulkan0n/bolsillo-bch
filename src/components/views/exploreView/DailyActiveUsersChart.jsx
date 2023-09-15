@@ -22,7 +22,7 @@ ChartJS.register(
   Legend
 );
 
-const DailyActiveUsersChart = ({ data }) => {
+function DailyActiveUsersChart({ data }) {
   const labels = data.activeBitcoiners.map(({ date }) =>
     moment(date).format("ddd Do")
   );
@@ -67,10 +67,10 @@ const DailyActiveUsersChart = ({ data }) => {
   };
 
   return (
-    <div className={"flex justify-center align-center"}>
+    <div className="flex justify-center align-center">
       <Line options={options} data={chartData} />
     </div>
   );
-};
+}
 
 export default DailyActiveUsersChart;

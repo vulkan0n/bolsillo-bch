@@ -9,8 +9,8 @@ import {
 import { Toaster } from "react-hot-toast";
 
 import { Provider } from "react-redux";
-import { store } from "./redux";
 import { ApolloProvider } from "@apollo/client";
+import { store } from "./redux";
 import apolloClient from "./apolloClient";
 
 import "./index.css";

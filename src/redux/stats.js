@@ -7,7 +7,5 @@ export const triggerCheckIn = createAsyncThunk(
     const { submitCheckIn } = new StatsService();
 
     submitCheckIn();
-
-    return;
   }
 );

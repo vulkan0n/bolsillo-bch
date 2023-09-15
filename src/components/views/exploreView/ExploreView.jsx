@@ -1,10 +1,10 @@
 import React, { useEffect } from "react";
 import { AppstoreOutlined } from "@ant-design/icons";
-import ViewHeader from "@/components/views/ViewHeader";
 import moment from "moment";
+import { useQuery } from "@apollo/client";
+import ViewHeader from "@/components/views/ViewHeader";
 import { useCountdown } from "./useCountdown";
 import DailyActiveUsersChart from "./DailyActiveUsersChart";
-import { useQuery } from "@apollo/client";
 import GET_ACTIVE_BITCOINERS from "./getActiveBitcoiners";
 import { THIRTY_SECONDS } from "@/util/time";
 import { ONE_HUNDRED, TEN_MILLION } from "@/util/numbers";
@@ -87,11 +87,11 @@ export default function ExploreView() {
             <div
               className="bg-green-200 h-2.5 rounded-full"
               style={{ width: `${dailyActiveUsersTodayWidth}%` }}
-            ></div>
+            />
             <div
               className="bg-green-500 h-2.5 rounded-full"
               style={{ width: `${dailyActiveUsersYesterdayWidth}%` }}
-            ></div>
+            />
           </div>
           <div className="flex justify-between mb-1">
             <span className="text-base font-medium text-secondary">
