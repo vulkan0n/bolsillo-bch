@@ -11,7 +11,7 @@ import { selectActiveWalletId } from "@/redux/preferences";
 import { translate } from "@/util/translations";
 import translations from "./SettingsViewTranslations";
 
-import Accordion from "@/components/atoms/Accordion";
+import Accordion from "@/atoms/Accordion";
 import WalletService from "@/services/WalletService";
 
 export default function WalletSettings() {

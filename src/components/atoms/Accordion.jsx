@@ -32,12 +32,12 @@ function AccordionChild({ icon, label, children }) {
   const Icon = icon || (() => null);
   return (
     <div className="p-3">
-      <div className="flex items-center">
-        <span className="label-text flex-1">
+      <div className="flex justify-between items-center">
+        <div className="flex items-center flex-nowrap grow items-center">
           <Icon className="text-xl mr-1" />
           {label}
-        </span>
-        {children}
+        </div>
+        <div className="shrink">{children}</div>
       </div>
     </div>
   );

@@ -13,20 +13,20 @@ import { store } from "./redux";
 
 import "./index.css";
 
-import MainLayout from "./components/MainLayout";
-import WalletView from "./components/views/WalletView";
-import WalletViewHome from "./components/views/walletView/WalletViewHome/WalletViewHome";
-import WalletViewHistory from "./components/views/walletView/WalletViewHistory/WalletViewHistory";
-import WalletViewSend from "./components/views/walletView/WalletViewSend/WalletViewSend";
-import WalletViewSendSuccess from "./components/views/walletView/WalletViewSendSuccess/WalletViewSendSuccess";
-import ExploreView from "./components/views/ExploreView";
-import SettingsView from "./components/views/SettingsView";
-import SettingsWalletView from "./components/views/settingsView/SettingsWalletView/SettingsWalletView";
-import SettingsWalletWizard from "./components/views/settingsView/SettingsWalletWizard/SettingsWalletWizard";
-import SettingsWalletWizardInit from "./components/views/settingsView/SettingsWalletWizardInit/SettingsWalletWizardInit";
-import SettingsWalletWizardImport from "./components/views/settingsView/SettingsWalletWizardImport/SettingsWalletWizardImport";
-import SettingsWalletAdditionalInformation from "./components/views/settingsView/SettingsWalletAdditionalInformation/SettingsWalletAdditionalInformation";
-import CreditsView from "./components/views/CreditsView";
+import MainLayout from "@/layout/MainLayout";
+import WalletView from "@/views/wallet/WalletView";
+import WalletViewHome from "@/views/wallet/WalletViewHome/WalletViewHome";
+import WalletViewHistory from "@/views/wallet/WalletViewHistory/WalletViewHistory";
+import WalletViewSend from "@/views/wallet/WalletViewSend/WalletViewSend";
+import WalletViewSendSuccess from "@/views/wallet/WalletViewSendSuccess/WalletViewSendSuccess";
+import ExploreView from "@/views/explore/ExploreView";
+import SettingsView from "@/views/settings/SettingsView";
+import SettingsWalletView from "@/views/settings/SettingsWalletView/SettingsWalletView";
+import SettingsWalletWizard from "@/views/settings/SettingsWalletWizard/SettingsWalletWizard";
+import SettingsWalletWizardInit from "@/views/settings/SettingsWalletWizardInit/SettingsWalletWizardInit";
+import SettingsWalletWizardImport from "@/views/settings/SettingsWalletWizardImport/SettingsWalletWizardImport";
+import SettingsWalletAdditionalInformation from "@/views/settings/SettingsWalletAdditionalInformation/SettingsWalletAdditionalInformation";
+import CreditsView from "@/views/credits/CreditsView";
 
 export const routes = [
   {

@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { BarcodeScanner } from "@capacitor-community/barcode-scanner";
 import { BulbOutlined } from "@ant-design/icons";
-import Button from "@/components/atoms/Button";
+import Button from "@/atoms/Button";
 import translations from "./translations";
 import { translate } from "@/util/translations";
 

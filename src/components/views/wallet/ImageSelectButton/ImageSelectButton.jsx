@@ -4,7 +4,7 @@ import { PictureOutlined } from "@ant-design/icons";
 import { Camera } from "@capacitor/camera";
 import { Haptics } from "@capacitor/haptics";
 import QrScanner from "qr-scanner";
-import Button from "@/components/atoms/Button";
+import Button from "@/atoms/Button";
 import translations from "./translations";
 import { translate } from "@/util/translations";
 

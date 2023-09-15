@@ -21,7 +21,7 @@ import translations from "./SettingsViewTranslations";
 import { SettingsContext } from "./SettingsContext";
 import { currencyList } from "@/util/currency";
 
-import Accordion from "@/components/atoms/Accordion";
+import Accordion from "@/atoms/Accordion";
 
 export default function CurrencySettings() {
   const { handleSettingsUpdate } = useContext(SettingsContext);

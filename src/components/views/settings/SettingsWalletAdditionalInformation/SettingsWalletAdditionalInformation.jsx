@@ -17,8 +17,8 @@ import {
 
 import WalletService from "@/services/WalletService";
 
-import ViewHeader from "@/components/views/ViewHeader";
-import SettingsCategory from "../SettingsCategory";
+import ViewHeader from "@/layout/ViewHeader";
+import Accordion from "@/atoms/Accordion";
 
 import { translate } from "@/util/translations";
 import translations from "./translations";
@@ -54,20 +54,20 @@ export default function SettingsWalletAdditionalInformation() {
         title={translate(translations.additionalWalletInformation)}
       />
       <div className="p-2">
-        <SettingsCategory
+        <Accordion
           icon={() => null}
           title={translate(translations.derivationPathTitle)}
         >
-          <SettingsCategory.Child label={derivationPath} />
-          <SettingsCategory.Child
+          <Accordion.Child label={derivationPath} />
+          <Accordion.Child
             label={`${translate(
               translations.derivationPathExplanation
             )} ${SELENE_DEFAULT_DERIVATION_PATH}`}
           />
-        </SettingsCategory>
+        </Accordion>
 
-        <SettingsCategory icon={() => null} title="xPub">
-          <SettingsCategory.Child
+        <Accordion icon={() => null} title="xPub">
+          <Accordion.Child
             label={
               <div className="flex flex-col gap-y-2">
                 {translate(translations.xPubDescription1)}{" "}
@@ -78,7 +78,7 @@ export default function SettingsWalletAdditionalInformation() {
               </div>
             }
           />
-          <SettingsCategory.Child>
+          <Accordion.Child>
             <div className="flex flex-col gap-y-1 w-full">
               <button
                 type="button"
@@ -107,11 +107,11 @@ export default function SettingsWalletAdditionalInformation() {
                 </div>
               )}
             </div>
-          </SettingsCategory.Child>
-        </SettingsCategory>
+          </Accordion.Child>
+        </Accordion>
 
-        <SettingsCategory icon={() => null} title="xPrv">
-          <SettingsCategory.Child
+        <Accordion icon={() => null} title="xPrv">
+          <Accordion.Child
             label={
               <div className="flex flex-col gap-y-2">
                 {translate(translations.xPrvDescription1)}{" "}
@@ -125,7 +125,7 @@ export default function SettingsWalletAdditionalInformation() {
             }
           />
 
-          <SettingsCategory.Child>
+          <Accordion.Child>
             <div className="flex flex-col gap-y-1 w-full">
               <button
                 type="button"
@@ -153,8 +153,8 @@ export default function SettingsWalletAdditionalInformation() {
                 </div>
               )}
             </div>
-          </SettingsCategory.Child>
-        </SettingsCategory>
+          </Accordion.Child>
+        </Accordion>
       </div>
     </>
   );

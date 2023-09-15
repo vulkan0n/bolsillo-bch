@@ -1,9 +1,9 @@
 import { Outlet } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { selectScannerIsScanning } from "@/redux/device";
-import WalletViewBalance from "./walletView/WalletViewBalance";
-import SyncIndicator from "./walletView/SyncIndicator";
-import BalanceHideButton from "./walletView/BalanceHideButton";
+import WalletViewBalance from "./WalletViewBalance";
+import SyncIndicator from "./SyncIndicator";
+import BalanceHideButton from "./BalanceHideButton";
 
 export default function WalletView() {
   const isScanning = useSelector(selectScannerIsScanning);

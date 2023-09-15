@@ -6,8 +6,8 @@ import { SettingOutlined } from "@ant-design/icons";
 
 import { selectPreferences, setPreference } from "@/redux/preferences";
 
-import ViewHeader from "@/components/layout/ViewHeader";
-import KeyWarning from "@/components/atoms/KeyWarning";
+import ViewHeader from "@/layout/ViewHeader";
+import KeyWarning from "@/atoms/KeyWarning/KeyWarning";
 
 import { translate } from "@/util/translations";
 import translations from "./SettingsViewTranslations";

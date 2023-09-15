@@ -11,7 +11,7 @@ import { selectScannerIsScanning } from "@/redux/device";
 import translations from "./translations";
 import { translate } from "@/util/translations";
 
-import Button from "@/components/atoms/Button";
+import Button from "@/atoms/Button";
 import ScannerButton from "../ScannerButton/ScannerButton";
 import TorchButton from "../TorchButton/TorchButton";
 import ImageSelectButton from "../ImageSelectButton/ImageSelectButton";

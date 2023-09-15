@@ -9,7 +9,7 @@ import { setPreference, selectCurrencySettings } from "@/redux/preferences";
 
 import { formatSatoshis, stripArsPostDecimal } from "@/util/sats";
 
-import CurrencyFlip from "@/components/atoms/CurrencyFlip";
+import CurrencyFlip from "@/atoms/CurrencyFlip";
 import { selectLocale } from "@/redux/device";
 
 export default function WalletViewBalance() {

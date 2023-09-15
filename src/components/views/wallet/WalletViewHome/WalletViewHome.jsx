@@ -21,10 +21,10 @@ import { translate } from "@/util/translations";
 import AddressManagerService from "@/services/AddressManagerService";
 import WalletViewButtons from "../WalletViewButtons/WalletViewButtons";
 import ScannerOverlay from "../ScannerOverlay";
-import SatoshiInput from "@/components/atoms/SatoshiInput";
-import Address from "@/components/atoms/Address";
-import CurrencySymbol from "@/components/atoms/CurrencySymbol";
-import CurrencyFlip from "@/components/atoms/CurrencyFlip";
+import SatoshiInput from "@/atoms/SatoshiInput";
+import Address from "@/atoms/Address";
+import CurrencySymbol from "@/atoms/CurrencySymbol";
+import CurrencyFlip from "@/atoms/CurrencyFlip";
 
 import showToast from "@/util/toast";
 import { logos } from "@/util/logos";

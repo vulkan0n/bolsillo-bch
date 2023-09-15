@@ -23,12 +23,12 @@ import { walletBoot, walletReload } from "@/redux/wallet";
 import { selectLocale } from "@/redux/device";
 import { syncReconnect } from "@/redux/sync";
 
-import ViewHeader from "@/components/views/ViewHeader";
+import ViewHeader from "@/layout/ViewHeader";
 
 import WalletService from "@/services/WalletService";
 
-import KeyWarning from "../KeyWarning/KeyWarning";
-import SettingsCategory from "../SettingsCategory";
+import KeyWarning from "@/atoms/KeyWarning/KeyWarning";
+import Accordion from "@/atoms/Accordion";
 
 import { formatSatoshis } from "@/util/sats";
 import { translate } from "@/util/translations";
@@ -269,11 +269,11 @@ export default function SettingsWalletView() {
         {
           /* Only show "Advanced Options" if user has viewed (TODO: verified) their recovery phrase */
           wallet.key_viewed !== null && isActiveWallet && (
-            <SettingsCategory
+            <Accordion
               icon={ToolOutlined}
               title={translate(translations.advancedOptions)}
             >
-              <SettingsCategory.Child icon={null} label="">
+              <Accordion.Child icon={null} label="">
                 <button
                   type="button"
                   className="w-full text-left"
@@ -282,8 +282,8 @@ export default function SettingsWalletView() {
                   <MedicineBoxOutlined className="text-xl mr-1" />
                   {translate(translations.rebuildWallet)}
                 </button>
-              </SettingsCategory.Child>
-              <SettingsCategory.Child icon={null} label="">
+              </Accordion.Child>
+              <Accordion.Child icon={null} label="">
                 <button
                   type="button"
                   className="w-full text-left"
@@ -292,8 +292,8 @@ export default function SettingsWalletView() {
                   <InfoCircleOutlined className="text-xl mr-1" />
                   {translate(translations.additionalWalletInformation)}
                 </button>
-              </SettingsCategory.Child>
-            </SettingsCategory>
+              </Accordion.Child>
+            </Accordion>
           )
         }
       </div>

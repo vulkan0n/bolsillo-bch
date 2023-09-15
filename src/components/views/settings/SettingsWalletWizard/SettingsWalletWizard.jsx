@@ -1,7 +1,7 @@
 import { Outlet } from "react-router-dom";
 import { PlusCircleOutlined } from "@ant-design/icons";
 
-import ViewHeader from "@/components/views/ViewHeader";
+import ViewHeader from "@/layout/ViewHeader";
 import { logos } from "@/util/logos";
 import { translate } from "@/util/translations";
 import translations from "./translations";

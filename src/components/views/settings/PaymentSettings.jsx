@@ -13,9 +13,9 @@ import translations from "./SettingsViewTranslations";
 
 import { SettingsContext } from "./SettingsContext";
 
-import Accordion from "@/components/atoms/Accordion";
-import CurrencySymbol from "@/components/atoms/CurrencySymbol";
-import SatoshiInput from "@/components/atoms/SatoshiInput";
+import Accordion from "@/atoms/Accordion";
+import CurrencySymbol from "@/atoms/CurrencySymbol";
+import SatoshiInput from "@/atoms/SatoshiInput";
 import { satsToDisplayAmount } from "@/util/sats";
 
 export default function PaymentSettings() {

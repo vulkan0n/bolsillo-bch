@@ -13,8 +13,10 @@ import translations from "./SettingsViewTranslations";
 
 import { SettingsContext } from "./SettingsContext";
 
-import Accordion from "@/components/atoms/Accordion";
-import Button from "@/components/atoms/Button";
+import Accordion from "@/atoms/Accordion";
+import Button from "@/atoms/Button";
+
+import { logos } from "@/util/logos";
 
 export default function QrCodeSettings() {
   const { handleSettingsUpdate, preferences } = useContext(SettingsContext);

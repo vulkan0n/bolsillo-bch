@@ -6,7 +6,7 @@ import translations from "./SettingsViewTranslations";
 
 import { SettingsContext } from "./SettingsContext";
 
-import Accordion from "@/components/atoms/Accordion";
+import Accordion from "@/atoms/Accordion";
 
 export default function IntlSettings() {
   const { handleSettingsUpdate, preferences } = useContext(SettingsContext);
@@ -20,7 +20,7 @@ export default function IntlSettings() {
         label={translate(translations.language)}
       >
         <select
-          className="p-2 bg-white rounded h-10 w-1/2"
+          className="p-2 bg-white rounded h-10 w-48"
           value={preferences.languageCode || ""}
           onChange={(event) => {
             handleSettingsUpdate("languageCode", event.target.value);

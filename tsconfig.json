@@ -19,7 +19,10 @@
     "jsx": "react-jsx",
     "composite": true,
     "paths": {
-      "@/*": ["*"]
+      "@/*": ["*"],
+      "@/views/*": ["components/views/*"],
+      "@/layout/*": ["components/layout/*"],
+      "@/atoms/*": ["components/atoms/*"]
     }
   }
 }

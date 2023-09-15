@@ -9,7 +9,7 @@ import { selectTransactionHistory } from "@/redux/transactions";
 import translations from "./translations";
 import { translate } from "@/util/translations";
 
-import Button from "@/components/atoms/Button";
+import Button from "@/atoms/Button";
 
 export default function WalletViewHistory() {
   const navigate = useNavigate();

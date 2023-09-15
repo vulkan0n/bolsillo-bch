@@ -18,11 +18,11 @@ import { validateInvoiceString } from "@/util/invoice";
 
 import TransactionManagerService from "@/services/TransactionManagerService";
 
-import SatoshiInput from "@/components/atoms/SatoshiInput";
-import Button from "@/components/atoms/Button";
-import Address from "@/components/atoms/Address";
-import CurrencySymbol from "@/components/atoms/CurrencySymbol";
-import CurrencyFlip from "@/components/atoms/CurrencyFlip";
+import SatoshiInput from "@/atoms/SatoshiInput";
+import Button from "@/atoms/Button";
+import Address from "@/atoms/Address";
+import CurrencySymbol from "@/atoms/CurrencySymbol";
+import CurrencyFlip from "@/atoms/CurrencyFlip";
 
 import { translate } from "@/util/translations";
 import translations from "./translations";

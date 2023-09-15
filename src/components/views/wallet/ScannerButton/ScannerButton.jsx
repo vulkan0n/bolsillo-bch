@@ -16,7 +16,7 @@ import {
   selectScannerIsScanning,
 } from "@/redux/device";
 
-import Button from "@/components/atoms/Button";
+import Button from "@/atoms/Button";
 
 import { validateInvoiceString } from "@/util/invoice";
 

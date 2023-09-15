@@ -1,8 +1,8 @@
-import ViewHeader from "@/components/views/ViewHeader";
+import ViewHeader from "@/layout/ViewHeader";
 import { logos } from "@/util/logos";
 import SELENE_WALLET_VERSION from "@/util/version";
-import translations from "./CreditsViewTranslations";
 import { translate } from "@/util/translations";
+import translations from "./CreditsViewTranslations";
 
 const {
   credits,

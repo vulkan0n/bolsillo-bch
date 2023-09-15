@@ -1,5 +1,4 @@
 import { useState, useContext } from "react";
-import { useSelector } from "react-redux";
 import {
   PlusCircleFilled,
   ApiOutlined,
@@ -15,7 +14,7 @@ import { electrum_servers } from "@/util/electrum_servers";
 
 import { SettingsContext } from "./SettingsContext";
 
-import Accordion from "@/components/atoms/Accordion";
+import Accordion from "@/atoms/Accordion";
 
 export default function NetworkSettings() {
   const { handleSettingsUpdate, preferences, dispatch } =
@@ -43,25 +42,27 @@ export default function NetworkSettings() {
         icon={CloudServerOutlined}
         label={translate(translations.translatedElectrumServer)}
       >
-        <select
-          className="p-2 bg-white rounded h-10"
-          value={preferences.electrumServer || ""}
-          onChange={(event) => {
-            handleElectrumServerChoice(event.target.value);
-          }}
-        >
-          {electrum_servers.map((server) => (
-            <option key={server} value={server}>
-              {server}
-            </option>
-          ))}
-        </select>
-        <button
-          type="button"
-          onClick={() => setShouldShowElectrumServerInput(true)}
-        >
-          <PlusCircleFilled className="ml-2 text-2xl" />
-        </button>
+        <div className="flex">
+          <select
+            className="p-2 bg-white rounded h-10 w-40"
+            value={preferences.electrumServer || ""}
+            onChange={(event) => {
+              handleElectrumServerChoice(event.target.value);
+            }}
+          >
+            {electrum_servers.map((server) => (
+              <option key={server} value={server}>
+                {server}
+              </option>
+            ))}
+          </select>
+          <button
+            type="button"
+            onClick={() => setShouldShowElectrumServerInput(true)}
+          >
+            <PlusCircleFilled className="ml-2 text-2xl" />
+          </button>
+        </div>
       </Accordion.Child>
       {shouldShowElectrumServerInput && (
         <Accordion.Child
