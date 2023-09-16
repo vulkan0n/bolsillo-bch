@@ -21,6 +21,7 @@ import WalletViewHome from "@/views/wallet/WalletViewHome/WalletViewHome";
 import WalletViewHistory from "@/views/wallet/WalletViewHistory/WalletViewHistory";
 import WalletViewSend from "@/views/wallet/WalletViewSend/WalletViewSend";
 import WalletViewSendSuccess from "@/views/wallet/WalletViewSendSuccess/WalletViewSendSuccess";
+import WalletAssetsView from "@/views/wallet/assets/WalletAssetsView";
 
 import ExploreView from "@/views/explore/ExploreView";
 import ExploreViewHome from "@/views/explore/ExploreViewHome";
@@ -38,7 +39,6 @@ import SettingsWalletWizardImport from "@/views/settings/SettingsWalletWizardImp
 import SettingsWalletAdditionalInformation from "@/views/settings/SettingsWalletAdditionalInformation/SettingsWalletAdditionalInformation";
 
 import CreditsView from "@/views/credits/CreditsView";
-import AssetsView from "@/views/assets/AssetsView";
 import DebugView from "@/views/debug/DebugView";
 
 export const routes = [
@@ -68,6 +68,10 @@ export const routes = [
           {
             path: "history",
             element: <WalletViewHistory />,
+          },
+          {
+            path: "assets",
+            element: <WalletAssetsView />,
           },
           {
             index: true,
@@ -136,10 +140,6 @@ export const routes = [
         element: <CreditsView />,
       },
 
-      {
-        path: "/assets",
-        element: <AssetsView />,
-      },
       {
         path: "/debug",
         element: <DebugView />,

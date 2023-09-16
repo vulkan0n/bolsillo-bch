@@ -11,7 +11,7 @@ export default function ExploreViewHome() {
   return (
     <div className="p-2">
       <ExploreStatBlock />
-      <ExploreApp icon={BankOutlined} name="Assets" to="/assets" />
+      <ExploreApp icon={BankOutlined} name="Assets" to="/wallet/assets" />
       <ExploreApp
         icon={ContactsOutlined}
         name="Contacts"
