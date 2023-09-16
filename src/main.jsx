@@ -28,6 +28,7 @@ import ExploreStatsView from "@/views/explore/stats/ExploreStatsView";
 import ExploreContactsView from "@/views/explore/contacts/ExploreContactsView";
 import ExploreMapView from "@/views/explore/map/ExploreMapView";
 import ExploreHelpView from "@/views/explore/help/ExploreHelpView";
+import ExplorePriceView from "@/views/explore/price/ExplorePriceView";
 
 import SettingsView from "@/views/settings/SettingsView";
 import SettingsWalletView from "@/views/settings/SettingsWalletView/SettingsWalletView";
@@ -93,6 +94,10 @@ export const routes = [
           {
             path: "help",
             element: <ExploreHelpView />,
+          },
+          {
+            path: "price",
+            element: <ExplorePriceView />,
           },
           {
             index: true,
