@@ -1,10 +1,10 @@
-import moment from "moment";
+import { DateTime } from "luxon";
 import { Device } from "@capacitor/device";
 import { gql } from "@apollo/client";
 
 import { store } from "@/redux";
 import { setPreference } from "@/redux/preferences";
-import apolloClient from "../apolloClient";
+import apolloClient from "@/apolloClient";
 
 const SEND_DAILY_CHECK_IN = gql`
   mutation SendCheckIn($deviceId: String!, $date: String!) {
@@ -24,15 +24,14 @@ export default function StatsService() {
 
   // run a daily check in, if current time UTC is on a date later than previous check in
   async function submitCheckIn() {
-    const now = moment.utc();
+    const now = DateTime.utc();
     const nowFormatted = now.format("YYYYMMDD");
 
     const DAY = "day";
 
     const lastCheckIn = store.getState().preferences.lastCheckIn || "";
 
-    const lastCheckInMoment = moment
-      .utc(lastCheckIn, "YYYYMMDD")
+    const lastCheckInMoment = DateTime.utc(lastCheckIn, "YYYYMMDD")
       .startOf(DAY)
       .add(1, "s");
 

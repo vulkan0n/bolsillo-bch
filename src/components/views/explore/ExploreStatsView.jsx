@@ -1,8 +1,8 @@
 import { useEffect } from "react";
 import { AppstoreOutlined } from "@ant-design/icons";
-import luxon from "luxon";
+import { DateTime } from "luxon";
 import { useQuery } from "@apollo/client";
-import ViewHeader from "@/views/ViewHeader";
+import ViewHeader from "@/layout/ViewHeader";
 import { useCountdown } from "./useCountdown";
 import DailyActiveUsersChart from "./DailyActiveUsersChart";
 import GET_ACTIVE_BITCOINERS from "./getActiveBitcoiners";
@@ -10,22 +10,24 @@ import { THIRTY_SECONDS } from "@/util/time";
 import { ONE_HUNDRED, TEN_MILLION } from "@/util/numbers";
 
 export default function StatsView() {
-  const { loading, data, startPolling, stopPolling } = useQuery(
-    GET_ACTIVE_BITCOINERS,
-    {
-      variables: {
-        period: "DAILY",
-      },
-    }
-  );
+  const {
+    loading: isLoading,
+    data,
+    startPolling,
+    stopPolling,
+  } = useQuery(GET_ACTIVE_BITCOINERS, {
+    variables: {
+      period: "DAILY",
+    },
+  });
 
   useEffect(() => {
     startPolling(THIRTY_SECONDS);
 
     return stopPolling;
-  }, []);
+  }, [startPolling, stopPolling]);
 
-  const midnightUtc = luxon().utc().endOf("day");
+  const midnightUtc = DateTime().utc().endOf("day");
   const [days, hours, minutes, seconds] = useCountdown(midnightUtc);
 
   const dailyActiveUsersToday =
@@ -65,8 +67,8 @@ export default function StatsView() {
           </div>
 
           <div className="bg-zinc-200 mt-3 mb-3">
-            {loading && <p>Loading chart...</p>}
-            {!loading && <DailyActiveUsersChart data={data} />}
+            {isLoading && <p>Loading chart...</p>}
+            {!isLoading && <DailyActiveUsersChart data={data} />}
           </div>
 
           <div className="flex justify-between mb-1">

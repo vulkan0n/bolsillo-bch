@@ -1,4 +1,3 @@
-import React from "react";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -10,7 +9,7 @@ import {
   Legend,
 } from "chart.js";
 import { Line } from "react-chartjs-2";
-import moment from "moment";
+import { DateTime } from "luxon";
 
 ChartJS.register(
   CategoryScale,
@@ -24,7 +23,7 @@ ChartJS.register(
 
 function DailyActiveUsersChart({ data }) {
   const labels = data.activeBitcoiners.map(({ date }) =>
-    moment(date).format("ddd Do")
+    DateTime(date).format("ddd Do")
   );
 
   const dataPoints = data.activeBitcoiners.map(({ count }) => count);
