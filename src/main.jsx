@@ -24,7 +24,7 @@ import WalletViewSendSuccess from "@/views/wallet/WalletViewSendSuccess/WalletVi
 
 import ExploreView from "@/views/explore/ExploreView";
 import ExploreStatsView from "@/views/explore/ExploreStatsView";
-import ExploreContactsView from "@/views/explore/map/ExploreContactsView";
+import ExploreContactsView from "@/views/explore/contacts/ExploreContactsView";
 import ExploreMapView from "@/views/explore/map/ExploreMapView";
 
 import SettingsView from "@/views/settings/SettingsView";
