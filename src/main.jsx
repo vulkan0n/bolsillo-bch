@@ -23,9 +23,11 @@ import WalletViewSend from "@/views/wallet/WalletViewSend/WalletViewSend";
 import WalletViewSendSuccess from "@/views/wallet/WalletViewSendSuccess/WalletViewSendSuccess";
 
 import ExploreView from "@/views/explore/ExploreView";
-import ExploreStatsView from "@/views/explore/ExploreStatsView";
+import ExploreViewHome from "@/views/explore/ExploreViewHome";
+import ExploreStatsView from "@/views/explore/stats/ExploreStatsView";
 import ExploreContactsView from "@/views/explore/contacts/ExploreContactsView";
 import ExploreMapView from "@/views/explore/map/ExploreMapView";
+import ExploreHelpView from "@/views/explore/help/ExploreHelpView";
 
 import SettingsView from "@/views/settings/SettingsView";
 import SettingsWalletView from "@/views/settings/SettingsWalletView/SettingsWalletView";
@@ -37,7 +39,6 @@ import SettingsWalletAdditionalInformation from "@/views/settings/SettingsWallet
 import CreditsView from "@/views/credits/CreditsView";
 import AssetsView from "@/views/assets/AssetsView";
 import DebugView from "@/views/debug/DebugView";
-import HelpView from "@/views/help/HelpView";
 
 export const routes = [
   {
@@ -89,6 +90,14 @@ export const routes = [
             path: "contacts",
             element: <ExploreContactsView />,
           },
+          {
+            path: "help",
+            element: <ExploreHelpView />,
+          },
+          {
+            index: true,
+            element: <ExploreViewHome />,
+          },
         ],
       },
       {
@@ -129,10 +138,6 @@ export const routes = [
       {
         path: "/debug",
         element: <DebugView />,
-      },
-      {
-        path: "/help",
-        element: <HelpView />,
       },
     ],
   },

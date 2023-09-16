@@ -155,13 +155,13 @@ const translations = {
     zh: "Flipstarter 贡献者",
     zh_TW: "Flipstarter 貢獻者",
   },
-  contributingDevelopers: {
+  translators: {
     ar: "المطورين المساهمين",
     bn: "অবদানকারী ডেভেলপারগণ",
     da: "Medvirkende udviklere",
     de: "Mitwirkende Entwickler",
     el: "Συνεισφέροντες προγραμματιστές",
-    en: "Contributing developers",
+    en: "Translators",
     es: "Desarrolladores colaboradores",
     fa: "توسعه دهندگان مشارکت کننده",
     fil: "Nag-aambag na mga developer",

@@ -1,9 +1,11 @@
+import { BugOutlined } from "@ant-design/icons";
 import ViewHeader from "@/layout/ViewHeader";
 
 export default function DebugView() {
   return (
-    <div>
+    <>
+      <ViewHeader icon={BugOutlined} title="Debug" />
       <div>DebugView</div>
-    </div>
+    </>
   );
 }

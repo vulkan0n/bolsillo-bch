@@ -4,19 +4,10 @@ import SELENE_WALLET_VERSION from "@/util/version";
 import { translate } from "@/util/translations";
 import translations from "./CreditsViewTranslations";
 
-const {
-  credits,
-  developedWith,
-  contributors,
-  flipstarterContributors,
-  contributingDevelopers,
-  specialThanks,
-} = translations;
-
 export default function CreditsView() {
   return (
     <>
-      <ViewHeader icon={() => null} title={translate(credits)} />
+      <ViewHeader icon={() => null} title={translate(translations.credits)} />
       <div className="bg-primary text-white text-center p-2">
         <div className="flex items-center justify-center h-40">
           <img
@@ -28,12 +19,16 @@ export default function CreditsView() {
         <h1 className="text-2xl font-bold">
           Selene Wallet v{SELENE_WALLET_VERSION}
         </h1>
-        <h2 className="text-xl font-bold">{translate(developedWith)}</h2>
-        <h2 className="text-xl font-semibold p-1">{translate(contributors)}</h2>
+        <h2 className="text-xl font-bold">
+          {translate(translations.developedWith)}
+        </h2>
+        <h2 className="text-xl font-semibold p-1">
+          {translate(translations.contributors)}
+        </h2>
       </div>
       <div className="p-2 w-5/6 mx-auto">
         <h2 className="text-center font-bold text-2xl">
-          {translate(flipstarterContributors)}
+          {translate(translations.flipstarterContributors)}
         </h2>
         <ol className="list-inside list-decimal">
           <li>majamalu</li>
@@ -68,7 +63,7 @@ export default function CreditsView() {
         </ol>
 
         <h2 className="text-center font-bold text-2xl mt-4">
-          {translate(contributingDevelopers)}
+          {translate(translations.translators)}
         </h2>
         <ul className="list-inside list-disc">
           <li>Marius Kjærstad (GitLab: @sandakersmann)</li>
@@ -76,7 +71,7 @@ export default function CreditsView() {
         </ul>
 
         <h2 className="text-center font-bold text-2xl mt-4">
-          {translate(specialThanks)}
+          {translate(translations.specialThanks)}
         </h2>
         <ul className="list-inside list-disc">
           <li>Jason Dreyzehner</li>
@@ -91,6 +86,7 @@ export default function CreditsView() {
           <li>Ian Blas</li>
           <li>@CM_Works</li>
           <li>Arthur</li>
+          <li>Gustavo</li>
         </ul>
       </div>
     </>

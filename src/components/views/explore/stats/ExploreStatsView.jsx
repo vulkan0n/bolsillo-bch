@@ -9,7 +9,7 @@ import GET_ACTIVE_BITCOINERS from "./getActiveBitcoiners";
 import { THIRTY_SECONDS } from "@/util/time";
 import { ONE_HUNDRED, TEN_MILLION } from "@/util/numbers";
 
-export default function ExploreStatsView() {
+export default function StatsView() {
   const {
     loading: isLoading,
     data,
