@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ViewHeader from "@/layout/ViewHeader";
 import { logos } from "@/util/logos";

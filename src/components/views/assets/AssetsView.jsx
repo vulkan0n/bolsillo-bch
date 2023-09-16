@@ -1,5 +1,5 @@
-import ViewHeader from "@/layout/ViewHeader";
 import { BankOutlined } from "@ant-design/icons";
+import ViewHeader from "@/layout/ViewHeader";
 
 export default function AssetsView() {
   return (
