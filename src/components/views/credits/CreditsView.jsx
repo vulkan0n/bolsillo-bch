@@ -1,3 +1,5 @@
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import ViewHeader from "@/layout/ViewHeader";
 import { logos } from "@/util/logos";
 import SELENE_WALLET_VERSION from "@/util/version";
@@ -5,6 +7,18 @@ import { translate } from "@/util/translations";
 import translations from "./CreditsViewTranslations";
 
 export default function CreditsView() {
+  const navigate = useNavigate();
+  const [debugTaps, setDebugTaps] = useState(0);
+
+  const handleDebugTap = () => {
+    setDebugTaps((taps) => taps + 1);
+    if (debugTaps >= 6) {
+      navigate("/debug");
+    } else {
+      setTimeout(() => setDebugTaps((taps) => taps - 1), 1337);
+    }
+  };
+
   return (
     <>
       <ViewHeader icon={() => null} title={translate(translations.credits)} />
@@ -14,6 +28,7 @@ export default function CreditsView() {
             src={logos.selene.img}
             className="h-full"
             alt="Selene Wallet Logo"
+            onClick={handleDebugTap}
           />
         </div>
         <h1 className="text-2xl font-bold">
