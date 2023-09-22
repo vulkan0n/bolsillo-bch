@@ -1,7 +1,7 @@
 import PropTypes from "prop-types";
 import { useState } from "react";
 import { useSelector } from "react-redux";
-import { BankOutlined } from "@ant-design/icons";
+import { BankOutlined, MoneyCollectOutlined } from "@ant-design/icons";
 import { selectActiveWallet } from "@/redux/wallet";
 import { selectCurrencySettings } from "@/redux/preferences";
 import AddressManagerService from "@/services/AddressManagerService";
@@ -17,9 +17,6 @@ export default function WalletAssetsView() {
   const receiveAddresses = AddressManager.getReceiveAddresses();
   const changeAddresses = AddressManager.getChangeAddresses();
 
-  const UtxoManager = new UtxoManagerService(wallet.id);
-  const coins = UtxoManager.getWalletUtxos();
-
   return (
     <>
       <ViewHeader icon={BankOutlined} title="Assets" />
@@ -31,7 +28,7 @@ export default function WalletAssetsView() {
         </div>*/}
         <div className="bg-zinc-200 rounded my-1 p-2">
           <h2 className="text-xl font-bold mb-2">Coins</h2>
-          <CoinsBlock coins={coins} />
+          <CoinsBlock />
         </div>
         <div className="bg-zinc-200 rounded my-1 p-2">
           <h2 className="text-xl font-bold mb-2">Receive Addresses</h2>
@@ -46,49 +43,54 @@ export default function WalletAssetsView() {
   );
 }
 
-function CoinsBlock({ coins }) {
+function CoinsBlock() {
+  const wallet = useSelector(selectActiveWallet);
   const { shouldPreferLocalCurrency } = useSelector(selectCurrencySettings);
 
+  const UtxoManager = new UtxoManagerService(wallet.id);
+  const coins = UtxoManager.getWalletUtxos();
+
   return (
-    <ul className="bg-zinc-100 text-zinc-600 divide-y divide-zinc-300 rounded-sm px-2 max-h-[58vh] overflow-y-scroll border border-zinc-400 shadow-inner">
-      {coins.map((a) => (
-        <li key={`${a.txid}:${a.tx_pos}`} className="flex px-1 py-2">
-          <div
-            className="flex-1 text-sm"
-            onClick={() => null /*console.log(tx.time, new Date(tx.time))*/}
-          >
-            <Address address={a.address} short />
-          </div>
-          <div className="flex-1 text-right">
-            <div className="font-mono">
-              {
-                formatSatoshis(a.amount)[
-                  shouldPreferLocalCurrency ? "fiat" : "bch"
-                ]
-              }
+    <div className="flex flex-wrap gap-1">
+      {coins.map((coin) => (
+        <div className="border rounded border-primary bg-zinc-50 text-zinc-900 p-1.5 text-sm">
+          <div className="flex items-center">
+            <div className="text-base mr-1">
+              <MoneyCollectOutlined />
             </div>
-            <div className="text-sm opacity-80">
-              {
-                formatSatoshis(a.amount)[
-                  shouldPreferLocalCurrency ? "bch" : "fiat"
-                ]
-              }
+            <div>
+              <div className="font-mono">
+                {
+                  formatSatoshis(coin.amount)[
+                    shouldPreferLocalCurrency ? "fiat" : "bch"
+                  ]
+                }
+              </div>
+              <div className="text-sm opacity-80">
+                {
+                  formatSatoshis(coin.amount)[
+                    shouldPreferLocalCurrency ? "bch" : "fiat"
+                  ]
+                }
+              </div>
+              <div className="text-xs">
+                <Address address={coin.address} short />
+              </div>
             </div>
           </div>
-        </li>
+        </div>
       ))}
-    </ul>
+    </div>
   );
 }
 
-CoinsBlock.propTypes = {
-  coins: PropTypes.array.isRequired,
-};
-
-function AddressBlock({ addresses }) {
+function AddressBlock() {
   const { shouldPreferLocalCurrency } = useSelector(selectCurrencySettings);
   const [shouldHideEmptyAddresses, setShouldHideEmptyAddresses] =
     useState(true);
+
+  const AddressManager = new AddressManagerService();
+  const addresses = 
 
   return (
     <>

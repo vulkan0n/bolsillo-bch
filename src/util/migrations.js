@@ -1,6 +1,7 @@
 // migrations.js: handle sqlite database schema updates
 
-// functions in this migrations will be executed sequentially
+// functions in this migrations will be executed sequentially,
+// starting with the function at index PRAGMA user_version
 // each entry should represent a new db version
 const migrations = [
   function migrate_v0() {
@@ -21,7 +22,7 @@ const migrations = [
         id integer primary key not null, 
         name text not null, 
         mnemonic text unique not null, 
-        derivation text default "m/44'/0'/0'", 
+        derivation text default "m/44'/145'/0'", 
         date_created default ( strftime('%Y-%m-%dT%H:%M:%SZ') ),
         key_viewed text, 
         key_verified text, 
@@ -100,9 +101,40 @@ const migrations = [
     return query.join("");
   },
 
-  /* function migrate_v1() {
+  function migrate_v1() {
     console.log("migrate_v1");
-    let query = [];
+    const query = [];
+
+    // add memo fields
+    query.push(
+      `ALTER TABLE addresses ADD COLUMN
+        memo text default null;`,
+      `ALTER TABLE address_transactions ADD COLUMN
+        memo text default null;`,
+      `ALTER TABLE address_utxos ADD COLUMN
+        memo text default null;`
+    );
+
+    // add bip32 passphrase field to wallets
+    query.push(
+      `ALTER TABLE wallets ADD COLUMN
+        passphrase text default null;`
+    );
+
+    // add prefix field to addresses
+    query.push(
+      `ALTER TABLE addresses ADD COLUMN
+        prefix text default "bitcoincash";`
+    );
+
+    query.push("PRAGMA user_version = 2;");
+
+    return query.join("");
+  },
+
+  /* function migrate_v2() {
+    console.log("migrate_v2");
+    const query = [];
 
     query.push("PRAGMA user_version = 0;");
 
@@ -111,11 +143,16 @@ const migrations = [
 ];
 
 // run_migrations: run all migrations in migrations array sequentially
+// Starts with index indicated in PRAGMA user_version
 export function run_migrations(db) {
   const DB_VERSION = db.exec("PRAGMA user_version")[0].values[0][0];
   // console.log("DB_VERSION", DB_VERSION, migrations.length);
   for (let version = DB_VERSION; version < migrations.length; version += 1) {
     // console.log("DB_VERSION", `${DB_VERSION}/${migrations.length}`, version);
-    db.run(migrations[version]());
+    try {
+      db.run(migrations[version]());
+    } catch (e) {
+      console.error(e);
+    }
   }
 }

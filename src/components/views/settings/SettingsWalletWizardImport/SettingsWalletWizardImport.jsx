@@ -47,7 +47,7 @@ export default function SettingsWalletWizardImport() {
       try {
         const wallet = new WalletService().importWallet(
           trimmedInput,
-          "m/44'/0'/0'"
+          "m/44'/145'/0'"
         );
         navigate(`/settings/wallet/${wallet.id}`, { replace: true });
       } catch (e) {

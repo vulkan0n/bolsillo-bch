@@ -32,7 +32,7 @@ export default function WalletService() {
     const result = resultToJson(
       db.exec(`SELECT * FROM wallets WHERE id="${id}"`)
     );
-    //console.log("getWalletById", result);
+    console.log("getWalletById", result);
     return result.length > 0 ? result[0] : null;
   }
 
@@ -79,7 +79,7 @@ export default function WalletService() {
     return result;
   }
 
-  function importWallet(mnemonic, derivation = "m/44'/0'/0'") {
+  function importWallet(mnemonic, derivation = "m/44'/145'/0'") {
     const result = resultToJson(
       db.exec(
         `INSERT INTO wallets (name, mnemonic, derivation, key_viewed) VALUES (?, ?, ?, strftime('%Y-%m-%dT%H:%M:%SZ')) RETURNING *`,

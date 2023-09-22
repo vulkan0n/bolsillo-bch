@@ -15,10 +15,11 @@ import WalletService from "@/services/WalletService";
 import AddressManagerService from "@/services/AddressManagerService";
 
 export default function HdNodeService(wallet_id) {
-  //console.log("HdNodeService", wallet_id);
-  const { mnemonic, derivation } = new WalletService().getWalletById(wallet_id);
+  const { mnemonic, derivation, passphrase } =
+    new WalletService().getWalletById(wallet_id);
+  //console.log("HdNodeService", wallet_id, derivation, mnemonic);
 
-  const seed = bip39.mnemonicToSeedSync(mnemonic);
+  const seed = bip39.mnemonicToSeedSync(mnemonic, passphrase);
   const hdMaster = deriveHdPrivateNodeFromSeed(seed);
   const hdMain = deriveHdPath(hdMaster, `${derivation}/0`);
   const hdChange = deriveHdPath(hdMaster, `${derivation}/1`);

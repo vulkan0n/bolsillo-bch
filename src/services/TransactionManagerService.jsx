@@ -12,7 +12,7 @@ import { validateInvoiceString } from "@/util/invoice";
 import { hexToBin, binToHex } from "@/util/hex";
 
 export default function TransactionManagerService() {
-  const { db, resultToJson, saveDatabase } = new DatabaseService();
+  const { db, resultToJson, saveDatabase } = DatabaseService();
 
   return {
     registerTransaction,
@@ -91,7 +91,7 @@ export default function TransactionManagerService() {
 
   function getVoutFromDecodedTransaction(decodedTx) {
     return decodedTx.outputs.map((output, n) => {
-      const value = new Decimal(output.valueSatoshis.toString()).toNumber();
+      const value = Decimal(output.valueSatoshis.toString()).toNumber();
 
       return {
         n,
@@ -119,7 +119,7 @@ export default function TransactionManagerService() {
       localTx.blockhash === "null" ||
       localTx.time === "null"
     ) {
-      const Electrum = new ElectrumService();
+      const Electrum = ElectrumService();
       const tx = await Electrum.requestTransaction(tx_hash);
       registerTransaction(tx);
     }
@@ -142,14 +142,14 @@ export default function TransactionManagerService() {
 
     // calculate total amount to send for all recipients
     const sendTotal = recipients
-      .reduce((sum, cur) => sum.plus(cur.amount), new Decimal(0))
+      .reduce((sum, cur) => sum.plus(cur.amount), Decimal(0))
       .toNumber();
 
     // gather suitable inputs
-    const UtxoManager = new UtxoManagerService(wallet_id);
+    const UtxoManager = UtxoManagerService(wallet_id);
     const inputs = UtxoManager.selectUtxos(sendTotal, fee);
     const inputTotal = inputs
-      .reduce((sum, cur) => sum.plus(cur.amount), new Decimal(0))
+      .reduce((sum, cur) => sum.plus(cur.amount), Decimal(0))
       .toNumber();
 
     // calculate change
@@ -168,7 +168,7 @@ export default function TransactionManagerService() {
 
     // construct change outputs
     if (changeTotal >= DUST_LIMIT) {
-      const AddressManager = new AddressManagerService(wallet_id);
+      const AddressManager = AddressManagerService(wallet_id);
       const changeAddress = AddressManager.getUnusedAddresses(1, 1)[0];
 
       vout.push({
@@ -184,7 +184,7 @@ export default function TransactionManagerService() {
     const compiler = libauth.authenticationTemplateToCompilerBCH(template);
 
     // sign inputs
-    const HdNode = new HdNodeService(wallet_id);
+    const HdNode = HdNodeService(wallet_id);
     const signedInputs = HdNode.signInputs(inputs, compiler);
 
     const generatedTx = libauth.generateTransaction({
@@ -243,12 +243,12 @@ export default function TransactionManagerService() {
   }
 
   async function sendTransaction({ tx_hash, tx_hex }, wallet_id) {
-    const Electrum = new ElectrumService();
+    const Electrum = ElectrumService();
     const result = await Electrum.broadcastTransaction(tx_hex);
     const isSuccess = result === tx_hash;
 
     if (isSuccess) {
-      const UtxoManager = new UtxoManagerService(wallet_id);
+      const UtxoManager = UtxoManagerService(wallet_id);
       const decodedTx = libauth.decodeTransaction(hexToBin(tx_hex));
       const vin = getVinFromDecodedTransaction(decodedTx);
 

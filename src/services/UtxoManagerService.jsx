@@ -3,7 +3,7 @@ import DatabaseService from "@/services/DatabaseService";
 import { DUST_LIMIT } from "@/util/sats";
 
 export default function UxtoManagerService(wallet_id) {
-  const { db, resultToJson, saveDatabase } = new DatabaseService();
+  const { db, resultToJson, saveDatabase } = DatabaseService();
 
   return {
     registerUtxo,
@@ -87,19 +87,22 @@ export default function UxtoManagerService(wallet_id) {
       (utxo) => utxo.amount === targetAmount
     );
     if (exactUtxos.length > 0) {
-      return [exactUtxos[0], ...getAddressUtxos(exactUtxos[0].address)];
+      return getAddressUtxos(exactUtxos[0].address);
     }
 
     // 3. try to consolidate enough UTXOs to make the targetAmount
-    const eligibleSum = eligibleUtxos.reduce((sum, cur) => sum + cur.amount, 0);
+    const eligibleUtxoSum = eligibleUtxos.reduce(
+      (sum, cur) => sum + cur.amount,
+      0
+    );
 
     // 4. if sum of utxos matches exactly, consolidate the UTXOs
-    if (eligibleSum === targetAmount) {
+    if (eligibleUtxoSum === targetAmount) {
       return eligibleUtxos;
     }
 
     // 5. if consolidating won't be enough, use entire balance of next-eligible address
-    if (eligibleSum < targetAmount) {
+    if (eligibleUtxoSum < targetAmount) {
       if (eligibleAddresses.length > 0) {
         return getAddressUtxos(eligibleAddresses[0].address);
       }
@@ -107,23 +110,30 @@ export default function UxtoManagerService(wallet_id) {
       return [];
     }
 
-    // if there's enough change that consolidating will work, find the smallest combo
+    // 6. if there's enough change that consolidating will work, find the smallest combo
     const selection = [];
     let remainingAmount = targetAmount;
 
+    // add eligible utxos to final selection
     while (remainingAmount > 0 && eligibleUtxos.length > 0) {
       const utxo = eligibleUtxos.shift();
       selection.push(utxo);
       remainingAmount -= utxo.amount;
     }
 
+    // 7. if no more eligible utxos, insufficient funds
+    // return empty selection
     if (remainingAmount > 0) {
       return [];
     }
 
+    // negative remainingAmount is change that needs to be returned to wallet
     const utxoChange = remainingAmount * -1 - fee;
+
+    // if remaining change is under dust limit, add it to fee instead
     const utxoFee = utxoChange > DUST_LIMIT ? fee : fee + utxoChange;
 
+    // 8. check if it's cheaper to spend an address vs consolidate utxos
     if (eligibleAddresses.length > 0) {
       const eligibleAddress = eligibleAddresses[0];
       const addressChange = eligibleAddress.balance - targetAmount - fee;
