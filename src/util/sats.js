@@ -1,6 +1,9 @@
 import { Decimal } from "decimal.js";
 import { selectLocale } from "@/redux/device";
-import { selectPreferences, selectCurrencySettings } from "@/redux/preferences";
+import {
+  selectCurrencySettings,
+  selectDenomination,
+} from "@/redux/preferences";
 import { store } from "@/redux";
 import CurrencyService from "@/services/CurrencyService";
 
@@ -20,13 +23,12 @@ export function bchToSats(bch) {
 }
 
 export function satsToDisplayAmount(sats) {
-  const preferences = selectPreferences(store.getState());
   const { shouldPreferLocalCurrency, localCurrency } = selectCurrencySettings(
     store.getState()
   );
-  const Currency = new CurrencyService(localCurrency);
+  const Currency = CurrencyService(localCurrency);
 
-  const shouldDenominateSats = preferences.shouldDenominateSats === "true";
+  const shouldDenominateSats = selectDenomination(store.getState()) === "sats";
 
   if (new Decimal(sats).equals(0)) {
     return "0";
@@ -62,13 +64,14 @@ export function formatSatoshis(amount) {
   }
 
   const locale = selectLocale(store.getState());
-  const preferences = selectPreferences(store.getState());
 
-  const { localCurrency } = selectCurrencySettings(store.getState());
-  const shouldDenominateSats = preferences.shouldDenominateSats === "true";
-  const shouldHideBalance = preferences.hideAvailableBalance === "true";
+  const { localCurrency, shouldHideBalance } = selectCurrencySettings(
+    store.getState()
+  );
 
-  const Currency = new CurrencyService(localCurrency);
+  const shouldDenominateSats = selectDenomination(store.getState()) === "sats";
+
+  const Currency = CurrencyService(localCurrency);
 
   const bchSymbol = shouldDenominateSats ? "" : "₿";
   const bchUnit = shouldDenominateSats ? "sats" : "";

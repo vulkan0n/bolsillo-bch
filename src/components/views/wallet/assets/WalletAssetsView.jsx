@@ -11,129 +11,46 @@ import { formatSatoshis } from "@/util/sats";
 import ViewHeader from "@/layout/ViewHeader";
 
 export default function WalletAssetsView() {
-  const wallet = useSelector(selectActiveWallet);
-
-  const AddressManager = new AddressManagerService(wallet.id);
-  const receiveAddresses = AddressManager.getReceiveAddresses();
-  const changeAddresses = AddressManager.getChangeAddresses();
-
   return (
     <>
       <ViewHeader icon={BankOutlined} title="Assets" />
-      <div className="p-2">
-        {/*<div className="my-1 flex justify-evenly">
-          <Link to="/wallet/assets/addresses">Addresses</Link>
-          <Link to="/wallet/assets/coins">Coins</Link>
-          <Link to="/wallet/assets/tokens">Tokens</Link>
-        </div>*/}
-        <div className="bg-zinc-200 rounded my-1 p-2">
-          <h2 className="text-xl font-bold mb-2">Coins</h2>
-          <CoinsBlock />
-        </div>
-        <div className="bg-zinc-200 rounded my-1 p-2">
-          <h2 className="text-xl font-bold mb-2">Receive Addresses</h2>
-          <AddressBlock addresses={receiveAddresses} />
-        </div>
-        <div className="bg-zinc-200 rounded my-1 p-2">
-          <h2 className="text-xl font-bold">Change Addresses</h2>
-          <AddressBlock addresses={changeAddresses} />
-        </div>
-      </div>
+      <CoinsBlock />
     </>
   );
 }
 
 function CoinsBlock() {
   const wallet = useSelector(selectActiveWallet);
-  const { shouldPreferLocalCurrency } = useSelector(selectCurrencySettings);
 
-  const UtxoManager = new UtxoManagerService(wallet.id);
-  const coins = UtxoManager.getWalletUtxos();
+  const [shouldShowEmptyAddresses, setShouldShowEmptyAddresses] =
+    useState(false);
 
-  return (
-    <div className="flex flex-wrap gap-1">
-      {coins.map((coin) => (
-        <div className="border rounded border-primary bg-zinc-50 text-zinc-900 p-1.5 text-sm">
-          <div className="flex items-center">
-            <div className="text-base mr-1">
-              <MoneyCollectOutlined />
-            </div>
-            <div>
-              <div className="font-mono">
-                {
-                  formatSatoshis(coin.amount)[
-                    shouldPreferLocalCurrency ? "fiat" : "bch"
-                  ]
-                }
-              </div>
-              <div className="text-sm opacity-80">
-                {
-                  formatSatoshis(coin.amount)[
-                    shouldPreferLocalCurrency ? "bch" : "fiat"
-                  ]
-                }
-              </div>
-              <div className="text-xs">
-                <Address address={coin.address} short />
-              </div>
-            </div>
-          </div>
-        </div>
-      ))}
-    </div>
-  );
-}
+  const AddressManager = AddressManagerService(wallet.id);
+  const receiveAddresses = AddressManager.getReceiveAddresses();
+  const changeAddresses = AddressManager.getChangeAddresses();
 
-function AddressBlock() {
-  const { shouldPreferLocalCurrency } = useSelector(selectCurrencySettings);
-  const [shouldHideEmptyAddresses, setShouldHideEmptyAddresses] =
-    useState(true);
-
-  const AddressManager = new AddressManagerService();
-  const addresses = [];
+  const addresses = [...receiveAddresses, ...changeAddresses];
 
   return (
     <>
-      <div className="my-1">
+      <div className="m-1">
         <div className="flex">
           <input
             type="checkbox"
-            checked={shouldHideEmptyAddresses}
+            checked={shouldShowEmptyAddresses}
             onChange={(event) =>
-              setShouldHideEmptyAddresses(event.target.checked)
+              setShouldShowEmptyAddresses(event.target.checked)
             }
           />
-          <span className="ml-1">Hide Empty Addresses</span>
+          <span className="ml-1">Show Empty Addresses</span>
         </div>
       </div>
-      <ul className="bg-zinc-100 text-zinc-600 divide-y divide-zinc-300 rounded-sm px-2 max-h-[58vh] overflow-y-scroll border border-zinc-400 shadow-inner">
+      <ul className="bg-zinc-100 text-zinc-600 divide-y divide-zinc-300 max-h-[58vh] overflow-y-scroll border border-zinc-400 shadow-inner">
         {addresses
-          .filter((a) => a.balance > 0 || !shouldHideEmptyAddresses)
+          .filter((a) => a.balance > 0 || shouldShowEmptyAddresses)
           .map((a) => (
-            <li key={a.address} className="flex px-1 py-2">
-              <div
-                className="flex-1 text-sm"
-                onClick={() => null /*console.log(tx.time, new Date(tx.time))*/}
-              >
-                <span className="font-mono text-xs mr-1">#{a.hd_index}</span>
-                <Address address={a.address} short />
-              </div>
-              <div className="flex-1 text-right">
-                <div className="font-mono">
-                  {
-                    formatSatoshis(a.balance)[
-                      shouldPreferLocalCurrency ? "fiat" : "bch"
-                    ]
-                  }
-                </div>
-                <div className="text-sm opacity-80">
-                  {
-                    formatSatoshis(a.balance)[
-                      shouldPreferLocalCurrency ? "bch" : "fiat"
-                    ]
-                  }
-                </div>
-              </div>
+            <li key={a.address}>
+              <AddressAccordion a={a} />
             </li>
           ))}
       </ul>
@@ -141,6 +58,74 @@ function AddressBlock() {
   );
 }
 
-AddressBlock.propTypes = {
-  addresses: PropTypes.array.isRequired,
+function AddressAccordion({ a }) {
+  const { shouldPreferLocalCurrency } = useSelector(selectCurrencySettings);
+  const [isOpen, setIsOpen] = useState(false);
+
+  const wallet = useSelector(selectActiveWallet);
+  const UtxoManager = UtxoManagerService(wallet.id);
+  const coins = UtxoManager.getAddressUtxos(a.address);
+
+  return (
+    <div className="p-2">
+      <div className="flex text-sm" onClick={() => setIsOpen(!isOpen)}>
+        <div className="flex-1 text-sm">
+          <span className="font-mono text-xs mr-1">
+            #{a.hd_index}.{a.change}
+          </span>
+          <Address address={a.address} short />
+          <div className="opacity-90">{a.memo}</div>
+        </div>
+        <div className="flex-1 text-right">
+          <div className="font-mono">
+            {
+              formatSatoshis(a.balance)[
+                shouldPreferLocalCurrency ? "fiat" : "bch"
+              ]
+            }
+          </div>
+          <div className="text-sm opacity-80">
+            {
+              formatSatoshis(a.balance)[
+                shouldPreferLocalCurrency ? "bch" : "fiat"
+              ]
+            }
+          </div>
+        </div>
+      </div>
+      {isOpen && a.balance > 0 && (
+        <div className="bg-zinc-50 rounded-sm shadow-inner text-sm mt-1 flex flex-wrap gap-1 justify-between">
+          {coins.map((coin) => (
+            <div className="border rounded border-primary bg-zinc-50 text-zinc-900 p-1.5 text-sm flex-1">
+              <div className="flex items-center">
+                <div className="text-base mr-1">
+                  <MoneyCollectOutlined />
+                </div>
+                <div>
+                  <div className="font-mono">
+                    {
+                      formatSatoshis(coin.amount)[
+                        shouldPreferLocalCurrency ? "fiat" : "bch"
+                      ]
+                    }
+                  </div>
+                  <div className="text-sm opacity-80">
+                    {
+                      formatSatoshis(coin.amount)[
+                        shouldPreferLocalCurrency ? "bch" : "fiat"
+                      ]
+                    }
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+AddressAccordion.propTypes = {
+  a: PropTypes.object.isRequired,
 };
