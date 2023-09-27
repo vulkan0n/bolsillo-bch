@@ -22,7 +22,7 @@ import Accordion from "@/atoms/Accordion";
 
 import { translate } from "@/util/translations";
 import translations from "./translations";
-import { SELENE_DEFAULT_DERIVATION_PATH } from "@/util/crypto";
+import { DEFAULT_DERIVATION_PATH } from "@/util/crypto";
 
 export default function SettingsWalletAdditionalInformation() {
   const { wallet_id } = useParams();

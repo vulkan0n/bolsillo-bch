@@ -90,7 +90,7 @@ function AddressBlock() {
     useState(true);
 
   const AddressManager = new AddressManagerService();
-  const addresses = 
+  const addresses = [];
 
   return (
     <>

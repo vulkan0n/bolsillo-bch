@@ -91,7 +91,7 @@ export default function TransactionManagerService() {
 
   function getVoutFromDecodedTransaction(decodedTx) {
     return decodedTx.outputs.map((output, n) => {
-      const value = Decimal(output.valueSatoshis.toString()).toNumber();
+      const value = new Decimal(output.valueSatoshis.toString()).toNumber();
 
       return {
         n,
@@ -142,14 +142,14 @@ export default function TransactionManagerService() {
 
     // calculate total amount to send for all recipients
     const sendTotal = recipients
-      .reduce((sum, cur) => sum.plus(cur.amount), Decimal(0))
+      .reduce((sum, cur) => sum.plus(cur.amount), new Decimal(0))
       .toNumber();
 
     // gather suitable inputs
     const UtxoManager = UtxoManagerService(wallet_id);
     const inputs = UtxoManager.selectUtxos(sendTotal, fee);
     const inputTotal = inputs
-      .reduce((sum, cur) => sum.plus(cur.amount), Decimal(0))
+      .reduce((sum, cur) => sum.plus(cur.amount), new Decimal(0))
       .toNumber();
 
     // calculate change

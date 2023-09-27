@@ -31,7 +31,11 @@ try {
 }
 
 // run schema migrations
-run_migrations(db);
+try {
+  run_migrations(db);
+} catch (e) {
+  console.error(e);
+}
 
 // --------------------------------
 

@@ -1,7 +1,7 @@
 import * as bip39 from "bip39";
-import DatabaseService from "./DatabaseService";
-import AddressManagerService from "./AddressManagerService";
-import { SELENE_DEFAULT_DERIVATION_PATH } from "../util/crypto";
+import DatabaseService from "@/services/DatabaseService";
+import AddressManagerService from "@/services/AddressManagerService";
+import { DEFAULT_DERIVATION_PATH } from "@/util/crypto";
 
 export default function WalletService() {
   const { db, resultToJson, saveDatabase } = new DatabaseService();
@@ -40,6 +40,7 @@ export default function WalletService() {
 
   // boot: load a wallet, create a wallet if none exist
   function boot(wallet_id) {
+    saveDatabase();
     let wallet = getWalletById(wallet_id);
 
     if (wallet === null) {
@@ -64,13 +65,17 @@ export default function WalletService() {
 
   // createWallet: generate a new wallet from a randomly generated seed phrase
   // persist the new wallet in the database
-  function createWallet(name, derivation = SELENE_DEFAULT_DERIVATION_PATH) {
+  function createWallet(
+    name,
+    passphrase = "",
+    derivation = DEFAULT_DERIVATION_PATH
+  ) {
     const mnemonic = bip39.generateMnemonic();
 
     const result = resultToJson(
       db.exec(
-        `INSERT INTO wallets (name, mnemonic, derivation) VALUES (?, ?, ?) RETURNING *`,
-        [name, mnemonic, derivation]
+        `INSERT INTO wallets (name, mnemonic, passphrase, derivation) VALUES (?, ?, ?, ?) RETURNING *`,
+        [name, mnemonic, passphrase, derivation]
       )
     )[0];
 
@@ -79,11 +84,15 @@ export default function WalletService() {
     return result;
   }
 
-  function importWallet(mnemonic, derivation = "m/44'/145'/0'") {
+  function importWallet(
+    mnemonic,
+    passphrase = "",
+    derivation = DEFAULT_DERIVATION_PATH
+  ) {
     const result = resultToJson(
       db.exec(
-        `INSERT INTO wallets (name, mnemonic, derivation, key_viewed) VALUES (?, ?, ?, strftime('%Y-%m-%dT%H:%M:%SZ')) RETURNING *`,
-        ["Imported Wallet", mnemonic, derivation]
+        `INSERT INTO wallets (name, mnemonic, passphrase, derivation, key_viewed) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%SZ')) RETURNING *`,
+        ["Imported Wallet", mnemonic, passphrase, derivation]
       )
     )[0];
 

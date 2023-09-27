@@ -1,4 +1,5 @@
 // migrations.js: handle sqlite database schema updates
+import { DEFAULT_DERIVATION_PATH } from "@/util/crypto";
 
 // functions in this migrations will be executed sequentially,
 // starting with the function at index PRAGMA user_version
@@ -102,10 +103,15 @@ const migrations = [
   },
 
   function migrate_v1() {
-    console.log("migrate_v1");
     const query = [];
 
-    // add memo fields
+    // add prefix field to addresses
+    query.push(
+      `ALTER TABLE addresses ADD COLUMN
+        prefix text CHECK(prefix IN ("bitcoincash", "bchtest", "bchreg")) default "bitcoincash";`
+    );
+
+    // add memo fields to address-related tables
     query.push(
       `ALTER TABLE addresses ADD COLUMN
         memo text default null;`,
@@ -115,16 +121,73 @@ const migrations = [
         memo text default null;`
     );
 
+    query.push("DROP TRIGGER IF EXISTS balance_update;");
+
+    // recreate wallet table:
     // add bip32 passphrase field to wallets
+    // update unique constraints
+    // reset default derivation path
+    // recreate balance_update trigger
     query.push(
-      `ALTER TABLE wallets ADD COLUMN
-        passphrase text default null;`
+      `
+      PRAGMA foreign_keys=OFF;
+      BEGIN TRANSACTION;
+        DROP TABLE IF EXISTS wallets_new;
+        CREATE TABLE wallets_new ( 
+          id integer primary key not null, 
+          name text not null, 
+          mnemonic text not null, 
+          passphrase text default "",
+          derivation text default "${DEFAULT_DERIVATION_PATH}", 
+          date_created default ( strftime('%Y-%m-%dT%H:%M:%SZ') ),
+          key_viewed text, 
+          key_verified text, 
+          balance int default 0,
+          UNIQUE(mnemonic, passphrase, derivation)
+        );
+
+        INSERT INTO wallets_new (
+          id,
+          name, 
+          mnemonic, 
+          derivation,
+          date_created,
+          key_viewed,
+          key_verified,
+          balance,
+          passphrase
+        ) 
+        SELECT 
+          wallets.id,
+          wallets.name, 
+          wallets.mnemonic,
+          wallets.derivation,
+          wallets.date_created, 
+          wallets.key_viewed,   
+          wallets.key_verified, 
+          wallets.balance,
+          ""
+        FROM wallets;
+
+        DROP TABLE wallets;
+        ALTER TABLE 'wallets_new' RENAME TO 'wallets';
+        PRAGMA foreign_key_check;
+      COMMIT;
+      PRAGMA foreign_keys=ON;
+      `
     );
 
-    // add prefix field to addresses
     query.push(
-      `ALTER TABLE addresses ADD COLUMN
-        prefix text default "bitcoincash";`
+      `CREATE TRIGGER IF NOT EXISTS balance_update AFTER UPDATE ON addresses
+        BEGIN
+          UPDATE wallets SET 
+            balance=(
+              SELECT SUM(balance) FROM addresses 
+              WHERE wallet_id=NEW.wallet_id
+            ) WHERE id=NEW.wallet_id
+          ;
+        END
+      ;`
     );
 
     query.push("PRAGMA user_version = 2;");
@@ -132,24 +195,24 @@ const migrations = [
     return query.join("");
   },
 
-  /* function migrate_v2() {
-    console.log("migrate_v2");
+  /*function migrate_v2() {
     const query = [];
 
     query.push("PRAGMA user_version = 0;");
 
     return query.join("");
-  }, */
+  },*/
 ];
 
 // run_migrations: run all migrations in migrations array sequentially
 // Starts with index indicated in PRAGMA user_version
 export function run_migrations(db) {
   const DB_VERSION = db.exec("PRAGMA user_version")[0].values[0][0];
-  // console.log("DB_VERSION", DB_VERSION, migrations.length);
+  console.log("DB_VERSION", DB_VERSION, migrations.length);
   for (let version = DB_VERSION; version < migrations.length; version += 1) {
-    // console.log("DB_VERSION", `${DB_VERSION}/${migrations.length}`, version);
+    console.log("DB_MIGRATE", `${version}/${migrations.length}`, DB_VERSION);
     try {
+      //console.log(migrations[version]());
       db.run(migrations[version]());
     } catch (e) {
       console.error(e);

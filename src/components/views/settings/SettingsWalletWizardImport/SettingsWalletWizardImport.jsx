@@ -1,27 +1,21 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ImportOutlined } from "@ant-design/icons";
-
 import * as bip39 from "bip39";
+import Accordion from "@/components/atoms/Accordion";
 import WalletService from "@/services/WalletService";
 import { translate } from "@/util/translations";
 import translations from "./translations";
 
-const {
-  exactWordCount,
-  alreadyImported,
-  phraseInvalid,
-  enterRecoveryPhrase,
-  alsoKnownAs,
-  exactly12Or24,
-  importWallet,
-} = translations;
+import { DEFAULT_DERIVATION_PATH, DERIVATION_PATHS } from "@/util/crypto";
 
 export default function SettingsWalletWizardImport() {
   const navigate = useNavigate();
 
   const [mnemonicInput, setMnemonicInput] = useState("");
+  const [passphraseInput, setPassphraseInput] = useState("");
   const [message, setMessage] = useState("");
+  const [derivationPath, setDerivationPath] = useState(DEFAULT_DERIVATION_PATH);
 
   const handleMnemonicInput = (event) => {
     const sanitizedInput = event.target.value
@@ -33,11 +27,19 @@ export default function SettingsWalletWizardImport() {
     setMessage("");
   };
 
+  const handlePassphraseInput = (event) => {
+    setPassphraseInput(event.target.value);
+  };
+
+  const handleDerivationSelect = (event) => {
+    setDerivationPath(event.target.value);
+  };
+
   const handleImportWallet = () => {
     const trimmedInput = mnemonicInput.trim();
     const wordCount = trimmedInput.split(" ").length;
     if (wordCount !== 12 && wordCount !== 24) {
-      setMessage(translate(exactWordCount));
+      setMessage(translate(translations.exactWordCount));
       return;
     }
 
@@ -45,29 +47,30 @@ export default function SettingsWalletWizardImport() {
 
     if (isValidMnemonic) {
       try {
-        const wallet = new WalletService().importWallet(
+        const wallet = WalletService().importWallet(
           trimmedInput,
-          "m/44'/145'/0'"
+          passphraseInput,
+          derivationPath
         );
         navigate(`/settings/wallet/${wallet.id}`, { replace: true });
       } catch (e) {
-        setMessage(translate(alreadyImported));
+        setMessage(translate(translations.alreadyImported));
       }
     } else {
-      setMessage(translate(phraseInvalid));
+      setMessage(translate(translations.phraseInvalid));
     }
   };
 
   return (
     <>
       <div className="text-2xl text-center text-neutral-900">
-        {translate(enterRecoveryPhrase)}
+        {translate(translations.enterRecoveryPhrase)}
       </div>
       <div className="flex justify-center">
         {message === "" ? (
-          <ul className="list-disc p-2 text-left text-neutral-700">
-            <li>{translate(alsoKnownAs)}</li>
-            <li>{translate(exactly12Or24)}</li>
+          <ul className="list-disc list-inside p-2 text-left text-neutral-700">
+            <li>{translate(translations.alsoKnownAs)}</li>
+            <li>{translate(translations.exactly12Or24)}</li>
           </ul>
         ) : (
           <div className="text-error p-2">{message}</div>
@@ -81,13 +84,34 @@ export default function SettingsWalletWizardImport() {
           autoComplete="off"
         />
       </div>
+      <div className="my-1">
+        <Accordion icon={() => null} title="Additional Options">
+          <Accordion.Child icon={() => null} label="Passphrase">
+            <input
+              type="text"
+              className="w-full border border-primary"
+              onChange={handlePassphraseInput}
+              value={passphraseInput}
+              autoComplete="off"
+            />
+          </Accordion.Child>
+          <Accordion.Child icon={() => null} label="Derivation Path">
+            <select onChange={handleDerivationSelect} value={derivationPath}>
+              {DERIVATION_PATHS.map((path) => (
+                <option value={path}>{path}</option>
+              ))}
+            </select>
+          </Accordion.Child>
+        </Accordion>
+      </div>
       <div className="my-2">
         <button
           type="button"
           className="bg-primary text-white w-full rounded-lg p-2"
           onClick={handleImportWallet}
         >
-          <ImportOutlined className="text-2xl" /> {translate(importWallet)}
+          <ImportOutlined className="text-2xl" />{" "}
+          {translate(translations.importWallet)}
         </button>
       </div>
     </>
