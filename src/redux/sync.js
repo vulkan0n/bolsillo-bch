@@ -7,9 +7,13 @@ import {
   createListenerMiddleware,
 } from "@reduxjs/toolkit";
 
-import { walletBalanceUpdate } from "@/redux/wallet";
+import { walletBalanceUpdate, selectActiveWallet } from "@/redux/wallet";
 import { fetchExchangeRates } from "@/redux/exchangeRates";
-import { setPreference } from "@/redux/preferences";
+import {
+  setPreference,
+  selectIsChipnet,
+  selectCurrencySettings,
+} from "@/redux/preferences";
 
 import ElectrumService from "@/services/ElectrumService";
 import BlockchainService from "@/services/BlockchainService";
@@ -20,7 +24,7 @@ import UtxoManagerService from "@/services/UtxoManagerService";
 
 import { block_checkpoints } from "@/util/block_checkpoints";
 
-const Electrum = new ElectrumService();
+const Electrum = ElectrumService();
 
 export const syncMiddleware = createListenerMiddleware();
 
@@ -30,8 +34,8 @@ export const syncMiddleware = createListenerMiddleware();
 export const syncConnect = createAsyncThunk(
   "sync/connect",
   async (payload, thunkApi) => {
+    console.log("sync/connect", payload);
     try {
-      console.log("sync/connect", payload);
       await Electrum.connect(payload.server);
     } catch (e) {
       // if connection fails, destroy the client and try again
@@ -45,12 +49,15 @@ export const syncConnect = createAsyncThunk(
           )
         );
       } else {
-        const newServer = Electrum.selectFallbackServer(payload.server);
-        thunkApi.dispatch(
-          setPreference({ key: "electrumServer", value: newServer })
-        );
+        const isChipnet = selectIsChipnet(thunkApi.getState());
+        if (!isChipnet) {
+          const newServer = Electrum.selectFallbackServer(payload.server);
+          thunkApi.dispatch(
+            setPreference({ key: "electrumServer", value: newServer })
+          );
 
-        thunkApi.dispatch(syncConnect({ server: newServer, attempts: 0 }));
+          thunkApi.dispatch(syncConnect({ server: newServer, attempts: 0 }));
+        }
       }
     }
   }
@@ -73,9 +80,9 @@ syncMiddleware.startListening({
     // set up subscriptions on connect
     Electrum.subscribeToChaintip();
 
-    const AddressManager = new AddressManagerService(
-      listenerApi.getState().wallet.id
-    );
+    const wallet = selectActiveWallet(listenerApi.getState());
+
+    const AddressManager = AddressManagerService(wallet);
 
     const subscribeAddresses = AddressManager.getReceiveAddresses();
     subscribeAddresses.forEach(({ address }) =>
@@ -118,9 +125,8 @@ export const syncSubscribeAddress = createAsyncThunk(
 export const syncChangeAddress = createAsyncThunk(
   "sync/changeAddress",
   async (address, thunkApi) => {
-    const AddressManager = new AddressManagerService(
-      thunkApi.getState().wallet.id
-    );
+    const wallet = selectActiveWallet(thunkApi.getState());
+    const AddressManager = AddressManagerService(wallet);
     const addressState = await Electrum.requestAddressState(address);
 
     if (AddressManager.getAddressState(address) !== addressState) {
@@ -143,9 +149,8 @@ syncMiddleware.startListening({
     const [address, addressState] = action.payload;
 
     // check downloaded state against local state
-    const AddressManager = new AddressManagerService(
-      listenerApi.getState().wallet.id
-    );
+    const wallet = selectActiveWallet(listenerApi.getState());
+    const AddressManager = AddressManagerService(wallet);
     if (AddressManager.updateAddressState(address, addressState)) {
       // if state updated, get utxos for address
       // console.log("address state changed for", address);
@@ -171,10 +176,10 @@ syncMiddleware.startListening({
   actionCreator: syncAddressUtxos.fulfilled,
   effect: async (action, listenerApi) => {
     const { utxos, address } = action.payload;
-    const wallet_id = listenerApi.getState().wallet.id;
+    const wallet = selectActiveWallet(listenerApi.getState());
 
-    const AddressManager = new AddressManagerService(wallet_id);
-    const UtxoManager = new UtxoManagerService(wallet_id);
+    const AddressManager = AddressManagerService(wallet);
+    const UtxoManager = UtxoManagerService(wallet);
 
     // we need to delete our knowledge of UTXO set
     // in case some utxos were spent elsewhere
@@ -222,8 +227,9 @@ syncMiddleware.startListening({
 export const syncAddressHistory = createAsyncThunk(
   "sync/addressHistory",
   async (address, thunkApi) => {
-    const wallet_id = thunkApi.getState().wallet.id;
-    const AddressManager = new AddressManagerService(wallet_id);
+    const wallet = selectActiveWallet(thunkApi.getState());
+
+    const AddressManager = AddressManagerService(wallet);
 
     const history = await Electrum.requestAddressHistory(address);
     history.forEach(({ tx_hash, height }) => {
@@ -240,7 +246,7 @@ export const syncAddressHistory = createAsyncThunk(
 export const syncTxRequest = createAsyncThunk(
   "sync/txRequest",
   async (tx_hash, thunkApi) => {
-    const TransactionManager = new TransactionManagerService();
+    const TransactionManager = TransactionManagerService();
     const tx = await TransactionManager.resolveTransaction(tx_hash);
     thunkApi.dispatch(syncTxAmount(tx));
     return tx;
@@ -250,19 +256,18 @@ export const syncTxRequest = createAsyncThunk(
 export const syncTxAmount = createAsyncThunk(
   "sync/txAmount",
   async (tx, thunkApi) => {
-    const wallet_id = thunkApi.getState().wallet.id;
-    await new TransactionHistoryService(
-      wallet_id
-    ).calculateAndUpdateTransactionAmount(
+    const wallet = selectActiveWallet(thunkApi.getState());
+    const { localCurrency } = selectCurrencySettings(thunkApi.getState());
+    await TransactionHistoryService(wallet).calculateAndUpdateTransactionAmount(
       tx,
-      thunkApi.getState().preferences.localCurrency
+      localCurrency
     );
-    return wallet_id;
+    return wallet.id;
   }
 );
 
 export const syncBlock = createAsyncThunk("sync/block", async (height) => {
-  const Blockchain = new BlockchainService();
+  const Blockchain = BlockchainService();
   let block = Blockchain.getBlockByHeight(height);
 
   if (block === null || block.header === null) {
@@ -336,7 +341,7 @@ export const syncReducer = createReducer(initialState, (builder) => {
     .addCase(syncChaintip, (state, action) => {
       const { hex, height } = action.payload;
       state.chaintip = {
-        blockhash: new BlockchainService().calculateBlockhash(hex),
+        blockhash: BlockchainService().calculateBlockhash(hex),
         header: hex,
         height,
       };

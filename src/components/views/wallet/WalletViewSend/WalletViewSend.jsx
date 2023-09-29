@@ -79,11 +79,11 @@ export default function WalletViewSend() {
       return;
     }
 
-    const TransactionManager = new TransactionManagerService();
+    const TransactionManager = TransactionManagerService();
 
     const transaction = TransactionManager.buildP2pkhTransaction(
       [{ address, amount: satoshiInput.sats }],
-      wallet.id
+      wallet
     );
 
     if (typeof transaction !== "object") {
@@ -93,12 +93,12 @@ export default function WalletViewSend() {
     }
 
     const { tx_hash, tx_hex } = transaction;
-    const success = await TransactionManager.sendTransaction(
+    const isSuccess = await TransactionManager.sendTransaction(
       { tx_hash, tx_hex },
-      wallet.id
+      wallet
     );
 
-    if (success) {
+    if (isSuccess) {
       await Haptics.notification({ type: NotificationType.Success });
       navigate("/wallet/send/success");
     } else {
@@ -127,18 +127,18 @@ export default function WalletViewSend() {
   const handleSendMax = () => {
     let amount = wallet.balance;
 
-    const TransactionManager = new TransactionManagerService();
+    const TransactionManager = TransactionManagerService();
 
     let transaction = TransactionManager.buildP2pkhTransaction(
       [{ address, amount }],
-      wallet.id
+      wallet
     );
 
     while (typeof transaction !== "object") {
       amount = transaction;
       transaction = TransactionManager.buildP2pkhTransaction(
         [{ address, amount }],
-        wallet.id
+        wallet
       );
     }
 

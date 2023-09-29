@@ -23,6 +23,7 @@ const defaultPreferences = {
   qrCodeForeground: "#000000",
   electrumServer: electrum_servers[0],
   lastCheckIn: "",
+  bchNetwork: "mainnet",
 };
 
 async function retrievePreferences() {
@@ -106,6 +107,15 @@ export const selectInstantPaySettings = createSelector(
   })
 );
 
+export const selectQrCodeSettings = createSelector(
+  (state) => state.preferences,
+  (preferences) => ({
+    foreground: preferences.qrCodeForeground,
+    background: preferences.qrCodeBackground,
+    logo: preferences.qrCodeLogo,
+  })
+);
+
 export const selectLanguageCode = createSelector(
   (state) => state.preferences,
   (preferences) => preferences.languageCode
@@ -114,4 +124,9 @@ export const selectLanguageCode = createSelector(
 export const selectElectrumServer = createSelector(
   (state) => state.preferences,
   (preferences) => preferences.electrumServer
+);
+
+export const selectIsChipnet = createSelector(
+  (state) => state.preferences,
+  (preferences) => preferences.bchNetwork === "chipnet"
 );

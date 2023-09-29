@@ -4,8 +4,8 @@ import AddressManagerService from "@/services/AddressManagerService";
 import TransactionManagerService from "@/services/TransactionManagerService";
 import CurrencyService from "@/services/CurrencyService";
 
-export default function TransactionHistoryService(wallet_id) {
-  const { db, resultToJson, saveDatabase } = new DatabaseService();
+export default function TransactionHistoryService(wallet) {
+  const { db, resultToJson, saveDatabase } = DatabaseService();
 
   return {
     getTransactionHistory,
@@ -15,7 +15,7 @@ export default function TransactionHistoryService(wallet_id) {
   function getTransactionHistory() {
     const result = resultToJson(
       db.exec(
-        `SELECT * FROM address_transactions WHERE address IN (SELECT address FROM addresses WHERE wallet_id="${wallet_id}") ORDER BY time DESC, time_seen DESC, height ASC`
+        `SELECT * FROM address_transactions WHERE address IN (SELECT address FROM addresses WHERE wallet_id="${wallet.id}") ORDER BY time DESC, time_seen DESC, height ASC`
       )
     );
 
@@ -35,8 +35,8 @@ export default function TransactionHistoryService(wallet_id) {
   }
 
   async function calculateAndUpdateTransactionAmount(tx, fiatCurrency) {
-    const AddressManager = new AddressManagerService(wallet_id);
-    const TransactionManager = new TransactionManagerService();
+    const AddressManager = AddressManagerService(wallet);
+    const TransactionManager = TransactionManagerService();
 
     const myAddresses = [
       ...AddressManager.getReceiveAddresses().map((a) => a.address),
@@ -105,7 +105,7 @@ export default function TransactionHistoryService(wallet_id) {
     db.run(
       `UPDATE address_transactions SET 
         amount="${amount}", 
-        fiat_amount="${new CurrencyService(fiatCurrency).satsToFiat(amount)}", 
+        fiat_amount="${CurrencyService(fiatCurrency).satsToFiat(amount)}", 
         time=${
           tx.time !== "null"
             ? `strftime('%Y-%m-%dT%H:%M:%SZ', "${tx.time}", "unixepoch")`

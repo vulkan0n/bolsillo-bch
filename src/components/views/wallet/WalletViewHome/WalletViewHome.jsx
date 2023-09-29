@@ -13,7 +13,7 @@ import {
 } from "@ant-design/icons";
 import { animated, useSpring } from "@react-spring/web";
 import { selectActiveWallet } from "@/redux/wallet";
-import { selectPreferences } from "@/redux/preferences";
+import { selectIsChipnet, selectQrCodeSettings } from "@/redux/preferences";
 import { selectScannerIsScanning, selectKeyboardIsOpen } from "@/redux/device";
 import translations from "./translations";
 import { translate } from "@/util/translations";
@@ -37,7 +37,8 @@ export default function WalletViewHome() {
   const keyboardIsOpen = useSelector(selectKeyboardIsOpen);
   const isScanning = useSelector(selectScannerIsScanning);
 
-  const preferences = useSelector(selectPreferences);
+  const qrCodeSettings = useSelector(selectQrCodeSettings);
+  const isChipnet = useSelector(selectIsChipnet);
 
   //const [skip, setSkip] = useState(0);
   const skip = 0;
@@ -45,7 +46,7 @@ export default function WalletViewHome() {
   const [satoshiInput, setSatoshiInput] = useState({ display: "0", sats: 0 });
 
   const unusedAddresses = useMemo(
-    () => new AddressManagerService(wallet.id).getUnusedAddresses(),
+    () => AddressManagerService(wallet).getUnusedAddresses(),
     [wallet]
   );
 
@@ -104,6 +105,9 @@ export default function WalletViewHome() {
     },
   }));
 
+  const qrCodeBorder = isChipnet ? "border-[#ff0000]" : "border-primary/80";
+  const addressColor = isChipnet ? "text-[#ff0000]" : "text-primary";
+
   return (
     <>
       {isScanning ? (
@@ -112,16 +116,16 @@ export default function WalletViewHome() {
         <div className="py-3 px-2 flex flex-col items-center">
           <button
             type="button"
-            className="w-fit h-fit border border-4 border-primary/80 cursor-pointer shadow active:shadow-none active:bg-primary active:shadow-inner"
+            className={`w-fit h-fit border border-4 cursor-pointer shadow active:shadow-none active:bg-primary active:shadow-inner ${qrCodeBorder}`}
             onClick={copyAddressToClipboard}
           >
             <QRCode
               value={qrRequest}
               size={204}
               quietZone={16}
-              bgColor={preferences.qrCodeBackground}
-              fgColor={preferences.qrCodeForeground}
-              logoImage={getQrLogoImage(preferences.qrCodeLogo)}
+              bgColor={isChipnet ? "#ffffff" : qrCodeSettings.background}
+              fgColor={isChipnet ? "#000000" : qrCodeSettings.foreground}
+              logoImage={getQrLogoImage(qrCodeSettings.logo)}
               logoWidth={60}
               logoHeight={60}
             />
@@ -130,7 +134,7 @@ export default function WalletViewHome() {
           <button
             type="button"
             onClick={copyAddressToClipboard}
-            className="w-fit mx-auto text-xs font-mono text-center cursor-pointer text-primary slashed-zero select-none my-2 rounded p-1 shadow-sm my-2 active:bg-primary active:text-white active:shadow-none active:shadow-inner"
+            className={`w-fit mx-auto text-xs font-mono text-center cursor-pointer slashed-zero select-none my-2 rounded p-1 shadow-sm my-2 active:bg-primary active:text-white active:shadow-none active:shadow-inner ${addressColor}`}
           >
             <CopyOutlined className="mr-1" />
             <Address address={address} />

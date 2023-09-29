@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-use-before-define */
 import {
   createAction,
   createReducer,
@@ -6,7 +7,11 @@ import {
 } from "@reduxjs/toolkit";
 
 import Decimal from "decimal.js";
-import { setPreference, selectElectrumServer } from "@/redux/preferences";
+import {
+  setPreference,
+  selectElectrumServer,
+  selectIsChipnet,
+} from "@/redux/preferences";
 import { syncConnect, syncSubscribeAddress } from "@/redux/sync";
 
 import WalletService from "@/services/WalletService";
@@ -22,7 +27,7 @@ export const walletMiddleware = createListenerMiddleware();
 
 // walletBoot : initialize/load wallet from preferences.activeWalletId
 export const walletBoot = createAction("wallet/boot", (wallet_id) => {
-  const wallet = new WalletService().boot(wallet_id);
+  const wallet = WalletService().boot(wallet_id);
   return { payload: wallet };
 });
 walletMiddleware.startListening({
@@ -33,9 +38,14 @@ walletMiddleware.startListening({
       setPreference({ key: "activeWalletId", value: action.payload.id })
     );
     // connect to electrum
+    const isChipnet = selectIsChipnet(listenerApi.getState());
+    const server = isChipnet
+      ? "chipnet.bch.ninja"
+      : selectElectrumServer(listenerApi.getState());
+
     listenerApi.dispatch(
       syncConnect({
-        server: selectElectrumServer(listenerApi.getState()),
+        server,
         attempts: 0,
       })
     );
@@ -48,8 +58,8 @@ export const walletBalanceUpdate = createAction("wallet/balanceUpdate");
 walletMiddleware.startListening({
   actionCreator: walletBalanceUpdate,
   effect: async (action, listenerApi) => {
-    const wallet_id = listenerApi.getState().wallet.id;
-    const AddressManager = new AddressManagerService(wallet_id);
+    const wallet = selectActiveWallet(listenerApi.getState());
+    const AddressManager = AddressManagerService(wallet);
 
     // generate new addresses when address state updates
     const generatedAddresses = AddressManager.populateAddresses();
@@ -95,7 +105,7 @@ export const walletReducer = createReducer(initialState, (builder) => {
       state.balance = action.payload.walletBalance;
     })
     .addCase(walletReload, (state) => {
-      return new WalletService().getWalletById(state.id);
+      return WalletService().getWalletById(state.id);
     });
 });
 

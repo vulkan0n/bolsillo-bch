@@ -1,13 +1,19 @@
 import { sha256 } from "@bitauth/libauth";
+import WalletService from "@/services/WalletService";
 import DatabaseService from "@/services/DatabaseService";
 import HdNodeService from "@/services/HdNodeService";
 import { binToHex } from "@/util/hex";
+import { store } from "@/redux";
+import { selectIsChipnet } from "@/redux/preferences";
 
 // AddressManagerService: handles most address-related operations
-export default function AddressManagerService(wallet_id) {
-  //console.log("AddressManagerService", wallet_id);
+export default function AddressManagerService(wallet) {
+  //console.log("AddressManagerService", wallet);
 
-  const { db, resultToJson, saveDatabase } = new DatabaseService();
+  const { db, resultToJson, saveDatabase } = DatabaseService();
+
+  const isChipnet = selectIsChipnet(store.getState());
+  const prefix = isChipnet ? "bchtest" : "bitcoincash";
 
   return {
     registerAddress,
@@ -35,13 +41,15 @@ export default function AddressManagerService(wallet_id) {
         address, 
         wallet_id, 
         hd_index,
-        change
+        change,
+        prefix
       ) 
       VALUES (
         "${address}", 
-        "${wallet_id}", 
+        "${wallet.id}", 
         "${hd_index}",
-        "${change}"
+        "${change}",
+        "${prefix}"
       );`
     );
 
@@ -56,7 +64,7 @@ export default function AddressManagerService(wallet_id) {
 
     const generatedAddresses = [];
 
-    const hdWallet = new HdNodeService(wallet_id);
+    const hdWallet = HdNodeService(wallet);
     populate(0);
     populate(1);
 
@@ -95,8 +103,9 @@ export default function AddressManagerService(wallet_id) {
     const result = resultToJson(
       db.exec(
         `SELECT * FROM addresses 
-          WHERE wallet_id="${wallet_id}" 
+          WHERE wallet_id="${wallet.id}" 
           AND change='0' 
+          AND prefix='${prefix}'
           ORDER BY hd_index DESC 
           ${limit ? `LIMIT ${Number.parseInt(limit, 10)}` : ""}
         ;`
@@ -115,8 +124,9 @@ export default function AddressManagerService(wallet_id) {
     const result = resultToJson(
       db.exec(
         `SELECT * FROM addresses 
-          WHERE wallet_id=${wallet_id} 
+          WHERE wallet_id=${wallet.id} 
           AND change='1' 
+          AND prefix='${prefix}'
           ORDER BY hd_index DESC 
           ${limit ? `LIMIT ${Number.parseInt(limit, 10)}` : ""}
         ;`
@@ -133,9 +143,10 @@ export default function AddressManagerService(wallet_id) {
     const result = resultToJson(
       db.exec(
         `SELECT * FROM addresses 
-          WHERE wallet_id="${wallet_id}"
+          WHERE wallet_id="${wallet.id}"
           AND state IS NULL 
           AND change="${change}"
+          AND prefix='${prefix}'
           ORDER BY hd_index ASC 
           LIMIT ${limit}
         ;`
@@ -172,7 +183,7 @@ export default function AddressManagerService(wallet_id) {
   // returns total wallet balance
   function updateAddressBalance(address, balance) {
     const previousBalance = resultToJson(
-      db.exec(`SELECT balance FROM wallets WHERE id="${wallet_id}"`)
+      db.exec(`SELECT balance FROM wallets WHERE id="${wallet.id}"`)
     )[0].balance;
 
     db.run(
@@ -180,7 +191,7 @@ export default function AddressManagerService(wallet_id) {
     );
 
     const walletBalance = resultToJson(
-      db.exec(`SELECT balance FROM wallets WHERE id="${wallet_id}"`)
+      db.exec(`SELECT balance FROM wallets WHERE id="${wallet.id}"`)
     )[0].balance;
 
     const { change } = resultToJson(
@@ -217,9 +228,7 @@ export default function AddressManagerService(wallet_id) {
 
   // calculateAddressState: calculate electrum address state using local tx history
   function calculateAddressState(address) {
-    const localHistory = new AddressManagerService().getAddressTransactions(
-      address
-    );
+    const localHistory = getAddressTransactions(address);
 
     // return null if address has no transactions
     if (

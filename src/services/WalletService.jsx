@@ -4,7 +4,7 @@ import AddressManagerService from "@/services/AddressManagerService";
 import { DEFAULT_DERIVATION_PATH } from "@/util/crypto";
 
 export default function WalletService() {
-  const { db, resultToJson, saveDatabase } = new DatabaseService();
+  const { db, resultToJson, saveDatabase } = DatabaseService();
 
   return {
     getWallets,
@@ -55,7 +55,7 @@ export default function WalletService() {
       }
     }
 
-    const AddressManager = new AddressManagerService(wallet.id);
+    const AddressManager = AddressManagerService(wallet);
     AddressManager.populateAddresses();
 
     return wallet;
@@ -135,6 +135,7 @@ export default function WalletService() {
     );
     db.run(`DELETE FROM addresses WHERE wallet_id="${wallet_id}"`);
     db.run(`DELETE FROM address_utxos WHERE wallet_id="${wallet_id}"`);
+    db.run(`UPDATE wallets SET balance='0' WHERE id="${wallet_id}"`);
 
     saveDatabase();
   }

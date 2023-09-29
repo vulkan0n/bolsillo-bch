@@ -5,7 +5,11 @@ import { animated, useSpring } from "@react-spring/web";
 import { StockOutlined } from "@ant-design/icons";
 import { selectActiveWallet } from "@/redux/wallet";
 import { selectExchangeRates } from "@/redux/exchangeRates";
-import { setPreference, selectCurrencySettings } from "@/redux/preferences";
+import {
+  setPreference,
+  selectCurrencySettings,
+  selectIsChipnet,
+} from "@/redux/preferences";
 
 import { formatSatoshis, stripArsPostDecimal } from "@/util/sats";
 
@@ -16,6 +20,7 @@ export default function WalletViewBalance() {
   const dispatch = useDispatch();
   const { name: activeWalletName, balance } = useSelector(selectActiveWallet);
   const exchangeRates = useSelector(selectExchangeRates);
+  const isChipnet = useSelector(selectIsChipnet);
 
   const {
     localCurrency: currency,
@@ -78,6 +83,7 @@ export default function WalletViewBalance() {
         className={`font-bold text-zinc-400 text-md tracking-wide ${hiddenBalanceClasses}`}
       >
         {activeWalletName}
+        {isChipnet ? " [CHIP]" : ""}
       </div>
       <button
         type="button"

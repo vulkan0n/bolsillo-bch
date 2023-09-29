@@ -43,7 +43,6 @@ export default function PaymentSettings() {
       >
         <input
           type="checkbox"
-          className="toggle"
           checked={preferences.allowInstantPay === "true"}
           onChange={(event) =>
             handleSettingsUpdate("allowInstantPay", event.target.checked)

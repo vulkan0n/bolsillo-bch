@@ -16,7 +16,7 @@ export default function WalletAssetsView() {
   const [shouldShowEmptyAddresses, setShouldShowEmptyAddresses] =
     useState(false);
 
-  const AddressManager = AddressManagerService(wallet.id);
+  const AddressManager = AddressManagerService(wallet);
   const receiveAddresses = AddressManager.getReceiveAddresses();
   const changeAddresses = AddressManager.getChangeAddresses();
 
@@ -58,7 +58,7 @@ function AddressAccordion({ a, i }) {
   const [isOpen, setIsOpen] = useState(false);
 
   const wallet = useSelector(selectActiveWallet);
-  const UtxoManager = UtxoManagerService(wallet.id);
+  const UtxoManager = UtxoManagerService(wallet);
   const coins = UtxoManager.getAddressUtxos(a.address);
 
   const zebraCss = i % 2 === 0 ? "bg-zinc-100" : "bg-zinc-50";

@@ -2,7 +2,7 @@ import { Decimal } from "decimal.js";
 import DatabaseService from "@/services/DatabaseService";
 import { DUST_LIMIT } from "@/util/sats";
 
-export default function UxtoManagerService(wallet_id) {
+export default function UxtoManagerService(wallet) {
   const { db, resultToJson, saveDatabase } = DatabaseService();
 
   return {
@@ -23,7 +23,7 @@ export default function UxtoManagerService(wallet_id) {
         tx_pos,
         amount
       ) VALUES (
-        "${wallet_id}",
+        "${wallet.id}",
         "${address}",
         "${utxo.tx_hash}",
         "${utxo.tx_pos}",
@@ -36,7 +36,7 @@ export default function UxtoManagerService(wallet_id) {
 
   function getWalletUtxos() {
     const result = resultToJson(
-      db.exec(`SELECT * FROM address_utxos WHERE wallet_id="${wallet_id}"`)
+      db.exec(`SELECT * FROM address_utxos WHERE wallet_id="${wallet.id}"`)
     );
 
     return result;
@@ -58,7 +58,7 @@ export default function UxtoManagerService(wallet_id) {
         `SELECT * FROM addresses 
           WHERE 
             balance >= "${targetAmount}"
-            AND wallet_id="${wallet_id}"
+            AND wallet_id="${wallet.id}"
           ORDER BY balance ASC`
       )
     );
@@ -77,7 +77,7 @@ export default function UxtoManagerService(wallet_id) {
         `SELECT * FROM address_utxos 
           WHERE 
             amount <= "${targetAmount}" 
-            AND wallet_id="${wallet_id}" 
+            AND wallet_id="${wallet.id}" 
           ORDER BY amount DESC`
       )
     );

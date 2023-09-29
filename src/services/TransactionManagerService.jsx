@@ -127,7 +127,7 @@ export default function TransactionManagerService() {
     return getTransactionByHash(tx_hash);
   }
 
-  function buildP2pkhTransaction(recipients, wallet_id, fee = DUST_LIMIT / 3) {
+  function buildP2pkhTransaction(recipients, wallet, fee = DUST_LIMIT / 3) {
     // helper function returns null if invalid locking bytecode
     const addressToLockingBytecode = (addr) => {
       const { isBase58Address, address } = validateInvoiceString(addr);
@@ -146,7 +146,7 @@ export default function TransactionManagerService() {
       .toNumber();
 
     // gather suitable inputs
-    const UtxoManager = UtxoManagerService(wallet_id);
+    const UtxoManager = UtxoManagerService(wallet);
     const inputs = UtxoManager.selectUtxos(sendTotal, fee);
     const inputTotal = inputs
       .reduce((sum, cur) => sum.plus(cur.amount), new Decimal(0))
@@ -168,7 +168,7 @@ export default function TransactionManagerService() {
 
     // construct change outputs
     if (changeTotal >= DUST_LIMIT) {
-      const AddressManager = AddressManagerService(wallet_id);
+      const AddressManager = AddressManagerService(wallet);
       const changeAddress = AddressManager.getUnusedAddresses(1, 1)[0];
 
       vout.push({
@@ -184,7 +184,7 @@ export default function TransactionManagerService() {
     const compiler = libauth.authenticationTemplateToCompilerBCH(template);
 
     // sign inputs
-    const HdNode = HdNodeService(wallet_id);
+    const HdNode = HdNodeService(wallet);
     const signedInputs = HdNode.signInputs(inputs, compiler);
 
     const generatedTx = libauth.generateTransaction({
@@ -210,13 +210,13 @@ export default function TransactionManagerService() {
     if (feeTotal < tx_raw.length) {
       // Fee under 1 sat/B... try again with byte length as fee
       // TODO: use relay fee provided by electrum (futureproofing)
-      return buildP2pkhTransaction(recipients, wallet_id, tx_raw.length);
+      return buildP2pkhTransaction(recipients, wallet, tx_raw.length);
     }
 
     if (feeTotal > tx_raw.length * 3) {
       if (fee !== tx_raw.length) {
         // Fee greater than 300% of byte length. Can we make it smaller?
-        return buildP2pkhTransaction(recipients, wallet_id, tx_raw.length);
+        return buildP2pkhTransaction(recipients, wallet, tx_raw.length);
       }
 
       // if we're here, fee can't get any smaller. proceed
@@ -242,13 +242,13 @@ export default function TransactionManagerService() {
     };
   }
 
-  async function sendTransaction({ tx_hash, tx_hex }, wallet_id) {
+  async function sendTransaction({ tx_hash, tx_hex }, wallet) {
     const Electrum = ElectrumService();
     const result = await Electrum.broadcastTransaction(tx_hex);
     const isSuccess = result === tx_hash;
 
     if (isSuccess) {
-      const UtxoManager = UtxoManagerService(wallet_id);
+      const UtxoManager = UtxoManagerService(wallet);
       const decodedTx = libauth.decodeTransaction(hexToBin(tx_hex));
       const vin = getVinFromDecodedTransaction(decodedTx);
 

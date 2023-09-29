@@ -10,7 +10,7 @@ const migrations = [
 
     query.push("PRAGMA user_version = 0;");
 
-    query.push("DROP TABLE IF EXISTS wallets;");
+    //query.push("DROP TABLE IF EXISTS wallets;");
     query.push("DROP TABLE IF EXISTS blockchain;");
     query.push("DROP TABLE IF EXISTS addresses;");
     query.push("DROP TABLE IF EXISTS transactions;");
@@ -184,6 +184,7 @@ const migrations = [
             balance=(
               SELECT SUM(balance) FROM addresses 
               WHERE wallet_id=NEW.wallet_id
+              AND prefix=NEW.prefix
             ) WHERE id=NEW.wallet_id
           ;
         END
@@ -209,6 +210,7 @@ const migrations = [
 export function run_migrations(db) {
   const DB_VERSION = db.exec("PRAGMA user_version")[0].values[0][0];
   console.log("DB_VERSION", DB_VERSION, migrations.length);
+  // db.run("PRAGMA user_version = 0;");
   for (let version = DB_VERSION; version < migrations.length; version += 1) {
     console.log("DB_MIGRATE", `${version}/${migrations.length}`, DB_VERSION);
     try {

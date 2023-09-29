@@ -57,8 +57,8 @@ export default function SettingsView() {
           <CurrencySettings />
           <PaymentSettings />
           <QrCodeSettings />
-          <IntlSettings />
           <NetworkSettings />
+          <IntlSettings />
         </SettingsContext.Provider>
       </div>
       <div className="w-fit mx-auto px-2 py-0.5 shadow-sm rounded-full bg-primary text-white active:bg-white active:text-primary">
