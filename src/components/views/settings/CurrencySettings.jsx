@@ -66,7 +66,6 @@ export default function CurrencySettings() {
       >
         <input
           type="checkbox"
-          className="toggle"
           checked={shouldPreferLocalCurrency}
           onChange={(event) =>
             handleSettingsUpdate("preferLocalCurrency", event.target.checked)
@@ -79,7 +78,6 @@ export default function CurrencySettings() {
       >
         <input
           type="checkbox"
-          className="toggle"
           checked={shouldHideBalance}
           onChange={(event) =>
             handleSettingsUpdate("hideAvailableBalance", event.target.checked)
@@ -92,7 +90,6 @@ export default function CurrencySettings() {
       >
         <input
           type="checkbox"
-          className="toggle"
           checked={shouldDenominateSats}
           onChange={(event) =>
             handleSettingsUpdate("denominateSats", event.target.checked)
@@ -105,7 +102,6 @@ export default function CurrencySettings() {
       >
         <input
           type="checkbox"
-          className="toggle"
           checked={shouldDisplayExchangeRate}
           onChange={(event) =>
             handleSettingsUpdate("displayExchangeRate", event.target.checked)

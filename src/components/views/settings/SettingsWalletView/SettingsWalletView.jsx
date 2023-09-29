@@ -46,8 +46,11 @@ export default function SettingsWalletView() {
 
   const { shouldPreferLocalCurrency } = useSelector(selectCurrencySettings);
 
-  const WalletManager = new WalletService();
+  const WalletManager = WalletService();
   const wallet = WalletManager.getWalletById(wallet_id);
+
+  const shouldShowAdvancedOptions =
+    wallet.key_viewed !== null && isActiveWallet;
 
   // toggle visibility for recovery phrase
   const [shouldShowRecoveryPhrase, setShouldShowRecoveryPhrase] =
@@ -268,7 +271,7 @@ export default function SettingsWalletView() {
         </button>
         {
           /* Only show "Advanced Options" if user has viewed (TODO: verified) their recovery phrase */
-          wallet.key_viewed !== null && isActiveWallet && (
+          shouldShowAdvancedOptions && (
             <Accordion
               icon={ToolOutlined}
               title={translate(translations.advancedOptions)}

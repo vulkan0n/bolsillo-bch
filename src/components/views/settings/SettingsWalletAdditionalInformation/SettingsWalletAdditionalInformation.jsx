@@ -1,10 +1,14 @@
 import { useState } from "react";
-import { useParams, Navigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 import {
   EyeOutlined,
   EyeInvisibleOutlined,
   InfoCircleOutlined,
+  BranchesOutlined,
+  LockOutlined,
+  ContainerOutlined,
 } from "@ant-design/icons";
 
 import * as bip39 from "bip39";
@@ -20,6 +24,8 @@ import WalletService from "@/services/WalletService";
 import ViewHeader from "@/layout/ViewHeader";
 import Accordion from "@/atoms/Accordion";
 
+import { selectIsChipnet } from "@/redux/preferences";
+
 import { translate } from "@/util/translations";
 import translations from "./translations";
 import { DEFAULT_DERIVATION_PATH } from "@/util/crypto";
@@ -30,22 +36,20 @@ export default function SettingsWalletAdditionalInformation() {
   const [isShowXpub, setIsShowXpub] = useState(false);
   const [isShowxPrv, setIsShowxPrv] = useState(false);
 
-  const WalletManager = new WalletService();
+  const WalletManager = WalletService();
   const wallet = WalletManager.getWalletById(wallet_id);
-
-  // if invalid wallet_id passed via queryparams, redirect back to settings
-  if (wallet === null) {
-    return <Navigate to="/settings" />;
-  }
 
   const derivationPath = wallet.derivation;
 
+  const isChipnet = useSelector(selectIsChipnet);
+  const network = isChipnet ? "chipnet" : "mainnet";
+
   const seed = bip39.mnemonicToSeedSync(wallet.mnemonic);
   const hdMaster = deriveHdPrivateNodeFromSeed(seed);
-  const xPrv = encodeHdPrivateKey({ node: hdMaster, network: "mainnet" });
+  const xPrv = encodeHdPrivateKey({ node: hdMaster, network });
 
   const hdMasterPublic = deriveHdPublicNode(hdMaster);
-  const xPub = encodeHdPublicKey({ node: hdMasterPublic, network: "mainnet" });
+  const xPub = encodeHdPublicKey({ node: hdMasterPublic, network });
 
   return (
     <>
@@ -55,29 +59,34 @@ export default function SettingsWalletAdditionalInformation() {
       />
       <div className="p-2">
         <Accordion
-          icon={() => null}
+          icon={BranchesOutlined}
           title={translate(translations.derivationPathTitle)}
         >
-          <Accordion.Child label={derivationPath} />
-          <Accordion.Child
-            label={`${translate(
-              translations.derivationPathExplanation
-            )} ${SELENE_DEFAULT_DERIVATION_PATH}`}
-          />
+          <Accordion.Child>
+            <div className="text-left font-mono font-bold">
+              {derivationPath}
+            </div>
+          </Accordion.Child>
+          <Accordion.Child>
+            <div className="text-left">
+              {translate(translations.derivationPathExplanation)}{" "}
+              <span className="font-mono text-sm">
+                {DEFAULT_DERIVATION_PATH}
+              </span>
+            </div>
+          </Accordion.Child>
         </Accordion>
 
-        <Accordion icon={() => null} title="xPub">
-          <Accordion.Child
-            label={
-              <div className="flex flex-col gap-y-2">
-                {translate(translations.xPubDescription1)}{" "}
-                <span className="font-bold text-underline">
-                  {translate(translations.xPubDescription2)}{" "}
-                  {translate(translations.xPubDescription3)}
-                </span>
-              </div>
-            }
-          />
+        <Accordion icon={ContainerOutlined} title="xPub">
+          <Accordion.Child>
+            <div className="flex flex-col gap-y-2 text-left">
+              {translate(translations.xPubDescription1)}{" "}
+              <span className="font-bold text-underline">
+                {translate(translations.xPubDescription2)}{" "}
+                {translate(translations.xPubDescription3)}
+              </span>
+            </div>
+          </Accordion.Child>
           <Accordion.Child>
             <div className="flex flex-col gap-y-1 w-full">
               <button
@@ -102,7 +111,7 @@ export default function SettingsWalletAdditionalInformation() {
               </button>
 
               {isShowXpub && (
-                <div className="mt-2 p-2 rounded-md border-2 border-zinc-300">
+                <div className="mt-2 p-2 rounded-md border-2 border-zinc-300 text-left">
                   <div className="break-all font-mono select-all">{xPub}</div>
                 </div>
               )}
@@ -110,20 +119,18 @@ export default function SettingsWalletAdditionalInformation() {
           </Accordion.Child>
         </Accordion>
 
-        <Accordion icon={() => null} title="xPrv">
-          <Accordion.Child
-            label={
-              <div className="flex flex-col gap-y-2">
-                {translate(translations.xPrvDescription1)}{" "}
-                <span className="font-bold text-underline">
-                  {translate(translations.xPrvDescription2)}{" "}
-                  <span className="text-red-500">
-                    {translate(translations.xPrvDescription3)}
-                  </span>
+        <Accordion icon={LockOutlined} title="xPrv">
+          <Accordion.Child>
+            <div className="flex flex-col gap-y-2 text-left">
+              {translate(translations.xPrvDescription1)}{" "}
+              <span className="font-bold text-underline">
+                {translate(translations.xPrvDescription2)}{" "}
+                <span className="text-red-500">
+                  {translate(translations.xPrvDescription3)}
                 </span>
-              </div>
-            }
-          />
+              </span>
+            </div>
+          </Accordion.Child>
 
           <Accordion.Child>
             <div className="flex flex-col gap-y-1 w-full">
@@ -148,7 +155,7 @@ export default function SettingsWalletAdditionalInformation() {
               </button>
 
               {isShowxPrv && (
-                <div className="mt-2 p-2 rounded-md border-2 border-zinc-300">
+                <div className="mt-2 p-2 rounded-md border-2 border-zinc-300 text-left">
                   <div className="break-all font-mono select-all">{xPrv}</div>
                 </div>
               )}

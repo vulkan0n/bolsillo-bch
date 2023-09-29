@@ -33,11 +33,13 @@ function AccordionChild({ icon, label, children }) {
   return (
     <div className="p-3">
       <div className="flex justify-between items-center">
-        <div className="flex items-center flex-nowrap grow items-center">
-          <Icon className="text-xl mr-1" />
-          {label}
-        </div>
-        <div className="shrink">{children}</div>
+        {label && (
+          <div className="flex flex-1 items-center flex-nowrap items-center">
+            <Icon className="text-xl mr-1" />
+            {label}
+          </div>
+        )}
+        <div className="flex-1 text-right">{children}</div>
       </div>
     </div>
   );
