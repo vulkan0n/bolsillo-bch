@@ -104,7 +104,7 @@ function AddressAccordion({ a, i }) {
       {isOpen && a.balance > 0 && (
         <div className="bg-zinc-50 rounded-sm shadow-inner text-sm mt-1 flex flex-wrap gap-1 justify-between">
           {coins.map((coin) => (
-            <Coin coin={coin} />
+            <Coin key={`${coin.txid}:${coin.tx_pos}`} coin={coin} />
           ))}
         </div>
       )}
@@ -158,3 +158,7 @@ function Coin({ coin }) {
     </div>
   );
 }
+
+Coin.propTypes = {
+  coin: PropTypes.object.isRequired,
+};
