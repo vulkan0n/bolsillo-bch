@@ -45,7 +45,7 @@ export default function CurrencySettings() {
         label={translate(translations.localCurrency)}
       >
         <select
-          className="p-2 bg-white rounded h-10 w-24"
+          className="p-2 bg-white rounded h-10 w-24 w-fit"
           value={localCurrency || ""}
           onChange={(event) =>
             handleSettingsUpdate("localCurrency", event.target.value)

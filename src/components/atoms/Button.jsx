@@ -18,7 +18,7 @@ export default function Button({
   const borderClasses = tailwindBorderClass || "border-primary";
 
   return (
-    <div className="text-center">
+    <div>
       <button
         type="button"
         onClick={onClick}
@@ -35,7 +35,7 @@ export default function Button({
       </button>
       {label && (
         <div
-          className={`text-${labelSize} text-${labelColor} mt-1 select-none`}
+          className={`text-${labelSize} text-${labelColor} mt-1 select-none text-center`}
         >
           {label}
         </div>

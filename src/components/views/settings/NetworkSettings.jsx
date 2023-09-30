@@ -44,7 +44,7 @@ export default function NetworkSettings() {
       >
         <div className="flex">
           <select
-            className="p-2 bg-white rounded h-10 w-40"
+            className="p-2 bg-white rounded h-10 w-40 flex-1"
             value={preferences.electrumServer || ""}
             onChange={(event) => {
               handleElectrumServerChoice(event.target.value);

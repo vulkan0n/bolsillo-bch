@@ -66,7 +66,7 @@ export default function QrCodeSettings() {
           />
           <input
             type="color"
-            className="rounded h-10 w-24 m-0 p-2"
+            className="rounded h-10 w-24 m-0 p-2 w-full"
             value={preferences.qrCodeForeground || ""}
             onChange={(event) =>
               handleSettingsUpdate("qrCodeForeground", event.target.value)
@@ -85,7 +85,7 @@ export default function QrCodeSettings() {
           />
           <input
             type="color"
-            className="rounded h-10 w-24 m-0 p-2"
+            className="rounded h-10 w-24 m-0 p-2 w-full"
             value={preferences.qrCodeBackground || ""}
             onChange={(event) =>
               handleSettingsUpdate("qrCodeBackground", event.target.value)
@@ -93,8 +93,8 @@ export default function QrCodeSettings() {
           />
         </div>
       </Accordion.Child>
-      <Accordion.Child icon={null} label="">
-        <div className="flex items-center">
+      <Accordion.Child>
+        <div className="text-right">
           <Button
             onClick={handleResetQrColors}
             icon={() => (

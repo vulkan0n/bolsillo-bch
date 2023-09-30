@@ -58,11 +58,11 @@ export default function PaymentSettings() {
         icon={PropertySafetyOutlined}
         label={translate(translations.instantPayLimit)}
       >
-        <span className="text-zinc-600">
-          <CurrencySymbol className="font-bold" />
+        <span className="text-zinc-600 flex items-center">
+          <CurrencySymbol className="font-bold text-lg" />
           <SatoshiInput
             satoshiInput={instantPaySatInput}
-            className="p-2 w-28 rounded mx-1"
+            className="p-2 w-28 rounded mx-1 flex-1"
             onChange={handleInstantPayInput}
           />
         </span>
