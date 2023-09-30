@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react";
+import { useEffect } from "react";
 
 import { useSelector, useDispatch } from "react-redux";
 import { animated, useSpring } from "@react-spring/web";
@@ -9,12 +9,11 @@ import {
   selectCurrencySettings,
   selectIsChipnet,
 } from "@/redux/preferences";
+import { selectCurrentPrice } from "@/redux/exchangeRates";
 
 import { formatSatoshis } from "@/util/sats";
 
 import CurrencyFlip from "@/atoms/CurrencyFlip";
-import { selectLocale } from "@/redux/device";
-import { selectCurrentPrice } from "@/redux/exchangeRates";
 
 export default function WalletViewBalance() {
   const dispatch = useDispatch();
@@ -23,13 +22,10 @@ export default function WalletViewBalance() {
   const isChipnet = useSelector(selectIsChipnet);
 
   const {
-    localCurrency: currency,
     shouldPreferLocalCurrency,
     shouldHideBalance,
     shouldDisplayExchangeRate,
   } = useSelector(selectCurrencySettings);
-
-  const locale = useSelector(selectLocale);
 
   const handleFlipCurrency = () => {
     dispatch(
@@ -67,7 +63,7 @@ export default function WalletViewBalance() {
     [balance, receiveSpringApi]
   );
 
-  const formattedBalance = useMemo(() => formatSatoshis(balance), [balance]);
+  const formattedBalance = formatSatoshis(balance);
 
   return (
     <div className="py-2.5 text-center">
