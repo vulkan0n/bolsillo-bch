@@ -9,8 +9,8 @@ const initialState = [];
 export const txReducer = createReducer(initialState, (builder) => {
   builder
     .addCase(walletBoot, (state, action) => {
-      return new TransactionHistoryService(
-        action.payload.id
+      return TransactionHistoryService(
+        action.payload
       ).getTransactionHistory();
     })
     .addCase(syncTxAmount.fulfilled, (state, action) => {

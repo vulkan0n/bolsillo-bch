@@ -4,6 +4,7 @@ import {
   selectCurrencySettings,
   selectDenomination,
 } from "@/redux/preferences";
+import { stripArsPostDecimal } from "@/redux/exchangeRates";
 import { store } from "@/redux";
 import CurrencyService from "@/services/CurrencyService";
 
@@ -43,15 +44,6 @@ export function satsToDisplayAmount(sats) {
   }
 
   return satsToBch(sats);
-}
-
-export function stripArsPostDecimal(localCurrency, fiatString) {
-  // ARS users prefer not to see irrelevant post decimal values
-  if (localCurrency === "ARS" && fiatString.includes(".")) {
-    return fiatString?.split(".")?.[0];
-  }
-
-  return fiatString;
 }
 
 export function formatSatoshis(amount) {

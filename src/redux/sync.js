@@ -262,7 +262,7 @@ export const syncTxAmount = createAsyncThunk(
       tx,
       localCurrency
     );
-    return wallet.id;
+    return wallet;
   }
 );
 

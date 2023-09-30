@@ -4,22 +4,22 @@ import { useSelector, useDispatch } from "react-redux";
 import { animated, useSpring } from "@react-spring/web";
 import { StockOutlined } from "@ant-design/icons";
 import { selectActiveWallet } from "@/redux/wallet";
-import { selectExchangeRates } from "@/redux/exchangeRates";
 import {
   setPreference,
   selectCurrencySettings,
   selectIsChipnet,
 } from "@/redux/preferences";
 
-import { formatSatoshis, stripArsPostDecimal } from "@/util/sats";
+import { formatSatoshis } from "@/util/sats";
 
 import CurrencyFlip from "@/atoms/CurrencyFlip";
 import { selectLocale } from "@/redux/device";
+import { selectCurrentPrice } from "@/redux/exchangeRates";
 
 export default function WalletViewBalance() {
   const dispatch = useDispatch();
   const { name: activeWalletName, balance } = useSelector(selectActiveWallet);
-  const exchangeRates = useSelector(selectExchangeRates);
+  const price = useSelector(selectCurrentPrice);
   const isChipnet = useSelector(selectIsChipnet);
 
   const {
@@ -69,14 +69,6 @@ export default function WalletViewBalance() {
 
   const formattedBalance = useMemo(() => formatSatoshis(balance), [balance]);
 
-  const relevantCurrency = exchangeRates.find((e) => e.currency === currency);
-  const price = relevantCurrency?.price || "0";
-  const priceString = `${Number(price).toLocaleString(locale, {
-    style: "currency",
-    currency,
-  })}`;
-  const adjustedPriceString = stripArsPostDecimal(currency, priceString);
-
   return (
     <div className="py-2.5 text-center">
       <div
@@ -104,7 +96,7 @@ export default function WalletViewBalance() {
       {shouldDisplayExchangeRate && (
         <div className="text-md text-zinc-400/80 mt-0.5">
           <StockOutlined className="mr-1" />
-          {adjustedPriceString}
+          {price.price}
           <span className="mx-0.5 text-sm font-mono">/</span>BCH
         </div>
       )}
