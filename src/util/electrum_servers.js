@@ -1,22 +1,19 @@
 export const electrum_servers = [
-  "cashnode.bch.ninja",
-  "fulcrum.jettscythe.xyz",
-  "bch.crypto.mldlabs.com",
-  "bch.imaginary.cash",
-  "blackie.c3-soft.com",
-  "bch0.kister.net",
+  "cashnode.bch.ninja", // Kallisti
+  "fulcrum.jettscythe.xyz", // Jett
+  "bch.imaginary.cash", // im_uname
+  "blackie.c3-soft.com", // Calin
+  "electroncash.dk",
+  "electroncash.de",
+  "electron.jochen-hoenicke.de",
   "bch.loping.net",
   "bch.soul-dev.com",
-  "electron.jochen-hoenicke.de",
-  "electroncash.dk",
-  "bch2.electroncash.dk",
-  "electrumx-cash.1209k.com",
-  "electroncash.de",
-  "electrs.electroncash.de",
-  "electrs.bitcoinunlimited.info",
-  "bch.cyberbits.eu",
   "bitcoincash.network",
-  "electrumx-bch.cryptonermal.net",
-  "electrum.bitcoinverde.org",
-  "fulcrum.criptolayer.net",
+];
+
+export const chipnet_servers = [
+  "chipnet.bch.ninja", // Kallisti
+  "chipnet.imaginary.cash", // im_uname
+  "chipnet.c3-soft.com", // Calin
+  "cbch.loping.net",
 ];

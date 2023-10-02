@@ -6,18 +6,19 @@ import {
 } from "@reduxjs/toolkit";
 
 import { electrum_servers } from "@/util/electrum_servers";
+import { languageList } from "@/util/translations";
+import { currencyList } from "@/util/currency";
 
 const defaultPreferences = {
   activeWalletId: "1",
-  languageCode: "", // Default empty = use device language
-  localCurrency: "USD",
+  languageCode: languageList[0].code,
+  localCurrency: currencyList[0].currency,
   preferLocalCurrency: "false",
   hideAvailableBalance: "false",
   displayExchangeRate: "false",
   denominateSats: "false",
   allowInstantPay: "false",
   instantPayThreshold: "25000000",
-  scannerFastMode: "false",
   qrCodeLogo: "Selene",
   qrCodeBackground: "#ffffff",
   qrCodeForeground: "#000000",
@@ -25,6 +26,28 @@ const defaultPreferences = {
   lastCheckIn: "",
   bchNetwork: "mainnet",
 };
+
+async function validatePreferences(preferences) {
+  // activeWalletId must be integer
+  if (Number.isNaN(Number.parseInt(preferences.activeWalletId, 10))) {
+    return false;
+  }
+
+  // languageCode must be in list of language codes
+  if (!languageList.find((lang) => lang.code === preferences.languageCode)) {
+    return false;
+  }
+
+  if (
+    !currencyList.find(
+      (currency) => currency.currency === preferences.localCurrency
+    )
+  ) {
+    return false;
+  }
+
+  return true;
+}
 
 async function retrievePreferences() {
   // Preferences.clear();
@@ -45,6 +68,13 @@ async function retrievePreferences() {
   ).reduce((acc, cur) => {
     return { ...acc, ...cur };
   }, {});
+
+  const isValidPreferences = await validatePreferences(preferences);
+  if (!isValidPreferences) {
+    Preferences.clear();
+    return retrievePreferences();
+  }
+
   return preferences;
 }
 

@@ -11,9 +11,10 @@ import {
   syncAddressUpdate,
   syncChaintip,
 } from "@/redux/sync";
+import { selectIsChipnet } from "@/redux/preferences";
 
 import { bchToSats } from "@/util/sats";
-import { electrum_servers } from "@/util/electrum_servers";
+import { electrum_servers, chipnet_servers } from "@/util/electrum_servers";
 
 const DEFAULT_ELECTRUM_SERVER = electrum_servers[0];
 
@@ -64,7 +65,7 @@ export default function ElectrumService() {
     // Also allows us to switch servers on the fly
     electrum = new ElectrumClient(
       "Selene.cash",
-      "1.4",
+      "1.5.1",
       server,
       ElectrumTransport.WSS.Port,
       ElectrumTransport.WSS.Scheme
@@ -231,12 +232,18 @@ export default function ElectrumService() {
   }
 
   function selectFallbackServer(prevServer) {
-    server_blacklist.push(prevServer);
+    const isChipnet = selectIsChipnet(store.getState());
+
+    // don't blacklist chipnet servers or the known-good Selene-operated server
+    if (prevServer !== DEFAULT_ELECTRUM_SERVER && !isChipnet) {
+      server_blacklist.push(prevServer);
+    }
 
     let newServer = prevServer;
     while (server_blacklist.indexOf(newServer) !== -1) {
-      newServer =
-        electrum_servers[Math.floor(Math.random() * electrum_servers.length)];
+      newServer = isChipnet
+        ? chipnet_servers[Math.floor(Math.random() * chipnet_servers.length)]
+        : electrum_servers[Math.floor(Math.random() * electrum_servers.length)];
     }
 
     return newServer;

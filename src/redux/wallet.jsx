@@ -16,6 +16,7 @@ import { syncConnect, syncSubscribeAddress } from "@/redux/sync";
 
 import WalletService from "@/services/WalletService";
 import AddressManagerService from "@/services/AddressManagerService";
+import ElectrumService from "@/services/ElectrumService";
 
 import { formatSatoshis } from "@/util/sats";
 import showToast from "@/util/toast";
@@ -40,7 +41,7 @@ walletMiddleware.startListening({
     // connect to electrum
     const isChipnet = selectIsChipnet(listenerApi.getState());
     const server = isChipnet
-      ? "chipnet.bch.ninja"
+      ? ElectrumService().selectFallbackServer()
       : selectElectrumServer(listenerApi.getState());
 
     listenerApi.dispatch(
