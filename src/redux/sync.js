@@ -49,14 +49,14 @@ export const syncConnect = createAsyncThunk(
           )
         );
       } else {
+        const newServer = Electrum.selectFallbackServer(payload.server);
+        thunkApi.dispatch(syncConnect({ server: newServer, attempts: 0 }));
+
         const isChipnet = selectIsChipnet(thunkApi.getState());
         if (!isChipnet) {
-          const newServer = Electrum.selectFallbackServer(payload.server);
           thunkApi.dispatch(
             setPreference({ key: "electrumServer", value: newServer })
           );
-
-          thunkApi.dispatch(syncConnect({ server: newServer, attempts: 0 }));
         }
       }
     }

@@ -40,9 +40,12 @@ walletMiddleware.startListening({
     );
     // connect to electrum
     const isChipnet = selectIsChipnet(listenerApi.getState());
+    const Electrum = ElectrumService();
     const server = isChipnet
-      ? ElectrumService().selectFallbackServer()
+      ? Electrum.selectFallbackServer()
       : selectElectrumServer(listenerApi.getState());
+
+    console.log("walletBoot", server, isChipnet);
 
     listenerApi.dispatch(
       syncConnect({

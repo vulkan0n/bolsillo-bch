@@ -65,7 +65,7 @@ export default function ElectrumService() {
     // Also allows us to switch servers on the fly
     electrum = new ElectrumClient(
       "Selene.cash",
-      "1.5.1",
+      "1.4",
       server,
       ElectrumTransport.WSS.Port,
       ElectrumTransport.WSS.Scheme
@@ -235,17 +235,27 @@ export default function ElectrumService() {
     const isChipnet = selectIsChipnet(store.getState());
 
     // don't blacklist chipnet servers or the known-good Selene-operated server
-    if (prevServer !== DEFAULT_ELECTRUM_SERVER && !isChipnet) {
+    if (prevServer && prevServer !== DEFAULT_ELECTRUM_SERVER && !isChipnet) {
       server_blacklist.push(prevServer);
     }
 
-    let newServer = prevServer;
-    while (server_blacklist.indexOf(newServer) !== -1) {
-      newServer = isChipnet
+    const chooseRandomServer = () => {
+      return isChipnet
         ? chipnet_servers[Math.floor(Math.random() * chipnet_servers.length)]
         : electrum_servers[Math.floor(Math.random() * electrum_servers.length)];
+    };
+
+    let newServer = chooseRandomServer();
+    while (server_blacklist.indexOf(newServer) > -1) {
+      newServer = chooseRandomServer();
     }
 
+    console.log(
+      "selectFallbackServer",
+      newServer,
+      prevServer,
+      server_blacklist
+    );
     return newServer;
   }
 }
