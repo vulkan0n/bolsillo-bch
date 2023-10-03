@@ -20,8 +20,6 @@ export default function HdNodeService(wallet) {
   const { mnemonic, derivation, passphrase } = wallet;
   //console.log("HdNodeService", wallet_id, derivation, mnemonic);
 
-  const isChipnet = selectIsChipnet(store.getState());
-
   const seed = bip39.mnemonicToSeedSync(mnemonic, passphrase);
   const hdMaster = deriveHdPrivateNodeFromSeed(seed);
   const hdMain = deriveHdPath(hdMaster, `${derivation}/0`);
@@ -38,8 +36,7 @@ export default function HdNodeService(wallet) {
 
     const pubKey = secp256k1.derivePublicKeyCompressed(child.privateKey);
     const hash = ripemd160.hash(sha256.hash(pubKey));
-    const prefix = isChipnet ? "bchtest" : "bitcoincash";
-    const address = encodeCashAddress(prefix, "P2PKH", hash);
+    const address = encodeCashAddress(wallet.prefix, "P2PKH", hash);
 
     //console.log("generateAddress", index, address);
     return address;

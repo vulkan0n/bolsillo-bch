@@ -58,7 +58,7 @@ export default function WalletService() {
     const AddressManager = AddressManagerService(wallet);
     AddressManager.populateAddresses();
 
-    return wallet;
+    return { ...wallet, prefix: AddressManager.getPrefix() };
   }
 
   // ----------------------------

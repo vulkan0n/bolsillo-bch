@@ -34,12 +34,15 @@ export const walletBoot = createAction("wallet/boot", (wallet_id) => {
 walletMiddleware.startListening({
   actionCreator: walletBoot,
   effect: async (action, listenerApi) => {
+    const wallet = action.payload;
     //console.log("walletBoot", action.payload);
+
     listenerApi.dispatch(
-      setPreference({ key: "activeWalletId", value: action.payload.id })
+      setPreference({ key: "activeWalletId", value: wallet.id })
     );
     // connect to electrum
-    const isChipnet = selectIsChipnet(listenerApi.getState());
+    const isChipnet = wallet.prefix === "bchtest";
+
     const Electrum = ElectrumService();
     const server = isChipnet
       ? Electrum.selectFallbackServer()

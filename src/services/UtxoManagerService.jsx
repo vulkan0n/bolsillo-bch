@@ -59,6 +59,7 @@ export default function UxtoManagerService(wallet) {
           WHERE 
             balance >= "${targetAmount}"
             AND wallet_id="${wallet.id}"
+            AND prefix="${wallet.prefix}"
           ORDER BY balance ASC`
       )
     );

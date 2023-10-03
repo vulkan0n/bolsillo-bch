@@ -18,6 +18,7 @@ export default function AddressManagerService(wallet) {
   return {
     registerAddress,
     populateAddresses,
+    getPrefix,
     getAddress,
     getReceiveAddresses,
     getChangeAddresses,
@@ -87,6 +88,10 @@ export default function AddressManagerService(wallet) {
     }
 
     return generatedAddresses;
+  }
+
+  function getPrefix() {
+    return prefix;
   }
 
   function getAddress(address) {
