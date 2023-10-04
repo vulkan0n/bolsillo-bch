@@ -2,6 +2,8 @@ import * as bip39 from "bip39";
 import DatabaseService from "@/services/DatabaseService";
 import AddressManagerService from "@/services/AddressManagerService";
 import { DEFAULT_DERIVATION_PATH } from "@/util/crypto";
+import { store } from "@/redux";
+import { selectIsChipnet } from "@/redux/preferences";
 
 export default function WalletService() {
   const { db, resultToJson, saveDatabase } = DatabaseService();
@@ -54,6 +56,9 @@ export default function WalletService() {
         wallet = wallets.shift();
       }
     }
+
+    const isChipnet = selectIsChipnet(store.getState());
+    wallet.prefix = isChipnet ? "bchtest" : "bitcoincash";
 
     const AddressManager = AddressManagerService(wallet);
     AddressManager.populateAddresses();
