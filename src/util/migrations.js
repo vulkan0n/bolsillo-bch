@@ -4,7 +4,7 @@ import { DEFAULT_DERIVATION_PATH } from "@/util/crypto";
 // functions in this migrations will be executed sequentially,
 // starting with the function at index PRAGMA user_version
 // each entry should represent a new db version
-const migrations = [
+const legacy_migrations = [
   function migrate_v0() {
     const query = [];
 
@@ -207,15 +207,23 @@ const migrations = [
 
 // run_migrations: run all migrations in migrations array sequentially
 // Starts with index indicated in PRAGMA user_version
-export function run_migrations(db) {
+export function run_legacy_migrations(db) {
   const DB_VERSION = db.exec("PRAGMA user_version")[0].values[0][0];
-  console.log("DB_VERSION", DB_VERSION, migrations.length);
+  console.log("DB_VERSION", DB_VERSION, legacy_migrations.length);
   // db.run("PRAGMA user_version = 0;");
-  for (let version = DB_VERSION; version < migrations.length; version += 1) {
-    console.log("DB_MIGRATE", `${version}/${migrations.length}`, DB_VERSION);
+  for (
+    let version = DB_VERSION;
+    version < legacy_migrations.length;
+    version += 1
+  ) {
+    console.log(
+      "DB_MIGRATE",
+      `${version}/${legacy_migrations.length}`,
+      DB_VERSION
+    );
     try {
-      //console.log(migrations[version]());
-      db.run(migrations[version]());
+      //console.log(legacy_migrations[version]());
+      db.run(legacy_migrations[version]());
     } catch (e) {
       console.error(e);
     }

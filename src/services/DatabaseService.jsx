@@ -1,51 +1,84 @@
 import { Filesystem, Directory, Encoding } from "@capacitor/filesystem";
 import initSqlJs from "sql.js";
-import { run_migrations } from "@/util/migrations";
+import { run_legacy_migrations } from "@/util/migrations";
 
 // --------------------------------
-const SELENE_DB_FILE = "db/selene.db";
+const SELENE_LEGACY_DB_FILE = "db/selene.db";
 // --------------------------------
+
+/*
+ *
+ * [network/blocks]
+ * mainnet/blocks
+ * chipnet/blocks
+ * [network/wallet_id/entity]
+ * mainnet/1/transactions
+ * mainnet/1/addresses
+ * mainnet/1/utxos
+ * mainnet/1/history
+ */
 
 // Connect to SQLite Database
 // use top-level pointers to ensure db is only loaded into memory once
 const SQL = await initSqlJs({ locateFile: () => "/sql-wasm.wasm" });
-let db = null;
+const dbHandles = [];
 let flushPending = null;
 
-try {
-  // TODO: store mnemonics in a separate file so they can be encrypted
-  // and not persist in memory unless needed
+async function open_legacy() {
+  // run schema migrations
+  try {
+    // TODO: store mnemonics in a separate file so they can be encrypted
+    // and not persist in memory unless needed
 
-  // TODO: ensure in-memory DB size stays sane over time
-  // more testing needed but OOM error is a possible risk
-  // split DB into multiple files if needed
-  const dbFile = await Filesystem.readFile({
-    path: SELENE_DB_FILE,
-    directory: Directory.Library,
-    encoding: Encoding.UTF8,
-  });
-  db = new SQL.Database(dbFile.data.split(","));
-} catch (e) {
-  //console.warn("New Database File");
-  db = new SQL.Database();
-}
-
-// run schema migrations
-try {
-  run_migrations(db);
-} catch (e) {
-  console.error(e);
+    // TODO: ensure in-memory DB size stays sane over time
+    // more testing needed but OOM error is a possible risk
+    // split DB into multiple files if needed
+    const dbFile = await Filesystem.readFile({
+      path: SELENE_LEGACY_DB_FILE,
+      directory: Directory.Library,
+      encoding: Encoding.UTF8,
+    });
+    const db = new SQL.Database(dbFile.data.split(","));
+    run_legacy_migrations(db);
+  } catch (e) {
+    console.error(e);
+  }
 }
 
 // --------------------------------
 
 // DatabaseService: brokers interactions with raw SQLite database
 export default function DatabaseService() {
+  const db = open_legacy();
   return {
     db,
     resultToJson,
     saveDatabase,
+    open,
   };
+
+  async function open(dbName) {
+    let db = null;
+    try {
+      // TODO: store mnemonics in a separate file so they can be encrypted
+      // and not persist in memory unless needed
+
+      // TODO: ensure in-memory DB size stays sane over time
+      // more testing needed but OOM error is a possible risk
+      // split DB into multiple files if needed
+      const dbFile = await Filesystem.readFile({
+        path: dbName,
+        directory: Directory.Library,
+        encoding: Encoding.UTF8,
+      });
+      db = new SQL.Database(dbFile.data.split(","));
+    } catch (e) {
+      //console.warn("New Database File");
+      db = new SQL.Database();
+    }
+
+    return db;
+  }
 
   // resultToJson: turns SQLite result into a consumable object
   function resultToJson(result) {

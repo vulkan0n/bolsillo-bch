@@ -38,6 +38,7 @@ async function validatePreferences(preferences) {
     return false;
   }
 
+  // localCurrency must be in list of currencies
   if (
     !currencyList.find(
       (currency) => currency.currency === preferences.localCurrency
