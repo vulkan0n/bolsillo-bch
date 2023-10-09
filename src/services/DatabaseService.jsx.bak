@@ -22,6 +22,10 @@ import { store } from "@/redux";
 const SQL = await initSqlJs({ locateFile: () => "/sql-wasm.wasm" });
 let flushPending = null;
 
+const db = await open_legacy();
+
+// --------------------------------
+
 // DatabaseService: brokers interactions with raw SQLite database
 export default function DatabaseService() {
   const bchNetwork = selectBchNetwork(store.getState());
@@ -34,41 +38,57 @@ export default function DatabaseService() {
     getUtxoDatabase,
     getHistoryDatabase,
     getSettingsDatabase,
+    db,
     resultToJson,
     saveDatabase,
   };
 
   async function _dbOpen(filename) {
     try {
+    const dbFile = await Filesystem.readFile({
+      path: SELENE_LEGACY_DB_FILE,
+      directory: Directory.Library,
+      encoding: Encoding.UTF8,
+    });
+    const db = new SQL.Database(dbFile.data.split(","));
+    return db;
+    } catch (e) {
+      console.error(e);
+
+  }
+
+async function getSeleneDatabase() {
+  console.log("getSeleneDatabase");
+  // run schema migrations
+  try {
+    const SELENE_LEGACY_DB_FILE = "db/selene.db";
+    const SELENE_DB_FILE = "selene/selene.db";
+    const db = _dbOpen(SELENE_LEGACY_DB_FILE);
+    run_legacy_migrations(db);
+  } catch (e) {
+    console.error(e);
+    const db = new SQL.Database();
+    run_legacy_migrations(db);
+    return db;
+  }
+}
+
+  async function getSelene(dbName) {
+    try {
+      const filename = `${bchNetwork}/
+
       const dbFile = await Filesystem.readFile({
-        path: filename,
+        path: dbName,
         directory: Directory.Library,
         encoding: Encoding.UTF8,
       });
-      const db = new SQL.Database(dbFile.data.split(","));
-      return db;
+      db = new SQL.Database(dbFile.data.split(","));
     } catch (e) {
-      console.error(e);
-      const db = new SQL.Database();
-      return db;
+      //console.warn("New Database File");
+      db = new SQL.Database();
     }
-  }
 
-  async function getSeleneDatabase() {
-    console.log("getSeleneDatabase");
-    // run schema migrations
-    try {
-      const SELENE_LEGACY_DB_FILE = "db/selene.db";
-      const SELENE_DB_FILE = "selene/selene.db";
-      const db = _dbOpen(SELENE_LEGACY_DB_FILE);
-      run_legacy_migrations(db);
-      return db;
-    } catch (e) {
-      console.error(e);
-      const db = new SQL.Database();
-      run_legacy_migrations(db);
-      return db;
-    }
+    return db;
   }
 
   // resultToJson: turns SQLite result into a consumable object
@@ -119,20 +139,20 @@ export default function DatabaseService() {
 
   // saveDatabase: schedules a write to disk
   // sets a timeout to batch writes together
-  function saveDatabase(db, filename) {
+  function saveDatabase() {
     clearTimeout(flushPending);
 
     flushPending = setTimeout(async () => {
-      await _flushDatabase(db, filename);
-    }, 180);
+      await _flushDatabase();
+    }, 120);
   }
 
   // _flushDatabase [private]: writes database to disk
-  async function _flushDatabase(db, filename) {
+  async function _flushDatabase() {
     const data = db.export();
 
     const result = await Filesystem.writeFile({
-      path: filename,
+      path: SELENE_LEGACY_DB_FILE,
       data: data.toString(),
       directory: Directory.Library,
       encoding: Encoding.UTF8,
@@ -140,7 +160,7 @@ export default function DatabaseService() {
     });
 
     // eslint-disable-next-line no-console
-    console.log("flushDatabase", filename, result);
+    console.log("flushDatabase", result);
   }
 }
 

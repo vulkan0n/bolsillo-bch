@@ -6,7 +6,9 @@ import { store } from "@/redux";
 import { selectIsChipnet } from "@/redux/preferences";
 
 export default function WalletService() {
-  const { db, resultToJson, saveDatabase } = DatabaseService();
+  const { getSeleneDatabase, resultToJson, saveDatabase } = DatabaseService();
+
+  const db = getSeleneDatabase();
 
   return {
     getWallets,

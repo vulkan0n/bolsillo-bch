@@ -157,7 +157,12 @@ export const selectElectrumServer = createSelector(
   (preferences) => preferences.electrumServer
 );
 
-export const selectIsChipnet = createSelector(
+export const selectBchNetwork = createSelector(
   (state) => state.preferences,
-  (preferences) => preferences.bchNetwork === "chipnet"
+  (preferences) => preferences.bchNetwork
+);
+
+export const selectIsChipnet = createSelector(
+  (state) => selectBchNetwork(state),
+  (bchNetwork) => bchNetwork === "chipnet"
 );
