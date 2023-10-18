@@ -38,6 +38,7 @@
     "decimal.js": "^10.4.3",
     "electrum-cash": "^2.0.10",
     "graphql": "^16.8.0",
+    "js-logger": "^1.6.1",
     "luxon": "^3.4.3",
     "prop-types": "^15.8.1",
     "qr-scanner": "^1.4.2",

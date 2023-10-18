@@ -1,4 +1,5 @@
 // migrations.js: handle sqlite database schema updates
+import Logger from "js-logger";
 import { DEFAULT_DERIVATION_PATH } from "@/util/crypto";
 
 // functions in this migrations will be executed sequentially,
@@ -209,23 +210,15 @@ const migrations = [
 // Starts with index indicated in PRAGMA user_version
 export function run_migrations(db) {
   const DB_VERSION = db.exec("PRAGMA user_version")[0].values[0][0];
-  console.log("DB_VERSION", DB_VERSION, migrations.length);
+  Logger.log("DB_VERSION", DB_VERSION, migrations.length);
   // db.run("PRAGMA user_version = 0;");
-  for (
-    let version = DB_VERSION;
-    version < migrations.length;
-    version += 1
-  ) {
-    console.log(
-      "DB_MIGRATE",
-      `${version}/${migrations.length}`,
-      DB_VERSION
-    );
+  for (let version = DB_VERSION; version < migrations.length; version += 1) {
+    Logger.log("DB_MIGRATE", `${version}/${migrations.length}`, DB_VERSION);
     try {
-      //console.log(migrations[version]());
+      //Logger.log(migrations[version]());
       db.run(migrations[version]());
     } catch (e) {
-      console.error(e);
+      Logger.error(e);
     }
   }
 }

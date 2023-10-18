@@ -1,67 +1,69 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
+import Logger from "js-logger";
 import {
   createAction,
   createReducer,
   createSelector,
   createListenerMiddleware,
+  createAsyncThunk,
 } from "@reduxjs/toolkit";
 
-import Decimal from "decimal.js";
-import {
-  setPreference,
-  selectElectrumServer,
-  selectIsChipnet,
-} from "@/redux/preferences";
+import { setPreference, selectElectrumServer } from "@/redux/preferences";
 import { syncConnect, syncSubscribeAddress } from "@/redux/sync";
 
-import WalletService from "@/services/WalletService";
+import WalletManagerService from "@/services/WalletManagerService";
 import AddressManagerService from "@/services/AddressManagerService";
-import ElectrumService from "@/services/ElectrumService";
 
+/*
+import Decimal from "decimal.js";
 import { formatSatoshis } from "@/util/sats";
 import showToast from "@/util/toast";
 import { logos } from "@/util/logos";
+*/
 
 export const walletMiddleware = createListenerMiddleware();
 
 // --------------------------------
 
-// walletBoot : initialize/load wallet from preferences.activeWalletId
-export const walletBoot = createAction("wallet/boot", (wallet_id) => {
-  const wallet = WalletService().boot(wallet_id);
-  return { payload: wallet };
-});
-walletMiddleware.startListening({
-  actionCreator: walletBoot,
-  effect: async (action, listenerApi) => {
-    const wallet = action.payload;
-    //console.log("walletBoot", action.payload);
+// walletBoot: loads wallet by wallet_id and initializes Electrum connection
+export const walletBoot = createAsyncThunk(
+  "wallet/boot",
+  async (wallet_id: number, thunkApi) => {
+    // load Wallet from database
+    const wallet = WalletManagerService().boot(wallet_id);
+    Logger.log("walletBoot", wallet_id, wallet);
 
-    listenerApi.dispatch(
-      setPreference({ key: "activeWalletId", value: wallet.id })
+    thunkApi.dispatch(
+      setPreference({ key: "activeWalletId", value: wallet.id.toString() })
     );
-    // connect to electrum
-    const isChipnet = wallet.prefix === "bchtest";
 
-    const Electrum = ElectrumService();
-    const server = isChipnet
-      ? Electrum.selectFallbackServer()
-      : selectElectrumServer(listenerApi.getState());
-
-    console.log("walletBoot", server, isChipnet);
-
-    listenerApi.dispatch(
+    const server = selectElectrumServer(thunkApi.getState());
+    thunkApi.dispatch(
       syncConnect({
-        server,
         attempts: 0,
+        server,
       })
     );
-  },
+
+    return wallet;
+  }
+);
+
+// walletReload: reload currently active wallet from database
+export const walletReload = createAction("wallet/reload", () => {
+  return { payload: { id: 0, balance: 0 } };
 });
 
-export const walletReload = createAction("wallet/reload");
-
-export const walletBalanceUpdate = createAction("wallet/balanceUpdate");
+export const walletBalanceUpdate = createAction(
+  "wallet/balanceUpdate",
+  (payload) => ({
+    payload: {
+      previousBalance: payload.previousBalance,
+      currentBalance: payload.currentBalance,
+      isChange: payload.isChange,
+    },
+  })
+);
 walletMiddleware.startListening({
   actionCreator: walletBalanceUpdate,
   effect: async (action, listenerApi) => {
@@ -77,8 +79,9 @@ walletMiddleware.startListening({
     );
 
     // show receive notification
-    const { previousBalance, walletBalance, change } = action.payload;
-    if (walletBalance > previousBalance && change === 0) {
+    /*
+    const { previousBalance, walletBalance, isChange } = action.payload;
+    if (walletBalance > previousBalance && isChange === 0) {
       const difference = formatSatoshis(
         new Decimal(walletBalance).minus(previousBalance)
       );
@@ -95,28 +98,30 @@ walletMiddleware.startListening({
         description: `+${difference.bch}`,
       });
     }
+    */
   },
 });
 
 const initialState = {
-  id: null,
+  id: 0,
   balance: 0,
 };
 
 export const walletReducer = createReducer(initialState, (builder) => {
   builder
-    .addCase(walletBoot, (state, action) => {
+    .addCase(walletBoot.fulfilled, (state, action) => {
       return action.payload;
     })
     .addCase(walletBalanceUpdate, (state, action) => {
-      state.balance = action.payload.walletBalance;
+      state.balance = action.payload.currentBalance;
     })
-    .addCase(walletReload, (state) => {
-      return WalletService().getWalletById(state.id);
+    .addCase(walletReload, (state, action) => {
+      const wallet = WalletManagerService().getWalletById(state.id);
+      return { ...action.payload, ...wallet };
     });
 });
 
 export const selectActiveWallet = createSelector(
-  (state) => state,
-  (state) => state.wallet
+  (state) => state.wallet,
+  (wallet) => wallet
 );

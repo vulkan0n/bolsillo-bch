@@ -1,9 +1,7 @@
+import Logger from "js-logger";
 import { Filesystem, Directory, Encoding } from "@capacitor/filesystem";
 import initSqlJs from "sql.js";
-import { run_legacy_migrations } from "@/util/migrations";
-
-import { selectBchNetwork } from "@/redux/preferences";
-import { store } from "@/redux";
+import { run_migrations } from "@/util/migrations";
 
 /*
  * [network/servers]
@@ -17,59 +15,55 @@ import { store } from "@/redux";
  * mainnet/1/settings
  */
 
+const SELENE_LEGACY_DB_FILE = "db/selene.db";
+
 // Connect to SQLite Database
 // use top-level pointers to ensure db is only loaded into memory once
 const SQL = await initSqlJs({ locateFile: () => "/sql-wasm.wasm" });
 let flushPending = null;
 
+async function _dbOpen(filename) {
+  try {
+    const dbFile = await Filesystem.readFile({
+      path: filename,
+      directory: Directory.Library,
+      encoding: Encoding.UTF8,
+    });
+    const dbData = dbFile.data.toString();
+    const db = new SQL.Database(dbData.split(","));
+    return db;
+  } catch (e) {
+    Logger.error(e);
+    const db = new SQL.Database();
+    return db;
+  }
+}
+
+async function getWalletDatabase() {
+  Logger.debug("getWalletDatabase");
+  // run schema migrations
+  try {
+    //const SELENE_DB_FILE = "selene/selene.db";
+    const db = await _dbOpen(SELENE_LEGACY_DB_FILE);
+    run_migrations(db);
+    return db;
+  } catch (e) {
+    Logger.error(e);
+    const db = new SQL.Database();
+    run_migrations(db);
+    return db;
+  }
+}
+
+const db = await getWalletDatabase();
+
 // DatabaseService: brokers interactions with raw SQLite database
 export default function DatabaseService() {
-  const bchNetwork = selectBchNetwork(store.getState());
-
   return {
-    getSeleneDatabase,
-    getBlockDatabase,
-    getTransactionDatabase,
-    getAddressDatabase,
-    getUtxoDatabase,
-    getHistoryDatabase,
-    getSettingsDatabase,
+    db,
     resultToJson,
     saveDatabase,
   };
-
-  async function _dbOpen(filename) {
-    try {
-      const dbFile = await Filesystem.readFile({
-        path: filename,
-        directory: Directory.Library,
-        encoding: Encoding.UTF8,
-      });
-      const db = new SQL.Database(dbFile.data.split(","));
-      return db;
-    } catch (e) {
-      console.error(e);
-      const db = new SQL.Database();
-      return db;
-    }
-  }
-
-  async function getSeleneDatabase() {
-    console.log("getSeleneDatabase");
-    // run schema migrations
-    try {
-      const SELENE_LEGACY_DB_FILE = "db/selene.db";
-      const SELENE_DB_FILE = "selene/selene.db";
-      const db = _dbOpen(SELENE_LEGACY_DB_FILE);
-      run_legacy_migrations(db);
-      return db;
-    } catch (e) {
-      console.error(e);
-      const db = new SQL.Database();
-      run_legacy_migrations(db);
-      return db;
-    }
-  }
 
   // resultToJson: turns SQLite result into a consumable object
   function resultToJson(result) {
@@ -113,22 +107,23 @@ export default function DatabaseService() {
      * ]
      **/
 
-    //console.log("resultToJson", result, mapped, reduced);
+    //Logger.log("resultToJson", result, mapped, reduced);
     return reduced;
   }
 
   // saveDatabase: schedules a write to disk
   // sets a timeout to batch writes together
-  function saveDatabase(db, filename) {
+  function saveDatabase() {
+    const filename = SELENE_LEGACY_DB_FILE;
     clearTimeout(flushPending);
 
     flushPending = setTimeout(async () => {
-      await _flushDatabase(db, filename);
+      await _flushDatabase(filename);
     }, 180);
   }
 
   // _flushDatabase [private]: writes database to disk
-  async function _flushDatabase(db, filename) {
+  async function _flushDatabase(filename) {
     const data = db.export();
 
     const result = await Filesystem.writeFile({
@@ -139,8 +134,7 @@ export default function DatabaseService() {
       recursive: true,
     });
 
-    // eslint-disable-next-line no-console
-    console.log("flushDatabase", filename, result);
+    Logger.debug("flushDatabase", filename, result);
   }
 }
 

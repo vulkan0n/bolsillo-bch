@@ -17,17 +17,26 @@ const defaultPreferences = {
   hideAvailableBalance: "false",
   displayExchangeRate: "false",
   denominateSats: "false",
+  bchNetwork: "mainnet",
+  // --------
+  // TODO: make these per-wallet instead of global
   allowInstantPay: "false",
   instantPayThreshold: "25000000",
   qrCodeLogo: "Selene",
   qrCodeBackground: "#ffffff",
   qrCodeForeground: "#000000",
+  // --------
+  // TODO: should these go in db instead?
   electrumServer: electrum_servers[0],
   lastCheckIn: "",
-  bchNetwork: "mainnet",
+  // --------
 };
 
-async function validatePreferences(preferences) {
+type ValidPreferences = typeof defaultPreferences;
+
+// validatePreferences: ensures loaded preferences object won't lead to broken app state on load
+// returns true/false
+function validatePreferences(preferences: ValidPreferences): boolean {
   // activeWalletId must be integer
   if (Number.isNaN(Number.parseInt(preferences.activeWalletId, 10))) {
     return false;
@@ -50,8 +59,27 @@ async function validatePreferences(preferences) {
   return true;
 }
 
-async function retrievePreferences() {
+async function cleanupPreferences(): Promise<void[]> {
+  const knownKeys = (await Preferences.keys()).keys;
+  const validKeys = Object.keys(defaultPreferences);
+
+  const invalidKeys = knownKeys.filter(
+    (known) => validKeys.indexOf(known) === -1
+  );
+
+  return Promise.all(
+    invalidKeys.map(async (key) => {
+      await Preferences.remove({ key });
+    })
+  );
+}
+
+async function retrievePreferences(): Promise<ValidPreferences> {
   // Preferences.clear();
+
+  // remove any unused preferences
+  await cleanupPreferences();
+
   const keys = Object.keys(defaultPreferences);
 
   const preferences = (
@@ -68,7 +96,7 @@ async function retrievePreferences() {
     )
   ).reduce((acc, cur) => {
     return { ...acc, ...cur };
-  }, {});
+  }, {}) as ValidPreferences;
 
   const isValidPreferences = await validatePreferences(preferences);
   if (!isValidPreferences) {
@@ -83,15 +111,13 @@ const initialState = await retrievePreferences();
 
 export const setPreference = createAsyncThunk(
   "preferences/set",
-  async (payload) => {
-    const sanitizedPayload = {
-      key: payload.key,
-      value: payload.value.toString(),
-    };
-    await Preferences.set(sanitizedPayload);
+  async (payload: { key: string; value: string }) => {
+    await Preferences.set(payload);
+
+    // ensure redux state stays consistent with device state
     const result = {
-      key: sanitizedPayload.key,
-      value: (await Preferences.get({ key: sanitizedPayload.key })).value,
+      key: payload.key,
+      value: (await Preferences.get({ key: payload.key })).value,
     };
 
     return result;

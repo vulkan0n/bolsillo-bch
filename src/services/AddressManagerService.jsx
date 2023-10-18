@@ -195,16 +195,22 @@ export default function AddressManagerService(wallet) {
       `UPDATE addresses SET balance="${balance}" WHERE address="${address}";`
     );
 
-    const walletBalance = resultToJson(
+    const currentBalance = resultToJson(
       db.exec(`SELECT balance FROM wallets WHERE id="${wallet.id}"`)
     )[0].balance;
 
-    const { change } = resultToJson(
+    const change = resultToJson(
       db.exec(`SELECT change FROM addresses WHERE address="${address}";`)
-    )[0];
+    )[0].change;
+
+    const isChange = Number.parseInt(change, 10) !== 0;
 
     saveDatabase();
-    return { previousBalance, walletBalance, change };
+    return {
+      previousBalance,
+      currentBalance,
+      isChange,
+    };
   }
 
   function getAddressTransactions(address) {

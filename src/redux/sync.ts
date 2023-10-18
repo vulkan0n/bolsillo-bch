@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
+import Logger from "js-logger";
 import {
   createAction,
   createReducer,
@@ -33,41 +34,43 @@ export const syncMiddleware = createListenerMiddleware();
 // syncConnect: request/retry electrum connection
 export const syncConnect = createAsyncThunk(
   "sync/connect",
-  async (payload, thunkApi) => {
-    console.log("sync/connect", payload);
+  async (payload: { attempts: number; server: string }, thunkApi) => {
+    Logger.log("sync/connect", payload);
     try {
+      // attempt connection
       await Electrum.connect(payload.server);
     } catch (e) {
       // if connection fails, destroy the client and try again
       await Electrum.disconnect(true);
 
-      if (payload.attempts <= 1) {
-        setTimeout(() =>
-          thunkApi.dispatch(
-            syncConnect({ ...payload, attempts: payload.attempts + 1 }),
-            Math.min(1000 * payload.attempts * 2, 10 * 1000)
-          )
+      // 3 attempts, over 12 seconds total, per server
+      if (payload.attempts < 2) {
+        setTimeout(
+          () =>
+            thunkApi.dispatch(
+              syncConnect({ ...payload, attempts: payload.attempts + 1 })
+            ),
+          Math.min(1000 * (payload.attempts + 1) * 2, 10 * 1000)
         );
       } else {
+        // try a different server
         const newServer = Electrum.selectFallbackServer(payload.server);
         thunkApi.dispatch(syncConnect({ server: newServer, attempts: 0 }));
 
-        const isChipnet = selectIsChipnet(thunkApi.getState());
-        if (!isChipnet) {
-          thunkApi.dispatch(
-            setPreference({ key: "electrumServer", value: newServer })
-          );
-        }
+        thunkApi.dispatch(
+          setPreference({ key: "electrumServer", value: newServer })
+        );
       }
     }
   }
 );
 
+// syncReconnect: force disconnect and attempt fresh connection to server
 export const syncReconnect = createAsyncThunk(
   "sync/reconnect",
-  async (server, thunkApi) => {
+  async (server: string, thunkApi) => {
     await Electrum.disconnect(true);
-    thunkApi.dispatch(syncConnect({ server }));
+    thunkApi.dispatch(syncConnect({ attempts: 0, server }));
   }
 );
 
@@ -153,7 +156,7 @@ syncMiddleware.startListening({
     const AddressManager = AddressManagerService(wallet);
     if (AddressManager.updateAddressState(address, addressState)) {
       // if state updated, get utxos for address
-      // console.log("address state changed for", address);
+      // Logger.log("address state changed for", address);
       listenerApi.dispatch(syncAddressUtxos(address));
     }
   },
@@ -276,7 +279,7 @@ export const syncBlock = createAsyncThunk("sync/block", async (height) => {
     block = Blockchain.getBlockByHeight(height);
   }
 
-  // console.log("sync/block", block);
+  // Logger.log("sync/block", block);
   return block;
 });
 
@@ -286,7 +289,7 @@ syncMiddleware.startListening({
   actionCreator: syncChaintip,
   effect: async (action, listenerApi) => {
     const chaintip = action.payload;
-    // console.log("sync/chaintip", chaintip);
+    // Logger.log("sync/chaintip", chaintip);
     listenerApi.dispatch(syncBlock(chaintip.height));
     listenerApi.dispatch(fetchExchangeRates());
   },
