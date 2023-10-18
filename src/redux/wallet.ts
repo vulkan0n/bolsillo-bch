@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
 import Logger from "js-logger";
+import { SplashScreen } from "@capacitor/splash-screen";
 import {
   createAction,
   createReducer,
@@ -44,6 +45,8 @@ export const walletBoot = createAsyncThunk(
         server,
       })
     );
+
+    await SplashScreen.hide();
 
     return wallet;
   }
