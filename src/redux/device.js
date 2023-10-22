@@ -70,7 +70,7 @@ async function initializeDevice() {
       store.dispatch(setKeyboardIsOpen(true))
     );
 
-    Keyboard.addListener("keyboardDidHide", () =>
+    Keyboard.addListener("keyboardWillHide", () =>
       store.dispatch(setKeyboardIsOpen(false))
     );
   }
