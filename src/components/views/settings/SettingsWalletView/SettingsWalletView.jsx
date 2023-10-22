@@ -25,7 +25,7 @@ import { syncReconnect } from "@/redux/sync";
 
 import ViewHeader from "@/layout/ViewHeader";
 
-import WalletService from "@/services/WalletService";
+import WalletManagerService from "@/services/WalletManagerService";
 
 import KeyWarning from "@/atoms/KeyWarning/KeyWarning";
 import Accordion from "@/atoms/Accordion";
@@ -46,7 +46,7 @@ export default function SettingsWalletView() {
 
   const { shouldPreferLocalCurrency } = useSelector(selectCurrencySettings);
 
-  const WalletManager = WalletService();
+  const WalletManager = WalletManagerService();
   const wallet = WalletManager.getWalletById(wallet_id);
 
   const shouldShowAdvancedOptions =

@@ -132,12 +132,12 @@ export const preferencesReducer = createReducer(initialState, (builder) => {
 
 export const selectPreferences = createSelector(
   (state) => state,
-  (state) => state.preferences
+  (state): ValidPreferences => state.preferences
 );
 
 export const selectActiveWalletId = createSelector(
   (state) => state,
-  (state) => state.preferences.activeWalletId
+  (state): number => Number.parseInt(state.preferences.activeWalletId, 10)
 );
 
 export const selectCurrencySettings = createSelector(
@@ -153,7 +153,8 @@ export const selectCurrencySettings = createSelector(
 // TODO: bits, mBCH
 export const selectDenomination = createSelector(
   (state) => state.preferences,
-  (preferences) => (preferences.denominateSats === "true" ? "sats" : "bch")
+  (preferences): string =>
+    preferences.denominateSats === "true" ? "sats" : "bch"
 );
 
 export const selectInstantPaySettings = createSelector(
@@ -175,20 +176,20 @@ export const selectQrCodeSettings = createSelector(
 
 export const selectLanguageCode = createSelector(
   (state) => state.preferences,
-  (preferences) => preferences.languageCode
+  (preferences): string => preferences.languageCode
 );
 
 export const selectElectrumServer = createSelector(
   (state) => state.preferences,
-  (preferences) => preferences.electrumServer
+  (preferences): string => preferences.electrumServer
 );
 
 export const selectBchNetwork = createSelector(
   (state) => state.preferences,
-  (preferences) => preferences.bchNetwork
+  (preferences): string => preferences.bchNetwork
 );
 
 export const selectIsChipnet = createSelector(
   (state) => selectBchNetwork(state),
-  (bchNetwork) => bchNetwork === "chipnet"
+  (bchNetwork): boolean => bchNetwork === "chipnet"
 );

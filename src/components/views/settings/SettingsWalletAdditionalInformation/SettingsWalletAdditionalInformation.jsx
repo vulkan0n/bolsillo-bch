@@ -19,7 +19,7 @@ import {
   encodeHdPublicKey,
 } from "@bitauth/libauth";
 
-import WalletService from "@/services/WalletService";
+import WalletManagerService from "@/services/WalletManagerService";
 
 import ViewHeader from "@/layout/ViewHeader";
 import Accordion from "@/atoms/Accordion";
@@ -36,7 +36,7 @@ export default function SettingsWalletAdditionalInformation() {
   const [isShowXpub, setIsShowXpub] = useState(false);
   const [isShowxPrv, setIsShowxPrv] = useState(false);
 
-  const WalletManager = WalletService();
+  const WalletManager = WalletManagerService();
   const wallet = WalletManager.getWalletById(wallet_id);
 
   const derivationPath = wallet.derivation;

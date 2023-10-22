@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { ImportOutlined } from "@ant-design/icons";
 import * as bip39 from "bip39";
 import Accordion from "@/components/atoms/Accordion";
-import WalletService from "@/services/WalletService";
+import WalletManagerService from "@/services/WalletManagerService";
 import { translate } from "@/util/translations";
 import translations from "./translations";
 
@@ -47,7 +47,7 @@ export default function SettingsWalletWizardImport() {
 
     if (isValidMnemonic) {
       try {
-        const wallet = WalletService().importWallet(
+        const wallet = WalletManagerService().importWallet(
           trimmedInput,
           passphraseInput,
           derivationPath

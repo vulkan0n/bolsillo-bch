@@ -1,5 +1,4 @@
 import { sha256 } from "@bitauth/libauth";
-import WalletService from "@/services/WalletService";
 import DatabaseService from "@/services/DatabaseService";
 import HdNodeService from "@/services/HdNodeService";
 import { binToHex } from "@/util/hex";

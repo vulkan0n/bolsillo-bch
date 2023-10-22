@@ -12,10 +12,10 @@ import { translate } from "@/util/translations";
 import translations from "./SettingsViewTranslations";
 
 import Accordion from "@/atoms/Accordion";
-import WalletService from "@/services/WalletService";
+import WalletManagerService from "@/services/WalletManagerService";
 
 export default function WalletSettings() {
-  const walletList = new WalletService().getWallets();
+  const walletList = WalletManagerService().getWallets();
   const activeWalletId = useSelector(selectActiveWalletId);
 
   return (
@@ -33,7 +33,7 @@ export default function WalletSettings() {
           to={`/settings/wallet/${w.id}`}
           className="w-full block p-2"
         >
-          {w.id.toString() === activeWalletId && (
+          {w.id === activeWalletId && (
             <CheckCircleOutlined className="text-xl mr-1 text-secondary" />
           )}
           {w.name}
