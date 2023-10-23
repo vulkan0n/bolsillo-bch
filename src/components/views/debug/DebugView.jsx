@@ -1,17 +1,23 @@
 import { useDispatch, useSelector } from "react-redux";
 import { BugOutlined, ExperimentOutlined } from "@ant-design/icons";
-import { setPreference, selectIsChipnet } from "@/redux/preferences";
+import {
+  setPreference,
+  selectIsChipnet,
+  selectActiveWalletId,
+} from "@/redux/preferences";
+import { walletBoot } from "@/redux/wallet";
 import ViewHeader from "@/layout/ViewHeader";
 import Accordion from "@/atoms/Accordion";
 
 export default function DebugView() {
   const dispatch = useDispatch();
   const isChipnet = useSelector(selectIsChipnet);
+  const wallet_id = useSelector(selectActiveWalletId);
 
   const handleIsChipnet = (event) => {
     const newNetwork = event.target.checked ? "chipnet" : "mainnet";
     dispatch(setPreference({ key: "bchNetwork", value: newNetwork }));
-    window.location.reload();
+    dispatch(walletBoot({ wallet_id, network: newNetwork }));
   };
 
   return (

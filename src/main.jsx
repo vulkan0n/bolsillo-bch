@@ -6,6 +6,7 @@ import {
   Navigate,
 } from "react-router-dom";
 
+import Logger from "js-logger";
 import { Toaster } from "react-hot-toast";
 
 import { Provider } from "react-redux";
@@ -40,6 +41,9 @@ import SettingsWalletAdditionalInformation from "@/views/settings/SettingsWallet
 
 import CreditsView from "@/views/credits/CreditsView";
 import DebugView from "@/views/debug/DebugView";
+
+// eslint-disable-next-line react-hooks/rules-of-hooks
+Logger.useDefaults();
 
 export const routes = [
   {

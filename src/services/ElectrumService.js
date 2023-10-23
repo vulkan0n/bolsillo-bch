@@ -1,4 +1,4 @@
-/* eslint-disable no-console */
+import Logger from "js-logger";
 import { ElectrumClient, ElectrumTransport } from "electrum-cash";
 
 import { App } from "@capacitor/app";
@@ -58,7 +58,7 @@ export default function ElectrumService() {
       // disconnect(force=true) cleans up all listeners and timeouts
       await electrum.disconnect(true);
     }
-    console.log("Electrum: Connecting to", server);
+    Logger.log("Electrum: Connecting to", server);
 
     // Create a new ElectrumClient every time
     // This avoids memory leaks from EventEmitter
@@ -73,12 +73,12 @@ export default function ElectrumService() {
 
     // need to establish listeners every time we recreate the ElectrumClient
     electrum.addListener("connected", () => {
-      console.log("ELECTRUM CONNECTED");
+      Logger.log("ELECTRUM CONNECTED");
       store.dispatch(syncConnectionUp());
     });
 
     electrum.addListener("disconnected", () => {
-      console.log("ELECTRUM DISCONNECTED");
+      Logger.log("ELECTRUM DISCONNECTED");
       store.dispatch(syncConnectionDown({ server }));
     });
 
@@ -120,7 +120,7 @@ export default function ElectrumService() {
       return false;
     } catch (e) {
       // throws if electrum is disconnected
-      console.error(e);
+      Logger.error(e);
       return false;
     }
   }
@@ -210,7 +210,7 @@ export default function ElectrumService() {
       checkpoint_height
     );
 
-    //console.log("requestBlock", header, height);
+    //Logger.log("requestBlock", header, height);
     return header;
   }
 
@@ -220,7 +220,7 @@ export default function ElectrumService() {
       tx_hex
     );
 
-    //console.log("broadcastTransaction", tx_hash, tx_hex);
+    //Logger.log("broadcastTransaction", tx_hash, tx_hex);
     return tx_hash;
   }
 
@@ -250,11 +250,12 @@ export default function ElectrumService() {
       newServer = chooseRandomServer();
     }
 
-    console.log(
+    Logger.log(
       "selectFallbackServer",
       newServer,
       prevServer,
-      server_blacklist
+      server_blacklist,
+      isChipnet
     );
     return newServer;
   }

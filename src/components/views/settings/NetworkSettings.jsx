@@ -1,4 +1,5 @@
 import { useState, useContext } from "react";
+import { useSelector } from "react-redux";
 import {
   PlusCircleFilled,
   ApiOutlined,
@@ -6,6 +7,7 @@ import {
 } from "@ant-design/icons";
 
 import { syncReconnect } from "@/redux/sync";
+import { selectIsChipnet } from "@/redux/preferences";
 
 import { translate } from "@/util/translations";
 import translations from "./SettingsViewTranslations";
@@ -36,6 +38,8 @@ export default function NetworkSettings() {
     handleElectrumServerChoice(electrum_servers[0]);
   };
 
+  const isChipnet = useSelector(selectIsChipnet);
+
   return (
     <Accordion icon={ApiOutlined} title={translate(translations.network)}>
       <Accordion.Child
@@ -44,11 +48,12 @@ export default function NetworkSettings() {
       >
         <div className="flex">
           <select
-            className="p-2 bg-white rounded h-10 w-40 flex-1"
+            className="p-2 bg-white rounded h-10 w-40 flex-1 disabled:bg-zinc-200 disabled:text-zinc-400"
             value={preferences.electrumServer || ""}
             onChange={(event) => {
               handleElectrumServerChoice(event.target.value);
             }}
+            disabled={isChipnet}
           >
             {electrum_servers.map((server) => (
               <option key={server} value={server}>
@@ -56,12 +61,14 @@ export default function NetworkSettings() {
               </option>
             ))}
           </select>
-          <button
-            type="button"
-            onClick={() => setShouldShowElectrumServerInput(true)}
-          >
-            <PlusCircleFilled className="ml-2 text-2xl" />
-          </button>
+          {!isChipnet && (
+            <button
+              type="button"
+              onClick={() => setShouldShowElectrumServerInput(true)}
+            >
+              <PlusCircleFilled className="ml-2 text-2xl" />
+            </button>
+          )}
         </div>
       </Accordion.Child>
       {shouldShowElectrumServerInput && (

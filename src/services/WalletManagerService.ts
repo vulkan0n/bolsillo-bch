@@ -2,9 +2,13 @@ import Logger from "js-logger";
 import * as bip39 from "bip39";
 import DatabaseService from "@/services/DatabaseService";
 import AddressManagerService from "@/services/AddressManagerService";
-import { ValidDerivationPath, DEFAULT_DERIVATION_PATH } from "@/util/crypto";
+import {
+  ValidDerivationPath,
+  DEFAULT_DERIVATION_PATH,
+  ValidBchNetwork,
+} from "@/util/crypto";
 
-export interface Wallet {
+export interface WalletEntity {
   id: number;
   name: string;
   mnemonic: string;
@@ -36,14 +40,14 @@ export default function WalletManagerService() {
   // ----------------------------
 
   // getWallets: return a list of all wallets in the database
-  function getWallets(): Wallet[] {
+  function getWallets(): WalletEntity[] {
     const result = resultToJson(db.exec("SELECT * FROM wallets"));
     Logger.debug("getWallets", result);
     return result;
   }
 
   // getWalletById: get a consumable Wallet object from the database
-  function getWalletById(id: number): Wallet | null {
+  function getWalletById(id: number): WalletEntity | null {
     const result = resultToJson(
       db.exec(`SELECT * FROM wallets WHERE id="${id}"`)
     );
@@ -54,20 +58,19 @@ export default function WalletManagerService() {
   // ----------------------------
 
   // boot: load a wallet, create a wallet if none exist
-  function boot(wallet_id: number): Wallet {
+  function boot(wallet_id: number, network: ValidBchNetwork): WalletEntity {
     let wallet = getWalletById(wallet_id);
 
     // requested wallet doesn't exist
     if (wallet === null) {
       const wallets = getWallets();
       // attempt to return lowest-index wallet instead, create a new wallet if none exist
-      const attemptWallet = wallets.shift() || createWallet("My Selene Wallet");
+      const attemptWallet: WalletEntity =
+        wallets.shift() || createWallet("My Selene Wallet");
       wallet = attemptWallet;
     }
 
-    // TODO: Chipnet
-    const network = "mainnet";
-    wallet.prefix = network;
+    wallet.prefix = network === "mainnet" ? "bitcoincash" : "bchtest";
 
     const AddressManager = AddressManagerService(wallet);
     AddressManager.populateAddresses();
@@ -83,7 +86,7 @@ export default function WalletManagerService() {
     name: string = "New Wallet",
     passphrase: string = "",
     derivation: ValidDerivationPath = DEFAULT_DERIVATION_PATH
-  ): Wallet {
+  ): WalletEntity {
     const mnemonic = bip39.generateMnemonic();
 
     const result = resultToJson(
@@ -109,7 +112,7 @@ export default function WalletManagerService() {
     mnemonic: string,
     passphrase: string = "",
     derivation: ValidDerivationPath = DEFAULT_DERIVATION_PATH
-  ): Wallet {
+  ): WalletEntity {
     const result = resultToJson(
       db.exec(
         `INSERT INTO wallets (

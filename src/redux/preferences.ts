@@ -5,9 +5,11 @@ import {
   createAsyncThunk,
 } from "@reduxjs/toolkit";
 
+import { RootState } from "@/redux";
 import { electrum_servers } from "@/util/electrum_servers";
 import { languageList } from "@/util/translations";
 import { currencyList } from "@/util/currency";
+import { ValidBchNetwork } from "@/util/crypto";
 
 const defaultPreferences = {
   activeWalletId: "1",
@@ -107,7 +109,7 @@ async function retrievePreferences(): Promise<ValidPreferences> {
   return preferences;
 }
 
-const initialState = await retrievePreferences();
+const initialState: ValidPreferences = await retrievePreferences();
 
 export const setPreference = createAsyncThunk(
   "preferences/set",
@@ -131,17 +133,17 @@ export const preferencesReducer = createReducer(initialState, (builder) => {
 });
 
 export const selectPreferences = createSelector(
-  (state) => state,
+  (state: RootState) => state,
   (state): ValidPreferences => state.preferences
 );
 
 export const selectActiveWalletId = createSelector(
-  (state) => state,
+  (state: RootState) => state,
   (state): number => Number.parseInt(state.preferences.activeWalletId, 10)
 );
 
 export const selectCurrencySettings = createSelector(
-  (state) => state.preferences,
+  (state: RootState) => state.preferences,
   (preferences) => ({
     localCurrency: preferences.localCurrency,
     shouldPreferLocalCurrency: preferences.preferLocalCurrency === "true",
@@ -152,13 +154,13 @@ export const selectCurrencySettings = createSelector(
 
 // TODO: bits, mBCH
 export const selectDenomination = createSelector(
-  (state) => state.preferences,
+  (state: RootState) => state.preferences,
   (preferences): string =>
     preferences.denominateSats === "true" ? "sats" : "bch"
 );
 
 export const selectInstantPaySettings = createSelector(
-  (state) => state.preferences,
+  (state: RootState) => state.preferences,
   (preferences) => ({
     isInstantPayEnabled: preferences.allowInstantPay === "true",
     instantPayThreshold: preferences.instantPayThreshold,
@@ -166,7 +168,7 @@ export const selectInstantPaySettings = createSelector(
 );
 
 export const selectQrCodeSettings = createSelector(
-  (state) => state.preferences,
+  (state: RootState) => state.preferences,
   (preferences) => ({
     foreground: preferences.qrCodeForeground,
     background: preferences.qrCodeBackground,
@@ -175,21 +177,21 @@ export const selectQrCodeSettings = createSelector(
 );
 
 export const selectLanguageCode = createSelector(
-  (state) => state.preferences,
+  (state: RootState) => state.preferences,
   (preferences): string => preferences.languageCode
 );
 
 export const selectElectrumServer = createSelector(
-  (state) => state.preferences,
+  (state: RootState) => state.preferences,
   (preferences): string => preferences.electrumServer
 );
 
 export const selectBchNetwork = createSelector(
-  (state) => state.preferences,
-  (preferences): string => preferences.bchNetwork
+  (state: RootState) => state.preferences,
+  (preferences): ValidBchNetwork => preferences.bchNetwork
 );
 
 export const selectIsChipnet = createSelector(
-  (state) => selectBchNetwork(state),
+  (state: RootState) => selectBchNetwork(state),
   (bchNetwork): boolean => bchNetwork === "chipnet"
 );

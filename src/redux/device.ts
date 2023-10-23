@@ -1,44 +1,65 @@
 import { createAction, createReducer, createSelector } from "@reduxjs/toolkit";
 import { App } from "@capacitor/app";
-import { Device } from "@capacitor/device";
+import { Device, DeviceInfo as CapacitorDeviceInfo } from "@capacitor/device";
 import { Keyboard } from "@capacitor/keyboard";
-import { store } from "@/redux";
+import { store, RootState } from "@/redux";
+
+type DeviceInfo = CapacitorDeviceInfo & {
+  deviceId: string;
+  languageCode: string;
+};
+
+interface DeviceState {
+  scanner: {
+    isScanning: boolean;
+  };
+  keyboard: {
+    isOpen: boolean;
+  };
+  deviceInfo: DeviceInfo;
+  locale: string;
+}
 
 export const setScannerIsScanning = createAction(
-  "scanner/setScannerIsScanning"
+  "scanner/setScannerIsScanning",
+  (isScanning: boolean) => ({ payload: isScanning })
 );
-export const setKeyboardIsOpen = createAction("scanner/setKeyboardIsOpen");
+export const setKeyboardIsOpen = createAction(
+  "scanner/setKeyboardIsOpen",
+  (isOpen: boolean) => ({ payload: isOpen })
+);
 
 export const selectScannerIsScanning = createSelector(
-  (state) => state.device.scanner,
-  (scanner) => scanner.isScanning
+  (state: RootState) => state.device.scanner,
+  (scanner): boolean => scanner.isScanning
 );
 
 export const selectKeyboardIsOpen = createSelector(
-  (state) => state.device.keyboard,
-  (keyboard) => keyboard.isOpen
+  (state: RootState) => state.device.keyboard,
+  (keyboard): boolean => keyboard.isOpen
 );
 
 export const selectDeviceInfo = createSelector(
-  (state) => state.device.deviceInfo,
-  (deviceInfo) => deviceInfo
+  (state: RootState) => state.device.deviceInfo,
+  (deviceInfo): DeviceInfo => deviceInfo
 );
 
 export const selectLocale = createSelector(
-  (state) => state.device.locale,
-  (locale) => locale
+  (state: RootState) => state.device.locale,
+  (locale): string => locale
 );
 
-async function initializeDevice() {
-  const deviceState = {
+async function initializeDevice(): Promise<DeviceState> {
+  const deviceState: DeviceState = {
     scanner: { isScanning: false },
     keyboard: { isOpen: false },
+    deviceInfo: {
+      ...(await Device.getInfo()),
+      deviceId: (await Device.getId()).identifier,
+      languageCode: (await Device.getLanguageCode()).value,
+    },
+    locale: (await Device.getLanguageTag()).value,
   };
-
-  deviceState.deviceInfo = await Device.getInfo();
-  deviceState.deviceInfo.deviceId = await Device.getId();
-  deviceState.deviceInfo.languageCode = (await Device.getLanguageCode()).value;
-  deviceState.locale = (await Device.getLanguageTag()).value;
 
   if (deviceState.deviceInfo.platform !== "web") {
     App.addListener("backButton", (canGoBack) => {
@@ -78,7 +99,7 @@ async function initializeDevice() {
   return deviceState;
 }
 
-const initialState = await initializeDevice();
+const initialState: DeviceState = await initializeDevice();
 
 export const deviceReducer = createReducer(initialState, (builder) => {
   builder

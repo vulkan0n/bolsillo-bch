@@ -12,8 +12,15 @@ import {
 import { setPreference, selectElectrumServer } from "@/redux/preferences";
 import { syncConnect, syncSubscribeAddress } from "@/redux/sync";
 
-import WalletManagerService from "@/services/WalletManagerService";
-import AddressManagerService from "@/services/AddressManagerService";
+import WalletManagerService, {
+  WalletEntity,
+} from "@/services/WalletManagerService";
+import AddressManagerService, {
+  AddressEntity,
+} from "@/services/AddressManagerService";
+import ElectrumService from "@/services/ElectrumService";
+
+import { ValidBchNetwork } from "@/util/crypto";
 
 /*
 import Decimal from "decimal.js";
@@ -29,16 +36,28 @@ export const walletMiddleware = createListenerMiddleware();
 // walletBoot: loads wallet by wallet_id and initializes Electrum connection
 export const walletBoot = createAsyncThunk(
   "wallet/boot",
-  async (wallet_id: number, thunkApi) => {
+  async (
+    payload: {
+      wallet_id: number;
+      network: ValidBchNetwork;
+    },
+    thunkApi
+  ) => {
+    const { wallet_id, network } = payload;
     // load Wallet from database
-    const wallet = WalletManagerService().boot(wallet_id);
-    Logger.log("walletBoot", wallet_id, wallet);
+    const wallet = WalletManagerService().boot(wallet_id, network);
+    console.log("walletBoot", wallet_id, wallet, network);
 
     thunkApi.dispatch(
       setPreference({ key: "activeWalletId", value: wallet.id.toString() })
     );
 
-    const server = selectElectrumServer(thunkApi.getState());
+    const isChipnet = network === "chipnet";
+
+    const server = isChipnet
+      ? ElectrumService().selectFallbackServer(isChipnet)
+      : selectElectrumServer(thunkApi.getState());
+
     thunkApi.dispatch(
       syncConnect({
         attempts: 0,
@@ -126,5 +145,5 @@ export const walletReducer = createReducer(initialState, (builder) => {
 
 export const selectActiveWallet = createSelector(
   (state) => state.wallet,
-  (wallet) => wallet
+  (wallet): WalletEntity => wallet
 );

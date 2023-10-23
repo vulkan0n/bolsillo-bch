@@ -1,5 +1,9 @@
 import { configureStore } from "@reduxjs/toolkit";
-import { preferencesReducer, selectActiveWalletId } from "./preferences";
+import {
+  preferencesReducer,
+  selectActiveWalletId,
+  selectBchNetwork,
+} from "./preferences";
 import { walletReducer, walletMiddleware, walletBoot } from "./wallet";
 import { syncReducer, syncMiddleware } from "./sync";
 import { txReducer } from "./transactions";
@@ -22,7 +26,14 @@ export const store = configureStore({
       .prepend(syncMiddleware.middleware),
 });
 
+export type RootState = ReturnType<typeof store.getState>;
+export type AppDispatch = typeof store.dispatch;
+
 // Run actions needed to fire on app load
-store.dispatch(walletBoot(selectActiveWalletId(store.getState())));
+const bootPayload = {
+  wallet_id: selectActiveWalletId(store.getState()),
+  network: selectBchNetwork(store.getState()),
+};
+store.dispatch(walletBoot(bootPayload));
 store.dispatch(fetchExchangeRates(store.getState()));
 store.dispatch(triggerCheckIn());

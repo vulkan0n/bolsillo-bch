@@ -2,17 +2,22 @@ import { sha256 } from "@bitauth/libauth";
 import DatabaseService from "@/services/DatabaseService";
 import HdNodeService from "@/services/HdNodeService";
 import { binToHex } from "@/util/hex";
-import { store } from "@/redux";
-import { selectIsChipnet } from "@/redux/preferences";
+import { WalletEntity } from "@/services/WalletManagerService";
+
+export interface AddressEntity {
+  address: string;
+  wallet_id: number;
+  hd_index: number;
+  balance: number;
+  change: number;
+  state: string;
+}
 
 // AddressManagerService: handles most address-related operations
-export default function AddressManagerService(wallet) {
+export default function AddressManagerService(wallet: WalletEntity) {
   //console.log("AddressManagerService", wallet);
 
   const { db, resultToJson, saveDatabase } = DatabaseService();
-
-  const isChipnet = selectIsChipnet(store.getState());
-  const prefix = isChipnet ? "bchtest" : "bitcoincash";
 
   return {
     registerAddress,
@@ -33,7 +38,7 @@ export default function AddressManagerService(wallet) {
   // --------------------------------
 
   // register an address into the database
-  function registerAddress(address, hd_index, change = 0) {
+  function registerAddress(address: string, hd_index: number, change: number = 0) {
     //console.log(`registerAddress${change ? " change" : ""}`, hd_index, address);
 
     db.run(
@@ -49,7 +54,7 @@ export default function AddressManagerService(wallet) {
         "${wallet.id}", 
         "${hd_index}",
         "${change}",
-        "${prefix}"
+        "${wallet.prefix}"
       );`
     );
 
@@ -59,16 +64,16 @@ export default function AddressManagerService(wallet) {
   // populateAddresses: generate addresses such that
   // we always have ADDRESS_GAP_LIMIT unused addresses
   // returns an array of generated addresses
-  function populateAddresses() {
+  function populateAddresses(): Array<AddressEntity> {
     const ADDRESS_GAP_LIMIT = 20; // BIP-44 gap limit is 20
 
-    const generatedAddresses = [];
+    const generatedAddresses: Array<AddressEntity> = [];
 
     const hdWallet = HdNodeService(wallet);
     populate(0);
     populate(1);
 
-    function populate(change) {
+    function populate(change: number): void {
       const unused = getUnusedAddresses(ADDRESS_GAP_LIMIT, change);
       const latestAddress =
         (change ? getChangeAddresses(1)[0] : getReceiveAddresses(1)[0]) || null;
@@ -109,7 +114,7 @@ export default function AddressManagerService(wallet) {
         `SELECT * FROM addresses 
           WHERE wallet_id="${wallet.id}" 
           AND change='0' 
-          AND prefix='${prefix}'
+          AND prefix='${wallet.prefix}'
           ORDER BY hd_index DESC 
           ${limit ? `LIMIT ${Number.parseInt(limit, 10)}` : ""}
         ;`
@@ -130,7 +135,7 @@ export default function AddressManagerService(wallet) {
         `SELECT * FROM addresses 
           WHERE wallet_id=${wallet.id} 
           AND change='1' 
-          AND prefix='${prefix}'
+          AND prefix='${wallet.prefix}'
           ORDER BY hd_index DESC 
           ${limit ? `LIMIT ${Number.parseInt(limit, 10)}` : ""}
         ;`
@@ -150,7 +155,7 @@ export default function AddressManagerService(wallet) {
           WHERE wallet_id="${wallet.id}"
           AND state IS NULL 
           AND change="${change}"
-          AND prefix='${prefix}'
+          AND prefix='${wallet.prefix}'
           ORDER BY hd_index ASC 
           LIMIT ${limit}
         ;`
