@@ -20,7 +20,7 @@ const SELENE_LEGACY_DB_FILE = "db/selene.db";
 // Connect to SQLite Database
 // use top-level pointers to ensure db is only loaded into memory once
 const SQL = await initSqlJs({ locateFile: () => "/sql-wasm.wasm" });
-let flushPending = null;
+let flushPending;
 
 async function _dbOpen(filename) {
   try {
