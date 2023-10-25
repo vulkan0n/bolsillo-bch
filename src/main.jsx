@@ -42,9 +42,6 @@ import SettingsWalletAdditionalInformation from "@/views/settings/SettingsWallet
 import CreditsView from "@/views/credits/CreditsView";
 import DebugView from "@/views/debug/DebugView";
 
-// eslint-disable-next-line react-hooks/rules-of-hooks
-Logger.useDefaults();
-
 export const routes = [
   {
     element: <MainLayout />,

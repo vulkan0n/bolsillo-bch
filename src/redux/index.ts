@@ -1,3 +1,4 @@
+import Logger from "js-logger";
 import { configureStore } from "@reduxjs/toolkit";
 import {
   preferencesReducer,
@@ -30,6 +31,8 @@ export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
 
 // Run actions needed to fire on app load
+Logger.useDefaults(); // eslint-disable-line react-hooks/rules-of-hooks
+
 const bootPayload = {
   wallet_id: selectActiveWalletId(store.getState()),
   network: selectBchNetwork(store.getState()),

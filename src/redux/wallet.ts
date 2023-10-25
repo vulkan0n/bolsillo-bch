@@ -46,7 +46,7 @@ export const walletBoot = createAsyncThunk(
     const { wallet_id, network } = payload;
     // load Wallet from database
     const wallet = WalletManagerService().boot(wallet_id, network);
-    console.log("walletBoot", wallet_id, wallet, network);
+    Logger.log("walletBoot", wallet_id, wallet, network);
 
     thunkApi.dispatch(
       setPreference({ key: "activeWalletId", value: wallet.id.toString() })
@@ -55,7 +55,7 @@ export const walletBoot = createAsyncThunk(
     const isChipnet = network === "chipnet";
 
     const server = isChipnet
-      ? ElectrumService().selectFallbackServer(isChipnet)
+      ? ElectrumService().selectFallbackServer(null, true)
       : selectElectrumServer(thunkApi.getState());
 
     thunkApi.dispatch(

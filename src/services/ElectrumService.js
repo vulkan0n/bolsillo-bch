@@ -11,7 +11,6 @@ import {
   syncAddressUpdate,
   syncChaintip,
 } from "@/redux/sync";
-import { selectIsChipnet } from "@/redux/preferences";
 
 import { bchToSats } from "@/util/sats";
 import { electrum_servers, chipnet_servers } from "@/util/electrum_servers";
@@ -231,18 +230,16 @@ export default function ElectrumService() {
     return relayFee;
   }
 
-  function selectFallbackServer(prevServer) {
-    const isChipnet = selectIsChipnet(store.getState());
-
-    // don't blacklist chipnet servers or the known-good Selene-operated server
-    if (prevServer && prevServer !== DEFAULT_ELECTRUM_SERVER && !isChipnet) {
+  function selectFallbackServer(prevServer, isChipnet = false) {
+    // don't blacklist the known-good Selene-operated server
+    if (prevServer && prevServer !== DEFAULT_ELECTRUM_SERVER) {
       server_blacklist.push(prevServer);
     }
 
+    const server_list = isChipnet ? chipnet_servers : electrum_servers;
+
     const chooseRandomServer = () => {
-      return isChipnet
-        ? chipnet_servers[Math.floor(Math.random() * chipnet_servers.length)]
-        : electrum_servers[Math.floor(Math.random() * electrum_servers.length)];
+      return server_list[Math.floor(Math.random() * server_list.length)];
     };
 
     let newServer = chooseRandomServer();

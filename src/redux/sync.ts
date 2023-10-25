@@ -12,8 +12,8 @@ import { walletBalanceUpdate, selectActiveWallet } from "@/redux/wallet";
 import { fetchExchangeRates } from "@/redux/exchangeRates";
 import {
   setPreference,
-  selectIsChipnet,
   selectCurrencySettings,
+  selectIsChipnet,
 } from "@/redux/preferences";
 
 import ElectrumService from "@/services/ElectrumService";
@@ -54,12 +54,18 @@ export const syncConnect = createAsyncThunk(
         );
       } else {
         // try a different server
-        const newServer = Electrum.selectFallbackServer(payload.server);
+        const isChipnet = selectIsChipnet(thunkApi.getState());
+        const newServer = Electrum.selectFallbackServer(
+          payload.server,
+          isChipnet
+        );
         thunkApi.dispatch(syncConnect({ server: newServer, attempts: 0 }));
 
-        thunkApi.dispatch(
-          setPreference({ key: "electrumServer", value: newServer })
-        );
+        if (!isChipnet) {
+          thunkApi.dispatch(
+            setPreference({ key: "electrumServer", value: newServer })
+          );
+        }
       }
     }
   }
