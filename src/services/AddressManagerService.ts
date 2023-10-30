@@ -23,7 +23,6 @@ export default function AddressManagerService(wallet: WalletEntity) {
   return {
     registerAddress,
     populateAddresses,
-    getPrefix,
     getAddress,
     getReceiveAddresses,
     getChangeAddresses,
