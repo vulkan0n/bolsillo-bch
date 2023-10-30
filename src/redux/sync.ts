@@ -74,9 +74,10 @@ export const syncConnect = createAsyncThunk(
 // syncReconnect: force disconnect and attempt fresh connection to server
 export const syncReconnect = createAsyncThunk(
   "sync/reconnect",
-  async (server: string, thunkApi) => {
+  async (server: string | undefined, thunkApi) => {
+    const connectServer = server || Electrum.getElectrumHost();
     await Electrum.disconnect(true);
-    thunkApi.dispatch(syncConnect({ attempts: 0, server }));
+    thunkApi.dispatch(syncConnect({ attempts: 0, server: connectServer }));
   }
 );
 

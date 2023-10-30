@@ -47,12 +47,18 @@ export default function WalletManagerService() {
   }
 
   // getWalletById: get a consumable Wallet object from the database
-  function getWalletById(id: number): WalletEntity | null {
+  function getWalletById(id: number | string = 0): WalletEntity {
     const result = resultToJson(
       db.exec(`SELECT * FROM wallets WHERE id="${id}"`)
     );
+
     Logger.debug("getWalletById", result);
-    return result.length > 0 ? result[0] : null;
+
+    if (result.length === 0) {
+      throw new Error(`No Wallet with id ${id}`);
+    }
+
+    return result[0];
   }
 
   // ----------------------------

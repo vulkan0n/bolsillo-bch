@@ -18,6 +18,7 @@ import {
 import {
   selectActiveWalletId,
   selectCurrencySettings,
+  selectBchNetwork,
 } from "@/redux/preferences";
 import { walletBoot, walletReload } from "@/redux/wallet";
 import { selectLocale } from "@/redux/device";
@@ -38,16 +39,17 @@ export default function SettingsWalletView() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const locale = useSelector(selectLocale);
-
   const { wallet_id } = useParams();
-  const activeWalletId = useSelector(selectActiveWalletId);
-  const isActiveWallet = wallet_id === activeWalletId;
-
-  const { shouldPreferLocalCurrency } = useSelector(selectCurrencySettings);
-
   const WalletManager = WalletManagerService();
   const wallet = WalletManager.getWalletById(wallet_id);
+
+  const activeWalletId = useSelector(selectActiveWalletId);
+  const isActiveWallet = wallet.id === activeWalletId;
+
+  const bchNetwork = useSelector(selectBchNetwork);
+
+  const locale = useSelector(selectLocale);
+  const { shouldPreferLocalCurrency } = useSelector(selectCurrencySettings);
 
   const shouldShowAdvancedOptions =
     wallet.key_viewed !== null && isActiveWallet;
@@ -71,8 +73,8 @@ export default function SettingsWalletView() {
 
     // on 4th press, delete wallet and "reboot" app
     if (deleteConfirm === 3) {
-      WalletManager.deleteWallet(wallet_id);
-      dispatch(walletBoot(1));
+      WalletManager.deleteWallet(wallet.id);
+      dispatch(walletBoot({ wallet_id: 1, network: bchNetwork }));
       navigate("/");
     } else {
       // if user hesitates, reset the counter
@@ -88,7 +90,7 @@ export default function SettingsWalletView() {
 
   // handler for "Activate Wallet" button
   const handleActivateWallet = () => {
-    dispatch(walletBoot(wallet.id));
+    dispatch(walletBoot({ wallet_id: wallet.id, network: bchNetwork }));
     dispatch(syncReconnect());
     navigate("/");
   };
@@ -97,7 +99,7 @@ export default function SettingsWalletView() {
   const handleShowMnemonic = () => {
     if (shouldShowRecoveryPhrase === false) {
       setShouldShowRecoveryPhrase(true);
-      WalletManager.updateKeyViewed(wallet_id);
+      WalletManager.updateKeyViewed(wallet.id);
       dispatch(walletReload());
     } else {
       setShouldShowRecoveryPhrase(false);
@@ -107,7 +109,7 @@ export default function SettingsWalletView() {
   // handler for wallet name edit button
   const handleEdit = () => {
     if (isEditingWalletName === true) {
-      WalletManager.setWalletName(wallet_id, walletEditedName);
+      WalletManager.setWalletName(wallet.id, walletEditedName);
       dispatch(walletReload());
       setIsEditingWalletName(false);
     } else {
@@ -127,7 +129,7 @@ export default function SettingsWalletView() {
   };
 
   const handleNavigateAdditionalWalletInformation = () => {
-    navigate(`/settings/wallet/${wallet_id}/additionalInformation`);
+    navigate(`/settings/wallet/${wallet.id}/additionalInformation`);
   };
 
   return (
@@ -187,7 +189,7 @@ export default function SettingsWalletView() {
               disabled={isActiveWallet}
             >
               <div className="flex items-center">
-                {wallet_id === activeWalletId ? (
+                {wallet.id === activeWalletId ? (
                   <CheckCircleOutlined className="text-white text-2xl" />
                 ) : (
                   <LoginOutlined className="text-2xl mr-1" />

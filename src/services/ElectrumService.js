@@ -39,6 +39,7 @@ export default function ElectrumService() {
     broadcastTransaction,
     requestRelayFee,
     selectFallbackServer,
+    getElectrumHost,
   };
 
   // connect: connect to an Electrum server
@@ -209,7 +210,7 @@ export default function ElectrumService() {
       checkpoint_height
     );
 
-    //Logger.log("requestBlock", header, height);
+    Logger.debug("requestBlock", header, height);
     return header;
   }
 
@@ -219,7 +220,7 @@ export default function ElectrumService() {
       tx_hex
     );
 
-    //Logger.log("broadcastTransaction", tx_hash, tx_hex);
+    Logger.log("broadcastTransaction", tx_hash, tx_hex);
     return tx_hash;
   }
 

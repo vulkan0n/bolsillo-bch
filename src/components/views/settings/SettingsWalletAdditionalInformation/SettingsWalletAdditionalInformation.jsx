@@ -24,7 +24,7 @@ import WalletManagerService from "@/services/WalletManagerService";
 import ViewHeader from "@/layout/ViewHeader";
 import Accordion from "@/atoms/Accordion";
 
-import { selectIsChipnet } from "@/redux/preferences";
+import { selectBchNetwork } from "@/redux/preferences";
 
 import { translate } from "@/util/translations";
 import translations from "./translations";
@@ -41,8 +41,7 @@ export default function SettingsWalletAdditionalInformation() {
 
   const derivationPath = wallet.derivation;
 
-  const isChipnet = useSelector(selectIsChipnet);
-  const network = isChipnet ? "chipnet" : "mainnet";
+  const network = useSelector(selectBchNetwork);
 
   const seed = bip39.mnemonicToSeedSync(wallet.mnemonic);
   const hdMaster = deriveHdPrivateNodeFromSeed(seed);
