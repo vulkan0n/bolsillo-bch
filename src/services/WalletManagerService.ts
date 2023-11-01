@@ -21,6 +21,12 @@ export interface WalletEntity {
   prefix: string;
 }
 
+export class WalletNotExistsError extends Error {
+  constructor(id: number | string) {
+    super(`No Wallet with id ${id}`);
+  }
+}
+
 export default function WalletManagerService() {
   const { db, resultToJson, saveDatabase } = DatabaseService();
 
@@ -52,10 +58,10 @@ export default function WalletManagerService() {
       db.exec(`SELECT * FROM wallets WHERE id="${id}"`)
     );
 
-    Logger.debug("getWalletById", result);
+    Logger.debug("getWalletById", id, result);
 
     if (result.length === 0) {
-      throw new Error(`No Wallet with id ${id}`);
+      throw new WalletNotExistsError(id);
     }
 
     return result[0];
@@ -65,15 +71,18 @@ export default function WalletManagerService() {
 
   // boot: load a wallet, create a wallet if none exist
   function boot(wallet_id: number, network: ValidBchNetwork): WalletEntity {
-    let wallet = getWalletById(wallet_id);
+    let wallet: WalletEntity;
+    try {
+      wallet = getWalletById(wallet_id);
+    } catch (e) {
+      if (!(e instanceof WalletNotExistsError)) {
+        throw e;
+      }
 
-    // requested wallet doesn't exist
-    if (wallet === null) {
-      const wallets = getWallets();
+      // requested wallet doesn't exist
       // attempt to return lowest-index wallet instead, create a new wallet if none exist
-      const attemptWallet: WalletEntity =
-        wallets.shift() || createWallet("My Selene Wallet");
-      wallet = attemptWallet;
+      const wallets = getWallets();
+      wallet = wallets.shift() || createWallet("My Selene Wallet");
     }
 
     // for safety, assume testnet unless we've explicitly stated to be on mainnet

@@ -6,7 +6,6 @@ import {
   Navigate,
 } from "react-router-dom";
 
-import Logger from "js-logger";
 import { Toaster } from "react-hot-toast";
 
 import { Provider } from "react-redux";
@@ -151,6 +150,7 @@ export const routes = [
 
 const router = createBrowserRouter(routes);
 
+// ReactDOM does not render until after redux store is imported
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <Provider store={store}>

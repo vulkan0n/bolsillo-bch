@@ -11,6 +11,7 @@ import { txReducer } from "./transactions";
 import { deviceReducer } from "./device";
 import { exchangeRateReducer, fetchExchangeRates } from "./exchangeRates";
 import { triggerCheckIn } from "./stats";
+import { SELENE_WALLET_VERSION } from "@/util/version";
 
 export const store = configureStore({
   reducer: {
@@ -31,12 +32,17 @@ export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
 
 // Run actions needed to fire on app load
-Logger.useDefaults(); // eslint-disable-line react-hooks/rules-of-hooks
+function initialize_app() {
+  Logger.info(`Selene Wallet v${SELENE_WALLET_VERSION} :: https://selene.cash`);
 
-const bootPayload = {
-  wallet_id: selectActiveWalletId(store.getState()),
-  network: selectBchNetwork(store.getState()),
-};
-store.dispatch(walletBoot(bootPayload));
-store.dispatch(fetchExchangeRates(store.getState()));
-store.dispatch(triggerCheckIn());
+  const bootPayload = {
+    wallet_id: selectActiveWalletId(store.getState()),
+    network: selectBchNetwork(store.getState()),
+  };
+  store.dispatch(walletBoot(bootPayload));
+  store.dispatch(fetchExchangeRates(store.getState()));
+  store.dispatch(triggerCheckIn());
+}
+
+Logger.useDefaults(); // eslint-disable-line react-hooks/rules-of-hooks
+initialize_app();

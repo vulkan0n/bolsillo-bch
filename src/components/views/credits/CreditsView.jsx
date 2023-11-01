@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ViewHeader from "@/layout/ViewHeader";
 import { logos } from "@/util/logos";
-import SELENE_WALLET_VERSION from "@/util/version";
+import { SELENE_WALLET_VERSION } from "@/util/version";
 import { translate } from "@/util/translations";
 import translations from "./CreditsViewTranslations";
 

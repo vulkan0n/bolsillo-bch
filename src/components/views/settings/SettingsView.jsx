@@ -13,7 +13,7 @@ import { translate } from "@/util/translations";
 import translations from "./SettingsViewTranslations";
 
 import { logos } from "@/util/logos";
-import SELENE_WALLET_VERSION from "@/util/version";
+import { SELENE_WALLET_VERSION } from "@/util/version";
 
 import { SettingsContext } from "./SettingsContext";
 

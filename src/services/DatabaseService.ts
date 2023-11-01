@@ -4,21 +4,21 @@ import initSqlJs from "sql.js";
 import { run_migrations } from "@/util/migrations";
 
 /*
- * [network/servers]
- * [network/blocks]
- * [network/transactions]
- * [network/wallet_id/entity]
- * mainnet/1/wallet
- * mainnet/1/addresses
- * mainnet/1/utxos
- * mainnet/1/history
- * mainnet/1/settings
+ * [{ network }/servers.json]
+ * [{ network }/blocks/blockhash.raw]
+ * [{ network }/tx/tx_hash.raw]
+ * [{ network }/wallet_id.db]
+ * - /wallet
+ * - /wallet_addresses
+ * - /address_utxos
+ * - /address_transactions
+ * - /wallet_settings
  */
 
 const SELENE_LEGACY_DB_FILE = "db/selene.db";
+Logger.useDefaults(); // eslint-disable-line react-hooks/rules-of-hooks
 
 // Connect to SQLite Database
-// use top-level pointers to ensure db is only loaded into memory once
 const SQL = await initSqlJs({ locateFile: () => "/sql-wasm.wasm" });
 let flushPending;
 
@@ -40,21 +40,20 @@ async function _dbOpen(filename) {
 }
 
 async function getWalletDatabase() {
-  Logger.debug("getWalletDatabase");
   // run schema migrations
+  let db;
   try {
     //const SELENE_DB_FILE = "selene/selene.db";
-    const db = await _dbOpen(SELENE_LEGACY_DB_FILE);
-    run_migrations(db);
-    return db;
+    db = await _dbOpen(SELENE_LEGACY_DB_FILE);
   } catch (e) {
     Logger.error(e);
-    const db = new SQL.Database();
-    run_migrations(db);
-    return db;
+    db = new SQL.Database();
   }
+  run_migrations(db);
+  return db;
 }
 
+// use top-level pointer to ensure db is only loaded into memory once
 const db = await getWalletDatabase();
 
 // DatabaseService: brokers interactions with raw SQLite database
@@ -124,17 +123,20 @@ export default function DatabaseService() {
 
   // _flushDatabase [private]: writes database to disk
   async function _flushDatabase(filename) {
-    const data = db.export();
+    try {
+      const data = db.export();
 
-    const result = await Filesystem.writeFile({
-      path: filename,
-      data: data.toString(),
-      directory: Directory.Library,
-      encoding: Encoding.UTF8,
-      recursive: true,
-    });
-
-    Logger.debug("flushDatabase", filename, result);
+      const result = await Filesystem.writeFile({
+        path: filename,
+        data: data.toString(),
+        directory: Directory.Library,
+        encoding: Encoding.UTF8,
+        recursive: true,
+      });
+      Logger.debug("flushDatabase", filename, result);
+    } catch (e) {
+      Logger.error(e);
+    }
   }
 }
 
