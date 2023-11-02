@@ -16,6 +16,8 @@ import apolloClient from "./apolloClient";
 import "./index.css";
 
 import MainLayout from "@/layout/MainLayout";
+import ErrorBoundary from "@/layout/ErrorBoundary";
+
 import WalletView from "@/views/wallet/WalletView";
 import WalletViewHome from "@/views/wallet/WalletViewHome/WalletViewHome";
 import WalletViewHistory from "@/views/wallet/WalletViewHistory/WalletViewHistory";
@@ -25,6 +27,7 @@ import WalletAssetsView from "@/views/wallet/assets/WalletAssetsView";
 
 import ExploreView from "@/views/explore/ExploreView";
 import ExploreViewHome from "@/views/explore/ExploreViewHome";
+import ExploreTransactionView from "@/views/explore/ExploreTransactionView";
 import ExploreStatsView from "@/views/explore/stats/ExploreStatsView";
 import ExploreContactsView from "@/views/explore/contacts/ExploreContactsView";
 import ExploreMapView from "@/views/explore/map/ExploreMapView";
@@ -44,6 +47,7 @@ import DebugView from "@/views/debug/DebugView";
 export const routes = [
   {
     element: <MainLayout />,
+    errorElement: <ErrorBoundary />,
     children: [
       {
         path: "/",
@@ -83,6 +87,10 @@ export const routes = [
         path: "/explore",
         element: <ExploreView />,
         children: [
+          {
+            path: "tx/:txid",
+            element: <ExploreTransactionView />,
+          },
           {
             path: "stats",
             element: <ExploreStatsView />,
