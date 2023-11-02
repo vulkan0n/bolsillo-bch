@@ -1,13 +1,80 @@
 import Logger from "js-logger";
 import { useRouteError } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { BugOutlined } from "@ant-design/icons";
+import SeleneLogo from "@/components/atoms/SeleneLogo";
+import Accordion from "@/components/atoms/Accordion";
+import ShowMnemonic from "@/components/atoms/ShowMnemonic";
+
+import WalletManagerService from "@/services/WalletManagerService";
+
+import { selectActiveWallet } from "@/redux/wallet";
 
 export default function ErrorBoundary() {
   const error = useRouteError();
+  Logger.debug(error);
   Logger.error(error);
 
+  const wallet = useSelector(selectActiveWallet);
+
+  const handleRestartApp = () => {
+    window.location.assign("/");
+  };
+  const handleShowRecoveryPhrase = () => null;
+  const handleRebuildWallet = () => {
+    try {
+      WalletManagerService().clearWalletData(wallet.id);
+    } catch {
+      return;
+    }
+    handleRestartApp();
+  };
+  const handleSendDiagnosticInfo = () => null;
+
   return (
-    <div>
-      <div>{error.message}</div>
-    </div>
+    <>
+      <div className="text-xl p-1 bg-zinc-900 text-zinc-300 font-bold flex items-center">
+        <span>
+          <SeleneLogo className="h-14 mr-2" />
+        </span>
+        <span className="flex-1">Something went wrong...</span>
+      </div>
+      <div className="p-2">
+        <div className="bg-zinc-200 p-2 rounded my-1">
+          <div className="text-xl font-bold mb-2">Here's what you can try:</div>
+          <div className="flex items-center gap-x-1">
+            <button
+              type="button"
+              className="bg-primary rounded text-white p-1"
+              onClick={handleRebuildWallet}
+            >
+              Rebuild Wallet
+            </button>
+            <button
+              type="button"
+              className="bg-primary rounded text-white p-1"
+              onClick={handleSendDiagnosticInfo}
+            >
+              Send Diagnostic Info to Developers
+            </button>
+            <button
+              type="button"
+              className="bg-primary rounded text-white p-1"
+              onClick={handleRestartApp}
+            >
+              Restart App
+            </button>
+          </div>
+        </div>
+        <Accordion icon={BugOutlined} title="Error Message">
+          <Accordion.Child icon={null} label="">
+            <div className="font-mono bg-zinc-100 p-2 text-left">
+              {error.message}
+            </div>
+          </Accordion.Child>
+        </Accordion>
+        <ShowMnemonic wallet={wallet} />
+      </div>
+    </>
   );
 }

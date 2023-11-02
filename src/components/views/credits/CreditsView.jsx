@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ViewHeader from "@/layout/ViewHeader";
-import { logos } from "@/util/logos";
+import SeleneLogo from "@/components/atoms/SeleneLogo";
 import { SELENE_WALLET_VERSION } from "@/util/version";
 import { translate } from "@/util/translations";
 import translations from "./CreditsViewTranslations";
@@ -24,12 +24,7 @@ export default function CreditsView() {
       <ViewHeader icon={() => null} title={translate(translations.credits)} />
       <div className="bg-primary text-white text-center p-2">
         <div className="flex items-center justify-center h-40">
-          <img
-            src={logos.selene.img}
-            className="h-full"
-            alt="Selene Wallet Logo"
-            onClick={handleDebugTap}
-          />
+          <SeleneLogo className="h-full" onClick={handleDebugTap} />
         </div>
         <h1 className="text-2xl font-bold">
           Selene Wallet v{SELENE_WALLET_VERSION}
