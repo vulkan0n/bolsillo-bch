@@ -12,7 +12,7 @@ export default function CreditsView() {
 
   const handleDebugTap = () => {
     setDebugTaps((taps) => taps + 1);
-    if (debugTaps >= 6) {
+    if (debugTaps >= 5) {
       navigate("/debug");
     } else {
       setTimeout(() => setDebugTaps((taps) => taps - 1), 1337);

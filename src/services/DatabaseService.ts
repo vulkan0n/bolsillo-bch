@@ -54,12 +54,12 @@ async function getWalletDatabase() {
 }
 
 // use top-level pointer to ensure db is only loaded into memory once
-const db = await getWalletDatabase();
+const wallet_db = await getWalletDatabase();
 
 // DatabaseService: brokers interactions with raw SQLite database
 export default function DatabaseService() {
   return {
-    db,
+    db: wallet_db,
     resultToJson,
     saveDatabase,
   };

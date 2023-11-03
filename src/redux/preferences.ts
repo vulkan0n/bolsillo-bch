@@ -126,9 +126,21 @@ export const setPreference = createAsyncThunk(
   }
 );
 
+export const resetPreferences = createAsyncThunk(
+  "preferences/reset",
+  async () => {
+    Preferences.clear();
+    const preferences = await retrievePreferences();
+    return preferences;
+  }
+);
+
 export const preferencesReducer = createReducer(initialState, (builder) => {
   builder.addCase(setPreference.fulfilled, (state, action) => {
     state[action.payload.key] = action.payload.value;
+  });
+  builder.addCase(resetPreferences.fulfilled, (state, action) => {
+    return action.payload;
   });
 });
 
