@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { ArrowLeftOutlined } from "@ant-design/icons";
 import { selectLocale } from "@/redux/device";
@@ -34,43 +34,40 @@ export default function WalletViewHistory() {
           )}
           {transactions.map((tx, i) =>
             i < 100 ? (
-              <li key={tx.txid} className="flex px-1 py-2">
-                <div
-                  className="flex-1 text-sm"
-                  onClick={
-                    () => null /*console.log(tx.time, new Date(tx.time))*/
-                  }
-                >
-                  <div
-                    className={`${tx.amount > 0 ? receiveStyle : sendStyle}`}
-                  >
-                    {new Date(tx.time).toLocaleDateString(locale)}
+              <li key={tx.txid} className="px-1 py-2">
+                <Link to={`/explore/tx/${tx.txid}`} className="flex">
+                  <div className="flex-1 text-sm">
+                    <div
+                      className={`${tx.amount > 0 ? receiveStyle : sendStyle}`}
+                    >
+                      {new Date(tx.time).toLocaleDateString(locale)}
+                    </div>
+                    <div className="text-sm opacity-80">
+                      {new Date(tx.time).toLocaleTimeString(locale)}
+                    </div>
                   </div>
-                  <div className="text-sm opacity-80">
-                    {new Date(tx.time).toLocaleTimeString(locale)}
+                  <div className="flex-1 text-right">
+                    <div
+                      className={`font-mono ${
+                        tx.amount > 0 ? receiveStyle : sendStyle
+                      }`}
+                    >
+                      {tx.amount > 0 && "+"}
+                      {
+                        formatSatoshis(tx.amount)[
+                          shouldPreferLocalCurrency ? "fiat" : "bch"
+                        ]
+                      }
+                    </div>
+                    <div className="text-sm opacity-80">
+                      {
+                        formatSatoshis(tx.amount)[
+                          shouldPreferLocalCurrency ? "bch" : "fiat"
+                        ]
+                      }
+                    </div>
                   </div>
-                </div>
-                <div className="flex-1 text-right">
-                  <div
-                    className={`font-mono ${
-                      tx.amount > 0 ? receiveStyle : sendStyle
-                    }`}
-                  >
-                    {tx.amount > 0 && "+"}
-                    {
-                      formatSatoshis(tx.amount)[
-                        shouldPreferLocalCurrency ? "fiat" : "bch"
-                      ]
-                    }
-                  </div>
-                  <div className="text-sm opacity-80">
-                    {
-                      formatSatoshis(tx.amount)[
-                        shouldPreferLocalCurrency ? "bch" : "fiat"
-                      ]
-                    }
-                  </div>
-                </div>
+                </Link>
               </li>
             ) : null
           )}

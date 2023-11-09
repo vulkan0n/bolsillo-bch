@@ -44,6 +44,8 @@ import SettingsWalletAdditionalInformation from "@/views/settings/SettingsWallet
 import CreditsView from "@/views/credits/CreditsView";
 import DebugView from "@/views/debug/DebugView";
 
+import TransactionManagerService from "@/services/TransactionManagerService";
+
 export const routes = [
   {
     element: <MainLayout />,
@@ -90,6 +92,11 @@ export const routes = [
           {
             path: "tx/:txid",
             element: <ExploreTransactionView />,
+            loader: async ({ params }) => {
+              return TransactionManagerService().resolveTransaction(
+                params.txid
+              );
+            },
           },
           {
             path: "stats",
