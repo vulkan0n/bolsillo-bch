@@ -17,7 +17,7 @@ export default function Address({ address, short }) {
   const suffix = formattedAddress.substring(PREFIX_LENGTH + middle.length);
 
   return (
-    <span className="tracking-tight">
+    <span className="tracking-tighter">
       <span className="font-bold">{prefix}</span>
       {short ? "-" : middle}
       <span className="font-bold">{suffix}</span>

@@ -124,7 +124,7 @@ export default function DatabaseService() {
   // _flushDatabase [private]: writes database to disk
   async function _flushDatabase(filename) {
     try {
-      const data = db.export();
+      const data = wallet_db.export();
 
       const result = await Filesystem.writeFile({
         path: filename,

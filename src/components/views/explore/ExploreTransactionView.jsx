@@ -1,4 +1,4 @@
-import { useLoaderData } from "react-router-dom";
+import { useLoaderData, Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { selectCurrencySettings } from "@/redux/preferences";
 //import {} from "@ant-design/icons";
@@ -8,15 +8,13 @@ import { formatSatoshis } from "@/util/sats";
 
 export default function ExploreTransactionView() {
   const tx = useLoaderData();
-  const { shouldPreferLocalCurrency } = useSelector(selectCurrencySettings);
 
   const isConfirmed = tx.blocktime !== "null";
   const txDate = (
-    isConfirmed ? new Date(tx.blocktime) : Date.parse(tx.time_seen)
+    isConfirmed ? new Date(tx.blocktime * 1000) : Date.parse(tx.time_seen)
   ).toLocaleString();
 
-  const receiveStyle = "text-secondary";
-  const sendStyle = "text-error";
+  console.log(tx);
 
   return (
     <>
@@ -30,49 +28,59 @@ export default function ExploreTransactionView() {
       <div className="p-1">
         <div className="bg-zinc-200 rounded p-1">
           <div className="font-semibold py-1">Outputs</div>
-          <ul>
-            {tx.vout.map((output) => (
-              <li>
-                <div className="flex">
-                  <div>#{output.n}</div>
-                  <div className="text-sm tracking-tighter">
-                    <Address address={output.scriptPubKey.addresses[0]} short />
-                  </div>
-                  <div className="flex-1 text-right">
-                    <div
-                      className={`font-mono ${
-                        output.value > 0 ? receiveStyle : sendStyle
-                      }`}
-                    >
-                      {output.value > 0 && "+"}
-                      {
-                        formatSatoshis(output.value)[
-                          shouldPreferLocalCurrency ? "fiat" : "bch"
-                        ]
-                      }
-                    </div>
-                    <div className="text-sm opacity-80">
-                      {
-                        formatSatoshis(output.value)[
-                          shouldPreferLocalCurrency ? "bch" : "fiat"
-                        ]
-                      }
-                    </div>
-                  </div>
-                </div>
-              </li>
-            ))}
-          </ul>
+          {tx.vout.map((output, i) => (
+            <OutputListItem key={output.n} output={output} i={i} />
+          ))}
         </div>
-        <div>
-          <div>Inputs</div>
-          <ul>
-            {tx.vin.map((input) => (
-              <li>{JSON.stringify(input)}</li>
-            ))}
-          </ul>
+        <div className="bg-zinc-200 rounded p-1 mt-2">
+          <div className="font-semibold py-1">Inputs</div>
+          {tx.vin.map((input, i) => (
+            <InputListItem
+              key={`${input.txid}:${input.vout}`}
+              input={input}
+              i={i}
+            />
+          ))}
         </div>
       </div>
     </>
+  );
+}
+
+function OutputListItem({ output, i }) {
+  const { shouldPreferLocalCurrency } = useSelector(selectCurrencySettings);
+
+  const zebraCss = i % 2 === 0 ? "bg-zinc-100" : "bg-zinc-50";
+
+  return (
+    <div className={`p-1.5 ${zebraCss}`}>
+      <div className="flex text-sm items-center">
+        <div>
+          <Address address={output.scriptPubKey.addresses[0]} />
+        </div>
+      </div>
+      <div className="">
+        <span className="text-xs tracking-tighter mr-1.5 opacity-70">
+          #{output.n}
+        </span>
+        <span className="font-mono">{formatSatoshis(output.value)["bch"]}</span>
+        <span className="mx-1 text-zinc-500">/</span>
+        <span className="text-sm opacity-80">
+          {formatSatoshis(output.value)["fiat"]}
+        </span>
+      </div>
+    </div>
+  );
+}
+
+function InputListItem({ input, i }) {
+  const zebraCss = i % 2 === 0 ? "bg-zinc-100" : "bg-zinc-50";
+
+  return (
+    <div className={`p-1.5 ${zebraCss} truncate tracking-tight`}>
+      <Link className="font-mono text-xs" to={`/explore/tx/${input.txid}`}>
+        {input.txid}:{input.vout}
+      </Link>
+    </div>
   );
 }

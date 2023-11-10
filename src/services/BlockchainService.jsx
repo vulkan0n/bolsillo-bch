@@ -4,7 +4,7 @@ import { hexToBin, binToHex } from "@/util/hex";
 
 // BlockchainService: brokers interactions with the block data
 export default function BlockchainService() {
-  const { db, resultToJson, saveDatabase } = new DatabaseService();
+  const { db, resultToJson, saveDatabase } = DatabaseService();
 
   return {
     registerBlock,

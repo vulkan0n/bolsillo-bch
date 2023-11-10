@@ -70,11 +70,7 @@ function AddressAccordion({ a, i }) {
           <span className="font-mono text-xs mr-1 tracking-tighter">
             #{a.hd_index}.{a.change}
           </span>
-          <span
-            className={`${
-              a.balance > 0 ? (!isOpen ? "text-sm" : "text-xs") : "text-xs" // eslint-disable-line no-nested-ternary
-            }`}
-          >
+          <span className="text-sm">
             <Address
               address={a.address}
               short={isOpen ? false : a.balance > 0}
