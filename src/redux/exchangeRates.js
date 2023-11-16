@@ -1,3 +1,4 @@
+import Logger from "js-logger";
 import {
   createReducer,
   createSelector,
@@ -16,15 +17,14 @@ export const fetchExchangeRates = createAsyncThunk(
 
     try {
       const exchangeRates = await Currency.fetchExchangeRates();
+      return exchangeRates;
     } catch (e) {
-      console.log("fetchExchangeRates failed", e);
+      Logger.error("fetchExchangeRates failed", e);
       setTimeout(
         () => thunkApi.dispatch(fetchExchangeRates(attempts + 1)),
         10000 * attempts + 1
       );
     }
-
-    return exchangeRates;
   }
 );
 
@@ -42,10 +42,7 @@ export const exchangeRateReducer = createReducer(initialState, (builder) => {
 
 export const selectExchangeRates = createSelector(
   (state) => state.exchangeRates,
-  (exchangeRates) => {
-    console.log("selectExchangeRates", exchangeRates);
-    return exchangeRates;
-  }
+  (exchangeRates) => exchangeRates
 );
 
 export function stripArsPostDecimal(localCurrency, fiatString) {
