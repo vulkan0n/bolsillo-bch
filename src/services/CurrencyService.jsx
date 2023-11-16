@@ -57,6 +57,7 @@ export default function CurrencyService(fiatCurrency) {
   };
 
   async function fetchExchangeRates() {
+    console.log("Currency.fetchExchangeRates");
     const currencies = encodeURI(
       currencyList.map((currency) => currency.currency).join(",")
     );
@@ -64,40 +65,37 @@ export default function CurrencyService(fiatCurrency) {
     // https://www.coingecko.com/en/api/documentation
     const coingeckoUri = `https://api.coingecko.com/api/v3/simple/price?ids=bitcoin-cash&vs_currencies=${currencies}`;
 
-    try {
-      const response = await fetch(coingeckoUri, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+    const response = await fetch(coingeckoUri, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
 
-      if (!response.ok) {
-        throw new Error(response);
+    console.log("Exchange rates", response);
+
+    if (!response.ok) {
+      throw new Error(response);
+    }
+
+    const json = await response.json();
+    const data = json["bitcoin-cash"];
+
+    const rates = currencyList.map((currency) => {
+      if (!data[currency.currency.toLowerCase()]) {
+        return { ...currency };
       }
 
-      const json = await response.json();
-      const data = json["bitcoin-cash"];
+      return {
+        ...currency,
+        price: data[currency.currency.toLowerCase()].toString(),
+      };
+    });
 
-      const rates = currencyList.map((currency) => {
-        if (!data[currency.currency.toLowerCase()]) {
-          return { ...currency };
-        }
+    // Swap in the correct ARS rate
+    const adjustedRates = await replaceYadioRates(rates);
 
-        return {
-          ...currency,
-          price: data[currency.currency.toLowerCase()].toString(),
-        };
-      });
-
-      // Swap in the correct ARS rate
-      const adjustedRates = await replaceYadioRates(rates);
-
-      return adjustedRates;
-    } catch (e) {
-      //console.error(e);
-      return e;
-    }
+    return adjustedRates;
   }
 
   function fiatToSats(fiatAmount) {

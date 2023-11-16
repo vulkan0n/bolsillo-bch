@@ -99,8 +99,9 @@ export default function WalletViewSend() {
     );
 
     if (isSuccess) {
+      const tx = await TransactionManager.resolveTransaction(tx_hash);
       await Haptics.notification({ type: NotificationType.Success });
-      navigate("/wallet/send/success");
+      navigate("/wallet/send/success", { state: { tx } });
     } else {
       await Haptics.notification({ type: NotificationType.Error });
       setMessage(translate(translations.transactionFailed));

@@ -44,7 +44,7 @@ const translations = {
     da: "Tryk hvor som helst for at fortsætte",
     de: "Tippen Sie überall, um fortzufahren",
     el: "Πατήστε οπουδήποτε για να συνεχίσετε",
-    en: "Tap anywhere to continue",
+    en: "Tap here to continue",
     es: "Toque en cualquier lugar para continuar",
     fa: "برای ادامه روی هر جایی ضربه بزنید",
     fil: "Mag-tap kahit saan para magpatuloy",

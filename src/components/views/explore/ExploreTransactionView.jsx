@@ -1,7 +1,7 @@
 import { useLoaderData, Link } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { selectCurrencySettings } from "@/redux/preferences";
 //import {} from "@ant-design/icons";
+import { selectCurrencySettings } from "@/redux/preferences";
 
 import Address from "@/atoms/Address";
 import { formatSatoshis } from "@/util/sats";

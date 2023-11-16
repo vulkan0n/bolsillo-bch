@@ -40,7 +40,7 @@ function initialize_app() {
     network: selectBchNetwork(store.getState()),
   };
   store.dispatch(walletBoot(bootPayload));
-  store.dispatch(fetchExchangeRates(store.getState()));
+  store.dispatch(fetchExchangeRates());
   store.dispatch(triggerCheckIn());
 }
 

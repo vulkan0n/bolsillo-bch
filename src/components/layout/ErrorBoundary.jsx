@@ -90,6 +90,7 @@ export default function ErrorBoundary() {
             <div className="font-mono bg-zinc-100 p-2 text-left">
               {error.message}
             </div>
+            {/*<div className="font-mono">{error.stack}</div>*/}
           </Accordion.Child>
         </Accordion>
         <ShowMnemonic wallet={wallet} />

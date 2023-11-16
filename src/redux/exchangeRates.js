@@ -10,11 +10,20 @@ import { currencyList } from "@/util/currency";
 
 export const fetchExchangeRates = createAsyncThunk(
   "exchangeRates/fetch",
-  async (_, thunkApi) => {
+  async (attempts = 0, thunkApi) => {
     const { localCurrency } = selectCurrencySettings(thunkApi.getState());
     const Currency = CurrencyService(localCurrency);
 
-    const exchangeRates = await Currency.fetchExchangeRates();
+    try {
+      const exchangeRates = await Currency.fetchExchangeRates();
+    } catch (e) {
+      console.log("fetchExchangeRates failed", e);
+      setTimeout(
+        () => thunkApi.dispatch(fetchExchangeRates(attempts + 1)),
+        10000 * attempts + 1
+      );
+    }
+
     return exchangeRates;
   }
 );
@@ -33,13 +42,16 @@ export const exchangeRateReducer = createReducer(initialState, (builder) => {
 
 export const selectExchangeRates = createSelector(
   (state) => state.exchangeRates,
-  (exchangeRates) => exchangeRates
+  (exchangeRates) => {
+    console.log("selectExchangeRates", exchangeRates);
+    return exchangeRates;
+  }
 );
 
 export function stripArsPostDecimal(localCurrency, fiatString) {
   // ARS users prefer not to see irrelevant post decimal values
   if (localCurrency === "ARS" && fiatString.includes(".")) {
-    return fiatString?.split(".")?.[0];
+    return fiatString.split(".")[0];
   }
 
   return fiatString;
@@ -47,7 +59,7 @@ export function stripArsPostDecimal(localCurrency, fiatString) {
 
 export const selectCurrentPrice = createSelector(
   (state) => ({
-    exchangeRates: state.exchangeRates,
+    exchangeRates: selectExchangeRates(state),
     currency: state.preferences.localCurrency,
     locale: state.device.locale,
   }),
