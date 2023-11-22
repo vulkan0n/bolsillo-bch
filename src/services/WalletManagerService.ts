@@ -2,6 +2,7 @@ import Logger from "js-logger";
 import * as bip39 from "bip39";
 import DatabaseService from "@/services/DatabaseService";
 import AddressManagerService from "@/services/AddressManagerService";
+import TransactionManagerService from "@/services/TransactionManagerService";
 import {
   ValidDerivationPath,
   DEFAULT_DERIVATION_PATH,
@@ -190,8 +191,9 @@ export default function WalletManagerService() {
   // does NOT delete the wallet; all data can be re-derived/resynced
   function clearWalletData(wallet_id: number): void {
     // delete transaction data associated with this wallet's addresses
-    db.run(
-      `DELETE FROM transactions WHERE 
+    const txList = resultToJson(
+      db.exec(
+        `SELECT txid FROM transactions WHERE 
         txid IN (
           SELECT txid FROM address_transactions WHERE 
             address IN (
@@ -199,6 +201,15 @@ export default function WalletManagerService() {
                 wallet_id="${wallet_id}"
             )
         )`
+      )
+    );
+
+    const TransactionManager = TransactionManagerService();
+    txList.forEach((txid) => TransactionManager.deleteTransaction(txid));
+
+    db.run(
+      `DELETE FROM transactions WHERE 
+        txid IN (${txList.join(",")})`
     );
 
     // delete this wallet's transaction history

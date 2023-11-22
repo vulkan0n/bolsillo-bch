@@ -1,17 +1,58 @@
 import Logger from "js-logger";
-import * as libauth from "@bitauth/libauth";
-import { Filesystem, Directory } from "@capacitor/filesystem";
+import { Filesystem, Directory, WriteFileResult } from "@capacitor/filesystem";
 import { Decimal } from "decimal.js";
-import { sha256 } from "@bitauth/libauth";
+import {
+  sha256,
+  decodeTransaction,
+  encodeTransaction,
+  generateTransaction,
+  swapEndianness,
+  lockingBytecodeToCashAddress,
+  cashAddressToLockingBytecode,
+  base58AddressToLockingBytecode,
+  importAuthenticationTemplate,
+  authenticationTemplateP2pkhNonHd,
+  authenticationTemplateToCompilerBCH,
+  TransactionCommon as LibauthTransaction,
+} from "@bitauth/libauth";
+
 import DatabaseService from "@/services/DatabaseService";
 import ElectrumService from "@/services/ElectrumService";
 import UtxoManagerService from "@/services/UtxoManagerService";
 import AddressManagerService from "@/services/AddressManagerService";
 import HdNodeService from "@/services/HdNodeService";
+import { WalletEntity } from "@/services/WalletManagerService";
+
 import { DUST_LIMIT } from "@/util/sats";
 import { validateInvoiceString } from "@/util/invoice";
-
 import { hexToBin, binToHex } from "@/util/hex";
+
+export interface TransactionEntity {
+  txid: string;
+  hex: string;
+  blockhash: string;
+  blocktime: string;
+  time: string;
+  size: string;
+  vin: Array<TransactionInput>;
+  vout: Array<TransactionOutput>;
+}
+
+export interface TransactionInput {
+  txid: string;
+  vout: number;
+}
+export interface TransactionOutput {
+  n: number;
+  scriptPubKey: object;
+  value: Decimal;
+}
+
+export class TransactionNotExistsError extends Error {
+  constructor(tx_hash: string) {
+    super(`No Transaction with id ${tx_hash}`);
+  }
+}
 
 export default function TransactionManagerService() {
   const { db, resultToJson, saveDatabase } = DatabaseService();
@@ -22,47 +63,75 @@ export default function TransactionManagerService() {
     resolveTransaction,
     buildP2pkhTransaction,
     sendTransaction,
+    deleteTransaction,
   };
 
-  async function loadTransaction(tx_hash: string): string {
+  // --------------------------------
+
+  // Raw transaction data is stored directly on the device filesystem
+  // This prevents bloating the in-memory sqlite db and causing OOM errors
+
+  // [private] _loadTxData: read raw transaction hex data from filesystem
+  async function _loadTxData(tx_hash: string): Promise<string> {
     try {
       const txFile = await Filesystem.readFile({
-        path: `/tx/${tx_hash}.raw`,
+        path: `/selene/tx/${tx_hash}.raw`,
         directory: Directory.Library,
       });
 
-      const txData = atob(txFile.data.toString());
-      return txData;
+      const txData = txFile.data.toString();
+
+      if (txData === "") {
+        throw new TransactionNotExistsError(tx_hash);
+      }
+
+      // Filesystem plugin gives us base64-encoded data
+      const tx_hex = atob(txData);
+      return tx_hex;
     } catch (e) {
       Logger.error(e);
-      return "";
+      throw new TransactionNotExistsError(tx_hash);
     }
   }
 
-  async function writeTransaction(tx_hash: string, tx_hex: string): void {
+  // [private] _writeTxData: write raw transaction hex data to filesystem
+  async function _writeTxData(
+    tx_hash: string,
+    tx_hex: string
+  ): Promise<WriteFileResult> {
     try {
+      // Filesystem plugin writes as raw bytes, but we must pass base64
       const data = btoa(tx_hex);
 
       const result = await Filesystem.writeFile({
-        path: `/tx/${tx_hash}.raw`,
+        path: `/selene/tx/${tx_hash}.raw`,
         directory: Directory.Library,
         recursive: true,
         data,
       });
-      Logger.debug("writeTransaction", tx_hash, result);
+
+      return result;
     } catch (e) {
       Logger.error(e);
+      return { uri: "" };
     }
   }
 
-  function registerTransaction(tx) {
+  async function deleteTransaction(tx_hash: string): Promise<void> {
+    return Filesystem.deleteFile({
+      path: `/selene/tx/${tx_hash}.raw`,
+      directory: Directory.Library,
+    });
+  }
+
+  // --------------------------------
+
+  async function registerTransaction(tx): Promise<void> {
     const blockhash = tx.blockhash ? tx.blockhash : null;
     const blocktime = tx.blocktime ? tx.blocktime : null;
     const time = tx.time ? tx.time : null;
 
-    //console.log("registerTransaction", tx, time, blockhash);
-
-    writeTransaction(tx.txid, tx.hex);
+    Logger.log("registerTransaction", tx, time, blockhash);
 
     db.run(
       `INSERT INTO transactions (
@@ -87,22 +156,28 @@ export default function TransactionManagerService() {
       `
     );
 
-    saveDatabase();
+    await _writeTxData(tx.txid, tx.hex);
+    await saveDatabase();
   }
 
-  async function getTransactionByHash(tx_hash) {
+  async function getTransactionByHash(
+    tx_hash: string
+  ): Promise<TransactionEntity> {
     const result = resultToJson(
       db.exec(`SELECT * FROM transactions WHERE txid="${tx_hash}"`)
     );
 
     if (result.length < 1) {
-      return null;
+      throw new TransactionNotExistsError(tx_hash);
     }
 
+    // reconstruct transaction from raw tx hex
     const localTx = result[0];
-    localTx.hex = await loadTransaction(tx_hash);
+    localTx.hex = await _loadTxData(tx_hash);
 
-    const decodedTx = libauth.decodeTransaction(hexToBin(localTx.hex));
+    const decodedTx = decodeTransaction(
+      hexToBin(localTx.hex)
+    ) as LibauthTransaction;
 
     // reconstruct "vin" from raw hex
     const vin = getVinFromDecodedTransaction(decodedTx);
@@ -112,27 +187,33 @@ export default function TransactionManagerService() {
 
     const tx = { ...localTx, vin, vout };
 
-    //console.log("getTransactionByHash", tx_hash, decodedTx, tx);
+    //Logger.log("getTransactionByHash", tx_hash, decodedTx, tx);
     return tx;
   }
 
-  function getVinFromDecodedTransaction(decodedTx) {
-    return decodedTx.inputs.map((input) => ({
-      txid: binToHex(input.outpointTransactionHash),
-      vout: input.outpointIndex,
-    }));
+  function getVinFromDecodedTransaction(
+    decodedTx: LibauthTransaction
+  ): Array<TransactionInput> {
+    return decodedTx.inputs.map(
+      (input): TransactionInput => ({
+        txid: binToHex(input.outpointTransactionHash),
+        vout: input.outpointIndex,
+      })
+    );
   }
 
-  function getVoutFromDecodedTransaction(decodedTx) {
-    return decodedTx.outputs.map((output, n) => {
-      const value = new Decimal(output.valueSatoshis.toString()).toNumber();
+  function getVoutFromDecodedTransaction(
+    decodedTx: LibauthTransaction
+  ): Array<TransactionOutput> {
+    return decodedTx.outputs.map((output, n): TransactionOutput => {
+      const value = new Decimal(output.valueSatoshis.toString());
 
       return {
         n,
         scriptPubKey: {
           addresses: [
-            value > 0
-              ? libauth.lockingBytecodeToCashAddress(
+            value.greaterThan(0)
+              ? lockingBytecodeToCashAddress(
                   output.lockingBytecode,
                   "bitcoincash"
                 )
@@ -144,21 +225,27 @@ export default function TransactionManagerService() {
     });
   }
 
-  async function resolveTransaction(tx_hash) {
-    const localTx = await getTransactionByHash(tx_hash);
+  async function resolveTransaction(
+    tx_hash: string
+  ): Promise<TransactionEntity> {
+    Logger.log("resolving", tx_hash);
+    try {
+      const localTx = await getTransactionByHash(tx_hash);
+      Logger.log("localTx", localTx);
 
-    // if localTx is null we're requesting this tx for the first time
-    if (
-      localTx === null ||
-      localTx.blockhash === "null" ||
-      localTx.time === "null"
-    ) {
+      if (localTx.blockhash === "null" || localTx.time === "null") {
+        throw new Error("Transaction Unconfirmed");
+      }
+
+      return localTx;
+    } catch (e) {
       const Electrum = ElectrumService();
       const tx = await Electrum.requestTransaction(tx_hash);
-      registerTransaction(tx);
+      await registerTransaction(tx);
     }
 
     const loadedTx = await getTransactionByHash(tx_hash);
+    Logger.log("resolved", tx_hash, loadedTx);
     return loadedTx;
   }
 
@@ -167,8 +254,8 @@ export default function TransactionManagerService() {
     const addressToLockingBytecode = (addr) => {
       const { isBase58Address, address } = validateInvoiceString(addr);
       const lockingBytecode = isBase58Address
-        ? libauth.base58AddressToLockingBytecode(address)
-        : libauth.cashAddressToLockingBytecode(address);
+        ? base58AddressToLockingBytecode(address)
+        : cashAddressToLockingBytecode(address);
 
       return typeof lockingBytecode === "object"
         ? lockingBytecode.bytecode
@@ -213,16 +300,16 @@ export default function TransactionManagerService() {
     }
 
     // initialize transaction compiler
-    const template = libauth.importAuthenticationTemplate(
-      libauth.authenticationTemplateP2pkhNonHd
+    const template = importAuthenticationTemplate(
+      authenticationTemplateP2pkhNonHd
     );
-    const compiler = libauth.authenticationTemplateToCompilerBCH(template);
+    const compiler = authenticationTemplateToCompilerBCH(template);
 
     // sign inputs
     const HdNode = HdNodeService(wallet);
     const signedInputs = HdNode.signInputs(inputs, compiler);
 
-    const generatedTx = libauth.generateTransaction({
+    const generatedTx = generateTransaction({
       inputs: signedInputs,
       outputs: vout,
       locktime: 0,
@@ -230,15 +317,13 @@ export default function TransactionManagerService() {
     });
 
     if (generatedTx.success === false) {
-      console.warn("tx generation failed", generatedTx); // eslint-disable-line no-console
+      Logger.warn("tx generation failed", generatedTx);
       return null;
     }
 
-    const tx_raw = libauth.encodeTransaction(generatedTx.transaction);
+    const tx_raw = encodeTransaction(generatedTx.transaction);
     const tx_hex = binToHex(tx_raw);
-    const tx_hash = libauth.swapEndianness(
-      binToHex(sha256.hash(sha256.hash(tx_raw)))
-    );
+    const tx_hash = swapEndianness(binToHex(sha256.hash(sha256.hash(tx_raw))));
 
     // if we didn't reclaim change, add it to total fee
     const feeTotal = changeTotal >= DUST_LIMIT ? fee : fee + changeTotal;
@@ -258,7 +343,7 @@ export default function TransactionManagerService() {
     }
 
     /*
-    console.log(
+    Logger.log(
       "buildTransaction",
       tx_hash,
       vout,
@@ -277,21 +362,24 @@ export default function TransactionManagerService() {
     };
   }
 
-  async function sendTransaction({ tx_hash, tx_hex }, wallet) {
+  async function sendTransaction(
+    { tx_hash, tx_hex },
+    wallet: WalletEntity
+  ): Promise<boolean> {
     const Electrum = ElectrumService();
     const result = await Electrum.broadcastTransaction(tx_hex);
     const isSuccess = result === tx_hash;
 
     if (isSuccess) {
       const UtxoManager = UtxoManagerService(wallet);
-      const decodedTx = libauth.decodeTransaction(hexToBin(tx_hex));
+      const decodedTx = decodeTransaction(hexToBin(tx_hex));
       const vin = getVinFromDecodedTransaction(decodedTx);
 
       vin.forEach((input) => {
         UtxoManager.discardUtxo({ tx_hash: input.txid, tx_pos: input.vout });
       });
     } else {
-      console.warn("transaction send failure", result); // eslint-disable-line no-console
+      Logger.warn("transaction send failure", result);
     }
 
     return isSuccess;
