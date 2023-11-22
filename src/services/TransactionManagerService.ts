@@ -131,7 +131,7 @@ export default function TransactionManagerService() {
     const blocktime = tx.blocktime ? tx.blocktime : null;
     const time = tx.time ? tx.time : null;
 
-    Logger.log("registerTransaction", tx, time, blockhash);
+    //Logger.log("registerTransaction", tx, time, blockhash);
 
     db.run(
       `INSERT INTO transactions (

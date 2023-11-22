@@ -204,12 +204,14 @@ export default function WalletManagerService() {
       )
     );
 
+    Logger.log(txList);
+
     const TransactionManager = TransactionManagerService();
-    txList.forEach((txid) => TransactionManager.deleteTransaction(txid));
+    txList.forEach((tx) => TransactionManager.deleteTransaction(tx.txid));
 
     db.run(
       `DELETE FROM transactions WHERE 
-        txid IN (${txList.join(",")})`
+        txid IN (${txList.map((tx) => `"${tx.txid}"`).join(",")})`
     );
 
     // delete this wallet's transaction history
