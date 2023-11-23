@@ -204,15 +204,8 @@ export default function WalletManagerService() {
       )
     );
 
-    Logger.log(txList);
-
     const TransactionManager = TransactionManagerService();
     txList.forEach((tx) => TransactionManager.deleteTransaction(tx.txid));
-
-    db.run(
-      `DELETE FROM transactions WHERE 
-        txid IN (${txList.map((tx) => `"${tx.txid}"`).join(",")})`
-    );
 
     // delete this wallet's transaction history
     db.run(
@@ -229,7 +222,7 @@ export default function WalletManagerService() {
     // delete wallet utxos
     db.run(`DELETE FROM address_utxos WHERE wallet_id="${wallet_id}"`);
 
-    // delete wallet utxos
+    // reset wallet balance
     db.run(`UPDATE wallets SET balance='0' WHERE id="${wallet_id}"`);
 
     saveDatabase();

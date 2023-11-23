@@ -57,7 +57,6 @@ export default function CurrencyService(fiatCurrency) {
   };
 
   async function fetchExchangeRates() {
-    console.log("Currency.fetchExchangeRates");
     const currencies = encodeURI(
       currencyList.map((currency) => currency.currency).join(",")
     );

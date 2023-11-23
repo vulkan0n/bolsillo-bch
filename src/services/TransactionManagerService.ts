@@ -45,7 +45,7 @@ export interface TransactionInput {
 export interface TransactionOutput {
   n: number;
   scriptPubKey: object;
-  value: Decimal;
+  value: string;
 }
 
 export class TransactionNotExistsError extends Error {
@@ -118,7 +118,9 @@ export default function TransactionManagerService() {
   }
 
   async function deleteTransaction(tx_hash: string): Promise<void> {
-    return Filesystem.deleteFile({
+    db.run(`DELETE FROM transactions WHERE txid="${tx_hash}";`);
+
+    Filesystem.deleteFile({
       path: `/selene/tx/${tx_hash}.raw`,
       directory: Directory.Library,
     });
@@ -157,7 +159,7 @@ export default function TransactionManagerService() {
     );
 
     await _writeTxData(tx.txid, tx.hex);
-    await saveDatabase();
+    saveDatabase();
   }
 
   async function getTransactionByHash(
@@ -220,7 +222,7 @@ export default function TransactionManagerService() {
               : "",
           ],
         },
-        value,
+        value: value.toString(),
       };
     });
   }
@@ -228,10 +230,8 @@ export default function TransactionManagerService() {
   async function resolveTransaction(
     tx_hash: string
   ): Promise<TransactionEntity> {
-    Logger.log("resolving", tx_hash);
     try {
       const localTx = await getTransactionByHash(tx_hash);
-      Logger.log("localTx", localTx);
 
       if (localTx.blockhash === "null" || localTx.time === "null") {
         throw new Error("Transaction Unconfirmed");

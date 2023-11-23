@@ -99,11 +99,11 @@ export default function WalletViewSend() {
     );
 
     if (isSuccess) {
-      console.log("send success");
       const tx = await TransactionManager.resolveTransaction(tx_hash);
-      console.log("resolveTransaction:", tx);
       await Haptics.notification({ type: NotificationType.Success });
-      navigate("/wallet/send/success", { state: { tx } });
+      navigate("/wallet/send/success", {
+        state: { tx },
+      });
     } else {
       await Haptics.notification({ type: NotificationType.Error });
       setMessage(translate(translations.transactionFailed));
@@ -122,7 +122,7 @@ export default function WalletViewSend() {
     );
 
     if (requestAmount > 0 && requestAmount <= threshold) {
-      //console.log("instapay!", threshold, requestAmount);
+      //Logger.log("instapay!", threshold, requestAmount);
       confirmSend();
     }
   });
