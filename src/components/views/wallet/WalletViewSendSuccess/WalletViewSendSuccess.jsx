@@ -1,3 +1,4 @@
+import {useState} from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { CheckCircleFilled } from "@ant-design/icons";
@@ -13,6 +14,8 @@ import translations from "./translations";
 function WalletViewSendSuccess() {
   const location = useLocation();
   const { tx } = location.state;
+
+  const [memo, setMemo] = useState("");
 
   return (
     <div className="fixed top-0 left-0 w-screen h-screen z-50">
@@ -42,6 +45,10 @@ function WalletViewSendSuccess() {
         </div>
       </Link>
       <div className="p-2">
+        <div className="bg-zinc-200 p-1 rounded mb-2 flex">
+          <span className="font-semibold p-0.5">Memo</span>
+            <input type="text" className="ml-1 flex-1 rounded-sm" value={memo} />
+        </div>
         <div className="bg-zinc-200 p-1 rounded">
           <div className="font-semibold py-1">Outputs</div>
           {tx.vout.map((output, i) => (
