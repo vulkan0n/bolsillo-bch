@@ -1,11 +1,11 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { ArrowLeftOutlined } from "@ant-design/icons";
+import { selectActiveWallet } from "@/redux/wallet";
 import { selectLocale } from "@/redux/device";
 import { selectCurrencySettings } from "@/redux/preferences";
+import TransactionHistoryService from "@/services/TransactionHistoryService";
 import { formatSatoshis } from "@/util/sats";
-import { selectTransactionHistory } from "@/redux/transactions";
-
 import translations from "./translations";
 import { translate } from "@/util/translations";
 
@@ -14,7 +14,11 @@ import Button from "@/atoms/Button";
 export default function WalletViewHistory() {
   const navigate = useNavigate();
   const locale = useSelector(selectLocale);
-  const transactions = useSelector(selectTransactionHistory);
+  const wallet = useSelector(selectActiveWallet);
+
+  const transactions =
+    TransactionHistoryService(wallet).getTransactionHistory();
+
   const { shouldPreferLocalCurrency } = useSelector(selectCurrencySettings);
 
   const receiveStyle = "text-secondary";

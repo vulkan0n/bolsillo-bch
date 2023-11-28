@@ -72,10 +72,10 @@ export default function AddressManagerService(wallet: WalletEntity) {
   // populateAddresses: generate addresses such that
   // we always have ADDRESS_GAP_LIMIT unused addresses
   // returns an array of generated addresses
-  function populateAddresses(): Array<AddressEntity> {
+  function populateAddresses(): Array<string> {
     const ADDRESS_GAP_LIMIT = 20; // BIP-44 gap limit is 20
 
-    const generatedAddresses: Array<AddressEntity> = [];
+    const generatedAddresses: Array<string> = [];
 
     const hdWallet = HdNodeService(wallet);
     populate(0);
@@ -287,17 +287,19 @@ export default function AddressManagerService(wallet: WalletEntity) {
 
   // AddressManager.registerTransaction: register a transaction with an address
   function registerTransaction(address: string, tx): void {
-    Logger.debug("AddressManager.registerTransaction", address, tx);
+    //Logger.debug("AddressManager.registerTransaction", address, tx);
 
     db.run(
       `INSERT INTO address_transactions (
         txid,
         height,
-        address
+        address,
+        wallet_id
       ) VALUES (
         "${tx.tx_hash}",
         "${tx.height}",
-        "${address}"
+        "${address}",
+        "${wallet.id}"
       ) ON CONFLICT DO 
         UPDATE SET 
           height="${tx.height}";

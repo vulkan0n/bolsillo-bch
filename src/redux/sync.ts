@@ -268,11 +268,10 @@ export const syncTxAmount = createAsyncThunk(
   async (tx, thunkApi) => {
     const wallet = selectActiveWallet(thunkApi.getState());
     const { localCurrency } = selectCurrencySettings(thunkApi.getState());
-    await TransactionHistoryService(wallet).calculateAndUpdateTransactionAmount(
-      tx,
-      localCurrency
-    );
-    return wallet;
+    const result = await TransactionHistoryService(
+      wallet
+    ).calculateAndUpdateTransactionAmount(tx, localCurrency);
+    return result;
   }
 );
 
@@ -305,10 +304,10 @@ syncMiddleware.startListening({
 const initialState = {
   connected: false,
   syncPending: {
-    utxo: false,
-    history: false,
-    txData: false,
-    txAmount: false,
+    utxo: 0,
+    history: 0,
+    txData: 0,
+    txAmount: 0,
   },
   chaintip: { ...block_checkpoints.first2023 },
 };
@@ -325,28 +324,28 @@ export const syncReducer = createReducer(initialState, (builder) => {
       state.connected = false;
     })
     .addCase(syncAddressUtxos.pending, (state) => {
-      state.syncPending.utxo = true;
+      state.syncPending.utxo += 1;
     })
     .addCase(syncAddressUtxos.fulfilled, (state) => {
-      state.syncPending.utxo = false;
+      state.syncPending.utxo -= 1;
     })
     .addCase(syncAddressHistory.pending, (state) => {
-      state.syncPending.history = true;
+      state.syncPending.history += 1;
     })
     .addCase(syncAddressHistory.fulfilled, (state) => {
-      state.syncPending.history = false;
+      state.syncPending.history -= 1;
     })
     .addCase(syncTxRequest.pending, (state) => {
-      state.syncPending.txRequest = true;
+      state.syncPending.txData += 1;
     })
     .addCase(syncTxRequest.fulfilled, (state) => {
-      state.syncPending.txRequest = false;
+      state.syncPending.txData -= 1;
     })
     .addCase(syncTxAmount.pending, (state) => {
-      state.syncPending.txAmount = true;
+      state.syncPending.txAmount += 1;
     })
     .addCase(syncTxAmount.fulfilled, (state) => {
-      state.syncPending.txAmount = false;
+      state.syncPending.txAmount -= 1;
     })
     .addCase(syncChaintip, (state, action) => {
       const { hex, height } = action.payload;
@@ -364,7 +363,7 @@ export const selectSyncState = createSelector(
     connected: sync.connected,
     syncPending: sync.syncPending,
     isSyncing: Object.keys(sync.syncPending).reduce(
-      (isSyncing, pending) => sync.syncPending[pending] || isSyncing,
+      (isSyncing, pending) => sync.syncPending[pending] > 0 || isSyncing,
       false
     ),
   })

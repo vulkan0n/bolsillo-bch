@@ -89,7 +89,6 @@ export default function TransactionManagerService() {
       const tx_hex = atob(txData);
       return tx_hex;
     } catch (e) {
-      Logger.error(e);
       throw new TransactionNotExistsError(tx_hash);
     }
   }
@@ -120,7 +119,7 @@ export default function TransactionManagerService() {
   async function deleteTransaction(tx_hash: string): Promise<void> {
     db.run(`DELETE FROM transactions WHERE txid="${tx_hash}";`);
 
-    Filesystem.deleteFile({
+    await Filesystem.deleteFile({
       path: `/selene/tx/${tx_hash}.raw`,
       directory: Directory.Library,
     });
@@ -245,7 +244,6 @@ export default function TransactionManagerService() {
     }
 
     const loadedTx = await getTransactionByHash(tx_hash);
-    Logger.log("resolved", tx_hash, loadedTx);
     return loadedTx;
   }
 

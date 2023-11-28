@@ -7,7 +7,6 @@ import {
 } from "./preferences";
 import { walletReducer, walletMiddleware, walletBoot } from "./wallet";
 import { syncReducer, syncMiddleware } from "./sync";
-import { txReducer } from "./transactions";
 import { deviceReducer } from "./device";
 import { exchangeRateReducer, fetchExchangeRates } from "./exchangeRates";
 import { triggerCheckIn } from "./stats";
@@ -19,7 +18,6 @@ export const store = configureStore({
     preferences: preferencesReducer,
     wallet: walletReducer,
     sync: syncReducer,
-    transactions: txReducer,
     exchangeRates: exchangeRateReducer,
   },
   middleware: (getDefaultMiddleware) =>

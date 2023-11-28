@@ -197,7 +197,65 @@ const migrations = [
     return query.join("");
   },
 
-  /*function migrate_v2() {
+  function migrate_v2() {
+    const query = [];
+
+    // remove primary key from address_transactions
+    // add fiat unit (to avoid stupid conversion bugs that nobody has noticed yet)
+    query.push(
+      `
+      PRAGMA foreign_keys=OFF;
+      BEGIN TRANSACTION;
+        DROP TABLE IF EXISTS address_transactions_new;
+        CREATE TABLE address_transactions_new ( 
+          txid text not null,
+          height int not null,
+          time text default ( strftime('%Y-%m-%dT%H:%M:%SZ') ),
+          time_seen default ( strftime('%Y-%m-%dT%H:%M:%SZ') ),
+          address text not null,
+          amount int,
+          fiat_amount text,
+          fiat_currency text,
+          wallet_id int,
+          UNIQUE(txid, wallet_id)
+        );
+
+        INSERT INTO address_transactions_new (
+          txid,
+          height, 
+          time, 
+          time_seen,
+          address,
+          amount,
+          fiat_amount
+        ) 
+        SELECT 
+          address_transactions.txid,
+          address_transactions.height, 
+          address_transactions.time,
+          address_transactions.time_seen,
+          address_transactions.address, 
+          address_transactions.amount,   
+          address_transactions.fiat_amount
+        FROM address_transactions;
+
+        DROP TABLE address_transactions;
+        ALTER TABLE 'address_transactions_new' RENAME TO 'address_transactions';
+        PRAGMA foreign_key_check;
+      COMMIT;
+      PRAGMA foreign_keys=ON;
+      `
+    );
+
+    // drop transaction hex data, as it is now written to filesystem directly
+    query.push("ALTER TABLE transactions DROP COLUMN hex;");
+
+    query.push("PRAGMA user_version = 3;");
+
+    return query.join("");
+  },
+
+  /*function migrate_v3() {
     const query = [];
 
     query.push("PRAGMA user_version = 0;");
@@ -209,9 +267,9 @@ const migrations = [
 // run_migrations: run all migrations in migrations array sequentially
 // Starts with index indicated in PRAGMA user_version
 export function run_migrations(db) {
+  //db.run("PRAGMA user_version = 0;");
   const DB_VERSION = db.exec("PRAGMA user_version")[0].values[0][0];
   Logger.log("DB_VERSION", DB_VERSION, migrations.length);
-  // db.run("PRAGMA user_version = 0;");
   for (let version = DB_VERSION; version < migrations.length; version += 1) {
     Logger.log("DB_MIGRATE", `${version}/${migrations.length}`, DB_VERSION);
     try {

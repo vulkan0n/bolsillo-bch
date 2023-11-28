@@ -1,8 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, useSearchParams, useNavigate } from "react-router-dom";
-
 import { Haptics, NotificationType } from "@capacitor/haptics";
-
 import { useSelector } from "react-redux";
 import { ArrowLeftOutlined } from "@ant-design/icons";
 import { selectActiveWallet } from "@/redux/wallet";
@@ -13,9 +11,6 @@ import {
 
 import { selectKeyboardIsOpen } from "@/redux/device";
 
-import { bchToSats, formatSatoshis, satsToDisplayAmount } from "@/util/sats";
-import { validateInvoiceString } from "@/util/invoice";
-
 import TransactionManagerService from "@/services/TransactionManagerService";
 
 import SatoshiInput from "@/atoms/SatoshiInput";
@@ -24,6 +19,8 @@ import Address from "@/atoms/Address";
 import CurrencySymbol from "@/atoms/CurrencySymbol";
 import CurrencyFlip from "@/atoms/CurrencyFlip";
 
+import { bchToSats, formatSatoshis, satsToDisplayAmount } from "@/util/sats";
+import { validateInvoiceString } from "@/util/invoice";
 import { translate } from "@/util/translations";
 import translations from "./translations";
 

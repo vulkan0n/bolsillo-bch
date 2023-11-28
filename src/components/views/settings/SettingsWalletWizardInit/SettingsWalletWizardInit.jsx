@@ -10,9 +10,8 @@ export default function SettingsWalletWizardInit() {
   const navigate = useNavigate();
 
   const handleCreateWallet = () => {
-    const newWalletTranslation = translate(translations.newWallet);
     const wallet = WalletManagerService().createWallet(
-      translate(translations.newWalletTranslation)
+      translate(translations.newWallet)
     );
     navigate(`/settings/wallet/${wallet.id}`, { replace: true });
   };

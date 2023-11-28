@@ -7,15 +7,27 @@ import CurrencyService from "@/services/CurrencyService";
 export default function TransactionHistoryService(wallet) {
   const { db, resultToJson, saveDatabase } = DatabaseService();
 
+  const AddressManager = AddressManagerService(wallet);
+  const myAddresses = [
+    ...AddressManager.getReceiveAddresses().map((a) => a.address),
+    ...AddressManager.getChangeAddresses().map((a) => a.address),
+  ];
+
   return {
     getTransactionHistory,
     calculateAndUpdateTransactionAmount,
   };
 
   function getTransactionHistory() {
+    console.log("getTransactionHistory", wallet.id);
     const result = resultToJson(
       db.exec(
-        `SELECT * FROM address_transactions WHERE address IN (SELECT address FROM addresses WHERE wallet_id="${wallet.id}") ORDER BY time DESC, time_seen DESC, height ASC`
+        `SELECT * FROM address_transactions 
+          WHERE wallet_id="${wallet.id}"
+          OR address IN (
+            SELECT address FROM addresses WHERE wallet_id="${wallet.id}"
+          ) ORDER BY height DESC, time_seen DESC, time DESC
+        `
       )
     );
 
@@ -35,13 +47,7 @@ export default function TransactionHistoryService(wallet) {
   }
 
   async function calculateAndUpdateTransactionAmount(tx, fiatCurrency) {
-    const AddressManager = AddressManagerService(wallet);
     const TransactionManager = TransactionManagerService();
-
-    const myAddresses = [
-      ...AddressManager.getReceiveAddresses().map((a) => a.address),
-      ...AddressManager.getChangeAddresses().map((a) => a.address),
-    ];
 
     const isMyUtxo = (utxo) => {
       if (utxo.value === 0) {
@@ -88,7 +94,7 @@ export default function TransactionHistoryService(wallet) {
     const sentAmount = myInputs.reduce(sumReducer, new Decimal(0));
 
     // TODO: totalOutput - amount = fee
-    const amount = receivedAmount - sentAmount;
+    const amount = receivedAmount.minus(sentAmount);
 
     /*
     console.log(
@@ -105,13 +111,15 @@ export default function TransactionHistoryService(wallet) {
     db.run(
       `UPDATE address_transactions SET 
         amount="${amount}", 
-        fiat_amount="${CurrencyService(fiatCurrency).satsToFiat(amount)}", 
+        fiat_amount="${CurrencyService(fiatCurrency).satsToFiat(amount) || 0}", 
+        fiat_currency="${fiatCurrency}",
         time=${
           tx.time !== "null"
             ? `strftime('%Y-%m-%dT%H:%M:%SZ', "${tx.time}", "unixepoch")`
             : `strftime('%Y-%m-%dT%H:%M:%SZ')`
-        }
-      WHERE txid="${tx.txid}"`
+        },
+        wallet_id="${wallet.id}"
+      WHERE txid="${tx.txid}" AND (wallet_id="${wallet.id}" OR wallet_id=null)`
     );
 
     saveDatabase();
