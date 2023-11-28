@@ -4,7 +4,9 @@ import AddressManagerService from "@/services/AddressManagerService";
 import TransactionManagerService from "@/services/TransactionManagerService";
 import CurrencyService from "@/services/CurrencyService";
 
-export default function TransactionHistoryService(wallet) {
+import { WalletEntity } from "@/services/WalletManagerService";
+
+export default function TransactionHistoryService(wallet: WalletEntity) {
   const { db, resultToJson, saveDatabase } = DatabaseService();
 
   const AddressManager = AddressManagerService(wallet);
@@ -16,6 +18,7 @@ export default function TransactionHistoryService(wallet) {
   return {
     getTransactionHistory,
     calculateAndUpdateTransactionAmount,
+    setTransactionMemo,
   };
 
   function getTransactionHistory() {
@@ -65,7 +68,7 @@ export default function TransactionHistoryService(wallet) {
 
     // resolve vins to real txos
     const vinTxes = await Promise.all(
-      tx.vin.map((vin) => TransactionManager.resolveTransaction(vin.txid))
+      tx.vin.map((vin) => TransactionManager.resolveTransaction(vin.txid, true))
     );
 
     // for each input tx, get outputs.
@@ -122,6 +125,11 @@ export default function TransactionHistoryService(wallet) {
       WHERE txid="${tx.txid}" AND (wallet_id="${wallet.id}" OR wallet_id=null)`
     );
 
+    saveDatabase();
+  }
+
+  function setTransactionMemo(tx_hash: string, memo: string) {
+    db.run(`UPDATE transactions SET memo="${memo}" WHERE txid=${tx_hash}`);
     saveDatabase();
   }
 }

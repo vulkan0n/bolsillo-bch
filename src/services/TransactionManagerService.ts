@@ -58,12 +58,12 @@ export default function TransactionManagerService() {
   const { db, resultToJson, saveDatabase } = DatabaseService();
 
   return {
-    registerTransaction,
     getTransactionByHash,
     resolveTransaction,
     buildP2pkhTransaction,
     sendTransaction,
     deleteTransaction,
+    purgeTransactions,
   };
 
   // --------------------------------
@@ -116,18 +116,12 @@ export default function TransactionManagerService() {
     }
   }
 
-  async function deleteTransaction(tx_hash: string): Promise<void> {
-    db.run(`DELETE FROM transactions WHERE txid="${tx_hash}";`);
-
-    await Filesystem.deleteFile({
-      path: `/selene/tx/${tx_hash}.raw`,
-      directory: Directory.Library,
-    });
-  }
-
   // --------------------------------
 
-  async function registerTransaction(tx): Promise<void> {
+  async function _registerTransaction(
+    tx,
+    purge: boolean = false
+  ): Promise<void> {
     const blockhash = tx.blockhash ? tx.blockhash : null;
     const blocktime = tx.blocktime ? tx.blocktime : null;
     const time = tx.time ? tx.time : null;
@@ -140,25 +134,45 @@ export default function TransactionManagerService() {
         size,
         blockhash,
         time,
-        blocktime
+        blocktime,
+        purge
       )
       VALUES (
         "${tx.txid}",
         "${tx.size}",
         "${blockhash}",
         "${time}",
-        "${blocktime}"
+        "${blocktime}",
+        "${purge}",
       ) ON CONFLICT DO 
         UPDATE SET
           size="${tx.size}",
           blockhash="${blockhash}",
           time="${time}",
-          blocktime="${blocktime}";
+          blocktime="${blocktime}",
+          purge="${purge}"
       `
     );
 
     await _writeTxData(tx.txid, tx.hex);
     saveDatabase();
+  }
+
+  async function deleteTransaction(tx_hash: string): Promise<void> {
+    db.run(`DELETE FROM transactions WHERE txid="${tx_hash}";`);
+
+    await Filesystem.deleteFile({
+      path: `/selene/tx/${tx_hash}.raw`,
+      directory: Directory.Library,
+    });
+  }
+
+  async function purgeTransactions(): Promise<void> {
+    const hashes = resultToJson(
+      db.exec("SELECT txid FROM transactions WHERE purge=1")
+    );
+
+    await Promise.all(hashes.map((tx_hash) => deleteTransaction(tx_hash)));
   }
 
   async function getTransactionByHash(
@@ -227,7 +241,8 @@ export default function TransactionManagerService() {
   }
 
   async function resolveTransaction(
-    tx_hash: string
+    tx_hash: string,
+    purge: boolean
   ): Promise<TransactionEntity> {
     try {
       const localTx = await getTransactionByHash(tx_hash);
@@ -238,9 +253,10 @@ export default function TransactionManagerService() {
 
       return localTx;
     } catch (e) {
+      Logger.warn(e);
       const Electrum = ElectrumService();
       const tx = await Electrum.requestTransaction(tx_hash);
-      await registerTransaction(tx);
+      await _registerTransaction(tx, purge);
     }
 
     const loadedTx = await getTransactionByHash(tx_hash);

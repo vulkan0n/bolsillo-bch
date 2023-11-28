@@ -1,13 +1,16 @@
-import {useState} from "react";
+import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { CheckCircleFilled } from "@ant-design/icons";
 import { selectCurrencySettings } from "@/redux/preferences";
-import { logos } from "@/util/logos";
+import { selectActiveWallet } from "@/redux/wallet";
+
+import TransactionHistoryService from "@/services/TransactionHistoryService";
 
 import Address from "@/atoms/Address";
 import { formatSatoshis } from "@/util/sats";
 
+import { logos } from "@/util/logos";
 import { translate } from "@/util/translations";
 import translations from "./translations";
 
@@ -15,7 +18,17 @@ function WalletViewSendSuccess() {
   const location = useLocation();
   const { tx } = location.state;
 
+  const wallet = useSelector(selectActiveWallet);
+
   const [memo, setMemo] = useState("");
+
+  const handleMemoChange = (event) => setMemo(event.target.value);
+
+  const handleMemoKeyDown = (event) => {
+    if (event.key === "Enter") {
+      TransactionHistoryService(wallet).setTransactionMemo(tx.txid, memo);
+    }
+  };
 
   return (
     <div className="fixed top-0 left-0 w-screen h-screen z-50">
@@ -38,7 +51,7 @@ function WalletViewSendSuccess() {
       </Link>
       <Link to={`/explore/tx/${tx.txid}`}>
         <div className="bg-zinc-200 mb-1 border-b border-zinc-500">
-          <span className="mr-1">Transaction ID:</span>
+          <span className="mr-1 font-semibold">Transaction ID:</span>
           <span className="font-mono text-sm tracking-tighter break-all select-all">
             {tx.txid}
           </span>
@@ -47,7 +60,13 @@ function WalletViewSendSuccess() {
       <div className="p-2">
         <div className="bg-zinc-200 p-1 rounded mb-2 flex">
           <span className="font-semibold p-0.5">Memo</span>
-            <input type="text" className="ml-1 flex-1 rounded-sm" value={memo} />
+          <input
+            type="text"
+            className="ml-1 flex-1 rounded-sm"
+            value={memo}
+            onChange={handleMemoChange}
+            onKeyDown={handleMemoKeyDown}
+          />
         </div>
         <div className="bg-zinc-200 p-1 rounded">
           <div className="font-semibold py-1">Outputs</div>
