@@ -118,10 +118,7 @@ export default function TransactionManagerService() {
 
   // --------------------------------
 
-  async function _registerTransaction(
-    tx,
-    purge: boolean = false
-  ): Promise<void> {
+  async function _registerTransaction(tx): Promise<void> {
     const blockhash = tx.blockhash ? tx.blockhash : null;
     const blocktime = tx.blocktime ? tx.blocktime : null;
     const time = tx.time ? tx.time : null;
@@ -134,23 +131,20 @@ export default function TransactionManagerService() {
         size,
         blockhash,
         time,
-        blocktime,
-        purge
+        blocktime
       )
       VALUES (
         "${tx.txid}",
         "${tx.size}",
         "${blockhash}",
         "${time}",
-        "${blocktime}",
-        "${purge}",
+        "${blocktime}"
       ) ON CONFLICT DO 
         UPDATE SET
           size="${tx.size}",
           blockhash="${blockhash}",
           time="${time}",
-          blocktime="${blocktime}",
-          purge="${purge}"
+          blocktime="${blocktime}"
       `
     );
 
@@ -168,11 +162,18 @@ export default function TransactionManagerService() {
   }
 
   async function purgeTransactions(): Promise<void> {
-    const hashes = resultToJson(
-      db.exec("SELECT txid FROM transactions WHERE purge=1")
+    const tx_hashes = resultToJson(
+      db.exec(
+        `
+        SELECT txid FROM transactions WHERE
+          txid NOT IN (SELECT txid FROM address_utxos);
+        `
+      )
     );
 
-    await Promise.all(hashes.map((tx_hash) => deleteTransaction(tx_hash)));
+    Logger.debug("purgeTransactions", tx_hashes);
+
+    await Promise.all(tx_hashes.map(({ txid }) => deleteTransaction(txid)));
   }
 
   async function getTransactionByHash(
@@ -241,8 +242,7 @@ export default function TransactionManagerService() {
   }
 
   async function resolveTransaction(
-    tx_hash: string,
-    purge: boolean
+    tx_hash: string
   ): Promise<TransactionEntity> {
     try {
       const localTx = await getTransactionByHash(tx_hash);
@@ -256,7 +256,7 @@ export default function TransactionManagerService() {
       Logger.warn(e);
       const Electrum = ElectrumService();
       const tx = await Electrum.requestTransaction(tx_hash);
-      await _registerTransaction(tx, purge);
+      await _registerTransaction(tx);
     }
 
     const loadedTx = await getTransactionByHash(tx_hash);

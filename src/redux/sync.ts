@@ -298,6 +298,8 @@ syncMiddleware.startListening({
     // Logger.log("sync/chaintip", chaintip);
     listenerApi.dispatch(syncBlock(chaintip.height));
     listenerApi.dispatch(fetchExchangeRates());
+
+    TransactionManagerService().purgeTransactions();
   },
 });
 

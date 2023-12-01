@@ -250,9 +250,6 @@ const migrations = [
     // drop transaction hex data, as it is now written to filesystem directly
     query.push("ALTER TABLE transactions DROP COLUMN hex;");
 
-    // add 'purge' column to transactions to mark for purging
-    query.push("ALTER TABLE transactions ADD COLUMN purge int default 0;");
-
     query.push("PRAGMA user_version = 3;");
 
     return query.join("");
