@@ -61,6 +61,7 @@ function validatePreferences(preferences: ValidPreferences): boolean {
   return true;
 }
 
+// cleanupPreferences: removes all unknown/invalid preferences
 async function cleanupPreferences(): Promise<void[]> {
   const knownKeys = (await Preferences.keys()).keys;
   const validKeys = Object.keys(defaultPreferences);
@@ -79,7 +80,7 @@ async function cleanupPreferences(): Promise<void[]> {
 async function retrievePreferences(): Promise<ValidPreferences> {
   // Preferences.clear();
 
-  // remove any unused preferences
+  // remove any unused preferences first
   await cleanupPreferences();
 
   const keys = Object.keys(defaultPreferences);
@@ -109,7 +110,7 @@ async function retrievePreferences(): Promise<ValidPreferences> {
   return preferences;
 }
 
-const initialState: ValidPreferences = await retrievePreferences();
+const initialState = await retrievePreferences();
 
 export const setPreference = createAsyncThunk(
   "preferences/set",

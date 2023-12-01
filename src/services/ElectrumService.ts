@@ -10,17 +10,27 @@ import {
   syncConnectionDown,
   syncAddressUpdate,
   syncChaintip,
+  selectSyncState,
 } from "@/redux/sync";
+
+import { AddressEntity } from "@/services/AddressManagerService";
 
 import { bchToSats } from "@/util/sats";
 import { electrum_servers, chipnet_servers } from "@/util/electrum_servers";
 
 const DEFAULT_ELECTRUM_SERVER = electrum_servers[0];
 
-const server_blacklist = [];
+export class ElectrumNotConnectedError extends Error {
+  constructor() {
+    super(`ElectrumNotConnectedError`);
+  }
+}
 
 // pointer for current ElectrumClient instance
-let electrum = null;
+let electrum: ElectrumClient | null = null;
+
+const server_blacklist: Array<string> = [];
+const pendingRequests: Array<string> = [];
 
 // ElectrumService: brokers interactions with electrum server
 export default function ElectrumService() {
@@ -45,11 +55,13 @@ export default function ElectrumService() {
   // connect: connect to an Electrum server
   // Creates a new ElectrumClient every time
   // Destroys existing ElectrumClient if out of sync with Redux state
-  async function connect(server = DEFAULT_ELECTRUM_SERVER) {
+  async function connect(
+    server: string = DEFAULT_ELECTRUM_SERVER
+  ): Promise<void> {
     // using redux connection state guarantees that
     // we only create new ElectrumClient when necessary
-    if (store.getState().sync.connected) {
-      return Promise.resolve(true);
+    if (selectSyncState(store.getState()).connected) {
+      return Promise.resolve();
     }
 
     // ensure all references to old ElectrumClient are killed
@@ -79,14 +91,14 @@ export default function ElectrumService() {
 
     electrum.addListener("disconnected", () => {
       Logger.log("ELECTRUM DISCONNECTED");
-      store.dispatch(syncConnectionDown({ server }));
+      store.dispatch(syncConnectionDown());
     });
 
     return electrum.connect();
   }
 
   // disconnect: disconnect the Electrum instance
-  async function disconnect(force) {
+  async function disconnect(force: boolean): Promise<boolean> {
     if (electrum !== null) {
       return electrum.disconnect(force);
     }
@@ -95,50 +107,51 @@ export default function ElectrumService() {
   }
 
   // subscribeToAddress: listen for updates on an address
-  async function subscribeToAddress(address) {
-    try {
-      if (
-        await electrum.subscribe(
-          handleAddressSubscription,
-          "blockchain.address.subscribe",
-          address
-        )
-      ) {
-        const addressState = await electrum.request(
-          "blockchain.address.subscribe",
-          address
-        );
-
-        // don't emit subscription update for unused (null state) addresses
-        if (addressState !== null) {
-          handleAddressSubscription([address, addressState]);
-        }
-
-        return address;
-      }
-
-      return false;
-    } catch (e) {
-      // throws if electrum is disconnected
-      Logger.error(e);
-      return false;
+  async function subscribeToAddress(address: AddressEntity): Promise<boolean> {
+    if (electrum === null) {
+      throw new ElectrumNotConnectedError();
     }
+
+    const isSubscribed = await electrum.subscribe(
+      handleAddressSubscription,
+      "blockchain.address.subscribe",
+      address.address
+    );
+
+    if (isSubscribed) {
+      const addressState = await electrum.request(
+        "blockchain.address.subscribe",
+        address.address
+      );
+
+      // don't emit subscription update for unused (null state) addresses
+      if (addressState !== null) {
+        handleAddressSubscription([address.address, addressState]);
+      }
+    }
+
+    return isSubscribed;
   }
 
-  async function subscribeToChaintip() {
-    try {
-      return electrum.subscribe(
-        handleChaintipSubscription,
-        "blockchain.headers.subscribe"
-      );
-    } catch (e) {
-      // throws if electrum is disconnected
-      return Promise.reject(e);
+  async function subscribeToChaintip(): Promise<boolean> {
+    if (electrum === null) {
+      throw new ElectrumNotConnectedError();
     }
+
+    const isSubscribed = electrum.subscribe(
+      handleChaintipSubscription,
+      "blockchain.headers.subscribe"
+    );
+
+    return isSubscribed;
   }
 
   // request the most up-to-date balance information for an address
   async function requestBalance(address) {
+    if (electrum === null) {
+      throw new ElectrumNotConnectedError();
+    }
+
     const { confirmed, unconfirmed } = await electrum.request(
       "blockchain.address.get_balance",
       address
@@ -149,6 +162,9 @@ export default function ElectrumService() {
 
   // request the most up-to-date state hash for an address
   async function requestAddressState(address) {
+    if (electrum === null) {
+      throw new ElectrumNotConnectedError();
+    }
     const addressState = await electrum.request(
       "blockchain.address.subscribe",
       address
@@ -159,6 +175,9 @@ export default function ElectrumService() {
 
   // request the entire transaction history for an address
   async function requestAddressHistory(address) {
+    if (electrum === null) {
+      throw new ElectrumNotConnectedError();
+    }
     const history = await electrum.request(
       "blockchain.address.get_history",
       address
@@ -169,6 +188,9 @@ export default function ElectrumService() {
 
   // request all current UTXOs for an address
   async function requestUtxos(address) {
+    if (electrum === null) {
+      throw new ElectrumNotConnectedError();
+    }
     const utxos = await electrum.request(
       "blockchain.address.listunspent",
       address
@@ -178,8 +200,37 @@ export default function ElectrumService() {
   }
 
   // request a transaction by its txid
-  async function requestTransaction(tx_hash, verbose = true) {
-    const transaction = await electrum.request(
+  async function requestTransaction(tx_hash: string, verbose: boolean = true) {
+    if (electrum === null) {
+      throw new ElectrumNotConnectedError();
+    }
+
+    const isPending = pendingRequests.indexOf(tx_hash) > -1;
+    let transaction;
+
+    const waitForResolution = (resolve) => {
+      Logger.warn("waiting for resolution of", tx_hash);
+      setTimeout(() => {
+        if (transaction === undefined) {
+          return waitForResolution(resolve);
+        }
+
+        const pendingIndex = pendingRequests.indexOf(tx_hash);
+        if (pendingIndex > -1) {
+          pendingRequests.splice(pendingIndex, 1);
+        }
+
+        return resolve(transaction);
+      }, 1000);
+    };
+
+    if (isPending) {
+      return new Promise(waitForResolution);
+    }
+
+    pendingRequests.push(tx_hash);
+
+    transaction = await electrum.request(
       "blockchain.transaction.get",
       tx_hash,
       verbose
@@ -189,6 +240,9 @@ export default function ElectrumService() {
   }
 
   async function requestMerkle(tx_hash, height) {
+    if (electrum === null) {
+      throw new ElectrumNotConnectedError();
+    }
     const merkle = await electrum.request(
       "blockchain.transaction.get_merkle",
       tx_hash,
@@ -204,6 +258,10 @@ export default function ElectrumService() {
       throw new Error("height must be non-negative integer");
     }
 
+    if (electrum === null) {
+      throw new ElectrumNotConnectedError();
+    }
+
     const header = await electrum.request(
       "blockchain.block.header",
       height,
@@ -215,6 +273,9 @@ export default function ElectrumService() {
   }
 
   async function broadcastTransaction(tx_hex) {
+    if (electrum === null) {
+      throw new ElectrumNotConnectedError();
+    }
     const tx_hash = await electrum.request(
       "blockchain.transaction.broadcast",
       tx_hex
@@ -225,6 +286,9 @@ export default function ElectrumService() {
   }
 
   async function requestRelayFee() {
+    if (electrum === null) {
+      throw new ElectrumNotConnectedError();
+    }
     const result = await electrum.request("blockchain.relayfee");
 
     const relayFee = bchToSats(result);

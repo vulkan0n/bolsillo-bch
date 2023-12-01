@@ -190,23 +190,6 @@ export default function WalletManagerService() {
   // clearWalletData: deletes all data associated with a wallet
   // does NOT delete the wallet; all data can be re-derived/resynced
   function clearWalletData(wallet_id: number): void {
-    // delete transaction data associated with this wallet's addresses
-    const txList = resultToJson(
-      db.exec(
-        `SELECT txid FROM transactions WHERE 
-        txid IN (
-          SELECT txid FROM address_transactions WHERE 
-            address IN (
-              SELECT address FROM addresses WHERE 
-                wallet_id="${wallet_id}"
-            )
-        )`
-      )
-    );
-
-    const TransactionManager = TransactionManagerService();
-    txList.forEach((tx) => TransactionManager.deleteTransaction(tx.txid));
-
     // delete this wallet's transaction history
     db.run(
       `DELETE FROM address_transactions WHERE 
@@ -224,6 +207,9 @@ export default function WalletManagerService() {
 
     // reset wallet balance
     db.run(`UPDATE wallets SET balance='0' WHERE id="${wallet_id}"`);
+
+    // purge orphaned transaction data
+    TransactionManagerService().purgeTransactions();
 
     saveDatabase();
   }

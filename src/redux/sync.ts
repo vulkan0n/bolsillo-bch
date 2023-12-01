@@ -8,6 +8,7 @@ import {
   createListenerMiddleware,
 } from "@reduxjs/toolkit";
 
+import { RootState } from "@/redux";
 import { walletBalanceUpdate, selectActiveWallet } from "@/redux/wallet";
 import { fetchExchangeRates } from "@/redux/exchangeRates";
 import {
@@ -18,7 +19,9 @@ import {
 
 import ElectrumService from "@/services/ElectrumService";
 import BlockchainService from "@/services/BlockchainService";
-import AddressManagerService from "@/services/AddressManagerService";
+import AddressManagerService, {
+  AddressEntity,
+} from "@/services/AddressManagerService";
 import TransactionManagerService from "@/services/TransactionManagerService";
 import TransactionHistoryService from "@/services/TransactionHistoryService";
 import UtxoManagerService from "@/services/UtxoManagerService";
@@ -95,12 +98,12 @@ syncMiddleware.startListening({
     const AddressManager = AddressManagerService(wallet);
 
     const subscribeAddresses = AddressManager.getReceiveAddresses();
-    subscribeAddresses.forEach(({ address }) =>
+    subscribeAddresses.forEach((address) =>
       listenerApi.dispatch(syncSubscribeAddress(address))
     );
 
     const changeAddresses = AddressManager.getChangeAddresses();
-    changeAddresses.forEach(({ address }) =>
+    changeAddresses.forEach((address) =>
       listenerApi.dispatch(syncChangeAddress(address))
     );
   },
@@ -112,12 +115,12 @@ export const syncConnectionDown = createAction("sync/down");
 syncMiddleware.startListening({
   actionCreator: syncConnectionDown,
   effect: async (action, listenerApi) => {
+    const server = Electrum.getElectrumHost();
+
     // cleanup electrum subscriptions (force=true)
     Electrum.disconnect(true);
     // we'll handle reconnecting ourselves
-    listenerApi.dispatch(
-      syncConnect({ server: action.payload.server, attempts: 0 })
-    );
+    listenerApi.dispatch(syncConnect({ server, attempts: 0 }));
   },
 });
 
@@ -126,7 +129,7 @@ syncMiddleware.startListening({
 // TODO: check to see if duplicate subscriptions are even a problem...
 export const syncSubscribeAddress = createAsyncThunk(
   "sync/subscribeAddress",
-  async (address) => {
+  async (address: AddressEntity) => {
     return Electrum.subscribeToAddress(address);
   }
 );
@@ -135,12 +138,16 @@ export const syncSubscribeAddress = createAsyncThunk(
 export const syncChangeAddress = createAsyncThunk(
   "sync/changeAddress",
   async (address, thunkApi) => {
-    const wallet = selectActiveWallet(thunkApi.getState());
-    const AddressManager = AddressManagerService(wallet);
-    const addressState = await Electrum.requestAddressState(address);
+    const newestChange = selectNewestChange(thunkApi.getState());
 
-    if (AddressManager.getAddressState(address) !== addressState) {
-      thunkApi.dispatch(syncAddressUpdate([address, addressState]));
+    // only rescan last 1000 change addresses
+    if (
+      address.state === "null" ||
+      address.hd_index < newestChange.hd_index - 1000
+    ) {
+      const addressState = await Electrum.requestAddressState(address.address);
+
+      thunkApi.dispatch(syncAddressUpdate([address.address, addressState]));
     }
   }
 );
@@ -297,7 +304,7 @@ syncMiddleware.startListening({
     const chaintip = action.payload;
     // Logger.log("sync/chaintip", chaintip);
     listenerApi.dispatch(syncBlock(chaintip.height));
-    listenerApi.dispatch(fetchExchangeRates());
+    //listenerApi.dispatch(fetchExchangeRates());
 
     TransactionManagerService().purgeTransactions();
   },
@@ -316,37 +323,37 @@ const initialState = {
 
 export const syncReducer = createReducer(initialState, (builder) => {
   builder
-    .addCase(syncConnectionUp, (state) => {
+    .addCase(syncConnectionUp, (state: RootState) => {
       state.connected = true;
     })
-    .addCase(syncConnectionDown, (state) => {
+    .addCase(syncConnectionDown, (state: RootState) => {
       state.connected = false;
     })
-    .addCase(syncReconnect.pending, (state) => {
+    .addCase(syncReconnect.pending, (state: RootState) => {
       state.connected = false;
     })
-    .addCase(syncAddressUtxos.pending, (state) => {
+    .addCase(syncAddressUtxos.pending, (state: RootState) => {
       state.syncPending.utxo += 1;
     })
-    .addCase(syncAddressUtxos.fulfilled, (state) => {
+    .addCase(syncAddressUtxos.fulfilled, (state: RootState) => {
       state.syncPending.utxo -= 1;
     })
-    .addCase(syncAddressHistory.pending, (state) => {
+    .addCase(syncAddressHistory.pending, (state: RootState) => {
       state.syncPending.history += 1;
     })
-    .addCase(syncAddressHistory.fulfilled, (state) => {
+    .addCase(syncAddressHistory.fulfilled, (state: RootState) => {
       state.syncPending.history -= 1;
     })
-    .addCase(syncTxRequest.pending, (state) => {
+    .addCase(syncTxRequest.pending, (state: RootState) => {
       state.syncPending.txData += 1;
     })
-    .addCase(syncTxRequest.fulfilled, (state) => {
+    .addCase(syncTxRequest.fulfilled, (state: RootState) => {
       state.syncPending.txData -= 1;
     })
-    .addCase(syncTxAmount.pending, (state) => {
+    .addCase(syncTxAmount.pending, (state: RootState) => {
       state.syncPending.txAmount += 1;
     })
-    .addCase(syncTxAmount.fulfilled, (state) => {
+    .addCase(syncTxAmount.fulfilled, (state: RootState) => {
       state.syncPending.txAmount -= 1;
     })
     .addCase(syncChaintip, (state, action) => {
@@ -360,7 +367,7 @@ export const syncReducer = createReducer(initialState, (builder) => {
 });
 
 export const selectSyncState = createSelector(
-  (state) => state.sync,
+  (state: RootState) => state.sync,
   (sync) => ({
     connected: sync.connected,
     syncPending: sync.syncPending,

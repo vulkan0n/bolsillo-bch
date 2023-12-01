@@ -2,29 +2,16 @@ import Logger from "js-logger";
 import { Filesystem, Directory, WriteFileResult } from "@capacitor/filesystem";
 import { Decimal } from "decimal.js";
 import {
-  sha256,
   decodeTransaction,
-  encodeTransaction,
-  generateTransaction,
-  swapEndianness,
   lockingBytecodeToCashAddress,
-  cashAddressToLockingBytecode,
-  base58AddressToLockingBytecode,
-  importAuthenticationTemplate,
-  authenticationTemplateP2pkhNonHd,
-  authenticationTemplateToCompilerBCH,
   TransactionCommon as LibauthTransaction,
 } from "@bitauth/libauth";
 
 import DatabaseService from "@/services/DatabaseService";
 import ElectrumService from "@/services/ElectrumService";
 import UtxoManagerService from "@/services/UtxoManagerService";
-import AddressManagerService from "@/services/AddressManagerService";
-import HdNodeService from "@/services/HdNodeService";
 import { WalletEntity } from "@/services/WalletManagerService";
 
-import { DUST_LIMIT } from "@/util/sats";
-import { validateInvoiceString } from "@/util/invoice";
 import { hexToBin, binToHex } from "@/util/hex";
 
 export interface TransactionEntity {
@@ -58,13 +45,92 @@ export default function TransactionManagerService() {
   const { db, resultToJson, saveDatabase } = DatabaseService();
 
   return {
-    getTransactionByHash,
     resolveTransaction,
-    buildP2pkhTransaction,
     sendTransaction,
     deleteTransaction,
     purgeTransactions,
   };
+
+  // --------------------------------
+
+  // resolveTransaction: load transaction from db, fetch it from electrum if we don't have it
+  async function resolveTransaction(
+    tx_hash: string
+  ): Promise<TransactionEntity> {
+    try {
+      const localTx = await getTransactionByHash(tx_hash);
+
+      // request the tx again if it's unconfirmed
+      if (localTx.blockhash === "null" || localTx.time === "null") {
+        throw new Error("Transaction Unconfirmed");
+      }
+
+      //Logger.debug("resolveTransaction", "local", tx_hash);
+      return localTx;
+    } catch (e) {
+      // if there's any problem retrieving the tx locally, try to resolve it
+      const Electrum = ElectrumService();
+      const remoteTx = await Electrum.requestTransaction(tx_hash);
+      Logger.debug("resolveTransaction", "remote", tx_hash);
+      return _registerTransaction(remoteTx);
+    }
+  }
+
+  async function sendTransaction(
+    tx: TransactionEntity,
+    wallet: WalletEntity
+  ): Promise<boolean> {
+    const { txid: tx_hash, hex: tx_hex } = tx;
+
+    const Electrum = ElectrumService();
+    const result = await Electrum.broadcastTransaction(tx_hex);
+    const isSuccess = result === tx_hash;
+
+    if (isSuccess) {
+      const UtxoManager = UtxoManagerService(wallet);
+      const decodedTx = decodeTransaction(hexToBin(tx_hex));
+      const vin = getVinFromDecodedTransaction(decodedTx);
+
+      vin.forEach((input) => {
+        UtxoManager.discardUtxo({ tx_hash: input.txid, tx_pos: input.vout });
+      });
+    } else {
+      Logger.warn("transaction send failure", result);
+    }
+
+    return isSuccess;
+  }
+
+  async function deleteTransaction(tx_hash: string): Promise<void> {
+    try {
+      await Filesystem.deleteFile({
+        path: `/selene/tx/${tx_hash}.raw`,
+        directory: Directory.Library,
+      });
+    } catch (e) {
+      Logger.warn(e);
+    }
+
+    //Logger.debug("deleteTransaction", tx_hash);
+    db.run(`DELETE FROM transactions WHERE txid="${tx_hash}";`);
+    saveDatabase();
+  }
+
+  async function purgeTransactions(): Promise<void> {
+    const tx_hashes = resultToJson(
+      db.exec(
+        `
+        SELECT txid FROM transactions WHERE
+          txid NOT IN (SELECT txid FROM address_utxos);
+        `
+      )
+    );
+
+    Logger.debug("purgeTransactions", tx_hashes);
+
+    await Promise.all(tx_hashes.map(({ txid }) => deleteTransaction(txid)));
+    saveDatabase();
+  }
 
   // --------------------------------
 
@@ -98,32 +164,29 @@ export default function TransactionManagerService() {
     tx_hash: string,
     tx_hex: string
   ): Promise<WriteFileResult> {
-    try {
-      // Filesystem plugin writes as raw bytes, but we must pass base64
-      const data = btoa(tx_hex);
+    // Filesystem plugin writes as raw bytes, but we must pass base64
+    const data = btoa(tx_hex);
 
-      const result = await Filesystem.writeFile({
-        path: `/selene/tx/${tx_hash}.raw`,
-        directory: Directory.Library,
-        recursive: true,
-        data,
-      });
+    const result = await Filesystem.writeFile({
+      path: `/selene/tx/${tx_hash}.raw`,
+      directory: Directory.Library,
+      recursive: true,
+      data,
+    });
 
-      return result;
-    } catch (e) {
-      Logger.error(e);
-      return { uri: "" };
-    }
+    return result;
   }
 
   // --------------------------------
 
-  async function _registerTransaction(tx): Promise<void> {
+  async function _registerTransaction(
+    tx: TransactionEntity
+  ): Promise<TransactionEntity> {
     const blockhash = tx.blockhash ? tx.blockhash : null;
     const blocktime = tx.blocktime ? tx.blocktime : null;
     const time = tx.time ? tx.time : null;
 
-    //Logger.log("registerTransaction", tx, time, blockhash);
+    //Logger.debug("registerTransaction", tx, time, blockhash);
 
     db.run(
       `INSERT INTO transactions (
@@ -150,30 +213,8 @@ export default function TransactionManagerService() {
 
     await _writeTxData(tx.txid, tx.hex);
     saveDatabase();
-  }
 
-  async function deleteTransaction(tx_hash: string): Promise<void> {
-    db.run(`DELETE FROM transactions WHERE txid="${tx_hash}";`);
-
-    await Filesystem.deleteFile({
-      path: `/selene/tx/${tx_hash}.raw`,
-      directory: Directory.Library,
-    });
-  }
-
-  async function purgeTransactions(): Promise<void> {
-    const tx_hashes = resultToJson(
-      db.exec(
-        `
-        SELECT txid FROM transactions WHERE
-          txid NOT IN (SELECT txid FROM address_utxos);
-        `
-      )
-    );
-
-    Logger.debug("purgeTransactions", tx_hashes);
-
-    await Promise.all(tx_hashes.map(({ txid }) => deleteTransaction(txid)));
+    return tx;
   }
 
   async function getTransactionByHash(
@@ -239,163 +280,5 @@ export default function TransactionManagerService() {
         value: value.toString(),
       };
     });
-  }
-
-  async function resolveTransaction(
-    tx_hash: string
-  ): Promise<TransactionEntity> {
-    try {
-      const localTx = await getTransactionByHash(tx_hash);
-
-      if (localTx.blockhash === "null" || localTx.time === "null") {
-        throw new Error("Transaction Unconfirmed");
-      }
-
-      return localTx;
-    } catch (e) {
-      Logger.warn(e);
-      const Electrum = ElectrumService();
-      const tx = await Electrum.requestTransaction(tx_hash);
-      await _registerTransaction(tx);
-    }
-
-    const loadedTx = await getTransactionByHash(tx_hash);
-    return loadedTx;
-  }
-
-  function buildP2pkhTransaction(recipients, wallet, fee = DUST_LIMIT / 3) {
-    // helper function returns null if invalid locking bytecode
-    const addressToLockingBytecode = (addr) => {
-      const { isBase58Address, address } = validateInvoiceString(addr);
-      const lockingBytecode = isBase58Address
-        ? base58AddressToLockingBytecode(address)
-        : cashAddressToLockingBytecode(address);
-
-      return typeof lockingBytecode === "object"
-        ? lockingBytecode.bytecode
-        : null;
-    };
-
-    // calculate total amount to send for all recipients
-    const sendTotal = recipients
-      .reduce((sum, cur) => sum.plus(cur.amount), new Decimal(0))
-      .toNumber();
-
-    // gather suitable inputs
-    const UtxoManager = UtxoManagerService(wallet);
-    const inputs = UtxoManager.selectUtxos(sendTotal, fee);
-    const inputTotal = inputs
-      .reduce((sum, cur) => sum.plus(cur.amount), new Decimal(0))
-      .toNumber();
-
-    // calculate change
-    const changeTotal = inputTotal - sendTotal - fee;
-
-    // insufficient funds
-    if (changeTotal < 0) {
-      return sendTotal - fee;
-    }
-
-    // construct tx outputs
-    const vout = recipients.map((out) => ({
-      lockingBytecode: addressToLockingBytecode(out.address),
-      valueSatoshis: BigInt(out.amount),
-    }));
-
-    // construct change outputs
-    if (changeTotal >= DUST_LIMIT) {
-      const AddressManager = AddressManagerService(wallet);
-      const changeAddress = AddressManager.getUnusedAddresses(1, 1)[0];
-
-      vout.push({
-        lockingBytecode: addressToLockingBytecode(changeAddress.address),
-        valueSatoshis: BigInt(changeTotal),
-      });
-    }
-
-    // initialize transaction compiler
-    const template = importAuthenticationTemplate(
-      authenticationTemplateP2pkhNonHd
-    );
-    const compiler = authenticationTemplateToCompilerBCH(template);
-
-    // sign inputs
-    const HdNode = HdNodeService(wallet);
-    const signedInputs = HdNode.signInputs(inputs, compiler);
-
-    const generatedTx = generateTransaction({
-      inputs: signedInputs,
-      outputs: vout,
-      locktime: 0,
-      version: 2,
-    });
-
-    if (generatedTx.success === false) {
-      Logger.warn("tx generation failed", generatedTx);
-      return null;
-    }
-
-    const tx_raw = encodeTransaction(generatedTx.transaction);
-    const tx_hex = binToHex(tx_raw);
-    const tx_hash = swapEndianness(binToHex(sha256.hash(sha256.hash(tx_raw))));
-
-    // if we didn't reclaim change, add it to total fee
-    const feeTotal = changeTotal >= DUST_LIMIT ? fee : fee + changeTotal;
-    if (feeTotal < tx_raw.length) {
-      // Fee under 1 sat/B... try again with byte length as fee
-      // TODO: use relay fee provided by electrum (futureproofing)
-      return buildP2pkhTransaction(recipients, wallet, tx_raw.length);
-    }
-
-    if (feeTotal > tx_raw.length * 3) {
-      if (fee !== tx_raw.length) {
-        // Fee greater than 300% of byte length. Can we make it smaller?
-        return buildP2pkhTransaction(recipients, wallet, tx_raw.length);
-      }
-
-      // if we're here, fee can't get any smaller. proceed
-    }
-
-    /*
-    Logger.log(
-      "buildTransaction",
-      tx_hash,
-      vout,
-      signedInputs,
-      tx_hex,
-      tx_raw.length,
-      fee,
-      feeTotal
-    );
-    */
-
-    return {
-      tx_hash,
-      tx_hex,
-      feeTotal,
-    };
-  }
-
-  async function sendTransaction(
-    { tx_hash, tx_hex },
-    wallet: WalletEntity
-  ): Promise<boolean> {
-    const Electrum = ElectrumService();
-    const result = await Electrum.broadcastTransaction(tx_hex);
-    const isSuccess = result === tx_hash;
-
-    if (isSuccess) {
-      const UtxoManager = UtxoManagerService(wallet);
-      const decodedTx = decodeTransaction(hexToBin(tx_hex));
-      const vin = getVinFromDecodedTransaction(decodedTx);
-
-      vin.forEach((input) => {
-        UtxoManager.discardUtxo({ tx_hash: input.txid, tx_pos: input.vout });
-      });
-    } else {
-      Logger.warn("transaction send failure", result);
-    }
-
-    return isSuccess;
   }
 }
