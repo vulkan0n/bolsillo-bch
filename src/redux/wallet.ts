@@ -9,6 +9,7 @@ import {
   createAsyncThunk,
 } from "@reduxjs/toolkit";
 
+import { RootState } from "@/redux";
 import { setPreference, selectElectrumServer } from "@/redux/preferences";
 import { syncConnect, syncSubscribeAddress } from "@/redux/sync";
 
@@ -38,6 +39,8 @@ export const walletBoot = createAsyncThunk(
   "wallet/boot",
   async (
     payload: {
+      wallet: WalletEntity;
+      addresses: string[];
       wallet_id: number;
       network: ValidBchNetwork;
     },
@@ -51,6 +54,9 @@ export const walletBoot = createAsyncThunk(
     thunkApi.dispatch(
       setPreference({ key: "activeWalletId", value: wallet.id.toString() })
     );
+
+    const AddressManager = AddressManagerService(wallet);
+    const addresses = AddressManager.populateAddresses();
 
     const isChipnet = network === "chipnet";
 
@@ -67,7 +73,7 @@ export const walletBoot = createAsyncThunk(
 
     await SplashScreen.hide();
 
-    return wallet;
+    return { wallet, addresses };
   }
 );
 
@@ -132,7 +138,8 @@ const initialState = {
 export const walletReducer = createReducer(initialState, (builder) => {
   builder
     .addCase(walletBoot.fulfilled, (state, action) => {
-      return action.payload;
+      const { wallet } = action.payload;
+      return wallet;
     })
     .addCase(walletBalanceUpdate, (state, action) => {
       state.balance = action.payload.currentBalance;
@@ -144,6 +151,6 @@ export const walletReducer = createReducer(initialState, (builder) => {
 });
 
 export const selectActiveWallet = createSelector(
-  (state) => state.wallet,
+  (state: RootState) => state.wallet,
   (wallet): WalletEntity => wallet
 );

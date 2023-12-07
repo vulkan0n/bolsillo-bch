@@ -11,7 +11,13 @@ export interface AddressEntity {
   hd_index: number;
   balance: number;
   change: number;
-  state: string;
+  state: string | null;
+}
+
+export interface AddressIdentifier {
+  address: string;
+  hd_index: number;
+  wallet_id: number;
 }
 
 // AddressManagerService: handles most address-related operations
@@ -21,7 +27,6 @@ export default function AddressManagerService(wallet: WalletEntity) {
   const { db, resultToJson, saveDatabase } = DatabaseService();
 
   return {
-    registerAddress,
     populateAddresses,
     getAddress,
     getReceiveAddresses,
@@ -38,11 +43,11 @@ export default function AddressManagerService(wallet: WalletEntity) {
   // --------------------------------
 
   // register an address into the database
-  function registerAddress(
+  function _registerAddress(
     address: string,
     hd_index: number,
     change: number = 0
-  ): void {
+  ): AddressIdentifier {
     Logger.debug(
       `registerAddress${change ? " change" : ""}`,
       hd_index,
@@ -67,15 +72,21 @@ export default function AddressManagerService(wallet: WalletEntity) {
     );
 
     saveDatabase();
+
+    return {
+      address,
+      wallet_id: wallet.id,
+      hd_index,
+    };
   }
 
   // populateAddresses: generate addresses such that
   // we always have ADDRESS_GAP_LIMIT unused addresses
   // returns an array of generated addresses
-  function populateAddresses(): Array<string> {
+  function populateAddresses(): Array<AddressIdentifier> {
     const ADDRESS_GAP_LIMIT = 20; // BIP-44 gap limit is 20
 
-    const generatedAddresses: Array<string> = [];
+    const generatedAddresses: Array<AddressIdentifier> = [];
 
     const hdWallet = HdNodeService(wallet);
     populate(0);
@@ -94,8 +105,8 @@ export default function AddressManagerService(wallet: WalletEntity) {
         hd_index += 1
       ) {
         const newAddress = hdWallet.generateAddress(hd_index, change);
-        registerAddress(newAddress, hd_index, change);
-        generatedAddresses.push(newAddress);
+
+        generatedAddresses.push(_registerAddress(newAddress, hd_index, change));
       }
     }
 
@@ -112,7 +123,7 @@ export default function AddressManagerService(wallet: WalletEntity) {
 
   // getReceiveAddresses: get all active receive addresses for this wallet
   // in DESCENDING order so we can get latest index with limit 1
-  function getReceiveAddresses(limit: number): Array<AddressEntity> {
+  function getReceiveAddresses(limit: number = 0): Array<AddressEntity> {
     const result = resultToJson(
       db.exec(
         `SELECT * FROM addresses 
@@ -120,7 +131,7 @@ export default function AddressManagerService(wallet: WalletEntity) {
           AND change='0' 
           AND prefix='${wallet.prefix}'
           ORDER BY hd_index DESC 
-          ${limit ? `LIMIT ${limit}` : ""}
+          ${limit > 0 ? `LIMIT ${limit}` : ""}
         ;`
       )
     );
@@ -133,7 +144,7 @@ export default function AddressManagerService(wallet: WalletEntity) {
   // in DESCENDING order so we can get latest index with limit 1
   // NB: If you want first UNUSED change address,
   // instead use getUnusedAddress(limit, 1)
-  function getChangeAddresses(limit: number): Array<AddressEntity> {
+  function getChangeAddresses(limit: number = 0): Array<AddressEntity> {
     const result = resultToJson(
       db.exec(
         `SELECT * FROM addresses 
@@ -141,7 +152,7 @@ export default function AddressManagerService(wallet: WalletEntity) {
           AND change='1' 
           AND prefix='${wallet.prefix}'
           ORDER BY hd_index DESC 
-          ${limit ? `LIMIT ${limit}` : ""}
+          ${limit > 0 ? `LIMIT ${limit}` : ""}
         ;`
       )
     );

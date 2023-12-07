@@ -16,6 +16,7 @@ import {
   selectCurrencySettings,
   selectIsChipnet,
 } from "@/redux/preferences";
+import { selectNewestChangeAddress } from "@/redux/address";
 
 import ElectrumService from "@/services/ElectrumService";
 import BlockchainService from "@/services/BlockchainService";
@@ -137,12 +138,12 @@ export const syncSubscribeAddress = createAsyncThunk(
 // syncChangeAddress: ensure a change address is up to date
 export const syncChangeAddress = createAsyncThunk(
   "sync/changeAddress",
-  async (address, thunkApi) => {
-    const newestChange = selectNewestChange(thunkApi.getState());
+  async (address: AddressEntity, thunkApi) => {
+    const newestChange = selectNewestChangeAddress(thunkApi.getState());
 
     // only rescan last 1000 change addresses
     if (
-      address.state === "null" ||
+      address.state === null ||
       address.hd_index < newestChange.hd_index - 1000
     ) {
       const addressState = await Electrum.requestAddressState(address.address);

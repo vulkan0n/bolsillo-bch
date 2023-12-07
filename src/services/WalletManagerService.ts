@@ -89,9 +89,6 @@ export default function WalletManagerService() {
     // for safety, assume testnet unless we've explicitly stated to be on mainnet
     wallet.prefix = network === "mainnet" ? "bitcoincash" : "bchtest";
 
-    const AddressManager = AddressManagerService(wallet);
-    AddressManager.populateAddresses();
-
     return wallet;
   }
 
