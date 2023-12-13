@@ -1,19 +1,18 @@
-import {
-  createReducer,
-  createSelector,
-  createAsyncThunk,
-} from "@reduxjs/toolkit";
+import { createAction, createReducer, createSelector } from "@reduxjs/toolkit";
 
 import { RootState } from "@/redux";
+import { AddressEntity } from "@/services/AddressManagerService";
 
-import AddressManagerService from "@/services/AddressManagerService";
+const initialState = [[], []];
 
-const initialState = [];
+export const addressPopulate =
+  createAction<AddressEntity[][]>("address/populate");
 
 export const addressReducer = createReducer(initialState, (builder) => {
-  builder.addCase(walletBoot.fulfilled, (state, action) => {
-    const { addresses } = action.payload;
+  builder.addCase("address/populate", (state, action) => {
+    const addresses = action.payload;
     return addresses;
+  });
 });
 
 export const selectNewestReceiveAddress = createSelector(

@@ -5,24 +5,21 @@ import HdNodeService from "@/services/HdNodeService";
 import { binToHex } from "@/util/hex";
 import { WalletEntity } from "@/services/WalletManagerService";
 
-export interface AddressEntity {
-  address: string;
-  wallet_id: number;
-  hd_index: number;
-  balance: number;
-  change: number;
-  state: string | null;
-}
-
 export interface AddressIdentifier {
   address: string;
   hd_index: number;
   wallet_id: number;
 }
 
+export interface AddressEntity extends AddressIdentifier {
+  balance: number;
+  change: number;
+  state: string | null;
+}
+
 // AddressManagerService: handles most address-related operations
 export default function AddressManagerService(wallet: WalletEntity) {
-  //Logger.log("AddressManagerService", wallet);
+  //Logger.debug("AddressManagerService", wallet);
 
   const { db, resultToJson, saveDatabase } = DatabaseService();
 
@@ -173,7 +170,7 @@ export default function AddressManagerService(wallet: WalletEntity) {
           WHERE wallet_id="${wallet.id}"
           AND state IS NULL 
           AND change="${change}"
-          AND prefix='${wallet.prefix}'
+          AND prefix="${wallet.prefix}"
           ORDER BY hd_index ASC 
           LIMIT ${limit}
         ;`

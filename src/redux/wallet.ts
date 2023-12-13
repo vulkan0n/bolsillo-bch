@@ -12,6 +12,9 @@ import {
 import { RootState } from "@/redux";
 import { setPreference, selectElectrumServer } from "@/redux/preferences";
 import { syncConnect, syncSubscribeAddress } from "@/redux/sync";
+import { addressPopulate } from "@/redux/address";
+
+import { ValidBchNetwork } from "@/util/crypto";
 
 import WalletManagerService, {
   WalletEntity,
@@ -20,8 +23,6 @@ import AddressManagerService, {
   AddressEntity,
 } from "@/services/AddressManagerService";
 import ElectrumService from "@/services/ElectrumService";
-
-import { ValidBchNetwork } from "@/util/crypto";
 
 /*
 import Decimal from "decimal.js";
@@ -38,25 +39,27 @@ export const walletMiddleware = createListenerMiddleware();
 export const walletBoot = createAsyncThunk(
   "wallet/boot",
   async (
-    payload: {
-      wallet: WalletEntity;
-      addresses: string[];
-      wallet_id: number;
-      network: ValidBchNetwork;
-    },
+    payload: { wallet_id: number; network: ValidBchNetwork },
     thunkApi
   ) => {
     const { wallet_id, network } = payload;
     // load Wallet from database
     const wallet = WalletManagerService().boot(wallet_id, network);
-    Logger.log("walletBoot", wallet_id, wallet, network);
+    Logger.debug("walletBoot", wallet_id, wallet, network);
 
     thunkApi.dispatch(
       setPreference({ key: "activeWalletId", value: wallet.id.toString() })
     );
 
     const AddressManager = AddressManagerService(wallet);
-    const addresses = AddressManager.populateAddresses();
+    AddressManager.populateAddresses();
+
+    const addresses = [
+      AddressManager.getReceiveAddresses(),
+      AddressManager.getChangeAddresses(),
+    ];
+
+    thunkApi.dispatch(addressPopulate(addresses));
 
     const isChipnet = network === "chipnet";
 
@@ -64,6 +67,7 @@ export const walletBoot = createAsyncThunk(
       ? ElectrumService().selectFallbackServer(null, true)
       : selectElectrumServer(thunkApi.getState());
 
+    // connect to Electrum
     thunkApi.dispatch(
       syncConnect({
         attempts: 0,
@@ -71,9 +75,7 @@ export const walletBoot = createAsyncThunk(
       })
     );
 
-    await SplashScreen.hide();
-
-    return { wallet, addresses };
+    return wallet;
   }
 );
 
@@ -92,6 +94,7 @@ export const walletBalanceUpdate = createAction(
     },
   })
 );
+
 walletMiddleware.startListening({
   actionCreator: walletBalanceUpdate,
   effect: async (action, listenerApi) => {
@@ -130,6 +133,14 @@ walletMiddleware.startListening({
   },
 });
 
+// hide splash screen when wallet is loaded
+walletMiddleware.startListening({
+  actionCreator: walletBoot.fulfilled,
+  effect: async () => {
+    await SplashScreen.hide();
+  },
+});
+
 const initialState = {
   id: 0,
   balance: 0,
@@ -138,7 +149,7 @@ const initialState = {
 export const walletReducer = createReducer(initialState, (builder) => {
   builder
     .addCase(walletBoot.fulfilled, (state, action) => {
-      const { wallet } = action.payload;
+      const wallet = action.payload;
       return wallet;
     })
     .addCase(walletBalanceUpdate, (state, action) => {
