@@ -104,6 +104,7 @@ syncMiddleware.startListening({
     );
 
     const changeAddresses = AddressManager.getChangeAddresses();
+    Logger.debug("sync up!", changeAddresses);
     changeAddresses.forEach((address) =>
       listenerApi.dispatch(syncChangeAddress(address))
     );
@@ -130,7 +131,7 @@ syncMiddleware.startListening({
 // TODO: check to see if duplicate subscriptions are even a problem...
 export const syncSubscribeAddress = createAsyncThunk(
   "sync/subscribeAddress",
-  async (address: AddressEntity) => {
+  async (address: AddressIdentifier) => {
     return Electrum.subscribeToAddress(address);
   }
 );

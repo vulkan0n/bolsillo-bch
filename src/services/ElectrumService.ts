@@ -13,7 +13,7 @@ import {
   selectSyncState,
 } from "@/redux/sync";
 
-import { AddressEntity } from "@/services/AddressManagerService";
+import { AddressIdentifier } from "@/services/AddressManagerService";
 
 import { bchToSats } from "@/util/sats";
 import { electrum_servers, chipnet_servers } from "@/util/electrum_servers";
@@ -30,7 +30,7 @@ export class ElectrumNotConnectedError extends Error {
 let electrum: ElectrumClient | null = null;
 
 const server_blacklist: Array<string> = [];
-const pendingRequests: Array<string> = [];
+const pendingRequests: Array<{ tx_hash: string; request: Promise }> = [];
 
 // ElectrumService: brokers interactions with electrum server
 export default function ElectrumService() {
@@ -107,18 +107,20 @@ export default function ElectrumService() {
   }
 
   // subscribeToAddress: listen for updates on an address
-  async function subscribeToAddress(address: AddressEntity): Promise<boolean> {
+  async function subscribeToAddress(
+    address: AddressIdentifier
+  ): Promise<boolean> {
     if (electrum === null) {
       throw new ElectrumNotConnectedError();
     }
 
-    const isSubscribed = await electrum.subscribe(
+    const didSubscribe = await electrum.subscribe(
       handleAddressSubscription,
       "blockchain.address.subscribe",
       address.address
     );
 
-    if (isSubscribed) {
+    if (didSubscribe) {
       const addressState = await electrum.request(
         "blockchain.address.subscribe",
         address.address
@@ -130,7 +132,7 @@ export default function ElectrumService() {
       }
     }
 
-    return isSubscribed;
+    return didSubscribe;
   }
 
   async function subscribeToChaintip(): Promise<boolean> {
@@ -205,38 +207,21 @@ export default function ElectrumService() {
       throw new ElectrumNotConnectedError();
     }
 
-    const isPending = pendingRequests.indexOf(tx_hash) > -1;
-    let transaction;
-
-    const waitForResolution = (resolve) => {
-      Logger.warn("waiting for resolution of", tx_hash);
-      setTimeout(() => {
-        if (transaction === undefined) {
-          return waitForResolution(resolve);
-        }
-
-        const pendingIndex = pendingRequests.indexOf(tx_hash);
-        if (pendingIndex > -1) {
-          pendingRequests.splice(pendingIndex, 1);
-        }
-
-        return resolve(transaction);
-      }, 1000);
-    };
-
-    if (isPending) {
-      return new Promise(waitForResolution);
+    if (pendingRequests[tx_hash]) {
+      Logger.warn("waiting on resolution for", tx_hash);
+      return pendingRequests[tx_hash];
     }
 
-    pendingRequests.push(tx_hash);
+    const txRequest = electrum
+      .request("blockchain.transaction.get", tx_hash, verbose)
+      .then((tx) => {
+        delete pendingRequests[tx_hash];
+        return tx;
+      });
 
-    transaction = await electrum.request(
-      "blockchain.transaction.get",
-      tx_hash,
-      verbose
-    );
+    pendingRequests[tx_hash] = txRequest;
 
-    return transaction;
+    return txRequest;
   }
 
   async function requestMerkle(tx_hash, height) {

@@ -1,3 +1,4 @@
+import Logger from "js-logger";
 import { createAction, createReducer, createSelector } from "@reduxjs/toolkit";
 
 import { RootState } from "@/redux";
@@ -16,11 +17,11 @@ export const addressReducer = createReducer(initialState, (builder) => {
 });
 
 export const selectNewestReceiveAddress = createSelector(
-  (state: RootState) => state.addresses[1],
-  (receiveAddresses) => receiveAddresses.shift()
+  (state: RootState) => state.addresses[0],
+  (receiveAddresses) => receiveAddresses.slice(-1)
 );
 
 export const selectNewestChangeAddress = createSelector(
   (state: RootState) => state.addresses[1],
-  (changeAddresses) => changeAddresses.shift()
+  (changeAddresses) => changeAddresses.slice(-1)
 );

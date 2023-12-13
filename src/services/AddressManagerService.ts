@@ -5,16 +5,14 @@ import HdNodeService from "@/services/HdNodeService";
 import { binToHex } from "@/util/hex";
 import { WalletEntity } from "@/services/WalletManagerService";
 
-export interface AddressIdentifier {
+export interface AddressEntity {
   address: string;
   hd_index: number;
   wallet_id: number;
-}
-
-export interface AddressEntity extends AddressIdentifier {
-  balance: number;
   change: number;
+  balance: number;
   state: string | null;
+  memo: string;
 }
 
 // AddressManagerService: handles most address-related operations
@@ -44,7 +42,7 @@ export default function AddressManagerService(wallet: WalletEntity) {
     address: string,
     hd_index: number,
     change: number = 0
-  ): AddressIdentifier {
+  ): AddressEntity {
     Logger.debug(
       `registerAddress${change ? " change" : ""}`,
       hd_index,
@@ -74,39 +72,50 @@ export default function AddressManagerService(wallet: WalletEntity) {
       address,
       wallet_id: wallet.id,
       hd_index,
+      change,
+      state: null,
+      balance: 0,
+      memo: "",
     };
   }
 
   // populateAddresses: generate addresses such that
   // we always have ADDRESS_GAP_LIMIT unused addresses
   // returns an array of generated addresses
-  function populateAddresses(): Array<AddressIdentifier> {
+  function populateAddresses(): Array<AddressEntity> {
     const ADDRESS_GAP_LIMIT = 20; // BIP-44 gap limit is 20
-
-    const generatedAddresses: Array<AddressIdentifier> = [];
-
     const hdWallet = HdNodeService(wallet);
-    populate(0);
-    populate(1);
 
-    function populate(change: number): void {
-      const unused = getUnusedAddresses(ADDRESS_GAP_LIMIT, change);
+    function populate(change: number): Array<AddressEntity> {
+      const generated: Array<AddressEntity> = [];
+
       const latestAddress =
         (change ? getChangeAddresses(1)[0] : getReceiveAddresses(1)[0]) || null;
       const latestIndex =
         latestAddress !== null ? latestAddress.hd_index + 1 : 0;
 
+      const unusedAddressCount = getUnusedAddresses(
+        ADDRESS_GAP_LIMIT,
+        change
+      ).length;
+
+      // starting from latest index, generate new addresses
+      // until unused address count is equal to address gap limit
       for (
         let hd_index = latestIndex;
-        hd_index < latestIndex + ADDRESS_GAP_LIMIT - unused.length;
+        hd_index < latestIndex + ADDRESS_GAP_LIMIT - unusedAddressCount;
         hd_index += 1
       ) {
         const newAddress = hdWallet.generateAddress(hd_index, change);
 
-        generatedAddresses.push(_registerAddress(newAddress, hd_index, change));
+        generated.push(_registerAddress(newAddress, hd_index, change));
       }
+
+      return generated;
     }
 
+    const generatedAddresses = [...populate(0), ...populate(1)];
+    //Logger.debug("populateAddresses", generatedAddresses);
     return generatedAddresses;
   }
 
@@ -145,9 +154,9 @@ export default function AddressManagerService(wallet: WalletEntity) {
     const result = resultToJson(
       db.exec(
         `SELECT * FROM addresses 
-          WHERE wallet_id=${wallet.id} 
-          AND change='1' 
-          AND prefix='${wallet.prefix}'
+          WHERE wallet_id="${wallet.id}"
+          AND change="1" 
+          AND prefix="${wallet.prefix}"
           ORDER BY hd_index DESC 
           ${limit > 0 ? `LIMIT ${limit}` : ""}
         ;`
@@ -177,7 +186,7 @@ export default function AddressManagerService(wallet: WalletEntity) {
       )
     );
 
-    //Logger.log("getUnusedAddress", limit, result);
+    Logger.debug("getUnusedAddress", limit, result);
     return result;
   }
 
