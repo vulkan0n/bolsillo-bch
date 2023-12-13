@@ -34,33 +34,42 @@ const { copiedAddress, requestAmount } = translations;
 
 export default function WalletViewHome() {
   const wallet = useSelector(selectActiveWallet);
-  const keyboardIsOpen = useSelector(selectKeyboardIsOpen);
+  const isKeyboardOpen = useSelector(selectKeyboardIsOpen);
   const isScanning = useSelector(selectScannerIsScanning);
 
   const qrCodeSettings = useSelector(selectQrCodeSettings);
   const isChipnet = useSelector(selectIsChipnet);
 
-  //const [skip, setSkip] = useState(0);
-  const skip = 0;
-  const [shouldShowRequestAmount, setShouldShowRequestAmount] = useState(false);
-  const [satoshiInput, setSatoshiInput] = useState({ display: "0", sats: 0 });
-
+  // reload unused addresses when wallet data changes
   const unusedAddresses = useMemo(
     () => AddressManagerService(wallet).getUnusedAddresses(),
     [wallet]
   );
 
+  // Address cycling state (old...)
+  //const [skip, setSkip] = useState(0);
+  //const skipAddress = () => setSkip((skip + 1) % 5);
+  const skip = 0;
+
+  // currently displayed address
   const address =
     unusedAddresses.length > 0
       ? unusedAddresses[(0 + skip) % unusedAddresses.length].address
       : "";
 
+  // "Request Amount" state
+  const [shouldShowRequestAmount, setShouldShowRequestAmount] = useState(false);
+  const [satoshiInput, setSatoshiInput] = useState({ display: "0", sats: 0 });
+
+  const handleRequestAmountChange = (satInput) => {
+    setSatoshiInput(satInput);
+  };
+
+  // generate bip21 uri for QR code
   const qrRequest =
     shouldShowRequestAmount && satoshiInput.sats > 0
       ? `${address}?amount=${satsToBch(satoshiInput.sats)}`
       : address;
-
-  //const skipAddress = () => setSkip((skip + 1) % 5);
 
   const getQrLogoImage = (logo) => logos[logo.toLowerCase()].img;
 
@@ -79,10 +88,7 @@ export default function WalletViewHome() {
     await Clipboard.write({ string: qrRequest });
   };
 
-  const handleRequestAmountChange = (satInput) => {
-    setSatoshiInput(satInput);
-  };
-
+  // "Request Amount" animations
   const [requestSprings, requestSpringsApi] = useSpring(() => ({
     from: { scale: 1 },
     to: { scale: 0.875 },
@@ -105,6 +111,7 @@ export default function WalletViewHome() {
     },
   }));
 
+  // force red QR code border if connected to chipnet
   const qrCodeBorder = isChipnet ? "border-[#ff0000]" : "border-primary/80";
   const addressColor = isChipnet ? "text-[#ff0000]" : "text-primary";
 
@@ -192,7 +199,7 @@ export default function WalletViewHome() {
           </div>
         </div>
       )}
-      {!keyboardIsOpen && (
+      {!isKeyboardOpen && (
         <div className="absolute bottom-[4.75em] w-full">
           <WalletViewButtons />
         </div>

@@ -14,12 +14,13 @@ import { selectKeyboardIsOpen } from "@/redux/device";
 import TransactionManagerService from "@/services/TransactionManagerService";
 
 import SatoshiInput from "@/atoms/SatoshiInput";
+import Satoshi from "@/atoms/Satoshi";
 import Button from "@/atoms/Button";
 import Address from "@/atoms/Address";
 import CurrencySymbol from "@/atoms/CurrencySymbol";
 import CurrencyFlip from "@/atoms/CurrencyFlip";
 
-import { bchToSats, formatSatoshis, satsToDisplayAmount } from "@/util/sats";
+import { bchToSats, satsToDisplayAmount } from "@/util/sats";
 import { validateInvoiceString } from "@/util/invoice";
 import { translate } from "@/util/translations";
 import translations from "./translations";
@@ -52,8 +53,6 @@ export default function WalletViewSend() {
     sats: querySats,
     display: satsToDisplayAmount(querySats),
   });
-
-  const displayAmount = formatSatoshis(satoshiInput.sats);
 
   const isInsufficientFunds = wallet.balance < satoshiInput.sats;
 
@@ -195,7 +194,10 @@ export default function WalletViewSend() {
 
         <div className="p-2 relative text-center w-full">
           <span className="text-2xl font-semibold text-center w-full text-zinc-800/80">
-            {shouldPreferLocalCurrency ? displayAmount.bch : displayAmount.fiat}
+            <Satoshi
+              value={satoshiInput.sats}
+              fiat={!shouldPreferLocalCurrency}
+            />
           </span>
           <div className="absolute top-2 right-2 flex items-center">
             <Button icon={CurrencyFlipIcon} />

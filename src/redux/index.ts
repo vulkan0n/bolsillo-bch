@@ -26,6 +26,9 @@ export const store = configureStore({
 
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
+export function withPayloadType<T>() {
+  return (t: T) => ({ payload: t });
+}
 
 // run actions needed to fire on app load
 export function redux_init() {

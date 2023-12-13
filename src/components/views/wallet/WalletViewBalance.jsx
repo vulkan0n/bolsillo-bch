@@ -11,8 +11,7 @@ import {
 } from "@/redux/preferences";
 import { selectCurrentPrice } from "@/redux/exchangeRates";
 
-import { formatSatoshis } from "@/util/sats";
-
+import Satoshi from "@/atoms/Satoshi";
 import CurrencyFlip from "@/atoms/CurrencyFlip";
 
 export default function WalletViewBalance() {
@@ -63,8 +62,6 @@ export default function WalletViewBalance() {
     [balance, receiveSpringApi]
   );
 
-  const formattedBalance = formatSatoshis(balance);
-
   return (
     <div className="py-2.5 text-center">
       <div
@@ -80,12 +77,12 @@ export default function WalletViewBalance() {
       >
         <div className="text-2xl text-zinc-200 tabular-nums">
           <animated.span style={{ ...balanceReceivedSpring }}>
-            {formattedBalance[shouldPreferLocalCurrency ? "fiat" : "bch"]}
+            <Satoshi value={balance} fiat={shouldPreferLocalCurrency} />
           </animated.span>
         </div>
 
         <div className="text-md text-zinc-400 flex items-center justify-center">
-          {formattedBalance[shouldPreferLocalCurrency ? "bch" : "fiat"]}
+          <Satoshi value={balance} fiat={!shouldPreferLocalCurrency} />
           <CurrencyFlip className="ml-1" />
         </div>
       </button>

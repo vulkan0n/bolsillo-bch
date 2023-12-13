@@ -1,10 +1,11 @@
+import Logger from "js-logger";
 import { useLoaderData, Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 //import {} from "@ant-design/icons";
 import { selectCurrencySettings } from "@/redux/preferences";
 
 import Address from "@/atoms/Address";
-import { formatSatoshis } from "@/util/sats";
+import Satoshi from "@/atoms/Satoshi";
 
 export default function ExploreTransactionView() {
   const tx = useLoaderData();
@@ -14,7 +15,7 @@ export default function ExploreTransactionView() {
     isConfirmed ? new Date(tx.blocktime * 1000) : Date.parse(tx.time_seen)
   ).toLocaleString();
 
-  console.log(tx);
+  Logger.debug(tx);
 
   return (
     <>
@@ -63,10 +64,12 @@ function OutputListItem({ output, i }) {
         <span className="text-xs tracking-tighter mr-1.5 opacity-70">
           #{output.n}
         </span>
-        <span className="font-mono">{formatSatoshis(output.value)["bch"]}</span>
+        <span className="font-mono">
+          <Satoshi value={output.value} fiat={shouldPreferLocalCurrency} />
+        </span>
         <span className="mx-1 text-zinc-500">/</span>
         <span className="text-sm opacity-80">
-          {formatSatoshis(output.value)["fiat"]}
+          <Satoshi value={output.value} fiat={!shouldPreferLocalCurrency} />
         </span>
       </div>
     </div>

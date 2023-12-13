@@ -7,7 +7,7 @@ import { selectCurrencySettings } from "@/redux/preferences";
 import AddressManagerService from "@/services/AddressManagerService";
 import UtxoManagerService from "@/services/UtxoManagerService";
 import Address from "@/atoms/Address";
-import { formatSatoshis } from "@/util/sats";
+import Satoshi from "@/atoms/Satoshi";
 import ViewHeader from "@/layout/ViewHeader";
 
 export default function WalletAssetsView() {
@@ -81,18 +81,10 @@ function AddressAccordion({ a, i }) {
         {!isOpen && a.balance > 0 && (
           <div className="flex-1 text-right">
             <div className="font-mono">
-              {
-                formatSatoshis(a.balance)[
-                  shouldPreferLocalCurrency ? "fiat" : "bch"
-                ]
-              }
+              <Satoshi value={a.balance} fiat={shouldPreferLocalCurrency} />
             </div>
             <div className="text-sm opacity-80">
-              {
-                formatSatoshis(a.balance)[
-                  shouldPreferLocalCurrency ? "bch" : "fiat"
-                ]
-              }
+              <Satoshi value={a.balance} fiat={!shouldPreferLocalCurrency} />
             </div>
           </div>
         )}
@@ -136,18 +128,10 @@ function Coin({ coin }) {
         </div>
         <div>
           <div className="font-mono">
-            {
-              formatSatoshis(coin.amount)[
-                shouldPreferLocalCurrency ? "fiat" : "bch"
-              ]
-            }
+            <Satoshi value={coin.amount} fiat={shouldPreferLocalCurrency} />
           </div>
           <div className="text-sm opacity-80">
-            {
-              formatSatoshis(coin.amount)[
-                shouldPreferLocalCurrency ? "bch" : "fiat"
-              ]
-            }
+            <Satoshi value={coin.amount} fiat={!shouldPreferLocalCurrency} />
           </div>
         </div>
       </div>

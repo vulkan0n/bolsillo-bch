@@ -30,8 +30,8 @@ import WalletManagerService from "@/services/WalletManagerService";
 import KeyWarning from "@/atoms/KeyWarning/KeyWarning";
 import ShowMnemonic from "@/atoms/ShowMnemonic";
 import Accordion from "@/atoms/Accordion";
+import Satoshi from "@/atoms/Satoshi";
 
-import { formatSatoshis } from "@/util/sats";
 import { translate } from "@/util/translations";
 import translations from "./translations";
 
@@ -49,7 +49,6 @@ export default function SettingsWalletView() {
   const bchNetwork = useSelector(selectBchNetwork);
 
   const locale = useSelector(selectLocale);
-  const { shouldPreferLocalCurrency } = useSelector(selectCurrencySettings);
 
   const shouldShowAdvancedOptions =
     wallet.key_viewed !== null && isActiveWallet;
@@ -154,11 +153,7 @@ export default function SettingsWalletView() {
           {wallet.balance > 0 && (
             <div className="text-lg text-center text-zinc-500">
               {translate(translations.lastKnownBalance)}:{" "}
-              {
-                formatSatoshis(wallet.balance)[
-                  shouldPreferLocalCurrency ? "fiat" : "bch"
-                ]
-              }
+              <Satoshi value={wallet.balance} />
             </div>
           )}
         </div>

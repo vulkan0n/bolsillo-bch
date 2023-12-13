@@ -5,11 +5,11 @@ import { selectActiveWallet } from "@/redux/wallet";
 import { selectLocale } from "@/redux/device";
 import { selectCurrencySettings } from "@/redux/preferences";
 import TransactionHistoryService from "@/services/TransactionHistoryService";
-import { formatSatoshis } from "@/util/sats";
 import translations from "./translations";
 import { translate } from "@/util/translations";
 
 import Button from "@/atoms/Button";
+import Satoshi from "@/atoms/Satoshi";
 
 export default function WalletViewHistory() {
   const navigate = useNavigate();
@@ -57,18 +57,16 @@ export default function WalletViewHistory() {
                       }`}
                     >
                       {tx.amount > 0 && "+"}
-                      {
-                        formatSatoshis(tx.amount)[
-                          shouldPreferLocalCurrency ? "fiat" : "bch"
-                        ]
-                      }
+                      <Satoshi
+                        value={tx.amount}
+                        fiat={shouldPreferLocalCurrency}
+                      />
                     </div>
                     <div className="text-sm opacity-80">
-                      {
-                        formatSatoshis(tx.amount)[
-                          shouldPreferLocalCurrency ? "bch" : "fiat"
-                        ]
-                      }
+                      <Satoshi
+                        value={tx.amount}
+                        fiat={!shouldPreferLocalCurrency}
+                      />
                     </div>
                   </div>
                 </Link>
