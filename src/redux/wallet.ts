@@ -54,13 +54,6 @@ export const walletBoot = createAsyncThunk(
     const AddressManager = AddressManagerService(wallet);
     AddressManager.populateAddresses();
 
-    const addresses = [
-      AddressManager.getReceiveAddresses(),
-      AddressManager.getChangeAddresses(),
-    ];
-
-    thunkApi.dispatch(addressPopulate(addresses));
-
     const isChipnet = network === "chipnet";
 
     const server = isChipnet

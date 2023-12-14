@@ -49,8 +49,9 @@ export default function AddressManagerService(wallet: WalletEntity) {
       address
     );
 
-    db.run(
-      `INSERT INTO addresses (
+    const result = resultToJson(
+      db.exec(
+        `INSERT INTO addresses (
         address, 
         wallet_id, 
         hd_index,
@@ -63,20 +64,15 @@ export default function AddressManagerService(wallet: WalletEntity) {
         "${hd_index}",
         "${change}",
         "${wallet.prefix}"
-      );`
-    );
+      ) RETURNING *;`
+      )
+    )[0];
 
     saveDatabase();
 
-    return {
-      address,
-      wallet_id: wallet.id,
-      hd_index,
-      change,
-      state: null,
-      balance: 0,
-      memo: "",
-    };
+    Logger.debug("registerTransaction", result);
+
+    return result;
   }
 
   // populateAddresses: generate addresses such that
@@ -98,6 +94,15 @@ export default function AddressManagerService(wallet: WalletEntity) {
         ADDRESS_GAP_LIMIT,
         change
       ).length;
+
+      /*Logger.debug(
+        "populate",
+        change,
+        latestIndex,
+        unusedAddressCount,
+        latestIndex + ADDRESS_GAP_LIMIT - unusedAddressCount,
+        latestIndex < latestIndex + ADDRESS_GAP_LIMIT - unusedAddressCount
+      );*/
 
       // starting from latest index, generate new addresses
       // until unused address count is equal to address gap limit
@@ -186,13 +191,17 @@ export default function AddressManagerService(wallet: WalletEntity) {
       )
     );
 
-    Logger.debug("getUnusedAddress", limit, result);
+    //Logger.debug("getUnusedAddress", limit, result);
     return result;
   }
 
   // updateAddressState: updates address state in db
   // returns true if update actually happened, false if up-to-date
-  function updateAddressState(address: string, state: string): boolean {
+  function updateAddressState(address: string, state: string | null): boolean {
+    if (state === "null" || state === null) {
+      return false;
+    }
+
     const result = resultToJson(
       db.exec(
         `UPDATE addresses SET 

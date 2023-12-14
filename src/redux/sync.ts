@@ -104,7 +104,6 @@ syncMiddleware.startListening({
     );
 
     const changeAddresses = AddressManager.getChangeAddresses();
-    Logger.debug("sync up!", changeAddresses);
     changeAddresses.forEach((address) =>
       listenerApi.dispatch(syncChangeAddress(address))
     );
@@ -131,7 +130,7 @@ syncMiddleware.startListening({
 // TODO: check to see if duplicate subscriptions are even a problem...
 export const syncSubscribeAddress = createAsyncThunk(
   "sync/subscribeAddress",
-  async (address: AddressIdentifier) => {
+  async (address: AddressEntity) => {
     return Electrum.subscribeToAddress(address);
   }
 );
@@ -140,7 +139,8 @@ export const syncSubscribeAddress = createAsyncThunk(
 export const syncChangeAddress = createAsyncThunk(
   "sync/changeAddress",
   async (address: AddressEntity, thunkApi) => {
-    const newestChange = selectNewestChangeAddress(thunkApi.getState());
+    const wallet = selectActiveWallet(thunkApi.getState());
+    const newestChange = AddressManagerService(wallet).getChangeAddresses(1)[0];
 
     // only rescan last 1000 change addresses
     if (
@@ -172,7 +172,7 @@ syncMiddleware.startListening({
     const AddressManager = AddressManagerService(wallet);
     if (AddressManager.updateAddressState(address, addressState)) {
       // if state updated, get utxos for address
-      // Logger.log("address state changed for", address);
+      //Logger.debug("address state changed for", address, addressState);
       listenerApi.dispatch(syncAddressUtxos(address));
     }
   },

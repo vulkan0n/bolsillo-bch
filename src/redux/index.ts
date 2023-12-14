@@ -7,7 +7,6 @@ import {
 import { walletReducer, walletMiddleware, walletBoot } from "./wallet";
 import { syncReducer, syncMiddleware } from "./sync";
 import { deviceReducer } from "./device";
-import { addressReducer } from "./address";
 import { exchangeRateReducer, fetchExchangeRates } from "./exchangeRates";
 import { triggerCheckIn } from "./stats";
 
@@ -18,7 +17,6 @@ export const store = configureStore({
     wallet: walletReducer,
     sync: syncReducer,
     exchangeRates: exchangeRateReducer,
-    addresses: addressReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware()
@@ -28,9 +26,6 @@ export const store = configureStore({
 
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
-export function withPayloadType<T>() {
-  return (t: T) => ({ payload: t });
-}
 
 // run actions needed to fire on app load
 export function redux_init() {
