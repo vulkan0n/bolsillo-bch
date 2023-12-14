@@ -116,19 +116,19 @@ export default function DatabaseService() {
   function saveDatabase() {
     const filename = SELENE_LEGACY_DB_FILE;
 
-    if (pendingCount > 100) {
+    clearTimeout(flushPending);
+    pendingCount += 1;
+
+    if (pendingCount > 256) {
       _flushDatabase(filename);
       pendingCount = 0;
+      return;
     }
-
-    clearTimeout(flushPending);
 
     flushPending = setTimeout(async () => {
       await _flushDatabase(filename);
       pendingCount = 0;
-    }, 180);
-
-    pendingCount = pendingCount + 1;
+    }, 128);
   }
 
   // _flushDatabase [private]: writes database to disk
@@ -146,6 +146,7 @@ export default function DatabaseService() {
       Logger.debug("flushDatabase", filename, result);
     } catch (e) {
       Logger.error(e);
+      window.location.assign("/");
     }
   }
 }

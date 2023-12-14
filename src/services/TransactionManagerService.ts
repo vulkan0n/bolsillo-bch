@@ -164,17 +164,23 @@ export default function TransactionManagerService() {
     tx_hash: string,
     tx_hex: string
   ): Promise<WriteFileResult> {
-    // Filesystem plugin writes as raw bytes, but we must pass base64
-    const data = btoa(tx_hex);
+    try {
+      // Filesystem plugin writes as raw bytes, but we must pass base64
+      const data = btoa(tx_hex);
 
-    const result = await Filesystem.writeFile({
-      path: `/selene/tx/${tx_hash}.raw`,
-      directory: Directory.Library,
-      recursive: true,
-      data,
-    });
+      const result = await Filesystem.writeFile({
+        path: `/selene/tx/${tx_hash}.raw`,
+        directory: Directory.Library,
+        recursive: true,
+        data,
+      });
 
-    return result;
+      return result;
+    } catch (e) {
+      console.error(e);
+      purgeTransactions();
+      return { uri: "" };
+    }
   }
 
   // --------------------------------

@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 
 import {
@@ -14,11 +14,7 @@ import {
   InfoCircleOutlined,
 } from "@ant-design/icons";
 
-import {
-  selectActiveWalletId,
-  selectCurrencySettings,
-  selectBchNetwork,
-} from "@/redux/preferences";
+import { selectActiveWalletId, selectBchNetwork } from "@/redux/preferences";
 import { walletBoot, walletReload } from "@/redux/wallet";
 import { selectLocale } from "@/redux/device";
 import { syncReconnect } from "@/redux/sync";
@@ -230,20 +226,20 @@ export default function SettingsWalletView() {
                 <button
                   type="button"
                   className="w-full text-left"
-                  onClick={handleRebuildWallet}
+                  onClick={handleNavigateAdditionalWalletInformation}
                 >
-                  <MedicineBoxOutlined className="text-xl mr-1" />
-                  {translate(translations.rebuildWallet)}
+                  <InfoCircleOutlined className="text-xl mr-1" />
+                  {translate(translations.additionalWalletInformation)}
                 </button>
               </Accordion.Child>
               <Accordion.Child icon={null} label="">
                 <button
                   type="button"
                   className="w-full text-left"
-                  onClick={handleNavigateAdditionalWalletInformation}
+                  onClick={handleRebuildWallet}
                 >
-                  <InfoCircleOutlined className="text-xl mr-1" />
-                  {translate(translations.additionalWalletInformation)}
+                  <MedicineBoxOutlined className="text-xl mr-1" />
+                  {translate(translations.rebuildWallet)}
                 </button>
               </Accordion.Child>
             </Accordion>

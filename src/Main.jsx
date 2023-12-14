@@ -38,6 +38,7 @@ import SettingsWalletView from "@/views/settings/SettingsWalletView/SettingsWall
 import SettingsWalletWizard from "@/views/settings/SettingsWalletWizard/SettingsWalletWizard";
 import SettingsWalletWizardInit from "@/views/settings/SettingsWalletWizardInit/SettingsWalletWizardInit";
 import SettingsWalletWizardImport from "@/views/settings/SettingsWalletWizardImport/SettingsWalletWizardImport";
+//import SettingsWalletWizardScan from "@/views/settings/SettingsWalletWizardScan";
 import SettingsWalletAdditionalInformation from "@/views/settings/SettingsWalletAdditionalInformation/SettingsWalletAdditionalInformation";
 
 import CreditsView from "@/views/credits/CreditsView";
@@ -148,6 +149,10 @@ export default function Main() {
               path: "import",
               element: <SettingsWalletWizardImport />,
             },
+            /*{
+              path: "scan/:wallet_id",
+              element: <SettingsWalletWizardScan />,
+            }*/
           ],
         },
         {

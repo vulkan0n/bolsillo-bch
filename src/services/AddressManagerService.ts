@@ -20,6 +20,7 @@ export default function AddressManagerService(wallet: WalletEntity) {
   //Logger.debug("AddressManagerService", wallet);
 
   const { db, resultToJson, saveDatabase } = DatabaseService();
+  const ADDRESS_GAP_LIMIT = 20; // BIP-44 gap limit is 20
 
   return {
     populateAddresses,
@@ -27,6 +28,7 @@ export default function AddressManagerService(wallet: WalletEntity) {
     getReceiveAddresses,
     getChangeAddresses,
     getUnusedAddresses,
+    getRecentAddresses,
     updateAddressBalance,
     updateAddressState,
     getAddressTransactions,
@@ -70,16 +72,15 @@ export default function AddressManagerService(wallet: WalletEntity) {
 
     saveDatabase();
 
-    Logger.debug("registerTransaction", result);
+    //Logger.debug("registerAddress", result);
 
     return result;
   }
 
-  // populateAddresses: generate addresses such that
-  // we always have ADDRESS_GAP_LIMIT unused addresses
+  // populateAddresses: derive new addresses such that
+  // there are always at least $ADDRESS_GAP_LIMIT addresses
   // returns an array of generated addresses
   function populateAddresses(): Array<AddressEntity> {
-    const ADDRESS_GAP_LIMIT = 20; // BIP-44 gap limit is 20
     const hdWallet = HdNodeService(wallet);
 
     function populate(change: number): Array<AddressEntity> {
@@ -87,33 +88,42 @@ export default function AddressManagerService(wallet: WalletEntity) {
 
       const latestAddress =
         (change ? getChangeAddresses(1)[0] : getReceiveAddresses(1)[0]) || null;
-      const latestIndex =
+      const nextHdIndex =
         latestAddress !== null ? latestAddress.hd_index + 1 : 0;
 
-      const unusedAddressCount = getUnusedAddresses(
-        ADDRESS_GAP_LIMIT,
-        change
-      ).length;
+      const latestUsedAddress = getRecentAddresses(1, change)[0] || null;
+      const latestUsedIndex =
+        latestUsedAddress !== null ? latestUsedAddress.hd_index : -1;
+
+      const unusedAddresses = getUnusedAddresses(0, change);
+      const unusedAddressCount = unusedAddresses.length;
+
+      const scanEndIndex = nextHdIndex + ADDRESS_GAP_LIMIT;
 
       /*Logger.debug(
         "populate",
-        change,
-        latestIndex,
-        unusedAddressCount,
-        latestIndex + ADDRESS_GAP_LIMIT - unusedAddressCount,
-        latestIndex < latestIndex + ADDRESS_GAP_LIMIT - unusedAddressCount
+        change ? "change" : "receive",
+        `next: ${nextHdIndex}`,
+        `end: ${scanEndIndex}`,
+        `unused: ${unusedAddressCount}`,
+        `latest: ${latestUsedIndex}`,
+        `diff: ${nextHdIndex - latestUsedIndex}`
       );*/
 
       // starting from latest index, generate new addresses
-      // until unused address count is equal to address gap limit
-      for (
-        let hd_index = latestIndex;
-        hd_index < latestIndex + ADDRESS_GAP_LIMIT - unusedAddressCount;
-        hd_index += 1
+      if (
+        unusedAddressCount < ADDRESS_GAP_LIMIT ||
+        nextHdIndex - latestUsedIndex <= ADDRESS_GAP_LIMIT
       ) {
-        const newAddress = hdWallet.generateAddress(hd_index, change);
+        for (
+          let hd_index = nextHdIndex;
+          hd_index < scanEndIndex;
+          hd_index += 1
+        ) {
+          const newAddress = hdWallet.generateAddress(hd_index, change);
 
-        generated.push(_registerAddress(newAddress, hd_index, change));
+          generated.push(_registerAddress(newAddress, hd_index, change));
+        }
       }
 
       return generated;
@@ -186,12 +196,35 @@ export default function AddressManagerService(wallet: WalletEntity) {
           AND change="${change}"
           AND prefix="${wallet.prefix}"
           ORDER BY hd_index ASC 
-          LIMIT ${limit}
+          ${limit > 0 ? `LIMIT ${limit}` : ""}
         ;`
       )
     );
 
     //Logger.debug("getUnusedAddress", limit, result);
+    return result;
+  }
+
+  // getRecentAddresess: get the higest-index USED addresses for wallet
+  // in DESCENDING order so wallet consumes most recent index first
+  function getRecentAddresses(
+    limit: number = 20,
+    change: number = 0
+  ): Array<AddressEntity> {
+    const result = resultToJson(
+      db.exec(
+        `SELECT * FROM addresses 
+          WHERE wallet_id="${wallet.id}"
+          AND state IS NOT NULL 
+          AND change="${change}"
+          AND prefix="${wallet.prefix}"
+          ORDER BY hd_index DESC 
+          LIMIT ${limit}
+        ;`
+      )
+    );
+
+    //Logger.debug("getRecentAddresses", limit, result);
     return result;
   }
 
