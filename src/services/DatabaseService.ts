@@ -21,6 +21,7 @@ Logger.useDefaults(); // eslint-disable-line react-hooks/rules-of-hooks
 // Connect to SQLite Database
 const SQL = await initSqlJs({ locateFile: () => "/sql-wasm.wasm" });
 let flushPending;
+let pendingCount = 0;
 
 async function _dbOpen(filename) {
   try {
@@ -114,11 +115,20 @@ export default function DatabaseService() {
   // sets a timeout to batch writes together
   function saveDatabase() {
     const filename = SELENE_LEGACY_DB_FILE;
+
+    if (pendingCount > 100) {
+      _flushDatabase(filename);
+      pendingCount = 0;
+    }
+
     clearTimeout(flushPending);
 
     flushPending = setTimeout(async () => {
       await _flushDatabase(filename);
+      pendingCount = 0;
     }, 180);
+
+    pendingCount = pendingCount + 1;
   }
 
   // _flushDatabase [private]: writes database to disk
