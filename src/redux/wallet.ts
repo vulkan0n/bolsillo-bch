@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
 import Logger from "js-logger";
+import Decimal from "decimal.js";
 import { SplashScreen } from "@capacitor/splash-screen";
 import {
   createAction,
@@ -12,26 +13,23 @@ import {
 import { RootState } from "@/redux";
 import { setPreference, selectElectrumServer } from "@/redux/preferences";
 import { syncConnect, syncSubscribeAddress } from "@/redux/sync";
-import { addressPopulate } from "@/redux/address";
 
 import { ValidBchNetwork } from "@/util/crypto";
 
 import WalletManagerService, {
   WalletEntity,
 } from "@/services/WalletManagerService";
-import AddressManagerService, {
-  AddressEntity,
-} from "@/services/AddressManagerService";
+import AddressManagerService from "@/services/AddressManagerService";
 import ElectrumService from "@/services/ElectrumService";
 
-/*
-import Decimal from "decimal.js";
-import { formatSatoshis } from "@/util/sats";
-import showToast from "@/util/toast";
-import { logos } from "@/util/logos";
-*/
+import ToastService from "@/services/ToastService";
 
 export const walletMiddleware = createListenerMiddleware();
+
+const initialState = {
+  id: 0,
+  balance: 0,
+};
 
 // --------------------------------
 
@@ -74,19 +72,14 @@ export const walletBoot = createAsyncThunk(
 
 // walletReload: reload currently active wallet from database
 export const walletReload = createAction("wallet/reload", () => {
-  return { payload: { id: 0, balance: 0 } };
+  return { payload: initialState };
 });
 
-export const walletBalanceUpdate = createAction(
-  "wallet/balanceUpdate",
-  (payload) => ({
-    payload: {
-      previousBalance: payload.previousBalance,
-      currentBalance: payload.currentBalance,
-      isChange: payload.isChange,
-    },
-  })
-);
+export const walletBalanceUpdate = createAction<{
+  previousBalance: number;
+  currentBalance: number;
+  isChange: boolean;
+}>("wallet/balanceUpdate");
 
 walletMiddleware.startListening({
   actionCreator: walletBalanceUpdate,
@@ -103,26 +96,11 @@ walletMiddleware.startListening({
     );
 
     // show receive notification
-    /*
-    const { previousBalance, walletBalance, isChange } = action.payload;
-    if (walletBalance > previousBalance && isChange === 0) {
-      const difference = formatSatoshis(
-        new Decimal(walletBalance).minus(previousBalance)
-      );
-
-      showToast({
-        icon: (
-          <img
-            src={logos.selene.img}
-            style={{ width: "64px", height: "64px" }}
-            alt=""
-          />
-        ),
-        title: "Payment received!",
-        description: `+${difference.bch}`,
-      });
+    const { previousBalance, currentBalance, isChange } = action.payload;
+    if (currentBalance > previousBalance && isChange === false) {
+      const difference = currentBalance - previousBalance;
+      ToastService().paymentReceived(difference);
     }
-    */
   },
 });
 
@@ -133,11 +111,6 @@ walletMiddleware.startListening({
     await SplashScreen.hide();
   },
 });
-
-const initialState = {
-  id: 0,
-  balance: 0,
-};
 
 export const walletReducer = createReducer(initialState, (builder) => {
   builder

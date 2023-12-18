@@ -17,7 +17,7 @@ import TorchButton from "../TorchButton/TorchButton";
 import ImageSelectButton from "../ImageSelectButton/ImageSelectButton";
 
 import { validateInvoiceString } from "@/util/invoice";
-import showToast from "@/util/toast";
+import ToastService from "@/services/ToastService";
 
 const { noBchAddress, pleaseCopy, history, send } = translations;
 
@@ -49,16 +49,16 @@ export default function WalletViewButtons() {
       const paste = (await Clipboard.read()).value;
       isValid = forwardOnValidAddress(paste);
     } catch (e) {
-      //console.warn(e);
+      //Logger.warn(e);
     } finally {
       const titleTranslation = translate(noBchAddress);
       const descriptionTranslation = translate(pleaseCopy);
 
       if (!isValid) {
-        showToast({
+        ToastService().spawn({
           icon: <ExclamationCircleFilled className="text-primary text-4xl" />,
-          title: titleTranslation,
-          description: descriptionTranslation,
+          header: titleTranslation,
+          body: descriptionTranslation,
           options: {
             duration: 2000,
           },

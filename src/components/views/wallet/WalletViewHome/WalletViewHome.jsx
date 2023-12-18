@@ -26,7 +26,7 @@ import Address from "@/atoms/Address";
 import CurrencySymbol from "@/atoms/CurrencySymbol";
 import CurrencyFlip from "@/atoms/CurrencyFlip";
 
-import showToast from "@/util/toast";
+import ToastService from "@/services/ToastService";
 import { logos } from "@/util/logos";
 import { satsToBch } from "@/util/sats";
 
@@ -76,10 +76,10 @@ export default function WalletViewHome() {
   const copyAddressToClipboard = async () => {
     const titleTranslation = translate(copiedAddress);
 
-    showToast({
+    ToastService().spawn({
       icon: <SnippetsFilled className="text-4xl text-primary" />,
-      title: titleTranslation,
-      description: (
+      header: titleTranslation,
+      body: (
         <span className="inline-block max-w-[62%] truncate text-sm break-all">
           {qrRequest}
         </span>
