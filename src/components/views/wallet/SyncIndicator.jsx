@@ -8,6 +8,7 @@ import {
 } from "@ant-design/icons";
 import { animated, useSpring } from "@react-spring/web";
 import { selectSyncState } from "@/redux/sync";
+import ToastService from "@/services/ToastService";
 
 export default function SyncIndicator() {
   const sync = useSelector(selectSyncState);
@@ -20,6 +21,7 @@ export default function SyncIndicator() {
     immediate: true,
   }));
 
+  // make the sync spinner smoother by forcing it to play for a minimum time
   useEffect(
     function gracefulSyncIndicator() {
       if (sync.isSyncing) {
@@ -68,6 +70,8 @@ export default function SyncIndicator() {
     } else {
       disconnectApi.start();
     }
+
+    ToastService().connectionStatus(sync);
   };
 
   return (

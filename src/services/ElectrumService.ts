@@ -86,7 +86,7 @@ export default function ElectrumService() {
     // need to establish listeners every time we recreate the ElectrumClient
     electrum.addListener("connected", () => {
       Logger.log("ELECTRUM CONNECTED");
-      store.dispatch(syncConnectionUp());
+      store.dispatch(syncConnectionUp(server));
     });
 
     electrum.addListener("disconnected", () => {

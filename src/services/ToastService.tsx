@@ -6,6 +6,7 @@ export default function ToastService() {
   return {
     spawn,
     paymentReceived,
+    connectionStatus,
   };
 
   function spawn({ header, body, icon, options = {} }) {
@@ -45,6 +46,33 @@ export default function ToastService() {
           +<Satoshi value={amount} />
         </>
       ),
+    });
+  }
+
+  function connectionStatus(sync) {
+    const header = sync.connected
+      ? `Connected to ${sync.server}`
+      : "Disconnected";
+
+    const pendingSum = Object.keys(sync.syncPending).reduce(
+      (acc, cur) => (acc += sync.syncPending[cur]),
+      0
+    );
+
+    const failedSum = Object.keys(sync.syncFailed).reduce(
+      (acc, cur) => (acc += sync.syncFailed[cur]),
+      0
+    );
+
+    spawn({
+      header,
+      body: (
+        <div>
+          {pendingSum > 0 && <div>Pending Requests: {pendingSum}</div>}
+          {failedSum > 0 && <div>Failed Requests: {failedSum}</div>}
+        </div>
+      ),
+      icon: null,
     });
   }
 }
