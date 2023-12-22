@@ -68,7 +68,7 @@ export default function TransactionHistoryService(wallet: WalletEntity) {
 
     // resolve vins to real txos
     const vinTxes = await Promise.all(
-      tx.vin.map((vin) => TransactionManager.resolveTransaction(vin.txid, true))
+      tx.vin.map((vin) => TransactionManager.resolveTransaction(vin.txid))
     );
 
     // for each input tx, get outputs.
@@ -117,12 +117,12 @@ export default function TransactionHistoryService(wallet: WalletEntity) {
         fiat_amount="${CurrencyService(fiatCurrency).satsToFiat(amount) || 0}", 
         fiat_currency="${fiatCurrency}",
         time=${
-          tx.time !== "null"
+          tx.time !== null
             ? `strftime('%Y-%m-%dT%H:%M:%SZ', "${tx.time}", "unixepoch")`
             : `strftime('%Y-%m-%dT%H:%M:%SZ')`
         },
         wallet_id="${wallet.id}"
-      WHERE txid="${tx.txid}" AND (wallet_id="${wallet.id}" OR wallet_id=null)`
+      WHERE txid="${tx.txid}" AND (wallet_id="${wallet.id}" OR wallet_id=null);`
     );
 
     saveDatabase();

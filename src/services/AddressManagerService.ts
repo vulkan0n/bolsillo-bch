@@ -45,11 +45,11 @@ export default function AddressManagerService(wallet: WalletEntity) {
     hd_index: number,
     change: number = 0
   ): AddressEntity {
-    Logger.debug(
+    /*Logger.debug(
       `registerAddress${change ? " change" : ""}`,
       hd_index,
       address
-    );
+    );*/
 
     const result = resultToJson(
       db.exec(

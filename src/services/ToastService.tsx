@@ -2,6 +2,8 @@ import toast from "react-hot-toast";
 import { logos } from "@/util/logos";
 import Satoshi from "@/atoms/Satoshi";
 
+import AddressManagerService from "@/services/AddressManagerService";
+
 export default function ToastService() {
   return {
     spawn,
@@ -49,20 +51,25 @@ export default function ToastService() {
     });
   }
 
-  function connectionStatus(sync) {
+  function connectionStatus({ wallet, sync }) {
     const header = sync.connected
       ? `Connected to ${sync.server}`
       : "Disconnected";
 
     const pendingSum = Object.keys(sync.syncPending).reduce(
-      (acc, cur) => (acc += sync.syncPending[cur]),
+      (sum, cur) => (sum = sum + sync.syncPending[cur]),
       0
     );
 
     const failedSum = Object.keys(sync.syncFailed).reduce(
-      (acc, cur) => (acc += sync.syncFailed[cur]),
+      (sum, cur) => (sum = sum + sync.syncFailed[cur]),
       0
     );
+
+    const AddressManager = AddressManagerService(wallet);
+    const latestReceiveIndex =
+      AddressManager.getReceiveAddresses(1)[0].hd_index;
+    const latestChangeIndex = AddressManager.getChangeAddresses(1)[0].hd_index;
 
     spawn({
       header,
@@ -70,6 +77,8 @@ export default function ToastService() {
         <div>
           {pendingSum > 0 && <div>Pending Requests: {pendingSum}</div>}
           {failedSum > 0 && <div>Failed Requests: {failedSum}</div>}
+          <div># Receive Addresses: {latestReceiveIndex}</div>
+          <div># Change Addresses: {latestChangeIndex}</div>
         </div>
       ),
       icon: null,

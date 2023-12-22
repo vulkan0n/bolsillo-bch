@@ -8,9 +8,11 @@ import {
 } from "@ant-design/icons";
 import { animated, useSpring } from "@react-spring/web";
 import { selectSyncState } from "@/redux/sync";
+import { selectActiveWallet } from "@/redux/wallet";
 import ToastService from "@/services/ToastService";
 
 export default function SyncIndicator() {
+  const wallet = useSelector(selectActiveWallet);
   const sync = useSelector(selectSyncState);
 
   const [syncTimeout, setSyncTimeout] = useState(null);
@@ -71,7 +73,7 @@ export default function SyncIndicator() {
       disconnectApi.start();
     }
 
-    ToastService().connectionStatus(sync);
+    ToastService().connectionStatus({ wallet, sync });
   };
 
   return (

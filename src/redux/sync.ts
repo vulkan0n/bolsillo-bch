@@ -16,7 +16,6 @@ import {
   selectCurrencySettings,
   selectIsChipnet,
 } from "@/redux/preferences";
-import { selectNewestChangeAddress } from "@/redux/address";
 
 import ElectrumService from "@/services/ElectrumService";
 import BlockchainService from "@/services/BlockchainService";
@@ -218,8 +217,10 @@ syncMiddleware.startListening({
 
       UtxoManager.registerUtxo(address, utxo);
 
+      /*
       listenerApi.dispatch(syncBlock(utxo.height));
       listenerApi.dispatch(syncTxRequest(utxo.tx_hash));
+      */
     });
 
     // use local tx history to calculate expected state hash
@@ -288,19 +289,22 @@ export const syncTxAmount = createAsyncThunk(
   }
 );
 
-export const syncBlock = createAsyncThunk("sync/block", async (height) => {
-  const Blockchain = BlockchainService();
-  let block = Blockchain.getBlockByHeight(height);
+export const syncBlock = createAsyncThunk(
+  "sync/block",
+  async (height: number) => {
+    const Blockchain = BlockchainService();
+    let block = await Blockchain.getBlockByHeight(height);
 
-  if (block === null || block.header === null) {
-    const header = await Electrum.requestBlock(height);
-    Blockchain.registerBlock({ header, height });
-    block = Blockchain.getBlockByHeight(height);
+    if (block === null || block.header === null) {
+      const header = await Electrum.requestBlock(height);
+      await Blockchain.registerBlock({ header, height });
+      block = await Blockchain.getBlockByHeight(height);
+    }
+
+    // Logger.log("sync/block", block);
+    return block;
   }
-
-  // Logger.log("sync/block", block);
-  return block;
-});
+);
 
 // TODO: keep last 4032 blocks (28 days)
 export const syncChaintip = createAction("sync/chaintip");
@@ -308,11 +312,12 @@ syncMiddleware.startListening({
   actionCreator: syncChaintip,
   effect: async (action, listenerApi) => {
     const chaintip = action.payload;
-    // Logger.log("sync/chaintip", chaintip);
+    Logger.log("sync/chaintip", chaintip);
     listenerApi.dispatch(syncBlock(chaintip.height));
     //listenerApi.dispatch(fetchExchangeRates());
 
-    TransactionManagerService().purgeTransactions();
+    await TransactionManagerService().purgeTransactions();
+    await BlockchainService().purgeBlocks();
   },
 });
 

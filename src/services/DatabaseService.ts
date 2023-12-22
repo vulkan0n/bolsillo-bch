@@ -119,7 +119,7 @@ export default function DatabaseService() {
     clearTimeout(flushPending);
     pendingCount += 1;
 
-    if (pendingCount > 256) {
+    if (pendingCount > 1024) {
       _flushDatabase(filename);
       pendingCount = 0;
       return;

@@ -247,8 +247,9 @@ const migrations = [
       `
     );
 
-    // drop transaction hex data, as it is now written to filesystem directly
+    // drop transaction and block hex data, as it is now written to filesystem directly
     query.push("ALTER TABLE transactions DROP COLUMN hex;");
+    query.push("ALTER TABLE blockchain DROP COLUMN header;");
 
     query.push("PRAGMA user_version = 3;");
 
