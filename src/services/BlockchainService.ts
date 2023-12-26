@@ -238,7 +238,7 @@ export default function BlockchainService() {
 
     Logger.debug("purgeBlocks", blockhashes);
 
-    await Promise.all(blockhashes.map(({ hash }) => deleteBlock(hash)));
+    await Promise.all(blockhashes.map((hash) => deleteBlock(hash)));
     saveDatabase();
   }
 }

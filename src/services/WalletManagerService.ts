@@ -1,7 +1,6 @@
 import Logger from "js-logger";
 import * as bip39 from "bip39";
 import DatabaseService from "@/services/DatabaseService";
-import AddressManagerService from "@/services/AddressManagerService";
 import TransactionManagerService from "@/services/TransactionManagerService";
 import {
   ValidDerivationPath,

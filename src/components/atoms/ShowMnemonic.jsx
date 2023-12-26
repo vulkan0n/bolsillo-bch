@@ -1,6 +1,6 @@
 import PropTypes from "prop-types";
 import { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { WarningFilled, EyeInvisibleOutlined } from "@ant-design/icons";
 
 import { walletReload } from "@/redux/wallet";
