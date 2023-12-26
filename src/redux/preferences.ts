@@ -58,6 +58,23 @@ function validatePreferences(preferences: ValidPreferences): boolean {
     return false;
   }
 
+  // force boolean strings
+  const boolKeys = [
+    "preferLocalCurrency",
+    "hideAvailableBalance",
+    "displayExchangeRate",
+    "denominateSats",
+    "allowInstantPay",
+  ];
+
+  const invalidBools = boolKeys.filter(
+    (key) => preferences[key] !== "true" && preferences[key] !== "false"
+  );
+
+  if (invalidBools.length > 0) {
+    return false;
+  }
+
   return true;
 }
 
