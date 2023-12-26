@@ -161,7 +161,7 @@ export default function WalletManagerService() {
   }
 
   // updateKeyViewed: updates the wallet's key_viewed timestamp
-  function updateKeyViewed(wallet_id: number): void {
+  function updateKeyViewed(wallet_id: number): string {
     const result = resultToJson(
       db.exec(
         `UPDATE wallets SET key_viewed=strftime('%Y-%m-%dT%H:%M:%SZ') WHERE id='${wallet_id}' RETURNING key_viewed`

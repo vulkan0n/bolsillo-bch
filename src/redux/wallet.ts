@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
-import Logger from "js-logger";
 import { SplashScreen } from "@capacitor/splash-screen";
 import {
   createAction,
@@ -29,7 +28,7 @@ const initialState = {
   id: 0,
   balance: 0,
   name: "Wallet",
-  key_viewed: null,
+  key_viewed: "",
 };
 
 // --------------------------------

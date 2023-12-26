@@ -201,7 +201,7 @@ export default function AddressManagerService(wallet: WalletEntity) {
       )
     );
 
-    Logger.debug("getUnusedAddress", limit, wallet, result);
+    //Logger.debug("getUnusedAddress", limit, result);
     return result;
   }
 

@@ -7,7 +7,7 @@ import translations from "./translations";
 
 export default function KeyWarning({ wallet }) {
   return (
-    wallet.key_viewed === null && (
+    !wallet.key_viewed && (
       <div className="mb-2 p-2">
         <Link to={`/settings/wallet/${wallet.id}`}>
           <div className="alert alert-warning p-2 shadow-lg bg-warning text-black rounded-lg text-center">
