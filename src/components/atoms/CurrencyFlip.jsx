@@ -13,7 +13,7 @@ export default function CurrencyFlip({ className, ...rest }) {
     dispatch(
       setPreference({
         key: "preferLocalCurrency",
-        value: !shouldPreferLocalCurrency,
+        value: shouldPreferLocalCurrency ? "false" : "true",
       })
     );
   };
