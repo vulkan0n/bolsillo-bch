@@ -3,9 +3,7 @@ import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { WarningFilled, EyeInvisibleOutlined } from "@ant-design/icons";
 
-import { walletReload } from "@/redux/wallet";
-
-import WalletManagerService from "@/services/WalletManagerService";
+import { walletSetKeyViewed } from "@/redux/wallet";
 
 import { translate } from "@/util/translations";
 import translations from "@/components/views/settings/SettingsWalletView/translations";
@@ -21,8 +19,7 @@ export default function ShowMnemonic({ wallet }) {
   const handleShowMnemonic = () => {
     if (shouldShowRecoveryPhrase === false) {
       setShouldShowRecoveryPhrase(true);
-      WalletManagerService().updateKeyViewed(wallet.id);
-      dispatch(walletReload());
+      dispatch(walletSetKeyViewed({ wallet_id: wallet.id }));
     } else {
       setShouldShowRecoveryPhrase(false);
     }

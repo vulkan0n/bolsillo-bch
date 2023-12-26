@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
 import Logger from "js-logger";
-import Decimal from "decimal.js";
 import { SplashScreen } from "@capacitor/splash-screen";
 import {
   createAction,
@@ -29,6 +28,8 @@ export const walletMiddleware = createListenerMiddleware();
 const initialState = {
   id: 0,
   balance: 0,
+  name: "Wallet",
+  key_viewed: null,
 };
 
 // --------------------------------
@@ -43,7 +44,6 @@ export const walletBoot = createAsyncThunk(
     const { wallet_id, network } = payload;
     // load Wallet from database
     const wallet = WalletManagerService().boot(wallet_id, network);
-    Logger.debug("walletBoot", wallet_id, wallet, network);
 
     thunkApi.dispatch(
       setPreference({ key: "activeWalletId", value: wallet.id.toString() })
@@ -69,11 +69,6 @@ export const walletBoot = createAsyncThunk(
     return wallet;
   }
 );
-
-// walletReload: reload currently active wallet from database
-export const walletReload = createAction("wallet/reload", () => {
-  return { payload: initialState };
-});
 
 export const walletBalanceUpdate = createAction<{
   previousBalance: number;
@@ -112,6 +107,26 @@ walletMiddleware.startListening({
   },
 });
 
+export const walletSetName = createAction(
+  "wallet/name",
+  (payload: { wallet_id: number; name: string }) => {
+    WalletManagerService().setWalletName(payload.wallet_id, payload.name);
+
+    return { payload: payload.name };
+  }
+);
+
+export const walletSetKeyViewed = createAction(
+  "wallet/key_viewed",
+  (payload: { wallet_id: number }) => {
+    const key_viewed = WalletManagerService().updateKeyViewed(
+      payload.wallet_id
+    );
+
+    return { payload: key_viewed };
+  }
+);
+
 export const walletReducer = createReducer(initialState, (builder) => {
   builder
     .addCase(walletBoot.fulfilled, (state, action) => {
@@ -121,9 +136,11 @@ export const walletReducer = createReducer(initialState, (builder) => {
     .addCase(walletBalanceUpdate, (state, action) => {
       state.balance = action.payload.currentBalance;
     })
-    .addCase(walletReload, (state, action) => {
-      const wallet = WalletManagerService().getWalletById(state.id);
-      return { ...action.payload, ...wallet };
+    .addCase(walletSetName, (state, action) => {
+      state.name = action.payload;
+    })
+    .addCase(walletSetKeyViewed, (state, action) => {
+      state.key_viewed = action.payload;
     });
 });
 

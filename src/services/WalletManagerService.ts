@@ -88,6 +88,7 @@ export default function WalletManagerService() {
     // for safety, assume testnet unless we've explicitly stated to be on mainnet
     wallet.prefix = network === "mainnet" ? "bitcoincash" : "bchtest";
 
+    Logger.debug("walletBoot", wallet_id, wallet, network);
     return wallet;
   }
 
@@ -161,11 +162,16 @@ export default function WalletManagerService() {
 
   // updateKeyViewed: updates the wallet's key_viewed timestamp
   function updateKeyViewed(wallet_id: number): void {
-    db.run(
-      `UPDATE wallets SET key_viewed=strftime('%Y-%m-%dT%H:%M:%SZ') WHERE id='${wallet_id}'`
-    );
+    const result = resultToJson(
+      db.exec(
+        `UPDATE wallets SET key_viewed=strftime('%Y-%m-%dT%H:%M:%SZ') WHERE id='${wallet_id}' RETURNING key_viewed`
+      )
+    )[0];
+
+    Logger.debug("keyViewed", result);
 
     saveDatabase();
+    return result.key_viewed;
   }
 
   // updateKeyVerified: updates the wallet's key_verified timestamp

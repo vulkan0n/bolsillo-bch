@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { useParams, useNavigate, Link } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 
 import {
@@ -15,7 +15,7 @@ import {
 } from "@ant-design/icons";
 
 import { selectActiveWalletId, selectBchNetwork } from "@/redux/preferences";
-import { walletBoot, walletReload } from "@/redux/wallet";
+import { walletBoot, walletSetName } from "@/redux/wallet";
 import { selectLocale } from "@/redux/device";
 import { syncReconnect } from "@/redux/sync";
 
@@ -89,8 +89,7 @@ export default function SettingsWalletView() {
   // handler for wallet name edit button
   const handleEdit = () => {
     if (isEditingWalletName === true) {
-      WalletManager.setWalletName(wallet.id, walletEditedName);
-      dispatch(walletReload());
+      dispatch(walletSetName({ wallet_id: wallet.id, name: walletEditedName }));
       setIsEditingWalletName(false);
     } else {
       setIsEditingWalletName(true);
