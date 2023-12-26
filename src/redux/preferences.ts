@@ -1,3 +1,4 @@
+import Logger from "js-logger";
 import { Preferences } from "@capacitor/preferences";
 import {
   createReducer,
@@ -132,7 +133,9 @@ const initialState = await retrievePreferences();
 export const setPreference = createAsyncThunk(
   "preferences/set",
   async (payload: { key: string; value: string }) => {
-    await Preferences.set(payload);
+    // force string value
+    const fixedPayload = { ...payload, value: payload.value.toString() };
+    await Preferences.set(fixedPayload);
 
     // ensure redux state stays consistent with device state
     const result = {
