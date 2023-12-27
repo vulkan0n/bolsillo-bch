@@ -314,7 +314,6 @@ syncMiddleware.startListening({
     const chaintip = action.payload;
     Logger.log("sync/chaintip", chaintip);
     listenerApi.dispatch(syncBlock(chaintip.height));
-    listenerApi.dispatch(fetchExchangeRates());
 
     await TransactionManagerService().purgeTransactions();
     await BlockchainService().purgeBlocks();

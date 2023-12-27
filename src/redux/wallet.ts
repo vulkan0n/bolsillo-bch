@@ -11,6 +11,7 @@ import {
 import { RootState } from "@/redux";
 import { setPreference, selectElectrumServer } from "@/redux/preferences";
 import { syncConnect, syncSubscribeAddress } from "@/redux/sync";
+import { fetchExchangeRates } from "@/redux/exchangeRates";
 
 import { ValidBchNetwork } from "@/util/crypto";
 
@@ -64,6 +65,8 @@ export const walletBoot = createAsyncThunk(
         server,
       })
     );
+
+    thunkApi.dispatch(fetchExchangeRates());
 
     return wallet;
   }
