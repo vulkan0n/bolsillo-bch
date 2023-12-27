@@ -119,7 +119,7 @@ export default function DatabaseService() {
     clearTimeout(flushPending);
     pendingCount += 1;
 
-    if (pendingCount > 1024) {
+    if (pendingCount > 2048) {
       _flushDatabase(filename);
       pendingCount = 0;
       return;
@@ -128,7 +128,7 @@ export default function DatabaseService() {
     flushPending = setTimeout(async () => {
       await _flushDatabase(filename);
       pendingCount = 0;
-    }, 128);
+    }, 512);
   }
 
   // _flushDatabase [private]: writes database to disk
