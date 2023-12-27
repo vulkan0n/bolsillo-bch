@@ -1,3 +1,4 @@
+import Logger from "js-logger";
 import { Decimal } from "decimal.js";
 import DatabaseService from "@/services/DatabaseService";
 import { DUST_LIMIT } from "@/util/sats";
@@ -21,22 +22,28 @@ export default function UxtoManagerService(wallet) {
         address,
         txid,
         tx_pos,
-        amount
+        amount,
+        prefix
       ) VALUES (
         "${wallet.id}",
         "${address}",
         "${utxo.tx_hash}",
         "${utxo.tx_pos}",
-        "${utxo.value}"
+        "${utxo.value}",
+        "${wallet.prefix}"
       )`
     );
+
+    Logger.debug("registerUtxo", utxo.tx_hash, utxo.tx_pos, utxo.value);
 
     saveDatabase();
   }
 
   function getWalletUtxos() {
     const result = resultToJson(
-      db.exec(`SELECT * FROM address_utxos WHERE wallet_id="${wallet.id}"`)
+      db.exec(
+        `SELECT * FROM address_utxos WHERE wallet_id="${wallet.id}" AND prefix="${wallet.prefix}"`
+      )
     );
 
     return result;
@@ -50,6 +57,7 @@ export default function UxtoManagerService(wallet) {
   }
 
   function selectUtxos(amount, fee) {
+    Logger.debug("selectUtxos", amount, fee);
     const targetAmount = new Decimal(amount).plus(fee).toNumber();
 
     // all full address balances >= amount are eligible
@@ -64,11 +72,14 @@ export default function UxtoManagerService(wallet) {
       )
     );
 
+    Logger.debug("selectUtxos eligibleAddresses", eligibleAddresses);
+
     // 1. if there's a whole address balance that's exact, spend the entire address
     const exactAddresses = eligibleAddresses.filter(
       (address) => address.balance === targetAmount
     );
     if (exactAddresses.length > 0) {
+      Logger.debug("selectUtxos exactAddress", exactAddresses[0].address);
       return getAddressUtxos(exactAddresses[0].address);
     }
 
@@ -79,15 +90,19 @@ export default function UxtoManagerService(wallet) {
           WHERE 
             amount <= "${targetAmount}" 
             AND wallet_id="${wallet.id}" 
+            AND prefix="${wallet.prefix}"
           ORDER BY amount DESC`
       )
     );
+
+    Logger.debug("selectUtxos eligibleUtxos", eligibleUtxos);
 
     // 2. if there's an exact UTXO, use that UTXO and its address-mates
     const exactUtxos = eligibleUtxos.filter(
       (utxo) => utxo.amount === targetAmount
     );
     if (exactUtxos.length > 0) {
+      Logger.debug("selectUtxos exactUtxo", exactUtxos[0].address);
       return getAddressUtxos(exactUtxos[0].address);
     }
 
@@ -99,12 +114,17 @@ export default function UxtoManagerService(wallet) {
 
     // 4. if sum of utxos matches exactly, consolidate the UTXOs
     if (eligibleUtxoSum === targetAmount) {
+      Logger.debug("selectUtxos exactUtxoSum", eligibleUtxos);
       return eligibleUtxos;
     }
 
     // 5. if consolidating won't be enough, use entire balance of next-eligible address
     if (eligibleUtxoSum < targetAmount) {
       if (eligibleAddresses.length > 0) {
+        Logger.debug(
+          "selectUtxos eligibleAddress",
+          eligibleAddresses[0].address
+        );
         return getAddressUtxos(eligibleAddresses[0].address);
       }
       // if no eligible address, return empty set
@@ -125,6 +145,7 @@ export default function UxtoManagerService(wallet) {
     // 7. if no more eligible utxos, insufficient funds
     // return empty selection
     if (remainingAmount > 0) {
+      Logger.debug("selectUtxos insufficient funds", remainingAmount);
       return [];
     }
 
@@ -141,10 +162,12 @@ export default function UxtoManagerService(wallet) {
       const addressFee = addressChange > DUST_LIMIT ? fee : fee + addressChange;
 
       if (addressFee < utxoFee) {
+        Logger.debug("selectUtxos address is cheaper than consolidation");
         return getAddressUtxos(eligibleAddress.address);
       }
     }
 
+    Logger.debug("selectUtxos selection", selection);
     return selection;
   }
 

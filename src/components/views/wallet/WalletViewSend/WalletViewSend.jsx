@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, useSearchParams, useNavigate } from "react-router-dom";
+import Decimal from "decimal.js";
 import { Haptics, NotificationType } from "@capacitor/haptics";
 import { useSelector } from "react-redux";
 import { ArrowLeftOutlined } from "@ant-design/icons";
@@ -12,6 +13,7 @@ import {
 import { selectKeyboardIsOpen } from "@/redux/device";
 
 import TransactionManagerService from "@/services/TransactionManagerService";
+import TransactionBuilderService from "@/services/TransactionBuilderService";
 
 import SatoshiInput from "@/atoms/SatoshiInput";
 import Satoshi from "@/atoms/Satoshi";
@@ -54,7 +56,9 @@ export default function WalletViewSend() {
     display: satsToDisplayAmount(querySats),
   });
 
-  const isInsufficientFunds = wallet.balance < satoshiInput.sats;
+  const isInsufficientFunds = new Decimal(wallet.balance).lessThan(
+    new Decimal(satoshiInput.sats)
+  );
 
   const { isInstantPayEnabled, instantPayThreshold } = useSelector(
     selectInstantPaySettings
@@ -76,11 +80,11 @@ export default function WalletViewSend() {
     }
 
     const TransactionManager = TransactionManagerService();
+    const TransactionBuilder = TransactionBuilderService(wallet);
 
-    const transaction = TransactionManager.buildP2pkhTransaction(
-      [{ address, amount: satoshiInput.sats }],
-      wallet
-    );
+    const transaction = TransactionBuilder.buildP2pkhTransaction([
+      { address, amount: satoshiInput.sats },
+    ]);
 
     if (typeof transaction !== "object") {
       await Haptics.notification({ type: NotificationType.Warning });
@@ -90,7 +94,7 @@ export default function WalletViewSend() {
 
     const { tx_hash, tx_hex } = transaction;
     const isSuccess = await TransactionManager.sendTransaction(
-      { tx_hash, tx_hex },
+      { txid: tx_hash, hex: tx_hex },
       wallet
     );
 
@@ -124,24 +128,22 @@ export default function WalletViewSend() {
   });
 
   const handleSendMax = () => {
-    let amount = wallet.balance;
+    let amount = new Decimal(wallet.balance);
 
-    const TransactionManager = TransactionManagerService();
+    const TransactionBuilder = TransactionBuilderService(wallet);
 
-    let transaction = TransactionManager.buildP2pkhTransaction(
-      [{ address, amount }],
-      wallet
-    );
+    let transaction = TransactionBuilder.buildP2pkhTransaction([
+      { address, amount },
+    ]);
 
     while (typeof transaction !== "object") {
-      amount = transaction;
-      transaction = TransactionManager.buildP2pkhTransaction(
-        [{ address, amount }],
-        wallet
-      );
+      amount = new Decimal(transaction);
+      transaction = TransactionBuilder.buildP2pkhTransaction([
+        { address, amount },
+      ]);
     }
 
-    const clampedAmount = Math.max(0, amount);
+    const clampedAmount = Math.max(0, amount.toNumber());
 
     setSatoshiInput({
       display: satsToDisplayAmount(clampedAmount),

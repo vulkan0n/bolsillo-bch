@@ -42,7 +42,7 @@ export default function TransactionBuilderService(wallet: WalletEntity) {
   }
 
   function buildP2pkhTransaction(
-    recipients: Array<any>,
+    recipients: Array<{ address: string; amount: Decimal }>,
     fee: number = DUST_LIMIT / 3
   ) {
     // calculate total amount to send for all recipients
