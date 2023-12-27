@@ -85,18 +85,19 @@ export default function CreditsView() {
         </h2>
         <ul className="list-inside list-disc">
           <li>Jason Dreyzehner</li>
-          <li>vvn</li>
           <li>Lisa L</li>
           <li>NeonDaThal</li>
           <li>Johnathan Silverblood</li>
           <li>Mathieu Geukens</li>
           <li>Jim Hamill</li>
+          <li>Gustavo</li>
+          <li>nemecis1000</li>
           <li>Bitcoin Jason</li>
           <li>Sahid Miller</li>
           <li>Ian Blas</li>
           <li>@CM_Works</li>
           <li>Arthur</li>
-          <li>Gustavo</li>
+          <li>XaYaZaZa</li>
         </ul>
       </div>
     </>
