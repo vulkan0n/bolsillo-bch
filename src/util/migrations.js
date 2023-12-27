@@ -251,18 +251,25 @@ const migrations = [
     query.push("ALTER TABLE transactions DROP COLUMN hex;");
     query.push("ALTER TABLE blockchain DROP COLUMN header;");
 
+    query.push("PRAGMA user_version = 3;");
+
+    return query.join("");
+  },
+
+  function migrate_v3() {
+    const query = [];
+
     // add prefix field to address_utxos
     query.push(
       `ALTER TABLE address_utxos ADD COLUMN
         prefix text CHECK(prefix IN ("bitcoincash", "bchtest", "bchreg")) default "bitcoincash";`
     );
 
-    query.push("PRAGMA user_version = 3;");
+    query.push("PRAGMA user_version = 4;");
 
     return query.join("");
   },
-
-  /*function migrate_v3() {
+  /*function migrate_v4() {
     const query = [];
 
     query.push("PRAGMA user_version = 0;");
