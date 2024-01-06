@@ -8,12 +8,12 @@ import {
   syncConnect,
   syncConnectionUp,
   syncConnectionDown,
-  syncAddressUpdate,
+  syncAddressState,
   syncChaintip,
   selectSyncState,
 } from "@/redux/sync";
 
-import { AddressIdentifier } from "@/services/AddressManagerService";
+import { AddressEntity } from "@/services/AddressManagerService";
 
 import { bchToSats } from "@/util/sats";
 import { electrum_servers, chipnet_servers } from "@/util/electrum_servers";
@@ -30,7 +30,7 @@ export class ElectrumNotConnectedError extends Error {
 let electrum: ElectrumClient | null = null;
 
 const server_blacklist: Array<string> = [];
-const pendingRequests: Array<{ tx_hash: string; request: Promise }> = [];
+const pendingRequests: Array<Promise<object>> = [];
 
 // ElectrumService: brokers interactions with electrum server
 export default function ElectrumService() {
@@ -107,9 +107,7 @@ export default function ElectrumService() {
   }
 
   // subscribeToAddress: listen for updates on an address
-  async function subscribeToAddress(
-    address: AddressIdentifier
-  ): Promise<boolean> {
+  async function subscribeToAddress(address: AddressEntity): Promise<object> {
     if (electrum === null) {
       throw new ElectrumNotConnectedError();
     }
@@ -120,19 +118,16 @@ export default function ElectrumService() {
       address.address
     );
 
-    if (didSubscribe) {
-      const addressState = await electrum.request(
-        "blockchain.address.subscribe",
-        address.address
-      );
-
-      // don't emit subscription update for unused (null state) addresses
-      if (addressState !== null) {
-        handleAddressSubscription([address.address, addressState]);
-      }
+    if (!didSubscribe) {
+      throw new ElectrumNotConnectedError();
     }
 
-    return didSubscribe;
+    const addressState = await electrum.request(
+      "blockchain.address.subscribe",
+      address.address
+    );
+
+    return { address, addressState };
   }
 
   async function subscribeToChaintip(): Promise<boolean> {
@@ -180,6 +175,7 @@ export default function ElectrumService() {
     if (electrum === null) {
       throw new ElectrumNotConnectedError();
     }
+
     const history = await electrum.request(
       "blockchain.address.get_history",
       address
@@ -189,10 +185,11 @@ export default function ElectrumService() {
   }
 
   // request all current UTXOs for an address
-  async function requestUtxos(address) {
+  async function requestUtxos(address: string) {
     if (electrum === null) {
       throw new ElectrumNotConnectedError();
     }
+
     const utxos = await electrum.request(
       "blockchain.address.listunspent",
       address
@@ -312,7 +309,7 @@ export default function ElectrumService() {
 // important that the pointer to this function never changes
 // so we define it on top-level
 function handleAddressSubscription(data) {
-  store.dispatch(syncAddressUpdate(data));
+  store.dispatch(syncAddressState(data));
 }
 
 function handleChaintipSubscription(data) {
@@ -321,7 +318,7 @@ function handleChaintipSubscription(data) {
 }
 
 function getElectrumHost() {
-  return electrum && electrum.connection.host;
+  return electrum ? electrum.connection.host : "";
 }
 
 App.addListener("resume", () =>

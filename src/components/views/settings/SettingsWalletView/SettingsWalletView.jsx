@@ -198,12 +198,12 @@ export default function SettingsWalletView() {
                     deleteConfirm === 0
                       ? translate(translations.deleteWallet)
                       : deleteConfirm === 1
-                      ? translate(translations.areYouSure)
-                      : deleteConfirm === 2
-                      ? translate(translations.ensureRecoveryPhrase)
-                      : `${translate(translations.confirmDelete)} "${
-                          wallet.name
-                        }"`
+                        ? translate(translations.areYouSure)
+                        : deleteConfirm === 2
+                          ? translate(translations.ensureRecoveryPhrase)
+                          : `${translate(translations.confirmDelete)} "${
+                              wallet.name
+                            }"`
                     /* eslint-enable no-nested-ternary */
                   }
                 </div>

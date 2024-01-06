@@ -72,7 +72,10 @@ export default function UxtoManagerService(wallet) {
       )
     );
 
-    Logger.debug("selectUtxos eligibleAddresses", eligibleAddresses);
+    Logger.debug(
+      "selectUtxos eligibleAddresses",
+      eligibleAddresses.map((a) => a.address)
+    );
 
     // 1. if there's a whole address balance that's exact, spend the entire address
     const exactAddresses = eligibleAddresses.filter(
@@ -95,7 +98,7 @@ export default function UxtoManagerService(wallet) {
       )
     );
 
-    Logger.debug("selectUtxos eligibleUtxos", eligibleUtxos);
+    Logger.debug("selectUtxos eligibleUtxos", eligibleUtxos.length);
 
     // 2. if there's an exact UTXO, use that UTXO and its address-mates
     const exactUtxos = eligibleUtxos.filter(
@@ -121,13 +124,20 @@ export default function UxtoManagerService(wallet) {
     // 5. if consolidating won't be enough, use entire balance of next-eligible address
     if (eligibleUtxoSum < targetAmount) {
       if (eligibleAddresses.length > 0) {
+        const selection = getAddressUtxos(eligibleAddresses[0].address);
         Logger.debug(
           "selectUtxos eligibleAddress",
-          eligibleAddresses[0].address
+          eligibleAddresses[0].address,
+          selection
         );
-        return getAddressUtxos(eligibleAddresses[0].address);
+        return selection;
       }
       // if no eligible address, return empty set
+      Logger.debug(
+        "selectUtxos eligibleUtxoSum < targetAmount",
+        eligibleUtxoSum,
+        targetAmount
+      );
       return [];
     }
 

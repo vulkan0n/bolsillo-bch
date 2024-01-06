@@ -221,9 +221,9 @@ export default function BlockchainService() {
       Logger.warn(e);
     }
 
-    //Logger.debug("deleteTransaction", tx_hash);
     db.run(`DELETE FROM blockchain WHERE blockhash="${blockhash}";`);
     saveDatabase();
+    //Logger.debug("deleteBlock", blockhash);
   }
 
   async function purgeBlocks(): Promise<void> {
@@ -236,9 +236,8 @@ export default function BlockchainService() {
       )
     );
 
-    Logger.debug("purgeBlocks", blockhashes);
-
     await Promise.all(blockhashes.map((hash) => deleteBlock(hash)));
     saveDatabase();
+    Logger.debug("purgeBlocks", blockhashes);
   }
 }

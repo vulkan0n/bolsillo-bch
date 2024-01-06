@@ -7,8 +7,8 @@ import {
 import { walletReducer, walletMiddleware, walletBoot } from "./wallet";
 import { syncReducer, syncMiddleware } from "./sync";
 import { deviceReducer } from "./device";
-import { exchangeRateReducer, fetchExchangeRates } from "./exchangeRates";
-import { triggerCheckIn } from "./stats";
+import { exchangeRateReducer } from "./exchangeRates";
+//import { triggerCheckIn } from "./stats";
 
 export const store = configureStore({
   reducer: {
@@ -35,6 +35,5 @@ export function redux_init() {
       network: selectBchNetwork(store.getState()),
     })
   );
-  //store.dispatch(fetchExchangeRates());
   //store.dispatch(triggerCheckIn());
 }

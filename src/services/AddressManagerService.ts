@@ -20,7 +20,7 @@ export default function AddressManagerService(wallet: WalletEntity) {
   //Logger.debug("AddressManagerService", wallet);
 
   const { db, resultToJson, saveDatabase } = DatabaseService();
-  const ADDRESS_GAP_LIMIT = 20; // BIP-44 gap limit is 20
+  const ADDRESS_GAP_LIMIT = 64; // BIP-44 gap limit is 20
 
   return {
     populateAddresses,

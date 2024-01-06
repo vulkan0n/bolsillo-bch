@@ -10,7 +10,6 @@ import {
 
 import { RootState } from "@/redux";
 import { walletBalanceUpdate, selectActiveWallet } from "@/redux/wallet";
-import { fetchExchangeRates } from "@/redux/exchangeRates";
 import {
   setPreference,
   selectCurrencySettings,
@@ -22,9 +21,12 @@ import BlockchainService from "@/services/BlockchainService";
 import AddressManagerService, {
   AddressEntity,
 } from "@/services/AddressManagerService";
-import TransactionManagerService from "@/services/TransactionManagerService";
+import TransactionManagerService, {
+  TransactionEntity,
+} from "@/services/TransactionManagerService";
 import TransactionHistoryService from "@/services/TransactionHistoryService";
 import UtxoManagerService from "@/services/UtxoManagerService";
+import ToastService from "@/services/ToastService";
 
 import { block_checkpoints } from "@/util/block_checkpoints";
 
@@ -42,6 +44,7 @@ export const syncConnect = createAsyncThunk(
     try {
       // attempt connection
       await Electrum.connect(payload.server);
+      return payload.server;
     } catch (e) {
       // if connection fails, destroy the client and try again
       await Electrum.disconnect(true);
@@ -79,126 +82,155 @@ export const syncReconnect = createAsyncThunk(
   "sync/reconnect",
   async (server: string | undefined, thunkApi) => {
     const connectServer = server || Electrum.getElectrumHost();
+    // cleanup electrum subscriptions (force=true)
     await Electrum.disconnect(true);
     thunkApi.dispatch(syncConnect({ attempts: 0, server: connectServer }));
   }
 );
 
 // syncConnectionUp: fired when electrum connection is up
-// set up electrum subscriptions to all receive addresses
-export const syncConnectionUp = createAction<string>("sync/up");
-syncMiddleware.startListening({
-  actionCreator: syncConnectionUp,
-  effect: async (action, listenerApi) => {
+export const syncConnectionUp = createAsyncThunk(
+  "sync/up",
+  (server: string, thunkApi) => {
     // set up subscriptions on connect
     Electrum.subscribeToChaintip();
+    thunkApi.dispatch(syncReceiveSubscriptions());
+    thunkApi.dispatch(syncChangeAddresses());
 
-    const wallet = selectActiveWallet(listenerApi.getState());
+    return server;
+  }
+);
 
+// syncConnectionDown: fired if electrum connection goes down
+export const syncConnectionDown = createAsyncThunk(
+  "sync/down",
+  (payload, thunkApi) => {
+    // attempt reconnect when connection goes down
+    thunkApi.dispatch(syncReconnect());
+  }
+);
+
+// syncReceiveSubscriptions: set up subscriptions to all receive addresses
+export const syncReceiveSubscriptions = createAsyncThunk(
+  "sync/receiveSubscriptions",
+  (payload, thunkApi) => {
+    const wallet = selectActiveWallet(thunkApi.getState());
     const AddressManager = AddressManagerService(wallet);
 
     const subscribeAddresses = AddressManager.getReceiveAddresses();
     subscribeAddresses.forEach((address) =>
-      listenerApi.dispatch(syncSubscribeAddress(address))
+      thunkApi.dispatch(syncSubscribeAddress(address))
     );
-
-    const changeAddresses = AddressManager.getChangeAddresses();
-    changeAddresses.forEach((address) =>
-      listenerApi.dispatch(
-        syncChangeAddress({
-          address,
-          latestIndex: changeAddresses[changeAddresses.length - 1].hd_index,
-        })
-      )
-    );
-  },
-});
-
-// syncConnectionDown: fired if electrum connection goes down
-// destroy electrum connection and reissue syncConnect action
-export const syncConnectionDown = createAction("sync/down");
-syncMiddleware.startListening({
-  actionCreator: syncConnectionDown,
-  effect: async (action, listenerApi) => {
-    const server = Electrum.getElectrumHost();
-
-    // cleanup electrum subscriptions (force=true)
-    Electrum.disconnect(true);
-    // we'll handle reconnecting ourselves
-    listenerApi.dispatch(syncConnect({ server, attempts: 0 }));
-  },
-});
+  }
+);
 
 // syncSubscribeAddress: subscribe to state updates for an address
-// TODO: don't allow duplicate subscriptions
-// TODO: check to see if duplicate subscriptions are even a problem...
 export const syncSubscribeAddress = createAsyncThunk(
   "sync/subscribeAddress",
-  async (address: AddressEntity) => {
-    return Electrum.subscribeToAddress(address);
+  async (address: AddressEntity, thunkApi) => {
+    // get initial address state
+    const subscription = await Electrum.subscribeToAddress(address);
+
+    if (address.state !== subscription.addressState) {
+      // update address state if necessary upon subscription
+      thunkApi.dispatch(
+        syncAddressState([subscription.address, subscription.addressState])
+      );
+    }
+
+    return subscription;
   }
 );
 
 // syncChangeAddress: ensure a change address is up to date
-export const syncChangeAddress = createAsyncThunk(
-  "sync/changeAddress",
-  async (
-    payload: { address: AddressEntity; latestIndex: number },
-    thunkApi
-  ) => {
-    const { address, latestIndex } = payload;
+export const syncChangeAddresses = createAsyncThunk(
+  "sync/changeAddresses",
+  async (payload, thunkApi) => {
+    const wallet = selectActiveWallet(thunkApi.getState());
 
-    // only rescan last 1000 change addresses
-    if (address.state === null || address.hd_index < latestIndex - 1000) {
+    const AddressManager = AddressManagerService(wallet);
+
+    const changeAddresses = AddressManager.getChangeAddresses();
+
+    changeAddresses.forEach(async (address) => {
       const addressState = await Electrum.requestAddressState(address.address);
-
-      thunkApi.dispatch(syncAddressUpdate([address.address, addressState]));
-    }
+      thunkApi.dispatch(syncAddressState([address, addressState]));
+    });
   }
 );
 
-// syncAddressUpdate: fired when data acquired from address subscription
-export const syncAddressUpdate = createAction("sync/addressUpdate");
-syncMiddleware.startListening({
-  actionCreator: syncAddressUpdate,
-  effect: async (action, listenerApi) => {
+// syncAddressState: fired when data acquired from address subscription
+export const syncAddressState = createAsyncThunk(
+  "sync/addressState",
+  (payload: [AddressEntity, string], thunkApi) => {
     // initial subscription response doesn't have address for context
-    if (!Array.isArray(action.payload)) {
+    if (!Array.isArray(payload)) {
       return;
     }
 
     // get subscription response data from payload
-    const [address, addressState] = action.payload;
+    const [address, addressState] = payload;
 
     // check downloaded state against local state
-    const wallet = selectActiveWallet(listenerApi.getState());
+    const wallet = selectActiveWallet(thunkApi.getState());
     const AddressManager = AddressManagerService(wallet);
-    if (AddressManager.updateAddressState(address, addressState)) {
+
+    const addressObj = address.address
+      ? address
+      : AddressManager.getAddress(address);
+
+    if (addressObj.state !== addressState) {
       // if state updated, get utxos for address
       //Logger.debug("address state changed for", address, addressState);
-      listenerApi.dispatch(syncAddressUtxos(address));
+      thunkApi.dispatch(syncAddressUtxos(addressObj));
+      AddressManager.updateAddressState(addressObj.address, addressState);
     }
-  },
-});
+  }
+);
+
+export const syncHotRefresh = createAsyncThunk(
+  "sync/hotRefresh",
+  async (payload, thunkApi) => {
+    const wallet = selectActiveWallet(thunkApi.getState());
+    const sync = selectSyncState(thunkApi.getState());
+
+    if (!sync.isSyncing) {
+      const AddressManager = AddressManagerService(wallet);
+      const UtxoManager = UtxoManagerService(wallet);
+
+      const walletUtxos = UtxoManager.getWalletUtxos();
+      const hotAddresses = walletUtxos.map((utxo) =>
+        AddressManager.getAddress(utxo.address)
+      );
+      const unusedAddresses = AddressManager.getUnusedAddresses(60);
+
+      const syncAddresses = [...hotAddresses, ...unusedAddresses];
+
+      syncAddresses.forEach(async (address) => {
+        const addressState = await Electrum.requestAddressState(
+          address.address
+        );
+        thunkApi.dispatch(syncAddressState([address, addressState])); // :thinking:
+      });
+
+      Logger.debug("sync/hotRefresh", syncAddresses, sync);
+    }
+
+    ToastService().connectionStatus({ wallet, sync });
+  }
+);
 
 // syncAddressUtxos: fired when we learn one of our addresses have changed
 // requests current utxo set for an address
 const syncAddressUtxos = createAsyncThunk(
   "sync/addressUtxos",
-  async (address) => {
+  async (address: AddressEntity, thunkApi) => {
+    const addr = address.address;
+
     // we will always need the up-to-date utxo set
-    const utxos = await Electrum.requestUtxos(address);
-    return {
-      address,
-      utxos,
-    };
-  }
-);
-syncMiddleware.startListening({
-  actionCreator: syncAddressUtxos.fulfilled,
-  effect: async (action, listenerApi) => {
-    const { utxos, address } = action.payload;
-    const wallet = selectActiveWallet(listenerApi.getState());
+    const utxos = await Electrum.requestUtxos(addr);
+
+    const wallet = selectActiveWallet(thunkApi.getState());
 
     const AddressManager = AddressManagerService(wallet);
     const UtxoManager = UtxoManagerService(wallet);
@@ -206,70 +238,76 @@ syncMiddleware.startListening({
     // we need to delete our knowledge of UTXO set
     // in case some utxos were spent elsewhere
     // i.e. wallet seed shared on multiple devices
-    UtxoManager.discardAddressUtxos(address);
+    UtxoManager.discardAddressUtxos(addr);
 
     // register each UTXO, add tx to history
     utxos.forEach((utxo) => {
-      AddressManager.registerTransaction(address, {
+      AddressManager.registerTransaction(addr, {
         tx_hash: utxo.tx_hash,
         height: utxo.height,
       });
 
-      UtxoManager.registerUtxo(address, utxo);
+      UtxoManager.registerUtxo(addr, utxo);
 
       /*
+      // TODO: validate that the UTXOs pass merkle inclusion
+      // for now we just trust that fulcrum isn't lying to us
       listenerApi.dispatch(syncBlock(utxo.height));
       listenerApi.dispatch(syncTxRequest(utxo.tx_hash));
       */
     });
 
-    // use local tx history to calculate expected state hash
-    // if different than response hash, we must be missing transactions
-    // ask for entire history of address if so
-    const calculatedAddressState =
-      AddressManager.calculateAddressState(address);
-    const storedAddressState = AddressManager.getAddressState(address);
-
-    // UTXO set represents tip of addresses.
-    // If we're still out of sync after applying tip, we must be missing txes
-    if (calculatedAddressState !== storedAddressState) {
-      listenerApi.dispatch(syncAddressHistory(address));
-    }
-
     // calculate address balance
     const addressBalance = utxos.reduce((sum, utxo) => sum + utxo.value, 0);
-    const balances = AddressManager.updateAddressBalance(
-      address,
-      addressBalance
-    );
+    const balances = AddressManager.updateAddressBalance(addr, addressBalance);
 
     // update wallet balance; view re-renders on wallet update
-    listenerApi.dispatch(walletBalanceUpdate(balances));
-  },
-});
+    thunkApi.dispatch(walletBalanceUpdate(balances));
+
+    return {
+      address,
+      utxos,
+    };
+  }
+);
 
 export const syncAddressHistory = createAsyncThunk(
   "sync/addressHistory",
-  async (address, thunkApi) => {
+  async (address: AddressEntity, thunkApi) => {
+    const addr = address.address;
+
     const wallet = selectActiveWallet(thunkApi.getState());
 
     const AddressManager = AddressManagerService(wallet);
 
-    const history = await Electrum.requestAddressHistory(address);
-    history.forEach(({ tx_hash, height }) => {
-      AddressManager.registerTransaction(address, { tx_hash, height });
-      thunkApi.dispatch(syncTxRequest(tx_hash));
+    // use local tx history to calculate expected state hash
+    // if different than response hash, we must be missing transactions
+    // ask for entire history of address if so
+    const calculatedAddressState = AddressManager.calculateAddressState(addr);
+    const storedAddressState = AddressManager.getAddressState(addr);
 
-      // if (height > listenerApi.getState().sync.chaintip.height - 12960) {
-      // }
-    });
-    return history;
+    // UTXO set represents tip of addresses.
+    // If we're still out of sync after applying tip, we must be missing txes
+    if (calculatedAddressState !== storedAddressState) {
+      const history = await Electrum.requestAddressHistory(addr);
+      history.forEach(({ tx_hash, height }) => {
+        AddressManager.registerTransaction(addr, {
+          tx_hash,
+          height,
+        });
+        thunkApi.dispatch(syncTxRequest(tx_hash));
+
+        // if (height > listenerApi.getState().sync.chaintip.height - 12960) {
+        // }
+      });
+      return history;
+    }
   }
 );
 
 export const syncTxRequest = createAsyncThunk(
   "sync/txRequest",
-  async (tx_hash, thunkApi) => {
+  async (tx_hash: string, thunkApi) => {
     const TransactionManager = TransactionManagerService();
     const tx = await TransactionManager.resolveTransaction(tx_hash);
     thunkApi.dispatch(syncTxAmount(tx));
@@ -279,7 +317,7 @@ export const syncTxRequest = createAsyncThunk(
 
 export const syncTxAmount = createAsyncThunk(
   "sync/txAmount",
-  async (tx, thunkApi) => {
+  async (tx: TransactionEntity, thunkApi) => {
     const wallet = selectActiveWallet(thunkApi.getState());
     const { localCurrency } = selectCurrencySettings(thunkApi.getState());
     const result = await TransactionHistoryService(
@@ -306,7 +344,6 @@ export const syncBlock = createAsyncThunk(
   }
 );
 
-// TODO: keep last 4032 blocks (28 days)
 export const syncChaintip = createAction("sync/chaintip");
 syncMiddleware.startListening({
   actionCreator: syncChaintip,
@@ -332,15 +369,16 @@ const initialState = {
   syncPending: { ...initialPending },
   syncFailed: { ...initialPending },
   chaintip: { ...block_checkpoints.first2023 },
+  addressUtxos: {},
 };
 
 export const syncReducer = createReducer(initialState, (builder) => {
   builder
-    .addCase(syncConnectionUp, (state: RootState, action) => {
+    .addCase(syncConnectionUp.fulfilled, (state: RootState, action) => {
       state.connected = true;
       state.server = action.payload;
     })
-    .addCase(syncConnectionDown, (state: RootState) => {
+    .addCase(syncConnectionDown.pending, (state: RootState) => {
       state.connected = false;
     })
     .addCase(syncReconnect.pending, (state: RootState) => {

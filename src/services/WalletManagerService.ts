@@ -76,6 +76,7 @@ export default function WalletManagerService() {
       wallet = getWalletById(wallet_id);
     } catch (e) {
       if (!(e instanceof WalletNotExistsError)) {
+        Logger.warn("something bad happened during boot", e);
         throw e;
       }
 
