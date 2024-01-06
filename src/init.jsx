@@ -9,8 +9,9 @@ function initialize_app() {
   Logger.info(`Selene Wallet v${SELENE_WALLET_VERSION} :: https://selene.cash`);
 
   // initialize redux state, don't render app until redux state is loaded
-  Logger.debug("redux_init");
+  Logger.debug("redux init");
   redux_init();
+
   Logger.debug("render app");
   ReactDOM.createRoot(document.getElementById("root")).render(<Main />);
 }

@@ -57,14 +57,15 @@ export default function ToastService() {
       : "Disconnected";
 
     const pendingSum = Object.keys(sync.syncPending).reduce(
-      (sum, cur) => (sum = sum + sync.syncPending[cur]),
+      (sum, cur) => sum + sync.syncPending[cur],
       0
     );
 
+    /*
     const failedSum = Object.keys(sync.syncFailed).reduce(
-      (sum, cur) => (sum = sum + sync.syncFailed[cur]),
+      (sum, cur) => sum + sync.syncFailed[cur],
       0
-    );
+      );*/
 
     const AddressManager = AddressManagerService(wallet);
     const latestReceiveIndex =
@@ -76,7 +77,6 @@ export default function ToastService() {
       body: (
         <div>
           {pendingSum > 0 && <div>Pending Requests: {pendingSum}</div>}
-          {failedSum > 0 && <div>Failed Requests: {failedSum}</div>}
           <div># Receive Addresses: {latestReceiveIndex}</div>
           <div># Change Addresses: {latestChangeIndex}</div>
         </div>

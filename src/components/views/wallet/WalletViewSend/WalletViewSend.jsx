@@ -1,3 +1,4 @@
+import Logger from "js-logger";
 import { useState, useEffect } from "react";
 import { useParams, useSearchParams, useNavigate } from "react-router-dom";
 import Decimal from "decimal.js";
@@ -87,6 +88,7 @@ export default function WalletViewSend() {
     ]);
 
     if (typeof transaction !== "object") {
+      Logger.warn(transaction);
       await Haptics.notification({ type: NotificationType.Warning });
       setMessage(translate(translations.notEnoughFee));
       return;

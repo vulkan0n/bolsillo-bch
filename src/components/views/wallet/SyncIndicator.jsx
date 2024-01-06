@@ -1,21 +1,20 @@
 import PropTypes from "prop-types";
-import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useEffect, useState, useRef } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import {
   DisconnectOutlined,
   CheckCircleFilled,
   SyncOutlined,
 } from "@ant-design/icons";
 import { animated, useSpring } from "@react-spring/web";
-import { selectSyncState } from "@/redux/sync";
-import { selectActiveWallet } from "@/redux/wallet";
-import ToastService from "@/services/ToastService";
+import { selectSyncState, syncHotRefresh } from "@/redux/sync";
 
 export default function SyncIndicator() {
-  const wallet = useSelector(selectActiveWallet);
+  const dispatch = useDispatch();
   const sync = useSelector(selectSyncState);
 
-  const [syncTimeout, setSyncTimeout] = useState(null);
+  const [shouldAnimateSync, setShouldAnimateSync] = useState(false);
+  const syncTimeoutRef = useRef();
 
   const [syncSprings] = useSpring(() => ({
     from: { opacity: 1, scale: 1.1 },
@@ -26,17 +25,17 @@ export default function SyncIndicator() {
   // make the sync spinner smoother by forcing it to play for a minimum time
   useEffect(
     function gracefulSyncIndicator() {
-      if (sync.isSyncing) {
-        if (syncTimeout === null) {
-          setSyncTimeout(
-            setTimeout(() => {
-              setSyncTimeout(null);
-            }, 1000)
-          );
-        }
+      setShouldAnimateSync(true);
+
+      if (!sync.isSyncing) {
+        clearTimeout(syncTimeoutRef.current);
+        syncTimeoutRef.current = setTimeout(
+          () => setShouldAnimateSync(false),
+          1000
+        );
       }
     },
-    [sync.isSyncing, syncTimeout]
+    [sync.isSyncing]
   );
 
   const [disconnectSprings, disconnectApi] = useSpring(() => ({
@@ -73,7 +72,7 @@ export default function SyncIndicator() {
       disconnectApi.start();
     }
 
-    ToastService().connectionStatus({ wallet, sync });
+    dispatch(syncHotRefresh());
   };
 
   return (
@@ -85,7 +84,7 @@ export default function SyncIndicator() {
         <DisconnectedIcon springs={{ ...disconnectSprings }} />
       )}
       {sync.connected &&
-        (syncTimeout !== null ? (
+        (shouldAnimateSync ? (
           <SyncIcon springs={{ ...syncSprings }} />
         ) : (
           <ConnectedIcon springs={{ ...connectSprings }} />

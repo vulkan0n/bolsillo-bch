@@ -53,6 +53,9 @@ export default function TransactionBuilderService(wallet: WalletEntity) {
     // gather suitable inputs
     const UtxoManager = UtxoManagerService(wallet);
     const inputs = UtxoManager.selectUtxos(sendTotal, fee);
+
+    Logger.debug("selectUtxos:", inputs);
+
     const inputTotal = inputs
       .reduce((sum, cur) => sum.plus(cur.amount), new Decimal(0))
       .toNumber();
@@ -62,6 +65,14 @@ export default function TransactionBuilderService(wallet: WalletEntity) {
 
     // insufficient funds
     if (changeTotal < 0) {
+      Logger.debug(
+        "buildP2pkhTransaction: insufficient funds",
+        inputTotal,
+        sendTotal,
+        fee,
+        sendTotal - fee,
+        changeTotal
+      );
       return sendTotal - fee;
     }
 
@@ -111,14 +122,18 @@ export default function TransactionBuilderService(wallet: WalletEntity) {
     // if we didn't reclaim change, add it to total fee
     const feeTotal = changeTotal >= DUST_LIMIT ? fee : fee + changeTotal;
     if (feeTotal < tx_raw.length) {
-      // Fee under 1 sat/B... try again with byte length as fee
+      Logger.debug(
+        `Fee under 1 sat/B... try again with ${tx_raw.length} bytelength as fee`
+      );
       // TODO: use relay fee provided by electrum (futureproofing)
       return buildP2pkhTransaction(recipients, tx_raw.length);
     }
 
     if (feeTotal > tx_raw.length * 3) {
       if (fee !== tx_raw.length) {
-        // Fee greater than 300% of byte length. Can we make it smaller?
+        Logger.debug(
+          "Fee greater than 300% of byte length. Can we make it smaller?"
+        );
         return buildP2pkhTransaction(recipients, tx_raw.length);
       }
 

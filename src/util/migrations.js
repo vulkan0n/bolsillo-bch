@@ -287,10 +287,10 @@ export function run_migrations(db) {
   for (let version = DB_VERSION; version < migrations.length; version += 1) {
     Logger.log("DB_MIGRATE", `${version}/${migrations.length}`, DB_VERSION);
     try {
-      //Logger.log(migrations[version]());
+      //Logger.debug(migrations[version]());
       db.run(migrations[version]());
     } catch (e) {
-      Logger.error(e);
+      Logger.error("error during migrations", e);
     }
   }
 }

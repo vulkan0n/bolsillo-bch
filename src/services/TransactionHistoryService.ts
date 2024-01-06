@@ -117,7 +117,7 @@ export default function TransactionHistoryService(wallet: WalletEntity) {
         fiat_amount="${CurrencyService(fiatCurrency).satsToFiat(amount) || 0}", 
         fiat_currency="${fiatCurrency}",
         time=${
-          tx.time !== null
+          tx.time
             ? `strftime('%Y-%m-%dT%H:%M:%SZ', "${tx.time}", "unixepoch")`
             : `strftime('%Y-%m-%dT%H:%M:%SZ')`
         },

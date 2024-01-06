@@ -9,7 +9,7 @@ export default function ExploreSearchBar() {
     setSearchText(search);
 
     // search for addresses and transactions instantly if valid
-    
+
     // if search input is a number, assume it's a block height
     const canBeBlock =
       Number.isInteger(Number.parseInt(search, 10)) || search.startsWith("#"); // e.g. #478559, 478559
