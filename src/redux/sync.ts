@@ -138,7 +138,7 @@ export const syncSubscribeAddress = createAsyncThunk(
       );
     }
 
-    return subscription;
+    return [subscription.address, subscription.addressState];
   }
 );
 
@@ -162,12 +162,7 @@ export const syncChangeAddresses = createAsyncThunk(
 // syncAddressState: fired when data acquired from address subscription
 export const syncAddressState = createAsyncThunk(
   "sync/addressState",
-  (payload: [AddressEntity, string], thunkApi) => {
-    // initial subscription response doesn't have address for context
-    if (!Array.isArray(payload)) {
-      return;
-    }
-
+  (payload: [AddressEntity | string, string], thunkApi) => {
     // get subscription response data from payload
     const [address, addressState] = payload;
 
@@ -175,9 +170,11 @@ export const syncAddressState = createAsyncThunk(
     const wallet = selectActiveWallet(thunkApi.getState());
     const AddressManager = AddressManagerService(wallet);
 
-    const addressObj = address.address
-      ? address
-      : AddressManager.getAddress(address);
+    // catch for payload from direct electrum subscription
+    const addressObj: AddressEntity =
+      typeof address === "string"
+        ? AddressManager.getAddress(address)
+        : address;
 
     if (addressObj.state !== addressState) {
       // if state updated, get utxos for address
@@ -185,6 +182,8 @@ export const syncAddressState = createAsyncThunk(
       thunkApi.dispatch(syncAddressUtxos(addressObj));
       AddressManager.updateAddressState(addressObj.address, addressState);
     }
+
+    return [addressObj, addressState];
   }
 );
 
@@ -369,7 +368,7 @@ const initialState = {
   syncPending: { ...initialPending },
   syncFailed: { ...initialPending },
   chaintip: { ...block_checkpoints.first2023 },
-  addressUtxos: {},
+  addresses: {},
 };
 
 export const syncReducer = createReducer(initialState, (builder) => {
@@ -383,6 +382,14 @@ export const syncReducer = createReducer(initialState, (builder) => {
     })
     .addCase(syncReconnect.pending, (state: RootState) => {
       state.connected = false;
+    })
+    .addCase(syncSubscribeAddress.fulfilled, (state: RootState, action) => {
+      const [address] = action.payload;
+      state.addresses[address.address] = address;
+    })
+    .addCase(syncAddressState.fulfilled, (state: RootState, action) => {
+      const [address] = action.payload;
+      state.addresses[address.address] = address;
     })
     .addCase(syncAddressUtxos.pending, (state: RootState) => {
       state.syncPending.utxo += 1;
@@ -443,6 +450,11 @@ export const selectSyncState = createSelector(
       false
     ),
   })
+);
+
+export const selectMyAddresses = createSelector(
+  (state: RootState) => state.sync,
+  (sync) => sync.addresses
 );
 
 /*

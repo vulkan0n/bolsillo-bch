@@ -15,6 +15,12 @@ export interface AddressEntity {
   memo: string;
 }
 
+export class AddressNotExistsError extends Error {
+  constructor(address: string) {
+    super(`No Address ${address}`);
+  }
+}
+
 // AddressManagerService: handles most address-related operations
 export default function AddressManagerService(wallet: WalletEntity) {
   //Logger.debug("AddressManagerService", wallet);
@@ -134,12 +140,16 @@ export default function AddressManagerService(wallet: WalletEntity) {
     return generatedAddresses;
   }
 
-  function getAddress(address: string): AddressEntity | null {
+  function getAddress(address: string): AddressEntity {
     const result = resultToJson(
       db.exec(`SELECT * FROM addresses WHERE address="${address}"`)
     );
 
-    return result.length > 0 ? result[0] : null;
+    if (result.length < 1) {
+      throw new AddressNotExistsError(address);
+    }
+
+    return result[0];
   }
 
   // getReceiveAddresses: get all active receive addresses for this wallet

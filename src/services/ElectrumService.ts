@@ -107,7 +107,9 @@ export default function ElectrumService() {
   }
 
   // subscribeToAddress: listen for updates on an address
-  async function subscribeToAddress(address: AddressEntity): Promise<object> {
+  async function subscribeToAddress(
+    address: AddressEntity
+  ): Promise<{ address: AddressEntity; addressState: string }> {
     if (electrum === null) {
       throw new ElectrumNotConnectedError();
     }
@@ -122,10 +124,10 @@ export default function ElectrumService() {
       throw new ElectrumNotConnectedError();
     }
 
-    const addressState = await electrum.request(
+    const addressState = (await electrum.request(
       "blockchain.address.subscribe",
       address.address
-    );
+    )) as string;
 
     return { address, addressState };
   }
