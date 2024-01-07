@@ -53,12 +53,19 @@ function OutputListItem({ output, i }) {
 
   const zebraCss = i % 2 === 0 ? "bg-zinc-100" : "bg-zinc-50";
 
+  const isOpReturn =
+    output.type === "nulldata" || !output.scriptPubKey.addresses;
+
   return (
     <div className={`p-1.5 ${zebraCss}`}>
       <div className="flex text-sm items-center">
-        <div>
-          <Address address={output.scriptPubKey.addresses[0]} />
-        </div>
+        {isOpReturn ? (
+          <div className="font-mono font-bold">OP_RETURN</div>
+        ) : (
+          <div>
+            <Address address={output.scriptPubKey.addresses[0]} />
+          </div>
+        )}
       </div>
       <div className="">
         <span className="text-xs tracking-tighter mr-1.5 opacity-70">
