@@ -4,8 +4,8 @@ import { useSelector } from "react-redux";
 import {
   WalletOutlined,
   WalletFilled,
-  AppstoreOutlined,
-  AppstoreFilled,
+  //AppstoreOutlined,
+  //AppstoreFilled,
   SettingOutlined,
   SettingFilled,
 } from "@ant-design/icons";
@@ -18,14 +18,14 @@ import { translate } from "@/util/translations";
 const { wallet, settings } = translations;
 
 function BottomNavigation() {
-  const keyboardIsOpen = useSelector(selectKeyboardIsOpen);
+  const isKeyboardOpen = useSelector(selectKeyboardIsOpen);
   const isScanning = useSelector(selectScannerIsScanning);
 
   // Ensure component reloads when language preferences are changed
   useSelector(selectLanguageCode);
 
   return (
-    !keyboardIsOpen &&
+    !isKeyboardOpen &&
     !isScanning && (
       <div
         className="fixed bottom-0 w-full flex items-center justify-around z-50"

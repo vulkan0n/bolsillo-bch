@@ -66,7 +66,7 @@ export const walletBoot = createAsyncThunk(
       })
     );
 
-    thunkApi.dispatch(fetchExchangeRates());
+    thunkApi.dispatch(fetchExchangeRates(0));
 
     return wallet;
   }

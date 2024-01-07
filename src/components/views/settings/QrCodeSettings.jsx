@@ -95,17 +95,18 @@ export default function QrCodeSettings() {
       </Accordion.Child>
       <Accordion.Child>
         <div className="text-right">
-          <Button
-            onClick={handleResetQrColors}
-            icon={() => (
-              <span>
-                <UndoOutlined className="mr-1" />
-                {translate(translations.resetColors)}
-              </span>
-            )}
-          />
+          <Button onClick={handleResetQrColors} icon={QrCodeResetButtonIcon} />
         </div>
       </Accordion.Child>
     </Accordion>
+  );
+}
+
+function QrCodeResetButtonIcon() {
+  return (
+    <span>
+      <UndoOutlined className="mr-1" />
+      {translate(translations.resetColors)}
+    </span>
   );
 }

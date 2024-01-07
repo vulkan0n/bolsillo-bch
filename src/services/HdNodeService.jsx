@@ -13,12 +13,9 @@ import { hexToBin } from "@/util/hex";
 
 import AddressManagerService from "@/services/AddressManagerService";
 
-import { store } from "@/redux";
-import { selectIsChipnet } from "@/redux/preferences";
-
 export default function HdNodeService(wallet) {
   const { mnemonic, derivation, passphrase } = wallet;
-  //console.log("HdNodeService", wallet_id, derivation, mnemonic);
+  //Logger.debug("HdNodeService", wallet_id, derivation, mnemonic);
 
   const seed = bip39.mnemonicToSeedSync(mnemonic, passphrase);
   const hdMaster = deriveHdPrivateNodeFromSeed(seed);
@@ -36,9 +33,9 @@ export default function HdNodeService(wallet) {
 
     const pubKey = secp256k1.derivePublicKeyCompressed(child.privateKey);
     const hash = ripemd160.hash(sha256.hash(pubKey));
-    const address = encodeCashAddress(wallet.prefix, "P2PKH", hash);
+    const address = encodeCashAddress(wallet.prefix, "p2pkh", hash);
 
-    //console.log("generateAddress", index, address);
+    //Logger.debug("generateAddress", index, address);
     return address;
   }
 

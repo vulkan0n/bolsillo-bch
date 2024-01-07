@@ -1,4 +1,4 @@
-import Logger from "js-logger";
+//import Logger from "js-logger";
 import { sha256 } from "@bitauth/libauth";
 import DatabaseService from "@/services/DatabaseService";
 import HdNodeService from "@/services/HdNodeService";

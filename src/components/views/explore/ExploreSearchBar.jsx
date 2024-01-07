@@ -1,7 +1,9 @@
-import { useState } from "react";
-import { SearchOutlined } from "@ant-design/icons";
+/*import { useState } from "react";
+import { SearchOutlined } from "@ant-design/icons";*/
 
 export default function ExploreSearchBar() {
+  return <div />;
+  /*
   const [searchText, setSearchText] = useState("");
 
   const handleSearchTextChange = (event) => {
@@ -28,5 +30,5 @@ export default function ExploreSearchBar() {
         />
       </div>
     </div>
-  );
+  );*/
 }

@@ -1,4 +1,3 @@
-import Logger from "js-logger";
 import { Preferences } from "@capacitor/preferences";
 import {
   createReducer,

@@ -1,4 +1,4 @@
-import {
+/*import {
   Chart as ChartJS,
   CategoryScale,
   LinearScale,
@@ -72,4 +72,4 @@ function DailyActiveUsersChart({ data }) {
   );
 }
 
-export default DailyActiveUsersChart;
+export default DailyActiveUsersChart;*/

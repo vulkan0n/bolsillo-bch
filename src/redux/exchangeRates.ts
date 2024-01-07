@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-use-before-define */
 import Logger from "js-logger";
 import {
   createReducer,
@@ -11,7 +12,7 @@ import { currencyList } from "@/util/currency";
 
 export const fetchExchangeRates = createAsyncThunk(
   "exchangeRates/fetch",
-  async (attempts = 0, thunkApi) => {
+  async (attempts: number, thunkApi) => {
     const { localCurrency } = selectCurrencySettings(thunkApi.getState());
     const Currency = CurrencyService(localCurrency);
 
@@ -24,6 +25,7 @@ export const fetchExchangeRates = createAsyncThunk(
         () => thunkApi.dispatch(fetchExchangeRates(attempts + 1)),
         10000 * attempts + 1
       );
+      return selectExchangeRates(thunkApi.getState());
     }
   }
 );

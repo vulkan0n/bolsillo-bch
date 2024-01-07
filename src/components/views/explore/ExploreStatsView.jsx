@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+/*import { useEffect } from "react";
 import { AppstoreOutlined } from "@ant-design/icons";
 import { DateTime } from "luxon";
 import { useQuery } from "@apollo/client";
@@ -110,4 +110,4 @@ export default function ExploreStatsView() {
       </div>
     </>
   );
-}
+}*/

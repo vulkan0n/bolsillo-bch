@@ -1,3 +1,4 @@
+import Logger from "js-logger";
 import { Decimal } from "decimal.js";
 import { bchToSats, satsToBch } from "@/util/sats";
 import { currencyList } from "@/util/currency";
@@ -71,7 +72,7 @@ export default function CurrencyService(fiatCurrency) {
       },
     });
 
-    console.log("Exchange rates", response);
+    Logger.log("Exchange rates", response);
 
     if (!response.ok) {
       throw new Error(response);

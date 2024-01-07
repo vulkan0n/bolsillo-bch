@@ -12,7 +12,6 @@ export default function ExploreViewHome() {
     <div className="p-2">
       <ExploreStatBlock />
       <ExploreApp icon={BankOutlined} name="Assets" to="/wallet/assets" />
-      {/*
       <ExploreApp
         icon={ContactsOutlined}
         name="Contacts"
@@ -24,7 +23,6 @@ export default function ExploreViewHome() {
         name="Help"
         to="/explore/help"
       />
-      */}
     </div>
   );
 }

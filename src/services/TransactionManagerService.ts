@@ -177,7 +177,7 @@ export default function TransactionManagerService() {
 
       return result;
     } catch (e) {
-      console.error(e);
+      Logger.error(e);
       purgeTransactions();
       return { uri: "" };
     }

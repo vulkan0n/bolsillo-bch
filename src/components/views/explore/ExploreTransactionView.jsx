@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import Logger from "js-logger";
 import { useLoaderData, Link } from "react-router-dom";
 import { useSelector } from "react-redux";
@@ -6,6 +7,7 @@ import { selectCurrencySettings } from "@/redux/preferences";
 
 import Address from "@/atoms/Address";
 import Satoshi from "@/atoms/Satoshi";
+import Accordion from "@/atoms/Accordion";
 
 export default function ExploreTransactionView() {
   const tx = useLoaderData();
@@ -27,14 +29,12 @@ export default function ExploreTransactionView() {
         {isConfirmed ? "Confirmed" : "Seen"} {txDate}
       </div>
       <div className="p-1">
-        <div className="bg-zinc-200 rounded p-1">
-          <div className="font-semibold py-1">Outputs</div>
+        <Accordion title="Outputs" open>
           {tx.vout.map((output, i) => (
             <OutputListItem key={output.n} output={output} i={i} />
           ))}
-        </div>
-        <div className="bg-zinc-200 rounded p-1 mt-2">
-          <div className="font-semibold py-1">Inputs</div>
+        </Accordion>
+        <Accordion title="Inputs">
           {tx.vin.map((input, i) => (
             <InputListItem
               key={`${input.txid}:${input.vout}`}
@@ -42,7 +42,7 @@ export default function ExploreTransactionView() {
               i={i}
             />
           ))}
-        </div>
+        </Accordion>
       </div>
     </>
   );

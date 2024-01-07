@@ -8,9 +8,9 @@ import {
 import { Toaster } from "react-hot-toast";
 
 import { Provider } from "react-redux";
-import { ApolloProvider } from "@apollo/client";
+//import { ApolloProvider } from "@apollo/client";
+//import apolloClient from "./apolloClient";
 import { store } from "./redux";
-import apolloClient from "./apolloClient";
 
 import "./index.css";
 
@@ -27,7 +27,7 @@ import WalletAssetsView from "@/views/wallet/assets/WalletAssetsView";
 import ExploreView from "@/views/explore/ExploreView";
 import ExploreViewHome from "@/views/explore/ExploreViewHome";
 import ExploreTransactionView from "@/views/explore/ExploreTransactionView";
-import ExploreStatsView from "@/views/explore/stats/ExploreStatsView";
+//import ExploreStatsView from "@/views/explore/stats/ExploreStatsView";
 import ExploreContactsView from "@/views/explore/contacts/ExploreContactsView";
 import ExploreMapView from "@/views/explore/map/ExploreMapView";
 import ExploreHelpView from "@/views/explore/help/ExploreHelpView";
@@ -38,7 +38,6 @@ import SettingsWalletView from "@/views/settings/SettingsWalletView/SettingsWall
 import SettingsWalletWizard from "@/views/settings/SettingsWalletWizard/SettingsWalletWizard";
 import SettingsWalletWizardInit from "@/views/settings/SettingsWalletWizardInit/SettingsWalletWizardInit";
 import SettingsWalletWizardImport from "@/views/settings/SettingsWalletWizardImport/SettingsWalletWizardImport";
-//import SettingsWalletWizardScan from "@/views/settings/SettingsWalletWizardScan";
 import SettingsWalletAdditionalInformation from "@/views/settings/SettingsWalletAdditionalInformation/SettingsWalletAdditionalInformation";
 
 import CreditsView from "@/views/credits/CreditsView";
@@ -99,10 +98,10 @@ export default function Main() {
                 );
               },
             },
-            {
+            /*{
               path: "stats",
               element: <ExploreStatsView />,
-            },
+            },*/
             {
               path: "map",
               element: <ExploreMapView />,
@@ -149,10 +148,6 @@ export default function Main() {
               path: "import",
               element: <SettingsWalletWizardImport />,
             },
-            /*{
-              path: "scan/:wallet_id",
-              element: <SettingsWalletWizardScan />,
-            }*/
           ],
         },
         {
@@ -173,14 +168,14 @@ export default function Main() {
   return (
     <ReactStrictMode>
       <Provider store={store}>
-        <ApolloProvider client={apolloClient}>
-          {/* Note: Duration has an inbuilt extra 1000ms dismissal delay */}
-          <Toaster
-            toastOptions={{ duration: 1000 }}
-            containerClassName="toaster"
-          />
-          <RouterProvider router={router} />
-        </ApolloProvider>
+        {/*<ApolloProvider client={apolloClient}>*/}
+        {/* Note: Duration has an inbuilt extra 1000ms dismissal delay */}
+        <Toaster
+          toastOptions={{ duration: 1000 }}
+          containerClassName="toaster"
+        />
+        <RouterProvider router={router} />
+        {/*</ApolloProvider>*/}
       </Provider>
     </ReactStrictMode>
   );

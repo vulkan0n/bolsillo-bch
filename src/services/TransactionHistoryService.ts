@@ -1,3 +1,4 @@
+import Logger from "js-logger";
 import { Decimal } from "decimal.js";
 import DatabaseService from "@/services/DatabaseService";
 import AddressManagerService from "@/services/AddressManagerService";
@@ -22,7 +23,7 @@ export default function TransactionHistoryService(wallet: WalletEntity) {
   };
 
   function getTransactionHistory() {
-    console.log("getTransactionHistory", wallet.id);
+    Logger.debug("getTransactionHistory", wallet.id);
     const result = resultToJson(
       db.exec(
         `SELECT * FROM address_transactions 

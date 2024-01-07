@@ -1,4 +1,4 @@
-import { createAsyncThunk } from "@reduxjs/toolkit";
+/*import { createAsyncThunk } from "@reduxjs/toolkit";
 import StatsService from "../services/StatsService";
 
 export const triggerCheckIn = createAsyncThunk(
@@ -8,4 +8,4 @@ export const triggerCheckIn = createAsyncThunk(
 
     submitCheckIn();
   }
-);
+);*/

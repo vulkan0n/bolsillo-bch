@@ -54,12 +54,7 @@ export default function DebugView() {
         <div className="m-1">
           <div className="flex">
             <Button
-              icon={() => (
-                <span>
-                  <ExceptionOutlined className="mr-1" />
-                  Throw an Error
-                </span>
-              )}
+              icon={ThrowAnErrorButtonIcon}
               label=""
               onClick={handleThrowFakeError}
             />
@@ -67,5 +62,14 @@ export default function DebugView() {
         </div>
       </div>
     </>
+  );
+}
+
+function ThrowAnErrorButtonIcon() {
+  return (
+    <span>
+      <ExceptionOutlined className="mr-1" />
+      Throw an Error
+    </span>
   );
 }

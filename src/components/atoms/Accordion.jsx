@@ -1,8 +1,9 @@
+import PropTypes from "prop-types";
 import { useState } from "react";
 import { CaretRightOutlined, CaretDownOutlined } from "@ant-design/icons";
 
-export default function Accordion({ icon, title, children }) {
-  const [isOpen, setIsOpen] = useState(false);
+export default function Accordion({ icon, title, children, open }) {
+  const [isOpen, setIsOpen] = useState(open);
   const Icon = icon;
 
   return (
@@ -28,6 +29,20 @@ export default function Accordion({ icon, title, children }) {
   );
 }
 
+Accordion.propTypes = {
+  icon: PropTypes.node,
+  title: PropTypes.string,
+  children: PropTypes.node,
+  open: PropTypes.bool,
+};
+
+Accordion.defaultProps = {
+  icon: () => null,
+  title: "",
+  children: () => null,
+  open: false,
+};
+
 function AccordionChild({ icon, label, children }) {
   const Icon = icon || (() => null);
   return (
@@ -44,5 +59,17 @@ function AccordionChild({ icon, label, children }) {
     </div>
   );
 }
+
+AccordionChild.propTypes = {
+  icon: PropTypes.node,
+  label: PropTypes.string,
+  children: PropTypes.node,
+};
+
+AccordionChild.defaultProps = {
+  icon: () => null,
+  label: "",
+  children: () => null,
+};
 
 Accordion.Child = AccordionChild;

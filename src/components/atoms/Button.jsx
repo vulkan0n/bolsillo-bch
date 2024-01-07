@@ -1,3 +1,5 @@
+/* eslint-disable react/prop-types */
+// TODO: refactor this component it kinda sucks
 export default function Button({
   icon,
   label,

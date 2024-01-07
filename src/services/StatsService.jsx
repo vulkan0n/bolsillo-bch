@@ -1,3 +1,4 @@
+/*import Logger from "js-logger";
 import { DateTime } from "luxon";
 import { Device } from "@capacitor/device";
 import { gql } from "@apollo/client";
@@ -40,7 +41,7 @@ export default function StatsService() {
     const isShouldCheckIn = lastCheckIn === "" || now.isAfter(nextCheckIn);
 
     const deviceId = (await Device.getId())?.identifier;
-    console.log({ lastCheckIn, isShouldCheckIn, deviceId });
+    Logger.debug({ lastCheckIn, isShouldCheckIn, deviceId });
 
     if (isShouldCheckIn) {
       apolloClient.mutate({
@@ -51,10 +52,10 @@ export default function StatsService() {
         },
       });
 
-      console.log("sending off store.dispatch");
+      Logger.debug("sending off store.dispatch");
       store.dispatch(
         setPreference({ key: "lastCheckIn", value: nowFormatted })
       );
     }
   }
-}
+}*/

@@ -1,3 +1,4 @@
+import PropTypes from "prop-types";
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
@@ -107,3 +108,8 @@ function OutputListItem({ output, i }) {
     </div>
   );
 }
+
+OutputListItem.propTypes = {
+  output: PropTypes.object.isRequired,
+  i: PropTypes.number.isRequired,
+};

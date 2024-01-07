@@ -44,7 +44,6 @@ export const syncConnect = createAsyncThunk(
     try {
       // attempt connection
       await Electrum.connect(payload.server);
-      return payload.server;
     } catch (e) {
       // if connection fails, destroy the client and try again
       await Electrum.disconnect(true);
@@ -72,8 +71,11 @@ export const syncConnect = createAsyncThunk(
             setPreference({ key: "electrumServer", value: newServer })
           );
         }
+        return newServer;
       }
     }
+
+    return payload.server;
   }
 );
 
@@ -296,13 +298,12 @@ const syncAddressUtxos = createAsyncThunk(
   }
 );
 
-export const syncAddressHistory = createAsyncThunk(
+/*export const syncAddressHistory = createAsyncThunk(
   "sync/addressHistory",
   async (address: AddressEntity, thunkApi) => {
     const addr = address.address;
 
     const wallet = selectActiveWallet(thunkApi.getState());
-
     const AddressManager = AddressManagerService(wallet);
 
     // use local tx history to calculate expected state hash
@@ -328,7 +329,7 @@ export const syncAddressHistory = createAsyncThunk(
       return history;
     }
   }
-);
+);*/
 
 export const syncTxRequest = createAsyncThunk(
   "sync/txRequest",
@@ -435,7 +436,7 @@ export const syncReducer = createReducer(initialState, (builder) => {
       state.syncPending.utxo -= 1;
       //state.syncFailed.utxo += 1;
     })
-    .addCase(syncAddressHistory.pending, (state: RootState) => {
+    /*.addCase(syncAddressHistory.pending, (state: RootState) => {
       state.syncPending.history += 1;
     })
     .addCase(syncAddressHistory.fulfilled, (state: RootState) => {
@@ -444,7 +445,7 @@ export const syncReducer = createReducer(initialState, (builder) => {
     .addCase(syncAddressHistory.rejected, (state: RootState) => {
       state.syncPending.history -= 1;
       //state.syncFailed.history += 1;
-    })
+    })*/
     .addCase(syncTxRequest.pending, (state: RootState) => {
       state.syncPending.txData += 1;
     })
