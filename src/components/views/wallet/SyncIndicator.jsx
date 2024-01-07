@@ -25,7 +25,9 @@ export default function SyncIndicator() {
   // make the sync spinner smoother by forcing it to play for a minimum time
   useEffect(
     function gracefulSyncIndicator() {
-      setShouldAnimateSync(true);
+      if (sync.isSyncing) {
+        setShouldAnimateSync(true);
+      }
 
       if (!sync.isSyncing) {
         clearTimeout(syncTimeoutRef.current);
