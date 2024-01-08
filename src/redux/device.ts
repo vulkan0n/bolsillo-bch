@@ -20,33 +20,31 @@ interface DeviceState {
   locale: string;
 }
 
-export const setScannerIsScanning = createAction(
-  "scanner/setScannerIsScanning",
-  (isScanning: boolean) => ({ payload: isScanning })
+export const setScannerIsScanning = createAction<boolean>(
+  "scanner/setScannerIsScanning"
 );
-export const setKeyboardIsOpen = createAction(
-  "scanner/setKeyboardIsOpen",
-  (isOpen: boolean) => ({ payload: isOpen })
+export const setKeyboardIsOpen = createAction<boolean>(
+  "scanner/setKeyboardIsOpen"
 );
 
 export const selectScannerIsScanning = createSelector(
-  (state: RootState) => state.device.scanner,
-  (scanner): boolean => scanner.isScanning
+  (state: RootState) => state.device,
+  (device): boolean => device.scanner.isScanning
 );
 
 export const selectKeyboardIsOpen = createSelector(
-  (state: RootState) => state.device.keyboard,
-  (keyboard): boolean => keyboard.isOpen
+  (state: RootState) => state.device,
+  (device): boolean => device.keyboard.isOpen
 );
 
 export const selectDeviceInfo = createSelector(
-  (state: RootState) => state.device.deviceInfo,
-  (deviceInfo): DeviceInfo => deviceInfo
+  (state: RootState) => state.device,
+  (device): DeviceInfo => device.deviceInfo
 );
 
 export const selectLocale = createSelector(
-  (state: RootState) => state.device.locale,
-  (locale): string => locale
+  (state: RootState) => state.device,
+  (device): string => device.locale
 );
 
 async function initializeDevice(): Promise<DeviceState> {

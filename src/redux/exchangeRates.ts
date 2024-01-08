@@ -43,8 +43,8 @@ export const exchangeRateReducer = createReducer(initialState, (builder) => {
 });
 
 export const selectExchangeRates = createSelector(
-  (state) => state.exchangeRates,
-  (exchangeRates) => exchangeRates
+  (state) => state,
+  (state) => state.exchangeRates
 );
 
 export function stripArsPostDecimal(localCurrency, fiatString) {
@@ -57,12 +57,14 @@ export function stripArsPostDecimal(localCurrency, fiatString) {
 }
 
 export const selectCurrentPrice = createSelector(
-  (state) => ({
-    exchangeRates: selectExchangeRates(state),
-    currency: state.preferences.localCurrency,
-    locale: state.device.locale,
-  }),
-  (s) => {
+  (state) => state,
+  (state) => {
+    const s = {
+      exchangeRates: selectExchangeRates(state),
+      currency: state.preferences.localCurrency,
+      locale: state.device.locale,
+    };
+
     const relevantCurrency = s.exchangeRates.find(
       (e) => e.currency === s.currency
     );

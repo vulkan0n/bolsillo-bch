@@ -147,6 +147,6 @@ export const walletReducer = createReducer(initialState, (builder) => {
 });
 
 export const selectActiveWallet = createSelector(
-  (state: RootState) => state.wallet,
-  (wallet): WalletEntity => wallet
+  (state: RootState) => state,
+  (state) => state.wallet
 );
