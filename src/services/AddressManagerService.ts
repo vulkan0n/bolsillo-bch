@@ -1,4 +1,4 @@
-//import Logger from "js-logger";
+import Logger from "js-logger";
 import { sha256 } from "@bitauth/libauth";
 import DatabaseService from "@/services/DatabaseService";
 import HdNodeService from "@/services/HdNodeService";
@@ -51,11 +51,11 @@ export default function AddressManagerService(wallet: WalletEntity) {
     hd_index: number,
     change: number = 0
   ): AddressEntity {
-    /*Logger.debug(
+    Logger.debug(
       `registerAddress${change ? " change" : ""}`,
       hd_index,
       address
-    );*/
+    );
 
     const result = resultToJson(
       db.exec(
@@ -229,7 +229,7 @@ export default function AddressManagerService(wallet: WalletEntity) {
           AND change="${change}"
           AND prefix="${wallet.prefix}"
           ORDER BY hd_index DESC 
-          LIMIT ${limit}
+          ${limit ? `LIMIT ${limit}` : ""}
         ;`
       )
     );
@@ -240,9 +240,12 @@ export default function AddressManagerService(wallet: WalletEntity) {
 
   // updateAddressState: updates address state in db
   // returns true if update actually happened, false if up-to-date
-  function updateAddressState(address: string, state: string | null): boolean {
+  function updateAddressState(
+    address: AddressEntity,
+    state: string | null
+  ): AddressEntity {
     if (state === "null" || state === null) {
-      return false;
+      return address;
     }
 
     const result = resultToJson(
@@ -250,18 +253,15 @@ export default function AddressManagerService(wallet: WalletEntity) {
         `UPDATE addresses SET 
           state="${state}" 
          WHERE (
-          address="${address}" 
-          AND state IS DISTINCT FROM "${state}" 
+          address="${address.address}" 
         ) RETURNING *;`
       )
-    );
+    )[0];
 
-    const didUpdate = result.length > 0;
-    if (didUpdate) {
-      saveDatabase();
-    }
+    //Logger.debug("updateAddressState", state, result);
+    saveDatabase();
 
-    return didUpdate;
+    return result;
   }
 
   // updateAddressBalance: updates balance for address in database
@@ -299,7 +299,8 @@ export default function AddressManagerService(wallet: WalletEntity) {
         `SELECT * FROM address_transactions
           WHERE address="${address}"
           AND height > 0
-          ORDER BY height 
+          AND wallet_id="${wallet.id}"
+          ORDER BY height ASC
         ;`
       )
     );
@@ -309,6 +310,7 @@ export default function AddressManagerService(wallet: WalletEntity) {
         `SELECT * FROM address_transactions
           WHERE address="${address}"
           AND height <= 0
+          AND wallet_id="${wallet.id}"
         ;`
       )
     );
@@ -318,8 +320,8 @@ export default function AddressManagerService(wallet: WalletEntity) {
   }
 
   // calculateAddressState: calculate electrum address state using local tx history
-  function calculateAddressState(address: string): string | null {
-    const localHistory = getAddressTransactions(address);
+  function calculateAddressState(address: AddressEntity): string | null {
+    const localHistory = getAddressTransactions(address.address);
 
     // return null if address has no transactions
     if (
@@ -355,7 +357,10 @@ export default function AddressManagerService(wallet: WalletEntity) {
   }
 
   // AddressManager.registerTransaction: register a transaction with an address
-  function registerTransaction(address: string, tx): void {
+  function registerTransaction(
+    address: string,
+    tx: { tx_hash: string; height: number }
+  ): void {
     //Logger.debug("AddressManager.registerTransaction", address, tx);
 
     db.run(
@@ -374,5 +379,7 @@ export default function AddressManagerService(wallet: WalletEntity) {
           height="${tx.height}";
       `
     );
+
+    saveDatabase();
   }
 }

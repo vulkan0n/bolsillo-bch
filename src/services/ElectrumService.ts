@@ -30,7 +30,7 @@ export class ElectrumNotConnectedError extends Error {
 let electrum: ElectrumClient | null = null;
 
 const server_blacklist: Array<string> = [];
-const pendingRequests: Array<Promise<object>> = [];
+const pendingTxRequests: Array<Promise<object>> = [];
 
 // ElectrumService: brokers interactions with electrum server
 export default function ElectrumService() {
@@ -206,19 +206,19 @@ export default function ElectrumService() {
       throw new ElectrumNotConnectedError();
     }
 
-    if (pendingRequests[tx_hash]) {
+    if (pendingTxRequests[tx_hash]) {
       Logger.warn("waiting on resolution for", tx_hash);
-      return pendingRequests[tx_hash];
+      return pendingTxRequests[tx_hash];
     }
 
     const txRequest = electrum
       .request("blockchain.transaction.get", tx_hash, verbose)
       .then((tx) => {
-        delete pendingRequests[tx_hash];
+        delete pendingTxRequests[tx_hash];
         return tx;
       });
 
-    pendingRequests[tx_hash] = txRequest;
+    pendingTxRequests[tx_hash] = txRequest;
 
     return txRequest;
   }

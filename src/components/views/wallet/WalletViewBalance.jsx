@@ -30,14 +30,17 @@ export default function WalletViewBalance() {
     dispatch(
       setPreference({
         key: "preferLocalCurrency",
-        value: !shouldPreferLocalCurrency,
+        value: shouldPreferLocalCurrency ? "false" : "true",
       })
     );
   };
 
   const handleHideBalance = () => {
     dispatch(
-      setPreference({ key: "hideAvailableBalance", value: !shouldHideBalance })
+      setPreference({
+        key: "hideAvailableBalance",
+        value: shouldHideBalance ? "false" : "true",
+      })
     );
   };
 
@@ -67,8 +70,8 @@ export default function WalletViewBalance() {
       <div
         className={`font-bold text-zinc-400 text-md tracking-wide ${hiddenBalanceClasses}`}
       >
+        {isChipnet ? "[CHIP] " : ""}
         {activeWalletName}
-        {isChipnet ? " [CHIP]" : ""}
       </div>
       <button
         type="button"

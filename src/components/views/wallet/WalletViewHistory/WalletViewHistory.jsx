@@ -1,23 +1,35 @@
+import { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { ArrowLeftOutlined } from "@ant-design/icons";
-import { selectActiveWallet } from "@/redux/wallet";
 import { selectLocale } from "@/redux/device";
 import { selectCurrencySettings } from "@/redux/preferences";
-import TransactionHistoryService from "@/services/TransactionHistoryService";
+import { selectTransactionHistory, txHistoryFetch } from "@/redux/txHistory";
 import translations from "./translations";
 import { translate } from "@/util/translations";
 
 import Button from "@/atoms/Button";
 import Satoshi from "@/atoms/Satoshi";
 
+function useTransactionHistory() {
+  const dispatch = useDispatch();
+  const txHistory = useSelector(selectTransactionHistory);
+
+  useEffect(
+    function loadTxHistory() {
+      dispatch(txHistoryFetch());
+    },
+    [dispatch]
+  );
+
+  return txHistory;
+}
+
 export default function WalletViewHistory() {
   const navigate = useNavigate();
   const locale = useSelector(selectLocale);
-  const wallet = useSelector(selectActiveWallet);
 
-  const transactions =
-    TransactionHistoryService(wallet).getTransactionHistory();
+  const txHistory = useTransactionHistory();
 
   const { shouldPreferLocalCurrency } = useSelector(selectCurrencySettings);
 
@@ -31,12 +43,12 @@ export default function WalletViewHistory() {
           {translate(translations.recentTransactions)}
         </div>
         <ul className="bg-zinc-100 text-zinc-600 divide-y divide-zinc-300 rounded-b px-2 max-h-[58vh] overflow-y-scroll border border-zinc-400 shadow-inner">
-          {transactions.length === 0 && (
+          {txHistory.length === 0 && (
             <li className="flex px-1 py-2 items-center justify-center tracking-tighter font-bold">
               ---
             </li>
           )}
-          {transactions.map((tx, i) =>
+          {txHistory.map((tx, i) =>
             i < 100 ? (
               <li key={tx.txid} className="px-1 py-2">
                 <Link to={`/explore/tx/${tx.txid}`} className="flex">
@@ -44,10 +56,10 @@ export default function WalletViewHistory() {
                     <div
                       className={`${tx.amount > 0 ? receiveStyle : sendStyle}`}
                     >
-                      {new Date(tx.time).toLocaleDateString(locale)}
+                      {new Date(tx.time * 1000).toLocaleDateString(locale)}
                     </div>
                     <div className="text-sm opacity-80">
-                      {new Date(tx.time).toLocaleTimeString(locale)}
+                      {new Date(tx.time * 1000).toLocaleTimeString(locale)}
                     </div>
                   </div>
                   <div className="flex-1 text-right">

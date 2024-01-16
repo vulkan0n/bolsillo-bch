@@ -65,14 +65,15 @@ export default function TransactionManagerService() {
         throw new Error("Transaction Unconfirmed");
       }
 
-      //Logger.debug("resolveTransaction", "local", tx_hash);
+      //Logger.debug("resolveTransaction", "local", tx_hash, localTx);
       return localTx;
     } catch (e) {
       // if there's any problem retrieving the tx locally, try to resolve it
       const Electrum = ElectrumService();
       const remoteTx = await Electrum.requestTransaction(tx_hash);
-      //Logger.debug("resolveTransaction", "remote", tx_hash);
-      return _registerTransaction(remoteTx);
+      const registeredTx = await _registerTransaction(remoteTx);
+      //Logger.debug("resolveTransaction", "remote", tx_hash, registeredTx);
+      return registeredTx;
     }
   }
 
@@ -117,19 +118,21 @@ export default function TransactionManagerService() {
   }
 
   async function purgeTransactions(): Promise<void> {
-    const tx_hashes = resultToJson(
-      db.exec(
-        `
+    Logger.debug("purgeTransactions scheduled");
+    queueMicrotask(async () => {
+      const tx_hashes = resultToJson(
+        db.exec(
+          `
         SELECT txid FROM transactions WHERE
-          txid NOT IN (SELECT txid FROM address_utxos);
+          txid NOT IN (SELECT txid FROM address_utxos) 
+          AND txid NOT IN (SELECT txid FROM address_transactions WHERE amount IS NULL);
         `
-      )
-    );
-
-    Logger.debug("purgeTransactions", tx_hashes);
-
-    await Promise.all(tx_hashes.map(({ txid }) => deleteTransaction(txid)));
-    saveDatabase();
+        )
+      );
+      Logger.debug("purgeTransactions", tx_hashes);
+      await Promise.all(tx_hashes.map(({ txid }) => deleteTransaction(txid)));
+      Logger.debug("purgeTransactions done");
+    });
   }
 
   // --------------------------------
@@ -178,7 +181,7 @@ export default function TransactionManagerService() {
       return result;
     } catch (e) {
       Logger.error(e);
-      purgeTransactions();
+      await purgeTransactions();
       return { uri: "" };
     }
   }
@@ -191,8 +194,6 @@ export default function TransactionManagerService() {
     const blockhash = tx.blockhash ? tx.blockhash : null;
     const blocktime = tx.blocktime ? tx.blocktime : null;
     const time = tx.time ? tx.time : null;
-
-    //Logger.debug("registerTransaction", tx, time, blockhash);
 
     db.run(
       `INSERT INTO transactions (
@@ -220,7 +221,18 @@ export default function TransactionManagerService() {
     await _writeTxData(tx.txid, tx.hex);
     saveDatabase();
 
-    return tx;
+    const decodedTx = decodeTransaction(hexToBin(tx.hex)) as LibauthTransaction;
+
+    // reconstruct "vin" from raw hex
+    const vin = getVinFromDecodedTransaction(decodedTx);
+
+    // reconstruct "vout" from raw hex
+    const vout = getVoutFromDecodedTransaction(decodedTx);
+
+    const finalTx = { ...tx, vin, vout };
+
+    //Logger.debug("_registerTransaction", tx, time, blockhash);
+    return finalTx;
   }
 
   async function getTransactionByHash(
