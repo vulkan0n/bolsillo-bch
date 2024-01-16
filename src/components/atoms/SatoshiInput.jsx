@@ -19,7 +19,7 @@ export default function SatoshiInput({
   onChange,
   size,
 }) {
-  const DECIMAL_KEYS = [".", ",", "_", " "];
+  const DECIMAL_KEYS = [".", ","];
 
   const deviceInfo = useSelector(selectDeviceInfo);
 
@@ -50,7 +50,7 @@ export default function SatoshiInput({
 
   const bchDenomination = useSelector(selectDenomination);
 
-  const Currency = new CurrencyService(localCurrency);
+  const Currency = CurrencyService(localCurrency);
 
   // get raw satoshi value from any currency input
   const amountToSats = (amount) => {
