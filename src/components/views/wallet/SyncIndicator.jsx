@@ -8,12 +8,13 @@ import {
 } from "@ant-design/icons";
 import { animated, useSpring } from "@react-spring/web";
 import { selectSyncState, syncHotRefresh } from "@/redux/sync";
+import ToastService from "@/services/ToastService";
 
 export default function SyncIndicator() {
   const dispatch = useDispatch();
   const sync = useSelector(selectSyncState);
 
-  const [shouldAnimateSync, setShouldAnimateSync] = useState(false);
+  const [shouldAnimateSync, setShouldAnimateSync] = useState(sync.isSyncing);
   const syncTimeoutRef = useRef();
 
   const [syncSprings] = useSpring(() => ({
@@ -25,19 +26,19 @@ export default function SyncIndicator() {
   // make the sync spinner smoother by forcing it to play for a minimum time
   useEffect(
     function gracefulSyncIndicator() {
-      if (sync.isSyncing) {
-        setShouldAnimateSync(true);
+      if (sync.syncCount > 0) {
+        requestAnimationFrame(() => setShouldAnimateSync(true));
       }
 
       if (!sync.isSyncing) {
         clearTimeout(syncTimeoutRef.current);
         syncTimeoutRef.current = setTimeout(
-          () => setShouldAnimateSync(false),
-          1000
+          () => requestAnimationFrame(() => setShouldAnimateSync(false)),
+          1337
         );
       }
     },
-    [sync.isSyncing]
+    [sync.syncCount, sync.isSyncing]
   );
 
   const [disconnectSprings, disconnectApi] = useSpring(() => ({
@@ -70,11 +71,12 @@ export default function SyncIndicator() {
         from: { opacity: 0.8, scale: 0.85 },
         to: { opacity: 0.1, scale: 0.65 },
       });
+
+      dispatch(syncHotRefresh());
+      ToastService().connectionStatus(sync);
     } else {
       disconnectApi.start();
     }
-
-    dispatch(syncHotRefresh());
   };
 
   return (
@@ -87,7 +89,12 @@ export default function SyncIndicator() {
       )}
       {sync.connected &&
         (shouldAnimateSync ? (
-          <SyncIcon springs={{ ...syncSprings }} />
+          <div>
+            <SyncIcon springs={{ ...syncSprings }} />
+            {/*<div className="text-xs text-zinc-600">
+              {sync.syncCount}
+            </div>*/}
+          </div>
         ) : (
           <ConnectedIcon springs={{ ...connectSprings }} />
         ))}

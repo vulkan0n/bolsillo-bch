@@ -15,9 +15,7 @@ import { fetchExchangeRates } from "@/redux/exchangeRates";
 
 import { ValidBchNetwork } from "@/util/crypto";
 
-import WalletManagerService, {
-  WalletEntity,
-} from "@/services/WalletManagerService";
+import WalletManagerService from "@/services/WalletManagerService";
 import AddressManagerService from "@/services/AddressManagerService";
 import ElectrumService from "@/services/ElectrumService";
 
