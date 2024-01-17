@@ -1,11 +1,11 @@
 import PropTypes from "prop-types";
-import { useState } from "react";
+//import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { selectCurrencySettings } from "@/redux/preferences";
-import { selectActiveWallet } from "@/redux/wallet";
+//import { selectActiveWallet } from "@/redux/wallet";
 
-import TransactionHistoryService from "@/services/TransactionHistoryService";
+//import TransactionHistoryService from "@/services/TransactionHistoryService";
 
 import Address from "@/atoms/Address";
 import Satoshi from "@/atoms/Satoshi";
@@ -18,9 +18,9 @@ function WalletViewSendSuccess() {
   const location = useLocation();
   const { tx } = location.state;
 
-  const wallet = useSelector(selectActiveWallet);
+  //const wallet = useSelector(selectActiveWallet);
 
-  const [memo, setMemo] = useState("");
+  /*const [memo, setMemo] = useState("");
 
   const handleMemoChange = (event) => setMemo(event.target.value);
 
@@ -28,7 +28,7 @@ function WalletViewSendSuccess() {
     if (event.key === "Enter") {
       TransactionHistoryService(wallet).setTransactionMemo(tx.txid, memo);
     }
-  };
+  };*/
 
   return (
     <div className="fixed top-0 left-0 w-screen h-screen z-50">

@@ -32,7 +32,7 @@ const initialState = [];
 
 export const txHistoryReducer = createReducer(initialState, (builder) => {
   builder
-    .addCase(txHistoryFetch.pending, (state: RootState, action) => {
+    .addCase(txHistoryFetch.pending, () => {
       return initialState;
     })
     .addCase(txHistoryFetch.fulfilled, (state: RootState, action) => {
