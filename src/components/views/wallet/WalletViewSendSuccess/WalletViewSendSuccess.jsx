@@ -58,7 +58,7 @@ function WalletViewSendSuccess() {
         </div>
       </Link>
       <div className="p-2">
-        <div className="bg-zinc-200 p-1 rounded mb-2 flex">
+        {/*<div className="bg-zinc-200 p-1 rounded mb-2 flex">
           <span className="font-semibold p-0.5">Memo</span>
           <input
             type="text"
@@ -67,7 +67,7 @@ function WalletViewSendSuccess() {
             onChange={handleMemoChange}
             onKeyDown={handleMemoKeyDown}
           />
-        </div>
+        </div>*/}
         <div className="bg-zinc-200 p-1 rounded">
           <div className="font-semibold py-1">Outputs</div>
           {tx.vout.map((output, i) => (
