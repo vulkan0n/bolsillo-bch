@@ -1,6 +1,10 @@
 import { Decimal } from "decimal.js";
 import { selectLocale } from "@/redux/device";
-import { selectPreferences, selectLocalCurrency } from "@/redux/preferences";
+import {
+  selectCurrencySettings,
+  selectDenomination,
+} from "@/redux/preferences";
+import { stripArsPostDecimal } from "@/redux/exchangeRates";
 import { store } from "@/redux";
 import CurrencyService from "@/services/CurrencyService";
 
@@ -20,36 +24,26 @@ export function bchToSats(bch) {
 }
 
 export function satsToDisplayAmount(sats) {
-  const preferences = selectPreferences(store.getState());
-  const { preferLocalCurrency, localCurrency } = selectLocalCurrency(
+  const { shouldPreferLocalCurrency, localCurrency } = selectCurrencySettings(
     store.getState()
   );
-  const Currency = new CurrencyService(localCurrency);
+  const Currency = CurrencyService(localCurrency);
 
-  const denominateSats = preferences.denominateSats === "true";
+  const shouldDenominateSats = selectDenomination(store.getState()) === "sats";
 
   if (new Decimal(sats).equals(0)) {
     return "0";
   }
 
-  if (preferLocalCurrency) {
+  if (shouldPreferLocalCurrency) {
     return Currency.satsToFiat(sats);
   }
 
-  if (denominateSats) {
+  if (shouldDenominateSats) {
     return sats;
   }
 
   return satsToBch(sats);
-}
-
-export function stripArsPostDecimal(localCurrency, fiatString) {
-  // ARS users prefer not to see irrelevant post decimal values
-  if (localCurrency === "ARS" && fiatString.includes(".")) {
-    return fiatString?.split(".")?.[0];
-  }
-
-  return fiatString;
 }
 
 export function formatSatoshis(amount) {
@@ -62,18 +56,19 @@ export function formatSatoshis(amount) {
   }
 
   const locale = selectLocale(store.getState());
-  const preferences = selectPreferences(store.getState());
 
-  const { localCurrency } = selectLocalCurrency(store.getState());
-  const denominateSats = preferences.denominateSats === "true";
-  const hideBalance = preferences.hideAvailableBalance === "true";
+  const { localCurrency, shouldHideBalance } = selectCurrencySettings(
+    store.getState()
+  );
 
-  const Currency = new CurrencyService(localCurrency);
+  const shouldDenominateSats = selectDenomination(store.getState()) === "sats";
 
-  const bchSymbol = denominateSats ? "" : "₿";
-  const bchUnit = denominateSats ? "sats" : "";
+  const Currency = CurrencyService(localCurrency);
+
+  const bchSymbol = shouldDenominateSats ? "" : "₿";
+  const bchUnit = shouldDenominateSats ? "sats" : "";
   const absoluteSatsAmount = Math.abs(amount);
-  const absoluteBchAmount = denominateSats
+  const absoluteBchAmount = shouldDenominateSats
     ? absoluteSatsAmount
     : satsToBch(absoluteSatsAmount);
 
@@ -103,5 +98,5 @@ export function formatSatoshis(amount) {
     sign: "",
   };
 
-  return hideBalance ? displayHidden : displayAmount;
+  return shouldHideBalance ? displayHidden : displayAmount;
 }

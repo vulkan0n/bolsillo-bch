@@ -1,3 +1,5 @@
+/* eslint-disable react/prop-types */
+// TODO: refactor this component it kinda sucks
 export default function Button({
   icon,
   label,
@@ -6,6 +8,7 @@ export default function Button({
   labelSize = "sm",
   labelColor = "zinc-700",
   inverted,
+  tailwindBorderClass,
   shittyFullWidthHack,
 }) {
   const Icon = icon;
@@ -14,9 +17,10 @@ export default function Button({
   const activeClasses =
     "bg-primary text-white active:bg-white active:text-zinc-600";
   const colorClasses = inverted ? activeClasses : inactiveClasses;
+  const borderClasses = tailwindBorderClass || "border-primary";
 
   return (
-    <div className="text-center">
+    <div>
       <button
         type="button"
         onClick={onClick}
@@ -24,7 +28,7 @@ export default function Button({
       >
         <div
           className={`w-full h-full flex items-center justify-center cursor-pointer p-3 mx-auto
-        rounded-full border border-2 border-primary shadow-md opacity-90 
+        rounded-full border border-2 ${borderClasses} shadow-md opacity-90 
         ${colorClasses}
         active:shadow-none active:shadow-inner`}
         >
@@ -33,7 +37,7 @@ export default function Button({
       </button>
       {label && (
         <div
-          className={`text-${labelSize} text-${labelColor} mt-1 select-none`}
+          className={`text-${labelSize} text-${labelColor} mt-1 select-none text-center`}
         >
           {label}
         </div>

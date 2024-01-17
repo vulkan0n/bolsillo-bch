@@ -1,0 +1,67 @@
+import PropTypes from "prop-types";
+import { useState } from "react";
+import { useDispatch } from "react-redux";
+import { WarningFilled, EyeInvisibleOutlined } from "@ant-design/icons";
+
+import { walletSetKeyViewed } from "@/redux/wallet";
+
+import { translate } from "@/util/translations";
+import translations from "@/components/views/settings/SettingsWalletView/translations";
+
+export default function ShowMnemonic({ wallet }) {
+  const dispatch = useDispatch();
+
+  // toggle visibility for recovery phrase
+  const [shouldShowRecoveryPhrase, setShouldShowRecoveryPhrase] =
+    useState(false);
+
+  // handler for mnemonic visibility area
+  const handleShowMnemonic = () => {
+    if (shouldShowRecoveryPhrase === false) {
+      setShouldShowRecoveryPhrase(true);
+      dispatch(walletSetKeyViewed({ wallet_id: wallet.id }));
+    } else {
+      setShouldShowRecoveryPhrase(false);
+    }
+  };
+
+  return (
+    <button
+      type="button"
+      className="w-full bg-zinc-700 flex-col rounded-lg flex items-center justify-center my-2 px-2 py-4 cursor-pointer"
+      onClick={handleShowMnemonic}
+    >
+      {shouldShowRecoveryPhrase ? (
+        <div className="flex flex-col justify-between items-center">
+          <div className="text-center text-error text-xl font-bold">
+            <WarningFilled className="mr-2 text-warning" />
+            {translate(translations.keepSecret)}
+            <WarningFilled className="ml-2 text-warning" />
+          </div>
+          <div className="text-center text-zinc-50 text-xl font-mono py-4">
+            {wallet.mnemonic}
+          </div>
+          <div className="text-center text-error text-xl font-bold">
+            <WarningFilled className="mr-2 text-warning" />
+            {translate(translations.dontStoreDigitally)}
+            <WarningFilled className="ml-2 text-warning" />
+          </div>
+        </div>
+      ) : (
+        <>
+          <EyeInvisibleOutlined className="text-8xl text-zinc-50" />
+          <div className="text-center text-zinc-50 text-xl">
+            {translate(translations.viewRecoveryPhrase)}
+          </div>
+          <div className="text-center text-zinc-200 text-lg opacity-90">
+            ({translate(translations.secretAndSecure)})
+          </div>
+        </>
+      )}
+    </button>
+  );
+}
+
+ShowMnemonic.propTypes = {
+  wallet: PropTypes.object.isRequired,
+};
