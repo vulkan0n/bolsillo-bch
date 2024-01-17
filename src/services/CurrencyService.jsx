@@ -1,5 +1,6 @@
-import { bchToSats, satsToBch } from "@/util/sats";
+import Logger from "js-logger";
 import { Decimal } from "decimal.js";
+import { bchToSats, satsToBch } from "@/util/sats";
 import { currencyList } from "@/util/currency";
 import { selectExchangeRates } from "@/redux/exchangeRates";
 import { store } from "@/redux";
@@ -57,49 +58,44 @@ export default function CurrencyService(fiatCurrency) {
   };
 
   async function fetchExchangeRates() {
-    // https://www.coingecko.com/en/api/documentation
-    const coingeckoUrl = "https://api.coingecko.com";
-
     const currencies = encodeURI(
       currencyList.map((currency) => currency.currency).join(",")
     );
 
-    try {
-      const response = await fetch(
-        `https://api.coingecko.com/api/v3/simple/price?ids=bitcoin-cash&vs_currencies=${currencies}`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+    // https://www.coingecko.com/en/api/documentation
+    const coingeckoUri = `https://api.coingecko.com/api/v3/simple/price?ids=bitcoin-cash&vs_currencies=${currencies}`;
 
-      if (!response.ok) {
-        throw new Error(response);
+    const response = await fetch(coingeckoUri, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    Logger.log("Exchange rates", response);
+
+    if (!response.ok) {
+      throw new Error(response);
+    }
+
+    const json = await response.json();
+    const data = json["bitcoin-cash"];
+
+    const rates = currencyList.map((currency) => {
+      if (!data[currency.currency.toLowerCase()]) {
+        return { ...currency };
       }
 
-      const json = await response.json();
-      const data = json["bitcoin-cash"];
+      return {
+        ...currency,
+        price: data[currency.currency.toLowerCase()].toString(),
+      };
+    });
 
-      const rates = currencyList.map((currency) => {
-        if (!data[currency.currency.toLowerCase()]) {
-          return { ...currency };
-        }
+    // Swap in the correct ARS rate
+    const adjustedRates = await replaceYadioRates(rates);
 
-        return {
-          ...currency,
-          price: data[currency.currency.toLowerCase()].toString(),
-        };
-      });
-
-      // Swap in the correct ARS rate
-      const adjustedRates = await replaceYadioRates(rates);
-
-      return adjustedRates;
-    } catch (e) {
-      console.error(e);
-    }
+    return adjustedRates;
   }
 
   function fiatToSats(fiatAmount) {

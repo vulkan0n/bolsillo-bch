@@ -18,7 +18,7 @@ export function validateInvoiceString(invoice) {
   const validCashAddress = isCashAddress ? prefixedAddress : address;
   const finalCashAddress = isValid ? validCashAddress : "";
 
-  const query = new Decimal(amount) > 0 ? `?amount=${amount}` : "";
+  const query = new Decimal(amount).greaterThan(0) ? `?amount=${amount}` : "";
 
   return {
     address: finalCashAddress,

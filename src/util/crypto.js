@@ -1,1 +1,0 @@
-export const SELENE_DEFAULT_DERIVATION_PATH = "m/44'/0'/0'";

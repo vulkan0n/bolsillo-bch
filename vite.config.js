@@ -6,6 +6,7 @@ import path from "path";
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  target: ["es2020", "chrome87", "safari14", "firefox78", "edge88"],
   plugins: [
     react(),
     nodePolyfills(),
@@ -16,6 +17,9 @@ export default defineConfig({
   ],
   resolve: {
     alias: {
+      "@/layout": path.resolve(__dirname, "./src/components/layout"),
+      "@/views": path.resolve(__dirname, "./src/components/views"),
+      "@/atoms": path.resolve(__dirname, "./src/components/atoms"),
       "@": path.resolve(__dirname, "./src"),
     },
   },

@@ -1,30 +1,34 @@
 PODS:
-  - Capacitor (5.0.5):
+  - Capacitor (5.6.0):
     - CapacitorCordova
-  - CapacitorApp (5.0.3):
+  - CapacitorApp (5.0.6):
     - Capacitor
-  - CapacitorCamera (5.0.4):
+  - CapacitorCamera (5.0.8):
     - Capacitor
-  - CapacitorClipboard (5.0.4):
+  - CapacitorClipboard (5.0.6):
     - Capacitor
   - CapacitorCommunityBarcodeScanner (4.0.1):
     - Capacitor
-  - CapacitorCordova (5.0.5)
-  - CapacitorDevice (5.0.4):
+  - CapacitorCordova (5.6.0)
+  - CapacitorDevice (5.0.6):
     - Capacitor
   - CapacitorDialog (5.0.6):
     - Capacitor
-  - CapacitorFilesystem (5.0.4):
+  - CapacitorFilesystem (5.2.0):
     - Capacitor
   - CapacitorHaptics (5.0.6):
     - Capacitor
-  - CapacitorKeyboard (5.0.4):
+  - CapacitorKeyboard (5.0.7):
     - Capacitor
-  - CapacitorPreferences (5.0.4):
+  - CapacitorNetwork (5.0.6):
+    - Capacitor
+  - CapacitorPreferences (5.0.6):
     - Capacitor
   - CapacitorSecureStoragePlugin (0.9.0):
     - Capacitor
     - SwiftKeychainWrapper
+  - CapacitorSplashScreen (5.0.6):
+    - Capacitor
   - SwiftKeychainWrapper (4.0.1)
 
 DEPENDENCIES:
@@ -39,8 +43,10 @@ DEPENDENCIES:
   - "CapacitorFilesystem (from `../../node_modules/@capacitor/filesystem`)"
   - "CapacitorHaptics (from `../../node_modules/@capacitor/haptics`)"
   - "CapacitorKeyboard (from `../../node_modules/@capacitor/keyboard`)"
+  - "CapacitorNetwork (from `../../node_modules/@capacitor/network`)"
   - "CapacitorPreferences (from `../../node_modules/@capacitor/preferences`)"
   - CapacitorSecureStoragePlugin (from `../../node_modules/capacitor-secure-storage-plugin`)
+  - "CapacitorSplashScreen (from `../../node_modules/@capacitor/splash-screen`)"
 
 SPEC REPOS:
   trunk:
@@ -69,27 +75,33 @@ EXTERNAL SOURCES:
     :path: "../../node_modules/@capacitor/haptics"
   CapacitorKeyboard:
     :path: "../../node_modules/@capacitor/keyboard"
+  CapacitorNetwork:
+    :path: "../../node_modules/@capacitor/network"
   CapacitorPreferences:
     :path: "../../node_modules/@capacitor/preferences"
   CapacitorSecureStoragePlugin:
     :path: "../../node_modules/capacitor-secure-storage-plugin"
+  CapacitorSplashScreen:
+    :path: "../../node_modules/@capacitor/splash-screen"
 
 SPEC CHECKSUMS:
-  Capacitor: b1248915663add1bd6567e2b67c1c1fa3abcf5e8
-  CapacitorApp: 7a5dec8b33573707164b293475d5c89ba684364a
-  CapacitorCamera: 9b5c8e809c1042f263994f97ba846aa37e974f12
-  CapacitorClipboard: 46f3959735fa0d96b9989dafcc4aed52e624d163
+  Capacitor: ebfc16cdb8116d04c101686b080342872da42d43
+  CapacitorApp: 024e1b1bea5f883d79f6330d309bc441c88ad04a
+  CapacitorCamera: 4be26c04b35e01f5e7ceb0fcaeafd7dc19b448e0
+  CapacitorClipboard: 77edf49827ea21da2a9c05c690a4a6a4d07199c4
   CapacitorCommunityBarcodeScanner: 7feb206489c8555a8ca0c74c57ddf49ead774eb8
-  CapacitorCordova: f8c06b897c74ee8f7701fe10e6443b40822bc83a
-  CapacitorDevice: eb4b5e3b42ac35d2527f20aad296b59e0785dc8d
+  CapacitorCordova: 931b48fcdbc9bc985fc2f16cec9f77c794a27729
+  CapacitorDevice: 2c968f98a1ec4d22357418c1521e7ddc46c675e6
   CapacitorDialog: 0f3c15dfe9414b83bc64aef4078f1b92bcfead26
-  CapacitorFilesystem: e1bdfab09b95b181c844c16abcfda45ec8e8ed6b
+  CapacitorFilesystem: 02f9a9053b96e1881ba1fc98d846869413c195c2
   CapacitorHaptics: 1fffc1217c7e64a472d7845be50fb0c2f7d4204c
-  CapacitorKeyboard: d1b25fde6f19744ad09c890862aefc6e2a7ded3d
-  CapacitorPreferences: 82a9ecf5355283a3b3cf7ac217d8c5534c4dee8a
+  CapacitorKeyboard: ce5e01064cf57a2c05b32565310713b7fe6cc6f9
+  CapacitorNetwork: d80b3e79bef6ec37640ee2806c19771f07ff2d0c
+  CapacitorPreferences: f03954bcb0ff09c792909e46bff88e3183c16b10
   CapacitorSecureStoragePlugin: e91d7df060f2495a1acff9583641a6953e3aacba
+  CapacitorSplashScreen: 5fa2ab5e46cf5cc530cf16a51c80c7a986579ccd
   SwiftKeychainWrapper: 807ba1d63c33a7d0613288512399cd1eda1e470c
 
-PODFILE CHECKSUM: 402747767cd80521c9ead91e186837c2580ccbef
+PODFILE CHECKSUM: ec15ddb3b220c872c6eacba0431c58dda6137c47
 
 COCOAPODS: 1.11.2

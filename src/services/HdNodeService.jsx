@@ -4,20 +4,20 @@ import {
   deriveHdPrivateNodeChild,
   deriveHdPath,
   encodeCashAddress,
+  secp256k1,
+  ripemd160,
+  sha256,
 } from "@bitauth/libauth";
 
 import { hexToBin } from "@/util/hex";
 
-import WalletService from "@/services/WalletService";
 import AddressManagerService from "@/services/AddressManagerService";
 
-import { secp256k1, ripemd160, sha256 } from "@bitauth/libauth";
+export default function HdNodeService(wallet) {
+  const { mnemonic, derivation, passphrase } = wallet;
+  //Logger.debug("HdNodeService", wallet_id, derivation, mnemonic);
 
-export default function HdNodeService(wallet_id) {
-  //console.log("HdNodeService", wallet_id);
-  const { mnemonic, derivation } = new WalletService().getWalletById(wallet_id);
-
-  const seed = bip39.mnemonicToSeedSync(mnemonic);
+  const seed = bip39.mnemonicToSeedSync(mnemonic, passphrase);
   const hdMaster = deriveHdPrivateNodeFromSeed(seed);
   const hdMain = deriveHdPath(hdMaster, `${derivation}/0`);
   const hdChange = deriveHdPath(hdMaster, `${derivation}/1`);
@@ -33,20 +33,20 @@ export default function HdNodeService(wallet_id) {
 
     const pubKey = secp256k1.derivePublicKeyCompressed(child.privateKey);
     const hash = ripemd160.hash(sha256.hash(pubKey));
-    const address = encodeCashAddress("bitcoincash", "P2PKH", hash);
+    const address = encodeCashAddress(wallet.prefix, "p2pkh", hash);
 
-    //console.log("generateAddress", index, address);
+    //Logger.debug("generateAddress", index, address);
     return address;
   }
 
   function _deriveAddressPrivateKey(address) {
-    const AddressManager = new AddressManagerService(wallet_id);
+    const AddressManager = AddressManagerService(wallet);
     const { hd_index, change } = AddressManager.getAddress(address);
 
-    const privateKey = deriveHdPrivateNodeChild(
+    const { privateKey } = deriveHdPrivateNodeChild(
       change ? hdChange : hdMain,
       hd_index
-    ).privateKey;
+    );
 
     return privateKey;
   }
