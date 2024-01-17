@@ -31,9 +31,13 @@ export const txHistoryFetch = createAsyncThunk(
 const initialState = [];
 
 export const txHistoryReducer = createReducer(initialState, (builder) => {
-  builder.addCase(txHistoryFetch.fulfilled, (state: RootState, action) => {
-    return action.payload;
-  });
+  builder
+    .addCase(txHistoryFetch.pending, (state: RootState, action) => {
+      return initialState;
+    })
+    .addCase(txHistoryFetch.fulfilled, (state: RootState, action) => {
+      return action.payload;
+    });
 });
 
 export const selectTransactionHistory = createSelector(
