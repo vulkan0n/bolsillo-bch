@@ -6,7 +6,7 @@ import {
   createAsyncThunk,
 } from "@reduxjs/toolkit";
 
-import { selectCurrencySettings } from "@/redux/preferences";
+import { setPreference, selectCurrencySettings } from "@/redux/preferences";
 import CurrencyService from "@/services/CurrencyService";
 import { currencyList } from "@/util/currency";
 
@@ -18,6 +18,12 @@ export const fetchExchangeRates = createAsyncThunk(
 
     try {
       const exchangeRates = await Currency.fetchExchangeRates();
+      thunkApi.dispatch(
+        setPreference({
+          key: "lastExchangeRate",
+          value: selectCurrentPrice(thunkApi.getState()).price,
+        })
+      );
       return exchangeRates;
     } catch (e) {
       Logger.error("fetchExchangeRates failed", e);
@@ -63,19 +69,18 @@ export const selectCurrentPrice = createSelector(
       exchangeRates: selectExchangeRates(state),
       currency: state.preferences.localCurrency,
       locale: state.device.locale,
+      lastExchangeRate: state.preferences.lastExchangeRate,
     };
 
     const relevantCurrency = s.exchangeRates.find(
       (e) => e.currency === s.currency
     );
-    const price = relevantCurrency?.price || "0";
+    const price = relevantCurrency?.price || s.lastExchangeRate;
     const priceString = `${Number(price).toLocaleString(s.locale, {
       style: "currency",
       currency: s.currency,
     })}`;
 
-    const adjustedPriceString = stripArsPostDecimal(s.currency, priceString);
-
-    return { price: adjustedPriceString, currency: s.currency };
+    return { price: priceString, currency: s.currency };
   }
 );

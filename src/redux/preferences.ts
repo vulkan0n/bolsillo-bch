@@ -23,7 +23,8 @@ const defaultPreferences = {
   // --------
   // TODO: make these per-wallet instead of global
   allowInstantPay: "false",
-  instantPayThreshold: "25000000",
+  instantPayThreshold: "10000000",
+  instantPayThresholdFiat: "10",
   qrCodeLogo: "Selene",
   qrCodeBackground: "#ffffff",
   qrCodeForeground: "#000000",
@@ -31,6 +32,7 @@ const defaultPreferences = {
   // TODO: should these go in db instead?
   electrumServer: electrum_servers[0],
   lastCheckIn: "",
+  lastExchangeRate: "1",
   // --------
 };
 
@@ -196,6 +198,7 @@ export const selectInstantPaySettings = createSelector(
   (preferences) => ({
     isInstantPayEnabled: preferences.allowInstantPay === "true",
     instantPayThreshold: preferences.instantPayThreshold,
+    instantPayThresholdFiat: preferences.instantPayThresholdFiat,
   })
 );
 
