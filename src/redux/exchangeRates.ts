@@ -6,6 +6,8 @@ import {
   createAsyncThunk,
 } from "@reduxjs/toolkit";
 
+import { Preferences } from "@capacitor/preferences";
+
 import { setPreference, selectCurrencySettings } from "@/redux/preferences";
 import CurrencyService from "@/services/CurrencyService";
 import { currencyList } from "@/util/currency";
@@ -18,12 +20,19 @@ export const fetchExchangeRates = createAsyncThunk(
 
     try {
       const exchangeRates = await Currency.fetchExchangeRates();
+
+      // persist exchange rate
+      const currentPrice = Currency.getExchangeRate(
+        localCurrency,
+        exchangeRates
+      );
       thunkApi.dispatch(
         setPreference({
           key: "lastExchangeRate",
-          value: selectCurrentPrice(thunkApi.getState()).price,
+          value: currentPrice,
         })
       );
+
       return exchangeRates;
     } catch (e) {
       Logger.error("fetchExchangeRates failed", e);
@@ -36,10 +45,12 @@ export const fetchExchangeRates = createAsyncThunk(
   }
 );
 
-// TODO: persist exchange rates to local DB
+const lastExchangeRate = (await Preferences.get({ key: "lastExchangeRate" }))
+  .value;
+Logger.debug("lastExchangeRate", lastExchangeRate);
 const initialState = currencyList.map((currency) => ({
   ...currency,
-  price: "1",
+  price: lastExchangeRate,
 }));
 
 export const exchangeRateReducer = createReducer(initialState, (builder) => {
@@ -69,18 +80,18 @@ export const selectCurrentPrice = createSelector(
       exchangeRates: selectExchangeRates(state),
       currency: state.preferences.localCurrency,
       locale: state.device.locale,
-      lastExchangeRate: state.preferences.lastExchangeRate,
     };
 
     const relevantCurrency = s.exchangeRates.find(
       (e) => e.currency === s.currency
     );
-    const price = relevantCurrency?.price || s.lastExchangeRate;
+    const price = relevantCurrency?.price || "1";
+
     const priceString = `${Number(price).toLocaleString(s.locale, {
       style: "currency",
       currency: s.currency,
     })}`;
 
-    return { price: priceString, currency: s.currency };
+    return { price, priceString, currency: s.currency };
   }
 );

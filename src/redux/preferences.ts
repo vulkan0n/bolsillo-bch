@@ -46,6 +46,11 @@ function validatePreferences(preferences: ValidPreferences): boolean {
     return false;
   }
 
+  // lastExchangeRate must be numeric
+  if (Number.isNaN(Number.parseFloat(preferences.lastExchangeRate))) {
+    return false;
+  }
+
   // languageCode must be in list of language codes
   if (!languageList.find((lang) => lang.code === preferences.languageCode)) {
     return false;

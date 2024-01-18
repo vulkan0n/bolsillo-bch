@@ -117,8 +117,8 @@ export default function CurrencyService(fiatCurrency) {
       .toString();
   }
 
-  function getExchangeRate(currency) {
-    const exchangeRates = selectExchangeRates(store.getState());
+  function getExchangeRate(currency, rates = undefined) {
+    const exchangeRates = rates || selectExchangeRates(store.getState());
     const index = exchangeRates.findIndex(
       (exchangeRate) => exchangeRate.currency === currency
     );

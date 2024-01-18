@@ -27,7 +27,7 @@ export default function ExploreStatBlock() {
         <div className="p-1 mx-1">
           <div className="font-bold text-zinc-300">BCH/{price.currency}</div>
           <div className="text-primary text-lg font-semibold">
-            {price.price}
+            {price.priceString}
           </div>
           <div className="text-xs text-zinc-400">↗︎ $0.42 (3%)</div>
         </div>
