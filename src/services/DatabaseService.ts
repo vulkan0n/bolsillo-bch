@@ -49,6 +49,12 @@ async function _migrateLegacyDbFile() {
       directory: Directory.Library,
     });
 
+    const mkdirResult = await Filesystem.mkdir({
+      path: "selene/",
+      directory: Directory.Library,
+      recursive: true,
+    });
+
     // copy legacy db file to new location (throws on failure)
     const renameResult = await Filesystem.rename({
       from: SELENE_LEGACY_DB_FILE,
@@ -56,7 +62,7 @@ async function _migrateLegacyDbFile() {
       directory: Directory.Library,
     });
 
-    Logger.debug("_migrateLegacyDbFile", statResult, renameResult);
+    Logger.debug("_migrateLegacyDbFile", statResult, mkdirResult, renameResult);
   } catch (e) {} // eslint-disable-line no-empty
 
   return Promise.resolve();
