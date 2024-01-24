@@ -6,12 +6,17 @@ import {
   PropertySafetyOutlined,
 } from "@ant-design/icons";
 
-import { selectInstantPaySettings } from "@/redux/preferences";
+import {
+  selectInstantPaySettings,
+  selectCurrencySettings,
+} from "@/redux/preferences";
 
 import { translate } from "@/util/translations";
 import translations from "./SettingsViewTranslations";
 
 import { SettingsContext } from "./SettingsContext";
+
+import CurrencyService from "@/services/CurrencyService";
 
 import Accordion from "@/atoms/Accordion";
 import CurrencySymbol from "@/atoms/CurrencySymbol";
@@ -20,16 +25,35 @@ import { satsToDisplayAmount } from "@/util/sats";
 
 export default function PaymentSettings() {
   const { handleSettingsUpdate, preferences } = useContext(SettingsContext);
-  const { instantPayThreshold } = useSelector(selectInstantPaySettings);
+  const { instantPayThreshold, instantPayThresholdFiat } = useSelector(
+    selectInstantPaySettings
+  );
+  const { localCurrency, shouldPreferLocalCurrency } = useSelector(
+    selectCurrencySettings
+  );
+
+  const Currency = CurrencyService(localCurrency);
 
   const [instantPaySatInput, setInstantPaySatInput] = useState({
-    display: satsToDisplayAmount(instantPayThreshold),
-    sats: instantPayThreshold,
+    display: shouldPreferLocalCurrency
+      ? satsToDisplayAmount(Currency.fiatToSats(instantPayThresholdFiat))
+      : satsToDisplayAmount(instantPayThreshold),
+    sats: shouldPreferLocalCurrency
+      ? Currency.fiatToSats(instantPayThresholdFiat)
+      : instantPayThreshold,
   });
 
   const handleInstantPayInput = (satInput) => {
+    const instantPaySettingsKey = shouldPreferLocalCurrency
+      ? "instantPayThresholdFiat"
+      : "instantPayThreshold";
+
+    const instantPaySettingsValue = shouldPreferLocalCurrency
+      ? Currency.satsToFiat(satInput.sats)
+      : satInput.sats;
+
     setInstantPaySatInput(satInput);
-    handleSettingsUpdate("instantPayThreshold", satInput.sats);
+    handleSettingsUpdate(instantPaySettingsKey, instantPaySettingsValue);
   };
 
   return (

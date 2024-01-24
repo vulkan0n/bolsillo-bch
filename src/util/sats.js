@@ -4,7 +4,7 @@ import {
   selectCurrencySettings,
   selectDenomination,
 } from "@/redux/preferences";
-import { stripArsPostDecimal } from "@/redux/exchangeRates";
+//import { stripArsPostDecimal } from "@/redux/exchangeRates";
 import { store } from "@/redux";
 import CurrencyService from "@/services/CurrencyService";
 
@@ -87,7 +87,7 @@ export function formatSatoshis(amount) {
 
   const displayAmount = {
     bch: bchDisplay,
-    fiat: stripArsPostDecimal(localCurrency, fiatDisplay),
+    fiat: fiatDisplay, //stripArsPostDecimal(localCurrency, fiatDisplay),
     sign,
   };
 

@@ -49,29 +49,28 @@ async function _migrateLegacyDbFile() {
       directory: Directory.Library,
     });
 
+    const mkdirResult = await Filesystem.mkdir({
+      path: "selene/",
+      directory: Directory.Library,
+      recursive: true,
+    });
+
     // copy legacy db file to new location (throws on failure)
-    const copyResult = await Filesystem.copy({
+    const renameResult = await Filesystem.rename({
       from: SELENE_LEGACY_DB_FILE,
       to: SELENE_DB_FILE,
       directory: Directory.Library,
     });
 
-    // delete legacy db file (throws on failure)
-    const deleteResult = await Filesystem.deleteFile({
-      path: SELENE_LEGACY_DB_FILE,
-      directory: Directory.Library,
-    });
-
-    Logger.debug("_migrateLegacyDbFile", statResult, copyResult, deleteResult);
+    Logger.debug("_migrateLegacyDbFile", statResult, mkdirResult, renameResult);
   } catch (e) {} // eslint-disable-line no-empty
+
+  return Promise.resolve();
 }
 
 // getWalletDatabase: try to open the wallet db file
 // return a blank db if file doesn't exist
 async function getWalletDatabase() {
-  // try to migrate legacy db file first
-  await _migrateLegacyDbFile();
-
   let db;
   try {
     db = await _dbOpen(SELENE_DB_FILE);
@@ -87,6 +86,8 @@ async function getWalletDatabase() {
 }
 
 // use top-level pointer to ensure db is only loaded into memory once
+// try to migrate legacy db file first
+await _migrateLegacyDbFile();
 const WALLET_DB = await getWalletDatabase();
 
 // DatabaseService: brokers interactions with raw SQLite database

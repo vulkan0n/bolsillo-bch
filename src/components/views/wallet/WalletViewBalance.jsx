@@ -92,7 +92,7 @@ export default function WalletViewBalance() {
       {shouldDisplayExchangeRate && (
         <div className="text-md text-zinc-400/80 mt-0.5">
           <StockOutlined className="mr-1" />
-          {price.price}
+          {price.priceString}
           <span className="mx-0.5 text-sm font-mono">/</span>BCH
         </div>
       )}

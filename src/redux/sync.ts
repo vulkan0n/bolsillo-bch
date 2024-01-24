@@ -11,6 +11,7 @@ import {
 import { RootState } from "@/redux";
 import { walletBalanceUpdate, selectActiveWallet } from "@/redux/wallet";
 import { setPreference, selectIsChipnet } from "@/redux/preferences";
+import { txHistoryFetch } from "@/redux/txHistory";
 
 import ElectrumService from "@/services/ElectrumService";
 import BlockchainService from "@/services/BlockchainService";
@@ -413,6 +414,15 @@ export const syncReducer = createReducer(initialState, (builder) => {
       state.syncPending.history -= 1;
     })
     .addCase(syncAddressHistory.rejected, (state: RootState) => {
+      state.syncPending.history -= 1;
+    })
+    .addCase(txHistoryFetch.pending, (state: RootState) => {
+      state.syncPending.history += 1;
+    })
+    .addCase(txHistoryFetch.fulfilled, (state: RootState) => {
+      state.syncPending.history -= 1;
+    })
+    .addCase(txHistoryFetch.rejected, (state: RootState) => {
       state.syncPending.history -= 1;
     })
     .addCase(syncChangeAddresses.pending, (state: RootState) => {
