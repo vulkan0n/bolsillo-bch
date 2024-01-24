@@ -51,6 +51,20 @@ $ git fetch gitlabMirror merge-requests/1111111/head:MY_NEW_BRANCH
 $ git merge MY_NEW_BRANCH
 ```
 
+### Archiving on XCode (fixing the build error)
+Open Target Support Files -> Pods-App -> Pods-App-Framework.sh.
+
+find this (around line 44):
+
+```
+  if [ -L "${source}" ]; then
+    echo "Symlinked..."
+    source="$(readlink "${source}")"
+  fi
+```
+
+change the readlink line to `source="$(readlink -f "${source}")"`
+
 ### Auto-translations
 
 Manually managing translations got super tiresome & unwieldy with so many languages, so it has been automated.
