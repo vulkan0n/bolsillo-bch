@@ -15,7 +15,6 @@ import { selectKeyboardIsOpen } from "@/redux/device";
 
 import TransactionManagerService from "@/services/TransactionManagerService";
 import TransactionBuilderService from "@/services/TransactionBuilderService";
-import CurrencyService from "@/services/CurrencyService";
 
 import SatoshiInput from "@/atoms/SatoshiInput";
 import Satoshi from "@/atoms/Satoshi";
@@ -62,8 +61,9 @@ export default function WalletViewSend() {
     new Decimal(satoshiInput.sats)
   );
 
-  const { isInstantPayEnabled, instantPayThreshold, instantPayThresholdFiat } =
-    useSelector(selectInstantPaySettings);
+  const { isInstantPayEnabled, instantPayThreshold } = useSelector(
+    selectInstantPaySettings
+  );
 
   const handleAmountInput = (satInput) => {
     setSatoshiInput(satInput);
@@ -117,19 +117,12 @@ export default function WalletViewSend() {
       return;
     }
 
-    const threshold = Number.parseInt(
-      shouldPreferLocalCurrency
-        ? CurrencyService(localCurrency).fiatToSats(instantPayThresholdFiat)
-        : instantPayThreshold,
-      10
-    );
-
     const requestAmount = Number.parseInt(
       bchToSats(searchParams.get("amount") || 0),
       10
     );
 
-    if (requestAmount > 0 && requestAmount <= threshold) {
+    if (requestAmount > 0 && requestAmount <= instantPayThreshold) {
       //Logger.debug("instapay!", threshold, requestAmount);
       confirmSend();
     }
