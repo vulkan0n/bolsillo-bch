@@ -43,7 +43,8 @@ export default function TransactionBuilderService(wallet: WalletEntity) {
 
   function buildP2pkhTransaction(
     recipients: Array<{ address: string; amount: Decimal }>,
-    fee: number = DUST_LIMIT / 3
+    fee: number = DUST_LIMIT / 3,
+    depth: number = 0
   ) {
     // calculate total amount to send for all recipients
     const sendTotal = recipients
@@ -123,18 +124,20 @@ export default function TransactionBuilderService(wallet: WalletEntity) {
     const feeTotal = changeTotal >= DUST_LIMIT ? fee : fee + changeTotal;
     if (feeTotal < tx_raw.length) {
       Logger.debug(
-        `Fee under 1 sat/B... try again with ${tx_raw.length} bytelength as fee`
+        `Fee under 1 sat/B... try again with ${tx_raw.length} bytelength as fee`,
+        depth
       );
       // TODO: use relay fee provided by electrum (futureproofing)
-      return buildP2pkhTransaction(recipients, tx_raw.length);
+      return buildP2pkhTransaction(recipients, tx_raw.length, depth + 1);
     }
 
-    if (feeTotal > tx_raw.length * 3) {
+    if (feeTotal > tx_raw.length * 3 && depth < 3) {
       if (fee !== tx_raw.length) {
         Logger.debug(
-          "Fee greater than 300% of byte length. Can we make it smaller?"
+          "Fee greater than 300% of byte length. Can we make it smaller?",
+          depth
         );
-        return buildP2pkhTransaction(recipients, tx_raw.length);
+        return buildP2pkhTransaction(recipients, tx_raw.length, depth + 1);
       }
 
       // if we're here, fee can't get any smaller. proceed
