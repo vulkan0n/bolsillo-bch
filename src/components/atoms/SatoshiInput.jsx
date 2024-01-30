@@ -185,8 +185,9 @@ export default function SatoshiInput({
       type="text"
       inputMode="decimal"
       className={className}
+      placeholder="0"
       size={size}
-      value={satoshiInput.display}
+      value={satoshiInput.display !== "0" ? satoshiInput.display : ""}
       onKeyDown={handleKeyDown}
       onChange={handleInputChangeEvent}
     />
