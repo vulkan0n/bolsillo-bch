@@ -10,6 +10,7 @@ import { electrum_servers } from "@/util/electrum_servers";
 import { languageList } from "@/util/translations";
 import { currencyList } from "@/util/currency";
 import { ValidBchNetwork } from "@/util/crypto";
+import CurrencyService from "@/services/CurrencyService";
 
 const defaultPreferences = {
   activeWalletId: "1",
@@ -202,8 +203,13 @@ export const selectInstantPaySettings = createSelector(
   (state: RootState) => state.preferences,
   (preferences) => ({
     isInstantPayEnabled: preferences.allowInstantPay === "true",
-    instantPayThreshold: preferences.instantPayThreshold,
-    instantPayThresholdFiat: preferences.instantPayThresholdFiat,
+    // always in sats
+    instantPayThreshold:
+      preferences.preferLocalCurrency === "true"
+        ? CurrencyService(preferences.localCurrency).fiatToSats(
+            preferences.instantPayThresholdFiat
+          )
+        : preferences.instantPayThreshold,
   })
 );
 

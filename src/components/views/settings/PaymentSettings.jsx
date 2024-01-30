@@ -25,9 +25,7 @@ import { satsToDisplayAmount } from "@/util/sats";
 
 export default function PaymentSettings() {
   const { handleSettingsUpdate, preferences } = useContext(SettingsContext);
-  const { instantPayThreshold, instantPayThresholdFiat } = useSelector(
-    selectInstantPaySettings
-  );
+  const { instantPayThreshold } = useSelector(selectInstantPaySettings);
   const { localCurrency, shouldPreferLocalCurrency } = useSelector(
     selectCurrencySettings
   );
@@ -35,12 +33,8 @@ export default function PaymentSettings() {
   const Currency = CurrencyService(localCurrency);
 
   const [instantPaySatInput, setInstantPaySatInput] = useState({
-    display: shouldPreferLocalCurrency
-      ? satsToDisplayAmount(Currency.fiatToSats(instantPayThresholdFiat))
-      : satsToDisplayAmount(instantPayThreshold),
-    sats: shouldPreferLocalCurrency
-      ? Currency.fiatToSats(instantPayThresholdFiat)
-      : instantPayThreshold,
+    display: satsToDisplayAmount(instantPayThreshold),
+    sats: instantPayThreshold,
   });
 
   const handleInstantPayInput = (satInput) => {
