@@ -2,7 +2,7 @@
 import PropTypes from "prop-types";
 import { PictureOutlined } from "@ant-design/icons";
 import { Camera } from "@capacitor/camera";
-import { Haptics } from "@capacitor/haptics";
+import { Haptics, NotificationType } from "@capacitor/haptics";
 import QrScanner from "qr-scanner";
 import Button from "@/atoms/Button";
 import translations from "./translations";
@@ -54,7 +54,8 @@ export default function ImageSelectButton({ onSelection, ...rest }) {
         onSelection(result.data);
         //console.log(result.data);
       } catch (e) {
-        Haptics.notification({ type: "ERROR" });
+        Haptics.notification({ type: NotificationType.Error });
+        onSelection("");
         //console.error(e);
       }
     };
