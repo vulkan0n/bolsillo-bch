@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
-import { SplashScreen } from "@capacitor/splash-screen";
 import {
   createAction,
   createReducer,
@@ -96,14 +95,6 @@ walletMiddleware.startListening({
       const difference = currentBalance - previousBalance;
       ToastService().paymentReceived(difference);
     }
-  },
-});
-
-// hide splash screen when wallet is loaded
-walletMiddleware.startListening({
-  actionCreator: walletBoot.fulfilled,
-  effect: async () => {
-    await SplashScreen.hide();
   },
 });
 
