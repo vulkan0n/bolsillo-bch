@@ -1,13 +1,13 @@
 import PropTypes from "prop-types";
-//import { useState } from "react";
+import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Clipboard } from "@capacitor/clipboard";
-import { CopyOutlined, SnippetsFilled } from "@ant-design/icons";
+import { CopyOutlined, CheckCircleFilled } from "@ant-design/icons";
 import { useSelector } from "react-redux";
 import { selectCurrencySettings } from "@/redux/preferences";
-//import { selectActiveWallet } from "@/redux/wallet";
+import { selectActiveWallet } from "@/redux/wallet";
 
-//import TransactionHistoryService from "@/services/TransactionHistoryService";
+import TransactionHistoryService from "@/services/TransactionHistoryService";
 import ToastService from "@/services/ToastService";
 
 import Address from "@/atoms/Address";
@@ -22,31 +22,24 @@ function WalletViewSendSuccess() {
   const location = useLocation();
   const { tx } = location.state;
 
-  //const wallet = useSelector(selectActiveWallet);
+  const wallet = useSelector(selectActiveWallet);
+  const { localCurrency } = useSelector(selectCurrencySettings);
 
-  /*const [memo, setMemo] = useState("");
+  const [memo, setMemo] = useState("");
 
-  const handleMemoChange = (event) => setMemo(event.target.value);
-
-  const handleMemoKeyDown = (event) => {
-    if (event.key === "Enter") {
-      TransactionHistoryService(wallet).setTransactionMemo(tx.txid, memo);
-    }
-  };*/
+  const handleMemoChange = (event) => {
+    setMemo(event.target.value);
+    TransactionHistoryService(wallet, localCurrency).setTransactionMemo(
+      tx.txid,
+      event.target.value
+    );
+  };
 
   const handleCopyTransactionId = async (event) => {
     event.stopPropagation();
 
-    ToastService().spawn({
-      icon: <SnippetsFilled className="text-4xl text-primary" />,
-      header: "Copied Transaction ID",
-      body: (
-        <span className="inline-block max-w-[62%] truncate text-sm break-all">
-          {tx.txid}
-        </span>
-      ),
-    });
     await Clipboard.write({ string: tx.txid });
+    ToastService().clipboardCopy("Transaction ID", tx.txid);
   };
 
   return (
@@ -85,16 +78,25 @@ function WalletViewSendSuccess() {
             </span>
           </div>
         </div>
-        {/*<div className="bg-zinc-200 p-1 rounded mb-2 flex">
-          <span className="font-semibold p-0.5">Memo</span>
-          <input
-            type="text"
-            className="ml-1 flex-1 rounded-sm"
-            value={memo}
-            onChange={handleMemoChange}
-            onKeyDown={handleMemoKeyDown}
-          />
-        </div>*/}
+        <div
+          className="border rounded mb-2 border-primary"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className="p-1 bg-zinc-500 rounded-t-sm">
+            <span className="font-semibold text-zinc-200">Memo</span>
+          </div>
+          <div className="bg-zinc-200 p-1 rounded-b-sm flex items-center">
+            <input
+              type="text"
+              className="flex-1 rounded-sm p-1"
+              value={memo}
+              onChange={handleMemoChange}
+            />
+            {memo && (
+              <CheckCircleFilled className="shrink text-primary text-lg ml-2 mr-1 font-bold" />
+            )}
+          </div>
+        </div>
         <div
           className="bg-zinc-200 p-1 rounded"
           onClick={(e) => e.stopPropagation()}

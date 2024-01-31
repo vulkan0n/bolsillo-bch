@@ -1,4 +1,5 @@
 import toast from "react-hot-toast";
+import { SnippetsFilled } from "@ant-design/icons";
 import { logos } from "@/util/logos";
 import Satoshi from "@/atoms/Satoshi";
 
@@ -7,6 +8,7 @@ export default function ToastService() {
     spawn,
     paymentReceived,
     connectionStatus,
+    clipboardCopy,
   };
 
   function spawn({ header, body, icon, options = {} }) {
@@ -74,6 +76,18 @@ export default function ToastService() {
         </div>
       ),
       icon: null,
+    });
+  }
+
+  function clipboardCopy(header, payload) {
+    spawn({
+      icon: <SnippetsFilled className="text-4xl text-primary" />,
+      header: `Copied ${header} to Clipboard`,
+      body: (
+        <span className="inline-block max-w-[62%] truncate text-sm break-all">
+          {payload}
+        </span>
+      ),
     });
   }
 }

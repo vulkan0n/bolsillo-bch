@@ -5,7 +5,6 @@ import { Clipboard } from "@capacitor/clipboard";
 import { QRCode } from "react-qrcode-logo";
 
 import {
-  SnippetsFilled,
   FormOutlined,
   CopyOutlined,
   CaretRightOutlined,
@@ -30,7 +29,7 @@ import ToastService from "@/services/ToastService";
 import { logos } from "@/util/logos";
 import { satsToBch } from "@/util/sats";
 
-const { copiedAddress, requestAmount } = translations;
+const { requestAmount } = translations;
 
 export default function WalletViewHome() {
   const wallet = useSelector(selectActiveWallet);
@@ -74,18 +73,10 @@ export default function WalletViewHome() {
   const getQrLogoImage = (logo) => logos[logo.toLowerCase()].img;
 
   const copyAddressToClipboard = async () => {
-    const titleTranslation = translate(copiedAddress);
+    //const titleTranslation = translate(copiedAddress);
 
-    ToastService().spawn({
-      icon: <SnippetsFilled className="text-4xl text-primary" />,
-      header: titleTranslation,
-      body: (
-        <span className="inline-block max-w-[62%] truncate text-sm break-all">
-          {qrRequest}
-        </span>
-      ),
-    });
     await Clipboard.write({ string: qrRequest });
+    ToastService().clipboardCopy("Address", qrRequest);
   };
 
   // "Request Amount" animations
