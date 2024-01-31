@@ -61,7 +61,7 @@ export default function TransactionManagerService() {
       const localTx = await getTransactionByHash(tx_hash);
 
       // request the tx again if it's unconfirmed
-      if (localTx.blockhash === "null" || localTx.time === "null") {
+      if (localTx.blockhash === "null") {
         throw new Error("Transaction Unconfirmed");
       }
 
@@ -109,7 +109,7 @@ export default function TransactionManagerService() {
         directory: Directory.Library,
       });
     } catch (e) {
-      Logger.warn(e);
+      //Logger.warn(e);
     }
 
     //Logger.debug("deleteTransaction", tx_hash);
@@ -193,10 +193,11 @@ export default function TransactionManagerService() {
   ): Promise<TransactionEntity> {
     const blockhash = tx.blockhash ? tx.blockhash : null;
     const blocktime = tx.blocktime ? tx.blocktime : null;
-    const time = tx.time ? tx.time : null;
+    const time = tx.time ? tx.time : Math.floor(Date.now() / 1000);
 
-    db.run(
-      `INSERT INTO transactions (
+    const result = resultToJson(
+      db.exec(
+        `INSERT INTO transactions (
         txid,
         size,
         blockhash,
@@ -215,8 +216,10 @@ export default function TransactionManagerService() {
           blockhash="${blockhash}",
           time="${time}",
           blocktime="${blocktime}"
+        RETURNING *;
       `
-    );
+      )
+    )[0];
 
     await _writeTxData(tx.txid, tx.hex);
     saveDatabase();
@@ -229,7 +232,7 @@ export default function TransactionManagerService() {
     // reconstruct "vout" from raw hex
     const vout = getVoutFromDecodedTransaction(decodedTx);
 
-    const finalTx = { ...tx, vin, vout };
+    const finalTx = { ...result, vin, vout };
 
     //Logger.debug("_registerTransaction", tx, time, blockhash);
     return finalTx;

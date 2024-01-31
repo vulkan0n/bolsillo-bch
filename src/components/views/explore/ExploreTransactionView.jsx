@@ -1,9 +1,14 @@
 /* eslint-disable react/prop-types */
-import Logger from "js-logger";
 import { useLoaderData, Link } from "react-router-dom";
 import { useSelector } from "react-redux";
+import { Clipboard } from "@capacitor/clipboard";
+import { DateTime } from "luxon";
 //import {} from "@ant-design/icons";
 import { selectCurrencySettings } from "@/redux/preferences";
+import { selectActiveWallet } from "@/redux/wallet";
+
+import TransactionHistoryService from "@/services/TransactionHistoryService";
+import ToastService from "@/services/ToastService";
 
 import Address from "@/atoms/Address";
 import Satoshi from "@/atoms/Satoshi";
@@ -12,37 +17,61 @@ import Accordion from "@/atoms/Accordion";
 export default function ExploreTransactionView() {
   const tx = useLoaderData();
 
-  const isConfirmed = tx.blocktime !== "null";
-  const txDate = (
-    isConfirmed ? new Date(tx.blocktime * 1000) : Date.parse(tx.time_seen)
-  ).toLocaleString();
+  const wallet = useSelector(selectActiveWallet);
+  const { localCurrency } = useSelector(selectCurrencySettings);
 
-  Logger.debug(tx);
+  const memo = TransactionHistoryService(
+    wallet,
+    localCurrency
+  ).getTransactionMemo(tx.txid);
+
+  const isConfirmed = tx.blockhash !== "null";
+
+  const txDate = (
+    isConfirmed ? DateTime.fromSeconds(tx.time) : DateTime.fromISO(tx.time_seen)
+  ).toLocaleString(DateTime.DATETIME_FULL);
+
+  const handleCopyTransactionId = async () => {
+    await Clipboard.write({ string: tx.txid });
+    ToastService().clipboardCopy("Transaction ID", tx.txid);
+  };
+
+  //Logger.debug(tx);
 
   return (
     <>
-      <div className="p-2 bg-zinc-100 border-b border-zinc-400">
+      <div
+        className="p-2 bg-zinc-100 border-b border-zinc-400"
+        onClick={handleCopyTransactionId}
+      >
         <span className="text-lg font-semibold mr-1">Transaction ID:</span>
         <span className="break-all font-mono text-sm">{tx.txid}</span>
       </div>
-      <div className="text-zinc-800 p-1 font-bold">
-        {isConfirmed ? "Confirmed" : "Seen"} {txDate}
-      </div>
-      <div className="p-1">
-        <Accordion title="Outputs" open>
-          {tx.vout.map((output, i) => (
-            <OutputListItem key={output.n} output={output} i={i} />
-          ))}
-        </Accordion>
-        <Accordion title="Inputs">
-          {tx.vin.map((input, i) => (
-            <InputListItem
-              key={`${input.txid}:${input.vout}`}
-              input={input}
-              i={i}
-            />
-          ))}
-        </Accordion>
+      <div className="p-2">
+        <div className="text-zinc-800 font-bold">
+          {isConfirmed ? "Confirmed" : "Seen"} {txDate}
+        </div>
+        {memo && (
+          <div className="text-zinc-800 my-2">
+            <span className="font-bold">Memo:</span> {memo}
+          </div>
+        )}
+        <div>
+          <Accordion title="Outputs" open>
+            {tx.vout.map((output, i) => (
+              <OutputListItem key={output.n} output={output} i={i} />
+            ))}
+          </Accordion>
+          <Accordion title="Inputs">
+            {tx.vin.map((input, i) => (
+              <InputListItem
+                key={`${input.txid}:${input.vout}`}
+                input={input}
+                i={i}
+              />
+            ))}
+          </Accordion>
+        </div>
       </div>
     </>
   );

@@ -1,5 +1,6 @@
 import Logger from "js-logger";
 import { Decimal } from "decimal.js";
+import { DateTime } from "luxon";
 import DatabaseService from "@/services/DatabaseService";
 import AddressManagerService from "@/services/AddressManagerService";
 import TransactionManagerService, {
@@ -31,40 +32,51 @@ export default function TransactionHistoryService(
     resolveTransactionHistory,
     calculateTxAmount,
     setTransactionMemo,
+    getTransactionMemo,
   };
 
   async function resolveTransactionHistory(start: number = 0) {
-    Logger.debug("resolveTransactionHistory");
+    //Logger.debug("resolveTransactionHistory");
 
     // get all transactions that are registered with addresses
-    const address_transactions = resultToJson(
+    const address_transactions_confirmed = resultToJson(
       db.exec(
         `SELECT * FROM address_transactions 
-          WHERE wallet_id="${wallet.id}"
+          WHERE (wallet_id="${wallet.id}"
           OR address IN (
             SELECT address FROM addresses WHERE wallet_id="${wallet.id}"
-          ) ORDER BY height DESC, time DESC, time_seen DESC
+          )) AND height > 0
+          ORDER BY height DESC, time DESC, time_seen DESC
           LIMIT 100 OFFSET ${start};
         `
       )
     );
 
-    // put unconfirmed transactions in front
-    address_transactions.sort((a, b) => {
-      if (a.height <= 0) {
-        return -1;
-      }
+    const address_transactions_unconfirmed = resultToJson(
+      db.exec(
+        `SELECT * FROM address_transactions 
+          WHERE (wallet_id="${wallet.id}"
+          OR address IN (
+            SELECT address FROM addresses WHERE wallet_id="${wallet.id}"
+          )) AND height <= 0
+          ORDER BY height ASC, time_seen DESC, time DESC
+          LIMIT 100 OFFSET ${start};
+        `
+      )
+    );
 
-      if (b.height <= 0) {
-        return 1;
-      }
-
-      return 0;
-    });
+    const address_transactions = address_transactions_unconfirmed
+      .concat(address_transactions_confirmed)
+      .map((at) => {
+        let txTime = at.time;
+        if (at.height <= 0) {
+          txTime = DateTime.fromISO(at.time_seen).toSeconds();
+        }
+        return { ...at, time: txTime };
+      });
 
     // resolve amounts for transactions that don't have them
     const tx_hashes = address_transactions.map((at) => at.txid);
-
     Logger.debug("resolveTransactionHistory awaiting", tx_hashes.length);
     const transactions = (
       await Promise.all(
@@ -153,9 +165,27 @@ export default function TransactionHistoryService(
     return amount;
   }
 
-  function setTransactionMemo(tx_hash: string, memo: string) {
-    db.run(`UPDATE transactions SET memo="${memo}" WHERE txid=${tx_hash}`);
+  function setTransactionMemo(tx_hash: string, memo: string): void {
+    db.run(
+      `UPDATE address_transactions SET memo="${memo}"
+        WHERE txid="${tx_hash}" AND wallet_id="${wallet.id}";
+
+       UPDATE address_utxos SET memo="${memo}"
+        WHERE txid="${tx_hash}" AND wallet_id="${wallet.id}";
+      `
+    );
     saveDatabase();
+  }
+
+  function getTransactionMemo(tx_hash: string): string {
+    const result = resultToJson(
+      db.exec(
+        `SELECT memo FROM address_transactions WHERE txid="${tx_hash}" AND wallet_id="${wallet.id}"`
+      )
+    );
+
+    const memo = result.length > 0 ? result[0].memo : "";
+    return memo;
   }
 
   function updateTxAmount(tx_hash: string, amount: number) {
@@ -168,7 +198,7 @@ export default function TransactionHistoryService(
           fiat_amount="${fiat_amount}",
           fiat_currency="${fiatCurrency}",
           wallet_id="${wallet.id}",
-          time=(SELECT time FROM transactions WHERE txid="${tx_hash}")
+          time=(SELECT time FROM transactions WHERE txid="${tx_hash}" AND time != "null")
         WHERE txid="${tx_hash}" AND wallet_id="${wallet.id}"
         RETURNING *;`
       )
