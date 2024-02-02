@@ -1,14 +1,16 @@
 import Logger from "js-logger";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useParams, useSearchParams, useNavigate } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
 import Decimal from "decimal.js";
 import { Haptics, NotificationType } from "@capacitor/haptics";
-import { useSelector } from "react-redux";
 import { ArrowLeftOutlined } from "@ant-design/icons";
+
 import { selectActiveWallet } from "@/redux/wallet";
 import {
   selectCurrencySettings,
   selectInstantPaySettings,
+  setPreference,
 } from "@/redux/preferences";
 
 import { selectKeyboardIsOpen } from "@/redux/device";
@@ -16,14 +18,14 @@ import { selectKeyboardIsOpen } from "@/redux/device";
 import TransactionManagerService from "@/services/TransactionManagerService";
 import TransactionBuilderService from "@/services/TransactionBuilderService";
 
-import SatoshiInput from "@/atoms/SatoshiInput";
+import { SatoshiInput } from "@/atoms/SatoshiInput";
 import Satoshi from "@/atoms/Satoshi";
 import Button from "@/atoms/Button";
 import Address from "@/atoms/Address";
 import CurrencySymbol from "@/atoms/CurrencySymbol";
 import CurrencyFlip from "@/atoms/CurrencyFlip";
 
-import { bchToSats, satsToDisplayAmount } from "@/util/sats";
+import { bchToSats } from "@/util/sats";
 import { validateInvoiceString } from "@/util/invoice";
 import { translate } from "@/util/translations";
 import translations from "./translations";
@@ -32,6 +34,9 @@ export default function WalletViewSend() {
   const [searchParams] = useSearchParams();
   const params = useParams();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const inputRef = useRef();
 
   const isKeyboardOpen = useSelector(selectKeyboardIsOpen);
   const buttonsPos = isKeyboardOpen ? "bottom-2" : "bottom-[5em]";
@@ -42,7 +47,7 @@ export default function WalletViewSend() {
 
   const [message, setMessage] = useState("");
 
-  const { localCurrency, shouldPreferLocalCurrency } = useSelector(
+  const { shouldPreferLocalCurrency, localCurrency } = useSelector(
     selectCurrencySettings
   );
 
@@ -50,15 +55,14 @@ export default function WalletViewSend() {
 
   const querySats = searchParams.get("amount")
     ? bchToSats(searchParams.get("amount"))
-    : "0";
+    : new Decimal(0);
 
-  const [satoshiInput, setSatoshiInput] = useState({
-    sats: querySats,
-    display: satsToDisplayAmount(querySats),
-  });
+  const [satoshiInput, setSatoshiInput] = useState(querySats);
+  // used to force re-render of SatoshiInput component with MAX button
+  const [satoshiInputKey, setSatoshiInputKey] = useState("satoshiInputKey");
 
   const isInsufficientFunds = new Decimal(wallet.balance).lessThan(
-    new Decimal(satoshiInput.sats)
+    satoshiInput
   );
 
   const { isInstantPayEnabled, instantPayThreshold } = useSelector(
@@ -67,6 +71,7 @@ export default function WalletViewSend() {
 
   const handleAmountInput = (satInput) => {
     setSatoshiInput(satInput);
+    setSatoshiInputKey("satoshiInputKey");
     setMessage("");
   };
 
@@ -84,7 +89,7 @@ export default function WalletViewSend() {
     const TransactionBuilder = TransactionBuilderService(wallet);
 
     const transaction = TransactionBuilder.buildP2pkhTransaction([
-      { address, amount: satoshiInput.sats },
+      { address, amount: satoshiInput },
     ]);
 
     if (typeof transaction !== "object") {
@@ -117,12 +122,12 @@ export default function WalletViewSend() {
       return;
     }
 
-    const requestAmount = Number.parseInt(
-      bchToSats(searchParams.get("amount") || 0),
-      10
-    );
+    const requestAmount = bchToSats(searchParams.get("amount") || 0);
 
-    if (requestAmount > 0 && requestAmount <= instantPayThreshold) {
+    if (
+      requestAmount.greaterThan(0) &&
+      requestAmount.lessThanOrEqualTo(instantPayThreshold)
+    ) {
       //Logger.debug("instapay!", threshold, requestAmount);
       confirmSend();
     }
@@ -144,12 +149,21 @@ export default function WalletViewSend() {
       ]);
     }
 
-    const clampedAmount = Math.max(0, amount.toNumber());
+    const clampedAmount = new Decimal(Math.max(0, amount.toNumber()));
+    setSatoshiInput(clampedAmount);
+    // force re-render of SatoshiInput component
+    setSatoshiInputKey(clampedAmount.toString());
+  };
 
-    setSatoshiInput({
-      display: satsToDisplayAmount(clampedAmount),
-      sats: clampedAmount.toString(),
-    });
+  const handleFlipCurrency = () => {
+    dispatch(
+      setPreference({
+        key: "preferLocalCurrency",
+        value: shouldPreferLocalCurrency ? "false" : "true",
+      })
+    );
+
+    inputRef.current.focus();
   };
 
   return (
@@ -179,12 +193,15 @@ export default function WalletViewSend() {
               className="font-bold text-4xl mr-2"
             />
             <SatoshiInput
+              key={satoshiInputKey}
               onChange={handleAmountInput}
-              satoshiInput={satoshiInput}
+              satoshis={satoshiInput}
               size={1}
               className={`mr-1.5 p-1 flex-1 text-3xl rounded shadow-inner ${
                 isInsufficientFunds ? "text-error" : "text-black/70"
               }`}
+              autoFocus
+              ref={inputRef}
             />
             <Button
               className="text-xs spacing-wide font-semibold text-zinc-800 rounded-full border border-zinc-200 bg-zinc-100"
@@ -195,16 +212,14 @@ export default function WalletViewSend() {
           </div>
         </div>
 
-        <div className="p-2 relative text-center w-full">
+        <div
+          className="p-2 relative text-center w-full"
+          onClick={handleFlipCurrency}
+        >
           <span className="text-2xl font-semibold text-center w-full text-zinc-800/80">
-            <Satoshi
-              value={satoshiInput.sats}
-              fiat={!shouldPreferLocalCurrency}
-            />
+            <Satoshi value={satoshiInput} fiat={!shouldPreferLocalCurrency} />
+            <CurrencyFlip className="text-3xl ml-2" />
           </span>
-          <div className="absolute top-2 right-2 flex items-center">
-            <Button icon={CurrencyFlipIcon} />
-          </div>
         </div>
       </div>
 
@@ -243,8 +258,4 @@ function BackIcon() {
       {translate(translations.back)}
     </span>
   );
-}
-
-function CurrencyFlipIcon() {
-  return <CurrencyFlip className="text-xl" />;
 }
