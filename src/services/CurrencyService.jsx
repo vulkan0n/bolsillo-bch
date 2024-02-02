@@ -106,12 +106,12 @@ export default function CurrencyService(fiatCurrency) {
     return bchToSats(bchAmount);
   }
 
-  function fiatToBch(fiatAmount) {
-    return new Decimal(satsToBch(fiatToSats(fiatAmount))).toFixed(8).toString();
+  function fiatToBch(fiatAmount, denomination) {
+    return satsToBch(fiatToSats(fiatAmount))[denomination];
   }
 
   function satsToFiat(sats) {
-    return new Decimal(satsToBch(sats))
+    return new Decimal(satsToBch(sats).bch)
       .times(getExchangeRate(fiatCurrency))
       .toFixed(2)
       .toString();

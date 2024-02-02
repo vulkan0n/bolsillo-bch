@@ -20,8 +20,7 @@ import CurrencyService from "@/services/CurrencyService";
 
 import Accordion from "@/atoms/Accordion";
 import CurrencySymbol from "@/atoms/CurrencySymbol";
-import SatoshiInput from "@/atoms/SatoshiInput";
-import { satsToDisplayAmount } from "@/util/sats";
+import { SatoshiInput } from "@/atoms/SatoshiInput";
 
 export default function PaymentSettings() {
   const { handleSettingsUpdate, preferences } = useContext(SettingsContext);
@@ -32,10 +31,8 @@ export default function PaymentSettings() {
 
   const Currency = CurrencyService(localCurrency);
 
-  const [instantPaySatInput, setInstantPaySatInput] = useState({
-    display: satsToDisplayAmount(instantPayThreshold),
-    sats: instantPayThreshold,
-  });
+  const [instantPaySatInput, setInstantPaySatInput] =
+    useState(instantPayThreshold);
 
   const handleInstantPayInput = (satInput) => {
     const instantPaySettingsKey = shouldPreferLocalCurrency
@@ -43,8 +40,8 @@ export default function PaymentSettings() {
       : "instantPayThreshold";
 
     const instantPaySettingsValue = shouldPreferLocalCurrency
-      ? Currency.satsToFiat(satInput.sats)
-      : satInput.sats;
+      ? Currency.satsToFiat(satInput)
+      : satInput;
 
     setInstantPaySatInput(satInput);
     handleSettingsUpdate(instantPaySettingsKey, instantPaySettingsValue);
@@ -79,7 +76,7 @@ export default function PaymentSettings() {
         <span className="text-zinc-600 flex items-center">
           <CurrencySymbol className="font-bold text-lg" />
           <SatoshiInput
-            satoshiInput={instantPaySatInput}
+            satoshis={instantPaySatInput}
             className="p-2 w-28 rounded mx-1 flex-1"
             onChange={handleInstantPayInput}
           />

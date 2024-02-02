@@ -1,102 +1,46 @@
 import { Decimal } from "decimal.js";
-import { selectLocale } from "@/redux/device";
-import {
-  selectCurrencySettings,
-  selectDenomination,
-} from "@/redux/preferences";
-//import { stripArsPostDecimal } from "@/redux/exchangeRates";
-import { store } from "@/redux";
-import CurrencyService from "@/services/CurrencyService";
 
 export const SATOSHI = 100000000; // sats per 1 BCH
 export const MAX_SATOSHI = new Decimal(SATOSHI * 21000000).toString();
 export const DUST_LIMIT = 546; // 3 * minRelayFee (currently 1000 sat/kB on most nodes)
+export const VALID_DENOMINATIONS = ["BCH", "mBCH", "bits", "sats"];
 
 export function satsToBch(sats) {
-  return new Decimal(sats).div(SATOSHI).toFixed(8, Decimal.ROUND_DOWN);
-}
-
-export function bchToSats(bch) {
-  const sats = new Decimal(bch)
-    .mul(SATOSHI)
-    .toDecimalPlaces(0, Decimal.ROUND_DOWN);
-  return sats;
-}
-
-export function satsToDisplayAmount(sats) {
-  const { shouldPreferLocalCurrency, localCurrency } = selectCurrencySettings(
-    store.getState()
-  );
-  const Currency = CurrencyService(localCurrency);
-
-  const shouldDenominateSats = selectDenomination(store.getState()) === "sats";
-
-  if (new Decimal(sats).equals(0)) {
-    return "0";
-  }
-
-  if (shouldPreferLocalCurrency) {
-    return Currency.satsToFiat(sats);
-  }
-
-  if (shouldDenominateSats) {
-    return sats;
-  }
-
-  return satsToBch(sats);
-}
-
-export function formatSatoshis(amount) {
-  // Can't check for !amount because amount maybe === 0
-  if (amount === null || amount === undefined) {
-    return {
-      bch: "-",
-      fiat: "-",
-    };
-  }
-
-  const locale = selectLocale(store.getState());
-
-  const { localCurrency, shouldHideBalance } = selectCurrencySettings(
-    store.getState()
-  );
-
-  const shouldDenominateSats = selectDenomination(store.getState()) === "sats";
-
-  const Currency = CurrencyService(localCurrency);
-
-  const bchSymbol = shouldDenominateSats ? "" : "₿";
-  const bchUnit = shouldDenominateSats ? "sats" : "";
-  const absoluteSatsAmount = Math.abs(amount);
-  const absoluteBchAmount = shouldDenominateSats
-    ? absoluteSatsAmount
-    : satsToBch(absoluteSatsAmount);
-
-  const sign = amount < 0 ? "-" : "";
-  const bchDisplay =
-    `${sign}${bchSymbol}${absoluteBchAmount} ${bchUnit}`.trim();
-
-  /* eslint-disable no-new-wrappers */
-  const fiatDisplay = `${new Number(Currency.satsToFiat(amount)).toLocaleString(
-    locale,
-    {
-      style: "currency",
-      currency: localCurrency,
-    }
-  )}`;
-
-  const displayAmount = {
-    bch: bchDisplay,
-    fiat: fiatDisplay, //stripArsPostDecimal(localCurrency, fiatDisplay),
-    sign,
+  return {
+    sats: new Decimal(sats).toNumber(),
+    bch: Number.parseFloat(
+      new Decimal(sats).div(SATOSHI).toFixed(8, Decimal.ROUND_DOWN)
+    ),
+    mbch: Number.parseFloat(
+      new Decimal(sats).div(SATOSHI).mul(1000).toFixed(5, Decimal.ROUND_DOWN)
+    ),
+    bits: Number.parseFloat(
+      new Decimal(sats).div(SATOSHI).mul(1000000).toFixed(2, Decimal.ROUND_DOWN)
+    ),
   };
+}
 
-  // Don't leak number of digits when hiding balance
-  const displayHidden = {
-    bch: "XXXXXXXXXX",
-    fiat: "XXXXXXXXXX",
-    sign: "",
-  };
+export function bchToSats(bch, denomination = "bch") {
+  switch (denomination) {
+    case "sats":
+      return new Decimal(bch);
 
-  return shouldHideBalance ? displayHidden : displayAmount;
+    case "mbch":
+      return new Decimal(bch)
+        .div(1000)
+        .mul(SATOSHI)
+        .toDecimalPlaces(0, Decimal.ROUND_DOWN);
+
+    case "bits":
+      return new Decimal(bch)
+        .div(1000000)
+        .mul(SATOSHI)
+        .toDecimalPlaces(0, Decimal.ROUND_DOWN);
+
+    case "bch":
+    default:
+      return new Decimal(bch)
+        .mul(SATOSHI)
+        .toDecimalPlaces(0, Decimal.ROUND_DOWN);
+  }
 }

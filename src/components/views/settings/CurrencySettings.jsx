@@ -10,16 +10,14 @@ import {
   StockOutlined,
 } from "@ant-design/icons";
 
-import {
-  selectCurrencySettings,
-  selectDenomination,
-} from "@/redux/preferences";
+import { selectCurrencySettings } from "@/redux/preferences";
 
 import { translate } from "@/util/translations";
 import translations from "./SettingsViewTranslations";
 
 import { SettingsContext } from "./SettingsContext";
 import { currencyList } from "@/util/currency";
+import { VALID_DENOMINATIONS } from "@/util/sats";
 
 import Accordion from "@/atoms/Accordion";
 
@@ -27,13 +25,12 @@ export default function CurrencySettings() {
   const { handleSettingsUpdate } = useContext(SettingsContext);
 
   const {
-    localCurrency,
     shouldPreferLocalCurrency,
     shouldHideBalance,
     shouldDisplayExchangeRate,
+    localCurrency,
+    denomination,
   } = useSelector(selectCurrencySettings);
-
-  const shouldDenominateSats = useSelector(selectDenomination) === "sats";
 
   return (
     <Accordion
@@ -45,7 +42,7 @@ export default function CurrencySettings() {
         label={translate(translations.localCurrency)}
       >
         <select
-          className="p-2 bg-white rounded h-10 w-24 w-fit"
+          className="p-2 bg-white rounded h-10 w-fit"
           value={localCurrency || ""}
           onChange={(event) =>
             handleSettingsUpdate("localCurrency", event.target.value)
@@ -88,13 +85,22 @@ export default function CurrencySettings() {
         icon={AccountBookOutlined}
         label={translate(translations.denominateInSats)}
       >
-        <input
-          type="checkbox"
-          checked={shouldDenominateSats}
+        <select
+          className="p-2 bg-white rounded h-10 w-24"
+          value={denomination}
           onChange={(event) =>
-            handleSettingsUpdate("denominateSats", event.target.checked)
+            handleSettingsUpdate(
+              "denomination",
+              event.target.value.toLowerCase()
+            )
           }
-        />
+        >
+          {VALID_DENOMINATIONS.map((d) => (
+            <option id={d} value={d.toLowerCase()}>
+              {d}
+            </option>
+          ))}
+        </select>
       </Accordion.Child>
       <Accordion.Child
         icon={StockOutlined}

@@ -20,7 +20,7 @@ import { translate } from "@/util/translations";
 import AddressManagerService from "@/services/AddressManagerService";
 import WalletViewButtons from "../WalletViewButtons/WalletViewButtons";
 import ScannerOverlay from "../ScannerOverlay";
-import SatoshiInput from "@/atoms/SatoshiInput";
+import { SatoshiInput } from "@/atoms/SatoshiInput";
 import Address from "@/atoms/Address";
 import CurrencySymbol from "@/atoms/CurrencySymbol";
 import CurrencyFlip from "@/atoms/CurrencyFlip";
@@ -58,7 +58,7 @@ export default function WalletViewHome() {
 
   // "Request Amount" state
   const [shouldShowRequestAmount, setShouldShowRequestAmount] = useState(false);
-  const [satoshiInput, setSatoshiInput] = useState({ display: "0", sats: 0 });
+  const [satoshiInput, setSatoshiInput] = useState(0);
 
   const handleRequestAmountChange = (satInput) => {
     setSatoshiInput(satInput);
@@ -66,8 +66,8 @@ export default function WalletViewHome() {
 
   // generate bip21 uri for QR code
   const qrRequest =
-    shouldShowRequestAmount && satoshiInput.sats > 0
-      ? `${address}?amount=${satsToBch(satoshiInput.sats)}`
+    shouldShowRequestAmount && satoshiInput > 0
+      ? `${address}?amount=${satsToBch(satoshiInput).bch}`
       : address;
 
   const getQrLogoImage = (logo) => logos[logo.toLowerCase()].img;
@@ -177,8 +177,8 @@ export default function WalletViewHome() {
                 <>
                   <CurrencySymbol className="text-xl font-bold font-mono px-0.5" />
                   <SatoshiInput
+                    satoshis={satoshiInput}
                     onChange={handleRequestAmountChange}
-                    satoshiInput={satoshiInput}
                     className="p-1 w-fit text-black/70 font-mono rounded mx-1"
                   />
                   <div className="w-6 h-8 flex items-center justify-center">
