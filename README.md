@@ -33,9 +33,9 @@ We are fulfilling the mission of making Bitcoin Cash (BCH) the [global reserve c
 
 ## Contribution and Contact
 
-Questions: [Telegram group](https://t.me/+MMbV2KEPFt84MDQ8)
+Questions: [Telegram group](https://t.me/SeleneWallet)
 
-Contributors: [Contributing](./docs/CONTRIBUTING.md)
+Contributors: [Contributing](./CONTRIBUTING.md)
 
 Testers: [Testing document](https://docs.google.com/document/d/1VKXeuwlIPFrudwEBrdtg6zIuC2rSF4QRginuq3C_-ro/edit?usp=sharing)
 
