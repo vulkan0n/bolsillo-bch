@@ -46,7 +46,7 @@ export default function TransactionBuilderService(wallet: WalletEntity) {
     recipients: Array<{ address: string; amount: Decimal }>,
     fee: number = DUST_LIMIT / 3,
     depth: number = 0
-  ): TransactionStub {
+  ): TransactionStub | number | null {
     // calculate total amount to send for all recipients
     const sendTotal = recipients
       .reduce((sum, cur) => sum.plus(cur.amount), new Decimal(0))
@@ -81,7 +81,7 @@ export default function TransactionBuilderService(wallet: WalletEntity) {
     // construct tx outputs
     const vout = recipients.map((out) => ({
       lockingBytecode: addressToLockingBytecode(out.address),
-      valueSatoshis: BigInt(out.amount),
+      valueSatoshis: BigInt(out.amount.toString()),
     }));
 
     // construct change outputs
