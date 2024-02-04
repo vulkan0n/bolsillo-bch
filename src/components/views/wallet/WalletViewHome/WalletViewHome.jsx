@@ -138,7 +138,7 @@ export default function WalletViewHome() {
             <Address address={address} />
           </button>
 
-          <div className="mt-2 mx-auto select-none opacity-90">
+          <div className="mt-2 mx-auto select-none z-50">
             <animated.div
               className={`py-1.5 px-2 w-max justify-center shadow-sm outline outline-2 outline-primary flex items-center mx-auto cursor-pointer ${
                 shouldShowRequestAmount
@@ -152,8 +152,8 @@ export default function WalletViewHome() {
                 requestOpenSpringsApi.start({
                   to: {
                     opacity: shouldShowRequestAmount ? 0 : 1,
-                    scaleY: shouldShowRequestAmount ? 0 : 1,
-                    scaleX: shouldShowRequestAmount ? 0.5 : 1,
+                    scaleY: shouldShowRequestAmount ? 0 : 1.2,
+                    scaleX: shouldShowRequestAmount ? 0.5 : 1.2,
                     y: shouldShowRequestAmount ? -16 : 0,
                   },
                 });
@@ -170,7 +170,7 @@ export default function WalletViewHome() {
               )}
             </animated.div>
             <animated.div
-              className="bg-primary text-white p-1.5 shadow-sm rounded min-w-[200px] w-fit max-w-[20.5em] mx-auto flex items-center"
+              className="bg-primary text-white p-2 shadow-sm rounded min-w-[200px] w-fit max-w-[20.5em] mx-auto flex items-center"
               style={{ ...requestOpenSprings }}
             >
               {shouldShowRequestAmount && (
