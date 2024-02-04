@@ -25,7 +25,7 @@ import Address from "@/atoms/Address";
 import CurrencySymbol from "@/atoms/CurrencySymbol";
 import CurrencyFlip from "@/atoms/CurrencyFlip";
 
-import { bchToSats } from "@/util/sats";
+import { bchToSats, DUST_LIMIT } from "@/util/sats";
 import { validateInvoiceString } from "@/util/invoice";
 import { translate } from "@/util/translations";
 import translations from "./translations";
@@ -95,25 +95,26 @@ export default function WalletViewSend() {
     if (typeof transaction !== "object") {
       Logger.warn(transaction);
       await Haptics.notification({ type: NotificationType.Warning });
-      setMessage(translate(translations.notEnoughFee));
+      //setMessage(translate(translations.notEnoughFee));
+      setMessage("Transaction Failed: Wallet out of sync?");
       return;
     }
 
-    const { tx_hash, tx_hex } = transaction;
     const isSuccess = await TransactionManager.sendTransaction(
-      { txid: tx_hash, hex: tx_hex },
+      transaction,
       wallet
     );
 
     if (isSuccess) {
-      const tx = await TransactionManager.resolveTransaction(tx_hash);
+      const tx = await TransactionManager.resolveTransaction(transaction.txid);
       await Haptics.notification({ type: NotificationType.Success });
       navigate("/wallet/send/success", {
         state: { tx },
       });
     } else {
       await Haptics.notification({ type: NotificationType.Error });
-      setMessage(translate(translations.transactionFailed));
+      //setMessage(translate(translations.transactionFailed));
+      setMessage(`Transaction Failed: Must send at least ${DUST_LIMIT} sats`);
     }
   };
 

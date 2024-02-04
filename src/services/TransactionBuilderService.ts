@@ -16,6 +16,7 @@ import UtxoManagerService from "@/services/UtxoManagerService";
 import AddressManagerService from "@/services/AddressManagerService";
 import HdNodeService from "@/services/HdNodeService";
 import { WalletEntity } from "@/services/WalletManagerService";
+import { TransactionStub } from "@/services/TransactionManagerService";
 
 import { DUST_LIMIT } from "@/util/sats";
 import { validateInvoiceString } from "@/util/invoice";
@@ -45,7 +46,7 @@ export default function TransactionBuilderService(wallet: WalletEntity) {
     recipients: Array<{ address: string; amount: Decimal }>,
     fee: number = DUST_LIMIT / 3,
     depth: number = 0
-  ) {
+  ): TransactionStub {
     // calculate total amount to send for all recipients
     const sendTotal = recipients
       .reduce((sum, cur) => sum.plus(cur.amount), new Decimal(0))
@@ -157,9 +158,8 @@ export default function TransactionBuilderService(wallet: WalletEntity) {
     */
 
     return {
-      tx_hash,
-      tx_hex,
-      feeTotal,
+      txid: tx_hash,
+      hex: tx_hex,
     };
   }
 }

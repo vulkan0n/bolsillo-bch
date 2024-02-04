@@ -14,9 +14,12 @@ import { WalletEntity } from "@/services/WalletManagerService";
 
 import { hexToBin, binToHex } from "@/util/hex";
 
-export interface TransactionEntity {
+export interface TransactionStub {
   txid: string;
   hex: string;
+}
+
+export interface TransactionEntity extends TransactionStub {
   blockhash: string;
   blocktime: string;
   time: string;
@@ -78,7 +81,7 @@ export default function TransactionManagerService() {
   }
 
   async function sendTransaction(
-    tx: TransactionEntity,
+    tx: TransactionStub,
     wallet: WalletEntity
   ): Promise<boolean> {
     const { txid: tx_hash, hex: tx_hex } = tx;
