@@ -7,6 +7,7 @@ import {
   LoginOutlined,
   DeleteOutlined,
   CheckCircleOutlined,
+  CheckCircleFilled,
   EditOutlined,
   WarningFilled,
   ToolOutlined,
@@ -51,6 +52,7 @@ export default function SettingsWalletView() {
 
   // toggle editing state for "wallet name"
   const [isEditingWalletName, setIsEditingWalletName] = useState(false);
+  const [isWalletNameSaved, setIsWalletNameSaved] = useState(false);
   const [walletEditedName, setWalletEditedName] = useState(wallet.name);
 
   // user must tap "delete wallet" button multiple times to confirm
@@ -91,6 +93,7 @@ export default function SettingsWalletView() {
     if (isEditingWalletName === true) {
       dispatch(walletSetName({ wallet_id: wallet.id, name: walletEditedName }));
       setIsEditingWalletName(false);
+      setIsWalletNameSaved(true);
     } else {
       setIsEditingWalletName(true);
     }
@@ -99,6 +102,7 @@ export default function SettingsWalletView() {
   // handler for wallet name edit textbox
   const handleWalletNameTextChange = (event) => {
     setWalletEditedName(event.target.value);
+    setIsWalletNameSaved(false);
   };
 
   // handler for "rebuild wallet" button
@@ -129,15 +133,20 @@ export default function SettingsWalletView() {
                   onKeyDown={(e) => e.key === "Enter" && handleEdit()}
                   value={walletEditedName}
                 />
-                <EditOutlined className="text-2xl ml-2" onClick={handleEdit} />
               </div>
             ) : (
-              <div className="grid grid-cols-6">
-                <div className="col-span-1">&nbsp;</div>
-                <div className="text-center col-span-4">{wallet.name}</div>
-                <div className="col-span-1 flex items-center justify-center opacity-90">
-                  <EditOutlined className="text-2xl" onClick={handleEdit} />
-                </div>
+              <div
+                className="flex justify-center items-center"
+                onClick={handleEdit}
+              >
+                <span className="text-center mx-2">{wallet.name}</span>
+                <span className="flex items-center justify-center opacity-90">
+                  {isWalletNameSaved ? (
+                    <CheckCircleFilled className="text-base text-primary" />
+                  ) : (
+                    <EditOutlined className="text-2xl" onClick={handleEdit} />
+                  )}
+                </span>
               </div>
             )}
           </div>
