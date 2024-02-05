@@ -6,7 +6,7 @@ import { selectCurrencySettings } from "@/redux/preferences";
 import CurrencyService from "@/services/CurrencyService";
 import { satsToBch } from "@/util/sats";
 
-export default function Satoshi({ value, fiat }) {
+export default function Satoshi({ value, fiat, flip }) {
   const {
     shouldPreferLocalCurrency,
     shouldHideBalance,
@@ -16,7 +16,10 @@ export default function Satoshi({ value, fiat }) {
   const locale = useSelector(selectLocale);
 
   const shouldDisplayFiat =
-    fiat || (shouldPreferLocalCurrency && fiat === undefined);
+    fiat ||
+    (fiat === undefined &&
+      ((shouldPreferLocalCurrency && !flip) ||
+        (!shouldPreferLocalCurrency && flip)));
 
   const formatIndex = shouldDisplayFiat ? "fiat" : denomination;
 
@@ -98,8 +101,10 @@ export default function Satoshi({ value, fiat }) {
 Satoshi.propTypes = {
   value: PropTypes.number.isRequired,
   fiat: PropTypes.bool,
+  flip: PropTypes.bool,
 };
 
 Satoshi.defaultProps = {
   fiat: undefined,
+  flip: false,
 };

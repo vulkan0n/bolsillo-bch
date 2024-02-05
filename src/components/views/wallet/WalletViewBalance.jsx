@@ -80,12 +80,12 @@ export default function WalletViewBalance() {
       >
         <div className="text-2xl text-zinc-200 tabular-nums">
           <animated.span style={{ ...balanceReceivedSpring }}>
-            <Satoshi value={balance} fiat={shouldPreferLocalCurrency} />
+            <Satoshi value={balance} />
           </animated.span>
         </div>
 
         <div className="text-md text-zinc-400 flex items-center justify-center">
-          <Satoshi value={balance} fiat={!shouldPreferLocalCurrency} />
+          <Satoshi value={balance} flip />
           <CurrencyFlip className="ml-1" />
         </div>
       </button>

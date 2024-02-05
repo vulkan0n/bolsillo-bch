@@ -14,9 +14,11 @@ import {
 } from "@/redux/preferences";
 
 import { selectKeyboardIsOpen } from "@/redux/device";
+import { selectSyncState } from "@/redux/sync";
 
 import TransactionManagerService from "@/services/TransactionManagerService";
 import TransactionBuilderService from "@/services/TransactionBuilderService";
+import ToastService from "@/services/ToastService";
 
 import { SatoshiInput } from "@/atoms/SatoshiInput";
 import Satoshi from "@/atoms/Satoshi";
@@ -42,6 +44,7 @@ export default function WalletViewSend() {
   const buttonsPos = isKeyboardOpen ? "bottom-2" : "bottom-[5em]";
 
   const wallet = useSelector(selectActiveWallet);
+  const sync = useSelector(selectSyncState);
 
   const { address } = validateInvoiceString(params.address);
 
@@ -75,13 +78,22 @@ export default function WalletViewSend() {
     setMessage("");
   };
 
+  const handleInsufficientFunds = async () => {
+    await Haptics.notification({ type: NotificationType.Warning });
+    const insufficientFundsTranslation = translate(
+      translations.insufficientFunds
+    );
+    setMessage(insufficientFundsTranslation);
+  };
+
   const confirmSend = async () => {
     if (isInsufficientFunds) {
-      await Haptics.notification({ type: NotificationType.Warning });
-      const insufficientFundsTranslation = translate(
-        translations.insufficientFunds
-      );
-      setMessage(insufficientFundsTranslation);
+      await handleInsufficientFunds();
+      return;
+    }
+
+    if (!sync.connected) {
+      ToastService().disconnected();
       return;
     }
 
@@ -92,11 +104,16 @@ export default function WalletViewSend() {
       { address, amount: satoshiInput },
     ]);
 
-    if (typeof transaction !== "object") {
+    if (transaction === null) {
       Logger.warn(transaction);
       await Haptics.notification({ type: NotificationType.Warning });
       //setMessage(translate(translations.notEnoughFee));
       setMessage("Transaction Failed: Wallet out of sync?");
+      return;
+    }
+
+    if (typeof transaction === "number") {
+      await handleInsufficientFunds();
       return;
     }
 
@@ -218,7 +235,7 @@ export default function WalletViewSend() {
           onClick={handleFlipCurrency}
         >
           <span className="text-2xl font-semibold text-center w-full text-zinc-800/80">
-            <Satoshi value={satoshiInput} fiat={!shouldPreferLocalCurrency} />
+            <Satoshi value={satoshiInput} flip />
             <CurrencyFlip className="text-3xl ml-2" />
           </span>
         </div>

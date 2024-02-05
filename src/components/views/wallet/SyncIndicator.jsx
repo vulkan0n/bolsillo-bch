@@ -76,6 +76,7 @@ export default function SyncIndicator() {
       ToastService().connectionStatus(sync);
     } else {
       disconnectApi.start();
+      ToastService().disconnected();
     }
   };
 

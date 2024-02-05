@@ -171,7 +171,7 @@ export default function Main() {
         {/*<ApolloProvider client={apolloClient}>*/}
         {/* Note: Duration has an inbuilt extra 1000ms dismissal delay */}
         <Toaster
-          toastOptions={{ duration: 1000 }}
+          toastOptions={{ duration: 1250 }}
           containerClassName="toaster"
         />
         <RouterProvider router={router} />
