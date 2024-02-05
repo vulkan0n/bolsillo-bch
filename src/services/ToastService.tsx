@@ -1,5 +1,10 @@
 import toast from "react-hot-toast";
-import { SnippetsFilled } from "@ant-design/icons";
+import {
+  SnippetsFilled,
+  DisconnectOutlined,
+  SyncOutlined,
+  CheckCircleFilled,
+} from "@ant-design/icons";
 import { logos } from "@/util/logos";
 import Satoshi from "@/atoms/Satoshi";
 
@@ -9,6 +14,7 @@ export default function ToastService() {
     paymentReceived,
     connectionStatus,
     clipboardCopy,
+    disconnected,
   };
 
   function spawn({ header, body, icon, options = {} }) {
@@ -45,7 +51,12 @@ export default function ToastService() {
       header: "Payment received!",
       body: (
         <>
-          +<Satoshi value={amount} />
+          <span className="text-secondary">
+            +<Satoshi value={amount} />
+          </span>
+          <div className="text-zinc-500 font-mono text-sm">
+            <Satoshi value={amount} flip />
+          </div>
         </>
       ),
     });
@@ -75,7 +86,12 @@ export default function ToastService() {
           <div>{Object.keys(sync.addresses).length} addresses synced</div>
         </div>
       ),
-      icon: null,
+      icon:
+        pendingSum > 0 ? (
+          <SyncOutlined className="text-4xl text-zinc-800" />
+        ) : (
+          <CheckCircleFilled className="text-4xl text-primary" />
+        ),
     });
   }
 
@@ -88,6 +104,14 @@ export default function ToastService() {
           {payload}
         </span>
       ),
+    });
+  }
+
+  function disconnected() {
+    spawn({
+      icon: <DisconnectOutlined className="text-4xl text-error" />,
+      header: `Not Connected`,
+      body: <span>Unable to perform action while disconnected</span>,
     });
   }
 }

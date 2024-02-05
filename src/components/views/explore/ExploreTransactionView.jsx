@@ -78,8 +78,6 @@ export default function ExploreTransactionView() {
 }
 
 function OutputListItem({ output, i }) {
-  const { shouldPreferLocalCurrency } = useSelector(selectCurrencySettings);
-
   const zebraCss = i % 2 === 0 ? "bg-zinc-100" : "bg-zinc-50";
 
   const isOpReturn =
@@ -101,11 +99,11 @@ function OutputListItem({ output, i }) {
           #{output.n}
         </span>
         <span className="font-mono">
-          <Satoshi value={output.value} fiat={shouldPreferLocalCurrency} />
+          <Satoshi value={output.value} />
         </span>
         <span className="mx-1 text-zinc-500">/</span>
         <span className="text-sm opacity-80">
-          <Satoshi value={output.value} fiat={!shouldPreferLocalCurrency} />
+          <Satoshi value={output.value} flip />
         </span>
       </div>
     </div>

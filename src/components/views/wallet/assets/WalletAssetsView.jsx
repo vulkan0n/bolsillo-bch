@@ -3,7 +3,6 @@ import { useState } from "react";
 import { useSelector } from "react-redux";
 import { BankOutlined, MoneyCollectOutlined } from "@ant-design/icons";
 import { selectActiveWallet } from "@/redux/wallet";
-import { selectCurrencySettings } from "@/redux/preferences";
 import AddressManagerService from "@/services/AddressManagerService";
 import UtxoManagerService from "@/services/UtxoManagerService";
 import Address from "@/atoms/Address";
@@ -54,7 +53,6 @@ export default function WalletAssetsView() {
 }
 
 function AddressAccordion({ a, i }) {
-  const { shouldPreferLocalCurrency } = useSelector(selectCurrencySettings);
   const [isOpen, setIsOpen] = useState(false);
 
   const wallet = useSelector(selectActiveWallet);
@@ -81,10 +79,10 @@ function AddressAccordion({ a, i }) {
         {!isOpen && a.balance > 0 && (
           <div className="flex-1 text-right">
             <div className="font-mono">
-              <Satoshi value={a.balance} fiat={shouldPreferLocalCurrency} />
+              <Satoshi value={a.balance} />
             </div>
             <div className="text-sm opacity-80">
-              <Satoshi value={a.balance} fiat={!shouldPreferLocalCurrency} />
+              <Satoshi value={a.balance} flip />
             </div>
           </div>
         )}
@@ -106,7 +104,6 @@ AddressAccordion.propTypes = {
 };
 
 function Coin({ coin }) {
-  const { shouldPreferLocalCurrency } = useSelector(selectCurrencySettings);
   const [isSelected, setIsSelected] = useState(false);
 
   const selectCss = isSelected
@@ -128,10 +125,10 @@ function Coin({ coin }) {
         </div>
         <div>
           <div className="font-mono">
-            <Satoshi value={coin.amount} fiat={shouldPreferLocalCurrency} />
+            <Satoshi value={coin.amount} />
           </div>
           <div className="text-sm opacity-80">
-            <Satoshi value={coin.amount} fiat={!shouldPreferLocalCurrency} />
+            <Satoshi value={coin.amount} flip />
           </div>
         </div>
       </div>

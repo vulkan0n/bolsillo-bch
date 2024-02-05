@@ -3,7 +3,6 @@ import { Link, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { DateTime } from "luxon";
 import { ArrowLeftOutlined } from "@ant-design/icons";
-import { selectCurrencySettings } from "@/redux/preferences";
 import { selectTransactionHistory, txHistoryFetch } from "@/redux/txHistory";
 import translations from "./translations";
 import { translate } from "@/util/translations";
@@ -29,8 +28,6 @@ export default function WalletViewHistory() {
   const navigate = useNavigate();
 
   const txHistory = useTransactionHistory();
-
-  const { shouldPreferLocalCurrency } = useSelector(selectCurrencySettings);
 
   const receiveStyle = "text-secondary";
   const sendStyle = "text-error";
@@ -77,16 +74,10 @@ export default function WalletViewHistory() {
                         }`}
                       >
                         {tx.amount > 0 && "+"}
-                        <Satoshi
-                          value={tx.amount}
-                          fiat={shouldPreferLocalCurrency}
-                        />
+                        <Satoshi value={tx.amount} />
                       </div>
                       <div className="opacity-80">
-                        <Satoshi
-                          value={tx.amount}
-                          fiat={!shouldPreferLocalCurrency}
-                        />
+                        <Satoshi value={tx.amount} flip />
                       </div>
                     </div>
                   </div>
