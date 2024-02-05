@@ -46,7 +46,7 @@ export const fetchExchangeRates = createAsyncThunk(
 );
 
 const lastExchangeRate = (await Preferences.get({ key: "lastExchangeRate" }))
-  .value;
+  .value || 1;
 Logger.debug("lastExchangeRate", lastExchangeRate);
 const initialState = currencyList.map((currency) => ({
   ...currency,
