@@ -1,9 +1,8 @@
 import { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
+import { DateTime } from "luxon";
 import { ArrowLeftOutlined } from "@ant-design/icons";
-import { selectLocale } from "@/redux/device";
-import { selectCurrencySettings } from "@/redux/preferences";
 import { selectTransactionHistory, txHistoryFetch } from "@/redux/txHistory";
 import translations from "./translations";
 import { translate } from "@/util/translations";
@@ -27,11 +26,8 @@ function useTransactionHistory() {
 
 export default function WalletViewHistory() {
   const navigate = useNavigate();
-  const locale = useSelector(selectLocale);
 
   const txHistory = useTransactionHistory();
-
-  const { shouldPreferLocalCurrency } = useSelector(selectCurrencySettings);
 
   const receiveStyle = "text-secondary";
   const sendStyle = "text-error";
@@ -45,42 +41,51 @@ export default function WalletViewHistory() {
         <ul className="bg-zinc-100 text-zinc-600 divide-y divide-zinc-300 rounded-b px-2 max-h-[58vh] overflow-y-scroll border border-zinc-400 shadow-inner">
           {txHistory.length === 0 && (
             <li className="flex px-1 py-2 items-center justify-center tracking-tighter font-bold">
-              ---
+              -----
             </li>
           )}
           {txHistory.map((tx, i) =>
             i < 100 ? (
               <li key={tx.txid} className="px-1 py-2">
-                <Link to={`/explore/tx/${tx.txid}`} className="flex">
-                  <div className="flex-1 text-sm">
-                    <div
-                      className={`${tx.amount > 0 ? receiveStyle : sendStyle}`}
-                    >
-                      {new Date(tx.time * 1000).toLocaleDateString(locale)}
+                <Link to={`/explore/tx/${tx.txid}`}>
+                  <div className="flex text-sm">
+                    <div className="flex-1">
+                      <div
+                        className={`${
+                          tx.amount > 0 ? receiveStyle : sendStyle
+                        }`}
+                      >
+                        {(Number.isNaN(Number.parseInt(tx.time, 10))
+                          ? DateTime.fromISO(tx.time_seen)
+                          : DateTime.fromSeconds(Number.parseInt(tx.time, 10))
+                        ).toLocaleString(DateTime.DATE_SHORT)}
+                      </div>
+                      <div className="opacity-80">
+                        {(Number.isNaN(Number.parseInt(tx.time, 10))
+                          ? DateTime.fromISO(tx.time_seen)
+                          : DateTime.fromSeconds(Number.parseInt(tx.time, 10))
+                        ).toLocaleString(DateTime.TIME_WITH_SECONDS)}
+                      </div>
                     </div>
-                    <div className="text-sm opacity-80">
-                      {new Date(tx.time * 1000).toLocaleTimeString(locale)}
+                    <div className="flex-1 text-right">
+                      <div
+                        className={`font-mono ${
+                          tx.amount > 0 ? receiveStyle : sendStyle
+                        }`}
+                      >
+                        {tx.amount > 0 && "+"}
+                        <Satoshi value={tx.amount} />
+                      </div>
+                      <div className="opacity-80">
+                        <Satoshi value={tx.amount} flip />
+                      </div>
                     </div>
                   </div>
-                  <div className="flex-1 text-right">
-                    <div
-                      className={`font-mono ${
-                        tx.amount > 0 ? receiveStyle : sendStyle
-                      }`}
-                    >
-                      {tx.amount > 0 && "+"}
-                      <Satoshi
-                        value={tx.amount}
-                        fiat={shouldPreferLocalCurrency}
-                      />
+                  {tx.memo && (
+                    <div className="text-sm text-zinc-600/90">
+                      Memo: {tx.memo}
                     </div>
-                    <div className="text-sm opacity-80">
-                      <Satoshi
-                        value={tx.amount}
-                        fiat={!shouldPreferLocalCurrency}
-                      />
-                    </div>
-                  </div>
+                  )}
                 </Link>
               </li>
             ) : null

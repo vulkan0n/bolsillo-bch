@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
-import { SplashScreen } from "@capacitor/splash-screen";
 import {
   createAction,
   createReducer,
@@ -99,20 +98,11 @@ walletMiddleware.startListening({
   },
 });
 
-// hide splash screen when wallet is loaded
-walletMiddleware.startListening({
-  actionCreator: walletBoot.fulfilled,
-  effect: async () => {
-    await SplashScreen.hide();
-  },
-});
-
 export const walletSetName = createAction(
   "wallet/name",
   (payload: { wallet_id: number; name: string }) => {
     WalletManagerService().setWalletName(payload.wallet_id, payload.name);
-
-    return { payload: payload.name };
+    return { payload };
   }
 );
 
@@ -137,7 +127,9 @@ export const walletReducer = createReducer(initialState, (builder) => {
       state.balance = action.payload.currentBalance;
     })
     .addCase(walletSetName, (state, action) => {
-      state.name = action.payload;
+      if (state.id === action.payload.wallet_id) {
+        state.name = action.payload.name;
+      }
     })
     .addCase(walletSetKeyViewed, (state, action) => {
       state.key_viewed = action.payload;

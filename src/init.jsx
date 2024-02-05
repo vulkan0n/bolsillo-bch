@@ -1,5 +1,6 @@
 import Logger from "js-logger";
 import ReactDOM from "react-dom/client";
+import { SplashScreen } from "@capacitor/splash-screen";
 import { redux_init } from "@/redux";
 import Main from "@/Main";
 import { SELENE_WALLET_VERSION } from "@/util/version";
@@ -18,3 +19,4 @@ function initialize_app() {
 
 // big green START button for the whole app
 initialize_app();
+await SplashScreen.hide();

@@ -10,6 +10,8 @@ import { electrum_servers } from "@/util/electrum_servers";
 import { languageList } from "@/util/translations";
 import { currencyList } from "@/util/currency";
 import { ValidBchNetwork } from "@/util/crypto";
+import { VALID_DENOMINATIONS } from "@/util/sats";
+import CurrencyService from "@/services/CurrencyService";
 
 const defaultPreferences = {
   activeWalletId: "1",
@@ -18,7 +20,7 @@ const defaultPreferences = {
   preferLocalCurrency: "false",
   hideAvailableBalance: "false",
   displayExchangeRate: "false",
-  denominateSats: "false",
+  denomination: "bch",
   bchNetwork: "mainnet",
   // --------
   // TODO: make these per-wallet instead of global
@@ -65,12 +67,19 @@ function validatePreferences(preferences: ValidPreferences): boolean {
     return false;
   }
 
+  if (
+    !VALID_DENOMINATIONS.map((d) => d.toLowerCase()).find(
+      (d) => d === preferences.denomination
+    )
+  ) {
+    return false;
+  }
+
   // force boolean strings
   const boolKeys = [
     "preferLocalCurrency",
     "hideAvailableBalance",
     "displayExchangeRate",
-    "denominateSats",
     "allowInstantPay",
   ];
 
@@ -185,25 +194,24 @@ export const selectCurrencySettings = createSelector(
   (state: RootState) => state.preferences,
   (preferences) => ({
     localCurrency: preferences.localCurrency,
+    denomination: preferences.denomination,
     shouldPreferLocalCurrency: preferences.preferLocalCurrency === "true",
     shouldHideBalance: preferences.hideAvailableBalance === "true",
     shouldDisplayExchangeRate: preferences.displayExchangeRate === "true",
   })
 );
 
-// TODO: bits, mBCH
-export const selectDenomination = createSelector(
-  (state: RootState) => state.preferences,
-  (preferences): string =>
-    preferences.denominateSats === "true" ? "sats" : "bch"
-);
-
 export const selectInstantPaySettings = createSelector(
   (state: RootState) => state.preferences,
   (preferences) => ({
     isInstantPayEnabled: preferences.allowInstantPay === "true",
-    instantPayThreshold: preferences.instantPayThreshold,
-    instantPayThresholdFiat: preferences.instantPayThresholdFiat,
+    // always in sats
+    instantPayThreshold:
+      preferences.preferLocalCurrency === "true"
+        ? CurrencyService(preferences.localCurrency).fiatToSats(
+            preferences.instantPayThresholdFiat
+          )
+        : preferences.instantPayThreshold,
   })
 );
 

@@ -269,7 +269,20 @@ const migrations = [
 
     return query.join("");
   },
-  /*function migrate_v4() {
+  function migrate_v4() {
+    const query = [];
+
+    // add memo field back to address_transactions...
+    query.push(
+      `ALTER TABLE address_transactions ADD COLUMN
+        memo text default null;`
+    );
+
+    query.push("PRAGMA user_version = 5;");
+
+    return query.join("");
+  },
+  /* function migrate_v5() {
     const query = [];
 
     query.push("PRAGMA user_version = 0;");

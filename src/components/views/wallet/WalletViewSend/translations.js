@@ -44,7 +44,7 @@ const translations = {
     da: "Transaktion Mislykkedes: Ikke nok saldo til minearbejdergebyr",
     de: "Transaktion fehlgeschlagen: Nicht genügend Guthaben für die Miner-Gebühr",
     el: "Αποτυχία συναλλαγής: Μη επαρκές υπόλοιπο για την αμοιβή του μεταγωγέα",
-    en: "Transaction Failed: Not enough balance for miner fee",
+    en: "Transaction Failed: Wallet out of sync?",
     es: "Transacción fallida: Saldo insuficiente para la comisión del minero",
     fa: "تراکنش ناموفق: موجودی کافی برای هزینه ماینر وجود ندارد",
     fil: "Nabigo ang Transaksyon: Hindi sapat na balanse para sa bayad ng miner",

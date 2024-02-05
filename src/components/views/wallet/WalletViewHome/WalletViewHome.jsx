@@ -5,7 +5,6 @@ import { Clipboard } from "@capacitor/clipboard";
 import { QRCode } from "react-qrcode-logo";
 
 import {
-  SnippetsFilled,
   FormOutlined,
   CopyOutlined,
   CaretRightOutlined,
@@ -21,7 +20,7 @@ import { translate } from "@/util/translations";
 import AddressManagerService from "@/services/AddressManagerService";
 import WalletViewButtons from "../WalletViewButtons/WalletViewButtons";
 import ScannerOverlay from "../ScannerOverlay";
-import SatoshiInput from "@/atoms/SatoshiInput";
+import { SatoshiInput } from "@/atoms/SatoshiInput";
 import Address from "@/atoms/Address";
 import CurrencySymbol from "@/atoms/CurrencySymbol";
 import CurrencyFlip from "@/atoms/CurrencyFlip";
@@ -30,7 +29,7 @@ import ToastService from "@/services/ToastService";
 import { logos } from "@/util/logos";
 import { satsToBch } from "@/util/sats";
 
-const { copiedAddress, requestAmount } = translations;
+const { requestAmount } = translations;
 
 export default function WalletViewHome() {
   const wallet = useSelector(selectActiveWallet);
@@ -59,7 +58,7 @@ export default function WalletViewHome() {
 
   // "Request Amount" state
   const [shouldShowRequestAmount, setShouldShowRequestAmount] = useState(false);
-  const [satoshiInput, setSatoshiInput] = useState({ display: "0", sats: 0 });
+  const [satoshiInput, setSatoshiInput] = useState(0);
 
   const handleRequestAmountChange = (satInput) => {
     setSatoshiInput(satInput);
@@ -67,25 +66,17 @@ export default function WalletViewHome() {
 
   // generate bip21 uri for QR code
   const qrRequest =
-    shouldShowRequestAmount && satoshiInput.sats > 0
-      ? `${address}?amount=${satsToBch(satoshiInput.sats)}`
+    shouldShowRequestAmount && satoshiInput > 0
+      ? `${address}?amount=${satsToBch(satoshiInput).bch}`
       : address;
 
   const getQrLogoImage = (logo) => logos[logo.toLowerCase()].img;
 
   const copyAddressToClipboard = async () => {
-    const titleTranslation = translate(copiedAddress);
+    //const titleTranslation = translate(copiedAddress);
 
-    ToastService().spawn({
-      icon: <SnippetsFilled className="text-4xl text-primary" />,
-      header: titleTranslation,
-      body: (
-        <span className="inline-block max-w-[62%] truncate text-sm break-all">
-          {qrRequest}
-        </span>
-      ),
-    });
     await Clipboard.write({ string: qrRequest });
+    ToastService().clipboardCopy("Address", qrRequest);
   };
 
   // "Request Amount" animations
@@ -147,7 +138,7 @@ export default function WalletViewHome() {
             <Address address={address} />
           </button>
 
-          <div className="mt-2 mx-auto select-none opacity-90">
+          <div className="mt-2 mx-auto select-none z-50">
             <animated.div
               className={`py-1.5 px-2 w-max justify-center shadow-sm outline outline-2 outline-primary flex items-center mx-auto cursor-pointer ${
                 shouldShowRequestAmount
@@ -161,8 +152,8 @@ export default function WalletViewHome() {
                 requestOpenSpringsApi.start({
                   to: {
                     opacity: shouldShowRequestAmount ? 0 : 1,
-                    scaleY: shouldShowRequestAmount ? 0 : 1,
-                    scaleX: shouldShowRequestAmount ? 0.5 : 1,
+                    scaleY: shouldShowRequestAmount ? 0 : 1.2,
+                    scaleX: shouldShowRequestAmount ? 0.5 : 1.2,
                     y: shouldShowRequestAmount ? -16 : 0,
                   },
                 });
@@ -179,15 +170,15 @@ export default function WalletViewHome() {
               )}
             </animated.div>
             <animated.div
-              className="bg-primary text-white p-1.5 shadow-sm rounded min-w-[200px] w-fit max-w-[20.5em] mx-auto flex items-center"
+              className="bg-primary text-white p-2 shadow-sm rounded min-w-[200px] w-fit max-w-[20.5em] mx-auto flex items-center"
               style={{ ...requestOpenSprings }}
             >
               {shouldShowRequestAmount && (
                 <>
                   <CurrencySymbol className="text-xl font-bold font-mono px-0.5" />
                   <SatoshiInput
+                    satoshis={satoshiInput}
                     onChange={handleRequestAmountChange}
-                    satoshiInput={satoshiInput}
                     className="p-1 w-fit text-black/70 font-mono rounded mx-1"
                   />
                   <div className="w-6 h-8 flex items-center justify-center">
