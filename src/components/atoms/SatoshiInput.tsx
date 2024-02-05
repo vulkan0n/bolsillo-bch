@@ -147,7 +147,9 @@ export const SatoshiInput = forwardRef(function SatoshiInput(
     }
 
     // handle all possible decimal keys (i18n)
-    const isDecimalKey = DECIMAL_KEYS.includes(event.key);
+    const isDecimalKey =
+      DECIMAL_KEYS.includes(event.key) ||
+      (deviceInfo.platform === "android" && event.keyCode === 229); // android is dumb, so we cope by catching keyCode 229 and hoping for the best
 
     if (isDecimalKey) {
       const currentDisplay = displayValue;
@@ -214,5 +216,3 @@ SatoshiInput.defaultProps = {
   size: 20,
   autoFocus: false,
 };
-
-//|| (deviceInfo.platform === "android" && event.keyCode === 229); // android is dumb, so we cope by catching keyCode 229 and hoping for the best
