@@ -167,7 +167,10 @@ export const SatoshiInput = forwardRef(function SatoshiInput(
       newInput = "0.";
     }
 
-    if (!hasEndDecimal || denomination === "sats") {
+    if (
+      !hasEndDecimal ||
+      (!shouldPreferLocalCurrency && denomination === "sats")
+    ) {
       newInput = truncateDecimals(newInput);
     }
 
