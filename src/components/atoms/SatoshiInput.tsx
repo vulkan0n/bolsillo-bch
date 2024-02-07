@@ -122,7 +122,10 @@ export const SatoshiInput = forwardRef(function SatoshiInput(
   };
 
   const handleInputChange = (input: string): void => {
-    const sats = amountToSats(input);
+    const hasEndDecimal = input.endsWith(".");
+    const sats = amountToSats(
+      hasEndDecimal ? input.substring(0, input.length - 1) : input
+    );
 
     if (sats.greaterThan(MAX_SATOSHI)) {
       return;
@@ -136,64 +139,45 @@ export const SatoshiInput = forwardRef(function SatoshiInput(
     handleOnChange(sats.toNumber(), input);
   };
 
-  const DECIMAL_KEYS = [".", ","];
-
   // fired BEFORE HTML text input is rendered or updated
   const handleKeyDown = (event) => {
     // hide keyboard when "Enter" pressed on mobile
     if (event.key === "Enter" && deviceInfo.platform !== "web") {
       Keyboard.hide();
-      return;
-    }
-
-    // handle all possible decimal keys (i18n)
-    const isDecimalKey =
-      DECIMAL_KEYS.includes(event.key) ||
-      (deviceInfo.platform === "android" && event.keyCode === 229); // android is dumb, so we cope by catching keyCode 229 and hoping for the best
-
-    if (isDecimalKey) {
-      const currentDisplay = displayValue;
-      let newInput = currentDisplay;
-
-      // double press "." to pad rest of number with max decimal places
-      if (currentDisplay.includes(".")) {
-        const maxDecimals = getMaxDecimals();
-        newInput = new Decimal(currentDisplay).toFixed(maxDecimals);
-      } else {
-        newInput = `${currentDisplay}.`;
-      }
-
-      // ignore decimal in sats mode
-      if (!shouldPreferLocalCurrency && denomination === "sats") {
-        newInput = currentDisplay;
-      }
-
-      // pass modified input directly to handler
-      // stop propagation to avoid firing handleInputChangeEvent
-      handleInputChange(newInput);
-      event.preventDefault();
       event.stopPropagation();
+      event.preventDefault();
     }
   };
 
   // fired AFTER HTML text input is updated
   const handleInputChangeEvent = (event) => {
+    // replace everything that's not 0-9 and '.' with '.'
     const sanitizedInput = event.target.value.replace(/[^0-9.]/, ".");
-    const currentInput = sanitizedInput;
+    const lastChar = sanitizedInput.substring(sanitizedInput.length - 1);
+
     const prevInput = displayValue.toString();
 
-    const lastChar = currentInput.substring(currentInput.length - 1);
-    const prevLastChar = prevInput.substring(prevInput.length - 1);
-
+    // handle all possible decimal keys (i18n)
+    const DECIMAL_KEYS = [".", ","];
     const hasEndDecimal = DECIMAL_KEYS.includes(lastChar);
-    const hasPrevEndDecimal = DECIMAL_KEYS.includes(prevLastChar);
 
-    if (
-      !hasEndDecimal || // allow dangling decimal (e.g. "123.")
-      (hasEndDecimal && !hasPrevEndDecimal) // don't truncate decimals when user is trying to add/remove the decimal
-    ) {
-      handleInputChange(truncateDecimals(currentInput));
+    let newInput = sanitizedInput;
+
+    if (sanitizedInput === ".") {
+      newInput = "0.";
     }
+
+    if (!hasEndDecimal || denomination === "sats") {
+      newInput = truncateDecimals(newInput);
+    }
+
+    // double press "." to pad rest of number with max decimal places
+    if (sanitizedInput.split(".").length > 2) {
+      const maxDecimals = getMaxDecimals();
+      newInput = new Decimal(prevInput).toFixed(maxDecimals);
+    }
+
+    handleInputChange(newInput);
   };
 
   return (
@@ -216,3 +200,5 @@ SatoshiInput.defaultProps = {
   size: 20,
   autoFocus: false,
 };
+
+//(deviceInfo.platform === "android" && event.keyCode === 229); // android is dumb, so we cope by catching keyCode 229 and hoping for the best
