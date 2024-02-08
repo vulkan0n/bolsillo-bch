@@ -1,4 +1,4 @@
-/*import { gql } from "@apollo/client";
+import { gql } from "@apollo/client";
 
 const GET_ACTIVE_BITCOINERS = gql`
   query GetActiveBitcoiners($period: String!) {
@@ -9,4 +9,4 @@ const GET_ACTIVE_BITCOINERS = gql`
   }
 `;
 
-export default GET_ACTIVE_BITCOINERS;*/
+export default GET_ACTIVE_BITCOINERS;

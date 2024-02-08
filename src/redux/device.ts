@@ -89,7 +89,7 @@ async function initializeDevice(): Promise<DeviceState> {
       store.dispatch(setKeyboardIsOpen(true))
     );
 
-    Keyboard.addListener("keyboardWillHide", () =>
+    Keyboard.addListener("keyboardDidHide", () =>
       store.dispatch(setKeyboardIsOpen(false))
     );
   }
