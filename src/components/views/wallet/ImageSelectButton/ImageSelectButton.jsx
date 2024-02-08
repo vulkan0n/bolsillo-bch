@@ -1,14 +1,19 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import PropTypes from "prop-types";
+import { useDispatch } from "react-redux";
 import { PictureOutlined } from "@ant-design/icons";
 import { Camera } from "@capacitor/camera";
 import { Haptics, NotificationType } from "@capacitor/haptics";
 import QrScanner from "qr-scanner";
+
+import { setScannerIsScanning } from "@/redux/device";
+
 import Button from "@/atoms/Button";
 import translations from "./translations";
 import { translate } from "@/util/translations";
 
 export default function ImageSelectButton({ onSelection, ...rest }) {
+  const dispatch = useDispatch();
   // function to downscale images (helps QR codes read better)
   const scaleImage = (image) => {
     const maxWidth = 1920;
@@ -58,6 +63,8 @@ export default function ImageSelectButton({ onSelection, ...rest }) {
         onSelection("");
         //console.error(e);
       }
+
+      dispatch(setScannerIsScanning(false));
     };
   };
 
