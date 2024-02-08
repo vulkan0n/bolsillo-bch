@@ -1,6 +1,6 @@
-/*import { ApolloClient, InMemoryCache } from "@apollo/client";
+import { ApolloClient, InMemoryCache } from "@apollo/client";
 
-const PRODUCTION_SERVER = "https://stats.selene.cash/";
+//const PRODUCTION_SERVER = "https://stats.selene.cash/";
 
 const LOCALHOST_SERVER = "http://localhost:4000/";
 
@@ -10,4 +10,4 @@ const apolloClient = new ApolloClient({
   cache: new InMemoryCache(),
 });
 
-export default apolloClient;*/
+export default apolloClient;

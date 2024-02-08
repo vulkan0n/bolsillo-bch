@@ -1,4 +1,4 @@
-/*import Logger from "js-logger";
+import Logger from "js-logger";
 import { DateTime } from "luxon";
 import { Device } from "@capacitor/device";
 import { gql } from "@apollo/client";
@@ -58,4 +58,4 @@ export default function StatsService() {
       );
     }
   }
-}*/
+}

@@ -1,4 +1,5 @@
-/*import {
+/* eslint-disable react/prop-types */
+import {
   Chart as ChartJS,
   CategoryScale,
   LinearScale,
@@ -23,13 +24,13 @@ ChartJS.register(
 
 function DailyActiveUsersChart({ data }) {
   const labels = data.activeBitcoiners.map(({ date }) =>
-    DateTime(date).format("ddd Do")
+    DateTime.fromISO(date).toLocaleString(DateTime.DATE_SHORT)
   );
 
   const dataPoints = data.activeBitcoiners.map(({ count }) => count);
 
   const maxCount = Math.max(
-    ...data.activeBitcoiners.map(({ count }) => parseInt(count))
+    ...data.activeBitcoiners.map(({ count }) => parseInt(count, 10))
   );
   const maxCountRoundedUpToNearest10 = Math.ceil(maxCount / 10) * 10;
 
@@ -72,4 +73,4 @@ function DailyActiveUsersChart({ data }) {
   );
 }
 
-export default DailyActiveUsersChart;*/
+export default DailyActiveUsersChart;

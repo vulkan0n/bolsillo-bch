@@ -17,7 +17,7 @@ export default function ToastService() {
     disconnected,
   };
 
-  function spawn({ header, body, icon, options = {} }) {
+  function spawn({ header, body, icon, options = undefined }) {
     toast.custom(
       (t) => (
         <div
