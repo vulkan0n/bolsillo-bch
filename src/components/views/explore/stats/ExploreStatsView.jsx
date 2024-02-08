@@ -1,18 +1,29 @@
-/*import { useEffect } from "react";
-import { AppstoreOutlined } from "@ant-design/icons";
+/* eslint-disable no-unsafe-optional-chaining */
+//import { useEffect } from "react";
+//import { useQuery } from "@apollo/client";
 import { DateTime } from "luxon";
-import { useQuery } from "@apollo/client";
-import ViewHeader from "@/layout/ViewHeader";
+
 import { useCountdown } from "./useCountdown";
 import DailyActiveUsersChart from "./DailyActiveUsersChart";
-import GET_ACTIVE_BITCOINERS from "./getActiveBitcoiners";
-import { THIRTY_SECONDS } from "@/util/time";
+//import GET_ACTIVE_BITCOINERS from "./getActiveBitcoiners";
+//import { THIRTY_SECONDS } from "@/util/time";
 import { ONE_HUNDRED, TEN_MILLION } from "@/util/numbers";
 
+const activeBitcoiners = Array.from(Array(1000).keys())
+  .reverse()
+  .map((n) => ({
+    date: DateTime.now()
+      .minus({ hours: 12 * n })
+      .toString(),
+    count: Math.floor(
+      (Math.random() * Math.random() * 10000) / (1 + Math.random())
+    ),
+  }));
+
 export default function StatsView() {
-  const {
+  /*const {
     loading: isLoading,
-    data,
+    //data,
     startPolling,
     stopPolling,
   } = useQuery(GET_ACTIVE_BITCOINERS, {
@@ -21,14 +32,18 @@ export default function StatsView() {
     },
   });
 
-  useEffect(() => {
+  /*useEffect(() => {
     startPolling(THIRTY_SECONDS);
 
     return stopPolling;
-  }, [startPolling, stopPolling]);
+  }, [startPolling, stopPolling]);*/
 
-  const midnightUtc = DateTime().utc().endOf("day");
-  const [days, hours, minutes, seconds] = useCountdown(midnightUtc);
+  const isLoading = false;
+
+  const data = { activeBitcoiners };
+
+  const midnightUtc = DateTime.utc().endOf("day");
+  const [days, hours, minutes, seconds] = useCountdown(midnightUtc); // eslint-disable-line @typescript-eslint/no-unused-vars
 
   const dailyActiveUsersToday =
     data?.activeBitcoiners?.[data?.activeBitcoiners.length - 1]?.count || 1;
@@ -53,61 +68,58 @@ export default function StatsView() {
     (+dailyActiveUsersYesterdayPercentage.toFixed(2)).toString() + 1;
 
   return (
-    <>
-      <ViewHeader icon={AppstoreOutlined} title="Explore" />
-      <div className="p-2">
-        <div className="stats shadow rounded-lg p-3 bg-zinc-100 w-full">
-          <div className="text-2xl font-bold text-zinc-800">
-            Global Bitcoin Cash Adoption
-          </div>
-          <div className="stat">
-            <div className="stat-title text-zinc-800">
-              Daily Active Selene Users
-            </div>
-          </div>
-
-          <div className="bg-zinc-200 mt-3 mb-3">
-            {isLoading && <p>Loading chart...</p>}
-            {!isLoading && <DailyActiveUsersChart data={data} />}
-          </div>
-
-          <div className="flex justify-between mb-1">
-            <span className="text-base font-small text-zinc-800">
-              <div className="text-base font-medium text-secondary">Today</div>
-              <div className="text-xs">
-                ({hours}h {minutes}m {seconds}s remaining)
-              </div>
-            </span>
-            <span className="text-sm font-medium text-secondary mt-5">
-              {dailyActiveUsersToday}{" "}
-              <span className="text-zinc-800">of 10 million (</span>
-              {fixedDailyActiveUsersTodayPercentage}%
-              <span className="text-zinc-800">)</span>
-            </span>
-          </div>
-          <div className="w-full bg-gray-200 rounded-full h-4.5 dark:bg-gray-250">
-            <div
-              className="bg-green-200 h-2.5 rounded-full"
-              style={{ width: `${dailyActiveUsersTodayWidth}%` }}
-            />
-            <div
-              className="bg-green-500 h-2.5 rounded-full"
-              style={{ width: `${dailyActiveUsersYesterdayWidth}%` }}
-            />
-          </div>
-          <div className="flex justify-between mb-1">
-            <span className="text-base font-medium text-secondary">
-              Yesterday
-            </span>
-            <span className="text-sm font-medium text-secondary">
-              {dailyActiveUsersYesterday}{" "}
-              <span className="text-zinc-800">of 10 million (</span>
-              {fixedDailyActiveUsersYesterdayPercentage}%
-              <span className="text-zinc-800">)</span>
-            </span>
+    <div className="p-2">
+      <div className="stats shadow rounded-lg p-3 bg-zinc-100 w-full">
+        <div className="text-2xl font-bold text-zinc-800">
+          Global Bitcoin Cash Adoption
+        </div>
+        <div className="stat">
+          <div className="stat-title text-zinc-800">
+            Daily Active Selene Users
           </div>
         </div>
+
+        <div className="bg-zinc-200 mt-3 mb-3">
+          {isLoading && <p>Loading chart...</p>}
+          {!isLoading && <DailyActiveUsersChart data={data} />}
+        </div>
+
+        <div className="flex justify-between mb-1">
+          <span className="text-base font-small text-zinc-800">
+            <div className="text-base font-medium text-secondary">Today</div>
+            <div className="text-xs">
+              ({hours}h {minutes}m {seconds}s remaining)
+            </div>
+          </span>
+          <span className="text-sm font-medium text-secondary mt-5">
+            {dailyActiveUsersToday}{" "}
+            <span className="text-zinc-800">of 10 million (</span>
+            {fixedDailyActiveUsersTodayPercentage}%
+            <span className="text-zinc-800">)</span>
+          </span>
+        </div>
+        <div className="w-full bg-gray-200 rounded-full h-4.5 dark:bg-gray-250">
+          <div
+            className="bg-green-200 h-2.5 rounded-full"
+            style={{ width: `${dailyActiveUsersTodayWidth}%` }}
+          />
+          <div
+            className="bg-green-500 h-2.5 rounded-full"
+            style={{ width: `${dailyActiveUsersYesterdayWidth}%` }}
+          />
+        </div>
+        <div className="flex justify-between mb-1">
+          <span className="text-base font-medium text-secondary">
+            Yesterday
+          </span>
+          <span className="text-sm font-medium text-secondary">
+            {dailyActiveUsersYesterday}{" "}
+            <span className="text-zinc-800">of 10 million (</span>
+            {fixedDailyActiveUsersYesterdayPercentage}%
+            <span className="text-zinc-800">)</span>
+          </span>
+        </div>
       </div>
-    </>
+    </div>
   );
-}*/
+}

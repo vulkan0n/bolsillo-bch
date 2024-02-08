@@ -50,21 +50,23 @@ export default function Satoshi({ value, fiat, flip }) {
     const bchSymbol = {
       bch: "₿",
       mbch: "₿",
-      bits: "",
-      sats: "",
+      bits: "₿",
+      sats: "₿",
     };
 
     const bchUnit = {
       bch: "",
-      mbch: "mBCH",
-      bits: "bits",
-      sats: "sats",
+      mbch: "",
+      bits: "",
+      sats: "",
     };
 
     const absoluteAmounts = satsToBch(Math.abs(amount));
 
     const formattedAmounts = {
-      sats: new Intl.NumberFormat(locale).format(absoluteAmounts.sats),
+      sats: new Intl.NumberFormat(locale, { maximumFractionDigits: 0 }).format(
+        absoluteAmounts.sats
+      ),
       bch: new Intl.NumberFormat(locale, { minimumFractionDigits: 8 }).format(
         absoluteAmounts.bch
       ),
