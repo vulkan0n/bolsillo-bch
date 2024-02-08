@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import { Haptics, NotificationType } from "@capacitor/haptics";
 import { Clipboard } from "@capacitor/clipboard";
 import {
@@ -7,7 +7,7 @@ import {
   HistoryOutlined,
   ExclamationCircleFilled,
 } from "@ant-design/icons";
-import { selectScannerIsScanning, setScannerIsScanning } from "@/redux/device";
+import { selectScannerIsScanning } from "@/redux/device";
 import translations from "./translations";
 import { translate } from "@/util/translations";
 
@@ -23,7 +23,6 @@ const { noBchAddress, pleaseCopy, history, send } = translations;
 
 export default function WalletViewButtons() {
   const navigate = useNavigate();
-  const dispatch = useDispatch();
   const isScanning = useSelector(selectScannerIsScanning);
 
   const forwardOnValidAddress = (input) => {
@@ -35,7 +34,6 @@ export default function WalletViewButtons() {
       navigate(`/wallet/send/${address}${query}`);
     } else {
       Haptics.notification({ type: NotificationType.Error });
-      dispatch(setScannerIsScanning(false));
     }
 
     return isValid;

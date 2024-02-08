@@ -1,9 +1,9 @@
 /* eslint-disable react/prop-types */
-import { useLoaderData, Link } from "react-router-dom";
+import { useLoaderData, Link, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { Clipboard } from "@capacitor/clipboard";
 import { DateTime } from "luxon";
-//import {} from "@ant-design/icons";
+import { CopyOutlined, ArrowLeftOutlined } from "@ant-design/icons";
 import { selectCurrencySettings } from "@/redux/preferences";
 import { selectActiveWallet } from "@/redux/wallet";
 
@@ -13,8 +13,10 @@ import ToastService from "@/services/ToastService";
 import Address from "@/atoms/Address";
 import Satoshi from "@/atoms/Satoshi";
 import Accordion from "@/atoms/Accordion";
+import Button from "@/atoms/Button";
 
 export default function ExploreTransactionView() {
+  const navigate = useNavigate();
   const tx = useLoaderData();
 
   const wallet = useSelector(selectActiveWallet);
@@ -46,6 +48,7 @@ export default function ExploreTransactionView() {
       >
         <span className="text-lg font-semibold mr-1">Transaction ID:</span>
         <span className="break-all font-mono text-sm">{tx.txid}</span>
+        <CopyOutlined className="ml-1" />
       </div>
       <div className="p-2">
         <div className="text-zinc-800 font-bold">
@@ -73,6 +76,11 @@ export default function ExploreTransactionView() {
           </Accordion>
         </div>
       </div>
+      <Button
+        shittyFullWidthHack
+        icon={BackIcon}
+        onClick={() => navigate(-1)}
+      />
     </>
   );
 }
@@ -119,5 +127,14 @@ function InputListItem({ input, i }) {
         {input.txid}:{input.vout}
       </Link>
     </div>
+  );
+}
+
+function BackIcon() {
+  return (
+    <>
+      <ArrowLeftOutlined className="mr-1" />
+      Back
+    </>
   );
 }

@@ -14,7 +14,7 @@ import {
 } from "@/redux/preferences";
 
 import { selectKeyboardIsOpen } from "@/redux/device";
-import { selectSyncState } from "@/redux/sync";
+import { selectSyncState, selectMyAddresses } from "@/redux/sync";
 
 import TransactionManagerService from "@/services/TransactionManagerService";
 import TransactionBuilderService from "@/services/TransactionBuilderService";
@@ -47,6 +47,9 @@ export default function WalletViewSend() {
   const sync = useSelector(selectSyncState);
 
   const { address } = validateInvoiceString(params.address);
+
+  const myAddresses = useSelector(selectMyAddresses);
+  const isMyAddress = myAddresses[address] !== undefined;
 
   const [message, setMessage] = useState("");
 
@@ -191,8 +194,9 @@ export default function WalletViewSend() {
           <div className="bg-primary p-2">
             <div className="text-xl font-bold">
               {translate(translations.sendingTo)}
+              {isMyAddress && <span> self</span>}
             </div>
-            <div className="text-sm py-2 font-mono tracking-tight">
+            <div className="text-sm py-1 font-mono tracking-tight">
               <Address address={address} />
             </div>
           </div>

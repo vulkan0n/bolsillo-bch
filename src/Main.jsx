@@ -8,8 +8,8 @@ import {
 import { Toaster } from "react-hot-toast";
 
 import { Provider } from "react-redux";
-//import { ApolloProvider } from "@apollo/client";
-//import apolloClient from "./apolloClient";
+import { ApolloProvider } from "@apollo/client";
+import apolloClient from "./apolloClient";
 import { store } from "./redux";
 
 import "./index.css";
@@ -27,7 +27,7 @@ import WalletAssetsView from "@/views/wallet/assets/WalletAssetsView";
 import ExploreView from "@/views/explore/ExploreView";
 import ExploreViewHome from "@/views/explore/ExploreViewHome";
 import ExploreTransactionView from "@/views/explore/ExploreTransactionView";
-//import ExploreStatsView from "@/views/explore/stats/ExploreStatsView";
+import ExploreStatsView from "@/views/explore/stats/ExploreStatsView";
 import ExploreContactsView from "@/views/explore/contacts/ExploreContactsView";
 import ExploreMapView from "@/views/explore/map/ExploreMapView";
 import ExploreHelpView from "@/views/explore/help/ExploreHelpView";
@@ -98,10 +98,10 @@ export default function Main() {
                 );
               },
             },
-            /*{
+            {
               path: "stats",
               element: <ExploreStatsView />,
-            },*/
+            },
             {
               path: "map",
               element: <ExploreMapView />,
@@ -168,14 +168,14 @@ export default function Main() {
   return (
     <ReactStrictMode>
       <Provider store={store}>
-        {/*<ApolloProvider client={apolloClient}>*/}
-        {/* Note: Duration has an inbuilt extra 1000ms dismissal delay */}
-        <Toaster
-          toastOptions={{ duration: 1250 }}
-          containerClassName="toaster"
-        />
-        <RouterProvider router={router} />
-        {/*</ApolloProvider>*/}
+        <ApolloProvider client={apolloClient}>
+          {/* Note: Duration has an inbuilt extra 1000ms dismissal delay */}
+          <Toaster
+            toastOptions={{ duration: 1250 }}
+            containerClassName="toaster"
+          />
+          <RouterProvider router={router} />
+        </ApolloProvider>
       </Provider>
     </ReactStrictMode>
   );
