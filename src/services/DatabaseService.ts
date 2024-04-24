@@ -70,7 +70,7 @@ async function _migrateLegacyDbFile() {
 
 // getWalletDatabase: try to open the wallet db file
 // return a blank db if file doesn't exist
-async function getWalletDatabase() {
+async function getWalletDatabase(retry = false) {
   let db;
   try {
     db = await _dbOpen(SELENE_DB_FILE);
@@ -80,9 +80,45 @@ async function getWalletDatabase() {
     db = new SQL.Database();
   }
 
+  if (retry) {
+    Logger.warn("Wallet database corrupted! Creating new wallet database");
+    db = new SQL.Database();
+  }
+
   // run schema migrations
-  run_migrations(db);
+  try {
+    run_migrations(db);
+  } catch (e) {
+    // something went wrong when attempting to run migrations
+    // probably "database image is malformed"
+    // attempt to load backup file or bail with new db...
+    await dump_db(db);
+    return getWalletDatabase(true);
+  }
+
   return db;
+}
+
+async function dump_db(db) {
+  try {
+    const data = db.export();
+
+    const filename = SELENE_DB_FILE.concat(".")
+      .concat(Date.now().toString())
+      .concat(".bak");
+
+    const result = await Filesystem.writeFile({
+      path: filename,
+      data: data.toString(),
+      directory: Directory.Library,
+      encoding: Encoding.UTF8,
+      recursive: true,
+    });
+
+    Logger.debug("DUMP_DB", filename, result);
+  } catch (e) {
+    Logger.error(e);
+  }
 }
 
 // use top-level pointer to ensure db is only loaded into memory once
@@ -182,10 +218,12 @@ export default function DatabaseService() {
   }
 }
 
-// force database write on app sleep
-App.addListener("pause", () => {
-  DatabaseService().saveDatabase(true);
-  Logger.debug("flushDatabase on pause");
+// force database write on app stop
+App.addListener("appStateChange", ({ isActive }) => {
+  if (!isActive) {
+    DatabaseService().saveDatabase(true);
+    Logger.debug("flushDatabase on stop");
+  }
 });
 
 /*const _fakeDb = [
