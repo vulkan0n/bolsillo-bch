@@ -17,6 +17,7 @@ import {
   encodeHdPrivateKey,
   deriveHdPublicNode,
   encodeHdPublicKey,
+  deriveHdPath,
 } from "@bitauth/libauth";
 
 import WalletManagerService from "@/services/WalletManagerService";
@@ -45,10 +46,12 @@ export default function SettingsWalletAdditionalInformation() {
 
   const seed = bip39.mnemonicToSeedSync(wallet.mnemonic);
   const hdMaster = deriveHdPrivateNodeFromSeed(seed);
-  const xPrv = encodeHdPrivateKey({ node: hdMaster, network });
 
-  const hdMasterPublic = deriveHdPublicNode(hdMaster);
-  const xPub = encodeHdPublicKey({ node: hdMasterPublic, network });
+  const hdPrivate = deriveHdPath(hdMaster, `${derivationPath}`);
+  const xPrv = encodeHdPrivateKey({ node: hdPrivate, network });
+
+  const hdPublic = deriveHdPublicNode(hdPrivate);
+  const xPub = encodeHdPublicKey({ node: hdPublic, network });
 
   return (
     <>
