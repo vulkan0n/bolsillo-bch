@@ -252,9 +252,9 @@ export default function DatabaseService() {
 }
 
 // force database write on app stop
-App.addListener("appStateChange", ({ isActive }) => {
+App.addListener("appStateChange", async ({ isActive }) => {
   if (!isActive) {
-    DatabaseService().saveDatabase(true);
+    await DatabaseService().saveDatabase(true);
     Logger.debug("flushDatabase on stop");
   }
 });

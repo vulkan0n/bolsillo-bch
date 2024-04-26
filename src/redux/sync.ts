@@ -148,12 +148,16 @@ export const syncChangeAddresses = createAsyncThunk(
 
     const changeAddresses = AddressManager.getChangeAddresses();
 
-    const promises = changeAddresses.map(async (address) => {
-      const addressState = await Electrum.requestAddressState(address.address);
-      thunkApi.dispatch(syncAddressState([address, addressState]));
-      //Logger.debug("sync/changeAddresses", address, addressState);
-      return [address, addressState];
-    });
+    const promises = changeAddresses
+      .filter((address) => !(address.state !== null && address.balance === 0))
+      .map(async (address) => {
+        const addressState = await Electrum.requestAddressState(
+          address.address
+        );
+        thunkApi.dispatch(syncAddressState([address, addressState]));
+        //Logger.debug("sync/changeAddresses", address, addressState);
+        return [address, addressState];
+      });
 
     const batchedPromises = [];
 
