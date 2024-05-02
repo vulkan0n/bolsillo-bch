@@ -20,7 +20,7 @@
     "sourceType": "module",
     "project": "./tsconfig.json"
   },
-  "plugins": ["prettier", "react", "@typescript-eslint"],
+  "plugins": ["prettier", "react", "@typescript-eslint", "react-refresh"],
   "rules": {
     "prettier/prettier": ["error"],
     "import/prefer-default-export": ["off"],
@@ -133,7 +133,8 @@
         "format": null,
         "modifiers": ["requiresQuotes"]
       }
-    ]
+    ],
+    "react-refresh/only-export-components": "warn"
   },
   "settings": {
     "react": {
