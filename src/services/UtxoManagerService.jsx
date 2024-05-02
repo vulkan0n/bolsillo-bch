@@ -31,10 +31,8 @@ export default function UxtoManagerService(wallet) {
         "${utxo.tx_pos}",
         "${utxo.value}",
         "${wallet.prefix}"
-      )`
+      );`
     );
-
-    Logger.debug("registerUtxo", utxo.tx_hash, utxo.tx_pos, utxo.value);
 
     saveDatabase();
   }
@@ -87,6 +85,7 @@ export default function UxtoManagerService(wallet) {
     }
 
     // all UTXOs <= targetAmount are eligible
+    // Note: a UTXO > targetAmount implies an address > targetAmount, handled earlier
     const eligibleUtxos = resultToJson(
       db.exec(
         `SELECT * FROM address_utxos 
@@ -121,18 +120,19 @@ export default function UxtoManagerService(wallet) {
       return eligibleUtxos;
     }
 
-    // 5. if consolidating won't be enough, use entire balance of next-eligible address
+    // 5. check if consolidating will be enough, if not then use entire balance of next-eligible address
     if (eligibleUtxoSum < targetAmount) {
       if (eligibleAddresses.length > 0) {
-        const selection = getAddressUtxos(eligibleAddresses[0].address);
+        const addressUtxos = getAddressUtxos(eligibleAddresses[0].address);
         Logger.debug(
           "selectUtxos eligibleAddress",
           eligibleAddresses[0].address,
-          selection
+          addressUtxos,
+          eligibleAddresses[0].balance
         );
-        return selection;
+        return addressUtxos;
       }
-      // if no eligible address, return empty set
+      // if consolidating won't be enough and no eligible address, return empty set
       Logger.debug(
         "selectUtxos eligibleUtxoSum < targetAmount",
         eligibleUtxoSum,
@@ -163,13 +163,13 @@ export default function UxtoManagerService(wallet) {
     const utxoChange = remainingAmount * -1 - fee;
 
     // if remaining change is under dust limit, add it to fee instead
-    const utxoFee = utxoChange > DUST_LIMIT ? fee : fee + utxoChange;
+    const utxoFee = utxoChange < DUST_LIMIT ? fee + utxoChange : fee;
 
     // 8. check if it's cheaper to spend an address vs consolidate utxos
     if (eligibleAddresses.length > 0) {
       const eligibleAddress = eligibleAddresses[0];
       const addressChange = eligibleAddress.balance - targetAmount - fee;
-      const addressFee = addressChange > DUST_LIMIT ? fee : fee + addressChange;
+      const addressFee = addressChange < DUST_LIMIT ? fee + addressChange : fee;
 
       if (addressFee < utxoFee) {
         Logger.debug("selectUtxos address is cheaper than consolidation");
@@ -183,7 +183,7 @@ export default function UxtoManagerService(wallet) {
 
   function discardUtxo(utxo) {
     db.run(
-      `DELETE FROM address_utxos WHERE txid="${utxo.tx_hash}" AND tx_pos="${utxo.tx_pos}"`
+      `DELETE FROM address_utxos WHERE txid="${utxo.tx_hash}" AND tx_pos="${utxo.tx_pos}";`
     );
 
     saveDatabase();

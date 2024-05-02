@@ -35,7 +35,6 @@ export default function AddressManagerService(wallet: WalletEntity) {
     getChangeAddresses,
     getUnusedAddresses,
     getRecentAddresses,
-    updateAddressBalance,
     updateAddressState,
     getAddressTransactions,
     calculateAddressState,
@@ -262,35 +261,6 @@ export default function AddressManagerService(wallet: WalletEntity) {
     saveDatabase();
 
     return result;
-  }
-
-  // updateAddressBalance: updates balance for address in database
-  // returns total wallet balance
-  function updateAddressBalance(address: string, balance: number) {
-    const previousBalance = resultToJson(
-      db.exec(`SELECT balance FROM wallets WHERE id="${wallet.id}"`)
-    )[0].balance;
-
-    db.run(
-      `UPDATE addresses SET balance="${balance}" WHERE address="${address}";`
-    );
-
-    const currentBalance = resultToJson(
-      db.exec(`SELECT balance FROM wallets WHERE id="${wallet.id}"`)
-    )[0].balance;
-
-    const { change } = resultToJson(
-      db.exec(`SELECT change FROM addresses WHERE address="${address}";`)
-    )[0];
-
-    const isChange = Number.parseInt(change, 10) !== 0;
-
-    saveDatabase();
-    return {
-      previousBalance,
-      currentBalance,
-      isChange,
-    };
   }
 
   function getAddressTransactions(address: string) {
