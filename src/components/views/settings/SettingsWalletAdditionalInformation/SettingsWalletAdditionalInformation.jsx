@@ -9,6 +9,7 @@ import {
   BranchesOutlined,
   LockOutlined,
   ContainerOutlined,
+  KeyOutlined,
 } from "@ant-design/icons";
 
 import * as bip39 from "bip39";
@@ -44,7 +45,7 @@ export default function SettingsWalletAdditionalInformation() {
 
   const network = useSelector(selectBchNetwork);
 
-  const seed = bip39.mnemonicToSeedSync(wallet.mnemonic);
+  const seed = bip39.mnemonicToSeedSync(wallet.mnemonic, wallet.passphrase);
   const hdMaster = deriveHdPrivateNodeFromSeed(seed);
 
   const hdPrivate = deriveHdPath(hdMaster, `${derivationPath}`);
@@ -60,6 +61,16 @@ export default function SettingsWalletAdditionalInformation() {
         title={translate(translations.additionalWalletInformation)}
       />
       <div className="p-2">
+        {wallet.passphrase !== "" && (
+          <Accordion icon={KeyOutlined} title="Passphrase">
+            <Accordion.Child>
+              <div className="text-left font-mono font-bold">
+                {wallet.passphrase}
+              </div>
+            </Accordion.Child>
+          </Accordion>
+        )}
+
         <Accordion
           icon={BranchesOutlined}
           title={translate(translations.derivationPathTitle)}
