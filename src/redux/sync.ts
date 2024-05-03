@@ -197,7 +197,6 @@ export const syncAddressState = createAsyncThunk(
       queueMicrotask(() => thunkApi.dispatch(syncAddressHistory(addressObj)));
     }
 
-    thunkApi.dispatch(syncPopulateAddresses());
     return [addressObj, addressState];
   }
 );
@@ -250,6 +249,8 @@ const syncAddressUtxos = createAsyncThunk(
       })
     );
 
+    thunkApi.dispatch(syncPopulateAddresses());
+
     //Logger.debug("sync/addressUtxos", { address, utxos });
     return {
       address,
@@ -285,15 +286,18 @@ const syncAddressHistory = createAsyncThunk(
   }
 );
 
-export const syncPopulateAddresses = createAction("sync/populateAddresses");
+export const syncPopulateAddresses = createAction<number | undefined>(
+  "sync/populateAddresses"
+);
 syncMiddleware.startListening({
   actionCreator: syncPopulateAddresses,
   effect: async (action, listenerApi) => {
     const wallet = selectActiveWallet(listenerApi.getState());
     const AddressManager = AddressManagerService(wallet);
 
-    // generate new addresses when address state updates
-    const generatedAddresses = AddressManager.populateAddresses();
+    const nScanMore = action.payload;
+
+    const generatedAddresses = AddressManager.populateAddresses(nScanMore);
 
     // subscribe to the new addresses
     generatedAddresses.forEach((address) =>
@@ -310,6 +314,10 @@ export const syncHotRefresh = createAsyncThunk(
 
     // only allow hot sync after cooldown
     const hotSyncCooldown = 10 * 1000;
+
+    // how many additional addresses to scan (attempt to detect funds beyond the gap)
+    const nSyncMore = 100;
+    thunkApi.dispatch(syncPopulateAddresses(nSyncMore));
 
     if (!sync.isSyncing && sync.lastRefresh < Date.now() - hotSyncCooldown) {
       const AddressManager = AddressManagerService(wallet);

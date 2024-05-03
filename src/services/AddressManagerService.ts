@@ -26,7 +26,7 @@ export default function AddressManagerService(wallet: WalletEntity) {
   //Logger.debug("AddressManagerService", wallet);
 
   const { db, resultToJson, saveDatabase } = DatabaseService();
-  const ADDRESS_GAP_LIMIT = 64; // BIP-44 gap limit is 20
+  const ADDRESS_GAP_LIMIT = 20; // BIP-44 gap limit is 20
 
   return {
     populateAddresses,
@@ -85,50 +85,30 @@ export default function AddressManagerService(wallet: WalletEntity) {
   // populateAddresses: derive new addresses such that
   // there are always at least $ADDRESS_GAP_LIMIT addresses
   // returns an array of generated addresses
-  function populateAddresses(): Array<AddressEntity> {
+  function populateAddresses(nScanMore: number = 0): Array<AddressEntity> {
     const hdWallet = HdNodeService(wallet);
 
     function populate(change: number): Array<AddressEntity> {
       const generated: Array<AddressEntity> = [];
+
+      const unusedAddresses = getUnusedAddresses(0, change);
+      const unusedAddressCount = unusedAddresses.length;
+
+      if (unusedAddressCount >= ADDRESS_GAP_LIMIT + nScanMore) {
+        return [];
+      }
 
       const latestAddress =
         (change ? getChangeAddresses(1)[0] : getReceiveAddresses(1)[0]) || null;
       const nextHdIndex =
         latestAddress !== null ? latestAddress.hd_index + 1 : 0;
 
-      const latestUsedAddress = getRecentAddresses(1, change)[0] || null;
-      const latestUsedIndex =
-        latestUsedAddress !== null ? latestUsedAddress.hd_index : -1;
-
-      const unusedAddresses = getUnusedAddresses(0, change);
-      const unusedAddressCount = unusedAddresses.length;
-
-      const scanEndIndex = nextHdIndex + ADDRESS_GAP_LIMIT;
-
-      /*Logger.debug(
-        "populate",
-        change ? "change" : "receive",
-        `next: ${nextHdIndex}`,
-        `end: ${scanEndIndex}`,
-        `unused: ${unusedAddressCount}`,
-        `latest: ${latestUsedIndex}`,
-        `diff: ${nextHdIndex - latestUsedIndex}`
-      );*/
+      const scanEndIndex = nextHdIndex + ADDRESS_GAP_LIMIT + nScanMore;
 
       // starting from latest index, generate new addresses
-      if (
-        unusedAddressCount < ADDRESS_GAP_LIMIT ||
-        nextHdIndex - latestUsedIndex <= ADDRESS_GAP_LIMIT
-      ) {
-        for (
-          let hd_index = nextHdIndex;
-          hd_index < scanEndIndex;
-          hd_index += 1
-        ) {
-          const newAddress = hdWallet.generateAddress(hd_index, change);
-
-          generated.push(_registerAddress(newAddress, hd_index, change));
-        }
+      for (let hd_index = nextHdIndex; hd_index < scanEndIndex; hd_index += 1) {
+        const newAddress = hdWallet.generateAddress(hd_index, change);
+        generated.push(_registerAddress(newAddress, hd_index, change));
       }
 
       return generated;
