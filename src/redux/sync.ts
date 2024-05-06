@@ -316,10 +316,11 @@ export const syncHotRefresh = createAsyncThunk(
     const hotSyncCooldown = 10 * 1000;
 
     // how many additional addresses to scan (attempt to detect funds beyond the gap)
-    const nSyncMore = 100;
-    thunkApi.dispatch(syncPopulateAddresses(nSyncMore));
+    const nSyncMore = 200;
 
     if (!sync.isSyncing && sync.lastRefresh < Date.now() - hotSyncCooldown) {
+      thunkApi.dispatch(syncPopulateAddresses(nSyncMore));
+
       const AddressManager = AddressManagerService(wallet);
       const UtxoManager = UtxoManagerService(wallet);
 
