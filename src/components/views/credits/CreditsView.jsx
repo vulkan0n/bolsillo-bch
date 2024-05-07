@@ -37,9 +37,62 @@ export default function CreditsView() {
         </h2>
       </div>
       <div className="p-2 w-5/6 mx-auto">
-        <h2 className="text-center font-bold text-2xl">
+        <h2 className="font-bold text-2xl">
           {translate(translations.flipstarterContributors)}
         </h2>
+
+        <h3 className="font-bold text-xl">March 2024</h3>
+        <ol className="list-inside list-decimal">
+          <li>molecular</li>
+          <li>toorik</li>
+          <li>majamalu</li>
+          <li>Renegade</li>
+          <li>Mark Komaransky</li>
+          <li>ErdoganTalk</li>
+          <li>Shadow Of Harbringer</li>
+          <li>BigV</li>
+          <li>@_minisatoshi</li>
+          <li>imaginary_username</li>
+          <li>Joemar Taganna / Paytaca</li>
+          <li>emergent_reasons</li>
+          <li>notme</li>
+          <li>Bernanácatl</li>
+          <li>Omar</li>
+          <li>Steve2048</li>
+          <li>coolcleaner</li>
+          <li>2qx</li>
+          <li>Dmoney$$</li>
+          <li>yeahhhbeer</li>
+          <li>sandakersmann</li>
+          <li>George Engelmann</li>
+          <li>Bitcoin Out Loud</li>
+          <li>bchtoronto.com</li>
+          <li>Remora_101</li>
+          <li>Josh</li>
+          <li>Nico MG</li>
+          <li>Anonymous</li>
+          <li>Killian</li>
+          <li>George Donnelly</li>
+          <li>chrome</li>
+          <li>Anonymous</li>
+          <li>Eggroley</li>
+          <li>devperate</li>
+          <li>bchforeveryone.net</li>
+          <li>bchpls.org</li>
+          <li>BCHTV</li>
+          <li>Anonymous</li>
+          <li>Anonymous</li>
+          <li>Nick</li>
+          <li>Deidor</li>
+          <li>@HashmobMedia</li>
+          <li>Manilo</li>
+          <li>nemecis1000</li>
+          <li>Biometric/PIN Authentica</li>
+          <li>AVG</li>
+          <li>Anonymous</li>
+        </ol>
+        <br />
+        <h3 className="font-bold text-xl">May 2023</h3>
         <ol className="list-inside list-decimal">
           <li>majamalu</li>
           <li>toorik</li>
@@ -72,7 +125,7 @@ export default function CreditsView() {
           <li>Anonymous (x5)</li>
         </ol>
 
-        <h2 className="text-center font-bold text-2xl mt-4">
+        <h2 className="font-bold text-2xl mt-4">
           {translate(translations.translators)}
         </h2>
         <ul className="list-inside list-disc">
@@ -80,7 +133,7 @@ export default function CreditsView() {
           <li>Prashant Singh Pawar (GitLab: @prashantpawar)</li>
         </ul>
 
-        <h2 className="text-center font-bold text-2xl mt-4">
+        <h2 className="font-bold text-2xl mt-4">
           {translate(translations.specialThanks)}
         </h2>
         <ul className="list-inside list-disc">
@@ -98,6 +151,7 @@ export default function CreditsView() {
           <li>@CM_Works</li>
           <li>Arthur</li>
           <li>XaYaZaZa</li>
+          <li>@_minisatoshi</li>
         </ul>
       </div>
     </>

@@ -18,6 +18,7 @@ import { run_migrations } from "@/util/migrations";
 
 Logger.useDefaults(); // eslint-disable-line react-hooks/rules-of-hooks
 const SELENE_DB_FILE = "selene/selene.db";
+const SELENE_DB_BACKUP_FILE = "selene/selene.db.bak";
 
 // Connect to SQLite Database
 const SQL = await initSqlJs({ locateFile: () => "/sql-wasm.wasm" });
@@ -68,6 +69,64 @@ async function _migrateLegacyDbFile() {
   return Promise.resolve();
 }
 
+async function retryWalletDatabase() {
+  // something went wrong, attempting to load backup
+  let db;
+  try {
+    db = await _dbOpen(SELENE_DB_BACKUP_FILE);
+    Logger.warn("Wallet database corrupted? Loading backup...");
+    run_migrations(db);
+  } catch (e) {
+    Logger.warn("Wallet database corrupted!! Creating new wallet database");
+    db = new SQL.Database();
+    run_migrations(db);
+  }
+
+  return db;
+}
+
+async function dump_db(db) {
+  try {
+    const data = db.export();
+
+    const filename = SELENE_DB_FILE.concat(".")
+      .concat(Date.now().toString())
+      .concat(".bak");
+
+    const result = await Filesystem.writeFile({
+      path: filename,
+      data: data.toString(),
+      directory: Directory.Library,
+      encoding: Encoding.UTF8,
+      recursive: true,
+    });
+
+    Logger.debug("DUMP_DB", filename, result);
+  } catch (e) {
+    Logger.error(e);
+  }
+}
+
+async function backup_db(db) {
+  try {
+    const data = db.export();
+
+    const filename = SELENE_DB_FILE.concat(".bak");
+
+    const result = await Filesystem.writeFile({
+      path: filename,
+      data: data.toString(),
+      directory: Directory.Library,
+      encoding: Encoding.UTF8,
+      recursive: true,
+    });
+
+    Logger.debug("BACKUP_DB", filename, result);
+  } catch (e) {
+    Logger.error(e);
+  }
+}
+
 // getWalletDatabase: try to open the wallet db file
 // return a blank db if file doesn't exist
 async function getWalletDatabase() {
@@ -75,13 +134,23 @@ async function getWalletDatabase() {
   try {
     db = await _dbOpen(SELENE_DB_FILE);
     Logger.debug("Loaded wallet database");
+    backup_db(db);
   } catch (e) {
     Logger.warn("Creating wallet database", e);
     db = new SQL.Database();
   }
 
   // run schema migrations
-  run_migrations(db);
+  try {
+    run_migrations(db);
+  } catch (e) {
+    // something went wrong when attempting to run migrations
+    // probably "database image is malformed"
+    // attempt to load backup file or bail with new db...
+    await dump_db(db);
+    db = await retryWalletDatabase();
+  }
+
   return db;
 }
 
@@ -150,7 +219,7 @@ export default function DatabaseService() {
     clearTimeout(flushPending);
     pendingCount += 1;
 
-    if (pendingCount > 256 || force) {
+    if (pendingCount > 320 || force) {
       pendingCount = 0;
       await _flushDatabase();
       return;
@@ -182,10 +251,12 @@ export default function DatabaseService() {
   }
 }
 
-// force database write on app sleep
-App.addListener("pause", () => {
-  DatabaseService().saveDatabase(true);
-  Logger.debug("flushDatabase on pause");
+// force database write on app stop
+App.addListener("appStateChange", async ({ isActive }) => {
+  if (!isActive) {
+    await DatabaseService().saveDatabase(true);
+    Logger.debug("flushDatabase on stop");
+  }
 });
 
 /*const _fakeDb = [

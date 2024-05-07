@@ -36,6 +36,7 @@ const defaultPreferences = {
   lastCheckIn: "",
   lastExchangeRate: "1",
   // --------
+  enableExperimental: "false",
 };
 
 type ValidPreferences = typeof defaultPreferences;
@@ -81,6 +82,7 @@ function validatePreferences(preferences: ValidPreferences): boolean {
     "hideAvailableBalance",
     "displayExchangeRate",
     "allowInstantPay",
+    "enableExperimental",
   ];
 
   const invalidBools = boolKeys.filter(
@@ -242,4 +244,9 @@ export const selectBchNetwork = createSelector(
 export const selectIsChipnet = createSelector(
   (state: RootState) => selectBchNetwork(state),
   (bchNetwork): boolean => bchNetwork === "chipnet"
+);
+
+export const selectIsExperimental = createSelector(
+  (state: RootState) => state.preferences,
+  (preferences): boolean => preferences.enableExperimental === "true"
 );

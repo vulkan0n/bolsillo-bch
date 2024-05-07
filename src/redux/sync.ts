@@ -138,7 +138,7 @@ export const syncSubscribeAddress = createAsyncThunk(
   }
 );
 
-// syncChangeAddress: ensure a change address is up to date
+// syncChangeAddresses: syncs all change addresses
 export const syncChangeAddresses = createAsyncThunk(
   "sync/changeAddresses",
   async (payload, thunkApi) => {
@@ -148,12 +148,16 @@ export const syncChangeAddresses = createAsyncThunk(
 
     const changeAddresses = AddressManager.getChangeAddresses();
 
-    const promises = changeAddresses.map(async (address) => {
-      const addressState = await Electrum.requestAddressState(address.address);
-      thunkApi.dispatch(syncAddressState([address, addressState]));
-      //Logger.debug("sync/changeAddresses", address, addressState);
-      return [address, addressState];
-    });
+    const promises = changeAddresses
+      .filter((address) => !(address.state !== null && address.balance === 0)) // don't resync fully spent change addresses
+      .map(async (address) => {
+        const addressState = await Electrum.requestAddressState(
+          address.address
+        );
+        thunkApi.dispatch(syncAddressState([address, addressState]));
+        //Logger.debug("sync/changeAddresses", address, addressState);
+        return [address, addressState];
+      });
 
     const batchedPromises = [];
 
@@ -189,58 +193,11 @@ export const syncAddressState = createAsyncThunk(
       //Logger.debug("address state changed for", addressObj, addressState);
       thunkApi.dispatch(syncAddressUtxos(addressObj));
 
+      // queue history sync after all other requests have finished
       queueMicrotask(() => thunkApi.dispatch(syncAddressHistory(addressObj)));
     }
 
     return [addressObj, addressState];
-  }
-);
-
-export const syncHotRefresh = createAsyncThunk(
-  "sync/hotRefresh",
-  async (payload, thunkApi) => {
-    const wallet = selectActiveWallet(thunkApi.getState());
-    const sync = selectSyncState(thunkApi.getState());
-
-    if (!sync.isSyncing && sync.lastRefresh < Date.now() - 10000) {
-      const AddressManager = AddressManagerService(wallet);
-      const UtxoManager = UtxoManagerService(wallet);
-
-      // "hot" addresses are any addresses with UTXOs on them
-      const walletUtxos = UtxoManager.getWalletUtxos();
-      const hotAddresses = walletUtxos.map((utxo) =>
-        AddressManager.getAddress(utxo.address)
-      );
-
-      // check unused change addresses (attempts to fill gaps)
-      const unusedChangeAddresses = AddressManager.getUnusedAddresses(50, 1);
-
-      // check recent change addresses (tries to catch undetected spends)
-      const recentChangeAddresses = AddressManager.getRecentAddresses(50, 1);
-
-      // check all receive addresses (all user-managed addresses)
-      const receiveAddresses = AddressManager.getReceiveAddresses();
-
-      const syncAddresses = [
-        ...hotAddresses,
-        ...recentChangeAddresses,
-        ...unusedChangeAddresses,
-        ...receiveAddresses,
-      ];
-
-      Promise.all(
-        syncAddresses.map(async (address) => {
-          const addressState = await Electrum.requestAddressState(
-            address.address
-          );
-          thunkApi.dispatch(syncAddressState([address, addressState]));
-        })
-      );
-
-      Logger.debug("sync/hotRefresh", syncAddresses, sync);
-    }
-
-    return Date.now();
   }
 );
 
@@ -266,12 +223,12 @@ const syncAddressUtxos = createAsyncThunk(
 
     // register each UTXO, add tx to history
     utxos.forEach((utxo) => {
+      UtxoManager.registerUtxo(addr, utxo);
+
       AddressManager.registerTransaction(addr, {
         tx_hash: utxo.tx_hash,
         height: utxo.height,
       });
-
-      UtxoManager.registerUtxo(addr, utxo);
 
       /*
       // TODO: validate that the UTXOs pass merkle inclusion
@@ -281,12 +238,18 @@ const syncAddressUtxos = createAsyncThunk(
       */
     });
 
-    // calculate address balance
-    const addressBalance = utxos.reduce((sum, utxo) => sum + utxo.value, 0);
-    const balances = AddressManager.updateAddressBalance(addr, addressBalance);
+    const isChange = address.change === 1;
 
     // update wallet balance; view re-renders on wallet update
-    thunkApi.dispatch(walletBalanceUpdate(balances));
+    thunkApi.dispatch(
+      walletBalanceUpdate({
+        wallet_id: wallet.id,
+        previousBalance: wallet.balance,
+        isChange,
+      })
+    );
+
+    thunkApi.dispatch(syncPopulateAddresses());
 
     //Logger.debug("sync/addressUtxos", { address, utxos });
     return {
@@ -320,6 +283,82 @@ const syncAddressHistory = createAsyncThunk(
       storedAddressState,
       calculatedAddressState !== storedAddressState
     );*/
+  }
+);
+
+export const syncPopulateAddresses = createAction<number | undefined>(
+  "sync/populateAddresses"
+);
+syncMiddleware.startListening({
+  actionCreator: syncPopulateAddresses,
+  effect: async (action, listenerApi) => {
+    const wallet = selectActiveWallet(listenerApi.getState());
+    const AddressManager = AddressManagerService(wallet);
+
+    const nScanMore = action.payload;
+
+    const generatedAddresses = AddressManager.populateAddresses(nScanMore);
+
+    // subscribe to the new addresses
+    generatedAddresses.forEach((address) =>
+      listenerApi.dispatch(syncSubscribeAddress(address))
+    );
+  },
+});
+
+export const syncHotRefresh = createAsyncThunk(
+  "sync/hotRefresh",
+  async (payload, thunkApi) => {
+    const wallet = selectActiveWallet(thunkApi.getState());
+    const sync = selectSyncState(thunkApi.getState());
+
+    // only allow hot sync after cooldown
+    const hotSyncCooldown = 10 * 1000;
+
+    // how many additional addresses to scan (attempt to detect funds beyond the gap)
+    const nSyncMore = 200;
+
+    if (!sync.isSyncing && sync.lastRefresh < Date.now() - hotSyncCooldown) {
+      thunkApi.dispatch(syncPopulateAddresses(nSyncMore));
+
+      const AddressManager = AddressManagerService(wallet);
+      const UtxoManager = UtxoManagerService(wallet);
+
+      // "hot" addresses are any addresses with UTXOs on them
+      const walletUtxos = UtxoManager.getWalletUtxos();
+      const hotAddresses = walletUtxos.map((utxo) =>
+        AddressManager.getAddress(utxo.address)
+      );
+
+      // check unused change addresses (attempts to fill gaps)
+      const unusedChangeAddresses = AddressManager.getUnusedAddresses(0, 1);
+
+      // check recent change addresses (tries to catch undetected spends)
+      const recentChangeAddresses = AddressManager.getRecentAddresses(50, 1);
+
+      // check all receive addresses (all user-managed addresses)
+      const receiveAddresses = AddressManager.getReceiveAddresses();
+
+      const syncAddresses = [
+        ...hotAddresses,
+        ...recentChangeAddresses,
+        ...unusedChangeAddresses,
+        ...receiveAddresses,
+      ];
+
+      Promise.all(
+        syncAddresses.map(async (address) => {
+          const addressState = await Electrum.requestAddressState(
+            address.address
+          );
+          thunkApi.dispatch(syncAddressState([address, addressState]));
+        })
+      );
+
+      Logger.debug("sync/hotRefresh", syncAddresses, sync);
+    }
+
+    return Date.now();
   }
 );
 

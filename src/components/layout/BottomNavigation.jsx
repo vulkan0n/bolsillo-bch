@@ -4,13 +4,13 @@ import { useSelector } from "react-redux";
 import {
   WalletOutlined,
   WalletFilled,
-  //AppstoreOutlined,
-  //AppstoreFilled,
+  AppstoreOutlined,
+  AppstoreFilled,
   SettingOutlined,
   SettingFilled,
 } from "@ant-design/icons";
 
-import { selectLanguageCode } from "@/redux/preferences";
+import { selectLanguageCode, selectIsExperimental } from "@/redux/preferences";
 import { selectKeyboardIsOpen, selectScannerIsScanning } from "@/redux/device";
 import translations from "./bottomNavigationTranslations";
 import { translate } from "@/util/translations";
@@ -20,6 +20,7 @@ const { wallet, settings } = translations;
 function BottomNavigation() {
   const isKeyboardOpen = useSelector(selectKeyboardIsOpen);
   const isScanning = useSelector(selectScannerIsScanning);
+  const isExperimental = useSelector(selectIsExperimental);
 
   // Ensure component reloads when language preferences are changed
   useSelector(selectLanguageCode);
@@ -37,12 +38,14 @@ function BottomNavigation() {
           icon={WalletOutlined}
           label={translate(wallet)}
         />
-        {/*<NavButton
-          to="/explore"
-          activeIcon={AppstoreFilled}
-          icon={AppstoreOutlined}
-          label="Explore"
-        />*/}
+        {isExperimental && (
+          <NavButton
+            to="/explore"
+            activeIcon={AppstoreFilled}
+            icon={AppstoreOutlined}
+            label="Explore"
+          />
+        )}
         <NavButton
           to="/settings"
           activeIcon={SettingFilled}

@@ -9,7 +9,7 @@ import {
 
 import { RootState } from "@/redux";
 import { setPreference, selectElectrumServer } from "@/redux/preferences";
-import { syncConnect, syncSubscribeAddress } from "@/redux/sync";
+import { syncConnect } from "@/redux/sync";
 import { fetchExchangeRates } from "@/redux/exchangeRates";
 
 import { ValidBchNetwork } from "@/util/crypto";
@@ -69,34 +69,28 @@ export const walletBoot = createAsyncThunk(
   }
 );
 
-export const walletBalanceUpdate = createAction<{
-  previousBalance: number;
-  currentBalance: number;
-  isChange: boolean;
-}>("wallet/balanceUpdate");
+export const walletBalanceUpdate = createAction(
+  "wallet/balanceUpdate",
+  (payload: {
+    wallet_id: number;
+    previousBalance: number;
+    isChange: boolean;
+  }) => {
+    // address and wallet balances are automatically derived on SQL layer when UTXO entries are updated
+    const wallet = WalletManagerService().getWalletById(payload.wallet_id);
+    const currentBalance = wallet.balance;
 
-walletMiddleware.startListening({
-  actionCreator: walletBalanceUpdate,
-  effect: async (action, listenerApi) => {
-    const wallet = selectActiveWallet(listenerApi.getState());
-    const AddressManager = AddressManagerService(wallet);
-
-    // generate new addresses when address state updates
-    const generatedAddresses = AddressManager.populateAddresses();
-
-    // subscribe to the new addresses
-    generatedAddresses.forEach((address) =>
-      listenerApi.dispatch(syncSubscribeAddress(address))
-    );
+    const { previousBalance, isChange } = payload;
 
     // show receive notification
-    const { previousBalance, currentBalance, isChange } = action.payload;
     if (currentBalance > previousBalance && isChange === false) {
       const difference = currentBalance - previousBalance;
       ToastService().paymentReceived(difference);
     }
-  },
-});
+
+    return { payload: currentBalance };
+  }
+);
 
 export const walletSetName = createAction(
   "wallet/name",
@@ -124,7 +118,7 @@ export const walletReducer = createReducer(initialState, (builder) => {
       return wallet;
     })
     .addCase(walletBalanceUpdate, (state, action) => {
-      state.balance = action.payload.currentBalance;
+      state.balance = action.payload;
     })
     .addCase(walletSetName, (state, action) => {
       if (state.id === action.payload.wallet_id) {

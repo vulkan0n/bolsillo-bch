@@ -18,6 +18,8 @@ const migrations = [
     query.push("DROP TABLE IF EXISTS address_transactions;");
     query.push("DROP TABLE IF EXISTS address_utxos;");
     query.push("DROP TRIGGER IF EXISTS balance_update;");
+    query.push("DROP TRIGGER IF EXISTS utxo_balance_delete;");
+    query.push("DROP TRIGGER IF EXISTS utxo_balance_insert;");
 
     query.push(
       `CREATE TABLE IF NOT EXISTS wallets ( 
@@ -282,7 +284,40 @@ const migrations = [
 
     return query.join("");
   },
-  /* function migrate_v5() {
+  function migrate_v5() {
+    const query = [];
+
+    query.push(
+      `CREATE TRIGGER IF NOT EXISTS utxo_balance_delete AFTER DELETE ON address_utxos
+        BEGIN
+          UPDATE addresses SET 
+            balance=(
+              SELECT COALESCE(SUM(amount), 0) FROM address_utxos
+              WHERE address=OLD.address
+            ) WHERE address=OLD.address
+          ;
+        END
+      ;`
+    );
+
+    query.push(
+      `CREATE TRIGGER IF NOT EXISTS utxo_balance_insert AFTER INSERT ON address_utxos
+        BEGIN
+          UPDATE addresses SET 
+            balance=(
+              SELECT SUM(amount) FROM address_utxos
+              WHERE address=NEW.address
+            ) WHERE address=NEW.address
+          ;
+        END
+      ;`
+    );
+
+    query.push("PRAGMA user_version = 6;");
+
+    return query.join("");
+  },
+  /* function migrate_v6() {
     const query = [];
 
     query.push("PRAGMA user_version = 0;");
