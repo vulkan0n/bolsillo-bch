@@ -7,14 +7,16 @@ import {
 } from "@reduxjs/toolkit";
 
 import { Preferences } from "@capacitor/preferences";
+import { App } from "@capacitor/app";
 
+import { store } from "@/redux";
 import { setPreference, selectCurrencySettings } from "@/redux/preferences";
 import CurrencyService from "@/services/CurrencyService";
 import { currencyList } from "@/util/currency";
 
 export const fetchExchangeRates = createAsyncThunk(
   "exchangeRates/fetch",
-  async (attempts: number, thunkApi) => {
+  async (attempts: number = 0, thunkApi) => {
     const { localCurrency } = selectCurrencySettings(thunkApi.getState());
     const Currency = CurrencyService(localCurrency);
 
@@ -38,7 +40,7 @@ export const fetchExchangeRates = createAsyncThunk(
       Logger.error("fetchExchangeRates failed", e);
       setTimeout(
         () => thunkApi.dispatch(fetchExchangeRates(attempts + 1)),
-        10000 * attempts + 1
+        10000 * (attempts + 1)
       );
       return selectExchangeRates(thunkApi.getState());
     }
@@ -95,3 +97,5 @@ export const selectCurrentPrice = createSelector(
     return { price, priceString, currency: s.currency };
   }
 );
+
+App.addListener("resume", () => store.dispatch(fetchExchangeRates(0)));
