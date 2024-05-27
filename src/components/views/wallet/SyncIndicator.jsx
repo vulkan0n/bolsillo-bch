@@ -1,17 +1,18 @@
 import PropTypes from "prop-types";
 import { useEffect, useState, useRef } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import {
   DisconnectOutlined,
   CheckCircleFilled,
   SyncOutlined,
 } from "@ant-design/icons";
 import { animated, useSpring } from "@react-spring/web";
-import { selectSyncState, syncHotRefresh } from "@/redux/sync";
+import { selectSyncState } from "@/redux/sync";
 import ToastService from "@/services/ToastService";
 
 export default function SyncIndicator() {
-  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const sync = useSelector(selectSyncState);
 
   const [shouldAnimateSync, setShouldAnimateSync] = useState(sync.isSyncing);
@@ -34,7 +35,7 @@ export default function SyncIndicator() {
         clearTimeout(syncTimeoutRef.current);
         syncTimeoutRef.current = setTimeout(
           () => requestAnimationFrame(() => setShouldAnimateSync(false)),
-          1337
+          500
         );
       }
     },
@@ -72,8 +73,7 @@ export default function SyncIndicator() {
         to: { opacity: 0.1, scale: 0.65 },
       });
 
-      dispatch(syncHotRefresh());
-      ToastService().connectionStatus(sync);
+      navigate("/wallet/scan");
     } else {
       disconnectApi.start();
       ToastService().disconnected();

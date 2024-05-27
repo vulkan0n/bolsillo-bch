@@ -23,6 +23,7 @@ import WalletViewHistory from "@/views/wallet/WalletViewHistory/WalletViewHistor
 import WalletViewSend from "@/views/wallet/WalletViewSend/WalletViewSend";
 import WalletViewSendSuccess from "@/views/wallet/WalletViewSendSuccess/WalletViewSendSuccess";
 import WalletAssetsView from "@/views/wallet/assets/WalletAssetsView";
+import WalletViewScanTool from "@/views/wallet/WalletViewScanTool/WalletViewScanTool";
 
 import ExploreView from "@/views/explore/ExploreView";
 import ExploreViewHome from "@/views/explore/ExploreViewHome";
@@ -80,6 +81,10 @@ export default function Main() {
               element: <WalletAssetsView />,
             },
             {
+              path: "scan",
+              element: <WalletViewScanTool />,
+            },
+            {
               index: true,
               element: <WalletViewHome />,
             },
@@ -105,7 +110,10 @@ export default function Main() {
             {
               path: "map",
               element: <ExploreMapView />,
-              loader: async () => await Geolocation.getCurrentPosition({enableHighAccuracy: true})
+              loader: async () =>
+                await Geolocation.getCurrentPosition({
+                  enableHighAccuracy: true,
+                }),
             },
             {
               path: "contacts",

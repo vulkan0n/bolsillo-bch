@@ -29,6 +29,7 @@ export default function AddressManagerService(wallet: WalletEntity) {
   const ADDRESS_GAP_LIMIT = 20; // BIP-44 gap limit is 20
 
   return {
+    registerAddress,
     populateAddresses,
     getAddress,
     getReceiveAddresses,
@@ -45,7 +46,7 @@ export default function AddressManagerService(wallet: WalletEntity) {
   // --------------------------------
 
   // register an address into the database
-  function _registerAddress(
+  function registerAddress(
     address: string,
     hd_index: number,
     change: number = 0
@@ -108,7 +109,7 @@ export default function AddressManagerService(wallet: WalletEntity) {
       // starting from latest index, generate new addresses
       for (let hd_index = nextHdIndex; hd_index < scanEndIndex; hd_index += 1) {
         const newAddress = hdWallet.generateAddress(hd_index, change);
-        generated.push(_registerAddress(newAddress, hd_index, change));
+        generated.push(registerAddress(newAddress, hd_index, change));
       }
 
       return generated;

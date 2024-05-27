@@ -74,9 +74,7 @@ export default function WalletViewBalance() {
 
   return (
     <div className="py-2.5 text-center flex flex-col justify-center items-center">
-      <div
-        className={`font-bold text-zinc-400 text-md tracking-wide ${hiddenBalanceClasses}`}
-      >
+      <div className={`font-bold text-zinc-400 text-md tracking-wide`}>
         <Link
           to={`/settings/wallet/${wallet_id}`}
           className={`flex justify-center items-center ${!isKeyViewed && "text-warning"}`}
