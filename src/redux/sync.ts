@@ -243,8 +243,7 @@ const syncAddressUtxos = createAsyncThunk(
     // update wallet balance; view re-renders on wallet update
     thunkApi.dispatch(
       walletBalanceUpdate({
-        wallet_id: wallet.id,
-        previousBalance: wallet.balance,
+        wallet,
         isChange,
       })
     );

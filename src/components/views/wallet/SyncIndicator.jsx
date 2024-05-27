@@ -9,11 +9,14 @@ import {
 } from "@ant-design/icons";
 import { animated, useSpring } from "@react-spring/web";
 import { selectSyncState } from "@/redux/sync";
+import { selectActiveWallet } from "@/redux/wallet";
 import ToastService from "@/services/ToastService";
 
 export default function SyncIndicator() {
   const navigate = useNavigate();
   const sync = useSelector(selectSyncState);
+
+  const { id: wallet_id } = useSelector(selectActiveWallet);
 
   const [shouldAnimateSync, setShouldAnimateSync] = useState(sync.isSyncing);
   const syncTimeoutRef = useRef();
@@ -73,7 +76,7 @@ export default function SyncIndicator() {
         to: { opacity: 0.1, scale: 0.65 },
       });
 
-      navigate("/wallet/scan");
+      navigate(`/settings/wallet/${wallet_id}/scan`);
     } else {
       disconnectApi.start();
       ToastService().disconnected();

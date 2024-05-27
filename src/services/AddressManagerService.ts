@@ -147,7 +147,7 @@ export default function AddressManagerService(wallet: WalletEntity) {
       )
     );
 
-    //Logger.log("getReceiveAddresses", limit, result);
+    Logger.log("getReceiveAddresses", limit, result, wallet);
     return result;
   }
 

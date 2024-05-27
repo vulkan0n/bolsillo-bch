@@ -36,14 +36,14 @@ export default function SettingsWalletView() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  const bchNetwork = useSelector(selectBchNetwork);
+
   const { wallet_id } = useParams();
-  const WalletManager = WalletManagerService();
+  const WalletManager = WalletManagerService(bchNetwork);
   const wallet = WalletManager.getWalletById(wallet_id);
 
   const activeWalletId = useSelector(selectActiveWalletId);
   const isActiveWallet = wallet.id === activeWalletId;
-
-  const bchNetwork = useSelector(selectBchNetwork);
 
   const locale = useSelector(selectLocale);
 

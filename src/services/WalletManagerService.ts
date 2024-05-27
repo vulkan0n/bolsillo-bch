@@ -27,7 +27,7 @@ export class WalletNotExistsError extends Error {
   }
 }
 
-export default function WalletManagerService() {
+export default function WalletManagerService(network: ValidBchNetwork) {
   const { db, resultToJson, saveDatabase } = DatabaseService();
 
   return {
@@ -63,14 +63,18 @@ export default function WalletManagerService() {
     if (result.length === 0) {
       throw new WalletNotExistsError(id);
     }
+    const wallet = result[0];
 
-    return result[0];
+    // for safety, assume testnet unless we've explicitly stated to be on mainnet
+    wallet.prefix = network === "mainnet" ? "bitcoincash" : "bchtest";
+
+    return wallet;
   }
 
   // ----------------------------
 
   // boot: load a wallet, create a wallet if none exist
-  function boot(wallet_id: number, network: ValidBchNetwork): WalletEntity {
+  function boot(wallet_id: number): WalletEntity {
     let wallet: WalletEntity;
     try {
       wallet = getWalletById(wallet_id);
@@ -85,9 +89,6 @@ export default function WalletManagerService() {
       const wallets = getWallets();
       wallet = wallets.shift() || createWallet("My Selene Wallet");
     }
-
-    // for safety, assume testnet unless we've explicitly stated to be on mainnet
-    wallet.prefix = network === "mainnet" ? "bitcoincash" : "bchtest";
 
     Logger.debug("walletBoot", wallet_id, wallet, network);
     return wallet;

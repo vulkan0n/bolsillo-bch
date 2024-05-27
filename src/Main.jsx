@@ -23,7 +23,6 @@ import WalletViewHistory from "@/views/wallet/WalletViewHistory/WalletViewHistor
 import WalletViewSend from "@/views/wallet/WalletViewSend/WalletViewSend";
 import WalletViewSendSuccess from "@/views/wallet/WalletViewSendSuccess/WalletViewSendSuccess";
 import WalletAssetsView from "@/views/wallet/assets/WalletAssetsView";
-import WalletViewScanTool from "@/views/wallet/WalletViewScanTool/WalletViewScanTool";
 
 import ExploreView from "@/views/explore/ExploreView";
 import ExploreViewHome from "@/views/explore/ExploreViewHome";
@@ -40,6 +39,7 @@ import SettingsWalletWizard from "@/views/settings/SettingsWalletWizard/Settings
 import SettingsWalletWizardInit from "@/views/settings/SettingsWalletWizardInit/SettingsWalletWizardInit";
 import SettingsWalletWizardImport from "@/views/settings/SettingsWalletWizardImport/SettingsWalletWizardImport";
 import SettingsWalletAdditionalInformation from "@/views/settings/SettingsWalletAdditionalInformation/SettingsWalletAdditionalInformation";
+import SettingsWalletScanTool from "@/views/settings/SettingsWalletScanTool/SettingsWalletScanTool";
 
 import CreditsView from "@/views/credits/CreditsView";
 import DebugView from "@/views/debug/DebugView";
@@ -79,10 +79,6 @@ export default function Main() {
             {
               path: "assets",
               element: <WalletAssetsView />,
-            },
-            {
-              path: "scan",
-              element: <WalletViewScanTool />,
             },
             {
               index: true,
@@ -158,6 +154,10 @@ export default function Main() {
               element: <SettingsWalletWizardImport />,
             },
           ],
+        },
+        {
+          path: "/settings/wallet/:wallet_id/scan",
+          element: <SettingsWalletScanTool />,
         },
         {
           path: "/credits",
