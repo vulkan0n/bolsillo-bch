@@ -5,9 +5,9 @@ import {
   Navigate,
 } from "react-router-dom";
 
-import { Toaster } from "react-hot-toast";
-
 import { Provider } from "react-redux";
+import { Toaster } from "react-hot-toast";
+import { Geolocation } from "@capacitor/geolocation";
 import { ApolloProvider } from "@apollo/client";
 import apolloClient from "./apolloClient";
 import { store } from "./redux";
@@ -105,6 +105,7 @@ export default function Main() {
             {
               path: "map",
               element: <ExploreMapView />,
+              loader: async () => await Geolocation.getCurrentPosition({enableHighAccuracy: true})
             },
             {
               path: "contacts",
