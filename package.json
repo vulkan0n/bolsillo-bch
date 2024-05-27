@@ -41,6 +41,7 @@
     "graphql": "^16.8.0",
     "js-logger": "^1.6.1",
     "luxon": "^3.4.4",
+    "leaflet": "^1.9.4",
     "prop-types": "^15.8.1",
     "qr-scanner": "^1.4.2",
     "react": "^18.2.0",
