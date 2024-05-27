@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useSelector } from "react-redux";
-import { selectIsExperimental } from "@/redux/preferences";
 import { SearchOutlined } from "@ant-design/icons";
+import { selectIsExperimental } from "@/redux/preferences";
 
 export default function ExploreSearchBar() {
   const isExperimental = useSelector(selectIsExperimental);

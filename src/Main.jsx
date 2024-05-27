@@ -111,7 +111,7 @@ export default function Main() {
               path: "map",
               element: <ExploreMapView />,
               loader: async () =>
-                await Geolocation.getCurrentPosition({
+                Geolocation.getCurrentPosition({
                   enableHighAccuracy: true,
                 }),
             },
