@@ -1,5 +1,5 @@
 import Logger from "js-logger";
-import { useParams } from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { SyncOutlined } from "@ant-design/icons";
 
@@ -17,6 +17,9 @@ import { DEFAULT_DERIVATION_PATH, DERIVATION_PATHS } from "@/util/crypto";
 export default function SettingsWalletScanTool() {
   const { wallet_id } = useParams();
   const bchNetwork = useSelector(selectBchNetwork);
+  const location = useLocation();
+
+  const { startNow } = location.state;
 
   const WalletManager = WalletManagerService(bchNetwork);
   const wallet = WalletManager.getWalletById(wallet_id);

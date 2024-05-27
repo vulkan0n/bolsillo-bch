@@ -19,6 +19,7 @@ export interface WalletEntity {
   key_verified: string;
   balance: number;
   prefix: string;
+  network: ValidBchNetwork;
 }
 
 export class WalletNotExistsError extends Error {
@@ -65,6 +66,8 @@ export default function WalletManagerService(network: ValidBchNetwork) {
     }
     const wallet = result[0];
 
+    wallet.network = network;
+
     // for safety, assume testnet unless we've explicitly stated to be on mainnet
     wallet.prefix = network === "mainnet" ? "bitcoincash" : "bchtest";
 
@@ -88,6 +91,7 @@ export default function WalletManagerService(network: ValidBchNetwork) {
       // attempt to return lowest-index wallet instead, create a new wallet if none exist
       const wallets = getWallets();
       wallet = wallets.shift() || createWallet("My Selene Wallet");
+      return boot(wallet.id);
     }
 
     Logger.debug("walletBoot", wallet_id, wallet, network);

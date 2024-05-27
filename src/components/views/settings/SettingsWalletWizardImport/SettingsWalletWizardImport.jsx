@@ -52,7 +52,9 @@ export default function SettingsWalletWizardImport() {
           passphraseInput,
           derivationPath
         );
-        navigate(`/settings/wallet/wizard/import/${wallet.id}`);
+        navigate(`/settings/wallet/scan/${wallet.id}`, {
+          state: { startNow: true },
+        });
       } catch (e) {
         setMessage(translate(translations.alreadyImported));
       }
