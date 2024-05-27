@@ -45,16 +45,8 @@ export default function WalletViewHome() {
     [wallet]
   );
 
-  // Address cycling state (old...)
-  //const [skip, setSkip] = useState(0);
-  //const skipAddress = () => setSkip((skip + 1) % 5);
-  const skip = 0;
-
   // currently displayed address
-  const address =
-    unusedAddresses.length > 0
-      ? unusedAddresses[(0 + skip) % unusedAddresses.length].address
-      : "";
+  const address = unusedAddresses.length > 0 ? unusedAddresses[0].address : "";
 
   // "Request Amount" state
   const [shouldShowRequestAmount, setShouldShowRequestAmount] = useState(false);
@@ -132,9 +124,9 @@ export default function WalletViewHome() {
           <button
             type="button"
             onClick={copyAddressToClipboard}
-            className={`w-fit mx-auto text-xs font-mono text-center cursor-pointer slashed-zero select-none my-2 rounded p-1 shadow-sm my-2 active:bg-primary active:text-white active:shadow-none active:shadow-inner ${addressColor}`}
+            className={`flex justify-center items-center w-fit mx-auto text-xs font-mono text-center cursor-pointer slashed-zero select-none my-2 rounded p-1 shadow-sm my-2 active:bg-primary active:text-white active:shadow-none active:shadow-inner ${addressColor}`}
           >
-            <CopyOutlined className="mr-1" />
+            <CopyOutlined className="mr-0.5" />
             <Address address={address} />
           </button>
 

@@ -1,8 +1,8 @@
 import { useEffect } from "react";
-
 import { useSelector, useDispatch } from "react-redux";
+import { Link } from "react-router-dom";
 import { animated, useSpring } from "@react-spring/web";
-import { StockOutlined } from "@ant-design/icons";
+import { StockOutlined, SettingFilled, WarningFilled } from "@ant-design/icons";
 import { selectActiveWallet } from "@/redux/wallet";
 import {
   setPreference,
@@ -16,9 +16,16 @@ import CurrencyFlip from "@/atoms/CurrencyFlip";
 
 export default function WalletViewBalance() {
   const dispatch = useDispatch();
-  const { name: activeWalletName, balance } = useSelector(selectActiveWallet);
+  const {
+    id: wallet_id,
+    name: activeWalletName,
+    balance,
+    key_viewed,
+  } = useSelector(selectActiveWallet);
   const price = useSelector(selectCurrentPrice);
   const isChipnet = useSelector(selectIsChipnet);
+
+  const isKeyViewed = key_viewed !== null;
 
   const {
     shouldPreferLocalCurrency,
@@ -66,19 +73,29 @@ export default function WalletViewBalance() {
   );
 
   return (
-    <div className="py-2.5 text-center">
+    <div className="py-2.5 text-center flex flex-col justify-center items-center">
       <div
         className={`font-bold text-zinc-400 text-md tracking-wide ${hiddenBalanceClasses}`}
       >
-        {isChipnet ? "[CHIP] " : ""}
-        {activeWalletName}
+        <Link
+          to={`/settings/wallet/${wallet_id}`}
+          className={`flex justify-center items-center ${!isKeyViewed && "text-warning"}`}
+        >
+          {isChipnet ? "[CHIP] " : ""}
+          {activeWalletName}{" "}
+          {!isKeyViewed && balance > 0 ? (
+            <WarningFilled className="text-xs ml-1 text-warning" />
+          ) : (
+            <SettingFilled className="text-xs ml-1 text-primary/70" />
+          )}
+        </Link>
       </div>
       <button
         type="button"
         className={`cursor-pointer ${hiddenBalanceClasses}`}
         onClick={shouldHideBalance ? handleHideBalance : handleFlipCurrency}
       >
-        <div className="text-2xl text-zinc-200 tabular-nums">
+        <div className="text-2xl text-zinc-200 tabular-nums flex justify-center items-center">
           <animated.span style={{ ...balanceReceivedSpring }}>
             <Satoshi value={balance} />
           </animated.span>
@@ -90,7 +107,7 @@ export default function WalletViewBalance() {
         </div>
       </button>
       {shouldDisplayExchangeRate && (
-        <div className="text-md text-zinc-400/80 mt-0.5">
+        <div className="text-sm text-zinc-400/80 mt-0.5 flex justify-center items-center font-mono">
           <StockOutlined className="mr-1" />
           {price.priceString}
           <span className="mx-0.5 text-sm font-mono">/</span>BCH
