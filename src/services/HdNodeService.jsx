@@ -11,11 +11,15 @@ import {
 
 import { hexToBin } from "@/util/hex";
 
+import LogService from "@/services/LogService";
 import AddressManagerService from "@/services/AddressManagerService";
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const Log = LogService("HdNode");
 
 export default function HdNodeService(wallet) {
   const { mnemonic, derivation, passphrase } = wallet;
-  //Logger.debug("HdNodeService", wallet_id, derivation, mnemonic);
+  //Log.debug("HdNodeService", wallet_id, derivation, mnemonic);
 
   const seed = bip39.mnemonicToSeedSync(mnemonic, passphrase);
   const hdMaster = deriveHdPrivateNodeFromSeed(seed);
@@ -35,7 +39,7 @@ export default function HdNodeService(wallet) {
     const hash = ripemd160.hash(sha256.hash(pubKey));
     const address = encodeCashAddress(wallet.prefix, "p2pkh", hash);
 
-    //Logger.debug("generateAddress", index, address);
+    //Log.debug("generateAddress", index, address);
     return address;
   }
 

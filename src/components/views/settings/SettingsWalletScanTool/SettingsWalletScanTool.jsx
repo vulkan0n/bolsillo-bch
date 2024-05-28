@@ -1,4 +1,4 @@
-import Logger from "js-logger";
+/* eslint-disable */
 import { useParams, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { SyncOutlined } from "@ant-design/icons";
@@ -7,6 +7,7 @@ import { selectBchNetwork } from "@/redux/preferences";
 
 import ViewHeader from "@/layout/ViewHeader";
 
+import LogService from "@/services/LogService";
 import ElectrumService from "@/services/ElectrumService";
 import WalletManagerService from "@/services/WalletManagerService";
 import HdNodeService from "@/services/HdNodeService";
@@ -19,12 +20,10 @@ export default function SettingsWalletScanTool() {
   const bchNetwork = useSelector(selectBchNetwork);
   const location = useLocation();
 
-  const { startNow } = location.state;
+  //const { startNow } = location.state;
 
   const WalletManager = WalletManagerService(bchNetwork);
   const wallet = WalletManager.getWalletById(wallet_id);
-
-  Logger.debug("scan tool", wallet);
 
   const AddressManager = AddressManagerService(wallet);
 
@@ -32,15 +31,6 @@ export default function SettingsWalletScanTool() {
   const changeAddresses = AddressManager.getChangeAddresses();
   const unusedReceiveAddresses = AddressManager.getUnusedAddresses(0);
   const unusedChangeAddresses = AddressManager.getUnusedAddresses(0, 1);
-
-  Logger.debug(
-    receiveAddresses,
-    changeAddresses,
-    unusedReceiveAddresses,
-    unusedChangeAddresses
-  );
-
-  Logger.debug(AddressManager.getReceiveAddresses());
 
   return (
     <>

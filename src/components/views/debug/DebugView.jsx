@@ -6,12 +6,15 @@ import {
   ExceptionOutlined,
   RocketOutlined,
   ForkOutlined,
+  CodeOutlined,
+  ExportOutlined,
 } from "@ant-design/icons";
 import {
   setPreference,
   selectIsChipnet,
   selectIsExperimental,
   selectIsPrerelease,
+  selectIsDeveloper,
 } from "@/redux/preferences";
 import ViewHeader from "@/layout/ViewHeader";
 import Accordion from "@/atoms/Accordion";
@@ -19,22 +22,17 @@ import Button from "@/atoms/Button";
 import { translate } from "@/util/translations";
 import translations from "./DebugViewTranslations";
 
-const {
-  debug,
-  debugOptions,
-  enableExperimentalFeatures,
-  experimentalDescription,
-  enablePrereleaseFeatures,
-  prereleaseDescription,
-  throwAnError,
-} = translations;
+import ConsoleService from "@/services/ConsoleService";
 
 export default function DebugView() {
+  const Console = ConsoleService();
+
   const dispatch = useDispatch();
 
   const isChipnet = useSelector(selectIsChipnet);
   const isExperimental = useSelector(selectIsExperimental);
   const isPrerelease = useSelector(selectIsPrerelease);
+  const isDeveloper = useSelector(selectIsDeveloper);
 
   const handleIsChipnet = (event) => {
     const newNetwork = event.target.checked ? "chipnet" : "mainnet";
@@ -50,6 +48,11 @@ export default function DebugView() {
   const handleIsPrerelease = (event) => {
     const value = event.target.checked ? "true" : "false";
     dispatch(setPreference({ key: "enablePrerelease", value }));
+  };
+
+  const handleIsDeveloper = (event) => {
+    const value = event.target.checked ? "true" : "false";
+    dispatch(setPreference({ key: "developer", value }));
   };
 
   const [shouldThrowFakeError, setShouldThrowFakeError] = useState(false);
@@ -69,11 +72,18 @@ export default function DebugView() {
     setShouldThrowFakeError(true);
   };
 
+  const handleExportLogs = async () => {
+    await Console.exportLogs();
+  };
+
   return (
     <>
-      <ViewHeader icon={BugOutlined} title={translate(debug)} />
+      <ViewHeader icon={BugOutlined} title={translate(translations.debug)} />
       <div className="p-2">
-        <Accordion icon={BugOutlined} title={translate(debugOptions)}>
+        <Accordion
+          icon={BugOutlined}
+          title={translate(translations.debugOptions)}
+        >
           <Accordion.Child icon={ExperimentOutlined} label="Use Chipnet">
             <input
               type="checkbox"
@@ -83,8 +93,8 @@ export default function DebugView() {
           </Accordion.Child>
           <Accordion.Child
             icon={RocketOutlined}
-            label={translate(enableExperimentalFeatures)}
-            description={translate(experimentalDescription)}
+            label={translate(translations.enableExperimentalFeatures)}
+            description={translate(translations.experimentalDescription)}
           >
             <input
               type="checkbox"
@@ -94,8 +104,8 @@ export default function DebugView() {
           </Accordion.Child>
           <Accordion.Child
             icon={ForkOutlined}
-            label={translate(enablePrereleaseFeatures)}
-            description={translate(prereleaseDescription)}
+            label={translate(translations.enablePrereleaseFeatures)}
+            description={translate(translations.prereleaseDescription)}
           >
             <div>
               <input
@@ -104,15 +114,37 @@ export default function DebugView() {
                 onChange={handleIsPrerelease}
               />
             </div>
-            {/* {translate(translations.derivationPathExplanation)}{" "} */}
+            {/* {translate(translations.translations.derivationPathExplanation)}{" "} */}
           </Accordion.Child>
+          {isExperimental ? (
+            <Accordion.Child icon={CodeOutlined} label="Developer Mode">
+              <input
+                type="checkbox"
+                checked={isDeveloper}
+                onChange={handleIsDeveloper}
+              />
+            </Accordion.Child>
+          ) : null}
         </Accordion>
+        <div className="p-1 font-mono h-[50vh] overflow-y-auto border border-black rounded text-wrap break-words">
+          <ul className="h-full list-disc list-inside">
+            {Console.getLines().map((line) => (
+              <li key={line}>{line}</li>
+            ))}
+          </ul>
+          .
+        </div>
         <div className="m-1">
           <div className="flex">
             <Button
               icon={ThrowAnErrorButtonIcon}
               label=""
               onClick={handleThrowFakeError}
+            />
+            <Button
+              icon={ExportLogsButtonIcon}
+              label=""
+              onClick={handleExportLogs}
             />
           </div>
         </div>
@@ -123,9 +155,18 @@ export default function DebugView() {
 
 function ThrowAnErrorButtonIcon() {
   return (
-    <span>
+    <span className="flex justify-center items-center">
       <ExceptionOutlined className="mr-1" />
-      {translate(throwAnError)}
+      {translate(translations.throwAnError)}
+    </span>
+  );
+}
+
+function ExportLogsButtonIcon() {
+  return (
+    <span className="flex justify-center items-center">
+      <ExportOutlined className="mr-1" />
+      Export Logs
     </span>
   );
 }

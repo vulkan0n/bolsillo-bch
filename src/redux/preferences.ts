@@ -38,6 +38,7 @@ const defaultPreferences = {
   // --------
   enableExperimental: "false",
   enablePrerelease: "false",
+  developer: "true",
 };
 
 type ValidPreferences = typeof defaultPreferences;
@@ -84,6 +85,8 @@ function validatePreferences(preferences: ValidPreferences): boolean {
     "displayExchangeRate",
     "allowInstantPay",
     "enableExperimental",
+    "enablePrerelease",
+    "developer",
   ];
 
   const invalidBools = boolKeys.filter(
@@ -255,4 +258,9 @@ export const selectIsExperimental = createSelector(
 export const selectIsPrerelease = createSelector(
   (state: RootState) => state.preferences,
   (preferences): boolean => preferences.enablePrerelease === "true"
+);
+
+export const selectIsDeveloper = createSelector(
+  (state: RootState) => state.preferences,
+  (preferences): boolean => preferences.developer === "true"
 );

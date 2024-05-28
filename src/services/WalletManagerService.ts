@@ -1,5 +1,5 @@
-import Logger from "js-logger";
 import * as bip39 from "bip39";
+import LogService from "@/services/LogService";
 import DatabaseService from "@/services/DatabaseService";
 import TransactionManagerService from "@/services/TransactionManagerService";
 import {
@@ -7,6 +7,8 @@ import {
   DEFAULT_DERIVATION_PATH,
   ValidBchNetwork,
 } from "@/util/crypto";
+
+const Log = LogService("WalletManager");
 
 export interface WalletEntity {
   id: number;
@@ -49,7 +51,7 @@ export default function WalletManagerService(network: ValidBchNetwork) {
   // getWallets: return a list of all wallets in the database
   function getWallets(): WalletEntity[] {
     const result = resultToJson(db.exec("SELECT * FROM wallets"));
-    Logger.debug("getWallets", result);
+    //Log.debug("getWallets", result);
     return result;
   }
 
@@ -59,7 +61,7 @@ export default function WalletManagerService(network: ValidBchNetwork) {
       db.exec(`SELECT * FROM wallets WHERE id="${id}"`)
     );
 
-    Logger.debug("getWalletById", id, result);
+    //Log.debug("getWalletById", id, result);
 
     if (result.length === 0) {
       throw new WalletNotExistsError(id);
@@ -83,7 +85,7 @@ export default function WalletManagerService(network: ValidBchNetwork) {
       wallet = getWalletById(wallet_id);
     } catch (e) {
       if (!(e instanceof WalletNotExistsError)) {
-        Logger.warn("something bad happened during boot", e);
+        Log.warn("something bad happened during boot", e);
         throw e;
       }
 
@@ -94,7 +96,7 @@ export default function WalletManagerService(network: ValidBchNetwork) {
       return boot(wallet.id);
     }
 
-    Logger.debug("walletBoot", wallet_id, wallet, network);
+    Log.debug("walletBoot", wallet_id, wallet, network);
     return wallet;
   }
 
@@ -121,7 +123,7 @@ export default function WalletManagerService(network: ValidBchNetwork) {
       )
     )[0];
 
-    Logger.log("creating wallet", result);
+    Log.log("creating wallet", result);
     saveDatabase();
     return result;
   }
@@ -149,7 +151,7 @@ export default function WalletManagerService(network: ValidBchNetwork) {
       )
     )[0];
 
-    Logger.log("importing wallet", result);
+    Log.log("importing wallet", result);
     saveDatabase();
     return result;
   }
@@ -174,7 +176,7 @@ export default function WalletManagerService(network: ValidBchNetwork) {
       )
     )[0];
 
-    Logger.debug("keyViewed", result);
+    Log.debug("keyViewed", result);
 
     saveDatabase();
     return result.key_viewed;

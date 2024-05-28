@@ -1,4 +1,3 @@
-import Logger from "js-logger";
 import { Filesystem, Directory, WriteFileResult } from "@capacitor/filesystem";
 import { Decimal } from "decimal.js";
 import {
@@ -7,12 +6,15 @@ import {
   TransactionCommon as LibauthTransaction,
 } from "@bitauth/libauth";
 
+import LogService from "@/services/LogService";
 import DatabaseService from "@/services/DatabaseService";
 import ElectrumService from "@/services/ElectrumService";
 import UtxoManagerService from "@/services/UtxoManagerService";
 import { WalletEntity } from "@/services/WalletManagerService";
 
 import { hexToBin, binToHex } from "@/util/hex";
+
+const Log = LogService("TransactionManager");
 
 export interface TransactionStub {
   txid: string;
@@ -68,14 +70,14 @@ export default function TransactionManagerService() {
         throw new Error("Transaction Unconfirmed");
       }
 
-      //Logger.debug("resolveTransaction", "local", tx_hash, localTx);
+      //Log.debug("resolveTransaction", "local", tx_hash, localTx);
       return localTx;
     } catch (e) {
       // if there's any problem retrieving the tx locally, try to resolve it
       const Electrum = ElectrumService();
       const remoteTx = await Electrum.requestTransaction(tx_hash);
       const registeredTx = await _registerTransaction(remoteTx);
-      //Logger.debug("resolveTransaction", "remote", tx_hash, registeredTx);
+      //Log.debug("resolveTransaction", "remote", tx_hash, registeredTx);
       return registeredTx;
     }
   }
@@ -99,7 +101,7 @@ export default function TransactionManagerService() {
         UtxoManager.discardUtxo({ tx_hash: input.txid, tx_pos: input.vout });
       });
     } else {
-      Logger.warn("transaction send failure", result);
+      Log.warn("transaction send failure", result);
     }
 
     return isSuccess;
@@ -112,16 +114,16 @@ export default function TransactionManagerService() {
         directory: Directory.Library,
       });
     } catch (e) {
-      //Logger.warn(e);
+      //Log.warn(e);
     }
 
-    //Logger.debug("deleteTransaction", tx_hash);
+    //Log.debug("deleteTransaction", tx_hash);
     db.run(`DELETE FROM transactions WHERE txid="${tx_hash}";`);
     saveDatabase();
   }
 
   async function purgeTransactions(): Promise<void> {
-    Logger.debug("purgeTransactions scheduled");
+    Log.debug("purgeTransactions scheduled");
     queueMicrotask(async () => {
       const tx_hashes = resultToJson(
         db.exec(
@@ -132,9 +134,9 @@ export default function TransactionManagerService() {
         `
         )
       );
-      Logger.debug("purgeTransactions", tx_hashes);
+      Log.debug("purgeTransactions", tx_hashes);
       await Promise.all(tx_hashes.map(({ txid }) => deleteTransaction(txid)));
-      Logger.debug("purgeTransactions done");
+      Log.debug("purgeTransactions done");
     });
   }
 
@@ -183,7 +185,7 @@ export default function TransactionManagerService() {
 
       return result;
     } catch (e) {
-      Logger.error(e);
+      Log.error(e);
       await purgeTransactions();
       return { uri: "" };
     }
@@ -237,7 +239,7 @@ export default function TransactionManagerService() {
 
     const finalTx = { ...result, vin, vout };
 
-    //Logger.debug("_registerTransaction", tx, time, blockhash);
+    //Log.debug("_registerTransaction", tx, time, blockhash);
     return finalTx;
   }
 
@@ -268,7 +270,7 @@ export default function TransactionManagerService() {
 
     const tx = { ...localTx, vin, vout };
 
-    //Logger.log("getTransactionByHash", tx_hash, decodedTx, tx);
+    //Log.log("getTransactionByHash", tx_hash, decodedTx, tx);
     return tx;
   }
 

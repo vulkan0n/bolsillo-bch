@@ -10,7 +10,6 @@ import {
 import { RootState } from "@/redux";
 import { setPreference, selectElectrumServer } from "@/redux/preferences";
 import { syncConnect } from "@/redux/sync";
-import { fetchExchangeRates } from "@/redux/exchangeRates";
 
 import { ValidBchNetwork } from "@/util/crypto";
 

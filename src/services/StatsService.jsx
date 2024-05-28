@@ -1,4 +1,3 @@
-import Logger from "js-logger";
 import { DateTime } from "luxon";
 import { Device } from "@capacitor/device";
 import { gql } from "@apollo/client";
@@ -8,6 +7,10 @@ import apolloClient from "@/apolloClient";
 import { binToHex } from "@/util/hex";
 import { store } from "@/redux";
 import { setPreference } from "@/redux/preferences";
+
+import LogService from "@/services/LogService";
+
+const Log = LogService("Stats");
 
 const SEND_DAILY_CHECK_IN = gql`
   mutation SendCheckIn($hashedDeviceId: String!, $date: String!) {
@@ -51,7 +54,7 @@ export default function StatsService() {
     const deviceId = (await Device.getId())?.identifier;
     const textEncoder = new TextEncoder();
     const hashedDeviceId = binToHex(sha256.hash(textEncoder.encode(deviceId)));
-    Logger.debug({ lastCheckIn, isShouldCheckIn, hashedDeviceId });
+    Log.debug({ lastCheckIn, isShouldCheckIn, hashedDeviceId });
 
     // This will be replaced with a user-optional setting
     const isPrerelease = store.getState().preferences.enablePrerelease;
@@ -66,7 +69,7 @@ export default function StatsService() {
       });
 
       if (result) {
-        Logger.debug("sending off store.dispatch");
+        Log.debug("sending off store.dispatch");
         store.dispatch(
           setPreference({ key: "lastCheckIn", value: nowFormatted })
         );

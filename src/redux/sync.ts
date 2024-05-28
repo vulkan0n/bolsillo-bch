@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
-import Logger from "js-logger";
 import {
   createAction,
   createReducer,
@@ -12,7 +11,9 @@ import { RootState } from "@/redux";
 import { walletBalanceUpdate, selectActiveWallet } from "@/redux/wallet";
 import { setPreference, selectIsChipnet } from "@/redux/preferences";
 import { txHistoryFetch } from "@/redux/txHistory";
+import { selectNetworkStatus } from "@/redux/device";
 
+import LogService from "@/services/LogService";
 import ElectrumService from "@/services/ElectrumService";
 import BlockchainService from "@/services/BlockchainService";
 import AddressManagerService, {
@@ -22,6 +23,8 @@ import TransactionManagerService from "@/services/TransactionManagerService";
 import UtxoManagerService from "@/services/UtxoManagerService";
 
 import { block_checkpoints } from "@/util/block_checkpoints";
+
+const Log = LogService("redux/sync");
 
 const Electrum = ElectrumService();
 
@@ -33,10 +36,13 @@ export const syncMiddleware = createListenerMiddleware();
 export const syncConnect = createAsyncThunk(
   "sync/connect",
   async (payload: { attempts: number; server: string }, thunkApi) => {
-    Logger.log("sync/connect", payload);
+    Log.log("sync/connect", payload);
     try {
-      // attempt connection
-      await Electrum.connect(payload.server);
+      // attempt connection only if device reports active network connection
+      const { isConnected } = selectNetworkStatus(thunkApi.getState());
+      if (isConnected) {
+        await Electrum.connect(payload.server);
+      }
     } catch (e) {
       // if connection fails, destroy the client and try again
       await Electrum.disconnect(true);
@@ -155,7 +161,7 @@ export const syncChangeAddresses = createAsyncThunk(
           address.address
         );
         thunkApi.dispatch(syncAddressState([address, addressState]));
-        //Logger.debug("sync/changeAddresses", address, addressState);
+        //Log.debug("sync/changeAddresses", address, addressState);
         return [address, addressState];
       });
 
@@ -190,7 +196,7 @@ export const syncAddressState = createAsyncThunk(
     if (addressObj.state !== addressState) {
       addressObj = AddressManager.updateAddressState(addressObj, addressState);
       // if state updated, get utxos for address
-      //Logger.debug("address state changed for", addressObj, addressState);
+      //Log.debug("address state changed for", addressObj, addressState);
       thunkApi.dispatch(syncAddressUtxos(addressObj));
 
       // queue history sync after all other requests have finished
@@ -250,7 +256,7 @@ const syncAddressUtxos = createAsyncThunk(
 
     thunkApi.dispatch(syncPopulateAddresses());
 
-    //Logger.debug("sync/addressUtxos", { address, utxos });
+    //Log.debug("sync/addressUtxos", { address, utxos });
     return {
       address,
       utxos,
@@ -269,14 +275,14 @@ const syncAddressHistory = createAsyncThunk(
     const storedAddressState = address.state;
 
     if (calculatedAddressState !== storedAddressState) {
-      //Logger.debug("sync/addressHistory requesting", address.address);
+      //Log.debug("sync/addressHistory requesting", address.address);
       const history = await Electrum.requestAddressHistory(address.address);
       history.forEach((historyTx) =>
         AddressManager.registerTransaction(address.address, historyTx)
       );
     }
 
-    /*Logger.debug(
+    /*Log.debug(
       "sync/addressHistory",
       calculatedAddressState,
       storedAddressState,
@@ -354,7 +360,7 @@ export const syncHotRefresh = createAsyncThunk(
         })
       );
 
-      Logger.debug("sync/hotRefresh", syncAddresses, sync);
+      Log.debug("sync/hotRefresh", syncAddresses, sync);
     }
 
     return Date.now();
@@ -373,7 +379,7 @@ export const syncBlock = createAsyncThunk(
       block = await Blockchain.getBlockByHeight(height);
     }
 
-    // Logger.log("sync/block", block);
+    // Log.log("sync/block", block);
     return block;
   }
 );
@@ -383,7 +389,7 @@ syncMiddleware.startListening({
   actionCreator: syncChaintip,
   effect: async (action, listenerApi) => {
     const chaintip = action.payload;
-    Logger.log("sync/chaintip", chaintip);
+    Log.log("sync/chaintip", chaintip);
     listenerApi.dispatch(syncBlock(chaintip.height));
 
     await TransactionManagerService().purgeTransactions();

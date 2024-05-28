@@ -1,8 +1,10 @@
-import Logger from "js-logger";
 import { App } from "@capacitor/app";
 import { Filesystem, Directory, Encoding } from "@capacitor/filesystem";
 import initSqlJs from "sql.js";
 import { run_migrations } from "@/util/migrations";
+import LogService from "@/services/LogService";
+
+const Log = LogService("Database");
 
 /*
  * [{ network }/servers.json]
@@ -16,12 +18,16 @@ import { run_migrations } from "@/util/migrations";
  * - /wallet_settings
  */
 
-Logger.useDefaults(); // eslint-disable-line react-hooks/rules-of-hooks
 const SELENE_DB_FILE = "selene/selene.db";
 const SELENE_DB_BACKUP_FILE = "selene/selene.db.bak";
 
 // Connect to SQLite Database
+Log.log("* Initializing Database *");
+Log.time("initDb");
+Log.debug("loading SQL module...");
+Log.time("initSql");
 const SQL = await initSqlJs({ locateFile: () => "/sql-wasm.wasm" });
+Log.timeEnd("initSql");
 
 // pointers for throttling db writes
 let flushPending;
@@ -41,30 +47,43 @@ async function _dbOpen(filename) {
 
 // _migrateLegacyDbFile: move old db file to new location
 async function _migrateLegacyDbFile() {
+  Log.debug("Checking for legacy database file");
   const SELENE_LEGACY_DB_FILE = "db/selene.db";
 
   try {
     // check if legacy db file exists (throws if not exists)
-    const statResult = await Filesystem.stat({
+    await Filesystem.stat({
       path: SELENE_LEGACY_DB_FILE,
       directory: Directory.Library,
     });
+  } catch (e) {
+    // fail gracefully if file not found (no need to migrate)
+    Log.debug("No legacy database found");
+    return Promise.resolve();
+  }
 
-    const mkdirResult = await Filesystem.mkdir({
+  try {
+    await Filesystem.mkdir({
       path: "selene/",
       directory: Directory.Library,
       recursive: true,
     });
-
-    // copy legacy db file to new location (throws on failure)
-    const renameResult = await Filesystem.rename({
-      from: SELENE_LEGACY_DB_FILE,
-      to: SELENE_DB_FILE,
-      directory: Directory.Library,
-    });
-
-    Logger.debug("_migrateLegacyDbFile", statResult, mkdirResult, renameResult);
-  } catch (e) {} // eslint-disable-line no-empty
+  } catch (e) {
+    // directory probably already exists, that's fine
+  } finally {
+    try {
+      // copy legacy db file to new location (throws on failure)
+      // overwrites existing DB file!!
+      const renameResult = await Filesystem.rename({
+        from: SELENE_LEGACY_DB_FILE,
+        to: SELENE_DB_FILE,
+        directory: Directory.Library,
+      });
+      Log.log("Migrated legacy database file", renameResult);
+    } catch (e) {
+      Log.error("Legacy database migration failed", e);
+    } // eslint-disable-line no-empty
+  }
 
   return Promise.resolve();
 }
@@ -74,10 +93,11 @@ async function retryWalletDatabase() {
   let db;
   try {
     db = await _dbOpen(SELENE_DB_BACKUP_FILE);
-    Logger.warn("Wallet database corrupted? Loading backup...");
+    Log.warn("Wallet database corrupted? Loading backup...");
     run_migrations(db);
   } catch (e) {
-    Logger.warn("Wallet database corrupted!! Creating new wallet database");
+    Log.warn("Wallet database corrupted!! Creating new wallet database");
+    // TODO: warn user when this happens
     db = new SQL.Database();
     run_migrations(db);
   }
@@ -86,12 +106,15 @@ async function retryWalletDatabase() {
 }
 
 async function dump_db(db) {
+  const filename = SELENE_DB_FILE.concat(".")
+    .concat(Date.now().toString())
+    .concat(".bak");
+
+  Log.warn("Dumping database!!", filename);
+  Log.time("dbDump");
+
   try {
     const data = db.export();
-
-    const filename = SELENE_DB_FILE.concat(".")
-      .concat(Date.now().toString())
-      .concat(".bak");
 
     const result = await Filesystem.writeFile({
       path: filename,
@@ -101,17 +124,21 @@ async function dump_db(db) {
       recursive: true,
     });
 
-    Logger.debug("DUMP_DB", filename, result);
+    Log.debug("DUMP_DB", filename, result);
   } catch (e) {
-    Logger.error(e);
+    Log.error(e);
   }
+
+  Log.timeEnd("dbDump");
 }
 
 async function backup_db(db) {
+  const filename = SELENE_DB_FILE.concat(".bak");
+  Log.log("Writing backup database file", filename);
+  Log.time("dbBackup");
+
   try {
     const data = db.export();
-
-    const filename = SELENE_DB_FILE.concat(".bak");
 
     const result = await Filesystem.writeFile({
       path: filename,
@@ -121,22 +148,26 @@ async function backup_db(db) {
       recursive: true,
     });
 
-    Logger.debug("BACKUP_DB", filename, result);
+    Log.debug("BACKUP_DB", filename, result);
   } catch (e) {
-    Logger.error(e);
+    Log.error(e);
   }
+
+  Log.timeEnd("dbBackup");
 }
 
 // getWalletDatabase: try to open the wallet db file
 // return a blank db if file doesn't exist
 async function getWalletDatabase() {
+  Log.time("dbLoad");
+
   let db;
   try {
     db = await _dbOpen(SELENE_DB_FILE);
-    Logger.debug("Loaded wallet database");
+    Log.log("Loaded wallet database");
     backup_db(db);
   } catch (e) {
-    Logger.warn("Creating wallet database", e);
+    Log.warn("Creating wallet database", e);
     db = new SQL.Database();
   }
 
@@ -151,6 +182,7 @@ async function getWalletDatabase() {
     db = await retryWalletDatabase();
   }
 
+  Log.timeEnd("dbLoad");
   return db;
 }
 
@@ -158,6 +190,7 @@ async function getWalletDatabase() {
 // try to migrate legacy db file first
 await _migrateLegacyDbFile();
 const WALLET_DB = await getWalletDatabase();
+Log.timeEnd("initDb");
 
 // DatabaseService: brokers interactions with raw SQLite database
 export default function DatabaseService() {
@@ -209,7 +242,7 @@ export default function DatabaseService() {
      * ]
      **/
 
-    //Logger.debug("resultToJson", result, mapped, reduced);
+    //Log.debug("resultToJson", result, mapped, reduced);
     return reduced;
   }
 
@@ -233,6 +266,7 @@ export default function DatabaseService() {
 
   // _flushDatabase [private]: writes database to disk
   async function _flushDatabase() {
+    Log.time("flushDatabase");
     try {
       const data = WALLET_DB.export();
 
@@ -244,10 +278,11 @@ export default function DatabaseService() {
         recursive: true,
       });
 
-      Logger.debug("flushDatabase", result);
+      Log.debug("flushDatabase", result);
     } catch (e) {
-      Logger.error(e);
+      Log.error(e);
     }
+    Log.timeEnd("flushDatabase");
   }
 }
 
@@ -255,7 +290,7 @@ export default function DatabaseService() {
 App.addListener("appStateChange", async ({ isActive }) => {
   if (!isActive) {
     await DatabaseService().saveDatabase(true);
-    Logger.debug("flushDatabase on stop");
+    Log.debug("flushDatabase on stop");
   }
 });
 

@@ -16,6 +16,7 @@ import { currencyList } from "@/util/currency";
 
 export const fetchExchangeRates = createAsyncThunk(
   "exchangeRates/fetch",
+  // eslint-disable-next-line @typescript-eslint/default-param-last
   async (attempts: number = 0, thunkApi) => {
     const { localCurrency } = selectCurrencySettings(thunkApi.getState());
     const Currency = CurrencyService(localCurrency);

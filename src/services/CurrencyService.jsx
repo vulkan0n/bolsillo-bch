@@ -1,9 +1,11 @@
-import Logger from "js-logger";
 import { Decimal } from "decimal.js";
+import LogService from "@/services/LogService";
 import { bchToSats, satsToBch } from "@/util/sats";
 import { currencyList } from "@/util/currency";
 import { selectExchangeRates } from "@/redux/exchangeRates";
 import { store } from "@/redux";
+
+const Log = LogService("Currency");
 
 // ARS (Argentina) has to be calculated from the street rate
 // Rate provided by yadio.io, requested by Argentinian users, standard for Bitcoin apps
@@ -72,7 +74,7 @@ export default function CurrencyService(fiatCurrency) {
       },
     });
 
-    Logger.log("Exchange rates", response);
+    Log.log("Exchange rates", response);
 
     if (!response.ok) {
       throw new Error(response);

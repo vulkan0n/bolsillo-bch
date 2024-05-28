@@ -4,8 +4,6 @@ import { MapContainer, TileLayer } from "react-leaflet";
 export default function ExploreMapView() {
   const gpsPosition = useLoaderData();
 
-  console.log(gpsPosition);
-
   return (
     <div>
       <MapContainer
