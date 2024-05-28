@@ -3,6 +3,7 @@ import { Filesystem, Directory, Encoding } from "@capacitor/filesystem";
 import initSqlJs from "sql.js";
 import { run_migrations } from "@/util/migrations";
 import LogService from "@/services/LogService";
+import WalletManagerService from "@/services/WalletManagerService";
 
 const Log = LogService("Database");
 
@@ -20,6 +21,7 @@ const Log = LogService("Database");
 
 const SELENE_DB_FILE = "selene/selene.db";
 const SELENE_DB_BACKUP_FILE = "selene/selene.db.bak";
+const SELENE_LEGACY_DB_FILE = "db/selene.db";
 
 // Connect to SQLite Database
 Log.log("* Initializing Database *");
@@ -48,7 +50,6 @@ async function _dbOpen(filename) {
 // _migrateLegacyDbFile: move old db file to new location
 async function _migrateLegacyDbFile() {
   Log.debug("Checking for legacy database file");
-  const SELENE_LEGACY_DB_FILE = "db/selene.db";
 
   try {
     // check if legacy db file exists (throws if not exists)
@@ -68,21 +69,55 @@ async function _migrateLegacyDbFile() {
       directory: Directory.Library,
       recursive: true,
     });
-  } catch (e) {
-    // directory probably already exists, that's fine
   } finally {
+    // proceed even if directory already exists
     try {
-      // copy legacy db file to new location (throws on failure)
-      // overwrites existing DB file!!
-      const renameResult = await Filesystem.rename({
-        from: SELENE_LEGACY_DB_FILE,
-        to: SELENE_DB_FILE,
+      // check if normal db file exists (throws if not exists)
+      await Filesystem.stat({
+        path: SELENE_DB_FILE,
         directory: Directory.Library,
       });
-      Log.log("Migrated legacy database file", renameResult);
+
+      // if both legacy and new dbs exist, import wallets from legacy
+      const legacy_db = await _dbOpen(SELENE_LEGACY_DB_FILE);
+      const new_db = await _dbOpen(SELENE_DB_FILE);
+      run_migrations(legacy_db);
+      run_migrations(new_db);
+
+      const LegacyDb = DatabaseService(legacy_db);
+      const legacy_wallets = LegacyDb.resultToJson(
+        legacy_db.exec("SELECT * FROM wallets")
+      );
+
+      const WalletManager = WalletManagerService("mainnet");
+      legacy_wallets.forEach((w) => {
+        try {
+          WalletManager.importWallet(
+            w.mnemonic,
+            w.passphrase,
+            w.derivation,
+            w.name
+          );
+        } catch (e) {
+          Log.warn(
+            `Couldn't import legacy wallet '${w.name}'. Mnemonic already exists?`
+          );
+        }
+      });
     } catch (e) {
-      Log.error("Legacy database migration failed", e);
-    } // eslint-disable-line no-empty
+      // legacy db exists but old db doesn't
+      // copy legacy db file to new location (throws on failure)
+      try {
+        const renameResult = await Filesystem.rename({
+          from: SELENE_LEGACY_DB_FILE,
+          to: SELENE_DB_FILE,
+          directory: Directory.Library,
+        });
+        Log.log("Migrated legacy database file", renameResult);
+      } catch (e2) {
+        Log.error("Legacy database migration failed", e2);
+      }
+    }
   }
 
   return Promise.resolve();
@@ -105,6 +140,7 @@ async function retryWalletDatabase() {
   return db;
 }
 
+// dumps db file as-is with timestamp
 async function dump_db(db) {
   const filename = SELENE_DB_FILE.concat(".")
     .concat(Date.now().toString())
@@ -132,6 +168,7 @@ async function dump_db(db) {
   Log.timeEnd("dbDump");
 }
 
+// dumps db file as backup
 async function backup_db(db) {
   const filename = SELENE_DB_FILE.concat(".bak");
   Log.log("Writing backup database file", filename);
@@ -165,7 +202,7 @@ async function getWalletDatabase() {
   try {
     db = await _dbOpen(SELENE_DB_FILE);
     Log.log("Loaded wallet database");
-    backup_db(db);
+    setTimeout(() => backup_db(db), 500); // decouple saving backup db from init process to improve startup speed
   } catch (e) {
     Log.warn("Creating wallet database", e);
     db = new SQL.Database();
@@ -193,9 +230,9 @@ const WALLET_DB = await getWalletDatabase();
 Log.timeEnd("initDb");
 
 // DatabaseService: brokers interactions with raw SQLite database
-export default function DatabaseService() {
+export default function DatabaseService(db = undefined) {
   return {
-    db: WALLET_DB,
+    db: db || WALLET_DB,
     resultToJson,
     saveDatabase,
   };

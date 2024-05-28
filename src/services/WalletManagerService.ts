@@ -133,7 +133,8 @@ export default function WalletManagerService(network: ValidBchNetwork) {
   function importWallet(
     mnemonic: string,
     passphrase: string = "",
-    derivation: ValidDerivationPath = DEFAULT_DERIVATION_PATH
+    derivation: ValidDerivationPath = DEFAULT_DERIVATION_PATH,
+    name: string = "Imported Wallet"
   ): WalletEntity {
     const result = resultToJson(
       db.exec(
@@ -147,7 +148,7 @@ export default function WalletManagerService(network: ValidBchNetwork) {
           ?, ?, ?, ?, 
           strftime('%Y-%m-%dT%H:%M:%SZ')
         ) RETURNING *`,
-        ["Imported Wallet", mnemonic, passphrase, derivation]
+        [name, mnemonic, passphrase, derivation]
       )
     )[0];
 
