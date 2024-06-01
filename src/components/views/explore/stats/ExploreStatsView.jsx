@@ -1,12 +1,12 @@
 /* eslint-disable no-unsafe-optional-chaining */
-//import { useEffect } from "react";
-//import { useQuery } from "@apollo/client";
+import { useEffect } from "react";
+import { useQuery } from "@apollo/client";
 import { DateTime } from "luxon";
 
 import { useCountdown } from "./useCountdown";
 import DailyActiveUsersChart from "./DailyActiveUsersChart";
-//import GET_ACTIVE_BITCOINERS from "./getActiveBitcoiners";
-//import { THIRTY_SECONDS } from "@/util/time";
+import GET_ACTIVE_BITCOINERS from "./getActiveBitcoiners";
+import { THIRTY_SECONDS } from "@/util/time";
 import { ONE_HUNDRED, TEN_MILLION } from "@/util/numbers";
 
 const activeBitcoiners = Array.from(Array(1000).keys())
@@ -21,9 +21,9 @@ const activeBitcoiners = Array.from(Array(1000).keys())
   }));
 
 export default function StatsView() {
-  /*const {
+  const {
     loading: isLoading,
-    //data,
+    data,
     startPolling,
     stopPolling,
   } = useQuery(GET_ACTIVE_BITCOINERS, {
@@ -32,15 +32,13 @@ export default function StatsView() {
     },
   });
 
-  /*useEffect(() => {
+  useEffect(() => {
     startPolling(THIRTY_SECONDS);
 
     return stopPolling;
-  }, [startPolling, stopPolling]);*/
+  }, [startPolling, stopPolling]);
 
-  const isLoading = false;
-
-  const data = { activeBitcoiners };
+  console.log({ data })
 
   const midnightUtc = DateTime.utc().endOf("day");
   const [days, hours, minutes, seconds] = useCountdown(midnightUtc); // eslint-disable-line @typescript-eslint/no-unused-vars
@@ -67,6 +65,8 @@ export default function StatsView() {
   const dailyActiveUsersYesterdayWidth =
     (+dailyActiveUsersYesterdayPercentage.toFixed(2)).toString() + 1;
 
+  const isReady = !isLoading && data?.activeBitcoiners
+
   return (
     <div className="p-2">
       <div className="stats shadow rounded-lg p-3 bg-zinc-100 w-full">
@@ -80,8 +80,8 @@ export default function StatsView() {
         </div>
 
         <div className="bg-zinc-200 mt-3 mb-3">
-          {isLoading && <p>Loading chart...</p>}
-          {!isLoading && <DailyActiveUsersChart data={data} />}
+          {!isReady && <p>Loading chart...</p>}
+          {isReady && <DailyActiveUsersChart data={data} />}
         </div>
 
         <div className="flex justify-between mb-1">
