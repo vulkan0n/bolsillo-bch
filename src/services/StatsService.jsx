@@ -26,15 +26,18 @@ export default function StatsService() {
   // run a daily check in, if current time UTC is on a date later than previous check in
   async function submitCheckIn() {
     const now = DateTime.utc();
-    const nowFormatted = now.format("YYYYMMDD");
+    const nowFormatted = now.toFormat("yyyyLLdd"); // LL is month, 2 digit padded
 
     const DAY = "day";
 
     const lastCheckIn = store.getState().preferences.lastCheckIn || "";
 
+    console.log('hit this point')
+    console.log({ nowFormatted })
     const lastCheckInMoment = DateTime.utc(lastCheckIn, "YYYYMMDD")
       .startOf(DAY)
       .add(1, "s");
+
 
     const nextCheckIn = lastCheckInMoment.clone().add(1, DAY).startOf(DAY);
 
@@ -43,7 +46,11 @@ export default function StatsService() {
     const deviceId = (await Device.getId())?.identifier;
     Logger.debug({ lastCheckIn, isShouldCheckIn, deviceId });
 
+    console.log('3')
+
+    console.log("Should we send!!")
     if (isShouldCheckIn) {
+      console.log("Sending!!")
       apolloClient.mutate({
         mutation: SEND_DAILY_CHECK_IN,
         variables: {
