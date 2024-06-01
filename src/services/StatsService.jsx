@@ -6,10 +6,12 @@ import { gql } from "@apollo/client";
 import { store } from "@/redux";
 import { setPreference } from "@/redux/preferences";
 import apolloClient from "@/apolloClient";
+import { sha256 } from "@bitauth/libauth";
+import { binToHex } from "@/util/hex";
 
 const SEND_DAILY_CHECK_IN = gql`
-  mutation SendCheckIn($deviceId: String!, $date: String!) {
-    sendCheckIn(deviceId: $deviceId, date: $date) {
+  mutation SendCheckIn($hashedDeviceId: String!, $date: String!) {
+    sendCheckIn(hashedDeviceId: $hashedDeviceId, date: $date) {
       status
     }
   }
@@ -40,26 +42,31 @@ export default function StatsService() {
 
     const nextCheckIn = lastCheckInMoment.plus({ days: 1 }).startOf(DAY);
 
-    const isShouldCheckIn = lastCheckIn === "" || now.isAfter(nextCheckIn);
+    const isShouldCheckIn = lastCheckIn === "" || now > nextCheckIn;
 
     const deviceId = (await Device.getId())?.identifier;
-    Logger.debug({ lastCheckIn, isShouldCheckIn, deviceId });
+    const textEncoder = new TextEncoder()
+    const hashedDeviceId = binToHex(sha256.hash(textEncoder.encode(deviceId)))
+    console.log({ isShouldCheckIn, lastCheckIn, deviceId, hashedDeviceId })
+    Logger.debug({ lastCheckIn, isShouldCheckIn, hashedDeviceId });
 
-    console.log("Should we send!!")
+    console.log("Should we send?")
     if (isShouldCheckIn) {
-      console.log("Sending!!")
-      apolloClient.mutate({
+      const result = await apolloClient.mutate({
         mutation: SEND_DAILY_CHECK_IN,
         variables: {
-          deviceId,
+          hashedDeviceId,
           date: nowFormatted,
         },
       });
 
-      Logger.debug("sending off store.dispatch");
-      store.dispatch(
-        setPreference({ key: "lastCheckIn", value: nowFormatted })
-      );
+      if (result) {
+        Logger.debug("sending off store.dispatch");
+        store.dispatch(
+          setPreference({ key: "lastCheckIn", value: nowFormatted })
+        );
+
+      }
     }
   }
 }
