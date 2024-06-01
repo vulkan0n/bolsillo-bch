@@ -24,7 +24,7 @@ ChartJS.register(
 
 function DailyActiveUsersChart({ data }) {
   const labels = data.activeBitcoiners.map(({ date }) =>
-    DateTime.fromISO(date).toLocaleString(DateTime.DATE_SHORT)
+    DateTime.fromISO(date).toLocaleString({ month: 'short', day: 'numeric' })
   );
 
   const dataPoints = data.activeBitcoiners.map(({ count }) => count);
