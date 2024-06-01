@@ -34,19 +34,16 @@ export default function StatsService() {
 
     console.log('hit this point')
     console.log({ nowFormatted })
-    const lastCheckInMoment = DateTime.utc(lastCheckIn, "YYYYMMDD")
-      .startOf(DAY)
-      .add(1, "s");
+    console.log({ lastCheckIn })
+    const defaultLastCheckInMoment = now.minus({ days: 1 }).startOf(DAY).plus({ seconds: 1 })
+    const lastCheckInMoment = lastCheckIn === "" ? defaultLastCheckInMoment : DateTime.fromISO(lastCheckIn).startOf(DAY).plus({ seconds: 1 })
 
-
-    const nextCheckIn = lastCheckInMoment.clone().add(1, DAY).startOf(DAY);
+    const nextCheckIn = lastCheckInMoment.plus({ days: 1 }).startOf(DAY);
 
     const isShouldCheckIn = lastCheckIn === "" || now.isAfter(nextCheckIn);
 
     const deviceId = (await Device.getId())?.identifier;
     Logger.debug({ lastCheckIn, isShouldCheckIn, deviceId });
-
-    console.log('3')
 
     console.log("Should we send!!")
     if (isShouldCheckIn) {
