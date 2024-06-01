@@ -89,14 +89,20 @@ async function _migrateLegacyDbFile() {
         legacy_db.exec("SELECT * FROM wallets")
       );
 
-      const WalletManager = WalletManagerService("mainnet");
       legacy_wallets.forEach((w) => {
         try {
-          WalletManager.importWallet(
-            w.mnemonic,
-            w.passphrase,
-            w.derivation,
-            w.name
+          new_db.exec(
+            `INSERT INTO wallets (
+          name, 
+          mnemonic, 
+          passphrase, 
+          derivation, 
+          key_viewed
+        ) VALUES (
+          ?, ?, ?, ?, 
+          strftime('%Y-%m-%dT%H:%M:%SZ')
+        );`,
+            [w.name, w.mnemonic, w.passphrase, w.derivation]
           );
         } catch (e) {
           Log.warn(
@@ -104,19 +110,17 @@ async function _migrateLegacyDbFile() {
           );
         }
       });
+
+      const NewDb = DatabaseService(new_db);
+      NewDb.saveDatabase(true);
+
+      const deleteResult = await Filesystem.deleteFile({
+        path: SELENE_LEGACY_DB_FILE,
+        directory: Directory.Library,
+      });
+      Log.log("Migrated legacy database file", deleteResult);
     } catch (e) {
-      // legacy db exists but old db doesn't
-      // copy legacy db file to new location (throws on failure)
-      try {
-        const renameResult = await Filesystem.rename({
-          from: SELENE_LEGACY_DB_FILE,
-          to: SELENE_DB_FILE,
-          directory: Directory.Library,
-        });
-        Log.log("Migrated legacy database file", renameResult);
-      } catch (e2) {
-        Log.error("Legacy database migration failed", e2);
-      }
+      Log.error("Legacy database migration failed", e);
     }
   }
 
