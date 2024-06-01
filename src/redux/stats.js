@@ -6,8 +6,6 @@ export const triggerCheckIn = createAsyncThunk(
   async (_, thunkApi) => {
     const { submitCheckIn } = new StatsService();
 
-    console.log("Submitting check in!!")
-
     submitCheckIn();
   }
 );

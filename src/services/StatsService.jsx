@@ -34,9 +34,6 @@ export default function StatsService() {
 
     const lastCheckIn = store.getState().preferences.lastCheckIn || "";
 
-    console.log('hit this point')
-    console.log({ nowFormatted })
-    console.log({ lastCheckIn })
     const defaultLastCheckInMoment = now.minus({ days: 1 }).startOf(DAY).plus({ seconds: 1 })
     const lastCheckInMoment = lastCheckIn === "" ? defaultLastCheckInMoment : DateTime.fromISO(lastCheckIn).startOf(DAY).plus({ seconds: 1 })
 
@@ -47,10 +44,8 @@ export default function StatsService() {
     const deviceId = (await Device.getId())?.identifier;
     const textEncoder = new TextEncoder()
     const hashedDeviceId = binToHex(sha256.hash(textEncoder.encode(deviceId)))
-    console.log({ isShouldCheckIn, lastCheckIn, deviceId, hashedDeviceId })
     Logger.debug({ lastCheckIn, isShouldCheckIn, hashedDeviceId });
 
-    console.log("Should we send?")
     if (isShouldCheckIn) {
       const result = await apolloClient.mutate({
         mutation: SEND_DAILY_CHECK_IN,
