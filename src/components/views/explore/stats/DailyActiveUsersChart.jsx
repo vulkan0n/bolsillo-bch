@@ -29,8 +29,6 @@ function DailyActiveUsersChart({ data }) {
 
   const dataPoints = data.activeBitcoiners.map(({ count }) => count);
 
-  console.log({ dataPoints })
-
   const maxCount = Math.max(
     ...data.activeBitcoiners.map(({ count }) => parseInt(count, 10))
   );

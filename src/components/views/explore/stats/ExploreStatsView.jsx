@@ -9,17 +9,6 @@ import GET_ACTIVE_BITCOINERS from "./getActiveBitcoiners";
 import { THIRTY_SECONDS } from "@/util/time";
 import { ONE_HUNDRED, TEN_MILLION } from "@/util/numbers";
 
-const activeBitcoiners = Array.from(Array(7).keys())
-  .reverse()
-  .map((n) => ({
-    date: DateTime.now()
-      .minus({ hours: 12 * n })
-      .toString(),
-    count: Math.floor(
-      (Math.random() * Math.random() * 10) / (1 + Math.random())
-    ),
-  }));
-
 export default function StatsView() {
   const {
     loading: isLoading,
@@ -37,9 +26,6 @@ export default function StatsView() {
 
     return stopPolling;
   }, [startPolling, stopPolling]);
-
-  console.log({ data })
-  const data2 = { activeBitcoiners }
 
   const midnightUtc = DateTime.utc().endOf("day");
   const [days, hours, minutes, seconds] = useCountdown(midnightUtc); // eslint-disable-line @typescript-eslint/no-unused-vars
@@ -82,7 +68,7 @@ export default function StatsView() {
 
         <div className="bg-zinc-200 mt-3 mb-3">
           {!isReady && <p>Loading chart...</p>}
-          {isReady && <DailyActiveUsersChart data={data2} />}
+          {isReady && <DailyActiveUsersChart data={data} />}
         </div>
 
         <div className="flex justify-between mb-1">
