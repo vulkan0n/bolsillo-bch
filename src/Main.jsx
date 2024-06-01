@@ -22,7 +22,8 @@ import WalletViewHome from "@/views/wallet/WalletViewHome/WalletViewHome";
 import WalletViewHistory from "@/views/wallet/WalletViewHistory/WalletViewHistory";
 import WalletViewSend from "@/views/wallet/WalletViewSend/WalletViewSend";
 import WalletViewSendSuccess from "@/views/wallet/WalletViewSendSuccess/WalletViewSendSuccess";
-import WalletAssetsView from "@/views/wallet/assets/WalletAssetsView";
+
+import AssetsView from "@/views/assets/AssetsView";
 
 import ExploreView from "@/views/explore/ExploreView";
 import ExploreViewHome from "@/views/explore/ExploreViewHome";
@@ -76,15 +77,16 @@ export default function Main() {
               path: "history",
               element: <WalletViewHistory />,
             },
-            {
-              path: "assets",
-              element: <WalletAssetsView />,
-            },
+            ,
             {
               index: true,
               element: <WalletViewHome />,
             },
           ],
+        },
+        {
+          path: "/assets",
+          element: <AssetsView />,
         },
         {
           path: "/explore",

@@ -8,7 +8,7 @@ import Address from "@/atoms/Address";
 import Satoshi from "@/atoms/Satoshi";
 import ViewHeader from "@/layout/ViewHeader";
 
-export default function WalletAssetsView() {
+export default function AssetsView() {
   const wallet = useSelector(selectActiveWallet);
 
   const [shouldShowEmptyAddresses, setShouldShowEmptyAddresses] =

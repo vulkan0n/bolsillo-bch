@@ -1,8 +1,8 @@
 import {
-  BankOutlined,
   ContactsOutlined,
   EnvironmentOutlined,
   QuestionCircleOutlined,
+  BankOutlined,
 } from "@ant-design/icons";
 import { useSelector } from "react-redux";
 import { selectIsExperimental } from "@/redux/preferences";
@@ -17,9 +17,6 @@ export default function ExploreViewHome() {
     <div className="p-2">
       <ExploreStatBlock />
       <StatsView />
-      {isExperimental && (
-        <ExploreApp icon={BankOutlined} name="Assets" to="/wallet/assets" />
-      )}
       {isExperimental && (
         <ExploreApp
           icon={ContactsOutlined}

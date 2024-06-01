@@ -5,6 +5,8 @@ import {
   WalletFilled,
   CompassOutlined,
   CompassFilled,
+  BankOutlined,
+  BankFilled,
   SettingOutlined,
   SettingFilled,
 } from "@ant-design/icons";
@@ -40,21 +42,29 @@ export default function BottomNavigation() {
           to="/wallet"
           activeIcon={WalletFilled}
           icon={WalletOutlined}
-          label={translate(wallet)}
+          label="Cash"
         />
+        {isExperimental && (
+          <NavButton
+            to="/assets"
+            activeIcon={BankFilled}
+            icon={BankOutlined}
+            label="Assets"
+          />
+        )}
         {(isExperimental || isPrerelease) && (
           <NavButton
             to="/explore"
             activeIcon={CompassFilled}
             icon={CompassOutlined}
-            label={translate(explore)}
+            label={translate(translations.explore)}
           />
         )}
         <NavButton
           to="/settings"
           activeIcon={SettingFilled}
           icon={SettingOutlined}
-          label={translate(settings)}
+          label={translate(translations.settings)}
         />
       </div>
     )
