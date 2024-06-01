@@ -1,4 +1,3 @@
-import PropTypes from "prop-types";
 import { useState } from "react";
 import { useSelector } from "react-redux";
 import { BankOutlined, MoneyCollectOutlined } from "@ant-design/icons";
@@ -52,7 +51,12 @@ export default function WalletAssetsView() {
   );
 }
 
-function AddressAccordion({ a, i }) {
+interface AddressAccordionProps {
+  a: AddressEntity;
+  i: number;
+}
+
+function AddressAccordion({ a, i }: AddressAccordionProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   const wallet = useSelector(selectActiveWallet);
@@ -98,11 +102,7 @@ function AddressAccordion({ a, i }) {
   );
 }
 
-AddressAccordion.propTypes = {
-  a: PropTypes.object.isRequired,
-  i: PropTypes.number.isRequired,
-};
-
+/* eslint-disable react/prop-types */
 function Coin({ coin }) {
   const [isSelected, setIsSelected] = useState(false);
 
@@ -135,7 +135,3 @@ function Coin({ coin }) {
     </div>
   );
 }
-
-Coin.propTypes = {
-  coin: PropTypes.object.isRequired,
-};

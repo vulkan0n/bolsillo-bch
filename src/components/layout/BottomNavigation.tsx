@@ -1,4 +1,3 @@
-import PropTypes from "prop-types";
 import { NavLink } from "react-router-dom";
 import { useSelector } from "react-redux";
 import {
@@ -21,7 +20,7 @@ import { translate } from "@/util/translations";
 
 const { wallet, explore, settings } = translations;
 
-function BottomNavigation() {
+export default function BottomNavigation() {
   const isKeyboardOpen = useSelector(selectKeyboardIsOpen);
   const isScanning = useSelector(selectScannerIsScanning);
   const isExperimental = useSelector(selectIsExperimental);
@@ -62,7 +61,19 @@ function BottomNavigation() {
   );
 }
 
-function NavButton({ to, icon, activeIcon, label }) {
+interface NavButtonProps {
+  to: string;
+  icon: React.ComponentType;
+  activeIcon: React.ComponentType;
+  label: string;
+}
+
+function NavButton({
+  to = "",
+  icon = () => null,
+  activeIcon = () => null,
+  label = "",
+}: NavButtonProps) {
   const Icon = icon;
   const ActiveIcon = activeIcon;
 
@@ -92,19 +103,3 @@ function NavButton({ to, icon, activeIcon, label }) {
     </NavLink>
   );
 }
-
-NavButton.propTypes = {
-  to: PropTypes.string,
-  icon: PropTypes.object,
-  activeIcon: PropTypes.object,
-  label: PropTypes.string,
-};
-
-NavButton.defaultProps = {
-  to: "",
-  icon: null,
-  activeIcon: null,
-  label: "",
-};
-
-export default BottomNavigation;

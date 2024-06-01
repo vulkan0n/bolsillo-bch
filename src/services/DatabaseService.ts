@@ -3,7 +3,6 @@ import { Filesystem, Directory, Encoding } from "@capacitor/filesystem";
 import initSqlJs from "sql.js";
 import { run_migrations } from "@/util/migrations";
 import LogService from "@/services/LogService";
-import WalletManagerService from "@/services/WalletManagerService";
 
 const Log = LogService("Database");
 

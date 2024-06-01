@@ -1,8 +1,15 @@
-import PropTypes from "prop-types";
 import { useSelector } from "react-redux";
 import { selectMyAddresses } from "@/redux/sync";
 
-export default function Address({ address, short }) {
+interface AddressProps {
+  address: string;
+  short?: boolean;
+}
+
+export default function Address({
+  address = "-",
+  short = false,
+}: AddressProps) {
   const PREFIX_LENGTH = 5;
   const SUFFIX_LENGTH = 5;
 
@@ -36,13 +43,3 @@ export default function Address({ address, short }) {
     </span>
   );
 }
-
-Address.propTypes = {
-  address: PropTypes.string,
-  short: PropTypes.bool,
-};
-
-Address.defaultProps = {
-  address: "-",
-  short: false,
-};

@@ -1,8 +1,7 @@
 /* eslint-disable react/jsx-props-no-spreading */
-import PropTypes from "prop-types";
 import { useDispatch } from "react-redux";
 import { PictureOutlined } from "@ant-design/icons";
-import { Camera } from "@capacitor/camera";
+import { Camera, CameraResultType, CameraSource } from "@capacitor/camera";
 import { Haptics, NotificationType } from "@capacitor/haptics";
 import QrScanner from "qr-scanner";
 
@@ -12,7 +11,11 @@ import Button from "@/atoms/Button";
 import translations from "./translations";
 import { translate } from "@/util/translations";
 
-export default function ImageSelectButton({ onSelection, ...rest }) {
+interface Props {
+  onSelection: (data: string) => void;
+}
+
+export default function ImageSelectButton({ onSelection, ...rest }: Props) {
   const dispatch = useDispatch();
   // function to downscale images (helps QR codes read better)
   const scaleImage = (image) => {
@@ -42,8 +45,8 @@ export default function ImageSelectButton({ onSelection, ...rest }) {
     const { dataUrl } = await Camera.getPhoto({
       quality: 100,
       allowEditing: false,
-      resultType: "dataUrl",
-      source: "PHOTOS",
+      resultType: CameraResultType.DataUrl,
+      source: CameraSource.Photos,
     });
 
     // load and scan the chosen image
@@ -77,7 +80,3 @@ export default function ImageSelectButton({ onSelection, ...rest }) {
     />
   );
 }
-
-ImageSelectButton.propTypes = {
-  onSelection: PropTypes.func.isRequired,
-};

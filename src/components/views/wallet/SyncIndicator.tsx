@@ -1,4 +1,3 @@
-import PropTypes from "prop-types";
 import { useEffect, useState, useRef } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
@@ -12,6 +11,8 @@ import { selectSyncState } from "@/redux/sync";
 import { selectActiveWallet } from "@/redux/wallet";
 import ToastService from "@/services/ToastService";
 
+type TimeoutType = ReturnType<typeof setTimeout>;
+
 export default function SyncIndicator() {
   const navigate = useNavigate();
   const sync = useSelector(selectSyncState);
@@ -19,7 +20,7 @@ export default function SyncIndicator() {
   const { id: wallet_id } = useSelector(selectActiveWallet);
 
   const [shouldAnimateSync, setShouldAnimateSync] = useState(sync.isSyncing);
-  const syncTimeoutRef = useRef();
+  const syncTimeoutRef = useRef<TimeoutType>();
 
   const [syncSprings] = useSpring(() => ({
     from: { opacity: 1, scale: 1.1 },
@@ -38,7 +39,7 @@ export default function SyncIndicator() {
         clearTimeout(syncTimeoutRef.current);
         syncTimeoutRef.current = setTimeout(
           () => requestAnimationFrame(() => setShouldAnimateSync(false)),
-          500
+          600
         );
       }
     },
@@ -106,6 +107,7 @@ export default function SyncIndicator() {
   );
 }
 
+/* eslint-disable react/prop-types */
 function DisconnectedIcon({ springs }) {
   return (
     <animated.div style={springs}>
@@ -113,9 +115,6 @@ function DisconnectedIcon({ springs }) {
     </animated.div>
   );
 }
-DisconnectedIcon.propTypes = {
-  springs: PropTypes.object.isRequired,
-};
 
 function ConnectedIcon({ springs }) {
   return (
@@ -125,10 +124,6 @@ function ConnectedIcon({ springs }) {
   );
 }
 
-ConnectedIcon.propTypes = {
-  springs: PropTypes.object.isRequired,
-};
-
 function SyncIcon({ springs }) {
   return (
     <animated.div style={springs}>
@@ -136,6 +131,3 @@ function SyncIcon({ springs }) {
     </animated.div>
   );
 }
-SyncIcon.propTypes = {
-  springs: PropTypes.object.isRequired,
-};
