@@ -10,6 +10,7 @@ import {
 import { useSelector } from "react-redux";
 import ExploreStatBlock from "./ExploreStatBlock";
 import ExploreApp from "./ExploreApp";
+import StatsView from "./stats/ExploreStatsView";
 
 export default function ExploreViewHome() {
   const isExperimental = useSelector(selectIsExperimental);
@@ -17,6 +18,7 @@ export default function ExploreViewHome() {
   return (
     <div className="p-2">
       <ExploreStatBlock />
+      <StatsView />
       {isExperimental && <ExploreApp icon={BankOutlined} name="Assets" to="/wallet/assets" />}
       {isExperimental && <ExploreApp
         icon={ContactsOutlined}
