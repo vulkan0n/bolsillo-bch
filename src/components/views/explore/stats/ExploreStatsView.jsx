@@ -52,7 +52,7 @@ export default function StatsView() {
   const dailyActiveUsersYesterdayWidth =
     (+dailyActiveUsersYesterdayPercentage.toFixed(2)).toString() + 1;
 
-  const isReady = !isLoading && data?.activeBitcoiners
+  const isReady = !isLoading && data?.activeBitcoiners;
 
   return (
     <div className="p-2">

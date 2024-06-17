@@ -2,12 +2,12 @@ import Logger from "js-logger";
 import { DateTime } from "luxon";
 import { Device } from "@capacitor/device";
 import { gql } from "@apollo/client";
+import { sha256 } from "@bitauth/libauth";
 
+import apolloClient from "@/apolloClient";
+import { binToHex } from "@/util/hex";
 import { store } from "@/redux";
 import { setPreference } from "@/redux/preferences";
-import apolloClient from "@/apolloClient";
-import { sha256 } from "@bitauth/libauth";
-import { binToHex } from "@/util/hex";
 
 const SEND_DAILY_CHECK_IN = gql`
   mutation SendCheckIn($hashedDeviceId: String!, $date: String!) {
@@ -34,16 +34,22 @@ export default function StatsService() {
 
     const lastCheckIn = store.getState().preferences.lastCheckIn || "";
 
-    const defaultLastCheckInMoment = now.minus({ days: 1 }).startOf(DAY).plus({ seconds: 1 })
-    const lastCheckInMoment = lastCheckIn === "" ? defaultLastCheckInMoment : DateTime.fromISO(lastCheckIn).startOf(DAY).plus({ seconds: 1 })
+    const defaultLastCheckInMoment = now
+      .minus({ days: 1 })
+      .startOf(DAY)
+      .plus({ seconds: 1 });
+    const lastCheckInMoment =
+      lastCheckIn === ""
+        ? defaultLastCheckInMoment
+        : DateTime.fromISO(lastCheckIn).startOf(DAY).plus({ seconds: 1 });
 
     const nextCheckIn = lastCheckInMoment.plus({ days: 1 }).startOf(DAY);
 
     const isShouldCheckIn = lastCheckIn === "" || now > nextCheckIn;
 
     const deviceId = (await Device.getId())?.identifier;
-    const textEncoder = new TextEncoder()
-    const hashedDeviceId = binToHex(sha256.hash(textEncoder.encode(deviceId)))
+    const textEncoder = new TextEncoder();
+    const hashedDeviceId = binToHex(sha256.hash(textEncoder.encode(deviceId)));
     Logger.debug({ lastCheckIn, isShouldCheckIn, hashedDeviceId });
 
     if (isShouldCheckIn) {
@@ -60,7 +66,6 @@ export default function StatsService() {
         store.dispatch(
           setPreference({ key: "lastCheckIn", value: nowFormatted })
         );
-
       }
     }
   }
