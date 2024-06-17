@@ -1,27 +1,48 @@
-export default function ExploreAfogView() {
-  // const up
+import { useState, useEffect } from 'react';
+import { DateTime } from "luxon";
 
-  const tournaments = [
-    {
-      id: 1,
-      game: 'Magic: The Gathering Arena',
-      guild: 'MTGADailyChallenge',
-      prize: '$22',
-      players: '7',
-      date: '06/17/2024',
-      startsIn: '12 hours'
-    },
-    {
-      id: 2,
-      game: 'Magic: The Gathering Arena',
-      guild: 'MTGADailyChallenge',
-      prize: '$31',
-      players: '3',
-      date: '06/17/2024',
-      startsIn: '15 hours'
-    },
-    // More people...
-  ]
+export default function ExploreAfogView() {
+  const [tournaments, setTournaments] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const afogEndpoint = "https://afifthofgaming.com/Session/GetTournaments"
+
+  useEffect(() => {
+    const fetchTournaments = async () => {
+      try {
+        const response = await fetch('http://cors-anywhere.herokuapp.com/https://afifthofgaming.com/Session/GetTournaments');
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        const data = await response.json();
+        const tournamentData = data?.data
+        const sortedData = tournamentData.sort((a, b) => {
+          const dateA = DateTime.fromISO(a.date)
+          const dateB = DateTime.fromISO(b.date)
+          const res = dateA > dateB
+          return res ? 1 : -1
+        })
+        setTournaments(sortedData);
+      } catch (error) {
+        setError(error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTournaments();
+  }, []);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
+
+  console.log({ tournaments })
 
   const Table = () => {
     return (
@@ -41,7 +62,8 @@ export default function ExploreAfogView() {
                 <thead>
                   <tr>
                     <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-                      Date
+                      Date<br />
+                      starts in...
                     </th>
                     <th scope="col" className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">
                       Game (Guild)
@@ -55,28 +77,33 @@ export default function ExploreAfogView() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200">
-                  {tournaments.map(({ id, game, guild, prize, players, date, startsIn }) => (
-                    <tr key={id}>
-                      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                        {date}<br />
-                        in {startsIn}
-                      </td>
-                      <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">
-                        {game}
-                        <br />
-                        {guild}
-                      </td>
-                      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{prize}</td>
-                      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{players}</td>
-                      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500"></td>
-                    </tr>
-                  ))}
+                  {tournaments && tournaments.map(({ id, game, prize, players, date, timeUntilStartDisplay, ...data }) => {
+                    const title = data.cycle.game.title
+                    const guild = data.cycle.guild.name
+
+                    return (
+                      <tr key={id}>
+                        <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                          {date}<br />
+                          in {timeUntilStartDisplay}
+                        </td>
+                        <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">
+                          {title}
+                          <br />
+                          ({guild})
+                        </td>
+                        <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{prize}</td>
+                        <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{players}</td>
+                        <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500"></td>
+                      </tr>
+                    )
+                  })}
                 </tbody>
               </table>
             </div>
           </div>
         </div>
-      </div>
+      </div >
     )
   }
 
