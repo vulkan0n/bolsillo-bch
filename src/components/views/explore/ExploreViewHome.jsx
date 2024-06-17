@@ -4,25 +4,31 @@ import {
   EnvironmentOutlined,
   QuestionCircleOutlined,
 } from "@ant-design/icons";
+import {
+  selectIsExperimental,
+} from "@/redux/preferences";
+import { useSelector } from "react-redux";
 import ExploreStatBlock from "./ExploreStatBlock";
 import ExploreApp from "./ExploreApp";
 
 export default function ExploreViewHome() {
+  const isExperimental = useSelector(selectIsExperimental);
+
   return (
     <div className="p-2">
       <ExploreStatBlock />
-      <ExploreApp icon={BankOutlined} name="Assets" to="/wallet/assets" />
-      <ExploreApp
+      {isExperimental && <ExploreApp icon={BankOutlined} name="Assets" to="/wallet/assets" />}
+      {isExperimental && <ExploreApp
         icon={ContactsOutlined}
         name="Contacts"
         to="/explore/contacts"
-      />
-      <ExploreApp icon={EnvironmentOutlined} name="Map" to="/explore/map" />
-      <ExploreApp
+      />}
+      {isExperimental && <ExploreApp icon={EnvironmentOutlined} name="Map" to="/explore/map" />}
+      {isExperimental && <ExploreApp
         icon={QuestionCircleOutlined}
         name="Help"
         to="/explore/help"
-      />
+      />}
     </div>
   );
 }
