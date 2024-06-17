@@ -8,10 +8,16 @@ import ActiveUsersChart from "./ActiveUsersChart";
 import GET_ACTIVE_BITCOINERS from "./getActiveBitcoiners";
 import { THIRTY_SECONDS } from "@/util/time";
 import { ONE_HUNDRED, TEN_MILLION } from "@/util/numbers";
-import Button from "@/atoms/Button";
+
+const PERIODS = {
+  DAILY: "DAILY",
+  WEEKLY: "WEEKLY",
+  MONTHLY: "MONTHLY",
+  YEARLY: "YEARLY"
+}
 
 export default function StatsView() {
-  const [period, setPeriod] = useState("DAILY")
+  const [period, setPeriod] = useState(PERIODS.DAILY)
 
   const {
     loading: isLoading,
@@ -71,38 +77,46 @@ export default function StatsView() {
 
         <div>
           <button
-            onClick={() => { setPeriod("DAILY") }}
+            onClick={() => {
+              setPeriod(PERIODS.DAILY)
+            }}
           >
-            <span className={`${period === "DAILY" ? 'primary' : 'zinc-400'}`}>
-              DAILY
+            <span className={`${period === PERIODS.DAILY ? 'text-primary' : 'text-zinc-400'}`}>
+              {PERIODS.DAILY}
             </span>
           </button>
           <button
-            onClick={() => { setPeriod("WEEKLY") }}
+            onClick={() => {
+              setPeriod(PERIODS.WEEKLY)
+            }}
           >
-            <span className={`${period === "WEEKLY" ? 'primary' : 'zinc-400'}`}>
-              WEEKLY
+            <span className={`${period === PERIODS.WEEKLY ? 'text-primary' : 'text-zinc-400'}`}>
+              {PERIODS.WEEKLY}
             </span>
           </button>
           <button
-            onClick={() => { setPeriod("MONTHLY") }}
+            onClick={() => {
+              setPeriod(PERIODS.MONTHLY)
+            }}
           >
-            <span className={`${period === "MONTHLY" ? 'primary' : 'zinc-400'}`}>
-              MONTHLY
+            <span className={`${period === PERIODS.MONTHLY ? 'text-primary' : 'text-zinc-400'}`}>
+              {PERIODS.MONTHLY}
             </span>
           </button>
           <button
-            onClick={() => { setPeriod("YEARLY") }}
+            onClick={() => {
+              setPeriod(PERIODS.YEARLY)
+            }}
           >
-            <span className={`${period === "YEARLY" ? 'primary' : 'zinc-400'}`}>
-              YEARLY
+            <span className={`${period === PERIODS.YEARLY ? 'text-primary' : 'text-zinc-400'}`}>
+              {PERIODS.YEARLY}
             </span>
           </button>
         </div>
 
         <div className="bg-zinc-200 mt-3 mb-3">
           {!isReady && <p>Loading chart...</p>}
-          {isReady && <ActiveUsersChart data={data} isYearly={period === "YEARLY"} />}
+          {isReady && <ActiveUsersChart data={data} isYearly={period === PERIODS.YEARLY} />}
         </div>
 
         <div className="flex justify-between mb-1">
