@@ -9,7 +9,7 @@ import { THIRTY_SECONDS } from "@/util/time";
 import { ONE_HUNDRED, TEN_MILLION } from "@/util/numbers";
 import { PERIODS } from "@/util/time"
 
-export default function StatsView() {
+export default function DailyTarget() {
   const [period] = useState(PERIODS.DAILY)
 
   const {
@@ -59,7 +59,7 @@ export default function StatsView() {
   return (
     <div className="p-1">
       <div className="flex justify-between mb-1">
-        <span className="text-base font-small text-zinc-800">
+        <span className="text-base font-small text-zinc-400">
           <div className="text-base font-medium text-secondary">Today</div>
           <div className="text-xs">
             ({hours}h {minutes}m {seconds}s remaining)
@@ -67,12 +67,12 @@ export default function StatsView() {
         </span>
         <span className="text-sm font-medium text-secondary mt-5">
           {dailyActiveUsersToday}{" "}
-          <span className="text-zinc-800">of 10 million (</span>
+          <span className="text-zinc-400">of 10 million (</span>
           {fixedDailyActiveUsersTodayPercentage}%
-          <span className="text-zinc-800">)</span>
+          <span className="text-zinc-400">)</span>
         </span>
       </div>
-      <div className="w-full bg-gray-200 rounded-full h-4.5 dark:bg-gray-250">
+      <div className="w-full bg-gray-800 rounded-full h-4.5 dark:bg-gray-250">
         <div
           className="bg-green-200 h-2.5 rounded-full"
           style={{ width: `${dailyActiveUsersTodayWidth}%` }}
@@ -88,9 +88,9 @@ export default function StatsView() {
         </span>
         <span className="text-sm font-medium text-secondary">
           {dailyActiveUsersYesterday}{" "}
-          <span className="text-zinc-800">of 10 million (</span>
+          <span className="text-zinc-400">of 10 million (</span>
           {fixedDailyActiveUsersYesterdayPercentage}%
-          <span className="text-zinc-800">)</span>
+          <span className="text-zinc-400">)</span>
         </span>
       </div>
     </div>

@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { useQuery } from "@apollo/client";
 import { THIRTY_SECONDS } from "@/util/time";
 import GET_ACTIVE_BITCOINERS_SUMMARY from "./stats/getActiveBitcoinersSummary";
+import DailyTarget from "./stats/DailyTarget";
 
 export default function ExploreStatBlock() {
   const {
@@ -55,6 +56,9 @@ export default function ExploreStatBlock() {
       <div className="w-full flex justify-center items-center">
         <span className="font-bold text-xl text-zinc-300">Selene Active Users</span>
       </div>
+
+      <DailyTarget />
+
       <div className="shadow rounded-lg p-2 bg-zinc-900 w-full flex justify-between items-center">
         <Link to="/explore/stats/#d">
           <div className="p-1 mx-1">
