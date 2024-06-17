@@ -22,9 +22,9 @@ ChartJS.register(
   Legend
 );
 
-function DailyActiveUsersChart({ data }) {
+function ActiveUsersChart({ data, isYearly = false }) {
   const labels = data.activeBitcoiners.map(({ date }) =>
-    DateTime.fromISO(date).toLocaleString({ month: 'short', day: 'numeric' })
+    DateTime.fromISO(date).toLocaleString({ year: isYearly ? '2-digit' : undefined, month: 'short', day: 'numeric' })
   );
 
   const dataPoints = data.activeBitcoiners.map(({ count }) => count);
@@ -38,7 +38,7 @@ function DailyActiveUsersChart({ data }) {
     labels,
     datasets: [
       {
-        label: "Daily Active Selene Users",
+        label: "Active Selene Users",
         data: dataPoints,
         borderColor: "#478559",
         backgroundColor: "#478559",
@@ -73,4 +73,4 @@ function DailyActiveUsersChart({ data }) {
   );
 }
 
-export default DailyActiveUsersChart;
+export default ActiveUsersChart;

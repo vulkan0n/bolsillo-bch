@@ -4,7 +4,7 @@ import { useQuery } from "@apollo/client";
 import { DateTime } from "luxon";
 
 import { useCountdown } from "./useCountdown";
-import DailyActiveUsersChart from "./DailyActiveUsersChart";
+import ActiveUsersChart from "./ActiveUsersChart";
 import GET_ACTIVE_BITCOINERS from "./getActiveBitcoiners";
 import { THIRTY_SECONDS } from "@/util/time";
 import { ONE_HUNDRED, TEN_MILLION } from "@/util/numbers";
@@ -102,7 +102,7 @@ export default function StatsView() {
 
         <div className="bg-zinc-200 mt-3 mb-3">
           {!isReady && <p>Loading chart...</p>}
-          {isReady && <DailyActiveUsersChart data={data} />}
+          {isReady && <ActiveUsersChart data={data} isYearly={period === "YEARLY"} />}
         </div>
 
         <div className="flex justify-between mb-1">
