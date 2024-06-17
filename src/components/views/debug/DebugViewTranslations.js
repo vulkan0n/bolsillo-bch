@@ -38,7 +38,7 @@ const translations = {
     zh: "调试",
     zh_TW: "偵錯"
   },
-  debugOption: {
+  debugOptions: {
     ar: "خيارات التصحيح",
     bn: "ডিবাগ বিকল্প",
     da: "Fejlfindingsindstillinger",
