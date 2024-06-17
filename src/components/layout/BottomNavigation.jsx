@@ -4,8 +4,8 @@ import { useSelector } from "react-redux";
 import {
   WalletOutlined,
   WalletFilled,
-  AppstoreOutlined,
-  AppstoreFilled,
+  CompassOutlined,
+  CompassFilled,
   SettingOutlined,
   SettingFilled,
 } from "@ant-design/icons";
@@ -42,8 +42,8 @@ function BottomNavigation() {
         {(isExperimental || isPrerelease) && (
           <NavButton
             to="/explore"
-            activeIcon={AppstoreFilled}
-            icon={AppstoreOutlined}
+            activeIcon={CompassFilled}
+            icon={CompassOutlined}
             label="Explore"
           />
         )}
