@@ -35,19 +35,19 @@ export default function ExploreStatBlock() {
   } = data.activeBitcoinersSummary
 
   const dailyChange = dailyActiveCount - dailyActivePreviousCount
-  const dailyChangePercentage = (100 / dailyActiveCount * dailyChange) || 0
+  const dailyChangePercentage = (100 / dailyActivePreviousCount * dailyChange)?.toFixed(1) || 0
   const isDailyActiveIncrease = dailyChange >= 0
 
   const weeklyChange = weeklyActiveCount - weeklyActivePreviousCount
-  const weeklyChangePercentage = (100 / weeklyActiveCount * weeklyChange) || 0
+  const weeklyChangePercentage = (100 / weeklyActivePreviousCount * weeklyChange)?.toFixed(1) || 0
   const isWeeklyActiveIncrease = weeklyChange >= 0
 
   const monthlyChange = monthlyActiveCount - monthlyActivePreviousCount
-  const monthlyChangePercentage = (100 / monthlyActiveCount * monthlyChange) || 0
+  const monthlyChangePercentage = (100 / monthlyActivePreviousCount * monthlyChange)?.toFixed(1) || 0
   const isMonthlyActiveIncrease = monthlyChange >= 0
 
   const yearlyChange = yearlyActiveCount - yearlyActivePreviousCount
-  const yearlyChangePercentage = (100 / yearlyActiveCount * yearlyChange) || 0
+  const yearlyChangePercentage = (100 / yearlyActivePreviousCount * yearlyChange)?.toFixed(1) || 0
   const isYearlyActiveIncrease = yearlyChange >= 0
 
   return (
