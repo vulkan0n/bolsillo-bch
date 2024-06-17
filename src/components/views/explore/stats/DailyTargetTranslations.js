@@ -36,7 +36,7 @@ const translations = {
     ur: "آج",
     vi: "Hôm nay",
     zh: "今天",
-    zh_TW: "今天",
+    zh_TW: "今天"
   },
   remaining: {
     ar: "متبقي",
@@ -75,7 +75,7 @@ const translations = {
     ur: "باقی",
     vi: "còn lại",
     zh: "其余的",
-    zh_TW: "其餘的",
+    zh_TW: "其餘的"
   },
   of10million: {
     ar: "من 10 مليون",
@@ -114,7 +114,7 @@ const translations = {
     ur: "10 ملین کی",
     vi: "10 triệu",
     zh: "1000 万",
-    zh_TW: "1000萬",
+    zh_TW: "1000萬"
   },
   yesterday: {
     ar: "أمس",
@@ -153,8 +153,8 @@ const translations = {
     ur: "کل",
     vi: "Hôm qua",
     zh: "昨天",
-    zh_TW: "昨天",
-  },
+    zh_TW: "昨天"
+  }
 };
 
 export default translations;

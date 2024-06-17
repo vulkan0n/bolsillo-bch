@@ -36,7 +36,7 @@ const translations = {
     ur: "ترتیبات",
     vi: "Cài đặt",
     zh: "设置",
-    zh_TW: "設置",
+    zh_TW: "設置"
   },
   walletSettings: {
     ar: "محفظة",
@@ -75,7 +75,7 @@ const translations = {
     ur: "ولیٹ",
     vi: "Ví",
     zh: "钱包",
-    zh_TW: "錢包",
+    zh_TW: "錢包"
   },
   createImportWallet: {
     ar: "إنشاء / استيراد المحفظة",
@@ -114,7 +114,7 @@ const translations = {
     ur: "والیٹ بنائیں/داخل کریں",
     vi: "Tạo/Nhập ví",
     zh: "创建/导入钱包",
-    zh_TW: "創建/導入錢包",
+    zh_TW: "創建/導入錢包"
   },
   localizationSettings: {
     ar: "الموقع",
@@ -153,7 +153,7 @@ const translations = {
     ur: "مقامی کرنے والا",
     vi: "Địa phương hóa",
     zh: "本地化",
-    zh_TW: "本土化",
+    zh_TW: "本土化"
   },
   language: {
     ar: "لغة",
@@ -192,7 +192,7 @@ const translations = {
     ur: "زبان",
     vi: "Ngôn ngữ",
     zh: "语言",
-    zh_TW: "語言",
+    zh_TW: "語言"
   },
   currencySettings: {
     ar: "عملة",
@@ -231,7 +231,7 @@ const translations = {
     ur: "کرنسی",
     vi: "Tiền tệ",
     zh: "货币",
-    zh_TW: "貨幣",
+    zh_TW: "貨幣"
   },
   localCurrency: {
     ar: "العملة المحلية",
@@ -270,7 +270,7 @@ const translations = {
     ur: "مقامی کرنسی",
     vi: "Tiền tệ địa phương",
     zh: "本地货币",
-    zh_TW: "當地貨幣",
+    zh_TW: "當地貨幣"
   },
   preferLocalCurrency: {
     ar: "تفضل العملة المحلية",
@@ -309,7 +309,7 @@ const translations = {
     ur: "مقامی کرنسی کو ترجیح دیں",
     vi: "Ưu tiên tiền tệ địa phương",
     zh: "优先使用本地货币",
-    zh_TW: "更喜歡當地貨幣",
+    zh_TW: "更喜歡當地貨幣"
   },
   hideAvailableBalance: {
     ar: "إخفاء الرصيد المتاح",
@@ -348,7 +348,7 @@ const translations = {
     ur: "دستیاب بقیہ چھپائیں",
     vi: "Ẩn số dư khả dụng",
     zh: "隐藏可用余额",
-    zh_TW: "隱藏可用餘額",
+    zh_TW: "隱藏可用餘額"
   },
   denominateInSats: {
     ar: "تصنيف في ساتس",
@@ -387,7 +387,7 @@ const translations = {
     ur: "سیٹس میں تعین کریں",
     vi: "Ghi nhận theo",
     zh: "以为单位",
-    zh_TW: "以 sat 計價",
+    zh_TW: "以 sat 計價"
   },
   displayExchangeRate: {
     ar: "عرض سعر الصرف",
@@ -426,7 +426,7 @@ const translations = {
     ur: "تبادلی شرح دکھائیں",
     vi: "Hiển thị tỷ giá hối đoái",
     zh: "显示汇率",
-    zh_TW: "顯示匯率",
+    zh_TW: "顯示匯率"
   },
   paymentSettings: {
     ar: "قسط",
@@ -465,7 +465,7 @@ const translations = {
     ur: "ادائیگی",
     vi: "Thanh toán",
     zh: "付款",
-    zh_TW: "支付",
+    zh_TW: "支付"
   },
   allowInstantPay: {
     ar: "السماح بالدفع الفوري",
@@ -504,7 +504,7 @@ const translations = {
     ur: "فوری ادائیگی کی اجازت دیں",
     vi: "Cho phép thanh toán nhanh",
     zh: "允许即时支付",
-    zh_TW: "允許即時付款",
+    zh_TW: "允許即時付款"
   },
   instantPayExplanation: {
     ar: "مسح رمز QR للفاتورة يطلب مبلغًا أقل من حد الدفع الفوري يدفع على الفور دون نقرة إضافية للإرسال.",
@@ -543,8 +543,7 @@ const translations = {
     ur: "انوائس QR کوڈ اسکین کرنے سے مناسبت طلب کی رقم فوری طور پر اضافی ٹیپ کرنے کے بغیر فوری ادائیگی کرتی ہے.",
     vi: "Quét mã QR của hóa đơn yêu cầu số tiền dưới ngưỡng thanh toán tức thì trả ngay mà không cần nhấn thêm để gửi.",
     zh: "扫描发票二维码，请求金额低于即时支付阈值，立即支付而无需额外点击以发送。",
-    zh_TW:
-      "掃描發票二維碼並請求低於即時付款閾值的金額即可立即付款，無需額外點擊即可發送。",
+    zh_TW: "掃描發票二維碼並請求低於即時付款閾值的金額即可立即付款，無需額外點擊即可發送。"
   },
   instantPayLimit: {
     ar: "حد الدفع الفوري",
@@ -583,7 +582,7 @@ const translations = {
     ur: "فوری ادائیگی حد",
     vi: "Giới hạn thanh toán nhanh",
     zh: "即时支付限额",
-    zh_TW: "即時支付限額",
+    zh_TW: "即時支付限額"
   },
   qrCodeSettings: {
     ar: "رمز الاستجابة السريعة",
@@ -622,7 +621,7 @@ const translations = {
     ur: "کیو آر کوڈ",
     vi: "Mã QR",
     zh: "二维码",
-    zh_TW: "二維碼",
+    zh_TW: "二維碼"
   },
   logo: {
     ar: "شعار",
@@ -661,7 +660,7 @@ const translations = {
     ur: "لوگو",
     vi: "Logo",
     zh: "商标",
-    zh_TW: "標識",
+    zh_TW: "標識"
   },
   foregroundColor: {
     ar: "لون المقدمة",
@@ -700,7 +699,7 @@ const translations = {
     ur: "زمینے کا رنگ",
     vi: "Màu nền",
     zh: "前景色",
-    zh_TW: "前景色",
+    zh_TW: "前景色"
   },
   backgroundColor: {
     ar: "لون الخلفية",
@@ -739,7 +738,7 @@ const translations = {
     ur: "پس زمینہ کا رنگ",
     vi: "Màu nền",
     zh: "背景色",
-    zh_TW: "背景顏色",
+    zh_TW: "背景顏色"
   },
   resetColors: {
     ar: "إعادة تعيين الألوان",
@@ -778,7 +777,7 @@ const translations = {
     ur: "رنگوں کو دوبارہ ترتیب دیں",
     vi: "Đặt lại Màu sắc",
     zh: "重置颜色",
-    zh_TW: "重置顏色",
+    zh_TW: "重置顏色"
   },
   network: {
     ar: "Network",
@@ -817,7 +816,7 @@ const translations = {
     ur: "نیٹ ورک",
     vi: "Mạng lưới",
     zh: "网络",
-    zh_TW: "Network",
+    zh_TW: "Network"
   },
   translatedElectrumServer: {
     ar: "Electrum Server",
@@ -856,22 +855,22 @@ const translations = {
     ur: "ایلیکٹرم سرور",
     vi: "Máy chủ Electrum",
     zh: "Electrum 服务器",
-    zh_TW: "Electrum Server",
+    zh_TW: "Electrum Server"
   },
   electrumServerDescription: {
-    ar: "Choose an Electrum server from the provided list or override by entering a custom Electrum server name.",
+    ar: "اختر خادم Electrum من القائمة المتوفرة أو قم بالتجاوز عن طريق إدخال اسم خادم Electrum مخصص.",
     bn: "প্রদত্ত তালিকা থেকে ইলেক্ট্রাম সার্ভার নির্বাচন করুন অথবা কাস্টম ইলেক্ট্রাম সার্ভার নাম প্রবেশ করুন।",
     da: "Vælg en Electrum-server fra den medfølgende liste, eller tilsidesæt ved at indtaste et brugerdefineret navn for Electrum-server.",
     de: "Wählen Sie einen Electrum-Server aus der bereitgestellten Liste oder überschreiben Sie ihn, indem Sie einen benutzerdefinierten Electrum-Servernamen eingeben.",
     el: "Επιλέξτε έναν διακομιστή Electrum από την παρεχόμενη λίστα ή αντικαταστήστε τον εισάγοντας ένα προσαρμοσμένο όνομα διακομιστή Electrum.",
     en: "Choose an Electrum server from the provided list or override by entering a custom Electrum server name.",
     es: "Elija un servidor Electrum de la lista proporcionada o anule la selección ingresando un nombre de servidor Electrum personalizado.",
-    fa: "Choose an Electrum server from the provided list or override by entering a custom Electrum server name.",
-    fil: "Choose an Electrum server from the provided list or override by entering a custom Electrum server name.",
+    fa: "یک سرور Electrum را از لیست ارائه شده انتخاب کنید یا با وارد کردن نام سرور Electrum سفارشی، آن را لغو کنید.",
+    fil: "Pumili ng Electrum server mula sa ibinigay na listahan o i-override sa pamamagitan ng paglalagay ng custom na pangalan ng Electrum server.",
     fr: "Choisissez un serveur Electrum dans la liste fournie ou remplacez-le en saisissant un nom de serveur Electrum personnalisé.",
-    ha: "Choose an Electrum server from the provided list or override by entering a custom Electrum server name.",
+    ha: "Zaɓi uwar garken Electrum daga lissafin da aka bayar ko soke ta shigar da sunan uwar garken Electrum na al&#39;ada.",
     hi: "प्रदान की गई सूची से एक इलेक्ट्रम सर्वर चुनें या एक कस्टम इलेक्ट्रम सर्वर नाम द्वारा ओवरराइड करें।",
-    id: "Choose an Electrum server from the provided list or override by entering a custom Electrum server name.",
+    id: "Pilih server Electrum dari daftar yang disediakan atau ganti dengan memasukkan nama server Electrum khusus.",
     it: "Scegli un server Electrum dalla lista fornita o sovrascrivilo inserendo un nome di server Electrum personalizzato.",
     ja: "提供されたリストからElectrumサーバーを選択するか、カスタムElectrumサーバー名を入力して上書きします。",
     jv: "Pilih server Electrum saka daftar sing disajetani utawa ganti ing ngisor-nirmiti jeneng server Electrum.",
@@ -879,78 +878,77 @@ const translations = {
     mr: "प्रदत्त यादीतील एक इलेक्ट्रम सर्व्हर निवडा किंवा एक कस्टम इलेक्ट्रम सर्व्हर नाव द्वारे अधिरोहण करा.",
     ms: "Pilih server Electrum dari senarai yang disediakan atau tukar ganti dengan memasukkan nama server Electrum yang disesuaikan.",
     nb: "Velg en Electrum-server fra den oppgitte listen eller overstyr ved å angi et egendefinert navn for Electrum-server.",
-    nl: "Choose an Electrum server from the provided list or override by entering a custom Electrum server name.",
+    nl: "Kies een Electrum-server uit de aangeboden lijst of overschrijf deze door een aangepaste Electrum-servernaam in te voeren.",
     pa: "ਪ੍ਰਦਾਨ ਕੀਤੀਆਂ ਸੂਚੀ ਤੋਂ ਇਲੈਕਟਰਮ ਸਰਵਰ ਚੁਣੋ ਜਾਂ ਕਸਟਮ ਇਲੈਕਟਰਮ ਸਰਵਰ ਨਾਂ ਦੀ ਓਵਰਰਾਈਡ ਕਰੋ।",
-    pl: "Choose an Electrum server from the provided list or override by entering a custom Electrum server name.",
+    pl: "Wybierz serwer Electrum z podanej listy lub zastąp go, wprowadzając niestandardową nazwę serwera Electrum.",
     pt: "Escolha um servidor Electrum da lista fornecida ou substitua-o inserindo um nome de servidor Electrum personalizado.",
-    ro: "Choose an Electrum server from the provided list or override by entering a custom Electrum server name.",
+    ro: "Alegeți un server Electrum din lista furnizată sau înlocuiți introducând un nume personalizat de server Electrum.",
     ru: "Выберите сервер Electrum из предоставленного списка или переопределите его, введя имя настраиваемого сервера Electrum.",
     sv: "Välj en Electrum-server från den medföljande listan eller åsidosätt genom att ange ett anpassat namn för Electrum-server.",
-    sw: "Choose an Electrum server from the provided list or override by entering a custom Electrum server name.",
+    sw: "Chagua seva ya Electrum kutoka kwenye orodha iliyotolewa au ubatilishe kwa kuingiza jina maalum la seva ya Electrum.",
     ta: "வழங்கப்பட்ட பட்டியலிலிருந்து ஒரு எலெக்ட்ரம் சேவையகம் தேர்ந்தெடுக்கவும் அல்லது தனிநிறுத்தப்பட்ட எலெக்ட்ரம் சேவையகத்திற்கு பின்னர் மாற்றியிருப்பதற்கு ஒரு தனி எலெக்ட்ரம் சேவையக பெயரை உள்ளிடுக.",
     te: "అందించిన జాబితా నుంచి ఒక ఎలిక్ట్రమ్ సర్వర్‌ను ఎంచుకోండి లేదా కస్టమ్ ఎలిక్ట్రమ్ సర్వర్‌ను పేరు ఎంటర్ చేసి మార్చవచ్చు.",
-    th: "Choose an Electrum server from the provided list or override by entering a custom Electrum server name.",
+    th: "เลือกเซิร์ฟเวอร์ Electrum จากรายการที่ให้ไว้หรือแทนที่โดยป้อนชื่อเซิร์ฟเวอร์ Electrum แบบกำหนดเอง",
     tr: "Sağlanan listeden bir Electrum sunucusu seçin veya özel bir Electrum sunucusu adı girerek üzerine yazın.",
-    uk: "Choose an Electrum server from the provided list or override by entering a custom Electrum server name.",
+    uk: "Виберіть сервер Electrum із наданого списку або перевизначте, ввівши спеціальне ім’я сервера Electrum.",
     ur: "فراہم کردہ فہرست سے ایک الیکٹرم سرور کا انتخاب کریں یا خود سے الیکٹرم سرور کا نام داخل کر کے اس کو اوپر لکھیں۔",
     vi: "Chọn một máy chủ Electrum từ danh sách được cung cấp hoặc ghi đè bằng cách nhập tên máy chủ Electrum tùy chỉnh.",
     zh: "从提供的列表中选择一个 Electrum 服务器或通过输入自定义 Electrum 服务器名称覆盖。",
-    zh_TW:
-      "Choose an Electrum server from the provided list or override by entering a custom Electrum server name.",
+    zh_TW: "從提供的清單中選擇 Electrum 伺服器或透過輸入自訂 Electrum 伺服器名稱進行覆蓋。"
   },
   server: {
-    ar: "Server",
+    ar: "الخادم",
     bn: "সার্ভার",
     da: "Server",
     de: "Server",
     el: "Διακομιστής",
     en: "Server",
     es: "Servidor",
-    fa: "Server",
-    fil: "Server",
+    fa: "سرور",
+    fil: "server",
     fr: "Serveur",
-    ha: "Server",
+    ha: "Sabar",
     hi: "सर्वर",
-    id: "Server",
-    it: "Server",
+    id: "pelayan",
+    it: "server",
     ja: "サーバー",
     jv: "Server",
     ko: "서버",
     mr: "सर्व्हर",
-    ms: "Server",
+    ms: "pelayan",
     nb: "Server",
     nl: "Server",
     pa: "ਸਰਵਰ",
-    pl: "Server",
+    pl: "serwer",
     pt: "Servidor",
     ro: "Server",
     ru: "Сервер",
     sv: "Server",
-    sw: "Server",
+    sw: "Seva",
     ta: "சேவையகம்",
     te: "సర్వర్",
-    th: "Server",
+    th: "เซิร์ฟเวอร์",
     tr: "Sunucu",
-    uk: "Server",
+    uk: "Сервер",
     ur: "سرور",
     vi: "Máy chủ",
     zh: "服务器",
-    zh_TW: "Server",
+    zh_TW: "伺服器"
   },
   customServer: {
-    ar: "Custom Server",
+    ar: "خادم مخصص",
     bn: "কাস্টম সার্ভার",
     da: "Brugerdefineret Server",
     de: "Benutzerdefinierter Server",
     el: "Προσαρμοσμένος διακομιστής",
     en: "Custom Server",
     es: "Servidor personalizado",
-    fa: "Custom Server",
-    fil: "Custom Server",
+    fa: "سرور سفارشی",
+    fil: "Custom na Server",
     fr: "Serveur personnalisé",
-    ha: "Custom Server",
+    ha: "Abokin Ciniki na Musamman",
     hi: "कस्टम सर्वर",
-    id: "Custom Server",
+    id: "Server Khusus",
     it: "Server personalizzato",
     ja: "カスタムサーバー",
     jv: "Server Kustom",
@@ -958,24 +956,24 @@ const translations = {
     mr: "कस्टम सर्व्हर",
     ms: "Server Tersuai",
     nb: "Egendefinert Server",
-    nl: "Custom Server",
+    nl: "Aangepaste server",
     pa: "ਕਸਟਮ ਸਰਵਰ",
-    pl: "Custom Server",
+    pl: "Serwer niestandardowy",
     pt: "Servidor Personalizado",
-    ro: "Custom Server",
+    ro: "Server personalizat",
     ru: "Настроенный сервер",
     sv: "Anpassad Server",
-    sw: "Custom Server",
+    sw: "Seva Maalum",
     ta: "விருப்ப சேவையகம்",
     te: "అభినందించే సర్వర్",
-    th: "Custom Server",
+    th: "เซิร์ฟเวอร์แบบกำหนดเอง",
     tr: "Özel Sunucu",
-    uk: "Custom Server",
+    uk: "Спеціальний сервер",
     ur: "مخصوص سرور",
     vi: "Máy chủ tùy chỉnh",
     zh: "自定义服务器",
-    zh_TW: "Custom Server",
-  },
+    zh_TW: "客製化伺服器"
+  }
 };
 
 export default translations;

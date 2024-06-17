@@ -36,7 +36,7 @@ const translations = {
     ur: "اضافی والیٹ معلومات",
     vi: "Thông tin ví tiền bổ sung",
     zh: "额外钱包信息",
-    zh_TW: "Additional Wallet Information",
+    zh_TW: "Additional Wallet Information"
   },
   activateToReveal: {
     ar: "Activate this wallet to view this information.",
@@ -75,7 +75,7 @@ const translations = {
     ur: "اس معلومات کو دیکھنے کے لئے اس والٹ کو چالو کریں۔",
     vi: "Kích hoạt ví này để xem thông tin này.",
     zh: "激活此钱包以查看此信息。",
-    zh_TW: "Activate this wallet to view this information.",
+    zh_TW: "Activate this wallet to view this information."
   },
   derivationPathTitle: {
     ar: "Derivation Path",
@@ -114,7 +114,7 @@ const translations = {
     ur: "اخذ راہ",
     vi: "Đường dẫn tạo",
     zh: "衍生路径",
-    zh_TW: "Derivation Path",
+    zh_TW: "Derivation Path"
   },
   derivationPathExplanation: {
     ar: "A wallet derivation path tells wallet software how to generate each successive new Bitcoin address from the initial seed phrase. When importing seed phrases from one wallet software into another, the correct derivation path is sometimes required to help it find any existing coins or transactions. It is best to store the derivation path if you plan to change wallets, but if not then it's always possible to try the limited number of standard derivation paths to recover your coins. The default Selene Wallet derivation path is",
@@ -153,8 +153,7 @@ const translations = {
     ur: "A wallet derivation path tells wallet software how to generate each successive new Bitcoin address from the initial seed phrase. When importing seed phrases from one wallet software into another, the correct derivation path is sometimes required to help it find any existing coins or transactions. It is best to store the derivation path if you plan to change wallets, but if not then it's always possible to try the limited number of standard derivation paths to recover your coins. The default Selene Wallet derivation path is",
     vi: "Đường dẫn của ví cho biết phần mềm ví làm thế nào để tạo ra từng địa chỉ Bitcoin mới liên tiếp từ cụm hạt giống ban đầu. Khi nhập các cụm hạt giống từ phần mềm ví này sang phần mềm ví khác, đôi khi cần phải có đường dẫn chính xác để giúp tìm thấy bất kỳ đồng xu hoặc giao dịch hiện có. Nên lưu trữ đường dẫn nếu bạn có kế hoạch thay đổi ví, nhưng nếu không, luôn có thể thử số lượng hạn chế các đường dẫn tiêu chuẩn để khôi phục lại số tiền của bạn. Đường dẫn mặc định của Selene Wallet là",
     zh: "钱包派生路径告诉钱包软件如何从初始种子短语生成每个连续的新比特币地址。当从一个钱包软件导入种子短语到另一个钱包软件时，有时需要正确的派生路径来帮助找到任何现有的比特币或交易。最好在计划更改钱包时保存派生路径，但如果不打算更改，则始终可以尝试有限数量的标准派生路径来恢复您的比特币。 Selene钱包的默认派生路径是",
-    zh_TW:
-      "A wallet derivation path tells wallet software how to generate each successive new Bitcoin address from the initial seed phrase. When importing seed phrases from one wallet software into another, the correct derivation path is sometimes required to help it find any existing coins or transactions. It is best to store the derivation path if you plan to change wallets, but if not then it's always possible to try the limited number of standard derivation paths to recover your coins. The default Selene Wallet derivation path is",
+    zh_TW: "A wallet derivation path tells wallet software how to generate each successive new Bitcoin address from the initial seed phrase. When importing seed phrases from one wallet software into another, the correct derivation path is sometimes required to help it find any existing coins or transactions. It is best to store the derivation path if you plan to change wallets, but if not then it's always possible to try the limited number of standard derivation paths to recover your coins. The default Selene Wallet derivation path is"
   },
   xPubDescription1: {
     ar: "xPub is the root public address from which all other public addresses in the same wallet can be generated.",
@@ -193,8 +192,7 @@ const translations = {
     ur: "xPub ایک روٹ عام پتہ ہے جس سے ایک ہی والٹ میں تمام دیگر عوامی پتے بنائے جا سکتے ہیں۔",
     vi: "xPub là địa chỉ công khai gốc từ đó có thể tạo ra tất cả các địa chỉ công khai khác trong cùng một ví tiền.",
     zh: "xPub是根公共地址，可以从中生成同一钱包中的所有其他公共地址。",
-    zh_TW:
-      "xPub is the root public address from which all other public addresses in the same wallet can be generated.",
+    zh_TW: "xPub is the root public address from which all other public addresses in the same wallet can be generated."
   },
   xPubDescription2: {
     ar: "Be VERY CAREFUL with this value.",
@@ -233,7 +231,7 @@ const translations = {
     ur: "اس قدر محتاط رہیں۔",
     vi: "Hãy CẨN THẬN rất nhiều với giá trị này.",
     zh: "对这个值要非常小心。",
-    zh_TW: "Be VERY CAREFUL with this value.",
+    zh_TW: "Be VERY CAREFUL with this value."
   },
   xPubDescription3: {
     ar: "Anyone with access to the xPub can observe every address ever generated (past or future) by this wallet!",
@@ -272,8 +270,7 @@ const translations = {
     ur: "xPub تک رسائی رکھنے والے کو اس والٹ سے بنائے گئے ہر ایڈریس کا نگرانہ کرنا ممکن ہے (ماضی یا مستقبل)!",
     vi: "Bất kỳ ai có quyền truy cập vào xPub đều có thể quan sát mọi địa chỉ đã được tạo ra (quá khứ hoặc tương lai) bởi ví này!",
     zh: "任何有xPub访问权限的人都可以观察此钱包生成的每个地址（过去或未来）！",
-    zh_TW:
-      "Anyone with access to the xPub can observe every address ever generated (past or future) by this wallet!",
+    zh_TW: "Anyone with access to the xPub can observe every address ever generated (past or future) by this wallet!"
   },
   hideXpub: {
     ar: "Hide xPub",
@@ -312,7 +309,7 @@ const translations = {
     ur: "xPub چھپائیں",
     vi: "Ẩn xPub",
     zh: "隐藏 xPub",
-    zh_TW: "Hide xPub",
+    zh_TW: "Hide xPub"
   },
   revealXpub: {
     ar: "Reveal xPub",
@@ -351,7 +348,7 @@ const translations = {
     ur: "xPub ظاہر کریں",
     vi: "Tiết lộ xPub",
     zh: "显示 xPub",
-    zh_TW: "Reveal xPub",
+    zh_TW: "Reveal xPub"
   },
   xPrvDescription1: {
     ar: "xPrv is the root private key from which all other private keys in the same wallet can be generated.",
@@ -390,8 +387,7 @@ const translations = {
     ur: "xPrv ایک روٹ نجی کلید ہے جس سے اسی والیٹ میں دیگر تمام نجی کلیدیں تیار کی جا سکتی ہیں۔",
     vi: "xPrv là khóa cá nhân gốc từ đó có thể tạo ra tất cả các khóa cá nhân khác trong cùng một ví.",
     zh: "xPrv是根私钥，可用于生成同一钱包中的所有其他私钥。",
-    zh_TW:
-      "xPrv is the root private key from which all other private keys in the same wallet can be generated.",
+    zh_TW: "xPrv is the root private key from which all other private keys in the same wallet can be generated."
   },
   xPrvDescription2: {
     ar: "Be VERY CAREFUL with this value.",
@@ -430,7 +426,7 @@ const translations = {
     ur: "اس قدر سے بہت خیال رکھیں۔",
     vi: "Hãy RẤT CẨN THẬN với giá trị này.",
     zh: "对此值要非常小心。",
-    zh_TW: "Be VERY CAREFUL with this value.",
+    zh_TW: "Be VERY CAREFUL with this value."
   },
   xPrvDescription3: {
     ar: "Anyone with access to the xPrv can TAKE ALL FUNDS from every address ever generated (past or future) by this wallet!!",
@@ -469,8 +465,7 @@ const translations = {
     ur: "xPrv تک رسائی رکھنے والے کو اس والٹ سے بنائے گئے ہر ایڈریس کے سب سے (ماضی یا مستقبل) سب سے زیادہ دولت لے سکتے ہیں!!",
     vi: "Bất kỳ ai có quyền truy cập vào xPrv đều có thể LẤY TẤT CẢ TÀI SẢN từ mọi địa chỉ từng được tạo ra (quá khứ hoặc tương lai) bởi ví này!!",
     zh: "任何有xPrv访问权限的人都可以从此钱包生成的每个地址（过去或未来）拿走所有资金!!",
-    zh_TW:
-      "Anyone with access to the xPrv can TAKE ALL FUNDS from every address ever generated (past or future) by this wallet!!",
+    zh_TW: "Anyone with access to the xPrv can TAKE ALL FUNDS from every address ever generated (past or future) by this wallet!!"
   },
   hideXprv: {
     ar: "Hide xPrv",
@@ -509,7 +504,7 @@ const translations = {
     ur: "xPrv چھپائیں",
     vi: "Ẩn xPrv",
     zh: "隐藏 xPrv",
-    zh_TW: "Hide xPrv",
+    zh_TW: "Hide xPrv"
   },
   revealXprv: {
     ar: "Reveal xPrv",
@@ -548,8 +543,8 @@ const translations = {
     ur: "xPrv ظاہر کریں",
     vi: "Tiết lộ xPrv",
     zh: "显示 xPrv",
-    zh_TW: "Reveal xPrv",
-  },
+    zh_TW: "Reveal xPrv"
+  }
 };
 
 export default translations;

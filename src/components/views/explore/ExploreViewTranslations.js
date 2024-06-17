@@ -36,8 +36,8 @@ const translations = {
     ur: "Bitcoin کیش کو دریافت کریں۔",
     vi: "Khám phá tiền mặt Bitcoin",
     zh: "探索比特币现金",
-    zh_TW: "探索比特幣現金",
-  },
+    zh_TW: "探索比特幣現金"
+  }
 };
 
 export default translations;

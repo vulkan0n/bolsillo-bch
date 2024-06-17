@@ -36,8 +36,8 @@ const translations = {
     ur: "سیلین ایکٹو صارفین",
     vi: "Người dùng đang hoạt động Selene",
     zh: "Selene 活跃用户",
-    zh_TW: "Selene 活躍用戶",
-  },
+    zh_TW: "Selene 活躍用戶"
+  }
 };
 
 export default translations;

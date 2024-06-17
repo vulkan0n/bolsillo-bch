@@ -36,8 +36,8 @@ const translations = {
     ur: "تصویر",
     vi: "Hình ảnh",
     zh: "图像",
-    zh_TW: "圖像",
-  },
+    zh_TW: "圖像"
+  }
 };
 
 export default translations;
