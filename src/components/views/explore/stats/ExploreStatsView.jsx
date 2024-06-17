@@ -9,7 +9,7 @@ import { PERIODS } from "@/util/time"
 import { translate } from "@/util/translations";
 import translations from "./ExploreStatsViewTranslations";
 
-const { globalAdoption } = translations;
+const { globalAdoption, activeSeleneUsers, daily, weekly, monthly, yearly } = translations;
 
 export default function StatsView() {
   const [period, setPeriod] = useState(PERIODS.DAILY)
@@ -41,7 +41,7 @@ export default function StatsView() {
         </div>
         <div className="stat">
           <div className="stat-title text-zinc-800">
-            Active Selene Users
+            {translate(activeSeleneUsers)}
           </div>
         </div>
 
@@ -58,7 +58,7 @@ export default function StatsView() {
             }}
           >
             <span className={`${period === PERIODS.DAILY ? 'text-primary' : 'text-zinc-400'}`}>
-              {PERIODS.DAILY}
+              {translate(daily)}
             </span>
           </button>
           <button
@@ -68,7 +68,7 @@ export default function StatsView() {
             }}
           >
             <span className={`${period === PERIODS.WEEKLY ? 'text-primary' : 'text-zinc-400'}`}>
-              {PERIODS.WEEKLY}
+              {translate(weekly)}
             </span>
           </button>
           <button
@@ -78,7 +78,7 @@ export default function StatsView() {
             }}
           >
             <span className={`${period === PERIODS.MONTHLY ? 'text-primary' : 'text-zinc-400'}`}>
-              {PERIODS.MONTHLY}
+              {translate(monthly)}
             </span>
           </button>
           <button
@@ -88,7 +88,7 @@ export default function StatsView() {
             }}
           >
             <span className={`${period === PERIODS.YEARLY ? 'text-primary' : 'text-zinc-400'}`}>
-              {PERIODS.YEARLY}
+              {translate(yearly)}
             </span>
           </button>
         </div>

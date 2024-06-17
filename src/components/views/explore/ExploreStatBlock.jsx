@@ -1,10 +1,13 @@
 import { Link } from "react-router-dom";
-import { useSelector } from "react-redux";
 import { useEffect } from "react";
 import { useQuery } from "@apollo/client";
 import { THIRTY_SECONDS } from "@/util/time";
 import GET_ACTIVE_BITCOINERS_SUMMARY from "./stats/getActiveBitcoinersSummary";
 import DailyTarget from "./stats/DailyTarget";
+import { translate } from "@/util/translations";
+import translations from "./ExploreStatBlockTranslations";
+
+const { seleneActiveUsers } = translations;
 
 export default function ExploreStatBlock() {
   const {
@@ -54,7 +57,7 @@ export default function ExploreStatBlock() {
   return (
     <div className="shadow rounded-lg p-2 bg-zinc-900 w-full flex-column justify-between items-center" >
       <div className="w-full flex justify-center items-center">
-        <span className="font-bold text-xl text-zinc-300">Selene Active Users</span>
+        <span className="font-bold text-xl text-zinc-300">{translate(seleneActiveUsers)}</span>
       </div>
 
       <DailyTarget />

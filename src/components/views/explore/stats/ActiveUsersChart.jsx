@@ -11,6 +11,10 @@ import {
 } from "chart.js";
 import { Line } from "react-chartjs-2";
 import { DateTime } from "luxon";
+import { translate } from "@/util/translations";
+import translations from "./ActiveUsersChartTranslations";
+
+const { activeSeleneUsers } = translations;
 
 ChartJS.register(
   CategoryScale,
@@ -38,7 +42,7 @@ function ActiveUsersChart({ data, isYearly = false }) {
     labels,
     datasets: [
       {
-        label: "Active Selene Users",
+        label: translate(activeSeleneUsers),
         data: dataPoints,
         borderColor: "#478559",
         backgroundColor: "#478559",

@@ -8,6 +8,10 @@ import GET_ACTIVE_BITCOINERS from "./getActiveBitcoiners";
 import { THIRTY_SECONDS } from "@/util/time";
 import { ONE_HUNDRED, TEN_MILLION } from "@/util/numbers";
 import { PERIODS } from "@/util/time"
+import { translate } from "@/util/translations";
+import translations from "./DailyTargetTranslations";
+
+const { today, remaining, of10million, yesterday } = translations;
 
 export default function DailyTarget() {
   const [period] = useState(PERIODS.DAILY)
@@ -58,14 +62,14 @@ export default function DailyTarget() {
     <div className="p-1">
       <div className="flex justify-between mb-1">
         <span className="text-base font-small text-zinc-400">
-          <div className="text-base font-medium text-secondary">Today</div>
+          <div className="text-base font-medium text-secondary">{translate(today)}</div>
           <div className="text-xs">
-            ({hours}h {minutes}m {seconds}s remaining)
+            ({hours}h {minutes}m {seconds}s {translate(remaining)})
           </div>
         </span>
         <span className="text-sm font-medium text-secondary mt-5">
           {dailyActiveUsersToday}{" "}
-          <span className="text-zinc-400">of 10 million (</span>
+          <span className="text-zinc-400">{translate(of10million)} (</span>
           {fixedDailyActiveUsersTodayPercentage}%
           <span className="text-zinc-400">)</span>
         </span>
@@ -82,11 +86,11 @@ export default function DailyTarget() {
       </div>
       <div className="flex justify-between mb-1">
         <span className="text-base font-medium text-secondary">
-          Yesterday
+          {translate(yesterday)}
         </span>
         <span className="text-sm font-medium text-secondary">
           {dailyActiveUsersYesterday}{" "}
-          <span className="text-zinc-400">of 10 million (</span>
+          <span className="text-zinc-400">{translate(of10million)} (</span>
           {fixedDailyActiveUsersYesterdayPercentage}%
           <span className="text-zinc-400">)</span>
         </span>
