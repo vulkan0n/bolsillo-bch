@@ -15,7 +15,7 @@ import { selectKeyboardIsOpen, selectScannerIsScanning } from "@/redux/device";
 import translations from "./bottomNavigationTranslations";
 import { translate } from "@/util/translations";
 
-const { wallet, settings } = translations;
+const { wallet, explore, settings } = translations;
 
 function BottomNavigation() {
   const isKeyboardOpen = useSelector(selectKeyboardIsOpen);
@@ -44,7 +44,7 @@ function BottomNavigation() {
             to="/explore"
             activeIcon={CompassFilled}
             icon={CompassOutlined}
-            label="Explore"
+            label={translate(explore)}
           />
         )}
         <NavButton
