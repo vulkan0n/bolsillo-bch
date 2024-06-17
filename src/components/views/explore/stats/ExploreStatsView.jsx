@@ -8,13 +8,7 @@ import ActiveUsersChart from "./ActiveUsersChart";
 import GET_ACTIVE_BITCOINERS from "./getActiveBitcoiners";
 import { THIRTY_SECONDS } from "@/util/time";
 import { ONE_HUNDRED, TEN_MILLION } from "@/util/numbers";
-
-const PERIODS = {
-  DAILY: "DAILY",
-  WEEKLY: "WEEKLY",
-  MONTHLY: "MONTHLY",
-  YEARLY: "YEARLY"
-}
+import { PERIODS } from "@/util/time"
 
 export default function StatsView() {
   const [period, setPeriod] = useState(PERIODS.DAILY)
@@ -75,8 +69,14 @@ export default function StatsView() {
           </div>
         </div>
 
-        <div>
+        <div className="bg-zinc-200 mt-3 mb-3">
+          {!isReady && <p>Loading chart...</p>}
+          {isReady && <ActiveUsersChart data={data} isYearly={period === PERIODS.YEARLY} />}
+        </div>
+
+        <div className="w-full flex justify-center align-center">
           <button
+            className="p-2 ml-1 mr-1 rounded-full border border-2 border-primary shadow-md opacity-90"
             onClick={() => {
               setPeriod(PERIODS.DAILY)
             }}
@@ -86,6 +86,7 @@ export default function StatsView() {
             </span>
           </button>
           <button
+            className="p-2 ml-1 mr-1 rounded-full border border-2 border-primary shadow-md opacity-90"
             onClick={() => {
               setPeriod(PERIODS.WEEKLY)
             }}
@@ -95,6 +96,7 @@ export default function StatsView() {
             </span>
           </button>
           <button
+            className="p-2 ml-1 mr-1 rounded-full border border-2 border-primary shadow-md opacity-90"
             onClick={() => {
               setPeriod(PERIODS.MONTHLY)
             }}
@@ -104,6 +106,7 @@ export default function StatsView() {
             </span>
           </button>
           <button
+            className="p-2 ml-1 mr-1 rounded-full border border-2 border-primary shadow-md opacity-90"
             onClick={() => {
               setPeriod(PERIODS.YEARLY)
             }}
@@ -112,11 +115,6 @@ export default function StatsView() {
               {PERIODS.YEARLY}
             </span>
           </button>
-        </div>
-
-        <div className="bg-zinc-200 mt-3 mb-3">
-          {!isReady && <p>Loading chart...</p>}
-          {isReady && <ActiveUsersChart data={data} isYearly={period === PERIODS.YEARLY} />}
         </div>
 
         <div className="flex justify-between mb-1">

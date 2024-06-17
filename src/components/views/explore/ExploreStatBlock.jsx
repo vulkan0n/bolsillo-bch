@@ -58,7 +58,7 @@ export default function ExploreStatBlock() {
       <div className="shadow rounded-lg p-2 bg-zinc-900 w-full flex justify-between items-center">
         <Link to="/explore/stats/#d">
           <div className="p-1 mx-1">
-            <div className="font-bold text-zinc-300">Daily</div>
+            <div className="font-bold text-zinc-300">24h</div>
             <div className={`${isDailyActiveIncrease ? "text-primary" : "text-red-500"} text-lg font-semibold`}>
               {dailyActiveCount}
             </div>
@@ -70,7 +70,7 @@ export default function ExploreStatBlock() {
 
         <Link to="/explore/stats/#w">
           <div className="p-1 mx-1">
-            <div className="font-bold text-zinc-300">Weekly</div>
+            <div className="font-bold text-zinc-300">7d</div>
             <div className={`${isWeeklyActiveIncrease ? "text-primary" : "text-red-500"} text-lg font-semibold`}>
               {weeklyActiveCount}
             </div>
@@ -82,7 +82,7 @@ export default function ExploreStatBlock() {
 
         <Link to="/explore/stats/#w">
           <div className="p-1 mx-1">
-            <div className="font-bold text-zinc-300">Monthly</div>
+            <div className="font-bold text-zinc-300">30d</div>
             <div className={`${isMonthlyActiveIncrease ? "text-primary" : "text-red-500"} text-lg font-semibold`}>
               {monthlyActiveCount}
             </div>
@@ -94,7 +94,7 @@ export default function ExploreStatBlock() {
 
         <Link to="/explore/stats/#y">
           <div className="p-1 mx-1">
-            <div className="font-bold text-zinc-300">Yearly</div>
+            <div className="font-bold text-zinc-300">1y</div>
             <div className={`${isYearlyActiveIncrease ? "text-primary" : "text-red-500"} text-lg font-semibold`}>
               {yearlyActiveCount}
             </div>
