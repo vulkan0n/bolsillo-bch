@@ -1,5 +1,5 @@
 /* eslint-disable no-unsafe-optional-chaining */
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useQuery } from "@apollo/client";
 import { DateTime } from "luxon";
 
@@ -8,8 +8,11 @@ import DailyActiveUsersChart from "./DailyActiveUsersChart";
 import GET_ACTIVE_BITCOINERS from "./getActiveBitcoiners";
 import { THIRTY_SECONDS } from "@/util/time";
 import { ONE_HUNDRED, TEN_MILLION } from "@/util/numbers";
+import Button from "@/atoms/Button";
 
 export default function StatsView() {
+  const [period, setPeriod] = useState("DAILY")
+
   const {
     loading: isLoading,
     data,
@@ -17,7 +20,7 @@ export default function StatsView() {
     stopPolling,
   } = useQuery(GET_ACTIVE_BITCOINERS, {
     variables: {
-      period: "DAILY",
+      period,
     },
   });
 
@@ -62,8 +65,39 @@ export default function StatsView() {
         </div>
         <div className="stat">
           <div className="stat-title text-zinc-800">
-            Daily Active Selene Users
+            Active Selene Users
           </div>
+        </div>
+
+        <div>
+          <button
+            onClick={() => { setPeriod("DAILY") }}
+          >
+            <span className={`${period === "DAILY" ? 'primary' : 'zinc-400'}`}>
+              DAILY
+            </span>
+          </button>
+          <button
+            onClick={() => { setPeriod("WEEKLY") }}
+          >
+            <span className={`${period === "WEEKLY" ? 'primary' : 'zinc-400'}`}>
+              WEEKLY
+            </span>
+          </button>
+          <button
+            onClick={() => { setPeriod("MONTHLY") }}
+          >
+            <span className={`${period === "MONTHLY" ? 'primary' : 'zinc-400'}`}>
+              MONTHLY
+            </span>
+          </button>
+          <button
+            onClick={() => { setPeriod("YEARLY") }}
+          >
+            <span className={`${period === "YEARLY" ? 'primary' : 'zinc-400'}`}>
+              YEARLY
+            </span>
+          </button>
         </div>
 
         <div className="bg-zinc-200 mt-3 mb-3">
