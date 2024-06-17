@@ -37,5 +37,6 @@ export function redux_init() {
       network: selectBchNetwork(store.getState()),
     })
   );
+
   store.dispatch(triggerCheckIn());
 }
