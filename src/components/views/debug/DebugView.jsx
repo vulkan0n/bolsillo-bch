@@ -16,6 +16,18 @@ import {
 import ViewHeader from "@/layout/ViewHeader";
 import Accordion from "@/atoms/Accordion";
 import Button from "@/atoms/Button";
+import { translate } from "@/util/translations";
+import translations from "./DebugViewTranslations";
+
+const {
+  debug,
+  debugOptions,
+  enableExperimentalFeatures,
+  experimentalDescription,
+  enablePrereleaseFeatures,
+  prereleaseDescription,
+  throwAnError
+} = translations;
 
 export default function DebugView() {
   const dispatch = useDispatch();
@@ -59,9 +71,9 @@ export default function DebugView() {
 
   return (
     <>
-      <ViewHeader icon={BugOutlined} title="Debug" />
+      <ViewHeader icon={BugOutlined} title={translate(debug)} />
       <div className="p-2">
-        <Accordion icon={BugOutlined} title="Debug Options">
+        <Accordion icon={BugOutlined} title={translate(debugOptions)}>
           <Accordion.Child icon={ExperimentOutlined} label="Use Chipnet">
             <input
               type="checkbox"
@@ -71,8 +83,8 @@ export default function DebugView() {
           </Accordion.Child>
           <Accordion.Child
             icon={RocketOutlined}
-            label="Enable Experimental Features"
-            description="Unstable features undergoing development. Intended for developers & internal testers only. Use extreme caution!!"
+            label={translate(enableExperimentalFeatures)}
+            description={translate(experimentalDescription)}
           >
             <input
               type="checkbox"
@@ -82,8 +94,8 @@ export default function DebugView() {
           </Accordion.Child>
           <Accordion.Child
             icon={ForkOutlined}
-            label="Enable Pre-release Features"
-            description="Stable features planned for upcoming release. Advanced users may trial before release, with appropriate caution & expectation of bugs."
+            label={translate(enablePrereleaseFeatures)}
+            description={translate(prereleaseDescription)}
           >
             <div>
               <input
@@ -113,7 +125,7 @@ function ThrowAnErrorButtonIcon() {
   return (
     <span>
       <ExceptionOutlined className="mr-1" />
-      Throw an Error
+      {translate(throwAnError)}
     </span>
   );
 }
