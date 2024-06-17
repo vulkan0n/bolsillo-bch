@@ -28,7 +28,7 @@ export default function StatsService() {
 
   // run a daily check in, if current time UTC is on a date later than previous check in
   async function submitCheckIn() {
-    console.log("Submitting!!")
+    console.log("Submitting!!");
     const now = DateTime.utc();
     const nowFormatted = now.toFormat("yyyyLLdd"); // LL is month, 2 digit padded
 

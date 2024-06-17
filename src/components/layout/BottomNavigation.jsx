@@ -10,7 +10,11 @@ import {
   SettingFilled,
 } from "@ant-design/icons";
 
-import { selectLanguageCode, selectIsExperimental, selectIsPrerelease } from "@/redux/preferences";
+import {
+  selectLanguageCode,
+  selectIsExperimental,
+  selectIsPrerelease,
+} from "@/redux/preferences";
 import { selectKeyboardIsOpen, selectScannerIsScanning } from "@/redux/device";
 import translations from "./bottomNavigationTranslations";
 import { translate } from "@/util/translations";

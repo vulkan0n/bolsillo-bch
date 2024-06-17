@@ -56,10 +56,8 @@ function AccordionChild({ icon, label, children, description = "" }) {
         )}
         <div className="flex-1 text-right">{children}</div>
       </div>
-      {description && <div className="pt-2 text-sm">
-        {description}
-      </div>}
-    </div >
+      {description && <div className="pt-2 text-sm">{description}</div>}
+    </div>
   );
 }
 

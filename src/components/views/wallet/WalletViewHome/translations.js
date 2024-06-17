@@ -36,7 +36,7 @@ const translations = {
     ur: "ایڈریس کلپ بورڈ پر کاپی ہوگئی",
     vi: "Đã sao chép địa chỉ vào bộ nhớ tạm",
     zh: "地址已复制到剪贴板",
-    zh_TW: "複製地址到剪貼板"
+    zh_TW: "複製地址到剪貼板",
   },
   requestAmount: {
     ar: "طلب المبلغ",
@@ -75,8 +75,8 @@ const translations = {
     ur: "درخواست کی رقم",
     vi: "Số Tiền Yêu Cầu",
     zh: "请求金额",
-    zh_TW: "請求金額"
-  }
+    zh_TW: "請求金額",
+  },
 };
 
 export default translations;

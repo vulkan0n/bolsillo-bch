@@ -24,7 +24,7 @@ export default function ExploreStatBlock() {
   }, [startPolling, stopPolling]);
 
   if (isLoading) {
-    return <p>Loading...</p>
+    return <p>Loading...</p>;
   }
 
   const {
@@ -36,28 +36,34 @@ export default function ExploreStatBlock() {
     monthlyActivePreviousCount,
     yearlyActiveCount,
     yearlyActivePreviousCount,
-  } = data.activeBitcoinersSummary
+  } = data.activeBitcoinersSummary;
 
-  const dailyChange = dailyActiveCount - dailyActivePreviousCount
-  const dailyChangePercentage = (100 / dailyActivePreviousCount * dailyChange)?.toFixed(1) || 0
-  const isDailyActiveIncrease = dailyChange >= 0
+  const dailyChange = dailyActiveCount - dailyActivePreviousCount;
+  const dailyChangePercentage =
+    ((100 / dailyActivePreviousCount) * dailyChange)?.toFixed(1) || 0;
+  const isDailyActiveIncrease = dailyChange >= 0;
 
-  const weeklyChange = weeklyActiveCount - weeklyActivePreviousCount
-  const weeklyChangePercentage = (100 / weeklyActivePreviousCount * weeklyChange)?.toFixed(1) || 0
-  const isWeeklyActiveIncrease = weeklyChange >= 0
+  const weeklyChange = weeklyActiveCount - weeklyActivePreviousCount;
+  const weeklyChangePercentage =
+    ((100 / weeklyActivePreviousCount) * weeklyChange)?.toFixed(1) || 0;
+  const isWeeklyActiveIncrease = weeklyChange >= 0;
 
-  const monthlyChange = monthlyActiveCount - monthlyActivePreviousCount
-  const monthlyChangePercentage = (100 / monthlyActivePreviousCount * monthlyChange)?.toFixed(1) || 0
-  const isMonthlyActiveIncrease = monthlyChange >= 0
+  const monthlyChange = monthlyActiveCount - monthlyActivePreviousCount;
+  const monthlyChangePercentage =
+    ((100 / monthlyActivePreviousCount) * monthlyChange)?.toFixed(1) || 0;
+  const isMonthlyActiveIncrease = monthlyChange >= 0;
 
-  const yearlyChange = yearlyActiveCount - yearlyActivePreviousCount
-  const yearlyChangePercentage = (100 / yearlyActivePreviousCount * yearlyChange)?.toFixed(1) || 0
-  const isYearlyActiveIncrease = yearlyChange >= 0
+  const yearlyChange = yearlyActiveCount - yearlyActivePreviousCount;
+  const yearlyChangePercentage =
+    ((100 / yearlyActivePreviousCount) * yearlyChange)?.toFixed(1) || 0;
+  const isYearlyActiveIncrease = yearlyChange >= 0;
 
   return (
-    <div className="shadow rounded-lg p-2 bg-zinc-900 w-full flex-column justify-between items-center" >
+    <div className="shadow rounded-lg p-2 bg-zinc-900 w-full flex-column justify-between items-center">
       <div className="w-full flex justify-center items-center">
-        <span className="font-bold text-xl text-zinc-300">{translate(seleneActiveUsers)}</span>
+        <span className="font-bold text-xl text-zinc-300">
+          {translate(seleneActiveUsers)}
+        </span>
       </div>
 
       <DailyTarget />
@@ -66,11 +72,17 @@ export default function ExploreStatBlock() {
         <Link to="/explore/stats/#d">
           <div className="p-1 mx-1">
             <div className="font-bold text-zinc-300">24h</div>
-            <div className={`${isDailyActiveIncrease ? "text-primary" : "text-red-500"} text-lg font-semibold`}>
+            <div
+              className={`${isDailyActiveIncrease ? "text-primary" : "text-red-500"} text-lg font-semibold`}
+            >
               {dailyActiveCount}
             </div>
-            <div className={`text-xs ${isDailyActiveIncrease ? "text-primary" : "text-red-500"}`}>
-              {isDailyActiveIncrease ? "↑" : "↓"} {isDailyActiveIncrease && "+"}{dailyChange} ({isDailyActiveIncrease && "+"}{dailyChangePercentage}%)
+            <div
+              className={`text-xs ${isDailyActiveIncrease ? "text-primary" : "text-red-500"}`}
+            >
+              {isDailyActiveIncrease ? "↑" : "↓"} {isDailyActiveIncrease && "+"}
+              {dailyChange} ({isDailyActiveIncrease && "+"}
+              {dailyChangePercentage}%)
             </div>
           </div>
         </Link>
@@ -78,11 +90,18 @@ export default function ExploreStatBlock() {
         <Link to="/explore/stats/#w">
           <div className="p-1 mx-1">
             <div className="font-bold text-zinc-300">7d</div>
-            <div className={`${isWeeklyActiveIncrease ? "text-primary" : "text-red-500"} text-lg font-semibold`}>
+            <div
+              className={`${isWeeklyActiveIncrease ? "text-primary" : "text-red-500"} text-lg font-semibold`}
+            >
               {weeklyActiveCount}
             </div>
-            <div className={`text-xs ${isWeeklyActiveIncrease ? "text-primary" : "text-red-500"}`}>
-              {isWeeklyActiveIncrease ? "↑" : "↓"} {isWeeklyActiveIncrease && "+"}{weeklyChange} ({isWeeklyActiveIncrease && "+"}{weeklyChangePercentage}%)
+            <div
+              className={`text-xs ${isWeeklyActiveIncrease ? "text-primary" : "text-red-500"}`}
+            >
+              {isWeeklyActiveIncrease ? "↑" : "↓"}{" "}
+              {isWeeklyActiveIncrease && "+"}
+              {weeklyChange} ({isWeeklyActiveIncrease && "+"}
+              {weeklyChangePercentage}%)
             </div>
           </div>
         </Link>
@@ -90,11 +109,18 @@ export default function ExploreStatBlock() {
         <Link to="/explore/stats/#w">
           <div className="p-1 mx-1">
             <div className="font-bold text-zinc-300">30d</div>
-            <div className={`${isMonthlyActiveIncrease ? "text-primary" : "text-red-500"} text-lg font-semibold`}>
+            <div
+              className={`${isMonthlyActiveIncrease ? "text-primary" : "text-red-500"} text-lg font-semibold`}
+            >
               {monthlyActiveCount}
             </div>
-            <div className={`text-xs ${isMonthlyActiveIncrease ? "text-primary" : "text-red-500"}`}>
-              {isMonthlyActiveIncrease ? "↑" : "↓"} {isMonthlyActiveIncrease && "+"}{monthlyChange} ({isMonthlyActiveIncrease && "+"}{monthlyChangePercentage}%)
+            <div
+              className={`text-xs ${isMonthlyActiveIncrease ? "text-primary" : "text-red-500"}`}
+            >
+              {isMonthlyActiveIncrease ? "↑" : "↓"}{" "}
+              {isMonthlyActiveIncrease && "+"}
+              {monthlyChange} ({isMonthlyActiveIncrease && "+"}
+              {monthlyChangePercentage}%)
             </div>
           </div>
         </Link>
@@ -102,15 +128,22 @@ export default function ExploreStatBlock() {
         <Link to="/explore/stats/#y">
           <div className="p-1 mx-1">
             <div className="font-bold text-zinc-300">1y</div>
-            <div className={`${isYearlyActiveIncrease ? "text-primary" : "text-red-500"} text-lg font-semibold`}>
+            <div
+              className={`${isYearlyActiveIncrease ? "text-primary" : "text-red-500"} text-lg font-semibold`}
+            >
               {yearlyActiveCount}
             </div>
-            <div className={`text-xs ${isYearlyActiveIncrease ? "text-primary" : "text-red-500"}`}>
-              {isYearlyActiveIncrease ? "↑" : "↓"} {isYearlyActiveIncrease && "+"}{yearlyChange} ({isYearlyActiveIncrease && "+"}{yearlyChangePercentage}%)
+            <div
+              className={`text-xs ${isYearlyActiveIncrease ? "text-primary" : "text-red-500"}`}
+            >
+              {isYearlyActiveIncrease ? "↑" : "↓"}{" "}
+              {isYearlyActiveIncrease && "+"}
+              {yearlyChange} ({isYearlyActiveIncrease && "+"}
+              {yearlyChangePercentage}%)
             </div>
           </div>
         </Link>
-      </div >
-    </div >
+      </div>
+    </div>
   );
 }

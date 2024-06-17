@@ -8,5 +8,5 @@ export const PERIODS = {
   DAILY: "DAILY",
   WEEKLY: "WEEKLY",
   MONTHLY: "MONTHLY",
-  YEARLY: "YEARLY"
-}
+  YEARLY: "YEARLY",
+};

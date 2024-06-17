@@ -26,7 +26,7 @@ const {
   experimentalDescription,
   enablePrereleaseFeatures,
   prereleaseDescription,
-  throwAnError
+  throwAnError,
 } = translations;
 
 export default function DebugView() {

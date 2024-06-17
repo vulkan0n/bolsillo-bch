@@ -212,8 +212,8 @@ export const selectInstantPaySettings = createSelector(
     instantPayThreshold:
       preferences.preferLocalCurrency === "true"
         ? CurrencyService(preferences.localCurrency).fiatToSats(
-          preferences.instantPayThresholdFiat
-        )
+            preferences.instantPayThresholdFiat
+          )
         : preferences.instantPayThreshold,
   })
 );

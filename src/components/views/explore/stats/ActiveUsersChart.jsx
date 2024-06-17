@@ -28,7 +28,11 @@ ChartJS.register(
 
 function ActiveUsersChart({ data, isYearly = false }) {
   const labels = data.activeBitcoiners.map(({ date }) =>
-    DateTime.fromISO(date).toLocaleString({ year: isYearly ? '2-digit' : undefined, month: 'short', day: 'numeric' })
+    DateTime.fromISO(date).toLocaleString({
+      year: isYearly ? "2-digit" : undefined,
+      month: "short",
+      day: "numeric",
+    })
   );
 
   const dataPoints = data.activeBitcoiners.map(({ count }) => count);

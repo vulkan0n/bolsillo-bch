@@ -21,7 +21,7 @@ const {
   restartApp,
   resetSettings,
   rebuildWallet,
-  errorMessage
+  errorMessage,
 } = translations;
 
 export default function ErrorBoundary() {
@@ -61,9 +61,7 @@ export default function ErrorBoundary() {
       </div>
       <div className="p-2">
         <div className="bg-zinc-200 p-2 rounded my-1">
-          <div className="text-xl font-bold mb-2">
-            {translate(hereCanTry)}:
-          </div>
+          <div className="text-xl font-bold mb-2">{translate(hereCanTry)}:</div>
           <div className="flex items-center gap-x-1">
             <button
               type="button"

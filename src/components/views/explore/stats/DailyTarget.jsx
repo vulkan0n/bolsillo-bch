@@ -7,14 +7,14 @@ import { useCountdown } from "./useCountdown";
 import GET_ACTIVE_BITCOINERS from "./getActiveBitcoiners";
 import { THIRTY_SECONDS } from "@/util/time";
 import { ONE_HUNDRED, TEN_MILLION } from "@/util/numbers";
-import { PERIODS } from "@/util/time"
+import { PERIODS } from "@/util/time";
 import { translate } from "@/util/translations";
 import translations from "./DailyTargetTranslations";
 
 const { today, remaining, of10million, yesterday } = translations;
 
 export default function DailyTarget() {
-  const [period] = useState(PERIODS.DAILY)
+  const [period] = useState(PERIODS.DAILY);
 
   const {
     loading: isLoading,
@@ -62,7 +62,9 @@ export default function DailyTarget() {
     <div className="p-1">
       <div className="flex justify-between mb-1">
         <span className="text-base font-small text-zinc-400">
-          <div className="text-base font-medium text-secondary">{translate(today)}</div>
+          <div className="text-base font-medium text-secondary">
+            {translate(today)}
+          </div>
           <div className="text-xs">
             ({hours}h {minutes}m {seconds}s {translate(remaining)})
           </div>
