@@ -1,14 +1,10 @@
 /* eslint-disable no-unsafe-optional-chaining */
 import { useState, useEffect } from "react";
 import { useQuery } from "@apollo/client";
-import { DateTime } from "luxon";
 
-import { useCountdown } from "./useCountdown";
 import ActiveUsersChart from "./ActiveUsersChart";
-import DailyTarget from "./DailyTarget";
 import GET_ACTIVE_BITCOINERS from "./getActiveBitcoiners";
 import { THIRTY_SECONDS } from "@/util/time";
-import { ONE_HUNDRED, TEN_MILLION } from "@/util/numbers";
 import { PERIODS } from "@/util/time"
 
 export default function StatsView() {
@@ -30,31 +26,6 @@ export default function StatsView() {
 
     return stopPolling;
   }, [startPolling, stopPolling]);
-
-  const midnightUtc = DateTime.utc().endOf("day");
-  const [days, hours, minutes, seconds] = useCountdown(midnightUtc); // eslint-disable-line @typescript-eslint/no-unused-vars
-
-  const dailyActiveUsersToday =
-    data?.activeBitcoiners?.[data?.activeBitcoiners.length - 1]?.count || 1;
-  const dailyActiveUsersTodayPercentage =
-    (ONE_HUNDRED / TEN_MILLION) * dailyActiveUsersToday;
-  const fixedDailyActiveUsersTodayPercentage =
-    dailyActiveUsersTodayPercentage.toFixed(5);
-  // https://stackoverflow.com/a/12830454/2792268
-  // +1 to round up
-  const dailyActiveUsersTodayWidth =
-    (+dailyActiveUsersTodayPercentage.toFixed(2)).toString() + 1;
-
-  const dailyActiveUsersYesterday =
-    data?.activeBitcoiners?.[data?.activeBitcoiners.length - 2]?.count || 1;
-  const dailyActiveUsersYesterdayPercentage =
-    (ONE_HUNDRED / TEN_MILLION) * dailyActiveUsersYesterday;
-  const fixedDailyActiveUsersYesterdayPercentage =
-    dailyActiveUsersYesterdayPercentage.toFixed(5);
-  // https://stackoverflow.com/a/12830454/2792268
-  // +1 to round up
-  const dailyActiveUsersYesterdayWidth =
-    (+dailyActiveUsersYesterdayPercentage.toFixed(2)).toString() + 1;
 
   const isReady = !isLoading && data?.activeBitcoiners;
 

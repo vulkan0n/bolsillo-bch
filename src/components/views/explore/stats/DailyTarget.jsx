@@ -54,8 +54,6 @@ export default function DailyTarget() {
   const dailyActiveUsersYesterdayWidth =
     (+dailyActiveUsersYesterdayPercentage.toFixed(2)).toString() + 1;
 
-  const isReady = !isLoading && data?.activeBitcoiners;
-
   return (
     <div className="p-1">
       <div className="flex justify-between mb-1">
