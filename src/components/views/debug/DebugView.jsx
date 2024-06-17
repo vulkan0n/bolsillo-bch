@@ -10,6 +10,7 @@ import {
   setPreference,
   selectIsChipnet,
   selectIsExperimental,
+  selectIsPrerelease,
 } from "@/redux/preferences";
 import ViewHeader from "@/layout/ViewHeader";
 import Accordion from "@/atoms/Accordion";
@@ -20,6 +21,7 @@ export default function DebugView() {
 
   const isChipnet = useSelector(selectIsChipnet);
   const isExperimental = useSelector(selectIsExperimental);
+  const isPrerelease = useSelector(selectIsPrerelease);
 
   const handleIsChipnet = (event) => {
     const newNetwork = event.target.checked ? "chipnet" : "mainnet";
@@ -30,6 +32,11 @@ export default function DebugView() {
   const handleIsExperimental = (event) => {
     const value = event.target.checked ? "true" : "false";
     dispatch(setPreference({ key: "enableExperimental", value }));
+  };
+
+  const handleIsPrerelease = (event) => {
+    const value = event.target.checked ? "true" : "false";
+    dispatch(setPreference({ key: "enablePrerelease", value }));
   };
 
   const [shouldThrowFakeError, setShouldThrowFakeError] = useState(false);
@@ -69,6 +76,16 @@ export default function DebugView() {
               type="checkbox"
               checked={isExperimental}
               onChange={handleIsExperimental}
+            />
+          </Accordion.Child>
+          <Accordion.Child
+            icon={RocketOutlined}
+            label="Enable Pre-release Features"
+          >
+            <input
+              type="checkbox"
+              checked={isPrerelease}
+              onChange={handleIsPrerelease}
             />
           </Accordion.Child>
         </Accordion>
