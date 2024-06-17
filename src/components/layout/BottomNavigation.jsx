@@ -10,7 +10,7 @@ import {
   SettingFilled,
 } from "@ant-design/icons";
 
-import { selectLanguageCode, selectIsExperimental } from "@/redux/preferences";
+import { selectLanguageCode, selectIsExperimental, selectIsPrerelease } from "@/redux/preferences";
 import { selectKeyboardIsOpen, selectScannerIsScanning } from "@/redux/device";
 import translations from "./bottomNavigationTranslations";
 import { translate } from "@/util/translations";
@@ -21,6 +21,7 @@ function BottomNavigation() {
   const isKeyboardOpen = useSelector(selectKeyboardIsOpen);
   const isScanning = useSelector(selectScannerIsScanning);
   const isExperimental = useSelector(selectIsExperimental);
+  const isPrerelease = useSelector(selectIsPrerelease);
 
   // Ensure component reloads when language preferences are changed
   useSelector(selectLanguageCode);
@@ -38,7 +39,7 @@ function BottomNavigation() {
           icon={WalletOutlined}
           label={translate(wallet)}
         />
-        {isExperimental && (
+        {(isExperimental || isPrerelease) && (
           <NavButton
             to="/explore"
             activeIcon={AppstoreFilled}

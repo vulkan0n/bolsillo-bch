@@ -72,7 +72,7 @@ export default function DebugView() {
           <Accordion.Child
             icon={RocketOutlined}
             label="Enable Experimental Features"
-            description="Unstable features undergoing development. Intended for developers & internal testers only."
+            description="Unstable features undergoing development. Intended for developers & internal testers only. Use extreme caution!!"
           >
             <input
               type="checkbox"
