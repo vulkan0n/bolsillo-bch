@@ -77,6 +77,12 @@ change the readlink line to `source="$(readlink -f "${source}")"`
 
 Manually managing translations got super tiresome & unwieldy with so many languages, so it has been automated.
 
+```
+# Use a valid API key
+$ GOOGLE_TRANSLATE_API_KEY="XXXXXXXXX" node ./automation/addLanguages.js
+# Please read below about the cost of API credits!!
+```
+
 Translation files are colocated with the file needing the translation strings. The script scans the entire `src` folder for files that begin exactly `const translations = {`. For every found file, it looks in the **second** layer of the object (first is the string identifier) for the "en" key, translates it into every language key we support (skipping any that are already known), and overwrites the original file with the new values included in alphabetical order by language-key.
 
 Start of a translation file sample:
@@ -111,7 +117,3 @@ Translations are done with Google Cloud Translation API. At the moment it's runn
 
 NOTE: There is a bug in `src/components/views/walletView/WalletViewSend/translations.js` with the "notEnoughFee" key. Before running translation, copy-paste that key into a separate document, run the translation, then afterwards return the "notEnoughFee" key. Also, manually add any new "notEnoughFee" translations. If you don't do this, the entire file will miss out on having its translations updated.
 
-```
-# Use a valid API key
-$ GOOGLE_TRANSLATE_API_KEY="XXXXXXXXX" node ./automation/addLanguages.js
-```

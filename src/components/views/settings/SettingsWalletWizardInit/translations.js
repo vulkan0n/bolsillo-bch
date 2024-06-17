@@ -36,7 +36,7 @@ const translations = {
     ur: "نیا والیٹ",
     vi: "Ví mới",
     zh: "新钱包",
-    zh_TW: "新錢包",
+    zh_TW: "新錢包"
   },
   createNewWallet: {
     ar: "إنشاء محفظة جديدة",
@@ -75,7 +75,7 @@ const translations = {
     ur: "نیا والیٹ بنائیں",
     vi: "Tạo Ví Mới",
     zh: "创建新钱包",
-    zh_TW: "創建新錢包",
+    zh_TW: "創建新錢包"
   },
   importWalletFromPhrase: {
     ar: "استيراد المحفظة من عبارة الاسترداد",
@@ -114,8 +114,8 @@ const translations = {
     ur: "ریکووری فیز سے والیٹ واپس لائیں",
     vi: "Nhập Ví từ Cụm từ Khôi phục",
     zh: "从恢复短语导入钱包",
-    zh_TW: "從恢復短語導入錢包",
-  },
+    zh_TW: "從恢復短語導入錢包"
+  }
 };
 
 export default translations;

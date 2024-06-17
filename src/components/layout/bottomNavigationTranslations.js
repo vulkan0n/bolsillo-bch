@@ -36,6 +36,7 @@ const translations = {
     ur: "والٹ",
     vi: "Ví",
     zh: "钱包",
+    zh_TW: "Wallet"
   },
   settings: {
     ar: "إعدادات",
@@ -74,7 +75,8 @@ const translations = {
     ur: "ترتیبات",
     vi: "Cài đặt",
     zh: "设置",
-  },
+    zh_TW: "Settings"
+  }
 };
 
 export default translations;
