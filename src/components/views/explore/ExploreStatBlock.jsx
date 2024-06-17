@@ -62,7 +62,7 @@ export default function ExploreStatBlock() {
             <div className={`${isDailyActiveIncrease ? "text-primary" : "text-red-500"} text-lg font-semibold`}>
               {dailyActiveCount}
             </div>
-            <div className={`text-xs ${isDailyActiveIncrease ? "text-green-400" : "text-red-400"}`}>
+            <div className={`text-xs ${isDailyActiveIncrease ? "text-primary" : "text-red-500"}`}>
               {isDailyActiveIncrease ? "↑" : "↓"} {isDailyActiveIncrease && "+"}{dailyChange} ({isDailyActiveIncrease && "+"}{dailyChangePercentage}%)
             </div>
           </div>
@@ -74,7 +74,7 @@ export default function ExploreStatBlock() {
             <div className={`${isWeeklyActiveIncrease ? "text-primary" : "text-red-500"} text-lg font-semibold`}>
               {weeklyActiveCount}
             </div>
-            <div className={`text-xs ${isWeeklyActiveIncrease ? "text-green-400" : "text-red-400"}`}>
+            <div className={`text-xs ${isWeeklyActiveIncrease ? "text-primary" : "text-red-500"}`}>
               {isWeeklyActiveIncrease ? "↑" : "↓"} {isWeeklyActiveIncrease && "+"}{weeklyChange} ({isWeeklyActiveIncrease && "+"}{weeklyChangePercentage}%)
             </div>
           </div>
@@ -86,7 +86,7 @@ export default function ExploreStatBlock() {
             <div className={`${isMonthlyActiveIncrease ? "text-primary" : "text-red-500"} text-lg font-semibold`}>
               {monthlyActiveCount}
             </div>
-            <div className={`text-xs ${isMonthlyActiveIncrease ? "text-green-400" : "text-red-400"}`}>
+            <div className={`text-xs ${isMonthlyActiveIncrease ? "text-primary" : "text-red-500"}`}>
               {isMonthlyActiveIncrease ? "↑" : "↓"} {isMonthlyActiveIncrease && "+"}{monthlyChange} ({isMonthlyActiveIncrease && "+"}{monthlyChangePercentage}%)
             </div>
           </div>
@@ -98,7 +98,7 @@ export default function ExploreStatBlock() {
             <div className={`${isYearlyActiveIncrease ? "text-primary" : "text-red-500"} text-lg font-semibold`}>
               {yearlyActiveCount}
             </div>
-            <div className={`text-xs ${isYearlyActiveIncrease ? "text-green-400" : "text-red-400"}`}>
+            <div className={`text-xs ${isYearlyActiveIncrease ? "text-primary" : "text-red-500"}`}>
               {isYearlyActiveIncrease ? "↑" : "↓"} {isYearlyActiveIncrease && "+"}{yearlyChange} ({isYearlyActiveIncrease && "+"}{yearlyChangePercentage}%)
             </div>
           </div>
