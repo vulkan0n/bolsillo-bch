@@ -6,6 +6,10 @@ import ActiveUsersChart from "./ActiveUsersChart";
 import GET_ACTIVE_BITCOINERS from "./getActiveBitcoiners";
 import { THIRTY_SECONDS } from "@/util/time";
 import { PERIODS } from "@/util/time"
+import { translate } from "@/util/translations";
+import translations from "./ExploreStatsViewTranslations";
+
+const { globalAdoption } = translations;
 
 export default function StatsView() {
   const [period, setPeriod] = useState(PERIODS.DAILY)
@@ -33,7 +37,7 @@ export default function StatsView() {
     <div className="p-2">
       <div className="stats shadow rounded-lg p-3 bg-zinc-100 w-full">
         <div className="text-2xl font-bold text-zinc-800">
-          Global Bitcoin Cash Adoption
+          {translate(globalAdoption)}
         </div>
         <div className="stat">
           <div className="stat-title text-zinc-800">

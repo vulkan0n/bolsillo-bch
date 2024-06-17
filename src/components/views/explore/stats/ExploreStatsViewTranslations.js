@@ -1,0 +1,43 @@
+const translations = {
+  globalAdoption: {
+    ar: "اعتماد البيتكوين النقدي العالمي",
+    bn: "গ্লোবাল বিটকয়েন নগদ গ্রহণ",
+    da: "Global Bitcoin Cash Adoption",
+    de: "Weltweite Einführung von Bitcoin Cash",
+    el: "Παγκόσμια υιοθέτηση Bitcoin Cash",
+    en: "Global Bitcoin Cash Adoption",
+    es: "Adopción global de Bitcoin Cash",
+    fa: "پذیرش جهانی بیت کوین کش",
+    fil: "Pandaigdigang Bitcoin Cash Adoption",
+    fr: "Adoption mondiale du Bitcoin Cash",
+    ha: "Tallace-tallacen Bitcoin Cash na Duniya",
+    hi: "वैश्विक बिटकॉइन कैश अपनाना",
+    id: "Adopsi Bitcoin Tunai Global",
+    it: "Adozione globale di Bitcoin Cash",
+    ja: "ビットコインキャッシュの世界的な普及",
+    jv: "Adoption Bitcoin Cash Global",
+    ko: "글로벌 비트코인 캐시 채택",
+    mr: "जागतिक बिटकॉइन रोख दत्तक",
+    ms: "Penerimaan Tunai Bitcoin Global",
+    nb: "Global Bitcoin Cash Adoption",
+    nl: "Wereldwijde adoptie van Bitcoin Cash",
+    pa: "ਗਲੋਬਲ ਬਿਟਕੋਇਨ ਕੈਸ਼ ਅਡਾਪਸ਼ਨ",
+    pl: "Globalne przyjęcie Bitcoin Cash",
+    pt: "Adoção global do Bitcoin Cash",
+    ro: "Adopția globală a Bitcoin Cash",
+    ru: "Глобальное принятие Bitcoin Cash",
+    sv: "Global Bitcoin Cash Adoption",
+    sw: "Upitishaji wa Pesa ya Bitcoin ya Ulimwenguni",
+    ta: "உலகளாவிய பிட்காயின் பண தத்தெடுப்பு",
+    te: "గ్లోబల్ బిట్‌కాయిన్ నగదు స్వీకరణ",
+    th: "การยอมรับเงินสด Bitcoin ทั่วโลก",
+    tr: "Küresel Bitcoin Nakit Kabulü",
+    uk: "Глобальне впровадження Bitcoin Cash",
+    ur: "گلوبل بٹ کوائن کیش اپنانا",
+    vi: "Việc áp dụng tiền mặt Bitcoin toàn cầu",
+    zh: "全球比特币现金采用情况",
+    zh_TW: "全球比特幣現金採用率"
+  }
+};
+
+export default translations;
