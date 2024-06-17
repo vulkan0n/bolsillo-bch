@@ -15,6 +15,13 @@ We are fulfilling the mission of making Bitcoin Cash (BCH) the [global reserve c
 5. `yarn dev`
 6. https://localhost:5173
 
+```
+Look in `selene-wallet/src/apolloClient.tsx`!!
+You can connect to either a localhost instance or the production server as you desire.
+```
+
+See the [Selene Server repo](https://git.xulu.tech/selene.cash/selene-server) for localhost setup.
+
 ## Building for Android
 
 1. Install Android Studio
