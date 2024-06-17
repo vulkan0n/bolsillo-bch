@@ -5,6 +5,7 @@ import {
   ExperimentOutlined,
   ExceptionOutlined,
   RocketOutlined,
+  ForkOutlined,
 } from "@ant-design/icons";
 import {
   setPreference,
@@ -71,6 +72,7 @@ export default function DebugView() {
           <Accordion.Child
             icon={RocketOutlined}
             label="Enable Experimental Features"
+            description="Unstable features undergoing development. Intended for developers & internal testers only."
           >
             <input
               type="checkbox"
@@ -79,14 +81,18 @@ export default function DebugView() {
             />
           </Accordion.Child>
           <Accordion.Child
-            icon={RocketOutlined}
+            icon={ForkOutlined}
             label="Enable Pre-release Features"
+            description="Stable features planned for upcoming release. Advanced users may trial before release, with appropriate caution & expectation of bugs."
           >
-            <input
-              type="checkbox"
-              checked={isPrerelease}
-              onChange={handleIsPrerelease}
-            />
+            <div>
+              <input
+                type="checkbox"
+                checked={isPrerelease}
+                onChange={handleIsPrerelease}
+              />
+            </div>
+            {/* {translate(translations.derivationPathExplanation)}{" "} */}
           </Accordion.Child>
         </Accordion>
         <div className="m-1">

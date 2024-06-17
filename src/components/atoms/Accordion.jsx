@@ -43,7 +43,7 @@ Accordion.defaultProps = {
   open: false,
 };
 
-function AccordionChild({ icon, label, children }) {
+function AccordionChild({ icon, label, children, description = "" }) {
   const Icon = icon || (() => null);
   return (
     <div className="p-3">
@@ -56,7 +56,10 @@ function AccordionChild({ icon, label, children }) {
         )}
         <div className="flex-1 text-right">{children}</div>
       </div>
-    </div>
+      {description && <div className="pt-2 text-sm">
+        {description}
+      </div>}
+    </div >
   );
 }
 
