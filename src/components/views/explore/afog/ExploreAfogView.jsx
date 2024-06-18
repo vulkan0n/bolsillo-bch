@@ -6,12 +6,15 @@ export default function ExploreAfogView() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // Go to http://cors-anywhere.herokuapp.com/corsdemo
+  // To enable this hack
+  const corsAnywhereEndpointHack = "http://cors-anywhere.herokuapp.com/"
   const afogEndpoint = "https://afifthofgaming.com/Session/GetTournaments"
 
   useEffect(() => {
     const fetchTournaments = async () => {
       try {
-        const response = await fetch('http://cors-anywhere.herokuapp.com/https://afifthofgaming.com/Session/GetTournaments');
+        const response = await fetch(`${corsAnywhereEndpointHack}${afogEndpoint}`);
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
@@ -50,12 +53,9 @@ export default function ExploreAfogView() {
         <div className="sm:flex sm:items-center">
           <div className="sm:flex-auto">
             <h1 className="text-base font-semibold leading-6 text-gray-900">Upcoming Tournaments</h1>
-            <p className="mt-2 text-sm text-gray-700">
-              A list of all the users in your account including their name, title, email and role.
-            </p>
           </div>
         </div>
-        <div className="mt-8 flow-root">
+        <div className="mt-1 flow-root">
           <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
             <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
               <table className="min-w-full divide-y divide-gray-300">
@@ -85,15 +85,18 @@ export default function ExploreAfogView() {
                       <tr key={id}>
                         <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                           {date}<br />
-                          in {timeUntilStartDisplay}
+                          {timeUntilStartDisplay && "in "}{timeUntilStartDisplay}
                         </td>
                         <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">
                           {title}
                           <br />
                           ({guild})
                         </td>
-                        <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{prize}</td>
-                        <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{players}</td>
+                        <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                          ${data?.walletValue.toFixed(2)}<br />
+                          {data?.walletBalance} sats
+                        </td>
+                        <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{data?.attendance?.length}</td>
                         <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500"></td>
                       </tr>
                     )
