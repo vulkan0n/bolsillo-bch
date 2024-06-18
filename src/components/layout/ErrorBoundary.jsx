@@ -12,6 +12,18 @@ import { selectActiveWallet, walletBoot } from "@/redux/wallet";
 import { syncReconnect } from "@/redux/sync";
 import { resetPreferences, selectBchNetwork } from "@/redux/preferences";
 
+import { translate } from "@/util/translations";
+import translations from "./ErrorBoundaryTranslations";
+
+const {
+  somethingWrong,
+  hereCanTry,
+  restartApp,
+  resetSettings,
+  rebuildWallet,
+  errorMessage,
+} = translations;
+
 export default function ErrorBoundary() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -45,34 +57,32 @@ export default function ErrorBoundary() {
         <span>
           <SeleneLogo className="h-14 mr-2" />
         </span>
-        <span className="flex-1">Something went wrong...</span>
+        <span className="flex-1">{translate(somethingWrong)}</span>
       </div>
       <div className="p-2">
         <div className="bg-zinc-200 p-2 rounded my-1">
-          <div className="text-xl font-bold mb-2">
-            Here&apos;s what you can try:
-          </div>
+          <div className="text-xl font-bold mb-2">{translate(hereCanTry)}:</div>
           <div className="flex items-center gap-x-1">
             <button
               type="button"
               className="bg-primary rounded text-white p-1 flex-1"
               onClick={handleRestartApp}
             >
-              Restart App
+              {translate(restartApp)}
             </button>
             <button
               type="button"
               className="bg-primary rounded text-white p-1 flex-1"
               onClick={handleResetPreferences}
             >
-              Reset Settings
+              {translate(resetSettings)}
             </button>
             <button
               type="button"
               className="bg-primary rounded text-white p-1 flex-1"
               onClick={handleRebuildWallet}
             >
-              Rebuild Wallet
+              {translate(rebuildWallet)}
             </button>
             {/*
             <button
@@ -85,7 +95,7 @@ export default function ErrorBoundary() {
             */}
           </div>
         </div>
-        <Accordion icon={BugOutlined} title="Error Message">
+        <Accordion icon={BugOutlined} title={translate(errorMessage)}>
           <Accordion.Child icon={null} label="">
             <div className="font-mono bg-zinc-100 p-2 text-left">
               {error.message}

@@ -9,7 +9,7 @@ import { syncReducer, syncMiddleware } from "./sync";
 import { deviceReducer } from "./device";
 import { txHistoryReducer } from "./txHistory";
 import { exchangeRateReducer } from "./exchangeRates";
-//import { triggerCheckIn } from "./stats";
+import { triggerCheckIn } from "./stats";
 
 export const store = configureStore({
   reducer: {
@@ -37,5 +37,6 @@ export function redux_init() {
       network: selectBchNetwork(store.getState()),
     })
   );
-  //store.dispatch(triggerCheckIn());
+
+  store.dispatch(triggerCheckIn());
 }

@@ -1,12 +1,16 @@
 import { Outlet } from "react-router-dom";
-import { AppstoreOutlined } from "@ant-design/icons";
+import { CompassOutlined } from "@ant-design/icons";
 import ViewHeader from "@/layout/ViewHeader";
 import ExploreSearchBar from "./ExploreSearchBar";
+import { translate } from "@/util/translations";
+import translations from "./ExploreViewTranslations";
+
+const { exploreBch } = translations;
 
 export default function ExploreView() {
   return (
     <>
-      <ViewHeader icon={AppstoreOutlined} title="Explore BCH" />
+      <ViewHeader icon={CompassOutlined} title={translate(exploreBch)} />
       <ExploreSearchBar />
       <div className="my-0.5">
         <Outlet />

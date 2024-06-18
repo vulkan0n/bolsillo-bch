@@ -11,6 +11,10 @@ import {
 } from "chart.js";
 import { Line } from "react-chartjs-2";
 import { DateTime } from "luxon";
+import { translate } from "@/util/translations";
+import translations from "./ActiveUsersChartTranslations";
+
+const { activeSeleneUsers } = translations;
 
 ChartJS.register(
   CategoryScale,
@@ -22,9 +26,13 @@ ChartJS.register(
   Legend
 );
 
-function DailyActiveUsersChart({ data }) {
+function ActiveUsersChart({ data, isYearly = false }) {
   const labels = data.activeBitcoiners.map(({ date }) =>
-    DateTime.fromISO(date).toLocaleString(DateTime.DATE_SHORT)
+    DateTime.fromISO(date).toLocaleString({
+      year: isYearly ? "2-digit" : undefined,
+      month: "short",
+      day: "numeric",
+    })
   );
 
   const dataPoints = data.activeBitcoiners.map(({ count }) => count);
@@ -38,7 +46,7 @@ function DailyActiveUsersChart({ data }) {
     labels,
     datasets: [
       {
-        label: "Daily Active Selene Users",
+        label: translate(activeSeleneUsers),
         data: dataPoints,
         borderColor: "#478559",
         backgroundColor: "#478559",
@@ -73,4 +81,4 @@ function DailyActiveUsersChart({ data }) {
   );
 }
 
-export default DailyActiveUsersChart;
+export default ActiveUsersChart;

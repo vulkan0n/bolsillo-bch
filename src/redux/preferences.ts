@@ -37,6 +37,7 @@ const defaultPreferences = {
   lastExchangeRate: "1",
   // --------
   enableExperimental: "false",
+  enablePrerelease: "false",
 };
 
 type ValidPreferences = typeof defaultPreferences;
@@ -249,4 +250,9 @@ export const selectIsChipnet = createSelector(
 export const selectIsExperimental = createSelector(
   (state: RootState) => state.preferences,
   (preferences): boolean => preferences.enableExperimental === "true"
+);
+
+export const selectIsPrerelease = createSelector(
+  (state: RootState) => state.preferences,
+  (preferences): boolean => preferences.enablePrerelease === "true"
 );
