@@ -4,8 +4,7 @@ import { useQuery } from "@apollo/client";
 
 import ActiveUsersChart from "./ActiveUsersChart";
 import GET_ACTIVE_BITCOINERS from "./getActiveBitcoiners";
-import { THIRTY_SECONDS } from "@/util/time";
-import { PERIODS } from "@/util/time";
+import { THIRTY_SECONDS, Period } from "@/util/time";
 import { translate } from "@/util/translations";
 import translations from "./ExploreStatsViewTranslations";
 
@@ -13,7 +12,7 @@ const { globalAdoption, activeSeleneUsers, daily, weekly, monthly, yearly } =
   translations;
 
 export default function StatsView() {
-  const [period, setPeriod] = useState(PERIODS.DAILY);
+  const [period, setPeriod] = useState(Period.Daily);
 
   const {
     loading: isLoading,
@@ -49,58 +48,59 @@ export default function StatsView() {
         <div className="bg-zinc-200 mt-3 mb-3">
           {!isReady && <p>Loading chart...</p>}
           {isReady && (
-            <ActiveUsersChart
-              data={data}
-              isYearly={period === PERIODS.YEARLY}
-            />
+            <ActiveUsersChart data={data} isYearly={period === Period.Yearly} />
           )}
         </div>
 
         <div className="w-full flex justify-center align-center">
           <button
+            type="button"
             className="p-2 ml-1 mr-1 rounded-full border border-2 border-primary shadow-md opacity-90"
             onClick={() => {
-              setPeriod(PERIODS.DAILY);
+              setPeriod(Period.Daily);
             }}
           >
             <span
-              className={`${period === PERIODS.DAILY ? "text-primary" : "text-zinc-400"}`}
+              className={`${period === Period.Daily ? "text-primary" : "text-zinc-400"}`}
             >
               {translate(daily)}
             </span>
           </button>
           <button
+            type="button"
             className="p-2 ml-1 mr-1 rounded-full border border-2 border-primary shadow-md opacity-90"
             onClick={() => {
-              setPeriod(PERIODS.WEEKLY);
+              setPeriod(Period.Weekly);
             }}
           >
             <span
-              className={`${period === PERIODS.WEEKLY ? "text-primary" : "text-zinc-400"}`}
+              className={`${period === Period.Weekly ? "text-primary" : "text-zinc-400"}`}
             >
               {translate(weekly)}
             </span>
           </button>
           <button
+            type="button"
             className="p-2 ml-1 mr-1 rounded-full border border-2 border-primary shadow-md opacity-90"
             onClick={() => {
-              setPeriod(PERIODS.MONTHLY);
+              setPeriod(Period.Monthly);
             }}
           >
             <span
-              className={`${period === PERIODS.MONTHLY ? "text-primary" : "text-zinc-400"}`}
+              className={`${period === Period.Monthly ? "text-primary" : "text-zinc-400"}`}
             >
               {translate(monthly)}
             </span>
           </button>
           <button
+            type="button"
             className="p-2 ml-1 mr-1 rounded-full border border-2 border-primary shadow-md opacity-90"
             onClick={() => {
-              setPeriod(PERIODS.YEARLY);
+              setPeriod(Period.Yearly);
             }}
           >
             <span
-              className={`${period === PERIODS.YEARLY ? "text-primary" : "text-zinc-400"}`}
+              className={`${period === Period.Yearly ? "text-primary" : "text-zinc-400"}`}
             >
               {translate(yearly)}
             </span>

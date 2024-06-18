@@ -3,12 +3,11 @@ import { DateTime } from "luxon";
 import { Device } from "@capacitor/device";
 import { gql } from "@apollo/client";
 import { sha256 } from "@bitauth/libauth";
-import { useSelector } from "react-redux";
 
 import apolloClient from "@/apolloClient";
 import { binToHex } from "@/util/hex";
 import { store } from "@/redux";
-import { setPreference, selectIsPrerelease } from "@/redux/preferences";
+import { setPreference } from "@/redux/preferences";
 
 const SEND_DAILY_CHECK_IN = gql`
   mutation SendCheckIn($hashedDeviceId: String!, $date: String!) {
@@ -28,7 +27,7 @@ export default function StatsService() {
 
   // run a daily check in, if current time UTC is on a date later than previous check in
   async function submitCheckIn() {
-    console.log("Submitting!!");
+    //console.log("Submitting!!");
     const now = DateTime.utc();
     const nowFormatted = now.toFormat("yyyyLLdd"); // LL is month, 2 digit padded
 

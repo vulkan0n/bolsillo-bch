@@ -65,12 +65,14 @@ AccordionChild.propTypes = {
   icon: PropTypes.node,
   label: PropTypes.string,
   children: PropTypes.node,
+  description: PropTypes.string,
 };
 
 AccordionChild.defaultProps = {
   icon: () => null,
   label: "",
   children: () => null,
+  description: "",
 };
 
 Accordion.Child = AccordionChild;

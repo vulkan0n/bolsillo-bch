@@ -3,18 +3,17 @@ import { useState, useEffect } from "react";
 import { useQuery } from "@apollo/client";
 import { DateTime } from "luxon";
 
+import { THIRTY_SECONDS, Period } from "@/util/time";
+import { ONE_HUNDRED, TEN_MILLION } from "@/util/numbers";
 import { useCountdown } from "./useCountdown";
 import GET_ACTIVE_BITCOINERS from "./getActiveBitcoiners";
-import { THIRTY_SECONDS } from "@/util/time";
-import { ONE_HUNDRED, TEN_MILLION } from "@/util/numbers";
-import { PERIODS } from "@/util/time";
 import { translate } from "@/util/translations";
 import translations from "./DailyTargetTranslations";
 
 const { today, remaining, of10million, yesterday } = translations;
 
 export default function DailyTarget() {
-  const [period] = useState(PERIODS.DAILY);
+  const [period] = useState(Period.Daily);
 
   const {
     loading: isLoading,
@@ -35,6 +34,10 @@ export default function DailyTarget() {
 
   const midnightUtc = DateTime.utc().endOf("day");
   const [days, hours, minutes, seconds] = useCountdown(midnightUtc); // eslint-disable-line @typescript-eslint/no-unused-vars
+
+  if (isLoading || !data) {
+    return <div>Loading...</div>;
+  }
 
   const dailyActiveUsersToday =
     data?.activeBitcoiners?.[data?.activeBitcoiners.length - 1]?.count || 1;
