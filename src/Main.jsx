@@ -77,7 +77,6 @@ export default function Main() {
               path: "history",
               element: <WalletViewHistory />,
             },
-            ,
             {
               index: true,
               element: <WalletViewHome />,

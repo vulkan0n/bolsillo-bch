@@ -2,7 +2,6 @@ import {
   ContactsOutlined,
   EnvironmentOutlined,
   QuestionCircleOutlined,
-  BankOutlined,
 } from "@ant-design/icons";
 import { useSelector } from "react-redux";
 import { selectIsExperimental } from "@/redux/preferences";
