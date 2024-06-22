@@ -1,7 +1,6 @@
 import Logger from "js-logger";
 import { Decimal } from "decimal.js";
 import {
-  sha256,
   encodeTransaction,
   generateTransaction,
   swapEndianness,
@@ -21,6 +20,7 @@ import { TransactionStub } from "@/services/TransactionManagerService";
 import { DUST_LIMIT } from "@/util/sats";
 import { validateInvoiceString } from "@/util/invoice";
 import { binToHex } from "@/util/hex";
+import { sha256 } from "@/util/hash";
 
 export default function TransactionBuilderService(wallet: WalletEntity) {
   return {

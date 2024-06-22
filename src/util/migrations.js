@@ -319,7 +319,17 @@ const migrations = [
 
     return query.join("");
   },
-  /* function migrate_v6() {
+  function migrate_v6() {
+    const query = [];
+
+    // add walletHash column
+    query.push(`ALTER TABLE wallets ADD COLUMN walletHash text default null;`);
+
+    query.push("PRAGMA user_version = 7;");
+
+    return query.join("");
+  },
+  /* function migrate_v7() {
     const query = [];
 
     query.push("PRAGMA user_version = 0;");

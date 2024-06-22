@@ -17,14 +17,17 @@ import translations from "./SettingsViewTranslations";
 import { SettingsContext } from "./SettingsContext";
 
 import CurrencyService from "@/services/CurrencyService";
+import SecurityService from "@/services/SecurityService";
 
 import Accordion from "@/atoms/Accordion";
 import CurrencySymbol from "@/atoms/CurrencySymbol";
 import { SatoshiInput } from "@/atoms/SatoshiInput";
 
 export default function PaymentSettings() {
-  const { handleSettingsUpdate, preferences } = useContext(SettingsContext);
-  const { instantPayThreshold } = useSelector(selectInstantPaySettings);
+  const { handleSettingsUpdate } = useContext(SettingsContext);
+  const { isInstantPayEnabled, instantPayThreshold } = useSelector(
+    selectInstantPaySettings
+  );
   const { localCurrency, shouldPreferLocalCurrency } = useSelector(
     selectCurrencySettings
   );
@@ -58,20 +61,23 @@ export default function PaymentSettings() {
       >
         <input
           type="checkbox"
-          checked={preferences.allowInstantPay === "true"}
-          onChange={(event) =>
-            handleSettingsUpdate("allowInstantPay", event.target.checked)
-          }
+          checked={isInstantPayEnabled}
+          onChange={async (event) => {
+            const { checked: isChecked } = event.target;
+            const isAuthorized =
+              isInstantPayEnabled === true ||
+              (await SecurityService().authorize());
+
+            if (isAuthorized) {
+              handleSettingsUpdate("allowInstantPay", isChecked);
+            }
+          }}
         />
       </Accordion.Child>
-      {/*<Accordion.Child>
-        <span className="text-zinc-600">
-          {translate(translations.instantPayExplanation)}
-        </span>
-      </Accordion.Child>*/}
       <Accordion.Child
         icon={PropertySafetyOutlined}
         label={translate(translations.instantPayLimit)}
+        description={translate(translations.instantPayExplanation)}
       >
         <span className="text-zinc-600 flex items-center">
           <CurrencySymbol className="font-bold text-lg" />

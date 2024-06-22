@@ -17,6 +17,7 @@ import {
   selectIsPrerelease,
 } from "@/redux/preferences";
 import { selectKeyboardIsOpen, selectScannerIsScanning } from "@/redux/device";
+
 import translations from "./bottomNavigationTranslations";
 import { translate } from "@/util/translations";
 
@@ -40,7 +41,7 @@ export default function BottomNavigation() {
           to="/wallet"
           activeIcon={WalletFilled}
           icon={WalletOutlined}
-          label="Cash"
+          label={translate(translations.wallet)}
         />
         {isExperimental && (
           <NavButton

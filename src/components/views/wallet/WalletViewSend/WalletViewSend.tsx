@@ -19,6 +19,7 @@ import { selectSyncState, selectMyAddresses } from "@/redux/sync";
 import TransactionManagerService from "@/services/TransactionManagerService";
 import TransactionBuilderService from "@/services/TransactionBuilderService";
 import ToastService from "@/services/ToastService";
+import SecurityService from "@/services/SecurityService";
 
 import { SatoshiInput } from "@/atoms/SatoshiInput";
 import Satoshi from "@/atoms/Satoshi";
@@ -38,7 +39,7 @@ export default function WalletViewSend() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const inputRef = useRef();
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const isKeyboardOpen = useSelector(selectKeyboardIsOpen);
   const buttonsPos = isKeyboardOpen ? "bottom-2" : "bottom-[5em]";
@@ -89,13 +90,18 @@ export default function WalletViewSend() {
     setMessage(insufficientFundsTranslation);
   };
 
-  const confirmSend = async () => {
+  const confirmSend = async (isInstantPay: boolean = false) => {
+    const isAuthorized = isInstantPay || (await SecurityService().authorize());
+    if (!isAuthorized) {
+      return;
+    }
+
     if (isInsufficientFunds) {
       await handleInsufficientFunds();
       return;
     }
 
-    if (!sync.connected) {
+    if (!sync.isConnected) {
       ToastService().disconnected();
       return;
     }
@@ -130,6 +136,7 @@ export default function WalletViewSend() {
       await Haptics.notification({ type: NotificationType.Success });
       navigate("/wallet/send/success", {
         state: { tx },
+        replace: true,
       });
     } else {
       await Haptics.notification({ type: NotificationType.Error });
@@ -150,7 +157,7 @@ export default function WalletViewSend() {
       requestAmount.lessThanOrEqualTo(instantPayThreshold)
     ) {
       //Logger.debug("instapay!", threshold, requestAmount);
-      confirmSend();
+      confirmSend(true);
     }
   });
 
@@ -184,7 +191,9 @@ export default function WalletViewSend() {
       })
     );
 
-    inputRef.current.focus();
+    if (inputRef.current !== null) {
+      inputRef.current.focus();
+    }
   };
 
   return (

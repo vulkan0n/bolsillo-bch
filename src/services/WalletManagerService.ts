@@ -2,11 +2,13 @@ import * as bip39 from "bip39";
 import LogService from "@/services/LogService";
 import DatabaseService from "@/services/DatabaseService";
 import TransactionManagerService from "@/services/TransactionManagerService";
+import AddressManagerService from "@/services/AddressManagerService";
 import {
   ValidDerivationPath,
   DEFAULT_DERIVATION_PATH,
   ValidBchNetwork,
 } from "@/util/crypto";
+import { sha256 } from "@/util/hash";
 
 const Log = LogService("WalletManager");
 
@@ -22,6 +24,7 @@ export interface WalletEntity {
   balance: number;
   prefix: string;
   network: ValidBchNetwork;
+  walletHash: string;
 }
 
 export class WalletNotExistsError extends Error {
@@ -44,6 +47,7 @@ export default function WalletManagerService(network: ValidBchNetwork) {
     updateKeyVerified,
     setWalletName,
     clearWalletData,
+    updateWalletHash,
   };
 
   // ----------------------------
@@ -82,6 +86,7 @@ export default function WalletManagerService(network: ValidBchNetwork) {
   function boot(wallet_id: number): WalletEntity {
     let wallet: WalletEntity;
     try {
+      Log.debug("walletBoot ~", wallet_id);
       wallet = getWalletById(wallet_id);
     } catch (e) {
       if (!(e instanceof WalletNotExistsError)) {
@@ -96,7 +101,20 @@ export default function WalletManagerService(network: ValidBchNetwork) {
       return boot(wallet.id);
     }
 
+    wallet = cleanupWallet(wallet);
     Log.debug("walletBoot", wallet_id, wallet, network);
+    return wallet;
+  }
+
+  // cleanupWallet: ensure wallet correctness before loading
+  function cleanupWallet(wallet: WalletEntity): WalletEntity {
+    if (!wallet.walletHash) {
+      updateWalletHash(wallet);
+      return boot(wallet.id);
+    }
+
+    AddressManagerService(wallet).cleanupAddressStates();
+
     return wallet;
   }
 
@@ -221,6 +239,25 @@ export default function WalletManagerService(network: ValidBchNetwork) {
 
     // purge orphaned transaction data
     TransactionManagerService().purgeTransactions();
+
+    saveDatabase();
+  }
+
+  function updateWalletHash(wallet: WalletEntity) {
+    const mnemonicHash = sha256.text(wallet.mnemonic);
+    const passphraseHash =
+      wallet.passphrase !== "" ? sha256.text(wallet.passphrase) : "";
+    const derivationHash = sha256.text(wallet.derivation);
+
+    const concatHashes = [mnemonicHash, passphraseHash, derivationHash].join(
+      ""
+    );
+
+    const walletHash = sha256.text(concatHashes);
+
+    db.run(
+      `UPDATE wallets SET walletHash="${walletHash}" WHERE id="${wallet.id}"`
+    );
 
     saveDatabase();
   }

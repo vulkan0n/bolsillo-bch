@@ -2,6 +2,7 @@
 import { useSelector, useDispatch } from "react-redux";
 import { EyeOutlined, EyeInvisibleOutlined } from "@ant-design/icons";
 import { selectCurrencySettings, setPreference } from "@/redux/preferences";
+import SecurityService from "@/services/SecurityService";
 
 interface Props {
   className?: string;
@@ -14,7 +15,14 @@ export default function BalanceHideButton({ className = "", ...rest }: Props) {
 
   const hiddenClasses = shouldHideBalance ? "opacity-60" : "opacity-40";
 
-  const handleHideBalance = () => {
+  const handleHideBalance = async () => {
+    if (shouldHideBalance === true) {
+      const isAuthorized = await SecurityService().authorize();
+      if (!isAuthorized) {
+        return;
+      }
+    }
+
     dispatch(
       setPreference({
         key: "hideAvailableBalance",

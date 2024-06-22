@@ -37,18 +37,19 @@ export const syncConnect = createAsyncThunk(
   "sync/connect",
   async (payload: { attempts: number; server: string }, thunkApi) => {
     Log.log("sync/connect", payload);
+    // attempt connection only if device reports active network connection
+    const { isConnected: isNetworkConnected } = selectNetworkStatus(
+      thunkApi.getState()
+    );
+
     try {
-      // attempt connection only if device reports active network connection
-      const { isConnected } = selectNetworkStatus(thunkApi.getState());
-      if (isConnected) {
-        await Electrum.connect(payload.server);
-      }
+      await Electrum.connect(payload.server);
     } catch (e) {
       // if connection fails, destroy the client and try again
       await Electrum.disconnect(true);
 
       // 3 attempts, over 12 seconds total, per server
-      if (payload.attempts < 2) {
+      if (payload.attempts < 2 || !isNetworkConnected) {
         setTimeout(
           () =>
             thunkApi.dispatch(
@@ -160,6 +161,7 @@ export const syncChangeAddresses = createAsyncThunk(
         const addressState = await Electrum.requestAddressState(
           address.address
         );
+
         thunkApi.dispatch(syncAddressState([address, addressState]));
         //Log.debug("sync/changeAddresses", address, addressState);
         return [address, addressState];
@@ -179,7 +181,7 @@ export const syncChangeAddresses = createAsyncThunk(
 // syncAddressState: fired when data acquired from address subscription
 export const syncAddressState = createAsyncThunk(
   "sync/addressState",
-  (payload: [AddressEntity | string, string], thunkApi) => {
+  (payload: [AddressEntity | string, string | null], thunkApi) => {
     // get subscription response data from payload
     const [address, addressState] = payload;
 
@@ -403,7 +405,7 @@ const initialPending = {
   txState: 0,
 };
 const initialState = {
-  connected: false,
+  isConnected: false,
   server: "",
   syncPending: { ...initialPending },
   chaintip: { ...block_checkpoints.first2023 },
@@ -414,14 +416,14 @@ const initialState = {
 export const syncReducer = createReducer(initialState, (builder) => {
   builder
     .addCase(syncConnectionUp.fulfilled, (state: RootState, action) => {
-      state.connected = true;
+      state.isConnected = true;
       state.server = action.payload;
     })
     .addCase(syncConnectionDown.pending, (state: RootState) => {
-      state.connected = false;
+      state.isConnected = false;
     })
     .addCase(syncReconnect.pending, (state: RootState) => {
-      state.connected = false;
+      state.isConnected = false;
     })
     .addCase(syncSubscribeAddress.pending, (state: RootState) => {
       state.syncPending.txState += 1;

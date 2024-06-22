@@ -10,6 +10,7 @@ import {
   selectIsChipnet,
 } from "@/redux/preferences";
 import { selectCurrentPrice } from "@/redux/exchangeRates";
+import SecurityService from "@/services/SecurityService";
 
 import Satoshi from "@/atoms/Satoshi";
 import CurrencyFlip from "@/atoms/CurrencyFlip";
@@ -42,7 +43,14 @@ export default function WalletViewBalance() {
     );
   };
 
-  const handleHideBalance = () => {
+  const handleHideBalance = async () => {
+    if (shouldHideBalance === true) {
+      const isAuthorized = await SecurityService().authorize();
+      if (!isAuthorized) {
+        return;
+      }
+    }
+
     dispatch(
       setPreference({
         key: "hideAvailableBalance",

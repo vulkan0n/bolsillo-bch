@@ -71,7 +71,7 @@ export default function SyncIndicator() {
   }));
 
   const handlePointerDown = () => {
-    if (sync.connected) {
+    if (sync.isConnected) {
       connectApi.start({
         from: { opacity: 0.8, scale: 0.85 },
         to: { opacity: 0.1, scale: 0.65 },
@@ -89,10 +89,10 @@ export default function SyncIndicator() {
       className="cursor-pointer w-10 h-10 flex justify-center items-center"
       onPointerDown={handlePointerDown}
     >
-      {!sync.connected && (
+      {!sync.isConnected && (
         <DisconnectedIcon springs={{ ...disconnectSprings }} />
       )}
-      {sync.connected &&
+      {sync.isConnected &&
         (shouldAnimateSync ? (
           <div>
             <SyncIcon springs={{ ...syncSprings }} />

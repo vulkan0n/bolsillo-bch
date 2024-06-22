@@ -23,6 +23,7 @@ import { syncReconnect } from "@/redux/sync";
 import ViewHeader from "@/layout/ViewHeader";
 
 import WalletManagerService from "@/services/WalletManagerService";
+import SecurityService from "@/services/SecurityService";
 
 import KeyWarning from "@/atoms/KeyWarning/KeyWarning";
 import ShowMnemonic from "@/atoms/ShowMnemonic";
@@ -61,11 +62,16 @@ export default function SettingsWalletView() {
   const isDeleteDisabled = deleteConfirm === 2 && wallet.key_viewed === null;
 
   // handler for "Delete Wallet" button
-  const handleDeleteWallet = () => {
+  const handleDeleteWallet = async () => {
     setDeleteConfirm((deleteConfirm + 1) % 4);
 
     // on 4th press, delete wallet and "reboot" app
     if (deleteConfirm === 3) {
+      const isAuthorized = await SecurityService().authorize();
+      if (!isAuthorized) {
+        return;
+      }
+
       WalletManager.deleteWallet(wallet.id);
       dispatch(walletBoot({ wallet_id: 1, network: bchNetwork }));
       navigate("/");

@@ -532,6 +532,11 @@
   resolved "https://registry.yarnpkg.com/@capacitor/splash-screen/-/splash-screen-6.0.0.tgz#15a66cb27f9b99076845113188cead77ad1c0864"
   integrity sha512-ZGgbT1j6opz1xCnMHnERnBd33aQTuepOXuDHMiKgZGlOluviBFOyOcnMnWjEwavg8PSiYSPSmVSwjxW7L6mXsg==
 
+"@capgo/capacitor-native-biometric@^6.0.1":
+  version "6.0.1"
+  resolved "https://registry.yarnpkg.com/@capgo/capacitor-native-biometric/-/capacitor-native-biometric-6.0.1.tgz#dca4c9f772f03bb6825a30d4e5a904bc348c9ede"
+  integrity sha512-yexCWAWxF8klufTxYqhBrP5QFjkVIInaSiKy5SBaGKW3y50gppsQv6TLHuktCX/tesVCeWPDAaWJZkozfp8Cpw==
+
 "@cspotcode/source-map-support@^0.8.0":
   version "0.8.1"
   resolved "https://registry.yarnpkg.com/@cspotcode/source-map-support/-/source-map-support-0.8.1.tgz#00629c35a688e05a88b1cda684fb9d5e73f000a1"
