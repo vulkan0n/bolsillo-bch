@@ -60,9 +60,9 @@ export default function SettingsView() {
           <WalletSettings />
           <CurrencySettings />
           <PaymentSettings />
+          <SecuritySettings />
           <QrCodeSettings />
           <NetworkSettings />
-          <SecuritySettings />
           <IntlSettings />
         </SettingsContext.Provider>
       </div>
