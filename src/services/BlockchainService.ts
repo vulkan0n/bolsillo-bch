@@ -1,9 +1,10 @@
 /* eslint-disable max-classes-per-file */
-import { sha256, swapEndianness } from "@bitauth/libauth";
+import { swapEndianness } from "@bitauth/libauth";
 import { Filesystem, Directory, WriteFileResult } from "@capacitor/filesystem";
 import LogService from "@/services/LogService";
 import DatabaseService from "@/services/DatabaseService";
 import { hexToBin, binToHex } from "@/util/hex";
+import { sha256 } from "@/util/hash";
 
 const Log = LogService("Blockchain");
 

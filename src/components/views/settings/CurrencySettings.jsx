@@ -20,6 +20,7 @@ import { currencyList } from "@/util/currency";
 import { VALID_DENOMINATIONS } from "@/util/sats";
 
 import Accordion from "@/atoms/Accordion";
+import SecurityService from "@/services/SecurityService";
 
 export default function CurrencySettings() {
   const { handleSettingsUpdate } = useContext(SettingsContext);
@@ -76,9 +77,16 @@ export default function CurrencySettings() {
         <input
           type="checkbox"
           checked={shouldHideBalance}
-          onChange={(event) =>
-            handleSettingsUpdate("hideAvailableBalance", event.target.checked)
-          }
+          onChange={async (event) => {
+            const { checked: isChecked } = event.target;
+            const isAuthorized =
+              shouldHideBalance === false ||
+              (await SecurityService().authorize());
+
+            if (isAuthorized) {
+              handleSettingsUpdate("hideAvailableBalance", isChecked);
+            }
+          }}
         />
       </Accordion.Child>
       <Accordion.Child

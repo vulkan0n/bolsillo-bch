@@ -4,6 +4,7 @@ import { WarningFilled, EyeInvisibleOutlined } from "@ant-design/icons";
 
 import { walletSetKeyViewed } from "@/redux/wallet";
 import { WalletEntity } from "@/services/WalletManagerService";
+import SecurityService from "@/services/SecurityService";
 
 import { translate } from "@/util/translations";
 import translations from "@/components/views/settings/SettingsWalletView/translations";
@@ -16,8 +17,13 @@ export default function ShowMnemonic({ wallet }: { wallet: WalletEntity }) {
     useState(false);
 
   // handler for mnemonic visibility area
-  const handleShowMnemonic = () => {
+  const handleShowMnemonic = async () => {
     if (shouldShowRecoveryPhrase === false) {
+      const isAuthorized = await SecurityService().authorize();
+      if (!isAuthorized) {
+        return;
+      }
+
       setShouldShowRecoveryPhrase(true);
       dispatch(walletSetKeyViewed({ wallet_id: wallet.id }));
     } else {

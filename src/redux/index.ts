@@ -8,7 +8,7 @@ import { walletReducer, walletMiddleware, walletBoot } from "./wallet";
 import { syncReducer, syncMiddleware } from "./sync";
 import { deviceReducer } from "./device";
 import { txHistoryReducer } from "./txHistory";
-import { exchangeRateReducer } from "./exchangeRates";
+import { exchangeRateReducer, fetchExchangeRates } from "./exchangeRates";
 import { triggerCheckIn } from "./stats";
 
 export const store = configureStore({
@@ -39,4 +39,5 @@ export function redux_init() {
   );
 
   store.dispatch(triggerCheckIn());
+  store.dispatch(fetchExchangeRates(0));
 }

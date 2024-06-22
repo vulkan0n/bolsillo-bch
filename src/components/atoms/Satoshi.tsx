@@ -60,14 +60,14 @@ export default function Satoshi({
       bch: "₿",
       mbch: "₿",
       bits: "₿",
-      sats: "Ꞩ",
+      sats: "",
     };
 
     const bchUnit = {
       bch: "",
       mbch: "",
       bits: "",
-      sats: "",
+      sats: "Ꞩ",
     };
 
     const absoluteAmounts = satsToBch(Math.abs(amount));

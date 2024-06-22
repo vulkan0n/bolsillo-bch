@@ -6,10 +6,10 @@ import {
   encodeCashAddress,
   secp256k1,
   ripemd160,
-  sha256,
 } from "@bitauth/libauth";
 
 import { hexToBin } from "@/util/hex";
+import { sha256 } from "@/util/hash";
 
 import LogService from "@/services/LogService";
 import AddressManagerService from "@/services/AddressManagerService";

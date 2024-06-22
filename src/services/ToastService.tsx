@@ -63,7 +63,7 @@ export default function ToastService() {
   }
 
   function connectionStatus(sync) {
-    const header = sync.connected
+    const header = sync.isConnected
       ? `Connected to ${sync.server}`
       : "Disconnected";
 

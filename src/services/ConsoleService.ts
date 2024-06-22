@@ -1,7 +1,8 @@
+import { DateTime } from "luxon";
 import { Share } from "@capacitor/share";
 import { Filesystem, Directory, Encoding } from "@capacitor/filesystem";
 
-let lines = [];
+let lines: Array<string> = [];
 const timers = {};
 const denyLoggers = ["WalletManager"];
 
@@ -15,7 +16,7 @@ function ConsoleService() {
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   function registerLine(messages, context) {
-    const line = [];
+    const line: Array<string> = [];
 
     //console.log(context);
 
@@ -51,6 +52,7 @@ function ConsoleService() {
         break;
     }
 
+    line.unshift(DateTime.now().toFormat("HH:mm:ss.SSS"));
     lines.push(line.join(" "));
   }
 

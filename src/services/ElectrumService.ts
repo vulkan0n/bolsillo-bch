@@ -60,7 +60,7 @@ export default function ElectrumService() {
   ): Promise<void> {
     // using redux connection state guarantees that
     // we only create new ElectrumClient when necessary
-    if (selectSyncState(store.getState()).connected) {
+    if (selectSyncState(store.getState()).isConnected) {
       return Promise.resolve();
     }
 
@@ -109,7 +109,7 @@ export default function ElectrumService() {
   // subscribeToAddress: listen for updates on an address
   async function subscribeToAddress(
     address: AddressEntity
-  ): Promise<{ address: AddressEntity; addressState: string }> {
+  ): Promise<{ address: AddressEntity; addressState: string | null }> {
     if (electrum === null) {
       throw new ElectrumNotConnectedError();
     }
@@ -124,10 +124,18 @@ export default function ElectrumService() {
       throw new ElectrumNotConnectedError();
     }
 
-    const addressState = (await electrum.request(
+    const addressState = await electrum.request(
       "blockchain.address.subscribe",
       address.address
-    )) as string;
+    );
+
+    if (addressState instanceof Error) {
+      throw addressState;
+    }
+
+    if (!(addressState === null || typeof addressState === "string")) {
+      throw new Error();
+    }
 
     return { address, addressState };
   }
@@ -168,6 +176,10 @@ export default function ElectrumService() {
       "blockchain.address.subscribe",
       address
     );
+
+    if (!(addressState === null || typeof addressState === "string")) {
+      throw new Error();
+    }
 
     return addressState;
   }

@@ -1,9 +1,8 @@
-import { sha256 } from "@bitauth/libauth";
 import LogService from "@/services/LogService";
 import DatabaseService from "@/services/DatabaseService";
 import HdNodeService from "@/services/HdNodeService";
-import { binToHex } from "@/util/hex";
 import { WalletEntity } from "@/services/WalletManagerService";
+import { sha256 } from "@/util/hash";
 
 const Log = LogService("AddressManager");
 
@@ -43,6 +42,7 @@ export default function AddressManagerService(wallet: WalletEntity) {
     calculateAddressState,
     getAddressState,
     registerTransaction,
+    cleanupAddressStates,
   };
 
   // --------------------------------
@@ -222,14 +222,11 @@ export default function AddressManagerService(wallet: WalletEntity) {
     address: AddressEntity,
     state: string | null
   ): AddressEntity {
-    if (state === "null" || state === null) {
-      return address;
-    }
-
+    const s = state === null ? "NULL" : `'${state}'`;
     const result = resultToJson(
       db.exec(
         `UPDATE addresses SET 
-          state="${state}" 
+          state=${s}
          WHERE (
           address="${address.address}" 
         ) RETURNING *;`
@@ -287,9 +284,7 @@ export default function AddressManagerService(wallet: WalletEntity) {
       .concat(localHistory.unconfirmed.map(txToState))
       .join("");
 
-    const stateHash = binToHex(
-      sha256.hash(new TextEncoder().encode(stateString))
-    );
+    const stateHash = sha256.text(stateString);
 
     //Log.debug("calculateAddressState", stateHash, stateString, address);
     return stateHash;
@@ -328,6 +323,21 @@ export default function AddressManagerService(wallet: WalletEntity) {
           height="${tx.height}";
       `
     );
+
+    saveDatabase();
+  }
+
+  function cleanupAddressStates() {
+    const needsCleanup = resultToJson(
+      db.exec(
+        `SELECT address,state FROM addresses WHERE state LIKE "%Error%" OR state="null";`
+      )
+    );
+    Log.warn(`Found ${needsCleanup.length} addresses needing state cleanup!`);
+    db.run(
+      `UPDATE addresses SET state=NULL WHERE address IN (SELECT address FROM addresses WHERE state LIKE "%Error%" OR state="null");`
+    );
+    Log.debug("Address cleanup done");
 
     saveDatabase();
   }

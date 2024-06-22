@@ -3,8 +3,9 @@ import { App } from "@capacitor/app";
 import { Device, DeviceInfo as CapacitorDeviceInfo } from "@capacitor/device";
 import { Keyboard } from "@capacitor/keyboard";
 import { Network, ConnectionStatus } from "@capacitor/network";
+import { NativeBiometric } from "@capgo/capacitor-native-biometric";
 import { store, RootState } from "@/redux";
-import { syncReconnect } from "@/redux/sync";
+//import { syncReconnect } from "@/redux/sync";
 import LogService from "@/services/LogService";
 
 const Log = LogService("Device");
@@ -12,6 +13,7 @@ const Log = LogService("Device");
 type DeviceInfo = CapacitorDeviceInfo & {
   deviceId: string;
   languageCode: string;
+  hasBiometric: boolean;
 };
 
 interface DeviceState {
@@ -75,12 +77,17 @@ async function initializeDevice(): Promise<DeviceState> {
       ...(await Device.getInfo()),
       deviceId: (await Device.getId()).identifier,
       languageCode: (await Device.getLanguageCode()).value,
+      hasBiometric: false,
     },
     locale: (await Device.getLanguageTag()).value,
     network: await Network.getStatus(),
   };
 
   if (deviceState.deviceInfo.platform !== "web") {
+    deviceState.deviceInfo.hasBiometric = (
+      await NativeBiometric.isAvailable()
+    ).isAvailable;
+
     App.addListener("backButton", (canGoBack) => {
       if (selectKeyboardIsOpen(store.getState())) {
         Keyboard.hide();
@@ -116,9 +123,6 @@ async function initializeDevice(): Promise<DeviceState> {
 
     Network.addListener("networkStatusChange", (status) => {
       store.dispatch(setNetworkStatus(status));
-      if (status.connected) {
-        store.dispatch(syncReconnect());
-      }
     });
   }
 
