@@ -11,7 +11,7 @@ export default function ExploreView() {
   return (
     <>
       <ViewHeader icon={CompassOutlined} title={translate(exploreBch)} />
-      <ExploreSearchBar />
+      {/* <ExploreSearchBar /> */}
       <div className="my-0.5">
         <Outlet />
       </div>

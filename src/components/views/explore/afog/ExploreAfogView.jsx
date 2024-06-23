@@ -62,17 +62,7 @@ export default function ExploreAfogView() {
                 <thead>
                   <tr>
                     <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-                      Date<br />
-                      starts in...
-                    </th>
-                    <th scope="col" className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">
-                      Game (Guild)
-                    </th>
-                    <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-                      Prize Pool
-                    </th>
-                    <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-                      Players
+                      Tournament Info
                     </th>
                   </tr>
                 </thead>
@@ -84,20 +74,18 @@ export default function ExploreAfogView() {
                     return (
                       <tr key={id}>
                         <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                          {date}<br />
-                          {timeUntilStartDisplay && "in "}{timeUntilStartDisplay}
-                        </td>
-                        <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">
-                          {title}
+                          {date}
                           <br />
-                          ({guild})
+                          <b>{title}</b>
+                          <br />
+                          (<i>{guild}</i>)
+                          <br />
+                          Prize Pool: ${data?.walletValue.toFixed(2)} ({data?.walletBalance} sats)
+                          <br />
+                          Players: {data?.attendance?.length}
+                          <br />
+                          {timeUntilStartDisplay && "Starts in "}{timeUntilStartDisplay}
                         </td>
-                        <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                          ${data?.walletValue.toFixed(2)}<br />
-                          {data?.walletBalance} sats
-                        </td>
-                        <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{data?.attendance?.length}</td>
-                        <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500"></td>
                       </tr>
                     )
                   })}
@@ -114,7 +102,7 @@ export default function ExploreAfogView() {
   return (
     <div>
       <div>Compete in online video game tournaments, with entry fees & prizes paid directly in BCH!</div>
-      <div>Read more at <a href="https://afifthofgaming.com/" target="_blank">https://afifthofgaming.com/</a></div>
+      <div>Read more & sign up to play at <a href="https://afifthofgaming.com/" target="_blank">https://afifthofgaming.com/</a></div>
 
       <Table />
     </div>
