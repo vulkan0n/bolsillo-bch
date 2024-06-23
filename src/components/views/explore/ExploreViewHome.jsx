@@ -1,5 +1,6 @@
 import {
   ContactsOutlined,
+  BankOutlined,
   EnvironmentOutlined,
   LaptopOutlined,
   QuestionCircleOutlined,
