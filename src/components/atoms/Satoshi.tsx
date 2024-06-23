@@ -1,4 +1,3 @@
-import PropTypes from "prop-types";
 import { useSelector } from "react-redux";
 import { selectLocale } from "@/redux/device";
 import { selectCurrencySettings } from "@/redux/preferences";
@@ -6,7 +5,17 @@ import { selectCurrencySettings } from "@/redux/preferences";
 import CurrencyService from "@/services/CurrencyService";
 import { satsToBch } from "@/util/sats";
 
-export default function Satoshi({ value, fiat, flip }) {
+interface Props {
+  value: number;
+  fiat?: boolean;
+  flip?: boolean;
+}
+
+export default function Satoshi({
+  value = 0,
+  fiat = undefined,
+  flip = false,
+}: Props) {
   const {
     shouldPreferLocalCurrency,
     shouldHideBalance,
@@ -51,14 +60,14 @@ export default function Satoshi({ value, fiat, flip }) {
       bch: "₿",
       mbch: "₿",
       bits: "₿",
-      sats: "₿",
+      sats: "",
     };
 
     const bchUnit = {
       bch: "",
       mbch: "",
       bits: "",
-      sats: "",
+      sats: "Ꞩ",
     };
 
     const absoluteAmounts = satsToBch(Math.abs(amount));
@@ -99,14 +108,3 @@ export default function Satoshi({ value, fiat, flip }) {
 
   return <span>{formatSatoshis(value)[formatIndex]}</span>;
 }
-
-Satoshi.propTypes = {
-  value: PropTypes.number.isRequired,
-  fiat: PropTypes.bool,
-  flip: PropTypes.bool,
-};
-
-Satoshi.defaultProps = {
-  fiat: undefined,
-  flip: false,
-};

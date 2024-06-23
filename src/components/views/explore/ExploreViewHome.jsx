@@ -1,12 +1,11 @@
 import {
-  BankOutlined,
   ContactsOutlined,
   EnvironmentOutlined,
   LaptopOutlined,
   QuestionCircleOutlined,
 } from "@ant-design/icons";
-import { selectIsExperimental } from "@/redux/preferences";
 import { useSelector } from "react-redux";
+import { selectIsExperimental } from "@/redux/preferences";
 import ExploreStatBlock from "./ExploreStatBlock";
 import ExploreApp from "./ExploreApp";
 import StatsView from "./stats/ExploreStatsView";

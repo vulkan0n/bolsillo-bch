@@ -1,7 +1,16 @@
-import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 
-export default function ExploreApp({ name, icon, to }) {
+interface Props {
+  name: string;
+  icon: React.ComponentType;
+  to: string;
+}
+
+export default function ExploreApp({
+  name = "",
+  icon = () => null,
+  to = "",
+}: Props) {
   const Icon = icon;
 
   return (
@@ -17,14 +26,3 @@ export default function ExploreApp({ name, icon, to }) {
     </Link>
   );
 }
-
-ExploreApp.propTypes = {
-  name: PropTypes.string.isRequired,
-  icon: PropTypes.object,
-  to: PropTypes.string,
-};
-
-ExploreApp.defaultProps = {
-  icon: {},
-  to: "",
-};

@@ -1,9 +1,12 @@
 /* eslint-disable max-classes-per-file */
-import Logger from "js-logger";
-import { sha256, swapEndianness } from "@bitauth/libauth";
+import { swapEndianness } from "@bitauth/libauth";
 import { Filesystem, Directory, WriteFileResult } from "@capacitor/filesystem";
+import LogService from "@/services/LogService";
 import DatabaseService from "@/services/DatabaseService";
 import { hexToBin, binToHex } from "@/util/hex";
+import { sha256 } from "@/util/hash";
+
+const Log = LogService("Blockchain");
 
 export class BlockNotExistsError extends Error {
   constructor(id: string | number) {
@@ -84,7 +87,7 @@ export default function BlockchainService() {
 
       return result;
     } catch (e) {
-      Logger.error(e);
+      Log.error(e);
       return { uri: "" };
     }
   }
@@ -113,7 +116,7 @@ export default function BlockchainService() {
   // getBlocks: return all known blocks
   function getBlocks(): Array<BlockEntity> {
     const result = resultToJson(db.exec(`SELECT * FROM blockchain;`));
-    //Logger.log("getBlocks", result);
+    //Log.log("getBlocks", result);
     return result;
   }
 
@@ -129,7 +132,7 @@ export default function BlockchainService() {
 
     result.header = await _loadBlockData(result.blockhash);
 
-    Logger.debug("getBlockByHash", result, height);
+    Log.debug("getBlockByHash", result, height);
     return result[0];
   }
 
@@ -145,7 +148,7 @@ export default function BlockchainService() {
 
     result.header = await _loadBlockData(result.blockhash);
 
-    Logger.debug("getBlockByHeight", result, height);
+    Log.debug("getBlockByHeight", result, height);
     return result[0];
   }
 
@@ -188,7 +191,7 @@ export default function BlockchainService() {
   }
 
   function verifyMerkleProof(txHash, txIndex, merkleBranch, merkleRoot) {
-    //Logger.log("verifyMerkleProof", txHash, txIndex, merkleBranch, merkleRoot);
+    //Log.log("verifyMerkleProof", txHash, txIndex, merkleBranch, merkleRoot);
 
     let hash = txHash;
     let index = txIndex;
@@ -218,12 +221,12 @@ export default function BlockchainService() {
         directory: Directory.Library,
       });
     } catch (e) {
-      Logger.warn(e);
+      Log.warn(e);
     }
 
     db.run(`DELETE FROM blockchain WHERE blockhash="${blockhash}";`);
     saveDatabase();
-    //Logger.debug("deleteBlock", blockhash);
+    //Log.debug("deleteBlock", blockhash);
   }
 
   async function purgeBlocks(): Promise<void> {
@@ -240,6 +243,6 @@ export default function BlockchainService() {
       blockhashes.map(async ({ blockhash }) => deleteBlock(blockhash))
     );
     saveDatabase();
-    Logger.debug("purgeBlocks", blockhashes);
+    Log.debug("purgeBlocks", blockhashes);
   }
 }

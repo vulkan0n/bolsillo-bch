@@ -23,7 +23,7 @@ export default function ExploreStatBlock() {
     return stopPolling;
   }, [startPolling, stopPolling]);
 
-  if (isLoading) {
+  if (isLoading || !data) {
     return <p>Loading...</p>;
   }
 

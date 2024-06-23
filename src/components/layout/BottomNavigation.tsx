@@ -1,4 +1,3 @@
-import PropTypes from "prop-types";
 import { NavLink } from "react-router-dom";
 import { useSelector } from "react-redux";
 import {
@@ -6,6 +5,8 @@ import {
   WalletFilled,
   CompassOutlined,
   CompassFilled,
+  BankOutlined,
+  BankFilled,
   SettingOutlined,
   SettingFilled,
 } from "@ant-design/icons";
@@ -16,12 +17,11 @@ import {
   selectIsPrerelease,
 } from "@/redux/preferences";
 import { selectKeyboardIsOpen, selectScannerIsScanning } from "@/redux/device";
+
 import translations from "./bottomNavigationTranslations";
 import { translate } from "@/util/translations";
 
-const { wallet, explore, settings } = translations;
-
-function BottomNavigation() {
+export default function BottomNavigation() {
   const isKeyboardOpen = useSelector(selectKeyboardIsOpen);
   const isScanning = useSelector(selectScannerIsScanning);
   const isExperimental = useSelector(selectIsExperimental);
@@ -41,28 +41,48 @@ function BottomNavigation() {
           to="/wallet"
           activeIcon={WalletFilled}
           icon={WalletOutlined}
-          label={translate(wallet)}
+          label={translate(translations.wallet)}
         />
+        {isExperimental && (
+          <NavButton
+            to="/assets"
+            activeIcon={BankFilled}
+            icon={BankOutlined}
+            label="Assets"
+          />
+        )}
         {(isExperimental || isPrerelease) && (
           <NavButton
             to="/explore"
             activeIcon={CompassFilled}
             icon={CompassOutlined}
-            label={translate(explore)}
+            label={translate(translations.explore)}
           />
         )}
         <NavButton
           to="/settings"
           activeIcon={SettingFilled}
           icon={SettingOutlined}
-          label={translate(settings)}
+          label={translate(translations.settings)}
         />
       </div>
     )
   );
 }
 
-function NavButton({ to, icon, activeIcon, label }) {
+interface NavButtonProps {
+  to: string;
+  icon: React.ComponentType;
+  activeIcon: React.ComponentType;
+  label: string;
+}
+
+function NavButton({
+  to = "",
+  icon = () => null,
+  activeIcon = () => null,
+  label = "",
+}: NavButtonProps) {
   const Icon = icon;
   const ActiveIcon = activeIcon;
 
@@ -92,19 +112,3 @@ function NavButton({ to, icon, activeIcon, label }) {
     </NavLink>
   );
 }
-
-NavButton.propTypes = {
-  to: PropTypes.string,
-  icon: PropTypes.object,
-  activeIcon: PropTypes.object,
-  label: PropTypes.string,
-};
-
-NavButton.defaultProps = {
-  to: "",
-  icon: null,
-  activeIcon: null,
-  label: "",
-};
-
-export default BottomNavigation;

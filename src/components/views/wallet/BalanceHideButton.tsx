@@ -1,19 +1,33 @@
 /* eslint-disable react/jsx-props-no-spreading */
-import PropTypes from "prop-types";
 import { useSelector, useDispatch } from "react-redux";
 import { EyeOutlined, EyeInvisibleOutlined } from "@ant-design/icons";
 import { selectCurrencySettings, setPreference } from "@/redux/preferences";
+import SecurityService from "@/services/SecurityService";
 
-export default function BalanceHideButton({ className, ...rest }) {
+interface Props {
+  className?: string;
+}
+
+export default function BalanceHideButton({ className = "", ...rest }: Props) {
   const dispatch = useDispatch();
   const { shouldHideBalance } = useSelector(selectCurrencySettings);
   const Icon = shouldHideBalance ? EyeInvisibleOutlined : EyeOutlined;
 
   const hiddenClasses = shouldHideBalance ? "opacity-60" : "opacity-40";
 
-  const handleHideBalance = () => {
+  const handleHideBalance = async () => {
+    if (shouldHideBalance === true) {
+      const isAuthorized = await SecurityService().authorize();
+      if (!isAuthorized) {
+        return;
+      }
+    }
+
     dispatch(
-      setPreference({ key: "hideAvailableBalance", value: !shouldHideBalance })
+      setPreference({
+        key: "hideAvailableBalance",
+        value: (!shouldHideBalance).toString(),
+      })
     );
   };
 
@@ -25,11 +39,3 @@ export default function BalanceHideButton({ className, ...rest }) {
     />
   );
 }
-
-BalanceHideButton.propTypes = {
-  className: PropTypes.string,
-};
-
-BalanceHideButton.defaultProps = {
-  className: "",
-};

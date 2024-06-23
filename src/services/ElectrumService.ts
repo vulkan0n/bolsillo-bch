@@ -1,8 +1,5 @@
-import Logger from "js-logger";
 import { ElectrumClient, ElectrumTransport } from "electrum-cash";
-
 import { App } from "@capacitor/app";
-
 import { store } from "@/redux";
 import {
   syncConnect,
@@ -13,10 +10,13 @@ import {
   selectSyncState,
 } from "@/redux/sync";
 
+import LogService from "@/services/LogService";
 import { AddressEntity } from "@/services/AddressManagerService";
 
 import { bchToSats } from "@/util/sats";
 import { electrum_servers, chipnet_servers } from "@/util/electrum_servers";
+
+const Log = LogService("Electrum");
 
 const DEFAULT_ELECTRUM_SERVER = electrum_servers[0];
 
@@ -60,7 +60,7 @@ export default function ElectrumService() {
   ): Promise<void> {
     // using redux connection state guarantees that
     // we only create new ElectrumClient when necessary
-    if (selectSyncState(store.getState()).connected) {
+    if (selectSyncState(store.getState()).isConnected) {
       return Promise.resolve();
     }
 
@@ -70,7 +70,7 @@ export default function ElectrumService() {
       // disconnect(force=true) cleans up all listeners and timeouts
       await electrum.disconnect(true);
     }
-    Logger.log("Electrum: Connecting to", server);
+    Log.log("Electrum: Connecting to", server);
 
     // Create a new ElectrumClient every time
     // This avoids memory leaks from EventEmitter
@@ -85,12 +85,12 @@ export default function ElectrumService() {
 
     // need to establish listeners every time we recreate the ElectrumClient
     electrum.addListener("connected", () => {
-      Logger.log("ELECTRUM CONNECTED");
+      Log.log("ELECTRUM CONNECTED");
       store.dispatch(syncConnectionUp(server));
     });
 
     electrum.addListener("disconnected", () => {
-      Logger.log("ELECTRUM DISCONNECTED");
+      Log.log("ELECTRUM DISCONNECTED");
       store.dispatch(syncConnectionDown());
     });
 
@@ -109,7 +109,7 @@ export default function ElectrumService() {
   // subscribeToAddress: listen for updates on an address
   async function subscribeToAddress(
     address: AddressEntity
-  ): Promise<{ address: AddressEntity; addressState: string }> {
+  ): Promise<{ address: AddressEntity; addressState: string | null }> {
     if (electrum === null) {
       throw new ElectrumNotConnectedError();
     }
@@ -124,10 +124,18 @@ export default function ElectrumService() {
       throw new ElectrumNotConnectedError();
     }
 
-    const addressState = (await electrum.request(
+    const addressState = await electrum.request(
       "blockchain.address.subscribe",
       address.address
-    )) as string;
+    );
+
+    if (addressState instanceof Error) {
+      throw addressState;
+    }
+
+    if (!(addressState === null || typeof addressState === "string")) {
+      throw new Error();
+    }
 
     return { address, addressState };
   }
@@ -169,6 +177,10 @@ export default function ElectrumService() {
       address
     );
 
+    if (!(addressState === null || typeof addressState === "string")) {
+      throw new Error();
+    }
+
     return addressState;
   }
 
@@ -207,7 +219,7 @@ export default function ElectrumService() {
     }
 
     if (pendingTxRequests[tx_hash]) {
-      Logger.warn("waiting on resolution for", tx_hash);
+      Log.warn("waiting on resolution for", tx_hash);
       return pendingTxRequests[tx_hash];
     }
 
@@ -252,7 +264,7 @@ export default function ElectrumService() {
       checkpoint_height
     );
 
-    Logger.debug("requestBlock", header, height);
+    Log.debug("requestBlock", header, height);
     return header;
   }
 
@@ -265,7 +277,7 @@ export default function ElectrumService() {
       tx_hex
     );
 
-    Logger.log("broadcastTransaction", tx_hash, tx_hex);
+    Log.log("broadcastTransaction", tx_hash, tx_hex);
     return tx_hash;
   }
 
@@ -296,7 +308,7 @@ export default function ElectrumService() {
       newServer = chooseRandomServer();
     }
 
-    Logger.log(
+    Log.log(
       "selectFallbackServer",
       newServer,
       prevServer,

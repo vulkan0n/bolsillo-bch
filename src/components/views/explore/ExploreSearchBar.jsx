@@ -1,9 +1,12 @@
-/*import { useState } from "react";
-import { SearchOutlined } from "@ant-design/icons";*/
+/* eslint-disable */
+import { useState } from "react";
+import { useSelector } from "react-redux";
+import { SearchOutlined } from "@ant-design/icons";
+import { selectIsExperimental } from "@/redux/preferences";
 
 export default function ExploreSearchBar() {
-  return <div />;
-  /*
+  const isExperimental = useSelector(selectIsExperimental);
+
   const [searchText, setSearchText] = useState("");
 
   const handleSearchTextChange = (event) => {
@@ -17,7 +20,7 @@ export default function ExploreSearchBar() {
       Number.isInteger(Number.parseInt(search, 10)) || search.startsWith("#"); // e.g. #478559, 478559
   };
 
-  return (
+  return isExperimental ? (
     <div className="border border-primary shadow bg-primary text-white">
       <div className="flex justify-center items-center p-2">
         <SearchOutlined className="text-2xl" />
@@ -30,5 +33,5 @@ export default function ExploreSearchBar() {
         />
       </div>
     </div>
-  );*/
+  ) : null;
 }

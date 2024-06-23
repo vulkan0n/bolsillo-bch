@@ -61,6 +61,10 @@ export default function SettingsWalletAdditionalInformation() {
         title={translate(translations.additionalWalletInformation)}
       />
       <div className="p-2">
+        <div className="flex flex-col justify-center items-center font-mono text-zinc-600 text-xs break-all text-center px-1 mb-2">
+          <div>Wallet Hash</div>
+          <div className="text-zinc-400 select-all">{wallet.walletHash}</div>
+        </div>
         {wallet.passphrase !== "" && (
           <Accordion icon={KeyOutlined} title="Passphrase">
             <Accordion.Child>

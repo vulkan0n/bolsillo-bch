@@ -1,4 +1,3 @@
-import PropTypes from "prop-types";
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Clipboard } from "@capacitor/clipboard";
@@ -113,6 +112,7 @@ function WalletViewSendSuccess() {
 
 export default WalletViewSendSuccess;
 
+/* eslint-disable react/prop-types */
 function OutputListItem({ output, i }) {
   const zebraCss = i % 2 === 0 ? "bg-zinc-100" : "bg-zinc-50";
 
@@ -138,8 +138,3 @@ function OutputListItem({ output, i }) {
     </div>
   );
 }
-
-OutputListItem.propTypes = {
-  output: PropTypes.object.isRequired,
-  i: PropTypes.number.isRequired,
-};

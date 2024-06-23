@@ -22,6 +22,8 @@ const defaultPreferences = {
   displayExchangeRate: "false",
   denomination: "bch",
   bchNetwork: "mainnet",
+  authMode: "none",
+  pinHash: "",
   // --------
   // TODO: make these per-wallet instead of global
   allowInstantPay: "false",
@@ -38,6 +40,7 @@ const defaultPreferences = {
   // --------
   enableExperimental: "false",
   enablePrerelease: "false",
+  debugLog: "true",
 };
 
 type ValidPreferences = typeof defaultPreferences;
@@ -84,6 +87,8 @@ function validatePreferences(preferences: ValidPreferences): boolean {
     "displayExchangeRate",
     "allowInstantPay",
     "enableExperimental",
+    "enablePrerelease",
+    "debugLog",
   ];
 
   const invalidBools = boolKeys.filter(
@@ -242,6 +247,14 @@ export const selectBchNetwork = createSelector(
   (preferences): ValidBchNetwork => preferences.bchNetwork
 );
 
+export const selectSecuritySettings = createSelector(
+  (state: RootState) => state.preferences,
+  (preferences) => ({
+    authMode: preferences.authMode,
+    pinHash: preferences.pinHash,
+  })
+);
+
 export const selectIsChipnet = createSelector(
   (state: RootState) => selectBchNetwork(state),
   (bchNetwork): boolean => bchNetwork === "chipnet"
@@ -255,4 +268,9 @@ export const selectIsExperimental = createSelector(
 export const selectIsPrerelease = createSelector(
   (state: RootState) => state.preferences,
   (preferences): boolean => preferences.enablePrerelease === "true"
+);
+
+export const selectIsDebugLogEnabled = createSelector(
+  (state: RootState) => state.preferences,
+  (preferences): boolean => preferences.debugLog === "true"
 );

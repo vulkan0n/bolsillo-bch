@@ -1,8 +1,14 @@
-import PropTypes from "prop-types";
+// TODO: refactor this component it kinda sucks too
+/* eslint-disable react/prop-types */
 import { useState } from "react";
 import { CaretRightOutlined, CaretDownOutlined } from "@ant-design/icons";
 
-export default function Accordion({ icon, title, children, open }) {
+export default function Accordion({
+  icon = () => null,
+  title = "",
+  open = false,
+  children,
+}) {
   const [isOpen, setIsOpen] = useState(open);
   const Icon = icon;
 
@@ -29,22 +35,13 @@ export default function Accordion({ icon, title, children, open }) {
   );
 }
 
-Accordion.propTypes = {
-  icon: PropTypes.node,
-  title: PropTypes.string,
-  children: PropTypes.node,
-  open: PropTypes.bool,
-};
-
-Accordion.defaultProps = {
-  icon: () => null,
-  title: "",
-  children: () => null,
-  open: false,
-};
-
-function AccordionChild({ icon, label, children, description = "" }) {
-  const Icon = icon || (() => null);
+function AccordionChild({
+  icon = () => null,
+  label = "",
+  description = "",
+  children,
+}) {
+  const Icon = icon;
   return (
     <div className="p-3">
       <div className="flex justify-between items-center">
@@ -60,17 +57,5 @@ function AccordionChild({ icon, label, children, description = "" }) {
     </div>
   );
 }
-
-AccordionChild.propTypes = {
-  icon: PropTypes.node,
-  label: PropTypes.string,
-  children: PropTypes.node,
-};
-
-AccordionChild.defaultProps = {
-  icon: () => null,
-  label: "",
-  children: () => null,
-};
 
 Accordion.Child = AccordionChild;
