@@ -34,16 +34,8 @@ export default function ExploreAfogView() {
       }
     };
 
-    fetchTournaments();
+    // fetchTournaments();
   }, []);
-
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
-  if (error) {
-    return <div>Error: {error}</div>;
-  }
 
   console.log({ tournaments })
 
@@ -100,11 +92,28 @@ export default function ExploreAfogView() {
 
 
   return (
-    <div>
-      <div>Compete in online video game tournaments, with entry fees & prizes paid directly in BCH!</div>
-      <div>Read more & sign up to play at <a href="https://afifthofgaming.com/" target="_blank">https://afifthofgaming.com/</a></div>
+    <div
+    >
+      <div className="shadow rounded-lg m-2 p-2 bg-zinc-900 flex-column justify-center items-center">
+        <div className="w-full">
+          <div className="font-bold text-xl text-center text-zinc-300">
+            A Fifth Of Gaming
+          </div>
 
-      <Table />
+          <div className="text-md text-center text-zinc-300">
+            Compete in online video game tournaments, with entry fees & prizes paid directly in BCH!
+          </div>
+        </div>
+
+        <div><a
+          href="https://afifthofgaming.com/"
+          target="_blank"
+          className="flex justify-center p-2 m-4 rounded-full border border-2 border-primary bg-primary text-zinc-100 shadow-md opacity-90"
+        >Sign Up</a></div>
+      </div>
+
+      {loading && <div>Loading...</div>}
+      {!loading && !error && <Table />}
     </div>
   );
 }
