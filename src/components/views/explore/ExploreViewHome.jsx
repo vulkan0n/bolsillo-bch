@@ -25,12 +25,9 @@ export default function ExploreViewHome() {
         />
       )}
       {isExperimental && (
-<<<<<<< HEAD
         <ExploreApp icon={BankOutlined} name="Assets" to="/wallet/assets" />
       )}
       {isExperimental && (
-=======
->>>>>>> d0b17ef4fadab5fe3022b5b26298d90298161a01
         <ExploreApp
           icon={ContactsOutlined}
           name="Contacts"
