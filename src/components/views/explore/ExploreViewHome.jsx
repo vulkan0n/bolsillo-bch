@@ -1,6 +1,5 @@
 import {
   ContactsOutlined,
-  BankOutlined,
   EnvironmentOutlined,
   LaptopOutlined,
   QuestionCircleOutlined,
@@ -24,9 +23,6 @@ export default function ExploreViewHome() {
           name="A Fifth Of Gaming"
           to="/explore/afog"
         />
-      )}
-      {isExperimental && (
-        <ExploreApp icon={BankOutlined} name="Assets" to="/wallet/assets" />
       )}
       {isExperimental && (
         <ExploreApp
