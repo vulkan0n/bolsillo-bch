@@ -59,15 +59,20 @@ export default function ExploreAfogView() {
                   {tournaments && tournaments.map(({ id, game, prize, players, date, timeUntilStartDisplay, ...data }) => {
                     const title = data.cycle.game.title
                     const guild = data.cycle.guild.name
+                    const formattedDatePart1 = DateTime.fromISO(date).toFormat('ccc dd LLL yyyy')
+                    const formattedDatePart2 = DateTime.fromISO(date).toFormat('HH:mm ZZZZ')
 
                     return (
                       <tr key={id}>
                         <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                          {date}
-                          <br />
                           <b>{title}</b>
                           <br />
                           (<i>{guild}</i>)
+                          <br />
+                          <br />
+                          {formattedDatePart1}
+                          <br />
+                          {formattedDatePart2}
                           <br />
                           Prize Pool: ${data?.walletValue.toFixed(2)} ({data?.walletBalance} sats)
                           <br />
