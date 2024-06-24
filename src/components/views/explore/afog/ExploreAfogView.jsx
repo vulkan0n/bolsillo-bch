@@ -50,6 +50,7 @@ export default function ExploreAfogView() {
               <table className="min-w-full divide-y divide-gray-300">
                 <thead>
                   <tr>
+                    <th></th>
                     <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
                       Tournament Info
                     </th>
@@ -61,9 +62,13 @@ export default function ExploreAfogView() {
                     const guild = data.cycle.guild.name
                     const formattedDatePart1 = DateTime.fromISO(date).toFormat('ccc dd LLL yyyy')
                     const formattedDatePart2 = DateTime.fromISO(date).toFormat('HH:mm ZZZZ')
+                    const imageUrl = data.cycle.game.igdbImageUrl
 
                     return (
                       <tr key={id}>
+                        <td className="px-2">
+                          <img src={imageUrl} alt="Game image" width="100" height="100" />
+                        </td>
                         <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                           <b>{title}</b>
                           <br />
@@ -74,11 +79,15 @@ export default function ExploreAfogView() {
                           <br />
                           {formattedDatePart2}
                           <br />
+                          {timeUntilStartDisplay && "Starts in "}{timeUntilStartDisplay}
+                          {!timeUntilStartDisplay && "Underway!"}
+                          <br />
+                          <br />
                           Prize Pool: ${data?.walletValue.toFixed(2)} ({data?.walletBalance} sats)
                           <br />
-                          Players: {data?.attendance?.length}
+                          Entry: $
                           <br />
-                          {timeUntilStartDisplay && "Starts in "}{timeUntilStartDisplay}
+                          Players: {data?.attendance?.length}
                         </td>
                       </tr>
                     )
