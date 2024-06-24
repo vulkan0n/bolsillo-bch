@@ -24,6 +24,7 @@ const defaultPreferences = {
   bchNetwork: "mainnet",
   authMode: "none",
   pinHash: "",
+  displayExploreTab: "true",
   // --------
   // TODO: make these per-wallet instead of global
   allowInstantPay: "false",
@@ -89,6 +90,7 @@ function validatePreferences(preferences: ValidPreferences): boolean {
     "enableExperimental",
     "enablePrerelease",
     "debugLog",
+    "displayExploreTab",
   ];
 
   const invalidBools = boolKeys.filter(
@@ -252,6 +254,13 @@ export const selectSecuritySettings = createSelector(
   (preferences) => ({
     authMode: preferences.authMode,
     pinHash: preferences.pinHash,
+  })
+);
+
+export const selectUiSettings = createSelector(
+  (state: RootState) => state.preferences,
+  (preferences) => ({
+    shouldDisplayExploreTab: preferences.displayExploreTab === "true",
   })
 );
 
