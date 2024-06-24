@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { DateTime } from "luxon";
+import ReactPlayer from 'react-player/youtube'
 
 export default function ExploreAfogView() {
   const [tournaments, setTournaments] = useState([]);
@@ -91,6 +92,14 @@ export default function ExploreAfogView() {
     )
   }
 
+  const EmbeddedVideo = ({ url }) => (
+    <div className="w-full flex justify-center">
+      <ReactPlayer
+        url={url}
+        width={"100%"}
+      />
+    </div>
+  )
 
   return (
     <div>
@@ -112,7 +121,13 @@ export default function ExploreAfogView() {
         >Sign Up</a></div>
 
         <div className="w-full bg-zinc-200 text-lg text-center text-zinc-300">
-          Learn more
+          <div>
+            Learn more
+          </div>
+
+          <EmbeddedVideo url={"https://www.youtube.com/watch?v=6cn4dcdN7d4"} />
+          <EmbeddedVideo url={"https://www.youtube.com/watch?v=yadskoNfbwI"} />
+          <EmbeddedVideo url={"https://www.youtube.com/watch?v=-3iXgm-0Gik"} />
         </div>
       </div>
 
