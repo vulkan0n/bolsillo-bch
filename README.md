@@ -23,6 +23,8 @@ You can connect to either a localhost instance or the production server as you d
 See the [Selene Server repo](https://git.xulu.tech/selene.cash/selene-server) for localhost setup.
 ```
 
+Make sure to read up on the [Selene Documentation](https://git.xulu.tech/selene.cash/selene-docs) to get a handle on the project.
+
 ## Building for Android
 
 1. Install Android Studio
