@@ -104,7 +104,7 @@ export default function CurrencySettings() {
           }
         >
           {VALID_DENOMINATIONS.map((d) => (
-            <option id={d} value={d.toLowerCase()}>
+            <option key={d} id={d} value={d.toLowerCase()}>
               {d}
             </option>
           ))}

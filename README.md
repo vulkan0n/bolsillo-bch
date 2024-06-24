@@ -113,7 +113,7 @@ const translations = {
     fa: "تنظیمات کیف پول",
 ```
 
-Translations are done with Google Cloud Translation API. At the moment it's running on free credits, but even after it isn't it probably shouldn't be that expensive. You can run the script to test, it skips over existing translations and only fills in missing translations, but if you're adding new text please don't run up the bill by running it unnecessarily. Decide on the English versions, then run it once to fill everything out.
+Translations are done with Google Cloud Translation API. It isn't super expensive, but it does cost money per translation. You can run the script to test, it skips over existing translations and only fills in missing translations, but if you're adding new text please don't run up the bill by running it unnecessarily. Decide on the English versions as part of concluding your feature pull request, prepare the translation files, then run translations script once to fill everything out.
 
 NOTE: There is a bug in `src/components/views/walletView/WalletViewSend/translations.js` with the "notEnoughFee" key. Before running translation, copy-paste that key into a separate document, run the translation, then afterwards return the "notEnoughFee" key. Also, manually add any new "notEnoughFee" translations. If you don't do this, the entire file will miss out on having its translations updated.
 

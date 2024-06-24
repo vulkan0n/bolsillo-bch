@@ -25,6 +25,7 @@ import QrCodeSettings from "./QrCodeSettings";
 import IntlSettings from "./IntlSettings";
 import NetworkSettings from "./NetworkSettings";
 import SecuritySettings from "./SecuritySettings";
+import UiSettings from "./UiSettings/UiSettings";
 
 export default function SettingsView() {
   const dispatch = useDispatch();
@@ -62,6 +63,7 @@ export default function SettingsView() {
           <PaymentSettings />
           <SecuritySettings />
           <QrCodeSettings />
+          <UiSettings />
           <NetworkSettings />
           <IntlSettings />
         </SettingsContext.Provider>
