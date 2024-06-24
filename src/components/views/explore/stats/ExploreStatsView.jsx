@@ -47,9 +47,7 @@ export default function StatsView() {
 
         <div className="bg-zinc-200 mt-3 mb-3">
           {!isReady && <p>Loading chart...</p>}
-          {isReady && (
-            <ActiveUsersChart data={data} isYearly={period === Period.Yearly} />
-          )}
+          {isReady && <ActiveUsersChart data={data} period={period} />}
         </div>
 
         <div className="w-full flex justify-center align-center">

@@ -3,7 +3,7 @@
     "browser": true,
     "es2021": true
   },
-  "ignorePatterns": ["*.test.*"],
+  "ignorePatterns": ["*.test.*", "translations.js"],
   "extends": [
     "plugin:react/recommended",
     "plugin:react-hooks/recommended",
