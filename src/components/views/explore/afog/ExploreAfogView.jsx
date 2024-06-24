@@ -136,7 +136,7 @@ export default function ExploreAfogView() {
             </span>
             <span className="flex justify-center align-center">
               {!isLearnMoreOpen && <DownSquareOutlined className="my-auto text-xl" />}
-              {isLearnMoreOpen && <UpSquareOutlined className="text-xl" />}
+              {isLearnMoreOpen && <UpSquareOutlined className="my-auto text-xl" />}
             </span>
           </div>
 
