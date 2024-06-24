@@ -40,7 +40,7 @@ export default function ExploreAfogView() {
     return (
       <div className="px-4 sm:px-6 lg:px-8">
         <div className="sm:flex sm:items-center">
-          <div className="sm:flex-auto">
+          <div>
             <h1 className="text-base font-semibold leading-6 text-gray-900">Upcoming Tournaments</h1>
           </div>
         </div>
@@ -48,14 +48,6 @@ export default function ExploreAfogView() {
           <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
             <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
               <table className="min-w-full divide-y divide-gray-300">
-                <thead>
-                  <tr>
-                    <th></th>
-                    <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-                      Tournament Info
-                    </th>
-                  </tr>
-                </thead>
                 <tbody className="divide-y divide-gray-200">
                   {tournaments && tournaments.map(({ id, game, prize, players, date, timeUntilStartDisplay, ...data }) => {
                     const title = data.cycle.game.title
@@ -65,8 +57,8 @@ export default function ExploreAfogView() {
                     const imageUrl = data.cycle.game.igdbImageUrl
 
                     return (
-                      <tr key={id}>
-                        <td className="px-2">
+                      <tr key={id} className="flex justify-left">
+                        <td className="px-2 min-w-2 my-auto">
                           <img src={imageUrl} alt="Game image" width="100" height="100" />
                         </td>
                         <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
@@ -85,8 +77,6 @@ export default function ExploreAfogView() {
                           <br />
                           Prize Pool: ${data?.walletValue.toFixed(2)} ({data?.walletBalance} sats)
                           <br />
-                          Entry: $
-                          <br />
                           Players: {data?.attendance?.length}
                         </td>
                       </tr>
@@ -103,8 +93,7 @@ export default function ExploreAfogView() {
 
 
   return (
-    <div
-    >
+    <div>
       <div className="shadow rounded-lg m-2 p-2 bg-zinc-900 flex-column justify-center items-center">
         <div className="w-full">
           <div className="font-bold text-xl text-center text-zinc-300">
