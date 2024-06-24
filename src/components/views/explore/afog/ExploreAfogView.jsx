@@ -110,6 +110,10 @@ export default function ExploreAfogView() {
           target="_blank"
           className="flex justify-center p-2 m-4 rounded-full border border-2 border-primary bg-primary text-zinc-100 shadow-md opacity-90"
         >Sign Up</a></div>
+
+        <div className="w-full bg-zinc-200 text-lg text-center text-zinc-300">
+          Learn more
+        </div>
       </div>
 
       {loading && <div>Loading...</div>}
