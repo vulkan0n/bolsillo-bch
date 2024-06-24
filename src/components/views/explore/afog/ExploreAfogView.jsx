@@ -6,15 +6,12 @@ export default function ExploreAfogView() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Go to http://cors-anywhere.herokuapp.com/corsdemo
-  // To enable this hack
-  const corsAnywhereEndpointHack = "http://cors-anywhere.herokuapp.com/"
   const afogEndpoint = "https://afifthofgaming.com/Session/GetTournaments"
 
   useEffect(() => {
     const fetchTournaments = async () => {
       try {
-        const response = await fetch(`${corsAnywhereEndpointHack}${afogEndpoint}`);
+        const response = await fetch(afogEndpoint);
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
@@ -34,7 +31,7 @@ export default function ExploreAfogView() {
       }
     };
 
-    // fetchTournaments();
+    fetchTournaments();
   }, []);
 
   console.log({ tournaments })
