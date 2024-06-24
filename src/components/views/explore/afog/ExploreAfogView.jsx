@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
 import { DateTime } from "luxon";
 import ReactPlayer from 'react-player/youtube'
+import { UpSquareOutlined, DownSquareOutlined } from "@ant-design/icons";
 
 export default function ExploreAfogView() {
   const [tournaments, setTournaments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isLearnMoreOpen, setIsLearnMoreOpen] = useState(false)
 
   const afogEndpoint = "https://afifthofgaming.com/Session/GetTournaments"
 
@@ -120,14 +122,22 @@ export default function ExploreAfogView() {
           className="flex justify-center p-2 m-4 rounded-full border border-2 border-primary bg-primary text-zinc-100 shadow-md opacity-90"
         >Sign Up</a></div>
 
-        <div className="w-full bg-zinc-200 text-lg text-center text-zinc-300">
-          <div>
-            Learn more
+        <div className="w-full bg-zinc-200 text-lg text-center text-zinc-800">
+          <div className={"flex justify-center align-center"} onClick={() => { setIsLearnMoreOpen(!isLearnMoreOpen) }}>
+            <span className="pr-1">
+              Learn more
+            </span>
+            <span className="flex justify-center align-center">
+              {!isLearnMoreOpen && <DownSquareOutlined className="my-auto text-xl" />}
+              {isLearnMoreOpen && <UpSquareOutlined className="text-xl" />}
+            </span>
           </div>
 
-          <EmbeddedVideo url={"https://www.youtube.com/watch?v=6cn4dcdN7d4"} />
-          <EmbeddedVideo url={"https://www.youtube.com/watch?v=yadskoNfbwI"} />
-          <EmbeddedVideo url={"https://www.youtube.com/watch?v=-3iXgm-0Gik"} />
+          {isLearnMoreOpen && <div>
+            <EmbeddedVideo url={"https://www.youtube.com/watch?v=6cn4dcdN7d4"} />
+            <EmbeddedVideo url={"https://www.youtube.com/watch?v=yadskoNfbwI"} />
+            <EmbeddedVideo url={"https://www.youtube.com/watch?v=-3iXgm-0Gik"} />
+          </div>}
         </div>
       </div>
 
