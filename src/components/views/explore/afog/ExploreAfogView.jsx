@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { DateTime } from "luxon";
 import ReactPlayer from 'react-player/youtube'
-import { UpSquareOutlined, DownSquareOutlined } from "@ant-design/icons";
+import { UpSquareOutlined, DownSquareOutlined, LaptopOutlined } from "@ant-design/icons";
 
 export default function ExploreAfogView() {
   const [tournaments, setTournaments] = useState([]);
@@ -36,8 +36,6 @@ export default function ExploreAfogView() {
 
     fetchTournaments();
   }, []);
-
-  console.log({ tournaments })
 
   const Table = () => {
     return (
@@ -107,8 +105,17 @@ export default function ExploreAfogView() {
     <div>
       <div className="shadow rounded-lg m-2 p-2 bg-zinc-900 flex-column justify-center items-center">
         <div className="w-full">
-          <div className="font-bold text-xl text-center text-zinc-300">
-            A Fifth Of Gaming
+          <div className="flex justify-center align-center">
+            <span className="flex justify-center align-center">
+              <LaptopOutlined className="text-xl my-auto pr-1 text-zinc-200" />
+            </span>
+            <span className="font-bold text-xl text-center text-zinc-300 px-1">
+              A Fifth Of Gaming
+            </span>
+            <span className="flex justify-center align-center">
+              <LaptopOutlined className="text-xl my-auto pl-1 text-zinc-200" />
+            </span>
+
           </div>
 
           <div className="text-md text-center text-zinc-300">
@@ -143,6 +150,6 @@ export default function ExploreAfogView() {
 
       {loading && <div>Loading...</div>}
       {!loading && !error && <Table />}
-    </div>
+    </div >
   );
 }
