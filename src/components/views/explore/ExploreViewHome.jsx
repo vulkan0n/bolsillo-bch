@@ -7,31 +7,34 @@ import {
   QuestionCircleOutlined,
 } from "@ant-design/icons";
 import { useSelector } from "react-redux";
-import { selectIsExperimental } from "@/redux/preferences";
+import {
+  selectIsExperimental, selectIsPrerelease,
+} from "@/redux/preferences";
 import ExploreApp from "./ExploreApp";
 import GlobalAdoptionSummary from "./stats/GlobalAdoptionSummary";
 
 export default function ExploreViewHome() {
   const isExperimental = useSelector(selectIsExperimental);
+  const isPrerelease = useSelector(selectIsPrerelease);
 
   return (
     <div className="p-2">
       <GlobalAdoptionSummary />
-      {isExperimental && (
+      {isPrerelease && (
         <ExploreApp
           icon={LineChartOutlined}
           name="Stats"
           to="/explore/stats"
         />
       )}
-      {isExperimental && (
+      {isPrerelease && (
         <ExploreApp
           icon={LikeOutlined}
           name="Social Media"
           to="/explore/socialMedia"
         />
       )}
-      {isExperimental && (
+      {isPrerelease && (
         <ExploreApp
           icon={LaptopOutlined}
           name="A Fifth Of Gaming"
