@@ -3,7 +3,7 @@ import { OPTIONS } from './ExploreSocialMediaView';
 
 export const TabSwitcher = ({ selected, setSelected }) => {
   return (
-    <div className="flex mx-2 mt-2 rounded-md bg-blue-gray-100">
+    <div className="flex mx-2 rounded-md bg-blue-gray-100">
       <div
         className={`flex-1 py-1 my-2 ml-2 text-center rounded-md bg-${selected === OPTIONS.YOUTUBE ? 'red-300' : 'zinc-200'}`}
       >
