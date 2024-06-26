@@ -2,29 +2,28 @@ import { useState, useEffect } from 'react';
 import { DateTime } from "luxon";
 import ReactPlayer from 'react-player/youtube'
 import { UpSquareOutlined, DownSquareOutlined, LaptopOutlined } from "@ant-design/icons";
-import AppHero from '@/components/atoms/AppHero/AppHero';
 import { translate } from "@/util/translations";
 import translations from "./ExploreAfogViewTranslations";
 
-const {
-  upcomingTournaments,
-  startsIn,
-  underway,
-  prizePool,
-  playersText,
-  description,
-  signUp,
-  loadingText
-} = translations;
+// const {
+//   upcomingTournaments,
+//   startsIn,
+//   underway,
+//   prizePool,
+//   playersText,
+//   description,
+//   signUp,
+//   learnMore,
+//   loadingText
+// } = translations;
 
-const AFOG_BASE_URL = "https://afifthofgaming.com"
-
-export default function ExploreAfogView() {
+export default function ExploreSocialMediaView() {
   const [tournaments, setTournaments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isLearnMoreOpen, setIsLearnMoreOpen] = useState(false)
 
+  const AFOG_BASE_URL = "https://afifthofgaming.com"
   const AFOG_ENDPOINT = `${AFOG_BASE_URL}/Session/GetTournaments`
 
   useEffect(() => {
@@ -119,23 +118,7 @@ export default function ExploreAfogView() {
 
   return (
     <div>
-      <AppHero
-        title={"A Fifth Of Gaming"}
-        icon={<LaptopOutlined className="text-xl my-auto text-zinc-200" />}
-        description={translate(description)}
-        callToAction={translate(signUp)}
-        callToActionUrl={AFOG_BASE_URL}
-        learnMoreContent={
-          <div>
-            <EmbeddedVideo url={"https://www.youtube.com/watch?v=6cn4dcdN7d4"} />
-            <EmbeddedVideo url={"https://www.youtube.com/watch?v=yadskoNfbwI"} />
-            <EmbeddedVideo url={"https://www.youtube.com/watch?v=-3iXgm-0Gik"} />
-          </div>
-        }
-      />
-
-      {loading && <div>{`${translate(loadingText)}...`}</div>}
-      {!loading && !error && <Table />}
+      <h1>Social Media</h1>
     </div >
   );
 }
