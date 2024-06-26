@@ -3,12 +3,12 @@ import {
   EnvironmentOutlined,
   LaptopOutlined,
   LikeOutlined,
+  LineChartOutlined,
   QuestionCircleOutlined,
 } from "@ant-design/icons";
 import { useSelector } from "react-redux";
 import { selectIsExperimental } from "@/redux/preferences";
 import ExploreApp from "./ExploreApp";
-import StatsView from "./stats/ExploreStatsView";
 import GlobalAdoptionSummary from "./stats/GlobalAdoptionSummary";
 
 export default function ExploreViewHome() {
@@ -17,6 +17,13 @@ export default function ExploreViewHome() {
   return (
     <div className="p-2">
       <GlobalAdoptionSummary />
+      {isExperimental && (
+        <ExploreApp
+          icon={LineChartOutlined}
+          name="Stats"
+          to="/explore/stats"
+        />
+      )}
       {isExperimental && (
         <ExploreApp
           icon={LikeOutlined}

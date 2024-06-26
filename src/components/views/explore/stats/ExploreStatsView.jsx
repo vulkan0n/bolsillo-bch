@@ -3,7 +3,7 @@ import GlobalAdoptionSummary from "./GlobalAdoptionSummary";
 
 export default function StatsView() {
   return (
-    <div>
+    <div className="p-2">
       <ExploreStatBlock />
       <GlobalAdoptionSummary />
     </div>
