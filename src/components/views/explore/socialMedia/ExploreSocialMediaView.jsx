@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import ReactPlayer from 'react-player/youtube'
 import { translate } from "@/util/translations";
+import AppHero from '@/components/atoms/AppHero/AppHero';
 // import translations from "./ExploreAfogViewTranslations";
 
 // const {
@@ -18,7 +19,9 @@ import { translate } from "@/util/translations";
 export default function ExploreSocialMediaView() {
   return (
     <div>
-      <h1>Social Media</h1>
+      <AppHero
+        description="Get involved in the latest content, news & discussion in BCH."
+      />
     </div >
   );
 }

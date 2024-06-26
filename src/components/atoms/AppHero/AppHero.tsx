@@ -11,8 +11,8 @@ interface Props {
   icon: ReactNode,
   title: string,
   description: string,
-  callToAction: string,
-  callToActionUrl: string,
+  callToAction?: string,
+  callToActionUrl?: string,
   learnMoreContent: ReactNode
 }
 
@@ -47,11 +47,13 @@ export default function AppHero({
         </div>
       </div>
 
-      <div><a
-        href={callToActionUrl}
-        target="_blank"
-        className="flex justify-center p-2 m-4 rounded-full border border-2 border-primary bg-primary text-zinc-100 shadow-md opacity-90"
-      >{callToAction}</a></div>
+      <div className="p-2">
+        {callToAction && callToActionUrl && <div><a
+          href={callToActionUrl}
+          target="_blank"
+          className="flex justify-center m-4 rounded-full border border-2 border-primary bg-primary text-zinc-100 shadow-md opacity-90"
+        >{callToAction}</a></div>}
+      </div>
 
       <div className="w-full bg-zinc-200 text-lg text-center text-zinc-800">
         <div className={"flex justify-center align-center"} onClick={() => { setIsLearnMoreOpen(!isLearnMoreOpen) }}>
