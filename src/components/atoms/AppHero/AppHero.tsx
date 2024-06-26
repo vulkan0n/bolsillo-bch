@@ -13,7 +13,7 @@ interface Props {
   description: string,
   callToAction?: string,
   callToActionUrl?: string,
-  learnMoreContent: ReactNode
+  learnMoreContent?: ReactNode
 }
 
 export default function AppHero({
@@ -47,15 +47,13 @@ export default function AppHero({
         </div>
       </div>
 
-      <div className="p-2">
-        {callToAction && callToActionUrl && <div><a
-          href={callToActionUrl}
-          target="_blank"
-          className="flex justify-center m-4 rounded-full border border-2 border-primary bg-primary text-zinc-100 shadow-md opacity-90"
-        >{callToAction}</a></div>}
-      </div>
+      {callToAction && callToActionUrl && <div className="p-1"><a
+        href={callToActionUrl}
+        target="_blank"
+        className="flex justify-center m-4 rounded-full border border-2 border-primary bg-primary text-zinc-100 shadow-md opacity-90"
+      >{callToAction}</a></div>}
 
-      <div className="w-full bg-zinc-200 text-lg text-center text-zinc-800">
+      {learnMoreContent && <div className="p-1 w-full bg-zinc-200 text-lg text-center text-zinc-800">
         <div className={"flex justify-center align-center"} onClick={() => { setIsLearnMoreOpen(!isLearnMoreOpen) }}>
           <span className="pr-1">
             {translate(learnMore)}
@@ -67,7 +65,7 @@ export default function AppHero({
         </div>
 
         {isLearnMoreOpen && learnMoreContent}
-      </div>
+      </div>}
     </div>
   )
 }
