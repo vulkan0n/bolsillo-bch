@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { DateTime } from "luxon";
 import ReactPlayer from 'react-player/youtube'
-import { UpSquareOutlined, DownSquareOutlined, LaptopOutlined } from "@ant-design/icons";
+import { LaptopOutlined } from "@ant-design/icons";
 import AppHero from '@/components/atoms/AppHero/AppHero';
 import { translate } from "@/util/translations";
 import translations from "./ExploreAfogViewTranslations";
@@ -23,7 +23,6 @@ export default function ExploreAfogView() {
   const [tournaments, setTournaments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [isLearnMoreOpen, setIsLearnMoreOpen] = useState(false)
 
   const AFOG_ENDPOINT = `${AFOG_BASE_URL}/Session/GetTournaments`
 

@@ -2,6 +2,7 @@ import {
   ContactsOutlined,
   EnvironmentOutlined,
   LaptopOutlined,
+  LikeOutlined,
   QuestionCircleOutlined,
 } from "@ant-design/icons";
 import { useSelector } from "react-redux";
@@ -17,6 +18,13 @@ export default function ExploreViewHome() {
     <div className="p-2">
       <ExploreStatBlock />
       <StatsView />
+      {isExperimental && (
+        <ExploreApp
+          icon={LikeOutlined}
+          name="Social Media"
+          to="/explore/socialMedia"
+        />
+      )}
       {isExperimental && (
         <ExploreApp
           icon={LaptopOutlined}

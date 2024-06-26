@@ -29,6 +29,7 @@ import ExploreView from "@/views/explore/ExploreView";
 import ExploreViewHome from "@/views/explore/ExploreViewHome";
 import ExploreTransactionView from "@/views/explore/ExploreTransactionView";
 import ExploreStatsView from "@/views/explore/stats/ExploreStatsView";
+import ExploreSocialMediaView from "@/views/explore/socialMedia/ExploreSocialMediaView";
 import ExploreAfogView from "@/views/explore/afog/ExploreAfogView";
 import ExploreContactsView from "@/views/explore/contacts/ExploreContactsView";
 import ExploreMapView from "@/views/explore/map/ExploreMapView";
@@ -104,6 +105,10 @@ export default function Main() {
             {
               path: "stats",
               element: <ExploreStatsView />,
+            },
+            {
+              path: "socialMedia",
+              element: <ExploreSocialMediaView />
             },
             {
               path: "afog",
