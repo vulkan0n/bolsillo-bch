@@ -2,6 +2,20 @@ import { useState, useEffect } from 'react';
 import { DateTime } from "luxon";
 import ReactPlayer from 'react-player/youtube'
 import { UpSquareOutlined, DownSquareOutlined, LaptopOutlined } from "@ant-design/icons";
+import { translate } from "@/util/translations";
+import translations from "./ExploreAfogViewTranslations";
+
+const {
+  upcomingTournaments,
+  startsIn,
+  underway,
+  prizePool,
+  playersText,
+  description,
+  signUp,
+  learnMore,
+  loadingText
+} = translations;
 
 export default function ExploreAfogView() {
   const [tournaments, setTournaments] = useState([]);
@@ -43,7 +57,7 @@ export default function ExploreAfogView() {
       <div className="px-4 sm:px-6 lg:px-8">
         <div className="sm:flex sm:items-center">
           <div>
-            <h1 className="text-base font-semibold leading-6 text-gray-900">Upcoming Tournaments</h1>
+            <h1 className="text-base font-semibold leading-6 text-gray-900">{translate(upcomingTournaments)}</h1>
           </div>
         </div>
         <div className="mt-1 flow-root">
@@ -73,13 +87,13 @@ export default function ExploreAfogView() {
                           <br />
                           {formattedDatePart2}
                           <br />
-                          {timeUntilStartDisplay && "Starts in "}{timeUntilStartDisplay}
-                          {!timeUntilStartDisplay && "Underway!"}
+                          {timeUntilStartDisplay && <span>{translate(startsIn)}{" "}{timeUntilStartDisplay}</span>}
+                          {!timeUntilStartDisplay && <span>{translate(underway)}</span>}
                           <br />
                           <br />
-                          Prize Pool: ${data?.walletValue.toFixed(2)} ({data?.walletBalance} sats)
+                          {translate(prizePool)}: ${data?.walletValue.toFixed(2)} ({data?.walletBalance} sats)
                           <br />
-                          Players: {data?.attendance?.length}
+                          {translate(playersText)}: {data?.attendance?.length}
                         </td>
                       </tr>
                     )
@@ -120,7 +134,7 @@ export default function ExploreAfogView() {
           </div>
 
           <div className="text-md text-center text-zinc-300">
-            Compete in online video game tournaments, with entry fees & prizes paid directly in BCH!
+            {translate(description)}
           </div>
         </div>
 
@@ -128,12 +142,12 @@ export default function ExploreAfogView() {
           href="https://afifthofgaming.com/"
           target="_blank"
           className="flex justify-center p-2 m-4 rounded-full border border-2 border-primary bg-primary text-zinc-100 shadow-md opacity-90"
-        >Sign Up</a></div>
+        >{translate(signUp)}</a></div>
 
         <div className="w-full bg-zinc-200 text-lg text-center text-zinc-800">
           <div className={"flex justify-center align-center"} onClick={() => { setIsLearnMoreOpen(!isLearnMoreOpen) }}>
             <span className="pr-1">
-              Learn more
+              {translate(learnMore)}
             </span>
             <span className="flex justify-center align-center">
               {!isLearnMoreOpen && <DownSquareOutlined className="my-auto text-xl" />}
@@ -149,7 +163,7 @@ export default function ExploreAfogView() {
         </div>
       </div>
 
-      {loading && <div>Loading...</div>}
+      {loading && <div>{`${translate(loadingText)}...`}</div>}
       {!loading && !error && <Table />}
     </div >
   );
