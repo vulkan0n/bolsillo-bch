@@ -19,7 +19,15 @@ import { TabSwitcher } from './TabSwitcher';
 //   loadingText
 // } = translations;
 
+export const OPTIONS = {
+  YOUTUBE: "Youtube",
+  TWITTER: "Twitter"
+}
+
+
 export default function ExploreSocialMediaView() {
+  const [selected, setSelected] = useState(OPTIONS.YOUTUBE)
+
   return (
     <div>
       <AppHero
@@ -29,7 +37,7 @@ export default function ExploreSocialMediaView() {
       />
 
       <div className="px-3">
-        <div className="w-full  text-center justify-center align-center bg-red-200">
+        <div className="w-full  text-center justify-center items-center bg-red-200">
           <h1>Youtube</h1>
           <YoutubeOutlined className="text-xl my-auto text-zinc-800" />
 
@@ -44,9 +52,9 @@ export default function ExploreSocialMediaView() {
 
         </div>
 
-        <TabSwitcher />
       </div>
 
+      <TabSwitcher selected={selected} setSelected={setSelected} />
     </div >
   );
 }

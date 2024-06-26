@@ -50,7 +50,7 @@ export default function GlobalAdoptionSummary() {
           {isReady && <ActiveUsersChart data={data} period={period} />}
         </div>
 
-        <div className="w-full flex justify-center align-center">
+        <div className="w-full flex justify-center items-center">
           <button
             type="button"
             className="p-2 ml-1 mr-1 rounded-full border border-2 border-primary shadow-md opacity-90"

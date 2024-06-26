@@ -1,25 +1,25 @@
 import { useState } from 'react'
+import { YoutubeOutlined } from '@ant-design/icons';
+import { OPTIONS } from './ExploreSocialMediaView';
 
-export const TabSwitcher = () => {
-  const OPTIONS = {
-    YOUTUBE: "Youtube",
-    TWITTER: "Twitter"
-  }
-
-  const [selected, setSelected] = useState(OPTIONS.YOUTUBE)
-
+export const TabSwitcher = ({ selected, setSelected }) => {
   return (
     <div className="flex mx-2 mt-2 rounded-md bg-blue-gray-100">
       <div
         className={`flex-1 py-1 my-2 ml-2 text-center rounded-md bg-${selected === OPTIONS.YOUTUBE ? 'red-300' : 'zinc-200'}`}
       >
         <button
-          className={'w-full text-sm cursor-pointer select-none focus:outline-none font-bold text-blue-gray-900'}
+          className={'w-full flex flex-col justify-center items-center text-sm cursor-pointer select-none focus:outline-none font-bold text-blue-gray-900'}
           onClick={() => {
             setSelected(OPTIONS.YOUTUBE)
           }}
         >
-          {OPTIONS.YOUTUBE}
+          <span>
+            <YoutubeOutlined className="text-xl my-auto text-zinc-800" />
+          </span>
+          <span>
+            {OPTIONS.YOUTUBE}
+          </span>
         </button>
       </div>
       <div
