@@ -9,12 +9,13 @@ export default function ExploreAfogView() {
   const [error, setError] = useState(null);
   const [isLearnMoreOpen, setIsLearnMoreOpen] = useState(false)
 
-  const afogEndpoint = "https://afifthofgaming.com/Session/GetTournaments"
+  const AFOG_BASE_URL = "https://afifthofgaming.com"
+  const AFOG_ENDPOINT = `${AFOG_BASE_URL}/Session/GetTournaments`
 
   useEffect(() => {
     const fetchTournaments = async () => {
       try {
-        const response = await fetch(afogEndpoint);
+        const response = await fetch(AFOG_ENDPOINT);
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
