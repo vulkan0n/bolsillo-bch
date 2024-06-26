@@ -4,6 +4,7 @@ import { translate } from "@/util/translations";
 import AppHero from '@/components/atoms/AppHero/AppHero';
 import { LikeOutlined, YoutubeOutlined } from '@ant-design/icons';
 import { RECOMMENDED_YOUTUBE_CHANNELS } from './recommended';
+import { TabSwitcher } from './TabSwitcher';
 // import translations from "./ExploreAfogViewTranslations";
 
 // const {
@@ -35,13 +36,15 @@ export default function ExploreSocialMediaView() {
           <div className="text-left">
             <p>Recommended channels:</p>
             <ul>
-              {RECOMMENDED_YOUTUBE_CHANNELS.map(channel => <li>
+              {RECOMMENDED_YOUTUBE_CHANNELS.map(channel => <li key={channel.name}>
                 <a href={channel.url} target="_blank">- <u>{channel.name}</u></a>
               </li>)}
             </ul>
           </div>
 
         </div>
+
+        <TabSwitcher />
       </div>
 
     </div >
