@@ -1,5 +1,4 @@
-import { useState } from 'react'
-import { YoutubeOutlined } from '@ant-design/icons';
+import { YoutubeOutlined, TwitterOutlined } from '@ant-design/icons';
 import { OPTIONS } from './ExploreSocialMediaView';
 
 export const TabSwitcher = ({ selected, setSelected }) => {
@@ -27,12 +26,17 @@ export const TabSwitcher = ({ selected, setSelected }) => {
       >
         <button
           className={
-            'w-full text-sm cursor-pointer select-none focus:outline-none font-bold text-blue-gray-900'}
+            'w-full flex flex-col justify-center items-center text-sm cursor-pointer select-none focus:outline-none font-bold text-blue-gray-900'}
           onClick={() => {
             setSelected(OPTIONS.TWITTER)
           }}
         >
-          {OPTIONS.TWITTER}
+          <span>
+            <TwitterOutlined className="text-xl my-auto text-zinc-800" />
+          </span>
+          <span>
+            X ({OPTIONS.TWITTER})
+          </span>
         </button>
       </div>
       <div
