@@ -11,7 +11,7 @@ import {
   selectIsExperimental, selectIsPrerelease,
 } from "@/redux/preferences";
 import ExploreApp from "./ExploreApp";
-import GlobalAdoptionSummary from "./stats/GlobalAdoptionSummary";
+import ExploreStatBlock from "./stats/ExploreStatBlock";
 
 export default function ExploreViewHome() {
   const isExperimental = useSelector(selectIsExperimental);
@@ -19,7 +19,7 @@ export default function ExploreViewHome() {
 
   return (
     <div className="p-2">
-      <GlobalAdoptionSummary />
+      <ExploreStatBlock />
       {isPrerelease && (
         <ExploreApp
           icon={LineChartOutlined}
