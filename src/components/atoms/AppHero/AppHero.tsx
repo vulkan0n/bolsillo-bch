@@ -49,7 +49,7 @@ export default function AppHero({
         className="flex justify-center m-4 rounded-full border border-2 border-primary bg-primary text-zinc-100 shadow-md opacity-90"
       >{callToAction}</a></div>}
 
-      {expandableTitle && expandableContent && <div className="p-1 w-full bg-zinc-200 text-lg text-center text-zinc-800">
+      {expandableTitle && expandableContent && <div className={`${!callToAction && "mt-2"} p-1 w-full bg-zinc-200 text-lg text-center text-zinc-800`}>
         <div className={"flex justify-center items-center"} onClick={() => { setIsExpandableOpen(!isExpandableOpen) }}>
           <span className="pr-1">
             {expandableTitle}

@@ -19,6 +19,16 @@ export default function ExploreSocialMediaView() {
           title="Social Media"
           description="Get involved in the latest content, news & discussion in BCH."
           icon={<LikeOutlined className="text-xl my-auto text-zinc-200" />}
+          expandableTitle={"Recommended channels"}
+          expandableContent={
+            <div className="text-left">
+              <ul>
+                {RECOMMENDED_YOUTUBE_CHANNELS.map(channel => <li key={channel.name}>
+                  <a href={channel.url} target="_blank">- <u>{channel.name}</u></a>
+                </li>)}
+              </ul>
+            </div>
+          }
         />
 
         <div className="px-3 bg-green-200">
@@ -26,14 +36,6 @@ export default function ExploreSocialMediaView() {
             <h1>Youtube</h1>
             <YoutubeOutlined className="text-xl my-auto text-zinc-800" />
 
-            <div className="text-left">
-              <p>Recommended channels:</p>
-              <ul>
-                {RECOMMENDED_YOUTUBE_CHANNELS.map(channel => <li key={channel.name}>
-                  <a href={channel.url} target="_blank">- <u>{channel.name}</u></a>
-                </li>)}
-              </ul>
-            </div>
           </div>
         </div>
         <br />
