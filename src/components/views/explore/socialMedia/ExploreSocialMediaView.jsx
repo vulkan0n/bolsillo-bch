@@ -13,7 +13,7 @@ export default function ExploreSocialMediaView() {
   const [selected, setSelected] = useState(OPTIONS.YOUTUBE)
 
   return (
-    <div className="">
+    <div>
       <div className="flex flex-col mb-16 bg-pink-200">
         <AppHero
           title="Social Media"
