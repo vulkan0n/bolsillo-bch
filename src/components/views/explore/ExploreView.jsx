@@ -12,9 +12,7 @@ export default function ExploreView() {
     <>
       <ViewHeader icon={CompassOutlined} title={translate(exploreBch)} />
       {/* <ExploreSearchBar /> */}
-      <div className="my-0.5">
-        <Outlet />
-      </div>
+      <Outlet />
     </>
   );
 }
