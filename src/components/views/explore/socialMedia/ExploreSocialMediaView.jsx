@@ -52,7 +52,7 @@ export default function ExploreSocialMediaView() {
       </div>
 
       {/* <div className="bg-green-600"> */}
-      <div className="fixed bottom-16 w-full bg-green-600">
+      <div className="fixed bottom-16 w-full bg-zinc-400">
         <TabSwitcher selected={selected} setSelected={setSelected} />
       </div>
     </div >
