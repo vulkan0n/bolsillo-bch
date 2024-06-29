@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 import { DateTime } from "luxon";
-import ReactPlayer from 'react-player/youtube'
 import { LaptopOutlined } from "@ant-design/icons";
 import AppHero from '@/components/atoms/AppHero/AppHero';
 import { translate } from "@/util/translations";
 import translations from "./ExploreAfogViewTranslations";
+import EmbeddedVideo from '@/components/atoms/EmbeddedVideo/EmbeddedVideo';
 
 const {
   upcomingTournaments,
@@ -107,15 +107,6 @@ export default function ExploreAfogView() {
       </div >
     )
   }
-
-  const EmbeddedVideo = ({ url }) => (
-    <div className="w-full flex justify-center">
-      <ReactPlayer
-        url={url}
-        width={"100%"}
-      />
-    </div>
-  )
 
   return (
     <div>
