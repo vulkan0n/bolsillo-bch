@@ -1,8 +1,10 @@
+export const BITCOIN_CASH_PODCAST = {
+  name: "The Bitcoin Cash Podcast",
+  url: "https://www.youtube.com/channel/UCsrDsJnHFnkMnJhEslofyPQ"
+}
+
 export const RECOMMENDED_YOUTUBE_CHANNELS = [
-  {
-    name: "The Bitcoin Cash Podcast",
-    url: "https://www.youtube.com/channel/UCsrDsJnHFnkMnJhEslofyPQ"
-  },
+  BITCOIN_CASH_PODCAST,
   {
     name: "General Protocols Spaces",
     url: "https://www.youtube.com/@generalprotocols",
