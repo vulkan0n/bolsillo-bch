@@ -14,7 +14,8 @@ const {
   playersText,
   description,
   signUp,
-  loadingText
+  loadingText,
+  learnMore
 } = translations;
 
 const AFOG_BASE_URL = "https://afifthofgaming.com"
@@ -124,7 +125,8 @@ export default function ExploreAfogView() {
         description={translate(description)}
         callToAction={translate(signUp)}
         callToActionUrl={AFOG_BASE_URL}
-        learnMoreContent={
+        expandableTitle={translate(learnMore)}
+        expandableContent={
           <div>
             <EmbeddedVideo url={"https://www.youtube.com/watch?v=6cn4dcdN7d4"} />
             <EmbeddedVideo url={"https://www.youtube.com/watch?v=yadskoNfbwI"} />

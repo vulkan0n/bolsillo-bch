@@ -1,11 +1,5 @@
 import { ReactNode, useState } from 'react'
 import { UpSquareOutlined, DownSquareOutlined } from "@ant-design/icons";
-import { translate } from "@/util/translations";
-import translations from "./AppHeroTranslations";
-
-const {
-  learnMore,
-} = translations;
 
 interface Props {
   icon: ReactNode,
@@ -13,7 +7,8 @@ interface Props {
   description: string,
   callToAction?: string,
   callToActionUrl?: string,
-  learnMoreContent?: ReactNode
+  expandableTitle?: string,
+  expandableContent?: ReactNode
 }
 
 export default function AppHero({
@@ -22,9 +17,10 @@ export default function AppHero({
   description,
   callToAction,
   callToActionUrl,
-  learnMoreContent
+  expandableTitle,
+  expandableContent
 }: Props) {
-  const [isLearnMoreOpen, setIsLearnMoreOpen] = useState(false)
+  const [isExpandableOpen, setIsExpandableOpen] = useState(false)
 
   return (
     <div className="shadow rounded-lg m-2 p-2 bg-zinc-900 flex-column justify-center items-center">
@@ -53,18 +49,18 @@ export default function AppHero({
         className="flex justify-center m-4 rounded-full border border-2 border-primary bg-primary text-zinc-100 shadow-md opacity-90"
       >{callToAction}</a></div>}
 
-      {learnMoreContent && <div className="p-1 w-full bg-zinc-200 text-lg text-center text-zinc-800">
-        <div className={"flex justify-center items-center"} onClick={() => { setIsLearnMoreOpen(!isLearnMoreOpen) }}>
+      {expandableTitle && expandableContent && <div className="p-1 w-full bg-zinc-200 text-lg text-center text-zinc-800">
+        <div className={"flex justify-center items-center"} onClick={() => { setIsExpandableOpen(!isExpandableOpen) }}>
           <span className="pr-1">
-            {translate(learnMore)}
+            {expandableTitle}
           </span>
           <span className="flex justify-center items-center">
-            {!isLearnMoreOpen && <DownSquareOutlined className="my-auto text-xl" />}
-            {isLearnMoreOpen && <UpSquareOutlined className="my-auto text-xl" />}
+            {!isExpandableOpen && <DownSquareOutlined className="my-auto text-xl" />}
+            {isExpandableOpen && <UpSquareOutlined className="my-auto text-xl" />}
           </span>
         </div>
 
-        {isLearnMoreOpen && learnMoreContent}
+        {isExpandableOpen && expandableContent}
       </div>}
     </div>
   )
