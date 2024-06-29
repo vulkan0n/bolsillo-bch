@@ -31,8 +31,9 @@ const SQL = await initSqlJs({ locateFile: () => "/sql-wasm.wasm" });
 Log.timeEnd("initSql");
 
 // pointers for throttling db writes
-let flushPending;
+const MAX_PENDING_SAVES = 800;
 let pendingCount = 0;
+let flushPendingTimeout;
 
 // open a db file from filesystem
 async function _dbOpen(filename) {
@@ -289,16 +290,16 @@ export default function DatabaseService(db = undefined) {
   // saveDatabase: schedules a write to disk
   // sets a timeout to batch writes together
   async function saveDatabase(force: boolean = false) {
-    clearTimeout(flushPending);
+    clearTimeout(flushPendingTimeout);
     pendingCount += 1;
 
-    if (pendingCount > 320 || force) {
+    if (pendingCount > MAX_PENDING_SAVES || force) {
       pendingCount = 0;
       await _flushDatabase();
       return;
     }
 
-    flushPending = setTimeout(async () => {
+    flushPendingTimeout = setTimeout(async () => {
       pendingCount = 0;
       await _flushDatabase();
     }, 512);

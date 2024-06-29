@@ -30,6 +30,8 @@ import ShowMnemonic from "@/atoms/ShowMnemonic";
 import Accordion from "@/atoms/Accordion";
 import Satoshi from "@/atoms/Satoshi";
 
+import WalletSettings from "@/views/settings/WalletSettings";
+
 import { translate } from "@/util/translations";
 import translations from "./translations";
 
@@ -128,6 +130,7 @@ export default function SettingsWalletView() {
         title={translate(translations.walletSettings)}
       />
       <div className="p-2">
+        <WalletSettings />
         <div className="p-3 rounded-lg bg-zinc-200">
           <div className="text-2xl">
             {isEditingWalletName ? (
