@@ -59,9 +59,9 @@ export default function SettingsView() {
         <SettingsContext.Provider value={settingsContext}>
           <KeyWarning wallet={activeWallet} />
           <WalletSettings />
+          <SecuritySettings />
           <CurrencySettings />
           <PaymentSettings />
-          <SecuritySettings />
           <QrCodeSettings />
           <UiSettings />
           <NetworkSettings />

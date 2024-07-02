@@ -130,7 +130,6 @@ export default function SettingsWalletView() {
         title={translate(translations.walletSettings)}
       />
       <div className="p-2">
-        <WalletSettings />
         <div className="p-3 rounded-lg bg-zinc-200">
           <div className="text-2xl">
             {isEditingWalletName ? (
@@ -230,6 +229,7 @@ export default function SettingsWalletView() {
           </div>
         </div>
 
+        <WalletSettings />
         <KeyWarning wallet={wallet} />
         <ShowMnemonic wallet={wallet} />
         {
@@ -242,7 +242,7 @@ export default function SettingsWalletView() {
               <Accordion.Child icon={null} label="">
                 <button
                   type="button"
-                  className="w-full text-left"
+                  className="w-full text-left flex items-center"
                   onClick={handleNavigateAdditionalWalletInformation}
                 >
                   <InfoCircleOutlined className="text-xl mr-1" />
@@ -252,7 +252,7 @@ export default function SettingsWalletView() {
               <Accordion.Child icon={null} label="">
                 <button
                   type="button"
-                  className="w-full text-left"
+                  className="w-full text-left flex items-center"
                   onClick={handleRebuildWallet}
                 >
                   <MedicineBoxOutlined className="text-xl mr-1" />
