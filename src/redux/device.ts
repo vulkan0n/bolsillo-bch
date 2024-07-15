@@ -7,11 +7,13 @@ import { NativeBiometric } from "@capgo/capacitor-native-biometric";
 import { store, RootState } from "@/redux";
 //import { syncReconnect } from "@/redux/sync";
 import LogService from "@/services/LogService";
+import { sha256 } from "@/util/hash";
 
 const Log = LogService("Device");
 
 type DeviceInfo = CapacitorDeviceInfo & {
   deviceId: string;
+  deviceIdHash: string;
   languageCode: string;
   hasBiometric: boolean;
 };
@@ -70,12 +72,16 @@ async function initializeDevice(): Promise<DeviceState> {
   Log.log("* Initializing Device *");
   Log.time("initDevice");
 
+  const deviceId = (await Device.getId()).identifier;
+  const deviceIdHash = sha256.text(deviceId);
+
   const deviceState: DeviceState = {
     scanner: { isScanning: false },
     keyboard: { isOpen: false },
     deviceInfo: {
       ...(await Device.getInfo()),
-      deviceId: (await Device.getId()).identifier,
+      deviceId,
+      deviceIdHash,
       languageCode: (await Device.getLanguageCode()).value,
       hasBiometric: false,
     },

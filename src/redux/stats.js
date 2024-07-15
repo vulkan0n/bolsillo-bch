@@ -1,12 +1,15 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
+import { selectIsPrerelease } from "@/redux/preferences";
 import StatsService from "@/services/StatsService";
 
 export const triggerCheckIn = createAsyncThunk(
   "stats/submitCheckIn",
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async (payload, thunkApi) => {
-    const { submitCheckIn } = StatsService();
+    const isPrerelease = selectIsPrerelease(thunkApi.getState());
 
-    submitCheckIn();
+    if (isPrerelease) {
+      await StatsService().submitCheckIn();
+    }
   }
 );

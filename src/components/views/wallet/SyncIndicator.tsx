@@ -1,26 +1,20 @@
 import { useEffect, useState, useRef } from "react";
-import { useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
 import {
   DisconnectOutlined,
   CheckCircleFilled,
   SyncOutlined,
 } from "@ant-design/icons";
 import { animated, useSpring } from "@react-spring/web";
-import { selectSyncState } from "@/redux/sync";
-import { selectActiveWallet } from "@/redux/wallet";
+import { selectSyncState, syncHotRefresh } from "@/redux/sync";
 import ToastService from "@/services/ToastService";
 
-type TimeoutType = ReturnType<typeof setTimeout>;
-
 export default function SyncIndicator() {
-  const navigate = useNavigate();
+  const dispatch = useDispatch();
   const sync = useSelector(selectSyncState);
 
-  const { id: wallet_id } = useSelector(selectActiveWallet);
-
   const [shouldAnimateSync, setShouldAnimateSync] = useState(sync.isSyncing);
-  const syncTimeoutRef = useRef<TimeoutType>();
+  const syncTimeoutRef = useRef(setTimeout(() => {}, 0));
 
   const [syncSprings] = useSpring(() => ({
     from: { opacity: 1, scale: 1.1 },
@@ -77,7 +71,7 @@ export default function SyncIndicator() {
         to: { opacity: 0.1, scale: 0.65 },
       });
 
-      navigate(`/settings/wallet/${wallet_id}/scan`);
+      dispatch(syncHotRefresh());
     } else {
       disconnectApi.start();
       ToastService().disconnected();
@@ -94,11 +88,9 @@ export default function SyncIndicator() {
       )}
       {sync.isConnected &&
         (shouldAnimateSync ? (
-          <div>
+          <div className="flex flex-col items-center">
             <SyncIcon springs={{ ...syncSprings }} />
-            {/*<div className="text-xs text-zinc-600">
-              {sync.syncCount}
-            </div>*/}
+            {/*<div className="text-xs text-zinc-600">{sync.syncCount}</div>*/}
           </div>
         ) : (
           <ConnectedIcon springs={{ ...connectSprings }} />

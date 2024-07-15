@@ -2,8 +2,9 @@ import { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { DateTime } from "luxon";
-import { ArrowLeftOutlined } from "@ant-design/icons";
+import { ArrowLeftOutlined, SyncOutlined } from "@ant-design/icons";
 import { selectTransactionHistory, txHistoryFetch } from "@/redux/txHistory";
+import { selectSyncState } from "@/redux/sync";
 import translations from "./translations";
 import { translate } from "@/util/translations";
 
@@ -28,6 +29,7 @@ export default function WalletViewHistory() {
   const navigate = useNavigate();
 
   const txHistory = useTransactionHistory();
+  const sync = useSelector(selectSyncState);
 
   const receiveStyle = "text-secondary";
   const sendStyle = "text-error";
@@ -41,12 +43,16 @@ export default function WalletViewHistory() {
         <ul className="bg-zinc-100 text-zinc-600 divide-y divide-zinc-300 rounded-b px-2 max-h-[58vh] overflow-y-scroll border border-zinc-400 shadow-inner">
           {txHistory.length === 0 && (
             <li className="flex px-1 py-2 items-center justify-center tracking-tighter font-bold">
-              -----
+              {sync.syncPending.txHistory === 0 ? (
+                <span>-----</span>
+              ) : (
+                <SyncOutlined className="text-3xl" spin />
+              )}
             </li>
           )}
           {txHistory.map((tx, i) =>
             i < 100 ? (
-              <li key={tx.txid} className="px-1 py-2">
+              <li key={`${tx.txid}${tx.address}`} className="px-1 py-2">
                 <Link to={`/explore/tx/${tx.txid}`}>
                   <div className="flex text-sm">
                     <div className="flex-1">

@@ -1,10 +1,6 @@
 import Logger from "js-logger";
-import { Preferences } from "@capacitor/preferences";
 import { SELENE_WALLET_VERSION } from "@/util/version";
 import ConsoleService from "@/services/ConsoleService";
-
-const isDebugLogEnabled =
-  (await Preferences.get({ key: "debugLog" })).value === "true";
 
 // eslint-disable-next-line react-hooks/rules-of-hooks
 Logger.useDefaults();
@@ -17,7 +13,7 @@ Logger.setHandler((messages, context) => {
   seleneConsoleHandler(messages, context);
 });
 
-Logger.setLevel(isDebugLogEnabled ? Logger.DEBUG : Logger.INFO);
+Logger.setLevel(Logger.DEBUG);
 Logger.time("INIT_APP");
 Logger.info(
   `** Selene Wallet v${SELENE_WALLET_VERSION} :: https://selene.cash **`

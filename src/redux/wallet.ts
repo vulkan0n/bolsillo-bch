@@ -16,7 +16,6 @@ import { ValidBchNetwork } from "@/util/crypto";
 import WalletManagerService, {
   WalletEntity,
 } from "@/services/WalletManagerService";
-import AddressManagerService from "@/services/AddressManagerService";
 import ElectrumService from "@/services/ElectrumService";
 
 import ToastService from "@/services/ToastService";
@@ -46,9 +45,6 @@ export const walletBoot = createAsyncThunk(
     thunkApi.dispatch(
       setPreference({ key: "activeWalletId", value: wallet.id.toString() })
     );
-
-    const AddressManager = AddressManagerService(wallet);
-    AddressManager.populateAddresses();
 
     const isChipnet = network === "chipnet";
 

@@ -19,6 +19,7 @@ import BlockchainService from "@/services/BlockchainService";
 import AddressManagerService, {
   AddressEntity,
 } from "@/services/AddressManagerService";
+import AddressScannerService from "@/services/AddressScannerService";
 import TransactionManagerService from "@/services/TransactionManagerService";
 import UtxoManagerService from "@/services/UtxoManagerService";
 
@@ -37,18 +38,18 @@ export const syncConnect = createAsyncThunk(
   "sync/connect",
   async (payload: { attempts: number; server: string }, thunkApi) => {
     Log.log("sync/connect", payload);
-    // attempt connection only if device reports active network connection
-    const { isConnected: isNetworkConnected } = selectNetworkStatus(
-      thunkApi.getState()
-    );
-
     try {
       await Electrum.connect(payload.server);
     } catch (e) {
       // if connection fails, destroy the client and try again
       await Electrum.disconnect(true);
 
-      // 3 attempts, over 12 seconds total, per server
+      // try multiple servers only if device reports active network connection
+      const { isConnected: isNetworkConnected } = selectNetworkStatus(
+        thunkApi.getState()
+      );
+
+      // 3 attempts per server
       if (payload.attempts < 2 || !isNetworkConnected) {
         setTimeout(
           () =>
@@ -93,12 +94,10 @@ export const syncReconnect = createAsyncThunk(
 // syncConnectionUp: fired when electrum connection is up
 export const syncConnectionUp = createAsyncThunk(
   "sync/up",
-  (server: string, thunkApi) => {
+  (server: string, thunkApi): string => {
     // set up subscriptions on connect
     Electrum.subscribeToChaintip();
-    thunkApi.dispatch(syncReceiveSubscriptions());
-    thunkApi.dispatch(syncChangeAddresses());
-    //thunkApi.dispatch(syncHotRefresh());
+    thunkApi.dispatch(syncWalletAddresses());
 
     return server;
   }
@@ -113,42 +112,32 @@ export const syncConnectionDown = createAsyncThunk(
   }
 );
 
-// syncReceiveSubscriptions: set up subscriptions to all receive addresses
-export const syncReceiveSubscriptions = createAsyncThunk(
-  "sync/receiveSubscriptions",
-  (payload, thunkApi) => {
+// syncWalletAddresses: generate wallet addresses and set up subscriptions
+export const syncWalletAddresses = createAsyncThunk(
+  "sync/walletAddresses",
+  async (payload, thunkApi): Promise<void> => {
     const wallet = selectActiveWallet(thunkApi.getState());
     const AddressManager = AddressManagerService(wallet);
+    const AddressScanner = AddressScannerService(wallet);
 
-    const subscribeAddresses = AddressManager.getReceiveAddresses();
-    subscribeAddresses.forEach((address) =>
-      thunkApi.dispatch(syncSubscribeAddress(address))
+    AddressScanner.populateAddresses();
+    thunkApi.dispatch(syncChangeAddresses());
+
+    Promise.all(
+      AddressManager.getReceiveAddresses().map(async (address) => {
+        const subscription = await Electrum.subscribeToAddress(address);
+        thunkApi.dispatch(
+          syncAddressState([address, subscription.addressState])
+        );
+      })
     );
-  }
-);
-
-// syncSubscribeAddress: subscribe to state updates for an address
-export const syncSubscribeAddress = createAsyncThunk(
-  "sync/subscribeAddress",
-  async (address: AddressEntity, thunkApi) => {
-    // get initial address state
-    const subscription = await Electrum.subscribeToAddress(address);
-
-    if (address.state !== subscription.addressState) {
-      // update address state if necessary upon subscription
-      thunkApi.dispatch(
-        syncAddressState([subscription.address, subscription.addressState])
-      );
-    }
-
-    return [subscription.address, subscription.addressState];
   }
 );
 
 // syncChangeAddresses: syncs all change addresses
 export const syncChangeAddresses = createAsyncThunk(
   "sync/changeAddresses",
-  async (payload, thunkApi) => {
+  async (payload, thunkApi): Promise<void> => {
     const wallet = selectActiveWallet(thunkApi.getState());
 
     const AddressManager = AddressManagerService(wallet);
@@ -158,20 +147,21 @@ export const syncChangeAddresses = createAsyncThunk(
     const promises = changeAddresses
       .filter((address) => !(address.state !== null && address.balance === 0)) // don't resync fully spent change addresses
       .map(async (address) => {
-        const addressState = await Electrum.requestAddressState(
-          address.address
-        );
+        const subscription = await Electrum.subscribeToAddress(address);
 
-        thunkApi.dispatch(syncAddressState([address, addressState]));
+        thunkApi.dispatch(
+          syncAddressState([address, subscription.addressState])
+        );
         //Log.debug("sync/changeAddresses", address, addressState);
-        return [address, addressState];
+        return [address, subscription.addressState];
       });
 
     const batchedPromises = [];
+    const batch_chunk_size = 256;
 
     while (promises.length > 0) {
-      batchedPromises.concat(promises.slice(0, 1000));
-      promises.splice(0, 1000);
+      batchedPromises.concat(promises.slice(0, batch_chunk_size));
+      promises.splice(0, batch_chunk_size);
     }
 
     batchedPromises.forEach((batch) => Promise.all(batch));
@@ -181,28 +171,27 @@ export const syncChangeAddresses = createAsyncThunk(
 // syncAddressState: fired when data acquired from address subscription
 export const syncAddressState = createAsyncThunk(
   "sync/addressState",
-  (payload: [AddressEntity | string, string | null], thunkApi) => {
+  (
+    payload: [AddressEntity, string | null],
+    thunkApi
+  ): [AddressEntity, string | null] => {
     // get subscription response data from payload
     const [address, addressState] = payload;
 
-    // check downloaded state against local state
+    // catch for payload from direct electrum subscription
     const wallet = selectActiveWallet(thunkApi.getState());
     const AddressManager = AddressManagerService(wallet);
 
-    // catch for payload from direct electrum subscription
-    let addressObj: AddressEntity =
+    const addressObj: AddressEntity =
       typeof address === "string"
         ? AddressManager.getAddress(address)
         : address;
 
+    // check downloaded state against local state
     if (addressObj.state !== addressState) {
-      addressObj = AddressManager.updateAddressState(addressObj, addressState);
-      // if state updated, get utxos for address
-      //Log.debug("address state changed for", addressObj, addressState);
+      //Log.debug("address state changed for", address, addressState);
       thunkApi.dispatch(syncAddressUtxos(addressObj));
-
-      // queue history sync after all other requests have finished
-      queueMicrotask(() => thunkApi.dispatch(syncAddressHistory(addressObj)));
+      thunkApi.dispatch(syncAddressHistory(addressObj));
     }
 
     return [addressObj, addressState];
@@ -213,109 +202,71 @@ export const syncAddressState = createAsyncThunk(
 // requests current utxo set for an address
 const syncAddressUtxos = createAsyncThunk(
   "sync/addressUtxos",
-  async (address: AddressEntity, thunkApi) => {
-    const addr = address.address;
-
-    // we will always need the up-to-date utxo set
-    const utxos = await Electrum.requestUtxos(addr);
-
+  async (address: AddressEntity, thunkApi): Promise<void> => {
     const wallet = selectActiveWallet(thunkApi.getState());
-
-    const AddressManager = AddressManagerService(wallet);
-    const UtxoManager = UtxoManagerService(wallet);
-
-    // we need to delete our knowledge of UTXO set
-    // in case some utxos were spent elsewhere
-    // i.e. wallet seed shared on multiple devices
-    UtxoManager.discardAddressUtxos(addr);
-
-    // register each UTXO, add tx to history
-    utxos.forEach((utxo) => {
-      UtxoManager.registerUtxo(addr, utxo);
-
-      AddressManager.registerTransaction(addr, {
-        tx_hash: utxo.tx_hash,
-        height: utxo.height,
-      });
-
-      /*
-      // TODO: validate that the UTXOs pass merkle inclusion
-      // for now we just trust that fulcrum isn't lying to us
-      listenerApi.dispatch(syncBlock(utxo.height));
-      listenerApi.dispatch(syncTxRequest(utxo.tx_hash));
-      */
-    });
-
-    const isChange = address.change === 1;
+    await AddressScannerService(wallet).scanUtxos(address.address);
 
     // update wallet balance; view re-renders on wallet update
+    const isChange = address.change === 1;
     thunkApi.dispatch(
       walletBalanceUpdate({
         wallet,
         isChange,
       })
     );
-
-    thunkApi.dispatch(syncPopulateAddresses());
-
-    //Log.debug("sync/addressUtxos", { address, utxos });
-    return {
-      address,
-      utxos,
-    };
   }
 );
 
-const syncAddressHistory = createAsyncThunk(
+export const syncAddressHistory = createAsyncThunk(
   "sync/addressHistory",
-  async (address: AddressEntity, thunkApi) => {
+  async (address: AddressEntity, thunkApi): Promise<void> => {
     const wallet = selectActiveWallet(thunkApi.getState());
     const AddressManager = AddressManagerService(wallet);
+    const AddressScanner = AddressScannerService(wallet);
 
-    const calculatedAddressState =
-      AddressManager.calculateAddressState(address);
     const storedAddressState = address.state;
 
-    if (calculatedAddressState !== storedAddressState) {
-      //Log.debug("sync/addressHistory requesting", address.address);
-      const history = await Electrum.requestAddressHistory(address.address);
-      history.forEach((historyTx) =>
-        AddressManager.registerTransaction(address.address, historyTx)
-      );
-    }
+    const calculatedAddressState = AddressManager.calculateAddressState(
+      address.address
+    );
 
-    /*Log.debug(
-      "sync/addressHistory",
-      calculatedAddressState,
-      storedAddressState,
-      calculatedAddressState !== storedAddressState
-    );*/
+    if (
+      calculatedAddressState !== storedAddressState ||
+      storedAddressState === null
+    ) {
+      await AddressScanner.scanHistory(address.address);
+    }
   }
 );
-
-export const syncPopulateAddresses = createAction<number | undefined>(
-  "sync/populateAddresses"
-);
 syncMiddleware.startListening({
-  actionCreator: syncPopulateAddresses,
+  actionCreator: syncAddressHistory.fulfilled,
   effect: async (action, listenerApi) => {
-    const wallet = selectActiveWallet(listenerApi.getState());
-    const AddressManager = AddressManagerService(wallet);
-
-    const nScanMore = action.payload;
-
-    const generatedAddresses = AddressManager.populateAddresses(nScanMore);
-
-    // subscribe to the new addresses
-    generatedAddresses.forEach((address) =>
-      listenerApi.dispatch(syncSubscribeAddress(address))
-    );
+    listenerApi.dispatch(syncPopulateAddresses());
   },
 });
 
+export const syncPopulateAddresses = createAsyncThunk(
+  "sync/populateAddresses",
+  async (action, thunkApi) => {
+    const wallet = selectActiveWallet(thunkApi.getState());
+    const AddressScanner = AddressScannerService(wallet);
+
+    const generatedAddresses = AddressScanner.populateAddresses();
+
+    await Promise.all(
+      generatedAddresses.map(async (address) => {
+        const subscription = await Electrum.subscribeToAddress(address);
+        thunkApi.dispatch(
+          syncAddressState([subscription.address, subscription.addressState])
+        );
+      })
+    );
+  }
+);
+
 export const syncHotRefresh = createAsyncThunk(
   "sync/hotRefresh",
-  async (payload, thunkApi) => {
+  async (payload: { force: boolean }, thunkApi) => {
     const wallet = selectActiveWallet(thunkApi.getState());
     const sync = selectSyncState(thunkApi.getState());
 
@@ -323,13 +274,17 @@ export const syncHotRefresh = createAsyncThunk(
     const hotSyncCooldown = 10 * 1000;
 
     // how many additional addresses to scan (attempt to detect funds beyond the gap)
-    const nSyncMore = 200;
+    const nScanMore = 1600;
 
-    if (!sync.isSyncing && sync.lastRefresh < Date.now() - hotSyncCooldown) {
-      thunkApi.dispatch(syncPopulateAddresses(nSyncMore));
-
+    if (
+      (!sync.isSyncing && sync.lastRefresh < Date.now() - hotSyncCooldown) ||
+      payload.force
+    ) {
+      const AddressScanner = AddressScannerService(wallet);
       const AddressManager = AddressManagerService(wallet);
       const UtxoManager = UtxoManagerService(wallet);
+
+      thunkApi.dispatch(syncWalletAddresses());
 
       // "hot" addresses are any addresses with UTXOs on them
       const walletUtxos = UtxoManager.getWalletUtxos();
@@ -337,24 +292,8 @@ export const syncHotRefresh = createAsyncThunk(
         AddressManager.getAddress(utxo.address)
       );
 
-      // check unused change addresses (attempts to fill gaps)
-      const unusedChangeAddresses = AddressManager.getUnusedAddresses(0, 1);
-
-      // check recent change addresses (tries to catch undetected spends)
-      const recentChangeAddresses = AddressManager.getRecentAddresses(50, 1);
-
-      // check all receive addresses (all user-managed addresses)
-      const receiveAddresses = AddressManager.getReceiveAddresses();
-
-      const syncAddresses = [
-        ...hotAddresses,
-        ...recentChangeAddresses,
-        ...unusedChangeAddresses,
-        ...receiveAddresses,
-      ];
-
-      Promise.all(
-        syncAddresses.map(async (address) => {
+      await Promise.all(
+        hotAddresses.map(async (address) => {
           const addressState = await Electrum.requestAddressState(
             address.address
           );
@@ -362,7 +301,13 @@ export const syncHotRefresh = createAsyncThunk(
         })
       );
 
-      Log.debug("sync/hotRefresh", syncAddresses, sync);
+      // scan change from first unused index to last index + nScanMore
+      await AddressScanner.scanMoreAddresses(nScanMore, 1);
+
+      thunkApi.dispatch(syncPopulateAddresses());
+      thunkApi.dispatch(walletBalanceUpdate({ wallet, isChange: false }));
+
+      Log.debug("sync/hotRefresh", sync);
     }
 
     return Date.now();
@@ -373,20 +318,23 @@ export const syncBlock = createAsyncThunk(
   "sync/block",
   async (height: number) => {
     const Blockchain = BlockchainService();
-    let block = await Blockchain.getBlockByHeight(height);
-
-    if (block === null || block.header === null) {
+    let block;
+    try {
+      block = await Blockchain.getBlockByHeight(height);
+    } catch {
       const header = await Electrum.requestBlock(height);
       await Blockchain.registerBlock({ header, height });
       block = await Blockchain.getBlockByHeight(height);
     }
 
-    // Log.log("sync/block", block);
+    Log.log("sync/block", block);
     return block;
   }
 );
 
-export const syncChaintip = createAction("sync/chaintip");
+export const syncChaintip = createAction<{ height: number; hex: string }>(
+  "sync/chaintip"
+);
 syncMiddleware.startListening({
   actionCreator: syncChaintip,
   effect: async (action, listenerApi) => {
@@ -403,6 +351,8 @@ const initialPending = {
   utxo: 0,
   history: 0,
   txState: 0,
+  change: 0,
+  rebuild: 0,
 };
 const initialState = {
   isConnected: false,
@@ -424,14 +374,6 @@ export const syncReducer = createReducer(initialState, (builder) => {
     })
     .addCase(syncReconnect.pending, (state: RootState) => {
       state.isConnected = false;
-    })
-    .addCase(syncSubscribeAddress.pending, (state: RootState) => {
-      state.syncPending.txState += 1;
-    })
-    .addCase(syncSubscribeAddress.fulfilled, (state: RootState, action) => {
-      const [address] = action.payload;
-      state.addresses[address.address] = address;
-      state.syncPending.txState -= 1;
     })
     .addCase(syncAddressState.pending, (state: RootState) => {
       state.syncPending.txState += 1;
@@ -472,13 +414,13 @@ export const syncReducer = createReducer(initialState, (builder) => {
       state.syncPending.history -= 1;
     })
     .addCase(syncChangeAddresses.pending, (state: RootState) => {
-      state.syncPending.txState += 1;
+      state.syncPending.change += 1;
     })
     .addCase(syncChangeAddresses.fulfilled, (state: RootState) => {
-      state.syncPending.txState -= 1;
+      state.syncPending.change -= 1;
     })
     .addCase(syncChangeAddresses.rejected, (state: RootState) => {
-      state.syncPending.txState -= 1;
+      state.syncPending.change -= 1;
     })
     .addCase(syncChaintip, (state, action) => {
       const { hex, height } = action.payload;

@@ -1,12 +1,14 @@
 import { DateTime } from "luxon";
-import { Device } from "@capacitor/device";
 import { gql } from "@apollo/client";
-import { sha256 } from "@bitauth/libauth";
 
 import apolloClient from "@/apolloClient";
-import { binToHex } from "@/util/hex";
 import { store } from "@/redux";
-import { setPreference } from "@/redux/preferences";
+import { selectDeviceInfo } from "@/redux/device";
+import {
+  setPreference,
+  selectIsPrerelease,
+  selectLastCheckIn,
+} from "@/redux/preferences";
 
 import LogService from "@/services/LogService";
 
@@ -29,6 +31,7 @@ export default function StatsService() {
   // --------------------------------
 
   // run a daily check in, if current time UTC is on a date later than previous check in
+  // TODO: check-in interval should be enforced server-side per device ID
   async function submitCheckIn() {
     //console.log("Submitting!!");
     const now = DateTime.utc();
@@ -36,7 +39,7 @@ export default function StatsService() {
 
     const DAY = "day";
 
-    const lastCheckIn = store.getState().preferences.lastCheckIn || "";
+    const lastCheckIn = selectLastCheckIn(store.getState());
 
     const defaultLastCheckInMoment = now
       .minus({ days: 1 })
@@ -51,25 +54,25 @@ export default function StatsService() {
 
     const isShouldCheckIn = lastCheckIn === "" || now > nextCheckIn;
 
-    const deviceId = (await Device.getId())?.identifier;
-    const textEncoder = new TextEncoder();
-    const hashedDeviceId = binToHex(sha256.hash(textEncoder.encode(deviceId)));
-    Log.debug({ lastCheckIn, isShouldCheckIn, hashedDeviceId });
-
     // This will be replaced with a user-optional setting
-    const isPrerelease = store.getState().preferences.enablePrerelease;
+    const isPrerelease = selectIsPrerelease(store.getState());
+
+    const { deviceIdHash } = selectDeviceInfo(store.getState());
+
+    Log.debug({ lastCheckIn, isShouldCheckIn, deviceIdHash });
 
     if (isShouldCheckIn && isPrerelease) {
+      Log.debug("sending checkin");
       const result = await apolloClient.mutate({
         mutation: SEND_DAILY_CHECK_IN,
         variables: {
-          hashedDeviceId,
+          hashedDeviceId: deviceIdHash,
           date: nowFormatted,
         },
       });
 
       if (result) {
-        Log.debug("sending off store.dispatch");
+        Log.debug("check-in successful");
         store.dispatch(
           setPreference({ key: "lastCheckIn", value: nowFormatted })
         );

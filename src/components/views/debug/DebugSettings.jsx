@@ -4,7 +4,6 @@ import {
   ExperimentOutlined,
   RocketOutlined,
   ForkOutlined,
-  CodeOutlined,
 } from "@ant-design/icons";
 
 import {
@@ -12,7 +11,6 @@ import {
   selectIsChipnet,
   selectIsExperimental,
   selectIsPrerelease,
-  selectIsDebugLogEnabled,
 } from "@/redux/preferences";
 import Accordion from "@/atoms/Accordion";
 import { translate } from "@/util/translations";
@@ -24,7 +22,6 @@ export default function DebugSettings() {
   const isChipnet = useSelector(selectIsChipnet);
   const isExperimental = useSelector(selectIsExperimental);
   const isPrerelease = useSelector(selectIsPrerelease);
-  const isDebugLogEnabled = useSelector(selectIsDebugLogEnabled);
 
   const handleIsChipnet = (event) => {
     const newNetwork = event.target.checked ? "chipnet" : "mainnet";
@@ -71,11 +68,6 @@ export default function DebugSettings() {
           onChange={handleIsExperimental}
         />
       </Accordion.Child>
-      {isExperimental ? (
-        <Accordion.Child icon={CodeOutlined} label="Log Level DEBUG">
-          <input type="checkbox" checked={isDebugLogEnabled} disabled />
-        </Accordion.Child>
-      ) : null}
     </Accordion>
   );
 }

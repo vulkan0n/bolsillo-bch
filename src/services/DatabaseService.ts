@@ -18,25 +18,23 @@ const Log = LogService("Database");
  * - /wallet_settings
  */
 
-const SELENE_DB_FILE = "selene/selene.db";
-const SELENE_DB_BACKUP_FILE = "selene/selene.db.bak";
-const SELENE_LEGACY_DB_FILE = "db/selene.db";
+export const SELENE_DB_FILENAME = "selene/selene.db";
+export const SELENE_LEGACY_DB_FILENAME = "db/selene.db";
+const SELENE_DB_BACKUP_FILENAME = "selene/selene.db.bak";
 
 // Connect to SQLite Database
 Log.log("* Initializing Database *");
 Log.time("initDb");
-Log.debug("loading SQL module...");
-Log.time("initSql");
 const SQL = await initSqlJs({ locateFile: () => "/sql-wasm.wasm" });
-Log.timeEnd("initSql");
 
 // pointers for throttling db writes
-const MAX_PENDING_SAVES = 800;
+const MAX_PENDING_SAVES = 8000;
 let pendingCount = 0;
 let flushPendingTimeout;
+let isFlushing = false;
 
 // open a db file from filesystem
-async function _dbOpen(filename) {
+export async function _dbOpen(filename) {
   const dbFile = await Filesystem.readFile({
     path: filename,
     directory: Directory.Library,
@@ -47,156 +45,6 @@ async function _dbOpen(filename) {
   return db;
 }
 
-// _migrateLegacyDbFile: move old db file to new location
-async function _migrateLegacyDbFile() {
-  Log.debug("Checking for legacy database file");
-
-  try {
-    // check if legacy db file exists (throws if not exists)
-    await Filesystem.stat({
-      path: SELENE_LEGACY_DB_FILE,
-      directory: Directory.Library,
-    });
-  } catch (e) {
-    // fail gracefully if file not found (no need to migrate)
-    Log.debug("No legacy database found");
-    return Promise.resolve();
-  }
-
-  try {
-    await Filesystem.mkdir({
-      path: "selene/",
-      directory: Directory.Library,
-      recursive: true,
-    });
-  } finally {
-    // proceed even if directory already exists
-    try {
-      // check if normal db file exists (throws if not exists)
-      await Filesystem.stat({
-        path: SELENE_DB_FILE,
-        directory: Directory.Library,
-      });
-
-      // if both legacy and new dbs exist, import wallets from legacy
-      const legacy_db = await _dbOpen(SELENE_LEGACY_DB_FILE);
-      const new_db = await _dbOpen(SELENE_DB_FILE);
-      run_migrations(legacy_db);
-      run_migrations(new_db);
-
-      const LegacyDb = DatabaseService(legacy_db);
-      const legacy_wallets = LegacyDb.resultToJson(
-        legacy_db.exec("SELECT * FROM wallets")
-      );
-
-      legacy_wallets.forEach((w) => {
-        try {
-          new_db.exec(
-            `INSERT INTO wallets (
-          name, 
-          mnemonic, 
-          passphrase, 
-          derivation, 
-          key_viewed
-        ) VALUES (
-          ?, ?, ?, ?, 
-          strftime('%Y-%m-%dT%H:%M:%SZ')
-        );`,
-            [w.name, w.mnemonic, w.passphrase, w.derivation]
-          );
-        } catch (e) {
-          Log.warn(
-            `Couldn't import legacy wallet '${w.name}'. Mnemonic already exists?`
-          );
-        }
-      });
-
-      const NewDb = DatabaseService(new_db);
-      NewDb.saveDatabase(true);
-
-      const deleteResult = await Filesystem.deleteFile({
-        path: SELENE_LEGACY_DB_FILE,
-        directory: Directory.Library,
-      });
-      Log.log("Migrated legacy database file", deleteResult);
-    } catch (e) {
-      Log.error("Legacy database migration failed", e);
-    }
-  }
-
-  return Promise.resolve();
-}
-
-async function retryWalletDatabase() {
-  // something went wrong, attempting to load backup
-  let db;
-  try {
-    db = await _dbOpen(SELENE_DB_BACKUP_FILE);
-    Log.warn("Wallet database corrupted? Loading backup...");
-    run_migrations(db);
-  } catch (e) {
-    Log.warn("Wallet database corrupted!! Creating new wallet database");
-    // TODO: warn user when this happens
-    db = new SQL.Database();
-    run_migrations(db);
-  }
-
-  return db;
-}
-
-// dumps db file as-is with timestamp
-async function dump_db(db) {
-  const filename = SELENE_DB_FILE.concat(".")
-    .concat(Date.now().toString())
-    .concat(".bak");
-
-  Log.warn("Dumping database!!", filename);
-  Log.time("dbDump");
-
-  try {
-    const data = db.export();
-
-    const result = await Filesystem.writeFile({
-      path: filename,
-      data: data.toString(),
-      directory: Directory.Library,
-      encoding: Encoding.UTF8,
-      recursive: true,
-    });
-
-    Log.debug("DUMP_DB", filename, result);
-  } catch (e) {
-    Log.error(e);
-  }
-
-  Log.timeEnd("dbDump");
-}
-
-// dumps db file as backup
-async function backup_db(db) {
-  const filename = SELENE_DB_FILE.concat(".bak");
-  Log.log("Writing backup database file", filename);
-  Log.time("dbBackup");
-
-  try {
-    const data = db.export();
-
-    const result = await Filesystem.writeFile({
-      path: filename,
-      data: data.toString(),
-      directory: Directory.Library,
-      encoding: Encoding.UTF8,
-      recursive: true,
-    });
-
-    Log.debug("BACKUP_DB", filename, result);
-  } catch (e) {
-    Log.error(e);
-  }
-
-  Log.timeEnd("dbBackup");
-}
-
 // getWalletDatabase: try to open the wallet db file
 // return a blank db if file doesn't exist
 async function getWalletDatabase() {
@@ -204,9 +52,8 @@ async function getWalletDatabase() {
 
   let db;
   try {
-    db = await _dbOpen(SELENE_DB_FILE);
+    db = await _dbOpen(SELENE_DB_FILENAME);
     Log.log("Loaded wallet database");
-    setTimeout(() => backup_db(db), 500); // decouple saving backup db from init process to improve startup speed
   } catch (e) {
     Log.warn("Creating wallet database", e);
     db = new SQL.Database();
@@ -227,16 +74,80 @@ async function getWalletDatabase() {
   return db;
 }
 
+async function retryWalletDatabase() {
+  // something went wrong, attempting to load backup
+  let db;
+  try {
+    db = await _dbOpen(SELENE_DB_BACKUP_FILENAME);
+    Log.warn("Wallet database corrupted? Loading backup...");
+    run_migrations(db);
+  } catch (e) {
+    Log.warn("Wallet database corrupted!! Creating new wallet database");
+    // TODO: warn user when this happens
+    db = new SQL.Database();
+    run_migrations(db);
+  }
+
+  return db;
+}
+
+// dumps db file as-is with timestamp
+async function dump_db(db) {
+  const filename = SELENE_DB_FILENAME.concat(".")
+    .concat(Date.now().toString())
+    .concat(".bak");
+
+  Log.warn("Dumping database!!", filename);
+  Log.time("dbDump");
+
+  try {
+    const result = await Filesystem.writeFile({
+      path: filename,
+      data: db.export().toString(),
+      directory: Directory.Library,
+      encoding: Encoding.UTF8,
+      recursive: true,
+    });
+
+    Log.debug("DUMP_DB", filename, result);
+  } catch (e) {
+    Log.error(e);
+  }
+
+  Log.timeEnd("dbDump");
+}
+
+// dumps db file as backup
+export async function backup_db(db) {
+  const filename = SELENE_DB_BACKUP_FILENAME;
+  Log.log("Writing backup database file", filename);
+  Log.time("dbBackup");
+
+  try {
+    const result = await Filesystem.writeFile({
+      path: filename,
+      data: db.export().toString(),
+      directory: Directory.Library,
+      encoding: Encoding.UTF8,
+      recursive: true,
+    });
+
+    Log.debug("BACKUP_DB", filename, result);
+  } catch (e) {
+    Log.error(e);
+  }
+
+  Log.timeEnd("dbBackup");
+}
+
 // use top-level pointer to ensure db is only loaded into memory once
-// try to migrate legacy db file first
-await _migrateLegacyDbFile();
 const WALLET_DB = await getWalletDatabase();
 Log.timeEnd("initDb");
 
 // DatabaseService: brokers interactions with raw SQLite database
-export default function DatabaseService(db = undefined) {
+export default function DatabaseService(db = WALLET_DB) {
   return {
-    db: db || WALLET_DB,
+    db,
     resultToJson,
     saveDatabase,
   };
@@ -291,29 +202,36 @@ export default function DatabaseService(db = undefined) {
   // sets a timeout to batch writes together
   async function saveDatabase(force: boolean = false) {
     clearTimeout(flushPendingTimeout);
+    flushPendingTimeout = undefined;
     pendingCount += 1;
 
     if (pendingCount > MAX_PENDING_SAVES || force) {
       pendingCount = 0;
-      await _flushDatabase();
+      flushPendingTimeout = undefined;
+      await _flushDatabase(force);
       return;
     }
 
     flushPendingTimeout = setTimeout(async () => {
       pendingCount = 0;
+      flushPendingTimeout = undefined;
       await _flushDatabase();
     }, 512);
   }
 
   // _flushDatabase [private]: writes database to disk
-  async function _flushDatabase() {
+  async function _flushDatabase(force: boolean = false) {
+    if (!force && (isFlushing || flushPendingTimeout !== undefined)) {
+      Log.debug("skipping flush due to flushLock");
+      return;
+    }
+
     Log.time("flushDatabase");
     try {
-      const data = WALLET_DB.export();
-
+      isFlushing = true;
       const result = await Filesystem.writeFile({
-        path: SELENE_DB_FILE,
-        data: data.toString(),
+        path: SELENE_DB_FILENAME,
+        data: db.export().toString(),
         directory: Directory.Library,
         encoding: Encoding.UTF8,
         recursive: true,
@@ -321,13 +239,17 @@ export default function DatabaseService(db = undefined) {
 
       Log.debug("flushDatabase", result);
     } catch (e) {
-      Log.error(e);
+      Log.error("flushDatabase error", e);
+    } finally {
+      isFlushing = false;
+      clearTimeout(flushPendingTimeout);
+      flushPendingTimeout = undefined;
+      Log.timeEnd("flushDatabase");
     }
-    Log.timeEnd("flushDatabase");
   }
 }
 
-// force database write on app stop
+// force database write on app stop and pause
 App.addListener("appStateChange", async ({ isActive }) => {
   if (!isActive) {
     await DatabaseService().saveDatabase(true);
@@ -335,6 +257,14 @@ App.addListener("appStateChange", async ({ isActive }) => {
   }
 });
 
+// force database write on app stop and pause
+App.addListener("pause", async () => {
+  await DatabaseService().saveDatabase(true);
+  Log.debug("flushDatabase on pause");
+});
+
+// HERE BE SATS if someone wants to try to steal them!
+// Some ancient commit will load this wallet, but send wasn't implemented yet...
 /*const _fakeDb = [
   {
     name: "Selene Test",
