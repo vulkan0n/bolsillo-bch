@@ -1,8 +1,7 @@
 import * as bip39 from "bip39";
 import LogService from "@/services/LogService";
-import DatabaseService from "@/services/DatabaseService";
+import DatabaseService, { backup_db } from "@/services/DatabaseService";
 import TransactionManagerService from "@/services/TransactionManagerService";
-import AddressManagerService from "@/services/AddressManagerService";
 import {
   ValidDerivationPath,
   DEFAULT_DERIVATION_PATH,
@@ -113,7 +112,7 @@ export default function WalletManagerService(network: ValidBchNetwork) {
       return boot(wallet.id);
     }
 
-    AddressManagerService(wallet).cleanupAddressStates();
+    queueMicrotask(() => backup_db(db));
 
     return wallet;
   }

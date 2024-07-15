@@ -1,10 +1,5 @@
 import toast from "react-hot-toast";
-import {
-  SnippetsFilled,
-  DisconnectOutlined,
-  SyncOutlined,
-  CheckCircleFilled,
-} from "@ant-design/icons";
+import { SnippetsFilled, DisconnectOutlined } from "@ant-design/icons";
 import { logos } from "@/util/logos";
 import Satoshi from "@/atoms/Satoshi";
 
@@ -12,7 +7,6 @@ export default function ToastService() {
   return {
     spawn,
     paymentReceived,
-    connectionStatus,
     clipboardCopy,
     disconnected,
   };
@@ -59,39 +53,6 @@ export default function ToastService() {
           </div>
         </>
       ),
-    });
-  }
-
-  function connectionStatus(sync) {
-    const header = sync.isConnected
-      ? `Connected to ${sync.server}`
-      : "Disconnected";
-
-    const pendingSum = Object.keys(sync.syncPending).reduce(
-      (sum, cur) => sum + sync.syncPending[cur],
-      0
-    );
-
-    /*
-    const failedSum = Object.keys(sync.syncFailed).reduce(
-      (sum, cur) => sum + sync.syncFailed[cur],
-      0
-      );*/
-
-    spawn({
-      header,
-      body: (
-        <div>
-          {pendingSum > 0 && <div>Pending Requests: {pendingSum}</div>}
-          <div>{Object.keys(sync.addresses).length} addresses synced</div>
-        </div>
-      ),
-      icon:
-        pendingSum > 0 ? (
-          <SyncOutlined className="text-4xl text-zinc-800" />
-        ) : (
-          <CheckCircleFilled className="text-4xl text-primary" />
-        ),
     });
   }
 

@@ -1,6 +1,6 @@
 import { useSelector } from "react-redux";
 import { selectLocale } from "@/redux/device";
-import { selectCurrencySettings } from "@/redux/preferences";
+import { selectCurrencySettings, selectUiSettings } from "@/redux/preferences";
 
 import CurrencyService from "@/services/CurrencyService";
 import { satsToBch } from "@/util/sats";
@@ -16,12 +16,9 @@ export default function Satoshi({
   fiat = undefined,
   flip = false,
 }: Props) {
-  const {
-    shouldPreferLocalCurrency,
-    shouldHideBalance,
-    localCurrency,
-    denomination,
-  } = useSelector(selectCurrencySettings);
+  const { shouldPreferLocalCurrency, localCurrency, denomination } =
+    useSelector(selectCurrencySettings);
+  const { shouldHideBalance } = useSelector(selectUiSettings);
   const locale = useSelector(selectLocale);
 
   const shouldDisplayFiat =

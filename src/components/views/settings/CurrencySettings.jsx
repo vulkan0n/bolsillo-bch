@@ -4,8 +4,6 @@ import {
   DollarCircleOutlined,
   EuroCircleOutlined,
   TransactionOutlined,
-  EyeOutlined,
-  EyeInvisibleOutlined,
   AccountBookOutlined,
   StockOutlined,
 } from "@ant-design/icons";
@@ -20,14 +18,12 @@ import { currencyList } from "@/util/currency";
 import { VALID_DENOMINATIONS } from "@/util/sats";
 
 import Accordion from "@/atoms/Accordion";
-import SecurityService from "@/services/SecurityService";
 
 export default function CurrencySettings() {
   const { handleSettingsUpdate } = useContext(SettingsContext);
 
   const {
     shouldPreferLocalCurrency,
-    shouldHideBalance,
     shouldDisplayExchangeRate,
     localCurrency,
     denomination,
@@ -68,25 +64,6 @@ export default function CurrencySettings() {
           onChange={(event) =>
             handleSettingsUpdate("preferLocalCurrency", event.target.checked)
           }
-        />
-      </Accordion.Child>
-      <Accordion.Child
-        icon={shouldHideBalance ? EyeInvisibleOutlined : EyeOutlined}
-        label={translate(translations.hideAvailableBalance)}
-      >
-        <input
-          type="checkbox"
-          checked={shouldHideBalance}
-          onChange={async (event) => {
-            const { checked: isChecked } = event.target;
-            const isAuthorized =
-              shouldHideBalance === false ||
-              (await SecurityService().authorize());
-
-            if (isAuthorized) {
-              handleSettingsUpdate("hideAvailableBalance", isChecked);
-            }
-          }}
         />
       </Accordion.Child>
       <Accordion.Child

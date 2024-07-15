@@ -41,7 +41,6 @@ const defaultPreferences = {
   // --------
   enableExperimental: "false",
   enablePrerelease: "false",
-  debugLog: "true",
 };
 
 type ValidPreferences = typeof defaultPreferences;
@@ -89,7 +88,6 @@ function validatePreferences(preferences: ValidPreferences): boolean {
     "allowInstantPay",
     "enableExperimental",
     "enablePrerelease",
-    "debugLog",
     "displayExploreTab",
   ];
 
@@ -206,7 +204,6 @@ export const selectCurrencySettings = createSelector(
     localCurrency: preferences.localCurrency,
     denomination: preferences.denomination,
     shouldPreferLocalCurrency: preferences.preferLocalCurrency === "true",
-    shouldHideBalance: preferences.hideAvailableBalance === "true",
     shouldDisplayExchangeRate: preferences.displayExchangeRate === "true",
   })
 );
@@ -260,6 +257,7 @@ export const selectSecuritySettings = createSelector(
 export const selectUiSettings = createSelector(
   (state: RootState) => state.preferences,
   (preferences) => ({
+    shouldHideBalance: preferences.hideAvailableBalance === "true",
     shouldDisplayExploreTab: preferences.displayExploreTab === "true",
   })
 );
@@ -279,7 +277,7 @@ export const selectIsPrerelease = createSelector(
   (preferences): boolean => preferences.enablePrerelease === "true"
 );
 
-export const selectIsDebugLogEnabled = createSelector(
+export const selectLastCheckIn = createSelector(
   (state: RootState) => state.preferences,
-  (preferences): boolean => preferences.debugLog === "true"
+  (preferences) => preferences.lastCheckIn
 );

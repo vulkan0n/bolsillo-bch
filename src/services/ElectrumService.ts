@@ -70,7 +70,7 @@ export default function ElectrumService() {
       // disconnect(force=true) cleans up all listeners and timeouts
       await electrum.disconnect(true);
     }
-    Log.log("Electrum: Connecting to", server);
+    Log.log("Connecting to", server);
 
     // Create a new ElectrumClient every time
     // This avoids memory leaks from EventEmitter
@@ -154,7 +154,7 @@ export default function ElectrumService() {
   }
 
   // request the most up-to-date balance information for an address
-  async function requestBalance(address) {
+  async function requestBalance(address: string) {
     if (electrum === null) {
       throw new ElectrumNotConnectedError();
     }
@@ -168,7 +168,7 @@ export default function ElectrumService() {
   }
 
   // request the most up-to-date state hash for an address
-  async function requestAddressState(address) {
+  async function requestAddressState(address: string) {
     if (electrum === null) {
       throw new ElectrumNotConnectedError();
     }
@@ -178,14 +178,14 @@ export default function ElectrumService() {
     );
 
     if (!(addressState === null || typeof addressState === "string")) {
-      throw new Error();
+      throw new Error(addressState.toString());
     }
 
     return addressState;
   }
 
   // request the entire transaction history for an address
-  async function requestAddressHistory(address) {
+  async function requestAddressHistory(address: string) {
     if (electrum === null) {
       throw new ElectrumNotConnectedError();
     }
@@ -195,7 +195,7 @@ export default function ElectrumService() {
       address
     );
 
-    return history;
+    return history as Array<object>;
   }
 
   // request all current UTXOs for an address
@@ -323,6 +323,10 @@ export default function ElectrumService() {
 // important that the pointer to this function never changes
 // so we define it on top-level
 function handleAddressSubscription(data) {
+  if (!Array.isArray(data)) {
+    return;
+  }
+
   store.dispatch(syncAddressState(data));
 }
 

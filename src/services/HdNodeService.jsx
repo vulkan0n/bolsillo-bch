@@ -32,7 +32,7 @@ export default function HdNodeService(wallet) {
   };
 
   // raw address generation function
-  function generateAddress(index, change) {
+  function generateAddress(index, change = 0) {
     const child = deriveHdPrivateNodeChild(change ? hdChange : hdMain, index);
 
     const pubKey = secp256k1.derivePublicKeyCompressed(child.privateKey);
