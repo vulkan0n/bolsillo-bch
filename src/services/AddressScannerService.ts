@@ -19,8 +19,8 @@ import {
 } from "@/util/crypto";
 
 const ADDRESS_GAP_LIMIT = 20; // BIP-44 gap limit is 20
-const DERIVATION_SCAN_LIMIT = 10;
-const SCAN_BATCH_SIZE = 4096;
+const DERIVATION_SCAN_LIMIT = 5;
+const SCAN_BATCH_SIZE = 3000;
 
 const Log = LogService("AddressScanner");
 
@@ -86,16 +86,13 @@ export default function AddressScannerService(wallet) {
 
   // determine which derivation path to use by scanning each path
   async function scanDerivationPaths(): Promise<ValidDerivationPath> {
-    Log.debug("scanDerivationPaths");
     // race all of the available derivation paths
     // first one to resolve with an active address wins
     const activeDerivationPath = await Promise.any(
       DERIVATION_PATHS.map((path) => {
-        Log.debug(path);
         // set the derivation path for the WalletEntity
         const tempWallet = { ...wallet, derivation: path };
         const Hd = HdNodeService(tempWallet);
-        Log.debug(tempWallet);
 
         // generate addresses for each change path
         const addresses: Array<string> = [];
@@ -105,18 +102,14 @@ export default function AddressScannerService(wallet) {
             hd_index < DERIVATION_SCAN_LIMIT;
             hd_index += 1
           ) {
-            Log.debug("address?", hd_index);
             try {
               const address = Hd.generateAddress(hd_index, change);
               addresses.push(address);
-              Log.debug(address);
             } catch (e) {
               Log.error(e);
             }
           }
         }
-
-        Log.debug("path?", path);
 
         // get states for first n addresses, resolve with path if active
         // if all addresses reject, then path also rejects
@@ -302,7 +295,7 @@ export default function AddressScannerService(wallet) {
 
     /* eslint-disable no-await-in-loop */
     for (let change = 0; change <= 1; change += 1) {
-      let addresses = await scanMoreAddresses(ADDRESS_GAP_LIMIT, change);
+      let addresses = await scanMoreAddresses(SCAN_BATCH_SIZE, change);
       while (getUnusedCount(addresses) < ADDRESS_GAP_LIMIT) {
         addresses = await scanMoreAddresses(SCAN_BATCH_SIZE, change);
       }
@@ -322,7 +315,7 @@ export default function AddressScannerService(wallet) {
     // i.e. wallet seed shared on multiple devices
     UtxoManager.discardAddressUtxos(address);
 
-    if (utxos instanceof Array) {
+    if (Array.isArray(utxos)) {
       utxos.forEach((utxo) => {
         UtxoManager.registerUtxo(address, utxo);
         /*

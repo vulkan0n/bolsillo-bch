@@ -1,5 +1,6 @@
 import { useContext } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { Dialog } from "@capacitor/dialog";
 import {
   LockOutlined,
   PushpinOutlined,
@@ -22,7 +23,11 @@ export default function SecuritySettings() {
   const handleSetPin = async () => {
     const isAuthorized = await SecurityService().authorize();
     if (isAuthorized || pinHash === "") {
-      const pin = prompt("Enter **new** PIN");
+      const pin = Dialog.prompt({
+        title: "Enter New PIN",
+        message: "Please enter a **new** PIN.",
+        okButtonTitle: "Set PIN",
+      });
       const newPinHash = sha256.text(pin);
 
       dispatch(setPreference({ key: "pinHash", value: newPinHash }));

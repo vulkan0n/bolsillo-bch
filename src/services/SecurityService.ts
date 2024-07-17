@@ -1,3 +1,4 @@
+import { Dialog } from "@capacitor/dialog";
 import { NativeBiometric } from "@capgo/capacitor-native-biometric";
 import LogService from "@/services/LogService";
 import { store } from "@/redux";
@@ -60,7 +61,7 @@ export default function SecurityService() {
     return isAuthorized;
   }
 
-  function authorizePin() {
+  async function authorizePin() {
     let isAuthorized = false;
 
     const { pinHash: storedPinHash } = selectSecuritySettings(store.getState());
@@ -69,8 +70,16 @@ export default function SecurityService() {
       return true;
     }
 
-    // eslint-disable-next-line no-restricted-globals
-    const pin = prompt("Enter PIN"); // eslint-disable-line no-alert
+    const { value: pin, cancelled: isCancelled } = await Dialog.prompt({
+      title: "Enter PIN",
+      message: "Please enter your PIN.",
+      okButtonTitle: "Authorize",
+    });
+
+    if (isCancelled) {
+      return false;
+    }
+
     const inputPinHash = sha256.text(pin);
 
     if (inputPinHash === storedPinHash) {

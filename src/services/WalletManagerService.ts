@@ -1,6 +1,6 @@
 import * as bip39 from "bip39";
 import LogService from "@/services/LogService";
-import DatabaseService, { backup_db } from "@/services/DatabaseService";
+import DatabaseService from "@/services/DatabaseService";
 import TransactionManagerService from "@/services/TransactionManagerService";
 import {
   ValidDerivationPath,
@@ -111,8 +111,6 @@ export default function WalletManagerService(network: ValidBchNetwork) {
       updateWalletHash(wallet);
       return boot(wallet.id);
     }
-
-    queueMicrotask(() => backup_db(db));
 
     return wallet;
   }

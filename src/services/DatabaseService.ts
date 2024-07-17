@@ -28,7 +28,9 @@ Log.time("initDb");
 const SQL = await initSqlJs({ locateFile: () => "/sql-wasm.wasm" });
 
 // pointers for throttling db writes
-const MAX_PENDING_SAVES = 8000;
+const MAX_PENDING_SAVES = 16000;
+const BACKUP_FLUSH_LIMIT = 4;
+let flushCount = 0;
 let pendingCount = 0;
 let flushPendingTimeout;
 let isFlushing = false;
@@ -229,17 +231,26 @@ export default function DatabaseService(db = WALLET_DB) {
     Log.time("flushDatabase");
     try {
       isFlushing = true;
+      const data = db.export().toString();
       const result = await Filesystem.writeFile({
         path: SELENE_DB_FILENAME,
-        data: db.export().toString(),
+        data,
         directory: Directory.Library,
         encoding: Encoding.UTF8,
         recursive: true,
       });
 
+      flushCount += 1;
+
+      if (flushCount > BACKUP_FLUSH_LIMIT) {
+        backup_db(db);
+        flushCount = 0;
+      }
+
       Log.debug("flushDatabase", result);
     } catch (e) {
       Log.error("flushDatabase error", e);
+      await dump_db(db);
     } finally {
       isFlushing = false;
       clearTimeout(flushPendingTimeout);
