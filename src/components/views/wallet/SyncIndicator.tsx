@@ -1,4 +1,3 @@
-import PropTypes from "prop-types";
 import { useEffect, useState, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import {
@@ -15,7 +14,7 @@ export default function SyncIndicator() {
   const sync = useSelector(selectSyncState);
 
   const [shouldAnimateSync, setShouldAnimateSync] = useState(sync.isSyncing);
-  const syncTimeoutRef = useRef();
+  const syncTimeoutRef = useRef(setTimeout(() => {}, 0));
 
   const [syncSprings] = useSpring(() => ({
     from: { opacity: 1, scale: 1.1 },
@@ -34,7 +33,7 @@ export default function SyncIndicator() {
         clearTimeout(syncTimeoutRef.current);
         syncTimeoutRef.current = setTimeout(
           () => requestAnimationFrame(() => setShouldAnimateSync(false)),
-          1337
+          600
         );
       }
     },
@@ -66,14 +65,13 @@ export default function SyncIndicator() {
   }));
 
   const handlePointerDown = () => {
-    if (sync.connected) {
+    if (sync.isConnected) {
       connectApi.start({
         from: { opacity: 0.8, scale: 0.85 },
         to: { opacity: 0.1, scale: 0.65 },
       });
 
       dispatch(syncHotRefresh());
-      ToastService().connectionStatus(sync);
     } else {
       disconnectApi.start();
       ToastService().disconnected();
@@ -85,16 +83,14 @@ export default function SyncIndicator() {
       className="cursor-pointer w-10 h-10 flex justify-center items-center"
       onPointerDown={handlePointerDown}
     >
-      {!sync.connected && (
+      {!sync.isConnected && (
         <DisconnectedIcon springs={{ ...disconnectSprings }} />
       )}
-      {sync.connected &&
+      {sync.isConnected &&
         (shouldAnimateSync ? (
-          <div>
+          <div className="flex flex-col items-center">
             <SyncIcon springs={{ ...syncSprings }} />
-            {/*<div className="text-xs text-zinc-600">
-              {sync.syncCount}
-            </div>*/}
+            {/*<div className="text-xs text-zinc-600">{sync.syncCount}</div>*/}
           </div>
         ) : (
           <ConnectedIcon springs={{ ...connectSprings }} />
@@ -103,6 +99,7 @@ export default function SyncIndicator() {
   );
 }
 
+/* eslint-disable react/prop-types */
 function DisconnectedIcon({ springs }) {
   return (
     <animated.div style={springs}>
@@ -110,9 +107,6 @@ function DisconnectedIcon({ springs }) {
     </animated.div>
   );
 }
-DisconnectedIcon.propTypes = {
-  springs: PropTypes.object.isRequired,
-};
 
 function ConnectedIcon({ springs }) {
   return (
@@ -122,10 +116,6 @@ function ConnectedIcon({ springs }) {
   );
 }
 
-ConnectedIcon.propTypes = {
-  springs: PropTypes.object.isRequired,
-};
-
 function SyncIcon({ springs }) {
   return (
     <animated.div style={springs}>
@@ -133,6 +123,3 @@ function SyncIcon({ springs }) {
     </animated.div>
   );
 }
-SyncIcon.propTypes = {
-  springs: PropTypes.object.isRequired,
-};

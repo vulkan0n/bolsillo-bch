@@ -4,9 +4,10 @@ import {
   WalletOutlined,
   PlusCircleFilled,
   CheckCircleOutlined,
+  WarningFilled,
 } from "@ant-design/icons";
 
-import { selectActiveWalletId } from "@/redux/preferences";
+import { selectActiveWalletId, selectBchNetwork } from "@/redux/preferences";
 
 import { translate } from "@/util/translations";
 import translations from "./SettingsViewTranslations";
@@ -15,7 +16,8 @@ import Accordion from "@/atoms/Accordion";
 import WalletManagerService from "@/services/WalletManagerService";
 
 export default function WalletSettings() {
-  const walletList = WalletManagerService().getWallets();
+  const bchNetwork = useSelector(selectBchNetwork);
+  const walletList = WalletManagerService(bchNetwork).getWallets();
   const activeWalletId = useSelector(selectActiveWalletId);
 
   return (
@@ -23,7 +25,10 @@ export default function WalletSettings() {
       icon={WalletOutlined}
       title={translate(translations.walletSettings)}
     >
-      <Link to="/settings/wallet/wizard" className="w-full block p-2">
+      <Link
+        to="/settings/wallet/wizard"
+        className="w-full block p-2 flex items-center"
+      >
         <PlusCircleFilled className="text-xl mr-1" />
         {translate(translations.createImportWallet)}
       </Link>
@@ -31,10 +36,15 @@ export default function WalletSettings() {
         <Link
           key={w.id}
           to={`/settings/wallet/${w.id}`}
-          className="w-full block p-2"
+          className="w-full block p-2 flex items-center"
+          replace
         >
           {w.id === activeWalletId && (
             <CheckCircleOutlined className="text-xl mr-1 text-secondary" />
+          )}
+
+          {w.key_viewed === null && (
+            <WarningFilled className="text-xl mr-1 text-error" />
           )}
           {w.name}
         </Link>

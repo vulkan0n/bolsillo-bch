@@ -1,21 +1,29 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 import { ImportOutlined } from "@ant-design/icons";
 import * as bip39 from "bip39";
 import Accordion from "@/components/atoms/Accordion";
 import WalletManagerService from "@/services/WalletManagerService";
+import AddressScannerService from "@/services/AddressScannerService";
+import LogService from "@/services/LogService";
+import { selectBchNetwork } from "@/redux/preferences";
 import { translate } from "@/util/translations";
 import translations from "./translations";
 
 import { DEFAULT_DERIVATION_PATH, DERIVATION_PATHS } from "@/util/crypto";
 
+const Log = LogService("WizardImport");
+
 export default function SettingsWalletWizardImport() {
   const navigate = useNavigate();
+
+  const bchNetwork = useSelector(selectBchNetwork);
 
   const [mnemonicInput, setMnemonicInput] = useState("");
   const [passphraseInput, setPassphraseInput] = useState("");
   const [message, setMessage] = useState("");
-  const [derivationPath, setDerivationPath] = useState(DEFAULT_DERIVATION_PATH);
+  const [derivationPath, setDerivationPath] = useState("auto");
 
   const handleMnemonicInput = (event) => {
     const sanitizedInput = event.target.value
@@ -35,7 +43,7 @@ export default function SettingsWalletWizardImport() {
     setDerivationPath(event.target.value);
   };
 
-  const handleImportWallet = () => {
+  const handleImportWallet = async () => {
     const trimmedInput = mnemonicInput.trim();
     const wordCount = trimmedInput.split(" ").length;
     if (wordCount !== 12 && wordCount !== 24) {
@@ -47,12 +55,27 @@ export default function SettingsWalletWizardImport() {
 
     if (isValidMnemonic) {
       try {
-        const wallet = WalletManagerService().importWallet(
+        const tempWallet = {
+          mnemonic: trimmedInput,
+          passphrase: passphraseInput,
+          derivation: DEFAULT_DERIVATION_PATH,
+          prefix: bchNetwork === "mainnet" ? "bitcoincash" : "bchtest",
+        };
+
+        const path =
+          derivationPath === "auto"
+            ? await AddressScannerService(tempWallet).scanDerivationPaths()
+            : derivationPath;
+
+        Log.debug("Found path", path);
+
+        const wallet = WalletManagerService(bchNetwork).importWallet(
           trimmedInput,
           passphraseInput,
-          derivationPath
+          path
         );
-        navigate(`/settings/wallet/${wallet.id}`, { replace: true });
+
+        navigate(`build/${wallet.id}`);
       } catch (e) {
         setMessage(translate(translations.alreadyImported));
       }
@@ -97,6 +120,7 @@ export default function SettingsWalletWizardImport() {
           </Accordion.Child>
           <Accordion.Child icon={() => null} label="Derivation Path">
             <select onChange={handleDerivationSelect} value={derivationPath}>
+              <option value="auto">Auto</option>
               {DERIVATION_PATHS.map((path) => (
                 <option value={path}>{path}</option>
               ))}

@@ -1,14 +1,18 @@
 // migrations.js: handle sqlite database schema updates
-import Logger from "js-logger";
+import LogService from "@/services/LogService";
 import { DEFAULT_DERIVATION_PATH } from "@/util/crypto";
 
-// functions in this migrations will be executed sequentially,
+const Log = LogService("migrations");
+
+// functions in the migrations array will be executed sequentially,
 // starting with the function at index PRAGMA user_version
 // each entry should represent a new db version
 const migrations = [
   function migrate_v0() {
     const query = [];
 
+    // [!] WARNING: resetting the database with user_version 0
+    // [!] will destroy wallet passphrases!
     query.push("PRAGMA user_version = 0;");
 
     //query.push("DROP TABLE IF EXISTS wallets;");
@@ -20,6 +24,7 @@ const migrations = [
     query.push("DROP TRIGGER IF EXISTS balance_update;");
     query.push("DROP TRIGGER IF EXISTS utxo_balance_delete;");
     query.push("DROP TRIGGER IF EXISTS utxo_balance_insert;");
+    query.push("DROP INDEX IF EXISTS idx_address_transactions;");
 
     query.push(
       `CREATE TABLE IF NOT EXISTS wallets ( 
@@ -180,6 +185,7 @@ const migrations = [
       `
     );
 
+    // update wallet balance automatically when address balance is updated
     query.push(
       `CREATE TRIGGER IF NOT EXISTS balance_update AFTER UPDATE ON addresses
         BEGIN
@@ -218,7 +224,7 @@ const migrations = [
           amount int,
           fiat_amount text,
           fiat_currency text,
-          wallet_id int,
+          wallet_id int not null,
           UNIQUE(txid, wallet_id)
         );
 
@@ -287,6 +293,7 @@ const migrations = [
   function migrate_v5() {
     const query = [];
 
+    // update address balances immediately when local utxo set is updated
     query.push(
       `CREATE TRIGGER IF NOT EXISTS utxo_balance_delete AFTER DELETE ON address_utxos
         BEGIN
@@ -317,10 +324,85 @@ const migrations = [
 
     return query.join("");
   },
-  /* function migrate_v6() {
+  function migrate_v6() {
     const query = [];
 
-    query.push("PRAGMA user_version = 0;");
+    // add walletHash column
+    query.push(`ALTER TABLE wallets ADD COLUMN walletHash text default null;`);
+
+    query.push("PRAGMA user_version = 7;");
+
+    return query.join("");
+  },
+  function migrate_v7() {
+    const query = [];
+
+    // fix address_transactions unique key
+    query.push(
+      `
+      PRAGMA foreign_keys=OFF;
+      BEGIN TRANSACTION;
+        DROP TABLE IF EXISTS address_transactions_new;
+        CREATE TABLE address_transactions_new ( 
+          txid text not null,
+          height int not null,
+          time text default ( strftime('%Y-%m-%dT%H:%M:%SZ') ),
+          time_seen default ( strftime('%Y-%m-%dT%H:%M:%SZ') ),
+          address text not null,
+          amount int,
+          fiat_amount text,
+          fiat_currency text,
+          wallet_id int not null,
+          memo text default null,
+          UNIQUE(txid, address, wallet_id)
+        );
+
+        INSERT INTO address_transactions_new (
+          txid,
+          height, 
+          time, 
+          time_seen,
+          address,
+          amount,
+          fiat_amount,
+          fiat_currency,
+          wallet_id,
+          memo
+        ) 
+        SELECT 
+          address_transactions.txid,
+          address_transactions.height, 
+          address_transactions.time,
+          address_transactions.time_seen,
+          address_transactions.address, 
+          address_transactions.amount,   
+          address_transactions.fiat_amount,
+          address_transactions.fiat_currency,
+          address_transactions.wallet_id,
+          address_transactions.memo
+        FROM address_transactions;
+
+        DROP TABLE address_transactions;
+        ALTER TABLE 'address_transactions_new' RENAME TO 'address_transactions';
+        PRAGMA foreign_key_check;
+      COMMIT;
+      PRAGMA foreign_keys=ON;
+      `
+    );
+
+    // index address_transactions to dramatically increase read performnce
+    query.push(
+      "CREATE INDEX idx_address_transactions ON address_transactions (wallet_id, address);"
+    );
+
+    query.push("PRAGMA user_version = 8;");
+
+    return query.join("");
+  },
+  /* function migrate_v9() {
+    const query = [];
+
+    query.push("PRAGMA user_version = 9;");
 
     return query.join("");
   },*/
@@ -329,16 +411,18 @@ const migrations = [
 // run_migrations: run all migrations in migrations array sequentially
 // Starts with index indicated in PRAGMA user_version
 export function run_migrations(db) {
+  Log.time("dbMigrate");
   //db.run("PRAGMA user_version = 0;");
   const DB_VERSION = db.exec("PRAGMA user_version")[0].values[0][0];
-  Logger.log("DB_VERSION", DB_VERSION, migrations.length);
+  Log.log("DB_VERSION", DB_VERSION, migrations.length);
   for (let version = DB_VERSION; version < migrations.length; version += 1) {
-    Logger.log("DB_MIGRATE", `${version}/${migrations.length}`, DB_VERSION);
+    Log.log("DB_MIGRATE", `${version}/${migrations.length}`, DB_VERSION);
     try {
-      //Logger.debug(migrations[version]());
+      //Log.debug(migrations[version]());
       db.run(migrations[version]());
     } catch (e) {
-      Logger.error("error during migrations", e);
+      Log.error("error during migrations", e);
     }
   }
+  Log.timeEnd("dbMigrate");
 }

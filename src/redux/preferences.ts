@@ -22,6 +22,9 @@ const defaultPreferences = {
   displayExchangeRate: "false",
   denomination: "bch",
   bchNetwork: "mainnet",
+  authMode: "none",
+  pinHash: "",
+  displayExploreTab: "true",
   // --------
   // TODO: make these per-wallet instead of global
   allowInstantPay: "false",
@@ -37,6 +40,7 @@ const defaultPreferences = {
   lastExchangeRate: "1",
   // --------
   enableExperimental: "false",
+  enablePrerelease: "false",
 };
 
 type ValidPreferences = typeof defaultPreferences;
@@ -83,6 +87,8 @@ function validatePreferences(preferences: ValidPreferences): boolean {
     "displayExchangeRate",
     "allowInstantPay",
     "enableExperimental",
+    "enablePrerelease",
+    "displayExploreTab",
   ];
 
   const invalidBools = boolKeys.filter(
@@ -198,7 +204,6 @@ export const selectCurrencySettings = createSelector(
     localCurrency: preferences.localCurrency,
     denomination: preferences.denomination,
     shouldPreferLocalCurrency: preferences.preferLocalCurrency === "true",
-    shouldHideBalance: preferences.hideAvailableBalance === "true",
     shouldDisplayExchangeRate: preferences.displayExchangeRate === "true",
   })
 );
@@ -241,6 +246,22 @@ export const selectBchNetwork = createSelector(
   (preferences): ValidBchNetwork => preferences.bchNetwork
 );
 
+export const selectSecuritySettings = createSelector(
+  (state: RootState) => state.preferences,
+  (preferences) => ({
+    authMode: preferences.authMode,
+    pinHash: preferences.pinHash,
+  })
+);
+
+export const selectUiSettings = createSelector(
+  (state: RootState) => state.preferences,
+  (preferences) => ({
+    shouldHideBalance: preferences.hideAvailableBalance === "true",
+    shouldDisplayExploreTab: preferences.displayExploreTab === "true",
+  })
+);
+
 export const selectIsChipnet = createSelector(
   (state: RootState) => selectBchNetwork(state),
   (bchNetwork): boolean => bchNetwork === "chipnet"
@@ -249,4 +270,14 @@ export const selectIsChipnet = createSelector(
 export const selectIsExperimental = createSelector(
   (state: RootState) => state.preferences,
   (preferences): boolean => preferences.enableExperimental === "true"
+);
+
+export const selectIsPrerelease = createSelector(
+  (state: RootState) => state.preferences,
+  (preferences): boolean => preferences.enablePrerelease === "true"
+);
+
+export const selectLastCheckIn = createSelector(
+  (state: RootState) => state.preferences,
+  (preferences) => preferences.lastCheckIn
 );

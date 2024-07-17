@@ -1,16 +1,17 @@
-import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 import { WarningFilled } from "@ant-design/icons";
+
+import { WalletEntity } from "@/services/WalletManagerService";
 
 import { translate } from "@/util/translations";
 import translations from "./translations";
 
-export default function KeyWarning({ wallet }) {
+export default function KeyWarning({ wallet }: { wallet: WalletEntity }) {
   return wallet.key_viewed ? null : (
     <div className="mb-2 p-2">
       <Link to={`/settings/wallet/${wallet.id}`}>
-        <div className="alert alert-warning p-2 shadow-lg bg-warning text-black rounded-lg text-center">
-          <div className="text-xl">
+        <div className="alert alert-warning p-2 shadow-lg bg-warning text-black rounded-lg text-center border-primary border-2">
+          <div className="text-xl flex items-center justify-center">
             <WarningFilled className="text-error text-4xl ml-2" />
             {translate(translations.backUpWallet)}
           </div>
@@ -19,7 +20,3 @@ export default function KeyWarning({ wallet }) {
     </div>
   );
 }
-
-KeyWarning.propTypes = {
-  wallet: PropTypes.object.isRequired,
-};

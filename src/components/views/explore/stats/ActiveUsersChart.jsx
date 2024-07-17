@@ -11,6 +11,11 @@ import {
 } from "chart.js";
 import { Line } from "react-chartjs-2";
 import { DateTime } from "luxon";
+import { translate } from "@/util/translations";
+import translations from "./ActiveUsersChartTranslations";
+import { Period } from "@/util/time";
+
+const { activeSeleneUsers } = translations;
 
 ChartJS.register(
   CategoryScale,
@@ -22,10 +27,32 @@ ChartJS.register(
   Legend
 );
 
-function DailyActiveUsersChart({ data }) {
-  const labels = data.activeBitcoiners.map(({ date }) =>
-    DateTime.fromISO(date).toLocaleString(DateTime.DATE_SHORT)
-  );
+function ActiveUsersChart({ data, period }) {
+  const labels = data.activeBitcoiners.map(({ date }) => {
+    switch (period) {
+      case Period.Weekly:
+        return `${DateTime.fromISO(date).toLocaleString({
+          month: "short",
+          day: "numeric",
+        })} - ${DateTime.fromISO(date).plus({ days: 6 }).toLocaleString({
+          month: "short",
+          day: "numeric",
+        })}`;
+      case Period.Monthly:
+        return DateTime.fromISO(date).toLocaleString({
+          month: "short",
+        });
+      case Period.Yearly:
+        return DateTime.fromISO(date).toLocaleString({
+          year: "numeric",
+        });
+      default: // Period.Daily
+        return DateTime.fromISO(date).toLocaleString({
+          month: "short",
+          day: "numeric",
+        });
+    }
+  });
 
   const dataPoints = data.activeBitcoiners.map(({ count }) => count);
 
@@ -38,7 +65,7 @@ function DailyActiveUsersChart({ data }) {
     labels,
     datasets: [
       {
-        label: "Daily Active Selene Users",
+        label: translate(activeSeleneUsers),
         data: dataPoints,
         borderColor: "#478559",
         backgroundColor: "#478559",
@@ -73,4 +100,4 @@ function DailyActiveUsersChart({ data }) {
   );
 }
 
-export default DailyActiveUsersChart;
+export default ActiveUsersChart;

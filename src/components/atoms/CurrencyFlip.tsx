@@ -1,11 +1,13 @@
 /* eslint-disable react/jsx-props-no-spreading */
-import PropTypes from "prop-types";
-
 import { useDispatch, useSelector } from "react-redux";
 import { TransactionOutlined } from "@ant-design/icons";
 import { selectCurrencySettings, setPreference } from "@/redux/preferences";
 
-export default function CurrencyFlip({ className, ...rest }) {
+interface Props {
+  className: string;
+}
+
+export default function CurrencyFlip({ className = "", ...rest }: Props) {
   const dispatch = useDispatch();
   const { shouldPreferLocalCurrency } = useSelector(selectCurrencySettings);
 
@@ -26,11 +28,3 @@ export default function CurrencyFlip({ className, ...rest }) {
     />
   );
 }
-
-CurrencyFlip.propTypes = {
-  className: PropTypes.string,
-};
-
-CurrencyFlip.defaultProps = {
-  className: "",
-};

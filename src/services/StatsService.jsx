@@ -1,15 +1,18 @@
-import Logger from "js-logger";
 import { DateTime } from "luxon";
-import { Device } from "@capacitor/device";
 import { gql } from "@apollo/client";
 
-import { store } from "@/redux";
-import { setPreference } from "@/redux/preferences";
 import apolloClient from "@/apolloClient";
+import { store } from "@/redux";
+import { selectDeviceInfo } from "@/redux/device";
+import { setPreference, selectLastCheckIn } from "@/redux/preferences";
+
+import LogService from "@/services/LogService";
+
+const Log = LogService("Stats");
 
 const SEND_DAILY_CHECK_IN = gql`
-  mutation SendCheckIn($deviceId: String!, $date: String!) {
-    sendCheckIn(deviceId: $deviceId, date: $date) {
+  mutation SendCheckIn($hashedDeviceId: String!, $date: String!) {
+    sendCheckIn(hashedDeviceId: $hashedDeviceId, date: $date) {
       status
     }
   }
@@ -24,38 +27,49 @@ export default function StatsService() {
   // --------------------------------
 
   // run a daily check in, if current time UTC is on a date later than previous check in
+  // TODO: check-in interval should be enforced server-side per device ID
   async function submitCheckIn() {
+    //console.log("Submitting!!");
     const now = DateTime.utc();
-    const nowFormatted = now.format("YYYYMMDD");
+    const nowFormatted = now.toFormat("yyyyLLdd"); // LL is month, 2 digit padded
 
     const DAY = "day";
 
-    const lastCheckIn = store.getState().preferences.lastCheckIn || "";
+    const lastCheckIn = selectLastCheckIn(store.getState());
 
-    const lastCheckInMoment = DateTime.utc(lastCheckIn, "YYYYMMDD")
+    const defaultLastCheckInMoment = now
+      .minus({ days: 1 })
       .startOf(DAY)
-      .add(1, "s");
+      .plus({ seconds: 1 });
+    const lastCheckInMoment =
+      lastCheckIn === ""
+        ? defaultLastCheckInMoment
+        : DateTime.fromISO(lastCheckIn).startOf(DAY).plus({ seconds: 1 });
 
-    const nextCheckIn = lastCheckInMoment.clone().add(1, DAY).startOf(DAY);
+    const nextCheckIn = lastCheckInMoment.plus({ days: 1 }).startOf(DAY);
 
-    const isShouldCheckIn = lastCheckIn === "" || now.isAfter(nextCheckIn);
+    const isShouldCheckIn = lastCheckIn === "" || now > nextCheckIn;
 
-    const deviceId = (await Device.getId())?.identifier;
-    Logger.debug({ lastCheckIn, isShouldCheckIn, deviceId });
+    const { deviceIdHash } = selectDeviceInfo(store.getState());
+
+    Log.debug({ lastCheckIn, isShouldCheckIn, deviceIdHash });
 
     if (isShouldCheckIn) {
-      apolloClient.mutate({
+      Log.debug("sending checkin");
+      const result = await apolloClient.mutate({
         mutation: SEND_DAILY_CHECK_IN,
         variables: {
-          deviceId,
+          hashedDeviceId: deviceIdHash,
           date: nowFormatted,
         },
       });
 
-      Logger.debug("sending off store.dispatch");
-      store.dispatch(
-        setPreference({ key: "lastCheckIn", value: nowFormatted })
-      );
+      if (result) {
+        Log.debug("check-in successful");
+        store.dispatch(
+          setPreference({ key: "lastCheckIn", value: nowFormatted })
+        );
+      }
     }
   }
 }

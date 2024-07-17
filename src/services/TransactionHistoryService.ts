@@ -1,6 +1,6 @@
-import Logger from "js-logger";
 import { Decimal } from "decimal.js";
 import { DateTime } from "luxon";
+import LogService from "@/services/LogService";
 import DatabaseService from "@/services/DatabaseService";
 import AddressManagerService from "@/services/AddressManagerService";
 import TransactionManagerService, {
@@ -9,6 +9,8 @@ import TransactionManagerService, {
 import CurrencyService from "@/services/CurrencyService";
 
 import { WalletEntity } from "@/services/WalletManagerService";
+
+const Log = LogService("TransactionHistoryService");
 
 class TransactionHistoryNotExistsError extends Error {
   constructor(tx_hash, wallet_id) {
@@ -36,7 +38,7 @@ export default function TransactionHistoryService(
   };
 
   async function resolveTransactionHistory(start: number = 0) {
-    //Logger.debug("resolveTransactionHistory");
+    //Log.debug("resolveTransactionHistory");
 
     // get all transactions that are registered with addresses
     const address_transactions_confirmed = resultToJson(
@@ -77,7 +79,7 @@ export default function TransactionHistoryService(
 
     // resolve amounts for transactions that don't have them
     const tx_hashes = address_transactions.map((at) => at.txid);
-    Logger.debug("resolveTransactionHistory awaiting", tx_hashes.length);
+    Log.debug("resolveTransactionHistory awaiting", tx_hashes.length);
     const transactions = (
       await Promise.all(
         tx_hashes.map(async (tx_hash) => {
@@ -203,7 +205,7 @@ export default function TransactionHistoryService(
         RETURNING *;`
       )
     )[0];
-    Logger.debug("updateTxAmount", tx_hash, result);
+    Log.debug("updateTxAmount", tx_hash, result);
 
     saveDatabase();
 
@@ -221,7 +223,7 @@ export default function TransactionHistoryService(
       throw new TransactionHistoryNotExistsError(tx_hash, wallet.id);
     }
 
-    //Logger.debug("getAddressTransaction", tx_hash, result);
+    //Log.debug("getAddressTransaction", tx_hash, result);
     return result[0];
   }
 }

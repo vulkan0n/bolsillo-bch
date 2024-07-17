@@ -5,9 +5,9 @@ import {
   Navigate,
 } from "react-router-dom";
 
-import { Toaster } from "react-hot-toast";
-
 import { Provider } from "react-redux";
+import { Toaster } from "react-hot-toast";
+import { Geolocation } from "@capacitor/geolocation";
 import { ApolloProvider } from "@apollo/client";
 import apolloClient from "./apolloClient";
 import { store } from "./redux";
@@ -22,7 +22,8 @@ import WalletViewHome from "@/views/wallet/WalletViewHome/WalletViewHome";
 import WalletViewHistory from "@/views/wallet/WalletViewHistory/WalletViewHistory";
 import WalletViewSend from "@/views/wallet/WalletViewSend/WalletViewSend";
 import WalletViewSendSuccess from "@/views/wallet/WalletViewSendSuccess/WalletViewSendSuccess";
-import WalletAssetsView from "@/views/wallet/assets/WalletAssetsView";
+
+import AssetsView from "@/views/assets/AssetsView";
 
 import ExploreView from "@/views/explore/ExploreView";
 import ExploreViewHome from "@/views/explore/ExploreViewHome";
@@ -38,7 +39,9 @@ import SettingsWalletView from "@/views/settings/SettingsWalletView/SettingsWall
 import SettingsWalletWizard from "@/views/settings/SettingsWalletWizard/SettingsWalletWizard";
 import SettingsWalletWizardInit from "@/views/settings/SettingsWalletWizardInit/SettingsWalletWizardInit";
 import SettingsWalletWizardImport from "@/views/settings/SettingsWalletWizardImport/SettingsWalletWizardImport";
+import SettingsWalletWizardBuild from "@/views/settings/SettingsWalletWizardBuild/SettingsWalletWizardBuild";
 import SettingsWalletAdditionalInformation from "@/views/settings/SettingsWalletAdditionalInformation/SettingsWalletAdditionalInformation";
+import SettingsWalletScanTool from "@/views/settings/SettingsWalletScanTool/SettingsWalletScanTool";
 
 import CreditsView from "@/views/credits/CreditsView";
 import DebugView from "@/views/debug/DebugView";
@@ -76,14 +79,14 @@ export default function Main() {
               element: <WalletViewHistory />,
             },
             {
-              path: "assets",
-              element: <WalletAssetsView />,
-            },
-            {
               index: true,
               element: <WalletViewHome />,
             },
           ],
+        },
+        {
+          path: "/assets",
+          element: <AssetsView />,
         },
         {
           path: "/explore",
@@ -105,6 +108,10 @@ export default function Main() {
             {
               path: "map",
               element: <ExploreMapView />,
+              loader: async () =>
+                Geolocation.getCurrentPosition({
+                  enableHighAccuracy: true,
+                }),
             },
             {
               path: "contacts",
@@ -148,7 +155,15 @@ export default function Main() {
               path: "import",
               element: <SettingsWalletWizardImport />,
             },
+            {
+              path: "import/build/:wallet_id",
+              element: <SettingsWalletWizardBuild />,
+            },
           ],
+        },
+        {
+          path: "/settings/wallet/:wallet_id/scan",
+          element: <SettingsWalletScanTool />,
         },
         {
           path: "/credits",

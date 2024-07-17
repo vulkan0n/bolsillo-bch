@@ -10,12 +10,12 @@ import {
 import { RootState } from "@/redux";
 import { setPreference, selectElectrumServer } from "@/redux/preferences";
 import { syncConnect } from "@/redux/sync";
-import { fetchExchangeRates } from "@/redux/exchangeRates";
 
 import { ValidBchNetwork } from "@/util/crypto";
 
-import WalletManagerService from "@/services/WalletManagerService";
-import AddressManagerService from "@/services/AddressManagerService";
+import WalletManagerService, {
+  WalletEntity,
+} from "@/services/WalletManagerService";
 import ElectrumService from "@/services/ElectrumService";
 
 import ToastService from "@/services/ToastService";
@@ -40,14 +40,11 @@ export const walletBoot = createAsyncThunk(
   ) => {
     const { wallet_id, network } = payload;
     // load Wallet from database
-    const wallet = WalletManagerService().boot(wallet_id, network);
+    const wallet = WalletManagerService(network).boot(wallet_id);
 
     thunkApi.dispatch(
       setPreference({ key: "activeWalletId", value: wallet.id.toString() })
     );
-
-    const AddressManager = AddressManagerService(wallet);
-    AddressManager.populateAddresses();
 
     const isChipnet = network === "chipnet";
 
@@ -63,24 +60,22 @@ export const walletBoot = createAsyncThunk(
       })
     );
 
-    thunkApi.dispatch(fetchExchangeRates(0));
-
     return wallet;
   }
 );
 
 export const walletBalanceUpdate = createAction(
   "wallet/balanceUpdate",
-  (payload: {
-    wallet_id: number;
-    previousBalance: number;
-    isChange: boolean;
-  }) => {
-    // address and wallet balances are automatically derived on SQL layer when UTXO entries are updated
-    const wallet = WalletManagerService().getWalletById(payload.wallet_id);
-    const currentBalance = wallet.balance;
+  (payload: { wallet: WalletEntity; isChange: boolean }) => {
+    const { wallet, isChange } = payload;
 
-    const { previousBalance, isChange } = payload;
+    // address and wallet balances are automatically derived on SQL layer when UTXO entries are updated
+    const sqlWallet = WalletManagerService(wallet.network).getWalletById(
+      wallet.id
+    );
+
+    const previousBalance = wallet.balance;
+    const currentBalance = sqlWallet.balance;
 
     // show receive notification
     if (currentBalance > previousBalance && isChange === false) {

@@ -24,6 +24,8 @@ import PaymentSettings from "./PaymentSettings";
 import QrCodeSettings from "./QrCodeSettings";
 import IntlSettings from "./IntlSettings";
 import NetworkSettings from "./NetworkSettings";
+import SecuritySettings from "./SecuritySettings";
+import UiSettings from "./UiSettings";
 
 export default function SettingsView() {
   const dispatch = useDispatch();
@@ -57,9 +59,11 @@ export default function SettingsView() {
         <SettingsContext.Provider value={settingsContext}>
           <KeyWarning wallet={activeWallet} />
           <WalletSettings />
+          <SecuritySettings />
           <CurrencySettings />
           <PaymentSettings />
           <QrCodeSettings />
+          <UiSettings />
           <NetworkSettings />
           <IntlSettings />
         </SettingsContext.Provider>

@@ -1,26 +1,33 @@
-import PropTypes from "prop-types";
 import { NavLink } from "react-router-dom";
 import { useSelector } from "react-redux";
 import {
   WalletOutlined,
   WalletFilled,
-  AppstoreOutlined,
-  AppstoreFilled,
+  CompassOutlined,
+  CompassFilled,
+  BankOutlined,
+  BankFilled,
   SettingOutlined,
   SettingFilled,
 } from "@ant-design/icons";
 
-import { selectLanguageCode, selectIsExperimental } from "@/redux/preferences";
+import {
+  selectLanguageCode,
+  selectIsExperimental,
+  selectIsPrerelease,
+  selectUiSettings,
+} from "@/redux/preferences";
 import { selectKeyboardIsOpen, selectScannerIsScanning } from "@/redux/device";
+
 import translations from "./bottomNavigationTranslations";
 import { translate } from "@/util/translations";
 
-const { wallet, settings } = translations;
-
-function BottomNavigation() {
+export default function BottomNavigation() {
   const isKeyboardOpen = useSelector(selectKeyboardIsOpen);
   const isScanning = useSelector(selectScannerIsScanning);
   const isExperimental = useSelector(selectIsExperimental);
+  const isPrerelease = useSelector(selectIsPrerelease);
+  const { shouldDisplayExploreTab } = useSelector(selectUiSettings);
 
   // Ensure component reloads when language preferences are changed
   useSelector(selectLanguageCode);
@@ -36,28 +43,48 @@ function BottomNavigation() {
           to="/wallet"
           activeIcon={WalletFilled}
           icon={WalletOutlined}
-          label={translate(wallet)}
+          label={translate(translations.wallet)}
         />
         {isExperimental && (
           <NavButton
+            to="/assets"
+            activeIcon={BankFilled}
+            icon={BankOutlined}
+            label="Assets"
+          />
+        )}
+        {(isExperimental || isPrerelease) && shouldDisplayExploreTab && (
+          <NavButton
             to="/explore"
-            activeIcon={AppstoreFilled}
-            icon={AppstoreOutlined}
-            label="Explore"
+            activeIcon={CompassFilled}
+            icon={CompassOutlined}
+            label={translate(translations.explore)}
           />
         )}
         <NavButton
           to="/settings"
           activeIcon={SettingFilled}
           icon={SettingOutlined}
-          label={translate(settings)}
+          label={translate(translations.settings)}
         />
       </div>
     )
   );
 }
 
-function NavButton({ to, icon, activeIcon, label }) {
+interface NavButtonProps {
+  to: string;
+  icon: React.ComponentType;
+  activeIcon: React.ComponentType;
+  label: string;
+}
+
+function NavButton({
+  to = "",
+  icon = () => null,
+  activeIcon = () => null,
+  label = "",
+}: NavButtonProps) {
   const Icon = icon;
   const ActiveIcon = activeIcon;
 
@@ -87,19 +114,3 @@ function NavButton({ to, icon, activeIcon, label }) {
     </NavLink>
   );
 }
-
-NavButton.propTypes = {
-  to: PropTypes.string,
-  icon: PropTypes.object,
-  activeIcon: PropTypes.object,
-  label: PropTypes.string,
-};
-
-NavButton.defaultProps = {
-  to: "",
-  icon: null,
-  activeIcon: null,
-  label: "",
-};
-
-export default BottomNavigation;

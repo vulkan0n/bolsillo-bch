@@ -1,17 +1,20 @@
-import Logger from "js-logger";
-import { sha256 } from "@bitauth/libauth";
+import LogService from "@/services/LogService";
 import DatabaseService from "@/services/DatabaseService";
-import HdNodeService from "@/services/HdNodeService";
-import { binToHex } from "@/util/hex";
 import { WalletEntity } from "@/services/WalletManagerService";
+import { sha256 } from "@/util/hash";
 
-export interface AddressEntity {
+const Log = LogService("AddressManager");
+
+export interface AddressStub {
   address: string;
   hd_index: number;
-  wallet_id: number;
   change: number;
-  balance: number;
   state: string | null;
+}
+
+export interface AddressEntity extends AddressStub {
+  wallet_id: number;
+  balance: number;
   memo: string;
 }
 
@@ -23,14 +26,14 @@ export class AddressNotExistsError extends Error {
 
 // AddressManagerService: handles most address-related operations
 export default function AddressManagerService(wallet: WalletEntity) {
-  //Logger.debug("AddressManagerService", wallet);
+  //Log.debug("AddressManagerService", wallet);
 
   const { db, resultToJson, saveDatabase } = DatabaseService();
-  const ADDRESS_GAP_LIMIT = 20; // BIP-44 gap limit is 20
 
   return {
-    populateAddresses,
+    registerAddress,
     getAddress,
+    getAddressRange,
     getReceiveAddresses,
     getChangeAddresses,
     getUnusedAddresses,
@@ -38,27 +41,23 @@ export default function AddressManagerService(wallet: WalletEntity) {
     updateAddressState,
     getAddressTransactions,
     calculateAddressState,
-    getAddressState,
     registerTransaction,
   };
 
   // --------------------------------
 
   // register an address into the database
-  function _registerAddress(
+  function registerAddress(
     address: string,
     hd_index: number,
     change: number = 0
   ): AddressEntity {
-    Logger.debug(
-      `registerAddress${change ? " change" : ""}`,
-      hd_index,
-      address
-    );
+    //Log.debug(`registerAddress${change ? " change" : ""}`, hd_index, address);
 
-    const result = resultToJson(
-      db.exec(
-        `INSERT INTO addresses (
+    try {
+      const result = resultToJson(
+        db.exec(
+          `INSERT INTO addresses (
         address, 
         wallet_id, 
         hd_index,
@@ -72,51 +71,17 @@ export default function AddressManagerService(wallet: WalletEntity) {
         "${change}",
         "${wallet.prefix}"
       ) RETURNING *;`
-      )
-    )[0];
+        )
+      )[0];
 
-    saveDatabase();
-
-    //Logger.debug("registerAddress", result);
-
-    return result;
-  }
-
-  // populateAddresses: derive new addresses such that
-  // there are always at least $ADDRESS_GAP_LIMIT addresses
-  // returns an array of generated addresses
-  function populateAddresses(nScanMore: number = 0): Array<AddressEntity> {
-    const hdWallet = HdNodeService(wallet);
-
-    function populate(change: number): Array<AddressEntity> {
-      const generated: Array<AddressEntity> = [];
-
-      const unusedAddresses = getUnusedAddresses(0, change);
-      const unusedAddressCount = unusedAddresses.length;
-
-      if (unusedAddressCount >= ADDRESS_GAP_LIMIT + nScanMore) {
-        return [];
-      }
-
-      const latestAddress =
-        (change ? getChangeAddresses(1)[0] : getReceiveAddresses(1)[0]) || null;
-      const nextHdIndex =
-        latestAddress !== null ? latestAddress.hd_index + 1 : 0;
-
-      const scanEndIndex = nextHdIndex + ADDRESS_GAP_LIMIT + nScanMore;
-
-      // starting from latest index, generate new addresses
-      for (let hd_index = nextHdIndex; hd_index < scanEndIndex; hd_index += 1) {
-        const newAddress = hdWallet.generateAddress(hd_index, change);
-        generated.push(_registerAddress(newAddress, hd_index, change));
-      }
-
-      return generated;
+      saveDatabase();
+      //Log.debug("registerAddress", result);
+      return result;
+    } catch (e) {
+      const addr = getAddress(address);
+      //Log.debug("getAddress (register)", addr);
+      return addr;
     }
-
-    const generatedAddresses = [...populate(0), ...populate(1)];
-    //Logger.debug("populateAddresses", generatedAddresses);
-    return generatedAddresses;
   }
 
   function getAddress(address: string): AddressEntity {
@@ -129,6 +94,27 @@ export default function AddressManagerService(wallet: WalletEntity) {
     }
 
     return result[0];
+  }
+
+  function getAddressRange(
+    startIndex: number = 0,
+    endIndex: number = 20,
+    change: number = 0
+  ): Array<AddressEntity> {
+    const result = resultToJson(
+      db.exec(
+        `SELECT * FROM addresses
+          WHERE hd_index >= ${startIndex}
+          AND hd_index <= ${endIndex}
+          AND change=${change}
+          AND wallet_id=${wallet.id}
+        ;`
+      )
+    );
+
+    Log.debug("getAddressRange", startIndex, endIndex, result);
+
+    return result;
   }
 
   // getReceiveAddresses: get all active receive addresses for this wallet
@@ -146,7 +132,7 @@ export default function AddressManagerService(wallet: WalletEntity) {
       )
     );
 
-    //Logger.log("getReceiveAddresses", limit, result);
+    //Log.log("getReceiveAddresses", limit, result);
     return result;
   }
 
@@ -167,7 +153,7 @@ export default function AddressManagerService(wallet: WalletEntity) {
       )
     );
 
-    //Logger.log("getChangeAddresses", limit, result);
+    //Log.log("getChangeAddresses", limit, result);
     return result;
   }
 
@@ -190,7 +176,7 @@ export default function AddressManagerService(wallet: WalletEntity) {
       )
     );
 
-    //Logger.debug("getUnusedAddress", limit, result);
+    //Log.debug("getUnusedAddress", limit, result);
     return result;
   }
 
@@ -213,43 +199,34 @@ export default function AddressManagerService(wallet: WalletEntity) {
       )
     );
 
-    //Logger.debug("getRecentAddresses", limit, result);
+    //Log.debug("getRecentAddresses", limit, result);
     return result;
   }
 
   // updateAddressState: updates address state in db
-  // returns true if update actually happened, false if up-to-date
-  function updateAddressState(
-    address: AddressEntity,
-    state: string | null
-  ): AddressEntity {
-    if (state === "null" || state === null) {
-      return address;
-    }
+  function updateAddressState(address: string, state: string | null): void {
+    const s = state === null ? "NULL" : `'${state}'`;
 
-    const result = resultToJson(
-      db.exec(
-        `UPDATE addresses SET 
-          state="${state}" 
+    db.exec(
+      `UPDATE addresses SET 
+          state=${s}
          WHERE (
-          address="${address.address}" 
-        ) RETURNING *;`
-      )
-    )[0];
+             wallet_id="${wallet.id}"
+             AND address="${address}" 
+        );`
+    );
 
-    //Logger.debug("updateAddressState", state, result);
+    //Log.debug("updateAddressState", address, state);
     saveDatabase();
-
-    return result;
   }
 
   function getAddressTransactions(address: string) {
     const confirmed = resultToJson(
       db.exec(
         `SELECT * FROM address_transactions
-          WHERE address="${address}"
+          WHERE wallet_id="${wallet.id}" 
+          AND address="${address}"
           AND height > 0
-          AND wallet_id="${wallet.id}"
           ORDER BY height ASC
         ;`
       )
@@ -258,20 +235,20 @@ export default function AddressManagerService(wallet: WalletEntity) {
     const unconfirmed = resultToJson(
       db.exec(
         `SELECT * FROM address_transactions
-          WHERE address="${address}"
+          WHERE wallet_id="${wallet.id}"
+          AND address="${address}"
           AND height <= 0
-          AND wallet_id="${wallet.id}"
         ;`
       )
     );
 
-    //Logger.log("getAddressTransactions", confirmed, unconfirmed, address);
+    //Log.log("getAddressTransactions", confirmed, unconfirmed, address);
     return { confirmed, unconfirmed };
   }
 
   // calculateAddressState: calculate electrum address state using local tx history
-  function calculateAddressState(address: AddressEntity): string | null {
-    const localHistory = getAddressTransactions(address.address);
+  function calculateAddressState(address: string): string | null {
+    const localHistory = getAddressTransactions(address);
 
     // return null if address has no transactions
     if (
@@ -288,22 +265,10 @@ export default function AddressManagerService(wallet: WalletEntity) {
       .concat(localHistory.unconfirmed.map(txToState))
       .join("");
 
-    const stateHash = binToHex(
-      sha256.hash(new TextEncoder().encode(stateString))
-    );
+    const stateHash = sha256.text(stateString);
 
-    //Logger.debug("calculateAddressState", stateHash, stateString, address);
+    //Log.debug("calculateAddressState", stateHash, stateString, address);
     return stateHash;
-  }
-
-  // getAddressState: get stored state hash for address
-  function getAddressState(address: string): string | null {
-    const result = resultToJson(
-      db.exec(`SELECT state FROM addresses WHERE address="${address}"`)
-    );
-
-    //Logger.log("getAddressState", result, address);
-    return result.length > 0 ? result[0].state : null;
   }
 
   // AddressManager.registerTransaction: register a transaction with an address
@@ -311,10 +276,9 @@ export default function AddressManagerService(wallet: WalletEntity) {
     address: string,
     tx: { tx_hash: string; height: number }
   ): void {
-    //Logger.debug("AddressManager.registerTransaction", address, tx);
-
-    db.run(
-      `INSERT INTO address_transactions (
+    try {
+      db.run(
+        `INSERT INTO address_transactions (
         txid,
         height,
         address,
@@ -328,8 +292,12 @@ export default function AddressManagerService(wallet: WalletEntity) {
         UPDATE SET 
           height="${tx.height}";
       `
-    );
+      );
+    } catch (e) {
+      Log.error(e);
+    }
 
+    //Log.debug("AddressManager.registerTransaction", address, tx, wallet.id);
     saveDatabase();
   }
 }

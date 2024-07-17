@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 
 import {
@@ -13,9 +13,14 @@ import {
   ToolOutlined,
   MedicineBoxOutlined,
   InfoCircleOutlined,
+  SyncOutlined,
 } from "@ant-design/icons";
 
-import { selectActiveWalletId, selectBchNetwork } from "@/redux/preferences";
+import {
+  selectActiveWalletId,
+  selectBchNetwork,
+  selectIsExperimental,
+} from "@/redux/preferences";
 import { walletBoot, walletSetName } from "@/redux/wallet";
 import { selectLocale } from "@/redux/device";
 import { syncReconnect } from "@/redux/sync";
@@ -23,11 +28,14 @@ import { syncReconnect } from "@/redux/sync";
 import ViewHeader from "@/layout/ViewHeader";
 
 import WalletManagerService from "@/services/WalletManagerService";
+import SecurityService from "@/services/SecurityService";
 
 import KeyWarning from "@/atoms/KeyWarning/KeyWarning";
 import ShowMnemonic from "@/atoms/ShowMnemonic";
 import Accordion from "@/atoms/Accordion";
 import Satoshi from "@/atoms/Satoshi";
+
+import WalletSettings from "@/views/settings/WalletSettings";
 
 import { translate } from "@/util/translations";
 import translations from "./translations";
@@ -36,19 +44,21 @@ export default function SettingsWalletView() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  const bchNetwork = useSelector(selectBchNetwork);
+
   const { wallet_id } = useParams();
-  const WalletManager = WalletManagerService();
+  const WalletManager = WalletManagerService(bchNetwork);
   const wallet = WalletManager.getWalletById(wallet_id);
 
   const activeWalletId = useSelector(selectActiveWalletId);
   const isActiveWallet = wallet.id === activeWalletId;
 
-  const bchNetwork = useSelector(selectBchNetwork);
-
   const locale = useSelector(selectLocale);
 
   const shouldShowAdvancedOptions =
     wallet.key_viewed !== null && isActiveWallet;
+
+  const isExperimental = useSelector(selectIsExperimental);
 
   // toggle editing state for "wallet name"
   const [isEditingWalletName, setIsEditingWalletName] = useState(false);
@@ -57,15 +67,20 @@ export default function SettingsWalletView() {
 
   // user must tap "delete wallet" button multiple times to confirm
   const [deleteConfirm, setDeleteConfirm] = useState(0);
-  const deleteRef = useRef(null);
+  const deleteRef = useRef(setTimeout(() => {}, 0));
   const isDeleteDisabled = deleteConfirm === 2 && wallet.key_viewed === null;
 
   // handler for "Delete Wallet" button
-  const handleDeleteWallet = () => {
+  const handleDeleteWallet = async () => {
     setDeleteConfirm((deleteConfirm + 1) % 4);
 
     // on 4th press, delete wallet and "reboot" app
     if (deleteConfirm === 3) {
+      const isAuthorized = await SecurityService().authorize();
+      if (!isAuthorized) {
+        return;
+      }
+
       WalletManager.deleteWallet(wallet.id);
       dispatch(walletBoot({ wallet_id: 1, network: bchNetwork }));
       navigate("/");
@@ -107,8 +122,7 @@ export default function SettingsWalletView() {
 
   // handler for "rebuild wallet" button
   const handleRebuildWallet = () => {
-    WalletManager.clearWalletData(wallet.id);
-    handleActivateWallet();
+    navigate(`/settings/wallet/wizard/import/build/${wallet.id}`);
   };
 
   const handleNavigateAdditionalWalletInformation = () => {
@@ -221,6 +235,7 @@ export default function SettingsWalletView() {
           </div>
         </div>
 
+        <WalletSettings />
         <KeyWarning wallet={wallet} />
         <ShowMnemonic wallet={wallet} />
         {
@@ -233,17 +248,29 @@ export default function SettingsWalletView() {
               <Accordion.Child icon={null} label="">
                 <button
                   type="button"
-                  className="w-full text-left"
+                  className="w-full text-left flex items-center"
                   onClick={handleNavigateAdditionalWalletInformation}
                 >
                   <InfoCircleOutlined className="text-xl mr-1" />
                   {translate(translations.additionalWalletInformation)}
                 </button>
               </Accordion.Child>
+              {isExperimental && (
+                <Accordion.Child icon={null} label="">
+                  <Link
+                    type="button"
+                    className="w-full text-left flex items-center"
+                    to="scan"
+                  >
+                    <SyncOutlined className="text-xl mr-1" />
+                    Address Scan Tool
+                  </Link>
+                </Accordion.Child>
+              )}
               <Accordion.Child icon={null} label="">
                 <button
                   type="button"
-                  className="w-full text-left"
+                  className="w-full text-left flex items-center"
                   onClick={handleRebuildWallet}
                 >
                   <MedicineBoxOutlined className="text-xl mr-1" />

@@ -1,4 +1,5 @@
 import { configureStore } from "@reduxjs/toolkit";
+import LogService from "@/services/LogService";
 import {
   preferencesReducer,
   selectActiveWalletId,
@@ -8,8 +9,10 @@ import { walletReducer, walletMiddleware, walletBoot } from "./wallet";
 import { syncReducer, syncMiddleware } from "./sync";
 import { deviceReducer } from "./device";
 import { txHistoryReducer } from "./txHistory";
-import { exchangeRateReducer } from "./exchangeRates";
-//import { triggerCheckIn } from "./stats";
+import { exchangeRateReducer, fetchExchangeRates } from "./exchangeRates";
+import { triggerCheckIn } from "./stats";
+
+const Log = LogService("redux");
 
 export const store = configureStore({
   reducer: {
@@ -31,11 +34,18 @@ export type AppDispatch = typeof store.dispatch;
 
 // run actions needed to fire on app load
 export function redux_init() {
+  Log.debug("redux_init");
   store.dispatch(
     walletBoot({
       wallet_id: selectActiveWalletId(store.getState()),
       network: selectBchNetwork(store.getState()),
     })
   );
-  //store.dispatch(triggerCheckIn());
+
+  store.dispatch(fetchExchangeRates(0));
+}
+
+export function redux_post_init() {
+  Log.debug("redux_post_init");
+  store.dispatch(triggerCheckIn());
 }

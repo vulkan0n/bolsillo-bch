@@ -4,8 +4,6 @@ import {
   DollarCircleOutlined,
   EuroCircleOutlined,
   TransactionOutlined,
-  EyeOutlined,
-  EyeInvisibleOutlined,
   AccountBookOutlined,
   StockOutlined,
 } from "@ant-design/icons";
@@ -26,7 +24,6 @@ export default function CurrencySettings() {
 
   const {
     shouldPreferLocalCurrency,
-    shouldHideBalance,
     shouldDisplayExchangeRate,
     localCurrency,
     denomination,
@@ -70,18 +67,6 @@ export default function CurrencySettings() {
         />
       </Accordion.Child>
       <Accordion.Child
-        icon={shouldHideBalance ? EyeInvisibleOutlined : EyeOutlined}
-        label={translate(translations.hideAvailableBalance)}
-      >
-        <input
-          type="checkbox"
-          checked={shouldHideBalance}
-          onChange={(event) =>
-            handleSettingsUpdate("hideAvailableBalance", event.target.checked)
-          }
-        />
-      </Accordion.Child>
-      <Accordion.Child
         icon={AccountBookOutlined}
         label={translate(translations.denominateInSats)}
       >
@@ -96,7 +81,7 @@ export default function CurrencySettings() {
           }
         >
           {VALID_DENOMINATIONS.map((d) => (
-            <option id={d} value={d.toLowerCase()}>
+            <option key={d} id={d} value={d.toLowerCase()}>
               {d}
             </option>
           ))}

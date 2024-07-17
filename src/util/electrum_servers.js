@@ -3,9 +3,12 @@ export const electrum_servers = [
   "fulcrum.jettscythe.xyz", // Jett
   "bch.imaginary.cash", // im_uname
   "bitcoincash.network", // Dagur
-  "electroncash.dk",
+  "electroncash.dk", // Georg
   "bch.loping.net",
   "bch.soul-dev.com",
+  "bitcoincash.stackwallet.com", // Rehrar / Stack Wallet official
+  "blackie.c3-soft.com", // Calin's back!
+  "node.minisatoshi.cash", // minisatoshi
 ];
 
 export const chipnet_servers = [

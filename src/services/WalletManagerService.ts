@@ -1,5 +1,5 @@
-import Logger from "js-logger";
 import * as bip39 from "bip39";
+import LogService from "@/services/LogService";
 import DatabaseService from "@/services/DatabaseService";
 import TransactionManagerService from "@/services/TransactionManagerService";
 import {
@@ -7,6 +7,9 @@ import {
   DEFAULT_DERIVATION_PATH,
   ValidBchNetwork,
 } from "@/util/crypto";
+import { sha256 } from "@/util/hash";
+
+const Log = LogService("WalletManager");
 
 export interface WalletEntity {
   id: number;
@@ -19,6 +22,8 @@ export interface WalletEntity {
   key_verified: string;
   balance: number;
   prefix: string;
+  network: ValidBchNetwork;
+  walletHash: string;
 }
 
 export class WalletNotExistsError extends Error {
@@ -27,7 +32,7 @@ export class WalletNotExistsError extends Error {
   }
 }
 
-export default function WalletManagerService() {
+export default function WalletManagerService(network: ValidBchNetwork) {
   const { db, resultToJson, saveDatabase } = DatabaseService();
 
   return {
@@ -41,6 +46,7 @@ export default function WalletManagerService() {
     updateKeyVerified,
     setWalletName,
     clearWalletData,
+    updateWalletHash,
   };
 
   // ----------------------------
@@ -48,7 +54,7 @@ export default function WalletManagerService() {
   // getWallets: return a list of all wallets in the database
   function getWallets(): WalletEntity[] {
     const result = resultToJson(db.exec("SELECT * FROM wallets"));
-    Logger.debug("getWallets", result);
+    //Log.debug("getWallets", result);
     return result;
   }
 
@@ -58,25 +64,32 @@ export default function WalletManagerService() {
       db.exec(`SELECT * FROM wallets WHERE id="${id}"`)
     );
 
-    Logger.debug("getWalletById", id, result);
+    //Log.debug("getWalletById", id, result);
 
     if (result.length === 0) {
       throw new WalletNotExistsError(id);
     }
+    const wallet = result[0];
 
-    return result[0];
+    wallet.network = network;
+
+    // for safety, assume testnet unless we've explicitly stated to be on mainnet
+    wallet.prefix = network === "mainnet" ? "bitcoincash" : "bchtest";
+
+    return wallet;
   }
 
   // ----------------------------
 
   // boot: load a wallet, create a wallet if none exist
-  function boot(wallet_id: number, network: ValidBchNetwork): WalletEntity {
+  function boot(wallet_id: number): WalletEntity {
     let wallet: WalletEntity;
     try {
+      Log.debug("walletBoot ~", wallet_id);
       wallet = getWalletById(wallet_id);
     } catch (e) {
       if (!(e instanceof WalletNotExistsError)) {
-        Logger.warn("something bad happened during boot", e);
+        Log.warn("something bad happened during boot", e);
         throw e;
       }
 
@@ -84,12 +97,21 @@ export default function WalletManagerService() {
       // attempt to return lowest-index wallet instead, create a new wallet if none exist
       const wallets = getWallets();
       wallet = wallets.shift() || createWallet("My Selene Wallet");
+      return boot(wallet.id);
     }
 
-    // for safety, assume testnet unless we've explicitly stated to be on mainnet
-    wallet.prefix = network === "mainnet" ? "bitcoincash" : "bchtest";
+    wallet = cleanupWallet(wallet);
+    Log.debug("walletBoot", wallet_id, wallet, network);
+    return wallet;
+  }
 
-    Logger.debug("walletBoot", wallet_id, wallet, network);
+  // cleanupWallet: ensure wallet correctness before loading
+  function cleanupWallet(wallet: WalletEntity): WalletEntity {
+    if (!wallet.walletHash) {
+      updateWalletHash(wallet);
+      return boot(wallet.id);
+    }
+
     return wallet;
   }
 
@@ -116,7 +138,7 @@ export default function WalletManagerService() {
       )
     )[0];
 
-    Logger.log("creating wallet", result);
+    Log.log("creating wallet", result);
     saveDatabase();
     return result;
   }
@@ -126,7 +148,8 @@ export default function WalletManagerService() {
   function importWallet(
     mnemonic: string,
     passphrase: string = "",
-    derivation: ValidDerivationPath = DEFAULT_DERIVATION_PATH
+    derivation: ValidDerivationPath = DEFAULT_DERIVATION_PATH,
+    name: string = "Imported Wallet"
   ): WalletEntity {
     const result = resultToJson(
       db.exec(
@@ -140,11 +163,11 @@ export default function WalletManagerService() {
           ?, ?, ?, ?, 
           strftime('%Y-%m-%dT%H:%M:%SZ')
         ) RETURNING *`,
-        ["Imported Wallet", mnemonic, passphrase, derivation]
+        [name, mnemonic, passphrase, derivation]
       )
     )[0];
 
-    Logger.log("importing wallet", result);
+    Log.log("importing wallet", result);
     saveDatabase();
     return result;
   }
@@ -169,7 +192,7 @@ export default function WalletManagerService() {
       )
     )[0];
 
-    Logger.debug("keyViewed", result);
+    Log.debug("keyViewed", result);
 
     saveDatabase();
     return result.key_viewed;
@@ -213,6 +236,25 @@ export default function WalletManagerService() {
 
     // purge orphaned transaction data
     TransactionManagerService().purgeTransactions();
+
+    saveDatabase();
+  }
+
+  function updateWalletHash(wallet: WalletEntity) {
+    const mnemonicHash = sha256.text(wallet.mnemonic);
+    const passphraseHash =
+      wallet.passphrase !== "" ? sha256.text(wallet.passphrase) : "";
+    const derivationHash = sha256.text(wallet.derivation);
+
+    const concatHashes = [mnemonicHash, passphraseHash, derivationHash].join(
+      ""
+    );
+
+    const walletHash = sha256.text(concatHashes);
+
+    db.run(
+      `UPDATE wallets SET walletHash="${walletHash}" WHERE id="${wallet.id}"`
+    );
 
     saveDatabase();
   }

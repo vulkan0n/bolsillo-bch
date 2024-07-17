@@ -1,8 +1,12 @@
-import PropTypes from "prop-types";
 import { useLocation, useNavigate } from "react-router-dom";
 import { ArrowLeftOutlined } from "@ant-design/icons";
 
-export default function ViewHeader({ icon, title }) {
+interface Props {
+  icon: React.ComponentType;
+  title: string;
+}
+
+export default function ViewHeader({ icon = () => null, title = "" }: Props) {
   const location = useLocation();
   const navigate = useNavigate();
   const shouldShowBackButton = location.pathname.split("/").length > 1;
@@ -30,12 +34,3 @@ export default function ViewHeader({ icon, title }) {
     </div>
   );
 }
-
-ViewHeader.propTypes = {
-  icon: PropTypes.object,
-  title: PropTypes.string.isRequired,
-};
-
-ViewHeader.defaultProps = {
-  icon: null,
-};

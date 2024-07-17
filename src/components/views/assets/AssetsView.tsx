@@ -1,4 +1,3 @@
-import PropTypes from "prop-types";
 import { useState } from "react";
 import { useSelector } from "react-redux";
 import { BankOutlined, MoneyCollectOutlined } from "@ant-design/icons";
@@ -9,7 +8,7 @@ import Address from "@/atoms/Address";
 import Satoshi from "@/atoms/Satoshi";
 import ViewHeader from "@/layout/ViewHeader";
 
-export default function WalletAssetsView() {
+export default function AssetsView() {
   const wallet = useSelector(selectActiveWallet);
 
   const [shouldShowEmptyAddresses, setShouldShowEmptyAddresses] =
@@ -18,6 +17,13 @@ export default function WalletAssetsView() {
   const AddressManager = AddressManagerService(wallet);
   const receiveAddresses = AddressManager.getReceiveAddresses();
   const changeAddresses = AddressManager.getChangeAddresses();
+
+  const unusedReceiveAddresses = receiveAddresses.filter(
+    (address) => address.state === null
+  );
+  const unusedChangeAddresses = changeAddresses.filter(
+    (address) => address.state === null
+  );
 
   const addresses = [...receiveAddresses, ...changeAddresses];
 
@@ -38,6 +44,14 @@ export default function WalletAssetsView() {
             Show Empty Addresses
           </label>
         </div>
+        <div>
+          <ul>
+            <li>Receive Addresses: {receiveAddresses.length}</li>
+            <li>Unused Receive Addresses: {unusedReceiveAddresses.length}</li>
+            <li>Change Addresses: {changeAddresses.length}</li>
+            <li>Unused Change Addresses: {unusedChangeAddresses.length}</li>
+          </ul>
+        </div>
         <ul className="mt-2 bg-zinc-100 text-zinc-600 divide-y divide-zinc-300 max-h-[58vh] overflow-y-scroll border border-zinc-400 shadow-inner">
           {addresses
             .filter((a) => a.balance > 0 || shouldShowEmptyAddresses)
@@ -52,7 +66,12 @@ export default function WalletAssetsView() {
   );
 }
 
-function AddressAccordion({ a, i }) {
+interface AddressAccordionProps {
+  a: AddressEntity;
+  i: number;
+}
+
+function AddressAccordion({ a, i }: AddressAccordionProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   const wallet = useSelector(selectActiveWallet);
@@ -98,11 +117,7 @@ function AddressAccordion({ a, i }) {
   );
 }
 
-AddressAccordion.propTypes = {
-  a: PropTypes.object.isRequired,
-  i: PropTypes.number.isRequired,
-};
-
+/* eslint-disable react/prop-types */
 function Coin({ coin }) {
   const [isSelected, setIsSelected] = useState(false);
 
@@ -135,7 +150,3 @@ function Coin({ coin }) {
     </div>
   );
 }
-
-Coin.propTypes = {
-  coin: PropTypes.object.isRequired,
-};

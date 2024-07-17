@@ -1,14 +1,15 @@
-import PropTypes from "prop-types";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { WarningFilled, EyeInvisibleOutlined } from "@ant-design/icons";
 
 import { walletSetKeyViewed } from "@/redux/wallet";
+import { WalletEntity } from "@/services/WalletManagerService";
+import SecurityService from "@/services/SecurityService";
 
 import { translate } from "@/util/translations";
 import translations from "@/components/views/settings/SettingsWalletView/translations";
 
-export default function ShowMnemonic({ wallet }) {
+export default function ShowMnemonic({ wallet }: { wallet: WalletEntity }) {
   const dispatch = useDispatch();
 
   // toggle visibility for recovery phrase
@@ -16,8 +17,13 @@ export default function ShowMnemonic({ wallet }) {
     useState(false);
 
   // handler for mnemonic visibility area
-  const handleShowMnemonic = () => {
+  const handleShowMnemonic = async () => {
     if (shouldShowRecoveryPhrase === false) {
+      const isAuthorized = await SecurityService().authorize();
+      if (!isAuthorized) {
+        return;
+      }
+
       setShouldShowRecoveryPhrase(true);
       dispatch(walletSetKeyViewed({ wallet_id: wallet.id }));
     } else {
@@ -61,7 +67,3 @@ export default function ShowMnemonic({ wallet }) {
     </button>
   );
 }
-
-ShowMnemonic.propTypes = {
-  wallet: PropTypes.object.isRequired,
-};
