@@ -23,7 +23,7 @@ export default function SecuritySettings() {
   const handleSetPin = async () => {
     const isAuthorized = await SecurityService().authorize();
     if (isAuthorized || pinHash === "") {
-      const pin = Dialog.prompt({
+      const { value: pin } = await Dialog.prompt({
         title: "Enter New PIN",
         message: "Please enter a **new** PIN.",
         okButtonTitle: "Set PIN",

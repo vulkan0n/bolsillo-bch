@@ -33,6 +33,11 @@ export default function SettingsWalletScanTool() {
   const receiveAddresses = AddressManager.getReceiveAddresses();
   const changeAddresses = AddressManager.getChangeAddresses();
 
+  const unusedReceiveAddresses = receiveAddresses.filter(
+    (a) => a.state === null
+  );
+  const unusedChangeAddresses = changeAddresses.filter((a) => a.state === null);
+
   const [foundPath, setFoundPath] = useState("");
   const [scanCount, setScanCount] = useState(0);
 
@@ -144,24 +149,10 @@ export default function SettingsWalletScanTool() {
           </button>
           <button
             type="button"
-            onClick={handleClearWalletData}
-            className="border border-primary p-1"
-          >
-            Clear Wallet Data
-          </button>
-          <button
-            type="button"
             onClick={handleRebuildWallet}
             className="border border-primary p-1"
           >
             Rebuild Wallet
-          </button>
-          <button
-            type="button"
-            onClick={handleHotSync}
-            className="border border-primary p-1"
-          >
-            Hot Sync
           </button>
         </div>
         <div>

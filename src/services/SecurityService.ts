@@ -18,7 +18,7 @@ export default function SecurityService() {
 
     let isAuthorized = false;
     switch (authMode) {
-      case "fingerprint":
+      case "bio":
         isAuthorized = await authorizeBio();
         break;
 
@@ -41,15 +41,22 @@ export default function SecurityService() {
   async function authorizeBio(): Promise<boolean> {
     let isAuthorized = false;
 
-    const { isAvailable } = await NativeBiometric.isAvailable();
+    const { isAvailable, errorCode } = await NativeBiometric.isAvailable({
+      useFallback: false,
+    });
+    const { isAvailable: isFallbackAvailable } =
+      await NativeBiometric.isAvailable({ useFallback: true });
 
-    if (isAvailable) {
+    Log.log("Biometric", isAvailable, errorCode);
+
+    if (isAvailable || isFallbackAvailable) {
       try {
         await NativeBiometric.verifyIdentity({
           reason: "Authorize this action",
           title: "Selene Wallet",
           subtitle: "Authorization Required",
           description: "Please authorize this action.",
+          useFallback: !isAvailable && isFallbackAvailable,
         });
 
         isAuthorized = true;
@@ -70,15 +77,11 @@ export default function SecurityService() {
       return true;
     }
 
-    const { value: pin, cancelled: isCancelled } = await Dialog.prompt({
+    const { value: pin } = await Dialog.prompt({
       title: "Enter PIN",
       message: "Please enter your PIN.",
       okButtonTitle: "Authorize",
     });
-
-    if (isCancelled) {
-      return false;
-    }
 
     const inputPinHash = sha256.text(pin);
 

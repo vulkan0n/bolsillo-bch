@@ -4,11 +4,7 @@ import { gql } from "@apollo/client";
 import apolloClient from "@/apolloClient";
 import { store } from "@/redux";
 import { selectDeviceInfo } from "@/redux/device";
-import {
-  setPreference,
-  selectIsPrerelease,
-  selectLastCheckIn,
-} from "@/redux/preferences";
+import { setPreference, selectLastCheckIn } from "@/redux/preferences";
 
 import LogService from "@/services/LogService";
 
@@ -54,14 +50,11 @@ export default function StatsService() {
 
     const isShouldCheckIn = lastCheckIn === "" || now > nextCheckIn;
 
-    // This will be replaced with a user-optional setting
-    const isPrerelease = selectIsPrerelease(store.getState());
-
     const { deviceIdHash } = selectDeviceInfo(store.getState());
 
     Log.debug({ lastCheckIn, isShouldCheckIn, deviceIdHash });
 
-    if (isShouldCheckIn && isPrerelease) {
+    if (isShouldCheckIn) {
       Log.debug("sending checkin");
       const result = await apolloClient.mutate({
         mutation: SEND_DAILY_CHECK_IN,
