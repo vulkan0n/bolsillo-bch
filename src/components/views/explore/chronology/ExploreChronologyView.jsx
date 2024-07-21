@@ -58,88 +58,95 @@ export default function ExploreChronologyView() {
 
       <div>{isReverseTimeline.toString()}</div>
 
-      <div>
+      <div className="px-6 pb-1">
+        <span className="text-lg font-bold">Categories</span>
+        <div>
+          <input
+            type="checkbox"
+            checked={isDisplayHardForks}
+            onChange={(event) => {
+              const { checked: isChecked } = event.target;
+              setIsDisplayHardForks(isChecked);
+            }}
+          />
+          <span>{hardForksCount}x {CATEGORIES.FORK.FORK} ({CATEGORIES.FORK.HARD_FORK})</span>
+        </div>
+
+        <div>
+          <input
+            type="checkbox"
+            checked={isDisplaySoftForks}
+            onChange={(event) => {
+              const { checked: isChecked } = event.target;
+              setIsDisplaySoftForks(isChecked);
+            }}
+          />
+          <span>{softForksCount}x {CATEGORIES.FORK.FORK} ({CATEGORIES.FORK.SOFT_FORK})</span>
+        </div>
+
         <input
           type="checkbox"
-          checked={isDisplayHardForks}
+          checked={isDisplayConferences}
           onChange={(event) => {
             const { checked: isChecked } = event.target;
-            setIsDisplayHardForks(isChecked);
+            setIsDisplayConferences(isChecked);
           }}
         />
-        <span>{hardForksCount}x {CATEGORIES.FORK.FORK} ({CATEGORIES.FORK.HARD_FORK})</span>
+        <span>{conferencesCount}x {CATEGORIES.CONFERENCE}</span>
       </div>
-
-      <div>
-        <input
-          type="checkbox"
-          checked={isDisplaySoftForks}
-          onChange={(event) => {
-            const { checked: isChecked } = event.target;
-            setIsDisplaySoftForks(isChecked);
-          }}
-        />
-        <span>{softForksCount}x {CATEGORIES.FORK.FORK} ({CATEGORIES.FORK.SOFT_FORK})</span>
-      </div>
-
-      <input
-        type="checkbox"
-        checked={isDisplayConferences}
-        onChange={(event) => {
-          const { checked: isChecked } = event.target;
-          setIsDisplayConferences(isChecked);
-        }}
-      />
-      <span>{conferencesCount}x {CATEGORIES.CONFERENCE}</span>
 
       <hr />
 
-      {isTimelineItemsEmpty && (
-        <div>No items found</div>
-      )}
+      {
+        isTimelineItemsEmpty && (
+          <div>No items found</div>
+        )
+      }
 
-      {!isTimelineItemsEmpty && (
-        <VerticalTimeline
-          lineColor={'black'}
-          layout={'1-column-left'}
-        >
-          {timelineItems.map(({ title, date, subtitle, category, videoUrl, description, readMoreUrl }) => (
-            <VerticalTimelineElement
-              contentStyle={{ background: 'rgb(33, 150, 243)', color: '#fff', paddingTop: 0, paddingBottom: 0 }}
-              contentArrowStyle={{ borderRight: '7px solid  rgb(33, 150, 243)' }}
-              iconStyle={{ background: 'rgb(33, 150, 243)', color: '#fff' }}
-              icon={null}
-            >
-              <div className="pb-1" >
-                <div className="flex justify-between items-center pt-1">
-                  <span className="text-xl font-bold">{title}</span>
-                  <span className={"text text-zinc-200 pt-0 mt-2"}>{date}</span>
+      {
+        !isTimelineItemsEmpty && (
+          <VerticalTimeline
+            lineColor={'black'}
+            layout={'1-column-left'}
+          >
+            {timelineItems.map(({ title, date, subtitle, category, videoUrl, description, readMoreUrl }) => (
+              <VerticalTimelineElement
+                contentStyle={{ background: 'rgb(33, 150, 243)', color: '#fff', paddingTop: 0, paddingBottom: 0 }}
+                contentArrowStyle={{ borderRight: '7px solid  rgb(33, 150, 243)' }}
+                iconStyle={{ background: 'rgb(33, 150, 243)', color: '#fff' }}
+                icon={null}
+              >
+                <div className="pb-1" >
+                  <div className="flex justify-between items-center pt-1">
+                    <span className="text-xl font-bold">{title}</span>
+                    <span className={"text text-zinc-200 pt-0 mt-2"}>{date}</span>
+                  </div>
+                  {subtitle && <span className="text-md text-white-800 pt-6">{subtitle}</span>}
                 </div>
-                {subtitle && <span className="text-md text-white-800 pt-6">{subtitle}</span>}
-              </div>
-              <div className="flex justify-between" >
-                <span className={"text text-zinc-200 pb-2"}>{category}</span>
-              </div>
+                <div className="flex justify-between" >
+                  <span className={"text text-zinc-200 pb-2"}>{category}</span>
+                </div>
 
-              {videoUrl && <EmbeddedVideo url={videoUrl} />}
+                {videoUrl && <EmbeddedVideo url={videoUrl} />}
 
-              {description && description.map(text => <div className={"py-1"}>
-                <span className={"text italic"}>{text}</span>
-              </div>)}
+                {description && description.map(text => <div className={"py-1"}>
+                  <span className={"text italic"}>{text}</span>
+                </div>)}
 
-              {readMoreUrl && <div>
-                <a
-                  href={readMoreUrl}
-                  target="_blank"
-                  className="flex justify-center m-1 rounded-full border border-2 border-primary bg-primary text-zinc-100 shadow-md opacity-90"
-                >
-                  Read More
-                </a>
-              </div>}
-            </VerticalTimelineElement>
-          ))}
-        </VerticalTimeline>
-      )}
+                {readMoreUrl && <div>
+                  <a
+                    href={readMoreUrl}
+                    target="_blank"
+                    className="flex justify-center m-1 rounded-full border border-2 border-primary bg-primary text-zinc-100 shadow-md opacity-90"
+                  >
+                    Read More
+                  </a>
+                </div>}
+              </VerticalTimelineElement>
+            ))}
+          </VerticalTimeline>
+        )
+      }
     </div >
   );
 }
