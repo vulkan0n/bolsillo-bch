@@ -2,8 +2,8 @@ import { Link } from "react-router-dom";
 import { useEffect } from "react";
 import { useQuery } from "@apollo/client";
 import { THIRTY_SECONDS } from "@/util/time";
-import GET_ACTIVE_BITCOINERS_SUMMARY from "./stats/getActiveBitcoinersSummary";
-import DailyTarget from "./stats/DailyTarget";
+import GET_ACTIVE_BITCOINERS_SUMMARY from "./getActiveBitcoinersSummary";
+import DailyTarget from "./DailyTarget";
 import { translate } from "@/util/translations";
 import translations from "./ExploreStatBlockTranslations";
 
