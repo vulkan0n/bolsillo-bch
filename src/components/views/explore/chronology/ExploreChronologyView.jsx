@@ -13,6 +13,7 @@ export default function ExploreChronologyView() {
   const [isDisplayHardForks, setIsDisplayHardForks] = useState(true)
   const [isDisplaySoftForks, setIsDisplaySoftForks] = useState(true)
   const [isDisplayConferences, setIsDisplayConferences] = useState(true)
+  const [isDisplayProjectLaunches, setIsDisplayProjectLaunches] = useState(true)
 
   const timelineItems = TIMELINE_ITEMS.reverse().filter(item => {
     if (item.category === CATEGORIES.FORK.HARD_FORK && !isDisplayHardForks) {
@@ -53,9 +54,11 @@ export default function ExploreChronologyView() {
         isDisplayHardForks={isDisplayHardForks}
         isDisplaySoftForks={isDisplaySoftForks}
         isDisplayConferences={isDisplayConferences}
+        isDisplayProjectLaunches={isDisplayProjectLaunches}
         setIsDisplayHardForks={setIsDisplayHardForks}
         setIsDisplaySoftForks={setIsDisplaySoftForks}
         setIsDisplayConferences={setIsDisplayConferences}
+        setIsDisplayProjectLaunches={setIsDisplayProjectLaunches}
       />
 
       <hr />

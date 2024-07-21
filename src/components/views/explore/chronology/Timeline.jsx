@@ -16,7 +16,7 @@ export default function Timeline({ timelineItems }) {
       lineColor={'black'}
       layout={'1-column-left'}
     >
-      {timelineItems.map(({ title, date, subtitle, category, videoUrl, description, readMoreUrl }) => (
+      {timelineItems.map(({ title, date, subtitle, category, videoUrl, graphicUrl, description, readMoreUrl }) => (
         <VerticalTimelineElement
           contentStyle={{ background: 'rgb(33, 150, 243)', color: '#fff', paddingTop: 0, paddingBottom: 0 }}
           contentArrowStyle={{ borderRight: '7px solid  rgb(33, 150, 243)' }}
@@ -34,6 +34,10 @@ export default function Timeline({ timelineItems }) {
             {category === (CATEGORIES.FORK.HARD_FORK || CATEGORIES.FORK.SOFT_FORK) && <span className={"text text-zinc-200 pb-2"}>{CATEGORIES.FORK.FORK} - </span>}
             <span className={"text text-zinc-200 pb-2"}>{category}</span>
           </div>
+
+          {graphicUrl && <div className="flex justify-center pb-2">
+            <img src={graphicUrl} height={300} width={300} alt={`${title} graphic`} />
+          </div>}
 
           {videoUrl && <EmbeddedVideo url={videoUrl} />}
 

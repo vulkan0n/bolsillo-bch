@@ -6,13 +6,17 @@ const ABLA_FAQ_URL = "https://bitcoincashpodcast.com/faqs/BCH/what-is-the-maximu
 
 const BLISS_FAQ_URL = "https://bitcoincashpodcast.com/faqs/Events/BLISS"
 
+const BITCOIN_CASH_PODCAST_GRAPHIC_URL = "https://bitcoincashpodcast.com/sunglasses.jpg"
+const BITCOIN_CASH_PODCAST_URL = "https://bitcoincashpodcast.com/"
+
 export const CATEGORIES = {
   FORK: {
     FORK: "Protocol Upgrade",
     HARD_FORK: "Hard Fork",
     SOFT_FORK: "Soft Fork"
   },
-  CONFERENCE: "Conference"
+  CONFERENCE: "Conference",
+  PROJECT_LAUNCH: "Project Launch"
 }
 
 const TIMELINE_ITEMS = [
@@ -26,6 +30,18 @@ const TIMELINE_ITEMS = [
     ],
     readMoreUrl: null
   },
+  {
+    title: "The Bitcoin Cash Podcast",
+    date: "23rd January 2021",
+    category: CATEGORIES.PROJECT_LAUNCH,
+    videoUrl: null,
+    graphicUrl: BITCOIN_CASH_PODCAST_GRAPHIC_URL,
+    description: [
+      "The Bitcoin Cash Podcast publishes its first piece of BCH content with the release of Episode 1.",
+    ],
+    readMoreUrl: BITCOIN_CASH_PODCAST_URL
+  },
+
   {
     title: "CashTokens",
     date: "15th May 2023",
