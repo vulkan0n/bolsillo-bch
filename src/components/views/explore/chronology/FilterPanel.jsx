@@ -34,6 +34,7 @@ export default function FilterPanel({
       <div>
         <input
           type="checkbox"
+          className="mr-1"
           checked={isDisplayHardForks}
           onChange={(event) => {
             const { checked: isChecked } = event.target;
@@ -46,6 +47,7 @@ export default function FilterPanel({
       <div>
         <input
           type="checkbox"
+          className="mr-1"
           checked={isDisplaySoftForks}
           onChange={(event) => {
             const { checked: isChecked } = event.target;
@@ -57,6 +59,7 @@ export default function FilterPanel({
 
       <input
         type="checkbox"
+        className="mr-1"
         checked={isDisplayConferences}
         onChange={(event) => {
           const { checked: isChecked } = event.target;
