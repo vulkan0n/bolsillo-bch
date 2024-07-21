@@ -9,6 +9,25 @@ import EmbeddedVideo from '../../../atoms/EmbeddedVideo/EmbeddedVideo';
 const ABLA_EXPLAINER_VIDEO_URL = "https://www.youtube.com/watch?v=YkkzIjZQNH0"
 const ABLA_FAQ_URL = "https://bitcoincashpodcast.com/faqs/BCH/what-is-the-maximum-bch-blocksize"
 
+const CATEGORIES = {
+  HARD_FORK: "Protocol Upgrade (Hard Fork)"
+}
+
+const TIMELINE_ITEMS = [
+  {
+    title: "ABLA",
+    date: "15th May 2024",
+    subtitle: "Adjustable Blocksize Limit Algorithm",
+    category: CATEGORIES.HARD_FORK,
+    videoUrl: ABLA_EXPLAINER_VIDEO_URL,
+    description: [
+      "BCH's 32 MB blocksize limit replaced with a new adjustable limit that scales with and responds intelligently to live network traffic.",
+      "Upgrade was celebrated at BCH BLISS in Ljubljana, Slovenia."
+    ],
+    readMoreUrl: ABLA_FAQ_URL
+  }
+]
+
 export default function ExploreChronologyView() {
   return (
     <div>
@@ -22,60 +41,42 @@ export default function ExploreChronologyView() {
         lineColor={'black'}
         layout={'1-column-left'}
       >
-        <div className={"pl-10"}>
-          <p>2024</p>
-        </div>
-
-        <VerticalTimelineElement
-          contentStyle={{ background: 'rgb(33, 150, 243)', color: '#fff', paddingTop: 0, paddingBottom: 0 }}
-          contentArrowStyle={{ borderRight: '7px solid  rgb(33, 150, 243)' }}
-          iconStyle={{ background: 'rgb(33, 150, 243)', color: '#fff' }}
-          icon={null}
-        >
-          <div className="pb-1" >
-            <div className="flex justify-between items-center pt-1">
-              <span className="text-xl font-bold">ABLA</span>
-              <span className={"text text-zinc-200 pt-0 mt-2 pb-2"}>15th May 2024</span>
+        {TIMELINE_ITEMS.map(({ title, date, subtitle, category, videoUrl, description, readMoreUrl }) => (
+          <VerticalTimelineElement
+            contentStyle={{ background: 'rgb(33, 150, 243)', color: '#fff', paddingTop: 0, paddingBottom: 0 }}
+            contentArrowStyle={{ borderRight: '7px solid  rgb(33, 150, 243)' }}
+            iconStyle={{ background: 'rgb(33, 150, 243)', color: '#fff' }}
+            icon={null}
+          >
+            <div className="pb-1" >
+              <div className="flex justify-between items-center pt-1">
+                <span className="text-xl font-bold">{title}</span>
+                <span className={"text text-zinc-200 pt-0 mt-2 pb-2"}>{date}</span>
+              </div>
+              <span className="text-md text-white-800 pt-4">{subtitle}</span>
             </div>
-            <span className="text-md text-white-800 pt-4">Adjustable Blocksize Limit Algorithm</span>
-          </div>
-          <div className="flex justify-between" >
-            <span className={"text text-zinc-200 pb-2"}>Protocol Upgrade (Hard Fork)</span>
-          </div>
+            <div className="flex justify-between" >
+              <span className={"text text-zinc-200 pb-2"}>{category}</span>
+            </div>
 
-          <EmbeddedVideo url={ABLA_EXPLAINER_VIDEO_URL} />
-          <div className={"py-1"}>
-            <span className={"text italic"}>BCH's 32 MB blocksize limit replaced with a new adjustable limit that responds intelligently to network traffic.</span>
-          </div>
-          <div className={"py-1"}>
-            <span className={"text italic"}>Upgrade was celebrated live in Ljubljana, Slovenia at BCH BLISS.</span>
-          </div>
+            {videoUrl && <EmbeddedVideo url={ABLA_EXPLAINER_VIDEO_URL} />}
 
-          <div>
-            <a
-              href={ABLA_FAQ_URL}
-              target="_blank"
-              className="flex justify-center m-1 rounded-full border border-2 border-primary bg-primary text-zinc-100 shadow-md opacity-90"
-            >
-              Read More
-            </a>
-          </div>
-        </VerticalTimelineElement>
-        <VerticalTimelineElement
-          className="vertical-timeline-element--work"
-          date="2010 - 2011"
-          contentStyle={{ background: 'rgb(33, 150, 243)', color: '#fff' }}
-          iconStyle={{ background: 'rgb(33, 150, 243)', color: '#fff' }}
-          icon={null}
-        >
-          <h3 className="vertical-timeline-element-title">Art Director</h3>
-          <h4 className="vertical-timeline-element-subtitle">San Francisco, CA</h4>
-          <p>
-            Creative Direction, User Experience, Visual Design, SEO, Online Marketing
-          </p>
-        </VerticalTimelineElement>
+            {description && description.map(text => <div className={"py-1"}>
+              <span className={"text italic"}>{text}</span>
+            </div>)}
+
+            {readMoreUrl && <div>
+              <a
+                href={readMoreUrl}
+                target="_blank"
+                className="flex justify-center m-1 rounded-full border border-2 border-primary bg-primary text-zinc-100 shadow-md opacity-90"
+              >
+                Read More
+              </a>
+            </div>}
+          </VerticalTimelineElement>
+        ))}
       </VerticalTimeline>
-
-    </div>
+    </div >
   );
 }
