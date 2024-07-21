@@ -4,6 +4,10 @@ import {
   ProfileOutlined,
 } from "@ant-design/icons";
 import AppHero from '@/components/atoms/AppHero/AppHero';
+import EmbeddedVideo from '../../../atoms/EmbeddedVideo/EmbeddedVideo';
+
+const ABLA_EXPLAINER_VIDEO_URL = "https://www.youtube.com/watch?v=YkkzIjZQNH0"
+const ABLA_FAQ_URL = "https://bitcoincashpodcast.com/faqs/BCH/what-is-the-maximum-bch-blocksize"
 
 export default function ExploreChronologyView() {
   return (
@@ -29,23 +33,32 @@ export default function ExploreChronologyView() {
           icon={null}
         >
           <div className="pb-1" >
-            <div className="flex justify-between items-center pt-4">
+            <div className="flex justify-between items-center pt-1">
               <span className="text-xl font-bold">ABLA</span>
               <span className={"text text-zinc-200 pt-0 mt-2 pb-2"}>15th May 2024</span>
             </div>
             <span className="text-md text-white-800 pt-4">Adjustable Blocksize Limit Algorithm</span>
           </div>
-          <div>
-            <span className={"text pt-0 mt-0"}>BCH's 32 MB blocksize limit replaced with a new adjustable limit that responds intelligently to network traffic.</span>
-          </div>
-          <div className={"pb-1"}>
-            <span className={"text pt-0 mt-0"}>Upgrade was celebrated live in Ljubljana, Slovenia at BCH BLISS.</span>
-          </div>
-          <hr />
-          <br />
-          <hr />
           <div className="flex justify-between" >
-            <span className={"text text-zinc-200 pt-0 mt-2 pb-2"}>Protocol Upgrade (Hard Fork)</span>
+            <span className={"text text-zinc-200 pb-2"}>Protocol Upgrade (Hard Fork)</span>
+          </div>
+
+          <EmbeddedVideo url={ABLA_EXPLAINER_VIDEO_URL} />
+          <div className={"py-1"}>
+            <span className={"text italic"}>BCH's 32 MB blocksize limit replaced with a new adjustable limit that responds intelligently to network traffic.</span>
+          </div>
+          <div className={"py-1"}>
+            <span className={"text italic"}>Upgrade was celebrated live in Ljubljana, Slovenia at BCH BLISS.</span>
+          </div>
+
+          <div>
+            <a
+              href={ABLA_FAQ_URL}
+              target="_blank"
+              className="flex justify-center m-1 rounded-full border border-2 border-primary bg-primary text-zinc-100 shadow-md opacity-90"
+            >
+              Read More
+            </a>
           </div>
         </VerticalTimelineElement>
         <VerticalTimelineElement
