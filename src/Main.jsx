@@ -29,7 +29,7 @@ import ExploreView from "@/views/explore/ExploreView";
 import ExploreViewHome from "@/views/explore/ExploreViewHome";
 import ExploreTransactionView from "@/views/explore/ExploreTransactionView";
 import ExploreStatsView from "@/views/explore/stats/ExploreStatsView";
-import ExploreChronologyView from "@/views/explore/contacts/ExploreChronologyView";
+import ExploreChronologyView from "@/views/explore/chronology/ExploreChronologyView";
 import ExploreContactsView from "@/views/explore/contacts/ExploreContactsView";
 import ExploreMapView from "@/views/explore/map/ExploreMapView";
 import ExploreHelpView from "@/views/explore/help/ExploreHelpView";
@@ -113,6 +113,10 @@ export default function Main() {
                 Geolocation.getCurrentPosition({
                   enableHighAccuracy: true,
                 }),
+            },
+            {
+              path: "chronology",
+              element: <ExploreChronologyView />,
             },
             {
               path: "contacts",
