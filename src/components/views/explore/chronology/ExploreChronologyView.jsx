@@ -1,10 +1,18 @@
 import { VerticalTimeline, VerticalTimelineElement } from 'react-vertical-timeline-component';
 import 'react-vertical-timeline-component/style.min.css';
+import {
+  ProfileOutlined,
+} from "@ant-design/icons";
+import AppHero from '@/components/atoms/AppHero/AppHero';
 
 export default function ExploreChronologyView() {
   return (
     <div>
-      <div>Explore Chronology View</div>
+      <AppHero
+        title="Chronology"
+        description="Explore the history of BCH upgrades, apps, conferences & historical events."
+        icon={<ProfileOutlined className="text-xl my-auto text-zinc-200" />}
+      />
 
       <VerticalTimeline
         lineColor={'black'}
