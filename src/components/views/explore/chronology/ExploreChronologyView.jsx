@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { VerticalTimeline, VerticalTimelineElement } from 'react-vertical-timeline-component';
 import 'react-vertical-timeline-component/style.min.css';
 import {
@@ -6,7 +7,13 @@ import {
 import AppHero from '@/components/atoms/AppHero/AppHero';
 import EmbeddedVideo from '../../../atoms/EmbeddedVideo/EmbeddedVideo';
 import TIMELINE_ITEMS from './timelineItems';
+
 export default function ExploreChronologyView() {
+  const [isReverseTimeline, setIsReverseTimeline] = useState(false)
+
+  const timelineItems = TIMELINE_ITEMS.reverse()
+  console.log({ timelineItems })
+
   return (
     <div>
       <AppHero
@@ -15,11 +22,23 @@ export default function ExploreChronologyView() {
         icon={<ProfileOutlined className="text-xl my-auto text-zinc-200" />}
       />
 
+      <hr />
+
+      <button
+        className="flex justify-center m-1 rounded-full border border-2 border-primary bg-primary text-zinc-100 shadow-md opacity-90"
+        onClick={() => setIsReverseTimeline(!isReverseTimeline)}
+      >
+        Reverse
+      </button>
+
+      <div>{isReverseTimeline.toString()}</div>
+      <hr />
+
       <VerticalTimeline
         lineColor={'black'}
         layout={'1-column-left'}
       >
-        {TIMELINE_ITEMS.map(({ title, date, subtitle, category, videoUrl, description, readMoreUrl }) => (
+        {timelineItems.map(({ title, date, subtitle, category, videoUrl, description, readMoreUrl }) => (
           <VerticalTimelineElement
             contentStyle={{ background: 'rgb(33, 150, 243)', color: '#fff', paddingTop: 0, paddingBottom: 0 }}
             contentArrowStyle={{ borderRight: '7px solid  rgb(33, 150, 243)' }}
