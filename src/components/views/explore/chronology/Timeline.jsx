@@ -1,5 +1,6 @@
 import { VerticalTimeline, VerticalTimelineElement } from 'react-vertical-timeline-component';
 import EmbeddedVideo from '../../../atoms/EmbeddedVideo/EmbeddedVideo';
+import { CATEGORIES } from './timelineItems';
 
 export default function Timeline({ timelineItems }) {
   const isTimelineItemsEmpty = timelineItems.length === 0
@@ -29,7 +30,8 @@ export default function Timeline({ timelineItems }) {
             </div>
             {subtitle && <span className="text-md text-white-800 pt-6">{subtitle}</span>}
           </div>
-          <div className="flex justify-between" >
+          <div className="pb-2" >
+            {category === (CATEGORIES.FORK.HARD_FORK || CATEGORIES.FORK.SOFT_FORK) && <span className={"text text-zinc-200 pb-2"}>{CATEGORIES.FORK.FORK} - </span>}
             <span className={"text text-zinc-200 pb-2"}>{category}</span>
           </div>
 
