@@ -7,6 +7,7 @@ import {
 import AppHero from '@/components/atoms/AppHero/AppHero';
 import EmbeddedVideo from '../../../atoms/EmbeddedVideo/EmbeddedVideo';
 import TIMELINE_ITEMS, { CATEGORIES } from './timelineItems';
+import FilterPanel from './FilterPanel';
 
 export default function ExploreChronologyView() {
   const [isReverseTimeline, setIsReverseTimeline] = useState(false)
@@ -58,42 +59,14 @@ export default function ExploreChronologyView() {
 
       <div>{isReverseTimeline.toString()}</div>
 
-      <div className="px-6 pb-1">
-        <span className="text-lg font-bold">Categories</span>
-        <div>
-          <input
-            type="checkbox"
-            checked={isDisplayHardForks}
-            onChange={(event) => {
-              const { checked: isChecked } = event.target;
-              setIsDisplayHardForks(isChecked);
-            }}
-          />
-          <span>{hardForksCount}x {CATEGORIES.FORK.FORK} ({CATEGORIES.FORK.HARD_FORK})</span>
-        </div>
-
-        <div>
-          <input
-            type="checkbox"
-            checked={isDisplaySoftForks}
-            onChange={(event) => {
-              const { checked: isChecked } = event.target;
-              setIsDisplaySoftForks(isChecked);
-            }}
-          />
-          <span>{softForksCount}x {CATEGORIES.FORK.FORK} ({CATEGORIES.FORK.SOFT_FORK})</span>
-        </div>
-
-        <input
-          type="checkbox"
-          checked={isDisplayConferences}
-          onChange={(event) => {
-            const { checked: isChecked } = event.target;
-            setIsDisplayConferences(isChecked);
-          }}
-        />
-        <span>{conferencesCount}x {CATEGORIES.CONFERENCE}</span>
-      </div>
+      <FilterPanel
+        isDisplayHardForks={isDisplayHardForks}
+        isDisplaySoftForks={isDisplaySoftForks}
+        isDisplayConferences={isDisplayConferences}
+        setIsDisplayHardForks={setIsDisplayHardForks}
+        setIsDisplaySoftForks={setIsDisplaySoftForks}
+        setIsDisplayConferences={setIsDisplayConferences}
+      />
 
       <hr />
 
