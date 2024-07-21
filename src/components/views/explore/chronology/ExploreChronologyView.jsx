@@ -6,6 +6,9 @@ import {
 import AppHero from '@/components/atoms/AppHero/AppHero';
 import EmbeddedVideo from '../../../atoms/EmbeddedVideo/EmbeddedVideo';
 
+const CASHTOKENS_EXPLANER_VIDEO_URL = "https://www.youtube.com/watch?v=uIhQKQ4efnQ"
+const CASHTOKENS_FAQ_URL = "https://bitcoincashpodcast.com/faqs/Tech/what-is-cashtokens"
+
 const ABLA_EXPLAINER_VIDEO_URL = "https://www.youtube.com/watch?v=YkkzIjZQNH0"
 const ABLA_FAQ_URL = "https://bitcoincashpodcast.com/faqs/BCH/what-is-the-maximum-bch-blocksize"
 
@@ -14,6 +17,16 @@ const CATEGORIES = {
 }
 
 const TIMELINE_ITEMS = [
+  {
+    title: "CashTokens",
+    date: "15th May 2023",
+    category: CATEGORIES.HARD_FORK,
+    videoUrl: CASHTOKENS_EXPLANER_VIDEO_URL,
+    description: [
+      "Protocol native CashTokens added to BCH, allowing for smart-contracts, fungible tokens & non-fungible tokens directly validated by the network.",
+    ],
+    readMoreUrl: CASHTOKENS_FAQ_URL
+  },
   {
     title: "ABLA",
     date: "15th May 2024",
@@ -51,15 +64,15 @@ export default function ExploreChronologyView() {
             <div className="pb-1" >
               <div className="flex justify-between items-center pt-1">
                 <span className="text-xl font-bold">{title}</span>
-                <span className={"text text-zinc-200 pt-0 mt-2 pb-2"}>{date}</span>
+                <span className={"text text-zinc-200 pt-0 mt-2"}>{date}</span>
               </div>
-              <span className="text-md text-white-800 pt-4">{subtitle}</span>
+              {subtitle && <span className="text-md text-white-800 pt-6">{subtitle}</span>}
             </div>
             <div className="flex justify-between" >
               <span className={"text text-zinc-200 pb-2"}>{category}</span>
             </div>
 
-            {videoUrl && <EmbeddedVideo url={ABLA_EXPLAINER_VIDEO_URL} />}
+            {videoUrl && <EmbeddedVideo url={videoUrl} />}
 
             {description && description.map(text => <div className={"py-1"}>
               <span className={"text italic"}>{text}</span>
