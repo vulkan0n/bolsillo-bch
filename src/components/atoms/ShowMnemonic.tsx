@@ -31,10 +31,15 @@ export default function ShowMnemonic({ wallet }: { wallet: WalletEntity }) {
     }
   };
 
+  const isKeyViewed = wallet.key_viewed !== null;
+  const keyNotViewedClasses = isKeyViewed
+    ? "bg-zinc-700"
+    : "border border-4 rounded-lg border-primary bg-primary";
+
   return (
     <button
       type="button"
-      className="w-full bg-zinc-700 flex-col rounded-lg flex items-center justify-center my-2 px-2 py-4 cursor-pointer"
+      className={`w-full flex-col rounded-lg flex items-center justify-center my-2 px-2 py-4 cursor-pointer ${keyNotViewedClasses}`}
       onClick={handleShowMnemonic}
     >
       {shouldShowRecoveryPhrase ? (
