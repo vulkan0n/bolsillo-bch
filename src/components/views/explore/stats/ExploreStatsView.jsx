@@ -11,7 +11,7 @@ import translations from "./ExploreStatsViewTranslations";
 const { globalAdoption, activeSeleneUsers, daily, weekly, monthly, yearly } =
   translations;
 
-export default function StatsView() {
+export default function ExploreStatsView() {
   const [period, setPeriod] = useState(Period.Daily);
 
   const {

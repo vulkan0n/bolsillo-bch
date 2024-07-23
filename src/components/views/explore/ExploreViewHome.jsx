@@ -1,3 +1,4 @@
+import { ApolloProvider } from "@apollo/client";
 import {
   ContactsOutlined,
   EnvironmentOutlined,
@@ -7,15 +8,18 @@ import { useSelector } from "react-redux";
 import { selectIsExperimental } from "@/redux/preferences";
 import ExploreStatBlock from "./ExploreStatBlock";
 import ExploreApp from "./ExploreApp";
-import StatsView from "./stats/ExploreStatsView";
+import ExploreStatsView from "./stats/ExploreStatsView";
+import apolloClient from "@/apolloClient";
 
 export default function ExploreViewHome() {
   const isExperimental = useSelector(selectIsExperimental);
 
   return (
     <div className="p-2">
-      <ExploreStatBlock />
-      <StatsView />
+      <ApolloProvider client={apolloClient}>
+        <ExploreStatBlock />
+        <ExploreStatsView />
+      </ApolloProvider>
       {isExperimental && (
         <ExploreApp
           icon={ContactsOutlined}

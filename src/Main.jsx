@@ -7,9 +7,6 @@ import {
 
 import { Provider } from "react-redux";
 import { Toaster } from "react-hot-toast";
-import { Geolocation } from "@capacitor/geolocation";
-import { ApolloProvider } from "@apollo/client";
-import apolloClient from "./apolloClient";
 import { store } from "./redux";
 
 import "./index.css";
@@ -17,36 +14,10 @@ import "./index.css";
 import MainLayout from "@/layout/MainLayout";
 import ErrorBoundary from "@/layout/ErrorBoundary";
 
-import WalletView from "@/views/wallet/WalletView";
-import WalletViewHome from "@/views/wallet/WalletViewHome/WalletViewHome";
-import WalletViewHistory from "@/views/wallet/WalletViewHistory/WalletViewHistory";
-import WalletViewSend from "@/views/wallet/WalletViewSend/WalletViewSend";
-import WalletViewSendSuccess from "@/views/wallet/WalletViewSendSuccess/WalletViewSendSuccess";
-
-import AssetsView from "@/views/assets/AssetsView";
-
-import ExploreView from "@/views/explore/ExploreView";
-import ExploreViewHome from "@/views/explore/ExploreViewHome";
-import ExploreTransactionView from "@/views/explore/ExploreTransactionView";
-import ExploreStatsView from "@/views/explore/stats/ExploreStatsView";
-import ExploreContactsView from "@/views/explore/contacts/ExploreContactsView";
-import ExploreMapView from "@/views/explore/map/ExploreMapView";
-import ExploreHelpView from "@/views/explore/help/ExploreHelpView";
-import ExplorePriceView from "@/views/explore/price/ExplorePriceView";
-
-import SettingsView from "@/views/settings/SettingsView";
-import SettingsWalletView from "@/views/settings/SettingsWalletView/SettingsWalletView";
-import SettingsWalletWizard from "@/views/settings/SettingsWalletWizard/SettingsWalletWizard";
-import SettingsWalletWizardInit from "@/views/settings/SettingsWalletWizardInit/SettingsWalletWizardInit";
-import SettingsWalletWizardImport from "@/views/settings/SettingsWalletWizardImport/SettingsWalletWizardImport";
-import SettingsWalletWizardBuild from "@/views/settings/SettingsWalletWizardBuild/SettingsWalletWizardBuild";
-import SettingsWalletAdditionalInformation from "@/views/settings/SettingsWalletAdditionalInformation/SettingsWalletAdditionalInformation";
-import SettingsWalletScanTool from "@/views/settings/SettingsWalletScanTool/SettingsWalletScanTool";
-
-import CreditsView from "@/views/credits/CreditsView";
-import DebugView from "@/views/debug/DebugView";
-
-import TransactionManagerService from "@/services/TransactionManagerService";
+import { routeWallet } from "@/routes/routeWallet";
+import { routeAssets } from "@/routes/routeAssets";
+import { routeExplore } from "@/routes/routeExplore";
+import { routeSettings } from "@/routes/routeSettings";
 
 export default function Main() {
   const routes = [
@@ -58,121 +29,28 @@ export default function Main() {
           path: "/",
           element: <Navigate to="/wallet" />,
         },
-        {
-          path: "/wallet",
-          element: <WalletView />,
-          children: [
-            /*{
-            path: "send",
-            element: <WalletViewSend />,
-          },*/
-            {
-              path: "send/:address",
-              element: <WalletViewSend />,
-            },
-            {
-              path: "send/success",
-              element: <WalletViewSendSuccess />,
-            },
-            {
-              path: "history",
-              element: <WalletViewHistory />,
-            },
-            {
-              index: true,
-              element: <WalletViewHome />,
-            },
-          ],
-        },
-        {
-          path: "/assets",
-          element: <AssetsView />,
-        },
-        {
-          path: "/explore",
-          element: <ExploreView />,
-          children: [
-            {
-              path: "tx/:txid",
-              element: <ExploreTransactionView />,
-              loader: async ({ params }) => {
-                return TransactionManagerService().resolveTransaction(
-                  params.txid
-                );
-              },
-            },
-            {
-              path: "stats",
-              element: <ExploreStatsView />,
-            },
-            {
-              path: "map",
-              element: <ExploreMapView />,
-              loader: async () =>
-                Geolocation.getCurrentPosition({
-                  enableHighAccuracy: true,
-                }),
-            },
-            {
-              path: "contacts",
-              element: <ExploreContactsView />,
-            },
-            {
-              path: "help",
-              element: <ExploreHelpView />,
-            },
-            {
-              path: "price",
-              element: <ExplorePriceView />,
-            },
-            {
-              index: true,
-              element: <ExploreViewHome />,
-            },
-          ],
-        },
-        {
-          path: "/settings",
-          element: <SettingsView />,
-        },
-        {
-          path: "/settings/wallet/:wallet_id",
-          element: <SettingsWalletView />,
-        },
-        {
-          path: "/settings/wallet/:wallet_id/additionalInformation",
-          element: <SettingsWalletAdditionalInformation />,
-        },
-        {
-          path: "/settings/wallet/wizard",
-          element: <SettingsWalletWizard />,
-          children: [
-            {
-              index: true,
-              element: <SettingsWalletWizardInit />,
-            },
-            {
-              path: "import",
-              element: <SettingsWalletWizardImport />,
-            },
-            {
-              path: "import/build/:wallet_id",
-              element: <SettingsWalletWizardBuild />,
-            },
-          ],
-        },
-        {
-          path: "/settings/wallet/:wallet_id/scan",
-          element: <SettingsWalletScanTool />,
-        },
+        ...routeWallet,
+        ...routeAssets,
+        ...routeExplore,
+        ...routeSettings,
         {
           path: "/credits",
-          element: <CreditsView />,
+          async lazy() {
+            const { default: CreditsView } = await import(
+              "@/views/credits/CreditsView"
+            );
+            return { Component: CreditsView };
+          },
         },
 
         {
           path: "/debug",
-          element: <DebugView />,
+          async lazy() {
+            const { default: DebugView } = await import(
+              "@/views/debug/DebugView"
+            );
+            return { Component: DebugView };
+          },
         },
       ],
     },
@@ -183,14 +61,12 @@ export default function Main() {
   return (
     <ReactStrictMode>
       <Provider store={store}>
-        <ApolloProvider client={apolloClient}>
-          {/* Note: Duration has an inbuilt extra 1000ms dismissal delay */}
-          <Toaster
-            toastOptions={{ duration: 1250 }}
-            containerClassName="toaster"
-          />
-          <RouterProvider router={router} />
-        </ApolloProvider>
+        {/* Note: Duration has an inbuilt extra 1000ms dismissal delay */}
+        <Toaster
+          toastOptions={{ duration: 1250 }}
+          containerClassName="toaster"
+        />
+        <RouterProvider router={router} />
       </Provider>
     </ReactStrictMode>
   );
