@@ -22,6 +22,7 @@ import {
 } from "@bitauth/libauth";
 
 import WalletManagerService from "@/services/WalletManagerService";
+import SecurityService from "@/services/SecurityService";
 
 import ViewHeader from "@/layout/ViewHeader";
 import Accordion from "@/atoms/Accordion";
@@ -36,14 +37,14 @@ export default function SettingsWalletAdditionalInformation() {
   const { wallet_id } = useParams();
 
   const [isShowXpub, setIsShowXpub] = useState(false);
-  const [isShowxPrv, setIsShowxPrv] = useState(false);
+  const [isShowXprv, setIsShowXprv] = useState(false);
 
-  const WalletManager = WalletManagerService();
+  const network = useSelector(selectBchNetwork);
+
+  const WalletManager = WalletManagerService(network);
   const wallet = WalletManager.getWalletById(wallet_id);
 
   const derivationPath = wallet.derivation;
-
-  const network = useSelector(selectBchNetwork);
 
   const seed = bip39.mnemonicToSeedSync(wallet.mnemonic, wallet.passphrase);
   const hdMaster = deriveHdPrivateNodeFromSeed(seed);
@@ -108,7 +109,12 @@ export default function SettingsWalletAdditionalInformation() {
             <div className="flex flex-col gap-y-1 w-full">
               <button
                 type="button"
-                onClick={() => {
+                onClick={async () => {
+                  const isAuthorized =
+                    isShowXpub || (await SecurityService().authorize());
+                  if (!isAuthorized) {
+                    return;
+                  }
                   setIsShowXpub(!isShowXpub);
                 }}
                 className="rounded-lg p-3 bg-primary text-zinc-50 shadow-sm"
@@ -153,25 +159,31 @@ export default function SettingsWalletAdditionalInformation() {
             <div className="flex flex-col gap-y-1 w-full">
               <button
                 type="button"
-                onClick={() => {
-                  setIsShowxPrv(!isShowxPrv);
+                onClick={async () => {
+                  const isAuthorized =
+                    isShowXprv || (await SecurityService().authorize());
+                  if (!isAuthorized) {
+                    return;
+                  }
+
+                  setIsShowXprv(!isShowXprv);
                 }}
                 className="rounded-lg p-3 bg-primary text-zinc-50 w-full shadow-sm"
               >
                 <div className="flex items-center">
-                  {isShowxPrv && (
+                  {isShowXprv && (
                     <EyeInvisibleOutlined className="text-2xl mr-1" />
                   )}
-                  {!isShowxPrv && <EyeOutlined className="text-2xl mr-1" />}
+                  {!isShowXprv && <EyeOutlined className="text-2xl mr-1" />}
                   <div className="text-lg font-medium flex-1 text-center">
-                    {isShowxPrv
+                    {isShowXprv
                       ? translate(translations.hideXprv)
                       : translate(translations.revealXprv)}
                   </div>
                 </div>
               </button>
 
-              {isShowxPrv && (
+              {isShowXprv && (
                 <div className="mt-2 p-2 rounded-md border-2 border-zinc-300 text-left">
                   <div className="break-all font-mono select-all">{xPrv}</div>
                 </div>

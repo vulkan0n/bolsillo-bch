@@ -175,7 +175,19 @@ export const setPreference = createAsyncThunk(
 export const resetPreferences = createAsyncThunk(
   "preferences/reset",
   async () => {
+    // do not reset authMode or pinHash as that would allow adversaries to trivially bypass SecurityService
+    const authMode =
+      (await Preferences.get({ key: "authMode" })).value ||
+      defaultPreferences.authMode;
+    const pinHash =
+      (await Preferences.get({ key: "pinHash" })).value ||
+      defaultPreferences.pinHash;
+
     Preferences.clear();
+
+    await Preferences.set({ key: "authMode", value: authMode });
+    await Preferences.set({ key: "pinHash", value: pinHash });
+
     const preferences = await retrievePreferences();
     return preferences;
   }

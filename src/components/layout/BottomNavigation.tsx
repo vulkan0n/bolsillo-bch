@@ -14,7 +14,6 @@ import {
 import {
   selectLanguageCode,
   selectIsExperimental,
-  selectIsPrerelease,
   selectUiSettings,
 } from "@/redux/preferences";
 import { selectKeyboardIsOpen, selectScannerIsScanning } from "@/redux/device";
@@ -26,7 +25,6 @@ export default function BottomNavigation() {
   const isKeyboardOpen = useSelector(selectKeyboardIsOpen);
   const isScanning = useSelector(selectScannerIsScanning);
   const isExperimental = useSelector(selectIsExperimental);
-  const isPrerelease = useSelector(selectIsPrerelease);
   const { shouldDisplayExploreTab } = useSelector(selectUiSettings);
 
   // Ensure component reloads when language preferences are changed
@@ -53,7 +51,7 @@ export default function BottomNavigation() {
             label="Assets"
           />
         )}
-        {(isExperimental || isPrerelease) && shouldDisplayExploreTab && (
+        {shouldDisplayExploreTab && (
           <NavButton
             to="/explore"
             activeIcon={CompassFilled}

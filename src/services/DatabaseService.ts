@@ -262,7 +262,7 @@ export default function DatabaseService(db = WALLET_DB) {
 
 // force database write on app stop and pause
 App.addListener("appStateChange", async ({ isActive }) => {
-  if (!isActive) {
+  if (!isActive && pendingCount > 0) {
     await DatabaseService().saveDatabase(true);
     Log.debug("flushDatabase on stop");
   }
@@ -270,8 +270,10 @@ App.addListener("appStateChange", async ({ isActive }) => {
 
 // force database write on app stop and pause
 App.addListener("pause", async () => {
-  await DatabaseService().saveDatabase(true);
-  Log.debug("flushDatabase on pause");
+  if (pendingCount > 0) {
+    await DatabaseService().saveDatabase(false);
+    Log.debug("flushDatabase on pause");
+  }
 });
 
 // HERE BE SATS if someone wants to try to steal them!
