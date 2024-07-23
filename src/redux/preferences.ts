@@ -41,6 +41,7 @@ const defaultPreferences = {
   // --------
   enableExperimental: "false",
   enablePrerelease: "false",
+  enableDailyCheckIn: "true",
 };
 
 type ValidPreferences = typeof defaultPreferences;
@@ -89,6 +90,7 @@ function validatePreferences(preferences: ValidPreferences): boolean {
     "enableExperimental",
     "enablePrerelease",
     "displayExploreTab",
+    "enableDailyCheckIn",
   ];
 
   const invalidBools = boolKeys.filter(
@@ -259,6 +261,13 @@ export const selectUiSettings = createSelector(
   (preferences) => ({
     shouldHideBalance: preferences.hideAvailableBalance === "true",
     shouldDisplayExploreTab: preferences.displayExploreTab === "true",
+  })
+);
+
+export const selectPrivacySettings = createSelector(
+  (state: RootState) => state.preferences,
+  (preferences) => ({
+    isDailyCheckInEnabled: preferences.enableDailyCheckIn === "true",
   })
 );
 

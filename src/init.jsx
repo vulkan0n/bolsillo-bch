@@ -29,6 +29,6 @@ async function post_init() {
 // big green START button for the whole app
 Log.log("* Initializing App *");
 initialize_app();
-await post_init();
 await SplashScreen.hide();
+await post_init();
 Logger.timeEnd("INIT_APP");
