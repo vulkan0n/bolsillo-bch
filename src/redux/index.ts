@@ -41,11 +41,10 @@ export function redux_init() {
       network: selectBchNetwork(store.getState()),
     })
   );
-
-  store.dispatch(fetchExchangeRates(0));
 }
 
 export function redux_post_init() {
   Log.debug("redux_post_init");
+  store.dispatch(fetchExchangeRates(0));
   store.dispatch(triggerCheckIn());
 }
