@@ -88,7 +88,7 @@ const UPGRADES = [
     readMoreUrl: MONOLITH_READ_MORE_URL
   },
   {
-    title: "Magnetic Anomaly",
+    title: "Magnetic Anomaly - BCH/BSV Split",
     date: DateTime.fromISO("2018-11-15"),
     category: CATEGORIES.FORK.HARD_FORK,
     videoUrl: null,
