@@ -26,6 +26,41 @@ export const CATEGORIES = {
   PROJECT_LAUNCH: "Project Launch"
 }
 
+const UPGRADES = [
+  {
+    title: "OP_CHECKSEQUENCEVERIFY",
+    date: DateTime.fromISO("2016-07-04"),
+    category: CATEGORIES.FORK.SOFT_FORK,
+    videoUrl: null,
+    description: [
+      "Addition of OP_CHECKSEQUENCEVERIFY.",
+    ],
+    readMoreUrl: null
+  },
+  {
+    title: "CashTokens",
+    date: DateTime.fromISO("2023-05-15"),
+    category: CATEGORIES.FORK.HARD_FORK,
+    videoUrl: CASHTOKENS_EXPLANER_VIDEO_URL,
+    description: [
+      "Protocol native CashTokens added to BCH, allowing for smart-contracts, fungible tokens & non-fungible tokens directly validated by the network.",
+    ],
+    readMoreUrl: CASHTOKENS_FAQ_URL
+  },
+  {
+    title: "ABLA",
+    date: DateTime.fromISO("2024-05-15"),
+    subtitle: "Adjustable Blocksize Limit Algorithm",
+    category: CATEGORIES.FORK.HARD_FORK,
+    videoUrl: ABLA_EXPLAINER_VIDEO_URL,
+    description: [
+      "BCH's 32 MB blocksize limit replaced with a new adjustable limit that scales with and responds intelligently to live network traffic.",
+      "Upgrade was celebrated at BCH BLISS in Ljubljana, Slovenia."
+    ],
+    readMoreUrl: ABLA_FAQ_URL
+  }
+]
+
 const CONFERENCES = [
   {
     title: "Bitcoin Cash City Conference",
@@ -62,18 +97,7 @@ const CONFERENCES = [
   },
 ]
 
-const TIMELINE_ITEMS = [
-  ...CONFERENCES,
-  {
-    title: "OP_CHECKSEQUENCEVERIFY",
-    date: DateTime.fromISO("2016-07-04"),
-    category: CATEGORIES.FORK.SOFT_FORK,
-    videoUrl: null,
-    description: [
-      "Addition of OP_CHECKSEQUENCEVERIFY.",
-    ],
-    readMoreUrl: null
-  },
+const PROJECTS = [
   {
     title: "The Bitcoin Cash Podcast",
     date: DateTime.fromISO("2021-01-23"),
@@ -85,30 +109,12 @@ const TIMELINE_ITEMS = [
     ],
     readMoreUrl: BITCOIN_CASH_PODCAST_URL
   },
+]
 
-  {
-    title: "CashTokens",
-    date: DateTime.fromISO("2023-05-15"),
-    category: CATEGORIES.FORK.HARD_FORK,
-    videoUrl: CASHTOKENS_EXPLANER_VIDEO_URL,
-    description: [
-      "Protocol native CashTokens added to BCH, allowing for smart-contracts, fungible tokens & non-fungible tokens directly validated by the network.",
-    ],
-    readMoreUrl: CASHTOKENS_FAQ_URL
-  },
-
-  {
-    title: "ABLA",
-    date: DateTime.fromISO("2024-05-15"),
-    subtitle: "Adjustable Blocksize Limit Algorithm",
-    category: CATEGORIES.FORK.HARD_FORK,
-    videoUrl: ABLA_EXPLAINER_VIDEO_URL,
-    description: [
-      "BCH's 32 MB blocksize limit replaced with a new adjustable limit that scales with and responds intelligently to live network traffic.",
-      "Upgrade was celebrated at BCH BLISS in Ljubljana, Slovenia."
-    ],
-    readMoreUrl: ABLA_FAQ_URL
-  }
+const TIMELINE_ITEMS = [
+  ...CONFERENCES,
+  ...UPGRADES,
+  ...PROJECTS
 ].sort((a, b) => a.date - b.date)
 
 export default TIMELINE_ITEMS
