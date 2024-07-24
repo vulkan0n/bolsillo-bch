@@ -29,6 +29,7 @@ const UAHF_READ_MORE_URL = "https://bitcoincashpodcast.com/start#episode-8-of-10
 const CW_144_READ_MORE_URL = "https://reference.cash/protocol/forks/hf-20171113"
 const MONOLITH_READ_MORE_URL = "https://reference.cash/protocol/forks/hf-20180515"
 const MAGNETIC_ANOMALY_READ_MORE_URL = "https://reference.cash/protocol/forks/hf-20181115"
+const GREAT_WALL_READ_MORE_URL = "https://reference.cash/protocol/forks/hf-20190515"
 
 export const CATEGORIES = {
   FORK: {
@@ -99,6 +100,18 @@ const UPGRADES = [
       "OP_CHECKDATASIG & OP_CHECKDATASIGVERIFY: New OP_Codes introduced allowing verification of non-blockchain data, for example oracle messages.",
     ],
     readMoreUrl: MAGNETIC_ANOMALY_READ_MORE_URL
+  },
+  {
+    title: "Great Wall",
+    date: DateTime.fromISO("2019-05-15"),
+    category: CATEGORIES.FORK.HARD_FORK,
+    videoUrl: null,
+    description: [
+      "BCH continues its cadence of 6-monthly upgrades. Schnorr signatures added & SegWit coins recovery enabled.",
+      "Schnorr signatures: A new cryptographic signature scheme is added for some OP_Codes to resolve 3rd party malleability among other reasons.",
+      "SegWit Recovery: Correction of an oversight in the previous upgrade that made SegWit coins unspendable.",
+    ],
+    readMoreUrl: GREAT_WALL_READ_MORE_URL
   },
   {
     title: "CashTokens",
