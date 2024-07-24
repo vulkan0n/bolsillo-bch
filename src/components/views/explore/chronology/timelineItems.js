@@ -14,6 +14,8 @@ const BCH22_FAQ_URL = "https://bitcoincashpodcast.com/faqs/Events/BCH22"
 const BITCOIN_CASH_PODCAST_GRAPHIC_URL = "https://bitcoincashpodcast.com/sunglasses.jpg"
 const BITCOIN_CASH_PODCAST_URL = "https://bitcoincashpodcast.com/"
 
+const BCH_CITY_VIDEO_URL = "https://www.youtube.com/watch?v=UuhH1lL6BAw"
+
 export const CATEGORIES = {
   FORK: {
     FORK: "Protocol Upgrade",
@@ -25,6 +27,17 @@ export const CATEGORIES = {
 }
 
 const CONFERENCES = [
+  {
+    title: "Bitcoin Cash City Conference",
+    date: DateTime.fromISO("2019-09-04"),
+    category: CATEGORIES.CONFERENCE,
+    videoUrl: BCH_CITY_VIDEO_URL,
+    description: [
+      "Conference held in the 'Bitcoin Cash City' Townsvile, Australia 4th - 5th September 2019.",
+      "Only 2 years after the split from BTC, the BCH community converged to assess the state of the revolution.",
+    ],
+    readMoreUrl: null
+  },
   {
     title: "BCH22",
     date: DateTime.fromISO("2022-11-12"),
