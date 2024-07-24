@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
 import { useQuery } from "@apollo/client";
-import { GET_ACTIVE_BITCOINERS } from "@/graphql/queries";
-import { Period } from "@/constants";
-import { THIRTY_SECONDS } from "@/constants";
+import GET_ACTIVE_BITCOINERS from "./getActiveBitcoiners";
+import { Period, THIRTY_SECONDS } from "@/util/time";
 
 import ExploreStatBlock from "./ExploreStatBlock";
 import GlobalAdoptionSummary from "./GlobalAdoptionSummary";
