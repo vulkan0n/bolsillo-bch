@@ -1,3 +1,5 @@
+import { DateTime } from "luxon";
+
 const CASHTOKENS_EXPLANER_VIDEO_URL = "https://www.youtube.com/watch?v=uIhQKQ4efnQ"
 const CASHTOKENS_FAQ_URL = "https://bitcoincashpodcast.com/faqs/Tech/what-is-cashtokens"
 
@@ -19,10 +21,25 @@ export const CATEGORIES = {
   PROJECT_LAUNCH: "Project Launch"
 }
 
+const CONFERENCES = [
+  {
+    title: "BLISS",
+    date: DateTime.fromISO("2024-05-14"),
+    category: CATEGORIES.CONFERENCE,
+    videoUrl: null,
+    description: [
+      "Conference held in Ljubljana, Slovenia 14th - 15th May 2024.",
+      "Arranged to celebrate the ABLA upgrade, discuss industry thinking & for community networking.",
+    ],
+    readMoreUrl: BLISS_FAQ_URL
+  },
+]
+
 const TIMELINE_ITEMS = [
+  ...CONFERENCES,
   {
     title: "OP_CHECKSEQUENCEVERIFY",
-    date: "4th July 2016",
+    date: DateTime.fromISO("2016-07-04"),
     category: CATEGORIES.FORK.SOFT_FORK,
     videoUrl: null,
     description: [
@@ -32,7 +49,7 @@ const TIMELINE_ITEMS = [
   },
   {
     title: "The Bitcoin Cash Podcast",
-    date: "23rd January 2021",
+    date: DateTime.fromISO("2021-01-23"),
     category: CATEGORIES.PROJECT_LAUNCH,
     videoUrl: null,
     graphicUrl: BITCOIN_CASH_PODCAST_GRAPHIC_URL,
@@ -44,7 +61,7 @@ const TIMELINE_ITEMS = [
 
   {
     title: "CashTokens",
-    date: "15th May 2023",
+    date: DateTime.fromISO("2023-05-15"),
     category: CATEGORIES.FORK.HARD_FORK,
     videoUrl: CASHTOKENS_EXPLANER_VIDEO_URL,
     description: [
@@ -52,20 +69,10 @@ const TIMELINE_ITEMS = [
     ],
     readMoreUrl: CASHTOKENS_FAQ_URL
   },
-  {
-    title: "BLISS",
-    date: "14th May 2023",
-    category: CATEGORIES.CONFERENCE,
-    videoUrl: null,
-    description: [
-      "Conference held in Ljubljana, Slovenia 14th - 15th May 2024.",
-      "Arranged to celebrate the ABLA upgrade, present on industry thinking & for community networking.",
-    ],
-    readMoreUrl: BLISS_FAQ_URL
-  },
+
   {
     title: "ABLA",
-    date: "15th May 2024",
+    date: DateTime.fromISO("2024-05-15"),
     subtitle: "Adjustable Blocksize Limit Algorithm",
     category: CATEGORIES.FORK.HARD_FORK,
     videoUrl: ABLA_EXPLAINER_VIDEO_URL,
@@ -75,6 +82,6 @@ const TIMELINE_ITEMS = [
     ],
     readMoreUrl: ABLA_FAQ_URL
   }
-]
+].sort((a, b) => a.date - b.date)
 
 export default TIMELINE_ITEMS

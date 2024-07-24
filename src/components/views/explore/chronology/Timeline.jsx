@@ -16,47 +16,51 @@ export default function Timeline({ timelineItems }) {
       lineColor={'black'}
       layout={'1-column-left'}
     >
-      {timelineItems.map(({ title, date, subtitle, category, videoUrl, graphicUrl, description, readMoreUrl }) => (
-        <VerticalTimelineElement
-          key={`${title}-${date}`}
-          contentStyle={{ background: 'rgb(33, 150, 243)', color: '#fff', paddingTop: 0, paddingBottom: 0 }}
-          contentArrowStyle={{ borderRight: '7px solid  rgb(33, 150, 243)' }}
-          iconStyle={{ background: 'rgb(33, 150, 243)', color: '#fff' }}
-          icon={null}
-        >
-          <div className="pb-1" >
-            <div className="flex justify-between items-center pt-1">
-              <span className="text-xl font-bold">{title}</span>
-              <span className={"text text-zinc-200 pt-0 mt-2"}>{date}</span>
+      {timelineItems.map(({ title, date, subtitle, category, videoUrl, graphicUrl, description, readMoreUrl }) => {
+        const formattedDate = date.toFormat('dd LLL yyyy')
+
+        return (
+          <VerticalTimelineElement
+            key={`${title}-${formattedDate}`}
+            contentStyle={{ background: 'rgb(33, 150, 243)', color: '#fff', paddingTop: 0, paddingBottom: 0 }}
+            contentArrowStyle={{ borderRight: '7px solid  rgb(33, 150, 243)' }}
+            iconStyle={{ background: 'rgb(33, 150, 243)', color: '#fff' }}
+            icon={null}
+          >
+            <div className="pb-1" >
+              <div className="flex justify-between items-center pt-1">
+                <span className="text-xl font-bold">{title}</span>
+                <span className={"text text-zinc-200 pt-0 mt-2"}>{formattedDate}</span>
+              </div>
+              {subtitle && <span className="text-md text-white-800 pt-6">{subtitle}</span>}
             </div>
-            {subtitle && <span className="text-md text-white-800 pt-6">{subtitle}</span>}
-          </div>
-          <div className="pb-2" >
-            {category === (CATEGORIES.FORK.HARD_FORK || CATEGORIES.FORK.SOFT_FORK) && <span className={"text text-zinc-200 pb-2"}>{CATEGORIES.FORK.FORK} - </span>}
-            <span className={"text text-zinc-200 pb-2"}>{category}</span>
-          </div>
+            <div className="pb-2" >
+              {category === (CATEGORIES.FORK.HARD_FORK || CATEGORIES.FORK.SOFT_FORK) && <span className={"text text-zinc-200 pb-2"}>{CATEGORIES.FORK.FORK} - </span>}
+              <span className={"text text-zinc-200 pb-2"}>{category}</span>
+            </div>
 
-          {graphicUrl && <div className="flex justify-center pb-2">
-            <img src={graphicUrl} height={300} width={300} alt={`${title} graphic`} />
-          </div>}
+            {graphicUrl && <div className="flex justify-center pb-2">
+              <img src={graphicUrl} height={300} width={300} alt={`${title} graphic`} />
+            </div>}
 
-          {videoUrl && <EmbeddedVideo url={videoUrl} />}
+            {videoUrl && <EmbeddedVideo url={videoUrl} />}
 
-          {description && description.map(text => <div className={"py-1"} key={text.substring(1, 25)}>
-            <span className={"text italic"}>{text}</span>
-          </div>)}
+            {description && description.map(text => <div className={"py-1"} key={text.substring(1, 25)}>
+              <span className={"text italic"}>{text}</span>
+            </div>)}
 
-          {readMoreUrl && <div>
-            <a
-              href={readMoreUrl}
-              target="_blank"
-              className="flex justify-center m-1 rounded-full border border-2 border-primary bg-primary text-zinc-100 shadow-md opacity-90"
-            >
-              Read More
-            </a>
-          </div>}
-        </VerticalTimelineElement>
-      ))}
+            {readMoreUrl && <div>
+              <a
+                href={readMoreUrl}
+                target="_blank"
+                className="flex justify-center m-1 rounded-full border border-2 border-primary bg-primary text-zinc-100 shadow-md opacity-90"
+              >
+                Read More
+              </a>
+            </div>}
+          </VerticalTimelineElement>
+        )
+      })}
     </VerticalTimeline>
 
 
