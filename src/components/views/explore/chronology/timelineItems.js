@@ -34,6 +34,7 @@ const GRAVITON_READ_MORE_URL = "https://reference.cash/protocol/forks/hf-2019111
 const PHONON_READ_MORE_URL = "https://reference.cash/protocol/forks/hf-20200515"
 const AXION_READ_MORE_URL = "https://reference.cash/protocol/forks/hf-20201115"
 const BIGBLOCKIFTRUE_READ_MORE_URL = "https://reference.cash/protocol/forks/hf-20210515"
+const U8_READ_MORE_URL = "https://reference.cash/protocol/forks/hf-20220515"
 
 export const CATEGORIES = {
   FORK: {
@@ -163,6 +164,19 @@ const UPGRADES = [
       "Multiple OP_RETURNs: Additional on-chain data flexibility was introduced by removing a restriction of only one OP_RETURN per transaction."
     ],
     readMoreUrl: BIGBLOCKIFTRUE_READ_MORE_URL
+  },
+  {
+    title: "U8",
+    date: DateTime.fromISO("2022-05-15"),
+    category: CATEGORIES.FORK.HARD_FORK,
+    videoUrl: null,
+    description: [
+      "Yearly BCH protocol upgrades in May continue. Three new upgrades - introspection, bigger integers & OP_MUL.",
+      "Introspection: Covenents were enabled by Magnetic Anomaly in November 2018, but efficiency & ease of use was very low. Introspection OP_Codes added to significantly improve the developer experience & power of BCH smart contract programming.",
+      "64 Bit Integers: 32 bit integers were restricting the ease & potential of mathematical operations in smart contracts. The range of usable numbers expanded enormously to 64 bits.",
+      "OP_MUL: Mathematics OP_Code re-enabled in parallel with 64 bit integers."
+    ],
+    readMoreUrl: U8_READ_MORE_URL
   },
   {
     title: "CashTokens",
