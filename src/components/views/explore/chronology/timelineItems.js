@@ -19,6 +19,9 @@ const BCH_CITY_VIDEO_URL = "https://www.youtube.com/watch?v=UuhH1lL6BAw"
 const FLIPSTARTER_READ_MORE_URL = "https://flipstarter.cash/"
 const FLIPSTARTER_GRAPHIC_URL = "https://flipstarter.cash/static/img/logo-alt.svg"
 
+const CASHSCRIPT_READ_MORE_URL = "https://cashscript.org/"
+const CASHSCRIPT_VIDEO_URL = "https://www.youtube.com/watch?v=5fsqU0lvA8c"
+
 export const CATEGORIES = {
   FORK: {
     FORK: "Protocol Upgrade",
@@ -26,7 +29,8 @@ export const CATEGORIES = {
     SOFT_FORK: "Soft Fork"
   },
   CONFERENCE: "Conference",
-  PROJECT_LAUNCH: "Project Launch"
+  PROJECT_LAUNCH: "Project Launch",
+  INFRASTRUCTURE: "Developer Tools & Infrastructure"
 }
 
 const UPGRADES = [
@@ -101,6 +105,17 @@ const CONFERENCES = [
 ]
 
 const PROJECTS = [
+  {
+    title: "CashScript",
+    date: DateTime.fromISO("2019-07-01"), // July 2019, check exact date
+    category: CATEGORIES.INFRASTRUCTURE,
+    videoUrl: CASHSCRIPT_VIDEO_URL,
+    graphicUrl: null,
+    description: [
+      "Higher-level language compiler for programmers building Bitcoin Cash smart contracts.",
+    ],
+    readMoreUrl: CASHSCRIPT_READ_MORE_URL
+  },
   {
     title: "Flipstarter",
     date: DateTime.fromISO("2020-03-01"), // March 2020, check exact date
