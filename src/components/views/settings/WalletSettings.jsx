@@ -1,9 +1,10 @@
 import { useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import {
   WalletOutlined,
   PlusCircleFilled,
-  CheckCircleOutlined,
+  RightCircleOutlined,
+  CheckCircleFilled,
   WarningFilled,
 } from "@ant-design/icons";
 
@@ -19,6 +20,9 @@ export default function WalletSettings() {
   const bchNetwork = useSelector(selectBchNetwork);
   const walletList = WalletManagerService(bchNetwork).getWallets();
   const activeWalletId = useSelector(selectActiveWalletId);
+
+  const { wallet_id } = useParams();
+  const selectedWalletId = Number.parseInt(wallet_id || "0", 10);
 
   return (
     <Accordion
@@ -39,8 +43,11 @@ export default function WalletSettings() {
           className="w-full block p-2 flex items-center"
           replace
         >
+          {w.id === selectedWalletId && (
+            <RightCircleOutlined className="text-xl mr-1 text-secondary" />
+          )}
           {w.id === activeWalletId && (
-            <CheckCircleOutlined className="text-xl mr-1 text-secondary" />
+            <CheckCircleFilled className="text-xl mr-1 text-primary" />
           )}
 
           {w.key_viewed === null && (

@@ -1,3 +1,4 @@
+import { ApolloProvider } from "@apollo/client";
 import {
   ContactsOutlined,
   EnvironmentOutlined,
@@ -13,6 +14,7 @@ import {
 } from "@/redux/preferences";
 import ExploreApp from "./ExploreApp";
 import ExploreStatBlock from "./stats/ExploreStatBlock";
+import apolloClient from "@/apolloClient";
 
 export default function ExploreViewHome() {
   const isExperimental = useSelector(selectIsExperimental);
@@ -20,35 +22,37 @@ export default function ExploreViewHome() {
 
   return (
     <div className="p-2">
-      <ExploreStatBlock />
-      {isPrerelease && (
-        <ExploreApp
-          icon={LineChartOutlined}
-          name="Stats"
-          to="/explore/stats"
-        />
-      )}
-      {isPrerelease && (
-        <ExploreApp
-          icon={LikeOutlined}
-          name="Social Media"
-          to="/explore/socialMedia"
-        />
-      )}
-      {isPrerelease && (
-        <ExploreApp
-          icon={LaptopOutlined}
-          name="A Fifth Of Gaming"
-          to="/explore/afog"
-        />
-      )}
-      {isExperimental && (
-        <ExploreApp
-          icon={ProfileOutlined}
-          name="Chronology"
-          to="/explore/chronology"
-        />
-      )}
+      <ApolloProvider client={apolloClient}>
+        <ExploreStatBlock />
+        {isPrerelease && (
+          <ExploreApp
+            icon={LineChartOutlined}
+            name="Stats"
+            to="/explore/stats"
+          />
+        )}
+        {isPrerelease && (
+          <ExploreApp
+            icon={LikeOutlined}
+            name="Social Media"
+            to="/explore/socialMedia"
+          />
+        )}
+        {isPrerelease && (
+          <ExploreApp
+            icon={LaptopOutlined}
+            name="A Fifth Of Gaming"
+            to="/explore/afog"
+          />
+        )}
+        {isExperimental && (
+          <ExploreApp
+            icon={ProfileOutlined}
+            name="Chronology"
+            to="/explore/chronology"
+          />
+        )}
+      </ApolloProvider>
       {isExperimental && (
         <ExploreApp
           icon={ContactsOutlined}

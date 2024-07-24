@@ -35,10 +35,6 @@ export default function DailyTarget() {
   const midnightUtc = DateTime.utc().endOf("day");
   const [days, hours, minutes, seconds] = useCountdown(midnightUtc); // eslint-disable-line @typescript-eslint/no-unused-vars
 
-  if (isLoading || !data) {
-    return <div>Loading...</div>;
-  }
-
   const dailyActiveUsersToday =
     data?.activeBitcoiners?.[data?.activeBitcoiners.length - 1]?.count || 1;
   const dailyActiveUsersTodayPercentage =
@@ -51,7 +47,7 @@ export default function DailyTarget() {
     (+dailyActiveUsersTodayPercentage.toFixed(2)).toString() + 1;
 
   const dailyActiveUsersYesterday =
-    data?.activeBitcoiners?.[data?.activeBitcoiners.length - 2]?.count || 1;
+    data?.activeBitcoiners?.[data?.activeBitcoiners?.length - 2]?.count || 1;
   const dailyActiveUsersYesterdayPercentage =
     (ONE_HUNDRED / TEN_MILLION) * dailyActiveUsersYesterday;
   const fixedDailyActiveUsersYesterdayPercentage =
@@ -60,6 +56,8 @@ export default function DailyTarget() {
   // +1 to round up
   const dailyActiveUsersYesterdayWidth =
     (+dailyActiveUsersYesterdayPercentage.toFixed(2)).toString() + 1;
+
+  const isDataUnavailable = isLoading || !data;
 
   return (
     <div className="p-1">
@@ -73,9 +71,9 @@ export default function DailyTarget() {
           </div>
         </span>
         <span className="text-sm font-medium text-secondary mt-5">
-          {dailyActiveUsersToday}{" "}
+          {isDataUnavailable ? "-" : dailyActiveUsersToday}{" "}
           <span className="text-zinc-400">{translate(of10million)} (</span>
-          {fixedDailyActiveUsersTodayPercentage}%
+          {isDataUnavailable ? "-" : fixedDailyActiveUsersTodayPercentage}%
           <span className="text-zinc-400">)</span>
         </span>
       </div>
@@ -94,9 +92,9 @@ export default function DailyTarget() {
           {translate(yesterday)}
         </span>
         <span className="text-sm font-medium text-secondary">
-          {dailyActiveUsersYesterday}{" "}
+          {isDataUnavailable ? "-" : dailyActiveUsersYesterday}{" "}
           <span className="text-zinc-400">{translate(of10million)} (</span>
-          {fixedDailyActiveUsersYesterdayPercentage}%
+          {isDataUnavailable ? "-" : fixedDailyActiveUsersYesterdayPercentage}%
           <span className="text-zinc-400">)</span>
         </span>
       </div>

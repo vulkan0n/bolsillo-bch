@@ -4,7 +4,7 @@ import { useParams, useSearchParams, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import Decimal from "decimal.js";
 import { Haptics, NotificationType } from "@capacitor/haptics";
-import { ArrowLeftOutlined } from "@ant-design/icons";
+import { ArrowLeftOutlined, SyncOutlined } from "@ant-design/icons";
 
 import { selectActiveWallet } from "@/redux/wallet";
 import {
@@ -53,6 +53,7 @@ export default function WalletViewSend() {
   const isMyAddress = myAddresses[address] !== undefined;
 
   const [message, setMessage] = useState("");
+  const [isSending, setIsSending] = useState(false);
 
   const { shouldPreferLocalCurrency, localCurrency } = useSelector(
     selectCurrencySettings
@@ -91,18 +92,26 @@ export default function WalletViewSend() {
   };
 
   const confirmSend = async (isInstantPay: boolean = false) => {
+    if (isSending) {
+      return;
+    }
+
+    setIsSending(true);
     const isAuthorized = isInstantPay || (await SecurityService().authorize());
     if (!isAuthorized) {
+      setIsSending(false);
       return;
     }
 
     if (isInsufficientFunds) {
       await handleInsufficientFunds();
+      setIsSending(false);
       return;
     }
 
     if (!sync.isConnected) {
       ToastService().disconnected();
+      setIsSending(false);
       return;
     }
 
@@ -118,11 +127,13 @@ export default function WalletViewSend() {
       await Haptics.notification({ type: NotificationType.Warning });
       //setMessage(translate(translations.notEnoughFee));
       setMessage("Transaction Failed: Wallet out of sync?");
+      setIsSending(false);
       return;
     }
 
     if (typeof transaction === "number") {
       await handleInsufficientFunds();
+      setIsSending(false);
       return;
     }
 
@@ -143,6 +154,8 @@ export default function WalletViewSend() {
       //setMessage(translate(translations.transactionFailed));
       setMessage(`Transaction Failed: Must send at least ${DUST_LIMIT} sats`);
     }
+
+    setIsSending(false);
   };
 
   useEffect(function handleInstantPay() {
@@ -216,60 +229,68 @@ export default function WalletViewSend() {
         )}
       </div>
 
-      <div className="p-2 fixed top-[40%] w-full">
-        <div className="py-4 px-2 rounded-md shadow-md bg-primary/95 text-white">
-          <div className="flex items-center">
-            <CurrencySymbol
-              currency={currency}
-              className="font-bold text-4xl mr-2"
-            />
-            <SatoshiInput
-              key={satoshiInputKey}
-              onChange={handleAmountInput}
-              satoshis={satoshiInput}
-              size={1}
-              className={`mr-1.5 p-1 flex-1 text-3xl rounded shadow-inner ${
-                isInsufficientFunds ? "text-error" : "text-black/70"
-              }`}
-              autoFocus
-              ref={inputRef}
-            />
-            <Button
-              className="text-xs spacing-wide font-semibold text-zinc-800 rounded-full border border-zinc-200 bg-zinc-100"
-              icon={MaxButton}
-              iconSize="xs font-bold"
-              onClick={handleSendMax}
-            />
+      {isSending ? (
+        <div className="p-2 flex items-center justify-center fixed top-1/3 w-full text-center">
+          <SyncOutlined className="text-7xl" spin />
+        </div>
+      ) : (
+        <>
+          <div className="p-2 fixed top-[40%] w-full">
+            <div className="py-4 px-2 rounded-md shadow-md bg-primary/95 text-white">
+              <div className="flex items-center">
+                <CurrencySymbol
+                  currency={currency}
+                  className="font-bold text-4xl mr-2"
+                />
+                <SatoshiInput
+                  key={satoshiInputKey}
+                  onChange={handleAmountInput}
+                  satoshis={satoshiInput}
+                  size={1}
+                  className={`mr-1.5 p-1 flex-1 text-3xl rounded shadow-inner ${
+                    isInsufficientFunds ? "text-error" : "text-black/70"
+                  }`}
+                  autoFocus
+                  ref={inputRef}
+                />
+                <Button
+                  className="text-xs spacing-wide font-semibold text-zinc-800 rounded-full border border-zinc-200 bg-zinc-100"
+                  icon={MaxButton}
+                  iconSize="xs font-bold"
+                  onClick={handleSendMax}
+                />
+              </div>
+            </div>
+
+            <div
+              className="p-2 relative text-center w-full"
+              onClick={handleFlipCurrency}
+            >
+              <span className="text-2xl font-semibold text-center w-full text-zinc-800/80">
+                <Satoshi value={satoshiInput} flip />
+                <CurrencyFlip className="text-3xl ml-2" />
+              </span>
+            </div>
           </div>
-        </div>
 
-        <div
-          className="p-2 relative text-center w-full"
-          onClick={handleFlipCurrency}
-        >
-          <span className="text-2xl font-semibold text-center w-full text-zinc-800/80">
-            <Satoshi value={satoshiInput} flip />
-            <CurrencyFlip className="text-3xl ml-2" />
-          </span>
-        </div>
-      </div>
-
-      <div
-        className={`flex absolute ${buttonsPos} w-full justify-around items-center px-2 gap-x-2`}
-      >
-        <div className="mx-2">
-          <Button onClick={() => navigate(-1)} icon={BackIcon} />
-        </div>
-        <div className="flex-1">
-          <Button
-            size="full"
-            icon={ConfirmIcon}
-            shittyFullWidthHack
-            onClick={confirmSend}
-            inverted
-          />
-        </div>
-      </div>
+          <div
+            className={`flex absolute ${buttonsPos} w-full justify-around items-center px-2 gap-x-2`}
+          >
+            <div className="mx-2">
+              <Button onClick={() => navigate(-1)} icon={BackIcon} />
+            </div>
+            <div className="flex-1">
+              <Button
+                size="full"
+                icon={ConfirmIcon}
+                shittyFullWidthHack
+                onClick={() => confirmSend(false)}
+                inverted
+              />
+            </div>
+          </div>
+        </>
+      )}
     </>
   );
 }
