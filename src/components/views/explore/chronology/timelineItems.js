@@ -55,7 +55,8 @@ const UPGRADES = [
     videoUrl: null,
     description: [
       "Mired in the chaos of The Blocksize War, big blockers take a stand & split the original Bitcoin into separate BTC & BCH chains.",
-      "Initial upgrade raises the blocksize from 1MB to 8MB & pre-empted the incoming (unwanted) SegWit changes later added to the BTC side.",
+      "UAHF stands for User Activated Hard Fork."
+      "The initial upgrade raised the blocksize from 1MB to 8MB & pre-empted the incoming (unwanted) SegWit changes later added with a UASF (Soft fork) to the BTC side.",
     ],
     readMoreUrl: UAHF_READ_MORE_URL
   },
