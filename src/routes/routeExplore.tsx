@@ -43,6 +43,24 @@ export const routeExplore = [
         },
       },
       {
+        path: "socialMedia",
+        async lazy() {
+          const { default: ExploreSocialMediaView } = await import(
+            "@/views/explore/socialMedia/ExploreSocialMediaView"
+          );
+          return { Component: ExploreSocialMediaView };
+        },
+      },
+      {
+        path: "afog",
+        async lazy() {
+          const { default: ExploreAfogView } = await import(
+            "@/views/explore/afog/ExploreAfogView"
+          );
+          return { Component: ExploreAfogView };
+        },
+      },
+      {
         path: "map",
         async lazy() {
           const { default: ExploreMapView } = await import(
