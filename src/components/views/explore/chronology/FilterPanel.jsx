@@ -30,7 +30,7 @@ export default function FilterPanel({
             setIsDisplayHardForks(isChecked);
           }}
         />
-        <span className="text-blue-500">&#9632;</span>
+        <span className="text-blue-500 pr-1">&#9632;</span>
         <span>
           {hardForksCount}x{' '}
           {CATEGORIES.FORK.FORK} ({CATEGORIES.FORK.HARD_FORK})
@@ -47,7 +47,7 @@ export default function FilterPanel({
             setIsDisplaySoftForks(isChecked);
           }}
         />
-        <span className="text-blue-500">&#9632;</span>
+        <span className="text-blue-500 pr-1">&#9632;</span>
         <span>{softForksCount}x {' '}
           {CATEGORIES.FORK.FORK} ({CATEGORIES.FORK.SOFT_FORK})
         </span>
@@ -63,7 +63,7 @@ export default function FilterPanel({
             setIsDisplayConferences(isChecked);
           }}
         />
-        <span className="text-blue-500">&#9632;</span>
+        <span className="text-blue-500 pr-1">&#9632;</span>
         <span>{conferencesCount}x {CATEGORIES.CONFERENCE}</span>
       </div>
 
@@ -77,7 +77,7 @@ export default function FilterPanel({
             setIsDisplayProjectLaunches(isChecked);
           }}
         />
-        <span className="text-blue-500">&#9632;</span>
+        <span className="text-blue-500 pr-1">&#9632;</span>
         <span>{projectLaunchesCount}x {CATEGORIES.PROJECT_LAUNCH}</span>
       </div>
     </div >
