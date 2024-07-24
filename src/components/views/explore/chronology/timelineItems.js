@@ -28,6 +28,7 @@ const UAHF_READ_MORE_URL = "https://bitcoincashpodcast.com/start#episode-8-of-10
 
 const CW_144_READ_MORE_URL = "https://reference.cash/protocol/forks/hf-20171113"
 const MONOLITH_READ_MORE_URL = "https://reference.cash/protocol/forks/hf-20180515"
+const MAGNETIC_ANOMALY_READ_MORE_URL = "https://reference.cash/protocol/forks/hf-20181115"
 
 export const CATEGORIES = {
   FORK: {
@@ -85,6 +86,19 @@ const UPGRADES = [
       "OP_Codes: Several OP_codes (including OP_CAT, OP_DIV) deactivated in 2010 & 2011 are reactivated on BCH after re-examination & redesigning as necessary to restore Bitcoin script functionality.",
     ],
     readMoreUrl: MONOLITH_READ_MORE_URL
+  },
+  {
+    title: "Magnetic Anomaly",
+    date: DateTime.fromISO("2018-11-15"),
+    category: CATEGORIES.FORK.HARD_FORK,
+    videoUrl: null,
+    description: [
+      "BCH continues its cadence of 6-monthly upgrades. Two changes are implemented, CTOR & new OP_Codes.",
+      "In protest of these changes, the 'Bitcoin Satoshi's Vision' (BSV) community split the chain to follow their own direction after a dramatic 'Hash War' in which they fail to secure control of the BCH chain.",
+      "CTOR (Canonical Transaction Ordering): Transaction ordering within a block must conform to an exact sorting by numerically ascending transaction ids. This improves scaling by reducing need to transmit ordering information & improve transaction parallel processing.",
+      "OP_CHECKDATASIG & OP_CHECKDATASIGVERIFY: New OP_Codes introduced allowing verification of non-blockchain data, for example oracle messages.",
+    ],
+    readMoreUrl: MAGNETIC_ANOMALY_READ_MORE_URL
   },
   {
     title: "CashTokens",
