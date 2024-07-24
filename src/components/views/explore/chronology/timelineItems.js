@@ -24,6 +24,8 @@ const CASHSCRIPT_VIDEO_URL = "https://www.youtube.com/watch?v=5fsqU0lvA8c"
 
 const JOGS_READ_MORE_URL = "https://jogs.one/"
 
+const UAHF_READ_MORE_URL = "https://bitcoincashpodcast.com/start#episode-8-of-10-bitcoin-cash"
+
 export const CATEGORIES = {
   FORK: {
     FORK: "Protocol Upgrade",
@@ -45,6 +47,17 @@ const UPGRADES = [
       "Addition of OP_CHECKSEQUENCEVERIFY.",
     ],
     readMoreUrl: null
+  },
+  {
+    title: "UAHF - BCH/BTC Split",
+    date: DateTime.fromISO("2017-08-01"),
+    category: CATEGORIES.FORK.HARD_FORK,
+    videoUrl: null,
+    description: [
+      "Mired in the chaos of The Blocksize War, big blockers take a stand & split the original Bitcoin into separate BTC & BCH chains.",
+      "Initial upgrade raises the blocksize from 1MB to 8MB & pre-empted the incoming (unwanted) SegWit changes later added to the BTC side.",
+    ],
+    readMoreUrl: UAHF_READ_MORE_URL
   },
   {
     title: "CashTokens",
