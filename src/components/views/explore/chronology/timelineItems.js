@@ -16,6 +16,9 @@ const BITCOIN_CASH_PODCAST_URL = "https://bitcoincashpodcast.com/"
 
 const BCH_CITY_VIDEO_URL = "https://www.youtube.com/watch?v=UuhH1lL6BAw"
 
+const FLIPSTARTER_READ_MORE_URL = "https://flipstarter.cash/"
+const FLIPSTARTER_GRAPHIC_URL = "https://flipstarter.cash/static/img/logo-alt.svg"
+
 export const CATEGORIES = {
   FORK: {
     FORK: "Protocol Upgrade",
@@ -98,6 +101,17 @@ const CONFERENCES = [
 ]
 
 const PROJECTS = [
+  {
+    title: "Flipstarter",
+    date: DateTime.fromISO("2020-03-01"), // March 2020, check exact date
+    category: CATEGORIES.PROJECT_LAUNCH,
+    videoUrl: null,
+    graphicUrl: FLIPSTARTER_GRAPHIC_URL,
+    description: [
+      "Non-custodial, open-source, on-chain crowdfunding allowing BCH projects to bootstrap from community funding.",
+    ],
+    readMoreUrl: FLIPSTARTER_READ_MORE_URL
+  },
   {
     title: "The Bitcoin Cash Podcast",
     date: DateTime.fromISO("2021-01-23"),
