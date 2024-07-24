@@ -289,11 +289,12 @@ const PROJECTS = [
   },
 ]
 
+// Default sort by reverse-chronological
 const TIMELINE_ITEMS = [
   ...CONFERENCES,
   ...UPGRADES,
   ...PROJECTS,
   ...INFRASTRUCTURE
-].sort((a, b) => a.date - b.date)
+].sort((a, b) => b.date - a.date)
 
 export default TIMELINE_ITEMS
