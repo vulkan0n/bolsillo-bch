@@ -26,6 +26,9 @@ const JOGS_READ_MORE_URL = "https://jogs.one/"
 
 const UAHF_READ_MORE_URL = "https://bitcoincashpodcast.com/start#episode-8-of-10-bitcoin-cash"
 
+const CW_144_READ_MORE_URL = "https://reference.cash/protocol/forks/hf-20171113"
+const MONOLITH_READ_MORE_URL = "https://reference.cash/protocol/forks/hf-20180515"
+
 export const CATEGORIES = {
   FORK: {
     FORK: "Protocol Upgrade",
@@ -59,6 +62,29 @@ const UPGRADES = [
       "The initial upgrade raised the blocksize from 1MB to 8MB & pre-empted the incoming (unwanted) SegWit changes later added with a UASF (Soft Fork) to the BTC side.",
     ],
     readMoreUrl: UAHF_READ_MORE_URL
+  },
+  {
+    title: "CW-144",
+    date: DateTime.fromISO("2017-11-13"),
+    category: CATEGORIES.FORK.HARD_FORK,
+    videoUrl: null,
+    description: [
+      "The BCH Difficulty Adjustment Algorithm updated to cw-144 to help it better handle the rapid price & hashrate fluctuations resulting from sharing SHA256 miners with the BTC chain.",
+      "Although initially resource intensive to research & implement, this greatly increased BCH resilience in comparison to BTC.",
+    ],
+    readMoreUrl: CW_144_READ_MORE_URL
+  },
+  {
+    title: "Monolith",
+    date: DateTime.fromISO("2018-05-15"),
+    category: CATEGORIES.FORK.HARD_FORK,
+    videoUrl: null,
+    description: [
+      "BCH begins a cadence of 6-monthly upgrades. Two changes are implemented, increased blocksize & extra op-codes.",
+      "32 MB blocks: Network capacity raised 4x after sufficient research & testing done to ensure network resilience.",
+      "OP_Codes: Several OP_codes (including OP_CAT, OP_DIV) deactivated in 2010 & 2011 are reactivated on BCH after re-examination & redesigning as necessary to restore Bitcoin script functionality.",
+    ],
+    readMoreUrl: MONOLITH_READ_MORE_URL
   },
   {
     title: "CashTokens",
