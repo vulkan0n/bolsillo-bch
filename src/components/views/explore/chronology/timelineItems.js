@@ -8,6 +8,9 @@ const ABLA_FAQ_URL = "https://bitcoincashpodcast.com/faqs/BCH/what-is-the-maximu
 
 const BLISS_FAQ_URL = "https://bitcoincashpodcast.com/faqs/Events/BLISS"
 
+const BCH22_STREAM_URL = "https://www.youtube.com/watch?v=1W0-N_0K6jQ"
+const BCH22_FAQ_URL = "https://bitcoincashpodcast.com/faqs/Events/BCH22"
+
 const BITCOIN_CASH_PODCAST_GRAPHIC_URL = "https://bitcoincashpodcast.com/sunglasses.jpg"
 const BITCOIN_CASH_PODCAST_URL = "https://bitcoincashpodcast.com/"
 
@@ -22,6 +25,17 @@ export const CATEGORIES = {
 }
 
 const CONFERENCES = [
+  {
+    title: "BCH22",
+    date: DateTime.fromISO("2022-11-12"),
+    category: CATEGORIES.CONFERENCE,
+    videoUrl: BCH22_STREAM_URL,
+    description: [
+      "Conference held in St Kitts 12th - 13th November 2023.",
+      "Arranged to experience the impressive BCH adoption on the island & discuss the future of BCH.",
+    ],
+    readMoreUrl: BCH22_FAQ_URL
+  },
   {
     title: "BLISS",
     date: DateTime.fromISO("2024-05-14"),
