@@ -28,6 +28,10 @@ export default function ExploreChronologyView() {
       return false
     }
 
+    if (item.category === CATEGORIES.PROJECT_LAUNCH && !isDisplayProjectLaunches) {
+      return false
+    }
+
     return true
   })
 

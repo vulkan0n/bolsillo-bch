@@ -10,21 +10,6 @@ export default function FilterPanel({
   setIsDisplayConferences,
   setIsDisplayProjectLaunches,
 }) {
-  const timelineItems = TIMELINE_ITEMS.reverse().filter(item => {
-    if (item.category === CATEGORIES.FORK.HARD_FORK && !isDisplayHardForks) {
-      return false
-    }
-
-    if (item.category === CATEGORIES.FORK.SOFT_FORK && !isDisplaySoftForks) {
-      return false
-    }
-
-    if (item.category === CATEGORIES.CONFERENCE && !isDisplayConferences) {
-      return false
-    }
-
-    return true
-  })
 
   const hardForksCount = TIMELINE_ITEMS.filter(item => item.category === CATEGORIES.FORK.HARD_FORK).length
   const softForksCount = TIMELINE_ITEMS.filter(item => item.category === CATEGORIES.FORK.SOFT_FORK).length
@@ -34,7 +19,6 @@ export default function FilterPanel({
   return (
     <div className="px-6 pb-1">
       <span className="text-lg font-bold">Categories</span>
-
 
       <div>
         <input
