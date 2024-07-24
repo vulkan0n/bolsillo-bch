@@ -22,6 +22,8 @@ const FLIPSTARTER_GRAPHIC_URL = "https://flipstarter.cash/static/img/logo-alt.sv
 const CASHSCRIPT_READ_MORE_URL = "https://cashscript.org/"
 const CASHSCRIPT_VIDEO_URL = "https://www.youtube.com/watch?v=5fsqU0lvA8c"
 
+const JOGS_READ_MORE_URL = "https://jogs.one/"
+
 export const CATEGORIES = {
   FORK: {
     FORK: "Protocol Upgrade",
@@ -104,7 +106,7 @@ const CONFERENCES = [
   },
 ]
 
-const PROJECTS = [
+const INFRASTRUCTURE = [
   {
     title: "CashScript",
     date: DateTime.fromISO("2019-07-01"), // July 2019, check exact date
@@ -116,6 +118,9 @@ const PROJECTS = [
     ],
     readMoreUrl: CASHSCRIPT_READ_MORE_URL
   },
+]
+
+const PROJECTS = [
   {
     title: "Flipstarter",
     date: DateTime.fromISO("2020-03-01"), // March 2020, check exact date
@@ -126,6 +131,18 @@ const PROJECTS = [
       "Non-custodial, open-source, on-chain crowdfunding allowing BCH projects to bootstrap from community funding.",
     ],
     readMoreUrl: FLIPSTARTER_READ_MORE_URL
+  },
+  {
+    title: "Journal of Global Surgery",
+    date: DateTime.fromISO("2021-06-01"), // June 2021, check exact date
+    category: CATEGORIES.PROJECT_LAUNCH,
+    videoUrl: null,
+    graphicUrl: null,
+    description: [
+      "Peer-reviewed medical journal with a unique publishing model.",
+      "Journal articles are accessed by BCH micropayments & articles become public once cost of research is recouped.",
+    ],
+    readMoreUrl: JOGS_READ_MORE_URL
   },
   {
     title: "The Bitcoin Cash Podcast",
@@ -143,7 +160,8 @@ const PROJECTS = [
 const TIMELINE_ITEMS = [
   ...CONFERENCES,
   ...UPGRADES,
-  ...PROJECTS
+  ...PROJECTS,
+  ...INFRASTRUCTURE
 ].sort((a, b) => a.date - b.date)
 
 export default TIMELINE_ITEMS
