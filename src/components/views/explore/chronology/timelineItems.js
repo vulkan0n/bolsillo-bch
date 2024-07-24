@@ -30,6 +30,10 @@ const CW_144_READ_MORE_URL = "https://reference.cash/protocol/forks/hf-20171113"
 const MONOLITH_READ_MORE_URL = "https://reference.cash/protocol/forks/hf-20180515"
 const MAGNETIC_ANOMALY_READ_MORE_URL = "https://reference.cash/protocol/forks/hf-20181115"
 const GREAT_WALL_READ_MORE_URL = "https://reference.cash/protocol/forks/hf-20190515"
+const GRAVITON_READ_MORE_URL = "https://reference.cash/protocol/forks/hf-20191115"
+const PHONON_READ_MORE_URL = "https://reference.cash/protocol/forks/hf-20200515"
+const AXION_READ_MORE_URL = "https://reference.cash/protocol/forks/hf-20201115"
+const BIGBLOCKIFTRUE_READ_MORE_URL = "https://reference.cash/protocol/forks/hf-20210515"
 
 export const CATEGORIES = {
   FORK: {
@@ -112,6 +116,53 @@ const UPGRADES = [
       "SegWit Recovery: Correction of an oversight in the previous upgrade that made SegWit coins unspendable.",
     ],
     readMoreUrl: GREAT_WALL_READ_MORE_URL
+  },
+  {
+    title: "Graviton",
+    date: DateTime.fromISO("2019-11-15"),
+    category: CATEGORIES.FORK.HARD_FORK,
+    videoUrl: null,
+    description: [
+      "BCH continues its cadence of 6-monthly upgrades.",
+      "Schnorr signatures expanded to cover some multisig transactions.",
+      "Malleability mitigations that were previously mempool-enforced are moved to the consensus layer.",
+    ],
+    readMoreUrl: GRAVITON_READ_MORE_URL
+  },
+  {
+    title: "Phonon",
+    date: DateTime.fromISO("2020-05-15"),
+    category: CATEGORIES.FORK.HARD_FORK,
+    videoUrl: null,
+    description: [
+      "BCH continues its cadence of 6-monthly upgrades.",
+      "OP_REVERSEBYTES added & SigChecks system introduced to better match transaction needs with computing resources consumed."
+    ],
+    readMoreUrl: PHONON_READ_MORE_URL
+  },
+  {
+    title: "Axion - BCH/XEC Split",
+    date: DateTime.fromISO("2020-11-15"),
+    category: CATEGORIES.FORK.HARD_FORK,
+    videoUrl: null,
+    description: [
+      "BCH continues its cadence of 6-monthly upgrades with an essential upgrade to its Difficulty Adjustment Algorithm.",
+      "After significant community turmoil, prominent developer Amaury Sechet & his BCHABC node team split off into their own coin 'eCash' (XEC). Contention centered on the introduction of a coinbase 'tax' intended to fund developer activity that the BCH community would not tolerate (for essentially installing a financially priviliged central party to the network).",
+      "ASERT: The 2017 BCH DAA (CW-144) was encouraging miners to switch frenetically between Bitcoin chains & disrupting BCH confirmation times. To resolve this, a new DAA called ASERT was introduced for additional robustness to changing mining conditions."
+    ],
+    readMoreUrl: AXION_READ_MORE_URL
+  },
+  {
+    title: "BigBlockIfTrue",
+    date: DateTime.fromISO("2021-05-15"),
+    category: CATEGORIES.FORK.HARD_FORK,
+    videoUrl: null,
+    description: [
+      "After the exit of BCHABC in the Axion upgrade, BCH switches to a yearly upgrade cadence under the CHIP process. Two new upgrades are added.",
+      "Unconfirmed Transaction Limit Removed: Unconfirmed transaction chains were previously limited to 50 transactions per block. This limit was removed, allowing unlimited length chains. This removed a lot of developer friction for programmers of real-time apps that may chain transactions at high speeds.",
+      "Multiple OP_RETURNs: Additional on-chain data flexibility was introduced by removing a restriction of only one OP_RETURN per transaction."
+    ],
+    readMoreUrl: BIGBLOCKIFTRUE_READ_MORE_URL
   },
   {
     title: "CashTokens",
