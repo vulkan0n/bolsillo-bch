@@ -61,6 +61,15 @@ export const routeExplore = [
         },
       },
       {
+        path: "chronology",
+        async lazy() {
+          const { default: ExploreChronologyView } = await import(
+            "@/views/explore/chronology/ExploreChronologyView"
+          );
+          return { Component: ExploreChronologyView };
+        },
+      },
+      {
         path: "map",
         async lazy() {
           const { default: ExploreMapView } = await import(
