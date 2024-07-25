@@ -27,6 +27,7 @@ const initialState = {
   balance: 0,
   name: "Wallet",
   key_viewed: "",
+  nonce: 0,
 };
 
 // --------------------------------
@@ -89,22 +90,27 @@ export const walletBalanceUpdate = createAction(
 
 export const walletSetName = createAction(
   "wallet/name",
-  (payload: { wallet_id: number; name: string }) => {
-    WalletManagerService().setWalletName(payload.wallet_id, payload.name);
+  (payload: { wallet: WalletEntity; name: string }) => {
+    WalletManagerService(payload.wallet.network).setWalletName(
+      payload.wallet.id,
+      payload.name
+    );
     return { payload };
   }
 );
 
 export const walletSetKeyViewed = createAction(
   "wallet/key_viewed",
-  (payload: { wallet_id: number }) => {
-    const key_viewed = WalletManagerService().updateKeyViewed(
-      payload.wallet_id
-    );
+  (payload: { wallet: WalletEntity }) => {
+    const key_viewed = WalletManagerService(
+      payload.wallet.network
+    ).updateKeyViewed(payload.wallet.id);
 
     return { payload: key_viewed };
   }
 );
+
+export const walletNonce = createAction("wallet/nonce");
 
 export const walletReducer = createReducer(initialState, (builder) => {
   builder
@@ -116,12 +122,15 @@ export const walletReducer = createReducer(initialState, (builder) => {
       state.balance = action.payload;
     })
     .addCase(walletSetName, (state, action) => {
-      if (state.id === action.payload.wallet_id) {
+      if (state.id === action.payload.wallet.id) {
         state.name = action.payload.name;
       }
     })
     .addCase(walletSetKeyViewed, (state, action) => {
       state.key_viewed = action.payload;
+    })
+    .addCase(walletNonce, (state) => {
+      state.nonce += 1;
     });
 });
 

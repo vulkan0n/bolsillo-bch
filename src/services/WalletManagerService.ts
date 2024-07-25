@@ -24,6 +24,7 @@ export interface WalletEntity {
   prefix: string;
   network: ValidBchNetwork;
   walletHash: string;
+  nonce: number;
 }
 
 export class WalletNotExistsError extends Error {
@@ -75,6 +76,8 @@ export default function WalletManagerService(network: ValidBchNetwork) {
 
     // for safety, assume testnet unless we've explicitly stated to be on mainnet
     wallet.prefix = network === "mainnet" ? "bitcoincash" : "bchtest";
+
+    wallet.nonce = 0;
 
     return wallet;
   }
