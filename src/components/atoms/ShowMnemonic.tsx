@@ -25,7 +25,7 @@ export default function ShowMnemonic({ wallet }: { wallet: WalletEntity }) {
       }
 
       setShouldShowRecoveryPhrase(true);
-      dispatch(walletSetKeyViewed({ wallet_id: wallet.id }));
+      dispatch(walletSetKeyViewed({ wallet }));
     } else {
       setShouldShowRecoveryPhrase(false);
     }

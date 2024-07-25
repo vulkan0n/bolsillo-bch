@@ -8,7 +8,11 @@ import {
 } from "@reduxjs/toolkit";
 
 import { RootState } from "@/redux";
-import { walletBalanceUpdate, selectActiveWallet } from "@/redux/wallet";
+import {
+  walletBalanceUpdate,
+  selectActiveWallet,
+  walletNonce,
+} from "@/redux/wallet";
 import { setPreference, selectIsChipnet } from "@/redux/preferences";
 import { txHistoryFetch } from "@/redux/txHistory";
 import { selectNetworkStatus } from "@/redux/device";
@@ -121,7 +125,6 @@ export const syncWalletAddresses = createAsyncThunk(
     const AddressScanner = AddressScannerService(wallet);
 
     AddressScanner.populateAddresses();
-    thunkApi.dispatch(syncChangeAddresses());
 
     Promise.all(
       AddressManager.getReceiveAddresses().map(async (address) => {
@@ -131,6 +134,8 @@ export const syncWalletAddresses = createAsyncThunk(
         );
       })
     );
+
+    thunkApi.dispatch(syncChangeAddresses());
   }
 );
 
@@ -157,14 +162,16 @@ export const syncChangeAddresses = createAsyncThunk(
       });
 
     const batchedPromises = [];
-    const batch_chunk_size = 256;
+    const batch_chunk_size = 1024;
 
     while (promises.length > 0) {
       batchedPromises.concat(promises.slice(0, batch_chunk_size));
       promises.splice(0, batch_chunk_size);
     }
 
-    batchedPromises.forEach((batch) => Promise.all(batch));
+    batchedPromises.forEach(async (batch) => {
+      Promise.all(batch);
+    });
   }
 );
 
@@ -193,6 +200,8 @@ export const syncAddressState = createAsyncThunk(
       thunkApi.dispatch(syncAddressUtxos(addressObj));
       thunkApi.dispatch(syncAddressHistory(addressObj));
     }
+
+    thunkApi.dispatch(walletNonce());
 
     return [addressObj, addressState];
   }
