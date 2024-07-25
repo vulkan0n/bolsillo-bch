@@ -7,11 +7,13 @@ import {
   VerifiedOutlined,
 } from "@ant-design/icons";
 import { setPreference, selectSecuritySettings } from "@/redux/preferences";
+import { selectActiveWallet } from "@/redux/wallet";
 import { selectDeviceInfo } from "@/redux/device";
 import { SettingsContext } from "./SettingsContext";
 import SecurityService from "@/services/SecurityService";
 import Accordion from "@/atoms/Accordion";
 import Button from "@/atoms/Button";
+import KeyWarning from "@/atoms/KeyWarning/KeyWarning";
 import { sha256 } from "@/util/hash";
 
 export default function SecuritySettings() {
@@ -30,28 +32,49 @@ export default function SecuritySettings() {
       });
       const newPinHash = sha256.text(pin);
 
-      dispatch(setPreference({ key: "pinHash", value: newPinHash }));
+      const { value: confirmPin } = await Dialog.prompt({
+        title: "Confirm New PIN",
+        message: "Please confirm your new PIN.",
+        okButtonTitle: "Confirm PIN",
+      });
+      const confirmPinHash = sha256.text(confirmPin);
+
+      if (newPinHash === confirmPinHash) {
+        dispatch(setPreference({ key: "pinHash", value: newPinHash }));
+      } else {
+        await Dialog.alert({
+          message: "PIN confirmation did not match! PIN was not set.",
+        });
+      }
     }
   };
+
+  const activeWallet = useSelector(selectActiveWallet);
+  const isWalletKeyViewed = activeWallet.key_viewed !== null;
 
   return (
     <Accordion icon={LockOutlined} title="Security">
       <Accordion.Child icon={VerifiedOutlined} label="Security Mode">
-        <select
-          className="p-2 bg-white rounded h-10 w-fit"
-          value={authMode}
-          onChange={async (event) => {
-            const { value } = event.target;
-            const isAuthorized = await SecurityService().authorize();
-            if (isAuthorized) {
-              handleSettingsUpdate("authMode", value);
-            }
-          }}
-        >
-          <option value="none">None</option>
-          <option value="pin">PIN</option>
-          {hasBiometric && <option value="bio">Biometric</option>}
-        </select>
+        {!isWalletKeyViewed ? (
+          <KeyWarning wallet={activeWallet} />
+        ) : (
+          <select
+            className="p-2 bg-white rounded h-10 w-fit"
+            value={authMode}
+            disabled={!isWalletKeyViewed}
+            onChange={async (event) => {
+              const { value } = event.target;
+              const isAuthorized = await SecurityService().authorize();
+              if (isAuthorized) {
+                handleSettingsUpdate("authMode", value);
+              }
+            }}
+          >
+            <option value="none">None</option>
+            <option value="pin">PIN</option>
+            {hasBiometric && <option value="bio">Biometric</option>}
+          </select>
+        )}
       </Accordion.Child>
       {authMode === "pin" && (
         <Accordion.Child>

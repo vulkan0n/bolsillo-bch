@@ -28,7 +28,7 @@ Log.time("initDb");
 const SQL = await initSqlJs({ locateFile: () => "/sql-wasm.wasm" });
 
 // pointers for throttling db writes
-const MAX_PENDING_SAVES = 16000;
+const MAX_PENDING_SAVES = 8000;
 const BACKUP_FLUSH_LIMIT = 4;
 let flushCount = 0;
 let pendingCount = 0;
@@ -202,67 +202,80 @@ export default function DatabaseService(db = WALLET_DB) {
 
   // saveDatabase: schedules a write to disk
   // sets a timeout to batch writes together
-  async function saveDatabase(force: boolean = false) {
+  function saveDatabase(force: boolean = false) {
     clearTimeout(flushPendingTimeout);
     flushPendingTimeout = undefined;
     pendingCount += 1;
 
     if (pendingCount > MAX_PENDING_SAVES || force) {
-      pendingCount = 0;
+      _flushDatabase(force);
       flushPendingTimeout = undefined;
-      await _flushDatabase(force);
       return;
     }
 
-    flushPendingTimeout = setTimeout(async () => {
-      pendingCount = 0;
-      flushPendingTimeout = undefined;
-      await _flushDatabase();
+    flushPendingTimeout = setTimeout(() => {
+      if (pendingCount > 0) {
+        queueMicrotask(() => {
+          if (!isFlushing) {
+            _flushDatabase();
+          }
+        });
+      }
     }, 512);
   }
 
   // _flushDatabase [private]: writes database to disk
   async function _flushDatabase(force: boolean = false) {
-    if (!force && (isFlushing || flushPendingTimeout !== undefined)) {
+    if (isFlushing && !force) {
       Log.debug("skipping flush due to flushLock");
       return;
     }
 
-    Log.time("flushDatabase");
-    try {
-      isFlushing = true;
-      const data = db.export().toString();
-      const result = await Filesystem.writeFile({
-        path: SELENE_DB_FILENAME,
-        data,
-        directory: Directory.Library,
-        encoding: Encoding.UTF8,
-        recursive: true,
-      });
+    const doFlush = async () => {
+      Log.time("flushDatabase");
+      try {
+        isFlushing = true;
+        const data = db.export().toString();
+        const result = await Filesystem.writeFile({
+          path: SELENE_DB_FILENAME,
+          data,
+          directory: Directory.Library,
+          encoding: Encoding.UTF8,
+          recursive: true,
+        });
 
-      flushCount += 1;
+        pendingCount = 0;
+        flushCount += 1;
 
-      if (flushCount > BACKUP_FLUSH_LIMIT) {
-        backup_db(db);
-        flushCount = 0;
+        if (flushCount > BACKUP_FLUSH_LIMIT) {
+          queueMicrotask(() => backup_db(db));
+          flushCount = 0;
+        }
+
+        Log.debug("flushDatabase", result);
+      } catch (e) {
+        Log.error("flushDatabase error", e);
+        await dump_db(db);
+      } finally {
+        isFlushing = false;
+        Log.timeEnd("flushDatabase");
       }
+    };
 
-      Log.debug("flushDatabase", result);
-    } catch (e) {
-      Log.error("flushDatabase error", e);
-      await dump_db(db);
-    } finally {
-      isFlushing = false;
-      clearTimeout(flushPendingTimeout);
-      flushPendingTimeout = undefined;
-      Log.timeEnd("flushDatabase");
+    if (force) {
+      Log.debug("Forced flushDatabase!");
+      await doFlush();
+    } else {
+      queueMicrotask(() => {
+        doFlush();
+      });
     }
   }
 }
 
 // force database write on app stop and pause
 App.addListener("appStateChange", async ({ isActive }) => {
-  if (!isActive) {
+  if (!isActive && pendingCount > 0) {
     await DatabaseService().saveDatabase(true);
     Log.debug("flushDatabase on stop");
   }
@@ -270,8 +283,10 @@ App.addListener("appStateChange", async ({ isActive }) => {
 
 // force database write on app stop and pause
 App.addListener("pause", async () => {
-  await DatabaseService().saveDatabase(true);
-  Log.debug("flushDatabase on pause");
+  if (pendingCount > 0) {
+    await DatabaseService().saveDatabase(false);
+    Log.debug("flushDatabase on pause");
+  }
 });
 
 // HERE BE SATS if someone wants to try to steal them!

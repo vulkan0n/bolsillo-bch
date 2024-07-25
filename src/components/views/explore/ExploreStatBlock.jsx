@@ -23,9 +23,7 @@ export default function ExploreStatBlock() {
     return stopPolling;
   }, [startPolling, stopPolling]);
 
-  if (isLoading || !data) {
-    return <p>Loading...</p>;
-  }
+  const isDataUnavailable = isLoading || !data;
 
   const {
     dailyActiveCount,
@@ -36,7 +34,7 @@ export default function ExploreStatBlock() {
     monthlyActivePreviousCount,
     yearlyActiveCount,
     yearlyActivePreviousCount,
-  } = data.activeBitcoinersSummary;
+  } = data?.activeBitcoinersSummary || {};
 
   const dailyChange = dailyActiveCount - dailyActivePreviousCount;
   const dailyChangePercentage =
@@ -75,14 +73,15 @@ export default function ExploreStatBlock() {
             <div
               className={`${isDailyActiveIncrease ? "text-primary" : "text-red-500"} text-lg font-semibold`}
             >
-              {dailyActiveCount}
+              {isDataUnavailable ? "-" : dailyActiveCount}
             </div>
             <div
               className={`text-xs ${isDailyActiveIncrease ? "text-primary" : "text-red-500"}`}
             >
               {isDailyActiveIncrease ? "↑" : "↓"} {isDailyActiveIncrease && "+"}
-              {dailyChange} ({isDailyActiveIncrease && "+"}
-              {dailyChangePercentage}%)
+              {isDataUnavailable ? "-" : dailyChange} (
+              {isDailyActiveIncrease && "+"}
+              {isDataUnavailable ? "-" : dailyChangePercentage}%)
             </div>
           </div>
         </Link>
@@ -93,15 +92,16 @@ export default function ExploreStatBlock() {
             <div
               className={`${isWeeklyActiveIncrease ? "text-primary" : "text-red-500"} text-lg font-semibold`}
             >
-              {weeklyActiveCount}
+              {isDataUnavailable ? "-" : weeklyActiveCount}
             </div>
             <div
               className={`text-xs ${isWeeklyActiveIncrease ? "text-primary" : "text-red-500"}`}
             >
               {isWeeklyActiveIncrease ? "↑" : "↓"}{" "}
               {isWeeklyActiveIncrease && "+"}
-              {weeklyChange} ({isWeeklyActiveIncrease && "+"}
-              {weeklyChangePercentage}%)
+              {isDataUnavailable ? "-" : weeklyChange} (
+              {isWeeklyActiveIncrease && "+"}
+              {isDataUnavailable ? "-" : weeklyChangePercentage}%)
             </div>
           </div>
         </Link>
@@ -112,15 +112,16 @@ export default function ExploreStatBlock() {
             <div
               className={`${isMonthlyActiveIncrease ? "text-primary" : "text-red-500"} text-lg font-semibold`}
             >
-              {monthlyActiveCount}
+              {isDataUnavailable ? "-" : monthlyActiveCount}
             </div>
             <div
               className={`text-xs ${isMonthlyActiveIncrease ? "text-primary" : "text-red-500"}`}
             >
               {isMonthlyActiveIncrease ? "↑" : "↓"}{" "}
               {isMonthlyActiveIncrease && "+"}
-              {monthlyChange} ({isMonthlyActiveIncrease && "+"}
-              {monthlyChangePercentage}%)
+              {isDataUnavailable ? "-" : monthlyChange} (
+              {isMonthlyActiveIncrease && "+"}
+              {isDataUnavailable ? "-" : monthlyChangePercentage}%)
             </div>
           </div>
         </Link>
@@ -131,15 +132,16 @@ export default function ExploreStatBlock() {
             <div
               className={`${isYearlyActiveIncrease ? "text-primary" : "text-red-500"} text-lg font-semibold`}
             >
-              {yearlyActiveCount}
+              {isDataUnavailable ? "-" : yearlyActiveCount}
             </div>
             <div
               className={`text-xs ${isYearlyActiveIncrease ? "text-primary" : "text-red-500"}`}
             >
               {isYearlyActiveIncrease ? "↑" : "↓"}{" "}
               {isYearlyActiveIncrease && "+"}
-              {yearlyChange} ({isYearlyActiveIncrease && "+"}
-              {yearlyChangePercentage}%)
+              {isDataUnavailable ? "-" : yearlyChange} (
+              {isYearlyActiveIncrease && "+"}
+              {isDataUnavailable ? "-" : yearlyChangePercentage}%)
             </div>
           </div>
         </Link>

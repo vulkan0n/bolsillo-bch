@@ -51,15 +51,17 @@ export default function SecurityService() {
 
     if (isAvailable || isFallbackAvailable) {
       try {
-        await NativeBiometric.verifyIdentity({
+        const isSuccess = await NativeBiometric.verifyIdentity({
           reason: "Authorize this action",
           title: "Selene Wallet",
           subtitle: "Authorization Required",
           description: "Please authorize this action.",
           useFallback: !isAvailable && isFallbackAvailable,
-        });
+        })
+          .then(() => true)
+          .catch(() => false);
 
-        isAuthorized = true;
+        isAuthorized = isSuccess;
       } catch (e) {
         Log.warn(e);
       }

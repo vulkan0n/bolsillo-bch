@@ -106,7 +106,7 @@ export default function SettingsWalletView() {
   // handler for wallet name edit button
   const handleEdit = () => {
     if (isEditingWalletName === true) {
-      dispatch(walletSetName({ wallet_id: wallet.id, name: walletEditedName }));
+      dispatch(walletSetName({ wallet, name: walletEditedName }));
       setIsEditingWalletName(false);
       setIsWalletNameSaved(true);
     } else {

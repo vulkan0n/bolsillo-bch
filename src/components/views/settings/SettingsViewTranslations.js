@@ -982,6 +982,12 @@ const translations = {
   hideExploreTab: {
     en: "Hide Explore tab",
   },
+  privacySettings: {
+    en: "Privacy",
+  },
+  sendDailyCheckIn: {
+    en: "Send Stats check-in",
+  },
 };
 
 export default translations;
