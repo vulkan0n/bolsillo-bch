@@ -1,6 +1,7 @@
 import { VerticalTimeline, VerticalTimelineElement } from 'react-vertical-timeline-component';
 import EmbeddedVideo from '../../../atoms/EmbeddedVideo/EmbeddedVideo';
 import { CATEGORIES } from './timelineItems';
+import { mapCategoryToColour } from './utils';
 
 export default function Timeline({ timelineItems }) {
   const isTimelineItemsEmpty = timelineItems.length === 0
@@ -21,12 +22,14 @@ export default function Timeline({ timelineItems }) {
       {timelineItems.map(({ title, date, subtitle, category, videoUrl, graphicUrl, description, readMoreUrl }) => {
         const formattedDate = date.toFormat('dd LLL yyyy')
 
+        const specificColour = mapCategoryToColour(category).rgb
+
         return (
           <VerticalTimelineElement
             key={`${title}-${formattedDate}`}
-            contentStyle={{ background: 'rgb(33, 150, 243)', color: '#fff', paddingTop: 0, paddingBottom: 0 }}
-            contentArrowStyle={{ borderRight: '7px solid  rgb(33, 150, 243)' }}
-            iconStyle={{ background: 'rgb(33, 150, 243)', color: '#fff' }}
+            contentStyle={{ background: `${specificColour}`, color: '#fff', paddingTop: 0, paddingBottom: 0 }}
+            contentArrowStyle={{ borderRight: `7px solid  ${specificColour}` }}
+            iconStyle={{ background: `${specificColour}`, color: '#fff' }}
             icon={null}
           >
             <div className="pb-1" >

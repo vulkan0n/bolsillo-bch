@@ -1,4 +1,5 @@
 import TIMELINE_ITEMS, { CATEGORIES } from './timelineItems';
+import { mapCategoryToColour } from './utils';
 
 export default function FilterPanel({
   isDisplayHardForks,
@@ -33,7 +34,7 @@ export default function FilterPanel({
             setIsDisplayHardForks(isChecked);
           }}
         />
-        <span className="text-blue-500 pr-1">&#9632;</span>
+        <span className={`${mapCategoryToColour(CATEGORIES.FORK.HARD_FORK).className} pr-1`}>&#9632;</span>
         <span>
           {hardForksCount}x{' '}
           {CATEGORIES.FORK.FORK} ({CATEGORIES.FORK.HARD_FORK})
