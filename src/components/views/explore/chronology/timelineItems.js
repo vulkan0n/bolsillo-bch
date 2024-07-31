@@ -1,5 +1,8 @@
 import { DateTime } from "luxon";
 
+const AFOG_GRAPHIC_URL = "https://pbs.twimg.com/profile_images/1719547852722946048/Ap4rOTHp_400x400.jpg"
+const AFOG_APP_URL = '/explore/afog'
+
 const BCH_ARGENTINA_CONFERENCE_VIDEO_URL = "https://www.youtube.com/watch?v=zmt1RiFHMOA"
 const BCH_ARGENTINA_CONFERENCE_READ_MORE_URL = "https://2024.bcharg.com/"
 
@@ -293,6 +296,18 @@ const PROJECTS = [
       "The Bitcoin Cash Podcast publishes its first piece of BCH content with the release of Episode 1.",
     ],
     readMoreUrl: BITCOIN_CASH_PODCAST_URL
+  },
+  {
+    title: "A Fifth Of Gaming",
+    date: DateTime.fromISO("2023-09-22"),
+    category: CATEGORIES.PROJECT_LAUNCH,
+    videoUrl: null,
+    graphicUrl: AFOG_GRAPHIC_URL,
+    description: [
+      "A Fifth Of Gaming, a service for running automated video game tournaments & social evenings with Bitcoin Cash, launches with its first public tournament.",
+    ],
+    readMoreUrl: null,
+    appUrl: AFOG_APP_URL
   },
 ]
 

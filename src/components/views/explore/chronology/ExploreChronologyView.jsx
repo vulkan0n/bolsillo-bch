@@ -38,6 +38,10 @@ export default function ExploreChronologyView() {
       return false
     }
 
+    if (item.category === CATEGORIES.UPCOMING && !isDisplayUpcoming) {
+      return false
+    }
+
     return true
   })
 

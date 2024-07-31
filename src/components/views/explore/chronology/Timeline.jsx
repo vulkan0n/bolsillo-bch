@@ -2,9 +2,11 @@ import { VerticalTimeline, VerticalTimelineElement } from 'react-vertical-timeli
 import EmbeddedVideo from '../../../atoms/EmbeddedVideo/EmbeddedVideo';
 import { CATEGORIES } from './timelineItems';
 import { mapCategoryToColour } from './utils';
+import { useNavigate } from "react-router-dom";
 
 export default function Timeline({ timelineItems }) {
   const isTimelineItemsEmpty = timelineItems.length === 0
+  const navigate = useNavigate();
 
   if (isTimelineItemsEmpty) {
     return (
@@ -19,7 +21,7 @@ export default function Timeline({ timelineItems }) {
       lineColor={'black'}
       layout={'1-column-left'}
     >
-      {timelineItems.map(({ title, date, subtitle, category, videoUrl, graphicUrl, description, readMoreUrl }) => {
+      {timelineItems.map(({ title, date, subtitle, category, videoUrl, graphicUrl, description, readMoreUrl, appUrl }) => {
         const formattedDate = date.toFormat('dd LLL yyyy')
 
         const specificColour = mapCategoryToColour(category).rgb
@@ -63,6 +65,16 @@ export default function Timeline({ timelineItems }) {
                 Read More
               </a>
             </div>}
+
+            {appUrl && <div>
+              <span
+                onClick={() => navigate(appUrl)}
+                className="flex justify-center m-1 rounded-full border border-2 border-primary bg-primary text-zinc-100 shadow-md opacity-90"
+              >
+                Try it in Selene!
+              </span>
+            </div>}
+
           </VerticalTimelineElement>
         )
       })}
