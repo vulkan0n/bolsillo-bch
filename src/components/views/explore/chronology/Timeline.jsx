@@ -7,7 +7,9 @@ export default function Timeline({ timelineItems }) {
 
   if (isTimelineItemsEmpty) {
     return (
-      <div>No items found</div>
+      <div className="m-2">
+        <div className="flex justify-center items-center h-full">No items found. Adjust filters to populate.</div>
+      </div>
     )
   }
 
