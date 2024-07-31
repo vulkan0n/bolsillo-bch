@@ -10,6 +10,7 @@ import Timeline from './Timeline';
 
 export default function ExploreChronologyView() {
   const [isReverseTimeline, setIsReverseTimeline] = useState(false)
+  const [isDisplayUpcoming, setIsDisplayUpcoming] = useState(true)
   const [isDisplayHardForks, setIsDisplayHardForks] = useState(true)
   const [isDisplaySoftForks, setIsDisplaySoftForks] = useState(true)
   const [isDisplayConferences, setIsDisplayConferences] = useState(true)
@@ -60,11 +61,13 @@ export default function ExploreChronologyView() {
       <div>{isReverseTimeline.toString()}</div> */}
 
       <FilterPanel
+        isDisplayUpcoming={isDisplayUpcoming}
         isDisplayHardForks={isDisplayHardForks}
         isDisplaySoftForks={isDisplaySoftForks}
         isDisplayConferences={isDisplayConferences}
         isDisplayProjectLaunches={isDisplayProjectLaunches}
         isDisplayInfrastructure={isDisplayInfrastructure}
+        setIsDisplayUpcoming={setIsDisplayUpcoming}
         setIsDisplayHardForks={setIsDisplayHardForks}
         setIsDisplaySoftForks={setIsDisplaySoftForks}
         setIsDisplayConferences={setIsDisplayConferences}

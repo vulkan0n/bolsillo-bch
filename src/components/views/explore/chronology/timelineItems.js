@@ -44,7 +44,8 @@ export const CATEGORIES = {
   },
   CONFERENCE: "Conference",
   PROJECT_LAUNCH: "Project Launch",
-  INFRASTRUCTURE: "Developer Tools & Infrastructure"
+  INFRASTRUCTURE: "Developer Tools & Infrastructure",
+  UPCOMING: "Upcoming (Planned / Theoretical)"
 }
 
 const UPGRADES = [

@@ -2,11 +2,13 @@ import TIMELINE_ITEMS, { CATEGORIES } from './timelineItems';
 import { mapCategoryToColour } from './utils';
 
 export default function FilterPanel({
+  isDisplayUpcoming,
   isDisplayHardForks,
   isDisplaySoftForks,
   isDisplayConferences,
   isDisplayProjectLaunches,
   isDisplayInfrastructure,
+  setIsDisplayUpcoming,
   setIsDisplayHardForks,
   setIsDisplaySoftForks,
   setIsDisplayConferences,
@@ -19,10 +21,28 @@ export default function FilterPanel({
   const conferencesCount = TIMELINE_ITEMS.filter(item => item.category === CATEGORIES.CONFERENCE).length
   const projectLaunchesCount = TIMELINE_ITEMS.filter(item => item.category === CATEGORIES.PROJECT_LAUNCH).length
   const infrastructureCount = TIMELINE_ITEMS.filter(item => item.category === CATEGORIES.INFRASTRUCTURE).length
+  const upcomingCount = TIMELINE_ITEMS.filter(item => item.category === CATEGORIES.UPCOMING).length
 
   return (
     <div className="px-6 pb-1">
       <span className="text-lg font-bold">Categories</span>
+
+      <div>
+        <input
+          type="checkbox"
+          className="mr-1"
+          checked={isDisplayUpcoming}
+          onChange={(event) => {
+            const { checked: isChecked } = event.target;
+            setIsDisplayUpcoming(isChecked);
+          }}
+        />
+        <span className={`${mapCategoryToColour(CATEGORIES.UPCOMING).className} pr-1`}>&#9632;</span>
+        <span>
+          {upcomingCount}x{' '}
+          {CATEGORIES.UPCOMING}
+        </span>
+      </div>
 
       <div>
         <input
