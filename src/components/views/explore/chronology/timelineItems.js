@@ -1,5 +1,11 @@
 import { DateTime } from "luxon";
 
+const BCH_ARGENTINA_CONFERENCE_VIDEO_URL = "https://www.youtube.com/watch?v=zmt1RiFHMOA"
+const BCH_ARGENTINA_CONFERENCE_READ_MORE_URL = "https://2024.bcharg.com/"
+
+const LOCK_IN_2025_URL = "https://youtu.be/oPQ8w0yZ88E?t=247"
+const LOCK_IN_2025_READ_MORE_URL = "https://bitcoincashresearch.org/t/chip-2021-05-targeted-virtual-machine-limits/437/26"
+
 const CASHTOKENS_EXPLANER_VIDEO_URL = "https://www.youtube.com/watch?v=uIhQKQ4efnQ"
 const CASHTOKENS_FAQ_URL = "https://bitcoincashpodcast.com/faqs/Tech/what-is-cashtokens"
 
@@ -290,8 +296,37 @@ const PROJECTS = [
   },
 ]
 
+const UPCOMING = [
+  {
+    title: "BCH Argentina Conference",
+    date: DateTime.fromISO("2024-10-12"),
+    category: CATEGORIES.UPCOMING,
+    videoUrl: BCH_ARGENTINA_CONFERENCE_VIDEO_URL,
+    description: [
+      "Upcoming conference in Buenos Aires, Argentina.",
+      "Gathering for the sizeable local merchant community & opportunity for international guests to experience the thriving local BCH economy.",
+      "Tickets on sale now!"
+    ],
+    readMoreUrl: BCH_ARGENTINA_CONFERENCE_READ_MORE_URL
+  },
+  {
+    title: "Upgrade Lock in for 2025 Upgrade",
+    date: DateTime.fromISO("2024-11-15"),
+    category: CATEGORIES.UPCOMING,
+    videoUrl: LOCK_IN_2025_URL,
+    description: [
+      "Deadline for community consensus on CHIP Upgrades suggested for May 2025.",
+      "Proposals sufficiently supported are 'locked in' for implementation & go live on May 15 2025.",
+      'Proposals with insufficient support remain in revision & discussion for the following year.',
+      'The current proposals seriously under consideration are VM_Limits & accompanying work on BigInts.'
+    ],
+    readMoreUrl: LOCK_IN_2025_READ_MORE_URL
+  }
+]
+
 // Default sort by reverse-chronological
 const TIMELINE_ITEMS = [
+  ...UPCOMING,
   ...CONFERENCES,
   ...UPGRADES,
   ...PROJECTS,
