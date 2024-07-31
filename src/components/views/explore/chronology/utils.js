@@ -32,9 +32,15 @@ const COLOURS = {
 export const mapCategoryToColour = (category) => {
   switch (category) {
     case CATEGORIES.FORK.HARD_FORK:
-      return COLOURS.RED
-    case CATEGORIES.FORK.SOFT_FORK:
       return COLOURS.LIME
+    case CATEGORIES.FORK.SOFT_FORK:
+      return COLOURS.RED
+    case CATEGORIES.CONFERENCE:
+      return COLOURS.CYAN
+    case CATEGORIES.PROJECT_LAUNCH:
+      return COLOURS.INDIGO
+    case CATEGORIES.INFRASTRUCTURE:
+      return COLOURS.VIOLET
     default:
       return COLOURS.BLUE
   }

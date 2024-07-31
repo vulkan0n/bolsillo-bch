@@ -51,7 +51,7 @@ export default function FilterPanel({
             setIsDisplaySoftForks(isChecked);
           }}
         />
-        <span className="text-blue-500 pr-1">&#9632;</span>
+        <span className={`${mapCategoryToColour(CATEGORIES.FORK.SOFT_FORK).className} pr-1`}>&#9632;</span>
         <span>{softForksCount}x {' '}
           {CATEGORIES.FORK.FORK} ({CATEGORIES.FORK.SOFT_FORK})
         </span>
@@ -67,7 +67,7 @@ export default function FilterPanel({
             setIsDisplayConferences(isChecked);
           }}
         />
-        <span className="text-blue-500 pr-1">&#9632;</span>
+        <span className={`${mapCategoryToColour(CATEGORIES.CONFERENCE).className} pr-1`}>&#9632;</span>
         <span>{conferencesCount}x {CATEGORIES.CONFERENCE}</span>
       </div>
 
@@ -81,7 +81,7 @@ export default function FilterPanel({
             setIsDisplayProjectLaunches(isChecked);
           }}
         />
-        <span className="text-blue-500 pr-1">&#9632;</span>
+        <span className={`${mapCategoryToColour(CATEGORIES.PROJECT_LAUNCH).className} pr-1`}>&#9632;</span>
         <span>{projectLaunchesCount}x {CATEGORIES.PROJECT_LAUNCH}</span>
       </div>
 
@@ -95,7 +95,7 @@ export default function FilterPanel({
             setIsDisplayInfrastructure(isChecked);
           }}
         />
-        <span className="text-blue-500 pr-1">&#9632;</span>
+        <span className={`${mapCategoryToColour(CATEGORIES.INFRASTRUCTURE).className} pr-1`}>&#9632;</span>
         <span>{infrastructureCount}x {CATEGORIES.INFRASTRUCTURE}</span>
       </div>
     </div >
