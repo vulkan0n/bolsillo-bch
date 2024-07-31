@@ -43,7 +43,7 @@ export default function ExploreViewHome() {
           to="/explore/afog"
         />
       )}
-      {isExperimental && (
+      {isPrerelease && (
         <ExploreApp
           icon={ProfileOutlined}
           name="Chronology"
