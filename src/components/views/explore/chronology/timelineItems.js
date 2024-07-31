@@ -1,5 +1,7 @@
 import { DateTime } from "luxon";
 
+const GENESIS_READ_MORE_URL = "https://blockchair.com/bitcoin-cash/block/0"
+
 const AFOG_GRAPHIC_URL = "https://pbs.twimg.com/profile_images/1719547852722946048/Ap4rOTHp_400x400.jpg"
 const AFOG_APP_URL = '/explore/afog'
 
@@ -54,7 +56,8 @@ export const CATEGORIES = {
   CONFERENCE: "Conference",
   PROJECT_LAUNCH: "Project Launch",
   INFRASTRUCTURE: "Developer Tools & Infrastructure",
-  UPCOMING: "Upcoming (Planned / Theoretical)"
+  UPCOMING: "Upcoming (Planned / Theoretical)",
+  HISTORIC_EVENT: "Historic Event"
 }
 
 const UPGRADES = [
@@ -339,13 +342,30 @@ const UPCOMING = [
   }
 ]
 
+const HISTORIC_EVENT = [
+  {
+    title: "Genesis Block",
+    date: DateTime.fromISO("2009-01-03"),
+    category: CATEGORIES.HISTORIC_EVENT,
+    videoUrl: null,
+    description: [
+      "Satoshi Nakamoto starts the Bitcoin network by mining the very first block (Block 0).",
+      "He includes a message embedded in the block: 'The Times 03/Jan/2009 Chancellor on brink of second bailout for banks', a reference to the days headline from British newspaper The Times.",
+      'This message served the dual purpose of proving Satoshi had not begun work on the Genesis block earlier & establishing a statement as to the problems Bitcoin was created to solve.'
+    ],
+    readMoreUrl: GENESIS_READ_MORE_URL
+  }
+
+]
+
 // Default sort by reverse-chronological
 const TIMELINE_ITEMS = [
   ...UPCOMING,
   ...CONFERENCES,
   ...UPGRADES,
   ...PROJECTS,
-  ...INFRASTRUCTURE
+  ...INFRASTRUCTURE,
+  ...HISTORIC_EVENT
 ].sort((a, b) => b.date - a.date)
 
 export default TIMELINE_ITEMS

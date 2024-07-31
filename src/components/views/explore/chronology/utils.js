@@ -27,6 +27,10 @@ const COLOURS = {
     className: 'text-violet-500',
     rgb: 'rgb(139 92 246)'
   },
+  PINK: {
+    className: 'text-pink-500',
+    rgb: 'rgb(236 72 153)'
+  },
   GRAY: {
     className: 'text-gray-400',
     rgb: 'rgb(156 163 175)'
@@ -47,6 +51,8 @@ export const mapCategoryToColour = (category) => {
       return COLOURS.VIOLET
     case CATEGORIES.UPCOMING:
       return COLOURS.GRAY
+    case CATEGORIES.HISTORIC_EVENT:
+      return COLOURS.PINK
     default:
       return COLOURS.BLUE
   }

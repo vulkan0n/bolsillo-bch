@@ -8,12 +8,14 @@ export default function FilterPanel({
   isDisplayConferences,
   isDisplayProjectLaunches,
   isDisplayInfrastructure,
+  isDisplayHistoricEvent,
   setIsDisplayUpcoming,
   setIsDisplayHardForks,
   setIsDisplaySoftForks,
   setIsDisplayConferences,
   setIsDisplayProjectLaunches,
-  setIsDisplayInfrastructure
+  setIsDisplayInfrastructure,
+  setIsDisplayHistoricEvent
 }) {
 
   const hardForksCount = TIMELINE_ITEMS.filter(item => item.category === CATEGORIES.FORK.HARD_FORK).length
@@ -22,6 +24,7 @@ export default function FilterPanel({
   const projectLaunchesCount = TIMELINE_ITEMS.filter(item => item.category === CATEGORIES.PROJECT_LAUNCH).length
   const infrastructureCount = TIMELINE_ITEMS.filter(item => item.category === CATEGORIES.INFRASTRUCTURE).length
   const upcomingCount = TIMELINE_ITEMS.filter(item => item.category === CATEGORIES.UPCOMING).length
+  const historicEventCount = TIMELINE_ITEMS.filter(item => item.category === CATEGORIES.HISTORIC_EVENT).length
 
   return (
     <div className="px-6 pb-1">
@@ -117,6 +120,20 @@ export default function FilterPanel({
         />
         <span className={`${mapCategoryToColour(CATEGORIES.INFRASTRUCTURE).className} pr-1`}>&#9632;</span>
         <span>{infrastructureCount}x {CATEGORIES.INFRASTRUCTURE}</span>
+      </div>
+
+      <div>
+        <input
+          type="checkbox"
+          className="mr-1"
+          checked={isDisplayHistoricEvent}
+          onChange={(event) => {
+            const { checked: isChecked } = event.target;
+            setIsDisplayHistoricEvent(isChecked);
+          }}
+        />
+        <span className={`${mapCategoryToColour(CATEGORIES.HISTORIC_EVENT).className} pr-1`}>&#9632;</span>
+        <span>{historicEventCount}x {CATEGORIES.HISTORIC_EVENT}</span>
       </div>
     </div >
   );
