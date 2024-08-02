@@ -56,7 +56,8 @@ const HIJACKING_BITCOIN_GRAPHIC_URL = "https://bitcoincashpodcast.com/assets/ima
 const {
   categories: {
     fork, softFork, hardFork, conference, projectLaunch, infrastructure, upcoming, historicEvent
-  }
+  },
+  upgrades
 } = translations
 
 export const CATEGORIES = {
@@ -79,7 +80,7 @@ const UPGRADES = [
     category: CATEGORIES.FORK.SOFT_FORK,
     videoUrl: null,
     description: [
-      "Addition of OP_CHECKSEQUENCEVERIFY.",
+      translate(upgrades.opCheckSeqVerify.description),
     ],
     readMoreUrl: null
   },
@@ -89,9 +90,9 @@ const UPGRADES = [
     category: CATEGORIES.FORK.HARD_FORK,
     videoUrl: null,
     description: [
-      "Mired in the chaos of The Blocksize War, big blockers take a stand & split the original Bitcoin into separate BTC & BCH chains.",
-      "UAHF stands for User Activated Hard Fork.",
-      "The initial upgrade raised the blocksize from 1MB to 8MB & pre-empted the incoming (unwanted) SegWit changes later added with a UASF (Soft Fork) to the BTC side.",
+      translate(upgrades.uahf.description),
+      translate(upgrades.uahf.description2),
+      translate(upgrades.uahf.description3),
     ],
     readMoreUrl: UAHF_READ_MORE_URL
   },
@@ -101,8 +102,8 @@ const UPGRADES = [
     category: CATEGORIES.FORK.HARD_FORK,
     videoUrl: null,
     description: [
-      "The BCH Difficulty Adjustment Algorithm updated to cw-144 to help it better handle the rapid price & hashrate fluctuations resulting from sharing SHA256 miners with the BTC chain.",
-      "Although initially resource intensive to research & implement, this greatly increased BCH resilience in comparison to BTC.",
+      translate(upgrades.cw144.description),
+      translate(upgrades.cw144.description2),
     ],
     readMoreUrl: CW_144_READ_MORE_URL
   },
@@ -112,9 +113,9 @@ const UPGRADES = [
     category: CATEGORIES.FORK.HARD_FORK,
     videoUrl: null,
     description: [
-      "BCH begins a cadence of 6-monthly upgrades. Two changes are implemented, increased blocksize & extra op-codes.",
-      "32 MB blocks: Network capacity raised 4x after sufficient research & testing done to ensure network resilience.",
-      "OP_Codes: Several OP_codes (including OP_CAT, OP_DIV) deactivated in 2010 & 2011 are reactivated on BCH after re-examination & redesigning as necessary to restore Bitcoin script functionality.",
+      translate(upgrades.monolith.description),
+      translate(upgrades.monolith.description2),
+      translate(upgrades.monolith.description3),
     ],
     readMoreUrl: MONOLITH_READ_MORE_URL
   },
