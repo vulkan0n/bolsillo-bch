@@ -36,7 +36,7 @@ const translations = {
     ur: "کیمرہ اجازت درکار ہے",
     vi: "Yêu cầu quyền truy cập máy ảnh",
     zh: "需要相机权限",
-    zh_TW: "需要相機許可",
+    zh_TW: "需要相機許可"
   },
   permissionMessage: {
     ar: "إذن الكاميرا مطلوب لاستخدام الماسح الضوئي لرمز الاستجابة السريعة. هل ترغب في فتح إعدادات جهازك؟",
@@ -75,7 +75,7 @@ const translations = {
     ur: "کیمرہ کی اجازت QR کوڈ اسکینر کا استعمال کرنے کے لئے ضروری ہے۔ کیا آپ اپنی ڈیوائس کی ترتیبات کھولنا چاہیں گے؟",
     vi: "Cần cấp quyền truy cập camera để sử dụng máy quét mã QR. Bạn có muốn mở cài đặt thiết bị không?",
     zh: "使用QR码扫描器需要相机权限。是否打开设备设置？",
-    zh_TW: "使用二維碼掃描儀需要相機許可。您想打開您的設備設置嗎？",
+    zh_TW: "使用二維碼掃描儀需要相機許可。您想打開您的設備設置嗎？"
   },
   scan: {
     ar: "مسح",
@@ -114,7 +114,7 @@ const translations = {
     ur: "اسکین کریں",
     vi: "Quét",
     zh: "扫描",
-    zh_TW: "掃描",
+    zh_TW: "掃描"
   },
   close: {
     ar: "يغلق",
@@ -153,8 +153,8 @@ const translations = {
     ur: "بند کریں",
     vi: "Đóng",
     zh: "关闭",
-    zh_TW: "關閉",
-  },
+    zh_TW: "關閉"
+  }
 };
 
 export default translations;

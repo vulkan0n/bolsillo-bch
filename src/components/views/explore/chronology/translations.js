@@ -255,7 +255,7 @@ const translations = {
       }
     }
   },
-  historicEvents: {
+  historic: {
     genesisBlock: {
       description: {
         en: "Satoshi Nakamoto starts the Bitcoin network by mining the very first block (Block 0)."

@@ -36,7 +36,7 @@ const translations = {
     ur: "حالیہ لین دین",
     vi: "Giao dịch Gần đây",
     zh: "最近的交易",
-    zh_TW: "最近交易",
+    zh_TW: "最近交易"
   },
   back: {
     ar: "خلف",
@@ -75,8 +75,8 @@ const translations = {
     ur: "واپس",
     vi: "Quay lại",
     zh: "返回",
-    zh_TW: "後退",
-  },
+    zh_TW: "後退"
+  }
 };
 
 export default translations;
