@@ -47,6 +47,9 @@ const AXION_READ_MORE_URL = "https://reference.cash/protocol/forks/hf-20201115"
 const BIGBLOCKIFTRUE_READ_MORE_URL = "https://reference.cash/protocol/forks/hf-20210515"
 const U8_READ_MORE_URL = "https://reference.cash/protocol/forks/hf-20220515"
 
+const HIJACKING_BITCOIN_READ_MORE_URL = "https://bitcoincashpodcast.com/faqs/Media/what-about-roger-vers-book-hijacking-bitcoin"
+const HIJACKING_BITCOIN_GRAPHIC_URL = "https://bitcoincashpodcast.com/assets/images/hijacking-bitcoin-5542bf1c53b9af5dc7226cbb569cc105.png"
+
 export const CATEGORIES = {
   FORK: {
     FORK: "Protocol Upgrade",
@@ -354,8 +357,19 @@ const HISTORIC_EVENT = [
       'This message served the dual purpose of proving Satoshi had not begun work on the Genesis block earlier & establishing a statement as to the problems Bitcoin was created to solve.'
     ],
     readMoreUrl: GENESIS_READ_MORE_URL
+  },
+  {
+    title: "Hijacking Bitcoin",
+    date: DateTime.fromISO("2024-04-05"),
+    category: CATEGORIES.HISTORIC_EVENT,
+    videoUrl: null,
+    graphicUrl: HIJACKING_BITCOIN_GRAPHIC_URL,
+    description: [
+      "Roger Ver & Steve Patterson release Hijacking Bitcoin - a well-cited exposé of the takeover of BTC & the origins of the BTC/BCH split.",
+      "The book immediately makes a giant splash in the cryptocurrency industry as many people hear this essential information for the first time.",
+    ],
+    readMoreUrl: HIJACKING_BITCOIN_READ_MORE_URL
   }
-
 ]
 
 // Default sort by reverse-chronological
