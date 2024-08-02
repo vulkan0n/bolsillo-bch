@@ -3,6 +3,28 @@ import isValidJSON from "./isValidJson.js";
 import fs from "fs";
 import { ISO_639_1_LANGUAGES } from "./addLanguages.js";
 
+async function processObject(obj) {
+  const result = {};
+  for (const key in obj) {
+    if (Object.prototype.hasOwnProperty.call(obj, key)) {
+      const item = obj[key];
+      if (typeof item === 'object' && item !== null && !item.en) {
+        // Recursively process nested objects
+        // Unless the object has an "en" key, ie. is the base object
+        // for translation strings
+        result[key] = await processObject(item);
+      } else {
+        // Translate string values
+        console.log('-----')
+        console.log('item', item)
+        console.log({ key })
+        result[key] = await translateJSONKeys(item, ISO_639_1_LANGUAGES);
+      }
+    }
+  }
+  return result;
+}
+
 async function processFile(filePath) {
   try {
     // Read the original file content
@@ -22,19 +44,7 @@ async function processFile(filePath) {
       .replace(/,\s+}/g, "}");
 
     const inputJSON = JSON.parse(originalJSON);
-    const result = {};
-
-    // Iterate over the JSON object and run each item through the function
-    for (const key in inputJSON) {
-      if (Object.prototype.hasOwnProperty.call(inputJSON, key)) {
-        const item = inputJSON[key];
-        const processedContent = await translateJSONKeys(
-          item,
-          ISO_639_1_LANGUAGES
-        );
-        result[key] = processedContent;
-      }
-    }
+    const result = await processObject(inputJSON);
 
     const startFile = "const translations = ";
     const endFile = ";\n\nexport default translations;\n";
