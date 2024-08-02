@@ -8,6 +8,11 @@ import TIMELINE_ITEMS, { CATEGORIES } from './timelineItems';
 import FilterPanel from './FilterPanel';
 import Timeline from './Timeline';
 
+import { translate } from "@/util/translations";
+import translations from "./translations";
+
+const { chronology, description } = translations
+
 export default function ExploreChronologyView() {
   const [isDisplayUpcoming, setIsDisplayUpcoming] = useState(true)
   const [isDisplayHardForks, setIsDisplayHardForks] = useState(true)
@@ -52,8 +57,8 @@ export default function ExploreChronologyView() {
   return (
     <div>
       <AppHero
-        title="Chronology"
-        description="Explore the history of BCH upgrades, apps, conferences & historical events."
+        title={translate(chronology)}
+        description={translate(description)}
         icon={<ProfileOutlined className="text-xl my-auto text-zinc-200" />}
       />
 

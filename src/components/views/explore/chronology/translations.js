@@ -1,6 +1,9 @@
 const translations = {
-  debug: {
-    en: "Translation",
+  chronology: {
+    en: "Chronology",
+  },
+  description: {
+    en: "Explore the history of BCH upgrades, apps, conferences & historical events.",
   },
 };
 
