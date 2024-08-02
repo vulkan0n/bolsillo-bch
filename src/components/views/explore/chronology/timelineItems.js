@@ -125,10 +125,10 @@ const UPGRADES = [
     category: CATEGORIES.FORK.HARD_FORK,
     videoUrl: null,
     description: [
-      "BCH continues its cadence of 6-monthly upgrades. Two changes are implemented, CTOR & new OP_Codes.",
-      "In protest of these changes, the 'Bitcoin Satoshi's Vision' (BSV) community split the chain to follow their own direction after a dramatic 'Hash War' in which they fail to secure control of the BCH chain.",
-      "CTOR (Canonical Transaction Ordering): Transaction ordering within a block must conform to an exact sorting by numerically ascending transaction ids. This improves scaling by reducing need to transmit ordering information & improve transaction parallel processing.",
-      "OP_CHECKDATASIG & OP_CHECKDATASIGVERIFY: New OP_Codes introduced allowing verification of non-blockchain data, for example oracle messages.",
+      translate(upgrades.magneticAnomaly.description),
+      translate(upgrades.magneticAnomaly.description2),
+      translate(upgrades.magneticAnomaly.description3),
+      translate(upgrades.magneticAnomaly.description4),
     ],
     readMoreUrl: MAGNETIC_ANOMALY_READ_MORE_URL
   },
@@ -138,9 +138,9 @@ const UPGRADES = [
     category: CATEGORIES.FORK.HARD_FORK,
     videoUrl: null,
     description: [
-      "BCH continues its cadence of 6-monthly upgrades. Schnorr signatures added & SegWit coins recovery enabled.",
-      "Schnorr signatures: A new cryptographic signature scheme is added for some OP_Codes to resolve 3rd party malleability among other reasons.",
-      "SegWit Recovery: Correction of an oversight in the previous upgrade that made SegWit coins unspendable.",
+      translate(upgrades.greatWall.description),
+      translate(upgrades.greatWall.description2),
+      translate(upgrades.greatWall.description3),
     ],
     readMoreUrl: GREAT_WALL_READ_MORE_URL
   },
@@ -150,9 +150,9 @@ const UPGRADES = [
     category: CATEGORIES.FORK.HARD_FORK,
     videoUrl: null,
     description: [
-      "BCH continues its cadence of 6-monthly upgrades.",
-      "Schnorr signatures expanded to cover some multisig transactions.",
-      "Malleability mitigations that were previously mempool-enforced are moved to the consensus layer.",
+      translate(upgrades.graviton.description),
+      translate(upgrades.graviton.description2),
+      translate(upgrades.graviton.description3),
     ],
     readMoreUrl: GRAVITON_READ_MORE_URL
   },
@@ -162,8 +162,8 @@ const UPGRADES = [
     category: CATEGORIES.FORK.HARD_FORK,
     videoUrl: null,
     description: [
-      "BCH continues its cadence of 6-monthly upgrades.",
-      "OP_REVERSEBYTES added & SigChecks system introduced to better match transaction needs with computing resources consumed."
+      translate(upgrades.phonon.description),
+      translate(upgrades.phonon.description2),
     ],
     readMoreUrl: PHONON_READ_MORE_URL
   },
@@ -173,9 +173,9 @@ const UPGRADES = [
     category: CATEGORIES.FORK.HARD_FORK,
     videoUrl: null,
     description: [
-      "BCH continues its cadence of 6-monthly upgrades with an essential upgrade to its Difficulty Adjustment Algorithm.",
-      "After significant community turmoil, prominent developer Amaury Sechet & his BCHABC node team split off into their own coin 'eCash' (XEC). Contention centered on the introduction of a coinbase 'tax' intended to fund developer activity that the BCH community would not tolerate (for essentially installing a financially priviliged central party to the network).",
-      "ASERT: The 2017 BCH DAA (CW-144) was encouraging miners to switch frenetically between Bitcoin chains & disrupting BCH confirmation times. To resolve this, a new DAA called ASERT was introduced for additional robustness to changing mining conditions."
+      translate(upgrades.axion.description),
+      translate(upgrades.axion.description2),
+      translate(upgrades.axion.description3),
     ],
     readMoreUrl: AXION_READ_MORE_URL
   },
@@ -185,9 +185,9 @@ const UPGRADES = [
     category: CATEGORIES.FORK.HARD_FORK,
     videoUrl: null,
     description: [
-      "After the exit of BCHABC in the Axion upgrade, BCH switches to a yearly upgrade cadence under the CHIP process. Two new upgrades are added.",
-      "Unconfirmed Transaction Limit Removed: Unconfirmed transaction chains were previously limited to 50 transactions per block. This limit was removed, allowing unlimited length chains. This removed a lot of developer friction for programmers of real-time apps that may chain transactions at high speeds.",
-      "Multiple OP_RETURNs: Additional on-chain data flexibility was introduced by removing a restriction of only one OP_RETURN per transaction."
+      translate(upgrades.bigBlockIfTrue.description),
+      translate(upgrades.bigBlockIfTrue.description2),
+      translate(upgrades.bigBlockIfTrue.description3),
     ],
     readMoreUrl: BIGBLOCKIFTRUE_READ_MORE_URL
   },
@@ -197,10 +197,10 @@ const UPGRADES = [
     category: CATEGORIES.FORK.HARD_FORK,
     videoUrl: null,
     description: [
-      "Yearly BCH protocol upgrades in May continue. Three new upgrades - introspection, bigger integers & OP_MUL.",
-      "Introspection: Covenents were enabled by Magnetic Anomaly in November 2018, but efficiency & ease of use was very low. Introspection OP_Codes added to significantly improve the developer experience & power of BCH smart contract programming.",
-      "64 Bit Integers: 32 bit integers were restricting the ease & potential of mathematical operations in smart contracts. The range of usable numbers expanded enormously to 64 bits.",
-      "OP_MUL: Mathematics OP_Code re-enabled in parallel with 64 bit integers."
+      translate(upgrades.u8.description),
+      translate(upgrades.u8.description2),
+      translate(upgrades.u8.description3),
+      translate(upgrades.u8.description4),
     ],
     readMoreUrl: U8_READ_MORE_URL
   },
@@ -210,7 +210,7 @@ const UPGRADES = [
     category: CATEGORIES.FORK.HARD_FORK,
     videoUrl: CASHTOKENS_EXPLANER_VIDEO_URL,
     description: [
-      "Protocol native CashTokens added to BCH, allowing for smart-contracts, fungible tokens & non-fungible tokens directly validated by the network.",
+      translate(upgrades.cashtokens.description),
     ],
     readMoreUrl: CASHTOKENS_FAQ_URL
   },
@@ -221,8 +221,8 @@ const UPGRADES = [
     category: CATEGORIES.FORK.HARD_FORK,
     videoUrl: ABLA_EXPLAINER_VIDEO_URL,
     description: [
-      "BCH's 32 MB blocksize limit replaced with a new adjustable limit that scales with and responds intelligently to live network traffic.",
-      "Upgrade was celebrated at BCH BLISS in Ljubljana, Slovenia."
+      translate(upgrades.abla.description),
+      translate(upgrades.abla.description2),
     ],
     readMoreUrl: ABLA_FAQ_URL
   }
