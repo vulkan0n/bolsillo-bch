@@ -85,7 +85,9 @@ $ GOOGLE_TRANSLATE_API_KEY="XXXXXXXXX" node ./automation/addLanguages.js
 # Please read below about the cost of API credits!!
 ```
 
-Translation files are colocated with the file needing the translation strings. The script scans the entire `src` folder for files that begin exactly `const translations = {`. For every found file, it looks in the **second** layer of the object (first is the string identifier) for the "en" key, translates it into every language key we support (skipping any that are already known), and overwrites the original file with the new values included in alphabetical order by language-key.
+Translation files are colocated with the file needing the translation strings. The script scans the entire `src` folder for files that begin exactly `const translations = {`. For every found file, it recursively looks through the objects from until it hits an object containing an "en" key, translates it into every language key we support (skipping any that are already known), and overwrites the original file with the new values included in alphabetical order by language-key.
+
+NOTE: Translation files cannot include ":" or "'" within the string values, as this will be incorrectly confused for JSON notation. You can prefer "-" to ":" and "`" to "'" to avoid this.
 
 Start of a translation file sample:
 

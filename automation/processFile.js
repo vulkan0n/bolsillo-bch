@@ -15,9 +15,6 @@ async function processObject(obj) {
         result[key] = await processObject(item);
       } else {
         // Translate string values
-        console.log('-----')
-        console.log('item', item)
-        console.log({ key })
         result[key] = await translateJSONKeys(item, ISO_639_1_LANGUAGES);
       }
     }
