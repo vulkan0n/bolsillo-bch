@@ -9,7 +9,6 @@ import FilterPanel from './FilterPanel';
 import Timeline from './Timeline';
 
 export default function ExploreChronologyView() {
-  const [isReverseTimeline, setIsReverseTimeline] = useState(false)
   const [isDisplayUpcoming, setIsDisplayUpcoming] = useState(true)
   const [isDisplayHardForks, setIsDisplayHardForks] = useState(true)
   const [isDisplaySoftForks, setIsDisplaySoftForks] = useState(true)
@@ -59,15 +58,6 @@ export default function ExploreChronologyView() {
       />
 
       <hr />
-
-      {/* <button
-        className="flex justify-center m-1 rounded-full border border-2 border-primary bg-primary text-zinc-100 shadow-md opacity-90"
-        onClick={() => setIsReverseTimeline(!isReverseTimeline)}
-      >
-        Reverse
-      </button>
-
-      <div>{isReverseTimeline.toString()}</div> */}
 
       <FilterPanel
         isDisplayUpcoming={isDisplayUpcoming}
