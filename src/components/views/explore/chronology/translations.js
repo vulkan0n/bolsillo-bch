@@ -174,6 +174,105 @@ const translations = {
     bchCity: {
       description: {
         en: "Conference held in the 'Bitcoin Cash City' Townsvile, Australia 4th - 5th September 2019."
+      },
+      description2: {
+        en: "Only 2 years after the split from BTC, the BCH community converged to assess the state of the revolution."
+      }
+    },
+    bch22: {
+      description: {
+        en: "Conference held in St Kitts 12th - 13th November 2023."
+      },
+      description2: {
+        en: "Arranged to experience the impressive BCH adoption on the island & discuss the future of BCH."
+      }
+    },
+    bliss: {
+      description: {
+        en: "Conference held in Ljubljana, Slovenia 14th - 15th May 2024."
+      },
+      description2: {
+        en: "Arranged to celebrate the ABLA upgrade, discuss industry thinking & for community networking."
+      }
+    }
+  },
+  infra: {
+    cashscript: {
+      description: {
+        en: "Higher-level language compiler for programmers building Bitcoin Cash smart contracts."
+      }
+    }
+  },
+  projects: {
+    flipstarter: {
+      description: {
+        en: "Non-custodial, open-source, on-chain crowdfunding allowing BCH projects to bootstrap from community funding."
+      }
+    },
+    jogs: {
+      description: {
+        en: "Peer-reviewed medical journal with a unique publishing model."
+      },
+      description2: {
+        en: "Journal articles are accessed by BCH micropayments & articles become public once cost of research is recouped."
+      }
+    },
+    bitcoinCashPodcast: {
+      description: {
+        en: "The Bitcoin Cash Podcast publishes its first piece of BCH content with the release of Episode 1."
+      }
+    },
+    aFifthOfGaming: {
+      description: {
+        en: "A Fifth Of Gaming, a service for running automated video game tournaments & social evenings with Bitcoin Cash, launches with its first public tournament."
+      }
+    }
+  },
+  upcomingEvents: {
+    bchArgentinaConference: {
+      description: {
+        en: "Upcoming conference in Buenos Aires, Argentina."
+      },
+      description2: {
+        en: "Gathering for the sizeable local merchant community & opportunity for international guests to experience the thriving local BCH economy."
+      },
+      description3: {
+        en: "Tickets on sale now!"
+      }
+    },
+    lockIn2025: {
+      description: {
+        en: "Deadline for community consensus on CHIP Upgrades suggested for May 2025."
+      },
+      description2: {
+        en: "Proposals sufficiently supported are 'locked in' for implementation & go live on May 15 2025."
+      },
+      description3: {
+        en: "Proposals with insufficient support remain in revision & discussion for the following year."
+      },
+      description4: {
+        en: "The current proposals seriously under consideration are VM_Limits & accompanying work on BigInts."
+      }
+    }
+  },
+  historicEvents: {
+    genesisBlock: {
+      description: {
+        en: "Satoshi Nakamoto starts the Bitcoin network by mining the very first block (Block 0)."
+      },
+      description2: {
+        en: "He includes a message embedded in the block: 'The Times 03/Jan/2009 Chancellor on brink of second bailout for banks', a reference to the days headline from British newspaper The Times."
+      },
+      description3: {
+        en: 'This message served the dual purpose of proving Satoshi had not begun work on the Genesis block earlier & establishing a statement as to the problems Bitcoin was created to solve.'
+      }
+    },
+    hijackingBitcoin: {
+      description: {
+        en: "Roger Ver & Steve Patterson release Hijacking Bitcoin - a well-cited exposé of the takeover of BTC & the origins of the BTC/BCH split."
+      },
+      description2: {
+        en: "The book immediately makes a giant splash in the cryptocurrency industry as many people hear this essential information for the first time."
       }
     }
   }

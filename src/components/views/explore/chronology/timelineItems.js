@@ -59,6 +59,10 @@ const {
   },
   upgrades,
   conferences,
+  infra,
+  projects,
+  upcomingEvents,
+  historic
 } = translations
 
 export const CATEGORIES = {
@@ -273,7 +277,7 @@ const INFRASTRUCTURE = [
     videoUrl: CASHSCRIPT_VIDEO_URL,
     graphicUrl: null,
     description: [
-      "Higher-level language compiler for programmers building Bitcoin Cash smart contracts.",
+      translate(infra.cashscript.description),
     ],
     readMoreUrl: CASHSCRIPT_READ_MORE_URL
   },
@@ -287,7 +291,7 @@ const PROJECTS = [
     videoUrl: null,
     graphicUrl: FLIPSTARTER_GRAPHIC_URL,
     description: [
-      "Non-custodial, open-source, on-chain crowdfunding allowing BCH projects to bootstrap from community funding.",
+      translate(projects.flipstarter.description),
     ],
     readMoreUrl: FLIPSTARTER_READ_MORE_URL
   },
@@ -298,8 +302,8 @@ const PROJECTS = [
     videoUrl: null,
     graphicUrl: null,
     description: [
-      "Peer-reviewed medical journal with a unique publishing model.",
-      "Journal articles are accessed by BCH micropayments & articles become public once cost of research is recouped.",
+      translate(projects.jogs.description),
+      translate(projects.jogs.description2),
     ],
     readMoreUrl: JOGS_READ_MORE_URL
   },
@@ -310,7 +314,7 @@ const PROJECTS = [
     videoUrl: null,
     graphicUrl: BITCOIN_CASH_PODCAST_GRAPHIC_URL,
     description: [
-      "The Bitcoin Cash Podcast publishes its first piece of BCH content with the release of Episode 1.",
+      translate(projects.bitcoinCashPodcast.description),
     ],
     readMoreUrl: BITCOIN_CASH_PODCAST_URL
   },
@@ -321,7 +325,7 @@ const PROJECTS = [
     videoUrl: null,
     graphicUrl: AFOG_GRAPHIC_URL,
     description: [
-      "A Fifth Of Gaming, a service for running automated video game tournaments & social evenings with Bitcoin Cash, launches with its first public tournament.",
+      translate(projects.aFifthOfGaming.description),
     ],
     readMoreUrl: null,
     appUrl: AFOG_APP_URL
@@ -335,9 +339,9 @@ const UPCOMING = [
     category: CATEGORIES.UPCOMING,
     videoUrl: BCH_ARGENTINA_CONFERENCE_VIDEO_URL,
     description: [
-      "Upcoming conference in Buenos Aires, Argentina.",
-      "Gathering for the sizeable local merchant community & opportunity for international guests to experience the thriving local BCH economy.",
-      "Tickets on sale now!"
+      translate(upcomingEvents.bchArgentinaConference.description),
+      translate(upcomingEvents.bchArgentinaConference.description2),
+      translate(upcomingEvents.bchArgentinaConference.description3),
     ],
     readMoreUrl: BCH_ARGENTINA_CONFERENCE_READ_MORE_URL
   },
@@ -347,10 +351,10 @@ const UPCOMING = [
     category: CATEGORIES.UPCOMING,
     videoUrl: LOCK_IN_2025_URL,
     description: [
-      "Deadline for community consensus on CHIP Upgrades suggested for May 2025.",
-      "Proposals sufficiently supported are 'locked in' for implementation & go live on May 15 2025.",
-      'Proposals with insufficient support remain in revision & discussion for the following year.',
-      'The current proposals seriously under consideration are VM_Limits & accompanying work on BigInts.'
+      translate(upcomingEvents.lockIn2025.description),
+      translate(upcomingEvents.lockIn2025.description2),
+      translate(upcomingEvents.lockIn2025.description3),
+      translate(upcomingEvents.lockIn2025.description4),
     ],
     readMoreUrl: LOCK_IN_2025_READ_MORE_URL
   }
@@ -363,9 +367,9 @@ const HISTORIC_EVENT = [
     category: CATEGORIES.HISTORIC_EVENT,
     videoUrl: null,
     description: [
-      "Satoshi Nakamoto starts the Bitcoin network by mining the very first block (Block 0).",
-      "He includes a message embedded in the block: 'The Times 03/Jan/2009 Chancellor on brink of second bailout for banks', a reference to the days headline from British newspaper The Times.",
-      'This message served the dual purpose of proving Satoshi had not begun work on the Genesis block earlier & establishing a statement as to the problems Bitcoin was created to solve.'
+      translate(historic.genesisBlock.description),
+      translate(historic.genesisBlock.description2),
+      translate(historic.genesisBlock.description3),
     ],
     readMoreUrl: GENESIS_READ_MORE_URL
   },
@@ -376,8 +380,8 @@ const HISTORIC_EVENT = [
     videoUrl: null,
     graphicUrl: HIJACKING_BITCOIN_GRAPHIC_URL,
     description: [
-      "Roger Ver & Steve Patterson release Hijacking Bitcoin - a well-cited exposé of the takeover of BTC & the origins of the BTC/BCH split.",
-      "The book immediately makes a giant splash in the cryptocurrency industry as many people hear this essential information for the first time.",
+      translate(historic.hijackingBitcoin.description),
+      translate(historic.hijackingBitcoin.description2),
     ],
     readMoreUrl: HIJACKING_BITCOIN_READ_MORE_URL
   }
