@@ -32,9 +32,9 @@ function findFilesWithTranslations(directoryPath) {
   checkDirectory(directoryPath);
 
   // Hack to only check one file
-  return [
-    "./src/components/views/explore/chronology/translations.js"
-  ]
+  // return [
+  //   "./src/components/views/explore/chronology/translations.js"
+  // ]
 
   return filesWithTranslations;
 }
