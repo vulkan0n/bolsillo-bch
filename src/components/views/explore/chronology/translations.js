@@ -749,6 +749,17 @@ const translations = {
         zh_TW: "儘管最初的研究和實施需要大量資源，但與 BTC 相比，這大大提高了 BCH 的彈性。"
       }
     },
+    monolith: {
+      description: {
+        en: "BCH begins a cadence of 6-monthly upgrades. Two changes are implemented, increased blocksize & extra op-codes.",
+      },
+      description2: {
+        en: "32 MB blocks: Network capacity raised 4x after sufficient research & testing done to ensure network resilience.",
+      },
+      description3: {
+        en: "OP_Codes: Several OP_codes (including OP_CAT, OP_DIV) deactivated in 2010 & 2011 are reactivated on BCH after re-examination & redesigning as necessary to restore Bitcoin script functionality.",
+      }
+    },
     magneticAnomaly: {
       description: {
         ar: "تواصل غرفة تبادل معلومات السلامة الأحيائية إيقاعها للترقيات كل 6 أشهر. تم تنفيذ تغييرين، CTOR وOP_Codes الجديدة.",
