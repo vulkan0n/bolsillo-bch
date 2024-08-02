@@ -57,7 +57,8 @@ const {
   categories: {
     fork, softFork, hardFork, conference, projectLaunch, infrastructure, upcoming, historicEvent
   },
-  upgrades
+  upgrades,
+  conferences,
 } = translations
 
 export const CATEGORIES = {
@@ -235,8 +236,8 @@ const CONFERENCES = [
     category: CATEGORIES.CONFERENCE,
     videoUrl: BCH_CITY_VIDEO_URL,
     description: [
-      "Conference held in the 'Bitcoin Cash City' Townsvile, Australia 4th - 5th September 2019.",
-      "Only 2 years after the split from BTC, the BCH community converged to assess the state of the revolution.",
+      translate(conferences.bchCity.description),
+      translate(conferences.bchCity.description2),
     ],
     readMoreUrl: null
   },
@@ -246,8 +247,8 @@ const CONFERENCES = [
     category: CATEGORIES.CONFERENCE,
     videoUrl: BCH22_STREAM_URL,
     description: [
-      "Conference held in St Kitts 12th - 13th November 2023.",
-      "Arranged to experience the impressive BCH adoption on the island & discuss the future of BCH.",
+      translate(conferences.bch22.description),
+      translate(conferences.bch22.description2),
     ],
     readMoreUrl: BCH22_FAQ_URL
   },
@@ -257,8 +258,8 @@ const CONFERENCES = [
     category: CATEGORIES.CONFERENCE,
     videoUrl: null,
     description: [
-      "Conference held in Ljubljana, Slovenia 14th - 15th May 2024.",
-      "Arranged to celebrate the ABLA upgrade, discuss industry thinking & for community networking.",
+      translate(conferences.bliss.description),
+      translate(conferences.bliss.description2),
     ],
     readMoreUrl: BLISS_FAQ_URL
   },

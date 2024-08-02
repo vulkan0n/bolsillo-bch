@@ -169,8 +169,14 @@ const translations = {
         en: "Upgrade was celebrated at BCH BLISS in Ljubljana, Slovenia."
       }
     }
+  },
+  conferences: {
+    bchCity: {
+      description: {
+        en: "Conference held in the 'Bitcoin Cash City' Townsvile, Australia 4th - 5th September 2019."
+      }
+    }
   }
-
 };
 
 export default translations;
