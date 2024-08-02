@@ -13,7 +13,33 @@ const translations = {
   },
   tryItInSelene: {
     en: "Try it in Selene"
-  }
+  },
+  categories: {
+    fork: {
+      en: "Protocol Upgrade"
+    },
+    hardFork: {
+      en: "Hard Fork"
+    },
+    softFork: {
+      en: "Soft Fork"
+    },
+    conference: {
+      en: "Conference"
+    },
+    projectLaunch: {
+      en: "Project Launch"
+    },
+    infrastructure: {
+      en: "Developer Tools & Infrastructure"
+    },
+    upcoming: {
+      en: "Upcoming (Planned / Theoretical)"
+    },
+    historicEvent: {
+      en: "Historic Event"
+    }
+  },
 };
 
 export default translations;

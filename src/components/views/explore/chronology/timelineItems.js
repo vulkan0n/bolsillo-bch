@@ -1,5 +1,8 @@
 import { DateTime } from "luxon";
 
+import { translate } from "@/util/translations";
+import translations from "./translations";
+
 const GENESIS_READ_MORE_URL = "https://blockchair.com/bitcoin-cash/block/0"
 
 const AFOG_GRAPHIC_URL = "https://pbs.twimg.com/profile_images/1719547852722946048/Ap4rOTHp_400x400.jpg"
@@ -50,17 +53,23 @@ const U8_READ_MORE_URL = "https://reference.cash/protocol/forks/hf-20220515"
 const HIJACKING_BITCOIN_READ_MORE_URL = "https://bitcoincashpodcast.com/faqs/Media/what-about-roger-vers-book-hijacking-bitcoin"
 const HIJACKING_BITCOIN_GRAPHIC_URL = "https://bitcoincashpodcast.com/assets/images/hijacking-bitcoin-5542bf1c53b9af5dc7226cbb569cc105.png"
 
+const {
+  categories: {
+    fork, softFork, hardFork, conference, projectLaunch, infrastructure, upcoming, historicEvent
+  }
+} = translations
+
 export const CATEGORIES = {
   FORK: {
-    FORK: "Protocol Upgrade",
-    HARD_FORK: "Hard Fork",
-    SOFT_FORK: "Soft Fork"
+    FORK: translate(fork),
+    HARD_FORK: translate(hardFork),
+    SOFT_FORK: translate(softFork)
   },
-  CONFERENCE: "Conference",
-  PROJECT_LAUNCH: "Project Launch",
-  INFRASTRUCTURE: "Developer Tools & Infrastructure",
-  UPCOMING: "Upcoming (Planned / Theoretical)",
-  HISTORIC_EVENT: "Historic Event"
+  CONFERENCE: translate(conference),
+  PROJECT_LAUNCH: translate(projectLaunch),
+  INFRASTRUCTURE: translate(infrastructure),
+  UPCOMING: translate(upcoming),
+  HISTORIC_EVENT: translate(historicEvent)
 }
 
 const UPGRADES = [
