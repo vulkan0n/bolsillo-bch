@@ -4,6 +4,11 @@ import { CATEGORIES } from './timelineItems';
 import { mapCategoryToColour } from './utils';
 import { useNavigate } from "react-router-dom";
 
+import { translate } from "@/util/translations";
+import translations from "./translations";
+
+const { noItems, readMore, tryItInSelene } = translations
+
 export default function Timeline({ timelineItems }) {
   const isTimelineItemsEmpty = timelineItems.length === 0
   const navigate = useNavigate();
@@ -11,7 +16,7 @@ export default function Timeline({ timelineItems }) {
   if (isTimelineItemsEmpty) {
     return (
       <div className="m-2">
-        <div className="flex justify-center items-center h-full">No items found. Adjust filters to populate.</div>
+        <div className="flex justify-center items-center h-full">{translate(noItems)}</div>
       </div>
     )
   }
@@ -62,7 +67,7 @@ export default function Timeline({ timelineItems }) {
                 target="_blank"
                 className="flex justify-center m-1 rounded-full border border-2 border-primary bg-primary text-zinc-100 shadow-md opacity-90"
               >
-                Read More
+                {translate(readMore)}
               </a>
             </div>}
 
@@ -71,7 +76,7 @@ export default function Timeline({ timelineItems }) {
                 onClick={() => navigate(appUrl)}
                 className="flex justify-center m-1 rounded-full border border-2 border-primary bg-primary text-zinc-100 shadow-md opacity-90"
               >
-                Try it in Selene!
+                {translate(tryItInSelene)}
               </span>
             </div>}
 
