@@ -79,158 +79,158 @@ export const CATEGORIES = {
 }
 
 const UPGRADES = [
-  {
-    title: "OP_CHECKSEQUENCEVERIFY",
-    date: DateTime.fromISO("2016-07-04"),
-    category: CATEGORIES.FORK.SOFT_FORK,
-    videoUrl: null,
-    description: [
-      translate(upgrades.opCheckSeqVerify.description),
-    ],
-    readMoreUrl: null
-  },
-  {
-    title: "UAHF - BCH/BTC Split",
-    date: DateTime.fromISO("2017-08-01"),
-    category: CATEGORIES.FORK.HARD_FORK,
-    videoUrl: null,
-    description: [
-      translate(upgrades.uahf.description),
-      translate(upgrades.uahf.description2),
-      translate(upgrades.uahf.description3),
-    ],
-    readMoreUrl: UAHF_READ_MORE_URL
-  },
-  {
-    title: "CW-144",
-    date: DateTime.fromISO("2017-11-13"),
-    category: CATEGORIES.FORK.HARD_FORK,
-    videoUrl: null,
-    description: [
-      translate(upgrades.cw144.description),
-      translate(upgrades.cw144.description2),
-    ],
-    readMoreUrl: CW_144_READ_MORE_URL
-  },
-  {
-    title: "Monolith",
-    date: DateTime.fromISO("2018-05-15"),
-    category: CATEGORIES.FORK.HARD_FORK,
-    videoUrl: null,
-    description: [
-      translate(upgrades.monolith.description),
-      translate(upgrades.monolith.description2),
-      translate(upgrades.monolith.description3),
-    ],
-    readMoreUrl: MONOLITH_READ_MORE_URL
-  },
-  {
-    title: "Magnetic Anomaly - BCH/BSV Split",
-    date: DateTime.fromISO("2018-11-15"),
-    category: CATEGORIES.FORK.HARD_FORK,
-    videoUrl: null,
-    description: [
-      translate(upgrades.magneticAnomaly.description),
-      translate(upgrades.magneticAnomaly.description2),
-      translate(upgrades.magneticAnomaly.description3),
-      translate(upgrades.magneticAnomaly.description4),
-    ],
-    readMoreUrl: MAGNETIC_ANOMALY_READ_MORE_URL
-  },
-  {
-    title: "Great Wall",
-    date: DateTime.fromISO("2019-05-15"),
-    category: CATEGORIES.FORK.HARD_FORK,
-    videoUrl: null,
-    description: [
-      translate(upgrades.greatWall.description),
-      translate(upgrades.greatWall.description2),
-      translate(upgrades.greatWall.description3),
-    ],
-    readMoreUrl: GREAT_WALL_READ_MORE_URL
-  },
-  {
-    title: "Graviton",
-    date: DateTime.fromISO("2019-11-15"),
-    category: CATEGORIES.FORK.HARD_FORK,
-    videoUrl: null,
-    description: [
-      translate(upgrades.graviton.description),
-      translate(upgrades.graviton.description2),
-      translate(upgrades.graviton.description3),
-    ],
-    readMoreUrl: GRAVITON_READ_MORE_URL
-  },
-  {
-    title: "Phonon",
-    date: DateTime.fromISO("2020-05-15"),
-    category: CATEGORIES.FORK.HARD_FORK,
-    videoUrl: null,
-    description: [
-      translate(upgrades.phonon.description),
-      translate(upgrades.phonon.description2),
-    ],
-    readMoreUrl: PHONON_READ_MORE_URL
-  },
-  {
-    title: "Axion - BCH/XEC Split",
-    date: DateTime.fromISO("2020-11-15"),
-    category: CATEGORIES.FORK.HARD_FORK,
-    videoUrl: null,
-    description: [
-      translate(upgrades.axion.description),
-      translate(upgrades.axion.description2),
-      translate(upgrades.axion.description3),
-    ],
-    readMoreUrl: AXION_READ_MORE_URL
-  },
-  {
-    title: "BigBlockIfTrue",
-    date: DateTime.fromISO("2021-05-15"),
-    category: CATEGORIES.FORK.HARD_FORK,
-    videoUrl: null,
-    description: [
-      translate(upgrades.bigBlockIfTrue.description),
-      translate(upgrades.bigBlockIfTrue.description2),
-      translate(upgrades.bigBlockIfTrue.description3),
-    ],
-    readMoreUrl: BIGBLOCKIFTRUE_READ_MORE_URL
-  },
-  {
-    title: "U8",
-    date: DateTime.fromISO("2022-05-15"),
-    category: CATEGORIES.FORK.HARD_FORK,
-    videoUrl: null,
-    description: [
-      translate(upgrades.u8.description),
-      translate(upgrades.u8.description2),
-      translate(upgrades.u8.description3),
-      translate(upgrades.u8.description4),
-    ],
-    readMoreUrl: U8_READ_MORE_URL
-  },
-  {
-    title: "CashTokens",
-    date: DateTime.fromISO("2023-05-15"),
-    category: CATEGORIES.FORK.HARD_FORK,
-    videoUrl: CASHTOKENS_EXPLANER_VIDEO_URL,
-    description: [
-      translate(upgrades.cashtokens.description),
-    ],
-    readMoreUrl: CASHTOKENS_FAQ_URL
-  },
-  {
-    title: "ABLA",
-    date: DateTime.fromISO("2024-05-15"),
-    subtitle: "Adjustable Blocksize Limit Algorithm",
-    category: CATEGORIES.FORK.HARD_FORK,
-    videoUrl: ABLA_EXPLAINER_VIDEO_URL,
-    description: [
-      translate(upgrades.abla.description),
-      translate(upgrades.abla.description2),
-    ],
-    readMoreUrl: ABLA_FAQ_URL
-  }
+  // {
+  //   title: "OP_CHECKSEQUENCEVERIFY",
+  //   date: DateTime.fromISO("2016-07-04"),
+  //   category: CATEGORIES.FORK.SOFT_FORK,
+  //   videoUrl: null,
+  //   description: [
+  //     translate(upgrades.opCheckSeqVerify.description),
+  //   ],
+  //   readMoreUrl: null
+  // },
+  // {
+  //   title: "UAHF - BCH/BTC Split",
+  //   date: DateTime.fromISO("2017-08-01"),
+  //   category: CATEGORIES.FORK.HARD_FORK,
+  //   videoUrl: null,
+  //   description: [
+  //     translate(upgrades.uahf.description),
+  //     translate(upgrades.uahf.description2),
+  //     translate(upgrades.uahf.description3),
+  //   ],
+  //   readMoreUrl: UAHF_READ_MORE_URL
+  // },
+  // {
+  //   title: "CW-144",
+  //   date: DateTime.fromISO("2017-11-13"),
+  //   category: CATEGORIES.FORK.HARD_FORK,
+  //   videoUrl: null,
+  //   description: [
+  //     translate(upgrades.cw144.description),
+  //     translate(upgrades.cw144.description2),
+  //   ],
+  //   readMoreUrl: CW_144_READ_MORE_URL
+  // },
+  // {
+  //   title: "Monolith",
+  //   date: DateTime.fromISO("2018-05-15"),
+  //   category: CATEGORIES.FORK.HARD_FORK,
+  //   videoUrl: null,
+  //   description: [
+  //     translate(upgrades.monolith.description),
+  //     translate(upgrades.monolith.description2),
+  //     translate(upgrades.monolith.description3),
+  //   ],
+  //   readMoreUrl: MONOLITH_READ_MORE_URL
+  // },
+  // {
+  //   title: "Magnetic Anomaly - BCH/BSV Split",
+  //   date: DateTime.fromISO("2018-11-15"),
+  //   category: CATEGORIES.FORK.HARD_FORK,
+  //   videoUrl: null,
+  //   description: [
+  //     translate(upgrades.magneticAnomaly.description),
+  //     translate(upgrades.magneticAnomaly.description2),
+  //     translate(upgrades.magneticAnomaly.description3),
+  //     translate(upgrades.magneticAnomaly.description4),
+  //   ],
+  //   readMoreUrl: MAGNETIC_ANOMALY_READ_MORE_URL
+  // },
+  // {
+  //   title: "Great Wall",
+  //   date: DateTime.fromISO("2019-05-15"),
+  //   category: CATEGORIES.FORK.HARD_FORK,
+  //   videoUrl: null,
+  //   description: [
+  //     translate(upgrades.greatWall.description),
+  //     translate(upgrades.greatWall.description2),
+  //     translate(upgrades.greatWall.description3),
+  //   ],
+  //   readMoreUrl: GREAT_WALL_READ_MORE_URL
+  // },
+  // {
+  //   title: "Graviton",
+  //   date: DateTime.fromISO("2019-11-15"),
+  //   category: CATEGORIES.FORK.HARD_FORK,
+  //   videoUrl: null,
+  //   description: [
+  //     translate(upgrades.graviton.description),
+  //     translate(upgrades.graviton.description2),
+  //     translate(upgrades.graviton.description3),
+  //   ],
+  //   readMoreUrl: GRAVITON_READ_MORE_URL
+  // },
+  // {
+  //   title: "Phonon",
+  //   date: DateTime.fromISO("2020-05-15"),
+  //   category: CATEGORIES.FORK.HARD_FORK,
+  //   videoUrl: null,
+  //   description: [
+  //     translate(upgrades.phonon.description),
+  //     translate(upgrades.phonon.description2),
+  //   ],
+  //   readMoreUrl: PHONON_READ_MORE_URL
+  // },
+  // {
+  //   title: "Axion - BCH/XEC Split",
+  //   date: DateTime.fromISO("2020-11-15"),
+  //   category: CATEGORIES.FORK.HARD_FORK,
+  //   videoUrl: null,
+  //   description: [
+  //     translate(upgrades.axion.description),
+  //     translate(upgrades.axion.description2),
+  //     translate(upgrades.axion.description3),
+  //   ],
+  //   readMoreUrl: AXION_READ_MORE_URL
+  // },
+  // {
+  //   title: "BigBlockIfTrue",
+  //   date: DateTime.fromISO("2021-05-15"),
+  //   category: CATEGORIES.FORK.HARD_FORK,
+  //   videoUrl: null,
+  //   description: [
+  //     translate(upgrades.bigBlockIfTrue.description),
+  //     translate(upgrades.bigBlockIfTrue.description2),
+  //     translate(upgrades.bigBlockIfTrue.description3),
+  //   ],
+  //   readMoreUrl: BIGBLOCKIFTRUE_READ_MORE_URL
+  // },
+  // {
+  //   title: "U8",
+  //   date: DateTime.fromISO("2022-05-15"),
+  //   category: CATEGORIES.FORK.HARD_FORK,
+  //   videoUrl: null,
+  //   description: [
+  //     translate(upgrades.u8.description),
+  //     translate(upgrades.u8.description2),
+  //     translate(upgrades.u8.description3),
+  //     translate(upgrades.u8.description4),
+  //   ],
+  //   readMoreUrl: U8_READ_MORE_URL
+  // },
+  // {
+  //   title: "CashTokens",
+  //   date: DateTime.fromISO("2023-05-15"),
+  //   category: CATEGORIES.FORK.HARD_FORK,
+  //   videoUrl: CASHTOKENS_EXPLANER_VIDEO_URL,
+  //   description: [
+  //     translate(upgrades.cashtokens.description),
+  //   ],
+  //   readMoreUrl: CASHTOKENS_FAQ_URL
+  // },
+  // {
+  //   title: "ABLA",
+  //   date: DateTime.fromISO("2024-05-15"),
+  //   subtitle: "Adjustable Blocksize Limit Algorithm",
+  //   category: CATEGORIES.FORK.HARD_FORK,
+  //   videoUrl: ABLA_EXPLAINER_VIDEO_URL,
+  //   description: [
+  //     translate(upgrades.abla.description),
+  //     translate(upgrades.abla.description2),
+  //   ],
+  //   readMoreUrl: ABLA_FAQ_URL
+  // }
 ]
 
 const CONFERENCES = [
