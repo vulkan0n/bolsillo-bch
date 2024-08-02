@@ -69,7 +69,7 @@ async function translateText(text, targetLang, GOOGLE_TRANSLATE_API_KEY) {
     const originalTranslation = data.data.translations[0].translatedText
     // Translate script confuses ":", """ & "'" as elements of JSON
     // So these need to be sanitised
-    const sanitisiedTranslation = originalTranslation.replace(/:/g, "-").replace(/'/g, "`").replace(/"/g, "`");
+    const sanitisiedTranslation = originalTranslation.replace(/:/g, " - ").replace(/'/g, "`").replace(/"/g, "`");
     return sanitisiedTranslation;
   } catch (error) {
     console.error(`Translation error for ${targetLang}: ${error.message}`);
