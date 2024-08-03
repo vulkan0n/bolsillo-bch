@@ -3,6 +3,9 @@ import { DateTime } from "luxon";
 import { translate } from "@/util/translations";
 import translations from "./translations";
 
+const BCH_GURU_GRAPHIC_URL = "https://pbs.twimg.com/profile_images/1649794915344465925/E8tlHvcJ_400x400.jpg"
+const BCH_GURU_READ_MORE_URL = "https://bch.guru/"
+
 const MT_GOX_READ_MORE_URL = "https://en.wikipedia.org/wiki/Mt._Gox"
 
 const GENESIS_READ_MORE_URL = "https://blockchair.com/bitcoin-cash/block/0"
@@ -444,6 +447,18 @@ const PROJECTS = [
       translate(projects.bitcoinCashPodcast.description),
     ],
     readMoreUrl: BITCOIN_CASH_PODCAST_URL
+  },
+  {
+    title: "BCH GURU",
+    date: DateTime.fromISO("2023-05-01"),
+    category: CATEGORIES.PROJECT_LAUNCH,
+    videoUrl: null,
+    graphicUrl: BCH_GURU_GRAPHIC_URL,
+    description: [
+      translate(projects.bchGuru.description),
+      translate(projects.bchGuru.description2),
+    ],
+    readMoreUrl: BCH_GURU_READ_MORE_URL
   },
   {
     title: "A Fifth Of Gaming",

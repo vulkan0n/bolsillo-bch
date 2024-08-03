@@ -2997,6 +2997,14 @@ const translations = {
         zh_TW: "比特幣現金播客發布了第一個 BCH 內容，並發布了第 1 集。"
       }
     },
+    bchGuru: {
+      description: {
+        en: "BCH Guru is an NFT series & on-chain predictions game played using BCH & their CashToken FURU."
+      },
+      description2: {
+        en: "A smart contract app showing off & developing the power of the Bitcoin Cash scripting language."
+      }
+    },
     aFifthOfGaming: {
       description: {
         ar: "تم إطلاق خدمة A Fifth Of Gaming، وهي خدمة لتشغيل دورات ألعاب الفيديو الآلية والأمسيات الاجتماعية باستخدام Bitcoin Cash، مع أول بطولة عامة لها.",
