@@ -80,6 +80,131 @@ export const CATEGORIES = {
 
 const UPGRADES = [
   {
+    title: "nLockTimeEnforcement",
+    date: DateTime.fromISO("2009-10-28"),
+    category: CATEGORIES.FORK.SOFT_FORK,
+    videoUrl: null,
+    description: [
+      "Addition of nLockTimeEnforcement."
+    ],
+    readMoreUrl: null
+  },
+  {
+    title: "OP_NOP Functions",
+    date: DateTime.fromISO("2010-07-31"),
+    category: CATEGORIES.FORK.HARD_FORK,
+    videoUrl: null,
+    description: [
+      "Addition of OP_NOP Functions."
+    ],
+    readMoreUrl: null
+  },
+  {
+    title: "Separation of evaluation of scriptSig and scriptPubKey",
+    date: DateTime.fromISO("2010-07-31"),
+    category: CATEGORIES.FORK.HARD_FORK,
+    videoUrl: null,
+    description: [
+      "Separation of evaluation of scriptSig and scriptPubKey"
+    ],
+    readMoreUrl: null
+  },
+  {
+    title: "Value Overflow Incident",
+    date: DateTime.fromISO("2010-08-15"),
+    category: CATEGORIES.FORK.SOFT_FORK,
+    videoUrl: null,
+    description: [
+      "A bug in Bitcoin's node software allows the creation of several billion Bitcoin, which requires urgent attention to fix & revert."
+    ],
+    readMoreUrl: null
+  },
+  {
+    title: "Blocksize Limit Introduced",
+    date: DateTime.fromISO("2010-10-12"),
+    category: CATEGORIES.FORK.SOFT_FORK,
+    videoUrl: null,
+    description: [
+      "1MB Blocksize limit introduced as a safeguard against denail of service attacks.",
+      "Everyone involved agrees the limit is temporary & must be raised with increasing usage.",
+      "Satoshi provides instructions on how the limit can be raised when needed."
+    ],
+    readMoreUrl: null
+  },
+  {
+    title: "Disallow Transactions with Same TXID",
+    date: DateTime.fromISO("2012-03-15"),
+    category: CATEGORIES.FORK.SOFT_FORK,
+    videoUrl: null,
+    description: [
+      "Disallow Transactions with Same TXID.",
+    ],
+    readMoreUrl: null
+  },
+  {
+    title: "Pay-to-Script-Hash",
+    date: DateTime.fromISO("2012-04-01"),
+    category: CATEGORIES.FORK.SOFT_FORK,
+    videoUrl: null,
+    description: [
+      "Pay-to-Script-Hash",
+    ],
+    readMoreUrl: null
+  },
+  {
+    title: "Block Height in Coinbase",
+    date: DateTime.fromISO("2013-03-24"),
+    category: CATEGORIES.FORK.SOFT_FORK,
+    videoUrl: null,
+    description: [
+      "Block Height in Coinbase",
+    ],
+    readMoreUrl: null
+  },
+  {
+    title: "Migration from Berkely DB to LevelDB",
+    date: DateTime.fromISO("2013-05-15"),
+    category: CATEGORIES.FORK.HARD_FORK,
+    videoUrl: null,
+    description: [
+      "Migration from Berkely DB to LevelDB",
+    ],
+    readMoreUrl: null
+  },
+  {
+    title: "Strict DER Encoding for Signatures",
+    date: DateTime.fromISO("2015-07-04"),
+    category: CATEGORIES.FORK.SOFT_FORK,
+    videoUrl: null,
+    description: [
+      "Migration from Berkely DB to LevelDB",
+    ],
+    readMoreUrl: null
+  },
+  {
+    title: "OP_CHECKLOCKTIMEVERIFY",
+    date: DateTime.fromISO("2015-12-14"),
+    category: CATEGORIES.FORK.SOFT_FORK,
+    videoUrl: null,
+    description: [
+      "OP_CHECKLOCKTIMEVERIFY",
+    ],
+    readMoreUrl: null
+  },
+  {
+    title: "Addition of Opt-In Replace-By-Fee (RBF)",
+    date: DateTime.fromISO("2016-02-23"),
+    category: CATEGORIES.FORK.SOFT_FORK,
+    videoUrl: null,
+    description: [
+      "In order to handle rising payment unreliability as a result of gridlocked Bitcoin Core development, a change is made to assist users to bump their own transaction out of the mempool.",
+      "RBF was removed by BCH as part of the split from BTC.",
+      "RBF is totally unnecessary with an appropriate scaling strategy & actively harmful to desired payment reliability.",
+      "RBF later became controversial on BTC after its opt-in status slowly solidified into a default & near required status."
+    ],
+    readMoreUrl: null
+  },
+  {
     title: "OP_CHECKSEQUENCEVERIFY",
     date: DateTime.fromISO("2016-07-04"),
     category: CATEGORIES.FORK.SOFT_FORK,
