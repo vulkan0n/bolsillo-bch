@@ -15,6 +15,15 @@ import {
 import ExploreApp from "./ExploreApp";
 import ExploreStatBlock from "./stats/ExploreStatBlock";
 
+import { translate } from "@/util/translations";
+import translations from "./ExploreViewTranslations";
+
+const {
+  statistics,
+  socialMedia,
+  chronology
+} = translations;
+
 export default function ExploreViewHome() {
   const isExperimental = useSelector(selectIsExperimental);
   const isPrerelease = useSelector(selectIsPrerelease);
@@ -25,14 +34,14 @@ export default function ExploreViewHome() {
       {isPrerelease && (
         <ExploreApp
           icon={LineChartOutlined}
-          name="Stats"
+          name={translate(statistics)}
           to="/explore/stats"
         />
       )}
       {isPrerelease && (
         <ExploreApp
           icon={LikeOutlined}
-          name="Social Media"
+          name={translate(socialMedia)}
           to="/explore/socialMedia"
         />
       )}
@@ -46,7 +55,7 @@ export default function ExploreViewHome() {
       {isPrerelease && (
         <ExploreApp
           icon={ProfileOutlined}
-          name="Chronology"
+          name={translate(chronology)}
           to="/explore/chronology"
         />
       )}
