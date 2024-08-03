@@ -489,6 +489,18 @@ const UPCOMING = [
 
 const HISTORIC_EVENT = [
   {
+    title: "Bitcoin Whitepaper",
+    date: DateTime.fromISO("2008-10-31"),
+    category: CATEGORIES.HISTORIC_EVENT,
+    videoUrl: null,
+    description: [
+      translate(historic.whitePaper.description),
+      translate(historic.whitePaper.description2),
+      translate(historic.whitePaper.description3),
+    ],
+    readMoreUrl: GENESIS_READ_MORE_URL
+  },
+  {
     title: "Genesis Block",
     date: DateTime.fromISO("2009-01-03"),
     category: CATEGORIES.HISTORIC_EVENT,

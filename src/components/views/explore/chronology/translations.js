@@ -3319,6 +3319,17 @@ const translations = {
     }
   },
   historic: {
+    whitePaper: {
+      description: {
+        en: "Satoshi Nakamoto, Bitcoin's pseudonymous creator, release the Bitcoin whitepaper on a cypherpunk mailing list online."
+      },
+      description2: {
+        en: "The whitepaper describes the technical & economic design for a free-market online currency without a centralised authority or bank."
+      },
+      description3: {
+        en: "This begins the cryptocurrency industry - fulfilling a long-held cypherpunk vision for a form of global, peer-to-peer currency."
+      }
+    },
     genesisBlock: {
       description: {
         ar: "يبدأ ساتوشي ناكاموتو شبكة البيتكوين عن طريق تعدين الكتلة الأولى (البلوك 0).",
