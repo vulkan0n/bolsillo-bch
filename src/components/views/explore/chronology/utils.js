@@ -12,8 +12,8 @@ const COLOURS = {
     rgb: 'rgb(248 113 113)'
   },
   LIME: {
-    className: 'text-lime-400',
-    rgb: 'rgb(163 230 53)'
+    className: 'text-lime-600',
+    rgb: 'rgb(101 163 13)'
   },
   CYAN: {
     className: 'text-cyan-400',
