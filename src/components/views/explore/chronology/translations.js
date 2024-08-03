@@ -509,6 +509,81 @@ const translations = {
     }
   },
   upgrades: {
+    nLockTimeEnforcement: {
+      description: {
+        en: "Addition of nLockTimeEnforcement."
+      }
+    },
+    opNopFunctions: {
+      description: {
+        en: "OP_NOP Functions"
+      }
+    },
+    separationOfEval: {
+      description: {
+        en: "Separation of evaluation of scriptSig and scriptPubKey"
+      }
+    },
+    valueOverflowIncident: {
+      description: {
+        en: "A bug in Bitcoin's node software allows the creation of several billion Bitcoin, which requires urgent attention to fix & revert."
+      }
+    },
+    blockSizeLimitIntroduced: {
+      description: {
+        en: "1MB Blocksize limit introduced as a safeguard against denial of service attacks."
+      },
+      description2: {
+        en: "Everyone involved agrees the limit is temporary & must be raised with increasing usage."
+      },
+      description3: {
+        en: "Satoshi provides instructions on how the limit can be raised when needed."
+      }
+    },
+    disallowTransactionsWithSameTXID: {
+      description: {
+        en: "Disallow Transactions with Same TXID"
+      }
+    },
+    payToScriptHash: {
+      description: {
+        en: "Pay-to-Script-Hash"
+      }
+    },
+    blockHeightInCoinbase: {
+      description: {
+        en: "Block Height in Coinbase"
+      }
+    },
+    migrationFromBerkelyDBToLevelDB: {
+      description: {
+        en: "Migration from Berkely DB to LevelDB"
+      }
+    },
+    strictDEREncodingForSignatures: {
+      description: {
+        en: "Strict DER encoding for signatures."
+      }
+    },
+    opCheckLocks: {
+      description: {
+        en: "OP_CHECKLOCKTIMEVERIFY was added to Bitcoin Core."
+      }
+    },
+    additionOfOptInReplaceByFee: {
+      description: {
+        en: "In order to handle rising payment unreliability as a result of gridlocked Bitcoin Core development, a change is made to assist users to bump their own transaction out of the mempool."
+      },
+      description2: {
+        en: "RBF was removed by BCH as part of the split from BTC."
+      },
+      description3: {
+        en: "RBF is totally unnecessary with an appropriate scaling strategy & actively harmful to desired payment reliability."
+      },
+      description4: {
+        en: "RBF later became controversial on BTC after its opt-in status slowly solidified into a default & near required status."
+      }
+    },
     opCheckSeqVerify: {
       description: {
         ar: "إضافة OP_CHECKSEQUENCEVERIFY.",

@@ -85,7 +85,7 @@ const UPGRADES = [
     category: CATEGORIES.FORK.SOFT_FORK,
     videoUrl: null,
     description: [
-      "Addition of nLockTimeEnforcement."
+      translate(upgrades.nLockTimeEnforcement.description),
     ],
     readMoreUrl: null
   },
@@ -95,7 +95,7 @@ const UPGRADES = [
     category: CATEGORIES.FORK.HARD_FORK,
     videoUrl: null,
     description: [
-      "Addition of OP_NOP Functions."
+      translate(upgrades.opNopFunctions.description),
     ],
     readMoreUrl: null
   },
@@ -105,7 +105,7 @@ const UPGRADES = [
     category: CATEGORIES.FORK.HARD_FORK,
     videoUrl: null,
     description: [
-      "Separation of evaluation of scriptSig and scriptPubKey"
+      translate(upgrades.separationOfEval.description),
     ],
     readMoreUrl: null
   },
@@ -115,7 +115,7 @@ const UPGRADES = [
     category: CATEGORIES.FORK.SOFT_FORK,
     videoUrl: null,
     description: [
-      "A bug in Bitcoin's node software allows the creation of several billion Bitcoin, which requires urgent attention to fix & revert."
+      translate(upgrades.valueOverflowIncident.description),
     ],
     readMoreUrl: null
   },
@@ -125,9 +125,9 @@ const UPGRADES = [
     category: CATEGORIES.FORK.SOFT_FORK,
     videoUrl: null,
     description: [
-      "1MB Blocksize limit introduced as a safeguard against denail of service attacks.",
-      "Everyone involved agrees the limit is temporary & must be raised with increasing usage.",
-      "Satoshi provides instructions on how the limit can be raised when needed."
+      translate(upgrades.blockSizeLimitIntroduced.description),
+      translate(upgrades.blockSizeLimitIntroduced.description2),
+      translate(upgrades.blockSizeLimitIntroduced.description3)
     ],
     readMoreUrl: null
   },
@@ -137,7 +137,7 @@ const UPGRADES = [
     category: CATEGORIES.FORK.SOFT_FORK,
     videoUrl: null,
     description: [
-      "Disallow Transactions with Same TXID.",
+      translate(upgrades.disallowTransactionsWithSameTXID.description),
     ],
     readMoreUrl: null
   },
@@ -147,7 +147,7 @@ const UPGRADES = [
     category: CATEGORIES.FORK.SOFT_FORK,
     videoUrl: null,
     description: [
-      "Pay-to-Script-Hash",
+      translate(upgrades.payToScriptHash.description),
     ],
     readMoreUrl: null
   },
@@ -157,7 +157,7 @@ const UPGRADES = [
     category: CATEGORIES.FORK.SOFT_FORK,
     videoUrl: null,
     description: [
-      "Block Height in Coinbase",
+      translate(upgrades.blockHeightInCoinbase.description),
     ],
     readMoreUrl: null
   },
@@ -167,7 +167,7 @@ const UPGRADES = [
     category: CATEGORIES.FORK.HARD_FORK,
     videoUrl: null,
     description: [
-      "Migration from Berkely DB to LevelDB",
+      translate(upgrades.migrationFromBerkelyDBToLevelDB.description),
     ],
     readMoreUrl: null
   },
@@ -177,7 +177,7 @@ const UPGRADES = [
     category: CATEGORIES.FORK.SOFT_FORK,
     videoUrl: null,
     description: [
-      "Migration from Berkely DB to LevelDB",
+      translate(upgrades.strictDEREncodingForSignatures.description),
     ],
     readMoreUrl: null
   },
@@ -187,7 +187,7 @@ const UPGRADES = [
     category: CATEGORIES.FORK.SOFT_FORK,
     videoUrl: null,
     description: [
-      "OP_CHECKLOCKTIMEVERIFY",
+      translate(upgrades.opCheckLocks.description),
     ],
     readMoreUrl: null
   },
@@ -197,10 +197,10 @@ const UPGRADES = [
     category: CATEGORIES.FORK.SOFT_FORK,
     videoUrl: null,
     description: [
-      "In order to handle rising payment unreliability as a result of gridlocked Bitcoin Core development, a change is made to assist users to bump their own transaction out of the mempool.",
-      "RBF was removed by BCH as part of the split from BTC.",
-      "RBF is totally unnecessary with an appropriate scaling strategy & actively harmful to desired payment reliability.",
-      "RBF later became controversial on BTC after its opt-in status slowly solidified into a default & near required status."
+      translate(upgrades.additionOfOptInReplaceByFee.description),
+      translate(upgrades.additionOfOptInReplaceByFee.description2),
+      translate(upgrades.additionOfOptInReplaceByFee.description3),
+      translate(upgrades.additionOfOptInReplaceByFee.description4),
     ],
     readMoreUrl: null
   },
