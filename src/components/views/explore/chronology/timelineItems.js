@@ -3,6 +3,8 @@ import { DateTime } from "luxon";
 import { translate } from "@/util/translations";
 import translations from "./translations";
 
+const MT_GOX_READ_MORE_URL = "https://en.wikipedia.org/wiki/Mt._Gox"
+
 const GENESIS_READ_MORE_URL = "https://blockchair.com/bitcoin-cash/block/0"
 
 const AFOG_GRAPHIC_URL = "https://pbs.twimg.com/profile_images/1719547852722946048/Ap4rOTHp_400x400.jpg"
@@ -497,6 +499,21 @@ const HISTORIC_EVENT = [
       translate(historic.genesisBlock.description3),
     ],
     readMoreUrl: GENESIS_READ_MORE_URL
+  },
+  {
+    title: "Mt. Gox Collapse",
+    date: DateTime.fromISO("2014-02-24"),
+    category: CATEGORIES.HISTORIC_EVENT,
+    videoUrl: null,
+    description: [
+      translate(historic.mtGox.description),
+      translate(historic.mtGox.description2),
+      translate(historic.mtGox.description3),
+      translate(historic.mtGox.description4),
+      translate(historic.mtGox.description5),
+      translate(historic.mtGox.description6),
+    ],
+    readMoreUrl: MT_GOX_READ_MORE_URL
   },
   {
     title: "Hijacking Bitcoin",

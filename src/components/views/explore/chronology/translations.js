@@ -3438,6 +3438,26 @@ const translations = {
         zh_TW: "此訊息具有雙重目的，即證明中本聰並未更早開始創世區塊的工作，並就比特幣創建時要解決的問題發表聲明。"
       }
     },
+    mtGox: {
+      description: {
+        en: "Early Bitcoin exchange Mt Gox was the central place to trade Bitcoin in its early days.",
+      },
+      description2: {
+        en: "After months of operational issues, the exchange suddenly went offline.",
+      },
+      description3: {
+        en: "This crashed the Bitcoin market & led many to fear that Bitcoin itself was ending.",
+      },
+      description4: {
+        en: "Around 850,000 Bitcoins were appropriated in the collapse.",
+      },
+      description5: {
+        en: "Bitcoin survived & more exchanges emerged to fill the gap in the market. Creditors learnt a harsh lesson to self-custody their own Bitcoin.",
+      },
+      description6: {
+        en: "Some creditors received a portion of their Bitcoin after lengthy & expensive court proceedings over 10 years later in 2024.",
+      }
+    },
     hijackingBitcoin: {
       description: {
         ar: "أصدر روجر فير وستيف باترسون Hijacking Bitcoin - عرضًا مستشهدًا به جيدًا للاستحواذ على BTC وأصول تقسيم BTC/BCH.",
