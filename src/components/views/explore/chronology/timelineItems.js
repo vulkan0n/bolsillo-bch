@@ -3,6 +3,11 @@ import { DateTime } from "luxon";
 import { translate } from "@/util/translations";
 import translations from "./translations";
 
+const WHITEPAPER_READ_MORE_URL = "https://bitcoincashpodcast.com/bitcoin.pdf"
+
+const SELENE_VIDEO_URL = "https://www.youtube.com/watch?v=5RqI6tByySQ"
+const SELENE_READ_MORE_URL = "https://selene.cash/"
+
 const BCH_GURU_GRAPHIC_URL = "https://pbs.twimg.com/profile_images/1649794915344465925/E8tlHvcJ_400x400.jpg"
 const BCH_GURU_READ_MORE_URL = "https://bch.guru/"
 
@@ -461,6 +466,17 @@ const PROJECTS = [
     readMoreUrl: BCH_GURU_READ_MORE_URL
   },
   {
+    title: "Selene Wallet",
+    date: DateTime.fromISO("2023-05-15"),
+    category: CATEGORIES.PROJECT_LAUNCH,
+    videoUrl: SELENE_VIDEO_URL,
+    graphicUrl: null,
+    description: [
+      translate(projects.seleneWallet.description),
+    ],
+    readMoreUrl: SELENE_READ_MORE_URL
+  },
+  {
     title: "A Fifth Of Gaming",
     date: DateTime.fromISO("2023-09-22"),
     category: CATEGORIES.PROJECT_LAUNCH,
@@ -513,7 +529,7 @@ const HISTORIC_EVENT = [
       translate(historic.whitePaper.description2),
       translate(historic.whitePaper.description3),
     ],
-    readMoreUrl: GENESIS_READ_MORE_URL
+    readMoreUrl: WHITEPAPER_READ_MORE_URL
   },
   {
     title: "Genesis Block",
