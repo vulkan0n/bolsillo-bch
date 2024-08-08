@@ -7,6 +7,8 @@ const AFITH_OF_GAMING_STATS_URL = "https://afifthofgaming.com/stats";
 const BCH_GURU_STATS_URL = "https://nfts.bch.guru/science";
 const TOKENAUT_URL = "https://tokenaut.cash/";
 const DEFI_LLAMA_URL = "https://defillama.com/chain/Bitcoincash"
+const TX_CITY_URL = "https://txcity.io/v/bch"
+const TX_WATCH_URL = "https://buyhodlsell.com/tx-watch"
 
 const SUBSECTIONS = [
   {
@@ -33,6 +35,14 @@ const SUBSECTIONS = [
   {
     name: "DeFi Llama",
     children: <EmbeddedIFrame src={DEFI_LLAMA_URL} />
+  },
+  {
+    name: "Tx City",
+    children: <EmbeddedIFrame src={TX_CITY_URL} />
+  },
+  {
+    name: "Tx Watch",
+    children: <EmbeddedIFrame src={TX_WATCH_URL} />
   }
 ]
 
