@@ -55,14 +55,16 @@ export default function ExploreStatsView() {
             return (
               <div
                 key={subsection.name}
-                className={`bg-${i % 2 === 0 ? "yellow" : "lime"}-300 ${i !== 0 && "mt-1"} w-full flex justify-between items-center text-center`}
+                className={`${i !== 0 && "mt-1"} w-full flex justify-between items-center text-center`}
                 onClick={() => {
                   setSelectedSubsectionIndex(i);
                   setIsMenuOpen(false);
                 }}
               >
                 <div className="w-6"></div>
-                <span className="text-lg font-semibold">{subsection.name}</span>
+                <span className="text-center bg-zinc-300 w-full mx-3">
+                  <span className="text-lg font-semibold">{subsection.name}</span>
+                </span>
                 {!isLastElement && <div className="w-6"></div>}
                 {isLastElement && <button className="text-2xl">☰</button>}
               </div>
