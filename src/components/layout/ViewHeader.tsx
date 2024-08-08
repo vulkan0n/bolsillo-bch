@@ -6,6 +6,9 @@ interface Props {
   title: string;
 }
 
+// NB: Wherever you use this component, 
+// Wrap its immediately following elements with "className={pt-14}"
+// to compensate for its fixed height
 export default function ViewHeader({ icon = () => null, title = "" }: Props) {
   const location = useLocation();
   const navigate = useNavigate();
