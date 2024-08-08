@@ -15,7 +15,7 @@ export default function ExploreStatsView() {
   const SUBSECTIONS = [
     {
       name: "Selene",
-      children: <div className="pb-12">
+      children: <div className="pb-28">
         <div className="p-2">
           <ExploreStatBlock />
           <GlobalAdoptionSummary />
