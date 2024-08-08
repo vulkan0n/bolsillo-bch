@@ -5,6 +5,7 @@ import EmbeddedIFrame from "@/components/atoms/EmbeddedIFrame/EmbeddedIFrame";
 
 const AFITH_OF_GAMING_STATS_URL = "https://afifthofgaming.com/stats";
 const BCH_GURU_STATS_URL = "https://nfts.bch.guru/science";
+const TOKENAUT_URL = "https://tokenaut.cash/";
 
 export default function ExploreStatsView() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -21,10 +22,15 @@ export default function ExploreStatsView() {
     {
       name: "A Fifth Of Gaming",
       children: <EmbeddedIFrame src={AFITH_OF_GAMING_STATS_URL} />
-    }, {
+    },
+    {
       name: "BCH Guru",
       children: <EmbeddedIFrame src={BCH_GURU_STATS_URL} />
-    }
+    },
+    {
+      name: "Tokenaut",
+      children: <EmbeddedIFrame src={TOKENAUT_URL} />
+    },
   ]
 
   return (
@@ -33,7 +39,7 @@ export default function ExploreStatsView() {
 
       {!isMenuOpen && (
         <div
-          className="fixed mb-16 bottom-0 left-0 right-0 bg-red-400 text-red p-2 flex justify-between items-center"
+          className="fixed mb-16 bottom-0 left-0 right-0 bg-gray-300 text-red p-2 flex justify-between items-center"
           onClick={() => setIsMenuOpen(true)}
         >
           <div className="w-6"></div>
@@ -47,7 +53,7 @@ export default function ExploreStatsView() {
           {SUBSECTIONS.map((subsection, i) => (
             <span
               key={subsection.name}
-              className={`bg-${i % 2 === 0 ? "cyan" : "lime"}-300 ${i !== 0 && "mt-1"} w-full text-center`}
+              className={`bg-${i % 2 === 0 ? "yellow" : "lime"}-300 ${i !== 0 && "mt-1"} w-full text-center`}
               onClick={() => {
                 setSelectedSubsectionIndex(i);
                 setIsMenuOpen(false);
