@@ -15,9 +15,11 @@ export default function ExploreStatsView() {
   const SUBSECTIONS = [
     {
       name: "Selene",
-      children: <div className="p-2">
-        <ExploreStatBlock />
-        <GlobalAdoptionSummary />
+      children: <div className="pb-12">
+        <div className="p-2">
+          <ExploreStatBlock />
+          <GlobalAdoptionSummary />
+        </div>
       </div>
     },
     {
@@ -40,11 +42,13 @@ export default function ExploreStatsView() {
 
   return (
     <div className="h-full">
-      {SUBSECTIONS[selectedSubsectionIndex].children}
+      <div className="h-full pb-12">
+        {SUBSECTIONS[selectedSubsectionIndex].children}
+      </div>
 
       {!isMenuOpen && (
         <div
-          className="fixed mb-16 bottom-0 left-0 right-0 bg-gray-300 text-red p-3 flex justify-between items-center"
+          className="fixed bottom-16 left-0 right-0 bg-gray-300 text-red p-3 flex justify-between items-center"
           onClick={() => setIsMenuOpen(true)}
         >
           <div className="w-6"></div>
@@ -54,7 +58,7 @@ export default function ExploreStatsView() {
       )}
 
       {isMenuOpen && (
-        <div className="fixed mb-16 bottom-0 left-0 right-0 bg-gray-200 text-red p-3 flex flex-col justify-between items-center">
+        <div className="fixed bottom-16 left-0 right-0 bg-gray-200 text-red p-3 flex flex-col justify-between items-center">
           {SUBSECTIONS.map((subsection, i) => {
             const isLastElement = i === SUBSECTIONS.length - 1;
             return (
