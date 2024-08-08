@@ -29,7 +29,7 @@ export default function ExploreViewHome() {
   const isPrerelease = useSelector(selectIsPrerelease);
 
   return (
-    <div className="p-2">
+    <div className="p-2 pb-16">
       <ExploreStatBlock />
       {isPrerelease && (
         <ExploreApp
@@ -47,16 +47,16 @@ export default function ExploreViewHome() {
       )}
       {isPrerelease && (
         <ExploreApp
-          icon={LaptopOutlined}
-          name="A Fifth Of Gaming"
-          to="/explore/afog"
+          icon={ProfileOutlined}
+          name={translate(chronology)}
+          to="/explore/chronology"
         />
       )}
       {isPrerelease && (
         <ExploreApp
-          icon={ProfileOutlined}
-          name={translate(chronology)}
-          to="/explore/chronology"
+          icon={LaptopOutlined}
+          name="A Fifth Of Gaming"
+          to="/explore/afog"
         />
       )}
       {
