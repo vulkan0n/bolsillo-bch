@@ -6,6 +6,7 @@ import EmbeddedIFrame from "@/components/atoms/EmbeddedIFrame/EmbeddedIFrame";
 const AFITH_OF_GAMING_STATS_URL = "https://afifthofgaming.com/stats";
 const BCH_GURU_STATS_URL = "https://nfts.bch.guru/science";
 const TOKENAUT_URL = "https://tokenaut.cash/";
+const DEFI_LLAMA_URL = "https://defillama.com/chain/Bitcoincash"
 
 export default function ExploreStatsView() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -31,6 +32,10 @@ export default function ExploreStatsView() {
       name: "Tokenaut",
       children: <EmbeddedIFrame src={TOKENAUT_URL} />
     },
+    {
+      name: "DeFi Llama",
+      children: <EmbeddedIFrame src={DEFI_LLAMA_URL} />
+    }
   ]
 
   return (
