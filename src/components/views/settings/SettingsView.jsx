@@ -56,30 +56,33 @@ export default function SettingsView() {
         icon={SettingOutlined}
         title={translate(translations.settings)}
       />
-      <div className="p-1">
-        <SettingsContext.Provider value={settingsContext}>
-          <KeyWarning wallet={activeWallet} />
-          <WalletSettings />
-          <SecuritySettings />
-          <CurrencySettings />
-          <PaymentSettings />
-          <QrCodeSettings />
-          <UiSettings />
-          <NetworkSettings />
-          <PrivacySettings />
-          <IntlSettings />
-        </SettingsContext.Provider>
-      </div>
-      <div className="w-fit mx-auto px-2 py-0.5 shadow-sm rounded-full bg-primary text-white active:bg-white active:text-primary">
-        <Link
-          to="/credits"
-          className="w-fit mx-auto my-2 flex items-center justify-center"
-        >
-          <img src={logos.selene.img} className="w-11 h-11 mr-1" alt="" />
-          <span className="text-sm font-semibold">
-            Selene Wallet v{SELENE_WALLET_VERSION}
-          </span>
-        </Link>
+      <div className="h-full pt-12">
+
+        <div className="p-1">
+          <SettingsContext.Provider value={settingsContext}>
+            <KeyWarning wallet={activeWallet} />
+            <WalletSettings />
+            <SecuritySettings />
+            <CurrencySettings />
+            <PaymentSettings />
+            <QrCodeSettings />
+            <UiSettings />
+            <NetworkSettings />
+            <PrivacySettings />
+            <IntlSettings />
+          </SettingsContext.Provider>
+        </div>
+        <div className="w-fit mx-auto px-2 py-0.5 shadow-sm rounded-full bg-primary text-white active:bg-white active:text-primary">
+          <Link
+            to="/credits"
+            className="w-fit mx-auto my-2 flex items-center justify-center"
+          >
+            <img src={logos.selene.img} className="w-11 h-11 mr-1" alt="" />
+            <span className="text-sm font-semibold">
+              Selene Wallet v{SELENE_WALLET_VERSION}
+            </span>
+          </Link>
+        </div>
       </div>
     </>
   );

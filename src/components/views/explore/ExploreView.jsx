@@ -12,7 +12,9 @@ export default function ExploreView() {
     <>
       <ViewHeader icon={CompassOutlined} title={translate(exploreBch)} />
       {/* <ExploreSearchBar /> */}
-      <Outlet />
+      <div className="h-full pt-12">
+        <Outlet />
+      </div>
     </>
   );
 }
