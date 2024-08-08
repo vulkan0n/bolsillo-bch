@@ -154,6 +154,9 @@ const translations = {
     vi: "Niên đại",
     zh: "年表",
     zh_TW: "年表"
+  },
+  faqs: {
+    en: "FAQs & Information"
   }
 };
 

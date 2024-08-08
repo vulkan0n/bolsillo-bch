@@ -22,7 +22,8 @@ import translations from "./ExploreViewTranslations";
 const {
   statistics,
   socialMedia,
-  chronology
+  chronology,
+  faqs
 } = translations;
 
 export default function ExploreViewHome() {
@@ -42,7 +43,7 @@ export default function ExploreViewHome() {
       {isPrerelease && (
         <ExploreApp
           icon={InfoCircleOutlined}
-          name={"FAQs & Information"}
+          name={translate(faqs)}
           to="/explore/faqs"
         />
       )}
