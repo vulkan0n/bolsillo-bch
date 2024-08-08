@@ -1,21 +1,10 @@
 import { useState } from "react";
 import ExploreStatBlock from "./ExploreStatBlock";
 import GlobalAdoptionSummary from "./GlobalAdoptionSummary";
+import EmbeddedIFrame from "@/components/atoms/EmbeddedIFrame/EmbeddedIFrame";
 
 const AFITH_OF_GAMING_STATS_URL = "https://afifthofgaming.com/stats";
 const BCH_GURU_STATS_URL = "https://nfts.bch.guru/science";
-
-const EmbeddedIframe = ({ src }) => (
-  <div className="h-full">
-    <iframe
-      src={src}
-      title="Embedded Web Page"
-      width="100%"
-      height="100%"
-      allowFullScreen
-    />
-  </div>
-)
 
 export default function ExploreStatsView() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -31,10 +20,10 @@ export default function ExploreStatsView() {
     },
     {
       name: "A Fifth Of Gaming",
-      children: <EmbeddedIframe src={AFITH_OF_GAMING_STATS_URL} />
+      children: <EmbeddedIFrame src={AFITH_OF_GAMING_STATS_URL} />
     }, {
       name: "BCH Guru",
-      children: <EmbeddedIframe src={BCH_GURU_STATS_URL} />
+      children: <EmbeddedIFrame src={BCH_GURU_STATS_URL} />
     }
   ]
 
