@@ -2,6 +2,21 @@ import { useState } from "react";
 import ExploreStatBlock from "./ExploreStatBlock";
 import GlobalAdoptionSummary from "./GlobalAdoptionSummary";
 
+const AFITH_OF_GAMING_STATS_URL = "https://afifthofgaming.com/stats";
+const BCH_GURU_STATS_URL = "https://nfts.bch.guru/science";
+
+const EmbeddedIframe = ({ src }) => (
+  <div className="h-full">
+    <iframe
+      src={src}
+      title="Embedded Web Page"
+      width="100%"
+      height="100%"
+      allowFullScreen
+    />
+  </div>
+)
+
 export default function ExploreStatsView() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [selectedSubsectionIndex, setSelectedSubsectionIndex] = useState(0);
@@ -16,17 +31,10 @@ export default function ExploreStatsView() {
     },
     {
       name: "A Fifth Of Gaming",
-      children:
-        <div className="h-full">
-          <iframe
-            src="https://afifthofgaming.com/stats"
-            title="Embedded Web Page"
-            width="100%"
-            height="100%"
-            frameBorder="0"
-            allowFullScreen
-          />
-        </div>
+      children: <EmbeddedIframe src={AFITH_OF_GAMING_STATS_URL} />
+    }, {
+      name: "BCH Guru",
+      children: <EmbeddedIframe src={BCH_GURU_STATS_URL} />
     }
   ]
 
