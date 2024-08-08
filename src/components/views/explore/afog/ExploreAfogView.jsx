@@ -20,6 +20,8 @@ const {
 
 const AFOG_BASE_URL = "https://afifthofgaming.com"
 
+const AFOG_SESSION_PATH = "/Session/Detail/"
+
 export default function ExploreAfogView() {
   const [tournaments, setTournaments] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -53,6 +55,10 @@ export default function ExploreAfogView() {
     fetchTournaments();
   }, []);
 
+  const handleClick = (href) => {
+    window.open(href, '_blank', 'noopener,noreferrer');
+  };
+
   const Table = () => {
     return (
       <div className="px-4 sm:px-6 lg:px-8">
@@ -73,8 +79,14 @@ export default function ExploreAfogView() {
                     const formattedDatePart2 = DateTime.fromISO(date).toFormat('HH:mm ZZZZ')
                     const imageUrl = data.cycle.game.igdbImageUrl
 
+                    const sessionUrl = `${AFOG_BASE_URL}${AFOG_SESSION_PATH}${id}`
+
                     return (
-                      <tr key={id} className="flex justify-left">
+                      <tr
+                        key={id}
+                        className="flex justify-left"
+                        onClick={() => handleClick(sessionUrl)}
+                      >
                         <td className="px-2 min-w-2 my-auto">
                           <img src={imageUrl} alt="Game image" width="100" height="100" />
                         </td>
