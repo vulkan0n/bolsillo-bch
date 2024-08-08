@@ -30,7 +30,7 @@ export default function AssetsView() {
   return (
     <>
       <ViewHeader icon={BankOutlined} title="Assets" />
-      <div className="p-1">
+      <div className="p-1 pt-14">
         <div className="flex">
           <label className="text-sm">
             <input

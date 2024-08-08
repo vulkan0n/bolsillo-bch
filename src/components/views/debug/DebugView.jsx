@@ -52,7 +52,7 @@ export default function DebugView() {
   return (
     <>
       <ViewHeader icon={BugOutlined} title={translate(translations.debug)} />
-      <div className="p-1">
+      <div className="p-1 pt-14">
         <DebugSettings />
         <DebugConsole />
         <div className="m-1">
