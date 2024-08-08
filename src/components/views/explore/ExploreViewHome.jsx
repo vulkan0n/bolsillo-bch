@@ -7,6 +7,7 @@ import {
   LikeOutlined,
   LineChartOutlined,
   QuestionCircleOutlined,
+  InfoCircleOutlined,
 } from "@ant-design/icons";
 import { useSelector } from "react-redux";
 import {
@@ -36,6 +37,13 @@ export default function ExploreViewHome() {
           icon={LineChartOutlined}
           name={translate(statistics)}
           to="/explore/stats"
+        />
+      )}
+      {isPrerelease && (
+        <ExploreApp
+          icon={InfoCircleOutlined}
+          name={"FAQs & Information"}
+          to="/explore/faqs"
         />
       )}
       {isPrerelease && (

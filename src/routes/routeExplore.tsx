@@ -43,6 +43,15 @@ export const routeExplore = [
         },
       },
       {
+        path: "faqs",
+        async lazy() {
+          const { default: ExploreFAQsView } = await import(
+            "@/views/explore/faqs/ExploreFAQsView"
+          );
+          return { Component: ExploreFAQsView };
+        },
+      },
+      {
         path: "socialMedia",
         async lazy() {
           const { default: ExploreSocialMediaView } = await import(
