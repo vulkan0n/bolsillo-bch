@@ -39,7 +39,7 @@ export default function ExploreStatsView() {
 
       {!isMenuOpen && (
         <div
-          className="fixed mb-16 bottom-0 left-0 right-0 bg-gray-300 text-red p-2 flex justify-between items-center"
+          className="fixed mb-16 bottom-0 left-0 right-0 bg-gray-300 text-red p-3 flex justify-between items-center"
           onClick={() => setIsMenuOpen(true)}
         >
           <div className="w-6"></div>
@@ -50,20 +50,24 @@ export default function ExploreStatsView() {
 
       {isMenuOpen && (
         <div className="fixed mb-16 bottom-0 left-0 right-0 bg-gray-200 text-red p-3 flex flex-col justify-between items-center">
-          {SUBSECTIONS.map((subsection, i) => (
-            <span
-              key={subsection.name}
-              className={`bg-${i % 2 === 0 ? "yellow" : "lime"}-300 ${i !== 0 && "mt-1"} w-full text-center`}
-              onClick={() => {
-                setSelectedSubsectionIndex(i);
-                setIsMenuOpen(false);
-              }}
-            >
-              <div className="w-6"></div>
-              <span className="text-lg font-semibold">{subsection.name}</span>
-              <div className="w-6"></div>
-            </span>
-          ))}
+          {SUBSECTIONS.map((subsection, i) => {
+            const isLastElement = i === SUBSECTIONS.length - 1;
+            return (
+              <div
+                key={subsection.name}
+                className={`bg-${i % 2 === 0 ? "yellow" : "lime"}-300 ${i !== 0 && "mt-1"} w-full flex justify-between items-center text-center`}
+                onClick={() => {
+                  setSelectedSubsectionIndex(i);
+                  setIsMenuOpen(false);
+                }}
+              >
+                <div className="w-6"></div>
+                <span className="text-lg font-semibold">{subsection.name}</span>
+                {!isLastElement && <div className="w-6"></div>}
+                {isLastElement && <button className="text-2xl">☰</button>}
+              </div>
+            )
+          })}
         </div>
       )}
 
