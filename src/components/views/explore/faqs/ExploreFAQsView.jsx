@@ -5,6 +5,8 @@ const BCH_PODCAST_FAQ_URL = "https://bitcoincashpodcast.com/faqs";
 const HELPME_CASH_URL = "https://helpme.cash/";
 const DISCOVER_CASH_URL = "https://discover.cash/"
 const BCHF_URL = "https://bitcoincashfoundation.org/";
+const BCH_FAQ_URL = "https://bchfaq.com/"
+const BCH_EDUCATION_URL = "https://bch.education/"
 
 const SUBSECTIONS = [
   {
@@ -23,6 +25,14 @@ const SUBSECTIONS = [
     name: "Bitcoin Cash Foundation",
     children: <EmbeddedIFrame src={BCHF_URL} />
   },
+  {
+    name: "BCH FAQ",
+    children: <EmbeddedIFrame src={BCH_FAQ_URL} />
+  },
+  {
+    name: "BCH.education",
+    children: <EmbeddedIFrame src={BCH_EDUCATION_URL} />
+  }
 ]
 
 export default function ExploreFAQsView() {
