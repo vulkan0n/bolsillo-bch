@@ -1,15 +1,15 @@
 import AppSubSectionWrapper from "@/components/atoms/AppSubSectionWrapper/AppSubSectionWrapper";
 import EmbeddedIFrame from "@/components/atoms/EmbeddedIFrame/EmbeddedIFrame";
 
-const AFITH_OF_GAMING_STATS_URL = "https://afifthofgaming.com/stats";
+const BCH_PODCAST_FAQ_URLS = "https://bitcoincashpodcast.com/faqs";
 const BCH_GURU_STATS_URL = "https://nfts.bch.guru/science";
 const TOKENAUT_URL = "https://tokenaut.cash/";
 const DEFI_LLAMA_URL = "https://defillama.com/chain/Bitcoincash"
 
 const SUBSECTIONS = [
   {
-    name: "A Fifth Of Gaming",
-    children: <EmbeddedIFrame src={AFITH_OF_GAMING_STATS_URL} />
+    name: "The Bitcoin Cash Podcast",
+    children: <EmbeddedIFrame src={BCH_PODCAST_FAQ_URLS} />
   },
   {
     name: "BCH Guru",
