@@ -5,11 +5,28 @@ import { RECOMMENDED_YOUTUBE_CHANNELS } from './recommended';
 import { TabSwitcher } from './TabSwitcher';
 import { YOUTUBE_FEED } from './youtubeFeed';
 import EmbeddedVideo from '@/components/atoms/EmbeddedVideo/EmbeddedVideo';
+import AppSubSectionWrapper from "@/components/atoms/AppSubSectionWrapper/AppSubSectionWrapper";
 
 export const OPTIONS = {
   YOUTUBE: "Youtube",
   TWITTER: "Twitter"
 }
+
+const SUBSECTIONS = [
+  {
+    name: "Latest Feed",
+    children: null
+  },
+  {
+    name: "HelpMe.Cash",
+    children: <div><h1>HelpMe.Cash</h1></div>
+  },
+  {
+    name: "Discover.cash",
+    children: <div><h1>Discover.cash</h1></div>
+  },
+]
+
 
 export default function ExploreSocialMediaView() {
   const [selected, setSelected] = useState(OPTIONS.YOUTUBE)
@@ -22,16 +39,9 @@ export default function ExploreSocialMediaView() {
           description="Get involved in the latest content, news & discussion in BCH."
           icon={<LikeOutlined className="text-xl my-auto text-zinc-200" />}
           expandableTitle={"Recommended channels"}
-          expandableContent={
-            <div className="text-left">
-              <ul>
-                {RECOMMENDED_YOUTUBE_CHANNELS.map(channel => <li key={channel.name}>
-                  <a href={channel.url} target="_blank">- <u>{channel.name}</u></a>
-                </li>)}
-              </ul>
-            </div>
-          }
         />
+
+        <AppSubSectionWrapper subsections={SUBSECTIONS} />
 
         {YOUTUBE_FEED.map(video => {
           return (
@@ -42,11 +52,6 @@ export default function ExploreSocialMediaView() {
             </div>
           )
         })}
-      </div>
-
-      {/* <div className="bg-green-600"> */}
-      <div className="fixed bottom-16 w-full bg-zinc-400">
-        <TabSwitcher selected={selected} setSelected={setSelected} />
       </div>
     </div >
   );

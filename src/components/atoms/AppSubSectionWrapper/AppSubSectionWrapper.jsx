@@ -4,11 +4,13 @@ export default function AppSubSectionWrapper({ subsections }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [selectedSubsectionIndex, setSelectedSubsectionIndex] = useState(0);
 
+  const isSectionEmpty = !subsections[selectedSubsectionIndex]?.children
+
   return (
     <div className="h-full">
-      <div className="h-full pb-12">
+      {!isSectionEmpty && <div className="h-full pb-12">
         {subsections[selectedSubsectionIndex].children}
-      </div>
+      </div>}
 
       {!isMenuOpen && (
         <div
