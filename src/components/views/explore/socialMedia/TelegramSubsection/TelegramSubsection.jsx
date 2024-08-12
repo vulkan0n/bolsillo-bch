@@ -84,8 +84,7 @@ export const TelegramSubsection = () => {
     <div className="px-2 pb-20">
       <div>
         <p>The BCH community has a thriving set of Telegram channels for discussion and collaboration.</p>
-        <p>Many projects or initiatives have their own topic or project-specific discussion group.</p>
-        <p>The diversity of groups allows for a variety of moderation policies.</p>
+        <p>Channels vary on topic, moderation, activity levels & more.</p>
         <p>Lurk or participate in any that interest you!</p>
       </div>
       <hr className="m-2" />
