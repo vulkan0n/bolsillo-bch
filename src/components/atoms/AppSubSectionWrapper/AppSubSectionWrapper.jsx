@@ -8,9 +8,9 @@ export default function AppSubSectionWrapper({ subsections }) {
 
   return (
     <div className="h-full">
-      {!isSectionEmpty && <div className="h-full pb-12">
+      <div className="h-full pb-12">
         {subsections[selectedSubsectionIndex].children}
-      </div>}
+      </div>
 
       {!isMenuOpen && (
         <div

@@ -6,6 +6,7 @@ import { TabSwitcher } from './TabSwitcher';
 import { YOUTUBE_FEED } from './youtubeFeed';
 import EmbeddedVideo from '@/components/atoms/EmbeddedVideo/EmbeddedVideo';
 import AppSubSectionWrapper from "@/components/atoms/AppSubSectionWrapper/AppSubSectionWrapper";
+import { TelegramSubsection } from './TelegramSubsection/TelegramSubsection';
 
 export const OPTIONS = {
   YOUTUBE: "Youtube",
@@ -14,16 +15,26 @@ export const OPTIONS = {
 
 const SUBSECTIONS = [
   {
-    name: "Latest Feed",
-    children: null
+    name: "Latest",
+    children: <>{
+      YOUTUBE_FEED.map(video => {
+        return (
+          <div key={video.videoTitle} className="block p-4 mb-1 mx-2 bg-white border border-gray-800 border-2 rounded-lg shadow">
+            <h5 className="mb-2 text-xl font-bold text-zinc-700">{video.videoTitle}</h5>
+            <p className="font-normal text-gray-700 dark:text-gray-400 pb-2">{video.channelName} - {video.videoDate}</p>
+            <EmbeddedVideo url={video.videoUrl} />
+          </div>
+        )
+      })
+    }</>
   },
   {
-    name: "HelpMe.Cash",
-    children: <div><h1>HelpMe.Cash</h1></div>
+    name: "Youtube",
+    children: <div><h1>Youtube</h1></div>
   },
   {
-    name: "Discover.cash",
-    children: <div><h1>Discover.cash</h1></div>
+    name: "Telegram",
+    children: <TelegramSubsection />
   },
 ]
 
@@ -42,16 +53,6 @@ export default function ExploreSocialMediaView() {
         />
 
         <AppSubSectionWrapper subsections={SUBSECTIONS} />
-
-        {YOUTUBE_FEED.map(video => {
-          return (
-            <div key={video.videoTitle} className="block p-4 mb-1 mx-2 bg-white border border-gray-800 border-2 rounded-lg shadow">
-              <h5 className="mb-2 text-xl font-bold text-zinc-700">{video.videoTitle}</h5>
-              <p className="font-normal text-gray-700 dark:text-gray-400 pb-2">{video.channelName} - {video.videoDate}</p>
-              <EmbeddedVideo url={video.videoUrl} />
-            </div>
-          )
-        })}
       </div>
     </div >
   );
