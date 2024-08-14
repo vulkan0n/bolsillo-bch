@@ -9,7 +9,7 @@ import {
 } from "@ant-design/icons";
 
 import { translate } from "@/util/translations";
-import translations from "./SettingsViewTranslations";
+import translations from "./translations";
 
 import { SettingsContext } from "./SettingsContext";
 

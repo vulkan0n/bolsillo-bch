@@ -11,7 +11,7 @@ import ViewHeader from "@/layout/ViewHeader";
 import KeyWarning from "@/atoms/KeyWarning/KeyWarning";
 
 import { translate } from "@/util/translations";
-import translations from "./SettingsViewTranslations";
+import translations from "./translations";
 
 import { logos } from "@/util/logos";
 import { SELENE_WALLET_VERSION } from "@/util/version";
