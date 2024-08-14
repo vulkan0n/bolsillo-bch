@@ -11,7 +11,7 @@ import {
 import { selectCurrencySettings } from "@/redux/preferences";
 
 import { translate } from "@/util/translations";
-import translations from "./SettingsViewTranslations";
+import translations from "./translations";
 
 import { SettingsContext } from "./SettingsContext";
 import { currencyList } from "@/util/currency";
