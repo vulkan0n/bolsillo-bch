@@ -10,7 +10,7 @@ import { selectUiSettings } from "@/redux/preferences";
 import SecurityService from "@/services/SecurityService";
 import Accordion from "@/atoms/Accordion";
 import { translate } from "@/util/translations";
-import translations from "./SettingsViewTranslations";
+import translations from "./translations";
 import { SettingsContext } from "./SettingsContext";
 
 const { uiSettings, hideExploreTab } = translations;
