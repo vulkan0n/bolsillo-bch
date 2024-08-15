@@ -7,7 +7,7 @@ interface Props {
 export default function EmbeddedVideo({ url = "" }: Props) {
   return (
     <div className="w-full flex justify-center">
-      <ReactPlayer url={url} width={"100%"} />
+      <ReactPlayer url={url} width="100%" />
     </div>
   );
 }

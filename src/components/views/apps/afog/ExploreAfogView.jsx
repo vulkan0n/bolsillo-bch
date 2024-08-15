@@ -4,7 +4,7 @@ import { LaptopOutlined } from "@ant-design/icons";
 import AppHero from "@/apps/AppHero/AppHero";
 import { translate } from "@/util/translations";
 import translations from "./ExploreAfogViewTranslations";
-import EmbeddedVideo from "@/components/atoms/EmbeddedVideo/EmbeddedVideo";
+import EmbeddedVideo from "@/atoms/EmbeddedVideo";
 
 const {
   upcomingTournaments,

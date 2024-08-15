@@ -1,5 +1,5 @@
 import AppSubSectionWrapper from "@/apps/AppSubSectionWrapper/AppSubSectionWrapper";
-import EmbeddedIFrame from "@/components/atoms/EmbeddedIFrame/EmbeddedIFrame";
+import EmbeddedIframe from "@/atoms/EmbeddedIframe";
 
 const BCH_PODCAST_FAQ_URL = "https://bitcoincashpodcast.com/faqs";
 const HELPME_CASH_URL = "https://helpme.cash/";
@@ -11,27 +11,27 @@ const BCH_EDUCATION_URL = "https://bch.education/";
 const SUBSECTIONS = [
   {
     name: "The Bitcoin Cash Podcast",
-    children: <EmbeddedIFrame src={BCH_PODCAST_FAQ_URL} />,
+    children: <EmbeddedIframe src={BCH_PODCAST_FAQ_URL} />,
   },
   {
     name: "HelpMe.Cash",
-    children: <EmbeddedIFrame src={HELPME_CASH_URL} />,
+    children: <EmbeddedIframe src={HELPME_CASH_URL} />,
   },
   {
     name: "Discover.cash",
-    children: <EmbeddedIFrame src={DISCOVER_CASH_URL} />,
+    children: <EmbeddedIframe src={DISCOVER_CASH_URL} />,
   },
   {
     name: "Bitcoin Cash Foundation",
-    children: <EmbeddedIFrame src={BCHF_URL} />,
+    children: <EmbeddedIframe src={BCHF_URL} />,
   },
   {
     name: "BCH FAQ",
-    children: <EmbeddedIFrame src={BCH_FAQ_URL} />,
+    children: <EmbeddedIframe src={BCH_FAQ_URL} />,
   },
   {
     name: "BCH.education",
-    children: <EmbeddedIFrame src={BCH_EDUCATION_URL} />,
+    children: <EmbeddedIframe src={BCH_EDUCATION_URL} />,
   },
 ];
 

@@ -2,7 +2,7 @@ import { ApolloProvider } from "@apollo/client";
 import AppSubSectionWrapper from "@/apps/AppSubSectionWrapper/AppSubSectionWrapper";
 import ExploreStatBlock from "./ExploreStatBlock";
 import GlobalAdoptionSummary from "./GlobalAdoptionSummary";
-import EmbeddedIFrame from "@/components/atoms/EmbeddedIFrame/EmbeddedIFrame";
+import EmbeddedIframe from "@/atoms/EmbeddedIframe";
 import apolloClient from "@/apolloClient";
 
 const AFITH_OF_GAMING_STATS_URL = "https://afifthofgaming.com/stats";
@@ -28,27 +28,27 @@ const SUBSECTIONS = [
   },
   {
     name: "A Fifth Of Gaming",
-    children: <EmbeddedIFrame src={AFITH_OF_GAMING_STATS_URL} />,
+    children: <EmbeddedIframe src={AFITH_OF_GAMING_STATS_URL} />,
   },
   {
     name: "BCH Guru",
-    children: <EmbeddedIFrame src={BCH_GURU_STATS_URL} />,
+    children: <EmbeddedIframe src={BCH_GURU_STATS_URL} />,
   },
   {
     name: "Tokenaut",
-    children: <EmbeddedIFrame src={TOKENAUT_URL} />,
+    children: <EmbeddedIframe src={TOKENAUT_URL} />,
   },
   {
     name: "DeFi Llama",
-    children: <EmbeddedIFrame src={DEFI_LLAMA_URL} />,
+    children: <EmbeddedIframe src={DEFI_LLAMA_URL} />,
   },
   {
     name: "Tx City",
-    children: <EmbeddedIFrame src={TX_CITY_URL} />,
+    children: <EmbeddedIframe src={TX_CITY_URL} />,
   },
   {
     name: "Tx Watch",
-    children: <EmbeddedIFrame src={TX_WATCH_URL} />,
+    children: <EmbeddedIframe src={TX_WATCH_URL} />,
   },
 ];
 

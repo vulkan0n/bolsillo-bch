@@ -2,7 +2,7 @@ import {
   VerticalTimeline,
   VerticalTimelineElement,
 } from "react-vertical-timeline-component";
-import EmbeddedVideo from "../../../atoms/EmbeddedVideo/EmbeddedVideo";
+import EmbeddedVideo from "@/atoms/EmbeddedVideo";
 import { CATEGORIES } from "./timelineItems";
 import { mapCategoryToColour } from "./utils";
 import { useNavigate } from "react-router-dom";

@@ -1,10 +1,8 @@
-import ReactPlayer from "react-player/youtube";
-
 interface Props {
   src: string;
 }
 
-export default function EmbeddedIFrame({ src = "" }: Props) {
+export default function EmbeddedIframe({ src = "" }: Props) {
   return (
     <div className="h-full">
       <iframe

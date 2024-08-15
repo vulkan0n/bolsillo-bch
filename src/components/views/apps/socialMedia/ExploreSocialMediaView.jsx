@@ -4,7 +4,7 @@ import { LikeOutlined, YoutubeOutlined } from "@ant-design/icons";
 import { RECOMMENDED_YOUTUBE_CHANNELS } from "./recommended";
 import { TabSwitcher } from "./TabSwitcher";
 import { YOUTUBE_FEED } from "./youtubeFeed";
-import EmbeddedVideo from "@/components/atoms/EmbeddedVideo/EmbeddedVideo";
+import EmbeddedVideo from "@/atoms/EmbeddedVideo";
 import AppSubSectionWrapper from "@/apps/AppSubSectionWrapper/AppSubSectionWrapper";
 import { TelegramSubsection } from "./TelegramSubsection/TelegramSubsection";
 
