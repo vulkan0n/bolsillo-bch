@@ -4,7 +4,7 @@ export default function AppSubSectionWrapper({ subsections }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [selectedSubsectionIndex, setSelectedSubsectionIndex] = useState(0);
 
-  const isSectionEmpty = !subsections[selectedSubsectionIndex]?.children
+  const isSectionEmpty = !subsections[selectedSubsectionIndex]?.children;
 
   return (
     <div className="h-full">
@@ -18,7 +18,9 @@ export default function AppSubSectionWrapper({ subsections }) {
           onClick={() => setIsMenuOpen(true)}
         >
           <div className="w-6"></div>
-          <span className="text-lg font-semibold">{subsections[selectedSubsectionIndex].name}</span>
+          <span className="text-lg font-semibold">
+            {subsections[selectedSubsectionIndex].name}
+          </span>
           <button className="text-2xl">☰</button>
         </div>
       )}
@@ -38,16 +40,17 @@ export default function AppSubSectionWrapper({ subsections }) {
               >
                 <div className="w-6"></div>
                 <span className="text-center bg-zinc-300 w-full mx-3">
-                  <span className="text-lg font-semibold">{subsection.name}</span>
+                  <span className="text-lg font-semibold">
+                    {subsection.name}
+                  </span>
                 </span>
                 {!isLastElement && <div className="w-6"></div>}
                 {isLastElement && <button className="text-2xl">☰</button>}
               </div>
-            )
+            );
           })}
         </div>
       )}
-
     </div>
   );
 }

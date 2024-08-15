@@ -1,5 +1,5 @@
 import { ApolloProvider } from "@apollo/client";
-import AppSubSectionWrapper from "@/components/atoms/AppSubSectionWrapper/AppSubSectionWrapper";
+import AppSubSectionWrapper from "@/apps/AppSubSectionWrapper/AppSubSectionWrapper";
 import ExploreStatBlock from "./ExploreStatBlock";
 import GlobalAdoptionSummary from "./GlobalAdoptionSummary";
 import EmbeddedIFrame from "@/components/atoms/EmbeddedIFrame/EmbeddedIFrame";
