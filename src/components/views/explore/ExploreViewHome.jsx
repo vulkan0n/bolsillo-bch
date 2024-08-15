@@ -1,37 +1,50 @@
 import {
-  //ContactsOutlined,
+  ContactsOutlined,
   EnvironmentOutlined,
-  //QuestionCircleOutlined,
+  QuestionCircleOutlined,
+  AppstoreOutlined,
+  PlaySquareOutlined,
 } from "@ant-design/icons";
 import { useSelector } from "react-redux";
-import { selectIsExperimental } from "@/redux/preferences";
+import { selectIsExperimental, selectIsPrerelease } from "@/redux/preferences";
 import ExploreApp from "./ExploreApp";
 
-import AppStatsWidget from "@/apps/stats/AppStatsWidget";
+import ExploreStatWidget from "./ExploreStatWidget";
 
 export default function ExploreViewHome() {
   const isExperimental = useSelector(selectIsExperimental);
+  const isPrerelease = useSelector(selectIsPrerelease);
 
   return (
-    <div className="p-2">
-      <AppStatsWidget />
-      {/*{isExperimental && (
+    <div className="p-1.5">
+      <ExploreStatWidget />
+      {(isPrerelease || isExperimental) && (
+        <ExploreApp icon={AppstoreOutlined} name="Apps" to="/apps" />
+      )}
+      {isExperimental && (
         <ExploreApp
           icon={ContactsOutlined}
           name="Contacts"
           to="/explore/contacts"
         />
-      )}*/}
+      )}
       {isExperimental && (
         <ExploreApp icon={EnvironmentOutlined} name="Map" to="/explore/map" />
       )}
-      {/*{isExperimental && (
+      {isExperimental && (
+        <ExploreApp
+          icon={PlaySquareOutlined}
+          name="Media"
+          to="/explore/media"
+        />
+      )}
+      {isExperimental && (
         <ExploreApp
           icon={QuestionCircleOutlined}
           name="Help"
           to="/explore/help"
         />
-      )}*/}
+      )}
     </div>
   );
 }
