@@ -5,8 +5,6 @@ import { useQuery } from "@apollo/client";
 import { selectCurrentPrice } from "@/redux/exchangeRates";
 import { THIRTY_SECONDS } from "@/util/time";
 import GET_ACTIVE_BITCOINERS_SUMMARY from "@/apps/stats/getActiveBitcoinersSummary";
-import { translate } from "@/util/translations";
-import translations from "./translations";
 
 export default function ExploreStatWidget() {
   const price = useSelector(selectCurrentPrice);
