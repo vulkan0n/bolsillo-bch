@@ -88,7 +88,7 @@ export default function ExploreStatWidget() {
           <div className="text-primary text-lg font-semibold">
             {price.priceString}
           </div>
-          <div className="text-xs text-zinc-400">↗︎ $0.42 (3%)</div>
+          <div className="text-xs text-zinc-400">&nbsp;</div>
         </div>
       </Link>
     </div>
