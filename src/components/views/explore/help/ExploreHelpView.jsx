@@ -1,7 +1,7 @@
-export default function HelpView() {
+export default function ExploreHelpView() {
   return (
     <div>
-      <div>HelpView</div>
+      <div>ExploreHelpView</div>
     </div>
   );
 }

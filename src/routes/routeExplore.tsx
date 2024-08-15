@@ -1,25 +1,18 @@
 import { Geolocation } from "@capacitor/geolocation";
 
+import ExploreView from "@/views/explore/ExploreView";
+import ExploreViewHome from "@/views/explore/ExploreViewHome";
+
 import TransactionManagerService from "@/services/TransactionManagerService";
 
 export const routeExplore = [
   {
     path: "/explore",
-    async lazy() {
-      const { default: ExploreView } = await import(
-        "@/views/explore/ExploreView"
-      );
-      return { Component: ExploreView };
-    },
+    element: <ExploreView />,
     children: [
       {
         index: true,
-        async lazy() {
-          const { default: ExploreViewHome } = await import(
-            "@/views/explore/ExploreViewHome"
-          );
-          return { Component: ExploreViewHome };
-        },
+        element: <ExploreViewHome />,
       },
       {
         path: "tx/:txid",
@@ -31,15 +24,6 @@ export const routeExplore = [
         },
         loader: async ({ params }) => {
           return TransactionManagerService().resolveTransaction(params.txid);
-        },
-      },
-      {
-        path: "stats",
-        async lazy() {
-          const { default: ExploreStatsView } = await import(
-            "@/views/explore/stats/ExploreStatsView"
-          );
-          return { Component: ExploreStatsView };
         },
       },
       {
@@ -71,15 +55,6 @@ export const routeExplore = [
             "@/views/explore/help/ExploreHelpView"
           );
           return { Component: ExploreHelpView };
-        },
-      },
-      {
-        path: "price",
-        async lazy() {
-          const { default: ExplorePriceView } = await import(
-            "@/views/explore/price/ExplorePriceView"
-          );
-          return { Component: ExplorePriceView };
         },
       },
     ],
