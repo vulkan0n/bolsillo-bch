@@ -36,7 +36,7 @@ const translations = {
     ur: "ڈیبگ",
     vi: "Gỡ lỗi",
     zh: "调试",
-    zh_TW: "偵錯"
+    zh_TW: "偵錯",
   },
   debugOptions: {
     ar: "خيارات التصحيح",
@@ -75,7 +75,7 @@ const translations = {
     ur: "ڈیبگ کے اختیارات",
     vi: "Tùy chọn gỡ lỗi",
     zh: "调试选项",
-    zh_TW: "偵錯選項"
+    zh_TW: "偵錯選項",
   },
   enableExperimentalFeatures: {
     ar: "تمكين الميزات التجريبية",
@@ -114,7 +114,7 @@ const translations = {
     ur: "تجرباتی خصوصیات کو فعال کریں۔",
     vi: "Bật tính năng thử nghiệm",
     zh: "启用实验性功能",
-    zh_TW: "啟用實驗功能"
+    zh_TW: "啟用實驗功能",
   },
   experimentalDescription: {
     ar: "ميزات غير مستقرة قيد التطوير. مخصص للمطورين والمختبرين الداخليين فقط. توخي الحذر الشديد!!",
@@ -153,7 +153,8 @@ const translations = {
     ur: "غیر مستحکم خصوصیات ترقی سے گزر رہی ہیں۔ صرف ڈویلپرز اور اندرونی ٹیسٹرز کے لیے۔ انتہائی احتیاط برتیں!!",
     vi: "Các tính năng không ổn định đang được phát triển. Chỉ dành cho nhà phát triển và người thử nghiệm nội bộ. Hãy hết sức thận trọng!!",
     zh: "不稳定的功能正在开发中。仅供开发人员和内部测试人员使用。请谨慎使用！！",
-    zh_TW: "不穩定的功能正在開發中。僅適用於開發人員和內部測試人員。使用時要格外小心！"
+    zh_TW:
+      "不穩定的功能正在開發中。僅適用於開發人員和內部測試人員。使用時要格外小心！",
   },
   enablePrereleaseFeatures: {
     ar: "تمكين ميزات الإصدار التجريبي",
@@ -192,7 +193,7 @@ const translations = {
     ur: "پری ریلیز کی خصوصیات کو فعال کریں۔",
     vi: "Bật tính năng phát hành trước",
     zh: "启用预发布功能",
-    zh_TW: "啟用預發布功能"
+    zh_TW: "啟用預發布功能",
   },
   prereleaseDescription: {
     ar: "الميزات الثابتة المخطط لها للإصدار القادم. يمكن للمستخدمين المتقدمين إجراء التجربة قبل الإصدار، مع توخي الحذر المناسب وتوقع الأخطاء.",
@@ -231,7 +232,8 @@ const translations = {
     ur: "آئندہ ریلیز کے لیے مستحکم خصوصیات کا منصوبہ بنایا گیا ہے۔ اعلی درجے کے صارفین مناسب احتیاط اور کیڑے کی توقع کے ساتھ، رہائی سے پہلے ٹرائل کر سکتے ہیں۔",
     vi: "Các tính năng ổn định được lên kế hoạch cho bản phát hành sắp tới. Người dùng nâng cao có thể dùng thử trước khi phát hành với sự thận trọng thích hợp và dự đoán sẽ có lỗi.",
     zh: "计划在即将发布的版本中加入稳定功能。高级用户可以在发布前试用，但需谨慎处理并注意可能出现的错误。",
-    zh_TW: "計劃即將發布的穩定功能。高級用戶可以在發布前進行試用，並適當謹慎並預期會出現錯誤。"
+    zh_TW:
+      "計劃即將發布的穩定功能。高級用戶可以在發布前進行試用，並適當謹慎並預期會出現錯誤。",
   },
   throwAnError: {
     ar: "رمي خطأ",
@@ -270,8 +272,8 @@ const translations = {
     ur: "ایک غلطی پھینک دیں۔",
     vi: "Ném một lỗi",
     zh: "抛出错误",
-    zh_TW: "拋出錯誤"
-  }
+    zh_TW: "拋出錯誤",
+  },
 };
 
 export default translations;

@@ -3,90 +3,116 @@ import { DateTime } from "luxon";
 import { translate } from "@/util/translations";
 import translations from "./translations";
 
-const WHITEPAPER_READ_MORE_URL = "https://bitcoincashpodcast.com/bitcoin.pdf"
+const WHITEPAPER_READ_MORE_URL = "https://bitcoincashpodcast.com/bitcoin.pdf";
 
-const SELENE_VIDEO_URL = "https://www.youtube.com/watch?v=5RqI6tByySQ"
-const SELENE_READ_MORE_URL = "https://selene.cash/"
+const SELENE_VIDEO_URL = "https://www.youtube.com/watch?v=5RqI6tByySQ";
+const SELENE_READ_MORE_URL = "https://selene.cash/";
 
-const BCH_GURU_GRAPHIC_URL = "https://pbs.twimg.com/profile_images/1649794915344465925/E8tlHvcJ_400x400.jpg"
-const BCH_GURU_READ_MORE_URL = "https://bch.guru/"
+const BCH_GURU_GRAPHIC_URL =
+  "https://pbs.twimg.com/profile_images/1649794915344465925/E8tlHvcJ_400x400.jpg";
+const BCH_GURU_READ_MORE_URL = "https://bch.guru/";
 
-const MT_GOX_READ_MORE_URL = "https://en.wikipedia.org/wiki/Mt._Gox"
+const MT_GOX_READ_MORE_URL = "https://en.wikipedia.org/wiki/Mt._Gox";
 
-const GENESIS_READ_MORE_URL = "https://blockchair.com/bitcoin-cash/block/0"
+const GENESIS_READ_MORE_URL = "https://blockchair.com/bitcoin-cash/block/0";
 
-const AFOG_GRAPHIC_URL = "https://pbs.twimg.com/profile_images/1719547852722946048/Ap4rOTHp_400x400.jpg"
-const AFOG_APP_URL = '/explore/afog'
+const AFOG_GRAPHIC_URL =
+  "https://pbs.twimg.com/profile_images/1719547852722946048/Ap4rOTHp_400x400.jpg";
+const AFOG_APP_URL = "/explore/afog";
 
-const BCH_ARGENTINA_CONFERENCE_VIDEO_URL = "https://www.youtube.com/watch?v=zmt1RiFHMOA"
-const BCH_ARGENTINA_CONFERENCE_READ_MORE_URL = "https://2024.bcharg.com/"
+const BCH_ARGENTINA_CONFERENCE_VIDEO_URL =
+  "https://www.youtube.com/watch?v=zmt1RiFHMOA";
+const BCH_ARGENTINA_CONFERENCE_READ_MORE_URL = "https://2024.bcharg.com/";
 
-const LOCK_IN_2025_URL = "https://youtu.be/oPQ8w0yZ88E?t=247"
-const LOCK_IN_2025_READ_MORE_URL = "https://bitcoincashresearch.org/t/chip-2021-05-targeted-virtual-machine-limits/437/26"
+const LOCK_IN_2025_URL = "https://youtu.be/oPQ8w0yZ88E?t=247";
+const LOCK_IN_2025_READ_MORE_URL =
+  "https://bitcoincashresearch.org/t/chip-2021-05-targeted-virtual-machine-limits/437/26";
 
-const CASHTOKENS_EXPLANER_VIDEO_URL = "https://www.youtube.com/watch?v=uIhQKQ4efnQ"
-const CASHTOKENS_FAQ_URL = "https://bitcoincashpodcast.com/faqs/Tech/what-is-cashtokens"
+const CASHTOKENS_EXPLANER_VIDEO_URL =
+  "https://www.youtube.com/watch?v=uIhQKQ4efnQ";
+const CASHTOKENS_FAQ_URL =
+  "https://bitcoincashpodcast.com/faqs/Tech/what-is-cashtokens";
 
-const ABLA_EXPLAINER_VIDEO_URL = "https://www.youtube.com/watch?v=YkkzIjZQNH0"
-const ABLA_FAQ_URL = "https://bitcoincashpodcast.com/faqs/BCH/what-is-the-maximum-bch-blocksize"
+const ABLA_EXPLAINER_VIDEO_URL = "https://www.youtube.com/watch?v=YkkzIjZQNH0";
+const ABLA_FAQ_URL =
+  "https://bitcoincashpodcast.com/faqs/BCH/what-is-the-maximum-bch-blocksize";
 
-const BLISS_FAQ_URL = "https://bitcoincashpodcast.com/faqs/Events/BLISS"
+const BLISS_FAQ_URL = "https://bitcoincashpodcast.com/faqs/Events/BLISS";
 
-const BCH22_STREAM_URL = "https://www.youtube.com/watch?v=1W0-N_0K6jQ"
-const BCH22_FAQ_URL = "https://bitcoincashpodcast.com/faqs/Events/BCH22"
+const BCH22_STREAM_URL = "https://www.youtube.com/watch?v=1W0-N_0K6jQ";
+const BCH22_FAQ_URL = "https://bitcoincashpodcast.com/faqs/Events/BCH22";
 
-const BITCOIN_CASH_PODCAST_GRAPHIC_URL = "https://bitcoincashpodcast.com/sunglasses.jpg"
-const BITCOIN_CASH_PODCAST_URL = "https://bitcoincashpodcast.com/"
+const BITCOIN_CASH_PODCAST_GRAPHIC_URL =
+  "https://bitcoincashpodcast.com/sunglasses.jpg";
+const BITCOIN_CASH_PODCAST_URL = "https://bitcoincashpodcast.com/";
 
-const BCH_CITY_VIDEO_URL = "https://www.youtube.com/watch?v=UuhH1lL6BAw"
+const BCH_CITY_VIDEO_URL = "https://www.youtube.com/watch?v=UuhH1lL6BAw";
 
-const FLIPSTARTER_READ_MORE_URL = "https://flipstarter.cash/"
-const FLIPSTARTER_GRAPHIC_URL = "https://flipstarter.cash/static/img/logo-alt.svg"
+const FLIPSTARTER_READ_MORE_URL = "https://flipstarter.cash/";
+const FLIPSTARTER_GRAPHIC_URL =
+  "https://flipstarter.cash/static/img/logo-alt.svg";
 
-const CASHSCRIPT_READ_MORE_URL = "https://cashscript.org/"
-const CASHSCRIPT_VIDEO_URL = "https://www.youtube.com/watch?v=5fsqU0lvA8c"
+const CASHSCRIPT_READ_MORE_URL = "https://cashscript.org/";
+const CASHSCRIPT_VIDEO_URL = "https://www.youtube.com/watch?v=5fsqU0lvA8c";
 
-const JOGS_READ_MORE_URL = "https://jogs.one/"
+const JOGS_READ_MORE_URL = "https://jogs.one/";
 
-const UAHF_READ_MORE_URL = "https://bitcoincashpodcast.com/start#episode-8-of-10-bitcoin-cash"
+const UAHF_READ_MORE_URL =
+  "https://bitcoincashpodcast.com/start#episode-8-of-10-bitcoin-cash";
 
-const CW_144_READ_MORE_URL = "https://reference.cash/protocol/forks/hf-20171113"
-const MONOLITH_READ_MORE_URL = "https://reference.cash/protocol/forks/hf-20180515"
-const MAGNETIC_ANOMALY_READ_MORE_URL = "https://reference.cash/protocol/forks/hf-20181115"
-const GREAT_WALL_READ_MORE_URL = "https://reference.cash/protocol/forks/hf-20190515"
-const GRAVITON_READ_MORE_URL = "https://reference.cash/protocol/forks/hf-20191115"
-const PHONON_READ_MORE_URL = "https://reference.cash/protocol/forks/hf-20200515"
-const AXION_READ_MORE_URL = "https://reference.cash/protocol/forks/hf-20201115"
-const BIGBLOCKIFTRUE_READ_MORE_URL = "https://reference.cash/protocol/forks/hf-20210515"
-const U8_READ_MORE_URL = "https://reference.cash/protocol/forks/hf-20220515"
+const CW_144_READ_MORE_URL =
+  "https://reference.cash/protocol/forks/hf-20171113";
+const MONOLITH_READ_MORE_URL =
+  "https://reference.cash/protocol/forks/hf-20180515";
+const MAGNETIC_ANOMALY_READ_MORE_URL =
+  "https://reference.cash/protocol/forks/hf-20181115";
+const GREAT_WALL_READ_MORE_URL =
+  "https://reference.cash/protocol/forks/hf-20190515";
+const GRAVITON_READ_MORE_URL =
+  "https://reference.cash/protocol/forks/hf-20191115";
+const PHONON_READ_MORE_URL =
+  "https://reference.cash/protocol/forks/hf-20200515";
+const AXION_READ_MORE_URL = "https://reference.cash/protocol/forks/hf-20201115";
+const BIGBLOCKIFTRUE_READ_MORE_URL =
+  "https://reference.cash/protocol/forks/hf-20210515";
+const U8_READ_MORE_URL = "https://reference.cash/protocol/forks/hf-20220515";
 
-const HIJACKING_BITCOIN_READ_MORE_URL = "https://bitcoincashpodcast.com/faqs/Media/what-about-roger-vers-book-hijacking-bitcoin"
-const HIJACKING_BITCOIN_GRAPHIC_URL = "https://bitcoincashpodcast.com/assets/images/hijacking-bitcoin-5542bf1c53b9af5dc7226cbb569cc105.png"
+const HIJACKING_BITCOIN_READ_MORE_URL =
+  "https://bitcoincashpodcast.com/faqs/Media/what-about-roger-vers-book-hijacking-bitcoin";
+const HIJACKING_BITCOIN_GRAPHIC_URL =
+  "https://bitcoincashpodcast.com/assets/images/hijacking-bitcoin-5542bf1c53b9af5dc7226cbb569cc105.png";
 
 const {
   categories: {
-    fork, softFork, hardFork, conference, projectLaunch, infrastructure, upcoming, historicEvent
+    fork,
+    softFork,
+    hardFork,
+    conference,
+    projectLaunch,
+    infrastructure,
+    upcoming,
+    historicEvent,
   },
   upgrades,
   conferences,
   infra,
   projects,
   upcomingEvents,
-  historic
-} = translations
+  historic,
+} = translations;
 
 export const CATEGORIES = {
   FORK: {
     FORK: translate(fork),
     HARD_FORK: translate(hardFork),
-    SOFT_FORK: translate(softFork)
+    SOFT_FORK: translate(softFork),
   },
   CONFERENCE: translate(conference),
   PROJECT_LAUNCH: translate(projectLaunch),
   INFRASTRUCTURE: translate(infrastructure),
   UPCOMING: translate(upcoming),
-  HISTORIC_EVENT: translate(historicEvent)
-}
+  HISTORIC_EVENT: translate(historicEvent),
+};
 
 const UPGRADES = [
   {
@@ -94,40 +120,32 @@ const UPGRADES = [
     date: DateTime.fromISO("2009-10-28"),
     category: CATEGORIES.FORK.SOFT_FORK,
     videoUrl: null,
-    description: [
-      translate(upgrades.nLockTimeEnforcement.description),
-    ],
-    readMoreUrl: null
+    description: [translate(upgrades.nLockTimeEnforcement.description)],
+    readMoreUrl: null,
   },
   {
     title: "OP_NOP Functions",
     date: DateTime.fromISO("2010-07-31"),
     category: CATEGORIES.FORK.HARD_FORK,
     videoUrl: null,
-    description: [
-      translate(upgrades.opNopFunctions.description),
-    ],
-    readMoreUrl: null
+    description: [translate(upgrades.opNopFunctions.description)],
+    readMoreUrl: null,
   },
   {
     title: "Separation of evaluation of scriptSig and scriptPubKey",
     date: DateTime.fromISO("2010-07-31"),
     category: CATEGORIES.FORK.HARD_FORK,
     videoUrl: null,
-    description: [
-      translate(upgrades.separationOfEval.description),
-    ],
-    readMoreUrl: null
+    description: [translate(upgrades.separationOfEval.description)],
+    readMoreUrl: null,
   },
   {
     title: "Value Overflow Incident",
     date: DateTime.fromISO("2010-08-15"),
     category: CATEGORIES.FORK.SOFT_FORK,
     videoUrl: null,
-    description: [
-      translate(upgrades.valueOverflowIncident.description),
-    ],
-    readMoreUrl: null
+    description: [translate(upgrades.valueOverflowIncident.description)],
+    readMoreUrl: null,
   },
   {
     title: "Blocksize Limit Introduced",
@@ -137,9 +155,9 @@ const UPGRADES = [
     description: [
       translate(upgrades.blockSizeLimitIntroduced.description),
       translate(upgrades.blockSizeLimitIntroduced.description2),
-      translate(upgrades.blockSizeLimitIntroduced.description3)
+      translate(upgrades.blockSizeLimitIntroduced.description3),
     ],
-    readMoreUrl: null
+    readMoreUrl: null,
   },
   {
     title: "Disallow Transactions with Same TXID",
@@ -149,27 +167,23 @@ const UPGRADES = [
     description: [
       translate(upgrades.disallowTransactionsWithSameTXID.description),
     ],
-    readMoreUrl: null
+    readMoreUrl: null,
   },
   {
     title: "Pay-to-Script-Hash",
     date: DateTime.fromISO("2012-04-01"),
     category: CATEGORIES.FORK.SOFT_FORK,
     videoUrl: null,
-    description: [
-      translate(upgrades.payToScriptHash.description),
-    ],
-    readMoreUrl: null
+    description: [translate(upgrades.payToScriptHash.description)],
+    readMoreUrl: null,
   },
   {
     title: "Block Height in Coinbase",
     date: DateTime.fromISO("2013-03-24"),
     category: CATEGORIES.FORK.SOFT_FORK,
     videoUrl: null,
-    description: [
-      translate(upgrades.blockHeightInCoinbase.description),
-    ],
-    readMoreUrl: null
+    description: [translate(upgrades.blockHeightInCoinbase.description)],
+    readMoreUrl: null,
   },
   {
     title: "Migration from Berkely DB to LevelDB",
@@ -179,7 +193,7 @@ const UPGRADES = [
     description: [
       translate(upgrades.migrationFromBerkelyDBToLevelDB.description),
     ],
-    readMoreUrl: null
+    readMoreUrl: null,
   },
   {
     title: "Strict DER Encoding for Signatures",
@@ -189,17 +203,15 @@ const UPGRADES = [
     description: [
       translate(upgrades.strictDEREncodingForSignatures.description),
     ],
-    readMoreUrl: null
+    readMoreUrl: null,
   },
   {
     title: "OP_CHECKLOCKTIMEVERIFY",
     date: DateTime.fromISO("2015-12-14"),
     category: CATEGORIES.FORK.SOFT_FORK,
     videoUrl: null,
-    description: [
-      translate(upgrades.opCheckLocks.description),
-    ],
-    readMoreUrl: null
+    description: [translate(upgrades.opCheckLocks.description)],
+    readMoreUrl: null,
   },
   {
     title: "Addition of Opt-In Replace-By-Fee (RBF)",
@@ -212,17 +224,15 @@ const UPGRADES = [
       translate(upgrades.additionOfOptInReplaceByFee.description3),
       translate(upgrades.additionOfOptInReplaceByFee.description4),
     ],
-    readMoreUrl: null
+    readMoreUrl: null,
   },
   {
     title: "OP_CHECKSEQUENCEVERIFY",
     date: DateTime.fromISO("2016-07-04"),
     category: CATEGORIES.FORK.SOFT_FORK,
     videoUrl: null,
-    description: [
-      translate(upgrades.opCheckSeqVerify.description),
-    ],
-    readMoreUrl: null
+    description: [translate(upgrades.opCheckSeqVerify.description)],
+    readMoreUrl: null,
   },
   {
     title: "UAHF - BCH/BTC Split",
@@ -234,7 +244,7 @@ const UPGRADES = [
       translate(upgrades.uahf.description2),
       translate(upgrades.uahf.description3),
     ],
-    readMoreUrl: UAHF_READ_MORE_URL
+    readMoreUrl: UAHF_READ_MORE_URL,
   },
   {
     title: "CW-144",
@@ -245,7 +255,7 @@ const UPGRADES = [
       translate(upgrades.cw144.description),
       translate(upgrades.cw144.description2),
     ],
-    readMoreUrl: CW_144_READ_MORE_URL
+    readMoreUrl: CW_144_READ_MORE_URL,
   },
   {
     title: "Monolith",
@@ -257,7 +267,7 @@ const UPGRADES = [
       translate(upgrades.monolith.description2),
       translate(upgrades.monolith.description3),
     ],
-    readMoreUrl: MONOLITH_READ_MORE_URL
+    readMoreUrl: MONOLITH_READ_MORE_URL,
   },
   {
     title: "Magnetic Anomaly - BCH/BSV Split",
@@ -270,7 +280,7 @@ const UPGRADES = [
       translate(upgrades.magneticAnomaly.description3),
       translate(upgrades.magneticAnomaly.description4),
     ],
-    readMoreUrl: MAGNETIC_ANOMALY_READ_MORE_URL
+    readMoreUrl: MAGNETIC_ANOMALY_READ_MORE_URL,
   },
   {
     title: "Great Wall",
@@ -282,7 +292,7 @@ const UPGRADES = [
       translate(upgrades.greatWall.description2),
       translate(upgrades.greatWall.description3),
     ],
-    readMoreUrl: GREAT_WALL_READ_MORE_URL
+    readMoreUrl: GREAT_WALL_READ_MORE_URL,
   },
   {
     title: "Graviton",
@@ -294,7 +304,7 @@ const UPGRADES = [
       translate(upgrades.graviton.description2),
       translate(upgrades.graviton.description3),
     ],
-    readMoreUrl: GRAVITON_READ_MORE_URL
+    readMoreUrl: GRAVITON_READ_MORE_URL,
   },
   {
     title: "Phonon",
@@ -305,7 +315,7 @@ const UPGRADES = [
       translate(upgrades.phonon.description),
       translate(upgrades.phonon.description2),
     ],
-    readMoreUrl: PHONON_READ_MORE_URL
+    readMoreUrl: PHONON_READ_MORE_URL,
   },
   {
     title: "Axion - BCH/XEC Split",
@@ -317,7 +327,7 @@ const UPGRADES = [
       translate(upgrades.axion.description2),
       translate(upgrades.axion.description3),
     ],
-    readMoreUrl: AXION_READ_MORE_URL
+    readMoreUrl: AXION_READ_MORE_URL,
   },
   {
     title: "BigBlockIfTrue",
@@ -329,7 +339,7 @@ const UPGRADES = [
       translate(upgrades.bigBlockIfTrue.description2),
       translate(upgrades.bigBlockIfTrue.description3),
     ],
-    readMoreUrl: BIGBLOCKIFTRUE_READ_MORE_URL
+    readMoreUrl: BIGBLOCKIFTRUE_READ_MORE_URL,
   },
   {
     title: "U8",
@@ -342,17 +352,15 @@ const UPGRADES = [
       translate(upgrades.u8.description3),
       translate(upgrades.u8.description4),
     ],
-    readMoreUrl: U8_READ_MORE_URL
+    readMoreUrl: U8_READ_MORE_URL,
   },
   {
     title: "CashTokens",
     date: DateTime.fromISO("2023-05-15"),
     category: CATEGORIES.FORK.HARD_FORK,
     videoUrl: CASHTOKENS_EXPLANER_VIDEO_URL,
-    description: [
-      translate(upgrades.cashtokens.description),
-    ],
-    readMoreUrl: CASHTOKENS_FAQ_URL
+    description: [translate(upgrades.cashtokens.description)],
+    readMoreUrl: CASHTOKENS_FAQ_URL,
   },
   {
     title: "ABLA",
@@ -364,9 +372,9 @@ const UPGRADES = [
       translate(upgrades.abla.description),
       translate(upgrades.abla.description2),
     ],
-    readMoreUrl: ABLA_FAQ_URL
-  }
-]
+    readMoreUrl: ABLA_FAQ_URL,
+  },
+];
 
 const CONFERENCES = [
   {
@@ -378,7 +386,7 @@ const CONFERENCES = [
       translate(conferences.bchCity.description),
       translate(conferences.bchCity.description2),
     ],
-    readMoreUrl: null
+    readMoreUrl: null,
   },
   {
     title: "BCH22",
@@ -389,7 +397,7 @@ const CONFERENCES = [
       translate(conferences.bch22.description),
       translate(conferences.bch22.description2),
     ],
-    readMoreUrl: BCH22_FAQ_URL
+    readMoreUrl: BCH22_FAQ_URL,
   },
   {
     title: "BLISS",
@@ -400,9 +408,9 @@ const CONFERENCES = [
       translate(conferences.bliss.description),
       translate(conferences.bliss.description2),
     ],
-    readMoreUrl: BLISS_FAQ_URL
+    readMoreUrl: BLISS_FAQ_URL,
   },
-]
+];
 
 const INFRASTRUCTURE = [
   {
@@ -411,12 +419,10 @@ const INFRASTRUCTURE = [
     category: CATEGORIES.INFRASTRUCTURE,
     videoUrl: CASHSCRIPT_VIDEO_URL,
     graphicUrl: null,
-    description: [
-      translate(infra.cashscript.description),
-    ],
-    readMoreUrl: CASHSCRIPT_READ_MORE_URL
+    description: [translate(infra.cashscript.description)],
+    readMoreUrl: CASHSCRIPT_READ_MORE_URL,
   },
-]
+];
 
 const PROJECTS = [
   {
@@ -425,10 +431,8 @@ const PROJECTS = [
     category: CATEGORIES.PROJECT_LAUNCH,
     videoUrl: null,
     graphicUrl: FLIPSTARTER_GRAPHIC_URL,
-    description: [
-      translate(projects.flipstarter.description),
-    ],
-    readMoreUrl: FLIPSTARTER_READ_MORE_URL
+    description: [translate(projects.flipstarter.description)],
+    readMoreUrl: FLIPSTARTER_READ_MORE_URL,
   },
   {
     title: "Journal of Global Surgery",
@@ -440,7 +444,7 @@ const PROJECTS = [
       translate(projects.jogs.description),
       translate(projects.jogs.description2),
     ],
-    readMoreUrl: JOGS_READ_MORE_URL
+    readMoreUrl: JOGS_READ_MORE_URL,
   },
   {
     title: "The Bitcoin Cash Podcast",
@@ -448,10 +452,8 @@ const PROJECTS = [
     category: CATEGORIES.PROJECT_LAUNCH,
     videoUrl: null,
     graphicUrl: BITCOIN_CASH_PODCAST_GRAPHIC_URL,
-    description: [
-      translate(projects.bitcoinCashPodcast.description),
-    ],
-    readMoreUrl: BITCOIN_CASH_PODCAST_URL
+    description: [translate(projects.bitcoinCashPodcast.description)],
+    readMoreUrl: BITCOIN_CASH_PODCAST_URL,
   },
   {
     title: "BCH GURU",
@@ -463,7 +465,7 @@ const PROJECTS = [
       translate(projects.bchGuru.description),
       translate(projects.bchGuru.description2),
     ],
-    readMoreUrl: BCH_GURU_READ_MORE_URL
+    readMoreUrl: BCH_GURU_READ_MORE_URL,
   },
   {
     title: "Selene Wallet",
@@ -471,10 +473,8 @@ const PROJECTS = [
     category: CATEGORIES.PROJECT_LAUNCH,
     videoUrl: SELENE_VIDEO_URL,
     graphicUrl: null,
-    description: [
-      translate(projects.seleneWallet.description),
-    ],
-    readMoreUrl: SELENE_READ_MORE_URL
+    description: [translate(projects.seleneWallet.description)],
+    readMoreUrl: SELENE_READ_MORE_URL,
   },
   {
     title: "A Fifth Of Gaming",
@@ -482,13 +482,11 @@ const PROJECTS = [
     category: CATEGORIES.PROJECT_LAUNCH,
     videoUrl: null,
     graphicUrl: AFOG_GRAPHIC_URL,
-    description: [
-      translate(projects.aFifthOfGaming.description),
-    ],
+    description: [translate(projects.aFifthOfGaming.description)],
     readMoreUrl: null,
-    appUrl: AFOG_APP_URL
+    appUrl: AFOG_APP_URL,
   },
-]
+];
 
 const UPCOMING = [
   {
@@ -501,7 +499,7 @@ const UPCOMING = [
       translate(upcomingEvents.bchArgentinaConference.description2),
       translate(upcomingEvents.bchArgentinaConference.description3),
     ],
-    readMoreUrl: BCH_ARGENTINA_CONFERENCE_READ_MORE_URL
+    readMoreUrl: BCH_ARGENTINA_CONFERENCE_READ_MORE_URL,
   },
   {
     title: "Upgrade Lock in for 2025 Upgrade",
@@ -514,9 +512,9 @@ const UPCOMING = [
       translate(upcomingEvents.lockIn2025.description3),
       translate(upcomingEvents.lockIn2025.description4),
     ],
-    readMoreUrl: LOCK_IN_2025_READ_MORE_URL
-  }
-]
+    readMoreUrl: LOCK_IN_2025_READ_MORE_URL,
+  },
+];
 
 const HISTORIC_EVENT = [
   {
@@ -529,7 +527,7 @@ const HISTORIC_EVENT = [
       translate(historic.whitePaper.description2),
       translate(historic.whitePaper.description3),
     ],
-    readMoreUrl: WHITEPAPER_READ_MORE_URL
+    readMoreUrl: WHITEPAPER_READ_MORE_URL,
   },
   {
     title: "Genesis Block",
@@ -541,7 +539,7 @@ const HISTORIC_EVENT = [
       translate(historic.genesisBlock.description2),
       translate(historic.genesisBlock.description3),
     ],
-    readMoreUrl: GENESIS_READ_MORE_URL
+    readMoreUrl: GENESIS_READ_MORE_URL,
   },
   {
     title: "Mt. Gox Collapse",
@@ -556,7 +554,7 @@ const HISTORIC_EVENT = [
       translate(historic.mtGox.description5),
       translate(historic.mtGox.description6),
     ],
-    readMoreUrl: MT_GOX_READ_MORE_URL
+    readMoreUrl: MT_GOX_READ_MORE_URL,
   },
   {
     title: "Hijacking Bitcoin",
@@ -568,9 +566,9 @@ const HISTORIC_EVENT = [
       translate(historic.hijackingBitcoin.description),
       translate(historic.hijackingBitcoin.description2),
     ],
-    readMoreUrl: HIJACKING_BITCOIN_READ_MORE_URL
-  }
-]
+    readMoreUrl: HIJACKING_BITCOIN_READ_MORE_URL,
+  },
+];
 
 // Default sort by reverse-chronological
 const TIMELINE_ITEMS = [
@@ -579,7 +577,7 @@ const TIMELINE_ITEMS = [
   ...UPGRADES,
   ...PROJECTS,
   ...INFRASTRUCTURE,
-  ...HISTORIC_EVENT
-].sort((a, b) => b.date - a.date)
+  ...HISTORIC_EVENT,
+].sort((a, b) => b.date - a.date);
 
-export default TIMELINE_ITEMS
+export default TIMELINE_ITEMS;
