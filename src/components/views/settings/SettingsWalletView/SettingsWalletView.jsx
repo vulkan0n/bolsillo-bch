@@ -135,7 +135,7 @@ export default function SettingsWalletView() {
         icon={WalletOutlined}
         title={translate(translations.walletSettings)}
       />
-      <div className="p-2 pt-14">
+      <div className="p-2">
         <div className="p-3 rounded-lg bg-zinc-200">
           <div className="text-2xl">
             {isEditingWalletName ? (
