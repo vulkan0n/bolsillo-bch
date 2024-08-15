@@ -36,7 +36,7 @@ const translations = {
     ur: "ترتیبات",
     vi: "Cài đặt",
     zh: "设置",
-    zh_TW: "設置",
+    zh_TW: "設置"
   },
   walletSettings: {
     ar: "محافظ",
@@ -75,7 +75,7 @@ const translations = {
     ur: "بٹوے",
     vi: "Ví",
     zh: "钱包",
-    zh_TW: "錢包",
+    zh_TW: "錢包"
   },
   createImportWallet: {
     ar: "إنشاء / استيراد المحفظة",
@@ -114,7 +114,7 @@ const translations = {
     ur: "والیٹ بنائیں/داخل کریں",
     vi: "Tạo/Nhập ví",
     zh: "创建/导入钱包",
-    zh_TW: "創建/導入錢包",
+    zh_TW: "創建/導入錢包"
   },
   localizationSettings: {
     ar: "الموقع",
@@ -153,7 +153,7 @@ const translations = {
     ur: "مقامی کرنے والا",
     vi: "Địa phương hóa",
     zh: "本地化",
-    zh_TW: "本土化",
+    zh_TW: "本土化"
   },
   language: {
     ar: "لغة",
@@ -192,7 +192,7 @@ const translations = {
     ur: "زبان",
     vi: "Ngôn ngữ",
     zh: "语言",
-    zh_TW: "語言",
+    zh_TW: "語言"
   },
   currencySettings: {
     ar: "عملة",
@@ -231,7 +231,7 @@ const translations = {
     ur: "کرنسی",
     vi: "Tiền tệ",
     zh: "货币",
-    zh_TW: "貨幣",
+    zh_TW: "貨幣"
   },
   localCurrency: {
     ar: "العملة المحلية",
@@ -270,7 +270,7 @@ const translations = {
     ur: "مقامی کرنسی",
     vi: "Tiền tệ địa phương",
     zh: "本地货币",
-    zh_TW: "當地貨幣",
+    zh_TW: "當地貨幣"
   },
   preferLocalCurrency: {
     ar: "تفضل العملة المحلية",
@@ -309,7 +309,7 @@ const translations = {
     ur: "مقامی کرنسی کو ترجیح دیں",
     vi: "Ưu tiên tiền tệ địa phương",
     zh: "优先使用本地货币",
-    zh_TW: "更喜歡當地貨幣",
+    zh_TW: "更喜歡當地貨幣"
   },
   hideAvailableBalance: {
     ar: "إخفاء الأرصدة",
@@ -387,7 +387,7 @@ const translations = {
     ur: "سیٹس میں تعین کریں",
     vi: "Ghi nhận theo",
     zh: "以为单位",
-    zh_TW: "以 sat 計價",
+    zh_TW: "以 sat 計價"
   },
   displayExchangeRate: {
     ar: "عرض سعر الصرف",
@@ -426,7 +426,7 @@ const translations = {
     ur: "تبادلی شرح دکھائیں",
     vi: "Hiển thị tỷ giá hối đoái",
     zh: "显示汇率",
-    zh_TW: "顯示匯率",
+    zh_TW: "顯示匯率"
   },
   paymentSettings: {
     ar: "قسط",
@@ -465,7 +465,7 @@ const translations = {
     ur: "ادائیگی",
     vi: "Thanh toán",
     zh: "付款",
-    zh_TW: "支付",
+    zh_TW: "支付"
   },
   allowInstantPay: {
     ar: "السماح بالدفع الفوري",
@@ -504,7 +504,7 @@ const translations = {
     ur: "فوری ادائیگی کی اجازت دیں",
     vi: "Cho phép thanh toán nhanh",
     zh: "允许即时支付",
-    zh_TW: "允許即時付款",
+    zh_TW: "允許即時付款"
   },
   instantPayExplanation: {
     ar: "مسح رمز QR للفاتورة يطلب مبلغًا أقل من حد الدفع الفوري يدفع على الفور دون نقرة إضافية للإرسال.",
@@ -543,8 +543,7 @@ const translations = {
     ur: "انوائس QR کوڈ اسکین کرنے سے مناسبت طلب کی رقم فوری طور پر اضافی ٹیپ کرنے کے بغیر فوری ادائیگی کرتی ہے.",
     vi: "Quét mã QR của hóa đơn yêu cầu số tiền dưới ngưỡng thanh toán tức thì trả ngay mà không cần nhấn thêm để gửi.",
     zh: "扫描发票二维码，请求金额低于即时支付阈值，立即支付而无需额外点击以发送。",
-    zh_TW:
-      "掃描發票二維碼並請求低於即時付款閾值的金額即可立即付款，無需額外點擊即可發送。",
+    zh_TW: "掃描發票二維碼並請求低於即時付款閾值的金額即可立即付款，無需額外點擊即可發送。"
   },
   instantPayLimit: {
     ar: "حد الدفع الفوري",
@@ -583,7 +582,7 @@ const translations = {
     ur: "فوری ادائیگی حد",
     vi: "Giới hạn thanh toán nhanh",
     zh: "即时支付限额",
-    zh_TW: "即時支付限額",
+    zh_TW: "即時支付限額"
   },
   qrCodeSettings: {
     ar: "رمز الاستجابة السريعة",
@@ -622,7 +621,7 @@ const translations = {
     ur: "کیو آر کوڈ",
     vi: "Mã QR",
     zh: "二维码",
-    zh_TW: "二維碼",
+    zh_TW: "二維碼"
   },
   logo: {
     ar: "شعار",
@@ -661,7 +660,7 @@ const translations = {
     ur: "لوگو",
     vi: "Logo",
     zh: "商标",
-    zh_TW: "標識",
+    zh_TW: "標識"
   },
   foregroundColor: {
     ar: "لون المقدمة",
@@ -700,7 +699,7 @@ const translations = {
     ur: "زمینے کا رنگ",
     vi: "Màu nền",
     zh: "前景色",
-    zh_TW: "前景色",
+    zh_TW: "前景色"
   },
   backgroundColor: {
     ar: "لون الخلفية",
@@ -739,7 +738,7 @@ const translations = {
     ur: "پس زمینہ کا رنگ",
     vi: "Màu nền",
     zh: "背景色",
-    zh_TW: "背景顏色",
+    zh_TW: "背景顏色"
   },
   resetColors: {
     ar: "إعادة تعيين الألوان",
@@ -778,7 +777,7 @@ const translations = {
     ur: "رنگوں کو دوبارہ ترتیب دیں",
     vi: "Đặt lại Màu sắc",
     zh: "重置颜色",
-    zh_TW: "重置顏色",
+    zh_TW: "重置顏色"
   },
   network: {
     ar: "Network",
@@ -817,7 +816,7 @@ const translations = {
     ur: "نیٹ ورک",
     vi: "Mạng lưới",
     zh: "网络",
-    zh_TW: "Network",
+    zh_TW: "Network"
   },
   translatedElectrumServer: {
     ar: "Electrum Server",
@@ -856,7 +855,7 @@ const translations = {
     ur: "ایلیکٹرم سرور",
     vi: "Máy chủ Electrum",
     zh: "Electrum 服务器",
-    zh_TW: "Electrum Server",
+    zh_TW: "Electrum Server"
   },
   electrumServerDescription: {
     ar: "اختر خادم Electrum من القائمة المتوفرة أو قم بالتجاوز عن طريق إدخال اسم خادم Electrum مخصص.",
@@ -895,8 +894,7 @@ const translations = {
     ur: "فراہم کردہ فہرست سے ایک الیکٹرم سرور کا انتخاب کریں یا خود سے الیکٹرم سرور کا نام داخل کر کے اس کو اوپر لکھیں۔",
     vi: "Chọn một máy chủ Electrum từ danh sách được cung cấp hoặc ghi đè bằng cách nhập tên máy chủ Electrum tùy chỉnh.",
     zh: "从提供的列表中选择一个 Electrum 服务器或通过输入自定义 Electrum 服务器名称覆盖。",
-    zh_TW:
-      "從提供的清單中選擇 Electrum 伺服器或透過輸入自訂 Electrum 伺服器名稱進行覆蓋。",
+    zh_TW: "從提供的清單中選擇 Electrum 伺服器或透過輸入自訂 Electrum 伺服器名稱進行覆蓋。"
   },
   server: {
     ar: "الخادم",
@@ -935,7 +933,7 @@ const translations = {
     ur: "سرور",
     vi: "Máy chủ",
     zh: "服务器",
-    zh_TW: "伺服器",
+    zh_TW: "伺服器"
   },
   customServer: {
     ar: "خادم مخصص",
@@ -974,7 +972,7 @@ const translations = {
     ur: "مخصوص سرور",
     vi: "Máy chủ tùy chỉnh",
     zh: "自定义服务器",
-    zh_TW: "客製化伺服器",
+    zh_TW: "客製化伺服器"
   },
   uiSettings: {
     ar: "واجهة المستخدم",
@@ -1013,7 +1011,7 @@ const translations = {
     ur: "یوزر انٹرفیس",
     vi: "Giao diện người dùng",
     zh: "用户界面",
-    zh_TW: "使用者介面",
+    zh_TW: "使用者介面"
   },
   hideExploreTab: {
     ar: "إخفاء علامة التبويب &quot;استكشاف&quot;",
@@ -1132,7 +1130,6 @@ const translations = {
     zh: "发送统计信息签到",
     zh_TW: "發送統計簽到",
   },
-
   security: {
     ar: "حماية",
     bn: "নিরাপত্তা",

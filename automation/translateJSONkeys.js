@@ -66,7 +66,11 @@ async function translateText(text, targetLang, GOOGLE_TRANSLATE_API_KEY) {
     }
 
     const data = await response.json();
-    return data.data.translations[0].translatedText;
+    const originalTranslation = data.data.translations[0].translatedText
+    // Translate script confuses ":", """ & "'" as elements of JSON
+    // So these need to be sanitised
+    const sanitisiedTranslation = originalTranslation.replace(/:/g, " - ").replace(/'/g, "`").replace(/"/g, "`");
+    return sanitisiedTranslation;
   } catch (error) {
     console.error(`Translation error for ${targetLang}: ${error.message}`);
     return text;

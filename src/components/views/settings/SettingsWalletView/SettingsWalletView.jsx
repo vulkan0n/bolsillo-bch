@@ -67,7 +67,7 @@ export default function SettingsWalletView() {
 
   // user must tap "delete wallet" button multiple times to confirm
   const [deleteConfirm, setDeleteConfirm] = useState(0);
-  const deleteRef = useRef(setTimeout(() => {}, 0));
+  const deleteRef = useRef(setTimeout(() => { }, 0));
   const isDeleteDisabled = deleteConfirm === 2 && wallet.key_viewed === null;
 
   // handler for "Delete Wallet" button
@@ -135,7 +135,7 @@ export default function SettingsWalletView() {
         icon={WalletOutlined}
         title={translate(translations.walletSettings)}
       />
-      <div className="p-2">
+      <div className="p-2 pt-14">
         <div className="p-3 rounded-lg bg-zinc-200">
           <div className="text-2xl">
             {isEditingWalletName ? (
@@ -181,9 +181,8 @@ export default function SettingsWalletView() {
             <button
               type="button"
               onClick={handleActivateWallet}
-              className={`rounded-lg p-4 bg-primary text-zinc-50 w-full ${
-                isActiveWallet ? "saturate-[.80]" : ""
-              }`}
+              className={`rounded-lg p-4 bg-primary text-zinc-50 w-full ${isActiveWallet ? "saturate-[.80]" : ""
+                }`}
               disabled={isActiveWallet}
             >
               <div className="flex items-center">
@@ -204,9 +203,8 @@ export default function SettingsWalletView() {
             <button
               type="button"
               onClick={handleDeleteWallet}
-              className={`rounded-lg p-4 bg-error text-zinc-50 w-full ${
-                isDeleteDisabled ? "saturate-[.60]" : ""
-              }`}
+              className={`rounded-lg p-4 bg-error text-zinc-50 w-full ${isDeleteDisabled ? "saturate-[.60]" : ""
+                }`}
               disabled={isDeleteDisabled}
             >
               <div className="flex items-center">
@@ -224,9 +222,8 @@ export default function SettingsWalletView() {
                         ? translate(translations.areYouSure)
                         : deleteConfirm === 2
                           ? translate(translations.ensureRecoveryPhrase)
-                          : `${translate(translations.confirmDelete)} "${
-                              wallet.name
-                            }"`
+                          : `${translate(translations.confirmDelete)} "${wallet.name
+                          }"`
                     /* eslint-enable no-nested-ternary */
                   }
                 </div>

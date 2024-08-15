@@ -8,8 +8,10 @@ import {
 import { useSelector } from "react-redux";
 import { selectIsExperimental, selectIsPrerelease } from "@/redux/preferences";
 import ExploreApp from "./ExploreApp";
-
 import ExploreStatWidget from "./ExploreStatWidget";
+
+import { translate } from "@/util/translations";
+import translations from "./translations";
 
 export default function ExploreViewHome() {
   const isExperimental = useSelector(selectIsExperimental);

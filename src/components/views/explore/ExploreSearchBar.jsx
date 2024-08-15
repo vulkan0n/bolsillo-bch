@@ -83,7 +83,7 @@ export default function ExploreSearchBar() {
     // search for map locations
   };
 
-  return isExperimental ? (
+  return (
     <div className="border border-primary shadow bg-primary text-white">
       <div className="flex justify-center items-center p-2">
         <SearchOutlined className="text-2xl" />
@@ -96,5 +96,5 @@ export default function ExploreSearchBar() {
         />
       </div>
     </div>
-  ) : null;
+  );
 }
