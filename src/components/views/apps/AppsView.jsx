@@ -1,10 +1,7 @@
 import {
-  AppstoreOutlined,
-  ProfileOutlined,
+  ProductOutlined,
   LaptopOutlined,
-  LikeOutlined,
   LineChartOutlined,
-  InfoCircleOutlined,
 } from "@ant-design/icons";
 import ViewHeader from "@/layout/ViewHeader";
 import ExploreApp from "@/views/explore/ExploreApp";
@@ -15,7 +12,7 @@ import translations from "@/views/explore/translations";
 export default function AppsView() {
   return (
     <>
-      <ViewHeader icon={AppstoreOutlined} title="Apps" />
+      <ViewHeader icon={ProductOutlined} title="Apps" />
       <div className="p-1">
         <ExploreApp
           icon={LaptopOutlined}
@@ -23,24 +20,9 @@ export default function AppsView() {
           to="/apps/afog"
         />
         <ExploreApp
-          icon={ProfileOutlined}
-          name={translate(translations.chronology)}
-          to="/apps/chronology"
-        />
-        <ExploreApp
           icon={LineChartOutlined}
           name={translate(translations.statistics)}
           to="/apps/stats"
-        />
-        <ExploreApp
-          icon={InfoCircleOutlined}
-          name={translate(translations.faqs)}
-          to="/apps/faqs"
-        />
-        <ExploreApp
-          icon={LikeOutlined}
-          name={translate(translations.socialMedia)}
-          to="/apps/socialMedia"
         />
       </div>
     </>

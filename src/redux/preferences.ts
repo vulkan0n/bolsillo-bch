@@ -295,7 +295,9 @@ export const selectIsExperimental = createSelector(
 
 export const selectIsPrerelease = createSelector(
   (state: RootState) => state.preferences,
-  (preferences): boolean => preferences.enablePrerelease === "true"
+  (preferences): boolean =>
+    preferences.enablePrerelease === "true" ||
+    selectIsExperimental({ preferences })
 );
 
 export const selectLastCheckIn = createSelector(

@@ -2,8 +2,8 @@ import {
   ContactsOutlined,
   EnvironmentOutlined,
   QuestionCircleOutlined,
-  AppstoreOutlined,
-  PlaySquareOutlined,
+  ProductOutlined,
+  ReadOutlined,
 } from "@ant-design/icons";
 import { ApolloProvider } from "@apollo/client";
 import { useSelector } from "react-redux";
@@ -22,8 +22,8 @@ export default function ExploreViewHome() {
       <ApolloProvider client={apolloClient}>
         <ExploreStatWidget />
       </ApolloProvider>
-      {(isPrerelease || isExperimental) && (
-        <ExploreApp icon={AppstoreOutlined} name="Apps" to="/apps" />
+      {isPrerelease && (
+        <ExploreApp icon={ProductOutlined} name="Apps" to="/apps" />
       )}
       {isExperimental && (
         <ExploreApp
@@ -35,11 +35,11 @@ export default function ExploreViewHome() {
       {isExperimental && (
         <ExploreApp icon={EnvironmentOutlined} name="Map" to="/explore/map" />
       )}
-      {isExperimental && (
+      {isPrerelease && (
         <ExploreApp
-          icon={PlaySquareOutlined}
-          name="Media"
-          to="/explore/media"
+          icon={ReadOutlined}
+          name="Encyclopedia"
+          to="/explore/info"
         />
       )}
       {isExperimental && (
