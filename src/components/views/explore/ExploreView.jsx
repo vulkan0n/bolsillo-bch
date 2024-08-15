@@ -3,14 +3,15 @@ import { CompassOutlined } from "@ant-design/icons";
 import ViewHeader from "@/layout/ViewHeader";
 import ExploreSearchBar from "./ExploreSearchBar";
 import { translate } from "@/util/translations";
-import translations from "./ExploreViewTranslations";
-
-const { exploreBch } = translations;
+import translations from "./translations";
 
 export default function ExploreView() {
   return (
     <>
-      <ViewHeader icon={CompassOutlined} title={translate(exploreBch)} />
+      <ViewHeader
+        icon={CompassOutlined}
+        title={translate(translations.exploreBch)}
+      />
       <ExploreSearchBar />
       <div className="my-0.5">
         <Outlet />

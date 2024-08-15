@@ -18,6 +18,7 @@ import { routeWallet } from "@/routes/routeWallet";
 import { routeAssets } from "@/routes/routeAssets";
 import { routeExplore } from "@/routes/routeExplore";
 import { routeSettings } from "@/routes/routeSettings";
+import { routeApps } from "@/routes/routeApps";
 
 export default function Main() {
   const routes = [
@@ -33,6 +34,7 @@ export default function Main() {
         ...routeAssets,
         ...routeExplore,
         ...routeSettings,
+        ...routeApps,
         {
           path: "/credits",
           async lazy() {
@@ -42,7 +44,6 @@ export default function Main() {
             return { Component: CreditsView };
           },
         },
-
         {
           path: "/debug",
           async lazy() {
