@@ -5,6 +5,7 @@ import {
   AppstoreOutlined,
   PlaySquareOutlined,
 } from "@ant-design/icons";
+import { ApolloProvider } from "@apollo/client";
 import { useSelector } from "react-redux";
 import { selectIsExperimental, selectIsPrerelease } from "@/redux/preferences";
 import ExploreApp from "./ExploreApp";
@@ -12,6 +13,7 @@ import ExploreStatWidget from "./ExploreStatWidget";
 
 import { translate } from "@/util/translations";
 import translations from "./translations";
+import apolloClient from "@/apolloClient";
 
 export default function ExploreViewHome() {
   const isExperimental = useSelector(selectIsExperimental);
@@ -19,7 +21,9 @@ export default function ExploreViewHome() {
 
   return (
     <div className="p-1.5">
-      <ExploreStatWidget />
+      <ApolloProvider client={apolloClient}>
+        <ExploreStatWidget />
+      </ApolloProvider>
       {(isPrerelease || isExperimental) && (
         <ExploreApp icon={AppstoreOutlined} name="Apps" to="/apps" />
       )}
