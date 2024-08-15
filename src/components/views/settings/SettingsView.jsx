@@ -56,7 +56,7 @@ export default function SettingsView() {
         icon={SettingOutlined}
         title={translate(translations.settings)}
       />
-      <div className="h-full pt-12">
+      <div className="h-full">
         <div className="p-1">
           <SettingsContext.Provider value={settingsContext}>
             <KeyWarning wallet={activeWallet} />

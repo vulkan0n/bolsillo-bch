@@ -22,7 +22,7 @@ export default function CreditsView() {
   return (
     <>
       <ViewHeader icon={() => null} title={translate(translations.credits)} />
-      <div className="pt-16 bg-primary text-white text-center p-2">
+      <div className="bg-primary text-white text-center p-2">
         <div className="flex items-center justify-center h-40">
           <SeleneLogo className="h-full" onClick={handleDebugTap} />
         </div>
