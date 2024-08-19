@@ -1,4 +1,4 @@
-import { useLoaderData } from "react-router-dom";
+/*import { useLoaderData } from "react-router-dom";
 import { MapContainer, TileLayer } from "react-leaflet";
 
 export default function ExploreMapView() {
@@ -17,4 +17,4 @@ export default function ExploreMapView() {
       </MapContainer>
     </div>
   );
-}
+}*/
