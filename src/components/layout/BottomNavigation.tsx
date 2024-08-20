@@ -30,44 +30,41 @@ export default function BottomNavigation() {
   // Ensure component reloads when language preferences are changed
   useSelector(selectLanguageCode);
 
-  return (
-    !isKeyboardOpen &&
-    !isScanning && (
-      <div
-        className="fixed bottom-0 w-full flex items-center justify-around z-50"
-        id="bottomNav"
-      >
+  return !isKeyboardOpen && !isScanning ? (
+    <div
+      className="fixed bottom-0 w-full flex items-center justify-around z-50"
+      id="bottomNav"
+    >
+      <NavButton
+        to="/wallet"
+        activeIcon={WalletFilled}
+        icon={WalletOutlined}
+        label={translate(translations.wallet)}
+      />
+      {isExperimental && (
         <NavButton
-          to="/wallet"
-          activeIcon={WalletFilled}
-          icon={WalletOutlined}
-          label={translate(translations.wallet)}
+          to="/assets"
+          activeIcon={BankFilled}
+          icon={BankOutlined}
+          label="Assets"
         />
-        {isExperimental && (
-          <NavButton
-            to="/assets"
-            activeIcon={BankFilled}
-            icon={BankOutlined}
-            label="Assets"
-          />
-        )}
-        {shouldDisplayExploreTab && (
-          <NavButton
-            to="/explore"
-            activeIcon={CompassFilled}
-            icon={CompassOutlined}
-            label={translate(translations.explore)}
-          />
-        )}
+      )}
+      {shouldDisplayExploreTab && (
         <NavButton
-          to="/settings"
-          activeIcon={SettingFilled}
-          icon={SettingOutlined}
-          label={translate(translations.settings)}
+          to="/explore"
+          activeIcon={CompassFilled}
+          icon={CompassOutlined}
+          label={translate(translations.explore)}
         />
-      </div>
-    )
-  );
+      )}
+      <NavButton
+        to="/settings"
+        activeIcon={SettingFilled}
+        icon={SettingOutlined}
+        label={translate(translations.settings)}
+      />
+    </div>
+  ) : null;
 }
 
 interface NavButtonProps {
