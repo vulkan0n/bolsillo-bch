@@ -1,9 +1,8 @@
 import Logger from "js-logger";
 import { useState, useEffect, useRef } from "react";
-import { useParams, useSearchParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import Decimal from "decimal.js";
-import { Dialog } from "@capacitor/dialog";
 import { Haptics, NotificationType } from "@capacitor/haptics";
 import { ArrowLeftOutlined, SyncOutlined } from "@ant-design/icons";
 
@@ -16,34 +15,27 @@ import {
 } from "@/redux/preferences";
 
 import { selectKeyboardIsOpen } from "@/redux/device";
-import { selectSyncState, selectMyAddresses } from "@/redux/sync";
+import { selectSyncState } from "@/redux/sync";
 
 import TransactionManagerService from "@/services/TransactionManagerService";
 import TransactionBuilderService from "@/services/TransactionBuilderService";
 import ToastService from "@/services/ToastService";
 import SecurityService from "@/services/SecurityService";
 
-import { SatoshiInput } from "@/atoms/SatoshiInput";
 import Satoshi from "@/atoms/Satoshi";
 import Button from "@/atoms/Button";
 import Address from "@/atoms/Address";
-import CurrencySymbol from "@/atoms/CurrencySymbol";
-import CurrencyFlip from "@/atoms/CurrencyFlip";
 
 import { bchToSats, DUST_LIMIT } from "@/util/sats";
-import { validateInvoiceString } from "@/util/invoice";
 import { translate } from "@/util/translations";
-import translations from "./translations";
+import translations from "@/components/views/wallet/WalletViewSend/translations";
 
-export default function WalletViewSend() {
-  const [searchParams] = useSearchParams();
-  const params = useParams();
+export default function WalletViewPay() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const { requestUri } = useParams();
 
   const isExperimental = useSelector(selectIsExperimental);
-
-  const inputRef = useRef<HTMLInputElement>(null);
 
   const isKeyboardOpen = useSelector(selectKeyboardIsOpen);
   const buttonsPos = isKeyboardOpen ? "bottom-2" : "bottom-[5em]";
@@ -51,13 +43,12 @@ export default function WalletViewSend() {
   const wallet = useSelector(selectActiveWallet);
   const sync = useSelector(selectSyncState);
 
-  const { address, isBase58Address } = validateInvoiceString(params.address);
-
-  const myAddresses = useSelector(selectMyAddresses);
-  const isMyAddress = myAddresses[address] !== undefined;
-
   const [message, setMessage] = useState("");
   const [isSending, setIsSending] = useState(false);
+
+  const { isInstantPayEnabled, instantPayThreshold } = useSelector(
+    selectInstantPaySettings
+  );
 
   const { shouldPreferLocalCurrency, localCurrency } = useSelector(
     selectCurrencySettings
@@ -65,27 +56,7 @@ export default function WalletViewSend() {
 
   const currency = shouldPreferLocalCurrency ? localCurrency : "BCH";
 
-  const querySats = searchParams.get("amount")
-    ? bchToSats(searchParams.get("amount"))
-    : new Decimal(0);
-
-  const [satoshiInput, setSatoshiInput] = useState(querySats);
-  // used to force re-render of SatoshiInput component with MAX button
-  const [satoshiInputKey, setSatoshiInputKey] = useState("satoshiInputKey");
-
-  const isInsufficientFunds = new Decimal(wallet.balance).lessThan(
-    satoshiInput
-  );
-
-  const { isInstantPayEnabled, instantPayThreshold } = useSelector(
-    selectInstantPaySettings
-  );
-
-  const handleAmountInput = (satInput) => {
-    setSatoshiInput(satInput);
-    setSatoshiInputKey("satoshiInputKey");
-    setMessage("");
-  };
+  const isInsufficientFunds = new Decimal(wallet.balance).lessThan(0);
 
   const handleInsufficientFunds = async () => {
     await Haptics.notification({ type: NotificationType.Warning });
@@ -101,19 +72,6 @@ export default function WalletViewSend() {
     }
 
     setIsSending(true);
-
-    if (isBase58Address) {
-      const { value: isLegacyAddressConfirmed } = await Dialog.prompt({
-        title: "Warning! Risk of lost funds! Legacy Address detected",
-        message:
-          "Be ABSOLUTELY CERTAIN that this is a Bitcoin Cash (BCH) address! If in doubt, do not proceed!",
-        okButtonTitle: "I Understand",
-      });
-
-      if (!isLegacyAddressConfirmed) {
-        return;
-      }
-    }
 
     const isAuthorized = isInstantPay || (await SecurityService().authorize());
     if (!isAuthorized) {
@@ -137,7 +95,7 @@ export default function WalletViewSend() {
     const TransactionBuilder = TransactionBuilderService(wallet);
 
     const transaction = TransactionBuilder.buildP2pkhTransaction([
-      { address, amount: satoshiInput },
+      { address, amount: requestAmount },
     ]);
 
     if (transaction === null) {
@@ -185,8 +143,6 @@ export default function WalletViewSend() {
       return;
     }
 
-    const requestAmount = bchToSats(searchParams.get("amount") || 0);
-
     if (
       requestAmount.greaterThan(0) &&
       requestAmount.lessThanOrEqualTo(instantPayThreshold)
@@ -196,105 +152,14 @@ export default function WalletViewSend() {
     }
   });
 
-  const handleSendMax = () => {
-    let amount = new Decimal(wallet.balance);
-
-    const TransactionBuilder = TransactionBuilderService(wallet);
-
-    let transaction = TransactionBuilder.buildP2pkhTransaction([
-      { address, amount },
-    ]);
-
-    while (typeof transaction !== "object") {
-      amount = new Decimal(transaction);
-      transaction = TransactionBuilder.buildP2pkhTransaction([
-        { address, amount },
-      ]);
-    }
-
-    const clampedAmount = new Decimal(Math.max(0, amount.toNumber()));
-    setSatoshiInput(clampedAmount);
-    // force re-render of SatoshiInput component
-    setSatoshiInputKey(clampedAmount.toString());
-  };
-
-  const handleFlipCurrency = () => {
-    dispatch(
-      setPreference({
-        key: "preferLocalCurrency",
-        value: shouldPreferLocalCurrency ? "false" : "true",
-      })
-    );
-
-    if (inputRef.current !== null) {
-      inputRef.current.focus();
-    }
-  };
-
   return (
     <>
-      <div className="tracking-wide text-center text-white">
-        {message === "" ? (
-          <div className="bg-primary p-2">
-            <div className="text-xl font-bold">
-              {translate(translations.sendingTo)}
-              {isMyAddress && <span> self</span>}
-            </div>
-            <div className="text-sm py-1 font-mono tracking-tight">
-              <Address address={address} />
-            </div>
-          </div>
-        ) : (
-          <div className="bg-error p-2">
-            <div className="text-2xl font-bold">{message}</div>
-          </div>
-        )}
-      </div>
-
       {isSending ? (
         <div className="p-2 flex items-center justify-center fixed top-1/3 w-full text-center">
           <SyncOutlined className="text-7xl" spin />
         </div>
       ) : (
         <>
-          <div className="p-2 fixed top-[40%] w-full">
-            <div className="py-4 px-2 rounded-md shadow-md bg-primary/95 text-white">
-              <div className="flex items-center">
-                <CurrencySymbol
-                  currency={currency}
-                  className="font-bold text-4xl mr-2"
-                />
-                <SatoshiInput
-                  key={satoshiInputKey}
-                  onChange={handleAmountInput}
-                  satoshis={satoshiInput}
-                  size={1}
-                  className={`mr-1.5 p-1 flex-1 text-3xl rounded shadow-inner ${
-                    isInsufficientFunds ? "text-error" : "text-black/70"
-                  }`}
-                  autoFocus
-                  ref={inputRef}
-                />
-                <Button
-                  className="text-xs spacing-wide font-semibold text-zinc-800 rounded-full border border-zinc-200 bg-zinc-100"
-                  icon={MaxButton}
-                  iconSize="xs font-bold"
-                  onClick={handleSendMax}
-                />
-              </div>
-            </div>
-
-            <div
-              className="p-2 relative text-center w-full"
-              onClick={handleFlipCurrency}
-            >
-              <span className="text-2xl font-semibold text-center w-full text-zinc-800/80">
-                <Satoshi value={satoshiInput} flip />
-                <CurrencyFlip className="text-3xl ml-2" />
-              </span>
-            </div>
-          </div>
-
           <div
             className={`flex absolute ${buttonsPos} w-full justify-around items-center px-2 gap-x-2`}
           >
@@ -315,10 +180,6 @@ export default function WalletViewSend() {
       )}
     </>
   );
-}
-
-function MaxButton() {
-  return <span>MAX</span>;
 }
 
 function ConfirmIcon() {

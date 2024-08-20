@@ -14,9 +14,15 @@ function MainLayout() {
   const navigate = useNavigate();
 
   App.addListener("appUrlOpen", ({ url }) => {
-    const { isValid, address, query } = validateInvoiceString(url);
+    const { isValid, address, query, isPaymentProtocol, requestUri } =
+      validateInvoiceString(url);
+
     if (isValid) {
-      navigate(`/wallet/send/${address}${query}`);
+      const navTo = isPaymentProtocol
+        ? `/wallet/pay/${requestUri}`
+        : `/wallet/send/${address}${query}`;
+
+      navigate(navTo);
     }
   });
 

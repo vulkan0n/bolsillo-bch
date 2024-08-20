@@ -82,10 +82,7 @@ export default function TransactionManagerService() {
     }
   }
 
-  async function sendTransaction(
-    tx: TransactionStub,
-    wallet: WalletEntity
-  ): Promise<boolean> {
+  async function sendTransaction(tx: TransactionStub, wallet: WalletEntity) {
     const { txid: tx_hash, hex: tx_hex } = tx;
 
     const Electrum = ElectrumService();
@@ -104,7 +101,7 @@ export default function TransactionManagerService() {
       Log.warn("transaction send failure", result);
     }
 
-    return isSuccess;
+    return { isSuccess, result };
   }
 
   async function deleteTransaction(tx_hash: string): Promise<void> {

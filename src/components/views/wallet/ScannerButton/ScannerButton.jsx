@@ -44,11 +44,17 @@ export default function ScannerButton() {
     async (content) => {
       dispatch(setScannerIsScanning(false));
 
-      const { isCashAddress, address, query } = validateInvoiceString(content);
+      const { isValid, address, query, isPaymentProtocol, requestUri } =
+        validateInvoiceString(content);
 
-      if (isCashAddress) {
+      if (isValid) {
         await Haptics.notification({ type: NotificationType.Success });
-        navigate(`/wallet/send/${address}${query}`);
+
+        const navTo = isPaymentProtocol
+          ? `/wallet/pay/${requestUri}`
+          : `/wallet/send/${address}${query}`;
+
+        navigate(navTo);
       } else {
         await Haptics.notification({ type: NotificationType.Error });
       }

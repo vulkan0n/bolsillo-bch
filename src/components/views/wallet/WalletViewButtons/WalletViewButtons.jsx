@@ -27,11 +27,16 @@ export default function WalletViewButtons() {
 
   const forwardOnValidAddress = (input) => {
     // go to send screen when valid address is entered
-    const { isValid, address, query } = validateInvoiceString(input);
+    const { isValid, address, query, isPaymentProtocol, requestUri } =
+      validateInvoiceString(input);
 
     if (isValid) {
       Haptics.notification({ type: NotificationType.Success });
-      navigate(`/wallet/send/${address}${query}`);
+      const navTo = isPaymentProtocol
+        ? `/wallet/pay/${requestUri}`
+        : `/wallet/send/${address}${query}`;
+
+      navigate(navTo);
     } else {
       Haptics.notification({ type: NotificationType.Error });
     }
