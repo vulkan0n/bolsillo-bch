@@ -6,8 +6,10 @@
 	<false/>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>To use the Map feature</string>
+    <!--
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <string>To use the Map feature</string>
+    -->
 	<key>CFBundleDisplayName</key>
 	<string>Selene Wallet</string>
 	<key>CFBundleExecutable</key>

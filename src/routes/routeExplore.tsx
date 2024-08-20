@@ -1,4 +1,4 @@
-import { Geolocation } from "@capacitor/geolocation";
+//import { Geolocation } from "@capacitor/geolocation";
 
 import ExploreView from "@/views/explore/ExploreView";
 import ExploreViewHome from "@/views/explore/ExploreViewHome";
@@ -26,7 +26,7 @@ export const routeExplore = [
           return TransactionManagerService().resolveTransaction(params.txid);
         },
       },
-      {
+      /*{
         path: "map",
         async lazy() {
           const { default: ExploreMapView } = await import(
@@ -38,7 +38,7 @@ export const routeExplore = [
           Geolocation.getCurrentPosition({
             enableHighAccuracy: true,
           }),
-      },
+      },*/
       {
         path: "contacts",
         async lazy() {

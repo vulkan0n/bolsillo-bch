@@ -32,9 +32,9 @@ export default function ExploreViewHome() {
           to="/explore/contacts"
         />
       )}
-      {isExperimental && (
+      {/*{isExperimental && (
         <ExploreApp icon={EnvironmentOutlined} name="Map" to="/explore/map" />
-      )}
+      )}*/}
       {isPrerelease && (
         <ExploreApp
           icon={ReadOutlined}
