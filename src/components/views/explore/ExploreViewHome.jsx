@@ -1,6 +1,6 @@
 import {
   ContactsOutlined,
-  EnvironmentOutlined,
+  //EnvironmentOutlined,
   QuestionCircleOutlined,
   ProductOutlined,
   ReadOutlined,
