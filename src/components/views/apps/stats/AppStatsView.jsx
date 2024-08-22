@@ -1,9 +1,7 @@
-import { ApolloProvider } from "@apollo/client";
 import AppSubSectionWrapper from "@/apps/AppSubSectionWrapper/AppSubSectionWrapper";
 import ExploreStatBlock from "./ExploreStatBlock";
 import GlobalAdoptionSummary from "./GlobalAdoptionSummary";
 import EmbeddedIframe from "@/atoms/EmbeddedIframe";
-import apolloClient from "@/apolloClient";
 
 const AFITH_OF_GAMING_STATS_URL = "https://afifthofgaming.com/stats";
 const BCH_GURU_STATS_URL = "https://nfts.bch.guru/science";
@@ -18,10 +16,8 @@ const SUBSECTIONS = [
     children: (
       <div className="pb-28">
         <div className="p-2">
-          <ApolloProvider client={apolloClient}>
-            <ExploreStatBlock />
-            <GlobalAdoptionSummary />
-          </ApolloProvider>
+          <ExploreStatBlock />
+          <GlobalAdoptionSummary />
         </div>
       </div>
     ),
