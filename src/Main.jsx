@@ -7,6 +7,8 @@ import {
 
 import { Provider } from "react-redux";
 import { Toaster } from "react-hot-toast";
+import { ApolloProvider } from "@apollo/client";
+import apolloClient from "@/apolloClient";
 import { store } from "./redux";
 
 import "./index.css";
@@ -62,12 +64,14 @@ export default function Main() {
   return (
     <ReactStrictMode>
       <Provider store={store}>
-        {/* Note: Duration has an inbuilt extra 1000ms dismissal delay */}
-        <Toaster
-          toastOptions={{ duration: 1250 }}
-          containerClassName="toaster"
-        />
-        <RouterProvider router={router} />
+        <ApolloProvider client={apolloClient}>
+          {/* Note: Duration has an inbuilt extra 1000ms dismissal delay */}
+          <Toaster
+            toastOptions={{ duration: 1250 }}
+            containerClassName="toaster"
+          />
+          <RouterProvider router={router} />
+        </ApolloProvider>
       </Provider>
     </ReactStrictMode>
   );
