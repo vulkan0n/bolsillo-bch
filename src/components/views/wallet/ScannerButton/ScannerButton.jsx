@@ -51,7 +51,7 @@ export default function ScannerButton() {
         await Haptics.notification({ type: NotificationType.Success });
 
         const navTo = isPaymentProtocol
-          ? `/wallet/pay/${requestUri}`
+          ? `/wallet/pay/?r=${requestUri}`
           : `/wallet/send/${address}${query}`;
 
         navigate(navTo);
