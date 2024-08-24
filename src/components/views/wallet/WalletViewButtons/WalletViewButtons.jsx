@@ -12,6 +12,7 @@ import translations from "./translations";
 import { translate } from "@/util/translations";
 
 import Button from "@/atoms/Button";
+import HrLabel from "@/atoms/HrLabel";
 import ScannerButton from "../ScannerButton/ScannerButton";
 import TorchButton from "../TorchButton/TorchButton";
 import ImageSelectButton from "../ImageSelectButton/ImageSelectButton";
@@ -73,7 +74,9 @@ export default function WalletViewButtons() {
 
   return (
     <>
-      <div className="mb-3.5">{!isScanning && <hr />}</div>
+      <div className="mb-2">
+        {!isScanning && <HrLabel text="Send" icon={SendOutlined} />}
+      </div>
       <div className="flex items-center w-auto mx-4 justify-evenly">
         {isScanning ? (
           <ImageSelectButton
