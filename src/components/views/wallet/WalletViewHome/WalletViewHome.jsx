@@ -3,33 +3,34 @@ import { useSelector } from "react-redux";
 
 import { Clipboard } from "@capacitor/clipboard";
 import { QRCode } from "react-qrcode-logo";
-
 import {
   FormOutlined,
-  CopyOutlined,
   CaretRightOutlined,
   CaretDownOutlined,
+  CloseOutlined,
+  MoneyCollectOutlined,
+  CopyOutlined,
 } from "@ant-design/icons";
-import { animated, useSpring } from "@react-spring/web";
+
 import { selectActiveWallet } from "@/redux/wallet";
 import { selectIsChipnet, selectQrCodeSettings } from "@/redux/preferences";
 import { selectScannerIsScanning, selectKeyboardIsOpen } from "@/redux/device";
-import translations from "./translations";
-import { translate } from "@/util/translations";
 
 import AddressManagerService from "@/services/AddressManagerService";
-import WalletViewButtons from "../WalletViewButtons/WalletViewButtons";
-import ScannerOverlay from "../ScannerOverlay";
+import ToastService from "@/services/ToastService";
+
 import { SatoshiInput } from "@/atoms/SatoshiInput";
 import Address from "@/atoms/Address";
 import CurrencySymbol from "@/atoms/CurrencySymbol";
 import CurrencyFlip from "@/atoms/CurrencyFlip";
+import WalletViewButtons from "../WalletViewButtons/WalletViewButtons";
+import ScannerOverlay from "../ScannerOverlay";
 
-import ToastService from "@/services/ToastService";
 import { logos } from "@/util/logos";
 import { satsToBch } from "@/util/sats";
 
-const { requestAmount } = translations;
+import { translate } from "@/util/translations";
+import translations from "./translations";
 
 export default function WalletViewHome() {
   const wallet = useSelector(selectActiveWallet);
@@ -71,31 +72,8 @@ export default function WalletViewHome() {
     ToastService().clipboardCopy("Address", qrRequest);
   };
 
-  // "Request Amount" animations
-  const [requestSprings, requestSpringsApi] = useSpring(() => ({
-    from: { scale: 1 },
-    to: { scale: 0.875 },
-    immediate: true,
-    config: {
-      tension: 150,
-      friction: 25,
-      mass: 0.8,
-    },
-  }));
-
-  const [requestOpenSprings, requestOpenSpringsApi] = useSpring(() => ({
-    from: { opacity: 1, y: 0, scaleY: 1, scaleX: 1 },
-    to: { opacity: 0, y: -16, scaleY: 0, scaleX: 0.5 },
-    immediate: true,
-    config: {
-      tension: 400,
-      friction: 60,
-      mass: 1,
-    },
-  }));
-
   // force red QR code border if connected to chipnet
-  const qrCodeBorder = isChipnet ? "border-[#ff0000]" : "border-primary/80";
+  const qrCodeBorder = isChipnet ? "border-[#ff0000]" : "border-primary/90";
   const addressColor = isChipnet ? "text-[#ff0000]" : "text-primary";
 
   return (
@@ -103,82 +81,78 @@ export default function WalletViewHome() {
       {isScanning ? (
         <ScannerOverlay />
       ) : (
-        <div className="py-3 px-2 flex flex-col items-center">
-          <button
-            type="button"
-            className={`w-fit h-fit border border-4 cursor-pointer shadow active:shadow-none active:bg-primary active:shadow-inner ${qrCodeBorder}`}
-            onClick={copyAddressToClipboard}
-          >
-            <QRCode
-              value={qrRequest}
-              size={204}
-              quietZone={16}
-              bgColor={isChipnet ? "#ffffff" : qrCodeSettings.background}
-              fgColor={isChipnet ? "#000000" : qrCodeSettings.foreground}
-              logoImage={getQrLogoImage(qrCodeSettings.logo)}
-              logoWidth={60}
-              logoHeight={60}
-            />
-          </button>
-
-          <button
-            type="button"
-            onClick={copyAddressToClipboard}
-            className={`flex justify-center items-center w-fit mx-auto text-xs font-mono text-center cursor-pointer slashed-zero select-none my-2 rounded p-1 shadow-sm my-2 active:bg-primary active:text-white active:shadow-none active:shadow-inner ${addressColor}`}
-          >
-            <CopyOutlined className="mr-0.5" />
-            <Address address={address} />
-          </button>
-
-          <div className="mt-2 mx-auto select-none z-50">
-            <animated.div
-              className={`py-1.5 px-2 w-max justify-center shadow-sm outline outline-2 outline-primary flex items-center mx-auto cursor-pointer ${
-                shouldShowRequestAmount
-                  ? "rounded-t pb-1 font-semibold bg-primary text-white active:bg-white active:text-primary active:font-normal"
-                  : "rounded bg-white text-zinc-600 active:bg-primary active:text-white active:font-semibold"
-              } active:shadow-none active:shadow-inner`}
-              onClick={() => {
-                requestSpringsApi.start({
-                  to: shouldShowRequestAmount ? { scale: 0.875 } : { scale: 1 },
-                });
-                requestOpenSpringsApi.start({
-                  to: {
-                    opacity: shouldShowRequestAmount ? 0 : 1,
-                    scaleY: shouldShowRequestAmount ? 0 : 1.2,
-                    scaleX: shouldShowRequestAmount ? 0.5 : 1.2,
-                    y: shouldShowRequestAmount ? -16 : 0,
-                  },
-                });
-                setShouldShowRequestAmount(!shouldShowRequestAmount);
-              }}
-              style={{ ...requestSprings }}
+        <div className="pt-1 font-mono text-white/90">
+          <div className="w-[92.5%] pt-1 mx-auto bg-primary/90 rounded rounded-b-none">
+            <div className="flex justify-between items-center uppercase">
+              <span className="grow text-sm text-center flex items-center justify-center">
+                <MoneyCollectOutlined className="text-base mr-1" />
+                Receive
+              </span>
+            </div>
+            <div className="w-fit mx-auto">
+              <button
+                type="button"
+                className={`border-4 cursor-pointer active:bg-primary shadow-inner shadow-md active:shadow-none active:shadow-inner active:scale-[0.98] ${qrCodeBorder}`}
+                onClick={copyAddressToClipboard}
+              >
+                <QRCode
+                  value={qrRequest}
+                  size={232}
+                  quietZone={12}
+                  bgColor={isChipnet ? "#ffffff" : qrCodeSettings.background}
+                  fgColor={isChipnet ? "#000000" : qrCodeSettings.foreground}
+                  logoImage={getQrLogoImage(qrCodeSettings.logo)}
+                  logoWidth={64}
+                  logoHeight={64}
+                />
+              </button>
+            </div>
+            <button
+              type="button"
+              onClick={copyAddressToClipboard}
+              className={`flex items-center justify-center w-full p-1 text-xs text-center cursor-pointer slashed-zero select-none active:bg-secondary active:shadow-inner ${addressColor}`}
             >
-              <FormOutlined className="mr-1" />
-              {translate(requestAmount)}
-              {shouldShowRequestAmount ? (
-                <CaretDownOutlined className="ml-1" />
-              ) : (
-                <CaretRightOutlined className="ml-1" />
-              )}
-            </animated.div>
-            <animated.div
-              className="bg-primary text-white p-2 shadow-sm rounded min-w-[200px] w-fit max-w-[20.5em] mx-auto flex items-center"
-              style={{ ...requestOpenSprings }}
-            >
-              {shouldShowRequestAmount && (
-                <>
-                  <CurrencySymbol className="text-xl font-bold font-mono px-0.5" />
+              <CopyOutlined className="mr-0.5 text-white/80" />
+              <Address
+                address={address}
+                className="text-white/80"
+                maxLength={50}
+              />
+            </button>
+          </div>
+          <div className="z-50 font-sans relative bg-primary w-[92.5%] mx-auto text-sm p-1 rounded-b">
+            {shouldShowRequestAmount ? (
+              <div className="flex w-full justify-between items-center">
+                <CloseOutlined
+                  className="p-1 font-bold text-lg"
+                  onClick={() => setShouldShowRequestAmount(false)}
+                />
+                <span className="flex text-center grow items-center ml-1">
+                  <CurrencySymbol className="text-lg bg-white/60 rounded-l px-1 text-zinc-500/80 font-semibold font-mono" />
                   <SatoshiInput
                     satoshis={satoshiInput}
                     onChange={handleRequestAmountChange}
-                    className="p-1 w-fit text-black/70 font-mono rounded mx-1"
+                    className="p-1 mr-1 w-full text-black/70 font-mono rounded-r "
                   />
-                  <div className="w-6 h-8 flex items-center justify-center">
-                    <CurrencyFlip className="text-xl" />
+                  <div className="flex items-center justify-center">
+                    <CurrencyFlip className="text-xl p-1" />
                   </div>
-                </>
-              )}
-            </animated.div>
+                </span>
+              </div>
+            ) : (
+              <div
+                className="flex items-center justify-center cursor-pointer active:bg-secondary active:shadow-inner"
+                onClick={() => setShouldShowRequestAmount(true)}
+              >
+                <FormOutlined className="mr-1 font-bold" />
+                <span>{translate(translations.requestAmount)}</span>
+                {shouldShowRequestAmount ? (
+                  <CaretDownOutlined className="ml-1" />
+                ) : (
+                  <CaretRightOutlined className="ml-1" />
+                )}
+              </div>
+            )}
           </div>
         </div>
       )}
