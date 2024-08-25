@@ -111,11 +111,7 @@ export default function WalletViewHome() {
               className={`flex items-center justify-center w-full p-1 text-xs text-center cursor-pointer slashed-zero select-none active:bg-secondary active:shadow-inner ${addressColor}`}
             >
               <CopyOutlined className="mr-0.5 text-white/80" />
-              <Address
-                address={address}
-                className="text-white/80"
-                maxLength={50}
-              />
+              <Address address={address} className="text-white/80" />
             </button>
           </div>
           <div className="z-50 font-sans relative bg-primary w-[92.5%] mx-auto text-sm p-1 rounded-b">

@@ -1,5 +1,6 @@
 import { useSelector } from "react-redux";
 import { selectMyAddresses } from "@/redux/sync";
+import { truncate } from "@/util/string";
 
 interface AddressProps {
   address: string;
@@ -19,37 +20,23 @@ export default function Address({
   const PREFIX_LENGTH = 5;
   const SUFFIX_LENGTH = 5;
 
-  const truncate = (str, len, sep = "...") => {
-    if (str.length <= len) {
-      return str;
+  const formattedAddress = (() => {
+    const split = address.split(":");
+    if (split.length > 1) {
+      return withPrefix ? split[0].concat(":").concat(split[1]) : split[1];
     }
+    return split[0];
+  })();
 
-    const showLength = len - sep.length;
+  const truncatedAddress = truncate(formattedAddress, maxLength);
 
-    const front = Math.ceil(showLength / 2);
-    const back = Math.floor(showLength / 2);
-
-    return str.substring(0, front) + sep + str.substring(str.length - back);
-  };
-
-  const formattedAddress = truncate(
-    (() => {
-      const split = address.split(":");
-      if (split.length > 1) {
-        return withPrefix ? split[0].concat(":").concat(split[1]) : split[1];
-      }
-      return split[0];
-    })(),
-    maxLength
-  );
-
-  const prefix = formattedAddress.substring(0, PREFIX_LENGTH);
-  const middle = formattedAddress.substring(
+  const prefix = truncatedAddress.substring(0, PREFIX_LENGTH);
+  const middle = truncatedAddress.substring(
     PREFIX_LENGTH,
-    formattedAddress.length - SUFFIX_LENGTH
+    truncatedAddress.length - SUFFIX_LENGTH
   );
-  const suffix = formattedAddress.substring(
-    formattedAddress.length - SUFFIX_LENGTH
+  const suffix = truncatedAddress.substring(
+    truncatedAddress.length - SUFFIX_LENGTH
   );
 
   const myAddresses = useSelector(selectMyAddresses);
