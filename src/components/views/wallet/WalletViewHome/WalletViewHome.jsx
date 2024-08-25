@@ -8,7 +8,6 @@ import {
   CaretRightOutlined,
   CaretDownOutlined,
   CloseOutlined,
-  MoneyCollectOutlined,
   CopyOutlined,
 } from "@ant-design/icons";
 
@@ -85,7 +84,6 @@ export default function WalletViewHome() {
           <div className="w-[92.5%] pt-1 mx-auto bg-primary/90 rounded rounded-b-none">
             <div className="flex justify-between items-center uppercase">
               <span className="grow text-sm text-center flex items-center justify-center">
-                <MoneyCollectOutlined className="text-base mr-1" />
                 Receive
               </span>
             </div>

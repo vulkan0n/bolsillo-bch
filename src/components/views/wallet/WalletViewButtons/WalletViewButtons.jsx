@@ -74,9 +74,7 @@ export default function WalletViewButtons() {
 
   return (
     <>
-      <div className="mb-2">
-        {!isScanning && <HrLabel text="Send" icon={SendOutlined} />}
-      </div>
+      <div className="mb-2">{!isScanning && <hr />}</div>
       <div className="flex items-center w-auto mx-4 justify-evenly">
         {isScanning ? (
           <ImageSelectButton
