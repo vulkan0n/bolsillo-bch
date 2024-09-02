@@ -13,5 +13,5 @@ ext {
     androidxJunitVersion = '1.1.5'
     androidxEspressoCoreVersion = '3.5.1'
     cordovaAndroidVersion = '10.1.1'
-    fastlaneScreengrabVersion = '1.0.0'
+    fastlaneScreengrabVersion = '2.1.1'
 }
