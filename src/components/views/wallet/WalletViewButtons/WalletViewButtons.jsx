@@ -73,7 +73,7 @@ export default function WalletViewButtons() {
 
   return (
     <>
-      <div className="mb-3.5">{!isScanning && <hr />}</div>
+      <div className="mb-2">{!isScanning && <hr />}</div>
       <div className="flex items-center w-auto mx-4 justify-evenly">
         {isScanning ? (
           <ImageSelectButton

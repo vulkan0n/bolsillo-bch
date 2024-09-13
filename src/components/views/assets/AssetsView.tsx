@@ -2,7 +2,9 @@ import { useState } from "react";
 import { useSelector } from "react-redux";
 import { BankOutlined, MoneyCollectOutlined } from "@ant-design/icons";
 import { selectActiveWallet } from "@/redux/wallet";
-import AddressManagerService from "@/services/AddressManagerService";
+import AddressManagerService, {
+  AddressEntity,
+} from "@/services/AddressManagerService";
 import UtxoManagerService from "@/services/UtxoManagerService";
 import Address from "@/atoms/Address";
 import Satoshi from "@/atoms/Satoshi";
@@ -91,6 +93,7 @@ function AddressAccordion({ a, i }: AddressAccordionProps) {
             <Address
               address={a.address}
               short={isOpen ? false : a.balance > 0}
+              maxLength={isOpen ? 0 : 40}
             />
           </span>
           <div className="opacity-90">{a.memo}</div>

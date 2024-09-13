@@ -16,6 +16,9 @@ import Button from "@/atoms/Button";
 import KeyWarning from "@/atoms/KeyWarning/KeyWarning";
 import { sha256 } from "@/util/hash";
 
+import { translate } from "@/util/translations";
+import translations from "./translations";
+
 export default function SecuritySettings() {
   const dispatch = useDispatch();
   const { handleSettingsUpdate } = useContext(SettingsContext);
@@ -26,16 +29,16 @@ export default function SecuritySettings() {
     const isAuthorized = await SecurityService().authorize();
     if (isAuthorized || pinHash === "") {
       const { value: pin } = await Dialog.prompt({
-        title: "Enter New PIN",
-        message: "Please enter a **new** PIN.",
-        okButtonTitle: "Set PIN",
+        title: translate(translations.enterNewPin),
+        message: translate(translations.enterNewPinMessage),
+        okButtonTitle: translate(translations.enterNewPinOkButtonTitle),
       });
       const newPinHash = sha256.text(pin);
 
       const { value: confirmPin } = await Dialog.prompt({
-        title: "Confirm New PIN",
-        message: "Please confirm your new PIN.",
-        okButtonTitle: "Confirm PIN",
+        title: translate(translations.confirmNewPin),
+        message: translate(translations.confirmNewPinMessage),
+        okButtonTitle: translate(translations.confirmNewPinOkButtonTitle),
       });
       const confirmPinHash = sha256.text(confirmPin);
 
@@ -43,7 +46,7 @@ export default function SecuritySettings() {
         dispatch(setPreference({ key: "pinHash", value: newPinHash }));
       } else {
         await Dialog.alert({
-          message: "PIN confirmation did not match! PIN was not set.",
+          message: translate(translations.pinConfirmationDidNotMatch),
         });
       }
     }
@@ -53,8 +56,12 @@ export default function SecuritySettings() {
   const isWalletKeyViewed = activeWallet.key_viewed !== null;
 
   return (
-    <Accordion icon={LockOutlined} title="Security">
-      <Accordion.Child icon={VerifiedOutlined} label="Security Mode">
+    <Accordion icon={LockOutlined} title={translate(translations.security)}>
+      <Accordion.Child
+        icon={VerifiedOutlined}
+        label={translate(translations.securityMode)}
+        description={translate(translations.securityModeExplanation)}
+      >
         {!isWalletKeyViewed ? (
           <KeyWarning wallet={activeWallet} />
         ) : (
@@ -70,9 +77,11 @@ export default function SecuritySettings() {
               }
             }}
           >
-            <option value="none">None</option>
-            <option value="pin">PIN</option>
-            {hasBiometric && <option value="bio">Biometric</option>}
+            <option value="none">{translate(translations.none)}</option>
+            <option value="pin">{translate(translations.pin)}</option>
+            {hasBiometric && (
+              <option value="bio">{translate(translations.biometric)}</option>
+            )}
           </select>
         )}
       </Accordion.Child>
@@ -80,9 +89,13 @@ export default function SecuritySettings() {
         <Accordion.Child>
           <div className="flex items-center justify-between">
             {pinHash === "" ? (
-              <span className="text-error font-semibold">PIN is not set!</span>
+              <span className="text-error font-semibold">
+                {translate(translations.pinNotSet)}
+              </span>
             ) : (
-              <span className="text-secondary font-semibold">PIN is set</span>
+              <span className="text-secondary font-semibold">
+                {translate(translations.pinSet)}
+              </span>
             )}
             <Button onClick={handleSetPin} icon={PinSetButtonIcon} />
           </div>

@@ -3,7 +3,7 @@ const translations = {
     ar: "شعلة",
     bn: "টর্চ",
     da: "Lommelygte",
-    de: "Taschenlampe",
+    de: "Blitz",
     el: "Φακός",
     en: "Torch",
     es: "Linterna",
@@ -36,8 +36,8 @@ const translations = {
     ur: "ٹارچ",
     vi: "Đèn pin",
     zh: "手电筒",
-    zh_TW: "火炬",
-  },
+    zh_TW: "火炬"
+  }
 };
 
 export default translations;

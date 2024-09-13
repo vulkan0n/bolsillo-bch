@@ -2,7 +2,7 @@ import { store } from "@/redux";
 import { selectDeviceInfo } from "@/redux/device";
 import { selectPreferences } from "@/redux/preferences";
 
-export const translate = (translationObject) => {
+export const translate = (translationObject): string => {
   // If language set in Selene Settings,
   // try to use that language
   const preferences = selectPreferences(store.getState());

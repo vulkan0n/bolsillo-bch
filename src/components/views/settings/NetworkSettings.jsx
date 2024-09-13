@@ -10,7 +10,7 @@ import { syncReconnect } from "@/redux/sync";
 import { selectIsChipnet } from "@/redux/preferences";
 
 import { translate } from "@/util/translations";
-import translations from "./SettingsViewTranslations";
+import translations from "./translations";
 
 import { electrum_servers } from "@/util/electrum_servers";
 

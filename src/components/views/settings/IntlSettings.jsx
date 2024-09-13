@@ -2,7 +2,7 @@ import { useContext } from "react";
 import { GlobalOutlined, FlagOutlined } from "@ant-design/icons";
 
 import { translate, languageList } from "@/util/translations";
-import translations from "./SettingsViewTranslations";
+import translations from "./translations";
 
 import { SettingsContext } from "./SettingsContext";
 
