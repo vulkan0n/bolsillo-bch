@@ -33,3 +33,4 @@ android/app/release
 android/app/capacitor.build.gradle
 android/capacitor.settings.gradle
 
+ios/App/fastlane/screenshots

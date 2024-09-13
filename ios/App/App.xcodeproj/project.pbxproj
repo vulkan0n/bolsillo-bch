@@ -14,6 +14,7 @@
 		504EC30F1FED79650016851F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 504EC30E1FED79650016851F /* Assets.xcassets */; };
 		504EC3121FED79650016851F /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 504EC3101FED79650016851F /* LaunchScreen.storyboard */; };
 		50B271D11FEDC1A000F3C39B /* public in Resources */ = {isa = PBXBuildFile; fileRef = 50B271D01FEDC1A000F3C39B /* public */; };
+		833F22F42C874255003E4CB9 /* SnapshotHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 833F22F32C874254003E4CB9 /* SnapshotHelper.swift */; };
 		8381F67E2C74263900ED0F5D /* selene-logo.svg in Resources */ = {isa = PBXBuildFile; fileRef = 8381F67D2C74263900ED0F5D /* selene-logo.svg */; };
 		8381F6952C86171A00ED0F5D /* SeleneWalletUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8381F6942C86171A00ED0F5D /* SeleneWalletUITests.swift */; };
 		8381F6972C86171A00ED0F5D /* SeleneWalletUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8381F6962C86171A00ED0F5D /* SeleneWalletUITestsLaunchTests.swift */; };
@@ -40,6 +41,7 @@
 		504EC3111FED79650016851F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		504EC3131FED79650016851F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		50B271D01FEDC1A000F3C39B /* public */ = {isa = PBXFileReference; lastKnownFileType = folder; path = public; sourceTree = "<group>"; };
+		833F22F32C874254003E4CB9 /* SnapshotHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SnapshotHelper.swift; sourceTree = "<group>"; };
 		8381F67D2C74263900ED0F5D /* selene-logo.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = "selene-logo.svg"; path = "../../src/assets/selene-logo.svg"; sourceTree = "<group>"; };
 		8381F6922C86171A00ED0F5D /* SeleneWalletUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SeleneWalletUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		8381F6942C86171A00ED0F5D /* SeleneWalletUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeleneWalletUITests.swift; sourceTree = "<group>"; };
@@ -124,6 +126,7 @@
 		8381F6932C86171A00ED0F5D /* SeleneWalletUITests */ = {
 			isa = PBXGroup;
 			children = (
+				833F22F32C874254003E4CB9 /* SnapshotHelper.swift */,
 				8381F6942C86171A00ED0F5D /* SeleneWalletUITests.swift */,
 				8381F6962C86171A00ED0F5D /* SeleneWalletUITestsLaunchTests.swift */,
 			);
@@ -285,6 +288,7 @@
 			files = (
 				8381F6952C86171A00ED0F5D /* SeleneWalletUITests.swift in Sources */,
 				8381F6972C86171A00ED0F5D /* SeleneWalletUITestsLaunchTests.swift in Sources */,
+				833F22F42C874255003E4CB9 /* SnapshotHelper.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
