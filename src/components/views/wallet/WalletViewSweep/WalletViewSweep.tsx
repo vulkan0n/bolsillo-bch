@@ -54,11 +54,14 @@ export default function WalletViewSweep() {
   const [isSweeping, setIsSweeping] = useState(false);
   const [message, setMessage] = useState("");
   const [utxos, setUtxos] = useState<Array<ElectrumUtxo>>([]);
+  const [isSweepable, setIsSweepable] = useState(false);
 
+  // Throw an error if no WIF was provided as a URL param to this route.
   if (!params.wif) {
     throw new Error('No "wif" param specified in route');
   }
 
+  // Validate the WIF provided is valid.
   const {
     address: wifAddress,
     privateKey,
@@ -70,11 +73,15 @@ export default function WalletViewSweep() {
     throw new Error(`Invalid WIF provided (${params.wif})`);
   }
 
+  // Run when Electrum's connectivity state changes.
+  // NOTE: This is to prevent a race-condition whereby a user can land on this page prior to Electrum being connected.
+  //       The intent is to allow Selene to be invoked by a "bch-wif:${wif}" URL and "wait" for connection before making the requestUTXO's call.
   useEffect(() => {
     const requestUtxos = async () => {
       // Fetch the UTXOs from our Electrum Service.
       const electrumUtxos = await ElectrumService().requestUtxos(wifAddress);
 
+      // Check if the response is an instance of Error (because Electrum Requests do not "throw" errors, they return them).
       if (utxos instanceof Error) {
         throw utxos;
       }
@@ -89,10 +96,14 @@ export default function WalletViewSweep() {
     }
   }, [sync.isConnected, isFetchingUtxos, utxos, wifAddress]);
 
+  // Calculate the satoshi balance when our UTXOs change.
   const wifSatoshiBalance = useMemo(() => {
     return utxos.reduce((total, utxo) => total + utxo.value, 0);
   }, [utxos]);
 
+  // Determine whether the WIF contains tokens so that we can display an unsupported message.
+  // NOTE: This will not be functional until our Electrum Protocol uses >= V1.5.
+  //       For Electrum Protocol < V1.5 UTXOs containing tokens will just be ignored (not swept).
   const didWifContainTokens = useMemo(() => {
     return utxos.some((utxo) => utxo.token_data);
   }, [utxos]);
@@ -103,22 +114,23 @@ export default function WalletViewSweep() {
       setMessage("");
     }
 
-    // If the WIF is empty...
+    // If the WIF is empty, set the wallet to unsweepable and show a message.
     else if (!wifSatoshiBalance) {
       const emptyWifTranslation = translate(translations.emptyWif);
       setMessage(emptyWifTranslation);
+      setIsSweepable(false);
     }
 
-    // If the WIF contains tokens...
-    // NOTE: We check for this condition because Selene does not yet support tokens (and nor does the sweep tx builder).
-    //       If a WIF contains tokens, chances are it's deliberate. And if we try to sweep a WIF with tokens, we would implicitly burn them.
+    // If the WIF contains tokens, set the wallet to unsweepable and show a message.
     else if (didWifContainTokens) {
       const wifContainsTokensTranslation = translate(
         translations.wifContainsTokens
       );
       setMessage(wifContainsTokensTranslation);
+      setIsSweepable(false);
     } else {
       setMessage("");
+      setIsSweepable(true);
     }
   }, [isFetchingUtxos, wifSatoshiBalance, didWifContainTokens]);
 
@@ -206,18 +218,31 @@ export default function WalletViewSweep() {
           <div
             className={`flex absolute ${buttonsPos} w-full justify-around items-center px-2 gap-x-2`}
           >
-            <div className="mx-2">
-              <Button onClick={() => navigate(-1)} icon={BackIcon} />
-            </div>
-            <div className="flex-1">
-              <Button
-                size="full"
-                icon={ConfirmIcon}
-                shittyFullWidthHack
-                onClick={() => confirmSweep()}
-                inverted
-              />
-            </div>
+            {isSweepable === true ? (
+              <>
+                <div className="mx-2">
+                  <Button onClick={() => navigate(-1)} icon={BackIcon} />
+                </div>
+                <div className="flex-1">
+                  <Button
+                    size="full"
+                    icon={ConfirmIcon}
+                    shittyFullWidthHack
+                    onClick={() => confirmSweep()}
+                    inverted
+                  />
+                </div>
+              </>
+            ) : (
+              <div className="flex-1">
+                <Button
+                  size="full"
+                  onClick={() => navigate(-1)}
+                  icon={BackIcon}
+                  shittyFullWidthHack
+                />
+              </div>
+            )}
           </div>
         </>
       )}
