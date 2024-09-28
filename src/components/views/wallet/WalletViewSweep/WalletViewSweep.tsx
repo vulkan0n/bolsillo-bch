@@ -72,33 +72,24 @@ export default function WalletViewSweep() {
 
   useEffect(() => {
     const requestUtxos = async () => {
-      try {
-        // Fetch the UTXOs from our Electrum Service.
-        const electrumUtxos = await ElectrumService().requestUtxos(wifAddress);
+      // Fetch the UTXOs from our Electrum Service.
+      const electrumUtxos = await ElectrumService().requestUtxos(wifAddress);
 
-        if (utxos instanceof Error) {
-          throw utxos;
-        }
-
-        console.log(electrumUtxos);
-
-        // Set the UTXOs.
-        setUtxos(electrumUtxos as Array<ElectrumUtxo>);
-        setIsFetchingUtxos(false);
-      } catch (error) {
-        console.error("Error fetching data:", error);
+      if (utxos instanceof Error) {
+        throw utxos;
       }
+
+      // Set the UTXOs.
+      setUtxos(electrumUtxos as Array<ElectrumUtxo>);
+      setIsFetchingUtxos(false);
     };
 
     if (sync.isConnected && isFetchingUtxos) {
       requestUtxos();
-    } else {
-      console.log("not connected");
     }
   }, [sync.isConnected, isFetchingUtxos, utxos, wifAddress]);
 
   const wifSatoshiBalance = useMemo(() => {
-    console.log("calcing balance", utxos);
     return utxos.reduce((total, utxo) => total + utxo.value, 0);
   }, [utxos]);
 

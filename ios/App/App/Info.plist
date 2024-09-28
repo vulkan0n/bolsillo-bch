@@ -32,6 +32,7 @@
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>bitcoincash</string>
+				<string>bch-wif</string>
 			</array>
 		</dict>
 	</array>

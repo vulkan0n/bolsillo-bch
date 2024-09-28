@@ -48,8 +48,6 @@ export default function ScannerButton() {
       const { isCashAddress, address, query } = validateInvoiceString(content);
       const { isWif, wif } = validateWifString(content);
 
-      debugger;
-
       if (isCashAddress) {
         await Haptics.notification({ type: NotificationType.Success });
         navigate(`/wallet/send/${address}${query}`);
