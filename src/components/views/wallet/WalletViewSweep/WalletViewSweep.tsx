@@ -162,7 +162,7 @@ export default function WalletViewSweep() {
       });
     } catch (error) {
       Logger.warn(`Sweeping from ${wif} failed: ${error}`);
-      setMessage(`Sweeping failed: ${error}`);
+      setMessage(translate(translations.sweepingFailed));
     } finally {
       setIsSweeping(false);
     }
