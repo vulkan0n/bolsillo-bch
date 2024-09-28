@@ -19,6 +19,7 @@ import {
 import Button from "@/atoms/Button";
 
 import { validateInvoiceString } from "@/util/invoice";
+import { validateWifString } from "@/util/sweep";
 
 import translations from "./translations";
 import { translate } from "@/util/translations";
@@ -45,10 +46,16 @@ export default function ScannerButton() {
       dispatch(setScannerIsScanning(false));
 
       const { isCashAddress, address, query } = validateInvoiceString(content);
+      const { isWif, wif } = validateWifString(content);
+
+      debugger;
 
       if (isCashAddress) {
         await Haptics.notification({ type: NotificationType.Success });
         navigate(`/wallet/send/${address}${query}`);
+      } else if (isWif) {
+        await Haptics.notification({ type: NotificationType.Success });
+        navigate(`/wallet/sweep/${wif}`);
       } else {
         await Haptics.notification({ type: NotificationType.Error });
       }
