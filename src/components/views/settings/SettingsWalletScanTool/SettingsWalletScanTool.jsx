@@ -137,7 +137,7 @@ export default function SettingsWalletScanTool() {
 
   return (
     <>
-      <ViewHeader icon={SyncOutlined} title="Wallet Scan Tool" />
+      <ViewHeader icon={SyncOutlined} title="Address Scan Tool" />
       <div className="p-1">
         <div className="flex mb-1">
           <button

@@ -7,6 +7,8 @@ import {
 
 import { Provider } from "react-redux";
 import { Toaster } from "react-hot-toast";
+import { ApolloProvider } from "@apollo/client";
+import apolloClient from "@/apolloClient";
 import { store } from "./redux";
 
 import "./index.css";
@@ -18,6 +20,7 @@ import { routeWallet } from "@/routes/routeWallet";
 import { routeAssets } from "@/routes/routeAssets";
 import { routeExplore } from "@/routes/routeExplore";
 import { routeSettings } from "@/routes/routeSettings";
+import { routeApps } from "@/routes/routeApps";
 
 export default function Main() {
   const routes = [
@@ -33,6 +36,7 @@ export default function Main() {
         ...routeAssets,
         ...routeExplore,
         ...routeSettings,
+        ...routeApps,
         {
           path: "/credits",
           async lazy() {
@@ -42,7 +46,6 @@ export default function Main() {
             return { Component: CreditsView };
           },
         },
-
         {
           path: "/debug",
           async lazy() {
@@ -61,12 +64,14 @@ export default function Main() {
   return (
     <ReactStrictMode>
       <Provider store={store}>
-        {/* Note: Duration has an inbuilt extra 1000ms dismissal delay */}
-        <Toaster
-          toastOptions={{ duration: 1250 }}
-          containerClassName="toaster"
-        />
-        <RouterProvider router={router} />
+        <ApolloProvider client={apolloClient}>
+          {/* Note: Duration has an inbuilt extra 1000ms dismissal delay */}
+          <Toaster
+            toastOptions={{ duration: 1250 }}
+            containerClassName="toaster"
+          />
+          <RouterProvider router={router} />
+        </ApolloProvider>
       </Provider>
     </ReactStrictMode>
   );

@@ -233,6 +233,9 @@ const translations = {
     zh: "特别感谢",
     zh_TW: "特別感謝",
   },
+  testers: {
+    en: "Testers",
+  },
 };
 
 export default translations;

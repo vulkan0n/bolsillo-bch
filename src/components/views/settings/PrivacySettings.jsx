@@ -4,7 +4,7 @@ import { EyeInvisibleOutlined, AreaChartOutlined } from "@ant-design/icons";
 import { selectPrivacySettings } from "@/redux/preferences";
 import Accordion from "@/atoms/Accordion";
 import { translate } from "@/util/translations";
-import translations from "./SettingsViewTranslations";
+import translations from "./translations";
 import { SettingsContext } from "./SettingsContext";
 
 const { privacySettings, sendDailyCheckIn } = translations;

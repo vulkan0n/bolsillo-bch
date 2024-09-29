@@ -8,6 +8,11 @@ import { syncReconnect } from "@/redux/sync";
 import WalletManagerService from "@/services/WalletManagerService";
 import AddressScannerService from "@/services/AddressScannerService";
 
+import { translate } from "@/util/translations";
+import translations from "./translations";
+
+const { importingWallet, takesMinutes } = translations;
+
 export default function SettingsWalletWizardBuild() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -48,10 +53,8 @@ export default function SettingsWalletWizardBuild() {
 
   return (
     <div>
-      <h2 className="text-2xl text-center">Importing Wallet</h2>
-      <h3 className="text-xl text-center">
-        This may take a few minutes for wallets with a large history!
-      </h3>
+      <h2 className="text-2xl text-center">{translate(importingWallet)}</h2>
+      <h3 className="text-xl text-center">{translate(takesMinutes)}</h3>
       <div className="flex justify-center items-center">
         <SyncOutlined className="text-5xl" spin />
       </div>

@@ -6,12 +6,12 @@ import ActiveUsersChart from "./ActiveUsersChart";
 import GET_ACTIVE_BITCOINERS from "./getActiveBitcoiners";
 import { THIRTY_SECONDS, Period } from "@/util/time";
 import { translate } from "@/util/translations";
-import translations from "./ExploreStatsViewTranslations";
+import translations from "./GlobalAdoptionSummaryTranslations";
 
 const { globalAdoption, activeSeleneUsers, daily, weekly, monthly, yearly } =
   translations;
 
-export default function ExploreStatsView() {
+export default function GlobalAdoptionSummary() {
   const [period, setPeriod] = useState(Period.Daily);
 
   const {
@@ -50,7 +50,7 @@ export default function ExploreStatsView() {
           {isReady && <ActiveUsersChart data={data} period={period} />}
         </div>
 
-        <div className="w-full flex justify-center align-center">
+        <div className="w-full flex justify-center items-center">
           <button
             type="button"
             className="p-2 ml-1 mr-1 rounded-full border border-2 border-primary shadow-md opacity-90"

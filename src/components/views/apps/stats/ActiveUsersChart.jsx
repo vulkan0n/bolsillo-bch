@@ -94,7 +94,7 @@ function ActiveUsersChart({ data, period }) {
   };
 
   return (
-    <div className="flex justify-center align-center">
+    <div className="flex justify-center items-center">
       <Line options={options} data={chartData} />
     </div>
   );

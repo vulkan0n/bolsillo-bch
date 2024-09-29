@@ -1,25 +1,18 @@
-import { Geolocation } from "@capacitor/geolocation";
+//import { Geolocation } from "@capacitor/geolocation";
+
+import ExploreView from "@/views/explore/ExploreView";
+import ExploreViewHome from "@/views/explore/ExploreViewHome";
 
 import TransactionManagerService from "@/services/TransactionManagerService";
 
 export const routeExplore = [
   {
     path: "/explore",
-    async lazy() {
-      const { default: ExploreView } = await import(
-        "@/views/explore/ExploreView"
-      );
-      return { Component: ExploreView };
-    },
+    element: <ExploreView />,
     children: [
       {
         index: true,
-        async lazy() {
-          const { default: ExploreViewHome } = await import(
-            "@/views/explore/ExploreViewHome"
-          );
-          return { Component: ExploreViewHome };
-        },
+        element: <ExploreViewHome />,
       },
       {
         path: "tx/:txid",
@@ -33,16 +26,7 @@ export const routeExplore = [
           return TransactionManagerService().resolveTransaction(params.txid);
         },
       },
-      {
-        path: "stats",
-        async lazy() {
-          const { default: ExploreStatsView } = await import(
-            "@/views/explore/stats/ExploreStatsView"
-          );
-          return { Component: ExploreStatsView };
-        },
-      },
-      {
+      /*{
         path: "map",
         async lazy() {
           const { default: ExploreMapView } = await import(
@@ -54,7 +38,7 @@ export const routeExplore = [
           Geolocation.getCurrentPosition({
             enableHighAccuracy: true,
           }),
-      },
+      },*/
       {
         path: "contacts",
         async lazy() {
@@ -74,12 +58,12 @@ export const routeExplore = [
         },
       },
       {
-        path: "price",
+        path: "info",
         async lazy() {
-          const { default: ExplorePriceView } = await import(
-            "@/views/explore/price/ExplorePriceView"
+          const { default: ExploreInfoView } = await import(
+            "@/views/explore/info/ExploreInfoView"
           );
-          return { Component: ExplorePriceView };
+          return { Component: ExploreInfoView };
         },
       },
     ],

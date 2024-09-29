@@ -36,7 +36,7 @@ const translations = {
     ur: "والیٹ سیٹنگز",
     vi: "Cài đặt Ví tiền",
     zh: "钱包设置",
-    zh_TW: "錢包設置",
+    zh_TW: "錢包設置"
   },
   advancedOptions: {
     ar: "خيارات متقدمة",
@@ -75,7 +75,7 @@ const translations = {
     ur: "اعلی تر کارروائیں",
     vi: "Tùy chọn nâng cao",
     zh: "高级选项",
-    zh_TW: "高級選項",
+    zh_TW: "高級選項"
   },
   additionalWalletInformation: {
     ar: "Additional Wallet Information",
@@ -114,7 +114,7 @@ const translations = {
     ur: "اضافی والیٹ معلومات",
     vi: "Thông tin ví tiền bổ sung",
     zh: "额外钱包信息",
-    zh_TW: "Additional Wallet Information",
+    zh_TW: "Additional Wallet Information"
   },
   created: {
     ar: "مخلوق",
@@ -153,7 +153,7 @@ const translations = {
     ur: "تخلیق کیا گیا",
     vi: "Đã tạo",
     zh: "已创建",
-    zh_TW: "已創建",
+    zh_TW: "已創建"
   },
   lastKnownBalance: {
     ar: "آخر رصيد معروف",
@@ -192,7 +192,7 @@ const translations = {
     ur: "آخری معروف بقیہ",
     vi: "Số dư cuối cùng đã biết",
     zh: "最后已知余额",
-    zh_TW: "最後已知餘額",
+    zh_TW: "最後已知餘額"
   },
   walletActive: {
     ar: "المحفظة نشطة",
@@ -231,7 +231,7 @@ const translations = {
     ur: "والٹ سرگرم",
     vi: "Ví hoạt động",
     zh: "钱包已激活",
-    zh_TW: "錢包活躍",
+    zh_TW: "錢包活躍"
   },
   activateWallet: {
     ar: "تنشيط المحفظة",
@@ -270,7 +270,7 @@ const translations = {
     ur: "والٹ چالو کریں",
     vi: "Kích hoạt ví",
     zh: "激活钱包",
-    zh_TW: "激活錢包",
+    zh_TW: "激活錢包"
   },
   deleteWallet: {
     ar: "حذف المحفظة",
@@ -309,7 +309,7 @@ const translations = {
     ur: "والٹ حذف کریں",
     vi: "Xóa ví",
     zh: "删除钱包",
-    zh_TW: "刪除錢包",
+    zh_TW: "刪除錢包"
   },
   areYouSure: {
     ar: "هل أنت متأكد؟ أموالك في خطر",
@@ -348,7 +348,7 @@ const translations = {
     ur: "کیا آپ یقینی ہیں؟ آپکا پیسہ خطرے میں ہے",
     vi: "BẠN CHẮC CHẮN? TIỀN CỦA BẠN ĐANG GẶP RỦI RO",
     zh: "您确定吗？您的资金有风险",
-    zh_TW: "你確定嗎？您的資金面臨風險",
+    zh_TW: "你確定嗎？您的資金面臨風險"
   },
   ensureRecoveryPhrase: {
     ar: "تأكد من كتابة عبارة الاسترداد الخاصة بك",
@@ -387,7 +387,7 @@ const translations = {
     ur: "یقینی بنائیں کہ آپ نے اپنا ریکوری فیز لکھ لیا ہے",
     vi: "HÃY CHẮC CHẮN RẰNG BẠN ĐÃ VIẾT CÂU KHÔI PHỤC CỦA MÌNH",
     zh: "请确保您已经写下了恢复短语",
-    zh_TW: "確保您已寫下恢復短語",
+    zh_TW: "確保您已寫下恢復短語"
   },
   confirmDelete: {
     ar: "نعم ، أريد الحذف",
@@ -426,7 +426,7 @@ const translations = {
     ur: "جی ہاں ، میں ڈیلیٹ کرنا چاہتا ہوں",
     vi: "Có, tôi muốn xóa",
     zh: "是的，我想删除",
-    zh_TW: "是的，我想刪除",
+    zh_TW: "是的，我想刪除"
   },
   keepSecret: {
     ar: "احتفظ بهذه الرسالة السرية",
@@ -465,7 +465,7 @@ const translations = {
     ur: "اس جملہ کو خفیہ رکھیں",
     vi: "GIỮ BÍ MẬT CÂU NÀY",
     zh: "保密此短语",
-    zh_TW: "保守這句話的秘密",
+    zh_TW: "保守這句話的秘密"
   },
   dontStoreDigitally: {
     ar: "لا تخزن رقميا",
@@ -504,7 +504,7 @@ const translations = {
     ur: "ڈیجیٹل طور پر ذخیرہ نہ کریں",
     vi: "KHÔNG LƯU TRỮ SỐ",
     zh: "不要以数字形式存储",
-    zh_TW: "不要以數字方式存儲",
+    zh_TW: "不要以數字方式存儲"
   },
   viewRecoveryPhrase: {
     ar: "عرض عبارة استرداد المحفظة",
@@ -543,7 +543,7 @@ const translations = {
     ur: "والیٹ ریکوری فریز دیکھیں",
     vi: "Xem Cụm từ Khôi phục Ví",
     zh: "查看钱包恢复短语",
-    zh_TW: "查看錢包恢復短語",
+    zh_TW: "查看錢包恢復短語"
   },
   secretAndSecure: {
     ar: "تأكد من إبقائها سرية وآمنة!",
@@ -582,7 +582,7 @@ const translations = {
     ur: "یقینی بنائیں کہ یہ خفیہ اور محفوظ رکھیں!",
     vi: "Đảm bảo giữ nó bí mật và an toàn!",
     zh: "确保保密且安全！",
-    zh_TW: "確保保密且安全！",
+    zh_TW: "確保保密且安全！"
   },
   rebuildWallet: {
     ar: "إعادة إنشاء المحفظة",
@@ -621,8 +621,47 @@ const translations = {
     ur: "والیٹ دوبارہ تعمیر کریں",
     vi: "Xây dựng lại Ví tiền",
     zh: "重建钱包",
-    zh_TW: "重建錢包",
+    zh_TW: "重建錢包"
   },
+  addressScanTool: {
+    ar: "أداة مسح العناوين",
+    bn: "ঠিকানা স্ক্যান টুল",
+    da: "Adressescanningsværktøj",
+    de: "Adress-Scan-Tool",
+    el: "Εργαλείο σάρωσης διευθύνσεων",
+    en: "Address Scan Tool",
+    es: "Herramienta de escaneo de direcciones",
+    fa: "ابزار اسکن آدرس",
+    fil: "Tool sa Pag-scan ng Address",
+    fr: "Outil d&#39;analyse d&#39;adresse",
+    ha: "Kayan aikin duba adireshin",
+    hi: "पता स्कैन उपकरण",
+    id: "Alat Pemindai Alamat",
+    it: "Strumento di scansione degli indirizzi",
+    ja: "住所スキャンツール",
+    jv: "Alat Scan Alamat",
+    ko: "주소 스캔 도구",
+    mr: "पत्ता स्कॅन साधन",
+    ms: "Alat Imbas Alamat",
+    nb: "Adresseskanneverktøy",
+    nl: "Adres Scan Tool",
+    pa: "ਐਡਰੈੱਸ ਸਕੈਨ ਟੂਲ",
+    pl: "Narzędzie do skanowania adresów",
+    pt: "Ferramenta de verificação de endereços",
+    ro: "Instrument de scanare a adresei",
+    ru: "Инструмент сканирования адреса",
+    sv: "Adressskanningsverktyg",
+    sw: "Zana ya Kuchanganua Anwani",
+    ta: "முகவரி ஸ்கேன் கருவி",
+    te: "చిరునామా స్కాన్ సాధనం",
+    th: "เครื่องมือสแกนที่อยู่",
+    tr: "Adres Tarama Aracı",
+    uk: "Інструмент сканування адрес",
+    ur: "ایڈریس اسکین ٹول",
+    vi: "Công cụ quét địa chỉ",
+    zh: "地址扫描工具",
+    zh_TW: "地址掃描工具"
+  }
 };
 
 export default translations;

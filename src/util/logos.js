@@ -1,5 +1,5 @@
 import seleneLogo from "@/assets/selene-logo.svg";
-import bchLogo from "@/assets/bch-logo.png";
+import bchLogo from "@/assets/bch-logo.svg";
 
 export const logos = {
   selene: { name: "Selene", img: seleneLogo },

@@ -11,7 +11,7 @@ import ViewHeader from "@/layout/ViewHeader";
 import KeyWarning from "@/atoms/KeyWarning/KeyWarning";
 
 import { translate } from "@/util/translations";
-import translations from "./SettingsViewTranslations";
+import translations from "./translations";
 
 import { logos } from "@/util/logos";
 import { SELENE_WALLET_VERSION } from "@/util/version";
@@ -56,30 +56,32 @@ export default function SettingsView() {
         icon={SettingOutlined}
         title={translate(translations.settings)}
       />
-      <div className="p-1">
-        <SettingsContext.Provider value={settingsContext}>
-          <KeyWarning wallet={activeWallet} />
-          <WalletSettings />
-          <SecuritySettings />
-          <CurrencySettings />
-          <PaymentSettings />
-          <QrCodeSettings />
-          <UiSettings />
-          <NetworkSettings />
-          <PrivacySettings />
-          <IntlSettings />
-        </SettingsContext.Provider>
-      </div>
-      <div className="w-fit mx-auto px-2 py-0.5 shadow-sm rounded-full bg-primary text-white active:bg-white active:text-primary">
-        <Link
-          to="/credits"
-          className="w-fit mx-auto my-2 flex items-center justify-center"
-        >
-          <img src={logos.selene.img} className="w-11 h-11 mr-1" alt="" />
-          <span className="text-sm font-semibold">
-            Selene Wallet v{SELENE_WALLET_VERSION}
-          </span>
-        </Link>
+      <div className="h-full">
+        <div className="p-1">
+          <SettingsContext.Provider value={settingsContext}>
+            <KeyWarning wallet={activeWallet} />
+            <WalletSettings />
+            <SecuritySettings />
+            <CurrencySettings />
+            <PaymentSettings />
+            <QrCodeSettings />
+            <UiSettings />
+            <NetworkSettings />
+            <PrivacySettings />
+            <IntlSettings />
+          </SettingsContext.Provider>
+        </div>
+        <div className="w-fit mx-auto px-2 py-0.5 shadow-sm rounded-full bg-primary text-white active:bg-white active:text-primary">
+          <Link
+            to="/credits"
+            className="w-fit mx-auto my-2 flex items-center justify-center"
+          >
+            <img src={logos.selene.img} className="w-11 h-11 mr-1" alt="" />
+            <span className="text-sm font-semibold">
+              Selene Wallet v{SELENE_WALLET_VERSION}
+            </span>
+          </Link>
+        </div>
       </div>
     </>
   );

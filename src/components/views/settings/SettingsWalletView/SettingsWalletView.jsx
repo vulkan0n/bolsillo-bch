@@ -263,7 +263,7 @@ export default function SettingsWalletView() {
                     to="scan"
                   >
                     <SyncOutlined className="text-xl mr-1" />
-                    Address Scan Tool
+                    {translate(translations.addressScanTool)}
                   </Link>
                 </Accordion.Child>
               )}

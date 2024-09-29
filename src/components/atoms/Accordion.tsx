@@ -1,14 +1,20 @@
 // TODO: refactor this component it kinda sucks too
-/* eslint-disable react/prop-types */
 import { useState } from "react";
 import { CaretRightOutlined, CaretDownOutlined } from "@ant-design/icons";
+
+interface AccordionProps {
+  icon: React.ComponentType;
+  title: string;
+  open: boolean;
+  children: React.ReactNode;
+}
 
 export default function Accordion({
   icon = () => null,
   title = "",
   open = false,
   children,
-}) {
+}: AccordionProps) {
   const [isOpen, setIsOpen] = useState(open);
   const Icon = icon;
 
@@ -35,12 +41,19 @@ export default function Accordion({
   );
 }
 
+interface AccordionChildProps {
+  icon: React.ComponentType;
+  label: string;
+  description: string;
+  children: React.ReactNode;
+}
+
 function AccordionChild({
   icon = () => null,
   label = "",
   description = "",
   children,
-}) {
+}: AccordionChildProps) {
   const Icon = icon;
   return (
     <div className="p-3">
