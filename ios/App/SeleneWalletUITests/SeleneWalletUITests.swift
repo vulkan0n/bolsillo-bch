@@ -29,8 +29,6 @@ final class SeleneWalletUITests: XCTestCase {
     }
 
     @MainActor func testExample() throws {
-
-
         let webViewsQuery = XCUIApplication().webViews.webViews.webViews
         
         snapshot("01MainScreen")
@@ -47,7 +45,6 @@ final class SeleneWalletUITests: XCTestCase {
         webViewsQuery/*@START_MENU_TOKEN@*/.images["setting"]/*[[".otherElements[\"Selene Wallet\"]",".otherElements[\"main\"]",".links[\"setting Settings\"]",".links[\"setting\"].images[\"setting\"]",".images[\"setting\"]"],[[[-1,4],[-1,3],[-1,2,3],[-1,1,2],[-1,0,1]],[[-1,4],[-1,3],[-1,2,3],[-1,1,2]],[[-1,4],[-1,3],[-1,2,3]],[[-1,4],[-1,3]]],[0]]@END_MENU_TOKEN@*/.tap()
         snapshot("02SettingsScreen")
 
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
     }
 
     func testLaunchPerformance() throws {
