@@ -1,6 +1,6 @@
 #!/bin/sh
 
-CURRENT_VERSION=$(jq -r '.version' package.json); 
+CURRENT_VERSION=$(sed -n 's/.*"version": "\([^"]*\)".*/\1/p' package.json)
 
 increment_release() {
     local year_month=$(echo $CURRENT_VERSION | cut -d. -f1-2)
@@ -15,14 +15,14 @@ increment_release() {
 
 update_package_version() {
     local version=$1
-    jq ".version = \"$version\"" package.json > temp.json && mv temp.json package.json
+    sed -i "s/\"version\": \".*\"/\"version\": \"$version\"/" package.json
 }
 
 update_android_version() {
     local version=$1
     local version_code=$2
-    sed -i '' "s/versionName \"[^\"]*\"/versionName \"$version\"/" android/app/build.gradle
-    sed -i '' "s/versionCode [0-9]*/versionCode $version_code/" android/app/build.gradle
+    sed -i "s/versionName \"[^\"]*\"/versionName \"$version\"/" android/app/build.gradle
+    sed -i "s/versionCode [0-9]*/versionCode $version_code/" android/app/build.gradle
 }
 
 update_ios_version() {
@@ -50,5 +50,7 @@ update_ios_version $VERSION $VERSION_CODE
 git add package.json
 git add android/app/build.gradle
 git add ios/App/App/Info.plist
+
+git commit -m "bump version to $VERSION ($VERSION_CODE)"
 
 echo "Version updated to $VERSION, Version Code: $VERSION_CODE"
