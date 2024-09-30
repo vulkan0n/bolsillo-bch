@@ -3,33 +3,93 @@
 #
 # For more information, see: https://docs.gitlab.com/ee/ci/yaml/index.html#stages
 
-image: node:lts-alpine
-
 stages:
-  - update_version
+  - version
   - build
+  - package
+  - screenshots
+  - testflight
+  - release
 
-variables:
-  INCREMENT_VERSION:
-    value: "patch"
-    options:
-      - "patch"
-      - "minor"
-      - "major"
-    description: "Choose which part of the version to increment"
-
-update_version:
-  when: manual
-  stage: update_version
+version:
+  stage: version
   script:
-    - apk add git
-    - git config --global user.email "git@selene.cash"
-    - git config --global user.name "Selene.cash CI/CD"
-    - yarn version --$INCREMENT_VERSION
+    - scripts/chversion
+  only:
+    - /^release\/.*$/
 
 build_sync:
   stage: build
+  image: node:lts-alpine
   script:
     - yarn install
     - yarn build
     - npx cap sync
+  artifacts:
+    paths:
+      - "dist/"
+
+package:
+  stage: package
+  dependencies:
+    - build_sync
+  script:
+    - fastlane android build_production
+    - fastlane ios build_production
+  artifacts:
+    paths:
+      - build/app/outputs/apk/release/app-release.apk
+      - fastlane/build/app.ipa
+    expire_in: 1 year
+  only:
+    - main
+  tags:
+    - package
+
+screenshots:
+  stage: screenshots
+  image: ruby:alpine
+  script:
+    - bundle install
+    - bundle exec fastlane screenshots
+  artifacts:
+    paths:
+      - ios/App/fastlane/screenshots
+      - android/fastlane/screenshots
+  only:
+    - main
+  tags:
+    - screenshots
+
+deploy_release:
+  stage: release
+  image: ruby:alpine
+  dependencies:
+    - package
+    - screenshots
+  script:
+    - bundle install
+    #- export SELENE_VERSION=$(sed -n 's/.*"version": "\([^"]*\)".*/\1/p' package.json)
+    - git tag -a $SELENE_VERSION -m "Version $SELENE_VERSION"
+    - git push origin $SELENE_VERSION
+    - bundle exec fastlane supply
+    - scp build/app/outputs/apk/release/app-release.apk root@warpgate.selene.technology:/srv/www/selene.cash/public/download/selene-v$SELENE_VERSION.apk
+    # update remote nginx config here
+  only:
+    - main
+#deploy_testflight:
+#  stage: testflight
+#  image: ruby:alpine
+#  dependencies:
+#    - build_sync
+#    - screenshots
+#  script:
+#    - bundle install
+#    - bundle exec fastlane supply
+#  only:
+#    - /^dev\/.*$/
+
+#before_script:
+#  - eval $(ssh-agent -s)
+#  - ssh-add <(echo "$SSH_PRIVATE_KEY")
+#  - export ANDROID_HOME=$HOME/android-sdk
