@@ -29,7 +29,7 @@ platform :android do
         task: "package",
         build_type: "Release"
     )
-
+  end
 
   desc "Generates screenshots"
   lane :screenshots do
