@@ -15,34 +15,34 @@ For _fastlane_ installation instructions, see [Installing _fastlane_](https://do
 
 ## Android
 
-### android test
+### android package
 
 ```sh
-[bundle exec] fastlane android test
+[bundle exec] fastlane android package
 ```
 
-Runs all the tests
+Build .aab and .apk packages for current version
 
-### android internal
+### android screenshots
 
 ```sh
-[bundle exec] fastlane android internal
+[bundle exec] fastlane android screenshots
 ```
 
-Submit a new Internal build
+Generates screenshots
 
-### android beta
+### android deploy_beta
 
 ```sh
-[bundle exec] fastlane android beta
+[bundle exec] fastlane android deploy_beta
 ```
 
 Submit a new Release Candidate to Google Play Beta Track
 
-### android release
+### android deploy
 
 ```sh
-[bundle exec] fastlane android release
+[bundle exec] fastlane android deploy
 ```
 
 Deploy a new version to the Google Play
