@@ -1,5 +1,4 @@
-# Logs
-logs
+# Logs logs
 *.log
 npm-debug.log*
 yarn-debug.log*
@@ -33,4 +32,8 @@ android/app/release
 android/app/capacitor.build.gradle
 android/capacitor.settings.gradle
 
-ios/App/fastlane/screenshots
+# fastlane
+**/fastlane/screenshots
+**/fastlane/Preview.html
+**/fastlane/report.xml
+**/fastlane/test_output
