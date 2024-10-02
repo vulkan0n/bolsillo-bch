@@ -3,6 +3,7 @@ import { Outlet, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { selectScannerIsScanning, selectKeyboardIsOpen } from "@/redux/device";
 import { validateInvoiceString } from "@/util/invoice";
+import { validateWifString } from "@/util/sweep";
 import BottomNavigation from "./BottomNavigation";
 
 function MainLayout() {
@@ -17,10 +18,17 @@ function MainLayout() {
     const { isValid, address, query, isPaymentProtocol, requestUri } =
       validateInvoiceString(url);
 
-    if (isValid) {
-      const navTo = isPaymentProtocol
-        ? `/wallet/pay/?r=${requestUri}`
-        : `/wallet/send/${address}${query}`;
+    const { isWif, wif } = validateWifString(url);
+
+    if (isValid || isWif) {
+      let navTo;
+      if (isPaymentProtocol) {
+        navTo = `/wallet/pay/?r=${requestUri}`;
+      } else if (isWif) {
+        navTo = `/wallet/send/${address}${query}`;
+      } else {
+        navTo = `/wallet/send/${address}${query}`;
+      }
 
       navigate(navTo);
     }
