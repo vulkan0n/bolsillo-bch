@@ -102,18 +102,18 @@ deploy_gitlab_release:
   only:
     - main
 
-deploy_android_apk:
-  stage: release
-  dependencies:
-    - package_android
-  script:
-    - eval $(ssh-agent -s)
-    - ssh-add <(echo "$SSH_PRIVATE_KEY")
-    #- export SELENE_VERSION=$(sed -n 's/.*"version": "\([^"]*\)".*/\1/p' package.json)
-    - scp android/build/app/outputs/apk/release/app-release.apk selene@warpgate.selene.technology:/srv/www/selene.cash/public/download/selene-v$SELENE_VERSION.apk
-    # update remote nginx config here
-  only:
-    - main
+#deploy_android_apk:
+#  stage: release
+#  dependencies:
+#    - package_android
+#  script:
+#    - eval $(ssh-agent -s)
+#    - ssh-add <(echo "$SSH_PRIVATE_KEY")
+#    #- export SELENE_VERSION=$(sed -n 's/.*"version": "\([^"]*\)".*/\1/p' package.json)
+#    - scp android/build/app/outputs/apk/release/app-release.apk selene@warpgate.selene.technology:/srv/www/selene.cash/public/download/selene-v$SELENE_VERSION.apk
+#    # update remote nginx config here
+#  only:
+#    - main
 
 deploy_android_release:
   stage: release
