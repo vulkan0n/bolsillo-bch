@@ -71,7 +71,7 @@ screenshots_android:
   script:
     - cd android/
     - bundle install
-    - bundle exec fastlane screenshots
+    - bundle exec fastlane snapshot
   artifacts:
     paths:
       - android/fastlane/screenshots
@@ -85,7 +85,7 @@ screenshots_ios:
   script:
     - cd ios/App/
     - bundle install
-    - bundle exec fastlane screenshots
+    - bundle exec fastlane snapshot
   artifacts:
     paths:
       - ios/App/fastlane/screenshots

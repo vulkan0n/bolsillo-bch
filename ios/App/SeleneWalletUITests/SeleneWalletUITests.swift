@@ -28,7 +28,7 @@ final class SeleneWalletUITests: XCTestCase {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
     }
 
-    @MainActor func testExample() throws {
+    @MainActor func testScreenshots() throws {
         let webViewsQuery = XCUIApplication().webViews.webViews.webViews
         
         snapshot("01MainScreen")
