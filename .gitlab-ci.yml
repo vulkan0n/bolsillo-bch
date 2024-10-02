@@ -60,7 +60,6 @@ package_ios:
   artifacts:
     paths:
       - App.ipa
-    expire_in: 1 year
   only:
     - main
     - testflight
@@ -100,6 +99,8 @@ deploy_gitlab_release:
   script:
     - git tag -a $SELENE_VERSION -m "Version $SELENE_VERSION"
     - git push origin $SELENE_VERSION
+  only:
+    - main
 
 deploy_android_apk:
   stage: release
@@ -111,6 +112,8 @@ deploy_android_apk:
     #- export SELENE_VERSION=$(sed -n 's/.*"version": "\([^"]*\)".*/\1/p' package.json)
     - scp android/build/app/outputs/apk/release/app-release.apk selene@warpgate.selene.technology:/srv/www/selene.cash/public/download/selene-v$SELENE_VERSION.apk
     # update remote nginx config here
+  only:
+    - main
 
 deploy_android_release:
   stage: release
@@ -137,5 +140,31 @@ deploy_ios_release:
     - bundle exec fastlane deploy
   only:
     - main
+  tags:
+    - macos
+
+deploy_android_testflight:
+  stage: testflight
+  dependencies:
+    - package_android
+  script:
+    - cd android/
+    - bundle install
+    - bundle exec fastlane deploy_testflight
+  only:
+    - testflight
+  tags:
+    - macos
+
+deploy_ios_testflight:
+  stage: release
+  dependencies:
+    - package_ios
+  script:
+    - cd ios/App/
+    - bundle install
+    - bundle exec fastlane deploy_testflight
+  only:
+    - testflight
   tags:
     - macos
