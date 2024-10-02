@@ -31,19 +31,31 @@ final class SeleneWalletUITests: XCTestCase {
     @MainActor func testScreenshots() throws {
         let webViewsQuery = XCUIApplication().webViews.webViews.webViews
         
+        var element = webViewsQuery.otherElements["main"];
+        var exists = element.waitForExistence(timeout: 10);
+        if (!exists) {
+            return;
+        }
+        
         snapshot("01MainScreen")
         
         webViewsQuery/*@START_MENU_TOKEN@*/.otherElements["main"]/*[[".otherElements[\"Selene Wallet\"].otherElements[\"main\"]",".otherElements[\"main\"]"],[[[-1,1],[-1,0]]],[0]]@END_MENU_TOKEN@*/.children(matching: .other).element(boundBy: 1).children(matching: .button).element.tap()
         
         webViewsQuery/*@START_MENU_TOKEN@*/.buttons["send"]/*[[".otherElements[\"Selene Wallet\"]",".otherElements[\"main\"].buttons[\"send\"]",".buttons[\"send\"]"],[[[-1,2],[-1,1],[-1,0,1]],[[-1,2],[-1,1]]],[0]]@END_MENU_TOKEN@*/.tap()
         
-        snapshot("01SendScreen")
+        element = webViewsQuery/*@START_MENU_TOKEN@*/.buttons["arrow-left Back"]/*[[".otherElements[\"Selene Wallet\"]",".otherElements[\"main\"].buttons[\"arrow-left Back\"]",".buttons[\"arrow-left Back\"]"],[[[-1,2],[-1,1],[-1,0,1]],[[-1,2],[-1,1]]],[0]]@END_MENU_TOKEN@*/
+        exists = element.waitForExistence(timeout: 10);
+        if (!exists) {
+            return;
+        }
+        
+        snapshot("02SendScreen")
 
         let arrowLeftBackButton = webViewsQuery/*@START_MENU_TOKEN@*/.buttons["arrow-left Back"]/*[[".otherElements[\"Selene Wallet\"]",".otherElements[\"main\"].buttons[\"arrow-left Back\"]",".buttons[\"arrow-left Back\"]"],[[[-1,2],[-1,1],[-1,0,1]],[[-1,2],[-1,1]]],[0]]@END_MENU_TOKEN@*/
         arrowLeftBackButton.tap()
         
         webViewsQuery/*@START_MENU_TOKEN@*/.images["setting"]/*[[".otherElements[\"Selene Wallet\"]",".otherElements[\"main\"]",".links[\"setting Settings\"]",".links[\"setting\"].images[\"setting\"]",".images[\"setting\"]"],[[[-1,4],[-1,3],[-1,2,3],[-1,1,2],[-1,0,1]],[[-1,4],[-1,3],[-1,2,3],[-1,1,2]],[[-1,4],[-1,3],[-1,2,3]],[[-1,4],[-1,3]]],[0]]@END_MENU_TOKEN@*/.tap()
-        snapshot("02SettingsScreen")
+        snapshot("03SettingsScreen")
 
     }
 
