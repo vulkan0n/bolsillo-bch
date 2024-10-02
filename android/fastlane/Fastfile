@@ -51,7 +51,7 @@ platform :android do
   end
 
   desc "Submit a new Release Candidate to Google Play Beta Track"
-  lane :deploy_beta do
+  lane :deploy_testflight do
     changelog_from_git_commits(merge_commit_filtering: "exclude_merges")
     upload_to_play_store(track: "beta",
         aab: "app/build/outputs/bundle/release/app-release.aab"

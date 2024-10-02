@@ -59,7 +59,7 @@ package_ios:
     - bundle exec fastlane package
   artifacts:
     paths:
-      - fastlane/build/app.ipa
+      - App.ipa
     expire_in: 1 year
   only:
     - main

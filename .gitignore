@@ -31,6 +31,8 @@ App/output
 android/app/release
 android/app/capacitor.build.gradle
 android/capacitor.settings.gradle
+ios/App/App.ipa
+ios/App/App.*.zip
 
 # fastlane
 **/fastlane/screenshots
