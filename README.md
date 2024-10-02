@@ -3,6 +3,7 @@
 [![Latest Release](https://git.xulu.tech/selene.cash/selene-wallet/-/badges/release.svg)](https://git.xulu.tech/selene.cash/selene-wallet/-/releases)
 
 Website: https://selene.cash
+Documentation: https://docs.selene.cash
 
 We are fulfilling the mission of making Bitcoin Cash (BCH) the [global reserve currency](https://bitcoincashpodcast.com/faqs/Global-Reserve-Currency/what-do-you-mean-global-reserve-currency) by building a sleek, robust, user-friendly wallet that makes joining the BCH economy as easy and compelling as possible.
 
@@ -15,19 +16,15 @@ We are fulfilling the mission of making Bitcoin Cash (BCH) the [global reserve c
 5. `yarn dev`
 6. https://localhost:5173
 
-You will also need a Selene Server for statistics & other features, but you can use the production server to get started quickly.
+### Selene Server
 
-```
-Look in `selene-wallet/src/apolloClient.tsx`!!
-You can connect to either a localhost instance or the production server as you desire.
-See the [Selene Server repo](https://git.xulu.tech/selene.cash/selene-server) for localhost setup.
-```
+You may also wish to run the [Selene Server](https://git.xulu.tech/selene.cash/selene-server) locally for statistics & other features, but the production server is fine for most purposes.
 
-Make sure to read up on the [Selene Documentation](https://git.xulu.tech/selene.cash/selene-docs) to get a handle on the project.
+If you are running Selene Server locally, make sure to update the server URL in `src/apolloClient.tsx`.
 
 ## Building for Android
 
-1. Install Android Studio
+1. Install [Android Studio](https://developer.android.com/studio)
 2. `yarn run build`
 3. `npx cap sync`
 4. `npx cap run android`
@@ -35,7 +32,7 @@ Make sure to read up on the [Selene Documentation](https://git.xulu.tech/selene.
 
 ## Building for iOS
 
-1. Install Xcode
+1. Install [Xcode](https://developer.apple.com/xcode/)
 2. `yarn run build`
 3. `npx cap sync`
 4. `npx cap run ios`
@@ -60,20 +57,6 @@ $ git fetch gitlabMirror merge-requests/1111111/head:MY_NEW_BRANCH
 # Now that branch is local and can be merged as usual
 $ git merge MY_NEW_BRANCH
 ```
-
-### Archiving on XCode (fixing the build error)
-Open Target Support Files -> Pods-App -> Pods-App-Framework.sh.
-
-find this (around line 44):
-
-```
-  if [ -L "${source}" ]; then
-    echo "Symlinked..."
-    source="$(readlink "${source}")"
-  fi
-```
-
-change the readlink line to `source="$(readlink -f "${source}")"`
 
 ### Auto-translations
 
