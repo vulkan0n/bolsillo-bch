@@ -16,7 +16,8 @@ version:
   script:
     - scripts/chversion
   only:
-    - /^release\/.*$/
+    - main
+    - testflight
 
 build_sync:
   stage: build
@@ -40,57 +41,101 @@ package_android:
   artifacts:
     paths:
       - build/app/outputs/apk/release/app-release.apk
+      - build/app/outputs/bundle/release/app-bundle.aab
+    expire_in: 1 year
+  only:
+    - main
+    - testflight
+  tags:
+    - macos
+
+package_ios:
+  stage: package
+  dependencies:
+    - build_sync
+  script:
+    - cd ios/App/
+    - bundle install
+    - bundle exec fastlane package
+  artifacts:
+    paths:
       - fastlane/build/app.ipa
     expire_in: 1 year
   only:
     - main
+    - testflight
   tags:
-    - package
+    - macos
 
-screenshots:
+screenshots_android:
   stage: screenshots
-  image: ruby:alpine
   script:
+    - cd android/
+    - bundle install
+    - bundle exec fastlane screenshots
+  artifacts:
+    paths:
+      - android/fastlane/screenshots
+  only:
+    - main
+  tags:
+    - macos
+
+screenshots_ios:
+  stage: screenshots
+  script:
+    - cd ios/App/
     - bundle install
     - bundle exec fastlane screenshots
   artifacts:
     paths:
       - ios/App/fastlane/screenshots
-      - android/fastlane/screenshots
   only:
     - main
   tags:
-    - screenshots
+    - macos
 
-deploy_release:
+deploy_gitlab_release:
   stage: release
-  image: ruby:alpine
-  dependencies:
-    - package
-    - screenshots
   script:
-    - bundle install
-    #- export SELENE_VERSION=$(sed -n 's/.*"version": "\([^"]*\)".*/\1/p' package.json)
     - git tag -a $SELENE_VERSION -m "Version $SELENE_VERSION"
     - git push origin $SELENE_VERSION
-    - bundle exec fastlane supply
-    - scp build/app/outputs/apk/release/app-release.apk root@warpgate.selene.technology:/srv/www/selene.cash/public/download/selene-v$SELENE_VERSION.apk
+
+deploy_android_apk:
+  stage: release
+  dependencies:
+    - package_android
+  script:
+    - eval $(ssh-agent -s)
+    - ssh-add <(echo "$SSH_PRIVATE_KEY")
+    #- export SELENE_VERSION=$(sed -n 's/.*"version": "\([^"]*\)".*/\1/p' package.json)
+    - scp android/build/app/outputs/apk/release/app-release.apk selene@warpgate.selene.technology:/srv/www/selene.cash/public/download/selene-v$SELENE_VERSION.apk
     # update remote nginx config here
+
+deploy_android_release:
+  stage: release
+  dependencies:
+    - package_android
+    - screenshots_android
+  script:
+    - cd android/
+    - bundle install
+    - bundle exec fastlane deploy
   only:
     - main
-#deploy_testflight:
-#  stage: testflight
-#  image: ruby:alpine
-#  dependencies:
-#    - build_sync
-#    - screenshots
-#  script:
-#    - bundle install
-#    - bundle exec fastlane supply
-#  only:
-#    - /^dev\/.*$/
+  tags:
+    - macos
 
-#before_script:
-#  - eval $(ssh-agent -s)
-#  - ssh-add <(echo "$SSH_PRIVATE_KEY")
-#  - export ANDROID_HOME=$HOME/android-sdk
+deploy_ios_release:
+  stage: release
+  dependencies:
+    - package_ios
+    - screenshots_ios
+  script:
+    - cd ios/App/
+    - bundle install
+    - bundle exec fastlane deploy
+  only:
+    - main
+  tags:
+    - macos
