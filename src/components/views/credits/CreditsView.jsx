@@ -126,6 +126,13 @@ export default function CreditsView() {
         </ol>
 
         <h2 className="font-bold text-2xl mt-4">
+          {translate(translations.developers)}
+        </h2>
+        <ul className="list-inside list-disc">
+          <li>Jim Hamill</li>
+        </ul>
+
+        <h2 className="font-bold text-2xl mt-4">
           {translate(translations.testers)}
         </h2>
         <ul className="list-inside list-disc">
