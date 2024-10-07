@@ -84,8 +84,6 @@ export default function ElectrumService() {
     // Also allows us to switch servers on the fly
     electrum = new ElectrumClient("Selene.cash", "1.4", server, port, scheme);
 
-    Log.debug("electrum?", electrum);
-
     // need to establish listeners every time we recreate the ElectrumClient
     electrum.addListener("connected", () => {
       Log.log("ELECTRUM CONNECTED");
