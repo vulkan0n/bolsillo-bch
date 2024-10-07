@@ -13,6 +13,10 @@ import { selectSyncState } from "@/redux/sync";
 import AddressManagerService from "@/services/AddressManagerService";
 import ElectrumService from "@/services/ElectrumService";
 import TransactionManagerService from "@/services/TransactionManagerService";
+import {
+  type ElectrumUtxo,
+  buildSweepTransaction,
+} from "@/services/TransactionBuilderService";
 import ToastService from "@/services/ToastService";
 
 import Satoshi from "@/atoms/Satoshi";
@@ -20,12 +24,9 @@ import Button from "@/atoms/Button";
 import Address from "@/atoms/Address";
 import CurrencyFlip from "@/atoms/CurrencyFlip";
 
+import { validateWifUri } from "@/util/uri";
+
 import { translate } from "@/util/translations";
-import {
-  type ElectrumUtxo,
-  buildSweepTransaction,
-  validateWifString,
-} from "@/util/sweep";
 import translations from "./translations";
 
 export default function WalletViewSweep() {
@@ -62,11 +63,7 @@ export default function WalletViewSweep() {
   }
 
   // Validate the WIF provided is valid.
-  const {
-    address: wifAddress,
-    privateKey,
-    wif,
-  } = validateWifString(params.wif);
+  const { address: wifAddress, privateKey, wif } = validateWifUri(params.wif);
 
   // Throw an error if the WIF is invalid.
   if (!wifAddress) {
@@ -168,8 +165,8 @@ export default function WalletViewSweep() {
       await Haptics.notification({ type: NotificationType.Success });
 
       // Navigate to the "Sweep Successful" page.
-      navigate("/wallet/sweep/success", {
-        state: { tx },
+      navigate("/wallet/send/success", {
+        state: { tx, header: translate(translations.walletSwept) },
         replace: true,
       });
     } catch (error) {
