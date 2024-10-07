@@ -6,8 +6,10 @@ import {
   CloudServerOutlined,
 } from "@ant-design/icons";
 
+import ElectrumService from "@/services/ElectrumService";
+
 import { syncReconnect } from "@/redux/sync";
-import { selectIsChipnet } from "@/redux/preferences";
+import { selectBchNetwork } from "@/redux/preferences";
 
 import { translate } from "@/util/translations";
 import translations from "./translations";
@@ -18,6 +20,8 @@ import { SettingsContext } from "./SettingsContext";
 
 import Accordion from "@/atoms/Accordion";
 
+const Electrum = ElectrumService();
+
 export default function NetworkSettings() {
   const { handleSettingsUpdate, preferences, dispatch } =
     useContext(SettingsContext);
@@ -26,19 +30,25 @@ export default function NetworkSettings() {
     useState(false);
   const [electrumServerInput, setElectrumServerInput] = useState("");
 
+  const bchNetwork = useSelector(selectBchNetwork);
+
   const handleElectrumServerChoice = (server) => {
     handleSettingsUpdate("electrumServer", server);
     dispatch(syncReconnect(server));
   };
 
   const handleAddElectrumServer = () => {
-    electrum_servers.unshift(electrumServerInput);
+    electrum_servers[bchNetwork].unshift(electrumServerInput);
     setShouldShowElectrumServerInput(false);
     setElectrumServerInput("");
-    handleElectrumServerChoice(electrum_servers[0]);
+    handleElectrumServerChoice(electrum_servers[bchNetwork][0]);
   };
 
-  const isChipnet = useSelector(selectIsChipnet);
+  const electrumHost = Electrum.getElectrumHost();
+  const currentServer =
+    electrumHost !== preferences.electrumServer
+      ? electrumHost
+      : preferences.electrumServer;
 
   return (
     <Accordion icon={ApiOutlined} title={translate(translations.network)}>
@@ -49,26 +59,23 @@ export default function NetworkSettings() {
         <div className="flex">
           <select
             className="p-2 bg-white rounded h-10 w-40 flex-1 disabled:bg-zinc-200 disabled:text-zinc-400"
-            value={preferences.electrumServer || ""}
+            value={currentServer || ""}
             onChange={(event) => {
               handleElectrumServerChoice(event.target.value);
             }}
-            disabled={isChipnet}
           >
-            {electrum_servers.map((server) => (
+            {electrum_servers[bchNetwork].map((server) => (
               <option key={server} value={server}>
                 {server}
               </option>
             ))}
           </select>
-          {!isChipnet && (
-            <button
-              type="button"
-              onClick={() => setShouldShowElectrumServerInput(true)}
-            >
-              <PlusCircleFilled className="ml-2 text-2xl" />
-            </button>
-          )}
+          <button
+            type="button"
+            onClick={() => setShouldShowElectrumServerInput(true)}
+          >
+            <PlusCircleFilled className="ml-2 text-2xl" />
+          </button>
         </div>
       </Accordion.Child>
       {shouldShowElectrumServerInput && (

@@ -288,6 +288,12 @@ export const selectIsChipnet = createSelector(
   (bchNetwork): boolean => bchNetwork === "chipnet"
 );
 
+export const selectIsTestnet = createSelector(
+  (state: RootState) => selectBchNetwork(state),
+  (bchNetwork): boolean =>
+    bchNetwork === "testnet3" || bchNetwork === "testnet4"
+);
+
 export const selectIsExperimental = createSelector(
   (state: RootState) => state.preferences,
   (preferences): boolean => preferences.enableExperimental === "true"

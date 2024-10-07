@@ -1,6 +1,7 @@
 import { ElectrumClient, ElectrumTransport } from "electrum-cash";
 import { App } from "@capacitor/app";
 import { store } from "@/redux";
+import { selectBchNetwork, setPreference } from "@/redux/preferences";
 import {
   syncConnect,
   syncConnectionUp,
@@ -14,11 +15,9 @@ import LogService from "@/services/LogService";
 import { AddressEntity } from "@/services/AddressManagerService";
 
 import { bchToSats } from "@/util/sats";
-import { electrum_servers, chipnet_servers } from "@/util/electrum_servers";
+import { electrum_servers } from "@/util/electrum_servers";
 
 const Log = LogService("Electrum");
-
-const DEFAULT_ELECTRUM_SERVER = electrum_servers[0];
 
 export class ElectrumNotConnectedError extends Error {
   constructor() {
@@ -56,7 +55,7 @@ export default function ElectrumService() {
   // Creates a new ElectrumClient every time
   // Destroys existing ElectrumClient if out of sync with Redux state
   async function connect(
-    server: string = DEFAULT_ELECTRUM_SERVER
+    server: string = electrum_servers.mainnet[0]
   ): Promise<void> {
     // using redux connection state guarantees that
     // we only create new ElectrumClient when necessary
@@ -72,16 +71,20 @@ export default function ElectrumService() {
     }
     Log.log("Connecting to", server);
 
+    // [K] hack to make testnet3 work, grumble grumble
+    const bchNetwork = selectBchNetwork(store.getState());
+    const port = bchNetwork === "testnet3" ? 60003 : ElectrumTransport.WSS.Port;
+    const scheme =
+      bchNetwork === "testnet3"
+        ? ElectrumTransport.WS.Scheme
+        : ElectrumTransport.WSS.Scheme;
+
     // Create a new ElectrumClient every time
     // This avoids memory leaks from EventEmitter
     // Also allows us to switch servers on the fly
-    electrum = new ElectrumClient(
-      "Selene.cash",
-      "1.4",
-      server,
-      ElectrumTransport.WSS.Port,
-      ElectrumTransport.WSS.Scheme
-    );
+    electrum = new ElectrumClient("Selene.cash", "1.4", server, port, scheme);
+
+    Log.debug("electrum?", electrum);
 
     // need to establish listeners every time we recreate the ElectrumClient
     electrum.addListener("connected", () => {
@@ -291,13 +294,14 @@ export default function ElectrumService() {
     return relayFee;
   }
 
-  function selectFallbackServer(prevServer, isChipnet = false) {
+  function selectFallbackServer(prevServer) {
+    const bchNetwork = selectBchNetwork(store.getState());
+    const server_list = electrum_servers[bchNetwork];
+
     // don't blacklist the known-good Selene-operated server
-    if (prevServer && prevServer !== DEFAULT_ELECTRUM_SERVER) {
+    if (prevServer && prevServer !== server_list[0]) {
       server_blacklist.push(prevServer);
     }
-
-    const server_list = isChipnet ? chipnet_servers : electrum_servers;
 
     const chooseRandomServer = () => {
       return server_list[Math.floor(Math.random() * server_list.length)];
@@ -308,12 +312,18 @@ export default function ElectrumService() {
       newServer = chooseRandomServer();
     }
 
+    if (bchNetwork === "mainnet") {
+      store.dispatch(
+        setPreference({ key: "electrumServer", value: newServer })
+      );
+    }
+
     Log.log(
       "selectFallbackServer",
       newServer,
       prevServer,
       server_blacklist,
-      isChipnet
+      bchNetwork
     );
     return newServer;
   }

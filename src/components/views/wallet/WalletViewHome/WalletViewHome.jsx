@@ -12,7 +12,7 @@ import {
 } from "@ant-design/icons";
 
 import { selectActiveWallet } from "@/redux/wallet";
-import { selectIsChipnet, selectQrCodeSettings } from "@/redux/preferences";
+import { selectBchNetwork, selectQrCodeSettings } from "@/redux/preferences";
 import { selectScannerIsScanning, selectKeyboardIsOpen } from "@/redux/device";
 
 import AddressManagerService from "@/services/AddressManagerService";
@@ -37,7 +37,7 @@ export default function WalletViewHome() {
   const isScanning = useSelector(selectScannerIsScanning);
 
   const qrCodeSettings = useSelector(selectQrCodeSettings);
-  const isChipnet = useSelector(selectIsChipnet);
+  const bchNetwork = useSelector(selectBchNetwork);
 
   // reload unused addresses when wallet data changes
   const unusedAddresses = useMemo(
@@ -72,8 +72,10 @@ export default function WalletViewHome() {
   };
 
   // force red QR code border if connected to chipnet
-  const qrCodeBorder = isChipnet ? "border-[#ff0000]" : "border-primary/90";
-  const addressColor = isChipnet ? "text-[#ff0000]" : "text-primary";
+  const qrCodeBorder =
+    bchNetwork !== "mainnet" ? "border-[#ff0000]" : "border-primary/90";
+  const addressColor =
+    bchNetwork !== "mainnet" ? "text-[#ff0000]" : "text-primary";
 
   return (
     <>
@@ -97,8 +99,16 @@ export default function WalletViewHome() {
                   value={qrRequest}
                   size={232}
                   quietZone={12}
-                  bgColor={isChipnet ? "#ffffff" : qrCodeSettings.background}
-                  fgColor={isChipnet ? "#000000" : qrCodeSettings.foreground}
+                  bgColor={
+                    bchNetwork !== "mainnet"
+                      ? "#ffffff"
+                      : qrCodeSettings.background
+                  }
+                  fgColor={
+                    bchNetwork !== "mainnet"
+                      ? "#000000"
+                      : qrCodeSettings.foreground
+                  }
                   logoImage={getQrLogoImage(qrCodeSettings.logo)}
                   logoWidth={64}
                   logoHeight={64}

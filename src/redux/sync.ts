@@ -13,7 +13,6 @@ import {
   selectActiveWallet,
   walletNonce,
 } from "@/redux/wallet";
-import { setPreference, selectIsChipnet } from "@/redux/preferences";
 import { txHistoryFetch } from "@/redux/txHistory";
 import { selectNetworkStatus } from "@/redux/device";
 
@@ -45,6 +44,7 @@ export const syncConnect = createAsyncThunk(
     try {
       await Electrum.connect(payload.server);
     } catch (e) {
+      Log.error(e);
       // if connection fails, destroy the client and try again
       await Electrum.disconnect(true);
 
@@ -64,18 +64,9 @@ export const syncConnect = createAsyncThunk(
         );
       } else {
         // try a different server
-        const isChipnet = selectIsChipnet(thunkApi.getState());
-        const newServer = Electrum.selectFallbackServer(
-          payload.server,
-          isChipnet
-        );
+        const newServer = Electrum.selectFallbackServer(payload.server);
         thunkApi.dispatch(syncConnect({ server: newServer, attempts: 0 }));
 
-        if (!isChipnet) {
-          thunkApi.dispatch(
-            setPreference({ key: "electrumServer", value: newServer })
-          );
-        }
         return newServer;
       }
     }

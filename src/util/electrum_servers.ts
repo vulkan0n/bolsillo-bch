@@ -1,4 +1,6 @@
-export const electrum_servers = [
+export type ValidBchNetwork = "mainnet" | "chipnet" | "testnet3" | "testnet4";
+
+const mainnet_servers = [
   "cashnode.bch.ninja", // Kallisti
   "fulcrum.jettscythe.xyz", // Jett
   "bch.imaginary.cash", // im_uname
@@ -11,8 +13,23 @@ export const electrum_servers = [
   "node.minisatoshi.cash", // minisatoshi
 ];
 
-export const chipnet_servers = [
+const chipnet_servers = [
   "chipnet.bch.ninja", // Kallisti
   "chipnet.imaginary.cash", // im_uname
   "cbch.loping.net",
 ];
+
+const testnet3_servers = [
+  "testnet3.bch.ninja",
+  "tbch.loping.net",
+  "blackie.c3-soft.com",
+];
+
+const testnet4_servers = ["tbch4.loping.net", "testnet4.imaginary.cash"];
+
+export const electrum_servers = {
+  mainnet: mainnet_servers,
+  chipnet: chipnet_servers,
+  testnet3: testnet3_servers,
+  testnet4: testnet4_servers,
+};
