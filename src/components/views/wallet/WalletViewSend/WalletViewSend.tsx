@@ -104,10 +104,9 @@ export default function WalletViewSend() {
 
     if (isBase58Address) {
       const { value: isLegacyAddressConfirmed } = await Dialog.prompt({
-        title: "Warning! Risk of lost funds! Legacy Address detected",
-        message:
-          "Be ABSOLUTELY CERTAIN that this is a Bitcoin Cash (BCH) address! If in doubt, do not proceed!",
-        okButtonTitle: "I Understand",
+        title: translate(translations.base58WarningTitle),
+        message: translate(translations.base58WarningMessage),
+        okButtonTitle: translate(translations.base58WarningOk),
       });
 
       if (!isLegacyAddressConfirmed) {
