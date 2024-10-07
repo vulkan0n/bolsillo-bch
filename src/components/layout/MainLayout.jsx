@@ -2,8 +2,7 @@ import { App } from "@capacitor/app";
 import { Outlet, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { selectScannerIsScanning, selectKeyboardIsOpen } from "@/redux/device";
-import { validateInvoiceString } from "@/util/invoice";
-import { validateWifString } from "@/util/sweep";
+import { validateBchUri } from "@/util/uri";
 import BottomNavigation from "./BottomNavigation";
 
 function MainLayout() {
@@ -15,17 +14,22 @@ function MainLayout() {
   const navigate = useNavigate();
 
   App.addListener("appUrlOpen", ({ url }) => {
-    const { isValid, address, query, isPaymentProtocol, requestUri } =
-      validateInvoiceString(url);
+    const {
+      isValid,
+      isPaymentProtocol,
+      isWif,
+      address,
+      query,
+      requestUri,
+      wif,
+    } = validateBchUri(url);
 
-    const { isWif, wif } = validateWifString(url);
-
-    if (isValid || isWif) {
+    if (isValid) {
       let navTo;
       if (isPaymentProtocol) {
         navTo = `/wallet/pay/?r=${requestUri}`;
       } else if (isWif) {
-        navTo = `/wallet/send/${address}${query}`;
+        navTo = `/wallet/sweep/${wif}`;
       } else {
         navTo = `/wallet/send/${address}${query}`;
       }

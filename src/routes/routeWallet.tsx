@@ -31,15 +31,6 @@ export const routeWallet = [
         element: <WalletViewSweep />,
       },
       {
-        path: "sweep/success",
-        async lazy() {
-          const { default: WalletViewSweepSuccess } = await import(
-            "@/views/wallet/WalletViewSweepSuccess/WalletViewSweepSuccess"
-          );
-          return { Component: WalletViewSweepSuccess };
-        },
-      },
-      {
         path: "history",
         async lazy() {
           const { default: WalletViewHistory } = await import(

@@ -18,8 +18,7 @@ import {
 
 import Button from "@/atoms/Button";
 
-import { validateInvoiceString } from "@/util/invoice";
-import { validateWifString } from "@/util/sweep";
+import { validateBchUri } from "@/util/uri";
 
 import translations from "./translations";
 import { translate } from "@/util/translations";
@@ -45,13 +44,18 @@ export default function ScannerButton() {
     async (content) => {
       dispatch(setScannerIsScanning(false));
 
-      const { isValid, address, query, isPaymentProtocol, requestUri } =
-        validateInvoiceString(content);
+      const {
+        isValid,
+        isPaymentProtocol,
+        isWif,
+        address,
+        query,
+        requestUri,
+        wif,
+      } = validateBchUri(content);
 
-      const { isWif, wif } = validateWifString(content);
-
-      if (isValid || isWif) {
-        await Haptics.notification({ type: NotificationType.Success });
+      if (isValid) {
+        Haptics.notification({ type: NotificationType.Success });
 
         let navTo;
         if (isPaymentProtocol) {
@@ -64,7 +68,7 @@ export default function ScannerButton() {
 
         navigate(navTo);
       } else {
-        await Haptics.notification({ type: NotificationType.Error });
+        Haptics.notification({ type: NotificationType.Error });
       }
     },
     [dispatch, navigate]

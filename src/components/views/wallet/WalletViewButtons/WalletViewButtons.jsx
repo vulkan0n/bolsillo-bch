@@ -16,7 +16,7 @@ import ScannerButton from "../ScannerButton/ScannerButton";
 import TorchButton from "../TorchButton/TorchButton";
 import ImageSelectButton from "../ImageSelectButton/ImageSelectButton";
 
-import { validateInvoiceString } from "@/util/invoice";
+import { validateBchUri } from "@/util/uri";
 import ToastService from "@/services/ToastService";
 
 const { noBchAddress, pleaseCopy, history, send } = translations;
@@ -27,14 +27,27 @@ export default function WalletViewButtons() {
 
   const forwardOnValidAddress = (input) => {
     // go to send screen when valid address is entered
-    const { isValid, address, query, isPaymentProtocol, requestUri } =
-      validateInvoiceString(input);
+    const {
+      isValid,
+      isPaymentProtocol,
+      isWif,
+      address,
+      query,
+      requestUri,
+      wif,
+    } = validateBchUri(input);
 
     if (isValid) {
       Haptics.notification({ type: NotificationType.Success });
-      const navTo = isPaymentProtocol
-        ? `/wallet/pay/?r=${requestUri}`
-        : `/wallet/send/${address}${query}`;
+
+      let navTo;
+      if (isPaymentProtocol) {
+        navTo = `/wallet/pay/?r=${requestUri}`;
+      } else if (isWif) {
+        navTo = `/wallet/sweep/${wif}`;
+      } else {
+        navTo = `/wallet/send/${address}${query}`;
+      }
 
       navigate(navTo);
     } else {

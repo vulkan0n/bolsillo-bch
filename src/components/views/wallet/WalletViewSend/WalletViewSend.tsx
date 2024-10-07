@@ -31,7 +31,7 @@ import CurrencySymbol from "@/atoms/CurrencySymbol";
 import CurrencyFlip from "@/atoms/CurrencyFlip";
 
 import { bchToSats, DUST_LIMIT } from "@/util/sats";
-import { validateInvoiceString } from "@/util/invoice";
+import { validateBchUri } from "@/util/uri";
 import { translate } from "@/util/translations";
 import translations from "./translations";
 
@@ -51,7 +51,7 @@ export default function WalletViewSend() {
   const wallet = useSelector(selectActiveWallet);
   const sync = useSelector(selectSyncState);
 
-  const { address, isBase58Address } = validateInvoiceString(params.address);
+  const { address, isBase58Address } = validateBchUri(params.address);
 
   const myAddresses = useSelector(selectMyAddresses);
   const isMyAddress = myAddresses[address] !== undefined;
