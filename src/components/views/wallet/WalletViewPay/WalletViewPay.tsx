@@ -51,6 +51,11 @@ export default function WalletViewPay() {
   const dispatch = useDispatch();
   const [searchParams] = useSearchParams();
 
+  const [paymentData, setPaymentData] = useState(null);
+  const [paymentDataError, setPaymentDataError] = useState("");
+
+  const isLoadingPaymentData = false;
+
   const requestUri = searchParams.get("r");
 
   const handlePaymentProtocol = async () => {
@@ -59,26 +64,30 @@ export default function WalletViewPay() {
     const client = new JsonPaymentProtocol(requestOptions, trustedKeys);
 
     Log.debug("client", client);
-    const paymentOptions = await client.getPaymentOptions(requestUri);
-    Log.debug("paymentOptions", paymentOptions);
 
-    const { responseData: paymentRequest } = await client.selectPaymentOption(
-      paymentOptions.requestUrl,
-      "BCH",
-      "BCH"
-    );
+    try {
+      const { responseData: paymentRequest } = await client.selectPaymentOption(
+        requestUri,
+        "BCH",
+        "BCH"
+      );
+      setPaymentData(paymentRequest);
+      Log.debug("paymentRequest", paymentRequest);
+      return paymentRequest;
+    } catch (e) {
+      setPaymentDataError(e);
+      Log.error(e);
+    }
 
-    Log.debug("paymentRequest", paymentRequest);
-    return paymentRequest;
     // create unsigned transaction
     // create signed transaction to get final size
   };
 
-  const {
+  /*const {
     data: paymentData,
     isLoading: isLoadingPaymentData,
     error: paymentDataError,
-  } = useSWR(requestUri, handlePaymentProtocol);
+  } = useSWR(requestUri, handlePaymentProtocol);*/
 
   const wallet = useSelector(selectActiveWallet);
 
