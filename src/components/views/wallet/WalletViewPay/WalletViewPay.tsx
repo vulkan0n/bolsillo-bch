@@ -55,8 +55,10 @@ export default function WalletViewPay() {
 
   const handlePaymentProtocol = async () => {
     const requestOptions = {};
+    Log.debug("handlePaymentProtocol", requestUri);
     const client = new JsonPaymentProtocol(requestOptions, trustedKeys);
 
+    Log.debug("client", client);
     const paymentOptions = await client.getPaymentOptions(requestUri);
     Log.debug("paymentOptions", paymentOptions);
 

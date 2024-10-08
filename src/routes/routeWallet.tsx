@@ -19,7 +19,7 @@ export const routeWallet = [
         element: <WalletViewSend />,
       },
       {
-        path: "pay/:requestUrl",
+        path: "pay/",
         element: <WalletViewPay />,
       },
       {

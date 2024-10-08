@@ -38,7 +38,7 @@ export default function WalletViewButtons() {
     } = validateBchUri(input);
 
     if (isValid) {
-      Haptics.notification({ type: NotificationType.Success });
+      //Haptics.notification({ type: NotificationType.Success });
 
       let navTo;
       if (isPaymentProtocol) {
@@ -51,7 +51,7 @@ export default function WalletViewButtons() {
 
       navigate(navTo);
     } else {
-      Haptics.notification({ type: NotificationType.Error });
+      //Haptics.notification({ type: NotificationType.Error });
     }
 
     return isValid;
@@ -65,9 +65,9 @@ export default function WalletViewButtons() {
       // Error: Reading from clipboard not supported in this browser
       // Firefox users must set "dom.events.asyncClipboard.read" to "true" in about:config
       const paste = (await Clipboard.read()).value;
-      isValid = forwardOnValidAddress(paste);
+      isValid = await forwardOnValidAddress(paste);
     } catch (e) {
-      //Logger.warn(e);
+      console.warn(e);
     } finally {
       const titleTranslation = translate(noBchAddress);
       const descriptionTranslation = translate(pleaseCopy);

@@ -19,11 +19,7 @@ const chipnet_servers = [
   "cbch.loping.net",
 ];
 
-const testnet3_servers = [
-  "testnet3.bch.ninja",
-  "tbch.loping.net",
-  "blackie.c3-soft.com",
-];
+const testnet3_servers = ["blackie.c3-soft.com"];
 
 const testnet4_servers = ["tbch4.loping.net", "testnet4.imaginary.cash"];
 

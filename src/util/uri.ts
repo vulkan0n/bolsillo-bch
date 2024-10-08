@@ -78,7 +78,7 @@ export function validateWifUri(
 }
 
 function validatePaymentProtocolUri(uri) {
-  const requestMatch = uri.match(/(?:r=)?(https:\/\/.*)$/);
+  const requestMatch = uri.match(/(?:r=)?(https:\/\/[^?]*)(?:\?.+)?$/);
   const requestUri = requestMatch !== null ? requestMatch[1] : null;
   const isPaymentProtocol = requestUri !== null;
 
