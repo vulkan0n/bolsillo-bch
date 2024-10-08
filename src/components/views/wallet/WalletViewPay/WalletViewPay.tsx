@@ -46,6 +46,35 @@ const trustedKeys = {
   },
 };
 
+JsonPaymentProtocol.prototype._asyncRequest = async (options) => {
+  const requestOptions = { ...options };
+  const parsedUrl = new URL(requestOptions.url);
+  // Copy headers directly as they're objects
+  requestOptions.headers = { ...options.headers };
+
+  requestOptions.hostname = parsedUrl.hostname;
+  requestOptions.path = parsedUrl.pathname;
+  requestOptions.port = parsedUrl.port;
+  delete requestOptions.url;
+
+  if (requestOptions.body) {
+    requestOptions.data = requestOptions.body;
+  }
+
+  Log.debug(parsedUrl.href, requestOptions);
+  return fetch(parsedUrl.href, requestOptions)
+    .then((data) => {
+      Log.debug(data);
+      return {
+        rawBody: data.body,
+        headers: data.headers,
+      };
+    })
+    .catch((e) => {
+      Log.error(e);
+    });
+};
+
 export default function WalletViewPay() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -63,11 +92,9 @@ export default function WalletViewPay() {
     Log.debug("handlePaymentProtocol", requestUri);
     const client = new JsonPaymentProtocol(requestOptions, trustedKeys);
 
-    Log.debug("client", client);
-
     try {
       const { responseData: paymentRequest } = await client.selectPaymentOption(
-        requestUri,
+        encodeURI(requestUri),
         "BCH",
         "BCH"
       );
