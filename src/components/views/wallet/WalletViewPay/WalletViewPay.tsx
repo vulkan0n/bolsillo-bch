@@ -63,11 +63,12 @@ JsonPaymentProtocol.prototype._asyncRequest = async (options) => {
 
   Log.debug(parsedUrl.href, requestOptions);
   return fetch(parsedUrl.href, requestOptions)
-    .then((data) => {
-      Log.debug(data);
+    .then(async (response) => {
+      Log.debug(JSON.stringify(response));
       return {
-        rawBody: data.body,
-        headers: data.headers,
+        ...response,
+        rawBody: await response.json(),
+        headers: response.headers,
       };
     })
     .catch((e) => {
