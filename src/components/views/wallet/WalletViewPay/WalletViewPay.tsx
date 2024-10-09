@@ -1,3 +1,4 @@
+import { CapacitorHttp } from "@capacitor/core";
 import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
@@ -46,35 +47,98 @@ const trustedKeys = {
   },
 };
 
-JsonPaymentProtocol.prototype._asyncRequest = async (options) => {
-  const requestOptions = { ...options };
-  const parsedUrl = new URL(requestOptions.url);
-  // Copy headers directly as they're objects
-  requestOptions.headers = { ...options.headers };
+function reorderJsonKeys(inputJson) {
+  const keyOrder = [
+    "time",
+    "expires",
+    "memo",
+    "paymentUrl",
+    "paymentId",
+    "chain",
+    "network",
+    "currency",
+    "instructions",
+    "type",
+    "requiredFeeRate",
+    "outputs",
+    "amount",
+    "address",
+  ];
 
-  requestOptions.hostname = parsedUrl.hostname;
-  requestOptions.path = parsedUrl.pathname;
-  requestOptions.port = parsedUrl.port;
-  delete requestOptions.url;
+  function sortObjectKeys(obj) {
+    if (typeof obj !== "object" || obj === null) return obj;
+    if (Array.isArray(obj)) {
+      return obj.map(sortObjectKeys);
+    }
 
-  if (requestOptions.body) {
-    requestOptions.data = requestOptions.body;
+    const ordered = {};
+    keyOrder.forEach((key) => {
+      if (obj.hasOwnProperty(key)) {
+        if (key === "instructions" || key === "outputs") {
+          // Handle nested objects or arrays specifically
+          ordered[key] = sortObjectKeys(obj[key]);
+        } else {
+          ordered[key] = obj[key];
+        }
+      }
+    });
+
+    // Add any remaining properties not in keyOrder
+    Object.keys(obj).forEach((key) => {
+      if (!keyOrder.includes(key)) {
+        ordered[key] = obj[key];
+      }
+    });
+
+    return ordered;
   }
 
-  Log.debug(parsedUrl.href, requestOptions);
-  return fetch(parsedUrl.href, requestOptions)
-    .then(async (response) => {
-      Log.debug(JSON.stringify(response));
-      return {
-        ...response,
-        rawBody: await response.json(),
-        headers: response.headers,
-      };
-    })
-    .catch((e) => {
-      Log.error(e);
-    });
-};
+  const parsedObj = JSON.parse(inputJson);
+  const reorderedObj = sortObjectKeys(parsedObj);
+
+  return JSON.stringify(reorderedObj);
+}
+
+async function selectPaymentOption(
+  paymentUrl,
+  chain,
+  currency,
+  unsafeBypassValidation = false
+) {
+  const data = JSON.stringify({
+    chain,
+    currency,
+  });
+  const response = await CapacitorHttp.request({
+    url: encodeURI(paymentUrl),
+    method: "POST",
+    headers: {
+      "Content-Type": "application/payment-request",
+      "x-paypro-version": "2",
+    },
+    data,
+    responseType: "json",
+  });
+
+  Log.debug("response", JSON.stringify(response));
+
+  if (response.status !== 200) {
+    throw new Error(JSON.stringify(response));
+  }
+
+  const { data: rawBody, headers } = response;
+
+  const sortedJson = reorderJsonKeys(JSON.stringify(rawBody));
+  Log.debug("rawbody", sortedJson);
+
+  return this.verifyResponse(
+    paymentUrl,
+    sortedJson,
+    headers,
+    unsafeBypassValidation
+  );
+}
+JsonPaymentProtocol.prototype.selectPaymentOption = selectPaymentOption;
 
 export default function WalletViewPay() {
   const navigate = useNavigate();
