@@ -1,364 +1,302 @@
-import { CapacitorHttp } from "@capacitor/core";
-import { useState, useEffect, useRef } from "react";
-import { useParams, useNavigate, useSearchParams } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
-import useSWR from "swr";
+import { useState, useEffect, useMemo } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { useSelector } from "react-redux";
 import Decimal from "decimal.js";
 import { Haptics, NotificationType } from "@capacitor/haptics";
 import { ArrowLeftOutlined, SyncOutlined } from "@ant-design/icons";
-import JsonPaymentProtocol from "json-payment-protocol";
-
-import { selectActiveWallet } from "@/redux/wallet";
-import {
-  selectCurrencySettings,
-  selectInstantPaySettings,
-  setPreference,
-  selectIsExperimental,
-} from "@/redux/preferences";
 
 import { selectKeyboardIsOpen } from "@/redux/device";
+import { selectActiveWallet } from "@/redux/wallet";
 import { selectSyncState } from "@/redux/sync";
 
-import TransactionManagerService from "@/services/TransactionManagerService";
+import TransactionManagerService, {
+  TransactionEntity,
+} from "@/services/TransactionManagerService";
 import TransactionBuilderService from "@/services/TransactionBuilderService";
 import ToastService from "@/services/ToastService";
 import SecurityService from "@/services/SecurityService";
 import LogService from "@/services/LogService";
 
-import Satoshi from "@/atoms/Satoshi";
 import Button from "@/atoms/Button";
-import Address from "@/atoms/Address";
+import CountdownTimer from "@/components/atoms/CountdownTimer";
+import CurrencyFlip from "@/atoms/CurrencyFlip";
+import Satoshi from "@/atoms/Satoshi";
 
-import { bchToSats, DUST_LIMIT } from "@/util/sats";
+import {
+  type PaymentRequestResponse,
+  JppV2Client,
+} from "@/util/payment_protocol";
 import { translate } from "@/util/translations";
 import translations from "@/components/views/wallet/WalletViewSend/translations";
 
 const Log = LogService("WalletViewPay");
-
-const trustedKeys = {
-  mh65MN7drqmwpCRZcEeBEE9ceQCQ95HtZc: {
-    // This is displayed to the user, somewhat like the organization field on an SSL certificate
-    owner: "BitPay (TESTNET ONLY - DO NOT TRUST FOR ACTUAL BITCOIN)",
-    // Which domains this key is valid for
-    domains: ["test.bitpay.com"],
-    // The actual public key which should be used to validate the signatures
-    publicKey:
-      "03159069584176096f1c89763488b94dbc8d5e1fa7bf91f50b42f4befe4e45295a",
-  },
-};
-
-function reorderJsonKeys(inputJson) {
-  const keyOrder = [
-    "time",
-    "expires",
-    "memo",
-    "paymentUrl",
-    "paymentId",
-    "chain",
-    "network",
-    "currency",
-    "instructions",
-    "type",
-    "requiredFeeRate",
-    "outputs",
-    "amount",
-    "address",
-  ];
-
-  function sortObjectKeys(obj) {
-    if (typeof obj !== "object" || obj === null) return obj;
-    if (Array.isArray(obj)) {
-      return obj.map(sortObjectKeys);
-    }
-
-    const ordered = {};
-    keyOrder.forEach((key) => {
-      if (obj.hasOwnProperty(key)) {
-        if (key === "instructions" || key === "outputs") {
-          // Handle nested objects or arrays specifically
-          ordered[key] = sortObjectKeys(obj[key]);
-        } else {
-          ordered[key] = obj[key];
-        }
-      }
-    });
-
-    // Add any remaining properties not in keyOrder
-    Object.keys(obj).forEach((key) => {
-      if (!keyOrder.includes(key)) {
-        ordered[key] = obj[key];
-      }
-    });
-
-    return ordered;
-  }
-
-  const parsedObj = JSON.parse(inputJson);
-  const reorderedObj = sortObjectKeys(parsedObj);
-
-  return JSON.stringify(reorderedObj);
-}
-
-async function selectPaymentOption(
-  paymentUrl,
-  chain,
-  currency,
-  unsafeBypassValidation = false
-) {
-  const data = JSON.stringify({
-    chain,
-    currency,
-  });
-  const response = await CapacitorHttp.request({
-    url: encodeURI(paymentUrl),
-    method: "POST",
-    headers: {
-      "Content-Type": "application/payment-request",
-      "x-paypro-version": "2",
-    },
-    data,
-    responseType: "json",
-  });
-
-  Log.debug("response", JSON.stringify(response));
-
-  if (response.status !== 200) {
-    throw new Error(JSON.stringify(response));
-  }
-
-  const { data: rawBody, headers } = response;
-
-  const sortedJson = reorderJsonKeys(JSON.stringify(rawBody));
-  Log.debug("rawbody", sortedJson);
-
-  return this.verifyResponse(
-    paymentUrl,
-    sortedJson,
-    headers,
-    unsafeBypassValidation
-  );
-}
-JsonPaymentProtocol.prototype.selectPaymentOption = selectPaymentOption;
+const jppClient = new JppV2Client();
 
 export default function WalletViewPay() {
   const navigate = useNavigate();
-  const dispatch = useDispatch();
   const [searchParams] = useSearchParams();
 
-  const [paymentData, setPaymentData] = useState(null);
-  const [paymentDataError, setPaymentDataError] = useState("");
-
-  const isLoadingPaymentData = false;
-
-  const requestUri = searchParams.get("r");
-
-  const handlePaymentProtocol = async () => {
-    const requestOptions = {};
-    Log.debug("handlePaymentProtocol", requestUri);
-    const client = new JsonPaymentProtocol(requestOptions, trustedKeys);
-
-    try {
-      const { responseData: paymentRequest } = await client.selectPaymentOption(
-        encodeURI(requestUri),
-        "BCH",
-        "BCH"
-      );
-      setPaymentData(paymentRequest);
-      Log.debug("paymentRequest", paymentRequest);
-      return paymentRequest;
-    } catch (e) {
-      setPaymentDataError(e);
-      Log.error(e);
-    }
-
-    // create unsigned transaction
-    // create signed transaction to get final size
-  };
-
-  /*const {
-    data: paymentData,
-    isLoading: isLoadingPaymentData,
-    error: paymentDataError,
-  } = useSWR(requestUri, handlePaymentProtocol);*/
-
+  const sync = useSelector(selectSyncState);
   const wallet = useSelector(selectActiveWallet);
-
-  if (paymentData) {
-    const TransactionBuilder = TransactionBuilderService(wallet);
-
-    const outputs = paymentData.instructions[0].outputs.map((out) => {
-      return { ...out, address: `${wallet.prefix}:${out.address}` };
-    });
-
-    const transaction = TransactionBuilder.buildP2pkhTransaction(outputs);
-
-    Log.debug("transaction", transaction);
-  }
-
-  const isExperimental = useSelector(selectIsExperimental);
-
   const isKeyboardOpen = useSelector(selectKeyboardIsOpen);
   const buttonsPos = isKeyboardOpen ? "bottom-2" : "bottom-[5em]";
 
-  const sync = useSelector(selectSyncState);
-
   const [message, setMessage] = useState("");
+  const [detailedMessage, setDetailedMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
   const [isSending, setIsSending] = useState(false);
-
-  const { isInstantPayEnabled, instantPayThreshold } = useSelector(
-    selectInstantPaySettings
+  const [paymentData, setPaymentData] = useState<PaymentRequestResponse | null>(
+    null
   );
 
-  const { shouldPreferLocalCurrency, localCurrency } = useSelector(
-    selectCurrencySettings
-  );
+  // Calculate the total satoshi amount required.
+  const totalSats = useMemo(() => {
+    if (!paymentData) {
+      return 0;
+    }
 
-  const currency = shouldPreferLocalCurrency ? localCurrency : "BCH";
+    return paymentData.instructions[0].outputs.reduce((total, output) => {
+      return total + output.amount;
+    }, 0);
+  }, [paymentData]);
+
+  // Get the request URL from our query parameters.
+  const requestUri = searchParams.get("r");
+  if (!requestUri) {
+    throw new Error("Invalid or missing request URI");
+  }
 
   const isInsufficientFunds = new Decimal(wallet.balance).lessThan(0);
 
-  const handleInsufficientFunds = async () => {
-    await Haptics.notification({ type: NotificationType.Warning });
-    const insufficientFundsTranslation = translate(
-      translations.insufficientFunds
-    );
-    setMessage(insufficientFundsTranslation);
+  const handleExpire = () => {
+    setMessage(translate("invalidInvoice"));
+    setDetailedMessage(translate("invoiceExpired"));
+  };
+
+  // The service broadcasts the transaction (not the wallet), so it might not propagate to our node right away.
+  // This function will just run TxManager.resolveTransaction once every second for up to ten seconds (or fail).
+  // Usually the transaction is found very quickly though (within a second or two).
+  const waitForTransactionToResolve = async (
+    transactionId: string,
+    timeoutMs = 10_000,
+    intervalMs = 1000
+  ) => {
+    const TransactionManager = TransactionManagerService();
+    const startTime = Date.now();
+
+    return new Promise<TransactionEntity>((resolve, reject) => {
+      const checkTransaction = async () => {
+        try {
+          const tx = await TransactionManager.resolveTransaction(transactionId);
+          resolve(tx);
+        } catch (error) {
+          // If the transaction is not resolved yet, check again after the interval
+          const elapsedTime = Date.now() - startTime;
+          if (elapsedTime < timeoutMs) {
+            setTimeout(checkTransaction, intervalMs);
+          } else {
+            reject(new Error(`${translate("transactionFailed")}`));
+          }
+        }
+      };
+
+      // Start checking the transaction
+      checkTransaction();
+    });
   };
 
   const confirmSend = async (isInstantPay: boolean = false) => {
-    if (isSending) {
-      return;
-    }
+    // We want to support two different error messages
+    // 1. One succinct one for the top bar (always "Transaction Failed").
+    // 2. One more detailed one which *may* not have translations (this comes from the thrown error).
+    try {
+      if (isSending) {
+        return;
+      }
 
-    setIsSending(true);
+      setIsSending(true);
 
-    const isAuthorized = isInstantPay || (await SecurityService().authorize());
-    if (!isAuthorized) {
-      setIsSending(false);
-      return;
-    }
+      const isAuthorized =
+        isInstantPay || (await SecurityService().authorize());
+      if (!isAuthorized) {
+        return;
+      }
 
-    if (isInsufficientFunds) {
-      await handleInsufficientFunds();
-      setIsSending(false);
-      return;
-    }
+      if (isInsufficientFunds) {
+        throw new Error(translate("insufficientFunds"));
+      }
 
-    if (!sync.isConnected) {
-      ToastService().disconnected();
-      setIsSending(false);
-      return;
-    }
+      if (!sync.isConnected) {
+        ToastService().disconnected();
+        throw new Error(translate("walletDisconnected"));
+      }
 
-    if (transaction === null) {
-      Log.warn(transaction);
-      await Haptics.notification({ type: NotificationType.Warning });
-      //setMessage(translate(translations.notEnoughFee));
-      setMessage("Transaction Failed: Wallet out of sync?");
-      setIsSending(false);
-      return;
-    }
+      // Ensure that payment data is available.
+      // NOTE: This is to satisfy Typescript as paymentData starts as null.
+      if (!paymentData) {
+        throw new Error("paymentData is falsey.");
+      }
 
-    if (typeof transaction === "number") {
-      await handleInsufficientFunds();
-      setIsSending(false);
-      return;
-    }
+      // Format the outputs into correct format for the Transaction Builder.
+      // NOTE: This is more to satisfy Typescript as Tx Builder expects Decimal type.
+      const outputsFormatted = paymentData.instructions[0].outputs.map(
+        (out) => {
+          return {
+            address: out.address,
+            amount: new Decimal(out.amount),
+          };
+        }
+      );
 
-    const { isSuccess, result } = await TransactionManager.sendTransaction(
-      transaction,
-      wallet
-    );
+      // Build the transaction.
+      const TransactionBuilder = TransactionBuilderService(wallet);
+      const transaction =
+        TransactionBuilder.buildP2pkhTransaction(outputsFormatted);
 
-    if (isSuccess) {
-      const tx = await TransactionManager.resolveTransaction(transaction.txid);
+      // Handle wallet out of sync error.
+      if (transaction === null) {
+        throw new Error("Transaction Failed: Wallet out of sync?");
+      }
+
+      // Handle insufficient funds error.
+      if (typeof transaction === "number") {
+        throw new Error(translate("insufficientFunds"));
+      }
+
+      // Respond to the payment URL with the signed transaction.
+      const paymentResponse = await jppClient.payment(paymentData.paymentUrl, {
+        chain: "BCH",
+        transactions: [{ tx: transaction.hex }],
+      });
+
+      // Wait until we actually see the transaction on our node.
+      const tx = await waitForTransactionToResolve(transaction.txid);
+
+      // Show a success notification and route the user to the success page.
       await Haptics.notification({ type: NotificationType.Success });
       navigate("/wallet/send/success", {
-        state: { tx },
+        state: { tx, prefillMemo: paymentResponse.memo || "" },
         replace: true,
       });
-    } else {
+    } catch (error) {
       await Haptics.notification({ type: NotificationType.Error });
-      //setMessage(translate(translations.transactionFailed));
-      setMessage(
-        isExperimental
-          ? `${result}`
-          : `Transaction Failed: Must send at least ${DUST_LIMIT} sats`
-      );
+      Log.debug(error);
+      setMessage(translate("transactionFailed"));
+      setDetailedMessage(`${error}`);
+    } finally {
+      setIsSending(false);
     }
-
-    setIsSending(false);
   };
 
-  useEffect(function handleInstantPay() {
-    if (!isInstantPayEnabled) {
-      return;
-    }
+  // Fetch the payment request.
+  useEffect(
+    function handlePaymentRequest() {
+      const fetchPaymentRequest = async () => {
+        try {
+          setIsLoading(true);
+          setPaymentData(await jppClient.paymentRequest(requestUri));
+        } catch (error) {
+          setMessage("Invalid invoice");
+          setDetailedMessage(`${error}`);
+        } finally {
+          setIsLoading(false);
+        }
+      };
 
-    if (
-      requestAmount.greaterThan(0) &&
-      requestAmount.lessThanOrEqualTo(instantPayThreshold)
-    ) {
-      //Log.debug("instapay!", threshold, requestAmount);
-      confirmSend(true);
-    }
-  });
+      fetchPaymentRequest();
+    },
+    [requestUri]
+  );
 
-  return isSending || isLoadingPaymentData ? (
-    <div className="p-2 flex items-center justify-center fixed top-1/3 w-full text-center">
-      <SyncOutlined className="text-7xl" spin />
-    </div>
-  ) : (
+  return (
     <>
-      <div>
-        <Button
-          onClick={() => handlePaymentProtocol()}
-          label=""
-          icon={RequestIcon}
-        />
-      </div>
-      <div className="border rounded border-zinc-800">
-        {paymentData && (
-          <div>
-            <h1>Payment Information</h1>
-            <div>{paymentData.paymentId}</div>
-            <div>{paymentData.time}</div>
-            <div>{paymentData.expires}</div>
-            <div>{paymentData.paymentUrl}</div>
-            <div>{paymentData.memo}</div>
-            <div>{JSON.stringify(paymentData.instructions)}</div>
+      <div className="tracking-wide text-center text-white">
+        {message === "" ? (
+          <div className="bg-primary p-2">
+            <div className="text-xl font-bold">{translate("paymentTo")}</div>
+            <div className="text-sm py-1 font-mono tracking-tight">
+              <div>{new URL(requestUri).hostname}</div>
+            </div>
           </div>
-        )}
-        {paymentDataError && (
-          <div>
-            <span className="text-error">
-              Error: {JSON.stringify(paymentDataError)}
-            </span>
+        ) : (
+          <div className="bg-error p-2">
+            <div className="text-2xl font-bold">{message}</div>
           </div>
         )}
       </div>
-      <div
-        className={`flex absolute ${buttonsPos} w-full justify-around items-center px-2 gap-x-2`}
-      >
-        <div className="mx-2">
-          <Button onClick={() => navigate(-1)} icon={BackIcon} />
+
+      {isLoading || isSending ? (
+        <div className="p-2 flex items-center justify-center fixed top-1/3 w-full text-center">
+          <SyncOutlined className="text-7xl" spin />
         </div>
-        <div className="flex-1">
-          <Button
-            size="full"
-            icon={ConfirmIcon}
-            shittyFullWidthHack
-            onClick={() => confirmSend(false)}
-            inverted
-          />
-        </div>
-      </div>
+      ) : (
+        <>
+          <div className="p-2 fixed top-[40%] w-full">
+            {!message ? (
+              <>
+                <div className="py-4 px-2">
+                  <div className="flex items-center justify-center">
+                    {paymentData.memo}
+                  </div>
+                </div>
+                <div className="py-4 px-2 rounded-md shadow-md bg-primary/95 text-white">
+                  <div className="flex items-center justify-center">
+                    <Satoshi value={totalSats} flip />
+                    <CurrencyFlip className="text-3xl ml-2" />
+                  </div>
+                </div>
+                <div className="py-4 px-2 rounded-md">
+                  <div className="flex justify-center">
+                    Expires in&nbsp;
+                    <CountdownTimer
+                      expiryDate={paymentData.expires}
+                      onExpire={handleExpire}
+                    />
+                  </div>
+                </div>
+              </>
+            ) : (
+              <div className="py-4 px-2">
+                <div className="flex items-center justify-center">
+                  {detailedMessage || message}
+                </div>
+              </div>
+            )}
+          </div>
+
+          <div
+            className={`flex absolute ${buttonsPos} w-full justify-around items-center px-2 gap-x-2`}
+          >
+            {paymentData && !message ? (
+              <>
+                <div className="mx-2">
+                  <Button onClick={() => navigate(-1)} icon={BackIcon} />
+                </div>
+                <div className="flex-1">
+                  <Button
+                    size="full"
+                    icon={ConfirmIcon}
+                    shittyFullWidthHack
+                    onClick={() => confirmSend()}
+                    inverted
+                  />
+                </div>
+              </>
+            ) : (
+              <div className="flex-1">
+                <Button
+                  size="full"
+                  onClick={() => navigate(-1)}
+                  icon={BackIcon}
+                  shittyFullWidthHack
+                />
+              </div>
+            )}
+          </div>
+        </>
+      )}
     </>
   );
-}
-
-function RequestIcon() {
-  return <span className="font-bold">Request</span>;
 }
 
 function ConfirmIcon() {

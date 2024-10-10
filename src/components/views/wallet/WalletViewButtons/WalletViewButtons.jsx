@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { Haptics, NotificationType } from "@capacitor/haptics";
+// import { Haptics, NotificationType } from "@capacitor/haptics";
 import { Clipboard } from "@capacitor/clipboard";
 import {
   SendOutlined,

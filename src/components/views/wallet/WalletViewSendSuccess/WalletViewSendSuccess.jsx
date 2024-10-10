@@ -19,12 +19,12 @@ import translations from "./translations";
 function WalletViewSendSuccess() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { tx, header } = location.state;
+  const { tx, header, prefillMemo } = location.state;
 
   const wallet = useSelector(selectActiveWallet);
   const { localCurrency } = useSelector(selectCurrencySettings);
 
-  const [memo, setMemo] = useState("");
+  const [memo, setMemo] = useState(prefillMemo || "");
 
   const handleMemoChange = (event) => {
     setMemo(event.target.value);
