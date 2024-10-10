@@ -281,9 +281,7 @@ export class JppV2Client {
 
     // Ensure that digest is present.
     if (!digestHash) {
-      throw new Error(
-        'Invalid digest header. Must be of form "SHA-256=${hash}'
-      );
+      throw new Error("Invalid digest header. Must be of form SHA-256=hash");
     }
 
     // Try to find a key for this identity in our trusted keys.
@@ -343,6 +341,4 @@ export class JppV2Client {
       );
     }
   }
-
-  protected getKnownDomains() {}
 }
