@@ -27,7 +27,7 @@ import {
   JppV2Client,
 } from "@/util/payment_protocol";
 import { translate } from "@/util/translations";
-import translations from "@/components/views/wallet/WalletViewSend/translations";
+import translations from "@/components/views/wallet/WalletViewPay/translations";
 
 const Log = LogService("WalletViewPay");
 const jppClient = new JppV2Client();
@@ -69,8 +69,8 @@ export default function WalletViewPay() {
   const isInsufficientFunds = new Decimal(wallet.balance).lessThan(0);
 
   const handleExpire = () => {
-    setMessage(translate("invalidInvoice"));
-    setDetailedMessage(translate("invoiceExpired"));
+    setMessage(translate(translations.invalidInvoice));
+    setDetailedMessage(translate(translations.invoiceExpired));
   };
 
   // The service broadcasts the transaction (not the wallet), so it might not propagate to our node right away.
@@ -95,7 +95,7 @@ export default function WalletViewPay() {
           if (elapsedTime < timeoutMs) {
             setTimeout(checkTransaction, intervalMs);
           } else {
-            reject(new Error(`${translate("transactionFailed")}`));
+            reject(new Error(translate(translations.transactionFailed)));
           }
         }
       };
@@ -123,12 +123,12 @@ export default function WalletViewPay() {
       }
 
       if (isInsufficientFunds) {
-        throw new Error(translate("insufficientFunds"));
+        throw new Error(translate(translations.insufficientFunds));
       }
 
       if (!sync.isConnected) {
         ToastService().disconnected();
-        throw new Error(translate("walletDisconnected"));
+        throw new Error(translate(translations.walletDisconnected));
       }
 
       // Ensure that payment data is available.
@@ -160,7 +160,7 @@ export default function WalletViewPay() {
 
       // Handle insufficient funds error.
       if (typeof transaction === "number") {
-        throw new Error(translate("insufficientFunds"));
+        throw new Error(translate(translations.insufficientFunds));
       }
 
       // Respond to the payment URL with the signed transaction.
@@ -181,7 +181,7 @@ export default function WalletViewPay() {
     } catch (error) {
       await Haptics.notification({ type: NotificationType.Error });
       Log.debug(error);
-      setMessage(translate("transactionFailed"));
+      setMessage(translate(translations.transactionFailed));
       setDetailedMessage(`${error}`);
     } finally {
       setIsSending(false);
@@ -213,7 +213,9 @@ export default function WalletViewPay() {
       <div className="tracking-wide text-center text-white">
         {message === "" ? (
           <div className="bg-primary p-2">
-            <div className="text-xl font-bold">{translate("paymentTo")}</div>
+            <div className="text-xl font-bold">
+              {translate(translations.paymentTo)}
+            </div>
             <div className="text-sm py-1 font-mono tracking-tight">
               <div>{new URL(requestUri).hostname}</div>
             </div>
