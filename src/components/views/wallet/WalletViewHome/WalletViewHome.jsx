@@ -11,7 +11,7 @@ import {
   CopyOutlined,
 } from "@ant-design/icons";
 
-import { selectActiveWallet } from "@/redux/wallet";
+import { selectActiveWallet, selectWalletAddresses } from "@/redux/wallet";
 import { selectIsChipnet, selectQrCodeSettings } from "@/redux/preferences";
 import { selectScannerIsScanning, selectKeyboardIsOpen } from "@/redux/device";
 

@@ -20,6 +20,7 @@ async function post_init() {
   Log.log("* POST_INIT *");
   const Janitor = JanitorService();
   await Janitor.migrateLegacyDbFile();
+  await Janitor.recoverWalletFiles();
   Janitor.cleanupAddressStates();
   Janitor.cleanupAddressTransactions();
 

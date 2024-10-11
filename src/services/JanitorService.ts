@@ -5,6 +5,7 @@ import DatabaseService, {
   _dbOpen,
 } from "@/services/DatabaseService";
 import LogService from "@/services/LogService";
+import WalletManagerService from "@/services/WalletManagerService";
 import { run_migrations } from "@/util/migrations";
 
 const Log = LogService("Janitor");
@@ -16,6 +17,7 @@ export default function JanitorService() {
     migrateLegacyDbFile,
     cleanupAddressStates,
     cleanupAddressTransactions,
+    recoverWalletFiles,
   };
 
   // _migrateLegacyDbFile: move old db file to new location
@@ -116,7 +118,9 @@ export default function JanitorService() {
 
   function cleanupAddressTransactions() {
     const needsCleanup = resultToJson(
-      db.exec("SELECT * FROM address_transactions WHERE wallet_id IS NULL")
+      db.exec(
+        "SELECT * FROM address_transactions WHERE wallet_id IS NULL OR wallet_id='0'"
+      )
     );
 
     if (needsCleanup.length > 0) {
@@ -125,10 +129,51 @@ export default function JanitorService() {
         needsCleanup
       );
 
-      db.run(`DELETE FROM address_transactions WHERE wallet_id IS NULL`);
+      db.run(
+        `DELETE FROM address_transactions WHERE wallet_id IS NULL OR wallet_id='0'`
+      );
       saveDatabase();
     }
 
     Log.debug("cleanupAddressTransactions done");
+  }
+
+  async function recoverWalletFiles() {
+    Log.debug("Searching for lost wallet files");
+
+    const { files: fileWallets } = await Filesystem.readdir({
+      path: "/selene/wallets",
+      directory: Directory.Library,
+    });
+
+    const dbWallets = resultToJson(
+      db.exec("SELECT id, walletHash FROM wallets")
+    );
+
+    Log.debug(
+      `Found ${fileWallets.length} wallet files, ${dbWallets.length} in database`
+    );
+
+    // make a list of walletHashes that are on the filesystem, but not in database
+    const importWallets = fileWallets
+      .map((file) => {
+        const walletHash = file.name.split(".")[0];
+        return dbWallets.some((w) => w.walletHash === walletHash)
+          ? null
+          : walletHash;
+      })
+      .filter((hash) => hash !== null);
+
+    Log.debug("recoverWalletFiles", importWallets);
+
+    return Promise.all(
+      importWallets.map(async (walletHash) => {
+        const WalletManager = WalletManagerService("mainnet");
+        const { mnemonic, passphrase, derivation, name } =
+          await WalletManager.importWalletFile(walletHash);
+
+        WalletManager.importWallet(mnemonic, passphrase, derivation, name);
+      })
+    );
   }
 }

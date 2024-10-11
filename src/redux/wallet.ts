@@ -17,6 +17,7 @@ import WalletManagerService, {
   WalletEntity,
 } from "@/services/WalletManagerService";
 import ElectrumService from "@/services/ElectrumService";
+import AddressManagerService from "@/services/AddressManagerService";
 
 import ToastService from "@/services/ToastService";
 
@@ -25,7 +26,7 @@ export const walletMiddleware = createListenerMiddleware();
 const initialState = {
   id: 0,
   balance: 0,
-  name: "Wallet",
+  name: "-",
   key_viewed: "",
   nonce: 0,
 };
@@ -41,11 +42,13 @@ export const walletBoot = createAsyncThunk(
   ) => {
     const { wallet_id, network } = payload;
     // load Wallet from database
-    const wallet = WalletManagerService(network).boot(wallet_id);
+    const wallet = await WalletManagerService(network).boot(wallet_id);
 
     thunkApi.dispatch(
       setPreference({ key: "activeWalletId", value: wallet.id.toString() })
     );
+
+    thunkApi.dispatch(walletReloadAddresses({ wallet }));
 
     const isChipnet = network === "chipnet";
 
@@ -112,6 +115,19 @@ export const walletSetKeyViewed = createAction(
 
 export const walletNonce = createAction("wallet/nonce");
 
+export const walletReloadAddresses = createAction(
+  "wallet/reloadAddresses",
+  (payload: { wallet: WalletEntity }) => {
+    const AddressManager = AddressManagerService(payload.wallet);
+    const myAddresses = [
+      ...AddressManager.getReceiveAddresses(),
+      ...AddressManager.getChangeAddresses(),
+    ];
+
+    return { payload: myAddresses };
+  }
+);
+
 export const walletReducer = createReducer(initialState, (builder) => {
   builder
     .addCase(walletBoot.fulfilled, (state, action) => {
@@ -134,7 +150,19 @@ export const walletReducer = createReducer(initialState, (builder) => {
     });
 });
 
+export const addressReducer = createReducer([], (builder) => {
+  builder.addCase(walletReloadAddresses, (state, action) => {
+    const addresses = action.payload;
+    return addresses;
+  });
+});
+
 export const selectActiveWallet = createSelector(
   (state: RootState) => state,
   (state) => state.wallet
+);
+
+export const selectWalletAddresses = createSelector(
+  (state: RootState) => state,
+  (state) => state.addresses
 );

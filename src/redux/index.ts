@@ -5,7 +5,12 @@ import {
   selectActiveWalletId,
   selectBchNetwork,
 } from "./preferences";
-import { walletReducer, walletMiddleware, walletBoot } from "./wallet";
+import {
+  walletReducer,
+  walletMiddleware,
+  walletBoot,
+  addressReducer,
+} from "./wallet";
 import { syncReducer, syncMiddleware } from "./sync";
 import { deviceReducer } from "./device";
 import { txHistoryReducer } from "./txHistory";
@@ -22,6 +27,7 @@ export const store = configureStore({
     sync: syncReducer,
     exchangeRates: exchangeRateReducer,
     txHistory: txHistoryReducer,
+    addresses: addressReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware()
