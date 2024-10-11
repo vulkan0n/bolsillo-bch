@@ -110,7 +110,7 @@ export default function WalletViewPay() {
     // 1. One succinct one for the top bar (always "Transaction Failed").
     // 2. One more detailed one which *may* not have translations (this comes from the thrown error).
     try {
-      if (isSending) {
+      if (isSending || !paymentData) {
         return;
       }
 
@@ -129,12 +129,6 @@ export default function WalletViewPay() {
       if (!sync.isConnected) {
         ToastService().disconnected();
         throw new Error(translate(translations.walletDisconnected));
-      }
-
-      // Ensure that payment data is available.
-      // NOTE: This is to satisfy Typescript as paymentData starts as null.
-      if (!paymentData) {
-        throw new Error("paymentData is falsey.");
       }
 
       // Format the outputs into correct format for the Transaction Builder.
