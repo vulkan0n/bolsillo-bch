@@ -9,9 +9,7 @@ import { selectKeyboardIsOpen } from "@/redux/device";
 import { selectActiveWallet } from "@/redux/wallet";
 import { selectSyncState } from "@/redux/sync";
 
-import TransactionManagerService, {
-  TransactionEntity,
-} from "@/services/TransactionManagerService";
+import TransactionManagerService from "@/services/TransactionManagerService";
 import TransactionBuilderService from "@/services/TransactionBuilderService";
 import ToastService from "@/services/ToastService";
 import SecurityService from "@/services/SecurityService";
@@ -73,38 +71,6 @@ export default function WalletViewPay() {
     setDetailedMessage(translate(translations.invoiceExpired));
   };
 
-  // The service broadcasts the transaction (not the wallet), so it might not propagate to our node right away.
-  // This function will just run TxManager.resolveTransaction once every second for up to ten seconds (or fail).
-  // Usually the transaction is found very quickly though (within a second or two).
-  const waitForTransactionToResolve = async (
-    transactionId: string,
-    timeoutMs = 10_000,
-    intervalMs = 1000
-  ) => {
-    const TransactionManager = TransactionManagerService();
-    const startTime = Date.now();
-
-    return new Promise<TransactionEntity>((resolve, reject) => {
-      const checkTransaction = async () => {
-        try {
-          const tx = await TransactionManager.resolveTransaction(transactionId);
-          resolve(tx);
-        } catch (error) {
-          // If the transaction is not resolved yet, check again after the interval
-          const elapsedTime = Date.now() - startTime;
-          if (elapsedTime < timeoutMs) {
-            setTimeout(checkTransaction, intervalMs);
-          } else {
-            reject(new Error(translate(translations.transactionFailed)));
-          }
-        }
-      };
-
-      // Start checking the transaction
-      checkTransaction();
-    });
-  };
-
   const confirmSend = async (isInstantPay: boolean = false) => {
     // We want to support two different error messages
     // 1. One succinct one for the top bar (always "Transaction Failed").
@@ -164,7 +130,10 @@ export default function WalletViewPay() {
       });
 
       // Wait until we actually see the transaction on our node.
-      const tx = await waitForTransactionToResolve(transaction.txid);
+      const TransactionManager = TransactionManagerService();
+      const tx = await TransactionManager.waitForTransactionToResolve(
+        transaction.txid
+      );
 
       // Show a success notification and route the user to the success page.
       await Haptics.notification({ type: NotificationType.Success });
