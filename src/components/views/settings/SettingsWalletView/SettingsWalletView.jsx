@@ -1,6 +1,8 @@
 import { useState, useRef } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
+import { Share } from "@capacitor/share";
+import { Filesystem, Directory, Encoding } from "@capacitor/filesystem";
 
 import {
   WalletOutlined,
@@ -14,12 +16,15 @@ import {
   MedicineBoxOutlined,
   InfoCircleOutlined,
   SyncOutlined,
+  ImportOutlined,
+  ExportOutlined,
 } from "@ant-design/icons";
 
 import {
   selectActiveWalletId,
   selectBchNetwork,
   selectIsExperimental,
+  selectIsPrerelease,
 } from "@/redux/preferences";
 import { walletBoot, walletSetName } from "@/redux/wallet";
 import { selectLocale } from "@/redux/device";
@@ -59,6 +64,7 @@ export default function SettingsWalletView() {
     wallet.key_viewed !== null && isActiveWallet;
 
   const isExperimental = useSelector(selectIsExperimental);
+  const isPrerelease = useSelector(selectIsPrerelease);
 
   // toggle editing state for "wallet name"
   const [isEditingWalletName, setIsEditingWalletName] = useState(false);
@@ -125,9 +131,23 @@ export default function SettingsWalletView() {
     navigate(`/settings/wallet/wizard/import/build/${wallet.id}`);
   };
 
-  const handleNavigateAdditionalWalletInformation = () => {
-    navigate(`/settings/wallet/${wallet.id}/additionalInformation`);
+  const handleExportWallet = async () => {
+    const { uri } = await Filesystem.getUri({
+      path: `/selene/wallets/${wallet.walletHash}.wallet.json`,
+      directory: Directory.Library,
+    });
+
+    await Share.share({
+      dialogTitle: `Export Wallet (${wallet.name})`,
+      url: uri,
+    });
   };
+
+  /*
+   const handleImportWallet = () => {
+    // spawn file picker
+  };
+  */
 
   return (
     <>
@@ -246,19 +266,17 @@ export default function SettingsWalletView() {
               title={translate(translations.advancedOptions)}
             >
               <Accordion.Child icon={null} label="">
-                <button
-                  type="button"
+                <Link
                   className="w-full text-left flex items-center"
-                  onClick={handleNavigateAdditionalWalletInformation}
+                  to={`/settings/wallet/${wallet.id}/additionalInformation`}
                 >
                   <InfoCircleOutlined className="text-xl mr-1" />
                   {translate(translations.additionalWalletInformation)}
-                </button>
+                </Link>
               </Accordion.Child>
               {isExperimental && (
                 <Accordion.Child icon={null} label="">
                   <Link
-                    type="button"
                     className="w-full text-left flex items-center"
                     to="scan"
                   >
@@ -277,6 +295,30 @@ export default function SettingsWalletView() {
                   {translate(translations.rebuildWallet)}
                 </button>
               </Accordion.Child>
+              {/*isExperimental && (
+                <Accordion.Child icon={null} label="">
+                  <button
+                    type="button"
+                    className="w-full text-left flex items-center"
+                    onClick={handleImportWallet}
+                  >
+                    <ImportOutlined className="text-xl mr-1" />
+                    {translate(translations.importWallet)}
+                  </button>
+                </Accordion.Child>
+              )*/}
+              {isExperimental && (
+                <Accordion.Child icon={null} label="">
+                  <button
+                    type="button"
+                    className="w-full text-left flex items-center"
+                    onClick={handleExportWallet}
+                  >
+                    <ExportOutlined className="text-xl mr-1" />
+                    {translate(translations.exportWallet)}
+                  </button>
+                </Accordion.Child>
+              )}
             </Accordion>
           )
         }
