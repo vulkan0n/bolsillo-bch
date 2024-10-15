@@ -34,15 +34,15 @@ import translations from "./translations";
 import { DEFAULT_DERIVATION_PATH } from "@/util/crypto";
 
 export default function SettingsWalletAdditionalInformation() {
-  const { wallet_id } = useParams();
+  const { walletHash } = useParams();
 
   const [isShowXpub, setIsShowXpub] = useState(false);
   const [isShowXprv, setIsShowXprv] = useState(false);
 
   const network = useSelector(selectBchNetwork);
 
-  const WalletManager = WalletManagerService(network);
-  const wallet = WalletManager.getWalletById(wallet_id);
+  const WalletManager = WalletManagerService();
+  const wallet = WalletManager.getWallet(walletHash);
 
   const derivationPath = wallet.derivation;
 

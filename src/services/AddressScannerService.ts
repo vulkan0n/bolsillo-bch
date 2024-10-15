@@ -25,8 +25,10 @@ const SCAN_BATCH_SIZE = 3000;
 const Log = LogService("AddressScanner");
 
 export default function AddressScannerService(wallet) {
-  const { db } = DatabaseService();
+  const Database = DatabaseService();
   const Electrum = ElectrumService();
+
+  const walletDb = Database.getWalletDatabase(wallet.walletHash);
 
   return {
     populateAddresses,
@@ -138,7 +140,7 @@ export default function AddressScannerService(wallet) {
     const AddressManager = AddressManagerService(wallet);
     const UtxoManager = UtxoManagerService(wallet);
 
-    Log.debug("scanAddesses", startIndex, endIndex, change, wallet.id);
+    Log.debug("scanAddesses", startIndex, endIndex, change, wallet.walletHash);
 
     const dbAddresses = change
       ? AddressManager.getChangeAddresses()
@@ -189,20 +191,18 @@ export default function AddressScannerService(wallet) {
     // for each address with state, register it if we don't have it.
     // [Kludge] We have to use raw SQL here instead of AddressManager.registerAddress
     // [K] so that we can batch all of the writes into one transction for performance
-    db.exec("BEGIN TRANSACTION;");
+    walletDb.exec("BEGIN TRANSACTION;");
     needsRegistrationAddresses.forEach((stub) => {
       try {
-        db.exec(
+        walletDb.exec(
           `INSERT INTO addresses (
             address, 
-            wallet_id, 
             hd_index,
             change,
             prefix
           ) 
           VALUES (
             "${stub.address}", 
-            "${wallet.id}", 
             "${stub.hd_index}",
             "${stub.change}",
             "${wallet.prefix}"
@@ -212,7 +212,7 @@ export default function AddressScannerService(wallet) {
         Log.warn(e);
       }
     });
-    db.exec("COMMIT;");
+    walletDb.exec("COMMIT;");
 
     // discard UTXO set for all generated addresses
     addresses.forEach((stub) => UtxoManager.discardAddressUtxos(stub.address));
@@ -291,7 +291,7 @@ export default function AddressScannerService(wallet) {
     const getUnusedCount = (addresses) =>
       addresses.filter((a) => a.state === null).length;
 
-    WalletManagerService(wallet.network).clearWalletData(wallet.id);
+    WalletManagerService().clearWalletData(wallet.walletHash);
 
     /* eslint-disable no-await-in-loop */
     for (let change = 0; change <= 1; change += 1) {

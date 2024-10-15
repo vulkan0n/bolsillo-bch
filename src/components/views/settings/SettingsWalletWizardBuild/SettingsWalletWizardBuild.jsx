@@ -17,7 +17,7 @@ export default function SettingsWalletWizardBuild() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const { wallet_id } = useParams();
+  const { walletHash } = useParams();
   const bchNetwork = useSelector(selectBchNetwork);
 
   const [isBuilding, setIsBuilding] = useState(false);
@@ -26,11 +26,12 @@ export default function SettingsWalletWizardBuild() {
   useEffect(
     function startBuild() {
       const scan = async () => {
-        const wallet =
-          WalletManagerService(bchNetwork).getWalletById(wallet_id);
+        const wallet = WalletManagerService().getWallet(walletHash);
 
         if (isBuildDone) {
-          dispatch(walletBoot({ wallet_id: wallet.id, network: bchNetwork }));
+          dispatch(
+            walletBoot({ walletHash: wallet.walletHash, network: bchNetwork })
+          );
           dispatch(syncReconnect());
           navigate("/");
           return;
@@ -48,7 +49,7 @@ export default function SettingsWalletWizardBuild() {
 
       scan();
     },
-    [isBuilding, bchNetwork, wallet_id, dispatch, isBuildDone, navigate]
+    [isBuilding, bchNetwork, walletHash, dispatch, isBuildDone, navigate]
   );
 
   return (

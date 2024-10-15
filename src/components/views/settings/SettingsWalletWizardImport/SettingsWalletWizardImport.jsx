@@ -69,13 +69,13 @@ export default function SettingsWalletWizardImport() {
 
         Log.debug("Found path", path);
 
-        const wallet = WalletManagerService(bchNetwork).importWallet(
-          trimmedInput,
-          passphraseInput,
-          path
-        );
+        const wallet = WalletManagerService().importWallet({
+          mnemonic: trimmedInput,
+          passphrase: passphraseInput,
+          derivation: path,
+        });
 
-        navigate(`build/${wallet.id}`);
+        navigate(`build/${wallet.walletHash}`);
       } catch (e) {
         setMessage(translate(translations.alreadyImported));
       }

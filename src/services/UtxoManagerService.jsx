@@ -6,7 +6,8 @@ import { DUST_LIMIT } from "@/util/sats";
 const Log = LogService("UtxoManager");
 
 export default function UxtoManagerService(wallet) {
-  const { db, resultToJson, saveDatabase } = DatabaseService();
+  const Database = DatabaseService();
+  const walletDb = Database.getWalletDatabase(wallet.walletHash);
 
   return {
     registerUtxo,
@@ -18,16 +19,14 @@ export default function UxtoManagerService(wallet) {
   };
 
   function registerUtxo(address, utxo) {
-    db.run(
+    walletDb.run(
       `INSERT INTO address_utxos (
-        wallet_id,
         address,
         txid,
         tx_pos,
         amount,
         prefix
       ) VALUES (
-        "${wallet.id}",
         "${address}",
         "${utxo.tx_hash}",
         "${utxo.tx_pos}",
@@ -35,23 +34,19 @@ export default function UxtoManagerService(wallet) {
         "${wallet.prefix}"
       );`
     );
-
-    saveDatabase();
   }
 
   function getWalletUtxos() {
-    const result = resultToJson(
-      db.exec(
-        `SELECT * FROM address_utxos WHERE wallet_id="${wallet.id}" AND prefix="${wallet.prefix}"`
-      )
+    const result = walletDb.exec(
+      `SELECT * FROM address_utxos WHERE prefix="${wallet.prefix}"`
     );
 
     return result;
   }
 
   function getAddressUtxos(address) {
-    const result = resultToJson(
-      db.exec(`SELECT * FROM address_utxos WHERE address="${address}"`)
+    const result = walletDb.exec(
+      `SELECT * FROM address_utxos WHERE address="${address}"`
     );
     return result;
   }
@@ -61,15 +56,12 @@ export default function UxtoManagerService(wallet) {
     const targetAmount = new Decimal(amount).plus(fee).toNumber();
 
     // all full address balances >= amount are eligible
-    const eligibleAddresses = resultToJson(
-      db.exec(
-        `SELECT * FROM addresses 
+    const eligibleAddresses = walletDb.exec(
+      `SELECT * FROM addresses 
           WHERE 
             balance >= "${targetAmount}"
-            AND wallet_id="${wallet.id}"
             AND prefix="${wallet.prefix}"
           ORDER BY balance ASC`
-      )
     );
 
     Log.debug(
@@ -88,15 +80,12 @@ export default function UxtoManagerService(wallet) {
 
     // all UTXOs <= targetAmount are eligible
     // Note: a UTXO > targetAmount implies an address > targetAmount, handled earlier
-    const eligibleUtxos = resultToJson(
-      db.exec(
-        `SELECT * FROM address_utxos 
+    const eligibleUtxos = walletDb.exec(
+      `SELECT * FROM address_utxos 
           WHERE 
             amount <= "${targetAmount}" 
-            AND wallet_id="${wallet.id}" 
             AND prefix="${wallet.prefix}"
           ORDER BY amount DESC`
-      )
     );
 
     Log.debug("selectUtxos eligibleUtxos", eligibleUtxos.length);
@@ -184,16 +173,12 @@ export default function UxtoManagerService(wallet) {
   }
 
   function discardUtxo(utxo) {
-    db.run(
+    walletDb.run(
       `DELETE FROM address_utxos WHERE txid="${utxo.tx_hash}" AND tx_pos="${utxo.tx_pos}";`
     );
-
-    saveDatabase();
   }
 
   function discardAddressUtxos(address) {
-    db.run(`DELETE FROM address_utxos WHERE address="${address}";`);
-
-    saveDatabase();
+    walletDb.run(`DELETE FROM address_utxos WHERE address="${address}";`);
   }
 }

@@ -10,7 +10,7 @@ export default function WalletView() {
   const wallet = useSelector(selectActiveWallet);
   const isScanning = useSelector(selectScannerIsScanning);
   return (
-    wallet.id > 0 && (
+    wallet.walletHash !== "" && (
       <>
         {!isScanning && (
           <div className="flex bg-zinc-900 justify-between">

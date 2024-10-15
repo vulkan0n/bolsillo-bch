@@ -2,7 +2,7 @@ import { useState, useRef } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { Share } from "@capacitor/share";
-import { Filesystem, Directory, Encoding } from "@capacitor/filesystem";
+import { Filesystem, Directory } from "@capacitor/filesystem";
 
 import {
   WalletOutlined,
@@ -16,15 +16,13 @@ import {
   MedicineBoxOutlined,
   InfoCircleOutlined,
   SyncOutlined,
-  ImportOutlined,
   ExportOutlined,
 } from "@ant-design/icons";
 
 import {
-  selectActiveWalletId,
+  selectActiveWalletHash,
   selectBchNetwork,
   selectIsExperimental,
-  selectIsPrerelease,
 } from "@/redux/preferences";
 import { walletBoot, walletSetName } from "@/redux/wallet";
 import { selectLocale } from "@/redux/device";
@@ -51,12 +49,13 @@ export default function SettingsWalletView() {
 
   const bchNetwork = useSelector(selectBchNetwork);
 
-  const { wallet_id } = useParams();
-  const WalletManager = WalletManagerService(bchNetwork);
-  const wallet = WalletManager.getWalletById(wallet_id);
+  const { walletHash } = useParams();
 
-  const activeWalletId = useSelector(selectActiveWalletId);
-  const isActiveWallet = wallet.id === activeWalletId;
+  const WalletManager = WalletManagerService();
+  const wallet = WalletManager.getWallet(walletHash);
+
+  const activeWalletHash = useSelector(selectActiveWalletHash);
+  const isActiveWallet = wallet.walletHash === activeWalletHash;
 
   const locale = useSelector(selectLocale);
 
@@ -64,7 +63,6 @@ export default function SettingsWalletView() {
     wallet.key_viewed !== null && isActiveWallet;
 
   const isExperimental = useSelector(selectIsExperimental);
-  const isPrerelease = useSelector(selectIsPrerelease);
 
   // toggle editing state for "wallet name"
   const [isEditingWalletName, setIsEditingWalletName] = useState(false);
@@ -87,8 +85,8 @@ export default function SettingsWalletView() {
         return;
       }
 
-      WalletManager.deleteWallet(wallet.id);
-      dispatch(walletBoot({ wallet_id: 1, network: bchNetwork }));
+      WalletManager.deleteWallet(wallet.walletHash);
+      dispatch(walletBoot({ walletHash: "", network: bchNetwork }));
       navigate("/");
     } else {
       // if user hesitates, reset the counter
@@ -104,7 +102,9 @@ export default function SettingsWalletView() {
 
   // handler for "Activate Wallet" button
   const handleActivateWallet = () => {
-    dispatch(walletBoot({ wallet_id: wallet.id, network: bchNetwork }));
+    dispatch(
+      walletBoot({ walletHash: wallet.walletHash, network: bchNetwork })
+    );
     dispatch(syncReconnect());
     navigate("/");
   };
@@ -128,7 +128,7 @@ export default function SettingsWalletView() {
 
   // handler for "rebuild wallet" button
   const handleRebuildWallet = () => {
-    navigate(`/settings/wallet/wizard/import/build/${wallet.id}`);
+    navigate(`/settings/wallet/wizard/import/build/${wallet.walletHash}`);
   };
 
   const handleExportWallet = async () => {
@@ -207,7 +207,7 @@ export default function SettingsWalletView() {
               disabled={isActiveWallet}
             >
               <div className="flex items-center">
-                {wallet.id === activeWalletId ? (
+                {wallet.walletHash === activeWalletHash ? (
                   <CheckCircleOutlined className="text-white text-2xl" />
                 ) : (
                   <LoginOutlined className="text-2xl mr-1" />
@@ -268,7 +268,7 @@ export default function SettingsWalletView() {
               <Accordion.Child icon={null} label="">
                 <Link
                   className="w-full text-left flex items-center"
-                  to={`/settings/wallet/${wallet.id}/additionalInformation`}
+                  to={`/settings/wallet/${wallet.walletHash}/additionalInformation`}
                 >
                   <InfoCircleOutlined className="text-xl mr-1" />
                   {translate(translations.additionalWalletInformation)}

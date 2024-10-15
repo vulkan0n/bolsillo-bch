@@ -20,11 +20,14 @@ import ElectrumService from "@/services/ElectrumService";
 import AddressManagerService from "@/services/AddressManagerService";
 
 import ToastService from "@/services/ToastService";
+import LogService from "@/services/LogService";
 
 export const walletMiddleware = createListenerMiddleware();
 
+const Log = LogService("redux/wallet");
+
 const initialState = {
-  id: 0,
+  walletHash: "",
   balance: 0,
   name: "-",
   key_viewed: "",
@@ -33,19 +36,19 @@ const initialState = {
 
 // --------------------------------
 
-// walletBoot: loads wallet by wallet_id and initializes Electrum connection
+// walletBoot: loads wallet by walletHash and initializes Electrum connection
 export const walletBoot = createAsyncThunk(
   "wallet/boot",
   async (
-    payload: { wallet_id: number; network: ValidBchNetwork },
+    payload: { walletHash: string; network: ValidBchNetwork },
     thunkApi
   ) => {
-    const { wallet_id, network } = payload;
+    const { walletHash, network } = payload;
     // load Wallet from database
-    const wallet = await WalletManagerService(network).boot(wallet_id);
+    const wallet = await WalletManagerService().boot(walletHash);
 
     thunkApi.dispatch(
-      setPreference({ key: "activeWalletId", value: wallet.id.toString() })
+      setPreference({ key: "activeWalletHash", value: wallet.walletHash })
     );
 
     thunkApi.dispatch(walletReloadAddresses({ wallet }));
@@ -64,6 +67,8 @@ export const walletBoot = createAsyncThunk(
       })
     );
 
+    Log.debug("wallet/boot", wallet);
+
     return wallet;
   }
 );
@@ -74,9 +79,7 @@ export const walletBalanceUpdate = createAction(
     const { wallet, isChange } = payload;
 
     // address and wallet balances are automatically derived on SQL layer when UTXO entries are updated
-    const sqlWallet = WalletManagerService(wallet.network).getWalletById(
-      wallet.id
-    );
+    const sqlWallet = WalletManagerService().getWallet(wallet.walletHash);
 
     const previousBalance = wallet.balance;
     const currentBalance = sqlWallet.balance;
@@ -94,8 +97,8 @@ export const walletBalanceUpdate = createAction(
 export const walletSetName = createAction(
   "wallet/name",
   (payload: { wallet: WalletEntity; name: string }) => {
-    WalletManagerService(payload.wallet.network).setWalletName(
-      payload.wallet.id,
+    WalletManagerService().setWalletName(
+      payload.wallet.walletHash,
       payload.name
     );
     return { payload };
@@ -105,9 +108,9 @@ export const walletSetName = createAction(
 export const walletSetKeyViewed = createAction(
   "wallet/key_viewed",
   (payload: { wallet: WalletEntity }) => {
-    const key_viewed = WalletManagerService(
-      payload.wallet.network
-    ).updateKeyViewed(payload.wallet.id);
+    const key_viewed = WalletManagerService().updateKeyViewed(
+      payload.wallet.walletHash
+    );
 
     return { payload: key_viewed };
   }
@@ -138,7 +141,7 @@ export const walletReducer = createReducer(initialState, (builder) => {
       state.balance = action.payload;
     })
     .addCase(walletSetName, (state, action) => {
-      if (state.id === action.payload.wallet.id) {
+      if (state.walletHash === action.payload.wallet.walletHash) {
         state.name = action.payload.name;
       }
     })

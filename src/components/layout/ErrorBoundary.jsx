@@ -32,8 +32,10 @@ export default function ErrorBoundary() {
   };
 
   const handleRebuildWallet = () => {
-    WalletManagerService(bchNetwork).clearWalletData(wallet.id);
-    dispatch(walletBoot({ wallet_id: wallet.id, network: bchNetwork }));
+    WalletManagerService().clearWalletData(wallet.walletHash);
+    dispatch(
+      walletBoot({ walletHash: wallet.walletHash, network: bchNetwork })
+    );
     dispatch(syncReconnect());
     navigate("/");
   };

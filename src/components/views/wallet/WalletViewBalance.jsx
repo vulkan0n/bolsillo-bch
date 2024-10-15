@@ -19,7 +19,7 @@ import CurrencyFlip from "@/atoms/CurrencyFlip";
 export default function WalletViewBalance() {
   const dispatch = useDispatch();
   const {
-    id: wallet_id,
+    walletHash,
     name: activeWalletName,
     balance,
     key_viewed,
@@ -85,7 +85,7 @@ export default function WalletViewBalance() {
     <div className="py-2.5 text-center flex flex-col justify-center items-center">
       <div className="font-bold text-zinc-400 text-md tracking-wide">
         <Link
-          to={`/settings/wallet/${wallet_id}`}
+          to={`/settings/wallet/${walletHash}`}
           className={`flex justify-center items-center ${!isKeyViewed && "text-warning"}`}
         >
           {isChipnet ? "[CHIP] " : ""}

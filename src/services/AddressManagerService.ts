@@ -13,7 +13,6 @@ export interface AddressStub {
 }
 
 export interface AddressEntity extends AddressStub {
-  wallet_id: number;
   balance: number;
   memo: string;
 }
@@ -27,8 +26,8 @@ export class AddressNotExistsError extends Error {
 // AddressManagerService: handles most address-related operations
 export default function AddressManagerService(wallet: WalletEntity) {
   //Log.debug("AddressManagerService", wallet);
-
-  const { db, resultToJson, saveDatabase } = DatabaseService();
+  const Database = DatabaseService();
+  const walletDb = Database.getWalletDatabase(wallet.walletHash);
 
   return {
     registerAddress,
@@ -55,26 +54,21 @@ export default function AddressManagerService(wallet: WalletEntity) {
     //Log.debug(`registerAddress${change ? " change" : ""}`, hd_index, address);
 
     try {
-      const result = resultToJson(
-        db.exec(
-          `INSERT INTO addresses (
-        address, 
-        wallet_id, 
-        hd_index,
-        change,
-        prefix
-      ) 
-      VALUES (
-        "${address}", 
-        "${wallet.id}", 
-        "${hd_index}",
-        "${change}",
-        "${wallet.prefix}"
-      ) RETURNING *;`
-        )
+      const result = walletDb.exec(
+        `INSERT INTO addresses (
+          address, 
+          hd_index,
+          change,
+          prefix
+        ) 
+        VALUES (
+          "${address}", 
+          "${hd_index}",
+          "${change}",
+          "${wallet.prefix}"
+        ) RETURNING *;`
       )[0];
 
-      saveDatabase();
       //Log.debug("registerAddress", result);
       return result;
     } catch (e) {
@@ -85,8 +79,8 @@ export default function AddressManagerService(wallet: WalletEntity) {
   }
 
   function getAddress(address: string): AddressEntity {
-    const result = resultToJson(
-      db.exec(`SELECT * FROM addresses WHERE address="${address}"`)
+    const result = walletDb.exec(
+      `SELECT * FROM addresses WHERE address="${address}"`
     );
 
     if (result.length < 1) {
@@ -101,15 +95,12 @@ export default function AddressManagerService(wallet: WalletEntity) {
     endIndex: number = 20,
     change: number = 0
   ): Array<AddressEntity> {
-    const result = resultToJson(
-      db.exec(
-        `SELECT * FROM addresses
+    const result = walletDb.exec(
+      `SELECT * FROM addresses
           WHERE hd_index >= ${startIndex}
           AND hd_index <= ${endIndex}
           AND change=${change}
-          AND wallet_id=${wallet.id}
         ;`
-      )
     );
 
     Log.debug("getAddressRange", startIndex, endIndex, result);
@@ -120,16 +111,13 @@ export default function AddressManagerService(wallet: WalletEntity) {
   // getReceiveAddresses: get all active receive addresses for this wallet
   // in DESCENDING order so we can get latest index with limit 1
   function getReceiveAddresses(limit: number = 0): Array<AddressEntity> {
-    const result = resultToJson(
-      db.exec(
-        `SELECT * FROM addresses 
-          WHERE wallet_id="${wallet.id}" 
-          AND change='0' 
+    const result = walletDb.exec(
+      `SELECT * FROM addresses 
+          WHERE change='0' 
           AND prefix='${wallet.prefix}'
           ORDER BY hd_index DESC 
           ${limit > 0 ? `LIMIT ${limit}` : ""}
         ;`
-      )
     );
 
     //Log.log("getReceiveAddresses", limit, result);
@@ -141,16 +129,13 @@ export default function AddressManagerService(wallet: WalletEntity) {
   // NB: If you want first UNUSED change address,
   // instead use getUnusedAddress(limit, 1)
   function getChangeAddresses(limit: number = 0): Array<AddressEntity> {
-    const result = resultToJson(
-      db.exec(
-        `SELECT * FROM addresses 
-          WHERE wallet_id="${wallet.id}"
-          AND change="1" 
+    const result = walletDb.exec(
+      `SELECT * FROM addresses 
+          WHERE change="1" 
           AND prefix="${wallet.prefix}"
           ORDER BY hd_index DESC 
           ${limit > 0 ? `LIMIT ${limit}` : ""}
         ;`
-      )
     );
 
     //Log.log("getChangeAddresses", limit, result);
@@ -163,17 +148,14 @@ export default function AddressManagerService(wallet: WalletEntity) {
     limit: number = 5,
     change: number = 0
   ): Array<AddressEntity> {
-    const result = resultToJson(
-      db.exec(
-        `SELECT * FROM addresses 
-          WHERE wallet_id="${wallet.id}"
-          AND state IS NULL 
+    const result = walletDb.exec(
+      `SELECT * FROM addresses 
+          WHERE state IS NULL 
           AND change="${change}"
           AND prefix="${wallet.prefix}"
           ORDER BY hd_index ASC 
           ${limit > 0 ? `LIMIT ${limit}` : ""}
         ;`
-      )
     );
 
     //Log.debug("getUnusedAddress", limit, result);
@@ -186,60 +168,49 @@ export default function AddressManagerService(wallet: WalletEntity) {
     limit: number = 20,
     change: number = 0
   ): Array<AddressEntity> {
-    const result = resultToJson(
-      db.exec(
-        `SELECT * FROM addresses 
-          WHERE wallet_id="${wallet.id}"
-          AND state IS NOT NULL 
+    const result = walletDb.exec(
+      `SELECT * FROM addresses 
+          WHERE state IS NOT NULL 
           AND change="${change}"
           AND prefix="${wallet.prefix}"
           ORDER BY hd_index DESC 
           ${limit ? `LIMIT ${limit}` : ""}
         ;`
-      )
     );
 
     //Log.debug("getRecentAddresses", limit, result);
     return result;
   }
 
-  // updateAddressState: updates address state in db
+  // updateAddressState: updates address state in walletDb
   function updateAddressState(address: string, state: string | null): void {
     const s = state === null ? "NULL" : `'${state}'`;
 
-    db.exec(
+    walletDb.exec(
       `UPDATE addresses SET 
           state=${s}
          WHERE (
-             wallet_id="${wallet.id}"
-             AND address="${address}" 
+             address="${address}" 
         );`
     );
 
     //Log.debug("updateAddressState", address, state);
-    saveDatabase();
   }
 
   function getAddressTransactions(address: string) {
-    const confirmed = resultToJson(
-      db.exec(
-        `SELECT * FROM address_transactions
-          WHERE wallet_id="${wallet.id}" 
-          AND address="${address}"
+    const confirmed = walletDb.exec(
+      `SELECT * FROM address_transactions
+          WHERE address="${address}"
           AND height > 0
           ORDER BY height ASC
         ;`
-      )
     );
 
-    const unconfirmed = resultToJson(
-      db.exec(
-        `SELECT * FROM address_transactions
-          WHERE wallet_id="${wallet.id}"
-          AND address="${address}"
+    const unconfirmed = walletDb.exec(
+      `SELECT * FROM address_transactions
+          WHERE address="${address}"
           AND height <= 0
         ;`
-      )
     );
 
     //Log.log("getAddressTransactions", confirmed, unconfirmed, address);
@@ -277,17 +248,15 @@ export default function AddressManagerService(wallet: WalletEntity) {
     tx: { tx_hash: string; height: number }
   ): void {
     try {
-      db.run(
+      walletDb.run(
         `INSERT INTO address_transactions (
         txid,
         height,
-        address,
-        wallet_id
+        address
       ) VALUES (
         "${tx.tx_hash}",
         "${tx.height}",
-        "${address}",
-        "${wallet.id}"
+        "${address}"
       ) ON CONFLICT DO 
         UPDATE SET 
           height="${tx.height}";
@@ -297,7 +266,6 @@ export default function AddressManagerService(wallet: WalletEntity) {
       Log.error(e);
     }
 
-    //Log.debug("AddressManager.registerTransaction", address, tx, wallet.id);
-    saveDatabase();
+    //Log.debug("AddressManager.registerTransaction", address, tx, wallet.walletHash);
   }
 }

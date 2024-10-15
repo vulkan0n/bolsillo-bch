@@ -14,7 +14,7 @@ import { VALID_DENOMINATIONS } from "@/util/sats";
 import CurrencyService from "@/services/CurrencyService";
 
 const defaultPreferences = {
-  activeWalletId: "1",
+  activeWalletHash: "",
   languageCode: languageList[0].code,
   localCurrency: currencyList[0].currency,
   preferLocalCurrency: "false",
@@ -49,11 +49,6 @@ type ValidPreferences = typeof defaultPreferences;
 // validatePreferences: ensures loaded preferences object won't lead to broken app state on load
 // returns true/false
 function validatePreferences(preferences: ValidPreferences): boolean {
-  // activeWalletId must be integer
-  if (Number.isNaN(Number.parseInt(preferences.activeWalletId, 10))) {
-    return false;
-  }
-
   // lastExchangeRate must be numeric
   if (Number.isNaN(Number.parseFloat(preferences.lastExchangeRate))) {
     return false;
@@ -204,12 +199,12 @@ export const preferencesReducer = createReducer(initialState, (builder) => {
 
 export const selectPreferences = createSelector(
   (state: RootState) => state,
-  (state): ValidPreferences => state.preferences
+  (state) => state.preferences
 );
 
-export const selectActiveWalletId = createSelector(
-  (state: RootState) => state,
-  (state): number => Number.parseInt(state.preferences.activeWalletId, 10)
+export const selectActiveWalletHash = createSelector(
+  (state: RootState) => state.preferences,
+  (preferences) => preferences.activeWalletHash
 );
 
 export const selectCurrencySettings = createSelector(

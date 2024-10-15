@@ -26,10 +26,10 @@ export interface BlockEntity {
   header: string;
 }
 
+const appDb = await DatabaseService().getAppDatabase();
+
 // BlockchainService: brokers interactions with the block data
 export default function BlockchainService() {
-  const { db, resultToJson, saveDatabase } = DatabaseService();
-
   return {
     registerBlock,
     getBlocks,
@@ -62,8 +62,8 @@ export default function BlockchainService() {
       }
 
       // Filesystem plugin gives us base64-encoded data
-      const tx_hex = atob(blockData);
-      return tx_hex;
+      const block_hex = atob(blockData);
+      return block_hex;
     } catch (e) {
       throw new BlockNotExistsError(blockhash);
     }
@@ -74,29 +74,24 @@ export default function BlockchainService() {
     blockhash: string,
     header: string
   ): Promise<WriteFileResult> {
-    try {
-      // Filesystem plugin writes as raw bytes, but we must pass base64
-      const data = btoa(header);
+    // Filesystem plugin writes as raw bytes, but we must pass base64
+    const data = btoa(header);
 
-      const result = await Filesystem.writeFile({
-        path: `/selene/blocks/${blockhash}.raw`,
-        directory: Directory.Library,
-        recursive: true,
-        data,
-      });
+    const result = await Filesystem.writeFile({
+      path: `/selene/blocks/${blockhash}.raw`,
+      directory: Directory.Library,
+      recursive: true,
+      data,
+    });
 
-      return result;
-    } catch (e) {
-      Log.error(e);
-      return { uri: "" };
-    }
+    return result;
   }
 
   // registerBlock: insert a block into the database
   async function registerBlock(block) {
     const blockhash = calculateBlockhash(block.header);
 
-    db.run(
+    appDb.run(
       `INSERT INTO blockchain (
         blockhash,
         height
@@ -110,60 +105,68 @@ export default function BlockchainService() {
     );
 
     await _writeBlockData(blockhash, block.header);
-    saveDatabase();
   }
 
   // getBlocks: return all known blocks
   function getBlocks(): Array<BlockEntity> {
-    const result = resultToJson(db.exec(`SELECT * FROM blockchain;`));
+    const result = appDb.exec(`SELECT * FROM blockchain;`);
     //Log.log("getBlocks", result);
     return result;
   }
 
   // getBlockByHash: get block from database by blockhash
   async function getBlockByHash(blockhash): Promise<BlockEntity> {
-    const result = resultToJson(
-      db.exec(`SELECT * FROM blockchain WHERE blockhash="${blockhash}";`)
+    const result = appDb.exec(
+      `SELECT * FROM blockchain WHERE blockhash="${blockhash}";`
     );
 
     if (result.length < 1) {
       throw new BlockNotExistsError(blockhash);
     }
 
-    result.header = await _loadBlockData(result.blockhash);
+    const block = {
+      ...result[0],
+      header: await _loadBlockData(result.blockhash),
+    };
 
-    Log.debug("getBlockByHash", result, height);
-    return result[0];
+    Log.debug("getBlockByHash", block);
+    return block;
   }
 
   // getBlockByHeight: get block from database by height
   async function getBlockByHeight(height): Promise<BlockEntity> {
-    const result = resultToJson(
-      db.exec(`SELECT * FROM blockchain WHERE height="${height}";`)
+    const result = appDb.exec(
+      `SELECT * FROM blockchain WHERE height="${height}";`
     );
 
     if (result.length < 1) {
       throw new BlockNotExistsError(height);
     }
 
-    result.header = await _loadBlockData(result.blockhash);
+    const block = {
+      ...result[0],
+      header: await _loadBlockData(result.blockhash),
+    };
 
-    Log.debug("getBlockByHeight", result, height);
-    return result[0];
+    Log.debug("getBlockByHeight", block);
+    return block;
   }
 
   async function getChaintip() {
-    const result = resultToJson(
-      db.exec(`SELECT * FROM blockchain ORDER BY height DESC LIMIT 1`)
+    const result = appDb.exec(
+      `SELECT * FROM blockchain ORDER BY height DESC LIMIT 1`
     );
 
     if (result.length < 1) {
       throw new ChaintipNotExistsError();
     }
 
-    result.header = await _loadBlockData(result.blockhash);
+    const block = {
+      ...result[0],
+      header: await _loadBlockData(result.blockhash),
+    };
 
-    return result[0];
+    return block;
   }
 
   // calculateBlockHash: get the sha256 hash of the block header (little-endian)
@@ -216,33 +219,28 @@ export default function BlockchainService() {
 
   async function deleteBlock(blockhash: string): Promise<void> {
     try {
+      appDb.run(`DELETE FROM blockchain WHERE blockhash="${blockhash}";`);
       await Filesystem.deleteFile({
         path: `/selene/blocks/${blockhash}.raw`,
         directory: Directory.Library,
       });
+      //Log.debug("deleteBlock", blockhash);
     } catch (e) {
       Log.warn(e);
     }
-
-    db.run(`DELETE FROM blockchain WHERE blockhash="${blockhash}";`);
-    saveDatabase();
-    //Log.debug("deleteBlock", blockhash);
   }
 
   async function purgeBlocks(): Promise<void> {
-    const blockhashes = resultToJson(
-      db.exec(
-        `
+    const blockhashes = appDb.exec(
+      `
         SELECT blockhash FROM blockchain WHERE
           blockhash NOT IN (SELECT blockhash FROM transactions);
         `
-      )
     );
 
     await Promise.all(
       blockhashes.map(async ({ blockhash }) => deleteBlock(blockhash))
     );
-    saveDatabase();
     Log.debug("purgeBlocks", blockhashes);
   }
 }
