@@ -129,7 +129,7 @@ export default function TransactionManagerService() {
 
     const WalletManager = WalletManagerService();
     const wallets = WalletManager.listWallets();
-    const live_txids = (
+    /*const live_txids = (
       await Promise.all(
         wallets.map(async ({ walletHash }) => {
           const walletDb = await Database.openWalletDatabase(walletHash);
@@ -148,7 +148,9 @@ export default function TransactionManagerService() {
       .filter((txid) => txid !== "")
       .join(",");
 
-    Log.debug("purge", live_txids);
+    Log.debug("purge", live_txids);*/
+
+    const live_txids = "";
 
     queueMicrotask(async () => {
       const tx_hashes = appDb.exec(
