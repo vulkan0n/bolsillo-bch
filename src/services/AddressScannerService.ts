@@ -198,14 +198,12 @@ export default function AddressScannerService(wallet) {
           `INSERT INTO addresses (
             address, 
             hd_index,
-            change,
-            prefix
+            change
           ) 
           VALUES (
             "${stub.address}", 
             "${stub.hd_index}",
-            "${stub.change}",
-            "${wallet.prefix}"
+            "${stub.change}"
           );`
         );
       } catch (e) {
@@ -291,7 +289,8 @@ export default function AddressScannerService(wallet) {
     const getUnusedCount = (addresses) =>
       addresses.filter((a) => a.state === null).length;
 
-    WalletManagerService().clearWalletData(wallet.walletHash);
+    const WalletManager = WalletManagerService();
+    WalletManager.clearWalletData(wallet.walletHash);
 
     /* eslint-disable no-await-in-loop */
     for (let change = 0; change <= 1; change += 1) {
@@ -301,6 +300,8 @@ export default function AddressScannerService(wallet) {
       }
       store.dispatch(walletBalanceUpdate({ wallet, isChange: change === 1 }));
     }
+
+    await WalletManager.saveWallet(wallet.walletHash);
 
     Log.debug("Wallet Rebuild Done");
     Log.timeEnd("rebuildWallet");

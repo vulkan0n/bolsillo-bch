@@ -127,32 +127,35 @@ export default function TransactionManagerService() {
   async function purgeTransactions(): Promise<void> {
     Log.debug("purgeTransactions scheduled");
 
-    const WalletManager = WalletManagerService();
-    const wallets = WalletManager.listWallets();
-    /*const live_txids = (
-      await Promise.all(
-        wallets.map(async ({ walletHash }) => {
-          const walletDb = await Database.openWalletDatabase(walletHash);
-          const utxo_txids = walletDb.exec("SELECT txid FROM address_utxos");
-          const history_txids = walletDb.exec(
-            "SELECT txid FROM address_transactions WHERE amount IS NULL"
-          );
-
-          const cat_txids = [...utxo_txids, ...history_txids].join(",");
-          await Database.closeWalletDatabase(walletHash, true);
-          Log.debug("purge cat", cat_txids);
-          return cat_txids;
-        })
-      )
-    )
-      .filter((txid) => txid !== "")
-      .join(",");
-
-    Log.debug("purge", live_txids);*/
-
-    const live_txids = "";
-
     queueMicrotask(async () => {
+      const db_keepalive = Database.getKeepAlive();
+      const WalletManager = WalletManagerService();
+      const wallets = WalletManager.listWallets();
+      const live_txids = (
+        await Promise.all(
+          wallets.map(async ({ walletHash }) => {
+            const walletDb = await Database.openWalletDatabase(walletHash);
+            const utxo_txids = walletDb.exec("SELECT txid FROM address_utxos");
+            const history_txids = walletDb.exec(
+              "SELECT txid FROM address_transactions WHERE amount IS NULL"
+            );
+
+            const cat_txids = [
+              ...utxo_txids.map(({ txid }) => `"${txid}"`),
+              ...history_txids.map(({ txid }) => `"${txid}"`),
+            ].join(",");
+
+            if (db_keepalive !== walletHash) {
+              await Database.closeWalletDatabase(walletHash, true);
+            }
+
+            return cat_txids;
+          })
+        )
+      )
+        .filter((txid) => txid !== "")
+        .join(",");
+
       const tx_hashes = appDb.exec(
         `SELECT txid FROM transactions WHERE txid NOT IN (${live_txids})`
       );

@@ -58,14 +58,12 @@ export default function AddressManagerService(wallet: WalletEntity) {
         `INSERT INTO addresses (
           address, 
           hd_index,
-          change,
-          prefix
+          change
         ) 
         VALUES (
           "${address}", 
           "${hd_index}",
-          "${change}",
-          "${wallet.prefix}"
+          "${change}"
         ) RETURNING *;`
       )[0];
 
@@ -114,7 +112,6 @@ export default function AddressManagerService(wallet: WalletEntity) {
     const result = walletDb.exec(
       `SELECT * FROM addresses 
           WHERE change='0' 
-          AND prefix='${wallet.prefix}'
           ORDER BY hd_index DESC 
           ${limit > 0 ? `LIMIT ${limit}` : ""}
         ;`
@@ -132,7 +129,6 @@ export default function AddressManagerService(wallet: WalletEntity) {
     const result = walletDb.exec(
       `SELECT * FROM addresses 
           WHERE change="1" 
-          AND prefix="${wallet.prefix}"
           ORDER BY hd_index DESC 
           ${limit > 0 ? `LIMIT ${limit}` : ""}
         ;`
@@ -152,7 +148,6 @@ export default function AddressManagerService(wallet: WalletEntity) {
       `SELECT * FROM addresses 
           WHERE state IS NULL 
           AND change="${change}"
-          AND prefix="${wallet.prefix}"
           ORDER BY hd_index ASC 
           ${limit > 0 ? `LIMIT ${limit}` : ""}
         ;`
@@ -172,7 +167,6 @@ export default function AddressManagerService(wallet: WalletEntity) {
       `SELECT * FROM addresses 
           WHERE state IS NOT NULL 
           AND change="${change}"
-          AND prefix="${wallet.prefix}"
           ORDER BY hd_index DESC 
           ${limit ? `LIMIT ${limit}` : ""}
         ;`

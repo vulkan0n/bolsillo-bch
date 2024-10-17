@@ -10,7 +10,7 @@ import {
 } from "@/util/crypto";
 import { sha256 } from "@/util/hash";
 import { store } from "@/redux";
-import { selectBchNetwork, selectActiveWalletHash } from "@/redux/preferences";
+import { selectBchNetwork } from "@/redux/preferences";
 
 const Log = LogService("WalletManager");
 
@@ -45,11 +45,12 @@ const Database = DatabaseService();
 const APP_DB = await Database.getAppDatabase();
 
 export default function WalletManagerService() {
+  const network = selectBchNetwork(store.getState());
+
   return {
     listWallets,
     getWallet,
-    getActiveWalletHash,
-    getActiveWallet,
+    getWalletMeta,
     boot,
     createWallet,
     importWallet,
@@ -60,6 +61,7 @@ export default function WalletManagerService() {
     clearWalletData,
     exportWalletFile,
     importWalletFile,
+    saveWallet,
   };
 
   // ----------------------------
@@ -80,7 +82,7 @@ export default function WalletManagerService() {
 
     const walletDb = Database.getWalletDatabase(walletHash);
     const result = walletDb.exec("SELECT * FROM wallet");
-    Log.debug("getWallet got result", result);
+    //Log.debug("getWallet got result", result);
 
     if (result.length === 0) {
       throw new WalletNotExistsError(walletHash);
@@ -88,7 +90,6 @@ export default function WalletManagerService() {
 
     const wallet = result[0]; // eslint-disable-line prefer-destructuring
 
-    const network = selectBchNetwork(store.getState());
     wallet.network = network;
 
     // for safety, assume testnet unless we've explicitly stated to be on mainnet
@@ -99,13 +100,21 @@ export default function WalletManagerService() {
     return wallet;
   }
 
-  function getActiveWalletHash() {
-    const activeWalletHash = selectActiveWalletHash(store.getState());
-    return activeWalletHash;
-  }
+  function getWalletMeta(walletHash): WalletMeta {
+    if (!walletHash) {
+      throw new WalletNotExistsError(walletHash);
+    }
 
-  function getActiveWallet() {
-    return getWallet(getActiveWalletHash());
+    const result = APP_DB.exec(
+      `SELECT * FROM wallets WHERE walletHash="${walletHash}"`
+    );
+
+    if (result.length === 0) {
+      throw new WalletNotExistsError(walletHash);
+    }
+
+    const walletMeta = result[0];
+    return walletMeta;
   }
 
   // ----------------------------
@@ -118,8 +127,8 @@ export default function WalletManagerService() {
         throw new WalletNotExistsError("");
       }
 
-      Log.debug("walletBoot ~", walletHash);
-      await Database.openWalletDatabase(walletHash);
+      Log.debug("walletBoot ~", walletHash, network);
+      await Database.openWalletDatabase(walletHash, network);
       wallet = getWallet(walletHash);
       Log.debug("boot got", wallet);
     } catch (e) {
@@ -142,7 +151,9 @@ export default function WalletManagerService() {
 
     Log.debug("walletBoot", walletHash, wallet, wallet.network);
 
-    await Database.flushDatabase("app");
+    Database.setKeepAlive(walletHash);
+    Database.flushHandles();
+
     return wallet;
   }
 
@@ -248,7 +259,7 @@ export default function WalletManagerService() {
   async function deleteWallet(walletHash) {
     try {
       APP_DB.run(`DELETE FROM wallets WHERE walletHash="${walletHash}"`);
-      await Database.deleteWalletDatabase(walletHash);
+      await Database.deleteWalletDatabase(walletHash, network);
       await deleteWalletFile(walletHash);
     } catch (e) {
       Log.warn(e);
@@ -356,7 +367,7 @@ export default function WalletManagerService() {
       directory: Directory.Library,
     });
 
-    await Database.openWalletDatabase(walletHash);
+    await Database.openWalletDatabase(walletHash, network);
     const walletData = JSON.parse(walletFile.data.toString());
     //Log.debug("importWalletFile", walletHash);
 
@@ -375,5 +386,9 @@ export default function WalletManagerService() {
       path: `/selene/wallets/${walletHash}.wallet.json`,
       directory: Directory.Library,
     });
+  }
+
+  async function saveWallet(walletHash) {
+    return Database.flushDatabase(walletHash);
   }
 }

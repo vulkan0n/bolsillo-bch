@@ -25,20 +25,20 @@ export default function UxtoManagerService(wallet) {
         txid,
         tx_pos,
         amount,
-        prefix
+        network
       ) VALUES (
         "${address}",
         "${utxo.tx_hash}",
         "${utxo.tx_pos}",
         "${utxo.value}",
-        "${wallet.prefix}"
+        "${wallet.network}"
       );`
     );
   }
 
   function getWalletUtxos() {
     const result = walletDb.exec(
-      `SELECT * FROM address_utxos WHERE prefix="${wallet.prefix}"`
+      `SELECT * FROM address_utxos WHERE network="${wallet.network}"`
     );
 
     return result;
@@ -60,7 +60,7 @@ export default function UxtoManagerService(wallet) {
       `SELECT * FROM addresses 
           WHERE 
             balance >= "${targetAmount}"
-            AND prefix="${wallet.prefix}"
+            AND network="${wallet.network}"
           ORDER BY balance ASC`
     );
 
@@ -84,7 +84,7 @@ export default function UxtoManagerService(wallet) {
       `SELECT * FROM address_utxos 
           WHERE 
             amount <= "${targetAmount}" 
-            AND prefix="${wallet.prefix}"
+            AND network="${wallet.network}"
           ORDER BY amount DESC`
     );
 

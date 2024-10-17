@@ -52,7 +52,7 @@ export default function SettingsWalletView() {
   const { walletHash } = useParams();
 
   const WalletManager = WalletManagerService();
-  const wallet = WalletManager.getWallet(walletHash);
+  const wallet = WalletManager.getWalletMeta(walletHash);
 
   const activeWalletHash = useSelector(selectActiveWalletHash);
   const isActiveWallet = wallet.walletHash === activeWalletHash;

@@ -18,6 +18,7 @@ import { txHistoryFetch } from "@/redux/txHistory";
 import { selectNetworkStatus } from "@/redux/device";
 
 import LogService from "@/services/LogService";
+import DatabaseService from "@/services/DatabaseService";
 import ElectrumService from "@/services/ElectrumService";
 import BlockchainService from "@/services/BlockchainService";
 import AddressManagerService, {

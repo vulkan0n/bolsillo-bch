@@ -94,7 +94,6 @@ const walletdb_migrations = [
         balance int default 0 not null, 
         change int default 0 not null, 
         state text default null,
-        prefix text default "bitcoincash" CHECK(prefix IN ("bitcoincash", "bchtest", "bchreg")),
         memo text default null
       );`
     );
@@ -119,7 +118,8 @@ const walletdb_migrations = [
         txid text not null,
         tx_pos int not null,
         amount int not null,
-        memo text default null
+        memo text default null,
+        network text default "mainnet" CHECK(network IN ("mainnet", "chipnet", "testnet3", "testnet4")) not null
       );`
     );
 

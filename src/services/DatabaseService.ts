@@ -26,6 +26,7 @@ const SQL = await initSqlJs({ locateFile: () => "/sql-wasm.wasm" });
 const isFlushing = {};
 
 const db_handles = new Map();
+let db_keepalive = null;
 
 // open a db file from filesystem
 // by default, creates and initializes the db file if it doesn't exist
@@ -65,6 +66,8 @@ export default function DatabaseService() {
     deleteWalletDatabase,
     flushDatabase,
     flushHandles,
+    setKeepAlive,
+    getKeepAlive,
   };
 
   // getAppDatabase: try to open the app db file
@@ -94,7 +97,7 @@ export default function DatabaseService() {
     return walletDb;
   }
 
-  async function openWalletDatabase(walletHash) {
+  async function openWalletDatabase(walletHash, network = "mainnet") {
     if (walletHash === "") {
       throw new DatabaseNotOpenError(walletHash);
     }
@@ -105,7 +108,7 @@ export default function DatabaseService() {
     if (db_handles.has(walletHash)) {
       walletDb = db_handles.get(walletHash);
     } else {
-      const walletDbFilename = `/selene/db/${walletHash}.db`;
+      const walletDbFilename = `/selene/db/${walletHash}.${network}.db`;
       walletDb = await _dbOpen(walletDbFilename);
       run_walletdb_migrations(walletDb);
 
@@ -134,16 +137,16 @@ export default function DatabaseService() {
     //Log.timeEnd(`closeWalletDatabase ${walletHash}`);
   }
 
-  async function deleteWalletDatabase(walletHash) {
+  async function deleteWalletDatabase(walletHash, network) {
     await closeWalletDatabase(walletHash, true);
 
     return Filesystem.deleteFile({
-      path: `/selene/db/${walletHash}.db`,
+      path: `/selene/db/${walletHash}.${network}.db`,
       directory: Directory.Library,
     });
   }
 
-  // _flushDatabase [private]: writes database to disk
+  // flushDatabase: writes database to disk
   async function flushDatabase(handle = "app", force: boolean = false) {
     if (!force && isFlushing[handle]) {
       Log.debug("skipping flush due to flushLock", handle);
@@ -176,21 +179,25 @@ export default function DatabaseService() {
   }
 
   async function flushHandles(shouldCloseHandles: boolean = true) {
-    const promises = [];
-
     Log.debug("flushHandles", db_handles);
-    db_handles.forEach((handle) => {
-      promises.push(async () => {
-        if (shouldCloseHandles && handle !== "app") {
-          return closeWalletDatabase(handle);
-        }
+    const promises = [...db_handles].map(async ([handle]) => {
+      if (shouldCloseHandles && handle !== "app" && handle !== db_keepalive) {
+        return closeWalletDatabase(handle);
+      }
 
-        return flushDatabase(handle);
-      });
+      return flushDatabase(handle);
     });
-    Log.debug("flushHandles promises", promises);
+    //Log.debug("flushHandles promises", promises);
 
     return Promise.all(promises);
+  }
+
+  function setKeepAlive(handle) {
+    db_keepalive = handle;
+  }
+
+  function getKeepAlive() {
+    return db_keepalive;
   }
 }
 
@@ -199,6 +206,10 @@ App.addListener("appStateChange", async ({ isActive }) => {
   const shouldCloseHandles = isActive === false;
   await DatabaseService().flushHandles(shouldCloseHandles);
 });
+
+/*App.addListener("pause", async () => {
+  await DatabaseService().flushHandles(false);
+});*/
 
 // HERE BE SATS if someone wants to try to steal them!
 // Some ancient commit will load this wallet, but send wasn't implemented yet...
