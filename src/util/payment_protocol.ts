@@ -1,8 +1,4 @@
-// TODO: Move out into own library. The BitPay library:
-//       1. Isn't typed (it's in pure JS)
-//       2. Relies on a 'request' NPM library which won't allow CORS within Capacitor apps.
-//       3. Doesn't use LibAuth.
-//       So there'll be some value for other developers in being able to leverage this.
+// TODO: Once @xocash/json-payment-protocol-v2 is released, consider replacing this file with that package.
 
 import {
   binsAreEqual,
