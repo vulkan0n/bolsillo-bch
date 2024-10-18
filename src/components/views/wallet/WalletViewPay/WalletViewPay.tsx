@@ -168,26 +168,6 @@ export default function WalletViewPay() {
     ]
   );
 
-  // Fetch the payment request.
-  useEffect(
-    function handlePaymentRequest() {
-      const fetchPaymentRequest = async () => {
-        try {
-          setIsLoading(true);
-          setPaymentData(await jppClient.paymentRequest(requestUri));
-        } catch (error) {
-          setMessage("Invalid invoice");
-          setDetailedMessage(`${error}`);
-        } finally {
-          setIsLoading(false);
-        }
-      };
-
-      fetchPaymentRequest();
-    },
-    [requestUri]
-  );
-
   // Handle instant pay.
   // NOTE: Some of the logic below is to prevent a race-condition whereby a user can land on this page prior to Electrum being connected.
   //       The intent is to allow Selene to be invoked by a "bitcoincash:?r=${url}" URL and "wait" for connection before triggering instant pay.
@@ -195,6 +175,11 @@ export default function WalletViewPay() {
     function handleInstantPay() {
       // If instant pay is not enabled, return to prevent further execution.
       if (!isInstantPayEnabled) {
+        return;
+      }
+
+      // If we are already sending, return to prevent further execution.
+      if (isSending) {
         return;
       }
 
@@ -215,12 +200,33 @@ export default function WalletViewPay() {
     },
     [
       isInstantPayEnabled,
-      paymentData,
+      isSending,
       sync.isConnected,
+      paymentData,
       totalSats,
       instantPayThreshold,
       confirmSend,
     ]
+  );
+
+  // Fetch the payment request.
+  useEffect(
+    function handlePaymentRequest() {
+      const fetchPaymentRequest = async () => {
+        try {
+          setIsLoading(true);
+          setPaymentData(await jppClient.paymentRequest(requestUri));
+        } catch (error) {
+          setMessage("Invalid invoice");
+          setDetailedMessage(`${error}`);
+        } finally {
+          setIsLoading(false);
+        }
+      };
+
+      fetchPaymentRequest();
+    },
+    [requestUri]
   );
 
   return (
