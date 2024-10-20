@@ -4,6 +4,7 @@ import { useSelector } from "react-redux";
 import { ImportOutlined } from "@ant-design/icons";
 import * as bip39 from "bip39";
 import Accordion from "@/components/atoms/Accordion";
+import DatabaseService from "@/services/DatabaseService";
 import WalletManagerService from "@/services/WalletManagerService";
 import AddressScannerService from "@/services/AddressScannerService";
 import LogService from "@/services/LogService";
@@ -22,6 +23,7 @@ export default function SettingsWalletWizardImport() {
 
   const [mnemonicInput, setMnemonicInput] = useState("");
   const [passphraseInput, setPassphraseInput] = useState("");
+  const [walletNameInput, setWalletNameInput] = useState("Imported Wallet");
   const [message, setMessage] = useState("");
   const [derivationPath, setDerivationPath] = useState("auto");
 
@@ -33,6 +35,10 @@ export default function SettingsWalletWizardImport() {
 
     setMnemonicInput(sanitizedInput);
     setMessage("");
+  };
+
+  const handleWalletNameInput = (event) => {
+    setWalletNameInput(event.target.value);
   };
 
   const handlePassphraseInput = (event) => {
@@ -69,13 +75,21 @@ export default function SettingsWalletWizardImport() {
 
         Log.debug("Found path", path);
 
-        const wallet = WalletManagerService().importWallet({
+        const walletData = {
           mnemonic: trimmedInput,
           passphrase: passphraseInput,
           derivation: path,
-        });
+          name: walletNameInput,
+        };
 
-        navigate(`build/${wallet.walletHash}`);
+        const WalletManager = WalletManagerService();
+        const Database = DatabaseService();
+        const walletHash = WalletManager.calculateWalletHash(walletData);
+        await Database.openWalletDatabase(walletHash, bchNetwork);
+        Database.setKeepAlive(walletHash);
+        WalletManagerService().importWallet(walletData);
+
+        navigate(`build/${walletHash}`);
       } catch (e) {
         setMessage(translate(translations.alreadyImported));
       }
@@ -106,6 +120,17 @@ export default function SettingsWalletWizardImport() {
           value={mnemonicInput}
           autoComplete="off"
         />
+      </div>
+      <div className="my-1">
+        <label>
+          <span className="font-bold">Wallet Name</span>
+          <input
+            type="text"
+            className="w-full border border-primary border-2 rounded-sm p-1"
+            onChange={handleWalletNameInput}
+            value={walletNameInput}
+          />
+        </label>
       </div>
       <div className="my-1">
         <Accordion icon={() => null} title="Additional Options">

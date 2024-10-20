@@ -38,10 +38,11 @@ const appdb_migrations = [
       `CREATE TABLE IF NOT EXISTS transactions (
         txid text primary key not null, 
         time_seen default ( strftime('%Y-%m-%dT%H:%M:%SZ') ),
-        size int,
-        blockhash text,
         time int,
-        blocktime int
+        blocktime int,
+        blockhash text,
+        size int,
+        version int
       );`
     );
 
@@ -100,15 +101,16 @@ const walletdb_migrations = [
 
     query.push(
       `CREATE TABLE IF NOT EXISTS address_transactions (
-        txid text primary key not null,
-        height int not null,
+        txid text not null,
+        height int default 0 not null,
         address text not null,
         time text default ( strftime('%Y-%m-%dT%H:%M:%SZ') ),
         time_seen default ( strftime('%Y-%m-%dT%H:%M:%SZ') ),
         amount int,
         fiat_amount text,
         fiat_currency text,
-        memo text default null
+        memo text default null,
+        UNIQUE(txid, address)
       );`
     );
 

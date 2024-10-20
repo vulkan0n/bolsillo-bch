@@ -28,8 +28,6 @@ export default function AddressScannerService(wallet) {
   const Database = DatabaseService();
   const Electrum = ElectrumService();
 
-  const walletDb = Database.getWalletDatabase(wallet.walletHash);
-
   return {
     populateAddresses,
     scanDerivationPaths,
@@ -136,6 +134,7 @@ export default function AddressScannerService(wallet) {
     change = 0
   ) {
     Log.time(`scanAddresses ${change}`);
+    const walletDb = Database.getWalletDatabase(wallet.walletHash);
     const Hd = HdNodeService(wallet);
     const AddressManager = AddressManagerService(wallet);
     const UtxoManager = UtxoManagerService(wallet);
@@ -177,16 +176,16 @@ export default function AddressScannerService(wallet) {
     const checkNeedsRegistration = (stub) =>
       dbAddresses.findIndex((dba) => dba.hd_index === stub.hd_index) === -1;
 
+    // don't register addresses past last used address (only fill gaps)
+    const gapAddresses = nullAddresses.filter(
+      (stub) =>
+        checkNeedsRegistration(stub) &&
+        stub.hd_index < activeAddresses[activeAddresses.length - 1].hd_index
+    );
+
     const needsRegistrationAddresses = activeAddresses
       .filter((stub) => checkNeedsRegistration(stub))
-      .concat(
-        // don't register addresses past last used address (only fill gaps)
-        nullAddresses.filter(
-          (stub) =>
-            checkNeedsRegistration(stub) &&
-            stub.hd_index < activeAddresses[activeAddresses.length - 1].hd_index
-        )
-      );
+      .concat(gapAddresses);
 
     // for each address with state, register it if we don't have it.
     // [Kludge] We have to use raw SQL here instead of AddressManager.registerAddress
@@ -220,7 +219,7 @@ export default function AddressScannerService(wallet) {
 
     // get history for active addresses
     await Promise.all(
-      activeAddresses.map((stub) => {
+      activeAddresses.concat(gapAddresses).map((stub) => {
         const calculatedState = AddressManager.calculateAddressState(
           stub.address
         );

@@ -160,12 +160,15 @@ export default function TransactionHistoryService(
 
   function setTransactionMemo(tx_hash: string, memo: string): void {
     walletDb.run(
-      `UPDATE address_transactions SET memo="${memo}"
-        WHERE txid="${tx_hash}";
+      `UPDATE address_transactions SET memo=?
+        WHERE txid="${tx_hash}";`,
+      [memo]
+    );
 
-       UPDATE address_utxos SET memo="${memo}"
-        WHERE txid="${tx_hash}";
-      `
+    walletDb.run(
+      `UPDATE address_utxos SET memo=?
+        WHERE txid="${tx_hash}";`,
+      [memo]
     );
   }
 
@@ -183,12 +186,13 @@ export default function TransactionHistoryService(
 
     const result = walletDb.exec(
       `UPDATE address_transactions SET 
-          amount="${amount}", 
-          fiat_amount="${fiat_amount}",
-          fiat_currency="${fiatCurrency}",
+          amount=?,
+          fiat_amount=?,
+          fiat_currency=?,
           time=(SELECT time FROM transactions WHERE txid="${tx_hash}" AND time != "null")
         WHERE txid="${tx_hash}"
-        RETURNING *;`
+        RETURNING *;`,
+      [amount, fiat_amount, fiatCurrency]
     )[0];
     Log.debug("updateTxAmount", tx_hash, result);
 

@@ -44,6 +44,7 @@ export const walletBoot = createAsyncThunk(
     thunkApi
   ) => {
     const { walletHash, network } = payload;
+
     // load Wallet from database
     const wallet = await WalletManagerService().boot(walletHash);
 

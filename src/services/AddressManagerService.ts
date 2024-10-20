@@ -60,18 +60,16 @@ export default function AddressManagerService(wallet: WalletEntity) {
           hd_index,
           change
         ) 
-        VALUES (
-          "${address}", 
-          "${hd_index}",
-          "${change}"
-        ) RETURNING *;`
+        VALUES (?, ?, ?)
+        RETURNING *;`,
+        [address, hd_index, change]
       )[0];
 
-      //Log.debug("registerAddress", result);
+      Log.debug("registerAddress", result);
       return result;
     } catch (e) {
       const addr = getAddress(address);
-      //Log.debug("getAddress (register)", addr);
+      Log.debug("getAddress (register)", addr);
       return addr;
     }
   }
@@ -178,17 +176,15 @@ export default function AddressManagerService(wallet: WalletEntity) {
 
   // updateAddressState: updates address state in walletDb
   function updateAddressState(address: string, state: string | null): void {
-    const s = state === null ? "NULL" : `'${state}'`;
-
-    walletDb.exec(
+    walletDb.run(
       `UPDATE addresses SET 
-          state=${s}
-         WHERE (
-             address="${address}" 
-        );`
+          state=?
+        WHERE address="${address}";
+      `,
+      [state]
     );
 
-    //Log.debug("updateAddressState", address, state);
+    Log.debug("updateAddressState", address, state);
   }
 
   function getAddressTransactions(address: string) {
@@ -244,22 +240,21 @@ export default function AddressManagerService(wallet: WalletEntity) {
     try {
       walletDb.run(
         `INSERT INTO address_transactions (
-        txid,
-        height,
-        address
-      ) VALUES (
-        "${tx.tx_hash}",
-        "${tx.height}",
-        "${address}"
-      ) ON CONFLICT DO 
-        UPDATE SET 
-          height="${tx.height}";
-      `
+          txid,
+          height,
+          address
+        ) VALUES (?, ?, ?)
+        ON CONFLICT DO 
+          UPDATE SET 
+            height=${tx.height}
+          WHERE txid=excluded.txid;
+        `,
+        [tx.tx_hash, tx.height, address]
       );
     } catch (e) {
       Log.error(e);
     }
 
-    //Log.debug("AddressManager.registerTransaction", address, tx, wallet.walletHash);
+    //Log.debug("AddressManager.registerTransaction", address, tx);
   }
 }

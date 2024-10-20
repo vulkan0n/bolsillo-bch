@@ -62,6 +62,7 @@ export default function WalletManagerService() {
     exportWalletFile,
     importWalletFile,
     saveWallet,
+    calculateWalletHash,
   };
 
   // ----------------------------
@@ -214,7 +215,7 @@ export default function WalletManagerService() {
 
     const created_at = walletData.date_created
       ? walletData.date_created
-      : walletData.created_at;
+      : walletData.created_at || new Date().toISOString();
 
     try {
       walletDb.run(
@@ -233,7 +234,7 @@ export default function WalletManagerService() {
         [name, mnemonic, passphrase, derivation, walletHash, created_at]
       );
     } catch (e) {
-      Log.warn("wallet already exists in walletDb", walletHash);
+      Log.warn("wallet already exists in walletDb", walletHash, e);
     }
 
     try {
@@ -250,10 +251,11 @@ export default function WalletManagerService() {
         [walletHash, name, created_at]
       );
     } catch (e) {
-      Log.warn("wallet already exists in appDb", walletHash);
+      Log.warn("wallet already exists in appDb", walletHash, e);
     }
 
     Log.log("importing wallet", walletHash);
+    return walletHash;
   }
 
   async function deleteWallet(walletHash) {
