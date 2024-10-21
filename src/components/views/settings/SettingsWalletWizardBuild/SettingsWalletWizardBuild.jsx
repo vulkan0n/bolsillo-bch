@@ -4,8 +4,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { SyncOutlined } from "@ant-design/icons";
 import { selectBchNetwork } from "@/redux/preferences";
 import { walletBoot } from "@/redux/wallet";
-import { syncReconnect } from "@/redux/sync";
-import ElectrumService from "@/services/ElectrumService";
 import WalletManagerService from "@/services/WalletManagerService";
 import AddressScannerService from "@/services/AddressScannerService";
 
@@ -30,14 +28,9 @@ export default function SettingsWalletWizardBuild() {
         const wallet = WalletManagerService().getWallet(walletHash);
 
         if (isBuildDone) {
-          const Electrum = ElectrumService();
-          await Electrum.disconnect(true);
-
           dispatch(
             walletBoot({ walletHash: wallet.walletHash, network: bchNetwork })
           );
-
-          dispatch(syncReconnect());
 
           navigate("/");
           return;

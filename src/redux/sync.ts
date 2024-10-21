@@ -45,6 +45,7 @@ export const syncConnect = createAsyncThunk(
     try {
       await Electrum.connect(payload.server);
     } catch (e) {
+      Log.error(e);
       // if connection fails, destroy the client and try again
       await Electrum.disconnect(true);
 
@@ -84,13 +85,11 @@ export const syncConnect = createAsyncThunk(
   }
 );
 
-// syncReconnect: force disconnect and attempt fresh connection to server
+// syncReconnect: attempt fresh connection to server
 export const syncReconnect = createAsyncThunk(
   "sync/reconnect",
   async (server: string | undefined, thunkApi) => {
     const connectServer = server || Electrum.getElectrumHost();
-    // cleanup electrum subscriptions (force=true)
-    await Electrum.disconnect(true);
     thunkApi.dispatch(syncConnect({ attempts: 0, server: connectServer }));
   }
 );
@@ -127,12 +126,9 @@ export const syncWalletAddresses = createAsyncThunk(
     AddressScanner.populateAddresses();
 
     Promise.all(
-      AddressManager.getReceiveAddresses().map(async (address) => {
-        const subscription = await Electrum.subscribeToAddress(address);
-        thunkApi.dispatch(
-          syncAddressState([address, subscription.addressState])
-        );
-      })
+      AddressManager.getReceiveAddresses().map((address) =>
+        Electrum.subscribeToAddress(address)
+      )
     );
 
     thunkApi.dispatch(syncChangeAddresses());
@@ -151,15 +147,7 @@ export const syncChangeAddresses = createAsyncThunk(
 
     const promises = changeAddresses
       .filter((address) => !(address.state !== null && address.balance === 0)) // don't resync fully spent change addresses
-      .map(async (address) => {
-        const subscription = await Electrum.subscribeToAddress(address);
-
-        thunkApi.dispatch(
-          syncAddressState([address, subscription.addressState])
-        );
-        //Log.debug("sync/changeAddresses", address, addressState);
-        return [address, subscription.addressState];
-      });
+      .map((address) => Electrum.subscribeToAddress(address));
 
     const batchedPromises = [];
     const batch_chunk_size = 1024;
@@ -263,12 +251,7 @@ export const syncPopulateAddresses = createAsyncThunk(
     const generatedAddresses = AddressScanner.populateAddresses();
 
     await Promise.all(
-      generatedAddresses.map(async (address) => {
-        const subscription = await Electrum.subscribeToAddress(address);
-        thunkApi.dispatch(
-          syncAddressState([subscription.address, subscription.addressState])
-        );
-      })
+      generatedAddresses.map((address) => Electrum.subscribeToAddress(address))
     );
   }
 );
