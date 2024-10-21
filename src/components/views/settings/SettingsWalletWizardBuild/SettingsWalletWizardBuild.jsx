@@ -21,6 +21,7 @@ export default function SettingsWalletWizardBuild() {
 
   const [isBuilding, setIsBuilding] = useState(false);
   const [isBuildDone, setIsBuildDone] = useState(false);
+  const [addressesScanned, setAddressesScanned] = useState(0);
 
   useEffect(
     function startBuild() {
@@ -37,7 +38,11 @@ export default function SettingsWalletWizardBuild() {
         }
 
         if (isBuilding) {
-          await AddressScannerService(wallet).rebuildWallet();
+          await AddressScannerService(wallet).rebuildWallet((scanCount) =>
+            requestAnimationFrame(() =>
+              setAddressesScanned((scanned) => scanned + scanCount)
+            )
+          );
           setIsBuildDone(true);
         }
 
@@ -55,9 +60,10 @@ export default function SettingsWalletWizardBuild() {
     <div>
       <h2 className="text-2xl text-center">{translate(importingWallet)}</h2>
       <h3 className="text-xl text-center">{translate(takesMinutes)}</h3>
-      <div className="flex justify-center items-center">
+      <div className="flex justify-center items-center my-2">
         <SyncOutlined className="text-5xl" spin />
       </div>
+      <div className="text-center">Scanned {addressesScanned} addresses</div>
     </div>
   );
 }

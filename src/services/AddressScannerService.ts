@@ -132,7 +132,8 @@ export default function AddressScannerService(wallet) {
   async function scanAddresses(
     startIndex = 0,
     endIndex = ADDRESS_GAP_LIMIT,
-    change = 0
+    change = 0,
+    callback: (number) => void = () => {}
   ) {
     Log.time(`scanAddresses ${change}`);
     Log.debug("scanAddresses", startIndex, endIndex, change, wallet.walletHash);
@@ -223,9 +224,12 @@ export default function AddressScannerService(wallet) {
         );
 
         // if states match, address does not need update
-        return calculatedState !== stub.state
-          ? scanHistory(stub.address)
-          : Promise.resolve();
+        if (calculatedState !== stub.state) {
+          return scanHistory(stub.address, callback);
+        }
+
+        callback(1);
+        return Promise.resolve();
       })
     );
 
@@ -244,7 +248,8 @@ export default function AddressScannerService(wallet) {
 
   async function scanMoreAddresses(
     nScanMore: number = ADDRESS_GAP_LIMIT,
-    change: number = 0
+    change: number = 0,
+    callback: (number) => void = () => {}
   ) {
     const addresses = change
       ? AddressManager.getChangeAddresses()
@@ -271,13 +276,14 @@ export default function AddressScannerService(wallet) {
     const scannedAddresses = await scanAddresses(
       scanStartIndex,
       scanEndIndex,
-      change
+      change,
+      callback
     );
 
     return scannedAddresses;
   }
 
-  async function rebuildWallet() {
+  async function rebuildWallet(callback: (number) => void = () => {}) {
     Log.debug("Starting Wallet Rebuild");
     Log.time("rebuildWallet");
 
@@ -288,10 +294,16 @@ export default function AddressScannerService(wallet) {
 
     /* eslint-disable no-await-in-loop */
     for (let change = 0; change <= 1; change += 1) {
-      let addresses = await scanMoreAddresses(SCAN_BATCH_SIZE, change);
+      let addresses = await scanMoreAddresses(
+        SCAN_BATCH_SIZE,
+        change,
+        callback
+      );
+
       while (getUnusedCount(addresses) < ADDRESS_GAP_LIMIT) {
-        addresses = await scanMoreAddresses(SCAN_BATCH_SIZE, change);
+        addresses = await scanMoreAddresses(SCAN_BATCH_SIZE, change, callback);
       }
+
       store.dispatch(walletBalanceUpdate({ wallet, isChange: change === 1 }));
     }
 
@@ -324,7 +336,10 @@ export default function AddressScannerService(wallet) {
     return Promise.resolve();
   }
 
-  async function scanHistory(address: string) {
+  async function scanHistory(
+    address: string,
+    callback: (number) => void = () => {}
+  ) {
     const walletDb = Database.getWalletDatabase(wallet.walletHash);
 
     const history = await Electrum.requestAddressHistory(address);
@@ -342,8 +357,9 @@ export default function AddressScannerService(wallet) {
       [newCalculatedState]
     );
 
-    Log.debug("scanHistory", address, newCalculatedState);
+    //Log.debug("scanHistory", address, newCalculatedState);
 
+    callback(1);
     return Promise.resolve();
   }
 }
