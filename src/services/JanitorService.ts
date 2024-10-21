@@ -9,6 +9,7 @@ export default function JanitorService() {
   return {
     migrateLegacyDatabases,
     recoverWalletFiles,
+    fsck,
   };
 
   async function migrateLegacyDatabases() {
@@ -94,5 +95,68 @@ export default function JanitorService() {
     );
 
     return Database.flushDatabase("app");
+  }
+
+  // fsck: FileSystem Consistency Check
+  async function fsck() {
+    try {
+      await Filesystem.readdir({
+        path: "/selene",
+        directory: Directory.Library,
+      });
+    } catch (e) {
+      await Filesystem.mkdir({
+        path: "/selene",
+        directory: Directory.Library,
+      });
+    }
+
+    try {
+      await Filesystem.readdir({
+        path: "/selene/db",
+        directory: Directory.Library,
+      });
+    } catch (e) {
+      await Filesystem.mkdir({
+        path: "/selene/db",
+        directory: Directory.Library,
+      });
+    }
+
+    try {
+      await Filesystem.readdir({
+        path: "/selene/wallets",
+        directory: Directory.Library,
+      });
+    } catch (e) {
+      await Filesystem.mkdir({
+        path: "/selene/wallets",
+        directory: Directory.Library,
+      });
+    }
+
+    try {
+      await Filesystem.readdir({
+        path: "/selene/tx",
+        directory: Directory.Library,
+      });
+    } catch (e) {
+      await Filesystem.mkdir({
+        path: "/selene/tx",
+        directory: Directory.Library,
+      });
+    }
+
+    try {
+      await Filesystem.readdir({
+        path: "/selene/blocks",
+        directory: Directory.Library,
+      });
+    } catch (e) {
+      await Filesystem.mkdir({
+        path: "/selene/blocks",
+        directory: Directory.Library,
+      });
+    }
   }
 }

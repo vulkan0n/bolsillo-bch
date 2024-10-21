@@ -27,6 +27,10 @@ const Log = LogService("AddressScanner");
 export default function AddressScannerService(wallet) {
   const Database = DatabaseService();
   const Electrum = ElectrumService();
+  const WalletManager = WalletManagerService();
+  const AddressManager = AddressManagerService(wallet);
+  const Hd = HdNodeService(wallet);
+  const UtxoManager = UtxoManagerService(wallet);
 
   return {
     populateAddresses,
@@ -44,9 +48,6 @@ export default function AddressScannerService(wallet) {
   // there are always at least $ADDRESS_GAP_LIMIT addresses
   // returns an array of generated addresses
   function populateAddresses(): Array<AddressEntity> {
-    const AddressManager = AddressManagerService(wallet);
-    const hdWallet = HdNodeService(wallet);
-
     const receiveAddresses = AddressManager.getReceiveAddresses();
     const changeAddresses = AddressManager.getChangeAddresses();
 
@@ -69,7 +70,7 @@ export default function AddressScannerService(wallet) {
 
       // starting from latest index, generate new addresses
       for (let hd_index = nextHdIndex; hd_index < endHdIndex; hd_index += 1) {
-        const newAddress = hdWallet.generateAddress(hd_index, change);
+        const newAddress = Hd.generateAddress(hd_index, change);
 
         generated.push(
           AddressManager.registerAddress(newAddress, hd_index, change)
@@ -92,7 +93,7 @@ export default function AddressScannerService(wallet) {
       DERIVATION_PATHS.map((path) => {
         // set the derivation path for the WalletEntity
         const tempWallet = { ...wallet, derivation: path };
-        const Hd = HdNodeService(tempWallet);
+        const tempHd = HdNodeService(tempWallet);
 
         // generate addresses for each change path
         const addresses: Array<string> = [];
@@ -103,7 +104,7 @@ export default function AddressScannerService(wallet) {
             hd_index += 1
           ) {
             try {
-              const address = Hd.generateAddress(hd_index, change);
+              const address = tempHd.generateAddress(hd_index, change);
               addresses.push(address);
             } catch (e) {
               Log.error(e);
@@ -134,12 +135,9 @@ export default function AddressScannerService(wallet) {
     change = 0
   ) {
     Log.time(`scanAddresses ${change}`);
-    const walletDb = Database.getWalletDatabase(wallet.walletHash);
-    const Hd = HdNodeService(wallet);
-    const AddressManager = AddressManagerService(wallet);
-    const UtxoManager = UtxoManagerService(wallet);
+    Log.debug("scanAddresses", startIndex, endIndex, change, wallet.walletHash);
 
-    Log.debug("scanAddesses", startIndex, endIndex, change, wallet.walletHash);
+    const walletDb = Database.getWalletDatabase(wallet.walletHash);
 
     const dbAddresses = change
       ? AddressManager.getChangeAddresses()
@@ -248,8 +246,6 @@ export default function AddressScannerService(wallet) {
     nScanMore: number = ADDRESS_GAP_LIMIT,
     change: number = 0
   ) {
-    const AddressManager = AddressManagerService(wallet);
-
     const addresses = change
       ? AddressManager.getChangeAddresses()
       : AddressManager.getReceiveAddresses();
@@ -288,7 +284,6 @@ export default function AddressScannerService(wallet) {
     const getUnusedCount = (addresses) =>
       addresses.filter((a) => a.state === null).length;
 
-    const WalletManager = WalletManagerService();
     WalletManager.clearWalletData(wallet.walletHash);
 
     /* eslint-disable no-await-in-loop */
@@ -307,7 +302,6 @@ export default function AddressScannerService(wallet) {
   }
 
   async function scanUtxos(address: string) {
-    const UtxoManager = UtxoManagerService(wallet);
     const utxos = await Electrum.requestUtxos(address);
 
     // we need to delete our knowledge of UTXO set
@@ -331,19 +325,24 @@ export default function AddressScannerService(wallet) {
   }
 
   async function scanHistory(address: string) {
-    const AddressManager = AddressManagerService(wallet);
+    const walletDb = Database.getWalletDatabase(wallet.walletHash);
 
     const history = await Electrum.requestAddressHistory(address);
     history.forEach((historyTx) => {
       AddressManager.registerTransaction(address, historyTx);
     });
 
-    const newCalculatedState =
-      history.length > 0 ? AddressManager.calculateAddressState(address) : null;
+    const newCalculatedState = AddressManager.calculateAddressState(address);
 
-    AddressManager.updateAddressState(address, newCalculatedState);
+    walletDb.run(
+      `UPDATE addresses SET 
+          state=?
+        WHERE address="${address}";
+      `,
+      [newCalculatedState]
+    );
 
-    //Log.debug("scanHistory", address, newCalculatedState);
+    Log.debug("scanHistory", address, newCalculatedState);
 
     return Promise.resolve();
   }

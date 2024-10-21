@@ -23,6 +23,7 @@ async function initialize_app() {
 async function pre_init() {
   Log.log("* PRE_INIT *");
   const Janitor = JanitorService();
+  await Janitor.fsck();
   await Janitor.migrateLegacyDatabases();
   await Janitor.recoverWalletFiles();
 }

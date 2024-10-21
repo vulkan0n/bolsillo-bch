@@ -147,6 +147,7 @@ export default function WalletManagerService() {
         wallets.length > 0
           ? wallets[0].walletHash
           : (await createWallet("My Selene Wallet")).walletHash;
+
       return boot(nextWalletHash);
     }
 
@@ -162,7 +163,7 @@ export default function WalletManagerService() {
 
   // createWallet: generate a new wallet from a randomly generated seed phrase
   // persist the new wallet in the database
-  function createWallet(
+  async function createWallet(
     name: string = "New Wallet",
     passphrase: string = "",
     derivation: ValidDerivationPath = DEFAULT_DERIVATION_PATH
@@ -175,7 +176,9 @@ export default function WalletManagerService() {
       derivation,
     });
 
-    const walletDb = Database.getWalletDatabase(walletHash);
+    Log.debug("createWallet", walletHash);
+
+    const walletDb = await Database.openWalletDatabase(walletHash);
 
     const result = walletDb.exec(
       `INSERT INTO wallet (
@@ -184,9 +187,10 @@ export default function WalletManagerService() {
         mnemonic,
         passphrase,
         derivation
-      ) VALUES (?, ?, ?, ?, ?)`,
+      ) VALUES (?, ?, ?, ?, ?)
+      RETURNING *`,
       [walletHash, name, mnemonic, passphrase, derivation]
-    );
+    )[0];
 
     APP_DB.run(
       `INSERT INTO wallets (

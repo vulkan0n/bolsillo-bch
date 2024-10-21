@@ -37,7 +37,6 @@ export default function AddressManagerService(wallet: WalletEntity) {
     getChangeAddresses,
     getUnusedAddresses,
     getRecentAddresses,
-    updateAddressState,
     getAddressTransactions,
     calculateAddressState,
     registerTransaction,
@@ -65,7 +64,7 @@ export default function AddressManagerService(wallet: WalletEntity) {
         [address, hd_index, change]
       )[0];
 
-      Log.debug("registerAddress", result);
+      //Log.debug("registerAddress", result);
       return result;
     } catch (e) {
       const addr = getAddress(address);
@@ -172,19 +171,6 @@ export default function AddressManagerService(wallet: WalletEntity) {
 
     //Log.debug("getRecentAddresses", limit, result);
     return result;
-  }
-
-  // updateAddressState: updates address state in walletDb
-  function updateAddressState(address: string, state: string | null): void {
-    walletDb.run(
-      `UPDATE addresses SET 
-          state=?
-        WHERE address="${address}";
-      `,
-      [state]
-    );
-
-    Log.debug("updateAddressState", address, state);
   }
 
   function getAddressTransactions(address: string) {

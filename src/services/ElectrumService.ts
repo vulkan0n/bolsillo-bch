@@ -58,8 +58,6 @@ export default function ElectrumService() {
   async function connect(
     server: string = DEFAULT_ELECTRUM_SERVER
   ): Promise<void> {
-    // using redux connection state guarantees that
-    // we only create new ElectrumClient when necessary
     if (selectSyncState(store.getState()).isConnected) {
       return Promise.resolve();
     }
@@ -100,7 +98,7 @@ export default function ElectrumService() {
   // disconnect: disconnect the Electrum instance
   async function disconnect(force: boolean): Promise<boolean> {
     if (electrum !== null) {
-      return electrum.disconnect(force);
+      return electrum.disconnect(force, false);
     }
 
     return true;

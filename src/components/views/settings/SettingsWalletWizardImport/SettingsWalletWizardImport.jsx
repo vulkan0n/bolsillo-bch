@@ -61,31 +61,34 @@ export default function SettingsWalletWizardImport() {
 
     if (isValidMnemonic) {
       try {
+        const WalletManager = WalletManagerService();
+
         const tempWallet = {
           mnemonic: trimmedInput,
           passphrase: passphraseInput,
           derivation: DEFAULT_DERIVATION_PATH,
           prefix: bchNetwork === "mainnet" ? "bitcoincash" : "bchtest",
+          name: walletNameInput,
         };
 
-        const path =
+        const walletHash = WalletManager.calculateWalletHash(tempWallet);
+        tempWallet.walletHash = walletHash;
+
+        const Database = DatabaseService();
+        await Database.openWalletDatabase(walletHash, bchNetwork);
+
+        const foundPath =
           derivationPath === "auto"
             ? await AddressScannerService(tempWallet).scanDerivationPaths()
             : derivationPath;
 
-        Log.debug("Found path", path);
+        Log.debug("Found path", foundPath);
 
         const walletData = {
-          mnemonic: trimmedInput,
-          passphrase: passphraseInput,
-          derivation: path,
-          name: walletNameInput,
+          ...tempWallet,
+          derivation: foundPath,
         };
 
-        const WalletManager = WalletManagerService();
-        const Database = DatabaseService();
-        const walletHash = WalletManager.calculateWalletHash(walletData);
-        await Database.openWalletDatabase(walletHash, bchNetwork);
         Database.setKeepAlive(walletHash);
         WalletManagerService().importWallet(walletData);
 
