@@ -307,7 +307,7 @@ export default function WalletManagerService() {
 
   // clearWalletData: deletes all data associated with a wallet
   // does NOT delete the wallet; all data can be re-derived/resynced
-  function clearWalletData(walletHash) {
+  async function clearWalletData(walletHash) {
     const walletDb = Database.getWalletDatabase(walletHash);
 
     // delete this wallet's transaction history
@@ -320,7 +320,7 @@ export default function WalletManagerService() {
     walletDb.run(`DELETE FROM address_utxos`);
 
     // purge orphaned transaction data
-    TransactionManagerService().purgeTransactions();
+    await TransactionManagerService().purgeTransactions();
   }
 
   function calculateWalletHash(wallet: WalletStub): string {

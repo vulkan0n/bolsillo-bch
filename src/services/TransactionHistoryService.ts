@@ -17,12 +17,13 @@ class TransactionHistoryNotExistsError extends Error {
     super(`No address_transactions for ${tx_hash} and wallet ${walletHash}`);
   }
 }
+const Database = DatabaseService();
+const APP_DB = await Database.getAppDatabase();
 
 export default function TransactionHistoryService(
   wallet: WalletEntity,
   fiatCurrency
 ) {
-  const Database = DatabaseService();
   const walletDb = Database.getWalletDatabase(wallet.walletHash);
 
   const AddressManager = AddressManagerService(wallet);
@@ -53,7 +54,7 @@ export default function TransactionHistoryService(
     const address_transactions_unconfirmed = walletDb.exec(
       `SELECT * FROM address_transactions 
           WHERE height <= 0
-          ORDER BY height ASC, time_seen DESC, time DESC
+          ORDER BY height ASC, time DESC, time_seen DESC
           LIMIT 100 OFFSET ${start};
         `
     );
@@ -182,17 +183,24 @@ export default function TransactionHistoryService(
   }
 
   function updateTxAmount(tx_hash: string, amount: number) {
+    Log.debug("updateTxAmount", tx_hash);
     const fiat_amount = CurrencyService(fiatCurrency).satsToFiat(amount);
+
+    const txTime = APP_DB.exec(
+      `SELECT time FROM transactions WHERE txid="${tx_hash}"`
+    )[0].time;
+
+    Log.debug("txTime", txTime);
 
     const result = walletDb.exec(
       `UPDATE address_transactions SET 
           amount=?,
           fiat_amount=?,
           fiat_currency=?,
-          time=(SELECT time FROM transactions WHERE txid="${tx_hash}" AND time != "null")
+          time=?
         WHERE txid="${tx_hash}"
         RETURNING *;`,
-      [amount, fiat_amount, fiatCurrency]
+      [amount, fiat_amount, fiatCurrency, txTime]
     )[0];
     Log.debug("updateTxAmount", tx_hash, result);
 

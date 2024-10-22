@@ -10,8 +10,7 @@ import ConsoleService from "@/services/ConsoleService";
 import WalletManagerService from "@/services/WalletManagerService";
 
 import { selectActiveWallet, walletBoot } from "@/redux/wallet";
-import { syncReconnect } from "@/redux/sync";
-import { resetPreferences, selectBchNetwork } from "@/redux/preferences";
+import { resetPreferences } from "@/redux/preferences";
 
 import { translate } from "@/util/translations";
 import translations from "./ErrorBoundaryTranslations";
@@ -25,19 +24,15 @@ export default function ErrorBoundary() {
   Log.error(error.message);
 
   const wallet = useSelector(selectActiveWallet);
-  const bchNetwork = useSelector(selectBchNetwork);
 
   const handleRestartApp = () => {
     window.location.assign("/");
   };
 
-  const handleRebuildWallet = () => {
-    WalletManagerService().clearWalletData(wallet.walletHash);
-    dispatch(
-      walletBoot({ walletHash: wallet.walletHash, network: bchNetwork })
-    );
-    dispatch(syncReconnect());
-    navigate("/");
+  const handleRebuildWallet = async () => {
+    await WalletManagerService().clearWalletData(wallet.walletHash);
+
+    navigate(`/settings/wallet/wizard/import/build/${wallet.walletHash}`);
   };
 
   const handleResetPreferences = () => {

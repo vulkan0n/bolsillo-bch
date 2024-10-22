@@ -105,7 +105,6 @@ export default function SettingsWalletView() {
     dispatch(
       walletBoot({ walletHash: wallet.walletHash, network: bchNetwork })
     );
-    dispatch(syncReconnect());
     navigate("/");
   };
 

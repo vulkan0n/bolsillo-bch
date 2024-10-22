@@ -290,7 +290,7 @@ export default function AddressScannerService(wallet) {
     const getUnusedCount = (addresses) =>
       addresses.filter((a) => a.state === null).length;
 
-    WalletManager.clearWalletData(wallet.walletHash);
+    await WalletManager.clearWalletData(wallet.walletHash);
 
     /* eslint-disable no-await-in-loop */
     for (let change = 0; change <= 1; change += 1) {
@@ -349,13 +349,18 @@ export default function AddressScannerService(wallet) {
 
     const newCalculatedState = AddressManager.calculateAddressState(address);
 
-    walletDb.run(
-      `UPDATE addresses SET 
+    try {
+      walletDb.run(
+        `UPDATE addresses SET 
           state=?
         WHERE address="${address}";
       `,
-      [newCalculatedState]
-    );
+        [newCalculatedState]
+      );
+    } catch (e) {
+      Log.error(e);
+      return Promise.reject();
+    }
 
     //Log.debug("scanHistory", address, newCalculatedState);
 

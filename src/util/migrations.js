@@ -17,6 +17,7 @@ const appdb_migrations = [
     query.push("DROP TABLE IF EXISTS blockchain;");
     query.push("DROP TABLE IF EXISTS transactions;");
 
+    // WalletMeta
     query.push(
       `CREATE TABLE IF NOT EXISTS wallets ( 
         walletHash text primary key not null,
@@ -72,7 +73,9 @@ const walletdb_migrations = [
     query.push("DROP TRIGGER IF EXISTS balance_update;");
     query.push("DROP TRIGGER IF EXISTS utxo_balance_delete;");
     query.push("DROP TRIGGER IF EXISTS utxo_balance_insert;");
+    query.push("DROP INDEX IF EXISTS idx_address_transactions;");
 
+    // WalletEntity
     query.push(
       `CREATE TABLE IF NOT EXISTS wallet ( 
         walletHash text primary key not null, 
@@ -88,6 +91,7 @@ const walletdb_migrations = [
       );`
     );
 
+    // AddressEntity
     query.push(
       `CREATE TABLE IF NOT EXISTS addresses (
         address text primary key not null, 
@@ -101,7 +105,7 @@ const walletdb_migrations = [
 
     query.push(
       `CREATE TABLE IF NOT EXISTS address_transactions (
-        txid text not null,
+        txid text primary key not null, 
         height int default 0 not null,
         address text not null,
         time text default ( strftime('%Y-%m-%dT%H:%M:%SZ') ),
@@ -109,8 +113,7 @@ const walletdb_migrations = [
         amount int,
         fiat_amount text,
         fiat_currency text,
-        memo text default null,
-        UNIQUE(txid, address)
+        memo text default null
       );`
     );
 
@@ -125,6 +128,7 @@ const walletdb_migrations = [
       );`
     );
 
+    // update total wallet balance when address balances are updated
     query.push(
       `CREATE TRIGGER IF NOT EXISTS balance_update AFTER UPDATE ON addresses
         BEGIN
@@ -164,6 +168,10 @@ const walletdb_migrations = [
       ;`
     );
 
+    query.push(
+      `CREATE INDEX idx_address_transactions ON address_transactions (address);`
+    );
+
     query.push("PRAGMA user_version = 1;");
 
     return query.join("");
@@ -196,11 +204,11 @@ export function run_migrations(migrations, db) {
 }
 
 export function run_appdb_migrations(appDb) {
-  //appDb.run("PRAGMA user_version = 0");
+  //appDb.run("PRAGMA user_version = 0;");
   run_migrations(appdb_migrations, appDb);
 }
 
 export function run_walletdb_migrations(walletDb) {
-  //walletDb.run("PRAGMA user_version = 0");
+  //walletDb.run("PRAGMA user_version = 0;");
   run_migrations(walletdb_migrations, walletDb);
 }
