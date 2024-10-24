@@ -151,6 +151,7 @@ export default function CreditsView() {
           <li>Johnathan Silverblood</li>
           <li>Mathieu Geukens</li>
           <li>Jim Hamill</li>
+          <li>Calin Culianu</li>
           <li>Bitcoin Jason</li>
           <li>Sahid Miller</li>
           <li>Ian Blas</li>
@@ -158,6 +159,7 @@ export default function CreditsView() {
           <li>Arthur</li>
           <li>XaYaZaZa</li>
           <li>@_minisatoshi</li>
+          <li>Steve Thurmond</li>
         </ul>
       </div>
     </>
