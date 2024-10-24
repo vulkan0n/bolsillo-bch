@@ -26,7 +26,6 @@ import {
 } from "@/redux/preferences";
 import { walletBoot, walletSetName } from "@/redux/wallet";
 import { selectLocale } from "@/redux/device";
-import { syncReconnect } from "@/redux/sync";
 
 import ViewHeader from "@/layout/ViewHeader";
 
@@ -255,8 +254,8 @@ export default function SettingsWalletView() {
         </div>
 
         <WalletSettings />
-        <KeyWarning wallet={wallet} />
-        <ShowMnemonic wallet={wallet} />
+        <KeyWarning walletHash={wallet.walletHash} />
+        <ShowMnemonic walletHash={wallet.walletHash} />
         {
           /* Only show "Advanced Options" if user has viewed (TODO: verified) their recovery phrase */
           shouldShowAdvancedOptions && (

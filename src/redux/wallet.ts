@@ -30,7 +30,7 @@ const initialState = {
   walletHash: "",
   balance: 0,
   name: "-",
-  key_viewed: "",
+  key_viewed_at: "",
   nonce: 0,
 };
 
@@ -108,12 +108,12 @@ export const walletSetName = createAction(
 
 export const walletSetKeyViewed = createAction(
   "wallet/key_viewed",
-  (payload: { wallet: WalletEntity }) => {
-    const key_viewed = WalletManagerService().updateKeyViewed(
-      payload.wallet.walletHash
+  (payload: { walletHash: string }) => {
+    const key_viewed_at = WalletManagerService().updateKeyViewed(
+      payload.walletHash
     );
 
-    return { payload: key_viewed };
+    return { payload: key_viewed_at };
   }
 );
 
@@ -147,7 +147,7 @@ export const walletReducer = createReducer(initialState, (builder) => {
       }
     })
     .addCase(walletSetKeyViewed, (state, action) => {
-      state.key_viewed = action.payload;
+      state.key_viewed_at = action.payload;
     })
     .addCase(walletNonce, (state) => {
       state.nonce += 1;

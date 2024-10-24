@@ -25,11 +25,11 @@ export interface WalletMeta {
   name: string;
   balance: number;
   created_at: string;
-  key_viewed: string;
-  key_verified: string;
+  key_viewed_at: string;
 }
 
 export interface WalletEntity extends WalletStub, WalletMeta {
+  key_verified_at: string;
   prefix: string;
   network: ValidBchNetwork;
   nonce: number;
@@ -280,12 +280,12 @@ export default function WalletManagerService() {
       `UPDATE wallets SET key_viewed_at=strftime('%Y-%m-%dT%H:%M:%SZ')`
     );
     const result = walletDb.exec(
-      `UPDATE wallet SET key_viewed_at=strftime('%Y-%m-%dT%H:%M:%SZ') RETURNING key_viewed`
+      `UPDATE wallet SET key_viewed_at=strftime('%Y-%m-%dT%H:%M:%SZ') RETURNING key_viewed_at`
     )[0];
 
     Log.debug("keyViewed", result);
 
-    return result.key_viewed;
+    return result.key_viewed_at;
   }
 
   // updateKeyVerified: updates the wallet's key_verified timestamp

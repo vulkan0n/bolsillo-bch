@@ -9,7 +9,7 @@ import LogService from "@/services/LogService";
 import ConsoleService from "@/services/ConsoleService";
 import WalletManagerService from "@/services/WalletManagerService";
 
-import { selectActiveWallet, walletBoot } from "@/redux/wallet";
+import { selectActiveWallet } from "@/redux/wallet";
 import { resetPreferences } from "@/redux/preferences";
 
 import { translate } from "@/util/translations";
@@ -96,7 +96,7 @@ export default function ErrorBoundary() {
             {/*<div className="font-mono">{error.stack}</div>*/}
           </Accordion.Child>
         </Accordion>
-        <ShowMnemonic wallet={wallet} />
+        <ShowMnemonic walletHash={wallet.walletHash} />
       </div>
     </>
   );

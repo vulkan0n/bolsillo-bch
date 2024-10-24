@@ -142,24 +142,20 @@ export default function WalletViewSend() {
       wallet
     );
 
-    try {
-      if (isSuccess) {
-        const tx = await TransactionManager.resolveTransaction(
-          transaction.txid
-        );
-        await Haptic.success();
-        navigate("/wallet/send/success", {
-          state: { tx },
-          replace: true,
-        });
-      } else {
-        //setMessage(translate(translations.transactionFailed));
-        setMessage(`Transaction Failed: Must send at least ${DUST_LIMIT} sats`);
-        await Haptic.error();
-      }
-    } finally {
-      setIsSending(false);
+    if (isSuccess) {
+      const tx = await TransactionManager.resolveTransaction(transaction.txid);
+      await Haptic.success();
+      navigate("/wallet/send/success", {
+        state: { tx },
+        replace: true,
+      });
+    } else {
+      //setMessage(translate(translations.transactionFailed));
+      setMessage(`Transaction Failed: Must send at least ${DUST_LIMIT} sats`);
+      await Haptic.error();
     }
+
+    setIsSending(false);
   };
 
   useEffect(function handleInstantPay() {

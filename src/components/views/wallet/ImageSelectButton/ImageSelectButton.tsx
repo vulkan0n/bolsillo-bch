@@ -2,8 +2,8 @@
 import { useDispatch } from "react-redux";
 import { PictureOutlined } from "@ant-design/icons";
 import { Camera, CameraResultType, CameraSource } from "@capacitor/camera";
-import { Haptic } from "@/util/haptic";
 import QrScanner from "qr-scanner";
+import { Haptic } from "@/util/haptic";
 
 import { setScannerIsScanning } from "@/redux/device";
 

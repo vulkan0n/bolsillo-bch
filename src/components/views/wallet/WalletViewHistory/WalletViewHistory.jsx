@@ -43,7 +43,7 @@ export default function WalletViewHistory() {
         <ul className="bg-zinc-100 text-zinc-600 divide-y divide-zinc-300 rounded-b px-2 max-h-[58vh] overflow-y-scroll border border-zinc-400 shadow-inner">
           {txHistory.length === 0 && (
             <li className="flex px-1 py-2 items-center justify-center tracking-tighter font-bold">
-              {sync.syncPending.txHistory === 0 ? (
+              {sync.syncPending.history === 0 ? (
                 <span>-----</span>
               ) : (
                 <SyncOutlined className="text-3xl" spin />

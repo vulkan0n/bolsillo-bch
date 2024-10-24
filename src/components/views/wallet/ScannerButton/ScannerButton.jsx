@@ -3,13 +3,13 @@ import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 
 import { Dialog } from "@capacitor/dialog";
-import { Haptic } from "@/util/haptic";
 import {
   BarcodeScanner,
   SupportedFormat,
 } from "@capacitor-community/barcode-scanner";
 
 import { ScanOutlined, CloseOutlined } from "@ant-design/icons";
+import { Haptic } from "@/util/haptic";
 import {
   selectDeviceInfo,
   setScannerIsScanning,

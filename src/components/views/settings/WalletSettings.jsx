@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { useSelector } from "react-redux";
 import { Link, useParams } from "react-router-dom";
 import {
@@ -17,7 +18,7 @@ import Accordion from "@/atoms/Accordion";
 import WalletManagerService from "@/services/WalletManagerService";
 
 export default function WalletSettings() {
-  const walletList = WalletManagerService().listWallets();
+  const walletList = useMemo(() => WalletManagerService().listWallets(), []);
   const activeWalletHash = useSelector(selectActiveWalletHash);
 
   const { walletHash: selectedWalletHash } = useParams();
@@ -48,7 +49,7 @@ export default function WalletSettings() {
             <CheckCircleFilled className="text-xl mr-1 text-primary" />
           )}
 
-          {w.key_viewed === null && (
+          {w.key_viewed_at === null && (
             <WarningFilled className="text-xl mr-1 text-error" />
           )}
           {w.name}
