@@ -99,7 +99,8 @@ const walletdb_migrations = [
         balance int default 0 not null, 
         change int default 0 not null, 
         state text default null,
-        memo text default null
+        memo text default null,
+        network text default "mainnet" CHECK(network IN ("mainnet", "chipnet", "testnet3", "testnet4")) not null
       );`
     );
 

@@ -378,7 +378,7 @@ export default function WalletManagerService() {
     //Log.debug("importWalletFile", walletHash);
 
     try {
-      importWallet(walletData);
+      await importWallet(walletData);
       await Database.closeWalletDatabase(walletHash);
     } catch (e) {
       Log.error("importWalletFile failed", walletHash, e);
@@ -399,13 +399,13 @@ export default function WalletManagerService() {
 
     const { name, balance, created_at, key_viewed_at } = walletDb.exec(
       "SELECT * FROM wallet"
-    );
+    )[0];
 
     APP_DB.run(
       `UPDATE wallets SET
-        name=?
-        balance=?
-        created_at=?
+        name=?,
+        balance=?,
+        created_at=?,
         key_viewed_at=?
       WHERE walletHash="${walletHash}";`,
       [name, balance, created_at, key_viewed_at]

@@ -55,11 +55,45 @@ export default function UxtoManagerService(wallet) {
     Log.debug("selectUtxos", amount, fee);
     const targetAmount = new Decimal(amount).plus(fee).toNumber();
 
+    // get all available UTXOs
+    const availableUtxos = walletDb.exec(
+      `SELECT * FROM address_utxos 
+          WHERE network="${wallet.network}"
+          ORDER BY amount DESC`
+    );
+
+    const availableUtxoSum = availableUtxos.reduce(
+      (sum, utxo) => sum + utxo.amount,
+      0
+    );
+
+    Log.debug(
+      "selectUtxos availableUtxos",
+      availableUtxoSum,
+      availableUtxos.length
+    );
+
+    // check if we have enough balance across all UTXOs
+    // empty set = insufficient funds
+    if (availableUtxoSum < targetAmount) {
+      return [];
+    }
+
+    // 1. if there's an exact UTXO, use that UTXO and its address-mates
+    const exactUtxos = availableUtxos.filter(
+      (utxo) => utxo.amount === targetAmount
+    );
+    if (exactUtxos.length > 0) {
+      Log.debug("selectUtxos exactUtxo", exactUtxos[0].address);
+      // spend all utxos on this address (for privacy)
+      return getAddressUtxos(exactUtxos[0].address);
+    }
+
     // all full address balances >= amount are eligible
     const eligibleAddresses = walletDb.exec(
       `SELECT * FROM addresses 
           WHERE 
-            balance >= "${targetAmount}"
+            balance >= ${targetAmount}
             AND network="${wallet.network}"
           ORDER BY balance ASC`
     );
@@ -69,7 +103,7 @@ export default function UxtoManagerService(wallet) {
       eligibleAddresses.map((a) => a.address)
     );
 
-    // 1. if there's a whole address balance that's exact, spend the entire address
+    // 2. if there's a whole address balance that's exact, spend the entire address
     const exactAddresses = eligibleAddresses.filter(
       (address) => address.balance === targetAmount
     );
@@ -78,98 +112,90 @@ export default function UxtoManagerService(wallet) {
       return getAddressUtxos(exactAddresses[0].address);
     }
 
-    // all UTXOs <= targetAmount are eligible
-    // Note: a UTXO > targetAmount implies an address > targetAmount, handled earlier
-    const eligibleUtxos = walletDb.exec(
+    // try to consolidate small UTXOs to make the targetAmount
+    // all UTXOs <= targetAmount are eligible to be consolidated
+    const consolidateUtxos = walletDb.exec(
       `SELECT * FROM address_utxos 
           WHERE 
-            amount <= "${targetAmount}" 
+            amount <= ${targetAmount} 
             AND network="${wallet.network}"
           ORDER BY amount DESC`
     );
 
-    Log.debug("selectUtxos eligibleUtxos", eligibleUtxos.length);
+    const eligibleUtxos = {
+      consolidated: targetUtxos(consolidateUtxos, targetAmount, fee),
 
-    // 2. if there's an exact UTXO, use that UTXO and its address-mates
-    const exactUtxos = eligibleUtxos.filter(
-      (utxo) => utxo.amount === targetAmount
-    );
-    if (exactUtxos.length > 0) {
-      Log.debug("selectUtxos exactUtxo", exactUtxos[0].address);
-      return getAddressUtxos(exactUtxos[0].address);
-    }
+      available: targetUtxos(availableUtxos, targetAmount, fee),
+      // 0th-index eligible address is smallest with balance >= targetAmount
+      address:
+        eligibleAddresses.length > 0
+          ? targetUtxos(getAddressUtxos(eligibleAddresses[0].address))
+          : null,
+    };
 
-    // 3. try to consolidate enough UTXOs to make the targetAmount
-    const eligibleUtxoSum = eligibleUtxos.reduce(
-      (sum, cur) => sum + cur.amount,
-      0
-    );
+    Log.debug("eligibleUtxos:", eligibleUtxos);
 
-    // 4. if sum of utxos matches exactly, consolidate the UTXOs
-    if (eligibleUtxoSum === targetAmount) {
-      Log.debug("selectUtxos exactUtxoSum", eligibleUtxos);
-      return eligibleUtxos;
-    }
-
-    // 5. check if consolidating will be enough, if not then use entire balance of next-eligible address
-    if (eligibleUtxoSum < targetAmount) {
-      if (eligibleAddresses.length > 0) {
-        const addressUtxos = getAddressUtxos(eligibleAddresses[0].address);
-        Log.debug(
-          "selectUtxos eligibleAddress",
-          eligibleAddresses[0].address,
-          addressUtxos,
-          eligibleAddresses[0].balance
-        );
-        return addressUtxos;
-      }
-      // if consolidating won't be enough and no eligible address, return empty set
-      Log.debug(
-        "selectUtxos eligibleUtxoSum < targetAmount",
-        eligibleUtxoSum,
-        targetAmount
-      );
+    // this should be impossible, but makes typescript happy. insufficient funds case
+    if (eligibleUtxos.available === null) {
       return [];
     }
 
-    // 6. if there's enough change that consolidating will work, find the smallest combo
+    // check if it's cheaper to spend consolidated utxos, summed utxos, or eligible addresses
+    if (eligibleUtxos.consolidated !== null) {
+      // case: address is cheaper than consolidation
+      if (
+        eligibleUtxos.address !== null &&
+        eligibleUtxos.address.feeAmount < eligibleUtxos.consolidated.feeAmount
+      ) {
+        Log.debug(
+          "selectUtxos: spending first-eligible address is cheaper than consolidation",
+          eligibleUtxos.address.selection
+        );
+        return eligibleUtxos.address.selection;
+      }
+
+      if (
+        eligibleUtxos.consolidated.feeAmount < eligibleUtxos.available.feeAmount
+      ) {
+        Log.debug(
+          "selectUtxos: spending consolidated UTXOs is cheaper than spending large UTXOs",
+          eligibleUtxos.consolidated.selection
+        );
+        return eligibleUtxos.consolidated.selection;
+      }
+    }
+
+    Log.debug(
+      "selectUtxos spending from all available UTXOs",
+      eligibleUtxos.available.selection
+    );
+    return eligibleUtxos.available.selection;
+  }
+
+  function targetUtxos(utxos, targetAmount, fee) {
+    const utxoSum = utxos.reduce((sum, utxo) => sum + utxo.amount, 0);
+    if (utxoSum < targetAmount) {
+      return null;
+    }
+
+    // try to find the smallest combination of UTXOs (fewer UTXOS moving is better for privacy)
     const selection = [];
     let remainingAmount = targetAmount;
 
-    // add eligible utxos to final selection
-    while (remainingAmount > 0 && eligibleUtxos.length > 0) {
-      const utxo = eligibleUtxos.shift();
+    while (remainingAmount > 0 && utxos.length > 0) {
+      const utxo = utxos.shift();
       selection.push(utxo);
       remainingAmount -= utxo.amount;
     }
 
-    // 7. if no more eligible utxos, insufficient funds
-    // return empty selection
-    if (remainingAmount > 0) {
-      Log.debug("selectUtxos insufficient funds", remainingAmount);
-      return [];
-    }
-
     // negative remainingAmount is change that needs to be returned to wallet
-    const utxoChange = remainingAmount * -1 - fee;
+    const changeAmount = remainingAmount * -1 - fee;
 
     // if remaining change is under dust limit, add it to fee instead
-    const utxoFee = utxoChange < DUST_LIMIT ? fee + utxoChange : fee;
+    const feeAmount = changeAmount < DUST_LIMIT ? fee + changeAmount : fee;
 
-    // 8. check if it's cheaper to spend an address vs consolidate utxos
-    if (eligibleAddresses.length > 0) {
-      const eligibleAddress = eligibleAddresses[0];
-      const addressChange = eligibleAddress.balance - targetAmount - fee;
-      const addressFee = addressChange < DUST_LIMIT ? fee + addressChange : fee;
-
-      if (addressFee < utxoFee) {
-        Log.debug("selectUtxos address is cheaper than consolidation");
-        return getAddressUtxos(eligibleAddress.address);
-      }
-    }
-
-    Log.debug("selectUtxos selection", selection);
-    return selection;
+    Log.debug("targetUtxos", selection);
+    return { selection, changeAmount, feeAmount };
   }
 
   function discardUtxo(utxo) {

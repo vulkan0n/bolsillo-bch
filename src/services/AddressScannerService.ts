@@ -138,7 +138,7 @@ export default function AddressScannerService(wallet) {
     Log.time(`scanAddresses ${change}`);
     Log.debug("scanAddresses", startIndex, endIndex, change, wallet.walletHash);
 
-    const walletDb = Database.getWalletDatabase(wallet.walletHash);
+    const walletDb = await Database.openWalletDatabase(wallet.walletHash);
 
     const dbAddresses = change
       ? AddressManager.getChangeAddresses()
@@ -340,7 +340,7 @@ export default function AddressScannerService(wallet) {
     address: string,
     callback: (number) => void = () => {}
   ) {
-    const walletDb = Database.getWalletDatabase(wallet.walletHash);
+    const walletDb = await Database.openWalletDatabase(wallet.walletHash);
 
     const history = await Electrum.requestAddressHistory(address);
     history.forEach((historyTx) => {

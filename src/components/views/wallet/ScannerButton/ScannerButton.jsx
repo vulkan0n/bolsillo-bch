@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 
 import { Dialog } from "@capacitor/dialog";
-import { Haptics, NotificationType } from "@capacitor/haptics";
+import { Haptic } from "@/util/haptic";
 import {
   BarcodeScanner,
   SupportedFormat,
@@ -47,10 +47,10 @@ export default function ScannerButton() {
       const { isCashAddress, address, query } = validateInvoiceString(content);
 
       if (isCashAddress) {
-        await Haptics.notification({ type: NotificationType.Success });
+        await Haptic.success();
         navigate(`/wallet/send/${address}${query}`);
       } else {
-        await Haptics.notification({ type: NotificationType.Error });
+        await Haptic.error();
       }
     },
     [dispatch, navigate]

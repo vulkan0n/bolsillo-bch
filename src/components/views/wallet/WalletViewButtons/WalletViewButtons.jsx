@@ -1,6 +1,5 @@
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { Haptics, NotificationType } from "@capacitor/haptics";
 import { Clipboard } from "@capacitor/clipboard";
 import {
   SendOutlined,
@@ -16,6 +15,7 @@ import ScannerButton from "../ScannerButton/ScannerButton";
 import TorchButton from "../TorchButton/TorchButton";
 import ImageSelectButton from "../ImageSelectButton/ImageSelectButton";
 
+import { Haptic } from "@/util/haptic";
 import { validateInvoiceString } from "@/util/invoice";
 import ToastService from "@/services/ToastService";
 
@@ -25,15 +25,15 @@ export default function WalletViewButtons() {
   const navigate = useNavigate();
   const isScanning = useSelector(selectScannerIsScanning);
 
-  const forwardOnValidAddress = (input) => {
+  const forwardOnValidAddress = async (input) => {
     // go to send screen when valid address is entered
     const { isValid, address, query } = validateInvoiceString(input);
 
     if (isValid) {
-      Haptics.notification({ type: NotificationType.Success });
+      await Haptic.success();
       navigate(`/wallet/send/${address}${query}`);
     } else {
-      Haptics.notification({ type: NotificationType.Error });
+      await Haptic.error();
     }
 
     return isValid;

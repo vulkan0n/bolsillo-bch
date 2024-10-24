@@ -3,7 +3,6 @@ import { useState, useEffect, useRef } from "react";
 import { useParams, useSearchParams, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import Decimal from "decimal.js";
-import { Haptics, NotificationType } from "@capacitor/haptics";
 import { ArrowLeftOutlined, SyncOutlined } from "@ant-design/icons";
 
 import { selectActiveWallet } from "@/redux/wallet";
@@ -28,6 +27,7 @@ import Address from "@/atoms/Address";
 import CurrencySymbol from "@/atoms/CurrencySymbol";
 import CurrencyFlip from "@/atoms/CurrencyFlip";
 
+import { Haptic } from "@/util/haptic";
 import { bchToSats, DUST_LIMIT } from "@/util/sats";
 import { validateInvoiceString } from "@/util/invoice";
 import { translate } from "@/util/translations";
@@ -84,7 +84,7 @@ export default function WalletViewSend() {
   };
 
   const handleInsufficientFunds = async () => {
-    await Haptics.notification({ type: NotificationType.Warning });
+    await Haptic.warn();
     const insufficientFundsTranslation = translate(
       translations.insufficientFunds
     );
@@ -124,10 +124,10 @@ export default function WalletViewSend() {
 
     if (transaction === null) {
       Logger.warn(transaction);
-      await Haptics.notification({ type: NotificationType.Warning });
       //setMessage(translate(translations.notEnoughFee));
       setMessage("Transaction Failed: Wallet out of sync?");
       setIsSending(false);
+      await Haptic.warn();
       return;
     }
 
@@ -142,20 +142,24 @@ export default function WalletViewSend() {
       wallet
     );
 
-    if (isSuccess) {
-      const tx = await TransactionManager.resolveTransaction(transaction.txid);
-      await Haptics.notification({ type: NotificationType.Success });
-      navigate("/wallet/send/success", {
-        state: { tx },
-        replace: true,
-      });
-    } else {
-      await Haptics.notification({ type: NotificationType.Error });
-      //setMessage(translate(translations.transactionFailed));
-      setMessage(`Transaction Failed: Must send at least ${DUST_LIMIT} sats`);
+    try {
+      if (isSuccess) {
+        const tx = await TransactionManager.resolveTransaction(
+          transaction.txid
+        );
+        await Haptic.success();
+        navigate("/wallet/send/success", {
+          state: { tx },
+          replace: true,
+        });
+      } else {
+        //setMessage(translate(translations.transactionFailed));
+        setMessage(`Transaction Failed: Must send at least ${DUST_LIMIT} sats`);
+        await Haptic.error();
+      }
+    } finally {
+      setIsSending(false);
     }
-
-    setIsSending(false);
   };
 
   useEffect(function handleInstantPay() {

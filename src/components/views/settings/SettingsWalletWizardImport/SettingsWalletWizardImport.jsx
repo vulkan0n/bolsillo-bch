@@ -69,13 +69,13 @@ export default function SettingsWalletWizardImport() {
           derivation: DEFAULT_DERIVATION_PATH,
           prefix: bchNetwork === "mainnet" ? "bitcoincash" : "bchtest",
           name: walletNameInput,
+          walletHash: "",
         };
 
-        const walletHash = WalletManager.calculateWalletHash(tempWallet);
-        tempWallet.walletHash = walletHash;
+        tempWallet.walletHash = WalletManager.calculateWalletHash(tempWallet);
 
         const Database = DatabaseService();
-        await Database.openWalletDatabase(walletHash, bchNetwork);
+        await Database.openWalletDatabase(tempWallet.walletHash, bchNetwork);
 
         const foundPath =
           derivationPath === "auto"
@@ -89,8 +89,11 @@ export default function SettingsWalletWizardImport() {
           derivation: foundPath,
         };
 
+        const walletHash = WalletManager.calculateWalletHash(walletData);
+        walletData.walletHash = walletHash;
+
         Database.setKeepAlive(walletHash);
-        WalletManagerService().importWallet(walletData);
+        await WalletManagerService().importWallet(walletData);
 
         navigate(`build/${walletHash}`);
       } catch (e) {
