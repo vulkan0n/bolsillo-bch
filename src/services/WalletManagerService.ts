@@ -206,7 +206,7 @@ export default function WalletManagerService() {
 
   // importWallet: import a wallet via provided seed phrase
   // persist the imported wallet in the database
-  function importWallet(walletData) {
+  async function importWallet(walletData) {
     const { mnemonic, passphrase, derivation, name } = walletData;
 
     const walletHash = calculateWalletHash({
@@ -215,7 +215,7 @@ export default function WalletManagerService() {
       derivation,
     });
 
-    const walletDb = Database.getWalletDatabase(walletHash);
+    const walletDb = await Database.openWalletDatabase(walletHash);
 
     const created_at = walletData.date_created
       ? walletData.date_created
@@ -395,6 +395,25 @@ export default function WalletManagerService() {
   }
 
   async function saveWallet(walletHash) {
-    return Database.flushDatabase(walletHash);
+    const walletDb = Database.getWalletDatabase(walletHash);
+
+    const { name, balance, created_at, key_viewed_at } = walletDb.exec(
+      "SELECT * FROM wallet"
+    );
+
+    APP_DB.run(
+      `UPDATE wallets SET
+        name=?
+        balance=?
+        created_at=?
+        key_viewed_at=?
+      WHERE walletHash="${walletHash}";`,
+      [name, balance, created_at, key_viewed_at]
+    );
+
+    return Promise.all([
+      Database.flushDatabase(walletHash),
+      Database.flushDatabase("app"),
+    ]);
   }
 }

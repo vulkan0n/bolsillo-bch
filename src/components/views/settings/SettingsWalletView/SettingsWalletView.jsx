@@ -185,7 +185,7 @@ export default function SettingsWalletView() {
           </div>
           <div className="text-lg text-center text-zinc-600">
             {translate(translations.created)}{" "}
-            {new Date(wallet.date_created).toLocaleString(locale)}
+            {new Date(wallet.created_at).toLocaleString(locale)}
           </div>
           {wallet.balance > 0 && (
             <div className="text-lg text-center text-zinc-500">
