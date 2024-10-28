@@ -18,9 +18,9 @@ import { txHistoryFetch } from "@/redux/txHistory";
 import { selectNetworkStatus } from "@/redux/device";
 
 import LogService from "@/services/LogService";
-import DatabaseService from "@/services/DatabaseService";
 import ElectrumService from "@/services/ElectrumService";
 import BlockchainService from "@/services/BlockchainService";
+import WalletManagerService from "@/services/WalletManagerService";
 import AddressManagerService, {
   AddressEntity,
 } from "@/services/AddressManagerService";
@@ -242,6 +242,11 @@ syncMiddleware.startListening({
     if (selectSyncState(listenerApi.getState()).syncCount <= 1) {
       listenerApi.dispatch(syncPopulateAddresses());
     }
+
+    if (selectSyncState(listenerApi.getState()).syncPending.history === 0) {
+      const wallet = selectActiveWallet(listenerApi.getState());
+      await WalletManagerService().saveWallet(wallet.walletHash);
+    }
   },
 });
 
@@ -303,7 +308,6 @@ export const syncHotRefresh = createAsyncThunk(
       thunkApi.dispatch(walletBalanceUpdate({ wallet, isChange: false }));
 
       Log.debug("sync/hotRefresh", sync);
-      await DatabaseService().flushHandles();
     }
 
     return Date.now();
@@ -339,8 +343,7 @@ syncMiddleware.startListening({
     listenerApi.dispatch(syncBlock(chaintip.height));
 
     await TransactionManagerService().purgeTransactions();
-    await BlockchainService().purgeBlocks();
-    //await DatabaseService().flushHandles();
+    BlockchainService().purgeBlocks();
   },
 });
 
