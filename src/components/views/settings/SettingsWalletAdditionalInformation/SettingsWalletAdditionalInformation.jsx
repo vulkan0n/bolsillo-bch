@@ -22,7 +22,7 @@ import {
 } from "@bitauth/libauth";
 
 import WalletManagerService from "@/services/WalletManagerService";
-import SecurityService from "@/services/SecurityService";
+import SecurityService, { AuthActions } from "@/services/SecurityService";
 
 import ViewHeader from "@/layout/ViewHeader";
 import Accordion from "@/atoms/Accordion";
@@ -111,7 +111,10 @@ export default function SettingsWalletAdditionalInformation() {
                 type="button"
                 onClick={async () => {
                   const isAuthorized =
-                    isShowXpub || (await SecurityService().authorize());
+                    isShowXpub ||
+                    (await SecurityService().authorize(
+                      AuthActions.RevealPrivateKeys
+                    ));
                   if (!isAuthorized) {
                     return;
                   }
@@ -161,7 +164,10 @@ export default function SettingsWalletAdditionalInformation() {
                 type="button"
                 onClick={async () => {
                   const isAuthorized =
-                    isShowXprv || (await SecurityService().authorize());
+                    isShowXprv ||
+                    (await SecurityService().authorize(
+                      AuthActions.RevealPrivateKeys
+                    ));
                   if (!isAuthorized) {
                     return;
                   }

@@ -131,7 +131,7 @@ export default function WalletManagerService() {
       Log.debug("walletBoot ~", walletHash, network);
       await Database.openWalletDatabase(walletHash, network);
       wallet = getWallet(walletHash);
-      Log.debug("boot got", wallet);
+      //Log.debug("boot got", wallet);
     } catch (e) {
       await Database.closeWalletDatabase(walletHash);
 
@@ -300,9 +300,10 @@ export default function WalletManagerService() {
   // setWalletName: sets a wallet's display name
   async function setWalletName(walletHash, name: string) {
     const walletDb = Database.getWalletDatabase(walletHash);
-    APP_DB.run(`UPDATE wallets SET name=?"`, [name]);
+    APP_DB.run(`UPDATE wallets SET name=? WHERE walletHash=${walletHash}"`, [
+      name,
+    ]);
     walletDb.run(`UPDATE wallet SET name=?"`, [name]);
-    await exportWalletFile(walletHash);
   }
 
   // clearWalletData: deletes all data associated with a wallet
@@ -397,9 +398,8 @@ export default function WalletManagerService() {
   async function saveWallet(walletHash) {
     const walletDb = Database.getWalletDatabase(walletHash);
 
-    const { name, balance, created_at, key_viewed_at } = walletDb.exec(
-      "SELECT * FROM wallet"
-    )[0];
+    const wallet = walletDb.exec("SELECT * FROM wallet")[0];
+    const { name, balance, created_at, key_viewed_at } = wallet;
 
     APP_DB.run(
       `UPDATE wallets SET
@@ -410,6 +410,8 @@ export default function WalletManagerService() {
       WHERE walletHash="${walletHash}";`,
       [name, balance, created_at, key_viewed_at]
     );
+
+    await exportWalletFile(wallet);
 
     return Promise.all([
       Database.flushDatabase(walletHash),

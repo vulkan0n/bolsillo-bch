@@ -12,6 +12,7 @@ import { currencyList } from "@/util/currency";
 import { ValidBchNetwork } from "@/util/crypto";
 import { VALID_DENOMINATIONS } from "@/util/sats";
 import CurrencyService from "@/services/CurrencyService";
+import { AuthActions } from "@/services/SecurityService";
 
 const defaultPreferences = {
   activeWalletHash: "",
@@ -22,9 +23,10 @@ const defaultPreferences = {
   displayExchangeRate: "false",
   denomination: "bch",
   bchNetwork: "mainnet",
+  // --------
   authMode: "none",
   pinHash: "",
-  displayExploreTab: "true",
+  authActions: "Generic;Debug;RevealPrivateKeys;RevealBalance;SendTransaction",
   // --------
   // TODO: make these per-wallet instead of global
   allowInstantPay: "false",
@@ -33,6 +35,8 @@ const defaultPreferences = {
   qrCodeLogo: "Selene",
   qrCodeBackground: "#ffffff",
   qrCodeForeground: "#000000",
+  displayExploreTab: "true",
+  displaySyncCounter: "false",
   // --------
   // TODO: should these go in db instead?
   electrumServer: electrum_servers[0],
@@ -68,10 +72,25 @@ function validatePreferences(preferences: ValidPreferences): boolean {
     return false;
   }
 
+  // ensure selected denomination is valid
   if (
     !VALID_DENOMINATIONS.map((d) => d.toLowerCase()).find(
       (d) => d === preferences.denomination
     )
+  ) {
+    return false;
+  }
+
+  // all authActions must be in AuthActions enum
+  const authActions = preferences.authActions.split(";");
+  if (
+    authActions
+      .map((a) =>
+        Object.values(AuthActions)
+          .map((aa) => aa.toString())
+          .includes(a)
+      )
+      .filter((b) => b === false).length > 0
   ) {
     return false;
   }
@@ -85,6 +104,7 @@ function validatePreferences(preferences: ValidPreferences): boolean {
     "enableExperimental",
     "enablePrerelease",
     "displayExploreTab",
+    "displaySyncCounter",
     "enableDailyCheckIn",
   ];
 
@@ -260,6 +280,7 @@ export const selectSecuritySettings = createSelector(
   (preferences) => ({
     authMode: preferences.authMode,
     pinHash: preferences.pinHash,
+    authActions: preferences.authActions.split(";"),
   })
 );
 
@@ -268,6 +289,7 @@ export const selectUiSettings = createSelector(
   (preferences) => ({
     shouldHideBalance: preferences.hideAvailableBalance === "true",
     shouldDisplayExploreTab: preferences.displayExploreTab === "true",
+    shouldDisplaySyncCounter: preferences.displaySyncCounter === "true",
   })
 );
 

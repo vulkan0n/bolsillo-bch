@@ -18,6 +18,7 @@ import WalletManagerService, {
 } from "@/services/WalletManagerService";
 import ElectrumService from "@/services/ElectrumService";
 import AddressManagerService from "@/services/AddressManagerService";
+import AddressScannerService from "@/services/AddressScannerService";
 
 import ToastService from "@/services/ToastService";
 import LogService from "@/services/LogService";
@@ -97,11 +98,8 @@ export const walletBalanceUpdate = createAction(
 
 export const walletSetName = createAction(
   "wallet/name",
-  (payload: { wallet: WalletEntity; name: string }) => {
-    WalletManagerService().setWalletName(
-      payload.wallet.walletHash,
-      payload.name
-    );
+  (payload: { walletHash: string; name: string }) => {
+    WalletManagerService().setWalletName(payload.walletHash, payload.name);
     return { payload };
   }
 );
@@ -123,6 +121,10 @@ export const walletReloadAddresses = createAction(
   "wallet/reloadAddresses",
   (payload: { wallet: WalletEntity }) => {
     const AddressManager = AddressManagerService(payload.wallet);
+    const AddressScanner = AddressScannerService(payload.wallet);
+
+    AddressScanner.populateAddresses();
+
     const myAddresses = [
       ...AddressManager.getReceiveAddresses(),
       ...AddressManager.getChangeAddresses(),

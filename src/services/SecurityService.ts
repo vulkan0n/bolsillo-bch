@@ -7,14 +7,32 @@ import { sha256 } from "@/util/hash";
 
 const Log = LogService("SecurityService");
 
+export enum AuthActions {
+  WalletActivate = "WalletActivate",
+  SendTransaction = "SendTransaction",
+  InstantPay = "InstantPay",
+  RevealBalance = "RevealBalance",
+  RevealPrivateKeys = "RevealPrivateKeys",
+  Debug = "Debug",
+  Generic = "Generic",
+}
+
 export default function SecurityService() {
   return {
     authorize,
   };
 
   // authorize user according to user preference
-  async function authorize(): Promise<boolean> {
-    const { authMode } = selectSecuritySettings(store.getState());
+  async function authorize(
+    action: AuthActions = AuthActions.Generic
+  ): Promise<boolean> {
+    const { authMode, authActions } = selectSecuritySettings(store.getState());
+
+    const isAuthRequired = authActions.includes(action);
+
+    if (!isAuthRequired) {
+      return true;
+    }
 
     let isAuthorized = false;
     switch (authMode) {

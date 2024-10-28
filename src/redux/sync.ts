@@ -18,6 +18,7 @@ import { txHistoryFetch } from "@/redux/txHistory";
 import { selectNetworkStatus } from "@/redux/device";
 
 import LogService from "@/services/LogService";
+import DatabaseService from "@/services/DatabaseService";
 import ElectrumService from "@/services/ElectrumService";
 import BlockchainService from "@/services/BlockchainService";
 import AddressManagerService, {
@@ -238,7 +239,9 @@ export const syncAddressHistory = createAsyncThunk(
 syncMiddleware.startListening({
   actionCreator: syncAddressHistory.fulfilled,
   effect: async (action, listenerApi) => {
-    listenerApi.dispatch(syncPopulateAddresses());
+    if (selectSyncState(listenerApi.getState()).syncCount <= 1) {
+      listenerApi.dispatch(syncPopulateAddresses());
+    }
   },
 });
 
@@ -300,6 +303,7 @@ export const syncHotRefresh = createAsyncThunk(
       thunkApi.dispatch(walletBalanceUpdate({ wallet, isChange: false }));
 
       Log.debug("sync/hotRefresh", sync);
+      await DatabaseService().flushHandles();
     }
 
     return Date.now();
@@ -336,6 +340,7 @@ syncMiddleware.startListening({
 
     await TransactionManagerService().purgeTransactions();
     await BlockchainService().purgeBlocks();
+    //await DatabaseService().flushHandles();
   },
 });
 

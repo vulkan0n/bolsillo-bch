@@ -88,6 +88,7 @@ export default function DatabaseService() {
     return appDb;
   }
 
+  // synchronous getWalletDatabase (requires db handle to be open already)
   function getWalletDatabase(walletHash) {
     if (!db_handles.has(walletHash)) {
       throw new DatabaseNotOpenError(walletHash);
@@ -97,6 +98,7 @@ export default function DatabaseService() {
     return walletDb;
   }
 
+  // asynchronous openWalletDatabase (returns db handle when ready)
   async function openWalletDatabase(walletHash, network = "mainnet") {
     if (walletHash === "") {
       throw new DatabaseNotOpenError(walletHash);
@@ -167,7 +169,7 @@ export default function DatabaseService() {
         recursive: true,
       });
 
-      Log.debug("flushDatabase", result);
+      Log.debug("flushDatabase", result.uri);
       return result;
     } catch (e) {
       Log.error("flushDatabase error", e);
@@ -185,6 +187,7 @@ export default function DatabaseService() {
         return closeWalletDatabase(handle);
       }
 
+      // else flush without closing
       return flushDatabase(handle);
     });
     //Log.debug("flushHandles promises", promises);

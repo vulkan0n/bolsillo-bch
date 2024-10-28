@@ -5,7 +5,7 @@ import { WarningFilled, EyeInvisibleOutlined } from "@ant-design/icons";
 import { walletSetKeyViewed } from "@/redux/wallet";
 import DatabaseService from "@/services/DatabaseService";
 import WalletManagerService from "@/services/WalletManagerService";
-import SecurityService from "@/services/SecurityService";
+import SecurityService, { AuthActions } from "@/services/SecurityService";
 
 import { translate } from "@/util/translations";
 import translations from "@/components/views/settings/SettingsWalletView/translations";
@@ -23,7 +23,9 @@ export default function ShowMnemonic({ walletHash }: { walletHash: string }) {
     const Database = DatabaseService();
 
     if (shouldShowRecoveryPhrase === false) {
-      const isAuthorized = await SecurityService().authorize();
+      const isAuthorized = await SecurityService().authorize(
+        AuthActions.RevealPrivateKeys
+      );
       if (!isAuthorized) {
         return;
       }

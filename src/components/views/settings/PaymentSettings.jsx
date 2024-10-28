@@ -17,7 +17,7 @@ import translations from "./translations";
 import { SettingsContext } from "./SettingsContext";
 
 import CurrencyService from "@/services/CurrencyService";
-import SecurityService from "@/services/SecurityService";
+import SecurityService, { AuthActions } from "@/services/SecurityService";
 
 import Accordion from "@/atoms/Accordion";
 import CurrencySymbol from "@/atoms/CurrencySymbol";
@@ -64,9 +64,11 @@ export default function PaymentSettings() {
           checked={isInstantPayEnabled}
           onChange={async (event) => {
             const { checked: isChecked } = event.target;
+            const Security = SecurityService();
             const isAuthorized =
               isInstantPayEnabled === true ||
-              (await SecurityService().authorize());
+              (await Security.authorize(AuthActions.SendTransaction)) ||
+              (await Security.authorize(AuthActions.InstantPay));
 
             if (isAuthorized) {
               handleSettingsUpdate("allowInstantPay", isChecked);

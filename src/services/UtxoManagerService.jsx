@@ -24,22 +24,14 @@ export default function UxtoManagerService(wallet) {
         address,
         txid,
         tx_pos,
-        amount,
-        network
-      ) VALUES (
-        "${address}",
-        "${utxo.tx_hash}",
-        "${utxo.tx_pos}",
-        "${utxo.value}",
-        "${wallet.network}"
-      );`
+        amount
+      ) VALUES (?, ?, ?, ?);`,
+      [address, utxo.tx_hash, utxo.tx_pos, utxo.value]
     );
   }
 
   function getWalletUtxos() {
-    const result = walletDb.exec(
-      `SELECT * FROM address_utxos WHERE network="${wallet.network}"`
-    );
+    const result = walletDb.exec(`SELECT * FROM address_utxos`);
 
     return result;
   }
@@ -58,7 +50,6 @@ export default function UxtoManagerService(wallet) {
     // get all available UTXOs
     const availableUtxos = walletDb.exec(
       `SELECT * FROM address_utxos 
-          WHERE network="${wallet.network}"
           ORDER BY amount DESC`
     );
 
@@ -94,7 +85,6 @@ export default function UxtoManagerService(wallet) {
       `SELECT * FROM addresses 
           WHERE 
             balance >= ${targetAmount}
-            AND network="${wallet.network}"
           ORDER BY balance ASC`
     );
 
@@ -118,7 +108,6 @@ export default function UxtoManagerService(wallet) {
       `SELECT * FROM address_utxos 
           WHERE 
             amount <= ${targetAmount} 
-            AND network="${wallet.network}"
           ORDER BY amount DESC`
     );
 
@@ -129,7 +118,11 @@ export default function UxtoManagerService(wallet) {
       // 0th-index eligible address is smallest with balance >= targetAmount
       address:
         eligibleAddresses.length > 0
-          ? targetUtxos(getAddressUtxos(eligibleAddresses[0].address))
+          ? targetUtxos(
+              getAddressUtxos(eligibleAddresses[0].address),
+              targetAmount,
+              fee
+            )
           : null,
     };
 
@@ -173,6 +166,7 @@ export default function UxtoManagerService(wallet) {
   }
 
   function targetUtxos(utxos, targetAmount, fee) {
+    Log.log("targetUtxos trying", utxos, targetAmount, fee);
     const utxoSum = utxos.reduce((sum, utxo) => sum + utxo.amount, 0);
     if (utxoSum < targetAmount) {
       return null;

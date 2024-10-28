@@ -30,7 +30,7 @@ import { selectLocale } from "@/redux/device";
 import ViewHeader from "@/layout/ViewHeader";
 
 import WalletManagerService from "@/services/WalletManagerService";
-import SecurityService from "@/services/SecurityService";
+import SecurityService, { AuthActions } from "@/services/SecurityService";
 
 import KeyWarning from "@/atoms/KeyWarning/KeyWarning";
 import ShowMnemonic from "@/atoms/ShowMnemonic";
@@ -59,7 +59,7 @@ export default function SettingsWalletView() {
   const locale = useSelector(selectLocale);
 
   const shouldShowAdvancedOptions =
-    wallet.key_viewed !== null && isActiveWallet;
+    wallet.key_viewed_at !== null && isActiveWallet;
 
   const isExperimental = useSelector(selectIsExperimental);
 
@@ -71,7 +71,7 @@ export default function SettingsWalletView() {
   // user must tap "delete wallet" button multiple times to confirm
   const [deleteConfirm, setDeleteConfirm] = useState(0);
   const deleteRef = useRef(setTimeout(() => {}, 0));
-  const isDeleteDisabled = deleteConfirm === 2 && wallet.key_viewed === null;
+  const isDeleteDisabled = deleteConfirm === 2 && wallet.key_viewed_at === null;
 
   // handler for "Delete Wallet" button
   const handleDeleteWallet = async () => {
@@ -100,7 +100,15 @@ export default function SettingsWalletView() {
   };
 
   // handler for "Activate Wallet" button
-  const handleActivateWallet = () => {
+  const handleActivateWallet = async () => {
+    const isAuthorized = await SecurityService().authorize(
+      AuthActions.ActivateWallet
+    );
+
+    if (!isAuthorized) {
+      return;
+    }
+
     dispatch(
       walletBoot({ walletHash: wallet.walletHash, network: bchNetwork })
     );
@@ -110,7 +118,9 @@ export default function SettingsWalletView() {
   // handler for wallet name edit button
   const handleEdit = () => {
     if (isEditingWalletName === true) {
-      dispatch(walletSetName({ wallet, name: walletEditedName }));
+      dispatch(
+        walletSetName({ walletHash: wallet.walletHash, name: walletEditedName })
+      );
       setIsEditingWalletName(false);
       setIsWalletNameSaved(true);
     } else {

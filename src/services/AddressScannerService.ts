@@ -56,6 +56,7 @@ export default function AddressScannerService(wallet) {
 
       const addresses = change ? changeAddresses : receiveAddresses;
 
+      // addresses assumed to be sorted with latest index first
       const latestAddresses = addresses.slice(0, ADDRESS_GAP_LIMIT);
       const latestUnusedAddresses = latestAddresses.filter(
         (a) => a.state === null
@@ -81,7 +82,7 @@ export default function AddressScannerService(wallet) {
     }
 
     const generatedAddresses = [...populate(0), ...populate(1)];
-    //Log.debug("populateAddresses", generatedAddresses);
+    Log.debug("populateAddresses", generatedAddresses);
     return generatedAddresses;
   }
 
@@ -189,10 +190,11 @@ export default function AddressScannerService(wallet) {
     // for each address with state, register it if we don't have it.
     // [Kludge] We have to use raw SQL here instead of AddressManager.registerAddress
     // [K] so that we can batch all of the writes into one transction for performance
-    walletDb.exec("BEGIN TRANSACTION;");
-    needsRegistrationAddresses.forEach((stub) => {
-      try {
-        walletDb.exec(
+    let query: Array<string> = [];
+    query.push("BEGIN TRANSACTION;");
+    query = query.concat(
+      needsRegistrationAddresses.map(
+        (stub) =>
           `INSERT INTO addresses (
             address, 
             hd_index,
@@ -203,12 +205,15 @@ export default function AddressScannerService(wallet) {
             "${stub.hd_index}",
             "${stub.change}"
           );`
-        );
-      } catch (e) {
-        Log.warn(e);
-      }
-    });
-    walletDb.exec("COMMIT;");
+      )
+    );
+    query.push("COMMIT;");
+    try {
+      //Log.debug(query);
+      walletDb.exec(query.join(""));
+    } catch (e) {
+      Log.error(e);
+    }
 
     // discard UTXO set for all generated addresses
     addresses.forEach((stub) => UtxoManager.discardAddressUtxos(stub.address));
@@ -217,21 +222,38 @@ export default function AddressScannerService(wallet) {
     await Promise.all(activeAddresses.map((stub) => scanUtxos(stub.address)));
 
     // get history for active addresses
-    await Promise.all(
-      activeAddresses.concat(gapAddresses).map((stub) => {
+    const stateUpdates = await Promise.all(
+      activeAddresses.map((stub) => {
         const calculatedState = AddressManager.calculateAddressState(
           stub.address
         );
 
         // if states match, address does not need update
         if (calculatedState !== stub.state) {
-          return scanHistory(stub.address, callback);
+          return scanHistory(stub.address, callback, true);
         }
 
         callback(1);
         return Promise.resolve();
       })
     );
+
+    query = [];
+    query.push("BEGIN TRANSACTION;");
+    query = query.concat(
+      stateUpdates.map((update) =>
+        Array.isArray(update)
+          ? `UPDATE addresses SET state="${update[1]}" WHERE address="${update[0]}";`
+          : ""
+      )
+    );
+    query.push("COMMIT;");
+    try {
+      //Log.debug(query);
+      walletDb.exec(query.join(""));
+    } catch (e) {
+      Log.error(e);
+    }
 
     Log.debug(
       "Scanned",
@@ -338,7 +360,8 @@ export default function AddressScannerService(wallet) {
 
   async function scanHistory(
     address: string,
-    callback: (number) => void = () => {}
+    callback: (number) => void = () => {},
+    batch = false
   ) {
     const walletDb = await Database.openWalletDatabase(wallet.walletHash);
 
@@ -350,21 +373,22 @@ export default function AddressScannerService(wallet) {
     const newCalculatedState = AddressManager.calculateAddressState(address);
 
     try {
-      walletDb.run(
-        `UPDATE addresses SET 
+      if (!batch) {
+        walletDb.run(
+          `UPDATE addresses SET 
           state=?
         WHERE address="${address}";
       `,
-        [newCalculatedState]
-      );
+          [newCalculatedState]
+        );
+      }
     } catch (e) {
       Log.error(e);
       return Promise.reject();
     }
 
     //Log.debug("scanHistory", address, newCalculatedState);
-
     callback(1);
-    return Promise.resolve();
+    return Promise.resolve([address, newCalculatedState]);
   }
 }

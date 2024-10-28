@@ -18,7 +18,7 @@ import { selectSyncState, selectMyAddresses } from "@/redux/sync";
 import TransactionManagerService from "@/services/TransactionManagerService";
 import TransactionBuilderService from "@/services/TransactionBuilderService";
 import ToastService from "@/services/ToastService";
-import SecurityService from "@/services/SecurityService";
+import SecurityService, { AuthActions } from "@/services/SecurityService";
 
 import { SatoshiInput } from "@/atoms/SatoshiInput";
 import Satoshi from "@/atoms/Satoshi";
@@ -97,7 +97,11 @@ export default function WalletViewSend() {
     }
 
     setIsSending(true);
-    const isAuthorized = isInstantPay || (await SecurityService().authorize());
+    const authAction = isInstantPay
+      ? AuthActions.InstantPay
+      : AuthActions.SendTransaction;
+
+    const isAuthorized = await SecurityService().authorize(authAction);
     if (!isAuthorized) {
       setIsSending(false);
       return;
@@ -266,7 +270,7 @@ export default function WalletViewSend() {
               className="p-2 relative text-center w-full"
               onClick={handleFlipCurrency}
             >
-              <span className="text-2xl font-semibold text-center w-full text-zinc-800/80">
+              <span className="text-2xl font-semibold text-center w-full text-zinc-800/80 flex justify-center items-center">
                 <Satoshi value={satoshiInput} flip />
                 <CurrencyFlip className="text-3xl ml-2" />
               </span>

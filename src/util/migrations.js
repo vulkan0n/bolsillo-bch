@@ -74,6 +74,7 @@ const walletdb_migrations = [
     query.push("DROP TRIGGER IF EXISTS utxo_balance_delete;");
     query.push("DROP TRIGGER IF EXISTS utxo_balance_insert;");
     query.push("DROP INDEX IF EXISTS idx_address_transactions;");
+    query.push("DROP INDEX IF EXISTS idx_address_utxos;");
 
     // WalletEntity
     query.push(
@@ -99,14 +100,13 @@ const walletdb_migrations = [
         balance int default 0 not null, 
         change int default 0 not null, 
         state text default null,
-        memo text default null,
-        network text default "mainnet" CHECK(network IN ("mainnet", "chipnet", "testnet3", "testnet4")) not null
+        memo text default null
       );`
     );
 
     query.push(
       `CREATE TABLE IF NOT EXISTS address_transactions (
-        txid text primary key not null, 
+        txid text not null, 
         height int default 0 not null,
         address text not null,
         time text default ( strftime('%Y-%m-%dT%H:%M:%SZ') ),
@@ -114,8 +114,13 @@ const walletdb_migrations = [
         amount int,
         fiat_amount text,
         fiat_currency text,
-        memo text default null
+        memo text default null,
+        UNIQUE(txid, address)
       );`
+    );
+
+    query.push(
+      `CREATE INDEX idx_address_transactions ON address_transactions (address);`
     );
 
     query.push(
@@ -124,10 +129,11 @@ const walletdb_migrations = [
         txid text not null,
         tx_pos int not null,
         amount int not null,
-        memo text default null,
-        network text default "mainnet" CHECK(network IN ("mainnet", "chipnet", "testnet3", "testnet4")) not null
+        memo text default null
       );`
     );
+
+    query.push(`CREATE INDEX idx_address_utxos ON address_utxos (address);`);
 
     // update total wallet balance when address balances are updated
     query.push(
@@ -167,10 +173,6 @@ const walletdb_migrations = [
           ;
         END
       ;`
-    );
-
-    query.push(
-      `CREATE INDEX idx_address_transactions ON address_transactions (address);`
     );
 
     query.push("PRAGMA user_version = 1;");

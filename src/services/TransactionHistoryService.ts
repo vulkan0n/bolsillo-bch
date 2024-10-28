@@ -46,6 +46,7 @@ export default function TransactionHistoryService(
     const address_transactions_confirmed = walletDb.exec(
       `SELECT * FROM address_transactions
           WHERE height > 0
+          GROUP BY txid
           ORDER BY height DESC, time DESC, time_seen DESC
           LIMIT 100 OFFSET ${start};
         `
@@ -54,6 +55,7 @@ export default function TransactionHistoryService(
     const address_transactions_unconfirmed = walletDb.exec(
       `SELECT * FROM address_transactions 
           WHERE height <= 0
+          GROUP BY txid
           ORDER BY height ASC, time DESC, time_seen DESC
           LIMIT 100 OFFSET ${start};
         `

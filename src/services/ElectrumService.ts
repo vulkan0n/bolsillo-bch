@@ -1,8 +1,6 @@
-import { App } from "@capacitor/app";
 import { ElectrumClient, ConnectionStatus } from "@electrum-cash/network";
 import { store } from "@/redux";
 import {
-  syncConnect,
   syncConnectionUp,
   syncConnectionDown,
   syncAddressState,
@@ -98,7 +96,7 @@ export default function ElectrumService() {
   async function subscribeToAddress(
     address: AddressEntity
   ): Promise<{ address: AddressEntity; addressState: string | null }> {
-    if (electrum === null) {
+    if (electrum === null || electrum.status !== ConnectionStatus.CONNECTED) {
       throw new ElectrumNotConnectedError();
     }
 
@@ -106,7 +104,7 @@ export default function ElectrumService() {
   }
 
   async function subscribeToChaintip(): Promise<boolean> {
-    if (electrum === null) {
+    if (electrum === null || electrum.status !== ConnectionStatus.CONNECTED) {
       throw new ElectrumNotConnectedError();
     }
 
@@ -115,7 +113,7 @@ export default function ElectrumService() {
 
   // request the most up-to-date balance information for an address
   async function requestBalance(address: string) {
-    if (electrum === null) {
+    if (electrum === null || electrum.status !== ConnectionStatus.CONNECTED) {
       throw new ElectrumNotConnectedError();
     }
 
@@ -129,7 +127,7 @@ export default function ElectrumService() {
 
   // request the most up-to-date state hash for an address
   async function requestAddressState(address: string) {
-    if (electrum === null) {
+    if (electrum === null || electrum.status !== ConnectionStatus.CONNECTED) {
       throw new ElectrumNotConnectedError();
     }
     const addressState = await electrum.request(
@@ -146,7 +144,7 @@ export default function ElectrumService() {
 
   // request the entire transaction history for an address
   async function requestAddressHistory(address: string) {
-    if (electrum === null) {
+    if (electrum === null || electrum.status !== ConnectionStatus.CONNECTED) {
       throw new ElectrumNotConnectedError();
     }
 
@@ -155,12 +153,12 @@ export default function ElectrumService() {
       address
     );
 
-    return history as Array<object>;
+    return history;
   }
 
   // request all current UTXOs for an address
   async function requestUtxos(address: string) {
-    if (electrum === null) {
+    if (electrum === null || electrum.status !== ConnectionStatus.CONNECTED) {
       throw new ElectrumNotConnectedError();
     }
 
@@ -174,7 +172,7 @@ export default function ElectrumService() {
 
   // request a transaction by its txid
   async function requestTransaction(tx_hash: string, verbose: boolean = true) {
-    if (electrum === null) {
+    if (electrum === null || electrum.status !== ConnectionStatus.CONNECTED) {
       throw new ElectrumNotConnectedError();
     }
 
@@ -196,7 +194,7 @@ export default function ElectrumService() {
   }
 
   async function requestMerkle(tx_hash, height) {
-    if (electrum === null) {
+    if (electrum === null || electrum.status !== ConnectionStatus.CONNECTED) {
       throw new ElectrumNotConnectedError();
     }
     const merkle = await electrum.request(
@@ -214,7 +212,7 @@ export default function ElectrumService() {
       throw new Error("height must be non-negative integer");
     }
 
-    if (electrum === null) {
+    if (electrum === null || electrum.status !== ConnectionStatus.CONNECTED) {
       throw new ElectrumNotConnectedError();
     }
 
@@ -229,7 +227,7 @@ export default function ElectrumService() {
   }
 
   async function broadcastTransaction(tx_hex) {
-    if (electrum === null) {
+    if (electrum === null || electrum.status !== ConnectionStatus.CONNECTED) {
       throw new ElectrumNotConnectedError();
     }
     const tx_hash = await electrum.request(
@@ -242,7 +240,7 @@ export default function ElectrumService() {
   }
 
   async function requestRelayFee() {
-    if (electrum === null) {
+    if (electrum === null || electrum.status !== ConnectionStatus.CONNECTED) {
       throw new ElectrumNotConnectedError();
     }
     const result = await electrum.request("blockchain.relayfee");
@@ -296,7 +294,11 @@ function handleElectrumError(error) {
 }
 
 function handleChaintipSubscription(data) {
-  const chaintip = Array.isArray(data) ? data[0] : data;
+  if (!Array.isArray(data)) {
+    return;
+  }
+
+  const chaintip = data[0];
   store.dispatch(syncChaintip(chaintip));
 }
 
@@ -304,6 +306,6 @@ function getElectrumHost() {
   return electrum ? electrum.connection.host : "";
 }
 
-App.addListener("resume", () =>
+/*App.addListener("resume", () =>
   store.dispatch(syncConnect({ server: getElectrumHost(), attempts: 0 }))
-);
+);*/
