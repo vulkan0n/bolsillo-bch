@@ -1,4 +1,3 @@
-import { useMemo } from "react";
 import { useSelector } from "react-redux";
 import { Link, useParams } from "react-router-dom";
 import {
@@ -18,7 +17,7 @@ import Accordion from "@/atoms/Accordion";
 import WalletManagerService from "@/services/WalletManagerService";
 
 export default function WalletSettings() {
-  const walletList = useMemo(() => WalletManagerService().listWallets(), []);
+  const walletList = WalletManagerService().listWallets();
   const activeWalletHash = useSelector(selectActiveWalletHash);
 
   const { walletHash: selectedWalletHash } = useParams();

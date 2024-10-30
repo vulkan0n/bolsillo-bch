@@ -11,19 +11,15 @@ import {
   selectUiSettings,
 } from "@/redux/preferences";
 import { selectCurrentPrice } from "@/redux/exchangeRates";
-import SecurityService from "@/services/SecurityService";
+import SecurityService, { AuthActions } from "@/services/SecurityService";
 
 import Satoshi from "@/atoms/Satoshi";
 import CurrencyFlip from "@/atoms/CurrencyFlip";
 
 export default function WalletViewBalance() {
   const dispatch = useDispatch();
-  const {
-    walletHash,
-    name: activeWalletName,
-    balance,
-    key_viewed,
-  } = useSelector(selectActiveWallet);
+  const wallet = useSelector(selectActiveWallet);
+  const { walletHash, name: activeWalletName, balance, key_viewed } = wallet;
   const price = useSelector(selectCurrentPrice);
   const isChipnet = useSelector(selectIsChipnet);
 
@@ -46,7 +42,10 @@ export default function WalletViewBalance() {
 
   const handleHideBalance = async () => {
     if (shouldHideBalance === true) {
-      const isAuthorized = await SecurityService().authorize();
+      const isAuthorized = await SecurityService().authorize(
+        AuthActions.RevealBalance
+      );
+
       if (!isAuthorized) {
         return;
       }

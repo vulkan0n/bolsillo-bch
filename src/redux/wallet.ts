@@ -17,7 +17,9 @@ import WalletManagerService, {
   WalletEntity,
 } from "@/services/WalletManagerService";
 import ElectrumService from "@/services/ElectrumService";
-import AddressManagerService from "@/services/AddressManagerService";
+import AddressManagerService, {
+  AddressEntity,
+} from "@/services/AddressManagerService";
 import AddressScannerService from "@/services/AddressScannerService";
 
 import ToastService from "@/services/ToastService";
@@ -96,13 +98,7 @@ export const walletBalanceUpdate = createAction(
   }
 );
 
-export const walletSetName = createAction(
-  "wallet/name",
-  (payload: { walletHash: string; name: string }) => {
-    WalletManagerService().setWalletName(payload.walletHash, payload.name);
-    return { payload };
-  }
-);
+export const walletSetName = createAction<string>("wallet/name");
 
 export const walletSetKeyViewed = createAction(
   "wallet/key_viewed",
@@ -144,9 +140,7 @@ export const walletReducer = createReducer(initialState, (builder) => {
       state.balance = action.payload;
     })
     .addCase(walletSetName, (state, action) => {
-      if (state.walletHash === action.payload.wallet.walletHash) {
-        state.name = action.payload.name;
-      }
+      state.name = action.payload;
     })
     .addCase(walletSetKeyViewed, (state, action) => {
       state.key_viewed_at = action.payload;
@@ -156,7 +150,8 @@ export const walletReducer = createReducer(initialState, (builder) => {
     });
 });
 
-export const addressReducer = createReducer([], (builder) => {
+const addressInitialState: Array<AddressEntity> = [];
+export const addressReducer = createReducer(addressInitialState, (builder) => {
   builder.addCase(walletReloadAddresses, (state, action) => {
     const addresses = action.payload;
     return addresses;

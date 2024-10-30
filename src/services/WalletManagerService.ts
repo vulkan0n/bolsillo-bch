@@ -299,11 +299,18 @@ export default function WalletManagerService() {
 
   // setWalletName: sets a wallet's display name
   async function setWalletName(walletHash, name: string) {
-    const walletDb = Database.getWalletDatabase(walletHash);
-    APP_DB.run(`UPDATE wallets SET name=? WHERE walletHash=${walletHash}"`, [
-      name,
-    ]);
-    walletDb.run(`UPDATE wallet SET name=?"`, [name]);
+    try {
+      const walletDb = Database.getWalletDatabase(walletHash);
+      APP_DB.run(`UPDATE wallets SET name=? WHERE walletHash="${walletHash}"`, [
+        name,
+      ]);
+      walletDb.run(`UPDATE wallet SET name=?`, [name]);
+    } catch (e) {
+      Log.error(e);
+    }
+
+    Log.debug("setWalletName", walletHash, name);
+    await saveWallet(walletHash);
   }
 
   // clearWalletData: deletes all data associated with a wallet

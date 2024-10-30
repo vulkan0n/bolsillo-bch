@@ -102,7 +102,7 @@ export default function SettingsWalletView() {
   // handler for "Activate Wallet" button
   const handleActivateWallet = async () => {
     const isAuthorized = await SecurityService().authorize(
-      AuthActions.ActivateWallet
+      AuthActions.WalletActivate
     );
 
     if (!isAuthorized) {
@@ -116,11 +116,10 @@ export default function SettingsWalletView() {
   };
 
   // handler for wallet name edit button
-  const handleEdit = () => {
+  const handleEdit = async () => {
     if (isEditingWalletName === true) {
-      dispatch(
-        walletSetName({ walletHash: wallet.walletHash, name: walletEditedName })
-      );
+      await WalletManager.setWalletName(walletHash, walletEditedName);
+      dispatch(walletSetName(walletEditedName));
       setIsEditingWalletName(false);
       setIsWalletNameSaved(true);
     } else {
