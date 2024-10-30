@@ -1,4 +1,3 @@
-import { App } from "@capacitor/app";
 import { Filesystem, Directory, Encoding } from "@capacitor/filesystem";
 import initSqlJs from "sql.js";
 import {
@@ -205,12 +204,13 @@ export default function DatabaseService() {
 }
 
 // force database write on app stop and pause
+/*
 App.addListener("appStateChange", async ({ isActive }) => {
   const shouldCloseHandles = isActive === false;
   await DatabaseService().flushHandles(shouldCloseHandles);
 });
 
-/*App.addListener("pause", async () => {
+App.addListener("pause", async () => {
   await DatabaseService().flushHandles(false);
 });*/
 

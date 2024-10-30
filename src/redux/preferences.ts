@@ -26,7 +26,7 @@ const defaultPreferences = {
   // --------
   authMode: "none",
   pinHash: "",
-  authActions: "Generic;Debug;RevealPrivateKeys;RevealBalance;SendTransaction",
+  authActions: "Any;Debug;RevealPrivateKeys;RevealBalance;SendTransaction",
   // --------
   // TODO: make these per-wallet instead of global
   allowInstantPay: "false",
