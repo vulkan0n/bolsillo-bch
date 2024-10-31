@@ -1,5 +1,5 @@
 import { useSelector } from "react-redux";
-import { selectMyAddresses } from "@/redux/sync";
+import { selectWalletAddresses } from "@/redux/wallet";
 import { truncate } from "@/util/string";
 
 interface AddressProps {
@@ -39,10 +39,10 @@ export default function Address({
     truncatedAddress.length - SUFFIX_LENGTH
   );
 
-  const myAddresses = useSelector(selectMyAddresses);
-  const isMyAddress = myAddresses[address] !== undefined;
+  const myAddresses = useSelector(selectWalletAddresses);
+  const myAddress = myAddresses.find((addr) => addr.address === address);
 
-  const myAddress = isMyAddress ? myAddresses[address] : null;
+  const isMyAddress = myAddress !== undefined;
 
   const myAddressStyle =
     isMyAddress && myAddress.change === 0 ? "text-secondary" : "";

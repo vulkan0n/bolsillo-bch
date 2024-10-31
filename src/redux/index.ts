@@ -2,10 +2,15 @@ import { configureStore } from "@reduxjs/toolkit";
 import LogService from "@/services/LogService";
 import {
   preferencesReducer,
-  selectActiveWalletId,
+  selectActiveWalletHash,
   selectBchNetwork,
 } from "./preferences";
-import { walletReducer, walletMiddleware, walletBoot } from "./wallet";
+import {
+  walletReducer,
+  walletMiddleware,
+  walletBoot,
+  addressReducer,
+} from "./wallet";
 import { syncReducer, syncMiddleware } from "./sync";
 import { deviceReducer } from "./device";
 import { txHistoryReducer } from "./txHistory";
@@ -22,6 +27,7 @@ export const store = configureStore({
     sync: syncReducer,
     exchangeRates: exchangeRateReducer,
     txHistory: txHistoryReducer,
+    addresses: addressReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware()
@@ -37,7 +43,7 @@ export function redux_init() {
   Log.debug("redux_init");
   store.dispatch(
     walletBoot({
-      wallet_id: selectActiveWalletId(store.getState()),
+      walletHash: selectActiveWalletHash(store.getState()),
       network: selectBchNetwork(store.getState()),
     })
   );

@@ -22,7 +22,7 @@ import {
 } from "@bitauth/libauth";
 
 import WalletManagerService from "@/services/WalletManagerService";
-import SecurityService from "@/services/SecurityService";
+import SecurityService, { AuthActions } from "@/services/SecurityService";
 
 import ViewHeader from "@/layout/ViewHeader";
 import Accordion from "@/atoms/Accordion";
@@ -34,15 +34,15 @@ import translations from "./translations";
 import { DEFAULT_DERIVATION_PATH } from "@/util/crypto";
 
 export default function SettingsWalletAdditionalInformation() {
-  const { wallet_id } = useParams();
+  const { walletHash } = useParams();
 
   const [isShowXpub, setIsShowXpub] = useState(false);
   const [isShowXprv, setIsShowXprv] = useState(false);
 
   const network = useSelector(selectBchNetwork);
 
-  const WalletManager = WalletManagerService(network);
-  const wallet = WalletManager.getWalletById(wallet_id);
+  const WalletManager = WalletManagerService();
+  const wallet = WalletManager.getWallet(walletHash);
 
   const derivationPath = wallet.derivation;
 
@@ -111,7 +111,10 @@ export default function SettingsWalletAdditionalInformation() {
                 type="button"
                 onClick={async () => {
                   const isAuthorized =
-                    isShowXpub || (await SecurityService().authorize());
+                    isShowXpub ||
+                    (await SecurityService().authorize(
+                      AuthActions.RevealPrivateKeys
+                    ));
                   if (!isAuthorized) {
                     return;
                   }
@@ -161,7 +164,10 @@ export default function SettingsWalletAdditionalInformation() {
                 type="button"
                 onClick={async () => {
                   const isAuthorized =
-                    isShowXprv || (await SecurityService().authorize());
+                    isShowXprv ||
+                    (await SecurityService().authorize(
+                      AuthActions.RevealPrivateKeys
+                    ));
                   if (!isAuthorized) {
                     return;
                   }

@@ -19,14 +19,14 @@ import AddressManagerService from "@/services/AddressManagerService";
 import { DEFAULT_DERIVATION_PATH, DERIVATION_PATHS } from "@/util/crypto";
 
 export default function SettingsWalletScanTool() {
-  const { wallet_id } = useParams();
+  const { walletHash } = useParams();
   const bchNetwork = useSelector(selectBchNetwork);
   const location = useLocation();
 
   const dispatch = useDispatch();
 
-  const WalletManager = WalletManagerService(bchNetwork);
-  const wallet = WalletManager.getWalletById(wallet_id);
+  const WalletManager = WalletManagerService();
+  const wallet = WalletManager.getWallet(walletHash);
 
   const AddressManager = AddressManagerService(wallet);
 

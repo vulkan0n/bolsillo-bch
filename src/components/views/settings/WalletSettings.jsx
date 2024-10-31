@@ -8,7 +8,7 @@ import {
   WarningFilled,
 } from "@ant-design/icons";
 
-import { selectActiveWalletId, selectBchNetwork } from "@/redux/preferences";
+import { selectActiveWalletHash } from "@/redux/preferences";
 
 import { translate } from "@/util/translations";
 import translations from "./translations";
@@ -17,12 +17,10 @@ import Accordion from "@/atoms/Accordion";
 import WalletManagerService from "@/services/WalletManagerService";
 
 export default function WalletSettings() {
-  const bchNetwork = useSelector(selectBchNetwork);
-  const walletList = WalletManagerService(bchNetwork).getWallets();
-  const activeWalletId = useSelector(selectActiveWalletId);
+  const walletList = WalletManagerService().listWallets();
+  const activeWalletHash = useSelector(selectActiveWalletHash);
 
-  const { wallet_id } = useParams();
-  const selectedWalletId = Number.parseInt(wallet_id || "0", 10);
+  const { walletHash: selectedWalletHash } = useParams();
 
   return (
     <Accordion
@@ -38,19 +36,19 @@ export default function WalletSettings() {
       </Link>
       {walletList.map((w) => (
         <Link
-          key={w.id}
-          to={`/settings/wallet/${w.id}`}
+          key={w.walletHash}
+          to={`/settings/wallet/${w.walletHash}`}
           className="w-full block p-2 flex items-center"
           replace
         >
-          {w.id === selectedWalletId && (
+          {w.walletHash === selectedWalletHash && (
             <RightCircleOutlined className="text-xl mr-1 text-secondary" />
           )}
-          {w.id === activeWalletId && (
+          {w.walletHash === activeWalletHash && (
             <CheckCircleFilled className="text-xl mr-1 text-primary" />
           )}
 
-          {w.key_viewed === null && (
+          {w.key_viewed_at === null && (
             <WarningFilled className="text-xl mr-1 text-error" />
           )}
           {w.name}

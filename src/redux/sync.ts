@@ -19,6 +19,7 @@ import { selectNetworkStatus } from "@/redux/device";
 import LogService from "@/services/LogService";
 import ElectrumService from "@/services/ElectrumService";
 import BlockchainService from "@/services/BlockchainService";
+import WalletManagerService from "@/services/WalletManagerService";
 import AddressManagerService, {
   AddressEntity,
 } from "@/services/AddressManagerService";
@@ -75,13 +76,11 @@ export const syncConnect = createAsyncThunk(
   }
 );
 
-// syncReconnect: force disconnect and attempt fresh connection to server
+// syncReconnect: attempt fresh connection to server
 export const syncReconnect = createAsyncThunk(
   "sync/reconnect",
   async (server: string | undefined, thunkApi) => {
     const connectServer = server || Electrum.getElectrumHost();
-    // cleanup electrum subscriptions (force=true)
-    await Electrum.disconnect(true);
     thunkApi.dispatch(syncConnect({ attempts: 0, server: connectServer }));
   }
 );
@@ -117,12 +116,13 @@ export const syncWalletAddresses = createAsyncThunk(
 
     AddressScanner.populateAddresses();
 
+    const addresses = AddressManager.getReceiveAddresses();
+    thunkApi.dispatch(syncSubscriptionCount(addresses.length));
+
     Promise.all(
-      AddressManager.getReceiveAddresses().map(async (address) => {
-        const subscription = await Electrum.subscribeToAddress(address);
-        thunkApi.dispatch(
-          syncAddressState([address, subscription.addressState])
-        );
+      addresses.map(async (address) => {
+        await Electrum.subscribeToAddress(address);
+        thunkApi.dispatch(syncSubscriptionCount(-1));
       })
     );
 
@@ -143,14 +143,11 @@ export const syncChangeAddresses = createAsyncThunk(
     const promises = changeAddresses
       .filter((address) => !(address.state !== null && address.balance === 0)) // don't resync fully spent change addresses
       .map(async (address) => {
-        const subscription = await Electrum.subscribeToAddress(address);
-
-        thunkApi.dispatch(
-          syncAddressState([address, subscription.addressState])
-        );
-        //Log.debug("sync/changeAddresses", address, addressState);
-        return [address, subscription.addressState];
+        await Electrum.subscribeToAddress(address);
+        thunkApi.dispatch(syncSubscriptionCount(-1));
       });
+
+    thunkApi.dispatch(syncSubscriptionCount(promises.length));
 
     const batchedPromises = [];
     const batch_chunk_size = 1024;
@@ -164,6 +161,10 @@ export const syncChangeAddresses = createAsyncThunk(
       Promise.all(batch);
     });
   }
+);
+
+export const syncSubscriptionCount = createAction<number>(
+  "sync/subscriptionCount"
 );
 
 // syncAddressState: fired when data acquired from address subscription
@@ -241,7 +242,14 @@ export const syncAddressHistory = createAsyncThunk(
 syncMiddleware.startListening({
   actionCreator: syncAddressHistory.fulfilled,
   effect: async (action, listenerApi) => {
-    listenerApi.dispatch(syncPopulateAddresses());
+    if (selectSyncState(listenerApi.getState()).syncCount <= 1) {
+      listenerApi.dispatch(syncPopulateAddresses());
+    }
+
+    if (selectSyncState(listenerApi.getState()).syncPending.history === 0) {
+      const wallet = selectActiveWallet(listenerApi.getState());
+      await WalletManagerService().saveWallet(wallet.walletHash);
+    }
   },
 });
 
@@ -254,12 +262,7 @@ export const syncPopulateAddresses = createAsyncThunk(
     const generatedAddresses = AddressScanner.populateAddresses();
 
     await Promise.all(
-      generatedAddresses.map(async (address) => {
-        const subscription = await Electrum.subscribeToAddress(address);
-        thunkApi.dispatch(
-          syncAddressState([subscription.address, subscription.addressState])
-        );
-      })
+      generatedAddresses.map((address) => Electrum.subscribeToAddress(address))
     );
   }
 );
@@ -314,51 +317,43 @@ export const syncHotRefresh = createAsyncThunk(
   }
 );
 
-export const syncBlock = createAsyncThunk(
-  "sync/block",
-  async (height: number) => {
-    const Blockchain = BlockchainService();
-    let block;
-    try {
-      block = await Blockchain.getBlockByHeight(height);
-    } catch {
-      const header = await Electrum.requestBlock(height);
-      await Blockchain.registerBlock({ header, height });
-      block = await Blockchain.getBlockByHeight(height);
+export const syncChaintip = createAsyncThunk(
+  "sync/chaintip",
+  async (chaintip: { height: number; hex: string }, thunkApi) => {
+    const sync = selectSyncState(thunkApi.getState());
+    if (sync.syncPending.chaintip > 1) {
+      return sync.chaintip;
     }
 
-    Log.log("sync/block", block);
+    const Blockchain = BlockchainService();
+    const block = await Blockchain.resolveBlockByHeight(chaintip.height);
+
+    Log.log("sync/chaintip", block);
+
+    queueMicrotask(async () => {
+      await TransactionManagerService().purgeTransactions();
+      await BlockchainService().purgeBlocks();
+    });
+
     return block;
   }
 );
 
-export const syncChaintip = createAction<{ height: number; hex: string }>(
-  "sync/chaintip"
-);
-syncMiddleware.startListening({
-  actionCreator: syncChaintip,
-  effect: async (action, listenerApi) => {
-    const chaintip = action.payload;
-    Log.log("sync/chaintip", chaintip);
-    listenerApi.dispatch(syncBlock(chaintip.height));
-
-    await TransactionManagerService().purgeTransactions();
-    await BlockchainService().purgeBlocks();
-  },
-});
-
 const initialPending = {
   utxo: 0,
   history: 0,
-  txState: 0,
-  change: 0,
+  addressState: 0,
+  subscription: 0,
+  chaintip: 0,
   rebuild: 0,
 };
 const initialState = {
   isConnected: false,
   server: "",
   syncPending: { ...initialPending },
-  chaintip: { ...block_checkpoints.first2023 },
+  chaintip: {
+    ...block_checkpoints.first2023,
+  },
   addresses: {},
   lastRefresh: Date.now(),
 };
@@ -376,15 +371,15 @@ export const syncReducer = createReducer(initialState, (builder) => {
       state.isConnected = false;
     })
     .addCase(syncAddressState.pending, (state: RootState) => {
-      state.syncPending.txState += 1;
+      state.syncPending.addressState += 1;
     })
     .addCase(syncAddressState.fulfilled, (state: RootState, action) => {
       const [address] = action.payload;
       state.addresses[address.address] = address;
-      state.syncPending.txState -= 1;
+      state.syncPending.addressState -= 1;
     })
     .addCase(syncAddressState.rejected, (state: RootState) => {
-      state.syncPending.txState -= 1;
+      state.syncPending.addressState -= 1;
     })
     .addCase(syncAddressUtxos.pending, (state: RootState) => {
       state.syncPending.utxo += 1;
@@ -413,22 +408,15 @@ export const syncReducer = createReducer(initialState, (builder) => {
     .addCase(txHistoryFetch.rejected, (state: RootState) => {
       state.syncPending.history -= 1;
     })
-    .addCase(syncChangeAddresses.pending, (state: RootState) => {
-      state.syncPending.change += 1;
+    .addCase(syncSubscriptionCount, (state, action) => {
+      state.syncPending.subscription += action.payload;
     })
-    .addCase(syncChangeAddresses.fulfilled, (state: RootState) => {
-      state.syncPending.change -= 1;
+    .addCase(syncChaintip.pending, (state) => {
+      state.syncPending.chaintip += 1;
     })
-    .addCase(syncChangeAddresses.rejected, (state: RootState) => {
-      state.syncPending.change -= 1;
-    })
-    .addCase(syncChaintip, (state, action) => {
-      const { hex, height } = action.payload;
-      state.chaintip = {
-        blockhash: BlockchainService().calculateBlockhash(hex),
-        header: hex,
-        height,
-      };
+    .addCase(syncChaintip.fulfilled, (state, action) => {
+      state.syncPending.chaintip -= 1;
+      state.chaintip = action.payload;
     })
     .addCase(syncHotRefresh.fulfilled, (state: RootState, action) => {
       state.lastRefresh = action.payload;
@@ -453,6 +441,11 @@ export const selectSyncState = createSelector(
 export const selectMyAddresses = createSelector(
   (state: RootState) => state.sync,
   (sync) => sync.addresses
+);
+
+export const selectChaintip = createSelector(
+  (state) => state.sync,
+  (sync) => sync.chaintip
 );
 
 /*

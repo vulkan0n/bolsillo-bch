@@ -2,8 +2,8 @@
 import { useDispatch } from "react-redux";
 import { PictureOutlined } from "@ant-design/icons";
 import { Camera, CameraResultType, CameraSource } from "@capacitor/camera";
-import { Haptics, NotificationType } from "@capacitor/haptics";
 import QrScanner from "qr-scanner";
+import { Haptic } from "@/util/haptic";
 
 import { setScannerIsScanning } from "@/redux/device";
 
@@ -62,7 +62,7 @@ export default function ImageSelectButton({ onSelection, ...rest }: Props) {
         onSelection(result.data);
         //console.log(result.data);
       } catch (e) {
-        Haptics.notification({ type: NotificationType.Error });
+        await Haptic.error();
         onSelection("");
         //console.error(e);
       }

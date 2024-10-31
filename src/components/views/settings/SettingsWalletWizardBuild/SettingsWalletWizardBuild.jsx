@@ -4,7 +4,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { SyncOutlined } from "@ant-design/icons";
 import { selectBchNetwork } from "@/redux/preferences";
 import { walletBoot } from "@/redux/wallet";
-import { syncReconnect } from "@/redux/sync";
 import WalletManagerService from "@/services/WalletManagerService";
 import AddressScannerService from "@/services/AddressScannerService";
 
@@ -17,27 +16,33 @@ export default function SettingsWalletWizardBuild() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const { wallet_id } = useParams();
+  const { walletHash } = useParams();
   const bchNetwork = useSelector(selectBchNetwork);
 
   const [isBuilding, setIsBuilding] = useState(false);
   const [isBuildDone, setIsBuildDone] = useState(false);
+  const [addressesScanned, setAddressesScanned] = useState(0);
 
   useEffect(
     function startBuild() {
       const scan = async () => {
-        const wallet =
-          WalletManagerService(bchNetwork).getWalletById(wallet_id);
+        const wallet = WalletManagerService().getWallet(walletHash);
 
         if (isBuildDone) {
-          dispatch(walletBoot({ wallet_id: wallet.id, network: bchNetwork }));
-          dispatch(syncReconnect());
+          dispatch(
+            walletBoot({ walletHash: wallet.walletHash, network: bchNetwork })
+          );
+
           navigate("/");
           return;
         }
 
         if (isBuilding) {
-          await AddressScannerService(wallet).rebuildWallet();
+          await AddressScannerService(wallet).rebuildWallet((scanCount) =>
+            requestAnimationFrame(() =>
+              setAddressesScanned((scanned) => scanned + scanCount)
+            )
+          );
           setIsBuildDone(true);
         }
 
@@ -48,16 +53,17 @@ export default function SettingsWalletWizardBuild() {
 
       scan();
     },
-    [isBuilding, bchNetwork, wallet_id, dispatch, isBuildDone, navigate]
+    [isBuilding, bchNetwork, walletHash, dispatch, isBuildDone, navigate]
   );
 
   return (
     <div>
       <h2 className="text-2xl text-center">{translate(importingWallet)}</h2>
       <h3 className="text-xl text-center">{translate(takesMinutes)}</h3>
-      <div className="flex justify-center items-center">
+      <div className="flex justify-center items-center my-2">
         <SyncOutlined className="text-5xl" spin />
       </div>
+      <div className="text-center">Scanned {addressesScanned} addresses</div>
     </div>
   );
 }

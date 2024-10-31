@@ -3,13 +3,13 @@ import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 
 import { Dialog } from "@capacitor/dialog";
-import { Haptics, NotificationType } from "@capacitor/haptics";
 import {
   BarcodeScanner,
   SupportedFormat,
 } from "@capacitor-community/barcode-scanner";
 
 import { ScanOutlined, CloseOutlined } from "@ant-design/icons";
+import { Haptic } from "@/util/haptic";
 import {
   selectDeviceInfo,
   setScannerIsScanning,
@@ -55,7 +55,7 @@ export default function ScannerButton() {
       } = validateBchUri(content);
 
       if (isValid) {
-        Haptics.notification({ type: NotificationType.Success });
+        await Haptic.success();
 
         let navTo;
         if (isPaymentProtocol) {
@@ -68,7 +68,7 @@ export default function ScannerButton() {
 
         navigate(navTo);
       } else {
-        Haptics.notification({ type: NotificationType.Error });
+        await Haptic.error();
       }
     },
     [dispatch, navigate]

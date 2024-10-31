@@ -19,7 +19,6 @@ const Log = LogService("HdNode");
 
 export default function HdNodeService(wallet) {
   const { mnemonic, derivation, passphrase } = wallet;
-  //Log.debug("HdNodeService", wallet_id, derivation, mnemonic);
 
   const seed = bip39.mnemonicToSeedSync(mnemonic, passphrase);
   const hdMaster = deriveHdPrivateNodeFromSeed(seed);

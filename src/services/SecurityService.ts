@@ -7,23 +7,53 @@ import { sha256 } from "@/util/hash";
 
 const Log = LogService("SecurityService");
 
+export enum AuthActions {
+  Any = "Any",
+  Debug = "Debug",
+  AppOpen = "AppOpen",
+  WalletActivate = "WalletActivate",
+  SendTransaction = "SendTransaction",
+  InstantPay = "InstantPay",
+  RevealBalance = "RevealBalance",
+  RevealPrivateKeys = "RevealPrivateKeys",
+}
+
+const authText = {
+  [AuthActions.Any]: "",
+  [AuthActions.Debug]: "Debug",
+  [AuthActions.AppOpen]: "Open App",
+  [AuthActions.WalletActivate]: "Activate Wallet",
+  [AuthActions.SendTransaction]: "Send Transaction",
+  [AuthActions.InstantPay]: "Instant Pay",
+  [AuthActions.RevealBalance]: "Reveal Balances",
+  [AuthActions.RevealPrivateKeys]: "Reveal Private Keys",
+};
+
 export default function SecurityService() {
   return {
     authorize,
   };
 
   // authorize user according to user preference
-  async function authorize(): Promise<boolean> {
-    const { authMode } = selectSecuritySettings(store.getState());
+  async function authorize(
+    action: AuthActions = AuthActions.Any
+  ): Promise<boolean> {
+    const { authMode, authActions } = selectSecuritySettings(store.getState());
+
+    const isAuthRequired = authActions.includes(action);
+
+    if (!isAuthRequired) {
+      return true;
+    }
 
     let isAuthorized = false;
     switch (authMode) {
       case "bio":
-        isAuthorized = await authorizeBio();
+        isAuthorized = await authorizeBio(action);
         break;
 
       case "pin":
-        isAuthorized = await authorizePin();
+        isAuthorized = await authorizePin(action);
         break;
 
       case "none":
@@ -38,7 +68,9 @@ export default function SecurityService() {
     return isAuthorized;
   }
 
-  async function authorizeBio(): Promise<boolean> {
+  async function authorizeBio(
+    action: AuthActions = AuthActions.Any
+  ): Promise<boolean> {
     let isAuthorized = false;
 
     const { isAvailable, errorCode } = await NativeBiometric.isAvailable({
@@ -54,7 +86,7 @@ export default function SecurityService() {
         const isSuccess = await NativeBiometric.verifyIdentity({
           reason: "Authorize this action",
           title: "Selene Wallet",
-          subtitle: "Authorization Required",
+          subtitle: authText[action],
           description: "Please authorize this action.",
           useFallback: !isAvailable && isFallbackAvailable,
         })
@@ -70,17 +102,18 @@ export default function SecurityService() {
     return isAuthorized;
   }
 
-  async function authorizePin() {
+  async function authorizePin(action: AuthActions = AuthActions.Any) {
     let isAuthorized = false;
 
     const { pinHash: storedPinHash } = selectSecuritySettings(store.getState());
 
+    // if PIN is not set, allow authorization
     if (storedPinHash === "") {
       return true;
     }
 
     const { value: pin } = await Dialog.prompt({
-      title: "Enter PIN",
+      title: authText[action] || "Enter PIN",
       message: "Please enter your PIN.",
       okButtonTitle: "Authorize",
     });
