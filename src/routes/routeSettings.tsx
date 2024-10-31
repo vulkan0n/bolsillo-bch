@@ -7,11 +7,11 @@ export const routeSettings = [
     element: <SettingsView />,
   },
   {
-    path: "/settings/wallet/:wallet_id",
+    path: "/settings/wallet/:walletHash",
     element: <SettingsWalletView />,
   },
   {
-    path: "/settings/wallet/:wallet_id/additionalInformation",
+    path: "/settings/wallet/:walletHash/additionalInformation",
     async lazy() {
       const { default: SettingsWalletAdditionalInformation } = await import(
         "@/views/settings/SettingsWalletAdditionalInformation/SettingsWalletAdditionalInformation"
@@ -47,7 +47,7 @@ export const routeSettings = [
         },
       },
       {
-        path: "import/build/:wallet_id",
+        path: "import/build/:walletHash",
         async lazy() {
           const { default: SettingsWalletWizardBuild } = await import(
             "@/views/settings/SettingsWalletWizardBuild/SettingsWalletWizardBuild"
@@ -58,7 +58,7 @@ export const routeSettings = [
     ],
   },
   {
-    path: "/settings/wallet/:wallet_id/scan",
+    path: "/settings/wallet/:walletHash/scan",
     async lazy() {
       const { default: SettingsWalletScanTool } = await import(
         "@/views/settings/SettingsWalletScanTool/SettingsWalletScanTool"

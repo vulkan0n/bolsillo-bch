@@ -7,54 +7,31 @@ const Log = LogService("migrations");
 // functions in the migrations array will be executed sequentially,
 // starting with the function at index PRAGMA user_version
 // each entry should represent a new db version
-const migrations = [
+const appdb_migrations = [
   function migrate_v0() {
     const query = [];
 
-    // [!] WARNING: resetting the database with user_version 0
-    // [!] will destroy wallet passphrases!
     query.push("PRAGMA user_version = 0;");
 
-    //query.push("DROP TABLE IF EXISTS wallets;");
+    query.push("DROP TABLE IF EXISTS wallets;");
     query.push("DROP TABLE IF EXISTS blockchain;");
-    query.push("DROP TABLE IF EXISTS addresses;");
     query.push("DROP TABLE IF EXISTS transactions;");
-    query.push("DROP TABLE IF EXISTS address_transactions;");
-    query.push("DROP TABLE IF EXISTS address_utxos;");
-    query.push("DROP TRIGGER IF EXISTS balance_update;");
-    query.push("DROP TRIGGER IF EXISTS utxo_balance_delete;");
-    query.push("DROP TRIGGER IF EXISTS utxo_balance_insert;");
-    query.push("DROP INDEX IF EXISTS idx_address_transactions;");
 
+    // WalletMeta
     query.push(
       `CREATE TABLE IF NOT EXISTS wallets ( 
-        id integer primary key not null, 
-        name text not null, 
-        mnemonic text unique not null, 
-        derivation text default "m/44'/145'/0'", 
-        date_created default ( strftime('%Y-%m-%dT%H:%M:%SZ') ),
-        key_viewed text, 
-        key_verified text, 
-        balance int default 0
+        walletHash text primary key not null,
+        name text default "" not null,
+        balance int default 0,
+        created_at text default ( strftime('%Y-%m-%dT%H:%M:%SZ') ),
+        key_viewed_at text default null
       );`
     );
 
     query.push(
       `CREATE TABLE IF NOT EXISTS blockchain (
         blockhash text primary key,
-        height int not null,
-        header text not null
-      );`
-    );
-
-    query.push(
-      `CREATE TABLE IF NOT EXISTS addresses (
-        address text primary key not null, 
-        wallet_id int not null, 
-        hd_index int not null, 
-        balance int default 0, 
-        change int default 0, 
-        state text default null
+        height int not null
       );`
     );
 
@@ -62,236 +39,114 @@ const migrations = [
       `CREATE TABLE IF NOT EXISTS transactions (
         txid text primary key not null, 
         time_seen default ( strftime('%Y-%m-%dT%H:%M:%SZ') ),
-        hex text,
-        size int,
-        blockhash text,
         time int,
-        blocktime int
+        blocktime int,
+        blockhash text,
+        size int,
+        version int
       );`
-    );
-
-    query.push(
-      `CREATE TABLE IF NOT EXISTS address_transactions (
-        txid text primary key not null,
-        height int not null,
-        time text default ( strftime('%Y-%m-%dT%H:%M:%SZ') ),
-        time_seen default ( strftime('%Y-%m-%dT%H:%M:%SZ') ),
-        address text not null,
-        amount int,
-        fiat_amount text
-      );`
-    );
-
-    query.push(
-      `CREATE TABLE IF NOT EXISTS address_utxos (
-        wallet_id int not null,
-        address text not null,
-        txid text not null,
-        tx_pos int not null,
-        amount int not null
-      );`
-    );
-
-    query.push(
-      `CREATE TRIGGER IF NOT EXISTS balance_update AFTER UPDATE ON addresses
-        BEGIN
-          UPDATE wallets SET 
-            balance=(
-              SELECT SUM(balance) FROM addresses 
-              WHERE wallet_id=NEW.wallet_id
-            ) WHERE id=NEW.wallet_id
-          ;
-        END
-      ;`
     );
 
     query.push("PRAGMA user_version = 1;");
 
     return query.join("");
   },
-
-  function migrate_v1() {
+  /*function migrate_v1() {
     const query = [];
-
-    // add prefix field to addresses
-    query.push(
-      `ALTER TABLE addresses ADD COLUMN
-        prefix text CHECK(prefix IN ("bitcoincash", "bchtest", "bchreg")) default "bitcoincash";`
-    );
-
-    // add memo fields to address-related tables
-    query.push(
-      `ALTER TABLE addresses ADD COLUMN
-        memo text default null;`,
-      `ALTER TABLE address_transactions ADD COLUMN
-        memo text default null;`,
-      `ALTER TABLE address_utxos ADD COLUMN
-        memo text default null;`
-    );
-
-    query.push("DROP TRIGGER IF EXISTS balance_update;");
-
-    // recreate wallet table:
-    // add bip32 passphrase field to wallets
-    // update unique constraints
-    // reset default derivation path
-    // recreate balance_update trigger
-    query.push(
-      `
-      PRAGMA foreign_keys=OFF;
-      BEGIN TRANSACTION;
-        DROP TABLE IF EXISTS wallets_new;
-        CREATE TABLE wallets_new ( 
-          id integer primary key not null, 
-          name text not null, 
-          mnemonic text not null, 
-          passphrase text default "",
-          derivation text default "${DEFAULT_DERIVATION_PATH}", 
-          date_created default ( strftime('%Y-%m-%dT%H:%M:%SZ') ),
-          key_viewed text, 
-          key_verified text, 
-          balance int default 0,
-          UNIQUE(mnemonic, passphrase, derivation)
-        );
-
-        INSERT INTO wallets_new (
-          id,
-          name, 
-          mnemonic, 
-          derivation,
-          date_created,
-          key_viewed,
-          key_verified,
-          balance,
-          passphrase
-        ) 
-        SELECT 
-          wallets.id,
-          wallets.name, 
-          wallets.mnemonic,
-          wallets.derivation,
-          wallets.date_created, 
-          wallets.key_viewed,   
-          wallets.key_verified, 
-          wallets.balance,
-          ""
-        FROM wallets;
-
-        DROP TABLE wallets;
-        ALTER TABLE 'wallets_new' RENAME TO 'wallets';
-        PRAGMA foreign_key_check;
-      COMMIT;
-      PRAGMA foreign_keys=ON;
-      `
-    );
-
-    // update wallet balance automatically when address balance is updated
-    query.push(
-      `CREATE TRIGGER IF NOT EXISTS balance_update AFTER UPDATE ON addresses
-        BEGIN
-          UPDATE wallets SET 
-            balance=(
-              SELECT SUM(balance) FROM addresses 
-              WHERE wallet_id=NEW.wallet_id
-              AND prefix=NEW.prefix
-            ) WHERE id=NEW.wallet_id
-          ;
-        END
-      ;`
-    );
 
     query.push("PRAGMA user_version = 2;");
 
     return query.join("");
-  },
+  },*/
+];
 
-  function migrate_v2() {
+const walletdb_migrations = [
+  function migrate_v0() {
     const query = [];
 
-    // remove primary key from address_transactions
-    // add fiat unit (to avoid stupid conversion bugs that nobody has noticed yet)
+    query.push("PRAGMA user_version = 0;");
+
+    query.push("DROP TABLE IF EXISTS wallet;");
+    query.push("DROP TABLE IF EXISTS addresses;");
+    query.push("DROP TABLE IF EXISTS address_utxos;");
+    query.push("DROP TABLE IF EXISTS address_transactions;");
+    query.push("DROP TRIGGER IF EXISTS balance_update;");
+    query.push("DROP TRIGGER IF EXISTS utxo_balance_delete;");
+    query.push("DROP TRIGGER IF EXISTS utxo_balance_insert;");
+    query.push("DROP INDEX IF EXISTS idx_address_transactions;");
+    query.push("DROP INDEX IF EXISTS idx_address_utxos;");
+
+    // WalletEntity
     query.push(
-      `
-      PRAGMA foreign_keys=OFF;
-      BEGIN TRANSACTION;
-        DROP TABLE IF EXISTS address_transactions_new;
-        CREATE TABLE address_transactions_new ( 
-          txid text not null,
-          height int not null,
-          time text default ( strftime('%Y-%m-%dT%H:%M:%SZ') ),
-          time_seen default ( strftime('%Y-%m-%dT%H:%M:%SZ') ),
-          address text not null,
-          amount int,
-          fiat_amount text,
-          fiat_currency text,
-          wallet_id int not null,
-          UNIQUE(txid, wallet_id)
-        );
-
-        INSERT INTO address_transactions_new (
-          txid,
-          height, 
-          time, 
-          time_seen,
-          address,
-          amount,
-          fiat_amount
-        ) 
-        SELECT 
-          address_transactions.txid,
-          address_transactions.height, 
-          address_transactions.time,
-          address_transactions.time_seen,
-          address_transactions.address, 
-          address_transactions.amount,   
-          address_transactions.fiat_amount
-        FROM address_transactions;
-
-        DROP TABLE address_transactions;
-        ALTER TABLE 'address_transactions_new' RENAME TO 'address_transactions';
-        PRAGMA foreign_key_check;
-      COMMIT;
-      PRAGMA foreign_keys=ON;
-      `
+      `CREATE TABLE IF NOT EXISTS wallet ( 
+        walletHash text primary key not null, 
+        mnemonic text not null, 
+        passphrase text default "" not null,
+        derivation text default "${DEFAULT_DERIVATION_PATH}" not null,
+        name text not null, 
+        balance int default 0 not null,
+        genesis_height int default null,
+        created_at text default ( strftime('%Y-%m-%dT%H:%M:%SZ') ),
+        key_viewed_at text default null, 
+        key_verified_at text default null 
+      );`
     );
 
-    // drop transaction and block hex data, as it is now written to filesystem directly
-    query.push("ALTER TABLE transactions DROP COLUMN hex;");
-    query.push("ALTER TABLE blockchain DROP COLUMN header;");
-
-    query.push("PRAGMA user_version = 3;");
-
-    return query.join("");
-  },
-
-  function migrate_v3() {
-    const query = [];
-
-    // add prefix field to address_utxos
+    // AddressEntity
     query.push(
-      `ALTER TABLE address_utxos ADD COLUMN
-        prefix text CHECK(prefix IN ("bitcoincash", "bchtest", "bchreg")) default "bitcoincash";`
+      `CREATE TABLE IF NOT EXISTS addresses (
+        address text primary key not null, 
+        hd_index int not null, 
+        balance int default 0 not null, 
+        change int default 0 not null, 
+        state text default null,
+        memo text default null
+      );`
     );
 
-    query.push("PRAGMA user_version = 4;");
-
-    return query.join("");
-  },
-  function migrate_v4() {
-    const query = [];
-
-    // add memo field back to address_transactions...
     query.push(
-      `ALTER TABLE address_transactions ADD COLUMN
-        memo text default null;`
+      `CREATE TABLE IF NOT EXISTS address_transactions (
+        txid text not null, 
+        height int default 0 not null,
+        address text not null,
+        time text default ( strftime('%Y-%m-%dT%H:%M:%SZ') ),
+        time_seen default ( strftime('%Y-%m-%dT%H:%M:%SZ') ),
+        amount int,
+        fiat_amount text,
+        fiat_currency text,
+        memo text default null,
+        UNIQUE(txid, address)
+      );`
     );
 
-    query.push("PRAGMA user_version = 5;");
+    query.push(
+      `CREATE INDEX idx_address_transactions ON address_transactions (address);`
+    );
 
-    return query.join("");
-  },
-  function migrate_v5() {
-    const query = [];
+    query.push(
+      `CREATE TABLE IF NOT EXISTS address_utxos (
+        address text not null,
+        txid text not null,
+        tx_pos int not null,
+        amount int not null,
+        memo text default null
+      );`
+    );
+
+    query.push(`CREATE INDEX idx_address_utxos ON address_utxos (address);`);
+
+    // update total wallet balance when address balances are updated
+    query.push(
+      `CREATE TRIGGER IF NOT EXISTS balance_update AFTER UPDATE ON addresses
+        BEGIN
+          UPDATE wallet SET 
+            balance=(
+              SELECT SUM(balance) FROM addresses 
+            )
+          ;
+        END
+      ;`
+    );
 
     // update address balances immediately when local utxo set is updated
     query.push(
@@ -312,7 +167,7 @@ const migrations = [
         BEGIN
           UPDATE addresses SET 
             balance=(
-              SELECT SUM(amount) FROM address_utxos
+              SELECT COALESCE(SUM(amount), 0) FROM address_utxos
               WHERE address=NEW.address
             ) WHERE address=NEW.address
           ;
@@ -320,89 +175,14 @@ const migrations = [
       ;`
     );
 
-    query.push("PRAGMA user_version = 6;");
+    query.push("PRAGMA user_version = 1;");
 
     return query.join("");
   },
-  function migrate_v6() {
+  /*function migrate_v1() {
     const query = [];
 
-    // add walletHash column
-    query.push(`ALTER TABLE wallets ADD COLUMN walletHash text default null;`);
-
-    query.push("PRAGMA user_version = 7;");
-
-    return query.join("");
-  },
-  function migrate_v7() {
-    const query = [];
-
-    // fix address_transactions unique key
-    query.push(
-      `
-      PRAGMA foreign_keys=OFF;
-      BEGIN TRANSACTION;
-        DROP TABLE IF EXISTS address_transactions_new;
-        CREATE TABLE address_transactions_new ( 
-          txid text not null,
-          height int not null,
-          time text default ( strftime('%Y-%m-%dT%H:%M:%SZ') ),
-          time_seen default ( strftime('%Y-%m-%dT%H:%M:%SZ') ),
-          address text not null,
-          amount int,
-          fiat_amount text,
-          fiat_currency text,
-          wallet_id int not null,
-          memo text default null,
-          UNIQUE(txid, address, wallet_id)
-        );
-
-        INSERT INTO address_transactions_new (
-          txid,
-          height, 
-          time, 
-          time_seen,
-          address,
-          amount,
-          fiat_amount,
-          fiat_currency,
-          wallet_id,
-          memo
-        ) 
-        SELECT 
-          address_transactions.txid,
-          address_transactions.height, 
-          address_transactions.time,
-          address_transactions.time_seen,
-          address_transactions.address, 
-          address_transactions.amount,   
-          address_transactions.fiat_amount,
-          address_transactions.fiat_currency,
-          address_transactions.wallet_id,
-          address_transactions.memo
-        FROM address_transactions;
-
-        DROP TABLE address_transactions;
-        ALTER TABLE 'address_transactions_new' RENAME TO 'address_transactions';
-        PRAGMA foreign_key_check;
-      COMMIT;
-      PRAGMA foreign_keys=ON;
-      `
-    );
-
-    // index address_transactions to dramatically increase read performnce
-    query.push(
-      "CREATE INDEX idx_address_transactions ON address_transactions (wallet_id, address);"
-    );
-
-    query.push("PRAGMA user_version = 8;");
-
-    return query.join("");
-  },
-  /* function migrate_v9() {
-    const query = [];
-
-    query.push("PRAGMA user_version = 9;");
+    query.push("PRAGMA user_version = 2;");
 
     return query.join("");
   },*/
@@ -410,11 +190,10 @@ const migrations = [
 
 // run_migrations: run all migrations in migrations array sequentially
 // Starts with index indicated in PRAGMA user_version
-export function run_migrations(db) {
-  Log.time("dbMigrate");
-  //db.run("PRAGMA user_version = 0;");
-  const DB_VERSION = db.exec("PRAGMA user_version")[0].values[0][0];
-  Log.log("DB_VERSION", DB_VERSION, migrations.length);
+export function run_migrations(migrations, db) {
+  //Log.time("dbMigrate");
+  const DB_VERSION = db.exec("PRAGMA user_version")[0].user_version;
+  //Log.log("DB_VERSION", DB_VERSION, migrations.length);
   for (let version = DB_VERSION; version < migrations.length; version += 1) {
     Log.log("DB_MIGRATE", `${version}/${migrations.length}`, DB_VERSION);
     try {
@@ -424,5 +203,15 @@ export function run_migrations(db) {
       Log.error("error during migrations", e);
     }
   }
-  Log.timeEnd("dbMigrate");
+  //Log.timeEnd("dbMigrate");
+}
+
+export function run_appdb_migrations(appDb) {
+  //appDb.run("PRAGMA user_version = 0;");
+  run_migrations(appdb_migrations, appDb);
+}
+
+export function run_walletdb_migrations(walletDb) {
+  //walletDb.run("PRAGMA user_version = 0;");
+  run_migrations(walletdb_migrations, walletDb);
 }

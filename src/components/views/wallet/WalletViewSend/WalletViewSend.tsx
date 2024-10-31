@@ -3,7 +3,6 @@ import { useState, useEffect, useRef } from "react";
 import { useParams, useSearchParams, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import Decimal from "decimal.js";
-import { Haptics, NotificationType } from "@capacitor/haptics";
 import { ArrowLeftOutlined, SyncOutlined } from "@ant-design/icons";
 
 import { selectActiveWallet } from "@/redux/wallet";
@@ -19,7 +18,7 @@ import { selectSyncState, selectMyAddresses } from "@/redux/sync";
 import TransactionManagerService from "@/services/TransactionManagerService";
 import TransactionBuilderService from "@/services/TransactionBuilderService";
 import ToastService from "@/services/ToastService";
-import SecurityService from "@/services/SecurityService";
+import SecurityService, { AuthActions } from "@/services/SecurityService";
 
 import { SatoshiInput } from "@/atoms/SatoshiInput";
 import Satoshi from "@/atoms/Satoshi";
@@ -28,6 +27,7 @@ import Address from "@/atoms/Address";
 import CurrencySymbol from "@/atoms/CurrencySymbol";
 import CurrencyFlip from "@/atoms/CurrencyFlip";
 
+import { Haptic } from "@/util/haptic";
 import { bchToSats, DUST_LIMIT } from "@/util/sats";
 import { validateInvoiceString } from "@/util/invoice";
 import { translate } from "@/util/translations";
@@ -84,7 +84,7 @@ export default function WalletViewSend() {
   };
 
   const handleInsufficientFunds = async () => {
-    await Haptics.notification({ type: NotificationType.Warning });
+    await Haptic.warn();
     const insufficientFundsTranslation = translate(
       translations.insufficientFunds
     );
@@ -97,7 +97,11 @@ export default function WalletViewSend() {
     }
 
     setIsSending(true);
-    const isAuthorized = isInstantPay || (await SecurityService().authorize());
+    const authAction = isInstantPay
+      ? AuthActions.InstantPay
+      : AuthActions.SendTransaction;
+
+    const isAuthorized = await SecurityService().authorize(authAction);
     if (!isAuthorized) {
       setIsSending(false);
       return;
@@ -124,10 +128,10 @@ export default function WalletViewSend() {
 
     if (transaction === null) {
       Logger.warn(transaction);
-      await Haptics.notification({ type: NotificationType.Warning });
       //setMessage(translate(translations.notEnoughFee));
       setMessage("Transaction Failed: Wallet out of sync?");
       setIsSending(false);
+      await Haptic.warn();
       return;
     }
 
@@ -144,15 +148,15 @@ export default function WalletViewSend() {
 
     if (isSuccess) {
       const tx = await TransactionManager.resolveTransaction(transaction.txid);
-      await Haptics.notification({ type: NotificationType.Success });
+      await Haptic.success();
       navigate("/wallet/send/success", {
         state: { tx },
         replace: true,
       });
     } else {
-      await Haptics.notification({ type: NotificationType.Error });
       //setMessage(translate(translations.transactionFailed));
       setMessage(`Transaction Failed: Must send at least ${DUST_LIMIT} sats`);
+      await Haptic.error();
     }
 
     setIsSending(false);
@@ -266,7 +270,7 @@ export default function WalletViewSend() {
               className="p-2 relative text-center w-full"
               onClick={handleFlipCurrency}
             >
-              <span className="text-2xl font-semibold text-center w-full text-zinc-800/80">
+              <span className="text-2xl font-semibold text-center w-full text-zinc-800/80 flex justify-center items-center">
                 <Satoshi value={satoshiInput} flip />
                 <CurrencyFlip className="text-3xl ml-2" />
               </span>

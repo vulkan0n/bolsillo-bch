@@ -17,35 +17,45 @@ import WalletManagerService, {
   WalletEntity,
 } from "@/services/WalletManagerService";
 import ElectrumService from "@/services/ElectrumService";
+import AddressManagerService, {
+  AddressEntity,
+} from "@/services/AddressManagerService";
+import AddressScannerService from "@/services/AddressScannerService";
 
 import ToastService from "@/services/ToastService";
+import LogService from "@/services/LogService";
 
 export const walletMiddleware = createListenerMiddleware();
 
+const Log = LogService("redux/wallet");
+
 const initialState = {
-  id: 0,
+  walletHash: "",
   balance: 0,
-  name: "Wallet",
-  key_viewed: "",
+  name: "-",
+  key_viewed_at: "",
   nonce: 0,
 };
 
 // --------------------------------
 
-// walletBoot: loads wallet by wallet_id and initializes Electrum connection
+// walletBoot: loads wallet by walletHash and initializes Electrum connection
 export const walletBoot = createAsyncThunk(
   "wallet/boot",
   async (
-    payload: { wallet_id: number; network: ValidBchNetwork },
+    payload: { walletHash: string; network: ValidBchNetwork },
     thunkApi
   ) => {
-    const { wallet_id, network } = payload;
+    const { walletHash, network } = payload;
+
     // load Wallet from database
-    const wallet = WalletManagerService(network).boot(wallet_id);
+    const wallet = await WalletManagerService().boot(walletHash);
 
     thunkApi.dispatch(
-      setPreference({ key: "activeWalletId", value: wallet.id.toString() })
+      setPreference({ key: "activeWalletHash", value: wallet.walletHash })
     );
+
+    thunkApi.dispatch(walletReloadAddresses({ wallet }));
 
     const isChipnet = network === "chipnet";
 
@@ -61,6 +71,8 @@ export const walletBoot = createAsyncThunk(
       })
     );
 
+    Log.debug("wallet/boot", wallet);
+
     return wallet;
   }
 );
@@ -71,9 +83,7 @@ export const walletBalanceUpdate = createAction(
     const { wallet, isChange } = payload;
 
     // address and wallet balances are automatically derived on SQL layer when UTXO entries are updated
-    const sqlWallet = WalletManagerService(wallet.network).getWalletById(
-      wallet.id
-    );
+    const sqlWallet = WalletManagerService().getWallet(wallet.walletHash);
 
     const previousBalance = wallet.balance;
     const currentBalance = sqlWallet.balance;
@@ -88,29 +98,37 @@ export const walletBalanceUpdate = createAction(
   }
 );
 
-export const walletSetName = createAction(
-  "wallet/name",
-  (payload: { wallet: WalletEntity; name: string }) => {
-    WalletManagerService(payload.wallet.network).setWalletName(
-      payload.wallet.id,
-      payload.name
-    );
-    return { payload };
-  }
-);
+export const walletSetName = createAction<string>("wallet/name");
 
 export const walletSetKeyViewed = createAction(
   "wallet/key_viewed",
-  (payload: { wallet: WalletEntity }) => {
-    const key_viewed = WalletManagerService(
-      payload.wallet.network
-    ).updateKeyViewed(payload.wallet.id);
+  (payload: { walletHash: string }) => {
+    const key_viewed_at = WalletManagerService().updateKeyViewed(
+      payload.walletHash
+    );
 
-    return { payload: key_viewed };
+    return { payload: key_viewed_at };
   }
 );
 
 export const walletNonce = createAction("wallet/nonce");
+
+export const walletReloadAddresses = createAction(
+  "wallet/reloadAddresses",
+  (payload: { wallet: WalletEntity }) => {
+    const AddressManager = AddressManagerService(payload.wallet);
+    const AddressScanner = AddressScannerService(payload.wallet);
+
+    AddressScanner.populateAddresses();
+
+    const myAddresses = [
+      ...AddressManager.getReceiveAddresses(),
+      ...AddressManager.getChangeAddresses(),
+    ];
+
+    return { payload: myAddresses };
+  }
+);
 
 export const walletReducer = createReducer(initialState, (builder) => {
   builder
@@ -122,19 +140,30 @@ export const walletReducer = createReducer(initialState, (builder) => {
       state.balance = action.payload;
     })
     .addCase(walletSetName, (state, action) => {
-      if (state.id === action.payload.wallet.id) {
-        state.name = action.payload.name;
-      }
+      state.name = action.payload;
     })
     .addCase(walletSetKeyViewed, (state, action) => {
-      state.key_viewed = action.payload;
+      state.key_viewed_at = action.payload;
     })
     .addCase(walletNonce, (state) => {
       state.nonce += 1;
     });
 });
 
+const addressInitialState: Array<AddressEntity> = [];
+export const addressReducer = createReducer(addressInitialState, (builder) => {
+  builder.addCase(walletReloadAddresses, (state, action) => {
+    const addresses = action.payload;
+    return addresses;
+  });
+});
+
 export const selectActiveWallet = createSelector(
   (state: RootState) => state,
   (state) => state.wallet
+);
+
+export const selectWalletAddresses = createSelector(
+  (state: RootState) => state,
+  (state) => state.addresses
 );

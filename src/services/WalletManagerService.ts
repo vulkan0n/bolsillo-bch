@@ -1,3 +1,4 @@
+import { Filesystem, Directory, Encoding } from "@capacitor/filesystem";
 import * as bip39 from "bip39";
 import LogService from "@/services/LogService";
 import DatabaseService from "@/services/DatabaseService";
@@ -8,37 +9,48 @@ import {
   ValidBchNetwork,
 } from "@/util/crypto";
 import { sha256 } from "@/util/hash";
+import { store } from "@/redux";
+import { selectBchNetwork } from "@/redux/preferences";
 
 const Log = LogService("WalletManager");
 
-export interface WalletEntity {
-  id: number;
-  name: string;
+export interface WalletStub {
   mnemonic: string;
   passphrase: string;
   derivation: ValidDerivationPath;
-  date_created: string;
-  key_viewed: string;
-  key_verified: string;
+}
+
+export interface WalletMeta {
+  walletHash: string;
+  name: string;
   balance: number;
+  created_at: string;
+  key_viewed_at: string;
+}
+
+export interface WalletEntity extends WalletStub, WalletMeta {
+  key_verified_at: string;
   prefix: string;
   network: ValidBchNetwork;
-  walletHash: string;
   nonce: number;
 }
 
 export class WalletNotExistsError extends Error {
-  constructor(id: number | string) {
-    super(`No Wallet with id ${id}`);
+  constructor(walletHash: string) {
+    super(`No Wallet with walletHash ${walletHash}`);
   }
 }
 
-export default function WalletManagerService(network: ValidBchNetwork) {
-  const { db, resultToJson, saveDatabase } = DatabaseService();
+const Database = DatabaseService();
+const APP_DB = await Database.getAppDatabase();
+
+export default function WalletManagerService() {
+  const network = selectBchNetwork(store.getState());
 
   return {
-    getWallets,
-    getWalletById,
+    listWallets,
+    getWallet,
+    getWalletMeta,
     boot,
     createWallet,
     importWallet,
@@ -47,30 +59,37 @@ export default function WalletManagerService(network: ValidBchNetwork) {
     updateKeyVerified,
     setWalletName,
     clearWalletData,
-    updateWalletHash,
+    exportWalletFile,
+    importWalletFile,
+    saveWallet,
+    calculateWalletHash,
   };
 
   // ----------------------------
 
-  // getWallets: return a list of all wallets in the database
-  function getWallets(): WalletEntity[] {
-    const result = resultToJson(db.exec("SELECT * FROM wallets"));
-    //Log.debug("getWallets", result);
+  // listWallets: return a list of all wallets in the database
+  function listWallets(): WalletMeta[] {
+    const result = APP_DB.exec("SELECT * FROM wallets");
+
+    Log.debug("listWallets", result);
     return result;
   }
 
-  // getWalletById: get a consumable Wallet object from the database
-  function getWalletById(id: number | string = 0): WalletEntity {
-    const result = resultToJson(
-      db.exec(`SELECT * FROM wallets WHERE id="${id}"`)
-    );
+  // getWallet: get a consumable Wallet object from the database
+  function getWallet(walletHash): WalletEntity {
+    if (!walletHash) {
+      throw new WalletNotExistsError(walletHash);
+    }
 
-    //Log.debug("getWalletById", id, result);
+    const walletDb = Database.getWalletDatabase(walletHash);
+    const result = walletDb.exec("SELECT * FROM wallet");
+    //Log.debug("getWallet got result", result);
 
     if (result.length === 0) {
-      throw new WalletNotExistsError(id);
+      throw new WalletNotExistsError(walletHash);
     }
-    const wallet = result[0];
+
+    const wallet = result[0]; // eslint-disable-line prefer-destructuring
 
     wallet.network = network;
 
@@ -82,38 +101,60 @@ export default function WalletManagerService(network: ValidBchNetwork) {
     return wallet;
   }
 
+  function getWalletMeta(walletHash): WalletMeta {
+    if (!walletHash) {
+      throw new WalletNotExistsError(walletHash);
+    }
+
+    const result = APP_DB.exec(
+      `SELECT * FROM wallets WHERE walletHash="${walletHash}"`
+    );
+
+    if (result.length === 0) {
+      throw new WalletNotExistsError(walletHash);
+    }
+
+    const walletMeta = result[0];
+    return walletMeta;
+  }
+
   // ----------------------------
 
   // boot: load a wallet, create a wallet if none exist
-  function boot(wallet_id: number): WalletEntity {
+  async function boot(walletHash): Promise<WalletEntity> {
     let wallet: WalletEntity;
     try {
-      Log.debug("walletBoot ~", wallet_id);
-      wallet = getWalletById(wallet_id);
+      if (walletHash === "") {
+        throw new WalletNotExistsError("");
+      }
+
+      Log.debug("walletBoot ~", walletHash, network);
+      await Database.openWalletDatabase(walletHash, network);
+      wallet = getWallet(walletHash);
+      //Log.debug("boot got", wallet);
     } catch (e) {
+      await Database.closeWalletDatabase(walletHash);
+
       if (!(e instanceof WalletNotExistsError)) {
-        Log.warn("something bad happened during boot", e);
+        Log.warn("critical error during walletBoot!", e);
         throw e;
       }
 
       // requested wallet doesn't exist
       // attempt to return lowest-index wallet instead, create a new wallet if none exist
-      const wallets = getWallets();
-      wallet = wallets.shift() || createWallet("My Selene Wallet");
-      return boot(wallet.id);
+      const wallets = listWallets();
+      const nextWalletHash =
+        wallets.length > 0
+          ? wallets[0].walletHash
+          : (await createWallet("My Selene Wallet")).walletHash;
+
+      return boot(nextWalletHash);
     }
 
-    wallet = cleanupWallet(wallet);
-    Log.debug("walletBoot", wallet_id, wallet, network);
-    return wallet;
-  }
+    Log.debug("walletBoot", walletHash, wallet, wallet.network);
 
-  // cleanupWallet: ensure wallet correctness before loading
-  function cleanupWallet(wallet: WalletEntity): WalletEntity {
-    if (!wallet.walletHash) {
-      updateWalletHash(wallet);
-      return boot(wallet.id);
-    }
+    Database.setKeepAlive(walletHash);
+    Database.flushHandles();
 
     return wallet;
   }
@@ -122,128 +163,175 @@ export default function WalletManagerService(network: ValidBchNetwork) {
 
   // createWallet: generate a new wallet from a randomly generated seed phrase
   // persist the new wallet in the database
-  function createWallet(
+  async function createWallet(
     name: string = "New Wallet",
     passphrase: string = "",
     derivation: ValidDerivationPath = DEFAULT_DERIVATION_PATH
-  ): WalletEntity {
+  ): Promise<WalletEntity> {
     const mnemonic = bip39.generateMnemonic();
 
-    const result = resultToJson(
-      db.exec(
-        `INSERT INTO wallets (
-          name, 
-          mnemonic, 
-          passphrase, 
-          derivation
-        ) VALUES (?, ?, ?, ?) RETURNING *`,
-        [name, mnemonic, passphrase, derivation]
-      )
+    const walletHash = calculateWalletHash({
+      mnemonic,
+      passphrase,
+      derivation,
+    });
+
+    Log.debug("createWallet", walletHash);
+
+    const walletDb = await Database.openWalletDatabase(walletHash);
+
+    const result = walletDb.exec(
+      `INSERT INTO wallet (
+        walletHash,
+        name,
+        mnemonic,
+        passphrase,
+        derivation
+      ) VALUES (?, ?, ?, ?, ?)
+      RETURNING *`,
+      [walletHash, name, mnemonic, passphrase, derivation]
     )[0];
 
+    APP_DB.run(
+      `INSERT INTO wallets (
+          walletHash,
+          name
+        ) VALUES (?, ?)`,
+      [walletHash, name]
+    );
+
     Log.log("creating wallet", result);
-    saveDatabase();
     return result;
   }
 
   // importWallet: import a wallet via provided seed phrase
   // persist the imported wallet in the database
-  function importWallet(
-    mnemonic: string,
-    passphrase: string = "",
-    derivation: ValidDerivationPath = DEFAULT_DERIVATION_PATH,
-    name: string = "Imported Wallet"
-  ): WalletEntity {
-    const result = resultToJson(
-      db.exec(
-        `INSERT INTO wallets (
+  async function importWallet(walletData) {
+    const { mnemonic, passphrase, derivation, name } = walletData;
+
+    const walletHash = calculateWalletHash({
+      mnemonic,
+      passphrase,
+      derivation,
+    });
+
+    const walletDb = await Database.openWalletDatabase(walletHash);
+
+    const created_at = walletData.date_created
+      ? walletData.date_created
+      : walletData.created_at || new Date().toISOString();
+
+    try {
+      walletDb.run(
+        `INSERT INTO wallet (
           name, 
           mnemonic, 
           passphrase, 
           derivation, 
-          key_viewed
+          walletHash,
+          created_at,
+          key_viewed_at
         ) VALUES (
-          ?, ?, ?, ?, 
+          ?, ?, ?, ?, ?, ?,
           strftime('%Y-%m-%dT%H:%M:%SZ')
         ) RETURNING *`,
-        [name, mnemonic, passphrase, derivation]
-      )
-    )[0];
+        [name, mnemonic, passphrase, derivation, walletHash, created_at]
+      );
+    } catch (e) {
+      Log.warn("wallet already exists in walletDb", walletHash, e);
+    }
 
-    Log.log("importing wallet", result);
-    saveDatabase();
-    return result;
+    try {
+      APP_DB.run(
+        `INSERT INTO wallets (
+          walletHash,
+          name,
+          created_at,
+          key_viewed_at
+        ) VALUES (
+          ?, ?, ?,
+          strftime('%Y-%m-%dT%H:%M:%SZ')
+        )`,
+        [walletHash, name, created_at]
+      );
+    } catch (e) {
+      Log.warn("wallet already exists in appDb", walletHash, e);
+    }
+
+    Log.log("importing wallet", walletHash);
+    return walletHash;
   }
 
-  function deleteWallet(wallet_id: number): void {
-    clearWalletData(wallet_id);
-
-    db.run(
-      `DELETE FROM transactions WHERE txid IN (SELECT txid FROM address_transactions WHERE address IN (SELECT address FROM addresses WHERE wallet_id="${wallet_id}"))`
-    );
-
-    db.run(`DELETE FROM wallets WHERE id="${wallet_id}"`);
-
-    saveDatabase();
+  async function deleteWallet(walletHash) {
+    try {
+      APP_DB.run(`DELETE FROM wallets WHERE walletHash="${walletHash}"`);
+      await Database.deleteWalletDatabase(walletHash, network);
+      await deleteWalletFile(walletHash);
+    } catch (e) {
+      Log.warn(e);
+    }
   }
 
   // updateKeyViewed: updates the wallet's key_viewed timestamp
-  function updateKeyViewed(wallet_id: number): string {
-    const result = resultToJson(
-      db.exec(
-        `UPDATE wallets SET key_viewed=strftime('%Y-%m-%dT%H:%M:%SZ') WHERE id='${wallet_id}' RETURNING key_viewed`
-      )
+  function updateKeyViewed(walletHash) {
+    const walletDb = Database.getWalletDatabase(walletHash);
+
+    APP_DB.run(
+      `UPDATE wallets SET key_viewed_at=strftime('%Y-%m-%dT%H:%M:%SZ')`
+    );
+    const result = walletDb.exec(
+      `UPDATE wallet SET key_viewed_at=strftime('%Y-%m-%dT%H:%M:%SZ') RETURNING key_viewed_at`
     )[0];
 
     Log.debug("keyViewed", result);
 
-    saveDatabase();
-    return result.key_viewed;
+    return result.key_viewed_at;
   }
 
   // updateKeyVerified: updates the wallet's key_verified timestamp
-  function updateKeyVerified(wallet_id: number): void {
-    db.run(
-      `UPDATE wallets SET key_verified=strftime('%Y-%m-%dT%H:%M:%SZ') WHERE id='${wallet_id}'`
-    );
+  function updateKeyVerified(walletHash) {
+    const walletDb = Database.getWalletDatabase(walletHash);
 
-    saveDatabase();
+    walletDb.run(
+      `UPDATE wallet SET key_verified=strftime('%Y-%m-%dT%H:%M:%SZ')`
+    );
   }
 
   // setWalletName: sets a wallet's display name
-  function setWalletName(wallet_id: number, name: string): void {
-    db.run(`UPDATE wallets SET name=? WHERE id="${wallet_id}"`, [name]);
-    saveDatabase();
+  async function setWalletName(walletHash, name: string) {
+    try {
+      const walletDb = Database.getWalletDatabase(walletHash);
+      APP_DB.run(`UPDATE wallets SET name=? WHERE walletHash="${walletHash}"`, [
+        name,
+      ]);
+      walletDb.run(`UPDATE wallet SET name=?`, [name]);
+    } catch (e) {
+      Log.error(e);
+    }
+
+    Log.debug("setWalletName", walletHash, name);
+    await saveWallet(walletHash);
   }
 
   // clearWalletData: deletes all data associated with a wallet
   // does NOT delete the wallet; all data can be re-derived/resynced
-  function clearWalletData(wallet_id: number): void {
+  async function clearWalletData(walletHash) {
+    const walletDb = Database.getWalletDatabase(walletHash);
+
     // delete this wallet's transaction history
-    db.run(
-      `DELETE FROM address_transactions WHERE 
-        address IN (
-          SELECT address FROM addresses WHERE 
-            wallet_id="${wallet_id}"
-        )`
-    );
+    walletDb.run(`DELETE FROM address_transactions`);
 
     // delete wallet addresses
-    db.run(`DELETE FROM addresses WHERE wallet_id="${wallet_id}"`);
+    walletDb.run(`DELETE FROM addresses`);
 
     // delete wallet utxos
-    db.run(`DELETE FROM address_utxos WHERE wallet_id="${wallet_id}"`);
-
-    // reset wallet balance
-    db.run(`UPDATE wallets SET balance='0' WHERE id="${wallet_id}"`);
+    walletDb.run(`DELETE FROM address_utxos`);
 
     // purge orphaned transaction data
-    TransactionManagerService().purgeTransactions();
-
-    saveDatabase();
+    await TransactionManagerService().purgeTransactions();
   }
 
-  function updateWalletHash(wallet: WalletEntity) {
+  function calculateWalletHash(wallet: WalletStub): string {
     const mnemonicHash = sha256.text(wallet.mnemonic);
     const passphraseHash =
       wallet.passphrase !== "" ? sha256.text(wallet.passphrase) : "";
@@ -254,11 +342,87 @@ export default function WalletManagerService(network: ValidBchNetwork) {
     );
 
     const walletHash = sha256.text(concatHashes);
+    return walletHash;
+  }
 
-    db.run(
-      `UPDATE wallets SET walletHash="${walletHash}" WHERE id="${wallet.id}"`
+  async function exportWalletFile(wallet: WalletEntity) {
+    const { mnemonic, passphrase, derivation, name, created_at } = wallet;
+
+    const walletHash = calculateWalletHash({
+      mnemonic,
+      passphrase,
+      derivation,
+    });
+
+    const walletData = {
+      walletHash,
+      mnemonic,
+      passphrase,
+      derivation,
+      created_at,
+      name,
+    };
+
+    const result = await Filesystem.writeFile({
+      path: `/selene/wallets/${walletHash}.wallet.json`,
+      directory: Directory.Library,
+      recursive: true,
+      data: JSON.stringify(walletData),
+      encoding: Encoding.UTF8,
+    });
+
+    Log.debug("exportWalletFile", result, walletData);
+    return { result, walletHash };
+  }
+
+  async function importWalletFile(walletHash) {
+    const walletFile = await Filesystem.readFile({
+      path: `/selene/wallets/${walletHash}.wallet.json`,
+      directory: Directory.Library,
+    });
+
+    await Database.openWalletDatabase(walletHash, network);
+    const walletData = JSON.parse(walletFile.data.toString());
+    //Log.debug("importWalletFile", walletHash);
+
+    try {
+      await importWallet(walletData);
+      await Database.closeWalletDatabase(walletHash);
+    } catch (e) {
+      Log.error("importWalletFile failed", walletHash, e);
+      await Database.closeWalletDatabase(walletHash, true);
+    }
+  }
+
+  async function deleteWalletFile(walletHash) {
+    Log.debug("deleteWalletfile", walletHash);
+    return Filesystem.deleteFile({
+      path: `/selene/wallets/${walletHash}.wallet.json`,
+      directory: Directory.Library,
+    });
+  }
+
+  async function saveWallet(walletHash) {
+    const walletDb = Database.getWalletDatabase(walletHash);
+
+    const wallet = walletDb.exec("SELECT * FROM wallet")[0];
+    const { name, balance, created_at, key_viewed_at } = wallet;
+
+    APP_DB.run(
+      `UPDATE wallets SET
+        name=?,
+        balance=?,
+        created_at=?,
+        key_viewed_at=?
+      WHERE walletHash="${walletHash}";`,
+      [name, balance, created_at, key_viewed_at]
     );
 
-    saveDatabase();
+    await exportWalletFile(wallet);
+
+    return Promise.all([
+      Database.flushDatabase(walletHash),
+      Database.flushDatabase("app"),
+    ]);
   }
 }

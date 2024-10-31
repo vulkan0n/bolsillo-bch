@@ -1,6 +1,8 @@
 import { useState, useRef } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
+import { Share } from "@capacitor/share";
+import { Filesystem, Directory } from "@capacitor/filesystem";
 
 import {
   WalletOutlined,
@@ -14,21 +16,21 @@ import {
   MedicineBoxOutlined,
   InfoCircleOutlined,
   SyncOutlined,
+  ExportOutlined,
 } from "@ant-design/icons";
 
 import {
-  selectActiveWalletId,
+  selectActiveWalletHash,
   selectBchNetwork,
   selectIsExperimental,
 } from "@/redux/preferences";
 import { walletBoot, walletSetName } from "@/redux/wallet";
 import { selectLocale } from "@/redux/device";
-import { syncReconnect } from "@/redux/sync";
 
 import ViewHeader from "@/layout/ViewHeader";
 
 import WalletManagerService from "@/services/WalletManagerService";
-import SecurityService from "@/services/SecurityService";
+import SecurityService, { AuthActions } from "@/services/SecurityService";
 
 import KeyWarning from "@/atoms/KeyWarning/KeyWarning";
 import ShowMnemonic from "@/atoms/ShowMnemonic";
@@ -46,17 +48,18 @@ export default function SettingsWalletView() {
 
   const bchNetwork = useSelector(selectBchNetwork);
 
-  const { wallet_id } = useParams();
-  const WalletManager = WalletManagerService(bchNetwork);
-  const wallet = WalletManager.getWalletById(wallet_id);
+  const { walletHash } = useParams();
 
-  const activeWalletId = useSelector(selectActiveWalletId);
-  const isActiveWallet = wallet.id === activeWalletId;
+  const WalletManager = WalletManagerService();
+  const wallet = WalletManager.getWalletMeta(walletHash);
+
+  const activeWalletHash = useSelector(selectActiveWalletHash);
+  const isActiveWallet = wallet.walletHash === activeWalletHash;
 
   const locale = useSelector(selectLocale);
 
   const shouldShowAdvancedOptions =
-    wallet.key_viewed !== null && isActiveWallet;
+    wallet.key_viewed_at !== null && isActiveWallet;
 
   const isExperimental = useSelector(selectIsExperimental);
 
@@ -68,7 +71,7 @@ export default function SettingsWalletView() {
   // user must tap "delete wallet" button multiple times to confirm
   const [deleteConfirm, setDeleteConfirm] = useState(0);
   const deleteRef = useRef(setTimeout(() => {}, 0));
-  const isDeleteDisabled = deleteConfirm === 2 && wallet.key_viewed === null;
+  const isDeleteDisabled = deleteConfirm === 2 && wallet.key_viewed_at === null;
 
   // handler for "Delete Wallet" button
   const handleDeleteWallet = async () => {
@@ -81,8 +84,8 @@ export default function SettingsWalletView() {
         return;
       }
 
-      WalletManager.deleteWallet(wallet.id);
-      dispatch(walletBoot({ wallet_id: 1, network: bchNetwork }));
+      WalletManager.deleteWallet(wallet.walletHash);
+      dispatch(walletBoot({ walletHash: "", network: bchNetwork }));
       navigate("/");
     } else {
       // if user hesitates, reset the counter
@@ -97,16 +100,26 @@ export default function SettingsWalletView() {
   };
 
   // handler for "Activate Wallet" button
-  const handleActivateWallet = () => {
-    dispatch(walletBoot({ wallet_id: wallet.id, network: bchNetwork }));
-    dispatch(syncReconnect());
+  const handleActivateWallet = async () => {
+    const isAuthorized = await SecurityService().authorize(
+      AuthActions.WalletActivate
+    );
+
+    if (!isAuthorized) {
+      return;
+    }
+
+    dispatch(
+      walletBoot({ walletHash: wallet.walletHash, network: bchNetwork })
+    );
     navigate("/");
   };
 
   // handler for wallet name edit button
-  const handleEdit = () => {
+  const handleEdit = async () => {
     if (isEditingWalletName === true) {
-      dispatch(walletSetName({ wallet, name: walletEditedName }));
+      await WalletManager.setWalletName(walletHash, walletEditedName);
+      dispatch(walletSetName(walletEditedName));
       setIsEditingWalletName(false);
       setIsWalletNameSaved(true);
     } else {
@@ -122,12 +135,26 @@ export default function SettingsWalletView() {
 
   // handler for "rebuild wallet" button
   const handleRebuildWallet = () => {
-    navigate(`/settings/wallet/wizard/import/build/${wallet.id}`);
+    navigate(`/settings/wallet/wizard/import/build/${wallet.walletHash}`);
   };
 
-  const handleNavigateAdditionalWalletInformation = () => {
-    navigate(`/settings/wallet/${wallet.id}/additionalInformation`);
+  const handleExportWallet = async () => {
+    const { uri } = await Filesystem.getUri({
+      path: `/selene/wallets/${wallet.walletHash}.wallet.json`,
+      directory: Directory.Library,
+    });
+
+    await Share.share({
+      dialogTitle: `Export Wallet (${wallet.name})`,
+      url: uri,
+    });
   };
+
+  /*
+   const handleImportWallet = () => {
+    // spawn file picker
+  };
+  */
 
   return (
     <>
@@ -166,7 +193,7 @@ export default function SettingsWalletView() {
           </div>
           <div className="text-lg text-center text-zinc-600">
             {translate(translations.created)}{" "}
-            {new Date(wallet.date_created).toLocaleString(locale)}
+            {new Date(wallet.created_at).toLocaleString(locale)}
           </div>
           {wallet.balance > 0 && (
             <div className="text-lg text-center text-zinc-500">
@@ -187,7 +214,7 @@ export default function SettingsWalletView() {
               disabled={isActiveWallet}
             >
               <div className="flex items-center">
-                {wallet.id === activeWalletId ? (
+                {wallet.walletHash === activeWalletHash ? (
                   <CheckCircleOutlined className="text-white text-2xl" />
                 ) : (
                   <LoginOutlined className="text-2xl mr-1" />
@@ -236,8 +263,8 @@ export default function SettingsWalletView() {
         </div>
 
         <WalletSettings />
-        <KeyWarning wallet={wallet} />
-        <ShowMnemonic wallet={wallet} />
+        <KeyWarning walletHash={wallet.walletHash} />
+        <ShowMnemonic walletHash={wallet.walletHash} />
         {
           /* Only show "Advanced Options" if user has viewed (TODO: verified) their recovery phrase */
           shouldShowAdvancedOptions && (
@@ -246,19 +273,17 @@ export default function SettingsWalletView() {
               title={translate(translations.advancedOptions)}
             >
               <Accordion.Child icon={null} label="">
-                <button
-                  type="button"
+                <Link
                   className="w-full text-left flex items-center"
-                  onClick={handleNavigateAdditionalWalletInformation}
+                  to={`/settings/wallet/${wallet.walletHash}/additionalInformation`}
                 >
                   <InfoCircleOutlined className="text-xl mr-1" />
                   {translate(translations.additionalWalletInformation)}
-                </button>
+                </Link>
               </Accordion.Child>
               {isExperimental && (
                 <Accordion.Child icon={null} label="">
                   <Link
-                    type="button"
                     className="w-full text-left flex items-center"
                     to="scan"
                   >
@@ -277,6 +302,30 @@ export default function SettingsWalletView() {
                   {translate(translations.rebuildWallet)}
                 </button>
               </Accordion.Child>
+              {/*isExperimental && (
+                <Accordion.Child icon={null} label="">
+                  <button
+                    type="button"
+                    className="w-full text-left flex items-center"
+                    onClick={handleImportWallet}
+                  >
+                    <ImportOutlined className="text-xl mr-1" />
+                    {translate(translations.importWallet)}
+                  </button>
+                </Accordion.Child>
+              )*/}
+              {isExperimental && (
+                <Accordion.Child icon={null} label="">
+                  <button
+                    type="button"
+                    className="w-full text-left flex items-center"
+                    onClick={handleExportWallet}
+                  >
+                    <ExportOutlined className="text-xl mr-1" />
+                    {translate(translations.exportWallet)}
+                  </button>
+                </Accordion.Child>
+              )}
             </Accordion>
           )
         }

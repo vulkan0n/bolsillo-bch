@@ -5,12 +5,14 @@ import {
   LockOutlined,
   PushpinOutlined,
   VerifiedOutlined,
+  WalletOutlined,
 } from "@ant-design/icons";
 import { setPreference, selectSecuritySettings } from "@/redux/preferences";
 import { selectActiveWallet } from "@/redux/wallet";
 import { selectDeviceInfo } from "@/redux/device";
 import { SettingsContext } from "./SettingsContext";
-import SecurityService from "@/services/SecurityService";
+import LogService from "@/services/LogService";
+import SecurityService, { AuthActions } from "@/services/SecurityService";
 import Accordion from "@/atoms/Accordion";
 import Button from "@/atoms/Button";
 import KeyWarning from "@/atoms/KeyWarning/KeyWarning";
@@ -19,10 +21,14 @@ import { sha256 } from "@/util/hash";
 import { translate } from "@/util/translations";
 import translations from "./translations";
 
+const Log = LogService("SecuritySettings");
+
 export default function SecuritySettings() {
   const dispatch = useDispatch();
   const { handleSettingsUpdate } = useContext(SettingsContext);
-  const { authMode, pinHash } = useSelector(selectSecuritySettings);
+  const { authMode, pinHash, authActions } = useSelector(
+    selectSecuritySettings
+  );
   const { hasBiometric } = useSelector(selectDeviceInfo);
 
   const handleSetPin = async () => {
@@ -50,6 +56,23 @@ export default function SecuritySettings() {
         });
       }
     }
+  };
+
+  const handleSetAuthActions = (action) => {
+    Log.debug("handleSetAuthActions", action, authActions);
+
+    let newAuthActions;
+
+    if (authActions.includes(action)) {
+      newAuthActions = authActions.filter((a) => a !== action);
+    } else {
+      newAuthActions = [...authActions, action];
+    }
+
+    Log.debug("handleSetAuthActions dispatch", newAuthActions.join(";"));
+    dispatch(
+      setPreference({ key: "authActions", value: newAuthActions.join(";") })
+    );
   };
 
   const activeWallet = useSelector(selectActiveWallet);
@@ -100,6 +123,66 @@ export default function SecuritySettings() {
             <Button onClick={handleSetPin} icon={PinSetButtonIcon} />
           </div>
         </Accordion.Child>
+      )}
+      {authMode !== "none" && pinHash !== "" && (
+        <>
+          <div className="text-lg font-semibold bg-zinc-600 text-white p-1">
+            Require authorization for:
+          </div>
+          <Accordion.Child
+            icon={WalletOutlined}
+            label={translate(translations.authWalletActivate)}
+          >
+            <input
+              type="checkbox"
+              checked={authActions.includes(AuthActions.WalletActivate)}
+              onChange={() => handleSetAuthActions(AuthActions.WalletActivate)}
+            />
+          </Accordion.Child>
+          <Accordion.Child
+            icon={WalletOutlined}
+            label={translate(translations.authRevealBalance)}
+          >
+            <input
+              type="checkbox"
+              checked={authActions.includes(AuthActions.RevealBalance)}
+              onChange={() => handleSetAuthActions(AuthActions.RevealBalance)}
+            />
+          </Accordion.Child>
+          <Accordion.Child
+            icon={WalletOutlined}
+            label={translate(translations.authSendTransaction)}
+          >
+            <input
+              type="checkbox"
+              checked={authActions.includes(AuthActions.SendTransaction)}
+              onChange={() => handleSetAuthActions(AuthActions.SendTransaction)}
+            />
+          </Accordion.Child>
+          <Accordion.Child
+            icon={WalletOutlined}
+            label={translate(translations.authInstantPay)}
+          >
+            <input
+              type="checkbox"
+              checked={authActions.includes(AuthActions.SendTransaction)}
+              onChange={() => handleSetAuthActions(AuthActions.SendTransaction)}
+            />
+          </Accordion.Child>
+          <Accordion.Child
+            icon={WalletOutlined}
+            label={translate(translations.authRevealPrivateKeys)}
+          >
+            <input
+              type="checkbox"
+              checked={authActions.includes(AuthActions.SendTransaction)}
+              disabled={authActions.includes(AuthActions.RevealPrivateKeys)}
+              onChange={() =>
+                handleSetAuthActions(AuthActions.RevealPrivateKeys)
+              }
+            />
+          </Accordion.Child>
+        </>
       )}
     </Accordion>
   );

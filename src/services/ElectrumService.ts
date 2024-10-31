@@ -1,13 +1,10 @@
-import { ElectrumClient, ElectrumTransport } from "electrum-cash";
-import { App } from "@capacitor/app";
+import { ElectrumClient, ConnectionStatus } from "@electrum-cash/network";
 import { store } from "@/redux";
 import {
-  syncConnect,
   syncConnectionUp,
   syncConnectionDown,
   syncAddressState,
   syncChaintip,
-  selectSyncState,
 } from "@/redux/sync";
 
 import LogService from "@/services/LogService";
@@ -55,37 +52,22 @@ export default function ElectrumService() {
   // connect: connect to an Electrum server
   // Creates a new ElectrumClient every time
   // Destroys existing ElectrumClient if out of sync with Redux state
-  async function connect(
-    server: string = DEFAULT_ELECTRUM_SERVER
-  ): Promise<void> {
-    // using redux connection state guarantees that
-    // we only create new ElectrumClient when necessary
-    if (selectSyncState(store.getState()).isConnected) {
-      return Promise.resolve();
-    }
-
-    // ensure all references to old ElectrumClient are killed
-    // so that it gets garbage collected
-    if (electrum !== null) {
-      // disconnect(force=true) cleans up all listeners and timeouts
-      await electrum.disconnect(true);
-    }
+  async function connect(server: string = DEFAULT_ELECTRUM_SERVER) {
     Log.log("Connecting to", server);
 
-    // Create a new ElectrumClient every time
-    // This avoids memory leaks from EventEmitter
-    // Also allows us to switch servers on the fly
-    electrum = new ElectrumClient(
-      "Selene.cash",
-      "1.4",
-      server,
-      ElectrumTransport.WSS.Port,
-      ElectrumTransport.WSS.Scheme
-    );
+    if (
+      electrum !== null &&
+      electrum.status !== ConnectionStatus.DISCONNECTED
+    ) {
+      await electrum.disconnect(true);
+    }
+
+    // create a new ElectrumClient every time to enable server switching
+    electrum = new ElectrumClient("Selene.cash", "1.4", server);
 
     // need to establish listeners every time we recreate the ElectrumClient
     electrum.addListener("connected", () => {
-      Log.log("ELECTRUM CONNECTED");
+      Log.log("ELECTRUM CONNECTED", server);
       store.dispatch(syncConnectionUp(server));
     });
 
@@ -94,13 +76,16 @@ export default function ElectrumService() {
       store.dispatch(syncConnectionDown());
     });
 
+    electrum.addListener("notification", handleElectrumNotifications);
+    electrum.addListener("error", handleElectrumError);
+
     return electrum.connect();
   }
 
   // disconnect: disconnect the Electrum instance
-  async function disconnect(force: boolean): Promise<boolean> {
+  async function disconnect(force: boolean) {
     if (electrum !== null) {
-      return electrum.disconnect(force);
+      return electrum.disconnect(force, false);
     }
 
     return true;
@@ -110,52 +95,24 @@ export default function ElectrumService() {
   async function subscribeToAddress(
     address: AddressEntity
   ): Promise<{ address: AddressEntity; addressState: string | null }> {
-    if (electrum === null) {
+    if (electrum === null || electrum.status !== ConnectionStatus.CONNECTED) {
       throw new ElectrumNotConnectedError();
     }
 
-    const didSubscribe = await electrum.subscribe(
-      handleAddressSubscription,
-      "blockchain.address.subscribe",
-      address.address
-    );
-
-    if (!didSubscribe) {
-      throw new ElectrumNotConnectedError();
-    }
-
-    const addressState = await electrum.request(
-      "blockchain.address.subscribe",
-      address.address
-    );
-
-    if (addressState instanceof Error) {
-      throw addressState;
-    }
-
-    if (!(addressState === null || typeof addressState === "string")) {
-      throw new Error();
-    }
-
-    return { address, addressState };
+    return electrum.subscribe("blockchain.address.subscribe", address.address);
   }
 
   async function subscribeToChaintip(): Promise<boolean> {
-    if (electrum === null) {
+    if (electrum === null || electrum.status !== ConnectionStatus.CONNECTED) {
       throw new ElectrumNotConnectedError();
     }
 
-    const isSubscribed = electrum.subscribe(
-      handleChaintipSubscription,
-      "blockchain.headers.subscribe"
-    );
-
-    return isSubscribed;
+    return electrum.subscribe("blockchain.headers.subscribe");
   }
 
   // request the most up-to-date balance information for an address
   async function requestBalance(address: string) {
-    if (electrum === null) {
+    if (electrum === null || electrum.status !== ConnectionStatus.CONNECTED) {
       throw new ElectrumNotConnectedError();
     }
 
@@ -169,7 +126,7 @@ export default function ElectrumService() {
 
   // request the most up-to-date state hash for an address
   async function requestAddressState(address: string) {
-    if (electrum === null) {
+    if (electrum === null || electrum.status !== ConnectionStatus.CONNECTED) {
       throw new ElectrumNotConnectedError();
     }
     const addressState = await electrum.request(
@@ -186,7 +143,7 @@ export default function ElectrumService() {
 
   // request the entire transaction history for an address
   async function requestAddressHistory(address: string) {
-    if (electrum === null) {
+    if (electrum === null || electrum.status !== ConnectionStatus.CONNECTED) {
       throw new ElectrumNotConnectedError();
     }
 
@@ -195,12 +152,12 @@ export default function ElectrumService() {
       address
     );
 
-    return history as Array<object>;
+    return history;
   }
 
   // request all current UTXOs for an address
   async function requestUtxos(address: string) {
-    if (electrum === null) {
+    if (electrum === null || electrum.status !== ConnectionStatus.CONNECTED) {
       throw new ElectrumNotConnectedError();
     }
 
@@ -214,7 +171,7 @@ export default function ElectrumService() {
 
   // request a transaction by its txid
   async function requestTransaction(tx_hash: string, verbose: boolean = true) {
-    if (electrum === null) {
+    if (electrum === null || electrum.status !== ConnectionStatus.CONNECTED) {
       throw new ElectrumNotConnectedError();
     }
 
@@ -236,7 +193,7 @@ export default function ElectrumService() {
   }
 
   async function requestMerkle(tx_hash, height) {
-    if (electrum === null) {
+    if (electrum === null || electrum.status !== ConnectionStatus.CONNECTED) {
       throw new ElectrumNotConnectedError();
     }
     const merkle = await electrum.request(
@@ -254,7 +211,7 @@ export default function ElectrumService() {
       throw new Error("height must be non-negative integer");
     }
 
-    if (electrum === null) {
+    if (electrum === null || electrum.status !== ConnectionStatus.CONNECTED) {
       throw new ElectrumNotConnectedError();
     }
 
@@ -269,7 +226,7 @@ export default function ElectrumService() {
   }
 
   async function broadcastTransaction(tx_hex) {
-    if (electrum === null) {
+    if (electrum === null || electrum.status !== ConnectionStatus.CONNECTED) {
       throw new ElectrumNotConnectedError();
     }
     const tx_hash = await electrum.request(
@@ -282,7 +239,7 @@ export default function ElectrumService() {
   }
 
   async function requestRelayFee() {
-    if (electrum === null) {
+    if (electrum === null || electrum.status !== ConnectionStatus.CONNECTED) {
       throw new ElectrumNotConnectedError();
     }
     const result = await electrum.request("blockchain.relayfee");
@@ -319,19 +276,26 @@ export default function ElectrumService() {
   }
 }
 
-// named function for address subscription, keeps electrum-cash performant
-// important that the pointer to this function never changes
-// so we define it on top-level
-function handleAddressSubscription(data) {
+function handleElectrumNotifications(data) {
+  if (data.method === "blockchain.address.subscribe") {
+    store.dispatch(syncAddressState(data.params));
+  }
+
+  if (data.method === "blockchain.headers.subscribe") {
+    handleChaintipSubscription(data.params);
+  }
+}
+
+function handleElectrumError(error) {
+  Log.error(error);
+}
+
+function handleChaintipSubscription(data) {
   if (!Array.isArray(data)) {
     return;
   }
 
-  store.dispatch(syncAddressState(data));
-}
-
-function handleChaintipSubscription(data) {
-  const chaintip = Array.isArray(data) ? data[0] : data;
+  const chaintip = data[0];
   store.dispatch(syncChaintip(chaintip));
 }
 
@@ -339,6 +303,6 @@ function getElectrumHost() {
   return electrum ? electrum.connection.host : "";
 }
 
-App.addListener("resume", () =>
+/*App.addListener("resume", () =>
   store.dispatch(syncConnect({ server: getElectrumHost(), attempts: 0 }))
-);
+);*/

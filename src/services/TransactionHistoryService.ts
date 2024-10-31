@@ -13,16 +13,18 @@ import { WalletEntity } from "@/services/WalletManagerService";
 const Log = LogService("TransactionHistoryService");
 
 class TransactionHistoryNotExistsError extends Error {
-  constructor(tx_hash, wallet_id) {
-    super(`No address_transactions for ${tx_hash} and wallet ${wallet_id}`);
+  constructor(tx_hash, walletHash) {
+    super(`No address_transactions for ${tx_hash} and wallet ${walletHash}`);
   }
 }
+const Database = DatabaseService();
+const APP_DB = await Database.getAppDatabase();
 
 export default function TransactionHistoryService(
   wallet: WalletEntity,
   fiatCurrency
 ) {
-  const { db, resultToJson, saveDatabase } = DatabaseService();
+  const walletDb = Database.getWalletDatabase(wallet.walletHash);
 
   const AddressManager = AddressManagerService(wallet);
   const myAddresses = [
@@ -41,30 +43,22 @@ export default function TransactionHistoryService(
     //Log.debug("resolveTransactionHistory");
 
     // get all transactions that are registered with addresses
-    const address_transactions_confirmed = resultToJson(
-      db.exec(
-        `SELECT * FROM address_transactions 
-          WHERE (wallet_id="${wallet.id}"
-          OR address IN (
-            SELECT address FROM addresses WHERE wallet_id="${wallet.id}"
-          )) AND height > 0
+    const address_transactions_confirmed = walletDb.exec(
+      `SELECT * FROM address_transactions
+          WHERE height > 0
+          GROUP BY txid
           ORDER BY height DESC, time DESC, time_seen DESC
           LIMIT 100 OFFSET ${start};
         `
-      )
     );
 
-    const address_transactions_unconfirmed = resultToJson(
-      db.exec(
-        `SELECT * FROM address_transactions 
-          WHERE (wallet_id="${wallet.id}"
-          OR address IN (
-            SELECT address FROM addresses WHERE wallet_id="${wallet.id}"
-          )) AND height <= 0
-          ORDER BY height ASC, time_seen DESC, time DESC
+    const address_transactions_unconfirmed = walletDb.exec(
+      `SELECT * FROM address_transactions 
+          WHERE height <= 0
+          GROUP BY txid
+          ORDER BY height ASC, time DESC, time_seen DESC
           LIMIT 100 OFFSET ${start};
         `
-      )
     );
 
     const address_transactions = address_transactions_unconfirmed
@@ -102,7 +96,7 @@ export default function TransactionHistoryService(
       const addressTx = getAddressTransaction(tx_hash);
 
       if (addressTx.amount === null) {
-        throw new TransactionHistoryNotExistsError(tx_hash, wallet.id);
+        throw new TransactionHistoryNotExistsError(tx_hash, wallet.walletHash);
       }
 
       return addressTx;
@@ -168,22 +162,22 @@ export default function TransactionHistoryService(
   }
 
   function setTransactionMemo(tx_hash: string, memo: string): void {
-    db.run(
-      `UPDATE address_transactions SET memo="${memo}"
-        WHERE txid="${tx_hash}" AND wallet_id="${wallet.id}";
-
-       UPDATE address_utxos SET memo="${memo}"
-        WHERE txid="${tx_hash}" AND wallet_id="${wallet.id}";
-      `
+    walletDb.run(
+      `UPDATE address_transactions SET memo=?
+        WHERE txid="${tx_hash}";`,
+      [memo]
     );
-    saveDatabase();
+
+    walletDb.run(
+      `UPDATE address_utxos SET memo=?
+        WHERE txid="${tx_hash}";`,
+      [memo]
+    );
   }
 
   function getTransactionMemo(tx_hash: string): string {
-    const result = resultToJson(
-      db.exec(
-        `SELECT memo FROM address_transactions WHERE txid="${tx_hash}" AND wallet_id="${wallet.id}"`
-      )
+    const result = walletDb.exec(
+      `SELECT memo FROM address_transactions WHERE txid="${tx_hash}"`
     );
 
     const memo = result.length > 0 ? result[0].memo : "";
@@ -191,36 +185,37 @@ export default function TransactionHistoryService(
   }
 
   function updateTxAmount(tx_hash: string, amount: number) {
+    Log.debug("updateTxAmount", tx_hash);
     const fiat_amount = CurrencyService(fiatCurrency).satsToFiat(amount);
 
-    const result = resultToJson(
-      db.exec(
-        `UPDATE address_transactions SET 
-          amount="${amount}", 
-          fiat_amount="${fiat_amount}",
-          fiat_currency="${fiatCurrency}",
-          wallet_id="${wallet.id}",
-          time=(SELECT time FROM transactions WHERE txid="${tx_hash}" AND time != "null")
-        WHERE txid="${tx_hash}" AND wallet_id="${wallet.id}"
-        RETURNING *;`
-      )
+    const txTime = APP_DB.exec(
+      `SELECT time FROM transactions WHERE txid="${tx_hash}"`
+    )[0].time;
+
+    Log.debug("txTime", txTime);
+
+    const result = walletDb.exec(
+      `UPDATE address_transactions SET 
+          amount=?,
+          fiat_amount=?,
+          fiat_currency=?,
+          time=?
+        WHERE txid="${tx_hash}"
+        RETURNING *;`,
+      [amount, fiat_amount, fiatCurrency, txTime]
     )[0];
     Log.debug("updateTxAmount", tx_hash, result);
-
-    saveDatabase();
 
     return result;
   }
 
   function getAddressTransaction(tx_hash: string) {
-    const result = resultToJson(
-      db.exec(
-        `SELECT * FROM address_transactions WHERE txid="${tx_hash}" AND wallet_id="${wallet.id}";`
-      )
+    const result = walletDb.exec(
+      `SELECT * FROM address_transactions WHERE txid="${tx_hash}";`
     );
 
     if (result.length === 0) {
-      throw new TransactionHistoryNotExistsError(tx_hash, wallet.id);
+      throw new TransactionHistoryNotExistsError(tx_hash, wallet.walletHash);
     }
 
     //Log.debug("getAddressTransaction", tx_hash, result);
