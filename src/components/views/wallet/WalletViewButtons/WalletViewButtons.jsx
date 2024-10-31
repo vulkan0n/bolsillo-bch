@@ -1,6 +1,5 @@
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
-// import { Haptics, NotificationType } from "@capacitor/haptics";
 import { Clipboard } from "@capacitor/clipboard";
 import {
   SendOutlined,
@@ -16,8 +15,9 @@ import ScannerButton from "../ScannerButton/ScannerButton";
 import TorchButton from "../TorchButton/TorchButton";
 import ImageSelectButton from "../ImageSelectButton/ImageSelectButton";
 
-import { validateBchUri } from "@/util/uri";
 import ToastService from "@/services/ToastService";
+import { validateBchUri } from "@/util/uri";
+import { Haptic } from "@/util/haptic";
 
 const { noBchAddress, pleaseCopy, history, send } = translations;
 
@@ -25,7 +25,7 @@ export default function WalletViewButtons() {
   const navigate = useNavigate();
   const isScanning = useSelector(selectScannerIsScanning);
 
-  const forwardOnValidAddress = (input) => {
+  const forwardOnValidAddress = async (input) => {
     // go to send screen when valid address is entered
     const {
       isValid,
@@ -38,7 +38,7 @@ export default function WalletViewButtons() {
     } = validateBchUri(input);
 
     if (isValid) {
-      //Haptics.notification({ type: NotificationType.Success });
+      await Haptic.success();
 
       let navTo;
       if (isPaymentProtocol) {
@@ -51,7 +51,7 @@ export default function WalletViewButtons() {
 
       navigate(navTo);
     } else {
-      //Haptics.notification({ type: NotificationType.Error });
+      await Haptic.error();
     }
 
     return isValid;
@@ -67,7 +67,7 @@ export default function WalletViewButtons() {
       const paste = (await Clipboard.read()).value;
       isValid = await forwardOnValidAddress(paste);
     } catch (e) {
-      console.warn(e);
+      //console.warn(e);
     } finally {
       const titleTranslation = translate(noBchAddress);
       const descriptionTranslation = translate(pleaseCopy);

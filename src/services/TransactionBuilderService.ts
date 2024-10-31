@@ -1,4 +1,3 @@
-import Logger from "js-logger";
 import { Decimal } from "decimal.js";
 import {
   encodeTransaction,
@@ -12,6 +11,7 @@ import {
   getMinimumFee,
 } from "@bitauth/libauth";
 
+import LogService from "@/services/LogService";
 import UtxoManagerService from "@/services/UtxoManagerService";
 import AddressManagerService from "@/services/AddressManagerService";
 import HdNodeService from "@/services/HdNodeService";
@@ -38,6 +38,10 @@ export type ElectrumUtxo = {
   tx_pos: number;
   value: number;
 };
+
+const Log = LogService("TxBuilder");
+
+export class TransactionBuilderError extends Error {}
 
 export default function TransactionBuilderService(wallet: WalletEntity) {
   return {
@@ -73,7 +77,7 @@ export default function TransactionBuilderService(wallet: WalletEntity) {
     const UtxoManager = UtxoManagerService(wallet);
     const inputs = UtxoManager.selectUtxos(sendTotal, fee);
 
-    Logger.debug("selectUtxos:", inputs);
+    Log.debug("using utxos:", inputs);
 
     const inputTotal = inputs
       .reduce((sum, cur) => sum.plus(cur.amount), new Decimal(0))
@@ -84,13 +88,14 @@ export default function TransactionBuilderService(wallet: WalletEntity) {
 
     // insufficient funds
     if (changeTotal < 0) {
-      Logger.debug(
+      Log.debug(
         "buildP2pkhTransaction: insufficient funds",
         inputTotal,
         sendTotal,
         fee,
-        sendTotal - fee,
-        changeTotal
+        inputTotal - sendTotal,
+        changeTotal,
+        sendTotal - fee
       );
       return sendTotal - fee;
     }
@@ -130,7 +135,7 @@ export default function TransactionBuilderService(wallet: WalletEntity) {
     });
 
     if (generatedTx.success === false) {
-      Logger.warn("tx generation failed", generatedTx);
+      Log.warn("tx generation failed", generatedTx);
       return null;
     }
 
@@ -139,9 +144,9 @@ export default function TransactionBuilderService(wallet: WalletEntity) {
     const tx_hash = swapEndianness(binToHex(sha256.hash(sha256.hash(tx_raw))));
 
     // if we didn't reclaim change, add it to total fee
-    const feeTotal = changeTotal >= DUST_LIMIT ? fee : fee + changeTotal;
+    const feeTotal = changeTotal < DUST_LIMIT ? fee + changeTotal : fee;
     if (feeTotal < tx_raw.length) {
-      Logger.debug(
+      Log.debug(
         `Fee under 1 sat/B... try again with ${tx_raw.length} bytelength as fee`,
         depth
       );
@@ -151,7 +156,7 @@ export default function TransactionBuilderService(wallet: WalletEntity) {
 
     if (feeTotal > tx_raw.length * 3 && depth < 3) {
       if (fee !== tx_raw.length) {
-        Logger.debug(
+        Log.debug(
           "Fee greater than 300% of byte length. Can we make it smaller?",
           depth
         );
@@ -162,7 +167,7 @@ export default function TransactionBuilderService(wallet: WalletEntity) {
     }
 
     /*
-    Logger.log(
+    Log.log(
       "buildTransaction",
       tx_hash,
       vout,

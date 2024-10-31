@@ -4,8 +4,11 @@ import { useSelector, useDispatch } from "react-redux";
 
 import { SettingOutlined } from "@ant-design/icons";
 
-import { selectPreferences, setPreference } from "@/redux/preferences";
-import { selectActiveWallet } from "@/redux/wallet";
+import {
+  selectPreferences,
+  setPreference,
+  selectActiveWalletHash,
+} from "@/redux/preferences";
 
 import ViewHeader from "@/layout/ViewHeader";
 import KeyWarning from "@/atoms/KeyWarning/KeyWarning";
@@ -48,7 +51,7 @@ export default function SettingsView() {
     [dispatch, preferences, handleSettingsUpdate]
   );
 
-  const activeWallet = useSelector(selectActiveWallet);
+  const activeWalletHash = useSelector(selectActiveWalletHash);
 
   return (
     <>
@@ -59,7 +62,7 @@ export default function SettingsView() {
       <div className="h-full">
         <div className="p-1">
           <SettingsContext.Provider value={settingsContext}>
-            <KeyWarning wallet={activeWallet} />
+            <KeyWarning walletHash={activeWalletHash} />
             <WalletSettings />
             <SecuritySettings />
             <CurrencySettings />
