@@ -14,7 +14,7 @@ export default function SyncIndicator() {
   const dispatch = useDispatch();
   const sync = useSelector(selectSyncState);
 
-  const shouldDisplaySyncCounter = useSelector(selectUiSettings);
+  const { shouldDisplaySyncCounter } = useSelector(selectUiSettings);
 
   const [shouldAnimateSync, setShouldAnimateSync] = useState(sync.isSyncing);
   const syncTimeoutRef = useRef(setTimeout(() => {}, 0));
@@ -36,7 +36,7 @@ export default function SyncIndicator() {
         clearTimeout(syncTimeoutRef.current);
         syncTimeoutRef.current = setTimeout(
           () => requestAnimationFrame(() => setShouldAnimateSync(false)),
-          600
+          100
         );
       }
     },
@@ -74,7 +74,7 @@ export default function SyncIndicator() {
         to: { opacity: 0.1, scale: 0.65 },
       });
 
-      dispatch(syncHotRefresh());
+      dispatch(syncHotRefresh({ force: false }));
     } else {
       disconnectApi.start();
       ToastService().disconnected();

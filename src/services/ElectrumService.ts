@@ -66,7 +66,6 @@ export default function ElectrumService() {
     electrum = new ElectrumClient("Selene.cash", "1.4", server);
 
     // need to establish listeners every time we recreate the ElectrumClient
-    // need to establish listeners every time we recreate the ElectrumClient
     electrum.addListener("connected", () => {
       Log.log("ELECTRUM CONNECTED", server);
       store.dispatch(syncConnectionUp(server));
@@ -278,8 +277,6 @@ export default function ElectrumService() {
 }
 
 function handleElectrumNotifications(data) {
-  //Log.debug(data);
-
   if (data.method === "blockchain.address.subscribe") {
     store.dispatch(syncAddressState(data.params));
   }
