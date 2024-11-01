@@ -2,7 +2,6 @@ import Logger from "js-logger";
 import { useState, useEffect, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { Haptics, NotificationType } from "@capacitor/haptics";
 import { ArrowLeftOutlined, SyncOutlined } from "@ant-design/icons";
 
 import { selectActiveWallet } from "@/redux/wallet";
@@ -25,6 +24,7 @@ import Address from "@/atoms/Address";
 import CurrencyFlip from "@/atoms/CurrencyFlip";
 
 import { validateWifUri } from "@/util/uri";
+import { Haptic } from "@/util/haptic";
 
 import { translate } from "@/util/translations";
 import translations from "./translations";
@@ -162,7 +162,7 @@ export default function WalletViewSweep() {
       const tx = await TransactionManager.resolveTransaction(transaction.txid);
 
       // Show a notification.
-      await Haptics.notification({ type: NotificationType.Success });
+      await Haptic.success();
 
       // Navigate to the "Sweep Successful" page.
       navigate("/wallet/send/success", {
@@ -170,6 +170,7 @@ export default function WalletViewSweep() {
         replace: true,
       });
     } catch (error) {
+      await Haptic.error();
       Logger.warn(`Sweeping from ${wif} failed: ${error}`);
       setMessage(translate(translations.sweepingFailed));
     } finally {

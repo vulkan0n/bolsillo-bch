@@ -2,7 +2,6 @@ import { useState, useCallback, useEffect, useMemo } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import Decimal from "decimal.js";
-import { Haptics, NotificationType } from "@capacitor/haptics";
 import { ArrowLeftOutlined, SyncOutlined } from "@ant-design/icons";
 
 import { selectKeyboardIsOpen } from "@/redux/device";
@@ -13,13 +12,15 @@ import { selectInstantPaySettings } from "@/redux/preferences";
 import TransactionManagerService from "@/services/TransactionManagerService";
 import TransactionBuilderService from "@/services/TransactionBuilderService";
 import ToastService from "@/services/ToastService";
-import SecurityService from "@/services/SecurityService";
+import SecurityService, { AuthActions } from "@/services/SecurityService";
 import LogService from "@/services/LogService";
 
 import Button from "@/atoms/Button";
 import CountdownTimer from "@/components/atoms/CountdownTimer";
 import CurrencyFlip from "@/atoms/CurrencyFlip";
 import Satoshi from "@/atoms/Satoshi";
+
+import { Haptic } from "@/util/haptic";
 
 import {
   type PaymentRequestResponse,
@@ -87,8 +88,11 @@ export default function WalletViewPay() {
 
         setIsSending(true);
 
-        const isAuthorized =
-          isInstantPay || (await SecurityService().authorize());
+        const Security = SecurityService();
+        const isAuthorized = isInstantPay
+          ? await Security.authorize(AuthActions.InstantPay)
+          : await Security.authorize(AuthActions.SendTransaction);
+
         if (!isAuthorized) {
           return;
         }
@@ -144,13 +148,13 @@ export default function WalletViewPay() {
         );
 
         // Show a success notification and route the user to the success page.
-        await Haptics.notification({ type: NotificationType.Success });
+        await Haptic.success();
         navigate("/wallet/send/success", {
           state: { tx, prefillMemo: paymentResponse.memo || "" },
           replace: true,
         });
       } catch (error) {
-        await Haptics.notification({ type: NotificationType.Error });
+        await Haptic.error();
         Log.debug(error);
         setMessage(translate(translations.transactionFailed));
         setDetailedMessage(`${error}`);
