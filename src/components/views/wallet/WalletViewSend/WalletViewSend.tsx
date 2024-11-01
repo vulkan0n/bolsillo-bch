@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from "react";
 import { useParams, useSearchParams, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import Decimal from "decimal.js";
+import { Dialog } from "@capacitor/dialog";
 import { ArrowLeftOutlined, SyncOutlined } from "@ant-design/icons";
 
 import { selectActiveWallet } from "@/redux/wallet";
@@ -10,6 +11,7 @@ import {
   selectCurrencySettings,
   selectInstantPaySettings,
   setPreference,
+  selectIsExperimental,
 } from "@/redux/preferences";
 
 import { selectKeyboardIsOpen } from "@/redux/device";
@@ -29,7 +31,7 @@ import CurrencyFlip from "@/atoms/CurrencyFlip";
 
 import { Haptic } from "@/util/haptic";
 import { bchToSats, DUST_LIMIT } from "@/util/sats";
-import { validateInvoiceString } from "@/util/invoice";
+import { validateBchUri } from "@/util/uri";
 import { translate } from "@/util/translations";
 import translations from "./translations";
 
@@ -39,6 +41,8 @@ export default function WalletViewSend() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
+  const isExperimental = useSelector(selectIsExperimental);
+
   const inputRef = useRef<HTMLInputElement>(null);
 
   const isKeyboardOpen = useSelector(selectKeyboardIsOpen);
@@ -47,7 +51,7 @@ export default function WalletViewSend() {
   const wallet = useSelector(selectActiveWallet);
   const sync = useSelector(selectSyncState);
 
-  const { address } = validateInvoiceString(params.address);
+  const { address, isBase58Address } = validateBchUri(params.address);
 
   const myAddresses = useSelector(selectMyAddresses);
   const isMyAddress = myAddresses[address] !== undefined;
@@ -97,6 +101,7 @@ export default function WalletViewSend() {
     }
 
     setIsSending(true);
+
     const authAction = isInstantPay
       ? AuthActions.InstantPay
       : AuthActions.SendTransaction;
@@ -117,6 +122,18 @@ export default function WalletViewSend() {
       ToastService().disconnected();
       setIsSending(false);
       return;
+    }
+
+    if (isBase58Address) {
+      const { value: isLegacyAddressConfirmed } = await Dialog.prompt({
+        title: translate(translations.base58WarningTitle),
+        message: translate(translations.base58WarningMessage),
+        okButtonTitle: translate(translations.base58WarningOk),
+      });
+
+      if (!isLegacyAddressConfirmed) {
+        return;
+      }
     }
 
     const TransactionManager = TransactionManagerService();
@@ -141,7 +158,7 @@ export default function WalletViewSend() {
       return;
     }
 
-    const isSuccess = await TransactionManager.sendTransaction(
+    const { isSuccess, result } = await TransactionManager.sendTransaction(
       transaction,
       wallet
     );
@@ -155,7 +172,11 @@ export default function WalletViewSend() {
       });
     } else {
       //setMessage(translate(translations.transactionFailed));
-      setMessage(`Transaction Failed: Must send at least ${DUST_LIMIT} sats`);
+      setMessage(
+        isExperimental
+          ? `${result}`
+          : `Transaction Failed: Must send at least ${DUST_LIMIT} sats`
+      );
       await Haptic.error();
     }
 

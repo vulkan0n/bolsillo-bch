@@ -274,6 +274,9 @@ const translations = {
     zh: "抛出错误",
     zh_TW: "拋出錯誤",
   },
+  bchNetwork: {
+    en: "BCH Network",
+  },
 };
 
 export default translations;

@@ -36,7 +36,7 @@ const translations = {
     ur: "قابل قبول رقم نہیں",
     vi: "Không đủ tiền",
     zh: "资金不足",
-    zh_TW: "不充足的資金"
+    zh_TW: "不充足的資金",
   },
   notEnoughFee: {
     ar: "فشلت العملية -  لا يوجد رصيد كافٍ لرسوم المنقّب",
@@ -75,7 +75,7 @@ const translations = {
     ur: "لین دین ناکام -  مائنر فی کیلئے کافی بیلنس نہیں",
     vi: "Giao dịch không thành công - Không đủ số dư để trả phí cho thợ đào",
     zh: "交易失败：余额不足以支付矿工费",
-    zh_TW: "交易失敗：礦工手續費不足"
+    zh_TW: "交易失敗：礦工手續費不足",
   },
   transactionFailed: {
     ar: "فشل الاجراء.",
@@ -114,7 +114,7 @@ const translations = {
     ur: "لین دین ناکام ہوگیا۔",
     vi: "Giao dịch thất bại.",
     zh: "交易失败。",
-    zh_TW: "交易失敗。"
+    zh_TW: "交易失敗。",
   },
   sendingTo: {
     ar: "إرسال إلى",
@@ -153,7 +153,7 @@ const translations = {
     ur: "بھیج رہا ہے",
     vi: "Đang gửi đến",
     zh: "发送至",
-    zh_TW: "發送至"
+    zh_TW: "發送至",
   },
   back: {
     ar: "خلف",
@@ -192,7 +192,7 @@ const translations = {
     ur: "واپس",
     vi: "Quay lại",
     zh: "返回",
-    zh_TW: "後退"
+    zh_TW: "後退",
   },
   confirm: {
     ar: "يتأكد",
@@ -231,8 +231,17 @@ const translations = {
     ur: "توثیق کریں",
     vi: "Xác nhận",
     zh: "确认",
-    zh_TW: "確認"
-  }
+    zh_TW: "確認",
+  },
+  base58WarningTitle: {
+    en: "Warning! RISK OF LOST FUNDS! Legacy Address detected",
+  },
+  base58WarningMessage: {
+    en: "You can accidentally send your funds to a BTC address. Be ABSOLUTELY CERTAIN that this is a Bitcoin Cash (BCH) address!! If in doubt, do not proceed!",
+  },
+  base58WarningOk: {
+    en: "Send Anyway",
+  },
 };
 
 export default translations;

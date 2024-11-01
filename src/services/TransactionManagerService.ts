@@ -54,6 +54,7 @@ const appDb = await Database.getAppDatabase();
 export default function TransactionManagerService() {
   return {
     resolveTransaction,
+    waitForTransactionToResolve,
     sendTransaction,
     deleteTransaction,
     purgeTransactions,
@@ -85,10 +86,41 @@ export default function TransactionManagerService() {
     }
   }
 
-  async function sendTransaction(
-    tx: TransactionStub,
-    wallet: WalletEntity
-  ): Promise<boolean> {
+  // Will poll resolveTransaction at the given interval for up to the given timeout period.
+  // This function is useful in situations where we need to monitor ("wait") for a transaction that is broadcasted by a third-party node (not us).
+  // NOTE: A more optimal implementation in future might be to use Fulcrum's tx.subscribe emthods.
+  //       However, this would probably be a heavy refactor that introduces additional state.
+  async function waitForTransactionToResolve(
+    transactionId: string,
+    timeoutMs = 10_000,
+    intervalMs = 1000
+  ) {
+    const startTime = Date.now();
+
+    return new Promise<TransactionEntity>((resolve, reject) => {
+      const checkTransaction = async () => {
+        try {
+          const tx = await resolveTransaction(transactionId);
+          resolve(tx);
+        } catch (error) {
+          // If the transaction is not resolved yet, check again after the interval
+          const elapsedTime = Date.now() - startTime;
+          if (elapsedTime < timeoutMs) {
+            setTimeout(checkTransaction, intervalMs);
+          } else {
+            reject(
+              new Error(`Failed to resolve transaction after ${timeoutMs}ms`)
+            );
+          }
+        }
+      };
+
+      // Start checking the transaction
+      checkTransaction();
+    });
+  }
+
+  async function sendTransaction(tx: TransactionStub, wallet: WalletEntity) {
     const { txid: tx_hash, hex: tx_hex } = tx;
 
     const Electrum = ElectrumService();
@@ -107,7 +139,7 @@ export default function TransactionManagerService() {
       Log.warn("transaction send failure", result);
     }
 
-    return isSuccess;
+    return { isSuccess, result };
   }
 
   async function deleteTransaction(tx_hash: string): Promise<void> {

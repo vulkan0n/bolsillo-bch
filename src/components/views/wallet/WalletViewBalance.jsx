@@ -7,7 +7,7 @@ import { selectActiveWallet } from "@/redux/wallet";
 import {
   setPreference,
   selectCurrencySettings,
-  selectIsChipnet,
+  selectBchNetwork,
   selectUiSettings,
 } from "@/redux/preferences";
 import { selectCurrentPrice } from "@/redux/exchangeRates";
@@ -21,7 +21,7 @@ export default function WalletViewBalance() {
   const wallet = useSelector(selectActiveWallet);
   const { walletHash, name: activeWalletName, balance, key_viewed } = wallet;
   const price = useSelector(selectCurrentPrice);
-  const isChipnet = useSelector(selectIsChipnet);
+  const bchNetwork = useSelector(selectBchNetwork);
 
   const isKeyViewed = key_viewed !== null;
 
@@ -87,7 +87,9 @@ export default function WalletViewBalance() {
           to={`/settings/wallet/${walletHash}`}
           className={`flex justify-center items-center ${!isKeyViewed && "text-warning"}`}
         >
-          {isChipnet ? "[CHIP] " : ""}
+          {bchNetwork === "chipnet" && "[CHIP] "}
+          {bchNetwork === "testnet3" && "[TEST3] "}
+          {bchNetwork === "testnet4" && "[TEST4] "}
           {activeWalletName}{" "}
           {!isKeyViewed && balance > 0 ? (
             <WarningFilled className="text-xs ml-1 text-warning" />

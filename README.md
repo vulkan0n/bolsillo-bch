@@ -3,6 +3,7 @@
 [![Latest Release](https://git.xulu.tech/selene.cash/selene-wallet/-/badges/release.svg)](https://git.xulu.tech/selene.cash/selene-wallet/-/releases)
 
 Website: https://selene.cash
+
 Documentation: https://docs.selene.cash
 
 We are fulfilling the mission of making Bitcoin Cash (BCH) the [global reserve currency](https://bitcoincashpodcast.com/faqs/Global-Reserve-Currency/what-do-you-mean-global-reserve-currency) by building a sleek, robust, user-friendly wallet that makes joining the BCH economy as easy and compelling as possible.
@@ -14,7 +15,7 @@ We are fulfilling the mission of making Bitcoin Cash (BCH) the [global reserve c
 3. `yarn install`
 4. `yarn run build`
 5. `yarn dev`
-6. https://localhost:5173
+6. http://localhost:5173
 
 ### Selene Server
 
@@ -103,4 +104,3 @@ const translations = {
 Translations are done with Google Cloud Translation API. It isn't super expensive, but it does cost money per translation. You can run the script to test, it skips over existing translations and only fills in missing translations, but if you're adding new text please don't run up the bill by running it unnecessarily. Decide on the English versions as part of concluding your feature pull request, prepare the translation files, then run translations script once to fill everything out.
 
 NOTE: There is a bug in `src/components/views/walletView/WalletViewSend/translations.js` with the "notEnoughFee" key. Before running translation, copy-paste that key into a separate document, run the translation, then afterwards return the "notEnoughFee" key. Also, manually add any new "notEnoughFee" translations. If you don't do this, the entire file will miss out on having its translations updated.
-

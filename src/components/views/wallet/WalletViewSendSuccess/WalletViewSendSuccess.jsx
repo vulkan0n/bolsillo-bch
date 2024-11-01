@@ -19,12 +19,12 @@ import translations from "./translations";
 function WalletViewSendSuccess() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { tx } = location.state;
+  const { tx, header, prefillMemo } = location.state;
 
   const wallet = useSelector(selectActiveWallet);
   const { localCurrency } = useSelector(selectCurrencySettings);
 
-  const [memo, setMemo] = useState("");
+  const [memo, setMemo] = useState(prefillMemo || "");
 
   const handleMemoChange = (event) => {
     setMemo(event.target.value);
@@ -52,7 +52,7 @@ function WalletViewSendSuccess() {
       <div className="p-1 bg-primary text-white shadow-inner">
         <div className="p-2 flex justify-center items-center">
           <span className="text-4xl font-bold">
-            {translate(translations.transactionSent)}
+            {header || translate(translations.transactionSent)}
           </span>
         </div>
         <div className="p-2 flex justify-center items-center">

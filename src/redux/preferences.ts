@@ -300,11 +300,6 @@ export const selectPrivacySettings = createSelector(
   })
 );
 
-export const selectIsChipnet = createSelector(
-  (state: RootState) => selectBchNetwork(state),
-  (bchNetwork): boolean => bchNetwork === "chipnet"
-);
-
 export const selectIsExperimental = createSelector(
   (state: RootState) => state.preferences,
   (preferences): boolean => preferences.enableExperimental === "true"

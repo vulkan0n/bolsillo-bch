@@ -1,5 +1,6 @@
 import { ElectrumClient, ConnectionStatus } from "@electrum-cash/network";
 import { store } from "@/redux";
+import { selectBchNetwork, setPreference } from "@/redux/preferences";
 import {
   syncConnectionUp,
   syncConnectionDown,
@@ -11,11 +12,9 @@ import LogService from "@/services/LogService";
 import { AddressEntity } from "@/services/AddressManagerService";
 
 import { bchToSats } from "@/util/sats";
-import { electrum_servers, chipnet_servers } from "@/util/electrum_servers";
+import { electrum_servers } from "@/util/electrum_servers";
 
 const Log = LogService("Electrum");
-
-const DEFAULT_ELECTRUM_SERVER = electrum_servers[0];
 
 export class ElectrumNotConnectedError extends Error {
   constructor() {
@@ -52,7 +51,7 @@ export default function ElectrumService() {
   // connect: connect to an Electrum server
   // Creates a new ElectrumClient every time
   // Destroys existing ElectrumClient if out of sync with Redux state
-  async function connect(server: string = DEFAULT_ELECTRUM_SERVER) {
+  async function connect(server: string = electrum_servers.mainnet[0]) {
     Log.log("Connecting to", server);
 
     if (
@@ -248,13 +247,14 @@ export default function ElectrumService() {
     return relayFee;
   }
 
-  function selectFallbackServer(prevServer, isChipnet = false) {
+  function selectFallbackServer(prevServer) {
+    const bchNetwork = selectBchNetwork(store.getState());
+    const server_list = electrum_servers[bchNetwork];
+
     // don't blacklist the known-good Selene-operated server
-    if (prevServer && prevServer !== DEFAULT_ELECTRUM_SERVER) {
+    if (prevServer && prevServer !== server_list[0]) {
       server_blacklist.push(prevServer);
     }
-
-    const server_list = isChipnet ? chipnet_servers : electrum_servers;
 
     const chooseRandomServer = () => {
       return server_list[Math.floor(Math.random() * server_list.length)];
@@ -265,12 +265,18 @@ export default function ElectrumService() {
       newServer = chooseRandomServer();
     }
 
+    if (bchNetwork === "mainnet") {
+      store.dispatch(
+        setPreference({ key: "electrumServer", value: newServer })
+      );
+    }
+
     Log.log(
       "selectFallbackServer",
       newServer,
       prevServer,
       server_blacklist,
-      isChipnet
+      bchNetwork
     );
     return newServer;
   }

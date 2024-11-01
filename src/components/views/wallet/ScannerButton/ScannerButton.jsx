@@ -18,7 +18,7 @@ import {
 
 import Button from "@/atoms/Button";
 
-import { validateInvoiceString } from "@/util/invoice";
+import { validateBchUri } from "@/util/uri";
 
 import translations from "./translations";
 import { translate } from "@/util/translations";
@@ -44,11 +44,29 @@ export default function ScannerButton() {
     async (content) => {
       dispatch(setScannerIsScanning(false));
 
-      const { isCashAddress, address, query } = validateInvoiceString(content);
+      const {
+        isValid,
+        isPaymentProtocol,
+        isWif,
+        address,
+        query,
+        requestUri,
+        wif,
+      } = validateBchUri(content);
 
-      if (isCashAddress) {
+      if (isValid) {
         await Haptic.success();
-        navigate(`/wallet/send/${address}${query}`);
+
+        let navTo;
+        if (isPaymentProtocol) {
+          navTo = `/wallet/pay/?r=${requestUri}`;
+        } else if (isWif) {
+          navTo = `/wallet/sweep/${wif}`;
+        } else {
+          navTo = `/wallet/send/${address}${query}`;
+        }
+
+        navigate(navTo);
       } else {
         await Haptic.error();
       }
