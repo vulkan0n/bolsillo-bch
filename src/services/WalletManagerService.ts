@@ -3,11 +3,11 @@ import * as bip39 from "bip39";
 import LogService from "@/services/LogService";
 import DatabaseService from "@/services/DatabaseService";
 import TransactionManagerService from "@/services/TransactionManagerService";
+import { ValidBchNetwork } from "@/util/electrum_servers";
 import {
   ValidDerivationPath,
   DEFAULT_DERIVATION_PATH,
-  ValidBchNetwork,
-} from "@/util/crypto";
+} from "@/util/derivation";
 import { sha256 } from "@/util/hash";
 import { store } from "@/redux";
 import { selectBchNetwork } from "@/redux/preferences";
@@ -54,6 +54,7 @@ export default function WalletManagerService() {
     boot,
     createWallet,
     importWallet,
+    createTemporaryWallet,
     deleteWallet,
     updateKeyViewed,
     updateKeyVerified,
@@ -63,6 +64,7 @@ export default function WalletManagerService() {
     importWalletFile,
     saveWallet,
     calculateWalletHash,
+    openWalletDatabase,
   };
 
   // ----------------------------
@@ -75,7 +77,7 @@ export default function WalletManagerService() {
     return result;
   }
 
-  // getWallet: get a consumable Wallet object from the database
+  // getWallet: synchronously get a consumable Wallet object from the database
   function getWallet(walletHash): WalletEntity {
     if (!walletHash) {
       throw new WalletNotExistsError(walletHash);
@@ -178,7 +180,7 @@ export default function WalletManagerService() {
 
     Log.debug("createWallet", walletHash);
 
-    const walletDb = await Database.openWalletDatabase(walletHash);
+    const walletDb = await openWalletDatabase(walletHash);
 
     const result = walletDb.exec(
       `INSERT INTO wallet (
@@ -215,7 +217,7 @@ export default function WalletManagerService() {
       derivation,
     });
 
-    const walletDb = await Database.openWalletDatabase(walletHash);
+    const walletDb = await openWalletDatabase(walletHash);
 
     const created_at = walletData.date_created
       ? walletData.date_created
@@ -260,6 +262,12 @@ export default function WalletManagerService() {
 
     Log.log("importing wallet", walletHash);
     return walletHash;
+  }
+
+  function createTemporaryWallet(walletStub: WalletStub) {
+    const walletHash = calculateWalletHash(walletStub);
+
+    return { ...walletStub, walletHash };
   }
 
   async function deleteWallet(walletHash) {
@@ -424,5 +432,9 @@ export default function WalletManagerService() {
       Database.flushDatabase(walletHash),
       Database.flushDatabase("app"),
     ]);
+  }
+
+  async function openWalletDatabase(walletHash) {
+    return Database.openWalletDatabase(walletHash, network);
   }
 }

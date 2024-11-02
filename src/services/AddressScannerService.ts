@@ -6,7 +6,6 @@ import AddressManagerService, {
 } from "@/services/AddressManagerService";
 import UtxoManagerService from "@/services/UtxoManagerService";
 import LogService from "@/services/LogService";
-import DatabaseService from "@/services/DatabaseService";
 import WalletManagerService from "@/services/WalletManagerService";
 
 import { walletBalanceUpdate } from "@/redux/wallet";
@@ -25,7 +24,6 @@ const SCAN_BATCH_SIZE = 3000;
 const Log = LogService("AddressScanner");
 
 export default function AddressScannerService(wallet) {
-  const Database = DatabaseService();
   const Electrum = ElectrumService();
   const WalletManager = WalletManagerService();
   const AddressManager = AddressManagerService(wallet);
@@ -139,7 +137,7 @@ export default function AddressScannerService(wallet) {
     Log.time(`scanAddresses ${change}`);
     Log.debug("scanAddresses", startIndex, endIndex, change, wallet.walletHash);
 
-    const walletDb = await Database.openWalletDatabase(wallet.walletHash);
+    const walletDb = await WalletManager.openWalletDatabase(wallet.walletHash);
 
     const dbAddresses = change
       ? AddressManager.getChangeAddresses()
@@ -363,7 +361,7 @@ export default function AddressScannerService(wallet) {
     callback: (number) => void = () => {},
     batch = false
   ) {
-    const walletDb = await Database.openWalletDatabase(wallet.walletHash);
+    const walletDb = await WalletManager.openWalletDatabase(wallet.walletHash);
 
     const history = await Electrum.requestAddressHistory(address);
     history.forEach((historyTx) => {

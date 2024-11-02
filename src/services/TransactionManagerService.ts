@@ -166,7 +166,7 @@ export default function TransactionManagerService() {
       const live_txids = (
         await Promise.all(
           wallets.map(async ({ walletHash }) => {
-            const walletDb = await Database.openWalletDatabase(walletHash);
+            const walletDb = await WalletManager.openWalletDatabase(walletHash);
             const utxo_txids = walletDb.exec("SELECT txid FROM address_utxos");
             const history_txids = walletDb.exec(
               "SELECT txid FROM address_transactions WHERE amount IS NULL"

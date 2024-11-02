@@ -63,19 +63,11 @@ export default function SettingsWalletWizardImport() {
       try {
         const WalletManager = WalletManagerService();
 
-        const tempWallet = {
+        const tempWallet = WalletManager.createTemporaryWallet({
           mnemonic: trimmedInput,
           passphrase: passphraseInput,
           derivation: DEFAULT_DERIVATION_PATH,
-          prefix: bchNetwork === "mainnet" ? "bitcoincash" : "bchtest",
-          name: walletNameInput,
-          walletHash: "",
-        };
-
-        tempWallet.walletHash = WalletManager.calculateWalletHash(tempWallet);
-
-        const Database = DatabaseService();
-        await Database.openWalletDatabase(tempWallet.walletHash, bchNetwork);
+        });
 
         const foundPath =
           derivationPath === "auto"
@@ -87,12 +79,12 @@ export default function SettingsWalletWizardImport() {
         const walletData = {
           ...tempWallet,
           derivation: foundPath,
+          name: walletNameInput,
         };
 
         const walletHash = WalletManager.calculateWalletHash(walletData);
         walletData.walletHash = walletHash;
 
-        Database.setKeepAlive(walletHash);
         await WalletManagerService().importWallet(walletData);
 
         navigate(`build/${walletHash}`);

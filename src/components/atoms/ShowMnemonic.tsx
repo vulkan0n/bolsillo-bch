@@ -3,7 +3,6 @@ import { useDispatch } from "react-redux";
 import { WarningFilled, EyeInvisibleOutlined } from "@ant-design/icons";
 
 import { walletSetKeyViewed } from "@/redux/wallet";
-import DatabaseService from "@/services/DatabaseService";
 import WalletManagerService from "@/services/WalletManagerService";
 import SecurityService, { AuthActions } from "@/services/SecurityService";
 
@@ -12,6 +11,7 @@ import translations from "@/components/views/settings/SettingsWalletView/transla
 
 export default function ShowMnemonic({ walletHash }: { walletHash: string }) {
   const dispatch = useDispatch();
+  const WalletManager = WalletManagerService();
 
   // toggle visibility for recovery phrase
   const [shouldShowRecoveryPhrase, setShouldShowRecoveryPhrase] =
@@ -20,8 +20,6 @@ export default function ShowMnemonic({ walletHash }: { walletHash: string }) {
 
   // handler for mnemonic visibility area
   const handleShowMnemonic = async () => {
-    const Database = DatabaseService();
-
     if (shouldShowRecoveryPhrase === false) {
       const isAuthorized = await SecurityService().authorize(
         AuthActions.RevealPrivateKeys
@@ -30,8 +28,8 @@ export default function ShowMnemonic({ walletHash }: { walletHash: string }) {
         return;
       }
 
-      await Database.openWalletDatabase(walletHash);
-      const { mnemonic: m } = WalletManagerService().getWallet(walletHash);
+      await WalletManager.openWalletDatabase(walletHash);
+      const { mnemonic: m } = WalletManager.getWallet(walletHash);
 
       setShouldShowRecoveryPhrase(true);
       setMnemonic(m);
@@ -42,7 +40,7 @@ export default function ShowMnemonic({ walletHash }: { walletHash: string }) {
     }
   };
 
-  const wallet = WalletManagerService().getWalletMeta(walletHash);
+  const wallet = WalletManager.getWalletMeta(walletHash);
 
   const isKeyViewed = wallet.key_viewed_at !== null;
   const keyNotViewedClasses = isKeyViewed

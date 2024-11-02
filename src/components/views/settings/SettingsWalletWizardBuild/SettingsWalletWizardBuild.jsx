@@ -26,7 +26,9 @@ export default function SettingsWalletWizardBuild() {
   useEffect(
     function startBuild() {
       const scan = async () => {
-        const wallet = WalletManagerService().getWallet(walletHash);
+        const WalletManager = WalletManagerService();
+        await WalletManager.openWalletDatabase(walletHash);
+        const wallet = WalletManager.getWallet(walletHash);
 
         if (isBuildDone) {
           dispatch(
