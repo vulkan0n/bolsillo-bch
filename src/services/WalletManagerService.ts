@@ -306,7 +306,7 @@ export default function WalletManagerService() {
     const walletDb = Database.getWalletDatabase(walletHash);
 
     walletDb.run(
-      `UPDATE wallet SET key_verified=strftime('%Y-%m-%dT%H:%M:%SZ')`
+      `UPDATE wallet SET key_verified_at=strftime('%Y-%m-%dT%H:%M:%SZ')`
     );
   }
 

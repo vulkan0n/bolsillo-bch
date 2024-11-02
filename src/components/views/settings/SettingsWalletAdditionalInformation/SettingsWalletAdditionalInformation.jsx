@@ -31,7 +31,7 @@ import { selectBchNetwork } from "@/redux/preferences";
 
 import { translate } from "@/util/translations";
 import translations from "./translations";
-import { DEFAULT_DERIVATION_PATH } from "@/util/crypto";
+import { DEFAULT_DERIVATION_PATH } from "@/util/derivation";
 
 export default function SettingsWalletAdditionalInformation() {
   const { walletHash } = useParams();

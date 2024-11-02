@@ -15,7 +15,7 @@ import {
   DEFAULT_DERIVATION_PATH,
   DERIVATION_PATHS,
   ValidDerivationPath,
-} from "@/util/crypto";
+} from "@/util/derivation";
 
 const ADDRESS_GAP_LIMIT = 20; // BIP-44 gap limit is 20
 const DERIVATION_SCAN_LIMIT = 5;

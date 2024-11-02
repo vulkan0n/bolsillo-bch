@@ -6,10 +6,9 @@ import {
 } from "@reduxjs/toolkit";
 
 import { RootState } from "@/redux";
-import { electrum_servers } from "@/util/electrum_servers";
+import { electrum_servers, ValidBchNetwork } from "@/util/electrum_servers";
 import { languageList } from "@/util/translations";
 import { currencyList } from "@/util/currency";
-import { ValidBchNetwork } from "@/util/crypto";
 import { VALID_DENOMINATIONS } from "@/util/sats";
 import CurrencyService from "@/services/CurrencyService";
 import { AuthActions } from "@/services/SecurityService";

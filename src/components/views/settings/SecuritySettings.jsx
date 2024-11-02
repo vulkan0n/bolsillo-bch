@@ -11,7 +11,6 @@ import { setPreference, selectSecuritySettings } from "@/redux/preferences";
 import { selectActiveWallet } from "@/redux/wallet";
 import { selectDeviceInfo } from "@/redux/device";
 import { SettingsContext } from "./SettingsContext";
-import LogService from "@/services/LogService";
 import SecurityService, { AuthActions } from "@/services/SecurityService";
 import Accordion from "@/atoms/Accordion";
 import Button from "@/atoms/Button";
@@ -20,8 +19,6 @@ import { sha256 } from "@/util/hash";
 
 import { translate } from "@/util/translations";
 import translations from "./translations";
-
-const Log = LogService("SecuritySettings");
 
 export default function SecuritySettings() {
   const dispatch = useDispatch();
@@ -32,7 +29,7 @@ export default function SecuritySettings() {
   const { hasBiometric } = useSelector(selectDeviceInfo);
 
   const handleSetPin = async () => {
-    const isAuthorized = await SecurityService().authorize();
+    const isAuthorized = await SecurityService().authorize(AuthActions.Any);
     if (isAuthorized || pinHash === "") {
       const { value: pin } = await Dialog.prompt({
         title: translate(translations.enterNewPin),
@@ -59,8 +56,6 @@ export default function SecuritySettings() {
   };
 
   const handleSetAuthActions = (action) => {
-    Log.debug("handleSetAuthActions", action, authActions);
-
     let newAuthActions;
 
     if (authActions.includes(action)) {
@@ -69,14 +64,13 @@ export default function SecuritySettings() {
       newAuthActions = [...authActions, action];
     }
 
-    Log.debug("handleSetAuthActions dispatch", newAuthActions.join(";"));
     dispatch(
       setPreference({ key: "authActions", value: newAuthActions.join(";") })
     );
   };
 
   const activeWallet = useSelector(selectActiveWallet);
-  const isWalletKeyViewed = activeWallet.key_viewed !== null;
+  const isWalletKeyViewed = activeWallet.key_viewed_at !== null;
 
   return (
     <Accordion icon={LockOutlined} title={translate(translations.security)}>
@@ -94,7 +88,9 @@ export default function SecuritySettings() {
             disabled={!isWalletKeyViewed}
             onChange={async (event) => {
               const { value } = event.target;
-              const isAuthorized = await SecurityService().authorize();
+              const isAuthorized = await SecurityService().authorize(
+                AuthActions.RevealPrivateKeys
+              );
               if (isAuthorized) {
                 handleSettingsUpdate("authMode", value);
               }

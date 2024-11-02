@@ -89,9 +89,11 @@ export default function WalletViewPay() {
         setIsSending(true);
 
         const Security = SecurityService();
-        const isAuthorized = isInstantPay
-          ? await Security.authorize(AuthActions.InstantPay)
-          : await Security.authorize(AuthActions.SendTransaction);
+        const authAction = isInstantPay
+          ? AuthActions.InstantPay
+          : AuthActions.SendTransaction;
+
+        const isAuthorized = await Security.authorize(authAction);
 
         if (!isAuthorized) {
           return;

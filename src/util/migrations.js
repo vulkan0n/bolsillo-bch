@@ -1,6 +1,6 @@
 // migrations.js: handle sqlite database schema updates
 import LogService from "@/services/LogService";
-import { DEFAULT_DERIVATION_PATH } from "@/util/crypto";
+import { DEFAULT_DERIVATION_PATH } from "@/util/derivation";
 
 const Log = LogService("migrations");
 

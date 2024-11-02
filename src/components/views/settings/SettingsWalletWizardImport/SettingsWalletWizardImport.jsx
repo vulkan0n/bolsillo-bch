@@ -9,7 +9,7 @@ import LogService from "@/services/LogService";
 import { translate } from "@/util/translations";
 import translations from "./translations";
 
-import { DEFAULT_DERIVATION_PATH, DERIVATION_PATHS } from "@/util/crypto";
+import { DEFAULT_DERIVATION_PATH, DERIVATION_PATHS } from "@/util/derivation";
 
 const Log = LogService("WizardImport");
 

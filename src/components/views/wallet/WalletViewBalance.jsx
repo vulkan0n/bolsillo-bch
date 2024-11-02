@@ -19,11 +19,11 @@ import CurrencyFlip from "@/atoms/CurrencyFlip";
 export default function WalletViewBalance() {
   const dispatch = useDispatch();
   const wallet = useSelector(selectActiveWallet);
-  const { walletHash, name: activeWalletName, balance, key_viewed } = wallet;
+  const { walletHash, name: activeWalletName, balance, key_viewed_at } = wallet;
   const price = useSelector(selectCurrentPrice);
   const bchNetwork = useSelector(selectBchNetwork);
 
-  const isKeyViewed = key_viewed !== null;
+  const isKeyViewed = key_viewed_at !== null;
 
   const { shouldPreferLocalCurrency, shouldDisplayExchangeRate } = useSelector(
     selectCurrencySettings

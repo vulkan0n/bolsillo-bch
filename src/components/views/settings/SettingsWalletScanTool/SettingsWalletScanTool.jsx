@@ -16,7 +16,7 @@ import AddressScannerService from "@/services/AddressScannerService";
 import HdNodeService from "@/services/HdNodeService";
 import AddressManagerService from "@/services/AddressManagerService";
 
-import { DEFAULT_DERIVATION_PATH, DERIVATION_PATHS } from "@/util/crypto";
+import { DEFAULT_DERIVATION_PATH, DERIVATION_PATHS } from "@/util/derivation";
 
 export default function SettingsWalletScanTool() {
   const { walletHash } = useParams();

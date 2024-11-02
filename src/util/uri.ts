@@ -14,10 +14,10 @@ export function validateBchUri(uri) {
   const { isPaymentProtocol, requestUri } = validatePaymentProtocolUri(uri);
   const wifPayload = validateWifUri(uri);
 
-  const isValid = isBip21 || isPaymentProtocol;
+  const isValid = isBip21 || isPaymentProtocol || wifPayload.isWif;
   const query = new Decimal(amount).greaterThan(0) ? `?amount=${amount}` : "";
 
-  return {
+  const payload = {
     address,
     amount,
     query,
@@ -28,6 +28,8 @@ export function validateBchUri(uri) {
     isPaymentProtocol,
     ...wifPayload,
   };
+
+  return payload;
 }
 
 export function validateWifUri(
