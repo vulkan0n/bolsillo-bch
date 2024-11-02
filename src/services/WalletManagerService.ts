@@ -392,11 +392,13 @@ export default function WalletManagerService() {
     const walletFile = await Filesystem.readFile({
       path: `/selene/wallets/${walletHash}.wallet.json`,
       directory: Directory.Library,
+      encoding: Encoding.UTF8,
     });
+
+    //Log.debug("importWalletFile", walletHash, JSON.stringify(walletFile));
 
     await Database.openWalletDatabase(walletHash, network);
     const walletData = JSON.parse(walletFile.data.toString());
-    //Log.debug("importWalletFile", walletHash);
 
     try {
       await importWallet(walletData);

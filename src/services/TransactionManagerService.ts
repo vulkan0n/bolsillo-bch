@@ -1,4 +1,4 @@
-import { Filesystem, Directory, WriteFileResult } from "@capacitor/filesystem";
+import { Filesystem, Directory } from "@capacitor/filesystem";
 import { Decimal } from "decimal.js";
 import {
   decodeTransaction,
@@ -225,10 +225,7 @@ export default function TransactionManagerService() {
   }
 
   // [private] _writeTxData: write raw transaction hex data to filesystem
-  async function _writeTxData(
-    tx_hash: string,
-    tx_hex: string
-  ): Promise<WriteFileResult> {
+  async function _writeTxData(tx_hash: string, tx_hex: string) {
     // Filesystem plugin writes as raw bytes, but we must pass base64
     const data = btoa(tx_hex);
 

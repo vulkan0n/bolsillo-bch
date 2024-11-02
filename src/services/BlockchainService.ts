@@ -1,6 +1,6 @@
 /* eslint-disable max-classes-per-file */
 import { swapEndianness } from "@bitauth/libauth";
-import { Filesystem, Directory, WriteFileResult } from "@capacitor/filesystem";
+import { Filesystem, Directory } from "@capacitor/filesystem";
 import LogService from "@/services/LogService";
 import DatabaseService from "@/services/DatabaseService";
 import ElectrumService from "@/services/ElectrumService";
@@ -68,10 +68,7 @@ export default function BlockchainService() {
   }
 
   // [private] _writeBlockData: write raw transaction hex data to filesystem
-  async function _writeBlockData(
-    blockhash: string,
-    hex: string
-  ): Promise<WriteFileResult> {
+  async function _writeBlockData(blockhash: string, hex: string) {
     // Filesystem plugin writes as raw bytes, but we must pass base64
     const data = btoa(hex);
 
