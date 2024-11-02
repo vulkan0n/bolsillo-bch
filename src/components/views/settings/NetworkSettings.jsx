@@ -46,9 +46,9 @@ export default function NetworkSettings() {
 
   const electrumHost = Electrum.getElectrumHost();
   const currentServer =
-    electrumHost !== preferences.electrumServer
-      ? electrumHost
-      : preferences.electrumServer;
+    electrumHost === preferences.electrumServer || electrumHost === ""
+      ? preferences.electrumServer
+      : electrumHost;
 
   return (
     <Accordion icon={ApiOutlined} title={translate(translations.network)}>
@@ -59,7 +59,7 @@ export default function NetworkSettings() {
         <div className="flex">
           <select
             className="p-2 bg-white rounded h-10 w-40 flex-1 disabled:bg-zinc-200 disabled:text-zinc-400"
-            value={currentServer || ""}
+            value={currentServer}
             onChange={(event) => {
               handleElectrumServerChoice(event.target.value);
             }}

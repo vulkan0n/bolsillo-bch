@@ -1,5 +1,5 @@
 import { Filesystem, Directory } from "@capacitor/filesystem";
-import DatabaseService, { _dbOpen } from "@/services/DatabaseService";
+import { _dbOpen } from "@/services/DatabaseService";
 import LogService from "@/services/LogService";
 import WalletManagerService from "@/services/WalletManagerService";
 

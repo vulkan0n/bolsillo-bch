@@ -1,14 +1,11 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
 import { ImportOutlined } from "@ant-design/icons";
 import * as bip39 from "bip39";
 import Accordion from "@/components/atoms/Accordion";
-import DatabaseService from "@/services/DatabaseService";
 import WalletManagerService from "@/services/WalletManagerService";
 import AddressScannerService from "@/services/AddressScannerService";
 import LogService from "@/services/LogService";
-import { selectBchNetwork } from "@/redux/preferences";
 import { translate } from "@/util/translations";
 import translations from "./translations";
 
@@ -18,8 +15,6 @@ const Log = LogService("WizardImport");
 
 export default function SettingsWalletWizardImport() {
   const navigate = useNavigate();
-
-  const bchNetwork = useSelector(selectBchNetwork);
 
   const [mnemonicInput, setMnemonicInput] = useState("");
   const [passphraseInput, setPassphraseInput] = useState("");

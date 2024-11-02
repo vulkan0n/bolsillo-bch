@@ -23,7 +23,6 @@ import AddressManagerService, {
 import AddressScannerService from "@/services/AddressScannerService";
 
 import ToastService from "@/services/ToastService";
-import LogService from "@/services/LogService";
 
 export const walletMiddleware = createListenerMiddleware();
 

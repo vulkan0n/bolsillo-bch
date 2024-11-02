@@ -63,7 +63,7 @@ export default function ElectrumService() {
       electrum !== null &&
       electrum.status !== ConnectionStatus.DISCONNECTED
     ) {
-      await electrum.disconnect(true);
+      await electrum.disconnect();
     }
 
     // create a new ElectrumClient every time to enable server switching
