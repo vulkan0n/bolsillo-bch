@@ -64,21 +64,20 @@ export default function JanitorService() {
       directory: Directory.Library,
     });
 
-    const Database = DatabaseService();
-    const appDb = await Database.getAppDatabase();
+    const WalletManager = WalletManagerService();
 
-    const dbWallets = appDb.exec("SELECT walletHash FROM wallets");
+    const metaWallets = WalletManager.listWallets();
 
     Log.debug(
-      `Found ${fileWallets.length} wallet files, ${dbWallets.length} in database`,
-      dbWallets
+      `Found ${fileWallets.length} wallet files, ${metaWallets.length} in database`,
+      metaWallets
     );
 
     // make a list of walletHashes that are on the filesystem, but not in database
     const importWallets = fileWallets
       .map((file) => {
         const walletHash = file.name.split(".")[0];
-        return dbWallets.some((w) => w.walletHash === walletHash)
+        return metaWallets.some((w) => w.walletHash === walletHash)
           ? null
           : walletHash;
       })
@@ -88,13 +87,11 @@ export default function JanitorService() {
       Log.debug("recoverWalletFiles", importWallets);
     }
 
-    await Promise.all(
+    return Promise.all(
       importWallets.map((walletHash) =>
         WalletManagerService().importWalletFile(walletHash)
       )
     );
-
-    return Database.flushDatabase("app");
   }
 
   // fsck: FileSystem Consistency Check

@@ -20,11 +20,13 @@ const appdb_migrations = [
     // WalletMeta
     query.push(
       `CREATE TABLE IF NOT EXISTS wallets ( 
-        walletHash text primary key not null,
+        walletHash text not null,
         name text default "" not null,
         balance int default 0,
         created_at text default ( strftime('%Y-%m-%dT%H:%M:%SZ') ),
-        key_viewed_at text default null
+        key_viewed_at text default null,
+        network text not null CHECK(network IN ("mainnet", "chipnet", "testnet3", "testnet4")) default "mainnet",
+        UNIQUE(walletHash, network)
       );`
     );
 

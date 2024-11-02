@@ -71,9 +71,11 @@ export default function WalletManagerService() {
 
   // listWallets: return a list of all wallets in the database
   function listWallets(): WalletMeta[] {
-    const result = APP_DB.exec("SELECT * FROM wallets");
+    const result = APP_DB.exec(
+      `SELECT * FROM wallets WHERE network="${network}"`
+    );
 
-    Log.debug("listWallets", result);
+    //Log.debug("listWallets", result);
     return result;
   }
 
@@ -85,7 +87,6 @@ export default function WalletManagerService() {
 
     const walletDb = Database.getWalletDatabase(walletHash);
     const result = walletDb.exec("SELECT * FROM wallet");
-    //Log.debug("getWallet got result", result);
 
     if (result.length === 0) {
       throw new WalletNotExistsError(walletHash);
@@ -109,7 +110,7 @@ export default function WalletManagerService() {
     }
 
     const result = APP_DB.exec(
-      `SELECT * FROM wallets WHERE walletHash="${walletHash}"`
+      `SELECT * FROM wallets WHERE walletHash="${walletHash}" AND network="${network}"`
     );
 
     if (result.length === 0) {
@@ -197,9 +198,10 @@ export default function WalletManagerService() {
     APP_DB.run(
       `INSERT INTO wallets (
           walletHash,
-          name
-        ) VALUES (?, ?)`,
-      [walletHash, name]
+          name,
+          network
+        ) VALUES (?, ?, ?)`,
+      [walletHash, name, network]
     );
 
     Log.log("creating wallet", result);
@@ -248,13 +250,14 @@ export default function WalletManagerService() {
         `INSERT INTO wallets (
           walletHash,
           name,
+          network,
           created_at,
           key_viewed_at
         ) VALUES (
-          ?, ?, ?,
+          ?, ?, ?, ?,
           strftime('%Y-%m-%dT%H:%M:%SZ')
         )`,
-        [walletHash, name, created_at]
+        [walletHash, name, network, created_at]
       );
     } catch (e) {
       Log.warn("wallet already exists in appDb", walletHash, e);
@@ -284,12 +287,14 @@ export default function WalletManagerService() {
   function updateKeyViewed(walletHash) {
     const walletDb = Database.getWalletDatabase(walletHash);
 
-    APP_DB.run(
-      `UPDATE wallets SET key_viewed_at=strftime('%Y-%m-%dT%H:%M:%SZ')`
-    );
     const result = walletDb.exec(
       `UPDATE wallet SET key_viewed_at=strftime('%Y-%m-%dT%H:%M:%SZ') RETURNING key_viewed_at`
     )[0];
+
+    APP_DB.run(
+      `UPDATE wallets SET key_viewed_at=? WHERE walletHash="${walletHash}" AND network=${network}"`,
+      [result]
+    );
 
     Log.debug("keyViewed", result);
 
@@ -422,7 +427,7 @@ export default function WalletManagerService() {
         balance=?,
         created_at=?,
         key_viewed_at=?
-      WHERE walletHash="${walletHash}";`,
+      WHERE walletHash="${walletHash}" AND network="${network}";`,
       [name, balance, created_at, key_viewed_at]
     );
 

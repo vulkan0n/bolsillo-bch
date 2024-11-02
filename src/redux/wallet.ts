@@ -11,7 +11,7 @@ import { RootState } from "@/redux";
 import { setPreference, selectElectrumServer } from "@/redux/preferences";
 import { syncConnect } from "@/redux/sync";
 
-import { ValidBchNetwork } from "@/util/crypto";
+import { ValidBchNetwork } from "@/util/electrum_servers";
 
 import WalletManagerService, {
   WalletEntity,
@@ -26,8 +26,6 @@ import ToastService from "@/services/ToastService";
 import LogService from "@/services/LogService";
 
 export const walletMiddleware = createListenerMiddleware();
-
-const Log = LogService("redux/wallet");
 
 const initialState = {
   walletHash: "",
@@ -57,11 +55,11 @@ export const walletBoot = createAsyncThunk(
 
     thunkApi.dispatch(walletReloadAddresses({ wallet }));
 
-    const isChipnet = network === "chipnet";
+    const isMainnet = network === "mainnet";
 
-    const server = isChipnet
-      ? ElectrumService().selectFallbackServer(null, true)
-      : selectElectrumServer(thunkApi.getState());
+    const server = isMainnet
+      ? selectElectrumServer(thunkApi.getState())
+      : ElectrumService().selectFallbackServer("");
 
     // connect to Electrum
     thunkApi.dispatch(
@@ -70,8 +68,6 @@ export const walletBoot = createAsyncThunk(
         server,
       })
     );
-
-    Log.debug("wallet/boot", wallet);
 
     return wallet;
   }

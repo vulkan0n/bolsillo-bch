@@ -51,8 +51,13 @@ export default function ElectrumService() {
   // connect: connect to an Electrum server
   // Creates a new ElectrumClient every time
   // Destroys existing ElectrumClient if out of sync with Redux state
-  async function connect(server: string = electrum_servers.mainnet[0]) {
-    Log.log("Connecting to", server);
+  async function connect(server: string) {
+    const bchNetwork = selectBchNetwork(store.getState());
+    const server_list = electrum_servers[bchNetwork];
+
+    const connectServer = server || server_list[0];
+
+    Log.log("Connecting to", connectServer, bchNetwork);
 
     if (
       electrum !== null &&
@@ -62,12 +67,12 @@ export default function ElectrumService() {
     }
 
     // create a new ElectrumClient every time to enable server switching
-    electrum = new ElectrumClient("Selene.cash", "1.4", server);
+    electrum = new ElectrumClient("Selene.cash", "1.4", connectServer);
 
     // need to establish listeners every time we recreate the ElectrumClient
     electrum.addListener("connected", () => {
-      Log.log("ELECTRUM CONNECTED", server);
-      store.dispatch(syncConnectionUp(server));
+      Log.log("ELECTRUM CONNECTED", connectServer);
+      store.dispatch(syncConnectionUp(connectServer));
     });
 
     electrum.addListener("disconnected", () => {
@@ -247,7 +252,7 @@ export default function ElectrumService() {
     return relayFee;
   }
 
-  function selectFallbackServer(prevServer) {
+  function selectFallbackServer(prevServer: string): string {
     const bchNetwork = selectBchNetwork(store.getState());
     const server_list = electrum_servers[bchNetwork];
 
