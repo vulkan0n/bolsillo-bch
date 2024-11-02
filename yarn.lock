@@ -413,11 +413,6 @@
     tslib "2.6.2"
     yargs "17.7.2"
 
-"@capacitor/background-runner@^2.0.0":
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/@capacitor/background-runner/-/background-runner-2.0.0.tgz#3ffaf5de605c0f501202b47f583d65469f72f0dd"
-  integrity sha512-YgkjROcD9pHzfIgVli+dhp1Hpm3EJKUx0PZIBCFnL4MHayUbwxNDTzL5+vMkwNwhBbde1O6PDCn2wICddcNxWQ==
-
 "@capacitor/camera@^6.0.0":
   version "6.0.0"
   resolved "https://registry.yarnpkg.com/@capacitor/camera/-/camera-6.0.0.tgz#c4f82d499d836fc9b9de935adac8de36bce52cc4"
