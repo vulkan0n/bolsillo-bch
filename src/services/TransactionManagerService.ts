@@ -157,44 +157,43 @@ export default function TransactionManagerService() {
   }
 
   async function purgeTransactions(): Promise<void> {
-    Log.debug("purgeTransactions scheduled");
+    const db_keepalive = Database.getKeepAlive();
+    const WalletManager = WalletManagerService();
+    const wallets = WalletManager.listWallets();
 
-    queueMicrotask(async () => {
-      const db_keepalive = Database.getKeepAlive();
-      const WalletManager = WalletManagerService();
-      const wallets = WalletManager.listWallets();
-      const live_txids = (
-        await Promise.all(
-          wallets.map(async ({ walletHash }) => {
-            const walletDb = await WalletManager.openWalletDatabase(walletHash);
-            const utxo_txids = walletDb.exec("SELECT txid FROM address_utxos");
-            const history_txids = walletDb.exec(
-              "SELECT txid FROM address_transactions WHERE amount IS NULL"
-            );
+    const live_txids = (
+      await Promise.all(
+        wallets.map(async ({ walletHash }) => {
+          const walletDb = await WalletManager.openWalletDatabase(walletHash);
+          const utxo_txids = walletDb.exec("SELECT txid FROM address_utxos");
+          const history_txids = walletDb.exec(
+            "SELECT txid FROM address_transactions WHERE amount IS NULL"
+          );
 
-            const cat_txids = [
-              ...utxo_txids.map(({ txid }) => `"${txid}"`),
-              ...history_txids.map(({ txid }) => `"${txid}"`),
-            ].join(",");
+          const cat_txids = [
+            ...utxo_txids.map(({ txid }) => `"${txid}"`),
+            ...history_txids.map(({ txid }) => `"${txid}"`),
+          ].join(",");
 
-            if (db_keepalive !== walletHash) {
-              await Database.closeWalletDatabase(walletHash, true);
-            }
+          if (db_keepalive !== walletHash) {
+            await Database.closeWalletDatabase(walletHash, true);
+          }
 
-            return cat_txids;
-          })
-        )
+          return cat_txids;
+        })
       )
-        .filter((txid) => txid !== "")
-        .join(",");
+    )
+      .filter((txid) => txid !== "")
+      .join(",");
 
-      const tx_hashes = appDb.exec(
-        `SELECT txid FROM transactions WHERE txid NOT IN (${live_txids})`
-      );
-      Log.debug("purgeTransactions", tx_hashes);
-      await Promise.all(tx_hashes.map(({ txid }) => deleteTransaction(txid)));
-      Log.debug("purgeTransactions done");
-    });
+    const tx_hashes = appDb.exec(
+      `SELECT txid FROM transactions WHERE txid NOT IN (${live_txids})`
+    );
+
+    Log.time("purgeTransactions");
+    Log.debug("purgeTransactions", tx_hashes);
+    await Promise.all(tx_hashes.map(({ txid }) => deleteTransaction(txid)));
+    Log.timeEnd("purgeTransactions");
   }
 
   // --------------------------------

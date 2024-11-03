@@ -237,13 +237,12 @@ export default function BlockchainService() {
   }
 
   async function purgeBlocks(): Promise<void> {
-    const chaintip = await getChaintip();
-
+    Log.time("purgeBlocks");
     const blockhashes = appDb.exec(
       `
         SELECT blockhash FROM blockchain WHERE
           blockhash NOT IN (SELECT blockhash FROM transactions)
-          AND height < ${chaintip.height};
+          AND height < (SELECT height from blockchain ORDER BY height DESC LIMIT 1)
         `
     );
 
@@ -251,5 +250,6 @@ export default function BlockchainService() {
       blockhashes.map(({ blockhash }) => deleteBlock(blockhash))
     );
     Log.debug("purgeBlocks", blockhashes);
+    Log.timeEnd("purgeBlocks");
   }
 }

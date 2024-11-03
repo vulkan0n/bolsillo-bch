@@ -29,6 +29,7 @@ import { selectLocale } from "@/redux/device";
 
 import ViewHeader from "@/layout/ViewHeader";
 
+import DatabaseService from "@/services/DatabaseService";
 import WalletManagerService from "@/services/WalletManagerService";
 import SecurityService, { AuthActions } from "@/services/SecurityService";
 
@@ -85,8 +86,9 @@ export default function SettingsWalletView() {
       }
 
       WalletManager.deleteWallet(wallet.walletHash);
-      dispatch(walletBoot({ walletHash: "", network: bchNetwork }));
-      navigate("/");
+      dispatch(walletBoot({ walletHash: "", network: bchNetwork })).then(() =>
+        navigate("/")
+      );
     } else {
       // if user hesitates, reset the counter
       clearTimeout(deleteRef.current);
@@ -109,10 +111,11 @@ export default function SettingsWalletView() {
       return;
     }
 
+    await DatabaseService().flushHandles();
+
     dispatch(
       walletBoot({ walletHash: wallet.walletHash, network: bchNetwork })
-    );
-    navigate("/");
+    ).then(() => navigate("/"));
   };
 
   // handler for wallet name edit button

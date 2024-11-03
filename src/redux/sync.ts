@@ -15,6 +15,7 @@ import {
 } from "@/redux/wallet";
 import { txHistoryFetch } from "@/redux/txHistory";
 import { selectNetworkStatus } from "@/redux/device";
+import { fetchExchangeRates } from "@/redux/exchangeRates";
 
 import LogService from "@/services/LogService";
 import ElectrumService from "@/services/ElectrumService";
@@ -24,7 +25,6 @@ import AddressManagerService, {
   AddressEntity,
 } from "@/services/AddressManagerService";
 import AddressScannerService from "@/services/AddressScannerService";
-import TransactionManagerService from "@/services/TransactionManagerService";
 import UtxoManagerService from "@/services/UtxoManagerService";
 
 import { block_checkpoints } from "@/util/block_checkpoints";
@@ -43,7 +43,7 @@ export const syncConnect = createAsyncThunk(
   async (payload: { attempts: number; server: string }, thunkApi) => {
     Log.log("sync/connect", payload);
     try {
-      await Electrum.connect(payload.server);
+      Electrum.connect(payload.server);
     } catch (e) {
       Log.error(e);
       // if connection fails, destroy the client and try again
@@ -92,19 +92,17 @@ export const syncConnectionUp = createAsyncThunk(
     // set up subscriptions on connect
     Electrum.subscribeToChaintip();
     thunkApi.dispatch(syncWalletAddresses());
+    thunkApi.dispatch(fetchExchangeRates(0));
 
     return server;
   }
 );
 
 // syncConnectionDown: fired if electrum connection goes down
-export const syncConnectionDown = createAsyncThunk(
-  "sync/down",
-  (payload, thunkApi) => {
-    // attempt reconnect when connection goes down
-    thunkApi.dispatch(syncReconnect());
-  }
-);
+export const syncConnectionDown = createAsyncThunk("sync/down", async () => {
+  // attempt reconnect when connection goes down
+  //thunkApi.dispatch(syncReconnect());
+});
 
 // syncWalletAddresses: generate wallet addresses and set up subscriptions
 export const syncWalletAddresses = createAsyncThunk(
@@ -329,11 +327,6 @@ export const syncChaintip = createAsyncThunk(
     const block = await Blockchain.resolveBlockByHeight(chaintip.height);
 
     Log.log("sync/chaintip", block);
-
-    queueMicrotask(async () => {
-      await TransactionManagerService().purgeTransactions();
-      await BlockchainService().purgeBlocks();
-    });
 
     return block;
   }

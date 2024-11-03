@@ -2,6 +2,8 @@ import { Filesystem, Directory } from "@capacitor/filesystem";
 import { _dbOpen } from "@/services/DatabaseService";
 import LogService from "@/services/LogService";
 import WalletManagerService from "@/services/WalletManagerService";
+import TransactionManagerService from "@/services/TransactionManagerService";
+import BlockchainService from "@/services/BlockchainService";
 
 const Log = LogService("Janitor");
 
@@ -10,6 +12,7 @@ export default function JanitorService() {
     migrateLegacyDatabases,
     recoverWalletFiles,
     fsck,
+    purgeStaleData,
   };
 
   async function migrateLegacyDatabases() {
@@ -155,5 +158,10 @@ export default function JanitorService() {
         directory: Directory.Library,
       });
     }
+  }
+
+  async function purgeStaleData() {
+    await TransactionManagerService().purgeTransactions();
+    await BlockchainService().purgeBlocks();
   }
 }

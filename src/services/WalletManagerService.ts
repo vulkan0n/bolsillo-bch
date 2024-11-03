@@ -157,7 +157,6 @@ export default function WalletManagerService() {
     Log.debug("walletBoot", walletHash, wallet, wallet.network);
 
     Database.setKeepAlive(walletHash);
-    Database.flushHandles();
 
     return wallet;
   }
@@ -435,10 +434,7 @@ export default function WalletManagerService() {
 
     await exportWalletFile(wallet);
 
-    return Promise.all([
-      Database.flushDatabase(walletHash),
-      Database.flushDatabase("app"),
-    ]);
+    Database.flushHandles();
   }
 
   async function openWalletDatabase(walletHash) {

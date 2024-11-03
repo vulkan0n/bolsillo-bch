@@ -16,7 +16,6 @@ async function initialize_app() {
 
   Log.debug("render <Main>");
   ReactDOM.createRoot(document.getElementById("root")).render(<Main />);
-  await SplashScreen.hide();
 }
 
 // actions to perform before initializing app state or rendering UI
@@ -31,7 +30,13 @@ async function pre_init() {
 // actions to perform after UI is rendered
 async function post_init() {
   Log.log("* POST_INIT *");
+  await SplashScreen.hide();
   redux_post_init();
+
+  queueMicrotask(() => {
+    const Janitor = JanitorService();
+    Janitor.purgeStaleData();
+  });
 }
 
 // :)
