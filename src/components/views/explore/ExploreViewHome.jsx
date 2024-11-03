@@ -10,12 +10,13 @@ import { useSelector } from "react-redux";
 import { selectIsExperimental, selectIsPrerelease } from "@/redux/preferences";
 import ExploreApp from "./ExploreApp";
 import ExploreStatWidget from "./ExploreStatWidget";
+import ExploreLegacyView from "./ExploreLegacyView";
 
 export default function ExploreViewHome() {
   const isExperimental = useSelector(selectIsExperimental);
   const isPrerelease = useSelector(selectIsPrerelease);
 
-  return (
+  return isPrerelease ? (
     <div className="p-1.5">
       <ExploreStatWidget />
       {isPrerelease && (
@@ -46,5 +47,7 @@ export default function ExploreViewHome() {
         />
       )}
     </div>
+  ) : (
+    <ExploreLegacyView />
   );
 }

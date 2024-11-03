@@ -48,6 +48,6 @@ const SUBSECTIONS = [
   },
 ];
 
-export default function ExploreStatsView() {
+export default function AppStatsView() {
   return <AppSubSectionWrapper subsections={SUBSECTIONS} />;
 }

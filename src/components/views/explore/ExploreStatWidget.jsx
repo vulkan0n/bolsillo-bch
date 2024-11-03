@@ -80,15 +80,15 @@ export default function ExploreStatWidget() {
         </div>
       </Link>
 
-      <Link to="/apps/price">
-        <div className="p-1 mx-1">
-          <div className="font-bold text-zinc-300">BCH/{price.currency}</div>
-          <div className="text-primary text-lg font-semibold">
-            {price.priceString}
-          </div>
-          <div className="text-xs text-zinc-400">&nbsp;</div>
+      {/*<Link to="/apps/price">*/}
+      <div className="p-1 mx-1">
+        <div className="font-bold text-zinc-300">BCH/{price.currency}</div>
+        <div className="text-primary text-lg font-semibold">
+          {price.priceString}
         </div>
-      </Link>
+        <div className="text-xs text-zinc-400">&nbsp;</div>
+      </div>
+      {/*</Link>*/}
     </div>
   );
 }
