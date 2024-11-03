@@ -1,3 +1,4 @@
+/* eslint-disable no-await-in-loop */
 import { useContext } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Dialog } from "@capacitor/dialog";
@@ -31,11 +32,16 @@ export default function SecuritySettings() {
   const handleSetPin = async () => {
     const isAuthorized = await SecurityService().authorize(AuthActions.Any);
     if (isAuthorized || pinHash === "") {
-      const { value: pin } = await Dialog.prompt({
-        title: translate(translations.enterNewPin),
-        message: translate(translations.enterNewPinMessage),
-        okButtonTitle: translate(translations.enterNewPinOkButtonTitle),
-      });
+      let pin = "";
+      while (!pin) {
+        pin = (
+          await Dialog.prompt({
+            title: translate(translations.enterNewPin),
+            message: translate(translations.enterNewPinMessage),
+            okButtonTitle: translate(translations.enterNewPinOkButtonTitle),
+          })
+        ).value;
+      }
       const newPinHash = sha256.text(pin);
 
       const { value: confirmPin } = await Dialog.prompt({
@@ -88,9 +94,16 @@ export default function SecuritySettings() {
             disabled={!isWalletKeyViewed}
             onChange={async (event) => {
               const { value } = event.target;
-              const isAuthorized = await SecurityService().authorize(
-                AuthActions.RevealPrivateKeys
-              );
+
+              let isAuthorized = false;
+              const Security = SecurityService();
+              // force biometric prompt if switching to bio
+              if (hasBiometric && value === "bio") {
+                isAuthorized = await Security.authorizeBio(AuthActions.Any);
+              } else {
+                isAuthorized = await Security.authorize(AuthActions.Any);
+              }
+
               if (isAuthorized) {
                 handleSettingsUpdate("authMode", value);
               }
@@ -120,7 +133,7 @@ export default function SecuritySettings() {
           </div>
         </Accordion.Child>
       )}
-      {authMode !== "none" && pinHash !== "" && (
+      {authMode !== "none" && (pinHash !== "" || authMode === "bio") && (
         <>
           <div className="text-lg font-semibold bg-zinc-600 text-white p-1">
             Require authorization for:
@@ -161,8 +174,8 @@ export default function SecuritySettings() {
           >
             <input
               type="checkbox"
-              checked={authActions.includes(AuthActions.SendTransaction)}
-              onChange={() => handleSetAuthActions(AuthActions.SendTransaction)}
+              checked={authActions.includes(AuthActions.InstantPay)}
+              onChange={() => handleSetAuthActions(AuthActions.InstantPay)}
             />
           </Accordion.Child>
           <Accordion.Child
@@ -171,7 +184,7 @@ export default function SecuritySettings() {
           >
             <input
               type="checkbox"
-              checked={authActions.includes(AuthActions.SendTransaction)}
+              checked={authActions.includes(AuthActions.RevealPrivateKeys)}
               disabled={authActions.includes(AuthActions.RevealPrivateKeys)}
               onChange={() =>
                 handleSetAuthActions(AuthActions.RevealPrivateKeys)

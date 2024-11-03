@@ -32,6 +32,7 @@ const authText = {
 export default function SecurityService() {
   return {
     authorize,
+    authorizeBio,
   };
 
   // authorize user according to user preference
@@ -86,8 +87,8 @@ export default function SecurityService() {
         const isSuccess = await NativeBiometric.verifyIdentity({
           reason: "Authorize this action",
           title: "Selene Wallet",
-          subtitle: authText[action],
-          description: "Please authorize this action.",
+          subtitle: "Please authorize this action.",
+          description: authText[action],
           useFallback: !isAvailable && isFallbackAvailable,
         })
           .then(() => true)
@@ -115,7 +116,7 @@ export default function SecurityService() {
     const { value: pin } = await Dialog.prompt({
       title: authText[action] || "Enter PIN",
       message: "Please enter your PIN.",
-      okButtonTitle: "Authorize",
+      okButtonTitle: `Authorize ${authText[action]}`,
     });
 
     const inputPinHash = sha256.text(pin);

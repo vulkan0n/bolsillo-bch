@@ -38,7 +38,7 @@ const defaultPreferences = {
   displaySyncCounter: "false",
   // --------
   // TODO: should these go in db instead?
-  electrumServer: electrum_servers[0],
+  electrumServer: electrum_servers.mainnet[0],
   lastCheckIn: "",
   lastExchangeRate: "1",
   // --------

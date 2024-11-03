@@ -1,5 +1,6 @@
 import { Outlet } from "react-router-dom";
 import { useSelector } from "react-redux";
+import { SyncOutlined } from "@ant-design/icons";
 import { selectActiveWallet } from "@/redux/wallet";
 import { selectScannerIsScanning } from "@/redux/device";
 import WalletViewBalance from "./WalletViewBalance";
@@ -10,7 +11,11 @@ export default function WalletView() {
   const wallet = useSelector(selectActiveWallet);
   const isScanning = useSelector(selectScannerIsScanning);
 
-  return wallet.walletHash === "" ? null : (
+  return wallet.walletHash === "" ? (
+    <div className="p-2 flex items-center justify-center fixed top-1/3 w-full text-center">
+      <SyncOutlined className="text-4xl" />
+    </div>
+  ) : (
     <>
       {!isScanning && (
         <div className="flex bg-zinc-900 justify-between">
