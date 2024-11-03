@@ -62,14 +62,14 @@ export default function SecuritySettings() {
   };
 
   const handleSetAuthActions = async (action) => {
-    const isAuthorized = await SecurityService().authorize(AuthActions.Any);
-    if (!isAuthorized) {
-      return;
-    }
-
     let newAuthActions;
 
     if (authActions.includes(action)) {
+      // require auth to disable any auth setting
+      const isAuthorized = await SecurityService().authorize(AuthActions.Any);
+      if (!isAuthorized) {
+        return;
+      }
       newAuthActions = authActions.filter((a) => a !== action);
     } else {
       newAuthActions = [...authActions, action];

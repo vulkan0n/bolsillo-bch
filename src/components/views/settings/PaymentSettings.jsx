@@ -67,8 +67,8 @@ export default function PaymentSettings() {
             const Security = SecurityService();
             const isAuthorized =
               isInstantPayEnabled === true ||
-              (await Security.authorize(AuthActions.SendTransaction)) ||
-              (await Security.authorize(AuthActions.InstantPay));
+              (await Security.authorize(AuthActions.InstantPay)) ||
+              (await Security.authorize(AuthActions.SendTransaction));
 
             if (isAuthorized) {
               handleSettingsUpdate("allowInstantPay", isChecked);
