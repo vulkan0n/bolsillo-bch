@@ -51,6 +51,7 @@ export default function WalletViewPay() {
   const [paymentData, setPaymentData] = useState<PaymentRequestResponse | null>(
     null
   );
+  const [isInstantPayCanceled, setIsInstantPayCanceled] = useState(false);
 
   // Calculate the total satoshi amount required.
   const totalSats = useMemo(() => {
@@ -96,6 +97,9 @@ export default function WalletViewPay() {
         const isAuthorized = await Security.authorize(authAction);
 
         if (!isAuthorized) {
+          if (isInstantPay) {
+            setIsInstantPayCanceled(true);
+          }
           return;
         }
 
@@ -184,6 +188,11 @@ export default function WalletViewPay() {
         return;
       }
 
+      if (isInstantPayCanceled) {
+        navigate(-1);
+        return;
+      }
+
       // If we are already sending, return to prevent further execution.
       if (isSending) {
         return;
@@ -206,12 +215,14 @@ export default function WalletViewPay() {
     },
     [
       isInstantPayEnabled,
+      isInstantPayCanceled,
       isSending,
       sync.isConnected,
       paymentData,
       totalSats,
       instantPayThreshold,
       confirmSend,
+      navigate,
     ]
   );
 

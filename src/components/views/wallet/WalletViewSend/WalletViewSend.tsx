@@ -81,6 +81,8 @@ export default function WalletViewSend() {
     selectInstantPaySettings
   );
 
+  const [isInstantPayCanceled, setIsInstantPayCanceled] = useState(false);
+
   const handleAmountInput = (satInput) => {
     setSatoshiInput(satInput);
     setSatoshiInputKey("satoshiInputKey");
@@ -109,6 +111,10 @@ export default function WalletViewSend() {
     const isAuthorized = await SecurityService().authorize(authAction);
     if (!isAuthorized) {
       setIsSending(false);
+
+      if (isInstantPay) {
+        setIsInstantPayCanceled(true);
+      }
       return;
     }
 
@@ -185,6 +191,10 @@ export default function WalletViewSend() {
 
   useEffect(function handleInstantPay() {
     if (!isInstantPayEnabled) {
+      return;
+    }
+    if (isInstantPayCanceled) {
+      navigate(-1);
       return;
     }
 

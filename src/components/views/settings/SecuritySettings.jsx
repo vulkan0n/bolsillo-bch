@@ -61,7 +61,12 @@ export default function SecuritySettings() {
     }
   };
 
-  const handleSetAuthActions = (action) => {
+  const handleSetAuthActions = async (action) => {
+    const isAuthorized = await SecurityService().authorize(AuthActions.Any);
+    if (!isAuthorized) {
+      return;
+    }
+
     let newAuthActions;
 
     if (authActions.includes(action)) {
