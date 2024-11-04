@@ -80,6 +80,18 @@ export default function ElectrumService() {
       store.dispatch(syncConnectionDown());
     });
 
+    electrum.addListener("connecting", () => {
+      Log.debug("connecting...");
+    });
+
+    electrum.addListener("reconnecting", () => {
+      Log.debug("reconnecting...");
+    });
+
+    electrum.addListener("disconnecting", () => {
+      Log.debug("disconnecting...");
+    });
+
     electrum.addListener("notification", handleElectrumNotifications);
     electrum.addListener("error", handleElectrumError);
 

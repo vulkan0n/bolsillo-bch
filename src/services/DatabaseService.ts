@@ -55,6 +55,25 @@ export async function _dbOpen(filename, skipCreate = false) {
   return db;
 }
 
+// getAppDatabase: try to open the app db file
+async function getAppDatabase() {
+  let appDb;
+  if (db_handles.has("app")) {
+    appDb = db_handles.get("app");
+  } else {
+    Log.time("getAppDatabase");
+    appDb = await _dbOpen(APP_DB_FILENAME);
+    run_appdb_migrations(appDb);
+    Log.log("Loaded app database");
+    db_handles.set("app", appDb);
+    Log.timeEnd("getAppDatabase");
+  }
+
+  return appDb;
+}
+
+await getAppDatabase();
+
 // DatabaseService: brokers interactions with raw SQLite database
 export default function DatabaseService() {
   return {
@@ -68,24 +87,6 @@ export default function DatabaseService() {
     setKeepAlive,
     getKeepAlive,
   };
-
-  // getAppDatabase: try to open the app db file
-  async function getAppDatabase() {
-    Log.time("getAppDatabase");
-
-    let appDb;
-    if (db_handles.has("app")) {
-      appDb = db_handles.get("app");
-    } else {
-      appDb = await _dbOpen(APP_DB_FILENAME);
-      run_appdb_migrations(appDb);
-      Log.log("Loaded app database");
-      db_handles.set("app", appDb);
-    }
-
-    Log.timeEnd("getAppDatabase");
-    return appDb;
-  }
 
   // synchronous getWalletDatabase (requires db handle to be open already)
   function getWalletDatabase(walletHash) {

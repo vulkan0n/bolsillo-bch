@@ -186,13 +186,26 @@ export default function TransactionManagerService() {
       .filter((txid) => txid !== "")
       .join(",");
 
-    const tx_hashes = appDb.exec(
-      `SELECT txid FROM transactions WHERE txid NOT IN (${live_txids})`
-    );
+    const purgeHashes = appDb
+      .exec(`SELECT txid FROM transactions WHERE txid NOT IN (${live_txids})`)
+      .map(({ txid }) => txid);
+
+    const fileTxHashes = (
+      await Filesystem.readdir({
+        path: "/selene/tx",
+        directory: Directory.Library,
+      })
+    ).files
+      .map((file) => file.name.split(".")[0])
+      .filter(
+        (txid) => !live_txids.includes(txid) && !purgeHashes.includes(txid)
+      );
+
+    const tx_hashes = [...purgeHashes, ...fileTxHashes];
 
     Log.time("purgeTransactions");
+    await Promise.all(tx_hashes.map((txid) => deleteTransaction(txid)));
     Log.debug("purgeTransactions", tx_hashes);
-    await Promise.all(tx_hashes.map(({ txid }) => deleteTransaction(txid)));
     Log.timeEnd("purgeTransactions");
   }
 

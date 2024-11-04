@@ -24,38 +24,73 @@ export default function JanitorService() {
       });
     } catch {
       // empty
-    } finally {
-      const extractLegacyWallets = async (legacy_db) => {
-        const legacy_wallets = legacy_db.exec("SELECT * FROM wallets");
-        const WalletManager = WalletManagerService();
-        return Promise.all(
-          legacy_wallets.map((wallet) => {
-            return WalletManager.exportWalletFile({
-              ...wallet,
-              created_at: wallet.date_created, // rename date_created field
-            });
-          })
-        );
-      };
+    }
 
-      const attemptMigration = async (filename) => {
-        try {
-          // check if legacy db file exists (throws if not exists)
-          const legacy_db = await _dbOpen(filename, true);
-          await extractLegacyWallets(legacy_db);
-
-          const deleteResult = await Filesystem.deleteFile({
-            path: filename,
+    // check for pre-2024.05 .db.bak files
+    const getLegacyBackupFiles = async () => {
+      try {
+        const backupFiles = (
+          await Filesystem.readdir({
+            path: "/selene",
             directory: Directory.Library,
-          });
-          Log.log("Migrated legacy database file", filename, deleteResult);
-        } catch (e) {
-          // empty
-        }
-      };
+          })
+        ).files.filter((file) => file.type === "file");
 
-      await attemptMigration("selene/selene.db");
-      await attemptMigration("db/selene.db");
+        return backupFiles.map((file) => `/selene/${file.name}`);
+      } catch (e) {
+        Log.error(e);
+        return [];
+      }
+    };
+
+    // copy wallets from database to filesystem
+    const extractLegacyWallets = async (legacy_db) => {
+      const legacy_wallets = legacy_db.exec("SELECT * FROM wallets");
+      const WalletManager = WalletManagerService();
+      return Promise.all(
+        legacy_wallets.map((wallet) => {
+          return WalletManager.exportWalletFile({
+            ...wallet,
+            created_at: wallet.date_created, // rename date_created field
+          });
+        })
+      );
+    };
+
+    // attempt to open a .db file and extract wallet data, then delete the .db file
+    const attemptMigration = async (filename) => {
+      try {
+        // check if legacy db file exists (throws if not exists)
+        const legacy_db = await _dbOpen(filename, true);
+        await extractLegacyWallets(legacy_db);
+
+        const deleteResult = await Filesystem.deleteFile({
+          path: filename,
+          directory: Directory.Library,
+        });
+        Log.log("Migrated legacy database file", filename, deleteResult);
+      } catch (e) {
+        // empty
+      }
+    };
+
+    // check for pre-2024.10, 2024.05 databases
+    const backupFiles = await getLegacyBackupFiles();
+    const attemptFiles = ["selene/selene.db", "db/selene.db", ...backupFiles];
+
+    await Promise.allSettled(
+      attemptFiles.map((file) => attemptMigration(file))
+    );
+
+    // stale dir
+    try {
+      await Filesystem.rmdir({
+        path: "/db",
+        directory: Directory.Library,
+        recursive: true,
+      });
+    } catch (e) {
+      // empty
     }
   }
 
@@ -160,7 +195,20 @@ export default function JanitorService() {
     }
   }
 
+  async function purgeLegacyTransactionFiles() {
+    try {
+      await Filesystem.rmdir({
+        path: "/tx",
+        directory: Directory.Library,
+        recursive: true,
+      });
+    } catch (e) {
+      // empty
+    }
+  }
+
   async function purgeStaleData() {
+    await purgeLegacyTransactionFiles();
     await TransactionManagerService().purgeTransactions();
     await BlockchainService().purgeBlocks();
   }

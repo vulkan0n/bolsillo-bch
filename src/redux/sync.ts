@@ -237,14 +237,14 @@ export const syncAddressHistory = createAsyncThunk(
     }
   }
 );
+
+// save wallet when sync is complete
 syncMiddleware.startListening({
   actionCreator: syncAddressHistory.fulfilled,
   effect: async (action, listenerApi) => {
-    if (selectSyncState(listenerApi.getState()).syncCount <= 1) {
-      listenerApi.dispatch(syncPopulateAddresses());
-    }
-
     if (selectSyncState(listenerApi.getState()).syncPending.history === 0) {
+      listenerApi.dispatch(syncPopulateAddresses());
+
       const wallet = selectActiveWallet(listenerApi.getState());
       await WalletManagerService().saveWallet(wallet.walletHash);
     }

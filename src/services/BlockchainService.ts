@@ -224,13 +224,18 @@ export default function BlockchainService() {
   }
 
   async function deleteBlock(blockhash: string): Promise<void> {
+    await deleteBlockFile(blockhash);
+    appDb.run(`DELETE FROM blockchain WHERE blockhash="${blockhash}";`);
+    //Log.debug("deleteBlock", blockhash);
+  }
+
+  async function deleteBlockFile(blockhash: string) {
     try {
-      appDb.run(`DELETE FROM blockchain WHERE blockhash="${blockhash}";`);
+      //Log.debug("deleteBlockFile", blockhash);
       await Filesystem.deleteFile({
         path: `/selene/blocks/${blockhash}.raw`,
         directory: Directory.Library,
       });
-      //Log.debug("deleteBlock", blockhash);
     } catch (e) {
       Log.warn(e);
     }
@@ -238,17 +243,48 @@ export default function BlockchainService() {
 
   async function purgeBlocks(): Promise<void> {
     Log.time("purgeBlocks");
-    const blockhashes = appDb.exec(
-      `
-        SELECT blockhash FROM blockchain WHERE
-          blockhash NOT IN (SELECT blockhash FROM transactions)
-          AND height < (SELECT height from blockchain ORDER BY height DESC LIMIT 1)
+
+    const purgeBlockHashes = appDb
+      .exec(
         `
+        SELECT blockhash FROM blockchain WHERE
+        blockhash NOT IN (SELECT blockhash FROM transactions)
+        AND height < (SELECT height FROM blockchain ORDER BY height DESC LIMIT 1)
+      `
+      )
+      .map(({ blockhash }) => blockhash);
+
+    //Log.debug("purgeBlockHashes", purgeBlockHashes);
+
+    const keepBlockHashes = appDb
+      .exec(
+        `
+        SELECT blockhash FROM blockchain WHERE
+        blockhash IN (SELECT blockhash FROM transactions)
+        OR height = (SELECT height FROM blockchain ORDER BY height DESC LIMIT 1)
+      `
+      )
+      .map(({ blockhash }) => blockhash);
+
+    //Log.debug("keepBlockHashes", keepBlockHashes);
+
+    const fileBlockhashes = (
+      await Filesystem.readdir({
+        path: "/selene/blocks",
+        directory: Directory.Library,
+      })
+    ).files.map((file) => file.name.split(".")[0]);
+
+    //Log.debug("fileBlockhashes", fileBlockhashes);
+
+    const blockhashes = purgeBlockHashes.concat(
+      fileBlockhashes.filter(
+        (h) => !keepBlockHashes.includes(h) && !purgeBlockHashes.includes(h)
+      )
     );
 
-    await Promise.all(
-      blockhashes.map(({ blockhash }) => deleteBlock(blockhash))
-    );
+    await Promise.all(blockhashes.map((blockhash) => deleteBlock(blockhash)));
+
     Log.debug("purgeBlocks", blockhashes);
     Log.timeEnd("purgeBlocks");
   }

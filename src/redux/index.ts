@@ -5,12 +5,7 @@ import {
   selectActiveWalletHash,
   selectBchNetwork,
 } from "./preferences";
-import {
-  walletReducer,
-  walletMiddleware,
-  walletBoot,
-  addressReducer,
-} from "./wallet";
+import { walletReducer, walletBoot, addressReducer } from "./wallet";
 import { syncReducer, syncMiddleware } from "./sync";
 import { deviceReducer } from "./device";
 import { txHistoryReducer } from "./txHistory";
@@ -30,9 +25,7 @@ export const store = configureStore({
     addresses: addressReducer,
   },
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware()
-      .prepend(walletMiddleware.middleware)
-      .prepend(syncMiddleware.middleware),
+    getDefaultMiddleware().prepend(syncMiddleware.middleware),
 });
 
 export type RootState = ReturnType<typeof store.getState>;

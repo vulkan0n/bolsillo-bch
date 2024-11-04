@@ -338,9 +338,6 @@ export default function WalletManagerService() {
 
     // delete wallet utxos
     walletDb.run(`DELETE FROM address_utxos`);
-
-    // purge orphaned transaction data
-    await TransactionManagerService().purgeTransactions();
   }
 
   function calculateWalletHash(wallet: WalletStub): string {

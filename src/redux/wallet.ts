@@ -3,7 +3,6 @@ import {
   createAction,
   createReducer,
   createSelector,
-  createListenerMiddleware,
   createAsyncThunk,
 } from "@reduxjs/toolkit";
 
@@ -23,8 +22,6 @@ import AddressManagerService, {
 import AddressScannerService from "@/services/AddressScannerService";
 
 import ToastService from "@/services/ToastService";
-
-export const walletMiddleware = createListenerMiddleware();
 
 const initialState = {
   walletHash: "",
