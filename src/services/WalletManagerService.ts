@@ -291,11 +291,11 @@ export default function WalletManagerService() {
     )[0];
 
     APP_DB.run(
-      `UPDATE wallets SET key_viewed_at=? WHERE walletHash="${walletHash}" AND network=${network}"`,
-      [result]
+      `UPDATE wallets SET key_viewed_at=? WHERE walletHash="${walletHash}" AND network="${network}"`,
+      [result.key_viewed_at]
     );
 
-    Log.debug("keyViewed", result);
+    Log.debug("keyViewed", result.key_viewed_at);
 
     return result.key_viewed_at;
   }
