@@ -7,6 +7,10 @@ import {
   PushpinOutlined,
   VerifiedOutlined,
   WalletOutlined,
+  EyeInvisibleOutlined,
+  SendOutlined,
+  ThunderboltOutlined,
+  KeyOutlined,
 } from "@ant-design/icons";
 import { setPreference, selectSecuritySettings } from "@/redux/preferences";
 import { selectActiveWallet } from "@/redux/wallet";
@@ -154,7 +158,7 @@ export default function SecuritySettings() {
             />
           </Accordion.Child>
           <Accordion.Child
-            icon={WalletOutlined}
+            icon={EyeInvisibleOutlined}
             label={translate(translations.authRevealBalance)}
           >
             <input
@@ -164,7 +168,7 @@ export default function SecuritySettings() {
             />
           </Accordion.Child>
           <Accordion.Child
-            icon={WalletOutlined}
+            icon={SendOutlined}
             label={translate(translations.authSendTransaction)}
           >
             <input
@@ -174,7 +178,7 @@ export default function SecuritySettings() {
             />
           </Accordion.Child>
           <Accordion.Child
-            icon={WalletOutlined}
+            icon={ThunderboltOutlined}
             label={translate(translations.authInstantPay)}
           >
             <input
@@ -184,7 +188,7 @@ export default function SecuritySettings() {
             />
           </Accordion.Child>
           <Accordion.Child
-            icon={WalletOutlined}
+            icon={KeyOutlined}
             label={translate(translations.authRevealPrivateKeys)}
           >
             <input
