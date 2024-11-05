@@ -155,6 +155,9 @@ const translations = {
     zh: "Flipstarter 贡献者",
     zh_TW: "Flipstarter 貢獻者",
   },
+  developers: {
+    en: "Development Contributions",
+  },
   translators: {
     ar: "المطورين المساهمين",
     bn: "অবদানকারী ডেভেলপারগণ",
@@ -232,6 +235,9 @@ const translations = {
     vi: "Cảm ơn Đặc biệt",
     zh: "特别感谢",
     zh_TW: "特別感謝",
+  },
+  testers: {
+    en: "Testers",
   },
 };
 

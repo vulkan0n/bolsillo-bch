@@ -7,11 +7,14 @@ import {
 } from "@ant-design/icons";
 import { animated, useSpring } from "@react-spring/web";
 import { selectSyncState, syncHotRefresh } from "@/redux/sync";
+import { selectUiSettings } from "@/redux/preferences";
 import ToastService from "@/services/ToastService";
 
 export default function SyncIndicator() {
   const dispatch = useDispatch();
   const sync = useSelector(selectSyncState);
+
+  const { shouldDisplaySyncCounter } = useSelector(selectUiSettings);
 
   const [shouldAnimateSync, setShouldAnimateSync] = useState(sync.isSyncing);
   const syncTimeoutRef = useRef(setTimeout(() => {}, 0));
@@ -33,7 +36,7 @@ export default function SyncIndicator() {
         clearTimeout(syncTimeoutRef.current);
         syncTimeoutRef.current = setTimeout(
           () => requestAnimationFrame(() => setShouldAnimateSync(false)),
-          600
+          100
         );
       }
     },
@@ -71,7 +74,7 @@ export default function SyncIndicator() {
         to: { opacity: 0.1, scale: 0.65 },
       });
 
-      dispatch(syncHotRefresh());
+      dispatch(syncHotRefresh({ force: false }));
     } else {
       disconnectApi.start();
       ToastService().disconnected();
@@ -90,7 +93,9 @@ export default function SyncIndicator() {
         (shouldAnimateSync ? (
           <div className="flex flex-col items-center">
             <SyncIcon springs={{ ...syncSprings }} />
-            {/*<div className="text-xs text-zinc-600">{sync.syncCount}</div>*/}
+            {shouldDisplaySyncCounter && (
+              <div className="text-xs text-zinc-600">{sync.syncCount}</div>
+            )}
           </div>
         ) : (
           <ConnectedIcon springs={{ ...connectSprings }} />

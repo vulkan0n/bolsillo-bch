@@ -6,7 +6,6 @@ import AddressManagerService, {
 } from "@/services/AddressManagerService";
 import UtxoManagerService from "@/services/UtxoManagerService";
 import LogService from "@/services/LogService";
-import DatabaseService from "@/services/DatabaseService";
 import WalletManagerService from "@/services/WalletManagerService";
 
 import { walletBalanceUpdate } from "@/redux/wallet";
@@ -16,7 +15,7 @@ import {
   DEFAULT_DERIVATION_PATH,
   DERIVATION_PATHS,
   ValidDerivationPath,
-} from "@/util/crypto";
+} from "@/util/derivation";
 
 const ADDRESS_GAP_LIMIT = 20; // BIP-44 gap limit is 20
 const DERIVATION_SCAN_LIMIT = 5;
@@ -25,8 +24,11 @@ const SCAN_BATCH_SIZE = 3000;
 const Log = LogService("AddressScanner");
 
 export default function AddressScannerService(wallet) {
-  const { db } = DatabaseService();
   const Electrum = ElectrumService();
+  const WalletManager = WalletManagerService();
+  const AddressManager = AddressManagerService(wallet);
+  const Hd = HdNodeService(wallet);
+  const UtxoManager = UtxoManagerService(wallet);
 
   return {
     populateAddresses,
@@ -44,9 +46,6 @@ export default function AddressScannerService(wallet) {
   // there are always at least $ADDRESS_GAP_LIMIT addresses
   // returns an array of generated addresses
   function populateAddresses(): Array<AddressEntity> {
-    const AddressManager = AddressManagerService(wallet);
-    const hdWallet = HdNodeService(wallet);
-
     const receiveAddresses = AddressManager.getReceiveAddresses();
     const changeAddresses = AddressManager.getChangeAddresses();
 
@@ -55,6 +54,7 @@ export default function AddressScannerService(wallet) {
 
       const addresses = change ? changeAddresses : receiveAddresses;
 
+      // addresses assumed to be sorted with latest index first
       const latestAddresses = addresses.slice(0, ADDRESS_GAP_LIMIT);
       const latestUnusedAddresses = latestAddresses.filter(
         (a) => a.state === null
@@ -65,11 +65,11 @@ export default function AddressScannerService(wallet) {
       const nextHdIndex =
         latestAddress !== null ? latestAddress.hd_index + 1 : 0;
 
-      const endHdIndex = nextHdIndex + gapDiff;
+      const endHdIndex = nextHdIndex + gapDiff - 1;
 
       // starting from latest index, generate new addresses
       for (let hd_index = nextHdIndex; hd_index < endHdIndex; hd_index += 1) {
-        const newAddress = hdWallet.generateAddress(hd_index, change);
+        const newAddress = Hd.generateAddress(hd_index, change);
 
         generated.push(
           AddressManager.registerAddress(newAddress, hd_index, change)
@@ -80,7 +80,7 @@ export default function AddressScannerService(wallet) {
     }
 
     const generatedAddresses = [...populate(0), ...populate(1)];
-    //Log.debug("populateAddresses", generatedAddresses);
+    Log.debug("populateAddresses", generatedAddresses);
     return generatedAddresses;
   }
 
@@ -92,7 +92,7 @@ export default function AddressScannerService(wallet) {
       DERIVATION_PATHS.map((path) => {
         // set the derivation path for the WalletEntity
         const tempWallet = { ...wallet, derivation: path };
-        const Hd = HdNodeService(tempWallet);
+        const tempHd = HdNodeService(tempWallet);
 
         // generate addresses for each change path
         const addresses: Array<string> = [];
@@ -103,7 +103,7 @@ export default function AddressScannerService(wallet) {
             hd_index += 1
           ) {
             try {
-              const address = Hd.generateAddress(hd_index, change);
+              const address = tempHd.generateAddress(hd_index, change);
               addresses.push(address);
             } catch (e) {
               Log.error(e);
@@ -131,14 +131,13 @@ export default function AddressScannerService(wallet) {
   async function scanAddresses(
     startIndex = 0,
     endIndex = ADDRESS_GAP_LIMIT,
-    change = 0
+    change = 0,
+    callback: (number) => void = () => {}
   ) {
     Log.time(`scanAddresses ${change}`);
-    const Hd = HdNodeService(wallet);
-    const AddressManager = AddressManagerService(wallet);
-    const UtxoManager = UtxoManagerService(wallet);
+    Log.debug("scanAddresses", startIndex, endIndex, change, wallet.walletHash);
 
-    Log.debug("scanAddesses", startIndex, endIndex, change, wallet.id);
+    const walletDb = await WalletManager.openWalletDatabase(wallet.walletHash);
 
     const dbAddresses = change
       ? AddressManager.getChangeAddresses()
@@ -175,44 +174,44 @@ export default function AddressScannerService(wallet) {
     const checkNeedsRegistration = (stub) =>
       dbAddresses.findIndex((dba) => dba.hd_index === stub.hd_index) === -1;
 
+    // don't register addresses past last used address (only fill gaps)
+    const gapAddresses = nullAddresses.filter(
+      (stub) =>
+        checkNeedsRegistration(stub) &&
+        stub.hd_index < activeAddresses[activeAddresses.length - 1].hd_index
+    );
+
     const needsRegistrationAddresses = activeAddresses
       .filter((stub) => checkNeedsRegistration(stub))
-      .concat(
-        // don't register addresses past last used address (only fill gaps)
-        nullAddresses.filter(
-          (stub) =>
-            checkNeedsRegistration(stub) &&
-            stub.hd_index < activeAddresses[activeAddresses.length - 1].hd_index
-        )
-      );
+      .concat(gapAddresses);
 
     // for each address with state, register it if we don't have it.
     // [Kludge] We have to use raw SQL here instead of AddressManager.registerAddress
     // [K] so that we can batch all of the writes into one transction for performance
-    db.exec("BEGIN TRANSACTION;");
-    needsRegistrationAddresses.forEach((stub) => {
-      try {
-        db.exec(
+    let query: Array<string> = [];
+    query.push("BEGIN TRANSACTION;");
+    query = query.concat(
+      needsRegistrationAddresses.map(
+        (stub) =>
           `INSERT INTO addresses (
             address, 
-            wallet_id, 
             hd_index,
-            change,
-            prefix
+            change
           ) 
           VALUES (
             "${stub.address}", 
-            "${wallet.id}", 
             "${stub.hd_index}",
-            "${stub.change}",
-            "${wallet.prefix}"
+            "${stub.change}"
           );`
-        );
-      } catch (e) {
-        Log.warn(e);
-      }
-    });
-    db.exec("COMMIT;");
+      )
+    );
+    query.push("COMMIT;");
+    try {
+      //Log.debug(query);
+      walletDb.exec(query.join(""));
+    } catch (e) {
+      Log.error(e);
+    }
 
     // discard UTXO set for all generated addresses
     addresses.forEach((stub) => UtxoManager.discardAddressUtxos(stub.address));
@@ -221,18 +220,38 @@ export default function AddressScannerService(wallet) {
     await Promise.all(activeAddresses.map((stub) => scanUtxos(stub.address)));
 
     // get history for active addresses
-    await Promise.all(
+    const stateUpdates = await Promise.all(
       activeAddresses.map((stub) => {
         const calculatedState = AddressManager.calculateAddressState(
           stub.address
         );
 
         // if states match, address does not need update
-        return calculatedState !== stub.state
-          ? scanHistory(stub.address)
-          : Promise.resolve();
+        if (calculatedState !== stub.state) {
+          return scanHistory(stub.address, callback, true);
+        }
+
+        callback(1);
+        return Promise.resolve();
       })
     );
+
+    query = [];
+    query.push("BEGIN TRANSACTION;");
+    query = query.concat(
+      stateUpdates.map((update) =>
+        Array.isArray(update)
+          ? `UPDATE addresses SET state="${update[1]}" WHERE address="${update[0]}";`
+          : ""
+      )
+    );
+    query.push("COMMIT;");
+    try {
+      //Log.debug(query);
+      walletDb.exec(query.join(""));
+    } catch (e) {
+      Log.error(e);
+    }
 
     Log.debug(
       "Scanned",
@@ -249,10 +268,9 @@ export default function AddressScannerService(wallet) {
 
   async function scanMoreAddresses(
     nScanMore: number = ADDRESS_GAP_LIMIT,
-    change: number = 0
+    change: number = 0,
+    callback: (number) => void = () => {}
   ) {
-    const AddressManager = AddressManagerService(wallet);
-
     const addresses = change
       ? AddressManager.getChangeAddresses()
       : AddressManager.getReceiveAddresses();
@@ -278,36 +296,44 @@ export default function AddressScannerService(wallet) {
     const scannedAddresses = await scanAddresses(
       scanStartIndex,
       scanEndIndex,
-      change
+      change,
+      callback
     );
 
     return scannedAddresses;
   }
 
-  async function rebuildWallet() {
+  async function rebuildWallet(callback: (number) => void = () => {}) {
     Log.debug("Starting Wallet Rebuild");
     Log.time("rebuildWallet");
 
     const getUnusedCount = (addresses) =>
       addresses.filter((a) => a.state === null).length;
 
-    WalletManagerService(wallet.network).clearWalletData(wallet.id);
+    await WalletManager.clearWalletData(wallet.walletHash);
 
     /* eslint-disable no-await-in-loop */
     for (let change = 0; change <= 1; change += 1) {
-      let addresses = await scanMoreAddresses(SCAN_BATCH_SIZE, change);
+      let addresses = await scanMoreAddresses(
+        SCAN_BATCH_SIZE,
+        change,
+        callback
+      );
+
       while (getUnusedCount(addresses) < ADDRESS_GAP_LIMIT) {
-        addresses = await scanMoreAddresses(SCAN_BATCH_SIZE, change);
+        addresses = await scanMoreAddresses(SCAN_BATCH_SIZE, change, callback);
       }
+
       store.dispatch(walletBalanceUpdate({ wallet, isChange: change === 1 }));
     }
+
+    await WalletManager.saveWallet(wallet.walletHash);
 
     Log.debug("Wallet Rebuild Done");
     Log.timeEnd("rebuildWallet");
   }
 
   async function scanUtxos(address: string) {
-    const UtxoManager = UtxoManagerService(wallet);
     const utxos = await Electrum.requestUtxos(address);
 
     // we need to delete our knowledge of UTXO set
@@ -330,21 +356,37 @@ export default function AddressScannerService(wallet) {
     return Promise.resolve();
   }
 
-  async function scanHistory(address: string) {
-    const AddressManager = AddressManagerService(wallet);
+  async function scanHistory(
+    address: string,
+    callback: (number) => void = () => {},
+    batch = false
+  ) {
+    const walletDb = await WalletManager.openWalletDatabase(wallet.walletHash);
 
     const history = await Electrum.requestAddressHistory(address);
     history.forEach((historyTx) => {
       AddressManager.registerTransaction(address, historyTx);
     });
 
-    const newCalculatedState =
-      history.length > 0 ? AddressManager.calculateAddressState(address) : null;
+    const newCalculatedState = AddressManager.calculateAddressState(address);
 
-    AddressManager.updateAddressState(address, newCalculatedState);
+    try {
+      if (!batch) {
+        walletDb.run(
+          `UPDATE addresses SET 
+          state=?
+        WHERE address="${address}";
+      `,
+          [newCalculatedState]
+        );
+      }
+    } catch (e) {
+      Log.error(e);
+      return Promise.reject();
+    }
 
     //Log.debug("scanHistory", address, newCalculatedState);
-
-    return Promise.resolve();
+    callback(1);
+    return Promise.resolve([address, newCalculatedState]);
   }
 }

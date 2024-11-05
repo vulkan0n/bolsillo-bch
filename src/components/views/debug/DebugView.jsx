@@ -13,7 +13,7 @@ import { translate } from "@/util/translations";
 import translations from "./DebugViewTranslations";
 
 import LogService from "@/services/LogService";
-import SecurityService from "@/services/SecurityService";
+import SecurityService, { AuthActions } from "@/services/SecurityService";
 
 import DebugSettings from "./DebugSettings";
 import DebugConsole from "./DebugConsole";
@@ -21,7 +21,7 @@ import DebugConsole from "./DebugConsole";
 const Log = LogService("DebugView");
 
 export default function DebugView() {
-  const { authMode } = useSelector(selectSecuritySettings);
+  const { authMode, authActions } = useSelector(selectSecuritySettings);
 
   const [shouldThrowFakeError, setShouldThrowFakeError] = useState(false);
 
@@ -41,11 +41,11 @@ export default function DebugView() {
   };
 
   const handleAuthorize = async () => {
-    const isAuthorized = await SecurityService().authorize();
+    const isAuthorized = await SecurityService().authorize(AuthActions.Debug);
     Log.log("SecurityService authorize", isAuthorized);
     Dialog.alert({
       title: "SecurityService",
-      message: `Security mode: ${authMode}\nisAuthorized ${isAuthorized}`,
+      message: `Security mode: ${authMode}\nisAuthorized ${isAuthorized}\nauthActions ${authActions.join(";")}`,
     });
   };
 

@@ -1,27 +1,24 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
 import { ImportOutlined } from "@ant-design/icons";
 import * as bip39 from "bip39";
 import Accordion from "@/components/atoms/Accordion";
 import WalletManagerService from "@/services/WalletManagerService";
 import AddressScannerService from "@/services/AddressScannerService";
 import LogService from "@/services/LogService";
-import { selectBchNetwork } from "@/redux/preferences";
 import { translate } from "@/util/translations";
 import translations from "./translations";
 
-import { DEFAULT_DERIVATION_PATH, DERIVATION_PATHS } from "@/util/crypto";
+import { DEFAULT_DERIVATION_PATH, DERIVATION_PATHS } from "@/util/derivation";
 
 const Log = LogService("WizardImport");
 
 export default function SettingsWalletWizardImport() {
   const navigate = useNavigate();
 
-  const bchNetwork = useSelector(selectBchNetwork);
-
   const [mnemonicInput, setMnemonicInput] = useState("");
   const [passphraseInput, setPassphraseInput] = useState("");
+  const [walletNameInput, setWalletNameInput] = useState("Imported Wallet");
   const [message, setMessage] = useState("");
   const [derivationPath, setDerivationPath] = useState("auto");
 
@@ -33,6 +30,10 @@ export default function SettingsWalletWizardImport() {
 
     setMnemonicInput(sanitizedInput);
     setMessage("");
+  };
+
+  const handleWalletNameInput = (event) => {
+    setWalletNameInput(event.target.value);
   };
 
   const handlePassphraseInput = (event) => {
@@ -55,27 +56,33 @@ export default function SettingsWalletWizardImport() {
 
     if (isValidMnemonic) {
       try {
-        const tempWallet = {
+        const WalletManager = WalletManagerService();
+
+        const tempWallet = WalletManager.createTemporaryWallet({
           mnemonic: trimmedInput,
           passphrase: passphraseInput,
           derivation: DEFAULT_DERIVATION_PATH,
-          prefix: bchNetwork === "mainnet" ? "bitcoincash" : "bchtest",
-        };
+        });
 
-        const path =
+        const foundPath =
           derivationPath === "auto"
             ? await AddressScannerService(tempWallet).scanDerivationPaths()
             : derivationPath;
 
-        Log.debug("Found path", path);
+        Log.debug("Found path", foundPath);
 
-        const wallet = WalletManagerService(bchNetwork).importWallet(
-          trimmedInput,
-          passphraseInput,
-          path
-        );
+        const walletData = {
+          ...tempWallet,
+          derivation: foundPath,
+          name: walletNameInput,
+        };
 
-        navigate(`build/${wallet.id}`);
+        const walletHash = WalletManager.calculateWalletHash(walletData);
+        walletData.walletHash = walletHash;
+
+        await WalletManagerService().importWallet(walletData);
+
+        navigate(`build/${walletHash}`);
       } catch (e) {
         setMessage(translate(translations.alreadyImported));
       }
@@ -106,6 +113,17 @@ export default function SettingsWalletWizardImport() {
           value={mnemonicInput}
           autoComplete="off"
         />
+      </div>
+      <div className="my-1">
+        <label>
+          <span className="font-bold">Wallet Name</span>
+          <input
+            type="text"
+            className="w-full border border-primary border-2 rounded-sm p-1"
+            onChange={handleWalletNameInput}
+            value={walletNameInput}
+          />
+        </label>
       </div>
       <div className="my-1">
         <Accordion icon={() => null} title="Additional Options">

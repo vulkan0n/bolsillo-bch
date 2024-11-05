@@ -5,23 +5,30 @@ import {
   CompassOutlined,
   EyeOutlined,
   EyeInvisibleOutlined,
+  SyncOutlined,
 } from "@ant-design/icons";
-import { selectUiSettings } from "@/redux/preferences";
-import SecurityService from "@/services/SecurityService";
+import { selectUiSettings, selectIsExperimental } from "@/redux/preferences";
+import SecurityService, { AuthActions } from "@/services/SecurityService";
 import Accordion from "@/atoms/Accordion";
 import { translate } from "@/util/translations";
-import translations from "./SettingsViewTranslations";
+import translations from "./translations";
 import { SettingsContext } from "./SettingsContext";
-
-const { uiSettings, hideExploreTab } = translations;
 
 export default function UiSettings() {
   const { handleSettingsUpdate } = useContext(SettingsContext);
-  const { shouldHideBalance, shouldDisplayExploreTab } =
-    useSelector(selectUiSettings);
+  const {
+    shouldHideBalance,
+    shouldDisplayExploreTab,
+    shouldDisplaySyncCounter,
+  } = useSelector(selectUiSettings);
+
+  const isExperimental = useSelector(selectIsExperimental);
 
   return (
-    <Accordion icon={ControlOutlined} title={translate(uiSettings)}>
+    <Accordion
+      icon={ControlOutlined}
+      title={translate(translations.uiSettings)}
+    >
       <Accordion.Child
         icon={shouldHideBalance ? EyeInvisibleOutlined : EyeOutlined}
         label={translate(translations.hideAvailableBalance)}
@@ -33,7 +40,7 @@ export default function UiSettings() {
             const { checked: isChecked } = event.target;
             const isAuthorized =
               shouldHideBalance === false ||
-              (await SecurityService().authorize());
+              (await SecurityService().authorize(AuthActions.RevealBalance));
 
             if (isAuthorized) {
               handleSettingsUpdate("hideAvailableBalance", isChecked);
@@ -41,7 +48,10 @@ export default function UiSettings() {
           }}
         />
       </Accordion.Child>
-      <Accordion.Child icon={CompassOutlined} label={translate(hideExploreTab)}>
+      <Accordion.Child
+        icon={CompassOutlined}
+        label={translate(translations.hideExploreTab)}
+      >
         <input
           type="checkbox"
           checked={!shouldDisplayExploreTab}
@@ -50,6 +60,20 @@ export default function UiSettings() {
           }
         />
       </Accordion.Child>
+      {isExperimental && (
+        <Accordion.Child
+          icon={SyncOutlined}
+          label={translate(translations.displaySyncCounter)}
+        >
+          <input
+            type="checkbox"
+            checked={shouldDisplaySyncCounter}
+            onChange={(event) =>
+              handleSettingsUpdate("displaySyncCounter", event.target.checked)
+            }
+          />
+        </Accordion.Child>
+      )}
     </Accordion>
   );
 }

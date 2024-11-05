@@ -2,7 +2,7 @@
 import { useSelector, useDispatch } from "react-redux";
 import { EyeOutlined, EyeInvisibleOutlined } from "@ant-design/icons";
 import { selectUiSettings, setPreference } from "@/redux/preferences";
-import SecurityService from "@/services/SecurityService";
+import SecurityService, { AuthActions } from "@/services/SecurityService";
 
 interface Props {
   className?: string;
@@ -17,7 +17,9 @@ export default function BalanceHideButton({ className = "", ...rest }: Props) {
 
   const handleHideBalance = async () => {
     if (shouldHideBalance === true) {
-      const isAuthorized = await SecurityService().authorize();
+      const isAuthorized = await SecurityService().authorize(
+        AuthActions.RevealBalance
+      );
       if (!isAuthorized) {
         return;
       }

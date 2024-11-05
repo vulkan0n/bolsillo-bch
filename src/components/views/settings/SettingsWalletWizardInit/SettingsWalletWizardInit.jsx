@@ -9,11 +9,11 @@ import translations from "./translations";
 export default function SettingsWalletWizardInit() {
   const navigate = useNavigate();
 
-  const handleCreateWallet = () => {
-    const wallet = WalletManagerService().createWallet(
+  const handleCreateWallet = async () => {
+    const wallet = await WalletManagerService().createWallet(
       translate(translations.newWallet)
     );
-    navigate(`/settings/wallet/${wallet.id}`, { replace: true });
+    navigate(`/settings/wallet/${wallet.walletHash}`, { replace: true });
   };
 
   const handleImportWallet = () => {

@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from "react";
 import { useParams, useSearchParams, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import Decimal from "decimal.js";
-import { Haptics, NotificationType } from "@capacitor/haptics";
+import { Dialog } from "@capacitor/dialog";
 import { ArrowLeftOutlined, SyncOutlined } from "@ant-design/icons";
 
 import { selectActiveWallet } from "@/redux/wallet";
@@ -11,6 +11,7 @@ import {
   selectCurrencySettings,
   selectInstantPaySettings,
   setPreference,
+  selectIsExperimental,
 } from "@/redux/preferences";
 
 import { selectKeyboardIsOpen } from "@/redux/device";
@@ -19,7 +20,7 @@ import { selectSyncState, selectMyAddresses } from "@/redux/sync";
 import TransactionManagerService from "@/services/TransactionManagerService";
 import TransactionBuilderService from "@/services/TransactionBuilderService";
 import ToastService from "@/services/ToastService";
-import SecurityService from "@/services/SecurityService";
+import SecurityService, { AuthActions } from "@/services/SecurityService";
 
 import { SatoshiInput } from "@/atoms/SatoshiInput";
 import Satoshi from "@/atoms/Satoshi";
@@ -28,8 +29,9 @@ import Address from "@/atoms/Address";
 import CurrencySymbol from "@/atoms/CurrencySymbol";
 import CurrencyFlip from "@/atoms/CurrencyFlip";
 
+import { Haptic } from "@/util/haptic";
 import { bchToSats, DUST_LIMIT } from "@/util/sats";
-import { validateInvoiceString } from "@/util/invoice";
+import { validateBchUri } from "@/util/uri";
 import { translate } from "@/util/translations";
 import translations from "./translations";
 
@@ -39,6 +41,8 @@ export default function WalletViewSend() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
+  const isExperimental = useSelector(selectIsExperimental);
+
   const inputRef = useRef<HTMLInputElement>(null);
 
   const isKeyboardOpen = useSelector(selectKeyboardIsOpen);
@@ -47,7 +51,7 @@ export default function WalletViewSend() {
   const wallet = useSelector(selectActiveWallet);
   const sync = useSelector(selectSyncState);
 
-  const { address } = validateInvoiceString(params.address);
+  const { address, isBase58Address } = validateBchUri(params.address);
 
   const myAddresses = useSelector(selectMyAddresses);
   const isMyAddress = myAddresses[address] !== undefined;
@@ -55,11 +59,7 @@ export default function WalletViewSend() {
   const [message, setMessage] = useState("");
   const [isSending, setIsSending] = useState(false);
 
-  const { shouldPreferLocalCurrency, localCurrency } = useSelector(
-    selectCurrencySettings
-  );
-
-  const currency = shouldPreferLocalCurrency ? localCurrency : "BCH";
+  const { shouldPreferLocalCurrency } = useSelector(selectCurrencySettings);
 
   const querySats = searchParams.get("amount")
     ? bchToSats(searchParams.get("amount"))
@@ -77,6 +77,8 @@ export default function WalletViewSend() {
     selectInstantPaySettings
   );
 
+  const [isInstantPayCanceled, setIsInstantPayCanceled] = useState(false);
+
   const handleAmountInput = (satInput) => {
     setSatoshiInput(satInput);
     setSatoshiInputKey("satoshiInputKey");
@@ -84,7 +86,7 @@ export default function WalletViewSend() {
   };
 
   const handleInsufficientFunds = async () => {
-    await Haptics.notification({ type: NotificationType.Warning });
+    await Haptic.warn();
     const insufficientFundsTranslation = translate(
       translations.insufficientFunds
     );
@@ -97,9 +99,18 @@ export default function WalletViewSend() {
     }
 
     setIsSending(true);
-    const isAuthorized = isInstantPay || (await SecurityService().authorize());
+
+    const authAction = isInstantPay
+      ? AuthActions.InstantPay
+      : AuthActions.SendTransaction;
+
+    const isAuthorized = await SecurityService().authorize(authAction);
     if (!isAuthorized) {
       setIsSending(false);
+
+      if (isInstantPay) {
+        setIsInstantPayCanceled(true);
+      }
       return;
     }
 
@@ -115,6 +126,18 @@ export default function WalletViewSend() {
       return;
     }
 
+    if (isBase58Address) {
+      const { value: isLegacyAddressConfirmed } = await Dialog.prompt({
+        title: translate(translations.base58WarningTitle),
+        message: translate(translations.base58WarningMessage),
+        okButtonTitle: translate(translations.base58WarningOk),
+      });
+
+      if (!isLegacyAddressConfirmed) {
+        return;
+      }
+    }
+
     const TransactionManager = TransactionManagerService();
     const TransactionBuilder = TransactionBuilderService(wallet);
 
@@ -124,10 +147,10 @@ export default function WalletViewSend() {
 
     if (transaction === null) {
       Logger.warn(transaction);
-      await Haptics.notification({ type: NotificationType.Warning });
       //setMessage(translate(translations.notEnoughFee));
       setMessage("Transaction Failed: Wallet out of sync?");
       setIsSending(false);
+      await Haptic.warn();
       return;
     }
 
@@ -137,22 +160,26 @@ export default function WalletViewSend() {
       return;
     }
 
-    const isSuccess = await TransactionManager.sendTransaction(
+    const { isSuccess, result } = await TransactionManager.sendTransaction(
       transaction,
       wallet
     );
 
     if (isSuccess) {
       const tx = await TransactionManager.resolveTransaction(transaction.txid);
-      await Haptics.notification({ type: NotificationType.Success });
+      await Haptic.success();
       navigate("/wallet/send/success", {
         state: { tx },
         replace: true,
       });
     } else {
-      await Haptics.notification({ type: NotificationType.Error });
       //setMessage(translate(translations.transactionFailed));
-      setMessage(`Transaction Failed: Must send at least ${DUST_LIMIT} sats`);
+      setMessage(
+        isExperimental
+          ? `${result}`
+          : `Transaction Failed: Must send at least ${DUST_LIMIT} sats`
+      );
+      await Haptic.error();
     }
 
     setIsSending(false);
@@ -160,6 +187,10 @@ export default function WalletViewSend() {
 
   useEffect(function handleInstantPay() {
     if (!isInstantPayEnabled) {
+      return;
+    }
+    if (isInstantPayCanceled) {
+      navigate(-1);
       return;
     }
 
@@ -238,10 +269,7 @@ export default function WalletViewSend() {
           <div className="p-2 fixed top-[40%] w-full">
             <div className="py-4 px-2 rounded-md shadow-md bg-primary/95 text-white">
               <div className="flex items-center">
-                <CurrencySymbol
-                  currency={currency}
-                  className="font-bold text-4xl mr-2"
-                />
+                <CurrencySymbol className="font-bold text-4xl mr-2" />
                 <SatoshiInput
                   key={satoshiInputKey}
                   onChange={handleAmountInput}
@@ -266,7 +294,7 @@ export default function WalletViewSend() {
               className="p-2 relative text-center w-full"
               onClick={handleFlipCurrency}
             >
-              <span className="text-2xl font-semibold text-center w-full text-zinc-800/80">
+              <span className="text-2xl font-semibold text-center w-full text-zinc-800/80 flex justify-center items-center">
                 <Satoshi value={satoshiInput} flip />
                 <CurrencyFlip className="text-3xl ml-2" />
               </span>

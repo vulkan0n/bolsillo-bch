@@ -3,33 +3,168 @@
 #
 # For more information, see: https://docs.gitlab.com/ee/ci/yaml/index.html#stages
 
-image: node:lts-alpine
-
 stages:
-  - update_version
+  - version
   - build
+  - package
+  - screenshots
+  - testflight
+  - release
 
-variables:
-  INCREMENT_VERSION:
-    value: "patch"
-    options:
-      - "patch"
-      - "minor"
-      - "major"
-    description: "Choose which part of the version to increment"
-
-update_version:
-  when: manual
-  stage: update_version
+version:
+  stage: version
   script:
-    - apk add git
-    - git config --global user.email "git@selene.cash"
-    - git config --global user.name "Selene.cash CI/CD"
-    - yarn version --$INCREMENT_VERSION
+    - scripts/chversion
+  only:
+    - main
+    - testflight
 
 build_sync:
   stage: build
+  image: node:lts-alpine
   script:
     - yarn install
     - yarn build
     - npx cap sync
+  artifacts:
+    paths:
+      - "dist/"
+
+package_android:
+  stage: package
+  dependencies:
+    - build_sync
+  script:
+    - cd android/
+    - bundle install
+    - bundle exec fastlane package
+  artifacts:
+    paths:
+      - build/app/outputs/apk/release/app-release.apk
+      - build/app/outputs/bundle/release/app-bundle.aab
+    expire_in: 1 year
+  only:
+    - main
+    - testflight
+  tags:
+    - macos
+
+package_ios:
+  stage: package
+  dependencies:
+    - build_sync
+  script:
+    - cd ios/App/
+    - bundle install
+    - bundle exec fastlane package
+  artifacts:
+    paths:
+      - App.ipa
+  only:
+    - main
+    - testflight
+  tags:
+    - macos
+
+screenshots_android:
+  stage: screenshots
+  script:
+    - cd android/
+    - bundle install
+    - bundle exec fastlane snapshot
+  artifacts:
+    paths:
+      - android/fastlane/screenshots
+  only:
+    - main
+  tags:
+    - macos
+
+screenshots_ios:
+  stage: screenshots
+  script:
+    - cd ios/App/
+    - bundle install
+    - bundle exec fastlane snapshot
+  artifacts:
+    paths:
+      - ios/App/fastlane/screenshots
+  only:
+    - main
+  tags:
+    - macos
+
+deploy_gitlab_release:
+  stage: release
+  script:
+    - git tag -a $SELENE_VERSION -m "Version $SELENE_VERSION"
+    - git push origin $SELENE_VERSION
+  only:
+    - main
+
+#deploy_android_apk:
+#  stage: release
+#  dependencies:
+#    - package_android
+#  script:
+#    - eval $(ssh-agent -s)
+#    - ssh-add <(echo "$SSH_PRIVATE_KEY")
+#    #- export SELENE_VERSION=$(sed -n 's/.*"version": "\([^"]*\)".*/\1/p' package.json)
+#    - scp android/build/app/outputs/apk/release/app-release.apk selene@warpgate.selene.technology:/srv/www/selene.cash/public/download/selene-v$SELENE_VERSION.apk
+#    # update remote nginx config here
+#  only:
+#    - main
+
+deploy_android_release:
+  stage: release
+  dependencies:
+    - package_android
+    - screenshots_android
+  script:
+    - cd android/
+    - bundle install
+    - bundle exec fastlane deploy
+  only:
+    - main
+  tags:
+    - macos
+
+deploy_ios_release:
+  stage: release
+  dependencies:
+    - package_ios
+    - screenshots_ios
+  script:
+    - cd ios/App/
+    - bundle install
+    - bundle exec fastlane deploy
+  only:
+    - main
+  tags:
+    - macos
+
+deploy_android_testflight:
+  stage: testflight
+  dependencies:
+    - package_android
+  script:
+    - cd android/
+    - bundle install
+    - bundle exec fastlane deploy_testflight
+  only:
+    - testflight
+  tags:
+    - macos
+
+deploy_ios_testflight:
+  stage: release
+  dependencies:
+    - package_ios
+  script:
+    - cd ios/App/
+    - bundle install
+    - bundle exec fastlane deploy_testflight
+  only:
+    - testflight
+  tags:
+    - macos

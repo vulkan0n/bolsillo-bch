@@ -6,7 +6,7 @@ const translations = {
     de: "Neue Brieftasche",
     el: "Νέο πορτοφόλι",
     en: "New Wallet",
-    es: "Nuevo billetera",
+    es: "Nueva billetera",
     fa: "کیف پول جدید",
     fil: "Bagong Wallet",
     fr: "Nouveau portefeuille",
@@ -36,7 +36,7 @@ const translations = {
     ur: "نیا والیٹ",
     vi: "Ví mới",
     zh: "新钱包",
-    zh_TW: "新錢包",
+    zh_TW: "新錢包"
   },
   createNewWallet: {
     ar: "إنشاء محفظة جديدة",
@@ -45,7 +45,7 @@ const translations = {
     de: "Neues Wallet erstellen",
     el: "Δημιουργία νέου πορτοφολιού",
     en: "Create New Wallet",
-    es: "Crear nuevo billetera",
+    es: "Crear nueva billetera",
     fa: "کیف پول جدید ایجاد کنید",
     fil: "Lumikha ng Bagong Wallet",
     fr: "Créer un nouveau portefeuille",
@@ -75,7 +75,7 @@ const translations = {
     ur: "نیا والیٹ بنائیں",
     vi: "Tạo Ví Mới",
     zh: "创建新钱包",
-    zh_TW: "創建新錢包",
+    zh_TW: "創建新錢包"
   },
   importWalletFromPhrase: {
     ar: "استيراد المحفظة من عبارة الاسترداد",
@@ -114,8 +114,8 @@ const translations = {
     ur: "ریکووری فیز سے والیٹ واپس لائیں",
     vi: "Nhập Ví từ Cụm từ Khôi phục",
     zh: "从恢复短语导入钱包",
-    zh_TW: "從恢復短語導入錢包",
-  },
+    zh_TW: "從恢復短語導入錢包"
+  }
 };
 
 export default translations;

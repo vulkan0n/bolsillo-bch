@@ -3,35 +3,46 @@ import { useDispatch } from "react-redux";
 import { WarningFilled, EyeInvisibleOutlined } from "@ant-design/icons";
 
 import { walletSetKeyViewed } from "@/redux/wallet";
-import { WalletEntity } from "@/services/WalletManagerService";
-import SecurityService from "@/services/SecurityService";
+import WalletManagerService from "@/services/WalletManagerService";
+import SecurityService, { AuthActions } from "@/services/SecurityService";
 
 import { translate } from "@/util/translations";
 import translations from "@/components/views/settings/SettingsWalletView/translations";
 
-export default function ShowMnemonic({ wallet }: { wallet: WalletEntity }) {
+export default function ShowMnemonic({ walletHash }: { walletHash: string }) {
   const dispatch = useDispatch();
+  const WalletManager = WalletManagerService();
 
   // toggle visibility for recovery phrase
   const [shouldShowRecoveryPhrase, setShouldShowRecoveryPhrase] =
     useState(false);
+  const [mnemonic, setMnemonic] = useState("");
 
   // handler for mnemonic visibility area
   const handleShowMnemonic = async () => {
     if (shouldShowRecoveryPhrase === false) {
-      const isAuthorized = await SecurityService().authorize();
+      const isAuthorized = await SecurityService().authorize(
+        AuthActions.RevealPrivateKeys
+      );
       if (!isAuthorized) {
         return;
       }
 
+      await WalletManager.openWalletDatabase(walletHash);
+      const { mnemonic: m } = WalletManager.getWallet(walletHash);
+
       setShouldShowRecoveryPhrase(true);
-      dispatch(walletSetKeyViewed({ wallet }));
+      setMnemonic(m);
+      dispatch(walletSetKeyViewed({ walletHash }));
     } else {
+      setMnemonic("");
       setShouldShowRecoveryPhrase(false);
     }
   };
 
-  const isKeyViewed = wallet.key_viewed !== null;
+  const wallet = WalletManager.getWalletMeta(walletHash);
+
+  const isKeyViewed = wallet.key_viewed_at !== null;
   const keyNotViewedClasses = isKeyViewed
     ? "bg-zinc-700"
     : "border border-4 rounded-lg border-primary bg-primary";
@@ -50,7 +61,7 @@ export default function ShowMnemonic({ wallet }: { wallet: WalletEntity }) {
             <WarningFilled className="ml-2 text-warning" />
           </div>
           <div className="text-center text-zinc-50 text-xl font-mono py-4">
-            {wallet.mnemonic}
+            {mnemonic}
           </div>
           <div className="text-center text-error text-xl font-bold">
             <WarningFilled className="mr-2 text-warning" />

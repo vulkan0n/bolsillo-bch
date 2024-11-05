@@ -7,9 +7,7 @@ import {
 } from "@reduxjs/toolkit";
 
 import { Preferences } from "@capacitor/preferences";
-import { App } from "@capacitor/app";
 
-import { store } from "@/redux";
 import { setPreference, selectCurrencySettings } from "@/redux/preferences";
 import CurrencyService from "@/services/CurrencyService";
 import LogService from "@/services/LogService";
@@ -101,5 +99,3 @@ export const selectCurrentPrice = createSelector(
     return { price, priceString, currency: s.currency };
   }
 );
-
-App.addListener("resume", () => store.dispatch(fetchExchangeRates(0)));

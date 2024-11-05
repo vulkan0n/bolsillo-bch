@@ -60,6 +60,7 @@ export default function ToastService() {
         </>
       ),
       options: {
+        id: "paymentReceived",
         duration: 2000,
       },
     });

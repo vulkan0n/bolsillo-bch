@@ -4,8 +4,8 @@ import { selectCurrencySettings } from "@/redux/preferences";
 import { currencyList } from "@/util/currency";
 
 interface Props {
-  currency: string;
-  className: string;
+  currency?: string;
+  className?: string;
 }
 
 export default function CurrencySymbol({

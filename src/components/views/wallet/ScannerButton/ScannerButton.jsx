@@ -3,13 +3,13 @@ import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 
 import { Dialog } from "@capacitor/dialog";
-import { Haptics, NotificationType } from "@capacitor/haptics";
 import {
   BarcodeScanner,
   SupportedFormat,
 } from "@capacitor-community/barcode-scanner";
 
 import { ScanOutlined, CloseOutlined } from "@ant-design/icons";
+import { Haptic } from "@/util/haptic";
 import {
   selectDeviceInfo,
   setScannerIsScanning,
@@ -18,7 +18,7 @@ import {
 
 import Button from "@/atoms/Button";
 
-import { validateInvoiceString } from "@/util/invoice";
+import { validateBchUri } from "@/util/uri";
 
 import translations from "./translations";
 import { translate } from "@/util/translations";
@@ -44,13 +44,31 @@ export default function ScannerButton() {
     async (content) => {
       dispatch(setScannerIsScanning(false));
 
-      const { isCashAddress, address, query } = validateInvoiceString(content);
+      const {
+        isValid,
+        isPaymentProtocol,
+        isWif,
+        address,
+        query,
+        requestUri,
+        wif,
+      } = validateBchUri(content);
 
-      if (isCashAddress) {
-        await Haptics.notification({ type: NotificationType.Success });
-        navigate(`/wallet/send/${address}${query}`);
+      if (isValid) {
+        await Haptic.success();
+
+        let navTo;
+        if (isPaymentProtocol) {
+          navTo = `/wallet/pay/?r=${requestUri}`;
+        } else if (isWif) {
+          navTo = `/wallet/sweep/${wif}`;
+        } else {
+          navTo = `/wallet/send/${address}${query}`;
+        }
+
+        navigate(navTo);
       } else {
-        await Haptics.notification({ type: NotificationType.Error });
+        await Haptic.error();
       }
     },
     [dispatch, navigate]

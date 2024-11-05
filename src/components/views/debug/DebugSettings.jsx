@@ -8,9 +8,9 @@ import {
 
 import {
   setPreference,
-  selectIsChipnet,
   selectIsExperimental,
   selectIsPrerelease,
+  selectBchNetwork,
 } from "@/redux/preferences";
 import Accordion from "@/atoms/Accordion";
 import { translate } from "@/util/translations";
@@ -19,12 +19,13 @@ import translations from "./DebugViewTranslations";
 export default function DebugSettings() {
   const dispatch = useDispatch();
 
-  const isChipnet = useSelector(selectIsChipnet);
   const isExperimental = useSelector(selectIsExperimental);
   const isPrerelease = useSelector(selectIsPrerelease);
 
-  const handleIsChipnet = (event) => {
-    const newNetwork = event.target.checked ? "chipnet" : "mainnet";
+  const bchNetwork = useSelector(selectBchNetwork);
+
+  const handleSelectBchNetwork = (event) => {
+    const newNetwork = event.target.value;
     dispatch(setPreference({ key: "bchNetwork", value: newNetwork }));
     window.location.assign("/");
   };
@@ -41,8 +42,16 @@ export default function DebugSettings() {
 
   return (
     <Accordion icon={BugOutlined} title={translate(translations.debugOptions)}>
-      <Accordion.Child icon={ExperimentOutlined} label="Use Chipnet">
-        <input type="checkbox" checked={isChipnet} onChange={handleIsChipnet} />
+      <Accordion.Child
+        icon={ExperimentOutlined}
+        label={translate(translations.bchNetwork)}
+      >
+        <select onChange={handleSelectBchNetwork} value={bchNetwork}>
+          <option value="mainnet">Mainnet</option>
+          <option value="chipnet">Chipnet</option>
+          <option value="testnet3">Testnet3</option>
+          <option value="testnet4">Testnet4</option>
+        </select>
       </Accordion.Child>
       <Accordion.Child
         icon={ForkOutlined}

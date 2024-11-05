@@ -1,4 +1,3 @@
-import Logger from "js-logger";
 import { Decimal } from "decimal.js";
 import {
   encodeTransaction,
@@ -9,8 +8,10 @@ import {
   importAuthenticationTemplate,
   authenticationTemplateP2pkhNonHd,
   authenticationTemplateToCompilerBCH,
+  getMinimumFee,
 } from "@bitauth/libauth";
 
+import LogService from "@/services/LogService";
 import UtxoManagerService from "@/services/UtxoManagerService";
 import AddressManagerService from "@/services/AddressManagerService";
 import HdNodeService from "@/services/HdNodeService";
@@ -18,9 +19,29 @@ import { WalletEntity } from "@/services/WalletManagerService";
 import { TransactionStub } from "@/services/TransactionManagerService";
 
 import { DUST_LIMIT } from "@/util/sats";
-import { validateInvoiceString } from "@/util/invoice";
-import { binToHex } from "@/util/hex";
+import { validateBchUri } from "@/util/uri";
+import { binToHex, hexToBin } from "@/util/hex";
 import { sha256 } from "@/util/hash";
+
+// NOTE: Couldn't find this type defined elsewhere, so have added it here.
+export type ElectrumUtxo = {
+  height: number;
+  token_data?: {
+    amount: string;
+    category: string;
+    nft?: {
+      capability: string;
+      commitment: string;
+    };
+  };
+  tx_hash: string;
+  tx_pos: number;
+  value: number;
+};
+
+const Log = LogService("TxBuilder");
+
+export class TransactionBuilderError extends Error {}
 
 export default function TransactionBuilderService(wallet: WalletEntity) {
   return {
@@ -30,7 +51,7 @@ export default function TransactionBuilderService(wallet: WalletEntity) {
   // --------------------------------
 
   function addressToLockingBytecode(addr) {
-    const { isBase58Address, address } = validateInvoiceString(addr);
+    const { isBase58Address, address } = validateBchUri(addr);
     const lockingBytecode = isBase58Address
       ? base58AddressToLockingBytecode(address)
       : cashAddressToLockingBytecode(address);
@@ -56,7 +77,7 @@ export default function TransactionBuilderService(wallet: WalletEntity) {
     const UtxoManager = UtxoManagerService(wallet);
     const inputs = UtxoManager.selectUtxos(sendTotal, fee);
 
-    Logger.debug("selectUtxos:", inputs);
+    Log.debug("using utxos:", inputs);
 
     const inputTotal = inputs
       .reduce((sum, cur) => sum.plus(cur.amount), new Decimal(0))
@@ -67,13 +88,14 @@ export default function TransactionBuilderService(wallet: WalletEntity) {
 
     // insufficient funds
     if (changeTotal < 0) {
-      Logger.debug(
+      Log.debug(
         "buildP2pkhTransaction: insufficient funds",
         inputTotal,
         sendTotal,
         fee,
-        sendTotal - fee,
-        changeTotal
+        inputTotal - sendTotal,
+        changeTotal,
+        sendTotal - fee
       );
       return sendTotal - fee;
     }
@@ -113,7 +135,7 @@ export default function TransactionBuilderService(wallet: WalletEntity) {
     });
 
     if (generatedTx.success === false) {
-      Logger.warn("tx generation failed", generatedTx);
+      Log.warn("tx generation failed", generatedTx);
       return null;
     }
 
@@ -122,9 +144,9 @@ export default function TransactionBuilderService(wallet: WalletEntity) {
     const tx_hash = swapEndianness(binToHex(sha256.hash(sha256.hash(tx_raw))));
 
     // if we didn't reclaim change, add it to total fee
-    const feeTotal = changeTotal >= DUST_LIMIT ? fee : fee + changeTotal;
+    const feeTotal = changeTotal < DUST_LIMIT ? fee + changeTotal : fee;
     if (feeTotal < tx_raw.length) {
-      Logger.debug(
+      Log.debug(
         `Fee under 1 sat/B... try again with ${tx_raw.length} bytelength as fee`,
         depth
       );
@@ -134,7 +156,7 @@ export default function TransactionBuilderService(wallet: WalletEntity) {
 
     if (feeTotal > tx_raw.length * 3 && depth < 3) {
       if (fee !== tx_raw.length) {
-        Logger.debug(
+        Log.debug(
           "Fee greater than 300% of byte length. Can we make it smaller?",
           depth
         );
@@ -145,7 +167,7 @@ export default function TransactionBuilderService(wallet: WalletEntity) {
     }
 
     /*
-    Logger.log(
+    Log.log(
       "buildTransaction",
       tx_hash,
       vout,
@@ -162,4 +184,94 @@ export default function TransactionBuilderService(wallet: WalletEntity) {
       hex: tx_hex,
     };
   }
+}
+
+// TODO: Once Token support is added to Selene, add it to this function too.
+//       It will require more complex logic: An output will need to be added per each token.
+export function buildSweepTransaction(
+  utxos: Array<ElectrumUtxo>,
+  privateKey: Uint8Array,
+  receivingAddress: string
+): TransactionStub {
+  // Convert the receiving address to locking bytecode.
+  const receivingBytecode = cashAddressToLockingBytecode(receivingAddress);
+
+  // If we could not convert it successfully, throw an error.
+  if (typeof receivingBytecode === "string") {
+    throw new Error(receivingBytecode);
+  }
+
+  // Create our P2PKH Compiler.
+  const compilerP2pkh = authenticationTemplateToCompilerBCH(
+    authenticationTemplateP2pkhNonHd
+  );
+
+  // Compile our inputs.
+  const inputDirectives = utxos.map((unspent) => ({
+    outpointIndex: unspent.tx_pos,
+    outpointTransactionHash: hexToBin(unspent.tx_hash),
+    sequenceNumber: 0,
+    unlockingBytecode: {
+      compiler: compilerP2pkh,
+      data: {
+        keys: { privateKeys: { key: privateKey } },
+      },
+      script: "unlock",
+      valueSatoshis: BigInt(unspent.value),
+    },
+  }));
+
+  // Calculate the total sats available in our inputs.
+  const totalSats = inputDirectives.reduce((total, input) => {
+    if (input.unlockingBytecode instanceof Uint8Array) {
+      return total + 0n;
+    }
+
+    return total + input.unlockingBytecode.valueSatoshis;
+  }, 0n);
+
+  // We need to calculate the number of bytes so that we can calculate the fee.
+  // So we loop twice and store the final transaction here each time.
+  // 1st time will have zero fee. 2nd time will accommodate the fee.
+  let encodedTransaction = new Uint8Array();
+
+  // Create the transaction by looping twice.
+  // 1st loop: Transaction without a fee.
+  // 2nd loop: Accommodate the fee.
+  for (let i = 0; i < 2; i += 1) {
+    // Get the fee using 1000 sats/KB.
+    const feeSats = getMinimumFee(BigInt(encodedTransaction.length), 1000n);
+
+    // Attempt to generate the transaction.
+    const generatedTransaction = generateTransaction({
+      version: 2,
+      locktime: 0,
+      inputs: inputDirectives,
+      outputs: [
+        {
+          lockingBytecode: receivingBytecode.bytecode,
+          valueSatoshis: totalSats - feeSats,
+        },
+      ],
+    });
+
+    if (!generatedTransaction.success) {
+      throw new Error("Failed to generate transaction");
+    }
+
+    // Encode the transaction for broadcasting (and fee estimation).
+    encodedTransaction = encodeTransaction(generatedTransaction.transaction);
+  }
+
+  // Calculate the txid and convert the transaction to hex format.
+  const txid = swapEndianness(
+    binToHex(sha256.hash(sha256.hash(encodedTransaction)))
+  );
+  const hex = binToHex(encodedTransaction);
+
+  // Return the transaction.
+  return {
+    txid,
+    hex,
+  };
 }

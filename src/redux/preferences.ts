@@ -6,15 +6,15 @@ import {
 } from "@reduxjs/toolkit";
 
 import { RootState } from "@/redux";
-import { electrum_servers } from "@/util/electrum_servers";
+import { electrum_servers, ValidBchNetwork } from "@/util/electrum_servers";
 import { languageList } from "@/util/translations";
 import { currencyList } from "@/util/currency";
-import { ValidBchNetwork } from "@/util/crypto";
 import { VALID_DENOMINATIONS } from "@/util/sats";
 import CurrencyService from "@/services/CurrencyService";
+import { AuthActions } from "@/services/SecurityService";
 
 const defaultPreferences = {
-  activeWalletId: "1",
+  activeWalletHash: "",
   languageCode: languageList[0].code,
   localCurrency: currencyList[0].currency,
   preferLocalCurrency: "false",
@@ -22,9 +22,10 @@ const defaultPreferences = {
   displayExchangeRate: "false",
   denomination: "bch",
   bchNetwork: "mainnet",
+  // --------
   authMode: "none",
   pinHash: "",
-  displayExploreTab: "true",
+  authActions: "Any;Debug;RevealPrivateKeys;RevealBalance;SendTransaction",
   // --------
   // TODO: make these per-wallet instead of global
   allowInstantPay: "false",
@@ -33,9 +34,11 @@ const defaultPreferences = {
   qrCodeLogo: "Selene",
   qrCodeBackground: "#ffffff",
   qrCodeForeground: "#000000",
+  displayExploreTab: "true",
+  displaySyncCounter: "false",
   // --------
   // TODO: should these go in db instead?
-  electrumServer: electrum_servers[0],
+  electrumServer: electrum_servers.mainnet[0],
   lastCheckIn: "",
   lastExchangeRate: "1",
   // --------
@@ -49,11 +52,6 @@ type ValidPreferences = typeof defaultPreferences;
 // validatePreferences: ensures loaded preferences object won't lead to broken app state on load
 // returns true/false
 function validatePreferences(preferences: ValidPreferences): boolean {
-  // activeWalletId must be integer
-  if (Number.isNaN(Number.parseInt(preferences.activeWalletId, 10))) {
-    return false;
-  }
-
   // lastExchangeRate must be numeric
   if (Number.isNaN(Number.parseFloat(preferences.lastExchangeRate))) {
     return false;
@@ -73,10 +71,25 @@ function validatePreferences(preferences: ValidPreferences): boolean {
     return false;
   }
 
+  // ensure selected denomination is valid
   if (
     !VALID_DENOMINATIONS.map((d) => d.toLowerCase()).find(
       (d) => d === preferences.denomination
     )
+  ) {
+    return false;
+  }
+
+  // all authActions must be in AuthActions enum
+  const authActions = preferences.authActions.split(";");
+  if (
+    authActions
+      .map((a) =>
+        Object.values(AuthActions)
+          .map((aa) => aa.toString())
+          .includes(a)
+      )
+      .filter((b) => b === false).length > 0
   ) {
     return false;
   }
@@ -90,6 +103,7 @@ function validatePreferences(preferences: ValidPreferences): boolean {
     "enableExperimental",
     "enablePrerelease",
     "displayExploreTab",
+    "displaySyncCounter",
     "enableDailyCheckIn",
   ];
 
@@ -204,12 +218,12 @@ export const preferencesReducer = createReducer(initialState, (builder) => {
 
 export const selectPreferences = createSelector(
   (state: RootState) => state,
-  (state): ValidPreferences => state.preferences
+  (state) => state.preferences
 );
 
-export const selectActiveWalletId = createSelector(
-  (state: RootState) => state,
-  (state): number => Number.parseInt(state.preferences.activeWalletId, 10)
+export const selectActiveWalletHash = createSelector(
+  (state: RootState) => state.preferences,
+  (preferences) => preferences.activeWalletHash
 );
 
 export const selectCurrencySettings = createSelector(
@@ -265,6 +279,7 @@ export const selectSecuritySettings = createSelector(
   (preferences) => ({
     authMode: preferences.authMode,
     pinHash: preferences.pinHash,
+    authActions: preferences.authActions.split(";"),
   })
 );
 
@@ -273,6 +288,7 @@ export const selectUiSettings = createSelector(
   (preferences) => ({
     shouldHideBalance: preferences.hideAvailableBalance === "true",
     shouldDisplayExploreTab: preferences.displayExploreTab === "true",
+    shouldDisplaySyncCounter: preferences.displaySyncCounter === "true",
   })
 );
 
@@ -283,11 +299,6 @@ export const selectPrivacySettings = createSelector(
   })
 );
 
-export const selectIsChipnet = createSelector(
-  (state: RootState) => selectBchNetwork(state),
-  (bchNetwork): boolean => bchNetwork === "chipnet"
-);
-
 export const selectIsExperimental = createSelector(
   (state: RootState) => state.preferences,
   (preferences): boolean => preferences.enableExperimental === "true"
@@ -295,7 +306,9 @@ export const selectIsExperimental = createSelector(
 
 export const selectIsPrerelease = createSelector(
   (state: RootState) => state.preferences,
-  (preferences): boolean => preferences.enablePrerelease === "true"
+  (preferences): boolean =>
+    preferences.enablePrerelease === "true" ||
+    selectIsExperimental({ preferences })
 );
 
 export const selectLastCheckIn = createSelector(

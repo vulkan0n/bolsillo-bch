@@ -1,293 +1,219 @@
-import { App } from "@capacitor/app";
 import { Filesystem, Directory, Encoding } from "@capacitor/filesystem";
 import initSqlJs from "sql.js";
-import { run_migrations } from "@/util/migrations";
+import {
+  run_appdb_migrations,
+  run_walletdb_migrations,
+} from "@/util/migrations";
+import { resultToJson } from "@/util/sql";
 import LogService from "@/services/LogService";
 
 const Log = LogService("Database");
 
-/*
- * [{ network }/servers.json]
- * [{ network }/blocks/blockhash.raw]
- * [{ network }/tx/tx_hash.raw]
- * [{ network }/wallet_id.db]
- * - /wallet
- * - /wallet_addresses
- * - /address_utxos
- * - /address_transactions
- * - /wallet_settings
- */
+const APP_DB_FILENAME = "/selene/db/app.db";
 
-export const SELENE_DB_FILENAME = "selene/selene.db";
-export const SELENE_LEGACY_DB_FILENAME = "db/selene.db";
-const SELENE_DB_BACKUP_FILENAME = "selene/selene.db.bak";
+export class DatabaseNotOpenError extends Error {
+  constructor(handle: string) {
+    super(`No Database open with handle ${handle}`);
+  }
+}
 
 // Connect to SQLite Database
-Log.log("* Initializing Database *");
-Log.time("initDb");
+Log.log("* Initializing SQLite *");
 const SQL = await initSqlJs({ locateFile: () => "/sql-wasm.wasm" });
 
 // pointers for throttling db writes
-const MAX_PENDING_SAVES = 8000;
-const BACKUP_FLUSH_LIMIT = 4;
-let flushCount = 0;
-let pendingCount = 0;
-let flushPendingTimeout;
-let isFlushing = false;
+const isFlushing = {};
+
+const db_handles = new Map();
+let db_keepalive = null;
 
 // open a db file from filesystem
-export async function _dbOpen(filename) {
-  const dbFile = await Filesystem.readFile({
-    path: filename,
-    directory: Directory.Library,
-    encoding: Encoding.UTF8,
-  });
-  const dbData = dbFile.data.toString();
-  const db = new SQL.Database(dbData.split(","));
-  return db;
-}
-
-// getWalletDatabase: try to open the wallet db file
-// return a blank db if file doesn't exist
-async function getWalletDatabase() {
-  Log.time("dbLoad");
-
+// by default, creates and initializes the db file if it doesn't exist
+export async function _dbOpen(filename, skipCreate = false) {
   let db;
   try {
-    db = await _dbOpen(SELENE_DB_FILENAME);
-    Log.log("Loaded wallet database");
+    const dbFile = await Filesystem.readFile({
+      path: filename,
+      directory: Directory.Library,
+      encoding: Encoding.UTF8,
+    });
+    const dbData = dbFile.data.toString();
+    db = new SQL.Database(dbData.split(","));
   } catch (e) {
-    Log.warn("Creating wallet database", e);
+    if (skipCreate) {
+      throw e;
+    }
+
+    Log.warn("Creating database file", filename);
     db = new SQL.Database();
   }
 
-  // run schema migrations
-  try {
-    run_migrations(db);
-  } catch (e) {
-    // something went wrong when attempting to run migrations
-    // probably "database image is malformed"
-    // attempt to load backup file or bail with new db...
-    await dump_db(db);
-    db = await retryWalletDatabase();
-  }
+  const dbExec = db.exec;
+  db.exec = (...args) => resultToJson(dbExec.apply(db, args));
 
-  Log.timeEnd("dbLoad");
+  db.path = filename;
   return db;
 }
 
-async function retryWalletDatabase() {
-  // something went wrong, attempting to load backup
-  let db;
-  try {
-    db = await _dbOpen(SELENE_DB_BACKUP_FILENAME);
-    Log.warn("Wallet database corrupted? Loading backup...");
-    run_migrations(db);
-  } catch (e) {
-    Log.warn("Wallet database corrupted!! Creating new wallet database");
-    // TODO: warn user when this happens
-    db = new SQL.Database();
-    run_migrations(db);
+// getAppDatabase: try to open the app db file
+async function getAppDatabase() {
+  let appDb;
+  if (db_handles.has("app")) {
+    appDb = db_handles.get("app");
+  } else {
+    Log.time("getAppDatabase");
+    appDb = await _dbOpen(APP_DB_FILENAME);
+    run_appdb_migrations(appDb);
+    Log.log("Loaded app database");
+    db_handles.set("app", appDb);
+    Log.timeEnd("getAppDatabase");
   }
 
-  return db;
+  return appDb;
 }
 
-// dumps db file as-is with timestamp
-async function dump_db(db) {
-  const filename = SELENE_DB_FILENAME.concat(".")
-    .concat(Date.now().toString())
-    .concat(".bak");
-
-  Log.warn("Dumping database!!", filename);
-  Log.time("dbDump");
-
-  try {
-    const result = await Filesystem.writeFile({
-      path: filename,
-      data: db.export().toString(),
-      directory: Directory.Library,
-      encoding: Encoding.UTF8,
-      recursive: true,
-    });
-
-    Log.debug("DUMP_DB", filename, result);
-  } catch (e) {
-    Log.error(e);
-  }
-
-  Log.timeEnd("dbDump");
-}
-
-// dumps db file as backup
-export async function backup_db(db) {
-  const filename = SELENE_DB_BACKUP_FILENAME;
-  Log.log("Writing backup database file", filename);
-  Log.time("dbBackup");
-
-  try {
-    const result = await Filesystem.writeFile({
-      path: filename,
-      data: db.export().toString(),
-      directory: Directory.Library,
-      encoding: Encoding.UTF8,
-      recursive: true,
-    });
-
-    Log.debug("BACKUP_DB", filename, result);
-  } catch (e) {
-    Log.error(e);
-  }
-
-  Log.timeEnd("dbBackup");
-}
-
-// use top-level pointer to ensure db is only loaded into memory once
-const WALLET_DB = await getWalletDatabase();
-Log.timeEnd("initDb");
+await getAppDatabase();
 
 // DatabaseService: brokers interactions with raw SQLite database
-export default function DatabaseService(db = WALLET_DB) {
+export default function DatabaseService() {
   return {
-    db,
-    resultToJson,
-    saveDatabase,
+    getAppDatabase,
+    getWalletDatabase,
+    openWalletDatabase,
+    closeWalletDatabase,
+    deleteWalletDatabase,
+    flushDatabase,
+    flushHandles,
+    setKeepAlive,
+    getKeepAlive,
   };
 
-  // resultToJson: turns SQLite result into a consumable object
-  function resultToJson(result) {
-    // result is empty set (empty array)
-    if (result.length === 0) {
-      return result;
+  // synchronous getWalletDatabase (requires db handle to be open already)
+  function getWalletDatabase(walletHash) {
+    if (!db_handles.has(walletHash)) {
+      throw new DatabaseNotOpenError(walletHash);
     }
 
-    const mapped = result[0].values.map((val) =>
-      result[0].columns.map((col, j) => ({ [result[0].columns[j]]: val[j] }))
-    );
-
-    const reduced = mapped.map((m) =>
-      m.reduce((acc, cur) => ({ ...acc, ...cur }), {})
-    );
-
-    /* result:
-     * [
-     *  {
-     *    columns: ["id", "name", ...],
-     *    values: [
-     *      [1, "Selene", ...],
-     *      [2, ...],
-     *      ...
-     *    ]
-     *  }
-     *]
-     *
-     * mapped:
-     * [
-     *   [ { id: 1 }, { name: "Selene" }, ...],
-     *   [ { id: 2 }, ...],
-     *   ...
-     * ]
-     *
-     * reduced:
-     * [
-     *   { id: 1, name: "Selene", ...},
-     *   { id: 2, ...},
-     *   ...
-     * ]
-     **/
-
-    //Log.debug("resultToJson", result, mapped, reduced);
-    return reduced;
+    const walletDb = db_handles.get(walletHash);
+    return walletDb;
   }
 
-  // saveDatabase: schedules a write to disk
-  // sets a timeout to batch writes together
-  function saveDatabase(force: boolean = false) {
-    clearTimeout(flushPendingTimeout);
-    flushPendingTimeout = undefined;
-    pendingCount += 1;
-
-    if (pendingCount > MAX_PENDING_SAVES || force) {
-      _flushDatabase(force);
-      flushPendingTimeout = undefined;
-      return;
+  // asynchronous openWalletDatabase (returns db handle when ready)
+  async function openWalletDatabase(walletHash, network = "mainnet") {
+    if (walletHash === "") {
+      throw new DatabaseNotOpenError(walletHash);
     }
 
-    flushPendingTimeout = setTimeout(() => {
-      if (pendingCount > 0) {
-        queueMicrotask(() => {
-          if (!isFlushing) {
-            _flushDatabase();
-          }
-        });
-      }
-    }, 512);
-  }
+    //Log.time(`openWalletDatabase ${walletHash}`);
 
-  // _flushDatabase [private]: writes database to disk
-  async function _flushDatabase(force: boolean = false) {
-    if (isFlushing && !force) {
-      Log.debug("skipping flush due to flushLock");
-      return;
-    }
-
-    const doFlush = async () => {
-      Log.time("flushDatabase");
-      try {
-        isFlushing = true;
-        const data = db.export().toString();
-        const result = await Filesystem.writeFile({
-          path: SELENE_DB_FILENAME,
-          data,
-          directory: Directory.Library,
-          encoding: Encoding.UTF8,
-          recursive: true,
-        });
-
-        pendingCount = 0;
-        flushCount += 1;
-
-        if (flushCount > BACKUP_FLUSH_LIMIT) {
-          queueMicrotask(() => backup_db(db));
-          flushCount = 0;
-        }
-
-        Log.debug("flushDatabase", result);
-      } catch (e) {
-        Log.error("flushDatabase error", e);
-        await dump_db(db);
-      } finally {
-        isFlushing = false;
-        Log.timeEnd("flushDatabase");
-      }
-    };
-
-    if (force) {
-      Log.debug("Forced flushDatabase!");
-      await doFlush();
+    let walletDb;
+    if (db_handles.has(walletHash)) {
+      walletDb = db_handles.get(walletHash);
     } else {
-      queueMicrotask(() => {
-        doFlush();
-      });
+      const walletDbFilename = `/selene/db/${walletHash}.${network}.db`;
+      walletDb = await _dbOpen(walletDbFilename);
+      run_walletdb_migrations(walletDb);
+
+      db_handles.set(walletHash, walletDb);
     }
+
+    //Log.timeEnd(`openWalletDatabase ${walletHash}`);
+    return walletDb;
+  }
+
+  async function closeWalletDatabase(walletHash, skipFlush = false) {
+    if (!db_handles.has(walletHash)) {
+      Log.warn("closeWalletDatabase: not open", walletHash);
+      return;
+    }
+
+    //Log.time(`closeWalletDatabase ${walletHash}`);
+
+    const walletDb = getWalletDatabase(walletHash);
+    if (!skipFlush) {
+      await flushDatabase(walletHash);
+    }
+    walletDb.close();
+    db_handles.delete(walletHash);
+
+    //Log.timeEnd(`closeWalletDatabase ${walletHash}`);
+  }
+
+  async function deleteWalletDatabase(walletHash, network) {
+    await closeWalletDatabase(walletHash, true);
+
+    return Filesystem.deleteFile({
+      path: `/selene/db/${walletHash}.${network}.db`,
+      directory: Directory.Library,
+    });
+  }
+
+  // flushDatabase: writes database to disk
+  async function flushDatabase(handle = "app", force: boolean = false) {
+    if (!force && isFlushing[handle]) {
+      Log.debug("skipping flush due to flushLock", handle);
+      return Promise.resolve();
+    }
+
+    Log.time(`flushDatabase ${handle}`);
+    try {
+      isFlushing[handle] = true;
+      const db_handle = db_handles.get(handle);
+
+      const data = db_handle.export().toString();
+      const result = await Filesystem.writeFile({
+        path: db_handle.path,
+        data,
+        directory: Directory.Library,
+        encoding: Encoding.UTF8,
+        recursive: true,
+      });
+
+      Log.debug("flushDatabase", result.uri);
+      return result;
+    } catch (e) {
+      Log.error("flushDatabase error", e);
+      throw e;
+    } finally {
+      isFlushing[handle] = false;
+      Log.timeEnd(`flushDatabase ${handle}`);
+    }
+  }
+
+  async function flushHandles(shouldCloseHandles: boolean = true) {
+    Log.debug("flushHandles", db_handles);
+    const promises = [...db_handles].map(async ([handle]) => {
+      if (shouldCloseHandles && handle !== "app" && handle !== db_keepalive) {
+        return closeWalletDatabase(handle);
+      }
+
+      // else flush without closing
+      return flushDatabase(handle);
+    });
+    //Log.debug("flushHandles promises", promises);
+
+    return Promise.all(promises);
+  }
+
+  function setKeepAlive(handle) {
+    db_keepalive = handle;
+  }
+
+  function getKeepAlive() {
+    return db_keepalive;
   }
 }
 
 // force database write on app stop and pause
+/*
 App.addListener("appStateChange", async ({ isActive }) => {
-  if (!isActive && pendingCount > 0) {
-    await DatabaseService().saveDatabase(true);
-    Log.debug("flushDatabase on stop");
-  }
+  const shouldCloseHandles = isActive === false;
+  await DatabaseService().flushHandles(shouldCloseHandles);
 });
 
-// force database write on app stop and pause
 App.addListener("pause", async () => {
-  if (pendingCount > 0) {
-    await DatabaseService().saveDatabase(false);
-    Log.debug("flushDatabase on pause");
-  }
-});
+  await DatabaseService().flushHandles(false);
+});*/
 
 // HERE BE SATS if someone wants to try to steal them!
 // Some ancient commit will load this wallet, but send wasn't implemented yet...

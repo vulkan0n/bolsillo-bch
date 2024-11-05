@@ -126,6 +126,21 @@ export default function CreditsView() {
         </ol>
 
         <h2 className="font-bold text-2xl mt-4">
+          {translate(translations.developers)}
+        </h2>
+        <ul className="list-inside list-disc">
+          <li>Jim Hamill</li>
+        </ul>
+
+        <h2 className="font-bold text-2xl mt-4">
+          {translate(translations.testers)}
+        </h2>
+        <ul className="list-inside list-disc">
+          <li>Gustavo</li>
+          <li>nemecis1000</li>
+        </ul>
+
+        <h2 className="font-bold text-2xl mt-4">
           {translate(translations.translators)}
         </h2>
         <ul className="list-inside list-disc">
@@ -143,8 +158,7 @@ export default function CreditsView() {
           <li>Johnathan Silverblood</li>
           <li>Mathieu Geukens</li>
           <li>Jim Hamill</li>
-          <li>Gustavo</li>
-          <li>nemecis1000</li>
+          <li>Calin Culianu</li>
           <li>Bitcoin Jason</li>
           <li>Sahid Miller</li>
           <li>Ian Blas</li>
@@ -152,6 +166,7 @@ export default function CreditsView() {
           <li>Arthur</li>
           <li>XaYaZaZa</li>
           <li>@_minisatoshi</li>
+          <li>Steve Thurmond</li>
         </ul>
       </div>
     </>

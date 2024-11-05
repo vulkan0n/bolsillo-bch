@@ -14,7 +14,7 @@ export default function ViewHeader({ icon = () => null, title = "" }: Props) {
   const Icon = icon;
 
   return (
-    <div className="bg-zinc-900 text-xl text-zinc-200 grid grid-cols-6 py-3 font-bold">
+    <div className="sticky top-0 z-50 w-full bg-zinc-900 text-xl text-zinc-200 grid grid-cols-6 py-3 font-bold">
       {shouldShowBackButton ? (
         <button
           type="button"

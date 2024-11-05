@@ -1,4 +1,5 @@
-## fastlane documentation
+fastlane documentation
+----
 
 # Installation
 
@@ -14,21 +15,29 @@ For _fastlane_ installation instructions, see [Installing _fastlane_](https://do
 
 ## Android
 
-### android test
+### android package
 
 ```sh
-[bundle exec] fastlane android test
+[bundle exec] fastlane android package
 ```
 
-Runs all the tests
+Build .aab and .apk packages for current version
 
-### android beta
+### android screenshots
 
 ```sh
-[bundle exec] fastlane android beta
+[bundle exec] fastlane android screenshots
 ```
 
-Submit a new Beta Build to Crashlytics Beta
+Generates screenshots
+
+### android deploy_beta
+
+```sh
+[bundle exec] fastlane android deploy_beta
+```
+
+Submit a new Release Candidate to Google Play Beta Track
 
 ### android deploy
 
@@ -38,7 +47,7 @@ Submit a new Beta Build to Crashlytics Beta
 
 Deploy a new version to the Google Play
 
----
+----
 
 This README.md is auto-generated and will be re-generated every time [_fastlane_](https://fastlane.tools) is run.
 

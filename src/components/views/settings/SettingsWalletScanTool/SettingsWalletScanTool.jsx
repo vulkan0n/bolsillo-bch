@@ -16,17 +16,17 @@ import AddressScannerService from "@/services/AddressScannerService";
 import HdNodeService from "@/services/HdNodeService";
 import AddressManagerService from "@/services/AddressManagerService";
 
-import { DEFAULT_DERIVATION_PATH, DERIVATION_PATHS } from "@/util/crypto";
+import { DEFAULT_DERIVATION_PATH, DERIVATION_PATHS } from "@/util/derivation";
 
 export default function SettingsWalletScanTool() {
-  const { wallet_id } = useParams();
+  const { walletHash } = useParams();
   const bchNetwork = useSelector(selectBchNetwork);
   const location = useLocation();
 
   const dispatch = useDispatch();
 
-  const WalletManager = WalletManagerService(bchNetwork);
-  const wallet = WalletManager.getWalletById(wallet_id);
+  const WalletManager = WalletManagerService();
+  const wallet = WalletManager.getWallet(walletHash);
 
   const AddressManager = AddressManagerService(wallet);
 
@@ -137,7 +137,7 @@ export default function SettingsWalletScanTool() {
 
   return (
     <>
-      <ViewHeader icon={SyncOutlined} title="Wallet Scan Tool" />
+      <ViewHeader icon={SyncOutlined} title="Address Scan Tool" />
       <div className="p-1">
         <div className="flex mb-1">
           <button

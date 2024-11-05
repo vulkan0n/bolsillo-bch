@@ -1,34 +1,48 @@
 import { useSelector } from "react-redux";
-import { selectMyAddresses } from "@/redux/sync";
+import { selectWalletAddresses } from "@/redux/wallet";
+import { truncate } from "@/util/string";
 
 interface AddressProps {
   address: string;
   short?: boolean;
+  maxLength?: number;
+  withPrefix?: boolean;
+  className?: string;
 }
 
 export default function Address({
   address = "-",
   short = false,
+  maxLength = 0,
+  withPrefix = false,
+  className = "",
 }: AddressProps) {
   const PREFIX_LENGTH = 5;
   const SUFFIX_LENGTH = 5;
 
   const formattedAddress = (() => {
     const split = address.split(":");
-    return split.length > 1 ? split[1] : split[0];
+    if (split.length > 1) {
+      return withPrefix ? split[0].concat(":").concat(split[1]) : split[1];
+    }
+    return split[0];
   })();
 
-  const prefix = formattedAddress.substring(0, PREFIX_LENGTH);
-  const middle = formattedAddress.substring(
+  const truncatedAddress = truncate(formattedAddress, maxLength);
+
+  const prefix = truncatedAddress.substring(0, PREFIX_LENGTH);
+  const middle = truncatedAddress.substring(
     PREFIX_LENGTH,
-    formattedAddress.length - SUFFIX_LENGTH
+    truncatedAddress.length - SUFFIX_LENGTH
   );
-  const suffix = formattedAddress.substring(PREFIX_LENGTH + middle.length);
+  const suffix = truncatedAddress.substring(
+    truncatedAddress.length - SUFFIX_LENGTH
+  );
 
-  const myAddresses = useSelector(selectMyAddresses);
-  const isMyAddress = myAddresses[address] !== undefined;
+  const myAddresses = useSelector(selectWalletAddresses);
+  const myAddress = myAddresses.find((addr) => addr.address === address);
 
-  const myAddress = isMyAddress ? myAddresses[address] : null;
+  const isMyAddress = myAddress !== undefined;
 
   const myAddressStyle =
     isMyAddress && myAddress.change === 0 ? "text-secondary" : "";
@@ -36,7 +50,9 @@ export default function Address({
     isMyAddress && myAddress.change === 1 ? "text-yellow-600" : "";
 
   return (
-    <span className={`tracking-tighter ${myAddressStyle} ${myChangeStyle}`}>
+    <span
+      className={`tracking-tighter ${myAddressStyle} ${myChangeStyle} ${className}`}
+    >
       <span className="font-bold">{prefix}</span>
       {short ? "-" : middle}
       <span className="font-bold">{suffix}</span>

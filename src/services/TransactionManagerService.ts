@@ -1,4 +1,4 @@
-import { Filesystem, Directory, WriteFileResult } from "@capacitor/filesystem";
+import { Filesystem, Directory } from "@capacitor/filesystem";
 import { Decimal } from "decimal.js";
 import {
   decodeTransaction,
@@ -10,7 +10,9 @@ import LogService from "@/services/LogService";
 import DatabaseService from "@/services/DatabaseService";
 import ElectrumService from "@/services/ElectrumService";
 import UtxoManagerService from "@/services/UtxoManagerService";
-import { WalletEntity } from "@/services/WalletManagerService";
+import WalletManagerService, {
+  WalletEntity,
+} from "@/services/WalletManagerService";
 
 import { hexToBin, binToHex } from "@/util/hex";
 
@@ -46,11 +48,13 @@ export class TransactionNotExistsError extends Error {
   }
 }
 
-export default function TransactionManagerService() {
-  const { db, resultToJson, saveDatabase } = DatabaseService();
+const Database = DatabaseService();
+const appDb = await Database.getAppDatabase();
 
+export default function TransactionManagerService() {
   return {
     resolveTransaction,
+    waitForTransactionToResolve,
     sendTransaction,
     deleteTransaction,
     purgeTransactions,
@@ -82,10 +86,41 @@ export default function TransactionManagerService() {
     }
   }
 
-  async function sendTransaction(
-    tx: TransactionStub,
-    wallet: WalletEntity
-  ): Promise<boolean> {
+  // Will poll resolveTransaction at the given interval for up to the given timeout period.
+  // This function is useful in situations where we need to monitor ("wait") for a transaction that is broadcasted by a third-party node (not us).
+  // NOTE: A more optimal implementation in future might be to use Fulcrum's tx.subscribe emthods.
+  //       However, this would probably be a heavy refactor that introduces additional state.
+  async function waitForTransactionToResolve(
+    transactionId: string,
+    timeoutMs = 10_000,
+    intervalMs = 1000
+  ) {
+    const startTime = Date.now();
+
+    return new Promise<TransactionEntity>((resolve, reject) => {
+      const checkTransaction = async () => {
+        try {
+          const tx = await resolveTransaction(transactionId);
+          resolve(tx);
+        } catch (error) {
+          // If the transaction is not resolved yet, check again after the interval
+          const elapsedTime = Date.now() - startTime;
+          if (elapsedTime < timeoutMs) {
+            setTimeout(checkTransaction, intervalMs);
+          } else {
+            reject(
+              new Error(`Failed to resolve transaction after ${timeoutMs}ms`)
+            );
+          }
+        }
+      };
+
+      // Start checking the transaction
+      checkTransaction();
+    });
+  }
+
+  async function sendTransaction(tx: TransactionStub, wallet: WalletEntity) {
     const { txid: tx_hash, hex: tx_hex } = tx;
 
     const Electrum = ElectrumService();
@@ -104,7 +139,7 @@ export default function TransactionManagerService() {
       Log.warn("transaction send failure", result);
     }
 
-    return isSuccess;
+    return { isSuccess, result };
   }
 
   async function deleteTransaction(tx_hash: string): Promise<void> {
@@ -118,26 +153,60 @@ export default function TransactionManagerService() {
     }
 
     //Log.debug("deleteTransaction", tx_hash);
-    db.run(`DELETE FROM transactions WHERE txid="${tx_hash}";`);
-    saveDatabase();
+    appDb.run(`DELETE FROM transactions WHERE txid="${tx_hash}";`);
   }
 
   async function purgeTransactions(): Promise<void> {
-    Log.debug("purgeTransactions scheduled");
-    queueMicrotask(async () => {
-      const tx_hashes = resultToJson(
-        db.exec(
-          `
-        SELECT txid FROM transactions WHERE
-          txid NOT IN (SELECT txid FROM address_utxos) 
-          AND txid NOT IN (SELECT txid FROM address_transactions WHERE amount IS NULL);
-        `
-        )
+    const db_keepalive = Database.getKeepAlive();
+    const WalletManager = WalletManagerService();
+    const wallets = WalletManager.listWallets();
+
+    const live_txids = (
+      await Promise.all(
+        wallets.map(async ({ walletHash }) => {
+          const walletDb = await WalletManager.openWalletDatabase(walletHash);
+          const utxo_txids = walletDb.exec("SELECT txid FROM address_utxos");
+          const history_txids = walletDb.exec(
+            "SELECT txid FROM address_transactions WHERE amount IS NULL"
+          );
+
+          const cat_txids = [
+            ...utxo_txids.map(({ txid }) => `"${txid}"`),
+            ...history_txids.map(({ txid }) => `"${txid}"`),
+          ].join(",");
+
+          if (db_keepalive !== walletHash) {
+            await Database.closeWalletDatabase(walletHash, true);
+          }
+
+          return cat_txids;
+        })
+      )
+    )
+      .filter((txid) => txid !== "")
+      .join(",");
+
+    const purgeHashes = appDb
+      .exec(`SELECT txid FROM transactions WHERE txid NOT IN (${live_txids})`)
+      .map(({ txid }) => txid);
+
+    const fileTxHashes = (
+      await Filesystem.readdir({
+        path: "/selene/tx",
+        directory: Directory.Library,
+      })
+    ).files
+      .map((file) => file.name.split(".")[0])
+      .filter(
+        (txid) => !live_txids.includes(txid) && !purgeHashes.includes(txid)
       );
-      Log.debug("purgeTransactions", tx_hashes);
-      await Promise.all(tx_hashes.map(({ txid }) => deleteTransaction(txid)));
-      Log.debug("purgeTransactions done");
-    });
+
+    const tx_hashes = [...purgeHashes, ...fileTxHashes];
+
+    Log.time("purgeTransactions");
+    await Promise.all(tx_hashes.map((txid) => deleteTransaction(txid)));
+    Log.debug("purgeTransactions", tx_hashes);
+    Log.timeEnd("purgeTransactions");
   }
 
   // --------------------------------
@@ -168,27 +237,18 @@ export default function TransactionManagerService() {
   }
 
   // [private] _writeTxData: write raw transaction hex data to filesystem
-  async function _writeTxData(
-    tx_hash: string,
-    tx_hex: string
-  ): Promise<WriteFileResult> {
-    try {
-      // Filesystem plugin writes as raw bytes, but we must pass base64
-      const data = btoa(tx_hex);
+  async function _writeTxData(tx_hash: string, tx_hex: string) {
+    // Filesystem plugin writes as raw bytes, but we must pass base64
+    const data = btoa(tx_hex);
 
-      const result = await Filesystem.writeFile({
-        path: `/selene/tx/${tx_hash}.raw`,
-        directory: Directory.Library,
-        recursive: true,
-        data,
-      });
+    const result = await Filesystem.writeFile({
+      path: `/selene/tx/${tx_hash}.raw`,
+      directory: Directory.Library,
+      recursive: true,
+      data,
+    });
 
-      return result;
-    } catch (e) {
-      Log.error(e);
-      await purgeTransactions();
-      return { uri: "" };
-    }
+    return result;
   }
 
   // --------------------------------
@@ -200,9 +260,8 @@ export default function TransactionManagerService() {
     const blocktime = tx.blocktime ? tx.blocktime : null;
     const time = tx.time ? tx.time : Math.floor(Date.now() / 1000);
 
-    const result = resultToJson(
-      db.exec(
-        `INSERT INTO transactions (
+    const result = appDb.exec(
+      `INSERT INTO transactions (
         txid,
         size,
         blockhash,
@@ -223,11 +282,9 @@ export default function TransactionManagerService() {
           blocktime="${blocktime}"
         RETURNING *;
       `
-      )
     )[0];
 
     await _writeTxData(tx.txid, tx.hex);
-    saveDatabase();
 
     const decodedTx = decodeTransaction(hexToBin(tx.hex)) as LibauthTransaction;
 
@@ -246,8 +303,8 @@ export default function TransactionManagerService() {
   async function getTransactionByHash(
     tx_hash: string
   ): Promise<TransactionEntity> {
-    const result = resultToJson(
-      db.exec(`SELECT * FROM transactions WHERE txid="${tx_hash}"`)
+    const result = appDb.exec(
+      `SELECT * FROM transactions WHERE txid="${tx_hash}"`
     );
 
     if (result.length < 1) {

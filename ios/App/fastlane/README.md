@@ -1,4 +1,5 @@
-## fastlane documentation
+fastlane documentation
+----
 
 # Installation
 
@@ -14,23 +15,31 @@ For _fastlane_ installation instructions, see [Installing _fastlane_](https://do
 
 ## iOS
 
-### ios beta
+### ios package
 
 ```sh
-[bundle exec] fastlane ios beta
+[bundle exec] fastlane ios package
+```
+
+Build .ipa package for iOS
+
+### ios deploy_testflight
+
+```sh
+[bundle exec] fastlane ios deploy_testflight
 ```
 
 Push a build to TestFlight
 
-### ios release
+### ios deploy
 
 ```sh
-[bundle exec] fastlane ios release
+[bundle exec] fastlane ios deploy
 ```
 
 Push a new release build to the App Store
 
----
+----
 
 This README.md is auto-generated and will be re-generated every time [_fastlane_](https://fastlane.tools) is run.
 

@@ -1,6 +1,5 @@
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { Haptics, NotificationType } from "@capacitor/haptics";
 import { Clipboard } from "@capacitor/clipboard";
 import {
   SendOutlined,
@@ -16,8 +15,9 @@ import ScannerButton from "../ScannerButton/ScannerButton";
 import TorchButton from "../TorchButton/TorchButton";
 import ImageSelectButton from "../ImageSelectButton/ImageSelectButton";
 
-import { validateInvoiceString } from "@/util/invoice";
 import ToastService from "@/services/ToastService";
+import { validateBchUri } from "@/util/uri";
+import { Haptic } from "@/util/haptic";
 
 const { noBchAddress, pleaseCopy, history, send } = translations;
 
@@ -25,15 +25,33 @@ export default function WalletViewButtons() {
   const navigate = useNavigate();
   const isScanning = useSelector(selectScannerIsScanning);
 
-  const forwardOnValidAddress = (input) => {
+  const forwardOnValidAddress = async (input) => {
     // go to send screen when valid address is entered
-    const { isValid, address, query } = validateInvoiceString(input);
+    const {
+      isValid,
+      isPaymentProtocol,
+      isWif,
+      address,
+      query,
+      requestUri,
+      wif,
+    } = validateBchUri(input);
 
     if (isValid) {
-      Haptics.notification({ type: NotificationType.Success });
-      navigate(`/wallet/send/${address}${query}`);
+      await Haptic.success();
+
+      let navTo;
+      if (isPaymentProtocol) {
+        navTo = `/wallet/pay/?r=${requestUri}`;
+      } else if (isWif) {
+        navTo = `/wallet/sweep/${wif}`;
+      } else {
+        navTo = `/wallet/send/${address}${query}`;
+      }
+
+      navigate(navTo);
     } else {
-      Haptics.notification({ type: NotificationType.Error });
+      await Haptic.error();
     }
 
     return isValid;
@@ -47,9 +65,9 @@ export default function WalletViewButtons() {
       // Error: Reading from clipboard not supported in this browser
       // Firefox users must set "dom.events.asyncClipboard.read" to "true" in about:config
       const paste = (await Clipboard.read()).value;
-      isValid = forwardOnValidAddress(paste);
+      isValid = await forwardOnValidAddress(paste);
     } catch (e) {
-      //Logger.warn(e);
+      //console.warn(e);
     } finally {
       const titleTranslation = translate(noBchAddress);
       const descriptionTranslation = translate(pleaseCopy);
@@ -73,7 +91,7 @@ export default function WalletViewButtons() {
 
   return (
     <>
-      <div className="mb-3.5">{!isScanning && <hr />}</div>
+      <div className="mb-2">{!isScanning && <hr />}</div>
       <div className="flex items-center w-auto mx-4 justify-evenly">
         {isScanning ? (
           <ImageSelectButton
