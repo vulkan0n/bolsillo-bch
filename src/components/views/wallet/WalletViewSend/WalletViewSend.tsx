@@ -59,11 +59,7 @@ export default function WalletViewSend() {
   const [message, setMessage] = useState("");
   const [isSending, setIsSending] = useState(false);
 
-  const { shouldPreferLocalCurrency, localCurrency } = useSelector(
-    selectCurrencySettings
-  );
-
-  const currency = shouldPreferLocalCurrency ? localCurrency : "BCH";
+  const { shouldPreferLocalCurrency } = useSelector(selectCurrencySettings);
 
   const querySats = searchParams.get("amount")
     ? bchToSats(searchParams.get("amount"))
@@ -273,10 +269,7 @@ export default function WalletViewSend() {
           <div className="p-2 fixed top-[40%] w-full">
             <div className="py-4 px-2 rounded-md shadow-md bg-primary/95 text-white">
               <div className="flex items-center">
-                <CurrencySymbol
-                  currency={currency}
-                  className="font-bold text-4xl mr-2"
-                />
+                <CurrencySymbol className="font-bold text-4xl mr-2" />
                 <SatoshiInput
                   key={satoshiInputKey}
                   onChange={handleAmountInput}
