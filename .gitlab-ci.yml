@@ -18,7 +18,9 @@ version:
   only:
     - main
     - testflight
-
+  tags:
+    - macos
+  
 build_sync:
   stage: build
   image: node:lts-alpine
