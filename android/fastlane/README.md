@@ -31,10 +31,10 @@ Build .aab and .apk packages for current version
 
 Generates screenshots
 
-### android deploy_beta
+### android deploy_testflight
 
 ```sh
-[bundle exec] fastlane android deploy_beta
+[bundle exec] fastlane android deploy_testflight
 ```
 
 Submit a new Release Candidate to Google Play Beta Track

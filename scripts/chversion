@@ -16,7 +16,7 @@ increment_release() {
 
 update_package_version() {
     local version=$1
-    sed -i "s/\"version\": \".*\"/\"version\": \"$version\"/" package.json
+    sed -i.bak "s/\"version\": \".*\"/\"version\": \"$version\"/" package.json
 }
 
 update_android_version() {
