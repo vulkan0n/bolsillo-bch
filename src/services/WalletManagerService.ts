@@ -32,6 +32,7 @@ export interface WalletEntity extends WalletStub, WalletMeta {
   prefix: string;
   network: ValidBchNetwork;
   nonce: number;
+  genesis_height: number | null;
 }
 
 export class WalletNotExistsError extends Error {
@@ -64,6 +65,7 @@ export default function WalletManagerService() {
     saveWallet,
     calculateWalletHash,
     openWalletDatabase,
+    setGenesisHeight,
   };
 
   // ----------------------------
@@ -187,8 +189,9 @@ export default function WalletManagerService() {
         name,
         mnemonic,
         passphrase,
-        derivation
-      ) VALUES (?, ?, ?, ?, ?)
+        derivation,
+        genesis_height
+      ) VALUES (?, ?, ?, ?, ?, 0)
       RETURNING *`,
       [walletHash, name, mnemonic, passphrase, derivation]
     )[0];
@@ -338,6 +341,8 @@ export default function WalletManagerService() {
 
     // delete wallet utxos
     walletDb.run(`DELETE FROM address_utxos`);
+
+    walletDb.run("UPDATE wallet SET genesis_height=null");
   }
 
   function calculateWalletHash(wallet: WalletStub): string {
@@ -436,5 +441,11 @@ export default function WalletManagerService() {
 
   async function openWalletDatabase(walletHash) {
     return Database.openWalletDatabase(walletHash, network);
+  }
+
+  function setGenesisHeight(walletHash, height) {
+    const walletDb = Database.getWalletDatabase(walletHash);
+    walletDb.run(`UPDATE wallet SET genesis_height=?`, [height]);
+    Log.debug("setGenesisHeight", height, walletHash);
   }
 }

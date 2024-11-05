@@ -33,6 +33,7 @@ export default function ElectrumService() {
   return {
     connect,
     disconnect,
+    getIsConnected,
     subscribeToAddress,
     subscribeToChaintip,
     requestBalance,
@@ -103,6 +104,12 @@ export default function ElectrumService() {
     }
 
     return true;
+  }
+
+  function getIsConnected() {
+    return electrum !== null
+      ? electrum.status === ConnectionStatus.CONNECTED
+      : false;
   }
 
   // subscribeToAddress: listen for updates on an address

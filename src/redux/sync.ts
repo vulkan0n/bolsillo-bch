@@ -43,7 +43,7 @@ export const syncConnect = createAsyncThunk(
   async (payload: { attempts: number; server: string }, thunkApi) => {
     Log.log("sync/connect", payload);
     try {
-      Electrum.connect(payload.server);
+      await Electrum.connect(payload.server);
     } catch (e) {
       Log.error(e);
       // if connection fails, destroy the client and try again
@@ -233,7 +233,7 @@ export const syncAddressHistory = createAsyncThunk(
       calculatedAddressState !== storedAddressState ||
       storedAddressState === null
     ) {
-      await AddressScanner.scanHistory(address.address);
+      await AddressScanner.scanHistory(address);
     }
   }
 );
@@ -355,6 +355,12 @@ const initialState = {
 
 export const syncReducer = createReducer(initialState, (builder) => {
   builder
+    .addCase(syncConnect.pending, (state) => {
+      state.isConnected = false;
+    })
+    .addCase(syncConnectionUp.pending, (state) => {
+      state.isConnected = false;
+    })
     .addCase(syncConnectionUp.fulfilled, (state: RootState, action) => {
       state.isConnected = true;
       state.server = action.payload;

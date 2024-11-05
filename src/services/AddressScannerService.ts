@@ -161,6 +161,14 @@ export default function AddressScannerService(wallet) {
 
     Log.debug("resolved states:", addressStubs);
 
+    const genesisAddress = addressStubs.find(
+      (stub) => stub.hd_index === 0 && stub.change === 0
+    );
+
+    if (genesisAddress && genesisAddress.state === null) {
+      WalletManager.setGenesisHeight(wallet.walletHash, 0);
+    }
+
     // filter out all unused addresses
     const activeAddresses = addressStubs.filter((stub) => stub.state !== null);
 
@@ -228,11 +236,11 @@ export default function AddressScannerService(wallet) {
 
         // if states match, address does not need update
         if (calculatedState !== stub.state) {
-          return scanHistory(stub.address, callback, true);
+          return scanHistory(stub, callback, true);
         }
 
         callback(1);
-        return Promise.resolve();
+        return Promise.resolve([stub.address, calculatedState]);
       })
     );
 
@@ -357,25 +365,39 @@ export default function AddressScannerService(wallet) {
   }
 
   async function scanHistory(
-    address: string,
+    address: AddressStub,
     callback: (number) => void = () => {},
     batch = false
   ) {
     const walletDb = await WalletManager.openWalletDatabase(wallet.walletHash);
 
-    const history = await Electrum.requestAddressHistory(address);
+    const history = await Electrum.requestAddressHistory(address.address);
     history.forEach((historyTx) => {
-      AddressManager.registerTransaction(address, historyTx);
+      AddressManager.registerTransaction(address.address, historyTx);
     });
 
-    const newCalculatedState = AddressManager.calculateAddressState(address);
+    const newCalculatedState = AddressManager.calculateAddressState(
+      address.address
+    );
+
+    if (address.hd_index === 0 && address.change === 0) {
+      const genesisHeight = history.reduce((lowest, cur) => {
+        if (lowest === 0) {
+          return cur.height;
+        }
+
+        return cur.height < lowest ? cur.height : lowest;
+      }, 0);
+
+      WalletManager.setGenesisHeight(wallet.walletHash, genesisHeight);
+    }
 
     try {
       if (!batch) {
         walletDb.run(
           `UPDATE addresses SET 
           state=?
-        WHERE address="${address}";
+        WHERE address="${address.address}";
       `,
           [newCalculatedState]
         );
@@ -387,6 +409,6 @@ export default function AddressScannerService(wallet) {
 
     //Log.debug("scanHistory", address, newCalculatedState);
     callback(1);
-    return Promise.resolve([address, newCalculatedState]);
+    return Promise.resolve([address.address, newCalculatedState]);
   }
 }
