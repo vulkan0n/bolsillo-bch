@@ -8,7 +8,7 @@ import {
 
 import { RootState } from "@/redux";
 import { setPreference, selectElectrumServer } from "@/redux/preferences";
-import { syncConnect } from "@/redux/sync";
+import { syncConnect, syncClearAddresses } from "@/redux/sync";
 
 import { ValidBchNetwork } from "@/util/electrum_servers";
 
@@ -49,6 +49,7 @@ export const walletBoot = createAsyncThunk(
       setPreference({ key: "activeWalletHash", value: wallet.walletHash })
     );
 
+    thunkApi.dispatch(syncClearAddresses());
     thunkApi.dispatch(walletReloadAddresses({ wallet }));
 
     const isMainnet = network === "mainnet";

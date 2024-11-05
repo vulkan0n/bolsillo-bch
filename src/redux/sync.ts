@@ -332,6 +332,8 @@ export const syncChaintip = createAsyncThunk(
   }
 );
 
+export const syncClearAddresses = createAction("sync/clearAddresses");
+
 const initialPending = {
   utxo: 0,
   history: 0,
@@ -413,6 +415,9 @@ export const syncReducer = createReducer(initialState, (builder) => {
     })
     .addCase(syncHotRefresh.fulfilled, (state: RootState, action) => {
       state.lastRefresh = action.payload;
+    })
+    .addCase(syncClearAddresses, (state) => {
+      state.addresses = initialState.addresses;
     });
 });
 

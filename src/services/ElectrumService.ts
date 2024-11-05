@@ -59,11 +59,8 @@ export default function ElectrumService() {
 
     Log.log("Connecting to", connectServer, bchNetwork);
 
-    if (
-      electrum !== null &&
-      electrum.status !== ConnectionStatus.DISCONNECTED
-    ) {
-      await electrum.disconnect();
+    if (electrum !== null) {
+      await electrum.disconnect(true);
     }
 
     // create a new ElectrumClient every time to enable server switching
@@ -101,7 +98,8 @@ export default function ElectrumService() {
   // disconnect: disconnect the Electrum instance
   async function disconnect(force: boolean) {
     if (electrum !== null) {
-      return electrum.disconnect(force, false);
+      await electrum.disconnect(force);
+      electrum = null;
     }
 
     return true;

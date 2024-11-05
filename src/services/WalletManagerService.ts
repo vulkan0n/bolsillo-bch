@@ -2,7 +2,6 @@ import { Filesystem, Directory, Encoding } from "@capacitor/filesystem";
 import * as bip39 from "bip39";
 import LogService from "@/services/LogService";
 import DatabaseService from "@/services/DatabaseService";
-import TransactionManagerService from "@/services/TransactionManagerService";
 import { ValidBchNetwork } from "@/util/electrum_servers";
 import {
   ValidDerivationPath,
