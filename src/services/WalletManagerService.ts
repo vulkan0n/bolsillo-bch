@@ -267,8 +267,9 @@ export default function WalletManagerService() {
 
   function createTemporaryWallet(walletStub: WalletStub) {
     const walletHash = calculateWalletHash(walletStub);
+    const prefix = network === "mainnet" ? "bitcoincash" : "bchtest";
 
-    return { ...walletStub, walletHash };
+    return { ...walletStub, walletHash, prefix, network };
   }
 
   async function deleteWallet(walletHash) {

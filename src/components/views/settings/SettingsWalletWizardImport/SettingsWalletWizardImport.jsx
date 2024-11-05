@@ -5,6 +5,7 @@ import * as bip39 from "bip39";
 import Accordion from "@/components/atoms/Accordion";
 import WalletManagerService from "@/services/WalletManagerService";
 import AddressScannerService from "@/services/AddressScannerService";
+import DatabaseService from "@/services/DatabaseService";
 import LogService from "@/services/LogService";
 import { translate } from "@/util/translations";
 import translations from "./translations";
@@ -64,6 +65,8 @@ export default function SettingsWalletWizardImport() {
           derivation: DEFAULT_DERIVATION_PATH,
         });
 
+        await WalletManager.openWalletDatabase(tempWallet.walletHash);
+
         const foundPath =
           derivationPath === "auto"
             ? await AddressScannerService(tempWallet).scanDerivationPaths()
@@ -81,6 +84,10 @@ export default function SettingsWalletWizardImport() {
         walletData.walletHash = walletHash;
 
         await WalletManagerService().importWallet(walletData);
+        await DatabaseService().closeWalletDatabase(
+          tempWallet.walletHash,
+          true
+        );
 
         navigate(`build/${walletHash}`);
       } catch (e) {
