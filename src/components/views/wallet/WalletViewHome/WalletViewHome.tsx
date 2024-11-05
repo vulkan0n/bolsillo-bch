@@ -137,6 +137,7 @@ export default function WalletViewHome() {
                     satoshis={satoshiInput}
                     onChange={handleRequestAmountChange}
                     className="p-1 mr-1 w-full text-black/70 font-mono rounded-r "
+                    autoFocus
                   />
                   <div className="flex items-center justify-center">
                     <CurrencyFlip className="text-xl p-1" />
