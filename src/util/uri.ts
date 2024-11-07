@@ -53,6 +53,22 @@ export function validateWifUri(
     };
   }
 
+  // Ensure the Private Key is valid by checking the length (32 bytes = uncompressed private key, 33 bytes = compressed private key).
+  // NOTE: This is to work around a LibAuth bug where decodePrivateKeyWif does not verify the version of the Base58 string.
+  //       This means that we will get a false positive on Base58/Legacy addresses as being valid WIFs.
+  //       Once the below PR is merged into LibAuth (and we've updated to the new version), we can remove the following code.
+  //       https://github.com/bitauth/libauth/pull/147
+  const isValidPrivateKey =
+    decodedPrivateKey.privateKey.length === 32 ||
+    decodedPrivateKey.privateKey.length === 33;
+
+  // If it is not a valid private key, then it is not a WIF,
+  if (!isValidPrivateKey) {
+    return {
+      isWif: false,
+    };
+  }
+
   // Attempt to derive the public key.
   const publicKey = secp256k1.derivePublicKeyCompressed(
     decodedPrivateKey.privateKey
