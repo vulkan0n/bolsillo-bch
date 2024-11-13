@@ -15,7 +15,6 @@ import {
 } from "@/redux/wallet";
 import { txHistoryFetch } from "@/redux/txHistory";
 import { selectNetworkStatus } from "@/redux/device";
-import { fetchExchangeRates } from "@/redux/exchangeRates";
 
 import LogService from "@/services/LogService";
 import ElectrumService from "@/services/ElectrumService";
@@ -96,11 +95,10 @@ export const syncReconnect = createAsyncThunk(
 // syncConnectionUp: fired when electrum connection is up
 export const syncConnectionUp = createAsyncThunk(
   "sync/up",
-  async (server: string, thunkApi): string => {
+  async (server: string, thunkApi): Promise<string> => {
     // set up subscriptions on connect
-    Electrum.subscribeToChaintip();
+    await Electrum.subscribeToChaintip();
     thunkApi.dispatch(syncWalletAddresses());
-    thunkApi.dispatch(fetchExchangeRates(0));
 
     return server;
   }
@@ -325,12 +323,7 @@ export const syncHotRefresh = createAsyncThunk(
 
 export const syncChaintip = createAsyncThunk(
   "sync/chaintip",
-  async (chaintip: { height: number; hex: string }, thunkApi) => {
-    const sync = selectSyncState(thunkApi.getState());
-    if (sync.syncPending.chaintip > 1) {
-      return sync.chaintip;
-    }
-
+  async (chaintip: { height: number; hex: string }) => {
     const Blockchain = BlockchainService();
     const block = await Blockchain.resolveBlockByHeight(chaintip.height);
 

@@ -63,7 +63,11 @@ export default function ElectrumService() {
     Log.log("Connecting to", connectServer, bchNetwork);
 
     if (electrum !== null) {
-      await electrum.disconnect(true);
+      if (electrum.status !== ConnectionStatus.DISCONNECTED) {
+        await electrum.disconnect(true);
+      }
+
+      electrum = null;
     }
 
     // create a new ElectrumClient every time to enable server switching
@@ -344,7 +348,3 @@ function handleChaintipSubscription(data) {
 function getElectrumHost() {
   return electrum ? electrum.connection.host : "";
 }
-
-/*App.addListener("resume", () =>
-  store.dispatch(syncConnect({ server: getElectrumHost(), attempts: 0 }))
-);*/
