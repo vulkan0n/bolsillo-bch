@@ -9,7 +9,7 @@ import { walletReducer, walletBoot, addressReducer } from "./wallet";
 import { syncReducer, syncMiddleware } from "./sync";
 import { deviceReducer } from "./device";
 import { txHistoryReducer } from "./txHistory";
-import { exchangeRateReducer } from "./exchangeRates";
+import { exchangeRateReducer, fetchExchangeRates } from "./exchangeRates";
 import { triggerCheckIn } from "./stats";
 
 const Log = LogService("redux");
@@ -45,4 +45,10 @@ export function redux_init() {
 export function redux_post_init() {
   Log.debug("redux_post_init");
   store.dispatch(triggerCheckIn());
+  store.dispatch(fetchExchangeRates(0));
+}
+
+export function redux_resume() {
+  Log.debug("redux_resume");
+  store.dispatch(fetchExchangeRates(0));
 }

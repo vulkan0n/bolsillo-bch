@@ -1,8 +1,9 @@
+import { App } from "@capacitor/app";
 import ReactDOM from "react-dom/client";
 import { SplashScreen } from "@capacitor/splash-screen";
 import LogService from "@/services/LogService";
 import JanitorService from "@/services/JanitorService";
-import { redux_init, redux_post_init } from "@/redux";
+import { redux_init, redux_post_init, redux_resume } from "@/redux";
 import Main from "@/Main";
 
 // Top-Level execution for entire app starts here!
@@ -38,6 +39,13 @@ async function post_init() {
     Janitor.purgeStaleData();
   });
 }
+
+// actions to perform after app is resumed from sleep state
+App.addListener("resume", function onResume() {
+  Log.time("INIT_RESUME");
+  redux_resume();
+  Log.timeEnd("INIT_RESUME");
+});
 
 // :)
 Log.time("INIT_APP");
