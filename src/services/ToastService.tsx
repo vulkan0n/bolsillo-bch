@@ -88,6 +88,7 @@ export default function ToastService() {
       icon: <DisconnectOutlined className="text-4xl text-error" />,
       header: `Not Connected`,
       body: <span>Unable to perform action while disconnected</span>,
+      options: { id: "disconnected" },
     });
   }
 

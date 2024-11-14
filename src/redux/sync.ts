@@ -42,8 +42,18 @@ export const syncConnect = createAsyncThunk(
   "sync/connect",
   async (payload: { attempts: number; server: string }, thunkApi) => {
     Log.log("sync/connect", payload);
+    let isSuccess = false;
     try {
-      await Electrum.connect(payload.server);
+      const sync = selectSyncState(thunkApi.getState());
+
+      if (!sync.isConnected || sync.server !== payload.server) {
+        Log.debug("syncConnect", sync);
+        await Electrum.connect(payload.server);
+      } else {
+        thunkApi.dispatch(syncWalletAddresses());
+      }
+
+      isSuccess = true;
     } catch (e) {
       Log.error(e);
       // if connection fails, destroy the client and try again
@@ -67,12 +77,10 @@ export const syncConnect = createAsyncThunk(
         // try a different server
         const newServer = Electrum.selectFallbackServer(payload.server);
         thunkApi.dispatch(syncConnect({ server: newServer, attempts: 0 }));
-
-        return newServer;
       }
     }
 
-    return payload.server;
+    return isSuccess;
   }
 );
 
@@ -88,7 +96,7 @@ export const syncReconnect = createAsyncThunk(
 // syncConnectionUp: fired when electrum connection is up
 export const syncConnectionUp = createAsyncThunk(
   "sync/up",
-  (server: string, thunkApi): string => {
+  async (server: string, thunkApi): string => {
     // set up subscriptions on connect
     Electrum.subscribeToChaintip();
     thunkApi.dispatch(syncWalletAddresses());
@@ -168,10 +176,10 @@ export const syncSubscriptionCount = createAction<number>(
 // syncAddressState: fired when data acquired from address subscription
 export const syncAddressState = createAsyncThunk(
   "sync/addressState",
-  (
+  async (
     payload: [AddressEntity, string | null],
     thunkApi
-  ): [AddressEntity, string | null] => {
+  ): Promise<[AddressEntity, string | null]> => {
     // get subscription response data from payload
     const [address, addressState] = payload;
 
@@ -355,11 +363,8 @@ const initialState = {
 
 export const syncReducer = createReducer(initialState, (builder) => {
   builder
-    .addCase(syncConnect.pending, (state) => {
-      state.isConnected = false;
-    })
-    .addCase(syncConnectionUp.pending, (state) => {
-      state.isConnected = false;
+    .addCase(syncConnect.fulfilled, (state, action) => {
+      state.isConnected = action.payload;
     })
     .addCase(syncConnectionUp.fulfilled, (state: RootState, action) => {
       state.isConnected = true;

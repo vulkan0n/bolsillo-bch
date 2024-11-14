@@ -4,8 +4,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { SyncOutlined } from "@ant-design/icons";
 import { selectBchNetwork } from "@/redux/preferences";
 import { walletBoot } from "@/redux/wallet";
+import { selectSyncState } from "@/redux/sync";
 import WalletManagerService from "@/services/WalletManagerService";
 import AddressScannerService from "@/services/AddressScannerService";
+import ToastService from "@/services/ToastService";
 
 import { translate } from "@/util/translations";
 import translations from "./translations";
@@ -18,6 +20,7 @@ export default function SettingsWalletWizardBuild() {
 
   const { walletHash } = useParams();
   const bchNetwork = useSelector(selectBchNetwork);
+  const { isConnected } = useSelector(selectSyncState);
 
   const [isBuilding, setIsBuilding] = useState(false);
   const [isBuildDone, setIsBuildDone] = useState(false);
@@ -30,8 +33,12 @@ export default function SettingsWalletWizardBuild() {
         await WalletManager.openWalletDatabase(walletHash);
         const wallet = WalletManager.getWallet(walletHash);
 
-        if (isBuildDone) {
-          dispatch(
+        if (isBuildDone || !isConnected) {
+          if (!isConnected) {
+            ToastService().disconnected();
+          }
+
+          await dispatch(
             walletBoot({ walletHash: wallet.walletHash, network: bchNetwork })
           );
 
@@ -55,7 +62,15 @@ export default function SettingsWalletWizardBuild() {
 
       scan();
     },
-    [isBuilding, bchNetwork, walletHash, dispatch, isBuildDone, navigate]
+    [
+      isBuilding,
+      bchNetwork,
+      walletHash,
+      dispatch,
+      isBuildDone,
+      navigate,
+      isConnected,
+    ]
   );
 
   return (
