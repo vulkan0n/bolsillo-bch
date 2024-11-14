@@ -6,14 +6,18 @@ import { DateTime } from "luxon";
 import { CopyOutlined, ArrowLeftOutlined } from "@ant-design/icons";
 import { selectCurrencySettings } from "@/redux/preferences";
 import { selectActiveWallet } from "@/redux/wallet";
+import { selectChaintip } from "@/redux/sync";
 
 import TransactionHistoryService from "@/services/TransactionHistoryService";
 import ToastService from "@/services/ToastService";
+//import LogService from "@/services/LogService";
 
 import Address from "@/atoms/Address";
 import Satoshi from "@/atoms/Satoshi";
 import Accordion from "@/atoms/Accordion";
 import Button from "@/atoms/Button";
+
+//const Log = LogService("ExploreTransactionView");
 
 export default function ExploreTransactionView() {
   const navigate = useNavigate();
@@ -21,13 +25,15 @@ export default function ExploreTransactionView() {
 
   const wallet = useSelector(selectActiveWallet);
   const { localCurrency } = useSelector(selectCurrencySettings);
+  const chaintip = useSelector(selectChaintip);
 
   const memo = TransactionHistoryService(
     wallet,
     localCurrency
   ).getTransactionMemo(tx.txid);
 
-  const isConfirmed = tx.blockhash !== "null";
+  const isConfirmed = tx.blockhash !== null;
+  const confirmations = isConfirmed ? chaintip.height - tx.height : 0;
 
   const txDate = (
     isConfirmed ? DateTime.fromSeconds(tx.time) : DateTime.fromISO(tx.time_seen)
@@ -38,7 +44,7 @@ export default function ExploreTransactionView() {
     ToastService().clipboardCopy("Transaction ID", tx.txid);
   };
 
-  //Logger.debug(tx);
+  //Log.debug(tx, confirmations);
 
   return (
     <>
@@ -53,6 +59,9 @@ export default function ExploreTransactionView() {
       <div className="p-2">
         <div className="text-zinc-800 font-bold">
           {isConfirmed ? "Confirmed" : "Seen"} {txDate}
+          <span className="text-zinc-600 text-sm ml-1">
+            [{confirmations} blocks]
+          </span>
         </div>
         {memo && (
           <div className="text-zinc-800 my-2">

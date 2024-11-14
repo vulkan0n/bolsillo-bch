@@ -53,10 +53,21 @@ const appdb_migrations = [
 
     return query.join("");
   },
-  /*function migrate_v1() {
+  function migrate_v1() {
     const query = [];
 
+    query.push(
+      "ALTER TABLE transactions ADD COLUMN height int not null default 0;"
+    );
+
     query.push("PRAGMA user_version = 2;");
+
+    return query.join("");
+  },
+  /*function migrate_v2() {
+    const query = [];
+
+    query.push("PRAGMA user_version = 3;");
 
     return query.join("");
   },*/

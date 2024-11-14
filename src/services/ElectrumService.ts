@@ -10,6 +10,7 @@ import {
 
 import LogService from "@/services/LogService";
 import { AddressEntity } from "@/services/AddressManagerService";
+import BlockchainService from "@/services/BlockchainService";
 
 import { bchToSats } from "@/util/sats";
 import { electrum_servers } from "@/util/electrum_servers";
@@ -42,6 +43,7 @@ export default function ElectrumService() {
     requestUtxos,
     requestTransaction,
     requestMerkle,
+    requestBlockHeader,
     requestBlock,
     broadcastTransaction,
     requestRelayFee,
@@ -203,9 +205,13 @@ export default function ElectrumService() {
 
     const txRequest = electrum
       .request("blockchain.transaction.get", tx_hash, verbose)
-      .then((tx) => {
+      .then(async (tx) => {
+        const height = await electrum.request(
+          "blockchain.transaction.get_height",
+          tx_hash
+        );
         delete pendingTxRequests[tx_hash];
-        return tx;
+        return { ...tx, height };
       });
 
     pendingTxRequests[tx_hash] = txRequest;
@@ -226,8 +232,8 @@ export default function ElectrumService() {
     return merkle;
   }
 
-  // requestBlock: request a block by height
-  async function requestBlock(height, checkpoint_height = 0) {
+  // requestBlockHeader: request a block by height
+  async function requestBlockHeader(height, checkpoint_height = 0) {
     if (height < 0 || checkpoint_height < 0) {
       throw new Error("height must be non-negative integer");
     }
@@ -242,8 +248,16 @@ export default function ElectrumService() {
       checkpoint_height
     );
 
-    Log.debug("requestBlock", header, height);
+    Log.debug("requestBlockHeader", header, height);
     return header;
+  }
+
+  async function requestBlock(blockhashOrHeight: string | number) {
+    const block = await electrum.request("blockchain.header.get");
+    const blockhash = BlockchainService().calculateBlockhash(block.hex);
+
+    Log.debug("requestBlock", block, blockhash);
+    return { ...block, blockhash };
   }
 
   async function broadcastTransaction(tx_hex) {

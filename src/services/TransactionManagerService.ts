@@ -24,10 +24,12 @@ export interface TransactionStub {
 }
 
 export interface TransactionEntity extends TransactionStub {
-  blockhash: string;
-  blocktime: string;
+  blockhash: string | null;
+  blocktime: number;
   time: string;
   size: string;
+  version: number;
+  height: number;
   vin: Array<TransactionInput>;
   vout: Array<TransactionOutput>;
 }
@@ -70,7 +72,7 @@ export default function TransactionManagerService() {
       const localTx = await getTransactionByHash(tx_hash);
 
       // request the tx again if it's unconfirmed
-      if (localTx.blockhash === "null") {
+      if (localTx.blockhash === null) {
         throw new Error("Transaction Unconfirmed");
       }
 
@@ -266,22 +268,29 @@ export default function TransactionManagerService() {
         size,
         blockhash,
         time,
-        blocktime
+        blocktime,
+        version,
+        height
       )
-      VALUES (
-        "${tx.txid}",
-        "${tx.size}",
-        "${blockhash}",
-        "${time}",
-        "${blocktime}"
-      ) ON CONFLICT DO 
+      VALUES ($txid, $size, $blockhash, $time, $blocktime, $version, $height)
+      ON CONFLICT DO 
         UPDATE SET
-          size="${tx.size}",
-          blockhash="${blockhash}",
-          time="${time}",
-          blocktime="${blocktime}"
+          size=$size,
+          blockhash=$blockhash,
+          time=$time,
+          blocktime=$blocktime,
+          height=$height
         RETURNING *;
-      `
+      `,
+      {
+        $txid: tx.txid,
+        $size: tx.size,
+        $blockhash: blockhash,
+        $time: time,
+        $blocktime: blocktime,
+        $version: tx.version,
+        $height: tx.height,
+      }
     )[0];
 
     await _writeTxData(tx.txid, tx.hex);

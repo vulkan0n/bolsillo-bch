@@ -36,6 +36,7 @@ export default function BlockchainService() {
     getBlocks,
     getBlockByHash,
     getBlockByHeight,
+    resolveBlockByHash,
     resolveBlockByHeight,
     getChaintip,
     calculateBlockhash,
@@ -90,11 +91,11 @@ export default function BlockchainService() {
       `INSERT INTO blockchain (
         blockhash,
         height
-      ) VALUES (?, ?)
+      ) VALUES ($blockhash, $height)
         ON CONFLICT DO 
-        UPDATE SET height="${block.height}"
+        UPDATE SET height=$height
       `,
-      [blockhash, block.height]
+      { $blockhash: blockhash, $height: block.height }
     );
 
     await _writeBlockData(blockhash, block.hex);
@@ -147,12 +148,23 @@ export default function BlockchainService() {
     return block;
   }
 
+  async function resolveBlockByHash(blockhash: string) {
+    let block;
+    try {
+      block = await getBlockByHash(blockhash);
+    } catch {
+      const requestedBlock = await ElectrumService().requestBlock(blockhash);
+      block = await registerBlock(requestedBlock);
+    }
+    return block;
+  }
+
   async function resolveBlockByHeight(height: number) {
     let block;
     try {
       block = await getBlockByHeight(height);
     } catch {
-      const hex = await ElectrumService().requestBlock(height);
+      const hex = await ElectrumService().requestBlockHeader(height);
       block = await registerBlock({ hex, height });
     }
     return block;
