@@ -127,13 +127,14 @@ export default function WalletViewSend() {
     }
 
     if (isBase58Address) {
-      const { value: isLegacyAddressConfirmed } = await Dialog.prompt({
+      const { value: isLegacyAddressConfirmed } = await Dialog.confirm({
         title: translate(translations.base58WarningTitle),
         message: translate(translations.base58WarningMessage),
         okButtonTitle: translate(translations.base58WarningOk),
       });
 
       if (!isLegacyAddressConfirmed) {
+        setIsSending(false);
         return;
       }
     }

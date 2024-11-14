@@ -1,5 +1,9 @@
 import toast from "react-hot-toast";
-import { SnippetsFilled, DisconnectOutlined } from "@ant-design/icons";
+import {
+  SnippetsFilled,
+  DisconnectOutlined,
+  InsuranceOutlined,
+} from "@ant-design/icons";
 import { logos } from "@/util/logos";
 import Satoshi from "@/atoms/Satoshi";
 
@@ -9,6 +13,7 @@ export default function ToastService() {
     paymentReceived,
     clipboardCopy,
     disconnected,
+    authFail,
   };
 
   function spawn({ header, body, icon, options = {} }) {
@@ -83,6 +88,14 @@ export default function ToastService() {
       icon: <DisconnectOutlined className="text-4xl text-error" />,
       header: `Not Connected`,
       body: <span>Unable to perform action while disconnected</span>,
+    });
+  }
+
+  function authFail(actionText) {
+    spawn({
+      icon: <InsuranceOutlined className="text-4xl text-error" />,
+      header: `Authorization Failed`,
+      body: <span>Action &quot;{actionText}&quot; was not approved.</span>,
     });
   }
 }

@@ -1,6 +1,7 @@
 import { Dialog } from "@capacitor/dialog";
 import { NativeBiometric } from "@capgo/capacitor-native-biometric";
 import LogService from "@/services/LogService";
+import ToastService from "@/services/ToastService";
 import { store } from "@/redux";
 import { selectSecuritySettings } from "@/redux/preferences";
 import { sha256 } from "@/util/hash";
@@ -64,6 +65,10 @@ export default function SecurityService() {
       default:
         isAuthorized = false;
         break;
+    }
+
+    if (!isAuthorized) {
+      ToastService().authFail(authText[action]);
     }
 
     return isAuthorized;
