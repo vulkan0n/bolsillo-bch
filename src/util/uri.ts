@@ -106,14 +106,14 @@ function validatePaymentProtocolUri(uri) {
 function validateBip21Uri(uri) {
   const address = uri.split("?")[0];
 
-  const prefixedAddress = address.includes(":")
-    ? address
-    : `bitcoincash:${address}`;
+  const isBase58Address = typeof decodeBase58Address(address) === "object";
+
+  const prefixedAddress =
+    !isBase58Address && !address.includes(":")
+      ? `bitcoincash:${address}`
+      : address;
 
   const isCashAddress = typeof decodeCashAddress(prefixedAddress) === "object";
-  const isBase58Address =
-    !isCashAddress && typeof decodeBase58Address(address) === "object";
-
   const amountMatch = uri.match(/amount=([0-9]*\.?[0-9]{0,8})/);
   const amount = amountMatch === null ? "0" : amountMatch[1];
 
