@@ -257,7 +257,10 @@ export default function ElectrumService() {
   }
 
   async function requestBlock(blockhashOrHeight: string | number) {
-    const block = await electrum.request("blockchain.header.get");
+    const block = await electrum.request(
+      "blockchain.header.get",
+      blockhashOrHeight
+    );
     const blockhash = BlockchainService().calculateBlockhash(block.hex);
 
     Log.debug("requestBlock", block, blockhash);
@@ -333,7 +336,7 @@ function handleElectrumNotifications(data) {
 }
 
 function handleElectrumError(error) {
-  Log.error(error);
+  Log.warn(error);
 }
 
 function handleChaintipSubscription(data) {

@@ -192,8 +192,6 @@ export default function TransactionHistoryService(
       `SELECT time FROM transactions WHERE txid="${tx_hash}"`
     )[0].time;
 
-    Log.debug("txTime", txTime);
-
     const result = walletDb.exec(
       `UPDATE address_transactions SET 
           amount=?,

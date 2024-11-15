@@ -28,19 +28,19 @@ export const txHistoryFetch = createAsyncThunk(
   }
 );
 
-const initialState = [];
+const initialState = { history: [] };
 
 export const txHistoryReducer = createReducer(initialState, (builder) => {
   builder
-    .addCase(txHistoryFetch.pending, () => {
-      return initialState;
+    .addCase(txHistoryFetch.pending, (state) => {
+      state.history = initialState.history;
     })
     .addCase(txHistoryFetch.fulfilled, (state: RootState, action) => {
-      return action.payload;
+      state.history = action.payload;
     });
 });
 
 export const selectTransactionHistory = createSelector(
-  (state) => state,
-  (state) => state.txHistory
+  (state) => state.txHistory,
+  (txHistory) => txHistory.history
 );

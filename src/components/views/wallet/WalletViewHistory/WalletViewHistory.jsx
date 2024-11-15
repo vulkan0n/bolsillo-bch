@@ -61,15 +61,15 @@ export default function WalletViewHistory() {
                           tx.amount > 0 ? receiveStyle : sendStyle
                         }`}
                       >
-                        {(Number.isNaN(Number.parseInt(tx.time, 10))
+                        {(Number.isNaN(tx.time)
                           ? DateTime.fromISO(tx.time_seen)
-                          : DateTime.fromSeconds(Number.parseInt(tx.time, 10))
+                          : DateTime.fromSeconds(tx.time)
                         ).toLocaleString(DateTime.DATE_SHORT)}
                       </div>
                       <div className="opacity-80">
-                        {(Number.isNaN(Number.parseInt(tx.time, 10))
+                        {(Number.isNaN(tx.time)
                           ? DateTime.fromISO(tx.time_seen)
-                          : DateTime.fromSeconds(Number.parseInt(tx.time, 10))
+                          : DateTime.fromSeconds(tx.time)
                         ).toLocaleString(DateTime.TIME_WITH_SECONDS)}
                       </div>
                     </div>

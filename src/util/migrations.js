@@ -119,7 +119,7 @@ const walletdb_migrations = [
 
     query.push(
       `CREATE TABLE IF NOT EXISTS address_transactions (
-        txid text not null, 
+        oxid text not null, 
         height int default 0 not null,
         address text not null,
         time text default ( strftime('%Y-%m-%dT%H:%M:%SZ') ),
@@ -192,10 +192,23 @@ const walletdb_migrations = [
 
     return query.join("");
   },
-  /*function migrate_v1() {
+  function migrate_v1() {
     const query = [];
 
+    // fix history time column to use unix time
+    query.push("ALTER TABLE address_transactions DROP COLUMN time;");
+    query.push(
+      "ALTER TABLE address_transactions ADD COLUMN time int default null;"
+    );
+
     query.push("PRAGMA user_version = 2;");
+
+    return query.join("");
+  },
+  /*function migrate_v2() {
+    const query = [];
+
+    query.push("PRAGMA user_version = 3;");
 
     return query.join("");
   },*/
