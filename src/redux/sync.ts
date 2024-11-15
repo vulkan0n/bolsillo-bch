@@ -99,6 +99,7 @@ export const syncConnectionUp = createAsyncThunk(
     // set up subscriptions on connect
     await Electrum.subscribeToChaintip();
     thunkApi.dispatch(syncWalletAddresses());
+    thunkApi.dispatch(syncChangeAddresses());
 
     return server;
   }
@@ -129,8 +130,6 @@ export const syncWalletAddresses = createAsyncThunk(
         thunkApi.dispatch(syncSubscriptionCount(-1));
       })
     );
-
-    thunkApi.dispatch(syncChangeAddresses());
   }
 );
 
@@ -161,9 +160,7 @@ export const syncChangeAddresses = createAsyncThunk(
       promises.splice(0, batch_chunk_size);
     }
 
-    batchedPromises.forEach(async (batch) => {
-      Promise.all(batch);
-    });
+    batchedPromises.forEach((batch) => Promise.all(batch));
   }
 );
 
@@ -290,8 +287,6 @@ export const syncHotRefresh = createAsyncThunk(
       const AddressScanner = AddressScannerService(wallet);
       const AddressManager = AddressManagerService(wallet);
       const UtxoManager = UtxoManagerService(wallet);
-
-      thunkApi.dispatch(syncWalletAddresses());
 
       // "hot" addresses are any addresses with UTXOs on them
       const walletUtxos = UtxoManager.getWalletUtxos();

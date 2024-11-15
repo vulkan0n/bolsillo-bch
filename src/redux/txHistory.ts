@@ -10,6 +10,7 @@ import { selectActiveWallet } from "@/redux/wallet";
 import { selectCurrencySettings } from "@/redux/preferences";
 
 import TransactionHistoryService from "@/services/TransactionHistoryService";
+import WalletManagerService from "@/services/WalletManagerService";
 
 export const txHistoryFetch = createAsyncThunk(
   "txHistory/fetch",
@@ -23,6 +24,8 @@ export const txHistoryFetch = createAsyncThunk(
     ).resolveTransactionHistory();
 
     Logger.debug("txHistory/fetch resolved", txHistory);
+
+    await WalletManagerService().saveWallet(wallet.walletHash);
 
     return txHistory;
   }
