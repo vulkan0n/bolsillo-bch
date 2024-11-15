@@ -3,7 +3,12 @@ import { useLoaderData, Link, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { Clipboard } from "@capacitor/clipboard";
 import { DateTime } from "luxon";
-import { CopyOutlined, ArrowLeftOutlined } from "@ant-design/icons";
+import {
+  CopyOutlined,
+  ArrowLeftOutlined,
+  HourglassOutlined,
+  CheckCircleOutlined,
+} from "@ant-design/icons";
 import { selectCurrencySettings } from "@/redux/preferences";
 import { selectActiveWallet } from "@/redux/wallet";
 import { selectChaintip } from "@/redux/sync";
@@ -57,18 +62,29 @@ export default function ExploreTransactionView() {
         <CopyOutlined className="ml-1" />
       </div>
       <div className="p-2">
-        <div className="text-zinc-800 font-bold">
-          {isConfirmed ? "Confirmed" : "Seen"} {txDate}
-          <span className="text-zinc-600 text-sm ml-1">
-            [{confirmations} blocks]
-          </span>
+        <div className="text-zinc-700 font-bold flex items-center justify-start">
+          <span>{txDate}</span>
         </div>
+        {isConfirmed ? (
+          <div className="flex items-center font-bold text-zinc-500 text-sm">
+            <CheckCircleOutlined className="text-secondary mr-1" /> Confirmed in
+            block #{tx.height}
+            <span className="text-zinc-500/80 ml-1">
+              [{confirmations} blocks]
+            </span>
+          </div>
+        ) : (
+          <div className="flex items-center font-bold text-zinc-500 text-sm">
+            <HourglassOutlined className="text-zinc-500 mr-1" /> Pending
+            Confirmation
+          </div>
+        )}
         {memo && (
           <div className="text-zinc-800 my-2">
             <span className="font-bold">Memo:</span> {memo}
           </div>
         )}
-        <div>
+        <div className="mt-1.5">
           <Accordion title="Outputs" open>
             {tx.vout.map((output, i) => (
               <OutputListItem key={output.n} output={output} i={i} />

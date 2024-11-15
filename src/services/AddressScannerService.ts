@@ -65,7 +65,7 @@ export default function AddressScannerService(wallet) {
       const nextHdIndex =
         latestAddress !== null ? latestAddress.hd_index + 1 : 0;
 
-      const endHdIndex = nextHdIndex + gapDiff - 1;
+      const endHdIndex = nextHdIndex + gapDiff;
 
       // starting from latest index, generate new addresses
       for (let hd_index = nextHdIndex; hd_index < endHdIndex; hd_index += 1) {

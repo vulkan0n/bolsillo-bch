@@ -99,7 +99,6 @@ export const syncConnectionUp = createAsyncThunk(
     // set up subscriptions on connect
     await Electrum.subscribeToChaintip();
     thunkApi.dispatch(syncWalletAddresses());
-    thunkApi.dispatch(syncChangeAddresses());
 
     return server;
   }
@@ -130,6 +129,8 @@ export const syncWalletAddresses = createAsyncThunk(
         thunkApi.dispatch(syncSubscriptionCount(-1));
       })
     );
+
+    thunkApi.dispatch(syncChangeAddresses());
   }
 );
 
@@ -245,7 +246,7 @@ export const syncAddressHistory = createAsyncThunk(
 syncMiddleware.startListening({
   actionCreator: syncAddressHistory.fulfilled,
   effect: async (action, listenerApi) => {
-    if (selectSyncState(listenerApi.getState()).syncPending.history === 0) {
+    if (selectSyncState(listenerApi.getState()).syncPending.history <= 1) {
       listenerApi.dispatch(syncPopulateAddresses());
 
       const wallet = selectActiveWallet(listenerApi.getState());

@@ -99,6 +99,10 @@ export default function TransactionHistoryService(
         throw new TransactionHistoryNotExistsError(tx_hash, wallet.walletHash);
       }
 
+      if (addressTx.height <= 0) {
+        throw new TransactionHistoryNotExistsError(tx_hash, wallet.walletHash);
+      }
+
       return addressTx;
     } catch (e) {
       const tx = await TransactionManagerService().resolveTransaction(tx_hash);
@@ -188,19 +192,20 @@ export default function TransactionHistoryService(
     Log.debug("updateTxAmount", tx_hash);
     const fiat_amount = CurrencyService(fiatCurrency).satsToFiat(amount);
 
-    const txTime = APP_DB.exec(
-      `SELECT time FROM transactions WHERE txid="${tx_hash}"`
-    )[0].time;
+    const tx = APP_DB.exec(
+      `SELECT time, height FROM transactions WHERE txid="${tx_hash}"`
+    )[0];
 
     const result = walletDb.exec(
       `UPDATE address_transactions SET 
           amount=?,
           fiat_amount=?,
           fiat_currency=?,
-          time=?
+          time=?,
+          height=?
         WHERE txid="${tx_hash}"
         RETURNING *;`,
-      [amount, fiat_amount, fiatCurrency, txTime]
+      [amount, fiat_amount, fiatCurrency, tx.time, tx.height]
     )[0];
     Log.debug("updateTxAmount", tx_hash, result);
 

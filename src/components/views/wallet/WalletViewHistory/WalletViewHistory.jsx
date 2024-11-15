@@ -2,7 +2,12 @@ import { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { DateTime } from "luxon";
-import { ArrowLeftOutlined, SyncOutlined } from "@ant-design/icons";
+import {
+  ArrowLeftOutlined,
+  SyncOutlined,
+  HourglassOutlined,
+  CheckCircleOutlined,
+} from "@ant-design/icons";
 import { selectTransactionHistory, txHistoryFetch } from "@/redux/txHistory";
 import { selectSyncState } from "@/redux/sync";
 import translations from "./translations";
@@ -35,12 +40,12 @@ export default function WalletViewHistory() {
   const sendStyle = "text-error";
 
   return (
-    <div className="p-2 pb-0">
+    <div className="pb-0">
       <div className="shadow-sm mb-2.5">
-        <div className="bg-zinc-800 text-zinc-200 rounded-t-lg text-center text-lg p-1 font-semibold">
+        <div className="bg-zinc-800/90 text-zinc-200 text-center text-lg p-1 font-semibold">
           {translate(translations.recentTransactions)}
         </div>
-        <ul className="bg-zinc-100 text-zinc-600 divide-y divide-zinc-300 rounded-b px-2 max-h-[58vh] overflow-y-scroll border border-zinc-400 shadow-inner">
+        <ul className="bg-zinc-100 text-zinc-600 divide-y divide-zinc-300 rounded-b px-1 max-h-[59vh] overflow-y-scroll border border-zinc-400 shadow-inner">
           {txHistory.length === 0 && (
             <li className="flex px-1 py-2 items-center justify-center tracking-tighter font-bold">
               {sync.syncPending.history === 0 ? (
@@ -52,22 +57,29 @@ export default function WalletViewHistory() {
           )}
           {txHistory.map((tx, i) =>
             i < 100 ? (
-              <li key={`${tx.txid}${tx.address}`} className="px-1 py-2">
+              <li key={`${tx.txid}${tx.address}`} className="py-2">
                 <Link to={`/explore/tx/${tx.txid}`}>
                   <div className="flex text-sm">
+                    <div className="shrink flex flex-col items-center justify-center mr-1 text-xs">
+                      {tx.height <= 0 ? (
+                        <HourglassOutlined className="text-zinc-400" />
+                      ) : (
+                        <CheckCircleOutlined className="text-primary" />
+                      )}
+                    </div>
                     <div className="flex-1">
                       <div
                         className={`${
                           tx.amount > 0 ? receiveStyle : sendStyle
                         }`}
                       >
-                        {(Number.isNaN(tx.time)
+                        {(tx.height <= 0
                           ? DateTime.fromISO(tx.time_seen)
                           : DateTime.fromSeconds(tx.time)
                         ).toLocaleString(DateTime.DATE_SHORT)}
                       </div>
                       <div className="opacity-80">
-                        {(Number.isNaN(tx.time)
+                        {(tx.height <= 0
                           ? DateTime.fromISO(tx.time_seen)
                           : DateTime.fromSeconds(tx.time)
                         ).toLocaleString(DateTime.TIME_WITH_SECONDS)}

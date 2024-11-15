@@ -1,4 +1,3 @@
-import Logger from "js-logger";
 import { useState, useEffect, useRef } from "react";
 import { useParams, useSearchParams, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
@@ -21,6 +20,7 @@ import TransactionManagerService from "@/services/TransactionManagerService";
 import TransactionBuilderService from "@/services/TransactionBuilderService";
 import ToastService from "@/services/ToastService";
 import SecurityService, { AuthActions } from "@/services/SecurityService";
+import LogService from "@/services/LogService";
 
 import { SatoshiInput } from "@/atoms/SatoshiInput";
 import Satoshi from "@/atoms/Satoshi";
@@ -34,6 +34,8 @@ import { bchToSats, DUST_LIMIT } from "@/util/sats";
 import { validateBchUri } from "@/util/uri";
 import { translate } from "@/util/translations";
 import translations from "./translations";
+
+const Log = LogService("WalletViewSend");
 
 export default function WalletViewSend() {
   const [searchParams] = useSearchParams();
@@ -147,7 +149,7 @@ export default function WalletViewSend() {
     ]);
 
     if (transaction === null) {
-      Logger.warn(transaction);
+      Log.warn(transaction);
       //setMessage(translate(translations.notEnoughFee));
       setMessage("Transaction Failed: Wallet out of sync?");
       setIsSending(false);
@@ -167,7 +169,7 @@ export default function WalletViewSend() {
     );
 
     if (isSuccess) {
-      const tx = await TransactionManager.resolveTransaction(transaction.txid);
+      const tx = await TransactionManager.resolveTransaction(result);
       await Haptic.success();
       navigate("/wallet/send/success", {
         state: { tx },
@@ -201,7 +203,7 @@ export default function WalletViewSend() {
       requestAmount.greaterThan(0) &&
       requestAmount.lessThanOrEqualTo(instantPayThreshold)
     ) {
-      //Logger.debug("instapay!", threshold, requestAmount);
+      //Log.debug("instapay!", threshold, requestAmount);
       confirmSend(true);
     }
   });

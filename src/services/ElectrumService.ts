@@ -210,10 +210,16 @@ export default function ElectrumService() {
     const txRequest = electrum
       .request("blockchain.transaction.get", tx_hash, verbose)
       .then(async (tx) => {
-        const height = await electrum.request(
+        const requestHeight = await electrum.request(
           "blockchain.transaction.get_height",
           tx_hash
         );
+
+        let height = 0;
+        if (!(requestHeight instanceof Error)) {
+          height = requestHeight;
+        }
+
         delete pendingTxRequests[tx_hash];
         return { ...tx, height };
       });

@@ -82,8 +82,8 @@ export default function TransactionManagerService() {
       // if there's any problem retrieving the tx locally, try to resolve it
       const Electrum = ElectrumService();
       const remoteTx = await Electrum.requestTransaction(tx_hash);
+      //Log.debug("resolveTransaction", "remote", tx_hash, remoteTx);
       const registeredTx = await _registerTransaction(remoteTx);
-      //Log.debug("resolveTransaction", "remote", tx_hash, registeredTx);
       return registeredTx;
     }
   }
