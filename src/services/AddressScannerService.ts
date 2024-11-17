@@ -380,6 +380,7 @@ export default function AddressScannerService(wallet) {
       address.address
     );
 
+    // set wallet genesis height based on first received transaction
     if (address.hd_index === 0 && address.change === 0) {
       const genesisHeight = history.reduce((lowest, cur) => {
         if (lowest === 0) {
