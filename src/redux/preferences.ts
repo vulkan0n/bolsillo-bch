@@ -19,7 +19,6 @@ const defaultPreferences = {
   localCurrency: currencyList[0].currency,
   preferLocalCurrency: "false",
   hideAvailableBalance: "false",
-  displayExchangeRate: "false",
   denomination: "bch",
   bchNetwork: "mainnet",
   // --------
@@ -35,7 +34,8 @@ const defaultPreferences = {
   qrCodeBackground: "#ffffff",
   qrCodeForeground: "#000000",
   displayExploreTab: "true",
-  displaySyncCounter: "false",
+  displayExchangeRate: "true",
+  displaySyncCounter: "true",
   // --------
   // TODO: should these go in db instead?
   electrumServer: electrum_servers.mainnet[0],
@@ -232,7 +232,6 @@ export const selectCurrencySettings = createSelector(
     localCurrency: preferences.localCurrency,
     denomination: preferences.denomination,
     shouldPreferLocalCurrency: preferences.preferLocalCurrency === "true",
-    shouldDisplayExchangeRate: preferences.displayExchangeRate === "true",
   })
 );
 
@@ -287,6 +286,7 @@ export const selectUiSettings = createSelector(
   (state: RootState) => state.preferences,
   (preferences) => ({
     shouldHideBalance: preferences.hideAvailableBalance === "true",
+    shouldDisplayExchangeRate: preferences.displayExchangeRate === "true",
     shouldDisplayExploreTab: preferences.displayExploreTab === "true",
     shouldDisplaySyncCounter: preferences.displaySyncCounter === "true",
   })

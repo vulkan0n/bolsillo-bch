@@ -6,8 +6,9 @@ import {
   EyeOutlined,
   EyeInvisibleOutlined,
   SyncOutlined,
+  StockOutlined,
 } from "@ant-design/icons";
-import { selectUiSettings, selectIsExperimental } from "@/redux/preferences";
+import { selectUiSettings } from "@/redux/preferences";
 import SecurityService, { AuthActions } from "@/services/SecurityService";
 import Accordion from "@/atoms/Accordion";
 import { translate } from "@/util/translations";
@@ -19,10 +20,9 @@ export default function UiSettings() {
   const {
     shouldHideBalance,
     shouldDisplayExploreTab,
+    shouldDisplayExchangeRate,
     shouldDisplaySyncCounter,
   } = useSelector(selectUiSettings);
-
-  const isExperimental = useSelector(selectIsExperimental);
 
   return (
     <Accordion
@@ -49,31 +49,42 @@ export default function UiSettings() {
         />
       </Accordion.Child>
       <Accordion.Child
-        icon={CompassOutlined}
-        label={translate(translations.hideExploreTab)}
+        icon={StockOutlined}
+        label={translate(translations.displayExchangeRate)}
       >
         <input
           type="checkbox"
-          checked={!shouldDisplayExploreTab}
+          checked={shouldDisplayExchangeRate}
           onChange={(event) =>
-            handleSettingsUpdate("displayExploreTab", !event.target.checked)
+            handleSettingsUpdate("displayExchangeRate", event.target.checked)
           }
         />
       </Accordion.Child>
-      {isExperimental && (
-        <Accordion.Child
-          icon={SyncOutlined}
-          label={translate(translations.displaySyncCounter)}
-        >
-          <input
-            type="checkbox"
-            checked={shouldDisplaySyncCounter}
-            onChange={(event) =>
-              handleSettingsUpdate("displaySyncCounter", event.target.checked)
-            }
-          />
-        </Accordion.Child>
-      )}
+      <Accordion.Child
+        icon={CompassOutlined}
+        label={translate(translations.displayExploreTab)}
+      >
+        <input
+          type="checkbox"
+          checked={shouldDisplayExploreTab}
+          onChange={(event) =>
+            handleSettingsUpdate("displayExploreTab", event.target.checked)
+          }
+        />
+      </Accordion.Child>
+
+      <Accordion.Child
+        icon={SyncOutlined}
+        label={translate(translations.displaySyncCounter)}
+      >
+        <input
+          type="checkbox"
+          checked={shouldDisplaySyncCounter}
+          onChange={(event) =>
+            handleSettingsUpdate("displaySyncCounter", event.target.checked)
+          }
+        />
+      </Accordion.Child>
     </Accordion>
   );
 }

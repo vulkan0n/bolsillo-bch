@@ -5,7 +5,6 @@ import {
   EuroCircleOutlined,
   TransactionOutlined,
   AccountBookOutlined,
-  StockOutlined,
 } from "@ant-design/icons";
 
 import { selectCurrencySettings } from "@/redux/preferences";
@@ -22,12 +21,8 @@ import Accordion from "@/atoms/Accordion";
 export default function CurrencySettings() {
   const { handleSettingsUpdate } = useContext(SettingsContext);
 
-  const {
-    shouldPreferLocalCurrency,
-    shouldDisplayExchangeRate,
-    localCurrency,
-    denomination,
-  } = useSelector(selectCurrencySettings);
+  const { shouldPreferLocalCurrency, localCurrency, denomination } =
+    useSelector(selectCurrencySettings);
 
   return (
     <Accordion
@@ -86,18 +81,6 @@ export default function CurrencySettings() {
             </option>
           ))}
         </select>
-      </Accordion.Child>
-      <Accordion.Child
-        icon={StockOutlined}
-        label={translate(translations.displayExchangeRate)}
-      >
-        <input
-          type="checkbox"
-          checked={shouldDisplayExchangeRate}
-          onChange={(event) =>
-            handleSettingsUpdate("displayExchangeRate", event.target.checked)
-          }
-        />
       </Accordion.Child>
     </Accordion>
   );
