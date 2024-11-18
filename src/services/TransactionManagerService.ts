@@ -72,7 +72,7 @@ export default function TransactionManagerService() {
       const localTx = await getTransactionByHash(tx_hash);
 
       // request the tx again if it's unconfirmed
-      if (localTx.blockhash === null) {
+      if (localTx.blockhash === null || localTx.height <= 0) {
         throw new Error("Transaction Unconfirmed");
       }
 
@@ -280,7 +280,7 @@ export default function TransactionManagerService() {
           time=$time,
           blocktime=$blocktime,
           height=$height
-        RETURNING *;
+      RETURNING *;
       `,
       {
         $txid: tx.txid,

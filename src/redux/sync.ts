@@ -43,15 +43,7 @@ export const syncConnect = createAsyncThunk(
     Log.log("sync/connect", payload);
     let isSuccess = false;
     try {
-      const sync = selectSyncState(thunkApi.getState());
-
-      if (!sync.isConnected || sync.server !== payload.server) {
-        Log.debug("syncConnect", sync);
-        await Electrum.connect(payload.server);
-      } else {
-        thunkApi.dispatch(syncWalletAddresses());
-      }
-
+      await Electrum.connect(payload.server);
       isSuccess = true;
     } catch (e) {
       Log.error(e);
@@ -120,48 +112,24 @@ export const syncWalletAddresses = createAsyncThunk(
 
     AddressScanner.populateAddresses();
 
-    const addresses = AddressManager.getReceiveAddresses();
+    const receiveAddresses = AddressManager.getReceiveAddresses();
+    const changeAddresses = AddressManager.getChangeAddresses();
+
+    // don't resync fully spent change addresses
+    const filteredChangeAddresses = changeAddresses.filter(
+      (address) => !(address.state !== null && address.balance === 0)
+    );
+
+    const addresses = receiveAddresses.concat(filteredChangeAddresses);
+
     thunkApi.dispatch(syncSubscriptionCount(addresses.length));
 
-    Promise.all(
+    await Promise.all(
       addresses.map(async (address) => {
         await Electrum.subscribeToAddress(address);
         thunkApi.dispatch(syncSubscriptionCount(-1));
       })
     );
-
-    thunkApi.dispatch(syncChangeAddresses());
-  }
-);
-
-// syncChangeAddresses: syncs all change addresses
-export const syncChangeAddresses = createAsyncThunk(
-  "sync/changeAddresses",
-  async (payload, thunkApi): Promise<void> => {
-    const wallet = selectActiveWallet(thunkApi.getState());
-
-    const AddressManager = AddressManagerService(wallet);
-
-    const changeAddresses = AddressManager.getChangeAddresses();
-
-    const promises = changeAddresses
-      .filter((address) => !(address.state !== null && address.balance === 0)) // don't resync fully spent change addresses
-      .map(async (address) => {
-        await Electrum.subscribeToAddress(address);
-        thunkApi.dispatch(syncSubscriptionCount(-1));
-      });
-
-    thunkApi.dispatch(syncSubscriptionCount(promises.length));
-
-    const batchedPromises = [];
-    const batch_chunk_size = 1024;
-
-    while (promises.length > 0) {
-      batchedPromises.concat(promises.slice(0, batch_chunk_size));
-      promises.splice(0, batch_chunk_size);
-    }
-
-    batchedPromises.forEach((batch) => Promise.all(batch));
   }
 );
 
@@ -192,7 +160,7 @@ export const syncAddressState = createAsyncThunk(
     if (addressObj.state !== addressState) {
       //Log.debug("address state changed for", address, addressState);
       thunkApi.dispatch(syncAddressUtxos(addressObj));
-      thunkApi.dispatch(syncAddressHistory(addressObj));
+      await thunkApi.dispatch(syncAddressHistory(addressObj));
     }
 
     thunkApi.dispatch(walletNonce());
@@ -246,11 +214,15 @@ export const syncAddressHistory = createAsyncThunk(
 syncMiddleware.startListening({
   actionCreator: syncAddressHistory.fulfilled,
   effect: async (action, listenerApi) => {
-    if (selectSyncState(listenerApi.getState()).syncPending.history <= 1) {
-      listenerApi.dispatch(syncPopulateAddresses());
+    const sync = selectSyncState(listenerApi.getState());
+    if (sync.syncPending.history === 0) {
+      Log.debug("sync complete?", sync);
+      const generated = await listenerApi.dispatch(syncPopulateAddresses());
 
-      const wallet = selectActiveWallet(listenerApi.getState());
-      await WalletManagerService().saveWallet(wallet.walletHash);
+      if (generated.payload.length === 0) {
+        const wallet = selectActiveWallet(listenerApi.getState());
+        await WalletManagerService().saveWallet(wallet.walletHash);
+      }
     }
   },
 });
@@ -266,6 +238,8 @@ export const syncPopulateAddresses = createAsyncThunk(
     await Promise.all(
       generatedAddresses.map((address) => Electrum.subscribeToAddress(address))
     );
+
+    return generatedAddresses;
   }
 );
 

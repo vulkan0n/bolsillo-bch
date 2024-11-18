@@ -30,7 +30,7 @@ import CurrencySymbol from "@/atoms/CurrencySymbol";
 import CurrencyFlip from "@/atoms/CurrencyFlip";
 
 import { Haptic } from "@/util/haptic";
-import { bchToSats, DUST_LIMIT } from "@/util/sats";
+import { bchToSats } from "@/util/sats";
 import { validateBchUri } from "@/util/uri";
 import { translate } from "@/util/translations";
 import translations from "./translations";
@@ -178,9 +178,7 @@ export default function WalletViewSend() {
     } else {
       //setMessage(translate(translations.transactionFailed));
       setMessage(
-        isExperimental
-          ? `${result}`
-          : `Transaction Failed: Must send at least ${DUST_LIMIT} sats`
+        isExperimental ? `${result}` : translate(translations.transactionFailed)
       );
       await Haptic.error();
     }
