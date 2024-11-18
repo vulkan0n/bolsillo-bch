@@ -119,7 +119,7 @@ const walletdb_migrations = [
 
     query.push(
       `CREATE TABLE IF NOT EXISTS address_transactions (
-        oxid text not null, 
+        txid text not null, 
         height int default 0 not null,
         address text not null,
         time text default ( strftime('%Y-%m-%dT%H:%M:%SZ') ),
@@ -220,19 +220,18 @@ export function run_migrations(migrations, db) {
   //Log.time("dbMigrate");
   const DB_VERSION = db.exec("PRAGMA user_version")[0].user_version;
   //Log.log("DB_VERSION", DB_VERSION, migrations.length);
-  let didMigrations = false;
   for (let version = DB_VERSION; version < migrations.length; version += 1) {
     Log.log("DB_MIGRATE", `${version}/${migrations.length}`, DB_VERSION);
     try {
       //Log.debug(migrations[version]());
       db.run(migrations[version]());
-      didMigrations = true;
     } catch (e) {
       Log.error("error during migrations", e);
+      return false;
     }
   }
   //Log.timeEnd("dbMigrate");
-  return didMigrations;
+  return true;
 }
 
 export function run_appdb_migrations(appDb) {
