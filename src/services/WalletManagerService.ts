@@ -206,6 +206,8 @@ export default function WalletManagerService() {
     );
 
     Log.log("creating wallet", result);
+
+    await Database.flushHandles(false);
     return result;
   }
 

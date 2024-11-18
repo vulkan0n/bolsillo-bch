@@ -212,17 +212,6 @@ export default function DatabaseService() {
   }
 }
 
-// force database write on app stop and pause
-/*
-App.addListener("appStateChange", async ({ isActive }) => {
-  const shouldCloseHandles = isActive === false;
-  await DatabaseService().flushHandles(shouldCloseHandles);
-});
-
-App.addListener("pause", async () => {
-  await DatabaseService().flushHandles(false);
-});*/
-
 // HERE BE SATS if someone wants to try to steal them!
 // Some ancient commit will load this wallet, but send wasn't implemented yet...
 /*const _fakeDb = [
