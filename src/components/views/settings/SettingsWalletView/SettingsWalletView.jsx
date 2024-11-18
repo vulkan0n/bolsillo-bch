@@ -111,11 +111,12 @@ export default function SettingsWalletView() {
       return;
     }
 
-    await DatabaseService().flushHandles();
-
     dispatch(
       walletBoot({ walletHash: wallet.walletHash, network: bchNetwork })
-    ).then(() => navigate("/"));
+    ).then(async () => {
+      await DatabaseService().flushHandles(true);
+      navigate("/");
+    });
   };
 
   // handler for wallet name edit button

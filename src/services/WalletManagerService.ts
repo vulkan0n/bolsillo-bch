@@ -438,7 +438,7 @@ export default function WalletManagerService() {
 
     await exportWalletFile(wallet);
 
-    Database.flushHandles();
+    Database.flushHandles(false);
   }
 
   async function openWalletDatabase(walletHash) {
