@@ -12,7 +12,7 @@ export default function ExploreView() {
         icon={CompassOutlined}
         title={translate(translations.exploreBch)}
       />
-      <ExploreSearchBar />
+      {/*<ExploreSearchBar />*/}
       <div className="h-full">
         <Outlet />
       </div>
