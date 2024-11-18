@@ -220,24 +220,27 @@ export function run_migrations(migrations, db) {
   //Log.time("dbMigrate");
   const DB_VERSION = db.exec("PRAGMA user_version")[0].user_version;
   //Log.log("DB_VERSION", DB_VERSION, migrations.length);
+  let didMigrations = false;
   for (let version = DB_VERSION; version < migrations.length; version += 1) {
     Log.log("DB_MIGRATE", `${version}/${migrations.length}`, DB_VERSION);
     try {
       //Log.debug(migrations[version]());
       db.run(migrations[version]());
+      didMigrations = true;
     } catch (e) {
       Log.error("error during migrations", e);
     }
   }
   //Log.timeEnd("dbMigrate");
+  return didMigrations;
 }
 
 export function run_appdb_migrations(appDb) {
   //appDb.run("PRAGMA user_version = 0;");
-  run_migrations(appdb_migrations, appDb);
+  return run_migrations(appdb_migrations, appDb);
 }
 
 export function run_walletdb_migrations(walletDb) {
   //walletDb.run("PRAGMA user_version = 0;");
-  run_migrations(walletdb_migrations, walletDb);
+  return run_migrations(walletdb_migrations, walletDb);
 }

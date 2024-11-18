@@ -63,9 +63,14 @@ async function getAppDatabase() {
   } else {
     Log.time("getAppDatabase");
     appDb = await _dbOpen(APP_DB_FILENAME);
-    run_appdb_migrations(appDb);
+    const didMigrations = run_appdb_migrations(appDb);
     Log.log("Loaded app database");
     db_handles.set("app", appDb);
+
+    if (didMigrations) {
+      await DatabaseService().flushDatabase("app");
+    }
+
     Log.timeEnd("getAppDatabase");
   }
 
@@ -112,9 +117,12 @@ export default function DatabaseService() {
     } else {
       const walletDbFilename = `/selene/db/${walletHash}.${network}.db`;
       walletDb = await _dbOpen(walletDbFilename);
-      run_walletdb_migrations(walletDb);
-
+      const didMigrations = run_walletdb_migrations(walletDb);
       db_handles.set(walletHash, walletDb);
+
+      if (didMigrations) {
+        await flushDatabase(walletHash);
+      }
     }
 
     //Log.timeEnd(`openWalletDatabase ${walletHash}`);
