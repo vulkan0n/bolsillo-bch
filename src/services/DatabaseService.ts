@@ -55,6 +55,38 @@ export async function _dbOpen(filename, skipCreate = false) {
   return db;
 }
 
+// flushDatabase: writes database to disk
+async function flushDatabase(handle = "app", force: boolean = false) {
+  if (!force && isFlushing[handle]) {
+    Log.debug("skipping flush due to flushLock", handle);
+    return Promise.resolve();
+  }
+
+  Log.time(`flushDatabase ${handle}`);
+  try {
+    isFlushing[handle] = true;
+    const db_handle = db_handles.get(handle);
+
+    const data = db_handle.export().toString();
+    const result = await Filesystem.writeFile({
+      path: db_handle.path,
+      data,
+      directory: Directory.Library,
+      encoding: Encoding.UTF8,
+      recursive: true,
+    });
+
+    Log.debug("flushDatabase", result.uri);
+    return result;
+  } catch (e) {
+    Log.error("flushDatabase error", e);
+    throw e;
+  } finally {
+    isFlushing[handle] = false;
+    Log.timeEnd(`flushDatabase ${handle}`);
+  }
+}
+
 // getAppDatabase: try to open the app db file
 async function getAppDatabase() {
   let appDb;
@@ -68,7 +100,7 @@ async function getAppDatabase() {
     db_handles.set("app", appDb);
 
     if (didMigrations) {
-      await DatabaseService().flushDatabase("app");
+      await flushDatabase("app");
     }
 
     Log.timeEnd("getAppDatabase");
@@ -154,38 +186,6 @@ export default function DatabaseService() {
       path: `/selene/db/${walletHash}.${network}.db`,
       directory: Directory.Library,
     });
-  }
-
-  // flushDatabase: writes database to disk
-  async function flushDatabase(handle = "app", force: boolean = false) {
-    if (!force && isFlushing[handle]) {
-      Log.debug("skipping flush due to flushLock", handle);
-      return Promise.resolve();
-    }
-
-    Log.time(`flushDatabase ${handle}`);
-    try {
-      isFlushing[handle] = true;
-      const db_handle = db_handles.get(handle);
-
-      const data = db_handle.export().toString();
-      const result = await Filesystem.writeFile({
-        path: db_handle.path,
-        data,
-        directory: Directory.Library,
-        encoding: Encoding.UTF8,
-        recursive: true,
-      });
-
-      Log.debug("flushDatabase", result.uri);
-      return result;
-    } catch (e) {
-      Log.error("flushDatabase error", e);
-      throw e;
-    } finally {
-      isFlushing[handle] = false;
-      Log.timeEnd(`flushDatabase ${handle}`);
-    }
   }
 
   async function flushHandles(shouldCloseHandles: boolean = true) {
