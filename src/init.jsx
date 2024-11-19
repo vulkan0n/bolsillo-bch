@@ -3,6 +3,7 @@ import ReactDOM from "react-dom/client";
 import { SplashScreen } from "@capacitor/splash-screen";
 import LogService from "@/services/LogService";
 import JanitorService from "@/services/JanitorService";
+import DatabaseService from "@/services/DatabaseService";
 import { redux_init, redux_post_init, redux_resume } from "@/redux";
 import Main from "@/Main";
 
@@ -12,9 +13,21 @@ const Log = LogService("init");
 
 // big green START button for the whole app
 async function initialize_app() {
-  Log.log("* Initializing App *");
-  redux_init();
+  Log.time("INIT");
+  await pre_init();
+  await app_init();
+  await post_init();
+  Log.timeEnd("INIT");
+}
 
+await initialize_app();
+
+// ----------------
+
+function app_init() {
+  Log.log("* APP_INIT *");
+  App.addListener("resume", app_resume);
+  redux_init();
   Log.debug("render <Main>");
   ReactDOM.createRoot(document.getElementById("root")).render(<Main />);
 }
@@ -23,7 +36,9 @@ async function initialize_app() {
 async function pre_init() {
   Log.log("* PRE_INIT *");
   const Janitor = JanitorService();
+  const Database = DatabaseService();
   await Janitor.fsck();
+  await Database.initAppDatabase();
   await Janitor.migrateLegacyDatabases();
   await Janitor.recoverWalletFiles();
 }
@@ -41,15 +56,8 @@ async function post_init() {
 }
 
 // actions to perform after app is resumed from sleep state
-App.addListener("resume", function onResume() {
-  Log.time("INIT_RESUME");
+function app_resume() {
+  Log.time("APP_RESUME");
   redux_resume();
-  Log.timeEnd("INIT_RESUME");
-});
-
-// :)
-Log.time("INIT_APP");
-await pre_init();
-await initialize_app();
-await post_init();
-Log.timeEnd("INIT_APP");
+  Log.timeEnd("APP_RESUME");
+}

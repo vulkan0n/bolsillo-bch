@@ -50,10 +50,10 @@ export class TransactionNotExistsError extends Error {
   }
 }
 
-const Database = DatabaseService();
-const appDb = await Database.getAppDatabase();
-
 export default function TransactionManagerService() {
+  const Database = DatabaseService();
+  const APP_DB = Database.getAppDatabase();
+
   return {
     resolveTransaction,
     waitForTransactionToResolve,
@@ -155,7 +155,7 @@ export default function TransactionManagerService() {
     }
 
     //Log.debug("deleteTransaction", tx_hash);
-    appDb.run(`DELETE FROM transactions WHERE txid="${tx_hash}";`);
+    APP_DB.run(`DELETE FROM transactions WHERE txid="${tx_hash}";`);
   }
 
   async function purgeTransactions(): Promise<void> {
@@ -188,9 +188,9 @@ export default function TransactionManagerService() {
       .filter((txid) => txid !== "")
       .join(",");
 
-    const purgeHashes = appDb
-      .exec(`SELECT txid FROM transactions WHERE txid NOT IN (${live_txids})`)
-      .map(({ txid }) => txid);
+    const purgeHashes = APP_DB.exec(
+      `SELECT txid FROM transactions WHERE txid NOT IN (${live_txids})`
+    ).map(({ txid }) => txid);
 
     const fileTxHashes = (
       await Filesystem.readdir({
@@ -262,7 +262,7 @@ export default function TransactionManagerService() {
     const blocktime = tx.blocktime ? tx.blocktime : null;
     const time = tx.time ? tx.time : Math.floor(Date.now() / 1000);
 
-    const result = appDb.exec(
+    const result = APP_DB.exec(
       `INSERT INTO transactions (
         txid,
         size,
@@ -312,7 +312,7 @@ export default function TransactionManagerService() {
   async function getTransactionByHash(
     tx_hash: string
   ): Promise<TransactionEntity> {
-    const result = appDb.exec(
+    const result = APP_DB.exec(
       `SELECT * FROM transactions WHERE txid="${tx_hash}"`
     );
 

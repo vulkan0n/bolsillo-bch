@@ -27,10 +27,10 @@ export interface BlockEntity {
   hex: string;
 }
 
-const appDb = await DatabaseService().getAppDatabase();
-
 // BlockchainService: brokers interactions with the block data
 export default function BlockchainService() {
+  const APP_DB = DatabaseService().getAppDatabase();
+
   return {
     registerBlock,
     getBlocks,
@@ -87,7 +87,7 @@ export default function BlockchainService() {
   async function registerBlock(block) {
     const blockhash = calculateBlockhash(block.hex);
 
-    appDb.run(
+    APP_DB.run(
       `INSERT INTO blockchain (
         blockhash,
         height
@@ -105,14 +105,14 @@ export default function BlockchainService() {
 
   // getBlocks: return all known blocks
   function getBlocks(): Array<BlockEntity> {
-    const result = appDb.exec(`SELECT * FROM blockchain;`);
+    const result = APP_DB.exec(`SELECT * FROM blockchain;`);
     //Log.log("getBlocks", result);
     return result;
   }
 
   // getBlockByHash: get block from database by blockhash
   async function getBlockByHash(blockhash): Promise<BlockEntity> {
-    const result = appDb.exec(
+    const result = APP_DB.exec(
       `SELECT * FROM blockchain WHERE blockhash="${blockhash}";`
     );
 
@@ -131,7 +131,7 @@ export default function BlockchainService() {
 
   // getBlockByHeight: get block from database by height
   async function getBlockByHeight(height): Promise<BlockEntity> {
-    const result = appDb.exec(
+    const result = APP_DB.exec(
       `SELECT * FROM blockchain WHERE height="${height}";`
     );
 
@@ -171,7 +171,7 @@ export default function BlockchainService() {
   }
 
   async function getChaintip() {
-    const result = appDb.exec(
+    const result = APP_DB.exec(
       `SELECT * FROM blockchain ORDER BY height DESC LIMIT 1`
     );
 
@@ -237,7 +237,7 @@ export default function BlockchainService() {
 
   async function deleteBlock(blockhash: string): Promise<void> {
     await deleteBlockFile(blockhash);
-    appDb.run(`DELETE FROM blockchain WHERE blockhash="${blockhash}";`);
+    APP_DB.run(`DELETE FROM blockchain WHERE blockhash="${blockhash}";`);
     //Log.debug("deleteBlock", blockhash);
   }
 
@@ -256,27 +256,23 @@ export default function BlockchainService() {
   async function purgeBlocks(): Promise<void> {
     Log.time("purgeBlocks");
 
-    const purgeBlockHashes = appDb
-      .exec(
-        `
+    const purgeBlockHashes = APP_DB.exec(
+      `
         SELECT blockhash FROM blockchain WHERE
         blockhash NOT IN (SELECT blockhash FROM transactions)
         AND height < (SELECT height FROM blockchain ORDER BY height DESC LIMIT 1)
       `
-      )
-      .map(({ blockhash }) => blockhash);
+    ).map(({ blockhash }) => blockhash);
 
     //Log.debug("purgeBlockHashes", purgeBlockHashes);
 
-    const keepBlockHashes = appDb
-      .exec(
-        `
+    const keepBlockHashes = APP_DB.exec(
+      `
         SELECT blockhash FROM blockchain WHERE
         blockhash IN (SELECT blockhash FROM transactions)
         OR height = (SELECT height FROM blockchain ORDER BY height DESC LIMIT 1)
       `
-      )
-      .map(({ blockhash }) => blockhash);
+    ).map(({ blockhash }) => blockhash);
 
     //Log.debug("keepBlockHashes", keepBlockHashes);
 

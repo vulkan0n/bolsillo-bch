@@ -212,14 +212,19 @@ export const syncAddressHistory = createAsyncThunk(
 
 // save wallet when sync is complete
 syncMiddleware.startListening({
-  actionCreator: syncAddressHistory.fulfilled,
+  actionCreator: syncAddressState.fulfilled,
   effect: async (action, listenerApi) => {
-    const sync = selectSyncState(listenerApi.getState());
-    if (sync.syncPending.history === 0) {
-      Log.debug("sync complete?", sync);
+    const { syncPending } = selectSyncState(listenerApi.getState());
+    if (
+      syncPending.subscription === 0 &&
+      syncPending.addressState === 0 &&
+      syncPending.history === 0 &&
+      syncPending.hotRefresh === 0
+    ) {
       const generated = await listenerApi.dispatch(syncPopulateAddresses());
 
       if (generated.payload.length === 0) {
+        Log.debug("sync complete", syncPending);
         const wallet = selectActiveWallet(listenerApi.getState());
         await WalletManagerService().saveWallet(wallet.walletHash);
       }
@@ -256,7 +261,8 @@ export const syncHotRefresh = createAsyncThunk(
     const nScanMore = 1600;
 
     if (
-      (!sync.isSyncing && sync.lastRefresh < Date.now() - hotSyncCooldown) ||
+      (sync.syncCount <= 1 &&
+        sync.lastRefresh < Date.now() - hotSyncCooldown) ||
       payload.force
     ) {
       const AddressScanner = AddressScannerService(wallet);
@@ -312,6 +318,7 @@ const initialPending = {
   subscription: 0,
   chaintip: 0,
   rebuild: 0,
+  hotRefresh: 0,
 };
 const initialState = {
   isConnected: false,
@@ -387,8 +394,12 @@ export const syncReducer = createReducer(initialState, (builder) => {
       state.syncPending.chaintip -= 1;
       state.chaintip = action.payload;
     })
+    .addCase(syncHotRefresh.pending, (state: RootState) => {
+      state.syncPending.hotRefresh += 1;
+    })
     .addCase(syncHotRefresh.fulfilled, (state: RootState, action) => {
       state.lastRefresh = action.payload;
+      state.syncPending.hotRefresh -= 1;
     })
     .addCase(syncClearAddresses, (state) => {
       state.addresses = initialState.addresses;

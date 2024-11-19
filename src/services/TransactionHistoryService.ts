@@ -17,13 +17,13 @@ class TransactionHistoryNotExistsError extends Error {
     super(`No address_transactions for ${tx_hash} and wallet ${walletHash}`);
   }
 }
-const Database = DatabaseService();
-const APP_DB = await Database.getAppDatabase();
 
 export default function TransactionHistoryService(
   wallet: WalletEntity,
   fiatCurrency
 ) {
+  const Database = DatabaseService();
+  const APP_DB = Database.getAppDatabase();
   const walletDb = Database.getWalletDatabase(wallet.walletHash);
 
   const AddressManager = AddressManagerService(wallet);

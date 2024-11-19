@@ -42,9 +42,9 @@ export class WalletNotExistsError extends Error {
 }
 
 const Database = DatabaseService();
-const APP_DB = await Database.getAppDatabase();
 
 export default function WalletManagerService() {
+  const APP_DB = Database.getAppDatabase();
   const network = selectBchNetwork(store.getState());
 
   return {
@@ -147,10 +147,14 @@ export default function WalletManagerService() {
       // requested wallet doesn't exist
       // attempt to return lowest-index wallet instead, create a new wallet if none exist
       const wallets = listWallets();
-      const nextWalletHash =
-        wallets.length > 0
-          ? wallets[0].walletHash
-          : (await createWallet("My Selene Wallet")).walletHash;
+
+      let nextWalletHash = "";
+      if (wallets.length > 0) {
+        nextWalletHash = wallets[0].walletHash;
+      } else {
+        nextWalletHash = (await createWallet("My Selene Wallet")).walletHash;
+        await Database.flushHandles(false);
+      }
 
       return boot(nextWalletHash);
     }
@@ -206,8 +210,6 @@ export default function WalletManagerService() {
     );
 
     Log.log("creating wallet", result);
-
-    await Database.flushHandles(false);
     return result;
   }
 
@@ -405,7 +407,11 @@ export default function WalletManagerService() {
 
     try {
       await importWallet(walletData);
-      await Database.closeWalletDatabase(walletHash);
+      try {
+        await Database.flushHandles(false);
+      } catch (e) {
+        Log.error(e);
+      }
     } catch (e) {
       Log.error("importWalletFile failed", walletHash, e);
       await Database.closeWalletDatabase(walletHash, true);
@@ -421,6 +427,7 @@ export default function WalletManagerService() {
   }
 
   async function saveWallet(walletHash) {
+    Log.debug("saveWallet", walletHash);
     const walletDb = Database.getWalletDatabase(walletHash);
 
     const wallet = walletDb.exec("SELECT * FROM wallet")[0];
@@ -437,8 +444,7 @@ export default function WalletManagerService() {
     );
 
     await exportWalletFile(wallet);
-
-    Database.flushHandles(false);
+    await Database.flushHandles(true);
   }
 
   async function openWalletDatabase(walletHash) {

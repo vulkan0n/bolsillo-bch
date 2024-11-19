@@ -22,7 +22,8 @@ Log.log("* Initializing SQLite *");
 const SQL = await initSqlJs({ locateFile: () => "/sql-wasm.wasm" });
 
 // pointers for throttling db writes
-const isFlushing = {};
+const flushPendingTimeout = {};
+const flushPendingCount = {};
 
 const db_handles = new Map();
 let db_keepalive = null;
@@ -55,65 +56,10 @@ export async function _dbOpen(filename, skipCreate = false) {
   return db;
 }
 
-// flushDatabase: writes database to disk
-async function flushDatabase(handle = "app", force: boolean = false) {
-  if (!force && isFlushing[handle]) {
-    Log.debug("skipping flush due to flushLock", handle);
-    return Promise.resolve();
-  }
-
-  Log.time(`flushDatabase ${handle}`);
-  try {
-    isFlushing[handle] = true;
-    const db_handle = db_handles.get(handle);
-
-    const data = db_handle.export().toString();
-    const result = await Filesystem.writeFile({
-      path: db_handle.path,
-      data,
-      directory: Directory.Library,
-      encoding: Encoding.UTF8,
-      recursive: true,
-    });
-
-    Log.debug("flushDatabase", result.uri);
-    return result;
-  } catch (e) {
-    Log.error("flushDatabase error", e);
-    throw e;
-  } finally {
-    isFlushing[handle] = false;
-    Log.timeEnd(`flushDatabase ${handle}`);
-  }
-}
-
-// getAppDatabase: try to open the app db file
-async function getAppDatabase() {
-  let appDb;
-  if (db_handles.has("app")) {
-    appDb = db_handles.get("app");
-  } else {
-    Log.time("getAppDatabase");
-    appDb = await _dbOpen(APP_DB_FILENAME);
-    const didMigrations = run_appdb_migrations(appDb);
-    Log.log("Loaded app database");
-    db_handles.set("app", appDb);
-
-    if (didMigrations) {
-      await flushDatabase("app");
-    }
-
-    Log.timeEnd("getAppDatabase");
-  }
-
-  return appDb;
-}
-
-await getAppDatabase();
-
 // DatabaseService: brokers interactions with raw SQLite database
 export default function DatabaseService() {
   return {
+    initAppDatabase,
     getAppDatabase,
     getWalletDatabase,
     openWalletDatabase,
@@ -124,6 +70,32 @@ export default function DatabaseService() {
     setKeepAlive,
     getKeepAlive,
   };
+
+  // attempt to preload the app db
+  async function initAppDatabase() {
+    let appDb;
+    if (db_handles.has("app")) {
+      appDb = db_handles.get("app");
+    } else {
+      Log.time("initAppDatabase");
+      appDb = await _dbOpen(APP_DB_FILENAME);
+      run_appdb_migrations(appDb);
+      Log.log("Loaded app database");
+      db_handles.set("app", appDb);
+      Log.timeEnd("initAppDatabase");
+    }
+
+    return appDb;
+  }
+
+  // getAppDatabase: return the appDb handle
+  function getAppDatabase() {
+    if (!db_handles.has("app")) {
+      throw new DatabaseNotOpenError("app");
+    }
+
+    return db_handles.get("app");
+  }
 
   // synchronous getWalletDatabase (requires db handle to be open already)
   function getWalletDatabase(walletHash) {
@@ -149,14 +121,10 @@ export default function DatabaseService() {
     } else {
       const walletDbFilename = `/selene/db/${walletHash}.${network}.db`;
       walletDb = await _dbOpen(walletDbFilename);
-      const didMigrations = run_walletdb_migrations(walletDb);
-      db_handles.set(walletHash, walletDb);
-
-      if (didMigrations) {
-        await flushDatabase(walletHash);
-      }
+      run_walletdb_migrations(walletDb);
     }
 
+    db_handles.set(walletHash, walletDb);
     //Log.timeEnd(`openWalletDatabase ${walletHash}`);
     return walletDb;
   }
@@ -188,9 +156,65 @@ export default function DatabaseService() {
     });
   }
 
+  // flushDatabase: writes database to disk
+  function flushDatabase(handle = "app", force: boolean = false) {
+    return new Promise((resolve, reject) => {
+      const flush = () => {
+        Log.time(`flushDatabase ${handle}`);
+        try {
+          const db_handle = db_handles.get(handle);
+          if (!db_handle) {
+            throw new DatabaseNotOpenError(handle);
+          }
+
+          const data = db_handle.export().toString();
+          Filesystem.writeFile({
+            path: db_handle.path,
+            data,
+            directory: Directory.Library,
+            encoding: Encoding.UTF8,
+            recursive: true,
+          })
+            .then((result) => {
+              Log.debug("flushDatabase success", result.uri);
+              resolve(result);
+            })
+            .catch((e) => {
+              reject(e);
+            })
+            .finally(() => {
+              flushPendingCount[handle] = 0;
+              Log.timeEnd(`flushDatabase ${handle}`);
+            });
+        } catch (e) {
+          Log.error("flushDatabase error", e);
+        }
+      };
+
+      const resetTimeout = () => {
+        clearTimeout(flushPendingTimeout[handle]);
+        flushPendingTimeout[handle] = undefined;
+        flushPendingTimeout[handle] = setTimeout(async () => {
+          await flush();
+        }, 100);
+      };
+
+      if (!force && flushPendingCount[handle] > 0) {
+        Log.debug("skipping flush due to flushLock", handle);
+        flushPendingCount[handle] += 1;
+        resetTimeout();
+      } else {
+        flushPendingCount[handle] += 1;
+        queueMicrotask(() => {
+          flush();
+        });
+      }
+    });
+  }
+
   async function flushHandles(shouldCloseHandles: boolean = true) {
     Log.debug("flushHandles", db_handles);
-    const promises = [...db_handles].map(async ([handle]) => {
+    const promises = [...db_handles].map(([handle]) => {
       if (shouldCloseHandles && handle !== "app" && handle !== db_keepalive) {
         return closeWalletDatabase(handle);
       }
@@ -200,7 +224,7 @@ export default function DatabaseService() {
     });
     //Log.debug("flushHandles promises", promises);
 
-    return Promise.all(promises);
+    await Promise.all(promises);
   }
 
   function setKeepAlive(handle) {
