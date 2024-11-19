@@ -98,8 +98,9 @@ export const syncConnectionUp = createAsyncThunk(
 
 // syncConnectionDown: fired if electrum connection goes down
 export const syncConnectionDown = createAsyncThunk("sync/down", async () => {
+  //async (payload: string, thunkApi) => {
   // attempt reconnect when connection goes down
-  //thunkApi.dispatch(syncReconnect());
+  //thunkApi.dispatch(syncReconnect(payload));
 });
 
 // syncWalletAddresses: generate wallet addresses and set up subscriptions
@@ -130,6 +131,8 @@ export const syncWalletAddresses = createAsyncThunk(
         thunkApi.dispatch(syncSubscriptionCount(-1));
       })
     );
+
+    thunkApi.dispatch(syncComplete());
   }
 );
 
@@ -160,10 +163,11 @@ export const syncAddressState = createAsyncThunk(
     if (addressObj.state !== addressState) {
       //Log.debug("address state changed for", address, addressState);
       thunkApi.dispatch(syncAddressUtxos(addressObj));
-      await thunkApi.dispatch(syncAddressHistory(addressObj));
+      thunkApi.dispatch(syncAddressHistory(addressObj));
     }
 
     thunkApi.dispatch(walletNonce());
+    thunkApi.dispatch(syncComplete());
 
     return [addressObj, addressState];
   }
@@ -206,31 +210,10 @@ export const syncAddressHistory = createAsyncThunk(
       storedAddressState === null
     ) {
       await AddressScanner.scanHistory(address);
+      thunkApi.dispatch(syncComplete());
     }
   }
 );
-
-// save wallet when sync is complete
-syncMiddleware.startListening({
-  actionCreator: syncAddressState.fulfilled,
-  effect: async (action, listenerApi) => {
-    const { syncPending } = selectSyncState(listenerApi.getState());
-    if (
-      syncPending.subscription === 0 &&
-      syncPending.addressState === 0 &&
-      syncPending.history === 0 &&
-      syncPending.hotRefresh === 0
-    ) {
-      const generated = await listenerApi.dispatch(syncPopulateAddresses());
-
-      if (generated.payload.length === 0) {
-        Log.debug("sync complete", syncPending);
-        const wallet = selectActiveWallet(listenerApi.getState());
-        await WalletManagerService().saveWallet(wallet.walletHash);
-      }
-    }
-  },
-});
 
 export const syncPopulateAddresses = createAsyncThunk(
   "sync/populateAddresses",
@@ -261,7 +244,7 @@ export const syncHotRefresh = createAsyncThunk(
     const nScanMore = 1600;
 
     if (
-      (sync.syncCount <= 1 &&
+      (sync.isSyncComplete &&
         sync.lastRefresh < Date.now() - hotSyncCooldown) ||
       payload.force
     ) {
@@ -291,6 +274,7 @@ export const syncHotRefresh = createAsyncThunk(
       thunkApi.dispatch(walletBalanceUpdate({ wallet, isChange: false }));
 
       Log.debug("sync/hotRefresh", sync);
+      thunkApi.dispatch(syncComplete());
     }
 
     return Date.now();
@@ -299,17 +283,93 @@ export const syncHotRefresh = createAsyncThunk(
 
 export const syncChaintip = createAsyncThunk(
   "sync/chaintip",
-  async (chaintip: { height: number; hex: string }) => {
-    const Blockchain = BlockchainService();
-    const block = await Blockchain.resolveBlockByHeight(chaintip.height);
+  async (chaintip: { height: number; hex: string }, thunkApi) => {
+    const { syncPending, chaintip: currentTip } = selectSyncState(
+      thunkApi.getState()
+    );
 
-    Log.log("sync/chaintip", block);
+    if (syncPending.chaintip <= 1) {
+      const Blockchain = BlockchainService();
+      const block = await Blockchain.resolveBlockByHeight(chaintip.height);
 
-    return block;
+      Log.log("sync/chaintip", block);
+
+      return block;
+    }
+
+    return currentTip;
   }
 );
 
 export const syncClearAddresses = createAction("sync/clearAddresses");
+
+export const syncSetSaving = createAction<boolean>("sync/saving");
+
+export const syncComplete = createAsyncThunk(
+  "sync/complete",
+  async (payload, thunkApi) => {
+    const { syncPending, isSyncComplete, isSaving } = selectSyncState(
+      thunkApi.getState()
+    );
+
+    if (
+      syncPending.subscription === 0 &&
+      syncPending.addressState === 0 &&
+      syncPending.utxo === 0 &&
+      syncPending.history === 0 &&
+      syncPending.txHistory === 0 &&
+      syncPending.chaintip === 0 &&
+      syncPending.hotRefresh === 0
+    ) {
+      if (!isSyncComplete && !isSaving) {
+        Log.debug("sync complete", syncPending);
+        thunkApi.dispatch(syncSetSaving(true));
+        const wallet = selectActiveWallet(thunkApi.getState());
+        await WalletManagerService().saveWallet(wallet.walletHash);
+        thunkApi.dispatch(syncSetSaving(false));
+      }
+      return true;
+    }
+
+    return false;
+  }
+);
+syncMiddleware.startListening({
+  actionCreator: syncAddressState.fulfilled,
+  effect: async (action, listenerApi) => {
+    listenerApi.dispatch(syncComplete());
+  },
+});
+syncMiddleware.startListening({
+  actionCreator: syncAddressHistory.fulfilled,
+  effect: async (action, listenerApi) => {
+    listenerApi.dispatch(syncComplete());
+  },
+});
+syncMiddleware.startListening({
+  actionCreator: syncAddressUtxos.fulfilled,
+  effect: async (action, listenerApi) => {
+    listenerApi.dispatch(syncComplete());
+  },
+});
+syncMiddleware.startListening({
+  actionCreator: syncChaintip.fulfilled,
+  effect: async (action, listenerApi) => {
+    listenerApi.dispatch(syncComplete());
+  },
+});
+syncMiddleware.startListening({
+  actionCreator: syncHotRefresh.fulfilled,
+  effect: async (action, listenerApi) => {
+    listenerApi.dispatch(syncComplete());
+  },
+});
+syncMiddleware.startListening({
+  actionCreator: txHistoryFetch.fulfilled,
+  effect: async (action, listenerApi) => {
+    listenerApi.dispatch(syncComplete());
+  },
+});
 
 const initialPending = {
   utxo: 0,
@@ -319,11 +379,14 @@ const initialPending = {
   chaintip: 0,
   rebuild: 0,
   hotRefresh: 0,
+  txHistory: 0,
 };
 const initialState = {
   isConnected: false,
   server: "",
   syncPending: { ...initialPending },
+  isSyncComplete: true,
+  isSaving: false,
   chaintip: {
     ...block_checkpoints.first2023,
   },
@@ -376,13 +439,14 @@ export const syncReducer = createReducer(initialState, (builder) => {
       state.syncPending.history -= 1;
     })
     .addCase(txHistoryFetch.pending, (state: RootState) => {
-      state.syncPending.history += 1;
+      state.syncPending.txHistory += 1;
+      state.isSyncComplete = false;
     })
     .addCase(txHistoryFetch.fulfilled, (state: RootState) => {
-      state.syncPending.history -= 1;
+      state.syncPending.txHistory -= 1;
     })
     .addCase(txHistoryFetch.rejected, (state: RootState) => {
-      state.syncPending.history -= 1;
+      state.syncPending.txHistory -= 1;
     })
     .addCase(syncSubscriptionCount, (state, action) => {
       state.syncPending.subscription += action.payload;
@@ -396,6 +460,7 @@ export const syncReducer = createReducer(initialState, (builder) => {
     })
     .addCase(syncHotRefresh.pending, (state: RootState) => {
       state.syncPending.hotRefresh += 1;
+      state.isSyncComplete = false;
     })
     .addCase(syncHotRefresh.fulfilled, (state: RootState, action) => {
       state.lastRefresh = action.payload;
@@ -403,6 +468,16 @@ export const syncReducer = createReducer(initialState, (builder) => {
     })
     .addCase(syncClearAddresses, (state) => {
       state.addresses = initialState.addresses;
+      state.isSyncComplete = false;
+    })
+    .addCase(syncWalletAddresses.pending, (state) => {
+      state.isSyncComplete = false;
+    })
+    .addCase(syncComplete.fulfilled, (state, action) => {
+      state.isSyncComplete = action.payload;
+    })
+    .addCase(syncSetSaving, (state, action) => {
+      state.isSaving = action.payload;
     });
 });
 

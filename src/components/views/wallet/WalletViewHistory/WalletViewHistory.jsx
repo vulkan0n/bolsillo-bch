@@ -34,7 +34,7 @@ export default function WalletViewHistory() {
   const navigate = useNavigate();
 
   const txHistory = useTransactionHistory();
-  const sync = useSelector(selectSyncState);
+  const { syncPending } = useSelector(selectSyncState);
 
   const receiveStyle = "text-secondary";
   const sendStyle = "text-error";
@@ -48,7 +48,7 @@ export default function WalletViewHistory() {
         <ul className="bg-zinc-100 text-zinc-600 divide-y divide-zinc-300 rounded-b px-1 max-h-[59vh] overflow-y-scroll border border-zinc-400 shadow-inner">
           {txHistory.length === 0 && (
             <li className="flex px-1 py-2 items-center justify-center tracking-tighter font-bold">
-              {sync.syncPending.history === 0 ? (
+              {syncPending.txHistory === 0 ? (
                 <span>-----</span>
               ) : (
                 <SyncOutlined className="text-3xl" spin />

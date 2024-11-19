@@ -91,7 +91,10 @@ export default function AddressScannerService(wallet) {
     const activeDerivationPath = await Promise.any(
       DERIVATION_PATHS.map((path) => {
         // set the derivation path for the WalletEntity
-        const tempWallet = { ...wallet, derivation: path };
+        const tempWallet = WalletManager.createTemporaryWallet({
+          ...wallet,
+          derivation: path,
+        });
         const tempHd = HdNodeService(tempWallet);
 
         // generate addresses for each change path

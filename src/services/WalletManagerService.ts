@@ -41,9 +41,8 @@ export class WalletNotExistsError extends Error {
   }
 }
 
-const Database = DatabaseService();
-
 export default function WalletManagerService() {
+  const Database = DatabaseService();
   const APP_DB = Database.getAppDatabase();
   const network = selectBchNetwork(store.getState());
 
@@ -210,6 +209,8 @@ export default function WalletManagerService() {
     );
 
     Log.log("creating wallet", result);
+
+    await saveWallet(walletHash);
     return result;
   }
 
@@ -269,6 +270,7 @@ export default function WalletManagerService() {
     }
 
     Log.log("importing wallet", walletHash);
+    await saveWallet(walletHash);
     return walletHash;
   }
 

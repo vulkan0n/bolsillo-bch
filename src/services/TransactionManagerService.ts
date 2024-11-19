@@ -163,13 +163,14 @@ export default function TransactionManagerService() {
     const WalletManager = WalletManagerService();
     const wallets = WalletManager.listWallets();
 
+    // get list of txids associated with our utxos or history (for ALL wallets)
     const live_txids = (
       await Promise.all(
         wallets.map(async ({ walletHash }) => {
           const walletDb = await WalletManager.openWalletDatabase(walletHash);
           const utxo_txids = walletDb.exec("SELECT txid FROM address_utxos");
           const history_txids = walletDb.exec(
-            "SELECT txid FROM address_transactions WHERE amount IS NULL"
+            "SELECT txid FROM address_transactions"
           );
 
           const cat_txids = [
@@ -200,7 +201,7 @@ export default function TransactionManagerService() {
     ).files
       .map((file) => file.name.split(".")[0])
       .filter(
-        (txid) => !live_txids.includes(txid) && !purgeHashes.includes(txid)
+        (txid) => !live_txids.includes(txid) && !purgeHashes.includes(txid) // purgeHashes already included
       );
 
     const tx_hashes = [...purgeHashes, ...fileTxHashes];

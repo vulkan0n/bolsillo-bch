@@ -84,7 +84,6 @@ export default function ElectrumService() {
 
     electrum.addListener("disconnected", () => {
       Log.log("ELECTRUM DISCONNECTED");
-
       store.dispatch(syncConnectionDown());
     });
 

@@ -1,4 +1,4 @@
-import Logger from "js-logger";
+/* eslint-disable @typescript-eslint/no-use-before-define */
 import {
   createReducer,
   createSelector,
@@ -9,8 +9,10 @@ import { RootState } from "@/redux";
 import { selectActiveWallet } from "@/redux/wallet";
 import { selectCurrencySettings } from "@/redux/preferences";
 
+import LogService from "@/services/LogService";
 import TransactionHistoryService from "@/services/TransactionHistoryService";
-import WalletManagerService from "@/services/WalletManagerService";
+
+const Log = LogService("redux/txHistory");
 
 export const txHistoryFetch = createAsyncThunk(
   "txHistory/fetch",
@@ -23,10 +25,7 @@ export const txHistoryFetch = createAsyncThunk(
       localCurrency
     ).resolveTransactionHistory();
 
-    Logger.debug("txHistory/fetch resolved", txHistory);
-
-    await WalletManagerService().saveWallet(wallet.walletHash);
-
+    Log.debug("txHistory resolved", txHistory);
     return txHistory;
   }
 );
