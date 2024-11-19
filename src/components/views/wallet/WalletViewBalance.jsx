@@ -25,11 +25,10 @@ export default function WalletViewBalance() {
 
   const isKeyViewed = key_viewed_at !== null;
 
-  const { shouldPreferLocalCurrency, shouldDisplayExchangeRate } = useSelector(
-    selectCurrencySettings
-  );
+  const { shouldPreferLocalCurrency } = useSelector(selectCurrencySettings);
 
-  const { shouldHideBalance } = useSelector(selectUiSettings);
+  const { shouldHideBalance, shouldDisplayExchangeRate } =
+    useSelector(selectUiSettings);
 
   const handleFlipCurrency = () => {
     dispatch(
