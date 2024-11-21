@@ -6,7 +6,7 @@ import {
   selectBchNetwork,
 } from "./preferences";
 import { walletReducer, walletBoot, addressReducer } from "./wallet";
-import { syncReducer, syncMiddleware } from "./sync";
+import { syncReducer, syncMiddleware, syncReconnect } from "./sync";
 import { deviceReducer } from "./device";
 import { txHistoryReducer } from "./txHistory";
 import { exchangeRateReducer, fetchExchangeRates } from "./exchangeRates";
@@ -50,5 +50,6 @@ export function redux_post_init() {
 
 export function redux_resume() {
   Log.debug("redux_resume");
+  store.dispatch(syncReconnect());
   store.dispatch(fetchExchangeRates(0));
 }

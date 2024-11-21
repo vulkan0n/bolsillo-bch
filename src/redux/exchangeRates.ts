@@ -8,7 +8,11 @@ import {
 
 import { Preferences } from "@capacitor/preferences";
 
-import { setPreference, selectCurrencySettings } from "@/redux/preferences";
+import {
+  setPreference,
+  selectCurrencySettings,
+  selectIsOfflineMode,
+} from "@/redux/preferences";
 import CurrencyService from "@/services/CurrencyService";
 import LogService from "@/services/LogService";
 import { currencyList } from "@/util/currency";
@@ -19,6 +23,12 @@ export const fetchExchangeRates = createAsyncThunk(
   "exchangeRates/fetch",
   // eslint-disable-next-line @typescript-eslint/default-param-last
   async (attempts: number = 0, thunkApi) => {
+    const isOfflineMode = selectIsOfflineMode(thunkApi.getState());
+    if (isOfflineMode) {
+      Log.debug("exchangeRates/fetch blocked by offline mode");
+      return;
+    }
+
     const { localCurrency } = selectCurrencySettings(thunkApi.getState());
     const Currency = CurrencyService(localCurrency);
 

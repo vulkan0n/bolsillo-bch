@@ -7,6 +7,7 @@ import {
   setPreference,
   selectLastCheckIn,
   selectPrivacySettings,
+  selectIsOfflineMode,
 } from "@/redux/preferences";
 import apolloClient from "@/apolloClient";
 
@@ -25,6 +26,12 @@ const SEND_DAILY_CHECK_IN = gql`
 export const triggerCheckIn = createAsyncThunk(
   "stats/submitCheckIn",
   async (payload, thunkApi) => {
+    const isOfflineMode = selectIsOfflineMode(thunkApi.getState());
+    if (isOfflineMode) {
+      Log.debug("stats/submitCheckIn blocked by offline mode");
+      return;
+    }
+
     const { isDailyCheckInEnabled } = selectPrivacySettings(
       thunkApi.getState()
     );

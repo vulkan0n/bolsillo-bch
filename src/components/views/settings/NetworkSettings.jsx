@@ -4,12 +4,17 @@ import {
   PlusCircleFilled,
   ApiOutlined,
   CloudServerOutlined,
+  DisconnectOutlined,
 } from "@ant-design/icons";
 
 import ElectrumService from "@/services/ElectrumService";
 
-import { syncReconnect } from "@/redux/sync";
-import { selectBchNetwork } from "@/redux/preferences";
+import { syncReconnect, syncDisconnect } from "@/redux/sync";
+import {
+  selectBchNetwork,
+  selectIsOfflineMode,
+  selectIsExperimental,
+} from "@/redux/preferences";
 
 import { translate } from "@/util/translations";
 import translations from "./translations";
@@ -31,6 +36,8 @@ export default function NetworkSettings() {
   const [electrumServerInput, setElectrumServerInput] = useState("");
 
   const bchNetwork = useSelector(selectBchNetwork);
+  const isExperimental = useSelector(selectIsExperimental);
+  const isOfflineMode = useSelector(selectIsOfflineMode);
 
   const handleElectrumServerChoice = (server) => {
     handleSettingsUpdate("electrumServer", server);
@@ -42,6 +49,20 @@ export default function NetworkSettings() {
     setShouldShowElectrumServerInput(false);
     setElectrumServerInput("");
     handleElectrumServerChoice(electrum_servers[bchNetwork][0]);
+  };
+
+  const handleSetOfflineMode = async (event) => {
+    const { checked } = event.target;
+
+    handleSettingsUpdate("offlineMode", checked);
+
+    if (checked) {
+      dispatch(syncDisconnect());
+    } else {
+      setTimeout(() => {
+        dispatch(syncReconnect());
+      }, 100);
+    }
   };
 
   const electrumHost = Electrum.getElectrumHost();
@@ -95,6 +116,19 @@ export default function NetworkSettings() {
               <PlusCircleFilled className="ml-2 text-2xl" />
             </button>
           </form>
+        </Accordion.Child>
+      )}
+
+      {isExperimental && (
+        <Accordion.Child
+          icon={DisconnectOutlined}
+          label={translate(translations.offlineMode)}
+        >
+          <input
+            type="checkbox"
+            checked={isOfflineMode}
+            onChange={handleSetOfflineMode}
+          />
         </Accordion.Child>
       )}
     </Accordion>

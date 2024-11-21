@@ -15,6 +15,7 @@ import {
 } from "@/redux/wallet";
 import { txHistoryFetch } from "@/redux/txHistory";
 import { selectNetworkStatus } from "@/redux/device";
+import { selectIsOfflineMode } from "@/redux/preferences";
 
 import LogService from "@/services/LogService";
 import ElectrumService from "@/services/ElectrumService";
@@ -40,6 +41,12 @@ export const syncMiddleware = createListenerMiddleware();
 export const syncConnect = createAsyncThunk(
   "sync/connect",
   async (payload: { attempts: number; server: string }, thunkApi) => {
+    const isOfflineMode = selectIsOfflineMode(thunkApi.getState());
+    if (isOfflineMode) {
+      Log.log("sync/connect blocked by offline mode");
+      return false;
+    }
+
     Log.log("sync/connect", payload);
     let isSuccess = false;
     try {
@@ -83,6 +90,10 @@ export const syncReconnect = createAsyncThunk(
     thunkApi.dispatch(syncConnect({ attempts: 0, server: connectServer }));
   }
 );
+
+export const syncDisconnect = createAsyncThunk("sync/disconnect", async () => {
+  return Electrum.disconnect(true);
+});
 
 // syncConnectionUp: fired when electrum connection is up
 export const syncConnectionUp = createAsyncThunk(
@@ -399,6 +410,9 @@ export const syncReducer = createReducer(initialState, (builder) => {
     .addCase(syncConnect.fulfilled, (state, action) => {
       state.isConnected = action.payload;
     })
+    .addCase(syncDisconnect.fulfilled, (state) => {
+      state.isConnected = false;
+    })
     .addCase(syncConnectionUp.fulfilled, (state: RootState, action) => {
       state.isConnected = true;
       state.server = action.payload;
@@ -472,6 +486,9 @@ export const syncReducer = createReducer(initialState, (builder) => {
     })
     .addCase(syncWalletAddresses.pending, (state) => {
       state.isSyncComplete = false;
+    })
+    .addCase(syncWalletAddresses.rejected, (state) => {
+      state.syncPending.subscription = 0;
     })
     .addCase(syncComplete.fulfilled, (state, action) => {
       state.isSyncComplete = action.payload;

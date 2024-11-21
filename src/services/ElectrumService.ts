@@ -107,8 +107,8 @@ export default function ElectrumService() {
   // disconnect: disconnect the Electrum instance
   async function disconnect(force: boolean) {
     if (electrum !== null) {
-      await electrum.disconnect(force);
-      electrum = null;
+      Log.debug("electrum disconnect");
+      return electrum.disconnect(force);
     }
 
     return true;

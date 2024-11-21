@@ -15,35 +15,38 @@ import { AuthActions } from "@/services/SecurityService";
 
 const defaultPreferences = {
   activeWalletHash: "",
-  languageCode: languageList[0].code,
-  localCurrency: currencyList[0].currency,
-  preferLocalCurrency: "false",
-  hideAvailableBalance: "false",
-  denomination: "bch",
   bchNetwork: "mainnet",
+  languageCode: languageList[0].code,
+  enableExperimental: "false",
+  enablePrerelease: "false",
+  lastCheckIn: "",
+  lastExchangeRate: "1", // TODO #423: save exchange rates per block
   // --------
   authMode: "none",
   pinHash: "",
   authActions: "Any;Debug;RevealPrivateKeys;RevealBalance;SendTransaction",
   // --------
-  // TODO: make these per-wallet instead of global
+  localCurrency: currencyList[0].currency,
+  preferLocalCurrency: "false",
+  denomination: "bch",
+  // --------
   allowInstantPay: "false",
-  instantPayThreshold: "10000000",
-  instantPayThresholdFiat: "10",
+  instantPayThreshold: "2000000", // 0.02 BCH (~$9 USD @ $450)
+  instantPayThresholdFiat: "10", // $10 USD (default)
+  // --------
   qrCodeLogo: "Selene",
   qrCodeBackground: "#ffffff",
   qrCodeForeground: "#000000",
+  // --------
   displayExploreTab: "true",
-  displayExchangeRate: "true",
+  displayExchangeRate: "false",
   displaySyncCounter: "true",
   // --------
-  // TODO: should these go in db instead?
+  // TODO #420: electrum peer db
   electrumServer: electrum_servers.mainnet[0],
-  lastCheckIn: "",
-  lastExchangeRate: "1",
+  offlineMode: "false",
   // --------
-  enableExperimental: "false",
-  enablePrerelease: "false",
+  hideAvailableBalance: "false",
   enableDailyCheckIn: "true",
 };
 
@@ -98,13 +101,14 @@ function validatePreferences(preferences: ValidPreferences): boolean {
   const boolKeys = [
     "preferLocalCurrency",
     "hideAvailableBalance",
-    "displayExchangeRate",
     "allowInstantPay",
     "enableExperimental",
     "enablePrerelease",
+    "displayExchangeRate",
     "displayExploreTab",
     "displaySyncCounter",
     "enableDailyCheckIn",
+    "offlineMode",
   ];
 
   const invalidBools = boolKeys.filter(
@@ -160,7 +164,7 @@ async function retrievePreferences(): Promise<ValidPreferences> {
 
   const isValidPreferences = await validatePreferences(preferences);
   if (!isValidPreferences) {
-    Preferences.clear();
+    await Preferences.clear();
     return retrievePreferences();
   }
 
@@ -197,7 +201,7 @@ export const resetPreferences = createAsyncThunk(
       (await Preferences.get({ key: "pinHash" })).value ||
       defaultPreferences.pinHash;
 
-    Preferences.clear();
+    await Preferences.clear();
 
     await Preferences.set({ key: "authMode", value: authMode });
     await Preferences.set({ key: "pinHash", value: pinHash });
@@ -273,6 +277,11 @@ export const selectBchNetwork = createSelector(
   (preferences): ValidBchNetwork => preferences.bchNetwork
 );
 
+export const selectIsOfflineMode = createSelector(
+  (state) => state.preferences,
+  (preferences): boolean => preferences.offlineMode === "true"
+);
+
 export const selectSecuritySettings = createSelector(
   (state: RootState) => state.preferences,
   (preferences) => ({
@@ -285,7 +294,6 @@ export const selectSecuritySettings = createSelector(
 export const selectUiSettings = createSelector(
   (state: RootState) => state.preferences,
   (preferences) => ({
-    shouldHideBalance: preferences.hideAvailableBalance === "true",
     shouldDisplayExchangeRate: preferences.displayExchangeRate === "true",
     shouldDisplayExploreTab: preferences.displayExploreTab === "true",
     shouldDisplaySyncCounter: preferences.displaySyncCounter === "true",
@@ -295,6 +303,7 @@ export const selectUiSettings = createSelector(
 export const selectPrivacySettings = createSelector(
   (state: RootState) => state.preferences,
   (preferences) => ({
+    shouldHideBalance: preferences.hideAvailableBalance === "true",
     isDailyCheckInEnabled: preferences.enableDailyCheckIn === "true",
   })
 );
