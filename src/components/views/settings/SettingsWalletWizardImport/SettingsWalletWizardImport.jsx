@@ -7,6 +7,7 @@ import WalletManagerService from "@/services/WalletManagerService";
 import AddressScannerService from "@/services/AddressScannerService";
 import DatabaseService from "@/services/DatabaseService";
 import LogService from "@/services/LogService";
+import { Haptic } from "@/util/haptic";
 import { translate } from "@/util/translations";
 import translations from "./translations";
 
@@ -92,9 +93,11 @@ export default function SettingsWalletWizardImport() {
         navigate(`build/${walletHash}`);
       } catch (e) {
         setMessage(translate(translations.alreadyImported));
+        await Haptic.error();
       }
     } else {
       setMessage(translate(translations.phraseInvalid));
+      await Haptic.error();
     }
   };
 
