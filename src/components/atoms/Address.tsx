@@ -7,6 +7,7 @@ interface AddressProps {
   short?: boolean;
   maxLength?: number;
   withPrefix?: boolean;
+  color?: string;
   className?: string;
 }
 
@@ -15,6 +16,7 @@ export default function Address({
   short = false,
   maxLength = 0,
   withPrefix = false,
+  color = "",
   className = "",
 }: AddressProps) {
   const PREFIX_LENGTH = 5;
@@ -45,13 +47,18 @@ export default function Address({
   const isMyAddress = myAddress !== undefined;
 
   const myAddressStyle =
-    isMyAddress && myAddress.change === 0 ? "text-secondary" : "";
+    color === "" && isMyAddress && myAddress.change === 0
+      ? "text-secondary"
+      : "";
+
   const myChangeStyle =
-    isMyAddress && myAddress.change === 1 ? "text-yellow-600" : "";
+    color === "" && isMyAddress && myAddress.change === 1
+      ? "text-yellow-600"
+      : "";
 
   return (
     <span
-      className={`tracking-tighter ${myAddressStyle} ${myChangeStyle} ${className}`}
+      className={`tracking-tighter ${color} ${myAddressStyle} ${myChangeStyle}`}
     >
       <span className="font-bold">{prefix}</span>
       {short ? "-" : middle}

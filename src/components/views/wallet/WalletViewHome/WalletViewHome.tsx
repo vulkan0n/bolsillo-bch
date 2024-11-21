@@ -121,7 +121,7 @@ export default function WalletViewHome() {
               className="flex items-center justify-center w-full py-2 text-xs text-center cursor-pointer slashed-zero select-none active:bg-secondary active:shadow-inner"
             >
               <CopyOutlined className={`mr-0.5 ${addressColor}`} />
-              <Address address={address} className={addressColor} />
+              <Address address={address} color={addressColor} />
             </button>
           </div>
           <div
