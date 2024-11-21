@@ -4,9 +4,14 @@ import { ArrowLeftOutlined } from "@ant-design/icons";
 interface Props {
   icon: React.ComponentType;
   title: string;
+  className?: string;
 }
 
-export default function ViewHeader({ icon = () => null, title = "" }: Props) {
+export default function ViewHeader({
+  icon = () => null,
+  title = "",
+  className = "py-3 bg-zinc-900 text-xl text-zinc-200 font-bold",
+}: Props) {
   const location = useLocation();
   const navigate = useNavigate();
   const shouldShowBackButton = location.pathname.split("/").length > 1;
@@ -14,14 +19,14 @@ export default function ViewHeader({ icon = () => null, title = "" }: Props) {
   const Icon = icon;
 
   return (
-    <div className="sticky top-0 z-50 w-full bg-zinc-900 text-xl text-zinc-200 grid grid-cols-6 py-3 font-bold">
+    <div className={`sticky top-0 z-50 w-full grid grid-cols-6 ${className}`}>
       {shouldShowBackButton ? (
         <button
           type="button"
           className="col-span-1 flex items-center justify-center cursor-pointer"
           onClick={() => navigate(-1)}
         >
-          <ArrowLeftOutlined className="text-2xl" />
+          <ArrowLeftOutlined className="text-xl" />
         </button>
       ) : (
         <div className="col-span-1">&nbsp;</div>

@@ -30,10 +30,9 @@ export default function BottomNavigation() {
   // Ensure component reloads when language preferences are changed
   useSelector(selectLanguageCode);
 
-  return !isKeyboardOpen && !isScanning ? (
+  return !isKeyboardOpen ? (
     <div
-      className="fixed bottom-0 w-full flex items-center justify-around z-50"
-      id="bottomNav"
+      className={`w-full flex items-center justify-around z-30 ${isScanning ? "opacity-0" : ""}`}
     >
       <NavButton
         to="/wallet"

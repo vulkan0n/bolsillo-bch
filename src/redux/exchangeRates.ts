@@ -23,22 +23,25 @@ export const fetchExchangeRates = createAsyncThunk(
   "exchangeRates/fetch",
   // eslint-disable-next-line @typescript-eslint/default-param-last
   async (attempts: number = 0, thunkApi) => {
+    const storedExchangeRates = selectExchangeRates(thunkApi.getState());
+
     const isOfflineMode = selectIsOfflineMode(thunkApi.getState());
     if (isOfflineMode) {
       Log.debug("exchangeRates/fetch blocked by offline mode");
-      return;
+      return storedExchangeRates;
     }
 
     const { localCurrency } = selectCurrencySettings(thunkApi.getState());
     const Currency = CurrencyService(localCurrency);
 
     try {
-      const exchangeRates = await Currency.fetchExchangeRates();
+      const fetchedExchangeRates = await Currency.fetchExchangeRates();
 
       // persist exchange rate
+      // TODO #423: save exchange rates per block
       const currentPrice = Currency.getExchangeRate(
         localCurrency,
-        exchangeRates
+        fetchedExchangeRates
       );
       thunkApi.dispatch(
         setPreference({
@@ -47,14 +50,14 @@ export const fetchExchangeRates = createAsyncThunk(
         })
       );
 
-      return exchangeRates;
+      return fetchedExchangeRates;
     } catch (e) {
       Logger.error("fetchExchangeRates failed", e);
       setTimeout(
         () => thunkApi.dispatch(fetchExchangeRates(attempts + 1)),
         30000 * (attempts + 1)
       );
-      return selectExchangeRates(thunkApi.getState());
+      return storedExchangeRates;
     }
   }
 );

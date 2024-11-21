@@ -30,7 +30,7 @@ export default function WalletView() {
   }
 
   return (
-    <>
+    <div className="flex flex-col justify-start h-full">
       {!isScanning && (
         <div className="flex bg-zinc-900 justify-between">
           <div className="flex flex-col justify-center px-5">
@@ -43,6 +43,6 @@ export default function WalletView() {
         </div>
       )}
       <Outlet />
-    </>
+    </div>
   );
 }

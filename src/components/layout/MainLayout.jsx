@@ -1,16 +1,9 @@
 import { App } from "@capacitor/app";
 import { Outlet, useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
-import { selectScannerIsScanning, selectKeyboardIsOpen } from "@/redux/device";
 import { validateBchUri } from "@/util/uri";
 import BottomNavigation from "./BottomNavigation";
 
 function MainLayout() {
-  const isScanning = useSelector(selectScannerIsScanning);
-  const isKeyboardOpen = useSelector(selectKeyboardIsOpen);
-  const bgColor = isScanning ? "bg-transparent" : "bg-white";
-  const padding = isKeyboardOpen ? "" : "bottomPadding";
-
   const navigate = useNavigate();
 
   App.addListener("appUrlOpen", ({ url }) => {
@@ -39,10 +32,12 @@ function MainLayout() {
   });
 
   return (
-    <main className={`${bgColor} ${padding}`}>
-      <Outlet />
+    <div id="container">
+      <main>
+        <Outlet />
+      </main>
       <BottomNavigation />
-    </main>
+    </div>
   );
 }
 

@@ -22,6 +22,9 @@ import Satoshi from "@/atoms/Satoshi";
 import Accordion from "@/atoms/Accordion";
 import Button from "@/atoms/Button";
 
+import { translate } from "@/util/translations";
+import translations from "./translations";
+
 //const Log = LogService("ExploreTransactionView");
 
 export default function ExploreTransactionView() {
@@ -102,8 +105,9 @@ export default function ExploreTransactionView() {
         </div>
       </div>
       <Button
-        shittyFullWidthHack
-        icon={BackIcon}
+        label={translate(translations.back)}
+        icon={ArrowLeftOutlined}
+        fullWidth
         onClick={() => navigate(-1)}
       />
     </>
@@ -152,14 +156,5 @@ function InputListItem({ input, i }) {
         {input.txid}:{input.vout}
       </Link>
     </div>
-  );
-}
-
-function BackIcon() {
-  return (
-    <>
-      <ArrowLeftOutlined className="mr-1" />
-      Back
-    </>
   );
 }

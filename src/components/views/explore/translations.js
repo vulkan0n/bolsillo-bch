@@ -36,7 +36,7 @@ const translations = {
     ur: "Bitcoin کیش کو دریافت کریں۔",
     vi: "Khám phá tiền mặt Bitcoin",
     zh: "探索比特币现金",
-    zh_TW: "探索比特幣現金"
+    zh_TW: "探索比特幣現金",
   },
   statistics: {
     ar: "إحصائيات",
@@ -75,7 +75,7 @@ const translations = {
     ur: "شماریات",
     vi: "Số liệu thống kê",
     zh: "统计数据",
-    zh_TW: "統計數據"
+    zh_TW: "統計數據",
   },
   socialMedia: {
     ar: "وسائل التواصل الاجتماعي",
@@ -114,7 +114,7 @@ const translations = {
     ur: "سوشل میڈیا",
     vi: "Truyền thông xã hội",
     zh: "社交媒体",
-    zh_TW: "社群媒體"
+    zh_TW: "社群媒體",
   },
   chronology: {
     ar: "التسلسل الزمني",
@@ -153,11 +153,50 @@ const translations = {
     ur: "تاریخ نامہ",
     vi: "Niên đại",
     zh: "年表",
-    zh_TW: "年表"
+    zh_TW: "年表",
   },
   faqs: {
-    en: "FAQs & Information"
-  }
+    en: "FAQs & Information",
+  },
+  back: {
+    ar: "خلف",
+    bn: "পিছনে",
+    da: "Tilbage",
+    de: "Zurück",
+    el: "Πίσω",
+    en: "Back",
+    es: "Volver",
+    fa: "بازگشت",
+    fil: "Bumalik",
+    fr: "Retour",
+    ha: "Baya",
+    hi: "वापस",
+    id: "Kembali",
+    it: "Indietro",
+    ja: "戻る",
+    jv: "Balik",
+    ko: "뒤로",
+    mr: "परत",
+    ms: "Kembali",
+    nb: "Tilbake",
+    nl: "Rug",
+    pa: "ਵਾਪਸ",
+    pl: "Z powrotem",
+    pt: "Voltar",
+    ro: "Înapoi",
+    ru: "Назад",
+    sv: "Tillbaka",
+    sw: "Nyuma",
+    ta: "பின்",
+    te: "తిరిగి",
+    th: "กลับ",
+    tr: "Geri",
+    uk: "Назад",
+    ur: "واپس",
+    vi: "Quay lại",
+    zh: "返回",
+    zh_TW: "後退",
+  },
 };
 
 export default translations;

@@ -137,10 +137,10 @@ export default function ScannerButton() {
   return (
     <Button
       icon={ScanIcon}
-      label={scanLabel}
-      onClick={toggleScanner}
-      labelColor={scanLabelColor}
+      outerLabel={scanLabel}
+      outerLabelColor={scanLabelColor}
       iconSize="4xl"
+      onClick={toggleScanner}
     />
   );
 }

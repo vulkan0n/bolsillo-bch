@@ -30,7 +30,7 @@ export default function TorchButton(props) {
   return (
     <Button
       icon={BulbOutlined}
-      label={translate(torch)}
+      outerLabel={translate(torch)}
       onClick={handleTorchButton}
       inverted={isTorchEnabled}
       {...props}

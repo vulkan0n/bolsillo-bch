@@ -1,9 +1,8 @@
 import { useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { DateTime } from "luxon";
 import {
-  ArrowLeftOutlined,
   SyncOutlined,
   HourglassOutlined,
   CheckCircleOutlined,
@@ -13,7 +12,7 @@ import { selectSyncState } from "@/redux/sync";
 import translations from "./translations";
 import { translate } from "@/util/translations";
 
-import Button from "@/atoms/Button";
+import ViewHeader from "@/layout/ViewHeader";
 import Satoshi from "@/atoms/Satoshi";
 
 function useTransactionHistory() {
@@ -31,8 +30,6 @@ function useTransactionHistory() {
 }
 
 export default function WalletViewHistory() {
-  const navigate = useNavigate();
-
   const txHistory = useTransactionHistory();
   const { syncPending } = useSelector(selectSyncState);
 
@@ -40,12 +37,13 @@ export default function WalletViewHistory() {
   const sendStyle = "text-error";
 
   return (
-    <div className="pb-0">
-      <div className="shadow-sm mb-2.5">
-        <div className="bg-zinc-800/90 text-zinc-200 text-center text-lg p-1 font-semibold">
-          {translate(translations.recentTransactions)}
-        </div>
-        <ul className="bg-zinc-100 text-zinc-600 divide-y divide-zinc-300 rounded-b px-1 max-h-[59vh] overflow-y-scroll border border-zinc-400 shadow-inner">
+    <div className="flex flex-col justify-start h-full">
+      <ViewHeader
+        title={translate(translations.recentTransactions)}
+        className="bg-zinc-800 text-lg py-1 font-semibold text-zinc-200"
+      />
+      <div className="h-full pb-2">
+        <ul className="bg-zinc-100 text-zinc-500 divide-y divide-zinc-300 rounded-b-sm px-1 overflow-y-scroll border border-zinc-400 shadow-inner h-full">
           {txHistory.length === 0 && (
             <li className="flex px-1 py-2 items-center justify-center tracking-tighter font-bold">
               {syncPending.txHistory === 0 ? (
@@ -69,16 +67,14 @@ export default function WalletViewHistory() {
                     </div>
                     <div className="flex-1">
                       <div
-                        className={`${
-                          tx.amount > 0 ? receiveStyle : sendStyle
-                        }`}
+                        className={`${tx.amount > 0 ? receiveStyle : sendStyle}`}
                       >
                         {(tx.height <= 0
                           ? DateTime.fromISO(tx.time_seen)
                           : DateTime.fromSeconds(tx.time)
                         ).toLocaleString(DateTime.DATE_SHORT)}
                       </div>
-                      <div className="opacity-80">
+                      <div>
                         {(tx.height <= 0
                           ? DateTime.fromISO(tx.time_seen)
                           : DateTime.fromSeconds(tx.time)
@@ -94,15 +90,13 @@ export default function WalletViewHistory() {
                         {tx.amount > 0 && "+"}
                         <Satoshi value={tx.amount} />
                       </div>
-                      <div className="opacity-80">
+                      <div>
                         <Satoshi value={tx.amount} flip />
                       </div>
                     </div>
                   </div>
                   {tx.memo && (
-                    <div className="text-sm text-zinc-600/90">
-                      Memo: {tx.memo}
-                    </div>
+                    <div className="text-sm text-zinc-500">Memo: {tx.memo}</div>
                   )}
                 </Link>
               </li>
@@ -110,20 +104,6 @@ export default function WalletViewHistory() {
           )}
         </ul>
       </div>
-      <Button
-        shittyFullWidthHack
-        icon={BackIcon}
-        onClick={() => navigate(-1)}
-      />
     </div>
-  );
-}
-
-function BackIcon() {
-  return (
-    <>
-      <ArrowLeftOutlined className="mr-1" />
-      {translate(translations.back)}
-    </>
   );
 }

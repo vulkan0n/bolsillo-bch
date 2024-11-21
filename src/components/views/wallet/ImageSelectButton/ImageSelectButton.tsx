@@ -7,15 +7,18 @@ import { Haptic } from "@/util/haptic";
 
 import { setScannerIsScanning } from "@/redux/device";
 
-import Button from "@/atoms/Button";
+import Button, { ButtonProps } from "@/atoms/Button";
 import translations from "./translations";
 import { translate } from "@/util/translations";
 
-interface Props {
+interface ImageSelectButtonProps extends ButtonProps {
   onSelection: (data: string) => void;
 }
 
-export default function ImageSelectButton({ onSelection, ...rest }: Props) {
+export default function ImageSelectButton({
+  onSelection,
+  ...rest
+}: ImageSelectButtonProps) {
   const dispatch = useDispatch();
   // function to downscale images (helps QR codes read better)
   const scaleImage = (image) => {
@@ -74,7 +77,7 @@ export default function ImageSelectButton({ onSelection, ...rest }: Props) {
   return (
     <Button
       icon={PictureOutlined}
-      label={translate(translations.imageText)}
+      outerLabel={translate(translations.imageText)}
       onClick={handleImageSelectButton}
       {...rest}
     />

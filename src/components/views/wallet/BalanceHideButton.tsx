@@ -1,7 +1,7 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import { useSelector, useDispatch } from "react-redux";
 import { EyeOutlined, EyeInvisibleOutlined } from "@ant-design/icons";
-import { selectUiSettings, setPreference } from "@/redux/preferences";
+import { selectPrivacySettings, setPreference } from "@/redux/preferences";
 import SecurityService, { AuthActions } from "@/services/SecurityService";
 
 interface Props {
@@ -10,7 +10,7 @@ interface Props {
 
 export default function BalanceHideButton({ className = "", ...rest }: Props) {
   const dispatch = useDispatch();
-  const { shouldHideBalance } = useSelector(selectUiSettings);
+  const { shouldHideBalance } = useSelector(selectPrivacySettings);
   const Icon = shouldHideBalance ? EyeInvisibleOutlined : EyeOutlined;
 
   const hiddenClasses = shouldHideBalance ? "opacity-60" : "opacity-40";

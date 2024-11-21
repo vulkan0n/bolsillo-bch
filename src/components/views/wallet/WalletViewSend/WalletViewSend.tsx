@@ -13,7 +13,6 @@ import {
   selectIsExperimental,
 } from "@/redux/preferences";
 
-import { selectKeyboardIsOpen } from "@/redux/device";
 import { selectSyncState, selectMyAddresses } from "@/redux/sync";
 
 import TransactionManagerService from "@/services/TransactionManagerService";
@@ -46,9 +45,6 @@ export default function WalletViewSend() {
   const isExperimental = useSelector(selectIsExperimental);
 
   const inputRef = useRef<HTMLInputElement>(null);
-
-  const isKeyboardOpen = useSelector(selectKeyboardIsOpen);
-  const buttonsPos = isKeyboardOpen ? "bottom-2" : "bottom-[5em]";
 
   const wallet = useSelector(selectActiveWallet);
   const sync = useSelector(selectSyncState);
@@ -129,6 +125,7 @@ export default function WalletViewSend() {
     }
 
     if (isBase58Address) {
+      await Haptic.warn();
       const { value: isLegacyAddressConfirmed } = await Dialog.confirm({
         title: translate(translations.base58WarningTitle),
         message: translate(translations.base58WarningMessage),
@@ -245,10 +242,10 @@ export default function WalletViewSend() {
     <>
       <div className="tracking-wide text-center text-white">
         {message === "" ? (
-          <div className="bg-primary p-2">
-            <div className="text-xl font-bold">
+          <div className="bg-primary px-2 py-1">
+            <div className="text-lg font-bold">
               {translate(translations.sendingTo)}
-              {isMyAddress && <span> self</span>}
+              {isMyAddress && <span>&nbsp;{translate(translations.self)}</span>}
             </div>
             <div className="text-sm py-1 font-mono tracking-tight">
               <Address address={address} />
@@ -256,7 +253,7 @@ export default function WalletViewSend() {
           </div>
         ) : (
           <div className="bg-error p-2">
-            <div className="text-2xl font-bold">{message}</div>
+            <div className="text-xl font-bold">{message}</div>
           </div>
         )}
       </div>
@@ -266,10 +263,10 @@ export default function WalletViewSend() {
           <SyncOutlined className="text-7xl" spin />
         </div>
       ) : (
-        <>
-          <div className="p-2 fixed top-[40%] w-full">
+        <div className="flex flex-col h-full justify-evenly">
+          <div className="p-2 w-full grow flex flex-col justify-center ">
             <div className="py-4 px-2 rounded-md shadow-md bg-primary/95 text-white">
-              <div className="flex items-center">
+              <div className="flex items-center justify-center">
                 <CurrencySymbol className="font-bold text-4xl mr-2" />
                 <SatoshiInput
                   key={satoshiInputKey}
@@ -283,9 +280,8 @@ export default function WalletViewSend() {
                   ref={inputRef}
                 />
                 <Button
-                  className="text-xs spacing-wide font-semibold text-zinc-800 rounded-full border border-zinc-200 bg-zinc-100"
-                  icon={MaxButton}
-                  iconSize="xs font-bold"
+                  label="MAX"
+                  className="spacing-wide text-bold text-zinc-800 rounded-full border border-zinc-200 bg-zinc-100"
                   onClick={handleSendMax}
                 />
               </div>
@@ -302,41 +298,30 @@ export default function WalletViewSend() {
             </div>
           </div>
 
-          <div
-            className={`flex absolute ${buttonsPos} w-full justify-around items-center px-2 gap-x-2`}
-          >
-            <div className="mx-2">
-              <Button onClick={() => navigate(-1)} icon={BackIcon} />
-            </div>
-            <div className="flex-1">
-              <Button
-                size="full"
-                icon={ConfirmIcon}
-                shittyFullWidthHack
-                onClick={() => confirmSend(false)}
-                inverted
-              />
+          <div className="flex flex-col justify-end shrink my-6">
+            <div className="flex w-full justify-around items-center px-2 gap-x-2">
+              <div className="mx-2">
+                <Button
+                  icon={ArrowLeftOutlined}
+                  iconSize="lg"
+                  label={translate(translations.back)}
+                  onClick={() => navigate(-1)}
+                />
+              </div>
+              <div className="flex-1">
+                <span className="font-bold">
+                  <Button
+                    label={translate(translations.confirm)}
+                    inverted
+                    fullWidth
+                    onClick={() => confirmSend(false)}
+                  />
+                </span>
+              </div>
             </div>
           </div>
-        </>
+        </div>
       )}
     </>
-  );
-}
-
-function MaxButton() {
-  return <span>MAX</span>;
-}
-
-function ConfirmIcon() {
-  return <span className="font-bold">{translate(translations.confirm)}</span>;
-}
-
-function BackIcon() {
-  return (
-    <span>
-      <ArrowLeftOutlined className="mr-1" />
-      {translate(translations.back)}
-    </span>
   );
 }

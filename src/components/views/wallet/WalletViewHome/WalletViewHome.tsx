@@ -73,26 +73,26 @@ export default function WalletViewHome() {
 
   // force red QR code border if connected to chipnet
   const qrCodeBorder =
-    bchNetwork !== "mainnet" ? "border-[#ff0000]" : "border-primary/90";
+    bchNetwork !== "mainnet" ? "border-[#ff0000]" : "border-primary";
   const addressColor =
-    bchNetwork !== "mainnet" ? "text-[#ff0000]" : "text-primary";
+    bchNetwork !== "mainnet" ? "text-[#ff0000]" : "text-white/80";
 
   return (
-    <>
+    <div className="flex flex-col justify-between h-full">
       {isScanning ? (
-        <ScannerOverlay />
+        <div>
+          <ScannerOverlay />
+        </div>
       ) : (
-        <div className="pt-1 font-mono text-white/90">
-          <div className="w-[92.5%] pt-1 mx-auto bg-primary/90 rounded rounded-b-none">
-            <div className="flex justify-between items-center uppercase">
-              <span className="grow text-sm text-center flex items-center justify-center">
-                Receive
-              </span>
+        <div className="font-mono text-white/90">
+          <div className="w-full mx-auto bg-primary/90">
+            <div className="py-1 flex justify-center items-center text-sm text-center uppercase">
+              Receive
             </div>
             <div className="w-fit mx-auto">
               <button
                 type="button"
-                className={`border-4 cursor-pointer active:bg-primary shadow-inner shadow-md active:shadow-none active:shadow-inner active:scale-[0.98] ${qrCodeBorder}`}
+                className={`border-4 cursor-pointer active:bg-primary shadow-inner shadow-lg active:shadow-none active:shadow-inner active:scale-[0.98] ${qrCodeBorder}`}
                 onClick={copyAddressToClipboard}
               >
                 <QRCode
@@ -118,13 +118,18 @@ export default function WalletViewHome() {
             <button
               type="button"
               onClick={copyAddressToClipboard}
-              className={`flex items-center justify-center w-full p-1 text-xs text-center cursor-pointer slashed-zero select-none active:bg-secondary active:shadow-inner ${addressColor}`}
+              className="flex items-center justify-center w-full py-2 text-xs text-center cursor-pointer slashed-zero select-none active:bg-secondary active:shadow-inner"
             >
-              <CopyOutlined className="mr-0.5 text-white/80" />
-              <Address address={address} className="text-white/80" />
+              <CopyOutlined className={`mr-0.5 ${addressColor}`} />
+              <Address address={address} className={addressColor} />
             </button>
           </div>
-          <div className="z-50 font-sans relative bg-primary w-[92.5%] mx-auto text-sm p-1 rounded-b">
+          <div
+            className={`font-sans bg-primary w-full mx-auto text-sm py-1.5 rounded-b-sm ${!shouldShowRequestAmount ? "active:bg-secondary active:shadow-inner" : ""}`}
+            onClick={() =>
+              !shouldShowRequestAmount && setShouldShowRequestAmount(true)
+            }
+          >
             {shouldShowRequestAmount ? (
               <div className="flex w-full justify-between items-center">
                 <CloseOutlined
@@ -145,10 +150,7 @@ export default function WalletViewHome() {
                 </span>
               </div>
             ) : (
-              <div
-                className="flex items-center justify-center cursor-pointer active:bg-secondary active:shadow-inner"
-                onClick={() => setShouldShowRequestAmount(true)}
-              >
+              <div className="flex items-center justify-center cursor-pointer">
                 <FormOutlined className="mr-1 font-bold" />
                 <span>{translate(translations.requestAmount)}</span>
                 {shouldShowRequestAmount ? (
@@ -162,10 +164,10 @@ export default function WalletViewHome() {
         </div>
       )}
       {!isKeyboardOpen && (
-        <div className="absolute bottom-[4.75em] w-full">
+        <div className="w-full">
           <WalletViewButtons />
         </div>
       )}
-    </>
+    </div>
   );
 }

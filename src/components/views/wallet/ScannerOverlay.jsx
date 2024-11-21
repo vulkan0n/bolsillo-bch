@@ -10,7 +10,7 @@ export default function ScannerOverlay() {
   );
 
   return (
-    <div className="fixed top-0 w-full h-screen flex items-center justify-center bg-transparent">
+    <div className="fixed top-0 w-full h-screen z-40 flex items-center justify-center bg-transparent">
       <div className="text-center">
         {isInstantPayEnabled && (
           <div className="relative bottom-4 bg-black/50 text-white/80 rounded-sm z-10">

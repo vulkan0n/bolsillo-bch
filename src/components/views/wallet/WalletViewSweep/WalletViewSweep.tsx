@@ -6,14 +6,13 @@ import { ArrowLeftOutlined, SyncOutlined } from "@ant-design/icons";
 
 import { selectActiveWallet } from "@/redux/wallet";
 
-import { selectKeyboardIsOpen } from "@/redux/device";
 import { selectSyncState } from "@/redux/sync";
 
 import AddressManagerService from "@/services/AddressManagerService";
 import ElectrumService from "@/services/ElectrumService";
 import TransactionManagerService from "@/services/TransactionManagerService";
 import {
-  type ElectrumUtxo,
+  ElectrumUtxo,
   buildSweepTransaction,
 } from "@/services/TransactionBuilderService";
 import ToastService from "@/services/ToastService";
@@ -32,9 +31,6 @@ import translations from "./translations";
 export default function WalletViewSweep() {
   const params = useParams();
   const navigate = useNavigate();
-
-  const isKeyboardOpen = useSelector(selectKeyboardIsOpen);
-  const buttonsPos = isKeyboardOpen ? "bottom-2" : "bottom-[5em]";
 
   const wallet = useSelector(selectActiveWallet);
   const sync = useSelector(selectSyncState);
@@ -182,8 +178,8 @@ export default function WalletViewSweep() {
     <>
       <div className="tracking-wide text-center text-white">
         {message === "" ? (
-          <div className="bg-primary p-2">
-            <div className="text-xl font-bold">
+          <div className="bg-primary px-2 py-1">
+            <div className="text-lg font-bold">
               {translate(translations.sweepingFrom)}
             </div>
             <div className="text-sm py-1 font-mono tracking-tight">
@@ -193,7 +189,7 @@ export default function WalletViewSweep() {
           </div>
         ) : (
           <div className="bg-error p-2">
-            <div className="text-2xl font-bold">{message}</div>
+            <div className="text-xl font-bold">{message}</div>
           </div>
         )}
       </div>
@@ -203,8 +199,8 @@ export default function WalletViewSweep() {
           <SyncOutlined className="text-7xl" spin />
         </div>
       ) : (
-        <>
-          <div className="p-2 fixed top-[40%] w-full">
+        <div className="flex flex-col h-full justify-evenly">
+          <div className="p-2 w-full grow flex flex-col justify-center">
             <div className="py-4 px-2 rounded-md shadow-md bg-primary/95 text-white">
               <div className="flex items-center justify-center">
                 <Satoshi value={wifSatoshiBalance} flip />
@@ -242,7 +238,7 @@ export default function WalletViewSweep() {
               </div>
             )}
           </div>
-        </>
+        </div>
       )}
     </>
   );

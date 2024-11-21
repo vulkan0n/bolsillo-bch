@@ -4,7 +4,6 @@ import { useSelector } from "react-redux";
 import Decimal from "decimal.js";
 import { ArrowLeftOutlined, SyncOutlined } from "@ant-design/icons";
 
-import { selectKeyboardIsOpen } from "@/redux/device";
 import { selectActiveWallet } from "@/redux/wallet";
 import { selectSyncState } from "@/redux/sync";
 import { selectInstantPaySettings } from "@/redux/preferences";
@@ -22,10 +21,7 @@ import Satoshi from "@/atoms/Satoshi";
 
 import { Haptic } from "@/util/haptic";
 
-import {
-  type PaymentRequestResponse,
-  JppV2Client,
-} from "@/util/payment_protocol";
+import { PaymentRequestResponse, JppV2Client } from "@/util/payment_protocol";
 import { translate } from "@/util/translations";
 import translations from "@/components/views/wallet/WalletViewPay/translations";
 
@@ -38,11 +34,9 @@ export default function WalletViewPay() {
 
   const sync = useSelector(selectSyncState);
   const wallet = useSelector(selectActiveWallet);
-  const isKeyboardOpen = useSelector(selectKeyboardIsOpen);
   const { isInstantPayEnabled, instantPayThreshold } = useSelector(
     selectInstantPaySettings
   );
-  const buttonsPos = isKeyboardOpen ? "bottom-2" : "bottom-[5em]";
 
   const [message, setMessage] = useState("");
   const [detailedMessage, setDetailedMessage] = useState("");
@@ -250,17 +244,17 @@ export default function WalletViewPay() {
     <>
       <div className="tracking-wide text-center text-white">
         {message === "" ? (
-          <div className="bg-primary p-2">
-            <div className="text-xl font-bold">
+          <div className="bg-primary px-2 py-1">
+            <div className="text-lg font-bold">
               {translate(translations.paymentTo)}
             </div>
-            <div className="text-sm py-1 font-mono tracking-tight">
-              <div>{new URL(requestUri).hostname}</div>
+            <div className="text-sm py-1">
+              <span>{new URL(requestUri).hostname}</span>
             </div>
           </div>
         ) : (
           <div className="bg-error p-2">
-            <div className="text-2xl font-bold">{message}</div>
+            <div className="text-xl font-bold">{message}</div>
           </div>
         )}
       </div>
@@ -271,18 +265,19 @@ export default function WalletViewPay() {
         </div>
       ) : (
         <>
-          <div className="p-2 fixed top-[40%] w-full">
+          <div className="flex flex-col h-full justify-evenly w-full m-1 bg-zinc-200 text-zinc-900 rounded-md">
             {!message ? (
               <>
-                <div className="py-4 px-2">
-                  <div className="flex items-center justify-center">
-                    {paymentData.memo}
-                  </div>
+                <div className="flex items-center justify-center w-[90%] mx-auto p-2 bg-zinc-100">
+                  {paymentData.memo}
                 </div>
-                <div className="py-4 px-2 rounded-md shadow-md bg-primary/95 text-white">
-                  <div className="flex items-center justify-center">
+                <div className="w-[80%] p-2 mx-auto text-center bg-zinc-100 rounded-md">
+                  <div className="font-semibold text-xl mb-1 text-zinc-900">
+                    <Satoshi value={totalSats} />
+                  </div>
+                  <div className="text-lg flex items-center justify-center gap-x-2 text-zinc-800">
                     <Satoshi value={totalSats} flip />
-                    <CurrencyFlip className="text-3xl ml-2" />
+                    <CurrencyFlip className="text-2xl" />
                   </div>
                 </div>
                 <div className="py-4 px-2 rounded-md">
@@ -304,50 +299,44 @@ export default function WalletViewPay() {
             )}
           </div>
 
-          <div
-            className={`flex absolute ${buttonsPos} w-full justify-around items-center px-2 gap-x-2`}
-          >
-            {paymentData && !message ? (
-              <>
-                <div className="mx-2">
-                  <Button onClick={() => navigate(-1)} icon={BackIcon} />
-                </div>
+          <div className="flex flex-col justify-end shrink my-6">
+            <div className="flex w-full justify-around items-center px-2 gap-x-2">
+              {paymentData && !message ? (
+                <>
+                  <div className="mx-2">
+                    <Button
+                      icon={ArrowLeftOutlined}
+                      iconSize="lg"
+                      label={translate(translations.back)}
+                      onClick={() => navigate(-1)}
+                    />
+                  </div>
+                  <div className="flex-1">
+                    <span className="font-bold">
+                      <Button
+                        label={translate(translations.confirm)}
+                        inverted
+                        fullWidth
+                        onClick={() => confirmSend(false)}
+                      />
+                    </span>
+                  </div>
+                </>
+              ) : (
                 <div className="flex-1">
                   <Button
-                    size="full"
-                    icon={ConfirmIcon}
-                    shittyFullWidthHack
-                    onClick={() => confirmSend()}
-                    inverted
+                    icon={ArrowLeftOutlined}
+                    iconSize="lg"
+                    label={translate(translations.back)}
+                    onClick={() => navigate(-1)}
+                    fullWidth
                   />
                 </div>
-              </>
-            ) : (
-              <div className="flex-1">
-                <Button
-                  size="full"
-                  onClick={() => navigate(-1)}
-                  icon={BackIcon}
-                  shittyFullWidthHack
-                />
-              </div>
-            )}
+              )}
+            </div>
           </div>
         </>
       )}
     </>
-  );
-}
-
-function ConfirmIcon() {
-  return <span className="font-bold">{translate(translations.confirm)}</span>;
-}
-
-function BackIcon() {
-  return (
-    <span>
-      <ArrowLeftOutlined className="mr-1" />
-      {translate(translations.back)}
-    </span>
   );
 }

@@ -3,9 +3,9 @@ import { useState } from "react";
 import { CaretRightOutlined, CaretDownOutlined } from "@ant-design/icons";
 
 interface AccordionProps {
-  icon: React.ComponentType;
-  title: string;
-  open: boolean;
+  icon?: React.ComponentType;
+  title?: string;
+  open?: boolean;
   children: React.ReactNode;
 }
 
@@ -42,9 +42,9 @@ export default function Accordion({
 }
 
 interface AccordionChildProps {
-  icon: React.ComponentType;
-  label: string;
-  description: string;
+  icon?: React.ComponentType;
+  label?: string;
+  description?: string;
   children: React.ReactNode;
 }
 

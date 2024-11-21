@@ -242,6 +242,9 @@ const translations = {
   base58WarningOk: {
     en: "Send Anyway",
   },
+  self: {
+    en: "self",
+  },
 };
 
 export default translations;

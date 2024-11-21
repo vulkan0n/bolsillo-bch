@@ -90,35 +90,32 @@ export default function WalletViewButtons() {
   };
 
   return (
-    <>
-      <div className="mb-2">{!isScanning && <hr />}</div>
-      <div className="flex items-center w-auto mx-4 justify-evenly">
-        {isScanning ? (
-          <ImageSelectButton
-            iconSize="2xl"
-            labelColor="white opacity-80"
-            onSelection={forwardOnValidAddress}
-          />
-        ) : (
-          <Button
-            icon={HistoryOutlined}
-            label={translate(history)}
-            onClick={handleHistoryButton}
-            iconSize="2xl"
-          />
-        )}
-        <ScannerButton />
-        {isScanning ? (
-          <TorchButton iconSize="2xl" labelColor="white opacity-80" />
-        ) : (
-          <Button
-            icon={SendOutlined}
-            label={translate(send)}
-            onClick={pasteAddressFromClipboard}
-            iconSize="2xl"
-          />
-        )}
-      </div>
-    </>
+    <div className="flex items-center w-auto mx-4 justify-evenly my-4 relative z-40">
+      {isScanning ? (
+        <ImageSelectButton
+          iconSize="2xl"
+          outerLabelColor="white opacity-80"
+          onSelection={forwardOnValidAddress}
+        />
+      ) : (
+        <Button
+          icon={HistoryOutlined}
+          outerLabel={translate(history)}
+          onClick={handleHistoryButton}
+          iconSize="2xl"
+        />
+      )}
+      <ScannerButton />
+      {isScanning ? (
+        <TorchButton iconSize="2xl" outerLabelColor="white opacity-80" />
+      ) : (
+        <Button
+          icon={SendOutlined}
+          outerLabel={translate(send)}
+          onClick={pasteAddressFromClipboard}
+          iconSize="2xl"
+        />
+      )}
+    </div>
   );
 }

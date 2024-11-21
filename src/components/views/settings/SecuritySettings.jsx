@@ -138,7 +138,11 @@ export default function SecuritySettings() {
                 {translate(translations.pinSet)}
               </span>
             )}
-            <Button onClick={handleSetPin} icon={PinSetButtonIcon} />
+            <Button
+              onClick={handleSetPin}
+              icon={PushpinOutlined}
+              label={translate(translations.resetPin)}
+            />
           </div>
         </Accordion.Child>
       )}
@@ -203,14 +207,5 @@ export default function SecuritySettings() {
         </>
       )}
     </Accordion>
-  );
-}
-
-function PinSetButtonIcon() {
-  return (
-    <span>
-      <PushpinOutlined className="mr-1" />
-      Reset PIN
-    </span>
   );
 }
