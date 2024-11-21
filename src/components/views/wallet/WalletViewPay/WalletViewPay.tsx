@@ -295,7 +295,7 @@ export default function WalletViewPay() {
             />
           </div>
           <div className="flex flex-col mx-2 justify-center">
-            <div className="h-full bg-primary/80 text-zinc-900 rounded-md p-4 ">
+            <div className="h-full bg-primary/80 text-zinc-900 rounded-md p-4">
               {!message ? (
                 <>
                   <div className="p-2 bg-zinc-100 rounded-md mb-3 text-center font-semibold">

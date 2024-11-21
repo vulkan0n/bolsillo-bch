@@ -1,13 +1,17 @@
-import Logger from "js-logger";
 import { useState, useEffect, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { ArrowLeftOutlined, SyncOutlined } from "@ant-design/icons";
 
 import { selectActiveWallet } from "@/redux/wallet";
-
 import { selectSyncState } from "@/redux/sync";
+import {
+  setPreference,
+  selectCurrencySettings,
+  selectIsOfflineMode,
+} from "@/redux/preferences";
 
+import LogService from "@/services/LogService";
 import AddressManagerService from "@/services/AddressManagerService";
 import ElectrumService from "@/services/ElectrumService";
 import TransactionManagerService from "@/services/TransactionManagerService";
@@ -28,12 +32,17 @@ import { Haptic } from "@/util/haptic";
 import { translate } from "@/util/translations";
 import translations from "./translations";
 
+const Log = LogService("WalletViewSweep");
+
 export default function WalletViewSweep() {
+  const dispatch = useDispatch();
   const params = useParams();
   const navigate = useNavigate();
 
   const wallet = useSelector(selectActiveWallet);
   const sync = useSelector(selectSyncState);
+  const { shouldPreferLocalCurrency } = useSelector(selectCurrencySettings);
+  const isOfflineMode = useSelector(selectIsOfflineMode);
 
   // Reload unused addresses when wallet data changes
   const unusedAddresses = useMemo(
@@ -53,6 +62,15 @@ export default function WalletViewSweep() {
   const [utxos, setUtxos] = useState<Array<ElectrumUtxo>>([]);
   const [isSweepable, setIsSweepable] = useState(false);
 
+  const handleFlipCurrency = () => {
+    dispatch(
+      setPreference({
+        key: "preferLocalCurrency",
+        value: shouldPreferLocalCurrency ? "false" : "true",
+      })
+    );
+  };
+
   // Throw an error if no WIF was provided as a URL param to this route.
   if (!params.wif) {
     throw new Error('No "wif" param specified in route');
@@ -71,6 +89,12 @@ export default function WalletViewSweep() {
   //       The intent is to allow Selene to be invoked by a "bch-wif:${wif}" URL and "wait" for connection before making the requestUTXO's call.
   useEffect(() => {
     const requestUtxos = async () => {
+      if (isOfflineMode) {
+        ToastService().disconnected();
+        navigate("/");
+        return;
+      }
+
       // Fetch the UTXOs from our Electrum Service.
       const electrumUtxos = await ElectrumService().requestUtxos(wifAddress);
 
@@ -87,7 +111,7 @@ export default function WalletViewSweep() {
     if (sync.isConnected && isFetchingUtxos) {
       requestUtxos();
     }
-  }, [sync.isConnected, isFetchingUtxos, utxos, wifAddress]);
+  }, [sync.isConnected, isFetchingUtxos, utxos, wifAddress, isOfflineMode]);
 
   // Calculate the satoshi balance when our UTXOs change.
   const wifSatoshiBalance = useMemo(() => {
@@ -167,7 +191,7 @@ export default function WalletViewSweep() {
       });
     } catch (error) {
       await Haptic.error();
-      Logger.warn(`Sweeping from ${wif} failed: ${error}`);
+      Log.warn(`Sweeping from ${wif} failed: ${error}`);
       setMessage(translate(translations.sweepingFailed));
     } finally {
       setIsSweeping(false);
@@ -175,9 +199,13 @@ export default function WalletViewSweep() {
   };
 
   return (
-    <>
+    <div className="flex flex-col justify-start h-full">
       <div className="tracking-wide text-center text-white">
-        {message === "" ? (
+        {message !== "" ? (
+          <div className="bg-error p-2">
+            <div className="text-xl font-bold">{message}</div>
+          </div>
+        ) : (
           <div className="bg-primary px-2 py-1">
             <div className="text-lg font-bold">
               {translate(translations.sweepingFrom)}
@@ -187,72 +215,57 @@ export default function WalletViewSweep() {
               (<Address address={wifAddress} />)
             </div>
           </div>
-        ) : (
-          <div className="bg-error p-2">
-            <div className="text-xl font-bold">{message}</div>
-          </div>
         )}
       </div>
 
       {isFetchingUtxos || isSweeping ? (
-        <div className="p-2 flex items-center justify-center fixed top-1/3 w-full text-center">
+        <div className="mb-32 flex items-center justify-center w-full h-full text-center">
           <SyncOutlined className="text-7xl" spin />
         </div>
       ) : (
-        <div className="flex flex-col h-full justify-evenly">
-          <div className="p-2 w-full grow flex flex-col justify-center">
-            <div className="py-4 px-2 rounded-md shadow-md bg-primary/95 text-white">
-              <div className="flex items-center justify-center">
-                <Satoshi value={wifSatoshiBalance} flip />
-                <CurrencyFlip className="text-3xl ml-2" />
+        <div className="flex flex-col h-full">
+          <div className="flex flex-col mx-2 justify-center h-full">
+            <div className="bg-primary/80 text-zinc-900 rounded-md p-4">
+              <div
+                className="p-4 text-center bg-zinc-100 rounded-md cursor-pointer"
+                onClick={handleFlipCurrency}
+              >
+                <div className="font-semibold text-xl mb-1 text-zinc-900">
+                  <Satoshi value={wifSatoshiBalance} />
+                </div>
+                <div className="text-lg flex items-center justify-center gap-x-2 text-zinc-800">
+                  <Satoshi value={wifSatoshiBalance} flip />
+                  <CurrencyFlip className="text-xl" />
+                </div>
               </div>
             </div>
           </div>
 
-          <div
-            className={`flex absolute ${buttonsPos} w-full justify-around items-center px-2 gap-x-2`}
-          >
-            {isSweepable === true ? (
-              <>
-                <div className="mx-2">
-                  <Button onClick={() => navigate(-1)} icon={BackIcon} />
-                </div>
-                <div className="flex-1">
-                  <Button
-                    size="full"
-                    icon={ConfirmIcon}
-                    shittyFullWidthHack
-                    onClick={() => confirmSweep()}
-                    inverted
-                  />
-                </div>
-              </>
-            ) : (
-              <div className="flex-1">
+          <div className="flex flex-col justify-end shrink my-6">
+            <div className="flex w-full justify-around items-center px-2 gap-x-2">
+              <div className="mx-2">
                 <Button
-                  size="full"
+                  icon={ArrowLeftOutlined}
+                  iconSize="lg"
+                  label={translate(translations.back)}
                   onClick={() => navigate(-1)}
-                  icon={BackIcon}
-                  shittyFullWidthHack
                 />
               </div>
-            )}
+              <div className="flex-1">
+                <span className="font-bold">
+                  <Button
+                    label={translate(translations.confirm)}
+                    inverted
+                    fullWidth
+                    onClick={() => confirmSweep()}
+                    disabled={!isSweepable}
+                  />
+                </span>
+              </div>
+            </div>
           </div>
         </div>
       )}
-    </>
-  );
-}
-
-function ConfirmIcon() {
-  return <span className="font-bold">{translate(translations.confirm)}</span>;
-}
-
-function BackIcon() {
-  return (
-    <span>
-      <ArrowLeftOutlined className="mr-1" />
-      {translate(translations.back)}
-    </span>
+    </div>
   );
 }
