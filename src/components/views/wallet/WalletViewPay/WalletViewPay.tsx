@@ -1,12 +1,17 @@
 import { useState, useCallback, useEffect, useMemo } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import Decimal from "decimal.js";
 import { ArrowLeftOutlined, SyncOutlined } from "@ant-design/icons";
 
 import { selectActiveWallet } from "@/redux/wallet";
 import { selectSyncState } from "@/redux/sync";
-import { selectInstantPaySettings } from "@/redux/preferences";
+import {
+  setPreference,
+  selectCurrencySettings,
+  selectInstantPaySettings,
+  selectIsOfflineMode,
+} from "@/redux/preferences";
 
 import TransactionManagerService from "@/services/TransactionManagerService";
 import TransactionBuilderService from "@/services/TransactionBuilderService";
@@ -29,6 +34,7 @@ const Log = LogService("WalletViewPay");
 const jppClient = new JppV2Client();
 
 export default function WalletViewPay() {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
@@ -37,6 +43,8 @@ export default function WalletViewPay() {
   const { isInstantPayEnabled, instantPayThreshold } = useSelector(
     selectInstantPaySettings
   );
+  const { shouldPreferLocalCurrency } = useSelector(selectCurrencySettings);
+  const isOfflineMode = useSelector(selectIsOfflineMode);
 
   const [message, setMessage] = useState("");
   const [detailedMessage, setDetailedMessage] = useState("");
@@ -64,7 +72,15 @@ export default function WalletViewPay() {
     throw new Error("Invalid or missing request URI");
   }
 
-  const isInsufficientFunds = new Decimal(wallet.balance).lessThan(0);
+  const isInsufficientFunds = new Decimal(wallet.balance).lessThanOrEqualTo(0);
+  const handleFlipCurrency = () => {
+    dispatch(
+      setPreference({
+        key: "preferLocalCurrency",
+        value: shouldPreferLocalCurrency ? "false" : "true",
+      })
+    );
+  };
 
   const handleExpire = () => {
     setMessage(translate(translations.invalidInvoice));
@@ -225,6 +241,12 @@ export default function WalletViewPay() {
     function handlePaymentRequest() {
       const fetchPaymentRequest = async () => {
         try {
+          if (isOfflineMode) {
+            //ToastService().disconnected();
+            //navigate("/");
+            //return;
+          }
+
           setIsLoading(true);
           setPaymentData(await jppClient.paymentRequest(requestUri));
         } catch (error) {
@@ -237,13 +259,17 @@ export default function WalletViewPay() {
 
       fetchPaymentRequest();
     },
-    [requestUri]
+    [requestUri, isOfflineMode, navigate]
   );
 
   return (
-    <>
+    <div className="flex flex-col justify-start h-full">
       <div className="tracking-wide text-center text-white">
-        {message === "" ? (
+        {message !== "" ? (
+          <div className="bg-error p-2">
+            <div className="text-xl font-bold">{message}</div>
+          </div>
+        ) : (
           <div className="bg-primary px-2 py-1">
             <div className="text-lg font-bold">
               {translate(translations.paymentTo)}
@@ -252,91 +278,76 @@ export default function WalletViewPay() {
               <span>{new URL(requestUri).hostname}</span>
             </div>
           </div>
-        ) : (
-          <div className="bg-error p-2">
-            <div className="text-xl font-bold">{message}</div>
-          </div>
         )}
       </div>
 
       {isLoading || isSending ? (
-        <div className="p-2 flex items-center justify-center fixed top-1/3 w-full text-center">
+        <div className="mb-32 flex items-center justify-center w-full h-full text-center">
           <SyncOutlined className="text-7xl" spin />
         </div>
       ) : (
-        <>
-          <div className="flex flex-col h-full justify-evenly w-full m-1 bg-zinc-200 text-zinc-900 rounded-md">
-            {!message ? (
-              <>
-                <div className="flex items-center justify-center w-[90%] mx-auto p-2 bg-zinc-100">
-                  {paymentData.memo}
-                </div>
-                <div className="w-[80%] p-2 mx-auto text-center bg-zinc-100 rounded-md">
-                  <div className="font-semibold text-xl mb-1 text-zinc-900">
-                    <Satoshi value={totalSats} />
-                  </div>
-                  <div className="text-lg flex items-center justify-center gap-x-2 text-zinc-800">
-                    <Satoshi value={totalSats} flip />
-                    <CurrencyFlip className="text-2xl" />
-                  </div>
-                </div>
-                <div className="py-4 px-2 rounded-md">
-                  <div className="flex justify-center">
-                    Expires in&nbsp;
-                    <CountdownTimer
-                      expiryDate={paymentData.expires}
-                      onExpire={handleExpire}
-                    />
-                  </div>
-                </div>
-              </>
-            ) : (
-              <div className="py-4 px-2">
-                <div className="flex items-center justify-center">
-                  {detailedMessage || message}
-                </div>
-              </div>
-            )}
+        <div className="flex flex-col h-full">
+          <div className="w-full text-center text-zinc-700 p-2 my-2">
+            Expires in&nbsp;
+            <CountdownTimer
+              expiryDate={paymentData.expires}
+              onExpire={handleExpire}
+            />
           </div>
-
-          <div className="flex flex-col justify-end shrink my-6">
-            <div className="flex w-full justify-around items-center px-2 gap-x-2">
-              {paymentData && !message ? (
+          <div className="flex flex-col mx-2 justify-center">
+            <div className="h-full bg-primary/80 text-zinc-900 rounded-md p-4 ">
+              {!message ? (
                 <>
-                  <div className="mx-2">
-                    <Button
-                      icon={ArrowLeftOutlined}
-                      iconSize="lg"
-                      label={translate(translations.back)}
-                      onClick={() => navigate(-1)}
-                    />
+                  <div className="p-2 bg-zinc-100 rounded-md mb-3 text-center font-semibold">
+                    {paymentData.memo}
                   </div>
-                  <div className="flex-1">
-                    <span className="font-bold">
-                      <Button
-                        label={translate(translations.confirm)}
-                        inverted
-                        fullWidth
-                        onClick={() => confirmSend(false)}
-                      />
-                    </span>
+                  <div
+                    className="p-4 text-center bg-zinc-100 rounded-md cursor-pointer"
+                    onClick={handleFlipCurrency}
+                  >
+                    <div className="font-semibold text-xl mb-1 text-zinc-900">
+                      <Satoshi value={totalSats} />
+                    </div>
+                    <div className="text-lg flex items-center justify-center gap-x-2 text-zinc-800">
+                      <Satoshi value={totalSats} flip />
+                      <CurrencyFlip className="text-xl" />
+                    </div>
                   </div>
                 </>
               ) : (
-                <div className="flex-1">
-                  <Button
-                    icon={ArrowLeftOutlined}
-                    iconSize="lg"
-                    label={translate(translations.back)}
-                    onClick={() => navigate(-1)}
-                    fullWidth
-                  />
+                <div className="py-4 px-2">
+                  <div className="flex items-center justify-center">
+                    {detailedMessage || message}
+                  </div>
                 </div>
               )}
             </div>
           </div>
-        </>
+        </div>
       )}
-    </>
+      <div className="flex flex-col justify-end shrink my-6">
+        <div className="flex w-full justify-around items-center px-2 gap-x-2">
+          <div className="mx-2">
+            <Button
+              icon={ArrowLeftOutlined}
+              iconSize="lg"
+              label={translate(translations.back)}
+              onClick={() => navigate(-1)}
+            />
+          </div>
+          <div className="flex-1">
+            <span className="font-bold">
+              <Button
+                label={translate(translations.confirm)}
+                inverted
+                fullWidth
+                onClick={() => confirmSend(false)}
+                disabled={message || !paymentData}
+              />
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }
