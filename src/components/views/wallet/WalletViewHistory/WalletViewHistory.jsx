@@ -6,6 +6,7 @@ import {
   SyncOutlined,
   HourglassOutlined,
   CheckCircleOutlined,
+  HistoryOutlined,
 } from "@ant-design/icons";
 import { selectTransactionHistory, txHistoryFetch } from "@/redux/txHistory";
 import { selectSyncState } from "@/redux/sync";
@@ -39,8 +40,9 @@ export default function WalletViewHistory() {
   return (
     <div className="flex flex-col justify-start h-full">
       <ViewHeader
+        icon={HistoryOutlined}
         title={translate(translations.recentTransactions)}
-        className="bg-zinc-800 text-lg py-1 font-semibold text-zinc-200"
+        small
       />
       <div className="h-full pb-2">
         <ul className="bg-zinc-100 text-zinc-500 divide-y divide-zinc-300 rounded-b-sm px-1 overflow-y-scroll border border-zinc-400 shadow-inner h-full">

@@ -2,6 +2,7 @@ import { Decimal } from "decimal.js";
 import { DateTime } from "luxon";
 import LogService from "@/services/LogService";
 import DatabaseService from "@/services/DatabaseService";
+import ElectrumService from "@/services/ElectrumService";
 import AddressManagerService from "@/services/AddressManagerService";
 import TransactionManagerService, {
   TransactionEntity,
@@ -39,9 +40,7 @@ export default function TransactionHistoryService(
     getTransactionMemo,
   };
 
-  async function resolveTransactionHistory(start: number = 0) {
-    //Log.debug("resolveTransactionHistory");
-
+  function getTransactionHistory(start: number = 0) {
     // get all transactions that are registered with addresses
     const address_transactions_confirmed = walletDb.exec(
       `SELECT * FROM address_transactions
@@ -71,10 +70,22 @@ export default function TransactionHistoryService(
         return { ...at, time: txTime };
       });
 
+    return address_transactions;
+  }
+
+  async function resolveTransactionHistory(start: number = 0) {
+    //Log.debug("resolveTransactionHistory");
+    const address_transactions = getTransactionHistory(start);
+
+    if (!ElectrumService().getIsConnected()) {
+      return address_transactions;
+    }
+
     // resolve amounts for transactions that don't have them
     const tx_hashes = address_transactions.map((at) => at.txid);
+
     Log.debug("resolveTransactionHistory awaiting", tx_hashes.length);
-    const transactions = (
+    const txHistory = (
       await Promise.all(
         tx_hashes.map(async (tx_hash) => {
           try {
@@ -88,7 +99,7 @@ export default function TransactionHistoryService(
       )
     ).filter((tx) => tx !== null);
 
-    return transactions;
+    return txHistory;
   }
 
   async function resolveTransactionAmount(tx_hash) {

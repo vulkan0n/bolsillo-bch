@@ -2,15 +2,17 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { ArrowLeftOutlined } from "@ant-design/icons";
 
 interface Props {
-  icon: React.ComponentType;
   title: string;
+  icon?: React.ComponentType;
+  small?: boolean;
   className?: string;
 }
 
 export default function ViewHeader({
-  icon = () => null,
   title = "",
-  className = "py-3 bg-zinc-900 text-xl text-zinc-200 font-bold",
+  icon = () => null,
+  small = false,
+  className = "",
 }: Props) {
   const location = useLocation();
   const navigate = useNavigate();
@@ -18,8 +20,16 @@ export default function ViewHeader({
 
   const Icon = icon;
 
+  const sizeClasses = small
+    ? "bg-zinc-800 text-lg py-1 font-semibold text-zinc-200"
+    : "bg-zinc-800 text-xl text-zinc-200 font-bold py-3";
+
+  const iconClasses = small ? "text-lg" : "text-2xl";
+
   return (
-    <div className={`sticky top-0 z-50 w-full grid grid-cols-6 ${className}`}>
+    <div
+      className={`sticky top-0 z-50 w-full grid grid-cols-6 ${sizeClasses} ${className}`}
+    >
       {shouldShowBackButton ? (
         <button
           type="button"
@@ -32,7 +42,7 @@ export default function ViewHeader({
         <div className="col-span-1">&nbsp;</div>
       )}
       <div className="text-center col-span-4 flex items-center justify-center">
-        <Icon className="text-2xl mr-2" />
+        <Icon className={`mr-2 ${iconClasses}`} />
         {title}
       </div>
       <div className="col-span-1">&nbsp;</div>
