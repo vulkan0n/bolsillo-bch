@@ -242,9 +242,9 @@ export default function WalletViewPay() {
       const fetchPaymentRequest = async () => {
         try {
           if (isOfflineMode) {
-            //ToastService().disconnected();
-            //navigate("/");
-            //return;
+            ToastService().disconnected();
+            navigate("/");
+            return;
           }
 
           setIsLoading(true);
