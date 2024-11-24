@@ -14,7 +14,7 @@ import {
 } from "@/redux/preferences";
 import Accordion from "@/atoms/Accordion";
 import { translate } from "@/util/translations";
-import translations from "./DebugViewTranslations";
+import translations from "./translations";
 
 export default function DebugSettings() {
   const dispatch = useDispatch();

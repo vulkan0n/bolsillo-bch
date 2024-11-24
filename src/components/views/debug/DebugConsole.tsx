@@ -3,6 +3,9 @@ import { ExportOutlined } from "@ant-design/icons";
 import ConsoleService from "@/services/ConsoleService";
 import Button from "@/atoms/Button";
 
+import { translate } from "@/util/translations";
+import translations from "./translations";
+
 export default function DebugConsole() {
   const [consoleLines, setConsoleLines] = useState<Array<string>>([]);
 
@@ -30,8 +33,8 @@ export default function DebugConsole() {
       </div>
       <div className="p-1">
         <Button
-          icon={ExportLogsButtonIcon}
-          label=""
+          icon={ExportOutlined}
+          label={translate(translations.exportLogs)}
           onClick={handleExportLogs}
         />
       </div>

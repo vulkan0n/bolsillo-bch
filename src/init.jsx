@@ -24,6 +24,7 @@ await initialize_app();
 
 // ----------------
 
+// initialize app state and render UI
 function app_init() {
   Log.log("* APP_INIT *");
   App.addListener("resume", app_resume);

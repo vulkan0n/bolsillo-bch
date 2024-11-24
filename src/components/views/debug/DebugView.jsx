@@ -9,11 +9,12 @@ import {
 import { selectSecuritySettings } from "@/redux/preferences";
 import ViewHeader from "@/layout/ViewHeader";
 import Button from "@/atoms/Button";
-import { translate } from "@/util/translations";
-import translations from "./DebugViewTranslations";
 
 import LogService from "@/services/LogService";
 import SecurityService, { AuthActions } from "@/services/SecurityService";
+
+import { translate } from "@/util/translations";
+import translations from "./translations";
 
 import DebugSettings from "./DebugSettings";
 import DebugConsole from "./DebugConsole";
@@ -58,36 +59,18 @@ export default function DebugView() {
         <div className="m-1">
           <div className="flex">
             <Button
-              icon={AuthorizeButtonIcon}
-              label=""
+              icon={UnlockOutlined}
+              label="AuthAction"
               onClick={handleAuthorize}
             />
             <Button
-              icon={ThrowAnErrorButtonIcon}
-              label=""
+              icon={ExceptionOutlined}
+              label={translate(translations.throwAnError)}
               onClick={handleThrowFakeError}
             />
           </div>
         </div>
       </div>
     </>
-  );
-}
-
-function AuthorizeButtonIcon() {
-  return (
-    <span className="flex justify-center items-center">
-      <UnlockOutlined className="mr-1" />
-      Authorize
-    </span>
-  );
-}
-
-function ThrowAnErrorButtonIcon() {
-  return (
-    <span className="flex justify-center items-center">
-      <ExceptionOutlined className="mr-1" />
-      {translate(translations.throwAnError)}
-    </span>
   );
 }

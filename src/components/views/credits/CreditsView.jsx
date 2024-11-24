@@ -47,7 +47,7 @@ export default function CreditsView() {
           <li>toorik</li>
           <li>majamalu</li>
           <li>Renegade</li>
-          <li>Mark Komaransky</li>
+          <li>Mike Komaransky</li>
           <li>ErdoganTalk</li>
           <li>Shadow Of Harbringer</li>
           <li>BigV</li>
