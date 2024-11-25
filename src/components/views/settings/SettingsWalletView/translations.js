@@ -1,9 +1,81 @@
 const translations = {
   walletSettings: {
+    ar: "معلومات المحفظة",
+    bn: "ওয়ালেট তথ্য",
+    da: "Pung info",
+    de: "Informationen zur Geldbörse",
+    el: "Πληροφορίες Πορτοφολιού",
     en: "Wallet Info",
+    es: "Información de la billetera",
+    fa: "اطلاعات کیف پول",
+    fil: "Impormasyon sa Wallet",
+    fr: "Informations sur le portefeuille",
+    ha: "Bayanin Wallet",
+    hi: "वॉलेट जानकारी",
+    id: "Info Dompet",
+    it: "Informazioni sul portafoglio",
+    ja: "ウォレット情報",
+    jv: "Info Dompet",
+    ko: "지갑 정보",
+    mr: "वॉलेट माहिती",
+    ms: "Maklumat Dompet",
+    nb: "Lommebokinformasjon",
+    nl: "Portemonnee-info",
+    pa: "ਵਾਲਿਟ ਜਾਣਕਾਰੀ",
+    pl: "Informacje o portfelu",
+    pt: "Informações da carteira",
+    ro: "Informații despre portofel",
+    ru: "Информация о кошельке",
+    sv: "Information om plånbok",
+    sw: "Maelezo ya Wallet",
+    ta: "பணப்பை தகவல்",
+    te: "వాలెట్ సమాచారం",
+    th: "ข้อมูลกระเป๋าสตางค์",
+    tr: "Cüzdan Bilgileri",
+    uk: "Інформація про гаманець",
+    ur: "والیٹ کی معلومات",
+    vi: "Thông tin ví",
+    zh: "钱包信息",
+    zh_TW: "錢包資訊"
   },
   advancedOptions: {
+    ar: "أدوات",
+    bn: "টুলস",
+    da: "Værktøjer",
+    de: "Werkzeuge",
+    el: "Εργαλεία",
     en: "Tools",
+    es: "Herramientas",
+    fa: "ابزار",
+    fil: "Mga gamit",
+    fr: "Outils",
+    ha: "Kayan aiki",
+    hi: "औजार",
+    id: "Peralatan",
+    it: "Utensili",
+    ja: "ツール",
+    jv: "piranti",
+    ko: "도구",
+    mr: "साधने",
+    ms: "Alatan",
+    nb: "Verktøy",
+    nl: "Hulpmiddelen",
+    pa: "ਸੰਦ",
+    pl: "Narzędzia",
+    pt: "Ferramentas",
+    ro: "Instrumente",
+    ru: "Инструменты",
+    sv: "Verktyg",
+    sw: "Zana",
+    ta: "கருவிகள்",
+    te: "ఉపకరణాలు",
+    th: "เครื่องมือ",
+    tr: "Aletler",
+    uk: "Інструменти",
+    ur: "اوزار",
+    vi: "Công cụ",
+    zh: "工具",
+    zh_TW: "工具"
   },
   additionalWalletInformation: {
     ar: "Additional Wallet Information",
@@ -42,7 +114,7 @@ const translations = {
     ur: "اضافی والیٹ معلومات",
     vi: "Thông tin ví tiền bổ sung",
     zh: "额外钱包信息",
-    zh_TW: "Additional Wallet Information",
+    zh_TW: "Additional Wallet Information"
   },
   created: {
     ar: "مخلوق",
@@ -81,7 +153,7 @@ const translations = {
     ur: "تخلیق کیا گیا",
     vi: "Đã tạo",
     zh: "已创建",
-    zh_TW: "已創建",
+    zh_TW: "已創建"
   },
   lastKnownBalance: {
     ar: "آخر رصيد معروف",
@@ -120,7 +192,7 @@ const translations = {
     ur: "آخری معروف بقیہ",
     vi: "Số dư cuối cùng đã biết",
     zh: "最后已知余额",
-    zh_TW: "最後已知餘額",
+    zh_TW: "最後已知餘額"
   },
   walletActive: {
     ar: "المحفظة نشطة",
@@ -159,7 +231,7 @@ const translations = {
     ur: "والٹ سرگرم",
     vi: "Ví hoạt động",
     zh: "钱包已激活",
-    zh_TW: "錢包活躍",
+    zh_TW: "錢包活躍"
   },
   activateWallet: {
     ar: "تنشيط المحفظة",
@@ -198,7 +270,7 @@ const translations = {
     ur: "والٹ چالو کریں",
     vi: "Kích hoạt ví",
     zh: "激活钱包",
-    zh_TW: "激活錢包",
+    zh_TW: "激活錢包"
   },
   deleteWallet: {
     ar: "حذف المحفظة",
@@ -237,7 +309,7 @@ const translations = {
     ur: "والٹ حذف کریں",
     vi: "Xóa ví",
     zh: "删除钱包",
-    zh_TW: "刪除錢包",
+    zh_TW: "刪除錢包"
   },
   areYouSure: {
     ar: "هل أنت متأكد؟ أموالك في خطر",
@@ -276,7 +348,7 @@ const translations = {
     ur: "کیا آپ یقینی ہیں؟ آپکا پیسہ خطرے میں ہے",
     vi: "BẠN CHẮC CHẮN? TIỀN CỦA BẠN ĐANG GẶP RỦI RO",
     zh: "您确定吗？您的资金有风险",
-    zh_TW: "你確定嗎？您的資金面臨風險",
+    zh_TW: "你確定嗎？您的資金面臨風險"
   },
   ensureRecoveryPhrase: {
     ar: "تأكد من كتابة عبارة الاسترداد الخاصة بك",
@@ -315,7 +387,7 @@ const translations = {
     ur: "یقینی بنائیں کہ آپ نے اپنا ریکوری فیز لکھ لیا ہے",
     vi: "HÃY CHẮC CHẮN RẰNG BẠN ĐÃ VIẾT CÂU KHÔI PHỤC CỦA MÌNH",
     zh: "请确保您已经写下了恢复短语",
-    zh_TW: "確保您已寫下恢復短語",
+    zh_TW: "確保您已寫下恢復短語"
   },
   confirmDelete: {
     ar: "نعم ، أريد الحذف",
@@ -354,7 +426,7 @@ const translations = {
     ur: "جی ہاں ، میں ڈیلیٹ کرنا چاہتا ہوں",
     vi: "Có, tôi muốn xóa",
     zh: "是的，我想删除",
-    zh_TW: "是的，我想刪除",
+    zh_TW: "是的，我想刪除"
   },
   keepSecret: {
     ar: "احتفظ بهذه الرسالة السرية",
@@ -393,7 +465,7 @@ const translations = {
     ur: "اس جملہ کو خفیہ رکھیں",
     vi: "GIỮ BÍ MẬT CÂU NÀY",
     zh: "保密此短语",
-    zh_TW: "保守這句話的秘密",
+    zh_TW: "保守這句話的秘密"
   },
   dontStoreDigitally: {
     ar: "لا تخزن رقميا",
@@ -432,7 +504,7 @@ const translations = {
     ur: "ڈیجیٹل طور پر ذخیرہ نہ کریں",
     vi: "KHÔNG LƯU TRỮ SỐ",
     zh: "不要以数字形式存储",
-    zh_TW: "不要以數字方式存儲",
+    zh_TW: "不要以數字方式存儲"
   },
   viewRecoveryPhrase: {
     ar: "عرض عبارة استرداد المحفظة",
@@ -471,7 +543,7 @@ const translations = {
     ur: "والیٹ ریکوری فریز دیکھیں",
     vi: "Xem Cụm từ Khôi phục Ví",
     zh: "查看钱包恢复短语",
-    zh_TW: "查看錢包恢復短語",
+    zh_TW: "查看錢包恢復短語"
   },
   secretAndSecure: {
     ar: "تأكد من إبقائها سرية وآمنة!",
@@ -510,7 +582,7 @@ const translations = {
     ur: "یقینی بنائیں کہ یہ خفیہ اور محفوظ رکھیں!",
     vi: "Đảm bảo giữ nó bí mật và an toàn!",
     zh: "确保保密且安全！",
-    zh_TW: "確保保密且安全！",
+    zh_TW: "確保保密且安全！"
   },
   rebuildWallet: {
     ar: "إعادة إنشاء المحفظة",
@@ -549,7 +621,7 @@ const translations = {
     ur: "والیٹ دوبارہ تعمیر کریں",
     vi: "Xây dựng lại Ví tiền",
     zh: "重建钱包",
-    zh_TW: "重建錢包",
+    zh_TW: "重建錢包"
   },
   addressScanTool: {
     ar: "أداة مسح العناوين",
@@ -588,14 +660,86 @@ const translations = {
     ur: "ایڈریس اسکین ٹول",
     vi: "Công cụ quét địa chỉ",
     zh: "地址扫描工具",
-    zh_TW: "地址掃描工具",
+    zh_TW: "地址掃描工具"
   },
   importWallet: {
+    ar: "استيراد ملف المحفظة",
+    bn: "ওয়ালেট ফাইল আমদানি করুন",
+    da: "Importer tegnebogsfil",
+    de: "Wallet-Datei importieren",
+    el: "Εισαγωγή αρχείου Πορτοφολιού",
     en: "Import Wallet File",
+    es: "Importar archivo de billetera",
+    fa: "وارد کردن فایل کیف پول",
+    fil: "Mag-import ng Wallet File",
+    fr: "Importer un fichier de portefeuille",
+    ha: "Shigo fayil ɗin Wallet",
+    hi: "वॉलेट फ़ाइल आयात करें",
+    id: "Impor File Dompet",
+    it: "Importa file portafoglio",
+    ja: "ウォレットファイルのインポート",
+    jv: "Ngimpor File Dompet",
+    ko: "지갑 파일 가져오기",
+    mr: "वॉलेट फाइल आयात करा",
+    ms: "Import Fail Wallet",
+    nb: "Importer lommebokfil",
+    nl: "Portemonneebestand importeren",
+    pa: "ਵਾਲਿਟ ਫਾਈਲ ਆਯਾਤ ਕਰੋ",
+    pl: "Importuj plik portfela",
+    pt: "Importar arquivo de carteira",
+    ro: "Importați fișierul portofel",
+    ru: "Импорт файла кошелька",
+    sv: "Importera plånboksfil",
+    sw: "Ingiza Faili ya Wallet",
+    ta: "வாலட் கோப்பை இறக்குமதி செய்யவும்",
+    te: "వాలెట్ ఫైల్‌ను దిగుమతి చేయండి",
+    th: "นำเข้าไฟล์กระเป๋าสตางค์",
+    tr: "Cüzdan Dosyasını İçe Aktar",
+    uk: "Імпортувати файл гаманця",
+    ur: "والیٹ فائل درآمد کریں۔",
+    vi: "Nhập tệp ví",
+    zh: "导入钱包文件",
+    zh_TW: "導入錢包文件"
   },
   exportWallet: {
+    ar: "تصدير ملف المحفظة",
+    bn: "ওয়ালেট ফাইল রপ্তানি করুন",
+    da: "Eksporter tegnebogsfil",
+    de: "Wallet-Datei exportieren",
+    el: "Εξαγωγή αρχείου πορτοφολιού",
     en: "Export Wallet File",
-  },
+    es: "Exportar archivo de billetera",
+    fa: "صادرات فایل کیف پول",
+    fil: "I-export ang Wallet File",
+    fr: "Exporter le fichier de portefeuille",
+    ha: "Fitar da Fayil na Wallet",
+    hi: "वॉलेट फ़ाइल निर्यात करें",
+    id: "Ekspor File Dompet",
+    it: "Esporta file portafoglio",
+    ja: "ウォレットファイルをエクスポート",
+    jv: "Ekspor File Dompet",
+    ko: "지갑 파일 내보내기",
+    mr: "वॉलेट फाइल निर्यात करा",
+    ms: "Eksport Fail Wallet",
+    nb: "Eksporter lommebokfil",
+    nl: "Exporteer portemonneebestand",
+    pa: "ਵਾਲਿਟ ਫਾਈਲ ਐਕਸਪੋਰਟ ਕਰੋ",
+    pl: "Eksportuj plik portfela",
+    pt: "Exportar arquivo de carteira",
+    ro: "Exportați fișierul portofel",
+    ru: "Экспорт файла кошелька",
+    sv: "Exportera plånboksfil",
+    sw: "Hamisha Faili ya Wallet",
+    ta: "வாலட் கோப்பை ஏற்றுமதி செய்யவும்",
+    te: "వాలెట్ ఫైల్‌ను ఎగుమతి చేయండి",
+    th: "ส่งออกไฟล์กระเป๋าสตางค์",
+    tr: "Cüzdan Dosyasını Dışa Aktar",
+    uk: "Експортувати файл гаманця",
+    ur: "والیٹ فائل برآمد کریں۔",
+    vi: "Xuất tệp ví",
+    zh: "导出钱包文件",
+    zh_TW: "匯出錢包文件"
+  }
 };
 
 export default translations;

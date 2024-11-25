@@ -111,7 +111,14 @@ export default function WalletViewSweep() {
     if (sync.isConnected && isFetchingUtxos) {
       requestUtxos();
     }
-  }, [sync.isConnected, isFetchingUtxos, utxos, wifAddress, isOfflineMode]);
+  }, [
+    sync.isConnected,
+    isFetchingUtxos,
+    utxos,
+    wifAddress,
+    isOfflineMode,
+    navigate,
+  ]);
 
   // Calculate the satoshi balance when our UTXOs change.
   const wifSatoshiBalance = useMemo(() => {

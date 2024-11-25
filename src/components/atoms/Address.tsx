@@ -8,7 +8,6 @@ interface AddressProps {
   maxLength?: number;
   withPrefix?: boolean;
   color?: string;
-  className?: string;
 }
 
 export default function Address({
@@ -17,7 +16,6 @@ export default function Address({
   maxLength = 0,
   withPrefix = false,
   color = "",
-  className = "",
 }: AddressProps) {
   const PREFIX_LENGTH = 5;
   const SUFFIX_LENGTH = 5;

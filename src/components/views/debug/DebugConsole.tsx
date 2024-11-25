@@ -41,12 +41,3 @@ export default function DebugConsole() {
     </div>
   );
 }
-
-function ExportLogsButtonIcon() {
-  return (
-    <span className="flex justify-center items-center text-sm">
-      <ExportOutlined className="mr-1" />
-      Export Logs
-    </span>
-  );
-}

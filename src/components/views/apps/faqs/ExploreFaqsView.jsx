@@ -21,14 +21,15 @@ const SUBSECTIONS = [
     name: "Discover.cash",
     children: <EmbeddedIframe src={DISCOVER_CASH_URL} />,
   },
-  {
-    name: "Bitcoin Cash Foundation",
-    children: <EmbeddedIframe src={BCHF_URL} />,
-  },
-  {
-    name: "BCH FAQ",
-    children: <EmbeddedIframe src={BCH_FAQ_URL} />,
-  },
+  // TODO: https://git.xulu.tech/selene.cash/selene-wallet/-/issues/431
+  // {
+  //   name: "Bitcoin Cash Foundation",
+  //   children: <EmbeddedIframe src={BCHF_URL} />,
+  // },
+  // {
+  //   name: "BCH FAQ",
+  //   children: <EmbeddedIframe src={BCH_FAQ_URL} />,
+  // },
   {
     name: "BCH.education",
     children: <EmbeddedIframe src={BCH_EDUCATION_URL} />,

@@ -36,7 +36,7 @@ const translations = {
     ur: "ریکووری فریز کو بالکل درست 12 یا بالکل درست 24 الفاظ ہونے چاہئیے۔",
     vi: "Cụm từ khôi phục phải chính xác 12 hoặc chính xác 24 từ.",
     zh: "恢复短语必须恰好是12个或恰好是24个单词。",
-    zh_TW: "恢復短語必須正好是 12 個或正好 24 個單詞。",
+    zh_TW: "恢復短語必須正好是 12 個或正好 24 個單詞。"
   },
   alreadyImported: {
     ar: "تم استيراد تلك المحفظة بالفعل!",
@@ -75,7 +75,7 @@ const translations = {
     ur: "وہ والیٹ پہلے ہی درآمد کی گئی ہے!",
     vi: "Ví đó đã được nhập trước đó!",
     zh: "该钱包已经被导入！",
-    zh_TW: "那個錢包已經導入了！",
+    zh_TW: "那個錢包已經導入了！"
   },
   phraseInvalid: {
     ar: "عبارة الاسترداد غير صالحة. تأكد من صحة جميع الكلمات وبالترتيب الصحيح.",
@@ -114,7 +114,7 @@ const translations = {
     ur: "ریکووری فریز غیر موثر ہے۔ یقینی بنائیں کہ تمام الفاظ درست ہیں اور مناسب ترتیب میں ہیں۔",
     vi: "Cụm từ khôi phục không hợp lệ. Đảm bảo tất cả các từ đúng và theo đúng thứ tự.",
     zh: "恢复短语无效。请确保所有单词正确且顺序正确。",
-    zh_TW: "恢復短語無效。確保所有單詞均正確且順序正確。",
+    zh_TW: "恢復短語無效。確保所有單詞均正確且順序正確。"
   },
   enterRecoveryPhrase: {
     ar: "أدخل عبارة الاسترداد الخاصة بك",
@@ -153,7 +153,7 @@ const translations = {
     ur: "اپنا ریکووری فریز درج کریں",
     vi: "Nhập Cụm từ Khôi phục của bạn",
     zh: "输入您的恢复短语",
-    zh_TW: "輸入您的恢復短語",
+    zh_TW: "輸入您的恢復短語"
   },
   alsoKnownAs: {
     ar: "قد تُعرف أيضًا باسم &quot;عبارة أولية&quot; أو &quot;عبارة ذاكري&quot;.",
@@ -192,7 +192,7 @@ const translations = {
     ur: "یہ بھی 'بیج جملہ' یا 'منمونک جملہ' کے طور پر معروف ہو سکتا ہے۔",
     vi: "Cũng có thể được biết đến như là 'seed phrase' hoặc 'mnemonic phrase'.",
     zh: "也可能被称为“种子短语”或“助记短语”。",
-    zh_TW: "也可能稱為“種子短語”或“助記詞短語”。",
+    zh_TW: "也可能稱為“種子短語”或“助記詞短語”。"
   },
   exactly12Or24: {
     ar: "12 كلمة بالضبط أو 24 كلمة بالضبط.",
@@ -231,7 +231,7 @@ const translations = {
     ur: "١٢ یا ٢٤ لفظوں کی لمبائی کے طور پر بالکل یکساں.",
     vi: "Chính xác 12 hoặc chính xác 24 từ.",
     zh: "恰好有12个或者恰好有24个单词长。",
-    zh_TW: "正好 12 或正好 24 個字長。",
+    zh_TW: "正好 12 或正好 24 個字長。"
   },
   importWallet: {
     ar: "استيراد المحفظة",
@@ -270,11 +270,47 @@ const translations = {
     ur: "والیٹ درآمد کریں",
     vi: "Nhập ví",
     zh: "导入钱包",
-    zh_TW: "導入錢包",
+    zh_TW: "導入錢包"
   },
   importedWalletName: {
+    ar: "محفظة مستوردة",
+    bn: "আমদানি করা ওয়ালেট",
+    da: "Importeret tegnebog",
+    de: "Importierte Brieftasche",
+    el: "Εισαγόμενο πορτοφόλι",
     en: "Imported Wallet",
-  },
+    es: "Billetera importada",
+    fa: "کیف پول وارداتی",
+    fil: "Na-import na Wallet",
+    fr: "Portefeuille importé",
+    ha: "Wallet da aka shigo dashi",
+    hi: "आयातित वॉलेट",
+    id: "Dompet Impor",
+    it: "Portafoglio importato",
+    ja: "輸入財布",
+    jv: "Dompet sing diimpor",
+    ko: "수입 지갑",
+    mr: "इंपोर्टेड वॉलेट",
+    ms: "Dompet yang diimport",
+    nb: "Importert lommebok",
+    nl: "Geïmporteerde portemonnee",
+    pa: "ਆਯਾਤ ਕੀਤਾ ਵਾਲਿਟ",
+    pl: "Portfel importowany",
+    pt: "Carteira importada",
+    ro: "Portofel importat",
+    ru: "Импортированный кошелек",
+    sv: "Importerad plånbok",
+    sw: "Mkoba Ulioingizwa",
+    ta: "இறக்குமதி செய்யப்பட்ட பணப்பை",
+    te: "దిగుమతి చేసుకున్న వాలెట్",
+    th: "กระเป๋าสตางค์นำเข้า",
+    tr: "İthal Cüzdan",
+    uk: "Імпортований гаманець",
+    ur: "امپورٹڈ پرس",
+    vi: "Ví nhập khẩu",
+    zh: "进口钱包",
+    zh_TW: "進口錢包"
+  }
 };
 
 export default translations;

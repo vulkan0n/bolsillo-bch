@@ -36,7 +36,7 @@ const translations = {
     ur: "لین دیں بھیج دی گئی!",
     vi: "Giao dịch đã được gửi đi!",
     zh: "交易已发送！",
-    zh_TW: "交易已發送！",
+    zh_TW: "交易已發送！"
   },
   tapAnywhereToContinue: {
     ar: "انقر في أي مكان للمتابعة",
@@ -75,7 +75,7 @@ const translations = {
     ur: "جاری رکھنے کے لئے کہیں بھی ٹیپ کریں",
     vi: "Chạm bất kỳ nơi nào để tiếp tục",
     zh: "点击任意位置继续",
-    zh_TW: "點擊任意位置繼續",
+    zh_TW: "點擊任意位置繼續"
   },
   walletSwept: {
     ar: "المحفظة تمت مسحها!",
@@ -114,8 +114,8 @@ const translations = {
     ur: "والٹ کو صاف کر دیا گیا!",
     vi: "Ví đã được quét!",
     zh: "钱包已被扫清！",
-    zh_TW: "錢包已被掃除！",
-  },
+    zh_TW: "錢包已被掃除！"
+  }
 };
 
 export default translations;
