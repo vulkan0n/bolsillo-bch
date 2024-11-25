@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ImportOutlined } from "@ant-design/icons";
 import * as bip39 from "bip39";
+import Button from "@/components/atoms/Button";
 import Accordion from "@/components/atoms/Accordion";
 import WalletManagerService from "@/services/WalletManagerService";
 import AddressScannerService from "@/services/AddressScannerService";
@@ -20,7 +21,9 @@ export default function SettingsWalletWizardImport() {
 
   const [mnemonicInput, setMnemonicInput] = useState("");
   const [passphraseInput, setPassphraseInput] = useState("");
-  const [walletNameInput, setWalletNameInput] = useState("Imported Wallet");
+  const [walletNameInput, setWalletNameInput] = useState(
+    translate(translations.importedWalletName)
+  );
   const [message, setMessage] = useState("");
   const [derivationPath, setDerivationPath] = useState("auto");
 
@@ -157,14 +160,16 @@ export default function SettingsWalletWizardImport() {
         </Accordion>
       </div>
       <div className="my-2">
-        <button
-          type="button"
-          className="bg-primary text-white w-full rounded-lg p-2"
+        <Button
+          label={translate(translations.importWallet)}
+          labelSize="lg"
+          icon={ImportOutlined}
+          iconSize="2xl"
+          rounded="md"
+          fullWidth
+          inverted
           onClick={handleImportWallet}
-        >
-          <ImportOutlined className="text-2xl" />{" "}
-          {translate(translations.importWallet)}
-        </button>
+        />
       </div>
     </>
   );

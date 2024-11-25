@@ -1,6 +1,8 @@
 import { useNavigate } from "react-router-dom";
 import { PlusCircleOutlined, ImportOutlined } from "@ant-design/icons";
 
+import Button from "@/atoms/Button";
+
 import WalletManagerService from "@/services/WalletManagerService";
 
 import { translate } from "@/util/translations";
@@ -21,23 +23,29 @@ export default function SettingsWalletWizardInit() {
   };
 
   return (
-    <>
-      <button
-        type="button"
+    <div className="flex flex-col gap-y-8">
+      <Button
+        label={translate(translations.createNewWallet)}
+        labelSize="lg"
+        icon={PlusCircleOutlined}
+        iconSize="2xl"
+        borderClasses=""
+        rounded
         onClick={handleCreateWallet}
-        className="bg-primary text-white w-full rounded p-4 my-3 text-xl"
-      >
-        <PlusCircleOutlined className="mr-2 text-2xl" />
-        {translate(translations.createNewWallet)}
-      </button>
-      <button
-        type="button"
+        fullWidth
+        inverted
+      />
+      <Button
+        label={translate(translations.importWalletFromPhrase)}
+        labelSize="lg"
+        icon={ImportOutlined}
+        iconSize="2xl"
+        borderClasses=""
+        rounded
+        bgColor="secondary"
         onClick={handleImportWallet}
-        className="bg-secondary text-white w-full rounded p-4 my-3"
-      >
-        <ImportOutlined className="mr-2 text-2xl" />
-        {translate(translations.importWalletFromPhrase)}
-      </button>
-    </>
+        fullWidth
+      />
+    </div>
   );
 }
