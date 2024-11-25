@@ -10,11 +10,7 @@ import {
 import ElectrumService from "@/services/ElectrumService";
 
 import { syncReconnect, syncDisconnect } from "@/redux/sync";
-import {
-  selectBchNetwork,
-  selectIsOfflineMode,
-  selectIsExperimental,
-} from "@/redux/preferences";
+import { selectBchNetwork, selectIsOfflineMode } from "@/redux/preferences";
 
 import { translate } from "@/util/translations";
 import translations from "./translations";
@@ -36,7 +32,6 @@ export default function NetworkSettings() {
   const [electrumServerInput, setElectrumServerInput] = useState("");
 
   const bchNetwork = useSelector(selectBchNetwork);
-  const isExperimental = useSelector(selectIsExperimental);
   const isOfflineMode = useSelector(selectIsOfflineMode);
 
   const handleElectrumServerChoice = (server) => {
@@ -119,18 +114,16 @@ export default function NetworkSettings() {
         </Accordion.Child>
       )}
 
-      {isExperimental && (
-        <Accordion.Child
-          icon={DisconnectOutlined}
-          label={translate(translations.offlineMode)}
-        >
-          <input
-            type="checkbox"
-            checked={isOfflineMode}
-            onChange={handleSetOfflineMode}
-          />
-        </Accordion.Child>
-      )}
+      <Accordion.Child
+        icon={DisconnectOutlined}
+        label={translate(translations.offlineMode)}
+      >
+        <input
+          type="checkbox"
+          checked={isOfflineMode}
+          onChange={handleSetOfflineMode}
+        />
+      </Accordion.Child>
     </Accordion>
   );
 }
