@@ -36,7 +36,7 @@ const translations = {
     ur: "کو ادائیگی",
     vi: "Thanh toán tới",
     zh: "付款到",
-    zh_TW: "支付至",
+    zh_TW: "支付至"
   },
   invalidInvoice: {
     ar: "فاتورة غير صالحة",
@@ -75,7 +75,7 @@ const translations = {
     ur: "غیر موزوں رسید",
     vi: "Hóa đơn không hợp lệ",
     zh: "无效发票",
-    zh_TW: "無效發票",
+    zh_TW: "無效發票"
   },
   invoiceExpired: {
     ar: "انتهت صلاحية الفاتورة",
@@ -114,7 +114,7 @@ const translations = {
     ur: "رسید کی مدت ختم ہوگئی ہے",
     vi: "Hóa đơn đã hết hạn",
     zh: "发票已过期",
-    zh_TW: "發票已過期",
+    zh_TW: "發票已過期"
   },
   walletDisconnected: {
     ar: "غير قادر على تنفيذ العملية أثناء قطع الاتصال",
@@ -153,7 +153,7 @@ const translations = {
     ur: "کنکشن کے دوران ایکشن نہیں کیا جاسکتا",
     vi: "Không thể thực hiện hành động khi ngắt kết nối",
     zh: "断开连接时无法执行操作",
-    zh_TW: "無法在斷線時執行操作",
+    zh_TW: "無法在斷線時執行操作"
   },
   insufficientFunds: {
     ar: "رصيد غير كاف",
@@ -192,7 +192,7 @@ const translations = {
     ur: "قابل قبول رقم نہیں",
     vi: "Không đủ tiền",
     zh: "资金不足",
-    zh_TW: "不充足的資金",
+    zh_TW: "不充足的資金"
   },
   transactionFailed: {
     ar: "فشل الاجراء.",
@@ -231,7 +231,7 @@ const translations = {
     ur: "لین دین ناکام ہوگیا۔",
     vi: "Giao dịch thất bại.",
     zh: "交易失败。",
-    zh_TW: "交易失敗。",
+    zh_TW: "交易失敗。"
   },
   back: {
     ar: "خلف",
@@ -270,7 +270,7 @@ const translations = {
     ur: "واپس",
     vi: "Quay lại",
     zh: "返回",
-    zh_TW: "後退",
+    zh_TW: "後退"
   },
   confirm: {
     ar: "يتأكد",
@@ -309,8 +309,8 @@ const translations = {
     ur: "توثیق کریں",
     vi: "Xác nhận",
     zh: "确认",
-    zh_TW: "確認",
-  },
+    zh_TW: "確認"
+  }
 };
 
 export default translations;
