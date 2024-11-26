@@ -7,8 +7,8 @@ android {
         applicationId "cash.selene.app"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 24114
-        versionName "2024.11.4"
+        versionCode 24115
+        versionName "2024.11.5"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
