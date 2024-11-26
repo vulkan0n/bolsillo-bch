@@ -24,13 +24,14 @@ import LogService from "@/services/LogService";
 import { SatoshiInput } from "@/atoms/SatoshiInput";
 import Satoshi from "@/atoms/Satoshi";
 import Button from "@/atoms/Button";
+import Editable from "@/atoms/Editable";
 import Address from "@/atoms/Address";
 import CurrencySymbol from "@/atoms/CurrencySymbol";
 import CurrencyFlip from "@/atoms/CurrencyFlip";
 
 import { Haptic } from "@/util/haptic";
 import { bchToSats } from "@/util/sats";
-import { validateBchUri } from "@/util/uri";
+import { validateBchUri, navigateOnValidUri } from "@/util/uri";
 import { translate } from "@/util/translations";
 import translations from "./translations";
 
@@ -49,7 +50,7 @@ export default function WalletViewSend() {
   const wallet = useSelector(selectActiveWallet);
   const sync = useSelector(selectSyncState);
 
-  const { address, isBase58Address } = validateBchUri(params.address);
+  const { address, isBase58Address } = validateBchUri(params.address || "");
 
   const myAddresses = useSelector(selectMyAddresses);
   const isMyAddress = myAddresses[address] !== undefined;
@@ -238,6 +239,13 @@ export default function WalletViewSend() {
     }
   };
 
+  const handleAddressInput = async (input) => {
+    const navTo = await navigateOnValidUri(input);
+    if (navTo !== "") {
+      navigate(navTo, { replace: true });
+    }
+  };
+
   return (
     <>
       <div className="tracking-wide text-center text-white">
@@ -248,7 +256,16 @@ export default function WalletViewSend() {
               {isMyAddress && <span>&nbsp;{translate(translations.self)}</span>}
             </div>
             <div className="text-sm py-1 font-mono tracking-tight">
-              <Address address={address} />
+              {address === "" ? (
+                <Editable
+                  value={address}
+                  onConfirm={handleAddressInput}
+                  onBlur={handleAddressInput}
+                  open
+                />
+              ) : (
+                <Address address={address} />
+              )}
             </div>
           </div>
         ) : (
@@ -276,7 +293,7 @@ export default function WalletViewSend() {
                   className={`mr-1.5 p-1 flex-1 text-3xl rounded shadow-inner ${
                     isInsufficientFunds ? "text-error" : "text-black/70"
                   }`}
-                  autoFocus
+                  autoFocus={address !== ""}
                   ref={inputRef}
                 />
                 <Button
@@ -315,6 +332,7 @@ export default function WalletViewSend() {
                     inverted
                     fullWidth
                     onClick={() => confirmSend(false)}
+                    disabled={address === "" || isSending}
                   />
                 </span>
               </div>

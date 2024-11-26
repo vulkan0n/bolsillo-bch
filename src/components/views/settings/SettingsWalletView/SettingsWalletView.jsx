@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useCallback, useEffect, useMemo } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { Share } from "@capacitor/share";
@@ -9,14 +9,13 @@ import {
   LoginOutlined,
   DeleteOutlined,
   CheckCircleOutlined,
-  CheckCircleFilled,
-  EditOutlined,
   WarningFilled,
   ToolOutlined,
   MedicineBoxOutlined,
   InfoCircleOutlined,
   SyncOutlined,
   ExportOutlined,
+  LoadingOutlined,
 } from "@ant-design/icons";
 
 import {
@@ -37,6 +36,8 @@ import KeyWarning from "@/atoms/KeyWarning/KeyWarning";
 import ShowMnemonic from "@/atoms/ShowMnemonic";
 import Accordion from "@/atoms/Accordion";
 import Satoshi from "@/atoms/Satoshi";
+import Editable from "@/atoms/Editable";
+import Button from "@/atoms/Button";
 
 import WalletSettings from "@/views/settings/WalletSettings";
 
@@ -51,8 +52,15 @@ export default function SettingsWalletView() {
 
   const { walletHash } = useParams();
 
-  const WalletManager = WalletManagerService();
-  const wallet = WalletManager.getWalletMeta(walletHash);
+  const WalletManager = useMemo(() => WalletManagerService(), []);
+  const [wallet, setWallet] = useState(WalletManager.getWalletMeta(walletHash));
+
+  useEffect(
+    function setWalletMeta() {
+      setWallet(WalletManager.getWalletMeta(walletHash));
+    },
+    [walletHash, WalletManager, wallet.name]
+  );
 
   const activeWalletHash = useSelector(selectActiveWalletHash);
   const isActiveWallet = wallet.walletHash === activeWalletHash;
@@ -64,10 +72,7 @@ export default function SettingsWalletView() {
 
   const isExperimental = useSelector(selectIsExperimental);
 
-  // toggle editing state for "wallet name"
-  const [isEditingWalletName, setIsEditingWalletName] = useState(false);
-  const [isWalletNameSaved, setIsWalletNameSaved] = useState(false);
-  const [walletEditedName, setWalletEditedName] = useState(wallet.name);
+  const [isActivating, setIsActivating] = useState(false);
 
   // user must tap "delete wallet" button multiple times to confirm
   const [deleteConfirm, setDeleteConfirm] = useState(0);
@@ -85,7 +90,7 @@ export default function SettingsWalletView() {
         return;
       }
 
-      WalletManager.deleteWallet(wallet.walletHash);
+      await WalletManager.deleteWallet(wallet.walletHash);
       dispatch(walletBoot({ walletHash: "", network: bchNetwork })).then(() =>
         navigate("/")
       );
@@ -111,6 +116,8 @@ export default function SettingsWalletView() {
       return;
     }
 
+    setIsActivating(true);
+
     dispatch(
       walletBoot({ walletHash: wallet.walletHash, network: bchNetwork })
     ).then(async () => {
@@ -120,21 +127,14 @@ export default function SettingsWalletView() {
   };
 
   // handler for wallet name edit button
-  const handleEdit = async () => {
-    if (isEditingWalletName === true) {
-      await WalletManager.setWalletName(walletHash, walletEditedName);
-      dispatch(walletSetName(walletEditedName));
-      setIsEditingWalletName(false);
-      setIsWalletNameSaved(true);
-    } else {
-      setIsEditingWalletName(true);
-    }
-  };
+  const handleEditConfirm = async (input) => {
+    await WalletManager.setWalletName(walletHash, input);
 
-  // handler for wallet name edit textbox
-  const handleWalletNameTextChange = (event) => {
-    setWalletEditedName(event.target.value);
-    setIsWalletNameSaved(false);
+    if (walletHash === activeWalletHash) {
+      dispatch(walletSetName(input));
+    }
+
+    setWallet(WalletManager.getWalletMeta(walletHash));
   };
 
   // handler for "rebuild wallet" button
@@ -160,6 +160,42 @@ export default function SettingsWalletView() {
   };
   */
 
+  const activateButtonIcon = useCallback(() => {
+    let Icon;
+    if (isActivating) {
+      Icon = LoadingOutlined;
+    } else if (wallet.walletHash === activeWalletHash) {
+      Icon = CheckCircleOutlined;
+    } else {
+      Icon = LoginOutlined;
+    }
+
+    return <Icon className="text-white text-2xl mr-2" />;
+  }, [wallet.walletHash, activeWalletHash, isActivating]);
+
+  const activateButtonLabel = isActiveWallet
+    ? translate(translations.walletActive)
+    : translate(translations.activateWallet);
+
+  const deleteButtonIcon = useCallback(() => {
+    return deleteConfirm > 0 ? (
+      <WarningFilled className="text-2xl mr-1 text-yellow-300" />
+    ) : (
+      <DeleteOutlined className="text-2xl mr-1" />
+    );
+  }, [deleteConfirm]);
+
+  const deleteButtonLabel =
+    /* eslint-disable no-nested-ternary */
+    deleteConfirm === 0
+      ? translate(translations.deleteWallet)
+      : deleteConfirm === 1
+        ? translate(translations.areYouSure)
+        : deleteConfirm === 2
+          ? translate(translations.ensureRecoveryPhrase)
+          : `${translate(translations.confirmDelete)} "${wallet.name}"`;
+  /* eslint-enable no-nested-ternary */
+
   return (
     <>
       <ViewHeader
@@ -169,31 +205,7 @@ export default function SettingsWalletView() {
       <div className="p-2">
         <div className="p-3 rounded-lg bg-zinc-200">
           <div className="text-2xl">
-            {isEditingWalletName ? (
-              <div className="flex items-center">
-                <input
-                  type="text"
-                  className="rounded-lg bg-white text-primary p-1 mx-1 w-full text-center"
-                  onChange={handleWalletNameTextChange}
-                  onKeyDown={(e) => e.key === "Enter" && handleEdit()}
-                  value={walletEditedName}
-                />
-              </div>
-            ) : (
-              <div
-                className="flex justify-center items-center"
-                onClick={handleEdit}
-              >
-                <span className="text-center mx-2">{wallet.name}</span>
-                <span className="flex items-center justify-center opacity-90">
-                  {isWalletNameSaved ? (
-                    <CheckCircleFilled className="text-base text-primary" />
-                  ) : (
-                    <EditOutlined className="text-2xl" onClick={handleEdit} />
-                  )}
-                </span>
-              </div>
-            )}
+            <Editable onConfirm={handleEditConfirm} value={wallet.name} />
           </div>
           <div className="text-lg text-center text-zinc-600">
             {translate(translations.created)}{" "}
@@ -209,60 +221,30 @@ export default function SettingsWalletView() {
 
         <div className="my-2 flex gap-x-2">
           <div className="text-center flex-1">
-            <button
-              type="button"
+            <Button
+              icon={activateButtonIcon}
+              label={activateButtonLabel}
+              labelColor={`zinc-50 ${isActiveWallet ? "saturate-[.60]" : ""}`}
+              bgColor="primary"
+              rounded="lg"
+              fullWidth
               onClick={handleActivateWallet}
-              className={`rounded-lg p-4 bg-primary text-zinc-50 w-full ${
-                isActiveWallet ? "saturate-[.80]" : ""
-              }`}
               disabled={isActiveWallet}
-            >
-              <div className="flex items-center">
-                {wallet.walletHash === activeWalletHash ? (
-                  <CheckCircleOutlined className="text-white text-2xl" />
-                ) : (
-                  <LoginOutlined className="text-2xl mr-1" />
-                )}
-                <div className="flex-1">
-                  {isActiveWallet
-                    ? translate(translations.walletActive)
-                    : translate(translations.activateWallet)}
-                </div>
-              </div>
-            </button>
+            />
           </div>
           <div className="text-center flex-1">
-            <button
-              type="button"
+            <Button
+              icon={deleteButtonIcon}
+              label={deleteButtonLabel}
+              labelColor={`zinc-50 ${isDeleteDisabled ? "saturate-[.60]" : ""}`}
+              bgColor="error"
+              activeBgColor="error"
+              borderClasses="border border-2 border-error"
+              rounded="lg"
+              fullWidth
               onClick={handleDeleteWallet}
-              className={`rounded-lg p-4 bg-error text-zinc-50 w-full ${
-                isDeleteDisabled ? "saturate-[.60]" : ""
-              }`}
               disabled={isDeleteDisabled}
-            >
-              <div className="flex items-center">
-                {deleteConfirm > 0 ? (
-                  <WarningFilled className="text-2xl mr-1 text-yellow-300" />
-                ) : (
-                  <DeleteOutlined className="text-2xl mr-1" />
-                )}
-                <div className="flex-1">
-                  {
-                    /* eslint-disable no-nested-ternary */
-                    deleteConfirm === 0
-                      ? translate(translations.deleteWallet)
-                      : deleteConfirm === 1
-                        ? translate(translations.areYouSure)
-                        : deleteConfirm === 2
-                          ? translate(translations.ensureRecoveryPhrase)
-                          : `${translate(translations.confirmDelete)} "${
-                              wallet.name
-                            }"`
-                    /* eslint-enable no-nested-ternary */
-                  }
-                </div>
-              </div>
-            </button>
+            />
           </div>
         </div>
 

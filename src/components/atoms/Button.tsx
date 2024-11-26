@@ -29,6 +29,7 @@ export interface ButtonProps {
   label?: string;
   labelSize?: ValidSizes;
   labelColor?: string;
+  activeLabelColor?: string;
   icon?: React.ComponentType;
   iconSize?: ValidSizes;
   outerLabel?: string;
@@ -41,12 +42,14 @@ export interface ButtonProps {
   inverted?: boolean;
   fullWidth?: boolean;
   onClick?: React.MouseEventHandler;
+  disabled?: boolean;
 }
 
 export default function Button({
   label = "",
   labelSize = "sm",
   labelColor = "zinc-600",
+  activeLabelColor = "white",
   icon = () => null,
   iconSize = "2xl",
   outerLabel = "",
@@ -59,10 +62,11 @@ export default function Button({
   inverted = false,
   fullWidth = false,
   onClick = () => null,
+  disabled = false,
 }: ButtonProps) {
   const Icon = icon;
-  const colors = `bg-${bgColor} text-${labelColor} active:bg-${activeBgColor} active:text-${bgColor}`;
-  const invertedColors = `bg-${activeBgColor} text-${labelColor} active:bg-${bgColor} active:text-${labelColor}`;
+  const colors = `bg-${bgColor} text-${labelColor} active:bg-${activeBgColor} active:text-${activeLabelColor}`;
+  const invertedColors = `bg-${activeBgColor} text-${activeLabelColor} active:bg-${bgColor} active:text-${labelColor}`;
   const colorClasses = inverted ? invertedColors : colors;
 
   const roundedClass = rounded === true ? "rounded" : `rounded-${rounded}`;
@@ -84,6 +88,7 @@ export default function Button({
           shadow-md opacity-90 
           active:shadow-none active:shadow-inner
         `}
+        disabled={disabled}
       >
         <Icon className={`text-${iconSize} ${label ? "mr-1" : ""}`} />
         <span>{label}</span>
