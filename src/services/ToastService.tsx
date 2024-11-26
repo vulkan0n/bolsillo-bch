@@ -37,7 +37,7 @@ export default function ToastService() {
           </div>
           <div className="p-1 break-word">
             <div className="text-lg font-bold text-zinc-800">{header}</div>
-            <div className="text-base text-zinc-600">{body}</div>
+            <div className="text-base text-zinc-600 flex">{body}</div>
           </div>
         </div>
       );
@@ -75,11 +75,8 @@ export default function ToastService() {
     spawn({
       icon: <SnippetsFilled className="text-4xl text-primary" />,
       header: `Copied ${header} to Clipboard`,
-      body: (
-        <span className="inline-block max-w-[62%] truncate text-sm break-all">
-          {payload}
-        </span>
-      ),
+      body: <span className="flex text-sm break-all">{payload}</span>,
+      options: { id: "clipboardCopy" },
     });
   }
 
@@ -96,10 +93,12 @@ export default function ToastService() {
     spawn({
       icon: <InsuranceOutlined className="text-4xl text-error" />,
       header: `Authorization Failed`,
-      body: <span>Action &quot;{actionText}&quot; was not approved.</span>,
+      body: (
+        <span>
+          Action {actionText ? `&quot;${actionText}}&quot;` : ""} was not
+          approved.
+        </span>
+      ),
     });
   }
 }
-
-/*
- */

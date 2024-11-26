@@ -4,7 +4,7 @@ import { Clipboard } from "@capacitor/clipboard";
 import {
   SendOutlined,
   HistoryOutlined,
-  ExclamationCircleFilled,
+  SnippetsOutlined,
 } from "@ant-design/icons";
 import { selectScannerIsScanning } from "@/redux/device";
 import translations from "./translations";
@@ -16,71 +16,42 @@ import TorchButton from "../TorchButton/TorchButton";
 import ImageSelectButton from "../ImageSelectButton/ImageSelectButton";
 
 import ToastService from "@/services/ToastService";
-import { validateBchUri } from "@/util/uri";
-import { Haptic } from "@/util/haptic";
-
-const { noBchAddress, pleaseCopy, history, send } = translations;
+import { navigateOnValidUri } from "@/util/uri";
 
 export default function WalletViewButtons() {
   const navigate = useNavigate();
   const isScanning = useSelector(selectScannerIsScanning);
 
   const forwardOnValidAddress = async (input) => {
-    // go to send screen when valid address is entered
-    const {
-      isValid,
-      isPaymentProtocol,
-      isWif,
-      address,
-      query,
-      requestUri,
-      wif,
-    } = validateBchUri(input);
-
-    if (isValid) {
-      await Haptic.success();
-
-      let navTo;
-      if (isPaymentProtocol) {
-        navTo = `/wallet/pay/?r=${requestUri}`;
-      } else if (isWif) {
-        navTo = `/wallet/sweep/${wif}`;
-      } else {
-        navTo = `/wallet/send/${address}${query}`;
-      }
-
+    const navTo = await navigateOnValidUri(input);
+    if (navTo) {
       navigate(navTo);
-    } else {
-      await Haptic.error();
     }
-
-    return isValid;
   };
 
   const pasteAddressFromClipboard = async () => {
-    let isValid = false;
+    const Toast = ToastService();
+    let navTo = "";
     try {
       // NOTE: Firefox does not support the Clipboard.read browser API yet!
       // https://developer.mozilla.org/en-US/docs/Web/API/Clipboard#clipboard_availability
       // Error: Reading from clipboard not supported in this browser
       // Firefox users must set "dom.events.asyncClipboard.read" to "true" in about:config
       const paste = (await Clipboard.read()).value;
-      isValid = await forwardOnValidAddress(paste);
+      navTo = await navigateOnValidUri(paste);
+      if (navTo !== "") {
+        Toast.spawn({
+          icon: <SnippetsOutlined className="text-primary text-4xl" />,
+          header: translate(translations.pastedFromClipboard),
+          body: <span className="flex break-all text-sm">{paste}</span>,
+        });
+        navigate(navTo);
+      }
     } catch (e) {
       //console.warn(e);
     } finally {
-      const titleTranslation = translate(noBchAddress);
-      const descriptionTranslation = translate(pleaseCopy);
-
-      if (!isValid) {
-        ToastService().spawn({
-          icon: <ExclamationCircleFilled className="text-primary text-4xl" />,
-          header: titleTranslation,
-          body: descriptionTranslation,
-          options: {
-            duration: 2000,
-          },
-        });
+      if (navTo === "") {
+        navigate("/wallet/send/");
       }
     }
   };
@@ -100,7 +71,7 @@ export default function WalletViewButtons() {
       ) : (
         <Button
           icon={HistoryOutlined}
-          outerLabel={translate(history)}
+          outerLabel={translate(translations.history)}
           onClick={handleHistoryButton}
           iconSize="2xl"
         />
@@ -111,7 +82,7 @@ export default function WalletViewButtons() {
       ) : (
         <Button
           icon={SendOutlined}
-          outerLabel={translate(send)}
+          outerLabel={translate(translations.send)}
           onClick={pasteAddressFromClipboard}
           iconSize="2xl"
         />

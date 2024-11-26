@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect, useMemo } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import Decimal from "decimal.js";
@@ -56,7 +56,7 @@ export default function WalletViewPay() {
   const [isInstantPayCanceled, setIsInstantPayCanceled] = useState(false);
 
   // Calculate the total satoshi amount required.
-  const totalSats = useMemo(() => {
+  const calculateTotalSats = () => {
     if (!paymentData) {
       return 0;
     }
@@ -64,7 +64,9 @@ export default function WalletViewPay() {
     return paymentData.instructions[0].outputs.reduce((total, output) => {
       return total + output.amount;
     }, 0);
-  }, [paymentData]);
+  };
+
+  const totalSats = calculateTotalSats();
 
   // Get the request URL from our query parameters.
   const requestUri = searchParams.get("r");
@@ -281,7 +283,7 @@ export default function WalletViewPay() {
         )}
       </div>
 
-      {isLoading || isSending ? (
+      {isLoading || isSending || !paymentData ? (
         <div className="mb-32 flex items-center justify-center w-full h-full text-center">
           <SyncOutlined className="text-7xl" spin />
         </div>
@@ -342,7 +344,7 @@ export default function WalletViewPay() {
                 inverted
                 fullWidth
                 onClick={() => confirmSend(false)}
-                disabled={message || !paymentData}
+                disabled={!!message || !paymentData}
               />
             </span>
           </div>

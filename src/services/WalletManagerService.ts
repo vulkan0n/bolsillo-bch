@@ -321,7 +321,7 @@ export default function WalletManagerService() {
   // setWalletName: sets a wallet's display name
   async function setWalletName(walletHash, name: string) {
     try {
-      const walletDb = Database.getWalletDatabase(walletHash);
+      const walletDb = await Database.openWalletDatabase(walletHash);
       APP_DB.run(`UPDATE wallets SET name=? WHERE walletHash="${walletHash}"`, [
         name,
       ]);

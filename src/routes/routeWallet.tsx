@@ -15,6 +15,10 @@ export const routeWallet = [
         element: <WalletViewHome />,
       },
       {
+        path: "send/",
+        element: <WalletViewSend />,
+      },
+      {
         path: "send/:address",
         element: <WalletViewSend />,
       },

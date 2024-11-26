@@ -154,6 +154,9 @@ const translations = {
     vi: "Gửi",
     zh: "发送",
     zh_TW: "發送"
+  },
+  pastedFromClipboard: {
+    en: "Pasted from Clipboard"
   }
 };
 

@@ -503,7 +503,8 @@ export const selectSyncState = createSelector(
   (sync) => ({
     ...sync,
     isSyncing: Object.keys(sync.syncPending).reduce(
-      (isSyncing, pending) => sync.syncPending[pending] > 0 || isSyncing,
+      (isSyncing, pending) =>
+        sync.syncPending[pending] > 0 || isSyncing || sync.isSaving,
       false
     ),
     syncCount: Object.keys(sync.syncPending).reduce(
@@ -522,12 +523,3 @@ export const selectChaintip = createSelector(
   (state) => state.sync,
   (sync) => sync.chaintip
 );
-
-/*
-const mergeUtxoMerkle = (utxo, merkle) => ({
-  ...utxo,
-  height: utxo.height === merkle.block_height ? utxo.height : null,
-  merkle: merkle.merkle,
-  block_pos: merkle.pos,
-});
-*/

@@ -7,6 +7,7 @@ import {
   secp256k1,
 } from "@bitauth/libauth";
 import { sha256, ripemd160 } from "@/util/hash";
+import { Haptic } from "@/util/haptic";
 
 export function validateBchUri(uri) {
   const { isBip21, isCashAddress, isBase58Address, address, amount } =
@@ -30,6 +31,39 @@ export function validateBchUri(uri) {
   };
 
   return payload;
+}
+
+function validateBip21Uri(uri) {
+  const address = uri.split("?")[0];
+
+  const isBase58Address = typeof decodeBase58Address(address) === "object";
+
+  const prefixedAddress =
+    !isBase58Address && !address.includes(":")
+      ? `bitcoincash:${address}`
+      : address;
+
+  const isCashAddress = typeof decodeCashAddress(prefixedAddress) === "object";
+  const amountMatch = uri.match(/amount=([0-9]*\.?[0-9]{0,8})/);
+  const amount = amountMatch === null ? "0" : amountMatch[1];
+
+  const isBip21 = isCashAddress || isBase58Address;
+
+  return {
+    isBip21,
+    isCashAddress,
+    isBase58Address,
+    address: isBip21 ? prefixedAddress : "",
+    amount,
+  };
+}
+
+function validatePaymentProtocolUri(uri) {
+  const requestMatch = uri.match(/(?:r=)?(https:\/\/[^?]*)(?:\?.+)?$/);
+  const requestUri = requestMatch !== null ? requestMatch[1] : null;
+  const isPaymentProtocol = requestUri !== null;
+
+  return { isPaymentProtocol, requestUri };
 }
 
 export function validateWifUri(
@@ -95,35 +129,25 @@ export function validateWifUri(
   };
 }
 
-function validatePaymentProtocolUri(uri) {
-  const requestMatch = uri.match(/(?:r=)?(https:\/\/[^?]*)(?:\?.+)?$/);
-  const requestUri = requestMatch !== null ? requestMatch[1] : null;
-  const isPaymentProtocol = requestUri !== null;
+export const navigateOnValidUri = async (input) => {
+  // go to send screen when valid address is entered
+  const { isValid, isPaymentProtocol, isWif, address, query, requestUri, wif } =
+    validateBchUri(input);
 
-  return { isPaymentProtocol, requestUri };
-}
+  let navTo = "";
+  if (isValid) {
+    await Haptic.success();
 
-function validateBip21Uri(uri) {
-  const address = uri.split("?")[0];
+    if (isPaymentProtocol) {
+      navTo = `/wallet/pay/?r=${requestUri}`;
+    } else if (isWif) {
+      navTo = `/wallet/sweep/${wif}`;
+    } else {
+      navTo = `/wallet/send/${address}${query}`;
+    }
+  } else {
+    await Haptic.error();
+  }
 
-  const isBase58Address = typeof decodeBase58Address(address) === "object";
-
-  const prefixedAddress =
-    !isBase58Address && !address.includes(":")
-      ? `bitcoincash:${address}`
-      : address;
-
-  const isCashAddress = typeof decodeCashAddress(prefixedAddress) === "object";
-  const amountMatch = uri.match(/amount=([0-9]*\.?[0-9]{0,8})/);
-  const amount = amountMatch === null ? "0" : amountMatch[1];
-
-  const isBip21 = isCashAddress || isBase58Address;
-
-  return {
-    isBip21,
-    isCashAddress,
-    isBase58Address,
-    address: prefixedAddress,
-    amount,
-  };
-}
+  return navTo;
+};

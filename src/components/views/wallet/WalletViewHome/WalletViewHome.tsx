@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useRef, useCallback } from "react";
 import { useSelector } from "react-redux";
 
 import { Clipboard } from "@capacitor/clipboard";
@@ -12,6 +12,7 @@ import {
 } from "@ant-design/icons";
 
 import { selectActiveWallet } from "@/redux/wallet";
+import { selectSyncState } from "@/redux/sync";
 import { selectBchNetwork, selectQrCodeSettings } from "@/redux/preferences";
 import { selectScannerIsScanning, selectKeyboardIsOpen } from "@/redux/device";
 
@@ -39,11 +40,20 @@ export default function WalletViewHome() {
   const qrCodeSettings = useSelector(selectQrCodeSettings);
   const bchNetwork = useSelector(selectBchNetwork);
 
+  const { isSyncing } = useSelector(selectSyncState);
+
   // reload unused addresses when wallet data changes
-  const unusedAddresses = useMemo(
-    () => AddressManagerService(wallet).getUnusedAddresses(),
-    [wallet]
-  );
+  const AddressManager = AddressManagerService(wallet);
+  const unusedAddressesRef = useRef(AddressManager.getUnusedAddresses());
+  const getUnusedAddresses = useCallback(() => {
+    if (!isSyncing) {
+      unusedAddressesRef.current = AddressManager.getUnusedAddresses();
+    }
+
+    return unusedAddressesRef.current;
+  }, [AddressManager, isSyncing]);
+
+  const unusedAddresses = getUnusedAddresses();
 
   // currently displayed address
   const address = unusedAddresses.length > 0 ? unusedAddresses[0].address : "";
