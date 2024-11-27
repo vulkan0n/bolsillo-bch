@@ -54,6 +54,8 @@ export default function TransactionManagerService() {
   const Database = DatabaseService();
   const APP_DB = Database.getAppDatabase();
 
+  const WalletManager = WalletManagerService();
+
   return {
     resolveTransaction,
     waitForTransactionToResolve,
@@ -160,7 +162,6 @@ export default function TransactionManagerService() {
 
   async function purgeTransactions(): Promise<void> {
     const db_keepalive = Database.getKeepAlive();
-    const WalletManager = WalletManagerService();
     const wallets = WalletManager.listWallets();
 
     // get list of txids associated with our utxos or history (for ALL wallets)
@@ -358,17 +359,15 @@ export default function TransactionManagerService() {
     return decodedTx.outputs.map((output, n): TransactionOutput => {
       const value = new Decimal(output.valueSatoshis.toString());
 
+      const cashAddr = lockingBytecodeToCashAddress(
+        output.lockingBytecode,
+        WalletManager.getPrefix()
+      );
+
       return {
         n,
         scriptPubKey: {
-          addresses: [
-            value.greaterThan(0)
-              ? lockingBytecodeToCashAddress(
-                  output.lockingBytecode,
-                  "bitcoincash"
-                )
-              : "",
-          ],
+          addresses: [value.greaterThan(0) ? cashAddr : ""],
         },
         value: value.toString(),
       };

@@ -65,6 +65,7 @@ export default function WalletManagerService() {
     calculateWalletHash,
     openWalletDatabase,
     setGenesisHeight,
+    getPrefix,
   };
 
   // ----------------------------
@@ -457,5 +458,9 @@ export default function WalletManagerService() {
     const walletDb = Database.getWalletDatabase(walletHash);
     walletDb.run(`UPDATE wallet SET genesis_height=?`, [height]);
     Log.debug("setGenesisHeight", height, walletHash);
+  }
+
+  function getPrefix() {
+    return network === "mainnet" ? "bitcoincash" : "bchtest";
   }
 }

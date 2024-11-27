@@ -53,7 +53,6 @@ export default function ElectrumService() {
 
   // connect: connect to an Electrum server
   // Creates a new ElectrumClient every time
-  // Destroys existing ElectrumClient if out of sync with Redux state
   async function connect(server: string) {
     const bchNetwork = selectBchNetwork(store.getState());
     const server_list = electrum_servers[bchNetwork];
@@ -63,10 +62,12 @@ export default function ElectrumService() {
     Log.log("Connecting to", connectServer, bchNetwork);
 
     if (electrum !== null) {
+      // force disconnect old electrum object to ensure all handlers are cleared
       if (electrum.status !== ConnectionStatus.DISCONNECTED) {
         await electrum.disconnect(true);
       }
 
+      // explicitly set electrum to null to prompt garbage collection
       electrum = null;
     }
 

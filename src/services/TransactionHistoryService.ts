@@ -127,7 +127,7 @@ export default function TransactionHistoryService(
     const TransactionManager = TransactionManagerService();
 
     const isMyUtxo = (utxo) => {
-      if (utxo.value === 0) {
+      if (utxo.value === "0") {
         // OP_RETURN
         return false;
       }
@@ -188,6 +188,8 @@ export default function TransactionHistoryService(
         WHERE txid="${tx_hash}";`,
       [memo]
     );
+
+    Database.flushDatabase(wallet.walletHash);
   }
 
   function getTransactionMemo(tx_hash: string): string {

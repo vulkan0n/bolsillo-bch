@@ -101,9 +101,9 @@ export default function TransactionBuilderService(wallet: WalletEntity) {
     }
 
     // construct tx outputs
-    const vout = recipients.map((out) => ({
-      lockingBytecode: addressToLockingBytecode(out.address),
-      valueSatoshis: BigInt(out.amount.toString()),
+    const vout = recipients.map((recipient) => ({
+      lockingBytecode: addressToLockingBytecode(recipient.address),
+      valueSatoshis: BigInt(recipient.amount.toString()),
     }));
 
     // construct change outputs

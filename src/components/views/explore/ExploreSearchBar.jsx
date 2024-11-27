@@ -1,6 +1,7 @@
 /* eslint-disable */
 import { useState } from "react";
 import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { SearchOutlined } from "@ant-design/icons";
 import { selectIsExperimental } from "@/redux/preferences";
 
@@ -66,6 +67,7 @@ function searchFunctionsFactory() {
 
 export default function ExploreSearchBar() {
   const isExperimental = useSelector(selectIsExperimental);
+  const navigate = useNavigate();
 
   const [searchText, setSearchText] = useState("");
 
@@ -78,7 +80,9 @@ export default function ExploreSearchBar() {
     const searchResults = searchFunctions.map((searchFunc) =>
       searchFunc(search)
     );
+
     // search for addresses and transactions instantly if valid
+    navigate(`/explore/tx/${search}`);
 
     // search for map locations
   };

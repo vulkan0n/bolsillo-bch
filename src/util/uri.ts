@@ -8,6 +8,7 @@ import {
 } from "@bitauth/libauth";
 import { sha256, ripemd160 } from "@/util/hash";
 import { Haptic } from "@/util/haptic";
+import WalletManagerService from "@/services/WalletManagerService";
 
 export function validateBchUri(uri) {
   const { isBip21, isCashAddress, isBase58Address, address, amount } =
@@ -38,9 +39,10 @@ function validateBip21Uri(uri) {
 
   const isBase58Address = typeof decodeBase58Address(address) === "object";
 
+  const prefix = WalletManagerService().getPrefix();
   const prefixedAddress =
     !isBase58Address && !address.includes(":")
-      ? `bitcoincash:${address}`
+      ? `${prefix}:${address}`
       : address;
 
   const isCashAddress = typeof decodeCashAddress(prefixedAddress) === "object";

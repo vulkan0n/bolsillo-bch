@@ -28,7 +28,6 @@ const initialState = {
   balance: 0,
   name: "-",
   key_viewed_at: "",
-  nonce: 0,
 };
 
 // --------------------------------
@@ -104,8 +103,6 @@ export const walletSetKeyViewed = createAction(
   }
 );
 
-export const walletNonce = createAction("wallet/nonce");
-
 export const walletReloadAddresses = createAction(
   "wallet/reloadAddresses",
   (payload: { wallet: WalletEntity }) => {
@@ -137,9 +134,6 @@ export const walletReducer = createReducer(initialState, (builder) => {
     })
     .addCase(walletSetKeyViewed, (state, action) => {
       state.key_viewed_at = action.payload;
-    })
-    .addCase(walletNonce, (state) => {
-      state.nonce += 1;
     });
 });
 

@@ -82,6 +82,7 @@ export default function DatabaseService() {
       run_appdb_migrations(appDb);
       Log.log("Loaded app database");
       db_handles.set("app", appDb);
+      flushPendingCount.app = 0;
       Log.timeEnd("initAppDatabase");
     }
 
@@ -122,6 +123,7 @@ export default function DatabaseService() {
       const walletDbFilename = `/selene/db/${walletHash}.${network}.db`;
       walletDb = await _dbOpen(walletDbFilename);
       run_walletdb_migrations(walletDb);
+      flushPendingCount[walletHash] = 0;
     }
 
     db_handles.set(walletHash, walletDb);
@@ -183,6 +185,7 @@ export default function DatabaseService() {
               reject(e);
             })
             .finally(() => {
+              Log.debug("flush", flushPendingCount[handle], handle);
               flushPendingCount[handle] = 0;
               Log.timeEnd(`flushDatabase ${handle}`);
             });
@@ -199,14 +202,13 @@ export default function DatabaseService() {
         }, 100);
       };
 
-      if (!force && flushPendingCount[handle] > 0) {
-        Log.debug("skipping flush due to flushLock", handle);
+      if (!force) {
         flushPendingCount[handle] += 1;
         resetTimeout();
       } else {
         flushPendingCount[handle] += 1;
-        queueMicrotask(() => {
-          flush();
+        queueMicrotask(async () => {
+          await flush();
         });
       }
     });
