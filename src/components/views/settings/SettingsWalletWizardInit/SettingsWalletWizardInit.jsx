@@ -40,7 +40,6 @@ export default function SettingsWalletWizardInit() {
         labelSize="lg"
         icon={ImportOutlined}
         iconSize="2xl"
-        borderClasses=""
         rounded
         bgColor="secondary"
         onClick={handleImportWallet}

@@ -70,6 +70,7 @@ export default function Button({
   const colorClasses = inverted ? invertedColors : colors;
 
   const roundedClass = rounded === true ? "rounded" : `rounded-${rounded}`;
+  const disabledClasses = disabled ? `opacity-[.5]` : "";
 
   return (
     <div className={`${fullWidth ? "w-full" : ""}`}>
@@ -85,6 +86,7 @@ export default function Button({
           ${colorClasses}
           text-${labelSize}
           ${roundedClass}
+          ${disabledClasses}
           shadow-md opacity-90 
           active:shadow-none active:shadow-inner
         `}
