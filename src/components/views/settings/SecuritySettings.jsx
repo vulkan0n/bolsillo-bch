@@ -95,7 +95,7 @@ export default function SecuritySettings() {
         description={translate(translations.securityModeExplanation)}
       >
         {!isWalletKeyViewed ? (
-          <KeyWarning wallet={activeWallet} />
+          <KeyWarning walletHash={activeWallet.walletHash} />
         ) : (
           <select
             className="p-2 bg-white rounded h-10 w-fit"
