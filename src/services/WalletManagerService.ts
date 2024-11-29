@@ -133,12 +133,11 @@ export default function WalletManagerService() {
       }
 
       Log.debug("walletBoot ~", walletHash, network);
+      Database.setKeepAlive(walletHash);
       await Database.openWalletDatabase(walletHash, network);
       wallet = getWallet(walletHash);
       //Log.debug("boot got", wallet);
     } catch (e) {
-      await Database.closeWalletDatabase(walletHash);
-
       if (!(e instanceof WalletNotExistsError)) {
         Log.warn("critical error during walletBoot!", e);
         throw e;
@@ -153,15 +152,13 @@ export default function WalletManagerService() {
         nextWalletHash = wallets[0].walletHash;
       } else {
         nextWalletHash = (await createWallet("My Selene Wallet")).walletHash;
-        await Database.flushHandles(false);
+        Database.setKeepAlive(nextWalletHash);
       }
 
       return boot(nextWalletHash);
     }
 
     Log.debug("walletBoot", walletHash, wallet, wallet.network);
-
-    Database.setKeepAlive(walletHash);
 
     return wallet;
   }

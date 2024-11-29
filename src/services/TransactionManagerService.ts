@@ -161,7 +161,6 @@ export default function TransactionManagerService() {
   }
 
   async function purgeTransactions(): Promise<void> {
-    const db_keepalive = Database.getKeepAlive();
     const wallets = WalletManager.listWallets();
 
     // get list of txids associated with our utxos or history (for ALL wallets)
@@ -178,10 +177,6 @@ export default function TransactionManagerService() {
             ...utxo_txids.map(({ txid }) => `"${txid}"`),
             ...history_txids.map(({ txid }) => `"${txid}"`),
           ].join(",");
-
-          if (db_keepalive !== walletHash) {
-            await Database.closeWalletDatabase(walletHash, true);
-          }
 
           return cat_txids;
         })
