@@ -1,4 +1,3 @@
-import { Link } from "react-router-dom";
 import { useEffect } from "react";
 import { useQuery } from "@apollo/client";
 import { THIRTY_SECONDS } from "@/util/time";
@@ -67,84 +66,74 @@ export default function ExploreStatBlock() {
       <DailyTarget />
 
       <div className="shadow rounded-lg p-2 bg-zinc-900 w-full flex justify-between items-center">
-        <Link to="/explore/stats/#d">
-          <div className="p-1 mx-1">
-            <div className="font-bold text-zinc-300">24h</div>
-            <div
-              className={`${isDailyActiveIncrease ? "text-primary" : "text-red-500"} text-lg font-semibold`}
-            >
-              {isDataUnavailable ? "-" : dailyActiveCount}
-            </div>
-            <div
-              className={`text-xs ${isDailyActiveIncrease ? "text-primary" : "text-red-500"}`}
-            >
-              {isDailyActiveIncrease ? "↑" : "↓"} {isDailyActiveIncrease && "+"}
-              {isDataUnavailable ? "-" : dailyChange} (
-              {isDailyActiveIncrease && "+"}
-              {isDataUnavailable ? "-" : dailyChangePercentage}%)
-            </div>
+        <div className="p-1 mx-1">
+          <div className="font-bold text-zinc-300">24h</div>
+          <div
+            className={`${isDailyActiveIncrease ? "text-primary" : "text-red-500"} text-lg font-semibold`}
+          >
+            {isDataUnavailable ? "-" : dailyActiveCount}
           </div>
-        </Link>
+          <div
+            className={`text-xs ${isDailyActiveIncrease ? "text-primary" : "text-red-500"}`}
+          >
+            {isDailyActiveIncrease ? "↑" : "↓"} {isDailyActiveIncrease && "+"}
+            {isDataUnavailable ? "-" : dailyChange} (
+            {isDailyActiveIncrease && "+"}
+            {isDataUnavailable ? "-" : dailyChangePercentage}%)
+          </div>
+        </div>
 
-        <Link to="/explore/stats/#w">
-          <div className="p-1 mx-1">
-            <div className="font-bold text-zinc-300">7d</div>
-            <div
-              className={`${isWeeklyActiveIncrease ? "text-primary" : "text-red-500"} text-lg font-semibold`}
-            >
-              {isDataUnavailable ? "-" : weeklyActiveCount}
-            </div>
-            <div
-              className={`text-xs ${isWeeklyActiveIncrease ? "text-primary" : "text-red-500"}`}
-            >
-              {isWeeklyActiveIncrease ? "↑" : "↓"}{" "}
-              {isWeeklyActiveIncrease && "+"}
-              {isDataUnavailable ? "-" : weeklyChange} (
-              {isWeeklyActiveIncrease && "+"}
-              {isDataUnavailable ? "-" : weeklyChangePercentage}%)
-            </div>
+        <div className="p-1 mx-1">
+          <div className="font-bold text-zinc-300">7d</div>
+          <div
+            className={`${isWeeklyActiveIncrease ? "text-primary" : "text-red-500"} text-lg font-semibold`}
+          >
+            {isDataUnavailable ? "-" : weeklyActiveCount}
           </div>
-        </Link>
+          <div
+            className={`text-xs ${isWeeklyActiveIncrease ? "text-primary" : "text-red-500"}`}
+          >
+            {isWeeklyActiveIncrease ? "↑" : "↓"} {isWeeklyActiveIncrease && "+"}
+            {isDataUnavailable ? "-" : weeklyChange} (
+            {isWeeklyActiveIncrease && "+"}
+            {isDataUnavailable ? "-" : weeklyChangePercentage}%)
+          </div>
+        </div>
 
-        <Link to="/explore/stats/#w">
-          <div className="p-1 mx-1">
-            <div className="font-bold text-zinc-300">30d</div>
-            <div
-              className={`${isMonthlyActiveIncrease ? "text-primary" : "text-red-500"} text-lg font-semibold`}
-            >
-              {isDataUnavailable ? "-" : monthlyActiveCount}
-            </div>
-            <div
-              className={`text-xs ${isMonthlyActiveIncrease ? "text-primary" : "text-red-500"}`}
-            >
-              {isMonthlyActiveIncrease ? "↑" : "↓"}{" "}
-              {isMonthlyActiveIncrease && "+"}
-              {isDataUnavailable ? "-" : monthlyChange} (
-              {isMonthlyActiveIncrease && "+"}
-              {isDataUnavailable ? "-" : monthlyChangePercentage}%)
-            </div>
+        <div className="p-1 mx-1">
+          <div className="font-bold text-zinc-300">30d</div>
+          <div
+            className={`${isMonthlyActiveIncrease ? "text-primary" : "text-red-500"} text-lg font-semibold`}
+          >
+            {isDataUnavailable ? "-" : monthlyActiveCount}
           </div>
-        </Link>
+          <div
+            className={`text-xs ${isMonthlyActiveIncrease ? "text-primary" : "text-red-500"}`}
+          >
+            {isMonthlyActiveIncrease ? "↑" : "↓"}{" "}
+            {isMonthlyActiveIncrease && "+"}
+            {isDataUnavailable ? "-" : monthlyChange} (
+            {isMonthlyActiveIncrease && "+"}
+            {isDataUnavailable ? "-" : monthlyChangePercentage}%)
+          </div>
+        </div>
 
-        <Link to="/explore/stats/#y">
-          <div className="p-1 mx-1">
-            <div className="font-bold text-zinc-300">1y</div>
-            <div
-              className={`${isYearlyActiveIncrease ? "text-primary" : "text-red-500"} text-lg font-semibold`}
-            >
-              {isDataUnavailable ? "-" : yearlyActiveCount}
-            </div>
-            <div
-              className={`text-xs ${isYearlyActiveIncrease ? "text-primary" : "text-red-500"}`}
-            >
-              {isYearlyActiveIncrease ? "↑" : "↓"}{" "}
-              {isYearlyActiveIncrease && "+"}
-              {isDataUnavailable ? "-" : yearlyChange} (
-              {isYearlyActiveIncrease && "+"}
-              {isDataUnavailable ? "-" : yearlyChangePercentage}%)
-            </div>
+        <div className="p-1 mx-1">
+          <div className="font-bold text-zinc-300">1y</div>
+          <div
+            className={`${isYearlyActiveIncrease ? "text-primary" : "text-red-500"} text-lg font-semibold`}
+          >
+            {isDataUnavailable ? "-" : yearlyActiveCount}
           </div>
-        </Link>
+          <div
+            className={`text-xs ${isYearlyActiveIncrease ? "text-primary" : "text-red-500"}`}
+          >
+            {isYearlyActiveIncrease ? "↑" : "↓"} {isYearlyActiveIncrease && "+"}
+            {isDataUnavailable ? "-" : yearlyChange} (
+            {isYearlyActiveIncrease && "+"}
+            {isDataUnavailable ? "-" : yearlyChangePercentage}%)
+          </div>
+        </div>
       </div>
     </div>
   );
