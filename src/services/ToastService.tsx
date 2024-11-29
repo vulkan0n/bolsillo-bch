@@ -95,8 +95,7 @@ export default function ToastService() {
       header: `Authorization Failed`,
       body: (
         <span>
-          Action {actionText ? `&quot;${actionText}}&quot;` : ""} was not
-          approved.
+          Action {actionText ? `'${actionText}'` : ""} was not approved.
         </span>
       ),
     });
