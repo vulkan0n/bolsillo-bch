@@ -9,6 +9,7 @@ import {
   selectCurrencySettings,
   selectBchNetwork,
   selectUiSettings,
+  selectPrivacySettings,
 } from "@/redux/preferences";
 import { selectCurrentPrice } from "@/redux/exchangeRates";
 import SecurityService, { AuthActions } from "@/services/SecurityService";
@@ -27,8 +28,9 @@ export default function WalletViewBalance() {
 
   const { shouldPreferLocalCurrency } = useSelector(selectCurrencySettings);
 
-  const { shouldHideBalance, shouldDisplayExchangeRate } =
-    useSelector(selectUiSettings);
+  const { shouldDisplayExchangeRate } = useSelector(selectUiSettings);
+
+  const { shouldHideBalance } = useSelector(selectPrivacySettings);
 
   const handleFlipCurrency = () => {
     dispatch(
