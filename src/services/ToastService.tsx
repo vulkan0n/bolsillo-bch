@@ -56,9 +56,9 @@ export default function ToastService() {
       header: "Payment received!",
       body: (
         <>
-          <span className="text-secondary">
+          <div className="text-secondary">
             +<Satoshi value={amount} />
-          </span>
+          </div>
           <div className="text-zinc-500 font-mono text-sm">
             <Satoshi value={amount} flip />
           </div>
