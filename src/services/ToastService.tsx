@@ -55,14 +55,14 @@ export default function ToastService() {
       ),
       header: "Payment received!",
       body: (
-        <>
+        <div className="flex flex-col">
           <div className="text-secondary">
             +<Satoshi value={amount} />
           </div>
           <div className="text-zinc-500 font-mono text-sm">
             <Satoshi value={amount} flip />
           </div>
-        </>
+        </div>
       ),
       options: {
         id: "paymentReceived",
