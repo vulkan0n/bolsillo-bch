@@ -154,7 +154,10 @@ const translations = {
     vi: "Đóng",
     zh: "关闭",
     zh_TW: "關閉"
-  }
+  },
+  scanContents: {
+    en: "Scan Contents",
+  },
 };
 
 export default translations;

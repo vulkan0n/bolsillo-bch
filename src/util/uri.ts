@@ -36,18 +36,22 @@ export function validateBchUri(uri) {
 
 function validateBip21Uri(uri) {
   const address = uri.split("?")[0];
-
-  const isBase58Address = typeof decodeBase58Address(address) === "object";
-
-  const prefix = WalletManagerService().getPrefix();
-  const prefixedAddress =
-    !isBase58Address && !address.includes(":")
-      ? `${prefix}:${address}`
-      : address;
-
-  const isCashAddress = typeof decodeCashAddress(prefixedAddress) === "object";
   const amountMatch = uri.match(/amount=([0-9]*\.?[0-9]{0,8})/);
   const amount = amountMatch === null ? "0" : amountMatch[1];
+
+  const noPrefixAddress = address.includes(":")
+    ? address.split(":")[1]
+    : address;
+
+  const isBase58Address =
+    typeof decodeBase58Address(noPrefixAddress) === "object";
+
+  const prefix = WalletManagerService().getPrefix();
+  const prefixedAddress = isBase58Address
+    ? noPrefixAddress
+    : `${prefix}:${address}`;
+
+  const isCashAddress = typeof decodeCashAddress(prefixedAddress) === "object";
 
   const isBip21 = isCashAddress || isBase58Address;
 
@@ -131,7 +135,7 @@ export function validateWifUri(
   };
 }
 
-export const navigateOnValidUri = async (input) => {
+export const navigateOnValidUri = async (input): Promise<string> => {
   // go to send screen when valid address is entered
   const { isValid, isPaymentProtocol, isWif, address, query, requestUri, wif } =
     validateBchUri(input);
