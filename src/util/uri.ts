@@ -49,7 +49,7 @@ function validateBip21Uri(uri) {
   const prefix = WalletManagerService().getPrefix();
   const prefixedAddress = isBase58Address
     ? noPrefixAddress
-    : `${prefix}:${address}`;
+    : `${prefix}:${noPrefixAddress}`;
 
   const isCashAddress = typeof decodeCashAddress(prefixedAddress) === "object";
 
