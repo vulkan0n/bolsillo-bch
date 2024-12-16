@@ -8,6 +8,7 @@ import { selectBchNetwork } from "@/redux/preferences";
 import { syncHotRefresh } from "@/redux/sync";
 
 import ViewHeader from "@/layout/ViewHeader";
+import Button from "@/atoms/Button";
 
 import LogService from "@/services/LogService";
 import ElectrumService from "@/services/ElectrumService";
@@ -135,25 +136,30 @@ export default function SettingsWalletScanTool() {
     setScanCount(-99);
   };
 
+  const handleClearWalletData = () => {
+    WalletManagerService().clearWalletData(walletHash);
+  };
+
   return (
     <>
       <ViewHeader icon={SyncOutlined} title="Address Scan Tool" />
       <div className="p-1">
         <div className="flex mb-1">
-          <button
-            type="button"
+          <Button
+            label="Scan Derivation Paths"
+            rounded="md"
             onClick={handleScanDerivationPaths}
-            className="border border-primary p-1"
-          >
-            Scan Derivation Paths
-          </button>
-          <button
-            type="button"
+          />
+          <Button
+            label="Rebuild Wallet"
             onClick={handleRebuildWallet}
-            className="border border-primary p-1"
-          >
-            Rebuild Wallet
-          </button>
+            rounded="md"
+          />
+          <Button
+            label="Clear Wallet Data"
+            onClick={handleClearWalletData}
+            rounded="md"
+          />
         </div>
         <div>
           <select
@@ -183,13 +189,7 @@ export default function SettingsWalletScanTool() {
             min="1"
             step="1"
           />
-          <button
-            type="button"
-            className="p-1 border border-primary grow"
-            onClick={handleScan}
-          >
-            Scan
-          </button>
+          <Button label="Start Scan" onClick={handleScan} rounded="md" />
         </div>
         <div>
           <input
@@ -197,13 +197,7 @@ export default function SettingsWalletScanTool() {
             value={nScanMore}
             onChange={handleSetNScanMore}
           />
-          <button
-            type="button"
-            className="p-1 border border-primary"
-            onClick={handleScanMore}
-          >
-            Scan More
-          </button>
+          <Button label="Scan More" rounded="md" onClick={handleScanMore} />
         </div>
         <ul>
           <li>Receive Addresses: {receiveAddresses.length}</li>

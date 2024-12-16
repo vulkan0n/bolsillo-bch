@@ -1,5 +1,7 @@
-import { useEffect, useState, useRef } from "react";
+/* eslint-disable react/jsx-props-no-spreading */
+import { useEffect, useState, useRef, useCallback } from "react";
 import { useSelector, useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import {
   DisconnectOutlined,
   CheckCircleFilled,
@@ -7,12 +9,18 @@ import {
 } from "@ant-design/icons";
 import { animated, useSpring } from "@react-spring/web";
 import { selectSyncState, syncHotRefresh } from "@/redux/sync";
-import { selectUiSettings } from "@/redux/preferences";
+import { selectUiSettings, selectIsExperimental } from "@/redux/preferences";
+import { selectActiveWallet } from "@/redux/wallet";
 import ToastService from "@/services/ToastService";
+
+import { useLongPress } from "@/hooks/useLongPress";
 
 export default function SyncIndicator() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { walletHash } = useSelector(selectActiveWallet);
   const sync = useSelector(selectSyncState);
+  const isExperimental = useSelector(selectIsExperimental);
 
   const { shouldDisplaySyncCounter } = useSelector(selectUiSettings);
 
@@ -36,7 +44,7 @@ export default function SyncIndicator() {
         clearTimeout(syncTimeoutRef.current);
         syncTimeoutRef.current = setTimeout(
           () => requestAnimationFrame(() => setShouldAnimateSync(false)),
-          100
+          125
         );
       }
     },
@@ -67,24 +75,43 @@ export default function SyncIndicator() {
     },
   }));
 
-  const handlePointerDown = () => {
-    if (sync.isConnected) {
-      connectApi.start({
-        from: { opacity: 0.8, scale: 0.85 },
-        to: { opacity: 0.1, scale: 0.65 },
-      });
+  const handlePointerDown = useCallback(
+    (event) => {
+      if (!event) {
+        return;
+      }
 
-      dispatch(syncHotRefresh({ force: false }));
-    } else {
-      disconnectApi.start();
-      ToastService().disconnected();
-    }
-  };
+      if (sync.isConnected) {
+        connectApi.start({
+          from: { opacity: 0.8, scale: 0.85 },
+          to: { opacity: 0.1, scale: 0.65 },
+        });
+
+        dispatch(syncHotRefresh({ force: false }));
+      } else {
+        disconnectApi.start();
+        ToastService().disconnected();
+      }
+    },
+    [sync.isConnected, dispatch, disconnectApi, connectApi]
+  );
+
+  const longPressEvents = useLongPress(
+    () => {
+      if (!isExperimental) {
+        return;
+      }
+
+      navigate(`/settings/wallet/${walletHash}/scan`);
+    },
+    handlePointerDown,
+    1000
+  );
 
   return (
     <div
       className="cursor-pointer w-10 h-10 flex justify-center items-center"
-      onPointerDown={handlePointerDown}
+      {...longPressEvents}
     >
       {!sync.isConnected && (
         <DisconnectedIcon springs={{ ...disconnectSprings }} />
