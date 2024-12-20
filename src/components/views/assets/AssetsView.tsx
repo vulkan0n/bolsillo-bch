@@ -44,10 +44,6 @@ export default function AssetsView() {
   );
 }
 
-function TokenIcon() {
-  return <DeploymentUnitOutlined className="text-lg mr-1" />;
-}
-
 interface NavTabProps {
   to: string;
   icon: React.ComponentType;
