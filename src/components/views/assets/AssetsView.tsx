@@ -60,7 +60,7 @@ function NavTab({
   const Icon = icon;
   const ActiveIcon = activeIcon;
 
-  const baseClasses = "bg-zinc-900 text-primary border-primary w-full p-2";
+  const baseClasses = "bg-zinc-800 text-primary border-primary w-full p-2";
   const activeClasses = "active border-b-4";
   const iconClasses = "text-lg mr-1";
 

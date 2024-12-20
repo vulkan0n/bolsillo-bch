@@ -22,7 +22,7 @@ export default function ViewHeader({
 
   const sizeClasses = small
     ? "bg-zinc-800 text-lg py-1 font-semibold text-zinc-200"
-    : "bg-zinc-800 text-xl text-zinc-200 font-bold py-3";
+    : "bg-zinc-900 text-xl text-zinc-200 font-bold py-3";
 
   const iconClasses = small ? "text-lg" : "text-2xl";
 
