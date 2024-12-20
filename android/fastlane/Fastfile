@@ -45,6 +45,17 @@ platform :android do
     )
   end
 
+  desc "Build debug .apk package for current version"
+  lane :package_debug do
+    gradle(task: "clean")
+
+    gradle(
+        task: "assemble",
+        build_type: "Debug",
+        print_command: false
+    )
+  end
+
   desc "Generates screenshots"
   lane :screenshots do
     gradle(task: "test")
