@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useSelector } from "react-redux";
-import { BankOutlined, MoneyCollectOutlined } from "@ant-design/icons";
+import { MoneyCollectOutlined } from "@ant-design/icons";
 import { selectActiveWallet } from "@/redux/wallet";
 import AddressManagerService, {
   AddressEntity,
@@ -8,9 +8,8 @@ import AddressManagerService, {
 import UtxoManagerService from "@/services/UtxoManagerService";
 import Address from "@/atoms/Address";
 import Satoshi from "@/atoms/Satoshi";
-import ViewHeader from "@/layout/ViewHeader";
 
-export default function AssetsView() {
+export default function AssetsViewAddresses() {
   const wallet = useSelector(selectActiveWallet);
 
   const [shouldShowEmptyAddresses, setShouldShowEmptyAddresses] =
@@ -30,41 +29,38 @@ export default function AssetsView() {
   const addresses = [...receiveAddresses, ...changeAddresses];
 
   return (
-    <>
-      <ViewHeader icon={BankOutlined} title="Assets" />
-      <div className="p-1">
-        <div className="flex">
-          <label className="text-sm">
-            <input
-              className="mr-1"
-              type="checkbox"
-              checked={shouldShowEmptyAddresses}
-              onChange={(event) =>
-                setShouldShowEmptyAddresses(event.target.checked)
-              }
-            />
-            Show Empty Addresses
-          </label>
-        </div>
-        <div>
-          <ul>
-            <li>Receive Addresses: {receiveAddresses.length}</li>
-            <li>Unused Receive Addresses: {unusedReceiveAddresses.length}</li>
-            <li>Change Addresses: {changeAddresses.length}</li>
-            <li>Unused Change Addresses: {unusedChangeAddresses.length}</li>
-          </ul>
-        </div>
-        <ul className="mt-2 bg-zinc-100 text-zinc-600 divide-y divide-zinc-300 max-h-[58vh] overflow-y-scroll border border-zinc-400 shadow-inner">
-          {addresses
-            .filter((a) => a.balance > 0 || shouldShowEmptyAddresses)
-            .map((a, i) => (
-              <li key={a.address}>
-                <AddressAccordion a={a} i={i} />
-              </li>
-            ))}
+    <div className="p-1">
+      <div className="flex">
+        <label className="text-sm">
+          <input
+            className="mr-1"
+            type="checkbox"
+            checked={shouldShowEmptyAddresses}
+            onChange={(event) =>
+              setShouldShowEmptyAddresses(event.target.checked)
+            }
+          />
+          Show Empty Addresses
+        </label>
+      </div>
+      <div>
+        <ul>
+          <li>Receive Addresses: {receiveAddresses.length}</li>
+          <li>Unused Receive Addresses: {unusedReceiveAddresses.length}</li>
+          <li>Change Addresses: {changeAddresses.length}</li>
+          <li>Unused Change Addresses: {unusedChangeAddresses.length}</li>
         </ul>
       </div>
-    </>
+      <ul className="mt-2 bg-zinc-100 text-zinc-600 divide-y divide-zinc-300 max-h-[58vh] overflow-y-scroll border border-zinc-400 shadow-inner">
+        {addresses
+          .filter((a) => a.balance > 0 || shouldShowEmptyAddresses)
+          .map((a, i) => (
+            <li key={a.address}>
+              <AddressAccordion a={a} i={i} />
+            </li>
+          ))}
+      </ul>
+    </div>
   );
 }
 
