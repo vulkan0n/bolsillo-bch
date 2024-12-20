@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { ImportOutlined } from "@ant-design/icons";
 import * as bip39 from "bip39";
 import Button from "@/components/atoms/Button";

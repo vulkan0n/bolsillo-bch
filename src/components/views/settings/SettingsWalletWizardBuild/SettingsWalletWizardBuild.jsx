@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
 import { SyncOutlined } from "@ant-design/icons";
 import { selectBchNetwork } from "@/redux/preferences";

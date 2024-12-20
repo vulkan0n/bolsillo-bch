@@ -5,7 +5,7 @@ import {
 import EmbeddedVideo from "@/atoms/EmbeddedVideo";
 import { CATEGORIES } from "./timelineItems";
 import { mapCategoryToColour } from "./utils";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 
 import { translate } from "@/util/translations";
 import translations from "./translations";

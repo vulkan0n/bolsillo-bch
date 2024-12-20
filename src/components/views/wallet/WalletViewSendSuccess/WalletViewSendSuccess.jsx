@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router";
 import { Clipboard } from "@capacitor/clipboard";
 import { CopyOutlined, CheckCircleFilled } from "@ant-design/icons";
 import { useSelector } from "react-redux";

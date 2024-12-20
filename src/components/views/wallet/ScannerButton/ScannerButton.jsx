@@ -1,5 +1,5 @@
 import { useEffect, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { useSelector, useDispatch } from "react-redux";
 
 import { Dialog } from "@capacitor/dialog";

@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router";
 import { useSelector, useDispatch } from "react-redux";
 import Decimal from "decimal.js";
 import { ArrowLeftOutlined, SyncOutlined } from "@ant-design/icons";

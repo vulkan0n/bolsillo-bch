@@ -1,4 +1,4 @@
-import { useRouteError, useNavigate } from "react-router-dom";
+import { useRouteError, useNavigate } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
 import { BugOutlined } from "@ant-design/icons";
 import SeleneLogo from "@/components/atoms/SeleneLogo";

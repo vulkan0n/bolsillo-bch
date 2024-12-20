@@ -1,7 +1,7 @@
 /* eslint-disable */
 import { useState } from "react";
 import { useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { SearchOutlined } from "@ant-design/icons";
 import { selectIsExperimental } from "@/redux/preferences";
 

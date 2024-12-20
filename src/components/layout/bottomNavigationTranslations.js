@@ -116,6 +116,9 @@ const translations = {
     zh: "设置",
     zh_TW: "Settings",
   },
+  assets: {
+    en: "Assets",
+  },
 };
 
 export default translations;

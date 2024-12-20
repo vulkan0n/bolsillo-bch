@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import { WarningFilled } from "@ant-design/icons";
 
 import WalletManagerService from "@/services/WalletManagerService";
