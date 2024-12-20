@@ -50,7 +50,9 @@ export default function QrCodeSettings() {
             }
           >
             {Object.keys(logos).map((l) => (
-              <option key={l}>{logos[l].name}</option>
+              <option key={l} value={l}>
+                {logos[l].name}
+              </option>
             ))}
           </select>
         </div>
