@@ -6,10 +6,14 @@ import {
   DeploymentUnitOutlined,
   GroupOutlined,
 } from "@ant-design/icons";
+import { useSelector } from "react-redux";
+
+import { selectIsExperimental } from "@/redux/preferences";
 
 import ViewHeader from "@/layout/ViewHeader";
 
 export default function AssetsView() {
+  const isExperimental = useSelector(selectIsExperimental);
   return (
     <>
       <ViewHeader icon={BankOutlined} title="Assets" />
@@ -26,18 +30,22 @@ export default function AssetsView() {
           icon={MoneyCollectOutlined}
           activeIcon={MoneyCollectOutlined}
         />
-        <NavTab
-          to="/assets/tokens"
-          label="Tokens"
-          icon={DeploymentUnitOutlined}
-          activeIcon={DeploymentUnitOutlined}
-        />
-        <NavTab
-          to="/assets/collections"
-          label="Collections"
-          icon={GroupOutlined}
-          activeIcon={GroupOutlined}
-        />
+        {isExperimental && (
+          <>
+            <NavTab
+              to="/assets/tokens"
+              label="Tokens"
+              icon={DeploymentUnitOutlined}
+              activeIcon={DeploymentUnitOutlined}
+            />
+            <NavTab
+              to="/assets/collections"
+              label="Collections"
+              icon={GroupOutlined}
+              activeIcon={GroupOutlined}
+            />
+          </>
+        )}
       </div>
       <Outlet />
     </>

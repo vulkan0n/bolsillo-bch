@@ -29,7 +29,7 @@ export default function AssetsViewAddresses() {
   const addresses = [...receiveAddresses, ...changeAddresses];
 
   return (
-    <div className="p-1">
+    <div>
       <div className="flex">
         <label className="text-sm">
           <input
@@ -43,14 +43,14 @@ export default function AssetsViewAddresses() {
           Show Empty Addresses
         </label>
       </div>
-      <div>
+      {/*<div>
         <ul>
           <li>Receive Addresses: {receiveAddresses.length}</li>
           <li>Unused Receive Addresses: {unusedReceiveAddresses.length}</li>
           <li>Change Addresses: {changeAddresses.length}</li>
           <li>Unused Change Addresses: {unusedChangeAddresses.length}</li>
         </ul>
-      </div>
+      </div>*/}
       <ul className="mt-2 bg-zinc-100 text-zinc-600 divide-y divide-zinc-300 max-h-[58vh] overflow-y-scroll border border-zinc-400 shadow-inner">
         {addresses
           .filter((a) => a.balance > 0 || shouldShowEmptyAddresses)

@@ -17,6 +17,8 @@ import AddressScannerService from "@/services/AddressScannerService";
 import HdNodeService from "@/services/HdNodeService";
 import AddressManagerService from "@/services/AddressManagerService";
 
+import AssetsViewAddresses from "@/views/assets/AssetsViewAddresses";
+
 import { DEFAULT_DERIVATION_PATH, DERIVATION_PATHS } from "@/util/derivation";
 
 export default function SettingsWalletScanTool() {
@@ -218,6 +220,7 @@ export default function SettingsWalletScanTool() {
       </div>
       {foundPath !== "" && <div>Found addresses on {foundPath}</div>}
       {scanCount !== 0 && <div>Scanned {scanCount} addresses</div>}
+      <AssetsViewAddresses />
     </>
   );
 }
