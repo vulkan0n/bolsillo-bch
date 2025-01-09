@@ -81,7 +81,7 @@ export default function ElectrumService() {
     const socket = new ElectrumWebSocket(parts.host, parts.port);
 
     // create a new ElectrumClient every time to enable server switching
-    electrum = new ElectrumClient("Selene.cash", "1.4", socket);
+    electrum = new ElectrumClient("Selene.cash", "1.5", socket);
 
     // need to establish listeners every time we recreate the ElectrumClient
     electrum.addListener("connected", () => {
