@@ -57,7 +57,7 @@ function ActiveUsersChart({ data, period }) {
   const dataPoints = data.activeBitcoiners.map(({ count }) => count);
 
   const maxCount = Math.max(
-    ...data.activeBitcoiners.map(({ count }) => parseInt(count, 10))
+    ...data.activeBitcoiners.map(({ count }) => Number.parseInt(count))
   );
   const maxCountRoundedUpToNearest10 = Math.ceil(maxCount / 10) * 10;
 

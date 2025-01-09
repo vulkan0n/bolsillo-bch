@@ -21,7 +21,7 @@ const replaceYadioRates = async (rates) => {
   const yadioUsdToVesRate = yadioData?.USD?.VES;
 
   const bchToUsdRate = rates.find((r) => r.currency === "USD")?.price;
-  const bchToUsdRateFloat = parseFloat(bchToUsdRate);
+  const bchToUsdRateFloat = Number.parseFloat(bchToUsdRate);
 
   const realBchToArsPrice = (bchToUsdRateFloat * yadioUsdToArsRate).toString();
   const realBchToVesPrice = (bchToUsdRateFloat * yadioUsdToVesRate).toString();
