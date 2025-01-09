@@ -7,21 +7,25 @@ import {
   DisconnectOutlined,
 } from "@ant-design/icons";
 
-import ElectrumService from "@/services/ElectrumService";
-
-import { syncReconnect, syncDisconnect } from "@/redux/sync";
+import {
+  syncReconnect,
+  syncDisconnect,
+  selectElectrumServer,
+} from "@/redux/sync";
 import { selectBchNetwork, selectIsOfflineMode } from "@/redux/preferences";
 
 import { translate } from "@/util/translations";
 import translations from "./translations";
 
-import { electrum_servers } from "@/util/electrum_servers";
+import {
+  electrum_servers,
+  ElectrumServer,
+  DEFAULT_ELECTRUM_PORT,
+} from "@/util/electrum_servers";
 
 import { SettingsContext } from "./SettingsContext";
 
 import Accordion from "@/atoms/Accordion";
-
-const Electrum = ElectrumService();
 
 export default function NetworkSettings() {
   const { handleSettingsUpdate, preferences, dispatch } =
@@ -40,7 +44,9 @@ export default function NetworkSettings() {
   };
 
   const handleAddElectrumServer = () => {
-    electrum_servers[bchNetwork].unshift(electrumServerInput);
+    electrum_servers[bchNetwork].unshift(
+      new ElectrumServer(electrumServerInput).toString()
+    );
     setShouldShowElectrumServerInput(false);
     setElectrumServerInput("");
     handleElectrumServerChoice(electrum_servers[bchNetwork][0]);
@@ -60,11 +66,11 @@ export default function NetworkSettings() {
     }
   };
 
-  const electrumHost = Electrum.getElectrumHost();
+  const electrumServer = useSelector(selectElectrumServer);
   const currentServer =
-    electrumHost === preferences.electrumServer || electrumHost === ""
-      ? preferences.electrumServer
-      : electrumHost;
+    bchNetwork !== "mainnet" || electrumServer !== preferences.electrumServer
+      ? electrumServer
+      : preferences.electrumServer;
 
   return (
     <Accordion icon={ApiOutlined} title={translate(translations.network)}>
@@ -72,26 +78,32 @@ export default function NetworkSettings() {
         icon={CloudServerOutlined}
         label={translate(translations.translatedElectrumServer)}
       >
-        <div className="flex">
+        <div className="flex items-center">
           <select
             className="p-2 bg-white rounded h-10 w-40 flex-1 disabled:bg-zinc-200 disabled:text-zinc-400"
             value={currentServer}
+            disabled={isOfflineMode === true}
             onChange={(event) => {
               handleElectrumServerChoice(event.target.value);
             }}
           >
-            {electrum_servers[bchNetwork].map((server) => (
-              <option key={server} value={server}>
-                {server}
-              </option>
-            ))}
+            {electrum_servers[bchNetwork].map((server) => {
+              const parts = ElectrumServer.toParts(server);
+              return (
+                <option key={server} value={server}>
+                  {parts.port !== DEFAULT_ELECTRUM_PORT ? server : parts.host}
+                </option>
+              );
+            })}
           </select>
-          <button
-            type="button"
-            onClick={() => setShouldShowElectrumServerInput(true)}
-          >
-            <PlusCircleFilled className="ml-2 text-2xl" />
-          </button>
+          {!isOfflineMode && (
+            <button
+              type="button"
+              onClick={() => setShouldShowElectrumServerInput(true)}
+            >
+              <PlusCircleFilled className="ml-2 text-2xl" />
+            </button>
+          )}
         </div>
       </Accordion.Child>
       {shouldShowElectrumServerInput && (

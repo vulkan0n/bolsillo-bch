@@ -43,7 +43,7 @@ const defaultPreferences = {
   displaySyncCounter: "true",
   // --------
   // TODO #420: electrum peer db
-  electrumServer: electrum_servers.mainnet[0],
+  electrumServer: "",
   offlineMode: "false",
   // --------
   hideAvailableBalance: "false",

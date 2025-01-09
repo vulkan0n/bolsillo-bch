@@ -2,10 +2,14 @@
 import { useState, useEffect } from "react";
 import { useParams, useLocation } from "react-router";
 import { useSelector, useDispatch } from "react-redux";
-import { SyncOutlined } from "@ant-design/icons";
+import {
+  SyncOutlined,
+  WifiOutlined,
+  DisconnectOutlined,
+} from "@ant-design/icons";
 
-import { selectBchNetwork } from "@/redux/preferences";
-import { syncHotRefresh } from "@/redux/sync";
+import { selectBchNetwork, selectIsOfflineMode } from "@/redux/preferences";
+import { syncHotRefresh, selectSyncState } from "@/redux/sync";
 
 import ViewHeader from "@/layout/ViewHeader";
 import Button from "@/atoms/Button";
@@ -20,6 +24,7 @@ import AddressManagerService from "@/services/AddressManagerService";
 import AssetsViewAddresses from "@/views/assets/AssetsViewAddresses";
 
 import { DEFAULT_DERIVATION_PATH, DERIVATION_PATHS } from "@/util/derivation";
+import { DEFAULT_ELECTRUM_PORT, ElectrumServer } from "@/util/electrum_servers";
 
 export default function SettingsWalletScanTool() {
   const { walletHash } = useParams();
@@ -27,6 +32,15 @@ export default function SettingsWalletScanTool() {
   const location = useLocation();
 
   const dispatch = useDispatch();
+
+  const { server } = useSelector(selectSyncState);
+  const serverParts = ElectrumServer.toParts(server);
+  const electrumHostname =
+    serverParts.port !== DEFAULT_ELECTRUM_PORT || bchNetwork !== "mainnet"
+      ? server
+      : serverParts.host;
+
+  const isOfflineMode = useSelector(selectIsOfflineMode);
 
   const WalletManager = WalletManagerService();
   const wallet = WalletManager.getWallet(walletHash);
@@ -48,7 +62,7 @@ export default function SettingsWalletScanTool() {
   const [endIndex, setEndIndex] = useState(1000);
   const [nScanMore, setNScanMore] = useState(1200);
 
-  const [changeMode, setChangeMode] = useState(-1);
+  const [changeMode, setChangeMode] = useState(0b11);
 
   const handleScanDerivationPaths = async () => {
     const found = await AddressScannerService(wallet).scanDerivationPaths();
@@ -67,8 +81,9 @@ export default function SettingsWalletScanTool() {
     setNScanMore(Number.parseInt(event.target.value));
   };
 
-  const handleSelectChangeMode = (event) => {
-    setChangeMode(Number.parseInt(event.target.value));
+  const handleChangeModeCheckbox = (event) => {
+    const newMode = changeMode ^ event.target.value;
+    setChangeMode(newMode);
   };
 
   const handleScan = async () => {
@@ -112,21 +127,24 @@ export default function SettingsWalletScanTool() {
     let scannedAddresses = [];
 
     switch (changeMode) {
-      case 0:
       case 1:
+      case 2:
         scannedAddresses = await AddressScannerService(
           wallet
-        ).scanMoreAddresses(nScanMore, changeMode);
+        ).scanMoreAddresses(nScanMore, changeMode - 1);
         break;
 
-      case -1:
-      default:
+      case 3:
         scannedAddresses = (
           await Promise.all([
             AddressScannerService(wallet).scanMoreAddresses(nScanMore, 0),
             AddressScannerService(wallet).scanMoreAddresses(nScanMore, 1),
           ])
         ).flat();
+        break;
+
+      default:
+      case 0:
         break;
     }
     setScanCount(scannedAddresses.length);
@@ -145,7 +163,51 @@ export default function SettingsWalletScanTool() {
   return (
     <>
       <ViewHeader icon={SyncOutlined} title="Address Scan Tool" />
-      <div className="p-1">
+      <div className="">
+        <div className="rounded bg-zinc-200 p-1 text-sm">
+          <div className="flex items-center gap-x-1">
+            {electrumHostname === "" ? (
+              <>
+                <DisconnectOutlined className="text-base" />
+                <span>Not Connected</span>
+                {isOfflineMode && <span>[Offline Mode]</span>}
+              </>
+            ) : (
+              <>
+                <WifiOutlined className="text-base" />
+                <span>Connected to</span>
+                <span className="font-mono">{electrumHostname}</span>
+              </>
+            )}
+          </div>
+          {bchNetwork !== "mainnet" && (
+            <div className="text-error font-bold p-0.5 text-center">
+              [{bchNetwork.toUpperCase()}]
+            </div>
+          )}
+        </div>
+        <div className="flex items-center gap-x-2 py-1">
+          <label className="cursor-pointer">
+            <input
+              type="checkbox"
+              checked={(changeMode & 0b01) > 0b00}
+              value={0b01}
+              onChange={handleChangeModeCheckbox}
+              className="text-sm p-2 my-1"
+            />{" "}
+            Receive
+          </label>
+          <label className="cursor-pointer">
+            <input
+              type="checkbox"
+              checked={(changeMode & 0b10) > 0b00}
+              value={0b10}
+              onChange={handleChangeModeCheckbox}
+              className="text-sm p-2 my-1"
+            />{" "}
+            Change
+          </label>
+        </div>
         <div className="flex mb-1">
           <Button
             label="Scan Derivation Paths"
@@ -162,17 +224,6 @@ export default function SettingsWalletScanTool() {
             onClick={handleClearWalletData}
             rounded="md"
           />
-        </div>
-        <div>
-          <select
-            className="text-sm p-2 my-1"
-            value={changeMode}
-            onChange={handleSelectChangeMode}
-          >
-            <option value={-1}>Receive/Change</option>
-            <option value={0}>Receive Only</option>
-            <option value={1}>Change Only</option>
-          </select>
         </div>
         <div className="flex justify-between">
           <input
