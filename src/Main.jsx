@@ -1,9 +1,6 @@
 import { StrictMode as ReactStrictMode } from "react";
-import {
-  createBrowserRouter,
-  RouterProvider,
-  Navigate,
-} from "react-router-dom";
+import { createBrowserRouter, Navigate } from "react-router";
+import { RouterProvider } from "react-router/dom";
 
 import { Provider } from "react-redux";
 import { Toaster } from "react-hot-toast";

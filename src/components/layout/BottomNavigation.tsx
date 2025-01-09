@@ -1,4 +1,4 @@
-import { NavLink } from "react-router-dom";
+import { NavLink } from "react-router";
 import { useSelector } from "react-redux";
 import {
   WalletOutlined,
@@ -13,7 +13,7 @@ import {
 
 import {
   selectLanguageCode,
-  selectIsExperimental,
+  selectIsPrerelease,
   selectUiSettings,
 } from "@/redux/preferences";
 import { selectKeyboardIsOpen, selectScannerIsScanning } from "@/redux/device";
@@ -24,7 +24,7 @@ import { translate } from "@/util/translations";
 export default function BottomNavigation() {
   const isKeyboardOpen = useSelector(selectKeyboardIsOpen);
   const isScanning = useSelector(selectScannerIsScanning);
-  const isExperimental = useSelector(selectIsExperimental);
+  const isPrerelease = useSelector(selectIsPrerelease);
   const { shouldDisplayExploreTab } = useSelector(selectUiSettings);
 
   // Ensure component reloads when language preferences are changed
@@ -40,12 +40,12 @@ export default function BottomNavigation() {
         icon={WalletOutlined}
         label={translate(translations.wallet)}
       />
-      {isExperimental && (
+      {isPrerelease && (
         <NavButton
           to="/assets"
           activeIcon={BankFilled}
           icon={BankOutlined}
-          label="Assets"
+          label={translate(translations.assets)}
         />
       )}
       {shouldDisplayExploreTab && (

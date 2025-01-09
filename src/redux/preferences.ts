@@ -6,7 +6,7 @@ import {
 } from "@reduxjs/toolkit";
 
 import { RootState } from "@/redux";
-import { electrum_servers, ValidBchNetwork } from "@/util/electrum_servers";
+import { ValidBchNetwork } from "@/util/electrum_servers";
 import { languageList } from "@/util/translations";
 import { currencyList } from "@/util/currency";
 import { VALID_DENOMINATIONS } from "@/util/sats";
@@ -43,7 +43,7 @@ const defaultPreferences = {
   displaySyncCounter: "true",
   // --------
   // TODO #420: electrum peer db
-  electrumServer: electrum_servers.mainnet[0],
+  electrumServer: "",
   offlineMode: "false",
   // --------
   hideAvailableBalance: "false",

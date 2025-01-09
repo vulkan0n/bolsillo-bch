@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import ViewHeader from "@/layout/ViewHeader";
 import SeleneLogo from "@/components/atoms/SeleneLogo";
 import { SELENE_WALLET_VERSION } from "@/util/version";

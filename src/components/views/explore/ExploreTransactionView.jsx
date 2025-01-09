@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import { useLoaderData, Link, useNavigate } from "react-router-dom";
+import { useLoaderData, Link, useNavigate } from "react-router";
 import { useSelector } from "react-redux";
 import { Clipboard } from "@capacitor/clipboard";
 import { DateTime } from "luxon";

@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import { animated, useSpring } from "@react-spring/web";
 import { StockOutlined, SettingFilled, WarningFilled } from "@ant-design/icons";
 import { selectActiveWallet } from "@/redux/wallet";

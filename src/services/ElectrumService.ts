@@ -1,4 +1,9 @@
-import { ElectrumClient, ConnectionStatus } from "@electrum-cash/network";
+import {
+  ElectrumClient,
+  ConnectionStatus,
+  ElectrumClientEvents,
+} from "@electrum-cash/network";
+import { ElectrumWebSocket } from "@electrum-cash/web-socket";
 import { store } from "@/redux";
 import { selectBchNetwork, setPreference } from "@/redux/preferences";
 import {
@@ -13,7 +18,7 @@ import { AddressEntity } from "@/services/AddressManagerService";
 import BlockchainService from "@/services/BlockchainService";
 
 //import { bchToSats } from "@/util/sats";
-import { electrum_servers } from "@/util/electrum_servers";
+import { electrum_servers, ElectrumServer } from "@/util/electrum_servers";
 
 const Log = LogService("Electrum");
 
@@ -24,7 +29,7 @@ export class ElectrumNotConnectedError extends Error {
 }
 
 // pointer for current ElectrumClient instance
-let electrum: ElectrumClient | null = null;
+let electrum: ElectrumClient<ElectrumClientEvents> | null = null;
 
 const server_blacklist: Array<string> = [];
 const pendingTxRequests: Array<Promise<object>> = [];
@@ -71,12 +76,16 @@ export default function ElectrumService() {
       electrum = null;
     }
 
+    // pre-configure the Electrum socket
+    const parts = ElectrumServer.toParts(connectServer);
+    const socket = new ElectrumWebSocket(parts.host, parts.port);
+
     // create a new ElectrumClient every time to enable server switching
-    electrum = new ElectrumClient("Selene.cash", "1.4", connectServer);
+    electrum = new ElectrumClient("Selene.cash", "1.4", socket);
 
     // need to establish listeners every time we recreate the ElectrumClient
     electrum.addListener("connected", () => {
-      Log.log("ELECTRUM CONNECTED", connectServer);
+      Log.log("ELECTRUM CONNECTED", getElectrumHost());
 
       // only listen for notifications when connected
       electrum.addListener("notification", handleElectrumNotifications);
@@ -192,7 +201,7 @@ export default function ElectrumService() {
       throw addressState;
     }
 
-    return addressState;
+    return addressState as string;
   }
 
   // request the entire transaction history for an address
@@ -363,8 +372,9 @@ export default function ElectrumService() {
   }
   */
 
-  function selectFallbackServer(prevServer: string): string {
+  function selectFallbackServer(prevServer): string {
     const bchNetwork = selectBchNetwork(store.getState());
+
     const server_list = electrum_servers[bchNetwork];
 
     // don't blacklist the known-good Selene-operated server
@@ -372,19 +382,25 @@ export default function ElectrumService() {
       server_blacklist.push(prevServer);
     }
 
+    const filtered_server_list = server_list.filter((s) =>
+      server_blacklist.includes(s)
+    );
+
     const chooseRandomServer = () => {
-      return server_list[Math.floor(Math.random() * server_list.length)];
+      return filtered_server_list[
+        Math.floor(Math.random() * filtered_server_list.length)
+      ];
     };
 
-    let newServer = chooseRandomServer();
-    while (server_blacklist.indexOf(newServer) > -1) {
-      newServer = chooseRandomServer();
-    }
+    const newServer = chooseRandomServer();
 
     // only overwrite user server preference on mainnet
     if (bchNetwork === "mainnet") {
       store.dispatch(
-        setPreference({ key: "electrumServer", value: newServer })
+        setPreference({
+          key: "electrumServer",
+          value: newServer,
+        })
       );
     }
 
@@ -395,6 +411,7 @@ export default function ElectrumService() {
       server_blacklist,
       bchNetwork
     );
+
     return newServer;
   }
 }
@@ -422,6 +439,6 @@ function handleChaintipSubscription(data) {
   store.dispatch(syncChaintip(chaintip));
 }
 
-function getElectrumHost() {
-  return electrum ? electrum.connection.host : "";
+function getElectrumHost(): string {
+  return electrum ? electrum.hostIdentifier : "";
 }

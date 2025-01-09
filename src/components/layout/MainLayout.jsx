@@ -1,5 +1,5 @@
 import { App } from "@capacitor/app";
-import { Outlet, useNavigate } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router";
 import { validateBchUri } from "@/util/uri";
 import BottomNavigation from "./BottomNavigation";
 

@@ -1,5 +1,5 @@
 import { App } from "@capacitor/app";
-import ReactDOM from "react-dom/client";
+import { createRoot } from "react-dom/client";
 import { SplashScreen } from "@capacitor/splash-screen";
 import LogService from "@/services/LogService";
 import JanitorService from "@/services/JanitorService";
@@ -30,7 +30,7 @@ function app_init() {
   App.addListener("resume", app_resume);
   redux_init();
   Log.debug("render <Main>");
-  ReactDOM.createRoot(document.getElementById("root")).render(<Main />);
+  createRoot(document.getElementById("root")).render(<Main />);
 }
 
 // actions to perform before initializing app state or rendering UI

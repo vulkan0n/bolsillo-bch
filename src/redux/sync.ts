@@ -83,6 +83,7 @@ export const syncReconnect = createAsyncThunk(
   "sync/reconnect",
   async (server: string | undefined, thunkApi) => {
     const connectServer = server || Electrum.getElectrumHost();
+    Log.debug("reconnect:", connectServer);
     thunkApi.dispatch(syncConnect({ attempts: 0, server: connectServer }));
   }
 );
@@ -94,7 +95,7 @@ export const syncDisconnect = createAsyncThunk("sync/disconnect", async () => {
 // syncConnectionUp: fired when electrum connection is up
 export const syncConnectionUp = createAsyncThunk(
   "sync/up",
-  async (server: string, thunkApi): Promise<string> => {
+  async (payload, thunkApi): Promise<ElectrumServer> => {
     // set up subscriptions on connect
     try {
       await Electrum.subscribeToChaintip();
@@ -103,16 +104,12 @@ export const syncConnectionUp = createAsyncThunk(
       Log.error(e);
     }
 
-    return server;
+    return Electrum.getElectrumHost();
   }
 );
 
 // syncConnectionDown: fired if electrum connection goes down
-export const syncConnectionDown = createAsyncThunk("sync/down", async () => {
-  //async (payload: string, thunkApi) => {
-  // attempt reconnect when connection goes down
-  //thunkApi.dispatch(syncReconnect(payload));
-});
+export const syncConnectionDown = createAction("sync/down");
 
 // syncWalletAddresses: generate wallet addresses and set up subscriptions
 export const syncWalletAddresses = createAsyncThunk(
@@ -442,7 +439,7 @@ export const syncReducer = createReducer(initialState, (builder) => {
       state.isConnected = true;
       state.server = action.payload;
     })
-    .addCase(syncConnectionDown.pending, (state: RootState) => {
+    .addCase(syncConnectionDown, (state: RootState) => {
       state.isConnected = false;
     })
     .addCase(syncReconnect.pending, (state: RootState) => {
@@ -547,4 +544,9 @@ export const selectMyAddresses = createSelector(
 export const selectChaintip = createSelector(
   (state) => state.sync,
   (sync) => sync.chaintip
+);
+
+export const selectElectrumServer = createSelector(
+  (state) => state.sync,
+  (sync) => sync.server
 );

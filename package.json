@@ -33,6 +33,7 @@
     "@capacitor/splash-screen": "^6.0.0",
     "@capgo/capacitor-native-biometric": "^6.0.1",
     "@electrum-cash/network": "^4.1.1",
+    "@electrum-cash/web-socket": "^1.0.0",
     "@react-spring/web": "^9.7.2",
     "@reduxjs/toolkit": "^2.0.1",
     "@use-gesture/react": "^10.2.26",
@@ -54,7 +55,7 @@
     "react-player": "^2.16.0",
     "react-qrcode-logo": "^3.0.0",
     "react-redux": "^9.0.4",
-    "react-router-dom": "^6.8.1",
+    "react-router": "^7.1.0",
     "react-vertical-timeline-component": "^3.6.0",
     "sql.js": "^1.8.0",
     "use-long-press": "^3.1.5"

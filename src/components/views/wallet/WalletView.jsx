@@ -1,4 +1,4 @@
-import { Outlet, Navigate } from "react-router-dom";
+import { Outlet, Navigate } from "react-router";
 import { useSelector } from "react-redux";
 import { SyncOutlined } from "@ant-design/icons";
 import { selectActiveWallet } from "@/redux/wallet";

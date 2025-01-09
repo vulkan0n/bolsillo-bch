@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { useParams, useSearchParams, useNavigate } from "react-router-dom";
+import { useParams, useSearchParams, useNavigate } from "react-router";
 import { useSelector, useDispatch } from "react-redux";
 import Decimal from "decimal.js";
 import { Dialog } from "@capacitor/dialog";

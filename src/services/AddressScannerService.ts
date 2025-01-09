@@ -156,7 +156,15 @@ export default function AddressScannerService(wallet) {
     // get updated state for all generated addresses
     const addressStubs: Array<AddressStub> = await Promise.all(
       addresses.map(async (a) => {
-        const addressState = await Electrum.requestAddressState(a.address);
+        let addressState;
+        try {
+          addressState = await Electrum.requestAddressState(a.address);
+        } catch (e) {
+          // reset address state to null if request fails
+          // null addresses will get re-scanned later
+          Log.warn(e);
+          addressState = null;
+        }
 
         return { ...a, state: addressState };
       })
@@ -321,27 +329,34 @@ export default function AddressScannerService(wallet) {
     const getUnusedCount = (addresses) =>
       addresses.filter((a) => a.state === null).length;
 
-    await WalletManager.clearWalletData(wallet.walletHash);
+    try {
+      await WalletManager.clearWalletData(wallet.walletHash);
+      /* eslint-disable no-await-in-loop */
+      for (let change = 0; change <= 1; change += 1) {
+        let addresses = await scanMoreAddresses(
+          SCAN_BATCH_SIZE,
+          change,
+          callback
+        );
 
-    /* eslint-disable no-await-in-loop */
-    for (let change = 0; change <= 1; change += 1) {
-      let addresses = await scanMoreAddresses(
-        SCAN_BATCH_SIZE,
-        change,
-        callback
-      );
+        while (getUnusedCount(addresses) < ADDRESS_GAP_LIMIT) {
+          addresses = await scanMoreAddresses(
+            SCAN_BATCH_SIZE,
+            change,
+            callback
+          );
+        }
 
-      while (getUnusedCount(addresses) < ADDRESS_GAP_LIMIT) {
-        addresses = await scanMoreAddresses(SCAN_BATCH_SIZE, change, callback);
+        store.dispatch(walletBalanceUpdate({ wallet, isChange: change === 1 }));
       }
 
-      store.dispatch(walletBalanceUpdate({ wallet, isChange: change === 1 }));
+      await WalletManager.saveWallet(wallet.walletHash);
+      Log.debug("Wallet Rebuild Done");
+    } catch (e) {
+      Log.warn("Wallet Rebuild Failed!", e);
+    } finally {
+      Log.timeEnd("rebuildWallet");
     }
-
-    await WalletManager.saveWallet(wallet.walletHash);
-
-    Log.debug("Wallet Rebuild Done");
-    Log.timeEnd("rebuildWallet");
   }
 
   async function scanUtxos(address: string) {
