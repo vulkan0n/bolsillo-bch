@@ -1,7 +1,6 @@
 import { NavLink, Outlet } from "react-router";
 import {
   BankOutlined,
-  OrderedListOutlined,
   MoneyCollectOutlined,
   DeploymentUnitOutlined,
   GroupOutlined,
@@ -18,12 +17,6 @@ export default function AssetsView() {
     <>
       <ViewHeader icon={BankOutlined} title="Assets" />
       <div className="flex">
-        <NavTab
-          to="/assets/addresses"
-          label="Addresses"
-          icon={OrderedListOutlined}
-          activeIcon={OrderedListOutlined}
-        />
         <NavTab
           to="/assets/coins"
           label="Coins"
