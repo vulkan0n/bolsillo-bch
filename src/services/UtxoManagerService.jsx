@@ -24,6 +24,8 @@ export default function UxtoManagerService(wallet) {
   };
 
   function registerUtxo(address, utxo) {
+    Log.debug("registerUtxo", utxo);
+
     walletDb.run(
       `INSERT INTO address_utxos (
         address,
