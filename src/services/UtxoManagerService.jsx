@@ -12,8 +12,13 @@ export default function UxtoManagerService(wallet) {
   return {
     registerUtxo,
     getWalletUtxos,
+    getWalletCoins,
+    getWalletTokens,
     getAddressUtxos,
+    getAddressCoins,
+    getAddressTokens,
     selectUtxos,
+    targetUtxos,
     discardUtxo,
     discardAddressUtxos,
   };
@@ -30,12 +35,29 @@ export default function UxtoManagerService(wallet) {
     );
   }
 
+  // returns all UTXOs for the wallet
   function getWalletUtxos() {
     const result = walletDb.exec(`SELECT * FROM address_utxos`);
-
     return result;
   }
 
+  // returns all non-token UTXOs for the wallet
+  function getWalletCoins() {
+    const result = walletDb.exec(
+      `SELECT * FROM address_utxos WHERE token_category IS NULL`
+    );
+    return result;
+  }
+
+  // returns all token UTXOs for the wallet
+  function getWalletTokens() {
+    const result = walletDb.exec(
+      `SELECT * FROM address_utxos WHERE token_category IS NOT NULL`
+    );
+    return result;
+  }
+
+  // returns all UTXOs for an address in the wallet
   function getAddressUtxos(address) {
     const result = walletDb.exec(
       `SELECT * FROM address_utxos WHERE address="${address}"`
@@ -43,6 +65,23 @@ export default function UxtoManagerService(wallet) {
     return result;
   }
 
+  // returns all non-token UTXOs for an address in the wallet
+  function getAddressCoins(address) {
+    const result = walletDb.exec(
+      `SELECT * FROM address_utxos WHERE address="${address}" AND token_category IS NULL`
+    );
+    return result;
+  }
+
+  // returns all token UTXOs for an address in the wallet
+  function getAddressTokens(address) {
+    const result = walletDb.exec(
+      `SELECT * FROM address_utxos WHERE address="${address}" AND token_category IS NOT NULL`
+    );
+    return result;
+  }
+
+  // attempts to find the best combination of UTXOs to fulfill the amount and fee
   function selectUtxos(amount, fee) {
     Log.debug("selectUtxos", amount, fee);
     const targetAmount = new Decimal(amount).plus(fee).toNumber();

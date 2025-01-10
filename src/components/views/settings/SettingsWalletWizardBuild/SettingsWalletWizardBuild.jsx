@@ -33,11 +33,7 @@ export default function SettingsWalletWizardBuild() {
         await WalletManager.openWalletDatabase(walletHash);
         const wallet = WalletManager.getWallet(walletHash);
 
-        if (isBuildDone || !isConnected) {
-          if (!isConnected) {
-            ToastService().disconnected();
-          }
-
+        if (isBuildDone) {
           await dispatch(
             walletBoot({ walletHash: wallet.walletHash, network: bchNetwork })
           );
@@ -56,6 +52,12 @@ export default function SettingsWalletWizardBuild() {
         }
 
         if (!isBuilding) {
+          if (!isConnected) {
+            ToastService().disconnected();
+            navigate("/");
+            return;
+          }
+
           setIsBuilding(true);
         }
       };

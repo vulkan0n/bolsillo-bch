@@ -236,24 +236,41 @@ export default function AddressScannerService(wallet) {
     addresses.forEach((stub) => UtxoManager.discardAddressUtxos(stub.address));
 
     // get updated UTXOs for active addresses
-    await Promise.all(activeAddresses.map((stub) => scanUtxos(stub.address)));
+    const updatedAddresses = await Promise.allSettled(
+      activeAddresses.map((stub) => scanUtxos(stub.address))
+    );
+
+    const successAddresses = updatedAddresses
+      .map((updated) => (updated.status === "fulfilled" ? updated.value : null))
+      .filter((s) => s !== null);
+
+    Log.debug(
+      `got UTXOs for ${successAddresses.length} addresses (${activeAddresses.length} attempted)`
+    );
 
     // get history for active addresses
-    const stateUpdates = await Promise.all(
-      activeAddresses.map((stub) => {
-        const calculatedState = AddressManager.calculateAddressState(
-          stub.address
-        );
+    const stateUpdates = (
+      await Promise.allSettled(
+        activeAddresses.map((stub) => {
+          if (!successAddresses.includes(stub.address)) {
+            Log.warn(stub.address, "failed getting UTXOs");
+            return Promise.resolve([stub.address, null]);
+          }
 
-        // if states match, address does not need update
-        if (calculatedState !== stub.state) {
-          return scanHistory(stub, callback, true);
-        }
+          const calculatedState = AddressManager.calculateAddressState(
+            stub.address
+          );
 
-        callback(1);
-        return Promise.resolve([stub.address, calculatedState]);
-      })
-    );
+          // if states match, address does not need update
+          if (calculatedState !== stub.state) {
+            return scanHistory(stub, callback, true);
+          }
+
+          callback(1);
+          return Promise.resolve([stub.address, calculatedState]);
+        })
+      )
+    ).map((settled) => (settled.status === "fulfilled" ? settled.value : null));
 
     query = [];
     query.push("BEGIN TRANSACTION;");
@@ -362,12 +379,12 @@ export default function AddressScannerService(wallet) {
   async function scanUtxos(address: string) {
     const utxos = await Electrum.requestUtxos(address);
 
-    // we need to delete our knowledge of UTXO set
-    // in case some utxos were spent elsewhere
-    // i.e. wallet seed shared on multiple devices
-    UtxoManager.discardAddressUtxos(address);
-
     if (Array.isArray(utxos)) {
+      // we need to delete our knowledge of UTXO set
+      // in case some utxos were spent elsewhere
+      // i.e. wallet seed shared on multiple devices
+      UtxoManager.discardAddressUtxos(address);
+
       utxos.forEach((utxo) => {
         UtxoManager.registerUtxo(address, utxo);
         /*
@@ -379,7 +396,8 @@ export default function AddressScannerService(wallet) {
       });
     }
 
-    return Promise.resolve();
+    //Log.debug("got utxos", address, utxos);
+    return address;
   }
 
   async function scanHistory(
@@ -423,7 +441,7 @@ export default function AddressScannerService(wallet) {
       }
     } catch (e) {
       Log.error(e);
-      return Promise.reject();
+      return Promise.resolve([address.address, null]);
     }
 
     //Log.debug("scanHistory", address, newCalculatedState);
