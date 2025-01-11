@@ -22,10 +22,7 @@ export default function AssetsViewHome() {
 
   Log.debug(utxos, coins, tokens);
 
-  const spendableBalance = coins.reduce(
-    (total, utxo) => (total += utxo.amount),
-    0
-  );
+  const spendableBalance = wallet.spendable_balance;
 
   const tokenCategories = tokens.reduce(
     (categories, utxo) =>
@@ -44,15 +41,24 @@ export default function AssetsViewHome() {
   );
 
   return (
-    <div>
-      <div>
-        <div>
-          Total Balance: <Satoshi value={wallet.balance} /> on {utxos.length}{" "}
-          UTXOs
-        </div>
-        <div>
-          Spendable Balance: <Satoshi value={spendableBalance} /> on{" "}
-          {coins.length} UTXOs
+    <div className="p-1">
+      <div className="bg-zinc-800 text-white rounded-lg p-2">
+        <div className="flex flex-col gap-y-2">
+          <div>
+            <div className="text-white text-xl font-bold">Total Balance</div>
+            <div className="text-zinc-100">
+              <Satoshi value={wallet.balance} /> on {utxos.length} UTXOs
+            </div>
+            <div>
+              <div className="text-white text-xl font-bold">
+                Spendable Balance
+              </div>
+              <div className="text-zinc-100">
+                <Satoshi value={wallet.spendable_balance} /> on {coins.length}{" "}
+                UTXOs
+              </div>
+            </div>
+          </div>
         </div>
         <div>
           NFTs: {nfts.length} in {nftCategories.length} categories

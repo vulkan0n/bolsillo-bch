@@ -1,4 +1,3 @@
-// migrations.js: handle sqlite database schema updates
 import LogService from "@/services/LogService";
 import { DEFAULT_DERIVATION_PATH } from "@/util/derivation";
 
@@ -84,6 +83,7 @@ const walletdb_migrations = [
     query.push("DROP TABLE IF EXISTS address_utxos;");
     query.push("DROP TABLE IF EXISTS address_transactions;");
     query.push("DROP TRIGGER IF EXISTS balance_update;");
+    query.push("DROP TRIGGER IF EXISTS spendable_balance_update;");
     query.push("DROP TRIGGER IF EXISTS utxo_balance_delete;");
     query.push("DROP TRIGGER IF EXISTS utxo_balance_insert;");
     query.push("DROP INDEX IF EXISTS idx_address_transactions;");
@@ -213,7 +213,7 @@ const walletdb_migrations = [
       "ALTER TABLE address_utxos ADD COLUMN token_category text default null;"
     );
     query.push(
-      "ALTER TABLE address_utxos ADD COLUMN token_amount text default null;"
+      "ALTER TABLE address_utxos ADD COLUMN token_amount int default null;"
     );
     query.push(
       "ALTER TABLE address_utxos ADD COLUMN nft_capability text default null;"
@@ -226,10 +226,35 @@ const walletdb_migrations = [
 
     return query.join("");
   },
-  /*function migrate_v3() {
+  function migrate_v3() {
     const query = [];
 
+    // keep account of non-token balance separately from balance with token UTXOs
+    query.push(
+      "ALTER TABLE wallet ADD COLUMN spendable_balance int default 0;"
+    );
+
+    query.push(
+      `CREATE TRIGGER IF NOT EXISTS spendable_balance_update AFTER UPDATE ON wallet
+        BEGIN
+          UPDATE wallet SET 
+            spendable_balance=(
+              SELECT COALESCE(SUM(amount), 0) FROM address_utxos
+              WHERE token_category IS NULL
+            ) 
+          ;
+        END
+      ;`
+    );
+
     query.push("PRAGMA user_version = 4;");
+
+    return query.join("");
+  },
+  /*function migrate_v4() {
+    const query = [];
+
+    query.push("PRAGMA user_version = 5;");
 
     return query.join("");
   },*/

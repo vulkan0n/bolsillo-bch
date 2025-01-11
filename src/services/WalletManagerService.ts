@@ -33,6 +33,7 @@ export interface WalletEntity extends WalletStub, WalletMeta {
   network: ValidBchNetwork;
   nonce: number;
   genesis_height: number | null;
+  spendable_balance: number;
 }
 
 export class WalletNotExistsError extends Error {
