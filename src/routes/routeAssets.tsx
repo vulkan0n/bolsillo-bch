@@ -1,6 +1,5 @@
-import { Navigate } from "react-router";
 import AssetsView from "@/views/assets/AssetsView";
-import AssetsViewAddresses from "@/views/assets/AssetsViewAddresses";
+import AssetsViewHome from "@/views/assets/AssetsViewHome";
 import AssetsViewCoins from "@/views/assets/AssetsViewCoins";
 import AssetsViewTokens from "@/views/assets/AssetsViewTokens";
 import AssetsViewCollections from "@/views/assets/AssetsViewCollections";
@@ -12,11 +11,7 @@ export const routeAssets = [
     children: [
       {
         index: true,
-        element: <Navigate to="/assets/addresses" replace />,
-      },
-      {
-        path: "addresses/",
-        element: <AssetsViewAddresses />,
+        element: <AssetsViewHome />,
       },
       {
         path: "coins/",

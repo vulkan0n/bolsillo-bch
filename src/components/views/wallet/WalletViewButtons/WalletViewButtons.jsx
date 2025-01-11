@@ -61,7 +61,7 @@ export default function WalletViewButtons() {
   };
 
   return (
-    <div className="flex items-center w-auto mx-4 justify-evenly my-4 relative z-40">
+    <div className="flex items-center w-auto mx-4 my-4 justify-evenly">
       {isScanning ? (
         <ImageSelectButton
           iconSize="2xl"

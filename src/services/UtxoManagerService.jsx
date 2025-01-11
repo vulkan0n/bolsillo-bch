@@ -26,15 +26,43 @@ export default function UxtoManagerService(wallet) {
   function registerUtxo(address, utxo) {
     Log.debug("registerUtxo", utxo);
 
-    walletDb.run(
-      `INSERT INTO address_utxos (
+    const token_data = utxo.token_data
+      ? utxo.token_data
+      : {
+          category: null,
+          amount: null,
+          nft: {
+            capability: null,
+            commitment: null,
+          },
+        };
+
+    try {
+      walletDb.run(
+        `INSERT INTO address_utxos (
         address,
         txid,
         tx_pos,
-        amount
-      ) VALUES (?, ?, ?, ?);`,
-      [address, utxo.tx_hash, utxo.tx_pos, utxo.value]
-    );
+        amount,
+        token_category,
+        token_amount,
+        nft_capability,
+        nft_commitment
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?);`,
+        [
+          address,
+          utxo.tx_hash,
+          utxo.tx_pos,
+          utxo.value,
+          token_data.category,
+          token_data.amount,
+          token_data.nft ? token_data.nft.capability : null,
+          token_data.nft ? token_data.nft.commitment : null,
+        ]
+      );
+    } catch (e) {
+      Log.error(e);
+    }
   }
 
   // returns all UTXOs for the wallet

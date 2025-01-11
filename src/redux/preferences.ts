@@ -14,6 +14,7 @@ import CurrencyService from "@/services/CurrencyService";
 import { AuthActions } from "@/services/SecurityService";
 
 const defaultPreferences = {
+  // global / wallet
   activeWalletHash: "",
   bchNetwork: "mainnet",
   languageCode: languageList[0].code,
@@ -21,31 +22,39 @@ const defaultPreferences = {
   enablePrerelease: "false",
   lastCheckIn: "",
   lastExchangeRate: "1", // TODO #423: save exchange rates per block
+  useTokenAddress: "false",
   // --------
+  // Security
   authMode: "none",
   pinHash: "",
   authActions: "Any;Debug;RevealPrivateKeys;RevealBalance;SendTransaction",
   // --------
+  // Currency
   localCurrency: currencyList[0].currency,
   preferLocalCurrency: "false",
   denomination: "bch",
   // --------
+  // Payment (move to wallet db?)
   allowInstantPay: "false",
   instantPayThreshold: "2000000", // 0.02 BCH (~$9 USD @ $450)
   instantPayThresholdFiat: "10", // $10 USD (default)
   // --------
+  // QR Code (move to wallet db?)
   qrCodeLogo: "Selene",
   qrCodeBackground: "#ffffff",
   qrCodeForeground: "#000000",
   // --------
+  // UI
   displayExploreTab: "true",
   displayExchangeRate: "false",
   displaySyncCounter: "true",
   // --------
+  // Network
   // TODO #420: electrum peer db
   electrumServer: "",
   offlineMode: "false",
   // --------
+  // Privacy
   hideAvailableBalance: "false",
   enableDailyCheckIn: "true",
 };
@@ -109,6 +118,7 @@ function validatePreferences(preferences: ValidPreferences): boolean {
     "displaySyncCounter",
     "enableDailyCheckIn",
     "offlineMode",
+    "useTokenAddress",
   ];
 
   const invalidBools = boolKeys.filter(
@@ -323,4 +333,9 @@ export const selectIsPrerelease = createSelector(
 export const selectLastCheckIn = createSelector(
   (state: RootState) => state.preferences,
   (preferences) => preferences.lastCheckIn
+);
+
+export const selectShouldUseTokenAddress = createSelector(
+  (state: RootState) => state.preferences,
+  (preferences) => preferences.useTokenAddress === "true"
 );

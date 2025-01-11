@@ -205,10 +205,31 @@ const walletdb_migrations = [
 
     return query.join("");
   },
-  /*function migrate_v2() {
+  function migrate_v2() {
     const query = [];
 
+    // add CashToken data to UTXOs
+    query.push(
+      "ALTER TABLE address_utxos ADD COLUMN token_category text default null;"
+    );
+    query.push(
+      "ALTER TABLE address_utxos ADD COLUMN token_amount text default null;"
+    );
+    query.push(
+      "ALTER TABLE address_utxos ADD COLUMN nft_capability text default null;"
+    );
+    query.push(
+      "ALTER TABLE address_utxos ADD COLUMN nft_commitment text default null;"
+    );
+
     query.push("PRAGMA user_version = 3;");
+
+    return query.join("");
+  },
+  /*function migrate_v3() {
+    const query = [];
+
+    query.push("PRAGMA user_version = 4;");
 
     return query.join("");
   },*/

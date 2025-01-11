@@ -1,5 +1,6 @@
-import { useState, useRef, useCallback } from "react";
-import { useSelector } from "react-redux";
+import { useState, useRef, useCallback, useMemo } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { encodeCashAddress, decodeCashAddress } from "@bitauth/libauth";
 
 import { Clipboard } from "@capacitor/clipboard";
 import { QRCode } from "react-qrcode-logo";
@@ -13,7 +14,12 @@ import {
 
 import { selectActiveWallet } from "@/redux/wallet";
 import { selectSyncState } from "@/redux/sync";
-import { selectBchNetwork, selectQrCodeSettings } from "@/redux/preferences";
+import {
+  selectBchNetwork,
+  selectQrCodeSettings,
+  selectShouldUseTokenAddress,
+  setPreference,
+} from "@/redux/preferences";
 import { selectScannerIsScanning, selectKeyboardIsOpen } from "@/redux/device";
 
 import AddressManagerService from "@/services/AddressManagerService";
@@ -33,6 +39,8 @@ import { translate } from "@/util/translations";
 import translations from "./translations";
 
 export default function WalletViewHome() {
+  const dispatch = useDispatch();
+
   const wallet = useSelector(selectActiveWallet);
   const isKeyboardOpen = useSelector(selectKeyboardIsOpen);
   const isScanning = useSelector(selectScannerIsScanning);
@@ -42,10 +50,16 @@ export default function WalletViewHome() {
 
   const { isSyncing } = useSelector(selectSyncState);
 
+  const shouldUseTokenAddress = useSelector(selectShouldUseTokenAddress);
+  const setShouldUseTokenAddress = (mode) =>
+    dispatch(setPreference({ key: "useTokenAddress", value: mode }));
+
   // reload unused addresses when wallet data changes
-  const AddressManager = AddressManagerService(wallet);
+  const AddressManager = useMemo(() => AddressManagerService(wallet), [wallet]);
   const unusedAddressesRef = useRef(AddressManager.getUnusedAddresses());
-  const getUnusedAddresses = useCallback(() => {
+
+  // only re-render when isSyncing changes
+  const unusedAddresses = useMemo(() => {
     if (!isSyncing) {
       unusedAddressesRef.current = AddressManager.getUnusedAddresses();
     }
@@ -53,10 +67,19 @@ export default function WalletViewHome() {
     return unusedAddressesRef.current;
   }, [AddressManager, isSyncing]);
 
-  const unusedAddresses = getUnusedAddresses();
-
   // currently displayed address
-  const address = unusedAddresses.length > 0 ? unusedAddresses[0].address : "";
+  const address = useMemo(() => {
+    const standardAddress =
+      unusedAddresses.length > 0 ? unusedAddresses[0].address : "";
+
+    // convert address to cashtokens address
+    if (shouldUseTokenAddress) {
+      const { payload, prefix } = decodeCashAddress(standardAddress);
+      return encodeCashAddress(prefix, "p2pkhWithTokens", payload);
+    }
+
+    return standardAddress;
+  }, [unusedAddresses, shouldUseTokenAddress]);
 
   // "Request Amount" state
   const [shouldShowRequestAmount, setShouldShowRequestAmount] = useState(false);
@@ -72,13 +95,16 @@ export default function WalletViewHome() {
       ? `${address}?amount=${satsToBch(satoshiInput).bch}`
       : address;
 
-  const getQrLogoImage = (logo) => logos[logo.toLowerCase()].img;
+  const getQrLogoImage = (logo) =>
+    shouldUseTokenAddress
+      ? logos[logo.toLowerCase()].img_tokens
+      : logos[logo.toLowerCase()].img;
 
   const copyAddressToClipboard = async () => {
-    //const titleTranslation = translate(copiedAddress);
+    const titleTranslation = translate(translations.copiedAddress);
 
     await Clipboard.write({ string: qrRequest });
-    ToastService().clipboardCopy("Address", qrRequest);
+    ToastService().clipboardCopy(titleTranslation, qrRequest);
   };
 
   // force red QR code border if connected to chipnet
@@ -134,41 +160,57 @@ export default function WalletViewHome() {
               <Address address={address} color={addressColor} />
             </button>
           </div>
-          <div
-            className={`font-sans bg-primary w-full mx-auto text-sm py-1.5 rounded-b-sm ${!shouldShowRequestAmount ? "active:bg-secondary active:shadow-inner" : ""}`}
-            onClick={() =>
-              !shouldShowRequestAmount && setShouldShowRequestAmount(true)
-            }
-          >
-            {shouldShowRequestAmount ? (
-              <div className="flex w-full justify-between items-center">
-                <CloseOutlined
-                  className="p-1 font-bold text-lg"
-                  onClick={() => setShouldShowRequestAmount(false)}
-                />
-                <span className="flex text-center grow items-center ml-1">
-                  <CurrencySymbol className="text-lg bg-white/60 rounded-l px-1 text-zinc-500/80 font-semibold font-mono" />
-                  <SatoshiInput
-                    satoshis={satoshiInput}
-                    onChange={handleRequestAmountChange}
-                    className="p-1 mr-1 w-full text-black/70 font-mono rounded-r "
-                    autoFocus
+          <div className="flex justify-evenly items-center rounded-b-sm text-sm border-primary/80 border-t">
+            <div
+              className={`font-sans bg-primary flex-1 px-1 py-1.5 ${!shouldShowRequestAmount ? "active:bg-secondary active:shadow-inner" : ""}`}
+              onClick={() =>
+                !shouldShowRequestAmount && setShouldShowRequestAmount(true)
+              }
+            >
+              {shouldShowRequestAmount ? (
+                <div className="flex w-full justify-between items-center">
+                  <CloseOutlined
+                    className="p-1 font-bold text-lg"
+                    onClick={() => setShouldShowRequestAmount(false)}
                   />
-                  <div className="flex items-center justify-center">
-                    <CurrencyFlip className="text-xl p-1" />
-                  </div>
-                </span>
-              </div>
-            ) : (
-              <div className="flex items-center justify-center cursor-pointer">
-                <FormOutlined className="mr-1 font-bold" />
-                <span>{translate(translations.requestAmount)}</span>
-                {shouldShowRequestAmount ? (
-                  <CaretDownOutlined className="ml-1" />
-                ) : (
-                  <CaretRightOutlined className="ml-1" />
-                )}
-              </div>
+                  <span className="flex text-center grow items-center ml-1">
+                    <CurrencySymbol className="text-lg bg-white/60 rounded-l px-1 text-zinc-500/80 font-semibold font-mono" />
+                    <SatoshiInput
+                      satoshis={satoshiInput}
+                      onChange={handleRequestAmountChange}
+                      className="p-1 mr-1 w-full text-black/70 font-mono rounded-r "
+                      autoFocus
+                    />
+                    <div className="flex items-center justify-center">
+                      <CurrencyFlip className="text-xl p-1" />
+                    </div>
+                  </span>
+                </div>
+              ) : (
+                <div className="flex items-center justify-center cursor-pointer">
+                  <FormOutlined className="mr-1 font-bold" />
+                  <span>{translate(translations.requestAmount)}</span>
+                  {shouldShowRequestAmount ? (
+                    <CaretDownOutlined className="ml-1" />
+                  ) : (
+                    <CaretRightOutlined className="ml-1" />
+                  )}
+                </div>
+              )}
+            </div>
+            {!shouldShowRequestAmount && (
+              <label
+                className={`font-sans bg-${shouldUseTokenAddress ? "secondary" : "primary"} px-2 py-1.5 border-l border-white/20`}
+              >
+                Receive Tokens{" "}
+                <input
+                  type="checkbox"
+                  checked={shouldUseTokenAddress}
+                  onChange={() =>
+                    setShouldUseTokenAddress(!shouldUseTokenAddress)
+                  }
+                />
+              </label>
             )}
           </div>
         </div>
