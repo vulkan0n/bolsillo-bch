@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback, useMemo } from "react";
+import { useState, useRef, useMemo } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { encodeCashAddress, decodeCashAddress } from "@bitauth/libauth";
 
