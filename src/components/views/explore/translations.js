@@ -36,7 +36,7 @@ const translations = {
     ur: "Bitcoin کیش کو دریافت کریں۔",
     vi: "Khám phá tiền mặt Bitcoin",
     zh: "探索比特币现金",
-    zh_TW: "探索比特幣現金"
+    zh_TW: "探索比特幣現金",
   },
   statistics: {
     ar: "إحصائيات",
@@ -75,7 +75,7 @@ const translations = {
     ur: "شماریات",
     vi: "Số liệu thống kê",
     zh: "统计数据",
-    zh_TW: "統計數據"
+    zh_TW: "統計數據",
   },
   socialMedia: {
     ar: "وسائل التواصل الاجتماعي",
@@ -114,7 +114,7 @@ const translations = {
     ur: "سوشل میڈیا",
     vi: "Truyền thông xã hội",
     zh: "社交媒体",
-    zh_TW: "社群媒體"
+    zh_TW: "社群媒體",
   },
   chronology: {
     ar: "التسلسل الزمني",
@@ -153,7 +153,7 @@ const translations = {
     ur: "تاریخ نامہ",
     vi: "Niên đại",
     zh: "年表",
-    zh_TW: "年表"
+    zh_TW: "年表",
   },
   faqs: {
     ar: "الأسئلة الشائعة والمعلومات",
@@ -192,7 +192,7 @@ const translations = {
     ur: "اکثر پوچھے گئے سوالات اور معلومات",
     vi: "Câu hỏi thường gặp &amp; Thông tin",
     zh: "常见问题和信息",
-    zh_TW: "常見問題及資訊"
+    zh_TW: "常見問題及資訊",
   },
   back: {
     ar: "خلف",
@@ -231,8 +231,11 @@ const translations = {
     ur: "واپس",
     vi: "Quay lại",
     zh: "返回",
-    zh_TW: "後退"
-  }
+    zh_TW: "後退",
+  },
+  copiedTxid: {
+    en: "Copied Transaction ID to Clipboard",
+  },
 };
 
 export default translations;

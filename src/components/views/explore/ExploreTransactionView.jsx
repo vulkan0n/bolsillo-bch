@@ -49,7 +49,8 @@ export default function ExploreTransactionView() {
 
   const handleCopyTransactionId = async () => {
     await Clipboard.write({ string: tx.txid });
-    ToastService().clipboardCopy("Transaction ID", tx.txid);
+    const titleTranslation = translate(translations.copiedTxid);
+    ToastService().clipboardCopy(titleTranslation, tx.txid);
   };
 
   //Log.debug(tx, confirmations);

@@ -74,7 +74,7 @@ export default function ToastService() {
   function clipboardCopy(header, payload) {
     spawn({
       icon: <SnippetsFilled className="text-4xl text-primary" />,
-      header: `Copied ${header} to Clipboard`,
+      header,
       body: <span className="flex text-sm break-all">{payload}</span>,
       options: { id: "clipboardCopy" },
     });
