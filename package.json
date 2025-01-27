@@ -14,7 +14,7 @@
   "dependencies": {
     "@ant-design/icons": "^5.0.1",
     "@apollo/client": "^3.8.1",
-    "@bitauth/libauth": "2.0.0-alpha.8",
+    "@bitauth/libauth": "^3.0.0",
     "@capacitor-community/barcode-scanner": "^4.0.1",
     "@capacitor/android": "^6.0.0",
     "@capacitor/app": "^6.0.0",
