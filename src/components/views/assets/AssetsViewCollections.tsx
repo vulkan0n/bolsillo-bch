@@ -7,6 +7,7 @@ import LogService from "@/services/LogService";
 import UtxoManagerService from "@/services/UtxoManagerService";
 import Address from "@/atoms/Address";
 import Satoshi from "@/atoms/Satoshi";
+import Checksum from "@/atoms/Checksum";
 
 const Log = LogService("AssetsViewCollections");
 
@@ -50,7 +51,9 @@ export default function AssetsViewCollections() {
             <div className="font-mono text-xs text-zinc-500 truncate px-1">
               {nft.category}
             </div>
-            <div className="p-8 border border-zinc-700 rounded">&nbsp;</div>
+            <div className="p-8 border border-zinc-700 rounded">
+              <Checksum data={nft.category} size={4} />
+            </div>
             <div className="px-1">{nft.count}</div>
           </div>
         ))}

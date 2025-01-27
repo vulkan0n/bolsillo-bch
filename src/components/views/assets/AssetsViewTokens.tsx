@@ -7,6 +7,7 @@ import LogService from "@/services/LogService";
 import UtxoManagerService from "@/services/UtxoManagerService";
 import Address from "@/atoms/Address";
 import Satoshi from "@/atoms/Satoshi";
+import Checksum from "@/atoms/Checksum";
 
 const Log = LogService("AssetsViewTokens");
 
@@ -49,6 +50,9 @@ export default function AssetsViewTokens() {
         {tokenBalances.map((token) => (
           <div key={token.category} className="w-full">
             <div className="flex justify-between items-center w-full my-1 p-2 border border-primary rounded">
+              <div>
+                <Checksum data={token.category} />
+              </div>
               <div className="font-mono text-xs text-zinc-500 truncate px-1">
                 {token.category}
               </div>
