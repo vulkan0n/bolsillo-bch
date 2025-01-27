@@ -5,9 +5,9 @@ import {
   swapEndianness,
   cashAddressToLockingBytecode,
   base58AddressToLockingBytecode,
-  importAuthenticationTemplate,
-  authenticationTemplateP2pkhNonHd,
-  authenticationTemplateToCompilerBCH,
+  importWalletTemplate,
+  walletTemplateP2pkhNonHd,
+  walletTemplateToCompilerBCH,
   getMinimumFee,
 } from "@bitauth/libauth";
 
@@ -118,10 +118,8 @@ export default function TransactionBuilderService(wallet: WalletEntity) {
     }
 
     // initialize transaction compiler
-    const template = importAuthenticationTemplate(
-      authenticationTemplateP2pkhNonHd
-    );
-    const compiler = authenticationTemplateToCompilerBCH(template);
+    const template = importWalletTemplate(walletTemplateP2pkhNonHd);
+    const compiler = walletTemplateToCompilerBCH(template);
 
     // sign inputs
     const HdNode = HdNodeService(wallet);
@@ -202,9 +200,7 @@ export function buildSweepTransaction(
   }
 
   // Create our P2PKH Compiler.
-  const compilerP2pkh = authenticationTemplateToCompilerBCH(
-    authenticationTemplateP2pkhNonHd
-  );
+  const compilerP2pkh = walletTemplateToCompilerBCH(walletTemplateP2pkhNonHd);
 
   // Compile our inputs.
   const inputDirectives = utxos.map((unspent) => ({
