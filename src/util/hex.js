@@ -1,7 +1,7 @@
 /* eslint-disable */
 import { hexToBin } from "@bitauth/libauth";
 
-// faster binToHex implementation: https://archive.is/2v7QZ
+// faster (4x) binToHex implementation: https://archive.is/2v7QZ
 // libauth uses slower array conversion method
 export function binToHex(buffer) {
   let out = "";
