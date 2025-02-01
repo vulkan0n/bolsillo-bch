@@ -36,7 +36,11 @@ export default function HdNodeService(wallet) {
 
     const pubKey = secp256k1.derivePublicKeyCompressed(child.privateKey);
     const hash = ripemd160.hash(sha256.hash(pubKey));
-    const address = encodeCashAddress(wallet.prefix, "p2pkh", hash);
+    const address = encodeCashAddress({
+      prefix: wallet.prefix,
+      type: "p2pkh",
+      payload: hash,
+    });
 
     //Log.debug("generateAddress", index, address);
     return address;
