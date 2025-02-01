@@ -13,6 +13,7 @@ import { selectBchNetwork } from "@/redux/preferences";
 
 const Log = LogService("WalletManager");
 
+// WalletStub: minimum data required to build a wallet
 export interface WalletStub {
   mnemonic: string;
   passphrase: string;
@@ -71,7 +72,7 @@ export default function WalletManagerService() {
 
   // ----------------------------
 
-  // listWallets: return a list of all wallets in the database
+  // listWallets: return a list of all wallets in the app database
   function listWallets(): WalletMeta[] {
     const result = APP_DB.exec(
       `SELECT * FROM wallets WHERE network="${network}"`
@@ -81,7 +82,7 @@ export default function WalletManagerService() {
     return result;
   }
 
-  // getWallet: synchronously get a consumable Wallet object from the database
+  // getWallet: synchronously get a consumable WalletEntity from the database
   function getWallet(walletHash): WalletEntity {
     if (!walletHash) {
       throw new WalletNotExistsError(walletHash);
@@ -129,23 +130,32 @@ export default function WalletManagerService() {
   async function boot(walletHash): Promise<WalletEntity> {
     let wallet: WalletEntity;
     try {
+      // walletHash is blank on first-run, so throw immediately to create a new wallet
       if (walletHash === "") {
         throw new WalletNotExistsError("");
       }
 
       Log.debug("walletBoot ~", walletHash, network);
+
+      // prevent Janitor from closing the active wallet handle
       Database.setKeepAlive(walletHash);
+
+      // get the wallet db handle
       await Database.openWalletDatabase(walletHash, network);
+
+      // get the WalletEntity
       wallet = getWallet(walletHash);
       //Log.debug("boot got", wallet);
     } catch (e) {
       if (!(e instanceof WalletNotExistsError)) {
+        // something is REALLY wrong if we hit this path
         Log.warn("critical error during walletBoot!", e);
         throw e;
       }
 
       // requested wallet doesn't exist
-      // attempt to return lowest-index wallet instead, create a new wallet if none exist
+      // attempt to return lowest-index wallet instead
+      // create a new wallet if none exist
       const wallets = listWallets();
 
       let nextWalletHash = "";
@@ -160,7 +170,6 @@ export default function WalletManagerService() {
     }
 
     Log.debug("walletBoot", walletHash, wallet, wallet.network);
-
     return wallet;
   }
 
