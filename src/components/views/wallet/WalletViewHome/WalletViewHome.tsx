@@ -1,6 +1,11 @@
 import { useState, useRef, useMemo } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { encodeCashAddress, decodeCashAddress } from "@bitauth/libauth";
+import {
+  encodeCashAddress,
+  decodeCashAddress,
+  CashAddressType,
+  assertSuccess,
+} from "@bitauth/libauth";
 
 import { Clipboard } from "@capacitor/clipboard";
 import { QRCode } from "react-qrcode-logo";
@@ -74,8 +79,18 @@ export default function WalletViewHome() {
 
     // convert address to cashtokens address
     if (shouldUseTokenAddress) {
-      const { payload, prefix } = decodeCashAddress(standardAddress);
-      return encodeCashAddress(prefix, "p2pkhWithTokens", payload);
+      const { payload, prefix } = assertSuccess(
+        decodeCashAddress(standardAddress)
+      );
+      const { address: tokenAddress } = assertSuccess(
+        encodeCashAddress({
+          prefix,
+          type: CashAddressType.p2pkhWithTokens,
+          payload,
+        })
+      );
+
+      return tokenAddress;
     }
 
     return standardAddress;
