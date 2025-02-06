@@ -6,6 +6,7 @@ import {
   encodeCashAddress,
   secp256k1,
   ripemd160,
+  CashAddressType,
 } from "@bitauth/libauth";
 
 import { hexToBin } from "@/util/hex";
@@ -36,10 +37,11 @@ export default function HdNodeService(wallet) {
 
     const pubKey = secp256k1.derivePublicKeyCompressed(child.privateKey);
     const hash = ripemd160.hash(sha256.hash(pubKey));
-    const address = encodeCashAddress({
+    const { address } = encodeCashAddress({
       prefix: wallet.prefix,
-      type: "p2pkh",
+      type: CashAddressType.p2pkh,
       payload: hash,
+      throwErrors: true,
     });
 
     //Log.debug("generateAddress", index, address);
