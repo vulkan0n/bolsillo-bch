@@ -68,7 +68,7 @@ export default function CreditsView() {
           <li>Bitcoin Out Loud</li>
           <li>bchtoronto.com</li>
           <li>Remora_101</li>
-          <li>Josh</li>
+          <li>Josh (@MrJPE)</li>
           <li>Nico MG</li>
           <li>Anonymous</li>
           <li>Killian</li>
@@ -130,6 +130,13 @@ export default function CreditsView() {
         </h2>
         <ul className="list-inside list-disc">
           <li>Jim Hamill</li>
+        </ul>
+
+        <h2 className="font-bold text-2xl mt-4">
+          {translate(translations.docs)}
+        </h2>
+        <ul className="list-inside list-disc">
+          <li>Josh (@MrJPE)</li>
         </ul>
 
         <h2 className="font-bold text-2xl mt-4">
