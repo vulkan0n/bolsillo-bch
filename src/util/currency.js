@@ -46,3 +46,28 @@ export const currencyList = [
   { currency: "VND", countryCode: "VN", symbol: "₫" },
   { currency: "ZAR", countryCode: "ZA", symbol: "R" },
 ];
+
+export const DEFAULT_CURRENCY = currencyList[0];
+// https://european-union.europa.eu/institutions-law-budget/euro/countries-using-euro_en
+export const euroZoneCountryList = [
+  { country: "Austria", countryCode: "AT" },
+  { country: "Belgium", countryCode: "BE" },
+  { country: "Croatia", countryCode: "HR" },
+  { country: "Cyprus", countryCode: "CY" },
+  { country: "Estonia", countryCode: "EE" },
+  { country: "Finland", countryCode: "FI" },
+  { country: "France", countryCode: "FR" },
+  { country: "Germany", countryCode: "DE" },
+  { country: "Greece", countryCode: "GR" },
+  { country: "Ireland", countryCode: "IE" },
+  { country: "Italy", countryCode: "IT" },
+  { country: "Latvia", countryCode: "LV" },
+  { country: "Lithuania", countryCode: "LT" },
+  { country: "Luxembourg", countryCode: "LU" },
+  { country: "Malta", countryCode: "MT" },
+  { country: "Netherlands", countryCode: "NL" },
+  { country: "Portugal", countryCode: "PT" },
+  { country: "Slovakia", countryCode: "SK" },
+  { country: "Slovenia", countryCode: "SI" },
+  { country: "Spain", countryCode: "ES" },
+];

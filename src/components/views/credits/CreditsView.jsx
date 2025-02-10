@@ -130,6 +130,7 @@ export default function CreditsView() {
         </h2>
         <ul className="list-inside list-disc">
           <li>Jim Hamill</li>
+          <li>Mateus Dal Bianco</li>
         </ul>
 
         <h2 className="font-bold text-2xl mt-4">

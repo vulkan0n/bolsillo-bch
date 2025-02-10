@@ -8,7 +8,7 @@ import {
 import { RootState } from "@/redux";
 import { ValidBchNetwork } from "@/util/electrum_servers";
 import { languageList } from "@/util/translations";
-import { currencyList } from "@/util/currency";
+import { DEFAULT_CURRENCY, currencyList } from "@/util/currency";
 import { VALID_DENOMINATIONS } from "@/util/sats";
 import CurrencyService from "@/services/CurrencyService";
 import { AuthActions } from "@/services/SecurityService";
@@ -30,7 +30,7 @@ const defaultPreferences = {
   authActions: "Any;Debug;RevealPrivateKeys;RevealBalance;SendTransaction",
   // --------
   // Currency
-  localCurrency: currencyList[0].currency,
+  localCurrency: DEFAULT_CURRENCY.currency,
   preferLocalCurrency: "false",
   denomination: "bch",
   // --------
@@ -148,20 +148,33 @@ async function cleanupPreferences(): Promise<void[]> {
   );
 }
 
+// tweakDefaultPreferences: dynamically change defaults for first-run/preferences reset
+async function tweakDefaultPreferences() {
+  const defaults = defaultPreferences;
+
+  // change default fiat currency based on device locale
+  defaults.localCurrency =
+    await CurrencyService().getCurrencyFromDeviceLocale();
+
+  return defaults;
+}
+
 async function retrievePreferences(): Promise<ValidPreferences> {
   // Preferences.clear();
 
   // remove any unused preferences first
   await cleanupPreferences();
 
-  const keys = Object.keys(defaultPreferences);
+  const defaults = await tweakDefaultPreferences();
+
+  const keys = Object.keys(defaults);
 
   const preferences = (
     await Promise.all(
       keys.map(async (key) => {
         const current = (await Preferences.get({ key })).value;
         if (current === null) {
-          await Preferences.set({ key, value: defaultPreferences[key] });
+          await Preferences.set({ key, value: defaults[key] });
           const newest = (await Preferences.get({ key })).value;
           return { [key]: newest };
         }
