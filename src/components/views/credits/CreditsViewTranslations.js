@@ -311,6 +311,9 @@ const translations = {
     zh: "测试人员",
     zh_TW: "測試人員",
   },
+  docs: {
+    en: "Documentation",
+  },
 };
 
 export default translations;
