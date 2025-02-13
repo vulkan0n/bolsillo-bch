@@ -1,6 +1,7 @@
 /* eslint-disable */
 import { useState } from "react";
 import { useSelector } from "react-redux";
+import { useNavigate } from "react-router";
 import { importMetadataRegistry, IdentityHistory } from "@bitauth/libauth";
 import { MoneyCollectOutlined } from "@ant-design/icons";
 import { selectActiveWallet } from "@/redux/wallet";
@@ -16,6 +17,8 @@ const Log = LogService("AssetsViewTokens");
 
 export default function AssetsViewTokens() {
   const wallet = useSelector(selectActiveWallet);
+
+  const navigate = useNavigate();
 
   const UtxoManager = UtxoManagerService(wallet);
 
@@ -85,12 +88,17 @@ export default function AssetsViewTokens() {
       : textCat + (textCat.endsWith(".") ? "" : ".");
   };
 
+  const handleTokenNavigate = (tokenId) => {
+    navigate(`/assets/tokens/${tokenId}`);
+  };
+
   return (
     <div className="p-1">
       {tokenData.map((token) => (
         <div
           key={token.category}
           className="w-full my-1 p-1 border border-primary rounded"
+          onClick={() => handleTokenNavigate(token.category)}
         >
           <div className="flex items-center">
             <div className="flex items-center justify-center">

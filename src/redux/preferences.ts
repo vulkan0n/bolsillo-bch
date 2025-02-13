@@ -48,6 +48,7 @@ const defaultPreferences = {
   displayExploreTab: "true",
   displayExchangeRate: "false",
   displaySyncCounter: "true",
+  lastAssetsPath: "/assets/coins",
   // --------
   // Network
   // TODO #420: electrum peer db
@@ -351,4 +352,9 @@ export const selectLastCheckIn = createSelector(
 export const selectShouldUseTokenAddress = createSelector(
   (state: RootState) => state.preferences,
   (preferences) => preferences.useTokenAddress === "true"
+);
+
+export const selectLastAssetsPath = createSelector(
+  (state: RootState) => state.preferences,
+  (preferences) => preferences.lastAssetsPath
 );

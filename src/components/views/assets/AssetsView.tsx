@@ -1,13 +1,35 @@
-import { NavLink, Outlet } from "react-router";
+import { useEffect } from "react";
+import { NavLink, Outlet, useLocation } from "react-router";
+import { useDispatch } from "react-redux";
 import {
   BankOutlined,
   MoneyCollectOutlined,
   DeploymentUnitOutlined,
 } from "@ant-design/icons";
+import { setPreference } from "@/redux/preferences";
 
 import ViewHeader from "@/layout/ViewHeader";
 
 export default function AssetsView() {
+  const dispatch = useDispatch();
+  const location = useLocation();
+
+  useEffect(
+    function updateLastAssetsPath() {
+      const pathSplit = location.pathname.split("/");
+      if (pathSplit.length > 2) {
+        const path = pathSplit.slice(0, 3).join("/");
+        dispatch(
+          setPreference({
+            key: "lastAssetsPath",
+            value: path,
+          })
+        );
+      }
+    },
+    [location, dispatch]
+  );
+
   return (
     <>
       <ViewHeader icon={BankOutlined} title="Assets" />
@@ -43,6 +65,7 @@ function NavTab({
   activeIcon = () => null,
   label = "",
 }: NavTabProps) {
+  const dispatch = useDispatch();
   const Icon = icon;
   const ActiveIcon = activeIcon;
 

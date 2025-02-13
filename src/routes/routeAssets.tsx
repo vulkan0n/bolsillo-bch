@@ -1,18 +1,13 @@
 import AssetsView from "@/views/assets/AssetsView";
-import AssetsViewHome from "@/views/assets/AssetsViewHome";
 import AssetsViewCoins from "@/views/assets/AssetsViewCoins";
 import AssetsViewTokens from "@/views/assets/AssetsViewTokens";
-import AssetsViewCollections from "@/views/assets/AssetsViewCollections";
+import AssetsViewTokenDetail from "@/views/assets/AssetsViewTokenDetail";
 
 export const routeAssets = [
   {
     path: "/assets",
     element: <AssetsView />,
     children: [
-      {
-        index: true,
-        element: <AssetsViewHome />,
-      },
       {
         path: "coins/",
         element: <AssetsViewCoins />,
@@ -22,9 +17,9 @@ export const routeAssets = [
         element: <AssetsViewTokens />,
       },
       {
-        path: "collections/",
-        element: <AssetsViewCollections />,
-      },
+          path: "tokens/:tokenId",
+          element: <AssetsViewTokenDetail />,
+        }
     ],
   },
 ];

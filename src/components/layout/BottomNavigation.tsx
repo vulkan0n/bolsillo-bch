@@ -13,8 +13,8 @@ import {
 
 import {
   selectLanguageCode,
-  selectIsPrerelease,
   selectUiSettings,
+  selectLastAssetsPath,
 } from "@/redux/preferences";
 import { selectKeyboardIsOpen, selectScannerIsScanning } from "@/redux/device";
 
@@ -24,11 +24,12 @@ import { translate } from "@/util/translations";
 export default function BottomNavigation() {
   const isKeyboardOpen = useSelector(selectKeyboardIsOpen);
   const isScanning = useSelector(selectScannerIsScanning);
-  const isPrerelease = useSelector(selectIsPrerelease);
   const { shouldDisplayExploreTab } = useSelector(selectUiSettings);
 
   // Ensure component reloads when language preferences are changed
   useSelector(selectLanguageCode);
+
+  const lastAssetsPath = useSelector(selectLastAssetsPath);
 
   return !isKeyboardOpen ? (
     <div
@@ -40,14 +41,14 @@ export default function BottomNavigation() {
         icon={WalletOutlined}
         label={translate(translations.wallet)}
       />
-      {isPrerelease && (
-        <NavButton
-          to="/assets"
-          activeIcon={BankFilled}
-          icon={BankOutlined}
-          label={translate(translations.assets)}
-        />
-      )}
+
+      <NavButton
+        to={lastAssetsPath}
+        activeIcon={BankFilled}
+        icon={BankOutlined}
+        label={translate(translations.assets)}
+      />
+
       {shouldDisplayExploreTab && (
         <NavButton
           to="/explore"
