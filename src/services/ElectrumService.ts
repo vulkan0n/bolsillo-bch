@@ -11,6 +11,7 @@ import {
   syncConnectionDown,
   syncAddressState,
   syncChaintip,
+  selectChaintip,
 } from "@/redux/sync";
 
 import LogService from "@/services/LogService";
@@ -253,19 +254,11 @@ export default function ElectrumService() {
 
     const txRequest = electrum
       .request("blockchain.transaction.get", tx_hash, verbose)
-      .then(async (tx) => {
-        //Log.debug("requesting height for", tx_hash);
-        const requestHeight = await electrum.request(
-          "blockchain.transaction.get_height",
-          tx_hash
-        );
+      .then((tx) => {
+        const chaintip = selectChaintip(store.getState());
+        const height = chaintip.height - tx.confirmations;
 
-        let height = 0;
-        if (!(requestHeight instanceof Error)) {
-          height = requestHeight;
-        }
-
-        //Log.debug("height", height, tx_hash, requestHeight instanceof Error);
+        Log.debug("height", height, tx_hash);
 
         delete pendingTxRequests[tx_hash];
         return { ...tx, height };

@@ -3,7 +3,8 @@ import { Decimal } from "decimal.js";
 import {
   decodeTransaction,
   lockingBytecodeToCashAddress,
-  TransactionCommon as LibauthTransaction,
+  TransactionCommon,
+  assertSuccess,
 } from "@bitauth/libauth";
 
 import LogService from "@/services/LogService";
@@ -133,7 +134,7 @@ export default function TransactionManagerService() {
 
     if (isSuccess) {
       const UtxoManager = UtxoManagerService(wallet);
-      const decodedTx = decodeTransaction(hexToBin(tx_hex));
+      const decodedTx = assertSuccess(decodeTransaction(hexToBin(tx_hex)));
       const vin = getVinFromDecodedTransaction(decodedTx);
 
       vin.forEach((input) => {
@@ -255,6 +256,12 @@ export default function TransactionManagerService() {
   async function _registerTransaction(
     tx: TransactionEntity
   ): Promise<TransactionEntity> {
+    const decodedTx = decodeTransaction(hexToBin(tx.hex));
+
+    if (typeof decodedTx === "string") {
+      throw new Error(decodedTx);
+    }
+
     const blockhash = tx.blockhash ? tx.blockhash : null;
     const blocktime = tx.blocktime ? tx.blocktime : null;
     const time = tx.time ? tx.time : Math.floor(Date.now() / 1000);
@@ -292,8 +299,6 @@ export default function TransactionManagerService() {
 
     await _writeTxData(tx.txid, tx.hex);
 
-    const decodedTx = decodeTransaction(hexToBin(tx.hex)) as LibauthTransaction;
-
     // reconstruct "vin" from raw hex
     const vin = getVinFromDecodedTransaction(decodedTx);
 
@@ -321,9 +326,7 @@ export default function TransactionManagerService() {
     const localTx = result[0];
     localTx.hex = await _loadTxData(tx_hash);
 
-    const decodedTx = decodeTransaction(
-      hexToBin(localTx.hex)
-    ) as LibauthTransaction;
+    const decodedTx = assertSuccess(decodeTransaction(hexToBin(localTx.hex)));
 
     // reconstruct "vin" from raw hex
     const vin = getVinFromDecodedTransaction(decodedTx);
@@ -338,26 +341,25 @@ export default function TransactionManagerService() {
   }
 
   function getVinFromDecodedTransaction(
-    decodedTx: LibauthTransaction
+    decodedTx: TransactionCommon
   ): Array<TransactionInput> {
-    return decodedTx.inputs.map(
-      (input): TransactionInput => ({
-        txid: binToHex(input.outpointTransactionHash),
-        vout: input.outpointIndex,
-      })
-    );
+    return decodedTx.inputs.map((input) => ({
+      txid: binToHex(input.outpointTransactionHash),
+      vout: input.outpointIndex,
+    }));
   }
 
   function getVoutFromDecodedTransaction(
-    decodedTx: LibauthTransaction
+    decodedTx: TransactionCommon
   ): Array<TransactionOutput> {
-    return decodedTx.outputs.map((output, n): TransactionOutput => {
+    return decodedTx.outputs.map((output, n) => {
       const value = new Decimal(output.valueSatoshis.toString());
 
-      const cashAddr = lockingBytecodeToCashAddress(
-        output.lockingBytecode,
-        WalletManager.getPrefix()
-      );
+      const cashAddr = lockingBytecodeToCashAddress({
+        prefix: WalletManager.getPrefix(),
+        bytecode: output.lockingBytecode,
+        tokenSupport: !!output.token,
+      });
 
       return {
         n,
