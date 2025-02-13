@@ -1,10 +1,10 @@
 import { DateTime } from "luxon";
 import { MetadataRegistry, IdentitySnapshot } from "@bitauth/libauth";
-import LogService from "@/services/LogService";
+//import LogService from "@/services/LogService";
 
 import bcmrOtr from "@/assets/bcmr-open-token-registry-2023-05-15.json";
 
-const Log = LogService("BcmrService");
+//const Log = LogService("BcmrService");
 
 export default function BcmrService() {
   const bcmr: MetadataRegistry = bcmrOtr as MetadataRegistry;
@@ -55,7 +55,7 @@ export default function BcmrService() {
       currentSnapshot.token.symbol = splitSymbol[0];
     }
 
-    Log.debug("currentSnapshot", currentSnapshot, authbase);
+    //Log.debug("currentSnapshot", currentSnapshot, authbase);
 
     return currentSnapshot;
   }
