@@ -22,7 +22,7 @@ export default function BcmrService() {
       throw new Error(`No identity for authbase ${authbase}`);
     }
 
-    const kSnapshots = Object.keys(snapshots).sort();
+    const kSnapshots = Object.keys(snapshots).sort().reverse();
     const latestSnapshotTimestamp = kSnapshots.shift();
 
     if (!latestSnapshotTimestamp) {
