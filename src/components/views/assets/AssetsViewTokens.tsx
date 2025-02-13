@@ -6,12 +6,11 @@ import { MoneyCollectOutlined } from "@ant-design/icons";
 import { selectActiveWallet } from "@/redux/wallet";
 import LogService from "@/services/LogService";
 import UtxoManagerService from "@/services/UtxoManagerService";
+import BcmrService from "@/services/BcmrService";
 import Address from "@/atoms/Address";
 import Satoshi from "@/atoms/Satoshi";
 import Checksum from "@/atoms/Checksum";
 import NumberFormat from "@/atoms/NumberFormat";
-
-import bcmrJson from "@/assets/bitcoin-cash-metadata-registry.json";
 
 const Log = LogService("AssetsViewTokens");
 
@@ -31,16 +30,17 @@ export default function AssetsViewTokens() {
     []
   );
 
-  const bcmr = importMetadataRegistry(bcmrJson);
+  const Bcmr = BcmrService();
 
   const tokenData = tokenCategories
     .map((category) => {
-      const identities = bcmr.identities[category] || {};
-      const latestIdentityTimestamp = Object.keys(identities).sort().shift();
+      let identity = {
+        name: `Token ${category.slice(0, 6)}`,
+      };
 
-      const identity = latestIdentityTimestamp
-        ? identities[latestIdentityTimestamp]
-        : {};
+      try {
+        identity = Bcmr.getIdentity(category);
+      } catch (e) {}
 
       const amount = tokenUtxos
         .filter((utxo) => utxo.token_category === category)
@@ -58,7 +58,6 @@ export default function AssetsViewTokens() {
         color: colorHex,
         amount,
         nftCount,
-        name: `Token ${category.slice(0, 6)}`,
         ...identity,
       };
     })

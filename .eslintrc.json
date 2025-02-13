@@ -46,6 +46,7 @@
     "radix": ["error", "as-needed"],
     "spaced-comment": ["off"],
     "no-underscore-dangle": ["off"],
+    "prefer-destructuring": ["error", { "object": true, "array": false }],
     "react/forbid-prop-types": ["error", { "forbid": ["any", "array"] }],
     "react/react-in-jsx-scope": ["off"],
     "react/require-default-props": [
