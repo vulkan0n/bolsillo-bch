@@ -16,6 +16,7 @@ import SecurityService, { AuthActions } from "@/services/SecurityService";
 
 import Satoshi from "@/atoms/Satoshi";
 import CurrencyFlip from "@/atoms/CurrencyFlip";
+import { useCurrencyFlip } from "@/hooks/useCurrencyFlip";
 
 export default function WalletViewBalance() {
   const dispatch = useDispatch();
@@ -31,20 +32,11 @@ export default function WalletViewBalance() {
 
   const isKeyViewed = key_viewed_at !== null;
 
-  const { shouldPreferLocalCurrency } = useSelector(selectCurrencySettings);
+  const handleFlipCurrency = useCurrencyFlip();
 
   const { shouldDisplayExchangeRate } = useSelector(selectUiSettings);
 
   const { shouldHideBalance } = useSelector(selectPrivacySettings);
-
-  const handleFlipCurrency = () => {
-    dispatch(
-      setPreference({
-        key: "preferLocalCurrency",
-        value: shouldPreferLocalCurrency ? "false" : "true",
-      })
-    );
-  };
 
   const handleHideBalance = async () => {
     if (shouldHideBalance === true) {
