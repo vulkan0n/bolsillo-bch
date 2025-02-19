@@ -46,7 +46,9 @@ export default function ElectrumService() {
     //requestBalance,
     requestAddressState,
     requestAddressHistory,
+    requestScripthashHistory,
     requestUtxos,
+    requestUtxoInfo,
     requestTransaction,
     //requestMerkle,
     requestBlockHeader,
@@ -223,6 +225,24 @@ export default function ElectrumService() {
     return history;
   }
 
+  // request the transaction history for a scripthash
+  async function requestScripthashHistory(scripthash: string) {
+    if (electrum === null || electrum.status !== ConnectionStatus.CONNECTED) {
+      throw new ElectrumNotConnectedError();
+    }
+
+    const history = await electrum.request(
+      "blockchain.scripthash.get_history",
+      scripthash
+    );
+
+    if (history instanceof Error) {
+      throw history;
+    }
+
+    return history;
+  }
+
   // request all current UTXOs for an address
   async function requestUtxos(address: string) {
     if (electrum === null || electrum.status !== ConnectionStatus.CONNECTED) {
@@ -239,6 +259,20 @@ export default function ElectrumService() {
     }
 
     return utxos;
+  }
+
+  async function requestUtxoInfo(tx_hash: string, tx_pos: number) {
+    if (electrum === null || electrum.status !== ConnectionStatus.CONNECTED) {
+      throw new ElectrumNotConnectedError();
+    }
+
+    const utxoInfo = await electrum.request(
+      "blockchain.utxo.getInfo",
+      tx_hash,
+      tx_pos
+    );
+
+    return utxoInfo;
   }
 
   // request a transaction by its txid
@@ -258,7 +292,7 @@ export default function ElectrumService() {
         const chaintip = selectChaintip(store.getState());
         const height = chaintip.height - tx.confirmations;
 
-        Log.debug("height", height, tx_hash);
+        //Log.debug("height", height, tx_hash);
 
         delete pendingTxRequests[tx_hash];
         return { ...tx, height };

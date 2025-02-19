@@ -1,6 +1,9 @@
 import { DateTime } from "luxon";
 import { MetadataRegistry, IdentitySnapshot } from "@bitauth/libauth";
 //import LogService from "@/services/LogService";
+import ElectrumService from "@/services/ElectrumService";
+import TransactionManagerService from "@/services/TransactionManagerService";
+import { sha256 } from "@/util/hash";
 
 import bcmrOtr from "@/assets/bcmr-open-token-registry-2023-05-15.json";
 
@@ -62,5 +65,53 @@ export default function BcmrService() {
 
   async function resolveIdentity(authbase: string) {}
 
-  async function resolveAuthChain(authbase: string) {}
+  async function resolveAuthChain(authbase: string) {
+    const TransactionManager = TransactionManagerService();
+
+    const identityOutput = { tx_hash: authbase, tx_pos: 0 };
+
+    const Electrum = ElectrumService();
+    let identityUtxo = Electrum.requestUtxoInfo(
+      identityOutput.tx_hash,
+      identityOutput.tx_pos
+    );
+
+    /* eslint-disable no-await-in-loop */
+    let nextTxHash = authbase;
+    while (identityUtxo === null) {
+      const nextTx = await TransactionManager.resolveTransaction(nextTxHash);
+      const scripthash = sha256
+        .text(nextTx.vout[0].scriptPubKey.hex)
+        .split("")
+        .reverse()
+        .join("");
+
+      const scripthashHistory =
+        await Electrum.requestScripthashHistory(scripthash);
+
+      scanHistoryForUtxo(scripthashHistory, nextTxHash, 0);
+    }
+  }
+
+  async function scanHistoryForUtxo(history, tx_hash, tx_pos) {
+    const promises = history.map(async (h) => {
+      const Electrum = ElectrumService();
+      const { vin } = await Electrum.requestTransaction(h.tx_hash);
+
+      const matchUtxo = vin.find(
+        (vn) => vn.txid === tx_hash && vn.vout === tx_pos
+      );
+
+      if (!matchUtxo) {
+        return Promise.reject();
+      }
+
+      return Promise.resolve({
+        tx_hash: matchUtxo.txid,
+        tx_pos: matchUtxo.vout,
+      });
+    });
+
+    return Promise.any(promises);
+  }
 }

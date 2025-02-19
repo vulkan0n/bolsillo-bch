@@ -65,6 +65,7 @@ export default function AssetsViewTokens() {
       };
     })
     .sort((a, b) => {
+      // sort tokens with metadata above tokens without metadata
       if (a.token && !b.token) {
         return -1;
       }
