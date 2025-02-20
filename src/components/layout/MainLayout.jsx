@@ -3,7 +3,7 @@ import { Outlet, useNavigate } from "react-router";
 import { validateBchUri } from "@/util/uri";
 import BottomNavigation from "./BottomNavigation";
 
-function MainLayout() {
+export default function MainLayout() {
   const navigate = useNavigate();
 
   App.addListener("appUrlOpen", ({ url }) => {
@@ -31,6 +31,7 @@ function MainLayout() {
     }
   });
 
+  // [!] see index.css for #container and <main> styles
   return (
     <div id="container">
       <main>
@@ -40,5 +41,3 @@ function MainLayout() {
     </div>
   );
 }
-
-export default MainLayout;

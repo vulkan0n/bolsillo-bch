@@ -2,9 +2,11 @@ import { useState } from "react";
 import { useSelector } from "react-redux";
 import { MoneyCollectOutlined } from "@ant-design/icons";
 import { selectActiveWallet } from "@/redux/wallet";
+import FullColumn from "@/layout/FullColumn";
 import Address from "@/atoms/Address";
 import Satoshi from "@/atoms/Satoshi";
 import CurrencyFlip from "@/atoms/CurrencyFlip";
+import KeyWarning from "@/atoms/KeyWarning/KeyWarning";
 import UtxoManagerService from "@/services/UtxoManagerService";
 //import LogService from "@/services/LogService";
 import { useCurrencyFlip } from "@/hooks/useCurrencyFlip";
@@ -75,10 +77,10 @@ export default function AssetsViewCoins() {
   const selectedAmount = selection.reduce((sum, coin) => sum + coin.amount, 0);
 
   return (
-    <>
-      <div className="p-1">
+    <FullColumn className="justify-between">
+      <div className="m-1">
         <div
-          className="p-1 rounded bg-zinc-700 text-white text-center"
+          className="p-1 rounded bg-zinc-700 text-white text-center my-1"
           onClick={handleFlipCurrency}
         >
           <div className="text-lg font-bold">Spendable Balance</div>
@@ -91,6 +93,8 @@ export default function AssetsViewCoins() {
           </div>
         </div>
 
+        <KeyWarning walletHash={wallet.walletHash} />
+
         {coinAddresses.map((address) => (
           <CoinGroup
             address={address}
@@ -98,9 +102,15 @@ export default function AssetsViewCoins() {
             onCoinSelect={handleCoinSelection}
           />
         ))}
+
+        {coinAddresses.length === 0 && (
+          <div className="text-center py-4 rounded text-2xl text-zinc-600/80 my-4">
+            No Coins
+          </div>
+        )}
       </div>
       {selectedAmount > 0 && <SelectionDisplay amount={selectedAmount} />}
-    </>
+    </FullColumn>
   );
 }
 
@@ -152,7 +162,7 @@ function Coin({ coin, onSelect }) {
         <MoneyCollectOutlined className="mr-1" />
         <div className="flex items-center justify-between w-full">
           <Satoshi value={coin.amount} />
-          <span className="text-sm opacity-70">
+          <span className="text-sm opacity-75">
             <Satoshi value={coin.amount} flip />
           </span>
         </div>
@@ -163,7 +173,7 @@ function Coin({ coin, onSelect }) {
 
 function SelectionDisplay({ amount }) {
   return (
-    <div className="sticky bottom-0 bg-black/70 w-full border-t-2 border-zinc-700 rounded-t shadow">
+    <div className="sticky bottom-0 bg-black/70 w-full border-t-2 border-zinc-700 rounded-t shadow mt-1">
       <div className="text-zinc-700 rounded-t bg-white/85 shadow-lg px-2 py-1">
         <div className="text-center">
           <div className="text-lg font-semibold">Selected Amount</div>

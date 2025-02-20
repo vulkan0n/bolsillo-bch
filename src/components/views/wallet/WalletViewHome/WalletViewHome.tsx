@@ -30,6 +30,7 @@ import { selectScannerIsScanning, selectKeyboardIsOpen } from "@/redux/device";
 import AddressManagerService from "@/services/AddressManagerService";
 import ToastService from "@/services/ToastService";
 
+import FullColumn from "@/layout/FullColumn";
 import { SatoshiInput } from "@/atoms/SatoshiInput";
 import Address from "@/atoms/Address";
 import CurrencySymbol from "@/atoms/CurrencySymbol";
@@ -128,113 +129,105 @@ export default function WalletViewHome() {
   const addressColor =
     bchNetwork !== "mainnet" ? "text-[#ff0000]" : "text-white/80";
 
-  return (
-    <div className="flex flex-col justify-between h-full">
-      {isScanning ? (
-        <div>
-          <ScannerOverlay />
-        </div>
-      ) : (
-        <div className="font-mono text-white/90">
-          <div className="w-full mx-auto bg-primary/90">
-            <div className="py-1 flex justify-center items-center text-sm text-center uppercase">
-              Receive
-            </div>
-            <div className="w-fit mx-auto">
-              <button
-                type="button"
-                className={`border-4 cursor-pointer active:bg-primary shadow-inner shadow-lg active:shadow-none active:shadow-inner active:scale-[0.98] ${qrCodeBorder}`}
-                onClick={copyAddressToClipboard}
-              >
-                <QRCode
-                  value={qrRequest}
-                  size={232}
-                  quietZone={12}
-                  bgColor={
-                    bchNetwork !== "mainnet"
-                      ? "#ffffff"
-                      : qrCodeSettings.background
-                  }
-                  fgColor={
-                    bchNetwork !== "mainnet"
-                      ? "#000000"
-                      : qrCodeSettings.foreground
-                  }
-                  logoImage={getQrLogoImage(qrCodeSettings.logo)}
-                  logoWidth={64}
-                  logoHeight={64}
-                />
-              </button>
-            </div>
+  return isScanning ? (
+    <ScannerOverlay />
+  ) : (
+    <FullColumn className="justify-between">
+      <div className="font-mono text-white/90">
+        <div className="w-full mx-auto bg-primary/90">
+          <div className="py-1 flex justify-center items-center text-sm text-center uppercase">
+            Receive
+          </div>
+          <div className="w-fit mx-auto">
             <button
               type="button"
+              className={`border-4 cursor-pointer active:bg-primary shadow-inner shadow-lg active:shadow-none active:shadow-inner active:scale-[0.98] ${qrCodeBorder}`}
               onClick={copyAddressToClipboard}
-              className="flex items-center justify-center w-full py-2 text-xs text-center cursor-pointer slashed-zero select-none active:bg-secondary active:shadow-inner"
             >
-              <CopyOutlined className={`mr-0.5 ${addressColor}`} />
-              <Address address={address} color={addressColor} />
+              <QRCode
+                value={qrRequest}
+                size={232}
+                quietZone={12}
+                bgColor={
+                  bchNetwork !== "mainnet"
+                    ? "#ffffff"
+                    : qrCodeSettings.background
+                }
+                fgColor={
+                  bchNetwork !== "mainnet"
+                    ? "#000000"
+                    : qrCodeSettings.foreground
+                }
+                logoImage={getQrLogoImage(qrCodeSettings.logo)}
+                logoWidth={64}
+                logoHeight={64}
+              />
             </button>
           </div>
-          <div className="flex justify-evenly items-center rounded-b-sm text-sm border-primary/80 border-t">
-            <div
-              className={`font-sans bg-primary flex-1 px-1 py-1.5 ${!shouldShowRequestAmount ? "active:bg-secondary active:shadow-inner" : ""}`}
-              onClick={() =>
-                !shouldShowRequestAmount && setShouldShowRequestAmount(true)
-              }
-            >
-              {shouldShowRequestAmount ? (
-                <div className="flex w-full justify-between items-center">
-                  <CloseOutlined
-                    className="p-1 font-bold text-lg"
-                    onClick={() => setShouldShowRequestAmount(false)}
-                  />
-                  <span className="flex text-center grow items-center ml-1">
-                    <CurrencySymbol className="text-lg bg-white/60 rounded-l px-1 text-zinc-500/80 font-semibold font-mono" />
-                    <SatoshiInput
-                      satoshis={satoshiInput}
-                      onChange={handleRequestAmountChange}
-                      className="p-1 mr-1 w-full text-black/70 font-mono rounded-r "
-                      autoFocus
-                    />
-                    <div className="flex items-center justify-center">
-                      <CurrencyFlip className="text-xl p-1" />
-                    </div>
-                  </span>
-                </div>
-              ) : (
-                <div className="flex items-center justify-center cursor-pointer">
-                  <FormOutlined className="mr-1 font-bold" />
-                  <span>{translate(translations.requestAmount)}</span>
-                  {shouldShowRequestAmount ? (
-                    <CaretDownOutlined className="ml-1" />
-                  ) : (
-                    <CaretRightOutlined className="ml-1" />
-                  )}
-                </div>
-              )}
-            </div>
-            {!shouldShowRequestAmount && (
-              <label
-                className={`font-sans bg-${shouldUseTokenAddress ? "secondary" : "primary"} px-2 py-1.5 border-l border-white/20`}
-              >
-                Receive Tokens{" "}
-                <input
-                  type="checkbox"
-                  checked={shouldUseTokenAddress}
-                  onChange={() =>
-                    setShouldUseTokenAddress(!shouldUseTokenAddress)
-                  }
+          <button
+            type="button"
+            onClick={copyAddressToClipboard}
+            className="flex items-center justify-center w-full py-2 text-xs text-center cursor-pointer slashed-zero select-none active:bg-secondary active:shadow-inner"
+          >
+            <CopyOutlined className={`mr-0.5 ${addressColor}`} />
+            <Address address={address} color={addressColor} />
+          </button>
+        </div>
+        <div className="flex justify-evenly items-center rounded-b-sm text-sm border-primary/80 border-t">
+          <div
+            className={`font-sans bg-primary flex-1 px-1 py-1.5 ${!shouldShowRequestAmount ? "active:bg-secondary active:shadow-inner" : ""}`}
+            onClick={() =>
+              !shouldShowRequestAmount && setShouldShowRequestAmount(true)
+            }
+          >
+            {shouldShowRequestAmount ? (
+              <div className="flex w-full justify-between items-center">
+                <CloseOutlined
+                  className="p-1 font-bold text-lg"
+                  onClick={() => setShouldShowRequestAmount(false)}
                 />
-              </label>
+                <span className="flex text-center grow items-center ml-1">
+                  <CurrencySymbol className="text-lg bg-white/60 rounded-l px-1 text-zinc-500/80 font-semibold font-mono" />
+                  <SatoshiInput
+                    satoshis={satoshiInput}
+                    onChange={handleRequestAmountChange}
+                    className="p-1 mr-1 w-full text-black/70 font-mono rounded-r "
+                    autoFocus
+                  />
+                  <div className="flex items-center justify-center">
+                    <CurrencyFlip className="text-xl p-1" />
+                  </div>
+                </span>
+              </div>
+            ) : (
+              <div className="flex items-center justify-center cursor-pointer">
+                <FormOutlined className="mr-1 font-bold" />
+                <span>{translate(translations.requestAmount)}</span>
+                {shouldShowRequestAmount ? (
+                  <CaretDownOutlined className="ml-1" />
+                ) : (
+                  <CaretRightOutlined className="ml-1" />
+                )}
+              </div>
             )}
           </div>
+          {!shouldShowRequestAmount && (
+            <label
+              className={`font-sans bg-${shouldUseTokenAddress ? "secondary" : "primary"} px-2 py-1.5 border-l border-white/20`}
+            >
+              Receive Tokens{" "}
+              <input
+                type="checkbox"
+                checked={shouldUseTokenAddress}
+                onChange={() =>
+                  setShouldUseTokenAddress(!shouldUseTokenAddress)
+                }
+              />
+            </label>
+          )}
         </div>
-      )}
-      {!isKeyboardOpen && (
-        <div className="w-full">
-          <WalletViewButtons />
-        </div>
-      )}
-    </div>
+      </div>
+      {!isKeyboardOpen && <WalletViewButtons />}
+    </FullColumn>
   );
 }

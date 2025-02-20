@@ -7,6 +7,7 @@ import { selectSyncState } from "@/redux/sync";
 import WalletViewBalance from "./WalletViewBalance";
 import SyncIndicator from "./SyncIndicator";
 import BalanceHideButton from "./BalanceHideButton";
+import FullColumn from "@/layout/FullColumn";
 
 export default function WalletView() {
   const wallet = useSelector(selectActiveWallet);
@@ -30,7 +31,7 @@ export default function WalletView() {
   }
 
   return (
-    <div className="flex flex-col justify-start h-full">
+    <FullColumn>
       {!isScanning && (
         <div className="flex bg-zinc-900 justify-between">
           <div className="flex flex-col justify-center px-5">
@@ -43,6 +44,6 @@ export default function WalletView() {
         </div>
       )}
       <Outlet />
-    </div>
+    </FullColumn>
   );
 }

@@ -9,6 +9,7 @@ import {
 import { setPreference } from "@/redux/preferences";
 
 import ViewHeader from "@/layout/ViewHeader";
+import FullColumn from "@/layout/FullColumn";
 
 export default function AssetsView() {
   const dispatch = useDispatch();
@@ -31,24 +32,26 @@ export default function AssetsView() {
   );
 
   return (
-    <>
+    <FullColumn>
       <ViewHeader icon={BankOutlined} title="Assets" />
-      <div className="flex">
-        <NavTab
-          to="/assets/coins"
-          label="Coins"
-          icon={MoneyCollectOutlined}
-          activeIcon={MoneyCollectOutlined}
-        />
-        <NavTab
-          to="/assets/tokens"
-          label="Tokens"
-          icon={DeploymentUnitOutlined}
-          activeIcon={DeploymentUnitOutlined}
-        />
-      </div>
-      <Outlet />
-    </>
+      <FullColumn>
+        <div className="flex">
+          <NavTab
+            to="/assets/coins"
+            label="Coins"
+            icon={MoneyCollectOutlined}
+            activeIcon={MoneyCollectOutlined}
+          />
+          <NavTab
+            to="/assets/tokens"
+            label="Tokens"
+            icon={DeploymentUnitOutlined}
+            activeIcon={DeploymentUnitOutlined}
+          />
+        </div>
+        <Outlet />
+      </FullColumn>
+    </FullColumn>
   );
 }
 

@@ -11,6 +11,7 @@ import BcmrService from "@/services/BcmrService";
 import Address from "@/atoms/Address";
 import Satoshi from "@/atoms/Satoshi";
 import Checksum from "@/atoms/Checksum";
+import KeyWarning from "@/atoms/KeyWarning/KeyWarning";
 import NumberFormat from "@/atoms/NumberFormat";
 
 const Log = LogService("AssetsViewTokens");
@@ -95,72 +96,81 @@ export default function AssetsViewTokens() {
 
   return (
     <div className="p-1">
-      {tokenData.map((token) => (
-        <div
-          key={token.category}
-          className="w-full my-1 p-1 border border-primary rounded"
-          onClick={() => handleTokenNavigate(token.category)}
-        >
-          <div className="flex items-center">
-            <div className="flex items-center justify-center">
-              <Checksum data={token.category} />
-            </div>
-            <div className="flex flex-col justify-between mx-1">
-              <div className="text-sm flex items-baseline">
-                <span
-                  className="font-mono text-xs font-bold pr-1.5 mr-1.5 border-r border-zinc-400/90"
-                  style={{ color: token.color }}
-                >
-                  {token.token
-                    ? token.token.symbol
-                    : token.category.slice(0, 6)}
-                </span>
-                <span className="font-bold text-zinc-700">
-                  {token.name || `Token ${token.category.slice(0, 6)}`}
-                </span>
-              </div>
-              <div className="flex items-center text-zinc-600 mt-0.5">
-                {token.amount > 0 && (
-                  <span
-                    className="text-xs font-mono border-dotted border-l-8 pl-0.5 mr-1.5"
-                    style={{ borderColor: token.color }}
-                  >
-                    <NumberFormat
-                      number={token.amount}
-                      decimals={
-                        token.token && token.token.decimals
-                          ? token.token.decimals
-                          : 0
-                      }
-                    />
-                  </span>
-                )}
-                {token.nftCount > 0 && (
-                  <div className="text-xs flex items-center">
+      <KeyWarning walletHash={wallet.walletHash} />
+      {tokenData.length === 0 ? (
+        <div className="text-center py-4 rounded text-2xl text-zinc-600/80 my-8">
+          No Tokens
+        </div>
+      ) : (
+        <>
+          {tokenData.map((token) => (
+            <div
+              key={token.category}
+              className="w-full my-1 p-1 border border-primary rounded"
+              onClick={() => handleTokenNavigate(token.category)}
+            >
+              <div className="flex items-center">
+                <div className="flex items-center justify-center">
+                  <Checksum data={token.category} />
+                </div>
+                <div className="flex flex-col justify-between mx-1">
+                  <div className="text-sm flex items-baseline">
                     <span
+                      className="font-mono text-xs font-bold pr-1.5 mr-1.5 border-r border-zinc-400/90"
                       style={{ color: token.color }}
-                      className="relative bottom-[1px] pr-0.5"
                     >
-                      &#9635;
+                      {token.token
+                        ? token.token.symbol
+                        : token.category.slice(0, 6)}
                     </span>
-                    <span>{token.nftCount}&nbsp;NFTs</span>
+                    <span className="font-bold text-zinc-700">
+                      {token.name || `Token ${token.category.slice(0, 6)}`}
+                    </span>
+                  </div>
+                  <div className="flex items-center text-zinc-600 mt-0.5">
+                    {token.amount > 0 && (
+                      <span
+                        className="text-xs font-mono border-dotted border-l-8 pl-0.5 mr-1.5"
+                        style={{ borderColor: token.color }}
+                      >
+                        <NumberFormat
+                          number={token.amount}
+                          decimals={
+                            token.token && token.token.decimals
+                              ? token.token.decimals
+                              : 0
+                          }
+                        />
+                      </span>
+                    )}
+                    {token.nftCount > 0 && (
+                      <div className="text-xs flex items-center">
+                        <span
+                          style={{ color: token.color }}
+                          className="relative bottom-[1px] pr-0.5"
+                        >
+                          &#9635;
+                        </span>
+                        <span>{token.nftCount}&nbsp;NFTs</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+              <div>
+                {token.description && (
+                  <div className="p-1 text-sm text-zinc-700">
+                    {truncateDescription(token.description)}
                   </div>
                 )}
+                <div className="mt-1.5 pt-0.5 border-t border-dashed border-zinc-300/80 font-mono text-xs text-zinc-400/70 truncate">
+                  {token.category}
+                </div>
               </div>
             </div>
-          </div>
-          <div>
-            {token.description && (
-              <div className="p-1 text-sm text-zinc-700">
-                {truncateDescription(token.description)}
-              </div>
-            )}
-            <div className="mt-1.5 pt-0.5 border-t border-dashed border-zinc-300/80 font-mono text-xs text-zinc-400/70 truncate">
-              {token.category}
-            </div>
-          </div>
-        </div>
-      ))}
+          ))}
+        </>
+      )}
     </div>
   );
 }
