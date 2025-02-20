@@ -26,6 +26,7 @@ import ToastService from "@/services/ToastService";
 const initialState = {
   walletHash: "",
   balance: 0,
+  spendable_balance: 0,
   name: "-",
   key_viewed_at: "",
 };
@@ -79,6 +80,7 @@ export const walletBalanceUpdate = createAction(
 
     const previousBalance = wallet.balance;
     const currentBalance = sqlWallet.balance;
+    const currentSpendableBalance = sqlWallet.spendable_balance;
 
     // show receive notification
     if (currentBalance > previousBalance && isChange === false) {
@@ -86,7 +88,7 @@ export const walletBalanceUpdate = createAction(
       ToastService().paymentReceived(difference);
     }
 
-    return { payload: currentBalance };
+    return { payload: { currentBalance, currentSpendableBalance } };
   }
 );
 
@@ -127,7 +129,8 @@ export const walletReducer = createReducer(initialState, (builder) => {
       return wallet;
     })
     .addCase(walletBalanceUpdate, (state, action) => {
-      state.balance = action.payload;
+      state.balance = action.payload.currentBalance;
+      state.spendable_balance = action.payload.currentSpendableBalance;
     })
     .addCase(walletSetName, (state, action) => {
       state.name = action.payload;
