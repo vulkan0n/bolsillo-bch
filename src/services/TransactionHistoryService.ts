@@ -106,7 +106,7 @@ export default function TransactionHistoryService(
     try {
       const addressTx = getAddressTransaction(tx_hash);
 
-      if (addressTx.amount === null) {
+      if (addressTx.amount === null || addressTx.amount === 0) {
         throw new TransactionHistoryNotExistsError(tx_hash, wallet.walletHash);
       }
 
@@ -134,7 +134,7 @@ export default function TransactionHistoryService(
 
       const isMine =
         utxo.scriptPubKey.addresses.findIndex((address) => {
-          return myAddresses.includes(address);
+          return myAddresses.includes(address.address);
         }) > -1;
 
       return isMine;

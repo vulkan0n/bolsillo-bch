@@ -128,7 +128,7 @@ function OutputListItem({ output, i }) {
           <div className="font-mono font-bold">OP_RETURN</div>
         ) : (
           <div>
-            <Address address={output.scriptPubKey.addresses[0]} />
+            <Address address={output.scriptPubKey.addresses[0].address} />
           </div>
         )}
       </div>
