@@ -91,7 +91,7 @@ export default function AssetsViewTokens() {
   };
 
   const handleTokenNavigate = (tokenId) => {
-    navigate(`/assets/tokens/${tokenId}`);
+    //navigate(`/assets/tokens/${tokenId}`);
   };
 
   return (
