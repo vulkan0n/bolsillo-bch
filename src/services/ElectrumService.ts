@@ -290,9 +290,11 @@ export default function ElectrumService() {
       .request("blockchain.transaction.get", tx_hash, verbose)
       .then((tx) => {
         const chaintip = selectChaintip(store.getState());
-        const height = chaintip.height - tx.confirmations;
+        const height = tx.confirmations
+          ? chaintip.height - tx.confirmations
+          : 0;
 
-        //Log.debug("height", height, tx_hash);
+        Log.debug("height", height, tx_hash, tx.confirmations);
 
         delete pendingTxRequests[tx_hash];
         return { ...tx, height };

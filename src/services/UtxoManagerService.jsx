@@ -17,7 +17,7 @@ export default function UxtoManagerService(wallet) {
     getAddressUtxos,
     getAddressCoins,
     getAddressTokens,
-    selectUtxos,
+    selectCoins,
     targetUtxos,
     discardUtxo,
     discardAddressUtxos,
@@ -112,41 +112,42 @@ export default function UxtoManagerService(wallet) {
   }
 
   // attempts to find the best combination of UTXOs to fulfill the amount and fee
-  function selectUtxos(amount, fee) {
-    Log.debug("selectUtxos", amount, fee);
+  function selectCoins(amount, fee) {
+    Log.debug("selectCoins", amount, fee);
     const targetAmount = new Decimal(amount).plus(fee).toNumber();
 
-    // get all available UTXOs
-    const availableUtxos = walletDb.exec(
+    // get all available UTXOs (without tokens)
+    const availableCoins = walletDb.exec(
       `SELECT * FROM address_utxos 
+          WHERE token_category IS NULL
           ORDER BY amount DESC`
     );
 
-    const availableUtxoSum = availableUtxos.reduce(
+    const availableCoinSum = availableCoins.reduce(
       (sum, utxo) => sum + utxo.amount,
       0
     );
 
     Log.debug(
-      "selectUtxos availableUtxos",
-      availableUtxoSum,
-      availableUtxos.length
+      "selectCoins availableCoins",
+      availableCoinSum,
+      availableCoins.length
     );
 
     // check if we have enough balance across all UTXOs
     // empty set = insufficient funds
-    if (availableUtxoSum < targetAmount) {
+    if (availableCoinSum < targetAmount) {
       return [];
     }
 
     // 1. if there's an exact UTXO, use that UTXO and its address-mates
-    const exactUtxos = availableUtxos.filter(
+    const exactCoins = availableCoins.filter(
       (utxo) => utxo.amount === targetAmount
     );
-    if (exactUtxos.length > 0) {
-      Log.debug("selectUtxos exactUtxo", exactUtxos[0].address);
+    if (exactCoins.length > 0) {
+      Log.debug("selectCoins exactCoin", exactCoins[0].address);
       // spend all utxos on this address (for privacy)
-      return getAddressUtxos(exactUtxos[0].address);
+      return getAddressCoins(exactCoins[0].address);
     }
 
     // all full address balances >= amount are eligible
@@ -158,7 +159,7 @@ export default function UxtoManagerService(wallet) {
     );
 
     Log.debug(
-      "selectUtxos eligibleAddresses",
+      "selectCoins eligibleAddresses",
       eligibleAddresses.map((a) => a.address)
     );
 
@@ -167,71 +168,72 @@ export default function UxtoManagerService(wallet) {
       (address) => address.balance === targetAmount
     );
     if (exactAddresses.length > 0) {
-      Log.debug("selectUtxos exactAddress", exactAddresses[0].address);
-      return getAddressUtxos(exactAddresses[0].address);
+      Log.debug("selectCoins exactAddress", exactAddresses[0].address);
+      return getAddressCoins(exactAddresses[0].address);
     }
 
     // try to consolidate small UTXOs to make the targetAmount
     // all UTXOs <= targetAmount are eligible to be consolidated
-    const consolidateUtxos = walletDb.exec(
+    const consolidateCoins = walletDb.exec(
       `SELECT * FROM address_utxos 
           WHERE 
             amount <= ${targetAmount} 
+            AND token_category IS NULL
           ORDER BY amount DESC`
     );
 
-    const eligibleUtxos = {
-      consolidated: targetUtxos(consolidateUtxos, targetAmount, fee),
+    const eligibleCoins = {
+      consolidated: targetUtxos(consolidateCoins, targetAmount, fee),
 
-      available: targetUtxos(availableUtxos, targetAmount, fee),
+      available: targetUtxos(availableCoins, targetAmount, fee),
       // 0th-index eligible address is smallest with balance >= targetAmount
       address:
         eligibleAddresses.length > 0
           ? targetUtxos(
-              getAddressUtxos(eligibleAddresses[0].address),
+              getAddressCoins(eligibleAddresses[0].address),
               targetAmount,
               fee
             )
           : null,
     };
 
-    Log.debug("eligibleUtxos:", eligibleUtxos);
+    Log.debug("eligibleCoins:", eligibleCoins);
 
     // this should be impossible, but makes typescript happy. insufficient funds case
-    if (eligibleUtxos.available === null) {
+    if (eligibleCoins.available === null) {
       return [];
     }
 
     // check if it's cheaper to spend consolidated utxos, summed utxos, or eligible addresses
-    if (eligibleUtxos.consolidated !== null) {
+    if (eligibleCoins.consolidated !== null) {
       // case: address is cheaper than consolidation
       if (
-        eligibleUtxos.address !== null &&
-        eligibleUtxos.address.feeAmount < eligibleUtxos.consolidated.feeAmount
+        eligibleCoins.address !== null &&
+        eligibleCoins.address.feeAmount < eligibleCoins.consolidated.feeAmount
       ) {
         Log.debug(
-          "selectUtxos: spending first-eligible address is cheaper than consolidation",
-          eligibleUtxos.address.selection
+          "selectCoins: spending first-eligible address is cheaper than consolidation",
+          eligibleCoins.address.selection
         );
-        return eligibleUtxos.address.selection;
+        return eligibleCoins.address.selection;
       }
 
       if (
-        eligibleUtxos.consolidated.feeAmount < eligibleUtxos.available.feeAmount
+        eligibleCoins.consolidated.feeAmount < eligibleCoins.available.feeAmount
       ) {
         Log.debug(
-          "selectUtxos: spending consolidated UTXOs is cheaper than spending large UTXOs",
-          eligibleUtxos.consolidated.selection
+          "selectCoins: spending consolidated UTXOs is cheaper than spending large UTXOs",
+          eligibleCoins.consolidated.selection
         );
-        return eligibleUtxos.consolidated.selection;
+        return eligibleCoins.consolidated.selection;
       }
     }
 
     Log.debug(
-      "selectUtxos spending from all available UTXOs",
-      eligibleUtxos.available.selection
+      "selectCoins spending from all available UTXOs",
+      eligibleCoins.available.selection
     );
-    return eligibleUtxos.available.selection;
+    return eligibleCoins.available.selection;
   }
 
   function targetUtxos(utxos, targetAmount, fee) {

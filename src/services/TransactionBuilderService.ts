@@ -75,7 +75,7 @@ export default function TransactionBuilderService(wallet: WalletEntity) {
 
     // gather suitable inputs
     const UtxoManager = UtxoManagerService(wallet);
-    const inputs = UtxoManager.selectUtxos(sendTotal, fee);
+    const inputs = UtxoManager.selectCoins(sendTotal, fee);
 
     Log.debug("using utxos:", inputs);
 

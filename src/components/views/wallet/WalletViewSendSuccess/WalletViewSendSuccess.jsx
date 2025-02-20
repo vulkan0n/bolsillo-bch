@@ -16,10 +16,16 @@ import { logos } from "@/util/logos";
 import { translate } from "@/util/translations";
 import translations from "./translations";
 
+import LogService from "@/services/LogService";
+
+const Log = LogService("WalletViewSendSuccess");
+
 function WalletViewSendSuccess() {
   const navigate = useNavigate();
   const location = useLocation();
   const { tx, header, prefillMemo } = location.state;
+
+  Log.debug(tx);
 
   const wallet = useSelector(selectActiveWallet);
   const { localCurrency } = useSelector(selectCurrencySettings);
@@ -120,7 +126,7 @@ function OutputListItem({ output, i }) {
     <div className={`p-1.5 ${zebraCss} rounded-sm`}>
       <div className="flex text-sm items-center">
         <div>
-          <Address address={output.scriptPubKey.addresses[0]} />
+          <Address address={output.scriptPubKey.addresses[0].address} />
         </div>
       </div>
       <div className="">
