@@ -6,7 +6,6 @@ import { StockOutlined, SettingFilled, WarningFilled } from "@ant-design/icons";
 import { selectActiveWallet } from "@/redux/wallet";
 import {
   setPreference,
-  selectCurrencySettings,
   selectBchNetwork,
   selectUiSettings,
   selectPrivacySettings,

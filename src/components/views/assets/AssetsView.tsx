@@ -68,7 +68,6 @@ function NavTab({
   activeIcon = () => null,
   label = "",
 }: NavTabProps) {
-  const dispatch = useDispatch();
   const Icon = icon;
   const ActiveIcon = activeIcon;
 

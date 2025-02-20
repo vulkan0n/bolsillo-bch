@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { DateTime } from "luxon";
 import { MetadataRegistry, IdentitySnapshot } from "@bitauth/libauth";
 //import LogService from "@/services/LogService";

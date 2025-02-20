@@ -17,9 +17,9 @@ export const routeAssets = [
         element: <AssetsViewTokens />,
       },
       {
-          path: "tokens/:tokenId",
-          element: <AssetsViewTokenDetail />,
-        }
+        path: "tokens/:tokenId",
+        element: <AssetsViewTokenDetail />,
+      },
     ],
   },
 ];
