@@ -14,12 +14,17 @@ import { sha256 } from "@/util/hash";
 
 import LogService from "@/services/LogService";
 import AddressManagerService from "@/services/AddressManagerService";
+import WalletManagerService, {
+  WalletStub,
+} from "@/services/WalletManagerService";
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const Log = LogService("HdNode");
 
-export default function HdNodeService(wallet) {
-  const { mnemonic, derivation, passphrase } = wallet;
+export default function HdNodeService(walletStub: WalletStub) {
+  const WalletManager = WalletManagerService();
+  const walletHash = WalletManager.calculateWalletHash(walletStub);
+  const { mnemonic, derivation, passphrase } = walletStub;
 
   const seed = bip39.mnemonicToSeedSync(mnemonic, passphrase);
   const hdMaster = deriveHdPrivateNodeFromSeed(seed);
@@ -38,7 +43,7 @@ export default function HdNodeService(wallet) {
     const pubKey = secp256k1.derivePublicKeyCompressed(child.privateKey);
     const hash = ripemd160.hash(sha256.hash(pubKey));
     const { address } = encodeCashAddress({
-      prefix: wallet.prefix,
+      prefix: WalletManager.getPrefix(),
       type: CashAddressType.p2pkh,
       payload: hash,
       throwErrors: true,
@@ -49,7 +54,7 @@ export default function HdNodeService(wallet) {
   }
 
   function _deriveAddressPrivateKey(address) {
-    const AddressManager = AddressManagerService(wallet);
+    const AddressManager = AddressManagerService(walletHash);
     const { hd_index, change } = AddressManager.getAddress(address);
 
     const { privateKey } = deriveHdPrivateNodeChild(

@@ -49,11 +49,6 @@ async function post_init() {
   Log.log("* POST_INIT *");
   await SplashScreen.hide();
   redux_post_init();
-
-  queueMicrotask(() => {
-    const Janitor = JanitorService();
-    Janitor.purgeStaleData();
-  });
 }
 
 // actions to perform after app is resumed from sleep state

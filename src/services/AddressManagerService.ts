@@ -24,10 +24,10 @@ export class AddressNotExistsError extends Error {
 }
 
 // AddressManagerService: handles most address-related operations
-export default function AddressManagerService(wallet: WalletEntity) {
+export default function AddressManagerService(walletHash: string) {
   //Log.debug("AddressManagerService", wallet);
   const Database = DatabaseService();
-  const walletDb = Database.getWalletDatabase(wallet.walletHash);
+  const walletDb = Database.getWalletDatabase(walletHash);
 
   return {
     registerAddress,
@@ -36,7 +36,7 @@ export default function AddressManagerService(wallet: WalletEntity) {
     getReceiveAddresses,
     getChangeAddresses,
     getUnusedAddresses,
-    getRecentAddresses,
+    //getRecentAddresses,
     getAddressTransactions,
     calculateAddressState,
     registerTransaction,
@@ -154,6 +154,9 @@ export default function AddressManagerService(wallet: WalletEntity) {
     return result;
   }
 
+  /*
+   * TODO: maybe make this return recently-used addresses by time or blockheight instead
+   *
   // getRecentAddresess: get the higest-index USED addresses for wallet
   // in DESCENDING order so wallet consumes most recent index first
   function getRecentAddresses(
@@ -172,6 +175,7 @@ export default function AddressManagerService(wallet: WalletEntity) {
     //Log.debug("getRecentAddresses", limit, result);
     return result;
   }
+  */
 
   function getAddressTransactions(address: string) {
     const confirmed = walletDb.exec(

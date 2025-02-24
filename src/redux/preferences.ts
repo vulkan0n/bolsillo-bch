@@ -324,12 +324,27 @@ export const selectUiSettings = createSelector(
   })
 );
 
+export const selectShouldDisplayExchangeRate = createSelector(
+  (state) => state.preferences,
+  (preferences) => preferences.displayExchangeRate === "true"
+);
+
+export const selectShouldDisplaySyncCounter = createSelector(
+  (state) => state.preferences,
+  (preferences) => preferences.displaySyncCounter === "true"
+);
+
 export const selectPrivacySettings = createSelector(
   (state: RootState) => state.preferences,
   (preferences) => ({
     shouldHideBalance: preferences.hideAvailableBalance === "true",
     isDailyCheckInEnabled: preferences.enableDailyCheckIn === "true",
   })
+);
+
+export const selectShouldHideBalance = createSelector(
+  (state) => state.preferences,
+  (preferences) => preferences.hideAvailableBalance === "true"
 );
 
 export const selectIsExperimental = createSelector(

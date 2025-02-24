@@ -5,9 +5,9 @@ import { DUST_LIMIT } from "@/util/sats";
 
 const Log = LogService("UtxoManager");
 
-export default function UxtoManagerService(wallet) {
+export default function UtxoManagerService(walletHash: string) {
   const Database = DatabaseService();
-  const walletDb = Database.getWalletDatabase(wallet.walletHash);
+  const walletDb = Database.getWalletDatabase(walletHash);
 
   return {
     registerUtxo,

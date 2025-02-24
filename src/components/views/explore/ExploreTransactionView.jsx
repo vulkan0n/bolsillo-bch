@@ -10,7 +10,7 @@ import {
   CheckCircleOutlined,
 } from "@ant-design/icons";
 import { selectCurrencySettings } from "@/redux/preferences";
-import { selectActiveWallet } from "@/redux/wallet";
+import { selectActiveWalletHash } from "@/redux/wallet";
 import { selectChaintip } from "@/redux/sync";
 
 import TransactionHistoryService from "@/services/TransactionHistoryService";
@@ -31,12 +31,12 @@ export default function ExploreTransactionView() {
   const navigate = useNavigate();
   const tx = useLoaderData();
 
-  const wallet = useSelector(selectActiveWallet);
+  const walletHash = useSelector(selectActiveWalletHash);
   const { localCurrency } = useSelector(selectCurrencySettings);
   const chaintip = useSelector(selectChaintip);
 
   const memo = TransactionHistoryService(
-    wallet,
+    walletHash,
     localCurrency
   ).getTransactionMemo(tx.txid);
 

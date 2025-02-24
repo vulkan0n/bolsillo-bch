@@ -125,7 +125,7 @@ export default function TransactionManagerService() {
     });
   }
 
-  async function sendTransaction(tx: TransactionStub, wallet: WalletEntity) {
+  async function sendTransaction(tx: TransactionStub, walletHash: string) {
     const { txid: tx_hash, hex: tx_hex } = tx;
 
     const Electrum = ElectrumService();
@@ -133,7 +133,7 @@ export default function TransactionManagerService() {
     const isSuccess = result === tx_hash;
 
     if (isSuccess) {
-      const UtxoManager = UtxoManagerService(wallet);
+      const UtxoManager = UtxoManagerService(walletHash);
       const decodedTx = assertSuccess(decodeTransaction(hexToBin(tx_hex)));
       const vin = getVinFromDecodedTransaction(decodedTx);
 

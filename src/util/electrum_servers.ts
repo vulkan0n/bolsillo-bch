@@ -66,6 +66,9 @@ export class ElectrumServer {
 
   static toParts(hostIdentifier: string = "") {
     const parts = hostIdentifier.split(":");
-    return { host: parts[0] || "", port: Number.parseInt(parts[1]) || 50004 };
+    return {
+      host: parts[0] || "",
+      port: Number.parseInt(parts[1]) || DEFAULT_ELECTRUM_PORT,
+    };
   }
 }

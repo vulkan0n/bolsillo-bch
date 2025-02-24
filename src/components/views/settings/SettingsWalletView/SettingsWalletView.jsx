@@ -18,12 +18,12 @@ import {
   LoadingOutlined,
 } from "@ant-design/icons";
 
+import { selectBchNetwork, selectIsExperimental } from "@/redux/preferences";
 import {
+  walletBoot,
+  walletSetName,
   selectActiveWalletHash,
-  selectBchNetwork,
-  selectIsExperimental,
-} from "@/redux/preferences";
-import { walletBoot, walletSetName } from "@/redux/wallet";
+} from "@/redux/wallet";
 import { selectLocale } from "@/redux/device";
 
 import ViewHeader from "@/layout/ViewHeader";

@@ -26,9 +26,9 @@ const Log = LogService("AddressScanner");
 export default function AddressScannerService(wallet) {
   const Electrum = ElectrumService();
   const WalletManager = WalletManagerService();
-  const AddressManager = AddressManagerService(wallet);
+  const AddressManager = AddressManagerService(wallet.walletHash);
+  const UtxoManager = UtxoManagerService(wallet.walletHash);
   const Hd = HdNodeService(wallet);
-  const UtxoManager = UtxoManagerService(wallet);
 
   return {
     populateAddresses,

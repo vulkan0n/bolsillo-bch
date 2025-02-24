@@ -1,3 +1,4 @@
+import { useCallback } from "react";
 import { useSelector } from "react-redux";
 import { selectLocale } from "@/redux/device";
 import {
@@ -32,79 +33,82 @@ export default function Satoshi({
 
   const formatIndex = shouldDisplayFiat ? "fiat" : denomination;
 
-  const formatSatoshis = (amount) => {
-    if (!amount && amount !== 0) {
-      return {
-        bch: "-",
-        mbch: "-",
-        bits: "-",
-        sats: "-",
-        fiat: "-",
+  const formatSatoshis = useCallback(
+    (amount) => {
+      if (!amount && amount !== 0) {
+        return {
+          bch: "-",
+          mbch: "-",
+          bits: "-",
+          sats: "-",
+          fiat: "-",
+        };
+      }
+
+      // Don't leak number of digits when hiding balance
+      if (shouldHideBalance) {
+        return {
+          bch: "XXXXXXXXXX",
+          mbch: "XXXXXXXXXX",
+          sats: "XXXXXXXXXX",
+          bits: "XXXXXXXXXX",
+          fiat: "XXXXXXXXXX",
+        };
+      }
+
+      const Currency = CurrencyService(localCurrency);
+
+      const bchSymbol = {
+        bch: "₿",
+        mbch: "₿",
+        bits: "₿",
+        sats: "",
       };
-    }
 
-    // Don't leak number of digits when hiding balance
-    if (shouldHideBalance) {
-      return {
-        bch: "XXXXXXXXXX",
-        mbch: "XXXXXXXXXX",
-        sats: "XXXXXXXXXX",
-        bits: "XXXXXXXXXX",
-        fiat: "XXXXXXXXXX",
+      const bchUnit = {
+        bch: "",
+        mbch: "",
+        bits: "",
+        sats: "Ꞩ",
       };
-    }
 
-    const Currency = CurrencyService(localCurrency);
+      const absoluteAmounts = satsToBch(Math.abs(amount));
 
-    const bchSymbol = {
-      bch: "₿",
-      mbch: "₿",
-      bits: "₿",
-      sats: "",
-    };
+      const formattedAmounts = {
+        sats: new Intl.NumberFormat(locale, {
+          maximumFractionDigits: 0,
+        }).format(absoluteAmounts.sats),
+        bch: new Intl.NumberFormat(locale, { minimumFractionDigits: 8 }).format(
+          absoluteAmounts.bch
+        ),
+        mbch: new Intl.NumberFormat(locale, {
+          minimumFractionDigits: 5,
+        }).format(absoluteAmounts.mbch),
+        bits: new Intl.NumberFormat(locale, {
+          minimumFractionDigits: 2,
+        }).format(absoluteAmounts.bits),
+        fiat: new Intl.NumberFormat(locale, {
+          style: "currency",
+          currency: localCurrency,
+        }).format(Number.parseFloat(Currency.satsToFiat(absoluteAmounts.sats))),
+      };
 
-    const bchUnit = {
-      bch: "",
-      mbch: "",
-      bits: "",
-      sats: "Ꞩ",
-    };
+      const sign = amount < 0 ? "-" : "";
+      const bchDisplay =
+        `${sign}${bchSymbol[denomination]}${formattedAmounts[denomination]} ${bchUnit[denomination]}`.trim();
 
-    const absoluteAmounts = satsToBch(Math.abs(amount));
+      const displayAmounts = {
+        bch: bchDisplay,
+        mbch: bchDisplay,
+        bits: bchDisplay,
+        sats: bchDisplay,
+        fiat: `${sign}${formattedAmounts.fiat}`,
+      };
 
-    const formattedAmounts = {
-      sats: new Intl.NumberFormat(locale, { maximumFractionDigits: 0 }).format(
-        absoluteAmounts.sats
-      ),
-      bch: new Intl.NumberFormat(locale, { minimumFractionDigits: 8 }).format(
-        absoluteAmounts.bch
-      ),
-      mbch: new Intl.NumberFormat(locale, { minimumFractionDigits: 5 }).format(
-        absoluteAmounts.mbch
-      ),
-      bits: new Intl.NumberFormat(locale, { minimumFractionDigits: 2 }).format(
-        absoluteAmounts.bits
-      ),
-      fiat: new Intl.NumberFormat(locale, {
-        style: "currency",
-        currency: localCurrency,
-      }).format(Number.parseFloat(Currency.satsToFiat(absoluteAmounts.sats))),
-    };
-
-    const sign = amount < 0 ? "-" : "";
-    const bchDisplay =
-      `${sign}${bchSymbol[denomination]}${formattedAmounts[denomination]} ${bchUnit[denomination]}`.trim();
-
-    const displayAmounts = {
-      bch: bchDisplay,
-      mbch: bchDisplay,
-      bits: bchDisplay,
-      sats: bchDisplay,
-      fiat: `${sign}${formattedAmounts.fiat}`,
-    };
-
-    return displayAmounts;
-  };
+      return displayAmounts;
+    },
+    [denomination, localCurrency, locale, shouldHideBalance]
+  );
 
   return <span>{formatSatoshis(value)[formatIndex]}</span>;
 }

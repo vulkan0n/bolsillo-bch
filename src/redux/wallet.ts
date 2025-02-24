@@ -108,7 +108,7 @@ export const walletSetKeyViewed = createAction(
 export const walletReloadAddresses = createAction(
   "wallet/reloadAddresses",
   (payload: { wallet: WalletEntity }) => {
-    const AddressManager = AddressManagerService(payload.wallet);
+    const AddressManager = AddressManagerService(payload.wallet.walletHash);
     const AddressScanner = AddressScannerService(payload.wallet);
 
     AddressScanner.populateAddresses();
@@ -153,7 +153,32 @@ export const selectActiveWallet = createSelector(
   (state) => state.wallet
 );
 
+export const selectActiveWalletHash = createSelector(
+  (state: RootState) => state.wallet,
+  (wallet) => wallet.walletHash
+);
+
 export const selectWalletAddresses = createSelector(
   (state: RootState) => state,
   (state) => state.addresses
+);
+
+export const selectGenesisHeight = createSelector(
+  (state: RootState) => state.wallet,
+  (wallet) => wallet.genesis_height
+);
+
+export const selectActiveWalletBalance = createSelector(
+  (state) => state.wallet,
+  (wallet) => wallet.spendable_balance
+);
+
+export const selectActiveWalletName = createSelector(
+  (state) => state.wallet,
+  (wallet) => wallet.name
+);
+
+export const selectKeyViewedAt = createSelector(
+  (state) => state.wallet,
+  (wallet) => wallet.key_viewed_at
 );

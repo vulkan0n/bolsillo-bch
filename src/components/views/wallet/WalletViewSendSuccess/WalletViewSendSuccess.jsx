@@ -4,7 +4,7 @@ import { Clipboard } from "@capacitor/clipboard";
 import { CopyOutlined, CheckCircleFilled } from "@ant-design/icons";
 import { useSelector } from "react-redux";
 import { selectCurrencySettings } from "@/redux/preferences";
-import { selectActiveWallet } from "@/redux/wallet";
+import { selectActiveWalletHash } from "@/redux/wallet";
 
 import TransactionHistoryService from "@/services/TransactionHistoryService";
 import ToastService from "@/services/ToastService";
@@ -27,14 +27,14 @@ function WalletViewSendSuccess() {
 
   Log.debug(tx);
 
-  const wallet = useSelector(selectActiveWallet);
+  const walletHash = useSelector(selectActiveWalletHash);
   const { localCurrency } = useSelector(selectCurrencySettings);
 
   const [memo, setMemo] = useState(prefillMemo || "");
 
   const handleMemoChange = (event) => {
     setMemo(event.target.value);
-    TransactionHistoryService(wallet, localCurrency).setTransactionMemo(
+    TransactionHistoryService(walletHash, localCurrency).setTransactionMemo(
       tx.txid,
       event.target.value
     );

@@ -6,6 +6,7 @@ import {
   cashAddressToLockingBytecode,
   base58AddressToLockingBytecode,
   importWalletTemplate,
+
   walletTemplateP2pkhNonHd,
   walletTemplateToCompilerBCH,
   getMinimumFee,
@@ -74,7 +75,7 @@ export default function TransactionBuilderService(wallet: WalletEntity) {
       .toNumber();
 
     // gather suitable inputs
-    const UtxoManager = UtxoManagerService(wallet);
+    const UtxoManager = UtxoManagerService(wallet.walletHash);
     const inputs = UtxoManager.selectCoins(sendTotal, fee);
 
     Log.debug("using utxos:", inputs);
@@ -108,7 +109,7 @@ export default function TransactionBuilderService(wallet: WalletEntity) {
 
     // construct change outputs
     if (changeTotal >= DUST_LIMIT) {
-      const AddressManager = AddressManagerService(wallet);
+      const AddressManager = AddressManagerService(wallet.walletHash);
       const changeAddress = AddressManager.getUnusedAddresses(1, 1)[0];
 
       vout.push({

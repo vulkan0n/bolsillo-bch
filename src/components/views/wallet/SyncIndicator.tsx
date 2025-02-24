@@ -8,9 +8,17 @@ import {
   SyncOutlined,
 } from "@ant-design/icons";
 import { animated, useSpring } from "@react-spring/web";
-import { selectSyncState, syncHotRefresh } from "@/redux/sync";
-import { selectUiSettings, selectIsExperimental } from "@/redux/preferences";
-import { selectActiveWallet } from "@/redux/wallet";
+import {
+  selectIsConnected,
+  selectIsSyncing,
+  selectSyncCount,
+  syncHotRefresh,
+} from "@/redux/sync";
+import {
+  selectShouldDisplaySyncCounter,
+  selectIsExperimental,
+} from "@/redux/preferences";
+import { selectActiveWalletHash } from "@/redux/wallet";
 import ToastService from "@/services/ToastService";
 
 import { useLongPress } from "@/hooks/useLongPress";
@@ -18,38 +26,10 @@ import { useLongPress } from "@/hooks/useLongPress";
 export default function SyncIndicator() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { walletHash } = useSelector(selectActiveWallet);
-  const sync = useSelector(selectSyncState);
+  const walletHash = useSelector(selectActiveWalletHash);
+  const isConnected = useSelector(selectIsConnected);
+  const isSyncing = useSelector(selectIsSyncing);
   const isExperimental = useSelector(selectIsExperimental);
-
-  const { shouldDisplaySyncCounter } = useSelector(selectUiSettings);
-
-  const [shouldAnimateSync, setShouldAnimateSync] = useState(sync.isSyncing);
-  const syncTimeoutRef = useRef(setTimeout(() => {}, 0));
-
-  const [syncSprings] = useSpring(() => ({
-    from: { opacity: 1, scale: 1.1 },
-    to: { opacity: 0.5, scale: 1.0 },
-    immediate: true,
-  }));
-
-  // make the sync spinner smoother by forcing it to play for a minimum time
-  useEffect(
-    function gracefulSyncIndicator() {
-      if (sync.syncCount > 0) {
-        requestAnimationFrame(() => setShouldAnimateSync(true));
-      }
-
-      if (!sync.isSyncing) {
-        clearTimeout(syncTimeoutRef.current);
-        syncTimeoutRef.current = setTimeout(
-          () => requestAnimationFrame(() => setShouldAnimateSync(false)),
-          125
-        );
-      }
-    },
-    [sync.syncCount, sync.isSyncing]
-  );
 
   const [disconnectSprings, disconnectApi] = useSpring(() => ({
     from: { opacity: 0.0333 },
@@ -81,7 +61,7 @@ export default function SyncIndicator() {
         return;
       }
 
-      if (sync.isConnected) {
+      if (isConnected) {
         connectApi.start({
           from: { opacity: 0.8, scale: 0.85 },
           to: { opacity: 0.1, scale: 0.65 },
@@ -93,17 +73,19 @@ export default function SyncIndicator() {
         ToastService().disconnected();
       }
     },
-    [sync.isConnected, dispatch, disconnectApi, connectApi]
+    [isConnected, dispatch, disconnectApi, connectApi]
   );
 
-  const longPressEvents = useLongPress(
-    () => {
-      if (!isExperimental) {
-        return;
-      }
+  const handleLongPress = useCallback(() => {
+    if (!isExperimental) {
+      return;
+    }
 
-      navigate(`/settings/wallet/${walletHash}/scan`);
-    },
+    navigate(`/settings/wallet/${walletHash}/scan`);
+  }, [isExperimental, navigate, walletHash]);
+
+  const longPressEvents = useLongPress(
+    handleLongPress,
     handlePointerDown,
     1000
   );
@@ -113,22 +95,26 @@ export default function SyncIndicator() {
       className="cursor-pointer w-10 h-10 flex justify-center items-center"
       {...longPressEvents}
     >
-      {!sync.isConnected && (
-        <DisconnectedIcon springs={{ ...disconnectSprings }} />
-      )}
-      {sync.isConnected &&
-        (shouldAnimateSync ? (
+      {!isConnected && <DisconnectedIcon springs={{ ...disconnectSprings }} />}
+      {isConnected &&
+        (isSyncing ? (
           <div className="flex flex-col items-center">
-            <SyncIcon springs={{ ...syncSprings }} />
-            {shouldDisplaySyncCounter && (
-              <div className="text-xs text-zinc-600">{sync.syncCount}</div>
-            )}
+            <SyncOutlined className="text-info text-xl opacity-30" spin />
+            <SyncCounter />
           </div>
         ) : (
           <ConnectedIcon springs={{ ...connectSprings }} />
         ))}
     </div>
   );
+}
+
+function SyncCounter() {
+  const shouldDisplaySyncCounter = useSelector(selectShouldDisplaySyncCounter);
+  const syncCount = useSelector(selectSyncCount);
+  return shouldDisplaySyncCounter ? (
+    <div className="text-xs text-zinc-600 mt-0.5">{syncCount}</div>
+  ) : null;
 }
 
 /* eslint-disable react/prop-types */
@@ -144,14 +130,6 @@ function ConnectedIcon({ springs }) {
   return (
     <animated.div style={springs}>
       <CheckCircleFilled className="text-primary text-3xl text-center" />
-    </animated.div>
-  );
-}
-
-function SyncIcon({ springs }) {
-  return (
-    <animated.div style={springs}>
-      <SyncOutlined className="text-info text-xl opacity-50" spin />
     </animated.div>
   );
 }

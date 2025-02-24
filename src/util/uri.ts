@@ -5,6 +5,8 @@ import {
   decodePrivateKeyWif,
   encodeCashAddress,
   secp256k1,
+  CashAddressType,
+  assertSuccess,
 } from "@bitauth/libauth";
 import { sha256, ripemd160 } from "@/util/hash";
 import { Haptic } from "@/util/haptic";
@@ -122,10 +124,16 @@ export function validateWifUri(
   }
 
   // SHA256 and then RIPDEMD160 the Public Key.
-  const hash160 = ripemd160.hash(sha256.hash(publicKey));
+  const payload = ripemd160.hash(sha256.hash(publicKey));
 
   // Encode the Public Key as an address (so that we can look up the UTXOs).
-  const address = encodeCashAddress("bitcoincash", "p2pkh", hash160);
+  const { address } = assertSuccess(
+    encodeCashAddress({
+      prefix: "bitcoincash",
+      type: CashAddressType.p2pkh,
+      payload,
+    })
+  );
 
   return {
     isWif: true,

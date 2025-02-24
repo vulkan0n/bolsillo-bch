@@ -17,8 +17,8 @@ import {
   CopyOutlined,
 } from "@ant-design/icons";
 
-import { selectActiveWallet } from "@/redux/wallet";
-import { selectSyncState } from "@/redux/sync";
+import { selectActiveWalletHash } from "@/redux/wallet";
+import { selectIsSyncing } from "@/redux/sync";
 import {
   selectBchNetwork,
   selectQrCodeSettings,
@@ -47,21 +47,23 @@ import translations from "./translations";
 export default function WalletViewHome() {
   const dispatch = useDispatch();
 
-  const wallet = useSelector(selectActiveWallet);
+  const walletHash = useSelector(selectActiveWalletHash);
   const isKeyboardOpen = useSelector(selectKeyboardIsOpen);
   const isScanning = useSelector(selectScannerIsScanning);
 
   const qrCodeSettings = useSelector(selectQrCodeSettings);
   const bchNetwork = useSelector(selectBchNetwork);
 
-  const { isSyncing } = useSelector(selectSyncState);
+  const isSyncing = useSelector(selectIsSyncing);
 
   const shouldUseTokenAddress = useSelector(selectShouldUseTokenAddress);
   const setShouldUseTokenAddress = (mode) =>
     dispatch(setPreference({ key: "useTokenAddress", value: mode }));
 
-  // reload unused addresses when wallet data changes
-  const AddressManager = useMemo(() => AddressManagerService(wallet), [wallet]);
+  const AddressManager = useMemo(
+    () => AddressManagerService(walletHash),
+    [walletHash]
+  );
   const unusedAddressesRef = useRef(AddressManager.getUnusedAddresses());
 
   // only re-render when isSyncing changes
@@ -106,15 +108,18 @@ export default function WalletViewHome() {
   };
 
   // generate bip21 uri for QR code
-  const qrRequest =
-    shouldShowRequestAmount && satoshiInput > 0
-      ? `${address}?amount=${satsToBch(satoshiInput).bch}`
-      : address;
+  const qrRequest = useMemo(
+    () =>
+      shouldShowRequestAmount && satoshiInput > 0
+        ? `${address}?amount=${satsToBch(satoshiInput).bch}`
+        : address,
+    [shouldShowRequestAmount, satoshiInput, address]
+  );
 
-  const getQrLogoImage = (logo) =>
-    shouldUseTokenAddress
-      ? logos[logo.toLowerCase()].img_tokens
-      : logos[logo.toLowerCase()].img;
+  const qrLogoImage = useMemo(() => {
+    const logo = qrCodeSettings.logo.toLowerCase();
+    return shouldUseTokenAddress ? logos[logo].img_tokens : logos[logo].img;
+  }, [shouldUseTokenAddress, qrCodeSettings.logo]);
 
   const copyAddressToClipboard = async () => {
     const titleTranslation = translate(translations.copiedAddress);
@@ -158,7 +163,7 @@ export default function WalletViewHome() {
                     ? "#000000"
                     : qrCodeSettings.foreground
                 }
-                logoImage={getQrLogoImage(qrCodeSettings.logo)}
+                logoImage={qrLogoImage}
                 logoWidth={64}
                 logoHeight={64}
               />
@@ -213,7 +218,7 @@ export default function WalletViewHome() {
           </div>
           {!shouldShowRequestAmount && (
             <label
-              className={`font-sans bg-${shouldUseTokenAddress ? "secondary" : "primary"} px-2 py-1.5 border-l border-white/20`}
+              className={`font-sans ${shouldUseTokenAddress ? "bg-secondary" : "bg-primary"} px-2 py-1.5 border-l border-white/20`}
             >
               Receive Tokens{" "}
               <input

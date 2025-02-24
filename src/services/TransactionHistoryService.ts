@@ -20,14 +20,14 @@ class TransactionHistoryNotExistsError extends Error {
 }
 
 export default function TransactionHistoryService(
-  wallet: WalletEntity,
+  walletHash: string,
   fiatCurrency
 ) {
   const Database = DatabaseService();
   const APP_DB = Database.getAppDatabase();
-  const walletDb = Database.getWalletDatabase(wallet.walletHash);
+  const walletDb = Database.getWalletDatabase(walletHash);
 
-  const AddressManager = AddressManagerService(wallet);
+  const AddressManager = AddressManagerService(walletHash);
   const myAddresses = [
     ...AddressManager.getReceiveAddresses().map((a) => a.address),
     ...AddressManager.getChangeAddresses().map((a) => a.address),
@@ -107,11 +107,11 @@ export default function TransactionHistoryService(
       const addressTx = getAddressTransaction(tx_hash);
 
       if (addressTx.amount === null || addressTx.amount === 0) {
-        throw new TransactionHistoryNotExistsError(tx_hash, wallet.walletHash);
+        throw new TransactionHistoryNotExistsError(tx_hash, walletHash);
       }
 
       if (addressTx.height <= 0) {
-        throw new TransactionHistoryNotExistsError(tx_hash, wallet.walletHash);
+        throw new TransactionHistoryNotExistsError(tx_hash, walletHash);
       }
 
       return addressTx;
@@ -189,7 +189,7 @@ export default function TransactionHistoryService(
       [memo]
     );
 
-    Database.flushDatabase(wallet.walletHash);
+    Database.flushDatabase(walletHash);
   }
 
   function getTransactionMemo(tx_hash: string): string {
@@ -231,7 +231,7 @@ export default function TransactionHistoryService(
     );
 
     if (result.length === 0) {
-      throw new TransactionHistoryNotExistsError(tx_hash, wallet.walletHash);
+      throw new TransactionHistoryNotExistsError(tx_hash, walletHash);
     }
 
     //Log.debug("getAddressTransaction", tx_hash, result);

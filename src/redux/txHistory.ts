@@ -6,7 +6,7 @@ import {
 } from "@reduxjs/toolkit";
 
 import { RootState } from "@/redux";
-import { selectActiveWallet } from "@/redux/wallet";
+import { selectActiveWalletHash } from "@/redux/wallet";
 import { selectCurrencySettings } from "@/redux/preferences";
 
 import LogService from "@/services/LogService";
@@ -17,11 +17,11 @@ const Log = LogService("redux/txHistory");
 export const txHistoryFetch = createAsyncThunk(
   "txHistory/fetch",
   async (payload, thunkApi) => {
-    const wallet = selectActiveWallet(thunkApi.getState());
+    const walletHash = selectActiveWalletHash(thunkApi.getState());
     const { localCurrency } = selectCurrencySettings(thunkApi.getState());
 
     const txHistory = await TransactionHistoryService(
-      wallet,
+      walletHash,
       localCurrency
     ).resolveTransactionHistory();
 

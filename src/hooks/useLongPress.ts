@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useMemo } from "react";
 
 export const useLongPress = (
   onLongPress = () => {},
@@ -23,11 +23,17 @@ export const useLongPress = (
   );
 
   const clear = useCallback(
-    (event) => {
+    (event = undefined) => {
       if (timerRef.current) {
         clearTimeout(timerRef.current);
         timerRef.current = null;
       }
+
+      // do nothing on cleanup
+      if (!event) {
+        return;
+      }
+
       // If it wasn't a long press, it's a click
       if (event && !isLongPress.current) {
         onClick(event);
@@ -37,14 +43,20 @@ export const useLongPress = (
   );
 
   useEffect(() => {
-    return () => clear(); // Cleanup on unmount or when dependencies change
+    // Cleanup on unmount
+    return () => clear();
   }, [clear]);
 
-  return {
-    onMouseDown: start,
-    onTouchStart: start,
-    onMouseUp: clear,
-    onMouseLeave: clear,
-    onTouchEnd: clear,
-  };
+  const events = useMemo(
+    () => ({
+      onMouseDown: start,
+      onTouchStart: start,
+      onMouseUp: clear,
+      onMouseLeave: clear,
+      onTouchEnd: clear,
+    }),
+    [start, clear]
+  );
+
+  return events;
 };

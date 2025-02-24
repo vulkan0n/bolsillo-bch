@@ -1,16 +1,21 @@
-import { useEffect } from "react";
+import { useEffect, useMemo, useCallback } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Link } from "react-router";
 import { animated, useSpring } from "@react-spring/web";
 import { StockOutlined, SettingFilled, WarningFilled } from "@ant-design/icons";
-import { selectActiveWallet } from "@/redux/wallet";
+import {
+  selectActiveWalletHash,
+  selectActiveWalletName,
+  selectActiveWalletBalance,
+  selectKeyViewedAt,
+} from "@/redux/wallet";
 import {
   setPreference,
   selectBchNetwork,
-  selectUiSettings,
-  selectPrivacySettings,
+  selectShouldDisplayExchangeRate,
+  selectShouldHideBalance,
 } from "@/redux/preferences";
-import { selectCurrentPrice } from "@/redux/exchangeRates";
+import { selectCurrentPriceString } from "@/redux/exchangeRates";
 import SecurityService, { AuthActions } from "@/services/SecurityService";
 
 import Satoshi from "@/atoms/Satoshi";
@@ -19,25 +24,26 @@ import { useCurrencyFlip } from "@/hooks/useCurrencyFlip";
 
 export default function WalletViewBalance() {
   const dispatch = useDispatch();
-  const wallet = useSelector(selectActiveWallet);
-  const {
-    walletHash,
-    name: activeWalletName,
-    spendable_balance: balance,
-    key_viewed_at,
-  } = wallet;
-  const price = useSelector(selectCurrentPrice);
+
+  const walletHash = useSelector(selectActiveWalletHash);
+  const activeWalletName = useSelector(selectActiveWalletName);
+  const balance = useSelector(selectActiveWalletBalance);
+  const key_viewed_at = useSelector(selectKeyViewedAt);
+
+  const priceString = useSelector(selectCurrentPriceString);
   const bchNetwork = useSelector(selectBchNetwork);
 
   const isKeyViewed = key_viewed_at !== null;
 
   const handleFlipCurrency = useCurrencyFlip();
 
-  const { shouldDisplayExchangeRate } = useSelector(selectUiSettings);
+  const shouldDisplayExchangeRate = useSelector(
+    selectShouldDisplayExchangeRate
+  );
 
-  const { shouldHideBalance } = useSelector(selectPrivacySettings);
+  const shouldHideBalance = useSelector(selectShouldHideBalance);
 
-  const handleHideBalance = async () => {
+  const handleHideBalance = useCallback(async () => {
     if (shouldHideBalance === true) {
       const isAuthorized = await SecurityService().authorize(
         AuthActions.RevealBalance
@@ -54,10 +60,12 @@ export default function WalletViewBalance() {
         value: shouldHideBalance ? "false" : "true",
       })
     );
-  };
+  }, [dispatch, shouldHideBalance]);
 
-  const hiddenBalanceClasses =
-    shouldHideBalance && "blur-sm backdrop-opacity-60 opacity-25";
+  const hiddenBalanceClasses = useMemo(
+    () => (shouldHideBalance ? "blur-sm backdrop-opacity-60 opacity-25" : ""),
+    [shouldHideBalance]
+  );
 
   const [balanceReceivedSpring, receiveSpringApi] = useSpring(() => ({
     from: { color: "#8dc451" },
@@ -101,9 +109,7 @@ export default function WalletViewBalance() {
         onClick={shouldHideBalance ? handleHideBalance : handleFlipCurrency}
       >
         <div className="text-2xl text-zinc-200 tabular-nums flex justify-center items-center">
-          <animated.span style={{ ...balanceReceivedSpring }}>
-            <Satoshi value={balance} />
-          </animated.span>
+          <Satoshi value={balance} />
         </div>
 
         <div className="text-md text-zinc-400 flex items-center justify-center">
@@ -114,7 +120,7 @@ export default function WalletViewBalance() {
       {shouldDisplayExchangeRate && (
         <div className="text-sm text-zinc-400/80 mt-0.5 flex justify-center items-center font-mono">
           <StockOutlined className="mr-1" />
-          {price.priceString}
+          {priceString}
           <span className="mx-0.5 text-sm font-mono">/</span>BCH
         </div>
       )}

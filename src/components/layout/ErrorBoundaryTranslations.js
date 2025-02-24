@@ -233,6 +233,9 @@ const translations = {
     zh: "错误信息",
     zh_TW: "錯誤訊息",
   },
+  exportLogs: {
+    en: "Export Logs",
+  },
 };
 
 export default translations;

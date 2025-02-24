@@ -16,7 +16,7 @@ import { useCurrencyFlip } from "@/hooks/useCurrencyFlip";
 export default function AssetsViewCoins() {
   const wallet = useSelector(selectActiveWallet);
 
-  const UtxoManager = UtxoManagerService(wallet);
+  const UtxoManager = UtxoManagerService(wallet.walletHash);
   const coins = UtxoManager.getWalletCoins();
 
   const [selection, setSelection] = useState([]);

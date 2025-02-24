@@ -4,7 +4,7 @@ import { useSelector } from "react-redux";
 import { useNavigate } from "react-router";
 import { importMetadataRegistry, IdentityHistory } from "@bitauth/libauth";
 import { MoneyCollectOutlined } from "@ant-design/icons";
-import { selectActiveWallet } from "@/redux/wallet";
+import { selectActiveWalletHash } from "@/redux/wallet";
 import LogService from "@/services/LogService";
 import UtxoManagerService from "@/services/UtxoManagerService";
 import BcmrService from "@/services/BcmrService";
@@ -17,11 +17,11 @@ import NumberFormat from "@/atoms/NumberFormat";
 const Log = LogService("AssetsViewTokens");
 
 export default function AssetsViewTokens() {
-  const wallet = useSelector(selectActiveWallet);
+  const walletHash = useSelector(selectActiveWalletHash);
 
   const navigate = useNavigate();
 
-  const UtxoManager = UtxoManagerService(wallet);
+  const UtxoManager = UtxoManagerService(walletHash);
 
   const tokenUtxos = UtxoManager.getWalletTokens();
   const nfts = tokenUtxos.filter((token) => token.nft_capability !== null);
@@ -96,7 +96,7 @@ export default function AssetsViewTokens() {
 
   return (
     <div className="p-1">
-      <KeyWarning walletHash={wallet.walletHash} />
+      <KeyWarning walletHash={walletHash} />
       {tokenData.length === 0 ? (
         <div className="text-center py-4 rounded text-2xl text-zinc-600/80 my-8">
           No Tokens

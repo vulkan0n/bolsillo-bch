@@ -45,7 +45,7 @@ export default function SettingsWalletScanTool() {
   const WalletManager = WalletManagerService();
   const wallet = WalletManager.getWallet(walletHash);
 
-  const AddressManager = AddressManagerService(wallet);
+  const AddressManager = AddressManagerService(walletHash);
 
   const receiveAddresses = AddressManager.getReceiveAddresses();
   const changeAddresses = AddressManager.getChangeAddresses();

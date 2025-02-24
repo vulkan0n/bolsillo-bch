@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { useSelector } from "react-redux";
 import { MoneyCollectOutlined } from "@ant-design/icons";
-import { selectActiveWallet } from "@/redux/wallet";
+import { selectActiveWalletHash } from "@/redux/wallet";
 import AddressManagerService, {
   AddressEntity,
 } from "@/services/AddressManagerService";
@@ -11,12 +11,12 @@ import Address from "@/atoms/Address";
 import Satoshi from "@/atoms/Satoshi";
 
 export default function AssetsViewAddresses() {
-  const wallet = useSelector(selectActiveWallet);
+  const walletHash = useSelector(selectActiveWalletHash);
 
   const [shouldShowEmptyAddresses, setShouldShowEmptyAddresses] =
     useState(false);
 
-  const AddressManager = AddressManagerService(wallet);
+  const AddressManager = AddressManagerService(walletHash);
   const receiveAddresses = AddressManager.getReceiveAddresses();
   const changeAddresses = AddressManager.getChangeAddresses();
 
@@ -73,8 +73,8 @@ interface AddressAccordionProps {
 function AddressAccordion({ a, i }: AddressAccordionProps) {
   const [isOpen, setIsOpen] = useState(false);
 
-  const wallet = useSelector(selectActiveWallet);
-  const UtxoManager = UtxoManagerService(wallet);
+  const walletHash = useSelector(selectActiveWalletHash);
+  const UtxoManager = UtxoManagerService(walletHash);
   const coins = UtxoManager.getAddressUtxos(a.address);
 
   const zebraCss = i % 2 === 0 ? "bg-zinc-100" : "bg-zinc-50";

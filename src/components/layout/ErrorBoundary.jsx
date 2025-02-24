@@ -4,6 +4,7 @@ import { BugOutlined } from "@ant-design/icons";
 import SeleneLogo from "@/components/atoms/SeleneLogo";
 import Accordion from "@/components/atoms/Accordion";
 import ShowMnemonic from "@/components/atoms/ShowMnemonic";
+import Button from "@/components/atoms/Button";
 
 import LogService from "@/services/LogService";
 import ConsoleService from "@/services/ConsoleService";
@@ -55,34 +56,26 @@ export default function ErrorBoundary() {
             {translate(translations.hereCanTry)}:
           </div>
           <div className="flex items-center gap-x-1">
-            <button
-              type="button"
+            <Button
               className="bg-primary rounded text-white p-1 flex-1"
               onClick={handleRestartApp}
-            >
-              {translate(translations.restartApp)}
-            </button>
-            <button
-              type="button"
+              label={translate(translations.restartApp)}
+            />
+            <Button
               className="bg-primary rounded text-white p-1 flex-1"
               onClick={handleResetPreferences}
-            >
-              {translate(translations.resetSettings)}
-            </button>
-            <button
-              type="button"
+              label={translate(translations.resetSettings)}
+            />
+            <Button
               className="bg-primary rounded text-white p-1 flex-1"
               onClick={handleRebuildWallet}
-            >
-              {translate(translations.rebuildWallet)}
-            </button>
-            <button
-              type="button"
+              label={translate(translations.rebuildWallet)}
+            />
+            <Button
               className="bg-primary rounded text-white p-1"
               onClick={handleSendDiagnosticInfo}
-            >
-              Export Logs
-            </button>
+              label={translate(translations.exportLogs)}
+            />
           </div>
         </div>
         <Accordion

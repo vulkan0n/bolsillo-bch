@@ -163,7 +163,7 @@ export default function WalletViewSend() {
 
     const { isSuccess, result } = await TransactionManager.sendTransaction(
       transaction,
-      wallet
+      wallet.walletHash
     );
 
     if (isSuccess) {
