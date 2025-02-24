@@ -109,7 +109,9 @@ export default function WalletViewBalance() {
         onClick={shouldHideBalance ? handleHideBalance : handleFlipCurrency}
       >
         <div className="text-2xl text-zinc-200 tabular-nums flex justify-center items-center">
-          <Satoshi value={balance} />
+          <animated.span style={{ ...balanceReceivedSpring }}>
+            <Satoshi value={balance} />
+          </animated.span>
         </div>
 
         <div className="text-md text-zinc-400 flex items-center justify-center">

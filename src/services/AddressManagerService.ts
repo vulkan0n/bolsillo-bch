@@ -1,6 +1,5 @@
 import LogService from "@/services/LogService";
 import DatabaseService from "@/services/DatabaseService";
-import { WalletEntity } from "@/services/WalletManagerService";
 import { sha256 } from "@/util/hash";
 
 const Log = LogService("AddressManager");

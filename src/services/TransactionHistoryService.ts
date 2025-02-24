@@ -9,8 +9,6 @@ import TransactionManagerService, {
 } from "@/services/TransactionManagerService";
 import CurrencyService from "@/services/CurrencyService";
 
-import { WalletEntity } from "@/services/WalletManagerService";
-
 const Log = LogService("TransactionHistoryService");
 
 class TransactionHistoryNotExistsError extends Error {

@@ -11,9 +11,7 @@ import LogService from "@/services/LogService";
 import DatabaseService from "@/services/DatabaseService";
 import ElectrumService from "@/services/ElectrumService";
 import UtxoManagerService from "@/services/UtxoManagerService";
-import WalletManagerService, {
-  WalletEntity,
-} from "@/services/WalletManagerService";
+import WalletManagerService from "@/services/WalletManagerService";
 
 import { hexToBin, binToHex } from "@/util/hex";
 

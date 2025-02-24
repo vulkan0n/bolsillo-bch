@@ -6,7 +6,6 @@ import {
   cashAddressToLockingBytecode,
   base58AddressToLockingBytecode,
   importWalletTemplate,
-
   walletTemplateP2pkhNonHd,
   walletTemplateToCompilerBCH,
   getMinimumFee,
