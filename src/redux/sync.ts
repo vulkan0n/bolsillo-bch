@@ -139,14 +139,17 @@ export const syncSubscriptions = createAsyncThunk(
     const unusedReceiveAddresses = AddressManager.getUnusedAddresses(0, 0);
 
     // we should subscribe to a few unused change addresses for instant updates if we spend elsewhere
-    const unusedChangeAddresses = AddressManager.getUnusedAddresses(20, 1);
+    const unusedChangeAddresses = AddressManager.getUnusedAddresses(0, 1);
+    const filteredUnusedChangeAddresses = unusedChangeAddresses.filter(
+      (a, i) => i < 20 || i > unusedChangeAddresses.length - 20
+    );
 
     // TODO: allow the user to set up pinned/watch addresses, subscribe here
 
     const addresses = [
       ...hotAddresses,
       ...unusedReceiveAddresses,
-      ...unusedChangeAddresses,
+      ...filteredUnusedChangeAddresses,
     ];
 
     thunkApi.dispatch(syncSubscriptionCount(addresses.length));
@@ -453,7 +456,20 @@ const initialPending = {
   hotRefresh: 0,
   txHistory: 0,
 };
-const initialState = {
+
+interface SyncState {
+  isConnected: boolean;
+  server: string;
+  syncPending: typeof initialPending;
+  isSyncComplete: boolean;
+  isSaving: boolean;
+  chaintip: typeof initialChaintip;
+  lastRefresh: number;
+  addresses: object;
+  subscriptions: Array<AddressEntity>;
+}
+
+const initialState: SyncState = {
   isConnected: false,
   server: "",
   syncPending: { ...initialPending },
@@ -473,56 +489,56 @@ export const syncReducer = createReducer(initialState, (builder) => {
     .addCase(syncDisconnect.fulfilled, (state) => {
       state.isConnected = false;
     })
-    .addCase(syncConnectionUp.fulfilled, (state: RootState, action) => {
+    .addCase(syncConnectionUp.fulfilled, (state, action) => {
       state.isConnected = true;
       state.server = action.payload;
     })
-    .addCase(syncConnectionDown, (state: RootState) => {
+    .addCase(syncConnectionDown, (state) => {
       state.isConnected = false;
     })
-    .addCase(syncReconnect.pending, (state: RootState) => {
+    .addCase(syncReconnect.pending, (state) => {
       state.isConnected = false;
     })
-    .addCase(syncAddressState.pending, (state: RootState) => {
+    .addCase(syncAddressState.pending, (state) => {
       state.isSyncComplete = false;
       state.syncPending.addressState += 1;
     })
-    .addCase(syncAddressState.fulfilled, (state: RootState, action) => {
+    .addCase(syncAddressState.fulfilled, (state, action) => {
       const [address] = action.payload;
       state.addresses[address.address] = address;
       state.syncPending.addressState -= 1;
     })
-    .addCase(syncAddressState.rejected, (state: RootState) => {
+    .addCase(syncAddressState.rejected, (state) => {
       state.syncPending.addressState -= 1;
     })
-    .addCase(syncAddressUtxos.pending, (state: RootState) => {
+    .addCase(syncAddressUtxos.pending, (state) => {
       state.isSyncComplete = false;
       state.syncPending.utxo += 1;
     })
-    .addCase(syncAddressUtxos.fulfilled, (state: RootState) => {
+    .addCase(syncAddressUtxos.fulfilled, (state) => {
       state.syncPending.utxo -= 1;
     })
-    .addCase(syncAddressUtxos.rejected, (state: RootState) => {
+    .addCase(syncAddressUtxos.rejected, (state) => {
       state.syncPending.utxo -= 1;
     })
-    .addCase(syncAddressHistory.pending, (state: RootState) => {
+    .addCase(syncAddressHistory.pending, (state) => {
       state.isSyncComplete = false;
       state.syncPending.history += 1;
     })
-    .addCase(syncAddressHistory.fulfilled, (state: RootState) => {
+    .addCase(syncAddressHistory.fulfilled, (state) => {
       state.syncPending.history -= 1;
     })
-    .addCase(syncAddressHistory.rejected, (state: RootState) => {
+    .addCase(syncAddressHistory.rejected, (state) => {
       state.syncPending.history -= 1;
     })
-    .addCase(txHistoryFetch.pending, (state: RootState) => {
+    .addCase(txHistoryFetch.pending, (state) => {
       state.isSyncComplete = false;
       state.syncPending.txHistory += 1;
     })
-    .addCase(txHistoryFetch.fulfilled, (state: RootState) => {
+    .addCase(txHistoryFetch.fulfilled, (state) => {
       state.syncPending.txHistory -= 1;
     })
-    .addCase(txHistoryFetch.rejected, (state: RootState) => {
+    .addCase(txHistoryFetch.rejected, (state) => {
       state.syncPending.txHistory -= 1;
     })
     .addCase(syncSubscriptionCount, (state, action) => {
@@ -536,11 +552,11 @@ export const syncReducer = createReducer(initialState, (builder) => {
       state.syncPending.chaintip -= 1;
       state.chaintip = action.payload;
     })
-    .addCase(syncHotRefresh.pending, (state: RootState) => {
+    .addCase(syncHotRefresh.pending, (state) => {
       //state.isSyncComplete = false;
       state.syncPending.hotRefresh += 1;
     })
-    .addCase(syncHotRefresh.fulfilled, (state: RootState, action) => {
+    .addCase(syncHotRefresh.fulfilled, (state, action) => {
       state.lastRefresh = action.payload;
       state.syncPending.hotRefresh -= 1;
     })
@@ -565,7 +581,7 @@ export const syncReducer = createReducer(initialState, (builder) => {
 });
 
 export const selectIsSyncing = createSelector(
-  (state) => state.sync,
+  (state: RootState) => state.sync,
   (sync) =>
     Object.keys(sync.syncPending).reduce(
       (isSyncing, pending) =>
@@ -575,7 +591,7 @@ export const selectIsSyncing = createSelector(
 );
 
 export const selectSyncCount = createSelector(
-  (state) => state.sync,
+  (state: RootState) => state.sync,
   (sync) =>
     Object.keys(sync.syncPending).reduce(
       (syncCount, pending) => syncCount + sync.syncPending[pending],
@@ -598,16 +614,16 @@ export const selectMyAddresses = createSelector(
 );
 
 export const selectChaintip = createSelector(
-  (state) => state.sync,
+  (state: RootState) => state.sync,
   (sync) => sync.chaintip
 );
 
 export const selectElectrumServer = createSelector(
-  (state) => state.sync,
+  (state: RootState) => state.sync,
   (sync) => sync.server
 );
 
 export const selectIsConnected = createSelector(
-  (state) => state.sync,
+  (state: RootState) => state.sync,
   (sync) => sync.isConnected
 );
