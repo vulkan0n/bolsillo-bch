@@ -1,7 +1,7 @@
 {
   "name": "selene-wallet",
   "private": true,
-  "version": "2024.02.0",
+  "version": "2025.02.01",
   "type": "module",
   "scripts": {
     "dev": "vite",
