@@ -1,5 +1,5 @@
 /* eslint-disable */
-import { hexToBin } from "@bitauth/libauth";
+import { hexToBin, binToUtf8 } from "@bitauth/libauth";
 
 // faster (4x) binToHex implementation: https://archive.is/2v7QZ
 // libauth uses slower array conversion method
@@ -16,8 +16,7 @@ export { hexToBin };
 
 // hexToUtf8: attempt to decode a hex string to utf8
 export function hexToUtf8(hex: string) {
-  const bytes = hexToBin(hex);
-  return new TextDecoder().decode(bytes);
+  return binToUtf8(hexToBin(hex));
 }
 
 // initialize binToHex lookup tables
