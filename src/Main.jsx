@@ -18,6 +18,7 @@ import { routeAssets } from "@/routes/routeAssets";
 import { routeExplore } from "@/routes/routeExplore";
 import { routeSettings } from "@/routes/routeSettings";
 import { routeApps } from "@/routes/routeApps";
+import { routeDebug } from "@/routes/routeDebug";
 
 export default function Main() {
   const routes = [
@@ -34,6 +35,7 @@ export default function Main() {
         ...routeExplore,
         ...routeSettings,
         ...routeApps,
+        ...routeDebug,
         {
           path: "/credits",
           async lazy() {
@@ -41,15 +43,6 @@ export default function Main() {
               "@/views/credits/CreditsView"
             );
             return { Component: CreditsView };
-          },
-        },
-        {
-          path: "/debug",
-          async lazy() {
-            const { default: DebugView } = await import(
-              "@/views/debug/DebugView"
-            );
-            return { Component: DebugView };
           },
         },
       ],
