@@ -1,15 +1,10 @@
-/* eslint-disable */
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router";
-import { importMetadataRegistry, IdentityHistory } from "@bitauth/libauth";
-import { MoneyCollectOutlined } from "@ant-design/icons";
 import { selectActiveWalletHash } from "@/redux/wallet";
 import LogService from "@/services/LogService";
 import UtxoManagerService from "@/services/UtxoManagerService";
 import BcmrService from "@/services/BcmrService";
-import Address from "@/atoms/Address";
-import Satoshi from "@/atoms/Satoshi";
 import Checksum from "@/atoms/Checksum";
 import KeyWarning from "@/atoms/KeyWarning/KeyWarning";
 import NumberFormat from "@/atoms/NumberFormat";
@@ -21,10 +16,11 @@ export default function AssetsViewTokens() {
 
   const navigate = useNavigate();
 
+  //const [tokenData, setTokenData] = useState([]);
+
   const UtxoManager = UtxoManagerService(walletHash);
 
   const tokenUtxos = UtxoManager.getWalletTokens();
-  const nfts = tokenUtxos.filter((token) => token.nft_capability !== null);
 
   const tokenCategories = tokenUtxos.reduce(
     (categories, utxo) =>
@@ -35,6 +31,17 @@ export default function AssetsViewTokens() {
   );
 
   const Bcmr = BcmrService();
+  useEffect(
+    function resolveTokenMetadata() {
+      const resolve = async () =>
+        Promise.all(
+          tokenCategories.map((category) => Bcmr.resolveIdentity(category))
+        );
+
+      //resolve();
+    },
+    [Bcmr, tokenCategories]
+  );
 
   const tokenData = tokenCategories
     .map((category) => {
@@ -111,7 +118,9 @@ export default function AssetsViewTokens() {
             >
               <div className="flex items-center">
                 <div className="flex items-center justify-center">
-                  <Checksum data={token.category} />
+                  <span className="border rounded-sm border-zinc-700 overflow-hidden">
+                    <Checksum data={token.category} />
+                  </span>
                 </div>
                 <div className="flex flex-col justify-between mx-1">
                   <div className="text-sm flex items-baseline">
@@ -129,10 +138,13 @@ export default function AssetsViewTokens() {
                   </div>
                   <div className="flex items-center text-zinc-600 mt-0.5">
                     {token.amount > 0 && (
-                      <span
-                        className="text-xs font-mono border-dotted border-l-8 pl-0.5 mr-1.5"
-                        style={{ borderColor: token.color }}
-                      >
+                      <span className="text-xs font-mono mr-1.5 flex items-center">
+                        <span
+                          style={{ color: token.color }}
+                          className="relative bottom-[1px] pr-0.5"
+                        >
+                          &#9679;
+                        </span>
                         <NumberFormat
                           number={token.amount}
                           decimals={
