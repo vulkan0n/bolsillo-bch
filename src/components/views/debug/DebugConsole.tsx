@@ -31,7 +31,7 @@ export default function DebugConsole() {
           ))}
         </ul>
       </div>
-      <div className="p-1">
+      <div className="p-1 flex justify-end">
         <Button
           icon={ExportOutlined}
           label={translate(translations.exportLogs)}

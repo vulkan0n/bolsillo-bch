@@ -5,6 +5,7 @@ import {
   BugOutlined,
   ExceptionOutlined,
   UnlockOutlined,
+  ClearOutlined,
 } from "@ant-design/icons";
 import { selectSecuritySettings } from "@/redux/preferences";
 import ViewHeader from "@/layout/ViewHeader";
@@ -12,6 +13,7 @@ import Button from "@/atoms/Button";
 
 import LogService from "@/services/LogService";
 import SecurityService, { AuthActions } from "@/services/SecurityService";
+import JanitorService from "@/services/JanitorService";
 
 import { translate } from "@/util/translations";
 import translations from "./translations";
@@ -50,6 +52,11 @@ export default function DebugView() {
     });
   };
 
+  const handlePurgeData = async () => {
+    const Janitor = JanitorService();
+    await Janitor.purgeStaleData();
+  };
+
   return (
     <>
       <ViewHeader icon={BugOutlined} title={translate(translations.debug)} />
@@ -67,6 +74,11 @@ export default function DebugView() {
               icon={ExceptionOutlined}
               label={translate(translations.throwAnError)}
               onClick={handleThrowFakeError}
+            />
+            <Button
+              icon={ClearOutlined}
+              label="Purge Stale Data"
+              onClick={handlePurgeData}
             />
           </div>
         </div>

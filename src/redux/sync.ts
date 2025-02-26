@@ -360,13 +360,13 @@ export const syncChaintip = createAsyncThunk(
       Log.log("sync/chaintip", block);
 
       // TODO: store last known chaintip
-      if (currentTip.height > block_checkpoints.first2023.height) {
-        // TODO: cron tasks based on chain height
-        if (block.height > currentTip.height + 10) {
-          const Janitor = JanitorService();
-          await Janitor.purgeStaleData();
-        }
-      }
+      //if (currentTip.height > block_checkpoints.first2023.height) {
+      // TODO: cron tasks based on chain height
+      //if (block.height > currentTip.height + 10) {
+      //const Janitor = JanitorService();
+      //await Janitor.purgeStaleData();
+      //}
+      //}
 
       return block;
     }
