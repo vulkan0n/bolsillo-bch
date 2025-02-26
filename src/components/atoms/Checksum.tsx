@@ -3,57 +3,71 @@ import { sha256 } from "@/util/hash";
 
 interface ChecksumProps {
   data: string;
-  size?: number;
+  canvasSize?: number;
 }
 
-export default function Checksum({ data, size = 1 }: ChecksumProps) {
-  const canvasRef = useRef(null);
 
-  const PIXEL_SIZE = 4 * size;
-  const GRID_SIZE = 4;
-  const CANVAS_SIZE = PIXEL_SIZE * GRID_SIZE * 2;
+export function Checksum({ data, canvasSize = 32 }: ChecksumProps) {
+  const canvasRef = useRef(null);
+  const hash = sha256.text(data);
+  const h = Number.parseInt(hash.slice(0, 8), 16);
+  const size = (h % 16) + 10;
 
   useEffect(() => {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
-    const hash = sha256.text(data);
+    const quadrantSize = size / 2;
 
-    // Clear canvas
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    // Function to draw a pixel with color from hash
+    const drawPixel = (x, y) => {
+      const pos = (y * quadrantSize + x) % 58;
+      const colorHex = hash.slice(pos, pos + 6);
+      ctx.fillStyle = `#${colorHex}`;
+      ctx.fillRect(x, y, 1, 1);
+    };
 
-    // Generate image from hash for one quadrant and mirror it
-    for (let i = 0; i < 64; i += 2) {
-      const x = (i / 2) % GRID_SIZE;
-      const y = Math.floor(i / (GRID_SIZE * 2));
-
-      // Extract RGB values from hash
-      const r = parseInt(hash.slice(i, i + 2), 16);
-      const g = parseInt(hash.slice((i + 2) % 64, (i + 4) % 64), 16);
-      const b = parseInt(hash.slice((i + 4) % 64, (i + 6) % 64), 16);
-
-      ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
-
-      // Draw in all four quadrants
-      for (let quadrantX = 0; quadrantX < 2; quadrantX += 1) {
-        for (let quadrantY = 0; quadrantY < 2; quadrantY += 1) {
-          const mirrorX = quadrantX ? GRID_SIZE - 1 - x : x;
-          const mirrorY = quadrantY ? GRID_SIZE - 1 - y : y;
-
-          ctx.fillRect(
-            mirrorX * PIXEL_SIZE + quadrantX * GRID_SIZE * PIXEL_SIZE,
-            mirrorY * PIXEL_SIZE + quadrantY * GRID_SIZE * PIXEL_SIZE,
-            PIXEL_SIZE,
-            PIXEL_SIZE
-          );
-        }
+    // Draw top-left quadrant
+    for (let y = 0; y < quadrantSize; y += 1) {
+      for (let x = 0; x < quadrantSize; x += 1) {
+        drawPixel(x, y);
       }
     }
 
-    // Draw outline
-    ctx.strokeStyle = "#444"; // Black outline
-    ctx.lineWidth = 1 * size; // Adjust thickness as needed
-    ctx.strokeRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
-  }, [data, size, PIXEL_SIZE, CANVAS_SIZE]);
+    // Mirror horizontally
+    ctx.scale(-1, 1);
+    ctx.translate(-size, 0);
+    ctx.drawImage(
+      canvas,
+      0,
+      0,
+      quadrantSize,
+      quadrantSize,
+      0,
+      0,
+      quadrantSize,
+      quadrantSize
+    );
+    ctx.setTransform(1, 0, 0, 1, 0, 0); // Reset transformation
 
-  return <canvas ref={canvasRef} width={CANVAS_SIZE} height={CANVAS_SIZE} />;
+    // Mirror vertically
+    ctx.scale(1, -1);
+    ctx.translate(0, -size);
+    ctx.drawImage(canvas, 0, 0, size, quadrantSize, 0, 0, size, quadrantSize);
+    ctx.setTransform(1, 0, 0, 1, 0, 0); // Reset transformation
+  }, [hash, size]);
+
+  return (
+    <canvas
+      ref={canvasRef}
+      width={size}
+      height={size}
+      style={{
+        width: `${canvasSize}px`,
+        height: `${canvasSize}px`,
+        imageRendering: "pixelated",
+      }}
+    />
+  );
 }
+
+export default Checksum;
