@@ -204,7 +204,7 @@ export default function SettingsWalletView() {
       />
       <div className="p-2">
         <div className="p-3 rounded-lg bg-zinc-200">
-          <div className="text-2xl">
+          <div className="text-2xl flex justify-center items-center">
             <Editable onConfirm={handleEditConfirm} value={wallet.name} />
           </div>
           <div className="text-lg text-center text-zinc-600">
