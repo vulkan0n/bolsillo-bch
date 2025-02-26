@@ -1,3 +1,5 @@
+import NullComponent from "@/atoms/NullComponent";
+
 type ValidSizes =
   | "xs"
   | "sm"
@@ -30,7 +32,7 @@ export interface ButtonProps {
   labelSize?: ValidSizes;
   labelColor?: string;
   activeLabelColor?: string;
-  icon?: React.ComponentType;
+  icon?: React.ComponentType<{ className?: string }>;
   iconSize?: ValidSizes;
   outerLabel?: string;
   outerLabelSize?: ValidSizes;
@@ -50,7 +52,7 @@ export default function Button({
   labelSize = "sm",
   labelColor = "zinc-600",
   activeLabelColor = "white",
-  icon = () => null,
+  icon = NullComponent,
   iconSize = "2xl",
   outerLabel = "",
   outerLabelSize = "sm",
