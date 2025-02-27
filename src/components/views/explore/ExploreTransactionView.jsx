@@ -60,7 +60,7 @@ export default function ExploreTransactionView() {
     setMemo(value);
     TransactionHistoryService(walletHash, localCurrency).setTransactionMemo(
       tx.txid,
-      memo
+      value
     );
   };
 

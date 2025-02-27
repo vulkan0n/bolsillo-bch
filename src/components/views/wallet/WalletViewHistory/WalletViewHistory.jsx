@@ -98,7 +98,9 @@ export default function WalletViewHistory() {
                     </div>
                   </div>
                   {tx.memo && (
-                    <div className="text-sm text-zinc-500">Memo: {tx.memo}</div>
+                    <div className="text-sm text-zinc-500 ml-4">
+                      Memo: {tx.memo}
+                    </div>
                   )}
                 </Link>
               </li>
