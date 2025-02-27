@@ -26,9 +26,8 @@ import AddressManagerService, {
 } from "@/services/AddressManagerService";
 import AddressScannerService from "@/services/AddressScannerService";
 import UtxoManagerService from "@/services/UtxoManagerService";
-//import JanitorService from "@/services/JanitorService";
+import JanitorService from "@/services/JanitorService";
 
-import { block_checkpoints } from "@/util/block_checkpoints";
 import { generateBatch } from "@/util/batch";
 
 const Log = LogService("redux/sync");
@@ -348,32 +347,32 @@ export const syncHotRefresh = createAsyncThunk(
 
 export const syncChaintip = createAsyncThunk(
   "sync/chaintip",
-  async (chaintip: { height: number; hex: string }, thunkApi) => {
-    const { syncPending, chaintip: currentTip } = selectSyncState(
-      thunkApi.getState()
-    );
+  async (chaintip: { height: number; hex: string }) => {
+    const Blockchain = BlockchainService();
 
-    if (syncPending.chaintip <= 1) {
-      const Blockchain = BlockchainService();
-      const block = await Blockchain.resolveBlockByHeight(chaintip.height);
+    const currentTip = await Blockchain.getChaintip();
 
-      Log.log("sync/chaintip", block);
+    const tipHash = Blockchain.calculateBlockhash(chaintip.hex);
 
-      // TODO: store last known chaintip
-      //if (currentTip.height > block_checkpoints.first2023.height) {
-      // TODO: cron tasks based on chain height
-      //if (block.height > currentTip.height + 10) {
-      //const Janitor = JanitorService();
-      //await Janitor.purgeStaleData();
-      //}
-      //}
-
-      return block;
+    // chaintip is up to date
+    if (currentTip.blockhash === tipHash) {
+      return currentTip;
     }
 
-    Log.log("sync/chaintip", chaintip, currentTip);
+    const block = await Blockchain.resolveBlockByHash(tipHash);
 
-    return currentTip;
+    Log.log("sync/chaintip", block, currentTip);
+
+    // this requires the app being closed for 10 blocks
+    // TODO: actual cron tasking
+    if (block.height > currentTip.height + 10) {
+      queueMicrotask(async () => {
+        const Janitor = JanitorService();
+        await Janitor.purgeStaleData();
+      });
+    }
+
+    return block;
   }
 );
 
@@ -444,7 +443,7 @@ syncMiddleware.startListening({
   },
 });
 
-const initialChaintip = { ...block_checkpoints.first2023 };
+const initialChaintip = { height: -1, hex: "" };
 
 const initialPending = {
   utxo: 0,
@@ -545,7 +544,6 @@ export const syncReducer = createReducer(initialState, (builder) => {
       state.syncPending.subscription += action.payload;
     })
     .addCase(syncChaintip.pending, (state) => {
-      state.isSyncComplete = false;
       state.syncPending.chaintip += 1;
     })
     .addCase(syncChaintip.fulfilled, (state, action) => {

@@ -6,18 +6,13 @@ import DatabaseService from "@/services/DatabaseService";
 import ElectrumService from "@/services/ElectrumService";
 import { hexToBin, binToHex } from "@/util/hex";
 import { sha256 } from "@/util/hash";
+import { block_checkpoints } from "@/util/block_checkpoints";
 
 const Log = LogService("Blockchain");
 
 export class BlockNotExistsError extends Error {
   constructor(id: string | number) {
     super(`No Block with id ${id}`);
-  }
-}
-
-export class ChaintipNotExistsError extends Error {
-  constructor() {
-    super(`No Chaintip?`);
   }
 }
 
@@ -40,8 +35,8 @@ export default function BlockchainService() {
     resolveBlockByHeight,
     getChaintip,
     calculateBlockhash,
-    decodeBlockHeader,
-    verifyMerkleProof,
+    //decodeBlockHeader,
+    //verifyMerkleProof,
     purgeBlocks,
   };
 
@@ -176,7 +171,8 @@ export default function BlockchainService() {
     );
 
     if (result.length < 1) {
-      throw new ChaintipNotExistsError();
+      Log.debug("getChaintip first2023");
+      return block_checkpoints.first2023;
     }
 
     const block = {
@@ -184,6 +180,7 @@ export default function BlockchainService() {
       hex: await _loadBlockData(result[0].blockhash),
     };
 
+    //Log.debug("getChaintip block", block);
     return block;
   }
 
