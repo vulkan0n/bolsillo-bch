@@ -37,16 +37,16 @@ export default function AssetsView() {
       <FullColumn>
         <div className="flex">
           <NavTab
-            to="/assets/coins"
-            label="Coins"
-            icon={MoneyCollectOutlined}
-            activeIcon={MoneyCollectOutlined}
-          />
-          <NavTab
             to="/assets/tokens"
             label="Tokens"
             icon={DeploymentUnitOutlined}
             activeIcon={DeploymentUnitOutlined}
+          />
+          <NavTab
+            to="/assets/coins"
+            label="Coins"
+            icon={MoneyCollectOutlined}
+            activeIcon={MoneyCollectOutlined}
           />
         </div>
         <Outlet />
