@@ -52,14 +52,14 @@ export default function SettingsWalletView() {
 
   const { walletHash } = useParams();
 
-  const WalletManager = useMemo(() => WalletManagerService(), []);
+  const WalletManager = WalletManagerService();
   const [wallet, setWallet] = useState(WalletManager.getWalletMeta(walletHash));
 
   useEffect(
-    function setWalletMeta() {
-      setWallet(WalletManager.getWalletMeta(walletHash));
+    function reloadWalletMeta() {
+      setWallet(WalletManagerService().getWalletMeta(walletHash));
     },
-    [walletHash, WalletManager, wallet.name]
+    [walletHash]
   );
 
   const activeWalletHash = useSelector(selectActiveWalletHash);
@@ -128,13 +128,13 @@ export default function SettingsWalletView() {
 
   // handler for wallet name edit button
   const handleEditConfirm = async (input) => {
-    await WalletManager.setWalletName(walletHash, input);
+    await WalletManager.setWalletName(wallet.walletHash, input);
 
-    if (walletHash === activeWalletHash) {
+    if (wallet.walletHash === activeWalletHash) {
       dispatch(walletSetName(input));
     }
 
-    setWallet(WalletManager.getWalletMeta(walletHash));
+    setWallet(WalletManager.getWalletMeta(wallet.walletHash));
   };
 
   // handler for "rebuild wallet" button
@@ -202,7 +202,7 @@ export default function SettingsWalletView() {
         icon={WalletOutlined}
         title={translate(translations.walletSettings)}
       />
-      <div className="p-2">
+      <div className="p-2" key={walletHash}>
         <div className="p-3 rounded-lg bg-zinc-200">
           <div className="text-2xl flex justify-center items-center">
             <Editable onConfirm={handleEditConfirm} value={wallet.name} />
@@ -250,7 +250,7 @@ export default function SettingsWalletView() {
 
         <WalletSettings />
         <KeyWarning walletHash={wallet.walletHash} />
-        <ShowMnemonic walletHash={wallet.walletHash} />
+        <ShowMnemonic key={wallet.walletHash} walletHash={wallet.walletHash} />
         {
           /* Only show "Advanced Options" if user has viewed (TODO: verified) their recovery phrase */
           shouldShowAdvancedOptions && (
