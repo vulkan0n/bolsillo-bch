@@ -27,9 +27,9 @@ export default function TransactionHistoryService(
 
   const AddressManager = AddressManagerService(walletHash);
   const myAddresses = [
-    ...AddressManager.getReceiveAddresses().map((a) => a.address),
-    ...AddressManager.getChangeAddresses().map((a) => a.address),
-  ];
+    ...AddressManager.getReceiveAddresses(),
+    ...AddressManager.getChangeAddresses(),
+  ].map((a) => a.address);
 
   return {
     resolveTransactionHistory,
@@ -135,19 +135,19 @@ export default function TransactionHistoryService(
           return myAddresses.includes(address);
         }) > -1;
 
-      if (
-        tx.vout[0].scriptPubKey.asm.startsWith("OP_RETURN") &&
-        tx.txid.startsWith("d6a0") && isMine
-      ) {
-        Log.warn(utxo, isMine);
-      }
-
       return isMine;
     };
 
     // resolve vins to real txos
-    const vinTxes = await Promise.all(
-      tx.vin.map((vin) => TransactionManager.resolveTransaction(vin.txid))
+    const vinTxes = (
+      await Promise.all(
+        tx.vin.map((vin) => TransactionManager.resolveTransaction(vin.txid))
+      )
+    ).reduce(
+      // de-duplicate resolved transactions
+      (txes, vtx) =>
+        !txes.find((t) => t.txid === vtx.txid) ? [...txes, vtx] : txes,
+      [] as Array<TransactionEntity>
     );
 
     // for each input tx, get outputs.

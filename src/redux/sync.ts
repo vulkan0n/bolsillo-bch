@@ -12,6 +12,7 @@ import {
   walletBalanceUpdate,
   selectActiveWalletHash,
   selectActiveWallet,
+  walletReloadAddresses,
 } from "@/redux/wallet";
 import { txHistoryFetch } from "@/redux/txHistory";
 import { selectNetworkStatus } from "@/redux/device";
@@ -328,9 +329,6 @@ export const syncHotRefresh = createAsyncThunk(
         await Promise.all(batchPromises);
       }
 
-      thunkApi.dispatch(syncPopulateAddresses());
-      //thunkApi.dispatch(walletBalanceUpdate({ wallet, isChange: false }));
-
       Log.debug("sync/hotRefresh", sync);
       thunkApi.dispatch(syncComplete());
       return Date.now();
@@ -403,6 +401,8 @@ export const syncComplete = createAsyncThunk(
               isChange: false,
             })
           );
+
+          thunkApi.dispatch(walletReloadAddresses({ wallet }));
 
           await WalletManagerService().saveWallet(wallet.walletHash);
           thunkApi.dispatch(syncSetSaving(false));
