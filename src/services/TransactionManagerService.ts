@@ -38,9 +38,16 @@ export interface TransactionInput {
   txid: string;
   vout: number;
 }
+
+export interface VoutScriptPubKey {
+  addresses?: Array<string>;
+  hex: string;
+  asm: string;
+}
+
 export interface TransactionOutput {
   n: number;
-  scriptPubKey: object;
+  scriptPubKey: VoutScriptPubKey;
   value: string;
 }
 

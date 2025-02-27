@@ -135,6 +135,13 @@ export default function TransactionHistoryService(
           return myAddresses.includes(address);
         }) > -1;
 
+      if (
+        tx.vout[0].scriptPubKey.asm.startsWith("OP_RETURN") &&
+        tx.txid.startsWith("d6a0") && isMine
+      ) {
+        Log.warn(utxo, isMine);
+      }
+
       return isMine;
     };
 

@@ -170,6 +170,8 @@ export const syncSubscriptions = createAsyncThunk(
       );
     }
 
+    thunkApi.dispatch(syncPopulateAddresses());
+
     return addresses;
   }
 );
@@ -438,6 +440,12 @@ syncMiddleware.startListening({
 });
 syncMiddleware.startListening({
   actionCreator: txHistoryFetch.fulfilled,
+  effect: async (action, listenerApi) => {
+    listenerApi.dispatch(syncComplete());
+  },
+});
+syncMiddleware.startListening({
+  actionCreator: syncPopulateAddresses.fulfilled,
   effect: async (action, listenerApi) => {
     listenerApi.dispatch(syncComplete());
   },

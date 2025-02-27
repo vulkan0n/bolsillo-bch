@@ -55,13 +55,13 @@ export default function WalletViewHistory() {
                   <div
                     className={`${tx.amount > 0 ? receiveStyle : sendStyle}`}
                   >
-                    {(tx.height <= 0
+                    {(tx.height <= 0 || !tx.time
                       ? DateTime.fromISO(tx.time_seen)
                       : DateTime.fromSeconds(tx.time)
                     ).toLocaleString(DateTime.DATE_SHORT)}
                   </div>
                   <div>
-                    {(tx.height <= 0
+                    {(tx.height <= 0 || !tx.time
                       ? DateTime.fromISO(tx.time_seen)
                       : DateTime.fromSeconds(tx.time)
                     ).toLocaleString(DateTime.TIME_WITH_SECONDS)}

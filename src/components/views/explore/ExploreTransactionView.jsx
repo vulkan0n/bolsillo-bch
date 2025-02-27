@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import { useState } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useLoaderData, Link } from "react-router";
 import { useSelector } from "react-redux";
 import { Clipboard } from "@capacitor/clipboard";
@@ -14,6 +14,7 @@ import { selectActiveWalletHash } from "@/redux/wallet";
 import { selectChaintip } from "@/redux/sync";
 
 import TransactionHistoryService from "@/services/TransactionHistoryService";
+import TransactionManagerService from "@/services/TransactionManagerService";
 import ToastService from "@/services/ToastService";
 //import LogService from "@/services/LogService";
 
@@ -183,11 +184,40 @@ function OutputListItem({ output, i }) {
 function InputListItem({ input, i }) {
   const zebraCss = i % 2 === 0 ? "bg-zinc-100" : "bg-zinc-50";
 
-  return (
-    <div className={`p-1.5 ${zebraCss} truncate tracking-tight`}>
-      <Link className="font-mono text-xs" to={`/explore/tx/${input.txid}`}>
-        {input.txid}:{input.vout}
-      </Link>
-    </div>
+  const [inputTx, setInputTx] = useState(null);
+
+  useEffect(
+    function resolveInput() {
+      const resolve = async () => {
+        const resolvedTx = await TransactionManagerService().resolveTransaction(
+          input.txid
+        );
+        setInputTx(resolvedTx);
+      };
+      resolve();
+    },
+    [input.txid]
   );
+
+  const ResolvedInput = useCallback(() => {
+    if (inputTx === null) {
+      return (
+        <div className={`p-1.5 ${zebraCss} truncate tracking-tight`}>
+          <Link className="font-mono text-xs" to={`/explore/tx/${input.txid}`}>
+            {input.txid}:{input.vout}
+          </Link>
+        </div>
+      );
+    }
+
+    const output = inputTx.vout.find((out) => out.n === input.vout);
+
+    return (
+      <Link to={`/explore/tx/${input.txid}`}>
+        <OutputListItem output={output} i={i} />
+      </Link>
+    );
+  }, [inputTx, input.txid, zebraCss, i, input.vout]);
+
+  return <ResolvedInput />;
 }
