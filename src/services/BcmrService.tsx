@@ -1,14 +1,14 @@
 /* eslint-disable */
 import { DateTime } from "luxon";
 import { MetadataRegistry, IdentitySnapshot } from "@bitauth/libauth";
-//import LogService from "@/services/LogService";
+import LogService from "@/services/LogService";
 import ElectrumService from "@/services/ElectrumService";
 import TransactionManagerService from "@/services/TransactionManagerService";
 import { sha256 } from "@/util/hash";
 
 import bcmrOtr from "@/assets/bcmr-open-token-registry-2023-05-15.json";
 
-//const Log = LogService("BcmrService");
+const Log = LogService("BcmrService");
 
 export default function BcmrService() {
   const bcmr: MetadataRegistry = bcmrOtr as MetadataRegistry;
@@ -64,55 +64,80 @@ export default function BcmrService() {
     return currentSnapshot;
   }
 
-  async function resolveIdentity(authbase: string) {}
+  async function resolveIdentity(authbase: string) {
+    const authhead = await resolveAuthChain(authbase);
 
-  async function resolveAuthChain(authbase: string) {
-    const TransactionManager = TransactionManagerService();
-
-    const identityOutput = { tx_hash: authbase, tx_pos: 0 };
-
-    const Electrum = ElectrumService();
-    let identityUtxo = Electrum.requestUtxoInfo(
-      identityOutput.tx_hash,
-      identityOutput.tx_pos
+    const BCMR_MAGIC = "6a0442434d52"; // OP_RETURN BCMR
+    const bcmrOutput = authhead.vout.find((out) =>
+      out.scriptPubKey.hex.startsWith(BCMR_MAGIC)
     );
 
-    /* eslint-disable no-await-in-loop */
-    let nextTxHash = authbase;
-    while (identityUtxo === null) {
-      const nextTx = await TransactionManager.resolveTransaction(nextTxHash);
-      const scripthash = sha256
-        .text(nextTx.vout[0].scriptPubKey.hex)
-        .split("")
-        .reverse()
-        .join("");
-
-      const scripthashHistory =
-        await Electrum.requestScripthashHistory(scripthash);
-
-      scanHistoryForUtxo(scripthashHistory, nextTxHash, 0);
+    if (bcmrOutput) {
+      Log.debug("resolveIdentity found BCMR output", bcmrOutput);
     }
   }
+  async function resolveAuthChain(authbase) {
+    const TransactionManager = TransactionManagerService();
+    const Electrum = ElectrumService();
 
-  async function scanHistoryForUtxo(history, tx_hash, tx_pos) {
-    const promises = history.map(async (h) => {
-      const Electrum = ElectrumService();
-      const { vin } = await Electrum.requestTransaction(h.tx_hash);
+    Log.debug("resolveAuthChain", authbase);
 
-      const matchUtxo = vin.find(
-        (vn) => vn.txid === tx_hash && vn.vout === tx_pos
-      );
+    let nextTxHash = authbase;
+    let chain = []; // Track the chain for debugging or return
 
-      if (!matchUtxo) {
-        return Promise.reject();
+    while (true) {
+      chain.push(nextTxHash);
+
+      // Check if output 0 is unspent (authhead condition)
+      const identityUtxo = await Electrum.requestUtxoInfo(nextTxHash, 0);
+      if (identityUtxo !== null) {
+        Log.debug("resolveAuthChain found authhead utxo", identityUtxo);
+
+        const authhead = await Electrum.requestTransaction(nextTxHash);
+        Log.debug("authhead", authhead);
+        return authhead; // Return the authhead transaction hash
       }
 
-      return Promise.resolve({
-        tx_hash: matchUtxo.txid,
-        tx_pos: matchUtxo.vout,
-      });
-    });
+      // If output 0 is spent, find the spending transaction
+      const nextTx = await TransactionManager.resolveTransaction(nextTxHash);
 
-    return Promise.any(promises);
+      /*const isOpReturn = nextTx.vout[0].scriptPubKey.hex.startsWith("6a");
+      if (isOpReturn) {
+        Log.warn("OP_RETURN", nextTx.vout[0]);
+        return Promise.reject(`Identity burned? ${nextTxHash}`);
+        }*/
+
+      const address = nextTx.vout[0].scriptPubKey.addresses[0];
+      const addressHistory = await Electrum.requestAddressHistory(
+        address,
+        nextTx.height
+      );
+
+      const promises = addressHistory.map(async (h) => {
+        const { vin } = await TransactionManager.resolveTransaction(h.tx_hash);
+        const matchUtxo = vin.find(
+          (vn) => vn.txid === nextTxHash && vn.vout === 0
+        );
+
+        if (matchUtxo) {
+          return h.tx_hash; // Resolve with the transaction hash that spends output 0
+        }
+        // Explicitly reject with a reason for non-matching transactions
+        return Promise.reject(
+          new Error(`Transaction ${h.tx_hash} does not spend ${nextTxHash}:0`)
+        );
+      });
+
+      try {
+        nextTxHash = await Promise.any(promises);
+        Log.debug("Found next transaction in chain", nextTxHash);
+      } catch (error) {
+        // If no transaction spends output 0, this might indicate an error or incomplete history
+        Log.error("No spending transaction found for", nextTxHash, error);
+        throw new Error(
+          `Authchain resolution failed: No spending transaction found for ${nextTxHash}`
+        );
+      }
+    }
   }
 }
