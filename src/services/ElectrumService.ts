@@ -208,14 +208,20 @@ export default function ElectrumService() {
   }
 
   // request the entire transaction history for an address
-  async function requestAddressHistory(address: string) {
+  async function requestAddressHistory(
+    address: string,
+    startHeight: number = 0,
+    endHeight: number = -1
+  ) {
     if (electrum === null || electrum.status !== ConnectionStatus.CONNECTED) {
       throw new ElectrumNotConnectedError();
     }
 
     const history = await electrum.request(
       "blockchain.address.get_history",
-      address
+      address,
+      startHeight,
+      endHeight
     );
 
     if (history instanceof Error) {
@@ -267,7 +273,7 @@ export default function ElectrumService() {
     }
 
     const utxoInfo = await electrum.request(
-      "blockchain.utxo.getInfo",
+      "blockchain.utxo.get_info",
       tx_hash,
       tx_pos
     );
