@@ -96,7 +96,7 @@ export default function QrCodeSettings() {
         </div>
       </Accordion.Child>
       <Accordion.Child>
-        <div className="text-right">
+        <div className="flex justify-end">
           <Button
             onClick={handleResetQrColors}
             icon={UndoOutlined}
