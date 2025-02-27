@@ -26,7 +26,7 @@ import AddressManagerService, {
 } from "@/services/AddressManagerService";
 import AddressScannerService from "@/services/AddressScannerService";
 import UtxoManagerService from "@/services/UtxoManagerService";
-import JanitorService from "@/services/JanitorService";
+//import JanitorService from "@/services/JanitorService";
 
 import { block_checkpoints } from "@/util/block_checkpoints";
 import { generateBatch } from "@/util/batch";

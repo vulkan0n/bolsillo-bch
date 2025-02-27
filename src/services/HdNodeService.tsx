@@ -12,14 +12,13 @@ import {
 import { hexToBin } from "@/util/hex";
 import { sha256 } from "@/util/hash";
 
-import LogService from "@/services/LogService";
+//import LogService from "@/services/LogService";
 import AddressManagerService from "@/services/AddressManagerService";
 import WalletManagerService, {
   WalletStub,
 } from "@/services/WalletManagerService";
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const Log = LogService("HdNode");
+//const Log = LogService("HdNode");
 
 export default function HdNodeService(walletStub: WalletStub) {
   const WalletManager = WalletManagerService();

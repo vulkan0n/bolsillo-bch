@@ -6,7 +6,6 @@ interface ChecksumProps {
   canvasSize?: number;
 }
 
-
 export function Checksum({ data, canvasSize = 32 }: ChecksumProps) {
   const canvasRef = useRef(null);
   const hash = sha256.text(data);

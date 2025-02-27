@@ -364,8 +364,9 @@ export default function AddressScannerService(wallet) {
           );
         }
 
-        store.dispatch(walletBalanceUpdate({ wallet, isChange: change === 1 }));
+        store.dispatch(walletBalanceUpdate({ wallet, isChange: false }));
       }
+      /* eslint-enable no-await-in-loop */
 
       await WalletManager.saveWallet(wallet.walletHash);
       Log.debug("Wallet Rebuild Done");

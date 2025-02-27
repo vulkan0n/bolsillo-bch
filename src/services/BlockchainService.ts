@@ -197,8 +197,7 @@ export default function BlockchainService() {
   }
 
   // decodeBlockHeader: extracts data from raw block header
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  function decodeBlockHeader(hex) {
+  /*function decodeBlockHeader(hex) {
     /*
      * version: 4 bytes int
      * prevBlockhash: 32 bytes block hash
@@ -206,11 +205,12 @@ export default function BlockchainService() {
      * timestamp: 4 bytes int
      * target: 4 bytes
      * nonce: 4 bytes
-     */
+     */ /*
 
     return {};
-  }
+  }*/
 
+  /*
   function verifyMerkleProof(txHash, txIndex, merkleBranch, merkleRoot) {
     //Log.log("verifyMerkleProof", txHash, txIndex, merkleBranch, merkleRoot);
 
@@ -234,6 +234,7 @@ export default function BlockchainService() {
     }
     return binToHex(hash) === merkleRoot;
   }
+  */
 
   async function deleteBlock(blockhash: string): Promise<void> {
     await deleteBlockFile(blockhash);

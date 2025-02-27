@@ -95,7 +95,7 @@ export default function WalletManagerService() {
       throw new WalletNotExistsError(walletHash);
     }
 
-    const wallet = result[0]; // eslint-disable-line prefer-destructuring
+    const wallet = result[0];
 
     wallet.network = network;
 

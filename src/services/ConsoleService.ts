@@ -14,7 +14,6 @@ function ConsoleService() {
     exportLogs,
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   function registerLine(messages, context) {
     const line: Array<string> = [];
 

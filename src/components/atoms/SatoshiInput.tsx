@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
-/* eslint-disable react/require-default-props */
 import { useState, useEffect, useCallback, forwardRef } from "react";
 import { useSelector } from "react-redux";
 import { Keyboard } from "@capacitor/keyboard";
@@ -223,5 +222,10 @@ export const SatoshiInput = forwardRef<HTMLInputElement, SatoshiInputProps>(
     );
   }
 );
+
+SatoshiInput.defaultProps = {
+  size: 20,
+  autoFocus: false,
+};
 
 //(deviceInfo.platform === "android" && event.keyCode === 229); // android is dumb, so we cope by catching keyCode 229 and hoping for the best

@@ -1,4 +1,3 @@
-/* eslint-disable no-await-in-loop */
 import { useContext } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Dialog } from "@capacitor/dialog";
@@ -37,6 +36,8 @@ export default function SecuritySettings() {
     const isAuthorized = await SecurityService().authorize(AuthActions.Any);
     if (isAuthorized || pinHash === "") {
       let pin = "";
+
+      /* eslint-disable no-await-in-loop */
       while (!pin) {
         pin = (
           await Dialog.prompt({
@@ -46,6 +47,8 @@ export default function SecuritySettings() {
           })
         ).value;
       }
+      /* eslint-enable no-await-in-loop */
+
       const newPinHash = sha256.text(pin);
 
       const { value: confirmPin } = await Dialog.prompt({

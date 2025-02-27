@@ -1,6 +1,5 @@
-import { useState, useEffect } from "react";
+//import { useEffect } from "react";
 import { useSelector } from "react-redux";
-import { useNavigate } from "react-router";
 import { selectActiveWalletHash } from "@/redux/wallet";
 import LogService from "@/services/LogService";
 import UtxoManagerService from "@/services/UtxoManagerService";
@@ -14,7 +13,7 @@ const Log = LogService("AssetsViewTokens");
 export default function AssetsViewTokens() {
   const walletHash = useSelector(selectActiveWalletHash);
 
-  const navigate = useNavigate();
+  //const navigate = useNavigate();
 
   //const [tokenData, setTokenData] = useState([]);
 
@@ -31,7 +30,7 @@ export default function AssetsViewTokens() {
   );
 
   const Bcmr = BcmrService();
-  useEffect(
+  /*useEffect(
     function resolveTokenMetadata() {
       const resolve = async () =>
         Promise.all(
@@ -41,7 +40,7 @@ export default function AssetsViewTokens() {
       //resolve();
     },
     [Bcmr, tokenCategories]
-  );
+    );*/
 
   const tokenData = tokenCategories
     .map((category) => {
@@ -51,11 +50,13 @@ export default function AssetsViewTokens() {
 
       try {
         identity = Bcmr.getIdentity(category);
-      } catch (e) {}
+      } catch (e) {
+        // pass
+      }
 
       const amount = tokenUtxos
         .filter((utxo) => utxo.token_category === category)
-        .reduce((total, utxo) => (total += utxo.token_amount), 0);
+        .reduce((total, utxo) => total + utxo.token_amount, 0);
 
       const nftCount = tokenUtxos.filter(
         (utxo) =>
@@ -93,13 +94,13 @@ export default function AssetsViewTokens() {
     const len = textCat.length;
 
     return len > 137
-      ? textCat.slice(0, 140) + "..."
+      ? `${textCat.slice(0, 140)}...`
       : textCat + (textCat.endsWith(".") ? "" : ".");
   };
 
-  const handleTokenNavigate = (tokenId) => {
-    //navigate(`/assets/tokens/${tokenId}`);
-  };
+  /*const handleTokenNavigate = (tokenId) => {
+    navigate(`/assets/tokens/${tokenId}`);
+    };*/
 
   return (
     <div className="p-1">
@@ -114,7 +115,7 @@ export default function AssetsViewTokens() {
             <div
               key={token.category}
               className="w-full my-1 p-1 border border-primary rounded"
-              onClick={() => handleTokenNavigate(token.category)}
+              onClick={() => null}
             >
               <div className="flex items-center">
                 <div className="flex items-center justify-center">

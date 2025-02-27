@@ -5,7 +5,7 @@ export const Haptic = {
   async success() {
     try {
       await Haptics.notification({ type: NotificationType.Success });
-    } catch {}
+    } catch {} // empty catches to mute errors. we don't care.
   },
 
   async error() {
