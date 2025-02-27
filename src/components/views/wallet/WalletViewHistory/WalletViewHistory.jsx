@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { Link } from "react-router";
 import { useSelector, useDispatch } from "react-redux";
 import { DateTime } from "luxon";
@@ -37,6 +37,62 @@ export default function WalletViewHistory() {
   const receiveStyle = "text-secondary";
   const sendStyle = "text-error";
 
+  const historyRender = useMemo(
+    () =>
+      txHistory.map((tx, i) =>
+        i < 100 ? (
+          <li key={`${tx.txid}${tx.address}`} className="py-2">
+            <Link to={`/explore/tx/${tx.txid}`}>
+              <div className="flex text-sm">
+                <div className="shrink flex flex-col items-center justify-center mr-1 text-xs">
+                  {tx.height <= 0 ? (
+                    <HourglassOutlined className="text-zinc-400" />
+                  ) : (
+                    <CheckCircleOutlined className="text-primary" />
+                  )}
+                </div>
+                <div className="flex-1">
+                  <div
+                    className={`${tx.amount > 0 ? receiveStyle : sendStyle}`}
+                  >
+                    {(tx.height <= 0
+                      ? DateTime.fromISO(tx.time_seen)
+                      : DateTime.fromSeconds(tx.time)
+                    ).toLocaleString(DateTime.DATE_SHORT)}
+                  </div>
+                  <div>
+                    {(tx.height <= 0
+                      ? DateTime.fromISO(tx.time_seen)
+                      : DateTime.fromSeconds(tx.time)
+                    ).toLocaleString(DateTime.TIME_WITH_SECONDS)}
+                  </div>
+                </div>
+                <div className="flex-1 text-right">
+                  <div
+                    className={`font-mono ${
+                      tx.amount > 0 ? receiveStyle : sendStyle
+                    }`}
+                  >
+                    {tx.amount > 0 && "+"}
+                    <Satoshi value={tx.amount} />
+                  </div>
+                  <div>
+                    <Satoshi value={tx.amount} flip />
+                  </div>
+                </div>
+              </div>
+              {tx.memo && (
+                <div className="text-sm text-zinc-500 ml-4">
+                  Memo: {tx.memo}
+                </div>
+              )}
+            </Link>
+          </li>
+        ) : null
+      ),
+    [txHistory]
+  );
+
   return (
     <div className="flex flex-col justify-start h-full">
       <ViewHeader
@@ -55,57 +111,7 @@ export default function WalletViewHistory() {
               )}
             </li>
           )}
-          {txHistory.map((tx, i) =>
-            i < 100 ? (
-              <li key={`${tx.txid}${tx.address}`} className="py-2">
-                <Link to={`/explore/tx/${tx.txid}`}>
-                  <div className="flex text-sm">
-                    <div className="shrink flex flex-col items-center justify-center mr-1 text-xs">
-                      {tx.height <= 0 ? (
-                        <HourglassOutlined className="text-zinc-400" />
-                      ) : (
-                        <CheckCircleOutlined className="text-primary" />
-                      )}
-                    </div>
-                    <div className="flex-1">
-                      <div
-                        className={`${tx.amount > 0 ? receiveStyle : sendStyle}`}
-                      >
-                        {(tx.height <= 0
-                          ? DateTime.fromISO(tx.time_seen)
-                          : DateTime.fromSeconds(tx.time)
-                        ).toLocaleString(DateTime.DATE_SHORT)}
-                      </div>
-                      <div>
-                        {(tx.height <= 0
-                          ? DateTime.fromISO(tx.time_seen)
-                          : DateTime.fromSeconds(tx.time)
-                        ).toLocaleString(DateTime.TIME_WITH_SECONDS)}
-                      </div>
-                    </div>
-                    <div className="flex-1 text-right">
-                      <div
-                        className={`font-mono ${
-                          tx.amount > 0 ? receiveStyle : sendStyle
-                        }`}
-                      >
-                        {tx.amount > 0 && "+"}
-                        <Satoshi value={tx.amount} />
-                      </div>
-                      <div>
-                        <Satoshi value={tx.amount} flip />
-                      </div>
-                    </div>
-                  </div>
-                  {tx.memo && (
-                    <div className="text-sm text-zinc-500 ml-4">
-                      Memo: {tx.memo}
-                    </div>
-                  )}
-                </Link>
-              </li>
-            ) : null
-          )}
+          {historyRender}
         </ul>
       </div>
     </div>
