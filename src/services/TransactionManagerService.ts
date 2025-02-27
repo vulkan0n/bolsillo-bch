@@ -5,6 +5,7 @@ import {
   lockingBytecodeToCashAddress,
   TransactionCommon,
   assertSuccess,
+  disassembleBytecodeBCH,
 } from "@bitauth/libauth";
 
 import LogService from "@/services/LogService";
@@ -359,13 +360,17 @@ export default function TransactionManagerService() {
         tokenSupport: !!output.token,
       });
 
-      return {
+      const vout = {
         n,
         scriptPubKey: {
-          addresses: [value.greaterThan(0) ? cashAddr : ""],
+          addresses: [typeof cashAddr !== "string" ? cashAddr.address : ""],
+          hex: binToHex(output.lockingBytecode),
+          asm: disassembleBytecodeBCH(output.lockingBytecode),
         },
         value: value.toString(),
       };
+
+      return vout;
     });
   }
 }

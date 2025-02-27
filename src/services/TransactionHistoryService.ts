@@ -125,14 +125,14 @@ export default function TransactionHistoryService(
     const TransactionManager = TransactionManagerService();
 
     const isMyUtxo = (utxo) => {
-      if (utxo.value === "0") {
+      if (utxo.scriptPubKey.asm.startsWith("OP_RETURN")) {
         // OP_RETURN
         return false;
       }
 
       const isMine =
         utxo.scriptPubKey.addresses.findIndex((address) => {
-          return myAddresses.includes(address.address);
+          return myAddresses.includes(address);
         }) > -1;
 
       return isMine;
