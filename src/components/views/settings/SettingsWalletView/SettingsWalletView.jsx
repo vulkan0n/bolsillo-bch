@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback, useEffect, useMemo } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
 import { Share } from "@capacitor/share";
