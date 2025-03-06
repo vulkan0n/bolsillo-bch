@@ -1,14 +1,14 @@
 /* eslint-disable */
 import { DateTime } from "luxon";
 import { MetadataRegistry, IdentitySnapshot } from "@bitauth/libauth";
-//import LogService from "@/services/LogService";
+import LogService from "@/services/LogService";
 import ElectrumService from "@/services/ElectrumService";
 import TransactionManagerService from "@/services/TransactionManagerService";
 import { sha256 } from "@/util/hash";
 
 import bcmrOtr from "@/assets/bcmr-open-token-registry-2023-05-15.json";
 
-//const Log = LogService("BcmrService");
+const Log = LogService("BcmrService");
 
 export default function BcmrService() {
   const bcmr: MetadataRegistry = bcmrOtr as MetadataRegistry;
@@ -60,11 +60,30 @@ export default function BcmrService() {
     }
 
     //Log.debug("currentSnapshot", currentSnapshot, authbase);
+    //
+    const colorHex = `#${authbase.slice(0, 6)}`;
 
-    return currentSnapshot;
+    return { ...currentSnapshot, color: colorHex };
   }
 
-  async function resolveIdentity(authbase: string) {}
+  async function resolveIdentity(authbase: string) {
+    const response = await fetch(
+      `https://bcmr.paytaca.com/api/tokens/${authbase}`
+    );
+
+    const data = await response.json();
+    Log.debug(data);
+
+    const colorHex = `#${authbase.slice(0, 6)}`;
+
+    const tokenData = {
+      ...data,
+      category: authbase,
+      color: colorHex,
+    };
+
+    return tokenData;
+  }
 
   async function resolveAuthChain(authbase: string) {
     const TransactionManager = TransactionManagerService();
