@@ -175,10 +175,7 @@ export default function BlockchainService() {
       return block_checkpoints.first2023;
     }
 
-    const block = {
-      ...result[0],
-      hex: await _loadBlockData(result[0].blockhash),
-    };
+    const block = resolveBlockByHash(result[0].blockhash);
 
     //Log.debug("getChaintip block", block);
     return block;

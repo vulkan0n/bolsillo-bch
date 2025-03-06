@@ -558,12 +558,18 @@ export const syncReducer = createReducer(initialState, (builder) => {
       state.syncPending.chaintip -= 1;
       state.chaintip = action.payload;
     })
+    .addCase(syncChaintip.rejected, (state) => {
+      state.syncPending.chaintip += 1;
+    })
     .addCase(syncHotRefresh.pending, (state) => {
       //state.isSyncComplete = false;
       state.syncPending.hotRefresh += 1;
     })
     .addCase(syncHotRefresh.fulfilled, (state, action) => {
       state.lastRefresh = action.payload;
+      state.syncPending.hotRefresh -= 1;
+    })
+    .addCase(syncHotRefresh.rejected, (state, action) => {
       state.syncPending.hotRefresh -= 1;
     })
     .addCase(syncClearAddresses, (state) => {
