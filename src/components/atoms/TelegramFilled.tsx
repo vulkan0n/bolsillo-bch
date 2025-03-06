@@ -1,6 +1,6 @@
-export function TelegramFilled({ className }: { className: string }) {
+export function TelegramFilled({ className = "" }: { className?: string }) {
   return (
-    <span className="anticon" role="img" aria-label="telegram">
+    <span className={`anticon ${className}`} role="img" aria-label="telegram">
       <svg
         role="img"
         viewBox="0 0 24 24"
