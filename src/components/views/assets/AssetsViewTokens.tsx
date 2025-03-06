@@ -1,9 +1,9 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router";
-import { selectActiveWalletHash } from "@/redux/wallet";
+import { selectActiveWallet } from "@/redux/wallet";
 import LogService from "@/services/LogService";
-import UtxoManagerService from "@/services/UtxoManagerService";
+import TokenManagerService from "@/services/TokenManagerService";
 import BcmrService from "@/services/BcmrService";
 import Checksum from "@/atoms/Checksum";
 import KeyWarning from "@/atoms/KeyWarning/KeyWarning";
@@ -12,65 +12,20 @@ import NumberFormat from "@/atoms/NumberFormat";
 const Log = LogService("AssetsViewTokens");
 
 export default function AssetsViewTokens() {
-  const walletHash = useSelector(selectActiveWalletHash);
+  // [?] use selectActiveWallet instead of selectActiveWalletHash
+  // we want the UI to re-render on wallet update in case we send/receive tokens
+  const { walletHash } = useSelector(selectActiveWallet);
 
   const navigate = useNavigate();
 
-  const tokenUtxos = useMemo(() => {
-    const UtxoManager = UtxoManagerService(walletHash);
-    return UtxoManager.getWalletTokens();
-  }, [walletHash]);
-
-  const tokenCategories = useMemo(
-    () =>
-      tokenUtxos.reduce(
-        (categories, utxo) =>
-          !categories.includes(utxo.token_category)
-            ? [...categories, utxo.token_category]
-            : categories,
-        []
-      ),
-    [tokenUtxos]
+  const TokenManager = useMemo(
+    () => TokenManagerService(walletHash),
+    [walletHash]
   );
 
-  const getTokenAmounts = useCallback(
-    (category) => {
-      const amount = tokenUtxos
-        .filter((utxo) => utxo.token_category === category)
-        .reduce((total, utxo) => total + utxo.token_amount, 0);
-
-      const nftCount = tokenUtxos.filter(
-        (utxo) =>
-          utxo.token_category === category && utxo.nft_capability !== null
-      ).length;
-
-      return { amount, nftCount };
-    },
-    [tokenUtxos]
-  );
-
-  const initializeIdentity = (category) => {
-    const Bcmr = BcmrService();
-
-    const colorHex = `#${category.slice(0, 6)}`;
-
-    let identity = {
-      name: `Token ${category.slice(0, 6)}`,
-      color: colorHex,
-    };
-
-    try {
-      identity = Bcmr.getIdentity(category);
-    } catch (e) {
-      // pass
-    }
-
-    return {
-      category,
-      ...getTokenAmounts(category),
-      ...identity,
-    };
-  };
+  const tokenCategories = useMemo(() => {
+    return TokenManager.getTokenCategories();
+  }, [TokenManager]);
 
   const sortIdentities = useCallback((a, b) => {
     // sort tokens with metadata above tokens without metadata
@@ -86,7 +41,7 @@ export default function AssetsViewTokens() {
   }, []);
 
   const [tokenData, setTokenData] = useState(
-    tokenCategories.map(initializeIdentity).sort(sortIdentities)
+    tokenCategories.map(TokenManager.getTokenData).sort(sortIdentities)
   );
 
   useEffect(
@@ -96,11 +51,12 @@ export default function AssetsViewTokens() {
         const resolvedData = (
           await Promise.all(
             tokenCategories.map(async (category) => {
+              const data = TokenManager.getTokenData(category);
               const identity = await Bcmr.resolveIdentity(category);
 
               return {
+                ...data,
                 ...identity,
-                ...getTokenAmounts(category),
               };
             })
           )
@@ -111,7 +67,7 @@ export default function AssetsViewTokens() {
 
       resolve();
     },
-    [tokenCategories, tokenUtxos, getTokenAmounts, sortIdentities]
+    [tokenCategories, TokenManager, sortIdentities]
   );
 
   Log.debug(tokenData);
@@ -141,44 +97,7 @@ export default function AssetsViewTokens() {
 }
 
 export function TokenCard({ token }) {
-  const truncateDescription = (text) => {
-    // Match sentences ending with ., !, or ? followed by optional whitespace
-    const sentences = text.match(/.*?[.!?]\s*/g);
-    let selectedText;
-
-    // Determine the text to use
-    if (sentences) {
-      if (sentences.length >= 2) {
-        // Take the first two sentences
-        selectedText = sentences[0] + sentences[1];
-      } else {
-        // Only one sentence available
-        selectedText = sentences[0];
-      }
-    } else {
-      // No sentence-ending punctuation; use the whole text
-      selectedText = text;
-    }
-
-    // Remove trailing whitespace
-    selectedText = selectedText.trim();
-
-    // Truncate if necessary
-    if (selectedText.length > 140) {
-      const truncated = selectedText.slice(0, 140);
-      const lastSpace = truncated.lastIndexOf(" ");
-      if (lastSpace > 0) {
-        // Truncate at the last word boundary before 140 characters
-        selectedText = `${truncated.slice(0, lastSpace)}...`;
-      } else {
-        // No space found; truncate at 140 and add "..."
-        selectedText = `${truncated}...`;
-      }
-    }
-
-    return selectedText;
-  };
-
+  const Bcmr = BcmrService();
   return (
     <div
       key={token.category}
@@ -190,7 +109,7 @@ export function TokenCard({ token }) {
             <Checksum data={token.category} />
           </span>
         </div>
-        <div className="flex flex-col justify-between mx-1">
+        <div className="flex flex-col mx-1">
           <div className="text-sm flex items-baseline">
             <span
               className="font-mono text-xs font-bold pr-1.5 mr-1.5 border-r border-zinc-400/90"
@@ -202,12 +121,12 @@ export function TokenCard({ token }) {
               {token.name || `Token ${token.category.slice(0, 6)}`}
             </span>
           </div>
-          <div className="flex items-center text-zinc-600 mt-0.5">
+          <div className="flex items-center text-zinc-600">
             {token.amount > 0 && (
               <span className="text-xs font-mono mr-1.5 flex items-center">
                 <span
                   style={{ color: token.color }}
-                  className="relative bottom-[1px] pr-0.5"
+                  className="relative bottom-[1px] pr-0.5 text-sm"
                 >
                   &#9679;
                 </span>
@@ -238,7 +157,7 @@ export function TokenCard({ token }) {
       <div>
         {token.description && (
           <div className="p-1 text-sm text-zinc-700">
-            {truncateDescription(token.description)}
+            {Bcmr.truncateDescription(token.description)}
           </div>
         )}
         <div className="mt-1.5 pt-0.5 border-t border-dashed border-zinc-300/80 font-mono text-xs text-zinc-400/70 truncate">

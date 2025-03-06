@@ -11,15 +11,16 @@ import bcmrOtr from "@/assets/bcmr-open-token-registry-2023-05-15.json";
 const Log = LogService("BcmrService");
 
 export default function BcmrService() {
-  const bcmr: MetadataRegistry = bcmrOtr as MetadataRegistry;
+  const _bcmr: MetadataRegistry = bcmrOtr as MetadataRegistry;
 
   return {
     getIdentity,
     resolveIdentity,
     resolveAuthChain,
+    truncateDescription,
   };
 
-  function getIdentity(authbase: string) {
+  function getIdentity(authbase: string, bcmr = _bcmr) {
     const snapshots = bcmr.identities ? bcmr.identities[authbase] : null;
 
     if (snapshots === null) {
@@ -60,30 +61,39 @@ export default function BcmrService() {
     }
 
     //Log.debug("currentSnapshot", currentSnapshot, authbase);
-    //
+
     const colorHex = `#${authbase.slice(0, 6)}`;
 
     return { ...currentSnapshot, color: colorHex };
   }
 
   async function resolveIdentity(authbase: string) {
-    const response = await fetch(
-      `https://bcmr.paytaca.com/api/tokens/${authbase}`
-    );
+    let identity = {};
+    try {
+      const response = await fetch(
+        `https://bcmr.paytaca.com/api/registries/${authbase}/latest`
+      );
 
-    const data = await response.json();
-    Log.debug(data);
+      const data = await response.json();
+      identity = getIdentity(authbase, data);
+    } catch (e) {
+      // pass
+    }
 
     const colorHex = `#${authbase.slice(0, 6)}`;
 
     const tokenData = {
-      ...data,
+      ...identity,
       category: authbase,
       color: colorHex,
     };
 
+    Log.debug(tokenData);
+
     return tokenData;
   }
+
+  async function resolveIcon(iconUri: string) {}
 
   async function resolveAuthChain(authbase: string) {
     const TransactionManager = TransactionManagerService();
@@ -133,5 +143,25 @@ export default function BcmrService() {
     });
 
     return Promise.any(promises);
+  }
+
+  function truncateDescription(text) {
+    // extract sentences, delimited by punctuation and whitespace
+    const sentences = text.match(/.*?[.!?]\s*/g);
+
+    // truncate down to first two sentences, remove whitespace
+    const selectedText = (
+      sentences ? sentences.slice(0, 2).join("") : text
+    ).trim();
+
+    if (selectedText.length <= 140) return selectedText;
+
+    const truncated = selectedText.slice(0, 140);
+
+    // truncate cleanly at word boundaries
+    const lastSpace = truncated.lastIndexOf(" ");
+    return lastSpace > 0
+      ? truncated.slice(0, lastSpace) + "..."
+      : truncated + "...";
   }
 }
