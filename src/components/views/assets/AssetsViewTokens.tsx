@@ -9,6 +9,8 @@ import Checksum from "@/atoms/Checksum";
 import KeyWarning from "@/atoms/KeyWarning/KeyWarning";
 import NumberFormat from "@/atoms/NumberFormat";
 
+import { truncateProse } from "@/util/string";
+
 const Log = LogService("AssetsViewTokens");
 
 export default function AssetsViewTokens() {
@@ -97,7 +99,6 @@ export default function AssetsViewTokens() {
 }
 
 export function TokenCard({ token }) {
-  const Bcmr = BcmrService();
   return (
     <div
       key={token.category}
@@ -157,7 +158,7 @@ export function TokenCard({ token }) {
       <div>
         {token.description && (
           <div className="p-1 text-sm text-zinc-700">
-            {Bcmr.truncateDescription(token.description)}
+            {truncateProse(token.description)}
           </div>
         )}
         <div className="mt-1.5 pt-0.5 border-t border-dashed border-zinc-300/80 font-mono text-xs text-zinc-400/70 truncate">

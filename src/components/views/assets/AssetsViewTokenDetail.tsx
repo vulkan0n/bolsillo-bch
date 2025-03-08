@@ -27,6 +27,8 @@ import TokenManagerService from "@/services/TokenManagerService";
 import Checksum from "@/atoms/Checksum";
 import NumberFormat from "@/atoms/NumberFormat";
 
+import { truncateProse } from "@/util/string";
+
 export default function AssetsViewTokenDetail() {
   const { tokenId } = useParams();
   const { walletHash } = useSelector(selectActiveWallet);
@@ -35,7 +37,6 @@ export default function AssetsViewTokenDetail() {
     () => TokenManagerService(walletHash),
     [walletHash]
   );
-  const Bcmr = useMemo(() => BcmrService(), []);
 
   const [tokenData, setTokenData] = useState(
     TokenManager.getTokenData(tokenId)
@@ -44,6 +45,7 @@ export default function AssetsViewTokenDetail() {
   useEffect(
     function resolveTokenMetadata() {
       const resolve = async () => {
+        const Bcmr = BcmrService();
         const data = TokenManager.getTokenData(tokenId);
         const identity = await Bcmr.resolveIdentity(tokenId);
 
@@ -58,7 +60,7 @@ export default function AssetsViewTokenDetail() {
       resolve();
     },
 
-    [TokenManager, tokenId, Bcmr]
+    [TokenManager, tokenId]
   );
 
   const [shouldShowFullDescription, setShouldShowFullDescription] =
@@ -166,7 +168,7 @@ export default function AssetsViewTokenDetail() {
                 tokenData.description
               ) : (
                 <>
-                  <div>{Bcmr.truncateDescription(tokenData.description)}</div>
+                  <div>{truncateProse(tokenData.description)}</div>
                   <div className="text-right text-xs">See More &gt;</div>
                 </>
               )}
