@@ -5,14 +5,25 @@ export const routeDebug = [
       const { default: DebugView } = await import("@/views/debug/DebugView");
       return { Component: DebugView };
     },
+    children: [
+      {
+        index: true,
+        async lazy() {
+          const { default: DebugViewHome } = await import(
+            "@/views/debug/DebugViewHome"
+          );
+          return { Component: DebugViewHome };
+        },
+      },
+      /*{
+        path: "/debug/data",
+        async lazy() {
+          const { default: DebugDataView } = await import(
+            "@/views/debug/DebugDataView"
+          );
+          return { Component: DebugDataView };
+        },
+        },*/
+    ],
   },
-  /*{
-    path: "/debug/dbtool",
-    async lazy() {
-      const { default: DebugDatabaseView } = await import(
-        "@/views/debug/DebugDatabaseView"
-      );
-      return { Component: DebugDatabaseView };
-    },
-    },*/
 ];

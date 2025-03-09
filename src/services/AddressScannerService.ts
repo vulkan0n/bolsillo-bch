@@ -19,6 +19,8 @@ import {
   ValidDerivationPath,
 } from "@/util/derivation";
 
+import { generateBatch } from "@/util/batch";
+
 const ADDRESS_GAP_LIMIT = 20; // BIP-44 gap limit is 20
 const DERIVATION_SCAN_LIMIT = 5;
 const SCAN_BATCH_SIZE = 3000;
@@ -61,7 +63,7 @@ export default function AddressScannerService(wallet: WalletEntity) {
       const latestUnusedAddresses = latestAddresses.filter(
         (a) => a.state === null
       );
-      const gapDiff = ADDRESS_GAP_LIMIT - latestUnusedAddresses.length;
+      const gapDiff = ADDRESS_GAP_LIMIT - latestUnusedAddresses.length - 1;
 
       const latestAddress = latestAddresses[0] || null;
       const nextHdIndex =
@@ -82,7 +84,7 @@ export default function AddressScannerService(wallet: WalletEntity) {
     }
 
     const generatedAddresses = [...populate(0), ...populate(1)];
-    Log.debug("populateAddresses", generatedAddresses);
+    //Log.debug("populateAddresses", generatedAddresses);
     return generatedAddresses;
   }
 
@@ -150,27 +152,35 @@ export default function AddressScannerService(wallet: WalletEntity) {
 
     // generate addresses within specified hd_index range
     const addresses: Array<AddressStub> = [];
-    for (let hd_index = startIndex; hd_index < endIndex; hd_index += 1) {
+    for (let hd_index = startIndex; hd_index <= endIndex; hd_index += 1) {
       const address = Hd.generateAddress(hd_index, change);
       addresses.push({ address, hd_index, change, state: null });
     }
 
     // get updated state for all generated addresses
-    const addressStubs: Array<AddressStub> = await Promise.all(
-      addresses.map(async (a) => {
-        let addressState;
-        try {
-          addressState = await Electrum.requestAddressState(a.address);
-        } catch (e) {
-          // reset address state to null if request fails
-          // null addresses will get re-scanned later
-          Log.warn(e);
-          addressState = null;
-        }
+    const addressStubs: Array<AddressStub> = [];
 
-        return { ...a, state: addressState };
-      })
-    );
+    /* eslint-disable no-restricted-syntax */
+    /* eslint-disable no-await-in-loop */
+    for (const batch of generateBatch(addresses, SCAN_BATCH_SIZE / 10)) {
+      const stubs: Array<AddressStub> = await Promise.all(
+        batch.map(async (a) => {
+          let addressState;
+          try {
+            addressState = await Electrum.requestAddressState(a.address);
+          } catch (e) {
+            // reset address state to null if request fails
+            // null addresses will get re-scanned later
+            Log.warn(e);
+            addressState = null;
+          }
+
+          return { ...a, state: addressState };
+        })
+      );
+
+      addressStubs.push(...stubs);
+    }
 
     Log.debug("resolved states:", addressStubs);
 
@@ -216,7 +226,7 @@ export default function AddressScannerService(wallet: WalletEntity) {
     query = query.concat(
       needsRegistrationAddresses.map(
         (stub) =>
-          `INSERT INTO addresses (
+          `INSERT OR IGNORE INTO addresses (
             address, 
             hd_index,
             change
@@ -353,6 +363,7 @@ export default function AddressScannerService(wallet: WalletEntity) {
 
     try {
       await WalletManager.clearWalletData(wallet.walletHash);
+
       /* eslint-disable no-await-in-loop */
       for (let change = 0; change <= 1; change += 1) {
         let addresses = await scanMoreAddresses(
@@ -376,6 +387,7 @@ export default function AddressScannerService(wallet: WalletEntity) {
       await WalletManager.saveWallet(wallet.walletHash);
       Log.debug("Wallet Rebuild Done");
     } catch (e) {
+      WalletManager.setGenesisHeight(wallet.walletHash, null);
       Log.warn("Wallet Rebuild Failed!", e);
     } finally {
       Log.timeEnd("rebuildWallet");

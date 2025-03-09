@@ -90,10 +90,10 @@ export default function ElectrumService() {
     electrum.addListener("connected", () => {
       Log.log("ELECTRUM CONNECTED", getElectrumHost());
 
-      // only listen for notifications when connected
-      electrum.addListener("notification", handleElectrumNotifications);
-      store.dispatch(syncConnectionUp(connectServer));
+      store.dispatch(syncConnectionUp());
     });
+
+    electrum.addListener("notification", handleElectrumNotifications);
 
     electrum.addListener("disconnected", () => {
       Log.log("ELECTRUM DISCONNECTED");
@@ -134,37 +134,20 @@ export default function ElectrumService() {
   }
 
   // subscribeToAddress: listen for updates on an address
-  async function subscribeToAddress(
-    address: AddressEntity
-  ): Promise<{ address: AddressEntity; addressState: string | null }> {
+  async function subscribeToAddress(address: AddressEntity): Promise<void> {
     if (electrum === null || electrum.status !== ConnectionStatus.CONNECTED) {
       throw new ElectrumNotConnectedError();
     }
 
-    const result = await electrum.subscribe(
-      "blockchain.address.subscribe",
-      address.address
-    );
-
-    if (result instanceof Error) {
-      throw result;
-    }
-
-    return result;
+    return electrum.subscribe("blockchain.address.subscribe", address.address);
   }
 
-  async function subscribeToChaintip(): Promise<boolean> {
+  async function subscribeToChaintip(): Promise<void> {
     if (electrum === null || electrum.status !== ConnectionStatus.CONNECTED) {
       throw new ElectrumNotConnectedError();
     }
 
-    const result = await electrum.subscribe("blockchain.headers.subscribe");
-
-    if (result instanceof Error) {
-      throw result;
-    }
-
-    return result;
+    return electrum.subscribe("blockchain.headers.subscribe");
   }
 
   // request the most up-to-date balance information for an address

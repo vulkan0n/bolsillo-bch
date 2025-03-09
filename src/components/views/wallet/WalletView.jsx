@@ -1,9 +1,11 @@
-import { Outlet, Navigate } from "react-router";
+import { useEffect } from "react";
+import { Outlet, useNavigate } from "react-router";
 import { useSelector } from "react-redux";
 import { SyncOutlined } from "@ant-design/icons";
 import { selectActiveWalletHash, selectGenesisHeight } from "@/redux/wallet";
 import { selectScannerIsScanning } from "@/redux/device";
 import { selectIsConnected } from "@/redux/sync";
+import ElectrumService from "@/services/ElectrumService";
 import WalletViewBalance from "./WalletViewBalance";
 import SyncIndicator from "./SyncIndicator";
 import BalanceHideButton from "./BalanceHideButton";
@@ -14,22 +16,24 @@ export default function WalletView() {
   const genesis_height = useSelector(selectGenesisHeight);
   const isScanning = useSelector(selectScannerIsScanning);
   const isConnected = useSelector(selectIsConnected);
+  const navigate = useNavigate();
 
-  if (walletHash === "") {
-    return (
-      <div className="p-2 flex items-center justify-center fixed top-1/3 w-full text-center">
-        <SyncOutlined className="text-4xl" />
-      </div>
-    );
-  }
+  useEffect(
+    function initialWalletBuild() {
+      if (genesis_height === null && (isConnected || ElectrumService().getIsConnected())) {
+        requestAnimationFrame(() =>
+          navigate(`/settings/wallet/wizard/import/build/${walletHash}`)
+        );
+      }
+    },
+    [isConnected, genesis_height, walletHash, navigate]
+  );
 
-  if (genesis_height === null && isConnected) {
-    return (
-      <Navigate to={`/settings/wallet/wizard/import/build/${walletHash}`} />
-    );
-  }
-
-  return (
+  return walletHash === "" ? (
+    <div className="p-2 flex items-center justify-center fixed top-1/3 w-full text-center">
+      <SyncOutlined className="text-4xl" />
+    </div>
+  ) : (
     <FullColumn>
       {!isScanning && (
         <div className="flex bg-zinc-900 justify-between">

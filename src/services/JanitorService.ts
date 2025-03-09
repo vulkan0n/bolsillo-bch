@@ -4,6 +4,7 @@ import LogService from "@/services/LogService";
 import WalletManagerService from "@/services/WalletManagerService";
 import TransactionManagerService from "@/services/TransactionManagerService";
 import BlockchainService from "@/services/BlockchainService";
+import DatabaseService from "@/services/DatabaseService";
 
 const Log = LogService("Janitor");
 
@@ -13,6 +14,7 @@ export default function JanitorService() {
     recoverWalletFiles,
     fsck,
     purgeStaleData,
+    resetDatabases,
   };
 
   async function migrateLegacyDatabases() {
@@ -127,7 +129,7 @@ export default function JanitorService() {
 
     return Promise.all(
       importWallets.map((walletHash) =>
-        WalletManagerService().importWalletFile(walletHash)
+        WalletManager.importWalletFile(walletHash)
       )
     );
   }
@@ -211,5 +213,27 @@ export default function JanitorService() {
     await purgeLegacyTransactionFiles();
     await TransactionManagerService().purgeTransactions();
     await BlockchainService().purgeBlocks();
+  }
+
+  async function resetDatabases() {
+    const Database = DatabaseService();
+    const WalletManager = WalletManagerService();
+    const APP_DB = Database.getAppDatabase();
+
+    const metaWallets = WalletManager.listWallets();
+
+    // delete each walletDb, but keep the wallet files so they can be re-imported later
+    await Promise.all(
+      metaWallets.map(async (w) => {
+        await WalletManager.deleteWallet(w.walletHash, true);
+      })
+    );
+
+    // reset appDb
+    APP_DB.exec("PRAGMA user_version = 0;");
+    await Database.flushDatabase("app");
+
+    // hard-reset app!
+    window.location.assign("/");
   }
 }

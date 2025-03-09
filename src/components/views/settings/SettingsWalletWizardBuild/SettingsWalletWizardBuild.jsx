@@ -7,7 +7,7 @@ import { walletBoot } from "@/redux/wallet";
 import { selectSyncState } from "@/redux/sync";
 import WalletManagerService from "@/services/WalletManagerService";
 import AddressScannerService from "@/services/AddressScannerService";
-import ToastService from "@/services/ToastService";
+import ElectrumService from "@/services/ElectrumService";
 
 import { translate } from "@/util/translations";
 import translations from "./translations";
@@ -43,21 +43,17 @@ export default function SettingsWalletWizardBuild() {
         }
 
         if (isBuilding) {
-          await AddressScannerService(wallet).rebuildWallet((scanCount) =>
-            requestAnimationFrame(() =>
-              setAddressesScanned((scanned) => scanned + scanCount)
-            )
-          );
-          setIsBuildDone(true);
+          if (ElectrumService().getIsConnected()) {
+            await AddressScannerService(wallet).rebuildWallet((scanCount) =>
+              requestAnimationFrame(() =>
+                setAddressesScanned((scanned) => scanned + scanCount)
+              )
+            );
+            setIsBuildDone(true);
+          }
         }
 
         if (!isBuilding) {
-          if (!isConnected) {
-            ToastService().disconnected();
-            navigate("/");
-            return;
-          }
-
           setIsBuilding(true);
         }
       };

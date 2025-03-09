@@ -121,7 +121,6 @@ export default function SettingsWalletView() {
     dispatch(
       walletBoot({ walletHash: wallet.walletHash, network: bchNetwork })
     ).then(async () => {
-      await DatabaseService().flushHandles(true);
       navigate("/");
     });
   };

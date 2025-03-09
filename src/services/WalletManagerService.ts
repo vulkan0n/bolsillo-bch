@@ -169,6 +169,8 @@ export default function WalletManagerService() {
       return boot(nextWalletHash);
     }
 
+    Database.flushHandles(true);
+
     Log.debug("walletBoot", walletHash, wallet, wallet.network);
     return wallet;
   }
@@ -289,11 +291,14 @@ export default function WalletManagerService() {
     return { ...walletStub, walletHash, prefix, network };
   }
 
-  async function deleteWallet(walletHash) {
+  async function deleteWallet(walletHash, keepFile = false) {
     try {
       APP_DB.run(`DELETE FROM wallets WHERE walletHash="${walletHash}"`);
       await Database.deleteWalletDatabase(walletHash, network);
-      await deleteWalletFile(walletHash);
+
+      if (!keepFile) {
+        await deleteWalletFile(walletHash);
+      }
     } catch (e) {
       Log.warn(e);
     }
@@ -418,7 +423,7 @@ export default function WalletManagerService() {
     try {
       await importWallet(walletData);
       try {
-        await Database.flushHandles(false);
+        await Database.flushDatabase(walletHash);
       } catch (e) {
         Log.error(e);
       }
@@ -454,7 +459,8 @@ export default function WalletManagerService() {
     );
 
     await exportWalletFile(wallet);
-    await Database.flushHandles(true);
+    await Database.flushDatabase(walletHash);
+    await Database.flushDatabase("app");
   }
 
   async function openWalletDatabase(walletHash) {
