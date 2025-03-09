@@ -583,7 +583,7 @@ export const syncReducer = createReducer(initialState, (builder) => {
       state.lastRefresh = action.payload;
       state.syncPending.hotRefresh -= 1;
     })
-    .addCase(syncHotRefresh.rejected, (state, action) => {
+    .addCase(syncHotRefresh.rejected, (state) => {
       state.syncPending.hotRefresh -= 1;
     })
     .addCase(syncClearAddresses, (state) => {

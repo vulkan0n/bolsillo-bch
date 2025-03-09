@@ -104,6 +104,7 @@ export default function AssetsViewTokens() {
   );
 }
 
+/* eslint-disable react/prop-types */
 export function TokenCard({ token }) {
   return (
     <div

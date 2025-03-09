@@ -1,10 +1,9 @@
 import { Filesystem, Directory } from "@capacitor/filesystem";
-import { _dbOpen } from "@/services/DatabaseService";
+import DatabaseService, { _dbOpen } from "@/services/DatabaseService";
 import LogService from "@/services/LogService";
 import WalletManagerService from "@/services/WalletManagerService";
 import TransactionManagerService from "@/services/TransactionManagerService";
 import BlockchainService from "@/services/BlockchainService";
-import DatabaseService from "@/services/DatabaseService";
 
 const Log = LogService("Janitor");
 

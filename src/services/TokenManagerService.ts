@@ -42,6 +42,7 @@ export default function TokenManagerService(walletHash) {
     return { amount, nftCount };
   }
 
+  /* eslint-disable-next-line no-use-before-define */
   function getTokenHistory(category) {
     return [];
   }
@@ -56,7 +57,7 @@ export default function TokenManagerService(walletHash) {
 
     let identity = {};
     try {
-      identity = Bcmr.getIdentity(category);
+      identity = Bcmr.extractIdentity(category);
     } catch (e) {
       // pass
     }

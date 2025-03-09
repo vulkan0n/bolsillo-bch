@@ -28,7 +28,6 @@ import { selectLocale } from "@/redux/device";
 
 import ViewHeader from "@/layout/ViewHeader";
 
-import DatabaseService from "@/services/DatabaseService";
 import WalletManagerService from "@/services/WalletManagerService";
 import SecurityService, { AuthActions } from "@/services/SecurityService";
 

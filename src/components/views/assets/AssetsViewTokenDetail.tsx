@@ -146,7 +146,7 @@ export default function AssetsViewTokenDetail() {
             <div className="flex items-end flex-1 text-zinc-500 gap-x-2 text-lg">
               {tokenData.uris &&
                 Object.entries(tokenData.uris)
-                  .filter(([k, v]) => !["icon", "image"].includes(k))
+                  .filter(([k]) => !["icon", "image"].includes(k))
                   .map(([k, v]) => {
                     return (
                       <Link to={v}>{uriIcons[k] || uriIcons.default}</Link>

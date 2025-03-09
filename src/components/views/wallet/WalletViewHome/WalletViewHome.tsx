@@ -180,7 +180,7 @@ export default function WalletViewHome() {
         </div>
         <div className="flex justify-evenly items-center rounded-b-sm text-sm border-primary/80 border-t">
           <div
-            className={`font-sans bg-primary flex-1 px-1 py-1.5 ${!shouldShowRequestAmount ? "active:bg-secondary active:shadow-inner" : ""}`}
+            className={`font-sans bg-primary flex-1 px-1 py-1.5 text-nowrap truncate ${!shouldShowRequestAmount ? "active:bg-secondary active:shadow-inner" : ""}`}
             onClick={() =>
               !shouldShowRequestAmount && setShouldShowRequestAmount(true)
             }
@@ -207,7 +207,9 @@ export default function WalletViewHome() {
             ) : (
               <div className="flex items-center justify-center cursor-pointer">
                 <FormOutlined className="mr-1 font-bold" />
-                <span>{translate(translations.requestAmount)}</span>
+                <span className="truncate">
+                  {translate(translations.requestAmount)}
+                </span>
                 {shouldShowRequestAmount ? (
                   <CaretDownOutlined className="ml-1" />
                 ) : (

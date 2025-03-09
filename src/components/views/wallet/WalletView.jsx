@@ -20,7 +20,10 @@ export default function WalletView() {
 
   useEffect(
     function initialWalletBuild() {
-      if (genesis_height === null && (isConnected || ElectrumService().getIsConnected())) {
+      if (
+        genesis_height === null &&
+        (isConnected || ElectrumService().getIsConnected())
+      ) {
         requestAnimationFrame(() =>
           navigate(`/settings/wallet/wizard/import/build/${walletHash}`)
         );

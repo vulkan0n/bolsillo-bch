@@ -13,9 +13,7 @@ export default function ExploreView() {
         title={translate(translations.exploreBch)}
       />
       {/*<ExploreSearchBar />*/}
-      <div className="h-full">
-        <Outlet />
-      </div>
+      <Outlet />
     </>
   );
 }
