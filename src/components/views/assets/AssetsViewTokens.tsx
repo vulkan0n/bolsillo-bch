@@ -5,6 +5,7 @@ import { selectActiveWallet } from "@/redux/wallet";
 import LogService from "@/services/LogService";
 import TokenManagerService from "@/services/TokenManagerService";
 import BcmrService from "@/services/BcmrService";
+import DatabaseService from "@/services/DatabaseService";
 import Checksum from "@/atoms/Checksum";
 import KeyWarning from "@/atoms/KeyWarning/KeyWarning";
 import NumberFormat from "@/atoms/NumberFormat";
@@ -68,6 +69,11 @@ export default function AssetsViewTokens() {
       };
 
       resolve();
+
+      return () => {
+        // ensure resolved metadata persists in app db
+        DatabaseService().flushDatabase("app");
+      };
     },
     [tokenCategories, TokenManager, sortIdentities]
   );
