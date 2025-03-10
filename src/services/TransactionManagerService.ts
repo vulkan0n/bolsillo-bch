@@ -6,6 +6,8 @@ import {
   TransactionCommon,
   assertSuccess,
   disassembleBytecodeBCH,
+  Output,
+  Input,
 } from "@bitauth/libauth";
 
 import LogService from "@/services/LogService";
@@ -34,7 +36,7 @@ export interface TransactionEntity extends TransactionStub {
   vout: Array<TransactionOutput>;
 }
 
-export interface TransactionInput {
+export interface TransactionInput extends Input {
   txid: string;
   vout: number;
 }
@@ -45,7 +47,7 @@ export interface VoutScriptPubKey {
   asm: string;
 }
 
-export interface TransactionOutput {
+export interface TransactionOutput extends Output {
   n: number;
   scriptPubKey: VoutScriptPubKey;
   value: string;
@@ -352,6 +354,10 @@ export default function TransactionManagerService() {
     return decodedTx.inputs.map((input) => ({
       txid: binToHex(input.outpointTransactionHash),
       vout: input.outpointIndex,
+      outpointIndex: input.outpointIndex,
+      outpointTransactionHash: input.outpointTransactionHash,
+      sequenceNumber: input.sequenceNumber,
+      unlockingBytecode: input.unlockingBytecode,
     }));
   }
 
@@ -375,6 +381,9 @@ export default function TransactionManagerService() {
           asm: disassembleBytecodeBCH(output.lockingBytecode),
         },
         value: value.toString(),
+        token: output.token,
+        valueSatoshis: output.valueSatoshis,
+        lockingBytecode: output.lockingBytecode,
       };
 
       return vout;

@@ -8,6 +8,8 @@ import TransactionManagerService, {
   TransactionEntity,
 } from "@/services/TransactionManagerService";
 import CurrencyService from "@/services/CurrencyService";
+import TokenManagerService from "@/services/TokenManagerService";
+import { binToHex } from "@/util/hex";
 
 const Log = LogService("TransactionHistoryService");
 
@@ -30,6 +32,11 @@ export default function TransactionHistoryService(
     ...AddressManager.getReceiveAddresses(),
     ...AddressManager.getChangeAddresses(),
   ].map((a) => a.address);
+  myAddresses.push(
+    ...myAddresses.map((a) => AddressManager.getTokenAddress(a))
+  );
+
+  const TokenManager = TokenManagerService(walletHash);
 
   return {
     resolveTransactionHistory,
@@ -115,8 +122,9 @@ export default function TransactionHistoryService(
       return addressTx;
     } catch (e) {
       const tx = await TransactionManagerService().resolveTransaction(tx_hash);
-      const amount = await calculateTxAmount(tx);
+      const { amount, tokens } = await calculateTxAmount(tx);
       const updatedAddressTx = updateTxAmount(tx.txid, amount);
+      await TokenManager.registerTokenHistory(tx.txid, tokens);
       return updatedAddressTx;
     }
   }
@@ -170,15 +178,79 @@ export default function TransactionHistoryService(
     const myOutputs = tx.vout.filter((out) => isMyUtxo(out));
 
     // sum reducer function
-    const sumReducer = (sum, cur) => sum.plus(cur.value);
+    const amountReducer = (sum, cur) => sum.plus(cur.value);
+    const tokenReducer = (tokens, cur) => {
+      const result = tokens;
 
-    const receivedAmount = myOutputs.reduce(sumReducer, new Decimal(0));
-    const sentAmount = myInputs.reduce(sumReducer, new Decimal(0));
+      if (!cur.token) {
+        return result;
+      }
+
+      const category = binToHex(cur.token.category);
+
+      if (!result[category]) {
+        result[category] = {
+          amount: "0",
+          nftAmount: 0,
+        };
+      }
+
+      result[category].amount = new Decimal(tokens[category].amount)
+        .plus(new Decimal(cur.token.amount.toString()))
+        .toString();
+
+      result[category].nftAmount = cur.token.nft
+        ? tokens[category].nftAmount + 1
+        : 0;
+
+      return result;
+    };
+
+    const receivedAmount = myOutputs.reduce(amountReducer, new Decimal(0));
+    const sentAmount = myInputs.reduce(amountReducer, new Decimal(0));
+
+    const receivedTokens = myOutputs.reduce(tokenReducer, {});
+    const sentTokens = myInputs.reduce(tokenReducer, {});
 
     // TODO: totalOutput - amount = fee
     const amount = receivedAmount.minus(sentAmount).toNumber();
 
-    return amount;
+    // get token counts
+    // `Set` automatically de-duplicate entries by enforcing uniqueness
+    const uniqueCategories: Array<string> = [
+      ...new Set([...Object.keys(receivedTokens), ...Object.keys(sentTokens)]),
+    ];
+
+    const tokens = uniqueCategories.map((category) => {
+      if (!receivedTokens[category]) {
+        receivedTokens[category] = {
+          amount: "0",
+          nftAmount: 0,
+        };
+      }
+
+      if (!sentTokens[category]) {
+        sentTokens[category] = {
+          amount: "0",
+          nftAmount: 0,
+        };
+      }
+
+      const { amount: receivedTokenAmount, nftAmount: receivedNftAmount } =
+        receivedTokens[category];
+      const { amount: sentTokenAmount, nftAmount: sentNftAmount } =
+        sentTokens[category];
+
+      return {
+        category,
+        amount: new Decimal(receivedTokenAmount)
+          .minus(new Decimal(sentTokenAmount))
+          .toString(),
+        nftAmount: receivedNftAmount - sentNftAmount,
+      };
+    });
+
+    return { amount, tokens };
   }
 
   function setTransactionMemo(tx_hash: string, memo: string): void {
@@ -207,7 +279,7 @@ export default function TransactionHistoryService(
   }
 
   function updateTxAmount(tx_hash: string, amount: number) {
-    Log.debug("updateTxAmount", tx_hash);
+    //Log.debug("updateTxAmount", tx_hash);
     const fiat_amount = CurrencyService(fiatCurrency).satsToFiat(amount);
 
     const tx = APP_DB.exec(
@@ -225,14 +297,15 @@ export default function TransactionHistoryService(
         RETURNING *;`,
       [amount, fiat_amount, fiatCurrency, tx.time, tx.height]
     )[0];
-    Log.debug("updateTxAmount", tx_hash, result);
+    //Log.debug("updateTxAmount", tx_hash, result);
 
     return result;
   }
 
   function getAddressTransaction(tx_hash: string) {
     const result = walletDb.exec(
-      `SELECT * FROM address_transactions WHERE txid="${tx_hash}";`
+      "SELECT * FROM address_transactions WHERE txid=?;",
+      [tx_hash]
     );
 
     if (result.length === 0) {

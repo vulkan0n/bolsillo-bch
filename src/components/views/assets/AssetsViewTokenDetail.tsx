@@ -30,13 +30,15 @@ import NumberFormat from "@/atoms/NumberFormat";
 import { truncateProse } from "@/util/string";
 
 export default function AssetsViewTokenDetail() {
-  const { tokenId } = useParams();
+  const { tokenId: paramsTokenId } = useParams();
   const { walletHash } = useSelector(selectActiveWallet);
 
   const TokenManager = useMemo(
     () => TokenManagerService(walletHash),
     [walletHash]
   );
+
+  const tokenId = paramsTokenId || "";
 
   const [tokenData, setTokenData] = useState(
     TokenManager.getTokenData(tokenId)
@@ -86,6 +88,8 @@ export default function AssetsViewTokenDetail() {
     youtube: <YoutubeFilled />,
     default: <LinkOutlined />,
   };
+
+  const tokenHistory = TokenManager.getTokenHistory(tokenId);
 
   return (
     <div key={tokenData.category} className="w-full p-1">
@@ -178,6 +182,11 @@ export default function AssetsViewTokenDetail() {
         <div className="mt-1.5 pt-0.5 border-t border-dashed border-zinc-300/80 font-mono text-xs text-zinc-400/70 truncate">
           {tokenData.category}
         </div>
+      </div>
+      <div>
+        {tokenHistory.map((h) => (
+          <div>{JSON.stringify(h)}</div>
+        ))}
       </div>
     </div>
   );

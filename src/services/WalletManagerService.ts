@@ -354,6 +354,7 @@ export default function WalletManagerService() {
 
     // delete this wallet's transaction history
     walletDb.run(`DELETE FROM address_transactions`);
+    walletDb.run(`DELETE FROM token_transactions`);
 
     // delete wallet addresses
     walletDb.run(`DELETE FROM addresses`);

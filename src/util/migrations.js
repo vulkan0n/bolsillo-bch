@@ -102,6 +102,7 @@ const walletdb_migrations = [
     query.push("DROP TABLE IF EXISTS addresses;");
     query.push("DROP TABLE IF EXISTS address_utxos;");
     query.push("DROP TABLE IF EXISTS address_transactions;");
+    query.push("DROP TABLE IF EXISTS token_transactions;");
     query.push("DROP TRIGGER IF EXISTS balance_update;");
     query.push("DROP TRIGGER IF EXISTS spendable_balance_update;");
     query.push("DROP TRIGGER IF EXISTS utxo_balance_delete;");
@@ -278,12 +279,9 @@ const walletdb_migrations = [
       `CREATE TABLE IF NOT EXISTS token_transactions (
         txid text not null, 
         category text not null,
-        height int default 0 not null,
-        time text default ( strftime('%Y-%m-%dT%H:%M:%SZ') ),
         amount int,
         nft_amount int,
-        memo text default null,
-        UNIQUE(txid, category)
+        UNIQUE(category, txid)
       );`
     );
 

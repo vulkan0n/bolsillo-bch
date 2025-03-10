@@ -1,13 +1,21 @@
 import UtxoManagerService from "@/services/UtxoManagerService";
 import BcmrService from "@/services/BcmrService";
+import DatabaseService from "@/services/DatabaseService";
+import LogService from "@/services/LogService";
 
-export default function TokenManagerService(walletHash) {
+const Log = LogService("TokenManagerService");
+
+export default function TokenManagerService(walletHash: string) {
+  const Database = DatabaseService();
+  const walletDb = Database.getWalletDatabase(walletHash);
+
   return {
     getTokenUtxos,
     getTokenCategories,
     getTokenAmounts,
     getTokenHistory,
     getTokenData,
+    registerTokenHistory,
   };
 
   function getTokenUtxos() {
@@ -29,7 +37,7 @@ export default function TokenManagerService(walletHash) {
     return tokenCategories;
   }
 
-  function getTokenAmounts(category) {
+  function getTokenAmounts(category: string) {
     const tokenUtxos = getTokenUtxos();
     const amount = tokenUtxos
       .filter((utxo) => utxo.token_category === category)
@@ -42,12 +50,17 @@ export default function TokenManagerService(walletHash) {
     return { amount, nftCount };
   }
 
-  /* eslint-disable-next-line no-use-before-define */
-  function getTokenHistory(category) {
-    return [];
+  function getTokenHistory(category: string) {
+    const result = walletDb.exec(
+      "SELECT * FROM token_transactions WHERE category=?;",
+      [category]
+    );
+
+    Log.debug("getTokenHistory", category, result);
+    return result;
   }
 
-  function getTokenData(category) {
+  function getTokenData(category: string) {
     const Bcmr = BcmrService();
 
     const categorySlice = category.slice(0, 6);
@@ -71,5 +84,32 @@ export default function TokenManagerService(walletHash) {
     };
 
     return tokenData;
+  }
+
+  function registerTokenHistory(
+    tx_hash: string,
+    tokens: Array<{ category: string; amount: number; nftAmount: number }>
+  ) {
+    try {
+      tokens.forEach((token) => {
+        walletDb.exec(
+          `INSERT OR IGNORE INTO token_transactions (
+        txid, category, amount, nft_amount
+      ) VALUES ($txid, $category, $amount, $nft_amount);`,
+          {
+            $txid: tx_hash,
+            $category: token.category,
+            $amount: token.amount,
+            $nft_amount: token.nftAmount,
+          }
+        );
+      });
+    } catch (e) {
+      Log.error(e);
+    }
+
+    if (tokens.length > 0) {
+      Log.debug("registerTokenHistory", tx_hash, tokens);
+    }
   }
 }
