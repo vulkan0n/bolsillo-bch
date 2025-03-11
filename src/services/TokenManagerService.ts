@@ -69,10 +69,18 @@ export default function TokenManagerService(walletHash: string) {
     const colorHex = `#${categorySlice}`;
 
     let identity = {};
+
     try {
       identity = Bcmr.extractIdentity(category);
     } catch (e) {
-      // pass
+      identity = {
+        token: {
+          symbol: categorySlice,
+          decimals: 0,
+          category,
+        },
+        description: "",
+      };
     }
 
     const tokenData = {

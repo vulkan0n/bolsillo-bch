@@ -22,12 +22,15 @@ import { TelegramFilled } from "@/atoms/TelegramFilled";
 import { selectActiveWallet } from "@/redux/wallet";
 
 import BcmrService from "@/services/BcmrService";
+import LogService from "@/services/LogService";
 import TokenManagerService from "@/services/TokenManagerService";
 
 import Checksum from "@/atoms/Checksum";
 import NumberFormat from "@/atoms/NumberFormat";
 
 import { truncateProse } from "@/util/string";
+
+const Log = LogService("AssetsViewTokenDetail");
 
 export default function AssetsViewTokenDetail() {
   const { tokenId: paramsTokenId } = useParams();
@@ -40,30 +43,8 @@ export default function AssetsViewTokenDetail() {
 
   const tokenId = paramsTokenId || "";
 
-  const [tokenData, setTokenData] = useState(
-    TokenManager.getTokenData(tokenId)
-  );
-
-  useEffect(
-    function resolveTokenMetadata() {
-      const resolve = async () => {
-        const Bcmr = BcmrService();
-        const data = TokenManager.getTokenData(tokenId);
-        const identity = await Bcmr.resolveIdentity(tokenId);
-
-        const resolvedData = {
-          ...data,
-          ...identity,
-        };
-
-        setTokenData(resolvedData);
-      };
-
-      resolve();
-    },
-
-    [TokenManager, tokenId]
-  );
+  const tokenData = TokenManager.getTokenData(tokenId);
+  Log.debug(tokenData);
 
   const [shouldShowFullDescription, setShouldShowFullDescription] =
     useState(false);
@@ -185,7 +166,28 @@ export default function AssetsViewTokenDetail() {
       </div>
       <div>
         {tokenHistory.map((h) => (
-          <div>{JSON.stringify(h)}</div>
+          <div key={h.txid}>
+            <div>{h.txid}</div>
+            {h.amount !== "0" && (
+              <span className="text-sm font-mono mr-1.5 flex items-center">
+                <span
+                  style={{ color: tokenData.color }}
+                  className="relative bottom-[1px] pr-0.5 text-sm"
+                >
+                  &#9679;
+                </span>
+                <NumberFormat
+                  number={tokenData.amount}
+                  decimals={
+                    tokenData.token && tokenData.token.decimals
+                      ? tokenData.token.decimals
+                      : 0
+                  }
+                />
+              </span>
+            )}
+            {h.nft_amount > 0 && <div>{h.nft_amount}</div>}
+          </div>
         ))}
       </div>
     </div>

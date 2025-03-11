@@ -54,8 +54,8 @@ export default function AssetsViewTokens() {
         const resolvedData = (
           await Promise.all(
             tokenCategories.map(async (category) => {
-              const data = TokenManager.getTokenData(category);
               const identity = await Bcmr.resolveIdentity(category);
+              const data = TokenManager.getTokenData(category);
 
               return {
                 ...data,

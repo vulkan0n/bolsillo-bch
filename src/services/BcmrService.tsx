@@ -99,7 +99,7 @@ export default function BcmrService() {
     return currentSnapshot;
   }
 
-  async function loadRegistry(category: string) {
+  async function loadIdentityRegistry(category: string) {
     const result = APP_DB.exec("SELECT * FROM bcmr WHERE category=?", [
       category,
     ]);
@@ -108,16 +108,19 @@ export default function BcmrService() {
       throw new Error(`No registry for category ${category}`);
     }
 
-    const registryFile = await _loadBcmrFile(`paytaca-${category}`);
+    const registryFile = await _loadBcmrFile(`${category}`);
     const registry = Object.assign({}, result[0], registryFile);
     //Log.debug("loadRegistry", category, registry);
     return registry;
   }
 
-  async function writeRegistry(category: string, registry: MetadataRegistry) {
+  async function writeIdentityRegistry(
+    category: string,
+    registry: MetadataRegistry
+  ) {
     const registryUri = `https://bcmr.paytaca.com/api/registries/${category}/latest`;
 
-    await _writeBcmrFile(`paytaca-${category}`, registry);
+    await _writeBcmrFile(`${category}`, registry);
 
     const result = APP_DB.exec(
       `INSERT INTO bcmr (category, registryUri) 
@@ -132,12 +135,18 @@ export default function BcmrService() {
     return Object.assign({}, result[0], registry);
   }
 
-  async function resolveRegistry(category: string) {
+  async function resolveIdentityRegistry(category: string) {
     try {
-      const registry = await loadRegistry(category);
+      const registry = await loadIdentityRegistry(category);
+      if (
+        DateTime.fromISO(registry.lastFetch).plus({ days: 7 }) < DateTime.now()
+      ) {
+        throw new Error("invalidate-cache");
+      }
+      return registry;
     } catch (e) {
       const registryUri = `https://bcmr.paytaca.com/api/registries/${category}/latest`;
-      Log.debug("fetching registry from", registryUri);
+      Log.debug("fetching identity registry from", registryUri);
       const response = await fetch(registryUri);
 
       const data = await response.json();
@@ -147,29 +156,35 @@ export default function BcmrService() {
         throw new Error(importedRegistry);
       }
 
-      const registry = await writeRegistry(category, importedRegistry);
-      return registry;
+      if (typeof importedRegistry.registryIdentity === "string") {
+        return resolveAuthChain(importedRegistry.registryIdentity);
+      }
+
+      if (!importedRegistry.identities) {
+        throw new Error(
+          `No identities resolved for category ${category} @ ${registryUri}`
+        );
+      }
+
+      const importedIdentity = extractIdentity(category, importedRegistry);
+
+      importedIdentity.extensions = Object.assign(
+        {},
+        importedRegistry.extensions,
+        importedIdentity.extensions
+      );
+
+      const identity = await writeIdentityRegistry(category, importedRegistry);
+      return identity;
     }
   }
 
   async function resolveIdentity(category: string, force = false) {
-    let registry;
-    try {
-      registry = await loadRegistry(category);
-
-      if (
-        DateTime.fromISO(registry.lastFetch).plus({ days: 7 }) < DateTime.now()
-      ) {
-        throw new Error("invalidate-cache");
-      }
-    } catch (e) {
-      registry = await resolveRegistry(category);
-    }
+    const identityRegistry = await resolveIdentityRegistry(category);
 
     //Log.debug("resolveIdentity using registry", category, registry);
 
     const identity = extractIdentity(category, registry);
-    const colorHex = `#${category.slice(0, 6)}`;
 
     if (identity.token) {
       if (registry.symbol === null) {
@@ -182,15 +197,9 @@ export default function BcmrService() {
       identity.token.symbol = splitSymbol[0];
     }
 
-    const tokenData = {
-      ...identity,
-      category: category,
-      color: colorHex,
-    };
+    //Log.debug(identity);
 
-    //Log.debug(tokenData);
-
-    return tokenData;
+    return identity;
   }
 
   async function resolveIcon(iconUri: string) {}
@@ -245,14 +254,23 @@ export default function BcmrService() {
     return Promise.any(promises);
   }
 
-  /*function mergeRegistry(registry) {
+  function mergeRegistry(registry) {
     const r = importMetadataRegistry(registry);
 
     if (typeof r === "string") {
       throw new Error(r);
     }
 
-    Object.assign(_bcmr, r);
+    const incomingIdentities = Object.keys(r.identities);
+    incomingIdentities.forEach((identity) => {
+      _bcmr.identities[identity] = [
+        ..._bcmr.identities[identity],
+        ...r.identities[identity],
+      ];
+    });
+
+    _bcmr.latestRevision = new Date().toISOString();
+
     Log.debug("mergeRegistry", r, _bcmr);
-    }*/
+  }
 }

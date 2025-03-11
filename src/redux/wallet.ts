@@ -117,6 +117,9 @@ export const walletReloadAddresses = createAction(
       ...AddressManager.getReceiveAddresses(),
       ...AddressManager.getChangeAddresses(),
     ];
+    myAddresses.push(
+      ...myAddresses.map((a) => AddressManager.getTokenAddress(a.address))
+    );
 
     return { payload: myAddresses };
   }
