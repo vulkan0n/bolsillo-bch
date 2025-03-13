@@ -24,7 +24,7 @@ export default function UtxoManagerService(walletHash: string) {
   };
 
   function registerUtxo(address, utxo) {
-    Log.debug("registerUtxo", utxo);
+    //Log.debug("registerUtxo", utxo);
 
     const token_data = utxo.token_data
       ? utxo.token_data
@@ -128,11 +128,11 @@ export default function UtxoManagerService(walletHash: string) {
       0
     );
 
-    Log.debug(
+    /*Log.debug(
       "selectCoins availableCoins",
       availableCoinSum,
       availableCoins.length
-    );
+    );*/
 
     // check if we have enough balance across all UTXOs
     // empty set = insufficient funds
@@ -158,10 +158,10 @@ export default function UtxoManagerService(walletHash: string) {
           ORDER BY balance ASC`
     );
 
-    Log.debug(
+    /*Log.debug(
       "selectCoins eligibleAddresses",
       eligibleAddresses.map((a) => a.address)
-    );
+    );*/
 
     // 2. if there's a whole address balance that's exact, spend the entire address
     const exactAddresses = eligibleAddresses.filter(

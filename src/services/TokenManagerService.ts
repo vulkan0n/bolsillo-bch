@@ -91,7 +91,7 @@ export default function TokenManagerService(walletHash: string) {
     };
 
     const identity = Bcmr.extractIdentity(category, identityRegistry);
-    Log.debug("generateTokenIdentity", identity);
+    //Log.debug("generateTokenIdentity", identity);
     return identity;
   }
 
@@ -125,7 +125,7 @@ export default function TokenManagerService(walletHash: string) {
       token: { ...identity.token, symbol: splitSymbol[0] },
     };
 
-    Log.debug("getToken", tokenData);
+    //Log.debug("getToken", tokenData);
     return tokenData;
   }
 

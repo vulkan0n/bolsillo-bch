@@ -4,7 +4,9 @@ import { useNavigate } from "react-router";
 import { selectActiveWallet } from "@/redux/wallet";
 import { selectPrivacySettings } from "@/redux/preferences";
 import LogService from "@/services/LogService";
-import TokenManagerService from "@/services/TokenManagerService";
+import TokenManagerService, {
+  TokenEntity,
+} from "@/services/TokenManagerService";
 import DatabaseService from "@/services/DatabaseService";
 import TokenIcon from "@/atoms/TokenIcon";
 import KeyWarning from "@/atoms/KeyWarning/KeyWarning";
@@ -44,7 +46,12 @@ export default function AssetsViewTokens() {
     return a.name.localeCompare(b.name);
   }, []);
 
-  const [tokenData, setTokenData] = useState([]);
+  const initTokenData = () =>
+    tokenCategories
+      .map((category) => TokenManager.getToken(category))
+      .sort(sortIdentities);
+
+  const [tokenData, setTokenData] = useState(initTokenData());
 
   useEffect(
     function resolveTokenMetadata() {
@@ -55,6 +62,7 @@ export default function AssetsViewTokens() {
               if (!shouldResolveBcmr) {
                 return TokenManager.getToken(category);
               }
+
               return TokenManager.resolveTokenData(category);
             })
           )
@@ -99,8 +107,7 @@ export default function AssetsViewTokens() {
   );
 }
 
-/* eslint-disable react/prop-types */
-export function TokenCard({ token }) {
+export function TokenCard({ token }: { token: TokenEntity }) {
   return (
     <div
       key={token.category}

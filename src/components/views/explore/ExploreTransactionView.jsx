@@ -146,7 +146,7 @@ function OutputListItem({ output, i }) {
 
   const asmSplit = output.scriptPubKey.asm.split(" ");
   const isOpReturn = asmSplit[0] === "OP_RETURN";
-  const opReturnData = hexToUtf8(asmSplit[2]);
+  const opReturnData = hexToUtf8(asmSplit[2]); // OP_RETURN OP_PUSHDATA_X ...
 
   return (
     <div className={`p-1.5 ${zebraCss}`}>

@@ -1,4 +1,3 @@
-/* eslint-disable */
 import { Filesystem, Directory, Encoding } from "@capacitor/filesystem";
 import { DateTime } from "luxon";
 import {
@@ -10,10 +9,14 @@ import {
 } from "@bitauth/libauth";
 import LogService from "@/services/LogService";
 import ElectrumService from "@/services/ElectrumService";
-import TransactionManagerService from "@/services/TransactionManagerService";
+import TransactionManagerService, {
+  TransactionEntity,
+} from "@/services/TransactionManagerService";
 import DatabaseService from "@/services/DatabaseService";
 
 import { sha256 } from "@/util/hash";
+import { hexToUtf8 } from "@/util/hex";
+import { ipfsFetch } from "@/util/ipfs";
 
 import bcmrLocal from "@/assets/bcmr-selene-local.json";
 
@@ -23,7 +26,16 @@ interface LocalMetadataRegistry extends MetadataRegistry {
   identities: RegistryTimestampKeyedValues<IdentityHistory>;
 }
 
-const _bcmr = importMetadataRegistry(bcmrLocal) as LocalMetadataRegistry;
+class BcmrRefreshError extends Error {
+  uri;
+
+  constructor(uri) {
+    super();
+    this.uri = uri;
+  }
+}
+
+const LOCAL_BCMR = importMetadataRegistry(bcmrLocal) as LocalMetadataRegistry;
 
 interface BcmrMeta extends MetadataRegistry {
   authbase: string;
@@ -45,6 +57,8 @@ function getDefaultRegistryUri(authbase: string): string {
 export default function BcmrService() {
   const Database = DatabaseService();
   const APP_DB = Database.getAppDatabase();
+
+  const BCMR_MAGIC = "6a0442434d52"; // OP_RETURN BCMR
 
   return {
     extractIdentity,
@@ -79,8 +93,9 @@ export default function BcmrService() {
 
   async function _writeBcmrFile(
     bcmrId = "selene-local",
-    bcmr: MetadataRegistry = _bcmr
+    bcmr: MetadataRegistry = LOCAL_BCMR
   ): Promise<void> {
+    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
     const result = await Filesystem.writeFile({
       path: `/selene/bcmr/bcmr-${bcmrId}.json`,
       directory: Directory.Library,
@@ -94,13 +109,14 @@ export default function BcmrService() {
   // --------------------------------
 
   // extractIdentity: get the current IdentitySnapshot for an authbase from a Registry
+  // defaults to local master registry
   function extractIdentity(
     authbase: string,
-    bcmr: MetadataRegistry = _bcmr
+    bcmr: MetadataRegistry = LOCAL_BCMR
   ): IdentitySnapshot {
     const snapshots = bcmr.identities ? bcmr.identities[authbase] : null;
 
-    if (snapshots === null) {
+    if (!snapshots) {
       throw new Error(`No identity for authbase ${authbase}`);
     }
 
@@ -186,16 +202,12 @@ export default function BcmrService() {
 
     const registryHash = sha256.text(JSON.stringify(registry));
 
-    Log.debug(
-      "commitIdentityRegistry",
-      authbase,
-      registry,
-      registryHash,
-      registryMeta
-    );
+    const identityRegistry = { registry, registryHash, registryMeta };
+
+    Log.debug("commitIdentityRegistry", authbase, identityRegistry);
     mergeRegistry(registry);
 
-    return { registry, registryHash, registryMeta };
+    return identityRegistry;
   }
 
   // --------------------------------
@@ -211,7 +223,8 @@ export default function BcmrService() {
 
   async function resolveIdentityRegistry(
     authbase: string,
-    _registryUri?: string
+    _registryUri?: string,
+    isAuthchainResolved: boolean = false
   ) {
     const registryUri = _registryUri || getDefaultRegistryUri(authbase);
 
@@ -221,15 +234,17 @@ export default function BcmrService() {
       if (
         DateTime.fromISO(registryMeta.lastFetch).plus({ days: 7 }) <
           DateTime.now() ||
-        registryMeta.registryUri !== registryUri
+        (registryMeta.registryUri !== registryUri && _registryUri !== undefined)
       ) {
-        throw new Error("invalidate-cache");
+        Log.warn("invalidate-cache", registryUri, registryMeta.registryUri);
+        throw new BcmrRefreshError(registryMeta.registryUri);
       }
       //Log.debug("resolveIdentityRegistry got", identityRegistry);
       return identityRegistry;
     } catch (e) {
-      Log.debug("fetching identity registry from", registryUri);
-      const response = await fetch(registryUri);
+      const uri = e instanceof BcmrRefreshError ? e.uri : registryUri;
+      Log.debug("fetching identity registry from", uri);
+      const response = await ipfsFetch(uri);
       const responseData = await response.json();
 
       const importedRegistry = importMetadataRegistry(responseData);
@@ -238,26 +253,37 @@ export default function BcmrService() {
         throw new Error(importedRegistry);
       }
 
-      const importedRegistryHash = sha256.text(
+      /*const importedRegistryHash = sha256.text(
         JSON.stringify(importedRegistry)
-      );
+        );*/
 
       // immediately upgrade to on-chain resolution if applicable
-      /*
-      if (typeof importedRegistry.registryIdentity === "string") {
-        const authHeadRegistry = await resolveAuthHeadRegistry(
+      if (
+        typeof importedRegistry.registryIdentity === "string" &&
+        !isAuthchainResolved
+      ) {
+        const authChainRegistry = await resolveAuthChainRegistry(
           importedRegistry.registryIdentity
         );
 
-        const authHeadRegistryHash = sha256.text(
-          JSON.stringify(authHeadRegistry)
-        );
+        if (!authChainRegistry) {
+          Log.warn("No authChainRegistry?", importedRegistry.registryIdentity);
+        }
 
-        if (registryHash !== authHeadRegistryHash) {
-          await commitIdentityRegistry(authbase, authHeadRegistry, registryUri);
+        /*onst authChainRegistryHash = sha256.text(
+          JSON.stringify(authChainRegistry.registry)
+          );*/
+
+        if (authChainRegistry) {
+          const identityRegistry = await commitIdentityRegistry(
+            authbase,
+            authChainRegistry.registry,
+            authChainRegistry.registryMeta.registryUri
+          );
+
+          return identityRegistry;
         }
       }
-      */
 
       if (!importedRegistry.identities) {
         throw new Error(
@@ -290,58 +316,79 @@ export default function BcmrService() {
     const TransactionManager = TransactionManagerService();
     const Electrum = ElectrumService();
 
+    const chain = [] as TransactionEntity[];
+    let nextTxHash = authbase;
+
     Log.debug("resolveAuthChain", authbase);
 
-    let nextTxHash = authbase;
-    let chain = [] as string[];
-
+    /* eslint-disable no-await-in-loop */
+    /* eslint-disable-next-line no-constant-condition */
     while (true) {
-      chain.push(nextTxHash);
+      const nextTx = await TransactionManager.resolveTransaction(nextTxHash);
+      chain.push(nextTx);
 
       // check if output 0 is unspent (authHead condition)
       const identityUtxo = await Electrum.requestUtxoInfo(nextTxHash, 0);
       if (identityUtxo !== null) {
-        Log.debug("resolveAuthChain found authHead utxo", identityUtxo);
+        Log.debug(
+          "resolveAuthChain found authHead utxo",
+          identityUtxo,
+          nextTxHash
+        );
 
-        const authHeadTx =
-          await TransactionManager.resolveTransaction(nextTxHash);
-        Log.debug("authHeadTx", authHeadTx);
-        return authHeadTx;
+        //Log.debug("resolveAuthChain got", identityUtxo, chain);
+        return chain;
       }
 
-      // If output 0 is spent, find the spending transaction
-      const nextTx = await TransactionManager.resolveTransaction(nextTxHash);
+      const { addresses: txAddresses } = nextTx.vout[0].scriptPubKey;
 
-      /*const isOpReturn = nextTx.vout[0].scriptPubKey.hex.startsWith("6a");
-      if (isOpReturn) {
-        Log.warn("OP_RETURN", nextTx.vout[0]);
-        return Promise.reject(`Identity burned? ${nextTxHash}`);
-        }*/
+      // if output 0 is OP_RETURN, identity is considered "burned"
+      const isOpReturn =
+        nextTx.vout[0].scriptPubKey.asm.startsWith("OP_RETURN");
 
-      const address = nextTx.vout[0].scriptPubKey.addresses[0];
+      if (isOpReturn || !txAddresses) {
+        Log.warn(
+          `Identity burned? Found OP_RETURN at vout[0] in ${nextTxHash}`,
+          nextTx.vout[0],
+          authbase
+        );
+        return chain;
+      }
+
+      const address = txAddresses[0];
       const addressHistory = await Electrum.requestAddressHistory(
         address,
         nextTx.height
       );
 
-      const promises = addressHistory.map(async (h) => {
-        const { vin } = await TransactionManager.resolveTransaction(h.tx_hash);
+      if (!Array.isArray(addressHistory)) {
+        Log.warn(`No address history for authchain?`);
+        return chain;
+      }
+
+      const findMatchTxid = async (htx, findHash) => {
+        const { vin } = await TransactionManager.resolveTransaction(
+          htx.tx_hash
+        );
         const matchUtxo = vin.find(
-          (vn) => vn.txid === nextTxHash && vn.vout === 0
+          (vn) => vn.txid === findHash && vn.vout === 0
         );
 
-        if (matchUtxo) {
-          return h.tx_hash;
+        if (!matchUtxo) {
+          return Promise.reject();
         }
 
-        return Promise.reject(
-          new Error(`Transaction ${h.tx_hash} does not spend ${nextTxHash}:0`)
-        );
-      });
+        return Promise.resolve(htx.tx_hash);
+      };
+
+      const findHash = nextTxHash;
+      const promises = addressHistory.map((htx) =>
+        findMatchTxid(htx, findHash)
+      );
 
       try {
         nextTxHash = await Promise.any(promises);
-        Log.debug("Found next transaction in chain", nextTxHash);
+        //Log.debug("Found next transaction in chain", nextTxHash);
       } catch (error) {
         // if no transaction spends output 0, this might indicate an error or incomplete history
         Log.error("No spending transaction found for", nextTxHash, error);
@@ -350,22 +397,102 @@ export default function BcmrService() {
         );
       }
     }
+    /* eslint-enable no-await-in-loop */
   }
 
-  async function resolveAuthHeadRegistry(authbase: string) {
-    const authHeadTx = await resolveAuthChain(authbase);
+  async function resolveAuthChainRegistry(authbase: string) {
+    try {
+      const authchain = await resolveAuthChain(authbase);
 
-    const BCMR_MAGIC = "6a0442434d52"; // OP_RETURN BCMR
-    const bcmrOutput = authHeadTx.vout.find((out) =>
+      Log.debug("resolveAuthChainRegistry got authchain", authbase);
+      let latestBcmrOutput;
+
+      authchain.forEach((tx) => {
+        const bcmrOutput = findBcmrOutput(tx);
+        latestBcmrOutput = bcmrOutput || latestBcmrOutput;
+      });
+
+      if (!latestBcmrOutput) {
+        throw new Error(`No BCMR in authchain for ${authbase}`);
+      }
+
+      Log.debug(
+        "resolveAuthChainRegistry latestBcmrOutput",
+        authbase,
+        latestBcmrOutput.scriptPubKey.asm
+      );
+
+      const { hash: registryHash, uris: registryUris } = parseBcmrOutput(
+        latestBcmrOutput.scriptPubKey.hex
+      );
+
+      Log.debug("Authhead got uri:", registryUris, registryHash);
+      return await resolveIdentityRegistry(authbase, registryUris[0], true);
+    } catch (e) {
+      Log.error(e);
+      return null;
+    }
+  }
+
+  function findBcmrOutput(transaction) {
+    const bcmrOutput = transaction.vout.find((out) =>
       out.scriptPubKey.hex.startsWith(BCMR_MAGIC)
     );
 
-    if (bcmrOutput) {
-      Log.debug("resolveIdentity found BCMR output", bcmrOutput);
-      // decode OP_RETURN data for BCMR output then resolveRegistry from ipfs/http
-      const registryUri = "https://OP_RETURN_URI";
-      return resolveIdentityRegistry(authbase, registryUri);
+    return bcmrOutput;
+  }
+
+  function parseBcmrOutput(vout_hex: string) {
+    let cursor = vout_hex.indexOf(BCMR_MAGIC);
+
+    // OP_RETURN BCMR
+    const magicSlice = vout_hex.slice(cursor, BCMR_MAGIC.length);
+    cursor += magicSlice.length;
+
+    // OP_PUSHBYTES_32
+    cursor += 2;
+
+    // <hash>
+    const hashSlice = vout_hex.slice(cursor, cursor + 64);
+    const hash = hexToUtf8(hashSlice);
+    cursor += hashSlice.length;
+
+    const uris: Array<string> = [];
+    while (cursor < vout_hex.length) {
+      // OP_PUSHBYTES_X
+      let pushSlice = vout_hex.slice(cursor, cursor + 2);
+      cursor += pushSlice.length;
+
+      // OP_PUSHBYTES_1
+      if (pushSlice === "4c") {
+        pushSlice = vout_hex.slice(cursor, cursor + 2);
+        cursor += pushSlice.length;
+      }
+
+      // OP_PUSHBYTES_2
+      if (pushSlice === "4d") {
+        pushSlice = vout_hex.slice(cursor, cursor + 4);
+        cursor += pushSlice.length;
+      }
+
+      // OP_PUSHBYTES_4
+      if (pushSlice === "4e") {
+        pushSlice = vout_hex.slice(cursor, cursor + 8);
+        cursor += pushSlice.length;
+      }
+
+      const nPush = Number.parseInt(pushSlice, 16) * 2;
+
+      // <uri>
+      const uriSlice = vout_hex.slice(cursor, cursor + nPush);
+      const uri = hexToUtf8(uriSlice);
+      uris.push(uri);
+      cursor += uriSlice.length;
     }
+
+    Log.debug("parseBcmrOutput", magicSlice, hashSlice, uris);
+
+    return { hash, uris };
   }
 
   // --------------------------------
@@ -373,7 +500,7 @@ export default function BcmrService() {
   function mergeRegistry(registry) {
     const incomingIdentities = Object.keys(registry.identities);
     incomingIdentities.forEach((authbase) => {
-      const bcmrIdentity = _bcmr.identities[authbase] || {};
+      const bcmrIdentity = LOCAL_BCMR.identities[authbase] || {};
       const registryIdentity = registry.identities[authbase] || {};
 
       const newBcmrIdentity = {
@@ -382,53 +509,32 @@ export default function BcmrService() {
       };
 
       const hashedBcmrIdentity = sha256.text(JSON.stringify(bcmrIdentity));
-      const hashedRegistryIdentity = sha256.text(
-        JSON.stringify(registryIdentity)
-      );
       const hashedNewIdentity = sha256.text(JSON.stringify(newBcmrIdentity));
 
       if (hashedNewIdentity !== hashedBcmrIdentity) {
-        /*Log.debug(
-          "bcmrIdentity",
-          JSON.stringify(bcmrIdentity),
-          hashedBcmrIdentity
-        );
-        Log.debug(
-          "registryidentity",
-          JSON.stringify(registryIdentity),
-          hashedRegistryIdentity
-        );
-        Log.debug(
-          "newBcmrIdentity",
-          JSON.stringify(newBcmrIdentity),
-          hashedNewIdentity
-          );*/
-
-        _bcmr.identities[authbase] = newBcmrIdentity;
-        _bcmr.version.patch = _bcmr.version.patch + 1;
-        _bcmr.latestRevision = new Date().toISOString();
+        LOCAL_BCMR.identities[authbase] = newBcmrIdentity;
+        LOCAL_BCMR.version.patch += LOCAL_BCMR.version.patch;
+        LOCAL_BCMR.latestRevision = new Date().toISOString();
 
         /*Log.debug(
           "mergeRegistry",
           bcmrIdentity,
           registryIdentity,
           newBcmrIdentity,
-          _bcmr
+          LOCAL_BCMR
           );*/
       }
     });
   }
 
   function exportLocalBcmr() {
-    const validBcmr = importMetadataRegistry(_bcmr);
+    const validBcmr = importMetadataRegistry(LOCAL_BCMR);
 
     if (typeof validBcmr === "string") {
       throw new Error(validBcmr);
     }
 
-    const bcmr = JSON.stringify(validBcmr);
-
-    Log.info(bcmr);
+    Log.info(validBcmr);
   }
 
   async function purgeBcmrData() {
@@ -471,6 +577,10 @@ export default function BcmrService() {
     let iconBase64;
     const identity = extractIdentity(authbase);
 
+    if (!identity) {
+      return null;
+    }
+
     try {
       iconBase64 = (
         await Filesystem.readFile({
@@ -484,17 +594,9 @@ export default function BcmrService() {
         throw new Error(`No icon for ${authbase}`);
       }
 
-      let fetchUri = identity.uris.icon;
+      const fetchUri = identity.uris.icon;
 
-      if (fetchUri.startsWith("ipfs://")) {
-        const uriSlice = fetchUri.slice(7);
-        fetchUri = `https://ipfs.io/ipfs/${uriSlice}`;
-      }
-
-      const uriSplit = fetchUri.split("/");
-      const filename = uriSplit.pop();
-
-      const response = await fetch(fetchUri);
+      const response = await ipfsFetch(fetchUri);
       const iconBytes = await response.bytes();
       const iconData = iconBytes.toBase64();
 

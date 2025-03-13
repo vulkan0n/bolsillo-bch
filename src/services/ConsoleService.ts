@@ -1,8 +1,10 @@
+import Logger from "js-logger";
+import { stringify } from "@bitauth/libauth";
 import { DateTime } from "luxon";
 import { Share } from "@capacitor/share";
 import { Filesystem, Directory, Encoding } from "@capacitor/filesystem";
 
-let lines: Array<string> = [];
+let lines: Array<{ level: number; message: string }> = [];
 const timers = {};
 const denyLoggers = ["WalletManager"];
 
@@ -15,12 +17,12 @@ function ConsoleService() {
   };
 
   function registerLine(messages, context) {
-    const line: Array<string> = [];
+    const message: Array<string> = [];
 
     //console.log(context);
 
     if (context.name) {
-      line.push(`[${context.name}]`);
+      message.push(`[${context.name}]`);
 
       // exclude some lines from exported log (i.e. ones that contain secrets)
       if (denyLoggers.includes(context.name)) {
@@ -28,31 +30,31 @@ function ConsoleService() {
       }
     }
 
-    switch (context.level.value) {
-      case 4:
+    switch (context.level) {
+      case Logger.TIME:
         if (messages[1] === "start") {
           timers[messages[0]] = Date.now();
-          line.push(messages[0]);
+          message.push(messages[0]);
         }
 
         if (messages[1] === "end") {
-          line.push(messages[0]);
-          line.push(`${Date.now() - timers[messages[0]]}msec`);
+          message.push(messages[0]);
+          message.push(`${Date.now() - timers[messages[0]]}msec`);
         }
 
         break;
 
       default:
-        line.push(
+        message.push(
           Object.values(messages)
-            .map((val) => JSON.stringify(val))
+            .map((val) => stringify(val))
             .join(" ")
         );
         break;
     }
 
-    line.unshift(DateTime.now().toFormat("HH:mm:ss.SSS"));
-    lines.push(line.join(" "));
+    message.unshift(DateTime.now().toFormat("HH:mm:ss.SSS"));
+    lines.push({ level: context.level, message: message.join(" ") });
   }
 
   function getLines() {
