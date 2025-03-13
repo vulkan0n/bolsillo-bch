@@ -19,8 +19,6 @@ import {
   ValidDerivationPath,
 } from "@/util/derivation";
 
-import { generateBatch } from "@/util/batch";
-
 const ADDRESS_GAP_LIMIT = 20; // BIP-44 gap limit is 20
 const DERIVATION_SCAN_LIMIT = 5;
 const SCAN_BATCH_SIZE = 3000;
@@ -158,29 +156,21 @@ export default function AddressScannerService(wallet: WalletEntity) {
     }
 
     // get updated state for all generated addresses
-    const addressStubs: Array<AddressStub> = [];
+    const addressStubs: Array<AddressStub> = await Promise.all(
+      addresses.map(async (a) => {
+        let addressState;
+        try {
+          addressState = await Electrum.requestAddressState(a.address);
+        } catch (e) {
+          // reset address state to null if request fails
+          // null addresses will get re-scanned later
+          Log.warn(e);
+          addressState = null;
+        }
 
-    /* eslint-disable no-restricted-syntax */
-    /* eslint-disable no-await-in-loop */
-    for (const batch of generateBatch(addresses, SCAN_BATCH_SIZE / 10)) {
-      const stubs: Array<AddressStub> = await Promise.all(
-        batch.map(async (a) => {
-          let addressState;
-          try {
-            addressState = await Electrum.requestAddressState(a.address);
-          } catch (e) {
-            // reset address state to null if request fails
-            // null addresses will get re-scanned later
-            Log.warn(e);
-            addressState = null;
-          }
-
-          return { ...a, state: addressState };
-        })
-      );
-
-      addressStubs.push(...stubs);
-    }
+        return { ...a, state: addressState };
+      })
+    );
 
     Log.debug("resolved states:", addressStubs);
 

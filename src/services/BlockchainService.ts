@@ -33,7 +33,7 @@ export default function BlockchainService() {
     getBlockByHeight,
     resolveBlockByHash,
     resolveBlockByHeight,
-    getChaintip,
+    resolveChaintip,
     calculateBlockhash,
     //decodeBlockHeader,
     //verifyMerkleProof,
@@ -165,19 +165,19 @@ export default function BlockchainService() {
     return block;
   }
 
-  async function getChaintip() {
+  async function resolveChaintip() {
     const result = APP_DB.exec(
       `SELECT * FROM blockchain ORDER BY height DESC LIMIT 1`
     );
 
     if (result.length < 1) {
-      Log.debug("getChaintip first2023");
+      Log.debug("resolveChaintip first2023");
       return block_checkpoints.first2023;
     }
 
     const block = resolveBlockByHash(result[0].blockhash);
 
-    //Log.debug("getChaintip block", block);
+    //Log.debug("resolveChaintip block", block);
     return block;
   }
 

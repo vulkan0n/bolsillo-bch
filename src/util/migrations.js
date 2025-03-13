@@ -16,6 +16,7 @@ const appdb_migrations = [
     query.push("DROP TABLE IF EXISTS blockchain;");
     query.push("DROP TABLE IF EXISTS transactions;");
     query.push("DROP TABLE IF EXISTS bcmr;");
+    query.push("DROP TABLE IF EXISTS bcmr_tokens;");
 
     // WalletMeta
     query.push(
@@ -68,14 +69,20 @@ const appdb_migrations = [
   function migrate_v2() {
     const query = [];
 
-    // add BCMR table
+    // add BCMR tables
     query.push(
       `CREATE TABLE IF NOT EXISTS bcmr (
-        category text primary key not null,
-        symbol text default null,
-        authbase text default null,
+        authbase text primary key not null,
         registryUri text not null,
         lastFetch not null default ( strftime('%Y-%m-%dT%H:%M:%SZ') )
+      );`
+    );
+
+    query.push(
+      `CREATE TABLE IF NOT EXISTS bcmr_tokens (
+        category text primary key not null,
+        authbase text not null,
+        symbol text default null unique
       );`
     );
 

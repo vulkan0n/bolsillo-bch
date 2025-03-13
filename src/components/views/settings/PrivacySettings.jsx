@@ -12,16 +12,16 @@ import { translate } from "@/util/translations";
 import translations from "./translations";
 import { SettingsContext } from "./SettingsContext";
 
-const { privacySettings, sendDailyCheckIn } = translations;
-
 export default function PrivacySettings() {
   const { handleSettingsUpdate } = useContext(SettingsContext);
-  const { shouldHideBalance, isDailyCheckInEnabled } = useSelector(
-    selectPrivacySettings
-  );
+  const { shouldHideBalance, isDailyCheckInEnabled, shouldResolveBcmr } =
+    useSelector(selectPrivacySettings);
 
   return (
-    <Accordion icon={EyeInvisibleOutlined} title={translate(privacySettings)}>
+    <Accordion
+      icon={EyeInvisibleOutlined}
+      title={translate(translations.privacySettings)}
+    >
       <Accordion.Child
         icon={shouldHideBalance ? EyeInvisibleOutlined : EyeOutlined}
         label={translate(translations.hideAvailableBalance)}
@@ -43,7 +43,7 @@ export default function PrivacySettings() {
       </Accordion.Child>
       <Accordion.Child
         icon={AreaChartOutlined}
-        label={translate(sendDailyCheckIn)}
+        label={translate(translations.sendDailyCheckIn)}
       >
         <input
           type="checkbox"
@@ -51,6 +51,19 @@ export default function PrivacySettings() {
           onChange={(event) => {
             const { checked: isChecked } = event.target;
             handleSettingsUpdate("enableDailyCheckIn", isChecked);
+          }}
+        />
+      </Accordion.Child>
+      <Accordion.Child
+        icon={AreaChartOutlined}
+        label={translate(translations.autoResolveBcmr)}
+      >
+        <input
+          type="checkbox"
+          checked={shouldResolveBcmr}
+          onChange={(event) => {
+            const { checked: isChecked } = event.target;
+            handleSettingsUpdate("autoResolveBcmr", isChecked);
           }}
         />
       </Accordion.Child>

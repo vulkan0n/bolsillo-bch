@@ -2,11 +2,11 @@ import { useState, useEffect, useMemo, useCallback } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router";
 import { selectActiveWallet } from "@/redux/wallet";
+import { selectPrivacySettings } from "@/redux/preferences";
 import LogService from "@/services/LogService";
 import TokenManagerService from "@/services/TokenManagerService";
-import BcmrService from "@/services/BcmrService";
 import DatabaseService from "@/services/DatabaseService";
-import Checksum from "@/atoms/Checksum";
+import TokenIcon from "@/atoms/TokenIcon";
 import KeyWarning from "@/atoms/KeyWarning/KeyWarning";
 import NumberFormat from "@/atoms/NumberFormat";
 
@@ -18,6 +18,7 @@ export default function AssetsViewTokens() {
   // [?] use selectActiveWallet instead of selectActiveWalletHash
   // we want the UI to re-render on wallet update in case we send/receive tokens
   const { walletHash } = useSelector(selectActiveWallet);
+  const { shouldResolveBcmr } = useSelector(selectPrivacySettings);
 
   const navigate = useNavigate();
 
@@ -43,24 +44,18 @@ export default function AssetsViewTokens() {
     return a.name.localeCompare(b.name);
   }, []);
 
-  const [tokenData, setTokenData] = useState(
-    tokenCategories.map(TokenManager.getTokenData).sort(sortIdentities)
-  );
+  const [tokenData, setTokenData] = useState([]);
 
   useEffect(
     function resolveTokenMetadata() {
-      const Bcmr = BcmrService();
       const resolve = async () => {
         const resolvedData = (
           await Promise.all(
             tokenCategories.map(async (category) => {
-              const identity = await Bcmr.resolveIdentity(category);
-              const data = TokenManager.getTokenData(category);
-
-              return {
-                ...data,
-                ...identity,
-              };
+              if (!shouldResolveBcmr) {
+                return TokenManager.getToken(category);
+              }
+              return TokenManager.resolveTokenData(category);
             })
           )
         ).sort(sortIdentities);
@@ -113,9 +108,7 @@ export function TokenCard({ token }) {
     >
       <div className="flex items-center">
         <div className="flex items-center justify-center">
-          <span className="border rounded-sm border-zinc-700 overflow-hidden">
-            <Checksum data={token.category} />
-          </span>
+          <TokenIcon category={token.category} />
         </div>
         <div className="flex flex-col mx-1">
           <div className="text-sm flex items-baseline">

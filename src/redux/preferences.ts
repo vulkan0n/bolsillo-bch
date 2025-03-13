@@ -58,6 +58,7 @@ const defaultPreferences = {
   // Privacy
   hideAvailableBalance: "false",
   enableDailyCheckIn: "true",
+  autoResolveBcmr: "true",
 };
 
 type ValidPreferences = typeof defaultPreferences;
@@ -120,6 +121,7 @@ function validatePreferences(preferences: ValidPreferences): boolean {
     "enableDailyCheckIn",
     "offlineMode",
     "useTokenAddress",
+    "autoResolveBcmr",
   ];
 
   const invalidBools = boolKeys.filter(
@@ -339,6 +341,7 @@ export const selectPrivacySettings = createSelector(
   (preferences) => ({
     shouldHideBalance: preferences.hideAvailableBalance === "true",
     isDailyCheckInEnabled: preferences.enableDailyCheckIn === "true",
+    shouldResolveBcmr: preferences.autoResolveBcmr === "true",
   })
 );
 

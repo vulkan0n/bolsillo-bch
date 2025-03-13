@@ -356,7 +356,7 @@ export const syncChaintip = createAsyncThunk(
   async (chaintip: { height: number; hex: string }) => {
     const Blockchain = BlockchainService();
 
-    const currentTip = await Blockchain.getChaintip();
+    const currentTip = await Blockchain.resolveChaintip();
 
     const tipHash = Blockchain.calculateBlockhash(chaintip.hex);
 

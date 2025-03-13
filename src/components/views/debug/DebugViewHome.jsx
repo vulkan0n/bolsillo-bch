@@ -15,6 +15,7 @@ import LogService from "@/services/LogService";
 import SecurityService, { AuthActions } from "@/services/SecurityService";
 import JanitorService from "@/services/JanitorService";
 import ConsoleService from "@/services/ConsoleService";
+import BcmrService from "@/services/BcmrService";
 
 import { translate } from "@/util/translations";
 import translations from "./translations";
@@ -22,7 +23,7 @@ import translations from "./translations";
 import DebugSettings from "./DebugSettings";
 import DebugConsole from "./DebugConsole";
 
-const Log = LogService("DebugView");
+const Log = LogService("DebugViewHome");
 
 export default function DebugView() {
   const { authMode, authActions } = useSelector(selectSecuritySettings);
@@ -61,6 +62,14 @@ export default function DebugView() {
     await JanitorService().purgeStaleData();
   };
 
+  const handlePurgeBcmr = async () => {
+    await BcmrService().purgeBcmrData();
+  };
+
+  const handleExportBcmr = async () => {
+    await BcmrService().exportLocalBcmr();
+  };
+
   const handleResetDatabases = async () => {
     await JanitorService().resetDatabases();
   };
@@ -75,6 +84,11 @@ export default function DebugView() {
             icon={ExportOutlined}
             label={translate(translations.exportLogs)}
             onClick={handleExportLogs}
+          />
+          <Button
+            icon={ExportOutlined}
+            label="Export BCMR Data"
+            onClick={handleExportBcmr}
           />
           <Button
             icon={UnlockOutlined}
@@ -92,8 +106,15 @@ export default function DebugView() {
             onClick={handlePurgeData}
           />
           <Button
+            icon={ClearOutlined}
+            label="Purge BCMR Data"
+            onClick={handlePurgeBcmr}
+          />
+          <Button
             icon={FireOutlined}
             label="Reset Databases"
+            borderClasses="border border-2 border-error"
+            activeBgColor="error"
             onClick={handleResetDatabases}
           />
         </div>

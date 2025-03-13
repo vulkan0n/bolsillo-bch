@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useMemo } from "react";
 import { useSelector } from "react-redux";
 import { useParams, Link } from "react-router";
 import {
@@ -21,11 +21,10 @@ import { TelegramFilled } from "@/atoms/TelegramFilled";
 
 import { selectActiveWallet } from "@/redux/wallet";
 
-import BcmrService from "@/services/BcmrService";
 import LogService from "@/services/LogService";
 import TokenManagerService from "@/services/TokenManagerService";
 
-import Checksum from "@/atoms/Checksum";
+import TokenIcon from "@/atoms/TokenIcon";
 import NumberFormat from "@/atoms/NumberFormat";
 
 import { truncateProse } from "@/util/string";
@@ -43,7 +42,7 @@ export default function AssetsViewTokenDetail() {
 
   const tokenId = paramsTokenId || "";
 
-  const tokenData = TokenManager.getTokenData(tokenId);
+  const tokenData = TokenManager.getToken(tokenId);
   Log.debug(tokenData);
 
   const [shouldShowFullDescription, setShouldShowFullDescription] =
@@ -78,7 +77,7 @@ export default function AssetsViewTokenDetail() {
         <div className="flex">
           <div className="flex items-center justify-center">
             <span className="border rounded-sm border-zinc-700 overflow-hidden">
-              <Checksum data={tokenData.category} canvasSize={96} />
+              <TokenIcon category={tokenData.category} size={96} />
             </span>
           </div>
           <div className="flex flex-col flex-1 mx-1">

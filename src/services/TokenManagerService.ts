@@ -5,17 +5,22 @@ import LogService from "@/services/LogService";
 
 const Log = LogService("TokenManagerService");
 
+export interface TokenEntity {}
+
 export default function TokenManagerService(walletHash: string) {
   const Database = DatabaseService();
+  const APP_DB = Database.getAppDatabase();
   const walletDb = Database.getWalletDatabase(walletHash);
 
   return {
+    getToken,
     getTokenUtxos,
     getTokenCategories,
-    getTokenAmounts,
+    calculateTokenAmounts,
     getTokenHistory,
-    getTokenData,
     registerTokenHistory,
+    resolveTokenIdentity,
+    resolveTokenData,
   };
 
   function getTokenUtxos() {
@@ -37,7 +42,7 @@ export default function TokenManagerService(walletHash: string) {
     return tokenCategories;
   }
 
-  function getTokenAmounts(category: string) {
+  function calculateTokenAmounts(category: string) {
     const tokenUtxos = getTokenUtxos();
     const amount = tokenUtxos
       .filter((utxo) => utxo.token_category === category)
@@ -60,38 +65,74 @@ export default function TokenManagerService(walletHash: string) {
     return result;
   }
 
-  function getTokenData(category: string) {
+  function generateTokenIdentity(category: string) {
     const Bcmr = BcmrService();
-
     const categorySlice = category.slice(0, 6);
 
-    const name = `Token ${categorySlice}`;
-    const colorHex = `#${categorySlice}`;
-
-    let identity = {};
-
-    try {
-      identity = Bcmr.extractIdentity(category);
-    } catch (e) {
-      identity = {
-        token: {
-          symbol: categorySlice,
-          decimals: 0,
-          category,
+    const identityRegistry = {
+      $schema: "https://cashtokens.org/bcmr-v2.schema.json",
+      version: { major: 0, minor: 0, patch: 1 },
+      identities: {
+        [category]: {
+          "1970-01-01T00:00:00.000Z": {
+            name: `Token ${categorySlice}`,
+            token: {
+              symbol: categorySlice,
+              category,
+              decimals: 0,
+            },
+          },
         },
-        description: "",
-      };
-    }
-
-    const tokenData = {
-      category,
-      name,
-      color: colorHex,
-      ...getTokenAmounts(category),
-      ...identity,
+      },
+      latestRevision: "1970-01-01T00:00:00.000Z",
+      registryIdentity: {
+        name: "Selene Wallet Generated Null Metadata",
+      },
     };
 
+    const identity = Bcmr.extractIdentity(category, identityRegistry);
+    Log.debug("generateTokenIdentity", identity);
+    return identity;
+  }
+
+  function getToken(category: string): TokenEntity {
+    const Bcmr = BcmrService();
+
+    let identity;
+
+    try {
+      // try to extract identity from local master BCMR
+      identity = Bcmr.extractIdentity(category);
+    } catch (e) {
+      // generate a placeholder identity if we don't have metadata
+      // use resolveTokenData elsewhere to try to download metadata
+      identity = generateTokenIdentity(category);
+    }
+
+    if (!identity.token) {
+      throw new Error(`no token data for ${category}`);
+    }
+
+    const colorHex = `#${category.slice(0, 6)}`;
+    const amounts = calculateTokenAmounts(category);
+
+    const splitSymbol = identity.token.symbol.split("-");
+    const tokenData = {
+      category,
+      color: colorHex,
+      ...amounts,
+      ...identity,
+      token: { ...identity.token, symbol: splitSymbol[0] },
+    };
+
+    Log.debug("getToken", tokenData);
     return tokenData;
+  }
+
+  async function resolveTokenData(category: string) {
+    //Log.debug("resolveTokenData");
+    await resolveTokenIdentity(category);
+    return getToken(category);
   }
 
   function registerTokenHistory(
@@ -119,5 +160,38 @@ export default function TokenManagerService(walletHash: string) {
     if (tokens.length > 0) {
       Log.debug("registerTokenHistory", tx_hash, tokens);
     }
+  }
+
+  async function resolveTokenIdentity(category: string) {
+    const Bcmr = BcmrService();
+    const authbase = Bcmr.getCategoryAuthbase(category);
+    let tokenIdentity = {};
+    try {
+      const identityRegistry = await Bcmr.resolveIdentityRegistry(authbase);
+
+      //Log.debug("resolveIdentity using registry", category, registry);
+
+      tokenIdentity = Bcmr.extractIdentity(category, identityRegistry.registry);
+
+      if (!tokenIdentity.token) {
+        throw new Error(
+          `Unable to resolve token tokenIdentity for ${category}`
+        );
+      }
+
+      APP_DB.exec(
+        "UPDATE bcmr_tokens SET symbol=$symbol WHERE category=$category",
+        {
+          $category: category,
+          $symbol: tokenIdentity.token.symbol,
+        }
+      );
+    } catch (e) {
+      tokenIdentity = generateTokenIdentity(category);
+    }
+
+    //Log.debug("resolveTokenIdentity", tokenIdentity);
+
+    return tokenIdentity;
   }
 }
