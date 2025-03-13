@@ -70,7 +70,7 @@ export default function AssetsViewTokens() {
         DatabaseService().flushDatabase("app");
       };
     },
-    [tokenCategories, TokenManager, sortIdentities]
+    [tokenCategories, TokenManager, sortIdentities, shouldResolveBcmr]
   );
 
   Log.debug(tokenData);
