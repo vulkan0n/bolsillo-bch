@@ -9,7 +9,7 @@ export default function DebugConsole() {
     const interval = setInterval(() => {
       const lines = ConsoleService().getLines();
       setRenderKey(lines.length);
-    }, 100);
+    }, 1000);
 
     return () => clearInterval(interval);
   }, []);

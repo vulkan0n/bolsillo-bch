@@ -428,7 +428,7 @@ export default function BcmrService() {
 
     const bcmr = JSON.stringify(validBcmr);
 
-    Log.info(JSON.stringify(bcmr));
+    Log.info(bcmr);
   }
 
   async function purgeBcmrData() {
