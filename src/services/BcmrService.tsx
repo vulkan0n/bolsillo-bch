@@ -73,7 +73,7 @@ export default function BcmrService() {
       throw new Error(bcmr);
     }
 
-    Log.debug("importBcmrFile", bcmr);
+    //Log.debug("importBcmrFile", bcmr);
     return bcmr;
   }
 
@@ -88,7 +88,7 @@ export default function BcmrService() {
       data: JSON.stringify(bcmr),
     });
 
-    Log.debug("writeBcmrFile", result, bcmr);
+    //Log.debug("writeBcmrFile", result, bcmr);
   }
 
   // --------------------------------
@@ -225,7 +225,7 @@ export default function BcmrService() {
       ) {
         throw new Error("invalidate-cache");
       }
-      Log.debug("resolveIdentityRegistry got", identityRegistry);
+      //Log.debug("resolveIdentityRegistry got", identityRegistry);
       return identityRegistry;
     } catch (e) {
       Log.debug("fetching identity registry from", registryUri);
@@ -279,7 +279,7 @@ export default function BcmrService() {
         registryUri
       );
 
-      Log.debug("resolveIdentityRegistry resolved", identityRegistry);
+      //Log.debug("resolveIdentityRegistry resolved", identityRegistry);
       return identityRegistry;
     }
   }
