@@ -575,9 +575,10 @@ export default function BcmrService() {
 
   async function resolveIcon(authbase: string) {
     let iconBase64;
-    const identity = extractIdentity(authbase);
-
-    if (!identity) {
+    let identity;
+    try {
+      identity = extractIdentity(authbase);
+    } catch (e) {
       return null;
     }
 

@@ -76,12 +76,12 @@ export default function AssetsViewTokenDetail() {
       <div className="border rounded border-primary p-1">
         <div className="flex">
           <div className="flex items-center justify-center">
-            <span className="border rounded-sm border-zinc-700 overflow-hidden">
+            <span className="border rounded-sm border-zinc-200 overflow-hidden shadow-sm">
               <TokenIcon category={tokenData.category} size={96} />
             </span>
           </div>
-          <div className="flex flex-col flex-1 mx-1">
-            <div className="">
+          <div className="flex flex-col flex-1 mx-1.5">
+            <div>
               <div className="flex items-baseline">
                 <span
                   className="font-mono text-sm font-bold pr-1.5 mr-1.5 border-r border-zinc-400/90"

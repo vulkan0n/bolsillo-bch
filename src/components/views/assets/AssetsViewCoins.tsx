@@ -80,10 +80,10 @@ export default function AssetsViewCoins() {
     <FullColumn className="justify-between">
       <div className="m-1">
         <div
-          className="p-1 rounded bg-zinc-700 text-white text-center my-1"
+          className="p-1 rounded bg-zinc-800 text-white text-center my-1"
           onClick={handleFlipCurrency}
         >
-          <div className="text-lg font-bold">Spendable Balance</div>
+          <div className="text-lg font-bold">Cash Balance</div>
           <div>
             <Satoshi value={wallet.spendable_balance} />
           </div>

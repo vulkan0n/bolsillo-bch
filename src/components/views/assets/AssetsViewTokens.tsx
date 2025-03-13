@@ -115,7 +115,7 @@ export function TokenCard({ token }: { token: TokenEntity }) {
     >
       <div className="flex items-center">
         <div className="flex items-center justify-center">
-          <TokenIcon category={token.category} />
+          <TokenIcon category={token.category} size={64} />
         </div>
         <div className="flex flex-col mx-1">
           <div className="text-sm flex items-baseline">
