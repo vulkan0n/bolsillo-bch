@@ -24,6 +24,7 @@ function WalletViewSendSuccess() {
   const navigate = useNavigate();
   const location = useLocation();
   const { tx, header, prefillMemo } = location.state;
+  const [isFocused, setIsFocused] = useState(false);
 
   Log.debug(tx);
 
@@ -52,7 +53,9 @@ function WalletViewSendSuccess() {
       className="fixed top-0 left-0 w-screen h-screen z-50 bg-primary"
       onClick={() => navigate("/")}
     >
-      <div className="flex items-center justify-center p-4 h-56 bg-zinc-800 shadow">
+      <div
+        className={`flex items-center justify-center p-4 bg-zinc-800 shadow transition-[height] ${isFocused ? "h-0" : "h-56"}`} // set the height dynamically based on input focus to prevent the virtual keyboard from overlaying the input
+      >
         <img src={logos.selene.img} className="h-full" alt="" />
       </div>
       <div className="p-1 bg-primary text-white shadow-inner">
@@ -96,6 +99,8 @@ function WalletViewSendSuccess() {
               className="flex-1 rounded-sm p-1"
               value={memo}
               onChange={handleMemoChange}
+              onFocus={() => setIsFocused(true)}
+              onBlur={() => setIsFocused(false)}
             />
             {memo && (
               <CheckCircleFilled className="shrink text-primary text-lg ml-2 mr-1 font-bold" />
