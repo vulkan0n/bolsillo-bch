@@ -19,6 +19,29 @@ class TransactionHistoryNotExistsError extends Error {
   }
 }
 
+interface HistoryEntity {
+  txid: string;
+  height: number;
+  address: string;
+  time: number;
+  time_seen: string;
+  amount: bigint;
+  fiat_amount: string;
+  fiat_currency: string;
+  memo: string;
+}
+
+export interface TokenHistoryEntity {
+  txid: string;
+  category: string;
+  fungible_amount: bigint;
+  nft_amount: number;
+}
+
+interface MergedHistoryEntity extends HistoryEntity {
+  tokens?: Array<TokenHistoryEntity>;
+}
+
 export default function TransactionHistoryService(
   walletHash: string,
   fiatCurrency
@@ -45,7 +68,7 @@ export default function TransactionHistoryService(
     getTransactionMemo,
   };
 
-  function getTransactionHistory(start: number = 0) {
+  function getTransactionHistory(start: number = 0): MergedHistoryEntity {
     // get all transactions that are registered with addresses
     const address_transactions_confirmed = walletDb.exec(
       `SELECT * FROM address_transactions
@@ -75,7 +98,50 @@ export default function TransactionHistoryService(
         return { ...at, time: txTime };
       });
 
-    return address_transactions;
+    const mergedHistory = mergeTokenHistory(address_transactions);
+    return mergedHistory;
+  }
+
+  function mergeTokenHistory(
+    address_transactions: Array<HistoryEntity>
+  ): MergedHistoryEntity {
+    const tx_hashes = address_transactions.map((at) => at.txid);
+    const joinedTxHashes = tx_hashes.map((txid) => `"${txid}"`).join(",");
+
+    // get token amounts for each historical transaction
+    const tokenTransactions: Array<TokenHistoryEntity> = walletDb.exec(
+      `SELECT * FROM token_transactions WHERE txid IN (${joinedTxHashes});`
+    );
+
+    // for each historical transaction, merge in the token data
+    const mergedTransactions = address_transactions.reduce((merged, atx) => {
+      // from all token transactions, get the ones for this atx
+      const tokenTxes = tokenTransactions.filter(
+        (ttx) => ttx.txid === atx.txid
+      );
+
+      // get a list of categories for our atx's token transactions
+      const categories = tokenTxes.map((ttx) => ttx.category);
+
+      const tokens = categories.map((category) =>
+        tokenTxes.filter((ttx) => ttx.category === category)
+      );
+
+      if (tokenTxes.length > 0) {
+        return [
+          ...merged,
+          {
+            ...atx,
+            tokens,
+          },
+        ];
+      }
+
+      return [...merged, atx];
+    }, [] as Array<MergedHistoryEntity>);
+
+    //Log.debug("mergedTransactions", mergedTransactions);
+    return mergedTransactions;
   }
 
   async function resolveTransactionHistory(start: number = 0) {
@@ -88,7 +154,6 @@ export default function TransactionHistoryService(
 
     // resolve amounts for transactions that don't have them
     const tx_hashes = address_transactions.map((at) => at.txid);
-
     Log.debug("resolveTransactionHistory awaiting", tx_hashes.length);
     const txHistory = (
       await Promise.all(
@@ -119,13 +184,27 @@ export default function TransactionHistoryService(
         throw new TransactionHistoryNotExistsError(tx_hash, walletHash);
       }
 
+      const tokenTxes = walletDb.exec(
+        `SELECT * FROM token_transactions WHERE txid="${tx_hash}";`
+      );
+
+      const categories = tokenTxes.map((ttx) => ttx.category);
+
+      const tokens = categories
+        .map((category) => tokenTxes.filter((ttx) => ttx.category === category))
+        .flat();
+
+      if (tokenTxes.length > 0) {
+        return { ...addressTx, tokens };
+      }
+
       return addressTx;
     } catch (e) {
       const tx = await TransactionManagerService().resolveTransaction(tx_hash);
       const { amount, tokens } = await calculateTxAmount(tx);
       const updatedAddressTx = updateTxAmount(tx.txid, amount);
       await TokenManager.registerTokenHistory(tx.txid, tokens);
-      return updatedAddressTx;
+      return { ...updatedAddressTx, tokens };
     }
   }
 
@@ -190,14 +269,12 @@ export default function TransactionHistoryService(
 
       if (!result[category]) {
         result[category] = {
-          amount: "0",
+          amount: 0n,
           nftAmount: 0,
         };
       }
 
-      result[category].amount = new Decimal(tokens[category].amount)
-        .plus(new Decimal(cur.token.amount.toString()))
-        .toString();
+      result[category].amount = tokens[category].amount + cur.token.amount;
 
       result[category].nftAmount = cur.token.nft
         ? tokens[category].nftAmount + 1
@@ -224,14 +301,14 @@ export default function TransactionHistoryService(
     const tokens = uniqueCategories.map((category) => {
       if (!receivedTokens[category]) {
         receivedTokens[category] = {
-          amount: "0",
+          amount: 0n,
           nftAmount: 0,
         };
       }
 
       if (!sentTokens[category]) {
         sentTokens[category] = {
-          amount: "0",
+          amount: 0n,
           nftAmount: 0,
         };
       }
@@ -243,9 +320,7 @@ export default function TransactionHistoryService(
 
       return {
         category,
-        amount: new Decimal(receivedTokenAmount)
-          .minus(new Decimal(sentTokenAmount))
-          .toString(),
+        amount: receivedTokenAmount - sentTokenAmount,
         nftAmount: receivedNftAmount - sentNftAmount,
       };
     });

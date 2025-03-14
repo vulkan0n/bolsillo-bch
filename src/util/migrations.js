@@ -151,7 +151,7 @@ const walletdb_migrations = [
         height int default 0 not null,
         address text not null,
         time text default ( strftime('%Y-%m-%dT%H:%M:%SZ') ),
-        time_seen default ( strftime('%Y-%m-%dT%H:%M:%SZ') ),
+        time_seen text default ( strftime('%Y-%m-%dT%H:%M:%SZ') ),
         amount int,
         fiat_amount text,
         fiat_currency text,
@@ -286,7 +286,7 @@ const walletdb_migrations = [
       `CREATE TABLE IF NOT EXISTS token_transactions (
         txid text not null, 
         category text not null,
-        amount int,
+        fungible_amount int,
         nft_amount int,
         UNIQUE(category, txid)
       );`

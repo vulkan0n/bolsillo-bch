@@ -9,8 +9,8 @@ import TokenManagerService, {
 } from "@/services/TokenManagerService";
 import DatabaseService from "@/services/DatabaseService";
 import TokenIcon from "@/atoms/TokenIcon";
+import TokenAmount from "@/atoms/TokenAmount";
 import KeyWarning from "@/atoms/KeyWarning/KeyWarning";
-import NumberFormat from "@/atoms/NumberFormat";
 
 import { truncateProse } from "@/util/string";
 
@@ -115,7 +115,7 @@ export function TokenCard({ token }: { token: TokenEntity }) {
     >
       <div className="flex items-center">
         <div className="flex items-center justify-center">
-          <TokenIcon category={token.category} size={64} />
+          <TokenIcon category={token.category} size={64} rounded />
         </div>
         <div className="flex flex-col mx-1">
           <div className="text-sm flex items-baseline">
@@ -130,35 +130,8 @@ export function TokenCard({ token }: { token: TokenEntity }) {
             </span>
           </div>
           <div className="flex items-center text-zinc-600">
-            {token.amount > 0 && (
-              <span className="text-xs font-mono mr-1.5 flex items-center">
-                <span
-                  style={{ color: token.color }}
-                  className="relative bottom-[1px] pr-0.5 text-sm"
-                >
-                  &#9679;
-                </span>
-                <NumberFormat
-                  number={token.amount}
-                  decimals={
-                    token.token && token.token.decimals
-                      ? token.token.decimals
-                      : 0
-                  }
-                />
-              </span>
-            )}
-            {token.nftCount > 0 && (
-              <div className="text-xs flex items-center">
-                <span
-                  style={{ color: token.color }}
-                  className="relative bottom-[1px] pr-0.5"
-                >
-                  &#9635;
-                </span>
-                <span>{token.nftCount}&nbsp;NFTs</span>
-              </div>
-            )}
+            {token.nftCount > 0 && <TokenAmount token={token} nft />}
+            {token.amount > 0 && <TokenAmount token={token} />}
           </div>
         </div>
       </div>

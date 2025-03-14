@@ -1,11 +1,28 @@
 import UtxoManagerService from "@/services/UtxoManagerService";
 import BcmrService from "@/services/BcmrService";
 import DatabaseService from "@/services/DatabaseService";
+import TransactionManagerService, {
+  TransactionEntity,
+} from "@/services/TransactionManagerService";
 import LogService from "@/services/LogService";
 
 const Log = LogService("TokenManagerService");
 
-export interface TokenEntity {}
+export interface TokenEntity {
+  category: string;
+  symbol: string;
+  name: string;
+  color: string;
+  amount: number;
+  nftCount: number;
+  token: {
+    category: string;
+    symbol: string;
+    decimals: number;
+  };
+  description?: string;
+  uris?: object;
+}
 
 export default function TokenManagerService(walletHash: string) {
   const Database = DatabaseService();
@@ -17,7 +34,7 @@ export default function TokenManagerService(walletHash: string) {
     getTokenUtxos,
     getTokenCategories,
     calculateTokenAmounts,
-    getTokenHistory,
+    resolveTokenHistory,
     registerTokenHistory,
     resolveTokenIdentity,
     resolveTokenData,
@@ -55,14 +72,38 @@ export default function TokenManagerService(walletHash: string) {
     return { amount, nftCount };
   }
 
-  function getTokenHistory(category: string) {
-    const result = walletDb.exec(
+  async function resolveTokenHistory(category: string) {
+    const tokenTransactions = walletDb.exec(
       "SELECT * FROM token_transactions WHERE category=?;",
       [category]
     );
 
-    Log.debug("getTokenHistory", category, result);
-    return result;
+    const token_txids = tokenTransactions.map((ttx) => ttx.txid);
+
+    const TransactionManager = TransactionManagerService();
+    const resolvedTransactions: Array<TransactionEntity> = await Promise.all(
+      token_txids.map((txid) => TransactionManager.resolveTransaction(txid))
+    );
+
+    const history = token_txids
+      .map((txid, i) => ({
+        ...tokenTransactions[i],
+        ...resolvedTransactions[i],
+      }))
+      .sort((a, b) => {
+        if (a.time > b.time) {
+          return -1;
+        }
+
+        if (b.time <= a.time) {
+          return 1;
+        }
+
+        return 0;
+      });
+
+    Log.debug("resolveTokenHistory", category, history);
+    return history;
   }
 
   function generateTokenIdentity(category: string) {
@@ -123,6 +164,7 @@ export default function TokenManagerService(walletHash: string) {
       ...amounts,
       ...identity,
       token: { ...identity.token, symbol: splitSymbol[0] },
+      symbol: splitSymbol[0],
     };
 
     //Log.debug("getToken", tokenData);
@@ -143,12 +185,12 @@ export default function TokenManagerService(walletHash: string) {
       tokens.forEach((token) => {
         walletDb.exec(
           `INSERT OR IGNORE INTO token_transactions (
-        txid, category, amount, nft_amount
-      ) VALUES ($txid, $category, $amount, $nft_amount);`,
+        txid, category, fungible_amount, nft_amount
+      ) VALUES ($txid, $category, $fungible_amount, $nft_amount);`,
           {
             $txid: tx_hash,
             $category: token.category,
-            $amount: token.amount,
+            $fungible_amount: token.amount,
             $nft_amount: token.nftAmount,
           }
         );

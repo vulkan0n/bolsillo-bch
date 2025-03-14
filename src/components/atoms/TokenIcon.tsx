@@ -5,9 +5,11 @@ import Checksum from "@/atoms/Checksum";
 export default function TokenIcon({
   category,
   size = 64,
+  rounded = false,
 }: {
   category: string;
   size?: number;
+  rounded?: boolean;
 }) {
   const [isToggled, setIsToggled] = useState(false);
   const [icon, setIcon] = useState<string | null>(null);
@@ -41,7 +43,7 @@ export default function TokenIcon({
       ) : (
         <div
           style={{ width: `${size}px`, height: `${size}px` }}
-          className="rounded-full overflow-hidden"
+          className={`${rounded ? "rounded-full" : ""} overflow-hidden`}
         >
           <img src={icon} />
         </div>

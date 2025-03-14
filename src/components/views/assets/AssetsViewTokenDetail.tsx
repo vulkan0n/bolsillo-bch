@@ -1,6 +1,7 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { useParams, Link } from "react-router";
+import { DateTime } from "luxon";
 import {
   LinkOutlined,
   HomeOutlined,
@@ -25,7 +26,7 @@ import LogService from "@/services/LogService";
 import TokenManagerService from "@/services/TokenManagerService";
 
 import TokenIcon from "@/atoms/TokenIcon";
-import NumberFormat from "@/atoms/NumberFormat";
+import TokenAmount from "@/atoms/TokenAmount";
 
 import { truncateProse } from "@/util/string";
 
@@ -69,7 +70,21 @@ export default function AssetsViewTokenDetail() {
     default: <LinkOutlined />,
   };
 
-  const tokenHistory = TokenManager.getTokenHistory(tokenId);
+  const [tokenHistory, setTokenHistory] = useState([]);
+
+  useEffect(
+    function resolveTokenHistory() {
+      const resolve = async () => {
+        const history = await TokenManager.resolveTokenHistory(tokenId);
+        setTokenHistory(history);
+      };
+      resolve();
+    },
+    [TokenManager, tokenId]
+  );
+
+  const receiveStyle = "text-secondary";
+  const sendStyle = "text-error";
 
   return (
     <div key={tokenData.category} className="w-full p-1">
@@ -97,33 +112,10 @@ export default function AssetsViewTokenDetail() {
               </div>
               <div className="flex items-center text-zinc-600 py-0.5">
                 {tokenData.amount > 0 && (
-                  <span className="text-sm font-mono mr-1.5 flex items-center">
-                    <span
-                      style={{ color: tokenData.color }}
-                      className="relative bottom-[1px] pr-0.5 text-sm"
-                    >
-                      &#9679;
-                    </span>
-                    <NumberFormat
-                      number={tokenData.amount}
-                      decimals={
-                        tokenData.token && tokenData.token.decimals
-                          ? tokenData.token.decimals
-                          : 0
-                      }
-                    />
-                  </span>
+                  <TokenAmount token={tokenData} useSymbol />
                 )}
                 {tokenData.nftCount > 0 && (
-                  <div className="text-sm flex items-center">
-                    <span
-                      style={{ color: tokenData.color }}
-                      className="relative bottom-[1px] pr-0.5"
-                    >
-                      &#9635;
-                    </span>
-                    <span>{tokenData.nftCount}&nbsp;NFTs</span>
-                  </div>
+                  <TokenAmount token={tokenData} nft useSymbol />
                 )}
               </div>
             </div>
@@ -163,31 +155,38 @@ export default function AssetsViewTokenDetail() {
           {tokenData.category}
         </div>
       </div>
-      <div>
-        {tokenHistory.map((h) => (
-          <div key={h.txid}>
-            <div>{h.txid}</div>
-            {h.amount !== "0" && (
-              <span className="text-sm font-mono mr-1.5 flex items-center">
-                <span
-                  style={{ color: tokenData.color }}
-                  className="relative bottom-[1px] pr-0.5 text-sm"
-                >
-                  &#9679;
-                </span>
-                <NumberFormat
-                  number={tokenData.amount}
-                  decimals={
-                    tokenData.token && tokenData.token.decimals
-                      ? tokenData.token.decimals
-                      : 0
-                  }
-                />
-              </span>
-            )}
-            {h.nft_amount > 0 && <div>{h.nft_amount}</div>}
-          </div>
-        ))}
+      <div className="mt-1">
+        <ul className="border rounded-sm border-zinc-300">
+          {tokenHistory.map((h) => (
+            <li key={h.txid} className="py-1">
+              <Link to={`/explore/tx/${h.txid}`}>
+                <div className="flex text-sm p-1">
+                  <div className="flex-1">
+                    {(h.height <= 0 || !h.time
+                      ? DateTime.fromISO(h.time_seen)
+                      : DateTime.fromSeconds(h.time)
+                    ).toLocaleString(DateTime.DATETIME_SHORT_WITH_SECONDS)}
+                  </div>
+                  <div className="text-right">
+                    {h.nft_amount !== 0 && <TokenAmount token={h} nft />}
+                    {h.fungible_amount !== 0 && (
+                      <div className="font-mono">
+                        <span className="text-sm font-mono flex items-center justify-end">
+                          <TokenAmount token={h} />
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+                {h.memo && (
+                  <div className="text-sm text-zinc-500 ml-4">
+                    Memo: {h.memo}
+                  </div>
+                )}
+              </Link>
+            </li>
+          ))}
+        </ul>
       </div>
     </div>
   );
