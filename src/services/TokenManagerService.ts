@@ -1,3 +1,4 @@
+import { IdentitySnapshot, TokenCategory } from "@bitauth/libauth";
 import UtxoManagerService from "@/services/UtxoManagerService";
 import BcmrService from "@/services/BcmrService";
 import DatabaseService from "@/services/DatabaseService";
@@ -8,20 +9,16 @@ import LogService from "@/services/LogService";
 
 const Log = LogService("TokenManagerService");
 
-export interface TokenEntity {
+export interface TokenEntity extends IdentitySnapshot {
   category: string;
   symbol: string;
   name: string;
   color: string;
   amount: number;
   nftCount: number;
-  token: {
-    category: string;
-    symbol: string;
-    decimals: number;
-  };
-  description?: string;
-  uris?: object;
+  token: TokenCategory;
+  fungible_amount?: bigint;
+  nft_amount?: number;
 }
 
 export default function TokenManagerService(walletHash: string) {
@@ -40,14 +37,10 @@ export default function TokenManagerService(walletHash: string) {
     resolveTokenData,
   };
 
-  function getTokenUtxos() {
+  function getTokenCategories() {
     const UtxoManager = UtxoManagerService(walletHash);
     const tokenUtxos = UtxoManager.getWalletTokens();
-    return tokenUtxos;
-  }
 
-  function getTokenCategories() {
-    const tokenUtxos = getTokenUtxos();
     const tokenCategories = tokenUtxos.reduce(
       (categories, utxo) =>
         !categories.includes(utxo.token_category)
@@ -59,8 +52,15 @@ export default function TokenManagerService(walletHash: string) {
     return tokenCategories;
   }
 
+  function getTokenUtxos(category: string) {
+    const UtxoManager = UtxoManagerService(walletHash);
+    const tokenUtxos = UtxoManager.getCategoryUtxos(category);
+    return tokenUtxos;
+  }
+
   function calculateTokenAmounts(category: string) {
-    const tokenUtxos = getTokenUtxos();
+    const UtxoManager = UtxoManagerService(walletHash);
+    const tokenUtxos = UtxoManager.getWalletTokens();
     const amount = tokenUtxos
       .filter((utxo) => utxo.token_category === category)
       .reduce((total, utxo) => total + utxo.token_amount, 0);

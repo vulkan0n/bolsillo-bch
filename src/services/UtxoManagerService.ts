@@ -17,6 +17,7 @@ export default function UtxoManagerService(walletHash: string) {
     getAddressUtxos,
     getAddressCoins,
     getAddressTokens,
+    getCategoryUtxos,
     selectCoins,
     targetUtxos,
     discardUtxo,
@@ -90,7 +91,8 @@ export default function UtxoManagerService(walletHash: string) {
   // returns all UTXOs for an address in the wallet
   function getAddressUtxos(address) {
     const result = walletDb.exec(
-      `SELECT * FROM address_utxos WHERE address="${address}"`
+      `SELECT * FROM address_utxos WHERE address=?`,
+      [address]
     );
     return result;
   }
@@ -98,7 +100,8 @@ export default function UtxoManagerService(walletHash: string) {
   // returns all non-token UTXOs for an address in the wallet
   function getAddressCoins(address) {
     const result = walletDb.exec(
-      `SELECT * FROM address_utxos WHERE address="${address}" AND token_category IS NULL`
+      `SELECT * FROM address_utxos WHERE address=? AND token_category IS NULL`,
+      [address]
     );
     return result;
   }
@@ -106,8 +109,18 @@ export default function UtxoManagerService(walletHash: string) {
   // returns all token UTXOs for an address in the wallet
   function getAddressTokens(address) {
     const result = walletDb.exec(
-      `SELECT * FROM address_utxos WHERE address="${address}" AND token_category IS NOT NULL`
+      `SELECT * FROM address_utxos WHERE address=? AND token_category IS NOT NULL`,
+      [address]
     );
+    return result;
+  }
+
+  function getCategoryUtxos(category: string) {
+    const result = walletDb.exec(
+      "SELECT * FROM address_utxos WHERE token_category=?",
+      [category]
+    );
+
     return result;
   }
 
@@ -154,8 +167,9 @@ export default function UtxoManagerService(walletHash: string) {
     const eligibleAddresses = walletDb.exec(
       `SELECT * FROM addresses 
           WHERE 
-            balance >= ${targetAmount}
-          ORDER BY balance ASC`
+            balance >= ?
+          ORDER BY balance ASC`,
+      [targetAmount]
     );
 
     /*Log.debug(
@@ -177,9 +191,10 @@ export default function UtxoManagerService(walletHash: string) {
     const consolidateCoins = walletDb.exec(
       `SELECT * FROM address_utxos 
           WHERE 
-            amount <= ${targetAmount} 
+            amount <= ?
             AND token_category IS NULL
-          ORDER BY amount DESC`
+          ORDER BY amount DESC`,
+      [targetAmount]
     );
 
     const eligibleCoins = {
@@ -264,12 +279,13 @@ export default function UtxoManagerService(walletHash: string) {
   }
 
   function discardUtxo(utxo) {
-    walletDb.run(
-      `DELETE FROM address_utxos WHERE txid="${utxo.tx_hash}" AND tx_pos="${utxo.tx_pos}";`
-    );
+    walletDb.run(`DELETE FROM address_utxos WHERE txid=? AND tx_pos=?;`, [
+      utxo.tx_hash,
+      utxo.tx_pos,
+    ]);
   }
 
   function discardAddressUtxos(address) {
-    walletDb.run(`DELETE FROM address_utxos WHERE address="${address}";`);
+    walletDb.run(`DELETE FROM address_utxos WHERE address=?;`, [address]);
   }
 }

@@ -68,7 +68,7 @@ export default function DebugConsole() {
       }}
     >
       <ul className="h-full text-sm">
-        {consoleLines.map((line, index) => (
+        {consoleLines.slice(-500).map((line, index) => (
           <li
             /* eslint-disable-next-line react/no-array-index-key */
             key={`${index}:${line.message}`}

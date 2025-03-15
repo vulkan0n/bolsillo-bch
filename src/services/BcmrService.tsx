@@ -176,7 +176,7 @@ export default function BcmrService() {
       registryMeta,
     };
 
-    Log.debug("loadIdentityRegistry", authbase, identityRegistry);
+    //Log.debug("loadIdentityRegistry", authbase, identityRegistry);
     mergeRegistry(registry);
     return identityRegistry;
   }
@@ -404,7 +404,7 @@ export default function BcmrService() {
     try {
       const authchain = await resolveAuthChain(authbase);
 
-      Log.debug("resolveAuthChainRegistry got authchain", authbase);
+      //Log.debug("resolveAuthChainRegistry got authchain", authbase);
       let latestBcmrOutput;
 
       authchain.forEach((tx) => {
@@ -416,17 +416,17 @@ export default function BcmrService() {
         throw new Error(`No BCMR in authchain for ${authbase}`);
       }
 
-      Log.debug(
+      /*Log.debug(
         "resolveAuthChainRegistry latestBcmrOutput",
         authbase,
         latestBcmrOutput.scriptPubKey.asm
-      );
+        );*/
 
-      const { hash: registryHash, uris: registryUris } = parseBcmrOutput(
+      const { uris: registryUris } = parseBcmrOutput(
         latestBcmrOutput.scriptPubKey.hex
       );
 
-      Log.debug("Authhead got uri:", registryUris, registryHash);
+      //Log.debug("Authhead got uri:", registryUris, registryHash);
       return await resolveIdentityRegistry(authbase, registryUris[0], true);
     } catch (e) {
       Log.error(e);
@@ -573,7 +573,11 @@ export default function BcmrService() {
     Log.timeEnd("purgeBcmrData");
   }
 
-  async function resolveIcon(authbase: string) {
+  async function resolveIcon(
+    authbase: string,
+    nft_commitment?: string,
+    returnImage?: boolean
+  ) {
     let iconBase64;
     let identity;
     try {
@@ -581,28 +585,71 @@ export default function BcmrService() {
     } catch (e) {
       return null;
     }
+    const hasNftMetadata = !!(
+      nft_commitment &&
+      identity.token.nfts &&
+      identity.token.nfts.parse.types[nft_commitment]
+    );
+
+    //Log.debug("hasNftMetadata?", hasNftMetadata);
+
+    const identityNft = hasNftMetadata
+      ? identity.token.nfts.parse.types[nft_commitment]
+      : null;
+
+    //Log.debug("identityNft?", identityNft);
+
+    const hasUris = !!identity.uris;
+    const hasIcon = hasUris && identity.uris.icon;
+    const hasImage = hasUris && identity.uris.image;
+
+    const hasNftUris = hasNftMetadata && identityNft && identityNft.uris;
+    const hasNftIcon = hasNftMetadata && hasNftUris && identityNft.uris.icon;
+    const hasNftImage = hasNftMetadata && hasNftUris && identityNft.uris.image;
+    const filename = hasNftMetadata
+      ? sha256.text(`${authbase}${nft_commitment}`)
+      : authbase;
+
+    const dir = returnImage ? "images" : "icons";
 
     try {
       iconBase64 = (
         await Filesystem.readFile({
-          path: `/selene/icons/${authbase}`,
+          path: `/selene/${dir}/${filename}`,
           directory: Directory.Cache,
           encoding: Encoding.UTF8,
         })
       ).data;
     } catch (e) {
-      if (!identity.uris || !identity.uris.icon) {
-        throw new Error(`No icon for ${authbase}`);
+      if (
+        (!hasUris && !hasNftUris) ||
+        (hasNftMetadata
+          ? !hasNftUris || (!hasNftIcon && !hasNftImage)
+          : !hasIcon && !hasImage)
+      ) {
+        return null;
       }
 
-      const fetchUri = identity.uris.icon;
+      /* eslint-disable-next-line no-nested-ternary */
+      const nftUri = hasNftMetadata
+        ? (returnImage && hasNftImage) || (!hasNftIcon && hasNftImage)
+          ? identityNft.uris.image
+          : identityNft.uris.icon
+        : "";
+
+      const categoryUri =
+        (returnImage && hasImage) || (!hasIcon && hasImage)
+          ? identity.uris.image
+          : identity.uris.icon;
+
+      const fetchUri = hasNftMetadata ? nftUri : categoryUri;
 
       const response = await ipfsFetch(fetchUri);
       const iconBytes = await response.bytes();
       const iconData = iconBytes.toBase64();
 
       const { uri: iconUri } = await Filesystem.writeFile({
-        path: `/selene/icons/${authbase}`,
+        path: `/selene/${dir}/${filename}`,
         directory: Directory.Cache,
         data: iconData,
         encoding: Encoding.UTF8,
@@ -614,9 +661,9 @@ export default function BcmrService() {
       });
 
       iconBase64 = data;
-      //Log.debug("iconBase64?", iconBase64);
     }
 
+    //Log.debug("iconBase64?", iconBase64);
     const iconDataUri = `data:;base64,${iconBase64}`;
 
     return iconDataUri;
