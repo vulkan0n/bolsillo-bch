@@ -56,7 +56,7 @@ export default function Address({
 
   return (
     <span
-      className={`tracking-tighter ${color} ${myAddressStyle} ${myChangeStyle}`}
+      className={`tracking-tighter ${color} ${myAddressStyle} ${myChangeStyle} truncate`}
     >
       <span className="font-bold">{prefix}</span>
       {short ? "-" : middle}

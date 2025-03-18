@@ -1,3 +1,9 @@
+import {
+  decodeCashAddress,
+  encodeCashAddress,
+  CashAddressType,
+  assertSuccess,
+} from "@bitauth/libauth";
 import LogService from "@/services/LogService";
 import DatabaseService from "@/services/DatabaseService";
 import { sha256 } from "@/util/hash";
@@ -31,6 +37,7 @@ export default function AddressManagerService(walletHash: string) {
   return {
     registerAddress,
     getAddress,
+    getTokenAddress,
     getAddressRange,
     getReceiveAddresses,
     getChangeAddresses,
@@ -82,6 +89,23 @@ export default function AddressManagerService(walletHash: string) {
     }
 
     return result[0];
+  }
+
+  function getTokenAddress(address: string): string {
+    const decoded = decodeCashAddress(address);
+
+    if (typeof decoded === "string") {
+      throw new Error(decoded);
+    }
+
+    const { address: encoded } = assertSuccess(
+      encodeCashAddress({
+        ...decoded,
+        type: CashAddressType.p2pkhWithTokens,
+      })
+    );
+
+    return encoded;
   }
 
   function getAddressRange(

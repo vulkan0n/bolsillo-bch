@@ -59,7 +59,7 @@ export const walletBoot = createAsyncThunk(
       : ElectrumService().selectFallbackServer("");
 
     // connect to Electrum
-    thunkApi.dispatch(
+    await thunkApi.dispatch(
       syncConnect({
         attempts: 0,
         server,
@@ -117,6 +117,9 @@ export const walletReloadAddresses = createAction(
       ...AddressManager.getReceiveAddresses(),
       ...AddressManager.getChangeAddresses(),
     ];
+    myAddresses.push(
+      ...myAddresses.map((a) => AddressManager.getTokenAddress(a.address))
+    );
 
     return { payload: myAddresses };
   }

@@ -1,5 +1,5 @@
 import { Filesystem, Directory } from "@capacitor/filesystem";
-import { _dbOpen } from "@/services/DatabaseService";
+import DatabaseService, { _dbOpen } from "@/services/DatabaseService";
 import LogService from "@/services/LogService";
 import WalletManagerService from "@/services/WalletManagerService";
 import TransactionManagerService from "@/services/TransactionManagerService";
@@ -13,19 +13,10 @@ export default function JanitorService() {
     recoverWalletFiles,
     fsck,
     purgeStaleData,
+    resetDatabases,
   };
 
   async function migrateLegacyDatabases() {
-    try {
-      await Filesystem.mkdir({
-        path: "selene/",
-        directory: Directory.Library,
-        recursive: true,
-      });
-    } catch {
-      // empty
-    }
-
     // check for pre-2024.05 .db.bak files
     const getLegacyBackupFiles = async () => {
       try {
@@ -43,7 +34,7 @@ export default function JanitorService() {
       }
     };
 
-    // copy wallets from database to filesystem
+    // copy legacy wallet backups from database to filesystem
     const extractLegacyWallets = async (legacy_db) => {
       const legacy_wallets = legacy_db.exec("SELECT * FROM wallets");
       const WalletManager = WalletManagerService();
@@ -70,7 +61,7 @@ export default function JanitorService() {
         });
         Log.log("Migrated legacy database file", filename, deleteResult);
       } catch (e) {
-        // empty
+        // pass
       }
     };
 
@@ -82,7 +73,7 @@ export default function JanitorService() {
       attemptFiles.map((file) => attemptMigration(file))
     );
 
-    // stale dir
+    // remove stale pre-2024.05  db dir AFTER attempting to recover the legacy databases
     try {
       await Filesystem.rmdir({
         path: "/db",
@@ -90,12 +81,12 @@ export default function JanitorService() {
         recursive: true,
       });
     } catch (e) {
-      // empty
+      // pass
     }
   }
 
   async function recoverWalletFiles() {
-    Log.debug("Searching for lost wallet files");
+    Log.debug("Searching for wallet files");
 
     const { files: fileWallets } = await Filesystem.readdir({
       path: "/selene/wallets",
@@ -107,8 +98,7 @@ export default function JanitorService() {
     const metaWallets = WalletManager.listWallets();
 
     Log.debug(
-      `Found ${fileWallets.length} wallet files, ${metaWallets.length} in database`,
-      metaWallets
+      `Found ${fileWallets.length} wallet files, ${metaWallets.length} in app database`
     );
 
     // make a list of walletHashes that are on the filesystem, but not in database
@@ -127,7 +117,7 @@ export default function JanitorService() {
 
     return Promise.all(
       importWallets.map((walletHash) =>
-        WalletManagerService().importWalletFile(walletHash)
+        WalletManager.importWalletFile(walletHash)
       )
     );
   }
@@ -193,9 +183,22 @@ export default function JanitorService() {
         directory: Directory.Library,
       });
     }
+
+    try {
+      await Filesystem.readdir({
+        path: "/selene/bcmr",
+        directory: Directory.Library,
+      });
+    } catch (e) {
+      await Filesystem.mkdir({
+        path: "/selene/icons",
+        directory: Directory.Cache,
+      });
+    }
   }
 
   async function purgeLegacyTransactionFiles() {
+    // remove pre-2024 /tx directory
     try {
       await Filesystem.rmdir({
         path: "/tx",
@@ -203,13 +206,38 @@ export default function JanitorService() {
         recursive: true,
       });
     } catch (e) {
-      // empty
+      // pass
     }
   }
 
+  // purgeStaleData: removes data from the wallet that is no longer used
   async function purgeStaleData() {
     await purgeLegacyTransactionFiles();
     await TransactionManagerService().purgeTransactions();
     await BlockchainService().purgeBlocks();
+  }
+
+  // resetDatabases: hard-resets all wallet databases and app database
+  // [!] does NOT delete wallet FILES - DOES drop walletDb tables!
+  async function resetDatabases() {
+    const Database = DatabaseService();
+    const WalletManager = WalletManagerService();
+    const APP_DB = Database.getAppDatabase();
+
+    const metaWallets = WalletManager.listWallets();
+
+    // delete each walletDb, but keep the wallet files so they can be re-imported later
+    await Promise.all(
+      metaWallets.map(async (w) => {
+        await WalletManager.deleteWallet(w.walletHash, true);
+      })
+    );
+
+    // reset appDb
+    APP_DB.exec("PRAGMA user_version = 0;");
+    await Database.flushDatabase("app");
+
+    // hard-reset app!
+    window.location.assign("/");
   }
 }

@@ -16,7 +16,7 @@ export default function ViewHeader({
 }: Props) {
   const location = useLocation();
   const navigate = useNavigate();
-  const shouldShowBackButton = location.pathname.split("/").length > 1;
+  const shouldShowBackButton = location.pathname.split("/").length > 2;
 
   const Icon = icon;
 

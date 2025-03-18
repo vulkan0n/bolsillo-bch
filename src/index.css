@@ -86,3 +86,9 @@ main {
   line-height: 0;
   vertical-align: 1px;
 }
+
+.text-stroke {
+  -webkit-text-stroke-color: #00000022;
+  -webkit-text-fill: transparent;
+  -webkit-text-stroke-width: 0.25px;
+}

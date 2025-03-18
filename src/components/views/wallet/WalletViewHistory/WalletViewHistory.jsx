@@ -15,6 +15,7 @@ import { translate } from "@/util/translations";
 
 import ViewHeader from "@/layout/ViewHeader";
 import Satoshi from "@/atoms/Satoshi";
+import TokenAmount from "@/atoms/TokenAmount";
 
 function useTransactionHistory() {
   const dispatch = useDispatch();
@@ -81,11 +82,33 @@ export default function WalletViewHistory() {
                   </div>
                 </div>
               </div>
-              {tx.memo && (
-                <div className="text-sm text-zinc-500 ml-4">
-                  Memo: {tx.memo}
-                </div>
-              )}
+              <div className="flex justify-between">
+                {tx.memo && (
+                  <div className="grow text-sm text-zinc-500 mx-4">
+                    {tx.memo}
+                  </div>
+                )}
+                {tx.tokens && (
+                  <div className="flex flex-1 justify-end flex-wrap gap-x-2 mr-0.5">
+                    {tx.tokens.map((token) => (
+                      <div className="flex justify-end items-center text-right">
+                        <span
+                          style={{ color: `#${token.category.slice(0, 6)}` }}
+                          className="font-mono text-xs tracking-tighter font-bold"
+                        >
+                          {token.symbol}
+                        </span>
+                        {token.nft_amount !== 0 && (
+                          <TokenAmount token={token} nft />
+                        )}
+                        {token.fungible_amount !== 0 && (
+                          <TokenAmount token={token} />
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
             </Link>
           </li>
         ) : null

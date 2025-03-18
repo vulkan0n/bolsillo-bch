@@ -28,7 +28,6 @@ import { selectLocale } from "@/redux/device";
 
 import ViewHeader from "@/layout/ViewHeader";
 
-import DatabaseService from "@/services/DatabaseService";
 import WalletManagerService from "@/services/WalletManagerService";
 import SecurityService, { AuthActions } from "@/services/SecurityService";
 
@@ -121,7 +120,6 @@ export default function SettingsWalletView() {
     dispatch(
       walletBoot({ walletHash: wallet.walletHash, network: bchNetwork })
     ).then(async () => {
-      await DatabaseService().flushHandles(true);
       navigate("/");
     });
   };
@@ -251,44 +249,39 @@ export default function SettingsWalletView() {
         <WalletSettings />
         <KeyWarning walletHash={wallet.walletHash} />
         <ShowMnemonic key={wallet.walletHash} walletHash={wallet.walletHash} />
-        {
-          /* Only show "Advanced Options" if user has viewed (TODO: verified) their recovery phrase */
-          shouldShowAdvancedOptions && (
-            <Accordion
-              icon={ToolOutlined}
-              title={translate(translations.advancedOptions)}
-            >
+        {shouldShowAdvancedOptions && (
+          <Accordion
+            icon={ToolOutlined}
+            title={translate(translations.advancedOptions)}
+          >
+            <Accordion.Child icon={null} label="">
+              <Link
+                className="w-full text-left flex items-center"
+                to={`/settings/wallet/${wallet.walletHash}/additionalInformation`}
+              >
+                <InfoCircleOutlined className="text-xl mr-1" />
+                {translate(translations.additionalWalletInformation)}
+              </Link>
+            </Accordion.Child>
+            {isExperimental && (
               <Accordion.Child icon={null} label="">
-                <Link
-                  className="w-full text-left flex items-center"
-                  to={`/settings/wallet/${wallet.walletHash}/additionalInformation`}
-                >
-                  <InfoCircleOutlined className="text-xl mr-1" />
-                  {translate(translations.additionalWalletInformation)}
+                <Link className="w-full text-left flex items-center" to="scan">
+                  <SyncOutlined className="text-xl mr-1" />
+                  {translate(translations.addressScanTool)}
                 </Link>
               </Accordion.Child>
-              {isExperimental && (
-                <Accordion.Child icon={null} label="">
-                  <Link
-                    className="w-full text-left flex items-center"
-                    to="scan"
-                  >
-                    <SyncOutlined className="text-xl mr-1" />
-                    {translate(translations.addressScanTool)}
-                  </Link>
-                </Accordion.Child>
-              )}
-              <Accordion.Child icon={null} label="">
-                <button
-                  type="button"
-                  className="w-full text-left flex items-center"
-                  onClick={handleRebuildWallet}
-                >
-                  <MedicineBoxOutlined className="text-xl mr-1" />
-                  {translate(translations.rebuildWallet)}
-                </button>
-              </Accordion.Child>
-              {/*isExperimental && (
+            )}
+            <Accordion.Child icon={null} label="">
+              <button
+                type="button"
+                className="w-full text-left flex items-center"
+                onClick={handleRebuildWallet}
+              >
+                <MedicineBoxOutlined className="text-xl mr-1" />
+                {translate(translations.rebuildWallet)}
+              </button>
+            </Accordion.Child>
+            {/*isExperimental && (
                 <Accordion.Child icon={null} label="">
                   <button
                     type="button"
@@ -300,21 +293,20 @@ export default function SettingsWalletView() {
                   </button>
                 </Accordion.Child>
               )*/}
-              {isExperimental && (
-                <Accordion.Child icon={null} label="">
-                  <button
-                    type="button"
-                    className="w-full text-left flex items-center"
-                    onClick={handleExportWallet}
-                  >
-                    <ExportOutlined className="text-xl mr-1" />
-                    {translate(translations.exportWallet)}
-                  </button>
-                </Accordion.Child>
-              )}
-            </Accordion>
-          )
-        }
+            {isExperimental && (
+              <Accordion.Child icon={null} label="">
+                <button
+                  type="button"
+                  className="w-full text-left flex items-center"
+                  onClick={handleExportWallet}
+                >
+                  <ExportOutlined className="text-xl mr-1" />
+                  {translate(translations.exportWallet)}
+                </button>
+              </Accordion.Child>
+            )}
+          </Accordion>
+        )}
       </div>
     </>
   );

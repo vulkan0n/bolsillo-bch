@@ -1,106 +1,91 @@
-//import { useEffect } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { useSelector } from "react-redux";
-import { selectActiveWalletHash } from "@/redux/wallet";
+import { useNavigate } from "react-router";
+import { selectActiveWallet } from "@/redux/wallet";
+import { selectPrivacySettings } from "@/redux/preferences";
 import LogService from "@/services/LogService";
-import UtxoManagerService from "@/services/UtxoManagerService";
-import BcmrService from "@/services/BcmrService";
-import Checksum from "@/atoms/Checksum";
+import TokenManagerService, {
+  TokenEntity,
+} from "@/services/TokenManagerService";
+import DatabaseService from "@/services/DatabaseService";
+import TokenIcon from "@/atoms/TokenIcon";
+import TokenAmount from "@/atoms/TokenAmount";
 import KeyWarning from "@/atoms/KeyWarning/KeyWarning";
-import NumberFormat from "@/atoms/NumberFormat";
+
+import { truncateProse } from "@/util/string";
 
 const Log = LogService("AssetsViewTokens");
 
 export default function AssetsViewTokens() {
-  const walletHash = useSelector(selectActiveWalletHash);
+  // [?] use selectActiveWallet instead of selectActiveWalletHash
+  // we want the UI to re-render on wallet update in case we send/receive tokens
+  const { walletHash } = useSelector(selectActiveWallet);
+  const { shouldResolveBcmr } = useSelector(selectPrivacySettings);
 
-  //const navigate = useNavigate();
+  const navigate = useNavigate();
 
-  //const [tokenData, setTokenData] = useState([]);
-
-  const UtxoManager = UtxoManagerService(walletHash);
-
-  const tokenUtxos = UtxoManager.getWalletTokens();
-
-  const tokenCategories = tokenUtxos.reduce(
-    (categories, utxo) =>
-      !categories.includes(utxo.token_category)
-        ? [...categories, utxo.token_category]
-        : categories,
-    []
+  const TokenManager = useMemo(
+    () => TokenManagerService(walletHash),
+    [walletHash]
   );
 
-  const Bcmr = BcmrService();
-  /*useEffect(
+  const tokenCategories = useMemo(() => {
+    return TokenManager.getTokenCategories();
+  }, [TokenManager]);
+
+  const sortIdentities = useCallback((a, b) => {
+    // sort tokens with metadata above tokens without metadata
+    if (a.token && !b.token) {
+      return -1;
+    }
+
+    if (b.token && !a.token) {
+      return 1;
+    }
+
+    return a.name.localeCompare(b.name);
+  }, []);
+
+  const initTokenData = () =>
+    tokenCategories
+      .map((category) => TokenManager.getToken(category))
+      .sort(sortIdentities);
+
+  const [tokenData, setTokenData] = useState(initTokenData());
+
+  useEffect(
     function resolveTokenMetadata() {
-      const resolve = async () =>
-        Promise.all(
-          tokenCategories.map((category) => Bcmr.resolveIdentity(category))
-        );
+      const resolve = async () => {
+        const resolvedData = (
+          await Promise.all(
+            tokenCategories.map(async (category) => {
+              if (!shouldResolveBcmr) {
+                return TokenManager.getToken(category);
+              }
 
-      //resolve();
+              return TokenManager.resolveTokenData(category);
+            })
+          )
+        ).sort(sortIdentities);
+
+        setTokenData(resolvedData);
+      };
+
+      resolve();
+
+      return () => {
+        // ensure resolved metadata persists in app db
+        DatabaseService().flushDatabase("app");
+      };
     },
-    [Bcmr, tokenCategories]
-    );*/
-
-  const tokenData = tokenCategories
-    .map((category) => {
-      let identity = {
-        name: `Token ${category.slice(0, 6)}`,
-      };
-
-      try {
-        identity = Bcmr.getIdentity(category);
-      } catch (e) {
-        // pass
-      }
-
-      const amount = tokenUtxos
-        .filter((utxo) => utxo.token_category === category)
-        .reduce((total, utxo) => total + utxo.token_amount, 0);
-
-      const nftCount = tokenUtxos.filter(
-        (utxo) =>
-          utxo.token_category === category && utxo.nft_capability !== null
-      ).length;
-
-      const colorHex = `#${category.slice(0, 6)}`;
-
-      return {
-        category,
-        color: colorHex,
-        amount,
-        nftCount,
-        ...identity,
-      };
-    })
-    .sort((a, b) => {
-      // sort tokens with metadata above tokens without metadata
-      if (a.token && !b.token) {
-        return -1;
-      }
-
-      if (b.token && !a.token) {
-        return 1;
-      }
-
-      return a.name.localeCompare(b.name);
-    });
+    [tokenCategories, TokenManager, sortIdentities, shouldResolveBcmr]
+  );
 
   Log.debug(tokenData);
 
-  const truncateDescription = (text) => {
-    const textSplit = text.split(".");
-    const textCat = [textSplit[0], textSplit[1]].join(".");
-    const len = textCat.length;
-
-    return len > 137
-      ? `${textCat.slice(0, 140)}...`
-      : textCat + (textCat.endsWith(".") ? "" : ".");
-  };
-
-  /*const handleTokenNavigate = (tokenId) => {
+  const handleTokenNavigate = (tokenId) => {
     navigate(`/assets/tokens/${tokenId}`);
-    };*/
+  };
 
   return (
     <div className="p-1">
@@ -112,78 +97,54 @@ export default function AssetsViewTokens() {
       ) : (
         <>
           {tokenData.map((token) => (
-            <div
-              key={token.category}
-              className="w-full my-1 p-1 border border-primary rounded"
-              onClick={() => null}
-            >
-              <div className="flex items-center">
-                <div className="flex items-center justify-center">
-                  <span className="border rounded-sm border-zinc-700 overflow-hidden">
-                    <Checksum data={token.category} />
-                  </span>
-                </div>
-                <div className="flex flex-col justify-between mx-1">
-                  <div className="text-sm flex items-baseline">
-                    <span
-                      className="font-mono text-xs font-bold pr-1.5 mr-1.5 border-r border-zinc-400/90"
-                      style={{ color: token.color }}
-                    >
-                      {token.token
-                        ? token.token.symbol
-                        : token.category.slice(0, 6)}
-                    </span>
-                    <span className="font-bold text-zinc-700">
-                      {token.name || `Token ${token.category.slice(0, 6)}`}
-                    </span>
-                  </div>
-                  <div className="flex items-center text-zinc-600 mt-0.5">
-                    {token.amount > 0 && (
-                      <span className="text-xs font-mono mr-1.5 flex items-center">
-                        <span
-                          style={{ color: token.color }}
-                          className="relative bottom-[1px] pr-0.5"
-                        >
-                          &#9679;
-                        </span>
-                        <NumberFormat
-                          number={token.amount}
-                          decimals={
-                            token.token && token.token.decimals
-                              ? token.token.decimals
-                              : 0
-                          }
-                        />
-                      </span>
-                    )}
-                    {token.nftCount > 0 && (
-                      <div className="text-xs flex items-center">
-                        <span
-                          style={{ color: token.color }}
-                          className="relative bottom-[1px] pr-0.5"
-                        >
-                          &#9635;
-                        </span>
-                        <span>{token.nftCount}&nbsp;NFTs</span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-              <div>
-                {token.description && (
-                  <div className="p-1 text-sm text-zinc-700">
-                    {truncateDescription(token.description)}
-                  </div>
-                )}
-                <div className="mt-1.5 pt-0.5 border-t border-dashed border-zinc-300/80 font-mono text-xs text-zinc-400/70 truncate">
-                  {token.category}
-                </div>
-              </div>
+            <div onClick={() => handleTokenNavigate(token.category)}>
+              <TokenCard token={token} />
             </div>
           ))}
         </>
       )}
+    </div>
+  );
+}
+
+export function TokenCard({ token }: { token: TokenEntity }) {
+  return (
+    <div
+      key={token.category}
+      className="w-full my-1 p-1 border border-primary rounded"
+    >
+      <div className="flex items-center">
+        <div className="flex items-center justify-center">
+          <TokenIcon category={token.category} size={64} rounded />
+        </div>
+        <div className="flex flex-col mx-1">
+          <div className="text-sm flex items-baseline">
+            <span
+              className="font-mono text-xs font-bold pr-1.5 mr-1.5 border-r border-zinc-400/90"
+              style={{ color: token.color }}
+            >
+              {token.token ? token.token.symbol : token.category.slice(0, 6)}
+            </span>
+            <span className="font-bold text-zinc-700">
+              {token.name || `Token ${token.category.slice(0, 6)}`}
+            </span>
+          </div>
+          <div className="flex items-center text-zinc-600">
+            {token.nftCount > 0 && <TokenAmount token={token} nft />}
+            {token.amount > 0 && <TokenAmount token={token} />}
+          </div>
+        </div>
+      </div>
+      <div>
+        {token.description && (
+          <div className="p-1 text-sm text-zinc-700">
+            {truncateProse(token.description)}
+          </div>
+        )}
+        <div className="mt-1.5 pt-0.5 border-t border-dashed border-zinc-300/80 font-mono text-xs text-zinc-400/70 truncate">
+          {token.category}
+        </div>
+      </div>
     </div>
   );
 }

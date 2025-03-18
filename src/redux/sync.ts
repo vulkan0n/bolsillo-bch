@@ -171,8 +171,6 @@ export const syncSubscriptions = createAsyncThunk(
       );
     }
 
-    thunkApi.dispatch(syncPopulateAddresses());
-
     return addresses;
   }
 );
@@ -199,7 +197,7 @@ export const syncAddressState = createAsyncThunk(
 
     // check downloaded state against local state
     if (addressObj.state !== addressState) {
-      Log.debug("address state changed for", address, addressState);
+      //Log.debug("address state changed for", address, addressState);
       thunkApi.dispatch(syncAddressUtxos(addressObj));
       thunkApi.dispatch(syncAddressHistory(addressObj));
     }
@@ -329,8 +327,16 @@ export const syncHotRefresh = createAsyncThunk(
         await Promise.all(batchPromises);
       }
 
+      const AddressScanner = AddressScannerService(wallet);
+      const nScanMore = 500;
+      await Promise.all([
+        AddressScanner.scanMoreAddresses(nScanMore, 0),
+        AddressScanner.scanMoreAddresses(nScanMore, 1),
+      ]);
+
+      thunkApi.dispatch(syncPopulateAddresses());
+
       Log.debug("sync/hotRefresh", sync);
-      thunkApi.dispatch(syncComplete());
       return Date.now();
     }
 
@@ -350,7 +356,7 @@ export const syncChaintip = createAsyncThunk(
   async (chaintip: { height: number; hex: string }) => {
     const Blockchain = BlockchainService();
 
-    const currentTip = await Blockchain.getChaintip();
+    const currentTip = await Blockchain.resolveChaintip();
 
     const tipHash = Blockchain.calculateBlockhash(chaintip.hex);
 
@@ -447,7 +453,11 @@ syncMiddleware.startListening({
 syncMiddleware.startListening({
   actionCreator: syncPopulateAddresses.fulfilled,
   effect: async (action, listenerApi) => {
-    listenerApi.dispatch(syncComplete());
+    if (action.payload.length > 0) {
+      listenerApi.dispatch(syncPopulateAddresses());
+    } else {
+      listenerApi.dispatch(syncComplete());
+    }
   },
 });
 
@@ -462,6 +472,7 @@ const initialPending = {
   rebuild: 0,
   hotRefresh: 0,
   txHistory: 0,
+  populate: 0,
 };
 
 interface SyncState {
@@ -492,6 +503,9 @@ export const syncReducer = createReducer(initialState, (builder) => {
   builder
     .addCase(syncConnect.fulfilled, (state, action) => {
       state.isConnected = action.payload;
+    })
+    .addCase(syncDisconnect.pending, (state) => {
+      state.isConnected = false;
     })
     .addCase(syncDisconnect.fulfilled, (state) => {
       state.isConnected = false;
@@ -558,12 +572,18 @@ export const syncReducer = createReducer(initialState, (builder) => {
       state.syncPending.chaintip -= 1;
       state.chaintip = action.payload;
     })
+    .addCase(syncChaintip.rejected, (state) => {
+      state.syncPending.chaintip += 1;
+    })
     .addCase(syncHotRefresh.pending, (state) => {
       //state.isSyncComplete = false;
       state.syncPending.hotRefresh += 1;
     })
     .addCase(syncHotRefresh.fulfilled, (state, action) => {
       state.lastRefresh = action.payload;
+      state.syncPending.hotRefresh -= 1;
+    })
+    .addCase(syncHotRefresh.rejected, (state) => {
       state.syncPending.hotRefresh -= 1;
     })
     .addCase(syncClearAddresses, (state) => {
@@ -575,7 +595,11 @@ export const syncReducer = createReducer(initialState, (builder) => {
     .addCase(syncSubscriptions.fulfilled, (state, action) => {
       state.subscriptions = action.payload;
     })
+    .addCase(syncPopulateAddresses.pending, (state) => {
+      state.syncPending.populate += 1;
+    })
     .addCase(syncPopulateAddresses.fulfilled, (state, action) => {
+      state.syncPending.populate -= 1;
       state.subscriptions = [...state.subscriptions, ...action.payload];
     })
     .addCase(syncComplete.fulfilled, (state, action) => {

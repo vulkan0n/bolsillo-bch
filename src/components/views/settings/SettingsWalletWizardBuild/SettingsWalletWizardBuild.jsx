@@ -1,13 +1,13 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
-import { SyncOutlined } from "@ant-design/icons";
+import { SyncOutlined, DisconnectOutlined } from "@ant-design/icons";
 import { selectBchNetwork } from "@/redux/preferences";
 import { walletBoot } from "@/redux/wallet";
 import { selectSyncState } from "@/redux/sync";
 import WalletManagerService from "@/services/WalletManagerService";
 import AddressScannerService from "@/services/AddressScannerService";
-import ToastService from "@/services/ToastService";
+import ElectrumService from "@/services/ElectrumService";
 
 import { translate } from "@/util/translations";
 import translations from "./translations";
@@ -43,21 +43,19 @@ export default function SettingsWalletWizardBuild() {
         }
 
         if (isBuilding) {
-          await AddressScannerService(wallet).rebuildWallet((scanCount) =>
-            requestAnimationFrame(() =>
-              setAddressesScanned((scanned) => scanned + scanCount)
-            )
-          );
-          setIsBuildDone(true);
+          if (ElectrumService().getIsConnected()) {
+            await AddressScannerService(wallet).rebuildWallet((scanCount) =>
+              requestAnimationFrame(() =>
+                setAddressesScanned((scanned) => scanned + scanCount)
+              )
+            );
+            setIsBuildDone(true);
+          } else {
+            setIsBuilding(false);
+          }
         }
 
         if (!isBuilding) {
-          if (!isConnected) {
-            ToastService().disconnected();
-            navigate("/");
-            return;
-          }
-
           setIsBuilding(true);
         }
       };
@@ -80,9 +78,17 @@ export default function SettingsWalletWizardBuild() {
       <h2 className="text-2xl text-center">{translate(importingWallet)}</h2>
       <h3 className="text-xl text-center">{translate(takesMinutes)}</h3>
       <div className="flex justify-center items-center my-2">
-        <SyncOutlined className="text-5xl" spin />
+        {isConnected ? (
+          <SyncOutlined className="text-5xl" spin />
+        ) : (
+          <DisconnectOutlined className="text-error text-5xl" />
+        )}
       </div>
-      <div className="text-center">Scanned {addressesScanned} addresses</div>
+      {isConnected ? (
+        <div className="text-center">Scanned {addressesScanned} addresses</div>
+      ) : (
+        <div className="text-center text-error text-lg">Not Connected</div>
+      )}
     </div>
   );
 }
