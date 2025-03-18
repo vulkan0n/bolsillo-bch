@@ -211,13 +211,24 @@ export default function JanitorService() {
     try {
       await Filesystem.readdir({
         path: "/selene/icons",
-        directory: Directory.Library,
+        directory: Directory.Cache,
       });
     } catch (e) {
       await Filesystem.mkdir({
         path: "/selene/icons",
         directory: Directory.Cache,
-        recursive: true,
+      });
+    }
+
+    try {
+      await Filesystem.readdir({
+        path: "/selene/images",
+        directory: Directory.Cache,
+      });
+    } catch (e) {
+      await Filesystem.mkdir({
+        path: "/selene/images",
+        directory: Directory.Cache,
       });
     }
   }

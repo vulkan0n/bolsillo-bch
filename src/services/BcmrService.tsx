@@ -6,6 +6,7 @@ import {
   IdentitySnapshot,
   IdentityHistory,
   RegistryTimestampKeyedValues,
+  binToBase64,
 } from "@bitauth/libauth";
 import LogService from "@/services/LogService";
 import ElectrumService from "@/services/ElectrumService";
@@ -36,6 +37,8 @@ class BcmrRefreshError extends Error {
 }
 
 const LOCAL_BCMR = importMetadataRegistry(bcmrLocal) as LocalMetadataRegistry;
+
+const ICON_CACHE = new Map();
 
 interface BcmrMeta extends MetadataRegistry {
   authbase: string;
@@ -611,11 +614,19 @@ export default function BcmrService() {
       : authbase;
 
     const dir = returnImage ? "images" : "icons";
+    const iconPath = `${dir}/${filename}`;
+
+    if (ICON_CACHE.has(iconPath)) {
+      const cachedIcon = ICON_CACHE.get(iconPath);
+      if (cachedIcon !== null) {
+        return cachedIcon;
+      }
+    }
 
     try {
       iconBase64 = (
         await Filesystem.readFile({
-          path: `/selene/${dir}/${filename}`,
+          path: `/selene/${iconPath}`,
           directory: Directory.Cache,
           encoding: Encoding.UTF8,
         })
@@ -627,6 +638,7 @@ export default function BcmrService() {
           ? !hasNftUris || (!hasNftIcon && !hasNftImage)
           : !hasIcon && !hasImage)
       ) {
+        ICON_CACHE.set(iconPath, null);
         return null;
       }
 
@@ -644,27 +656,36 @@ export default function BcmrService() {
 
       const fetchUri = hasNftMetadata ? nftUri : categoryUri;
 
-      const response = await ipfsFetch(fetchUri);
-      const iconBytes = await response.bytes();
-      const iconData = iconBytes.toBase64();
+      try {
+        const response = await ipfsFetch(fetchUri);
+        const iconBuffer = await response.arrayBuffer();
+        const iconBytes = new Uint8Array(iconBuffer);
+        const iconData = binToBase64(iconBytes);
 
-      const { uri: iconUri } = await Filesystem.writeFile({
-        path: `/selene/${dir}/${filename}`,
-        directory: Directory.Cache,
-        data: iconData,
-        encoding: Encoding.UTF8,
-      });
+        const { uri: iconUri } = await Filesystem.writeFile({
+          path: `/selene/${dir}/${filename}`,
+          directory: Directory.Cache,
+          data: iconData,
+          encoding: Encoding.UTF8,
+        });
 
-      const { data } = await Filesystem.readFile({
-        path: iconUri,
-        encoding: Encoding.UTF8,
-      });
+        const { data } = await Filesystem.readFile({
+          path: iconUri,
+          encoding: Encoding.UTF8,
+        });
 
-      iconBase64 = data;
+        iconBase64 = data;
+      } catch (fetchError) {
+        Log.warn(fetchError);
+
+        ICON_CACHE.set(iconPath, null);
+        return null;
+      }
     }
 
     //Log.debug("iconBase64?", iconBase64);
     const iconDataUri = `data:;base64,${iconBase64}`;
+    ICON_CACHE.set(iconPath, iconDataUri);
 
     return iconDataUri;
   }
