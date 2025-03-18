@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useMemo, useRef, useState } from "react";
+
 import { useNavigate } from "react-router";
 import { ImportOutlined } from "@ant-design/icons";
 import * as bip39 from "bip39";
@@ -14,7 +15,54 @@ import translations from "./translations";
 
 import { DEFAULT_DERIVATION_PATH, DERIVATION_PATHS } from "@/util/derivation";
 
+const wordlist = bip39.wordlists.english;
+
 const Log = LogService("WizardImport");
+
+interface AutoSuggestionsProps {
+  mnemonicInput: string;
+  inputSuggestions: string[];
+  onClickWord: (word: string) => void;
+}
+
+function AutoSuggestions({
+  mnemonicInput,
+  inputSuggestions,
+  onClickWord,
+}: AutoSuggestionsProps) {
+  const wrapperClassname =
+    "min-h-8 text-center flex items-center justify-center gap-2 text-zinc-400";
+  if (mnemonicInput === "" || mnemonicInput.endsWith(" ")) {
+    return (
+      <div className={wrapperClassname}>
+        {translate(translations.wordSuggestions)}
+      </div>
+    );
+  }
+  if (inputSuggestions.length === 0) {
+    const splitMnemonic = mnemonicInput.split(" ");
+    return (
+      <div className={wrapperClassname}>
+        {translate(translations.wordSuggestionsNoMatch, {
+          word: splitMnemonic[splitMnemonic.length - 1],
+        })}
+      </div>
+    );
+  }
+  return (
+    <div className={wrapperClassname}>
+      {inputSuggestions.map((w) => (
+        <div
+          className="px-2 py-1 bg-primary rounded-2xl text-white text-sm cursor-pointer"
+          onClick={() => onClickWord(w)}
+          key={`suggestion-${w}`}
+        >
+          {w}
+        </div>
+      ))}
+    </div>
+  );
+}
 
 export default function SettingsWalletWizardImport() {
   const navigate = useNavigate();
@@ -26,6 +74,8 @@ export default function SettingsWalletWizardImport() {
   );
   const [message, setMessage] = useState("");
   const [derivationPath, setDerivationPath] = useState("auto");
+
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const handleMnemonicInput = (event) => {
     const sanitizedInput = event.target.value
@@ -104,6 +154,24 @@ export default function SettingsWalletWizardImport() {
     }
   };
 
+  const inputSuggestions = useMemo(() => {
+    if (mnemonicInput === "" || mnemonicInput.endsWith(" ")) return [];
+    const words = mnemonicInput.split(" ");
+    const lastWord = words[words.length - 1].toLowerCase();
+    if (lastWord === "") return [];
+    const suggestions = wordlist.filter((word) => word.startsWith(lastWord));
+    return suggestions.slice(0, 4);
+  }, [mnemonicInput]);
+
+  const addWordSuggestion = (word) => {
+    setMnemonicInput((v) => {
+      const words = v.split(" ");
+      words[words.length - 1] = word;
+      return `${words.join(" ")} `;
+    });
+    textareaRef.current?.focus();
+  };
+
   return (
     <>
       <div className="text-2xl text-center text-neutral-900">
@@ -119,8 +187,15 @@ export default function SettingsWalletWizardImport() {
           <div className="text-error p-2">{message}</div>
         )}
       </div>
-      <div className="rounded-md border-4 border-primary">
+      <AutoSuggestions
+        mnemonicInput={mnemonicInput}
+        inputSuggestions={inputSuggestions}
+        onClickWord={addWordSuggestion}
+      />
+      <div className="mb-2" />
+      <div className="rounded-md border-4 border-primary relative">
         <textarea
+          ref={textareaRef}
           className="w-full text-mono h-36 max-h-36 resize-none"
           onChange={handleMnemonicInput}
           value={mnemonicInput}

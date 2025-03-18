@@ -2,14 +2,31 @@ import { store } from "@/redux";
 import { selectDeviceInfo } from "@/redux/device";
 import { selectPreferences } from "@/redux/preferences";
 
-export const translate = (translationObject): string => {
+function replaceWithVariables(
+  text: string,
+  variables?: Record<string, unknown>
+) {
+  if (variables == null) return text;
+  const replacedText = text.replace(/\{([^}]+)\}/g, (_, key) => {
+    return variables[key] ?? key;
+  });
+  return replacedText;
+}
+
+export const translate = (
+  translationObject: Record<string, string>,
+  variables?: Record<string, string>
+): string => {
   // If language set in Selene Settings,
   // try to use that language
   const preferences = selectPreferences(store.getState());
   const preferencesLanguageCode = preferences.languageCode;
 
   if (preferencesLanguageCode && translationObject[preferencesLanguageCode]) {
-    return translationObject[preferencesLanguageCode];
+    return replaceWithVariables(
+      translationObject[preferencesLanguageCode],
+      variables
+    );
   }
 
   // If language unset, try to use device language
@@ -17,11 +34,14 @@ export const translate = (translationObject): string => {
   const deviceLanguageCode = deviceInfo.languageCode;
 
   if (translationObject[deviceLanguageCode]) {
-    return translationObject[deviceLanguageCode];
+    return replaceWithVariables(
+      translationObject[deviceLanguageCode],
+      variables
+    );
   }
 
   // Default to English if no translation in those languages
-  return translationObject.en;
+  return replaceWithVariables(translationObject.en, variables);
 };
 
 // NOTE: Keep this list in sync with ISO_639_1_LANGUAGES
