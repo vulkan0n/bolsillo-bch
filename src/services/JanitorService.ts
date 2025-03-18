@@ -191,8 +191,33 @@ export default function JanitorService() {
       });
     } catch (e) {
       await Filesystem.mkdir({
+        path: "/selene/bcmr",
+        directory: Directory.Library,
+      });
+    }
+
+    try {
+      await Filesystem.readdir({
+        path: "/selene",
+        directory: Directory.Cache,
+      });
+    } catch (e) {
+      await Filesystem.mkdir({
+        path: "/selene",
+        directory: Directory.Cache,
+      });
+    }
+
+    try {
+      await Filesystem.readdir({
+        path: "/selene/icons",
+        directory: Directory.Library,
+      });
+    } catch (e) {
+      await Filesystem.mkdir({
         path: "/selene/icons",
         directory: Directory.Cache,
+        recursive: true,
       });
     }
   }
