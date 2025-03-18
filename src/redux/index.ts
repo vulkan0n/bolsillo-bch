@@ -50,6 +50,6 @@ export function redux_post_init() {
 
 export function redux_resume() {
   Log.debug("redux_resume");
-  store.dispatch(syncReconnect());
+  //store.dispatch(syncReconnect());
   store.dispatch(fetchExchangeRates(0));
 }
