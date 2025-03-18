@@ -555,11 +555,24 @@ export default function BcmrService() {
       })
     ).files;
 
+    const bcmrImageFiles = (
+      await Filesystem.readdir({
+        path: "/selene/images",
+        directory: Directory.Cache,
+      })
+    ).files;
+
     Log.time("purgeBcmrData");
     await Promise.all([
       ...bcmrIconFiles.map((file) =>
         Filesystem.deleteFile({
           path: `/selene/icons/${file.name}`,
+          directory: Directory.Cache,
+        })
+      ),
+      ...bcmrImageFiles.map((file) =>
+        Filesystem.deleteFile({
+          path: `/selene/images/${file.name}`,
           directory: Directory.Cache,
         })
       ),
