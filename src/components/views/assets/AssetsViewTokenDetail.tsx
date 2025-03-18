@@ -19,14 +19,14 @@ import {
 } from "@ant-design/icons";
 
 import { TelegramFilled } from "@/atoms/TelegramFilled";
+import TokenIcon from "@/atoms/TokenIcon";
+import TokenAmount from "@/atoms/TokenAmount";
+import FullColumn from "@/layout/FullColumn";
 
 import { selectActiveWallet } from "@/redux/wallet";
 
 import LogService from "@/services/LogService";
 import TokenManagerService from "@/services/TokenManagerService";
-
-import TokenIcon from "@/atoms/TokenIcon";
-import TokenAmount from "@/atoms/TokenAmount";
 
 import { truncateProse } from "@/util/string";
 
@@ -85,7 +85,7 @@ export default function AssetsViewTokenDetail() {
   const nfts = tokenUtxos.filter((utxo) => utxo.nft_capability !== null);
 
   return (
-    <div key={tokenData.category} className="w-full p-1">
+    <FullColumn key={tokenData.category} className="w-full p-1">
       <div className="border rounded border-primary p-1">
         <div className="flex">
           <div className="flex items-center justify-center">
@@ -154,8 +154,8 @@ export default function AssetsViewTokenDetail() {
           {tokenData.category}
         </div>
       </div>
-      <div className="mt-1">
-        <ul className="border rounded-sm border-zinc-300 max-h-[20vh] overflow-y-auto shadow-inner">
+      <FullColumn className="mt-1">
+        <ul className="border rounded-sm border-zinc-300 shrink overflow-y-auto shadow-inner">
           {tokenHistory.map((h) => (
             <li key={h.txid} className="py-1">
               <Link to={`/explore/tx/${h.txid}`}>
@@ -171,10 +171,7 @@ export default function AssetsViewTokenDetail() {
                     {h.fungible_amount !== 0 && (
                       <div className="font-mono">
                         <span className="text-sm font-mono flex items-center justify-end">
-                          <TokenAmount
-                            token={h}
-                            decimals={tokenData.token.decimals}
-                          />
+                          <TokenAmount token={{ ...h, ...tokenData.token }} />
                         </span>
                       </div>
                     )}
@@ -189,49 +186,49 @@ export default function AssetsViewTokenDetail() {
             </li>
           ))}
         </ul>
-      </div>
-      <div className="mt-1 flex flex-wrap gap-1 justify-around">
-        {nfts.map((utxo) => {
-          const nftData = tokenData.token.nfts
-            ? tokenData.token.nfts.parse.types[utxo.nft_commitment]
-            : null;
+        <div className="mt-1 pb-3 flex flex-wrap gap-1 justify-around">
+          {nfts.map((utxo) => {
+            const nftData = tokenData.token.nfts
+              ? tokenData.token.nfts.parse.types[utxo.nft_commitment]
+              : null;
 
-          return (
-            <div
-              className="border rounded-t rounded-b-sm items-center max-w-[174px]"
-              style={{ borderColor: tokenData.color }}
-            >
+            return (
               <div
-                style={{ backgroundColor: `${tokenData.color}AA` }}
-                className="truncate text-white font-semibold px-0.5 text-stroke"
+                className="border rounded-t rounded-b-sm items-center max-w-[174px]"
+                style={{ borderColor: tokenData.color }}
               >
-                {nftData && nftData.name && (
-                  <span className="px-0.5">{nftData.name}</span>
-                )}
-              </div>
-              <div className="flex">
-                <div className="p-0.5">
-                  <TokenIcon
-                    category={utxo.token_category}
-                    nft_commitment={utxo.nft_commitment}
-                  />
-                </div>
-                <div className="truncate px-1">
-                  {nftData && nftData.description ? (
-                    <span className="text-sm text-zinc-700 text-wrap">
-                      {truncateProse(nftData.description)}
-                    </span>
-                  ) : (
-                    <span className="break-all text-wrap text-xs tracking-tight font-mono">
-                      {utxo.nft_commitment}
-                    </span>
+                <div
+                  style={{ backgroundColor: `${tokenData.color}AA` }}
+                  className="truncate text-white font-semibold px-0.5 text-stroke"
+                >
+                  {nftData && nftData.name && (
+                    <span className="px-0.5">{nftData.name}</span>
                   )}
                 </div>
+                <div className="flex">
+                  <div className="p-0.5">
+                    <TokenIcon
+                      category={utxo.token_category}
+                      nft_commitment={utxo.nft_commitment}
+                    />
+                  </div>
+                  <div className="truncate px-1">
+                    {nftData && nftData.description ? (
+                      <span className="text-sm text-zinc-700 text-wrap">
+                        {truncateProse(nftData.description)}
+                      </span>
+                    ) : (
+                      <span className="break-all text-wrap text-xs tracking-tight font-mono">
+                        {utxo.nft_commitment}
+                      </span>
+                    )}
+                  </div>
+                </div>
               </div>
-            </div>
-          );
-        })}
-      </div>
-    </div>
+            );
+          })}
+        </div>
+      </FullColumn>
+    </FullColumn>
   );
 }

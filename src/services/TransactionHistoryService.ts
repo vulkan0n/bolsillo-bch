@@ -123,9 +123,17 @@ export default function TransactionHistoryService(
       // get a list of categories for our atx's token transactions
       const categories = tokenTxes.map((ttx) => ttx.category);
 
-      const tokens = categories.map((category) =>
-        tokenTxes.filter((ttx) => ttx.category === category)
-      );
+      const tokens = categories.map((category) => {
+        const token = TokenManager.getToken(category);
+        const txes = tokenTxes
+          .filter((ttx) => ttx.category === category)
+          .map((tx) => ({
+            ...token,
+            ...tx,
+          }));
+
+        return txes;
+      });
 
       if (tokenTxes.length > 0) {
         return [
@@ -147,9 +155,10 @@ export default function TransactionHistoryService(
   async function resolveTransactionHistory(start: number = 0) {
     //Log.debug("resolveTransactionHistory");
     const address_transactions = getTransactionHistory(start);
+    const mergedHistory = mergeTokenHistory(address_transactions);
 
     if (!ElectrumService().getIsConnected()) {
-      return address_transactions;
+      return mergedHistory;
     }
 
     // resolve amounts for transactions that don't have them
@@ -190,9 +199,10 @@ export default function TransactionHistoryService(
 
       const categories = tokenTxes.map((ttx) => ttx.category);
 
-      const tokens = categories
-        .map((category) => tokenTxes.filter((ttx) => ttx.category === category))
-        .flat();
+      const tokens = categories.map((category) => ({
+        ...TokenManager.getToken(category),
+        ...tokenTxes.find((ttx) => ttx.category === category),
+      }));
 
       if (tokenTxes.length > 0) {
         return { ...addressTx, tokens };
@@ -320,7 +330,7 @@ export default function TransactionHistoryService(
 
       return {
         category,
-        amount: receivedTokenAmount - sentTokenAmount,
+        amount: (receivedTokenAmount - sentTokenAmount).toString(),
         nftAmount: receivedNftAmount - sentNftAmount,
       };
     });

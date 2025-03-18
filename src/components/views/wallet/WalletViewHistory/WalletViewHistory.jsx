@@ -92,6 +92,12 @@ export default function WalletViewHistory() {
                   <div className="flex flex-1 justify-end flex-wrap gap-x-2 mr-0.5">
                     {tx.tokens.map((token) => (
                       <div className="flex justify-end items-center text-right">
+                        <span
+                          style={{ color: `#${token.category.slice(0, 6)}` }}
+                          className="font-mono text-xs tracking-tighter font-bold"
+                        >
+                          {token.symbol}
+                        </span>
                         {token.nft_amount !== 0 && (
                           <TokenAmount token={token} nft />
                         )}

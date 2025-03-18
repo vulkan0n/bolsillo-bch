@@ -221,18 +221,34 @@ export default function TokenManagerService(walletHash: string) {
         );
       }
 
-      APP_DB.exec(
-        "UPDATE bcmr_tokens SET symbol=$symbol WHERE category=$category",
-        {
-          $category: category,
-          $symbol: tokenIdentity.token.symbol,
-        }
-      );
+      const { symbol, decimals } = tokenIdentity.token;
+
+      try {
+        APP_DB.exec(
+          `INSERT INTO bcmr_tokens (authbase, category, symbol, decimals)
+          VALUES ($authbase, $category, $symbol, $decimals) 
+          ON CONFLICT DO UPDATE SET
+            authbase=$authbase,
+            symbol=$symbol,
+            decimals=$decimals
+          WHERE category=$category
+          ;`,
+          {
+            $category: category,
+            $authbase: authbase,
+            $symbol: symbol || "",
+            $decimals: decimals || 0,
+          }
+        );
+      } catch (e) {
+        Log.error(e);
+        throw e;
+      }
     } catch (e) {
       tokenIdentity = generateTokenIdentity(category);
     }
 
-    //Log.debug("resolveTokenIdentity", tokenIdentity);
+    Log.debug("resolveTokenIdentity", tokenIdentity);
 
     return tokenIdentity;
   }

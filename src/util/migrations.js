@@ -82,7 +82,8 @@ const appdb_migrations = [
       `CREATE TABLE IF NOT EXISTS bcmr_tokens (
         category text primary key not null,
         authbase text not null,
-        symbol text default null unique
+        symbol text default null unique,
+        decimals int default 0 not null
       );`
     );
 

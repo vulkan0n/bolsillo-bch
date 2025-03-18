@@ -5,18 +5,15 @@ import NumberFormat from "@/atoms/NumberFormat";
 interface TokenAmountProps {
   token: TokenEntity | TokenHistoryEntity;
   nft?: boolean;
-  decimals?: number;
 }
 
-export default function TokenAmount({
-  token,
-  nft = false,
-  decimals = 0,
-}: TokenAmountProps) {
+export default function TokenAmount({ token, nft = false }: TokenAmountProps) {
   const receiveStyle = "text-secondary";
   const sendStyle = "text-error";
 
   const tokenColor = token.color || `#${token.category.slice(0, 6)}`;
+
+  const decimals = token.decimals || token.token?.decimals || 0;
 
   return (
     <>
@@ -55,22 +52,11 @@ export default function TokenAmount({
               <span>{token.fungible_amount > 0 && "+"}</span>
               <NumberFormat
                 number={token.fungible_amount}
-                decimals={
-                  token.token && token.token.decimals
-                    ? token.token.decimals
-                    : decimals
-                }
+                decimals={decimals}
               />
             </span>
           ) : (
-            <NumberFormat
-              number={token.amount}
-              decimals={
-                token.token && token.token.decimals
-                  ? token.token.decimals
-                  : decimals
-              }
-            />
+            <NumberFormat number={token.amount} decimals={decimals} />
           )}
         </div>
       )}
