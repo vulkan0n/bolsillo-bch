@@ -131,7 +131,7 @@ function OutputListItem({ output, i }) {
     <div className={`p-1.5 ${zebraCss} rounded-sm`}>
       <div className="flex text-sm items-center">
         <div>
-          <Address address={output.scriptPubKey.addresses[0].address} />
+          <Address address={output.scriptPubKey.addresses[0]} />
         </div>
       </div>
       <div className="">

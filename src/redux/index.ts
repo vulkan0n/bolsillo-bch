@@ -6,7 +6,7 @@ import {
   selectBchNetwork,
 } from "./preferences";
 import { walletReducer, walletBoot, addressReducer } from "./wallet";
-import { syncReducer, syncMiddleware, syncReconnect } from "./sync";
+import { syncReducer, syncMiddleware } from "./sync";
 import { deviceReducer } from "./device";
 import { txHistoryReducer } from "./txHistory";
 import { exchangeRateReducer, fetchExchangeRates } from "./exchangeRates";

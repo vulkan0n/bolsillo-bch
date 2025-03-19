@@ -1,10 +1,16 @@
 import { useState } from "react";
 import { useSelector } from "react-redux";
-import { MoneyCollectOutlined } from "@ant-design/icons";
+import { useNavigate } from "react-router";
+import {
+  MoneyCollectOutlined,
+  SendOutlined,
+  CloseOutlined,
+} from "@ant-design/icons";
 import { selectActiveWallet } from "@/redux/wallet";
 import FullColumn from "@/layout/FullColumn";
 import Address from "@/atoms/Address";
 import Satoshi from "@/atoms/Satoshi";
+import Button from "@/atoms/Button";
 import CurrencyFlip from "@/atoms/CurrencyFlip";
 import KeyWarning from "@/atoms/KeyWarning/KeyWarning";
 import UtxoManagerService from "@/services/UtxoManagerService";
@@ -15,6 +21,7 @@ import { useCurrencyFlip } from "@/hooks/useCurrencyFlip";
 
 export default function AssetsViewCoins() {
   const wallet = useSelector(selectActiveWallet);
+  const navigate = useNavigate();
 
   const UtxoManager = UtxoManagerService(wallet.walletHash);
   const coins = UtxoManager.getWalletCoins();
@@ -74,7 +81,18 @@ export default function AssetsViewCoins() {
     });
   };
 
-  const selectedAmount = selection.reduce((sum, coin) => sum + coin.amount, 0);
+  const handleSelectionCancel = () => {
+    setSelection([]);
+  };
+
+  const handleSelectionConfirm = () => {
+    navigate("/wallet/send", {
+      state: {
+        selection,
+      },
+    });
+    setSelection([]);
+  };
 
   return (
     <FullColumn className="justify-between">
@@ -109,7 +127,13 @@ export default function AssetsViewCoins() {
           </div>
         )}
       </div>
-      {selectedAmount > 0 && <SelectionDisplay amount={selectedAmount} />}
+      {selection.length > 0 && (
+        <SelectionDisplay
+          selection={selection}
+          onConfirm={handleSelectionConfirm}
+          onCancel={handleSelectionCancel}
+        />
+      )}
     </FullColumn>
   );
 }
@@ -171,17 +195,50 @@ function Coin({ coin, onSelect }) {
   );
 }
 
-function SelectionDisplay({ amount }) {
+function SelectionDisplay({ selection, onConfirm, onCancel }) {
+  const selectedAmount = selection.reduce((sum, coin) => sum + coin.amount, 0);
+
+  const handleConfirm = () => {
+    onConfirm();
+  };
+
+  const handleCancel = () => {
+    onCancel();
+  };
+
   return (
     <div className="sticky bottom-0 bg-black/70 w-full border-t-2 border-zinc-700 rounded-t shadow mt-1">
       <div className="text-zinc-700 rounded-t bg-white/85 shadow-lg px-2 py-1">
-        <div className="text-center">
-          <div className="text-lg font-semibold">Selected Amount</div>
-          <div className="text-lg">
-            <Satoshi value={amount} />
+        <div className="flex relative justify-between">
+          <div className="flex items-center justify-start flex-1">
+            <Button
+              onClick={handleCancel}
+              icon={CloseOutlined}
+              bgColor="transparent"
+              activeBgColor="x active:bg-zinc-100"
+              borderClasses="border border-transparent"
+            />
           </div>
-          <div className="text-base">
-            <Satoshi value={amount} flip />
+          <div className="text-center grow">
+            <div className="text-lg font-semibold">Selected Amount</div>
+            <div className="text-lg">
+              <Satoshi value={selectedAmount} />
+            </div>
+            <div className="text-base">
+              <Satoshi value={selectedAmount} flip />
+            </div>
+          </div>
+          <div className="flex items-center justify-end flex-1">
+            <Button
+              onClick={handleConfirm}
+              icon={SendOutlined}
+              iconSize="lg"
+              label="Send"
+              activeLabelColor="white/90"
+              labelColor="primary"
+              borderClasses="border border-transparent"
+              inverted
+            />
           </div>
         </div>
       </div>

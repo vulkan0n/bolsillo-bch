@@ -63,11 +63,21 @@ export default function TransactionBuilderService(wallet: WalletEntity) {
     return lockingBytecode.bytecode;
   }
 
-  function buildP2pkhTransaction(
-    recipients: Array<{ address: string; amount: Decimal }>,
-    fee: number = DUST_LIMIT / 3,
-    depth: number = 0
-  ): TransactionStub | number | null {
+  function buildP2pkhTransaction({
+    recipients,
+    fee = DUST_LIMIT / 3,
+    depth = 0,
+    selection = [],
+  }: {
+    recipients: Array<{ address: string; amount: Decimal }>;
+    fee?: number;
+    depth?: number;
+    selection?: Array<{
+      tx_hash: string;
+      tx_pos: string;
+      value: bigint | number | Decimal | string;
+    }>;
+  }): TransactionStub | number | null {
     // calculate total amount to send for all recipients
     const sendTotal = recipients
       .reduce((sum, cur) => sum.plus(cur.amount), new Decimal(0))
@@ -75,7 +85,10 @@ export default function TransactionBuilderService(wallet: WalletEntity) {
 
     // gather suitable inputs
     const UtxoManager = UtxoManagerService(wallet.walletHash);
-    const inputs = UtxoManager.selectCoins(sendTotal, fee);
+    const inputs =
+      selection.length > 0
+        ? selection
+        : UtxoManager.selectCoins(sendTotal, fee);
 
     Log.debug("using utxos:", inputs);
 
@@ -149,7 +162,12 @@ export default function TransactionBuilderService(wallet: WalletEntity) {
         depth
       );
       // TODO: use relay fee provided by electrum (futureproofing)
-      return buildP2pkhTransaction(recipients, tx_raw.length, depth + 1);
+      return buildP2pkhTransaction({
+        selection,
+        recipients,
+        fee: tx_raw.length,
+        depth: depth + 1,
+      });
     }
 
     if (feeTotal > tx_raw.length * 3 && depth < 3) {
@@ -158,7 +176,12 @@ export default function TransactionBuilderService(wallet: WalletEntity) {
           "Fee greater than 300% of byte length. Can we make it smaller?",
           depth
         );
-        return buildP2pkhTransaction(recipients, tx_raw.length, depth + 1);
+        return buildP2pkhTransaction({
+          selection,
+          recipients,
+          fee: tx_raw.length,
+          depth: depth + 1,
+        });
       }
 
       // if we're here, fee can't get any smaller. proceed

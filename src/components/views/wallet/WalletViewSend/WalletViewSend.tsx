@@ -1,9 +1,18 @@
 import { useState, useEffect, useRef } from "react";
-import { useParams, useSearchParams, useNavigate } from "react-router";
+import {
+  useParams,
+  useSearchParams,
+  useNavigate,
+  useLocation,
+} from "react-router";
 import { useSelector, useDispatch } from "react-redux";
 import Decimal from "decimal.js";
 import { Dialog } from "@capacitor/dialog";
-import { ArrowLeftOutlined, SyncOutlined } from "@ant-design/icons";
+import {
+  ArrowLeftOutlined,
+  SyncOutlined,
+  MoneyCollectOutlined,
+} from "@ant-design/icons";
 
 import { selectActiveWallet } from "@/redux/wallet";
 import {
@@ -15,11 +24,14 @@ import {
 
 import { selectSyncState, selectMyAddresses } from "@/redux/sync";
 
+import AddressManagerService from "@/services/AddressManagerService";
 import TransactionManagerService from "@/services/TransactionManagerService";
 import TransactionBuilderService from "@/services/TransactionBuilderService";
 import ToastService from "@/services/ToastService";
 import SecurityService, { AuthActions } from "@/services/SecurityService";
 import LogService from "@/services/LogService";
+
+import FullColumn from "@/layout/FullColumn";
 
 import { SatoshiInput } from "@/atoms/SatoshiInput";
 import Satoshi from "@/atoms/Satoshi";
@@ -41,7 +53,12 @@ export default function WalletViewSend() {
   const [searchParams] = useSearchParams();
   const params = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const dispatch = useDispatch();
+
+  const { state: sendState } = location;
+  const selection = sendState?.selection || [];
+  const selectionAmount = selection.reduce((sum, cur) => sum + cur.amount, 0);
 
   const isExperimental = useSelector(selectIsExperimental);
 
@@ -68,9 +85,10 @@ export default function WalletViewSend() {
   // used to force re-render of SatoshiInput component with MAX button
   const [satoshiInputKey, setSatoshiInputKey] = useState("satoshiInputKey");
 
-  const isInsufficientFunds = new Decimal(wallet.balance).lessThan(
-    satoshiInput
-  );
+  const isInsufficientFunds =
+    selectionAmount > 0
+      ? new Decimal(selectionAmount).lessThan(satoshiInput)
+      : new Decimal(wallet.balance).lessThan(satoshiInput);
 
   const { isInstantPayEnabled, instantPayThreshold } = useSelector(
     selectInstantPaySettings
@@ -142,9 +160,10 @@ export default function WalletViewSend() {
     const TransactionManager = TransactionManagerService();
     const TransactionBuilder = TransactionBuilderService(wallet);
 
-    const transaction = TransactionBuilder.buildP2pkhTransaction([
-      { address, amount: satoshiInput },
-    ]);
+    const transaction = TransactionBuilder.buildP2pkhTransaction({
+      selection,
+      recipients: [{ address, amount: satoshiInput }],
+    });
 
     if (transaction === null) {
       Log.warn(transaction);
@@ -205,19 +224,28 @@ export default function WalletViewSend() {
   });
 
   const handleSendMax = () => {
-    let amount = new Decimal(wallet.balance);
+    let amount =
+      selectionAmount > 0
+        ? new Decimal(selectionAmount)
+        : new Decimal(wallet.balance);
 
     const TransactionBuilder = TransactionBuilderService(wallet);
+    const AddressManager = AddressManagerService(wallet.walletHash);
 
-    let transaction = TransactionBuilder.buildP2pkhTransaction([
-      { address, amount },
-    ]);
+    const tryAddress =
+      address || AddressManager.getUnusedAddresses(1, 0)[0].address;
+
+    let transaction = TransactionBuilder.buildP2pkhTransaction({
+      selection,
+      recipients: [{ address: tryAddress, amount }],
+    });
 
     while (typeof transaction !== "object") {
       amount = new Decimal(transaction);
-      transaction = TransactionBuilder.buildP2pkhTransaction([
-        { address, amount },
-      ]);
+      transaction = TransactionBuilder.buildP2pkhTransaction({
+        selection,
+        recipients: [{ address: tryAddress, amount }],
+      });
     }
 
     const clampedAmount = new Decimal(Math.max(0, amount.toNumber()));
@@ -242,12 +270,12 @@ export default function WalletViewSend() {
   const handleAddressInput = async (input) => {
     const navTo = await navigateOnValidUri(input);
     if (navTo !== "") {
-      navigate(navTo, { replace: true });
+      navigate(navTo, { replace: true, state: sendState });
     }
   };
 
   return (
-    <>
+    <FullColumn>
       <div className="tracking-wide text-center text-white">
         {message === "" ? (
           <div className="bg-primary px-2 py-1">
@@ -280,66 +308,86 @@ export default function WalletViewSend() {
           <SyncOutlined className="text-7xl" spin />
         </div>
       ) : (
-        <div className="flex flex-col h-full justify-evenly">
-          <div className="p-2 w-full grow flex flex-col justify-center ">
-            <div className="py-4 px-2 rounded-md shadow-md bg-primary/95 text-white">
-              <div className="flex items-center justify-center">
-                <CurrencySymbol className="font-bold text-4xl mr-2" />
-                <SatoshiInput
-                  key={satoshiInputKey}
-                  onChange={handleAmountInput}
-                  satoshis={satoshiInput}
-                  size={1}
-                  className={`mr-1.5 p-1 flex-1 text-3xl rounded shadow-inner ${
-                    isInsufficientFunds ? "text-error" : "text-black/70"
-                  }`}
-                  autoFocus={address !== ""}
-                  ref={inputRef}
-                />
-                <Button
-                  label="MAX"
-                  className="spacing-wide text-bold text-zinc-800 rounded-full border border-zinc-200 bg-zinc-100"
-                  onClick={handleSendMax}
-                />
-              </div>
+        <FullColumn>
+          {selectionAmount > 0 && (
+            <div className="m-1 border border-primary rounded">
+              {selection.map((utxo) => (
+                <div className="border p-1 text-sm flex-1">
+                  <div className="flex items-center">
+                    <MoneyCollectOutlined className="mr-1" />
+                    <div className="flex items-center justify-between w-full">
+                      <Satoshi value={utxo.amount} />
+                      <span className="text-sm opacity-75">
+                        <Satoshi value={utxo.amount} flip />
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
-
-            <div
-              className="p-2 relative text-center w-full"
-              onClick={handleFlipCurrency}
-            >
-              <span className="text-2xl font-semibold text-center w-full text-zinc-800/80 flex justify-center items-center">
-                <Satoshi value={satoshiInput} flip />
-                <CurrencyFlip className="text-3xl ml-2" />
-              </span>
-            </div>
-          </div>
-
-          <div className="flex flex-col justify-end shrink my-6">
-            <div className="flex w-full justify-around items-center px-2 gap-x-2">
-              <div className="mx-2">
-                <Button
-                  icon={ArrowLeftOutlined}
-                  iconSize="lg"
-                  label={translate(translations.back)}
-                  onClick={() => navigate(-1)}
-                />
-              </div>
-              <div className="flex-1">
-                <span className="font-bold">
-                  <Button
-                    label={translate(translations.confirm)}
-                    inverted
-                    fullWidth
-                    onClick={() => confirmSend(false)}
-                    disabled={address === "" || isSending}
+          )}
+          <div className="flex flex-col h-full justify-evenly">
+            <div className="p-2 w-full grow flex flex-col justify-center ">
+              <div className="py-4 px-2 rounded-md shadow-md bg-primary/95 text-white">
+                <div className="flex items-center justify-center">
+                  <CurrencySymbol className="font-bold text-4xl mr-2" />
+                  <SatoshiInput
+                    key={satoshiInputKey}
+                    onChange={handleAmountInput}
+                    satoshis={satoshiInput}
+                    size={1}
+                    className={`mr-1.5 p-1 flex-1 text-3xl rounded shadow-inner ${
+                      isInsufficientFunds ? "text-error" : "text-black/70"
+                    }`}
+                    autoFocus={address !== ""}
+                    ref={inputRef}
+                    max={selectionAmount}
                   />
+                  <Button
+                    label="MAX"
+                    className="spacing-wide text-bold text-zinc-800 rounded-full border border-zinc-200 bg-zinc-100"
+                    onClick={handleSendMax}
+                  />
+                </div>
+              </div>
+
+              <div
+                className="p-2 relative text-center w-full"
+                onClick={handleFlipCurrency}
+              >
+                <span className="text-2xl font-semibold text-center w-full text-zinc-800/80 flex justify-center items-center">
+                  <Satoshi value={satoshiInput} flip />
+                  <CurrencyFlip className="text-3xl ml-2" />
                 </span>
               </div>
             </div>
+
+            <div className="flex flex-col justify-end shrink my-6">
+              <div className="flex w-full justify-around items-center px-2 gap-x-2">
+                <div className="mx-2">
+                  <Button
+                    icon={ArrowLeftOutlined}
+                    iconSize="lg"
+                    label={translate(translations.back)}
+                    onClick={() => navigate(-1)}
+                  />
+                </div>
+                <div className="flex-1">
+                  <span className="font-bold">
+                    <Button
+                      label={translate(translations.confirm)}
+                      inverted
+                      fullWidth
+                      onClick={() => confirmSend(false)}
+                      disabled={address === "" || isSending}
+                    />
+                  </span>
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
+        </FullColumn>
       )}
-    </>
+    </FullColumn>
   );
 }

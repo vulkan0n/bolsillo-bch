@@ -67,6 +67,7 @@ export default function Button({
   disabled = false,
 }: ButtonProps) {
   const Icon = icon;
+  // tailwindcss dynamic classes don't work here, the tokenizer needs to see the whole string, they're computed at build time, not runtime!
   const colors = `bg-${bgColor} text-${labelColor} active:bg-${activeBgColor} active:text-${activeLabelColor}`;
   const invertedColors = `bg-${activeBgColor} text-${activeLabelColor} active:bg-${bgColor} active:text-${labelColor}`;
   const colorClasses = inverted ? invertedColors : colors;
