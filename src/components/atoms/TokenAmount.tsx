@@ -1,3 +1,5 @@
+import { useSelector } from "react-redux";
+import { selectPrivacySettings } from "@/redux/preferences";
 import { TokenEntity } from "@/services/TokenManagerService";
 import { TokenHistoryEntity } from "@/services/TransactionHistoryService";
 import NumberFormat from "@/atoms/NumberFormat";
@@ -12,10 +14,13 @@ export default function TokenAmount({ token, nft = false }: TokenAmountProps) {
   const sendStyle = "text-error";
 
   const tokenColor = token.color || `#${token.category.slice(0, 6)}`;
-
   const decimals = token.decimals || token.token?.decimals || 0;
 
-  return (
+  const { shouldHideBalance } = useSelector(selectPrivacySettings);
+
+  return shouldHideBalance ? (
+    <div className="text-xs flex items-center font-mono" />
+  ) : (
     <>
       {nft && (
         <div className="text-xs flex items-center">

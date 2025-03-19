@@ -10,6 +10,7 @@ import {
 } from "@ant-design/icons";
 import { selectTransactionHistory, txHistoryFetch } from "@/redux/txHistory";
 import { selectSyncState } from "@/redux/sync";
+import { selectPrivacySettings } from "@/redux/preferences";
 import translations from "./translations";
 import { translate } from "@/util/translations";
 
@@ -37,6 +38,8 @@ export default function WalletViewHistory() {
 
   const receiveStyle = "text-secondary";
   const sendStyle = "text-error";
+
+  const { shouldHideBalance } = useSelector(selectPrivacySettings);
 
   const historyRender = useMemo(
     () =>
@@ -88,7 +91,7 @@ export default function WalletViewHistory() {
                     {tx.memo}
                   </div>
                 )}
-                {tx.tokens && (
+                {tx.tokens && !shouldHideBalance ? (
                   <div className="flex flex-1 justify-end flex-wrap gap-x-2 mr-0.5">
                     {tx.tokens.map((token) => (
                       <div className="flex justify-end items-center text-right">
@@ -107,13 +110,13 @@ export default function WalletViewHistory() {
                       </div>
                     ))}
                   </div>
-                )}
+                ) : null}
               </div>
             </Link>
           </li>
         ) : null
       ),
-    [txHistory]
+    [txHistory, shouldHideBalance]
   );
 
   return (
