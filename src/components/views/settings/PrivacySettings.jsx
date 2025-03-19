@@ -4,6 +4,7 @@ import {
   AreaChartOutlined,
   EyeOutlined,
   EyeInvisibleOutlined,
+  DeliveredProcedureOutlined,
 } from "@ant-design/icons";
 import { selectPrivacySettings } from "@/redux/preferences";
 import Accordion from "@/atoms/Accordion";
@@ -55,7 +56,7 @@ export default function PrivacySettings() {
         />
       </Accordion.Child>
       <Accordion.Child
-        icon={AreaChartOutlined}
+        icon={DeliveredProcedureOutlined}
         label={translate(translations.autoResolveBcmr)}
       >
         <input

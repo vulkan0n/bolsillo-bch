@@ -178,7 +178,7 @@ export default function WalletViewHome() {
             <Address address={address} color={addressColor} />
           </button>
         </div>
-        <div className="flex justify-evenly items-center rounded-b-sm text-sm border-primary/80 border-t">
+        <div className="flex justify-evenly items-center rounded-b-sm text-sm">
           <div
             className={`font-sans bg-primary flex-1 px-1 py-1.5 text-nowrap truncate ${!shouldShowRequestAmount ? "active:bg-secondary active:shadow-inner" : ""}`}
             onClick={() =>

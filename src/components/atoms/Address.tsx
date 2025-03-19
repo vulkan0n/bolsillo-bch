@@ -17,8 +17,8 @@ export default function Address({
   withPrefix = false,
   color = "",
 }: AddressProps) {
-  const PREFIX_LENGTH = 5;
-  const SUFFIX_LENGTH = 5;
+  const PREFIX_LENGTH = 6;
+  const SUFFIX_LENGTH = 6;
 
   const formattedAddress = (() => {
     const split = address.split(":");
