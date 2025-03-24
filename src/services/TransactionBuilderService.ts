@@ -120,11 +120,56 @@ export default function TransactionBuilderService(wallet: WalletEntity) {
       return 1;
     }
 
-    if (a.lockingBytecodex < b.lockingBytecode) {
+    if (a.lockingBytecode < b.lockingBytecode) {
       return -1;
     }
 
     if (a.lockingBytecode > b.lockingBytecode) {
+      return 1;
+    }
+
+    // token-aware bip69
+    if (a.token && !b.token) {
+      return -1;
+    }
+
+    if (!a.token && b.token) {
+      return 1;
+    }
+
+    if (a.token.token_amount < b.token.token_amount) {
+      return -1;
+    }
+
+    if (a.token.token_amount > b.token.token_amount) {
+      return 1;
+    }
+
+    if (a.token.nft && !b.token.nft) {
+      return -1;
+    }
+
+    if (!a.token.nft && b.token.nft) {
+      return -1;
+    }
+
+    const capabilityRank = ["none", "mutable", "minting"];
+    const aRank = capabilityRank.findIndex((c) => a.token.nft.capability === c);
+    const bRank = capabilityRank.findIndex((c) => b.token.nft.capability === c);
+
+    if (aRank < bRank) {
+      return -1;
+    }
+
+    if (aRank > bRank) {
+      return 1;
+    }
+
+    if (a.token.nft.commitment < b.token.nft.commitment) {
+      return -1;
+    }
+
+    if (a.token.nft.commitment > b.token.nft.commitment) {
       return 1;
     }
 
