@@ -1,17 +1,18 @@
 import { useCallback, useEffect, useRef, useMemo } from "react";
 
-export const useLongPress = (
-  onLongPress = () => {},
-  onClick = () => {},
+export const useLongPress = <T>(
+  onLongPress: (e: T) => void = () => {},
+  onClick: (e: T) => void = () => {},
   ms = 500
 ) => {
-  const timerRef = useRef(setTimeout(() => {}, 0));
-  const isLongPress = useRef(false);
+  const timerRef = useRef<NodeJS.Timeout | null>(setTimeout(() => {}, 0));
+  const isLongPress = useRef<boolean>(false);
+  const hasClicked = useRef<boolean>(false);
 
   const start = useCallback(
-    (event) => {
+    (event?: T) => {
       isLongPress.current = false; // Reset on each start
-
+      hasClicked.current = false;
       if (event) {
         timerRef.current = setTimeout(() => {
           isLongPress.current = true;
@@ -23,7 +24,7 @@ export const useLongPress = (
   );
 
   const clear = useCallback(
-    (event = undefined) => {
+    (event?: T) => {
       if (timerRef.current) {
         clearTimeout(timerRef.current);
         timerRef.current = null;
@@ -35,8 +36,9 @@ export const useLongPress = (
       }
 
       // If it wasn't a long press, it's a click
-      if (event && !isLongPress.current) {
+      if (event && !isLongPress.current && !hasClicked.current) {
         onClick(event);
+        hasClicked.current = true;
       }
     },
     [onClick]
