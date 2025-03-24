@@ -1,7 +1,8 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router";
-import { selectActiveWallet } from "@/redux/wallet";
+import { SendOutlined } from "@ant-design/icons";
+import { selectActiveWallet, selectActiveWalletHash } from "@/redux/wallet";
 import { selectPrivacySettings } from "@/redux/preferences";
 import LogService from "@/services/LogService";
 import TokenManagerService, {
@@ -11,6 +12,7 @@ import DatabaseService from "@/services/DatabaseService";
 import TokenIcon from "@/atoms/TokenIcon";
 import TokenAmount from "@/atoms/TokenAmount";
 import KeyWarning from "@/atoms/KeyWarning/KeyWarning";
+import Button from "@/atoms/Button";
 
 import { truncateProse } from "@/util/string";
 
@@ -49,6 +51,10 @@ export default function AssetsViewTokens() {
   const initTokenData = () =>
     tokenCategories
       .map((category) => TokenManager.getToken(category))
+      .map((token) => ({
+        ...token,
+        ...TokenManager.calculateTokenAmounts(token.category),
+      }))
       .sort(sortIdentities);
 
   const [tokenData, setTokenData] = useState(initTokenData());
@@ -59,11 +65,15 @@ export default function AssetsViewTokens() {
         const resolvedData = (
           await Promise.all(
             tokenCategories.map(async (category) => {
+              let token;
               if (!shouldResolveBcmr) {
-                return TokenManager.getToken(category);
+                token = TokenManager.getToken(category);
+              } else {
+                token = await TokenManager.resolveTokenData(category);
               }
 
-              return TokenManager.resolveTokenData(category);
+              const amounts = TokenManager.calculateTokenAmounts(category);
+              return { ...token, ...amounts };
             })
           )
         ).sort(sortIdentities);
@@ -108,16 +118,32 @@ export default function AssetsViewTokens() {
 }
 
 export function TokenCard({ token }: { token: TokenEntity }) {
+  const navigate = useNavigate();
+  const activeWalletHash = useSelector(selectActiveWalletHash);
+
+  const handleTokenSend = () => {
+    const TokenManager = TokenManagerService(activeWalletHash);
+    const tokenUtxos = TokenManager.getTokenUtxos(token.category);
+
+    Log.debug("handleTokenSend", tokenUtxos);
+
+    navigate("/wallet/send", {
+      state: {
+        selection: tokenUtxos,
+      },
+    });
+  };
+
   return (
     <div
       key={token.category}
       className="w-full my-1 p-1 border border-primary rounded"
     >
-      <div className="flex items-center">
+      <div className="flex">
         <div className="flex items-center justify-center">
           <TokenIcon category={token.category} size={64} rounded />
         </div>
-        <div className="flex flex-col mx-1">
+        <div className="flex flex-col justify-evenly mx-1.5 flex-1">
           <div className="text-sm flex items-baseline">
             <span
               className="font-mono text-xs font-bold pr-1.5 mr-1.5 border-r border-zinc-400/90"
@@ -131,7 +157,25 @@ export function TokenCard({ token }: { token: TokenEntity }) {
           </div>
           <div className="flex items-center text-zinc-600">
             {token.nftCount > 0 && <TokenAmount token={token} nft />}
-            {token.amount > 0 && <TokenAmount token={token} />}
+            {token.amount > 0 && (
+              <div className="flex flex-1 justify-between items-center">
+                <TokenAmount token={token} />
+                <span className="ml-2">
+                  <Button
+                    icon={SendOutlined}
+                    iconSize="sm"
+                    label="Send"
+                    labelSize="xs"
+                    borderClasses="border"
+                    padding="1.5"
+                    rounded="md"
+                    shadow="sm"
+                    onClick={handleTokenSend}
+                    style={{ borderColor: token.color }}
+                  />
+                </span>
+              </div>
+            )}
           </div>
         </div>
       </div>

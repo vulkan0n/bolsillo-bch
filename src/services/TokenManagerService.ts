@@ -63,7 +63,7 @@ export default function TokenManagerService(walletHash: string) {
     const tokenUtxos = UtxoManager.getWalletTokens();
     const amount = tokenUtxos
       .filter((utxo) => utxo.token_category === category)
-      .reduce((total, utxo) => total + utxo.token_amount, 0);
+      .reduce((total, utxo) => total + utxo.token_amount, 0n);
 
     const nftCount = tokenUtxos.filter(
       (utxo) => utxo.token_category === category && utxo.nft_capability !== null
@@ -155,13 +155,11 @@ export default function TokenManagerService(walletHash: string) {
     }
 
     const colorHex = `#${category.slice(0, 6)}`;
-    const amounts = calculateTokenAmounts(category);
 
     const splitSymbol = identity.token.symbol.split("-");
     const tokenData = {
       category,
       color: colorHex,
-      ...amounts,
       ...identity,
       token: { ...identity.token, symbol: splitSymbol[0] },
       symbol: splitSymbol[0],

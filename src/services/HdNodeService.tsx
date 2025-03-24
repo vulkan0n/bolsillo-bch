@@ -67,7 +67,7 @@ export default function HdNodeService(walletStub: WalletStub) {
   function signInputs(inputs, compiler) {
     return inputs.map((input) => ({
       outpointTransactionHash: hexToBin(input.txid),
-      outpointIndex: input.tx_pos,
+      outpointIndex: Number(input.tx_pos), // Cant be BigInt! Being selected as bigint from db.
       sequenceNumber: 0,
       unlockingBytecode: {
         compiler,

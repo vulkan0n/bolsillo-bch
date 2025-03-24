@@ -6,7 +6,6 @@ import {
   useLocation,
 } from "react-router";
 import { useSelector, useDispatch } from "react-redux";
-import Decimal from "decimal.js";
 import { Dialog } from "@capacitor/dialog";
 import {
   ArrowLeftOutlined,
@@ -19,7 +18,6 @@ import {
   selectCurrencySettings,
   selectInstantPaySettings,
   setPreference,
-  selectIsExperimental,
 } from "@/redux/preferences";
 
 import { selectSyncState, selectMyAddresses } from "@/redux/sync";
@@ -27,6 +25,7 @@ import { selectSyncState, selectMyAddresses } from "@/redux/sync";
 import AddressManagerService from "@/services/AddressManagerService";
 import TransactionManagerService from "@/services/TransactionManagerService";
 import TransactionBuilderService from "@/services/TransactionBuilderService";
+import TokenManagerService from "@/services/TokenManagerService";
 import ToastService from "@/services/ToastService";
 import SecurityService, { AuthActions } from "@/services/SecurityService";
 import LogService from "@/services/LogService";
@@ -40,6 +39,8 @@ import Editable from "@/atoms/Editable";
 import Address from "@/atoms/Address";
 import CurrencySymbol from "@/atoms/CurrencySymbol";
 import CurrencyFlip from "@/atoms/CurrencyFlip";
+import TokenIcon from "@/atoms/TokenIcon";
+import TokenAmount from "@/atoms/TokenAmount";
 
 import { Haptic } from "@/util/haptic";
 import { bchToSats } from "@/util/sats";
@@ -56,16 +57,32 @@ export default function WalletViewSend() {
   const location = useLocation();
   const dispatch = useDispatch();
 
-  const { state: sendState } = location;
-  const selection = sendState?.selection || [];
-  const selectionAmount = selection.reduce((sum, cur) => sum + cur.amount, 0);
-
-  const isExperimental = useSelector(selectIsExperimental);
-
   const inputRef = useRef<HTMLInputElement>(null);
 
   const wallet = useSelector(selectActiveWallet);
   const sync = useSelector(selectSyncState);
+
+  const TokenManager = TokenManagerService(wallet.walletHash);
+
+  const { state: sendState } = location;
+  const selection = sendState?.selection || [];
+  const selectionAmount = selection.reduce((sum, cur) => sum + cur.amount, 0n);
+
+  const selectionTokenCategory = selection.find(
+    (utxo) => utxo.token_category !== null
+  )?.token_category;
+
+  const hasTokens = selectionTokenCategory !== undefined;
+
+  const selectionTokenAmount = selection
+    .filter((s) => s.token_category === selectionTokenCategory)
+    .reduce((sum, cur) => sum + cur.token_amount, 0n);
+
+  Log.debug("selection", selection);
+
+  const selectionTokenData = hasTokens
+    ? TokenManager.getToken(selectionTokenCategory)
+    : null;
 
   const { address, isBase58Address } = validateBchUri(params.address || "");
 
@@ -79,16 +96,19 @@ export default function WalletViewSend() {
 
   const querySats = searchParams.get("amount")
     ? bchToSats(searchParams.get("amount"))
-    : new Decimal(0);
+    : BigInt(0);
 
   const [satoshiInput, setSatoshiInput] = useState(querySats);
   // used to force re-render of SatoshiInput component with MAX button
   const [satoshiInputKey, setSatoshiInputKey] = useState("satoshiInputKey");
 
+  const isInsufficientTokens =
+    selectionTokenAmount > 0 ? satoshiInput > selectionTokenAmount : false;
+
   const isInsufficientFunds =
     selectionAmount > 0
-      ? new Decimal(selectionAmount).lessThan(satoshiInput)
-      : new Decimal(wallet.balance).lessThan(satoshiInput);
+      ? satoshiInput > selectionAmount
+      : satoshiInput > wallet.spendable_balance;
 
   const { isInstantPayEnabled, instantPayThreshold } = useSelector(
     selectInstantPaySettings
@@ -131,7 +151,7 @@ export default function WalletViewSend() {
       return;
     }
 
-    if (isInsufficientFunds) {
+    if (isInsufficientFunds || isInsufficientTokens) {
       await handleInsufficientFunds();
       setIsSending(false);
       return;
@@ -160,9 +180,13 @@ export default function WalletViewSend() {
     const TransactionManager = TransactionManagerService();
     const TransactionBuilder = TransactionBuilderService(wallet);
 
+    const token = hasTokens
+      ? { category: selectionTokenCategory, amount: selectionTokenAmount }
+      : undefined;
+
     const transaction = TransactionBuilder.buildP2pkhTransaction({
       selection,
-      recipients: [{ address, amount: satoshiInput }],
+      recipients: [{ address, amount: satoshiInput, token }],
     });
 
     if (transaction === null) {
@@ -174,33 +198,35 @@ export default function WalletViewSend() {
       return;
     }
 
-    if (typeof transaction === "number") {
+    if (typeof transaction === "bigint") {
       await handleInsufficientFunds();
       setIsSending(false);
       return;
     }
 
-    const { isSuccess, result } = await TransactionManager.sendTransaction(
-      transaction,
-      wallet.walletHash
-    );
-
-    if (isSuccess) {
-      const tx = await TransactionManager.resolveTransaction(result);
-      await Haptic.success();
-      navigate("/wallet/send/success", {
-        state: { tx },
-        replace: true,
-      });
-    } else {
-      //setMessage(translate(translations.transactionFailed));
-      setMessage(
-        isExperimental ? `${result}` : translate(translations.transactionFailed)
+    try {
+      const { isSuccess, result } = await TransactionManager.sendTransaction(
+        transaction,
+        wallet.walletHash
       );
-      await Haptic.error();
-    }
 
-    setIsSending(false);
+      if (isSuccess) {
+        const tx = await TransactionManager.resolveTransaction(result);
+        await Haptic.success();
+        navigate("/wallet/send/success", {
+          state: { tx },
+          replace: true,
+        });
+      } else {
+        throw new Error(result);
+      }
+    } catch (e) {
+      //setMessage(translate(translations.transactionFailed));
+      setMessage(`${translate(translations.transactionFailed)}: ${e.message}`);
+      await Haptic.error();
+    } finally {
+      setIsSending(false);
+    }
   };
 
   useEffect(function handleInstantPay() {
@@ -214,20 +240,23 @@ export default function WalletViewSend() {
 
     const requestAmount = bchToSats(searchParams.get("amount") || 0);
 
-    if (
-      requestAmount.greaterThan(0) &&
-      requestAmount.lessThanOrEqualTo(instantPayThreshold)
-    ) {
+    if (requestAmount > 0 && requestAmount <= instantPayThreshold) {
       //Log.debug("instapay!", threshold, requestAmount);
       confirmSend(true);
     }
   });
 
+  const handleSendMaxTokens = () => {
+    setSatoshiInput(selectionTokenAmount);
+    // force re-render of SatoshiInput component
+    setSatoshiInputKey(selectionTokenAmount.toString());
+  };
+
   const handleSendMax = () => {
     let amount =
       selectionAmount > 0
-        ? new Decimal(selectionAmount)
-        : new Decimal(wallet.balance);
+        ? BigInt(selectionAmount)
+        : BigInt(wallet.spendable_balance);
 
     const TransactionBuilder = TransactionBuilderService(wallet);
     const AddressManager = AddressManagerService(wallet.walletHash);
@@ -236,19 +265,19 @@ export default function WalletViewSend() {
       address || AddressManager.getUnusedAddresses(1, 0)[0].address;
 
     let transaction = TransactionBuilder.buildP2pkhTransaction({
-      selection,
+      selection: [...selection],
       recipients: [{ address: tryAddress, amount }],
     });
 
     while (typeof transaction !== "object") {
-      amount = new Decimal(transaction);
+      amount = transaction;
       transaction = TransactionBuilder.buildP2pkhTransaction({
-        selection,
+        selection: [...selection],
         recipients: [{ address: tryAddress, amount }],
       });
     }
 
-    const clampedAmount = new Decimal(Math.max(0, amount.toNumber()));
+    const clampedAmount = amount < 0 ? 0n : amount;
     setSatoshiInput(clampedAmount);
     // force re-render of SatoshiInput component
     setSatoshiInputKey(clampedAmount.toString());
@@ -309,59 +338,72 @@ export default function WalletViewSend() {
         </div>
       ) : (
         <FullColumn>
-          {selectionAmount > 0 && (
-            <div className="m-1 border border-primary rounded">
-              {selection.map((utxo) => (
-                <div className="border p-1 text-sm flex-1">
-                  <div className="flex items-center">
-                    <MoneyCollectOutlined className="mr-1" />
-                    <div className="flex items-center justify-between w-full">
-                      <Satoshi value={utxo.amount} />
-                      <span className="text-sm opacity-75">
-                        <Satoshi value={utxo.amount} flip />
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
           <div className="flex flex-col h-full justify-evenly">
             <div className="p-2 w-full grow flex flex-col justify-center ">
-              <div className="py-4 px-2 rounded-md shadow-md bg-primary/95 text-white">
-                <div className="flex items-center justify-center">
-                  <CurrencySymbol className="font-bold text-4xl mr-2" />
-                  <SatoshiInput
-                    key={satoshiInputKey}
-                    onChange={handleAmountInput}
-                    satoshis={satoshiInput}
-                    size={1}
-                    className={`mr-1.5 p-1 flex-1 text-3xl rounded shadow-inner ${
-                      isInsufficientFunds ? "text-error" : "text-black/70"
-                    }`}
-                    autoFocus={address !== ""}
-                    ref={inputRef}
-                    max={selectionAmount}
-                  />
-                  <Button
-                    label="MAX"
-                    className="spacing-wide text-bold text-zinc-800 rounded-full border border-zinc-200 bg-zinc-100"
-                    onClick={handleSendMax}
-                  />
+              {selectionAmount > 0 && <InputSelection inputs={selection} />}
+              {selectionTokenData !== null ? (
+                <div
+                  className="py-4 px-2 rounded-md shadow-md text-white"
+                  style={{ backgroundColor: selectionTokenData.color }}
+                >
+                  <div className="flex items-center justify-center">
+                    <TokenIcon category={selectionTokenCategory} size={48} />
+                    <SatoshiInput
+                      key={satoshiInputKey}
+                      onChange={handleAmountInput}
+                      satoshis={satoshiInput}
+                      size={1}
+                      className={`mr-1.5 p-1 flex-1 text-3xl rounded shadow-inner ${
+                        isInsufficientTokens ? "text-error" : "text-black/70"
+                      }`}
+                      autoFocus={address !== ""}
+                      ref={inputRef}
+                      max={selectionTokenAmount}
+                      tokenDecimals={selectionTokenData.token.decimals}
+                    />
+                    <Button
+                      label="MAX"
+                      className="spacing-wide text-bold text-zinc-800 rounded-full border border-zinc-200 bg-zinc-100"
+                      onClick={handleSendMaxTokens}
+                    />
+                  </div>
                 </div>
-              </div>
-
-              <div
-                className="p-2 relative text-center w-full"
-                onClick={handleFlipCurrency}
-              >
-                <span className="text-2xl font-semibold text-center w-full text-zinc-800/80 flex justify-center items-center">
-                  <Satoshi value={satoshiInput} flip />
-                  <CurrencyFlip className="text-3xl ml-2" />
-                </span>
-              </div>
+              ) : (
+                <>
+                  <div className="py-4 px-2 rounded-md shadow-md bg-primary/95 text-white">
+                    <div className="flex items-center justify-center">
+                      <CurrencySymbol className="font-bold text-4xl mr-2" />
+                      <SatoshiInput
+                        key={satoshiInputKey}
+                        onChange={handleAmountInput}
+                        satoshis={satoshiInput}
+                        size={1}
+                        className={`mr-1.5 p-1 flex-1 text-3xl rounded shadow-inner ${
+                          isInsufficientFunds ? "text-error" : "text-black/70"
+                        }`}
+                        autoFocus={address !== ""}
+                        ref={inputRef}
+                        max={selectionAmount}
+                      />
+                      <Button
+                        label="MAX"
+                        className="spacing-wide text-bold text-zinc-800 rounded-full border border-zinc-200 bg-zinc-100"
+                        onClick={handleSendMax}
+                      />
+                    </div>
+                  </div>
+                  <div
+                    className="p-2 relative text-center w-full"
+                    onClick={handleFlipCurrency}
+                  >
+                    <span className="text-2xl font-semibold text-center w-full text-zinc-800/80 flex justify-center items-center">
+                      <Satoshi value={satoshiInput} flip />
+                      <CurrencyFlip className="text-3xl ml-2" />
+                    </span>
+                  </div>
+                </>
+              )}
             </div>
-
             <div className="flex flex-col justify-end shrink my-6">
               <div className="flex w-full justify-around items-center px-2 gap-x-2">
                 <div className="mx-2">
@@ -389,5 +431,71 @@ export default function WalletViewSend() {
         </FullColumn>
       )}
     </FullColumn>
+  );
+}
+
+/* eslint-disable react/prop-types */
+function InputSelection({ inputs }) {
+  const { walletHash } = useSelector(selectActiveWallet);
+  const TokenManager = TokenManagerService(walletHash);
+
+  const coins = inputs.filter((utxo) => utxo.token_category === null);
+  const tokenUtxos = inputs.filter((utxo) => utxo.token_category !== null);
+
+  const tokenCategories = tokenUtxos.reduce(
+    (categories, utxo) =>
+      categories.includes(utxo.token_category)
+        ? categories
+        : [...categories, utxo.token_category],
+    []
+  );
+
+  const tokens = tokenCategories.map((category) => ({
+    ...TokenManager.getToken(category),
+    token_amount: tokenUtxos.reduce((sum, utxo) => sum + utxo.token_amount, 0n),
+    nftCount: tokenUtxos.reduce(
+      (sum, utxo) => sum + (utxo.nft_capability !== null ? 1 : 0),
+      0
+    ),
+  }));
+
+  const nftUtxos = inputs.filter(
+    (utxo) => utxo.token_category !== null && utxo.nft_capability !== null
+  );
+
+  Log.debug("InputSelection", coins, tokens, nftUtxos);
+
+  return (
+    <div className="mx-4 border border-primary rounded">
+      {coins.map((utxo) => (
+        <div className="p-1 text-sm flex-1">
+          <div className="flex items-center">
+            <MoneyCollectOutlined className="mr-1" />
+            <div className="flex items-center justify-between w-full">
+              <Satoshi value={utxo.amount} />
+              <span className="text-sm opacity-75">
+                <Satoshi value={utxo.amount} flip />
+              </span>
+            </div>
+          </div>
+        </div>
+      ))}
+      {tokens.map((token) => (
+        <div className="p-1.5 flex-1">
+          <div className="flex items-center gap-x-1">
+            <TokenIcon size={32} category={token.category} />
+            <span
+              style={{ color: `#${token.category.slice(0, 6)}` }}
+              className="font-mono text-sm mr-1"
+            >
+              {token.symbol}
+            </span>
+            <span className="text-sm grow flex justify-end">
+              <TokenAmount token={token} />
+            </span>
+          </div>
+        </div>
+      ))}
+    </div>
   );
 }
