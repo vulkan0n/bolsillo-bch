@@ -13,8 +13,14 @@ import { Haptic } from "@/util/haptic";
 import WalletManagerService from "@/services/WalletManagerService";
 
 export function validateBchUri(uri) {
-  const { isBip21, isCashAddress, isBase58Address, address, amount } =
-    validateBip21Uri(uri);
+  const {
+    isBip21,
+    isCashAddress,
+    isTokenAddress,
+    isBase58Address,
+    address,
+    amount,
+  } = validateBip21Uri(uri);
   const { isPaymentProtocol, requestUri } = validatePaymentProtocolUri(uri);
   const wifPayload = validateWifUri(uri);
 
@@ -28,6 +34,7 @@ export function validateBchUri(uri) {
     requestUri,
     isValid,
     isCashAddress,
+    isTokenAddress,
     isBase58Address,
     isPaymentProtocol,
     ...wifPayload,
@@ -53,13 +60,19 @@ function validateBip21Uri(uri) {
     ? noPrefixAddress
     : `${prefix}:${noPrefixAddress}`;
 
-  const isCashAddress = typeof decodeCashAddress(prefixedAddress) === "object";
+  const decodedCashAddress = decodeCashAddress(prefixedAddress);
+  const isCashAddress = typeof decodedCashAddress === "object";
+  const isTokenAddress =
+    isCashAddress &&
+    (decodedCashAddress.type === CashAddressType.p2pkhWithTokens ||
+      decodedCashAddress.type === CashAddressType.p2shWithTokens);
 
   const isBip21 = isCashAddress || isBase58Address;
 
   return {
     isBip21,
     isCashAddress,
+    isTokenAddress,
     isBase58Address,
     address: isBip21 ? prefixedAddress : "",
     amount,

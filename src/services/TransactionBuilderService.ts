@@ -11,7 +11,6 @@ import {
   getDustThreshold,
   Output,
   assertSuccess,
-  utf8ToBin,
 } from "@bitauth/libauth";
 
 import LogService from "@/services/LogService";
@@ -77,7 +76,7 @@ export default function TransactionBuilderService(wallet: WalletEntity) {
       valueSatoshis: EXCESSIVE_SATOSHIS,
       token: {
         ...token,
-        category: utf8ToBin(token.category),
+        category: hexToBin(token.category),
       },
     };
 
@@ -219,33 +218,36 @@ export default function TransactionBuilderService(wallet: WalletEntity) {
       (recipient) => recipient.token !== undefined
     );
 
-    const inputTokenAmounts = inputs
+    const tokenInputAmounts = inputs
       .filter((input) => input.token_category !== null)
-      .reduce((balances, input) => {
+      .reduce((tokenAmounts, input) => {
         const category = input.token_category;
 
-        const mapBalance = balances.get(category) || 0n;
-        balances.set(category, mapBalance + input.token_amount);
+        const mapAmount = tokenAmounts.get(category) || 0n;
+        tokenAmounts.set(category, mapAmount + input.token_amount);
 
-        return balances;
+        return tokenAmounts;
       }, new Map<string, bigint>());
 
-    const tokenCategories = Array.from(inputTokenAmounts.keys());
+    const tokenCategories = Array.from(tokenInputAmounts.keys());
 
     const tokenChangeAmounts = tokenRecipients.reduce((amounts, recipient) => {
-      if (!recipient.token) {
-        return amounts;
-      }
-
-      const { category, amount } = recipient.token;
+      const { category, amount } = recipient.token!;
 
       const amountRemaining =
-        amounts.get(category) || inputTokenAmounts.get(category) || 0n;
+        amounts.get(category) || tokenInputAmounts.get(category) || 0n;
 
       amounts.set(category, amountRemaining - amount);
 
       return amounts;
     }, new Map<string, bigint>());
+
+    Log.debug(
+      "tokenInputAmounts",
+      tokenInputAmounts,
+      "tokenChangeAmounts",
+      tokenChangeAmounts
+    );
 
     // construct tx outputs
     let remainingInputSats = inputTotal;
@@ -275,15 +277,20 @@ export default function TransactionBuilderService(wallet: WalletEntity) {
       const category = tokenCategories.shift() as string;
       const changeAddress = changeAddresses.shift() as AddressEntity;
 
-      const tokenAmountIn = inputTokenAmounts.get(category);
+      Log.debug(category, changeAddress.address);
+
+      const tokenAmountIn = tokenInputAmounts.get(category);
       const tokenAmountOut = tokenChangeAmounts.get(category);
+
+      Log.debug(category, tokenAmountIn, tokenAmountOut);
 
       const tokenChangeOutput = createTokenOutput(changeAddress.address, {
         category,
-        amount: tokenAmountIn - tokenAmountOut,
+        amount: tokenAmountOut,
       });
 
       remainingInputSats -= tokenChangeOutput.valueSatoshis;
+      Log.debug("tokenChangeOutput", tokenChangeOutput, remainingInputSats);
       vout.push(tokenChangeOutput);
     }
 
@@ -327,7 +334,6 @@ export default function TransactionBuilderService(wallet: WalletEntity) {
     const tx_hex = binToHex(tx_raw);
     const tx_hash = swapEndianness(binToHex(sha256.hash(sha256.hash(tx_raw))));
 
-    // if we didn't reclaim change, add it to total fee
     const minimumFee = getMinimumFee(BigInt(tx_raw.length), DUST_RELAY_FEE);
 
     if (fee < minimumFee && remainingInputSats < minimumFee) {
@@ -353,21 +359,30 @@ export default function TransactionBuilderService(wallet: WalletEntity) {
         sendTotal,
         fee
       );
+
+      if (tokenVout.length > 0 && depth < 3) {
+        const tokenFundInputs = UtxoManager.selectCoins(
+          remainingInputSats * -1n
+        );
+        const newSelection = selection
+          .filter(
+            (s) =>
+              tokenFundInputs.findIndex(
+                (tfi) => tfi.tx_hash === s.txid && tfi.tx_pos === s.n
+              ) === -1
+          )
+          .concat(tokenFundInputs)
+          .sort(bip69SortInputs);
+
+        return buildP2pkhTransaction({
+          selection: newSelection,
+          recipients,
+          fee: minimumFee,
+          depth: depth + 1
+        });
+      }
       return inputTotal;
     }
-
-    /*
-    Log.log(
-      "buildTransaction",
-      tx_hash,
-      vout,
-      signedInputs,
-      tx_hex,
-      tx_raw.length,
-      fee,
-      feeTotal
-    );
-    */
 
     return {
       txid: tx_hash,

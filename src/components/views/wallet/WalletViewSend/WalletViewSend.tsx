@@ -84,7 +84,9 @@ export default function WalletViewSend() {
     ? TokenManager.getToken(selectionTokenCategory)
     : null;
 
-  const { address, isBase58Address } = validateBchUri(params.address || "");
+  const { address, isBase58Address, isTokenAddress } = validateBchUri(
+    params.address || ""
+  );
 
   const myAddresses = useSelector(selectMyAddresses);
   const isMyAddress = myAddresses[address] !== undefined;
@@ -135,6 +137,12 @@ export default function WalletViewSend() {
       return;
     }
 
+    if (hasTokens && !isTokenAddress) {
+      await Haptic.warn();
+      setMessage("Can't send tokens to non-token address!");
+      return;
+    }
+
     setIsSending(true);
 
     const authAction = isInstantPay
@@ -181,17 +189,18 @@ export default function WalletViewSend() {
     const TransactionBuilder = TransactionBuilderService(wallet);
 
     const token = hasTokens
-      ? { category: selectionTokenCategory, amount: selectionTokenAmount }
+      ? { category: selectionTokenCategory, amount: satoshiInput }
       : undefined;
+
+    const sendAmount = hasTokens ? 0n : satoshiInput;
 
     const transaction = TransactionBuilder.buildP2pkhTransaction({
       selection,
-      recipients: [{ address, amount: satoshiInput, token }],
+      recipients: [{ address, amount: sendAmount, token }],
     });
 
     if (transaction === null) {
       Log.warn(transaction);
-      //setMessage(translate(translations.notEnoughFee));
       setMessage("Transaction Failed: Wallet out of sync?");
       setIsSending(false);
       await Haptic.warn();

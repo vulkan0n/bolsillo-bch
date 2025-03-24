@@ -67,7 +67,7 @@ export default function HdNodeService(walletStub: WalletStub) {
   function signInputs(inputs, compiler) {
     return inputs.map((input) => ({
       outpointTransactionHash: hexToBin(input.txid),
-      outpointIndex: Number(input.tx_pos), // Cant be BigInt! Being selected as bigint from db.
+      outpointIndex: Number(input.tx_pos), // Can't be BigInt! Being selected as bigint from db.
       sequenceNumber: 0,
       unlockingBytecode: {
         compiler,
@@ -80,6 +80,20 @@ export default function HdNodeService(walletStub: WalletStub) {
             },
           },
         },
+        token:
+          input.token_category === null
+            ? undefined
+            : {
+                category: hexToBin(input.token_category),
+                amount: input.token_amount,
+                nft:
+                  input.nft_capability === null
+                    ? undefined
+                    : {
+                        capability: input.nft_capability,
+                        commitment: input.nft_commitment,
+                      },
+              },
       },
     }));
   }
