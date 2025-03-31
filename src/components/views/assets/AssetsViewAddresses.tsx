@@ -75,7 +75,7 @@ function AddressAccordion({ a, i }: AddressAccordionProps) {
 
   const walletHash = useSelector(selectActiveWalletHash);
   const UtxoManager = UtxoManagerService(walletHash);
-  const coins = UtxoManager.getAddressUtxos(a.address);
+  const coins = UtxoManager.getAddressCoins(a.address);
 
   const zebraCss = i % 2 === 0 ? "bg-zinc-100" : "bg-zinc-50";
 
