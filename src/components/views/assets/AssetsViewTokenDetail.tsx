@@ -92,15 +92,13 @@ export default function AssetsViewTokenDetail() {
   );
 
   const tokenUtxos = TokenManager.getTokenUtxos(tokenId);
-  const fungibleUtxos = tokenUtxos.filter(
-    (utxo) => utxo.nft_capability === null
-  );
   const nfts = tokenUtxos.filter((utxo) => utxo.nft_capability !== null);
 
   const handleTokenSend = () =>
     navigate("/wallet/send", {
       state: {
-        selection: [...fungibleUtxos, ...nftSelection],
+        selection: nftSelection,
+        tokenCategories: [tokenId],
       },
     });
 
@@ -122,6 +120,7 @@ export default function AssetsViewTokenDetail() {
     navigate("/wallet/send", {
       state: {
         selection: nftSelection,
+        tokenCategories: [tokenId],
       },
     });
   };

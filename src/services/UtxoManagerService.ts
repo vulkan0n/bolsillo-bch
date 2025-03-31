@@ -149,8 +149,18 @@ export default function UtxoManagerService(walletHash: string) {
     const consumedUtxos = [];
     while (remainingAmount > 0) {
       const utxo = tokenUtxos.shift();
+
+      // insufficient tokens
+      if (!utxo) {
+        return [];
+      }
+
+      if (!utxo.token) {
+        Log.warn(utxo);
+      }
+
       consumedUtxos.push(utxo);
-      remainingAmount -= utxo.token.amount;
+      remainingAmount -= utxo.token_amount;
     }
 
     return consumedUtxos;
@@ -186,6 +196,7 @@ export default function UtxoManagerService(walletHash: string) {
     }
 
     // consider all addresses with balance >= amount
+    // in ASCENDING order so smallest address over threshold is first (for privacy)
     const eligibleAddresses = walletDb.exec(
       `SELECT * FROM addresses 
           WHERE 
