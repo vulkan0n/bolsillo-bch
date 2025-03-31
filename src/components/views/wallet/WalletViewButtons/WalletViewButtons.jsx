@@ -1,11 +1,6 @@
 import { useNavigate } from "react-router";
 import { useSelector } from "react-redux";
-import { Clipboard } from "@capacitor/clipboard";
-import {
-  SendOutlined,
-  HistoryOutlined,
-  SnippetsOutlined,
-} from "@ant-design/icons";
+import { SendOutlined, HistoryOutlined } from "@ant-design/icons";
 import { selectScannerIsScanning } from "@/redux/device";
 import translations from "./translations";
 import { translate } from "@/util/translations";
@@ -15,12 +10,14 @@ import ScannerButton from "../ScannerButton/ScannerButton";
 import TorchButton from "../TorchButton/TorchButton";
 import ImageSelectButton from "../ImageSelectButton/ImageSelectButton";
 
-import ToastService from "@/services/ToastService";
+import { useClipboard } from "@/hooks/useClipboard";
 import { navigateOnValidUri } from "@/util/uri";
 
 export default function WalletViewButtons() {
   const navigate = useNavigate();
   const isScanning = useSelector(selectScannerIsScanning);
+
+  const { getClipboardContents } = useClipboard();
 
   const forwardOnValidAddress = async (input) => {
     const navTo = await navigateOnValidUri(input);
@@ -30,21 +27,11 @@ export default function WalletViewButtons() {
   };
 
   const pasteAddressFromClipboard = async () => {
-    const Toast = ToastService();
     let navTo = "";
     try {
-      // NOTE: Firefox does not support the Clipboard.read browser API yet!
-      // https://developer.mozilla.org/en-US/docs/Web/API/Clipboard#clipboard_availability
-      // Error: Reading from clipboard not supported in this browser
-      // Firefox users must set "dom.events.asyncClipboard.read" to "true" in about:config
-      const paste = (await Clipboard.read()).value;
+      const paste = await getClipboardContents();
       navTo = await navigateOnValidUri(paste);
       if (navTo !== "") {
-        Toast.spawn({
-          icon: <SnippetsOutlined className="text-primary text-4xl" />,
-          header: translate(translations.pastedFromClipboard),
-          body: <span className="flex break-all text-sm">{paste}</span>,
-        });
         navigate(navTo);
       }
     } catch (e) {

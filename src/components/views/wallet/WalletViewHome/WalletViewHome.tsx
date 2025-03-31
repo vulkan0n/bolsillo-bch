@@ -7,7 +7,6 @@ import {
   assertSuccess,
 } from "@bitauth/libauth";
 
-import { Clipboard } from "@capacitor/clipboard";
 import { QRCode } from "react-qrcode-logo";
 import {
   FormOutlined,
@@ -28,7 +27,6 @@ import {
 import { selectScannerIsScanning, selectKeyboardIsOpen } from "@/redux/device";
 
 import AddressManagerService from "@/services/AddressManagerService";
-import ToastService from "@/services/ToastService";
 
 import FullColumn from "@/layout/FullColumn";
 import { SatoshiInput } from "@/atoms/SatoshiInput";
@@ -37,6 +35,8 @@ import CurrencySymbol from "@/atoms/CurrencySymbol";
 import CurrencyFlip from "@/atoms/CurrencyFlip";
 import WalletViewButtons from "../WalletViewButtons/WalletViewButtons";
 import ScannerOverlay from "../ScannerOverlay";
+
+import { useClipboard } from "@/hooks/useClipboard";
 
 import { logos } from "@/util/logos";
 import { satsToBch } from "@/util/sats";
@@ -121,11 +121,9 @@ export default function WalletViewHome() {
     return shouldUseTokenAddress ? logos[logo].img_tokens : logos[logo].img;
   }, [shouldUseTokenAddress, qrCodeSettings.logo]);
 
+  const { handleCopyToClipboard } = useClipboard();
   const copyAddressToClipboard = async () => {
-    const titleTranslation = translate(translations.copiedAddress);
-
-    await Clipboard.write({ string: qrRequest });
-    ToastService().clipboardCopy(titleTranslation, qrRequest);
+    handleCopyToClipboard(qrRequest, translate(translations.copiedAddress));
   };
 
   // force red QR code border if connected to chipnet
