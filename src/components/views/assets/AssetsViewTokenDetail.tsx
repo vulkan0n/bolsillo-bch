@@ -33,6 +33,8 @@ import TokenManagerService from "@/services/TokenManagerService";
 
 import { truncateProse } from "@/util/string";
 
+import { useTokenData } from "@/hooks/useTokenData";
+
 const Log = LogService("AssetsViewTokenDetail");
 
 export default function AssetsViewTokenDetail() {
@@ -48,10 +50,8 @@ export default function AssetsViewTokenDetail() {
 
   const tokenId = paramsTokenId || "";
 
-  const tokenData = {
-    ...TokenManager.getToken(tokenId),
-    ...TokenManager.calculateTokenAmounts(tokenId),
-  };
+  const tokenData = useTokenData(tokenId, true);
+
   Log.debug(tokenData);
 
   const [shouldShowFullDescription, setShouldShowFullDescription] =
@@ -92,9 +92,17 @@ export default function AssetsViewTokenDetail() {
   );
 
   const tokenUtxos = TokenManager.getTokenUtxos(tokenId);
+  const fungibleUtxos = tokenUtxos.filter(
+    (utxo) => utxo.nft_capability === null
+  );
   const nfts = tokenUtxos.filter((utxo) => utxo.nft_capability !== null);
 
-  const handleTokenSend = () => null;
+  const handleTokenSend = () =>
+    navigate("/wallet/send", {
+      state: {
+        selection: [...fungibleUtxos, ...nftSelection],
+      },
+    });
 
   const handleNftSelect = (utxo) => {
     const selectIndex = nftSelection.findIndex(
@@ -119,8 +127,8 @@ export default function AssetsViewTokenDetail() {
   };
 
   return (
-    <FullColumn key={tokenData.category} className="w-full p-1">
-      <div>
+    <FullColumn key={tokenData.category} className="justify-between">
+      <div className="p-1">
         <div className="border rounded border-primary p-1">
           <div className="flex">
             <div className="flex items-center justify-center">
@@ -147,7 +155,7 @@ export default function AssetsViewTokenDetail() {
                   </span>
                 </div>
 
-                <div className="flex items-center text-zinc-600 gap-x-2">
+                <div className="flex items-center text-zinc-600 gap-x-2 text-sm">
                   {tokenData.nftCount > 0 && (
                     <TokenAmount token={tokenData} nft />
                   )}
@@ -297,14 +305,14 @@ export default function AssetsViewTokenDetail() {
             })}
           </div>
         </div>
-        {nftSelection.length > 0 && (
-          <SelectionDisplay
-            selection={nftSelection}
-            onConfirm={handleSelectionConfirm}
-            onCancel={handleSelectionCancel}
-          />
-        )}
       </div>
+      {nftSelection.length > 0 && (
+        <SelectionDisplay
+          selection={nftSelection}
+          onConfirm={handleSelectionConfirm}
+          onCancel={handleSelectionCancel}
+        />
+      )}
     </FullColumn>
   );
 }
@@ -322,7 +330,7 @@ function SelectionDisplay({ selection, onConfirm, onCancel }) {
 
   return (
     <div className="sticky bottom-0 bg-black/70 w-full border-t-2 border-zinc-700 rounded-t shadow mt-1">
-      <div className="text-zinc-700 rounded-t bg-white/85 shadow-lg px-2 py-1">
+      <div className="text-zinc-700 rounded-t bg-white/85 shadow-lg px-3 py-3">
         <div className="flex relative justify-between">
           <div className="flex items-center justify-start flex-1">
             <Button

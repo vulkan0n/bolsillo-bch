@@ -91,7 +91,9 @@ export default function HdNodeService(walletStub: WalletStub) {
                     ? undefined
                     : {
                         capability: input.nft_capability,
-                        commitment: input.nft_commitment,
+                        commitment: input.nft_commitment
+                          ? hexToBin(input.nft_commitment)
+                          : undefined,
                       },
               },
       },

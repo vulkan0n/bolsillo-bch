@@ -14,9 +14,9 @@ export default function UtxoManagerService(walletHash: string) {
     getWalletTokens,
     getAddressUtxos,
     getAddressCoins,
-    getAddressTokens,
     getCategoryUtxos,
     selectCoins,
+    selectTokens,
     targetUtxos,
     discardUtxo,
     discardAddressUtxos,
@@ -66,13 +66,9 @@ export default function UtxoManagerService(walletHash: string) {
 
   // returns all UTXOs for the wallet
   function getWalletUtxos() {
-    const result = walletDb.exec(
-      `SELECT * FROM address_utxos`,
-      null,
-      {
-        useBigInt: true,
-      }
-    );
+    const result = walletDb.exec(`SELECT * FROM address_utxos`, null, {
+      useBigInt: true,
+    });
     Log.debug(result);
     return result;
   }
@@ -90,7 +86,7 @@ export default function UtxoManagerService(walletHash: string) {
   // returns all token UTXOs for the wallet
   function getWalletTokens() {
     const result = walletDb.exec(
-      `SELECT * FROM address_utxos WHERE token_category IS NOT NULL`,
+      `SELECT * FROM address_utxos WHERE token_category IS NOT NULL ORDER BY token_category ASC`,
       null,
       { useBigInt: true }
     );
@@ -117,24 +113,47 @@ export default function UtxoManagerService(walletHash: string) {
     return result;
   }
 
-  // returns all token UTXOs for an address in the wallet
-  function getAddressTokens(address) {
-    const result = walletDb.exec(
-      `SELECT * FROM address_utxos WHERE address=? AND token_category IS NOT NULL ORDER BY amount ASC `,
-      [address],
-      { useBigInt: true }
-    );
-    return result;
-  }
-
   function getCategoryUtxos(category: string) {
     const result = walletDb.exec(
-      "SELECT * FROM address_utxos WHERE token_category=?",
+      "SELECT * FROM address_utxos WHERE token_category=? ORDER BY token_amount DESC",
       [category],
       { useBigInt: true }
     );
 
     return result;
+  }
+
+  function selectTokens(category: string, amount: bigint) {
+    Log.debug("selectTokens", category, amount);
+    const targetAmount = amount;
+
+    const tokenUtxos = getCategoryUtxos(category);
+    const availableTokenSum = tokenUtxos.reduce(
+      (sum, cur) => sum + cur.token_amount,
+      0n
+    );
+
+    if (availableTokenSum < targetAmount) {
+      return [];
+    }
+
+    const thresholdUtxo = tokenUtxos
+      .filter((u) => u.token_amount >= targetAmount)
+      .pop();
+
+    if (thresholdUtxo) {
+      return [thresholdUtxo];
+    }
+
+    let remainingAmount = targetAmount;
+    const consumedUtxos = [];
+    while (remainingAmount > 0) {
+      const utxo = tokenUtxos.shift();
+      consumedUtxos.push(utxo);
+      remainingAmount -= utxo.token.amount;
+    }
+
+    return consumedUtxos;
   }
 
   // attempts to find the best combination of UTXOs to fulfill the amount and fee
@@ -143,18 +162,12 @@ export default function UtxoManagerService(walletHash: string) {
     const targetAmount = amount;
 
     // get all available UTXOs (without tokens)
-    const availableCoins = getWalletCoins();
+    const allAvailableCoins = getWalletCoins();
 
-    const availableCoinSum = availableCoins.reduce(
+    const availableCoinSum = allAvailableCoins.reduce(
       (sum, utxo) => sum + utxo.amount,
       0n
     );
-
-    /*Log.debug(
-      "selectCoins availableCoins",
-      availableCoinSum,
-      availableCoins.length
-    );*/
 
     // check if we have enough balance across all UTXOs
     // empty set = insufficient funds
@@ -162,17 +175,17 @@ export default function UtxoManagerService(walletHash: string) {
       return [];
     }
 
-    // 1. if there's an exact UTXO, use that UTXO and its address-mates
-    const exactCoins = availableCoins.filter(
+    // 1. if there's an exact UTXO, use that UTXO *and* its address-mates (for privacy)
+    const exactCoins = allAvailableCoins.filter(
       (utxo) => utxo.amount === targetAmount
     );
     if (exactCoins.length > 0) {
       Log.debug("selectCoins exactCoin", exactCoins[0].address);
-      // spend all utxos on this address (for privacy)
+      // spend all utxos on this address for privacy
       return getAddressCoins(exactCoins[0].address);
     }
 
-    // all full address balances >= amount are eligible
+    // consider all addresses with balance >= amount
     const eligibleAddresses = walletDb.exec(
       `SELECT * FROM addresses 
           WHERE 
@@ -180,11 +193,6 @@ export default function UtxoManagerService(walletHash: string) {
           ORDER BY balance ASC`,
       [targetAmount.toString()]
     );
-
-    /*Log.debug(
-      "selectCoins eligibleAddresses",
-      eligibleAddresses.map((a) => a.address)
-    );*/
 
     // 2. if there's a whole address balance that's exact, spend the entire address
     const exactAddresses = eligibleAddresses.filter(
@@ -195,30 +203,22 @@ export default function UtxoManagerService(walletHash: string) {
       return getAddressCoins(exactAddresses[0].address);
     }
 
+    // 3. select from all available UTXOs
     const eligibleCoins = {
-      available: targetUtxos(availableCoins, targetAmount),
+      available: targetUtxos(allAvailableCoins, targetAmount),
       // 0th-index eligible address is smallest with balance >= targetAmount
-      address:
-        eligibleAddresses.length > 0
-          ? targetUtxos(
-              getAddressCoins(eligibleAddresses[0].address),
-              targetAmount
-            )
-          : null,
+      address: targetUtxos(
+        getAddressCoins(eligibleAddresses[0].address),
+        targetAmount
+      ),
     };
 
     Log.debug("eligibleCoins:", eligibleCoins);
 
-    // this should be impossible, but makes typescript happy. insufficient funds case
-    if (eligibleCoins.available === null) {
-      return [];
-    }
-
-    // check if it's cheaper to spend consolidated utxos or eligible addresses
-    // case: address is cheaper than consolidation
     if (
-      eligibleCoins.address !== null &&
-      eligibleCoins.address.changeAmount > eligibleCoins.available.changeAmount
+      eligibleCoins.address.selection.length > 0 &&
+      eligibleCoins.address.selection.length <
+        eligibleCoins.available.selection.length
     ) {
       Log.debug(
         "selectCoins: spending first-eligible address is cheaper than consolidation",
@@ -238,7 +238,7 @@ export default function UtxoManagerService(walletHash: string) {
     Log.log("targetUtxos trying", utxos, targetAmount);
     const utxoSum = utxos.reduce((sum, utxo) => sum + utxo.amount, 0n);
     if (utxoSum < targetAmount) {
-      return null;
+      return { selection: [] };
     }
 
     // try to find the smallest combination of UTXOs (fewer UTXOS moving is better for privacy)

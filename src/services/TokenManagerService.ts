@@ -102,7 +102,7 @@ export default function TokenManagerService(walletHash: string) {
         return 0;
       });
 
-    Log.debug("resolveTokenHistory", category, history);
+    //Log.debug("resolveTokenHistory", category, history);
     return history;
   }
 
@@ -246,7 +246,7 @@ export default function TokenManagerService(walletHash: string) {
       tokenIdentity = generateTokenIdentity(category);
     }
 
-    Log.debug("resolveTokenIdentity", tokenIdentity);
+    //Log.debug("resolveTokenIdentity", tokenIdentity);
 
     return tokenIdentity;
   }

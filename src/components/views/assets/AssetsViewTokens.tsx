@@ -119,17 +119,11 @@ export default function AssetsViewTokens() {
 
 export function TokenCard({ token }: { token: TokenEntity }) {
   const navigate = useNavigate();
-  const activeWalletHash = useSelector(selectActiveWalletHash);
 
   const handleTokenSend = () => {
-    const TokenManager = TokenManagerService(activeWalletHash);
-    const tokenUtxos = TokenManager.getTokenUtxos(token.category);
-
-    Log.debug("handleTokenSend", tokenUtxos);
-
     navigate("/wallet/send", {
       state: {
-        selection: tokenUtxos,
+        tokenCategories: [token.category],
       },
     });
   };
