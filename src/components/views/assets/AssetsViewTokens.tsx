@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo, useCallback } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router";
 import { SendOutlined } from "@ant-design/icons";
-import { selectActiveWallet, selectActiveWalletHash } from "@/redux/wallet";
+import { selectActiveWallet } from "@/redux/wallet";
 import { selectPrivacySettings } from "@/redux/preferences";
 //import LogService from "@/services/LogService";
 import TokenManagerService, {
@@ -14,7 +14,10 @@ import TokenAmount from "@/atoms/TokenAmount";
 import KeyWarning from "@/atoms/KeyWarning/KeyWarning";
 import Button from "@/atoms/Button";
 
+import { useClipboard } from "@/hooks/useClipboard";
+
 import { truncateProse } from "@/util/string";
+import { navigateOnValidUri } from "@/util/uri";
 
 //const Log = LogService("AssetsViewTokens");
 
@@ -119,13 +122,20 @@ export default function AssetsViewTokens() {
 
 export function TokenCard({ token }: { token: TokenEntity }) {
   const navigate = useNavigate();
+  const { getClipboardContents } = useClipboard();
 
-  const handleTokenSend = () => {
-    navigate("/wallet/send", {
-      state: {
-        tokenCategories: [token.category],
-      },
-    });
+  const handleTokenSend = async () => {
+    const { value, spawnPasteToast } = await getClipboardContents();
+
+    const navTo = await navigateOnValidUri(value);
+    if (navTo) {
+      spawnPasteToast();
+      navigate(navTo, {
+        state: {
+          tokenCategories: [token.category],
+        },
+      });
+    }
   };
 
   return (

@@ -23,12 +23,13 @@ export function useClipboard() {
     const { value } = await Clipboard.read();
 
     const Toast = ToastService();
-    Toast.spawn({
-      icon: <SnippetsOutlined className="text-primary text-4xl" />,
-      header: translate(translations.pastedFromClipboard),
-      body: <span className="flex break-all text-sm">{value}</span>,
-    });
-    return value;
+    const spawnPasteToast = () =>
+      Toast.spawn({
+        icon: <SnippetsOutlined className="text-primary text-4xl" />,
+        header: translate(translations.pastedFromClipboard),
+        body: <span className="flex break-all text-sm">{value}</span>,
+      });
+    return { value, spawnPasteToast };
   }, []);
 
   return { getClipboardContents, handleCopyToClipboard };

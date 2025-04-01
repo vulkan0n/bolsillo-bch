@@ -16,8 +16,9 @@ export default function TokenIcon({
   rounded?: boolean;
   returnImage?: boolean;
 }) {
-  const [toggleState, setToggleState] = useState(nft_commitment ? 1 : 2);
+  const [toggleState, setToggleState] = useState(0);
   const [icon, setIcon] = useState<string | null>(null);
+  const [isResolving, setIsResolving] = useState(true);
 
   useEffect(
     function resolveIcon() {
@@ -29,11 +30,16 @@ export default function TokenIcon({
           nft_commitment,
           returnImage
         );
+
         setIcon(resolvedIcon);
 
         if (resolvedIcon) {
           setToggleState(0);
+        } else {
+          setToggleState(nft_commitment ? 1 : 2);
         }
+
+        setIsResolving(false);
       };
       resolve();
     },
@@ -64,13 +70,14 @@ export default function TokenIcon({
       }}
       className={`${rounded ? "rounded-full" : ""} overflow-hidden`}
     >
-      {icon === null ? (
-        <div className="flex items-center justify-center w-full h-full">
-          <SeleneLogo cashtokens className="saturate-30 opacity-90" />
-        </div>
-      ) : (
-        <img src={icon} />
-      )}
+      {!isResolving &&
+        (icon === null ? (
+          <div className="flex items-center justify-center w-full h-full">
+            <SeleneLogo cashtokens className="saturate-30 opacity-90" />
+          </div>
+        ) : (
+          <img src={icon} />
+        ))}
     </div>,
     <div
       className="border-2 border-zinc-600 rounded-sm overflow-hidden"

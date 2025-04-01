@@ -28,20 +28,23 @@ import FullColumn from "@/layout/FullColumn";
 
 import { selectActiveWallet } from "@/redux/wallet";
 
-import LogService from "@/services/LogService";
+//import LogService from "@/services/LogService";
 import TokenManagerService from "@/services/TokenManagerService";
 
 import { truncateProse } from "@/util/string";
+import { navigateOnValidUri } from "@/util/uri";
 
 import { useTokenData } from "@/hooks/useTokenData";
+import { useClipboard } from "@/hooks/useClipboard";
 
-const Log = LogService("AssetsViewTokenDetail");
+//const Log = LogService("AssetsViewTokenDetail");
 
 export default function AssetsViewTokenDetail() {
   const { tokenId: paramsTokenId } = useParams();
   const { walletHash } = useSelector(selectActiveWallet);
 
   const navigate = useNavigate();
+  const { handleCopyToClipboard, getClipboardContents } = useClipboard();
 
   const TokenManager = useMemo(
     () => TokenManagerService(walletHash),
@@ -52,7 +55,7 @@ export default function AssetsViewTokenDetail() {
 
   const tokenData = useTokenData(tokenId, true);
 
-  Log.debug(tokenData);
+  //Log.debug(tokenData);
 
   const [shouldShowFullDescription, setShouldShowFullDescription] =
     useState(false);
@@ -94,13 +97,19 @@ export default function AssetsViewTokenDetail() {
   const tokenUtxos = TokenManager.getTokenUtxos(tokenId);
   const nfts = tokenUtxos.filter((utxo) => utxo.nft_capability !== null);
 
-  const handleTokenSend = () =>
-    navigate("/wallet/send", {
-      state: {
-        selection: nftSelection,
-        tokenCategories: [tokenId],
-      },
-    });
+  const handleTokenSend = async () => {
+    const { value, spawnPasteToast } = await getClipboardContents();
+    const navTo = await navigateOnValidUri(value);
+    if (navTo) {
+      spawnPasteToast();
+      navigate(navTo, {
+        state: {
+          selection: nftSelection,
+          tokenCategories: [tokenId],
+        },
+      });
+    }
+  };
 
   const handleNftSelect = (utxo) => {
     const selectIndex = nftSelection.findIndex(
