@@ -4,6 +4,7 @@ import { SplashScreen } from "@capacitor/splash-screen";
 import LogService from "@/services/LogService";
 import JanitorService from "@/services/JanitorService";
 import DatabaseService from "@/services/DatabaseService";
+import BcmrService from "@/services/BcmrService";
 import { redux_init, redux_post_init, redux_resume } from "@/redux";
 import Main from "@/Main";
 
@@ -49,6 +50,9 @@ async function post_init() {
   Log.log("* POST_INIT *");
   await SplashScreen.hide();
   redux_post_init();
+  
+  const Bcmr = BcmrService();
+  Bcmr.preloadMetadataRegistries();
 }
 
 // actions to perform after app is resumed from sleep state

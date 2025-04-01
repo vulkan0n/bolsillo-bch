@@ -69,7 +69,7 @@ export default function UtxoManagerService(walletHash: string) {
     const result = walletDb.exec(`SELECT * FROM address_utxos`, null, {
       useBigInt: true,
     });
-    Log.debug(result);
+    //Log.debug(result);
     return result;
   }
 
