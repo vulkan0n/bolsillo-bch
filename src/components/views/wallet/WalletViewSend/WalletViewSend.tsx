@@ -72,6 +72,11 @@ export default function WalletViewSend() {
   const selectionAmount = selection.reduce((sum, cur) => sum + cur.amount, 0n);
 
   const hasTokens = tokenCategories.length > 0;
+  const nftSelection = selection.filter((s) => s.nft_capability !== null);
+
+  // TODO: add ability to send additional BCH with tokens
+  //const [isSendingAdditionalBch, setIsSendingAdditionalBch] = useState(false);
+  const isSendingAdditionalBch = false;
 
   Log.debug("selection", selection, tokenCategories);
 
@@ -190,21 +195,17 @@ export default function WalletViewSend() {
       token: { category, amount: satoshiInput },
     }));
 
-    const nftRecipients = selection
-      .filter((s) => s.nft_capability !== null)
-      .map((s) => ({
-        address,
-        amount: 0n,
-        token: {
-          category: s.token_category,
-          nft: {
-            capability: s.nft_capability,
-            commitment: s.nft_commitment
-              ? hexToBin(s.nft_commitment)
-              : undefined,
-          },
+    const nftRecipients = nftSelection.map((s) => ({
+      address,
+      amount: 0n,
+      token: {
+        category: s.token_category,
+        nft: {
+          capability: s.nft_capability,
+          commitment: s.nft_commitment ? hexToBin(s.nft_commitment) : undefined,
         },
-      }));
+      },
+    }));
 
     Log.debug("recipients", coinRecipients, tokenRecipients, nftRecipients);
 
@@ -364,7 +365,7 @@ export default function WalletViewSend() {
           <div className="flex flex-col h-full justify-evenly">
             <div className="p-2 w-full grow flex flex-col justify-center ">
               {selectionAmount > 0 && <InputSelection inputs={selection} />}
-              {tokenData !== null && (
+              {tokenData !== null && nftSelection.length === 0 && (
                 <div
                   className="py-4 px-2 rounded-md shadow-md text-white"
                   style={{ backgroundColor: tokenData.color }}
@@ -392,39 +393,43 @@ export default function WalletViewSend() {
                   </div>
                 </div>
               )}
-
-              <div className="py-4 px-2 rounded-md shadow-md bg-primary/95 text-white">
-                <div className="flex items-center justify-center">
-                  <CurrencySymbol className="font-bold text-4xl mr-2" />
-                  <SatoshiInput
-                    key={satoshiInputKey}
-                    onChange={handleAmountInput}
-                    satoshis={satoshiInput}
-                    size={1}
-                    className={`mr-1.5 p-1 flex-1 text-3xl rounded shadow-inner ${
-                      isInsufficientFunds ? "text-error" : "text-black/70"
-                    }`}
-                    autoFocus={address !== ""}
-                    ref={inputRef}
-                    max={selectionAmount}
-                  />
-                  <Button
-                    label="MAX"
-                    className="spacing-wide text-bold text-zinc-800 rounded-full border border-zinc-200 bg-zinc-100"
-                    onClick={handleSendMax}
-                  />
-                </div>
-              </div>
-              <div
-                className="p-2 relative text-center w-full"
-                onClick={handleFlipCurrency}
-              >
-                <span className="text-2xl font-semibold text-center w-full text-zinc-800/80 flex justify-center items-center">
-                  <Satoshi value={satoshiInput} flip />
-                  <CurrencyFlip className="text-3xl ml-2" />
-                </span>
-              </div>
+              {(tokenData === null || isSendingAdditionalBch) && (
+                <>
+                  <div className="py-4 px-2 rounded-md shadow-md bg-primary/95 text-white">
+                    <div className="flex items-center justify-center">
+                      <CurrencySymbol className="font-bold text-4xl mr-2" />
+                      <SatoshiInput
+                        key={satoshiInputKey}
+                        onChange={handleAmountInput}
+                        satoshis={satoshiInput}
+                        size={1}
+                        className={`mr-1.5 p-1 flex-1 text-3xl rounded shadow-inner ${
+                          isInsufficientFunds ? "text-error" : "text-black/70"
+                        }`}
+                        autoFocus={address !== ""}
+                        ref={inputRef}
+                        max={selectionAmount}
+                      />
+                      <Button
+                        label="MAX"
+                        className="spacing-wide text-bold text-zinc-800 rounded-full border border-zinc-200 bg-zinc-100"
+                        onClick={handleSendMax}
+                      />
+                    </div>
+                  </div>
+                  <div
+                    className="p-2 relative text-center w-full"
+                    onClick={handleFlipCurrency}
+                  >
+                    <span className="text-2xl font-semibold text-center w-full text-zinc-800/80 flex justify-center items-center">
+                      <Satoshi value={satoshiInput} flip />
+                      <CurrencyFlip className="text-3xl ml-2" />
+                    </span>
+                  </div>
+                </>
+              )}
             </div>
+
             <div className="flex flex-col justify-end shrink my-6">
               <div className="flex w-full justify-around items-center px-2 gap-x-2">
                 <div className="mx-2">
