@@ -122,7 +122,7 @@ export default function AssetsViewTokens() {
 
 export function TokenCard({ token }: { token: TokenEntity }) {
   const navigate = useNavigate();
-  const { getClipboardContents } = useClipboard();
+  const { handleCopyToClipboard, getClipboardContents } = useClipboard();
 
   const handleTokenSend = async () => {
     const { value, spawnPasteToast } = await getClipboardContents();
@@ -189,7 +189,13 @@ export function TokenCard({ token }: { token: TokenEntity }) {
             {truncateProse(token.description)}
           </div>
         )}
-        <div className="mt-1.5 pt-0.5 border-t border-dashed border-zinc-300/80 font-mono text-xs text-zinc-400/70 truncate">
+        <div
+          className="mt-1.5 pt-0.5 border-t border-dashed border-zinc-300/80 font-mono text-xs text-zinc-400/70 truncate"
+          onClick={(e) => {
+            e.stopPropagation();
+            handleCopyToClipboard(token.category);
+          }}
+        >
           {token.category}
         </div>
       </div>

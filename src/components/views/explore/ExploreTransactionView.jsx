@@ -2,7 +2,6 @@
 import { useState, useCallback, useEffect } from "react";
 import { useLoaderData, Link } from "react-router";
 import { useSelector } from "react-redux";
-import { Clipboard } from "@capacitor/clipboard";
 import { DateTime } from "luxon";
 import {
   CopyOutlined,
@@ -15,16 +14,19 @@ import { selectChaintip } from "@/redux/sync";
 
 import TransactionHistoryService from "@/services/TransactionHistoryService";
 import TransactionManagerService from "@/services/TransactionManagerService";
-import ToastService from "@/services/ToastService";
 //import LogService from "@/services/LogService";
 
 import Address from "@/atoms/Address";
 import Satoshi from "@/atoms/Satoshi";
 import Accordion from "@/atoms/Accordion";
 import Editable from "@/atoms/Editable";
+import TokenAmount from "@/atoms/TokenAmount";
+
 import ExploreSearchBar from "./ExploreSearchBar";
 
-import { hexToUtf8 } from "@/util/hex";
+import { useClipboard } from "@/hooks/useClipboard";
+
+import { hexToUtf8, binToHex } from "@/util/hex";
 
 import { translate } from "@/util/translations";
 import translations from "./translations";
@@ -51,10 +53,9 @@ export default function ExploreTransactionView() {
     isConfirmed ? DateTime.fromSeconds(tx.time) : DateTime.fromISO(tx.time_seen)
   ).toLocaleString(DateTime.DATETIME_FULL);
 
+  const { handleCopyToClipboard } = useClipboard();
   const handleCopyTransactionId = async () => {
-    await Clipboard.write({ string: tx.txid });
-    const titleTranslation = translate(translations.copiedTxid);
-    ToastService().clipboardCopy(titleTranslation, tx.txid);
+    handleCopyToClipboard(tx.txid, translate(translations.transactionId));
   };
 
   const handleSaveMemo = (value) => {
@@ -73,7 +74,7 @@ export default function ExploreTransactionView() {
       <div className="p-1">
         <div className="bg-zinc-700 rounded p-2">
           <div className="text-center font-semibold text-white mb-1">
-            Transaction ID
+            {translate(translations.transactionId)}
           </div>
           <div
             className="flex items-center justify-center rounded"
@@ -149,7 +150,7 @@ function OutputListItem({ output, i }) {
   const opReturnData = hexToUtf8(asmSplit.slice(2)); // OP_RETURN OP_PUSHDATA_X ...
 
   return (
-    <div className={`p-1.5 ${zebraCss}`}>
+    <div className={`p-1.5 ${zebraCss} rounded-sm`}>
       <div className="flex text-sm items-center">
         {isOpReturn ? (
           <div className="font-mono font-bold text-zinc-700">OP_RETURN</div>
@@ -157,22 +158,32 @@ function OutputListItem({ output, i }) {
           <Address address={output.scriptPubKey.addresses[0]} />
         )}
       </div>
-      <div className="">
-        <span className="text-xs tracking-tighter mr-1.5 opacity-70">
-          #{output.n}
-        </span>
-        {isOpReturn ? (
-          <span className="font-mono">{opReturnData}</span>
-        ) : (
-          <span>
-            <span className="font-mono">
-              <Satoshi value={output.value} />
-            </span>
-            <span className="mx-1 text-zinc-500">/</span>
-            <span className="text-sm opacity-80">
-              <Satoshi value={output.value} flip />
-            </span>
+      <div className="flex justify-between">
+        <div>
+          <span className="text-xs tracking-tighter mr-1.5 opacity-70">
+            #{output.n}
           </span>
+          {isOpReturn ? (
+            <span className="font-mono">{opReturnData}</span>
+          ) : (
+            <span>
+              <span className="font-mono">
+                <Satoshi value={output.value} />
+              </span>
+              <span className="mx-1 text-zinc-500">/</span>
+              <span className="text-sm opacity-80">
+                <Satoshi value={output.value} flip />
+              </span>
+            </span>
+          )}
+        </div>
+        {output.token && (
+          <div
+            className="text-sm"
+            style={{ color: `#${binToHex(output.token.category).slice(0, 6)}` }}
+          >
+            <TokenAmount token={output.token} />
+          </div>
         )}
       </div>
     </div>

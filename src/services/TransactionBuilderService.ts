@@ -199,9 +199,7 @@ export default function TransactionBuilderService(wallet: WalletEntity) {
 
     const coinInputs = UtxoManager.selectCoins(sendTotal);
 
-    const inputs = (
-      hasSelection ? selection : [...tokenInputs, ...coinInputs]
-    ).sort(bip69SortInputs);
+    const inputs = hasSelection ? selection : [...tokenInputs, ...coinInputs];
 
     const inputTotal = inputs.reduce((sum, cur) => sum + cur.amount, 0n);
     Log.debug("buildP2pkhTransaction using inputs:", inputs, inputTotal);
@@ -216,7 +214,7 @@ export default function TransactionBuilderService(wallet: WalletEntity) {
       ...recipientVouts,
       ...preparedTokenChange,
       ...prepareSatsChange(inputs, recipientVouts, fee + tokenChangeAmount),
-    ].sort(bip69SortOutputs);
+    ];
 
     const finalOutputTotal = outputs.reduce(
       (sum, cur) => sum + cur.valueSatoshis,
@@ -391,11 +389,14 @@ export default function TransactionBuilderService(wallet: WalletEntity) {
 
       // sign inputs
       const HdNode = HdNodeService(wallet);
-      const signedInputs = HdNode.signInputs(vin, compiler);
+      const signedInputs = HdNode.signInputs(
+        vin.sort(bip69SortInputs),
+        compiler
+      );
 
       const generatedTx = generateTransaction({
         inputs: signedInputs,
-        outputs: vout,
+        outputs: vout.sort(bip69SortOutputs),
         locktime: 0,
         version: 2,
       });

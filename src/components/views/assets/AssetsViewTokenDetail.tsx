@@ -134,6 +134,7 @@ export default function AssetsViewTokenDetail() {
     });
   };
 
+
   return (
     <FullColumn key={tokenData.category} className="justify-between">
       <div className="p-1">
@@ -219,7 +220,13 @@ export default function AssetsViewTokenDetail() {
               </div>
             )}
           </div>
-          <div className="mt-1.5 pt-0.5 border-t border-dashed border-zinc-300/80 font-mono text-xs text-zinc-400/70 truncate">
+          <div
+            className="mt-1.5 pt-0.5 border-t border-dashed border-zinc-300/80 font-mono text-xs text-zinc-400/70 truncate"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleCopyToClipboard(token.category);
+            }}
+          >
             {tokenData.category}
           </div>
         </div>

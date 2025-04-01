@@ -197,8 +197,8 @@ const translations = {
     zh: "返回",
     zh_TW: "後退",
   },
-  copiedTxid: {
-    en: "Copied Transaction ID to Clipboard",
+  transactionId: {
+    en: "Transaction ID",
   },
 };
 

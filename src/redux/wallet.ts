@@ -20,8 +20,11 @@ import AddressManagerService, {
   AddressEntity,
 } from "@/services/AddressManagerService";
 import AddressScannerService from "@/services/AddressScannerService";
+import TokenManagerService from "@/services/TokenManagerService";
 
 import ToastService from "@/services/ToastService";
+
+import { convertCashAddress } from "@/util/cashaddr";
 
 const initialState = {
   walletHash: "",
@@ -82,6 +85,8 @@ export const walletBalanceUpdate = createAction(
     const currentBalance = BigInt(sqlWallet.balance);
     const currentSpendableBalance = BigInt(sqlWallet.spendable_balance);
 
+    const TokenManager = TokenManagerService(wallet.walletHash);
+
     // show receive notification
     if (currentBalance > previousBalance && isChange === false) {
       const difference = currentBalance - previousBalance;
@@ -121,9 +126,13 @@ export const walletReloadAddresses = createAction(
     const myAddresses = [
       ...AddressManager.getReceiveAddresses(),
       ...AddressManager.getChangeAddresses(),
-    ];
+    ].map((a) => ({ change: a.change, address: a.address }));
+
     myAddresses.push(
-      ...myAddresses.map((a) => AddressManager.getTokenAddress(a.address))
+      ...myAddresses.map((a) => ({
+        change: a.change,
+        address: convertCashAddress(a.address, "tokenaddr"),
+      }))
     );
 
     return { payload: myAddresses };

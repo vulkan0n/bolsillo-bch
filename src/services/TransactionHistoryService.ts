@@ -10,6 +10,7 @@ import TransactionManagerService, {
 import CurrencyService from "@/services/CurrencyService";
 import TokenManagerService from "@/services/TokenManagerService";
 import { binToHex } from "@/util/hex";
+import { convertCashAddress } from "@/util/cashaddr";
 
 const Log = LogService("TransactionHistoryService");
 
@@ -56,7 +57,7 @@ export default function TransactionHistoryService(
     ...AddressManager.getChangeAddresses(),
   ].map((a) => a.address);
   myAddresses.push(
-    ...myAddresses.map((a) => AddressManager.getTokenAddress(a))
+    ...myAddresses.map((a) => convertCashAddress(a, "tokenaddr"))
   );
 
   const TokenManager = TokenManagerService(walletHash);

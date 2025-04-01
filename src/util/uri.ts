@@ -43,7 +43,7 @@ export function validateBchUri(uri) {
   return payload;
 }
 
-function validateBip21Uri(uri) {
+export function validateBip21Uri(uri) {
   const address = uri.split("?")[0];
   const amountMatch = uri.match(/amount=([0-9]*\.?[0-9]{0,8})/);
   const amount = amountMatch === null ? "0" : amountMatch[1];
