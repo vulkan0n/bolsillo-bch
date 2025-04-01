@@ -47,6 +47,8 @@ export default function ShowMnemonic({ walletHash }: { walletHash: string }) {
     ? "bg-zinc-700"
     : "border border-4 rounded-lg border-primary bg-primary";
 
+  const splitMnemonic = mnemonic.split(" ");
+
   return (
     <button
       type="button"
@@ -60,8 +62,16 @@ export default function ShowMnemonic({ walletHash }: { walletHash: string }) {
             {translate(translations.keepSecret)}
             <WarningFilled className="ml-2 text-warning" />
           </div>
-          <div className="text-center text-zinc-50 text-xl font-mono py-4">
-            {mnemonic}
+          <div className="text-center text-zinc-50 text-xl py-4 select-all grid gap-md grid-cols-3 gap-2 font-mono">
+            {splitMnemonic.map((w, idx) => (
+              <div
+                key={`w-${w}`}
+                className="col-span-1 rounded-2xl border whitespace-nowrap px-2 py-1 text-sm flex"
+              >
+                <span className="text-zinc-300">{idx + 1}.</span>{" "}
+                <span className="flex-1 text-center">{w}</span>
+              </div>
+            ))}
           </div>
           <div className="text-center text-error text-xl font-bold">
             <WarningFilled className="mr-2 text-warning" />

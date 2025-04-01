@@ -1,14 +1,12 @@
 import { useState, useCallback, useEffect } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
+import { useNavigate, useSearchParams } from "react-router";
+import { useSelector } from "react-redux";
 import Decimal from "decimal.js";
 import { ArrowLeftOutlined, SyncOutlined } from "@ant-design/icons";
 
 import { selectActiveWallet } from "@/redux/wallet";
 import { selectSyncState } from "@/redux/sync";
 import {
-  setPreference,
-  selectCurrencySettings,
   selectInstantPaySettings,
   selectIsOfflineMode,
 } from "@/redux/preferences";
@@ -24,6 +22,8 @@ import CountdownTimer from "@/components/atoms/CountdownTimer";
 import CurrencyFlip from "@/atoms/CurrencyFlip";
 import Satoshi from "@/atoms/Satoshi";
 
+import { useCurrencyFlip } from "@/hooks/useCurrencyFlip";
+
 import { Haptic } from "@/util/haptic";
 
 import { PaymentRequestResponse, JppV2Client } from "@/util/payment_protocol";
@@ -34,7 +34,6 @@ const Log = LogService("WalletViewPay");
 const jppClient = new JppV2Client();
 
 export default function WalletViewPay() {
-  const dispatch = useDispatch();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
@@ -43,7 +42,6 @@ export default function WalletViewPay() {
   const { isInstantPayEnabled, instantPayThreshold } = useSelector(
     selectInstantPaySettings
   );
-  const { shouldPreferLocalCurrency } = useSelector(selectCurrencySettings);
   const isOfflineMode = useSelector(selectIsOfflineMode);
 
   const [message, setMessage] = useState("");
@@ -75,14 +73,7 @@ export default function WalletViewPay() {
   }
 
   const isInsufficientFunds = new Decimal(wallet.balance).lessThanOrEqualTo(0);
-  const handleFlipCurrency = () => {
-    dispatch(
-      setPreference({
-        key: "preferLocalCurrency",
-        value: shouldPreferLocalCurrency ? "false" : "true",
-      })
-    );
-  };
+  const handleFlipCurrency = useCurrencyFlip();
 
   const handleExpire = () => {
     setMessage(translate(translations.invalidInvoice));

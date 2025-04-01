@@ -1,4 +1,7 @@
+import NullComponent from "@/atoms/NullComponent";
+
 type ValidSizes =
+  | "none"
   | "xs"
   | "sm"
   | "base"
@@ -30,7 +33,7 @@ export interface ButtonProps {
   labelSize?: ValidSizes;
   labelColor?: string;
   activeLabelColor?: string;
-  icon?: React.ComponentType;
+  icon?: React.ComponentType<{ className?: string }>;
   iconSize?: ValidSizes;
   outerLabel?: string;
   outerLabelSize?: ValidSizes;
@@ -39,10 +42,13 @@ export interface ButtonProps {
   rounded?: ValidRounded;
   bgColor?: string;
   activeBgColor?: string;
+  shadow?: ValidSizes;
+  padding?: string;
   inverted?: boolean;
   fullWidth?: boolean;
   onClick?: React.MouseEventHandler;
   disabled?: boolean;
+  style?: React.CSSProperties;
 }
 
 export default function Button({
@@ -50,7 +56,7 @@ export default function Button({
   labelSize = "sm",
   labelColor = "zinc-600",
   activeLabelColor = "white",
-  icon = () => null,
+  icon = NullComponent,
   iconSize = "2xl",
   outerLabel = "",
   outerLabelSize = "sm",
@@ -59,38 +65,48 @@ export default function Button({
   rounded = "full",
   bgColor = "white",
   activeBgColor = "primary",
+  shadow = "md",
+  padding = "3",
   inverted = false,
   fullWidth = false,
   onClick = () => null,
   disabled = false,
+  style = {},
 }: ButtonProps) {
   const Icon = icon;
-  const colors = `bg-${bgColor} text-${labelColor} active:bg-${activeBgColor} active:text-${activeLabelColor}`;
-  const invertedColors = `bg-${activeBgColor} text-${activeLabelColor} active:bg-${bgColor} active:text-${labelColor}`;
+  // tailwindcss dynamic classes don't work here, the tokenizer needs to see the whole string, they're computed at build time, not runtime!
+  const colors = `bg-${bgColor} text-${labelColor} ${disabled ? "" : `active:bg-${activeBgColor} active:text-${activeLabelColor}`}`;
+  const invertedColors = `bg-${activeBgColor} text-${activeLabelColor} ${disabled ? "" : `active:bg-${bgColor} active:text-${labelColor}`}`;
   const colorClasses = inverted ? invertedColors : colors;
 
   const roundedClass = rounded === true ? "rounded" : `rounded-${rounded}`;
-  const disabledClasses = disabled ? `opacity-[.5]` : "";
+  const disabledClasses = disabled
+    ? `opacity-[.5] shadow-none active:shadow-none`
+    : "cursor-pointer";
+  const handleOnClick = (event) => {
+    event.stopPropagation();
+    onClick(event);
+  };
 
   return (
     <div className={`${fullWidth ? "w-full" : ""}`}>
       <button
         type="button"
-        onClick={onClick}
+        onClick={handleOnClick}
         className={`
-          cursor-pointer 
           flex items-center justify-center
-          p-3 mx-auto
+          p-${padding} mx-auto
           ${fullWidth ? " w-full " : ""}
           ${borderClasses} 
           ${colorClasses}
           text-${labelSize}
           ${roundedClass}
-          ${disabledClasses}
-          shadow-md opacity-90 
+          shadow-${shadow} opacity-90 
           active:shadow-none active:shadow-inner
+          ${disabledClasses}
         `}
         disabled={disabled}
+        style={style}
       >
         <Icon className={`text-${iconSize} ${label ? "mr-1" : ""}`} />
         <span>{label}</span>

@@ -12,13 +12,12 @@ export default function CurrencySymbol({
   currency = "",
   className = "",
 }: Props) {
-  const { localCurrency, shouldPreferLocalCurrency } = useSelector(
-    selectCurrencySettings
-  );
+  const { localCurrency, shouldPreferLocalCurrency, denomination } =
+    useSelector(selectCurrencySettings);
 
   let findCurrency = currency;
   if (!findCurrency) {
-    findCurrency = shouldPreferLocalCurrency ? localCurrency : "BCH";
+    findCurrency = shouldPreferLocalCurrency ? localCurrency : denomination;
   }
 
   const currencyObj =

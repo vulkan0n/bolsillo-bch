@@ -1,4 +1,4 @@
-import { Outlet } from "react-router-dom";
+import { Outlet } from "react-router";
 import { CompassOutlined } from "@ant-design/icons";
 import ViewHeader from "@/layout/ViewHeader";
 //import ExploreSearchBar from "./ExploreSearchBar";
@@ -13,9 +13,7 @@ export default function ExploreView() {
         title={translate(translations.exploreBch)}
       />
       {/*<ExploreSearchBar />*/}
-      <div className="h-full">
-        <Outlet />
-      </div>
+      <Outlet />
     </>
   );
 }

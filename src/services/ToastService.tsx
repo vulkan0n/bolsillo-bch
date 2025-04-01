@@ -6,6 +6,8 @@ import {
 } from "@ant-design/icons";
 import { logos } from "@/util/logos";
 import Satoshi from "@/atoms/Satoshi";
+import TokenIcon from "@/atoms/TokenIcon";
+import TokenAmount from "@/atoms/TokenAmount";
 
 export default function ToastService() {
   return {
@@ -44,9 +46,11 @@ export default function ToastService() {
     }, options);
   }
 
-  function paymentReceived(amount) {
+  function paymentReceived(amount, token?) {
     spawn({
-      icon: (
+      icon: token ? (
+        <TokenIcon category={token.category} size={64} />
+      ) : (
         <img
           src={logos.selene.img}
           style={{ width: "64px", height: "64px" }}
@@ -56,6 +60,11 @@ export default function ToastService() {
       header: "Payment received!",
       body: (
         <div className="flex flex-col">
+          {token && (
+            <div>
+              <TokenAmount token={token} />
+            </div>
+          )}
           <div className="text-secondary">
             +<Satoshi value={amount} />
           </div>
@@ -74,9 +83,9 @@ export default function ToastService() {
   function clipboardCopy(header, payload) {
     spawn({
       icon: <SnippetsFilled className="text-4xl text-primary" />,
-      header: `Copied ${header} to Clipboard`,
+      header,
       body: <span className="flex text-sm break-all">{payload}</span>,
-      options: { id: "clipboardCopy" },
+      options: { id: "clipboardCopy", duration: 2500 },
     });
   }
 

@@ -1,24 +1,31 @@
-import { Decimal } from "decimal.js";
 import {
   encodeTransaction,
   generateTransaction,
   swapEndianness,
   cashAddressToLockingBytecode,
   base58AddressToLockingBytecode,
-  importAuthenticationTemplate,
-  authenticationTemplateP2pkhNonHd,
-  authenticationTemplateToCompilerBCH,
+  importWalletTemplate,
+  walletTemplateP2pkhNonHd,
+  walletTemplateToCompilerBCH,
   getMinimumFee,
+  getDustThreshold,
+  Output,
+  assertSuccess,
 } from "@bitauth/libauth";
 
 import LogService from "@/services/LogService";
 import UtxoManagerService from "@/services/UtxoManagerService";
-import AddressManagerService from "@/services/AddressManagerService";
+import AddressManagerService, {
+  AddressEntity,
+} from "@/services/AddressManagerService";
 import HdNodeService from "@/services/HdNodeService";
 import { WalletEntity } from "@/services/WalletManagerService";
-import { TransactionStub } from "@/services/TransactionManagerService";
+import {
+  TransactionStub,
+  TransactionOutput,
+} from "@/services/TransactionManagerService";
 
-import { DUST_LIMIT } from "@/util/sats";
+import { DUST_RELAY_FEE, EXCESSIVE_SATOSHIS } from "@/util/sats";
 import { validateBchUri } from "@/util/uri";
 import { binToHex, hexToBin } from "@/util/hex";
 import { sha256 } from "@/util/hash";
@@ -63,126 +70,450 @@ export default function TransactionBuilderService(wallet: WalletEntity) {
     return lockingBytecode.bytecode;
   }
 
-  function buildP2pkhTransaction(
-    recipients: Array<{ address: string; amount: Decimal }>,
-    fee: number = DUST_LIMIT / 3,
-    depth: number = 0
-  ): TransactionStub | number | null {
+  function createTokenOutput(recipientAddress, token) {
+    const output = {
+      lockingBytecode: addressToLockingBytecode(recipientAddress),
+      valueSatoshis: EXCESSIVE_SATOSHIS,
+      token: {
+        ...token,
+        category: hexToBin(token.category),
+      },
+    };
+
+    Log.debug("createTokenOutput", output, token);
+
+    const dustThreshold = getDustThreshold(output, DUST_RELAY_FEE);
+    output.valueSatoshis = dustThreshold;
+
+    return output;
+  }
+
+  function createCoinOutput(recipientAddress, amount) {
+    const output = {
+      lockingBytecode: addressToLockingBytecode(recipientAddress),
+      valueSatoshis: amount,
+    };
+
+    Log.debug("createCoinOutput", output);
+    return output;
+  }
+  // prepare outputs
+  function prepareOutputsFromRecipients(recipients) {
+    const coinRecipients = recipients.filter(
+      (recipient) => recipient.token === undefined
+    );
+    const coinVout: Array<Output> = coinRecipients.map((recipient) =>
+      createCoinOutput(recipient.address, recipient.amount)
+    );
+
+    // prepare token outputs
+    const tokenRecipients = recipients.filter(
+      (recipient) => recipient.token !== undefined
+    );
+    const tokenVout: Array<Output> = tokenRecipients.map((recipient) =>
+      createTokenOutput(recipient.address, recipient.token)
+    );
+
     // calculate total amount to send for all recipients
-    const sendTotal = recipients
-      .reduce((sum, cur) => sum.plus(cur.amount), new Decimal(0))
-      .toNumber();
+    const vout = [...coinVout, ...tokenVout];
+    return vout;
+  }
+
+  function buildP2pkhTransaction({
+    recipients,
+    fee = 0n,
+    depth = 0,
+    selection = [],
+  }: {
+    recipients: Array<{
+      address: string;
+      amount: bigint;
+      token?: {
+        category: string;
+        amount: bigint;
+        nft?: {
+          capability: "none" | "mutable" | "minting";
+          commitment: Uint8Array;
+        };
+      };
+    }>;
+    fee?: bigint;
+    depth?: number;
+    selection?: Array<TransactionOutput>;
+  }): TransactionStub | bigint {
+    const hasSelection = selection.length > 0;
+
+    Log.debug("buildP2pkhTransaction depth", depth);
+    // prepare outputs
+    const recipientVouts = prepareOutputsFromRecipients(recipients);
+    const recipientOutputTotal = recipientVouts.reduce(
+      (sum, cur) => sum + cur.valueSatoshis,
+      0n
+    );
+    const sendTotal = recipientOutputTotal + fee;
+
+    Log.debug(
+      "buildP2pkhTransaction recipients:",
+      recipientVouts,
+      recipientOutputTotal,
+      fee,
+      sendTotal
+    );
+
+    const tokenOutputAmountsByCategory = recipientVouts.reduce(
+      (amounts, output) => {
+        // calculate total output amounts for each token category
+        if (!output.token || output.token.nft) {
+          return amounts;
+        }
+
+        const { category, amount } = output.token;
+
+        const categoryHex = binToHex(category);
+        const categoryAmount = amounts.get(categoryHex) || 0n;
+        amounts.set(categoryHex, categoryAmount + amount);
+
+        return amounts;
+      },
+      new Map<string, bigint>()
+    );
+
+    const tokenCategories = Array.from(tokenOutputAmountsByCategory.keys());
+    const hasTokens = tokenCategories.length > 0;
 
     // gather suitable inputs
-    const UtxoManager = UtxoManagerService(wallet);
-    const inputs = UtxoManager.selectUtxos(sendTotal, fee);
+    const UtxoManager = UtxoManagerService(wallet.walletHash);
 
-    Log.debug("using utxos:", inputs);
+    const tokenInputs = tokenCategories
+      .map((category) => {
+        if (!tokenOutputAmountsByCategory.has(category)) {
+          return [];
+        }
 
-    const inputTotal = inputs
-      .reduce((sum, cur) => sum.plus(cur.amount), new Decimal(0))
-      .toNumber();
+        return UtxoManager.selectTokens(
+          category,
+          tokenOutputAmountsByCategory.get(category)
+        );
+      })
+      .flat();
 
-    // calculate change
-    const changeTotal = inputTotal - sendTotal - fee;
+    const coinInputs = UtxoManager.selectCoins(sendTotal);
 
-    // insufficient funds
-    if (changeTotal < 0) {
-      Log.debug(
-        "buildP2pkhTransaction: insufficient funds",
-        inputTotal,
-        sendTotal,
-        fee,
-        inputTotal - sendTotal,
-        changeTotal,
-        sendTotal - fee
-      );
-      return sendTotal - fee;
-    }
+    const inputs = hasSelection ? selection : [...tokenInputs, ...coinInputs];
 
-    // construct tx outputs
-    const vout = recipients.map((recipient) => ({
-      lockingBytecode: addressToLockingBytecode(recipient.address),
-      valueSatoshis: BigInt(recipient.amount.toString()),
-    }));
+    const inputTotal = inputs.reduce((sum, cur) => sum + cur.amount, 0n);
+    Log.debug("buildP2pkhTransaction using inputs:", inputs, inputTotal);
 
-    // construct change outputs
-    if (changeTotal >= DUST_LIMIT) {
-      const AddressManager = AddressManagerService(wallet);
-      const changeAddress = AddressManager.getUnusedAddresses(1, 1)[0];
+    const preparedTokenChange = prepareTokenChange(inputs, recipientVouts);
+    const tokenChangeAmount = preparedTokenChange.reduce(
+      (sum, cur) => sum + cur.valueSatoshis,
+      0n
+    );
 
-      vout.push({
-        lockingBytecode: addressToLockingBytecode(changeAddress.address),
-        valueSatoshis: BigInt(changeTotal),
+    const outputs = [
+      ...recipientVouts,
+      ...preparedTokenChange,
+      ...prepareSatsChange(inputs, recipientVouts, fee + tokenChangeAmount),
+    ];
+
+    const finalOutputTotal = outputs.reduce(
+      (sum, cur) => sum + cur.valueSatoshis,
+      0n
+    );
+
+    const transaction = compileP2pkhTransaction(inputs, outputs);
+    Log.debug("buildP2pkhTransaction transaction", transaction);
+
+    if (fee < transaction.minimumFee) {
+      Log.debug("fee less than minimum, retrying", fee, transaction.minimumFee);
+      return buildP2pkhTransaction({
+        recipients,
+        selection,
+        fee: transaction.minimumFee,
+        depth: depth + 1,
       });
     }
 
-    // initialize transaction compiler
-    const template = importAuthenticationTemplate(
-      authenticationTemplateP2pkhNonHd
-    );
-    const compiler = authenticationTemplateToCompilerBCH(template);
-
-    // sign inputs
-    const HdNode = HdNodeService(wallet);
-    const signedInputs = HdNode.signInputs(inputs, compiler);
-
-    const generatedTx = generateTransaction({
-      inputs: signedInputs,
-      outputs: vout,
-      locktime: 0,
-      version: 2,
-    });
-
-    if (generatedTx.success === false) {
-      Log.warn("tx generation failed", generatedTx);
-      return null;
-    }
-
-    const tx_raw = encodeTransaction(generatedTx.transaction);
-    const tx_hex = binToHex(tx_raw);
-    const tx_hash = swapEndianness(binToHex(sha256.hash(sha256.hash(tx_raw))));
-
-    // if we didn't reclaim change, add it to total fee
-    const feeTotal = changeTotal < DUST_LIMIT ? fee + changeTotal : fee;
-    if (feeTotal < tx_raw.length) {
+    // insufficient funds
+    if (inputTotal < finalOutputTotal + fee) {
+      const short = (inputTotal - fee - finalOutputTotal) * -1n;
       Log.debug(
-        `Fee under 1 sat/B... try again with ${tx_raw.length} bytelength as fee`,
-        depth
+        "buildP2pkhTransaction: insufficient funds",
+        inputTotal,
+        finalOutputTotal,
+        fee,
+        short
       );
-      // TODO: use relay fee provided by electrum (futureproofing)
-      return buildP2pkhTransaction(recipients, tx_raw.length, depth + 1);
-    }
 
-    if (feeTotal > tx_raw.length * 3 && depth < 3) {
-      if (fee !== tx_raw.length) {
-        Log.debug(
-          "Fee greater than 300% of byte length. Can we make it smaller?",
-          depth
-        );
-        return buildP2pkhTransaction(recipients, tx_raw.length, depth + 1);
+      if (hasTokens && wallet.spendable_balance >= finalOutputTotal + fee) {
+        const gasCoins = UtxoManager.selectCoins(short);
+        Log.debug("token tx attempting to gas up", gasCoins, short);
+
+        const newSelection = [...inputs, ...gasCoins];
+        return buildP2pkhTransaction({
+          recipients,
+          selection: newSelection,
+          fee,
+          depth: depth + 1,
+        });
       }
 
-      // if we're here, fee can't get any smaller. proceed
+      return short;
     }
 
-    /*
-    Log.log(
-      "buildTransaction",
-      tx_hash,
-      vout,
-      signedInputs,
-      tx_hex,
-      tx_raw.length,
-      fee,
-      feeTotal
-    );
-    */
+    // ----------------
 
-    return {
-      txid: tx_hash,
-      hex: tx_hex,
-    };
+    function prepareTokenChange(vin, vout) {
+      const tokenVin = vin.filter((input) => input.token_category !== null);
+
+      const tokenOutputs = vout.filter(
+        (output) => output.token && output.token.category !== null
+      );
+
+      // calculate total input amounts for each token category
+      const tokenCategoryInputAmounts = tokenVin.reduce(
+        (tokenAmounts, input) => {
+          const category = input.token_category;
+
+          if (input.nft_capability !== null) {
+            return tokenAmounts;
+          }
+
+          const mapAmount = tokenAmounts.get(category) || 0n;
+          tokenAmounts.set(category, mapAmount + input.token_amount);
+
+          return tokenAmounts;
+        },
+        new Map<string, bigint>()
+      );
+
+      // calculate total output amounts for each token category
+      const tokenCategoryOutputAmounts = tokenOutputs.reduce(
+        (amounts, output) => {
+          if (!output.token || output.token.nft) {
+            return amounts;
+          }
+
+          const { category, amount } = output.token;
+
+          const categoryHex = binToHex(category);
+          const categoryAmount = amounts.get(categoryHex) || 0n;
+          amounts.set(categoryHex, categoryAmount + amount);
+
+          return amounts;
+        },
+        new Map<string, bigint>()
+      );
+
+      Log.debug(
+        "prepareTokenChange",
+        tokenVin,
+        tokenOutputs,
+        tokenCategoryInputAmounts,
+        tokenCategoryOutputAmounts
+      );
+
+      // get change addresses
+      const AddressManager = AddressManagerService(wallet.walletHash);
+      const changeAddresses = AddressManager.getUnusedAddresses(
+        tokenCategories.length + 1,
+        1
+      );
+
+      // create token change outputs for each category
+      const tokenChangeVouts = [];
+      while (tokenCategories.length > 0) {
+        // each category gets its own change address
+        const category = tokenCategories.shift() as string;
+        const changeAddress = changeAddresses.shift() as AddressEntity;
+
+        // get amount of tokens spent; remainder is change
+        const tokenAmountIn = tokenCategoryInputAmounts.get(category) || 0n;
+        const tokenAmountOut = tokenCategoryOutputAmounts.get(category) || 0n;
+
+        const tokenChange = tokenAmountIn - tokenAmountOut;
+
+        const tokenChangeOutput = createTokenOutput(changeAddress.address, {
+          category,
+          amount: tokenChange,
+        });
+
+        if (tokenChange > 0 && tokenChangeOutput.valueSatoshis > 0) {
+          Log.debug("tokenChangeOutput", tokenChangeOutput);
+          tokenChangeVouts.push(tokenChangeOutput);
+        }
+      }
+
+      Log.debug("tokenChangeVouts", tokenChangeVouts);
+      return tokenChangeVouts;
+    }
+
+    function prepareSatsChange(vin, vout, txFee) {
+      const satsInputTotal = vin.reduce((sum, cur) => sum + cur.amount, 0n);
+
+      const satsOutputTotal = vout.reduce(
+        (sum, cur) => sum + cur.valueSatoshis,
+        0n
+      );
+
+      const changeAmount = satsInputTotal - satsOutputTotal - txFee;
+
+      // get change addresses
+      const AddressManager = AddressManagerService(wallet.walletHash);
+      const changeAddresses = AddressManager.getUnusedAddresses(1, 1);
+      const changeAddress = changeAddresses.shift();
+
+      const changeOutput = createCoinOutput(
+        changeAddress.address,
+        changeAmount
+      );
+
+      const dustThreshold = getDustThreshold(changeOutput, DUST_RELAY_FEE);
+
+      // only add change to the tx if it isn't dust.
+      const changeVouts = [];
+      if (changeAmount >= dustThreshold) {
+        changeVouts.push(changeOutput);
+      }
+
+      return changeVouts;
+    }
+
+    // --------
+    function compileP2pkhTransaction(vin, vout) {
+      // initialize transaction compiler
+      const template = assertSuccess(
+        importWalletTemplate(walletTemplateP2pkhNonHd)
+      );
+      const compiler = walletTemplateToCompilerBCH(template);
+
+      // sign inputs
+      const HdNode = HdNodeService(wallet);
+      const signedInputs = HdNode.signInputs(
+        vin.sort(bip69SortInputs),
+        compiler
+      );
+
+      const generatedTx = generateTransaction({
+        inputs: signedInputs,
+        outputs: vout.sort(bip69SortOutputs),
+        locktime: 0,
+        version: 2,
+      });
+
+      if (generatedTx.success === false) {
+        Log.warn("tx generation failed", generatedTx);
+        throw new Error(JSON.stringify(generatedTx));
+      }
+
+      Log.debug("compileP2pkhTransaction", vin, vout, generatedTx);
+
+      const tx_raw = encodeTransaction(generatedTx.transaction);
+      const tx_hex = binToHex(tx_raw);
+      const tx_hash = swapEndianness(
+        binToHex(sha256.hash(sha256.hash(tx_raw)))
+      );
+
+      const minimumFee = getMinimumFee(BigInt(tx_raw.length), DUST_RELAY_FEE);
+
+      return { tx_hash, tx_hex, minimumFee };
+    }
+
+    return transaction;
+  }
+
+  function bip69SortInputs(a, b) {
+    const aId = `${a.tx_hash}:${a.tx_pos}`;
+    const bId = `${b.tx_hash}:${b.tx_pos}`;
+
+    if (aId < bId) {
+      return -1;
+    }
+
+    if (aId > bId) {
+      return 1;
+    }
+
+    return 0;
+  }
+
+  function bip69SortOutputs(a, b) {
+    if (a.amount < b.amount) {
+      return -1;
+    }
+
+    if (a.amount > b.amount) {
+      return 1;
+    }
+
+    if (a.lockingBytecode < b.lockingBytecode) {
+      return -1;
+    }
+
+    if (a.lockingBytecode > b.lockingBytecode) {
+      return 1;
+    }
+
+    // token-aware bip69
+    if (!a.token && b.token) {
+      return -1;
+    }
+
+    if (a.token && !b.token) {
+      return 1;
+    }
+
+    if (a.token.token_amount < b.token.token_amount) {
+      return -1;
+    }
+
+    if (a.token.token_amount > b.token.token_amount) {
+      return 1;
+    }
+
+    if (!a.token.nft && b.token.nft) {
+      return -1;
+    }
+
+    if (a.token.nft && !b.token.nft) {
+      return -1;
+    }
+
+    if (a.token.nft && b.token.nft) {
+      const capabilityRank = ["none", "mutable", "minting"];
+      const aRank = capabilityRank.findIndex(
+        (c) => a.token.nft.capability === c
+      );
+      const bRank = capabilityRank.findIndex(
+        (c) => b.token.nft.capability === c
+      );
+
+      if (aRank < bRank) {
+        return -1;
+      }
+
+      if (aRank > bRank) {
+        return 1;
+      }
+
+      if (a.token.nft.commitment < b.token.nft.commitment) {
+        return -1;
+      }
+
+      if (a.token.nft.commitment > b.token.nft.commitment) {
+        return 1;
+      }
+    }
+
+    if (a.token.category < b.token.category) {
+      return -1;
+    }
+
+    if (a.token.category > b.token.category) {
+      return 1;
+    }
+
+    return 0;
   }
 }
 
@@ -202,9 +533,7 @@ export function buildSweepTransaction(
   }
 
   // Create our P2PKH Compiler.
-  const compilerP2pkh = authenticationTemplateToCompilerBCH(
-    authenticationTemplateP2pkhNonHd
-  );
+  const compilerP2pkh = walletTemplateToCompilerBCH(walletTemplateP2pkhNonHd);
 
   // Compile our inputs.
   const inputDirectives = utxos.map((unspent) => ({
@@ -240,7 +569,10 @@ export function buildSweepTransaction(
   // 2nd loop: Accommodate the fee.
   for (let i = 0; i < 2; i += 1) {
     // Get the fee using 1000 sats/KB.
-    const feeSats = getMinimumFee(BigInt(encodedTransaction.length), 1000n);
+    const feeSats = getMinimumFee(
+      BigInt(encodedTransaction.length),
+      DUST_RELAY_FEE
+    );
 
     // Attempt to generate the transaction.
     const generatedTransaction = generateTransaction({

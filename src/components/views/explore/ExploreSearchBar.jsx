@@ -1,7 +1,7 @@
 /* eslint-disable */
 import { useState } from "react";
 import { useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { SearchOutlined } from "@ant-design/icons";
 import { selectIsExperimental } from "@/redux/preferences";
 
@@ -36,6 +36,11 @@ function searchFunctionsFactory() {
 
   function searchTransactionHash(search) {
     const result = [];
+
+    if (search.toLowerCase().replace(/[^0-9a-f]+/, "").length === 64) {
+      result.push(search);
+    }
+
     return { searchContext: "txhash", result };
   }
 
@@ -70,6 +75,7 @@ export default function ExploreSearchBar() {
   const navigate = useNavigate();
 
   const [searchText, setSearchText] = useState("");
+  const [lastSearch, setLastSearch] = useState(searchText);
 
   const searchFunctions = searchFunctionsFactory();
 
@@ -77,12 +83,27 @@ export default function ExploreSearchBar() {
     const search = event.target.value;
     setSearchText(search);
 
-    const searchResults = searchFunctions.map((searchFunc) =>
-      searchFunc(search)
-    );
+    let searchResults = {};
+    let hasResult = false;
 
-    // search for addresses and transactions instantly if valid
-    navigate(`/explore/tx/${search}`);
+    searchFunctions.forEach((searchFunc) => {
+      const { searchContext, result } = searchFunc(search);
+      searchResults[searchContext] = result;
+
+      if (result.length > 0) {
+        hasResult = true;
+      }
+    });
+
+    if (hasResult) {
+      setSearchText("");
+      setLastSearch(search);
+    }
+
+    if (searchResults["txhash"].length > 0) {
+      // search for addresses and transactions instantly if valid
+      navigate(`/explore/tx/${search}`);
+    }
 
     // search for map locations
   };
@@ -93,7 +114,7 @@ export default function ExploreSearchBar() {
         <SearchOutlined className="text-2xl" />
         <input
           type="text"
-          placeholder="Search"
+          placeholder={lastSearch ? lastSearch : "Search"}
           className="w-full ml-2 p-2 border border-primary rounded-md shadow-inner text-zinc-900"
           onChange={handleSearchTextChange}
           value={searchText}

@@ -6,14 +6,15 @@ import {
 } from "@reduxjs/toolkit";
 
 import { RootState } from "@/redux";
-import { electrum_servers, ValidBchNetwork } from "@/util/electrum_servers";
+import { ValidBchNetwork } from "@/util/electrum_servers";
 import { languageList } from "@/util/translations";
-import { currencyList } from "@/util/currency";
+import { DEFAULT_CURRENCY, currencyList } from "@/util/currency";
 import { VALID_DENOMINATIONS } from "@/util/sats";
 import CurrencyService from "@/services/CurrencyService";
 import { AuthActions } from "@/services/SecurityService";
 
 const defaultPreferences = {
+  // global / wallet
   activeWalletHash: "",
   bchNetwork: "mainnet",
   languageCode: languageList[0].code,
@@ -21,33 +22,43 @@ const defaultPreferences = {
   enablePrerelease: "false",
   lastCheckIn: "",
   lastExchangeRate: "1", // TODO #423: save exchange rates per block
+  useTokenAddress: "false",
   // --------
+  // Security
   authMode: "none",
   pinHash: "",
   authActions: "Any;Debug;RevealPrivateKeys;RevealBalance;SendTransaction",
   // --------
-  localCurrency: currencyList[0].currency,
+  // Currency
+  localCurrency: DEFAULT_CURRENCY.currency,
   preferLocalCurrency: "false",
   denomination: "bch",
   // --------
+  // Payment (move to wallet db?)
   allowInstantPay: "false",
   instantPayThreshold: "2000000", // 0.02 BCH (~$9 USD @ $450)
   instantPayThresholdFiat: "10", // $10 USD (default)
   // --------
+  // QR Code (move to wallet db?)
   qrCodeLogo: "Selene",
   qrCodeBackground: "#ffffff",
   qrCodeForeground: "#000000",
   // --------
+  // UI
   displayExploreTab: "true",
   displayExchangeRate: "false",
   displaySyncCounter: "true",
+  lastAssetsPath: "/assets/coins",
   // --------
+  // Network
   // TODO #420: electrum peer db
-  electrumServer: electrum_servers.mainnet[0],
+  electrumServer: "",
   offlineMode: "false",
   // --------
+  // Privacy
   hideAvailableBalance: "false",
   enableDailyCheckIn: "true",
+  autoResolveBcmr: "true",
 };
 
 type ValidPreferences = typeof defaultPreferences;
@@ -109,6 +120,8 @@ function validatePreferences(preferences: ValidPreferences): boolean {
     "displaySyncCounter",
     "enableDailyCheckIn",
     "offlineMode",
+    "useTokenAddress",
+    "autoResolveBcmr",
   ];
 
   const invalidBools = boolKeys.filter(
@@ -138,20 +151,33 @@ async function cleanupPreferences(): Promise<void[]> {
   );
 }
 
+// tweakDefaultPreferences: dynamically change defaults for first-run/preferences reset
+async function tweakDefaultPreferences() {
+  const defaults = defaultPreferences;
+
+  // change default fiat currency based on device locale
+  defaults.localCurrency =
+    await CurrencyService().getCurrencyFromDeviceLocale();
+
+  return defaults;
+}
+
 async function retrievePreferences(): Promise<ValidPreferences> {
   // Preferences.clear();
 
   // remove any unused preferences first
   await cleanupPreferences();
 
-  const keys = Object.keys(defaultPreferences);
+  const defaults = await tweakDefaultPreferences();
+
+  const keys = Object.keys(defaults);
 
   const preferences = (
     await Promise.all(
       keys.map(async (key) => {
         const current = (await Preferences.get({ key })).value;
         if (current === null) {
-          await Preferences.set({ key, value: defaultPreferences[key] });
+          await Preferences.set({ key, value: defaults[key] });
           const newest = (await Preferences.get({ key })).value;
           return { [key]: newest };
         }
@@ -300,12 +326,28 @@ export const selectUiSettings = createSelector(
   })
 );
 
+export const selectShouldDisplayExchangeRate = createSelector(
+  (state) => state.preferences,
+  (preferences) => preferences.displayExchangeRate === "true"
+);
+
+export const selectShouldDisplaySyncCounter = createSelector(
+  (state) => state.preferences,
+  (preferences) => preferences.displaySyncCounter === "true"
+);
+
 export const selectPrivacySettings = createSelector(
   (state: RootState) => state.preferences,
   (preferences) => ({
     shouldHideBalance: preferences.hideAvailableBalance === "true",
     isDailyCheckInEnabled: preferences.enableDailyCheckIn === "true",
+    shouldResolveBcmr: preferences.autoResolveBcmr === "true",
   })
+);
+
+export const selectShouldHideBalance = createSelector(
+  (state) => state.preferences,
+  (preferences) => preferences.hideAvailableBalance === "true"
 );
 
 export const selectIsExperimental = createSelector(
@@ -323,4 +365,14 @@ export const selectIsPrerelease = createSelector(
 export const selectLastCheckIn = createSelector(
   (state: RootState) => state.preferences,
   (preferences) => preferences.lastCheckIn
+);
+
+export const selectShouldUseTokenAddress = createSelector(
+  (state: RootState) => state.preferences,
+  (preferences) => preferences.useTokenAddress === "true"
+);
+
+export const selectLastAssetsPath = createSelector(
+  (state: RootState) => state.preferences,
+  (preferences) => preferences.lastAssetsPath
 );

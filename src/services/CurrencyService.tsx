@@ -1,7 +1,12 @@
 import { Decimal } from "decimal.js";
+import { Device } from "@capacitor/device";
 import LogService from "@/services/LogService";
 import { bchToSats, satsToBch } from "@/util/sats";
-import { currencyList } from "@/util/currency";
+import {
+  DEFAULT_CURRENCY,
+  currencyList,
+  euroZoneCountryList,
+} from "@/util/currency";
 import { selectExchangeRates } from "@/redux/exchangeRates";
 import { store } from "@/redux";
 
@@ -21,7 +26,7 @@ const replaceYadioRates = async (rates) => {
   const yadioUsdToVesRate = yadioData?.USD?.VES;
 
   const bchToUsdRate = rates.find((r) => r.currency === "USD")?.price;
-  const bchToUsdRateFloat = parseFloat(bchToUsdRate);
+  const bchToUsdRateFloat = Number.parseFloat(bchToUsdRate);
 
   const realBchToArsPrice = (bchToUsdRateFloat * yadioUsdToArsRate).toString();
   const realBchToVesPrice = (bchToUsdRateFloat * yadioUsdToVesRate).toString();
@@ -49,7 +54,9 @@ const replaceYadioRates = async (rates) => {
   return adjustedRates;
 };
 
-export default function CurrencyService(fiatCurrency) {
+export default function CurrencyService(
+  fiatCurrency = DEFAULT_CURRENCY.currency
+) {
   return {
     fiatToSats,
     fiatToBch,
@@ -57,6 +64,7 @@ export default function CurrencyService(fiatCurrency) {
     getExchangeRate,
     getSymbol,
     fetchExchangeRates,
+    getCurrencyFromDeviceLocale,
   };
 
   async function fetchExchangeRates() {
@@ -134,5 +142,21 @@ export default function CurrencyService(fiatCurrency) {
     );
 
     return index > -1 ? currencyList[index].symbol : "";
+  }
+
+  // getCurrencyFromDeviceLocale: change default fiat currency based on device locale
+  async function getCurrencyFromDeviceLocale(): Promise<string> {
+    const deviceLocale = (await Device.getLanguageTag()).value.split("-")[1];
+
+    const isEuroZoneCountry = euroZoneCountryList.find(
+      (c) => c.countryCode === deviceLocale
+    );
+
+    const code = isEuroZoneCountry ? "EU" : deviceLocale;
+
+    const { currency } =
+      currencyList.find((c) => c.countryCode === code) || DEFAULT_CURRENCY;
+
+    return currency;
   }
 }

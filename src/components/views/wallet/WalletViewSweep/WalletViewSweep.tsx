@@ -1,15 +1,11 @@
 import { useState, useEffect, useMemo } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
+import { useParams, useNavigate } from "react-router";
+import { useSelector } from "react-redux";
 import { ArrowLeftOutlined, SyncOutlined } from "@ant-design/icons";
 
-import { selectActiveWallet } from "@/redux/wallet";
+import { selectActiveWalletHash } from "@/redux/wallet";
 import { selectSyncState } from "@/redux/sync";
-import {
-  setPreference,
-  selectCurrencySettings,
-  selectIsOfflineMode,
-} from "@/redux/preferences";
+import { selectIsOfflineMode } from "@/redux/preferences";
 
 import LogService from "@/services/LogService";
 import AddressManagerService from "@/services/AddressManagerService";
@@ -26,6 +22,8 @@ import Button from "@/atoms/Button";
 import Address from "@/atoms/Address";
 import CurrencyFlip from "@/atoms/CurrencyFlip";
 
+import { useCurrencyFlip } from "@/hooks/useCurrencyFlip";
+
 import { validateWifUri } from "@/util/uri";
 import { Haptic } from "@/util/haptic";
 
@@ -35,25 +33,19 @@ import translations from "./translations";
 const Log = LogService("WalletViewSweep");
 
 export default function WalletViewSweep() {
-  const dispatch = useDispatch();
   const params = useParams();
   const navigate = useNavigate();
 
-  const wallet = useSelector(selectActiveWallet);
+  const walletHash = useSelector(selectActiveWalletHash);
   const sync = useSelector(selectSyncState);
-  const { shouldPreferLocalCurrency } = useSelector(selectCurrencySettings);
   const isOfflineMode = useSelector(selectIsOfflineMode);
 
   // Reload unused addresses when wallet data changes
-  const unusedAddresses = useMemo(
-    () => AddressManagerService(wallet).getUnusedAddresses(),
-    [wallet]
-  );
+  const unusedAddresses =
+    AddressManagerService(walletHash).getUnusedAddresses();
 
   // Get the receiving address to use.
-  const receivingAddress = useMemo(() => {
-    return unusedAddresses[0]?.address || "";
-  }, [unusedAddresses]);
+  const receivingAddress = unusedAddresses[0]?.address || "";
 
   // Set our state.
   const [isFetchingUtxos, setIsFetchingUtxos] = useState(true);
@@ -62,14 +54,7 @@ export default function WalletViewSweep() {
   const [utxos, setUtxos] = useState<Array<ElectrumUtxo>>([]);
   const [isSweepable, setIsSweepable] = useState(false);
 
-  const handleFlipCurrency = () => {
-    dispatch(
-      setPreference({
-        key: "preferLocalCurrency",
-        value: shouldPreferLocalCurrency ? "false" : "true",
-      })
-    );
-  };
+  const handleFlipCurrency = useCurrencyFlip();
 
   // Throw an error if no WIF was provided as a URL param to this route.
   if (!params.wif) {
@@ -183,7 +168,7 @@ export default function WalletViewSweep() {
       );
 
       // Broadcast the transaction.
-      await TransactionManager.sendTransaction(transaction, wallet);
+      await TransactionManager.sendTransaction(transaction, walletHash);
 
       // Wait for the transaction to resolve.
       const tx = await TransactionManager.resolveTransaction(transaction.txid);

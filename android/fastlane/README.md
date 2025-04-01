@@ -23,6 +23,14 @@ For _fastlane_ installation instructions, see [Installing _fastlane_](https://do
 
 Build .aab and .apk packages for current version
 
+### android package_debug
+
+```sh
+[bundle exec] fastlane android package_debug
+```
+
+Build debug .apk package for current version
+
 ### android screenshots
 
 ```sh

@@ -1,5 +1,5 @@
 import { useEffect, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { useSelector, useDispatch } from "react-redux";
 
 import { Dialog } from "@capacitor/dialog";
@@ -9,7 +9,6 @@ import {
 } from "@capacitor-community/barcode-scanner";
 
 import { ScanOutlined, CloseOutlined } from "@ant-design/icons";
-import { Haptic } from "@/util/haptic";
 import {
   selectDeviceInfo,
   setScannerIsScanning,
@@ -17,8 +16,9 @@ import {
 } from "@/redux/device";
 
 import Button from "@/atoms/Button";
+import ToastService from "@/services/ToastService";
 
-import { validateBchUri } from "@/util/uri";
+import { navigateOnValidUri } from "@/util/uri";
 
 import translations from "./translations";
 import { translate } from "@/util/translations";
@@ -44,31 +44,14 @@ export default function ScannerButton() {
     async (content) => {
       dispatch(setScannerIsScanning(false));
 
-      const {
-        isValid,
-        isPaymentProtocol,
-        isWif,
-        address,
-        query,
-        requestUri,
-        wif,
-      } = validateBchUri(content);
-
-      if (isValid) {
-        await Haptic.success();
-
-        let navTo;
-        if (isPaymentProtocol) {
-          navTo = `/wallet/pay/?r=${requestUri}`;
-        } else if (isWif) {
-          navTo = `/wallet/sweep/${wif}`;
-        } else {
-          navTo = `/wallet/send/${address}${query}`;
-        }
-
+      const navTo = await navigateOnValidUri(content);
+      if (navTo !== "") {
+        ToastService().spawn({
+          icon: <ScanOutlined className="text-4xl" />,
+          header: translate(translations.scanContents),
+          body: <span className="flex break-all text-sm">{content}</span>,
+        });
         navigate(navTo);
-      } else {
-        await Haptic.error();
       }
     },
     [dispatch, navigate]

@@ -62,6 +62,8 @@ async function translateText(text, targetLang, GOOGLE_TRANSLATE_API_KEY) {
     });
 
     if (!response.ok) {
+      console.error(await response.json());
+      console.log(GOOGLE_TRANSLATE_API_KEY);
       throw new Error("Translation request failed");
     }
 

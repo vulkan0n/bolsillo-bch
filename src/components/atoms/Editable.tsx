@@ -8,6 +8,7 @@ interface EditableProps {
   onBlur?: (string) => void;
   open?: boolean;
   showConfirm?: boolean;
+  placeholder?: string;
 }
 
 export default function Editable({
@@ -17,6 +18,7 @@ export default function Editable({
   onBlur = () => {},
   open = false,
   showConfirm = true,
+  placeholder = "",
 }: EditableProps) {
   const [input, setInput] = useState("");
   const [isEditing, setIsEditing] = useState(open);
@@ -61,8 +63,8 @@ export default function Editable({
       />
     </div>
   ) : (
-    <div className="flex justify-center items-center" onClick={handleEdit}>
-      <span className="text-center mx-2">{value}</span>
+    <div className="flex items-center" onClick={handleEdit}>
+      <span className="text-center mx-2">{value || placeholder}</span>
       {showConfirm && (
         <span className="flex items-center justify-center opacity-90">
           {isInputConfirmed ? (

@@ -23,9 +23,12 @@ import AddressScannerService from "@/services/AddressScannerService";
 
 import ToastService from "@/services/ToastService";
 
+import { convertCashAddress } from "@/util/cashaddr";
+
 const initialState = {
   walletHash: "",
-  balance: 0,
+  balance: "0",
+  spendable_balance: "0",
   name: "-",
   key_viewed_at: "",
 };
@@ -58,7 +61,7 @@ export const walletBoot = createAsyncThunk(
       : ElectrumService().selectFallbackServer("");
 
     // connect to Electrum
-    thunkApi.dispatch(
+    await thunkApi.dispatch(
       syncConnect({
         attempts: 0,
         server,
@@ -77,8 +80,9 @@ export const walletBalanceUpdate = createAction(
     // address and wallet balances are automatically derived on SQL layer when UTXO entries are updated
     const sqlWallet = WalletManagerService().getWallet(wallet.walletHash);
 
-    const previousBalance = wallet.balance;
-    const currentBalance = sqlWallet.balance;
+    const previousBalance = BigInt(wallet.balance);
+    const currentBalance = BigInt(sqlWallet.balance);
+    const currentSpendableBalance = BigInt(sqlWallet.spendable_balance);
 
     // show receive notification
     if (currentBalance > previousBalance && isChange === false) {
@@ -86,7 +90,12 @@ export const walletBalanceUpdate = createAction(
       ToastService().paymentReceived(difference);
     }
 
-    return { payload: currentBalance };
+    return {
+      payload: {
+        currentBalance: currentBalance.toString(),
+        currentSpendableBalance: currentSpendableBalance.toString(),
+      },
+    };
   }
 );
 
@@ -106,7 +115,7 @@ export const walletSetKeyViewed = createAction(
 export const walletReloadAddresses = createAction(
   "wallet/reloadAddresses",
   (payload: { wallet: WalletEntity }) => {
-    const AddressManager = AddressManagerService(payload.wallet);
+    const AddressManager = AddressManagerService(payload.wallet.walletHash);
     const AddressScanner = AddressScannerService(payload.wallet);
 
     AddressScanner.populateAddresses();
@@ -114,7 +123,14 @@ export const walletReloadAddresses = createAction(
     const myAddresses = [
       ...AddressManager.getReceiveAddresses(),
       ...AddressManager.getChangeAddresses(),
-    ];
+    ].map((a) => ({ change: a.change, address: a.address }));
+
+    myAddresses.push(
+      ...myAddresses.map((a) => ({
+        change: a.change,
+        address: convertCashAddress(a.address, "tokenaddr"),
+      }))
+    );
 
     return { payload: myAddresses };
   }
@@ -127,7 +143,8 @@ export const walletReducer = createReducer(initialState, (builder) => {
       return wallet;
     })
     .addCase(walletBalanceUpdate, (state, action) => {
-      state.balance = action.payload;
+      state.balance = action.payload.currentBalance;
+      state.spendable_balance = action.payload.currentSpendableBalance;
     })
     .addCase(walletSetName, (state, action) => {
       state.name = action.payload;
@@ -150,7 +167,32 @@ export const selectActiveWallet = createSelector(
   (state) => state.wallet
 );
 
+export const selectActiveWalletHash = createSelector(
+  (state: RootState) => state.wallet,
+  (wallet) => wallet.walletHash
+);
+
 export const selectWalletAddresses = createSelector(
   (state: RootState) => state,
   (state) => state.addresses
+);
+
+export const selectGenesisHeight = createSelector(
+  (state: RootState) => state.wallet,
+  (wallet) => wallet.genesis_height
+);
+
+export const selectActiveWalletBalance = createSelector(
+  (state) => state.wallet,
+  (wallet) => wallet.spendable_balance
+);
+
+export const selectActiveWalletName = createSelector(
+  (state) => state.wallet,
+  (wallet) => wallet.name
+);
+
+export const selectKeyViewedAt = createSelector(
+  (state) => state.wallet,
+  (wallet) => wallet.key_viewed_at
 );

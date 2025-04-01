@@ -1,53 +1,66 @@
 import { useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
-import { Clipboard } from "@capacitor/clipboard";
+import { useLocation, useNavigate } from "react-router";
 import { CopyOutlined, CheckCircleFilled } from "@ant-design/icons";
 import { useSelector } from "react-redux";
 import { selectCurrencySettings } from "@/redux/preferences";
-import { selectActiveWallet } from "@/redux/wallet";
+import { selectActiveWalletHash } from "@/redux/wallet";
 
 import TransactionHistoryService from "@/services/TransactionHistoryService";
-import ToastService from "@/services/ToastService";
 
 import Address from "@/atoms/Address";
 import Satoshi from "@/atoms/Satoshi";
+import SeleneLogo from "@/atoms/SeleneLogo";
+import TokenAmount from "@/atoms/TokenAmount";
 
-import { logos } from "@/util/logos";
 import { translate } from "@/util/translations";
 import translations from "./translations";
+
+import { useClipboard } from "@/hooks/useClipboard";
+import { binToHex } from "@/util/hex";
+
+import LogService from "@/services/LogService";
+
+const Log = LogService("WalletViewSendSuccess");
 
 function WalletViewSendSuccess() {
   const navigate = useNavigate();
   const location = useLocation();
   const { tx, header, prefillMemo } = location.state;
+  const [isFocused, setIsFocused] = useState(false);
 
-  const wallet = useSelector(selectActiveWallet);
+  Log.debug(tx);
+
+  const walletHash = useSelector(selectActiveWalletHash);
   const { localCurrency } = useSelector(selectCurrencySettings);
 
   const [memo, setMemo] = useState(prefillMemo || "");
 
   const handleMemoChange = (event) => {
     setMemo(event.target.value);
-    TransactionHistoryService(wallet, localCurrency).setTransactionMemo(
+    TransactionHistoryService(walletHash, localCurrency).setTransactionMemo(
       tx.txid,
       event.target.value
     );
   };
 
+  const { handleCopyToClipboard } = useClipboard();
+
   const handleCopyTransactionId = async (event) => {
     event.stopPropagation();
-
-    await Clipboard.write({ string: tx.txid });
-    ToastService().clipboardCopy("Transaction ID", tx.txid);
+    handleCopyToClipboard(tx.txid, translate(translations.transactionId));
   };
+
+  const hasTokens = tx.vout.find((out) => out.token) !== undefined;
 
   return (
     <div
       className="fixed top-0 left-0 w-screen h-screen z-50 bg-primary"
       onClick={() => navigate("/")}
     >
-      <div className="flex items-center justify-center p-4 h-56 bg-zinc-800 shadow">
-        <img src={logos.selene.img} className="h-full" alt="" />
+      <div
+        className={`flex items-center justify-center p-4 bg-zinc-800 shadow-lg transition-[height] ${isFocused ? "h-0" : "h-48"}`} // set the height dynamically based on input focus to prevent the virtual keyboard from overlaying the input
+      >
+        <SeleneLogo className="h-full" cashtokens={hasTokens} />
       </div>
       <div className="p-1 bg-primary text-white shadow-inner">
         <div className="p-2 flex justify-center items-center">
@@ -67,8 +80,9 @@ function WalletViewSendSuccess() {
           onClick={handleCopyTransactionId}
         >
           <div className="p-1 bg-zinc-500 rounded-t-sm">
-            <span className="font-semibold text-zinc-200">
-              Transaction ID <CopyOutlined />
+            <span className="font-semibold text-zinc-200 flex items-center">
+              {translate(translations.transactionId)}
+              <CopyOutlined className="ml-1" />
             </span>
           </div>
           <div className="bg-zinc-200 p-1 rounded-b-sm">
@@ -82,7 +96,9 @@ function WalletViewSendSuccess() {
           onClick={(e) => e.stopPropagation()}
         >
           <div className="p-1 bg-zinc-500 rounded-t-sm">
-            <span className="font-semibold text-zinc-200">Memo</span>
+            <span className="font-semibold text-zinc-200">
+              {translate(translations.memo)}
+            </span>
           </div>
           <div className="bg-zinc-200 p-1 rounded-b-sm flex items-center">
             <input
@@ -90,6 +106,8 @@ function WalletViewSendSuccess() {
               className="flex-1 rounded-sm p-1"
               value={memo}
               onChange={handleMemoChange}
+              onFocus={() => setIsFocused(true)}
+              onBlur={() => setIsFocused(false)}
             />
             {memo && (
               <CheckCircleFilled className="shrink text-primary text-lg ml-2 mr-1 font-bold" />
@@ -100,7 +118,9 @@ function WalletViewSendSuccess() {
           className="bg-zinc-200 p-1 rounded"
           onClick={(e) => e.stopPropagation()}
         >
-          <div className="font-semibold pb-1 text-sm">Outputs</div>
+          <div className="font-semibold pb-1 text-sm">
+            {translate(translations.outputs)}
+          </div>
           {tx.vout.map((output, i) => (
             <OutputListItem key={output.n} output={output} i={i} />
           ))}
@@ -123,17 +143,27 @@ function OutputListItem({ output, i }) {
           <Address address={output.scriptPubKey.addresses[0]} />
         </div>
       </div>
-      <div className="">
-        <span className="text-xs tracking-tighter mr-1.5 opacity-70">
-          #{output.n}
-        </span>
-        <span className="font-mono">
-          <Satoshi value={output.value} />
-        </span>
-        <span className="mx-1 text-zinc-500">/</span>
-        <span className="text-sm opacity-80">
-          <Satoshi value={output.value} flip />
-        </span>
+      <div className="flex justify-between">
+        <div>
+          <span className="text-xs tracking-tighter mr-1.5 opacity-70">
+            #{output.n}
+          </span>
+          <span className="font-mono">
+            <Satoshi value={output.value} />
+          </span>
+          <span className="mx-1 text-zinc-500">/</span>
+          <span className="text-sm opacity-80">
+            <Satoshi value={output.value} flip />
+          </span>
+        </div>
+        {output.token && (
+          <div
+            className="text-sm"
+            style={{ color: `#${binToHex(output.token.category).slice(0, 6)}` }}
+          >
+            <TokenAmount token={output.token} />
+          </div>
+        )}
       </div>
     </div>
   );

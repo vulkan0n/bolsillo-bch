@@ -1,4 +1,4 @@
-import { NavLink } from "react-router-dom";
+import { NavLink } from "react-router";
 import { useSelector } from "react-redux";
 import {
   WalletOutlined,
@@ -13,8 +13,9 @@ import {
 
 import {
   selectLanguageCode,
-  selectIsExperimental,
   selectUiSettings,
+  selectLastAssetsPath,
+  selectIsPrerelease,
 } from "@/redux/preferences";
 import { selectKeyboardIsOpen, selectScannerIsScanning } from "@/redux/device";
 
@@ -24,11 +25,13 @@ import { translate } from "@/util/translations";
 export default function BottomNavigation() {
   const isKeyboardOpen = useSelector(selectKeyboardIsOpen);
   const isScanning = useSelector(selectScannerIsScanning);
-  const isExperimental = useSelector(selectIsExperimental);
   const { shouldDisplayExploreTab } = useSelector(selectUiSettings);
+  const isPrerelease = useSelector(selectIsPrerelease);
 
   // Ensure component reloads when language preferences are changed
   useSelector(selectLanguageCode);
+
+  const lastAssetsPath = useSelector(selectLastAssetsPath);
 
   return !isKeyboardOpen ? (
     <div
@@ -40,14 +43,16 @@ export default function BottomNavigation() {
         icon={WalletOutlined}
         label={translate(translations.wallet)}
       />
-      {isExperimental && (
+
+      {isPrerelease && (
         <NavButton
-          to="/assets"
+          to={lastAssetsPath}
           activeIcon={BankFilled}
           icon={BankOutlined}
-          label="Assets"
+          label={translate(translations.assets)}
         />
       )}
+
       {shouldDisplayExploreTab && (
         <NavButton
           to="/explore"
@@ -83,7 +88,7 @@ function NavButton({
   const ActiveIcon = activeIcon;
 
   const baseClasses = "bg-zinc-900 text-primary border-primary w-full h-16 p-2";
-  const activeClasses = "active border-t-4";
+  const activeClasses = "active border-t-4 font-semibold shadow-inner";
   const iconClasses = "text-2xl";
 
   return (

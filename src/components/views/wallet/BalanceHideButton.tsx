@@ -4,11 +4,11 @@ import { EyeOutlined, EyeInvisibleOutlined } from "@ant-design/icons";
 import { selectPrivacySettings, setPreference } from "@/redux/preferences";
 import SecurityService, { AuthActions } from "@/services/SecurityService";
 
-interface Props {
+export default function BalanceHideButton({
+  className = "",
+}: {
   className?: string;
-}
-
-export default function BalanceHideButton({ className = "", ...rest }: Props) {
+}) {
   const dispatch = useDispatch();
   const { shouldHideBalance } = useSelector(selectPrivacySettings);
   const Icon = shouldHideBalance ? EyeInvisibleOutlined : EyeOutlined;
@@ -37,7 +37,6 @@ export default function BalanceHideButton({ className = "", ...rest }: Props) {
     <Icon
       className={`cursor-pointer w-12 h-12 flex justify-center items-center ${className} ${hiddenClasses}`}
       onClick={handleHideBalance}
-      {...rest}
     />
   );
 }

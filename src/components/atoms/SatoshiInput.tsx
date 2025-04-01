@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
-/* eslint-disable react/require-default-props */
 import { useState, useEffect, useCallback, forwardRef } from "react";
 import { useSelector } from "react-redux";
 import { Keyboard } from "@capacitor/keyboard";
@@ -12,25 +11,35 @@ import CurrencyService from "@/services/CurrencyService";
 
 interface SatoshiInputProps {
   className: string;
-  satoshis: number | Decimal;
-  onChange: (sats: number) => void;
+  satoshis: bigint;
+  onChange: (sats: bigint) => void;
   size?: number;
   autoFocus?: boolean;
+  tokenDecimals?: number;
+  max?: bigint;
 }
 
 export const SatoshiInput = forwardRef<HTMLInputElement, SatoshiInputProps>(
   function SatoshiInput(
     {
       className = "",
-      satoshis = 0,
+      satoshis = 0n,
       onChange = () => null,
       size = 20,
       autoFocus = false,
+      tokenDecimals = undefined,
+      max = MAX_SATOSHI,
     },
     ref
   ) {
-    const { shouldPreferLocalCurrency, localCurrency, denomination } =
-      useSelector(selectCurrencySettings);
+    const {
+      shouldPreferLocalCurrency,
+      localCurrency,
+      denomination: userDenomination,
+    } = useSelector(selectCurrencySettings);
+
+    const denomination =
+      tokenDecimals !== undefined ? "token" : userDenomination;
 
     // use deviceInfo for deviceInfo.platform
     const deviceInfo = useSelector(selectDeviceInfo);
@@ -40,6 +49,9 @@ export const SatoshiInput = forwardRef<HTMLInputElement, SatoshiInputProps>(
       (sats): string => {
         if (!sats || new Decimal(sats).equals(0)) {
           return "0";
+        }
+        if (denomination === "token") {
+          return sats.toString();
         }
 
         if (shouldPreferLocalCurrency) {
@@ -52,9 +64,9 @@ export const SatoshiInput = forwardRef<HTMLInputElement, SatoshiInputProps>(
     );
 
     // get raw satoshi value from any currency input
-    const amountToSats = (amount): Decimal => {
+    const amountToSats = (amount): bigint => {
       // fiat mode
-      if (shouldPreferLocalCurrency) {
+      if (shouldPreferLocalCurrency && denomination !== "token") {
         return CurrencyService(localCurrency).fiatToSats(amount);
       }
 
@@ -69,11 +81,11 @@ export const SatoshiInput = forwardRef<HTMLInputElement, SatoshiInputProps>(
       satsToDisplayAmount(satoshis)
     );
 
-    const [didCurrencyFlip, setDidCurerncyFlip] = useState(false);
+    const [didCurrencyFlip, setDidCurrencyFlip] = useState(false);
 
     useEffect(
       function handleDidCurerncyFlip() {
-        setDidCurerncyFlip(true);
+        setDidCurrencyFlip(true);
       },
       [shouldPreferLocalCurrency]
     );
@@ -81,7 +93,7 @@ export const SatoshiInput = forwardRef<HTMLInputElement, SatoshiInputProps>(
     useEffect(
       function renderOnCurrencyFlip() {
         if (didCurrencyFlip) {
-          setDidCurerncyFlip(false);
+          setDidCurrencyFlip(false);
           setDisplayValue(satsToDisplayAmount(satoshis));
         }
       },
@@ -91,12 +103,14 @@ export const SatoshiInput = forwardRef<HTMLInputElement, SatoshiInputProps>(
     // --------------------------------
 
     const getMaxDecimals = (): number => {
-      if (shouldPreferLocalCurrency) {
+      if (shouldPreferLocalCurrency && denomination !== "token") {
         // fiat mode gets 2 decimals
         return 2;
       }
 
       switch (denomination) {
+        case "token":
+          return tokenDecimals || 0;
         case "sats":
           return 0;
         case "bits":
@@ -187,22 +201,22 @@ export const SatoshiInput = forwardRef<HTMLInputElement, SatoshiInputProps>(
       );
 
       // don't change state if attempting to set value greater than MAX_SATOSHI
-      if (sats.greaterThan(MAX_SATOSHI)) {
+      if (max > 0 && sats > max) {
         return;
       }
 
       // set state to zero if attempting to set value smaller than 0
-      if (sats.lessThan(0)) {
-        handleOnChange(0, "0");
+      if (sats < 0) {
+        handleOnChange(0n, "0");
         return;
       }
 
       // update state from input value if valid
-      handleOnChange(sats.toNumber(), input);
+      handleOnChange(sats, input);
     };
 
     // called after input is validated to update component state
-    const handleOnChange = (sats: number, display: string): void => {
+    const handleOnChange = (sats: bigint, display: string): void => {
       setDisplayValue(display.toString());
       onChange(sats); // propagate raw sats value to parent component
     };
@@ -223,5 +237,12 @@ export const SatoshiInput = forwardRef<HTMLInputElement, SatoshiInputProps>(
     );
   }
 );
+
+SatoshiInput.defaultProps = {
+  size: 20,
+  autoFocus: false,
+  tokenDecimals: undefined,
+  max: MAX_SATOSHI,
+};
 
 //(deviceInfo.platform === "android" && event.keyCode === 229); // android is dumb, so we cope by catching keyCode 229 and hoping for the best

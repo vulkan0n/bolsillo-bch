@@ -3,16 +3,18 @@ import { Decimal } from "decimal.js";
 import {
   decodeTransaction,
   lockingBytecodeToCashAddress,
-  TransactionCommon as LibauthTransaction,
+  TransactionCommon,
+  assertSuccess,
+  disassembleBytecodeBCH,
+  Output,
+  Input,
 } from "@bitauth/libauth";
 
 import LogService from "@/services/LogService";
 import DatabaseService from "@/services/DatabaseService";
 import ElectrumService from "@/services/ElectrumService";
 import UtxoManagerService from "@/services/UtxoManagerService";
-import WalletManagerService, {
-  WalletEntity,
-} from "@/services/WalletManagerService";
+import WalletManagerService from "@/services/WalletManagerService";
 
 import { hexToBin, binToHex } from "@/util/hex";
 
@@ -34,13 +36,20 @@ export interface TransactionEntity extends TransactionStub {
   vout: Array<TransactionOutput>;
 }
 
-export interface TransactionInput {
+export interface TransactionInput extends Input {
   txid: string;
   vout: number;
 }
-export interface TransactionOutput {
+
+export interface VoutScriptPubKey {
+  addresses?: Array<string>;
+  hex: string;
+  asm: string;
+}
+
+export interface TransactionOutput extends Output {
   n: number;
-  scriptPubKey: object;
+  scriptPubKey: VoutScriptPubKey;
   value: string;
 }
 
@@ -124,7 +133,7 @@ export default function TransactionManagerService() {
     });
   }
 
-  async function sendTransaction(tx: TransactionStub, wallet: WalletEntity) {
+  async function sendTransaction(tx: TransactionStub, walletHash: string) {
     const { txid: tx_hash, hex: tx_hex } = tx;
 
     const Electrum = ElectrumService();
@@ -132,8 +141,8 @@ export default function TransactionManagerService() {
     const isSuccess = result === tx_hash;
 
     if (isSuccess) {
-      const UtxoManager = UtxoManagerService(wallet);
-      const decodedTx = decodeTransaction(hexToBin(tx_hex));
+      const UtxoManager = UtxoManagerService(walletHash);
+      const decodedTx = assertSuccess(decodeTransaction(hexToBin(tx_hex)));
       const vin = getVinFromDecodedTransaction(decodedTx);
 
       vin.forEach((input) => {
@@ -255,6 +264,12 @@ export default function TransactionManagerService() {
   async function _registerTransaction(
     tx: TransactionEntity
   ): Promise<TransactionEntity> {
+    const decodedTx = decodeTransaction(hexToBin(tx.hex));
+
+    if (typeof decodedTx === "string") {
+      throw new Error(decodedTx);
+    }
+
     const blockhash = tx.blockhash ? tx.blockhash : null;
     const blocktime = tx.blocktime ? tx.blocktime : null;
     const time = tx.time ? tx.time : Math.floor(Date.now() / 1000);
@@ -292,8 +307,6 @@ export default function TransactionManagerService() {
 
     await _writeTxData(tx.txid, tx.hex);
 
-    const decodedTx = decodeTransaction(hexToBin(tx.hex)) as LibauthTransaction;
-
     // reconstruct "vin" from raw hex
     const vin = getVinFromDecodedTransaction(decodedTx);
 
@@ -321,9 +334,7 @@ export default function TransactionManagerService() {
     const localTx = result[0];
     localTx.hex = await _loadTxData(tx_hash);
 
-    const decodedTx = decodeTransaction(
-      hexToBin(localTx.hex)
-    ) as LibauthTransaction;
+    const decodedTx = assertSuccess(decodeTransaction(hexToBin(localTx.hex)));
 
     // reconstruct "vin" from raw hex
     const vin = getVinFromDecodedTransaction(decodedTx);
@@ -338,34 +349,44 @@ export default function TransactionManagerService() {
   }
 
   function getVinFromDecodedTransaction(
-    decodedTx: LibauthTransaction
+    decodedTx: TransactionCommon
   ): Array<TransactionInput> {
-    return decodedTx.inputs.map(
-      (input): TransactionInput => ({
-        txid: binToHex(input.outpointTransactionHash),
-        vout: input.outpointIndex,
-      })
-    );
+    return decodedTx.inputs.map((input) => ({
+      txid: binToHex(input.outpointTransactionHash),
+      vout: input.outpointIndex,
+      outpointIndex: input.outpointIndex,
+      outpointTransactionHash: input.outpointTransactionHash,
+      sequenceNumber: input.sequenceNumber,
+      unlockingBytecode: input.unlockingBytecode,
+    }));
   }
 
   function getVoutFromDecodedTransaction(
-    decodedTx: LibauthTransaction
+    decodedTx: TransactionCommon
   ): Array<TransactionOutput> {
-    return decodedTx.outputs.map((output, n): TransactionOutput => {
+    return decodedTx.outputs.map((output, n) => {
       const value = new Decimal(output.valueSatoshis.toString());
 
-      const cashAddr = lockingBytecodeToCashAddress(
-        output.lockingBytecode,
-        WalletManager.getPrefix()
-      );
+      const cashAddr = lockingBytecodeToCashAddress({
+        prefix: WalletManager.getPrefix(),
+        bytecode: output.lockingBytecode,
+        tokenSupport: !!output.token,
+      });
 
-      return {
+      const vout = {
         n,
         scriptPubKey: {
-          addresses: [value.greaterThan(0) ? cashAddr : ""],
+          addresses: [typeof cashAddr !== "string" ? cashAddr.address : ""],
+          hex: binToHex(output.lockingBytecode),
+          asm: disassembleBytecodeBCH(output.lockingBytecode),
         },
         value: value.toString(),
+        token: output.token,
+        valueSatoshis: output.valueSatoshis,
+        lockingBytecode: output.lockingBytecode,
       };
+
+      return vout;
     });
   }
 }

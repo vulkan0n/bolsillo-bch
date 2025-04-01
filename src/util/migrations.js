@@ -1,4 +1,3 @@
-// migrations.js: handle sqlite database schema updates
 import LogService from "@/services/LogService";
 import { DEFAULT_DERIVATION_PATH } from "@/util/derivation";
 
@@ -16,6 +15,8 @@ const appdb_migrations = [
     query.push("DROP TABLE IF EXISTS wallets;");
     query.push("DROP TABLE IF EXISTS blockchain;");
     query.push("DROP TABLE IF EXISTS transactions;");
+    query.push("DROP TABLE IF EXISTS bcmr;");
+    query.push("DROP TABLE IF EXISTS bcmr_tokens;");
 
     // WalletMeta
     query.push(
@@ -56,6 +57,7 @@ const appdb_migrations = [
   function migrate_v1() {
     const query = [];
 
+    // add height column to transaction table
     query.push(
       "ALTER TABLE transactions ADD COLUMN height int not null default 0;"
     );
@@ -64,10 +66,35 @@ const appdb_migrations = [
 
     return query.join("");
   },
-  /*function migrate_v2() {
+  function migrate_v2() {
     const query = [];
 
+    // add BCMR tables
+    query.push(
+      `CREATE TABLE IF NOT EXISTS bcmr (
+        authbase text primary key not null,
+        registryUri text not null,
+        lastFetch not null default ( strftime('%Y-%m-%dT%H:%M:%SZ') )
+      );`
+    );
+
+    query.push(
+      `CREATE TABLE IF NOT EXISTS bcmr_tokens (
+        category text primary key not null,
+        authbase text not null,
+        symbol text default null unique,
+        decimals int default 0 not null
+      );`
+    );
+
     query.push("PRAGMA user_version = 3;");
+
+    return query.join("");
+  },
+  /*function migrate_v3() {
+    const query = [];
+
+    query.push("PRAGMA user_version = 4;");
 
     return query.join("");
   },*/
@@ -83,7 +110,9 @@ const walletdb_migrations = [
     query.push("DROP TABLE IF EXISTS addresses;");
     query.push("DROP TABLE IF EXISTS address_utxos;");
     query.push("DROP TABLE IF EXISTS address_transactions;");
+    query.push("DROP TABLE IF EXISTS token_transactions;");
     query.push("DROP TRIGGER IF EXISTS balance_update;");
+    query.push("DROP TRIGGER IF EXISTS spendable_balance_update;");
     query.push("DROP TRIGGER IF EXISTS utxo_balance_delete;");
     query.push("DROP TRIGGER IF EXISTS utxo_balance_insert;");
     query.push("DROP INDEX IF EXISTS idx_address_transactions;");
@@ -123,7 +152,7 @@ const walletdb_migrations = [
         height int default 0 not null,
         address text not null,
         time text default ( strftime('%Y-%m-%dT%H:%M:%SZ') ),
-        time_seen default ( strftime('%Y-%m-%dT%H:%M:%SZ') ),
+        time_seen text default ( strftime('%Y-%m-%dT%H:%M:%SZ') ),
         amount int,
         fiat_amount text,
         fiat_currency text,
@@ -205,10 +234,73 @@ const walletdb_migrations = [
 
     return query.join("");
   },
-  /*function migrate_v2() {
+  function migrate_v2() {
     const query = [];
 
+    // add CashToken data to UTXOs
+    query.push(
+      "ALTER TABLE address_utxos ADD COLUMN token_category text default null;"
+    );
+    query.push(
+      "ALTER TABLE address_utxos ADD COLUMN token_amount int default null;"
+    );
+    query.push(
+      "ALTER TABLE address_utxos ADD COLUMN nft_capability text default null;"
+    );
+    query.push(
+      "ALTER TABLE address_utxos ADD COLUMN nft_commitment text default null;"
+    );
+
     query.push("PRAGMA user_version = 3;");
+
+    return query.join("");
+  },
+  function migrate_v3() {
+    const query = [];
+
+    // keep account of non-token balance separately from balance with token UTXOs
+    query.push(
+      "ALTER TABLE wallet ADD COLUMN spendable_balance int default 0;"
+    );
+
+    query.push(
+      `CREATE TRIGGER IF NOT EXISTS spendable_balance_update AFTER UPDATE ON wallet
+        BEGIN
+          UPDATE wallet SET 
+            spendable_balance=(
+              SELECT COALESCE(SUM(amount), 0) FROM address_utxos
+              WHERE token_category IS NULL
+            ) 
+          ;
+        END
+      ;`
+    );
+
+    query.push("PRAGMA user_version = 4;");
+
+    return query.join("");
+  },
+  function migrate_v4() {
+    const query = [];
+
+    query.push(
+      `CREATE TABLE IF NOT EXISTS token_transactions (
+        txid text not null, 
+        category text not null,
+        fungible_amount int,
+        nft_amount int,
+        UNIQUE(category, txid)
+      );`
+    );
+
+    query.push("PRAGMA user_version = 5;");
+
+    return query.join("");
+  },
+  /*function migrate_v5() {
+    const query = [];
+
+    query.push("PRAGMA user_version = 6;");
 
     return query.join("");
   },*/

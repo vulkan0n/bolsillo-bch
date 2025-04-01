@@ -2,15 +2,17 @@
 import { useState } from "react";
 import { CaretRightOutlined, CaretDownOutlined } from "@ant-design/icons";
 
+import NullComponent from "@/atoms/NullComponent";
+
 interface AccordionProps {
-  icon?: React.ComponentType;
+  icon?: React.ComponentType<{ className?: string }>;
   title?: string;
   open?: boolean;
   children: React.ReactNode;
 }
 
 export default function Accordion({
-  icon = () => null,
+  icon = NullComponent,
   title = "",
   open = false,
   children,
@@ -42,21 +44,21 @@ export default function Accordion({
 }
 
 interface AccordionChildProps {
-  icon?: React.ComponentType;
+  icon?: React.ComponentType<{ className?: string }>;
   label?: string;
   description?: string;
   children: React.ReactNode;
 }
 
 function AccordionChild({
-  icon = () => null,
+  icon = NullComponent,
   label = "",
   description = "",
   children,
 }: AccordionChildProps) {
   const Icon = icon;
   return (
-    <div className="p-3">
+    <div className="p-2.5">
       <div className="flex justify-between items-center">
         {label && (
           <div className="flex flex-1 items-center flex-nowrap items-center">
@@ -64,7 +66,7 @@ function AccordionChild({
             {label}
           </div>
         )}
-        <div className="flex-1 text-right">{children}</div>
+        <div className="flex items-center">{children}</div>
       </div>
       {description && <div className="pt-2 text-sm">{description}</div>}
     </div>

@@ -50,7 +50,9 @@ export default function QrCodeSettings() {
             }
           >
             {Object.keys(logos).map((l) => (
-              <option key={l}>{logos[l].name}</option>
+              <option key={l} value={l}>
+                {logos[l].name}
+              </option>
             ))}
           </select>
         </div>
@@ -94,7 +96,7 @@ export default function QrCodeSettings() {
         </div>
       </Accordion.Child>
       <Accordion.Child>
-        <div className="text-right">
+        <div className="flex justify-end">
           <Button
             onClick={handleResetQrColors}
             icon={UndoOutlined}

@@ -24,11 +24,12 @@ const SQL = await initSqlJs({ locateFile: () => "/sql-wasm.wasm" });
 const db_handles = new Map();
 let db_keepalive = null;
 
-// open a db file from filesystem
+// _dbOpen: open a db file from filesystem
 // by default, creates and initializes the db file if it doesn't exist
 export async function _dbOpen(filename, skipCreate = false) {
   let db;
   try {
+    // readFile throws if file doesn't exist
     const dbFile = await Filesystem.readFile({
       path: filename,
       directory: Directory.Library,
@@ -41,14 +42,19 @@ export async function _dbOpen(filename, skipCreate = false) {
       throw e;
     }
 
+    // create a new DB if file doesn't exist
     Log.warn("Creating database file", filename);
     db = new SQL.Database();
   }
 
+  // force the exec function to return results using our resultToJson
+  // otherwise we have to call resultToJson manually every time we query the db
   const dbExec = db.exec;
   db.exec = (...args) => resultToJson(dbExec.apply(db, args));
 
+  // attach file path to db handle
   db.path = filename;
+
   return db;
 }
 
@@ -67,7 +73,7 @@ export default function DatabaseService() {
     getKeepAlive,
   };
 
-  // attempt to preload the app db
+  // initAppDatabase: called during INIT to preload the app db
   async function initAppDatabase() {
     let appDb;
     if (db_handles.has("app")) {
@@ -84,7 +90,8 @@ export default function DatabaseService() {
     return appDb;
   }
 
-  // getAppDatabase: return the appDb handle
+  // getAppDatabase: synchronously return the appDb handle
+  // an error thrown here is critical
   function getAppDatabase() {
     if (!db_handles.has("app")) {
       throw new DatabaseNotOpenError("app");
@@ -93,7 +100,8 @@ export default function DatabaseService() {
     return db_handles.get("app");
   }
 
-  // synchronous getWalletDatabase (requires db handle to be open already)
+  // getWalletDatabase: synchronously return a wallet database handle
+  // requires db handle to be open already; an error thrown here is critical
   function getWalletDatabase(walletHash) {
     if (!db_handles.has(walletHash)) {
       throw new DatabaseNotOpenError(walletHash);
@@ -103,9 +111,11 @@ export default function DatabaseService() {
     return walletDb;
   }
 
-  // asynchronous openWalletDatabase (returns db handle when ready)
+  // openWalletDatabase: asynchronously open/return a wallet database handle
+  // (returns db handle when ready)
   async function openWalletDatabase(walletHash, network = "mainnet") {
     if (walletHash === "") {
+      // something went very wrong if we hit this path
       throw new DatabaseNotOpenError(walletHash);
     }
 
@@ -133,6 +143,7 @@ export default function DatabaseService() {
 
     //Log.time(`closeWalletDatabase ${walletHash}`);
 
+    // never close the db for the currently active wallet
     if (getKeepAlive() !== walletHash) {
       if (!skipFlush) {
         await flushDatabase(walletHash);

@@ -13,6 +13,7 @@ import { selectBchNetwork } from "@/redux/preferences";
 
 const Log = LogService("WalletManager");
 
+// WalletStub: minimum data required to build a wallet
 export interface WalletStub {
   mnemonic: string;
   passphrase: string;
@@ -22,7 +23,7 @@ export interface WalletStub {
 export interface WalletMeta {
   walletHash: string;
   name: string;
-  balance: number;
+  balance: bigint;
   created_at: string;
   key_viewed_at: string;
 }
@@ -33,6 +34,7 @@ export interface WalletEntity extends WalletStub, WalletMeta {
   network: ValidBchNetwork;
   nonce: number;
   genesis_height: number | null;
+  spendable_balance: bigint;
 }
 
 export class WalletNotExistsError extends Error {
@@ -70,7 +72,7 @@ export default function WalletManagerService() {
 
   // ----------------------------
 
-  // listWallets: return a list of all wallets in the database
+  // listWallets: return a list of all wallets in the app database
   function listWallets(): WalletMeta[] {
     const result = APP_DB.exec(
       `SELECT * FROM wallets WHERE network="${network}"`
@@ -80,20 +82,20 @@ export default function WalletManagerService() {
     return result;
   }
 
-  // getWallet: synchronously get a consumable Wallet object from the database
+  // getWallet: synchronously get a consumable WalletEntity from the database
   function getWallet(walletHash): WalletEntity {
     if (!walletHash) {
       throw new WalletNotExistsError(walletHash);
     }
 
     const walletDb = Database.getWalletDatabase(walletHash);
-    const result = walletDb.exec("SELECT * FROM wallet");
+    const result = walletDb.exec("SELECT * FROM wallet", { useBigInt: true });
 
     if (result.length === 0) {
       throw new WalletNotExistsError(walletHash);
     }
 
-    const wallet = result[0]; // eslint-disable-line prefer-destructuring
+    const wallet = result[0];
 
     wallet.network = network;
 
@@ -111,7 +113,8 @@ export default function WalletManagerService() {
     }
 
     const result = APP_DB.exec(
-      `SELECT * FROM wallets WHERE walletHash="${walletHash}" AND network="${network}"`
+      `SELECT * FROM wallets WHERE walletHash="${walletHash}" AND network="${network}"`,
+      { useBigInt: true }
     );
 
     if (result.length === 0) {
@@ -128,23 +131,32 @@ export default function WalletManagerService() {
   async function boot(walletHash): Promise<WalletEntity> {
     let wallet: WalletEntity;
     try {
+      // walletHash is blank on first-run, so throw immediately to create a new wallet
       if (walletHash === "") {
         throw new WalletNotExistsError("");
       }
 
       Log.debug("walletBoot ~", walletHash, network);
+
+      // prevent Janitor from closing the active wallet handle
       Database.setKeepAlive(walletHash);
+
+      // get the wallet db handle
       await Database.openWalletDatabase(walletHash, network);
+
+      // get the WalletEntity
       wallet = getWallet(walletHash);
       //Log.debug("boot got", wallet);
     } catch (e) {
       if (!(e instanceof WalletNotExistsError)) {
+        // something is REALLY wrong if we hit this path
         Log.warn("critical error during walletBoot!", e);
         throw e;
       }
 
       // requested wallet doesn't exist
-      // attempt to return lowest-index wallet instead, create a new wallet if none exist
+      // attempt to return lowest-index wallet instead
+      // create a new wallet if none exist
       const wallets = listWallets();
 
       let nextWalletHash = "";
@@ -158,8 +170,9 @@ export default function WalletManagerService() {
       return boot(nextWalletHash);
     }
 
-    Log.debug("walletBoot", walletHash, wallet, wallet.network);
+    Database.flushHandles(true);
 
+    Log.debug("walletBoot", walletHash, wallet, wallet.network);
     return wallet;
   }
 
@@ -279,11 +292,14 @@ export default function WalletManagerService() {
     return { ...walletStub, walletHash, prefix, network };
   }
 
-  async function deleteWallet(walletHash) {
+  async function deleteWallet(walletHash, keepFile = false) {
     try {
       APP_DB.run(`DELETE FROM wallets WHERE walletHash="${walletHash}"`);
       await Database.deleteWalletDatabase(walletHash, network);
-      await deleteWalletFile(walletHash);
+
+      if (!keepFile) {
+        await deleteWalletFile(walletHash);
+      }
     } catch (e) {
       Log.warn(e);
     }
@@ -339,6 +355,7 @@ export default function WalletManagerService() {
 
     // delete this wallet's transaction history
     walletDb.run(`DELETE FROM address_transactions`);
+    walletDb.run(`DELETE FROM token_transactions`);
 
     // delete wallet addresses
     walletDb.run(`DELETE FROM addresses`);
@@ -408,7 +425,7 @@ export default function WalletManagerService() {
     try {
       await importWallet(walletData);
       try {
-        await Database.flushHandles(false);
+        await Database.flushDatabase(walletHash);
       } catch (e) {
         Log.error(e);
       }
@@ -431,20 +448,20 @@ export default function WalletManagerService() {
     const walletDb = Database.getWalletDatabase(walletHash);
 
     const wallet = walletDb.exec("SELECT * FROM wallet")[0];
-    const { name, balance, created_at, key_viewed_at } = wallet;
+    const { name, created_at, key_viewed_at } = wallet;
 
     APP_DB.run(
       `UPDATE wallets SET
         name=?,
-        balance=?,
         created_at=?,
         key_viewed_at=?
       WHERE walletHash="${walletHash}" AND network="${network}";`,
-      [name, balance, created_at, key_viewed_at]
+      [name, created_at, key_viewed_at]
     );
 
     await exportWalletFile(wallet);
-    await Database.flushHandles(true);
+    await Database.flushDatabase(walletHash);
+    await Database.flushDatabase("app");
   }
 
   async function openWalletDatabase(walletHash) {

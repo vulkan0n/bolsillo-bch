@@ -8,6 +8,13 @@ html {
   -webkit-tap-highlight-color: transparent;
 }
 
+/* <body>
+ * fixed body gives us full control over layout by setting up our own viewport,
+ * detatched from window 
+ * 
+ * safe-area-inset-* variables are used to calculate viewport size for iOS
+ * (prevents rendering underneath the "notch" and home button) 
+*/
 body {
   position: fixed;
   top: env(safe-area-inset-top);
@@ -78,4 +85,10 @@ main {
 .anticon {
   line-height: 0;
   vertical-align: 1px;
+}
+
+.text-stroke {
+  -webkit-text-stroke-color: #00000022;
+  -webkit-text-fill: transparent;
+  -webkit-text-stroke-width: 0.25px;
 }

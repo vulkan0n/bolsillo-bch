@@ -112,3 +112,8 @@ export const selectCurrentPrice = createSelector(
     return { price, priceString, currency: s.currency };
   }
 );
+
+export const selectCurrentPriceString = createSelector(
+  (state) => selectCurrentPrice(state),
+  (priceData) => priceData.priceString
+);

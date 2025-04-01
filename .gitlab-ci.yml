@@ -11,6 +11,14 @@ stages:
   - testflight
   - release
 
+default:
+  before_script:
+    - "export LC_ALL=en_US.UTF-8"
+    - "export LANG=en_US.UTF-8"
+    - 'eval "$(rbenv init - --no-rehash zsh)"'
+    - 'export SELENE_VERSION=$(grep -o ''"version": *"[^"]*"'' package.json | sed -e ''s/"version": *"//'' -e ''s/"$//'')'
+    - 'echo "SELENE_VERSION $SELENE_VERSION"'
+
 version:
   stage: version
   script:
@@ -20,7 +28,8 @@ version:
     - testflight
   tags:
     - macos
-  
+
+# Build
 build_sync:
   stage: build
   image: node:lts-alpine
@@ -31,43 +40,11 @@ build_sync:
   artifacts:
     paths:
       - "dist/"
+      - "node_modules/**/*capacitor*"
+      - "android/"
+      - "ios/"
 
-package_android:
-  stage: package
-  dependencies:
-    - build_sync
-  script:
-    - cd android/
-    - bundle install
-    - bundle exec fastlane package
-  artifacts:
-    paths:
-      - build/app/outputs/apk/release/app-release.apk
-      - build/app/outputs/bundle/release/app-bundle.aab
-    expire_in: 1 year
-  only:
-    - main
-    - testflight
-  tags:
-    - macos
-
-package_ios:
-  stage: package
-  dependencies:
-    - build_sync
-  script:
-    - cd ios/App/
-    - bundle install
-    - bundle exec fastlane package
-  artifacts:
-    paths:
-      - App.ipa
-  only:
-    - main
-    - testflight
-  tags:
-    - macos
-
+# Screenshots
 screenshots_android:
   stage: screenshots
   script:
@@ -96,26 +73,75 @@ screenshots_ios:
   tags:
     - macos
 
-deploy_gitlab_release:
-  stage: release
+# Android Packaging
+package_android:
+  stage: package
+  dependencies:
+    - build_sync
   script:
-    - git tag -a $SELENE_VERSION -m "Version $SELENE_VERSION"
-    - git push origin $SELENE_VERSION
+    - cd android/
+    - bundle install
+    - bundle exec fastlane package
+  artifacts:
+    paths:
+      - android/app/build/outputs/apk/release/app-release.apk
+      - android/app/build/outputs/bundle/release/app-bundle.aab
+    expire_in: 1 year
   only:
     - main
+    - testflight
+  tags:
+    - macos
 
-#deploy_android_apk:
-#  stage: release
-#  dependencies:
-#    - package_android
-#  script:
-#    - eval $(ssh-agent -s)
-#    - ssh-add <(echo "$SSH_PRIVATE_KEY")
-#    #- export SELENE_VERSION=$(sed -n 's/.*"version": "\([^"]*\)".*/\1/p' package.json)
-#    - scp android/build/app/outputs/apk/release/app-release.apk selene@warpgate.selene.technology:/srv/www/selene.cash/public/download/selene-v$SELENE_VERSION.apk
-#    # update remote nginx config here
-#  only:
-#    - main
+package_android_edge:
+  stage: package
+  dependencies:
+    - build_sync
+  script:
+    - cd android/
+    - bundle install
+    - bundle exec fastlane package_debug
+  artifacts:
+    paths:
+      - android/app/build/outputs/apk/debug/app-debug.apk
+  only:
+    - edge
+  tags:
+    - macos
+
+# Android Deployment
+deploy_android_edge:
+  stage: release
+  image: alpine:latest
+  dependencies:
+    - package_android_edge
+  script:
+    - "which ssh-agent || (apk update && apk add openssh)"
+    - "mkdir -p ~/.ssh && chmod 700 ~/.ssh"
+    - eval $(ssh-agent -s)
+    - echo "$SELENE_SSH_KEY_BASE64" | base64 -d | ssh-add - > /dev/null 2>&1
+    - echo "$SSH_KNOWN_HOSTS_BASE64" | base64 -d > ~/.ssh/known_hosts
+    - echo "Uploading selene-edge.apk"
+    - scp android/app/build/outputs/apk/debug/app-debug.apk selene@warpgate.selene.technology:/srv/www/selene.cash/public/download/selene-edge.apk
+  only:
+    - edge
+
+deploy_android_apk:
+  stage: release
+  image: alpine:latest
+  dependencies:
+    - package_android
+  script:
+    - "which ssh-agent || (apk update && apk add openssh)"
+    - "mkdir -p ~/.ssh && chmod 700 ~/.ssh"
+    - eval $(ssh-agent -s)
+    - echo "$SELENE_SSH_KEY_BASE64" | base64 -d | ssh-add - > /dev/null 2>&1
+    - echo "$SSH_KNOWN_HOSTS_BASE64" | base64 -d > ~/.ssh/known_hosts
+    - echo "Uploading selene-v$SELENE_VERSION.apk"
+    - scp android/build/app/outputs/apk/release/app-release.apk selene@warpgate.selene.technology:/srv/www/selene.cash/public/download/selene-v$SELENE_VERSION.apk
+    # update remote nginx config here
+  only:
+    - main
 
 deploy_android_release:
   stage: release
@@ -124,20 +150,6 @@ deploy_android_release:
     - screenshots_android
   script:
     - cd android/
-    - bundle install
-    - bundle exec fastlane deploy
-  only:
-    - main
-  tags:
-    - macos
-
-deploy_ios_release:
-  stage: release
-  dependencies:
-    - package_ios
-    - screenshots_ios
-  script:
-    - cd ios/App/
     - bundle install
     - bundle exec fastlane deploy
   only:
@@ -158,6 +170,39 @@ deploy_android_testflight:
   tags:
     - macos
 
+# iOS Packaging
+package_ios:
+  stage: package
+  dependencies:
+    - build_sync
+  script:
+    - cd ios/App/
+    - bundle install
+    - bundle exec fastlane package
+  artifacts:
+    paths:
+      - App.ipa
+  only:
+    - main
+    - testflight
+  tags:
+    - macos
+
+# iOS Deployment
+deploy_ios_release:
+  stage: release
+  dependencies:
+    - package_ios
+    - screenshots_ios
+  script:
+    - cd ios/App/
+    - bundle install
+    - bundle exec fastlane deploy
+  only:
+    - main
+  tags:
+    - macos
+
 deploy_ios_testflight:
   stage: release
   dependencies:
@@ -170,3 +215,12 @@ deploy_ios_testflight:
     - testflight
   tags:
     - macos
+
+# Gitlab Release
+deploy_gitlab_release:
+  stage: release
+  script:
+    - git tag -a $SELENE_VERSION -m "Version $SELENE_VERSION"
+    - git push origin $SELENE_VERSION
+  only:
+    - main

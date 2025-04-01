@@ -1,9 +1,10 @@
 import { App } from "@capacitor/app";
-import ReactDOM from "react-dom/client";
+import { createRoot } from "react-dom/client";
 import { SplashScreen } from "@capacitor/splash-screen";
 import LogService from "@/services/LogService";
 import JanitorService from "@/services/JanitorService";
 import DatabaseService from "@/services/DatabaseService";
+import BcmrService from "@/services/BcmrService";
 import { redux_init, redux_post_init, redux_resume } from "@/redux";
 import Main from "@/Main";
 
@@ -30,7 +31,7 @@ function app_init() {
   App.addListener("resume", app_resume);
   redux_init();
   Log.debug("render <Main>");
-  ReactDOM.createRoot(document.getElementById("root")).render(<Main />);
+  createRoot(document.getElementById("root")).render(<Main />);
 }
 
 // actions to perform before initializing app state or rendering UI
@@ -50,10 +51,8 @@ async function post_init() {
   await SplashScreen.hide();
   redux_post_init();
 
-  queueMicrotask(() => {
-    const Janitor = JanitorService();
-    Janitor.purgeStaleData();
-  });
+  const Bcmr = BcmrService();
+  Bcmr.preloadMetadataRegistries();
 }
 
 // actions to perform after app is resumed from sleep state

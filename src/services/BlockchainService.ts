@@ -6,18 +6,13 @@ import DatabaseService from "@/services/DatabaseService";
 import ElectrumService from "@/services/ElectrumService";
 import { hexToBin, binToHex } from "@/util/hex";
 import { sha256 } from "@/util/hash";
+import { block_checkpoints } from "@/util/block_checkpoints";
 
 const Log = LogService("Blockchain");
 
 export class BlockNotExistsError extends Error {
   constructor(id: string | number) {
     super(`No Block with id ${id}`);
-  }
-}
-
-export class ChaintipNotExistsError extends Error {
-  constructor() {
-    super(`No Chaintip?`);
   }
 }
 
@@ -38,10 +33,10 @@ export default function BlockchainService() {
     getBlockByHeight,
     resolveBlockByHash,
     resolveBlockByHeight,
-    getChaintip,
+    resolveChaintip,
     calculateBlockhash,
-    decodeBlockHeader,
-    verifyMerkleProof,
+    //decodeBlockHeader,
+    //verifyMerkleProof,
     purgeBlocks,
   };
 
@@ -170,20 +165,19 @@ export default function BlockchainService() {
     return block;
   }
 
-  async function getChaintip() {
+  async function resolveChaintip() {
     const result = APP_DB.exec(
       `SELECT * FROM blockchain ORDER BY height DESC LIMIT 1`
     );
 
     if (result.length < 1) {
-      throw new ChaintipNotExistsError();
+      Log.debug("resolveChaintip first2023");
+      return block_checkpoints.first2023;
     }
 
-    const block = {
-      ...result[0],
-      hex: await _loadBlockData(result[0].blockhash),
-    };
+    const block = resolveBlockByHash(result[0].blockhash);
 
+    //Log.debug("resolveChaintip block", block);
     return block;
   }
 
@@ -197,8 +191,7 @@ export default function BlockchainService() {
   }
 
   // decodeBlockHeader: extracts data from raw block header
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  function decodeBlockHeader(hex) {
+  /*function decodeBlockHeader(hex) {
     /*
      * version: 4 bytes int
      * prevBlockhash: 32 bytes block hash
@@ -206,11 +199,12 @@ export default function BlockchainService() {
      * timestamp: 4 bytes int
      * target: 4 bytes
      * nonce: 4 bytes
-     */
+     */ /*
 
     return {};
-  }
+  }*/
 
+  /*
   function verifyMerkleProof(txHash, txIndex, merkleBranch, merkleRoot) {
     //Log.log("verifyMerkleProof", txHash, txIndex, merkleBranch, merkleRoot);
 
@@ -234,6 +228,7 @@ export default function BlockchainService() {
     }
     return binToHex(hash) === merkleRoot;
   }
+  */
 
   async function deleteBlock(blockhash: string): Promise<void> {
     await deleteBlockFile(blockhash);

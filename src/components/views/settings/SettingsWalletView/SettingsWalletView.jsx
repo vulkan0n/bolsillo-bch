@@ -1,5 +1,5 @@
-import { useState, useRef, useCallback, useEffect, useMemo } from "react";
-import { useParams, useNavigate, Link } from "react-router-dom";
+import { useState, useRef, useCallback, useEffect } from "react";
+import { useParams, useNavigate, Link } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
 import { Share } from "@capacitor/share";
 import { Filesystem, Directory } from "@capacitor/filesystem";
@@ -18,17 +18,16 @@ import {
   LoadingOutlined,
 } from "@ant-design/icons";
 
+import { selectBchNetwork, selectIsExperimental } from "@/redux/preferences";
 import {
+  walletBoot,
+  walletSetName,
   selectActiveWalletHash,
-  selectBchNetwork,
-  selectIsExperimental,
-} from "@/redux/preferences";
-import { walletBoot, walletSetName } from "@/redux/wallet";
+} from "@/redux/wallet";
 import { selectLocale } from "@/redux/device";
 
 import ViewHeader from "@/layout/ViewHeader";
 
-import DatabaseService from "@/services/DatabaseService";
 import WalletManagerService from "@/services/WalletManagerService";
 import SecurityService, { AuthActions } from "@/services/SecurityService";
 
@@ -52,14 +51,14 @@ export default function SettingsWalletView() {
 
   const { walletHash } = useParams();
 
-  const WalletManager = useMemo(() => WalletManagerService(), []);
+  const WalletManager = WalletManagerService();
   const [wallet, setWallet] = useState(WalletManager.getWalletMeta(walletHash));
 
   useEffect(
-    function setWalletMeta() {
-      setWallet(WalletManager.getWalletMeta(walletHash));
+    function reloadWalletMeta() {
+      setWallet(WalletManagerService().getWalletMeta(walletHash));
     },
-    [walletHash, WalletManager, wallet.name]
+    [walletHash]
   );
 
   const activeWalletHash = useSelector(selectActiveWalletHash);
@@ -121,20 +120,19 @@ export default function SettingsWalletView() {
     dispatch(
       walletBoot({ walletHash: wallet.walletHash, network: bchNetwork })
     ).then(async () => {
-      await DatabaseService().flushHandles(true);
       navigate("/");
     });
   };
 
   // handler for wallet name edit button
   const handleEditConfirm = async (input) => {
-    await WalletManager.setWalletName(walletHash, input);
+    await WalletManager.setWalletName(wallet.walletHash, input);
 
-    if (walletHash === activeWalletHash) {
+    if (wallet.walletHash === activeWalletHash) {
       dispatch(walletSetName(input));
     }
 
-    setWallet(WalletManager.getWalletMeta(walletHash));
+    setWallet(WalletManager.getWalletMeta(wallet.walletHash));
   };
 
   // handler for "rebuild wallet" button
@@ -202,9 +200,9 @@ export default function SettingsWalletView() {
         icon={WalletOutlined}
         title={translate(translations.walletSettings)}
       />
-      <div className="p-2">
+      <div className="p-2" key={walletHash}>
         <div className="p-3 rounded-lg bg-zinc-200">
-          <div className="text-2xl">
+          <div className="text-2xl flex justify-center items-center">
             <Editable onConfirm={handleEditConfirm} value={wallet.name} />
           </div>
           <div className="text-lg text-center text-zinc-600">
@@ -250,45 +248,40 @@ export default function SettingsWalletView() {
 
         <WalletSettings />
         <KeyWarning walletHash={wallet.walletHash} />
-        <ShowMnemonic walletHash={wallet.walletHash} />
-        {
-          /* Only show "Advanced Options" if user has viewed (TODO: verified) their recovery phrase */
-          shouldShowAdvancedOptions && (
-            <Accordion
-              icon={ToolOutlined}
-              title={translate(translations.advancedOptions)}
-            >
+        <ShowMnemonic key={wallet.walletHash} walletHash={wallet.walletHash} />
+        {shouldShowAdvancedOptions && (
+          <Accordion
+            icon={ToolOutlined}
+            title={translate(translations.advancedOptions)}
+          >
+            <Accordion.Child icon={null} label="">
+              <Link
+                className="w-full text-left flex items-center"
+                to={`/settings/wallet/${wallet.walletHash}/additionalInformation`}
+              >
+                <InfoCircleOutlined className="text-xl mr-1" />
+                {translate(translations.additionalWalletInformation)}
+              </Link>
+            </Accordion.Child>
+            {isExperimental && (
               <Accordion.Child icon={null} label="">
-                <Link
-                  className="w-full text-left flex items-center"
-                  to={`/settings/wallet/${wallet.walletHash}/additionalInformation`}
-                >
-                  <InfoCircleOutlined className="text-xl mr-1" />
-                  {translate(translations.additionalWalletInformation)}
+                <Link className="w-full text-left flex items-center" to="scan">
+                  <SyncOutlined className="text-xl mr-1" />
+                  {translate(translations.addressScanTool)}
                 </Link>
               </Accordion.Child>
-              {isExperimental && (
-                <Accordion.Child icon={null} label="">
-                  <Link
-                    className="w-full text-left flex items-center"
-                    to="scan"
-                  >
-                    <SyncOutlined className="text-xl mr-1" />
-                    {translate(translations.addressScanTool)}
-                  </Link>
-                </Accordion.Child>
-              )}
-              <Accordion.Child icon={null} label="">
-                <button
-                  type="button"
-                  className="w-full text-left flex items-center"
-                  onClick={handleRebuildWallet}
-                >
-                  <MedicineBoxOutlined className="text-xl mr-1" />
-                  {translate(translations.rebuildWallet)}
-                </button>
-              </Accordion.Child>
-              {/*isExperimental && (
+            )}
+            <Accordion.Child icon={null} label="">
+              <button
+                type="button"
+                className="w-full text-left flex items-center"
+                onClick={handleRebuildWallet}
+              >
+                <MedicineBoxOutlined className="text-xl mr-1" />
+                {translate(translations.rebuildWallet)}
+              </button>
+            </Accordion.Child>
+            {/*isExperimental && (
                 <Accordion.Child icon={null} label="">
                   <button
                     type="button"
@@ -300,21 +293,20 @@ export default function SettingsWalletView() {
                   </button>
                 </Accordion.Child>
               )*/}
-              {isExperimental && (
-                <Accordion.Child icon={null} label="">
-                  <button
-                    type="button"
-                    className="w-full text-left flex items-center"
-                    onClick={handleExportWallet}
-                  >
-                    <ExportOutlined className="text-xl mr-1" />
-                    {translate(translations.exportWallet)}
-                  </button>
-                </Accordion.Child>
-              )}
-            </Accordion>
-          )
-        }
+            {isExperimental && (
+              <Accordion.Child icon={null} label="">
+                <button
+                  type="button"
+                  className="w-full text-left flex items-center"
+                  onClick={handleExportWallet}
+                >
+                  <ExportOutlined className="text-xl mr-1" />
+                  {translate(translations.exportWallet)}
+                </button>
+              </Accordion.Child>
+            )}
+          </Accordion>
+        )}
       </div>
     </>
   );

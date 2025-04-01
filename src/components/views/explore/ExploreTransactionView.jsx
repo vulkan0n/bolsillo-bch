@@ -1,26 +1,32 @@
 /* eslint-disable react/prop-types */
-import { useLoaderData, Link, useNavigate } from "react-router-dom";
+import { useState, useCallback, useEffect } from "react";
+import { useLoaderData, Link } from "react-router";
 import { useSelector } from "react-redux";
-import { Clipboard } from "@capacitor/clipboard";
 import { DateTime } from "luxon";
 import {
   CopyOutlined,
-  ArrowLeftOutlined,
   HourglassOutlined,
   CheckCircleOutlined,
 } from "@ant-design/icons";
 import { selectCurrencySettings } from "@/redux/preferences";
-import { selectActiveWallet } from "@/redux/wallet";
+import { selectActiveWalletHash } from "@/redux/wallet";
 import { selectChaintip } from "@/redux/sync";
 
 import TransactionHistoryService from "@/services/TransactionHistoryService";
-import ToastService from "@/services/ToastService";
+import TransactionManagerService from "@/services/TransactionManagerService";
 //import LogService from "@/services/LogService";
 
 import Address from "@/atoms/Address";
 import Satoshi from "@/atoms/Satoshi";
 import Accordion from "@/atoms/Accordion";
-import Button from "@/atoms/Button";
+import Editable from "@/atoms/Editable";
+import TokenAmount from "@/atoms/TokenAmount";
+
+import ExploreSearchBar from "./ExploreSearchBar";
+
+import { useClipboard } from "@/hooks/useClipboard";
+
+import { hexToUtf8, binToHex } from "@/util/hex";
 
 import { translate } from "@/util/translations";
 import translations from "./translations";
@@ -28,17 +34,17 @@ import translations from "./translations";
 //const Log = LogService("ExploreTransactionView");
 
 export default function ExploreTransactionView() {
-  const navigate = useNavigate();
   const tx = useLoaderData();
 
-  const wallet = useSelector(selectActiveWallet);
+  const walletHash = useSelector(selectActiveWalletHash);
   const { localCurrency } = useSelector(selectCurrencySettings);
   const chaintip = useSelector(selectChaintip);
 
-  const memo = TransactionHistoryService(
-    wallet,
-    localCurrency
-  ).getTransactionMemo(tx.txid);
+  const [memo, setMemo] = useState(
+    TransactionHistoryService(walletHash, localCurrency).getTransactionMemo(
+      tx.txid
+    ) || ""
+  );
 
   const isConfirmed = tx.blockhash !== null;
   const confirmations = isConfirmed ? chaintip.height - tx.height : 0;
@@ -47,52 +53,80 @@ export default function ExploreTransactionView() {
     isConfirmed ? DateTime.fromSeconds(tx.time) : DateTime.fromISO(tx.time_seen)
   ).toLocaleString(DateTime.DATETIME_FULL);
 
+  const { handleCopyToClipboard } = useClipboard();
   const handleCopyTransactionId = async () => {
-    await Clipboard.write({ string: tx.txid });
-    ToastService().clipboardCopy("Transaction ID", tx.txid);
+    handleCopyToClipboard(tx.txid, translate(translations.transactionId));
+  };
+
+  const handleSaveMemo = (value) => {
+    setMemo(value);
+    TransactionHistoryService(walletHash, localCurrency).setTransactionMemo(
+      tx.txid,
+      value
+    );
   };
 
   //Log.debug(tx, confirmations);
 
   return (
     <>
-      <div
-        className="p-2 bg-zinc-100 border-b border-zinc-400"
-        onClick={handleCopyTransactionId}
-      >
-        <span className="text-lg font-semibold mr-1">Transaction ID:</span>
-        <span className="break-all font-mono text-sm">{tx.txid}</span>
-        <CopyOutlined className="ml-1" />
-      </div>
-      <div className="p-2">
-        <div className="text-zinc-700 font-bold flex items-center justify-start">
-          <span>{txDate}</span>
+      <ExploreSearchBar />
+      <div className="p-1">
+        <div className="bg-zinc-700 rounded p-2">
+          <div className="text-center font-semibold text-white mb-1">
+            {translate(translations.transactionId)}
+          </div>
+          <div
+            className="flex items-center justify-center rounded"
+            onClick={handleCopyTransactionId}
+          >
+            <div className="w-full p-2 bg-zinc-100 text-zinc-700 border border-primary rounded flex items-center justify-center active:bg-primary">
+              <CopyOutlined className="mr-1" />
+              <div className="font-mono text-xs flex flex-col items-center w-full">
+                <span>{tx.txid.slice(0, 32)}</span>
+                <span>{tx.txid.slice(32)}</span>
+              </div>
+            </div>
+          </div>
         </div>
-        {isConfirmed ? (
-          <div className="flex items-center font-bold text-zinc-500 text-sm">
-            <CheckCircleOutlined className="text-secondary mr-1" /> Confirmed in
-            block #{tx.height}
-            <span className="text-zinc-500/80 ml-1">
-              [{confirmations} blocks]
-            </span>
+        <div className="bg-zinc-200 text-white rounded p-1 my-1">
+          <div className="p-1">
+            <div className="text-zinc-700 font-bold flex items-center justify-start">
+              <span>{txDate}</span>
+            </div>
+            {isConfirmed ? (
+              <div className="flex items-center font-bold text-zinc-500 text-sm">
+                <span>
+                  <span className="flex items-center">
+                    <CheckCircleOutlined className="text-secondary mr-1" />{" "}
+                    Confirmed in block #{tx.height} ({confirmations} blocks)
+                  </span>
+                </span>
+              </div>
+            ) : (
+              <div className="flex items-center font-bold text-zinc-500 text-sm">
+                <HourglassOutlined className="text-zinc-500 mr-1" /> Pending
+                Confirmation
+              </div>
+            )}
           </div>
-        ) : (
-          <div className="flex items-center font-bold text-zinc-500 text-sm">
-            <HourglassOutlined className="text-zinc-500 mr-1" /> Pending
-            Confirmation
+          <div
+            className={`my-1 text-zinc-600 text-sm ${memo ? "" : "underline"}`}
+          >
+            <Editable
+              value={memo}
+              placeholder="Set Memo..."
+              onConfirm={handleSaveMemo}
+            />
           </div>
-        )}
-        {memo && (
-          <div className="text-zinc-800 my-2">
-            <span className="font-bold">Memo:</span> {memo}
-          </div>
-        )}
+        </div>
         <div className="mt-1.5">
-          <Accordion title="Outputs" open>
+          <div className="bg-zinc-600 p-1 rounded">
+            <div className="font-semibold pb-1 text-zinc-100">Outputs</div>
             {tx.vout.map((output, i) => (
               <OutputListItem key={output.n} output={output} i={i} />
             ))}
-          </Accordion>
+          </div>
           <Accordion title="Inputs">
             {tx.vin.map((input, i) => (
               <InputListItem
@@ -104,12 +138,6 @@ export default function ExploreTransactionView() {
           </Accordion>
         </div>
       </div>
-      <Button
-        label={translate(translations.back)}
-        icon={ArrowLeftOutlined}
-        fullWidth
-        onClick={() => navigate(-1)}
-      />
     </>
   );
 }
@@ -117,31 +145,46 @@ export default function ExploreTransactionView() {
 function OutputListItem({ output, i }) {
   const zebraCss = i % 2 === 0 ? "bg-zinc-100" : "bg-zinc-50";
 
-  const isOpReturn =
-    output.type === "nulldata" || !output.scriptPubKey.addresses;
+  const asmSplit = output.scriptPubKey.asm.split(" ");
+  const isOpReturn = asmSplit[0] === "OP_RETURN";
+  const opReturnData = hexToUtf8(asmSplit.slice(2)); // OP_RETURN OP_PUSHDATA_X ...
 
   return (
-    <div className={`p-1.5 ${zebraCss}`}>
+    <div className={`p-1.5 ${zebraCss} rounded-sm`}>
       <div className="flex text-sm items-center">
         {isOpReturn ? (
-          <div className="font-mono font-bold">OP_RETURN</div>
+          <div className="font-mono font-bold text-zinc-700">OP_RETURN</div>
         ) : (
-          <div>
-            <Address address={output.scriptPubKey.addresses[0]} />
-          </div>
+          <Address address={output.scriptPubKey.addresses[0]} />
         )}
       </div>
-      <div className="">
-        <span className="text-xs tracking-tighter mr-1.5 opacity-70">
-          #{output.n}
-        </span>
-        <span className="font-mono">
-          <Satoshi value={output.value} />
-        </span>
-        <span className="mx-1 text-zinc-500">/</span>
-        <span className="text-sm opacity-80">
-          <Satoshi value={output.value} flip />
-        </span>
+      <div className="flex justify-between">
+        <div>
+          <span className="text-xs tracking-tighter mr-1.5 opacity-70">
+            #{output.n}
+          </span>
+          {isOpReturn ? (
+            <span className="font-mono">{opReturnData}</span>
+          ) : (
+            <span>
+              <span className="font-mono">
+                <Satoshi value={output.value} />
+              </span>
+              <span className="mx-1 text-zinc-500">/</span>
+              <span className="text-sm opacity-80">
+                <Satoshi value={output.value} flip />
+              </span>
+            </span>
+          )}
+        </div>
+        {output.token && (
+          <div
+            className="text-sm"
+            style={{ color: `#${binToHex(output.token.category).slice(0, 6)}` }}
+          >
+            <TokenAmount token={output.token} />
+          </div>
+        )}
       </div>
     </div>
   );
@@ -150,11 +193,40 @@ function OutputListItem({ output, i }) {
 function InputListItem({ input, i }) {
   const zebraCss = i % 2 === 0 ? "bg-zinc-100" : "bg-zinc-50";
 
-  return (
-    <div className={`p-1.5 ${zebraCss} truncate tracking-tight`}>
-      <Link className="font-mono text-xs" to={`/explore/tx/${input.txid}`}>
-        {input.txid}:{input.vout}
-      </Link>
-    </div>
+  const [inputTx, setInputTx] = useState(null);
+
+  useEffect(
+    function resolveInput() {
+      const resolve = async () => {
+        const resolvedTx = await TransactionManagerService().resolveTransaction(
+          input.txid
+        );
+        setInputTx(resolvedTx);
+      };
+      resolve();
+    },
+    [input.txid]
   );
+
+  const ResolvedInput = useCallback(() => {
+    if (inputTx === null) {
+      return (
+        <div className={`p-1.5 ${zebraCss} truncate tracking-tight`}>
+          <Link className="font-mono text-xs" to={`/explore/tx/${input.txid}`}>
+            {input.txid}:{input.vout}
+          </Link>
+        </div>
+      );
+    }
+
+    const output = inputTx.vout.find((out) => out.n === input.vout);
+
+    return (
+      <Link to={`/explore/tx/${input.txid}`}>
+        <OutputListItem output={output} i={i} />
+      </Link>
+    );
+  }, [inputTx, input.txid, zebraCss, i, input.vout]);
+
+  return <ResolvedInput />;
 }

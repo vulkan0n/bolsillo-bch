@@ -1,6 +1,8 @@
+import { useMemo } from "react";
 import { useSelector } from "react-redux";
 import { selectWalletAddresses } from "@/redux/wallet";
 import { truncate } from "@/util/string";
+import { convertCashAddress } from "@/util/cashaddr";
 
 interface AddressProps {
   address: string;
@@ -8,6 +10,7 @@ interface AddressProps {
   maxLength?: number;
   withPrefix?: boolean;
   color?: string;
+  format?: "cashaddr" | "tokenaddr" | "base58";
 }
 
 export default function Address({
@@ -16,19 +19,28 @@ export default function Address({
   maxLength = 0,
   withPrefix = false,
   color = "",
+  format = undefined,
 }: AddressProps) {
-  const PREFIX_LENGTH = 5;
-  const SUFFIX_LENGTH = 5;
+  const PREFIX_LENGTH = 6;
+  const SUFFIX_LENGTH = 6;
 
-  const formattedAddress = (() => {
-    const split = address.split(":");
+  const convertedAddress = useMemo(
+    () => convertCashAddress(address, format),
+    [address, format]
+  );
+
+  const formattedAddress = useMemo(() => {
+    const split = convertedAddress.split(":");
     if (split.length > 1) {
       return withPrefix ? split[0].concat(":").concat(split[1]) : split[1];
     }
     return split[0];
-  })();
+  }, [convertedAddress, withPrefix]);
 
-  const truncatedAddress = truncate(formattedAddress, maxLength);
+  const truncatedAddress = useMemo(
+    () => truncate(formattedAddress, maxLength),
+    [formattedAddress, maxLength]
+  );
 
   const prefix = truncatedAddress.substring(0, PREFIX_LENGTH);
   const middle = truncatedAddress.substring(
@@ -56,7 +68,7 @@ export default function Address({
 
   return (
     <span
-      className={`tracking-tighter ${color} ${myAddressStyle} ${myChangeStyle}`}
+      className={`tracking-tighter ${color} ${myAddressStyle} ${myChangeStyle} truncate`}
     >
       <span className="font-bold">{prefix}</span>
       {short ? "-" : middle}

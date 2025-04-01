@@ -1,4 +1,4 @@
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router";
 import { ArrowLeftOutlined } from "@ant-design/icons";
 
 interface Props {
@@ -16,13 +16,13 @@ export default function ViewHeader({
 }: Props) {
   const location = useLocation();
   const navigate = useNavigate();
-  const shouldShowBackButton = location.pathname.split("/").length > 1;
+  const shouldShowBackButton = location.pathname.split("/").length > 2;
 
   const Icon = icon;
 
   const sizeClasses = small
     ? "bg-zinc-800 text-lg py-1 font-semibold text-zinc-200"
-    : "bg-zinc-800 text-xl text-zinc-200 font-bold py-3";
+    : "bg-zinc-900 text-xl text-zinc-200 font-bold py-3";
 
   const iconClasses = small ? "text-lg" : "text-2xl";
 
