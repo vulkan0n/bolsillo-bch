@@ -33,8 +33,6 @@ import { generateBatch } from "@/util/batch";
 
 const Log = LogService("redux/sync");
 
-const Electrum = ElectrumService();
-
 export const syncMiddleware = createListenerMiddleware();
 
 // --------------------------------
@@ -48,6 +46,8 @@ export const syncConnect = createAsyncThunk(
       Log.log("sync/connect blocked by offline mode");
       return false;
     }
+
+    const Electrum = ElectrumService();
 
     Log.log("sync/connect", payload);
     let isSuccess = false;
@@ -88,6 +88,7 @@ export const syncConnect = createAsyncThunk(
 export const syncReconnect = createAsyncThunk(
   "sync/reconnect",
   async (server: string | undefined, thunkApi) => {
+    const Electrum = ElectrumService();
     const connectServer = server || Electrum.getElectrumHost();
     Log.debug("reconnect:", connectServer);
     thunkApi.dispatch(syncConnect({ attempts: 0, server: connectServer }));
@@ -95,6 +96,7 @@ export const syncReconnect = createAsyncThunk(
 );
 
 export const syncDisconnect = createAsyncThunk("sync/disconnect", async () => {
+  const Electrum = ElectrumService();
   return Electrum.disconnect(true);
 });
 
@@ -102,6 +104,7 @@ export const syncDisconnect = createAsyncThunk("sync/disconnect", async () => {
 export const syncConnectionUp = createAsyncThunk(
   "sync/up",
   async (payload, thunkApi) => {
+    const Electrum = ElectrumService();
     // set up subscriptions on connect
     try {
       await Electrum.subscribeToChaintip();
@@ -153,6 +156,8 @@ export const syncSubscriptions = createAsyncThunk(
     ];
 
     thunkApi.dispatch(syncSubscriptionCount(addresses.length));
+
+    const Electrum = ElectrumService();
 
     /* eslint-disable no-restricted-syntax */
     /* eslint-disable no-await-in-loop */
@@ -256,6 +261,7 @@ export const syncPopulateAddresses = createAsyncThunk(
     const generatedAddresses = AddressScanner.populateAddresses();
     thunkApi.dispatch(syncSubscriptionCount(generatedAddresses.length));
 
+    const Electrum = ElectrumService();
     await Promise.all(
       generatedAddresses.map(async (address) => {
         try {
@@ -308,6 +314,7 @@ export const syncHotRefresh = createAsyncThunk(
       thunkApi.dispatch(syncSubscriptionCount(addresses.length));
       Log.debug("hotRefresh", addresses.length);
 
+      const Electrum = ElectrumService();
       for (const addressBatch of generateBatch(addresses)) {
         const batchPromises = addressBatch.map(async (address) => {
           try {
