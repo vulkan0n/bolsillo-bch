@@ -149,7 +149,7 @@ export function TokenCard({ token }: { token: TokenEntity }) {
               {token.name || `Token ${token.category.slice(0, 6)}`}
             </span>
           </div>
-          <div className="flex items-center text-zinc-600">
+          <div className="flex items-center text-zinc-600 text-sm">
             {token.nftCount > 0 && <TokenAmount token={token} nft />}
             {token.amount > 0 && (
               <div className="flex flex-1 justify-between items-center">
