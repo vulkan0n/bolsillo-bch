@@ -36,7 +36,7 @@ const translations = {
     ur: "آنے والے ٹورنامنٹس",
     vi: "Giải đấu sắp tới",
     zh: "即将举行的锦标赛",
-    zh_TW: "即將舉行的比賽"
+    zh_TW: "即將舉行的比賽",
   },
   startsIn: {
     ar: "يبدأ في",
@@ -75,7 +75,7 @@ const translations = {
     ur: "میں شروع ہوتا ہے۔",
     vi: "Bắt đầu vào",
     zh: "开始于",
-    zh_TW: "開始於"
+    zh_TW: "開始於",
   },
   underway: {
     ar: "قيد التنفيذ!",
@@ -114,7 +114,7 @@ const translations = {
     ur: "جاری ہے!",
     vi: "Đang tiến hành!",
     zh: "进行！",
-    zh_TW: "進行！"
+    zh_TW: "進行！",
   },
   prizePool: {
     ar: "مجموع جوائز",
@@ -153,7 +153,7 @@ const translations = {
     ur: "پرائز پول",
     vi: "Giải thưởng",
     zh: "奖池",
-    zh_TW: "獎金池"
+    zh_TW: "獎金池",
   },
   playersText: {
     ar: "اللاعبين",
@@ -192,7 +192,7 @@ const translations = {
     ur: "کھلاڑی",
     vi: "Người chơi",
     zh: "玩家",
-    zh_TW: "玩家"
+    zh_TW: "玩家",
   },
   description: {
     ar: "تنافس في دورات ألعاب الفيديو عبر الإنترنت، مع دفع رسوم الاشتراك والجوائز مباشرة بعملة Bitcoin Cash!",
@@ -231,7 +231,7 @@ const translations = {
     ur: "آن لائن ویڈیو گیم ٹورنامنٹس میں مقابلہ کریں، داخلہ فیس اور انعامات براہ راست بٹ کوائن کیش میں ادا کیے جائیں!",
     vi: "Thi đấu trong các giải đấu trò chơi điện tử trực tuyến, với phí tham gia và giải thưởng được thanh toán trực tiếp bằng Bitcoin Cash!",
     zh: "参加在线视频游戏锦标赛，报名费和奖金直接以比特币现金支付！",
-    zh_TW: "參加線上電玩錦標賽，參賽費和獎品直接以比特幣現金支付！"
+    zh_TW: "參加線上電玩錦標賽，參賽費和獎品直接以比特幣現金支付！",
   },
   signUp: {
     ar: "اشتراك",
@@ -270,7 +270,7 @@ const translations = {
     ur: "سائن اپ",
     vi: "Đăng ký",
     zh: "报名",
-    zh_TW: "報名"
+    zh_TW: "報名",
   },
   learnMore: {
     ar: "يتعلم أكثر",
@@ -309,7 +309,7 @@ const translations = {
     ur: "اورجانیے",
     vi: "Tìm hiểu thêm",
     zh: "了解更多",
-    zh_TW: "了解更多"
+    zh_TW: "了解更多",
   },
   loadingText: {
     ar: "تحميل",
@@ -348,8 +348,8 @@ const translations = {
     ur: "لوڈ ہو رہا ہے۔",
     vi: "Đang tải",
     zh: "加载中",
-    zh_TW: "載入中"
-  }
+    zh_TW: "載入中",
+  },
 };
 
 export default translations;
