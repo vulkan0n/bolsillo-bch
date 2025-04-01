@@ -23,10 +23,12 @@ import AddressScannerService from "@/services/AddressScannerService";
 
 import ToastService from "@/services/ToastService";
 
+import { convertCashAddress } from "@/util/cashaddr";
+
 const initialState = {
   walletHash: "",
-  balance: 0,
-  spendable_balance: 0,
+  balance: "0",
+  spendable_balance: "0",
   name: "-",
   key_viewed_at: "",
 };
@@ -78,9 +80,9 @@ export const walletBalanceUpdate = createAction(
     // address and wallet balances are automatically derived on SQL layer when UTXO entries are updated
     const sqlWallet = WalletManagerService().getWallet(wallet.walletHash);
 
-    const previousBalance = wallet.balance;
-    const currentBalance = sqlWallet.balance;
-    const currentSpendableBalance = sqlWallet.spendable_balance;
+    const previousBalance = BigInt(wallet.balance);
+    const currentBalance = BigInt(sqlWallet.balance);
+    const currentSpendableBalance = BigInt(sqlWallet.spendable_balance);
 
     // show receive notification
     if (currentBalance > previousBalance && isChange === false) {
@@ -88,7 +90,12 @@ export const walletBalanceUpdate = createAction(
       ToastService().paymentReceived(difference);
     }
 
-    return { payload: { currentBalance, currentSpendableBalance } };
+    return {
+      payload: {
+        currentBalance: currentBalance.toString(),
+        currentSpendableBalance: currentSpendableBalance.toString(),
+      },
+    };
   }
 );
 
@@ -116,9 +123,13 @@ export const walletReloadAddresses = createAction(
     const myAddresses = [
       ...AddressManager.getReceiveAddresses(),
       ...AddressManager.getChangeAddresses(),
-    ];
+    ].map((a) => ({ change: a.change, address: a.address }));
+
     myAddresses.push(
-      ...myAddresses.map((a) => AddressManager.getTokenAddress(a.address))
+      ...myAddresses.map((a) => ({
+        change: a.change,
+        address: convertCashAddress(a.address, "tokenaddr"),
+      }))
     );
 
     return { payload: myAddresses };

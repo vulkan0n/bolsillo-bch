@@ -196,7 +196,7 @@ function Coin({ coin, onSelect }) {
 }
 
 function SelectionDisplay({ selection, onConfirm, onCancel }) {
-  const selectedAmount = selection.reduce((sum, coin) => sum + coin.amount, 0);
+  const selectedAmount = selection.reduce((sum, coin) => sum + coin.amount, 0n);
 
   const handleConfirm = () => {
     onConfirm();

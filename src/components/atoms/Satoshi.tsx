@@ -10,7 +10,7 @@ import CurrencyService from "@/services/CurrencyService";
 import { satsToBch } from "@/util/sats";
 
 interface Props {
-  value: number;
+  value: number | bigint | string;
   fiat?: boolean;
   flip?: boolean;
 }
@@ -35,7 +35,7 @@ export default function Satoshi({
 
   const formatSatoshis = useCallback(
     (amount) => {
-      if (!amount && amount !== 0) {
+      if (!amount && amount.toString() !== "0") {
         return {
           bch: "-",
           mbch: "-",
@@ -72,7 +72,9 @@ export default function Satoshi({
         sats: "Ꞩ",
       };
 
-      const absoluteAmounts = satsToBch(Math.abs(amount));
+      const absoluteAmounts = satsToBch(
+        BigInt(amount) < 0n ? BigInt(amount) * -1n : BigInt(amount)
+      );
 
       const formattedAmounts = {
         sats: new Intl.NumberFormat(locale, {

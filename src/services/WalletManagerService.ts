@@ -23,7 +23,7 @@ export interface WalletStub {
 export interface WalletMeta {
   walletHash: string;
   name: string;
-  balance: number;
+  balance: bigint;
   created_at: string;
   key_viewed_at: string;
 }
@@ -34,7 +34,7 @@ export interface WalletEntity extends WalletStub, WalletMeta {
   network: ValidBchNetwork;
   nonce: number;
   genesis_height: number | null;
-  spendable_balance: number;
+  spendable_balance: bigint;
 }
 
 export class WalletNotExistsError extends Error {
@@ -89,7 +89,7 @@ export default function WalletManagerService() {
     }
 
     const walletDb = Database.getWalletDatabase(walletHash);
-    const result = walletDb.exec("SELECT * FROM wallet");
+    const result = walletDb.exec("SELECT * FROM wallet", { useBigInt: true });
 
     if (result.length === 0) {
       throw new WalletNotExistsError(walletHash);
@@ -113,7 +113,8 @@ export default function WalletManagerService() {
     }
 
     const result = APP_DB.exec(
-      `SELECT * FROM wallets WHERE walletHash="${walletHash}" AND network="${network}"`
+      `SELECT * FROM wallets WHERE walletHash="${walletHash}" AND network="${network}"`,
+      { useBigInt: true }
     );
 
     if (result.length === 0) {
@@ -447,16 +448,15 @@ export default function WalletManagerService() {
     const walletDb = Database.getWalletDatabase(walletHash);
 
     const wallet = walletDb.exec("SELECT * FROM wallet")[0];
-    const { name, balance, created_at, key_viewed_at } = wallet;
+    const { name, created_at, key_viewed_at } = wallet;
 
     APP_DB.run(
       `UPDATE wallets SET
         name=?,
-        balance=?,
         created_at=?,
         key_viewed_at=?
       WHERE walletHash="${walletHash}" AND network="${network}";`,
-      [name, balance, created_at, key_viewed_at]
+      [name, created_at, key_viewed_at]
     );
 
     await exportWalletFile(wallet);

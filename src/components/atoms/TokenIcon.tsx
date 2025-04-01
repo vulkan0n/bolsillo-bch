@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import BcmrService from "@/services/BcmrService";
 import Checksum from "@/atoms/Checksum";
+import SeleneLogo from "@/atoms/SeleneLogo";
 
 export default function TokenIcon({
   category,
@@ -17,17 +18,28 @@ export default function TokenIcon({
 }) {
   const [toggleState, setToggleState] = useState(0);
   const [icon, setIcon] = useState<string | null>(null);
+  const [isResolving, setIsResolving] = useState(true);
 
   useEffect(
     function resolveIcon() {
       const resolve = async () => {
         const Bcmr = BcmrService();
+
         const resolvedIcon = await Bcmr.resolveIcon(
           category,
           nft_commitment,
           returnImage
         );
+
         setIcon(resolvedIcon);
+
+        if (resolvedIcon) {
+          setToggleState(0);
+        } else {
+          setToggleState(nft_commitment ? 1 : 2);
+        }
+
+        setIsResolving(false);
       };
       resolve();
     },
@@ -39,10 +51,10 @@ export default function TokenIcon({
   const handleSetToggle = (event) => {
     event.stopPropagation();
 
-    const toggle =
-      icon === null
-        ? (toggleState + 1) % (nft_commitment ? 2 : 1)
-        : (toggleState + 1) % (nft_commitment ? 3 : 2);
+    let toggle = (toggleState + 1) % 3;
+    if (!nft_commitment && toggle === 1) {
+      toggle += 1;
+    }
 
     setToggleState(toggle);
   };
@@ -58,7 +70,14 @@ export default function TokenIcon({
       }}
       className={`${rounded ? "rounded-full" : ""} overflow-hidden`}
     >
-      <img src={icon} />
+      {!isResolving &&
+        (icon === null ? (
+          <div className="flex items-center justify-center w-full h-full">
+            <SeleneLogo cashtokens className="saturate-30 opacity-90" />
+          </div>
+        ) : (
+          <img src={icon} />
+        ))}
     </div>,
     <div
       className="border-2 border-zinc-600 rounded-sm overflow-hidden"

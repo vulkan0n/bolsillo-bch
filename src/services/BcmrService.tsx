@@ -71,6 +71,7 @@ export default function BcmrService() {
     getCategoryAuthbase,
     purgeBcmrData,
     exportLocalBcmr,
+    preloadMetadataRegistries,
   };
 
   // --------------------------------
@@ -222,6 +223,16 @@ export default function BcmrService() {
     );
 
     return result.length > 0 ? result[0].authbase : category;
+  }
+
+  async function preloadMetadataRegistries() {
+    const authbases = APP_DB.exec("SELECT authbase FROM bcmr");
+
+    //Log.debug("preloadMetadataRegistries", authbases);
+
+    return Promise.all(
+      authbases.map(({ authbase }) => loadIdentityRegistry(authbase))
+    );
   }
 
   async function resolveIdentityRegistry(
