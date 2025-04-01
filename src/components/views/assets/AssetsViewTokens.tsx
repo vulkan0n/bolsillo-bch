@@ -4,7 +4,7 @@ import { useNavigate } from "react-router";
 import { SendOutlined } from "@ant-design/icons";
 import { selectActiveWallet, selectActiveWalletHash } from "@/redux/wallet";
 import { selectPrivacySettings } from "@/redux/preferences";
-import LogService from "@/services/LogService";
+//import LogService from "@/services/LogService";
 import TokenManagerService, {
   TokenEntity,
 } from "@/services/TokenManagerService";
@@ -16,7 +16,7 @@ import Button from "@/atoms/Button";
 
 import { truncateProse } from "@/util/string";
 
-const Log = LogService("AssetsViewTokens");
+//const Log = LogService("AssetsViewTokens");
 
 export default function AssetsViewTokens() {
   // [?] use selectActiveWallet instead of selectActiveWalletHash
@@ -91,7 +91,7 @@ export default function AssetsViewTokens() {
     [tokenCategories, TokenManager, sortIdentities, shouldResolveBcmr]
   );
 
-  Log.debug(tokenData);
+  //Log.debug(tokenData);
 
   const handleTokenNavigate = (tokenId) => {
     navigate(`/assets/tokens/${tokenId}`);

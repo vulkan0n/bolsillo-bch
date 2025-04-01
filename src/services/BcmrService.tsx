@@ -180,7 +180,7 @@ export default function BcmrService() {
       registryMeta,
     };
 
-    Log.debug("loadIdentityRegistry", authbase, identityRegistry);
+    //Log.debug("loadIdentityRegistry", authbase, identityRegistry);
     mergeRegistry(registry);
     return identityRegistry;
   }
