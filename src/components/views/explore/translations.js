@@ -1,6 +1,42 @@
 const translations = {
   exploreBch: {
+    ar: "يستكشف",
+    bn: "অন্বেষণ করুন",
+    da: "Udforske",
+    de: "Erkunden",
+    el: "Εξερευνώ",
     en: "Explore",
+    es: "Explorar",
+    fa: "کاوش کنید",
+    fil: "Galugarin",
+    fr: "Explorer",
+    ha: "Bincika",
+    hi: "अन्वेषण करना",
+    id: "Mengeksplorasi",
+    it: "Esplorare",
+    ja: "探検する",
+    jv: "Jelajahi",
+    ko: "탐구하다",
+    mr: "एक्सप्लोर करा",
+    ms: "Teroka",
+    nb: "Utforske",
+    nl: "Ontdekken",
+    pa: "ਪੜਚੋਲ ਕਰੋ",
+    pl: "Badać",
+    pt: "Explorar",
+    ro: "Explora",
+    ru: "Исследовать",
+    sv: "Utforska",
+    sw: "Chunguza",
+    ta: "ஆராயுங்கள்",
+    te: "అన్వేషించండి",
+    th: "สำรวจ",
+    tr: "Keşfetmek",
+    uk: "Досліджуйте",
+    ur: "دریافت کریں۔",
+    vi: "Khám phá",
+    zh: "探索",
+    zh_TW: "探索"
   },
   statistics: {
     ar: "إحصائيات",
@@ -39,7 +75,7 @@ const translations = {
     ur: "شماریات",
     vi: "Số liệu thống kê",
     zh: "统计数据",
-    zh_TW: "統計數據",
+    zh_TW: "統計數據"
   },
   socialMedia: {
     ar: "وسائل التواصل الاجتماعي",
@@ -78,7 +114,7 @@ const translations = {
     ur: "سوشل میڈیا",
     vi: "Truyền thông xã hội",
     zh: "社交媒体",
-    zh_TW: "社群媒體",
+    zh_TW: "社群媒體"
   },
   chronology: {
     ar: "التسلسل الزمني",
@@ -117,7 +153,7 @@ const translations = {
     ur: "تاریخ نامہ",
     vi: "Niên đại",
     zh: "年表",
-    zh_TW: "年表",
+    zh_TW: "年表"
   },
   faqs: {
     ar: "الأسئلة الشائعة والمعلومات",
@@ -156,7 +192,7 @@ const translations = {
     ur: "اکثر پوچھے گئے سوالات اور معلومات",
     vi: "Câu hỏi thường gặp &amp; Thông tin",
     zh: "常见问题和信息",
-    zh_TW: "常見問題及資訊",
+    zh_TW: "常見問題及資訊"
   },
   back: {
     ar: "خلف",
@@ -195,11 +231,47 @@ const translations = {
     ur: "واپس",
     vi: "Quay lại",
     zh: "返回",
-    zh_TW: "後退",
+    zh_TW: "後退"
   },
   transactionId: {
+    ar: "معرف المعاملة",
+    bn: "লেনদেন আইডি",
+    da: "Transaktions-id",
+    de: "Transaktions-ID",
+    el: "Αναγνωριστικό συναλλαγής",
     en: "Transaction ID",
-  },
+    es: "ID de transacción",
+    fa: "شناسه تراکنش",
+    fil: "ID ng Transaksyon",
+    fr: "ID de transaction",
+    ha: "ID na kasuwanci",
+    hi: "लेन-देन आईडी",
+    id: "ID Transaksi",
+    it: "ID transazione",
+    ja: "取引ID",
+    jv: "ID transaksi",
+    ko: "거래 ID",
+    mr: "व्यवहार आयडी",
+    ms: "ID Transaksi",
+    nb: "Transaksjons-ID",
+    nl: "Transactie-ID",
+    pa: "ਲੈਣ-ਦੇਣ ਆਈਡੀ",
+    pl: "Identyfikator transakcji",
+    pt: "ID da transação",
+    ro: "ID tranzacție",
+    ru: "Идентификатор транзакции",
+    sv: "Transaktions-ID",
+    sw: "Kitambulisho cha muamala",
+    ta: "பரிவர்த்தனை ஐடி",
+    te: "లావాదేవీ ID",
+    th: "รหัสธุรกรรม",
+    tr: "İşlem Kimliği",
+    uk: "Ідентифікатор транзакції",
+    ur: "ٹرانزیکشن ID",
+    vi: "Mã giao dịch",
+    zh: "交易编号",
+    zh_TW: "交易編號"
+  }
 };
 
 export default translations;

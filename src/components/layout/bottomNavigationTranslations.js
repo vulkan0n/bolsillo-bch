@@ -36,7 +36,7 @@ const translations = {
     ur: "والٹ",
     vi: "Ví",
     zh: "钱包",
-    zh_TW: "Wallet",
+    zh_TW: "Wallet"
   },
   explore: {
     ar: "يستكشف",
@@ -75,7 +75,7 @@ const translations = {
     ur: "دریافت کریں۔",
     vi: "Khám phá",
     zh: "探索",
-    zh_TW: "探索",
+    zh_TW: "探索"
   },
   settings: {
     ar: "إعدادات",
@@ -114,11 +114,47 @@ const translations = {
     ur: "ترتیبات",
     vi: "Cài đặt",
     zh: "设置",
-    zh_TW: "Settings",
+    zh_TW: "Settings"
   },
   assets: {
+    ar: "أصول",
+    bn: "সম্পদ",
+    da: "Aktiver",
+    de: "Vermögenswerte",
+    el: "Ακίνητη περιουσία",
     en: "Assets",
-  },
+    es: "Activos",
+    fa: "دارایی ها",
+    fil: "Mga asset",
+    fr: "Actifs",
+    ha: "Kadari",
+    hi: "संपत्ति",
+    id: "Aktiva",
+    it: "Attività",
+    ja: "資産",
+    jv: "Aset",
+    ko: "자산",
+    mr: "मालमत्ता",
+    ms: "Aset",
+    nb: "Eiendeler",
+    nl: "Activa",
+    pa: "ਸੰਪਤੀਆਂ",
+    pl: "Aktywa",
+    pt: "Ativos",
+    ro: "Active",
+    ru: "Ресурсы",
+    sv: "Tillgångar",
+    sw: "Mali",
+    ta: "சொத்துக்கள்",
+    te: "ఆస్తులు",
+    th: "สินทรัพย์",
+    tr: "Varlıklar",
+    uk: "Активи",
+    ur: "اثاثے",
+    vi: "Tài sản",
+    zh: "资产",
+    zh_TW: "資產"
+  }
 };
 
 export default translations;

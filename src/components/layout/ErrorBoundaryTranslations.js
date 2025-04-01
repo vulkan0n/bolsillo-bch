@@ -36,7 +36,7 @@ const translations = {
     ur: "کچھ غلط ہو گیا...",
     vi: "Đã xảy ra lỗi...",
     zh: "出了些问题...",
-    zh_TW: "出了些問題...",
+    zh_TW: "出了些問題..."
   },
   hereCanTry: {
     ar: "إليك ما يمكنك تجربته",
@@ -75,7 +75,7 @@ const translations = {
     ur: "یہ ہے جو آپ کوشش کر سکتے ہیں۔",
     vi: "Đây là những gì bạn có thể thử",
     zh: "您可以尝试以下方法",
-    zh_TW: "這是你可以嘗試的",
+    zh_TW: "這是你可以嘗試的"
   },
   restartApp: {
     ar: "إعادة تشغيل التطبيق",
@@ -114,7 +114,7 @@ const translations = {
     ur: "ایپ کو دوبارہ شروع کریں۔",
     vi: "Khởi động lại ứng dụng",
     zh: "重启应用程序",
-    zh_TW: "重新啟動應用程式",
+    zh_TW: "重新啟動應用程式"
   },
   resetSettings: {
     ar: "اعادة الضبط",
@@ -153,7 +153,7 @@ const translations = {
     ur: "ترتیبات کو دوبارہ ترتیب دیں۔",
     vi: "Đặt lại cài đặt",
     zh: "重新设置",
-    zh_TW: "重新設定",
+    zh_TW: "重新設定"
   },
   rebuildWallet: {
     ar: "إعادة بناء المحفظة",
@@ -192,7 +192,7 @@ const translations = {
     ur: "والیٹ کو دوبارہ بنائیں",
     vi: "Xây dựng lại ví",
     zh: "重建钱包",
-    zh_TW: "重建錢包",
+    zh_TW: "重建錢包"
   },
   errorMessage: {
     ar: "رسالة خطأ",
@@ -231,11 +231,47 @@ const translations = {
     ur: "غلطی کا پیغام",
     vi: "Thông báo lỗi",
     zh: "错误信息",
-    zh_TW: "錯誤訊息",
+    zh_TW: "錯誤訊息"
   },
   exportLogs: {
+    ar: "سجلات التصدير",
+    bn: "লগ রপ্তানি করুন",
+    da: "Eksporter logs",
+    de: "Protokolle exportieren",
+    el: "Εξαγωγή αρχείων καταγραφής",
     en: "Export Logs",
-  },
+    es: "Exportar registros",
+    fa: "صادرات سیاهههای مربوط",
+    fil: "I-export ang mga Log",
+    fr: "Exporter les journaux",
+    ha: "Fitar da Logs",
+    hi: "लॉग निर्यात करें",
+    id: "Ekspor Log",
+    it: "Esporta registri",
+    ja: "ログのエクスポート",
+    jv: "Ekspor Log",
+    ko: "로그 내보내기",
+    mr: "लॉग निर्यात करा",
+    ms: "Eksport Log",
+    nb: "Eksporter logger",
+    nl: "Logboeken exporteren",
+    pa: "ਲੌਗ ਨਿਰਯਾਤ ਕਰੋ",
+    pl: "Eksportuj dzienniki",
+    pt: "Exportar Logs",
+    ro: "Exportă jurnalele",
+    ru: "Экспорт журналов",
+    sv: "Exportera loggar",
+    sw: "Hamisha Kumbukumbu",
+    ta: "பதிவுகளை ஏற்றுமதி செய்",
+    te: "లాగ్‌లను ఎగుమతి చేయండి",
+    th: "การส่งออกบันทึก",
+    tr: "İhracat Günlükleri",
+    uk: "Експорт журналів",
+    ur: "لاگز برآمد کریں۔",
+    vi: "Xuất Nhật Ký",
+    zh: "导出日志",
+    zh_TW: "匯出日誌"
+  }
 };
 
 export default translations;

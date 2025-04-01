@@ -36,7 +36,7 @@ const translations = {
     ur: "کریڈٹ",
     vi: "Tín dụng",
     zh: "学分",
-    zh_TW: "製作人員",
+    zh_TW: "製作人員"
   },
   developedWith: {
     ar: "تم تطويره بواسطة 💚 بواسطه",
@@ -75,7 +75,7 @@ const translations = {
     ur: "💚 کے ساتھ تیار کیا گیا",
     vi: "Phát triển với 💚 bởi",
     zh: "💚 开发",
-    zh_TW: "由 💚 開發",
+    zh_TW: "由 💚 開發"
   },
   contributors: {
     ar: "Kallisti.cash و Bitcoin Cash Podcast",
@@ -114,7 +114,7 @@ const translations = {
     ur: "کالسٹی اور دی بٹ کوائن کیش پادکاسٹ",
     vi: "Kallisti.cash và The Bitcoin Cash Podcast",
     zh: "Kallisti.cash 和比特币现金播客",
-    zh_TW: "卡利斯提和比特幣現金播客",
+    zh_TW: "卡利斯提和比特幣現金播客"
   },
   flipstarterContributors: {
     ar: "المساهمون Flipstarter",
@@ -153,7 +153,7 @@ const translations = {
     ur: "فلپسٹارٹر کنٹریبیوٹرز",
     vi: "Người đóng góp Flipstarter",
     zh: "Flipstarter 贡献者",
-    zh_TW: "Flipstarter 貢獻者",
+    zh_TW: "Flipstarter 貢獻者"
   },
   developers: {
     ar: "مساهمات التنمية",
@@ -192,7 +192,7 @@ const translations = {
     ur: "ترقیاتی شراکتیں۔",
     vi: "Đóng góp phát triển",
     zh: "发展贡献",
-    zh_TW: "發展貢獻",
+    zh_TW: "發展貢獻"
   },
   translators: {
     ar: "المطورين المساهمين",
@@ -231,7 +231,7 @@ const translations = {
     ur: "شراکت دار ڈیولپرز",
     vi: "Nhà phát triển đóng góp",
     zh: "贡献开发者",
-    zh_TW: "貢獻開發者",
+    zh_TW: "貢獻開發者"
   },
   specialThanks: {
     ar: "شكر خاص",
@@ -270,7 +270,7 @@ const translations = {
     ur: "خصوصی شکرگزاری",
     vi: "Cảm ơn Đặc biệt",
     zh: "特别感谢",
-    zh_TW: "特別感謝",
+    zh_TW: "特別感謝"
   },
   testers: {
     ar: "المُختبرين",
@@ -309,11 +309,47 @@ const translations = {
     ur: "ٹیسٹرز",
     vi: "Người kiểm tra",
     zh: "测试人员",
-    zh_TW: "測試人員",
+    zh_TW: "測試人員"
   },
   docs: {
+    ar: "التوثيق",
+    bn: "ডকুমেন্টেশন",
+    da: "Dokumentation",
+    de: "Dokumentation",
+    el: "Απόδειξη με έγγραφα",
     en: "Documentation",
-  },
+    es: "Documentación",
+    fa: "مستندات",
+    fil: "Dokumentasyon",
+    fr: "Documentation",
+    ha: "Takaddun bayanai",
+    hi: "प्रलेखन",
+    id: "Dokumentasi",
+    it: "Documentazione",
+    ja: "ドキュメント",
+    jv: "Dokumentasi",
+    ko: "선적 서류 비치",
+    mr: "दस्तऐवजीकरण",
+    ms: "Dokumentasi",
+    nb: "Dokumentasjon",
+    nl: "Documentatie",
+    pa: "ਦਸਤਾਵੇਜ਼ੀਕਰਨ",
+    pl: "Dokumentacja",
+    pt: "Documentação",
+    ro: "Documentare",
+    ru: "Документация",
+    sv: "Dokumentation",
+    sw: "Nyaraka",
+    ta: "ஆவணப்படுத்தல்",
+    te: "డాక్యుమెంటేషన్",
+    th: "เอกสารประกอบ",
+    tr: "Belgeleme",
+    uk: "Документація",
+    ur: "دستاویزی",
+    vi: "Tài liệu",
+    zh: "文档",
+    zh_TW: "文件"
+  }
 };
 
 export default translations;
