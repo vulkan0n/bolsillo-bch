@@ -134,7 +134,6 @@ export default function AssetsViewTokenDetail() {
     });
   };
 
-
   return (
     <FullColumn key={tokenData.category} className="justify-between">
       <div className="p-1">
@@ -332,6 +331,7 @@ export default function AssetsViewTokenDetail() {
   );
 }
 
+/* eslint-disable react/prop-types */
 function SelectionDisplay({ selection, onConfirm, onCancel }) {
   const selectedAmount = selection.length;
 

@@ -50,7 +50,7 @@ async function post_init() {
   Log.log("* POST_INIT *");
   await SplashScreen.hide();
   redux_post_init();
-  
+
   const Bcmr = BcmrService();
   Bcmr.preloadMetadataRegistries();
 }

@@ -20,7 +20,6 @@ import AddressManagerService, {
   AddressEntity,
 } from "@/services/AddressManagerService";
 import AddressScannerService from "@/services/AddressScannerService";
-import TokenManagerService from "@/services/TokenManagerService";
 
 import ToastService from "@/services/ToastService";
 
@@ -84,8 +83,6 @@ export const walletBalanceUpdate = createAction(
     const previousBalance = BigInt(wallet.balance);
     const currentBalance = BigInt(sqlWallet.balance);
     const currentSpendableBalance = BigInt(sqlWallet.spendable_balance);
-
-    const TokenManager = TokenManagerService(wallet.walletHash);
 
     // show receive notification
     if (currentBalance > previousBalance && isChange === false) {
