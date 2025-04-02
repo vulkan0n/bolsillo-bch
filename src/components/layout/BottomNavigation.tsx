@@ -44,14 +44,12 @@ export default function BottomNavigation() {
         label={translate(translations.wallet)}
       />
 
-      {isPrerelease && (
-        <NavButton
-          to={lastAssetsPath}
-          activeIcon={BankFilled}
-          icon={BankOutlined}
-          label={translate(translations.assets)}
-        />
-      )}
+      <NavButton
+        to={lastAssetsPath}
+        activeIcon={BankFilled}
+        icon={BankOutlined}
+        label={translate(translations.assets)}
+      />
 
       {shouldDisplayExploreTab && (
         <NavButton
