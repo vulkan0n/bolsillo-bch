@@ -67,7 +67,7 @@ function ConsoleService() {
 
   async function exportLogs() {
     const filename = `selene/selene.log.${Date.now()}.txt`;
-    const data = lines.join("\n~ ");
+    const data = lines.map((l) => l.message).join("\n~ ");
 
     await Filesystem.writeFile({
       path: filename,
