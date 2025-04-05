@@ -272,14 +272,12 @@ export default function WalletViewSend() {
   });
 
   const handleSendMaxTokens = (tokenId) => {
-    const t = tokenData.find((token) => token.category === tokenId);
-    if (!t) {
-      throw new Error("How did you do that?");
-    }
+    //const t = tokenData.find((token) => token.category === tokenId);
+    const { amount } = TokenManager.calculateTokenAmounts(tokenId);
 
-    setSatoshiInput(t.token_amount);
+    setSatoshiInput(amount);
     // force re-render of atoshiInput component
-    setSatoshiInputKey(t.token_amount.toString());
+    setSatoshiInputKey(amount.toString());
   };
 
   const handleSendMax = () => {
