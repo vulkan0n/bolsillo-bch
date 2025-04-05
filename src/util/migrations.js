@@ -297,10 +297,21 @@ const walletdb_migrations = [
 
     return query.join("");
   },
-  /*function migrate_v5() {
+  function migrate_v5() {
     const query = [];
 
+    // 2024.04.4: users upgrading to 2024.04.3 experienced an issue where balances reported as zero
+    // rebuilding the wallet fixes this. let's force everyone to rebuild just in case.
+    query.push(`UPDATE wallet SET genesis_height=NULL;`);
+
     query.push("PRAGMA user_version = 6;");
+
+    return query.join("");
+  },
+  /*function migrate_v6() {
+    const query = [];
+
+    query.push("PRAGMA user_version = 7;");
 
     return query.join("");
   },*/
