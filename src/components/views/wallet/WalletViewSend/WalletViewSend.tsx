@@ -109,9 +109,9 @@ export default function WalletViewSend() {
   // used to force re-render of SatoshiInput component with MAX button
   const [satoshiInputKey, setSatoshiInputKey] = useState("satoshiInputKey");
 
-  const { amount: token_amount } = TokenManager.calculateTokenAmounts(
-    tokenData.category
-  );
+  const { amount: token_amount } = hasTokens
+    ? TokenManager.calculateTokenAmounts(tokenData.category)
+    : { amount: 0n };
 
   const isInsufficientTokens = hasTokens && satoshiInput > token_amount;
 
