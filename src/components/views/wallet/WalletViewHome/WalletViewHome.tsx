@@ -101,7 +101,7 @@ export default function WalletViewHome() {
 
   // "Request Amount" state
   const [shouldShowRequestAmount, setShouldShowRequestAmount] = useState(false);
-  const [satoshiInput, setSatoshiInput] = useState(0);
+  const [satoshiInput, setSatoshiInput] = useState(0n);
 
   const handleRequestAmountChange = (satInput) => {
     setSatoshiInput(satInput);
@@ -136,10 +136,10 @@ export default function WalletViewHome() {
     <ScannerOverlay />
   ) : (
     <FullColumn className="justify-between">
-      <div className="font-mono text-white/90">
-        <div className="w-full mx-auto bg-primary/90">
+      <div className="text-white/90">
+        <div className="w-full mx-auto bg-primary/90 font-mono">
           <div className="py-1 flex justify-center items-center text-sm text-center uppercase">
-            Receive
+            {translate(translations.receive)}
           </div>
           <div className="w-fit mx-auto">
             <button
@@ -218,9 +218,9 @@ export default function WalletViewHome() {
           </div>
           {!shouldShowRequestAmount && (
             <label
-              className={`font-sans ${shouldUseTokenAddress ? "bg-secondary" : "bg-primary"} px-2 py-1.5 border-l border-white/20`}
+              className={`${shouldUseTokenAddress ? "bg-secondary" : "bg-primary"} px-1.5 py-1.5 border-l border-white/20 text-nowrap truncate flex items-center justify-between`}
             >
-              Receive Tokens{" "}
+              {translate(translations.receiveTokens)}&nbsp;
               <input
                 type="checkbox"
                 checked={shouldUseTokenAddress}

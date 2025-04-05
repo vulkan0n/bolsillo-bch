@@ -1,4 +1,7 @@
 const translations = {
+  receiveTokens: {
+    en: "Receive Tokens",
+  },
   receive: {
     ar: "يستلم",
     bn: "গ্রহণ করুন",
