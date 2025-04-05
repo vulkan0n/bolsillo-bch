@@ -153,6 +153,11 @@ export default function TransactionBuilderService(walletHash: string) {
       (sum, cur) => sum + cur.valueSatoshis,
       0n
     );
+
+    const recipientCoinTotal = recipientVouts
+      .filter((out) => out.token === undefined)
+      .reduce((sum, cur) => sum + cur.valueSatoshis, 0n);
+
     const sendTotal = recipientOutputTotal + fee;
 
     Log.debug(
@@ -200,7 +205,7 @@ export default function TransactionBuilderService(walletHash: string) {
       })
       .flat();
 
-    const coinInputs = UtxoManager.selectCoins(sendTotal);
+    const coinInputs = UtxoManager.selectCoins(recipientCoinTotal + fee);
 
     const inputs = hasSelection ? selection : [...tokenInputs, ...coinInputs];
 

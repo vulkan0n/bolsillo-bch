@@ -124,8 +124,8 @@ export default function UtxoManagerService(walletHash: string) {
   }
 
   function selectTokens(category: string, amount: bigint) {
-    Log.debug("selectTokens", category, amount);
     const targetAmount = amount;
+    Log.debug("selectTokens", category, targetAmount);
 
     const tokenUtxos = getCategoryUtxos(category);
     const availableTokenSum = tokenUtxos.reduce(
@@ -133,7 +133,7 @@ export default function UtxoManagerService(walletHash: string) {
       0n
     );
 
-    if (availableTokenSum < targetAmount) {
+    if (availableTokenSum < targetAmount || targetAmount === 0n) {
       return [];
     }
 
@@ -168,8 +168,8 @@ export default function UtxoManagerService(walletHash: string) {
 
   // attempts to find the best combination of UTXOs to fulfill the amount and fee
   function selectCoins(amount: bigint) {
-    Log.debug("selectCoins", amount);
     const targetAmount = amount;
+    Log.debug("selectCoins", targetAmount);
 
     // get all available UTXOs (without tokens)
     const allAvailableCoins = getWalletCoins();
@@ -181,7 +181,7 @@ export default function UtxoManagerService(walletHash: string) {
 
     // check if we have enough balance across all UTXOs
     // empty set = insufficient funds
-    if (availableCoinSum < targetAmount) {
+    if (availableCoinSum < targetAmount || targetAmount === 0n) {
       return [];
     }
 
@@ -205,6 +205,8 @@ export default function UtxoManagerService(walletHash: string) {
       [targetAmount.toString()]
     );
 
+    Log.debug("eligibleAddresses", eligibleAddresses);
+
     // 2. if there's a whole address balance that's exact, spend the entire address
     const exactAddresses = eligibleAddresses.filter(
       (address) => address.balance === targetAmount
@@ -217,21 +219,32 @@ export default function UtxoManagerService(walletHash: string) {
     // 3. select from all available UTXOs
     const eligibleCoins = targetUtxos(allAvailableCoins, targetAmount);
 
-    if (eligibleAddresses.length > 0) {
-      // 0th-index eligible address is smallest with balance >= targetAmount
+    // 0th-index eligible address is smallest with balance >= targetAmount
+    let coinAddress = eligibleAddresses.shift();
+    while (coinAddress !== undefined) {
       const addressCoins = targetUtxos(
-        getAddressCoins(eligibleAddresses[0].address),
+        getAddressCoins(coinAddress.address),
         targetAmount
       );
 
+      const addressCoinSum = addressCoins.selection.reduce(
+        (sum, cur) => sum + cur.amount,
+        0n
+      );
+
       // if it's cheaper to spend the "eligible address", do that instead of consolidating utxos
-      if (addressCoins.selection.length < eligibleCoins.selection.length) {
+      if (
+        addressCoinSum >= targetAmount &&
+        addressCoins.selection.length < eligibleCoins.selection.length
+      ) {
         Log.debug(
-          "selectCoins: spending first-eligible address is cheaper than consolidation",
+          "selectCoins: spending eligible address is cheaper than consolidation",
           addressCoins.selection
         );
         return addressCoins.selection;
       }
+
+      coinAddress = eligibleAddresses.shift();
     }
 
     Log.debug(
