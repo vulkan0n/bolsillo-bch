@@ -49,6 +49,7 @@ import { validateBchUri, navigateOnValidUri } from "@/util/uri";
 import { truncateProse } from "@/util/string";
 import { translate } from "@/util/translations";
 import translations from "./translations";
+import SlideToAction from "@/components/atoms/SlideToAction";
 
 const Log = LogService("WalletViewSend");
 
@@ -441,15 +442,11 @@ export default function WalletViewSend() {
                   />
                 </div>
                 <div className="flex-1">
-                  <span className="font-bold">
-                    <Button
-                      label={translate(translations.confirm)}
-                      inverted
-                      fullWidth
-                      onClick={() => confirmSend(false)}
-                      disabled={address === "" || isSending}
-                    />
-                  </span>
+                  <SlideToAction
+                    disabled={address === "" || isSending}
+                    onSlide={() => confirmSend(false)}
+                    label={translate(translations.confirm)}
+                  />
                 </div>
               </div>
             </div>
