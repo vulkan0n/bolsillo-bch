@@ -32,7 +32,7 @@ import { selectActiveWallet } from "@/redux/wallet";
 import TokenManagerService from "@/services/TokenManagerService";
 
 import { truncateProse } from "@/util/string";
-import { navigateOnValidUri } from "@/util/uri";
+import { validateBchUri } from "@/util/uri";
 
 import { useTokenData } from "@/hooks/useTokenData";
 import { useClipboard } from "@/hooks/useClipboard";
@@ -98,17 +98,21 @@ export default function AssetsViewTokenDetail() {
   const nfts = tokenUtxos.filter((utxo) => utxo.nft_capability !== null);
 
   const handleTokenSend = async () => {
-    const { value, spawnPasteToast } = await getClipboardContents();
-    const navTo = await navigateOnValidUri(value);
-    if (navTo) {
+    const { paste, spawnPasteToast } = await getClipboardContents();
+    const { isBip21, address, query } = validateBchUri(paste);
+
+    let navTo = "/wallet/send/";
+    if (isBip21) {
       spawnPasteToast();
-      navigate(navTo, {
-        state: {
-          selection: nftSelection,
-          tokenCategories: [tokenId],
-        },
-      });
+      navTo = [navTo, address, query].join("");
     }
+
+    navigate(navTo, {
+      state: {
+        selection: nftSelection,
+        tokenCategories: [tokenId],
+      },
+    });
   };
 
   const handleNftSelect = (utxo) => {

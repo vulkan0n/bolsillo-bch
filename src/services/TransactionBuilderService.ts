@@ -19,7 +19,7 @@ import AddressManagerService, {
   AddressEntity,
 } from "@/services/AddressManagerService";
 import HdNodeService from "@/services/HdNodeService";
-import { WalletEntity } from "@/services/WalletManagerService";
+import WalletManagerService from "@/services/WalletManagerService";
 import {
   TransactionStub,
   TransactionOutput,
@@ -50,7 +50,10 @@ const Log = LogService("TxBuilder");
 
 export class TransactionBuilderError extends Error {}
 
-export default function TransactionBuilderService(wallet: WalletEntity) {
+export default function TransactionBuilderService(walletHash: string) {
+  const WalletManager = WalletManagerService();
+  const wallet = WalletManager.getWallet(walletHash);
+
   return {
     buildP2pkhTransaction,
   };

@@ -20,16 +20,16 @@ export function useClipboard() {
     // https://developer.mozilla.org/en-US/docs/Web/API/Clipboard#clipboard_availability
     // Error: Reading from clipboard not supported in this browser
     // Firefox users must set "dom.events.asyncClipboard.read" to "true" in about:config
-    const { value } = await Clipboard.read();
+    const { value: paste } = await Clipboard.read();
 
     const Toast = ToastService();
     const spawnPasteToast = () =>
       Toast.spawn({
         icon: <SnippetsOutlined className="text-primary text-4xl" />,
         header: translate(translations.pastedFromClipboard),
-        body: <span className="flex break-all text-sm">{value}</span>,
+        body: <span className="flex break-all text-sm">{paste}</span>,
       });
-    return { value, spawnPasteToast };
+    return { paste, spawnPasteToast };
   }, []);
 
   return { getClipboardContents, handleCopyToClipboard };

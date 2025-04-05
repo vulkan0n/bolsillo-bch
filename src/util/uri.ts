@@ -33,6 +33,7 @@ export function validateBchUri(uri) {
     query,
     requestUri,
     isValid,
+    isBip21,
     isCashAddress,
     isTokenAddress,
     isBase58Address,

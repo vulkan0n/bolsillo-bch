@@ -13,7 +13,10 @@ import {
   MoneyCollectOutlined,
 } from "@ant-design/icons";
 
-import { selectActiveWallet } from "@/redux/wallet";
+import {
+  selectActiveWalletHash,
+  selectActiveWalletBalance,
+} from "@/redux/wallet";
 import {
   selectCurrencySettings,
   selectInstantPaySettings,
@@ -62,10 +65,11 @@ export default function WalletViewSend() {
 
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const wallet = useSelector(selectActiveWallet);
+  const walletHash = useSelector(selectActiveWalletHash);
+  const spendable_balance = useSelector(selectActiveWalletBalance);
   const sync = useSelector(selectSyncState);
 
-  const TokenManager = TokenManagerService(wallet.walletHash);
+  const TokenManager = TokenManagerService(walletHash);
 
   const { state: sendState } = location;
   const selection = sendState?.selection || [];
@@ -110,7 +114,7 @@ export default function WalletViewSend() {
   const isInsufficientFunds =
     selectionAmount > 0
       ? satoshiInput > selectionAmount
-      : satoshiInput > wallet.spendable_balance;
+      : satoshiInput > spendable_balance;
 
   const { isInstantPayEnabled, instantPayThreshold } = useSelector(
     selectInstantPaySettings
@@ -186,7 +190,7 @@ export default function WalletViewSend() {
     }
 
     const TransactionManager = TransactionManagerService();
-    const TransactionBuilder = TransactionBuilderService(wallet);
+    const TransactionBuilder = TransactionBuilderService(walletHash);
 
     const coinRecipients = hasTokens ? [] : [{ address, amount: satoshiInput }];
 
@@ -232,7 +236,7 @@ export default function WalletViewSend() {
     try {
       const { isSuccess, result } = await TransactionManager.sendTransaction(
         { txid: transaction.tx_hash, hex: transaction.tx_hex },
-        wallet.walletHash
+        walletHash
       );
 
       if (isSuccess) {
@@ -282,12 +286,10 @@ export default function WalletViewSend() {
 
   const handleSendMax = () => {
     let amount =
-      selectionAmount > 0
-        ? BigInt(selectionAmount)
-        : BigInt(wallet.spendable_balance);
+      selectionAmount > 0 ? BigInt(selectionAmount) : BigInt(spendable_balance);
 
-    const TransactionBuilder = TransactionBuilderService(wallet);
-    const AddressManager = AddressManagerService(wallet.walletHash);
+    const TransactionBuilder = TransactionBuilderService(walletHash);
+    const AddressManager = AddressManagerService(walletHash);
 
     const tryAddress =
       address || AddressManager.getUnusedAddresses(1, 0)[0].address;
@@ -350,7 +352,7 @@ export default function WalletViewSend() {
                   open
                 />
               ) : (
-                <Address address={address} />
+                <Address address={address} className="tracking-[-0.09em]" />
               )}
             </div>
           </div>
@@ -463,7 +465,7 @@ export default function WalletViewSend() {
 
 /* eslint-disable react/prop-types */
 function InputSelection({ inputs }) {
-  const { walletHash } = useSelector(selectActiveWallet);
+  const walletHash = useSelector(selectActiveWalletHash);
   const TokenManager = TokenManagerService(walletHash);
 
   const coins = inputs.filter((utxo) => utxo.token_category === null);
@@ -537,7 +539,7 @@ function InputSelection({ inputs }) {
 }
 
 function NftSelectionDisplay({ nftUtxos }) {
-  const { walletHash } = useSelector(selectActiveWallet);
+  const walletHash = useSelector(selectActiveWalletHash);
   const TokenManager = TokenManagerService(walletHash);
   return (
     <div className="mt-1 pb-3 flex flex-wrap gap-1 justify-around">

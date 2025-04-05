@@ -155,7 +155,10 @@ function OutputListItem({ output, i }) {
         {isOpReturn ? (
           <div className="font-mono font-bold text-zinc-700">OP_RETURN</div>
         ) : (
-          <Address address={output.scriptPubKey.addresses[0]} />
+          <Address
+            address={output.scriptPubKey.addresses[0]}
+            className="tracking-tight"
+          />
         )}
       </div>
       <div className="flex justify-between">

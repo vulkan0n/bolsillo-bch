@@ -54,7 +54,7 @@ function WalletViewSendSuccess() {
 
   return (
     <div
-      className="fixed top-0 left-0 w-screen h-screen z-50 bg-primary"
+      className="fixed top-0 left-0 w-screen h-screen z-50 bg-primary overflow-y-auto overscroll-none"
       onClick={() => navigate("/")}
     >
       <div
@@ -139,9 +139,10 @@ function OutputListItem({ output, i }) {
   return (
     <div className={`p-1.5 ${zebraCss} rounded-sm`}>
       <div className="flex text-sm items-center">
-        <div>
-          <Address address={output.scriptPubKey.addresses[0]} />
-        </div>
+        <Address
+          address={output.scriptPubKey.addresses[0]}
+          className="tracking-tight"
+        />
       </div>
       <div className="flex justify-between">
         <div>

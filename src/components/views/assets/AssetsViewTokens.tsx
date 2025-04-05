@@ -18,7 +18,7 @@ import SeleneLogo from "@/atoms/SeleneLogo";
 import { useClipboard } from "@/hooks/useClipboard";
 
 import { truncateProse } from "@/util/string";
-import { navigateOnValidUri } from "@/util/uri";
+import { validateBchUri } from "@/util/uri";
 
 import { translate } from "@/util/translations";
 import translations from "./translations";
@@ -132,17 +132,20 @@ export function TokenCard({ token }: { token: TokenEntity }) {
   const { handleCopyToClipboard, getClipboardContents } = useClipboard();
 
   const handleTokenSend = async () => {
-    const { value, spawnPasteToast } = await getClipboardContents();
+    const { paste, spawnPasteToast } = await getClipboardContents();
+    const { isBip21, address, query } = validateBchUri(paste);
 
-    const navTo = await navigateOnValidUri(value);
-    if (navTo) {
+    let navTo = "/wallet/send/";
+    if (isBip21) {
       spawnPasteToast();
-      navigate(navTo, {
-        state: {
-          tokenCategories: [token.category],
-        },
-      });
+      navTo = [navTo, address, query].join("");
     }
+
+    navigate(navTo, {
+      state: {
+        tokenCategories: [token.category],
+      },
+    });
   };
 
   return (

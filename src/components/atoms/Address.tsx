@@ -11,6 +11,7 @@ interface AddressProps {
   withPrefix?: boolean;
   color?: string;
   format?: "cashaddr" | "tokenaddr" | "base58";
+  className?: string;
 }
 
 export default function Address({
@@ -20,6 +21,7 @@ export default function Address({
   withPrefix = false,
   color = "",
   format = undefined,
+  className = undefined,
 }: AddressProps) {
   const PREFIX_LENGTH = 6;
   const SUFFIX_LENGTH = 6;
@@ -68,7 +70,7 @@ export default function Address({
 
   return (
     <span
-      className={`tracking-tighter ${color} ${myAddressStyle} ${myChangeStyle} truncate`}
+      className={`${color} ${myAddressStyle} ${myChangeStyle} truncate ${className}`}
     >
       <span className="font-bold">{prefix}</span>
       {short ? "-" : middle}

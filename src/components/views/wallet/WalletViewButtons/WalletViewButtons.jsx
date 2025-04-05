@@ -29,8 +29,8 @@ export default function WalletViewButtons() {
   const pasteAddressFromClipboard = async () => {
     let navTo = "";
     try {
-      const { value, spawnPasteToast } = await getClipboardContents();
-      navTo = await navigateOnValidUri(value);
+      const { paste, spawnPasteToast } = await getClipboardContents();
+      navTo = await navigateOnValidUri(paste);
       if (navTo !== "") {
         spawnPasteToast();
         navigate(navTo);
