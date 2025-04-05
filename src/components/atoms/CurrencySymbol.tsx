@@ -17,7 +17,9 @@ export default function CurrencySymbol({
 
   let findCurrency = currency;
   if (!findCurrency) {
-    findCurrency = shouldPreferLocalCurrency ? localCurrency : denomination;
+    findCurrency = shouldPreferLocalCurrency
+      ? localCurrency
+      : denomination.toUpperCase();
   }
 
   const currencyObj =

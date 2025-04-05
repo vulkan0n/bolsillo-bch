@@ -41,7 +41,12 @@ export default function CurrencySettings() {
           }
         >
           {currencyList
-            .filter((c) => c.currency !== "BCH")
+            .filter(
+              (c) =>
+                VALID_DENOMINATIONS.find(
+                  (d) => d.toLowerCase() === c.currency.toLowerCase()
+                ) === undefined
+            )
             .map((c) => (
               <option key={c.currency} value={c.currency}>
                 {c.currency} {c.symbol}
