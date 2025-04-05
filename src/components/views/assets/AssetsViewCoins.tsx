@@ -127,9 +127,9 @@ export default function AssetsViewCoins() {
         ))}
 
         {coinAddresses.length === 0 && (
-          <div className="text-center py-4 rounded text-2xl text-zinc-600/80 my-4">
+          <div className="text-center py-4 rounded text-2xl text-zinc-700/90">
             {translate(translations.noCoins)}
-            <div className="flex items-center justify-center mt-4">
+            <div className="flex items-center justify-center mt-2">
               <SeleneLogo className="h-32" />
             </div>
           </div>

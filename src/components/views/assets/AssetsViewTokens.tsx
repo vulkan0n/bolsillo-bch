@@ -108,7 +108,7 @@ export default function AssetsViewTokens() {
     <div className="p-1">
       <KeyWarning walletHash={walletHash} />
       {tokenData.length === 0 ? (
-        <div className="text-center py-4 rounded text-2xl text-zinc-600/80 my-8">
+        <div className="text-center py-4 rounded text-2xl text-zinc-700/90 my-4">
           {translate(translations.noTokens)}
           <div className="flex justify-center items-center mt-4">
             <SeleneLogo className="h-32" cashtokens />
