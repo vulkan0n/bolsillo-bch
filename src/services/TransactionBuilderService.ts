@@ -204,6 +204,10 @@ export default function TransactionBuilderService(wallet: WalletEntity) {
     const inputTotal = inputs.reduce((sum, cur) => sum + cur.amount, 0n);
     Log.debug("buildP2pkhTransaction using inputs:", inputs, inputTotal);
 
+    if (inputTotal < sendTotal) {
+      return (inputTotal - sendTotal) * -1n;
+    }
+
     const preparedTokenChange = prepareTokenChange(inputs, recipientVouts);
     const tokenChangeAmount = preparedTokenChange.reduce(
       (sum, cur) => sum + cur.valueSatoshis,

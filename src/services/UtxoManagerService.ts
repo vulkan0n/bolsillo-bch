@@ -215,34 +215,30 @@ export default function UtxoManagerService(walletHash: string) {
     }
 
     // 3. select from all available UTXOs
-    const eligibleCoins = {
-      available: targetUtxos(allAvailableCoins, targetAmount),
+    const eligibleCoins = targetUtxos(allAvailableCoins, targetAmount);
+
+    if (eligibleAddresses.length > 0) {
       // 0th-index eligible address is smallest with balance >= targetAmount
-      address: targetUtxos(
+      const addressCoins = targetUtxos(
         getAddressCoins(eligibleAddresses[0].address),
         targetAmount
-      ),
-    };
-
-    Log.debug("eligibleCoins:", eligibleCoins);
-
-    if (
-      eligibleCoins.address.selection.length > 0 &&
-      eligibleCoins.address.selection.length <
-        eligibleCoins.available.selection.length
-    ) {
-      Log.debug(
-        "selectCoins: spending first-eligible address is cheaper than consolidation",
-        eligibleCoins.address.selection
       );
-      return eligibleCoins.address.selection;
+
+      // if it's cheaper to spend the "eligible address", do that instead of consolidating utxos
+      if (addressCoins.selection.length < eligibleCoins.selection.length) {
+        Log.debug(
+          "selectCoins: spending first-eligible address is cheaper than consolidation",
+          addressCoins.selection
+        );
+        return addressCoins.selection;
+      }
     }
 
     Log.debug(
       "selectCoins spending from all available UTXOs",
-      eligibleCoins.available.selection
+      eligibleCoins.selection
     );
-    return eligibleCoins.available.selection;
+    return eligibleCoins.selection;
   }
 
   function targetUtxos(utxos, targetAmount) {

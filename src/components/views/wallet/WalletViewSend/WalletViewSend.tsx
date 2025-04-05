@@ -271,10 +271,15 @@ export default function WalletViewSend() {
     }
   });
 
-  const handleSendMaxTokens = () => {
-    setSatoshiInput(0n);
-    // force re-render of SatoshiInput component
-    setSatoshiInputKey("0");
+  const handleSendMaxTokens = (tokenId) => {
+    const t = tokenData.find((token) => token.category === tokenId);
+    if (!t) {
+      throw new Error("How did you do that?");
+    }
+
+    setSatoshiInput(t.token_amount);
+    // force re-render of atoshiInput component
+    setSatoshiInputKey(t.token_amount.toString());
   };
 
   const handleSendMax = () => {
@@ -290,14 +295,15 @@ export default function WalletViewSend() {
       address || AddressManager.getUnusedAddresses(1, 0)[0].address;
 
     let transaction = TransactionBuilder.buildP2pkhTransaction({
-      selection: [...selection],
+      selection,
       recipients: [{ address: tryAddress, amount }],
     });
 
     while (typeof transaction !== "object") {
-      amount = transaction;
+      const diff = transaction - amount;
+      amount -= diff;
       transaction = TransactionBuilder.buildP2pkhTransaction({
-        selection: [...selection],
+        selection,
         recipients: [{ address: tryAddress, amount }],
       });
     }
@@ -389,7 +395,7 @@ export default function WalletViewSend() {
                     <Button
                       label="MAX"
                       className="spacing-wide text-bold text-zinc-800 rounded-full border border-zinc-200 bg-zinc-100"
-                      onClick={handleSendMaxTokens}
+                      onClick={() => handleSendMaxTokens(tokenCategories[0])}
                     />
                   </div>
                 </div>
