@@ -13,11 +13,15 @@ import TokenIcon from "@/atoms/TokenIcon";
 import TokenAmount from "@/atoms/TokenAmount";
 import KeyWarning from "@/atoms/KeyWarning/KeyWarning";
 import Button from "@/atoms/Button";
+import SeleneLogo from "@/atoms/SeleneLogo";
 
 import { useClipboard } from "@/hooks/useClipboard";
 
 import { truncateProse } from "@/util/string";
 import { navigateOnValidUri } from "@/util/uri";
+
+import { translate } from "@/util/translations";
+import translations from "./translations";
 
 //const Log = LogService("AssetsViewTokens");
 
@@ -105,7 +109,10 @@ export default function AssetsViewTokens() {
       <KeyWarning walletHash={walletHash} />
       {tokenData.length === 0 ? (
         <div className="text-center py-4 rounded text-2xl text-zinc-600/80 my-8">
-          No Tokens
+          {translate(translations.noTokens)}
+          <div className="flex justify-center items-center mt-4">
+            <SeleneLogo className="h-32" cashtokens />
+          </div>
         </div>
       ) : (
         <>

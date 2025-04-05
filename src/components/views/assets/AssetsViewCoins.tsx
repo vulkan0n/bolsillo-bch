@@ -13,9 +13,14 @@ import Satoshi from "@/atoms/Satoshi";
 import Button from "@/atoms/Button";
 import CurrencyFlip from "@/atoms/CurrencyFlip";
 import KeyWarning from "@/atoms/KeyWarning/KeyWarning";
+import SeleneLogo from "@/atoms/SeleneLogo";
+
 import UtxoManagerService from "@/services/UtxoManagerService";
 //import LogService from "@/services/LogService";
 import { useCurrencyFlip } from "@/hooks/useCurrencyFlip";
+
+import { translate } from "@/util/translations";
+import translations from "./translations";
 
 //const Log = LogService("AssetsViewCoins");
 
@@ -123,7 +128,10 @@ export default function AssetsViewCoins() {
 
         {coinAddresses.length === 0 && (
           <div className="text-center py-4 rounded text-2xl text-zinc-600/80 my-4">
-            No Coins
+            {translate(translations.noCoins)}
+            <div className="flex items-center justify-center mt-4">
+              <SeleneLogo className="h-32" />
+            </div>
           </div>
         )}
       </div>
