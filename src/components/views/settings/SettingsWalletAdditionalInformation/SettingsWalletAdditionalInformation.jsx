@@ -40,6 +40,7 @@ export default function SettingsWalletAdditionalInformation() {
   const [isShowXprv, setIsShowXprv] = useState(false);
 
   const network = useSelector(selectBchNetwork);
+  const libauthNetwork = network === "mainnet" ? "mainnet" : "testnet";
 
   const WalletManager = WalletManagerService();
   const wallet = WalletManager.getWallet(walletHash);
@@ -50,10 +51,16 @@ export default function SettingsWalletAdditionalInformation() {
   const hdMaster = deriveHdPrivateNodeFromSeed(seed);
 
   const hdPrivate = deriveHdPath(hdMaster, `${derivationPath}`);
-  const xPrv = encodeHdPrivateKey({ node: hdPrivate, network });
+  const { hdPrivateKey: xPrv } = encodeHdPrivateKey({
+    node: hdPrivate,
+    network: libauthNetwork,
+  });
 
   const hdPublic = deriveHdPublicNode(hdPrivate);
-  const xPub = encodeHdPublicKey({ node: hdPublic, network });
+  const { hdPublicKey: xPub } = encodeHdPublicKey({
+    node: hdPublic,
+    network: libauthNetwork,
+  });
 
   return (
     <>
