@@ -31,7 +31,6 @@ export function satsToBch(sats: bigint | string | number | Decimal): {
 export function bchToSats(bch, denomination = "bch"): bigint {
   switch (denomination) {
     case "sats":
-    case "token":
       return BigInt(bch.toString());
 
     case "mbch":

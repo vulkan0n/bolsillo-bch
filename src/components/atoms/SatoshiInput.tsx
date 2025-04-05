@@ -41,6 +41,8 @@ export const SatoshiInput = forwardRef<HTMLInputElement, SatoshiInputProps>(
     const denomination =
       tokenDecimals !== undefined ? "token" : userDenomination;
 
+    const tokenScalar = tokenDecimals !== undefined ? 10 ** -tokenDecimals : 1;
+
     // use deviceInfo for deviceInfo.platform
     const deviceInfo = useSelector(selectDeviceInfo);
 
@@ -50,8 +52,9 @@ export const SatoshiInput = forwardRef<HTMLInputElement, SatoshiInputProps>(
         if (!sats || new Decimal(sats).equals(0)) {
           return "0";
         }
+
         if (denomination === "token") {
-          return sats.toString();
+          return new Decimal(sats).mul(tokenScalar).toString();
         }
 
         if (shouldPreferLocalCurrency) {
@@ -60,11 +63,17 @@ export const SatoshiInput = forwardRef<HTMLInputElement, SatoshiInputProps>(
 
         return satsToBch(sats)[denomination].toString();
       },
-      [shouldPreferLocalCurrency, localCurrency, denomination]
+      [shouldPreferLocalCurrency, localCurrency, denomination, tokenScalar]
     );
 
     // get raw satoshi value from any currency input
     const amountToSats = (amount): bigint => {
+      // token mode
+      if (denomination === "token") {
+        const scaledAmount = new Decimal(amount).div(tokenScalar).toString();
+        return BigInt(scaledAmount);
+      }
+
       // fiat mode
       if (shouldPreferLocalCurrency && denomination !== "token") {
         return CurrencyService(localCurrency).fiatToSats(amount);

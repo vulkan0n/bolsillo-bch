@@ -109,7 +109,11 @@ export default function WalletViewSend() {
   // used to force re-render of SatoshiInput component with MAX button
   const [satoshiInputKey, setSatoshiInputKey] = useState("satoshiInputKey");
 
-  const isInsufficientTokens = false;
+  const { amount: token_amount } = TokenManager.calculateTokenAmounts(
+    tokenData.category
+  );
+
+  const isInsufficientTokens = hasTokens && satoshiInput > token_amount;
 
   const isInsufficientFunds =
     selectionAmount > 0
@@ -275,13 +279,12 @@ export default function WalletViewSend() {
     }
   });
 
-  const handleSendMaxTokens = (tokenId) => {
+  const handleSendMaxTokens = () => {
     //const t = tokenData.find((token) => token.category === tokenId);
-    const { amount } = TokenManager.calculateTokenAmounts(tokenId);
 
-    setSatoshiInput(amount);
+    setSatoshiInput(token_amount);
     // force re-render of atoshiInput component
-    setSatoshiInputKey(amount.toString());
+    setSatoshiInputKey(token_amount.toString());
   };
 
   const handleSendMax = () => {
