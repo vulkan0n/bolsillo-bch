@@ -1,23 +1,26 @@
+import { Decimal } from "decimal.js";
 import { useSelector } from "react-redux";
 import { selectLocale } from "@/redux/device";
 
 export default function NumberFormat({
   number = 0,
-  decimals = 0,
+  decimals = undefined,
+  scalar = 0,
 }: {
-  number: number;
-  decimals: number;
+  number: number | bigint;
+  decimals?: number;
+  scalar?: number;
 }) {
   const locale = useSelector(selectLocale);
 
-  const numberFormat =
-    decimals > 0
-      ? new Intl.NumberFormat(locale, {
-          minimumFractionDigits: decimals,
-        }).format(number)
-      : new Intl.NumberFormat(locale, {
-          maximumFractionDigits: decimals,
-        }).format(number);
+  const scaledNumber = new Decimal(number).mul(10 ** scalar).toNumber();
+
+  const numberFormat = decimals
+    ? new Intl.NumberFormat(locale, {
+        minimumFractionDigits: decimals,
+        maximumFractionDigits: decimals,
+      }).format(scaledNumber)
+    : new Intl.NumberFormat(locale).format(scaledNumber);
 
   return <span>{numberFormat}</span>;
 }

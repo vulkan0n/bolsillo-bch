@@ -57,12 +57,14 @@ export default function TokenAmount({ token, nft = false }: TokenAmountProps) {
               <span>{token.fungible_amount > 0 && "+"}</span>
               <NumberFormat
                 number={token.fungible_amount}
+                scalar={-decimals}
                 decimals={decimals}
               />
             </span>
           ) : (
             <NumberFormat
               number={token.amount || token.token_amount}
+              scalar={-decimals}
               decimals={decimals}
             />
           )}
