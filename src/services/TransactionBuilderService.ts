@@ -125,8 +125,10 @@ export default function TransactionBuilderService(walletHash: string) {
   function buildP2pkhTransaction({
     recipients,
     fee = 0n,
+    gas = 0n,
     depth = 0,
     selection = [],
+    nftSelection = [],
   }: {
     recipients: Array<{
       address: string;
@@ -141,8 +143,10 @@ export default function TransactionBuilderService(walletHash: string) {
       };
     }>;
     fee?: bigint;
+    gas?: bigint;
     depth?: number;
     selection?: Array<TransactionOutput>;
+    nftSelection?: Array<TransactionOutput>;
   }): TransactionStub | bigint {
     const hasSelection = selection.length > 0;
 
@@ -158,14 +162,15 @@ export default function TransactionBuilderService(walletHash: string) {
       .filter((out) => out.token === undefined)
       .reduce((sum, cur) => sum + cur.valueSatoshis, 0n);
 
-    const sendTotal = recipientOutputTotal + fee;
+    const sendTotal = recipientOutputTotal + fee + gas;
 
     Log.debug(
       "buildP2pkhTransaction recipients:",
       recipientVouts,
       recipientOutputTotal,
       fee,
-      sendTotal
+      sendTotal,
+      gas
     );
 
     const tokenOutputAmountsByCategory = recipientVouts.reduce(
@@ -188,6 +193,7 @@ export default function TransactionBuilderService(walletHash: string) {
 
     const tokenCategories = Array.from(tokenOutputAmountsByCategory.keys());
     const hasTokens = tokenCategories.length > 0;
+    const hasNft = nftSelection.length > 0;
 
     // gather suitable inputs
     const UtxoManager = UtxoManagerService(wallet.walletHash);
@@ -205,9 +211,11 @@ export default function TransactionBuilderService(walletHash: string) {
       })
       .flat();
 
-    const coinInputs = UtxoManager.selectCoins(recipientCoinTotal + fee);
+    const coinInputs = UtxoManager.selectCoins(recipientCoinTotal + fee + gas);
 
-    const inputs = hasSelection ? selection : [...tokenInputs, ...coinInputs];
+    const inputs = hasSelection
+      ? selection
+      : [...nftSelection, ...tokenInputs, ...coinInputs];
 
     const inputTotal = inputs.reduce((sum, cur) => sum + cur.amount, 0n);
     Log.debug("buildP2pkhTransaction using inputs:", inputs, inputTotal);
@@ -241,13 +249,15 @@ export default function TransactionBuilderService(walletHash: string) {
       return buildP2pkhTransaction({
         recipients,
         selection,
+        nftSelection,
         fee: transaction.minimumFee,
+        gas,
         depth: depth + 1,
       });
     }
 
     // insufficient funds
-    if (inputTotal < finalOutputTotal + fee) {
+    if (inputTotal - fee < finalOutputTotal) {
       const short = (inputTotal - fee - finalOutputTotal) * -1n;
       Log.debug(
         "buildP2pkhTransaction: insufficient funds",
@@ -257,15 +267,17 @@ export default function TransactionBuilderService(walletHash: string) {
         short
       );
 
-      if (hasTokens && wallet.spendable_balance >= finalOutputTotal + fee) {
-        const gasCoins = UtxoManager.selectCoins(short);
-        Log.debug("token tx attempting to gas up", gasCoins, short);
+      if (
+        (hasTokens || hasNft) &&
+        wallet.spendable_balance >= finalOutputTotal + fee
+      ) {
+        Log.debug("token tx attempting to gas up", short);
 
-        const newSelection = [...inputs, ...gasCoins];
         return buildP2pkhTransaction({
           recipients,
-          selection: newSelection,
+          nftSelection,
           fee,
+          gas: short + gas,
           depth: depth + 1,
         });
       }

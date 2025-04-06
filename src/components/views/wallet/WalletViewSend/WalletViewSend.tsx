@@ -73,11 +73,12 @@ export default function WalletViewSend() {
 
   const { state: sendState } = location;
   const selection = sendState?.selection || [];
+  const nftSelection = sendState?.nftSelection || [];
   const tokenCategories = sendState?.tokenCategories || [];
   const selectionAmount = selection.reduce((sum, cur) => sum + cur.amount, 0n);
 
   const hasTokens = tokenCategories.length > 0;
-  const nftSelection = selection.filter((s) => s.nft_capability !== null);
+  const hasNft = nftSelection.length > 0;
 
   // TODO: add ability to send additional BCH with tokens
   //const [isSendingAdditionalBch, setIsSendingAdditionalBch] = useState(false);
@@ -113,7 +114,8 @@ export default function WalletViewSend() {
     ? TokenManager.calculateTokenAmounts(tokenData.category)
     : { amount: 0n };
 
-  const isInsufficientTokens = hasTokens && satoshiInput > token_amount;
+  const isInsufficientTokens =
+    hasTokens && !hasNft && satoshiInput > token_amount;
 
   const isInsufficientFunds =
     selectionAmount > 0
@@ -145,7 +147,7 @@ export default function WalletViewSend() {
       return;
     }
 
-    if (hasTokens && !isTokenAddress) {
+    if ((hasTokens || hasNft) && !isTokenAddress) {
       await Haptic.warn();
       setMessage("Can't send tokens to non-token address!");
       return;
@@ -198,11 +200,14 @@ export default function WalletViewSend() {
 
     const coinRecipients = hasTokens ? [] : [{ address, amount: satoshiInput }];
 
-    const tokenRecipients = tokenCategories.map((category) => ({
-      address,
-      amount: 0n,
-      token: { category, amount: satoshiInput },
-    }));
+    const tokenRecipients =
+      hasTokens && satoshiInput > 0
+        ? tokenCategories.map((category) => ({
+            address,
+            amount: 0n,
+            token: { category, amount: satoshiInput },
+          }))
+        : [];
 
     const nftRecipients = nftSelection.map((s) => ({
       address,
@@ -220,6 +225,7 @@ export default function WalletViewSend() {
 
     const transaction = TransactionBuilder.buildP2pkhTransaction({
       selection,
+      nftSelection,
       recipients: [...coinRecipients, ...tokenRecipients, ...nftRecipients],
     });
 
@@ -375,6 +381,7 @@ export default function WalletViewSend() {
           <div className="flex flex-col h-full justify-evenly">
             <div className="p-2 w-full grow flex flex-col justify-center ">
               {selectionAmount > 0 && <InputSelection inputs={selection} />}
+              {hasNft && <InputSelection inputs={nftSelection} />}
               {tokenData !== null && nftSelection.length === 0 && (
                 <div
                   className="py-4 px-2 rounded-md shadow-md text-white"
@@ -392,13 +399,13 @@ export default function WalletViewSend() {
                       }`}
                       autoFocus={address !== ""}
                       ref={inputRef}
-                      max={0}
+                      max={0n}
                       tokenDecimals={tokenData.token.decimals}
                     />
                     <Button
                       label="MAX"
                       className="spacing-wide text-bold text-zinc-800 rounded-full border border-zinc-200 bg-zinc-100"
-                      onClick={() => handleSendMaxTokens(tokenCategories[0])}
+                      onClick={() => handleSendMaxTokens()}
                     />
                   </div>
                 </div>

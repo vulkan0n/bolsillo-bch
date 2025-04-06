@@ -109,7 +109,7 @@ export default function AssetsViewTokenDetail() {
 
     navigate(navTo, {
       state: {
-        selection: nftSelection,
+        nftSelection,
         tokenCategories: [tokenId],
       },
     });
@@ -129,14 +129,7 @@ export default function AssetsViewTokenDetail() {
   };
 
   const handleSelectionCancel = () => setNftSelection([]);
-  const handleSelectionConfirm = () => {
-    navigate("/wallet/send", {
-      state: {
-        selection: nftSelection,
-        tokenCategories: [tokenId],
-      },
-    });
-  };
+  const handleSelectionConfirm = handleTokenSend;
 
   return (
     <FullColumn key={tokenData.category} className="justify-between">

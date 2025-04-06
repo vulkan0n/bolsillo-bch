@@ -235,7 +235,7 @@ export default function UtxoManagerService(walletHash: string) {
       // if it's cheaper to spend the "eligible address", do that instead of consolidating utxos
       if (
         addressCoinSum >= targetAmount &&
-        addressCoins.selection.length < eligibleCoins.selection.length
+        addressCoins.selection.length <= eligibleCoins.selection.length
       ) {
         Log.debug(
           "selectCoins: spending eligible address is cheaper than consolidation",
