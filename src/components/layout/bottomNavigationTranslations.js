@@ -36,7 +36,7 @@ const translations = {
     ur: "والٹ",
     vi: "Ví",
     zh: "钱包",
-    zh_TW: "Wallet",
+    zh_TW: "Wallet"
   },
   explore: {
     ar: "يستكشف",
@@ -75,7 +75,7 @@ const translations = {
     ur: "دریافت کریں۔",
     vi: "Khám phá",
     zh: "探索",
-    zh_TW: "探索",
+    zh_TW: "探索"
   },
   settings: {
     ar: "إعدادات",
@@ -114,7 +114,7 @@ const translations = {
     ur: "ترتیبات",
     vi: "Cài đặt",
     zh: "设置",
-    zh_TW: "Settings",
+    zh_TW: "Settings"
   },
   assets: {
     ar: "أصول",
@@ -153,8 +153,8 @@ const translations = {
     ur: "اثاثے",
     vi: "Tài sản",
     zh: "资产",
-    zh_TW: "資產",
-  },
+    zh_TW: "資產"
+  }
 };
 
 export default translations;
