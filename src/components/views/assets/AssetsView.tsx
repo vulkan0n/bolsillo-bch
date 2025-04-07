@@ -11,6 +11,9 @@ import { setPreference } from "@/redux/preferences";
 import ViewHeader from "@/layout/ViewHeader";
 import FullColumn from "@/layout/FullColumn";
 
+import { translate } from "@/util/translations";
+import translations from "./translations";
+
 export default function AssetsView() {
   const dispatch = useDispatch();
   const location = useLocation();
@@ -33,18 +36,18 @@ export default function AssetsView() {
 
   return (
     <FullColumn>
-      <ViewHeader icon={BankOutlined} title="Assets" />
+      <ViewHeader icon={BankOutlined} title={translate(translations.assets)} />
       <FullColumn>
         <div className="flex">
           <NavTab
             to="/assets/tokens"
-            label="Tokens"
+            label={translate(translations.tokens)}
             icon={DeploymentUnitOutlined}
             activeIcon={DeploymentUnitOutlined}
           />
           <NavTab
             to="/assets/coins"
-            label="Coins"
+            label={translate(translations.coins)}
             icon={MoneyCollectOutlined}
             activeIcon={MoneyCollectOutlined}
           />

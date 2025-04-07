@@ -24,6 +24,7 @@ import {
 } from "@/redux/preferences";
 
 import { selectSyncState, selectMyAddresses } from "@/redux/sync";
+import { selectScannerIsScanning } from "@/redux/device";
 
 import AddressManagerService from "@/services/AddressManagerService";
 import TransactionManagerService from "@/services/TransactionManagerService";
@@ -44,6 +45,9 @@ import CurrencySymbol from "@/atoms/CurrencySymbol";
 import CurrencyFlip from "@/atoms/CurrencyFlip";
 import TokenIcon from "@/atoms/TokenIcon";
 import TokenAmount from "@/atoms/TokenAmount";
+import SlideToAction from "@/components/atoms/SlideToAction";
+import ScannerButton from "@/views/wallet/ScannerButton/ScannerButton";
+import ScannerOverlay from "@/views/wallet/ScannerOverlay";
 
 import { hexToBin } from "@/util/hex";
 import { Haptic } from "@/util/haptic";
@@ -52,7 +56,6 @@ import { validateBchUri, navigateOnValidUri } from "@/util/uri";
 import { truncateProse } from "@/util/string";
 import { translate } from "@/util/translations";
 import translations from "./translations";
-import SlideToAction from "@/components/atoms/SlideToAction";
 
 const Log = LogService("WalletViewSend");
 
@@ -62,6 +65,8 @@ export default function WalletViewSend() {
   const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useDispatch();
+
+  const isScanning = useSelector(selectScannerIsScanning);
 
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -309,8 +314,13 @@ export default function WalletViewSend() {
     });
 
     while (typeof transaction !== "object") {
-      const diff = transaction - amount;
-      amount -= diff;
+      if (selection.length === 0) {
+        const diff = transaction - amount;
+        amount -= diff;
+      } else {
+        amount -= transaction;
+      }
+
       transaction = TransactionBuilder.buildP2pkhTransaction({
         selection,
         recipients: [{ address: tryAddress, amount }],
@@ -343,7 +353,9 @@ export default function WalletViewSend() {
     }
   };
 
-  return (
+  return isScanning ? (
+    <ScannerOverlay />
+  ) : (
     <FullColumn>
       <div className="tracking-wide text-center text-white">
         {message === "" ? (
@@ -354,12 +366,17 @@ export default function WalletViewSend() {
             </div>
             <div className="text-sm py-1 font-mono tracking-tight">
               {address === "" ? (
-                <Editable
-                  value={address}
-                  onConfirm={handleAddressInput}
-                  onBlur={handleAddressInput}
-                  open
-                />
+                <div className="flex items-center">
+                  <div className="flex-1">
+                    <Editable
+                      value={address}
+                      onConfirm={handleAddressInput}
+                      onBlur={handleAddressInput}
+                      open
+                    />
+                  </div>
+                  <ScannerButton label={false} size="xl" padding="2" />
+                </div>
               ) : (
                 <Address address={address} className="tracking-[-0.09em]" />
               )}

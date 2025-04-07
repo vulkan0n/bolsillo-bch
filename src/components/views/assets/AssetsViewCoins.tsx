@@ -106,7 +106,9 @@ export default function AssetsViewCoins() {
           className="p-1 rounded bg-zinc-800 text-white text-center my-1"
           onClick={handleFlipCurrency}
         >
-          <div className="text-lg font-bold">Cash Balance</div>
+          <div className="text-lg font-bold">
+            {translate(translations.cashBalance)}
+          </div>
           <div>
             <Satoshi value={wallet.spendable_balance} />
           </div>
