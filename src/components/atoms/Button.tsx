@@ -1,6 +1,6 @@
 import NullComponent from "@/atoms/NullComponent";
 
-type ValidSizes =
+export type ValidSizes =
   | "none"
   | "xs"
   | "sm"

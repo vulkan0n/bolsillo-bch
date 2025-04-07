@@ -1,33 +1,25 @@
 import { useEffect, useCallback } from "react";
-import { useNavigate } from "react-router";
 import { useSelector, useDispatch } from "react-redux";
-
 import { Dialog } from "@capacitor/dialog";
+import { ScanOutlined } from "@ant-design/icons";
 import {
   BarcodeScanner,
   SupportedFormat,
 } from "@capacitor-community/barcode-scanner";
 
-import { ScanOutlined, CloseOutlined } from "@ant-design/icons";
 import {
   selectDeviceInfo,
   setScannerIsScanning,
   selectScannerIsScanning,
 } from "@/redux/device";
 
-import Button from "@/atoms/Button";
 import ToastService from "@/services/ToastService";
 
-import { navigateOnValidUri } from "@/util/uri";
-
-import translations from "./translations";
 import { translate } from "@/util/translations";
+import translations from "@/views/wallet/ScannerButton/translations";
 
-const { permissionTitle, permissionMessage, scan, close } = translations;
-
-export default function ScannerButton() {
+export function useScanner(onScan) {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
   const deviceInfo = useSelector(selectDeviceInfo);
   const isScanning = useSelector(selectScannerIsScanning);
 
@@ -44,17 +36,16 @@ export default function ScannerButton() {
     async (content) => {
       dispatch(setScannerIsScanning(false));
 
-      const navTo = await navigateOnValidUri(content);
-      if (navTo !== "") {
+      const spawnScanToast = () =>
         ToastService().spawn({
           icon: <ScanOutlined className="text-4xl" />,
           header: translate(translations.scanContents),
           body: <span className="flex break-all text-sm">{content}</span>,
         });
-        navigate(navTo);
-      }
+
+      await onScan(content, spawnScanToast);
     },
-    [dispatch, navigate]
+    [dispatch, onScan]
   );
 
   const startScan = useCallback(async () => {
@@ -67,8 +58,8 @@ export default function ScannerButton() {
     if (status.denied) {
       // we hit this code path if user says "never ask again or Ask Every Time"
       const { value: hasConsent } = await Dialog.confirm({
-        title: translate(permissionTitle),
-        message: translate(permissionMessage),
+        title: translate(translations.permissionTitle),
+        message: translate(translations.permissionMessage),
       });
 
       if (hasConsent) {
@@ -111,19 +102,5 @@ export default function ScannerButton() {
     dispatch(setScannerIsScanning(!isScanning));
   };
 
-  const ScanIcon = isScanning ? CloseOutlined : ScanOutlined;
-  const closeTranslation = translate(close);
-  const scanTranslation = translate(scan);
-  const scanLabel = isScanning ? closeTranslation : scanTranslation;
-  const scanLabelColor = isScanning ? "white opacity-80" : undefined;
-
-  return (
-    <Button
-      icon={ScanIcon}
-      outerLabel={scanLabel}
-      outerLabelColor={scanLabelColor}
-      iconSize="4xl"
-      onClick={toggleScanner}
-    />
-  );
+  return { toggleScanner, handleScanContent };
 }

@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router";
-import { SendOutlined } from "@ant-design/icons";
+import { SendOutlined, SyncOutlined } from "@ant-design/icons";
 import { selectActiveWallet } from "@/redux/wallet";
 import { selectPrivacySettings } from "@/redux/preferences";
 //import LogService from "@/services/LogService";
@@ -66,6 +66,8 @@ export default function AssetsViewTokens() {
 
   const [tokenData, setTokenData] = useState(initTokenData());
 
+  const [isResolvingTokenData, setIsResolvingTokenData] = useState(false);
+
   useEffect(
     function resolveTokenMetadata() {
       const resolve = async () => {
@@ -76,6 +78,7 @@ export default function AssetsViewTokens() {
               if (!shouldResolveBcmr) {
                 token = TokenManager.getToken(category);
               } else {
+                setIsResolvingTokenData(true);
                 token = await TokenManager.resolveTokenData(category);
               }
 
@@ -86,6 +89,7 @@ export default function AssetsViewTokens() {
         ).sort(sortIdentities);
 
         setTokenData(resolvedData);
+        setIsResolvingTokenData(false);
       };
 
       resolve();
@@ -116,6 +120,12 @@ export default function AssetsViewTokens() {
         </div>
       ) : (
         <>
+          {isResolvingTokenData && (
+            <div className="flex justify-center items-center p-1">
+              <SyncOutlined className="text-lg mr-1" spin />
+              {translate(translations.downloadingTokenData)}
+            </div>
+          )}
           {tokenData.map((token) => (
             <div onClick={() => handleTokenNavigate(token.category)}>
               <TokenCard token={token} />
@@ -178,7 +188,7 @@ export function TokenCard({ token }: { token: TokenEntity }) {
                   <Button
                     icon={SendOutlined}
                     iconSize="sm"
-                    label="Send"
+                    label={translate(translations.send)}
                     labelSize="xs"
                     borderClasses="border"
                     padding="1.5"

@@ -8,7 +8,7 @@ import translations from "@/views/wallet/WalletViewButtons/translations";
 
 export function useClipboard() {
   const handleCopyToClipboard = useCallback(
-    async (string: string, type: string) => {
+    async (string: string, type?: string) => {
       await Clipboard.write({ string });
       ToastService().clipboardCopy(type, string);
     },

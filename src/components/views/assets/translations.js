@@ -1,4 +1,16 @@
 const translations = {
+  assets: {
+    en: "Assets",
+  },
+  downloadingTokenData: {
+    en: "Downloading Token Data...",
+  },
+  send: {
+    en: "Send",
+  },
+  seeMore: {
+    en: "See More",
+  },
   noTokens: {
     ar: "لا يوجد رموز",
     bn: "কোনও টোকেন নেই",
@@ -36,7 +48,7 @@ const translations = {
     ur: "کوئی ٹوکن نہیں۔",
     vi: "Không có mã thông báo",
     zh: "无代币",
-    zh_TW: "無代幣"
+    zh_TW: "無代幣",
   },
   noCoins: {
     ar: "لا يوجد عملات معدنية",
@@ -75,8 +87,20 @@ const translations = {
     ur: "کوئی سکے نہیں۔",
     vi: "Không có đồng xu",
     zh: "没有硬币",
-    zh_TW: "沒有硬幣"
-  }
+    zh_TW: "沒有硬幣",
+  },
+  memo: {
+    en: "Memo",
+  },
+  cashBalance: {
+    en: "Cash Balance",
+  },
+  tokens: {
+    en: "Tokens",
+  },
+  coins: {
+    en: "Coins",
+  },
 };
 
 export default translations;

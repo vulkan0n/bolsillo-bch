@@ -18,6 +18,7 @@ import {
   RedditCircleFilled,
   YoutubeFilled,
   SendOutlined,
+  ArrowRightOutlined,
 } from "@ant-design/icons";
 
 import { TelegramFilled } from "@/atoms/TelegramFilled";
@@ -36,6 +37,9 @@ import { validateBchUri } from "@/util/uri";
 
 import { useTokenData } from "@/hooks/useTokenData";
 import { useClipboard } from "@/hooks/useClipboard";
+
+import { translate } from "@/util/translations";
+import translations from "./translations";
 
 //const Log = LogService("AssetsViewTokenDetail");
 
@@ -171,7 +175,7 @@ export default function AssetsViewTokenDetail() {
                       <Button
                         icon={SendOutlined}
                         iconSize="sm"
-                        label="Send"
+                        label={translate(translations.send)}
                         labelSize="xs"
                         borderClasses="border"
                         padding="1.5"
@@ -210,7 +214,12 @@ export default function AssetsViewTokenDetail() {
                 ) : (
                   <>
                     <div>{truncateProse(tokenData.description)}</div>
-                    <div className="text-right text-xs">See More &gt;</div>
+                    <div className="text-right text-xs cursor-pointer flex justify-end">
+                      <span className="border-b border-dotted border-zinc-400 flex items-center shrink justify-end w-fit">
+                        {translate(translations.seeMore)}
+                        <ArrowRightOutlined className="ml-1" />
+                      </span>
+                    </div>
                   </>
                 )}
               </div>
@@ -252,7 +261,7 @@ export default function AssetsViewTokenDetail() {
                   </div>
                   {h.memo && (
                     <div className="text-sm text-zinc-500 ml-4">
-                      Memo: {h.memo}
+                      {translate(translations.memo)}: {h.memo}
                     </div>
                   )}
                 </Link>
