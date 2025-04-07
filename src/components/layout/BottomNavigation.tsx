@@ -74,12 +74,7 @@ interface NavButtonProps {
   label: string;
 }
 
-function NavButton({
-  to = "",
-  icon = () => null,
-  activeIcon = () => null,
-  label = "",
-}: NavButtonProps) {
+function NavButton({ to, icon, activeIcon, label }: NavButtonProps) {
   const Icon = icon;
   const ActiveIcon = activeIcon;
 

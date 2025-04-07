@@ -13,7 +13,7 @@ interface EditableProps {
 
 export default function Editable({
   value,
-  onConfirm = () => {},
+  onConfirm,
   onChange = () => {},
   onBlur = () => {},
   open = false,

@@ -22,6 +22,9 @@
   },
   "plugins": ["prettier", "react", "@typescript-eslint", "react-refresh"],
   "rules": {
+    "@typescript-eslint/lines-between-class-members": "off",
+    "@typescript-eslint/no-throw-literal": "off",
+    "no-throw-literal": "error",
     "prettier/prettier": ["error"],
     "import/prefer-default-export": ["off"],
     "import/extensions": [
@@ -53,6 +56,7 @@
       "error",
       { "functions": "defaultArguments" }
     ],
+    "@typescript-eslint/no-unused-vars": ["error", { "caughtErrors": "none" }],
     "@typescript-eslint/no-use-before-define": [
       "error",
       {

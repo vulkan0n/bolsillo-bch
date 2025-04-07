@@ -62,12 +62,7 @@ interface NavTabProps {
   label: string;
 }
 
-function NavTab({
-  to = "",
-  icon = () => null,
-  activeIcon = () => null,
-  label = "",
-}: NavTabProps) {
+function NavTab({ to, icon, activeIcon, label }: NavTabProps) {
   const Icon = icon;
   const ActiveIcon = activeIcon;
 

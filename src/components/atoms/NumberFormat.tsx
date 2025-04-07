@@ -7,7 +7,7 @@ export default function NumberFormat({
   decimals = undefined,
   scalar = 0,
 }: {
-  number: number | bigint;
+  number?: number | bigint;
   decimals?: number;
   scalar?: number;
 }) {
