@@ -2,7 +2,7 @@ interface Props {
   src: string;
 }
 
-export default function EmbeddedIframe({ src = "" }: Props) {
+export default function EmbeddedIframe({ src }: Props) {
   return (
     <div className="h-full">
       <iframe

@@ -9,7 +9,7 @@ interface Props {
 }
 
 export default function ViewHeader({
-  title = "",
+  title,
   icon = () => null,
   small = false,
   className = "",

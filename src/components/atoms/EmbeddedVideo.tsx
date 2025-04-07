@@ -4,7 +4,7 @@ interface Props {
   url: string;
 }
 
-export default function EmbeddedVideo({ url = "" }: Props) {
+export default function EmbeddedVideo({ url }: Props) {
   return (
     <div className="w-full flex justify-center">
       <ReactPlayer url={url} width="100%" />

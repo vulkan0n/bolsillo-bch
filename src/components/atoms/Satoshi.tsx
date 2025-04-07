@@ -10,7 +10,7 @@ import CurrencyService from "@/services/CurrencyService";
 import { satsToBch } from "@/util/sats";
 
 interface Props {
-  value: number | bigint | string;
+  value?: number | bigint | string;
   fiat?: boolean;
   flip?: boolean;
 }

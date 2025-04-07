@@ -5,7 +5,7 @@ import { truncate } from "@/util/string";
 import { convertCashAddress } from "@/util/cashaddr";
 
 interface AddressProps {
-  address: string;
+  address?: string;
   short?: boolean;
   maxLength?: number;
   withPrefix?: boolean;

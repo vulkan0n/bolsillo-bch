@@ -2,12 +2,12 @@ import { Link } from "react-router";
 
 interface Props {
   name: string;
-  icon: React.ComponentType;
-  to: string;
+  icon?: React.ComponentType;
+  to?: string;
 }
 
 export default function ExploreApp({
-  name = "",
+  name,
   icon = () => null,
   to = "",
 }: Props) {
