@@ -127,7 +127,10 @@ export default function AssetsViewTokens() {
             </div>
           )}
           {tokenData.map((token) => (
-            <div onClick={() => handleTokenNavigate(token.category)}>
+            <div
+              key={token.category}
+              onClick={() => handleTokenNavigate(token.category)}
+            >
               <TokenCard token={token} />
             </div>
           ))}
@@ -164,53 +167,55 @@ export function TokenCard({ token }: { token: TokenEntity }) {
       className="w-full my-1 p-1 border border-primary rounded"
     >
       <div className="flex">
-        <div className="flex items-center justify-center">
-          <TokenIcon category={token.category} size={64} rounded />
+        <div className="w-fit h-fit mr-1">
+          <TokenIcon category={token.category} size={72} rounded />
         </div>
-        <div className="flex flex-col justify-evenly mx-1.5 flex-1">
-          <div className="text-sm flex items-baseline">
+        <div className="flex-1 px-1">
+          <div className="flex items-center text-md mb-1 py-0.5">
             <span
-              className="font-mono text-xs font-bold pr-1.5 mr-1.5 border-r border-zinc-400/90"
+              className="font-mono text-md font-bold pr-1.5 mr-1.5 border-r border-zinc-400/90"
               style={{ color: token.color }}
             >
               {token.token ? token.token.symbol : token.category.slice(0, 6)}
             </span>
-            <span className="font-bold text-zinc-700">
+            <span className="font-bold text-lg text-zinc-700">
               {token.name || `Token ${token.category.slice(0, 6)}`}
             </span>
           </div>
-          <div className="flex items-center text-zinc-600 text-sm">
-            {token.nftCount > 0 && <TokenAmount token={token} nft />}
+          <div className="flex text-zinc-600">
+            <div className="flex-1">
+              {token.nftCount > 0 && <TokenAmount token={token} nft />}
+              {token.amount > 0 && (
+                <div className="flex flex-1 justify-between items-center">
+                  <TokenAmount token={token} />
+                </div>
+              )}
+            </div>
+
             {token.amount > 0 && (
-              <div className="flex flex-1 justify-between items-center">
-                <TokenAmount token={token} />
-                <span className="ml-2">
-                  <Button
-                    icon={SendOutlined}
-                    iconSize="sm"
-                    label={translate(translations.send)}
-                    labelSize="xs"
-                    borderClasses="border"
-                    padding="1.5"
-                    rounded="md"
-                    shadow="sm"
-                    onClick={handleTokenSend}
-                    style={{ borderColor: token.color }}
-                  />
-                </span>
-              </div>
+              <Button
+                icon={SendOutlined}
+                iconSize="lg"
+                label={translate(translations.send)}
+                labelSize="md"
+                borderClasses="border border-primary"
+                rounded="md"
+                shadow="sm"
+                padding="2"
+                onClick={handleTokenSend}
+              />
             )}
           </div>
         </div>
       </div>
       <div>
         {token.description && (
-          <div className="p-1 text-sm text-zinc-700">
+          <div className="p-1 mt-0.5 text-md text-zinc-700">
             {truncateProse(token.description)}
           </div>
         )}
         <div
-          className="mt-1.5 pt-0.5 border-t border-dashed border-zinc-300/80 font-mono text-xs text-zinc-400/70 truncate"
+          className="mt-1.5 pt-0.5 border-t border-dashed border-zinc-300/80 font-mono text-sm text-zinc-400/70 truncate"
           onClick={(e) => {
             e.stopPropagation();
             handleCopyToClipboard(token.category);

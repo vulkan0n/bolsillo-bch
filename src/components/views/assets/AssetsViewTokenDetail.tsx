@@ -140,70 +140,53 @@ export default function AssetsViewTokenDetail() {
       <div className="p-1">
         <div className="border rounded border-primary p-1">
           <div className="flex">
-            <div className="flex items-center justify-center">
-              <span
-                className="border border-2 rounded-sm overflow-hidden shadow-sm"
-                style={{ borderColor: tokenData.color }}
-              >
-                <TokenIcon category={tokenData.category} size={96} />
-              </span>
+            <div
+              className="border border-2 rounded-sm overflow-hidden shadow-sm w-fit h-fit"
+              style={{ borderColor: tokenData.color }}
+            >
+              <TokenIcon category={tokenData.category} size={96} />
             </div>
             <div className="flex flex-col flex-1 mx-1.5 justify-evenly">
               <div>
-                <div className="flex items-baseline">
-                  <span
-                    className="font-mono text-sm font-bold pr-1.5 mr-1.5 border-r border-zinc-400/90"
-                    style={{ color: tokenData.color }}
-                  >
-                    {tokenData.token
-                      ? tokenData.token.symbol
-                      : tokenData.category.slice(0, 6)}
-                  </span>
-                  <span className="font-bold text-zinc-700">
-                    {tokenData.name}
-                  </span>
-                </div>
-
-                <div className="flex items-center text-zinc-600 gap-x-2 text-sm">
-                  {tokenData.nftCount > 0 && (
-                    <TokenAmount token={tokenData} nft />
-                  )}
-                  {tokenData.amount > 0 && <TokenAmount token={tokenData} />}
-
-                  {(tokenData.amount > 0 || nftSelection.length > 0) && (
-                    <span className="flex grow justify-end">
-                      <Button
-                        icon={SendOutlined}
-                        iconSize="sm"
-                        label={translate(translations.send)}
-                        labelSize="xs"
-                        borderClasses="border"
-                        padding="1.5"
-                        rounded="md"
-                        onClick={handleTokenSend}
-                        style={{ borderColor: tokenData.color }}
-                      />
-                    </span>
-                  )}
-                </div>
+                <span
+                  className="font-mono text-md font-bold pr-1.5 mr-1.5 border-r border-zinc-400/90"
+                  style={{ color: tokenData.color }}
+                >
+                  {tokenData.token
+                    ? tokenData.token.symbol
+                    : tokenData.category.slice(0, 6)}
+                </span>
+                <span className="font-bold text-lg text-zinc-700">
+                  {tokenData.name}
+                </span>
               </div>
 
-              <div className="flex flex-1 flex-wrap items-end gap-x-2 text-lg text-zinc-500 text-lg">
+              <div className="flex items-center text-zinc-600 gap-x-2 text-md">
+                {tokenData.nftCount > 0 && (
+                  <TokenAmount token={tokenData} nft />
+                )}
+                {tokenData.amount > 0 && <TokenAmount token={tokenData} />}
+              </div>
+
+              <div className="flex flex-1 flex-wrap items-end gap-2 text-lg text-zinc-500 text-[1.725em]">
                 {tokenData.uris &&
                   Object.entries(tokenData.uris)
                     .filter(([k]) => !["icon", "image"].includes(k))
                     .map(([k, v]) => {
                       return (
-                        <Link to={v}>{uriIcons[k] || uriIcons.default}</Link>
+                        <Link className="p-0.5" to={v}>
+                          {uriIcons[k] || uriIcons.default}
+                        </Link>
                       );
                     })}
               </div>
             </div>
           </div>
+
           <div>
             {tokenData.description && (
               <div
-                className="p-1 text-sm text-zinc-700 border-t border-dashed border-zinc-300/80 mt-1"
+                className="p-1 text-md text-zinc-700 border-t border-dashed border-zinc-300/80 mt-1"
                 onClick={() =>
                   setShouldShowFullDescription(!shouldShowFullDescription)
                 }
@@ -214,7 +197,7 @@ export default function AssetsViewTokenDetail() {
                 ) : (
                   <>
                     <div>{truncateProse(tokenData.description)}</div>
-                    <div className="text-right text-xs cursor-pointer flex justify-end">
+                    <div className="text-right text-sm cursor-pointer flex justify-end">
                       <span className="border-b border-dotted border-zinc-400 flex items-center shrink justify-end w-fit">
                         {translate(translations.seeMore)}
                         <ArrowRightOutlined className="ml-1" />
@@ -226,7 +209,7 @@ export default function AssetsViewTokenDetail() {
             )}
           </div>
           <div
-            className="mt-1.5 pt-0.5 border-t border-dashed border-zinc-300/80 font-mono text-xs text-zinc-400/70 truncate"
+            className="mt-1.5 pt-0.5 border-t border-dashed border-zinc-300/80 font-mono text-sm text-zinc-400/70 truncate"
             onClick={(e) => {
               e.stopPropagation();
               handleCopyToClipboard(token.category);
@@ -268,6 +251,22 @@ export default function AssetsViewTokenDetail() {
               </li>
             ))}
           </ul>
+
+          {tokenData.amount > 0 && (
+            <div className="flex items-center mt-2">
+              <Button
+                icon={SendOutlined}
+                iconSize="xl"
+                label={translate(translations.sendTokens)}
+                labelSize="lg"
+                borderClasses="border border-primary border-2"
+                rounded="md"
+                inverted
+                onClick={handleTokenSend}
+                fullWidth
+              />
+            </div>
+          )}
 
           <div className="mt-1 pb-3 flex flex-wrap flex-1 gap-1 justify-around">
             {nfts.map((utxo) => {
