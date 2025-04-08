@@ -645,11 +645,6 @@ export const selectSyncState = createSelector(
   })
 );
 
-export const selectMyAddresses = createSelector(
-  (state: RootState) => state.sync,
-  (sync) => sync.addresses
-);
-
 export const selectChaintip = createSelector(
   (state: RootState) => state.sync,
   (sync) => sync.chaintip
