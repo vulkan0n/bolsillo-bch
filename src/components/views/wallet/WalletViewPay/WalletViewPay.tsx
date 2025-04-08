@@ -1,10 +1,11 @@
 import { useState, useCallback, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router";
 import { useSelector } from "react-redux";
-import Decimal from "decimal.js";
 import { ArrowLeftOutlined, SyncOutlined } from "@ant-design/icons";
-
-import { selectActiveWallet } from "@/redux/wallet";
+import {
+  selectActiveWalletHash,
+  selectActiveWalletBalance,
+} from "@/redux/wallet";
 import { selectSyncState } from "@/redux/sync";
 import {
   selectInstantPaySettings,
@@ -38,7 +39,8 @@ export default function WalletViewPay() {
   const [searchParams] = useSearchParams();
 
   const sync = useSelector(selectSyncState);
-  const wallet = useSelector(selectActiveWallet);
+  const walletHash = useSelector(selectActiveWalletHash);
+  const spendableBalance = useSelector(selectActiveWalletBalance);
   const { isInstantPayEnabled, instantPayThreshold } = useSelector(
     selectInstantPaySettings
   );
@@ -72,7 +74,7 @@ export default function WalletViewPay() {
     throw new Error("Invalid or missing request URI");
   }
 
-  const isInsufficientFunds = new Decimal(wallet.balance).lessThanOrEqualTo(0);
+  const isInsufficientFunds = spendableBalance <= 0;
   const handleFlipCurrency = useCurrencyFlip();
 
   const handleExpire = () => {
@@ -116,28 +118,30 @@ export default function WalletViewPay() {
         }
 
         // Format the outputs into correct format for the Transaction Builder.
-        // NOTE: This is more to satisfy Typescript as Tx Builder expects Decimal type.
+        // NOTE: This is more to satisfy Typescript as Tx Builder expects BigInt type.
         const outputsFormatted = paymentData.instructions[0].outputs.map(
           (out) => {
             return {
               address: out.address,
-              amount: new Decimal(out.amount),
+              // NOTE: This amount is already in Sats.
+              amount: BigInt(out.amount),
             };
           }
         );
 
         // Build the transaction.
-        const TransactionBuilder = TransactionBuilderService(wallet);
-        const transaction =
-          TransactionBuilder.buildP2pkhTransaction(outputsFormatted);
+        const TransactionBuilder = TransactionBuilderService(walletHash);
+        const transaction = TransactionBuilder.buildP2pkhTransaction({
+          recipients: outputsFormatted,
+        });
 
         // Handle wallet out of sync error.
         if (transaction === null) {
           throw new Error("Transaction Failed: Wallet out of sync?");
         }
 
-        // Handle insufficient funds error.
-        if (typeof transaction === "number") {
+        // Handle insufficient funds error (indicated by "bigint" type).
+        if (typeof transaction === "bigint") {
           throw new Error(translate(translations.insufficientFunds));
         }
 
@@ -146,14 +150,14 @@ export default function WalletViewPay() {
           paymentData.paymentUrl,
           {
             chain: "BCH",
-            transactions: [{ tx: transaction.hex }],
+            transactions: [{ tx: transaction.tx_hex }],
           }
         );
 
         // Wait until we actually see the transaction on our node.
         const TransactionManager = TransactionManagerService();
         const tx = await TransactionManager.waitForTransactionToResolve(
-          transaction.txid
+          transaction.tx_hash
         );
 
         // Show a success notification and route the user to the success page.
@@ -177,7 +181,7 @@ export default function WalletViewPay() {
       navigate,
       paymentData,
       sync.isConnected,
-      wallet,
+      walletHash,
     ]
   );
 
