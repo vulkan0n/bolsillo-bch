@@ -162,7 +162,7 @@ const translations = {
     de: "Inhalt scannen",
     el: "Σάρωση Περιεχομένων",
     en: "Scan Contents",
-    es: "Contenido del escaneo",
+    es: "Escanear contenido",
     fa: "اسکن مطالب",
     fil: "I-scan ang mga Nilalaman",
     fr: "Contenu de la numérisation",
