@@ -168,15 +168,13 @@ export default function AssetsViewTokenDetail() {
                 {tokenData.amount > 0 && <TokenAmount token={tokenData} />}
               </div>
 
-              <div className="flex flex-1 flex-wrap items-end gap-2 text-lg text-zinc-500 text-[1.725em]">
+              <div className="flex flex-1 flex-wrap items-end gap-3 text-zinc-500 text-[1.667em]">
                 {tokenData.uris &&
                   Object.entries(tokenData.uris)
                     .filter(([k]) => !["icon", "image"].includes(k))
                     .map(([k, v]) => {
                       return (
-                        <Link className="p-0.5" to={v}>
-                          {uriIcons[k] || uriIcons.default}
-                        </Link>
+                        <Link to={v}>{uriIcons[k] || uriIcons.default}</Link>
                       );
                     })}
               </div>
