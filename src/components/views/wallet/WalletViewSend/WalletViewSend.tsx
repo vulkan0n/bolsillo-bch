@@ -16,6 +16,7 @@ import {
 import {
   selectActiveWalletHash,
   selectActiveWalletBalance,
+  selectWalletAddresses,
 } from "@/redux/wallet";
 import {
   selectCurrencySettings,
@@ -23,7 +24,7 @@ import {
   setPreference,
 } from "@/redux/preferences";
 
-import { selectSyncState, selectMyAddresses } from "@/redux/sync";
+import { selectSyncState } from "@/redux/sync";
 import { selectScannerIsScanning } from "@/redux/device";
 
 import AddressManagerService from "@/services/AddressManagerService";
@@ -99,8 +100,9 @@ export default function WalletViewSend() {
     params.address || ""
   );
 
-  const myAddresses = useSelector(selectMyAddresses);
-  const isMyAddress = myAddresses[address] !== undefined;
+  const myAddresses = useSelector(selectWalletAddresses);
+  const isMyAddress =
+    myAddresses.find((a) => a.address === address) !== undefined;
 
   const [message, setMessage] = useState("");
   const [isSending, setIsSending] = useState(false);
