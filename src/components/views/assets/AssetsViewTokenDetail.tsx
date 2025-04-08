@@ -182,7 +182,6 @@ export default function AssetsViewTokenDetail() {
               </div>
             </div>
           </div>
-
           <div>
             {tokenData.description && (
               <div
@@ -219,56 +218,8 @@ export default function AssetsViewTokenDetail() {
           </div>
         </div>
 
-        <div className="mt-1">
-          <ul className="border rounded-sm border-zinc-300 max-h-[25%] overflow-y-scroll h-full shadow-inner">
-            {tokenHistory.map((h) => (
-              <li key={h.txid} className="py-1">
-                <Link to={`/explore/tx/${h.txid}`}>
-                  <div className="flex text-sm p-1">
-                    <div className="flex-1">
-                      {(h.height <= 0 || !h.time
-                        ? DateTime.fromISO(h.time_seen)
-                        : DateTime.fromSeconds(h.time)
-                      ).toLocaleString(DateTime.DATETIME_SHORT_WITH_SECONDS)}
-                    </div>
-                    <div className="text-right">
-                      {h.nft_amount !== 0 && <TokenAmount token={h} nft />}
-                      {h.fungible_amount !== 0 && (
-                        <div className="font-mono">
-                          <span className="text-sm font-mono flex items-center justify-end">
-                            <TokenAmount token={{ ...h, ...tokenData.token }} />
-                          </span>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                  {h.memo && (
-                    <div className="text-sm text-zinc-500 ml-4">
-                      {translate(translations.memo)}: {h.memo}
-                    </div>
-                  )}
-                </Link>
-              </li>
-            ))}
-          </ul>
-
-          {tokenData.amount > 0 && (
-            <div className="flex items-center mt-2">
-              <Button
-                icon={SendOutlined}
-                iconSize="xl"
-                label={translate(translations.sendTokens)}
-                labelSize="lg"
-                borderClasses="border border-primary border-2"
-                rounded="md"
-                inverted
-                onClick={handleTokenSend}
-                fullWidth
-              />
-            </div>
-          )}
-
-          <div className="mt-1 pb-3 flex flex-wrap flex-1 gap-1 justify-around">
+        {nfts.length > 0 ? (
+          <div className="mt-2 flex flex-wrap gap-1 justify-around">
             {nfts.map((utxo) => {
               const nftData = tokenData.token.nfts
                 ? tokenData.token.nfts.parse.types[utxo.nft_commitment]
@@ -323,8 +274,67 @@ export default function AssetsViewTokenDetail() {
               );
             })}
           </div>
-        </div>
+        ) : (
+          <div className="border rounded-sm border-zinc-300 shadow-inner mt-2">
+            {tokenHistory.map(
+              (h, i) =>
+                i < 50 && (
+                  <div key={h.txid} className="py-1">
+                    <Link to={`/explore/tx/${h.txid}`}>
+                      <div className="flex text-sm p-1">
+                        <div className="flex-1">
+                          {(h.height <= 0 || !h.time
+                            ? DateTime.fromISO(h.time_seen)
+                            : DateTime.fromSeconds(h.time)
+                          ).toLocaleString(
+                            DateTime.DATETIME_SHORT_WITH_SECONDS
+                          )}
+                        </div>
+                        <div className="text-right">
+                          {h.nft_amount !== 0 && <TokenAmount token={h} nft />}
+                          {h.fungible_amount !== 0 && (
+                            <div className="font-mono">
+                              <span className="text-sm font-mono flex items-center justify-end">
+                                <TokenAmount
+                                  token={{ ...h, ...tokenData.token }}
+                                />
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                      {h.memo && (
+                        <div className="text-sm text-zinc-500 ml-4">
+                          {translate(translations.memo)}: {h.memo}
+                        </div>
+                      )}
+                    </Link>
+                  </div>
+                )
+            )}
+          </div>
+        )}
       </div>
+
+      {tokenData.amount > 0 && (
+        <div className="sticky bottom-0 bg-black/80 w-full border-t-2 border-zinc-700 rounded-t shadow mt-1">
+          <div className="text-zinc-700 rounded-t bg-white/85 shadow-lg">
+            <div className="flex items-center p-2 mb-1">
+              <Button
+                icon={SendOutlined}
+                iconSize="xl"
+                label={translate(translations.sendTokens)}
+                labelSize="lg"
+                borderClasses="border border-primary border-2"
+                rounded="md"
+                inverted
+                onClick={handleTokenSend}
+                fullWidth
+              />
+            </div>
+          </div>
+        </div>
+      )}
       {nftSelection.length > 0 && (
         <SelectionDisplay
           selection={nftSelection}
