@@ -96,13 +96,17 @@ export default function WalletViewSend() {
     ? tokenCategories.map((category) => TokenManager.getToken(category))[0]
     : null;
 
-  const { address, isBase58Address, isTokenAddress } = validateBchUri(
+  const { address, isBase58Address, isTokenAddress, isValid } = validateBchUri(
     params.address || ""
   );
 
   const myAddresses = useSelector(selectWalletAddresses);
   const isMyAddress =
     myAddresses.find((a) => a.address === address) !== undefined;
+
+  const [isAddressInvalid, setIsAddressInvalid] = useState(
+    address !== "" && !isValid
+  );
 
   const [message, setMessage] = useState("");
   const [isSending, setIsSending] = useState(false);
@@ -352,7 +356,13 @@ export default function WalletViewSend() {
     const navTo = await navigateOnValidUri(input);
     if (navTo !== "") {
       navigate(navTo, { replace: true, state: sendState });
+    } else {
+      setIsAddressInvalid(true);
     }
+  };
+
+  const handleAddressFocus = () => {
+    setIsAddressInvalid(false);
   };
 
   return isScanning ? (
@@ -374,7 +384,9 @@ export default function WalletViewSend() {
                       value={address}
                       onConfirm={handleAddressInput}
                       onBlur={handleAddressInput}
+                      onFocus={handleAddressFocus}
                       open
+                      invalid={isAddressInvalid}
                     />
                   </div>
                   <ScannerButton label={false} size="xl" padding="2" />
@@ -413,8 +425,10 @@ export default function WalletViewSend() {
                       onChange={handleAmountInput}
                       satoshis={satoshiInput}
                       size={1}
-                      className={`mx-1.5 p-1 flex-1 text-3xl rounded shadow-inner ${
-                        isInsufficientTokens ? "text-error" : "text-black/70"
+                      className={`mx-1.5 p-1 flex-1 text-3xl rounded shadow-inner border-2 ${
+                        isInsufficientTokens
+                          ? "text-error border-error/90"
+                          : "text-black/70 border-primary/80"
                       }`}
                       autoFocus={address !== ""}
                       ref={inputRef}
@@ -439,8 +453,10 @@ export default function WalletViewSend() {
                         onChange={handleAmountInput}
                         satoshis={satoshiInput}
                         size={1}
-                        className={`mr-1.5 p-1 flex-1 text-3xl rounded shadow-inner ${
-                          isInsufficientFunds ? "text-error" : "text-black/70"
+                        className={`mr-1.5 p-1 flex-1 text-3xl rounded shadow-inner border-2 ${
+                          isInsufficientFunds
+                            ? "text-error border-error/90"
+                            : "text-black/70 border-primary/80"
                         }`}
                         autoFocus={address !== ""}
                         ref={inputRef}

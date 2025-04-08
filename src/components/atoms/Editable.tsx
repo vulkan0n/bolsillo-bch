@@ -6,9 +6,11 @@ interface EditableProps {
   onConfirm: (string) => void;
   onChange?: (string) => void;
   onBlur?: (string) => void;
+  onFocus?: (string) => void;
   open?: boolean;
   showConfirm?: boolean;
   placeholder?: string;
+  invalid?: boolean;
 }
 
 export default function Editable({
@@ -16,9 +18,11 @@ export default function Editable({
   onConfirm,
   onChange = () => {},
   onBlur = () => {},
+  onFocus = () => {},
   open = false,
   showConfirm = true,
   placeholder = "",
+  invalid = false,
 }: EditableProps) {
   const [input, setInput] = useState("");
   const [isEditing, setIsEditing] = useState(open);
@@ -49,14 +53,21 @@ export default function Editable({
     await onBlur(input);
   };
 
+  const handleFocus = async () => {
+    await onFocus(input);
+  };
+
+  const borderColor = invalid ? "border-error/90" : "border-primary/80";
+
   return isEditing ? (
     <div className="flex items-center">
       <input
         type="text"
-        className="rounded-lg bg-white text-primary p-1 mx-1 w-full text-center"
+        className={`rounded-lg bg-white text-primary p-1 mx-1 w-full text-center border-2 ${borderColor}`}
         onChange={handleInputChange}
         onKeyDown={(e) => e.key === "Enter" && handleEdit()}
         onBlur={handleBlur}
+        onFocus={handleFocus}
         value={
           input === value || (input === "" && !isInputDirty) ? value : input
         }
