@@ -10,7 +10,10 @@ export function useClipboard() {
   const handleCopyToClipboard = useCallback(
     async (string: string, type?: string, message?: string) => {
       await Clipboard.write({ string });
-      ToastService().clipboardCopy(type, message || string);
+      ToastService().clipboardCopy(
+        type,
+        message !== undefined ? message : string
+      );
     },
     []
   );

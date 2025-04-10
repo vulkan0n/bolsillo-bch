@@ -74,9 +74,7 @@ export default function ShowMnemonic({ walletHash }: { walletHash: string }) {
     handleCopyToClipboard(
       clipboardString,
       translate(translations.copiedToClipboardSuccess),
-      hasPassphrase
-        ? translate(translations.copiedToClipboardPassphrase)
-        : undefined
+      hasPassphrase ? translate(translations.copiedToClipboardPassphrase) : ""
     );
   };
 
