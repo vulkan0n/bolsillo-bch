@@ -41,6 +41,7 @@ export default function TokenIcon({
 
         setIsResolving(false);
       };
+
       resolve();
     },
     [category, nft_commitment, returnImage]
@@ -101,6 +102,10 @@ export default function TokenIcon({
   ];
 
   return (
-    <div onClick={handleSetToggle}>{toggleStateRenderables[toggleState]}</div>
+    <div onClick={handleSetToggle}>
+      {isResolving && icon === null
+        ? toggleStateRenderables[nft_commitment ? 1 : 2]
+        : toggleStateRenderables[toggleState]}
+    </div>
   );
 }
