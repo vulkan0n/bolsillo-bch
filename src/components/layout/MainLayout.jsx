@@ -3,9 +3,11 @@ import { Outlet, useNavigate } from "react-router";
 import { validateBchUri } from "@/util/uri";
 import BottomNavigation from "./BottomNavigation";
 
+import useScrollToTop from "../../hooks/useScrollToTop";
+
 export default function MainLayout() {
   const navigate = useNavigate();
-
+  useScrollToTop();
   App.addListener("appUrlOpen", ({ url }) => {
     const {
       isValid,

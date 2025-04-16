@@ -34,7 +34,7 @@ export default function GlobalAdoptionSummary() {
   const isReady = !isLoading && data?.activeBitcoiners;
 
   return (
-    <div className="p-2">
+    <div>
       <div className="stats shadow rounded-lg p-3 bg-zinc-100 w-full">
         <div className="text-2xl font-bold text-zinc-800">
           {translate(globalAdoption)}

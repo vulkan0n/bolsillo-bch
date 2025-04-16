@@ -59,4 +59,13 @@ export const routeApps = [
       return { Component: ExploreChronologyView };
     },
   },
+  {
+    path: "/apps/bliss",
+    async lazy() {
+      const { default: ExploreBlissView } = await import(
+        "@/views/apps/bliss/View"
+      );
+      return { Component: ExploreBlissView };
+    },
+  },
 ];
