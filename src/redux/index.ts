@@ -4,12 +4,17 @@ import {
   preferencesReducer,
   selectActiveWalletHash,
   selectBchNetwork,
+  preferencesInit,
 } from "./preferences";
 import { walletReducer, walletBoot, addressReducer } from "./wallet";
 import { syncReducer, syncMiddleware } from "./sync";
-import { deviceReducer } from "./device";
+import { deviceReducer, deviceInit } from "./device";
 import { txHistoryReducer } from "./txHistory";
-import { exchangeRateReducer, fetchExchangeRates } from "./exchangeRates";
+import {
+  exchangeRateReducer,
+  fetchExchangeRates,
+  exchangeRateInit,
+} from "./exchangeRates";
 import { triggerCheckIn } from "./stats";
 
 const Log = LogService("redux");
@@ -30,6 +35,14 @@ export const store = configureStore({
 
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
+
+// initialize redux stores
+export async function redux_pre_init() {
+  Log.debug("redux_pre_init");
+  await store.dispatch(preferencesInit());
+  await store.dispatch(deviceInit());
+  await store.dispatch(exchangeRateInit());
+}
 
 // run actions needed to fire on app load
 export function redux_init() {

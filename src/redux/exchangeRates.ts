@@ -62,18 +62,35 @@ export const fetchExchangeRates = createAsyncThunk(
   }
 );
 
-const lastExchangeRate =
-  (await Preferences.get({ key: "lastExchangeRate" })).value || 1;
-Log.debug("lastExchangeRate", lastExchangeRate);
+export const exchangeRateInit = createAsyncThunk(
+  "exchangeRate/init",
+  async () => {
+    const lastExchangeRate =
+      (await Preferences.get({ key: "lastExchangeRate" })).value || 1;
+
+    const exchangeRateState = currencyList.map((currency) => ({
+      ...currency,
+      price: lastExchangeRate,
+    }));
+
+    Log.debug("lastExchangeRate", lastExchangeRate);
+    return exchangeRateState;
+  }
+);
+
 const initialState = currencyList.map((currency) => ({
   ...currency,
-  price: lastExchangeRate,
+  price: 1,
 }));
 
 export const exchangeRateReducer = createReducer(initialState, (builder) => {
-  builder.addCase(fetchExchangeRates.fulfilled, (state, action) => {
-    return action.payload;
-  });
+  builder
+    .addCase(fetchExchangeRates.fulfilled, (state, action) => {
+      return action.payload;
+    })
+    .addCase(exchangeRateInit.fulfilled, (state, action) => {
+      return action.payload;
+    });
 });
 
 export const selectExchangeRates = createSelector(

@@ -5,7 +5,12 @@ import LogService from "@/services/LogService";
 import JanitorService from "@/services/JanitorService";
 import DatabaseService from "@/services/DatabaseService";
 import BcmrService from "@/services/BcmrService";
-import { redux_init, redux_post_init, redux_resume } from "@/redux";
+import {
+  redux_init,
+  redux_pre_init,
+  redux_post_init,
+  redux_resume,
+} from "@/redux";
 import Main from "@/Main";
 
 // Top-Level execution for entire app starts here!
@@ -21,15 +26,15 @@ async function initialize_app() {
   Log.timeEnd("INIT");
 }
 
-await initialize_app();
+initialize_app();
 
 // ----------------
 
 // initialize app state and render UI
-function app_init() {
+async function app_init() {
   Log.log("* APP_INIT *");
   App.addListener("resume", app_resume);
-  redux_init();
+  await redux_init();
   Log.debug("render <Main>");
   createRoot(document.getElementById("root")).render(<Main />);
 }
@@ -43,6 +48,7 @@ async function pre_init() {
   await Database.initAppDatabase();
   await Janitor.migrateLegacyDatabases();
   await Janitor.recoverWalletFiles();
+  await redux_pre_init();
 }
 
 // actions to perform after UI is rendered

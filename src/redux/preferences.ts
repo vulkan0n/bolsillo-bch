@@ -197,7 +197,15 @@ async function retrievePreferences(): Promise<ValidPreferences> {
   return preferences;
 }
 
-const initialState = await retrievePreferences();
+const initialState = defaultPreferences;
+
+export const preferencesInit = createAsyncThunk(
+  "preferences/init",
+  async () => {
+    const preferences = await retrievePreferences();
+    return preferences;
+  }
+);
 
 export const setPreference = createAsyncThunk(
   "preferences/set",
@@ -238,12 +246,16 @@ export const resetPreferences = createAsyncThunk(
 );
 
 export const preferencesReducer = createReducer(initialState, (builder) => {
-  builder.addCase(setPreference.fulfilled, (state, action) => {
-    state[action.payload.key] = action.payload.value;
-  });
-  builder.addCase(resetPreferences.fulfilled, (state, action) => {
-    return action.payload;
-  });
+  builder
+    .addCase(setPreference.fulfilled, (state, action) => {
+      state[action.payload.key] = action.payload.value;
+    })
+    .addCase(resetPreferences.fulfilled, (state, action) => {
+      return action.payload;
+    })
+    .addCase(preferencesInit.fulfilled, (state, action) => {
+      return action.payload;
+    });
 });
 
 export const selectPreferences = createSelector(

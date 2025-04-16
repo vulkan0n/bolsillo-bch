@@ -1,4 +1,9 @@
-import { createAction, createReducer, createSelector } from "@reduxjs/toolkit";
+import {
+  createAction,
+  createReducer,
+  createSelector,
+  createAsyncThunk,
+} from "@reduxjs/toolkit";
 import { App } from "@capacitor/app";
 import { Device, DeviceInfo as CapacitorDeviceInfo } from "@capacitor/device";
 import { Keyboard } from "@capacitor/keyboard";
@@ -29,6 +34,11 @@ interface DeviceState {
   locale: string;
   network: ConnectionStatus;
 }
+
+export const deviceInit = createAsyncThunk("device/init", async () => {
+  const deviceState = await initializeDevice();
+  return deviceState;
+});
 
 export const setScannerIsScanning = createAction<boolean>(
   "device/setScannerIsScanning"
@@ -72,28 +82,35 @@ async function initializeDevice(): Promise<DeviceState> {
   Log.log("* Initializing Device *");
   Log.time("initDevice");
 
-  const deviceId = (await Device.getId()).identifier;
+  const { identifier: deviceId } = await Device.getId();
   const deviceIdHash = sha256.text(deviceId);
+
+  const deviceInfo = await Device.getInfo();
+  const { value: languageCode } = await Device.getLanguageTag();
+  const { value: locale } = await Device.getLanguageTag();
+  const networkStatus = await Network.getStatus();
 
   const deviceState: DeviceState = {
     scanner: { isScanning: false },
     keyboard: { isOpen: false },
     deviceInfo: {
-      ...(await Device.getInfo()),
+      ...deviceInfo,
       deviceId,
       deviceIdHash,
-      languageCode: (await Device.getLanguageCode()).value,
+      languageCode,
       hasBiometric: false,
     },
-    locale: (await Device.getLanguageTag()).value,
-    network: await Network.getStatus(),
+    locale,
+    network: networkStatus,
   };
 
   if (deviceState.deviceInfo.platform !== "web") {
+    // report biometric authorization capability
     deviceState.deviceInfo.hasBiometric = (
       await NativeBiometric.isAvailable()
     ).isAvailable;
 
+    // global back button behavior
     App.addListener("backButton", (canGoBack) => {
       if (selectKeyboardIsOpen(store.getState())) {
         Keyboard.hide();
@@ -119,6 +136,7 @@ async function initializeDevice(): Promise<DeviceState> {
       history.back();
     });
 
+    // attach keyboard state change listeners
     Keyboard.addListener("keyboardWillShow", () =>
       store.dispatch(setKeyboardIsOpen(true))
     );
@@ -127,19 +145,48 @@ async function initializeDevice(): Promise<DeviceState> {
       store.dispatch(setKeyboardIsOpen(false))
     );
 
+    // attach network state change listener
     Network.addListener("networkStatusChange", (status) => {
       store.dispatch(setNetworkStatus(status));
     });
   }
 
+  Log.debug(deviceState);
   Log.timeEnd("initDevice");
   return deviceState;
 }
 
-const initialState: DeviceState = await initializeDevice();
+// top-level Device initialization
+const initialState: DeviceState = {
+  scanner: { isScanning: false },
+  keyboard: { isOpen: false },
+  deviceInfo: {
+    model: "null",
+    operatingSystem: "unknown",
+    platform: "web",
+    osVersion: "null",
+    manufacturer: "null",
+    isVirtual: true,
+    webViewVersion: "null",
+
+    deviceId: "",
+    deviceIdHash: "",
+    languageCode: "",
+    hasBiometric: false,
+  },
+  locale: "",
+  network: {
+    connected: false,
+    connectionType: "none",
+  },
+};
 
 export const deviceReducer = createReducer(initialState, (builder) => {
   builder
+    .addCase(deviceInit.fulfilled, (state, action) => {
+      return action.payload;
+    })
+
     .addCase(setScannerIsScanning, (state, action) => {
       state.scanner.isScanning = action.payload;
     })
