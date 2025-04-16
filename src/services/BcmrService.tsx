@@ -145,7 +145,7 @@ export default function BcmrService() {
       currentSnapshotTimestamp = kSnapshots.shift() || currentSnapshotTimestamp;
       currentSnapshot = snapshots[currentSnapshotTimestamp];
 
-      if (!currentSnapshot.migrated) {
+      if (!currentSnapshot.migrated || kSnapshots.length === 0) {
         break;
       }
 

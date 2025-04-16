@@ -195,7 +195,8 @@ export default function TransactionManagerService() {
       .join(",");
 
     const purgeHashes = APP_DB.exec(
-      `SELECT txid FROM transactions WHERE txid NOT IN (${live_txids})`
+      `SELECT txid FROM transactions WHERE txid NOT IN ($live_txids)`,
+      { $live_txids: live_txids }
     ).map(({ txid }) => txid);
 
     const fileTxHashes = (

@@ -340,24 +340,23 @@ export default function TransactionHistoryService(
   }
 
   function setTransactionMemo(tx_hash: string, memo: string): void {
-    walletDb.run(
-      `UPDATE address_transactions SET memo=?
-        WHERE txid="${tx_hash}";`,
-      [memo]
-    );
+    walletDb.run("UPDATE address_transactions SET memo=? WHERE txid=?;", [
+      memo,
+      tx_hash,
+    ]);
 
-    walletDb.run(
-      `UPDATE address_utxos SET memo=?
-        WHERE txid="${tx_hash}";`,
-      [memo]
-    );
+    walletDb.run("UPDATE address_utxos SET memo=? WHERE txid=?;", [
+      memo,
+      tx_hash,
+    ]);
 
     Database.flushDatabase(walletHash);
   }
 
   function getTransactionMemo(tx_hash: string): string {
     const result = walletDb.exec(
-      `SELECT memo FROM address_transactions WHERE txid="${tx_hash}"`
+      "SELECT memo FROM address_transactions WHERE txid=?;",
+      [tx_hash]
     );
 
     const memo = result.length > 0 ? result[0].memo : "";
@@ -369,7 +368,8 @@ export default function TransactionHistoryService(
     const fiat_amount = CurrencyService(fiatCurrency).satsToFiat(amount);
 
     const tx = APP_DB.exec(
-      `SELECT time, height FROM transactions WHERE txid="${tx_hash}"`
+      "SELECT time, height FROM transactions WHERE txid=?;",
+      [tx_hash]
     )[0];
 
     const result = walletDb.exec(
@@ -379,9 +379,9 @@ export default function TransactionHistoryService(
           fiat_currency=?,
           time=?,
           height=?
-        WHERE txid="${tx_hash}"
+        WHERE txid=?
         RETURNING *;`,
-      [amount, fiat_amount, fiatCurrency, tx.time, tx.height]
+      [amount, fiat_amount, fiatCurrency, tx.time, tx.height, tx_hash]
     )[0];
     //Log.debug("updateTxAmount", tx_hash, result);
 

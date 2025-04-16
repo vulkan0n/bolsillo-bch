@@ -48,29 +48,31 @@ export default function AddressScannerService(wallet: WalletEntity) {
   // there are always at least $ADDRESS_GAP_LIMIT addresses
   // returns an array of generated addresses
   function populateAddresses(): Array<AddressEntity> {
-    const receiveAddresses = AddressManager.getReceiveAddresses();
-    const changeAddresses = AddressManager.getChangeAddresses();
+    // addresses assumed to be sorted in DESCENDING order by hd_index
+    const receiveAddresses =
+      AddressManager.getReceiveAddresses(ADDRESS_GAP_LIMIT);
+    const changeAddresses =
+      AddressManager.getChangeAddresses(ADDRESS_GAP_LIMIT);
 
-    function populate(change: number): Array<AddressEntity> {
-      const generated: Array<AddressEntity> = [];
+    // unused addresses assumed to be sorted in ASCENDING order by hd_index
+    const unusedReceiveAddresses = AddressManager.getUnusedAddresses(0, 0);
+    const unusedChangeAddresses = AddressManager.getUnusedAddresses(0, 1);
 
+    function populate(change: number) {
       const addresses = change ? changeAddresses : receiveAddresses;
+      const unusedAddresses = change
+        ? unusedChangeAddresses
+        : unusedReceiveAddresses;
 
-      // addresses assumed to be sorted with latest index first
-      const latestAddresses = addresses.slice(0, ADDRESS_GAP_LIMIT);
-      const latestUnusedAddresses = latestAddresses.filter(
-        (a) => a.state === null
-      );
-      const gapDiff = ADDRESS_GAP_LIMIT - latestUnusedAddresses.length - 1;
+      const generated: Array<AddressEntity> = [];
+      const nAddressesNeeded = ADDRESS_GAP_LIMIT - unusedAddresses.length; // ADDRESS_GAP_LIMIT if no unused addresses
 
-      const latestAddress = latestAddresses[0] || null;
-      const nextHdIndex =
-        latestAddress !== null ? latestAddress.hd_index + 1 : 0;
-
-      const endHdIndex = nextHdIndex + gapDiff;
+      const startAddress = addresses.shift(); // addresses sorted in descending order
+      const startIndex = startAddress ? startAddress.hd_index + 1 : 0; // 0 if no addresses in db
+      const endIndex = startIndex + nAddressesNeeded;
 
       // starting from latest index, generate new addresses
-      for (let hd_index = nextHdIndex; hd_index <= endHdIndex; hd_index += 1) {
+      for (let hd_index = startIndex; hd_index < endIndex; hd_index += 1) {
         const newAddress = Hd.generateAddress(hd_index, change);
 
         generated.push(
@@ -82,7 +84,7 @@ export default function AddressScannerService(wallet: WalletEntity) {
     }
 
     const generatedAddresses = [...populate(0), ...populate(1)];
-    //Log.debug("populateAddresses", generatedAddresses);
+    Log.debug("populateAddresses", generatedAddresses);
     return generatedAddresses;
   }
 

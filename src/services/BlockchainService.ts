@@ -107,9 +107,9 @@ export default function BlockchainService() {
 
   // getBlockByHash: get block from database by blockhash
   async function getBlockByHash(blockhash): Promise<BlockEntity> {
-    const result = APP_DB.exec(
-      `SELECT * FROM blockchain WHERE blockhash="${blockhash}";`
-    );
+    const result = APP_DB.exec(`SELECT * FROM blockchain WHERE blockhash=?;`, [
+      blockhash,
+    ]);
 
     if (result.length < 1) {
       throw new BlockNotExistsError(blockhash);
@@ -126,9 +126,9 @@ export default function BlockchainService() {
 
   // getBlockByHeight: get block from database by height
   async function getBlockByHeight(height): Promise<BlockEntity> {
-    const result = APP_DB.exec(
-      `SELECT * FROM blockchain WHERE height="${height}";`
-    );
+    const result = APP_DB.exec(`SELECT * FROM blockchain WHERE height=?;`, [
+      height,
+    ]);
 
     if (result.length < 1) {
       throw new BlockNotExistsError(height);

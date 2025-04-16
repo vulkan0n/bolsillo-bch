@@ -74,9 +74,9 @@ export default function WalletManagerService() {
 
   // listWallets: return a list of all wallets in the app database
   function listWallets(): WalletMeta[] {
-    const result = APP_DB.exec(
-      `SELECT * FROM wallets WHERE network="${network}"`
-    );
+    const result = APP_DB.exec("SELECT * FROM wallets WHERE network=?", [
+      network,
+    ]);
 
     //Log.debug("listWallets", result);
     return result;
@@ -113,7 +113,8 @@ export default function WalletManagerService() {
     }
 
     const result = APP_DB.exec(
-      `SELECT * FROM wallets WHERE walletHash="${walletHash}" AND network="${network}"`,
+      "SELECT * FROM wallets WHERE walletHash=$walletHash AND network=$network",
+      { $walletHash: walletHash, $network: network },
       { useBigInt: true }
     );
 
@@ -294,7 +295,7 @@ export default function WalletManagerService() {
 
   async function deleteWallet(walletHash, keepFile = false) {
     try {
-      APP_DB.run(`DELETE FROM wallets WHERE walletHash="${walletHash}"`);
+      APP_DB.run("DELETE FROM wallets WHERE walletHash=?", [walletHash]);
       await Database.deleteWalletDatabase(walletHash, network);
 
       if (!keepFile) {
@@ -309,18 +310,18 @@ export default function WalletManagerService() {
   function updateKeyViewed(walletHash) {
     const walletDb = Database.getWalletDatabase(walletHash);
 
-    const result = walletDb.exec(
+    const { key_viewed_at } = walletDb.exec(
       `UPDATE wallet SET key_viewed_at=strftime('%Y-%m-%dT%H:%M:%SZ') RETURNING key_viewed_at`
     )[0];
 
     APP_DB.run(
-      `UPDATE wallets SET key_viewed_at=? WHERE walletHash="${walletHash}" AND network="${network}"`,
-      [result.key_viewed_at]
+      `UPDATE wallets SET key_viewed_at=? WHERE walletHash=? AND network=?`,
+      [key_viewed_at, walletHash, network]
     );
 
-    Log.debug("keyViewed", result.key_viewed_at);
+    Log.debug("keyViewed", key_viewed_at);
 
-    return result.key_viewed_at;
+    return key_viewed_at;
   }
 
   // updateKeyVerified: updates the wallet's key_verified timestamp
@@ -336,8 +337,9 @@ export default function WalletManagerService() {
   async function setWalletName(walletHash, name: string) {
     try {
       const walletDb = await Database.openWalletDatabase(walletHash);
-      APP_DB.run(`UPDATE wallets SET name=? WHERE walletHash="${walletHash}"`, [
+      APP_DB.run(`UPDATE wallets SET name=? WHERE walletHash=?`, [
         name,
+        walletHash,
       ]);
       walletDb.run(`UPDATE wallet SET name=?`, [name]);
     } catch (e) {
@@ -455,8 +457,8 @@ export default function WalletManagerService() {
         name=?,
         created_at=?,
         key_viewed_at=?
-      WHERE walletHash="${walletHash}" AND network="${network}";`,
-      [name, created_at, key_viewed_at]
+      WHERE walletHash=? AND network=?;`,
+      [name, created_at, key_viewed_at, walletHash, network]
     );
 
     await exportWalletFile(wallet);

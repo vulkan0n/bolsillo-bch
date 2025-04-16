@@ -66,16 +66,15 @@ export default function AddressManagerService(walletHash: string) {
       //Log.debug("registerAddress", result);
       return result;
     } catch (e) {
-      const addr = getAddress(address);
-      Log.debug("getAddress (register)", addr);
-      return addr;
+      Log.error(e);
+      throw e;
     }
   }
 
   function getAddress(address: string): AddressEntity {
-    const result = walletDb.exec(
-      `SELECT * FROM addresses WHERE address="${address}"`
-    );
+    const result = walletDb.exec("SELECT * FROM addresses WHERE address=?", [
+      address,
+    ]);
 
     if (result.length < 1) {
       throw new AddressNotExistsError(address);
@@ -91,10 +90,11 @@ export default function AddressManagerService(walletHash: string) {
   ): Array<AddressEntity> {
     const result = walletDb.exec(
       `SELECT * FROM addresses
-          WHERE hd_index >= ${startIndex}
-          AND hd_index <= ${endIndex}
-          AND change=${change}
-        ;`
+          WHERE hd_index >= ?
+          AND hd_index <= ?
+          AND change=?
+        ;`,
+      [startIndex, endIndex, change]
     );
 
     Log.debug("getAddressRange", startIndex, endIndex, result);
@@ -143,10 +143,11 @@ export default function AddressManagerService(walletHash: string) {
     const result = walletDb.exec(
       `SELECT * FROM addresses 
           WHERE state IS NULL 
-          AND change="${change}"
+          AND change=?
           ORDER BY hd_index ASC 
           ${limit > 0 ? `LIMIT ${limit}` : ""}
-        ;`
+        ;`,
+      [change]
     );
 
     //Log.debug("getUnusedAddress", limit, result);
@@ -179,17 +180,19 @@ export default function AddressManagerService(walletHash: string) {
   function getAddressTransactions(address: string) {
     const confirmed = walletDb.exec(
       `SELECT * FROM address_transactions
-          WHERE address="${address}"
+          WHERE address=?
           AND height > 0
           ORDER BY height ASC
-        ;`
+        ;`,
+      [address]
     );
 
     const unconfirmed = walletDb.exec(
       `SELECT * FROM address_transactions
-          WHERE address="${address}"
+          WHERE address=?
           AND height <= 0
-        ;`
+        ;`,
+      [address]
     );
 
     //Log.log("getAddressTransactions", confirmed, unconfirmed, address);
@@ -232,13 +235,13 @@ export default function AddressManagerService(walletHash: string) {
           txid,
           height,
           address
-        ) VALUES (?, ?, ?)
+        ) VALUES ($tx_hash, $tx_height, $address)
         ON CONFLICT DO 
           UPDATE SET 
-            height=${tx.height}
+            height=$tx_height
           WHERE txid=excluded.txid;
         `,
-        [tx.tx_hash, tx.height, address]
+        { $tx_hash: tx.tx_hash, $tx_height: tx.height, $address: address }
       );
     } catch (e) {
       Log.error(e);
