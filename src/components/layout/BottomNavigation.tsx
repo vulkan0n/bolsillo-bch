@@ -78,7 +78,8 @@ function NavButton({ to, icon, activeIcon, label }: NavButtonProps) {
   const Icon = icon;
   const ActiveIcon = activeIcon;
 
-  const baseClasses = "bg-zinc-900 text-primary border-primary w-full h-16 p-2";
+  const baseClasses =
+    "bg-zinc-900 text-primary border-primary w-full h-16 p-2 flex flex-col justify-center items-center";
   const activeClasses = "active border-t-4 font-semibold shadow-inner";
   const iconClasses = "text-2xl";
 
