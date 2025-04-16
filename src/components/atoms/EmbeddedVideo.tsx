@@ -11,3 +11,15 @@ export default function EmbeddedVideo({ url }: Props) {
     </div>
   );
 }
+
+function EmbeddedVideoCardWrapper({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="aspect-video rounded-lg overflow-hidden">{children}</div>
+  );
+}
+
+export function EmbeddedVideoCard({ url }: Props) {
+  return (
+    <ReactPlayer url={url} width="100%" wrapper={EmbeddedVideoCardWrapper} />
+  );
+}

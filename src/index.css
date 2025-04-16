@@ -92,3 +92,14 @@ main {
   -webkit-text-fill: transparent;
   -webkit-text-stroke-width: 0.25px;
 }
+
+@font-face {
+  font-family: "TAN NIMBUS";
+  src: url("./assets/tan-nimbus.woff2") format("woff2");
+  font-weight: normal;
+  font-style: normal;
+}
+
+.font-bliss {
+  font-family: "TAN NIMBUS";
+}
