@@ -153,7 +153,7 @@ async function cleanupPreferences(): Promise<void[]> {
 
 // tweakDefaultPreferences: dynamically change defaults for first-run/preferences reset
 async function tweakDefaultPreferences() {
-  const defaults = defaultPreferences;
+  const defaults = { ...defaultPreferences };
 
   // change default fiat currency based on device locale
   defaults.localCurrency =
@@ -197,7 +197,7 @@ async function retrievePreferences(): Promise<ValidPreferences> {
   return preferences;
 }
 
-const initialState = defaultPreferences;
+const initialState = { ...defaultPreferences };
 
 export const preferencesInit = createAsyncThunk(
   "preferences/init",
