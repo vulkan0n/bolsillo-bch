@@ -94,6 +94,15 @@ main {
 }
 
 @font-face {
+  font-family: "Archivo";
+  src: url("./assets/Archivo-VariableFont_wdth,wght.ttf");
+}
+@font-face {
+  font-family: "Chivo Mono";
+  src: url("./assets/ChivoMono-VariableFont_wght.ttf");
+}
+
+@font-face {
   font-family: "TAN NIMBUS";
   src: url("./assets/tan-nimbus.woff2") format("woff2");
   font-weight: normal;

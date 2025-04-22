@@ -8,6 +8,7 @@ import useScrollToTop from "../../hooks/useScrollToTop";
 export default function MainLayout() {
   const navigate = useNavigate();
   useScrollToTop();
+
   App.addListener("appUrlOpen", ({ url }) => {
     const {
       isValid,

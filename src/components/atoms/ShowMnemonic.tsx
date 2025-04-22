@@ -82,7 +82,7 @@ export default function ShowMnemonic({ walletHash }: { walletHash: string }) {
 
   const isKeyViewed = wallet.key_viewed_at !== null;
   const keyNotViewedClasses = isKeyViewed
-    ? "bg-zinc-700"
+    ? "bg-neutral-700"
     : "border border-4 rounded-lg border-primary bg-primary";
 
   const handleLongPress = async () => {
@@ -110,13 +110,13 @@ export default function ShowMnemonic({ walletHash }: { walletHash: string }) {
             {translate(translations.keepSecret)}
             <WarningFilled className="ml-2 text-warning" />
           </div>
-          <div className="text-center text-zinc-50 text-xl py-4 select-all grid gap-md grid-cols-3 gap-2 font-mono">
+          <div className="text-center text-neutral-50 text-xl py-4 select-all grid gap-md grid-cols-3 gap-2 font-mono">
             {splitMnemonic.map((w, idx) => (
               <div
                 key={`w-${w}`}
                 className="col-span-1 rounded-2xl border whitespace-nowrap px-2 py-1 text-sm flex select-none"
               >
-                <span className="text-zinc-300">{idx + 1}.</span>{" "}
+                <span className="text-neutral-300">{idx + 1}.</span>{" "}
                 <span className="flex-1 text-center">{w}</span>
               </div>
             ))}
@@ -129,11 +129,11 @@ export default function ShowMnemonic({ walletHash }: { walletHash: string }) {
         </div>
       ) : (
         <>
-          <EyeInvisibleOutlined className="text-8xl text-zinc-50" />
-          <div className="text-center text-zinc-50 text-xl">
+          <EyeInvisibleOutlined className="text-8xl text-neutral-50" />
+          <div className="text-center text-neutral-50 text-xl">
             {translate(translations.viewRecoveryPhrase)}
           </div>
-          <div className="text-center text-zinc-200 text-lg opacity-90">
+          <div className="text-center text-neutral-200 text-lg opacity-90">
             ({translate(translations.secretAndSecure)})
           </div>
         </>

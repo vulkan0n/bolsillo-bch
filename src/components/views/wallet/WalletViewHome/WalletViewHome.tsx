@@ -128,16 +128,16 @@ export default function WalletViewHome() {
 
   // force red QR code border if connected to chipnet
   const qrCodeBorder =
-    bchNetwork !== "mainnet" ? "border-[#ff0000]" : "border-primary";
+    bchNetwork !== "mainnet" ? "border-[#ff0000]" : "border-primary-700";
   const addressColor =
-    bchNetwork !== "mainnet" ? "text-[#ff0000]" : "text-white/80";
+    bchNetwork !== "mainnet" ? "text-[#ff0000]" : "text-neutral-25";
 
   return isScanning ? (
     <ScannerOverlay />
   ) : (
     <FullColumn className="justify-between">
-      <div className="text-white/90">
-        <div className="w-full mx-auto bg-primary/90 font-mono">
+      <div className="text-neutral-25">
+        <div className="w-full mx-auto bg-primary font-mono">
           <div className="py-1 flex justify-center items-center text-sm text-center uppercase">
             {translate(translations.receive)}
           </div>
@@ -170,19 +170,19 @@ export default function WalletViewHome() {
           <button
             type="button"
             onClick={copyAddressToClipboard}
-            className="flex items-center justify-center w-full py-2 text-xs text-center cursor-pointer slashed-zero select-none active:bg-secondary active:shadow-inner"
+            className="flex items-center justify-center w-full py-2 text-xs text-center cursor-pointer slashed-zero select-none active:bg-primary-700 active:shadow-inner"
           >
             <CopyOutlined className={`mr-0.5 ${addressColor}`} />
             <Address
               address={address}
               color={addressColor}
-              className="tracking-tighter"
+              className="tracking-tight"
             />
           </button>
         </div>
         <div className="flex justify-evenly items-center rounded-b-sm text-sm">
           <div
-            className={`font-sans bg-primary flex-1 px-1 py-1.5 text-nowrap truncate ${!shouldShowRequestAmount ? "active:bg-secondary active:shadow-inner" : ""}`}
+            className={`font-sans flex-1 px-1 py-1.5 text-nowrap truncate ${!shouldShowRequestAmount ? "bg-primary-400 active:bg-primary-700 active:shadow-inner" : "text-primary-50 bg-primary-700"}`}
             onClick={() =>
               !shouldShowRequestAmount && setShouldShowRequestAmount(true)
             }
@@ -194,7 +194,7 @@ export default function WalletViewHome() {
                   onClick={() => setShouldShowRequestAmount(false)}
                 />
                 <span className="flex text-center grow items-center ml-1">
-                  <CurrencySymbol className="text-lg bg-white/60 rounded-l px-1 text-zinc-500/80 font-semibold font-mono" />
+                  <CurrencySymbol className="text-lg bg-primary-200 rounded-l px-1 text-neutral-500 font-semibold font-mono" />
                   <SatoshiInput
                     satoshis={satoshiInput}
                     onChange={handleRequestAmountChange}
@@ -222,7 +222,7 @@ export default function WalletViewHome() {
           </div>
           {!shouldShowRequestAmount && (
             <label
-              className={`${shouldUseTokenAddress ? "bg-secondary" : "bg-primary"} px-1.5 py-1.5 border-l border-white/20 text-nowrap truncate flex items-center justify-between`}
+              className={`${shouldUseTokenAddress ? "bg-primary-700" : "bg-primary-400"} px-1.5 py-1.5 border-l border-primary-400 text-nowrap truncate flex items-center justify-between`}
             >
               {translate(translations.receiveTokens)}&nbsp;
               <input

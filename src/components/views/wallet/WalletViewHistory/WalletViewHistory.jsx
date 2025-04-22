@@ -36,7 +36,7 @@ export default function WalletViewHistory() {
   const txHistory = useTransactionHistory();
   const { syncPending } = useSelector(selectSyncState);
 
-  const receiveStyle = "text-secondary";
+  const receiveStyle = "text-success";
   const sendStyle = "text-error";
 
   const { shouldHideBalance } = useSelector(selectPrivacySettings);
@@ -50,7 +50,7 @@ export default function WalletViewHistory() {
               <div className="flex text-sm">
                 <div className="shrink flex flex-col items-center justify-center mr-1 text-xs">
                   {tx.height <= 0 ? (
-                    <HourglassOutlined className="text-zinc-400" />
+                    <HourglassOutlined className="text-neutral-400" />
                   ) : (
                     <CheckCircleOutlined className="text-primary" />
                   )}
@@ -87,7 +87,7 @@ export default function WalletViewHistory() {
               </div>
               <div className="flex justify-between">
                 {tx.memo && (
-                  <div className="grow text-sm text-zinc-500 mx-4">
+                  <div className="grow text-sm text-neutral-500 mx-4">
                     {tx.memo}
                   </div>
                 )}
@@ -127,7 +127,7 @@ export default function WalletViewHistory() {
         small
       />
       <div className="h-full pb-2">
-        <ul className="bg-zinc-100 text-zinc-500 divide-y divide-zinc-300 rounded-b-sm px-1 overflow-y-scroll border border-zinc-400 shadow-inner h-full">
+        <ul className="bg-neutral-100 text-neutral-500 divide-y divide-neutral-300 rounded-b-sm px-1 overflow-y-scroll border border-neutral-400 shadow-inner h-full">
           {txHistory.length === 0 && (
             <li className="flex px-1 py-2 items-center justify-center tracking-tighter font-bold">
               {syncPending.txHistory === 0 ? (

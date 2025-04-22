@@ -81,7 +81,7 @@ export default function TokenIcon({
         ))}
     </div>,
     <div
-      className="border-2 border-zinc-600 rounded-sm overflow-hidden"
+      className="border-2 border-neutral-600 rounded-sm overflow-hidden"
       style={{
         width: `${size}px`,
         height: `${size}px`,

@@ -38,8 +38,8 @@ export default function ToastService() {
             <div className="flex items-center justify-center">{icon}</div>
           </div>
           <div className="p-1 break-word">
-            <div className="text-lg font-bold text-zinc-800">{header}</div>
-            <div className="text-base text-zinc-600 flex">{body}</div>
+            <div className="text-lg font-bold text-neutral-800">{header}</div>
+            <div className="text-base text-neutral-600 flex">{body}</div>
           </div>
         </div>
       );
@@ -68,7 +68,7 @@ export default function ToastService() {
           <div className="text-secondary">
             +<Satoshi value={amount} />
           </div>
-          <div className="text-zinc-500 font-mono text-sm">
+          <div className="text-neutral-500 font-mono text-sm">
             <Satoshi value={amount} flip />
           </div>
         </div>
