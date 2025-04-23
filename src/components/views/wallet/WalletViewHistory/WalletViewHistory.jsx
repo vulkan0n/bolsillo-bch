@@ -39,20 +39,28 @@ export default function WalletViewHistory() {
   const receiveStyle = "text-success";
   const sendStyle = "text-error";
 
+  const zebraCss = [
+    "bg-neutral-50 text-neutral-800",
+    "bg-neutral-25 text-neutral-800",
+  ];
+
   const { shouldHideBalance } = useSelector(selectPrivacySettings);
 
   const historyRender = useMemo(
     () =>
       txHistory.map((tx, i) =>
         i < 100 ? (
-          <li key={`${tx.txid}${tx.address}`} className="py-2">
+          <li
+            key={`${tx.txid}${tx.address}`}
+            className={`py-2 ${zebraCss[i % 2]}`}
+          >
             <Link to={`/explore/tx/${tx.txid}`}>
               <div className="flex text-sm">
                 <div className="shrink flex flex-col items-center justify-center mr-1 text-xs">
                   {tx.height <= 0 ? (
                     <HourglassOutlined className="text-neutral-400" />
                   ) : (
-                    <CheckCircleOutlined className="text-primary" />
+                    <CheckCircleOutlined className="text-primary-700" />
                   )}
                 </div>
                 <div className="flex-1">
