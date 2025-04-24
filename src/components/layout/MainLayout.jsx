@@ -36,7 +36,7 @@ export default function MainLayout() {
 
   // [!] see index.css for #container and <main> styles
   return (
-    <div id="container">
+    <div id="container" className="bg-primary-50">
       <main>
         <Outlet />
       </main>

@@ -4,10 +4,6 @@
 @tailwind components;
 @tailwind utilities;
 
-html {
-  -webkit-tap-highlight-color: transparent;
-}
-
 /* <body>
  * fixed body gives us full control over layout by setting up our own viewport,
  * detatched from window 
@@ -15,7 +11,8 @@ html {
  * safe-area-inset-* variables are used to calculate viewport size for iOS
  * (prevents rendering underneath the "notch" and home button) 
 */
-body {
+html {
+  -webkit-tap-highlight-color: transparent;
   position: fixed;
   top: env(safe-area-inset-top);
   left: env(safe-area-inset-left);
@@ -23,21 +20,30 @@ body {
   min-height: calc(
     100% - env(safe-area-inset-top) - env(safe-area-inset-bottom)
   );
-  height: 100%;
+  height: calc(100% - env(safe-area-inset-top) - env(safe-area-inset-bottom));
   max-height: 100vh;
+  background-color: rgba(20, 20, 20, 0.9);
+}
+
+body {
+  position: relative;
+  margin: 0 auto;
+  max-width: 480px;
+  width: 100%;
+  min-height: 100%;
+  height: 100%;
   overscroll-behavior: none;
   user-select: none;
 }
 
 #root {
-  min-height: calc(
-    100% - env(safe-area-inset-top) - env(safe-area-inset-bottom)
-  );
-  height: calc(100% - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+  position: relative;
+  height: 100%;
   max-height: calc(
     100% - env(safe-area-inset-top) - env(safe-area-inset-bottom)
   );
-  width: 100%;
+  overscroll-behavior: none;
+  user-select: none;
 }
 
 #container {
@@ -45,7 +51,6 @@ body {
   flex-direction: column;
   min-height: 100%;
   height: 100%;
-  background: transparent;
   overscroll-behavior: none;
 }
 
