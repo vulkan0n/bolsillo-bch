@@ -152,7 +152,7 @@ export default function ExploreAfogView() {
     <div>
       <AppHero
         title={"A Fifth Of Gaming"}
-        icon={<LaptopOutlined className="text-xl my-auto text-zinc-200" />}
+        icon={<LaptopOutlined className="text-xl my-auto text-neutral-200" />}
         description={translate(description)}
         callToAction={translate(signUp)}
         callToActionUrl={AFOG_BASE_URL}

@@ -35,17 +35,17 @@ export default function GlobalAdoptionSummary() {
 
   return (
     <div>
-      <div className="stats shadow rounded-lg p-3 bg-zinc-100 w-full">
-        <div className="text-2xl font-bold text-zinc-800">
+      <div className="stats shadow rounded-lg p-3 bg-neutral-100 w-full">
+        <div className="text-2xl font-bold text-neutral-800">
           {translate(globalAdoption)}
         </div>
         <div className="stat">
-          <div className="stat-title text-zinc-800">
+          <div className="stat-title text-neutral-800">
             {translate(activeSeleneUsers)}
           </div>
         </div>
 
-        <div className="bg-zinc-200 mt-3 mb-3">
+        <div className="bg-neutral-200 mt-3 mb-3">
           {!isReady && <p>Loading chart...</p>}
           {isReady && <ActiveUsersChart data={data} period={period} />}
         </div>
@@ -59,7 +59,7 @@ export default function GlobalAdoptionSummary() {
             }}
           >
             <span
-              className={`${period === Period.Daily ? "text-primary" : "text-zinc-400"}`}
+              className={`${period === Period.Daily ? "text-primary" : "text-neutral-400"}`}
             >
               {translate(daily)}
             </span>
@@ -72,7 +72,7 @@ export default function GlobalAdoptionSummary() {
             }}
           >
             <span
-              className={`${period === Period.Weekly ? "text-primary" : "text-zinc-400"}`}
+              className={`${period === Period.Weekly ? "text-primary" : "text-neutral-400"}`}
             >
               {translate(weekly)}
             </span>
@@ -85,7 +85,7 @@ export default function GlobalAdoptionSummary() {
             }}
           >
             <span
-              className={`${period === Period.Monthly ? "text-primary" : "text-zinc-400"}`}
+              className={`${period === Period.Monthly ? "text-primary" : "text-neutral-400"}`}
             >
               {translate(monthly)}
             </span>
@@ -98,7 +98,7 @@ export default function GlobalAdoptionSummary() {
             }}
           >
             <span
-              className={`${period === Period.Yearly ? "text-primary" : "text-zinc-400"}`}
+              className={`${period === Period.Yearly ? "text-primary" : "text-neutral-400"}`}
             >
               {translate(yearly)}
             </span>

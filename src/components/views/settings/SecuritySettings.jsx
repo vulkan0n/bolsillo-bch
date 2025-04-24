@@ -151,7 +151,7 @@ export default function SecuritySettings() {
       )}
       {authMode !== "none" && (pinHash !== "" || authMode === "bio") && (
         <>
-          <div className="text-lg font-semibold bg-zinc-600 text-white p-1">
+          <div className="text-lg font-semibold bg-neutral-600 text-white p-1">
             Require authorization for:
           </div>
           <Accordion.Child

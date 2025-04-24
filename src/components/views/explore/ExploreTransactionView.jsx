@@ -72,7 +72,7 @@ export default function ExploreTransactionView() {
     <>
       <ExploreSearchBar />
       <div className="p-1">
-        <div className="bg-zinc-700 rounded p-2">
+        <div className="bg-neutral-700 rounded p-2">
           <div className="text-center font-semibold text-white mb-1">
             {translate(translations.transactionId)}
           </div>
@@ -80,7 +80,7 @@ export default function ExploreTransactionView() {
             className="flex items-center justify-center rounded"
             onClick={handleCopyTransactionId}
           >
-            <div className="w-full p-2 bg-zinc-100 text-zinc-700 border border-primary rounded flex items-center justify-center active:bg-primary">
+            <div className="w-full p-2 bg-neutral-100 text-neutral-700 border border-primary rounded flex items-center justify-center active:bg-primary">
               <CopyOutlined className="mr-1" />
               <div className="font-mono text-xs flex flex-col items-center w-full">
                 <span>{tx.txid.slice(0, 32)}</span>
@@ -89,13 +89,13 @@ export default function ExploreTransactionView() {
             </div>
           </div>
         </div>
-        <div className="bg-zinc-200 text-white rounded p-1 my-1">
+        <div className="bg-neutral-200 text-white rounded p-1 my-1">
           <div className="p-1">
-            <div className="text-zinc-700 font-bold flex items-center justify-start">
+            <div className="text-neutral-700 font-bold flex items-center justify-start">
               <span>{txDate}</span>
             </div>
             {isConfirmed ? (
-              <div className="flex items-center font-bold text-zinc-500 text-sm">
+              <div className="flex items-center font-bold text-neutral-500 text-sm">
                 <span>
                   <span className="flex items-center">
                     <CheckCircleOutlined className="text-secondary mr-1" />{" "}
@@ -104,14 +104,14 @@ export default function ExploreTransactionView() {
                 </span>
               </div>
             ) : (
-              <div className="flex items-center font-bold text-zinc-500 text-sm">
-                <HourglassOutlined className="text-zinc-500 mr-1" /> Pending
+              <div className="flex items-center font-bold text-neutral-500 text-sm">
+                <HourglassOutlined className="text-neutral-500 mr-1" /> Pending
                 Confirmation
               </div>
             )}
           </div>
           <div
-            className={`my-1 text-zinc-600 text-sm ${memo ? "" : "underline"}`}
+            className={`my-1 text-neutral-600 text-sm ${memo ? "" : "underline"}`}
           >
             <Editable
               value={memo}
@@ -121,8 +121,8 @@ export default function ExploreTransactionView() {
           </div>
         </div>
         <div className="mt-1.5">
-          <div className="bg-zinc-600 p-1 rounded">
-            <div className="font-semibold pb-1 text-zinc-100">Outputs</div>
+          <div className="bg-neutral-600 p-1 rounded">
+            <div className="font-semibold pb-1 text-neutral-100">Outputs</div>
             {tx.vout.map((output, i) => (
               <OutputListItem key={output.n} output={output} i={i} />
             ))}
@@ -143,7 +143,7 @@ export default function ExploreTransactionView() {
 }
 
 function OutputListItem({ output, i }) {
-  const zebraCss = i % 2 === 0 ? "bg-zinc-100" : "bg-zinc-50";
+  const zebraCss = i % 2 === 0 ? "bg-neutral-100" : "bg-neutral-50";
 
   const asmSplit = output.scriptPubKey.asm.split(" ");
   const isOpReturn = asmSplit[0] === "OP_RETURN";
@@ -153,7 +153,7 @@ function OutputListItem({ output, i }) {
     <div className={`p-1.5 ${zebraCss} rounded-sm`}>
       <div className="flex text-sm items-center">
         {isOpReturn ? (
-          <div className="font-mono font-bold text-zinc-700">OP_RETURN</div>
+          <div className="font-mono font-bold text-neutral-700">OP_RETURN</div>
         ) : (
           <Address
             address={output.scriptPubKey.addresses[0]}
@@ -173,7 +173,7 @@ function OutputListItem({ output, i }) {
               <span className="font-mono">
                 <Satoshi value={output.value} />
               </span>
-              <span className="mx-1 text-zinc-500">/</span>
+              <span className="mx-1 text-neutral-500">/</span>
               <span className="text-sm opacity-80">
                 <Satoshi value={output.value} flip />
               </span>
@@ -194,7 +194,7 @@ function OutputListItem({ output, i }) {
 }
 
 function InputListItem({ input, i }) {
-  const zebraCss = i % 2 === 0 ? "bg-zinc-100" : "bg-zinc-50";
+  const zebraCss = i % 2 === 0 ? "bg-neutral-100" : "bg-neutral-50";
 
   const [inputTx, setInputTx] = useState(null);
 

@@ -67,7 +67,7 @@ export default function ExploreChronologyView() {
       <AppHero
         title={translate(chronology)}
         description={translate(description)}
-        icon={<ProfileOutlined className="text-xl my-auto text-zinc-200" />}
+        icon={<ProfileOutlined className="text-xl my-auto text-neutral-200" />}
       />
 
       <hr />

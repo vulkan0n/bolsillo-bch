@@ -149,26 +149,26 @@ export default function AssetsViewTokenDetail() {
             <div className="flex flex-col flex-1 mx-1.5 justify-evenly">
               <div>
                 <span
-                  className="font-mono text-md font-bold pr-1.5 mr-1.5 border-r border-zinc-400/90"
+                  className="font-mono text-md font-bold pr-1.5 mr-1.5 border-r border-neutral-400/90"
                   style={{ color: tokenData.color }}
                 >
                   {tokenData.token
                     ? tokenData.token.symbol
                     : tokenData.category.slice(0, 6)}
                 </span>
-                <span className="font-bold text-lg text-zinc-700">
+                <span className="font-bold text-lg text-neutral-700">
                   {tokenData.name}
                 </span>
               </div>
 
-              <div className="flex items-center text-zinc-600 gap-x-2 text-md">
+              <div className="flex items-center text-neutral-600 gap-x-2 text-md">
                 {tokenData.nftCount > 0 && (
                   <TokenAmount token={tokenData} nft />
                 )}
                 {tokenData.amount > 0 && <TokenAmount token={tokenData} />}
               </div>
 
-              <div className="flex flex-1 flex-wrap items-end gap-3 text-zinc-500 text-[1.667em]">
+              <div className="flex flex-1 flex-wrap items-end gap-3 text-neutral-500 text-[1.667em]">
                 {tokenData.uris &&
                   Object.entries(tokenData.uris)
                     .filter(([k]) => !["icon", "image"].includes(k))
@@ -183,7 +183,7 @@ export default function AssetsViewTokenDetail() {
           <div>
             {tokenData.description && (
               <div
-                className="p-1 text-md text-zinc-700 border-t border-dashed border-zinc-300/80 mt-1"
+                className="p-1 text-md text-neutral-700 border-t border-dashed border-neutral-300/80 mt-1"
                 onClick={() =>
                   setShouldShowFullDescription(!shouldShowFullDescription)
                 }
@@ -195,7 +195,7 @@ export default function AssetsViewTokenDetail() {
                   <>
                     <div>{truncateProse(tokenData.description)}</div>
                     <div className="text-right text-sm cursor-pointer flex justify-end">
-                      <span className="border-b border-dotted border-zinc-400 flex items-center shrink justify-end w-fit">
+                      <span className="border-b border-dotted border-neutral-400 flex items-center shrink justify-end w-fit">
                         {translate(translations.seeMore)}
                         <ArrowRightOutlined className="ml-1" />
                       </span>
@@ -206,7 +206,7 @@ export default function AssetsViewTokenDetail() {
             )}
           </div>
           <div
-            className="mt-1.5 pt-0.5 border-t border-dashed border-zinc-300/80 font-mono text-sm text-zinc-400/70 truncate"
+            className="mt-1.5 pt-0.5 border-t border-dashed border-neutral-300/80 font-mono text-sm text-neutral-400/70 truncate"
             onClick={(e) => {
               e.stopPropagation();
               handleCopyToClipboard(token.category);
@@ -258,7 +258,7 @@ export default function AssetsViewTokenDetail() {
                     </div>
                     <div className="truncate px-1">
                       {nftData && nftData.description ? (
-                        <span className="text-sm text-zinc-700 text-wrap">
+                        <span className="text-sm text-neutral-700 text-wrap">
                           {truncateProse(nftData.description)}
                         </span>
                       ) : (
@@ -273,7 +273,7 @@ export default function AssetsViewTokenDetail() {
             })}
           </div>
         ) : (
-          <div className="border rounded-sm border-zinc-300 shadow-inner mt-2">
+          <div className="border rounded-sm border-neutral-300 shadow-inner mt-2">
             {tokenHistory.map(
               (h, i) =>
                 i < 50 && (
@@ -302,7 +302,7 @@ export default function AssetsViewTokenDetail() {
                         </div>
                       </div>
                       {h.memo && (
-                        <div className="text-sm text-zinc-500 ml-4">
+                        <div className="text-sm text-neutral-500 ml-4">
                           {translate(translations.memo)}: {h.memo}
                         </div>
                       )}
@@ -315,8 +315,8 @@ export default function AssetsViewTokenDetail() {
       </div>
 
       {tokenData.amount > 0 && (
-        <div className="sticky bottom-0 bg-black/80 w-full border-t-2 border-zinc-700 rounded-t shadow mt-1">
-          <div className="text-zinc-700 rounded-t bg-white/85 shadow-lg">
+        <div className="sticky bottom-0 bg-black/80 w-full border-t-2 border-neutral-700 rounded-t shadow mt-1">
+          <div className="text-neutral-700 rounded-t bg-white/85 shadow-lg">
             <div className="flex items-center p-2 mb-1">
               <Button
                 icon={SendOutlined}
@@ -357,8 +357,8 @@ function SelectionDisplay({ selection, onConfirm, onCancel }) {
   };
 
   return (
-    <div className="sticky bottom-0 bg-black/70 w-full border-t-2 border-zinc-700 rounded-t shadow mt-1">
-      <div className="text-zinc-700 rounded-t bg-white/85 shadow-lg px-3 py-3">
+    <div className="sticky bottom-0 bg-black/70 w-full border-t-2 border-neutral-700 rounded-t shadow mt-1">
+      <div className="text-neutral-700 rounded-t bg-white/85 shadow-lg px-3 py-3">
         <div className="flex relative justify-between">
           <div className="flex items-center justify-start flex-1">
             <Button
@@ -366,7 +366,7 @@ function SelectionDisplay({ selection, onConfirm, onCancel }) {
               icon={CloseOutlined}
               iconSize="lg"
               bgColor="transparent"
-              activeBgColor="x active:bg-zinc-100"
+              activeBgColor="x active:bg-neutral-100"
               borderClasses="border border-transparent"
             />
           </div>

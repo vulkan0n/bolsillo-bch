@@ -39,7 +39,7 @@ export default function AppSubSectionWrapper({ subsections }) {
                 }}
               >
                 <div className="w-6"></div>
-                <span className="text-center bg-zinc-300 w-full mx-3">
+                <span className="text-center bg-neutral-300 w-full mx-3">
                   <span className="text-lg font-semibold">
                     {subsection.name}
                   </span>

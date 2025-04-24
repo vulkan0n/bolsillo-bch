@@ -52,7 +52,7 @@ export default function AssetsViewAddresses() {
           <li>Unused Change Addresses: {unusedChangeAddresses.length}</li>
         </ul>
       </div>*/}
-      <ul className="mt-2 bg-zinc-100 text-zinc-600 divide-y divide-zinc-300 max-h-[58vh] overflow-y-scroll border border-zinc-400 shadow-inner">
+      <ul className="mt-2 bg-neutral-100 text-neutral-600 divide-y divide-neutral-300 max-h-[58vh] overflow-y-scroll border border-neutral-400 shadow-inner">
         {addresses
           .filter((a) => a.balance > 0 || shouldShowEmptyAddresses)
           .map((a, i) => (
@@ -77,7 +77,7 @@ function AddressAccordion({ a, i }: AddressAccordionProps) {
   const UtxoManager = UtxoManagerService(walletHash);
   const coins = UtxoManager.getAddressCoins(a.address);
 
-  const zebraCss = i % 2 === 0 ? "bg-zinc-100" : "bg-zinc-50";
+  const zebraCss = i % 2 === 0 ? "bg-neutral-100" : "bg-neutral-50";
 
   return (
     <div className={`p-1.5 ${zebraCss}`}>
@@ -107,7 +107,7 @@ function AddressAccordion({ a, i }: AddressAccordionProps) {
         )}
       </div>
       {isOpen && a.balance > 0 && (
-        <div className="bg-zinc-50 rounded-sm shadow-inner text-sm mt-1 flex flex-wrap gap-1 justify-between">
+        <div className="bg-neutral-50 rounded-sm shadow-inner text-sm mt-1 flex flex-wrap gap-1 justify-between">
           {coins.map((coin) => (
             <Coin key={`${coin.txid}:${coin.tx_pos}`} coin={coin} />
           ))}
@@ -123,7 +123,7 @@ function Coin({ coin }) {
 
   const selectCss = isSelected
     ? "bg-primary text-white"
-    : "bg-zinc-50 text-zinc-900";
+    : "bg-neutral-50 text-neutral-900";
 
   const handleSelection = () => {
     setIsSelected(!isSelected);

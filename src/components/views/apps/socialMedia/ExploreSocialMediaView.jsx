@@ -24,7 +24,7 @@ const SUBSECTIONS = [
               key={video.videoTitle}
               className="block p-4 mb-1 mx-2 bg-white border border-gray-800 border-2 rounded-lg shadow"
             >
-              <h5 className="mb-2 text-xl font-bold text-zinc-700">
+              <h5 className="mb-2 text-xl font-bold text-neutral-700">
                 {video.videoTitle}
               </h5>
               <p className="font-normal text-gray-700 dark:text-gray-400 pb-2">
@@ -60,7 +60,7 @@ export default function ExploreSocialMediaView() {
         <AppHero
           title="Social Media"
           description="Get involved in the latest content, news & discussion in BCH."
-          icon={<LikeOutlined className="text-xl my-auto text-zinc-200" />}
+          icon={<LikeOutlined className="text-xl my-auto text-neutral-200" />}
           expandableTitle={"Recommended channels"}
         />
 

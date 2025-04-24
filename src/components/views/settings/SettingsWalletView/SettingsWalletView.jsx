@@ -201,16 +201,16 @@ export default function SettingsWalletView() {
         title={translate(translations.walletSettings)}
       />
       <div className="p-2" key={walletHash}>
-        <div className="p-3 rounded-lg bg-zinc-200">
+        <div className="p-3 rounded-lg bg-neutral-200">
           <div className="text-2xl flex justify-center items-center">
             <Editable onConfirm={handleEditConfirm} value={wallet.name} />
           </div>
-          <div className="text-lg text-center text-zinc-600">
+          <div className="text-lg text-center text-neutral-600">
             {translate(translations.created)}{" "}
             {new Date(wallet.created_at).toLocaleString(locale)}
           </div>
           {wallet.balance > 0 && (
-            <div className="text-lg text-center text-zinc-500">
+            <div className="text-lg text-center text-neutral-500">
               {translate(translations.lastKnownBalance)}:{" "}
               <Satoshi value={wallet.balance} />
             </div>
@@ -222,7 +222,7 @@ export default function SettingsWalletView() {
             <Button
               icon={activateButtonIcon}
               label={activateButtonLabel}
-              labelColor={`zinc-50 ${isActiveWallet ? "saturate-[.60]" : ""}`}
+              labelColor={`neutral-50 ${isActiveWallet ? "saturate-[.60]" : ""}`}
               bgColor="primary"
               rounded="lg"
               fullWidth
@@ -234,7 +234,7 @@ export default function SettingsWalletView() {
             <Button
               icon={deleteButtonIcon}
               label={deleteButtonLabel}
-              labelColor={`zinc-50 ${isDeleteDisabled ? "saturate-[.60]" : ""}`}
+              labelColor={`neutral-50 ${isDeleteDisabled ? "saturate-[.60]" : ""}`}
               bgColor="error"
               activeBgColor="error"
               borderClasses="border border-2 border-error"

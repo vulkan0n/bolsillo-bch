@@ -15,7 +15,7 @@ export default function ExploreApp({
 
   return (
     <Link to={to}>
-      <div className="rounded-lg border border-primary bg-zinc-100 my-2 p-1">
+      <div className="rounded-lg border border-primary bg-neutral-100 my-2 p-1">
         <div className="flex items-center">
           <div className="flex items-center justify-center p-2 text-2xl">
             <Icon />

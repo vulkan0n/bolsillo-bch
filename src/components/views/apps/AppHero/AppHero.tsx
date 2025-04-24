@@ -23,17 +23,19 @@ export default function AppHero({
   const [isExpandableOpen, setIsExpandableOpen] = useState(false);
 
   return (
-    <div className="shadow rounded-lg m-2 p-2 bg-zinc-900 flex-column justify-center items-center">
+    <div className="shadow rounded-lg m-2 p-2 bg-neutral-900 flex-column justify-center items-center">
       <div className="w-full">
         <div className="flex justify-center items-center">
           <span className="pr-1 flex justify-center items-center">{icon}</span>
-          <span className="font-bold text-xl text-center text-zinc-300 px-1">
+          <span className="font-bold text-xl text-center text-neutral-300 px-1">
             {title}
           </span>
           <span className="pl-1 flex justify-center items-center">{icon}</span>
         </div>
 
-        <div className="text-md text-center text-zinc-300">{description}</div>
+        <div className="text-md text-center text-neutral-300">
+          {description}
+        </div>
       </div>
 
       {callToAction && callToActionUrl && (
@@ -41,7 +43,7 @@ export default function AppHero({
           <a
             href={callToActionUrl}
             target="_blank"
-            className="flex justify-center m-4 rounded-full border border-2 border-primary bg-primary text-zinc-100 shadow-md opacity-90"
+            className="flex justify-center m-4 rounded-full border border-2 border-primary bg-primary text-neutral-100 shadow-md opacity-90"
           >
             {callToAction}
           </a>
@@ -50,7 +52,7 @@ export default function AppHero({
 
       {expandableTitle && expandableContent && (
         <div
-          className={`${!callToAction && "mt-2"} p-1 w-full bg-zinc-200 text-lg text-center text-zinc-800`}
+          className={`${!callToAction && "mt-2"} p-1 w-full bg-neutral-200 text-lg text-center text-neutral-800`}
         >
           <div
             className={"flex justify-center items-center"}

@@ -79,11 +79,11 @@ export default function SlideToAction({
   };
 
   return (
-    <div className="p-1 bg-zinc-100 rounded-full overflow-hidden">
+    <div className="p-1 bg-neutral-100 rounded-full overflow-hidden">
       <div
         className={clsx(
           className,
-          "bg-zinc-100 rounded-full flex items-center justify-center relative text-primary font-bold text-center",
+          "bg-neutral-100 rounded-full flex items-center justify-center relative text-primary font-bold text-center",
           {
             "opacity-50 pointer-events-none": disabled,
           }

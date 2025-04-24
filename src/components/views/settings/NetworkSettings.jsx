@@ -80,7 +80,7 @@ export default function NetworkSettings() {
       >
         <div className="flex items-center">
           <select
-            className="p-2 bg-white rounded h-10 w-40 flex-1 disabled:bg-zinc-200 disabled:text-zinc-400"
+            className="p-2 bg-white rounded h-10 w-40 flex-1 disabled:bg-neutral-200 disabled:text-neutral-400"
             value={currentServer}
             disabled={isOfflineMode === true}
             onChange={(event) => {

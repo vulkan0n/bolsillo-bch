@@ -284,7 +284,7 @@ export default function WalletViewPay() {
         </div>
       ) : (
         <div className="flex flex-col h-full">
-          <div className="w-full text-center text-zinc-700 p-2 my-2">
+          <div className="w-full text-center text-neutral-700 p-2 my-2">
             Expires in&nbsp;
             <CountdownTimer
               expiryDate={paymentData.expires}
@@ -292,20 +292,20 @@ export default function WalletViewPay() {
             />
           </div>
           <div className="flex flex-col mx-2 justify-center">
-            <div className="h-full bg-primary/80 text-zinc-900 rounded-md p-4">
+            <div className="h-full bg-primary/80 text-neutral-900 rounded-md p-4">
               {!message ? (
                 <>
-                  <div className="p-2 bg-zinc-100 rounded-md mb-3 text-center font-semibold">
+                  <div className="p-2 bg-neutral-100 rounded-md mb-3 text-center font-semibold">
                     {paymentData.memo}
                   </div>
                   <div
-                    className="p-4 text-center bg-zinc-100 rounded-md cursor-pointer"
+                    className="p-4 text-center bg-neutral-100 rounded-md cursor-pointer"
                     onClick={handleFlipCurrency}
                   >
-                    <div className="font-semibold text-xl mb-1 text-zinc-900">
+                    <div className="font-semibold text-xl mb-1 text-neutral-900">
                       <Satoshi value={totalSats} />
                     </div>
-                    <div className="text-lg flex items-center justify-center gap-x-2 text-zinc-800">
+                    <div className="text-lg flex items-center justify-center gap-x-2 text-neutral-800">
                       <Satoshi value={totalSats} flip />
                       <CurrencyFlip className="text-xl" />
                     </div>

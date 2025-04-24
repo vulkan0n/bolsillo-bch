@@ -5,7 +5,7 @@ export const TabSwitcher = ({ selected, setSelected }) => {
   return (
     <div className="flex mx-2 rounded-md">
       <div
-        className={`flex-1 py-1 my-2 ml-2 text-center rounded-md bg-${selected === OPTIONS.YOUTUBE ? "red-400" : "zinc-200"}`}
+        className={`flex-1 py-1 my-2 ml-2 text-center rounded-md bg-${selected === OPTIONS.YOUTUBE ? "red-400" : "neutral-200"}`}
       >
         <button
           className={
@@ -16,13 +16,13 @@ export const TabSwitcher = ({ selected, setSelected }) => {
           }}
         >
           <span>
-            <YoutubeOutlined className="text-xl my-auto text-zinc-800" />
+            <YoutubeOutlined className="text-xl my-auto text-neutral-800" />
           </span>
           <span>{OPTIONS.YOUTUBE}</span>
         </button>
       </div>
       <div
-        className={`flex-1 py-1 my-2 ml-2 text-center rounded-md bg-${selected === OPTIONS.TWITTER ? "red-400" : "zinc-200"}`}
+        className={`flex-1 py-1 my-2 ml-2 text-center rounded-md bg-${selected === OPTIONS.TWITTER ? "red-400" : "neutral-200"}`}
       >
         <button
           className={
@@ -33,7 +33,7 @@ export const TabSwitcher = ({ selected, setSelected }) => {
           }}
         >
           <span>
-            <TwitterOutlined className="text-xl my-auto text-zinc-800" />
+            <TwitterOutlined className="text-xl my-auto text-neutral-800" />
           </span>
           <span>X ({OPTIONS.TWITTER})</span>
         </button>

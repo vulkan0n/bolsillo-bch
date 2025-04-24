@@ -58,7 +58,7 @@ function WalletViewSendSuccess() {
       onClick={() => navigate("/")}
     >
       <div
-        className={`flex items-center justify-center p-4 bg-zinc-800 shadow-lg transition-[height] ${isFocused ? "h-0" : "h-48"}`} // set the height dynamically based on input focus to prevent the virtual keyboard from overlaying the input
+        className={`flex items-center justify-center p-4 bg-neutral-800 shadow-lg transition-[height] ${isFocused ? "h-0" : "h-48"}`} // set the height dynamically based on input focus to prevent the virtual keyboard from overlaying the input
       >
         <SeleneLogo className="h-full" cashtokens={hasTokens} />
       </div>
@@ -79,13 +79,13 @@ function WalletViewSendSuccess() {
           className="border rounded mb-2 border-primary"
           onClick={handleCopyTransactionId}
         >
-          <div className="p-1 bg-zinc-500 rounded-t-sm">
-            <span className="font-semibold text-zinc-200 flex items-center">
+          <div className="p-1 bg-neutral-500 rounded-t-sm">
+            <span className="font-semibold text-neutral-200 flex items-center">
               {translate(translations.transactionId)}
               <CopyOutlined className="ml-1" />
             </span>
           </div>
-          <div className="bg-zinc-200 p-1 rounded-b-sm">
+          <div className="bg-neutral-200 p-1 rounded-b-sm">
             <span className="font-mono text-sm tracking-tighter break-all select-none">
               {tx.txid}
             </span>
@@ -95,12 +95,12 @@ function WalletViewSendSuccess() {
           className="border rounded mb-2 border-primary"
           onClick={(e) => e.stopPropagation()}
         >
-          <div className="p-1 bg-zinc-500 rounded-t-sm">
-            <span className="font-semibold text-zinc-200">
+          <div className="p-1 bg-neutral-500 rounded-t-sm">
+            <span className="font-semibold text-neutral-200">
               {translate(translations.memo)}
             </span>
           </div>
-          <div className="bg-zinc-200 p-1 rounded-b-sm flex items-center">
+          <div className="bg-neutral-200 p-1 rounded-b-sm flex items-center">
             <input
               type="text"
               className="flex-1 rounded-sm p-1"
@@ -115,7 +115,7 @@ function WalletViewSendSuccess() {
           </div>
         </div>
         <div
-          className="bg-zinc-200 p-1 rounded"
+          className="bg-neutral-200 p-1 rounded"
           onClick={(e) => e.stopPropagation()}
         >
           <div className="font-semibold pb-1 text-sm">
@@ -134,7 +134,7 @@ export default WalletViewSendSuccess;
 
 /* eslint-disable react/prop-types */
 function OutputListItem({ output, i }) {
-  const zebraCss = i % 2 === 0 ? "bg-zinc-100" : "bg-zinc-50";
+  const zebraCss = i % 2 === 0 ? "bg-neutral-100" : "bg-neutral-50";
 
   return (
     <div className={`p-1.5 ${zebraCss} rounded-sm`}>
@@ -152,7 +152,7 @@ function OutputListItem({ output, i }) {
           <span className="font-mono">
             <Satoshi value={output.value} />
           </span>
-          <span className="mx-1 text-zinc-500">/</span>
+          <span className="mx-1 text-neutral-500">/</span>
           <span className="text-sm opacity-80">
             <Satoshi value={output.value} flip />
           </span>

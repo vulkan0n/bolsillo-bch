@@ -44,14 +44,14 @@ export default function ErrorBoundary() {
 
   return (
     <>
-      <div className="text-2xl p-1 bg-zinc-900 text-zinc-300 font-bold flex items-center">
+      <div className="text-2xl p-1 bg-neutral-900 text-neutral-300 font-bold flex items-center">
         <span>
           <SeleneLogo className="h-14 mr-2" />
         </span>
         <span className="flex-1">{translate(translations.somethingWrong)}</span>
       </div>
       <div className="p-2">
-        <div className="bg-zinc-200 p-2 rounded my-1">
+        <div className="bg-neutral-200 p-2 rounded my-1">
           <div className="text-xl font-bold mb-2">
             {translate(translations.hereCanTry)}:
           </div>
@@ -83,7 +83,7 @@ export default function ErrorBoundary() {
           title={translate(translations.errorMessage)}
         >
           <Accordion.Child icon={null} label="">
-            <div className="font-mono bg-zinc-100 p-2 text-left">
+            <div className="font-mono bg-neutral-100 p-2 text-left">
               {error.message}
             </div>
             {/*<div className="font-mono">{error.stack}</div>*/}

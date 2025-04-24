@@ -103,7 +103,7 @@ export default function AssetsViewCoins() {
     <FullColumn className="justify-between">
       <div className="m-1">
         <div
-          className="p-1 rounded bg-zinc-800 text-white text-center my-1"
+          className="p-1 rounded bg-neutral-800 text-white text-center my-1"
           onClick={handleFlipCurrency}
         >
           <div className="text-lg font-bold">
@@ -129,7 +129,7 @@ export default function AssetsViewCoins() {
         ))}
 
         {coinAddresses.length === 0 && (
-          <div className="text-center py-4 rounded text-2xl text-zinc-700/90">
+          <div className="text-center py-4 rounded text-2xl text-neutral-700/90">
             {translate(translations.noCoins)}
             <div className="flex items-center justify-center mt-2">
               <SeleneLogo className="h-32" />
@@ -154,7 +154,7 @@ function CoinGroup({ address, coins, onCoinSelect }) {
 
   const selectCss = isSelected
     ? "bg-primary text-white"
-    : "bg-zinc-500 text-zinc-200";
+    : "bg-neutral-500 text-neutral-200";
 
   const handleGroupSelection = () => {
     coins.forEach((coin) => onCoinSelect(coin.key, !isSelected));
@@ -180,7 +180,7 @@ function CoinGroup({ address, coins, onCoinSelect }) {
 function Coin({ coin, onSelect }) {
   const selectCss = coin.selected
     ? "bg-primary text-white"
-    : "bg-zinc-50 text-zinc-900";
+    : "bg-neutral-50 text-neutral-900";
 
   const handleSelection = (event) => {
     onSelect(coin.key);
@@ -217,15 +217,15 @@ function SelectionDisplay({ selection, onConfirm, onCancel }) {
   };
 
   return (
-    <div className="sticky bottom-0 bg-black/70 w-full border-t-2 border-zinc-700 rounded-t shadow mt-1">
-      <div className="text-zinc-700 rounded-t bg-white/85 shadow-lg px-2 py-1">
+    <div className="sticky bottom-0 bg-black/70 w-full border-t-2 border-neutral-700 rounded-t shadow mt-1">
+      <div className="text-neutral-700 rounded-t bg-white/85 shadow-lg px-2 py-1">
         <div className="flex relative justify-between">
           <div className="flex items-center justify-start flex-1">
             <Button
               onClick={handleCancel}
               icon={CloseOutlined}
               bgColor="transparent"
-              activeBgColor="x active:bg-zinc-100"
+              activeBgColor="x active:bg-neutral-100"
               borderClasses="border border-transparent"
             />
           </div>

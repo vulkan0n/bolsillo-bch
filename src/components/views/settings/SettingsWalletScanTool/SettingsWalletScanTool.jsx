@@ -164,7 +164,7 @@ export default function SettingsWalletScanTool() {
     <>
       <ViewHeader icon={SyncOutlined} title="Address Scan Tool" />
       <div className="">
-        <div className="rounded bg-zinc-200 p-1 text-sm">
+        <div className="rounded bg-neutral-200 p-1 text-sm">
           <div className="flex items-center gap-x-1">
             {electrumHostname === "" ? (
               <>

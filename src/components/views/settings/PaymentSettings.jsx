@@ -81,7 +81,7 @@ export default function PaymentSettings() {
         label={translate(translations.instantPayLimit)}
         description={translate(translations.instantPayExplanation)}
       >
-        <span className="text-zinc-600 flex items-center">
+        <span className="text-neutral-600 flex items-center">
           <CurrencySymbol className="font-bold text-lg" />
           <SatoshiInput
             satoshis={instantPaySatInput}

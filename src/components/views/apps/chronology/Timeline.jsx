@@ -62,7 +62,7 @@ export default function Timeline({ timelineItems }) {
               <div className="pb-1">
                 <div className="flex justify-between items-center pt-1">
                   <span className="text-xl font-bold">{title}</span>
-                  <span className={"text text-zinc-200 pt-0 mt-2"}>
+                  <span className={"text text-neutral-200 pt-0 mt-2"}>
                     {formattedDate}
                   </span>
                 </div>
@@ -75,11 +75,11 @@ export default function Timeline({ timelineItems }) {
               <div className="pb-2">
                 {category ===
                   (CATEGORIES.FORK.HARD_FORK || CATEGORIES.FORK.SOFT_FORK) && (
-                  <span className={"text text-zinc-200 pb-2"}>
+                  <span className={"text text-neutral-200 pb-2"}>
                     {CATEGORIES.FORK.FORK} -{" "}
                   </span>
                 )}
-                <span className={"text text-zinc-200 pb-2"}>{category}</span>
+                <span className={"text text-neutral-200 pb-2"}>{category}</span>
               </div>
 
               {graphicUrl && (
@@ -107,7 +107,7 @@ export default function Timeline({ timelineItems }) {
                   <a
                     href={readMoreUrl}
                     target="_blank"
-                    className="flex justify-center m-1 rounded-full border border-2 border-primary bg-primary text-zinc-100 shadow-md opacity-90"
+                    className="flex justify-center m-1 rounded-full border border-2 border-primary bg-primary text-neutral-100 shadow-md opacity-90"
                   >
                     {translate(readMore)}
                   </a>
@@ -118,7 +118,7 @@ export default function Timeline({ timelineItems }) {
                 <div>
                   <span
                     onClick={() => navigate(appUrl)}
-                    className="flex justify-center m-1 rounded-full border border-2 border-primary bg-primary text-zinc-100 shadow-md opacity-90"
+                    className="flex justify-center m-1 rounded-full border border-2 border-primary bg-primary text-neutral-100 shadow-md opacity-90"
                   >
                     {translate(tryItInSelene)}
                   </span>

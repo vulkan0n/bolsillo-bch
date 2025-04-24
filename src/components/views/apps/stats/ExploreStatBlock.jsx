@@ -56,18 +56,18 @@ export default function ExploreStatBlock() {
   const isYearlyActiveIncrease = yearlyChange >= 0;
 
   return (
-    <div className="shadow rounded-lg p-2 bg-zinc-900 w-full flex-column justify-between items-center">
+    <div className="shadow rounded-lg p-2 bg-neutral-900 w-full flex-column justify-between items-center">
       <div className="w-full flex justify-center items-center">
-        <span className="font-bold text-xl text-zinc-300">
+        <span className="font-bold text-xl text-neutral-300">
           {translate(seleneActiveUsers)}
         </span>
       </div>
 
       <DailyTarget />
 
-      <div className="shadow rounded-lg p-2 bg-zinc-900 w-full flex justify-between items-center">
+      <div className="shadow rounded-lg p-2 bg-neutral-900 w-full flex justify-between items-center">
         <div className="p-1 mx-1">
-          <div className="font-bold text-zinc-300">24h</div>
+          <div className="font-bold text-neutral-300">24h</div>
           <div
             className={`${isDailyActiveIncrease ? "text-primary" : "text-red-500"} text-lg font-semibold`}
           >
@@ -84,7 +84,7 @@ export default function ExploreStatBlock() {
         </div>
 
         <div className="p-1 mx-1">
-          <div className="font-bold text-zinc-300">7d</div>
+          <div className="font-bold text-neutral-300">7d</div>
           <div
             className={`${isWeeklyActiveIncrease ? "text-primary" : "text-red-500"} text-lg font-semibold`}
           >
@@ -101,7 +101,7 @@ export default function ExploreStatBlock() {
         </div>
 
         <div className="p-1 mx-1">
-          <div className="font-bold text-zinc-300">30d</div>
+          <div className="font-bold text-neutral-300">30d</div>
           <div
             className={`${isMonthlyActiveIncrease ? "text-primary" : "text-red-500"} text-lg font-semibold`}
           >
@@ -119,7 +119,7 @@ export default function ExploreStatBlock() {
         </div>
 
         <div className="p-1 mx-1">
-          <div className="font-bold text-zinc-300">1y</div>
+          <div className="font-bold text-neutral-300">1y</div>
           <div
             className={`${isYearlyActiveIncrease ? "text-primary" : "text-red-500"} text-lg font-semibold`}
           >

@@ -437,7 +437,7 @@ export default function WalletViewSend() {
                     />
                     <Button
                       label="MAX"
-                      className="spacing-wide text-bold text-zinc-800 rounded-full border border-zinc-200 bg-zinc-100"
+                      className="spacing-wide text-bold text-neutral-800 rounded-full border border-neutral-200 bg-neutral-100"
                       onClick={() => handleSendMaxTokens()}
                     />
                   </div>
@@ -464,7 +464,7 @@ export default function WalletViewSend() {
                       />
                       <Button
                         label="MAX"
-                        className="spacing-wide text-bold text-zinc-800 rounded-full border border-zinc-200 bg-zinc-100"
+                        className="spacing-wide text-bold text-neutral-800 rounded-full border border-neutral-200 bg-neutral-100"
                         onClick={handleSendMax}
                       />
                     </div>
@@ -473,7 +473,7 @@ export default function WalletViewSend() {
                     className="p-2 relative text-center w-full"
                     onClick={handleFlipCurrency}
                   >
-                    <span className="text-2xl font-semibold text-center w-full text-zinc-800/80 flex justify-center items-center">
+                    <span className="text-2xl font-semibold text-center w-full text-neutral-800/80 flex justify-center items-center">
                       <Satoshi value={satoshiInput} flip />
                       <CurrencyFlip className="text-3xl ml-2" />
                     </span>
@@ -617,7 +617,7 @@ function NftSelectionDisplay({ nftUtxos }) {
               </div>
               <div className="truncate px-1">
                 {nftData && nftData.description ? (
-                  <span className="text-sm text-zinc-700 text-wrap">
+                  <span className="text-sm text-neutral-700 text-wrap">
                     {truncateProse(nftData.description)}
                   </span>
                 ) : (

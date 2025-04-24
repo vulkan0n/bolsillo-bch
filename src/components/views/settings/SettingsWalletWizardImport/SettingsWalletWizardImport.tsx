@@ -31,7 +31,7 @@ function AutoSuggestions({
   onClickWord,
 }: AutoSuggestionsProps) {
   const wrapperClassname =
-    "min-h-8 text-center flex items-center justify-center gap-2 text-zinc-400";
+    "min-h-8 text-center flex items-center justify-center gap-2 text-neutral-400";
   if (mnemonicInput === "" || mnemonicInput.endsWith(" ")) {
     return (
       <div className={wrapperClassname}>

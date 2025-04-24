@@ -113,7 +113,7 @@ function SyncCounter() {
   const shouldDisplaySyncCounter = useSelector(selectShouldDisplaySyncCounter);
   const syncCount = useSelector(selectSyncCount);
   return shouldDisplaySyncCounter ? (
-    <div className="text-xs text-zinc-600 mt-0.5">{syncCount}</div>
+    <div className="text-xs text-neutral-600 mt-0.5">{syncCount}</div>
   ) : null;
 }
 
