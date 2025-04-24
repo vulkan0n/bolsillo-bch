@@ -1,3 +1,4 @@
+import { useNavigate, To } from "react-router";
 import NullComponent from "@/atoms/NullComponent";
 
 export type ValidSizes =
@@ -29,12 +30,13 @@ type ValidRounded =
   | "3xl";
 
 export interface ButtonProps {
-  label?: string;
+  label?: React.ReactNode;
   labelSize?: ValidSizes;
   labelColor?: string;
   activeLabelColor?: string;
   icon?: React.ComponentType<{ className?: string }>;
   iconSize?: ValidSizes;
+  iconClasses?: string;
   outerLabel?: string;
   outerLabelSize?: ValidSizes;
   outerLabelColor?: string;
@@ -48,7 +50,9 @@ export interface ButtonProps {
   fullWidth?: boolean;
   onClick?: React.MouseEventHandler;
   disabled?: boolean;
+  className?: string;
   style?: React.CSSProperties;
+  navigateTo?: To;
 }
 
 export default function Button({
@@ -58,6 +62,7 @@ export default function Button({
   activeLabelColor = "white",
   icon = NullComponent,
   iconSize = "2xl",
+  iconClasses = "",
   outerLabel = "",
   outerLabelSize = "sm",
   outerLabelColor = "zinc-700",
@@ -71,7 +76,9 @@ export default function Button({
   fullWidth = false,
   onClick = () => null,
   disabled = false,
+  className = "",
   style = {},
+  navigateTo = undefined,
 }: ButtonProps) {
   const Icon = icon;
   // tailwindcss dynamic classes don't work here, the tokenizer needs to see the whole string, they're computed at build time, not runtime!
@@ -83,13 +90,20 @@ export default function Button({
   const disabledClasses = disabled
     ? `opacity-[.5] shadow-none active:shadow-none`
     : "cursor-pointer";
+
+  const navigate = useNavigate();
+
   const handleOnClick = (event) => {
     event.stopPropagation();
     onClick(event);
+
+    if (navigateTo) {
+      navigate(navigateTo);
+    }
   };
 
   return (
-    <div className={`${fullWidth ? "w-full" : ""}`}>
+    <div className={`${fullWidth ? "w-full" : ""} ${className}`}>
       <button
         type="button"
         onClick={handleOnClick}
@@ -108,7 +122,9 @@ export default function Button({
         disabled={disabled}
         style={style}
       >
-        <Icon className={`text-${iconSize} ${label ? "mr-1" : ""}`} />
+        <Icon
+          className={`text-${iconSize} ${label ? "mr-1" : ""} ${iconClasses}`}
+        />
         <span>{label}</span>
       </button>
       {outerLabel && (

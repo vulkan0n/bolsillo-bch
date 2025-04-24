@@ -1,8 +1,11 @@
 import { useMemo, useCallback } from "react";
-import { Link } from "react-router";
 import { useSelector, useDispatch } from "react-redux";
+import {
+  InAppBrowser,
+  DefaultSystemBrowserOptions,
+} from "@capacitor/inappbrowser";
 
-import { SettingOutlined } from "@ant-design/icons";
+import { SettingOutlined, QuestionCircleOutlined } from "@ant-design/icons";
 
 import {
   selectPreferences,
@@ -12,11 +15,14 @@ import {
 
 import ViewHeader from "@/layout/ViewHeader";
 import KeyWarning from "@/atoms/KeyWarning/KeyWarning";
+import Button from "@/atoms/Button";
+import SeleneLogo from "@/atoms/SeleneLogo";
+
+import { selectDevicePlatform } from "@/redux/device";
 
 import { translate } from "@/util/translations";
 import translations from "./translations";
 
-import { logos } from "@/util/logos";
 import { SELENE_WALLET_VERSION } from "@/util/version";
 
 import { SettingsContext } from "./SettingsContext";
@@ -35,6 +41,8 @@ export default function SettingsView() {
   const dispatch = useDispatch();
   const preferences = useSelector(selectPreferences);
 
+  const platform = useSelector(selectDevicePlatform);
+
   const handleSettingsUpdate = useCallback(
     (key, value) => {
       dispatch(setPreference({ key, value }));
@@ -52,6 +60,17 @@ export default function SettingsView() {
   );
 
   const activeWalletHash = useSelector(selectActiveWalletHash);
+
+  const handleHelpButton = async () => {
+    if (platform === "web") {
+      window.open("https://docs.selene.cash");
+    } else {
+      await InAppBrowser.openInSystemBrowser({
+        url: "https://docs.selene.cash",
+        options: DefaultSystemBrowserOptions,
+      });
+    }
+  };
 
   return (
     <>
@@ -74,16 +93,29 @@ export default function SettingsView() {
             <IntlSettings />
           </SettingsContext.Provider>
         </div>
-        <div className="w-fit mx-auto px-2 py-0.5 shadow-sm rounded-full bg-primary text-white active:bg-white active:text-primary">
-          <Link
-            to="/credits"
-            className="w-fit mx-auto my-2 flex items-center justify-center"
-          >
-            <img src={logos.selene.img} className="w-11 h-11 mr-1" alt="" />
-            <span className="text-sm font-semibold">
-              Selene Wallet v{SELENE_WALLET_VERSION}
-            </span>
-          </Link>
+        <div className="flex gap-x-2 justify-center items-center p-1 pb-2 mx-1">
+          <Button
+            navigateTo="/credits"
+            label={
+              <span className="font-semibold">
+                Selene Wallet v{SELENE_WALLET_VERSION}
+              </span>
+            }
+            icon={SeleneLogo}
+            iconClasses="w-[44px] h-[44px]"
+            padding="1"
+            inverted
+            fullWidth
+          />
+          <Button
+            onClick={handleHelpButton}
+            label="Help"
+            labelSize="xl"
+            icon={QuestionCircleOutlined}
+            iconSize="3xl"
+            padding="2"
+            fullWidth
+          />
         </div>
       </div>
     </>

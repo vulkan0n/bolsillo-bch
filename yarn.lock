@@ -477,6 +477,11 @@
   resolved "https://registry.yarnpkg.com/@capacitor/haptics/-/haptics-7.0.1.tgz#8e992837e87c0b65a4a38430944762d1e2fce6dc"
   integrity sha512-ewZmspE5krgDUj5ZvUDcfNZvgerAIr+3bDSk6DLzyvBZ/dYmr/tMLu5H6WtYaaKYZJ32aZAudGpIal5epDyBYA==
 
+"@capacitor/inappbrowser@^2.1.0":
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/@capacitor/inappbrowser/-/inappbrowser-2.1.0.tgz#a1c552fa5aed6ccb343433112203ab3abc62b9f3"
+  integrity sha512-OgNNlbgPChpxAvlLbHNM1BOvi8twvgDc1RZ1KwgElCL9fQEu9HY1jv2tzrTsZTnOTuJPdHvLORkdcSypbeV/lg==
+
 "@capacitor/ios@^7.0.0":
   version "7.2.0"
   resolved "https://registry.yarnpkg.com/@capacitor/ios/-/ios-7.2.0.tgz#c3d9435582e5267b57085229e5678d1d53b15b5a"
