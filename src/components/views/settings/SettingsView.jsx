@@ -1,8 +1,7 @@
 import { useMemo, useCallback } from "react";
-import { Link } from "react-router";
 import { useSelector, useDispatch } from "react-redux";
 
-import { SettingOutlined } from "@ant-design/icons";
+import { SettingOutlined, QuestionCircleOutlined } from "@ant-design/icons";
 
 import {
   selectPreferences,
@@ -12,11 +11,12 @@ import {
 
 import ViewHeader from "@/layout/ViewHeader";
 import KeyWarning from "@/atoms/KeyWarning/KeyWarning";
+import Button from "@/atoms/Button";
+import SeleneLogo from "@/atoms/SeleneLogo";
 
 import { translate } from "@/util/translations";
 import translations from "./translations";
 
-import { logos } from "@/util/logos";
 import { SELENE_WALLET_VERSION } from "@/util/version";
 
 import { SettingsContext } from "./SettingsContext";
@@ -74,16 +74,40 @@ export default function SettingsView() {
             <IntlSettings />
           </SettingsContext.Provider>
         </div>
-        <div className="w-fit mx-auto px-2 py-0.5 shadow-sm rounded-full bg-primary text-white active:bg-white active:text-primary">
-          <Link
-            to="/credits"
-            className="w-fit mx-auto my-2 flex items-center justify-center"
-          >
-            <img src={logos.selene.img} className="w-11 h-11 mr-1" alt="" />
-            <span className="text-sm font-semibold">
-              Selene Wallet v{SELENE_WALLET_VERSION}
-            </span>
-          </Link>
+        <div className="flex gap-x-2 justify-center items-center p-1 pb-2 mx-1">
+          <Button
+            navigateTo="/credits"
+            label={
+              <span className="font-semibold">
+                Selene Wallet v{SELENE_WALLET_VERSION}
+              </span>
+            }
+            icon={SeleneLogo}
+            iconClasses="w-[44px] h-[44px]"
+            padding="1"
+            inverted
+            fullWidth
+          />
+          <Button
+            navigateTo="/explore/help"
+            label="Help"
+            labelSize="xl"
+            icon={QuestionCircleOutlined}
+            iconSize="3xl"
+            padding="2"
+            fullWidth
+          />
+          {/*<div className="w-fit mx-auto px-2 py-0.5 shadow-sm rounded-full bg-primary text-white active:bg-white active:text-primary">
+            <Link
+              to="/credits"
+              className="w-fit mx-auto my-2 flex items-center justify-center"
+            >
+              <img src={logos.selene.img} className="w-11 h-11 mr-1" alt="" />
+              <span className="text-sm font-semibold">
+                Selene Wallet v{SELENE_WALLET_VERSION}
+              </span>
+            </Link>
+          </div>*/}
         </div>
       </div>
     </>
