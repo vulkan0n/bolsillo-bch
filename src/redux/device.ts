@@ -197,3 +197,8 @@ export const deviceReducer = createReducer(initialState, (builder) => {
       state.network = action.payload;
     });
 });
+
+export const selectDevicePlatform = createSelector(
+  (state) => state.device.deviceInfo,
+  (deviceInfo) => deviceInfo.platform
+);
