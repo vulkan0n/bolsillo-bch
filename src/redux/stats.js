@@ -2,6 +2,7 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import { DateTime } from "luxon";
 import { gql } from "@apollo/client";
 import LogService from "@/services/LogService";
+import { selectGenesisHeight } from "@/redux/wallet";
 import { selectDeviceInfo } from "@/redux/device";
 import {
   setPreference,
@@ -58,7 +59,11 @@ export const triggerCheckIn = createAsyncThunk(
 
     const nextCheckIn = lastCheckInMoment.plus({ days: 1 }).startOf(DAY);
 
-    const isShouldCheckIn = lastCheckIn === "" || now > nextCheckIn;
+    const walletGenesisHeight = selectGenesisHeight(thunkApi.getState());
+    const hasGenesisHeight = !!walletGenesisHeight;
+
+    const isShouldCheckIn =
+      (lastCheckIn === "" || now > nextCheckIn) && hasGenesisHeight;
 
     const { deviceIdHash } = selectDeviceInfo(thunkApi.getState());
 
