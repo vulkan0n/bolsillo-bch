@@ -3,9 +3,7 @@ export type ValidBchNetwork = "mainnet" | "chipnet" | "testnet3" | "testnet4";
 export const DEFAULT_ELECTRUM_PORT = 50004;
 
 export const cauldron_rostrum_servers: { [network: string]: Array<string> } = {
-  mainnet: [
-    "wss://rostrum.cauldron.quest:50004",
-  ],
+  mainnet: ["wss://rostrum.cauldron.quest:50004"],
 };
 
 const mainnet_servers: Array<string> = [

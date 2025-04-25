@@ -1,14 +1,25 @@
-import ElectrumClientManager, { ServerInfo } from "@/util/electrum_client_manager.js";
-import { deferredPromise } from "@/util/promise_helpers.ts";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable no-restricted-syntax */
+/* eslint-disable default-case */
+/* eslint-disable eqeqeq */
+/* eslint-disable no-continue */
+/* eslint-disable no-param-reassign */
+import { Exception } from "@cashlab/common";
+import { ExchangeLab, PoolV0 } from "@cashlab/cauldron";
+import { hashTransactionUiOrder } from "@bitauth/libauth";
+import type {
+  ElectrumClient,
+  ElectrumClientEvents,
+  RPCNotification as ElectrumRPCNotification,
+} from "@electrum-cash/network";
+import ElectrumClientManager, {
+  ServerInfo,
+} from "@/util/electrum_client_manager";
+import { deferredPromise } from "@/util/promise_helpers";
 import { hexToBin, binToHex } from "@/util/hex";
 import { cauldron_rostrum_servers } from "@/util/electrum_servers";
-import { TokenId } from "@cashlab/common";
-import { ExchangeLab, PoolV0, TradeResult } from "@cashlab/cauldron";
 import { store } from "@/redux";
 import { selectBchNetwork } from "@/redux/preferences";
-import { Exception } from "@cashlab/common";
-import { hashTransactionUiOrder } from '@cashlab/common/libauth.js';
-import type { ElectrumClient, ElectrumClientEvents, RPCNotification as ElectrumRPCNotification } from '@electrum-cash/network';
 
 export type PoolTrackerEntry = {
   category: string;
@@ -22,23 +33,26 @@ export type PoolTrackerEntry = {
 };
 
 export type RostrumCauldronContractSubscribeEvent = {
-  type: string,
+  type: string;
   utxos: Array<{
-    is_withdrawn: boolean,
-    new_utxo_hash: string,
-    new_utxo_n: number,
-    new_utxo_txid: string,
+    is_withdrawn: boolean;
+    new_utxo_hash: string;
+    new_utxo_n: number;
+    new_utxo_txid: string;
     pkh: string;
-    sats: number,
+    sats: number;
     spent_utxo_hash: string;
-    token_amount: number,
+    token_amount: number;
     token_id: string;
   }>;
 };
 
-export const parsePoolFromRostrumNodeData = (exlab: ExchangeLab, rn_pool: any): PoolV0 | null => {
+export const parsePoolFromRostrumNodeData = (
+  exlab: ExchangeLab,
+  rn_pool: any
+): PoolV0 | null => {
   if (rn_pool.is_withdrawn) {
-    return null
+    return null;
   }
   const pool_params: PoolV0Parameters = {
     withdraw_pubkey_hash: hexToBin(rn_pool.pkh),
@@ -63,16 +77,13 @@ export const parsePoolFromRostrumNodeData = (exlab: ExchangeLab, rn_pool: any): 
   };
 };
 
-export class OperationInterrupted extends Exception {
-}
-
 export class CauldronDexClient extends EventTarget {
   clientManager: ElectrumClientManager;
   entries: PoolTrackerEntry[];
-  poolHashMap: Map<string, { pool: PoolV0, entry: PoolTrackerEntry }>;
+  poolHashMap: Map<string, { pool: PoolV0; entry: PoolTrackerEntry }>;
   exlab: ExchangeLab;
   destroyed: boolean;
-  constructor (clientManager: ElectrumClientManager) {
+  constructor(clientManager: ElectrumClientManager) {
     super();
     this.exlab = new ExchangeLab();
     this.clientManager = clientManager;
@@ -80,32 +91,51 @@ export class CauldronDexClient extends EventTarget {
     this.poolHashMap = new Map();
     this.destroyed = false;
   }
-  async init () {
+  async init() {
     (this as any)._onConnected = this.onConnected.bind(this);
     (this as any)._onDisconnected = this.onDisconnected.bind(this);
-    (this as any)._onElectrumNotification = this.onElectrumNotification.bind(this);
-    this.clientManager.addEventListener("connected", (this as any)._onConnected);
-    this.clientManager.addEventListener("disconnected", (this as any)._onDisconnected);
-    this.clientManager.addEventListener("notification", (this as any)._onElectrumNotification);
+    (this as any)._onElectrumNotification =
+      this.onElectrumNotification.bind(this);
+    this.clientManager.addEventListener(
+      "connected",
+      (this as any)._onConnected
+    );
+    this.clientManager.addEventListener(
+      "disconnected",
+      (this as any)._onDisconnected
+    );
+    this.clientManager.addEventListener(
+      "notification",
+      (this as any)._onElectrumNotification
+    );
   }
-  async destroy () {
+  async destroy() {
     this.destroyed = true;
     if (this.clientManager != null) {
-      this.clientManager.removeEventListener("connected", (this as any)._onConnected);
-      this.clientManager.removeEventListener("disconnected", (this as any)._onDisconnected);
-      this.clientManager.removeEventListener("notification", (this as any)._onElectrumNotification);
+      this.clientManager.removeEventListener(
+        "connected",
+        (this as any)._onConnected
+      );
+      this.clientManager.removeEventListener(
+        "disconnected",
+        (this as any)._onDisconnected
+      );
+      this.clientManager.removeEventListener(
+        "notification",
+        (this as any)._onElectrumNotification
+      );
     }
     this.dispatchEvent(new Event("destroy"));
     await Promise.all(this.entries.map((entry) => this.removeEntry(entry)));
     this.poolHashMap = new Map();
   }
-  getElectrumClientManager (): ElectrumClientManager {
+  getElectrumClientManager(): ElectrumClientManager {
     return this.clientManager;
   }
-  getExchangeLab (): ExchangeLab {
+  getExchangeLab(): ExchangeLab {
     return this.exlab;
   }
-  onConnected (): void {
+  onConnected(): void {
     if (this.clientManager == null) {
       throw new Error("client manager is not defined!");
     }
@@ -117,7 +147,7 @@ export class CauldronDexClient extends EventTarget {
       this.initEntry(client, entry);
     }
   }
-  onDisconnected (): void {
+  onDisconnected(): void {
     if (this.clientManager == null) {
       throw new Error("client manager is not defined!");
     }
@@ -126,7 +156,7 @@ export class CauldronDexClient extends EventTarget {
       entry.pendingRequest = null;
     }
   }
-  onElectrumNotification (input: MessageEvent): void {
+  onElectrumNotification(input: MessageEvent): void {
     const message: ElectrumRPCNotification = input.data;
     if (this.clientManager == null) {
       throw new Error("client manager is not defined!");
@@ -137,14 +167,19 @@ export class CauldronDexClient extends EventTarget {
     }
     switch (message.method) {
       case "cauldron.contract.subscribe": {
-        if (message.params != null && message.params[0] == 2 && message.params[1]) {
+        if (
+          message.params != null &&
+          message.params[0] == 2 &&
+          message.params[1]
+        ) {
           const entry = this.getTokenTrackerEntry(message.params[1] as string);
           if (entry == null) {
             return; // ignore
           }
-          const event: RostrumCauldronContractSubscribeEvent = message.params[2] as any;
+          const event: RostrumCauldronContractSubscribeEvent = message
+            .params[2] as any;
           if (event.type == "initial") {
-            const pools: PoolV0[] = []
+            const pools: PoolV0[] = [];
             for (const utxo of event.utxos) {
               const pool = parsePoolFromRostrumNodeData(this.exlab, utxo);
               if (pool != null) {
@@ -153,15 +188,34 @@ export class CauldronDexClient extends EventTarget {
               }
             }
             entry.data = pools;
-            this.dispatchEvent(new MessageEvent("init-pools", { data: { category: entry.category, pools } }));
-            this.dispatchEvent(new MessageEvent("update", { data: { category: entry.category } }));
+            this.dispatchEvent(
+              new MessageEvent("init-pools", {
+                data: { category: entry.category, pools },
+              })
+            );
+            this.dispatchEvent(
+              new MessageEvent("update", { data: { category: entry.category } })
+            );
           } else {
-            this.dispatchEvent(new MessageEvent("console", { data: { type: "warn", message: "Unknown event type from (1) cauldron.contract.subscribe", data: event } }));
+            this.dispatchEvent(
+              new MessageEvent("console", {
+                data: {
+                  type: "warn",
+                  message:
+                    "Unknown event type from (1) cauldron.contract.subscribe",
+                  data: event,
+                },
+              })
+            );
           }
-        } else if (message.params != null && (message.params as any).type != null) {
-          const event: RostrumCauldronContractSubscribeEvent = message.params as any;
+        } else if (
+          message.params != null &&
+          (message.params as any).type != null
+        ) {
+          const event: RostrumCauldronContractSubscribeEvent =
+            message.params as any;
           if (event.type == "update") {
-            const updatedCategorySet: Set<string> = new Set();;
+            const updatedCategorySet: Set<string> = new Set();
             let cachedEntry: PoolTrackerEntry | null = null;
             for (const utxo of event.utxos) {
               if (utxo.token_id != null) {
@@ -180,15 +234,26 @@ export class CauldronDexClient extends EventTarget {
                 }
                 const pool = parsePoolFromRostrumNodeData(this.exlab, utxo);
                 if (pool == null) {
-                  throw new Error("Failed to parse a pool: " + JSON.stringify(utxo, null, "  "));
+                  throw new Error(
+                    `Failed to parse a pool: ${JSON.stringify(
+                      utxo,
+                      null,
+                      "  "
+                    )}`
+                  );
                 }
-                const existingPoolRef = this.poolHashMap.get(utxo.spent_utxo_hash);
+                const existingPoolRef = this.poolHashMap.get(
+                  utxo.spent_utxo_hash
+                );
                 if (existingPoolRef) {
                   // update
                   const existingPool = existingPoolRef.pool;
                   existingPool.outpoint = pool.outpoint;
                   existingPool.output = pool.output;
-                  this.poolHashMap.set(utxo.new_utxo_hash, { pool: existingPool, entry });
+                  this.poolHashMap.set(utxo.new_utxo_hash, {
+                    pool: existingPool,
+                    entry,
+                  });
                 } else {
                   // add
                   if (entry.data == null) {
@@ -218,26 +283,52 @@ export class CauldronDexClient extends EventTarget {
               }
             }
             for (const category of updatedCategorySet) {
-              this.dispatchEvent(new MessageEvent("update", { data: { category } }));
+              this.dispatchEvent(
+                new MessageEvent("update", { data: { category } })
+              );
             }
           } else {
-            this.dispatchEvent(new MessageEvent("console", { data: { type: "warn", message: "Unknown event type from (2) cauldron.contract.subscribe", data: event } }));
+            this.dispatchEvent(
+              new MessageEvent("console", {
+                data: {
+                  type: "warn",
+                  message:
+                    "Unknown event type from (2) cauldron.contract.subscribe",
+                  data: event,
+                },
+              })
+            );
           }
         } else {
-          this.dispatchEvent(new MessageEvent("console", { data: { type: "warn", message: "Unexpected data from cauldron.contract.subscribe", data: message } }));
+          this.dispatchEvent(
+            new MessageEvent("console", {
+              data: {
+                type: "warn",
+                message: "Unexpected data from cauldron.contract.subscribe",
+                data: message,
+              },
+            })
+          );
         }
         break;
       }
     }
   }
-  async initEntry (client: ElectrumClient<ElectrumClientEvents>, entry: PoolTrackerEntry): Promise<void> {
+  async initEntry(
+    client: ElectrumClient<ElectrumClientEvents>,
+    entry: PoolTrackerEntry
+  ): Promise<void> {
     if (this.destroyed) {
       throw new Exception("service is destroyed");
     }
-    const { promise: pendingPromise, resolve, reject } = await deferredPromise<void>();
+    const {
+      promise: pendingPromise,
+      resolve,
+      reject,
+    } = await deferredPromise<void>();
     entry.error = null;
     entry.pendingRequest = pendingPromise;
-    ;(async () => {
+    (async () => {
       const onResolve = () => {
         entry.pendingRequest = null;
         resolve();
@@ -247,13 +338,14 @@ export class CauldronDexClient extends EventTarget {
         reject(exc);
       };
       try {
+        /* eslint-disable @typescript-eslint/no-use-before-define */
         const clear = () => {
           this.removeEventListener("init-pools", onInitPools);
           this.removeEventListener("disconnected", onDisconnected);
           this.removeEventListener("destroy", onDestroy);
         };
         const onInitPools = (event) => {
-          const category: string = event.data.category;
+          const { category } = event.data;
           if (entry.category == category) {
             clear();
             entry.activeSub = true;
@@ -266,12 +358,16 @@ export class CauldronDexClient extends EventTarget {
         };
         const onDestroy = () => {
           clear();
-          onReject(new OperationInterrupted());
+          onReject(new Exception("OperationInterrupted"));
         };
         this.addEventListener("init-pools", onInitPools);
         this.addEventListener("disconnected", onDisconnected);
         this.addEventListener("destroy", onDestroy);
-        await client.subscribe("cauldron.contract.subscribe", 2, entry.category);
+        await client.subscribe(
+          "cauldron.contract.subscribe",
+          2,
+          entry.category
+        );
       } catch (err) {
         if (entry.pendingRequest != pendingPromise) {
           await entry.pendingRequest;
@@ -285,19 +381,18 @@ export class CauldronDexClient extends EventTarget {
     })();
     await pendingPromise;
   }
-  async removeEntry (entry: PoolTrackerEntry): Promise<void> {
+  async removeEntry(entry: PoolTrackerEntry): Promise<void> {
     const idx = this.entries.indexOf(entry);
     if (idx == -1) {
       throw new Error("The entry is not registered");
     }
     this.entries.splice(idx, 1);
-    for (const [ utxoHash, poolRef ] of this.poolHashMap.entries()) {
+    for (const [utxoHash, poolRef] of this.poolHashMap.entries()) {
       if (poolRef.entry == entry) {
         this.poolHashMap.delete(utxoHash);
       }
     }
     entry.data = null;
-    let pendingPromise;
     if (this.clientManager != null) {
       const client = this.clientManager.getClient();
       if (client != null) {
@@ -307,21 +402,32 @@ export class CauldronDexClient extends EventTarget {
           // pass
         }
         if (entry.activeSub) {
-          const pendingPromise = entry.pendingRequest = (async () => {
+          await (entry.pendingRequest = (async () => {
             try {
-              await client.unsubscribe("cauldron.contract.subscribe", 2, entry.category);
+              await client.unsubscribe(
+                "cauldron.contract.subscribe",
+                2,
+                entry.category
+              );
             } catch (err) {
-              this.dispatchEvent(new MessageEvent("console", { data: { type: "warn", message: "unsubscribe blockchain.address failed", error: err } }));
+              this.dispatchEvent(
+                new MessageEvent("console", {
+                  data: {
+                    type: "warn",
+                    message: "unsubscribe blockchain.address failed",
+                    error: err,
+                  },
+                })
+              );
             } finally {
               entry.pendingRequest = null;
             }
-          })();
-          await pendingPromise;
+          })());
         }
       }
     }
   }
-  async addTokenTracker (category: string): Promise<PoolTrackerEntry> {
+  async addTokenTracker(category: string): Promise<PoolTrackerEntry> {
     if (this.clientManager == null) {
       throw new Error("client manager is not defined!");
     }
@@ -344,13 +450,13 @@ export class CauldronDexClient extends EventTarget {
     }
     return entry;
   }
-  getTokenTrackerEntry (category: string): PoolTrackerEntry | undefined {
+  getTokenTrackerEntry(category: string): PoolTrackerEntry | undefined {
     return this.entries.find((a) => a.category == category);
   }
-  getTrackerEntries (): PoolTrackerEntry[] {
+  getTrackerEntries(): PoolTrackerEntry[] {
     return this.entries;
   }
-  async getEntryPools (entry: PoolTrackerEntry): Promise<PoolV0[]> {
+  async getEntryPools(entry: PoolTrackerEntry): Promise<PoolV0[]> {
     if (this.destroyed) {
       throw new Exception("service is destroyed");
     }
@@ -378,15 +484,14 @@ export class CauldronDexClient extends EventTarget {
           throw new Error("entry.data should not be null!!");
         }
         return entry.data;
-      } else {
-        throw new Error(entry.error || "Unknown error!");
       }
+      throw new Error(entry.error || "Unknown error!");
     } else {
       this.onEntryUsed(entry);
       return entry.data;
     }
   }
-  onEntryUsed (entry: PoolTrackerEntry): void {
+  onEntryUsed(entry: PoolTrackerEntry): void {
     if (entry.nouseAutoRemove) {
       if (entry.nouseTimeoutId != null) {
         clearTimeout(entry.nouseTimeoutId);
@@ -397,62 +502,79 @@ export class CauldronDexClient extends EventTarget {
       }, entry.nouseTimeoutDuration);
     }
   }
-  async getTokenPools (category: string): Promise<PoolV0[]> {
+  async getTokenPools(category: string): Promise<PoolV0[]> {
     let entry = this.getTokenTrackerEntry(category);
     if (entry == null) {
       entry = await this.addTokenTracker(category);
       entry.nouseAutoRemove = true;
     }
-    return await this.getEntryPools(entry);
+    return this.getEntryPools(entry);
   }
-  async broadcastTransaction (txbin: Uint8Array): Promise<{ txhash: string }>  {
-    return new Promise(async (resolve, reject) => {
-      try {
-        if (this.clientManager == null) {
-          throw new Error("client manager is not defined!");
+  async broadcastTransaction(txbin: Uint8Array): Promise<{ txhash: string }> {
+    return new Promise((resolve, reject) => {
+      (async () => {
+        try {
+          if (this.clientManager == null) {
+            throw new Error("client manager is not defined!");
+          }
+          const client = this.clientManager.getClient();
+          if (client == null) {
+            throw new Error("onConnected, client should not be null!");
+          }
+          const txhex = binToHex(txbin);
+          const txhash = binToHex(hashTransactionUiOrder(txbin));
+          const result = await client.request(
+            "blockchain.transaction.broadcast",
+            txhex
+          );
+          if (result instanceof Error) {
+            reject(result);
+          } else {
+            resolve({ txhash });
+          }
+        } catch (err) {
+          reject(err);
         }
-        const client = this.clientManager.getClient();
-        if (client == null) {
-          throw new Error("onConnected, client should not be null!");
-        }
-        const txhex = binToHex(txbin);
-        const txhash = binToHex(hashTransactionUiOrder(txbin));
-        const result = await client.request('blockchain.transaction.broadcast', txhex);
-        if (result instanceof Error) {
-          reject(result);
-        } else {
-          resolve({ txhash });
-        }
-      } catch (err) {
-        reject(err);
-      }
+      })();
     });
   }
 }
 
-export default function CauldronDexService () {
+export default function CauldronDexService() {
   return {
-    createCauldronRostrumClientManager (serversInfo?: ServerInfo[] = undefined): ElectrumClientManager {
+    createCauldronRostrumClientManager(
+      serversInfo?: ServerInfo[] = undefined
+    ): ElectrumClientManager {
       if (serversInfo == null) {
         serversInfo = [];
         const bchNetwork = selectBchNetwork(store.getState());
         for (const urlstr of cauldron_rostrum_servers[bchNetwork]) {
           const url = new URL(urlstr);
-          if (["wss:","ws:"].indexOf(url.protocol) == -1 || isNaN(parseInt(url.port||"443"))) {
-            throw new Error("Expecting electrum server to be a valid websocket url, got: " + url);
+          if (
+            ["wss:", "ws:"].indexOf(url.protocol) == -1 ||
+            Number.isNaN(parseInt(url.port || "443"))
+          ) {
+            throw new Error(
+              `Expecting electrum server to be a valid websocket url, got: ${
+                url
+              }`
+            );
           }
           serversInfo.push({
             host: url.hostname,
-            port: parseInt(url.port||"443"),
+            port: parseInt(url.port || "443"),
             encrypted: url.protocol == "wss:",
           });
         }
       }
-      return new ElectrumClientManager("cauldron-rostrum", "1.4.3", serversInfo);
+      return new ElectrumClientManager(
+        "cauldron-rostrum",
+        "1.4.3",
+        serversInfo
+      );
     },
-    create (clientManager: ElectrumClientManager): CauldronDexClient {
+    create(clientManager: ElectrumClientManager): CauldronDexClient {
       return new CauldronDexClient(clientManager);
     },
   };
 }
-

@@ -14,6 +14,7 @@ import {
   CloseOutlined,
 } from "@ant-design/icons";
 
+import * as clab from "@cashlab/common";
 import {
   selectActiveWalletHash,
   selectActiveWalletBalance,
@@ -61,7 +62,6 @@ import { translate } from "@/util/translations";
 import translations from "./translations";
 
 import CauldronDexService from "@/services/CauldronDexService";
-import * as clab from "@cashlab/common";
 
 const Log = LogService("WalletViewSend");
 
@@ -464,12 +464,6 @@ export default function WalletViewSend() {
 
   return isScanning ? (
     <ScannerOverlay />
-  ) : displayConfirmConvertAndSendPayout ? (
-    <ConfirmConvertAndSendPayoutOverlay
-      convertInfo={confirmConvertAndSendPayoutOverlayConvertInfo}
-      onConfirm={handleConfirmConvertAndSendPayoutClicked}
-      onCancel={handleCancelConvertAndSendPayoutClicked}
-    />
   ) : (
     <FullColumn>
       <div className="tracking-wide text-center text-white">

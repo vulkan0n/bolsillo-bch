@@ -102,7 +102,7 @@
     "vite-plugin-top-level-await": "^1.2.4"
   },
   "resolutions": {
-    "@cashlab/common": "1.0.1",
+    "@cashlab/common": "1.0.2",
     "@cashlab/**/@cashlab/common": "1.0.2"
   }
 }
