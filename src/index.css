@@ -22,7 +22,6 @@ html {
   );
   height: calc(100% - env(safe-area-inset-top) - env(safe-area-inset-bottom));
   max-height: 100vh;
-  background-color: rgba(20, 20, 20, 0.9);
 }
 
 body {
