@@ -15,7 +15,11 @@ export default function MainLayout() {
   const platform = useSelector(selectDevicePlatform);
   useEffect(
     function setPlatformCss() {
-      if (platform === "web") {
+      // add fake "phone" border on web if window is larger than 480px wide
+      if (
+        platform === "web" &&
+        document.querySelector("html").clientWidth > 480
+      ) {
         document
           .querySelector("body")
           .classList.add(
