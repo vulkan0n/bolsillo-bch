@@ -388,7 +388,22 @@ const translations = {
     vi: "bản thân",
     zh: "自己",
     zh_TW: "自己"
-  }
+  },
+  confirm_convert_and_send_payout_message_pre_token_amount: {
+    en: "Converting ",
+  },
+  confirm_convert_and_send_payout_message_post_token_amount: {
+    en: " to BCH in order to pay ",
+  },
+  confirm_convert_and_send_payout_message_post_txfee_amount: {
+    en: " in transaction fee, From the conversion ",
+  },
+  confirm_convert_and_send_payout_message_post_change_amount: {
+    en: " will be paid back to you (all of the remaining change from the conversion).",
+  },
+  confirm_convert_and_send_payout_quote_changed_message: {
+    en: "The conversion rate changed, Please verify and confirm again.",
+  },
 };
 
 export default translations;

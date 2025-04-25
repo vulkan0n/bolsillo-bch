@@ -11,6 +11,7 @@ import {
   ArrowLeftOutlined,
   SyncOutlined,
   MoneyCollectOutlined,
+  CloseOutlined,
 } from "@ant-design/icons";
 
 import {
@@ -49,6 +50,7 @@ import TokenAmount from "@/atoms/TokenAmount";
 import SlideToAction from "@/components/atoms/SlideToAction";
 import ScannerButton from "@/views/wallet/ScannerButton/ScannerButton";
 import ScannerOverlay from "@/views/wallet/ScannerOverlay";
+import ConfirmConvertAndSendPayoutOverlay from "@/views/wallet/WalletViewSend/ConfirmConvertAndSendPayoutOverlay";
 
 import { hexToBin } from "@/util/hex";
 import { Haptic } from "@/util/haptic";
@@ -57,6 +59,9 @@ import { validateBchUri, navigateOnValidUri } from "@/util/uri";
 import { truncateProse } from "@/util/string";
 import { translate } from "@/util/translations";
 import translations from "./translations";
+
+import CauldronDexService from "@/services/CauldronDexService";
+import * as clab from "@cashlab/common";
 
 const Log = LogService("WalletViewSend");
 
@@ -459,6 +464,12 @@ export default function WalletViewSend() {
 
   return isScanning ? (
     <ScannerOverlay />
+  ) : displayConfirmConvertAndSendPayout ? (
+    <ConfirmConvertAndSendPayoutOverlay
+      convertInfo={confirmConvertAndSendPayoutOverlayConvertInfo}
+      onConfirm={handleConfirmConvertAndSendPayoutClicked}
+      onCancel={handleCancelConvertAndSendPayoutClicked}
+    />
   ) : (
     <FullColumn>
       <div className="tracking-wide text-center text-white">
@@ -506,8 +517,20 @@ export default function WalletViewSend() {
       </div>
 
       {isSending ? (
-        <div className="p-2 flex items-center justify-center fixed top-1/3 w-full text-center">
+        <div className="p-2 flex flex-col items-center justify-center fixed top-1/3 w-full text-center">
           <SyncOutlined className="text-7xl" spin />
+          {isSendingProgressCancelable ? (
+            <div className="my-4">
+              <Button
+                icon={CloseOutlined}
+                iconSize="lg"
+                borderClasses="border border-2"
+                onClick={handleCancelSending}
+              />
+            </div>
+          ) : (
+            false
+          )}
         </div>
       ) : (
         <FullColumn>

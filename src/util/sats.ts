@@ -8,6 +8,8 @@ export const DUST_RELAY_FEE = 1000n; // minRelayFee in sats per kB (generally 10
 export const DUST_LIMIT = 546n;
 export const VALID_DENOMINATIONS = ["BCH", "sats"];
 
+export const TXFEE_PER_BYTE = 1n;
+
 export function satsToBch(sats: bigint | string | number | Decimal): {
   sats: bigint;
   bch: string;

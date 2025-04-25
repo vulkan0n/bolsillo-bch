@@ -25,10 +25,13 @@ import {
   TransactionOutput,
 } from "@/services/TransactionManagerService";
 
-import { DUST_RELAY_FEE, EXCESSIVE_SATOSHIS } from "@/util/sats";
+import { DUST_RELAY_FEE, EXCESSIVE_SATOSHIS, TXFEE_PER_BYTE } from "@/util/sats";
 import { validateBchUri } from "@/util/uri";
 import { binToHex, hexToBin } from "@/util/hex";
 import { sha256 } from "@/util/hash";
+
+import * as clab from '@cashlab/common';
+import * as cauldron from '@cashlab/cauldron';
 
 // NOTE: Couldn't find this type defined elsewhere, so have added it here.
 export type ElectrumUtxo = {
@@ -56,6 +59,7 @@ export default function TransactionBuilderService(walletHash: string) {
 
   return {
     buildP2pkhTransaction,
+    buildSendTokensTransactionWithFeePayingTokenCategory,
   };
 
   // --------------------------------
@@ -539,6 +543,126 @@ export default function TransactionBuilderService(walletHash: string) {
 
     return 0;
   }
+
+  function buildSendTokensTransactionWithFeePayingTokenCategory ({
+    recipients,
+    selection,
+    exchangeLab,
+    inputPools,
+    feePayingTokenCategory
+  }: {
+    recipients: Array<{
+      address: string;
+      token: {
+        category: string;
+        amount: bigint;
+      };
+    }>,
+    selection?: Array<TransactionOutput>;
+    exchangeLab: cauldron.ExchangeLab,
+    inputPools: cauldron.PoolV0[],
+    feePayingTokenCategory: string;
+  }): { tradeResult: cauldron.TradeResult, tradeTransaction: cauldron.TradeTxResult } {
+    const UtxoManager = UtxoManagerService(wallet.walletHash);
+    const tokenOutputAmountsByCategory = recipients.reduce(
+      (amounts, output) => {
+        // calculate total output amounts for each token category
+        if (output.token == null) {
+          throw new clab.ValueError(`recipient.token is null`);
+        }
+        const { category, amount } = output.token;
+        const categoryAmount = amounts.get(category) || 0n;
+        amounts.set(category, categoryAmount + amount);
+        return amounts;
+      },
+      new Map<string, bigint>()
+    );
+    const tokenCategories = Array.from(tokenOutputAmountsByCategory.keys());
+    if (tokenCategories.length == 0) {
+      throw new clab.ValueError(`Should at least send one token to a recipient.`);
+    }
+    const inputs = selection?.length > 0 ? selection : tokenCategories
+      .map((category) => {
+        if (!tokenOutputAmountsByCategory.has(category)) {
+          return [];
+        }
+        return UtxoManager.selectTokens(
+          category,
+          tokenOutputAmountsByCategory.get(category)
+        )
+          .filter((utxo) => utxo.nft_commitment == null);
+      })
+      .flat();
+    if (inputs.length == 0) {
+      throw new clab.InsufficientFunds(`No inputs found.`);
+    }
+    const HdNode = HdNodeService(wallet);
+    const inputCoins: clab.SpendableCoin[] = inputs.map((input) => {
+      return {
+        type: clab.SpendableCoinType.P2PKH,
+        key: HdNode.getAddressPrivateKey(input.address),
+        output: {
+          locking_bytecode: addressToLockingBytecode(input.address),
+          token: {
+            amount: BigInt(input.token_amount),
+            token_id: input.token_category,
+          },
+          amount: BigInt(input.amount),
+        },
+        outpoint: {
+          txhash: hexToBin(input.txid),
+          index: Number(input.tx_pos),
+        },
+      };
+    });
+    const AddressManager = AddressManagerService(wallet.walletHash);
+    const changeAddresses = AddressManager.getUnusedAddresses(
+      tokenCategories.length + 1,
+      1
+    );
+    let lastChangeAddressIndex = 0;
+    const payoutRules: clab.PayoutRule[] = [
+      ...(recipients.map((r) => ({
+        type: clab.PayoutAmountRuleType.FIXED,
+        locking_bytecode: addressToLockingBytecode(r.address),
+        token: {
+          token_id: r.token.category,
+          amount: r.token.amount,
+        },
+        amount: -1n,
+      }))),
+      {
+        type: clab.PayoutAmountRuleType.CHANGE,
+        generateChangeLockingBytecodeForOutput (output: clab.Output) {
+          const changeAddress = changeAddresses[lastChangeAddressIndex]
+          if (lastChangeAddressIndex + 1 < changeAddresses.length) {
+            lastChangeAddressIndex++;
+          }
+          return addressToLockingBytecode(changeAddress.address);
+        },
+        allow_mixing_native_and_token_when_bch_change_is_dust: true,
+      },
+    ];
+    let requiredBCH = 2000n; // initial amount
+    let tradeResult = exchangeLab.constructTradeBestRateForTargetDemand(feePayingTokenCategory, "BCH", requiredBCH, inputPools, TXFEE_PER_BYTE);
+    let maxTry = 5;
+    while (true) {
+      try {
+        const tradeTransaction = exchangeLab.createTradeTx(tradeResult.entries, inputCoins, payoutRules, null, TXFEE_PER_BYTE);
+        return { tradeResult, tradeTransaction };
+      } catch (err) {
+        if (err instanceof clab.InsufficientFunds) {
+          requiredBCH += err.required_amount;
+        } else {
+          throw err;
+        }
+      }
+      if (--maxTry <= 0) {
+        throw new clab.ValueError(`max try attempts to construct a trade reached.`);
+      }
+    }
+  }
+
 }
 
 // TODO: Once Token support is added to Selene, add it to this function too.

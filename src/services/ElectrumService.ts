@@ -304,6 +304,9 @@ export default function ElectrumService() {
     const txRequest = electrum
       .request("blockchain.transaction.get", tx_hash, verbose)
       .then((tx) => {
+        if (tx instanceof Error) {
+          throw tx;
+        }
         // [Kludge?] I don't like accessing redux here but not certain SQL chaintip is reliable
         const chaintip = selectChaintip(store.getState());
         const height = tx.confirmations
