@@ -14,6 +14,7 @@ import {
 } from "@/redux/preferences";
 
 import ViewHeader from "@/layout/ViewHeader";
+import FullColumn from "@/layout/FullColumn";
 import KeyWarning from "@/atoms/KeyWarning/KeyWarning";
 import Button from "@/atoms/Button";
 import SeleneLogo from "@/atoms/SeleneLogo";
@@ -73,51 +74,49 @@ export default function SettingsView() {
   };
 
   return (
-    <>
+    <FullColumn>
       <ViewHeader
         icon={SettingOutlined}
         title={translate(translations.settings)}
       />
-      <div className="h-full">
-        <div className="p-1">
-          <SettingsContext.Provider value={settingsContext}>
-            <KeyWarning walletHash={activeWalletHash} />
-            <WalletSettings />
-            <SecuritySettings />
-            <CurrencySettings />
-            <PaymentSettings />
-            <QrCodeSettings />
-            <UiSettings />
-            <NetworkSettings />
-            <PrivacySettings />
-            <IntlSettings />
-          </SettingsContext.Provider>
-        </div>
-        <div className="flex gap-x-2 justify-center items-center p-1 pb-2 mx-1">
-          <Button
-            navigateTo="/credits"
-            label={
-              <span className="font-semibold">
-                Selene Wallet v{SELENE_WALLET_VERSION}
-              </span>
-            }
-            icon={SeleneLogo}
-            iconClasses="w-[44px] h-[44px]"
-            padding="1"
-            inverted
-            fullWidth
-          />
-          <Button
-            onClick={handleHelpButton}
-            label="Help"
-            labelSize="xl"
-            icon={QuestionCircleOutlined}
-            iconSize="3xl"
-            padding="2"
-            fullWidth
-          />
-        </div>
+      <div className="p-1">
+        <SettingsContext.Provider value={settingsContext}>
+          <KeyWarning walletHash={activeWalletHash} />
+          <WalletSettings />
+          <SecuritySettings />
+          <CurrencySettings />
+          <PaymentSettings />
+          <QrCodeSettings />
+          <UiSettings />
+          <NetworkSettings />
+          <PrivacySettings />
+          <IntlSettings />
+        </SettingsContext.Provider>
       </div>
-    </>
+      <div className="flex gap-x-2 justify-center items-center p-1 pb-4 mx-1">
+        <Button
+          navigateTo="/credits"
+          label={
+            <span className="font-semibold">
+              Selene Wallet v{SELENE_WALLET_VERSION}
+            </span>
+          }
+          icon={SeleneLogo}
+          iconClasses="w-[44px] h-[44px]"
+          padding="1"
+          inverted
+          fullWidth
+        />
+        <Button
+          onClick={handleHelpButton}
+          label="Help"
+          labelSize="xl"
+          icon={QuestionCircleOutlined}
+          iconSize="3xl"
+          padding="2"
+          fullWidth
+        />
+      </div>
+    </FullColumn>
   );
 }

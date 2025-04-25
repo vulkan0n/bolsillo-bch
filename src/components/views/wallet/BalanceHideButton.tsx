@@ -13,7 +13,7 @@ export default function BalanceHideButton({
   const { shouldHideBalance } = useSelector(selectPrivacySettings);
   const Icon = shouldHideBalance ? EyeInvisibleOutlined : EyeOutlined;
 
-  const hiddenClasses = shouldHideBalance ? "opacity-60" : "opacity-40";
+  const hiddenClasses = shouldHideBalance ? "text-primary-500" : "text-primary-700";
 
   const handleHideBalance = async () => {
     if (shouldHideBalance === true) {

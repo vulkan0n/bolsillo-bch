@@ -41,7 +41,7 @@ export default function WalletView() {
       {!isScanning && (
         <div className="flex bg-neutral-900 justify-between">
           <div className="flex flex-col justify-center px-5">
-            <BalanceHideButton className="text-xl text-primary" />
+            <BalanceHideButton className="text-xl" />
           </div>
           <WalletViewBalance />
           <div className="flex flex-col justify-center px-5">

@@ -69,7 +69,7 @@ export default function WalletViewBalance() {
 
   const [balanceReceivedSpring, receiveSpringApi] = useSpring(() => ({
     from: { color: "#8dc451" },
-    to: { color: "#e4e4e7" },
+    to: { color: "#f3f1ec" },
     immediate: true,
     config: {
       tension: 230,
@@ -87,7 +87,7 @@ export default function WalletViewBalance() {
 
   return (
     <div className="py-2.5 text-center flex flex-col justify-center items-center">
-      <div className="font-bold text-neutral-400 text-md tracking-wide">
+      <div className="font-bold text-neutral-300 text-md tracking-wide">
         <Link
           to={`/settings/wallet/${walletHash}`}
           className={`flex justify-center items-center ${!isKeyViewed && "text-warning"}`}
@@ -99,7 +99,7 @@ export default function WalletViewBalance() {
           {!isKeyViewed && balance > 0 ? (
             <WarningFilled className="text-xs ml-1 text-warning" />
           ) : (
-            <SettingFilled className="text-xs ml-1 text-primary/70" />
+            <SettingFilled className="text-xs ml-1 text-primary-900" />
           )}
         </Link>
       </div>
@@ -108,19 +108,19 @@ export default function WalletViewBalance() {
         className={`cursor-pointer ${hiddenBalanceClasses}`}
         onClick={shouldHideBalance ? handleHideBalance : handleFlipCurrency}
       >
-        <div className="text-2xl text-neutral-200 tabular-nums flex justify-center items-center">
+        <div className="text-2xl text-neutral-50 tabular-nums flex justify-center items-center">
           <animated.span style={{ ...balanceReceivedSpring }}>
             <Satoshi value={balance} />
           </animated.span>
         </div>
 
-        <div className="text-md text-neutral-400 flex items-center justify-center">
+        <div className="text-md text-neutral-300 flex items-center justify-center">
           <Satoshi value={balance} flip />
           <CurrencyFlip className="ml-1" />
         </div>
       </button>
       {shouldDisplayExchangeRate && (
-        <div className="text-sm text-neutral-400/80 mt-0.5 flex justify-center items-center font-mono">
+        <div className="text-sm text-neutral-400 mt-0.5 flex justify-center items-center font-mono">
           <StockOutlined className="mr-1" />
           {priceString}
           <span className="mx-0.5 text-sm font-mono">/</span>BCH
