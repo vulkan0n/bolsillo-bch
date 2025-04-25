@@ -36,96 +36,99 @@ export default function WalletViewHistory() {
   const txHistory = useTransactionHistory();
   const { syncPending } = useSelector(selectSyncState);
 
-  const receiveStyle = "text-success";
-  const sendStyle = "text-error";
-
-  const zebraCss = [
-    "bg-neutral-50 text-neutral-800",
-    "bg-neutral-25 text-neutral-800",
-  ];
 
   const { shouldHideBalance } = useSelector(selectPrivacySettings);
 
-  const historyRender = useMemo(
-    () =>
-      txHistory.map((tx, i) =>
-        i < 100 ? (
-          <li
-            key={`${tx.txid}${tx.address}`}
-            className={`py-2 ${zebraCss[i % 2]}`}
-          >
-            <Link to={`/explore/tx/${tx.txid}`}>
-              <div className="flex text-sm">
-                <div className="shrink flex flex-col items-center justify-center mr-1 text-xs">
-                  {tx.height <= 0 ? (
-                    <HourglassOutlined className="text-neutral-400" />
-                  ) : (
-                    <CheckCircleOutlined className="text-primary-700" />
-                  )}
-                </div>
-                <div className="flex-1">
-                  <div
-                    className={`${tx.amount > 0 ? receiveStyle : sendStyle}`}
-                  >
-                    {(tx.height <= 0 || !tx.time
-                      ? DateTime.fromISO(tx.time_seen)
-                      : DateTime.fromSeconds(tx.time)
-                    ).toLocaleString(DateTime.DATE_SHORT)}
-                  </div>
-                  <div>
-                    {(tx.height <= 0 || !tx.time
-                      ? DateTime.fromISO(tx.time_seen)
-                      : DateTime.fromSeconds(tx.time)
-                    ).toLocaleString(DateTime.TIME_WITH_SECONDS)}
-                  </div>
-                </div>
-                <div className="flex-1 text-right">
-                  <div
-                    className={`font-mono ${
-                      tx.amount > 0 ? receiveStyle : sendStyle
-                    }`}
-                  >
-                    {tx.amount > 0 && "+"}
-                    <Satoshi value={tx.amount} />
-                  </div>
-                  <div>
-                    <Satoshi value={tx.amount} flip />
-                  </div>
-                </div>
-              </div>
-              <div className="flex justify-between">
-                {tx.memo && (
-                  <div className="grow text-sm text-neutral-500 mx-4">
-                    {tx.memo}
-                  </div>
+  const historyRender = useMemo(() => {
+  const receiveStyle = "text-success";
+  const sendStyle = "text-error";
+
+    const zebraCss = [
+      {
+        true: "bg-primary-50 text-neutral-800",
+        false: "bg-neutral-25 text-neutral-800",
+      },
+      {
+        true: "bg-primary-100 text-neutral-800",
+        false: "bg-neutral-50 text-neutral-800",
+      },
+    ];
+
+    return txHistory.map((tx, i) =>
+      i < 100 ? (
+        <li
+          key={`${tx.txid}${tx.address}`}
+          className={`py-2  ${zebraCss[i % 2][tx.amount > 0]}`}
+        >
+          <Link to={`/explore/tx/${tx.txid}`}>
+            <div className="flex text-sm">
+              <div className="shrink flex flex-col items-center justify-center mr-1 text-xs">
+                {tx.height <= 0 ? (
+                  <HourglassOutlined className="text-neutral-400" />
+                ) : (
+                  <CheckCircleOutlined className="text-primary-700" />
                 )}
-                {tx.tokens && !shouldHideBalance ? (
-                  <div className="flex flex-1 justify-end flex-wrap gap-x-2 mr-0.5">
-                    {tx.tokens.map((token) => (
-                      <div className="flex justify-end items-center text-right text-sm">
-                        <span
-                          style={{ color: `#${token.category.slice(0, 6)}` }}
-                          className="font-mono text-xs tracking-tighter font-bold"
-                        >
-                          {token.symbol}
-                        </span>
-                        {token.nft_amount !== 0 && (
-                          <TokenAmount token={token} nft />
-                        )}
-                        {token.fungible_amount !== 0 && (
-                          <TokenAmount token={token} />
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                ) : null}
               </div>
-            </Link>
-          </li>
-        ) : null
-      ),
-    [txHistory, shouldHideBalance]
-  );
+              <div className="flex-1">
+                <div className={`${tx.amount > 0 ? receiveStyle : sendStyle}`}>
+                  {(tx.height <= 0 || !tx.time
+                    ? DateTime.fromISO(tx.time_seen)
+                    : DateTime.fromSeconds(tx.time)
+                  ).toLocaleString(DateTime.DATE_SHORT)}
+                </div>
+                <div>
+                  {(tx.height <= 0 || !tx.time
+                    ? DateTime.fromISO(tx.time_seen)
+                    : DateTime.fromSeconds(tx.time)
+                  ).toLocaleString(DateTime.TIME_WITH_SECONDS)}
+                </div>
+              </div>
+              <div className="flex-1 text-right">
+                <div
+                  className={`font-mono ${
+                    tx.amount > 0 ? receiveStyle : sendStyle
+                  }`}
+                >
+                  {tx.amount > 0 && "+"}
+                  <Satoshi value={tx.amount} />
+                </div>
+                <div>
+                  <Satoshi value={tx.amount} flip />
+                </div>
+              </div>
+            </div>
+            <div className="flex justify-between">
+              {tx.memo && (
+                <div className="grow text-sm text-neutral-500 mx-4">
+                  {tx.memo}
+                </div>
+              )}
+              {tx.tokens && !shouldHideBalance ? (
+                <div className="flex flex-1 justify-end flex-wrap gap-x-2 mr-0.5">
+                  {tx.tokens.map((token) => (
+                    <div className="flex justify-end items-center text-right text-sm">
+                      <span
+                        style={{ color: `#${token.category.slice(0, 6)}` }}
+                        className="font-mono text-xs tracking-tighter font-bold"
+                      >
+                        {token.symbol}
+                      </span>
+                      {token.nft_amount !== 0 && (
+                        <TokenAmount token={token} nft />
+                      )}
+                      {token.fungible_amount !== 0 && (
+                        <TokenAmount token={token} />
+                      )}
+                    </div>
+                  ))}
+                </div>
+              ) : null}
+            </div>
+          </Link>
+        </li>
+      ) : null
+    );
+  }, [txHistory, shouldHideBalance]);
 
   return (
     <div className="flex flex-col justify-start h-full">
