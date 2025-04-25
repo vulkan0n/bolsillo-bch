@@ -149,11 +149,12 @@ export const syncSubscriptions = createAsyncThunk(
 
     // TODO: allow the user to set up pinned/watch addresses, subscribe here
 
+    const subscriptions = selectSubscriptions(thunkApi.getState());
     const addresses = [
       ...hotAddresses,
       ...unusedReceiveAddresses,
       ...filteredUnusedChangeAddresses,
-    ];
+    ].filter((a) => !subscriptions.includes(a.address));
 
     thunkApi.dispatch(syncSubscriptionCount(addresses.length));
 
@@ -658,4 +659,9 @@ export const selectElectrumServer = createSelector(
 export const selectIsConnected = createSelector(
   (state: RootState) => state.sync,
   (sync) => sync.isConnected
+);
+
+export const selectSubscriptions = createSelector(
+  (state: RootState) => state.sync,
+  (sync) => sync.subscriptions
 );
