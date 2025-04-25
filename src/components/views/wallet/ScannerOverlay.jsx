@@ -25,7 +25,7 @@ export default function ScannerOverlay() {
             </div>
           )}
           <div
-            className="w-80 h-80 rounded-xl flex items-center justify-center border border-4 border-primary opacity-90 mb-32"
+            className="w-72 h-72 rounded-xl flex items-center justify-center border border-4 border-primary opacity-90 mb-32"
             style={{ boxShadow: "0 0 0 100vh #232323" }}
           >
             <QrcodeOutlined
