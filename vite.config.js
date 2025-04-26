@@ -3,11 +3,13 @@ import { nodePolyfills } from "vite-plugin-node-polyfills";
 import topLevelAwait from "vite-plugin-top-level-await";
 import react from "@vitejs/plugin-react";
 import path from "path";
+import {visualizer} from "rollup-plugin-visualizer";
 
 // https://vitejs.dev/config/
 export default defineConfig({
   target: ["es2020", "chrome87", "safari14", "firefox78", "edge88"],
   plugins: [
+    visualizer(),
     react(),
     nodePolyfills(),
     topLevelAwait({
