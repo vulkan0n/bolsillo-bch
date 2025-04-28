@@ -17,13 +17,8 @@ export default function AppsView() {
 
   return (
     <>
-      <ViewHeader icon={ProductOutlined} title="Apps" />
-      <div className="p-1">
-        <ExploreApp
-          icon={LaptopOutlined}
-          name="A Fifth Of Gaming"
-          to="/apps/afog"
-        />
+      <ViewHeader icon={ProductOutlined} title="Apps" back="/explore" />
+      <div className="p-1 flex flex-col gap-2">
         <ExploreApp
           icon={LineChartOutlined}
           name={translate(translations.statistics)}
@@ -37,10 +32,17 @@ export default function AppsView() {
 
 function ExperimentalApps() {
   return (
-    <ExploreApp
-      icon={QrcodeOutlined}
-      name="QR Code Generator"
-      to="/apps/qrgen"
-    />
+    <>
+      <ExploreApp
+        icon={LaptopOutlined}
+        name="A Fifth Of Gaming"
+        to="/apps/afog"
+      />
+      <ExploreApp
+        icon={QrcodeOutlined}
+        name="QR Code Generator"
+        to="/apps/qrgen"
+      />
+    </>
   );
 }

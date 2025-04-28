@@ -5,6 +5,7 @@ interface Props {
   title: string;
   icon?: React.ComponentType;
   small?: boolean;
+  back?: string;
   className?: string;
 }
 
@@ -12,11 +13,12 @@ export default function ViewHeader({
   title,
   icon = () => null,
   small = false,
-  className = "",
+  back = undefined,
+  className = undefined,
 }: Props) {
   const location = useLocation();
   const navigate = useNavigate();
-  const shouldShowBackButton = location.pathname.split("/").length > 2;
+  const shouldShowBackButton = location.pathname.split("/").length > 2 || back;
 
   const Icon = icon;
 
@@ -34,7 +36,7 @@ export default function ViewHeader({
         <button
           type="button"
           className="col-span-1 flex items-center justify-center cursor-pointer"
-          onClick={() => navigate(-1)}
+          onClick={() => (back ? navigate(back) : navigate(-1))}
         >
           <ArrowLeftOutlined className="text-xl" />
         </button>
