@@ -31,7 +31,7 @@ const defaultPreferences = {
   // --------
   // Currency
   localCurrency: DEFAULT_CURRENCY.currency,
-  preferLocalCurrency: "false",
+  preferLocalCurrency: "true",
   denomination: "bch",
   // --------
   // Payment (move to wallet db?)
