@@ -68,4 +68,13 @@ export const routeApps = [
       return { Component: ExploreBlissView };
     },
   },
+  {
+    path: "/apps/qrgen",
+    async lazy() {
+      const { default: AppQrgenView } = await import(
+        "@/views/apps/qrgen/AppQrgenView"
+      );
+      return { Component: AppQrgenView };
+    },
+  },
 ];
