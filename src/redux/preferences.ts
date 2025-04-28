@@ -48,7 +48,7 @@ const defaultPreferences = {
   displayExploreTab: "true",
   displayExchangeRate: "false",
   displaySyncCounter: "true",
-  lastAssetsPath: "/assets/coins",
+  lastAssetsPath: "/assets/tokens",
   // --------
   // Network
   // TODO #420: electrum peer db

@@ -42,7 +42,7 @@ export default function ScannerButton({
   const scanTranslation = translate(translations.scan);
   const scanLabel =
     (label && (isScanning ? closeTranslation : scanTranslation)) || "";
-  const scanLabelColor = isScanning ? "white opacity-80" : undefined;
+  const scanLabelColor = isScanning ? "text-white/80" : undefined;
 
   return (
     <Button

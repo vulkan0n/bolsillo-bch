@@ -53,7 +53,7 @@ export default function WalletViewButtons() {
       {isScanning ? (
         <ImageSelectButton
           iconSize="2xl"
-          outerLabelColor="white opacity-80"
+          outerLabelColor="text-white/80"
           onSelection={forwardOnValidAddress}
         />
       ) : (
@@ -66,7 +66,7 @@ export default function WalletViewButtons() {
       )}
       <ScannerButton />
       {isScanning ? (
-        <TorchButton iconSize="2xl" outerLabelColor="white opacity-80" />
+        <TorchButton iconSize="2xl" outerLabelColor="text-white/80" />
       ) : (
         <Button
           icon={SendOutlined}

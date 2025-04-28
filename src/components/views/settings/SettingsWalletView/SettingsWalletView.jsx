@@ -200,21 +200,23 @@ export default function SettingsWalletView() {
         icon={WalletOutlined}
         title={translate(translations.walletSettings)}
       />
-      <div className="p-2" key={walletHash}>
-        <div className="p-3 rounded-lg bg-neutral-200">
-          <div className="text-2xl flex justify-center items-center">
-            <Editable onConfirm={handleEditConfirm} value={wallet.name} />
-          </div>
-          <div className="text-lg text-center text-neutral-600">
-            {translate(translations.created)}{" "}
-            {new Date(wallet.created_at).toLocaleString(locale)}
-          </div>
-          {wallet.balance > 0 && (
-            <div className="text-lg text-center text-neutral-500">
-              {translate(translations.lastKnownBalance)}:{" "}
-              <Satoshi value={wallet.balance} />
+      <div className="p-1" key={walletHash}>
+        <div className="rounded-lg border border-primary-400 bg-neutral-50">
+          <div className="p-3">
+            <div className="text-2xl flex justify-center items-center">
+              <Editable onConfirm={handleEditConfirm} value={wallet.name} />
             </div>
-          )}
+            <div className="text-lg text-center text-neutral-600">
+              {translate(translations.created)}{" "}
+              {new Date(wallet.created_at).toLocaleString(locale)}
+            </div>
+            {wallet.balance > 0 && (
+              <div className="text-lg text-center text-neutral-500">
+                {translate(translations.lastKnownBalance)}:{" "}
+                <Satoshi value={wallet.balance} />
+              </div>
+            )}
+          </div>
         </div>
 
         <div className="my-2 flex gap-x-2">
@@ -222,12 +224,11 @@ export default function SettingsWalletView() {
             <Button
               icon={activateButtonIcon}
               label={activateButtonLabel}
-              labelColor={`neutral-50 ${isActiveWallet ? "saturate-[.60]" : ""}`}
-              bgColor="primary"
               rounded="lg"
               fullWidth
               onClick={handleActivateWallet}
               disabled={isActiveWallet}
+              inverted
             />
           </div>
           <div className="text-center flex-1">

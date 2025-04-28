@@ -61,12 +61,12 @@ function AccordionChild({
     <div className="p-2.5">
       <div className="flex justify-between items-center">
         {label && (
-          <div className="flex flex-1 items-center flex-nowrap items-center">
+          <div className="flex flex-2 items-center flex-nowrap items-center">
             <Icon className="text-xl mr-1" />
             {label}
           </div>
         )}
-        <div className="flex items-center">{children}</div>
+        <div className="flex items-center flex-1 justify-end">{children}</div>
       </div>
       {description && <div className="pt-2 text-sm">{description}</div>}
     </div>

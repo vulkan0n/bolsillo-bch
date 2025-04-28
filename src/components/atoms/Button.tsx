@@ -58,18 +58,18 @@ export interface ButtonProps {
 export default function Button({
   label = "",
   labelSize = "sm",
-  labelColor = "neutral-600",
-  activeLabelColor = "white",
+  labelColor = "bg-neutral-600",
+  activeLabelColor = "text-white",
   icon = NullComponent,
   iconSize = "2xl",
   iconClasses = "",
   outerLabel = "",
   outerLabelSize = "sm",
-  outerLabelColor = "neutral-700",
+  outerLabelColor = "text-neutral-700",
   borderClasses = "border border-2 border-primary",
   rounded = "full",
-  bgColor = "white",
-  activeBgColor = "primary",
+  bgColor = "bg-white",
+  activeBgColor = "bg-primary",
   shadow = "md",
   padding = "3",
   inverted = false,
@@ -82,8 +82,8 @@ export default function Button({
 }: ButtonProps) {
   const Icon = icon;
   // tailwindcss dynamic classes don't work here, the tokenizer needs to see the whole string, they're computed at build time, not runtime!
-  const colors = `bg-${bgColor} text-${labelColor} ${disabled ? "" : `active:bg-${activeBgColor} active:text-${activeLabelColor}`}`;
-  const invertedColors = `bg-${activeBgColor} text-${activeLabelColor} ${disabled ? "" : `active:bg-${bgColor} active:text-${labelColor}`}`;
+  const colors = `${bgColor} ${labelColor} ${disabled ? "" : `active:${activeBgColor} active:${activeLabelColor}`}`;
+  const invertedColors = `${activeBgColor} ${activeLabelColor} ${disabled ? "" : `active:${bgColor} active:${labelColor}`}`;
   const colorClasses = inverted ? invertedColors : colors;
 
   const roundedClass = rounded === true ? "rounded" : `rounded-${rounded}`;
@@ -129,7 +129,7 @@ export default function Button({
       </button>
       {outerLabel && (
         <div
-          className={`text-${outerLabelSize} text-${outerLabelColor} mt-1 select-none text-center`}
+          className={`text-${outerLabelSize} ${outerLabelColor} mt-1 select-none text-center`}
         >
           {outerLabel}
         </div>

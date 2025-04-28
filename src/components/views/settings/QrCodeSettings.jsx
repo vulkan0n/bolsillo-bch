@@ -61,7 +61,7 @@ export default function QrCodeSettings() {
         icon={FormatPainterOutlined}
         label={translate(translations.foregroundColor)}
       >
-        <div className="flex items-center">
+        <div className="flex items-center w-1/2">
           <SettingFilled
             className="text-3xl px-2"
             style={{ color: preferences.qrCodeForeground }}
@@ -80,7 +80,7 @@ export default function QrCodeSettings() {
         icon={BgColorsOutlined}
         label={translate(translations.backgroundColor)}
       >
-        <div className="flex items-center">
+        <div className="flex items-center w-1/2">
           <SettingFilled
             className="text-3xl px-2"
             style={{ color: preferences.qrCodeBackground }}
@@ -96,13 +96,11 @@ export default function QrCodeSettings() {
         </div>
       </Accordion.Child>
       <Accordion.Child>
-        <div className="flex justify-end">
-          <Button
-            onClick={handleResetQrColors}
-            icon={UndoOutlined}
-            label={translate(translations.resetColors)}
-          />
-        </div>
+        <Button
+          onClick={handleResetQrColors}
+          icon={UndoOutlined}
+          label={translate(translations.resetColors)}
+        />
       </Accordion.Child>
     </Accordion>
   );
