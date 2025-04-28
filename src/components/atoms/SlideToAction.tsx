@@ -15,7 +15,10 @@ export default function SlideToAction({
   disabled = false,
   className = undefined,
 }: Props) {
-  const ref = useRef<HTMLDivElement>(null);
+  const knobRef = useRef<HTMLDivElement>(null);
+  const bannerRef = useRef<HTMLDivElement>(null);
+
+  const isDragging = useRef(false);
 
   const offsetX = useRef<number>(0);
 
@@ -23,71 +26,98 @@ export default function SlideToAction({
 
   const didConfirm = useRef<boolean>(false);
 
-  const dragElement = (x: number) => {
-    if (ref.current == null) return;
-    const transformX = Math.max(0, Math.min(endX.current, x - offsetX.current));
-    if (transformX === endX.current) {
-      didConfirm.current = true;
-      stopDragging();
-      onSlide();
-    }
-    ref.current.style.transition = `none`;
-    ref.current.style.transform = `translateX(${transformX}px)`;
-  };
-
-  const pointerDragElement = (e: PointerEvent) => {
-    e.preventDefault();
-    dragElement(e.clientX);
-  };
-
   const stopDragging = () => {
-    if (ref.current == null) return;
-    document.removeEventListener("pointermove", pointerDragElement);
     document.body.classList.remove("cursor-grabbing");
+    isDragging.current = false;
     if (didConfirm.current) return;
-    ref.current.style.transform = `translateX(0)`;
-    ref.current.style.transition = `0.1s`;
+    if (knobRef.current == null) return;
+    if (bannerRef.current == null) return;
+    knobRef.current.style.transform = `translateX(0)`;
+    knobRef.current.style.transition = `0.1s`;
+    bannerRef.current.style.width = `0`;
   };
 
   const startDragging = (x: number) => {
-    if (ref.current == null) return;
-    if (ref.current.parentElement == null) return;
+    if (knobRef.current == null) return;
+    if (knobRef.current.parentElement == null) return;
     offsetX.current = x;
     endX.current =
-      ref.current.parentElement.getBoundingClientRect().width -
-      ref.current.getBoundingClientRect().width;
-    document.addEventListener("pointermove", pointerDragElement);
+      knobRef.current.parentElement.getBoundingClientRect().width -
+      knobRef.current.getBoundingClientRect().width / 1.2;
 
+    isDragging.current = true;
     document.body.classList.add("cursor-grabbing");
   };
 
-  const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+  const handleConfirm = () => {
+    didConfirm.current = true;
+    stopDragging();
+    onSlide();
+  };
+  const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    if (!isDragging.current) return;
+    if (knobRef.current == null) return;
+    if (bannerRef.current == null) return;
+
+    const x = e.clientX;
+
+    const transformX = Math.max(0, Math.min(endX.current, x - offsetX.current));
+    if (transformX === endX.current) {
+      handleConfirm();
+    }
+    const knobWidth = knobRef.current.getBoundingClientRect().width;
+    knobRef.current.style.transition = `none`;
+    knobRef.current.style.transform = `translateX(${transformX}px)`;
+    bannerRef.current.style.transition = `none`;
+    bannerRef.current.style.width = `${transformX + knobWidth}px`;
+  };
+
+  const handlePointerUp = (e) => {
+    e.preventDefault();
+    stopDragging();
+  };
+
+  const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
     e.preventDefault();
     startDragging(e.clientX);
   };
 
   return (
+    <div className="bg-primary-200 border border-primary-200 shadow-inner rounded-full h-12 flex items-center relative">
+      <div
+        ref={bannerRef}
+        className="h-14 w-0 bg-primary absolute rounded-full"
+      />
+      <div
+        onPointerDown={handlePointerDown}
+        onPointerUp={handlePointerUp}
+        onPointerMove={handlePointerMove}
+        ref={knobRef}
+        className="h-16 w-16 relative z-10 flex items-center justify-center bg-primary p-0.5 rounded-full"
+      >
+        <SeleneLogo className="w-full h-full" />
+      </div>
+      <div className="text-lg font-bold text-neutral-600 flex-1 text-center mr-4 ml-auto">
+        {label}
+      </div>
+    </div>
+  );
+}
+
+/*
+ *
     <div className="p-1 bg-neutral-100 rounded-full overflow-hidden">
       <div
         className={clsx(
           className,
-          "bg-neutral-100 rounded-full flex items-center justify-center relative text-primary font-bold text-center",
+          "bg-neutral-100 rounded-full flex items-center relative text-primary font-bold text-center",
           {
             "opacity-50 pointer-events-none": disabled,
           }
         )}
       >
-        <div
-          onPointerDown={onPointerDown}
-          onPointerUp={stopDragging}
-          ref={ref}
-          className="h-10 absolute left-0"
-        >
-          <div className="w-screen h-12 bg-primary absolute rounded-full -right-1 -top-1" />
-          <SeleneLogo className="h-10 relative z-10" />
-        </div>
         <div className="h-10 leading-10">{label}</div>
       </div>
     </div>
-  );
-}
+  */
