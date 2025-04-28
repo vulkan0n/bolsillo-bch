@@ -175,6 +175,7 @@ export default function CreditsView() {
           <li>XaYaZaZa</li>
           <li>@_minisatoshi</li>
           <li>Steve Thurmond</li>
+          <li>The Paytaca Team</li>
           <li>Jett Scythe</li>
         </ul>
       </div>
