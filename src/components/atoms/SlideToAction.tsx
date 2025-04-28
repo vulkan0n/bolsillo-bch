@@ -3,17 +3,17 @@ import React, { useRef } from "react";
 import SeleneLogo from "./SeleneLogo";
 
 interface Props {
-  onSlide: () => void;
-  className: string | undefined;
-  disabled: boolean | undefined;
   label: string;
+  onSlide: () => void;
+  disabled?: boolean;
+  className?: string;
 }
 
 export default function SlideToAction({
-  className,
-  onSlide,
-  disabled,
   label,
+  onSlide,
+  disabled = false,
+  className = undefined,
 }: Props) {
   const ref = useRef<HTMLDivElement>(null);
 
@@ -28,27 +28,21 @@ export default function SlideToAction({
     const transformX = Math.max(0, Math.min(endX.current, x - offsetX.current));
     if (transformX === endX.current) {
       didConfirm.current = true;
-      stopDragging(); // eslint-disable-line
+      stopDragging();
       onSlide();
     }
     ref.current.style.transition = `none`;
     ref.current.style.transform = `translateX(${transformX}px)`;
   };
 
-  const mouseDragElement = (e: MouseEvent) => {
+  const pointerDragElement = (e: PointerEvent) => {
     e.preventDefault();
     dragElement(e.clientX);
   };
 
-  const touchDragElement = (e: TouchEvent) => {
-    e.preventDefault();
-    dragElement(e.touches[0].clientX);
-  };
-
   const stopDragging = () => {
     if (ref.current == null) return;
-    document.removeEventListener("mousemove", mouseDragElement);
-    document.removeEventListener("touchmove", touchDragElement);
+    document.removeEventListener("pointermove", pointerDragElement);
     document.body.classList.remove("cursor-grabbing");
     if (didConfirm.current) return;
     ref.current.style.transform = `translateX(0)`;
@@ -62,18 +56,12 @@ export default function SlideToAction({
     endX.current =
       ref.current.parentElement.getBoundingClientRect().width -
       ref.current.getBoundingClientRect().width;
-    document.addEventListener("mousemove", mouseDragElement);
-    document.addEventListener("touchmove", touchDragElement);
+    document.addEventListener("pointermove", pointerDragElement);
 
     document.body.classList.add("cursor-grabbing");
   };
 
-  const onTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    startDragging(e.touches[0].clientX);
-  };
-
-  const onMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+  const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
     e.preventDefault();
     startDragging(e.clientX);
   };
@@ -90,10 +78,8 @@ export default function SlideToAction({
         )}
       >
         <div
-          onTouchStart={onTouchStart}
-          onTouchEnd={stopDragging}
-          onMouseDown={onMouseDown}
-          onMouseUp={stopDragging}
+          onPointerDown={onPointerDown}
+          onPointerUp={stopDragging}
           ref={ref}
           className="h-10 absolute left-0"
         >
