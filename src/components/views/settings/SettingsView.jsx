@@ -1,9 +1,5 @@
 import { useMemo, useCallback } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import {
-  InAppBrowser,
-  DefaultSystemBrowserOptions,
-} from "@capacitor/inappbrowser";
 
 import { SettingOutlined, QuestionCircleOutlined } from "@ant-design/icons";
 
@@ -18,6 +14,7 @@ import FullColumn from "@/layout/FullColumn";
 import KeyWarning from "@/atoms/KeyWarning/KeyWarning";
 import Button from "@/atoms/Button";
 import SeleneLogo from "@/atoms/SeleneLogo";
+import LinkExternal from "@/atoms/LinkExternal";
 
 import { selectDevicePlatform } from "@/redux/device";
 
@@ -62,17 +59,6 @@ export default function SettingsView() {
 
   const activeWalletHash = useSelector(selectActiveWalletHash);
 
-  const handleHelpButton = async () => {
-    if (platform === "web") {
-      window.open("https://docs.selene.cash");
-    } else {
-      await InAppBrowser.openInSystemBrowser({
-        url: "https://docs.selene.cash",
-        options: DefaultSystemBrowserOptions,
-      });
-    }
-  };
-
   return (
     <FullColumn>
       <ViewHeader
@@ -107,15 +93,20 @@ export default function SettingsView() {
           inverted
           fullWidth
         />
-        <Button
-          onClick={handleHelpButton}
-          label="Help"
-          labelSize="xl"
-          icon={QuestionCircleOutlined}
-          iconSize="3xl"
-          padding="2"
-          fullWidth
-        />
+        <LinkExternal
+          inAppBrowser
+          to="https://docs.selene.cash"
+          className="w-full"
+        >
+          <Button
+            label="Help"
+            labelSize="xl"
+            icon={QuestionCircleOutlined}
+            iconSize="3xl"
+            padding="2"
+            fullWidth
+          />
+        </LinkExternal>
       </div>
     </FullColumn>
   );

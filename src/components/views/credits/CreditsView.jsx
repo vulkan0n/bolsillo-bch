@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router";
 import ViewHeader from "@/layout/ViewHeader";
 import SeleneLogo from "@/components/atoms/SeleneLogo";
+import LinkExternal from "@/components/atoms/LinkExternal";
 import { SELENE_WALLET_VERSION } from "@/util/version";
 import { translate } from "@/util/translations";
 import translations from "./CreditsViewTranslations";
@@ -32,15 +33,20 @@ export default function CreditsView() {
         <h2 className="text-xl font-bold">
           {translate(translations.developedWith)}
         </h2>
-        <h2 className="text-xl font-semibold p-1">
-          {translate(translations.contributors)}
+        <h2 className="font-bold text-xl">
+          <LinkExternal to="https://kallisti.io" className="underline">
+            Kallisti.cash
+          </LinkExternal>{" "}
+          &amp;{" "}
+          <LinkExternal
+            to="https://bitcoincashpodcast.com"
+            className="underline"
+          >
+            The Bitcoin Cash Podcast
+          </LinkExternal>
         </h2>
       </div>
       <div className="p-2 w-5/6 mx-auto">
-        <h2 className="font-bold text-2xl">
-          {translate(translations.flipstarterContributors)}
-        </h2>
-
         <h3 className="font-bold text-xl">March 2024</h3>
         <ol className="list-inside list-decimal">
           <li>molecular</li>

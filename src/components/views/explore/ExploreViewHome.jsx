@@ -1,7 +1,6 @@
 import {
   ContactsOutlined,
   //EnvironmentOutlined,
-  QuestionCircleOutlined,
   ProductOutlined,
   ReadOutlined,
 } from "@ant-design/icons";
@@ -35,15 +34,8 @@ export default function ExploreViewHome() {
       {isPrerelease && (
         <ExploreApp
           icon={ReadOutlined}
-          name="Encyclopedia"
+          name="Help & Information"
           to="/explore/info"
-        />
-      )}
-      {isExperimental && (
-        <ExploreApp
-          icon={QuestionCircleOutlined}
-          name="Help"
-          to="/explore/help"
         />
       )}
     </div>
