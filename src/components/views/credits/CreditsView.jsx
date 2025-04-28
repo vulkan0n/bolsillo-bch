@@ -28,7 +28,9 @@ export default function CreditsView() {
           <SeleneLogo className="h-full" onClick={handleDebugTap} />
         </div>
         <h1 className="text-2xl font-bold">
-          Selene Wallet v{SELENE_WALLET_VERSION}
+          <LinkExternal to="https://selene.cash" className="underline">
+            Selene Wallet v{SELENE_WALLET_VERSION}
+          </LinkExternal>
         </h1>
         <h2 className="text-xl font-bold">
           {translate(translations.developedWith)}
