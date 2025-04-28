@@ -29,6 +29,8 @@ type ValidRounded =
   | "2xl"
   | "3xl";
 
+type ValidJustify = "start" | "center" | "end";
+
 export interface ButtonProps {
   label?: React.ReactNode;
   labelSize?: ValidSizes;
@@ -46,6 +48,7 @@ export interface ButtonProps {
   activeBgColor?: string;
   shadow?: ValidSizes;
   padding?: string;
+  justify?: ValidJustify;
   inverted?: boolean;
   fullWidth?: boolean;
   onClick?: React.MouseEventHandler;
@@ -72,6 +75,7 @@ export default function Button({
   activeBgColor = "bg-primary",
   shadow = "md",
   padding = "3",
+  justify = "center",
   inverted = false,
   fullWidth = false,
   onClick = () => null,
@@ -108,7 +112,7 @@ export default function Button({
         type="button"
         onClick={handleOnClick}
         className={`
-          flex items-center justify-center
+          flex items-center justify-${justify}
           p-${padding} mx-auto
           ${fullWidth ? " w-full " : ""}
           ${borderClasses} 
