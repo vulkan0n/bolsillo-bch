@@ -153,8 +153,8 @@ function CoinGroup({ address, coins, onCoinSelect }) {
   const isSelected = coins.every((coin) => coin.selected);
 
   const selectCss = isSelected
-    ? "bg-primary text-white"
-    : "bg-neutral-500 text-neutral-200";
+    ? "bg-primary-500 border-2 border-neutral-600 text-white"
+    : "bg-primary-300 text-neutral-600 border border-neutral-600";
 
   const handleGroupSelection = () => {
     coins.forEach((coin) => onCoinSelect(coin.key, !isSelected));
@@ -162,7 +162,7 @@ function CoinGroup({ address, coins, onCoinSelect }) {
 
   return (
     <div
-      className={`rounded my-1 border border-primary ${selectCss}`}
+      className={`rounded my-1 ${selectCss}`}
       onClick={handleGroupSelection}
     >
       <div className="py-0.5 px-1 font-mono text-xs tracking-tight">
@@ -179,8 +179,8 @@ function CoinGroup({ address, coins, onCoinSelect }) {
 
 function Coin({ coin, onSelect }) {
   const selectCss = coin.selected
-    ? "bg-primary text-white"
-    : "bg-neutral-50 text-neutral-900";
+    ? "bg-primary-300 text-neutral-600"
+    : "bg-primary-100 text-neutral-600";
 
   const handleSelection = (event) => {
     onSelect(coin.key);

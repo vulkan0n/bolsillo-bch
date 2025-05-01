@@ -12,6 +12,7 @@
  * (prevents rendering underneath the "notch" and home button) 
 */
 html {
+  font-size: 16px;
   -webkit-tap-highlight-color: transparent;
   position: fixed;
   top: env(safe-area-inset-top);
