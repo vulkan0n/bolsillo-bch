@@ -153,22 +153,19 @@ function CoinGroup({ address, coins, onCoinSelect }) {
   const isSelected = coins.every((coin) => coin.selected);
 
   const selectCss = isSelected
-    ? "bg-primary-500 border-2 border-neutral-600 text-white"
-    : "bg-primary-300 text-neutral-600 border border-neutral-600";
+    ? "bg-primary-500 border-2 border-primary-700 text-neutral-700"
+    : "bg-primary-300 text-neutral-600 border border-neutral-500";
 
   const handleGroupSelection = () => {
     coins.forEach((coin) => onCoinSelect(coin.key, !isSelected));
   };
 
   return (
-    <div
-      className={`rounded my-1 ${selectCss}`}
-      onClick={handleGroupSelection}
-    >
+    <div className={`rounded my-1 ${selectCss}`} onClick={handleGroupSelection}>
       <div className="py-0.5 px-1 font-mono text-xs tracking-tight">
         <Address address={address} color="white" />
       </div>
-      <div className="m-0.5 shadow-inner border rounded border-primary">
+      <div className="m-0.5 border-1 border-primary-700 rounded-sm">
         {coins.map((coin) => (
           <Coin key={coin.key} coin={coin} onSelect={onCoinSelect} />
         ))}
@@ -179,8 +176,8 @@ function CoinGroup({ address, coins, onCoinSelect }) {
 
 function Coin({ coin, onSelect }) {
   const selectCss = coin.selected
-    ? "bg-primary-300 text-neutral-600"
-    : "bg-primary-100 text-neutral-600";
+    ? "bg-primary-200 text-neutral-700 border border-primary-500"
+    : "bg-primary-100 text-primary-900 border border-primary-200";
 
   const handleSelection = (event) => {
     onSelect(coin.key);
@@ -189,7 +186,7 @@ function Coin({ coin, onSelect }) {
 
   return (
     <div
-      className={`border p-1 text-sm flex-1 ${selectCss}`}
+      className={`p-1 text-sm flex-1 ${selectCss}`}
       onClick={handleSelection}
     >
       <div className="flex items-center">
@@ -217,16 +214,17 @@ function SelectionDisplay({ selection, onConfirm, onCancel }) {
   };
 
   return (
-    <div className="sticky bottom-0 bg-black/70 w-full border-t-2 border-neutral-700 rounded-t shadow mt-1">
-      <div className="text-neutral-700 rounded-t bg-white/85 shadow-lg px-2 py-1">
+    <div className="sticky bottom-0 bg-primary-900 w-full border-t-2 border-neutral-900 rounded-t shadow mt-1">
+      <div className="text-neutral-700 rounded-t bg-neutral-100 shadow-lg px-2 py-1">
         <div className="flex relative justify-between">
           <div className="flex items-center justify-start flex-1">
             <Button
               onClick={handleCancel}
               icon={CloseOutlined}
-              bgColor="transparent"
-              activeBgColor="x active:bg-neutral-100"
-              borderClasses="border border-transparent"
+              bgColor="bg-transparent"
+              activeBgColor="bg-neutral-100"
+              borderClasses="border border-primary-400"
+              shadow=""
             />
           </div>
           <div className="text-center grow">
@@ -242,11 +240,12 @@ function SelectionDisplay({ selection, onConfirm, onCancel }) {
             <Button
               onClick={handleConfirm}
               icon={SendOutlined}
-              iconSize="lg"
+              iconSize="xl"
               label="Send"
-              activeLabelColor="white/90"
-              labelColor="primary"
-              borderClasses="border border-transparent"
+              labelSize="lg"
+              activeLabelColor="text-neutral-100"
+              labelColor="text-white"
+              borderClasses="border border-primary-700"
               inverted
             />
           </div>

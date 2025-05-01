@@ -2,6 +2,7 @@ import { useNavigate, To } from "react-router";
 import NullComponent from "@/atoms/NullComponent";
 
 export type ValidSizes =
+  | ""
   | "none"
   | "xs"
   | "sm"
@@ -119,7 +120,8 @@ export default function Button({
           ${colorClasses}
           text-${labelSize}
           ${roundedClass}
-          shadow-${shadow} opacity-90 
+          shadow${shadow ? "-" + shadow : ""}
+          opacity-90 
           active:shadow-none active:shadow-inner
           ${disabledClasses}
         `}

@@ -11,6 +11,9 @@ module.exports = {
       mono: ['"Chivo Mono"', "monospace"],
     },
     colors: {
+      transparent: "rgba(0,0,0,0)",
+      black: "rgba(0, 0, 0, 1)",
+      white: "rgba(255, 255, 255, 1)",
       error: {
         light: "rgba(230, 174, 157, 1)",
         DEFAULT: "rgba(202, 50, 36, 1)",
@@ -26,8 +29,6 @@ module.exports = {
         DEFAULT: "rgba(232, 157, 30, 1)",
         dark: "rgba(103, 60, 24, 1)",
       },
-      black: "rgba(0, 0, 0, 1)",
-      white: "rgba(255, 255, 255, 1)",
       primary: {
         50: "rgba(247, 252, 241, 1)",
         100: "rgba(234, 243, 220, 1)",
