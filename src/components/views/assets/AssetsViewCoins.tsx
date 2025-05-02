@@ -177,7 +177,7 @@ function CoinGroup({ address, coins, onCoinSelect }) {
 function Coin({ coin, onSelect }) {
   const selectCss = coin.selected
     ? "bg-primary-200 text-neutral-700 border border-primary-500"
-    : "bg-primary-100 text-primary-900 border border-primary-200";
+    : "bg-primary-100 text-neutral-600 border border-primary-200";
 
   const handleSelection = (event) => {
     onSelect(coin.key);
@@ -243,8 +243,9 @@ function SelectionDisplay({ selection, onConfirm, onCancel }) {
               iconSize="xl"
               label="Send"
               labelSize="lg"
-              activeLabelColor="text-neutral-100"
-              labelColor="text-white"
+              bgColor="bg-primary-700"
+              activeLabelColor="text-white"
+              labelColor="text-neutral-200"
               borderClasses="border border-primary-700"
               inverted
             />
