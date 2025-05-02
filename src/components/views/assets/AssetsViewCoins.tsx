@@ -177,7 +177,7 @@ function CoinGroup({ address, coins, onCoinSelect }) {
 function Coin({ coin, onSelect }) {
   const selectCss = coin.selected
     ? "bg-primary-200 text-neutral-700 border border-primary-500"
-    : "bg-primary-100 text-neutral-600 border border-primary-200";
+    : "bg-primary-100 text-neutral-700 border border-primary-200";
 
   const handleSelection = (event) => {
     onSelect(coin.key);
@@ -221,10 +221,10 @@ function SelectionDisplay({ selection, onConfirm, onCancel }) {
             <Button
               onClick={handleCancel}
               icon={CloseOutlined}
-              bgColor="bg-transparent"
-              activeBgColor="bg-neutral-100"
+              bgColor="bg-neutral-50"
+              activeBgColor="bg-primary-500"
               borderClasses="border border-primary-400"
-              shadow=""
+              shadow
             />
           </div>
           <div className="text-center grow">

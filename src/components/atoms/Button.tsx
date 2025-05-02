@@ -2,7 +2,6 @@ import { useNavigate, To } from "react-router";
 import NullComponent from "@/atoms/NullComponent";
 
 export type ValidSizes =
-  | ""
   | "none"
   | "xs"
   | "sm"
@@ -47,7 +46,7 @@ export interface ButtonProps {
   rounded?: ValidRounded;
   bgColor?: string;
   activeBgColor?: string;
-  shadow?: ValidSizes;
+  shadow?: ValidRounded;
   padding?: string;
   justify?: ValidJustify;
   inverted?: boolean;
@@ -62,7 +61,7 @@ export interface ButtonProps {
 export default function Button({
   label = "",
   labelSize = "sm",
-  labelColor = "bg-neutral-600",
+  labelColor = "text-neutral-600",
   activeLabelColor = "text-white",
   icon = NullComponent,
   iconSize = "2xl",
