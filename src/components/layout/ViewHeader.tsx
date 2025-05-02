@@ -1,11 +1,12 @@
 import { useLocation, useNavigate } from "react-router";
-import { ArrowLeftOutlined } from "@ant-design/icons";
+import { ArrowLeftOutlined, CloseOutlined } from "@ant-design/icons";
 
 interface Props {
   title: string;
   icon?: React.ComponentType;
   small?: boolean;
-  back?: string;
+  back?: string | number;
+  close?: string;
   className?: string;
 }
 
@@ -14,11 +15,13 @@ export default function ViewHeader({
   icon = () => null,
   small = false,
   back = undefined,
+  close = undefined,
   className = undefined,
 }: Props) {
   const location = useLocation();
   const navigate = useNavigate();
-  const shouldShowBackButton = location.pathname.split("/").length > 2 || back;
+  const shouldShowBackButton =
+    (location.pathname.split("/").length > 2 || back) && !close;
 
   const Icon = icon;
 
@@ -32,17 +35,26 @@ export default function ViewHeader({
     <div
       className={`sticky top-0 z-50 w-full grid grid-cols-6 ${sizeClasses} ${className}`}
     >
-      {shouldShowBackButton ? (
-        <button
-          type="button"
-          className="col-span-1 flex items-center justify-center cursor-pointer"
-          onClick={() => (back ? navigate(back) : navigate(-1))}
-        >
-          <ArrowLeftOutlined className="text-xl" />
-        </button>
-      ) : (
-        <div className="col-span-1">&nbsp;</div>
-      )}
+      <div className="col-span-1 flex items-center justify-center">
+        {shouldShowBackButton && (
+          <button
+            type="button"
+            className="flex items-center justify-center cursor-pointer"
+            onClick={() => (back ? navigate(back) : navigate(-1))}
+          >
+            <ArrowLeftOutlined className="text-xl" />
+          </button>
+        )}
+        {close && (
+          <button
+            type="button"
+            className="flex items-center justify-center cursor-pointer"
+            onClick={() => navigate(close)}
+          >
+            <CloseOutlined className="text-xl" />
+          </button>
+        )}
+      </div>
       <div className="text-center col-span-4 flex items-center justify-center">
         <Icon className={`mr-2 ${iconClasses}`} />
         {title}
