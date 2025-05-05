@@ -58,22 +58,29 @@ export const syncConnect = createAsyncThunk(
       isSuccess = true;
     } catch (e) {
       Log.error("syncConnect:", e);
-      const isProtocolVersionMismatch =
-        e instanceof ElectrumVersionMismatchError;
 
       // if connection fails, destroy the client and try again
       await Electrum.disconnect(true);
+
+      // try a different server if there's a protocol version mismatch
+      const isProtocolVersionMismatch =
+        e instanceof ElectrumVersionMismatchError;
 
       // try multiple servers only if device reports active network connection
       const { isConnected: isNetworkConnected } = selectNetworkStatus(
         thunkApi.getState()
       );
 
+      // attempt to connect 3 times before failover
       const shouldFailover =
         isNetworkConnected &&
         (isProtocolVersionMismatch || payload.attempts > 2);
 
-      if (!shouldFailover) {
+      if (shouldFailover) {
+        // try a different server
+        const newServer = Electrum.selectFallbackServer(payload.server);
+        thunkApi.dispatch(syncConnect({ server: newServer, attempts: 0 }));
+      } else {
         setTimeout(
           () =>
             thunkApi.dispatch(
@@ -81,10 +88,6 @@ export const syncConnect = createAsyncThunk(
             ),
           Math.min(1000 * (payload.attempts + 1) * 2, 10 * 1000)
         );
-      } else {
-        // try a different server
-        const newServer = Electrum.selectFallbackServer(payload.server);
-        thunkApi.dispatch(syncConnect({ server: newServer, attempts: 0 }));
       }
     }
 
