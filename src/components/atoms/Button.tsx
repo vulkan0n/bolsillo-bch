@@ -56,9 +56,11 @@ export interface ButtonProps {
   className?: string;
   style?: React.CSSProperties;
   navigateTo?: To;
+  submit?: boolean;
 }
 
 export default function Button({
+  submit = false,
   label = "",
   labelSize = "sm",
   labelColor = "text-neutral-600",
@@ -111,7 +113,7 @@ export default function Button({
   return (
     <div className={`${fullWidth ? "w-full" : ""} ${className}`}>
       <button
-        type="button"
+        type={submit ? "submit" : "button"}
         onClick={handleOnClick}
         className={`
           flex items-center justify-${justify}

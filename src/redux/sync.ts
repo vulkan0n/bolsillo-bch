@@ -20,7 +20,7 @@ import { selectIsOfflineMode } from "@/redux/preferences";
 
 import LogService from "@/services/LogService";
 import ElectrumService, {
-  ELECTRUM_PROTOCOL_VERSION,
+  ElectrumVersionMismatchError,
 } from "@/services/ElectrumService";
 import BlockchainService from "@/services/BlockchainService";
 import WalletManagerService from "@/services/WalletManagerService";
@@ -58,9 +58,8 @@ export const syncConnect = createAsyncThunk(
       isSuccess = true;
     } catch (e) {
       Log.error("syncConnect:", e);
-      const isProtocolVersionMismatch = `${e}`.includes(
-        ELECTRUM_PROTOCOL_VERSION
-      );
+      const isProtocolVersionMismatch =
+        e instanceof ElectrumVersionMismatchError;
 
       // if connection fails, destroy the client and try again
       await Electrum.disconnect(true);
