@@ -19,7 +19,9 @@ import { selectNetworkStatus } from "@/redux/device";
 import { selectIsOfflineMode } from "@/redux/preferences";
 
 import LogService from "@/services/LogService";
-import ElectrumService from "@/services/ElectrumService";
+import ElectrumService, {
+  ELECTRUM_PROTOCOL_VERSION,
+} from "@/services/ElectrumService";
 import BlockchainService from "@/services/BlockchainService";
 import WalletManagerService from "@/services/WalletManagerService";
 import AddressManagerService, {
@@ -55,7 +57,11 @@ export const syncConnect = createAsyncThunk(
       await Electrum.connect(payload.server);
       isSuccess = true;
     } catch (e) {
-      Log.error(e);
+      Log.error("syncConnect:", e);
+      const isProtocolVersionMismatch = `${e}`.includes(
+        ELECTRUM_PROTOCOL_VERSION
+      );
+
       // if connection fails, destroy the client and try again
       await Electrum.disconnect(true);
 
@@ -64,8 +70,11 @@ export const syncConnect = createAsyncThunk(
         thunkApi.getState()
       );
 
-      // 3 attempts per server
-      if (payload.attempts < 2 || !isNetworkConnected) {
+      const shouldFailover =
+        isNetworkConnected &&
+        (isProtocolVersionMismatch || payload.attempts > 2);
+
+      if (!shouldFailover) {
         setTimeout(
           () =>
             thunkApi.dispatch(
@@ -110,7 +119,7 @@ export const syncConnectionUp = createAsyncThunk(
       await Electrum.subscribeToChaintip();
       thunkApi.dispatch(syncSubscriptions());
     } catch (e) {
-      Log.error(e);
+      Log.warn("syncConnectionUp:", e);
     }
 
     return Electrum.getElectrumHost();
@@ -169,7 +178,7 @@ export const syncSubscriptions = createAsyncThunk(
           try {
             await Electrum.subscribeToAddress(address);
           } catch (e) {
-            Log.error(e);
+            Log.warn("syncSubscriptions:", e);
           } finally {
             thunkApi.dispatch(syncSubscriptionCount(-1));
           }
@@ -222,7 +231,7 @@ const syncAddressUtxos = createAsyncThunk(
     try {
       await AddressScannerService(wallet).scanUtxos(address.address);
     } catch (e) {
-      Log.error(e);
+      Log.warn("syncAddressUtxos:", e);
     }
   }
 );
@@ -247,7 +256,7 @@ export const syncAddressHistory = createAsyncThunk(
       try {
         await AddressScanner.scanHistory(address);
       } catch (e) {
-        Log.error(e);
+        Log.warn("syncAddressHistory:", e);
       }
     }
   }
@@ -268,7 +277,7 @@ export const syncPopulateAddresses = createAsyncThunk(
         try {
           await Electrum.subscribeToAddress(address);
         } catch (e) {
-          Log.error(e);
+          Log.warn("syncPopulateAddresses", e);
         } finally {
           thunkApi.dispatch(syncSubscriptionCount(-1));
         }
@@ -326,7 +335,7 @@ export const syncHotRefresh = createAsyncThunk(
               syncAddressState([address.address, addressState])
             );
           } catch (e) {
-            Log.error(e);
+            Log.warn("syncHotRefresh:", e);
           } finally {
             thunkApi.dispatch(syncSubscriptionCount(-1));
           }
@@ -524,6 +533,7 @@ export const syncReducer = createReducer(initialState, (builder) => {
     })
     .addCase(syncConnectionDown, (state) => {
       state.isConnected = false;
+      state.syncPending = initialPending;
     })
     .addCase(syncReconnect.pending, (state) => {
       state.isConnected = false;

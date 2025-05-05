@@ -29,6 +29,8 @@ export class ElectrumNotConnectedError extends Error {
   }
 }
 
+export const ELECTRUM_PROTOCOL_VERSION = "1.5";
+
 // pointer for current ElectrumClient instance
 let electrum: ElectrumClient<ElectrumClientEvents> | null = null;
 
@@ -84,7 +86,11 @@ export default function ElectrumService() {
     const socket = new ElectrumWebSocket(parts.host, parts.port);
 
     // create a new ElectrumClient every time to enable server switching
-    electrum = new ElectrumClient("Selene.cash", "1.5", socket);
+    electrum = new ElectrumClient(
+      "Selene.cash",
+      ELECTRUM_PROTOCOL_VERSION,
+      socket
+    );
 
     // need to establish listeners every time we recreate the ElectrumClient
     electrum.addListener("connected", () => {
@@ -401,8 +407,8 @@ export default function ElectrumService() {
       server_blacklist.push(prevServer);
     }
 
-    const filtered_server_list = server_list.filter((s) =>
-      server_blacklist.includes(s)
+    const filtered_server_list = server_list.filter(
+      (s) => !server_blacklist.includes(s)
     );
 
     const chooseRandomServer = () => {
