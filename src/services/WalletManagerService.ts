@@ -123,6 +123,7 @@ export default function WalletManagerService() {
     }
 
     const walletMeta = result[0];
+    Log.debug(walletMeta);
     return walletMeta;
   }
 
@@ -450,15 +451,16 @@ export default function WalletManagerService() {
     const walletDb = Database.getWalletDatabase(walletHash);
 
     const wallet = walletDb.exec("SELECT * FROM wallet")[0];
-    const { name, created_at, key_viewed_at } = wallet;
+    const { name, created_at, key_viewed_at, balance } = wallet;
 
     APP_DB.run(
       `UPDATE wallets SET
         name=?,
         created_at=?,
-        key_viewed_at=?
+        key_viewed_at=?,
+        balance=?
       WHERE walletHash=? AND network=?;`,
-      [name, created_at, key_viewed_at, walletHash, network]
+      [name, created_at, key_viewed_at, balance, walletHash, network]
     );
 
     await exportWalletFile(wallet);
