@@ -1,3 +1,4 @@
+import { DoubleRightOutlined } from "@ant-design/icons";
 import Button from "@/atoms/Button";
 
 interface Props {
@@ -11,10 +12,17 @@ export default function ExploreApp({
   icon = () => null,
   to = "",
 }: Props) {
+  const label = (
+    <span className="w-full flex justify-between items-center">
+      <span>{name}</span>
+      <DoubleRightOutlined />
+    </span>
+  );
+
   return (
     <Button
       icon={icon}
-      label={name}
+      label={label}
       labelSize="lg"
       rounded="lg"
       justify="start"

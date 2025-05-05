@@ -24,48 +24,21 @@ export const routeApps = [
     },
   },
   {
-    path: "/apps/faqs",
-    async lazy() {
-      const { default: ExploreFaqsView } = await import(
-        "@/views/apps/faqs/ExploreFaqsView"
-      );
-      return { Component: ExploreFaqsView };
-    },
-  },
-  {
-    path: "/apps/socialMedia",
-    async lazy() {
-      const { default: ExploreSocialMediaView } = await import(
-        "@/views/apps/socialMedia/ExploreSocialMediaView"
-      );
-      return { Component: ExploreSocialMediaView };
-    },
-  },
-  {
     path: "/apps/afog",
     async lazy() {
-      const { default: ExploreAfogView } = await import(
-        "@/views/apps/afog/ExploreAfogView"
+      const { default: AppAfogView } = await import(
+        "@/views/apps/afog/AppAfogView"
       );
-      return { Component: ExploreAfogView };
-    },
-  },
-  {
-    path: "/apps/chronology",
-    async lazy() {
-      const { default: ExploreChronologyView } = await import(
-        "@/views/apps/chronology/ExploreChronologyView"
-      );
-      return { Component: ExploreChronologyView };
+      return { Component: AppAfogView };
     },
   },
   {
     path: "/apps/bliss",
     async lazy() {
-      const { default: ExploreBlissView } = await import(
-        "@/views/apps/bliss/View"
+      const { default: AppBlissView } = await import(
+        "@/views/apps/bliss/AppBlissView"
       );
-      return { Component: ExploreBlissView };
+      return { Component: AppBlissView };
     },
   },
   {

@@ -1,26 +1,28 @@
-import React from "react";
 import { ArrowRightOutlined } from "@ant-design/icons";
 import { DateTime, Interval } from "luxon";
 import { Link } from "react-router";
 import velma from "@/assets/bliss-velma.png";
 import useRealTime from "@/hooks/useRealTime";
 import { translate } from "@/util/translations";
-import translations from "../translations";
+import translations from "./translations";
+import StatsGraphCard from "@/apps/stats/StatsGraphCard";
 
 export const BLISS_2025_START_DATE = new Date("2025-05-13T09:00:00+02:00");
 export const BLISS_2025_END_DATE = new Date("2025-05-15T16:00:00+02:00");
 const BLISS_2025_GRACE_PERIOD = DateTime.fromJSDate(BLISS_2025_END_DATE).plus({
-  weeks: 2,
+  weeks: 3,
 });
 const BCH_PODCAST_LIVE_URL =
   "https://www.youtube.com/@BitcoinCashPodcast/streams";
 
 const pad = (value: number) => value.toString().padStart(2, "0");
 
-function BlissAppView() {
+function BlissAppCard() {
   const now = useRealTime(1000);
 
-  if (now.valueOf() > BLISS_2025_GRACE_PERIOD.valueOf()) return null;
+  if (now.valueOf() > BLISS_2025_GRACE_PERIOD.valueOf()) {
+    return <StatsGraphCard />;
+  }
 
   const isBefore = now.valueOf() < BLISS_2025_START_DATE.valueOf();
 
@@ -74,4 +76,4 @@ function BlissAppView() {
   );
 }
 
-export default BlissAppView;
+export default BlissAppCard;

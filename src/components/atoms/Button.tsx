@@ -91,6 +91,8 @@ export default function Button({
   const colorClasses = inverted ? invertedColors : colors;
 
   const roundedClass = rounded === true ? "rounded" : `rounded-${rounded}`;
+  const shadowClass = shadow === true ? "shadow" : `shadow-${shadow}`;
+
   const disabledClasses = disabled
     ? `opacity-[.5] shadow-none active:shadow-none`
     : "cursor-pointer";
@@ -119,7 +121,7 @@ export default function Button({
           ${colorClasses}
           text-${labelSize}
           ${roundedClass}
-          shadow${shadow ? "-" + shadow : ""}
+          ${shadowClass}
           opacity-90 
           active:shadow-none active:shadow-inner
           ${disabledClasses}
@@ -130,7 +132,7 @@ export default function Button({
         <Icon
           className={`text-${iconSize} ${label ? "mr-1" : ""} ${iconClasses}`}
         />
-        <span>{label}</span>
+        {label}
       </button>
       {outerLabel && (
         <div
