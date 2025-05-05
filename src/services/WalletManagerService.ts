@@ -123,7 +123,7 @@ export default function WalletManagerService() {
     }
 
     const walletMeta = result[0];
-    Log.debug(walletMeta);
+    //Log.debug(walletMeta);
     return walletMeta;
   }
 
