@@ -79,14 +79,14 @@ function WalletViewSendSuccess() {
           className="border rounded mb-2 border-primary"
           onClick={handleCopyTransactionId}
         >
-          <div className="p-1 bg-neutral-500 rounded-t-sm">
-            <span className="font-semibold text-neutral-200 flex items-center">
+          <div className="p-1 bg-primary-900 rounded-t border border-t-0 border-primary-900">
+            <span className="font-semibold text-neutral-25 flex items-center">
               {translate(translations.transactionId)}
               <CopyOutlined className="ml-1" />
             </span>
           </div>
-          <div className="bg-neutral-200 p-1 rounded-b-sm">
-            <span className="font-mono text-sm tracking-tighter break-all select-none">
+          <div className="bg-primary-100 p-1 rounded-b-sm border border-t-0 border-primary-900">
+            <span className="font-mono text-neutral-600 text-sm tracking-tighter break-all select-none">
               {tx.txid}
             </span>
           </div>
@@ -95,12 +95,12 @@ function WalletViewSendSuccess() {
           className="border rounded mb-2 border-primary"
           onClick={(e) => e.stopPropagation()}
         >
-          <div className="p-1 bg-neutral-500 rounded-t-sm">
-            <span className="font-semibold text-neutral-200">
+          <div className="p-1 bg-primary-900 rounded-t border border-t-0 border-primary-900">
+            <span className="font-semibold text-neutral-25 flex items-center">
               {translate(translations.memo)}
             </span>
           </div>
-          <div className="bg-neutral-200 p-1 rounded-b-sm flex items-center">
+          <div className="flex items-center bg-primary-100 p-1 rounded-b-sm border border-t-0 border-primary-900">
             <input
               type="text"
               className="flex-1 rounded-sm p-1"
@@ -115,15 +115,19 @@ function WalletViewSendSuccess() {
           </div>
         </div>
         <div
-          className="bg-neutral-200 p-1 rounded"
+          className="border rounded mb-2 border-primary"
           onClick={(e) => e.stopPropagation()}
         >
-          <div className="font-semibold pb-1 text-sm">
-            {translate(translations.outputs)}
+          <div className="p-1 bg-primary-900 rounded-t border border-t-0 border-primary-900">
+            <span className="font-semibold text-neutral-25 flex items-center">
+              {translate(translations.outputs)}
+            </span>
           </div>
-          {tx.vout.map((output, i) => (
-            <OutputListItem key={output.n} output={output} i={i} />
-          ))}
+          <div className="bg-primary-700 border border-primary-900">
+            {tx.vout.map((output, i) => (
+              <OutputListItem key={output.n} output={output} i={i} />
+            ))}
+          </div>
         </div>
       </div>
     </div>
@@ -134,10 +138,10 @@ export default WalletViewSendSuccess;
 
 /* eslint-disable react/prop-types */
 function OutputListItem({ output, i }) {
-  const zebraCss = i % 2 === 0 ? "bg-neutral-100" : "bg-neutral-50";
+  const zebraCss = i % 2 === 0 ? "bg-primary-100" : "bg-primary-50";
 
   return (
-    <div className={`p-1.5 ${zebraCss} rounded-sm`}>
+    <div className={`p-1.5 ${zebraCss}`}>
       <div className="flex text-sm items-center">
         <Address
           address={output.scriptPubKey.addresses[0]}
@@ -160,7 +164,9 @@ function OutputListItem({ output, i }) {
         {output.token && (
           <div
             className="text-sm"
-            style={{ color: `#${binToHex(output.token.category).slice(0, 6)}` }}
+            style={{
+              color: `#${binToHex(output.token.category).slice(0, 6)}`,
+            }}
           >
             <TokenAmount token={output.token} />
           </div>
