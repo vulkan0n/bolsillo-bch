@@ -1,5 +1,5 @@
-import clsx from "clsx";
-import React, { useRef } from "react";
+/* eslint-disable @typescript-eslint/no-use-before-define */
+import { useRef } from "react";
 import SeleneLogo from "./SeleneLogo";
 
 interface Props {
@@ -28,6 +28,8 @@ export default function SlideToAction({
 
   const stopDragging = () => {
     document.body.classList.remove("cursor-grabbing");
+    document.body.removeEventListener("pointermove", handlePointerMove);
+    document.body.removeEventListener("pointerup", handlePointerUp);
     isDragging.current = false;
     if (didConfirm.current) return;
     if (knobRef.current == null) return;
@@ -46,6 +48,8 @@ export default function SlideToAction({
       knobRef.current.getBoundingClientRect().width / 1.2;
 
     isDragging.current = true;
+    document.body.addEventListener("pointermove", handlePointerMove);
+    document.body.addEventListener("pointerup", handlePointerUp);
     document.body.classList.add("cursor-grabbing");
   };
 
@@ -54,7 +58,7 @@ export default function SlideToAction({
     stopDragging();
     onSlide();
   };
-  const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+  const handlePointerMove = (e) => {
     e.preventDefault();
     if (!isDragging.current) return;
     if (knobRef.current == null) return;
@@ -91,8 +95,6 @@ export default function SlideToAction({
       />
       <div
         onPointerDown={handlePointerDown}
-        onPointerUp={handlePointerUp}
-        onPointerMove={handlePointerMove}
         ref={knobRef}
         className="h-16 w-16 relative z-10 flex items-center justify-center bg-primary p-0.5 rounded-full"
       >
