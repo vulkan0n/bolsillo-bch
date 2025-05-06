@@ -372,9 +372,12 @@ export default function WalletViewSend() {
       <div className="tracking-wide text-center text-white">
         {message === "" ? (
           <div className="bg-primary px-2 py-1">
-            <div className="text-lg font-bold">
+            <div className="text-lg font-bold flex items-center justify-center">
               {translate(translations.sendingTo)}
               {isMyAddress && <span>&nbsp;{translate(translations.self)}</span>}
+              <span className="ml-2">
+                <ScannerButton label={false} size="xl" padding="2" />
+              </span>
             </div>
             <div className="text-sm py-1 font-mono tracking-tight">
               {address === "" ? (
@@ -389,10 +392,13 @@ export default function WalletViewSend() {
                       invalid={isAddressInvalid}
                     />
                   </div>
-                  <ScannerButton label={false} size="xl" padding="2" />
                 </div>
               ) : (
-                <Address address={address} className="tracking-[-0.09em]" />
+                <div className="flex items-center justify-center">
+                  <div className="flex-1">
+                    <Address address={address} className="tracking-[-0.09em]" />
+                  </div>
+                </div>
               )}
             </div>
           </div>
