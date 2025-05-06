@@ -284,6 +284,12 @@ const translations = {
   info: {
     en: "Help & Information",
   },
+  outputs: {
+    en: "Outputs",
+  },
+  inputs: {
+    en: "Inputs",
+  },
 };
 
 export default translations;

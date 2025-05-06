@@ -21,6 +21,7 @@ import Satoshi from "@/atoms/Satoshi";
 import Accordion from "@/atoms/Accordion";
 import Editable from "@/atoms/Editable";
 import TokenAmount from "@/atoms/TokenAmount";
+import Card from "@/atoms/Card";
 
 import ExploreSearchBar from "./ExploreSearchBar";
 
@@ -72,15 +73,15 @@ export default function ExploreTransactionView() {
     <>
       <ExploreSearchBar />
       <div className="p-1">
-        <div className="bg-neutral-700 rounded p-2">
-          <div className="text-center font-semibold text-white mb-1">
+        <div className="bg-neutral-700 rounded">
+          <div className="font-semibold text-neutral-100 p-1.5">
             {translate(translations.transactionId)}
           </div>
           <div
-            className="flex items-center justify-center rounded"
+            className="flex items-center justify-center rounded p-1 bg-primary-900"
             onClick={handleCopyTransactionId}
           >
-            <div className="w-full p-2 bg-neutral-100 text-neutral-700 border border-primary rounded flex items-center justify-center active:bg-primary">
+            <div className="w-full p-2 bg-neutral-100 text-neutral-700 border-2 border-primary rounded flex items-center justify-center active:bg-primary">
               <CopyOutlined className="mr-1" />
               <div className="font-mono text-xs flex flex-col items-center w-full">
                 <span>{tx.txid.slice(0, 32)}</span>
@@ -89,7 +90,8 @@ export default function ExploreTransactionView() {
             </div>
           </div>
         </div>
-        <div className="bg-neutral-200 text-white rounded p-1 my-1">
+
+        <Card className="bg-neutral-200 text-white rounded p-1 my-1">
           <div className="p-1">
             <div className="text-neutral-700 font-bold flex items-center justify-start">
               <span>{txDate}</span>
@@ -119,15 +121,22 @@ export default function ExploreTransactionView() {
               onConfirm={handleSaveMemo}
             />
           </div>
-        </div>
+        </Card>
+
         <div className="mt-1.5">
-          <div className="bg-neutral-600 p-1 rounded">
-            <div className="font-semibold pb-1 text-neutral-100">Outputs</div>
-            {tx.vout.map((output, i) => (
-              <OutputListItem key={output.n} output={output} i={i} />
-            ))}
+          <div className="rounded mb-2" onClick={(e) => e.stopPropagation()}>
+            <div className="p-1.5 bg-neutral-600 rounded-t">
+              <span className="font-semibold text-neutral-25 flex items-center">
+                {translate(translations.outputs)}
+              </span>
+            </div>
+            <div className="bg-primary-700 border border-primary-900">
+              {tx.vout.map((output, i) => (
+                <OutputListItem key={output.n} output={output} i={i} />
+              ))}
+            </div>
           </div>
-          <Accordion title="Inputs">
+          <Accordion title={translate(translations.inputs)}>
             {tx.vin.map((input, i) => (
               <InputListItem
                 key={`${input.txid}:${input.vout}`}
@@ -143,14 +152,14 @@ export default function ExploreTransactionView() {
 }
 
 function OutputListItem({ output, i }) {
-  const zebraCss = i % 2 === 0 ? "bg-neutral-100" : "bg-neutral-50";
+  const zebraCss = i % 2 === 0 ? "bg-primary-100" : "bg-primary-50";
 
   const asmSplit = output.scriptPubKey.asm.split(" ");
   const isOpReturn = asmSplit[0] === "OP_RETURN";
   const opReturnData = hexToUtf8(asmSplit.slice(2)); // OP_RETURN OP_PUSHDATA_X ...
 
   return (
-    <div className={`p-1.5 ${zebraCss} rounded-sm`}>
+    <div className={`p-1.5 ${zebraCss}`}>
       <div className="flex text-sm items-center">
         {isOpReturn ? (
           <div className="font-mono font-bold text-neutral-700">OP_RETURN</div>
