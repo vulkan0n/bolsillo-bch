@@ -2,9 +2,9 @@ import { useState, useEffect } from "react";
 import { DateTime } from "luxon";
 import { LaptopOutlined } from "@ant-design/icons";
 import AppHero from "@/apps/AppHero/AppHero";
-import { translate } from "@/util/translations";
-import translations from "./ExploreAfogViewTranslations";
 import EmbeddedVideo from "@/atoms/EmbeddedVideo";
+import { translate } from "@/util/translations";
+import translations from "./translations";
 
 const {
   upcomingTournaments,
@@ -152,7 +152,7 @@ export default function ExploreAfogView() {
     <div>
       <AppHero
         title={"A Fifth Of Gaming"}
-        icon={<LaptopOutlined className="text-xl my-auto text-zinc-200" />}
+        icon={<LaptopOutlined className="text-xl my-auto text-neutral-200" />}
         description={translate(description)}
         callToAction={translate(signUp)}
         callToActionUrl={AFOG_BASE_URL}

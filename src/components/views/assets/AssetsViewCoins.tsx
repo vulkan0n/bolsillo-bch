@@ -103,7 +103,7 @@ export default function AssetsViewCoins() {
     <FullColumn className="justify-between">
       <div className="m-1">
         <div
-          className="p-1 rounded bg-zinc-800 text-white text-center my-1"
+          className="p-1 rounded bg-neutral-800 text-white text-center my-1"
           onClick={handleFlipCurrency}
         >
           <div className="text-lg font-bold">
@@ -129,7 +129,7 @@ export default function AssetsViewCoins() {
         ))}
 
         {coinAddresses.length === 0 && (
-          <div className="text-center py-4 rounded text-2xl text-zinc-700/90">
+          <div className="text-center py-4 rounded text-2xl text-neutral-700/90">
             {translate(translations.noCoins)}
             <div className="flex items-center justify-center mt-2">
               <SeleneLogo className="h-32" />
@@ -153,22 +153,19 @@ function CoinGroup({ address, coins, onCoinSelect }) {
   const isSelected = coins.every((coin) => coin.selected);
 
   const selectCss = isSelected
-    ? "bg-primary text-white"
-    : "bg-zinc-500 text-zinc-200";
+    ? "bg-primary-500 border-2 border-primary-700 text-neutral-700"
+    : "bg-primary-300 text-neutral-600 border border-neutral-500";
 
   const handleGroupSelection = () => {
     coins.forEach((coin) => onCoinSelect(coin.key, !isSelected));
   };
 
   return (
-    <div
-      className={`rounded my-1 border border-primary ${selectCss}`}
-      onClick={handleGroupSelection}
-    >
+    <div className={`rounded my-1 ${selectCss}`} onClick={handleGroupSelection}>
       <div className="py-0.5 px-1 font-mono text-xs tracking-tight">
         <Address address={address} color="white" />
       </div>
-      <div className="m-0.5 shadow-inner border rounded border-primary">
+      <div className="m-0.5 border-1 border-primary-700 rounded-sm">
         {coins.map((coin) => (
           <Coin key={coin.key} coin={coin} onSelect={onCoinSelect} />
         ))}
@@ -179,8 +176,8 @@ function CoinGroup({ address, coins, onCoinSelect }) {
 
 function Coin({ coin, onSelect }) {
   const selectCss = coin.selected
-    ? "bg-primary text-white"
-    : "bg-zinc-50 text-zinc-900";
+    ? "bg-primary-200 text-neutral-700 border border-primary-500"
+    : "bg-primary-100 text-neutral-700 border border-primary-200";
 
   const handleSelection = (event) => {
     onSelect(coin.key);
@@ -189,7 +186,7 @@ function Coin({ coin, onSelect }) {
 
   return (
     <div
-      className={`border p-1 text-sm flex-1 ${selectCss}`}
+      className={`p-1 text-sm flex-1 ${selectCss}`}
       onClick={handleSelection}
     >
       <div className="flex items-center">
@@ -217,16 +214,17 @@ function SelectionDisplay({ selection, onConfirm, onCancel }) {
   };
 
   return (
-    <div className="sticky bottom-0 bg-black/70 w-full border-t-2 border-zinc-700 rounded-t shadow mt-1">
-      <div className="text-zinc-700 rounded-t bg-white/85 shadow-lg px-2 py-1">
+    <div className="sticky bottom-0 bg-primary-900 w-full border-t-2 border-neutral-900 rounded-t shadow mt-1">
+      <div className="text-neutral-700 rounded-t bg-neutral-100 shadow-lg px-2 py-1">
         <div className="flex relative justify-between">
           <div className="flex items-center justify-start flex-1">
             <Button
               onClick={handleCancel}
               icon={CloseOutlined}
-              bgColor="transparent"
-              activeBgColor="x active:bg-zinc-100"
-              borderClasses="border border-transparent"
+              bgColor="bg-neutral-50"
+              activeBgColor="bg-primary-500"
+              borderClasses="border border-primary-400"
+              shadow
             />
           </div>
           <div className="text-center grow">
@@ -242,11 +240,13 @@ function SelectionDisplay({ selection, onConfirm, onCancel }) {
             <Button
               onClick={handleConfirm}
               icon={SendOutlined}
-              iconSize="lg"
+              iconSize="xl"
               label="Send"
-              activeLabelColor="white/90"
-              labelColor="primary"
-              borderClasses="border border-transparent"
+              labelSize="lg"
+              bgColor="bg-primary-700"
+              activeLabelColor="text-white"
+              labelColor="text-neutral-200"
+              borderClasses="border border-primary-700"
               inverted
             />
           </div>

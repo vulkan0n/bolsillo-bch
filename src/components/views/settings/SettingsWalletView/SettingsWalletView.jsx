@@ -37,6 +37,7 @@ import Accordion from "@/atoms/Accordion";
 import Satoshi from "@/atoms/Satoshi";
 import Editable from "@/atoms/Editable";
 import Button from "@/atoms/Button";
+import Card from "@/atoms/Card";
 
 import WalletSettings from "@/views/settings/WalletSettings";
 
@@ -200,51 +201,66 @@ export default function SettingsWalletView() {
         icon={WalletOutlined}
         title={translate(translations.walletSettings)}
       />
-      <div className="p-2" key={walletHash}>
-        <div className="p-3 rounded-lg bg-zinc-200">
-          <div className="text-2xl flex justify-center items-center">
+      <div className="p-1" key={walletHash}>
+        <Card>
+          <div className="text-2xl flex justify-center items-center py-2 text-neutral-700 font-bold">
             <Editable onConfirm={handleEditConfirm} value={wallet.name} />
           </div>
-          <div className="text-lg text-center text-zinc-600">
-            {translate(translations.created)}{" "}
-            {new Date(wallet.created_at).toLocaleString(locale)}
-          </div>
-          {wallet.balance > 0 && (
-            <div className="text-lg text-center text-zinc-500">
-              {translate(translations.lastKnownBalance)}:{" "}
-              <Satoshi value={wallet.balance} />
+          <div className="flex gap-x-2">
+            <div className="flex-2 flex flex-col justify-around">
+              <div>
+                <div className="text-md text-neutral-600 font-semibold">
+                  {translate(translations.created)}
+                </div>
+                <div className="text-neutral-500 text-sm">
+                  {new Date(wallet.created_at).toLocaleString(locale)}
+                </div>
+              </div>
+              <div>
+                <div className="text-md text-neutral-600 font-semibold">
+                  {translate(translations.lastKnownBalance)}
+                </div>
+                <div className="flex gap-x-1 text-sm">
+                  <span>
+                    <Satoshi value={wallet.balance} />
+                  </span>
+                  <span>/</span>
+                  <span>
+                    <Satoshi value={wallet.balance} flip />
+                  </span>
+                </div>
+              </div>
             </div>
-          )}
-        </div>
 
-        <div className="my-2 flex gap-x-2">
-          <div className="text-center flex-1">
-            <Button
-              icon={activateButtonIcon}
-              label={activateButtonLabel}
-              labelColor={`zinc-50 ${isActiveWallet ? "saturate-[.60]" : ""}`}
-              bgColor="primary"
-              rounded="lg"
-              fullWidth
-              onClick={handleActivateWallet}
-              disabled={isActiveWallet}
-            />
+            <div className="flex-1 flex flex-col gap-y-2 justify-around">
+              <Button
+                icon={activateButtonIcon}
+                label={activateButtonLabel}
+                labelColor="text-white"
+                rounded="lg"
+                fullWidth
+                bgColor="bg-primary"
+                borderClasses="border border-2 border-primary-400"
+                onClick={handleActivateWallet}
+                disabled={isActiveWallet}
+                padding="2.5"
+              />
+              <Button
+                icon={deleteButtonIcon}
+                label={deleteButtonLabel}
+                labelColor={`text-error ${isDeleteDisabled ? "saturate-[.60]" : ""}`}
+                bgColor="bg-neutral-25"
+                activeBgColor="text-error-dark"
+                borderClasses="border border-2 border-error"
+                rounded="lg"
+                fullWidth
+                onClick={handleDeleteWallet}
+                disabled={isDeleteDisabled}
+                padding="2.5"
+              />
+            </div>
           </div>
-          <div className="text-center flex-1">
-            <Button
-              icon={deleteButtonIcon}
-              label={deleteButtonLabel}
-              labelColor={`zinc-50 ${isDeleteDisabled ? "saturate-[.60]" : ""}`}
-              bgColor="error"
-              activeBgColor="error"
-              borderClasses="border border-2 border-error"
-              rounded="lg"
-              fullWidth
-              onClick={handleDeleteWallet}
-              disabled={isDeleteDisabled}
-            />
-          </div>
-        </div>
+        </Card>
 
         <WalletSettings />
         <KeyWarning walletHash={wallet.walletHash} />

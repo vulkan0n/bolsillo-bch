@@ -217,15 +217,15 @@ export default function WalletViewSweep() {
       ) : (
         <div className="flex flex-col h-full">
           <div className="flex flex-col mx-2 justify-center h-full">
-            <div className="bg-primary/80 text-zinc-900 rounded-md p-4">
+            <div className="bg-primary/80 text-neutral-900 rounded-md p-4">
               <div
-                className="p-4 text-center bg-zinc-100 rounded-md cursor-pointer"
+                className="p-4 text-center bg-neutral-100 rounded-md cursor-pointer"
                 onClick={handleFlipCurrency}
               >
-                <div className="font-semibold text-xl mb-1 text-zinc-900">
+                <div className="font-semibold text-xl mb-1 text-neutral-900">
                   <Satoshi value={wifSatoshiBalance} />
                 </div>
-                <div className="text-lg flex items-center justify-center gap-x-2 text-zinc-800">
+                <div className="text-lg flex items-center justify-center gap-x-2 text-neutral-800">
                   <Satoshi value={wifSatoshiBalance} flip />
                   <CurrencyFlip className="text-xl" />
                 </div>

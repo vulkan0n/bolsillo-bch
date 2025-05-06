@@ -115,7 +115,7 @@ export default function ExploreSearchBar() {
         <input
           type="text"
           placeholder={lastSearch ? lastSearch : "Search"}
-          className="w-full ml-2 p-2 border border-primary rounded-md shadow-inner text-zinc-900"
+          className="w-full ml-2 p-2 border border-primary rounded-md shadow-inner text-neutral-900"
           onChange={handleSearchTextChange}
           value={searchText}
         />

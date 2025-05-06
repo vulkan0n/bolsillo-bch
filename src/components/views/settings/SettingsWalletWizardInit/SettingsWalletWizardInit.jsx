@@ -27,9 +27,11 @@ export default function SettingsWalletWizardInit() {
       <Button
         label={translate(translations.createNewWallet)}
         labelSize="lg"
+        labelColor="text-neutral-25"
         icon={PlusCircleOutlined}
         iconSize="2xl"
-        borderClasses=""
+        bgColor="bg-primary-400"
+        borderClasses="border border-primary-700"
         rounded
         onClick={handleCreateWallet}
         fullWidth
@@ -38,10 +40,12 @@ export default function SettingsWalletWizardInit() {
       <Button
         label={translate(translations.importWalletFromPhrase)}
         labelSize="lg"
+        labelColor="text-neutral-25"
         icon={ImportOutlined}
         iconSize="2xl"
         rounded
-        bgColor="secondary"
+        borderClasses="border border-primary-400"
+        bgColor="bg-primary-700"
         onClick={handleImportWallet}
         fullWidth
       />

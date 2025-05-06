@@ -4,10 +4,6 @@
 @tailwind components;
 @tailwind utilities;
 
-html {
-  -webkit-tap-highlight-color: transparent;
-}
-
 /* <body>
  * fixed body gives us full control over layout by setting up our own viewport,
  * detatched from window 
@@ -15,7 +11,9 @@ html {
  * safe-area-inset-* variables are used to calculate viewport size for iOS
  * (prevents rendering underneath the "notch" and home button) 
 */
-body {
+html {
+  font-size: 16px;
+  -webkit-tap-highlight-color: transparent;
   position: fixed;
   top: env(safe-area-inset-top);
   left: env(safe-area-inset-left);
@@ -23,21 +21,28 @@ body {
   min-height: calc(
     100% - env(safe-area-inset-top) - env(safe-area-inset-bottom)
   );
+  height: calc(100% - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+  max-height: calc(
+    100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom)
+  );
+}
+
+body {
+  position: relative;
+  margin: 0 auto;
+  max-width: 480px;
+  max-height: 960px;
+  width: 100%;
   height: 100%;
-  max-height: 100vh;
   overscroll-behavior: none;
   user-select: none;
 }
 
 #root {
-  min-height: calc(
-    100% - env(safe-area-inset-top) - env(safe-area-inset-bottom)
-  );
-  height: calc(100% - env(safe-area-inset-top) - env(safe-area-inset-bottom));
-  max-height: calc(
-    100% - env(safe-area-inset-top) - env(safe-area-inset-bottom)
-  );
-  width: 100%;
+  position: relative;
+  height: 100%;
+  overscroll-behavior: none;
+  user-select: none;
 }
 
 #container {
@@ -45,7 +50,6 @@ body {
   flex-direction: column;
   min-height: 100%;
   height: 100%;
-  background: transparent;
   overscroll-behavior: none;
 }
 
@@ -91,6 +95,15 @@ main {
   -webkit-text-stroke-color: #00000022;
   -webkit-text-fill: transparent;
   -webkit-text-stroke-width: 0.25px;
+}
+
+@font-face {
+  font-family: "Archivo";
+  src: url("./assets/Archivo-VariableFont_wdth,wght.ttf");
+}
+@font-face {
+  font-family: "Chivo Mono";
+  src: url("./assets/ChivoMono-VariableFont_wght.ttf");
 }
 
 @font-face {

@@ -131,13 +131,13 @@ export default function SecuritySettings() {
       </Accordion.Child>
       {authMode === "pin" && (
         <Accordion.Child>
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between w-full">
             {pinHash === "" ? (
               <span className="text-error font-semibold">
                 {translate(translations.pinNotSet)}
               </span>
             ) : (
-              <span className="text-secondary font-semibold">
+              <span className="text-success-dark font-semibold">
                 {translate(translations.pinSet)}
               </span>
             )}
@@ -151,7 +151,7 @@ export default function SecuritySettings() {
       )}
       {authMode !== "none" && (pinHash !== "" || authMode === "bio") && (
         <>
-          <div className="text-lg font-semibold bg-zinc-600 text-white p-1">
+          <div className="text-lg font-semibold bg-neutral-600 text-neutral-100 p-1">
             Require authorization for:
           </div>
           <Accordion.Child

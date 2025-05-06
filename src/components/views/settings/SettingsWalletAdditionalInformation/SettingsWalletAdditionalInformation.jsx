@@ -69,9 +69,9 @@ export default function SettingsWalletAdditionalInformation() {
         title={translate(translations.additionalWalletInformation)}
       />
       <div className="p-2">
-        <div className="flex flex-col justify-center items-center font-mono text-zinc-600 text-xs break-all text-center px-1 mb-2">
+        <div className="flex flex-col justify-center items-center font-mono text-neutral-600 text-xs break-all text-center px-1 mb-2">
           <div>Wallet Hash</div>
-          <div className="text-zinc-400 select-all">{wallet.walletHash}</div>
+          <div className="text-neutral-400 select-all">{wallet.walletHash}</div>
         </div>
         {wallet.passphrase !== "" && (
           <Accordion icon={KeyOutlined} title="Passphrase">
@@ -127,7 +127,7 @@ export default function SettingsWalletAdditionalInformation() {
                   }
                   setIsShowXpub(!isShowXpub);
                 }}
-                className="rounded-lg p-3 bg-primary text-zinc-50 shadow-sm"
+                className="rounded-lg p-3 bg-primary text-neutral-50 shadow-sm"
               >
                 <div className="flex items-center">
                   {isShowXpub ? (
@@ -144,7 +144,7 @@ export default function SettingsWalletAdditionalInformation() {
               </button>
 
               {isShowXpub && (
-                <div className="mt-2 p-2 rounded-md border-2 border-zinc-300 text-left">
+                <div className="mt-2 p-2 rounded-md border-2 border-neutral-300 text-left">
                   <div className="break-all font-mono select-all">{xPub}</div>
                 </div>
               )}
@@ -181,7 +181,7 @@ export default function SettingsWalletAdditionalInformation() {
 
                   setIsShowXprv(!isShowXprv);
                 }}
-                className="rounded-lg p-3 bg-primary text-zinc-50 w-full shadow-sm"
+                className="rounded-lg p-3 bg-primary text-neutral-50 w-full shadow-sm"
               >
                 <div className="flex items-center">
                   {isShowXprv && (
@@ -197,7 +197,7 @@ export default function SettingsWalletAdditionalInformation() {
               </button>
 
               {isShowXprv && (
-                <div className="mt-2 p-2 rounded-md border-2 border-zinc-300 text-left">
+                <div className="mt-2 p-2 rounded-md border-2 border-neutral-300 text-left">
                   <div className="break-all font-mono select-all">{xPrv}</div>
                 </div>
               )}

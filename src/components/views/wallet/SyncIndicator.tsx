@@ -46,7 +46,7 @@ export default function SyncIndicator() {
   // connection icon starts bright and dims out
   const [connectSprings, connectApi] = useSpring(() => ({
     from: { opacity: 0.5, scale: 0.75 },
-    to: { opacity: 0.1, scale: 0.65 },
+    to: { opacity: 0.25, scale: 0.65 },
     immediate: true,
     config: {
       mass: 0.6,
@@ -64,7 +64,7 @@ export default function SyncIndicator() {
       if (isConnected) {
         connectApi.start({
           from: { opacity: 0.8, scale: 0.85 },
-          to: { opacity: 0.1, scale: 0.65 },
+          to: { opacity: 0.2, scale: 0.65 },
         });
 
         dispatch(syncHotRefresh({ force: false }));
@@ -99,7 +99,7 @@ export default function SyncIndicator() {
       {isConnected &&
         (isSyncing ? (
           <div className="flex flex-col items-center">
-            <SyncOutlined className="text-info text-xl opacity-30" spin />
+            <SyncOutlined className="text-info text-xl text-neutral-500" spin />
             <SyncCounter />
           </div>
         ) : (
@@ -113,7 +113,7 @@ function SyncCounter() {
   const shouldDisplaySyncCounter = useSelector(selectShouldDisplaySyncCounter);
   const syncCount = useSelector(selectSyncCount);
   return shouldDisplaySyncCounter ? (
-    <div className="text-xs text-zinc-600 mt-0.5">{syncCount}</div>
+    <div className="text-xs text-neutral-500 mt-0.5">{syncCount}</div>
   ) : null;
 }
 

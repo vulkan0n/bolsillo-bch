@@ -11,11 +11,9 @@ import {
 } from "chart.js";
 import { Line } from "react-chartjs-2";
 import { DateTime } from "luxon";
+import { Period } from "@/util/time";
 import { translate } from "@/util/translations";
 import translations from "./ActiveUsersChartTranslations";
-import { Period } from "@/util/time";
-
-const { activeSeleneUsers } = translations;
 
 ChartJS.register(
   CategoryScale,
@@ -28,14 +26,17 @@ ChartJS.register(
 );
 
 function ActiveUsersChart({ data, period }) {
-  const labels = data.activeBitcoiners.map(({ date }) => {
+  const { activeBitcoiners } = data;
+
+  // generate labels based on dates and period
+  const labels = activeBitcoiners.map(({ date }) => {
     switch (period) {
       case Period.Weekly:
         return `${DateTime.fromISO(date).toLocaleString({
-          month: "short",
+          month: "numeric",
           day: "numeric",
         })} - ${DateTime.fromISO(date).plus({ days: 6 }).toLocaleString({
-          month: "short",
+          month: "numeric",
           day: "numeric",
         })}`;
       case Period.Monthly:
@@ -54,21 +55,48 @@ function ActiveUsersChart({ data, period }) {
     }
   });
 
-  const dataPoints = data.activeBitcoiners.map(({ count }) => count);
+  // parse counts to numbers and adjust the last data point
+  const counts = activeBitcoiners.map((item) => Number.parseInt(item.count));
+  const n = counts.length;
+  const normalizedCounts = [...counts];
+  while (normalizedCounts[0] === 0) {
+    normalizedCounts.shift();
+  }
 
-  const maxCount = Math.max(
-    ...data.activeBitcoiners.map(({ count }) => Number.parseInt(count))
-  );
+  // remove leading zeroes from data (prevents skewed average for Yearly)
+  const sum = normalizedCounts.reduce((acc, cur) => acc + cur, 0);
+  const averageCount = Math.floor(sum / normalizedCounts.length);
+  const normalizedDataPoints = [...counts.slice(0, n - 1), averageCount];
+
+  // calculate maxCount from the updated dataPoints
+  const maxCount = Math.max(...counts);
   const maxCountRoundedUpToNearest10 = Math.ceil(maxCount / 10) * 10;
 
+  // chart data with dashed line between last two points
+  const primaryColor = "rgba(148, 195, 82, 1)";
+  const projectionColor = "rgba(211, 209, 201, 1)";
   const chartData = {
     labels,
     datasets: [
       {
-        label: translate(activeSeleneUsers),
-        data: dataPoints,
-        borderColor: "#478559",
-        backgroundColor: "#478559",
+        label: translate(translations.activeSeleneUsers),
+        data: normalizedDataPoints,
+        borderColor: primaryColor,
+        backgroundColor: primaryColor,
+        segment: {
+          borderDash: (ctx) => (ctx.p0DataIndex === n - 2 ? [5, 5] : undefined),
+        },
+        borderWidth: 3,
+      },
+      {
+        label: translate(translations.activeSeleneUsers),
+        data: counts,
+        borderColor: projectionColor,
+        backgroundColor: projectionColor,
+        segment: {
+          borderDot: (ctx) => (ctx.p0DataIndex === n - 2 ? [5, 5] : undefined),
+        },
+        borderWidth: 3,
       },
     ],
   };

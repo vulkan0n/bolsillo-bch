@@ -42,15 +42,17 @@ export default function ExploreStatWidget() {
   const isMonthlyActiveIncrease = monthlyChange >= 0;
 
   return (
-    <div className="shadow rounded-lg p-2 bg-zinc-900 w-full flex justify-between items-center">
+    <div className="shadow rounded-lg p-2 bg-neutral-700 flex justify-between items-center border border-neutral-900">
       <Link to="/apps/stats/#d">
         <div className="p-1 mx-1">
-          <div className="font-bold text-zinc-300">Daily Users</div>
-          <div className="text-primary text-lg font-semibold">
+          <div className="font-bold text-neutral-50">Daily Users</div>
+          <div
+            className={`${isDailyActiveIncrease ? "text-success" : "text-error"} text-lg font-semibold`}
+          >
             {isDataUnavailable ? "-" : dailyActiveCount}
           </div>
           <div
-            className={`text-xs ${isDailyActiveIncrease ? "text-primary" : "text-red-500"}`}
+            className={`text-xs ${isDailyActiveIncrease ? "text-success" : "text-error"}`}
           >
             {isDailyActiveIncrease ? "↑" : "↓"} {isDailyActiveIncrease && "+"}
             {isDataUnavailable ? "-" : dailyChange} (
@@ -62,14 +64,14 @@ export default function ExploreStatWidget() {
 
       <Link to="/apps/stats/#m">
         <div className="p-1 mx-1">
-          <div className="font-bold text-zinc-300">Monthly Users</div>
+          <div className="font-bold text-neutral-50">Monthly Users</div>
           <div
-            className={`${isMonthlyActiveIncrease ? "text-primary" : "text-red-500"} text-lg font-semibold`}
+            className={`${isMonthlyActiveIncrease ? "text-success" : "text-error"} text-lg font-semibold`}
           >
             {isDataUnavailable ? "-" : monthlyActiveCount}
           </div>
           <div
-            className={`text-xs ${isMonthlyActiveIncrease ? "text-primary" : "text-red-500"}`}
+            className={`text-xs ${isMonthlyActiveIncrease ? "text-success" : "text-error"}`}
           >
             {isMonthlyActiveIncrease ? "↑" : "↓"}{" "}
             {isMonthlyActiveIncrease && "+"}
@@ -82,11 +84,11 @@ export default function ExploreStatWidget() {
 
       {/*<Link to="/apps/price">*/}
       <div className="p-1 mx-1">
-        <div className="font-bold text-zinc-300">BCH/{price.currency}</div>
-        <div className="text-primary text-lg font-semibold">
+        <div className="font-bold text-neutral-50">BCH/{price.currency}</div>
+        <div className="text-neutral-100 text-lg font-semibold">
           {price.priceString}
         </div>
-        <div className="text-xs text-zinc-400">&nbsp;</div>
+        <div className="text-xs text-neutral-400">&nbsp;</div>
       </div>
       {/*</Link>*/}
     </div>

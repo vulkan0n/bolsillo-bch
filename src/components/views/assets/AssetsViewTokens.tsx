@@ -112,7 +112,7 @@ export default function AssetsViewTokens() {
     <div className="p-1">
       <KeyWarning walletHash={walletHash} />
       {tokenData.length === 0 ? (
-        <div className="text-center py-4 rounded text-2xl text-zinc-700/90 my-4">
+        <div className="text-center py-4 rounded text-2xl text-neutral-700/90 my-4">
           {translate(translations.noTokens)}
           <div className="flex justify-center items-center mt-4">
             <SeleneLogo className="h-32" cashtokens />
@@ -173,16 +173,16 @@ export function TokenCard({ token }: { token: TokenEntity }) {
         <div className="flex-1 px-1">
           <div className="flex items-center text-md mb-1 py-0.5">
             <span
-              className="font-mono text-md font-bold pr-1.5 mr-1.5 border-r border-zinc-400/90"
+              className="font-mono text-md font-bold pr-1.5 mr-1.5 border-r border-neutral-400/90"
               style={{ color: token.color }}
             >
               {token.token ? token.token.symbol : token.category.slice(0, 6)}
             </span>
-            <span className="font-bold text-lg text-zinc-700">
+            <span className="font-bold text-lg text-neutral-700">
               {token.name || `Token ${token.category.slice(0, 6)}`}
             </span>
           </div>
-          <div className="flex text-zinc-600">
+          <div className="flex text-neutral-600">
             <div className="flex-1">
               {token.nftCount > 0 && <TokenAmount token={token} nft />}
               {token.amount > 0 && (
@@ -210,12 +210,12 @@ export function TokenCard({ token }: { token: TokenEntity }) {
       </div>
       <div>
         {token.description && (
-          <div className="p-1 mt-0.5 text-md text-zinc-700">
+          <div className="p-1 mt-0.5 text-md text-neutral-700">
             {truncateProse(token.description)}
           </div>
         )}
         <div
-          className="mt-1.5 pt-0.5 border-t border-dashed border-zinc-300/80 font-mono text-sm text-zinc-400/70 truncate"
+          className="mt-1.5 pt-0.5 border-t border-dashed border-neutral-300/80 font-mono text-sm text-neutral-400/70 truncate"
           onClick={(e) => {
             e.stopPropagation();
             handleCopyToClipboard(token.category);

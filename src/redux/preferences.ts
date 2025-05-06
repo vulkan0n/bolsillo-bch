@@ -31,7 +31,7 @@ const defaultPreferences = {
   // --------
   // Currency
   localCurrency: DEFAULT_CURRENCY.currency,
-  preferLocalCurrency: "false",
+  preferLocalCurrency: "true",
   denomination: "bch",
   // --------
   // Payment (move to wallet db?)
@@ -48,7 +48,7 @@ const defaultPreferences = {
   displayExploreTab: "true",
   displayExchangeRate: "false",
   displaySyncCounter: "true",
-  lastAssetsPath: "/assets/coins",
+  lastAssetsPath: "/assets/tokens",
   // --------
   // Network
   // TODO #420: electrum peer db

@@ -1,4 +1,5 @@
-import { Link } from "react-router";
+import { DoubleRightOutlined } from "@ant-design/icons";
+import Button from "@/atoms/Button";
 
 interface Props {
   name: string;
@@ -11,18 +12,23 @@ export default function ExploreApp({
   icon = () => null,
   to = "",
 }: Props) {
-  const Icon = icon;
+  const label = (
+    <span className="w-full flex justify-between items-center">
+      <span>{name}</span>
+      <DoubleRightOutlined />
+    </span>
+  );
 
   return (
-    <Link to={to}>
-      <div className="rounded-lg border border-primary bg-zinc-100 my-2 p-1">
-        <div className="flex items-center">
-          <div className="flex items-center justify-center p-2 text-2xl">
-            <Icon />
-          </div>
-          <div className="text-xl">{name}</div>
-        </div>
-      </div>
-    </Link>
+    <Button
+      icon={icon}
+      label={label}
+      labelSize="lg"
+      rounded="lg"
+      justify="start"
+      shadow="sm"
+      fullWidth
+      navigateTo={to}
+    />
   );
 }

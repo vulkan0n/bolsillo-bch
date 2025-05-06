@@ -1,3 +1,4 @@
+/* eslint-disable max-classes-per-file */
 import {
   ElectrumClient,
   ConnectionStatus,
@@ -28,6 +29,10 @@ export class ElectrumNotConnectedError extends Error {
     super(`ElectrumNotConnectedError`);
   }
 }
+
+export class ElectrumVersionMismatchError extends Error {}
+
+export const ELECTRUM_PROTOCOL_VERSION = "1.5";
 
 // pointer for current ElectrumClient instance
 let electrum: ElectrumClient<ElectrumClientEvents> | null = null;
@@ -61,7 +66,7 @@ export default function ElectrumService() {
 
   // connect: connect to an Electrum server
   // Creates a new ElectrumClient every time
-  async function connect(server: string) {
+  async function connect(server: string, withListeners = true) {
     const bchNetwork = selectBchNetwork(store.getState());
     const server_list = electrum_servers[bchNetwork];
 
@@ -84,37 +89,57 @@ export default function ElectrumService() {
     const socket = new ElectrumWebSocket(parts.host, parts.port);
 
     // create a new ElectrumClient every time to enable server switching
-    electrum = new ElectrumClient("Selene.cash", "1.5", socket);
+    electrum = new ElectrumClient(
+      "Selene.cash",
+      ELECTRUM_PROTOCOL_VERSION,
+      socket
+    );
 
     // need to establish listeners every time we recreate the ElectrumClient
-    electrum.addListener("connected", () => {
-      Log.log("ELECTRUM CONNECTED", getElectrumHost());
+    if (withListeners) {
+      electrum.addListener("connected", () => {
+        Log.log("ELECTRUM CONNECTED", getElectrumHost());
 
-      store.dispatch(syncConnectionUp());
-    });
+        store.dispatch(syncConnectionUp());
+      });
 
-    electrum.addListener("notification", handleElectrumNotifications);
+      electrum.addListener("notification", handleElectrumNotifications);
 
-    electrum.addListener("disconnected", () => {
-      Log.log("ELECTRUM DISCONNECTED");
-      store.dispatch(syncConnectionDown());
-    });
+      electrum.addListener("disconnected", () => {
+        Log.log("ELECTRUM DISCONNECTED");
+        store.dispatch(syncConnectionDown());
+      });
 
-    electrum.addListener("connecting", () => {
-      Log.debug("connecting...");
-    });
+      electrum.addListener("connecting", () => {
+        Log.debug("connecting...");
+      });
 
-    electrum.addListener("reconnecting", () => {
-      Log.debug("reconnecting...");
-    });
+      electrum.addListener("reconnecting", () => {
+        Log.debug("reconnecting...");
+      });
 
-    electrum.addListener("disconnecting", () => {
-      Log.debug("disconnecting...");
-    });
+      electrum.addListener("disconnecting", () => {
+        Log.debug("disconnecting...");
+      });
 
-    electrum.addListener("error", handleElectrumError);
+      electrum.addListener("error", handleElectrumError);
+    }
 
-    return electrum.connect();
+    try {
+      await electrum.connect();
+      return true;
+    } catch (e) {
+      const isProtocolVersionMismatch = `${e}`.includes(
+        ELECTRUM_PROTOCOL_VERSION
+      );
+
+      if (isProtocolVersionMismatch) {
+        throw new ElectrumVersionMismatchError(e);
+      }
+
+      Log.error(e);
+      return false;
+    }
   }
 
   // disconnect: disconnect the Electrum instance
@@ -401,8 +426,8 @@ export default function ElectrumService() {
       server_blacklist.push(prevServer);
     }
 
-    const filtered_server_list = server_list.filter((s) =>
-      server_blacklist.includes(s)
+    const filtered_server_list = server_list.filter(
+      (s) => !server_blacklist.includes(s)
     );
 
     const chooseRandomServer = () => {

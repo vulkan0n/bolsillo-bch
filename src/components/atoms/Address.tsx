@@ -60,12 +60,12 @@ export default function Address({
 
   const myAddressStyle =
     color === "" && isMyAddress && myAddress.change === 0
-      ? "text-secondary"
+      ? "text-primary-900"
       : "";
 
   const myChangeStyle =
     color === "" && isMyAddress && myAddress.change === 1
-      ? "text-yellow-600"
+      ? "text-warn"
       : "";
 
   return (

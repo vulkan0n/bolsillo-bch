@@ -19,7 +19,9 @@ import { selectNetworkStatus } from "@/redux/device";
 import { selectIsOfflineMode } from "@/redux/preferences";
 
 import LogService from "@/services/LogService";
-import ElectrumService from "@/services/ElectrumService";
+import ElectrumService, {
+  ElectrumVersionMismatchError,
+} from "@/services/ElectrumService";
 import BlockchainService from "@/services/BlockchainService";
 import WalletManagerService from "@/services/WalletManagerService";
 import AddressManagerService, {
@@ -55,17 +57,30 @@ export const syncConnect = createAsyncThunk(
       await Electrum.connect(payload.server);
       isSuccess = true;
     } catch (e) {
-      Log.error(e);
+      Log.error("syncConnect:", e);
+
       // if connection fails, destroy the client and try again
       await Electrum.disconnect(true);
+
+      // try a different server if there's a protocol version mismatch
+      const isProtocolVersionMismatch =
+        e instanceof ElectrumVersionMismatchError;
 
       // try multiple servers only if device reports active network connection
       const { isConnected: isNetworkConnected } = selectNetworkStatus(
         thunkApi.getState()
       );
 
-      // 3 attempts per server
-      if (payload.attempts < 2 || !isNetworkConnected) {
+      // attempt to connect 3 times before failover
+      const shouldFailover =
+        isNetworkConnected &&
+        (isProtocolVersionMismatch || payload.attempts > 2);
+
+      if (shouldFailover) {
+        // try a different server
+        const newServer = Electrum.selectFallbackServer(payload.server);
+        thunkApi.dispatch(syncConnect({ server: newServer, attempts: 0 }));
+      } else {
         setTimeout(
           () =>
             thunkApi.dispatch(
@@ -73,10 +88,6 @@ export const syncConnect = createAsyncThunk(
             ),
           Math.min(1000 * (payload.attempts + 1) * 2, 10 * 1000)
         );
-      } else {
-        // try a different server
-        const newServer = Electrum.selectFallbackServer(payload.server);
-        thunkApi.dispatch(syncConnect({ server: newServer, attempts: 0 }));
       }
     }
 
@@ -110,7 +121,7 @@ export const syncConnectionUp = createAsyncThunk(
       await Electrum.subscribeToChaintip();
       thunkApi.dispatch(syncSubscriptions());
     } catch (e) {
-      Log.error(e);
+      Log.warn("syncConnectionUp:", e);
     }
 
     return Electrum.getElectrumHost();
@@ -149,11 +160,12 @@ export const syncSubscriptions = createAsyncThunk(
 
     // TODO: allow the user to set up pinned/watch addresses, subscribe here
 
+    const subscriptions = selectSubscriptions(thunkApi.getState());
     const addresses = [
       ...hotAddresses,
       ...unusedReceiveAddresses,
       ...filteredUnusedChangeAddresses,
-    ];
+    ].filter((a) => !subscriptions.includes(a.address));
 
     thunkApi.dispatch(syncSubscriptionCount(addresses.length));
 
@@ -168,7 +180,7 @@ export const syncSubscriptions = createAsyncThunk(
           try {
             await Electrum.subscribeToAddress(address);
           } catch (e) {
-            Log.error(e);
+            Log.warn("syncSubscriptions:", e);
           } finally {
             thunkApi.dispatch(syncSubscriptionCount(-1));
           }
@@ -221,7 +233,7 @@ const syncAddressUtxos = createAsyncThunk(
     try {
       await AddressScannerService(wallet).scanUtxos(address.address);
     } catch (e) {
-      Log.error(e);
+      Log.warn("syncAddressUtxos:", e);
     }
   }
 );
@@ -246,7 +258,7 @@ export const syncAddressHistory = createAsyncThunk(
       try {
         await AddressScanner.scanHistory(address);
       } catch (e) {
-        Log.error(e);
+        Log.warn("syncAddressHistory:", e);
       }
     }
   }
@@ -267,7 +279,7 @@ export const syncPopulateAddresses = createAsyncThunk(
         try {
           await Electrum.subscribeToAddress(address);
         } catch (e) {
-          Log.error(e);
+          Log.warn("syncPopulateAddresses", e);
         } finally {
           thunkApi.dispatch(syncSubscriptionCount(-1));
         }
@@ -325,7 +337,7 @@ export const syncHotRefresh = createAsyncThunk(
               syncAddressState([address.address, addressState])
             );
           } catch (e) {
-            Log.error(e);
+            Log.warn("syncHotRefresh:", e);
           } finally {
             thunkApi.dispatch(syncSubscriptionCount(-1));
           }
@@ -523,6 +535,7 @@ export const syncReducer = createReducer(initialState, (builder) => {
     })
     .addCase(syncConnectionDown, (state) => {
       state.isConnected = false;
+      state.syncPending = initialPending;
     })
     .addCase(syncReconnect.pending, (state) => {
       state.isConnected = false;
@@ -658,4 +671,9 @@ export const selectElectrumServer = createSelector(
 export const selectIsConnected = createSelector(
   (state: RootState) => state.sync,
   (sync) => sync.isConnected
+);
+
+export const selectSubscriptions = createSelector(
+  (state: RootState) => state.sync,
+  (sync) => sync.subscriptions
 );

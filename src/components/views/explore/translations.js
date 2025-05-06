@@ -36,7 +36,7 @@ const translations = {
     ur: "دریافت کریں۔",
     vi: "Khám phá",
     zh: "探索",
-    zh_TW: "探索"
+    zh_TW: "探索",
   },
   statistics: {
     ar: "إحصائيات",
@@ -75,7 +75,7 @@ const translations = {
     ur: "شماریات",
     vi: "Số liệu thống kê",
     zh: "统计数据",
-    zh_TW: "統計數據"
+    zh_TW: "統計數據",
   },
   socialMedia: {
     ar: "وسائل التواصل الاجتماعي",
@@ -114,7 +114,7 @@ const translations = {
     ur: "سوشل میڈیا",
     vi: "Truyền thông xã hội",
     zh: "社交媒体",
-    zh_TW: "社群媒體"
+    zh_TW: "社群媒體",
   },
   chronology: {
     ar: "التسلسل الزمني",
@@ -153,46 +153,10 @@ const translations = {
     ur: "تاریخ نامہ",
     vi: "Niên đại",
     zh: "年表",
-    zh_TW: "年表"
+    zh_TW: "年表",
   },
   faqs: {
-    ar: "الأسئلة الشائعة والمعلومات",
-    bn: "প্রায়শই জিজ্ঞাসিত প্রশ্নাবলী এবং তথ্য",
-    da: "Ofte stillede spørgsmål og information",
-    de: "FAQs &amp; Informationen",
-    el: "Συχνές ερωτήσεις και πληροφορίες",
-    en: "FAQs & Information",
-    es: "Preguntas frecuentes e información",
-    fa: "سوالات متداول و اطلاعات",
-    fil: "Mga FAQ at Impormasyon",
-    fr: "FAQ et informations",
-    ha: "FAQs &amp; Bayani",
-    hi: "अक्सर पूछे जाने वाले प्रश्न और जानकारी",
-    id: "FAQ &amp; Informasi",
-    it: "Domande frequenti e informazioni",
-    ja: "よくある質問と情報",
-    jv: "Pitakonan &amp; Informasi",
-    ko: "자주 묻는 질문 및 정보",
-    mr: "वारंवार विचारले जाणारे प्रश्न आणि माहिती",
-    ms: "Soalan Lazim &amp; Maklumat",
-    nb: "Vanlige spørsmål og informasjon",
-    nl: "Veelgestelde vragen en informatie",
-    pa: "ਅਕਸਰ ਪੁੱਛੇ ਜਾਂਦੇ ਸਵਾਲ ਅਤੇ ਜਾਣਕਾਰੀ",
-    pl: "FAQ i informacje",
-    pt: "Perguntas frequentes e informações",
-    ro: "Întrebări frecvente și informații",
-    ru: "Часто задаваемые вопросы и информация",
-    sv: "Vanliga frågor och information",
-    sw: "Maswali Yanayoulizwa Mara kwa Mara na Taarifa",
-    ta: "அடிக்கடி கேட்கப்படும் கேள்விகள் &amp; தகவல்",
-    te: "తరచుగా అడిగే ప్రశ్నలు &amp; సమాచారం",
-    th: "คำถามที่พบบ่อยและข้อมูล",
-    tr: "SSS ve Bilgiler",
-    uk: "Поширені запитання та інформація",
-    ur: "اکثر پوچھے گئے سوالات اور معلومات",
-    vi: "Câu hỏi thường gặp &amp; Thông tin",
-    zh: "常见问题和信息",
-    zh_TW: "常見問題及資訊"
+    en: "FAQs",
   },
   back: {
     ar: "خلف",
@@ -231,7 +195,7 @@ const translations = {
     ur: "واپس",
     vi: "Quay lại",
     zh: "返回",
-    zh_TW: "後退"
+    zh_TW: "後退",
   },
   transactionId: {
     ar: "معرف المعاملة",
@@ -270,7 +234,7 @@ const translations = {
     ur: "ٹرانزیکشن ID",
     vi: "Mã giao dịch",
     zh: "交易编号",
-    zh_TW: "交易編號"
+    zh_TW: "交易編號",
   },
   copiedTxid: {
     ar: "تم نسخ معرف المعاملة إلى الحافظة",
@@ -309,8 +273,23 @@ const translations = {
     ur: "ٹرانزیکشن ID کو کلپ بورڈ پر کاپی کیا گیا۔",
     vi: "Đã sao chép ID giao dịch vào Bảng tạm",
     zh: "已将交易 ID 复制到剪贴板",
-    zh_TW: "已將交易 ID 複製到剪貼簿"
-  }
+    zh_TW: "已將交易 ID 複製到剪貼簿",
+  },
+  ecosystem: {
+    en: "Ecosystem",
+  },
+  help: {
+    en: "User Manual",
+  },
+  info: {
+    en: "Help & Information",
+  },
+  outputs: {
+    en: "Outputs",
+  },
+  inputs: {
+    en: "Inputs",
+  },
 };
 
 export default translations;

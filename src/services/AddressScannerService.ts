@@ -113,7 +113,7 @@ export default function AddressScannerService(wallet: WalletEntity) {
               const address = tempHd.generateAddress(hd_index, change);
               addresses.push(address);
             } catch (e) {
-              Log.error(e);
+              Log.error("scanDerivationPaths", e);
             }
           }
         }
@@ -235,7 +235,7 @@ export default function AddressScannerService(wallet: WalletEntity) {
       //Log.debug(query);
       walletDb.exec(query.join(""));
     } catch (e) {
-      Log.error(e);
+      Log.error("scanAddresses:", e);
     }
 
     // discard UTXO set for all generated addresses
@@ -293,7 +293,7 @@ export default function AddressScannerService(wallet: WalletEntity) {
       //Log.debug(query);
       walletDb.exec(query.join(""));
     } catch (e) {
-      Log.error(e);
+      Log.error("scanAddresses:", e);
     }
 
     Log.debug(
@@ -450,7 +450,7 @@ export default function AddressScannerService(wallet: WalletEntity) {
         );
       }
     } catch (e) {
-      Log.error(e);
+      Log.error("scanHistory", e);
       return Promise.resolve([address.address, null]);
     }
 

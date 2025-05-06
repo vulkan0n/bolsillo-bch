@@ -21,7 +21,7 @@ export default function Accordion({
   const Icon = icon;
 
   return (
-    <div className="bg-zinc-800 rounded-lg p-2 my-1 text-zinc-200">
+    <div className="bg-neutral-700 rounded-lg p-2 my-1 text-neutral-50">
       <button
         type="button"
         tabIndex={0}
@@ -35,7 +35,7 @@ export default function Accordion({
         {isOpen ? <CaretDownOutlined /> : <CaretRightOutlined />}
       </button>
       {isOpen && (
-        <div className="mt-1 text-zinc-700 rounded-sm bg-zinc-200 divide-y divide-zinc-300">
+        <div className="mt-1 text-neutral-500 rounded-sm bg-primary-50 divide-y divide-neutral-100">
           {children}
         </div>
       )}
@@ -61,12 +61,12 @@ function AccordionChild({
     <div className="p-2.5">
       <div className="flex justify-between items-center">
         {label && (
-          <div className="flex flex-1 items-center flex-nowrap items-center">
+          <div className="flex flex-2 items-center flex-nowrap items-center">
             <Icon className="text-xl mr-1" />
             {label}
           </div>
         )}
-        <div className="flex items-center">{children}</div>
+        <div className="flex items-center flex-1 justify-end">{children}</div>
       </div>
       {description && <div className="pt-2 text-sm">{description}</div>}
     </div>

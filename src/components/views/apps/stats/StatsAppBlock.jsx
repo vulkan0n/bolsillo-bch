@@ -1,14 +1,15 @@
 import { useEffect } from "react";
+import { Link } from "react-router";
 import { useQuery } from "@apollo/client";
 import { THIRTY_SECONDS } from "@/util/time";
 import GET_ACTIVE_BITCOINERS_SUMMARY from "./getActiveBitcoinersSummary";
 import DailyTarget from "./DailyTarget";
 import { translate } from "@/util/translations";
-import translations from "./ExploreStatBlockTranslations";
+import translations from "./translations";
 
 const { seleneActiveUsers } = translations;
 
-export default function ExploreStatBlock() {
+export default function StatsAppBlock() {
   const {
     loading: isLoading,
     data,
@@ -56,25 +57,17 @@ export default function ExploreStatBlock() {
   const isYearlyActiveIncrease = yearlyChange >= 0;
 
   return (
-    <div className="shadow rounded-lg p-2 bg-zinc-900 w-full flex-column justify-between items-center">
-      <div className="w-full flex justify-center items-center">
-        <span className="font-bold text-xl text-zinc-300">
-          {translate(seleneActiveUsers)}
-        </span>
-      </div>
-
-      <DailyTarget />
-
-      <div className="shadow rounded-lg p-2 bg-zinc-900 w-full flex justify-between items-center">
+    <div className="shadow rounded-lg p-2 bg-neutral-700 flex justify-between items-center border border-neutral-900">
+      <Link to="/apps/stats/#d">
         <div className="p-1 mx-1">
-          <div className="font-bold text-zinc-300">24h</div>
+          <div className="font-bold text-neutral-50">24h</div>
           <div
-            className={`${isDailyActiveIncrease ? "text-primary" : "text-red-500"} text-lg font-semibold`}
+            className={`${isDailyActiveIncrease ? "text-success" : "text-error"} text-lg font-semibold`}
           >
             {isDataUnavailable ? "-" : dailyActiveCount}
           </div>
           <div
-            className={`text-xs ${isDailyActiveIncrease ? "text-primary" : "text-red-500"}`}
+            className={`text-xs ${isDailyActiveIncrease ? "text-success" : "text-error"}`}
           >
             {isDailyActiveIncrease ? "↑" : "↓"} {isDailyActiveIncrease && "+"}
             {isDataUnavailable ? "-" : dailyChange} (
@@ -82,16 +75,18 @@ export default function ExploreStatBlock() {
             {isDataUnavailable ? "-" : dailyChangePercentage}%)
           </div>
         </div>
+      </Link>
 
+      <Link to="/apps/stats/#w">
         <div className="p-1 mx-1">
-          <div className="font-bold text-zinc-300">7d</div>
+          <div className="font-bold text-neutral-50">7d</div>
           <div
-            className={`${isWeeklyActiveIncrease ? "text-primary" : "text-red-500"} text-lg font-semibold`}
+            className={`${isWeeklyActiveIncrease ? "text-primary" : "text-error"} text-lg font-semibold`}
           >
             {isDataUnavailable ? "-" : weeklyActiveCount}
           </div>
           <div
-            className={`text-xs ${isWeeklyActiveIncrease ? "text-primary" : "text-red-500"}`}
+            className={`text-xs ${isWeeklyActiveIncrease ? "text-primary" : "text-error"}`}
           >
             {isWeeklyActiveIncrease ? "↑" : "↓"} {isWeeklyActiveIncrease && "+"}
             {isDataUnavailable ? "-" : weeklyChange} (
@@ -99,16 +94,18 @@ export default function ExploreStatBlock() {
             {isDataUnavailable ? "-" : weeklyChangePercentage}%)
           </div>
         </div>
+      </Link>
 
+      <Link to="/apps/stats/#m">
         <div className="p-1 mx-1">
-          <div className="font-bold text-zinc-300">30d</div>
+          <div className="font-bold text-neutral-100">30d</div>
           <div
-            className={`${isMonthlyActiveIncrease ? "text-primary" : "text-red-500"} text-lg font-semibold`}
+            className={`${isMonthlyActiveIncrease ? "text-primary" : "text-error"} text-lg font-semibold`}
           >
             {isDataUnavailable ? "-" : monthlyActiveCount}
           </div>
           <div
-            className={`text-xs ${isMonthlyActiveIncrease ? "text-primary" : "text-red-500"}`}
+            className={`text-xs ${isMonthlyActiveIncrease ? "text-primary" : "text-error"}`}
           >
             {isMonthlyActiveIncrease ? "↑" : "↓"}{" "}
             {isMonthlyActiveIncrease && "+"}
@@ -117,16 +114,18 @@ export default function ExploreStatBlock() {
             {isDataUnavailable ? "-" : monthlyChangePercentage}%)
           </div>
         </div>
+      </Link>
 
+      <Link to="/apps/stats/#y">
         <div className="p-1 mx-1">
-          <div className="font-bold text-zinc-300">1y</div>
+          <div className="font-bold text-neutral-100">1y</div>
           <div
-            className={`${isYearlyActiveIncrease ? "text-primary" : "text-red-500"} text-lg font-semibold`}
+            className={`${isYearlyActiveIncrease ? "text-primary" : "text-error"} text-lg font-semibold`}
           >
             {isDataUnavailable ? "-" : yearlyActiveCount}
           </div>
           <div
-            className={`text-xs ${isYearlyActiveIncrease ? "text-primary" : "text-red-500"}`}
+            className={`text-xs ${isYearlyActiveIncrease ? "text-primary" : "text-error"}`}
           >
             {isYearlyActiveIncrease ? "↑" : "↓"} {isYearlyActiveIncrease && "+"}
             {isDataUnavailable ? "-" : yearlyChange} (
@@ -134,7 +133,7 @@ export default function ExploreStatBlock() {
             {isDataUnavailable ? "-" : yearlyChangePercentage}%)
           </div>
         </div>
-      </div>
+      </Link>
     </div>
   );
 }

@@ -29,6 +29,8 @@ type ValidRounded =
   | "2xl"
   | "3xl";
 
+type ValidJustify = "start" | "center" | "end";
+
 export interface ButtonProps {
   label?: React.ReactNode;
   labelSize?: ValidSizes;
@@ -44,8 +46,9 @@ export interface ButtonProps {
   rounded?: ValidRounded;
   bgColor?: string;
   activeBgColor?: string;
-  shadow?: ValidSizes;
+  shadow?: ValidRounded;
   padding?: string;
+  justify?: ValidJustify;
   inverted?: boolean;
   fullWidth?: boolean;
   onClick?: React.MouseEventHandler;
@@ -53,25 +56,28 @@ export interface ButtonProps {
   className?: string;
   style?: React.CSSProperties;
   navigateTo?: To;
+  submit?: boolean;
 }
 
 export default function Button({
+  submit = false,
   label = "",
   labelSize = "sm",
-  labelColor = "zinc-600",
-  activeLabelColor = "white",
+  labelColor = "text-neutral-600",
+  activeLabelColor = "text-white",
   icon = NullComponent,
   iconSize = "2xl",
   iconClasses = "",
   outerLabel = "",
   outerLabelSize = "sm",
-  outerLabelColor = "zinc-700",
+  outerLabelColor = "text-neutral-700",
   borderClasses = "border border-2 border-primary",
   rounded = "full",
-  bgColor = "white",
-  activeBgColor = "primary",
+  bgColor = "bg-white",
+  activeBgColor = "bg-primary",
   shadow = "md",
   padding = "3",
+  justify = "center",
   inverted = false,
   fullWidth = false,
   onClick = () => null,
@@ -82,11 +88,13 @@ export default function Button({
 }: ButtonProps) {
   const Icon = icon;
   // tailwindcss dynamic classes don't work here, the tokenizer needs to see the whole string, they're computed at build time, not runtime!
-  const colors = `bg-${bgColor} text-${labelColor} ${disabled ? "" : `active:bg-${activeBgColor} active:text-${activeLabelColor}`}`;
-  const invertedColors = `bg-${activeBgColor} text-${activeLabelColor} ${disabled ? "" : `active:bg-${bgColor} active:text-${labelColor}`}`;
+  const colors = `${bgColor} ${labelColor} ${disabled ? "" : `active:${activeBgColor} active:${activeLabelColor}`}`;
+  const invertedColors = `${activeBgColor} ${activeLabelColor} ${disabled ? "" : `active:${bgColor} active:${labelColor}`}`;
   const colorClasses = inverted ? invertedColors : colors;
 
   const roundedClass = rounded === true ? "rounded" : `rounded-${rounded}`;
+  const shadowClass = shadow === true ? "shadow" : `shadow-${shadow}`;
+
   const disabledClasses = disabled
     ? `opacity-[.5] shadow-none active:shadow-none`
     : "cursor-pointer";
@@ -105,17 +113,18 @@ export default function Button({
   return (
     <div className={`${fullWidth ? "w-full" : ""} ${className}`}>
       <button
-        type="button"
+        type={submit ? "submit" : "button"}
         onClick={handleOnClick}
         className={`
-          flex items-center justify-center
+          flex items-center justify-${justify}
           p-${padding} mx-auto
           ${fullWidth ? " w-full " : ""}
           ${borderClasses} 
           ${colorClasses}
           text-${labelSize}
           ${roundedClass}
-          shadow-${shadow} opacity-90 
+          ${shadowClass}
+          opacity-90 
           active:shadow-none active:shadow-inner
           ${disabledClasses}
         `}
@@ -125,11 +134,11 @@ export default function Button({
         <Icon
           className={`text-${iconSize} ${label ? "mr-1" : ""} ${iconClasses}`}
         />
-        <span>{label}</span>
+        {label}
       </button>
       {outerLabel && (
         <div
-          className={`text-${outerLabelSize} text-${outerLabelColor} mt-1 select-none text-center`}
+          className={`text-${outerLabelSize} ${outerLabelColor} mt-1 select-none text-center`}
         >
           {outerLabel}
         </div>
