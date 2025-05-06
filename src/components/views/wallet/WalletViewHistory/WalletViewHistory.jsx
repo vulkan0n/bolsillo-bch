@@ -36,12 +36,11 @@ export default function WalletViewHistory() {
   const txHistory = useTransactionHistory();
   const { syncPending } = useSelector(selectSyncState);
 
-
   const { shouldHideBalance } = useSelector(selectPrivacySettings);
 
   const historyRender = useMemo(() => {
-  const receiveStyle = "text-success";
-  const sendStyle = "text-error";
+    const receiveStyle = "text-success";
+    const sendStyle = "text-error";
 
     const zebraCss = [
       {

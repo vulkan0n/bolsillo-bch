@@ -16,8 +16,6 @@ import Button from "@/atoms/Button";
 import SeleneLogo from "@/atoms/SeleneLogo";
 import LinkExternal from "@/atoms/LinkExternal";
 
-import { selectDevicePlatform } from "@/redux/device";
-
 import { translate } from "@/util/translations";
 import translations from "./translations";
 
@@ -38,8 +36,6 @@ import PrivacySettings from "./PrivacySettings";
 export default function SettingsView() {
   const dispatch = useDispatch();
   const preferences = useSelector(selectPreferences);
-
-  const platform = useSelector(selectDevicePlatform);
 
   const handleSettingsUpdate = useCallback(
     (key, value) => {
@@ -93,11 +89,7 @@ export default function SettingsView() {
           inverted
           fullWidth
         />
-        <LinkExternal
-          inAppBrowser
-          to="https://docs.selene.cash"
-          className="w-full"
-        >
+        <LinkExternal to="https://docs.selene.cash" className="w-full">
           <Button
             label="Help"
             labelSize="xl"

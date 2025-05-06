@@ -48,7 +48,6 @@ export const routeExplore = [
           return { Component: ExploreContactsView };
         },
       },
-      ,
     ],
   },
 ];

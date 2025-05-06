@@ -6,14 +6,12 @@ interface Props {
   label: string;
   onSlide: () => void;
   disabled?: boolean;
-  className?: string;
 }
 
 export default function SlideToAction({
   label,
   onSlide,
   disabled = false,
-  className = undefined,
 }: Props) {
   const knobRef = useRef<HTMLDivElement>(null);
   const bannerRef = useRef<HTMLDivElement>(null);
@@ -87,11 +85,17 @@ export default function SlideToAction({
     startDragging(e.clientX);
   };
 
+  const disabledClasses = disabled
+    ? "bg-neutral-200 opacity-50 pointer-events-none"
+    : "bg-primary-200";
+
   return (
-    <div className="bg-primary-200 border border-primary-200 shadow-inner rounded-full h-12 flex items-center relative">
+    <div
+      className={`border border-primary-200 shadow-inner rounded-full h-12 flex items-center relative ${disabledClasses}`}
+    >
       <div
         ref={bannerRef}
-        className="h-14 w-0 bg-primary absolute rounded-full"
+        className="h-14 w-0 bg-primary/90 absolute rounded-full"
       />
       <div
         onPointerDown={handlePointerDown}
@@ -100,7 +104,7 @@ export default function SlideToAction({
       >
         <SeleneLogo className="w-full h-full" />
       </div>
-      <div className="text-lg font-bold text-neutral-600 flex-1 text-center mr-4 ml-auto">
+      <div className="text-lg font-bold text-primary-900 flex-1 text-center mr-4 ml-auto">
         {label}
       </div>
     </div>

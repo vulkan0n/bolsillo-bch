@@ -64,9 +64,7 @@ export default function Address({
       : "";
 
   const myChangeStyle =
-    color === "" && isMyAddress && myAddress.change === 1
-      ? "text-warn"
-      : "";
+    color === "" && isMyAddress && myAddress.change === 1 ? "text-warn" : "";
 
   return (
     <span
