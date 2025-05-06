@@ -48,24 +48,7 @@ export const routeExplore = [
           return { Component: ExploreContactsView };
         },
       },
-      {
-        path: "help",
-        async lazy() {
-          const { default: ExploreHelpView } = await import(
-            "@/views/explore/help/ExploreHelpView"
-          );
-          return { Component: ExploreHelpView };
-        },
-      },
-      {
-        path: "info",
-        async lazy() {
-          const { default: ExploreInfoView } = await import(
-            "@/views/explore/info/ExploreInfoView"
-          );
-          return { Component: ExploreInfoView };
-        },
-      },
+      ,
     ],
   },
 ];
