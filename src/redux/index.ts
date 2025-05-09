@@ -15,6 +15,7 @@ import {
   fetchExchangeRates,
   exchangeRateInit,
 } from "./exchangeRates";
+import { walletConnectReducer, walletConnectInit } from "./walletConnect";
 import { triggerCheckIn } from "./stats";
 
 const Log = LogService("redux");
@@ -28,6 +29,7 @@ export const store = configureStore({
     exchangeRates: exchangeRateReducer,
     txHistory: txHistoryReducer,
     addresses: addressReducer,
+    walletConnect: walletConnectReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().prepend(syncMiddleware.middleware),
@@ -59,6 +61,7 @@ export function redux_post_init() {
   Log.debug("redux_post_init");
   store.dispatch(triggerCheckIn());
   store.dispatch(fetchExchangeRates(0));
+  store.dispatch(walletConnectInit());
 }
 
 export function redux_resume() {

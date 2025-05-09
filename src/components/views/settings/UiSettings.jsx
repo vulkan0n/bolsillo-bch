@@ -5,8 +5,10 @@ import {
   CompassOutlined,
   SyncOutlined,
   StockOutlined,
+  MobileOutlined,
 } from "@ant-design/icons";
 import { selectUiSettings } from "@/redux/preferences";
+import { selectDevicePlatform } from "@/redux/device";
 import Accordion from "@/atoms/Accordion";
 import { translate } from "@/util/translations";
 import translations from "./translations";
@@ -18,7 +20,10 @@ export default function UiSettings() {
     shouldDisplayExploreTab,
     shouldDisplayExchangeRate,
     shouldDisplaySyncCounter,
+    shouldConstrainViewport,
   } = useSelector(selectUiSettings);
+
+  const platform = useSelector(selectDevicePlatform);
 
   return (
     <Accordion
@@ -62,6 +67,25 @@ export default function UiSettings() {
           }
         />
       </Accordion.Child>
+
+      {platform === "web" &&
+        document.querySelector("html").clientWidth > 480 && (
+          <Accordion.Child
+            icon={MobileOutlined}
+            label={translate(translations.constrainViewport)}
+          >
+            <input
+              type="checkbox"
+              checked={shouldConstrainViewport}
+              onChange={(event) =>
+                handleSettingsUpdate(
+                  "shouldConstrainViewport",
+                  event.target.checked
+                )
+              }
+            />
+          </Accordion.Child>
+        )}
     </Accordion>
   );
 }

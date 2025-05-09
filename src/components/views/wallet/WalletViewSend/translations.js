@@ -36,7 +36,7 @@ const translations = {
     ur: "قابل قبول رقم نہیں",
     vi: "Không đủ tiền",
     zh: "资金不足",
-    zh_TW: "不充足的資金"
+    zh_TW: "不充足的資金",
   },
   notEnoughFee: {
     ar: "فشلت العملية -  لا يوجد رصيد كافٍ لرسوم المنقّب",
@@ -75,7 +75,7 @@ const translations = {
     ur: "لین دین ناکام -  مائنر فی کیلئے کافی بیلنس نہیں",
     vi: "Giao dịch không thành công - Không đủ số dư để trả phí cho thợ đào",
     zh: "交易失败：余额不足以支付矿工费",
-    zh_TW: "交易失敗：礦工手續費不足"
+    zh_TW: "交易失敗：礦工手續費不足",
   },
   transactionFailed: {
     ar: "فشل الاجراء",
@@ -114,7 +114,7 @@ const translations = {
     ur: "لین دین ناکام ہوگیا۔",
     vi: "Giao dịch thất bại",
     zh: "交易失败。",
-    zh_TW: "交易失敗。"
+    zh_TW: "交易失敗。",
   },
   sendingTo: {
     ar: "إرسال إلى",
@@ -153,7 +153,7 @@ const translations = {
     ur: "بھیج رہا ہے",
     vi: "Đang gửi đến",
     zh: "发送至",
-    zh_TW: "發送至"
+    zh_TW: "發送至",
   },
   back: {
     ar: "خلف",
@@ -192,46 +192,10 @@ const translations = {
     ur: "واپس",
     vi: "Quay lại",
     zh: "返回",
-    zh_TW: "後退"
+    zh_TW: "後退",
   },
   confirm: {
-    ar: "يتأكد",
-    bn: "নিশ্চিত করুন",
-    da: "Bekræft",
-    de: "Bestätigen",
-    el: "Επιβεβαίωση",
-    en: "Confirm",
-    es: "Confirmar",
-    fa: "تایید",
-    fil: "Kumpirmahin",
-    fr: "Confirmer",
-    ha: "Tabbatar",
-    hi: "पुष्टि करें",
-    id: "Mengonfirmasi",
-    it: "Conferma",
-    ja: "確認",
-    jv: "Konfirmasi",
-    ko: "확인",
-    mr: "पुष्टी करा",
-    ms: "Sahkan",
-    nb: "Bekreft",
-    nl: "Bevestigen",
-    pa: "ਪੁਸ਼ਟੀ ਕਰੋ",
-    pl: "Potwierdzać",
-    pt: "Confirmar",
-    ro: "A confirma",
-    ru: "Подтвердить",
-    sv: "Bekräfta",
-    sw: "Thibitisha",
-    ta: "உறுதிப்படுத்தவும்",
-    te: "నిర్ధారించండి",
-    th: "ยืนยัน",
-    tr: "Onayla",
-    uk: "Підтвердити",
-    ur: "توثیق کریں",
-    vi: "Xác nhận",
-    zh: "确认",
-    zh_TW: "確認"
+    en: "Slide to Confirm",
   },
   base58WarningTitle: {
     ar: "تحذير! خطر فقدان الأموال! تم اكتشاف عنوان قديم",
@@ -270,7 +234,7 @@ const translations = {
     ur: "وارننگ! کھوئے ہوئے فنڈز کا خطرہ! میراثی پتہ کا پتہ چلا",
     vi: "Cảnh báo! RỦI RO MẤT TIỀN! Đã phát hiện địa chỉ cũ",
     zh: "警告！资金损失风险！检测到旧地址",
-    zh_TW: "警告！資金損失的風險！偵測到舊地址"
+    zh_TW: "警告！資金損失的風險！偵測到舊地址",
   },
   base58WarningMessage: {
     ar: "قد تقوم عن طريق الخطأ بإرسال أموالك إلى عنوان BTC. تأكد تمامًا من أن هذا عنوان Bitcoin Cash (BCH)!! إذا كنت في شك، فلا تتابع!",
@@ -309,7 +273,8 @@ const translations = {
     ur: "آپ غلطی سے اپنے فنڈز BTC ایڈریس پر بھیج سکتے ہیں۔ بالکل یقین رکھیں کہ یہ بٹ کوائن کیش (BCH) پتہ ہے!! اگر شک ہو تو آگے نہ بڑھیں!",
     vi: "Bạn có thể vô tình gửi tiền của mình đến một địa chỉ BTC. Hãy HOÀN TOÀN CHẮC CHẮN rằng đây là một địa chỉ Bitcoin Cash (BCH)!! Nếu nghi ngờ, đừng tiếp tục!",
     zh: "您可能会意外地将资金发送到 BTC 地址。请绝对确定这是比特币现金 (BCH) 地址！！如有疑问，请勿继续！",
-    zh_TW: "您可能會意外地將資金發送到 BTC 地址。絕對確定這是一個比特幣現金（BCH）地址！如有疑問，請勿繼續！"
+    zh_TW:
+      "您可能會意外地將資金發送到 BTC 地址。絕對確定這是一個比特幣現金（BCH）地址！如有疑問，請勿繼續！",
   },
   base58WarningOk: {
     ar: "أرسل على أية حال",
@@ -348,7 +313,7 @@ const translations = {
     ur: "بہرحال بھیجیں۔",
     vi: "Gửi Dù sao",
     zh: "仍然发送",
-    zh_TW: "無論如何發送"
+    zh_TW: "無論如何發送",
   },
   self: {
     ar: "الذات",
@@ -387,8 +352,8 @@ const translations = {
     ur: "خود",
     vi: "bản thân",
     zh: "自己",
-    zh_TW: "自己"
-  }
+    zh_TW: "自己",
+  },
 };
 
 export default translations;

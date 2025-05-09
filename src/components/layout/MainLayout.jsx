@@ -1,8 +1,9 @@
 import { App } from "@capacitor/app";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { useSelector } from "react-redux";
 import { Outlet, useNavigate } from "react-router";
 import { selectScannerIsScanning, selectDevicePlatform } from "@/redux/device";
+import { selectShouldConstrainViewport } from "@/redux/preferences";
 import { validateBchUri } from "@/util/uri";
 import BottomNavigation from "./BottomNavigation";
 
@@ -13,35 +14,47 @@ export default function MainLayout() {
   useScrollToTop();
 
   const platform = useSelector(selectDevicePlatform);
+  const shouldConstrainViewport = useSelector(selectShouldConstrainViewport);
+
+  const html = useMemo(() => document.querySelector("html"), []);
+  const body = useMemo(() => document.querySelector("body"), []);
+
   useEffect(
     function setPlatformCss() {
+      if (!html || !body) {
+        return () => {};
+      }
+
       // add fake "phone" border on web if window is larger than 480px wide
       if (
         platform === "web" &&
-        document.querySelector("html").clientWidth > 480
+        html.clientWidth > 480 &&
+        shouldConstrainViewport
       ) {
-        document
-          .querySelector("body")
-          .classList.add(
-            "border-8",
-            "border-neutral-1000",
-            "rounded-lg",
-            "shadow-xl"
-          );
+        body.classList.add(
+          "border-8",
+          "border-neutral-1000",
+          "rounded-lg",
+          "shadow-xl"
+        );
+
+        body.style.maxWidth = "480px";
+        body.style.maxHeight = "960px";
       }
 
       return () => {
-        document
-          .querySelector("body")
-          .classList.remove(
-            "border-8",
-            "border-neutral-1000",
-            "rounded-lg",
-            "shadow-xl"
-          );
+        body.classList.remove(
+          "border-8",
+          "border-neutral-1000",
+          "rounded-lg",
+          "shadow-xl"
+        );
+
+        body.style.maxWidth = "";
+        body.style.maxHeight = "";
       };
     },
-    [platform]
+    [platform, shouldConstrainViewport, html, body]
   );
 
   const isScanning = useSelector(selectScannerIsScanning);
@@ -49,17 +62,21 @@ export default function MainLayout() {
     function forceTransparentContainer() {
       const isOverlayOpen = isScanning;
 
+      if (!html) {
+        return () => {};
+      }
+
       if (isOverlayOpen) {
-        document.querySelector("html").classList.add("bg-transparent");
-        document.querySelector("html").classList.remove("bg-neutral-1000/90");
+        html.classList.add("bg-transparent");
+        html.classList.remove("bg-neutral-1000/90");
       }
 
       return () => {
-        document.querySelector("html").classList.remove("bg-transparent");
-        document.querySelector("html").classList.add("bg-neutral-1000/90");
+        html.classList.remove("bg-transparent");
+        html.classList.add("bg-neutral-1000/90");
       };
     },
-    [isScanning]
+    [isScanning, html]
   );
 
   App.addListener("appUrlOpen", ({ url }) => {

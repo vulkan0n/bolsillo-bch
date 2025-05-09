@@ -1,8 +1,8 @@
 export const DERIVATION_PATHS: string[] = [
   "m/44'/145'/0'",
   "m/44'/0'/0'",
-  "m'/0'",
-  "m'/145'",
+  "m/0'",
+  "m/145'",
 ];
 
 export type ValidDerivationPath = (typeof DERIVATION_PATHS)[number];

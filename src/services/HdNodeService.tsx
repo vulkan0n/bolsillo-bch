@@ -5,20 +5,29 @@ import {
   deriveHdPath,
   encodeCashAddress,
   secp256k1,
-  ripemd160,
   CashAddressType,
+  utf8ToBin,
+  binToBase64,
+  SigningSerializationFlag,
+  generateSigningSerializationBCH,
+  CompilationContextBCH,
+  assertSuccess,
+  walletTemplateP2pkhNonHd,
+  walletTemplateToCompilerBCH,
+  importWalletTemplate,
+  encodeLockingBytecodeP2pkh,
 } from "@bitauth/libauth";
 
-import { hexToBin } from "@/util/hex";
-import { sha256 } from "@/util/hash";
+import { hexToBin, binToHex } from "@/util/hex";
+import { sha256, ripemd160 } from "@/util/hash";
 
-//import LogService from "@/services/LogService";
+import LogService from "@/services/LogService";
 import AddressManagerService from "@/services/AddressManagerService";
 import WalletManagerService, {
   WalletStub,
 } from "@/services/WalletManagerService";
 
-//const Log = LogService("HdNode");
+const Log = LogService("HdNode");
 
 export default function HdNodeService(walletStub: WalletStub) {
   const WalletManager = WalletManagerService();
@@ -33,6 +42,8 @@ export default function HdNodeService(walletStub: WalletStub) {
   return {
     generateAddress,
     signInputs,
+    signMessage,
+    signTemplate,
   };
 
   // raw address generation function
@@ -52,7 +63,7 @@ export default function HdNodeService(walletStub: WalletStub) {
     return address;
   }
 
-  function _deriveAddressPrivateKey(address) {
+  function _deriveAddressPrivateKey(address: string) {
     const AddressManager = AddressManagerService(walletHash);
     const { hd_index, change } = AddressManager.getAddress(address);
 
@@ -98,5 +109,136 @@ export default function HdNodeService(walletStub: WalletStub) {
               },
       },
     }));
+  }
+
+  function signMessage(payload: string, address: string) {
+    const privateKey = _deriveAddressPrivateKey(address);
+
+    const magic = `\x18Bitcoin Signed Message:\n`;
+    const length = payload.length.toString(16);
+    const preimage = new Uint8Array([
+      ...utf8ToBin(magic),
+      ...hexToBin(length),
+      ...utf8ToBin(payload),
+    ]);
+    const messageHash = sha256.hash(sha256.hash(preimage));
+
+    const recoverable = secp256k1.signMessageHashRecoverableCompact(
+      privateKey,
+      messageHash
+    );
+
+    if (typeof recoverable === "string") {
+      throw new Error(recoverable);
+    }
+
+    const signature = new Uint8Array([
+      ...[31 + recoverable.recoveryId],
+      ...recoverable.signature,
+    ]);
+
+    const base64Signature = binToBase64(signature);
+    Log.log("signMessage", address, base64Signature, payload);
+
+    return base64Signature;
+  }
+
+  function signTemplate(template, sourceOutputs, address) {
+    const privateKey = _deriveAddressPrivateKey(address);
+    const pubkeyCompressed = assertSuccess(
+      secp256k1.derivePublicKeyCompressed(privateKey)
+    );
+    const pubkeyHash = ripemd160.hash(sha256.hash(pubkeyCompressed));
+    const walletLockingBytecodeHex = binToHex(
+      encodeLockingBytecodeP2pkh(pubkeyHash)
+    );
+    const unsignedTransaction = { ...template };
+
+    const walletTemplate = importWalletTemplate(walletTemplateP2pkhNonHd);
+    const compiler = walletTemplateToCompilerBCH(walletTemplate);
+
+    /* eslint-disable prefer-template */
+    /* eslint-disable no-bitwise */
+    /* eslint-disable-next-line no-restricted-syntax */
+    for (const [index, input] of template.inputs.entries()) {
+      const correspondingSourceOutput = sourceOutputs[index];
+
+      if (correspondingSourceOutput.contract?.artifact?.contractName) {
+        // replace pubkey and sig placeholders
+        let unlockingBytecodeHex = binToHex(
+          correspondingSourceOutput.unlockingBytecode
+        );
+        const sigPlaceholder = "41" + binToHex(Uint8Array.from(Array(65)));
+        const pubkeyPlaceholder = "21" + binToHex(Uint8Array.from(Array(33)));
+        if (unlockingBytecodeHex.indexOf(sigPlaceholder) !== -1) {
+          // compute the signature argument
+          const hashType =
+            SigningSerializationFlag.allOutputs |
+            SigningSerializationFlag.utxos |
+            SigningSerializationFlag.forkId;
+          const context: CompilationContextBCH = {
+            inputIndex: index,
+            sourceOutputs,
+            transaction: unsignedTransaction,
+          };
+          const signingSerializationType = new Uint8Array([hashType]);
+
+          const coveredBytecode =
+            correspondingSourceOutput.contract?.redeemScript;
+          if (!coveredBytecode) {
+            throw new Error(
+              "Not enough information provided, please include contract redeemScript"
+            );
+          }
+          const sighashPreimage = generateSigningSerializationBCH(context, {
+            coveredBytecode,
+            signingSerializationType,
+          });
+          const sighash = sha256.hash(sha256.hash(sighashPreimage));
+          const signature = secp256k1.signMessageHashSchnorr(
+            privateKey,
+            sighash
+          );
+          if (typeof signature === "string") {
+            throw new Error("Signature error: " + signature);
+          }
+          const sig = Uint8Array.from([...signature, hashType]);
+
+          unlockingBytecodeHex = unlockingBytecodeHex.replace(
+            sigPlaceholder,
+            "41" + binToHex(sig)
+          );
+        }
+        if (unlockingBytecodeHex.indexOf(pubkeyPlaceholder) !== -1) {
+          unlockingBytecodeHex = unlockingBytecodeHex.replace(
+            pubkeyPlaceholder,
+            "21" + binToHex(pubkeyCompressed)
+          );
+        }
+
+        input.unlockingBytecode = hexToBin(unlockingBytecodeHex);
+      } else {
+        // replace unlocking bytecode for placeholder unlockers matching the wallet locking bytecode
+        const inputLockingBytecodeHex = binToHex(
+          correspondingSourceOutput.lockingBytecode
+        );
+        if (
+          !correspondingSourceOutput.unlockingBytecode?.length &&
+          inputLockingBytecodeHex === walletLockingBytecodeHex
+        ) {
+          input.unlockingBytecode = {
+            compiler,
+            data: {
+              keys: { privateKeys: { key: privateKey } },
+            },
+            valueSatoshis: correspondingSourceOutput.valueSatoshis,
+            script: "unlock",
+            token: correspondingSourceOutput.token,
+          };
+        }
+      }
+    }
+
+    return template;
   }
 }

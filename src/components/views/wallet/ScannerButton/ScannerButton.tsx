@@ -28,10 +28,10 @@ export default function ScannerButton({
   const isScanning = useSelector(selectScannerIsScanning);
 
   const handleScan = async (scanContent, spawnScanToast) => {
-    const navTo = await navigateOnValidUri(scanContent);
+    const { navTo, navState } = await navigateOnValidUri(scanContent);
     if (navTo !== "") {
       spawnScanToast();
-      navigate(navTo, { state: location.state });
+      navigate(navTo, { state: { ...location.state, ...navState } });
     }
   };
 

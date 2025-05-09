@@ -21,10 +21,19 @@ export function validateBchUri(uri) {
     address,
     amount,
   } = validateBip21Uri(uri);
+
   const { isPaymentProtocol, requestUri } = validatePaymentProtocolUri(uri);
+
   const wifPayload = validateWifUri(uri);
 
-  const isValid = isBip21 || isPaymentProtocol || wifPayload.isWif;
+  const wcPayload = validateWalletConnectUri(uri);
+
+  const isValid =
+    isBip21 ||
+    isPaymentProtocol ||
+    wifPayload.isWif ||
+    wcPayload.isWalletConnect;
+
   const query = new Decimal(amount).greaterThan(0) ? `?amount=${amount}` : "";
 
   const payload = {
@@ -39,6 +48,7 @@ export function validateBchUri(uri) {
     isBase58Address,
     isPaymentProtocol,
     ...wifPayload,
+    ...wcPayload,
   };
 
   return payload;
@@ -157,16 +167,54 @@ export function validateWifUri(
   };
 }
 
-export const navigateOnValidUri = async (input): Promise<string> => {
+export function validateWalletConnectUri(uri) {
+  const parsedUri = URL.parse(uri);
+  if (parsedUri === null) {
+    return {
+      isWalletConnect: false,
+    };
+  }
+
+  const { protocol } = parsedUri;
+
+  if (protocol !== "wc:") {
+    return {
+      isWalletConnect: false,
+    };
+  }
+
+  return {
+    isWalletConnect: true,
+    wcUri: parsedUri.href,
+  };
+}
+
+export const navigateOnValidUri = async (
+  input
+): Promise<{ navTo: string; navState: object }> => {
   // go to send screen when valid address is entered
-  const { isValid, isPaymentProtocol, isWif, address, query, requestUri, wif } =
-    validateBchUri(input);
+  const {
+    isValid,
+    isWalletConnect,
+    isPaymentProtocol,
+    isWif,
+    address,
+    query,
+    requestUri,
+    wif,
+    wcUri,
+  } = validateBchUri(input);
 
   let navTo = "";
+  let navState;
+
   if (isValid) {
     await Haptic.success();
 
-    if (isPaymentProtocol) {
+    if (isWalletConnect) {
+      navTo = `/apps/walletconnect`;
+      navState = { wcUri };
+    } else if (isPaymentProtocol) {
       navTo = `/wallet/pay/?r=${requestUri}`;
     } else if (isWif) {
       navTo = `/wallet/sweep/${wif}`;
@@ -177,5 +225,5 @@ export const navigateOnValidUri = async (input): Promise<string> => {
     await Haptic.error();
   }
 
-  return navTo;
+  return { navTo, navState };
 };

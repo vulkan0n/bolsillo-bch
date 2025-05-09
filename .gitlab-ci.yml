@@ -15,6 +15,7 @@ default:
   before_script:
     - "export LC_ALL=en_US.UTF-8"
     - "export LANG=en_US.UTF-8"
+    - "export JAVA_HOME=/usr/local/opt/openjdk@21"
     - 'eval "$(rbenv init - --no-rehash zsh)"'
     - 'export SELENE_VERSION=$(grep -o ''"version": *"[^"]*"'' package.json | sed -e ''s/"version": *"//'' -e ''s/"$//'')'
     - 'echo "SELENE_VERSION $SELENE_VERSION"'

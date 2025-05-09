@@ -49,6 +49,7 @@ const defaultPreferences = {
   displayExchangeRate: "false",
   displaySyncCounter: "true",
   lastAssetsPath: "/assets/tokens",
+  shouldConstrainViewport: "true",
   // --------
   // Network
   // TODO #420: electrum peer db
@@ -118,6 +119,7 @@ function validatePreferences(preferences: ValidPreferences): boolean {
     "displayExchangeRate",
     "displayExploreTab",
     "displaySyncCounter",
+    "shouldConstrainViewport",
     "enableDailyCheckIn",
     "offlineMode",
     "useTokenAddress",
@@ -335,6 +337,7 @@ export const selectUiSettings = createSelector(
     shouldDisplayExchangeRate: preferences.displayExchangeRate === "true",
     shouldDisplayExploreTab: preferences.displayExploreTab === "true",
     shouldDisplaySyncCounter: preferences.displaySyncCounter === "true",
+    shouldConstrainViewport: preferences.shouldConstrainViewport === "true",
   })
 );
 
@@ -387,4 +390,11 @@ export const selectShouldUseTokenAddress = createSelector(
 export const selectLastAssetsPath = createSelector(
   (state: RootState) => state.preferences,
   (preferences) => preferences.lastAssetsPath
+);
+
+export const selectShouldConstrainViewport = createSelector(
+  (state: RootState) => state,
+  ({ preferences, device }) =>
+    device.deviceInfo.platform === "web" &&
+    preferences.shouldConstrainViewport === "true"
 );

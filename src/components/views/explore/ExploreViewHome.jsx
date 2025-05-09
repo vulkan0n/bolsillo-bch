@@ -19,6 +19,7 @@ export default function ExploreViewHome() {
   return (
     <div className="p-1.5 flex flex-col gap-2">
       <ExploreStatWidget />
+      <BlissAppCard />
       <Card>
         <div className="flex flex-col gap-2">
           <div className="flex items-center text-xl font-bold">
@@ -51,7 +52,6 @@ export default function ExploreViewHome() {
           </LinkExternal>
         </div>
       </Card>
-      <BlissAppCard />
     </div>
   );
 }

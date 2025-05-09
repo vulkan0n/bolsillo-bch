@@ -22,6 +22,7 @@ export default defineConfig({
       "@/layout": path.resolve(__dirname, "./src/components/layout"),
       "@/views": path.resolve(__dirname, "./src/components/views"),
       "@/atoms": path.resolve(__dirname, "./src/components/atoms"),
+      "@/icons": path.resolve(__dirname, "./src/components/atoms/icons"),
       "@/apps": path.resolve(__dirname, "./src/components/views/apps"),
       "@": path.resolve(__dirname, "./src"),
     },

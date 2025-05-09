@@ -21,7 +21,7 @@ import {
   ArrowRightOutlined,
 } from "@ant-design/icons";
 
-import { TelegramFilled } from "@/atoms/TelegramFilled";
+import { TelegramFilled } from "@/icons/TelegramFilled";
 import TokenIcon from "@/atoms/TokenIcon";
 import TokenAmount from "@/atoms/TokenAmount";
 import Button from "@/atoms/Button";

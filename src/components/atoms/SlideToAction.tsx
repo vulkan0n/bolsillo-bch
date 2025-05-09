@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
 import { useRef } from "react";
+import { ArrowRightOutlined } from "@ant-design/icons";
 import SeleneLogo from "./SeleneLogo";
 
 interface Props {
@@ -57,7 +58,7 @@ export default function SlideToAction({
     onSlide();
   };
   const handlePointerMove = (e) => {
-    e.preventDefault();
+    //e.preventDefault();
     if (!isDragging.current) return;
     if (knobRef.current == null) return;
     if (bannerRef.current == null) return;
@@ -99,13 +100,16 @@ export default function SlideToAction({
       />
       <div
         onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
         ref={knobRef}
         className="h-16 w-16 relative z-10 flex items-center justify-center bg-primary p-0.5 rounded-full"
+        style={{ touchAction: "none" }}
       >
         <SeleneLogo className="w-full h-full" />
       </div>
-      <div className="text-lg font-bold text-primary-900 flex-1 text-center mr-4 ml-auto">
-        {label}
+      <div className="text-lg font-bold text-primary-900 flex flex-1 items-center justify-evenly">
+        <span>{label}</span>
+        <ArrowRightOutlined className="ml-1 font-bold text-xl" />
       </div>
     </div>
   );

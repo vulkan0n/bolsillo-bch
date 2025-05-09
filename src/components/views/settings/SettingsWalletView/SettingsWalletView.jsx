@@ -31,6 +31,7 @@ import ViewHeader from "@/layout/ViewHeader";
 import WalletManagerService from "@/services/WalletManagerService";
 import SecurityService, { AuthActions } from "@/services/SecurityService";
 
+import { WalletConnectFilled } from "@/icons/WalletConnectFilled";
 import KeyWarning from "@/atoms/KeyWarning/KeyWarning";
 import ShowMnemonic from "@/atoms/ShowMnemonic";
 import Accordion from "@/atoms/Accordion";
@@ -206,8 +207,8 @@ export default function SettingsWalletView() {
           <div className="text-2xl flex justify-center items-center py-2 text-neutral-700 font-bold">
             <Editable onConfirm={handleEditConfirm} value={wallet.name} />
           </div>
-          <div className="flex gap-x-2">
-            <div className="flex-2 flex flex-col justify-around">
+          <div className="flex gap-x-2 justify-between">
+            <div className="flex-1 flex flex-col justify-around">
               <div>
                 <div className="text-md text-neutral-600 font-semibold">
                   {translate(translations.created)}
@@ -232,18 +233,18 @@ export default function SettingsWalletView() {
               </div>
             </div>
 
-            <div className="flex-1 flex flex-col gap-y-2 justify-around">
+            <div className="flex-2 flex flex-col gap-y-2 justify-around">
               <Button
                 icon={activateButtonIcon}
                 label={activateButtonLabel}
                 labelColor="text-white"
                 rounded="lg"
-                fullWidth
                 bgColor="bg-primary"
                 borderClasses="border border-2 border-primary-400"
                 onClick={handleActivateWallet}
                 disabled={isActiveWallet}
                 padding="2.5"
+                fullWidth
               />
               <Button
                 icon={deleteButtonIcon}
@@ -253,10 +254,10 @@ export default function SettingsWalletView() {
                 activeBgColor="text-error-dark"
                 borderClasses="border border-2 border-error"
                 rounded="lg"
-                fullWidth
                 onClick={handleDeleteWallet}
                 disabled={isDeleteDisabled}
                 padding="2.5"
+                fullWidth
               />
             </div>
           </div>
@@ -277,6 +278,15 @@ export default function SettingsWalletView() {
               >
                 <InfoCircleOutlined className="text-xl mr-1" />
                 {translate(translations.additionalWalletInformation)}
+              </Link>
+            </Accordion.Child>
+            <Accordion.Child icon={null} label="">
+              <Link
+                className="w-full text-left flex items-center"
+                to="/apps/walletconnect"
+              >
+                <WalletConnectFilled className="text-xl mr-1" />
+                WalletConnect
               </Link>
             </Accordion.Child>
             {isExperimental && (

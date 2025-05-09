@@ -20,27 +20,24 @@ export default function WalletViewButtons() {
   const { getClipboardContents } = useClipboard();
 
   const forwardOnValidAddress = async (input) => {
-    const navTo = await navigateOnValidUri(input);
+    const { navTo, navState } = await navigateOnValidUri(input);
     if (navTo) {
-      navigate(navTo);
+      navigate(navTo, { state: navState });
     }
   };
 
   const pasteAddressFromClipboard = async () => {
-    let navTo = "";
     try {
       const { paste, spawnPasteToast } = await getClipboardContents();
-      navTo = await navigateOnValidUri(paste);
+      const { navTo, navState } = await navigateOnValidUri(paste);
       if (navTo !== "") {
         spawnPasteToast();
-        navigate(navTo);
+        navigate(navTo, { state: navState });
+      } else {
+        navigate("/wallet/send/");
       }
     } catch (e) {
       //console.warn(e);
-    } finally {
-      if (navTo === "") {
-        navigate("/wallet/send/");
-      }
     }
   };
 

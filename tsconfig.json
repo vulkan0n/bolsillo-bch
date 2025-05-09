@@ -23,7 +23,9 @@
       "@/*": ["*"],
       "@/views/*": ["components/views/*"],
       "@/layout/*": ["components/layout/*"],
-      "@/atoms/*": ["components/atoms/*"]
+      "@/atoms/*": ["components/atoms/*"],
+      "@/icons/*": ["components/atoms/icons/*"],
+      "@/apps/*": ["components/views/apps/*"]
     }
   }
 }

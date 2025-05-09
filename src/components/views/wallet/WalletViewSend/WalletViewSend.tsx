@@ -353,9 +353,9 @@ export default function WalletViewSend() {
   };
 
   const handleAddressInput = async (input) => {
-    const navTo = await navigateOnValidUri(input);
+    const { navTo } = await navigateOnValidUri(input);
     if (navTo !== "") {
-      navigate(navTo, { replace: true, state: sendState });
+      navigate(navTo, { state: sendState });
     } else {
       setIsAddressInvalid(true);
     }

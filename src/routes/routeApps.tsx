@@ -50,4 +50,13 @@ export const routeApps = [
       return { Component: AppQrgenView };
     },
   },
+  {
+    path: "/apps/walletconnect",
+    async lazy() {
+      const { default: AppWalletConnectView } = await import(
+        "@/views/apps/walletconnect/AppWalletConnectView"
+      );
+      return { Component: AppWalletConnectView };
+    },
+  },
 ];
