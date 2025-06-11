@@ -67,6 +67,7 @@ export default function WalletManagerService() {
     calculateWalletHash,
     openWalletDatabase,
     setGenesisHeight,
+    fetchGenesisHeight,
     getPrefix,
   };
 
@@ -476,6 +477,16 @@ export default function WalletManagerService() {
     const walletDb = Database.getWalletDatabase(walletHash);
     walletDb.run(`UPDATE wallet SET genesis_height=?`, [height]);
     Log.debug("setGenesisHeight", height, walletHash);
+  }
+
+  async function fetchGenesisHeight(walletHash) {
+    const walletDb = await openWalletDatabase(walletHash);
+    const result = walletDb.exec("SELECT genesis_height FROM wallet");
+
+    const { genesis_height } = result[0];
+
+    Log.debug("fetchGenesisHeight", genesis_height, walletHash);
+    return genesis_height;
   }
 
   function getPrefix() {
