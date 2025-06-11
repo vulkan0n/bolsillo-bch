@@ -57,14 +57,14 @@ export function redux_init() {
   );
 }
 
-export function redux_post_init() {
+export async function redux_post_init() {
   Log.debug("redux_post_init");
   store.dispatch(triggerCheckIn());
   store.dispatch(fetchExchangeRates(0));
   store.dispatch(walletConnectInit());
 }
 
-export function redux_resume() {
+export async function redux_resume() {
   Log.debug("redux_resume");
   //store.dispatch(syncReconnect());
   store.dispatch(fetchExchangeRates(0));

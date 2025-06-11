@@ -2,13 +2,14 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import { DateTime } from "luxon";
 import { gql } from "@apollo/client";
 import LogService from "@/services/LogService";
-import { selectGenesisHeight } from "@/redux/wallet";
+import WalletManagerService from "@/services/WalletManagerService";
 import { selectDeviceInfo } from "@/redux/device";
 import {
   setPreference,
   selectLastCheckIn,
   selectPrivacySettings,
   selectIsOfflineMode,
+  selectActiveWalletHash,
 } from "@/redux/preferences";
 import apolloClient from "@/apolloClient";
 
@@ -29,7 +30,7 @@ export const triggerCheckIn = createAsyncThunk(
   async (payload, thunkApi) => {
     const isOfflineMode = selectIsOfflineMode(thunkApi.getState());
     if (isOfflineMode) {
-      Log.debug("stats/submitCheckIn blocked by offline mode");
+      Log.log("stats/submitCheckIn blocked by offline mode");
       return;
     }
 
@@ -38,53 +39,64 @@ export const triggerCheckIn = createAsyncThunk(
     );
 
     if (!isDailyCheckInEnabled) {
+      Log.log("stats/submitCheckIn blocked by user preference");
       return;
     }
 
-    const now = DateTime.utc();
-    const nowFormatted = now.toFormat("yyyyLLdd"); // LL is month, 2 digit padded
+    const WalletManager = WalletManagerService();
+    const walletHash = selectActiveWalletHash(thunkApi.getState());
+    const hasGenesisHeight =
+      !!(await WalletManager.fetchGenesisHeight(walletHash));
 
-    const DAY = "day";
+    if (!hasGenesisHeight) {
+      Log.debug("stats/submitCheckIn blocked - no genesis height");
+      return;
+    }
 
     const lastCheckIn = selectLastCheckIn(thunkApi.getState());
 
+    const now = DateTime.utc();
     const defaultLastCheckInMoment = now
       .minus({ days: 1 })
-      .startOf(DAY)
+      .startOf("day")
       .plus({ seconds: 1 });
+
     const lastCheckInMoment =
       lastCheckIn === ""
         ? defaultLastCheckInMoment
-        : DateTime.fromISO(lastCheckIn).startOf(DAY).plus({ seconds: 1 });
+        : DateTime.fromISO(lastCheckIn).startOf("day").plus({ seconds: 1 });
 
-    const nextCheckIn = lastCheckInMoment.plus({ days: 1 }).startOf(DAY);
+    const nextCheckIn = lastCheckInMoment.plus({ days: 1 }).startOf("day");
 
-    const walletGenesisHeight = selectGenesisHeight(thunkApi.getState());
-    const hasGenesisHeight = !!walletGenesisHeight;
+    const isShouldCheckIn = lastCheckIn === "" || now > nextCheckIn;
 
-    const isShouldCheckIn =
-      (lastCheckIn === "" || now > nextCheckIn) && hasGenesisHeight;
+    if (!isShouldCheckIn) {
+      Log.debug("stats/submitCheckIn skipped");
+      return;
+    }
 
     const { deviceIdHash } = selectDeviceInfo(thunkApi.getState());
 
-    Log.debug({ lastCheckIn, isShouldCheckIn, deviceIdHash });
+    Log.debug("sending checkin", {
+      lastCheckIn,
+      deviceIdHash,
+    });
 
-    if (isShouldCheckIn) {
-      Log.debug("sending checkin");
-      const result = await apolloClient.mutate({
-        mutation: SEND_DAILY_CHECK_IN,
-        variables: {
-          hashedDeviceId: deviceIdHash,
-          date: nowFormatted,
-        },
-      });
+    const nowFormatted = now.toFormat("yyyyLLdd"); // LL is month, 2 digit padded
 
-      if (result) {
-        Log.debug("check-in successful");
-        thunkApi.dispatch(
-          setPreference({ key: "lastCheckIn", value: nowFormatted })
-        );
-      }
+    const result = await apolloClient.mutate({
+      mutation: SEND_DAILY_CHECK_IN,
+      variables: {
+        hashedDeviceId: deviceIdHash,
+        date: nowFormatted,
+      },
+    });
+
+    if (result) {
+      Log.debug("check-in successful");
+      thunkApi.dispatch(
+        setPreference({ key: "lastCheckIn", value: nowFormatted })
+      );
     }
   }
 );
