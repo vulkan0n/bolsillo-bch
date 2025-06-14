@@ -36,6 +36,7 @@ export default function AddressManagerService(walletHash: string) {
     getChangeAddresses,
     getUnusedAddresses,
     //getRecentAddresses,
+    getWalletConnectAddress,
     getAddressTransactions,
     calculateAddressState,
     registerTransaction,
@@ -152,6 +153,18 @@ export default function AddressManagerService(walletHash: string) {
 
     //Log.debug("getUnusedAddress", limit, result);
     return result;
+  }
+
+  function getWalletConnectAddress(): AddressEntity {
+    const result = walletDb.exec(
+      "SELECT * FROM addresses WHERE hd_index=0 AND change=0"
+    );
+
+    if (result.length < 1) {
+      throw new AddressNotExistsError("walletconnect");
+    }
+
+    return result[0];
   }
 
   /*

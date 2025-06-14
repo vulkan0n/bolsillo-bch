@@ -107,7 +107,7 @@ export default function ElectrumService() {
 
       electrum.addListener("disconnected", () => {
         Log.log("ELECTRUM DISCONNECTED");
-        store.dispatch(syncConnectionDown());
+        //electrum = null;
       });
 
       electrum.addListener("connecting", () => {
@@ -149,6 +149,7 @@ export default function ElectrumService() {
       return electrum.disconnect(force);
     }
 
+    electrum = null;
     return true;
   }
 
@@ -172,6 +173,7 @@ export default function ElectrumService() {
       throw new ElectrumNotConnectedError();
     }
 
+    await electrum.request("blockchain.headers.unsubscribe");
     return electrum.subscribe("blockchain.headers.subscribe");
   }
 
