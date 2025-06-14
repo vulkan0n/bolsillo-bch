@@ -536,10 +536,8 @@
   dependencies:
     debug "^4.3.7"
 
-"@electrum-cash/network@^4.1.1":
+"@electrum-cash/network@file:static/@electrum-cash/network":
   version "4.1.1"
-  resolved "https://registry.yarnpkg.com/@electrum-cash/network/-/network-4.1.1.tgz#1f9571c783f613ce960374b4bffb73c27b28c429"
-  integrity sha512-v5abF2qGRTnBoi9tcS/iz7j82D8HYsK9iY0NM5v8/Qu8SnlMGGNz8UDFl+YzRPFXb4SUL3K0uf3Oydy82DB3oA==
   dependencies:
     "@electrum-cash/debug-logs" "^1.0.0"
     "@electrum-cash/web-socket" "^1.0.0"

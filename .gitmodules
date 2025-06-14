@@ -1,0 +1,3 @@
+[submodule "static/@electrum-cash/network"]
+	path = static/@electrum-cash/network
+	url = "https://gitlab.com/kzKallisti/network/#patch-1"
