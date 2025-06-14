@@ -7,7 +7,7 @@ import {
   preferencesInit,
 } from "./preferences";
 import { walletReducer, walletBoot, addressReducer } from "./wallet";
-import { syncReducer, syncMiddleware } from "./sync";
+import { syncReducer, syncMiddleware, syncReconnect } from "./sync";
 import { deviceReducer, deviceInit } from "./device";
 import { txHistoryReducer } from "./txHistory";
 import {
@@ -64,8 +64,8 @@ export async function redux_post_init() {
   store.dispatch(walletConnectInit());
 }
 
-export async function redux_resume() {
+export function redux_resume() {
   Log.debug("redux_resume");
-  //store.dispatch(syncReconnect());
+  store.dispatch(syncReconnect());
   store.dispatch(fetchExchangeRates(0));
 }
