@@ -29,15 +29,28 @@ import WalletManagerService, {
 
 const Log = LogService("HdNode");
 
+const seedCache = new Map();
+
 export default function HdNodeService(walletStub: WalletStub) {
   const WalletManager = WalletManagerService();
   const walletHash = WalletManager.calculateWalletHash(walletStub);
   const { mnemonic, derivation, passphrase } = walletStub;
 
-  const seed = bip39.mnemonicToSeedSync(mnemonic, passphrase);
+  // bip39.mnemonicToSeedSync is expensive (according to profiling)
+  // so we make sure we only run once per seed material
+  const seedKey = `${mnemonic}:${passphrase}`;
+  if (!seedCache.has(seedKey)) {
+    const derivedSeed = bip39.mnemonicToSeedSync(mnemonic, passphrase);
+    seedCache.set(seedKey, derivedSeed);
+  }
+
+  const seed = seedCache.get(seedKey);
+
   const hdMaster = deriveHdPrivateNodeFromSeed(seed);
   const hdMain = deriveHdPath(hdMaster, `${derivation}/0`);
   const hdChange = deriveHdPath(hdMaster, `${derivation}/1`);
+
+  const walletPrefix = WalletManager.getPrefix();
 
   return {
     generateAddress,
@@ -51,9 +64,14 @@ export default function HdNodeService(walletStub: WalletStub) {
     const child = deriveHdPrivateNodeChild(change ? hdChange : hdMain, index);
 
     const pubKey = secp256k1.derivePublicKeyCompressed(child.privateKey);
+
+    if (typeof pubKey === "string") {
+      throw new Error(pubKey);
+    }
+
     const hash = ripemd160.hash(sha256.hash(pubKey));
     const { address } = encodeCashAddress({
-      prefix: WalletManager.getPrefix(),
+      prefix: walletPrefix,
       type: CashAddressType.p2pkh,
       payload: hash,
       throwErrors: true,
@@ -87,7 +105,7 @@ export default function HdNodeService(walletStub: WalletStub) {
         data: {
           keys: {
             privateKeys: {
-              key: _deriveAddressPrivateKey(input.address),
+              key: _deriveAddressPrivateKey(input.address), // [!]
             },
           },
         },
@@ -155,6 +173,11 @@ export default function HdNodeService(walletStub: WalletStub) {
     const unsignedTransaction = { ...template };
 
     const walletTemplate = importWalletTemplate(walletTemplateP2pkhNonHd);
+
+    if (typeof walletTemplate === "string") {
+      throw new Error(walletTemplate);
+    }
+
     const compiler = walletTemplateToCompilerBCH(walletTemplate);
 
     /* eslint-disable prefer-template */
