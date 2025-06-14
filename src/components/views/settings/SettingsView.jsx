@@ -7,6 +7,7 @@ import {
   selectPreferences,
   setPreference,
   selectActiveWalletHash,
+  selectIsPrerelease,
 } from "@/redux/preferences";
 
 import ViewHeader from "@/layout/ViewHeader";
@@ -53,6 +54,8 @@ export default function SettingsView() {
     [dispatch, preferences, handleSettingsUpdate]
   );
 
+  const isPrerelease = useSelector(selectIsPrerelease);
+
   const activeWalletHash = useSelector(selectActiveWalletHash);
 
   return (
@@ -89,16 +92,18 @@ export default function SettingsView() {
           inverted
           fullWidth
         />
-        <LinkExternal to="https://docs.selene.cash" className="w-full">
-          <Button
-            label="Help"
-            labelSize="xl"
-            icon={QuestionCircleOutlined}
-            iconSize="3xl"
-            padding="2"
-            fullWidth
-          />
-        </LinkExternal>
+        {isPrerelease && (
+          <LinkExternal to="https://docs.selene.cash" className="w-full">
+            <Button
+              label="Help"
+              labelSize="xl"
+              icon={QuestionCircleOutlined}
+              iconSize="3xl"
+              padding="2"
+              fullWidth
+            />
+          </LinkExternal>
+        )}
       </div>
     </FullColumn>
   );
