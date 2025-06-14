@@ -33,6 +33,7 @@ initialize_app();
 // initialize app state and render UI
 async function app_init() {
   Log.log("* APP_INIT *");
+  App.addListener("pause", app_pause);
   App.addListener("resume", app_resume);
   await redux_init();
   Log.debug("render <Main>");
@@ -62,8 +63,13 @@ async function post_init() {
 }
 
 // actions to perform after app is resumed from sleep state
-function app_resume() {
+async function app_resume() {
   Log.time("APP_RESUME");
   redux_resume();
   Log.timeEnd("APP_RESUME");
+}
+
+function app_pause() {
+  Log.time("APP_PAUSE");
+  Log.timeEnd("APP_PAUSE");
 }
