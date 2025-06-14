@@ -118,8 +118,8 @@ export const syncConnectionUp = createAsyncThunk(
     const Electrum = ElectrumService();
     // set up subscriptions on connect
     try {
+      await thunkApi.dispatch(syncSubscriptions());
       await Electrum.subscribeToChaintip();
-      thunkApi.dispatch(syncSubscriptions());
     } catch (e) {
       Log.warn("syncConnectionUp:", e);
     }
@@ -158,10 +158,14 @@ export const syncSubscriptions = createAsyncThunk(
       (a, i) => i < 20 || i > unusedChangeAddresses.length - 20
     );
 
+    // subscribe to WalletConnect address
+    const walletConnectAddress = AddressManager.getWalletConnectAddress();
+
     // TODO: allow the user to set up pinned/watch addresses, subscribe here
 
     const subscriptions = selectSubscriptions(thunkApi.getState());
     const addresses = [
+      walletConnectAddress,
       ...hotAddresses,
       ...unusedReceiveAddresses,
       ...filteredUnusedChangeAddresses,
@@ -173,7 +177,7 @@ export const syncSubscriptions = createAsyncThunk(
 
     /* eslint-disable no-restricted-syntax */
     /* eslint-disable no-await-in-loop */
-    for (const batch of generateBatch(addresses)) {
+    for (const batch of generateBatch(addresses, 200)) {
       Log.debug("syncSubscriptions batch", batch.length);
       await Promise.all(
         batch.map(async (address) => {
@@ -381,12 +385,13 @@ export const syncChaintip = createAsyncThunk(
 
     // chaintip is up to date
     if (currentTip.blockhash === tipHash) {
+    Log.log("sync/chaintip", currentTip.height, currentTip.blockhash);
       return currentTip;
     }
 
     const block = await Blockchain.resolveBlockByHash(tipHash);
 
-    Log.log("sync/chaintip", block, currentTip);
+    Log.log("sync/chaintip", block);
 
     // this requires the app being closed for 10 blocks
     // TODO: actual cron tasking
