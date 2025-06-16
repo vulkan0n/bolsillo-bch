@@ -3,6 +3,20 @@ import DatabaseService from "@/services/DatabaseService";
 
 const Log = LogService("UtxoManager");
 
+type TokenNftCapability = "none" | "mutable" | "minting";
+
+export interface UtxoEntity {
+  address: string;
+  txid: string;
+  tx_pos: number;
+  amount: bigint;
+  memo: string | null;
+  token_category: string | null;
+  token_amount: bigint | null;
+  nft_capability: TokenNftCapability | null;
+  nft_commitment: string | null;
+}
+
 export default function UtxoManagerService(walletHash: string) {
   const Database = DatabaseService();
   const walletDb = Database.getWalletDatabase(walletHash);
@@ -94,7 +108,7 @@ export default function UtxoManagerService(walletHash: string) {
   }
 
   // returns all UTXOs for an address in the wallet
-  function getAddressUtxos(address) {
+  function getAddressUtxos(address: string): Array<UtxoEntity> {
     const result = walletDb.exec(
       `SELECT * FROM address_utxos WHERE address=? ORDER BY amount ASC`,
       [address],
@@ -104,7 +118,7 @@ export default function UtxoManagerService(walletHash: string) {
   }
 
   // returns all non-token UTXOs for an address in the wallet
-  function getAddressCoins(address) {
+  function getAddressCoins(address: string) {
     const result = walletDb.exec(
       `SELECT * FROM address_utxos WHERE address=? AND token_category IS NULL ORDER BY amount ASC`,
       [address],

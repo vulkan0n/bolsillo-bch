@@ -61,7 +61,7 @@ export const walletBoot = createAsyncThunk(
       : ElectrumService().selectFallbackServer("");
 
     // connect to Electrum
-    await thunkApi.dispatch(
+    thunkApi.dispatch(
       syncConnect({
         attempts: 0,
         server,

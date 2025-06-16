@@ -118,8 +118,8 @@ export const syncConnectionUp = createAsyncThunk(
     const Electrum = ElectrumService();
     // set up subscriptions on connect
     try {
-      await thunkApi.dispatch(syncSubscriptions());
-      await Electrum.subscribeToChaintip();
+      Electrum.subscribeToChaintip();
+      thunkApi.dispatch(syncSubscriptions());
     } catch (e) {
       Log.warn("syncConnectionUp:", e);
     }
@@ -140,14 +140,15 @@ export const syncSubscriptions = createAsyncThunk(
     const UtxoManager = UtxoManagerService(walletHash);
 
     // "hot" addresses are any addresses with UTXOs on them
-    // if a change address has a utxo, we'll get notified on spend,
+    // if any address has a utxo, we'll get notified on spend,
     // then no longer subscribe going forward
-    // if it doesn't have a utxo, we assume the address is spent anyway,
+    // if a change address has state but no utxo, we assume the address is spent
     // so no need to subscribe.
     const walletUtxos = UtxoManager.getWalletUtxos();
-    const hotAddresses = walletUtxos.map((utxo) =>
-      AddressManager.getAddress(utxo.address)
-    );
+    const hotAddresses = walletUtxos.reduce((acc, utxo) => {
+      const a = AddressManager.getAddress(utxo.address);
+      return acc.find((f) => f.address === a.address) ? acc : [...acc, a];
+    }, []);
 
     // we should subscribe to all unused receive addresses
     const unusedReceiveAddresses = AddressManager.getUnusedAddresses(0, 0);
@@ -161,36 +162,38 @@ export const syncSubscriptions = createAsyncThunk(
     // subscribe to WalletConnect address
     const walletConnectAddress = AddressManager.getWalletConnectAddress();
 
-    // TODO: allow the user to set up pinned/watch addresses, subscribe here
+    // TODO: allow the user to set up pinned/watch addresses, get address list here
 
-    const subscriptions = selectSubscriptions(thunkApi.getState());
     const addresses = [
       walletConnectAddress,
       ...hotAddresses,
       ...unusedReceiveAddresses,
       ...filteredUnusedChangeAddresses,
-    ].filter((a) => !subscriptions.includes(a.address));
+    ]
+      // de-duplicate subscription list
+      .reduce(
+        (acc, cur) =>
+          acc.find((f) => f.address === cur.address) ? acc : [...acc, cur],
+        []
+      );
+
+    Log.debug("syncSubscriptions", [...addresses]);
 
     thunkApi.dispatch(syncSubscriptionCount(addresses.length));
 
     const Electrum = ElectrumService();
 
-    /* eslint-disable no-restricted-syntax */
-    /* eslint-disable no-await-in-loop */
-    for (const batch of generateBatch(addresses, 200)) {
-      Log.debug("syncSubscriptions batch", batch.length);
-      await Promise.all(
-        batch.map(async (address) => {
-          try {
-            await Electrum.subscribeToAddress(address);
-          } catch (e) {
-            Log.warn("syncSubscriptions:", e);
-          } finally {
-            thunkApi.dispatch(syncSubscriptionCount(-1));
-          }
-        })
-      );
-    }
+    Promise.all(
+      addresses.map(async (address) => {
+        try {
+          await Electrum.subscribeToAddress(address);
+        } catch (e) {
+          Log.warn("syncSubscriptions:", e);
+        } finally {
+          thunkApi.dispatch(syncSubscriptionCount(-1));
+        }
+      })
+    );
 
     return addresses;
   }
@@ -210,6 +213,8 @@ export const syncAddressState = createAsyncThunk(
     // get subscription response data from payload
     const [address, addressState] = payload;
 
+    //Log.debug("syncAddressState", payload);
+
     // catch for payload from direct electrum subscription
     const walletHash = selectActiveWalletHash(thunkApi.getState());
     const AddressManager = AddressManagerService(walletHash);
@@ -218,7 +223,7 @@ export const syncAddressState = createAsyncThunk(
 
     // check downloaded state against local state
     if (addressObj.state !== addressState) {
-      //Log.debug("address state changed for", address, addressState);
+      Log.debug("address state changed for", address, addressState);
       thunkApi.dispatch(syncAddressUtxos(addressObj));
       thunkApi.dispatch(syncAddressHistory(addressObj));
     }
@@ -235,6 +240,7 @@ const syncAddressUtxos = createAsyncThunk(
     const wallet = selectActiveWallet(thunkApi.getState());
 
     try {
+      //Log.debug("sync/addressUtxos", address.address);
       await AddressScannerService(wallet).scanUtxos(address.address);
     } catch (e) {
       Log.warn("syncAddressUtxos:", e);
@@ -385,7 +391,7 @@ export const syncChaintip = createAsyncThunk(
 
     // chaintip is up to date
     if (currentTip.blockhash === tipHash) {
-    Log.log("sync/chaintip", currentTip.height, currentTip.blockhash);
+      Log.log("sync/chaintip", currentTip.height, currentTip.blockhash);
       return currentTip;
     }
 

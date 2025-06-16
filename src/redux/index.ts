@@ -47,9 +47,9 @@ export async function redux_pre_init() {
 }
 
 // run actions needed to fire on app load
-export function redux_init() {
+export async function redux_init() {
   Log.debug("redux_init");
-  store.dispatch(
+  await store.dispatch(
     walletBoot({
       walletHash: selectActiveWalletHash(store.getState()),
       network: selectBchNetwork(store.getState()),
@@ -64,7 +64,7 @@ export async function redux_post_init() {
   store.dispatch(walletConnectInit());
 }
 
-export function redux_resume() {
+export async function redux_resume() {
   Log.debug("redux_resume");
   store.dispatch(syncReconnect());
   store.dispatch(fetchExchangeRates(0));

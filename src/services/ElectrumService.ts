@@ -164,6 +164,7 @@ export default function ElectrumService() {
       throw new ElectrumNotConnectedError();
     }
 
+    //Log.debug("subscribeToAddress", address.address);
     return electrum.subscribe("blockchain.address.subscribe", address.address);
   }
 

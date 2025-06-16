@@ -390,20 +390,43 @@ export default function AddressScannerService(wallet: WalletEntity) {
     const utxos = await Electrum.requestUtxos(address);
 
     if (Array.isArray(utxos)) {
-      // we need to delete our knowledge of UTXO set
-      // in case some utxos were spent elsewhere
-      // i.e. wallet seed shared on multiple devices
-      UtxoManager.discardAddressUtxos(address);
+      // re-registering UTXOs is time-expensive, so diff against existing utxo set
+      const remoteUtxoHash = utxos
+        .map((utxo) => `${utxo.tx_hash}:${utxo.tx_pos}`)
+        .sort()
+        .join(";");
 
-      utxos.forEach((utxo) => {
-        UtxoManager.registerUtxo(address, utxo);
-        /*
+      const localUtxos = UtxoManager.getAddressUtxos(address);
+      const localUtxoHash = localUtxos
+        .map((utxo) => `${utxo.txid}:${utxo.tx_pos}`)
+        .sort()
+        .join(";");
+
+      Log.debug(
+        address,
+        "local",
+        localUtxoHash,
+        "remote",
+        remoteUtxoHash,
+        localUtxoHash === remoteUtxoHash
+      );
+
+      if (localUtxoHash !== remoteUtxoHash) {
+        // we need to delete our knowledge of UTXO set
+        // in case some utxos were spent elsewhere
+        // i.e. wallet seed shared on multiple devices
+        UtxoManager.discardAddressUtxos(address);
+
+        utxos.forEach((utxo) => {
+          UtxoManager.registerUtxo(address, utxo);
+          /*
         // TODO: validate that the UTXOs pass merkle inclusion
         // for now we just trust that fulcrum isn't lying to us
         listenerApi.dispatch(syncBlock(utxo.height));
         listenerApi.dispatch(syncTxRequest(utxo.tx_hash));
         */
-      });
+        });
+      }
     }
 
     //Log.debug("got utxos", address, utxos);
