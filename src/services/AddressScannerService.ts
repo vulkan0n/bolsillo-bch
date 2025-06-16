@@ -402,14 +402,14 @@ export default function AddressScannerService(wallet: WalletEntity) {
         .sort()
         .join(";");
 
-      Log.debug(
+      /*Log.debug(
         address,
         "local",
         localUtxoHash,
         "remote",
         remoteUtxoHash,
         localUtxoHash === remoteUtxoHash
-      );
+      );*/
 
       if (localUtxoHash !== remoteUtxoHash) {
         // we need to delete our knowledge of UTXO set

@@ -307,7 +307,7 @@ export const syncHotRefresh = createAsyncThunk(
     const sync = selectSyncState(thunkApi.getState());
 
     // only allow hot sync after cooldown
-    const hotSyncCooldown = 10 * 1000;
+    const hotSyncCooldown = 3 * 1000;
 
     if (
       (sync.isSyncComplete &&
@@ -317,18 +317,23 @@ export const syncHotRefresh = createAsyncThunk(
     ) {
       const AddressManager = AddressManagerService(wallet.walletHash);
 
-      // don't resync unused receive addresses (we're already subscribed to them)
+      // get all receive addresses
       const receiveAddresses = AddressManager.getReceiveAddresses();
+
+      // don't resync unused receive addresses (we're already subscribed to them)
       const filteredReceiveAddresses = receiveAddresses.filter(
         (address) => !(address.state === null)
       );
 
-      // don't resync fully spent change addresses
+      // get all change addresses
       const changeAddresses = AddressManager.getChangeAddresses();
+
+      // don't resync fully spent change addresses
       const filteredChangeAddresses = changeAddresses.filter(
         (address) => !(address.state !== null && address.balance === 0)
       );
 
+      // concatenate full list of addresses
       const addresses = filteredReceiveAddresses.concat(
         filteredChangeAddresses
       );
@@ -337,13 +342,13 @@ export const syncHotRefresh = createAsyncThunk(
       Log.debug("hotRefresh", addresses.length);
 
       const Electrum = ElectrumService();
-      for (const addressBatch of generateBatch(addresses)) {
-        const batchPromises = addressBatch.map(async (address) => {
+      await Promise.all(
+        addresses.map(async (address) => {
           try {
             const addressState = await Electrum.requestAddressState(
               address.address
             );
-            thunkApi.dispatch(
+            await thunkApi.dispatch(
               syncAddressState([address.address, addressState])
             );
           } catch (e) {
@@ -351,10 +356,8 @@ export const syncHotRefresh = createAsyncThunk(
           } finally {
             thunkApi.dispatch(syncSubscriptionCount(-1));
           }
-        });
-
-        await Promise.all(batchPromises);
-      }
+        })
+      );
 
       const AddressScanner = AddressScannerService(wallet);
       const nScanMore = 500;
@@ -363,7 +366,7 @@ export const syncHotRefresh = createAsyncThunk(
         AddressScanner.scanMoreAddresses(nScanMore, 1),
       ]);
 
-      thunkApi.dispatch(syncPopulateAddresses());
+      await thunkApi.dispatch(syncPopulateAddresses());
 
       Log.debug("sync/hotRefresh", sync);
       return Date.now();
