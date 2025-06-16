@@ -133,7 +133,10 @@ export default function TransactionManagerService() {
     });
   }
 
-  async function sendTransaction(tx: TransactionStub, walletHash: string) {
+  async function sendTransaction(
+    tx: TransactionStub,
+    walletHash: string
+  ): Promise<{ isSuccess: boolean; result: string | null }> {
     const { txid: tx_hash, hex: tx_hex } = tx;
 
     const Electrum = ElectrumService();

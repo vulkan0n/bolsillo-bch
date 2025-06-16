@@ -9,7 +9,6 @@ import { store } from "@/redux";
 import { selectBchNetwork, setPreference } from "@/redux/preferences";
 import {
   syncConnectionUp,
-  syncConnectionDown,
   syncAddressState,
   syncChaintip,
   selectChaintip,
@@ -297,6 +296,7 @@ export default function ElectrumService() {
       throw new ElectrumNotConnectedError();
     }
 
+    // de-duplicate transaction requests
     if (pendingTxRequests[tx_hash]) {
       Log.warn("waiting on resolution for", tx_hash);
       return pendingTxRequests[tx_hash];
@@ -383,7 +383,7 @@ export default function ElectrumService() {
     return { ...block, blockhash };
   }
 
-  async function broadcastTransaction(tx_hex) {
+  async function broadcastTransaction(tx_hex): Promise<string> {
     if (electrum === null || electrum.status !== ConnectionStatus.CONNECTED) {
       throw new ElectrumNotConnectedError();
     }
@@ -393,8 +393,8 @@ export default function ElectrumService() {
       tx_hex
     );
 
-    if (tx_hash instanceof Error) {
-      throw tx_hash;
+    if (typeof tx_hash !== "string") {
+      throw new Error(tx_hash?.toString());
     }
 
     Log.log("broadcastTransaction", tx_hash, tx_hex);

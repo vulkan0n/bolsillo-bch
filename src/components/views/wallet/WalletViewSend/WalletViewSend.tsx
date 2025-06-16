@@ -268,11 +268,10 @@ export default function WalletViewSend() {
           replace: true,
         });
       } else {
-        throw new Error(result);
+        throw new Error(result?.toString());
       }
     } catch (e) {
-      //setMessage(translate(translations.transactionFailed));
-      setMessage(`${translate(translations.transactionFailed)}: ${e.message}`);
+      setMessage(`${translate(translations.transactionFailed)}: ${e}`);
       await Haptic.error();
     } finally {
       setIsSending(false);
@@ -280,21 +279,29 @@ export default function WalletViewSend() {
   };
 
   useEffect(function handleInstantPay() {
+    // don't handle instant pay if disabled
     if (!isInstantPayEnabled) {
       return;
     }
+
+    // don't retry instant pay on cancel - navigate back
     if (isInstantPayCanceled) {
       navigate(-1);
+      return;
+    }
+
+    // don't try instant pay if already attempting send
+    if (isSending) {
       return;
     }
 
     const requestAmount = bchToSats(searchParams.get("amount") || 0);
 
     if (requestAmount > 0 && requestAmount <= instantPayThreshold) {
-      //Log.debug("instapay!", threshold, requestAmount);
+      Log.debug("instapay!", instantPayThreshold, requestAmount);
       confirmSend(true);
     }
-  });
+  }); // we don't use a dependency array here in order to optimize speed - we can execute on first render instead of 2nd.
 
   const handleSendMaxTokens = () => {
     //const t = tokenData.find((token) => token.category === tokenId);
