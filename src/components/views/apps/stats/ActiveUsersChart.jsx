@@ -1,4 +1,5 @@
 /* eslint-disable react/prop-types */
+import { useMemo } from "react";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -28,35 +29,12 @@ ChartJS.register(
 function ActiveUsersChart({ data, period }) {
   const { activeBitcoiners } = data;
 
-  // generate labels based on dates and period
-  const labels = activeBitcoiners.map(({ date }) => {
-    switch (period) {
-      case Period.Weekly:
-        return `${DateTime.fromISO(date).toLocaleString({
-          month: "numeric",
-          day: "numeric",
-        })} - ${DateTime.fromISO(date).plus({ days: 6 }).toLocaleString({
-          month: "numeric",
-          day: "numeric",
-        })}`;
-      case Period.Monthly:
-        return DateTime.fromISO(date).toLocaleString({
-          month: "short",
-        });
-      case Period.Yearly:
-        return DateTime.fromISO(date).toLocaleString({
-          year: "numeric",
-        });
-      default: // Period.Daily
-        return DateTime.fromISO(date).toLocaleString({
-          month: "short",
-          day: "numeric",
-        });
-    }
-  });
-
   // parse counts to numbers and adjust the last data point
-  const counts = activeBitcoiners.map((item) => Number.parseInt(item.count));
+  const counts = useMemo(
+    () => activeBitcoiners.map((item) => Number.parseInt(item.count)),
+    [activeBitcoiners]
+  );
+
   const n = counts.length;
   const normalizedCounts = [...counts];
   while (normalizedCounts[0] === 0) {
@@ -72,34 +50,66 @@ function ActiveUsersChart({ data, period }) {
   const maxCount = Math.max(...counts);
   const maxCountRoundedUpToNearest10 = Math.ceil(maxCount / 10) * 10;
 
-  // chart data with dashed line between last two points
-  const primaryColor = "rgba(148, 195, 82, 1)";
-  const projectionColor = "rgba(211, 209, 201, 1)";
-  const chartData = {
-    labels,
-    datasets: [
-      {
-        label: translate(translations.activeSeleneUsers),
-        data: normalizedDataPoints,
-        borderColor: primaryColor,
-        backgroundColor: primaryColor,
-        segment: {
-          borderDash: (ctx) => (ctx.p0DataIndex === n - 2 ? [5, 5] : undefined),
+  const chartData = useMemo(() => {
+    // generate labels based on dates and period
+    const labels = activeBitcoiners.map(({ date }) => {
+      switch (period) {
+        case Period.Weekly:
+          return `${DateTime.fromISO(date).toLocaleString({
+            month: "numeric",
+            day: "numeric",
+          })} - ${DateTime.fromISO(date).plus({ days: 6 }).toLocaleString({
+            month: "numeric",
+            day: "numeric",
+          })}`;
+        case Period.Monthly:
+          return DateTime.fromISO(date).toLocaleString({
+            month: "short",
+          });
+        case Period.Yearly:
+          return DateTime.fromISO(date).toLocaleString({
+            year: "numeric",
+          });
+        default: // Period.Daily
+          return DateTime.fromISO(date).toLocaleString({
+            month: "short",
+            day: "numeric",
+          });
+      }
+    });
+
+    // chart data with dashed line between last two points
+    const primaryColor = "rgba(148, 195, 82, 1)";
+    const projectionColor = "rgba(211, 209, 201, 1)";
+
+    return {
+      labels,
+      datasets: [
+        {
+          label: translate(translations.activeSeleneUsers),
+          data: normalizedDataPoints,
+          borderColor: primaryColor,
+          backgroundColor: primaryColor,
+          segment: {
+            borderDash: (ctx) =>
+              ctx.p0DataIndex === n - 2 ? [5, 5] : undefined,
+          },
+          borderWidth: 3,
         },
-        borderWidth: 3,
-      },
-      {
-        label: translate(translations.activeSeleneUsers),
-        data: counts,
-        borderColor: projectionColor,
-        backgroundColor: projectionColor,
-        segment: {
-          borderDot: (ctx) => (ctx.p0DataIndex === n - 2 ? [5, 5] : undefined),
+        {
+          label: translate(translations.activeSeleneUsers),
+          data: counts,
+          borderColor: projectionColor,
+          backgroundColor: projectionColor,
+          segment: {
+            borderDot: (ctx) =>
+              ctx.p0DataIndex === n - 2 ? [5, 5] : undefined,
+          },
+          borderWidth: 3,
         },
-        borderWidth: 3,
-      },
-    ],
-  };
+      ],
+    };
+  }, [activeBitcoiners]);
 
   const options = {
     responsive: true,
