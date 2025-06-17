@@ -43,12 +43,12 @@ export async function redux_pre_init() {
   Log.debug("redux_pre_init");
   await store.dispatch(preferencesInit());
   await store.dispatch(deviceInit());
-  await store.dispatch(exchangeRateInit());
 }
 
 // run actions needed to fire on app load
 export async function redux_init() {
   Log.debug("redux_init");
+  await store.dispatch(exchangeRateInit());
   await store.dispatch(
     walletBoot({
       walletHash: selectActiveWalletHash(store.getState()),
@@ -59,13 +59,14 @@ export async function redux_init() {
 
 export async function redux_post_init() {
   Log.debug("redux_post_init");
-  store.dispatch(triggerCheckIn());
-  store.dispatch(fetchExchangeRates(0));
   store.dispatch(walletConnectInit());
+  store.dispatch(fetchExchangeRates(0));
+  store.dispatch(triggerCheckIn());
 }
 
 export async function redux_resume() {
   Log.debug("redux_resume");
   store.dispatch(syncReconnect());
   store.dispatch(fetchExchangeRates(0));
+  store.dispatch(triggerCheckIn());
 }
