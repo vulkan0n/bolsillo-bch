@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useDispatch } from "react-redux";
 import { WarningFilled, EyeInvisibleOutlined } from "@ant-design/icons";
 import { Dialog } from "@capacitor/dialog";
@@ -22,8 +22,16 @@ export default function ShowMnemonic({ walletHash }: { walletHash: string }) {
   // toggle visibility for recovery phrase
   const [shouldShowRecoveryPhrase, setShouldShowRecoveryPhrase] =
     useState(false);
-  const [mnemonic, setMnemonic] = useState("");
-  const [passphrase, setPassphrase] = useState("");
+  const mnemonic = useRef("");
+  const passphrase = useRef("");
+
+  const handleFetchMnemonic = async () => {
+    await WalletManager.openWalletDatabase(walletHash);
+    const { mnemonic: m, passphrase: p } = WalletManager.getWallet(walletHash);
+
+    mnemonic.current = m;
+    passphrase.current = p;
+  };
 
   // handler for mnemonic visibility area
   const handleShowMnemonic = async () => {
@@ -35,16 +43,12 @@ export default function ShowMnemonic({ walletHash }: { walletHash: string }) {
         return;
       }
 
-      await WalletManager.openWalletDatabase(walletHash);
-      const { mnemonic: m, passphrase: p } =
-        WalletManager.getWallet(walletHash);
+      await handleFetchMnemonic();
 
       setShouldShowRecoveryPhrase(true);
-      setMnemonic(m);
-      setPassphrase(p);
       dispatch(walletSetKeyViewed({ walletHash }));
     } else {
-      setMnemonic("");
+      mnemonic.current = "";
       setShouldShowRecoveryPhrase(false);
     }
   };
@@ -66,15 +70,20 @@ export default function ShowMnemonic({ walletHash }: { walletHash: string }) {
       return;
     }
 
-    const hasPassphrase = passphrase !== "";
+    await handleFetchMnemonic();
+
+    const hasPassphrase = passphrase.current !== "";
     const clipboardString = hasPassphrase
-      ? `${mnemonic} — ${translate(translations.passphrase)}: ${passphrase}`
-      : mnemonic;
+      ? `${mnemonic.current} — ${translate(translations.passphrase)}: ${passphrase.current}`
+      : mnemonic.current;
 
     handleCopyToClipboard(
       clipboardString,
       translate(translations.copiedToClipboardSuccess),
-      hasPassphrase ? translate(translations.copiedToClipboardPassphrase) : ""
+      hasPassphrase
+        ? translate(translations.copiedToClipboardPassphrase)
+        : undefined,
+      true
     );
   };
 
@@ -94,7 +103,7 @@ export default function ShowMnemonic({ walletHash }: { walletHash: string }) {
     React.TouchEvent<HTMLButtonElement> | React.MouseEvent
   >(handleLongPress, handleShowMnemonic);
 
-  const splitMnemonic = mnemonic.split(" ");
+  const splitMnemonic = mnemonic.current.split(" ");
 
   return (
     <button

@@ -8,11 +8,16 @@ import translations from "@/views/wallet/WalletViewButtons/translations";
 
 export function useClipboard() {
   const handleCopyToClipboard = useCallback(
-    async (string: string, type?: string, message?: string) => {
+    async (
+      string: string,
+      header?: string,
+      message?: string,
+      isPrivate?: boolean
+    ) => {
       await Clipboard.write({ string });
       ToastService().clipboardCopy(
-        type,
-        message !== undefined ? message : string
+        header,
+        message !== undefined ? message : !isPrivate && string
       );
     },
     []
@@ -23,16 +28,20 @@ export function useClipboard() {
     // https://developer.mozilla.org/en-US/docs/Web/API/Clipboard#clipboard_availability
     // Error: Reading from clipboard not supported in this browser
     // Firefox users must set "dom.events.asyncClipboard.read" to "true" in about:config
-    const { value: paste } = await Clipboard.read();
+    try {
+      const { value: paste } = await Clipboard.read();
 
-    const Toast = ToastService();
-    const spawnPasteToast = () =>
-      Toast.spawn({
-        icon: <SnippetsOutlined className="text-primary text-4xl" />,
-        header: translate(translations.pastedFromClipboard),
-        body: <span className="flex break-all text-sm">{paste}</span>,
-      });
-    return { paste, spawnPasteToast };
+      const Toast = ToastService();
+      const spawnPasteToast = () =>
+        Toast.spawn({
+          icon: <SnippetsOutlined className="text-primary text-4xl" />,
+          header: translate(translations.pastedFromClipboard),
+          body: <span className="flex break-all text-sm">{paste}</span>,
+        });
+      return { paste, spawnPasteToast };
+    } catch (e) {
+      return { paste: "", spawnPasteToast: () => {} };
+    }
   }, []);
 
   return { getClipboardContents, handleCopyToClipboard };
