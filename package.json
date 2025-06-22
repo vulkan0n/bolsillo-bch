@@ -7,7 +7,8 @@
     "dev": "vite",
     "pretty": "npx prettier src/ --write",
     "lint": "npx prettier src/ --check && npx eslint --ext .js,.jsx,.ts,.tsx src/",
-    "build": "yarn test && vite build",
+    "build-dep": "cd node_modules/@electrum-cash/network && npm install && npm run build",
+    "build": "yarn build-dep && yarn test && vite build",
     "preview": "vite preview",
     "test": "yarn lint && jest"
   },

@@ -35,6 +35,7 @@ build_sync:
   stage: build
   image: node:lts-alpine
   script:
+    - 'apk add git'
     - yarn install
     - yarn build
     - npx cap sync
