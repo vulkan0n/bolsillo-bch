@@ -28,8 +28,8 @@ export function useScanner(onScan) {
       return;
     }
 
-    await BarcodeScanner.showBackground();
     await BarcodeScanner.stopScan();
+    await BarcodeScanner.showBackground();
   }, [deviceInfo.platform]);
 
   const handleScanContent = useCallback(
@@ -43,9 +43,10 @@ export function useScanner(onScan) {
           body: <span className="flex break-all text-sm">{content}</span>,
         });
 
-      await onScan(content, spawnScanToast);
+      await closeScanner();
+      onScan(content, spawnScanToast);
     },
-    [dispatch, onScan]
+    [dispatch, onScan, closeScanner]
   );
 
   const startScan = useCallback(async () => {
