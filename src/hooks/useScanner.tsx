@@ -44,7 +44,7 @@ export function useScanner(onScan) {
         });
 
       await closeScanner();
-      onScan(content, spawnScanToast);
+      await onScan(content, spawnScanToast);
     },
     [dispatch, onScan, closeScanner]
   );
@@ -75,7 +75,7 @@ export function useScanner(onScan) {
     });
 
     if (result.hasContent) {
-      handleScanContent(result.content);
+      await handleScanContent(result.content);
     }
   }, [deviceInfo.platform, handleScanContent]);
 

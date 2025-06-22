@@ -31,8 +31,6 @@ import AddressScannerService from "@/services/AddressScannerService";
 import UtxoManagerService from "@/services/UtxoManagerService";
 import JanitorService from "@/services/JanitorService";
 
-import { generateBatch } from "@/util/batch";
-
 const Log = LogService("redux/sync");
 
 export const syncMiddleware = createListenerMiddleware();
@@ -177,7 +175,7 @@ export const syncSubscriptions = createAsyncThunk(
         []
       );
 
-    Log.debug("syncSubscriptions", [...addresses]);
+    //Log.debug("syncSubscriptions", [...addresses]);
 
     thunkApi.dispatch(syncSubscriptionCount(addresses.length));
 
@@ -223,7 +221,7 @@ export const syncAddressState = createAsyncThunk(
 
     // check downloaded state against local state
     if (addressObj.state !== addressState) {
-      Log.debug("address state changed for", address, addressState);
+      Log.debug("address state changed for", address, addressState, addressObj);
       thunkApi.dispatch(syncAddressUtxos(addressObj));
       thunkApi.dispatch(syncAddressHistory(addressObj));
     }

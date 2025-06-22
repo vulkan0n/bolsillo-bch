@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import {
   useParams,
   useSearchParams,
@@ -78,9 +78,15 @@ export default function WalletViewSend() {
   const TokenManager = TokenManagerService(walletHash);
 
   const { state: sendState } = location;
-  const selection = sendState?.selection || [];
-  const nftSelection = sendState?.nftSelection || [];
-  const tokenCategories = sendState?.tokenCategories || [];
+  const selection = useMemo(() => sendState?.selection || [], [sendState]);
+  const nftSelection = useMemo(
+    () => sendState?.nftSelection || [],
+    [sendState]
+  );
+  const tokenCategories = useMemo(
+    () => sendState?.tokenCategories || [],
+    [sendState]
+  );
   const selectionAmount = selection.reduce((sum, cur) => sum + cur.amount, 0n);
 
   const hasTokens = tokenCategories.length > 0;
@@ -110,6 +116,7 @@ export default function WalletViewSend() {
 
   const [message, setMessage] = useState("");
   const [isSending, setIsSending] = useState(false);
+  const isInstantPayPending = useRef(false);
 
   const { shouldPreferLocalCurrency } = useSelector(selectCurrencySettings);
 
@@ -153,60 +160,71 @@ export default function WalletViewSend() {
     setMessage(insufficientFundsTranslation);
   };
 
-  const confirmSend = async (isInstantPay: boolean = false) => {
-    if (isSending) {
-      return;
-    }
-
-    if ((hasTokens || hasNft) && !isTokenAddress) {
-      await Haptic.warn();
-      setMessage("Can't send tokens to non-token address!");
-      return;
-    }
-
-    setIsSending(true);
-
-    const authAction = isInstantPay
-      ? AuthActions.InstantPay
-      : AuthActions.SendTransaction;
-
-    const isAuthorized = await SecurityService().authorize(authAction);
-    if (!isAuthorized) {
-      setIsSending(false);
-
-      if (isInstantPay) {
-        setIsInstantPayCanceled(true);
+  const validateSendConditions = useCallback(
+    async (isInstantPay: boolean = false) => {
+      if (isSending) {
+        return false;
       }
-      return;
-    }
 
-    if ((!hasTokens && isInsufficientFunds) || isInsufficientTokens) {
-      await handleInsufficientFunds();
-      setIsSending(false);
-      return;
-    }
-
-    if (!sync.isConnected) {
-      ToastService().disconnected();
-      setIsSending(false);
-      return;
-    }
-
-    if (isBase58Address) {
-      await Haptic.warn();
-      const { value: isLegacyAddressConfirmed } = await Dialog.confirm({
-        title: translate(translations.base58WarningTitle),
-        message: translate(translations.base58WarningMessage),
-        okButtonTitle: translate(translations.base58WarningOk),
-      });
-
-      if (!isLegacyAddressConfirmed) {
-        setIsSending(false);
-        return;
+      if ((hasTokens || hasNft) && !isTokenAddress) {
+        await Haptic.warn();
+        setMessage("Can't send tokens to non-token address!");
+        return false;
       }
-    }
 
-    const TransactionManager = TransactionManagerService();
+      if (!sync.isConnected) {
+        ToastService().disconnected();
+        return false;
+      }
+
+      setIsSending(true);
+
+      const authAction = isInstantPay
+        ? AuthActions.InstantPay
+        : AuthActions.SendTransaction;
+
+      const isAuthorized = await SecurityService().authorize(authAction);
+      if (!isAuthorized) {
+        if (isInstantPay) {
+          setIsInstantPayCanceled(true);
+        }
+
+        return false;
+      }
+
+      if ((!hasTokens && isInsufficientFunds) || isInsufficientTokens) {
+        await handleInsufficientFunds();
+        return false;
+      }
+
+      if (isBase58Address) {
+        await Haptic.warn();
+        const { value: isLegacyAddressConfirmed } = await Dialog.confirm({
+          title: translate(translations.base58WarningTitle),
+          message: translate(translations.base58WarningMessage),
+          okButtonTitle: translate(translations.base58WarningOk),
+        });
+
+        if (!isLegacyAddressConfirmed) {
+          return false;
+        }
+      }
+
+      return true;
+    },
+    [
+      isSending,
+      hasTokens,
+      hasNft,
+      isTokenAddress,
+      sync.isConnected,
+      isBase58Address,
+      isInsufficientFunds,
+      isInsufficientTokens,
+    ]
+  );
+
+  const buildTransaction = useCallback(async () => {
     const TransactionBuilder = TransactionBuilderService(walletHash);
 
     const coinRecipients = hasTokens ? [] : [{ address, amount: satoshiInput }];
@@ -243,65 +261,113 @@ export default function WalletViewSend() {
     if (transaction === null) {
       Log.warn(transaction);
       setMessage("Transaction Failed: Wallet out of sync?");
-      setIsSending(false);
       await Haptic.warn();
-      return;
+      return false;
     }
 
     if (typeof transaction === "bigint") {
       await handleInsufficientFunds();
-      setIsSending(false);
-      return;
+      return false;
     }
 
-    try {
-      const { isSuccess, result } = await TransactionManager.sendTransaction(
-        { txid: transaction.tx_hash, hex: transaction.tx_hex },
-        walletHash
-      );
+    return transaction;
+  }, [
+    address,
+    hasTokens,
+    nftSelection,
+    satoshiInput,
+    selection,
+    tokenCategories,
+    walletHash,
+  ]);
 
-      if (isSuccess) {
-        const tx = await TransactionManager.resolveTransaction(result);
-        await Haptic.success();
-        navigate("/wallet/send/success", {
-          state: { tx },
-          replace: true,
-        });
-      } else {
-        throw new Error(result?.toString());
+  const broadcastTransaction = useCallback(
+    async (transaction) => {
+      try {
+        const TransactionManager = TransactionManagerService();
+        const { isSuccess, result } = await TransactionManager.sendTransaction(
+          { txid: transaction.tx_hash, hex: transaction.tx_hex },
+          walletHash
+        );
+
+        if (isSuccess) {
+          const tx = await TransactionManager.resolveTransaction(result);
+          await Haptic.success();
+          await navigate("/wallet/send/success", {
+            state: { tx },
+            replace: true,
+          });
+        } else {
+          throw new Error(result?.toString());
+        }
+      } catch (e) {
+        setMessage(`${translate(translations.transactionFailed)}: ${e}`);
+        await Haptic.error();
+        setIsSending(false);
+        isInstantPayPending.current = false;
       }
-    } catch (e) {
-      setMessage(`${translate(translations.transactionFailed)}: ${e}`);
-      await Haptic.error();
-    } finally {
-      setIsSending(false);
-    }
-  };
+    },
+    [navigate, walletHash]
+  );
 
-  useEffect(function handleInstantPay() {
-    // don't handle instant pay if disabled
-    if (!isInstantPayEnabled) {
-      return;
-    }
+  const confirmSend = useCallback(
+    async (isInstantPay: boolean = false) => {
+      const isValidSend = await validateSendConditions(isInstantPay);
+      if (!isValidSend) {
+        setIsSending(false);
+        return;
+      }
 
-    // don't retry instant pay on cancel - navigate back
-    if (isInstantPayCanceled) {
-      navigate(-1);
-      return;
-    }
+      setIsSending(true);
 
-    // don't try instant pay if already attempting send
-    if (isSending) {
-      return;
-    }
+      const transaction = await buildTransaction();
+      if (!transaction) {
+        setIsSending(false);
+        isInstantPayPending.current = false;
+        return;
+      }
 
-    const requestAmount = bchToSats(searchParams.get("amount") || 0);
+      await broadcastTransaction(transaction);
+    },
+    [broadcastTransaction, buildTransaction, validateSendConditions]
+  );
 
-    if (requestAmount > 0 && requestAmount <= instantPayThreshold) {
-      Log.debug("instapay!", instantPayThreshold, requestAmount);
-      confirmSend(true);
-    }
-  }); // we don't use a dependency array here in order to optimize speed - we can execute on first render instead of 2nd.
+  useEffect(
+    function handleInstantPay() {
+      // don't handle instant pay if disabled
+      if (!isInstantPayEnabled) {
+        return;
+      }
+
+      // don't retry instant pay on cancel - navigate back
+      if (isInstantPayCanceled) {
+        navigate(-1);
+        return;
+      }
+
+      // don't try instant pay if already attempting send
+      if (isSending || isInstantPayPending.current === true) {
+        return;
+      }
+
+      const requestAmount = bchToSats(searchParams.get("amount") || 0);
+
+      if (requestAmount > 0 && requestAmount <= instantPayThreshold) {
+        Log.debug("instapay!", instantPayThreshold, requestAmount);
+        isInstantPayPending.current = true;
+        confirmSend(true);
+      }
+    },
+    [
+      isInstantPayEnabled,
+      isInstantPayCanceled,
+      isSending,
+      instantPayThreshold,
+      confirmSend,
+      navigate,
+      searchParams,
+    ]
+  );
 
   const handleSendMaxTokens = () => {
     //const t = tokenData.find((token) => token.category === tokenId);
