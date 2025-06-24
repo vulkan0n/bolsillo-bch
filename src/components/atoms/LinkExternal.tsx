@@ -1,7 +1,3 @@
-import {
-  InAppBrowser,
-  DefaultSystemBrowserOptions,
-} from "@capacitor/inappbrowser";
 import { useSelector } from "react-redux";
 import { selectDevicePlatform } from "@/redux/device";
 
@@ -18,13 +14,10 @@ export default function LinkExternal({
 }) {
   const platform = useSelector(selectDevicePlatform);
 
-  const handleClick = (e) => {
+  const handleClick = () => {
     if (inAppBrowser && platform !== "web") {
-      e.preventDefault();
-      InAppBrowser.openInSystemBrowser({
-        url: to,
-        options: DefaultSystemBrowserOptions,
-      });
+      //e.preventDefault();
+      // open in-app browser
     }
   };
 

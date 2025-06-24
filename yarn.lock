@@ -482,11 +482,6 @@
   resolved "https://registry.yarnpkg.com/@capacitor/haptics/-/haptics-7.0.1.tgz#8e992837e87c0b65a4a38430944762d1e2fce6dc"
   integrity sha512-ewZmspE5krgDUj5ZvUDcfNZvgerAIr+3bDSk6DLzyvBZ/dYmr/tMLu5H6WtYaaKYZJ32aZAudGpIal5epDyBYA==
 
-"@capacitor/inappbrowser@^2.1.0":
-  version "2.1.0"
-  resolved "https://registry.yarnpkg.com/@capacitor/inappbrowser/-/inappbrowser-2.1.0.tgz#a1c552fa5aed6ccb343433112203ab3abc62b9f3"
-  integrity sha512-OgNNlbgPChpxAvlLbHNM1BOvi8twvgDc1RZ1KwgElCL9fQEu9HY1jv2tzrTsZTnOTuJPdHvLORkdcSypbeV/lg==
-
 "@capacitor/ios@^7.0.0":
   version "7.2.0"
   resolved "https://registry.yarnpkg.com/@capacitor/ios/-/ios-7.2.0.tgz#c3d9435582e5267b57085229e5678d1d53b15b5a"
@@ -536,9 +531,10 @@
   dependencies:
     debug "^4.3.7"
 
-"@electrum-cash/network@https://gitlab.com/electrum-cash/network#8021e43cfa59ecde6f32220c4c7421dad3e66ba0":
+"@electrum-cash/network@^4.1.1":
   version "4.1.1"
-  resolved "https://gitlab.com/electrum-cash/network#8021e43cfa59ecde6f32220c4c7421dad3e66ba0"
+  resolved "https://registry.yarnpkg.com/@electrum-cash/network/-/network-4.1.1.tgz#1f9571c783f613ce960374b4bffb73c27b28c429"
+  integrity sha512-v5abF2qGRTnBoi9tcS/iz7j82D8HYsK9iY0NM5v8/Qu8SnlMGGNz8UDFl+YzRPFXb4SUL3K0uf3Oydy82DB3oA==
   dependencies:
     "@electrum-cash/debug-logs" "^1.0.0"
     "@electrum-cash/web-socket" "^1.0.0"

@@ -18,9 +18,6 @@ PODS:
     - Capacitor
   - CapacitorHaptics (7.0.1):
     - Capacitor
-  - CapacitorInappbrowser (2.1.0):
-    - Capacitor
-    - OSInAppBrowserLib (~> 2.0)
   - CapacitorKeyboard (7.0.1):
     - Capacitor
   - CapacitorNetwork (7.0.1):
@@ -33,7 +30,6 @@ PODS:
     - Capacitor
   - CapgoCapacitorNativeBiometric (0.0.1):
     - Capacitor
-  - OSInAppBrowserLib (2.0.0)
 
 DEPENDENCIES:
   - "Capacitor (from `../../node_modules/@capacitor/ios`)"
@@ -46,17 +42,12 @@ DEPENDENCIES:
   - "CapacitorDialog (from `../../node_modules/@capacitor/dialog`)"
   - "CapacitorFilesystem (from `../../node_modules/@capacitor/filesystem`)"
   - "CapacitorHaptics (from `../../node_modules/@capacitor/haptics`)"
-  - "CapacitorInappbrowser (from `../../node_modules/@capacitor/inappbrowser`)"
   - "CapacitorKeyboard (from `../../node_modules/@capacitor/keyboard`)"
   - "CapacitorNetwork (from `../../node_modules/@capacitor/network`)"
   - "CapacitorPreferences (from `../../node_modules/@capacitor/preferences`)"
   - "CapacitorShare (from `../../node_modules/@capacitor/share`)"
   - "CapacitorSplashScreen (from `../../node_modules/@capacitor/splash-screen`)"
   - "CapgoCapacitorNativeBiometric (from `../../node_modules/@capgo/capacitor-native-biometric`)"
-
-SPEC REPOS:
-  trunk:
-    - OSInAppBrowserLib
 
 EXTERNAL SOURCES:
   Capacitor:
@@ -79,8 +70,6 @@ EXTERNAL SOURCES:
     :path: "../../node_modules/@capacitor/filesystem"
   CapacitorHaptics:
     :path: "../../node_modules/@capacitor/haptics"
-  CapacitorInappbrowser:
-    :path: "../../node_modules/@capacitor/inappbrowser"
   CapacitorKeyboard:
     :path: "../../node_modules/@capacitor/keyboard"
   CapacitorNetwork:
@@ -105,15 +94,13 @@ SPEC CHECKSUMS:
   CapacitorDialog: 9b934329026b2b0ffa56939bb06df3c67541a2ab
   CapacitorFilesystem: 307f97c27a265edf8396a1c9c235592fd8572fe3
   CapacitorHaptics: 70e47470fa1a6bd6338cd102552e3846b7f9a1b3
-  CapacitorInappbrowser: c9a5c1a10eff4f05e461904961ab05125c368036
   CapacitorKeyboard: 969647d0ca2e5c737d7300088e2517aa832434e2
   CapacitorNetwork: 07ec4c69c1bb696f41c23e00d31bda1bbb221bba
   CapacitorPreferences: cbf154e5e5519b7f5ab33817a334dda1e98387f9
   CapacitorShare: 58d6c2da63b093e8693287b2d36db92435538435
   CapacitorSplashScreen: 19cd3573e57507e02d6f34597a8c421e00931487
   CapgoCapacitorNativeBiometric: 44b0bb31118f6ed5171087a77a856a80a0cfa250
-  OSInAppBrowserLib: 232c74691cffb9959aa07b1d5ff57d96fca2af7f
 
-PODFILE CHECKSUM: 6a9e3064d0ffb86a5435aa1fab4a48833d1881c6
+PODFILE CHECKSUM: cce164b8e5dbd598de0f220d23c4b087d7c8ed7d
 
 COCOAPODS: 1.11.2
