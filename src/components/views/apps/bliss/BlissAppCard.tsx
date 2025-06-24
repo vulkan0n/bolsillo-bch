@@ -1,4 +1,4 @@
-import { ArrowRightOutlined } from "@ant-design/icons";
+/*import { ArrowRightOutlined } from "@ant-design/icons";
 import { DateTime, Interval } from "luxon";
 import { Link } from "react-router";
 import velma from "@/assets/bliss-velma.png";
@@ -77,3 +77,4 @@ function BlissAppCard() {
 }
 
 export default BlissAppCard;
+*/

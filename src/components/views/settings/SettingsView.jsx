@@ -1,13 +1,12 @@
 import { useMemo, useCallback } from "react";
 import { useSelector, useDispatch } from "react-redux";
 
-import { SettingOutlined, QuestionCircleOutlined } from "@ant-design/icons";
+import { SettingOutlined } from "@ant-design/icons";
 
 import {
   selectPreferences,
   setPreference,
   selectActiveWalletHash,
-  selectIsPrerelease,
 } from "@/redux/preferences";
 
 import ViewHeader from "@/layout/ViewHeader";
@@ -15,7 +14,6 @@ import FullColumn from "@/layout/FullColumn";
 import KeyWarning from "@/atoms/KeyWarning/KeyWarning";
 import Button from "@/atoms/Button";
 import SeleneLogo from "@/atoms/SeleneLogo";
-import LinkExternal from "@/atoms/LinkExternal";
 
 import { translate } from "@/util/translations";
 import translations from "./translations";
@@ -54,8 +52,6 @@ export default function SettingsView() {
     [dispatch, preferences, handleSettingsUpdate]
   );
 
-  const isPrerelease = useSelector(selectIsPrerelease);
-
   const activeWalletHash = useSelector(selectActiveWalletHash);
 
   return (
@@ -92,18 +88,6 @@ export default function SettingsView() {
           inverted
           fullWidth
         />
-        {isPrerelease && (
-          <LinkExternal to="https://docs.selene.cash" className="w-full">
-            <Button
-              label="Help"
-              labelSize="xl"
-              icon={QuestionCircleOutlined}
-              iconSize="3xl"
-              padding="2"
-              fullWidth
-            />
-          </LinkExternal>
-        )}
       </div>
     </FullColumn>
   );

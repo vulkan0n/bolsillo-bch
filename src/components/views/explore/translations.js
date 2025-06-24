@@ -156,7 +156,7 @@ const translations = {
     zh_TW: "年表",
   },
   faqs: {
-    en: "FAQs",
+    en: "Bitcoin Cash FAQs",
   },
   back: {
     ar: "خلف",
@@ -276,7 +276,7 @@ const translations = {
     zh_TW: "已將交易 ID 複製到剪貼簿",
   },
   ecosystem: {
-    en: "Ecosystem",
+    en: "Ecosystem Directory",
   },
   help: {
     en: "User Manual",
@@ -289,6 +289,9 @@ const translations = {
   },
   inputs: {
     en: "Inputs",
+  },
+  learnMore: {
+    en: "Learn More",
   },
 };
 
