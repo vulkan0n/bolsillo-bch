@@ -12,6 +12,7 @@ import { sha256, ripemd160 } from "@/util/hash";
 import { Haptic } from "@/util/haptic";
 import WalletManagerService from "@/services/WalletManagerService";
 
+// validateBchUri: validates all possible BCH URI formats
 export function validateBchUri(uri) {
   const {
     isBip21,
@@ -54,18 +55,28 @@ export function validateBchUri(uri) {
   return payload;
 }
 
+// validateBip21Uri: cashaddr, base58 addresses, and bip21 invoices (?amount=)
 export function validateBip21Uri(uri) {
   const address = uri.split("?")[0];
   const amountMatch = uri.match(/amount=([0-9]*\.?[0-9]{0,8})/);
   const amount = amountMatch === null ? "0" : amountMatch[1];
 
-  const noPrefixAddress = address.includes(":")
-    ? address.split(":")[1]
-    : address;
+  // various providers do stupid things with cashaddr that we must handle.
+  // in the wild we've seen:
+  // -  addresses with multiple prefixes (bitcoincash:bitcoincash:qz38adf...)
+  // -  prefix followed by base58 (bitcoincash:1D3ADB...)
+  const addressSplit = address.split(":");
 
+  // always get last item of split, as it's most likely the raw address.
+  const noPrefixAddress =
+    addressSplit.length > 1 ? addressSplit[addressSplit.length - 1] : address;
+
+  // check if raw address is base58.
   const isBase58Address =
     typeof decodeBase58Address(noPrefixAddress) === "object";
 
+  // only prefix the address if it's cashaddr, not base58.
+  // prefix is dependent on currently-connected network (mainnet/chipnet)
   const prefix = WalletManagerService().getPrefix();
   const prefixedAddress = isBase58Address
     ? noPrefixAddress
@@ -90,7 +101,9 @@ export function validateBip21Uri(uri) {
   };
 }
 
+// validatePaymentProtocolUri: BIP70/JSON Payment Protocol (https://)
 function validatePaymentProtocolUri(uri) {
+  // TODO: a better way that filters non-invoice URLs?
   const requestMatch = uri.match(/(?:r=)?(https:\/\/[^?]*)(?:\?.+)?$/);
   const requestUri = requestMatch !== null ? requestMatch[1] : null;
   const isPaymentProtocol = requestUri !== null;
@@ -98,6 +111,7 @@ function validatePaymentProtocolUri(uri) {
   return { isPaymentProtocol, requestUri };
 }
 
+// validateWifUri: Wallet Sweep (CashStamps) (bitcoincash: or bch-wif:)
 export function validateWifUri(
   wif: string,
   removePrefixes = ["bitcoincash:", "bch-wif:"]
