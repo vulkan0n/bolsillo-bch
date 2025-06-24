@@ -8,7 +8,7 @@ const mainnet_servers: Array<string> = [
   "bch.imaginary.cash:50004", // im_uname
   "bitcoincash.network:50004", // Dagur
   "electroncash.dk:50004", // Georg
-  "blackie.c3-soft.com:50004", // Calin's back!
+  "blackie.c3-soft.com:50004", // Calin
   "bch.loping.net:50004",
   "bch.soul-dev.com:50004",
   "bitcoincash.stackwallet.com:50004", // Rehrar / Stack Wallet official
@@ -17,10 +17,10 @@ const mainnet_servers: Array<string> = [
 
 const chipnet_servers: Array<string> = [
   "chipnet.bch.ninja:50004", // Kallisti
-  "chipnet.imaginary.cash:50004", // im_uname
+  //"chipnet.imaginary.cash:50004", // im_uname
   "chipnet.c3-soft.com:64004", // Calin
-  "electroncash.de:55004", // Georg
-  "cbch.loping.net:62104",
+  //"electroncash.de:55004", // Georg
+  //"cbch.loping.net:62104",
 ];
 
 const testnet3_servers: Array<string> = [

@@ -133,11 +133,11 @@ export default function ElectrumService() {
       );
 
       if (isProtocolVersionMismatch) {
-        throw new ElectrumVersionMismatchError(e);
+        throw new ElectrumVersionMismatchError();
       }
 
       Log.error(e);
-      return false;
+      throw new Error(`Connection to ${server} failed. ${e}`);
     }
   }
 

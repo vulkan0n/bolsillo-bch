@@ -13,6 +13,7 @@ import {
   selectIsSyncing,
   selectSyncCount,
   syncHotRefresh,
+  syncReconnect,
 } from "@/redux/sync";
 import {
   selectShouldDisplaySyncCounter,
@@ -71,6 +72,7 @@ export default function SyncIndicator() {
       } else {
         disconnectApi.start();
         ToastService().disconnected();
+        dispatch(syncReconnect());
       }
     },
     [isConnected, dispatch, disconnectApi, connectApi]
