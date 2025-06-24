@@ -4,7 +4,7 @@
 # For more information, see: https://docs.gitlab.com/ee/ci/yaml/index.html#stages
 
 stages:
-  - version
+  #- version
   - build
   - package
   - screenshots
@@ -20,22 +20,22 @@ default:
     - 'export SELENE_VERSION=$(grep -o ''"version": *"[^"]*"'' package.json | sed -e ''s/"version": *"//'' -e ''s/"$//'')'
     - 'echo "SELENE_VERSION $SELENE_VERSION"'
 
-version:
-  stage: version
-  script:
-    - scripts/chversion
-  only:
-    - main
-    - testflight
-  tags:
-    - macos
+#version:
+#  stage: version
+#  script:
+#    - scripts/chversion
+#  only:
+#    - main
+#    - testflight
+#  tags:
+#    - macos
 
 # Build
 build_sync:
   stage: build
   image: node:lts-alpine
   script:
-    - 'apk add git'
+    - "which git || (apk update && apk add git)"
     - yarn install
     - yarn build
     - npx cap sync
@@ -45,35 +45,6 @@ build_sync:
       - "node_modules/**/*capacitor*"
       - "android/"
       - "ios/"
-
-# Screenshots
-screenshots_android:
-  stage: screenshots
-  script:
-    - cd android/
-    - bundle install
-    - bundle exec fastlane snapshot
-  artifacts:
-    paths:
-      - android/fastlane/screenshots
-  only:
-    - main
-  tags:
-    - macos
-
-screenshots_ios:
-  stage: screenshots
-  script:
-    - cd ios/App/
-    - bundle install
-    - bundle exec fastlane snapshot
-  artifacts:
-    paths:
-      - ios/App/fastlane/screenshots
-  only:
-    - main
-  tags:
-    - macos
 
 # Android Packaging
 package_android:
@@ -103,6 +74,7 @@ package_android_edge:
     - cd android/
     - bundle install
     - bundle exec fastlane package_debug
+    - sha256sum android/app/build/outputs/apk/debug/app-debug.apk
   artifacts:
     paths:
       - android/app/build/outputs/apk/debug/app-debug.apk
@@ -124,6 +96,7 @@ deploy_android_edge:
     - echo "$SELENE_SSH_KEY_BASE64" | base64 -d | ssh-add - > /dev/null 2>&1
     - echo "$SSH_KNOWN_HOSTS_BASE64" | base64 -d > ~/.ssh/known_hosts
     - echo "Uploading selene-edge.apk"
+    - sha256sum android/app/build/outputs/apk/debug/app-debug.apk
     - scp android/app/build/outputs/apk/debug/app-debug.apk selene@warpgate.selene.technology:/srv/www/selene.cash/public/download/selene-edge.apk
   only:
     - edge
@@ -140,6 +113,7 @@ deploy_android_apk:
     - echo "$SELENE_SSH_KEY_BASE64" | base64 -d | ssh-add - > /dev/null 2>&1
     - echo "$SSH_KNOWN_HOSTS_BASE64" | base64 -d > ~/.ssh/known_hosts
     - echo "Uploading selene-v$SELENE_VERSION.apk"
+    - sha256sum android/app/build/outputs/apk/release/app-release.apk
     - scp android/build/app/outputs/apk/release/app-release.apk selene@warpgate.selene.technology:/srv/www/selene.cash/public/download/selene-v$SELENE_VERSION.apk
     # update remote nginx config here
   only:
@@ -226,3 +200,32 @@ deploy_gitlab_release:
     - git push origin $SELENE_VERSION
   only:
     - main
+
+# Screenshots
+screenshots_android:
+  stage: screenshots
+  script:
+    - cd android/
+    - bundle install
+    - bundle exec fastlane snapshot
+  artifacts:
+    paths:
+      - android/fastlane/screenshots
+  only:
+    - main
+  tags:
+    - macos
+
+screenshots_ios:
+  stage: screenshots
+  script:
+    - cd ios/App/
+    - bundle install
+    - bundle exec fastlane snapshot
+  artifacts:
+    paths:
+      - ios/App/fastlane/screenshots
+  only:
+    - main
+  tags:
+    - macos
