@@ -1,11 +1,5 @@
 import { useState, useRef, useMemo } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import {
-  encodeCashAddress,
-  decodeCashAddress,
-  CashAddressType,
-  assertSuccess,
-} from "@bitauth/libauth";
 
 import { QRCode } from "react-qrcode-logo";
 import {
@@ -40,6 +34,7 @@ import { useClipboard } from "@/hooks/useClipboard";
 
 import { logos } from "@/util/logos";
 import { satsToBch } from "@/util/sats";
+import { convertCashAddress } from "@/util/cashaddr";
 
 import { translate } from "@/util/translations";
 import translations from "./translations";
@@ -64,12 +59,12 @@ export default function WalletViewHome() {
     () => AddressManagerService(walletHash),
     [walletHash]
   );
-  const unusedAddressesRef = useRef(AddressManager.getUnusedAddresses());
+  const unusedAddressesRef = useRef(AddressManager.getUnusedAddresses(5));
 
   // only re-render when isSyncing changes
   const unusedAddresses = useMemo(() => {
     if (!isSyncing) {
-      unusedAddressesRef.current = AddressManager.getUnusedAddresses();
+      unusedAddressesRef.current = AddressManager.getUnusedAddresses(5);
     }
 
     return unusedAddressesRef.current;
@@ -82,17 +77,7 @@ export default function WalletViewHome() {
 
     // convert address to cashtokens address
     if (shouldUseTokenAddress) {
-      const { payload, prefix } = assertSuccess(
-        decodeCashAddress(standardAddress)
-      );
-      const { address: tokenAddress } = assertSuccess(
-        encodeCashAddress({
-          prefix,
-          type: CashAddressType.p2pkhWithTokens,
-          payload,
-        })
-      );
-
+      const tokenAddress = convertCashAddress(standardAddress, "tokenaddr");
       return tokenAddress;
     }
 

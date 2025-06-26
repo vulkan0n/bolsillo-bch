@@ -308,10 +308,21 @@ const walletdb_migrations = [
 
     return query.join("");
   },
-  /*function migrate_v6() {
+  function migrate_v6() {
     const query = [];
 
+    query.push(
+      "CREATE INDEX idx_addresses_unused ON addresses (change, state, hd_index);"
+    );
+
     query.push("PRAGMA user_version = 7;");
+
+    return query.join("");
+  },
+  /*function migrate_v7() {
+    const query = [];
+
+    query.push("PRAGMA user_version = 8;");
 
     return query.join("");
   },*/

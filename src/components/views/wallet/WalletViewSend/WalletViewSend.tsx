@@ -24,7 +24,7 @@ import {
   setPreference,
 } from "@/redux/preferences";
 
-import { selectSyncState } from "@/redux/sync";
+import { selectIsConnected } from "@/redux/sync";
 import { selectScannerIsScanning } from "@/redux/device";
 
 import AddressManagerService from "@/services/AddressManagerService";
@@ -73,20 +73,25 @@ export default function WalletViewSend() {
 
   const walletHash = useSelector(selectActiveWalletHash);
   const spendable_balance = useSelector(selectActiveWalletBalance);
-  const sync = useSelector(selectSyncState);
+  const isConnected = useSelector(selectIsConnected);
 
   const TokenManager = TokenManagerService(walletHash);
 
-  const { state: sendState } = location;
-  const selection = useMemo(() => sendState?.selection || [], [sendState]);
-  const nftSelection = useMemo(
-    () => sendState?.nftSelection || [],
-    [sendState]
-  );
-  const tokenCategories = useMemo(
-    () => sendState?.tokenCategories || [],
-    [sendState]
-  );
+  const selection = useMemo(() => {
+    const { state: sendState } = location;
+    return sendState?.selection || [];
+  }, [location]);
+
+  const nftSelection = useMemo(() => {
+    const { state: sendState } = location;
+    return sendState?.nftSelection || [];
+  }, [location]);
+
+  const tokenCategories = useMemo(() => {
+    const { state: sendState } = location;
+    return sendState?.tokenCategories || [];
+  }, [location]);
+
   const selectionAmount = selection.reduce((sum, cur) => sum + cur.amount, 0n);
 
   const hasTokens = tokenCategories.length > 0;
@@ -172,7 +177,7 @@ export default function WalletViewSend() {
         return false;
       }
 
-      if (!sync.isConnected) {
+      if (!isConnected) {
         ToastService().disconnected();
         return false;
       }
@@ -217,7 +222,7 @@ export default function WalletViewSend() {
       hasTokens,
       hasNft,
       isTokenAddress,
-      sync.isConnected,
+      isConnected,
       isBase58Address,
       isInsufficientFunds,
       isInsufficientTokens,
@@ -292,6 +297,7 @@ export default function WalletViewSend() {
 
         if (isSuccess) {
           const tx = await TransactionManager.resolveTransaction(result);
+          Log.debug("Transaction sent!", tx.txid);
           await Haptic.success();
           await navigate("/wallet/send/success", {
             state: { tx },
@@ -301,7 +307,9 @@ export default function WalletViewSend() {
           throw new Error(result?.toString());
         }
       } catch (e) {
-        setMessage(`${translate(translations.transactionFailed)}: ${e}`);
+        const err = `${translate(translations.transactionFailed)}: ${e}`;
+        Log.warn(err);
+        setMessage(err);
         await Haptic.error();
         setIsSending(false);
         isInstantPayPending.current = false;

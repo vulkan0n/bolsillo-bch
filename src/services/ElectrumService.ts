@@ -98,7 +98,6 @@ export default function ElectrumService() {
     if (withListeners) {
       electrum.addListener("connected", () => {
         Log.log("ELECTRUM CONNECTED", getElectrumHost());
-
         store.dispatch(syncConnectionUp());
       });
 
@@ -106,7 +105,6 @@ export default function ElectrumService() {
 
       electrum.addListener("disconnected", () => {
         Log.log("ELECTRUM DISCONNECTED");
-        //electrum = null;
       });
 
       electrum.addListener("connecting", () => {
@@ -385,8 +383,17 @@ export default function ElectrumService() {
   }
 
   async function broadcastTransaction(tx_hex): Promise<string> {
-    if (electrum === null || electrum.status !== ConnectionStatus.CONNECTED) {
+    if (electrum === null) {
       throw new ElectrumNotConnectedError();
+    }
+
+    if (electrum.status !== ConnectionStatus.CONNECTED) {
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          Log.debug("retry broadcast");
+          resolve(broadcastTransaction(tx_hex));
+        }, 120);
+      });
     }
 
     const tx_hash = await electrum.request(

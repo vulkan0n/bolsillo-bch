@@ -120,6 +120,7 @@ export const syncConnectionUp = createAsyncThunk(
     try {
       Electrum.subscribeToChaintip();
       thunkApi.dispatch(syncSubscriptions());
+      Log.debug("syncConnectionUp");
     } catch (e) {
       Log.warn("syncConnectionUp:", e);
     }
@@ -153,6 +154,10 @@ export const syncSubscriptions = createAsyncThunk(
     // we should subscribe to all unused receive addresses
     const unusedReceiveAddresses = AddressManager.getUnusedAddresses(0, 0);
 
+    // we should subscribe to addresses with n > 2 transactions in history
+    // these may be donation addresses or some other static payment address
+    const reusedReceiveAddresses = AddressManager.getReusedAddresses();
+
     // we should subscribe to a few unused change addresses for instant updates if we spend elsewhere
     const unusedChangeAddresses = AddressManager.getUnusedAddresses(0, 1);
     const filteredUnusedChangeAddresses = unusedChangeAddresses.filter(
@@ -168,6 +173,7 @@ export const syncSubscriptions = createAsyncThunk(
       walletConnectAddress,
       ...hotAddresses,
       ...unusedReceiveAddresses,
+      ...reusedReceiveAddresses,
       ...filteredUnusedChangeAddresses,
     ]
       // de-duplicate subscription list
@@ -177,7 +183,7 @@ export const syncSubscriptions = createAsyncThunk(
         []
       );
 
-    //Log.debug("syncSubscriptions", [...addresses]);
+    Log.debug("syncSubscriptions", addresses.length);
 
     thunkApi.dispatch(syncSubscriptionCount(addresses.length));
 
@@ -223,9 +229,16 @@ export const syncAddressState = createAsyncThunk(
 
     // check downloaded state against local state
     if (addressObj.state !== addressState) {
-      Log.debug("address state changed for", address, addressState, addressObj);
+      Log.debug(
+        "address state changed for",
+        address,
+        addressState,
+        addressObj.state
+      );
       thunkApi.dispatch(syncAddressUtxos(addressObj));
-      thunkApi.dispatch(syncAddressHistory(addressObj));
+      thunkApi.dispatch(
+        syncAddressHistory({ ...addressObj, state: addressState })
+      );
     }
 
     return [addressObj, addressState];
@@ -255,16 +268,13 @@ export const syncAddressHistory = createAsyncThunk(
     const AddressManager = AddressManagerService(wallet.walletHash);
     const AddressScanner = AddressScannerService(wallet);
 
-    const storedAddressState = address.state;
+    const receivedAddressState = address.state;
 
     const calculatedAddressState = AddressManager.calculateAddressState(
       address.address
     );
 
-    if (
-      calculatedAddressState !== storedAddressState ||
-      storedAddressState === null
-    ) {
+    if (calculatedAddressState !== receivedAddressState) {
       try {
         await AddressScanner.scanHistory(address);
       } catch (e) {

@@ -35,6 +35,7 @@ export default function AddressManagerService(walletHash: string) {
     getReceiveAddresses,
     getChangeAddresses,
     getUnusedAddresses,
+    getReusedAddresses,
     //getRecentAddresses,
     getWalletConnectAddress,
     getAddressTransactions,
@@ -152,6 +153,19 @@ export default function AddressManagerService(walletHash: string) {
     );
 
     //Log.debug("getUnusedAddress", limit, result);
+    return result;
+  }
+
+  function getReusedAddresses(): Array<AddressEntity> {
+    const result = walletDb.exec(
+      `SELECT * FROM addresses a
+        WHERE (
+          SELECT COUNT(*) FROM address_transactions t 
+            WHERE t.address = a.address
+        ) > 3;`
+    );
+
+    //Log.debug("getReusedAddresses", result);
     return result;
   }
 

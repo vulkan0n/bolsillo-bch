@@ -71,7 +71,10 @@ export const triggerCheckIn = createAsyncThunk(
     const isShouldCheckIn = lastCheckIn === "" || now > nextCheckIn;
 
     if (!isShouldCheckIn) {
-      Log.debug("stats/submitCheckIn skipped");
+      Log.debug(
+        "stats/submitCheckIn skipped - nextCheckIn is",
+        nextCheckIn.toString()
+      );
       return;
     }
 

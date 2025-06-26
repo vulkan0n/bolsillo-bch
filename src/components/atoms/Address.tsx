@@ -54,7 +54,10 @@ export default function Address({
   );
 
   const myAddresses = useSelector(selectWalletAddresses);
-  const myAddress = myAddresses.find((addr) => addr.address === address);
+  const myAddress = useMemo(
+    () => myAddresses.find((addr) => addr.address === address),
+    [myAddresses, address]
+  );
 
   const isMyAddress = myAddress !== undefined;
 
