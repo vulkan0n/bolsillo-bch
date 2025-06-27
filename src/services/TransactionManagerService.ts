@@ -13,7 +13,6 @@ import {
 import LogService from "@/services/LogService";
 import DatabaseService from "@/services/DatabaseService";
 import ElectrumService from "@/services/ElectrumService";
-import UtxoManagerService from "@/services/UtxoManagerService";
 import WalletManagerService from "@/services/WalletManagerService";
 
 import { hexToBin, binToHex } from "@/util/hex";
@@ -134,8 +133,7 @@ export default function TransactionManagerService() {
   }
 
   async function sendTransaction(
-    tx: TransactionStub,
-    walletHash: string
+    tx: TransactionStub
   ): Promise<{ isSuccess: boolean; result: string | null }> {
     const { txid: tx_hash, hex: tx_hex } = tx;
 
@@ -143,15 +141,7 @@ export default function TransactionManagerService() {
     const result = await Electrum.broadcastTransaction(tx_hex);
     const isSuccess = result === tx_hash;
 
-    if (isSuccess) {
-      const UtxoManager = UtxoManagerService(walletHash);
-      const decodedTx = assertSuccess(decodeTransaction(hexToBin(tx_hex)));
-      const vin = getVinFromDecodedTransaction(decodedTx);
-
-      vin.forEach((input) => {
-        UtxoManager.discardUtxo({ tx_hash: input.txid, tx_pos: input.vout });
-      });
-    } else {
+    if (!isSuccess) {
       Log.warn("transaction send failure", result);
     }
 

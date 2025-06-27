@@ -290,10 +290,10 @@ export default function WalletViewSend() {
     async (transaction) => {
       try {
         const TransactionManager = TransactionManagerService();
-        const { isSuccess, result } = await TransactionManager.sendTransaction(
-          { txid: transaction.tx_hash, hex: transaction.tx_hex },
-          walletHash
-        );
+        const { isSuccess, result } = await TransactionManager.sendTransaction({
+          txid: transaction.tx_hash,
+          hex: transaction.tx_hex,
+        });
 
         if (isSuccess) {
           const tx = await TransactionManager.resolveTransaction(result);
@@ -335,7 +335,7 @@ export default function WalletViewSend() {
         return;
       }
 
-      await broadcastTransaction(transaction);
+      broadcastTransaction(transaction);
     },
     [broadcastTransaction, buildTransaction, validateSendConditions]
   );

@@ -402,15 +402,6 @@ export default function AddressScannerService(wallet: WalletEntity) {
         .sort()
         .join(";");
 
-      /*Log.debug(
-        address,
-        "local",
-        localUtxoHash,
-        "remote",
-        remoteUtxoHash,
-        localUtxoHash === remoteUtxoHash
-      );*/
-
       if (localUtxoHash !== remoteUtxoHash) {
         // we need to delete our knowledge of UTXO set
         // in case some utxos were spent elsewhere
@@ -477,7 +468,7 @@ export default function AddressScannerService(wallet: WalletEntity) {
       return Promise.resolve([address.address, null]);
     }
 
-    //Log.debug("scanHistory", address, newCalculatedState);
+    Log.debug("scanHistory", address.address, newCalculatedState);
     callback(1);
     return Promise.resolve([address.address, newCalculatedState]);
   }
