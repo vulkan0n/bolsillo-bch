@@ -70,6 +70,7 @@ export default function TransactionManagerService() {
     sendTransaction,
     deleteTransaction,
     purgeTransactions,
+    setBlockPos,
   };
 
   // --------------------------------
@@ -382,5 +383,12 @@ export default function TransactionManagerService() {
 
       return vout;
     });
+  }
+
+  function setBlockPos(tx_hash: string, blockPos: number) {
+    APP_DB.run("UPDATE transactions SET block_pos=? WHERE txid=?", [
+      blockPos,
+      tx_hash,
+    ]);
   }
 }

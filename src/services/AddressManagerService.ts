@@ -1,5 +1,6 @@
 import LogService from "@/services/LogService";
 import DatabaseService from "@/services/DatabaseService";
+import TransactionManagerService from "@/services/TransactionManagerService";
 import { sha256 } from "@/util/hash";
 
 const Log = LogService("AddressManager");
@@ -209,7 +210,7 @@ export default function AddressManagerService(walletHash: string) {
       `SELECT * FROM address_transactions
           WHERE address=?
           AND height > 0
-          ORDER BY height ASC
+          ORDER BY height ASC, block_pos ASC
         ;`,
       [address]
     );
@@ -254,24 +255,41 @@ export default function AddressManagerService(walletHash: string) {
   // AddressManager.registerTransaction: register a transaction with an address
   function registerTransaction(
     address: string,
-    tx: { tx_hash: string; height: number }
+    tx: { tx_hash: string; height: number },
+    blockPos: number | null = null
   ): void {
     try {
       walletDb.run(
         `INSERT INTO address_transactions (
           txid,
           height,
-          address
-        ) VALUES ($tx_hash, $tx_height, $address)
+          address,
+          block_pos
+        ) VALUES ($tx_hash, $tx_height, $address, $block_pos)
         ON CONFLICT DO 
           UPDATE SET 
-            height=$tx_height
+            height=$tx_height,
+            block_pos=$block_pos
           WHERE txid=excluded.txid;
         `,
-        { $tx_hash: tx.tx_hash, $tx_height: tx.height, $address: address }
+        {
+          $tx_hash: tx.tx_hash,
+          $tx_height: tx.height,
+          $address: address,
+          $block_pos: blockPos,
+        }
       );
     } catch (e) {
       Log.error(e);
+      const r = walletDb.exec(
+        "SELECT * FROM address_transactions WHERE txid=? AND address=?",
+        [tx.tx_hash, address]
+      );
+      Log.warn(r[0]);
+    }
+
+    if (blockPos !== null) {
+      TransactionManagerService().setBlockPos(tx.tx_hash, blockPos);
     }
 
     //Log.debug("AddressManager.registerTransaction", address, tx);

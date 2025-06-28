@@ -432,9 +432,22 @@ export default function AddressScannerService(wallet: WalletEntity) {
     const walletDb = await WalletManager.openWalletDatabase(wallet.walletHash);
 
     const history = await Electrum.requestAddressHistory(address.address);
-    history.forEach((historyTx) => {
-      AddressManager.registerTransaction(address.address, historyTx);
-    });
+    await Promise.all(
+      history.map(async (historyTx) => {
+        const merkle = await Electrum.requestMerkle(
+          historyTx.tx_hash,
+          historyTx.height
+        );
+
+        // TODO: verify merkles
+
+        AddressManager.registerTransaction(
+          address.address,
+          historyTx,
+          merkle.pos
+        );
+      })
+    );
 
     const newCalculatedState = AddressManager.calculateAddressState(
       address.address
@@ -458,9 +471,9 @@ export default function AddressScannerService(wallet: WalletEntity) {
         walletDb.run(
           `UPDATE addresses SET 
           state=?
-        WHERE address="${address.address}";
+        WHERE address=?;
       `,
-          [newCalculatedState]
+          [newCalculatedState, address.address]
         );
       }
     } catch (e) {

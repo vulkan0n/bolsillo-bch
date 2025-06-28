@@ -54,7 +54,7 @@ export default function ElectrumService() {
     requestUtxos,
     requestUtxoInfo,
     requestTransaction,
-    //requestMerkle,
+    requestMerkle,
     requestBlockHeader,
     requestBlock,
     broadcastTransaction,
@@ -325,12 +325,12 @@ export default function ElectrumService() {
     return txRequest;
   }
 
-  /*
-  // unused, prune from dist payload for now
+  // requestMerkle: request merkle proof for a transaction
   async function requestMerkle(tx_hash, height) {
     if (electrum === null || electrum.status !== ConnectionStatus.CONNECTED) {
       throw new ElectrumNotConnectedError();
     }
+
     const merkle = await electrum.request(
       "blockchain.transaction.get_merkle",
       tx_hash,
@@ -339,7 +339,6 @@ export default function ElectrumService() {
 
     return merkle;
   }
-  */
 
   // requestBlockHeader: request a block by height
   async function requestBlockHeader(height, checkpoint_height = 0) {

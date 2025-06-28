@@ -232,13 +232,11 @@ export const syncAddressState = createAsyncThunk(
       Log.debug(
         "address state changed for",
         address,
-        addressState,
-        addressObj.state
+        addressObj.state,
+        addressState
       );
       thunkApi.dispatch(syncAddressUtxos(addressObj));
-      thunkApi.dispatch(
-        syncAddressHistory({ ...addressObj, state: addressState })
-      );
+      thunkApi.dispatch(syncAddressHistory([addressObj, addressState]));
     }
 
     return [addressObj, addressState];
@@ -263,23 +261,19 @@ const syncAddressUtxos = createAsyncThunk(
 
 export const syncAddressHistory = createAsyncThunk(
   "sync/addressHistory",
-  async (address: AddressEntity, thunkApi): Promise<void> => {
+  async (
+    payload: [addressObj: AddressEntity, resolvedState: string | null],
+    thunkApi
+  ): Promise<void> => {
     const wallet = selectActiveWallet(thunkApi.getState());
-    const AddressManager = AddressManagerService(wallet.walletHash);
     const AddressScanner = AddressScannerService(wallet);
 
-    const receivedAddressState = address.state;
+    const [addressObj, resolvedState] = payload;
+    const [, calculatedState] = await AddressScanner.scanHistory(addressObj);
 
-    const calculatedAddressState = AddressManager.calculateAddressState(
-      address.address
-    );
-
-    if (calculatedAddressState !== receivedAddressState) {
-      try {
-        await AddressScanner.scanHistory(address);
-      } catch (e) {
-        Log.warn("syncAddressHistory:", e);
-      }
+    // we shouldn't ever hit this path as of 2025.06.04. keep monitoring for now
+    if (calculatedState !== resolvedState) {
+      Log.warn("???", addressObj, calculatedState, resolvedState);
     }
   }
 );

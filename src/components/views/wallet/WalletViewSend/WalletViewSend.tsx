@@ -315,7 +315,7 @@ export default function WalletViewSend() {
         isInstantPayPending.current = false;
       }
     },
-    [navigate, walletHash]
+    [navigate]
   );
 
   const confirmSend = useCallback(

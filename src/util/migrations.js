@@ -91,10 +91,22 @@ const appdb_migrations = [
 
     return query.join("");
   },
-  /*function migrate_v3() {
+  function migrate_v3() {
     const query = [];
 
+    // add block_pos column to transaction table
+    query.push(
+      "ALTER TABLE transactions ADD COLUMN block_pos int default null;"
+    );
+
     query.push("PRAGMA user_version = 4;");
+
+    return query.join("");
+  },
+  /*function migrate_v4() {
+    const query = [];
+
+    query.push("PRAGMA user_version = 5;");
 
     return query.join("");
   },*/
@@ -311,6 +323,7 @@ const walletdb_migrations = [
   function migrate_v6() {
     const query = [];
 
+    // create an index for unused addresses (measured 3x performance increase)
     query.push(
       "CREATE INDEX idx_addresses_unused ON addresses (change, state, hd_index);"
     );
@@ -319,10 +332,22 @@ const walletdb_migrations = [
 
     return query.join("");
   },
-  /*function migrate_v7() {
+  function migrate_v7() {
     const query = [];
 
+    // add block_pos column to address_transaction table
+    query.push(
+      "ALTER TABLE address_transactions ADD COLUMN block_pos int default null;"
+    );
+
     query.push("PRAGMA user_version = 8;");
+
+    return query.join("");
+  },
+  /*function migrate_v8() {
+    const query = [];
+
+    query.push("PRAGMA user_version = 9;");
 
     return query.join("");
   },*/
