@@ -75,7 +75,7 @@ export default function TransactionHistoryService(
       `SELECT * FROM address_transactions
           WHERE height > 0
           GROUP BY txid
-          ORDER BY height DESC, time DESC, time_seen DESC
+          ORDER BY height DESC, block_pos ASC, time DESC, time_seen DESC
           LIMIT 100 OFFSET ${start};
         `
     );

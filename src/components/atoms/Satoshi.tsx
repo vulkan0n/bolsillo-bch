@@ -1,3 +1,4 @@
+import { Decimal } from "decimal.js";
 import { useCallback } from "react";
 import { useSelector } from "react-redux";
 import { selectLocale } from "@/redux/device";
@@ -38,8 +39,8 @@ export default function Satoshi({
       if (!amount && amount.toString() !== "0") {
         return {
           bch: "-",
-          mbch: "-",
-          bits: "-",
+          /*mbch: "-",
+            bits: "-",*/
           sats: "-",
           fiat: "-",
         };
@@ -49,8 +50,8 @@ export default function Satoshi({
       if (shouldHideBalance) {
         return {
           bch: "XXXXXXXXXX",
-          mbch: "XXXXXXXXXX",
-          sats: "XXXXXXXXXX",
+          /*mbch: "XXXXXXXXXX",
+            sats: "XXXXXXXXXX",*/
           bits: "XXXXXXXXXX",
           fiat: "XXXXXXXXXX",
         };
@@ -60,15 +61,15 @@ export default function Satoshi({
 
       const bchSymbol = {
         bch: "₿",
-        mbch: "₿",
-        bits: "₿",
+        /*mbch: "₿",
+          bits: "₿",*/
         sats: "",
       };
 
       const bchUnit = {
         bch: "",
-        mbch: "",
-        bits: "",
+        /*mbch: "",
+          bits: "",*/
         sats: "Ꞩ",
       };
 
@@ -81,18 +82,20 @@ export default function Satoshi({
           maximumFractionDigits: 0,
         }).format(absoluteAmounts.sats),
         bch: new Intl.NumberFormat(locale, { minimumFractionDigits: 8 }).format(
-          absoluteAmounts.bch
+          new Decimal(absoluteAmounts.bch).toNumber()
         ),
-        mbch: new Intl.NumberFormat(locale, {
+        /*mbch: new Intl.NumberFormat(locale, {
           minimumFractionDigits: 5,
         }).format(absoluteAmounts.mbch),
         bits: new Intl.NumberFormat(locale, {
           minimumFractionDigits: 2,
-        }).format(absoluteAmounts.bits),
+          }).format(absoluteAmounts.bits),*/
         fiat: new Intl.NumberFormat(locale, {
           style: "currency",
           currency: localCurrency,
-        }).format(Number.parseFloat(Currency.satsToFiat(absoluteAmounts.sats))),
+        }).format(
+          new Decimal(Currency.satsToFiat(absoluteAmounts.sats)).toNumber()
+        ),
       };
 
       const sign = amount < 0 ? "-" : "";
@@ -101,8 +104,8 @@ export default function Satoshi({
 
       const displayAmounts = {
         bch: bchDisplay,
-        mbch: bchDisplay,
-        bits: bchDisplay,
+        /*mbch: bchDisplay,
+          bits: bchDisplay,*/
         sats: bchDisplay,
         fiat: `${sign}${formattedAmounts.fiat}`,
       };

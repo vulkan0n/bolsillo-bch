@@ -481,7 +481,7 @@ export default function AddressScannerService(wallet: WalletEntity) {
       return Promise.resolve([address.address, null]);
     }
 
-    Log.debug("scanHistory", address.address, newCalculatedState);
+    //Log.debug("scanHistory", address.address, newCalculatedState);
     callback(1);
     return Promise.resolve([address.address, newCalculatedState]);
   }

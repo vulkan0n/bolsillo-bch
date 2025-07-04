@@ -259,8 +259,18 @@ export default function AddressManagerService(walletHash: string) {
     blockPos: number | null = null
   ): void {
     try {
-      walletDb.run(
-        `INSERT INTO address_transactions (
+      const existing = walletDb.exec(
+        "SELECT * FROM address_transactions WHERE txid=? AND address=?",
+        [tx.tx_hash, address]
+      );
+
+      if (
+        existing.length === 0 ||
+        existing[0].height !== tx.height ||
+        (existing[0].block_pos !== null && existing[0].block_pos !== blockPos)
+      ) {
+        walletDb.run(
+          `INSERT INTO address_transactions (
           txid,
           height,
           address,
@@ -272,13 +282,14 @@ export default function AddressManagerService(walletHash: string) {
             block_pos=$block_pos
           WHERE txid=excluded.txid;
         `,
-        {
-          $tx_hash: tx.tx_hash,
-          $tx_height: tx.height,
-          $address: address,
-          $block_pos: blockPos,
-        }
-      );
+          {
+            $tx_hash: tx.tx_hash,
+            $tx_height: tx.height,
+            $address: address,
+            $block_pos: blockPos,
+          }
+        );
+      }
     } catch (e) {
       Log.error(e);
       const r = walletDb.exec(
