@@ -1,8 +1,7 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { useSelector } from "react-redux";
-import { useNavigate } from "react-router";
+import { useNavigate, useOutletContext } from "react-router";
 import { SendOutlined, SyncOutlined } from "@ant-design/icons";
-import { selectActiveWallet } from "@/redux/wallet";
 import { selectPrivacySettings } from "@/redux/preferences";
 //import LogService from "@/services/LogService";
 import TokenManagerService, {
@@ -26,9 +25,7 @@ import translations from "./translations";
 //const Log = LogService("AssetsViewTokens");
 
 export default function AssetsViewTokens() {
-  // [?] use selectActiveWallet instead of selectActiveWalletHash
-  // we want the UI to re-render on wallet update in case we send/receive tokens
-  const { walletHash } = useSelector(selectActiveWallet);
+  const { walletHash } = useOutletContext();
   const { shouldResolveBcmr } = useSelector(selectPrivacySettings);
 
   const navigate = useNavigate();
