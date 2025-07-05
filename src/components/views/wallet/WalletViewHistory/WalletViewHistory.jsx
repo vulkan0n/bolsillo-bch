@@ -56,7 +56,7 @@ export default function WalletViewHistory() {
     return txHistory.map((tx, i) =>
       i < 100 ? (
         <li
-          key={`${tx.txid}${tx.address}`}
+          key={`${tx.txid}${tx.address}${tx.block_pos}`}
           className={`py-2  ${zebraCss[i % 2][tx.amount > 0]}`}
         >
           <Link to={`/explore/tx/${tx.txid}`}>
