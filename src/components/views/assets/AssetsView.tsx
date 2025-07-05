@@ -1,12 +1,13 @@
 import { useEffect } from "react";
 import { NavLink, Outlet, useLocation } from "react-router";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   BankOutlined,
   MoneyCollectOutlined,
   DeploymentUnitOutlined,
 } from "@ant-design/icons";
 import { setPreference } from "@/redux/preferences";
+import { selectActiveWallet } from "@/redux/wallet";
 
 import ViewHeader from "@/layout/ViewHeader";
 import FullColumn from "@/layout/FullColumn";
@@ -17,6 +18,8 @@ import translations from "./translations";
 export default function AssetsView() {
   const dispatch = useDispatch();
   const location = useLocation();
+
+  const wallet = useSelector(selectActiveWallet);
 
   useEffect(
     function updateLastAssetsPath() {
@@ -52,7 +55,7 @@ export default function AssetsView() {
             activeIcon={MoneyCollectOutlined}
           />
         </div>
-        <Outlet />
+        <Outlet context={wallet} />
       </FullColumn>
     </FullColumn>
   );

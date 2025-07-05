@@ -1,12 +1,10 @@
 import { useState } from "react";
-import { useSelector } from "react-redux";
-import { useNavigate } from "react-router";
+import { useNavigate, useOutletContext } from "react-router";
 import {
   MoneyCollectOutlined,
   SendOutlined,
   CloseOutlined,
 } from "@ant-design/icons";
-import { selectActiveWallet } from "@/redux/wallet";
 import FullColumn from "@/layout/FullColumn";
 import Address from "@/atoms/Address";
 import Satoshi from "@/atoms/Satoshi";
@@ -25,7 +23,7 @@ import translations from "./translations";
 //const Log = LogService("AssetsViewCoins");
 
 export default function AssetsViewCoins() {
-  const wallet = useSelector(selectActiveWallet);
+  const wallet = useOutletContext();
   const navigate = useNavigate();
 
   const UtxoManager = UtxoManagerService(wallet.walletHash);
