@@ -57,9 +57,12 @@ export function validateBchUri(uri) {
 
 // validateBip21Uri: cashaddr, base58 addresses, and bip21 invoices (?amount=)
 export function validateBip21Uri(uri) {
-  const address = uri.split("?")[0];
-  const amountMatch = uri.match(/amount=([0-9]*\.?[0-9]{0,8})/);
-  const amount = amountMatch === null ? "0" : amountMatch[1];
+  const uriSplit = uri.split("?");
+  const address = uriSplit[0];
+
+  const queryString = uriSplit[1] || "";
+  const searchParams = new URLSearchParams(queryString);
+  const amount = searchParams.get("amount") || "0";
 
   // various providers do stupid things with cashaddr that we must handle.
   // in the wild we've seen:
