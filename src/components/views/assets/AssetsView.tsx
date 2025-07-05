@@ -1,10 +1,11 @@
 import { useEffect } from "react";
-import { NavLink, Outlet, useLocation } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
+import { Link, NavLink, Outlet, useLocation } from "react-router";
 import {
   BankOutlined,
   MoneyCollectOutlined,
   DeploymentUnitOutlined,
+  SettingOutlined,
 } from "@ant-design/icons";
 import { setPreference } from "@/redux/preferences";
 import { selectActiveWallet } from "@/redux/wallet";
@@ -14,6 +15,14 @@ import FullColumn from "@/layout/FullColumn";
 
 import { translate } from "@/util/translations";
 import translations from "./translations";
+
+function AssetsViewAccessory() {
+  return (
+    <Link to="/settings" className="flex items-center justify-center">
+      <SettingOutlined className="text-2xl ml-2" />
+    </Link>
+  );
+}
 
 export default function AssetsView() {
   const dispatch = useDispatch();
@@ -39,7 +48,11 @@ export default function AssetsView() {
 
   return (
     <FullColumn>
-      <ViewHeader icon={BankOutlined} title={translate(translations.assets)} />
+      <ViewHeader
+        icon={BankOutlined}
+        title={translate(translations.assets)}
+        accessory={AssetsViewAccessory}
+      />
       <FullColumn>
         <div className="flex">
           <NavTab
