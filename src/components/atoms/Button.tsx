@@ -92,8 +92,8 @@ export default function Button({
   const invertedColors = `${activeBgColor} ${activeLabelColor} ${disabled ? "" : `active:${bgColor} active:${labelColor}`}`;
   const colorClasses = inverted ? invertedColors : colors;
 
-  const roundedClass = rounded === true ? "rounded" : `rounded-${rounded}`;
-  const shadowClass = shadow === true ? "shadow" : `shadow-${shadow}`;
+  const roundedClass = rounded === true ? "rounded-sm" : `rounded-${rounded}`;
+  const shadowClass = shadow === true ? "shadow-sm" : `shadow-${shadow}`;
 
   const disabledClasses = disabled
     ? `opacity-[.5] shadow-none active:shadow-none`

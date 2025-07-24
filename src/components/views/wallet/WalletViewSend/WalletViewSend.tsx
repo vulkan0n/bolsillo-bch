@@ -649,7 +649,7 @@ function InputSelection({ inputs }) {
       {inputs.some(
         (i) => i.nft_capability === null || i.token_category === null
       ) && (
-        <div className="mx-4 border border-primary rounded">
+        <div className="mx-4 border border-primary rounded-sm">
           {coins.map((utxo) => (
             <div className="p-1 text-sm flex-1">
               <div className="flex items-center">

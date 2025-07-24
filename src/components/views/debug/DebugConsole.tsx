@@ -61,7 +61,7 @@ export default function DebugConsole() {
 
   return (
     <div
-      className="font-mono h-[50vh] overflow-y-auto border border-black rounded text-wrap break-words"
+      className="font-mono h-[50vh] overflow-y-auto border border-black rounded-sm text-wrap break-words"
       ref={consoleRef}
       onScroll={() => {
         scrollRef.current = false;

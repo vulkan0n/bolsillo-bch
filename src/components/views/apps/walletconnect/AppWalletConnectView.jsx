@@ -93,7 +93,7 @@ export default function AppWalletConnectView() {
       <form onSubmit={handlePair} className="p-2 flex items-center">
         <input
           type="text"
-          className="p-1 w-full border-2 rounded border-primary mr-2"
+          className="p-1 w-full border-2 rounded-sm border-primary mr-2"
           value={walletConnectUri}
           onChange={(e) => setWalletConnectUri(e.target.value)}
         />
@@ -107,7 +107,10 @@ export default function AppWalletConnectView() {
 
           return (
             <>
-              <div className="p-1 border border-neutral-600 rounded" key={key}>
+              <div
+                className="p-1 border border-neutral-600 rounded-sm"
+                key={key}
+              >
                 <div className="flex">
                   <div className="flex items-center justify-center p-1 border border-neutral-500 w-16 h-16">
                     <img src={peer.icons[0]} className="w-full h-full" />

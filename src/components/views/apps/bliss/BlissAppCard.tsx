@@ -58,7 +58,7 @@ function BlissAppCard() {
           <div className="font-bold text-xl mb-2">
             <span className="font-bliss">BLISS</span>
           </div>
-          <div className="leading-[1rem]">
+          <div className="leading-4">
             {description}{" "}
             {isBefore && (
               <span className="font-mono">

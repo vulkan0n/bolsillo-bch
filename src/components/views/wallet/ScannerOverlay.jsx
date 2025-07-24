@@ -16,7 +16,7 @@ export default function ScannerOverlay() {
       <div className="fixed top-0 w-full h-screen z-40 flex items-center justify-center bg-transparent max-w-[480px]">
         <div className="text-center">
           {isInstantPayEnabled && (
-            <div className="relative bottom-4 bg-black/50 text-white/80 rounded-sm z-10">
+            <div className="relative bottom-4 bg-black/50 text-white/80 rounded-xs z-10">
               <div className="text-3xl font-bold">Instant Pay Enabled</div>
               <div className="text-xl font-semibold">
                 Threshold: <Satoshi value={instantPayThreshold} />
@@ -28,7 +28,7 @@ export default function ScannerOverlay() {
             style={{ boxShadow: "0 0 0 100vh #232323" }}
           >
             <QrcodeOutlined
-              className="text-4xl opacity-80 text-primary border-2 border-primary rounded-sm"
+              className="text-4xl opacity-80 text-primary border-2 border-primary rounded-xs"
               style={{ filter: "drop-shadow(0 0 4px #8dc351)" }}
             />
           </div>

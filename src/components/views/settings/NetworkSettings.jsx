@@ -99,7 +99,7 @@ export default function NetworkSettings() {
       >
         <div className="flex items-center w-3/4">
           <select
-            className="p-2 bg-white rounded h-10 w-full disabled:bg-neutral-200 disabled:text-neutral-400 mr-2"
+            className="p-2 bg-white rounded-sm h-10 w-full disabled:bg-neutral-200 disabled:text-neutral-400 mr-2"
             value={currentServer}
             disabled={isOfflineMode === true}
             onChange={(event) => {
@@ -137,7 +137,7 @@ export default function NetworkSettings() {
             className="flex items-center w-3/4"
           >
             <input
-              className={`p-2 bg-white rounded w-full mr-2 ${serverInputClasses}`}
+              className={`p-2 bg-white rounded-sm w-full mr-2 ${serverInputClasses}`}
               type="text"
               value={electrumServerInput}
               onChange={(event) => {

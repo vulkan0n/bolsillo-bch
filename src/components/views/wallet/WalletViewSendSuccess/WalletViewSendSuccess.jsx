@@ -76,7 +76,7 @@ function WalletViewSendSuccess() {
       </div>
       <div className="p-2">
         <div
-          className="border rounded mb-2 border-primary"
+          className="border rounded-sm mb-2 border-primary"
           onClick={handleCopyTransactionId}
         >
           <div className="p-1 bg-primary-900 rounded-t border border-t-0 border-primary-900">
@@ -92,7 +92,7 @@ function WalletViewSendSuccess() {
           </div>
         </div>
         <div
-          className="border rounded mb-2 border-primary"
+          className="border rounded-sm mb-2 border-primary"
           onClick={(e) => e.stopPropagation()}
         >
           <div className="p-1 bg-primary-900 rounded-t border border-t-0 border-primary-900">
@@ -103,7 +103,7 @@ function WalletViewSendSuccess() {
           <div className="flex items-center bg-primary-100 p-1 rounded-b-sm border border-t-0 border-primary-900">
             <input
               type="text"
-              className="flex-1 rounded-sm p-1"
+              className="flex-1 rounded-xs p-1"
               value={memo}
               onChange={handleMemoChange}
               onFocus={() => setIsFocused(true)}
@@ -115,7 +115,7 @@ function WalletViewSendSuccess() {
           </div>
         </div>
         <div
-          className="border rounded mb-2 border-primary"
+          className="border rounded-sm mb-2 border-primary"
           onClick={(e) => e.stopPropagation()}
         >
           <div className="p-1 bg-primary-900 rounded-t border border-t-0 border-primary-900">

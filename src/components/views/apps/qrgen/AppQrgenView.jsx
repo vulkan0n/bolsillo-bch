@@ -42,7 +42,7 @@ export default function AppQrgenView() {
             type="text"
             value={inputText}
             onChange={(e) => setInputText(e.target.value)}
-            className="border-2 border-primary rounded p-2 m-2 w-full"
+            className="border-2 border-primary rounded-sm p-2 m-2 w-full"
           />
         </div>
         <Button label="Generate" onClick={handleGenerate} />
