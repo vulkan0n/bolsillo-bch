@@ -237,10 +237,10 @@ export default function WalletViewSend() {
     const tokenRecipients =
       hasTokens && satoshiInput > 0
         ? tokenCategories.map((category) => ({
-            address,
-            amount: 0n,
-            token: { category, amount: satoshiInput },
-          }))
+          address,
+          amount: 0n,
+          token: { category, amount: satoshiInput },
+        }))
         : [];
 
     const nftRecipients = nftSelection.map((s) => ({
@@ -433,9 +433,10 @@ export default function WalletViewSend() {
     }
   };
 
-  const handleAddressInput = async (input) => {
+  const handleAddressInput = async (input: string) => {
     const { navTo } = await navigateOnValidUri(input);
     if (navTo !== "") {
+      const { state: sendState } = location;
       navigate(navTo, { state: sendState });
     } else {
       setIsAddressInvalid(true);
@@ -445,6 +446,10 @@ export default function WalletViewSend() {
   const handleAddressFocus = () => {
     setIsAddressInvalid(false);
   };
+
+  console.log({ satoshiInput })
+  console.log(typeof satoshiInput)
+  console.log(!satoshiInput)
 
   return isScanning ? (
     <ScannerOverlay />
@@ -468,6 +473,7 @@ export default function WalletViewSend() {
                       value={address}
                       onConfirm={handleAddressInput}
                       onBlur={handleAddressInput}
+                      onChange={handleAddressInput}
                       onFocus={handleAddressFocus}
                       open
                       invalid={isAddressInvalid}
@@ -512,11 +518,10 @@ export default function WalletViewSend() {
                       onChange={handleAmountInput}
                       satoshis={satoshiInput}
                       size={1}
-                      className={`mx-1.5 p-1 flex-1 text-3xl rounded shadow-inner border-2 ${
-                        isInsufficientTokens
-                          ? "text-error border-error/90"
-                          : "text-black/70 border-primary/80"
-                      }`}
+                      className={`mx-1.5 p-1 flex-1 text-3xl rounded shadow-inner border-2 ${isInsufficientTokens
+                        ? "text-error border-error/90"
+                        : "text-black/70 border-primary/80"
+                        }`}
                       autoFocus={address !== ""}
                       ref={inputRef}
                       max={0n}
@@ -540,11 +545,10 @@ export default function WalletViewSend() {
                         onChange={handleAmountInput}
                         satoshis={satoshiInput}
                         size={1}
-                        className={`mr-1.5 p-1 flex-1 text-3xl rounded shadow-inner border-2 ${
-                          isInsufficientFunds
-                            ? "text-error border-error/90"
-                            : "text-black/70 border-primary/80"
-                        }`}
+                        className={`mr-1.5 p-1 flex-1 text-3xl rounded shadow-inner border-2 ${isInsufficientFunds
+                          ? "text-error border-error/90"
+                          : "text-black/70 border-primary/80"
+                          }`}
                         autoFocus={address !== ""}
                         ref={inputRef}
                         max={selectionAmount}
@@ -581,7 +585,7 @@ export default function WalletViewSend() {
                 </div>
                 <div className="flex-1">
                   <SlideToAction
-                    disabled={address === "" || isSending}
+                    disabled={address === "" || !satoshiInput || isSending}
                     onSlide={() => confirmSend(false)}
                     label={translate(translations.confirm)}
                   />
@@ -634,38 +638,38 @@ function InputSelection({ inputs }) {
       {inputs.some(
         (i) => i.nft_capability === null || i.token_category === null
       ) && (
-        <div className="mx-4 border border-primary rounded">
-          {coins.map((utxo) => (
-            <div className="p-1 text-sm flex-1">
-              <div className="flex items-center">
-                <MoneyCollectOutlined className="mr-1" />
-                <div className="flex items-center justify-between w-full">
-                  <Satoshi value={utxo.amount} />
-                  <span className="text-sm opacity-75">
-                    <Satoshi value={utxo.amount} flip />
+          <div className="mx-4 border border-primary rounded">
+            {coins.map((utxo) => (
+              <div className="p-1 text-sm flex-1">
+                <div className="flex items-center">
+                  <MoneyCollectOutlined className="mr-1" />
+                  <div className="flex items-center justify-between w-full">
+                    <Satoshi value={utxo.amount} />
+                    <span className="text-sm opacity-75">
+                      <Satoshi value={utxo.amount} flip />
+                    </span>
+                  </div>
+                </div>
+              </div>
+            ))}
+            {tokens.map((token) => (
+              <div className="p-1.5 flex-1">
+                <div className="flex items-center gap-x-1">
+                  <TokenIcon size={32} category={token.category} />
+                  <span
+                    style={{ color: `#${token.category.slice(0, 6)}` }}
+                    className="font-mono text-sm mr-1"
+                  >
+                    {token.symbol}
+                  </span>
+                  <span className="text-sm grow flex justify-end">
+                    <TokenAmount token={token} />
                   </span>
                 </div>
               </div>
-            </div>
-          ))}
-          {tokens.map((token) => (
-            <div className="p-1.5 flex-1">
-              <div className="flex items-center gap-x-1">
-                <TokenIcon size={32} category={token.category} />
-                <span
-                  style={{ color: `#${token.category.slice(0, 6)}` }}
-                  className="font-mono text-sm mr-1"
-                >
-                  {token.symbol}
-                </span>
-                <span className="text-sm grow flex justify-end">
-                  <TokenAmount token={token} />
-                </span>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
+            ))}
+          </div>
+        )}
     </>
   );
 }
