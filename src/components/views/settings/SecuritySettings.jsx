@@ -101,7 +101,7 @@ export default function SecuritySettings() {
           <KeyWarning walletHash={activeWallet.walletHash} />
         ) : (
           <select
-            className="p-2 bg-white rounded h-10 w-fit"
+            className="p-2 bg-white rounded-sm h-10 w-fit"
             value={authMode}
             disabled={!isWalletKeyViewed}
             onChange={async (event) => {

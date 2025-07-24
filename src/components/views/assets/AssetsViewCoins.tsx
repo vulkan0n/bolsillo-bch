@@ -101,7 +101,7 @@ export default function AssetsViewCoins() {
     <FullColumn className="justify-between">
       <div className="m-1">
         <div
-          className="p-1 rounded bg-neutral-800 text-white text-center my-1"
+          className="p-1 rounded-sm bg-neutral-800 text-white text-center my-1"
           onClick={handleFlipCurrency}
         >
           <div className="text-lg font-bold">
@@ -127,7 +127,7 @@ export default function AssetsViewCoins() {
         ))}
 
         {coinAddresses.length === 0 && (
-          <div className="text-center py-4 rounded text-2xl text-neutral-700/90">
+          <div className="text-center py-4 rounded-sm text-2xl text-neutral-700/90">
             {translate(translations.noCoins)}
             <div className="flex items-center justify-center mt-2">
               <SeleneLogo className="h-32" />
@@ -159,11 +159,11 @@ function CoinGroup({ address, coins, onCoinSelect }) {
   };
 
   return (
-    <div className={`rounded my-1 ${selectCss}`} onClick={handleGroupSelection}>
+    <div className={`rounded-sm my-1 ${selectCss}`} onClick={handleGroupSelection}>
       <div className="py-0.5 px-1 font-mono text-xs tracking-tight">
         <Address address={address} color="white" />
       </div>
-      <div className="m-0.5 border-1 border-primary-700 rounded-sm">
+      <div className="m-0.5 border border-primary-700 rounded-xs">
         {coins.map((coin) => (
           <Coin key={coin.key} coin={coin} onSelect={onCoinSelect} />
         ))}
@@ -212,7 +212,7 @@ function SelectionDisplay({ selection, onConfirm, onCancel }) {
   };
 
   return (
-    <div className="sticky bottom-0 bg-primary-900 w-full border-t-2 border-neutral-900 rounded-t shadow mt-1">
+    <div className="sticky bottom-0 bg-primary-900 w-full border-t-2 border-neutral-900 rounded-t shadow-sm mt-1">
       <div className="text-neutral-700 rounded-t bg-neutral-100 shadow-lg px-2 py-1">
         <div className="flex relative justify-between">
           <div className="flex items-center justify-start flex-1">

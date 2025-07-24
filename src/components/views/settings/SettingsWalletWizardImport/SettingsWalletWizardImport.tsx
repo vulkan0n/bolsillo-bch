@@ -207,7 +207,7 @@ export default function SettingsWalletWizardImport() {
           <span className="font-bold">Wallet Name</span>
           <input
             type="text"
-            className="w-full border border-primary border-2 rounded-sm p-1"
+            className="w-full border border-primary border-2 rounded-xs p-1"
             onChange={handleWalletNameInput}
             value={walletNameInput}
           />

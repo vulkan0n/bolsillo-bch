@@ -109,7 +109,7 @@ export default function ExploreSearchBar() {
   };
 
   return isExperimental ? (
-    <div className="border border-primary shadow bg-primary text-white">
+    <div className="border border-primary shadow-sm bg-primary text-white">
       <div className="flex justify-center items-center p-2">
         <SearchOutlined className="text-2xl" />
         <input
