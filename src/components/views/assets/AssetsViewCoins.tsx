@@ -159,7 +159,10 @@ function CoinGroup({ address, coins, onCoinSelect }) {
   };
 
   return (
-    <div className={`rounded-sm my-1 ${selectCss}`} onClick={handleGroupSelection}>
+    <div
+      className={`rounded-sm my-1 ${selectCss}`}
+      onClick={handleGroupSelection}
+    >
       <div className="py-0.5 px-1 font-mono text-xs tracking-tight">
         <Address address={address} color="white" />
       </div>

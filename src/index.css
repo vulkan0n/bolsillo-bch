@@ -1,6 +1,6 @@
-@import url('leaflet/dist/leaflet.css') layer(base);
+@import url("leaflet/dist/leaflet.css") layer(base);
 
-@import 'tailwindcss';
+@import "tailwindcss";
 
 @theme {
   --breakpoint-*: initial;
@@ -9,7 +9,7 @@
 
   --font-*: initial;
   --font-sans: Archivo, sans-serif;
-  --font-mono: 'Chivo Mono', monospace;
+  --font-mono: "Chivo Mono", monospace;
 
   --color-*: initial;
   --color-transparent: rgba(0, 0, 0, 0);

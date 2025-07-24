@@ -107,7 +107,10 @@ export default function AppWalletConnectView() {
 
           return (
             <>
-              <div className="p-1 border border-neutral-600 rounded-sm" key={key}>
+              <div
+                className="p-1 border border-neutral-600 rounded-sm"
+                key={key}
+              >
                 <div className="flex">
                   <div className="flex items-center justify-center p-1 border border-neutral-500 w-16 h-16">
                     <img src={peer.icons[0]} className="w-full h-full" />
