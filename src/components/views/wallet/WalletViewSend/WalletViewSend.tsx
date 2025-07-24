@@ -151,6 +151,16 @@ export default function WalletViewSend() {
 
   const [isInstantPayCanceled, setIsInstantPayCanceled] = useState(false);
 
+  // Updating an incorrect address by tapping address bar instead of scanning a QR code
+  // Preserves CashTokens category info & entered send amount
+  const handleReEditAddress = () => {
+    const { state: sendState } = location;
+
+    navigate("/wallet/send", {
+      state: sendState,
+    });
+  }
+
   const handleAmountInput = (satInput) => {
     setSatoshiInput(satInput);
     setSatoshiInputKey("satoshiInputKey");
@@ -447,10 +457,6 @@ export default function WalletViewSend() {
     setIsAddressInvalid(false);
   };
 
-  console.log({ satoshiInput })
-  console.log(typeof satoshiInput)
-  console.log(!satoshiInput)
-
   return isScanning ? (
     <ScannerOverlay />
   ) : (
@@ -481,7 +487,7 @@ export default function WalletViewSend() {
                   </div>
                 </div>
               ) : (
-                <div className="flex items-center justify-center">
+                <div className="flex items-center justify-center" onClick={handleReEditAddress}>
                   <div className="flex-1">
                     <Address address={address} className="tracking-[-0.09em]" />
                   </div>
