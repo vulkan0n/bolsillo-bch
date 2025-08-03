@@ -3,6 +3,7 @@
   "private": true,
   "version": "2025.06.04",
   "type": "module",
+  "packageManager": "yarn@1.22.22",
   "scripts": {
     "dev": "vite",
     "pretty": "npx prettier src/ --write",
