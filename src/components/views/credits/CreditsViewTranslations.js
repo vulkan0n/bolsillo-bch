@@ -64,7 +64,7 @@ const translations = {
     pl: "Opracowany z 💚 przez",
     pt: "Desenvolvido com 💚 por",
     ro: "Dezvoltat cu 💚 de",
-    ru: "Разработано с 💚 от",
+    ru: "Разработано с 💚",
     sv: "Utvecklad med 💚 av",
     sw: "Imetengenezwa na 💚 na",
     ta: "💚 மூலம் மேம்படுத்தப்பட்டது",
