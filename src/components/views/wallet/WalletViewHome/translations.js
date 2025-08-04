@@ -64,7 +64,7 @@ const translations = {
     pl: "Odbierać",
     pt: "Receber",
     ro: "Primi",
-    ru: "Получать",
+    ru: "Получить",
     sv: "Få",
     sw: "Pokea",
     ta: "பெறு",

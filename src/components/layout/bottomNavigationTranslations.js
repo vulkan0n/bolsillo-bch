@@ -142,7 +142,7 @@ const translations = {
     pl: "Aktywa",
     pt: "Ativos",
     ro: "Active",
-    ru: "Ресурсы",
+    ru: "Активы",
     sv: "Tillgångar",
     sw: "Mali",
     ta: "சொத்துக்கள்",

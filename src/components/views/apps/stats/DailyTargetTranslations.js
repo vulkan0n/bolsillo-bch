@@ -64,7 +64,7 @@ const translations = {
     pl: "pozostały",
     pt: "restante",
     ro: "rămas",
-    ru: "оставшийся",
+    ru: "осталось",
     sv: "återstående",
     sw: "iliyobaki",
     ta: "மீதமுள்ள",

@@ -25,7 +25,7 @@ const translations = {
     pl: "Aktywni użytkownicy Selene",
     pt: "Usuários ativos do Selene",
     ro: "Utilizatori activi Selene",
-    ru: "Активные пользователи Селены",
+    ru: "Активные пользователи Selene",
     sv: "Aktiva Selene-användare",
     sw: "Watumiaji Hai wa Selene",
     ta: "செயலில் உள்ள செலீன் பயனர்கள்",

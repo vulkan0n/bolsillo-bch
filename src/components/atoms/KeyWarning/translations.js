@@ -25,7 +25,7 @@ const translations = {
     pl: "Utwórz kopię zapasową hasła odzyskiwania portfela",
     pt: "POR FAVOR, FAÇA O BACKUP DA SUA FRASE DE RECUPERAÇÃO DE CARTEIRA",
     ro: "Vă rugăm să faceți o copie de rezervă pentru FRAZA DE RECUPERARE PORTOfel",
-    ru: "ПОЖАЛУЙСТА, СДЕЛАЙТЕ РЕЗЕРВНУЮ КОПИЮ ВОССТАНОВИТЕЛЬНОЙ ФРАЗЫ ВАШЕГО КОШЕЛЬКА",
+    ru: "ПОЖАЛУЙСТА, СДЕЛАЙТЕ РЕЗЕРВНУЮ КОПИЮ ФРАЗЫ ВОССТАНОВЛЕНИЯ ВАШЕГО КОШЕЛЬКА",
     sv: "VÄNLIGEN SÄKERHETSKOPIERA DIN ÅTERSTÄLLNINGSFRAS FÖR PLÅNBOKEN",
     sw: "TAFADHALI HIFADHI KANISI YAKO YA KURUDISHA KIPOCHI",
     ta: "தயவுசெய்து உங்கள் வாலட் மீட்டமைப்பு வாசிப்பை பகுதியாகப் பின்தொடருங்கள்",

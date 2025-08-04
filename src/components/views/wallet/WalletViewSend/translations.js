@@ -337,7 +337,7 @@ const translations = {
     pl: "Wyślij mimo wszystko",
     pt: "Enviar de qualquer maneira",
     ro: "Trimite oricum",
-    ru: "Отправить в любом случае",
+    ru: "Всё равно отправить",
     sv: "Skicka ändå",
     sw: "Tuma Hata hivyo",
     ta: "எப்படியும் அனுப்பு",

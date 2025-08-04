@@ -259,7 +259,7 @@ const translations = {
     pl: "Eksportuj dzienniki",
     pt: "Exportar Logs",
     ro: "Exportă jurnalele",
-    ru: "Экспорт журналов",
+    ru: "Экспорт журнала",
     sv: "Exportera loggar",
     sw: "Hamisha Kumbukumbu",
     ta: "பதிவுகளை ஏற்றுமதி செய்",
