@@ -158,6 +158,9 @@ function OutputListItem({ output, i }) {
   const isOpReturn = asmSplit[0] === "OP_RETURN";
   const opReturnData = hexToUtf8(asmSplit.slice(2)); // OP_RETURN OP_PUSHDATA_X ...
 
+  // Determine address format based on whether tokens are present
+  const addressFormat = output.token ? "tokenaddr" : undefined;
+
   return (
     <div className={`p-1.5 ${zebraCss}`}>
       <div className="flex text-sm items-center">
@@ -166,6 +169,7 @@ function OutputListItem({ output, i }) {
         ) : (
           <Address
             address={output.scriptPubKey.addresses[0]}
+            format={addressFormat}
             className="tracking-tight"
           />
         )}

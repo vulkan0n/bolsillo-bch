@@ -140,11 +140,15 @@ export default WalletViewSendSuccess;
 function OutputListItem({ output, i }) {
   const zebraCss = i % 2 === 0 ? "bg-primary-100" : "bg-primary-50";
 
+  // Determine address format based on whether tokens are present
+  const addressFormat = output.token ? "tokenaddr" : undefined;
+
   return (
     <div className={`p-1.5 ${zebraCss}`}>
       <div className="flex text-sm items-center">
         <Address
           address={output.scriptPubKey.addresses[0]}
+          format={addressFormat}
           className="tracking-tight"
         />
       </div>
