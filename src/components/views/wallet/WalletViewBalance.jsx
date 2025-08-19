@@ -63,7 +63,7 @@ export default function WalletViewBalance() {
   }, [dispatch, shouldHideBalance]);
 
   const hiddenBalanceClasses = useMemo(
-    () => (shouldHideBalance ? "blur-xs backdrop-opacity-60 opacity-25" : ""),
+    () => (shouldHideBalance ? "blur-sm backdrop-opacity-60 opacity-25" : ""),
     [shouldHideBalance]
   );
 

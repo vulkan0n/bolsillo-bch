@@ -242,7 +242,7 @@ export default function SettingsWalletScanTool() {
             min="1"
             step="1"
           />
-          <Button label="Start Scan" onClick={handleScan} rounded-sm="md" />
+          <Button label="Start Scan" onClick={handleScan} rounded="md" />
         </div>
         <div>
           <input
@@ -250,7 +250,7 @@ export default function SettingsWalletScanTool() {
             value={nScanMore}
             onChange={handleSetNScanMore}
           />
-          <Button label="Scan More" rounded-sm="md" onClick={handleScanMore} />
+          <Button label="Scan More" rounded="md" onClick={handleScanMore} />
         </div>
         <ul>
           <li>Receive Addresses: {receiveAddresses.length}</li>

@@ -60,7 +60,7 @@ export default function StatsGraphCard() {
         </div>
       </div>
 
-      <div className="bg-primary-50 my-2 p-2 rounded-sm">
+      <div className="bg-primary-50 my-2 p-2 rounded">
         {!isReady && <p>Loading chart...</p>}
         {isReady && <ActiveUsersChart data={data} period={period} />}
       </div>

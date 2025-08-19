@@ -109,7 +109,7 @@ export default function AssetsViewTokens() {
     <div className="p-1">
       <KeyWarning walletHash={walletHash} />
       {tokenData.length === 0 ? (
-        <div className="text-center py-4 rounded-sm text-2xl text-neutral-700/90 my-4">
+        <div className="text-center py-4 rounded text-2xl text-neutral-700/90 my-4">
           {translate(translations.noTokens)}
           <div className="flex justify-center items-center mt-4">
             <SeleneLogo className="h-32" cashtokens />
@@ -161,7 +161,7 @@ export function TokenCard({ token }: { token: TokenEntity }) {
   return (
     <div
       key={token.category}
-      className="w-full my-1 p-1 border border-primary rounded-sm"
+      className="w-full my-1 p-1 border border-primary rounded"
     >
       <div className="flex">
         <div className="w-fit h-fit mr-1">

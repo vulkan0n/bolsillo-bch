@@ -34,7 +34,7 @@ export default function CurrencySettings() {
         label={translate(translations.localCurrency)}
       >
         <select
-          className="p-2 bg-white rounded-sm h-10 w-fit"
+          className="p-2 bg-white rounded h-10 w-fit"
           value={localCurrency || ""}
           onChange={(event) =>
             handleSettingsUpdate("localCurrency", event.target.value)
@@ -71,7 +71,7 @@ export default function CurrencySettings() {
         label={translate(translations.denominateInSats)}
       >
         <select
-          className="p-2 bg-white rounded-sm h-10 w-24"
+          className="p-2 bg-white rounded h-10 w-24"
           value={denomination}
           onChange={(event) =>
             handleSettingsUpdate(

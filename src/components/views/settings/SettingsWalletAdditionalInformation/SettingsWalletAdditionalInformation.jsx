@@ -127,7 +127,7 @@ export default function SettingsWalletAdditionalInformation() {
                   }
                   setIsShowXpub(!isShowXpub);
                 }}
-                className="rounded-lg p-3 bg-primary text-neutral-50 shadow-xs"
+                className="rounded-lg p-3 bg-primary text-neutral-50 shadow-sm"
               >
                 <div className="flex items-center">
                   {isShowXpub ? (
@@ -181,7 +181,7 @@ export default function SettingsWalletAdditionalInformation() {
 
                   setIsShowXprv(!isShowXprv);
                 }}
-                className="rounded-lg p-3 bg-primary text-neutral-50 w-full shadow-xs"
+                className="rounded-lg p-3 bg-primary text-neutral-50 w-full shadow-sm"
               >
                 <div className="flex items-center">
                   {isShowXprv && (

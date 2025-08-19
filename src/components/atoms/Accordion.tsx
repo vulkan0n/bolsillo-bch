@@ -35,7 +35,7 @@ export default function Accordion({
         {isOpen ? <CaretDownOutlined /> : <CaretRightOutlined />}
       </button>
       {isOpen && (
-        <div className="mt-1 text-neutral-500 rounded-xs bg-primary-50 divide-y divide-neutral-100">
+        <div className="mt-1 text-neutral-500 rounded-sm bg-primary-50 divide-y divide-neutral-100">
           {children}
         </div>
       )}

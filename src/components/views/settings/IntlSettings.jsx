@@ -20,7 +20,7 @@ export default function IntlSettings() {
         label={translate(translations.language)}
       >
         <select
-          className="p-2 bg-white rounded-sm h-10 w-48 w-2/3"
+          className="p-2 bg-white rounded h-10 w-48 w-2/3"
           value={preferences.languageCode || ""}
           onChange={(event) => {
             handleSettingsUpdate("languageCode", event.target.value);
