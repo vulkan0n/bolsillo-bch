@@ -1,8 +1,18 @@
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router";
-import { CopyOutlined, CheckCircleFilled } from "@ant-design/icons";
-import { useSelector } from "react-redux";
-import { selectCurrencySettings } from "@/redux/preferences";
+import {
+  CopyOutlined,
+  CheckCircleFilled,
+  CaretRightOutlined,
+  CaretDownOutlined,
+} from "@ant-design/icons";
+import { useSelector, useDispatch } from "react-redux";
+import {
+  selectCurrencySettings,
+  setPreference,
+  selectShouldShowMemoCard,
+  selectShouldShowOutputsCard,
+} from "@/redux/preferences";
 import { selectActiveWalletHash } from "@/redux/wallet";
 
 import TransactionHistoryService from "@/services/TransactionHistoryService";
@@ -24,9 +34,13 @@ const Log = LogService("WalletViewSendSuccess");
 
 function WalletViewSendSuccess() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const location = useLocation();
   const { tx, header, prefillMemo } = location.state;
   const [isFocused, setIsFocused] = useState(false);
+
+  const shouldShowOutputs = useSelector(selectShouldShowOutputsCard);
+  const shouldShowMemo = useSelector(selectShouldShowMemoCard);
 
   Log.debug(tx);
 
@@ -48,6 +62,23 @@ function WalletViewSendSuccess() {
   const handleCopyTransactionId = async (event) => {
     event.stopPropagation();
     handleCopyToClipboard(tx.txid, translate(translations.transactionId));
+  };
+
+  const toggleOutputsVisibility = async (event) => {
+    event.stopPropagation();
+    dispatch(
+      setPreference({
+        key: "showOutputsCard",
+        value: String(!shouldShowOutputs),
+      })
+    );
+  };
+
+  const toggleMemoVisibility = async (event) => {
+    event.stopPropagation();
+    dispatch(
+      setPreference({ key: "showMemoCard", value: String(!shouldShowMemo) })
+    );
   };
 
   const hasTokens = tx.vout.find((out) => out.token) !== undefined;
@@ -93,41 +124,56 @@ function WalletViewSendSuccess() {
         </div>
         <div
           className="border rounded mb-2 border-primary"
-          onClick={(e) => e.stopPropagation()}
+          onClick={toggleMemoVisibility}
         >
           <div className="p-1 bg-primary-900 rounded-t border border-t-0 border-primary-900">
             <span className="font-semibold text-neutral-25 flex items-center">
               {translate(translations.memo)}
+              {shouldShowMemo ? (
+                <CaretDownOutlined className="ml-1" />
+              ) : (
+                <CaretRightOutlined className="ml-1" />
+              )}
             </span>
           </div>
-          <div className="flex items-center bg-primary-100 p-1 rounded-b-sm border border-t-0 border-primary-900">
-            <input
-              type="text"
-              className="flex-1 rounded-sm p-1"
-              value={memo}
-              onChange={handleMemoChange}
-              onFocus={() => setIsFocused(true)}
-              onBlur={() => setIsFocused(false)}
-            />
-            {memo && (
-              <CheckCircleFilled className="shrink text-primary text-lg ml-2 mr-1 font-bold" />
-            )}
-          </div>
+          {shouldShowMemo && (
+            <div className="flex items-center bg-primary-100 p-1 rounded-b-sm border border-t-0 border-primary-900">
+              <input
+                type="text"
+                className="flex-1 rounded-sm p-1"
+                value={memo}
+                onChange={handleMemoChange}
+                onFocus={() => setIsFocused(true)}
+                onBlur={() => setIsFocused(false)}
+                onClick={(e) => e.stopPropagation()}
+              />
+              {memo && (
+                <CheckCircleFilled className="shrink text-primary text-lg ml-2 mr-1 font-bold" />
+              )}
+            </div>
+          )}
         </div>
         <div
           className="border rounded mb-2 border-primary"
-          onClick={(e) => e.stopPropagation()}
+          onClick={toggleOutputsVisibility}
         >
           <div className="p-1 bg-primary-900 rounded-t border border-t-0 border-primary-900">
             <span className="font-semibold text-neutral-25 flex items-center">
               {translate(translations.outputs)}
+              {shouldShowOutputs ? (
+                <CaretDownOutlined className="ml-1" />
+              ) : (
+                <CaretRightOutlined className="ml-1" />
+              )}
             </span>
           </div>
-          <div className="bg-primary-700 border border-primary-900">
-            {tx.vout.map((output, i) => (
-              <OutputListItem key={output.n} output={output} i={i} />
-            ))}
-          </div>
+          {shouldShowOutputs && (
+            <div className="bg-primary-700 border border-primary-900">
+              {tx.vout.map((output, i) => (
+                <OutputListItem key={output.n} output={output} i={i} />
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>

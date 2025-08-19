@@ -50,6 +50,8 @@ const defaultPreferences = {
   displaySyncCounter: "true",
   lastAssetsPath: "/assets/tokens",
   shouldConstrainViewport: "true",
+  showMemoCard: "false",
+  showOutputsCard: "true",
   // --------
   // Network
   // TODO #420: electrum peer db
@@ -124,6 +126,8 @@ function validatePreferences(preferences: ValidPreferences): boolean {
     "offlineMode",
     "useTokenAddress",
     "autoResolveBcmr",
+    "showMemoCard",
+    "showOutputsCard",
   ];
 
   const invalidBools = boolKeys.filter(
@@ -397,4 +401,14 @@ export const selectShouldConstrainViewport = createSelector(
   ({ preferences, device }) =>
     device.deviceInfo.platform === "web" &&
     preferences.shouldConstrainViewport === "true"
+);
+
+export const selectShouldShowOutputsCard = createSelector(
+  (state: RootState) => state.preferences,
+  (preferences) => preferences.showOutputsCard === "true"
+);
+
+export const selectShouldShowMemoCard = createSelector(
+  (state: RootState) => state.preferences,
+  (preferences) => preferences.showMemoCard === "true"
 );
