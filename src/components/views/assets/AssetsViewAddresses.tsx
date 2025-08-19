@@ -107,7 +107,7 @@ function AddressAccordion({ a, i }: AddressAccordionProps) {
         )}
       </div>
       {isOpen && a.balance > 0 && (
-        <div className="bg-neutral-50 rounded-xs shadow-inner text-sm mt-1 flex flex-wrap gap-1 justify-between">
+        <div className="bg-neutral-50 rounded-sm shadow-inner text-sm mt-1 flex flex-wrap gap-1 justify-between">
           {coins.map((coin) => (
             <Coin key={`${coin.txid}:${coin.tx_pos}`} coin={coin} />
           ))}
@@ -131,7 +131,7 @@ function Coin({ coin }) {
 
   return (
     <div
-      className={`border rounded-sm border-primary p-1.5 text-sm flex-1 ${selectCss}`}
+      className={`border rounded border-primary p-1.5 text-sm flex-1 ${selectCss}`}
       onClick={handleSelection}
     >
       <div className="flex items-center">

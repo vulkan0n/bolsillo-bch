@@ -38,7 +38,7 @@ function AppBlissView() {
     <FullColumn>
       <ViewHeader title={translate(translations.about)} close="/explore" />
       <div className="px-4 py-8">
-        <h1 className="font-bliss text-2xl text-[#e8078c] bg-[linear-gradient(to_bottom,rgb(232,7,140),rgb(160,137,191))] bg-clip-text text-transparent">
+        <h1 className="font-bliss text-2xl text-[#e8078c] bg-[linear-gradient(to_bottom,_rgb(232,_7,_140),_rgb(160,_137,_191))] bg-clip-text text-transparent">
           BCH BLISS 2025
         </h1>
         <div className=" text-xl font-bold">
@@ -77,7 +77,7 @@ function AppBlissView() {
           </li>
           <li>{translate(translations.howToTicketsStepFour)}</li>
           <li>{translate(translations.howToTicketsStepFive)}</li>
-          <a href={TICKETS_READ_MORE_URL} className="mt-4 ml-0! text-primary">
+          <a href={TICKETS_READ_MORE_URL} className="mt-4 !ml-0 text-primary">
             {translate(translations.howToTicketsReadMore)} →
           </a>
         </ol>

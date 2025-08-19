@@ -51,28 +51,28 @@ export default function ErrorBoundary() {
         <span className="flex-1">{translate(translations.somethingWrong)}</span>
       </div>
       <div className="p-2">
-        <div className="bg-neutral-200 p-2 rounded-sm my-1">
+        <div className="bg-neutral-200 p-2 rounded my-1">
           <div className="text-xl font-bold mb-2">
             {translate(translations.hereCanTry)}:
           </div>
           <div className="flex items-center gap-x-1">
             <Button
-              className="bg-primary rounded-sm text-white p-1 flex-1"
+              className="bg-primary rounded text-white p-1 flex-1"
               onClick={handleRestartApp}
               label={translate(translations.restartApp)}
             />
             <Button
-              className="bg-primary rounded-sm text-white p-1 flex-1"
+              className="bg-primary rounded text-white p-1 flex-1"
               onClick={handleResetPreferences}
               label={translate(translations.resetSettings)}
             />
             <Button
-              className="bg-primary rounded-sm text-white p-1 flex-1"
+              className="bg-primary rounded text-white p-1 flex-1"
               onClick={handleRebuildWallet}
               label={translate(translations.rebuildWallet)}
             />
             <Button
-              className="bg-primary rounded-sm text-white p-1"
+              className="bg-primary rounded text-white p-1"
               onClick={handleSendDiagnosticInfo}
               label={translate(translations.exportLogs)}
             />

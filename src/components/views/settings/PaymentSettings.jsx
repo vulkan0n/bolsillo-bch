@@ -85,7 +85,7 @@ export default function PaymentSettings() {
           <CurrencySymbol className="font-bold text-lg" />
           <SatoshiInput
             satoshis={instantPaySatInput}
-            className="p-2 w-28 rounded-sm mx-1 flex-1"
+            className="p-2 w-28 rounded mx-1 flex-1"
             onChange={handleInstantPayInput}
           />
         </span>

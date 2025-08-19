@@ -138,10 +138,10 @@ export default function AssetsViewTokenDetail() {
   return (
     <FullColumn key={tokenData.category} className="justify-between">
       <div className="p-1">
-        <div className="border rounded-sm border-primary p-1">
+        <div className="border rounded border-primary p-1">
           <div className="flex">
             <div
-              className="border border-2 rounded-xs overflow-hidden shadow-xs w-fit h-fit"
+              className="border border-2 rounded-sm overflow-hidden shadow-sm w-fit h-fit"
               style={{ borderColor: tokenData.color }}
             >
               <TokenIcon category={tokenData.category} size={96} />
@@ -273,7 +273,7 @@ export default function AssetsViewTokenDetail() {
             })}
           </div>
         ) : (
-          <div className="border rounded-xs border-neutral-300 shadow-inner mt-2">
+          <div className="border rounded-sm border-neutral-300 shadow-inner mt-2">
             {tokenHistory.map(
               (h, i) =>
                 i < 50 && (
@@ -315,7 +315,7 @@ export default function AssetsViewTokenDetail() {
       </div>
 
       {tokenData.amount > 0 && (
-        <div className="sticky bottom-0 bg-black/80 w-full border-t-2 border-neutral-700 rounded-t shadow-sm mt-1">
+        <div className="sticky bottom-0 bg-black/80 w-full border-t-2 border-neutral-700 rounded-t shadow mt-1">
           <div className="text-neutral-700 rounded-t bg-white/85 shadow-lg">
             <div className="flex items-center p-2 mb-1">
               <Button
@@ -357,7 +357,7 @@ function SelectionDisplay({ selection, onConfirm, onCancel }) {
   };
 
   return (
-    <div className="sticky bottom-0 bg-black/70 w-full border-t-2 border-neutral-700 rounded-t shadow-sm mt-1">
+    <div className="sticky bottom-0 bg-black/70 w-full border-t-2 border-neutral-700 rounded-t shadow mt-1">
       <div className="text-neutral-700 rounded-t bg-white/85 shadow-lg px-3 py-3">
         <div className="flex relative justify-between">
           <div className="flex items-center justify-start flex-1">

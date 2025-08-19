@@ -73,15 +73,15 @@ export default function ExploreTransactionView() {
     <>
       <ExploreSearchBar />
       <div className="p-1">
-        <div className="bg-neutral-700 rounded-sm">
+        <div className="bg-neutral-700 rounded">
           <div className="font-semibold text-neutral-100 p-1.5">
             {translate(translations.transactionId)}
           </div>
           <div
-            className="flex items-center justify-center rounded-sm p-1 bg-primary-900"
+            className="flex items-center justify-center rounded p-1 bg-primary-900"
             onClick={handleCopyTransactionId}
           >
-            <div className="w-full p-2 bg-neutral-100 text-neutral-700 border-2 border-primary rounded-sm flex items-center justify-center active:bg-primary">
+            <div className="w-full p-2 bg-neutral-100 text-neutral-700 border-2 border-primary rounded flex items-center justify-center active:bg-primary">
               <CopyOutlined className="mr-1" />
               <div className="font-mono text-xs flex flex-col items-center w-full">
                 <span>{tx.txid.slice(0, 32)}</span>
@@ -91,7 +91,7 @@ export default function ExploreTransactionView() {
           </div>
         </div>
 
-        <Card className="bg-neutral-200 text-white rounded-sm p-1 my-1">
+        <Card className="bg-neutral-200 text-white rounded p-1 my-1">
           <div className="p-1">
             <div className="text-neutral-700 font-bold flex items-center justify-start">
               <span>{txDate}</span>
