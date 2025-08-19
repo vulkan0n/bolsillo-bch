@@ -1,10 +1,105 @@
-# Contributing
+# Selene Contributor's Guide
+
+## Welcome & Getting Started
 
 We love contributors! Welcome!
 
-To get started review the following code style guide and pull request format notes as part of contributing to Selene. Of course if you have any questions, feel free to ask in [the Telegram group](https://t.me/+MMbV2KEPFt84MDQ8).
+- If you haven't already cloned the repository and started running a local copy of the app in your browser, do that first by following the instructions in the README.
 
-Note: Please **DO NOT** fork from `main`, instead it's best to fork from the branch for the next upcoming release (which will be named `vX.X.X` and clearly have recent activity). Upcoming release serves as the defacto development branch, and can be noticeably ahead of main.
+- In order to submit a Merge Request, you'll need to register for an account on the XULU.TECH Gitlab Instance. Contact Kallisti in order to have your account approved.
+
+- If you have any questions, feel free to ask in [the Telegram group](https://t.me/+MMbV2KEPFt84MDQ8).
+
+## Your First Ticket 
+
+1. Look in the [Issue Tracker](https://git.xulu.tech/selene.cash/selene-wallet/-/issues) or [Milestones](https://git.xulu.tech/selene.cash/selene-wallet/-/milestones) for a ticket that appeals to you.
+    - Some tickets have a Weight attached to them, notated in brackets (e.g. "[1] Add ability to check stats over longer time frames" has a weight of 1).
+    - Weight indicates an estimate of the time effort required to complete the ticket. See more details in the "Bounties" section of this document.
+
+2. Contact Kallisti before starting the work to validate scope, requirements, and approach.
+    - We are not liable for any of your time wasted if you do not communicate with Kallisti.
+
+3. Checkout a new branch based off of the `staging` branch. 
+    - Use a name format like `###-short-description`.
+    - e.g. for "#446 Persist Transaction Memos on Rebuild" use a branch name like `446-persist-memos`.
+
+4. Feel free to ask Kallisti any questions about the work as you go.
+
+5. When ready for review, open a Merge Request and set Kallisti as the Reviewer.
+
+6. Feel free to include a change adding yourself as a contributor on the Credits page in the app!
+
+## Merge Request Expectations
+
+- All Merge Requests are subject to review and are not guaranteed to be approved.
+
+- Merge Requests will be reviewed as soon as possible, but please allow up to 1-3 business days for each round of review.
+
+- Screenshots and/or video showing any changes are preferred and will help accelerate the review process.
+
+- Try to do some self-review by reading the diff of the changes yourself. If there's anything you'd like to note or highlight about the changes, do so in the comments.
+
+- Do your best to minimize the amount of changes required to resolve the ticket. Smaller, more thoughtful MRs are more likely to be approved.
+    - Large MRs will probably be rejected immediately, especially if you did not communicate with Kallisti beforehand.
+    - Recommended Reading: 
+        - _The Pragmatic Programmer_ by Andrew Hunt & David Thomas
+        - _Working Effectively With Legacy Code_ by Michael Feathers
+
+- It is expected that you are able to answer "why" each and every line of code exists. If you can't explain your decisions, your merge request will be rejected.
+
+- Use of AI code generation tools is discouraged\*, but not prohibited.
+    <details><summary>Clarity on AI Code Generation Policy</summary>
+
+    AI code generation is fine IF it produces a concise, effective PR that meets review standards.
+
+    The problem with AI is low-effort generating a load of spaghetti, unrelated changes, comments/noise or coding patterns that the actual coder would not have independently used at their level of capability.
+
+    In other words: Feel free to use, but use wisely. It is essential for any AI generated code to be self-reviewed by the MR owner before submission to ensure they clearly understand, cannot simplify & can explain all of the changes made - however they were incepted.
+    </details>
+
+### Code Style Guidelines
+
+- Use descriptive names for variables and functions.
+    - Do not use anonymous functions for `useEffect`.
+    - Instead, use a descriptive named function. Example:
+        ```
+        useEffect(
+          function handleInstantPay() {
+            // ...
+          }
+        );
+        ```
+
+- Use TypeScript type annotations where possible.
+
+- Boolean variable names must begin with `is`, `should`, `has`, `did`, or `will`.
+
+- `import React from "react"` is not necessary.
+
+- The linter must succeed in order for your merge request to be approved.
+
+### Package/Dependency Guidelines
+
+Each new package adds dependency risk & bundle size. Packages must meet a high bar of utility & necessity to be justified.
+
+- Minimize adding new dependencies/packages. Only do so if strictly necessary.
+
+- Do research on the package you intend to install. Make sure it's the best option available.
+
+- Prioritize packages with minimal footprint, which should be measured in KILOBYTES, not megabytes.
+
+- Prioritize packages that do one thing and do it well.
+
+- Prioritize packages that can stand the test of time with minimal maintenance/technical debt.
+
+- Package installation must be its own commit.
+
+
+### Managing Side Effects
+
+- Prefer pure functions unless side effects are neccesary.
+
+- Avoid use of top-level scope unless strictly necessary.
 
 ## Bounties
 
@@ -23,17 +118,7 @@ As relevant to the issue at hand, screen designs or non-functional UI scaffold b
 
 These points aren't set out to discourage contributors, but to appropriately set expectations that Selene is aiming to maintain a high standard of engineering and bounty payouts will be granted in alignment with that.
 
-## Code Style Guidelines
 
-- Prefer use of longer, descriptive variable names. E.g. `transactionId` not `txId`. Easier to mentally parse by reducing the cognitive load of (often unspecified or nonstandard) abbreviations.
-- Use hooks, not class components in React.
-- Use TypeScript wherever possible for ease of maintenance.
-- Use absolute file import paths (`import COLOURS from "@selene-wallet/common/design/colours";`) rather than relative ones (`import COLOURS from "../../../common/design/colours";`), makes Find+Replace on imports after relocating files much simpler.
-- Boolean variables should be named `isX` e.g. `isDarkMode`.
-
-## Pull Request Guidelines
-
-- Where access is available to the Trello board, please link to the relevant issue. If no access, ask for it!
 - Selene reviewers will use a system of "ASCII annotations" to prefix comments. This system comes from commercial experience with developers creating conflict over the severity or intent of context-less and tone-free typed review comments. See [these Google Slides](https://docs.google.com/presentation/d/1AA-ddE828xhXMaGKUp21vBMx20q9xOArw2-TuzkL3xM/edit?usp=sharing) for examples/details.
 
 ```
@@ -43,5 +128,3 @@ These points aren't set out to discourage contributors, but to appropriately set
 -+ = Recognition, encouragement and praise of smart or cool code, [typically] 0-3 / review, merge non-blocking
 ```
 
-- Where a change has been made impacting the UI, a "Before" and "After" screenshot showing the difference is immensely helpful for reviewing developers.
-- If this is your first PR, feel free to include a change adding yourself as a contributor on the Credits page in the app!!
