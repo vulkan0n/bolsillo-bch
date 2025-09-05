@@ -105,6 +105,7 @@ export default function CurrencySettings() {
         <Accordion.Child
           icon={FundOutlined}
           label={translate(translations.enableStablecoinMode)}
+          description={translate(translations.stablecoinModeExplanation)}
         >
           <input
             type="checkbox"
