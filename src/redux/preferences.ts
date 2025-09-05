@@ -40,6 +40,7 @@ const defaultPreferences = {
   preferLocalCurrency: "true",
   denomination: "bch",
   stablecoinMode: "false", // TODO: move to wallet db
+  includeVolatileBalance: "true", // TODO: move to wallet db
   // --------
   // Payment (move to wallet db?)
   allowInstantPay: "false",
@@ -53,7 +54,7 @@ const defaultPreferences = {
   // --------
   // UI
   displayExploreTab: "true",
-  displayExchangeRate: "false",
+  displayExchangeRate: "true",
   displaySyncCounter: "true",
   lastAssetsPath: "/assets/tokens",
   shouldConstrainViewport: "true",
@@ -137,6 +138,7 @@ function validatePreferences(preferences: ValidPreferences): boolean {
     "showMemoCard",
     "showOutputsCard",
     "stablecoinMode",
+    "includeVolatileBalance",
   ];
 
   const invalidBools = boolKeys.filter(
@@ -290,6 +292,7 @@ export const selectCurrencySettings = createSelector(
     denomination: preferences.denomination,
     shouldPreferLocalCurrency: preferences.preferLocalCurrency === "true",
     isStablecoinMode: preferences.stablecoinMode === "true",
+    shouldIncludeVolatileBalance: preferences.includeVolatileBalance === "true",
   })
 );
 

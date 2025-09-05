@@ -6,6 +6,7 @@ import {
   TransactionOutlined,
   AccountBookOutlined,
   FundOutlined,
+  MoneyCollectOutlined,
 } from "@ant-design/icons";
 
 import {
@@ -31,6 +32,7 @@ export default function CurrencySettings() {
     localCurrency,
     denomination,
     isStablecoinMode,
+    shouldIncludeVolatileBalance,
   } = useSelector(selectCurrencySettings);
 
   const isPrerelease = useSelector(selectIsPrerelease);
@@ -112,6 +114,23 @@ export default function CurrencySettings() {
             checked={isStablecoinMode}
             onChange={(event) =>
               handleSettingsUpdate("stablecoinMode", event.target.checked)
+            }
+          />
+        </Accordion.Child>
+      )}
+      {isStablecoinMode && (
+        <Accordion.Child
+          icon={MoneyCollectOutlined}
+          label={translate(translations.includeVolatileBalance)}
+        >
+          <input
+            type="checkbox"
+            checked={shouldIncludeVolatileBalance}
+            onChange={(event) =>
+              handleSettingsUpdate(
+                "includeVolatileBalance",
+                event.target.checked
+              )
             }
           />
         </Accordion.Child>

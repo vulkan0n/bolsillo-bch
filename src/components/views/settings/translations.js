@@ -2343,6 +2343,9 @@ const translations = {
     zh_TW:
       "啟用時，所有傳入的BCH都會透過Cauldron DEX自動轉換為MUSD，除了作為交易費用儲存為BCH的0.2%。顯示的餘額將是MUSD，法定貨幣將變為USD。",
   },
+  includeVolatileBalance: {
+    en: "Include non-stablecoin balances",
+  },
 };
 
 export default translations;
