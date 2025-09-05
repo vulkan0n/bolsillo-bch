@@ -5,9 +5,13 @@ import {
   EuroCircleOutlined,
   TransactionOutlined,
   AccountBookOutlined,
+  FundOutlined,
 } from "@ant-design/icons";
 
-import { selectCurrencySettings } from "@/redux/preferences";
+import {
+  selectCurrencySettings,
+  selectIsPrerelease,
+} from "@/redux/preferences";
 
 import { translate } from "@/util/translations";
 import translations from "./translations";
@@ -22,8 +26,17 @@ import Select from "@/components/atoms/Select";
 export default function CurrencySettings() {
   const { handleSettingsUpdate } = useContext(SettingsContext);
 
-  const { shouldPreferLocalCurrency, localCurrency, denomination } =
-    useSelector(selectCurrencySettings);
+  const {
+    shouldPreferLocalCurrency,
+    localCurrency,
+    denomination,
+    isStablecoinMode,
+  } = useSelector(selectCurrencySettings);
+
+  const isPrerelease = useSelector(selectIsPrerelease);
+
+  // force USD as local currency when in stablecoin mode
+  const localCurrencySelection = isStablecoinMode ? "USD" : localCurrency;
 
   return (
     <Accordion
@@ -36,7 +49,7 @@ export default function CurrencySettings() {
       >
         <Select
           className="w-fit"
-          value={localCurrency || ""}
+          value={localCurrencySelection || ""}
           onChange={(event) =>
             handleSettingsUpdate("localCurrency", event.target.value)
           }
@@ -88,6 +101,20 @@ export default function CurrencySettings() {
           ))}
         </Select>
       </Accordion.Child>
+      {(isPrerelease || isStablecoinMode) && (
+        <Accordion.Child
+          icon={FundOutlined}
+          label={translate(translations.enableStablecoinMode)}
+        >
+          <input
+            type="checkbox"
+            checked={isStablecoinMode}
+            onChange={(event) =>
+              handleSettingsUpdate("stablecoinMode", event.target.checked)
+            }
+          />
+        </Accordion.Child>
+      )}
     </Accordion>
   );
 }

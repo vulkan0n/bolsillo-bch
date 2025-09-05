@@ -36,7 +36,7 @@ const translations = {
     ur: "ترتیبات",
     vi: "Cài đặt",
     zh: "设置",
-    zh_TW: "設置"
+    zh_TW: "設置",
   },
   walletSettings: {
     ar: "محافظ",
@@ -75,7 +75,7 @@ const translations = {
     ur: "بٹوے",
     vi: "Ví",
     zh: "钱包",
-    zh_TW: "錢包"
+    zh_TW: "錢包",
   },
   createImportWallet: {
     ar: "إنشاء / استيراد المحفظة",
@@ -114,7 +114,7 @@ const translations = {
     ur: "والیٹ بنائیں/داخل کریں",
     vi: "Tạo/Nhập ví",
     zh: "创建/导入钱包",
-    zh_TW: "創建/導入錢包"
+    zh_TW: "創建/導入錢包",
   },
   localizationSettings: {
     ar: "الموقع",
@@ -153,7 +153,7 @@ const translations = {
     ur: "مقامی کرنے والا",
     vi: "Địa phương hóa",
     zh: "本地化",
-    zh_TW: "本土化"
+    zh_TW: "本土化",
   },
   language: {
     ar: "لغة",
@@ -192,7 +192,7 @@ const translations = {
     ur: "زبان",
     vi: "Ngôn ngữ",
     zh: "语言",
-    zh_TW: "語言"
+    zh_TW: "語言",
   },
   currencySettings: {
     ar: "عملة",
@@ -231,7 +231,7 @@ const translations = {
     ur: "کرنسی",
     vi: "Tiền tệ",
     zh: "货币",
-    zh_TW: "貨幣"
+    zh_TW: "貨幣",
   },
   localCurrency: {
     ar: "العملة المحلية",
@@ -270,7 +270,7 @@ const translations = {
     ur: "مقامی کرنسی",
     vi: "Tiền tệ địa phương",
     zh: "本地货币",
-    zh_TW: "當地貨幣"
+    zh_TW: "當地貨幣",
   },
   preferLocalCurrency: {
     ar: "تفضل العملة المحلية",
@@ -309,7 +309,7 @@ const translations = {
     ur: "مقامی کرنسی کو ترجیح دیں",
     vi: "Ưu tiên tiền tệ địa phương",
     zh: "优先使用本地货币",
-    zh_TW: "更喜歡當地貨幣"
+    zh_TW: "更喜歡當地貨幣",
   },
   hideAvailableBalance: {
     ar: "إخفاء الأرصدة",
@@ -348,7 +348,7 @@ const translations = {
     ur: "بیلنس چھپائیں۔",
     vi: "Ẩn số dư",
     zh: "隐藏余额",
-    zh_TW: "隱藏餘額"
+    zh_TW: "隱藏餘額",
   },
   denominateInSats: {
     ar: "فئة",
@@ -387,7 +387,7 @@ const translations = {
     ur: "فرقہ",
     vi: "Mệnh giá",
     zh: "面值",
-    zh_TW: "面值"
+    zh_TW: "面值",
   },
   themeMode: {
     ar: "وضع الموضوع",
@@ -582,7 +582,7 @@ const translations = {
     ur: "تبادلی شرح دکھائیں",
     vi: "Hiển thị tỷ giá hối đoái",
     zh: "显示汇率",
-    zh_TW: "顯示匯率"
+    zh_TW: "顯示匯率",
   },
   paymentSettings: {
     ar: "قسط",
@@ -621,7 +621,7 @@ const translations = {
     ur: "ادائیگی",
     vi: "Thanh toán",
     zh: "付款",
-    zh_TW: "支付"
+    zh_TW: "支付",
   },
   allowInstantPay: {
     ar: "السماح بالدفع الفوري",
@@ -660,7 +660,7 @@ const translations = {
     ur: "فوری ادائیگی کی اجازت دیں۔",
     vi: "Cho phép thanh toán ngay lập tức",
     zh: "允许即时支付",
-    zh_TW: "允許即時付款"
+    zh_TW: "允許即時付款",
   },
   instantPayExplanation: {
     ar: "مسح رمز QR للفاتورة يطلب مبلغًا أقل من حد الدفع الفوري يدفع على الفور دون نقرة إضافية للإرسال.",
@@ -699,7 +699,8 @@ const translations = {
     ur: "انوائس QR کوڈ اسکین کرنے سے مناسبت طلب کی رقم فوری طور پر اضافی ٹیپ کرنے کے بغیر فوری ادائیگی کرتی ہے.",
     vi: "Quét mã QR của hóa đơn yêu cầu số tiền dưới ngưỡng thanh toán tức thì trả ngay mà không cần nhấn thêm để gửi.",
     zh: "扫描发票二维码，请求金额低于即时支付阈值，立即支付而无需额外点击以发送。",
-    zh_TW: "掃描發票二維碼並請求低於即時付款閾值的金額即可立即付款，無需額外點擊即可發送。"
+    zh_TW:
+      "掃描發票二維碼並請求低於即時付款閾值的金額即可立即付款，無需額外點擊即可發送。",
   },
   instantPayLimit: {
     ar: "حد الدفع الفوري",
@@ -738,7 +739,7 @@ const translations = {
     ur: "فوری ادائیگی کی حد",
     vi: "Giới hạn thanh toán ngay",
     zh: "即时支付限额",
-    zh_TW: "即時支付限額"
+    zh_TW: "即時支付限額",
   },
   qrCodeSettings: {
     ar: "رمز الاستجابة السريعة",
@@ -777,7 +778,7 @@ const translations = {
     ur: "کیو آر کوڈ",
     vi: "Mã QR",
     zh: "二维码",
-    zh_TW: "二維碼"
+    zh_TW: "二維碼",
   },
   logo: {
     ar: "شعار",
@@ -816,7 +817,7 @@ const translations = {
     ur: "لوگو",
     vi: "Logo",
     zh: "商标",
-    zh_TW: "標識"
+    zh_TW: "標識",
   },
   foregroundColor: {
     ar: "لون المقدمة",
@@ -855,7 +856,7 @@ const translations = {
     ur: "پیش منظر کا رنگ",
     vi: "Màu nền trước",
     zh: "前景色",
-    zh_TW: "前景色"
+    zh_TW: "前景色",
   },
   backgroundColor: {
     ar: "لون الخلفية",
@@ -894,7 +895,7 @@ const translations = {
     ur: "پس منظر کا رنگ",
     vi: "Màu nền",
     zh: "背景颜色",
-    zh_TW: "背景顏色"
+    zh_TW: "背景顏色",
   },
   resetColors: {
     ar: "إعادة تعيين الألوان",
@@ -933,7 +934,7 @@ const translations = {
     ur: "رنگوں کو دوبارہ ترتیب دیں۔",
     vi: "Đặt lại màu sắc",
     zh: "重置颜色",
-    zh_TW: "重置顏色"
+    zh_TW: "重置顏色",
   },
   network: {
     ar: "Network",
@@ -972,7 +973,7 @@ const translations = {
     ur: "نیٹ ورک",
     vi: "Mạng lưới",
     zh: "网络",
-    zh_TW: "Network"
+    zh_TW: "Network",
   },
   translatedElectrumServer: {
     ar: "خادم اليكترون",
@@ -1011,7 +1012,7 @@ const translations = {
     ur: "الیکٹرم سرور",
     vi: "Máy chủ Electrum",
     zh: "Electrum 服务器",
-    zh_TW: "電子貨幣伺服器"
+    zh_TW: "電子貨幣伺服器",
   },
   electrumServerDescription: {
     ar: "اختر خادم Electrum من القائمة المتوفرة أو قم بالتجاوز عن طريق إدخال اسم خادم Electrum مخصص.",
@@ -1050,7 +1051,8 @@ const translations = {
     ur: "فراہم کردہ فہرست سے ایک الیکٹرم سرور کا انتخاب کریں یا خود سے الیکٹرم سرور کا نام داخل کر کے اس کو اوپر لکھیں۔",
     vi: "Chọn một máy chủ Electrum từ danh sách được cung cấp hoặc ghi đè bằng cách nhập tên máy chủ Electrum tùy chỉnh.",
     zh: "从提供的列表中选择一个 Electrum 服务器或通过输入自定义 Electrum 服务器名称覆盖。",
-    zh_TW: "從提供的清單中選擇 Electrum 伺服器或透過輸入自訂 Electrum 伺服器名稱進行覆蓋。"
+    zh_TW:
+      "從提供的清單中選擇 Electrum 伺服器或透過輸入自訂 Electrum 伺服器名稱進行覆蓋。",
   },
   server: {
     ar: "الخادم",
@@ -1089,7 +1091,7 @@ const translations = {
     ur: "سرور",
     vi: "Máy chủ",
     zh: "服务器",
-    zh_TW: "伺服器"
+    zh_TW: "伺服器",
   },
   customServer: {
     ar: "خادم مخصص",
@@ -1128,7 +1130,7 @@ const translations = {
     ur: "مخصوص سرور",
     vi: "Máy chủ tùy chỉnh",
     zh: "自定义服务器",
-    zh_TW: "客製化伺服器"
+    zh_TW: "客製化伺服器",
   },
   uiSettings: {
     ar: "واجهة المستخدم",
@@ -1167,7 +1169,7 @@ const translations = {
     ur: "یوزر انٹرفیس",
     vi: "Giao diện người dùng",
     zh: "用户界面",
-    zh_TW: "使用者介面"
+    zh_TW: "使用者介面",
   },
   displayExploreTab: {
     ar: "عرض علامة التبويب &quot;استكشاف&quot;",
@@ -1206,7 +1208,7 @@ const translations = {
     ur: "ایکسپلور ٹیب کو ڈسپلے کریں۔",
     vi: "Hiển thị tab Khám phá",
     zh: "显示“浏览”选项卡",
-    zh_TW: "顯示探索標籤"
+    zh_TW: "顯示探索標籤",
   },
   displaySyncCounter: {
     ar: "عرض عداد المزامنة",
@@ -1245,7 +1247,7 @@ const translations = {
     ur: "مطابقت پذیری کاؤنٹر ڈسپلے کریں۔",
     vi: "Hiển thị bộ đếm đồng bộ",
     zh: "显示同步计数器",
-    zh_TW: "顯示同步計數器"
+    zh_TW: "顯示同步計數器",
   },
   privacySettings: {
     ar: "خصوصية",
@@ -1284,7 +1286,7 @@ const translations = {
     ur: "رازداری",
     vi: "Sự riêng tư",
     zh: "隐私",
-    zh_TW: "隱私"
+    zh_TW: "隱私",
   },
   sendDailyCheckIn: {
     ar: "إرسال تسجيل الدخول للإحصائيات",
@@ -1323,7 +1325,7 @@ const translations = {
     ur: "اعدادوشمار چیک ان بھیجیں۔",
     vi: "Gửi kiểm tra số liệu thống kê",
     zh: "发送统计信息签到",
-    zh_TW: "發送統計簽到"
+    zh_TW: "發送統計簽到",
   },
   security: {
     ar: "حماية",
@@ -1362,7 +1364,7 @@ const translations = {
     ur: "سیکورٹی",
     vi: "Bảo vệ",
     zh: "安全",
-    zh_TW: "安全"
+    zh_TW: "安全",
   },
   securityMode: {
     ar: "وضع الأمان",
@@ -1401,7 +1403,7 @@ const translations = {
     ur: "سیکیورٹی موڈ",
     vi: "Chế độ bảo mật",
     zh: "安全模式",
-    zh_TW: "安全模式"
+    zh_TW: "安全模式",
   },
   none: {
     ar: "لا أحد",
@@ -1440,7 +1442,7 @@ const translations = {
     ur: "کوئی نہیں۔",
     vi: "Không có",
     zh: "没有任何",
-    zh_TW: "沒有任何"
+    zh_TW: "沒有任何",
   },
   pin: {
     ar: "دبوس",
@@ -1479,7 +1481,7 @@ const translations = {
     ur: "پن",
     vi: "GHIM",
     zh: "别针",
-    zh_TW: "別針"
+    zh_TW: "別針",
   },
   biometric: {
     ar: "البيانات الحيوية",
@@ -1518,7 +1520,7 @@ const translations = {
     ur: "بائیو میٹرک",
     vi: "Sinh trắc học",
     zh: "生物识别",
-    zh_TW: "生物識別"
+    zh_TW: "生物識別",
   },
   pinNotSet: {
     ar: "لم يتم تعيين رقم التعريف الشخصي (PIN)!",
@@ -1557,7 +1559,7 @@ const translations = {
     ur: "PIN سیٹ نہیں ہے!",
     vi: "Mã PIN chưa được thiết lập!",
     zh: "未设置 PIN！",
-    zh_TW: "PIN 碼未設定！"
+    zh_TW: "PIN 碼未設定！",
   },
   pinSet: {
     ar: "تم تعيين رقم التعريف الشخصي (PIN)",
@@ -1596,7 +1598,7 @@ const translations = {
     ur: "PIN سیٹ ہے۔",
     vi: "Mã PIN đã được thiết lập",
     zh: "已设置 PIN",
-    zh_TW: "PIN 碼已設置"
+    zh_TW: "PIN 碼已設置",
   },
   enterNewPin: {
     ar: "أدخل رقم التعريف الشخصي الجديد",
@@ -1635,7 +1637,7 @@ const translations = {
     ur: "نیا پن داخل کریں۔",
     vi: "Nhập mã PIN mới",
     zh: "输入新 PIN",
-    zh_TW: "輸入新 PIN 碼"
+    zh_TW: "輸入新 PIN 碼",
   },
   enterNewPinMessage: {
     ar: "الرجاء إدخال رقم التعريف الشخصي **الجديد**.",
@@ -1674,7 +1676,7 @@ const translations = {
     ur: "براہ کرم ایک **نیا** پن درج کریں۔",
     vi: "Vui lòng nhập mã PIN **mới**.",
     zh: "请输入**新** PIN。",
-    zh_TW: "請輸入**新** PIN 碼。"
+    zh_TW: "請輸入**新** PIN 碼。",
   },
   enterNewPinOkButtonTitle: {
     ar: "تعيين رقم التعريف الشخصي (PIN)",
@@ -1713,7 +1715,7 @@ const translations = {
     ur: "PIN سیٹ کریں۔",
     vi: "Đặt mã PIN",
     zh: "设置 PIN",
-    zh_TW: "設定密碼"
+    zh_TW: "設定密碼",
   },
   confirmNewPin: {
     ar: "تأكيد رقم التعريف الشخصي الجديد",
@@ -1752,7 +1754,7 @@ const translations = {
     ur: "نئے پن کی تصدیق کریں۔",
     vi: "Xác nhận mã PIN mới",
     zh: "确认新 PIN",
-    zh_TW: "確認新 PIN 碼"
+    zh_TW: "確認新 PIN 碼",
   },
   confirmNewPinMessage: {
     ar: "يرجى تأكيد رقم التعريف الشخصي الجديد الخاص بك.",
@@ -1791,7 +1793,7 @@ const translations = {
     ur: "براہ کرم اپنے نئے PIN کی تصدیق کریں۔",
     vi: "Vui lòng xác nhận mã PIN mới của bạn.",
     zh: "请确认您的新 PIN。",
-    zh_TW: "請確認您的新 PIN 碼。"
+    zh_TW: "請確認您的新 PIN 碼。",
   },
   confirmNewPinOkButtonTitle: {
     ar: "تأكيد رقم التعريف الشخصي (PIN)",
@@ -1830,7 +1832,7 @@ const translations = {
     ur: "پن کی تصدیق کریں۔",
     vi: "Xác nhận mã PIN",
     zh: "确认 PIN",
-    zh_TW: "確認密碼"
+    zh_TW: "確認密碼",
   },
   pinConfirmationDidNotMatch: {
     ar: "لم يتطابق تأكيد رقم التعريف الشخصي (PIN)! لم يتم تعيين رقم التعريف الشخصي (PIN).",
@@ -1869,7 +1871,7 @@ const translations = {
     ur: "PIN کی تصدیق مماثل نہیں ہے! PIN سیٹ نہیں کیا گیا تھا۔",
     vi: "Xác nhận mã PIN không khớp! Mã PIN chưa được thiết lập.",
     zh: "PIN 确认不匹配！未设置 PIN。",
-    zh_TW: "PIN 碼確認不符！未設定 PIN。"
+    zh_TW: "PIN 碼確認不符！未設定 PIN。",
   },
   securityModeExplanation: {
     ar: "يجب استخدام رقم التعريف الشخصي (PIN)/المصادقة البيومترية لعرض عبارات المحفظة الأصلية وإظهار رصيد المحفظة وإرسال المعاملات (باستثناء الفواتير التي تقل عن حد الدفع الفوري).",
@@ -1908,7 +1910,8 @@ const translations = {
     ur: "والیٹ سیڈ کے فقرے دیکھنے، والیٹ بیلنس کو چھپانے اور لین دین بھیجنے کے لیے PIN/بایومیٹرک تصدیق درکار ہے (سوائے فوری تنخواہ کی حد سے کم رسیدوں کے)۔",
     vi: "Yêu cầu xác thực mã PIN/sinh trắc học để xem cụm từ dữ liệu gốc của ví, hiện số dư ví và gửi giao dịch (trừ các hóa đơn dưới hạn mức thanh toán tức thì).",
     zh: "需要 PIN/生物识别身份验证才能查看钱包种子短语、取消隐藏钱包余额和发送交易（即时支付限额以下的发票除外）。",
-    zh_TW: "需要 PIN/生物識別身份驗證才能查看錢包助記詞、取消隱藏錢包餘額和發送交易（低於即時付款限額的發票除外）。"
+    zh_TW:
+      "需要 PIN/生物識別身份驗證才能查看錢包助記詞、取消隱藏錢包餘額和發送交易（低於即時付款限額的發票除外）。",
   },
   authWalletActivate: {
     ar: "تفعيل المحفظة",
@@ -1947,7 +1950,7 @@ const translations = {
     ur: "بٹوے کو چالو کریں۔",
     vi: "Kích hoạt ví",
     zh: "激活钱包",
-    zh_TW: "啟動錢包"
+    zh_TW: "啟動錢包",
   },
   authSendTransaction: {
     ar: "إرسال المعاملة",
@@ -1986,7 +1989,7 @@ const translations = {
     ur: "لین دین بھیجیں۔",
     vi: "Gửi giao dịch",
     zh: "发送交易",
-    zh_TW: "發送交易"
+    zh_TW: "發送交易",
   },
   authInstantPay: {
     ar: "الدفع الفوري",
@@ -2025,7 +2028,7 @@ const translations = {
     ur: "فوری تنخواہ",
     vi: "Thanh toán ngay lập tức",
     zh: "即时支付",
-    zh_TW: "即時支付"
+    zh_TW: "即時支付",
   },
   authRevealBalance: {
     ar: "كشف الأرصدة المخفية",
@@ -2064,7 +2067,7 @@ const translations = {
     ur: "پوشیدہ بیلنس ظاہر کریں۔",
     vi: "Tiết lộ số dư ẩn",
     zh: "显示隐藏余额",
-    zh_TW: "顯示隱藏餘額"
+    zh_TW: "顯示隱藏餘額",
   },
   authRevealPrivateKeys: {
     ar: "كشف المفاتيح الخاصة",
@@ -2103,7 +2106,7 @@ const translations = {
     ur: "نجی چابیاں ظاہر کریں۔",
     vi: "Tiết lộ khóa riêng tư",
     zh: "泄露私钥",
-    zh_TW: "洩漏私鑰"
+    zh_TW: "洩漏私鑰",
   },
   offlineMode: {
     ar: "الوضع غير المتصل",
@@ -2142,7 +2145,7 @@ const translations = {
     ur: "آف لائن موڈ",
     vi: "Chế độ ngoại tuyến",
     zh: "离线模式",
-    zh_TW: "離線模式"
+    zh_TW: "離線模式",
   },
   resetPin: {
     ar: "إعادة تعيين رقم التعريف الشخصي (PIN)",
@@ -2181,7 +2184,7 @@ const translations = {
     ur: "پن کو دوبارہ ترتیب دیں۔",
     vi: "Đặt lại mã PIN",
     zh: "重置 PIN",
-    zh_TW: "重設密碼"
+    zh_TW: "重設密碼",
   },
   autoResolveBcmr: {
     ar: "حل بيانات التعريف الرمزية تلقائيًا",
@@ -2220,7 +2223,7 @@ const translations = {
     ur: "ٹوکن میٹا ڈیٹا کو خود بخود حل کریں۔",
     vi: "Tự động giải quyết siêu dữ liệu Token",
     zh: "自动解析Token元数据",
-    zh_TW: "自動解析Token元數據"
+    zh_TW: "自動解析Token元數據",
   },
   constrainViewport: {
     ar: "تقييد عرض التطبيق",
@@ -2259,8 +2262,47 @@ const translations = {
     ur: "ایپ ویو پورٹ کو محدود کریں۔",
     vi: "Hạn chế Viewport của ứng dụng",
     zh: "限制应用程序视口",
-    zh_TW: "限制應用程式視窗"
-  }
+    zh_TW: "限制應用程式視窗",
+  },
+  enableStablecoinMode: {
+    ar: "تفعيل وضع العملة المستقرة",
+    bn: "স্টেবলকয়েন মোড সক্ষম করুন",
+    da: "Aktiver Stablecoin tilstand",
+    de: "Stablecoin-Modus aktivieren",
+    el: "Ενεργοποιήστε τη λειτουργία Stablecoin",
+    en: "Enable Stablecoin Mode",
+    es: "Habilitar modo de moneda estable",
+    fa: "فعال کردن حالت کوین پایدار",
+    fil: "Paganahin ang Stablecoin mode",
+    fr: "Activer le mode Stablecoin",
+    ha: "Kunna Stablecoin Mode",
+    hi: "स्टेबलकॉइन मोड सक्षम करें",
+    id: "Aktifkan Mode Stablecoin",
+    it: "Abilita modalità Stablecoin",
+    ja: "ステーブルコインモードを有効にする",
+    jv: "Aktifaken Mode Stablecoin",
+    ko: "스테이블코인 모드 활성화",
+    mr: "स्टेबलकॉइन मोड सक्षम करा",
+    ms: "Aktifkan Mod Stablecoin",
+    nb: "Aktiver Stablecoin-modus",
+    nl: "Stablecoin-modus inschakelen",
+    pa: "ਸਟੇਬਲਕੋਇਨ ਮੋਡ ਸਮਰੱਥ ਕਰੋ",
+    pl: "Włącz tryb Stablecoin",
+    pt: "Ativar modo Stablecoin",
+    ro: "Activați modul Stablecoin",
+    ru: "Включить режим стейблкойна",
+    sv: "Aktivera Stablecoin-läge",
+    sw: "Washa hali ya Stablecoin",
+    ta: "ஸ்டேபிள்கோயின் பயன்முறையை இயக்கு",
+    te: "స్టేబుల్‌కాయిన్ మోడ్‌ను ప్రారంభించండి",
+    th: "เปิดใช้โหมด Stablecoin",
+    tr: "Stablecoin Modunu Etkinleştir",
+    uk: "Увімкнути режим Stablecoin",
+    ur: "سٹیبل کوائن موڈ فعال کریں۔",
+    vi: "Bật chế độ Stablecoin",
+    zh: "启用稳定币模式",
+    zh_TW: "啟用穩定幣模式",
+  },
 };
 
 export default translations;

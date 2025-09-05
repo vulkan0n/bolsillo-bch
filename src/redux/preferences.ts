@@ -39,6 +39,7 @@ const defaultPreferences = {
   localCurrency: DEFAULT_CURRENCY.currency,
   preferLocalCurrency: "true",
   denomination: "bch",
+  stablecoinMode: "false", // TODO: move to wallet db
   // --------
   // Payment (move to wallet db?)
   allowInstantPay: "false",
@@ -135,6 +136,7 @@ function validatePreferences(preferences: ValidPreferences): boolean {
     "autoResolveBcmr",
     "showMemoCard",
     "showOutputsCard",
+    "stablecoinMode",
   ];
 
   const invalidBools = boolKeys.filter(
@@ -287,6 +289,7 @@ export const selectCurrencySettings = createSelector(
     localCurrency: preferences.localCurrency,
     denomination: preferences.denomination,
     shouldPreferLocalCurrency: preferences.preferLocalCurrency === "true",
+    isStablecoinMode: preferences.stablecoinMode === "true",
   })
 );
 
@@ -419,4 +422,9 @@ export const selectShouldShowOutputsCard = createSelector(
 export const selectShouldShowMemoCard = createSelector(
   (state: RootState) => state.preferences,
   (preferences) => preferences.showMemoCard === "true"
+);
+
+export const selectIsStablecoinMode = createSelector(
+  (state: RootState) => state.preferences,
+  (preferences) => preferences.stablecoinMode === "true"
 );

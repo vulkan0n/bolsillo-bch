@@ -358,6 +358,11 @@
   resolved "https://registry.yarnpkg.com/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz#75a2e8b51cb758a7553d6804a5932d7aace75c39"
   integrity sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==
 
+"@bitauth/libauth@3.1.0-next.6":
+  version "3.1.0-next.6"
+  resolved "https://registry.yarnpkg.com/@bitauth/libauth/-/libauth-3.1.0-next.6.tgz#2826db0abeda022b1c5bdfb247a408710a9d3ead"
+  integrity sha512-FJ4ZChczVx779T6yElNGV1pWuyN4+mwF7P6ro+eFt5g6GPKqJe4S7YYBJySRGyER2CvTVnmx0gArzSbp/2u3oA==
+
 "@bitauth/libauth@^3.0.0":
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/@bitauth/libauth/-/libauth-3.0.0.tgz#d88535fc5353d5ecd11db96d9a229e11c06a43d2"
@@ -516,6 +521,27 @@
   version "6.0.4"
   resolved "https://registry.yarnpkg.com/@capgo/capacitor-native-biometric/-/capacitor-native-biometric-6.0.4.tgz#76cffcfbdb73d7dfcaa2d119883d590c750d5c1f"
   integrity sha512-1hiCzlH1n+5N8gJTw+CYpYjTGcp8L+tGRb31clTN7c4GTQXMhIwmiitJ0cQRz8THl8IKDY9LL2FmcWuGA6ZELw==
+
+"@cashlab/cauldron@^1.0.0":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@cashlab/cauldron/-/cauldron-1.0.1.tgz#b8c40a017cdf130d38d0b98e5b3a68537aee915b"
+  integrity sha512-PeImHjloKn+KV8FBBhFBwZdBGO3zPb1uftWXDBXUBr4Uj0XJbhfCiuBXmnQp4/HawnIyEZowBguJsx78QNlAVw==
+  dependencies:
+    "@cashlab/common" "1.0.4"
+
+"@cashlab/common@1.0.2", "@cashlab/common@1.0.4":
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/@cashlab/common/-/common-1.0.2.tgz#276b96a7e5b93e6234397fdde679cc2d3ded7ff6"
+  integrity sha512-JrIiWNDcSU+k8Jv3CkLQarwOCL8voMFzV4AVPkW6JuG1Fy5W0fwKDarUpX/IsnrlpTbyd1eIjZtjQUYJtFb0Yg==
+  dependencies:
+    "@bitauth/libauth" "^3.0.0"
+
+"@cashlab/common@^1.0.2":
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/@cashlab/common/-/common-1.0.4.tgz#0021965ddd902544986211c866adf899baa16cb1"
+  integrity sha512-XkT0rFeyo3p0CPHVOKvG2SnBHM0U2gp6TA7aIserlRhJNoQ0xWz8UJ0hXHKEtXqECq/EDtuoK1Uy1VIKactYuQ==
+  dependencies:
+    "@bitauth/libauth" "3.1.0-next.6"
 
 "@cspotcode/source-map-support@^0.8.0":
   version "0.8.1"
