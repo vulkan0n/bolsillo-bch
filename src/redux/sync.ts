@@ -243,18 +243,32 @@ export const syncAddressState = createAsyncThunk(
   }
 );
 
+const syncAddressFail = createAsyncThunk(
+  "sync/addressFail",
+  async (address: string, thunkApi) => {
+    const walletHash = selectActiveWalletHash(thunkApi.getState());
+    AddressManagerService(walletHash).nullifyAddressState(address);
+  }
+);
+
 // syncAddressUtxos: fired when we learn one of our addresses have changed
 // requests current utxo set for an address
 const syncAddressUtxos = createAsyncThunk(
   "sync/addressUtxos",
-  async (address: AddressEntity, thunkApi): Promise<void> => {
+  async (address: AddressEntity, thunkApi) => {
     const wallet = selectActiveWallet(thunkApi.getState());
 
     try {
       //Log.debug("sync/addressUtxos", address.address);
-      await AddressScannerService(wallet).scanUtxos(address.address);
+      const utxoDiff = await AddressScannerService(wallet).scanUtxos(
+        address.address
+      );
+      return utxoDiff;
     } catch (e) {
+      // reset address state on failure
+      thunkApi.dispatch(syncAddressFail(address.address));
       Log.warn("syncAddressUtxos:", e);
+      return Promise.reject(e);
     }
   }
 );
@@ -426,9 +440,8 @@ export const syncSetSaving = createAction<boolean>("sync/saving");
 export const syncComplete = createAsyncThunk(
   "sync/complete",
   async (payload, thunkApi) => {
-    const { syncCount, isSyncComplete, isSyncing, isSaving } = selectSyncState(
-      thunkApi.getState()
-    );
+    const { syncCount, isSyncComplete, isSyncing, isSaving, syncDiff } =
+      selectSyncState(thunkApi.getState());
 
     if (!isSyncing && syncCount <= 1) {
       if (!isSyncComplete && !isSaving) {
@@ -442,6 +455,7 @@ export const syncComplete = createAsyncThunk(
             walletBalanceUpdate({
               wallet,
               isChange: false,
+              utxoDiff: syncDiff,
             })
           );
 
@@ -512,10 +526,16 @@ const initialPending = {
   populate: 0,
 };
 
+const initialDiff = {
+  diffIn: new Array<string>(),
+  diffOut: new Array<string>(),
+};
+
 interface SyncState {
   isConnected: boolean;
   server: string;
   syncPending: typeof initialPending;
+  syncDiff: typeof initialDiff;
   isSyncComplete: boolean;
   isSaving: boolean;
   chaintip: typeof initialChaintip;
@@ -528,6 +548,7 @@ const initialState: SyncState = {
   isConnected: false,
   server: "",
   syncPending: { ...initialPending },
+  syncDiff: { ...initialDiff },
   isSyncComplete: true,
   isSaving: false,
   chaintip: initialChaintip,
@@ -574,8 +595,11 @@ export const syncReducer = createReducer(initialState, (builder) => {
       state.isSyncComplete = false;
       state.syncPending.utxo += 1;
     })
-    .addCase(syncAddressUtxos.fulfilled, (state) => {
+    .addCase(syncAddressUtxos.fulfilled, (state, action) => {
       state.syncPending.utxo -= 1;
+      const { diffIn, diffOut } = action.payload;
+      state.syncDiff.diffIn = [...state.syncDiff.diffIn, ...diffIn];
+      state.syncDiff.diffOut = [...state.syncDiff.diffOut, ...diffOut];
     })
     .addCase(syncAddressUtxos.rejected, (state) => {
       state.syncPending.utxo -= 1;
@@ -642,6 +666,7 @@ export const syncReducer = createReducer(initialState, (builder) => {
     })
     .addCase(syncComplete.fulfilled, (state, action) => {
       state.isSyncComplete = action.payload;
+      state.syncDiff = { ...initialDiff };
     })
     .addCase(syncSetSaving, (state, action) => {
       state.isSaving = action.payload;

@@ -71,6 +71,7 @@ export default function TransactionManagerService() {
     deleteTransaction,
     purgeTransactions,
     setBlockPos,
+    setBlockPosBulk,
   };
 
   // --------------------------------
@@ -390,5 +391,25 @@ export default function TransactionManagerService() {
       blockPos,
       tx_hash,
     ]);
+  }
+
+  function setBlockPosBulk(transactions) {
+    try {
+      //Log.debug("setBlockPosBulk", transactions);
+      const query = [
+        "BEGIN TRANSACTION;",
+        ...transactions.map((t) =>
+          t.block_pos !== null
+            ? `UPDATE transactions SET block_pos=${t.block_pos} WHERE txid="${t.tx_hash}";`
+            : ""
+        ),
+        "COMMIT;",
+      ].join("");
+      APP_DB.run(query);
+      //Log.debug("setBlockPosBulk done");
+    } catch (e) {
+      Log.error(e);
+      throw e;
+    }
   }
 }

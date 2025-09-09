@@ -73,6 +73,7 @@ export default function UtxoManagerService(walletHash: string) {
           token_data.nft ? token_data.nft.commitment : null,
         ]
       );
+      //Log.debug("registerUtxo done");
     } catch (e) {
       Log.error(e);
     }

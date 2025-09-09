@@ -84,10 +84,15 @@ export const walletBalanceUpdate = createAction(
     const currentBalance = BigInt(sqlWallet.balance);
     const currentSpendableBalance = BigInt(sqlWallet.spendable_balance);
 
-    // show receive notification
-    if (currentBalance > previousBalance && isChange === false) {
-      const difference = currentBalance - previousBalance;
-      ToastService().paymentReceived(difference);
+    // specific behavior for receive addresses vs change addresses
+    if (!isChange) {
+      // if in stablecoin mode, swap incoming BCH to stablecoin
+      // we don't have token context here...
+
+      if (currentBalance > previousBalance) {
+        const difference = currentBalance - previousBalance;
+        ToastService().paymentReceived(difference);
+      }
     }
 
     return {
