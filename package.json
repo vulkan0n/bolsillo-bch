@@ -37,7 +37,7 @@
     "@cashlab/common": "^1.0.2",
     "@electrum-cash/network": "^4.1.1",
     "@electrum-cash/web-socket": "^1.0.0",
-    "@react-spring/web": "^9.7.2",
+    "@react-spring/web": "^10.0.2",
     "@reduxjs/toolkit": "^2.0.1",
     "@reown/walletkit": "^1.2.3",
     "@use-gesture/react": "^10.2.26",
