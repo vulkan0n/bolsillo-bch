@@ -13,7 +13,11 @@ export default function TokenAmount({ token, nft = false }: TokenAmountProps) {
   const receiveStyle = "text-secondary";
   const sendStyle = "text-error";
 
-  const tokenColor = token.color || `#${token.category.slice(0, 6)}`;
+  const tokenColor =
+    token.color ||
+    `#${token.category?.slice(0, 6)}` ||
+    `#${token.token?.category.slice(0, 6)}`;
+
   const decimals = token.decimals || token.token?.decimals || 0;
 
   const { shouldHideBalance } = useSelector(selectPrivacySettings);

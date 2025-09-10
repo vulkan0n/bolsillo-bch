@@ -58,8 +58,8 @@ export default function WalletViewHistory() {
     return txHistory.map((tx, i) =>
       i < 100 ? (
         <li
-          key={`${tx.txid}${tx.address}${tx.block_pos}`}
-          className={`p-2  ${zebraCss[i % 2][tx.amount > 0]}`}
+          key={`${tx.txid}${tx.address}:${tx.block_pos}`}
+          className={`p-2 ${zebraCss[i % 2][tx.amount > 0]}`}
         >
           <Link to={`/explore/tx/${tx.txid}`}>
             <div className="flex text-sm">
@@ -109,7 +109,9 @@ export default function WalletViewHistory() {
                   {tx.tokens.map((token) => (
                     <div className="flex justify-end items-center text-right text-sm">
                       <span
-                        style={{ color: `#${token.category.slice(0, 6)}` }}
+                        style={{
+                          color: `#${token.category?.slice(0, 6)}`,
+                        }}
                         className="font-mono text-xs tracking-tighter font-bold"
                       >
                         {token.symbol}
@@ -139,7 +141,11 @@ export default function WalletViewHistory() {
         small
       />
       <div className="h-full pb-2">
+<<<<<<< HEAD
         <ul className=" text-neutral-500 divide-y divide-neutral-300 dark:divide-neutral-700 rounded-b-sm overflow-y-scroll shadow-inner h-full">
+=======
+        <ul className="bg-neutral-100 text-neutral-500 divide-y divide-neutral-300 rounded-b-sm overflow-y-scroll border border-neutral-700 h-full">
+>>>>>>> 365c80df (slice error bandaid)
           {txHistory.length === 0 && (
             <li className="flex px-1 py-2 items-center justify-center tracking-tighter font-bold">
               {syncPending.txHistory === 0 ? (
