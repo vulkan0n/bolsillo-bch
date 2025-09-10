@@ -14,6 +14,7 @@ import {
   selectBchNetwork,
   selectShouldDisplayExchangeRate,
   selectShouldHideBalance,
+  selectIsStablecoinMode,
 } from "@/redux/preferences";
 import { selectCurrentPriceString } from "@/redux/exchangeRates";
 import SecurityService, { AuthActions } from "@/services/SecurityService";
@@ -32,6 +33,8 @@ export default function WalletViewBalance() {
 
   const priceString = useSelector(selectCurrentPriceString);
   const bchNetwork = useSelector(selectBchNetwork);
+
+  const isStablecoinMode = useSelector(selectIsStablecoinMode);
 
   const isKeyViewed = key_viewed_at !== null;
 
@@ -90,14 +93,14 @@ export default function WalletViewBalance() {
       <div className="font-bold text-neutral-300 text-md tracking-wide">
         <Link
           to={`/settings/wallet/${walletHash}`}
-          className={`flex justify-center items-center ${!isKeyViewed && "text-warning"}`}
+          className={`flex justify-center items-center ${!isKeyViewed && "text-warn"}`}
         >
           {bchNetwork === "chipnet" && "[CHIP] "}
           {bchNetwork === "testnet3" && "[TEST3] "}
           {bchNetwork === "testnet4" && "[TEST4] "}
           {activeWalletName}{" "}
           {!isKeyViewed && balance > 0 ? (
-            <WarningFilled className="text-xs ml-1 text-warning" />
+            <WarningFilled className="text-xs ml-1 text-warn" />
           ) : (
             <SettingFilled className="text-xs ml-1 text-primary-900" />
           )}
