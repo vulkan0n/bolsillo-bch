@@ -5,7 +5,6 @@ import {
   EuroCircleOutlined,
   TransactionOutlined,
   AccountBookOutlined,
-  FundOutlined,
   MoneyCollectOutlined,
 } from "@ant-design/icons";
 
@@ -102,7 +101,7 @@ export default function CurrencySettings() {
       </Accordion.Child>
       {(isPrerelease || isStablecoinMode) && (
         <Accordion.Child
-          icon={FundOutlined}
+          icon={DollarCircleOutlined}
           label={translate(translations.enableStablecoinMode)}
           description={translate(translations.stablecoinModeExplanation)}
         >

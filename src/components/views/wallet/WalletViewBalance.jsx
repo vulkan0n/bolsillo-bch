@@ -9,6 +9,7 @@ import {
   DollarCircleOutlined,
 } from "@ant-design/icons";
 import {
+  selectActiveWallet,
   selectActiveWalletHash,
   selectActiveWalletName,
   selectActiveWalletBalance,
@@ -50,9 +51,8 @@ export default function WalletViewBalance() {
     selectShouldDisplayExchangeRate
   );
 
-  const { isStablecoinMode, shouldIncludeVolatileBalance } = useSelector(
-    selectCurrencySettings
-  );
+  const { isStablecoinMode } = useSelector(selectCurrencySettings);
+
   const currencyFlip = useCurrencyFlip();
   const handleFlipCurrency = isStablecoinMode ? () => {} : currencyFlip;
 
@@ -117,8 +117,7 @@ export default function WalletViewBalance() {
 }
 
 function StablecoinBalance() {
-  const walletHash = useSelector(selectActiveWalletHash);
-  const balance = useSelector(selectActiveWalletBalance);
+  const { walletHash, balance } = useSelector(selectActiveWallet);
   const { shouldIncludeVolatileBalance } = useSelector(selectCurrencySettings);
 
   const MUSD_TOKENID =
