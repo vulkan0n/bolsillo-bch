@@ -2,7 +2,12 @@ import { useEffect, useMemo, useCallback } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Link } from "react-router";
 import { animated, useSpring } from "@react-spring/web";
-import { StockOutlined, SettingFilled, WarningFilled } from "@ant-design/icons";
+import {
+  StockOutlined,
+  SettingFilled,
+  WarningFilled,
+  DollarCircleOutlined,
+} from "@ant-design/icons";
 import {
   selectActiveWalletHash,
   selectActiveWalletName,
@@ -14,38 +19,48 @@ import {
   selectBchNetwork,
   selectShouldDisplayExchangeRate,
   selectShouldHideBalance,
-  selectIsStablecoinMode,
+  selectCurrencySettings,
 } from "@/redux/preferences";
 import { selectCurrentPriceString } from "@/redux/exchangeRates";
 import SecurityService, { AuthActions } from "@/services/SecurityService";
+import LogService from "@/services/LogService";
+import UtxoManagerService from "@/services/UtxoManagerService";
 
 import Satoshi from "@/atoms/Satoshi";
+import NumberFormat from "@/atoms/NumberFormat";
 import CurrencyFlip from "@/atoms/CurrencyFlip";
 import { useCurrencyFlip } from "@/hooks/useCurrencyFlip";
+
+const Log = LogService("WalletViewBalance");
 
 export default function WalletViewBalance() {
   const dispatch = useDispatch();
 
   const walletHash = useSelector(selectActiveWalletHash);
-  const activeWalletName = useSelector(selectActiveWalletName);
   const balance = useSelector(selectActiveWalletBalance);
+  const activeWalletName = useSelector(selectActiveWalletName);
   const key_viewed_at = useSelector(selectKeyViewedAt);
 
   const priceString = useSelector(selectCurrentPriceString);
   const bchNetwork = useSelector(selectBchNetwork);
 
-  const isStablecoinMode = useSelector(selectIsStablecoinMode);
-
   const isKeyViewed = key_viewed_at !== null;
-
-  const handleFlipCurrency = useCurrencyFlip();
 
   const shouldDisplayExchangeRate = useSelector(
     selectShouldDisplayExchangeRate
   );
 
-  const shouldHideBalance = useSelector(selectShouldHideBalance);
+  const { isStablecoinMode, shouldIncludeVolatileBalance } = useSelector(
+    selectCurrencySettings
+  );
+  const currencyFlip = useCurrencyFlip();
+  const handleFlipCurrency = isStablecoinMode ? () => {} : currencyFlip;
 
+  const shouldHideBalance = useSelector(selectShouldHideBalance);
+  const hiddenBalanceClasses = useMemo(
+    () => (shouldHideBalance ? "blur-sm backdrop-opacity-60 opacity-25" : ""),
+    [shouldHideBalance]
+  );
   const handleHideBalance = useCallback(async () => {
     if (shouldHideBalance === true) {
       const isAuthorized = await SecurityService().authorize(
@@ -64,29 +79,6 @@ export default function WalletViewBalance() {
       })
     );
   }, [dispatch, shouldHideBalance]);
-
-  const hiddenBalanceClasses = useMemo(
-    () => (shouldHideBalance ? "blur-sm backdrop-opacity-60 opacity-25" : ""),
-    [shouldHideBalance]
-  );
-
-  const [balanceReceivedSpring, receiveSpringApi] = useSpring(() => ({
-    from: { color: "#8dc451" },
-    to: { color: "#f3f1ec" },
-    immediate: true,
-    config: {
-      tension: 230,
-      friction: 100,
-      mass: 0.6,
-    },
-  }));
-
-  useEffect(
-    function animateWalletBalanceOnReceive() {
-      receiveSpringApi.start({ reset: true });
-    },
-    [balance, receiveSpringApi]
-  );
 
   return (
     <div className="py-2.5 text-center flex flex-col justify-center items-center">
@@ -108,19 +100,10 @@ export default function WalletViewBalance() {
       </div>
       <button
         type="button"
-        className={`cursor-pointer ${hiddenBalanceClasses}`}
+        className={`cursor-pointer w-full ${hiddenBalanceClasses}`}
         onClick={shouldHideBalance ? handleHideBalance : handleFlipCurrency}
       >
-        <div className="text-2xl text-neutral-50 tabular-nums flex justify-center items-center">
-          <animated.span style={{ ...balanceReceivedSpring }}>
-            <Satoshi value={balance} />
-          </animated.span>
-        </div>
-
-        <div className="text-md text-neutral-300 flex items-center justify-center">
-          <Satoshi value={balance} flip />
-          <CurrencyFlip className="ml-1" />
-        </div>
+        {isStablecoinMode ? <StablecoinBalance /> : <Balance />}
       </button>
       {shouldDisplayExchangeRate && (
         <div className="text-sm text-neutral-400 mt-0.5 flex justify-center items-center font-mono">
@@ -130,5 +113,82 @@ export default function WalletViewBalance() {
         </div>
       )}
     </div>
+  );
+}
+
+function StablecoinBalance() {
+  const walletHash = useSelector(selectActiveWalletHash);
+  const balance = useSelector(selectActiveWalletBalance);
+  const { shouldIncludeVolatileBalance } = useSelector(selectCurrencySettings);
+
+  const MUSD_TOKENID =
+    "b38a33f750f84c5c169a6f23cb873e6e79605021585d4f3408789689ed87f366";
+
+  const UtxoManager = UtxoManagerService(walletHash);
+  const stablecoinUtxos = UtxoManager.getCategoryUtxos(MUSD_TOKENID);
+
+  const stablecoinBalance = stablecoinUtxos.reduce(
+    (sum, cur) => sum + cur.token_amount,
+    0n
+  );
+
+  Log.debug(stablecoinUtxos, stablecoinBalance);
+
+  return (
+    <>
+      <div className="text-2xl text-neutral-50 tabular-nums flex justify-center items-center">
+        <span className="text-center">
+          $<NumberFormat number={stablecoinBalance} decimals={2} scalar={-2} />
+        </span>
+        <span className="ml-2 flex items-center">
+          <DollarCircleOutlined className="text-xl" />
+        </span>
+      </div>
+      {shouldIncludeVolatileBalance && (
+        <div className="text-md text-neutral-300 flex items-center justify-center">
+          <Satoshi value={balance} fiat="USD" />{" "}
+          <span className="ml-1.5 px-1.5 border border-neutral-300 text-xs text-neutral-200 rounded-full flex items-center justify-center">
+            ₿
+          </span>
+        </div>
+      )}
+    </>
+  );
+}
+
+function Balance() {
+  const balance = useSelector(selectActiveWalletBalance);
+
+  const [balanceReceivedSpring, receiveSpringApi] = useSpring(() => ({
+    from: { color: "#8dc451" },
+    to: { color: "#f3f1ec" },
+    immediate: true,
+    config: {
+      tension: 230,
+      friction: 100,
+      mass: 0.6,
+    },
+  }));
+
+  useEffect(
+    function animateWalletBalanceOnReceive() {
+      receiveSpringApi.start({ reset: true });
+    },
+    [balance, receiveSpringApi]
+  );
+
+  return (
+    <>
+      <div className="text-2xl text-neutral-50 tabular-nums flex justify-center items-center">
+        <animated.span style={{ ...balanceReceivedSpring }}>
+          <Satoshi value={balance} />
+        </animated.span>
+      </div>
+
+      <div className="text-md text-neutral-300 flex items-center justify-center">
+        <Satoshi value={balance} flip />
+        <CurrencyFlip className="ml-1" />
+      </div>
+    </>
   );
 }

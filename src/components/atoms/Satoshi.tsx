@@ -12,7 +12,7 @@ import { satsToBch } from "@/util/sats";
 
 interface Props {
   value?: number | bigint | string;
-  fiat?: boolean;
+  fiat?: string | boolean;
   flip?: boolean;
 }
 
@@ -57,7 +57,9 @@ export default function Satoshi({
         };
       }
 
-      const Currency = CurrencyService(localCurrency);
+      const formatCurrency = typeof fiat === "string" ? fiat : localCurrency;
+
+      const Currency = CurrencyService(formatCurrency);
 
       const bchSymbol = {
         bch: "₿",
@@ -92,7 +94,7 @@ export default function Satoshi({
           }).format(absoluteAmounts.bits),*/
         fiat: new Intl.NumberFormat(locale, {
           style: "currency",
-          currency: localCurrency,
+          currency: formatCurrency,
         }).format(
           new Decimal(Currency.satsToFiat(absoluteAmounts.sats)).toNumber()
         ),

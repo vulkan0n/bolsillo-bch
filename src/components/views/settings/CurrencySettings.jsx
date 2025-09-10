@@ -37,9 +37,6 @@ export default function CurrencySettings() {
 
   const isPrerelease = useSelector(selectIsPrerelease);
 
-  // force USD as local currency when in stablecoin mode
-  const localCurrencySelection = isStablecoinMode ? "USD" : localCurrency;
-
   return (
     <Accordion
       icon={DollarCircleOutlined}
@@ -51,7 +48,7 @@ export default function CurrencySettings() {
       >
         <Select
           className="w-fit"
-          value={localCurrencySelection || ""}
+          value={localCurrency || ""}
           onChange={(event) =>
             handleSettingsUpdate("localCurrency", event.target.value)
           }
