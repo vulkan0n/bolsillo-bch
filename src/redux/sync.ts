@@ -263,6 +263,7 @@ const syncAddressUtxos = createAsyncThunk(
       const utxoDiff = await AddressScannerService(wallet).scanUtxos(
         address.address
       );
+      Log.debug("sync/addressUtxos diff", utxoDiff);
       return utxoDiff;
     } catch (e) {
       // reset address state on failure
@@ -450,6 +451,10 @@ export const syncComplete = createAsyncThunk(
           thunkApi.dispatch(syncSetSaving(true));
           const wallet = selectActiveWallet(thunkApi.getState());
 
+          if (syncDiff.diffIn.length > 0 || syncDiff.diffOut.length > 0) {
+            Log.debug("utxo diff", syncDiff);
+          }
+
           // update wallet balance; view re-renders on wallet update
           thunkApi.dispatch(
             walletBalanceUpdate({
@@ -471,6 +476,9 @@ export const syncComplete = createAsyncThunk(
     return false;
   }
 );
+
+export const syncFlushDiff = createAction("sync/flushDiff");
+
 syncMiddleware.startListening({
   actionCreator: syncAddressHistory.fulfilled,
   effect: async (action, listenerApi) => {
@@ -508,6 +516,15 @@ syncMiddleware.startListening({
       listenerApi.dispatch(syncPopulateAddresses());
     } else {
       listenerApi.dispatch(syncComplete());
+    }
+  },
+});
+syncMiddleware.startListening({
+  actionCreator: walletBalanceUpdate,
+  effect: async (action, listenerApi) => {
+    const { isSyncComplete } = selectSyncState(listenerApi.getState());
+    if (isSyncComplete) {
+      listenerApi.dispatch(syncFlushDiff());
     }
   },
 });
@@ -653,6 +670,7 @@ export const syncReducer = createReducer(initialState, (builder) => {
     })
     .addCase(syncSubscriptions.pending, (state) => {
       state.isSyncComplete = false;
+      state.syncDiff = { ...initialDiff };
     })
     .addCase(syncSubscriptions.fulfilled, (state, action) => {
       state.subscriptions = action.payload;
@@ -664,12 +682,17 @@ export const syncReducer = createReducer(initialState, (builder) => {
       state.syncPending.populate -= 1;
       state.subscriptions = [...state.subscriptions, ...action.payload];
     })
+    .addCase(syncComplete.pending, (state) => {
+      state.isSyncComplete = false;
+    })
     .addCase(syncComplete.fulfilled, (state, action) => {
       state.isSyncComplete = action.payload;
-      state.syncDiff = { ...initialDiff };
     })
     .addCase(syncSetSaving, (state, action) => {
       state.isSaving = action.payload;
+    })
+    .addCase(syncFlushDiff, (state) => {
+      state.syncDiff = { ...initialDiff };
     });
 });
 

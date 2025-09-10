@@ -422,7 +422,7 @@ export default function AddressScannerService(wallet: WalletEntity) {
 
     if (localUtxoList.join(";") !== remoteUtxoList.join(";")) {
       Log.debug("got utxos", address, remoteUtxos);
-      Log.debug("diff", utxoDiffIn, utxoDiffOut);
+      //Log.debug("diff", utxoDiffIn, utxoDiffOut);
 
       // we need to delete our knowledge of UTXO set
       // in case some utxos were spent elsewhere
@@ -463,7 +463,7 @@ export default function AddressScannerService(wallet: WalletEntity) {
         return {
           address: address.address,
           ...historyTx,
-          block_pos: merkle.pos,
+          block_pos: merkle.pos || null,
         };
       })
     );
