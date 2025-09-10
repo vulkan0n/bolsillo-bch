@@ -150,7 +150,7 @@ export default function ShowMnemonic({ walletHash }: { walletHash: string }) {
           </div>
           {isKeyViewed ? (
             <div className="text-center text-neutral-200 font-mono tracking-tight">
-              (Long press to copy to clipboard)
+              ({translate(translations.longPressToCopy)})
             </div>
           ) : (
             <div className="text-center text-neutral-50 text-lg font-semibold">
