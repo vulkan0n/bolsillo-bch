@@ -40,7 +40,7 @@ const defaultPreferences = {
   preferLocalCurrency: "true",
   denomination: "bch",
   stablecoinMode: "false", // TODO: move to wallet db
-  includeVolatileBalance: "true", // TODO: move to wallet db
+  includeVolatileBalance: "false", // TODO: move to wallet db
   // --------
   // Payment (move to wallet db?)
   allowInstantPay: "false",
