@@ -31,6 +31,7 @@ import Satoshi from "@/atoms/Satoshi";
 import NumberFormat from "@/atoms/NumberFormat";
 import CurrencyFlip from "@/atoms/CurrencyFlip";
 import { useCurrencyFlip } from "@/hooks/useCurrencyFlip";
+import { MUSD_TOKENID } from "@/util/tokens";
 
 const Log = LogService("WalletViewBalance");
 
@@ -120,9 +121,6 @@ function StablecoinBalance() {
   const { walletHash, balance } = useSelector(selectActiveWallet);
   const { shouldIncludeVolatileBalance } = useSelector(selectCurrencySettings);
 
-  const MUSD_TOKENID =
-    "b38a33f750f84c5c169a6f23cb873e6e79605021585d4f3408789689ed87f366";
-
   const UtxoManager = UtxoManagerService(walletHash);
   const stablecoinUtxos = UtxoManager.getCategoryUtxos(MUSD_TOKENID);
 
@@ -145,7 +143,9 @@ function StablecoinBalance() {
       </div>
       {shouldIncludeVolatileBalance && (
         <div className="text-md text-neutral-300 flex items-center justify-center">
-          <Satoshi value={balance} fiat="USD" />{" "}
+          <span className="flex items-center justify-center">
+            +<Satoshi value={balance} fiat="USD" />
+          </span>
           <span className="ml-1.5 px-1.5 border border-neutral-300 text-xs text-neutral-200 rounded-full flex items-center justify-center">
             ₿
           </span>

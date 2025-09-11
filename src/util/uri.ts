@@ -208,10 +208,11 @@ export function validateWalletConnectUri(uri) {
 
 export const navigateOnValidUri = async (
   input
-): Promise<{ navTo: string; navState: object }> => {
+): Promise<{ navTo: string; navState: object; isTokenAddress: boolean }> => {
   // go to send screen when valid address is entered
   const {
     isValid,
+    isTokenAddress,
     isWalletConnect,
     isPaymentProtocol,
     isWif,
@@ -242,5 +243,5 @@ export const navigateOnValidUri = async (
     await Haptic.error();
   }
 
-  return { navTo, navState };
+  return { navTo, navState, isTokenAddress };
 };
