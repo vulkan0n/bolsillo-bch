@@ -12,6 +12,7 @@ import {
   ArrowLeftOutlined,
   SyncOutlined,
   CloseOutlined,
+  DollarCircleOutlined,
 } from "@ant-design/icons";
 
 import * as clab from "@cashlab/common";
@@ -39,6 +40,10 @@ import TokenManagerService from "@/services/TokenManagerService";
 import ToastService from "@/services/ToastService";
 import SecurityService, { AuthActions } from "@/services/SecurityService";
 import LogService from "@/services/LogService";
+import StablecoinService, {
+  TokenRecipient,
+  StablecoinOffer,
+} from "@/services/StablecoinService";
 
 import FullColumn from "@/layout/FullColumn";
 
@@ -47,7 +52,6 @@ import Satoshi from "@/atoms/Satoshi";
 import Button from "@/atoms/Button";
 import Editable from "@/atoms/Editable";
 import Address from "@/atoms/Address";
-import CurrencySymbol from "@/atoms/CurrencySymbol";
 import SlideToAction from "@/components/atoms/SlideToAction";
 import ScannerButton from "@/views/wallet/ScannerButton/ScannerButton";
 import ScannerOverlay from "@/views/wallet/ScannerOverlay";
@@ -58,7 +62,6 @@ import { Haptic } from "@/util/haptic";
 import { bchToSats } from "@/util/sats";
 import { MUSD_TOKENID } from "@/util/tokens";
 import { validateBchUri, navigateOnValidUri } from "@/util/uri";
-import { truncateProse } from "@/util/string";
 import { translate } from "@/util/translations";
 import translations from "./translations";
 
@@ -109,8 +112,7 @@ export default function WalletViewSendStablecoin() {
     setIsSendingProgressCancelAbortController,
   ] = useState(false);
 
-  const { shouldPreferLocalCurrency, shouldIncludeVolatileBalance } =
-    useSelector(selectCurrencySettings);
+  const { shouldIncludeVolatileBalance } = useSelector(selectCurrencySettings);
 
   const querySats = searchParams.get("amount")
     ? bchToSats(searchParams.get("amount"))
@@ -126,9 +128,10 @@ export default function WalletViewSendStablecoin() {
   const spendableSats = CurrencyService("USD").fiatToSats(
     new Decimal(spendableBalance).div(100)
   );
-  console.log("stablecoinBalance", stablecoinBalance);
-  console.log("spendableBalance", spendableBalance);
-  console.log("spendableSats", spendableSats);
+
+  Log.log("stablecoinBalance", stablecoinBalance);
+  Log.log("spendableBalance", spendableBalance);
+  Log.log("spendableSats", spendableSats);
 
   const isInsufficientFunds = satoshiInput > spendableSats;
 
@@ -187,225 +190,89 @@ export default function WalletViewSendStablecoin() {
   };
 
   const confirmDelegateSendTokensPayFeesViaCauldronContracts = useCallback(
-    (
-      feePayingTokenCategory: string,
-      tokenRecipients: {
-        address: string;
-        token: { category: string; amount: bigint };
-      }
-    ): void => {
-      const abortController = new AbortController();
-      const electrumClientManager =
-        CauldronDexService().createCauldronRostrumClientManager();
-      const client = CauldronDexService().create(electrumClientManager);
-      let hasQuoteChanged = false;
-      let currentOffer = null;
-      setIsSendingProgressCancelAbortController(abortController);
+    async (feePayingTokenCategory: string, tokenRecipient: TokenRecipient) => {
+      const Stablecoin = StablecoinService(walletHash);
+      const abortControllerRef = useRef(new AbortController());
+      setIsSending(true);
       setIsSendingProgressCancelable(true);
-      let hasEnded = false;
+      setIsSendingProgressCancelAbortController(abortControllerRef.current);
+
       const onEnd = async () => {
-        hasEnded = true;
-        (async () => {
-          try {
-            await electrumClientManager.destroy();
-          } catch (err) {
-            Log.warn("CauldronElectrumClientManager destroy fail, ", err);
-          }
-          try {
-            await client.destroy();
-          } catch (err) {
-            Log.warn("CauldronDexClient destroy fail, ", err);
-          }
-        })();
+        await Stablecoin.cancel();
         setIsSending(false);
         setIsSendingProgressCancelable(false);
         setIsSendingProgressCancelAbortController(null);
       };
-      const onFail = async (err): void => {
-        if (hasEnded) {
-          return;
-        }
-        Log.error(err);
-        if (err instanceof clab.InsufficientFunds) {
-          handleInsufficientFunds();
-          onEnd();
-        } else {
-          let errorMessage;
-          if (typeof err.toString === "function") {
-            errorMessage = err.toString();
-          } else {
-            errorMessage = err.message ? err.message : err;
-          }
-          await Haptic.warn();
-          setMessage(errorMessage);
-          onEnd();
-        }
-      };
-      const onConnectError = (event: MessageEvent): void => {
-        onFail(event.data);
-      };
-      const onConsoleEvent = (event: MessageEvent): void => {
-        switch (event.data.type) {
-          case "warn":
-            Log.warn(event.data.message, {
-              error: event.data.error,
-              data: event.data.data,
-            });
-            break;
-          case "error":
-            Log.error(event.data.message, {
-              error: event.data.error,
-              data: event.data.data,
-            });
-            break;
-          case "info":
-            Log.info(event.data.message, { data: event.data.data });
-            break;
-          case "log":
-          default:
-            Log.log(event.data.message, { data: event.data.data });
-        }
-      };
-      abortController.signal.addEventListener("abort", () => {
-        onEnd();
-      });
-      const onCreateOffer = (inputPools) => {
-        const TransactionBuilder = TransactionBuilderService(walletHash);
-        try {
-          currentOffer =
-            TransactionBuilder.buildSendTokensTransactionWithFeePayingTokenCategory(
-              {
-                recipients: tokenRecipients,
-                exchangeLab: client.getExchangeLab(),
-                inputPools,
-                feePayingTokenCategory,
-              }
-            );
-          const { tradeResult, tradeTransaction } = currentOffer;
-          setConfirmConvertAndSendPayoutOverlayConvertInfo({
-            showQuoteChangedMessage: hasQuoteChanged,
-            tokenEntity: tokenData,
-            spend: {
-              tokenAmount: tradeResult.summary.supply,
-            },
-            txfee: {
-              bchAmount: tradeTransaction.txfee + tradeResult.summary.trade_fee,
-            },
-            payouts: {
-              change: {
-                bchAmount: tradeResult.summary.demand - tradeTransaction.txfee,
+
+      try {
+        const result = await Stablecoin.sendTokensWithFees(
+          feePayingTokenCategory,
+          tokenRecipient,
+          (offer: StablecoinOffer) => {
+            setConfirmConvertAndSendPayoutOverlayConvertInfo({
+              showQuoteChangedMessage: false,
+              tokenEntity: tokenData,
+              spend: { tokenAmount: offer.tradeResult.summary.supply },
+              txfee: {
+                bchAmount:
+                  offer.tradeTransaction.txfee +
+                  offer.tradeResult.summary.trade_fee,
               },
-            },
-          });
-          setShouldDisplayConfirmConvertAndSendPayout(true);
-          hasQuoteChanged = false;
-        } catch (err) {
-          onFail(err);
-        }
-      };
-      const onReady = async () => {
-        if (tokenData.category !== feePayingTokenCategory) {
-          onFail(
-            new Error(
-              "tokenData.category does not match feePayingTokenCategory!"
-            )
-          );
-          return;
-        }
-        let tracker;
-        const mkOnConfirm = () => {
-          return async () => {
-            if (hasQuoteChanged) {
-              // flash once
-              setShouldDisplayConfirmConvertAndSendPayout(false);
-              (async () => {
-                try {
-                  const inputPools = await client.getEntryPools(tracker);
-                  onCreateOffer(inputPools);
-                } catch (err) {
-                  onFail(err);
-                }
-              })();
-              return;
-            }
-            if (currentOffer == null) {
-              onFail(new Error("currentOffer is null!"));
-            }
-            const TransactionManager = TransactionManagerService();
-            setIsSendingProgressCancelable(false);
+              payouts: {
+                change: {
+                  bchAmount:
+                    offer.tradeResult.summary.demand -
+                    offer.tradeTransaction.txfee,
+                },
+              },
+            });
+            setShouldDisplayConfirmConvertAndSendPayout(true);
+          },
+          (offer: StablecoinOffer) => {
             setShouldDisplayConfirmConvertAndSendPayout(false);
-            const { tradeTransaction } = currentOffer;
-            try {
-              const { txhash } = await client.broadcastTransaction(
-                tradeTransaction.txbin
-              );
-              // 5 second delay, waiting for the transaction to get propagated
-              await new Promise((resolve) => {
-                setTimeout(resolve, 5000);
-              });
-              const tx = await TransactionManager.resolveTransaction(txhash);
-              await Haptic.success();
-              navigate("/wallet/send/success", {
-                state: { tx },
-                replace: true,
-              });
-            } catch (err) {
-              Log.error(err);
-              setMessage(
-                `${translate(translations.transactionFailed)}: ${err.message}`
-              );
-              await Haptic.error();
-              onEnd();
-            }
-          };
-        };
-        setHandleConfirmConvertAndSendPayoutClicked(mkOnConfirm);
-        try {
-          tracker = await client.addTokenTracker(feePayingTokenCategory);
-          const inputPools = await client.getEntryPools(tracker);
-          onCreateOffer(inputPools);
-          client.addEventListener("update", (event) => {
-            if (
-              event.data.categroy === feePayingTokenCategory &&
-              currentOffer &&
-              tracker?.data
-            ) {
-              const { tradeResult } = currentOffer;
-              // did the update spend any of the used pools?
-              if (
-                tradeResult.entries.filter(
-                  (a) =>
-                    tracker.data.findIndex(
-                      (b) =>
-                        clab.uint8ArrayEqual(
-                          b.outpoint.txhash,
-                          a.pool.outpoint.txhash
-                        ) && b.outpoint.index === a.pool.outpoint.index
-                    ) !== -1
-                ).length !== tradeResult.entries.length
-              ) {
-                hasQuoteChanged = true;
-              }
-            }
-          });
-        } catch (err) {
-          onFail(err);
-        }
-      };
-      electrumClientManager.addEventListener("console", onConsoleEvent);
-      client.addEventListener("console", onConsoleEvent);
-      electrumClientManager.addEventListener("connect-error", onConnectError);
-      electrumClientManager.addEventListener("connected", () => {
-        electrumClientManager.removeEventListener(
-          "connect-error",
-          onConnectError
+            setConfirmConvertAndSendPayoutOverlayConvertInfo({
+              showQuoteChangedMessage: true,
+              tokenEntity: tokenData,
+              spend: { tokenAmount: offer.tradeResult.summary.supply },
+              txfee: {
+                bchAmount:
+                  offer.tradeTransaction.txfee +
+                  offer.tradeResult.summary.trade_fee,
+              },
+              payouts: {
+                change: {
+                  bchAmount:
+                    offer.tradeResult.summary.demand -
+                    offer.tradeTransaction.txfee,
+                },
+              },
+            });
+            setShouldDisplayConfirmConvertAndSendPayout(true);
+          },
+          abortControllerRef.current.signal
         );
-        onReady();
-      });
-      electrumClientManager.init();
-      client.init();
+
+        await Haptic.success();
+        navigate("/wallet/send/success", {
+          state: { tx: result.tx },
+          replace: true,
+        });
+      } catch (err) {
+        if (
+          err instanceof Exception &&
+          err.message.includes("InsufficientFunds")
+        ) {
+          handleInsufficientFunds();
+        } else {
+          await Haptic.error();
+          setMessage(
+            `${translate(translations.transactionFailed)}: ${err.message}`
+          );
+        }
+        await onEnd();
+      }
     },
-    [navigate, tokenData, walletHash]
+    [navigate, tokenData, walletHash, handleInsufficientFunds, translate]
   );
 
   const validateSendConditions = useCallback(
@@ -464,6 +331,25 @@ export default function WalletViewSendStablecoin() {
     [isSending, isConnected, isBase58Address, isInsufficientFunds]
   );
 
+  const attemptStablecoinToSatsConversion = useCallback(
+    async (recipients) => {
+      const TransactionBuilder = TransactionBuilderService(walletHash);
+      Log.debug("attempting Stablecoin -> Sats conversion", recipients);
+
+      // get cauldron UTXOs
+      // try to build a tx using cauldron UTXO
+      // input 0 -> cauldron
+      // input 1 -> my stablecoins
+      // input 2 -> my sats, if applicable
+      // output 0 -> cauldron
+      // output 1 -> funds sent
+      // output 2 -> sats change back
+
+      return { isConversionSuccess: false };
+    },
+    [walletHash]
+  );
+
   const buildTransaction = useCallback(async () => {
     const TransactionBuilder = TransactionBuilderService(walletHash);
 
@@ -491,6 +377,12 @@ export default function WalletViewSendStablecoin() {
         );
         return false;
         }*/
+      const { transaction: conversionTx, isConversionSuccess } =
+        await attemptStablecoinToSatsConversion(recipients);
+
+      if (isConversionSuccess) {
+        return conversionTx;
+      }
 
       await handleInsufficientFunds();
       return false;
@@ -688,7 +580,7 @@ export default function WalletViewSendStablecoin() {
             <div className="p-2 w-full grow flex flex-col justify-center ">
               <div className="py-4 px-2 rounded-md shadow-md bg-primary/95 text-white">
                 <div className="flex items-center justify-center">
-                  <CurrencySymbol className="font-bold text-4xl mr-2" />
+                  <DollarCircleOutlined className="font-bold text-4xl mr-2" />
                   <SatoshiInput
                     key={satoshiInputKey}
                     onChange={handleAmountInput}
