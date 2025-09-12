@@ -16,6 +16,7 @@ import {
   SyncOutlined,
   ExportOutlined,
   LoadingOutlined,
+  ExperimentOutlined,
 } from "@ant-design/icons";
 
 import { selectBchNetwork, selectIsExperimental } from "@/redux/preferences";
@@ -289,6 +290,17 @@ export default function SettingsWalletView() {
                 WalletConnect
               </Link>
             </Accordion.Child>
+            {isExperimental && (
+              <Accordion.Child icon={null} label="">
+                <Link
+                  className="w-full text-left flex items-center"
+                  to="/apps/cauldron"
+                >
+                  <ExperimentOutlined className="text-xl mr-1" />
+                  Cauldron DEX
+                </Link>
+              </Accordion.Child>
+            )}
             {isExperimental && (
               <Accordion.Child icon={null} label="">
                 <Link className="w-full text-left flex items-center" to="scan">

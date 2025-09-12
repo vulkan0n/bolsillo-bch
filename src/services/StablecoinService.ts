@@ -1,3 +1,4 @@
+import { uint8ArrayEqual, Exception } from "@cashlab/common";
 import LogService from "@/services/LogService";
 import CauldronDexService, {
   PoolTrackerEntry,
@@ -6,8 +7,6 @@ import CauldronDexService, {
 import TransactionBuilderService from "@/services/TransactionBuilderService";
 import TransactionManagerService from "@/services/TransactionManagerService";
 import ElectrumClientManager from "@/util/electrum_client_manager";
-import { Exception } from "@cashlab/common";
-import { uint8ArrayEqual } from "@cashlab/libauth";
 
 const Log = LogService("StablecoinService");
 
