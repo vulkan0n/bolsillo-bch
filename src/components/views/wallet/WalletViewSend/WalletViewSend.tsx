@@ -52,10 +52,12 @@ import SlideToAction from "@/components/atoms/SlideToAction";
 import ScannerButton from "@/views/wallet/ScannerButton/ScannerButton";
 import ScannerOverlay from "@/views/wallet/ScannerOverlay";
 import ConfirmConvertAndSendPayoutOverlay from "@/views/wallet/WalletViewSend/ConfirmConvertAndSendPayoutOverlay";
+import WalletViewSendStablecoin from "@/views/wallet/WalletViewSend/WalletViewSendStablecoin";
 
 import { hexToBin } from "@/util/hex";
 import { Haptic } from "@/util/haptic";
 import { bchToSats } from "@/util/sats";
+import { MUSD_TOKENID } from "@/util/tokens";
 import { validateBchUri, navigateOnValidUri } from "@/util/uri";
 import { truncateProse } from "@/util/string";
 import { translate } from "@/util/translations";
@@ -80,6 +82,14 @@ export default function WalletViewSend() {
   const spendable_balance = useSelector(selectActiveWalletBalance);
   const isConnected = useSelector(selectIsConnected);
 
+  const { address, isBase58Address, isTokenAddress, isValid } = validateBchUri(
+    params.address || ""
+  );
+
+  const { shouldPreferLocalCurrency, isStablecoinMode } = useSelector(
+    selectCurrencySettings
+  );
+
   const TokenManager = TokenManagerService(walletHash);
 
   const selection = useMemo(() => {
@@ -94,8 +104,14 @@ export default function WalletViewSend() {
 
   const tokenCategories = useMemo(() => {
     const { state: sendState } = location;
-    return sendState?.tokenCategories || [];
-  }, [location]);
+
+    // in stablecoin mode, we should automatically
+    // add MUSD to the category selection for token addresses
+    // but only if other tokens are not already selected
+    const stable = isStablecoinMode && isTokenAddress ? [MUSD_TOKENID] : [];
+    const categories = sendState?.tokenCategories || stable;
+    return categories;
+  }, [location, isStablecoinMode, isTokenAddress]);
 
   const selectionAmount = selection.reduce((sum, cur) => sum + cur.amount, 0n);
 
@@ -112,10 +128,6 @@ export default function WalletViewSend() {
     ? tokenCategories.map((category) => TokenManager.getToken(category))[0]
     : null;
 
-  const { address, isBase58Address, isTokenAddress, isValid } = validateBchUri(
-    params.address || ""
-  );
-
   const myAddresses = useSelector(selectWalletAddresses);
   const isMyAddress =
     myAddresses.find((a) => a.address === address) !== undefined;
@@ -127,8 +139,6 @@ export default function WalletViewSend() {
   const [message, setMessage] = useState("");
   const [isSending, setIsSending] = useState(false);
   const isInstantPayPending = useRef(false);
-
-  const { shouldPreferLocalCurrency } = useSelector(selectCurrencySettings);
 
   const querySats = searchParams.get("amount")
     ? bchToSats(searchParams.get("amount"))
@@ -199,6 +209,19 @@ export default function WalletViewSend() {
 
       setIsSending(true);
 
+      if (isBase58Address) {
+        await Haptic.warn();
+        const { value: isLegacyAddressConfirmed } = await Dialog.confirm({
+          title: translate(translations.base58WarningTitle),
+          message: translate(translations.base58WarningMessage),
+          okButtonTitle: translate(translations.base58WarningOk),
+        });
+
+        if (!isLegacyAddressConfirmed) {
+          return false;
+        }
+      }
+
       const authAction = isInstantPay
         ? AuthActions.InstantPay
         : AuthActions.SendTransaction;
@@ -215,19 +238,6 @@ export default function WalletViewSend() {
       if ((!hasTokens && isInsufficientFunds) || isInsufficientTokens) {
         await handleInsufficientFunds();
         return false;
-      }
-
-      if (isBase58Address) {
-        await Haptic.warn();
-        const { value: isLegacyAddressConfirmed } = await Dialog.confirm({
-          title: translate(translations.base58WarningTitle),
-          message: translate(translations.base58WarningMessage),
-          okButtonTitle: translate(translations.base58WarningOk),
-        });
-
-        if (!isLegacyAddressConfirmed) {
-          return false;
-        }
       }
 
       return true;
@@ -464,6 +474,8 @@ export default function WalletViewSend() {
 
   return isScanning ? (
     <ScannerOverlay />
+  ) : isStablecoinMode && !hasTokens && selection.length === 0 ? (
+    <WalletViewSendStablecoin />
   ) : (
     <FullColumn>
       <div className="tracking-wide text-center text-white">

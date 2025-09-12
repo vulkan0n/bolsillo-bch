@@ -25,13 +25,12 @@ import {
 import { selectCurrentPriceString } from "@/redux/exchangeRates";
 import SecurityService, { AuthActions } from "@/services/SecurityService";
 import LogService from "@/services/LogService";
-import UtxoManagerService from "@/services/UtxoManagerService";
 
 import Satoshi from "@/atoms/Satoshi";
 import NumberFormat from "@/atoms/NumberFormat";
 import CurrencyFlip from "@/atoms/CurrencyFlip";
 import { useCurrencyFlip } from "@/hooks/useCurrencyFlip";
-import { MUSD_TOKENID } from "@/util/tokens";
+import { useStablecoinBalance } from "@/hooks/useStablecoinBalance";
 
 const Log = LogService("WalletViewBalance");
 
@@ -121,15 +120,10 @@ function StablecoinBalance() {
   const { walletHash, balance } = useSelector(selectActiveWallet);
   const { shouldIncludeVolatileBalance } = useSelector(selectCurrencySettings);
 
-  const UtxoManager = UtxoManagerService(walletHash);
-  const stablecoinUtxos = UtxoManager.getCategoryUtxos(MUSD_TOKENID);
+  const { stablecoinBalance, volatileBalance } =
+    useStablecoinBalance(walletHash);
 
-  const stablecoinBalance = stablecoinUtxos.reduce(
-    (sum, cur) => sum + cur.token_amount,
-    0n
-  );
-
-  Log.debug(stablecoinUtxos, stablecoinBalance);
+  Log.debug("stablecoinBalance", stablecoinBalance, volatileBalance);
 
   return (
     <>
@@ -144,7 +138,8 @@ function StablecoinBalance() {
       {shouldIncludeVolatileBalance && (
         <div className="text-md text-neutral-300 flex items-center justify-center">
           <span className="flex items-center justify-center">
-            +<Satoshi value={balance} fiat="USD" />
+            +$
+            <NumberFormat number={volatileBalance} decimals={2} scalar={-2} />
           </span>
           <span className="ml-1.5 px-1.5 border border-neutral-300 text-xs text-neutral-200 rounded-full flex items-center justify-center">
             ₿

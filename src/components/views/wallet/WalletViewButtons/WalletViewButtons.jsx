@@ -31,16 +31,12 @@ export default function WalletViewButtons() {
 
   const pasteAddressFromClipboard = async () => {
     const { paste, spawnPasteToast } = await getClipboardContents();
-    const { navTo, navState, isTokenAddress } = await navigateOnValidUri(paste);
-    const stablecoinState =
-      isStablecoinMode && isTokenAddress
-        ? { tokenCategories: [MUSD_TOKENID] }
-        : {};
+    const { navTo, navState } = await navigateOnValidUri(paste);
     if (navTo !== "") {
       spawnPasteToast();
-      navigate(navTo, { state: { ...stablecoinState, ...navState } });
+      navigate(navTo, { state: navState });
     } else {
-      navigate("/wallet/send/", { state: { ...stablecoinState } });
+      navigate("/wallet/send/");
     }
   };
 
