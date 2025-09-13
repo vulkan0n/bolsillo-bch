@@ -2,9 +2,7 @@ export type ValidBchNetwork = "mainnet" | "chipnet" | "testnet3" | "testnet4";
 
 export const DEFAULT_ELECTRUM_PORT = 50004;
 
-export const cauldron_rostrum_servers: { [network: string]: Array<string> } = {
-  mainnet: ["wss://rostrum.cauldron.quest:50004"],
-};
+export const cauldron_servers: Array<string> = ["rostrum.cauldron.quest:50004"];
 
 const mainnet_servers: Array<string> = [
   "cashnode.bch.ninja:50004", // Kallisti / Selene Official
@@ -42,6 +40,7 @@ export const electrum_servers = {
   chipnet: chipnet_servers,
   testnet3: testnet3_servers,
   testnet4: testnet4_servers,
+  cauldron: cauldron_servers,
 };
 
 export class ElectrumServer {

@@ -32,15 +32,22 @@ export class ElectrumNotConnectedError extends Error {
 export class ElectrumVersionMismatchError extends Error {}
 
 export const ELECTRUM_PROTOCOL_VERSION = "1.5";
+export const ROSTRUM_PROTOCOL_VERSION = "1.4.3";
 
 // pointer for current ElectrumClient instance
-let electrum: ElectrumClient<ElectrumClientEvents> | null = null;
+const electrum_handles = new Map<
+  string,
+  ElectrumClient<ElectrumClientEvents> | null
+>();
 
 const server_blacklist: Array<string> = [];
 const pendingTxRequests: Array<Promise<object>> = [];
 
 // ElectrumService: brokers interactions with electrum server
-export default function ElectrumService() {
+export default function ElectrumService(bchNetwork = "mainnet") {
+  let electrum: ElectrumClient<ElectrumClientEvents> | null =
+    electrum_handles.get(bchNetwork) || null;
+
   return {
     connect,
     disconnect,
@@ -61,12 +68,12 @@ export default function ElectrumService() {
     //requestRelayFee,
     selectFallbackServer,
     getElectrumHost,
+    getElectrumClient,
   };
 
   // connect: connect to an Electrum server
   // Creates a new ElectrumClient every time
   async function connect(server: string, withListeners = true) {
-    const bchNetwork = selectBchNetwork(store.getState());
     const server_list = electrum_servers[bchNetwork];
 
     const connectServer = server || server_list[0];
@@ -81,30 +88,47 @@ export default function ElectrumService() {
 
       // explicitly set electrum to null to prompt garbage collection
       electrum = null;
+      electrum_handles.set(bchNetwork, null);
     }
 
     // pre-configure the Electrum socket
     const parts = ElectrumServer.toParts(connectServer);
     const socket = new ElectrumWebSocket(parts.host, parts.port);
 
+    const protocolVersion =
+      bchNetwork === "cauldron"
+        ? ROSTRUM_PROTOCOL_VERSION
+        : ELECTRUM_PROTOCOL_VERSION;
+
     // create a new ElectrumClient every time to enable server switching
-    electrum = new ElectrumClient(
-      "Selene.cash",
-      ELECTRUM_PROTOCOL_VERSION,
-      socket
-    );
+    electrum = new ElectrumClient("Selene.cash", protocolVersion, socket);
+    electrum_handles.set(bchNetwork, electrum);
 
     // need to establish listeners every time we recreate the ElectrumClient
     if (withListeners) {
       electrum.addListener("connected", () => {
-        Log.log("ELECTRUM CONNECTED", getElectrumHost());
-        store.dispatch(syncConnectionUp());
+        if (typeof withListeners.connected === "function") {
+          withListeners.connected();
+        } else {
+          Log.log("ELECTRUM CONNECTED", getElectrumHost());
+          store.dispatch(syncConnectionUp());
+        }
       });
 
-      electrum.addListener("notification", handleElectrumNotifications);
+      electrum.addListener("notification", (data) => {
+        if (typeof withListeners.notification === "function") {
+          withListeners.notification(data);
+        } else {
+          handleElectrumNotifications(data);
+        }
+      });
 
       electrum.addListener("disconnected", () => {
-        Log.log("ELECTRUM DISCONNECTED");
+        if (typeof withListeners.disconnected === "function") {
+          withListeners.disconnected();
+        } else {
+          Log.log("ELECTRUM DISCONNECTED");
+        }
       });
 
       electrum.addListener("connecting", () => {
@@ -470,6 +494,18 @@ export default function ElectrumService() {
 
     return newServer;
   }
+
+  function getElectrumHost(): string {
+    return electrum ? electrum.hostIdentifier : "";
+  }
+
+  function getElectrumClient() {
+    if (electrum === null) {
+      throw new ElectrumNotConnectedError();
+    }
+
+    return electrum;
+  }
 }
 
 function handleElectrumNotifications(data) {
@@ -493,8 +529,4 @@ function handleChaintipSubscription(data) {
 
   const chaintip = data[0];
   store.dispatch(syncChaintip(chaintip));
-}
-
-function getElectrumHost(): string {
-  return electrum ? electrum.hostIdentifier : "";
 }

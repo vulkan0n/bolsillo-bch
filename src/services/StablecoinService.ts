@@ -1,9 +1,9 @@
 import { uint8ArrayEqual, Exception } from "@cashlab/common";
 import LogService from "@/services/LogService";
-import CauldronDexService, {
+import CauldronService, {
   PoolTrackerEntry,
   PoolV0,
-} from "@/services/CauldronDexService";
+} from "@/services/CauldronService";
 import TransactionBuilderService from "@/services/TransactionBuilderService";
 import TransactionManagerService from "@/services/TransactionManagerService";
 import ElectrumClientManager from "@/util/electrum_client_manager";
@@ -44,7 +44,7 @@ export class StablecoinError extends Error {
 export default function StablecoinService(walletHash: string) {
   const TransactionBuilder = TransactionBuilderService(walletHash);
   const TransactionManager = TransactionManagerService();
-  const CauldronDex = CauldronDexService();
+  const CauldronDex = CauldronService();
   let electrumClientManager: ElectrumClientManager | null = null;
   let dexClient: any | null = null; // Replace with CauldronDexClient type if available
   let tracker: PoolTrackerEntry | null = null;

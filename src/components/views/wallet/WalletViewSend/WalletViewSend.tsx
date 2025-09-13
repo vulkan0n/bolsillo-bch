@@ -63,7 +63,7 @@ import { truncateProse } from "@/util/string";
 import { translate } from "@/util/translations";
 import translations from "./translations";
 
-import CauldronDexService from "@/services/CauldronDexService";
+import CauldronService from "@/services/CauldronService";
 
 const Log = LogService("WalletViewSend");
 
@@ -77,6 +77,7 @@ export default function WalletViewSend() {
   const isScanning = useSelector(selectScannerIsScanning);
 
   const inputRef = useRef<HTMLInputElement>(null);
+  const abortControllerRef = useRef<AbortController>(null);
 
   const walletHash = useSelector(selectActiveWalletHash);
   const spendable_balance = useSelector(selectActiveWalletBalance);
