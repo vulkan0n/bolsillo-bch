@@ -29,24 +29,37 @@ import { MUSD_TOKENID } from "@/util/tokens";
 const Log = LogService("AppCauldronDexView");
 
 function useCauldron(tokenId) {
-  const [cauldrons, setCauldrons] = useState([]);
-  const Cauldron = CauldronService();
+  const [cauldron, setCauldron] = useState(null);
+  const [utxos, setUtxos] = useState([]);
 
   useEffect(
-    function fetchCauldrons() {
+    function setupCauldronService() {
       const setup = async () => {
+        const Cauldron = CauldronService();
         await Cauldron.connect();
+        Cauldron.subscribe(tokenId, (utxos) => {
+          Log.debug("notification", utxos);
+          setUtxos(utxos);
+        });
 
-        const c = Cauldron.getCauldrons(tokenId);
-        setCauldrons(c);
+        setCauldron(Cauldron);
       };
 
-      setup();
+      if (cauldron === null) {
+        setup();
+      }
+
+      return () => {
+        if (cauldron) {
+          cauldron.disconnect();
+          setCauldron(null);
+        }
+      };
     },
-    [Cauldron]
+    [cauldron, tokenId]
   );
 
-  return cauldrons;
+  return utxos;
 }
 
 export default function AppCauldronDexView() {
