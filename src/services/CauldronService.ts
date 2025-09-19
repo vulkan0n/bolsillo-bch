@@ -1,27 +1,34 @@
-import { Exception } from "@cashlab/common";
-import { ExchangeLab, PoolV0 } from "@cashlab/cauldron";
+import {
+  PayoutRule,
+  PayoutAmountRuleType,
+  SpendableCoin,
+  SpendableCoinType,
+  InsufficientFunds,
+} from "@cashlab/common";
+import { ExchangeLab, PoolV0, PoolV0Parameters } from "@cashlab/cauldron";
 import { hashTransactionUiOrder } from "@bitauth/libauth";
-import ElectrumService from "@/services/ElectrumService";
 import LogService from "@/services/LogService";
+import ElectrumService from "@/services/ElectrumService";
+import { WalletEntity } from "@/services/WalletManagerService";
+import AddressManagerService from "@/services/AddressManagerService";
+import UtxoManagerService from "@/services/UtxoManagerService";
+import HdNodeService from "@/services/HdNodeService";
 import { deferredPromise } from "@/util/promise_helpers";
 import { hexToBin, binToHex } from "@/util/hex";
-import { MUSD_TOKENID } from "@/util/tokens";
+import { addressToLockingBytecode } from "@/util/cashaddr";
 
 const Log = LogService("CauldronService");
 
-export type RostrumCauldronContractSubscribeEvent = {
-  type: string;
-  utxos: Array<{
-    is_withdrawn: boolean;
-    new_utxo_hash: string;
-    new_utxo_n: number;
-    new_utxo_txid: string;
-    pkh: string;
-    sats: number;
-    spent_utxo_hash: string;
-    token_amount: number;
-    token_id: string;
-  }>;
+export type CauldronPoolUtxo = {
+  is_withdrawn: boolean;
+  new_utxo_hash: string;
+  new_utxo_n: number;
+  new_utxo_txid: string;
+  pkh: string;
+  sats: number;
+  spent_utxo_hash: string;
+  token_amount: number;
+  token_id: string;
 };
 
 export const parsePoolFromRostrumNodeData = (
@@ -58,25 +65,26 @@ type SubscriptionFunction = (data: any) => void;
 export default function CauldronService() {
   const Rostrum = ElectrumService("cauldron");
   const subscriptions = new Map<string, Array<SubscriptionFunction>>();
-  const pools = new Map();
+  const poolUtxos = new Map<string, CauldronPoolUtxo>();
 
   return {
     connect,
     disconnect,
     subscribe,
     prepareTrade,
+    broadcastTransaction: Rostrum.broadcastTransaction,
   };
 
   function registerPool(pool) {
-    pools.set(pool.new_utxo_hash, pool);
-    Log.debug("registerPool", pool);
+    poolUtxos.set(pool.new_utxo_hash, pool);
+    Log.debug("registerPool", pool, poolUtxos);
   }
 
   function updatePool(pool) {
-    const oldPool = pools.get(pool.spent_utxo_hash);
+    const oldPool = poolUtxos.get(pool.spent_utxo_hash);
 
     if (oldPool) {
-      pools.delete(pool.spent_utxo_hash);
+      poolUtxos.delete(pool.spent_utxo_hash);
     }
 
     registerPool(pool);
@@ -112,7 +120,7 @@ export default function CauldronService() {
 
     // notify subscribers with updated utxo list
     const callbacks = subscriptions.get(tokenId) || [];
-    Promise.all(callbacks.map((cb) => cb([...pools.values()])));
+    Promise.all(callbacks.map((cb) => cb([...poolUtxos.values()])));
   }
 
   async function connect() {
@@ -144,5 +152,165 @@ export default function CauldronService() {
     rostrum.subscribe("cauldron.contract.subscribe", 2, category);
 
     Log.debug("subscribe", category);
+  }
+
+  function getPoolInputs(): Array<PoolV0> {
+    const exlab = new ExchangeLab();
+    Log.log(poolUtxos);
+    return [...poolUtxos.values()].map((pool) =>
+      parsePoolFromRostrumNodeData(exlab, pool)
+    );
+  }
+
+  function prepareTrade(
+    supplyCategory: string,
+    demandCategory: string,
+    supplyAmount: bigint,
+    demandAmount: bigint,
+    wallet: WalletEntity,
+    isDemandFlipped: boolean = false
+  ) {
+    const exchangeLab = new ExchangeLab();
+
+    // get cauldron utxos
+    const inputPools = getPoolInputs();
+    const TX_FEE_PER_BYTE = 1n;
+
+    if (isDemandFlipped) {
+      Log.debug(
+        "prepareTrade:",
+        supplyCategory,
+        "->",
+        demandCategory,
+        "selling",
+        supplyAmount,
+        "from",
+        inputPools,
+        "with",
+        demandAmount
+      );
+    } else {
+      Log.debug(
+        "prepareTrade:",
+        supplyCategory,
+        "->",
+        demandCategory,
+        "buying",
+        demandAmount,
+        "from",
+        inputPools,
+        "with",
+        supplyAmount
+      );
+    }
+
+    const tradeResult = isDemandFlipped
+      ? exchangeLab.constructTradeBestRateForTargetSupply(
+          supplyCategory,
+          demandCategory,
+          supplyAmount,
+          inputPools,
+          TX_FEE_PER_BYTE
+        )
+      : exchangeLab.constructTradeBestRateForTargetDemand(
+          supplyCategory,
+          demandCategory,
+          demandAmount,
+          inputPools,
+          TX_FEE_PER_BYTE
+        );
+
+    Log.debug("prepareTrade", tradeResult);
+
+    const { walletHash } = wallet;
+
+    const AddressManager = AddressManagerService(walletHash);
+    const receiveAddress = AddressManager.getUnusedAddresses(1, 0)[0];
+    const changeAddress = AddressManager.getUnusedAddresses(1, 1)[0];
+
+    // output demand token
+    const isDemandToken = supplyCategory === "BCH";
+    const demandTokenRule = isDemandToken
+      ? {
+          token: { token_id: demandCategory, amount: demandAmount },
+          amount: -1n,
+        }
+      : { amount: demandAmount };
+
+    const payoutRules: PayoutRule[] = [
+      // trade payout address
+      {
+        type: PayoutAmountRuleType.FIXED,
+        locking_bytecode: addressToLockingBytecode(receiveAddress.address),
+        ...demandTokenRule,
+      },
+      // all of our change outputs to one address
+      {
+        type: PayoutAmountRuleType.CHANGE,
+        locking_bytecode: addressToLockingBytecode(changeAddress.address),
+        allow_mixing_native_and_token_when_bch_change_is_dust: true,
+      },
+      // cauldron utxo handled by cashlab
+    ];
+
+    Log.debug("payoutRules", payoutRules);
+
+    // input supply token
+    const UtxoManager = UtxoManagerService(walletHash);
+    const HdNode = HdNodeService(wallet);
+
+    let tradeTx;
+    let fee = 0n;
+    for (let i = 0; i < 5; i += 1) {
+      const supplyInputs = isDemandToken
+        ? UtxoManager.selectCoins(supplyAmount + fee)
+        : [
+            ...UtxoManager.selectTokens(supplyCategory, supplyAmount),
+            ...UtxoManager.selectCoins(fee),
+          ];
+
+      const clabInputs: SpendableCoin[] = supplyInputs.map((input) => {
+        return {
+          type: SpendableCoinType.P2PKH,
+          key: HdNode.getAddressPrivateKey(input.address),
+          output: {
+            locking_bytecode: addressToLockingBytecode(input.address),
+            token:
+              input.token_amount > 0
+                ? {
+                    amount: BigInt(input.token_amount),
+                    token_id: input.token_category,
+                  }
+                : undefined,
+            amount: BigInt(input.amount),
+          },
+          outpoint: {
+            txhash: hexToBin(input.txid),
+            index: Number(input.tx_pos),
+          },
+        };
+      });
+
+      try {
+        tradeTx = exchangeLab.createTradeTx(
+          tradeResult.entries,
+          clabInputs,
+          payoutRules,
+          null,
+          TX_FEE_PER_BYTE
+        );
+        Log.debug("tradeTx", tradeTx);
+        break;
+      } catch (e) {
+        if (e.required_amount) {
+          fee += e.required_amount;
+        } else {
+          throw e;
+        }
+      }
+    }
+
+    const tx_hex = binToHex(tradeTx.txbin);
+    return tx_hex;
   }
 }

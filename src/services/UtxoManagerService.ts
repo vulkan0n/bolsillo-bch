@@ -170,9 +170,9 @@ export default function UtxoManagerService(walletHash: string) {
         return [];
       }
 
-      if (!utxo.token) {
+      /*if (!utxo.token) {
         Log.warn(utxo);
-      }
+      }*/
 
       consumedUtxos.push(utxo);
       remainingAmount -= utxo.token_amount;

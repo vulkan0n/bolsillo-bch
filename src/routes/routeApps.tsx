@@ -41,7 +41,7 @@ export const routeApps = [
       return { Component: AppBlissView };
     },
   },
-{
+  {
     path: "/apps/cauldron",
     async lazy() {
       const { default: AppCauldronDexView } = await import(

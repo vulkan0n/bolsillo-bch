@@ -2,8 +2,6 @@ import {
   encodeTransaction,
   generateTransaction,
   swapEndianness,
-  cashAddressToLockingBytecode,
-  base58AddressToLockingBytecode,
   importWalletTemplate,
   walletTemplateP2pkhNonHd,
   walletTemplateToCompilerBCH,
@@ -32,9 +30,9 @@ import {
   EXCESSIVE_SATOSHIS,
   TXFEE_PER_BYTE,
 } from "@/util/sats";
-import { validateBchUri } from "@/util/uri";
 import { binToHex, hexToBin } from "@/util/hex";
 import { sha256 } from "@/util/hash";
+import { addressToLockingBytecode } from "@/util/cashaddr";
 
 // NOTE: Couldn't find this type defined elsewhere, so have added it here.
 export type ElectrumUtxo = {
@@ -66,19 +64,6 @@ export default function TransactionBuilderService(walletHash: string) {
   };
 
   // --------------------------------
-
-  function addressToLockingBytecode(addr) {
-    const { isBase58Address, address } = validateBchUri(addr);
-    const lockingBytecode = isBase58Address
-      ? base58AddressToLockingBytecode(address)
-      : cashAddressToLockingBytecode(address);
-
-    if (typeof lockingBytecode === "string") {
-      throw new Error(lockingBytecode);
-    }
-
-    return lockingBytecode.bytecode;
-  }
 
   function createTokenOutput(recipientAddress, token) {
     const output = {
