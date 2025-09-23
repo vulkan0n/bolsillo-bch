@@ -14,7 +14,6 @@ import {
   CloseOutlined,
 } from "@ant-design/icons";
 
-import * as clab from "@cashlab/common";
 import {
   selectActiveWalletHash,
   selectActiveWalletBalance,
@@ -51,7 +50,6 @@ import TokenAmount from "@/atoms/TokenAmount";
 import SlideToAction from "@/components/atoms/SlideToAction";
 import ScannerButton from "@/views/wallet/ScannerButton/ScannerButton";
 import ScannerOverlay from "@/views/wallet/ScannerOverlay";
-import ConfirmConvertAndSendPayoutOverlay from "@/views/wallet/WalletViewSend/ConfirmConvertAndSendPayoutOverlay";
 import WalletViewSendStablecoin from "@/views/wallet/WalletViewSend/WalletViewSendStablecoin";
 
 import { hexToBin } from "@/util/hex";
@@ -62,8 +60,6 @@ import { validateBchUri, navigateOnValidUri } from "@/util/uri";
 import { truncateProse } from "@/util/string";
 import { translate } from "@/util/translations";
 import translations from "./translations";
-
-import CauldronService from "@/services/CauldronService";
 
 const Log = LogService("WalletViewSend");
 
@@ -77,7 +73,6 @@ export default function WalletViewSend() {
   const isScanning = useSelector(selectScannerIsScanning);
 
   const inputRef = useRef<HTMLInputElement>(null);
-  const abortControllerRef = useRef<AbortController>(null);
 
   const walletHash = useSelector(selectActiveWalletHash);
   const spendable_balance = useSelector(selectActiveWalletBalance);

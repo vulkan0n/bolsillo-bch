@@ -1,13 +1,12 @@
-import { useState, useEffect, useRef, useCallback, useMemo } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import {
   useParams,
   useSearchParams,
   useNavigate,
   useLocation,
 } from "react-router";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import Decimal from "decimal.js";
-import { Dialog } from "@capacitor/dialog";
 import {
   ArrowLeftOutlined,
   SyncOutlined,
@@ -15,16 +14,10 @@ import {
   DollarCircleOutlined,
 } from "@ant-design/icons";
 
-import * as clab from "@cashlab/common";
-import {
-  selectActiveWalletHash,
-  selectActiveWalletBalance,
-  selectWalletAddresses,
-} from "@/redux/wallet";
+import { selectActiveWalletHash, selectWalletAddresses } from "@/redux/wallet";
 import {
   selectCurrencySettings,
   selectInstantPaySettings,
-  setPreference,
 } from "@/redux/preferences";
 
 import { selectIsConnected } from "@/redux/sync";
@@ -32,7 +25,6 @@ import { selectScannerIsScanning } from "@/redux/device";
 
 import { useStablecoinBalance } from "@/hooks/useStablecoinBalance";
 
-import AddressManagerService from "@/services/AddressManagerService";
 import CurrencyService from "@/services/CurrencyService";
 import TransactionManagerService from "@/services/TransactionManagerService";
 import TransactionBuilderService from "@/services/TransactionBuilderService";
@@ -40,15 +32,10 @@ import TokenManagerService from "@/services/TokenManagerService";
 import ToastService from "@/services/ToastService";
 import SecurityService, { AuthActions } from "@/services/SecurityService";
 import LogService from "@/services/LogService";
-import StablecoinService, {
-  TokenRecipient,
-  StablecoinOffer,
-} from "@/services/StablecoinService";
 
 import FullColumn from "@/layout/FullColumn";
 
 import { SatoshiInput } from "@/atoms/SatoshiInput";
-import Satoshi from "@/atoms/Satoshi";
 import Button from "@/atoms/Button";
 import Editable from "@/atoms/Editable";
 import Address from "@/atoms/Address";
@@ -57,15 +44,12 @@ import ScannerButton from "@/views/wallet/ScannerButton/ScannerButton";
 import ScannerOverlay from "@/views/wallet/ScannerOverlay";
 import ConfirmConvertAndSendPayoutOverlay from "@/views/wallet/WalletViewSend/ConfirmConvertAndSendPayoutOverlay";
 
-import { hexToBin } from "@/util/hex";
 import { Haptic } from "@/util/haptic";
 import { bchToSats } from "@/util/sats";
 import { MUSD_TOKENID } from "@/util/tokens";
 import { validateBchUri, navigateOnValidUri } from "@/util/uri";
 import { translate } from "@/util/translations";
 import translations from "./translations";
-
-import CauldronDexService from "@/services/CauldronDexService";
 
 const Log = LogService("WalletViewSendStablecoin");
 
@@ -74,7 +58,6 @@ export default function WalletViewSendStablecoin() {
   const params = useParams();
   const navigate = useNavigate();
   const location = useLocation();
-  const dispatch = useDispatch();
 
   const isScanning = useSelector(selectScannerIsScanning);
 
@@ -85,14 +68,9 @@ export default function WalletViewSendStablecoin() {
   const { stablecoinBalance, volatileBalance } =
     useStablecoinBalance(walletHash);
 
-  const TokenManager = TokenManagerService(walletHash);
-  const tokenData = TokenManager.getToken(MUSD_TOKENID);
-
   const { address, isBase58Address, isValid } = validateBchUri(
     params.address || ""
   );
-
-  const tokenRecipients = [];
 
   const myAddresses = useSelector(selectWalletAddresses);
   const isMyAddress =
@@ -105,12 +83,6 @@ export default function WalletViewSendStablecoin() {
   const [message, setMessage] = useState("");
   const [isSending, setIsSending] = useState(false);
   const isInstantPayPending = useRef(false);
-  const [isSendingProgressCancelable, setIsSendingProgressCancelable] =
-    useState(false);
-  const [
-    isSendingProgressCancelAbortController,
-    setIsSendingProgressCancelAbortController,
-  ] = useState(false);
 
   const { shouldIncludeVolatileBalance } = useSelector(selectCurrencySettings);
 
@@ -149,10 +121,6 @@ export default function WalletViewSendStablecoin() {
     confirmConvertAndSendPayoutOverlayConvertInfo,
     setConfirmConvertAndSendPayoutOverlayConvertInfo,
   ] = useState(null);
-  const [
-    handleConfirmConvertAndSendPayoutClicked,
-    setHandleConfirmConvertAndSendPayoutClicked,
-  ] = useState(() => null);
 
   // Updating an incorrect address by tapping address bar instead of scanning a QR code
   // Preserves CashTokens category info & entered send amount
@@ -178,103 +146,6 @@ export default function WalletViewSendStablecoin() {
     setMessage(insufficientFundsTranslation);
   };
 
-  const handleCancelSending = () => {
-    if (isSendingProgressCancelAbortController != null) {
-      isSendingProgressCancelAbortController.abort();
-    }
-  };
-
-  const handleCancelConvertAndSendPayoutClicked = () => {
-    setShouldDisplayConfirmConvertAndSendPayout(false);
-    handleCancelSending();
-  };
-
-  const confirmDelegateSendTokensPayFeesViaCauldronContracts = useCallback(
-    async (feePayingTokenCategory: string, tokenRecipient: TokenRecipient) => {
-      const Stablecoin = StablecoinService(walletHash);
-      const abortControllerRef = useRef(new AbortController());
-      setIsSending(true);
-      setIsSendingProgressCancelable(true);
-      setIsSendingProgressCancelAbortController(abortControllerRef.current);
-
-      const onEnd = async () => {
-        await Stablecoin.cancel();
-        setIsSending(false);
-        setIsSendingProgressCancelable(false);
-        setIsSendingProgressCancelAbortController(null);
-      };
-
-      try {
-        const result = await Stablecoin.sendTokensWithFees(
-          feePayingTokenCategory,
-          tokenRecipient,
-          (offer: StablecoinOffer) => {
-            setConfirmConvertAndSendPayoutOverlayConvertInfo({
-              showQuoteChangedMessage: false,
-              tokenEntity: tokenData,
-              spend: { tokenAmount: offer.tradeResult.summary.supply },
-              txfee: {
-                bchAmount:
-                  offer.tradeTransaction.txfee +
-                  offer.tradeResult.summary.trade_fee,
-              },
-              payouts: {
-                change: {
-                  bchAmount:
-                    offer.tradeResult.summary.demand -
-                    offer.tradeTransaction.txfee,
-                },
-              },
-            });
-            setShouldDisplayConfirmConvertAndSendPayout(true);
-          },
-          (offer: StablecoinOffer) => {
-            setShouldDisplayConfirmConvertAndSendPayout(false);
-            setConfirmConvertAndSendPayoutOverlayConvertInfo({
-              showQuoteChangedMessage: true,
-              tokenEntity: tokenData,
-              spend: { tokenAmount: offer.tradeResult.summary.supply },
-              txfee: {
-                bchAmount:
-                  offer.tradeTransaction.txfee +
-                  offer.tradeResult.summary.trade_fee,
-              },
-              payouts: {
-                change: {
-                  bchAmount:
-                    offer.tradeResult.summary.demand -
-                    offer.tradeTransaction.txfee,
-                },
-              },
-            });
-            setShouldDisplayConfirmConvertAndSendPayout(true);
-          },
-          abortControllerRef.current.signal
-        );
-
-        await Haptic.success();
-        navigate("/wallet/send/success", {
-          state: { tx: result.tx },
-          replace: true,
-        });
-      } catch (err) {
-        if (
-          err instanceof Exception &&
-          err.message.includes("InsufficientFunds")
-        ) {
-          handleInsufficientFunds();
-        } else {
-          await Haptic.error();
-          setMessage(
-            `${translate(translations.transactionFailed)}: ${err.message}`
-          );
-        }
-        await onEnd();
-      }
-    },
-    [navigate, tokenData, walletHash, handleInsufficientFunds, translate]
-  );
-
   const validateSendConditions = useCallback(
     async (isInstantPay: boolean = false) => {
       if (isSending) {
@@ -290,12 +161,6 @@ export default function WalletViewSendStablecoin() {
         await Haptic.warn();
         // we should not support this case in stablecoin mode
         const isLegacyAddressConfirmed = false;
-
-        /*const { value: isLegacyAddressConfirmed } = await Dialog.confirm({
-          title: translate(translations.base58WarningTitle),
-          message: translate(translations.base58WarningMessage),
-          okButtonTitle: translate(translations.base58WarningOk),
-          });*/
 
         if (!isLegacyAddressConfirmed) {
           return false;

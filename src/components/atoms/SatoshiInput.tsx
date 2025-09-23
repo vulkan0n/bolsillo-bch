@@ -19,7 +19,6 @@ interface SatoshiInputProps {
   autoFocus?: boolean;
   tokenDecimals?: number;
   max?: bigint;
-  fiat?: boolean;
 }
 
 export function SatoshiInput({

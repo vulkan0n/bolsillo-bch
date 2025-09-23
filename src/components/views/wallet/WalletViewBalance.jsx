@@ -117,7 +117,7 @@ export default function WalletViewBalance() {
 }
 
 function StablecoinBalance() {
-  const { walletHash, balance } = useSelector(selectActiveWallet);
+  const { walletHash } = useSelector(selectActiveWallet);
   const { shouldIncludeVolatileBalance } = useSelector(selectCurrencySettings);
 
   const { stablecoinBalance, volatileBalance } =

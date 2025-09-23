@@ -2,7 +2,6 @@ import { useNavigate } from "react-router";
 import { useSelector } from "react-redux";
 import { SendOutlined, HistoryOutlined } from "@ant-design/icons";
 import { selectScannerIsScanning } from "@/redux/device";
-import { selectIsStablecoinMode } from "@/redux/preferences";
 import translations from "./translations";
 import { translate } from "@/util/translations";
 
@@ -13,12 +12,10 @@ import ImageSelectButton from "../ImageSelectButton/ImageSelectButton";
 
 import { useClipboard } from "@/hooks/useClipboard";
 import { navigateOnValidUri } from "@/util/uri";
-import { MUSD_TOKENID } from "@/util/tokens";
 
 export default function WalletViewButtons() {
   const navigate = useNavigate();
   const isScanning = useSelector(selectScannerIsScanning);
-  const isStablecoinMode = useSelector(selectIsStablecoinMode);
 
   const { getClipboardContents } = useClipboard();
 
