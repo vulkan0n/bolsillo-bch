@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useRef, useMemo } from "react";
 
 export const useLongPress = <T>(
-  onLongPress: (e: T) => void = () => {},
-  onClick: (e: T) => void = () => {},
+  onLongPress: (e?: T) => void = () => {},
+  onClick: (e?: T) => void = () => {},
   ms = 500
 ) => {
   const timerRef = useRef<NodeJS.Timeout | null>(setTimeout(() => {}, 0));

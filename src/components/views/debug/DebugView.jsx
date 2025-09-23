@@ -10,7 +10,11 @@ import translations from "./translations";
 export default function DebugView() {
   return (
     <FullColumn>
-      <ViewHeader icon={BugOutlined} title={translate(translations.debug)} />
+      <ViewHeader
+        icon={BugOutlined}
+        title={translate(translations.debug)}
+        back={-1}
+      />
       <Outlet />
     </FullColumn>
   );

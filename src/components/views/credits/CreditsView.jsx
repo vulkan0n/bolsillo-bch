@@ -1,55 +1,137 @@
+/* eslint-disable react/jsx-props-no-spreading */
 import { useState } from "react";
 import { useNavigate } from "react-router";
+import { QRCode } from "react-qrcode-logo";
 import ViewHeader from "@/layout/ViewHeader";
+import FullColumn from "@/layout/FullColumn";
 import SeleneLogo from "@/components/atoms/SeleneLogo";
 import LinkExternal from "@/components/atoms/LinkExternal";
 import { SELENE_WALLET_VERSION } from "@/util/version";
 import { translate } from "@/util/translations";
 import translations from "./CreditsViewTranslations";
+import { logos } from "@/util/logos";
+import { useLongPress } from "@/hooks/useLongPress";
 
 export default function CreditsView() {
   const navigate = useNavigate();
-  const [debugTaps, setDebugTaps] = useState(0);
 
-  const handleDebugTap = () => {
-    setDebugTaps((taps) => taps + 1);
-    if (debugTaps >= 5) {
-      navigate("/debug");
-    } else {
-      setTimeout(() => setDebugTaps((taps) => taps - 1), 1337);
-    }
-  };
+  const [shouldShowQr, setShouldShowQr] = useState(false);
+
+  const longPressEvents = useLongPress(
+    () => {
+      if (shouldShowQr) {
+        navigate("/debug");
+      }
+    },
+    () => setShouldShowQr(!shouldShowQr),
+    1674
+  );
 
   return (
-    <>
-      <ViewHeader icon={() => null} title={translate(translations.credits)} />
+    <FullColumn>
+      <ViewHeader
+        icon={() => null}
+        title={translate(translations.credits)}
+        back="/"
+      />
       <div className="bg-primary text-white text-center p-2">
-        <div className="flex items-center justify-center h-40">
-          <SeleneLogo className="h-full" onClick={handleDebugTap} />
+        <div className="flex items-center justify-center" {...longPressEvents}>
+          {shouldShowQr ? (
+            <div className="border-2 border-primary-700 rounded-sm">
+              <QRCode
+                value="https://selene.cash"
+                size={180}
+                quietZone={12}
+                bgColor="#f7fcf1"
+                fgColor="#262b27"
+                logoImage={logos.selene.img}
+                logoWidth={48}
+                logoHeight={48}
+              />
+            </div>
+          ) : (
+            <SeleneLogo className="h-40" />
+          )}
         </div>
-        <h1 className="text-2xl font-bold">
-          <LinkExternal to="https://selene.cash" className="underline">
-            Selene Wallet v{SELENE_WALLET_VERSION}
-          </LinkExternal>
-        </h1>
-        <h2 className="text-xl font-bold">
-          {translate(translations.developedWith)}
-        </h2>
-        <h2 className="font-bold text-xl">
-          <LinkExternal to="https://kallisti.io" className="underline">
-            Kallisti.cash
-          </LinkExternal>{" "}
-          &amp;{" "}
-          <LinkExternal
-            to="https://bitcoincashpodcast.com"
-            className="underline"
-          >
-            The Bitcoin Cash Podcast
-          </LinkExternal>
-        </h2>
+        <div className="py-1">
+          <h1 className="text-2xl font-bold">
+            <LinkExternal to="https://selene.cash" className="underline">
+              Selene Wallet v{SELENE_WALLET_VERSION}
+            </LinkExternal>
+          </h1>
+          <h2 className="text-xl font-bold">
+            {translate(translations.developedWith)}
+          </h2>
+          <h2 className="font-bold text-xl">
+            <LinkExternal to="https://kallisti.io" className="underline">
+              Kallisti.cash
+            </LinkExternal>{" "}
+            &amp;{" "}
+            <LinkExternal
+              to="https://bitcoincashpodcast.com"
+              className="underline"
+            >
+              The Bitcoin Cash Podcast
+            </LinkExternal>
+          </h2>
+        </div>
       </div>
       <div className="p-2 w-5/6 mx-auto">
-        <h3 className="font-bold text-xl">March 2024</h3>
+        <h3 className="font-bold text-xl">FundMe: May 2025</h3>
+        <ol className="list-inside list-decimal">
+          <li>majamalu</li>
+          <li>molecular</li>
+          <li>TimeToDeliver</li>
+          <li>molecsdrunkuncl</li>
+          <li>&quot;Satoshi&quot;</li>
+          <li>Lucky 13</li>
+          <li>steve4096</li>
+          <li>@cashstamps</li>
+          <li>BigV</li>
+          <li>Selene User2543</li>
+          <li>Milton Friedman</li>
+          <li>Steve2048</li>
+          <li>David - AFoG</li>
+          <li>Paul</li>
+          <li>Ryan Giffin</li>
+          <li>Bliss Goer</li>
+          <li>Bernanácatl</li>
+          <li>EmergentReasons</li>
+          <li>Mathieu G.</li>
+          <li>9500</li>
+          <li>kiok</li>
+          <li>Cheapy</li>
+          <li>PurelyPeer</li>
+          <li>Drunk Bernanctl</li>
+          <li>Billy</li>
+          <li>im_uname</li>
+          <li>coolcleaner</li>
+          <li>yeahhhbeer</li>
+          <li>sandakersmann</li>
+          <li>Bitvitor.com</li>
+          <li>Gustavo</li>
+          <li>Anonymous</li>
+          <li>devperate</li>
+          <li>MTO</li>
+          <li>Murray Store</li>
+          <li>Remora_101</li>
+          <li>Andrew#128</li>
+          <li>Nico</li>
+          <li>BitcoinOutLoud</li>
+          <li>Dunconomics</li>
+          <li>Xandigal</li>
+          <li>Andy</li>
+          <li>Ben</li>
+          <li>Anonymous</li>
+          <li>Eggroley</li>
+          <li>Mike</li>
+          <li>rattattouille</li>
+          <li>Selene User</li>
+        </ol>
+
+        <br />
+
+        <h3 className="font-bold text-xl">Flipstarter: March 2024</h3>
         <ol className="list-inside list-decimal">
           <li>molecular</li>
           <li>toorik</li>
@@ -99,8 +181,10 @@ export default function CreditsView() {
           <li>AVG</li>
           <li>Anonymous</li>
         </ol>
+
         <br />
-        <h3 className="font-bold text-xl">May 2023</h3>
+
+        <h3 className="font-bold text-xl">Flipstarter: May 2023</h3>
         <ol className="list-inside list-decimal">
           <li>majamalu</li>
           <li>toorik</li>
@@ -186,8 +270,13 @@ export default function CreditsView() {
           <li>Steve Thurmond</li>
           <li>The Paytaca Team</li>
           <li>Jett Scythe</li>
+          <li>FiendishCrypto</li>
+          <li>Renegade</li>
+          <li>hosseinzoda</li>
+          <li>Sayoshi Nakamario</li>
+          <li>1ultrafresh</li>
         </ul>
       </div>
-    </>
+    </FullColumn>
   );
 }
