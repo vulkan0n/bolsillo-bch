@@ -60,22 +60,30 @@ export default function ToastService() {
       header: "Payment received!",
       body: (
         <div className="flex flex-col">
-          {token && (
-            <div>
-              <TokenAmount token={token} />
-            </div>
+          {token ? (
+            <>
+              <div>
+                <TokenAmount token={token} />
+              </div>
+              <div className="text-secondary text-sm">
+                +<Satoshi value={amount} />
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="text-secondary">
+                +<Satoshi value={amount} />
+              </div>
+              <div className="text-neutral-500 font-mono text-sm">
+                <Satoshi value={amount} flip />
+              </div>
+            </>
           )}
-          <div className="text-secondary">
-            +<Satoshi value={amount} />
-          </div>
-          <div className="text-neutral-500 font-mono text-sm">
-            <Satoshi value={amount} flip />
-          </div>
         </div>
       ),
       options: {
         id: "paymentReceived",
-        duration: 2000,
+        duration: 2400,
       },
     });
   }
@@ -85,7 +93,7 @@ export default function ToastService() {
       icon: <SnippetsFilled className="text-4xl text-primary" />,
       header,
       body: <span className="flex text-sm break-all">{payload}</span>,
-      options: { id: "clipboardCopy", duration: 2500 },
+      options: { id: "clipboardCopy", duration: 2400 },
     });
   }
 

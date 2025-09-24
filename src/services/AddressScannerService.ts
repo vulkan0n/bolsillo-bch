@@ -376,7 +376,7 @@ export default function AddressScannerService(wallet: WalletEntity) {
           );
         }
 
-        store.dispatch(walletBalanceUpdate({ wallet, isChange: false }));
+        store.dispatch(walletBalanceUpdate({ wallet }));
       }
       /* eslint-enable no-await-in-loop */
 

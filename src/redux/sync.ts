@@ -487,7 +487,6 @@ export const syncComplete = createAsyncThunk(
           thunkApi.dispatch(
             walletBalanceUpdate({
               wallet,
-              isChange: false,
               utxoDiff: syncDiff,
             })
           );

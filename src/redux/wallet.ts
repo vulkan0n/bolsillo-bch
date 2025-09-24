@@ -20,10 +20,15 @@ import AddressManagerService, {
   AddressEntity,
 } from "@/services/AddressManagerService";
 import AddressScannerService from "@/services/AddressScannerService";
+import UtxoManagerService from "@/services/UtxoManagerService";
+import TokenManagerService from "@/services/TokenManagerService";
 
 import ToastService from "@/services/ToastService";
+import LogService from "@/services/LogService";
 
 import { convertCashAddress } from "@/util/cashaddr";
+
+const Log = LogService("redux/wallet");
 
 const initialState = {
   walletHash: "",
@@ -74,8 +79,11 @@ export const walletBoot = createAsyncThunk(
 
 export const walletBalanceUpdate = createAction(
   "wallet/balanceUpdate",
-  (payload: { wallet: WalletEntity; isChange: boolean }) => {
-    const { wallet, isChange } = payload;
+  (payload: {
+    wallet: WalletEntity;
+    utxoDiff: { diffIn: Array<string>; diffOut: Array<string> };
+  }) => {
+    const { wallet, utxoDiff } = payload;
 
     // address and wallet balances are automatically derived on SQL layer when UTXO entries are updated
     const sqlWallet = WalletManagerService().getWallet(wallet.walletHash);
@@ -84,13 +92,51 @@ export const walletBalanceUpdate = createAction(
     const currentBalance = BigInt(sqlWallet.balance);
     const currentSpendableBalance = BigInt(sqlWallet.spendable_balance);
 
-    // specific behavior for receive addresses vs change addresses
-    if (!isChange) {
-      // if in stablecoin mode, swap incoming BCH to stablecoin
-      // we don't have token context here...
+    if (currentBalance > previousBalance) {
+      const difference = currentBalance - previousBalance;
 
-      if (currentBalance > previousBalance) {
-        const difference = currentBalance - previousBalance;
+      const UtxoManager = UtxoManagerService(wallet.walletHash);
+      const utxoIn = utxoDiff.diffIn.map((utxo) => UtxoManager.getUtxo(utxo));
+      const utxoOut = utxoDiff.diffOut.map((utxo) => UtxoManager.getUtxo(utxo));
+
+      const tokenDiff = {};
+      while (utxoIn.length > 0) {
+        const utxo = utxoIn.shift();
+        const category = utxo!.token_category;
+
+        if (!category) {
+          continue; // eslint-disable-line no-continue
+        }
+
+        if (!tokenDiff[category]) {
+          tokenDiff[category] = 0n;
+        }
+
+        tokenDiff[category] += utxo!.token_amount;
+
+        const outIndex = utxoOut.findIndex(
+          (u) => u.token_category === category
+        );
+        const output = utxoOut.splice(outIndex, 1)[0];
+
+        tokenDiff[category] -= output?.token_amount || 0n;
+      }
+
+      Log.debug("tokenDiff", tokenDiff);
+
+      if (Object.keys(tokenDiff).length > 0) {
+        const TokenManager = TokenManagerService(wallet.walletHash);
+        Object.keys(tokenDiff).forEach((category) => {
+          const tokenData = TokenManager.getToken(category);
+          const token = {
+            category,
+            decimals: tokenData.token.decimals,
+            amount: tokenDiff[category],
+          };
+
+          ToastService().paymentReceived(difference, token);
+        });
+      } else {
         ToastService().paymentReceived(difference);
       }
     }

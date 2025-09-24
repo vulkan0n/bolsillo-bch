@@ -22,6 +22,7 @@ export default function UtxoManagerService(walletHash: string) {
   const walletDb = Database.getWalletDatabase(walletHash);
 
   return {
+    getUtxo,
     registerUtxo,
     getWalletUtxos,
     getWalletCoins,
@@ -35,6 +36,18 @@ export default function UtxoManagerService(walletHash: string) {
     discardUtxo,
     discardAddressUtxos,
   };
+
+  function getUtxo(utxo_id: string): UtxoEntity {
+    const [txid, tx_pos] = utxo_id.split(":");
+
+    const result = walletDb.exec(
+      "SELECT * FROM address_utxos WHERE txid=? AND tx_pos=?",
+      [txid, tx_pos],
+      { useBigInt: true }
+    )[0];
+
+    return result;
+  }
 
   function registerUtxo(address, utxo) {
     //Log.debug("registerUtxo", utxo);
