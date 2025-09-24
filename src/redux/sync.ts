@@ -26,6 +26,7 @@ import BlockchainService from "@/services/BlockchainService";
 import WalletManagerService from "@/services/WalletManagerService";
 import AddressManagerService, {
   AddressEntity,
+  AddressStub,
 } from "@/services/AddressManagerService";
 import AddressScannerService from "@/services/AddressScannerService";
 import UtxoManagerService from "@/services/UtxoManagerService";
@@ -263,7 +264,7 @@ const syncAddressUtxos = createAsyncThunk(
       const utxoDiff = await AddressScannerService(wallet).scanUtxos(
         address.address
       );
-      Log.debug("sync/addressUtxos diff", utxoDiff);
+      //Log.debug("sync/addressUtxos diff", utxoDiff);
       return utxoDiff;
     } catch (e) {
       // reset address state on failure
@@ -353,16 +354,16 @@ export const syncHotRefresh = createAsyncThunk(
       );
 
       // concatenate full list of addresses
-      const addresses = filteredReceiveAddresses.concat(
+      const addressList = filteredReceiveAddresses.concat(
         filteredChangeAddresses
       );
 
-      thunkApi.dispatch(syncSubscriptionCount(addresses.length));
-      Log.debug("hotRefresh", addresses.length);
+      thunkApi.dispatch(syncSubscriptionCount(addressList.length));
+      Log.debug("hotRefresh", addressList.length);
 
       const Electrum = ElectrumService();
       await Promise.all(
-        addresses.map(async (address) => {
+        addressList.map(async (address) => {
           try {
             const addressState = await Electrum.requestAddressState(
               address.address
@@ -379,11 +380,38 @@ export const syncHotRefresh = createAsyncThunk(
       );
 
       const AddressScanner = AddressScannerService(wallet);
-      const nScanMore = 500;
-      await Promise.all([
-        AddressScanner.scanMoreAddresses(nScanMore, 0),
-        AddressScanner.scanMoreAddresses(nScanMore, 1),
-      ]);
+
+      const getUnusedCount = (addresses: Array<AddressStub> = []) =>
+        addresses.filter((a) => a.state === null).length;
+
+      /* eslint-disable no-await-in-loop */
+      const SCAN_BATCH_SIZE = 500;
+      const SCAN_BATCH_MAX = 3000;
+      for (let change = 0; change <= 1; change += 1) {
+        let i = 0;
+        let scanCount = 0;
+        let nScanMore = SCAN_BATCH_SIZE * (i + 1);
+
+        let scannedAddresses = await AddressScanner.scanMoreAddresses(
+          nScanMore,
+          change
+        );
+
+        thunkApi.dispatch(syncSubscriptionCount(scannedAddresses.length));
+        scanCount += scannedAddresses.length;
+
+        while (getUnusedCount(scannedAddresses) < nScanMore) {
+          nScanMore = Math.min(nScanMore + SCAN_BATCH_SIZE * i, SCAN_BATCH_MAX);
+          scannedAddresses = await AddressScanner.scanMoreAddresses(
+            nScanMore,
+            change
+          );
+          i += 1;
+          scanCount += scannedAddresses.length;
+          thunkApi.dispatch(syncSubscriptionCount(scannedAddresses.length));
+        }
+        thunkApi.dispatch(syncSubscriptionCount(-scanCount));
+      }
 
       await thunkApi.dispatch(syncPopulateAddresses());
 
