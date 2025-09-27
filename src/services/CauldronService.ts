@@ -6,7 +6,9 @@ import {
 } from "@cashlab/common";
 import { ExchangeLab, PoolV0, PoolV0Parameters } from "@cashlab/cauldron";
 import LogService from "@/services/LogService";
-import ElectrumService from "@/services/ElectrumService";
+import ElectrumService, {
+  ElectrumNotConnectedError,
+} from "@/services/ElectrumService";
 import { WalletEntity } from "@/services/WalletManagerService";
 import AddressManagerService from "@/services/AddressManagerService";
 import UtxoManagerService from "@/services/UtxoManagerService";
@@ -68,6 +70,7 @@ export default function CauldronService() {
     connect,
     disconnect,
     subscribe,
+    fetchPools,
     prepareTrade,
     broadcastTransaction: Rostrum.broadcastTransaction,
   };
@@ -159,7 +162,13 @@ export default function CauldronService() {
     );
   }
 
-  function prepareTrade(
+  async function fetchPools() {
+    if (!Rostrum.getIsConnected()) {
+      throw new ElectrumNotConnectedError();
+    }
+  }
+
+  async function prepareTrade(
     supplyCategory: string,
     demandCategory: string,
     supplyAmount: bigint,

@@ -7,7 +7,11 @@ import {
 } from "@reduxjs/toolkit";
 
 import { RootState } from "@/redux";
-import { setPreference, selectElectrumServer } from "@/redux/preferences";
+import {
+  setPreference,
+  selectElectrumServer,
+  selectIsStablecoinMode,
+} from "@/redux/preferences";
 import { syncConnect, syncClearAddresses } from "@/redux/sync";
 
 import { ValidBchNetwork } from "@/util/electrum_servers";
@@ -22,6 +26,7 @@ import AddressManagerService, {
 import AddressScannerService from "@/services/AddressScannerService";
 import UtxoManagerService from "@/services/UtxoManagerService";
 import TokenManagerService from "@/services/TokenManagerService";
+import StablecoinService from "@/services/StablecoinService";
 
 import ToastService from "@/services/ToastService";
 import LogService from "@/services/LogService";
@@ -73,6 +78,8 @@ export const walletBoot = createAsyncThunk(
       })
     );
 
+    // initialize Rostrum client
+
     return wallet;
   }
 );
@@ -92,61 +99,106 @@ export const walletBalanceUpdate = createAction(
     const currentBalance = BigInt(sqlWallet.balance);
     const currentSpendableBalance = BigInt(sqlWallet.spendable_balance);
 
-    if (currentBalance > previousBalance) {
-      const difference = currentBalance - previousBalance;
+    return {
+      payload: {
+        previousBalance: previousBalance.toString(),
+        currentBalance: currentBalance.toString(),
+        currentSpendableBalance: currentSpendableBalance.toString(),
+        utxoDiff,
+      },
+    };
+  }
+);
 
-      const UtxoManager = UtxoManagerService(wallet.walletHash);
-      const utxoIn = utxoDiff.diffIn.map((utxo) => UtxoManager.getUtxo(utxo));
-      const utxoOut = utxoDiff.diffOut.map((utxo) => UtxoManager.getUtxo(utxo));
+export const walletReceive = createAsyncThunk(
+  "wallet/receive",
+  async (
+    payload: {
+      wallet: WalletEntity;
+      utxoDiff: { diffIn: Array<string>; diffOut: Array<string> };
+    },
+    thunkApi
+  ) => {
+    const { wallet, utxoDiff } = payload;
 
-      const tokenDiff = {};
-      while (utxoIn.length > 0) {
-        const utxo = utxoIn.shift();
-        const category = utxo!.token_category;
+    const UtxoManager = UtxoManagerService(wallet.walletHash);
+    const utxoIn = utxoDiff.diffIn.map((utxo) => UtxoManager.getUtxo(utxo));
+    const utxoOut = utxoDiff.diffOut.map((utxo) => UtxoManager.getUtxo(utxo));
 
-        if (!category) {
-          continue; // eslint-disable-line no-continue
-        }
+    let satsDiff = 0n;
+    const tokenDiff = {};
 
-        if (!tokenDiff[category]) {
-          tokenDiff[category] = 0n;
-        }
+    // iterate over all incoming UTXOs
+    while (utxoIn.length > 0) {
+      const utxo = utxoIn.shift()!;
 
-        tokenDiff[category] += utxo!.token_amount;
+      satsDiff += utxo.amount;
 
-        const outIndex = utxoOut.findIndex(
-          (u) => u.token_category === category
-        );
-        const output = utxoOut.splice(outIndex, 1)[0];
+      const category = utxo.token_category;
 
-        tokenDiff[category] -= output?.token_amount || 0n;
+      // check for tokens, otherwise continue to next UTXO
+      if (!category) {
+        continue; // eslint-disable-line no-continue
       }
 
-      Log.debug("tokenDiff", tokenDiff);
+      if (!tokenDiff[category]) {
+        tokenDiff[category] = 0n;
+      }
 
-      if (Object.keys(tokenDiff).length > 0) {
-        const TokenManager = TokenManagerService(wallet.walletHash);
-        Object.keys(tokenDiff).forEach((category) => {
-          const tokenData = TokenManager.getToken(category);
-          const token = {
-            category,
-            decimals: tokenData.token.decimals,
-            amount: tokenDiff[category],
-          };
+      tokenDiff[category] += utxo.token_amount;
 
-          ToastService().paymentReceived(difference, token);
-        });
-      } else {
-        ToastService().paymentReceived(difference);
+      // check for matching utxoOut entry
+      const outIndex = utxoOut.findIndex((u) => u.token_category === category);
+      if (outIndex > -1) {
+        const output = utxoOut.splice(outIndex, 1)[0];
+        tokenDiff[category] -= output?.token_amount || 0n;
       }
     }
 
-    return {
-      payload: {
-        currentBalance: currentBalance.toString(),
-        currentSpendableBalance: currentSpendableBalance.toString(),
-      },
-    };
+    // iterate over all spent UTXOs
+    while (utxoOut.length > 0) {
+      const utxo = utxoOut.shift()!;
+      satsDiff -= utxo.amount;
+    }
+
+    Log.debug("tokenDiff", tokenDiff);
+
+    // receiving tokens
+    if (Object.keys(tokenDiff).length > 0) {
+      const TokenManager = TokenManagerService(wallet.walletHash);
+
+      // spawn a receive popup for each token category
+      Object.keys(tokenDiff).forEach((category) => {
+        const tokenData = TokenManager.getToken(category);
+        const token = {
+          ...tokenData,
+          amount: tokenDiff[category],
+        };
+
+        ToastService().paymentReceived(satsDiff, token);
+      });
+    } else {
+      // receiving raw BCH only
+
+      // need to swap to stablecoin in stablecoin mode
+      const isStablecoinMode = selectIsStablecoinMode(thunkApi.getState());
+      if (isStablecoinMode) {
+        // [K] only include non-token sats for now...
+        // [!] this is not good in practice! see issue #552
+        // TODO: include sats from token UTXOs in balance (#552)
+        const incomingSats = utxoIn.reduce(
+          (sum, utxo) =>
+            utxo.token_category === null ? sum + utxo.amount : sum,
+          0n
+        );
+
+        const Stablecoin = StablecoinService(wallet);
+        const incomingStableSats = await Stablecoin.swapIncoming(incomingSats);
+        ToastService().paymentReceived(incomingStableSats);
+      } else {
+        ToastService().paymentReceived(satsDiff);
+      }
+    }
   }
 );
 

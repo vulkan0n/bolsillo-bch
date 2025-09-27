@@ -468,7 +468,7 @@ export const syncSetSaving = createAction<boolean>("sync/saving");
 
 export const syncComplete = createAsyncThunk(
   "sync/complete",
-  async (payload, thunkApi) => {
+  async (payload, thunkApi): Promise<boolean> => {
     const { syncCount, isSyncComplete, isSyncing, isSaving, syncDiff } =
       selectSyncState(thunkApi.getState());
 
