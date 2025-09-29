@@ -102,7 +102,7 @@ export default function AddressManagerService(walletHash: string) {
       [startIndex, endIndex, change]
     );
 
-    Log.debug("getAddressRange", startIndex, endIndex, result);
+    //Log.debug("getAddressRange", startIndex, endIndex, result);
 
     return result;
   }

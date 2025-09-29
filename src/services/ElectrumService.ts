@@ -187,7 +187,20 @@ export default function ElectrumService(bchNetwork = "mainnet") {
     }
 
     //Log.debug("subscribeToAddress", address.address);
-    return electrum.subscribe("blockchain.address.subscribe", address.address);
+
+    // use `request` instead of `subscribe`
+    // this bypasses electrum-cash's subscription management
+    // otherwise we end up sending 2 requests per subscription
+    const result = await electrum.request(
+      "blockchain.address.subscribe",
+      address.address
+    );
+
+    // manually emit initial notification
+    handleElectrumNotifications({
+      method: "blockchain.address.subscribe",
+      params: [address.address, result],
+    });
   }
 
   async function subscribeToChaintip(): Promise<void> {
@@ -195,8 +208,16 @@ export default function ElectrumService(bchNetwork = "mainnet") {
       throw new ElectrumNotConnectedError();
     }
 
-    await electrum.request("blockchain.headers.unsubscribe");
-    return electrum.subscribe("blockchain.headers.subscribe");
+    // use `request` instead of `subscribe`
+    // this bypasses electrum-cash's subscription management
+    // otherwise we end up sending 2 requests per subscription
+    const result = await electrum.request("blockchain.headers.subscribe");
+
+    // manually emit initial notification
+    handleElectrumNotifications({
+      method: "blockchain.headers.subscribe",
+      params: result,
+    });
   }
 
   // request the most up-to-date balance information for an address

@@ -271,7 +271,7 @@ export default function AddressScannerService(wallet: WalletEntity) {
 
           // if states match, address does not need update
           if (calculatedState !== stub.state) {
-            return scanHistory(stub, callback, true);
+            return scanHistory(stub.address, callback, true);
           }
 
           callback(1);
@@ -444,13 +444,13 @@ export default function AddressScannerService(wallet: WalletEntity) {
   }
 
   async function scanHistory(
-    address: AddressStub,
+    address: string,
     callback: (number) => void = () => {},
     batch = false
   ) {
     const walletDb = await WalletManager.openWalletDatabase(wallet.walletHash);
 
-    const history = await Electrum.requestAddressHistory(address.address);
+    const history = await Electrum.requestAddressHistory(address);
     const transactions = await Promise.all(
       history.map(async (historyTx) => {
         const merkle = await Electrum.requestMerkle(
@@ -461,7 +461,7 @@ export default function AddressScannerService(wallet: WalletEntity) {
         // TODO: verify merkles
 
         return {
-          address: address.address,
+          address,
           ...historyTx,
           block_pos: merkle.pos || null,
         };
@@ -470,12 +470,11 @@ export default function AddressScannerService(wallet: WalletEntity) {
 
     AddressManager.registerTransactions(transactions);
 
-    const newCalculatedState = AddressManager.calculateAddressState(
-      address.address
-    );
+    const newCalculatedState = AddressManager.calculateAddressState(address);
 
     // set wallet genesis height based on first received transaction
-    if (address.hd_index === 0 && address.change === 0) {
+    const genesisAddress = AddressManager.getAddressRange(0, 0, 0)[0];
+    if (address === genesisAddress.address) {
       const genesisHeight = history.reduce((lowest, cur) => {
         if (lowest === 0) {
           return cur.height;
@@ -484,26 +483,27 @@ export default function AddressScannerService(wallet: WalletEntity) {
         return cur.height < lowest ? cur.height : lowest;
       }, 0);
 
+      //Log.debug("genesisAddress", genesisAddress, genesisHeight);
       WalletManager.setGenesisHeight(wallet.walletHash, genesisHeight);
     }
 
     try {
       if (!batch) {
         walletDb.run(
-          `UPDATE addresses SET
-          state=?
-        WHERE address=?;
+          `UPDATE addresses SET 
+          state=$state
+        WHERE address=$address AND state != $state;
       `,
-          [newCalculatedState, address.address]
+          { $state: newCalculatedState, $address: address }
         );
       }
     } catch (e) {
       Log.error("scanHistory", e);
-      return Promise.resolve([address.address, null]);
+      return Promise.resolve([address, null]);
     }
 
     //Log.debug("scanHistory", address.address, newCalculatedState);
     callback(1);
-    return Promise.resolve([address.address, newCalculatedState]);
+    return Promise.resolve([address, newCalculatedState]);
   }
 }

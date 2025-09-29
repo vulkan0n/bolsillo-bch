@@ -7,7 +7,7 @@ import {
   createListenerMiddleware,
 } from "@reduxjs/toolkit";
 
-import { RootState } from "@/redux";
+import { RootState, AppDispatch } from "@/redux";
 import {
   walletBalanceUpdate,
   selectActiveWalletHash,
@@ -34,7 +34,10 @@ import JanitorService from "@/services/JanitorService";
 
 const Log = LogService("redux/sync");
 
-export const syncMiddleware = createListenerMiddleware();
+export const syncMiddleware = createListenerMiddleware<{
+  state: RootState;
+  dispatch: AppDispatch;
+}>();
 
 // --------------------------------
 
@@ -119,9 +122,9 @@ export const syncConnectionUp = createAsyncThunk(
     const Electrum = ElectrumService();
     // set up subscriptions on connect
     try {
+      //Log.debug("syncConnectionUp");
       Electrum.subscribeToChaintip();
       thunkApi.dispatch(syncSubscriptions());
-      Log.debug("syncConnectionUp");
     } catch (e) {
       Log.warn("syncConnectionUp:", e);
     }
@@ -202,97 +205,103 @@ export const syncSubscriptions = createAsyncThunk(
       })
     );
 
+    thunkApi.dispatch(syncPopulateAddresses());
+
     return addresses;
   }
 );
 
+// syncSubsciptionCount: adjusts the number of requests shown on the sync indicator
 export const syncSubscriptionCount = createAction<number>(
   "sync/subscriptionCount"
 );
 
 // syncAddressState: fired when data acquired from address subscription
-export const syncAddressState = createAsyncThunk(
-  "sync/addressState",
-  async (
-    payload: [string, string | null],
-    thunkApi
-  ): Promise<[AddressEntity, string | null]> => {
-    // get subscription response data from payload
-    const [address, addressState] = payload;
+export const syncAddressState =
+  createAction<[string, string | null]>("sync/addressState");
 
-    //Log.debug("syncAddressState", payload);
+// syncUtxoDiffs: fired when an address update results in a new UTXO set
+export const syncUtxoDiffs = createAction<{
+  diffIn: string[];
+  diffOut: string[];
+}>("sync/utxoDiffs");
 
-    // catch for payload from direct electrum subscription
-    const walletHash = selectActiveWalletHash(thunkApi.getState());
-    const AddressManager = AddressManagerService(walletHash);
+// Use middleware to aggregate Electrum subscription updates
+syncMiddleware.startListening({
+  actionCreator: syncAddressState,
+  effect: async (action, listenerApi) => {
+    // collect syncAddressState actions over a short window
+    const batchTimeout = 20; // milliseconds
+    const collectedActions: Array<ReturnType<typeof action>> = [];
 
-    const addressObj = AddressManager.getAddress(address);
+    // use listenerApi.take to collect additional syncAddressState actions
+    const take = () =>
+      listenerApi.take((a) => a.type === syncAddressState.type, batchTimeout);
 
-    // check downloaded state against local state
-    if (addressObj.state !== addressState) {
-      Log.debug(
-        "address state changed for",
-        address,
-        addressObj.state,
-        addressState
-      );
-      thunkApi.dispatch(syncAddressUtxos(addressObj));
-      thunkApi.dispatch(syncAddressHistory([addressObj, addressState]));
+    let takeResult = await take();
+
+    while (takeResult !== null) {
+      listenerApi.cancelActiveListeners();
+
+      const [nextAction] = takeResult;
+      collectedActions.push(nextAction);
+
+      /* eslint-disable-next-line no-await-in-loop */
+      takeResult = await take();
     }
 
-    return [addressObj, addressState];
-  }
-);
+    collectedActions.push(action);
 
-const syncAddressFail = createAsyncThunk(
-  "sync/addressFail",
-  async (address: string, thunkApi) => {
-    const walletHash = selectActiveWalletHash(thunkApi.getState());
-    AddressManagerService(walletHash).nullifyAddressState(address);
-  }
-);
 
-// syncAddressUtxos: fired when we learn one of our addresses have changed
-// requests current utxo set for an address
-const syncAddressUtxos = createAsyncThunk(
-  "sync/addressUtxos",
-  async (address: AddressEntity, thunkApi) => {
-    const wallet = selectActiveWallet(thunkApi.getState());
+    const addressStates = collectedActions.map((a) => a.payload);
+    //Log.debug("addressStates", addressStates);
 
-    try {
-      //Log.debug("sync/addressUtxos", address.address);
-      const utxoDiff = await AddressScannerService(wallet).scanUtxos(
-        address.address
-      );
-      //Log.debug("sync/addressUtxos diff", utxoDiff);
-      return utxoDiff;
-    } catch (e) {
-      // reset address state on failure
-      thunkApi.dispatch(syncAddressFail(address.address));
-      Log.warn("syncAddressUtxos:", e);
-      return Promise.reject(e);
-    }
-  }
-);
+    listenerApi.dispatch(syncSubscriptionCount(addressStates.length));
 
-export const syncAddressHistory = createAsyncThunk(
-  "sync/addressHistory",
-  async (
-    payload: [addressObj: AddressEntity, resolvedState: string | null],
-    thunkApi
-  ): Promise<void> => {
-    const wallet = selectActiveWallet(thunkApi.getState());
+    const wallet = selectActiveWallet(listenerApi.getState());
     const AddressScanner = AddressScannerService(wallet);
+    const AddressManager = AddressManagerService(wallet.walletHash);
 
-    const [addressObj, resolvedState] = payload;
-    const [, calculatedState] = await AddressScanner.scanHistory(addressObj);
+    // process UTXOs and history for all collected addresses
+    const utxoDiffs = await Promise.all(
+      addressStates.map(async ([address, state]) => {
+        try {
+          const utxoDiff = await AddressScanner.scanUtxos(address);
 
-    // we shouldn't ever hit this path as of 2025.06.04. keep monitoring for now
-    if (calculatedState !== resolvedState) {
-      Log.warn("???", addressObj, calculatedState, resolvedState);
-    }
-  }
-);
+          const [, calculatedState] = await AddressScanner.scanHistory(address);
+
+          if (calculatedState !== state) {
+            Log.warn(
+              "state mismatch for address:",
+              address,
+              calculatedState,
+              state
+            );
+          }
+          return { address, utxoDiff };
+        } catch (e) {
+          Log.warn("address sync fail:", e, address);
+          AddressManager.nullifyAddressState(address); // Reset state on failure
+          return { address, utxoDiff: { diffIn: [], diffOut: [] } };
+        }
+      })
+    );
+
+    // aggregate UTXO diffs
+    const aggregateDiffs: { diffIn: string[]; diffOut: string[] } =
+      utxoDiffs.reduce(
+        (acc, { utxoDiff }) => ({
+          diffIn: [...acc.diffIn, ...utxoDiff.diffIn],
+          diffOut: [...acc.diffOut, ...utxoDiff.diffOut],
+        }),
+        { diffIn: [] as string[], diffOut: [] as string[] }
+      );
+
+    listenerApi.dispatch(syncUtxoDiffs(aggregateDiffs));
+    listenerApi.dispatch(syncSubscriptionCount(-addressStates.length));
+    listenerApi.dispatch(syncComplete());
+  },
+});
 
 export const syncPopulateAddresses = createAsyncThunk(
   "sync/populateAddresses",
@@ -358,23 +367,21 @@ export const syncHotRefresh = createAsyncThunk(
         filteredChangeAddresses
       );
 
-      thunkApi.dispatch(syncSubscriptionCount(addressList.length));
       Log.debug("hotRefresh", addressList.length);
 
       const Electrum = ElectrumService();
       await Promise.all(
         addressList.map(async (address) => {
           try {
+            // only request states, we don't want subscriptions here
             const addressState = await Electrum.requestAddressState(
               address.address
             );
-            await thunkApi.dispatch(
+            thunkApi.dispatch(
               syncAddressState([address.address, addressState])
             );
           } catch (e) {
             Log.warn("syncHotRefresh:", e);
-          } finally {
-            thunkApi.dispatch(syncSubscriptionCount(-1));
           }
         })
       );
@@ -384,10 +391,12 @@ export const syncHotRefresh = createAsyncThunk(
       const getUnusedCount = (addresses: Array<AddressStub> = []) =>
         addresses.filter((a) => a.state === null).length;
 
+      // additionally, scan forward until we're sure wallet is fully synchronized
       /* eslint-disable no-await-in-loop */
-      const SCAN_BATCH_SIZE = 500;
-      const SCAN_BATCH_MAX = 3000;
       for (let change = 0; change <= 1; change += 1) {
+        const SCAN_BATCH_SIZE = 500;
+        const SCAN_BATCH_MAX = 3000;
+
         let i = 0;
         let scanCount = 0;
         let nScanMore = SCAN_BATCH_SIZE * (i + 1);
@@ -413,18 +422,16 @@ export const syncHotRefresh = createAsyncThunk(
         thunkApi.dispatch(syncSubscriptionCount(-scanCount));
       }
 
-      await thunkApi.dispatch(syncPopulateAddresses());
-
       Log.debug("sync/hotRefresh", sync);
       return Date.now();
     }
 
     Log.debug(
       "skipped hotRefresh",
-      sync.isSyncComplete,
-      sync.lastRefresh,
-      Date.now() - hotSyncCooldown,
+      !sync.isSyncComplete ? "(sync incomplete)" : true,
       sync.lastRefresh < Date.now() - hotSyncCooldown
+        ? true
+        : "(cooldown active)"
     );
     return sync.lastRefresh;
   }
@@ -495,6 +502,7 @@ export const syncComplete = createAsyncThunk(
 
           await WalletManagerService().saveWallet(wallet.walletHash);
           thunkApi.dispatch(syncSetSaving(false));
+          thunkApi.dispatch(syncFlushDiff());
         });
       }
       return true;
@@ -507,24 +515,6 @@ export const syncComplete = createAsyncThunk(
 export const syncFlushDiff = createAction("sync/flushDiff");
 
 syncMiddleware.startListening({
-  actionCreator: syncAddressHistory.fulfilled,
-  effect: async (action, listenerApi) => {
-    listenerApi.dispatch(syncComplete());
-  },
-});
-syncMiddleware.startListening({
-  actionCreator: syncAddressUtxos.fulfilled,
-  effect: async (action, listenerApi) => {
-    listenerApi.dispatch(syncComplete());
-  },
-});
-syncMiddleware.startListening({
-  actionCreator: syncChaintip.fulfilled,
-  effect: async (action, listenerApi) => {
-    listenerApi.dispatch(syncComplete());
-  },
-});
-syncMiddleware.startListening({
   actionCreator: syncHotRefresh.fulfilled,
   effect: async (action, listenerApi) => {
     listenerApi.dispatch(syncComplete());
@@ -536,31 +526,10 @@ syncMiddleware.startListening({
     listenerApi.dispatch(syncComplete());
   },
 });
-syncMiddleware.startListening({
-  actionCreator: syncPopulateAddresses.fulfilled,
-  effect: async (action, listenerApi) => {
-    if (action.payload.length > 0) {
-      listenerApi.dispatch(syncPopulateAddresses());
-    } else {
-      listenerApi.dispatch(syncComplete());
-    }
-  },
-});
-syncMiddleware.startListening({
-  actionCreator: walletBalanceUpdate,
-  effect: async (action, listenerApi) => {
-    const { isSyncComplete } = selectSyncState(listenerApi.getState());
-    if (isSyncComplete) {
-      listenerApi.dispatch(syncFlushDiff());
-    }
-  },
-});
 
 const initialChaintip = { height: -1, hex: "" };
 
 const initialPending = {
-  utxo: 0,
-  history: 0,
   addressState: 0,
   subscription: 0,
   chaintip: 0,
@@ -623,40 +592,10 @@ export const syncReducer = createReducer(initialState, (builder) => {
     .addCase(syncReconnect.pending, (state) => {
       state.isConnected = false;
     })
-    .addCase(syncAddressState.pending, (state) => {
+    .addCase(syncAddressState, (state, action) => {
       state.isSyncComplete = false;
-      state.syncPending.addressState += 1;
-    })
-    .addCase(syncAddressState.fulfilled, (state, action) => {
       const [address] = action.payload;
-      state.addresses[address.address] = address;
-      state.syncPending.addressState -= 1;
-    })
-    .addCase(syncAddressState.rejected, (state) => {
-      state.syncPending.addressState -= 1;
-    })
-    .addCase(syncAddressUtxos.pending, (state) => {
-      state.isSyncComplete = false;
-      state.syncPending.utxo += 1;
-    })
-    .addCase(syncAddressUtxos.fulfilled, (state, action) => {
-      state.syncPending.utxo -= 1;
-      const { diffIn, diffOut } = action.payload;
-      state.syncDiff.diffIn = [...state.syncDiff.diffIn, ...diffIn];
-      state.syncDiff.diffOut = [...state.syncDiff.diffOut, ...diffOut];
-    })
-    .addCase(syncAddressUtxos.rejected, (state) => {
-      state.syncPending.utxo -= 1;
-    })
-    .addCase(syncAddressHistory.pending, (state) => {
-      state.isSyncComplete = false;
-      state.syncPending.history += 1;
-    })
-    .addCase(syncAddressHistory.fulfilled, (state) => {
-      state.syncPending.history -= 1;
-    })
-    .addCase(syncAddressHistory.rejected, (state) => {
-      state.syncPending.history -= 1;
+      state.addresses[address] = address;
     })
     .addCase(txHistoryFetch.pending, (state) => {
       state.isSyncComplete = false;
@@ -672,6 +611,7 @@ export const syncReducer = createReducer(initialState, (builder) => {
       state.syncPending.subscription += action.payload;
     })
     .addCase(syncChaintip.pending, (state) => {
+      state.isSyncComplete = false;
       state.syncPending.chaintip += 1;
     })
     .addCase(syncChaintip.fulfilled, (state, action) => {
@@ -679,10 +619,9 @@ export const syncReducer = createReducer(initialState, (builder) => {
       state.chaintip = action.payload;
     })
     .addCase(syncChaintip.rejected, (state) => {
-      state.syncPending.chaintip += 1;
+      state.syncPending.chaintip -= 1;
     })
     .addCase(syncHotRefresh.pending, (state) => {
-      //state.isSyncComplete = false;
       state.syncPending.hotRefresh += 1;
     })
     .addCase(syncHotRefresh.fulfilled, (state, action) => {
@@ -709,14 +648,14 @@ export const syncReducer = createReducer(initialState, (builder) => {
       state.syncPending.populate -= 1;
       state.subscriptions = [...state.subscriptions, ...action.payload];
     })
-    .addCase(syncComplete.pending, (state) => {
-      state.isSyncComplete = false;
-    })
     .addCase(syncComplete.fulfilled, (state, action) => {
       state.isSyncComplete = action.payload;
     })
     .addCase(syncSetSaving, (state, action) => {
       state.isSaving = action.payload;
+    })
+    .addCase(syncUtxoDiffs, (state, action) => {
+      state.syncDiff = { ...state.syncDiff, ...action.payload };
     })
     .addCase(syncFlushDiff, (state) => {
       state.syncDiff = { ...initialDiff };
