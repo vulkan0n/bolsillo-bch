@@ -70,8 +70,8 @@ export default function Button({
   iconClasses = "",
   outerLabel = "",
   outerLabelSize = "sm",
-  outerLabelColor = "text-neutral-700",
-  borderClasses = "border border-2 border-primary",
+  outerLabelColor = "text-neutral-700 dark:text-neutral-100",
+  borderClasses = "border border-2 border-primary dark:border-primarydark-500",
   rounded = "full",
   bgColor = "bg-white",
   activeBgColor = "bg-primary",
@@ -119,12 +119,12 @@ export default function Button({
           flex items-center justify-${justify}
           p-${padding} mx-auto
           ${fullWidth ? " w-full " : ""}
-          ${borderClasses} 
+          ${borderClasses}
           ${colorClasses}
           text-${labelSize}
           ${roundedClass}
           ${shadowClass}
-          opacity-90 
+          opacity-90
           active:shadow-none active:shadow-inner
           ${disabledClasses}
         `}

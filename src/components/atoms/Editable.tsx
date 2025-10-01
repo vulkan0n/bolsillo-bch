@@ -57,13 +57,15 @@ export default function Editable({
     await onFocus(input);
   };
 
-  const borderColor = invalid ? "border-error/90" : "border-primary/80";
+  const borderColor = invalid
+    ? "border-error/90"
+    : "border-primary/80 dark:border-primarydark-400";
 
   return isEditing ? (
     <div className="flex items-center">
       <input
         type="text"
-        className={`rounded-lg bg-white text-primary p-1 mx-1 w-full text-center border-2 ${borderColor}`}
+        className={`rounded-lg bg-white dark:bg-neutral-500 text-primary dark:text-neutral-25 p-1 mx-1 w-full text-center border-2 ${borderColor}`}
         onChange={handleInputChange}
         onKeyDown={(e) => e.key === "Enter" && handleEdit()}
         onBlur={handleBlur}

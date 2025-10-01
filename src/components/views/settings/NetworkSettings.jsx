@@ -29,6 +29,7 @@ import {
 import { SettingsContext } from "./SettingsContext";
 
 import Accordion from "@/atoms/Accordion";
+import Select from "@/components/atoms/Select";
 
 export default function NetworkSettings() {
   const { handleSettingsUpdate, preferences, dispatch } =
@@ -98,8 +99,8 @@ export default function NetworkSettings() {
         label={translate(translations.translatedElectrumServer)}
       >
         <div className="flex items-center w-3/4">
-          <select
-            className="p-2 bg-white rounded h-10 w-full disabled:bg-neutral-200 disabled:text-neutral-400 mr-2"
+          <Select
+            className="w-full mr-2"
             value={currentServer}
             disabled={isOfflineMode === true}
             onChange={(event) => {
@@ -114,7 +115,7 @@ export default function NetworkSettings() {
                 </option>
               );
             })}
-          </select>
+          </Select>
           {!isOfflineMode && (
             <Button
               icon={PlusCircleFilled}

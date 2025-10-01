@@ -463,7 +463,7 @@ export default function WalletViewSend() {
     <FullColumn>
       <div className="tracking-wide text-center text-white">
         {message === "" ? (
-          <div className="bg-primary px-2 py-1">
+          <div className="bg-primary dark:bg-primarydark-200 px-2 py-1">
             <div className="text-lg font-bold flex items-center justify-center">
               {translate(translations.sendingTo)}
               {isMyAddress && <span>&nbsp;{translate(translations.self)}</span>}
@@ -539,7 +539,7 @@ export default function WalletViewSend() {
                     />
                     <Button
                       label="MAX"
-                      className="spacing-wide text-bold text-neutral-800 rounded-full border border-neutral-200 bg-neutral-100"
+                      className="spacing-wide text-bold  rounded-full border border-neutral-200 bg-neutral-100"
                       onClick={() => handleSendMaxTokens()}
                     />
                   </div>
@@ -547,7 +547,7 @@ export default function WalletViewSend() {
               )}
               {(tokenData === null || isSendingAdditionalBch) && (
                 <>
-                  <div className="py-4 px-2 rounded-md shadow-md bg-primary/95 text-white">
+                  <div className="py-4 px-2 rounded-md shadow-md bg-primary/95 dark:bg-primarydark-200 text-white">
                     <div className="flex items-center justify-center">
                       <CurrencySymbol className="font-bold text-4xl mr-2" />
                       <SatoshiInput
@@ -575,7 +575,7 @@ export default function WalletViewSend() {
                     className="p-2 relative text-center w-full"
                     onClick={handleFlipCurrency}
                   >
-                    <span className="text-2xl font-semibold text-center w-full text-neutral-800/80 flex justify-center items-center">
+                    <span className="text-2xl font-semibold text-center w-full text-neutral-800/80 dark:text-neutral-100 flex justify-center items-center">
                       <Satoshi value={satoshiInput} flip />
                       <CurrencyFlip className="text-3xl ml-2" />
                     </span>
@@ -651,7 +651,7 @@ function InputSelection({ inputs }) {
       ) && (
         <div className="mx-4 border border-primary rounded">
           {coins.map((utxo) => (
-            <div className="p-1 text-sm flex-1">
+            <div className="p-1 text-sm dark:text-neutral-100 flex-1">
               <div className="flex items-center">
                 <MoneyCollectOutlined className="mr-1" />
                 <div className="flex items-center justify-between w-full">

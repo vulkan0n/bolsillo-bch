@@ -7,6 +7,7 @@ import translations from "./translations";
 import { SettingsContext } from "./SettingsContext";
 
 import Accordion from "@/atoms/Accordion";
+import Select from "@/components/atoms/Select";
 
 export default function IntlSettings() {
   const { handleSettingsUpdate, preferences } = useContext(SettingsContext);
@@ -19,8 +20,8 @@ export default function IntlSettings() {
         icon={FlagOutlined}
         label={translate(translations.language)}
       >
-        <select
-          className="p-2 bg-white rounded h-10 w-48 w-2/3"
+        <Select
+          className="w-48 w-2/3"
           value={preferences.languageCode || ""}
           onChange={(event) => {
             handleSettingsUpdate("languageCode", event.target.value);
@@ -31,7 +32,7 @@ export default function IntlSettings() {
               {flag} {code.toUpperCase()} - {name}
             </option>
           ))}
-        </select>
+        </Select>
       </Accordion.Child>
     </Accordion>
   );

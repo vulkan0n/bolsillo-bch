@@ -17,6 +17,7 @@ import Accordion from "@/atoms/Accordion";
 import Button from "@/atoms/Button";
 
 import { logos } from "@/util/logos";
+import Select from "@/components/atoms/Select";
 
 export default function QrCodeSettings() {
   const { handleSettingsUpdate, preferences } = useContext(SettingsContext);
@@ -42,8 +43,8 @@ export default function QrCodeSettings() {
           {logoKey !== "none" && (
             <img src={logos[logoKey].img} className="w-8 h-8 mx-2" alt="" />
           )}
-          <select
-            className="rounded h-10 w-24 p-2 flex-1 bg-white"
+          <Select
+            className="w-24 flex-1"
             value={preferences.qrCodeLogo || ""}
             onChange={(event) =>
               handleSettingsUpdate("qrCodeLogo", event.target.value)
@@ -54,7 +55,7 @@ export default function QrCodeSettings() {
                 {logos[l].name}
               </option>
             ))}
-          </select>
+          </Select>
         </div>
       </Accordion.Child>
       <Accordion.Child

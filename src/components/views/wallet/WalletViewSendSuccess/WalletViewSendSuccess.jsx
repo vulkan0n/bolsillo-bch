@@ -85,7 +85,7 @@ function WalletViewSendSuccess() {
 
   return (
     <div
-      className="fixed top-0 left-0 w-screen h-screen z-50 bg-primary overflow-y-auto overscroll-none"
+      className="fixed top-0 left-0 w-screen h-screen z-50 bg-primary dark:bg-primarydark-100 overflow-y-auto overscroll-none"
       onClick={() => navigate("/")}
     >
       <div
@@ -93,7 +93,7 @@ function WalletViewSendSuccess() {
       >
         <SeleneLogo className="h-full" cashtokens={hasTokens} />
       </div>
-      <div className="p-1 bg-primary text-white shadow-inner">
+      <div className="p-1 bg-primary dark:bg-primary-900 text-white shadow-inner">
         <div className="p-2 flex justify-center items-center">
           <span className="text-4xl font-bold">
             {header || translate(translations.transactionSent)}
@@ -137,7 +137,7 @@ function WalletViewSendSuccess() {
             </span>
           </div>
           {shouldShowMemo && (
-            <div className="flex items-center bg-primary-100 p-1 rounded-b-sm border border-t-0 border-primary-900">
+            <div className="flex items-center bg-white dark:bg-neutral-500 text-primary dark:text-neutral-25 p-1 rounded-b-sm border border-t-0 border-primary-900">
               <input
                 type="text"
                 className="flex-1 rounded-sm p-1"
@@ -184,7 +184,10 @@ export default WalletViewSendSuccess;
 
 /* eslint-disable react/prop-types */
 function OutputListItem({ output, i }) {
-  const zebraCss = i % 2 === 0 ? "bg-primary-100" : "bg-primary-50";
+  const zebraCss =
+    i % 2 === 0
+      ? "bg-primary-100 dark:bg-primarydark-100"
+      : "bg-primary-50 dark:bg-primarydark-50";
 
   // Determine address format based on whether tokens are present
   const addressFormat = output.token ? "tokenaddr" : undefined;
@@ -199,7 +202,7 @@ function OutputListItem({ output, i }) {
         />
       </div>
       <div className="flex justify-between">
-        <div>
+        <div className="dark:text-neutral-100">
           <span className="text-xs tracking-tighter mr-1.5 opacity-70">
             #{output.n}
           </span>

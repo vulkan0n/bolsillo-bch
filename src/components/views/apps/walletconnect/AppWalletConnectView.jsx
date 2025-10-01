@@ -81,6 +81,7 @@ export default function AppWalletConnectView() {
             <Address
               address={walletConnectAddress}
               className="font-mono tracking-tighter"
+              color="a" // non-empty string just to work w/ dark mode over a Button
             />
           }
           onClick={handleCopyWalletConnectAddress}
@@ -93,7 +94,7 @@ export default function AppWalletConnectView() {
       <form onSubmit={handlePair} className="p-2 flex items-center">
         <input
           type="text"
-          className="p-1 w-full border-2 rounded border-primary mr-2"
+          className="p-1 w-full border-2 rounded border-primary mr-2 dark:bg-neutral-700 text-primary dark:text-neutral-25"
           value={walletConnectUri}
           onChange={(e) => setWalletConnectUri(e.target.value)}
         />
@@ -107,9 +108,12 @@ export default function AppWalletConnectView() {
 
           return (
             <>
-              <div className="p-1 border border-neutral-600 rounded" key={key}>
+              <div
+                className="p-1 dark:text-neutral-100 border border-neutral-600 rounded"
+                key={key}
+              >
                 <div className="flex">
-                  <div className="flex items-center justify-center p-1 border border-neutral-500 w-16 h-16">
+                  <div className="flex items-center justify-center p-1 border border-neutral-500 dark:border-primarydark-500 w-16 h-16">
                     <img src={peer.icons[0]} className="w-full h-full" />
                   </div>
                   <div className="flex flex-col px-1 w-full">

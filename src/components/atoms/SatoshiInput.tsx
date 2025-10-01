@@ -3,6 +3,7 @@ import { useState, useEffect, useCallback, forwardRef } from "react";
 import { useSelector } from "react-redux";
 import { Keyboard } from "@capacitor/keyboard";
 import { Decimal } from "decimal.js";
+import { clsx } from "clsx";
 import { selectCurrencySettings } from "@/redux/preferences";
 import { selectDeviceInfo } from "@/redux/device";
 import { satsToBch, bchToSats, MAX_SATOSHI } from "@/util/sats";
@@ -235,7 +236,10 @@ export const SatoshiInput = forwardRef<HTMLInputElement, SatoshiInputProps>(
         type="text"
         ref={ref}
         inputMode="decimal"
-        className={className}
+        className={clsx(
+          className,
+          "bg-white dark:bg-neutral-500 text-primary dark:text-neutral-25"
+        )}
         placeholder="0"
         size={size}
         value={displayValue === "0" ? "" : displayValue}

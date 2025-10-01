@@ -175,11 +175,11 @@ export function TokenCard({ token }: { token: TokenEntity }) {
             >
               {token.token ? token.token.symbol : token.category.slice(0, 6)}
             </span>
-            <span className="font-bold text-lg text-neutral-700">
+            <span className="font-bold text-lg text-neutral-700 dark:text-neutral-100">
               {token.name || `Token ${token.category.slice(0, 6)}`}
             </span>
           </div>
-          <div className="flex text-neutral-600">
+          <div className="flex text-neutral-600 dark:text-neutral-100">
             <div className="flex-1">
               {token.nftCount > 0 && <TokenAmount token={token} nft />}
               {token.amount > 0 && (
@@ -207,12 +207,12 @@ export function TokenCard({ token }: { token: TokenEntity }) {
       </div>
       <div>
         {token.description && (
-          <div className="p-1 mt-0.5 text-md text-neutral-700">
+          <div className="p-1 mt-0.5 text-md text-neutral-700 dark:text-neutral-100">
             {truncateProse(token.description)}
           </div>
         )}
         <div
-          className="mt-1.5 pt-0.5 border-t border-dashed border-neutral-300/80 font-mono text-sm text-neutral-400/70 truncate"
+          className="mt-1.5 pt-0.5 border-t border-dashed border-neutral-300/80 font-mono text-sm text-neutral-400/70 dark:text-neutral-200 truncate"
           onClick={(e) => {
             e.stopPropagation();
             handleCopyToClipboard(token.category);
