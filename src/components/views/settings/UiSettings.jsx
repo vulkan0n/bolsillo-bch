@@ -6,13 +6,15 @@ import {
   SyncOutlined,
   StockOutlined,
   MobileOutlined,
+  SunFilled,
 } from "@ant-design/icons";
-import { selectUiSettings } from "@/redux/preferences";
+import { selectUiSettings, ThemeMode } from "@/redux/preferences";
 import { selectDevicePlatform } from "@/redux/device";
 import Accordion from "@/atoms/Accordion";
 import { translate } from "@/util/translations";
 import translations from "./translations";
 import { SettingsContext } from "./SettingsContext";
+import Select from "@/components/atoms/Select";
 
 export default function UiSettings() {
   const { handleSettingsUpdate } = useContext(SettingsContext);
@@ -21,6 +23,7 @@ export default function UiSettings() {
     shouldDisplayExchangeRate,
     shouldDisplaySyncCounter,
     shouldConstrainViewport,
+    themeMode,
   } = useSelector(selectUiSettings);
 
   const platform = useSelector(selectDevicePlatform);
@@ -30,6 +33,25 @@ export default function UiSettings() {
       icon={ControlOutlined}
       title={translate(translations.uiSettings)}
     >
+      <Accordion.Child
+        icon={SunFilled}
+        label={translate(translations.themeMode)}
+      >
+        <Select
+          onChange={(e) => handleSettingsUpdate("themeMode", e.target.value)}
+          value={themeMode}
+        >
+          <option value={ThemeMode.System}>
+            {translate(translations.themeModeSystem)}
+          </option>
+          <option value={ThemeMode.Light}>
+            {translate(translations.themeModeLight)}
+          </option>
+          <option value={ThemeMode.Dark}>
+            {translate(translations.themeModeDark)}
+          </option>
+        </Select>
+      </Accordion.Child>
       <Accordion.Child
         icon={StockOutlined}
         label={translate(translations.displayExchangeRate)}

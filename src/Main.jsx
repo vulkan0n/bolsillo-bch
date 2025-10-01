@@ -19,6 +19,7 @@ import { routeExplore } from "@/routes/routeExplore";
 import { routeSettings } from "@/routes/routeSettings";
 import { routeApps } from "@/routes/routeApps";
 import { routeDebug } from "@/routes/routeDebug";
+import ThemeHandler from "./ThemeHandler";
 
 export default function Main() {
   const routes = [
@@ -54,6 +55,7 @@ export default function Main() {
   return (
     <ReactStrictMode>
       <Provider store={store}>
+        <ThemeHandler />
         <ApolloProvider client={apolloClient}>
           {/* Note: Duration has an inbuilt extra 1000ms dismissal delay */}
           <Toaster

@@ -44,12 +44,14 @@ export default function WalletViewHistory() {
 
     const zebraCss = [
       {
-        true: "bg-primary-50 text-neutral-800",
-        false: "bg-neutral-25 text-neutral-800",
+        true: "bg-primary-50 dark:bg-primarydark-50 text-neutral-800 dark:text-neutral-200",
+        false:
+          "bg-neutral-25 dark:bg-neutral-700 text-neutral-800 dark:text-neutral-200",
       },
       {
-        true: "bg-primary-100 text-neutral-800",
-        false: "bg-neutral-50 text-neutral-800",
+        true: "bg-primary-100 dark:bg-primarydark-100 text-neutral-800 dark:text-neutral-200",
+        false:
+          "bg-neutral-50 dark:bg-neutral-600 text-neutral-800 dark:text-neutral-200",
       },
     ];
 
@@ -57,7 +59,7 @@ export default function WalletViewHistory() {
       i < 100 ? (
         <li
           key={`${tx.txid}${tx.address}${tx.block_pos}`}
-          className={`py-2  ${zebraCss[i % 2][tx.amount > 0]}`}
+          className={`p-2  ${zebraCss[i % 2][tx.amount > 0]}`}
         >
           <Link to={`/explore/tx/${tx.txid}`}>
             <div className="flex text-sm">
@@ -137,7 +139,7 @@ export default function WalletViewHistory() {
         small
       />
       <div className="h-full pb-2">
-        <ul className="bg-neutral-100 text-neutral-500 divide-y divide-neutral-300 rounded-b-sm px-1 overflow-y-scroll border border-neutral-400 shadow-inner h-full">
+        <ul className=" text-neutral-500 divide-y divide-neutral-300 dark:divide-neutral-700 rounded-b-sm overflow-y-scroll shadow-inner h-full">
           {txHistory.length === 0 && (
             <li className="flex px-1 py-2 items-center justify-center tracking-tighter font-bold">
               {syncPending.txHistory === 0 ? (

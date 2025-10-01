@@ -113,7 +113,9 @@ export default function WalletViewHome() {
 
   // force red QR code border if connected to chipnet
   const qrCodeBorder =
-    bchNetwork !== "mainnet" ? "border-[#ff0000]" : "border-primary-700";
+    bchNetwork !== "mainnet"
+      ? "border-[#ff0000]"
+      : "border-primary-700 dark:border-primarydark-200";
   const addressColor =
     bchNetwork !== "mainnet" ? "text-[#ff0000]" : "text-neutral-25";
 
@@ -122,7 +124,7 @@ export default function WalletViewHome() {
   ) : (
     <FullColumn className="justify-between">
       <div className="text-neutral-25">
-        <div className="w-full mx-auto bg-primary font-mono">
+        <div className="w-full mx-auto bg-primary dark:bg-primarydark-300 font-mono">
           <div className="py-1 flex justify-center items-center text-sm text-center uppercase">
             {translate(translations.receive)}
           </div>
@@ -167,7 +169,7 @@ export default function WalletViewHome() {
         </div>
         <div className="flex justify-evenly items-center rounded-b-sm text-sm">
           <div
-            className={`font-sans flex-1 px-1 py-1.5 text-nowrap truncate ${!shouldShowRequestAmount ? "bg-primary-400 active:bg-primary-700 active:shadow-inner" : "text-primary-50 bg-primary-700"}`}
+            className={`font-sans flex-1 px-1 py-1.5 text-nowrap truncate ${!shouldShowRequestAmount ? "bg-primary-400 dark:bg-primarydark-200 active:bg-primary-700 active:shadow-inner" : "text-primary-50 bg-primary-700"}`}
             onClick={() =>
               !shouldShowRequestAmount && setShouldShowRequestAmount(true)
             }
@@ -207,7 +209,7 @@ export default function WalletViewHome() {
           </div>
           {!shouldShowRequestAmount && (
             <label
-              className={`${shouldUseTokenAddress ? "bg-primary-700" : "bg-primary-400"} px-1.5 py-1.5 border-l border-primary-400 text-nowrap truncate flex items-center justify-between`}
+              className={`${shouldUseTokenAddress ? "bg-primary-700 dark:bg-primarydark-300" : "bg-primary-400 dark:bg-primarydark-200"} px-1.5 py-1.5 border-l border-primary-400 dark:border-primarydark-200 text-nowrap truncate flex items-center justify-between`}
             >
               {translate(translations.receiveTokens)}&nbsp;
               <input

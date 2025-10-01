@@ -23,6 +23,7 @@ import { sha256 } from "@/util/hash";
 
 import { translate } from "@/util/translations";
 import translations from "./translations";
+import Select from "@/components/atoms/Select";
 
 export default function SecuritySettings() {
   const dispatch = useDispatch();
@@ -100,8 +101,8 @@ export default function SecuritySettings() {
         {!isWalletKeyViewed ? (
           <KeyWarning walletHash={activeWallet.walletHash} />
         ) : (
-          <select
-            className="p-2 bg-white rounded h-10 w-fit"
+          <Select
+            className="w-fit"
             value={authMode}
             disabled={!isWalletKeyViewed}
             onChange={async (event) => {
@@ -126,7 +127,7 @@ export default function SecuritySettings() {
             {hasBiometric && (
               <option value="bio">{translate(translations.biometric)}</option>
             )}
-          </select>
+          </Select>
         )}
       </Accordion.Child>
       {authMode === "pin" && (

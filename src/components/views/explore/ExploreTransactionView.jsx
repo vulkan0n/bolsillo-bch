@@ -81,7 +81,7 @@ export default function ExploreTransactionView() {
             className="flex items-center justify-center rounded p-1 bg-primary-900"
             onClick={handleCopyTransactionId}
           >
-            <div className="w-full p-2 bg-neutral-100 text-neutral-700 border-2 border-primary rounded flex items-center justify-center active:bg-primary">
+            <div className="w-full p-2 bg-neutral-100 dark:bg-neutral-900 text-neutral-700 dark:text-neutral-100 border-2 border-primary rounded flex items-center justify-center active:bg-primary">
               <CopyOutlined className="mr-1" />
               <div className="font-mono text-xs flex flex-col items-center w-full">
                 <span>{tx.txid.slice(0, 32)}</span>
@@ -91,13 +91,13 @@ export default function ExploreTransactionView() {
           </div>
         </div>
 
-        <Card className="bg-neutral-200 text-white rounded p-1 my-1">
+        <Card className="my-1">
           <div className="p-1">
-            <div className="text-neutral-700 font-bold flex items-center justify-start">
+            <div className="font-bold flex items-center justify-start">
               <span>{txDate}</span>
             </div>
             {isConfirmed ? (
-              <div className="flex items-center font-bold text-neutral-500 text-sm">
+              <div className="flex items-center font-bold text-neutral-500 dark:text-neutral-200 text-sm">
                 <span>
                   <span className="flex items-center">
                     <CheckCircleOutlined className="text-secondary mr-1" />{" "}
@@ -106,14 +106,14 @@ export default function ExploreTransactionView() {
                 </span>
               </div>
             ) : (
-              <div className="flex items-center font-bold text-neutral-500 text-sm">
-                <HourglassOutlined className="text-neutral-500 mr-1" /> Pending
-                Confirmation
+              <div className="flex items-center font-bold text-neutral-500 dark:text-neutral-200 text-sm">
+                <HourglassOutlined className="text-neutral-500 dark:text-neutral-200 mr-1" />{" "}
+                Pending Confirmation
               </div>
             )}
           </div>
           <div
-            className={`my-1 text-neutral-600 text-sm ${memo ? "" : "underline"}`}
+            className={`my-1 text-neutral-600 dark:text-neutral-100 text-sm ${memo ? "" : "underline"}`}
           >
             <Editable
               value={memo}
@@ -130,7 +130,7 @@ export default function ExploreTransactionView() {
                 {translate(translations.outputs)}
               </span>
             </div>
-            <div className="bg-primary-700 border border-primary-900">
+            <div className="bg-primary-700 dark:text-neutral-100 border border-primary-900">
               {tx.vout.map((output, i) => (
                 <OutputListItem key={output.n} output={output} i={i} />
               ))}
@@ -152,7 +152,10 @@ export default function ExploreTransactionView() {
 }
 
 function OutputListItem({ output, i }) {
-  const zebraCss = i % 2 === 0 ? "bg-primary-100" : "bg-primary-50";
+  const zebraCss =
+    i % 2 === 0
+      ? "bg-primary-100 dark:bg-primarydark-100 dark:text-neutral-100"
+      : "bg-primary-50 dark:bg-primarydark-50 dark:text-neutral-100";
 
   const asmSplit = output.scriptPubKey.asm.split(" ");
   const isOpReturn = asmSplit[0] === "OP_RETURN";
@@ -165,7 +168,9 @@ function OutputListItem({ output, i }) {
     <div className={`p-1.5 ${zebraCss}`}>
       <div className="flex text-sm items-center">
         {isOpReturn ? (
-          <div className="font-mono font-bold text-neutral-700">OP_RETURN</div>
+          <div className="font-mono font-bold text-neutral-700 dark:text-neutral-200">
+            OP_RETURN
+          </div>
         ) : (
           <Address
             address={output.scriptPubKey.addresses[0]}
@@ -227,7 +232,7 @@ function InputListItem({ input, i }) {
   const ResolvedInput = useCallback(() => {
     if (inputTx === null) {
       return (
-        <div className={`p-1.5 ${zebraCss} truncate tracking-tight`}>
+        <div className={`p-1.5  ${zebraCss} truncate tracking-tight`}>
           <Link className="font-mono text-xs" to={`/explore/tx/${input.txid}`}>
             {input.txid}:{input.vout}
           </Link>

@@ -13,6 +13,12 @@ import { VALID_DENOMINATIONS } from "@/util/sats";
 import CurrencyService from "@/services/CurrencyService";
 import { AuthActions } from "@/services/SecurityService";
 
+export enum ThemeMode {
+  System = "system",
+  Light = "light",
+  Dark = "dark",
+}
+
 const defaultPreferences = {
   // global / wallet
   activeWalletHash: "",
@@ -52,6 +58,7 @@ const defaultPreferences = {
   shouldConstrainViewport: "true",
   showMemoCard: "false",
   showOutputsCard: "true",
+  themeMode: ThemeMode.System,
   // --------
   // Network
   // TODO #420: electrum peer db
@@ -342,6 +349,7 @@ export const selectUiSettings = createSelector(
     shouldDisplayExploreTab: preferences.displayExploreTab === "true",
     shouldDisplaySyncCounter: preferences.displaySyncCounter === "true",
     shouldConstrainViewport: preferences.shouldConstrainViewport === "true",
+    themeMode: preferences.themeMode as ThemeMode,
   })
 );
 

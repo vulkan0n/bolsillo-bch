@@ -108,7 +108,7 @@ export default function MainLayout() {
   return (
     <div
       id="container"
-      className={`${isScanning ? "bg-transparent" : "bg-primary-50"}`}
+      className={`${isScanning ? "bg-transparent" : "bg-primary-50 dark:bg-primarydark-50 dark:text-neutral-50"}`}
     >
       <main>
         <Outlet />

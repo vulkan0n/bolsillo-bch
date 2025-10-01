@@ -17,6 +17,7 @@ import { currencyList } from "@/util/currency";
 import { VALID_DENOMINATIONS } from "@/util/sats";
 
 import Accordion from "@/atoms/Accordion";
+import Select from "@/components/atoms/Select";
 
 export default function CurrencySettings() {
   const { handleSettingsUpdate } = useContext(SettingsContext);
@@ -33,8 +34,8 @@ export default function CurrencySettings() {
         icon={EuroCircleOutlined}
         label={translate(translations.localCurrency)}
       >
-        <select
-          className="p-2 bg-white rounded h-10 w-fit"
+        <Select
+          className="w-fit"
           value={localCurrency || ""}
           onChange={(event) =>
             handleSettingsUpdate("localCurrency", event.target.value)
@@ -52,7 +53,7 @@ export default function CurrencySettings() {
                 {c.currency} {c.symbol}
               </option>
             ))}
-        </select>
+        </Select>
       </Accordion.Child>
       <Accordion.Child
         icon={TransactionOutlined}
@@ -70,8 +71,8 @@ export default function CurrencySettings() {
         icon={AccountBookOutlined}
         label={translate(translations.denominateInSats)}
       >
-        <select
-          className="p-2 bg-white rounded h-10 w-24"
+        <Select
+          className="w-24"
           value={denomination}
           onChange={(event) =>
             handleSettingsUpdate(
@@ -85,7 +86,7 @@ export default function CurrencySettings() {
               {d}
             </option>
           ))}
-        </select>
+        </Select>
       </Accordion.Child>
     </Accordion>
   );

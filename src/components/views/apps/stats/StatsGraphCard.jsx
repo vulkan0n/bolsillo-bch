@@ -51,16 +51,16 @@ export default function StatsGraphCard() {
       <div className="flex items-center">
         <SeleneLogo className="w-12 mr-1" />
         <div>
-          <span className="text-xl font-bold text-neutral-900">
+          <span className="text-xl font-bold text-neutral-900 dark:text-neutral-100">
             {translate(translations.globalAdoption)}
           </span>
-          <div className="text-lg font-bold text-neutral-700">
+          <div className="text-lg font-bold text-neutral-700 dark:text-neutral-200">
             {translate(translations.activeSeleneUsers)}
           </div>
         </div>
       </div>
 
-      <div className="bg-primary-50 my-2 p-2 rounded">
+      <div className="bg-primary-50 dark:bg-primarydark-50 my-2 p-2 rounded">
         {!isReady && <p>Loading chart...</p>}
         {isReady && <ActiveUsersChart data={data} period={period} />}
       </div>
