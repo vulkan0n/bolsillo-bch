@@ -141,11 +141,7 @@ export default function WalletViewHistory() {
         small
       />
       <div className="h-full pb-2">
-<<<<<<< HEAD
-        <ul className=" text-neutral-500 divide-y divide-neutral-300 dark:divide-neutral-700 rounded-b-sm overflow-y-scroll shadow-inner h-full">
-=======
-        <ul className="bg-neutral-100 text-neutral-500 divide-y divide-neutral-300 rounded-b-sm overflow-y-scroll border border-neutral-700 h-full">
->>>>>>> 365c80df (slice error bandaid)
+        <ul className="text-neutral-500 divide-y divide-neutral-300 dark:divide-neutral-700 rounded-b-sm overflow-y-scroll shadow-inner h-full">
           {txHistory.length === 0 && (
             <li className="flex px-1 py-2 items-center justify-center tracking-tighter font-bold">
               {syncPending.txHistory === 0 ? (
