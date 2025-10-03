@@ -40,9 +40,9 @@ import Button from "@/atoms/Button";
 import Editable from "@/atoms/Editable";
 import Address from "@/atoms/Address";
 import SlideToAction from "@/components/atoms/SlideToAction";
-import ScannerButton from "@/views/wallet/ScannerButton/ScannerButton";
-import ScannerOverlay from "@/views/wallet/ScannerOverlay";
-import ConfirmConvertAndSendPayoutOverlay from "@/views/wallet/WalletViewSend/ConfirmConvertAndSendPayoutOverlay";
+import ScannerButton from "@/views/wallet/home/ScannerButton/ScannerButton";
+import ScannerOverlay from "@/views/wallet/home.ScannerOverlay";
+import ConfirmConvertAndSendPayoutOverlay from "@/views/wallet/send/WalletViewSend/ConfirmConvertAndSendPayoutOverlay";
 
 import { Haptic } from "@/util/haptic";
 import { bchToSats } from "@/util/sats";

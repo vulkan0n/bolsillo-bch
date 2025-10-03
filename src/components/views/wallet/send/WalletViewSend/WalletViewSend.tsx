@@ -48,9 +48,9 @@ import CurrencyFlip from "@/atoms/CurrencyFlip";
 import TokenIcon from "@/atoms/TokenIcon";
 import TokenAmount from "@/atoms/TokenAmount";
 import SlideToAction from "@/components/atoms/SlideToAction";
-import ScannerButton from "@/views/wallet/ScannerButton/ScannerButton";
-import ScannerOverlay from "@/views/wallet/ScannerOverlay";
-import WalletViewSendStablecoin from "@/views/wallet/WalletViewSend/WalletViewSendStablecoin";
+import ScannerButton from "@/views/wallet/home/ScannerButton/ScannerButton";
+import ScannerOverlay from "@/views/wallet/home/ScannerOverlay";
+import WalletViewSendStablecoin from "@/views/wallet/send/WalletViewSend/WalletViewSendStablecoin";
 
 import { hexToBin } from "@/util/hex";
 import { Haptic } from "@/util/haptic";
