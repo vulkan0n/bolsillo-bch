@@ -27,8 +27,8 @@ import { SatoshiInput } from "@/atoms/SatoshiInput";
 import Address from "@/atoms/Address";
 import CurrencySymbol from "@/atoms/CurrencySymbol";
 import CurrencyFlip from "@/atoms/CurrencyFlip";
-import WalletViewButtons from "../WalletViewButtons/WalletViewButtons";
-import ScannerOverlay from "../ScannerOverlay";
+import WalletViewButtons from "./WalletViewButtons";
+import ScannerOverlay from "./ScannerOverlay";
 
 import { useClipboard } from "@/hooks/useClipboard";
 
@@ -37,7 +37,7 @@ import { satsToBch } from "@/util/sats";
 import { convertCashAddress } from "@/util/cashaddr";
 
 import { translate } from "@/util/translations";
-import translations from "./translations";
+import translations from "@/views/wallet/translations";
 
 export default function WalletViewHome() {
   const dispatch = useDispatch();

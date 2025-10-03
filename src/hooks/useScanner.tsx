@@ -16,7 +16,7 @@ import {
 import ToastService from "@/services/ToastService";
 
 import { translate } from "@/util/translations";
-import translations from "@/views/wallet/ScannerButton/translations";
+import translations from "@/views/wallet/translations";
 
 export function useScanner(onScan) {
   const dispatch = useDispatch();

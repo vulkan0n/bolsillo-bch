@@ -2,16 +2,17 @@ import { useNavigate } from "react-router";
 import { useSelector } from "react-redux";
 import { SendOutlined, HistoryOutlined } from "@ant-design/icons";
 import { selectScannerIsScanning } from "@/redux/device";
-import translations from "./translations";
-import { translate } from "@/util/translations";
 
 import Button from "@/atoms/Button";
-import ScannerButton from "../ScannerButton/ScannerButton";
-import TorchButton from "../TorchButton/TorchButton";
-import ImageSelectButton from "../ImageSelectButton/ImageSelectButton";
+import ScannerButton from "./ScannerButton";
+import TorchButton from "./TorchButton";
+import ImageSelectButton from "./ImageSelectButton";
 
 import { useClipboard } from "@/hooks/useClipboard";
 import { navigateOnValidUri } from "@/util/uri";
+
+import translations from "@/views/wallet/translations";
+import { translate } from "@/util/translations";
 
 export default function WalletViewButtons() {
   const navigate = useNavigate();

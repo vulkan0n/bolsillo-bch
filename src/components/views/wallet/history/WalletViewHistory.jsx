@@ -11,7 +11,7 @@ import {
 import { selectTransactionHistory, txHistoryFetch } from "@/redux/txHistory";
 import { selectSyncState } from "@/redux/sync";
 import { selectPrivacySettings } from "@/redux/preferences";
-import translations from "./translations";
+import translations from "@/views/wallet/translations";
 import { translate } from "@/util/translations";
 
 import ViewHeader from "@/layout/ViewHeader";

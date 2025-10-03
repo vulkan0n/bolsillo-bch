@@ -7,7 +7,7 @@ import NumberFormat from "@/atoms/NumberFormat";
 
 import { satsToBch } from "@/util/sats";
 import { translate } from "@/util/translations";
-import translations from "./translations";
+import translations from "@/views/wallet/translations";
 
 export default function ConfirmConvertAndSendPayoutOverlay({
   convertInfo,

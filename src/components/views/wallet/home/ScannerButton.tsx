@@ -9,7 +9,7 @@ import Button, { ValidSizes } from "@/atoms/Button";
 
 import { navigateOnValidUri } from "@/util/uri";
 
-import translations from "./translations";
+import translations from "@/views/wallet/translations";
 import { translate } from "@/util/translations";
 
 import { useScanner } from "@/hooks/useScanner";

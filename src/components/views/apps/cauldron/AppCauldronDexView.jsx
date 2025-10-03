@@ -17,7 +17,7 @@ import TokenIcon from "@/atoms/TokenIcon";
 import NumberFormat from "@/atoms/NumberFormat";
 import Satoshi from "@/atoms/Satoshi";
 import { SatoshiInput } from "@/atoms/SatoshiInput";
-import WalletViewBalance from "@/views/wallet/WalletViewBalance";
+import WalletViewBalance from "@/views/wallet/home/WalletViewBalance";
 
 import { useClipboard } from "@/hooks/useClipboard";
 

@@ -48,9 +48,9 @@ import CurrencyFlip from "@/atoms/CurrencyFlip";
 import TokenIcon from "@/atoms/TokenIcon";
 import TokenAmount from "@/atoms/TokenAmount";
 import SlideToAction from "@/components/atoms/SlideToAction";
-import ScannerButton from "@/views/wallet/home/ScannerButton/ScannerButton";
+import ScannerButton from "@/views/wallet/home/ScannerButton";
 import ScannerOverlay from "@/views/wallet/home/ScannerOverlay";
-import WalletViewSendStablecoin from "@/views/wallet/send/WalletViewSend/WalletViewSendStablecoin";
+import WalletViewSendStablecoin from "@/views/wallet/send/WalletViewSendStablecoin";
 
 import { hexToBin } from "@/util/hex";
 import { Haptic } from "@/util/haptic";
@@ -59,7 +59,7 @@ import { MUSD_TOKENID } from "@/util/tokens";
 import { validateBchUri, navigateOnValidUri } from "@/util/uri";
 import { truncateProse } from "@/util/string";
 import { translate } from "@/util/translations";
-import translations from "./translations";
+import translations from "@/views/wallet/translations";
 
 const Log = LogService("WalletViewSend");
 

@@ -8,7 +8,7 @@ import { Haptic } from "@/util/haptic";
 import { setScannerIsScanning } from "@/redux/device";
 
 import Button, { ButtonProps } from "@/atoms/Button";
-import translations from "./translations";
+import translations from "@/views/wallet/translations";
 import { translate } from "@/util/translations";
 
 interface ImageSelectButtonProps extends ButtonProps {

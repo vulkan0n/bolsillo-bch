@@ -4,7 +4,7 @@ import { selectInstantPaySettings } from "@/redux/preferences";
 
 import Satoshi from "@/atoms/Satoshi";
 import FullColumn from "@/layout/FullColumn";
-import WalletViewButtons from "./WalletViewButtons/WalletViewButtons";
+import WalletViewButtons from "@/views/wallet/home/WalletViewButtons";
 
 export default function ScannerOverlay() {
   const { isInstantPayEnabled, instantPayThreshold } = useSelector(

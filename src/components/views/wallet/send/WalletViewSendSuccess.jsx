@@ -23,7 +23,7 @@ import SeleneLogo from "@/atoms/SeleneLogo";
 import TokenAmount from "@/atoms/TokenAmount";
 
 import { translate } from "@/util/translations";
-import translations from "./translations";
+import translations from "@/views/wallet/translations";
 
 import { useClipboard } from "@/hooks/useClipboard";
 import { binToHex } from "@/util/hex";

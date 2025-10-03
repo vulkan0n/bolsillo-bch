@@ -40,16 +40,16 @@ import Button from "@/atoms/Button";
 import Editable from "@/atoms/Editable";
 import Address from "@/atoms/Address";
 import SlideToAction from "@/components/atoms/SlideToAction";
-import ScannerButton from "@/views/wallet/home/ScannerButton/ScannerButton";
-import ScannerOverlay from "@/views/wallet/home.ScannerOverlay";
-import ConfirmConvertAndSendPayoutOverlay from "@/views/wallet/send/WalletViewSend/ConfirmConvertAndSendPayoutOverlay";
+import ScannerButton from "@/views/wallet/home/ScannerButton";
+import ScannerOverlay from "@/views/wallet/home/ScannerOverlay";
+import ConfirmConvertAndSendPayoutOverlay from "@/views/wallet/send/ConfirmConvertAndSendPayoutOverlay";
 
 import { Haptic } from "@/util/haptic";
 import { bchToSats } from "@/util/sats";
 import { MUSD_TOKENID } from "@/util/tokens";
 import { validateBchUri, navigateOnValidUri } from "@/util/uri";
 import { translate } from "@/util/translations";
-import translations from "./translations";
+import translations from "@/views/wallet/translations";
 
 const Log = LogService("WalletViewSendStablecoin");
 

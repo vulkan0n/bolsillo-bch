@@ -4,7 +4,7 @@ import { SnippetsOutlined } from "@ant-design/icons";
 import ToastService from "@/services/ToastService";
 
 import { translate } from "@/util/translations";
-import translations from "@/views/wallet/WalletViewButtons/translations";
+import translations from "@/views/wallet/translations";
 
 export function useClipboard() {
   const handleCopyToClipboard = useCallback(

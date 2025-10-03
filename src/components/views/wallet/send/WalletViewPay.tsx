@@ -15,6 +15,7 @@ import {
 
 import TransactionManagerService from "@/services/TransactionManagerService";
 import TransactionBuilderService from "@/services/TransactionBuilderService";
+import TransactionHistoryService from "@/services/TransactionHistoryService";
 import ToastService from "@/services/ToastService";
 import SecurityService, { AuthActions } from "@/services/SecurityService";
 import LogService from "@/services/LogService";
@@ -29,9 +30,9 @@ import { useCurrencyFlip } from "@/hooks/useCurrencyFlip";
 import { Haptic } from "@/util/haptic";
 
 import { PaymentRequestResponse, JppV2Client } from "@/util/payment_protocol";
+
 import { translate } from "@/util/translations";
-import translations from "@/components/views/wallet/WalletViewPay/translations";
-import TransactionHistoryService from "@/services/TransactionHistoryService";
+import translations from "@/views/wallet/translations";
 
 const Log = LogService("WalletViewPay");
 const jppClient = new JppV2Client();
