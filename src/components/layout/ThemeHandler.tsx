@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useSelector } from "react-redux";
-import { selectUiSettings, ThemeMode } from "./redux/preferences";
+import { selectUiSettings, ThemeMode } from "@/redux/preferences";
 
 export default function ThemeHandler() {
   const { themeMode } = useSelector(selectUiSettings);

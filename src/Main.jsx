@@ -12,6 +12,7 @@ import "./index.css";
 
 import MainLayout from "@/layout/MainLayout";
 import ErrorBoundary from "@/layout/ErrorBoundary";
+import ThemeHandler from "@/layout/ThemeHandler";
 
 import { routeWallet } from "@/routes/routeWallet";
 import { routeAssets } from "@/routes/routeAssets";
@@ -19,7 +20,6 @@ import { routeExplore } from "@/routes/routeExplore";
 import { routeSettings } from "@/routes/routeSettings";
 import { routeApps } from "@/routes/routeApps";
 import { routeDebug } from "@/routes/routeDebug";
-import ThemeHandler from "./ThemeHandler";
 
 export default function Main() {
   const routes = [
