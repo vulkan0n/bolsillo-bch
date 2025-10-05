@@ -83,7 +83,7 @@ export default function ErrorBoundary() {
           title={translate(translations.errorMessage)}
         >
           <Accordion.Child icon={null} label="">
-            <div className="font-mono bg-neutral-100 p-2 text-left">
+            <div className="font-mono p-2 w-full">
               {error.message}
             </div>
             {/*<div className="font-mono">{error.stack}</div>*/}
