@@ -67,6 +67,7 @@ export async function redux_post_init() {
 export async function redux_resume() {
   Log.debug("redux_resume");
   store.dispatch(syncReconnect());
+  store.dispatch(walletConnectInit());
   store.dispatch(fetchExchangeRates(0));
   store.dispatch(triggerCheckIn());
 }
