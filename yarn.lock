@@ -559,10 +559,10 @@
   dependencies:
     debug "^4.3.7"
 
-"@electrum-cash/network@^4.1.1":
-  version "4.1.3"
-  resolved "https://registry.yarnpkg.com/@electrum-cash/network/-/network-4.1.3.tgz#195a96e8bb34493c622223992da0649c753aafff"
-  integrity sha512-amMvdcEfHhquoUkhN7x/H04KPYfqd5LilOGcg6O1OdUks1Mcrcah8WfHICHW/qyZ3Rgoos9o7Wx8gKz8qcSNzg==
+"@electrum-cash/network@^4.1.4":
+  version "4.1.4"
+  resolved "https://registry.yarnpkg.com/@electrum-cash/network/-/network-4.1.4.tgz#c3a6e622998259513122061a8b85767d7dca6488"
+  integrity sha512-nHC/HTo26JGghVunXMlc2lh2p6gwUDjs8umGvEE4we+G0Hyv7xaO+WVYqKrGcr5huBnUX9wakVBIJmbtigzi4Q==
   dependencies:
     "@electrum-cash/debug-logs" "^1.0.0"
     "@electrum-cash/web-socket" "^1.0.0"
