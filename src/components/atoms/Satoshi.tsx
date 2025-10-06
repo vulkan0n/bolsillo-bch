@@ -14,12 +14,14 @@ interface Props {
   value?: number | bigint | string;
   fiat?: string | boolean;
   flip?: boolean;
+  forceVisible?: boolean;
 }
 
 export default function Satoshi({
   value = 0,
   fiat = undefined,
   flip = false,
+  forceVisible = false,
 }: Props) {
   const { shouldPreferLocalCurrency, localCurrency, denomination } =
     useSelector(selectCurrencySettings);
@@ -45,10 +47,10 @@ export default function Satoshi({
       }
 
       // Don't leak number of digits when hiding balance
-      if (shouldHideBalance) {
+      if (shouldHideBalance && !forceVisible) {
         return {
           bch: "XXXXXXXXXX",
-          bits: "XXXXXXXXXX",
+          sats: "XXXXXXXXXX",
           fiat: "XXXXXXXXXX",
         };
       }
