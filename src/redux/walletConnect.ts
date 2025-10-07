@@ -49,10 +49,12 @@ export const wcSessionProposal = createAsyncThunk(
     const proposal = payload;
     Log.debug("session_proposal", proposal);
 
-    const { requiredNamespaces } = proposal.params;
+    const { requiredNamespaces, optionalNamespaces } = proposal.params;
+
     if (
-      !requiredNamespaces.bch ||
-      !Array.isArray(requiredNamespaces.bch.chains)
+      (!requiredNamespaces.bch ||
+        !Array.isArray(requiredNamespaces.bch.chains)) &&
+      (!optionalNamespaces.bch || !Array.isArray(optionalNamespaces.bch.chains))
     ) {
       Log.error("Unsupported blockchain", requiredNamespaces);
       throw new Error("Unsupported Blockchain");
@@ -61,7 +63,8 @@ export const wcSessionProposal = createAsyncThunk(
     const wallet = selectActiveWallet(thunkApi.getState());
 
     const proposalNetworkPrefix =
-      requiredNamespaces.bch.chains[0].split(":")[1];
+      requiredNamespaces?.bch?.chains?.[0]?.split(":")[1] ??
+      optionalNamespaces.bch.chains[0].split(":")[1];
 
     const targetNetwork =
       proposalNetworkPrefix === "bitcoincash" ? "mainnet" : "chipnet";
