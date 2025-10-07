@@ -219,12 +219,12 @@ export default function AddressScannerService(wallet: WalletEntity) {
       needsRegistrationAddresses.map(
         (stub) =>
           `INSERT OR IGNORE INTO addresses (
-            address, 
+            address,
             hd_index,
             change
-          ) 
+          )
           VALUES (
-            "${stub.address}", 
+            "${stub.address}",
             "${stub.hd_index}",
             "${stub.change}"
           );`
@@ -376,6 +376,9 @@ export default function AddressScannerService(wallet: WalletEntity) {
       }
       /* eslint-enable no-await-in-loop */
 
+      // restore memos and historical fiat amounts
+      await WalletManager.restoreWalletData(wallet.walletHash);
+
       await WalletManager.saveWallet(wallet.walletHash);
       Log.debug("Wallet Rebuild Done");
     } catch (e) {
@@ -469,7 +472,7 @@ export default function AddressScannerService(wallet: WalletEntity) {
     try {
       if (!batch) {
         walletDb.run(
-          `UPDATE addresses SET 
+          `UPDATE addresses SET
           state=?
         WHERE address=?;
       `,
