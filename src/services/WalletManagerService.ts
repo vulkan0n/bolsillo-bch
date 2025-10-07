@@ -61,6 +61,7 @@ export default function WalletManagerService() {
     updateKeyVerified,
     setWalletName,
     clearWalletData,
+    restoreWalletData,
     exportWalletFile,
     importWalletFile,
     saveWallet,
@@ -248,10 +249,10 @@ export default function WalletManagerService() {
     try {
       walletDb.run(
         `INSERT INTO wallet (
-          name, 
-          mnemonic, 
-          passphrase, 
-          derivation, 
+          name,
+          mnemonic,
+          passphrase,
+          derivation,
           walletHash,
           created_at,
           key_viewed_at
@@ -354,8 +355,23 @@ export default function WalletManagerService() {
 
   // clearWalletData: deletes all data associated with a wallet
   // does NOT delete the wallet; all data can be re-derived/resynced
+  // preserves memos and historical fiat amounts
   async function clearWalletData(walletHash) {
     const walletDb = Database.getWalletDatabase(walletHash);
+
+    // create temporary tables to preserve memos and fiat amounts
+    walletDb.run(`CREATE TEMP TABLE IF NOT EXISTS temp_address_memos AS
+      SELECT address, memo FROM addresses WHERE memo IS NOT NULL`);
+
+    walletDb.run(`CREATE TEMP TABLE IF NOT EXISTS temp_transaction_data AS
+      SELECT txid, address, memo, fiat_amount, fiat_currency
+      FROM address_transactions
+      WHERE memo IS NOT NULL OR fiat_amount IS NOT NULL`);
+
+    walletDb.run(`CREATE TEMP TABLE IF NOT EXISTS temp_utxo_memos AS
+      SELECT address, txid, tx_pos, memo
+      FROM address_utxos
+      WHERE memo IS NOT NULL`);
 
     // delete this wallet's transaction history
     walletDb.run(`DELETE FROM address_transactions`);
@@ -368,6 +384,44 @@ export default function WalletManagerService() {
     walletDb.run(`DELETE FROM address_utxos`);
 
     walletDb.run("UPDATE wallet SET genesis_height=null");
+  }
+
+  // restoreWalletData: restores memos and fiat amounts from temporary tables
+  // called after wallet rebuild to restore user data
+  async function restoreWalletData(walletHash) {
+    const walletDb = Database.getWalletDatabase(walletHash);
+
+    // restore address memos
+    walletDb.run(`UPDATE addresses
+      SET memo = (SELECT memo FROM temp_address_memos WHERE temp_address_memos.address = addresses.address)
+      WHERE address IN (SELECT address FROM temp_address_memos)`);
+
+    // restore transaction memos and fiat amounts
+    walletDb.run(`UPDATE address_transactions
+      SET
+        memo = (SELECT memo FROM temp_transaction_data WHERE temp_transaction_data.txid = address_transactions.txid AND temp_transaction_data.address = address_transactions.address),
+        fiat_amount = (SELECT fiat_amount FROM temp_transaction_data WHERE temp_transaction_data.txid = address_transactions.txid AND temp_transaction_data.address = address_transactions.address),
+        fiat_currency = (SELECT fiat_currency FROM temp_transaction_data WHERE temp_transaction_data.txid = address_transactions.txid AND temp_transaction_data.address = address_transactions.address)
+      WHERE EXISTS (
+        SELECT 1 FROM temp_transaction_data
+        WHERE temp_transaction_data.txid = address_transactions.txid
+        AND temp_transaction_data.address = address_transactions.address
+      )`);
+
+    // restore UTXO memos
+    walletDb.run(`UPDATE address_utxos
+      SET memo = (SELECT memo FROM temp_utxo_memos WHERE temp_utxo_memos.address = address_utxos.address AND temp_utxo_memos.txid = address_utxos.txid AND temp_utxo_memos.tx_pos = address_utxos.tx_pos)
+      WHERE EXISTS (
+        SELECT 1 FROM temp_utxo_memos
+        WHERE temp_utxo_memos.address = address_utxos.address
+        AND temp_utxo_memos.txid = address_utxos.txid
+        AND temp_utxo_memos.tx_pos = address_utxos.tx_pos
+      )`);
+
+    // clean up temporary tables
+    walletDb.run(`DROP TABLE IF EXISTS temp_address_memos`);
+    walletDb.run(`DROP TABLE IF EXISTS temp_transaction_data`);
+    walletDb.run(`DROP TABLE IF EXISTS temp_utxo_memos`);
   }
 
   function calculateWalletHash(wallet: WalletStub): string {
