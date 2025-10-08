@@ -60,6 +60,7 @@ export const syncConnect = createAsyncThunk(
     Log.log("sync/connect", payload);
     let isSuccess = false;
     try {
+      await thunkApi.dispatch(syncCauldronConnect());
       await Electrum.connect(payload.server);
       isSuccess = true;
     } catch (e) {
@@ -99,10 +100,6 @@ export const syncConnect = createAsyncThunk(
       }
     }
 
-    if (isSuccess) {
-      thunkApi.dispatch(syncCauldronConnect());
-    }
-
     return isSuccess;
   }
 );
@@ -113,11 +110,11 @@ export const syncCauldronConnect = createAsyncThunk(
     const isStablecoinMode = selectIsStablecoinMode(thunkApi.getState());
     if (!isStablecoinMode) {
       Log.log("sync/cauldronConnect blocked - not in stablecoin mode");
-      return false;
+      return;
     }
 
     const Cauldron = CauldronService();
-    return Cauldron.connect();
+    await Cauldron.connect();
   }
 );
 
