@@ -16,12 +16,16 @@ import {
 } from "@/redux/wallet";
 import { txHistoryFetch } from "@/redux/txHistory";
 import { selectNetworkStatus } from "@/redux/device";
-import { selectIsOfflineMode } from "@/redux/preferences";
+import {
+  selectIsOfflineMode,
+  selectIsStablecoinMode,
+} from "@/redux/preferences";
 
 import LogService from "@/services/LogService";
 import ElectrumService, {
   ElectrumVersionMismatchError,
 } from "@/services/ElectrumService";
+import CauldronService from "@/services/CauldronService";
 import BlockchainService from "@/services/BlockchainService";
 import WalletManagerService from "@/services/WalletManagerService";
 import AddressManagerService, {
@@ -95,7 +99,25 @@ export const syncConnect = createAsyncThunk(
       }
     }
 
+    if (isSuccess) {
+      thunkApi.dispatch(syncCauldronConnect());
+    }
+
     return isSuccess;
+  }
+);
+
+export const syncCauldronConnect = createAsyncThunk(
+  "sync/cauldronConnect",
+  async (payload, thunkApi) => {
+    const isStablecoinMode = selectIsStablecoinMode(thunkApi.getState());
+    if (!isStablecoinMode) {
+      Log.log("sync/cauldronConnect blocked - not in stablecoin mode");
+      return false;
+    }
+
+    const Cauldron = CauldronService();
+    return Cauldron.connect();
   }
 );
 
@@ -251,7 +273,6 @@ syncMiddleware.startListening({
     }
 
     collectedActions.push(action);
-
 
     const addressStates = collectedActions.map((a) => a.payload);
     //Log.debug("addressStates", addressStates);

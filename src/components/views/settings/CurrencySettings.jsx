@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import {
   DollarCircleOutlined,
   EuroCircleOutlined,
@@ -13,6 +13,8 @@ import {
   selectIsPrerelease,
 } from "@/redux/preferences";
 
+import { syncCauldronConnect } from "@/redux/sync";
+
 import { translate } from "@/util/translations";
 import translations from "./translations";
 
@@ -25,6 +27,7 @@ import Select from "@/components/atoms/Select";
 
 export default function CurrencySettings() {
   const { handleSettingsUpdate } = useContext(SettingsContext);
+  const dispatch = useDispatch();
 
   const {
     shouldPreferLocalCurrency,
@@ -35,6 +38,26 @@ export default function CurrencySettings() {
   } = useSelector(selectCurrencySettings);
 
   const isPrerelease = useSelector(selectIsPrerelease);
+
+  const selectedCurrency = isStablecoinMode ? "USD" : localCurrency || "";
+
+  const handleToggleStablecoinMode = (event) => {
+    const isChecked = event.target.checked;
+    handleSettingsUpdate("stablecoinMode", event.target.checked);
+
+    if (isChecked) {
+      setTimeout(() => dispatch(syncCauldronConnect()), 200);
+    }
+  };
+
+  const handleToggleVolatileBalance = (event) => {
+    const isChecked = event.target.checked;
+    handleSettingsUpdate("includeVolatileBalance", event.target.checked);
+
+    if (isChecked) {
+      handleSettingsUpdate("displayExchangeRate", "true");
+    }
+  };
 
   return (
     <Accordion
@@ -47,7 +70,8 @@ export default function CurrencySettings() {
       >
         <Select
           className="w-fit"
-          value={localCurrency || ""}
+          value={selectedCurrency}
+          disabled={isStablecoinMode}
           onChange={(event) =>
             handleSettingsUpdate("localCurrency", event.target.value)
           }
@@ -108,9 +132,7 @@ export default function CurrencySettings() {
           <input
             type="checkbox"
             checked={isStablecoinMode}
-            onChange={(event) =>
-              handleSettingsUpdate("stablecoinMode", event.target.checked)
-            }
+            onChange={handleToggleStablecoinMode}
           />
         </Accordion.Child>
       )}
@@ -122,12 +144,7 @@ export default function CurrencySettings() {
           <input
             type="checkbox"
             checked={shouldIncludeVolatileBalance}
-            onChange={(event) =>
-              handleSettingsUpdate(
-                "includeVolatileBalance",
-                event.target.checked
-              )
-            }
+            onChange={handleToggleVolatileBalance}
           />
         </Accordion.Child>
       )}
