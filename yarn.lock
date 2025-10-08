@@ -531,17 +531,17 @@
   dependencies:
     "@cashlab/common" "1.0.5"
 
-"@cashlab/common@1.0.2", "@cashlab/common@1.0.5":
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/@cashlab/common/-/common-1.0.2.tgz#276b96a7e5b93e6234397fdde679cc2d3ded7ff6"
-  integrity sha512-JrIiWNDcSU+k8Jv3CkLQarwOCL8voMFzV4AVPkW6JuG1Fy5W0fwKDarUpX/IsnrlpTbyd1eIjZtjQUYJtFb0Yg==
-  dependencies:
-    "@bitauth/libauth" "^3.0.0"
-
 "@cashlab/common@1.0.4":
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/@cashlab/common/-/common-1.0.4.tgz#0021965ddd902544986211c866adf899baa16cb1"
   integrity sha512-XkT0rFeyo3p0CPHVOKvG2SnBHM0U2gp6TA7aIserlRhJNoQ0xWz8UJ0hXHKEtXqECq/EDtuoK1Uy1VIKactYuQ==
+  dependencies:
+    "@bitauth/libauth" "3.1.0-next.6"
+
+"@cashlab/common@1.0.5":
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/@cashlab/common/-/common-1.0.5.tgz#4d9f6431367229e3d2fefb26930240912e4a5fae"
+  integrity sha512-qMzoOJSkWyWdttNn956MRb1dZHqVaB4s0HmQyn+4jOm4ipgLhazsRdJoa6elZeHSA6ofMEZpTXjXUQRSeTYjmw==
   dependencies:
     "@bitauth/libauth" "3.1.0-next.6"
 
