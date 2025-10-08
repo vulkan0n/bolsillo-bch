@@ -8,6 +8,7 @@ import {
 } from "@/redux/wallet";
 import { selectSyncState } from "@/redux/sync";
 import {
+  selectCurrencySettings,
   selectInstantPaySettings,
   selectIsOfflineMode,
 } from "@/redux/preferences";
@@ -30,6 +31,7 @@ import { Haptic } from "@/util/haptic";
 import { PaymentRequestResponse, JppV2Client } from "@/util/payment_protocol";
 import { translate } from "@/util/translations";
 import translations from "@/components/views/wallet/WalletViewPay/translations";
+import TransactionHistoryService from "@/services/TransactionHistoryService";
 
 const Log = LogService("WalletViewPay");
 const jppClient = new JppV2Client();
@@ -45,6 +47,7 @@ export default function WalletViewPay() {
     selectInstantPaySettings
   );
   const isOfflineMode = useSelector(selectIsOfflineMode);
+  const { localCurrency } = useSelector(selectCurrencySettings);
 
   const [message, setMessage] = useState("");
   const [detailedMessage, setDetailedMessage] = useState("");
@@ -162,6 +165,12 @@ export default function WalletViewPay() {
 
         // Show a success notification and route the user to the success page.
         await Haptic.success();
+        if (paymentResponse.memo.length > 0) {
+          TransactionHistoryService(
+            walletHash,
+            localCurrency
+          ).setTransactionMemo(tx.txid, paymentResponse.memo);
+        }
         navigate("/wallet/send/success", {
           state: { tx, prefillMemo: paymentResponse.memo || "" },
           replace: true,
@@ -182,6 +191,7 @@ export default function WalletViewPay() {
       paymentData,
       sync.isConnected,
       walletHash,
+      localCurrency,
     ]
   );
 
