@@ -1,7 +1,7 @@
 export const currencyList = [
   { currency: "USD", countryCode: "US", symbol: "$" },
-  { currency: "BCH", countryCode: "BCH", symbol: "₿" },
-  { currency: "SATS", countryCode: "SATS", symbol: "Ꞩ" },
+  { currency: "BCH", countryCode: "BCH", symbol: "₿", decimals: 8 },
+  { currency: "SATS", countryCode: "SATS", symbol: "Ꞩ", decimals: 0 },
   { currency: "AED", countryCode: "AE", symbol: "د.إ" },
   { currency: "ARS", countryCode: "AR", symbol: "$" },
   { currency: "AUD", countryCode: "AU", symbol: "$" },
