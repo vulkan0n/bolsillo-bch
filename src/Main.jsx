@@ -12,7 +12,6 @@ import "./index.css";
 
 import MainLayout from "@/layout/MainLayout";
 import ErrorBoundary from "@/layout/ErrorBoundary";
-import ThemeHandler from "@/layout/ThemeHandler";
 
 import { routeWallet } from "@/routes/routeWallet";
 import { routeAssets } from "@/routes/routeAssets";
@@ -55,7 +54,6 @@ export default function Main() {
   return (
     <ReactStrictMode>
       <Provider store={store}>
-        <ThemeHandler />
         <ApolloProvider client={apolloClient}>
           {/* Note: Duration has an inbuilt extra 1000ms dismissal delay */}
           <Toaster

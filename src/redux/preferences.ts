@@ -6,6 +6,7 @@ import {
 } from "@reduxjs/toolkit";
 
 import { RootState } from "@/redux";
+import { selectIsSystemDarkMode } from "@/redux/device";
 import { ValidBchNetwork } from "@/util/electrum_servers";
 import { languageList } from "@/util/translations";
 import { DEFAULT_CURRENCY, currencyList } from "@/util/currency";
@@ -367,6 +368,13 @@ export const selectShouldDisplayExchangeRate = createSelector(
 export const selectShouldDisplaySyncCounter = createSelector(
   (state) => state.preferences,
   (preferences) => preferences.displaySyncCounter === "true"
+);
+
+export const selectIsDarkMode = createSelector(
+  (state) => state.preferences,
+  (preferences) =>
+    preferences.themeMode === "dark" ||
+    (preferences.themeMode === ThemeMode.System && selectIsSystemDarkMode())
 );
 
 export const selectPrivacySettings = createSelector(

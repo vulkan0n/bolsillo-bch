@@ -390,7 +390,7 @@ export default function WalletViewSend() {
       }
 
       // we have enough stablecoin to attempt a swap-in-place
-      Log.debug("buildStablecoinTransaction swapOutgoing", transaction);
+      Log.debug("buildStablecoinTransaction swapOutgoing", spendableStablecoinSats - transaction);
       return false;
     }
 
@@ -772,7 +772,7 @@ export default function WalletViewSend() {
                 <SlideToAction
                   disabled={address === "" || !satoshiInput || isSending}
                   onSlide={() => confirmSend(false)}
-                  label={translate(translations.confirm)}
+                  label={translate(translations.slideToConfirm)}
                 />
               </div>
             </div>

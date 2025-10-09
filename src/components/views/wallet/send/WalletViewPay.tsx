@@ -21,6 +21,7 @@ import SecurityService, { AuthActions } from "@/services/SecurityService";
 import LogService from "@/services/LogService";
 
 import Button from "@/atoms/Button";
+import SlideToAction from "@/atoms/SlideToAction";
 import CountdownTimer from "@/components/atoms/CountdownTimer";
 import CurrencyFlip from "@/atoms/CurrencyFlip";
 import Satoshi from "@/atoms/Satoshi";
@@ -345,11 +346,9 @@ export default function WalletViewPay() {
           </div>
           <div className="flex-1">
             <span className="font-bold">
-              <Button
-                label={translate(translations.confirm)}
-                inverted
-                fullWidth
-                onClick={() => confirmSend(false)}
+              <SlideToAction
+                label={translate(translations.slideToConfirm)}
+                onSlide={() => confirmSend(false)}
                 disabled={!!message || !paymentData}
               />
             </span>
