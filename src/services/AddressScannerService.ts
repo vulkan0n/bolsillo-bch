@@ -181,7 +181,7 @@ export default function AddressScannerService(wallet: WalletEntity) {
       (stub) => stub.hd_index === 0 && stub.change === 0
     );
 
-    // no genesis height yet if state is null(it's initialized as null in db)
+    // no genesis height yet if state is null, set to 0 (it's initialized as null in db)
     // set to zero to mark that the wallet has been synced at least once
     if (genesisAddress && genesisAddress.state === null) {
       WalletManager.setGenesisHeight(wallet.walletHash, 0);
