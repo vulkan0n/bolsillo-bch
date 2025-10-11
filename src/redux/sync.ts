@@ -206,8 +206,6 @@ export const syncSubscriptions = createAsyncThunk(
 
     Log.debug("syncSubscriptions", addresses.length);
 
-    thunkApi.dispatch(syncSubscriptionCount(addresses.length));
-
     const Electrum = ElectrumService();
 
     Promise.all(
@@ -216,13 +214,9 @@ export const syncSubscriptions = createAsyncThunk(
           await Electrum.subscribeToAddress(address);
         } catch (e) {
           Log.warn("syncSubscriptions:", e);
-        } finally {
-          thunkApi.dispatch(syncSubscriptionCount(-1));
-        }
+        } 
       })
     );
-
-    thunkApi.dispatch(syncPopulateAddresses());
 
     return addresses;
   }
