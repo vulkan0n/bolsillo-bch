@@ -87,16 +87,14 @@ export const syncConnect = createAsyncThunk(
         // try a different server
         const newServer = Electrum.selectFallbackServer(payload.server);
         thunkApi.dispatch(syncConnect({ server: newServer, attempts: 0 }));
-      } else if (payload.attempts < 5) {
+      } else {
         setTimeout(
           () =>
             thunkApi.dispatch(
               syncConnect({ ...payload, attempts: payload.attempts + 1 })
             ),
-          Math.min(1000 * (payload.attempts + 1) * 2, 10 * 1000)
+          2000
         );
-      } else {
-        thunkApi.dispatch(syncDisconnect());
       }
     }
 
