@@ -9,10 +9,10 @@ import {
 
 import { RootState, AppDispatch } from "@/redux";
 import {
-  walletBalanceUpdate,
+  walletSyncDiff,
   selectActiveWalletHash,
   selectActiveWallet,
-  walletReloadAddresses,
+  walletReloadAddresses
 } from "@/redux/wallet";
 import { txHistoryFetch } from "@/redux/txHistory";
 import { selectNetworkStatus } from "@/redux/device";
@@ -214,7 +214,7 @@ export const syncSubscriptions = createAsyncThunk(
           await Electrum.subscribeToAddress(address);
         } catch (e) {
           Log.warn("syncSubscriptions:", e);
-        } 
+        }
       })
     );
 
@@ -222,7 +222,7 @@ export const syncSubscriptions = createAsyncThunk(
   }
 );
 
-// syncSubsciptionCount: adjusts the number of requests shown on the sync indicator
+// syncSubscriptionCount: adjusts the number of requests shown on the sync indicator
 export const syncSubscriptionCount = createAction<number>(
   "sync/subscriptionCount"
 );
@@ -491,29 +491,28 @@ export const syncComplete = createAsyncThunk(
 
     if (!isSyncing && syncCount <= 1) {
       if (!isSyncComplete && !isSaving) {
-        requestAnimationFrame(async () => {
-          Log.debug("sync complete");
-          thunkApi.dispatch(syncSetSaving(true));
-          const wallet = selectActiveWallet(thunkApi.getState());
+        Log.debug("sync complete");
+        thunkApi.dispatch(syncSetSaving(true));
+        const wallet = selectActiveWallet(thunkApi.getState());
 
-          if (syncDiff.diffIn.length > 0 || syncDiff.diffOut.length > 0) {
-            Log.debug("utxo diff", syncDiff);
-          }
+        if (syncDiff.diffIn.length > 0 || syncDiff.diffOut.length > 0) {
+          Log.debug("utxo diff", syncDiff);
+        }
 
-          // update wallet balance; view re-renders on wallet update
-          thunkApi.dispatch(
-            walletBalanceUpdate({
-              wallet,
-              utxoDiff: syncDiff,
-            })
-          );
+        thunkApi.dispatch(syncPopulateAddresses());
 
-          thunkApi.dispatch(walletReloadAddresses({ wallet }));
+        // update wallet balance; view re-renders on wallet update
+        thunkApi.dispatch(
+          walletSyncDiff({
+            wallet,
+            utxoDiff: syncDiff,
+          })
+        );
 
-          await WalletManagerService().saveWallet(wallet.walletHash);
-          thunkApi.dispatch(syncSetSaving(false));
-          thunkApi.dispatch(syncFlushDiff());
-        });
+        await WalletManagerService().saveWallet(wallet.walletHash);
+
+        thunkApi.dispatch(syncSetSaving(false));
+        thunkApi.dispatch(syncFlushDiff());
       }
       return true;
     }

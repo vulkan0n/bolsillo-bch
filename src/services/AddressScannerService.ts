@@ -11,7 +11,6 @@ import WalletManagerService, {
 } from "@/services/WalletManagerService";
 
 import { walletBalanceUpdate } from "@/redux/wallet";
-import { store } from "@/redux";
 
 import {
   DEFAULT_DERIVATION_PATH,
@@ -375,8 +374,6 @@ export default function AddressScannerService(wallet: WalletEntity) {
             callback
           );
         }
-
-        store.dispatch(walletBalanceUpdate({ wallet }));
       }
       /* eslint-enable no-await-in-loop */
 

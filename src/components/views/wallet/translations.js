@@ -1732,6 +1732,21 @@ const translations = {
     zh: "正在从",
     zh_TW: "正在從",
   },
+  received: {
+    en: "Received",
+  },
+  notConnected: {
+    en: "Not Connected",
+  },
+  unableWhileDisconnected: {
+    en: "Unable to perform action while disconnected",
+  },
+  authFail: {
+    en: "Authorization Failed",
+  },
+  notApproved: {
+    en: "was not approved",
+  },
 };
 
 export default translations;

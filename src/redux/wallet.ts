@@ -84,12 +84,15 @@ export const walletBoot = createAsyncThunk(
   }
 );
 
-export const walletBalanceUpdate = createAction(
-  "wallet/balanceUpdate",
-  (payload: {
-    wallet: WalletEntity;
-    utxoDiff: { diffIn: Array<string>; diffOut: Array<string> };
-  }) => {
+export const walletSyncDiff = createAsyncThunk(
+  "wallet/syncDiff",
+  (
+    payload: {
+      wallet: WalletEntity;
+      utxoDiff: { diffIn: Array<string>; diffOut: Array<string> };
+    },
+    thunkApi
+  ) => {
     const { wallet, utxoDiff } = payload;
 
     // address and wallet balances are automatically derived on SQL layer when UTXO entries are updated
@@ -99,13 +102,14 @@ export const walletBalanceUpdate = createAction(
     const currentBalance = BigInt(sqlWallet.balance);
     const currentSpendableBalance = BigInt(sqlWallet.spendable_balance);
 
+    if (currentBalance > previousBalance) {
+      thunkApi.dispatch(walletReceive({ wallet, utxoDiff }));
+    }
+
     return {
-      payload: {
-        previousBalance: previousBalance.toString(),
-        currentBalance: currentBalance.toString(),
-        currentSpendableBalance: currentSpendableBalance.toString(),
-        utxoDiff,
-      },
+      previousBalance: previousBalance.toString(),
+      currentBalance: currentBalance.toString(),
+      currentSpendableBalance: currentSpendableBalance.toString(),
     };
   }
 );
@@ -127,6 +131,8 @@ export const walletReceive = createAsyncThunk(
 
     let satsDiff = 0n;
     const tokenDiff = {};
+
+    Log.debug("walletReceive", utxoIn);
 
     // iterate over all incoming UTXOs
     while (utxoIn.length > 0) {
@@ -161,10 +167,9 @@ export const walletReceive = createAsyncThunk(
       satsDiff -= utxo.amount;
     }
 
-    Log.debug("tokenDiff", tokenDiff);
-
     // receiving tokens
     if (Object.keys(tokenDiff).length > 0) {
+      Log.debug("tokenDiff", tokenDiff);
       const TokenManager = TokenManagerService(wallet.walletHash);
 
       // spawn a receive popup for each token category
@@ -175,29 +180,23 @@ export const walletReceive = createAsyncThunk(
           amount: tokenDiff[category],
         };
 
-        ToastService().paymentReceived(satsDiff, token);
+        ToastService().tokenReceived(token);
       });
+    }
+
+    // need to swap to stablecoin in stablecoin mode
+    const isStablecoinMode = selectIsStablecoinMode(thunkApi.getState());
+    if (isStablecoinMode) {
+      const incomingSats = utxoIn.reduce(
+        (sum, utxo) => (utxo.token_category === null ? sum + utxo.amount : sum),
+        0n
+      );
+
+      const Stablecoin = StablecoinService(wallet);
+      const incomingStableSats = await Stablecoin.swapIncoming(incomingSats);
+      ToastService().paymentReceived(incomingStableSats);
     } else {
-      // receiving raw BCH only
-
-      // need to swap to stablecoin in stablecoin mode
-      const isStablecoinMode = selectIsStablecoinMode(thunkApi.getState());
-      if (isStablecoinMode) {
-        // [K] only include non-token sats for now...
-        // [!] this is not good in practice! see issue #552
-        // TODO: include sats from token UTXOs in balance (#552)
-        const incomingSats = utxoIn.reduce(
-          (sum, utxo) =>
-            utxo.token_category === null ? sum + utxo.amount : sum,
-          0n
-        );
-
-        const Stablecoin = StablecoinService(wallet);
-        const incomingStableSats = await Stablecoin.swapIncoming(incomingSats);
-        ToastService().paymentReceived(incomingStableSats);
-      } else {
-        ToastService().paymentReceived(satsDiff);
-      }
+      ToastService().paymentReceived(satsDiff);
     }
   }
 );
@@ -243,9 +242,9 @@ export const walletReducer = createReducer(initialState, (builder) => {
   builder
     .addCase(walletBoot.fulfilled, (state, action) => {
       const wallet = action.payload;
-      return wallet;
+      Object.assign(state, wallet);
     })
-    .addCase(walletBalanceUpdate, (state, action) => {
+    .addCase(walletSyncDiff.fulfilled, (state, action) => {
       state.balance = action.payload.currentBalance;
       state.spendable_balance = action.payload.currentSpendableBalance;
     })
@@ -261,7 +260,7 @@ const addressInitialState: Array<AddressEntity> = [];
 export const addressReducer = createReducer(addressInitialState, (builder) => {
   builder.addCase(walletReloadAddresses, (state, action) => {
     const addresses = action.payload;
-    return addresses;
+    Object.assign(state, addresses);
   });
 });
 

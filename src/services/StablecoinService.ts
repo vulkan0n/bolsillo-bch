@@ -14,11 +14,15 @@ export default function StablecoinService(wallet: WalletEntity) {
     swapOutgoing,
   };
 
-  async function swapIncoming() {
+  async function swapIncoming(amount) {
       await Cauldron.connect();
+
+      return amount;
   }
 
-  async function swapOutgoing() {
+  async function swapOutgoing(amount) {
       await Cauldron.connect();
+
+      return amount;
   }
 }
