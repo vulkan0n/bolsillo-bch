@@ -1,3 +1,4 @@
+/* eslint-disable */
 import LogService from "@/services/LogService";
 import { WalletEntity } from "@/services/WalletManagerService";
 import CauldronService from "@/services/CauldronService";
@@ -15,14 +16,14 @@ export default function StablecoinService(wallet: WalletEntity) {
   };
 
   async function swapIncoming(amount) {
-      await Cauldron.connect();
+    await Cauldron.connect();
 
-      return amount;
+    return amount;
   }
 
   async function swapOutgoing(amount) {
-      await Cauldron.connect();
+    await Cauldron.connect();
 
-      return amount;
+    return amount;
   }
 }

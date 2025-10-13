@@ -100,7 +100,7 @@ export default function Satoshi({
 
       return displayAmounts;
     },
-    [denomination, localCurrency, locale, shouldHideBalance, fiat]
+    [denomination, localCurrency, locale, shouldHideBalance, fiat, forceVisible]
   );
 
   return <span>{formatSatoshis(value)[formatIndex]}</span>;

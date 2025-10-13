@@ -12,7 +12,6 @@ import {
   walletSyncDiff,
   selectActiveWalletHash,
   selectActiveWallet,
-  walletReloadAddresses
 } from "@/redux/wallet";
 import { txHistoryFetch } from "@/redux/txHistory";
 import { selectNetworkStatus } from "@/redux/device";

@@ -10,8 +10,6 @@ import WalletManagerService, {
   WalletEntity,
 } from "@/services/WalletManagerService";
 
-import { walletBalanceUpdate } from "@/redux/wallet";
-
 import {
   DEFAULT_DERIVATION_PATH,
   DERIVATION_PATHS,

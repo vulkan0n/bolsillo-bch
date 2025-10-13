@@ -390,7 +390,10 @@ export default function WalletViewSend() {
       }
 
       // we have enough stablecoin to attempt a swap-in-place
-      Log.debug("buildStablecoinTransaction swapOutgoing", spendableStablecoinSats - transaction);
+      Log.debug(
+        "buildStablecoinTransaction swapOutgoing",
+        spendableStablecoinSats - transaction
+      );
       return false;
     }
 

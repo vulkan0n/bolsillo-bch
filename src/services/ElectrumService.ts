@@ -6,7 +6,7 @@ import {
 } from "@electrum-cash/network";
 import { ElectrumWebSocket } from "@electrum-cash/web-socket";
 import { store } from "@/redux";
-import { selectBchNetwork, setPreference } from "@/redux/preferences";
+import { setPreference } from "@/redux/preferences";
 import {
   syncConnectionUp,
   syncAddressState,
@@ -474,8 +474,6 @@ export default function ElectrumService(bchNetwork = "mainnet") {
   */
 
   function selectFallbackServer(prevServer): string {
-    const bchNetwork = selectBchNetwork(store.getState());
-
     const server_list = electrum_servers[bchNetwork];
 
     // don't blacklist the known-good Selene-operated server

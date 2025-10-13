@@ -32,7 +32,7 @@ export type CauldronPoolUtxo = {
 
 export const parsePoolFromRostrumNodeData = (
   exlab: ExchangeLab,
-  rn_pool: any
+  rn_pool: CauldronPoolUtxo
 ): PoolV0 | null => {
   if (rn_pool.is_withdrawn) {
     return null;
@@ -59,7 +59,7 @@ export const parsePoolFromRostrumNodeData = (
   };
 };
 
-type SubscriptionFunction = (data: any) => void;
+type SubscriptionFunction = (data: unknown) => void;
 
 export default function CauldronService() {
   const Rostrum = ElectrumService("cauldron");

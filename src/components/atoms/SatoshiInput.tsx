@@ -3,7 +3,6 @@ import { useState, useEffect, useCallback, Ref } from "react";
 import { useSelector } from "react-redux";
 import { Keyboard } from "@capacitor/keyboard";
 import { Decimal } from "decimal.js";
-import { clsx } from "clsx";
 import { selectCurrencySettings } from "@/redux/preferences";
 import { selectDeviceInfo } from "@/redux/device";
 import { satsToBch, bchToSats, MAX_SATOSHI } from "@/util/sats";
