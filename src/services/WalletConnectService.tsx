@@ -134,6 +134,9 @@ export default function WalletConnectService() {
   }
 
   async function sessionResponse(sessionId, payload) {
-    return walletKit.respondSessionRequest({ topic: sessionId, ...payload });
+    return walletKit.respondSessionRequest({
+      topic: sessionId,
+      response: payload,
+    });
   }
 }

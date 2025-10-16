@@ -107,6 +107,7 @@ export const wcSessionRequest = createAsyncThunk(
           formatJsonRpcResult(id, sessionAddress)
         );
         break;
+
       case "bch_signTransaction":
         {
           const { transaction: unsignedTransaction, sourceOutputs } =
@@ -172,6 +173,8 @@ export const wcSessionRequest = createAsyncThunk(
           Log.debug("sessionResponse success", response);
         }
         break;
+
+      case "bch_signMessage":
       default:
         await WalletConnect.sessionResponse(topic, {
           response: formatJsonRpcError(id, `Unsupported method ${method}`),
@@ -187,9 +190,9 @@ export const wcSessionApprove = createAsyncThunk(
     const WalletConnect = WalletConnectService();
     const wallet = selectActiveWallet(thunkApi.getState());
 
-    // TODO: make walletconnect address configurable
     const AddressManager = AddressManagerService(wallet.walletHash);
-    const { address: sessionAddress } = AddressManager.getAddressRange(0, 0)[0];
+    const { address: sessionAddress } =
+      AddressManager.getWalletConnectAddress();
     Log.debug("wcSessionApprove", payload, sessionAddress);
     await WalletConnect.approveSession(payload, sessionAddress);
 
