@@ -61,6 +61,9 @@ export const walletBoot = createAsyncThunk(
       setPreference({ key: "activeWalletHash", value: wallet.walletHash })
     );
 
+    const AddressScanner = AddressScannerService(wallet);
+    AddressScanner.populateAddresses();
+
     thunkApi.dispatch(syncClearAddresses());
     thunkApi.dispatch(walletReloadAddresses({ wallet }));
 
@@ -77,8 +80,6 @@ export const walletBoot = createAsyncThunk(
         server,
       })
     );
-
-    // initialize Rostrum client
 
     return wallet;
   }
@@ -218,9 +219,6 @@ export const walletReloadAddresses = createAction(
   "wallet/reloadAddresses",
   (payload: { wallet: WalletEntity }) => {
     const AddressManager = AddressManagerService(payload.wallet.walletHash);
-    const AddressScanner = AddressScannerService(payload.wallet);
-
-    AddressScanner.populateAddresses();
 
     const myAddresses = [
       ...AddressManager.getReceiveAddresses(),

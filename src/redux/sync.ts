@@ -12,6 +12,7 @@ import {
   walletSyncDiff,
   selectActiveWalletHash,
   selectActiveWallet,
+  walletReloadAddresses,
 } from "@/redux/wallet";
 import { txHistoryFetch } from "@/redux/txHistory";
 import { selectNetworkStatus } from "@/redux/device";
@@ -275,8 +276,14 @@ syncMiddleware.startListening({
     const utxoDiffs = await Promise.all(
       addressStates.map(async ([address, state]) => {
         try {
-          const utxoDiff = await AddressScanner.scanUtxos(address);
+          const currentAddressState =
+            AddressManager.calculateAddressState(address);
 
+          if (state === null || state === currentAddressState) {
+            return { address, utxoDiff: { diffIn: [], diffOut: [] } };
+          }
+
+          const utxoDiff = await AddressScanner.scanUtxos(address);
           const [, calculatedState] = await AddressScanner.scanHistory(address);
 
           if (calculatedState !== state) {
@@ -287,6 +294,8 @@ syncMiddleware.startListening({
               state
             );
           }
+
+          //Log.debug("address state changed", address, state);
           return { address, utxoDiff };
         } catch (e) {
           Log.warn("address sync fail:", e, address);
@@ -319,7 +328,6 @@ export const syncPopulateAddresses = createAsyncThunk(
     const AddressScanner = AddressScannerService(wallet);
 
     const generatedAddresses = AddressScanner.populateAddresses();
-    thunkApi.dispatch(syncSubscriptionCount(generatedAddresses.length));
 
     const Electrum = ElectrumService();
     await Promise.all(
@@ -328,8 +336,6 @@ export const syncPopulateAddresses = createAsyncThunk(
           await Electrum.subscribeToAddress(address);
         } catch (e) {
           Log.warn("syncPopulateAddresses", e);
-        } finally {
-          thunkApi.dispatch(syncSubscriptionCount(-1));
         }
       })
     );
@@ -490,17 +496,21 @@ export const syncComplete = createAsyncThunk(
 
     if (!isSyncing && syncCount <= 1) {
       if (!isSyncComplete && !isSaving) {
+        const { payload: generatedAddresses } = await thunkApi.dispatch(
+          syncPopulateAddresses()
+        );
+
+        if (generatedAddresses.length > 0) {
+          return false;
+        }
+
         Log.debug("sync complete");
-        thunkApi.dispatch(syncSetSaving(true));
-        const wallet = selectActiveWallet(thunkApi.getState());
 
         if (syncDiff.diffIn.length > 0 || syncDiff.diffOut.length > 0) {
           Log.debug("utxo diff", syncDiff);
         }
 
-        thunkApi.dispatch(syncPopulateAddresses());
-
-        // update wallet balance; view re-renders on wallet update
+        const wallet = selectActiveWallet(thunkApi.getState());
         thunkApi.dispatch(
           walletSyncDiff({
             wallet,
@@ -508,10 +518,12 @@ export const syncComplete = createAsyncThunk(
           })
         );
 
+        thunkApi.dispatch(syncSetSaving(true));
         await WalletManagerService().saveWallet(wallet.walletHash);
-
         thunkApi.dispatch(syncSetSaving(false));
+
         thunkApi.dispatch(syncFlushDiff());
+        thunkApi.dispatch(walletReloadAddresses({ wallet }));
       }
       return true;
     }

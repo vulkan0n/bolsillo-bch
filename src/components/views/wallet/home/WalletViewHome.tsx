@@ -70,19 +70,16 @@ export default function WalletViewHome() {
     return unusedAddressesRef.current;
   }, [AddressManager, isSyncing]);
 
+  const standardAddress = unusedAddresses[0].address;
+
   // currently displayed address
-  const address = useMemo(() => {
-    const standardAddress =
-      unusedAddresses.length > 0 ? unusedAddresses[0].address : "";
-
-    // convert address to cashtokens address
-    if (shouldUseTokenAddress) {
-      const tokenAddress = convertCashAddress(standardAddress, "tokenaddr");
-      return tokenAddress;
-    }
-
-    return standardAddress;
-  }, [unusedAddresses, shouldUseTokenAddress]);
+  const address = useMemo(
+    () =>
+      shouldUseTokenAddress
+        ? convertCashAddress(standardAddress, "tokenaddr")
+        : standardAddress,
+    [standardAddress, shouldUseTokenAddress]
+  );
 
   // "Request Amount" state
   const [shouldShowRequestAmount, setShouldShowRequestAmount] = useState(false);

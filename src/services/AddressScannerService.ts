@@ -487,7 +487,7 @@ export default function AddressScannerService(wallet: WalletEntity) {
         walletDb.run(
           `UPDATE addresses SET 
           state=$state
-        WHERE address=$address AND state != $state;
+        WHERE address=$address;
       `,
           { $state: newCalculatedState, $address: address }
         );
@@ -497,7 +497,7 @@ export default function AddressScannerService(wallet: WalletEntity) {
       return Promise.resolve([address, null]);
     }
 
-    //Log.debug("scanHistory", address.address, newCalculatedState);
+    //Log.debug("scanHistory", address, newCalculatedState);
     callback(1);
     return Promise.resolve([address, newCalculatedState]);
   }
