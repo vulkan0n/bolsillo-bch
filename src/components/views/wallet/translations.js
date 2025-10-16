@@ -1747,6 +1747,9 @@ const translations = {
   notApproved: {
     en: "was not approved",
   },
+  mySeleneWallet: {
+    en: "My Selene Wallet",
+  }
 };
 
 export default translations;

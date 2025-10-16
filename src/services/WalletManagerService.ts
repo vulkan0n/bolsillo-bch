@@ -11,6 +11,9 @@ import { sha256 } from "@/util/hash";
 import { store } from "@/redux";
 import { selectBchNetwork } from "@/redux/preferences";
 
+import translations from "@/views/wallet/translations";
+import { translate } from "@/util/translations";
+
 const Log = LogService("WalletManager");
 
 // WalletStub: minimum data required to build a wallet
@@ -167,7 +170,9 @@ export default function WalletManagerService() {
       if (wallets.length > 0) {
         nextWalletHash = wallets[0].walletHash;
       } else {
-        nextWalletHash = (await createWallet("My Selene Wallet")).walletHash;
+        nextWalletHash = (
+          await createWallet(translate(translations.mySeleneWallet))
+        ).walletHash;
         Database.setKeepAlive(nextWalletHash);
       }
 
