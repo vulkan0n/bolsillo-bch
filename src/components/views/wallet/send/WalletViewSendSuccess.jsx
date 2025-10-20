@@ -207,11 +207,11 @@ function OutputListItem({ output, i }) {
             #{output.n}
           </span>
           <span className="font-mono">
-            <Satoshi value={output.value} />
+            <Satoshi value={output.valueSatoshis} />
           </span>
           <span className="mx-1 text-neutral-500">/</span>
           <span className="text-sm opacity-80">
-            <Satoshi value={output.value} flip />
+            <Satoshi value={output.valueSatoshis} flip />
           </span>
         </div>
         {output.token && (

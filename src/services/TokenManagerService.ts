@@ -177,7 +177,7 @@ export default function TokenManagerService(walletHash: string) {
 
   function registerTokenHistory(
     tx_hash: string,
-    tokens: Array<{ category: string; amount: number; nftAmount: number }>
+    tokens: Array<{ category: string; amount: string; nftAmount: number }>
   ) {
     try {
       tokens.forEach((token) => {

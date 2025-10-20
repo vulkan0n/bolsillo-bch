@@ -13,7 +13,10 @@ import { selectActiveWalletHash } from "@/redux/wallet";
 import { selectChaintip } from "@/redux/sync";
 
 import TransactionHistoryService from "@/services/TransactionHistoryService";
-import TransactionManagerService from "@/services/TransactionManagerService";
+import TransactionManagerService, {
+  TransactionOutput,
+} from "@/services/TransactionManagerService";
+import TokenManagerService from "@/services/TokenManagerService";
 //import LogService from "@/services/LogService";
 
 import Address from "@/atoms/Address";
@@ -59,11 +62,11 @@ export default function ExploreTransactionView() {
     handleCopyToClipboard(tx.txid, translate(translations.transactionId));
   };
 
-  const handleSaveMemo = (value) => {
-    setMemo(value);
+  const handleSaveMemo = (newMemo) => {
+    setMemo(newMemo);
     TransactionHistoryService(walletHash, localCurrency).setTransactionMemo(
       tx.txid,
-      value
+      newMemo
     );
   };
 
@@ -151,7 +154,13 @@ export default function ExploreTransactionView() {
   );
 }
 
-function OutputListItem({ output, i }) {
+function OutputListItem({
+  output,
+  i,
+}: {
+  output: TransactionOutput;
+  i: number;
+}) {
   const zebraCss =
     i % 2 === 0
       ? "bg-primary-100 dark:bg-primarydark-100 dark:text-neutral-100"
@@ -159,10 +168,23 @@ function OutputListItem({ output, i }) {
 
   const asmSplit = output.scriptPubKey.asm.split(" ");
   const isOpReturn = asmSplit[0] === "OP_RETURN";
-  const opReturnData = hexToUtf8(asmSplit.slice(2)); // OP_RETURN OP_PUSHDATA_X ...
+  const opReturnData = hexToUtf8(asmSplit.slice(2).join()); // OP_RETURN OP_PUSHDATA_X ...
 
   // Determine address format based on whether tokens are present
   const addressFormat = output.token ? "tokenaddr" : undefined;
+
+  const walletHash = useSelector(selectActiveWalletHash);
+  const TokenManager = TokenManagerService(walletHash);
+  const tokenData = output.token
+    ? TokenManager.getToken(binToHex(output.token.category))
+    : undefined;
+
+  const token = tokenData
+    ? {
+        ...tokenData,
+        amount: output.token!.amount,
+      }
+    : undefined;
 
   return (
     <div className={`p-1.5 ${zebraCss}`}>
@@ -173,7 +195,7 @@ function OutputListItem({ output, i }) {
           </div>
         ) : (
           <Address
-            address={output.scriptPubKey.addresses[0]}
+            address={output.scriptPubKey.addresses![0]}
             format={addressFormat}
             className="tracking-tight"
           />
@@ -189,22 +211,25 @@ function OutputListItem({ output, i }) {
           ) : (
             <span>
               <span className="font-mono">
-                <Satoshi value={output.value} />
+                <Satoshi value={output.valueSatoshis} />
               </span>
               <span className="mx-1 text-neutral-500">/</span>
               <span className="text-sm opacity-80">
-                <Satoshi value={output.value} flip />
+                <Satoshi value={output.valueSatoshis} flip />
               </span>
             </span>
           )}
         </div>
-        {output.token && (
-          <div
-            className="text-sm"
-            style={{ color: `#${binToHex(output.token.category).slice(0, 6)}` }}
-          >
-            <TokenAmount token={output.token} />
-          </div>
+        {token && (
+          <span className="flex items-center justify-end">
+            <span
+              style={{ color: token.color }}
+              className="font-mono text-xs tracking-tighter font-bold mr-0.5"
+            >
+              {token.symbol}
+            </span>
+            <TokenAmount token={token} />
+          </span>
         )}
       </div>
     </div>

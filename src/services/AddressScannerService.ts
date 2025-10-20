@@ -44,12 +44,12 @@ export default function AddressScannerService(wallet: WalletEntity) {
   // populateAddresses: derive new addresses such that
   // there are always at least $ADDRESS_GAP_LIMIT addresses
   // returns an array of generated addresses
-  function populateAddresses(): Array<AddressEntity> {
+  function populateAddresses(
+    n: number = ADDRESS_GAP_LIMIT
+  ): Array<AddressEntity> {
     // addresses assumed to be sorted in DESCENDING order by hd_index
-    const receiveAddresses =
-      AddressManager.getReceiveAddresses(ADDRESS_GAP_LIMIT);
-    const changeAddresses =
-      AddressManager.getChangeAddresses(ADDRESS_GAP_LIMIT);
+    const receiveAddresses = AddressManager.getReceiveAddresses(n);
+    const changeAddresses = AddressManager.getChangeAddresses(n);
 
     // unused addresses assumed to be sorted in ASCENDING order by hd_index
     const unusedReceiveAddresses = AddressManager.getUnusedAddresses(0, 0);
@@ -62,7 +62,7 @@ export default function AddressScannerService(wallet: WalletEntity) {
         : unusedReceiveAddresses;
 
       const generated: Array<AddressEntity> = [];
-      const nAddressesNeeded = ADDRESS_GAP_LIMIT - unusedAddresses.length; // ADDRESS_GAP_LIMIT if no unused addresses
+      const nAddressesNeeded = n - unusedAddresses.length; // ADDRESS_GAP_LIMIT if no unused addresses
 
       const startAddress = addresses.shift(); // addresses sorted in descending order
       const startIndex = startAddress ? startAddress.hd_index + 1 : 0; // 0 if no addresses in db
@@ -355,7 +355,7 @@ export default function AddressScannerService(wallet: WalletEntity) {
       addresses.filter((a) => a.state === null).length;
 
     try {
-      await WalletManager.clearWalletData(wallet.walletHash);
+      WalletManager.clearWalletData(wallet.walletHash);
 
       /* eslint-disable no-await-in-loop */
       for (let change = 0; change <= 1; change += 1) {
@@ -376,7 +376,7 @@ export default function AddressScannerService(wallet: WalletEntity) {
       /* eslint-enable no-await-in-loop */
 
       // restore memos and historical fiat amounts
-      await WalletManager.restoreWalletData(wallet.walletHash);
+      WalletManager.restoreWalletData(wallet.walletHash);
 
       await WalletManager.saveWallet(wallet.walletHash);
       Log.debug("Wallet Rebuild Done");
@@ -475,7 +475,7 @@ export default function AddressScannerService(wallet: WalletEntity) {
           return cur.height;
         }
 
-        return cur.height < lowest ? cur.height : lowest;
+        return cur.height > 0 && cur.height < lowest ? cur.height : lowest;
       }, 0);
 
       //Log.debug("genesisAddress", genesisAddress, genesisHeight);

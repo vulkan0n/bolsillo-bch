@@ -7,7 +7,7 @@ import {
   walletTemplateToCompilerBCH,
   getMinimumFee,
   getDustThreshold,
-  Output,
+  Output as LibauthOutput,
   assertSuccess,
 } from "@bitauth/libauth";
 
@@ -18,6 +18,7 @@ import UtxoManagerService from "@/services/UtxoManagerService";
 import AddressManagerService, {
   AddressEntity,
 } from "@/services/AddressManagerService";
+import AddressScannerService from "@/services/AddressScannerService";
 import HdNodeService from "@/services/HdNodeService";
 import WalletManagerService from "@/services/WalletManagerService";
 import {
@@ -50,6 +51,19 @@ export type ElectrumUtxo = {
   value: number;
 };
 
+export interface Recipient {
+  address: string;
+  amount: bigint;
+  token?: {
+    category: string;
+    amount: bigint;
+    nft?: {
+      capability: "minting" | "mutable" | "none";
+      commitment?: string;
+    };
+  };
+}
+
 const Log = LogService("TxBuilder");
 
 export class TransactionBuilderError extends Error {}
@@ -65,7 +79,7 @@ export default function TransactionBuilderService(walletHash: string) {
 
   // --------------------------------
 
-  function createTokenOutput(recipientAddress, token) {
+  function createTokenOutput(recipientAddress, token): LibauthOutput {
     const output = {
       lockingBytecode: addressToLockingBytecode(recipientAddress),
       valueSatoshis: EXCESSIVE_SATOSHIS,
@@ -83,7 +97,7 @@ export default function TransactionBuilderService(walletHash: string) {
     return output;
   }
 
-  function createCoinOutput(recipientAddress, amount) {
+  function createCoinOutput(recipientAddress, amount): LibauthOutput {
     const output = {
       lockingBytecode: addressToLockingBytecode(recipientAddress),
       valueSatoshis: amount,
@@ -92,12 +106,15 @@ export default function TransactionBuilderService(walletHash: string) {
     Log.debug("createCoinOutput", output);
     return output;
   }
+
   // prepare outputs
-  function prepareOutputsFromRecipients(recipients) {
+  function prepareOutputsFromRecipients(
+    recipients: Array<Recipient>
+  ): Array<LibauthOutput> {
     const coinRecipients = recipients.filter(
       (recipient) => recipient.token === undefined
     );
-    const coinVout: Array<Output> = coinRecipients.map((recipient) =>
+    const coinVout: Array<LibauthOutput> = coinRecipients.map((recipient) =>
       createCoinOutput(recipient.address, recipient.amount)
     );
 
@@ -105,7 +122,7 @@ export default function TransactionBuilderService(walletHash: string) {
     const tokenRecipients = recipients.filter(
       (recipient) => recipient.token !== undefined
     );
-    const tokenVout: Array<Output> = tokenRecipients.map((recipient) =>
+    const tokenVout: Array<LibauthOutput> = tokenRecipients.map((recipient) =>
       createTokenOutput(recipient.address, recipient.token)
     );
 
@@ -122,18 +139,7 @@ export default function TransactionBuilderService(walletHash: string) {
     selection = [],
     nftSelection = [],
   }: {
-    recipients: Array<{
-      address: string;
-      amount: bigint;
-      token?: {
-        category: string;
-        amount: bigint;
-        nft?: {
-          capability: "none" | "mutable" | "minting";
-          commitment: Uint8Array;
-        };
-      };
-    }>;
+    recipients: Array<Recipient>;
     fee?: bigint;
     gas?: bigint;
     depth?: number;
@@ -192,14 +198,8 @@ export default function TransactionBuilderService(walletHash: string) {
 
     const tokenInputs = tokenCategories
       .map((category) => {
-        if (!tokenOutputAmountsByCategory.has(category)) {
-          return [];
-        }
-
-        return UtxoManager.selectTokens(
-          category,
-          tokenOutputAmountsByCategory.get(category)
-        );
+        const amount = tokenOutputAmountsByCategory.get(category);
+        return amount ? UtxoManager.selectTokens(category, amount) : [];
       })
       .flat();
 
@@ -213,7 +213,7 @@ export default function TransactionBuilderService(walletHash: string) {
     Log.debug("buildP2pkhTransaction using inputs:", inputs, inputTotal);
 
     if (inputTotal < sendTotal) {
-      return (inputTotal - sendTotal) * -1n;
+      return sendTotal;
     }
 
     const preparedTokenChange = prepareTokenChange(inputs, recipientVouts);
@@ -249,8 +249,8 @@ export default function TransactionBuilderService(walletHash: string) {
     }
 
     // insufficient funds
-    if (inputTotal - fee < finalOutputTotal) {
-      const short = (inputTotal - fee - finalOutputTotal) * -1n;
+    if (inputTotal < finalOutputTotal) {
+      const short = finalOutputTotal - inputTotal;
       Log.debug(
         "buildP2pkhTransaction: insufficient funds",
         inputTotal,
@@ -274,12 +274,12 @@ export default function TransactionBuilderService(walletHash: string) {
         });
       }
 
-      return short;
+      return finalOutputTotal;
     }
 
     // ----------------
 
-    function prepareTokenChange(vin, vout) {
+    function prepareTokenChange(vin, vout): Array<LibauthOutput> {
       const tokenVin = vin.filter((input) => input.token_category !== null);
 
       const tokenOutputs = vout.filter(
@@ -287,10 +287,11 @@ export default function TransactionBuilderService(walletHash: string) {
       );
 
       // calculate total input amounts for each token category
-      const tokenCategoryInputAmounts = tokenVin.reduce(
+      const tokenCategoryInputAmounts: Map<string, bigint> = tokenVin.reduce(
         (tokenAmounts, input) => {
           const category = input.token_category;
 
+          // [!] this is probably wrong. can't we have ft amount and nft on one utxo?
           if (input.nft_capability !== null) {
             return tokenAmounts;
           }
@@ -304,8 +305,8 @@ export default function TransactionBuilderService(walletHash: string) {
       );
 
       // calculate total output amounts for each token category
-      const tokenCategoryOutputAmounts = tokenOutputs.reduce(
-        (amounts, output) => {
+      const tokenCategoryOutputAmounts: Map<string, bigint> =
+        tokenOutputs.reduce((amounts, output) => {
           if (!output.token || output.token.nft) {
             return amounts;
           }
@@ -317,9 +318,7 @@ export default function TransactionBuilderService(walletHash: string) {
           amounts.set(categoryHex, categoryAmount + amount);
 
           return amounts;
-        },
-        new Map<string, bigint>()
-      );
+        }, new Map<string, bigint>());
 
       Log.debug(
         "prepareTokenChange",
@@ -329,18 +328,30 @@ export default function TransactionBuilderService(walletHash: string) {
         tokenCategoryOutputAmounts
       );
 
+      // create token change outputs for each category
+      const categories: Array<string> = [
+        ...tokenCategoryOutputAmounts.keys(),
+        ...tokenCategoryInputAmounts.keys(),
+      ].reduce(
+        (acc, cur) => (acc.includes(cur) ? acc : [...acc, cur]),
+        [] as Array<string>
+      );
+
       // get change addresses
       const AddressManager = AddressManagerService(wallet.walletHash);
+      const AddressScanner = AddressScannerService(wallet);
+
+      AddressScanner.populateAddresses(categories.length + 1);
+
       const changeAddresses = AddressManager.getUnusedAddresses(
-        tokenCategories.length + 1,
+        categories.length + 1,
         1
       );
 
-      // create token change outputs for each category
-      const tokenChangeVouts = [];
-      while (tokenCategories.length > 0) {
+      const tokenChangeVouts: Array<LibauthOutput> = [];
+      while (categories.length > 0) {
         // each category gets its own change address
-        const category = tokenCategories.shift() as string;
+        const category = categories.shift() as string;
         const changeAddress = changeAddresses.shift() as AddressEntity;
 
         // get amount of tokens spent; remainder is change
@@ -364,7 +375,7 @@ export default function TransactionBuilderService(walletHash: string) {
       return tokenChangeVouts;
     }
 
-    function prepareSatsChange(vin, vout, txFee) {
+    function prepareSatsChange(vin, vout, txFee): Array<LibauthOutput> {
       const satsInputTotal = vin.reduce((sum, cur) => sum + cur.amount, 0n);
 
       const satsOutputTotal = vout.reduce(
@@ -387,7 +398,7 @@ export default function TransactionBuilderService(walletHash: string) {
       const dustThreshold = getDustThreshold(changeOutput, DUST_RELAY_FEE);
 
       // only add change to the tx if it isn't dust.
-      const changeVouts = [];
+      const changeVouts: Array<LibauthOutput> = [];
       if (changeAmount >= dustThreshold) {
         changeVouts.push(changeOutput);
       }
@@ -541,7 +552,7 @@ export default function TransactionBuilderService(walletHash: string) {
   }: {
     recipients: Array<{
       address: string;
-      token: {
+      token?: {
         category: string;
         amount: bigint;
       };

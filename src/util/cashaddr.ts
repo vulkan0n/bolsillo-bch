@@ -57,7 +57,7 @@ export function convertCashAddress(
 }
 
 // addressToLockingBytecode: convert any address format to locking bytecode
-export function addressToLockingBytecode(addr) {
+export function addressToLockingBytecode(addr: string): Uint8Array {
   const { isBase58Address, address } = validateBip21Uri(addr);
   const lockingBytecode = isBase58Address
     ? base58AddressToLockingBytecode(address)

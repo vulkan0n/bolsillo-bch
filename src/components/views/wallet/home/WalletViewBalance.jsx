@@ -38,9 +38,10 @@ export default function WalletViewBalance() {
   const dispatch = useDispatch();
 
   const walletHash = useSelector(selectActiveWalletHash);
-  const balance = useSelector(selectActiveWalletBalance);
   const activeWalletName = useSelector(selectActiveWalletName);
   const key_viewed_at = useSelector(selectKeyViewedAt);
+
+  const { balance } = useSelector(selectActiveWalletBalance);
 
   const priceString = useSelector(selectCurrentPriceString);
   const bchNetwork = useSelector(selectBchNetwork);
@@ -151,7 +152,9 @@ function StablecoinBalance() {
 }
 
 function Balance() {
-  const balance = useSelector(selectActiveWalletBalance);
+  const { balance, spendable_balance } = useSelector(selectActiveWalletBalance);
+  const { shouldIncludeTokenSats } = useSelector(selectCurrencySettings);
+  const displayBalance = shouldIncludeTokenSats ? balance : spendable_balance;
 
   const [balanceReceivedSpring, receiveSpringApi] = useSpring(() => ({
     from: { color: "#8dc451" },
@@ -168,19 +171,19 @@ function Balance() {
     function animateWalletBalanceOnReceive() {
       receiveSpringApi.start({ reset: true });
     },
-    [balance, receiveSpringApi]
+    [displayBalance, receiveSpringApi]
   );
 
   return (
     <>
       <div className="text-2xl text-neutral-50 tabular-nums flex justify-center items-center">
         <animated.span style={{ ...balanceReceivedSpring }}>
-          <Satoshi value={balance} />
+          <Satoshi value={displayBalance} />
         </animated.span>
       </div>
 
       <div className="text-md text-neutral-300 flex items-center justify-center">
-        <Satoshi value={balance} flip />
+        <Satoshi value={displayBalance} flip />
         <CurrencyFlip className="ml-1" />
       </div>
     </>

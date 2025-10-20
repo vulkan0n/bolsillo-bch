@@ -40,6 +40,7 @@ const defaultPreferences = {
   localCurrency: DEFAULT_CURRENCY.currency,
   preferLocalCurrency: "true",
   denomination: "bch",
+  includeTokenSats: "false",
   stablecoinMode: "false", // TODO: move to wallet db
   includeVolatileBalance: "true", // TODO: move to wallet db
   // --------
@@ -140,6 +141,7 @@ function validatePreferences(preferences: ValidPreferences): boolean {
     "showOutputsCard",
     "stablecoinMode",
     "includeVolatileBalance",
+    "includeTokenSats",
   ];
 
   const invalidBools = boolKeys.filter(
@@ -292,6 +294,7 @@ export const selectCurrencySettings = createSelector(
     localCurrency: preferences.localCurrency,
     denomination: preferences.denomination,
     shouldPreferLocalCurrency: preferences.preferLocalCurrency === "true",
+    shouldIncludeTokenSats: preferences.includeTokenSats === "true",
     isStablecoinMode: preferences.stablecoinMode === "true",
     shouldIncludeVolatileBalance: preferences.includeVolatileBalance === "true",
   })

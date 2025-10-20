@@ -111,6 +111,7 @@ export const walletSyncDiff = createAsyncThunk(
       previousBalance: previousBalance.toString(),
       currentBalance: currentBalance.toString(),
       currentSpendableBalance: currentSpendableBalance.toString(),
+      //currentSpendableBalance: currentSpendableBalance.toString(),
     };
   }
 );
@@ -284,7 +285,10 @@ export const selectGenesisHeight = createSelector(
 
 export const selectActiveWalletBalance = createSelector(
   (state) => state.wallet,
-  (wallet) => wallet.spendable_balance
+  (wallet) => ({
+    balance: wallet.balance,
+    spendable_balance: wallet.spendable_balance,
+  })
 );
 
 export const selectActiveWalletName = createSelector(

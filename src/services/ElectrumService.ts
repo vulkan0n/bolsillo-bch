@@ -216,7 +216,7 @@ export default function ElectrumService(bchNetwork = "mainnet") {
     // manually emit initial notification
     handleElectrumNotifications({
       method: "blockchain.headers.subscribe",
-      params: result,
+      params: [result],
     });
   }
 
@@ -349,6 +349,7 @@ export default function ElectrumService(bchNetwork = "mainnet") {
     const txRequest = electrum
       .request("blockchain.transaction.get", tx_hash, verbose)
       .then((tx) => {
+        //Log.debug(tx);
         if (tx instanceof Error) {
           throw tx;
         }

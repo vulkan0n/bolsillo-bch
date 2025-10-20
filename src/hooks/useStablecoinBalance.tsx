@@ -15,7 +15,7 @@ export function useStablecoinBalance(walletHash) {
     [stablecoinUtxos]
   );
 
-  const spendable_balance = useSelector(selectActiveWalletBalance);
+  const { spendable_balance } = useSelector(selectActiveWalletBalance);
 
   const Currency = CurrencyService("USD");
   const volatileBalance = BigInt(

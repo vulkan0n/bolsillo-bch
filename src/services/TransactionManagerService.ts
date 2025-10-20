@@ -1,13 +1,12 @@
 import { Filesystem, Directory } from "@capacitor/filesystem";
-import { Decimal } from "decimal.js";
 import {
   decodeTransaction,
   lockingBytecodeToCashAddress,
   TransactionCommon,
   assertSuccess,
   disassembleBytecodeBCH,
-  Output,
-  Input,
+  Output as LibauthOutput,
+  Input as LibauthInput,
 } from "@bitauth/libauth";
 
 import LogService from "@/services/LogService";
@@ -35,7 +34,7 @@ export interface TransactionEntity extends TransactionStub {
   vout: Array<TransactionOutput>;
 }
 
-export interface TransactionInput extends Input {
+export interface TransactionInput extends LibauthInput {
   txid: string;
   vout: number;
 }
@@ -46,10 +45,9 @@ export interface VoutScriptPubKey {
   asm: string;
 }
 
-export interface TransactionOutput extends Output {
+export interface TransactionOutput extends LibauthOutput {
   n: number;
   scriptPubKey: VoutScriptPubKey;
-  value: string;
 }
 
 export class TransactionNotExistsError extends Error {
@@ -361,8 +359,6 @@ export default function TransactionManagerService() {
     decodedTx: TransactionCommon
   ): Array<TransactionOutput> {
     return decodedTx.outputs.map((output, n) => {
-      const value = new Decimal(output.valueSatoshis.toString());
-
       const cashAddr = lockingBytecodeToCashAddress({
         prefix: WalletManager.getPrefix(),
         bytecode: output.lockingBytecode,
@@ -371,15 +367,14 @@ export default function TransactionManagerService() {
 
       const vout = {
         n,
+        lockingBytecode: output.lockingBytecode,
         scriptPubKey: {
           addresses: [typeof cashAddr !== "string" ? cashAddr.address : ""],
           hex: binToHex(output.lockingBytecode),
           asm: disassembleBytecodeBCH(output.lockingBytecode),
         },
-        value: value.toString(),
         token: output.token,
         valueSatoshis: output.valueSatoshis,
-        lockingBytecode: output.lockingBytecode,
       };
 
       return vout;

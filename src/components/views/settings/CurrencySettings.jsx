@@ -11,6 +11,7 @@ import {
 import {
   selectCurrencySettings,
   selectIsPrerelease,
+  selectIsExperimental,
 } from "@/redux/preferences";
 
 import { syncCauldronConnect } from "@/redux/sync";
@@ -33,11 +34,13 @@ export default function CurrencySettings() {
     shouldPreferLocalCurrency,
     localCurrency,
     denomination,
+    shouldIncludeTokenSats,
     isStablecoinMode,
     shouldIncludeVolatileBalance,
   } = useSelector(selectCurrencySettings);
 
   const isPrerelease = useSelector(selectIsPrerelease);
+  const isExperimental = useSelector(selectIsExperimental);
 
   const selectedCurrency = isStablecoinMode ? "USD" : localCurrency || "";
 
@@ -123,6 +126,20 @@ export default function CurrencySettings() {
           ))}
         </Select>
       </Accordion.Child>
+      {/*(isExperimental || shouldIncludeTokenSats) && (
+        <Accordion.Child
+          icon={DollarCircleOutlined}
+          label="Include Sats on Token UTXOs in Balance"
+        >
+          <input
+            type="checkbox"
+            checked={shouldIncludeTokenSats}
+            onChange={(event) =>
+              handleSettingsUpdate("includeTokenSats", event.target.checked)
+            }
+          />
+        </Accordion.Child>
+      )*/}
       {(isPrerelease || isStablecoinMode) && (
         <Accordion.Child
           icon={DollarCircleOutlined}

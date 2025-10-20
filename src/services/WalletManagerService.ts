@@ -361,7 +361,7 @@ export default function WalletManagerService() {
   // clearWalletData: deletes all data associated with a wallet
   // does NOT delete the wallet; all data can be re-derived/resynced
   // preserves memos and historical fiat amounts
-  async function clearWalletData(walletHash) {
+  function clearWalletData(walletHash) {
     const walletDb = Database.getWalletDatabase(walletHash);
 
     // create temporary tables to preserve memos and fiat amounts
@@ -393,7 +393,7 @@ export default function WalletManagerService() {
 
   // restoreWalletData: restores memos and fiat amounts from temporary tables
   // called after wallet rebuild to restore user data
-  async function restoreWalletData(walletHash) {
+  function restoreWalletData(walletHash) {
     const walletDb = Database.getWalletDatabase(walletHash);
 
     // restore address memos

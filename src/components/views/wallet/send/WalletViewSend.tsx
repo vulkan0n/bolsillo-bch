@@ -31,7 +31,9 @@ import { selectScannerIsScanning } from "@/redux/device";
 
 import AddressManagerService from "@/services/AddressManagerService";
 import TransactionManagerService from "@/services/TransactionManagerService";
-import TransactionBuilderService from "@/services/TransactionBuilderService";
+import TransactionBuilderService, {
+  Recipient,
+} from "@/services/TransactionBuilderService";
 import TokenManagerService from "@/services/TokenManagerService";
 import ToastService from "@/services/ToastService";
 import SecurityService, { AuthActions } from "@/services/SecurityService";
@@ -113,7 +115,7 @@ export default function WalletViewSend() {
     new Decimal(spendableStablecoinBalance).div(100)
   );
 
-  const spendable_balance = useSelector(selectActiveWalletBalance);
+  const { balance, spendable_balance } = useSelector(selectActiveWalletBalance);
 
   // ----------------
 
@@ -275,9 +277,11 @@ export default function WalletViewSend() {
   const buildTransaction = useCallback(async () => {
     const TransactionBuilder = TransactionBuilderService(walletHash);
 
-    const coinRecipients = hasTokens ? [] : [{ address, amount: satoshiInput }];
+    const coinRecipients: Array<Recipient> = hasTokens
+      ? []
+      : [{ address, amount: satoshiInput }];
 
-    const tokenRecipients =
+    const tokenRecipients: Array<Recipient> =
       hasTokens && satoshiInput > 0
         ? tokenCategories.map((category) => ({
             address,
@@ -286,7 +290,7 @@ export default function WalletViewSend() {
           }))
         : [];
 
-    const nftRecipients = nftSelection.map((s) => ({
+    const nftRecipients: Array<Recipient> = nftSelection.map((s) => ({
       address,
       amount: 0n,
       token: {
@@ -330,11 +334,7 @@ export default function WalletViewSend() {
   ]);
 
   const buildStablecoinTransaction = useCallback(async () => {
-    const recipients = new Array<{
-      address: string;
-      amount: bigint;
-      token?: { category: string; amount: bigint };
-    }>();
+    const recipients = new Array<Recipient>();
 
     // prioritize sending MUSD directly for token addresses
     // in this case we are assuming receiver is signalling their preference
@@ -394,6 +394,15 @@ export default function WalletViewSend() {
         "buildStablecoinTransaction swapOutgoing",
         spendableStablecoinSats - transaction
       );
+
+      TransactionBuilder.buildSendTokensTransactionWithFeePayingTokenCategory({
+        recipients,
+        selection,
+        exchangeLab,
+        inputPools,
+        MUSD_TOKENID,
+      });
+
       return false;
     }
 
@@ -405,6 +414,7 @@ export default function WalletViewSend() {
     address,
     spendableStablecoinSats,
     walletHash,
+    selection,
   ]);
 
   const broadcastTransaction = useCallback(
@@ -538,12 +548,8 @@ export default function WalletViewSend() {
     });
 
     while (typeof transaction !== "object") {
-      if (selection.length === 0) {
-        const diff = transaction - amount;
-        amount -= diff;
-      } else {
-        amount -= transaction;
-      }
+      const short = transaction - amount;
+      amount -= short;
 
       transaction = TransactionBuilder.buildP2pkhTransaction({
         selection,

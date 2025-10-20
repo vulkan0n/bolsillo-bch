@@ -494,7 +494,7 @@ export const syncComplete = createAsyncThunk(
     const { syncCount, isSyncComplete, isSyncing, isSaving, syncDiff } =
       selectSyncState(thunkApi.getState());
 
-    if (!isSyncing && syncCount <= 1) {
+    if (!isSyncing) {
       if (!isSyncComplete && !isSaving) {
         const { payload: generatedAddresses } = await thunkApi.dispatch(
           syncPopulateAddresses()
@@ -675,7 +675,10 @@ export const syncReducer = createReducer(initialState, (builder) => {
       state.isSaving = action.payload;
     })
     .addCase(syncUtxoDiffs, (state, action) => {
-      state.syncDiff = { ...state.syncDiff, ...action.payload };
+      state.syncDiff = {
+        diffIn: [...state.syncDiff.diffIn, ...action.payload.diffIn],
+        diffOut: [...state.syncDiff.diffOut, ...action.payload.diffOut],
+      };
     })
     .addCase(syncFlushDiff, (state) => {
       state.syncDiff = { ...initialDiff };

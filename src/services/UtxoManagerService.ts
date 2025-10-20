@@ -201,6 +201,7 @@ export default function UtxoManagerService(walletHash: string) {
 
     // get all available UTXOs (without tokens)
     const allAvailableCoins = getWalletCoins();
+    //const allAvailableCoins = getWalletUtxos();
 
     const availableCoinSum = allAvailableCoins.reduce(
       (sum, utxo) => sum + utxo.amount,
