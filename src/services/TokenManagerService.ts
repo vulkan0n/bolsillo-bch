@@ -14,7 +14,7 @@ export interface TokenEntity extends IdentitySnapshot {
   symbol: string;
   name: string;
   color: string;
-  amount: number;
+  amount: bigint;
   nftCount: number;
   token: TokenCategory;
   fungible_amount?: bigint;
@@ -91,15 +91,7 @@ export default function TokenManagerService(walletHash: string) {
         ...resolvedTransactions[i],
       }))
       .sort((a, b) => {
-        if (a.time > b.time) {
-          return -1;
-        }
-
-        if (b.time <= a.time) {
-          return 1;
-        }
-
-        return 0;
+        return a.time - b.time;
       });
 
     //Log.debug("resolveTokenHistory", category, history);

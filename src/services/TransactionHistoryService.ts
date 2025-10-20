@@ -1,4 +1,3 @@
-import { Decimal } from "decimal.js";
 import { DateTime } from "luxon";
 import LogService from "@/services/LogService";
 import DatabaseService from "@/services/DatabaseService";

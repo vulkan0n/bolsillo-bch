@@ -183,6 +183,7 @@ function OutputListItem({
     ? {
         ...tokenData,
         amount: output.token!.amount,
+        nftCount: output.token.nft ? 1 : 0,
       }
     : undefined;
 
@@ -229,6 +230,7 @@ function OutputListItem({
               {token.symbol}
             </span>
             <TokenAmount token={token} />
+            {token.nftCount > 0 && <TokenAmount token={token} nft />}
           </span>
         )}
       </div>
