@@ -153,12 +153,19 @@ export default function UtxoManagerService(walletHash: string) {
 
   function selectTokens(category: string, amount: bigint) {
     const targetAmount = amount;
-    Log.debug("selectTokens", category, targetAmount);
 
     const tokenUtxos = getCategoryUtxos(category);
     const availableTokenSum = tokenUtxos.reduce(
       (sum, cur) => sum + cur.token_amount,
       0n
+    );
+
+    Log.debug(
+      "selectTokens",
+      category,
+      targetAmount,
+      tokenUtxos,
+      availableTokenSum
     );
 
     if (availableTokenSum < targetAmount || targetAmount === 0n) {

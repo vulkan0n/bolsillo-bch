@@ -44,7 +44,7 @@ export default function WalletViewPay() {
 
   const sync = useSelector(selectSyncState);
   const walletHash = useSelector(selectActiveWalletHash);
-  const spendableBalance = useSelector(selectActiveWalletBalance);
+  const { spendable_balance } = useSelector(selectActiveWalletBalance);
   const { isInstantPayEnabled, instantPayThreshold } = useSelector(
     selectInstantPaySettings
   );
@@ -79,7 +79,7 @@ export default function WalletViewPay() {
     throw new Error("Invalid or missing request URI");
   }
 
-  const isInsufficientFunds = spendableBalance <= 0;
+  const isInsufficientFunds = spendable_balance <= 0;
   const handleFlipCurrency = useCurrencyFlip();
 
   const handleExpire = () => {

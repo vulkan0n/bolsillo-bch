@@ -13,6 +13,7 @@ import {
 
 import * as clab from "@cashlab/common";
 import * as cauldron from "@cashlab/cauldron";
+import { ExchangeLab, PoolV0 } from "@cashlab/cauldron";
 import LogService from "@/services/LogService";
 import UtxoManagerService from "@/services/UtxoManagerService";
 import AddressManagerService, {
@@ -21,6 +22,8 @@ import AddressManagerService, {
 import AddressScannerService from "@/services/AddressScannerService";
 import HdNodeService from "@/services/HdNodeService";
 import WalletManagerService from "@/services/WalletManagerService";
+import CauldronService from "@/services/CauldronService";
+import CurrencyService from "@/services/CurrencyService";
 import {
   TransactionStub,
   TransactionOutput,
@@ -34,6 +37,7 @@ import {
 import { binToHex, hexToBin } from "@/util/hex";
 import { sha256 } from "@/util/hash";
 import { addressToLockingBytecode } from "@/util/cashaddr";
+import { MUSD_TOKENID } from "@/util/tokens";
 
 // NOTE: Couldn't find this type defined elsewhere, so have added it here.
 export type ElectrumUtxo = {
@@ -74,6 +78,7 @@ export default function TransactionBuilderService(walletHash: string) {
 
   return {
     buildP2pkhTransaction,
+    buildStablecoinTransaction,
     buildSendTokensTransactionWithFeePayingTokenCategory,
   };
 
@@ -541,6 +546,140 @@ export default function TransactionBuilderService(walletHash: string) {
     }
 
     return 0;
+  }
+
+  function buildStablecoinTransaction(
+    recipients: Array<Recipient>,
+    satsShort: bigint
+  ) {
+    const Cauldron = CauldronService();
+    const exchangeLab = new ExchangeLab();
+    const UtxoManager = UtxoManagerService(wallet.walletHash);
+
+    const inputPools = Cauldron.getPoolInputs(MUSD_TOKENID);
+
+    const recipientAmount = recipients.reduce(
+      (sum, cur) => sum + cur.amount,
+      0n
+    );
+
+    const price = Cauldron.getTokenPrice(MUSD_TOKENID);
+    Log.debug(`${price} sats per 0.01 MUSD`);
+
+    const tokenTotal = recipientAmount / price;
+
+    Log.debug("tokenTotal", tokenTotal, "(musd)");
+    Log.debug("recipientAmount", recipientAmount, "(sats)");
+    Log.debug("satsShort", satsShort, "(sats)");
+
+    const AddressManager = AddressManagerService(wallet.walletHash);
+    const changeAddress = AddressManager.getUnusedAddresses(1, 1)[0];
+
+    const payoutRules: clab.PayoutRule[] = [
+      ...recipients.map((r) => ({
+        type: clab.PayoutAmountRuleType.FIXED,
+        locking_bytecode: addressToLockingBytecode(r.address),
+        amount: r.amount,
+        token: r.token
+          ? {
+              token_id: r.token.category,
+              amount: r.token.amount,
+            }
+          : undefined,
+      })),
+      {
+        type: clab.PayoutAmountRuleType.CHANGE,
+        locking_bytecode: addressToLockingBytecode(changeAddress.address),
+        allow_mixing_native_and_token_when_bch_change_is_dust: true,
+      },
+    ];
+
+    Log.debug("payoutRules", payoutRules);
+
+    const initialTrade = exchangeLab.constructTradeBestRateForTargetDemand(
+      MUSD_TOKENID,
+      "BCH",
+      satsShort,
+      inputPools,
+      1n
+    );
+
+    let isSuccess = false;
+    let currentTrade = initialTrade;
+    let tradeTransaction = null;
+    while (!isSuccess) {
+      try {
+        Log.debug("currentTrade", initialTrade);
+
+        const tokenFee = currentTrade.summary.trade_fee / price;
+
+        const stablecoinUtxos = UtxoManager.selectTokens(
+          MUSD_TOKENID,
+          currentTrade.summary.supply + tokenFee
+        );
+        Log.debug("tokenUtxos", stablecoinUtxos);
+
+        const coinUtxos = UtxoManager.selectCoins(recipientAmount - satsShort);
+        Log.debug("coinUtxos", coinUtxos);
+
+        const inputs = [...stablecoinUtxos, ...coinUtxos];
+
+        const HdNode = HdNodeService(wallet);
+        const clabInputs: clab.SpendableCoin[] = inputs.map((input) => {
+          return {
+            type: clab.SpendableCoinType.P2PKH,
+            key: HdNode.getAddressPrivateKey(input.address),
+            output: {
+              locking_bytecode: addressToLockingBytecode(input.address),
+              token:
+                input.token_category !== null
+                  ? {
+                      amount: BigInt(input.token_amount),
+                      token_id: input.token_category,
+                    }
+                  : undefined,
+              amount: BigInt(input.amount),
+            },
+            outpoint: {
+              txhash: hexToBin(input.txid),
+              index: Number(input.tx_pos),
+            },
+          };
+        });
+        tradeTransaction = exchangeLab.createTradeTx(
+          currentTrade.entries,
+          clabInputs,
+          payoutRules,
+          null,
+          TXFEE_PER_BYTE
+        );
+        isSuccess = true;
+        Log.debug("tradeTransaction", tradeTransaction);
+      } catch (e) {
+        Log.debug(e);
+        if (!e.required_amount) {
+          throw e;
+        }
+
+        currentTrade = exchangeLab.constructTradeBestRateForTargetDemand(
+          MUSD_TOKENID,
+          "BCH",
+          currentTrade.summary.demand + currentTrade.summary.trade_fee,
+          inputPools,
+          1n
+        );
+      }
+    }
+
+    if (tradeTransaction === null) {
+      return false;
+    }
+
+    const tx_raw = tradeTransaction.txbin;
+    const tx_hex = binToHex(tx_raw);
+    const tx_hash = swapEndianness(binToHex(sha256.hash(sha256.hash(tx_raw))));
+
+    return { tx_hex, tx_hash };
   }
 
   function buildSendTokensTransactionWithFeePayingTokenCategory({

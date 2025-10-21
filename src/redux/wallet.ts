@@ -286,8 +286,8 @@ export const selectGenesisHeight = createSelector(
 export const selectActiveWalletBalance = createSelector(
   (state) => state.wallet,
   (wallet) => ({
-    balance: wallet.balance,
-    spendable_balance: wallet.spendable_balance,
+    balance: BigInt(wallet.balance),
+    spendable_balance: BigInt(wallet.spendable_balance),
   })
 );
 

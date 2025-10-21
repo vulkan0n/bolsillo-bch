@@ -14,7 +14,6 @@ import {
   MoneyCollectOutlined,
   DollarCircleOutlined,
 } from "@ant-design/icons";
-
 import {
   selectActiveWalletHash,
   selectActiveWalletBalance,
@@ -23,6 +22,7 @@ import {
 import {
   selectCurrencySettings,
   selectInstantPaySettings,
+  selectBchNetwork,
   setPreference,
 } from "@/redux/preferences";
 
@@ -39,6 +39,7 @@ import ToastService from "@/services/ToastService";
 import SecurityService, { AuthActions } from "@/services/SecurityService";
 import LogService from "@/services/LogService";
 import CurrencyService from "@/services/CurrencyService";
+import CauldronService from "@/services/CauldronService";
 
 import { useStablecoinBalance } from "@/hooks/useStablecoinBalance";
 
@@ -81,6 +82,7 @@ export default function WalletViewSend() {
   const walletHash = useSelector(selectActiveWalletHash);
   const isConnected = useSelector(selectIsConnected);
   const isScanning = useSelector(selectScannerIsScanning);
+  const bchNetwork = useSelector(selectBchNetwork);
 
   const [isSending, setIsSending] = useState(false);
   const [message, setMessage] = useState("");
@@ -99,23 +101,19 @@ export default function WalletViewSend() {
 
   // ----------------
 
-  const {
-    shouldPreferLocalCurrency,
-    isStablecoinMode,
-    shouldIncludeVolatileBalance,
-  } = useSelector(selectCurrencySettings);
-
-  const { stablecoinBalance, volatileBalance } =
-    useStablecoinBalance(walletHash);
-
-  const spendableStablecoinBalance =
-    stablecoinBalance + (shouldIncludeVolatileBalance ? volatileBalance : 0n);
-
-  const spendableStablecoinSats = CurrencyService("USD").fiatToSats(
-    new Decimal(spendableStablecoinBalance).div(100)
+  const { shouldPreferLocalCurrency, isStablecoinMode } = useSelector(
+    selectCurrencySettings
   );
 
   const { balance, spendable_balance } = useSelector(selectActiveWalletBalance);
+
+  const { stablecoinBalance } = useStablecoinBalance(walletHash);
+
+  const Cauldron = CauldronService();
+  const cauldronPrice = Cauldron.getTokenPrice(MUSD_TOKENID);
+
+  const totalSpendableSats =
+    stablecoinBalance * cauldronPrice + spendable_balance;
 
   // ----------------
 
@@ -189,7 +187,7 @@ export default function WalletViewSend() {
   const isInsufficientTokens =
     hasTokens && !hasNft && satoshiInput > token_amount;
 
-  const isInsufficientStable = satoshiInput > spendableStablecoinSats;
+  const isInsufficientStable = satoshiInput > totalSpendableSats;
 
   const isInsufficientSats =
     selectionAmount > 0
@@ -336,27 +334,23 @@ export default function WalletViewSend() {
   const buildStablecoinTransaction = useCallback(async () => {
     const recipients = new Array<Recipient>();
 
+    const fiatNeeded = satoshiInput / cauldronPrice;
+
     // prioritize sending MUSD directly for token addresses
     // in this case we are assuming receiver is signalling their preference
     // to receive stablecoin token instead of raw sats
-    if (isTokenAddress) {
-      const fiatNeeded = BigInt(
-        new Decimal(CurrencyService("USD").satsToFiat(satoshiInput))
-          .mul(100)
-          .toString()
-      );
-
+    if (isTokenAddress && stablecoinBalance > 0) {
       // one token output if stablecoin balance covers entire amount
-      if (stablecoinBalance >= fiatNeeded) {
+      if (stablecoinBalance > fiatNeeded) {
         recipients.push({
           address,
-          amount: 0n,
+          amount: -1n,
           token: { category: MUSD_TOKENID, amount: fiatNeeded },
         });
-      } else if (spendableStablecoinSats >= satoshiInput) {
+      } else if (totalSpendableSats > satoshiInput) {
         // cover the difference with raw sats if balance is available (hybrid output)
         const amountShort = fiatNeeded - stablecoinBalance;
-        const satsShort = CurrencyService("USD").fiatToSats(amountShort);
+        const satsShort = amountShort * cauldronPrice;
 
         // if receiver uses stablecoin mode, they will convert the sats themselves
         // if they don't use stable mode, they don't care about receiving sats
@@ -376,34 +370,37 @@ export default function WalletViewSend() {
     }
 
     const TransactionBuilder = TransactionBuilderService(walletHash);
-    const transaction = TransactionBuilder.buildP2pkhTransaction({
+    let transaction = TransactionBuilder.buildP2pkhTransaction({
       recipients,
     });
 
-    Log.debug("buildStablecoinTransaction", recipients, transaction);
+    Log.debug(
+      "buildStablecoinTransaction",
+      fiatNeeded,
+      recipients,
+      transaction
+    );
 
     if (typeof transaction === "bigint") {
       // true insufficient funds
-      if (transaction > spendableStablecoinSats) {
+      if (transaction > totalSpendableSats) {
         handleInsufficientFunds();
         return false;
       }
 
       // we have enough stablecoin to attempt a swap-in-place
+      const satsShort = transaction - spendable_balance;
       Log.debug(
         "buildStablecoinTransaction swapOutgoing",
-        spendableStablecoinSats - transaction
+        spendable_balance,
+        transaction,
+        satsShort
       );
 
-      TransactionBuilder.buildSendTokensTransactionWithFeePayingTokenCategory({
+      transaction = TransactionBuilder.buildStablecoinTransaction(
         recipients,
-        selection,
-        exchangeLab,
-        inputPools,
-        MUSD_TOKENID,
-      });
-
-      return false;
+        satsShort
+      );
     }
 
     return transaction;
@@ -412,19 +409,23 @@ export default function WalletViewSend() {
     satoshiInput,
     stablecoinBalance,
     address,
-    spendableStablecoinSats,
     walletHash,
-    selection,
+    spendable_balance,
+    cauldronPrice,
+    totalSpendableSats,
   ]);
 
   const broadcastTransaction = useCallback(
     async (transaction) => {
       try {
         const TransactionManager = TransactionManagerService();
-        const { isSuccess, result } = await TransactionManager.sendTransaction({
-          txid: transaction.tx_hash,
-          hex: transaction.tx_hex,
-        });
+        const { isSuccess, result } = await TransactionManager.sendTransaction(
+          {
+            txid: transaction.tx_hash,
+            hex: transaction.tx_hex,
+          },
+          bchNetwork
+        );
 
         if (isSuccess) {
           const tx = await TransactionManager.resolveTransaction(result);
@@ -446,7 +447,7 @@ export default function WalletViewSend() {
         isInstantPayPending.current = false;
       }
     },
-    [navigate]
+    [navigate, bchNetwork]
   );
 
   const confirmSend = useCallback(
@@ -459,9 +460,10 @@ export default function WalletViewSend() {
 
       setIsSending(true);
 
-      const transaction = isStablecoinMode
-        ? await buildStablecoinTransaction()
-        : await buildTransaction();
+      const transaction =
+        isStablecoinMode && !hasTokens
+          ? await buildStablecoinTransaction()
+          : await buildTransaction();
 
       if (!transaction) {
         setIsSending(false);
@@ -474,6 +476,7 @@ export default function WalletViewSend() {
     [
       validateSendConditions,
       isStablecoinMode,
+      hasTokens,
       buildStablecoinTransaction,
       buildTransaction,
       broadcastTransaction,
@@ -528,13 +531,14 @@ export default function WalletViewSend() {
   };
 
   const handleSendMaxStablecoin = () => {
-    setSatoshiInput(spendableStablecoinSats);
-    setSatoshiInputKey(spendableStablecoinSats.toString());
+      handleSendMax();
   };
 
   const handleSendMax = () => {
     let amount =
-      selectionAmount > 0 ? BigInt(selectionAmount) : BigInt(spendable_balance);
+      selectionAmount > 0
+        ? BigInt(selectionAmount)
+        : BigInt(isStablecoinMode ? totalSpendableSats : spendable_balance);
 
     const TransactionBuilder = TransactionBuilderService(walletHash);
     const AddressManager = AddressManagerService(walletHash);

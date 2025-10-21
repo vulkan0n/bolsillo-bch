@@ -6,9 +6,7 @@ import {
 } from "@cashlab/common";
 import { ExchangeLab, PoolV0, PoolV0Parameters } from "@cashlab/cauldron";
 import LogService from "@/services/LogService";
-import ElectrumService, {
-  ElectrumNotConnectedError,
-} from "@/services/ElectrumService";
+import ElectrumService from "@/services/ElectrumService";
 import { WalletEntity } from "@/services/WalletManagerService";
 import AddressManagerService from "@/services/AddressManagerService";
 import UtxoManagerService from "@/services/UtxoManagerService";
@@ -61,23 +59,29 @@ export const parsePoolFromRostrumNodeData = (
 
 type SubscriptionFunction = (data: unknown) => void;
 
+const subscriptions = new Map<string, Array<SubscriptionFunction>>();
+const poolUtxos = new Map<string, CauldronPoolUtxo>();
+
 export default function CauldronService() {
   const Rostrum = ElectrumService("cauldron");
-  const subscriptions = new Map<string, Array<SubscriptionFunction>>();
-  const poolUtxos = new Map<string, CauldronPoolUtxo>();
 
   return {
     connect,
     disconnect,
     subscribe,
+    unsubscribe,
+    removeHandler,
+    getPoolInputs,
+    getTokenPrice,
     fetchPools,
     prepareTrade,
     broadcastTransaction: Rostrum.broadcastTransaction,
+    getIsConnected: Rostrum.getIsConnected,
   };
 
   function registerPool(pool) {
     poolUtxos.set(pool.new_utxo_hash, pool);
-    Log.debug("registerPool", pool, poolUtxos);
+    //Log.debug("registerPool", pool, poolUtxos);
   }
 
   function updatePool(pool) {
@@ -97,7 +101,7 @@ export default function CauldronService() {
   }
 
   function handleCauldronSubscription(params) {
-    Log.debug("handleCauldronSubscription", params);
+    Log.debug("handleCauldronSubscription", params, params.length);
     if (params.length < 2) {
       Log.warn("ignoring cauldron notification: invalid response length");
       return;
@@ -141,31 +145,109 @@ export default function CauldronService() {
   }
 
   function disconnect() {
+    subscriptions.clear();
     return Rostrum.disconnect(true);
   }
 
-  async function subscribe(category: string, callback: SubscriptionFunction) {
-    const currentSubscriptions = subscriptions.get(category) || [];
-    subscriptions.set(category, [...currentSubscriptions, callback]);
-
-    const rostrum = Rostrum.getElectrumClient();
-    rostrum.subscribe("cauldron.contract.subscribe", 2, category);
-
-    Log.debug("subscribe", category);
-  }
-
-  function getPoolInputs(): Array<PoolV0> {
-    const exlab = new ExchangeLab();
-    Log.log(poolUtxos);
-    return [...poolUtxos.values()].map((pool) =>
-      parsePoolFromRostrumNodeData(exlab, pool)
-    );
-  }
-
-  async function fetchPools() {
+  async function subscribe(category: string, callback?: SubscriptionFunction) {
     if (!Rostrum.getIsConnected()) {
-      throw new ElectrumNotConnectedError();
+      await connect();
     }
+
+    const currentSubscriptions = subscriptions.get(category) || [];
+
+    if (currentSubscriptions.length === 0) {
+      const rostrum = Rostrum.getElectrumClient();
+      rostrum.subscribe("cauldron.contract.subscribe", 2, category);
+    }
+
+    if (typeof callback === "function") {
+      currentSubscriptions.push(callback);
+      subscriptions.set(category, currentSubscriptions);
+    }
+
+    //Log.debug("subscribe", category, callback);
+  }
+
+  async function removeHandler(
+    category: string,
+    callback: SubscriptionFunction
+  ) {
+    const currentSubscriptions = subscriptions.get(category) || [];
+    const subscriptionIndex = currentSubscriptions.findIndex(
+      (s) => s === callback
+    );
+
+    if (subscriptionIndex > -1) {
+      currentSubscriptions.splice(subscriptionIndex, 1);
+      subscriptions.set(category, currentSubscriptions);
+    }
+
+    if (currentSubscriptions.length === 0) {
+      unsubscribe(category);
+    }
+  }
+
+  async function unsubscribe(category: string) {
+    const rostrum = Rostrum.getElectrumClient();
+    try {
+      await rostrum.unsubscribe("cauldron.contract.unsubscribe", 2, category);
+      subscriptions.set(category, []);
+    } catch (e) {
+      // squelch errors
+    }
+    //Log.debug("unsubscribe", category, callback);
+  }
+
+  function getPoolInputs(category?: string): Array<PoolV0> {
+    const exlab = new ExchangeLab();
+    Log.log("getPoolUtxos", poolUtxos, category);
+    return [...poolUtxos.values()]
+      .filter((p) => category === undefined || p.token_id === category)
+      .map((pool) => parsePoolFromRostrumNodeData(exlab, pool));
+  }
+
+  function getTokenPrice(category: string): bigint {
+    if (!category) {
+      throw new Error("getTokenPrice requires a token category");
+    }
+
+    const pools = Array.from(poolUtxos.values()).filter(
+      (p) => p.token_id === category
+    );
+
+    const tokenSum = pools.reduce(
+      (sum, cur) => sum + BigInt(cur.token_amount),
+      0n
+    );
+    const satsSum = pools.reduce((sum, cur) => sum + BigInt(cur.sats), 0n);
+
+    if (satsSum === 0n || tokenSum === 0n) {
+      return 1n;
+    }
+
+    const satsPerToken = BigInt(
+      Math.round(Number((satsSum * 100000000n) / tokenSum) / 100000000)
+    );
+    Log.debug("getTokenPrice", tokenSum, satsSum, satsPerToken);
+    return satsPerToken;
+  }
+
+  async function fetchPools(category: string) {
+    if (!Rostrum.getIsConnected()) {
+      await connect();
+    }
+    const rostrum = Rostrum.getElectrumClient();
+    const result = await rostrum.request(
+      "cauldron.contract.subscribe",
+      2,
+      category
+    );
+
+    Log.debug("fetchPools result", result);
+    handleCauldronSubscription([2, category, result]);
+
+    return getPoolInputs(category);
   }
 
   async function prepareTrade(

@@ -15,6 +15,7 @@ import ElectrumService from "@/services/ElectrumService";
 import WalletManagerService from "@/services/WalletManagerService";
 
 import { hexToBin, binToHex } from "@/util/hex";
+import { ValidBchNetwork } from "@/util/electrum_servers";
 
 const Log = LogService("TransactionManager");
 
@@ -133,11 +134,16 @@ export default function TransactionManagerService() {
   }
 
   async function sendTransaction(
-    tx: TransactionStub
+    tx: TransactionStub,
+    network: ValidBchNetwork = "mainnet"
   ): Promise<{ isSuccess: boolean; result: string | null }> {
     const { txid: tx_hash, hex: tx_hex } = tx;
 
-    const Electrum = ElectrumService();
+    const Electrum = ElectrumService(network);
+    if (!Electrum.getIsConnected()) {
+      await Electrum.connect();
+    }
+
     const result = await Electrum.broadcastTransaction(tx_hex);
     const isSuccess = result === tx_hash;
 

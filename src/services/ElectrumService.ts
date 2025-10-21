@@ -73,7 +73,7 @@ export default function ElectrumService(bchNetwork = "mainnet") {
 
   // connect: connect to an Electrum server
   // Creates a new ElectrumClient every time
-  async function connect(server: string, withListeners = true) {
+  async function connect(server?: string, withListeners = true) {
     const server_list = electrum_servers[bchNetwork];
 
     const connectServer = server || server_list[0];

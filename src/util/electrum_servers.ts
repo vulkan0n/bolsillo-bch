@@ -6,10 +6,10 @@ export const cauldron_servers: Array<string> = ["rostrum.cauldron.quest:50004"];
 
 const mainnet_servers: Array<string> = [
   "cashnode.bch.ninja:50004", // Kallisti / Selene Official
-  "fulcrum.jettscythe.xyz:50004", // Jett
+  //"fulcrum.jettscythe.xyz:50004", // Jett
   "bch.imaginary.cash:50004", // im_uname
   "bitcoincash.network:50004", // Dagur
-  "electroncash.dk:50004", // Georg
+  //"electroncash.dk:50004", // Georg
   "blackie.c3-soft.com:50004", // Calin
   "bch.loping.net:50004",
   "bch.soul-dev.com:50004",
@@ -19,7 +19,7 @@ const mainnet_servers: Array<string> = [
 
 const chipnet_servers: Array<string> = [
   "chipnet.bch.ninja:50004", // Kallisti
-  //"chipnet.imaginary.cash:50004", // im_uname
+  "chipnet.imaginary.cash:50004", // im_uname
   "chipnet.c3-soft.com:64004", // Calin
   //"electroncash.de:55004", // Georg
   //"cbch.loping.net:62104",

@@ -36,6 +36,8 @@ import AddressScannerService from "@/services/AddressScannerService";
 import UtxoManagerService from "@/services/UtxoManagerService";
 import JanitorService from "@/services/JanitorService";
 
+import { MUSD_TOKENID } from "@/util/tokens";
+
 const Log = LogService("redux/sync");
 
 export const syncMiddleware = createListenerMiddleware<{
@@ -60,7 +62,7 @@ export const syncConnect = createAsyncThunk(
     Log.log("sync/connect", payload);
     let isSuccess = false;
     try {
-      await thunkApi.dispatch(syncCauldronConnect());
+      thunkApi.dispatch(syncCauldronConnect());
       await Electrum.connect(payload.server);
       isSuccess = true;
     } catch (e) {
@@ -113,6 +115,8 @@ export const syncCauldronConnect = createAsyncThunk(
 
     const Cauldron = CauldronService();
     await Cauldron.connect();
+
+    //Cauldron.subscribe(MUSD_TOKENID);
   }
 );
 
@@ -129,6 +133,9 @@ export const syncReconnect = createAsyncThunk(
 
 export const syncDisconnect = createAsyncThunk("sync/disconnect", async () => {
   const Electrum = ElectrumService();
+  const Cauldron = CauldronService();
+
+  Cauldron.disconnect();
   return Electrum.disconnect(true);
 });
 
