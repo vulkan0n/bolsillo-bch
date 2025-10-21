@@ -821,7 +821,7 @@ export default function WalletViewSend() {
               </div>
               <div className="flex-1">
                 <SlideToAction
-                  disabled={address === "" || !satoshiInput || isSending}
+                  disabled={address === "" || (!satoshiInput && !hasNft) || isSending}
                   onSlide={() => confirmSend(false)}
                   label={translate(translations.slideToConfirm)}
                 />
