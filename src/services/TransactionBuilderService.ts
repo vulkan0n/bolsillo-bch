@@ -566,6 +566,7 @@ export default function TransactionBuilderService(walletHash: string) {
     const price = Cauldron.getTokenPrice(MUSD_TOKENID);
     Log.debug(`${price} sats per 0.01 MUSD`);
 
+    // recipientAmount denominated in stablecoin token
     const tokenTotal = recipientAmount / price;
 
     Log.debug("tokenTotal", tokenTotal, "(musd)");
@@ -573,7 +574,8 @@ export default function TransactionBuilderService(walletHash: string) {
     Log.debug("satsShort", satsShort, "(sats)");
 
     const AddressManager = AddressManagerService(wallet.walletHash);
-    const changeAddress = AddressManager.getUnusedAddresses(1, 1)[0];
+    const changeAddresses = AddressManager.getUnusedAddresses(2, 1);
+    let changeAddressIndex = 0;
 
     const payoutRules: clab.PayoutRule[] = [
       ...recipients.map((r) => ({
@@ -589,7 +591,14 @@ export default function TransactionBuilderService(walletHash: string) {
       })),
       {
         type: clab.PayoutAmountRuleType.CHANGE,
-        locking_bytecode: addressToLockingBytecode(changeAddress.address),
+        generateChangeLockingBytecodeForOutput() {
+          const changeAddress = changeAddresses[changeAddressIndex];
+          if (changeAddressIndex + 1 < changeAddresses.length) {
+            changeAddressIndex += 1;
+          }
+          return addressToLockingBytecode(changeAddress.address);
+        },
+
         allow_mixing_native_and_token_when_bch_change_is_dust: true,
       },
     ];
@@ -611,6 +620,7 @@ export default function TransactionBuilderService(walletHash: string) {
       try {
         Log.debug("currentTrade", initialTrade);
 
+        // attempt to pay trade fee by selling extra tokens
         const tokenFee = currentTrade.summary.trade_fee / price;
 
         const stablecoinUtxos = UtxoManager.selectTokens(
@@ -679,7 +689,7 @@ export default function TransactionBuilderService(walletHash: string) {
     const tx_hex = binToHex(tx_raw);
     const tx_hash = swapEndianness(binToHex(sha256.hash(sha256.hash(tx_raw))));
 
-    return { tx_hex, tx_hash };
+    return { tx_hex, tx_hash, trade: currentTrade };
   }
 
   function buildSendTokensTransactionWithFeePayingTokenCategory({

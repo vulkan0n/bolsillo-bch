@@ -331,55 +331,69 @@ export default function WalletViewSend() {
     walletHash,
   ]);
 
-  const buildStablecoinTransaction = useCallback(async () => {
-    const recipients = new Array<Recipient>();
+  const prepareStablecoinRecipients = useCallback(
+    (amount: bigint): Array<Recipient> => {
+      const recipients = new Array<Recipient>();
+      const fiatNeeded = amount / cauldronPrice;
 
-    const fiatNeeded = satoshiInput / cauldronPrice;
+      const AddressManager = AddressManagerService(walletHash);
+      const tryAddress =
+        address || AddressManager.getUnusedAddresses(1, 0)[0].address;
 
-    // prioritize sending MUSD directly for token addresses
-    // in this case we are assuming receiver is signalling their preference
-    // to receive stablecoin token instead of raw sats
-    if (isTokenAddress && stablecoinBalance > 0) {
-      // one token output if stablecoin balance covers entire amount
-      if (stablecoinBalance > fiatNeeded) {
+      // prioritize sending MUSD directly for token addresses
+      // in this case we are assuming receiver is signalling their preference
+      // to receive stablecoin token instead of raw sats
+      if (isTokenAddress && stablecoinBalance > 0) {
+        // one token output if stablecoin balance covers entire amount
+        if (stablecoinBalance > fiatNeeded) {
+          recipients.push({
+            address: tryAddress,
+            amount: -1n,
+            token: { category: MUSD_TOKENID, amount: fiatNeeded },
+          });
+        } else if (totalSpendableSats > satoshiInput) {
+          // cover the difference with raw sats if balance is available (hybrid output)
+          const amountShort = fiatNeeded - stablecoinBalance;
+          const satsShort = amountShort * cauldronPrice;
+
+          // if receiver uses stablecoin mode, they will convert the sats themselves
+          // if they don't use stable mode, they don't care about receiving sats
+          // if they give us a q address, they get sats regardless
+          recipients.push({
+            address: tryAddress,
+            amount: satsShort,
+            token: { category: MUSD_TOKENID, amount: stablecoinBalance },
+          });
+        }
+      } else {
+        // only output raw sats for non-token addresses
         recipients.push({
-          address,
-          amount: -1n,
-          token: { category: MUSD_TOKENID, amount: fiatNeeded },
-        });
-      } else if (totalSpendableSats > satoshiInput) {
-        // cover the difference with raw sats if balance is available (hybrid output)
-        const amountShort = fiatNeeded - stablecoinBalance;
-        const satsShort = amountShort * cauldronPrice;
-
-        // if receiver uses stablecoin mode, they will convert the sats themselves
-        // if they don't use stable mode, they don't care about receiving sats
-        // if they give us a q address, they get sats regardless
-        recipients.push({
-          address,
-          amount: satsShort,
-          token: { category: MUSD_TOKENID, amount: stablecoinBalance },
+          address: tryAddress,
+          amount: satoshiInput,
         });
       }
-    } else {
-      // only output raw sats for non-token addresses
-      recipients.push({
-        address,
-        amount: satoshiInput,
-      });
-    }
 
+      return recipients;
+    },
+    [
+      address,
+      cauldronPrice,
+      isTokenAddress,
+      satoshiInput,
+      stablecoinBalance,
+      totalSpendableSats,
+      walletHash,
+    ]
+  );
+
+  const buildStablecoinTransaction = useCallback(async () => {
+    const recipients = prepareStablecoinRecipients(satoshiInput);
     const TransactionBuilder = TransactionBuilderService(walletHash);
     let transaction = TransactionBuilder.buildP2pkhTransaction({
       recipients,
     });
 
-    Log.debug(
-      "buildStablecoinTransaction",
-      fiatNeeded,
-      recipients,
-      transaction
-    );
+    Log.debug("buildStablecoinTransaction", recipients, transaction);
 
     if (typeof transaction === "bigint") {
       // true insufficient funds
@@ -405,14 +419,11 @@ export default function WalletViewSend() {
 
     return transaction;
   }, [
-    isTokenAddress,
     satoshiInput,
-    stablecoinBalance,
-    address,
     walletHash,
-    spendable_balance,
-    cauldronPrice,
     totalSpendableSats,
+    prepareStablecoinRecipients,
+    spendable_balance,
   ]);
 
   const broadcastTransaction = useCallback(
@@ -531,14 +542,41 @@ export default function WalletViewSend() {
   };
 
   const handleSendMaxStablecoin = () => {
-      handleSendMax();
+    const TransactionBuilder = TransactionBuilderService(walletHash);
+    const AddressManager = AddressManagerService(walletHash);
+
+    const tryRecipients = prepareStablecoinRecipients(totalSpendableSats);
+
+    const satsShort = TransactionBuilder.buildP2pkhTransaction({
+      recipients: tryRecipients,
+    });
+
+    if (typeof satsShort !== "bigint") {
+      setSatoshiInput(totalSpendableSats);
+      setSatoshiInputKey(totalSpendableSats.toString());
+      return;
+    }
+
+    let amount = totalSpendableSats - satsShort;
+
+    const recipients = prepareStablecoinRecipients(amount);
+
+    let { trade } = TransactionBuilder.buildStablecoinTransaction(
+      recipients,
+      satsShort
+    );
+
+    Log.debug("trade: ", trade);
+
+    /*const clampedAmount = amount < 0 ? 0n : amount;
+      setSatoshiInput(clampedAmount);
+      // force re-render of SatoshiInput component
+      setSatoshiInputKey(clampedAmount.toString());*/
   };
 
   const handleSendMax = () => {
     let amount =
-      selectionAmount > 0
-        ? BigInt(selectionAmount)
-        : BigInt(isStablecoinMode ? totalSpendableSats : spendable_balance);
+      selectionAmount > 0 ? BigInt(selectionAmount) : BigInt(spendable_balance);
 
     const TransactionBuilder = TransactionBuilderService(walletHash);
     const AddressManager = AddressManagerService(walletHash);
