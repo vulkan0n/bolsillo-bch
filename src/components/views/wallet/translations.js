@@ -1749,7 +1749,13 @@ const translations = {
   },
   mySeleneWallet: {
     en: "My Selene Wallet",
-  }
+  },
+  useTokenAddress: {
+    en: "Use Token Address",
+  },
+  walletConnectAddress: {
+    en: "WalletConnect Address",
+  },
 };
 
 export default translations;

@@ -20,6 +20,10 @@ import WalletConnectService from "@/services/WalletConnectService";
 import AddressManagerService from "@/services/AddressManagerService";
 import LogService from "@/services/LogService";
 
+import { convertCashAddress } from "@/util/cashaddr";
+import { translate } from "@/util/translations";
+import translations from "@/views/wallet/translations";
+
 const Log = LogService("AppWalletConnectView");
 
 export default function AppWalletConnectView() {
@@ -27,6 +31,8 @@ export default function AppWalletConnectView() {
   const location = useLocation();
 
   const { handleCopyToClipboard } = useClipboard();
+
+  const [tokenToggle, setTokenToggle] = useState(0);
 
   const [walletConnectUri, setWalletConnectUri] = useState(
     location.state?.wcUri
@@ -45,7 +51,7 @@ export default function AppWalletConnectView() {
     setWalletConnectUri("");
   };
 
-  const handleReject = async () => {
+  const handleReject = async (sessionId) => {
     dispatch(wcSessionReject(sessionId));
   };
 
@@ -56,22 +62,39 @@ export default function AppWalletConnectView() {
   const walletHash = useSelector(selectActiveWalletHash);
   const walletConnectAddress = useMemo(() => {
     const AddressManager = AddressManagerService(walletHash);
-    const { address } = AddressManager.getAddressRange(0, 0)[0];
+    const { address } = AddressManager.getWalletConnectAddress();
+    const tokenAddress = convertCashAddress(address, "tokenaddr");
 
-    return address;
+    return [address, tokenAddress];
   }, [walletHash]);
 
   const handleCopyWalletConnectAddress = () => {
-    handleCopyToClipboard(walletConnectAddress, walletConnectAddress);
+    handleCopyToClipboard(
+      walletConnectAddress[tokenToggle],
+      walletConnectAddress[tokenToggle]
+    );
   };
 
   return (
     <FullColumn>
       <ViewHeader title="WalletConnect" icon={WalletConnectFilled} />
       <div className="p-1 bg-primary-900 text-neutral-50">
-        <div className="px-1 font-bold flex items-center">
-          <WalletConnectFilled className="mr-1" />
-          WalletConnect Address
+        <div className="flex justify-between items-center">
+          <div className="px-1 font-bold flex items-center">
+            <WalletConnectFilled className="mr-1" />
+            {translate(translations.walletConnectAddress)}
+          </div>
+          <label className="px-1 flex items-center">
+            <input
+              type="checkbox"
+              checked={tokenToggle === 1}
+              onChange={(event) => setTokenToggle(event.target.checked ? 1 : 0)}
+              className="mr-1"
+            />
+            <span className="text-sm">
+              {translate(translations.useTokenAddress)}
+            </span>
+          </label>
         </div>
         <Button
           icon={CopyOutlined}
@@ -79,7 +102,7 @@ export default function AppWalletConnectView() {
           labelColor="text-primary-700"
           label={
             <Address
-              address={walletConnectAddress}
+              address={walletConnectAddress[tokenToggle]}
               className="font-mono tracking-tighter"
               color="a" // non-empty string just to work w/ dark mode over a Button
             />
