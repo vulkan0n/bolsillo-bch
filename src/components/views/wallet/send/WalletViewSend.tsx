@@ -184,6 +184,10 @@ export default function WalletViewSend() {
     ? TokenManager.calculateTokenAmounts(tokenData.category)
     : { amount: 0n };
 
+  const tokenSelection = hasTokens
+    ? TokenManager.getTokenUtxos(tokenData.category)
+    : [];
+
   const isInsufficientTokens =
     hasTokens && !hasNft && satoshiInput > token_amount;
 
@@ -738,6 +742,9 @@ export default function WalletViewSend() {
               <>
                 {selectionAmount > 0 && <InputSelection inputs={selection} />}
                 {hasNft && <InputSelection inputs={nftSelection} />}
+                {tokenCategories.length > 0 && (
+                  <InputSelection inputs={tokenSelection} />
+                )}
                 {tokenData !== null && nftSelection.length === 0 && (
                   <div
                     className="py-4 px-2 rounded-md shadow-md text-white"
@@ -821,7 +828,9 @@ export default function WalletViewSend() {
               </div>
               <div className="flex-1">
                 <SlideToAction
-                  disabled={address === "" || (!satoshiInput && !hasNft) || isSending}
+                  disabled={
+                    address === "" || (!satoshiInput && !hasNft) || isSending
+                  }
                   onSlide={() => confirmSend(false)}
                   label={translate(translations.slideToConfirm)}
                 />
