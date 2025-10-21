@@ -16,6 +16,7 @@ import {
 import { selectActiveWalletHash } from "@/redux/wallet";
 
 import TransactionHistoryService from "@/services/TransactionHistoryService";
+import TokenManagerService from "@/services/TokenManagerService";
 
 import Address from "@/atoms/Address";
 import Satoshi from "@/atoms/Satoshi";
@@ -192,6 +193,20 @@ function OutputListItem({ output, i }) {
   // Determine address format based on whether tokens are present
   const addressFormat = output.token ? "tokenaddr" : undefined;
 
+  const walletHash = useSelector(selectActiveWalletHash);
+  const TokenManager = TokenManagerService(walletHash);
+  const tokenData = output.token
+    ? TokenManager.getToken(binToHex(output.token.category))
+    : undefined;
+
+  const token = tokenData
+    ? {
+        ...tokenData,
+        amount: output.token.amount,
+        nftCount: output.token.nft ? 1 : 0,
+      }
+    : undefined;
+
   return (
     <div className={`p-1.5 ${zebraCss}`}>
       <div className="flex text-sm items-center">
@@ -214,15 +229,19 @@ function OutputListItem({ output, i }) {
             <Satoshi value={output.valueSatoshis} flip />
           </span>
         </div>
-        {output.token && (
-          <div
-            className="text-sm"
-            style={{
-              color: `#${binToHex(output.token.category).slice(0, 6)}`,
-            }}
-          >
-            <TokenAmount token={output.token} />
-          </div>
+        {token && (
+          <span className="flex items-center justify-end">
+            <span
+              style={{ color: token.color }}
+              className="font-mono text-xs tracking-tighter font-bold mr-0.5"
+            >
+              {token.symbol}
+            </span>
+            <span className="flex items-baseline gap-x-0.5">
+              {token.amount > 0 && <TokenAmount token={token} />}
+              {token.nftCount > 0 && <TokenAmount token={token} nft />}
+            </span>
+          </span>
         )}
       </div>
     </div>

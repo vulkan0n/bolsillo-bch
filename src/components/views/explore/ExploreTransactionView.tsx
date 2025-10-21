@@ -104,14 +104,15 @@ export default function ExploreTransactionView() {
                 <span>
                   <span className="flex items-center">
                     <CheckCircleOutlined className="text-secondary mr-1" />{" "}
-                    Confirmed in block #{tx.height} ({confirmations} blocks)
+                    {translate(translations.confirmedInBlock)} #{tx.height} (
+                    {confirmations} {translate(translations.blocks)})
                   </span>
                 </span>
               </div>
             ) : (
               <div className="flex items-center font-bold text-neutral-500 dark:text-neutral-200 text-sm">
                 <HourglassOutlined className="text-neutral-500 dark:text-neutral-200 mr-1" />{" "}
-                Pending Confirmation
+                {translate(translations.pendingConfirmation)}
               </div>
             )}
           </div>
@@ -120,7 +121,7 @@ export default function ExploreTransactionView() {
           >
             <Editable
               value={memo}
-              placeholder="Set Memo..."
+              placeholder={translate(translations.setMemo)}
               onConfirm={handleSaveMemo}
             />
           </div>
@@ -229,8 +230,10 @@ function OutputListItem({
             >
               {token.symbol}
             </span>
-            <TokenAmount token={token} />
-            {token.nftCount > 0 && <TokenAmount token={token} nft />}
+            <span className="flex items-baseline gap-x-0.5 text-sm">
+              {token.amount > 0 && <TokenAmount token={token} />}
+              {token.nftCount > 0 && <TokenAmount token={token} nft />}
+            </span>
           </span>
         )}
       </div>

@@ -116,12 +116,12 @@ export default function WalletViewHistory() {
                       >
                         {token.symbol}
                       </span>
-                      {token.nft_amount !== 0 && (
+                      {token.nft_amount ? (
                         <TokenAmount token={token} nft />
-                      )}
-                      {token.fungible_amount !== 0 && (
+                      ) : null}
+                      {token.fungible_amount ? (
                         <TokenAmount token={token} />
-                      )}
+                      ) : null}
                     </div>
                   ))}
                 </div>

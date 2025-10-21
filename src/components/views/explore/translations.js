@@ -544,7 +544,19 @@ const translations = {
     vi: "Tìm hiểu thêm",
     zh: "了解更多",
     zh_TW: "了解更多"
-  }
+  },
+  confirmedInBlock: {
+    en: "Confirmed in block",
+  },
+  blocks: {
+    en: "blocks",
+  },
+  pendingConfirmation: {
+    en: "Pending Confirmation",
+  },
+  setMemo: {
+    en: "Set Memo...",
+  },
 };
 
 export default translations;
