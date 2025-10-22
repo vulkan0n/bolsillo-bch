@@ -4,11 +4,13 @@ import {
   SendOutlined,
   ThunderboltOutlined,
   PropertySafetyOutlined,
+  MergeOutlined,
 } from "@ant-design/icons";
 
 import {
   selectInstantPaySettings,
   selectCurrencySettings,
+  selectIsExperimental,
 } from "@/redux/preferences";
 
 import { translate } from "@/util/translations";
@@ -28,9 +30,10 @@ export default function PaymentSettings() {
   const { isInstantPayEnabled, instantPayThreshold } = useSelector(
     selectInstantPaySettings
   );
-  const { localCurrency, shouldPreferLocalCurrency } = useSelector(
-    selectCurrencySettings
-  );
+  const { localCurrency, shouldPreferLocalCurrency, shouldIncludeTokenSats } =
+    useSelector(selectCurrencySettings);
+
+  const isExperimental = useSelector(selectIsExperimental);
 
   const Currency = CurrencyService(localCurrency);
 
@@ -90,6 +93,20 @@ export default function PaymentSettings() {
           />
         </span>
       </Accordion.Child>
+      {(isExperimental || shouldIncludeTokenSats) && (
+        <Accordion.Child
+          icon={MergeOutlined}
+          label="Allow spending from token UTXOs"
+        >
+          <input
+            type="checkbox"
+            checked={shouldIncludeTokenSats}
+            onChange={(event) =>
+              handleSettingsUpdate("includeTokenSats", event.target.checked)
+            }
+          />
+        </Accordion.Child>
+      )}
     </Accordion>
   );
 }

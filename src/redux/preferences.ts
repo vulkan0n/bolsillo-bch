@@ -140,7 +140,6 @@ function validatePreferences(preferences: ValidPreferences): boolean {
     "showMemoCard",
     "showOutputsCard",
     "stablecoinMode",
-    "includeVolatileBalance",
     "includeTokenSats",
   ];
 
@@ -296,7 +295,6 @@ export const selectCurrencySettings = createSelector(
     shouldPreferLocalCurrency: preferences.preferLocalCurrency === "true",
     shouldIncludeTokenSats: preferences.includeTokenSats === "true",
     isStablecoinMode: preferences.stablecoinMode === "true",
-    shouldIncludeVolatileBalance: preferences.includeVolatileBalance === "true",
   })
 );
 

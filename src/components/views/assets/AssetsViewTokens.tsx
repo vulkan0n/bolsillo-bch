@@ -41,11 +41,13 @@ export default function AssetsViewTokens() {
 
   const sortIdentities = useCallback((a, b) => {
     // sort tokens with metadata above tokens without metadata
-    if (a.token && !b.token) {
+    const hasMetadata = (w) => w.token && w.symbol !== w.category.slice(0, 6);
+
+    if (hasMetadata(a) && !hasMetadata(b)) {
       return -1;
     }
 
-    if (b.token && !a.token) {
+    if (hasMetadata(b) && !hasMetadata(a)) {
       return 1;
     }
 

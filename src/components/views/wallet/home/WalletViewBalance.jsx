@@ -54,8 +54,7 @@ export default function WalletViewBalance() {
 
   const { isStablecoinMode } = useSelector(selectCurrencySettings);
 
-  const currencyFlip = useCurrencyFlip();
-  const handleFlipCurrency = isStablecoinMode ? () => {} : currencyFlip;
+  const handleFlipCurrency = useCurrencyFlip();
 
   const shouldHideBalance = useSelector(selectShouldHideBalance);
   const hiddenBalanceClasses = useMemo(
@@ -119,34 +118,55 @@ export default function WalletViewBalance() {
 
 function StablecoinBalance() {
   const { walletHash } = useSelector(selectActiveWallet);
-  const { shouldIncludeVolatileBalance } = useSelector(selectCurrencySettings);
+  const { shouldPreferLocalCurrency } = useSelector(selectCurrencySettings);
 
-  const { stablecoinBalance, volatileBalance } =
-    useStablecoinBalance(walletHash);
+  const stablecoinBalance = useStablecoinBalance(walletHash);
 
-  Log.debug("stablecoinBalance", stablecoinBalance, volatileBalance);
+  const { spendable_balance } = useSelector(selectActiveWalletBalance);
+
+  Log.debug("stablecoinBalance", stablecoinBalance);
+
+  const [balanceReceivedSpring, receiveSpringApi] = useSpring(() => ({
+    from: { color: "#8dc451" },
+    to: { color: "#f3f1ec" },
+    immediate: true,
+    config: {
+      tension: 230,
+      friction: 100,
+      mass: 0.6,
+    },
+  }));
+
+  useEffect(
+    function animateWalletBalanceOnReceive() {
+      receiveSpringApi.start({ reset: true });
+    },
+    [stablecoinBalance, receiveSpringApi]
+  );
 
   return (
     <>
       <div className="text-2xl text-neutral-50 tabular-nums flex justify-center items-center">
-        <span className="text-center">
+        <animated.span
+          className="text-center"
+          style={{ ...balanceReceivedSpring }}
+        >
           $<NumberFormat number={stablecoinBalance} decimals={2} scalar={-2} />
-        </span>
+        </animated.span>
         <span className="ml-2 flex items-center">
           <DollarCircleOutlined className="text-xl" />
         </span>
       </div>
-      {shouldIncludeVolatileBalance && (
-        <div className="text-md text-neutral-300 flex items-center justify-center">
-          <span className="flex items-center justify-center">
-            +$
-            <NumberFormat number={volatileBalance} decimals={2} scalar={-2} />
-          </span>
+      <div className="text-md text-neutral-300 flex items-center justify-center">
+        <span className="flex items-center justify-center">
+          +<Satoshi value={spendable_balance} />
+        </span>
+        {shouldPreferLocalCurrency && (
           <span className="ml-1.5 px-1.5 border border-neutral-300 text-xs text-neutral-200 rounded-full flex items-center justify-center">
             ₿
           </span>
-        </div>
-      )}
+        )}
+      </div>
     </>
   );
 }

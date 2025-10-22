@@ -11,7 +11,6 @@ import {
 import {
   selectCurrencySettings,
   selectIsPrerelease,
-  selectIsExperimental,
 } from "@/redux/preferences";
 
 import { syncCauldronConnect } from "@/redux/sync";
@@ -34,13 +33,10 @@ export default function CurrencySettings() {
     shouldPreferLocalCurrency,
     localCurrency,
     denomination,
-    shouldIncludeTokenSats,
     isStablecoinMode,
-    shouldIncludeVolatileBalance,
   } = useSelector(selectCurrencySettings);
 
   const isPrerelease = useSelector(selectIsPrerelease);
-  const isExperimental = useSelector(selectIsExperimental);
 
   const selectedCurrency = isStablecoinMode ? "USD" : localCurrency || "";
 
@@ -50,15 +46,6 @@ export default function CurrencySettings() {
 
     if (isChecked) {
       setTimeout(() => dispatch(syncCauldronConnect()), 200);
-    }
-  };
-
-  const handleToggleVolatileBalance = (event) => {
-    const isChecked = event.target.checked;
-    handleSettingsUpdate("includeVolatileBalance", event.target.checked);
-
-    if (isChecked) {
-      handleSettingsUpdate("displayExchangeRate", "true");
     }
   };
 
@@ -126,20 +113,6 @@ export default function CurrencySettings() {
           ))}
         </Select>
       </Accordion.Child>
-      {/*(isExperimental || shouldIncludeTokenSats) && (
-        <Accordion.Child
-          icon={DollarCircleOutlined}
-          label="Include Sats on Token UTXOs in Balance"
-        >
-          <input
-            type="checkbox"
-            checked={shouldIncludeTokenSats}
-            onChange={(event) =>
-              handleSettingsUpdate("includeTokenSats", event.target.checked)
-            }
-          />
-        </Accordion.Child>
-      )*/}
       {(isPrerelease || isStablecoinMode) && (
         <Accordion.Child
           icon={DollarCircleOutlined}
@@ -150,18 +123,6 @@ export default function CurrencySettings() {
             type="checkbox"
             checked={isStablecoinMode}
             onChange={handleToggleStablecoinMode}
-          />
-        </Accordion.Child>
-      )}
-      {isStablecoinMode && (
-        <Accordion.Child
-          icon={MoneyCollectOutlined}
-          label={translate(translations.includeVolatileBalance)}
-        >
-          <input
-            type="checkbox"
-            checked={shouldIncludeVolatileBalance}
-            onChange={handleToggleVolatileBalance}
           />
         </Accordion.Child>
       )}
