@@ -1732,6 +1732,9 @@ const translations = {
     zh: "正在从",
     zh_TW: "正在從",
   },
+  paymentReceived: {
+    en: "Payment Received!",
+  },
   received: {
     en: "Received",
   },

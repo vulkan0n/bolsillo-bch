@@ -61,7 +61,7 @@ export default function ToastService() {
           alt=""
         />
       ),
-      header: "Payment received!",
+      header: translate(translations.paymentReceived),
       body: (
         <div className="flex flex-col">
           {token ? (
