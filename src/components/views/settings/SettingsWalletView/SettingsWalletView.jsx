@@ -206,7 +206,11 @@ export default function SettingsWalletView() {
       <div className="p-1" key={walletHash}>
         <Card>
           <div className="text-2xl flex justify-center items-center py-2 text-neutral-700 dark:text-neutral-100 font-bold">
-            <Editable onConfirm={handleEditConfirm} value={wallet.name} />
+            <Editable
+              onConfirm={handleEditConfirm}
+              value={wallet.name}
+              confirmOnBlur
+            />
           </div>
           <div className="flex gap-x-2 justify-between">
             <div className="flex-1 flex flex-col justify-around">
