@@ -159,7 +159,11 @@ function StablecoinBalance() {
       </div>
       <div className="text-md text-neutral-300 flex items-center justify-center">
         <span className="flex items-center justify-center">
-          +<Satoshi value={spendable_balance} />
+          +
+          <Satoshi
+            value={spendable_balance}
+            fiat={shouldPreferLocalCurrency && "USD"}
+          />
         </span>
         {shouldPreferLocalCurrency && (
           <span className="ml-1.5 px-1.5 border border-neutral-300 text-xs text-neutral-200 rounded-full flex items-center justify-center">
