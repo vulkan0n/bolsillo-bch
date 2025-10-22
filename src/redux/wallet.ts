@@ -26,7 +26,6 @@ import AddressManagerService, {
 import AddressScannerService from "@/services/AddressScannerService";
 import UtxoManagerService from "@/services/UtxoManagerService";
 import TokenManagerService from "@/services/TokenManagerService";
-import StablecoinService from "@/services/StablecoinService";
 
 import ToastService from "@/services/ToastService";
 import LogService from "@/services/LogService";
@@ -194,9 +193,8 @@ export const walletReceive = createAsyncThunk(
         0n
       );
 
-      const Stablecoin = StablecoinService(wallet);
-      const incomingStableSats = await Stablecoin.swapIncoming(incomingSats);
-      ToastService().paymentReceived(incomingStableSats);
+      //const incomingStableSats = await Stablecoin.swapIncoming(incomingSats);
+      ToastService().paymentReceived(incomingSats);
     } else {
       ToastService().paymentReceived(satsDiff);
     }
