@@ -18,6 +18,7 @@ import DatabaseService from "@/services/DatabaseService";
 import { sha256 } from "@/util/hash";
 import { hexToUtf8 } from "@/util/hex";
 import { ipfsFetch } from "@/util/ipfs";
+import { detectImageMime } from "@/util/mime";
 
 import bcmrLocal from "@/assets/bcmr-selene-local.json";
 
@@ -230,7 +231,7 @@ export default function BcmrService() {
 
     //Log.debug("preloadMetadataRegistries", authbases);
 
-    return Promise.all(
+    return Promise.allSettled(
       authbases.map(({ authbase }) => loadIdentityRegistry(authbase))
     );
   }
@@ -466,30 +467,30 @@ export default function BcmrService() {
     // OP_PUSHBYTES_32
     cursor += 2;
 
-    // <hash>
+    // <hash> (32 bytes)
     const hashSlice = vout_hex.slice(cursor, cursor + 64);
     const hash = hexToUtf8(hashSlice);
     cursor += hashSlice.length;
 
     const uris: Array<string> = [];
     while (cursor < vout_hex.length) {
-      // OP_PUSHBYTES_X
+      // OP_PUSHBYTES_...
       let pushSlice = vout_hex.slice(cursor, cursor + 2);
       cursor += pushSlice.length;
 
-      // OP_PUSHBYTES_1
+      // ...PUSHBYTES_1
       if (pushSlice === "4c") {
         pushSlice = vout_hex.slice(cursor, cursor + 2);
         cursor += pushSlice.length;
       }
 
-      // OP_PUSHBYTES_2
+      // ...PUSHBYTES_2
       if (pushSlice === "4d") {
         pushSlice = vout_hex.slice(cursor, cursor + 4);
         cursor += pushSlice.length;
       }
 
-      // OP_PUSHBYTES_4
+      // ...PUSHBYTES_4
       if (pushSlice === "4e") {
         pushSlice = vout_hex.slice(cursor, cursor + 8);
         cursor += pushSlice.length;
@@ -686,6 +687,7 @@ export default function BcmrService() {
         const iconBytes = new Uint8Array(iconBuffer);
         const iconData = binToBase64(iconBytes);
 
+
         const { uri: iconUri } = await Filesystem.writeFile({
           path: `/selene/${dir}/${filename}`,
           directory: Directory.Cache,
@@ -707,8 +709,10 @@ export default function BcmrService() {
       }
     }
 
+    const mime = detectImageMime(iconBase64);
+
     //Log.debug("iconBase64?", iconBase64);
-    const iconDataUri = `data:;base64,${iconBase64}`;
+    const iconDataUri = `data:${mime};base64,${iconBase64}`;
     ICON_CACHE.set(iconPath, iconDataUri);
 
     return iconDataUri;

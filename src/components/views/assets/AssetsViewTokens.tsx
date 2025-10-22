@@ -49,7 +49,7 @@ export default function AssetsViewTokens() {
       return 1;
     }
 
-    return a.name.localeCompare(b.name);
+    return a.symbol.localeCompare(b.symbol);
   }, []);
 
   const initTokenData = () =>
@@ -69,7 +69,7 @@ export default function AssetsViewTokens() {
     function resolveTokenMetadata() {
       const resolve = async () => {
         const resolvedData = (
-          await Promise.all(
+          await Promise.allSettled(
             tokenCategories.map(async (category) => {
               let token;
               if (!shouldResolveBcmr) {
@@ -83,7 +83,10 @@ export default function AssetsViewTokens() {
               return { ...token, ...amounts };
             })
           )
-        ).sort(sortIdentities);
+        )
+          .filter((d) => d.status === "fulfilled")
+          .map((d) => d.value)
+          .sort(sortIdentities);
 
         setTokenData(resolvedData);
         setIsResolvingTokenData(false);
