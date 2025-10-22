@@ -607,6 +607,7 @@ export default function BcmrService() {
     returnImage?: boolean
   ) {
     let iconBase64;
+    let iconDataUri;
     let identity;
     try {
       identity = extractIdentity(authbase);
@@ -656,6 +657,9 @@ export default function BcmrService() {
           encoding: Encoding.UTF8,
         })
       ).data;
+
+      const mime = detectImageMime(iconBase64);
+      iconDataUri = `data:${mime};base64,${iconBase64}`;
     } catch (e) {
       if (
         (!hasUris && !hasNftUris) ||
@@ -679,42 +683,42 @@ export default function BcmrService() {
           ? identity.uris.image
           : identity.uris.icon;
 
-      const fetchUri = hasNftMetadata ? nftUri : categoryUri;
+      const fetchUri = decodeURI(hasNftMetadata ? nftUri : categoryUri);
 
-      try {
-        const response = await ipfsFetch(fetchUri);
-        const iconBuffer = await response.arrayBuffer();
-        const iconBytes = new Uint8Array(iconBuffer);
-        const iconData = binToBase64(iconBytes);
+      if (fetchUri.startsWith("data:")) {
+        iconDataUri = fetchUri;
+      } else {
+        try {
+          const response = await ipfsFetch(fetchUri);
+          const iconBuffer = await response.arrayBuffer();
+          const iconBytes = new Uint8Array(iconBuffer);
+          const iconData = binToBase64(iconBytes);
 
+          const { uri: iconUri } = await Filesystem.writeFile({
+            path: `/selene/${dir}/${filename}`,
+            directory: Directory.Cache,
+            data: iconData,
+            encoding: Encoding.UTF8,
+          });
 
-        const { uri: iconUri } = await Filesystem.writeFile({
-          path: `/selene/${dir}/${filename}`,
-          directory: Directory.Cache,
-          data: iconData,
-          encoding: Encoding.UTF8,
-        });
+          const { data } = await Filesystem.readFile({
+            path: iconUri,
+            encoding: Encoding.UTF8,
+          });
 
-        const { data } = await Filesystem.readFile({
-          path: iconUri,
-          encoding: Encoding.UTF8,
-        });
+          iconBase64 = data;
+          const mime = detectImageMime(iconBase64);
+          iconDataUri = `data:${mime};base64,${iconBase64}`;
+        } catch (fetchError) {
+          Log.warn(fetchError);
 
-        iconBase64 = data;
-      } catch (fetchError) {
-        Log.warn(fetchError);
-
-        ICON_CACHE.set(iconPath, null);
-        return null;
+          ICON_CACHE.set(iconPath, null);
+          return null;
+        }
       }
     }
 
-    const mime = detectImageMime(iconBase64);
-
-    //Log.debug("iconBase64?", iconBase64);
-    const iconDataUri = `data:${mime};base64,${iconBase64}`;
     ICON_CACHE.set(iconPath, iconDataUri);
-
     return iconDataUri;
   }
 }
