@@ -104,14 +104,18 @@ export function validateBip21Uri(uri: string) {
   };
 }
 
-// validatePaymentProtocolUri: BIP70/JSON Payment Protocol (https://)
+// validatePaymentProtocolUri: BIP70/JSON Payment Protocol (bitcoincash:?r=https://)
 function validatePaymentProtocolUri(uri: string) {
-  // TODO: a better way that filters non-invoice URLs?
-  const requestMatch = uri.match(/(?:r=)?(https:\/\/[^?]*)(?:\?.+)?$/);
-  const requestUri = requestMatch !== null ? requestMatch[1] : null;
-  const isPaymentProtocol = requestUri !== null;
+  if (!uri.startsWith("bitcoincash:?r=")) {
+    return { isPaymentProtocol: false };
+  }
 
-  return { isPaymentProtocol, requestUri };
+  const requestUri = uri.split("bitcoincash:?r=")[1];
+  const decodedUri = decodeURI(requestUri);
+
+  const isPaymentProtocol = decodedUri !== null;
+
+  return { isPaymentProtocol, requestUri: decodedUri };
 }
 
 // validateWifUri: Wallet Sweep (CashStamps) (bitcoincash: or bch-wif:)
