@@ -98,7 +98,7 @@ export default function TokenManagerService(walletHash: string) {
     return history;
   }
 
-  function generateTokenIdentity(category: string) {
+  function generateTokenIdentity(category: string): IdentitySnapshot {
     const Bcmr = BcmrService();
     const categorySlice = category.slice(0, 6);
 
