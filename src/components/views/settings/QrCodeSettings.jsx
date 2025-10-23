@@ -69,7 +69,7 @@ export default function QrCodeSettings() {
           />
           <input
             type="color"
-            className="rounded h-10 w-24 m-0 p-2 w-full"
+            className="rounded h-10 w-24 m-0 p-2 w-full dark:bg-neutral-1000 bg-primary-100"
             value={preferences.qrCodeForeground || ""}
             onChange={(event) =>
               handleSettingsUpdate("qrCodeForeground", event.target.value)
@@ -88,7 +88,7 @@ export default function QrCodeSettings() {
           />
           <input
             type="color"
-            className="rounded h-10 w-24 m-0 p-2 w-full"
+            className="rounded h-10 w-24 m-0 p-2 w-full dark:bg-neutral-1000 bg-primary-100"
             value={preferences.qrCodeBackground || ""}
             onChange={(event) =>
               handleSettingsUpdate("qrCodeBackground", event.target.value)

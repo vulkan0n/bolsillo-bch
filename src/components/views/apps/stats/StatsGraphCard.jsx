@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "react-router";
 import { useQuery } from "@apollo/client";
+import { SyncOutlined } from "@ant-design/icons";
 
 import Button from "@/atoms/Button";
 import Card from "@/atoms/Card";
@@ -61,7 +62,7 @@ export default function StatsGraphCard() {
       </div>
 
       <div className="bg-primary-50 dark:bg-primarydark-50 my-2 p-2 rounded">
-        {!isReady && <p>Loading chart...</p>}
+        {!isReady && <div className="flex items-center justify-center"><SyncOutlined className="text-4xl" spin /></div>}
         {isReady && <ActiveUsersChart data={data} period={period} />}
       </div>
 

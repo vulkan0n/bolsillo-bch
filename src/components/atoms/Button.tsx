@@ -63,7 +63,7 @@ export default function Button({
   submit = false,
   label = "",
   labelSize = "sm",
-  labelColor = "text-neutral-600 dark:text-neutral-200",
+  labelColor = "text-neutral-600 dark:text-neutral-100/80",
   activeLabelColor = "text-white dark:active:text-black",
   icon = NullComponent,
   iconSize = "2xl",

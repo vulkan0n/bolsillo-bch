@@ -57,7 +57,7 @@ export default function StatsAppBlock() {
   const isYearlyActiveIncrease = yearlyChange >= 0;
 
   return (
-    <div className="shadow rounded-lg p-2 bg-neutral-700 flex justify-between items-center border border-neutral-900">
+    <div className="shadow rounded-lg p-2 bg-neutral-700 flex justify-between items-center border border-neutral-900 dark:bg-neutral-800">
       <Link to="/apps/stats/#d">
         <div className="p-1 mx-1">
           <div className="font-bold text-neutral-50">24h</div>

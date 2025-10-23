@@ -34,7 +34,7 @@ export default function CreditsView() {
         title={translate(translations.credits)}
         back="/"
       />
-      <div className="bg-primary text-white text-center p-2">
+      <div className="bg-primary text-white text-center p-2 dark:bg-primarydark-200">
         <div className="flex items-center justify-center" {...longPressEvents}>
           {shouldShowQr ? (
             <div className="border-2 border-primary-700 rounded-sm">
