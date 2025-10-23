@@ -175,6 +175,18 @@ export const wcSessionRequest = createAsyncThunk(
         break;
 
       case "bch_signMessage":
+        {
+          const { message } = destringify(JSON.stringify(methodParams));
+
+          const Hd = HdNodeService(wallet);
+          const signedMessage = Hd.signMessage(message, sessionAddress);
+          await WalletConnect.sessionResponse(
+            topic,
+            formatJsonRpcResult(id, signedMessage)
+          );
+        }
+        break;
+
       default:
         await WalletConnect.sessionResponse(topic, {
           response: formatJsonRpcError(id, `Unsupported method ${method}`),
