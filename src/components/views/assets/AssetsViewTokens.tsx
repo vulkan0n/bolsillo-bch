@@ -114,7 +114,7 @@ export default function AssetsViewTokens() {
     <div className="p-1">
       <KeyWarning walletHash={walletHash} />
       {tokenData.length === 0 ? (
-        <div className="text-center py-4 rounded text-2xl text-neutral-700/90 my-4">
+          <div className="text-center py-4 rounded text-2xl text-neutral-700/90 dark:text-neutral-200 my-4">
           {translate(translations.noTokens)}
           <div className="flex justify-center items-center mt-4">
             <SeleneLogo className="h-32" cashtokens />
@@ -132,6 +132,7 @@ export default function AssetsViewTokens() {
             <div
               key={token.category}
               onClick={() => handleTokenNavigate(token.category)}
+              className="flex flex-col gap-y-1"
             >
               <TokenCard token={token} />
             </div>
@@ -170,56 +171,54 @@ export function TokenCard({ token }: { token: TokenEntity }) {
       key={token.category}
       className="w-full my-1 border border-primary rounded bg-primary-50 dark:bg-neutral-800 dark:border-primarydark-400"
     >
-      <div className="p-1">
-        <div className="flex">
-          <div className="w-fit h-fit mr-1">
-            <TokenIcon category={token.category} size={72} rounded />
+      <div className="flex p-1">
+        <div className="w-fit h-fit mr-1">
+          <TokenIcon category={token.category} size={72} rounded />
+        </div>
+        <div className="flex-1 p-1">
+          <div className="flex items-center text-md mb-1 py-0.5">
+            <span
+              className="font-mono text-md font-bold pr-1.5 mr-1.5 border-r border-neutral-400/90"
+              style={{ color: token.color }}
+            >
+              {token.token ? token.token.symbol : token.category.slice(0, 6)}
+            </span>
+            <span className="font-bold text-lg text-neutral-700 dark:text-neutral-100">
+              {token.name || `Token ${token.category.slice(0, 6)}`}
+            </span>
           </div>
-          <div className="flex-1 px-1">
-            <div className="flex items-center text-md mb-1 py-0.5">
-              <span
-                className="font-mono text-md font-bold pr-1.5 mr-1.5 border-r border-neutral-400/90"
-                style={{ color: token.color }}
-              >
-                {token.token ? token.token.symbol : token.category.slice(0, 6)}
-              </span>
-              <span className="font-bold text-lg text-neutral-700 dark:text-neutral-100">
-                {token.name || `Token ${token.category.slice(0, 6)}`}
-              </span>
-            </div>
-            <div className="flex text-neutral-600 dark:text-neutral-100">
-              <div className="flex-1">
-                {token.nftCount > 0 && <TokenAmount token={token} nft />}
-                {token.amount > 0 && (
-                  <div className="flex flex-1 justify-between items-center">
-                    <TokenAmount token={token} />
-                  </div>
-                )}
-              </div>
-
+          <div className="flex text-neutral-600 dark:text-neutral-100">
+            <div className="flex-1">
+              {token.nftCount > 0 && <TokenAmount token={token} nft />}
               {token.amount > 0 && (
-                <Button
-                  icon={SendOutlined}
-                  iconSize="lg"
-                  label={translate(translations.send)}
-                  labelSize="md"
-                  borderClasses="border border-primary"
-                  rounded="md"
-                  shadow="sm"
-                  padding="2"
-                  onClick={handleTokenSend}
-                />
+                <div className="flex flex-1 justify-between items-center">
+                  <TokenAmount token={token} />
+                </div>
               )}
             </div>
+
+            {token.amount > 0 && (
+              <Button
+                icon={SendOutlined}
+                iconSize="lg"
+                label={translate(translations.send)}
+                labelSize="md"
+                borderClasses="border border-primary"
+                rounded="md"
+                shadow="sm"
+                padding="2"
+                onClick={handleTokenSend}
+              />
+            )}
           </div>
         </div>
-        <div>
-          {token.description && (
-            <div className="p-1 mt-0.5 text-md text-neutral-700 dark:text-neutral-100">
-              {truncateProse(token.description)}
-            </div>
-          )}
-        </div>
+      </div>
+      <div>
+        {token.description && (
+          <div className="p-2 text-md text-neutral-700 dark:text-neutral-100 dark:bg-neutral-700 rounded-sm">
+            {truncateProse(token.description)}
+          </div>
+        )}
       </div>
       <div
         className="pt-0.5 px-0.5 border-t border-dashed border-neutral-300/80 font-mono text-xs text-neutral-400/70 dark:text-white/65 truncate"

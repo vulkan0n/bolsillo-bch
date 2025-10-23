@@ -717,7 +717,7 @@ export default function WalletViewSend() {
                     onChange={handleAmountInput}
                     satoshis={satoshiInput}
                     size={1}
-                    className={`mr-1.5 p-1 flex-1 text-3xl rounded shadow-inner border-2 ${
+                    className={`mr-1.5 p-1 flex-1 text-3xl rounded shadow-inner border-2 dark:bg-neutral-600 dark:text-neutral-100 ${
                       isInsufficientFunds
                         ? "text-error border-error/90"
                         : "text-black/70 border-primary/80"
@@ -752,7 +752,7 @@ export default function WalletViewSend() {
                         onChange={handleAmountInput}
                         satoshis={satoshiInput}
                         size={1}
-                        className={`mx-1.5 p-1 flex-1 text-3xl rounded shadow-inner border-2 ${
+                        className={`mx-1.5 p-1 flex-1 text-3xl rounded shadow-inner border-2 dark:bg-neutral-600 dark:text-neutral-100 ${
                           isInsufficientTokens
                             ? "text-error border-error/90"
                             : "text-black/70 border-primary/80"
@@ -780,7 +780,7 @@ export default function WalletViewSend() {
                           onChange={handleAmountInput}
                           satoshis={satoshiInput}
                           size={1}
-                          className={`mr-1.5 p-1 flex-1 text-3xl rounded shadow-inner border-2 ${
+                          className={`mr-1.5 p-1 flex-1 text-3xl rounded shadow-inner border-2 dark:bg-neutral-600 dark:text-neutral-100 ${
                             isInsufficientFunds
                               ? "text-error border-error/90"
                               : "text-black/70 border-primary/80"
@@ -801,7 +801,7 @@ export default function WalletViewSend() {
                       onClick={handleFlipCurrency}
                     >
                       <span className="text-2xl font-semibold text-center w-full text-neutral-800/80 dark:text-neutral-100 flex justify-center items-center">
-                        <Satoshi value={satoshiInput} flip />
+                        <Satoshi value={satoshiInput} flip forceVisible />
                         <CurrencyFlip className="text-3xl ml-2" />
                       </span>
                     </div>
