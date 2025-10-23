@@ -79,9 +79,9 @@ function NavButton({ to, icon, activeIcon, label }: NavButtonProps) {
   const ActiveIcon = activeIcon;
 
   const baseClasses =
-    "bg-neutral-900 text-primary border-primary w-full h-16 p-2 pt-3 flex flex-col justify-center items-center";
+    "bg-neutral-900 dark:bg-black text-primary border-primary w-full h-16 p-2 pt-3 flex flex-col justify-center items-center";
   const activeClasses =
-    "active shadow-[inset_0_4px_0_0_currentColor] font-semibold shadow-inner ";
+    "active shadow-[inset_0_4px_0_0_currentColor] font-semibold";
   const iconClasses = "text-2xl";
 
   return (

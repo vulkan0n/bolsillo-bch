@@ -121,7 +121,7 @@ export default function WalletViewHome() {
   ) : (
     <FullColumn className="justify-between">
       <div className="text-neutral-25">
-        <div className="w-full mx-auto bg-primary dark:bg-primarydark-300 font-mono">
+        <div className="w-full mx-auto bg-primary dark:bg-primarydark-200 font-mono">
           <div className="py-1 flex justify-center items-center text-sm text-center uppercase">
             {translate(translations.receive)}
           </div>
@@ -166,7 +166,7 @@ export default function WalletViewHome() {
         </div>
         <div className="flex justify-evenly items-center rounded-b-sm text-sm">
           <div
-            className={`font-sans flex-1 px-1 py-1.5 text-nowrap truncate ${!shouldShowRequestAmount ? "bg-primary-400 dark:bg-primarydark-200 active:bg-primary-700 active:shadow-inner" : "text-primary-50 bg-primary-700"}`}
+            className={`font-sans flex-1 px-1 py-1.5 text-nowrap truncate ${!shouldShowRequestAmount ? "bg-primary-400 dark:bg-primarydark-100 active:bg-primary-700 active:shadow-inner" : "text-primary-50 bg-primary-700"}`}
             onClick={() =>
               !shouldShowRequestAmount && setShouldShowRequestAmount(true)
             }
@@ -206,7 +206,7 @@ export default function WalletViewHome() {
           </div>
           {!shouldShowRequestAmount && (
             <label
-              className={`${shouldUseTokenAddress ? "bg-primary-700 dark:bg-primarydark-300" : "bg-primary-400 dark:bg-primarydark-200"} px-1.5 py-1.5 border-l border-primary-400 dark:border-primarydark-200 text-nowrap truncate flex items-center justify-between`}
+              className={`${shouldUseTokenAddress ? "bg-primary-700 dark:bg-primarydark-200" : "bg-primary-400 dark:bg-primarydark-100"} px-1.5 py-1.5 border-l border-primary-400 dark:border-primarydark-100 text-nowrap truncate flex items-center justify-between`}
             >
               {translate(translations.receiveTokens)}&nbsp;
               <input

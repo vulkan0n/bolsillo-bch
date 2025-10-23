@@ -29,8 +29,8 @@ export default function ViewHeader({
   const Accessory = accessory;
 
   const sizeClasses = small
-    ? "bg-neutral-800 text-lg py-1 font-semibold text-neutral-50"
-    : "bg-neutral-900 text-xl text-neutral-25 font-bold py-3";
+    ? "bg-neutral-800 dark:bg-neutral-1000 text-lg py-1 font-semibold text-neutral-50"
+    : "bg-neutral-900 dark:bg-black text-xl text-neutral-25 font-bold py-3";
 
   const iconClasses = small ? "text-lg" : "text-2xl";
 
