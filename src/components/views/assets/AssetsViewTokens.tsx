@@ -222,7 +222,7 @@ export function TokenCard({ token }: { token: TokenEntity }) {
         </div>
       </div>
       <div
-        className="mt-1.5 pt-0.5 px-0.5 border-t border-dashed border-neutral-300/80 font-mono text-xs text-neutral-400/70 dark:text-white/65 truncate"
+        className="pt-0.5 px-0.5 border-t border-dashed border-neutral-300/80 font-mono text-xs text-neutral-400/70 dark:text-white/65 truncate"
         style={{ backgroundColor: `${token.color}${isDarkMode ? "80" : "20"}` }}
         onClick={(e) => {
           e.stopPropagation();
