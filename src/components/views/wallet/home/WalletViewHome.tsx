@@ -10,7 +10,7 @@ import {
   CopyOutlined,
 } from "@ant-design/icons";
 
-import { selectActiveWalletHash } from "@/redux/wallet";
+import { selectActiveWalletHash, selectGenesisHeight } from "@/redux/wallet";
 import { selectIsSyncing } from "@/redux/sync";
 import {
   selectBchNetwork,
@@ -27,6 +27,7 @@ import { SatoshiInput } from "@/atoms/SatoshiInput";
 import Address from "@/atoms/Address";
 import CurrencySymbol from "@/atoms/CurrencySymbol";
 import CurrencyFlip from "@/atoms/CurrencyFlip";
+import KeyWarning from "@/atoms/KeyWarning/KeyWarning";
 import WalletViewButtons from "./WalletViewButtons";
 import ScannerOverlay from "./ScannerOverlay";
 
@@ -50,6 +51,7 @@ export default function WalletViewHome() {
   const bchNetwork = useSelector(selectBchNetwork);
 
   const isSyncing = useSelector(selectIsSyncing);
+  const genesis_height = useSelector(selectGenesisHeight);
 
   const shouldUseTokenAddress = useSelector(selectShouldUseTokenAddress);
   const setShouldUseTokenAddress = (mode) =>
@@ -178,11 +180,11 @@ export default function WalletViewHome() {
                   onClick={() => setShouldShowRequestAmount(false)}
                 />
                 <span className="flex text-center grow items-center ml-1">
-                    <CurrencySymbol className="text-lg bg-primary-200 rounded-l px-1 text-neutral-500 font-semibold font-mono dark:bg-primarydark-500" />
+                  <CurrencySymbol className="text-lg bg-primary-200 rounded-l px-1 text-neutral-500 font-semibold font-mono dark:bg-primarydark-500" />
                   <SatoshiInput
                     satoshis={satoshiInput}
                     onChange={handleRequestAmountChange}
-                      className="p-1 mr-1 w-full text-black/70 font-mono rounded-r dark:bg-primarydark-50 dark:text-neutral-100"
+                    className="p-1 mr-1 w-full text-black/70 font-mono rounded-r dark:bg-primarydark-50 dark:text-neutral-100"
                     autoFocus
                   />
                   <div className="flex items-center justify-center">
@@ -219,6 +221,7 @@ export default function WalletViewHome() {
             </label>
           )}
         </div>
+        {genesis_height > 0 && <KeyWarning walletHash={walletHash} />}
       </div>
       {!isKeyboardOpen && <WalletViewButtons />}
     </FullColumn>
