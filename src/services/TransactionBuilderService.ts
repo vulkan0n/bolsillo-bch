@@ -29,11 +29,7 @@ import {
   TransactionOutput,
 } from "@/services/TransactionManagerService";
 
-import {
-  DUST_RELAY_FEE,
-  EXCESSIVE_SATOSHIS,
-  TXFEE_PER_BYTE,
-} from "@/util/sats";
+import { DUST_RELAY_FEE, EXCESSIVE_SATOSHIS } from "@/util/sats";
 import { binToHex, hexToBin } from "@/util/hex";
 import { sha256 } from "@/util/hash";
 import { addressToLockingBytecode } from "@/util/cashaddr";
@@ -67,6 +63,8 @@ export interface Recipient {
     };
   };
 }
+
+const TXFEE_PER_BYTE = DUST_RELAY_FEE / 1000n;
 
 const Log = LogService("TxBuilder");
 
@@ -831,7 +829,7 @@ export default function TransactionBuilderService(walletHash: string) {
   }
 }
 
-// TODO: Once Token support is added to Selene, add it to this function too.
+// TODO: Once Token support is added to CashStamps, add it to this function too.
 //       It will require more complex logic: An output will need to be added per each token.
 export function buildSweepTransaction(
   utxos: Array<ElectrumUtxo>,

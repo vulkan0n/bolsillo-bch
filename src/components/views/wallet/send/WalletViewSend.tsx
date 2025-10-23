@@ -6,7 +6,6 @@ import {
   useLocation,
 } from "react-router";
 import { useSelector, useDispatch } from "react-redux";
-import Decimal from "decimal.js";
 import { Dialog } from "@capacitor/dialog";
 import {
   ArrowLeftOutlined,
@@ -38,7 +37,6 @@ import TokenManagerService from "@/services/TokenManagerService";
 import ToastService from "@/services/ToastService";
 import SecurityService, { AuthActions } from "@/services/SecurityService";
 import LogService from "@/services/LogService";
-import CurrencyService from "@/services/CurrencyService";
 import CauldronService from "@/services/CauldronService";
 
 import { useStablecoinBalance } from "@/hooks/useStablecoinBalance";
@@ -107,13 +105,8 @@ export default function WalletViewSend() {
 
   const { balance, spendable_balance } = useSelector(selectActiveWalletBalance);
 
-  const { stablecoinBalance } = useStablecoinBalance(walletHash);
-
-  const Cauldron = CauldronService();
-  const cauldronPrice = Cauldron.getTokenPrice(MUSD_TOKENID);
-
-  const totalSpendableSats =
-    stablecoinBalance * cauldronPrice + spendable_balance;
+  const { stablecoinBalance, totalSpendableSats } =
+    useStablecoinBalance(walletHash);
 
   // ----------------
 
@@ -338,6 +331,10 @@ export default function WalletViewSend() {
   const prepareStablecoinRecipients = useCallback(
     (amount: bigint): Array<Recipient> => {
       const recipients = new Array<Recipient>();
+
+      const Cauldron = CauldronService();
+      const cauldronPrice = Cauldron.getTokenPrice(MUSD_TOKENID);
+
       const fiatNeeded = amount / cauldronPrice;
 
       const AddressManager = AddressManagerService(walletHash);
@@ -381,7 +378,6 @@ export default function WalletViewSend() {
     },
     [
       address,
-      cauldronPrice,
       isTokenAddress,
       satoshiInput,
       stablecoinBalance,
@@ -547,7 +543,6 @@ export default function WalletViewSend() {
 
   const handleSendMaxStablecoin = () => {
     const TransactionBuilder = TransactionBuilderService(walletHash);
-    const AddressManager = AddressManagerService(walletHash);
 
     const tryRecipients = prepareStablecoinRecipients(totalSpendableSats);
 
@@ -561,11 +556,11 @@ export default function WalletViewSend() {
       return;
     }
 
-    let amount = totalSpendableSats - satsShort;
+    const amount = totalSpendableSats - satsShort;
 
     const recipients = prepareStablecoinRecipients(amount);
 
-    let { trade } = TransactionBuilder.buildStablecoinTransaction(
+    const { trade } = TransactionBuilder.buildStablecoinTransaction(
       recipients,
       satsShort
     );
@@ -683,11 +678,11 @@ export default function WalletViewSend() {
                     <Editable
                       value={address}
                       onConfirm={handleAddressInput}
-                      onBlur={handleAddressInput}
                       onChange={handleAddressInput}
                       onFocus={handleAddressFocus}
                       open
                       invalid={isAddressInvalid}
+                      confirmOnBlur
                     />
                   </div>
                 </div>

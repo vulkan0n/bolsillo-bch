@@ -42,7 +42,6 @@ const defaultPreferences = {
   denomination: "bch",
   includeTokenSats: "false",
   stablecoinMode: "false", // TODO: move to wallet db
-  includeVolatileBalance: "true", // TODO: move to wallet db
   // --------
   // Payment (move to wallet db?)
   allowInstantPay: "false",

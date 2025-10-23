@@ -229,7 +229,7 @@ export default function CauldronService() {
     const satsPerToken = BigInt(
       Math.round(Number((satsSum * 100000000n) / tokenSum) / 100000000)
     );
-    Log.debug("getTokenPrice", tokenSum, satsSum, satsPerToken);
+    Log.debug("getTokenPrice", category, satsPerToken);
     return satsPerToken;
   }
 

@@ -24,15 +24,12 @@ import {
 } from "@/redux/preferences";
 import { selectCurrentPriceString } from "@/redux/exchangeRates";
 import SecurityService, { AuthActions } from "@/services/SecurityService";
-import LogService from "@/services/LogService";
 
 import Satoshi from "@/atoms/Satoshi";
 import NumberFormat from "@/atoms/NumberFormat";
 import CurrencyFlip from "@/atoms/CurrencyFlip";
 import { useCurrencyFlip } from "@/hooks/useCurrencyFlip";
 import { useStablecoinBalance } from "@/hooks/useStablecoinBalance";
-
-const Log = LogService("WalletViewBalance");
 
 export default function WalletViewBalance() {
   const dispatch = useDispatch();
@@ -48,13 +45,14 @@ export default function WalletViewBalance() {
 
   const isKeyViewed = key_viewed_at !== null;
 
+  const handleFlipCurrency = useCurrencyFlip();
+
   const shouldDisplayExchangeRate = useSelector(
     selectShouldDisplayExchangeRate
   );
 
   const { isStablecoinMode } = useSelector(selectCurrencySettings);
 
-  const handleFlipCurrency = useCurrencyFlip();
 
   const shouldHideBalance = useSelector(selectShouldHideBalance);
   const hiddenBalanceClasses = useMemo(
@@ -120,11 +118,9 @@ function StablecoinBalance() {
   const { walletHash } = useSelector(selectActiveWallet);
   const { shouldPreferLocalCurrency } = useSelector(selectCurrencySettings);
 
-  const stablecoinBalance = useStablecoinBalance(walletHash);
+  const { stablecoinBalance } = useStablecoinBalance(walletHash);
 
   const { spendable_balance } = useSelector(selectActiveWalletBalance);
-
-  Log.debug("stablecoinBalance", stablecoinBalance);
 
   const [balanceReceivedSpring, receiveSpringApi] = useSpring(() => ({
     from: { color: "#8dc451" },
