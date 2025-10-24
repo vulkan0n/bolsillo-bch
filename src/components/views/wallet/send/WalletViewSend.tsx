@@ -357,6 +357,8 @@ export default function WalletViewSend() {
           const amountShort = fiatNeeded - stablecoinBalance;
           const satsShort = amountShort * cauldronPrice;
 
+          Log.debug("hybrid: stablecoinBalance, amountShort, satsShort", stablecoinBalance, amountShort, satsShort)
+
           // if receiver uses stablecoin mode, they will convert the sats themselves
           // if they don't use stable mode, they don't care about receiving sats
           // if they give us a q address, they get sats regardless

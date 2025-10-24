@@ -253,8 +253,7 @@ export default function CauldronService() {
   async function prepareTrade(
     supplyCategory: string,
     demandCategory: string,
-    supplyAmount: bigint,
-    demandAmount: bigint,
+    amount: bigint,
     wallet: WalletEntity,
     isDemandFlipped: boolean = false
   ) {
@@ -264,51 +263,33 @@ export default function CauldronService() {
     const inputPools = getPoolInputs();
     const TX_FEE_PER_BYTE = 1n;
 
-    if (isDemandFlipped) {
-      Log.debug(
-        "prepareTrade:",
-        supplyCategory,
-        "->",
-        demandCategory,
-        "selling",
-        supplyAmount,
-        "from",
-        inputPools,
-        "with",
-        demandAmount
-      );
-    } else {
-      Log.debug(
-        "prepareTrade:",
-        supplyCategory,
-        "->",
-        demandCategory,
-        "buying",
-        demandAmount,
-        "from",
-        inputPools,
-        "with",
-        supplyAmount
-      );
-    }
-
+    Log.debug("inputPools", inputPools);
     const tradeResult = isDemandFlipped
       ? exchangeLab.constructTradeBestRateForTargetSupply(
           supplyCategory,
           demandCategory,
-          supplyAmount,
+          amount,
           inputPools,
           TX_FEE_PER_BYTE
         )
       : exchangeLab.constructTradeBestRateForTargetDemand(
           supplyCategory,
           demandCategory,
-          demandAmount,
+          amount,
           inputPools,
           TX_FEE_PER_BYTE
         );
 
     Log.debug("prepareTrade", tradeResult);
+
+    Log.debug(
+      "prepareTrade:",
+      tradeResult.summary.supply,
+      supplyCategory,
+      "->",
+      demandCategory,
+      tradeResult.summary.demand
+    );
 
     const { walletHash } = wallet;
 
@@ -320,10 +301,13 @@ export default function CauldronService() {
     const isDemandToken = supplyCategory === "BCH";
     const demandTokenRule = isDemandToken
       ? {
-          token: { token_id: demandCategory, amount: demandAmount },
+          token: {
+            token_id: demandCategory,
+            amount: tradeResult.summary.demand,
+          },
           amount: -1n,
         }
-      : { amount: demandAmount };
+      : { amount: tradeResult.summary.demand };
 
     const payoutRules: PayoutRule[] = [
       // trade payout address
@@ -351,9 +335,12 @@ export default function CauldronService() {
     let fee = 0n;
     for (let i = 0; i < 5; i += 1) {
       const supplyInputs = isDemandToken
-        ? UtxoManager.selectCoins(supplyAmount + fee)
+        ? UtxoManager.selectCoins(tradeResult.summary.supply + fee)
         : [
-            ...UtxoManager.selectTokens(supplyCategory, supplyAmount),
+            ...UtxoManager.selectTokens(
+              supplyCategory,
+              tradeResult.summary.supply
+            ),
             ...UtxoManager.selectCoins(fee),
           ];
 
@@ -399,6 +386,6 @@ export default function CauldronService() {
     }
 
     const tx_hex = binToHex(tradeTx.txbin);
-    return tx_hex;
+    return { tx_hex, tradeResult };
   }
 }

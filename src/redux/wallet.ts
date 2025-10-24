@@ -20,6 +20,7 @@ import WalletManagerService, {
   WalletEntity,
 } from "@/services/WalletManagerService";
 import ElectrumService from "@/services/ElectrumService";
+import CauldronService from "@/services/CauldronService";
 import AddressManagerService, {
   AddressEntity,
 } from "@/services/AddressManagerService";
@@ -31,6 +32,7 @@ import ToastService from "@/services/ToastService";
 import LogService from "@/services/LogService";
 
 import { convertCashAddress } from "@/util/cashaddr";
+import { MUSD_TOKENID } from "@/util/tokens";
 
 const Log = LogService("redux/wallet");
 
@@ -131,6 +133,7 @@ export const walletReceive = createAsyncThunk(
     const utxoOut = utxoDiff.diffOut.map((utxo) => UtxoManager.getUtxo(utxo));
 
     let satsDiff = 0n;
+    let tokenSats = 0n;
     const tokenDiff = {};
 
     Log.debug("walletReceive", utxoIn);
@@ -153,6 +156,7 @@ export const walletReceive = createAsyncThunk(
       }
 
       tokenDiff[category] += utxo.token_amount;
+      tokenSats += utxo.amount;
 
       // check for matching utxoOut entry
       const outIndex = utxoOut.findIndex((u) => u.token_category === category);
@@ -188,12 +192,38 @@ export const walletReceive = createAsyncThunk(
     // need to swap to stablecoin in stablecoin mode
     const isStablecoinMode = selectIsStablecoinMode(thunkApi.getState());
     if (isStablecoinMode) {
-      const incomingSats = utxoIn.reduce(
-        (sum, utxo) => (utxo.token_category === null ? sum + utxo.amount : sum),
-        0n
-      );
+      const incomingSats = satsDiff - tokenSats;
 
-      //const incomingStableSats = await Stablecoin.swapIncoming(incomingSats);
+      Log.debug("incomingSats", incomingSats);
+
+      const Cauldron = CauldronService();
+
+      for (let i = 0; i < 3; i += 1) {
+        try {
+          /* eslint-disable no-await-in-loop */
+          const tradeTransaction = await Cauldron.prepareTrade(
+            "BCH",
+            MUSD_TOKENID,
+            incomingSats,
+            wallet,
+            true
+          );
+          Log.debug("tradeTransaction", tradeTransaction);
+          await Cauldron.broadcastTransaction(tradeTransaction.tx_hex);
+          const tokenData = TokenManagerService(wallet.walletHash).getToken(
+            MUSD_TOKENID
+          );
+          ToastService().tokenReceived({
+            ...tokenData,
+            amount: tradeTransaction.tradeResult.summary.demand,
+          });
+          return;
+        } catch (e) {
+          Log.warn(e);
+        }
+      }
+
+      Log.error("swap on receive failed!");
       ToastService().paymentReceived(incomingSats);
     } else {
       ToastService().paymentReceived(satsDiff);

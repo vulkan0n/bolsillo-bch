@@ -82,10 +82,14 @@ export default function TransactionBuilderService(walletHash: string) {
 
   // --------------------------------
 
-  function createTokenOutput(recipientAddress, token): LibauthOutput {
+  function createTokenOutput(
+    recipientAddress,
+    token,
+    satsAmount = EXCESSIVE_SATOSHIS
+  ): LibauthOutput {
     const output = {
       lockingBytecode: addressToLockingBytecode(recipientAddress),
-      valueSatoshis: EXCESSIVE_SATOSHIS,
+      valueSatoshis: satsAmount,
       token: {
         ...token,
         category: hexToBin(token.category),
@@ -94,8 +98,10 @@ export default function TransactionBuilderService(walletHash: string) {
 
     Log.debug("createTokenOutput", output, token);
 
-    const dustThreshold = getDustThreshold(output, DUST_RELAY_FEE);
-    output.valueSatoshis = dustThreshold;
+    if (satsAmount < 0 || satsAmount === EXCESSIVE_SATOSHIS) {
+      const dustThreshold = getDustThreshold(output, DUST_RELAY_FEE);
+      output.valueSatoshis = dustThreshold;
+    }
 
     return output;
   }
@@ -126,7 +132,7 @@ export default function TransactionBuilderService(walletHash: string) {
       (recipient) => recipient.token !== undefined
     );
     const tokenVout: Array<LibauthOutput> = tokenRecipients.map((recipient) =>
-      createTokenOutput(recipient.address, recipient.token)
+      createTokenOutput(recipient.address, recipient.token, recipient.amount)
     );
 
     // calculate total amount to send for all recipients
