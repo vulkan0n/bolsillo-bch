@@ -80,6 +80,10 @@ export default function CauldronService() {
   };
 
   function registerPool(pool) {
+    if (!pool.new_utxo_hash) {
+      return;
+    }
+
     poolUtxos.set(pool.new_utxo_hash, pool);
     //Log.debug("registerPool", pool, poolUtxos);
   }

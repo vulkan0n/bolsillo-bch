@@ -7,6 +7,7 @@ import {
 } from "react-router";
 import { useSelector, useDispatch } from "react-redux";
 import { Dialog } from "@capacitor/dialog";
+import { Decimal } from "decimal.js";
 import {
   ArrowLeftOutlined,
   SyncOutlined,
@@ -14,7 +15,7 @@ import {
   DollarCircleOutlined,
 } from "@ant-design/icons";
 import {
-  selectActiveWalletHash,
+  selectActiveWallet,
   selectActiveWalletBalance,
   selectWalletAddresses,
 } from "@/redux/wallet";
@@ -77,7 +78,8 @@ export default function WalletViewSend() {
 
   // ----------------
 
-  const walletHash = useSelector(selectActiveWalletHash);
+  const wallet = useSelector(selectActiveWallet);
+  const { walletHash } = wallet;
   const isConnected = useSelector(selectIsConnected);
   const isScanning = useSelector(selectScannerIsScanning);
   const bchNetwork = useSelector(selectBchNetwork);
@@ -103,7 +105,7 @@ export default function WalletViewSend() {
     selectCurrencySettings
   );
 
-  const { balance, spendable_balance } = useSelector(selectActiveWalletBalance);
+  const { spendable_balance } = useSelector(selectActiveWalletBalance);
 
   const { stablecoinBalance, totalSpendableSats } =
     useStablecoinBalance(walletHash);
@@ -335,7 +337,9 @@ export default function WalletViewSend() {
       const Cauldron = CauldronService();
       const cauldronPrice = Cauldron.getTokenPrice(MUSD_TOKENID);
 
-      const fiatNeeded = amount / cauldronPrice;
+      const fiatNeeded = BigInt(
+        Math.round(new Decimal(amount / cauldronPrice).toNumber())
+      );
 
       const AddressManager = AddressManagerService(walletHash);
       const tryAddress =
@@ -347,17 +351,23 @@ export default function WalletViewSend() {
       if (isTokenAddress && stablecoinBalance > 0) {
         // one token output if stablecoin balance covers entire amount
         if (stablecoinBalance > fiatNeeded) {
+          Log.debug("stablecoin: direct token", fiatNeeded, stablecoinBalance);
           recipients.push({
             address: tryAddress,
             amount: -1n,
             token: { category: MUSD_TOKENID, amount: fiatNeeded },
           });
-        } else if (totalSpendableSats > satoshiInput) {
+        } else if (totalSpendableSats > amount) {
           // cover the difference with raw sats if balance is available (hybrid output)
           const amountShort = fiatNeeded - stablecoinBalance;
           const satsShort = amountShort * cauldronPrice;
 
-          Log.debug("hybrid: stablecoinBalance, amountShort, satsShort", stablecoinBalance, amountShort, satsShort)
+          Log.debug(
+            "hybrid: stablecoinBalance, amountShort, satsShort",
+            stablecoinBalance,
+            amountShort,
+            satsShort
+          );
 
           // if receiver uses stablecoin mode, they will convert the sats themselves
           // if they don't use stable mode, they don't care about receiving sats
@@ -369,23 +379,18 @@ export default function WalletViewSend() {
           });
         }
       } else {
+        Log.debug("direct sats:", amount);
         // only output raw sats for non-token addresses
         recipients.push({
           address: tryAddress,
-          amount: satoshiInput,
+          amount,
         });
       }
 
+      Log.debug("prepareStablecoinRecipients", recipients, fiatNeeded, amount);
       return recipients;
     },
-    [
-      address,
-      isTokenAddress,
-      satoshiInput,
-      stablecoinBalance,
-      totalSpendableSats,
-      walletHash,
-    ]
+    [address, isTokenAddress, stablecoinBalance, totalSpendableSats, walletHash]
   );
 
   const buildStablecoinTransaction = useCallback(async () => {
@@ -413,7 +418,7 @@ export default function WalletViewSend() {
         satsShort
       );
 
-      transaction = TransactionBuilder.buildStablecoinTransaction(
+      transaction = await TransactionBuilder.buildStablecoinTransaction(
         recipients,
         satsShort
       );
@@ -543,36 +548,58 @@ export default function WalletViewSend() {
     setSatoshiInputKey(token_amount.toString());
   };
 
-  const handleSendMaxStablecoin = () => {
+  const handleSendMaxStablecoin = async () => {
+    Log.debug("HANDLEMAXSTABLECOIN?");
     const TransactionBuilder = TransactionBuilderService(walletHash);
 
     const tryRecipients = prepareStablecoinRecipients(totalSpendableSats);
 
-    const satsShort = TransactionBuilder.buildP2pkhTransaction({
+    const transaction = TransactionBuilder.buildP2pkhTransaction({
       recipients: tryRecipients,
     });
 
-    if (typeof satsShort !== "bigint") {
+    if (typeof transaction !== "bigint") {
       setSatoshiInput(totalSpendableSats);
       setSatoshiInputKey(totalSpendableSats.toString());
       return;
     }
 
-    const amount = totalSpendableSats - satsShort;
-
-    const recipients = prepareStablecoinRecipients(amount);
-
-    const { trade } = TransactionBuilder.buildStablecoinTransaction(
-      recipients,
-      satsShort
+    const Cauldron = CauldronService();
+    const liquidationTrade = await Cauldron.prepareTrade(
+      MUSD_TOKENID,
+      "BCH",
+      stablecoinBalance,
+      wallet,
+      true
     );
 
-    Log.debug("trade: ", trade);
+    Log.debug("liquidation", liquidationTrade.tradeResult);
 
-    /*const clampedAmount = amount < 0 ? 0n : amount;
-      setSatoshiInput(clampedAmount);
-      // force re-render of SatoshiInput component
-      setSatoshiInputKey(clampedAmount.toString());*/
+    const liquidationFee = BigInt(
+      liquidationTrade.tradeResult.summary.trade_fee
+    );
+    const liquidationSats = BigInt(
+      liquidationTrade.tradeResult.summary.demand - liquidationFee
+    );
+
+    const totalSats = spendable_balance + liquidationSats;
+
+    const recipients = prepareStablecoinRecipients(totalSats);
+
+    const finalTransaction =
+      await TransactionBuilder.buildStablecoinTransaction(
+        recipients,
+        liquidationSats,
+        liquidationFee
+      );
+
+    Log.debug("handleSendMaxStablecoin", recipients, finalTransaction);
+
+    const newAmount = finalTransaction.payouts_info[0].output.amount;
+
+    setSatoshiInput(newAmount);
+    // force re-render of SatoshiInput component
+    setSatoshiInputKey(newAmount.toString());
   };
 
   const handleSendMax = () => {
@@ -726,7 +753,7 @@ export default function WalletViewSend() {
                     }`}
                     autoFocus={address !== ""}
                     ref={inputRef}
-                    max={0n}
+                    max={totalSpendableSats}
                   />
                   <Button
                     label="MAX"

@@ -78,9 +78,15 @@ export default function TransactionBuilderService(walletHash: string) {
     buildP2pkhTransaction,
     buildStablecoinTransaction,
     buildSendTokensTransactionWithFeePayingTokenCategory,
+    calculateTransactionHash,
   };
 
   // --------------------------------
+
+  function calculateTransactionHash(tx_raw: Uint8Array): string {
+    const tx_hash = swapEndianness(binToHex(sha256.hash(sha256.hash(tx_raw))));
+    return tx_hash;
+  }
 
   function createTokenOutput(
     recipientAddress,
@@ -552,9 +558,10 @@ export default function TransactionBuilderService(walletHash: string) {
     return 0;
   }
 
-  function buildStablecoinTransaction(
+  async function buildStablecoinTransaction(
     recipients: Array<Recipient>,
-    satsShort: bigint
+    satsShort: bigint,
+    fee: bigint = 0n
   ) {
     const Cauldron = CauldronService();
     const exchangeLab = new ExchangeLab();
@@ -576,40 +583,9 @@ export default function TransactionBuilderService(walletHash: string) {
     Log.debug("tokenTotal", tokenTotal, "(musd)");
     Log.debug("recipientAmount", recipientAmount, "(sats)");
     Log.debug("satsShort", satsShort, "(sats)");
+    Log.debug("estimated fee", fee, "(sats)");
 
-    const AddressManager = AddressManagerService(wallet.walletHash);
-    const changeAddresses = AddressManager.getUnusedAddresses(2, 1);
-    let changeAddressIndex = 0;
-
-    const payoutRules: clab.PayoutRule[] = [
-      ...recipients.map((r) => ({
-        type: clab.PayoutAmountRuleType.FIXED,
-        locking_bytecode: addressToLockingBytecode(r.address),
-        amount: r.amount,
-        token: r.token
-          ? {
-              token_id: r.token.category,
-              amount: r.token.amount,
-            }
-          : undefined,
-      })),
-      {
-        type: clab.PayoutAmountRuleType.CHANGE,
-        generateChangeLockingBytecodeForOutput() {
-          const changeAddress = changeAddresses[changeAddressIndex];
-          if (changeAddressIndex + 1 < changeAddresses.length) {
-            changeAddressIndex += 1;
-          }
-          return addressToLockingBytecode(changeAddress.address);
-        },
-
-        allow_mixing_native_and_token_when_bch_change_is_dust: true,
-      },
-    ];
-
-    Log.debug("payoutRules", payoutRules);
-
-    const initialTrade = exchangeLab.constructTradeBestRateForTargetDemand(
+    const tradeResult = exchangeLab.constructTradeBestRateForTargetDemand(
       MUSD_TOKENID,
       "BCH",
       satsShort,
@@ -617,72 +593,97 @@ export default function TransactionBuilderService(walletHash: string) {
       1n
     );
 
-    let isSuccess = false;
-    let currentTrade = initialTrade;
     let tradeTransaction = null;
-    while (!isSuccess) {
-      try {
-        Log.debug("currentTrade", initialTrade);
+    let short = satsShort;
+    try {
+      Log.debug("tradeResult", tradeResult);
 
-        // attempt to pay trade fee by selling extra tokens
-        const tokenFee = currentTrade.summary.trade_fee / price;
+      const stablecoinUtxos = UtxoManager.selectTokens(
+        MUSD_TOKENID,
+        tradeResult.summary.supply
+      );
+      Log.debug("tokenUtxos", stablecoinUtxos);
 
-        const stablecoinUtxos = UtxoManager.selectTokens(
-          MUSD_TOKENID,
-          currentTrade.summary.supply + tokenFee
-        );
-        Log.debug("tokenUtxos", stablecoinUtxos);
+      const coinUtxos = UtxoManager.selectCoins(
+        tradeResult.summary.demand + fee
+      );
+      Log.debug("coinUtxos", coinUtxos);
 
-        const coinUtxos = UtxoManager.selectCoins(recipientAmount - satsShort);
-        Log.debug("coinUtxos", coinUtxos);
+      const inputs = [...stablecoinUtxos, ...coinUtxos];
 
-        const inputs = [...stablecoinUtxos, ...coinUtxos];
+      const HdNode = HdNodeService(wallet);
+      const clabInputs: clab.SpendableCoin[] = inputs.map((input) => {
+        return {
+          type: clab.SpendableCoinType.P2PKH,
+          key: HdNode.getAddressPrivateKey(input.address),
+          output: {
+            locking_bytecode: addressToLockingBytecode(input.address),
+            token:
+              input.token_category !== null
+                ? {
+                    amount: BigInt(input.token_amount),
+                    token_id: input.token_category,
+                  }
+                : undefined,
+            amount: BigInt(input.amount),
+          },
+          outpoint: {
+            txhash: hexToBin(input.txid),
+            index: Number(input.tx_pos),
+          },
+        };
+      });
 
-        const HdNode = HdNodeService(wallet);
-        const clabInputs: clab.SpendableCoin[] = inputs.map((input) => {
-          return {
-            type: clab.SpendableCoinType.P2PKH,
-            key: HdNode.getAddressPrivateKey(input.address),
-            output: {
-              locking_bytecode: addressToLockingBytecode(input.address),
-              token:
-                input.token_category !== null
-                  ? {
-                      amount: BigInt(input.token_amount),
-                      token_id: input.token_category,
-                    }
-                  : undefined,
-              amount: BigInt(input.amount),
-            },
-            outpoint: {
-              txhash: hexToBin(input.txid),
-              index: Number(input.tx_pos),
-            },
-          };
-        });
-        tradeTransaction = exchangeLab.createTradeTx(
-          currentTrade.entries,
-          clabInputs,
-          payoutRules,
-          null,
-          TXFEE_PER_BYTE
-        );
-        isSuccess = true;
-        Log.debug("tradeTransaction", tradeTransaction);
-      } catch (e) {
-        Log.debug(e);
-        if (!e.required_amount) {
-          throw e;
-        }
+      const AddressManager = AddressManagerService(wallet.walletHash);
+      const changeAddresses = AddressManager.getUnusedAddresses(2, 1);
+      let changeAddressIndex = 0;
 
-        currentTrade = exchangeLab.constructTradeBestRateForTargetDemand(
-          MUSD_TOKENID,
-          "BCH",
-          currentTrade.summary.demand + currentTrade.summary.trade_fee,
-          inputPools,
-          1n
-        );
+      const payoutRules: clab.PayoutRule[] = [
+        ...recipients.map((r) => ({
+          type: clab.PayoutAmountRuleType.FIXED,
+          locking_bytecode: addressToLockingBytecode(r.address),
+          amount: r.amount - fee,
+          token: r.token
+            ? {
+                token_id: r.token.category,
+                amount: r.token.amount,
+              }
+            : undefined,
+        })),
+        {
+          type: clab.PayoutAmountRuleType.CHANGE,
+          generateChangeLockingBytecodeForOutput() {
+            const changeAddress = changeAddresses[changeAddressIndex];
+            if (changeAddressIndex + 1 < changeAddresses.length) {
+              changeAddressIndex += 1;
+            }
+            return addressToLockingBytecode(changeAddress.address);
+          },
+
+          allow_mixing_native_and_token_when_bch_change_is_dust: true,
+        },
+      ];
+
+      Log.debug("payoutRules", payoutRules);
+      tradeTransaction = exchangeLab.createTradeTx(
+        tradeResult.entries,
+        clabInputs,
+        payoutRules,
+        null,
+        TXFEE_PER_BYTE
+      );
+      Log.debug("tradeTransaction", tradeTransaction);
+    } catch (e) {
+      Log.debug(e);
+      if (!e.required_amount) {
+        throw e;
       }
+
+      return buildStablecoinTransaction(
+        recipients,
+        tradeResult.summary.demand,
+        fee + e.required_amount
+      );
     }
 
     if (tradeTransaction === null) {
@@ -693,7 +694,12 @@ export default function TransactionBuilderService(walletHash: string) {
     const tx_hex = binToHex(tx_raw);
     const tx_hash = swapEndianness(binToHex(sha256.hash(sha256.hash(tx_raw))));
 
-    return { tx_hex, tx_hash, trade: currentTrade };
+    return {
+      tx_hex,
+      tx_hash,
+      tradeResult,
+      payout_rules: tradeTransaction.payout_rules,
+    };
   }
 
   function buildSendTokensTransactionWithFeePayingTokenCategory({
