@@ -117,7 +117,7 @@ const translations = {
     zh_TW: "觀看直播"
   },
   intro: {
-    en: "The premiere BCH conference is back for its third year! Join BCH enthusiasts from around the world to celebrate the Bitcoin Cash \"Layla\" upgrade with presentations, panels, project booths, social events & more.",
+    en: "A virtual hackathon designed to ignite innovation in the BitcoinCash (BCH) ecosystem! Compete for a share of 10 BCH in prizes, plus exclusive tickets to BLISS 2026 and other exciting perks!",
   },
   tickets: {
     ar: "التذاكر",

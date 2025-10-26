@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link, NavLink, Outlet, useLocation } from "react-router";
+import { Link, Outlet, useLocation } from "react-router";
 import {
   BankOutlined,
   MoneyCollectOutlined,
@@ -12,6 +12,7 @@ import { selectActiveWallet } from "@/redux/wallet";
 
 import ViewHeader from "@/layout/ViewHeader";
 import FullColumn from "@/layout/FullColumn";
+import NavTab from "@/layout/NavTab";
 
 import { translate } from "@/util/translations";
 import translations from "./translations";
@@ -71,42 +72,5 @@ export default function AssetsView() {
         <Outlet context={wallet} />
       </FullColumn>
     </FullColumn>
-  );
-}
-
-interface NavTabProps {
-  to: string;
-  icon: React.ComponentType;
-  activeIcon: React.ComponentType;
-  label: string;
-}
-
-function NavTab({ to, icon, activeIcon, label }: NavTabProps) {
-  const Icon = icon;
-  const ActiveIcon = activeIcon;
-
-  const baseClasses = "bg-neutral-800 dark:bg-neutral-1000 text-primary border-primary w-full p-2";
-  const activeClasses = "active border-b-4 font-semibold shadow-inner";
-  const iconClasses = "text-lg mr-1";
-
-  return (
-    <NavLink
-      to={to}
-      replace
-      className={({ isActive }) =>
-        isActive ? `${baseClasses} ${activeClasses}` : `${baseClasses}`
-      }
-    >
-      {({ isActive }) => (
-        <div className="flex items-center justify-center text-sm">
-          {isActive ? (
-            <ActiveIcon className={iconClasses} />
-          ) : (
-            <Icon className={iconClasses} />
-          )}
-          <span>{label}</span>
-        </div>
-      )}
-    </NavLink>
   );
 }

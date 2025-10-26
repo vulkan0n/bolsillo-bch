@@ -3,8 +3,11 @@ import { Link } from "react-router";
 import { useSelector } from "react-redux";
 import { useQuery } from "@apollo/client";
 import { selectCurrentPrice } from "@/redux/exchangeRates";
-import { THIRTY_SECONDS } from "@/util/time";
 import GET_ACTIVE_BITCOINERS_SUMMARY from "@/apps/stats/getActiveBitcoinersSummary";
+import { THIRTY_SECONDS } from "@/util/time";
+
+import { translate } from "@/util/translations";
+import  translations  from "@/views/explore/translations";
 
 export default function ExploreStatWidget() {
   const price = useSelector(selectCurrentPrice);
@@ -42,10 +45,12 @@ export default function ExploreStatWidget() {
   const isMonthlyActiveIncrease = monthlyChange >= 0;
 
   return (
-    <div className="shadow rounded-lg p-2 bg-neutral-700 flex justify-between items-center border border-neutral-900 dark:bg-neutral-800 dark:border-primarydark-200">
+    <div className="p-2 rounded bg-primary-100 flex justify-between items-center border border-primary-700 dark:bg-neutral-800 dark:border-primarydark-200">
       <Link to="/apps/stats/#d">
         <div className="p-1 mx-1">
-          <div className="font-bold text-neutral-50">Daily Users</div>
+          <div className="font-bold text-neutral-800 dark:text-neutral-200">
+            {translate(translations.dailyUsers)}
+          </div>
           <div
             className={`${isDailyActiveIncrease ? "text-success" : "text-error"} text-lg font-semibold`}
           >
@@ -64,7 +69,9 @@ export default function ExploreStatWidget() {
 
       <Link to="/apps/stats/#m">
         <div className="p-1 mx-1">
-          <div className="font-bold text-neutral-50">Monthly Users</div>
+          <div className="font-bold text-neutral-800 dark:text-neutral-200">
+            {translate(translations.monthlyUsers)}
+          </div>
           <div
             className={`${isMonthlyActiveIncrease ? "text-success" : "text-error"} text-lg font-semibold`}
           >
@@ -84,8 +91,10 @@ export default function ExploreStatWidget() {
 
       {/*<Link to="/apps/price">*/}
       <div className="p-1 mx-1">
-        <div className="font-bold text-neutral-50">BCH/{price.currency}</div>
-        <div className="text-neutral-100 text-lg font-semibold">
+        <div className="font-bold text-neutral-800 dark:text-neutral-200">
+          BCH/{price.currency}
+        </div>
+        <div className="text-neutral-600 text-lg font-semibold dark:text-neutral-100/90">
           {price.priceString}
         </div>
         <div className="text-xs text-neutral-400">&nbsp;</div>
