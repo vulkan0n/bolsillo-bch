@@ -5,7 +5,6 @@ import {
 } from "@ant-design/icons";
 
 import ExploreApp from "./ExploreApp";
-import ExploreStatWidget from "./ExploreStatWidget";
 import LinkExternal from "@/atoms/LinkExternal";
 import SeleneLogo from "@/atoms/SeleneLogo";
 import Card from "@/atoms/Card";
@@ -15,27 +14,21 @@ import useRealTime from "@/hooks/useRealTime";
 
 import { translate } from "@/util/translations";
 import translations from "./translations";
-import BlissAppCard from "../apps/bliss/BlissAppCard";
+//import BlissAppCard from "../apps/bliss/BlissAppCard";
 import BlazeAppCard from "../apps/blaze/BlazeAppCard";
 
 import { BLAZE_2025_HIDE_CARD_DATE } from "../apps/blaze/constants";
 
 export default function ExploreViewHome() {
   const now = useRealTime(1000);
-  const isBlazeOngoing = now.valueOf() <= BLAZE_2025_HIDE_CARD_DATE.valueOf()
+  const isBlazeOngoing = now.valueOf() <= BLAZE_2025_HIDE_CARD_DATE.valueOf();
 
   return (
     <div className="p-1.5 flex flex-col gap-2">
       <Carousel autoRotateInterval={10000}>
         {isBlazeOngoing && <BlazeAppCard />}
-
         {/* <BlissAppCard /> */}
-        <div className="bg-primary-200 dark:bg-neutral-800">
-          <StatsGraphCard />
-          <div className="p-2">
-            <ExploreStatWidget />
-          </div>
-        </div>
+        <StatsGraphCard />
       </Carousel>
       <Card>
         <div className="flex flex-col gap-2">

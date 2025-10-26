@@ -22,7 +22,7 @@ export default function Carousel({
   // Auto-rotation effect - only if more than 1 child
   useEffect(() => {
     if (isPaused || validChildren.length <= 1) {
-      return () => { };
+      return () => {};
     }
 
     const interval = setInterval(() => {
@@ -86,33 +86,31 @@ export default function Carousel({
       </div>
 
       {showNavigation && (
-        <div className="w-full pt-1">
-          <div className="flex items-center justify-center gap-4">
-            <Button
-              icon={LeftOutlined}
-              iconSize="lg"
-              padding="1"
-              onClick={goToPrevious}
-            />
+          <div className="w-1/2 mx-auto py-1 px-8 bg-primary-300 border border-primary border-t-0 dark:border-primarydark-200 dark:bg-primarydark-100 rounded-b shadow-sm dark:shadow-none flex items-center justify-between gap-4">
+          <Button
+            icon={LeftOutlined}
+            iconSize="lg"
+            padding="1"
+            onClick={goToPrevious}
+          />
 
-            <div className="flex gap-3">
-              {validChildren.map((_, index) => (
-                <button
-                  key={index}
-                  type="button"
-                  onClick={() => goToSlide(index)}
-                  className={`w-3 h-3 rounded-full transition-colors ${index === currentIndex ? "bg-primary" : "bg-neutral-500"}`}
-                />
-              ))}
-            </div>
-
-            <Button
-              icon={RightOutlined}
-              iconSize="lg"
-              padding="1"
-              onClick={goToNext}
-            />
+          <div className="flex gap-3">
+            {validChildren.map((_, index) => (
+              <button
+                key={index}
+                type="button"
+                onClick={() => goToSlide(index)}
+                className={`w-3 h-3 rounded-full transition-colors ${index === currentIndex ? "bg-primary" : "bg-neutral-500"}`}
+              />
+            ))}
           </div>
+
+          <Button
+            icon={RightOutlined}
+            iconSize="lg"
+            padding="1"
+            onClick={goToNext}
+          />
         </div>
       )}
     </div>
