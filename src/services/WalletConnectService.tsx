@@ -115,10 +115,12 @@ export default function WalletConnectService() {
         topic: sessionId,
         reason: getSdkError("USER_DISCONNECTED"),
       });
+      Log.debug("wc user_disconnected", sessionId);
     }
 
     if (pairings.find((p) => p.topic === sessionId)) {
       await walletKit.core.pairing.disconnect({ topic: sessionId });
+      Log.debug("wc pairing disconnected", sessionId);
     }
   }
 

@@ -130,11 +130,8 @@ export default function AppWalletConnectView() {
           const address = session.namespaces.bch.accounts[0].slice(4);
 
           return (
-            <>
-              <div
-                className="p-1 dark:text-neutral-100 border border-neutral-600 rounded"
-                key={key}
-              >
+            <div key={key}>
+              <div className="p-1 dark:text-neutral-100 border border-neutral-600 rounded">
                 <div className="flex">
                   <div className="flex items-center justify-center p-1 border border-neutral-500 dark:border-primarydark-500 w-16 h-16">
                     <img src={peer.icons[0]} className="w-full h-full" />
@@ -157,7 +154,7 @@ export default function AppWalletConnectView() {
                   <Address address={address} />
                 </div>
               </div>
-            </>
+            </div>
           );
         })}
       </div>

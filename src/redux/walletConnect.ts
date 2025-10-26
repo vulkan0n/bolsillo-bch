@@ -166,9 +166,7 @@ export const wcSessionRequest = createAsyncThunk(
           }
 
           const response = formatJsonRpcResult(id, result);
-          await WalletConnect.sessionResponse(topic, {
-            response,
-          });
+          await WalletConnect.sessionResponse(topic, response);
 
           Log.debug("sessionResponse success", response);
         }
@@ -228,9 +226,8 @@ export const wcSessionDelete = createAsyncThunk(
   "walletConnect/sessionDelete",
   async (payload) => {
     Log.debug("wcSessionDelete", payload);
-    const { topic } = payload;
     const WalletConnect = WalletConnectService();
-    await WalletConnect.deleteSession(topic);
+    await WalletConnect.deleteSession(payload);
 
     const sessions = await WalletConnect.getSessions();
     return sessions;
