@@ -45,7 +45,7 @@ export const routeApps = [
       {
         path: "about/",
         element: <BlazeAboutView />,
-      }
+      },
     ],
   },
   {

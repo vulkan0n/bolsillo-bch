@@ -53,7 +53,6 @@ export default function WalletViewBalance() {
 
   const { isStablecoinMode } = useSelector(selectCurrencySettings);
 
-
   const shouldHideBalance = useSelector(selectShouldHideBalance);
   const hiddenBalanceClasses = useMemo(
     () => (shouldHideBalance ? "blur-sm backdrop-opacity-60 opacity-25" : ""),

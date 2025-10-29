@@ -4,7 +4,11 @@ import { EmbeddedVideoCard } from "@/components/atoms/EmbeddedVideo";
 import { translate } from "@/util/translations";
 import translations from "../translations";
 
-import { TAPSWAP_TICKETS_URL, TICKETS_READ_MORE_URL, TAPSWAP_TUTORIAL_VIDEO_URL } from "../constants.jsx";
+import {
+  TAPSWAP_TICKETS_URL,
+  TICKETS_READ_MORE_URL,
+  TAPSWAP_TUTORIAL_VIDEO_URL,
+} from "../constants.jsx";
 
 function BlissTicketsView() {
   return (

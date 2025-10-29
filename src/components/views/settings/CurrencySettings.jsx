@@ -5,7 +5,6 @@ import {
   EuroCircleOutlined,
   TransactionOutlined,
   AccountBookOutlined,
-  MoneyCollectOutlined,
 } from "@ant-design/icons";
 
 import {

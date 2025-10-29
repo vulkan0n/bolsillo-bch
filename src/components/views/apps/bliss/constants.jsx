@@ -6,7 +6,9 @@ export { SELENE_ASSETS_URL, BCH_PODCAST_LIVE_URL };
 
 export const BLISS_2026_START_DATE = new Date("2026-05-15T09:00:00+02:00");
 export const BLISS_2026_END_DATE = new Date("2026-05-17T23:00:00+02:00");
-export const BLISS_2026_GRACE_PERIOD = DateTime.fromJSDate(BLISS_2026_END_DATE).plus({
+export const BLISS_2026_GRACE_PERIOD = DateTime.fromJSDate(
+  BLISS_2026_END_DATE
+).plus({
   weeks: 3,
 });
 

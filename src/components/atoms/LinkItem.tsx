@@ -13,4 +13,4 @@ function LinkItem({ href, label }: { href: string; label: string }) {
   );
 }
 
-export default LinkItem
+export default LinkItem;

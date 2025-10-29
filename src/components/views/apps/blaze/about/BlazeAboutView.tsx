@@ -9,7 +9,8 @@ import Card from "@/components/atoms/Card";
 
 const BLAZE_INFORMATION_STREAM_URL =
   "https://www.youtube.com/watch?v=EufKujsTQGc";
-const BLAZE_DORAHACKS_URL = "https://dorahacks.io/hackathon/bchblaze2025/detail";
+const BLAZE_DORAHACKS_URL =
+  "https://dorahacks.io/hackathon/bchblaze2025/detail";
 
 const interval = Interval.fromDateTimes(
   BLAZE_EVENTS[0].startTime,
@@ -24,9 +25,7 @@ function BlazeAboutView() {
           <h1 className="font-bliss text-2xl text-black dark:text-white">
             BCH BLAZE
           </h1>
-          <div className=" text-lg">
-            Online!
-          </div>
+          <div className=" text-lg">Online!</div>
 
           <div className=" text-md">
             {interval.toLocaleString({
@@ -35,16 +34,20 @@ function BlazeAboutView() {
           </div>
           <div className="mt-1">{translate(translations.intro)}</div>
           <div className="bg-neutral rounded-lg flex flex-col overflow-hidden">
-            <LinkItem href={BLAZE_DORAHACKS_URL} label="DoraHacks Sign Up & Information" />
+            <LinkItem
+              href={BLAZE_DORAHACKS_URL}
+              label="DoraHacks Sign Up & Information"
+            />
           </div>
         </Card>
 
         <Card>
-          <h2 className="font-bold text-xl mt-1">
-            {"BLAZE Schedule"}
-          </h2>
+          <h2 className="font-bold text-xl mt-1">{"BLAZE Schedule"}</h2>
 
-          <img src={`${SELENE_ASSETS_URL}Schedule.png`} className="w-full h-64 pb-4" />
+          <img
+            src={`${SELENE_ASSETS_URL}Schedule.png`}
+            className="w-full h-64 pb-4"
+          />
 
           <h2 className="font-bold text-xl mt-1">
             {"BLAZE Information Session"}

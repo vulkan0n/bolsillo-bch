@@ -4,8 +4,12 @@ import { Link } from "react-router";
 import useRealTime from "@/hooks/useRealTime";
 import { translate } from "@/util/translations";
 import translations from "./translations";
-import { SELENE_ASSETS_URL, BLISS_2026_START_DATE, BLISS_2026_END_DATE, BCH_PODCAST_LIVE_URL } from "./constants.jsx";
-
+import {
+  SELENE_ASSETS_URL,
+  BLISS_2026_START_DATE,
+  BLISS_2026_END_DATE,
+  BCH_PODCAST_LIVE_URL,
+} from "./constants.jsx";
 
 const pad = (value: number) => value.toString().padStart(2, "0");
 
@@ -40,7 +44,10 @@ function BlissAppCard() {
       to={isDuring ? BCH_PODCAST_LIVE_URL : "/apps/bliss/about"}
       className="shadow rounded-xl overflow-hidden relative bg-black h-96"
     >
-      <img src={`${SELENE_ASSETS_URL}bliss-layla.png`} className="w-full h-96" />
+      <img
+        src={`${SELENE_ASSETS_URL}bliss-layla.png`}
+        className="w-full h-96"
+      />
       <div className="absolute bottom-0 left-0 right-0 bg-[rgba(0,0,0,0.8)] text-white p-6 flex justify-between gap-4 h-32 rounded-b-xl">
         <div>
           <div className="font-bold text-xl mb-2">
@@ -60,11 +67,7 @@ function BlissAppCard() {
           </div>
 
           <div className="leading-[1rem] mt-4">
-            {isBefore && (
-              <span>
-                {"Tickets available now"}
-              </span>
-            )}
+            {isBefore && <span>{"Tickets available now"}</span>}
           </div>
         </div>
         <ArrowRightOutlined className="text-xl" />

@@ -7,7 +7,6 @@ import {
 } from "react-router";
 import { useSelector, useDispatch } from "react-redux";
 import { Dialog } from "@capacitor/dialog";
-import { Decimal } from "decimal.js";
 import {
   ArrowLeftOutlined,
   SyncOutlined,

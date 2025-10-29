@@ -13,7 +13,7 @@ import {
 
 import * as clab from "@cashlab/common";
 import * as cauldron from "@cashlab/cauldron";
-import { ExchangeLab, PoolV0 } from "@cashlab/cauldron";
+import { ExchangeLab } from "@cashlab/cauldron";
 import LogService from "@/services/LogService";
 import UtxoManagerService from "@/services/UtxoManagerService";
 import AddressManagerService, {
@@ -23,7 +23,6 @@ import AddressScannerService from "@/services/AddressScannerService";
 import HdNodeService from "@/services/HdNodeService";
 import WalletManagerService from "@/services/WalletManagerService";
 import CauldronService from "@/services/CauldronService";
-import CurrencyService from "@/services/CurrencyService";
 import {
   TransactionStub,
   TransactionOutput,
@@ -232,10 +231,6 @@ export default function TransactionBuilderService(walletHash: string) {
     }
 
     const preparedTokenChange = prepareTokenChange(inputs, recipientVouts);
-    const tokenChangeAmount = preparedTokenChange.reduce(
-      (sum, cur) => sum + cur.valueSatoshis,
-      0n
-    );
 
     const outputs = finalizeChange(
       inputs,
@@ -395,12 +390,6 @@ export default function TransactionBuilderService(walletHash: string) {
 
       const satsOutputTotal = vout.reduce(
         (sum, cur) => sum + cur.valueSatoshis,
-        0n
-      );
-
-      const tokenOutputTotal = vout.reduce(
-        (sum, cur) =>
-          cur.token_category !== null ? sum + cur.valueSatoshis : sum,
         0n
       );
 

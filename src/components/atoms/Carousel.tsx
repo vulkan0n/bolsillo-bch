@@ -1,3 +1,4 @@
+/* eslint-disable react/no-array-index-key */
 import { useState, useEffect, Children } from "react";
 import { LeftOutlined, RightOutlined } from "@ant-design/icons";
 import Button from "@/atoms/Button";
@@ -15,9 +16,7 @@ export default function Carousel({
   const [isPaused, setIsPaused] = useState(false);
 
   // Convert children to array and filter out null, undefined, or falsy children
-  const validChildren = Children.toArray(children).filter(
-    (child) => child !== null && child !== undefined
-  );
+  const validChildren = Children.toArray(children).filter((child) => !!child);
 
   // Auto-rotation effect - only if more than 1 child
   useEffect(() => {
@@ -54,7 +53,7 @@ export default function Carousel({
   };
 
   // Don't show navigation controls if there's only 0 or 1 child
-  const showNavigation = validChildren.length > 1;
+  const shouldShowNavigation = validChildren.length > 1;
 
   // If no valid children, return nothing
   if (validChildren.length === 0) {
@@ -77,16 +76,18 @@ export default function Carousel({
           className="flex transition-transform duration-500 ease-in-out h-full"
           style={{ transform: `translateX(-${currentIndex * 100}%)` }}
         >
-          {validChildren.map((child, index) => (
-            <div key={index} className="w-full shrink-0 max-h-full">
-              {child}
-            </div>
-          ))}
+          {validChildren.map((child) => {
+            return (
+              <div key={child!.key} className="w-full shrink-0 max-h-full">
+                {child}
+              </div>
+            );
+          })}
         </div>
       </div>
 
-      {showNavigation && (
-          <div className="w-1/2 mx-auto py-1 px-8 bg-primary-300 border border-primary border-t-0 dark:border-primarydark-200 dark:bg-primarydark-100 rounded-b shadow-sm dark:shadow-none flex items-center justify-between gap-4">
+      {shouldShowNavigation && (
+        <div className="w-1/2 mx-auto py-1 px-8 bg-primary-300 border border-primary border-t-0 dark:border-primarydark-200 dark:bg-primarydark-100 rounded-b shadow-sm dark:shadow-none flex items-center justify-between gap-4">
           <Button
             icon={LeftOutlined}
             iconSize="lg"

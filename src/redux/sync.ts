@@ -36,8 +36,6 @@ import AddressScannerService from "@/services/AddressScannerService";
 import UtxoManagerService from "@/services/UtxoManagerService";
 import JanitorService from "@/services/JanitorService";
 
-import { MUSD_TOKENID } from "@/util/tokens";
-
 const Log = LogService("redux/sync");
 
 export const syncMiddleware = createListenerMiddleware<{
@@ -498,8 +496,9 @@ export const syncSetSaving = createAction<boolean>("sync/saving");
 export const syncComplete = createAsyncThunk(
   "sync/complete",
   async (payload, thunkApi): Promise<boolean> => {
-    const { syncCount, isSyncComplete, isSyncing, isSaving, syncDiff } =
-      selectSyncState(thunkApi.getState());
+    const { isSyncComplete, isSyncing, isSaving, syncDiff } = selectSyncState(
+      thunkApi.getState()
+    );
 
     if (!isSyncing) {
       if (!isSyncComplete && !isSaving) {

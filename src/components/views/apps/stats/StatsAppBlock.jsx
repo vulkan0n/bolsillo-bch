@@ -60,7 +60,9 @@ export default function StatsAppBlock() {
     <div className="p-2 rounded bg-primary-50 flex justify-between items-center border border-primary-300 dark:bg-neutral-800 dark:border-primarydark-200">
       <Link to="#d">
         <div className="p-1 mx-1">
-          <div className="font-bold text-neutral-600 dark:text-neutral-200">24h</div>
+          <div className="font-bold text-neutral-600 dark:text-neutral-200">
+            24h
+          </div>
           <div
             className={`${isDailyActiveIncrease ? "text-success" : "text-error"} text-lg font-semibold`}
           >
@@ -79,7 +81,9 @@ export default function StatsAppBlock() {
 
       <Link to="#w">
         <div className="p-1 mx-1">
-          <div className="font-bold text-neutral-600 dark:text-neutral-200">7d</div>
+          <div className="font-bold text-neutral-600 dark:text-neutral-200">
+            7d
+          </div>
           <div
             className={`${isWeeklyActiveIncrease ? "text-primary" : "text-error"} text-lg font-semibold`}
           >
@@ -98,7 +102,9 @@ export default function StatsAppBlock() {
 
       <Link to="#m">
         <div className="p-1 mx-1">
-          <div className="font-bold text-neutral-600 dark:text-neutral-200">30d</div>
+          <div className="font-bold text-neutral-600 dark:text-neutral-200">
+            30d
+          </div>
           <div
             className={`${isMonthlyActiveIncrease ? "text-primary" : "text-error"} text-lg font-semibold`}
           >
@@ -118,7 +124,9 @@ export default function StatsAppBlock() {
 
       <Link to="#y">
         <div className="p-1 mx-1">
-          <div className="font-bold text-neutral-600 dark:text-neutral-200">1y</div>
+          <div className="font-bold text-neutral-600 dark:text-neutral-200">
+            1y
+          </div>
           <div
             className={`${isYearlyActiveIncrease ? "text-primary" : "text-error"} text-lg font-semibold`}
           >

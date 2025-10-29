@@ -12,10 +12,11 @@ export const BLAZE_2025_WORKSHOP_3_DATE = new Date("2025-11-08T18:00:00+00:00");
 export const BLAZE_2025_START_DATE = new Date("2026-05-15T09:00:00+02:00");
 export const BLAZE_2025_END_DATE = new Date("2026-05-17T23:00:00+02:00");
 
-export const BLAZE_2025_HIDE_CARD_DATE = DateTime.fromJSDate(BLAZE_2025_END_DATE).plus({
+export const BLAZE_2025_HIDE_CARD_DATE = DateTime.fromJSDate(
+  BLAZE_2025_END_DATE
+).plus({
   weeks: 2,
 });
-
 
 export const BLAZE_EVENTS = [
   {
@@ -74,4 +75,4 @@ export const BLAZE_EVENTS = [
     endTime: new Date("2025-11-29T21:00:00+00:00"),
     thumbnail: "hackathon-showcase.jpg",
   },
-]
+];

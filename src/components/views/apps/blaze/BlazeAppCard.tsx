@@ -5,7 +5,7 @@ import useRealTime from "@/hooks/useRealTime";
 import {
   SELENE_ASSETS_URL,
   BLAZE_EVENTS,
-  BCH_PODCAST_LIVE_URL
+  BCH_PODCAST_LIVE_URL,
 } from "./constants.jsx";
 
 const pad = (value: number) => value.toString().padStart(2, "0");
@@ -13,7 +13,9 @@ const pad = (value: number) => value.toString().padStart(2, "0");
 function BlazeAppCard() {
   const now = useRealTime(1000);
 
-  const nextEvent = BLAZE_EVENTS.filter(e => now.valueOf() < e.endTime.valueOf())?.[0] || BLAZE_EVENTS[-1];
+  const nextEvent =
+    BLAZE_EVENTS.filter((e) => now.valueOf() < e.endTime.valueOf())?.[0] ||
+    BLAZE_EVENTS[-1];
 
   const isDuring =
     now.valueOf() >= nextEvent.startTime.valueOf() &&
@@ -31,7 +33,10 @@ function BlazeAppCard() {
       to={isDuring ? BCH_PODCAST_LIVE_URL : "/apps/blaze/about"}
       className="bg-black h-full flex flex-col"
     >
-      <img src={`${SELENE_ASSETS_URL}${nextEvent.thumbnail}`} className="w-full" />
+      <img
+        src={`${SELENE_ASSETS_URL}${nextEvent.thumbnail}`}
+        className="w-full"
+      />
       <div className="bg-black text-neutral-50 p-6 flex justify-between items-center h-full">
         <div className="h-fit">
           <div className="font-bold text-xl mb-2">
@@ -39,17 +44,15 @@ function BlazeAppCard() {
           </div>
 
           <div className="leading-[1rem]">
-            <span>
-              {nextEvent.name}
-            </span>
+            <span>{nextEvent.name}</span>
           </div>
 
           <div className="leading-[1rem] mt-4">
-            {isDuring ? "Live!" : (
+            {isDuring ? (
+              "Live!"
+            ) : (
               <span>
-                <span>
-                  Starts in:{" "}
-                </span>
+                <span>Starts in: </span>
                 <span className="font-mono">
                   {days}d:
                   {hours}h:

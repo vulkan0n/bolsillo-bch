@@ -6,10 +6,7 @@ import { Outlet } from "react-router";
 import { useSelector } from "react-redux";
 import { selectActiveWallet } from "@/redux/wallet";
 
-import {
-  BankOutlined,
-  InfoCircleOutlined,
-} from "@ant-design/icons";
+import { BankOutlined, InfoCircleOutlined } from "@ant-design/icons";
 
 function AppBlazeView() {
   const wallet = useSelector(selectActiveWallet);
