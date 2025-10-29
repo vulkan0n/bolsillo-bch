@@ -1,9 +1,9 @@
 import WalletView from "@/views/wallet/WalletView";
-import WalletViewHome from "@/views/wallet/WalletViewHome/WalletViewHome";
-import WalletViewSend from "@/views/wallet/WalletViewSend/WalletViewSend";
-import WalletViewPay from "@/views/wallet/WalletViewPay/WalletViewPay";
-import WalletViewSweep from "@/views/wallet/WalletViewSweep/WalletViewSweep";
-import WalletViewSendSuccess from "@/views/wallet/WalletViewSendSuccess/WalletViewSendSuccess";
+import WalletViewHome from "@/views/wallet/home/WalletViewHome";
+import WalletViewSend from "@/views/wallet/send/WalletViewSend";
+import WalletViewPay from "@/views/wallet/send/WalletViewPay";
+import WalletViewSweep from "@/views/wallet/send/WalletViewSweep";
+import WalletViewSendSuccess from "@/views/wallet/send/WalletViewSendSuccess";
 
 export const routeWallet = [
   {
@@ -38,7 +38,7 @@ export const routeWallet = [
         path: "history",
         async lazy() {
           const { default: WalletViewHistory } = await import(
-            "@/views/wallet/WalletViewHistory/WalletViewHistory"
+            "@/views/wallet/history/WalletViewHistory"
           );
           return { Component: WalletViewHistory };
         },

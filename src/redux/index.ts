@@ -1,4 +1,4 @@
-import { configureStore } from "@reduxjs/toolkit";
+import { configureStore, combineReducers } from "@reduxjs/toolkit";
 import LogService from "@/services/LogService";
 import {
   preferencesReducer,
@@ -20,22 +20,24 @@ import { triggerCheckIn } from "./stats";
 
 const Log = LogService("redux");
 
+const rootReducer = combineReducers({
+  device: deviceReducer,
+  preferences: preferencesReducer,
+  wallet: walletReducer,
+  sync: syncReducer,
+  exchangeRates: exchangeRateReducer,
+  txHistory: txHistoryReducer,
+  addresses: addressReducer,
+  walletConnect: walletConnectReducer,
+});
+
 export const store = configureStore({
-  reducer: {
-    device: deviceReducer,
-    preferences: preferencesReducer,
-    wallet: walletReducer,
-    sync: syncReducer,
-    exchangeRates: exchangeRateReducer,
-    txHistory: txHistoryReducer,
-    addresses: addressReducer,
-    walletConnect: walletConnectReducer,
-  },
+  reducer: rootReducer,
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().prepend(syncMiddleware.middleware),
 });
 
-export type RootState = ReturnType<typeof store.getState>;
+export type RootState = ReturnType<typeof rootReducer>;
 export type AppDispatch = typeof store.dispatch;
 
 // initialize redux stores

@@ -3,7 +3,10 @@ import { useEffect, useMemo } from "react";
 import { useSelector } from "react-redux";
 import { Outlet, useNavigate } from "react-router";
 import { selectScannerIsScanning, selectDevicePlatform } from "@/redux/device";
-import { selectShouldConstrainViewport } from "@/redux/preferences";
+import {
+  selectShouldConstrainViewport,
+  selectIsDarkMode,
+} from "@/redux/preferences";
 import { validateBchUri } from "@/util/uri";
 import BottomNavigation from "./BottomNavigation";
 
@@ -16,8 +19,27 @@ export default function MainLayout() {
   const platform = useSelector(selectDevicePlatform);
   const shouldConstrainViewport = useSelector(selectShouldConstrainViewport);
 
+  const isDarkMode = useSelector(selectIsDarkMode);
+
   const html = useMemo(() => document.querySelector("html"), []);
   const body = useMemo(() => document.querySelector("body"), []);
+
+  useEffect(
+    function setDarkModeCss() {
+      if (!html) {
+        return () => {};
+      }
+
+      if (isDarkMode) {
+        html.classList.add("dark");
+      }
+
+      return () => {
+        html.classList.remove("dark");
+      };
+    },
+    [html, isDarkMode]
+  );
 
   useEffect(
     function setPlatformCss() {

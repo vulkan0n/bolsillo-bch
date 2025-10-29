@@ -36,7 +36,7 @@ const translations = {
     ur: "دریافت کریں۔",
     vi: "Khám phá",
     zh: "探索",
-    zh_TW: "探索"
+    zh_TW: "探索",
   },
   statistics: {
     ar: "إحصائيات",
@@ -75,7 +75,7 @@ const translations = {
     ur: "شماریات",
     vi: "Số liệu thống kê",
     zh: "统计数据",
-    zh_TW: "統計數據"
+    zh_TW: "統計數據",
   },
   socialMedia: {
     ar: "وسائل التواصل الاجتماعي",
@@ -114,7 +114,7 @@ const translations = {
     ur: "سوشل میڈیا",
     vi: "Truyền thông xã hội",
     zh: "社交媒体",
-    zh_TW: "社群媒體"
+    zh_TW: "社群媒體",
   },
   chronology: {
     ar: "التسلسل الزمني",
@@ -153,7 +153,7 @@ const translations = {
     ur: "تاریخ نامہ",
     vi: "Niên đại",
     zh: "年表",
-    zh_TW: "年表"
+    zh_TW: "年表",
   },
   faqs: {
     ar: "الأسئلة الشائعة حول بيتكوين كاش",
@@ -192,7 +192,7 @@ const translations = {
     ur: "بٹ کوائن کیش کے عمومی سوالات",
     vi: "Câu hỏi thường gặp về Bitcoin Cash",
     zh: "比特币现金常见问题解答",
-    zh_TW: "比特幣現金常見問題解答"
+    zh_TW: "比特幣現金常見問題解答",
   },
   back: {
     ar: "خلف",
@@ -231,7 +231,7 @@ const translations = {
     ur: "واپس",
     vi: "Quay lại",
     zh: "返回",
-    zh_TW: "後退"
+    zh_TW: "後退",
   },
   transactionId: {
     ar: "معرف المعاملة",
@@ -270,7 +270,7 @@ const translations = {
     ur: "ٹرانزیکشن ID",
     vi: "Mã giao dịch",
     zh: "交易编号",
-    zh_TW: "交易編號"
+    zh_TW: "交易編號",
   },
   copiedTxid: {
     ar: "تم نسخ معرف المعاملة إلى الحافظة",
@@ -309,7 +309,7 @@ const translations = {
     ur: "ٹرانزیکشن ID کو کلپ بورڈ پر کاپی کیا گیا۔",
     vi: "Đã sao chép ID giao dịch vào Bảng tạm",
     zh: "已将交易 ID 复制到剪贴板",
-    zh_TW: "已將交易 ID 複製到剪貼簿"
+    zh_TW: "已將交易 ID 複製到剪貼簿",
   },
   ecosystem: {
     ar: "دليل النظام البيئي",
@@ -348,7 +348,7 @@ const translations = {
     ur: "ایکو سسٹم ڈائرکٹری",
     vi: "Thư mục hệ sinh thái",
     zh: "生态系统目录",
-    zh_TW: "生態系目錄"
+    zh_TW: "生態系目錄",
   },
   help: {
     ar: "دليل المستخدم",
@@ -387,7 +387,7 @@ const translations = {
     ur: "صارف دستی",
     vi: "Hướng dẫn sử dụng",
     zh: "用户手册",
-    zh_TW: "使用者手冊"
+    zh_TW: "使用者手冊",
   },
   info: {
     ar: "المساعدة والمعلومات",
@@ -426,7 +426,7 @@ const translations = {
     ur: "مدد اور معلومات",
     vi: "Trợ giúp &amp; Thông tin",
     zh: "帮助和信息",
-    zh_TW: "幫助和資訊"
+    zh_TW: "幫助和資訊",
   },
   outputs: {
     ar: "المخرجات",
@@ -465,7 +465,7 @@ const translations = {
     ur: "آؤٹ پٹس",
     vi: "Đầu ra",
     zh: "输出",
-    zh_TW: "輸出"
+    zh_TW: "輸出",
   },
   inputs: {
     ar: "المدخلات",
@@ -504,7 +504,7 @@ const translations = {
     ur: "ان پٹ",
     vi: "Đầu vào",
     zh: "输入",
-    zh_TW: "輸入"
+    zh_TW: "輸入",
   },
   learnMore: {
     ar: "يتعلم أكثر",
@@ -543,8 +543,26 @@ const translations = {
     ur: "مزید جانیں",
     vi: "Tìm hiểu thêm",
     zh: "了解更多",
-    zh_TW: "了解更多"
-  }
+    zh_TW: "了解更多",
+  },
+  confirmedInBlock: {
+    en: "Confirmed in block",
+  },
+  blocks: {
+    en: "blocks",
+  },
+  pendingConfirmation: {
+    en: "Pending Confirmation",
+  },
+  setMemo: {
+    en: "Set Memo...",
+  },
+  dailyUsers: {
+    en: "Daily Users",
+  },
+  monthlyUsers: {
+    en: "Monthly Users",
+  },
 };
 
 export default translations;

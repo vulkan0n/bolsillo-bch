@@ -127,7 +127,7 @@ export default function CurrencyService(
   function satsToFiat(sats) {
     return new Decimal(satsToBch(sats).bch)
       .times(getExchangeRate(fiatCurrency))
-      .toFixed(2)
+      .toFixed(getDecimals(fiatCurrency))
       .toString();
   }
 
@@ -138,6 +138,14 @@ export default function CurrencyService(
     );
 
     return index > -1 ? exchangeRates[index].price : 1;
+  }
+
+  function getDecimals(currency) {
+    const index = currencyList.findIndex(
+      (exchangeRate) => exchangeRate.currency === currency
+    );
+
+    return (index > -1 && currencyList[index].decimals) || 2;
   }
 
   function getSymbol(currency) {

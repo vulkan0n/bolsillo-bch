@@ -107,6 +107,7 @@ export const wcSessionRequest = createAsyncThunk(
           formatJsonRpcResult(id, sessionAddress)
         );
         break;
+
       case "bch_signTransaction":
         {
           const { transaction: unsignedTransaction, sourceOutputs } =
@@ -165,13 +166,25 @@ export const wcSessionRequest = createAsyncThunk(
           }
 
           const response = formatJsonRpcResult(id, result);
-          await WalletConnect.sessionResponse(topic, {
-            response,
-          });
+          await WalletConnect.sessionResponse(topic, response);
 
           Log.debug("sessionResponse success", response);
         }
         break;
+
+      case "bch_signMessage":
+        {
+          const { message } = destringify(JSON.stringify(methodParams));
+
+          const Hd = HdNodeService(wallet);
+          const signedMessage = Hd.signMessage(message, sessionAddress);
+          await WalletConnect.sessionResponse(
+            topic,
+            formatJsonRpcResult(id, signedMessage)
+          );
+        }
+        break;
+
       default:
         await WalletConnect.sessionResponse(topic, {
           response: formatJsonRpcError(id, `Unsupported method ${method}`),
@@ -187,9 +200,9 @@ export const wcSessionApprove = createAsyncThunk(
     const WalletConnect = WalletConnectService();
     const wallet = selectActiveWallet(thunkApi.getState());
 
-    // TODO: make walletconnect address configurable
     const AddressManager = AddressManagerService(wallet.walletHash);
-    const { address: sessionAddress } = AddressManager.getAddressRange(0, 0)[0];
+    const { address: sessionAddress } =
+      AddressManager.getWalletConnectAddress();
     Log.debug("wcSessionApprove", payload, sessionAddress);
     await WalletConnect.approveSession(payload, sessionAddress);
 
@@ -213,9 +226,8 @@ export const wcSessionDelete = createAsyncThunk(
   "walletConnect/sessionDelete",
   async (payload) => {
     Log.debug("wcSessionDelete", payload);
-    const { topic } = payload;
     const WalletConnect = WalletConnectService();
-    await WalletConnect.deleteSession(topic);
+    await WalletConnect.deleteSession(payload);
 
     const sessions = await WalletConnect.getSessions();
     return sessions;

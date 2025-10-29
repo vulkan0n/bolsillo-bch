@@ -2,33 +2,38 @@ import {
   encodeTransaction,
   generateTransaction,
   swapEndianness,
-  cashAddressToLockingBytecode,
-  base58AddressToLockingBytecode,
   importWalletTemplate,
   walletTemplateP2pkhNonHd,
   walletTemplateToCompilerBCH,
   getMinimumFee,
   getDustThreshold,
-  Output,
+  Output as LibauthOutput,
   assertSuccess,
 } from "@bitauth/libauth";
 
+import * as clab from "@cashlab/common";
+import * as cauldron from "@cashlab/cauldron";
+import { ExchangeLab, PoolV0 } from "@cashlab/cauldron";
 import LogService from "@/services/LogService";
 import UtxoManagerService from "@/services/UtxoManagerService";
 import AddressManagerService, {
   AddressEntity,
 } from "@/services/AddressManagerService";
+import AddressScannerService from "@/services/AddressScannerService";
 import HdNodeService from "@/services/HdNodeService";
 import WalletManagerService from "@/services/WalletManagerService";
+import CauldronService from "@/services/CauldronService";
+import CurrencyService from "@/services/CurrencyService";
 import {
   TransactionStub,
   TransactionOutput,
 } from "@/services/TransactionManagerService";
 
 import { DUST_RELAY_FEE, EXCESSIVE_SATOSHIS } from "@/util/sats";
-import { validateBchUri } from "@/util/uri";
 import { binToHex, hexToBin } from "@/util/hex";
 import { sha256 } from "@/util/hash";
+import { addressToLockingBytecode } from "@/util/cashaddr";
+import { MUSD_TOKENID } from "@/util/tokens";
 
 // NOTE: Couldn't find this type defined elsewhere, so have added it here.
 export type ElectrumUtxo = {
@@ -46,6 +51,21 @@ export type ElectrumUtxo = {
   value: number;
 };
 
+export interface Recipient {
+  address: string;
+  amount: bigint;
+  token?: {
+    category: string;
+    amount: bigint;
+    nft?: {
+      capability: "minting" | "mutable" | "none";
+      commitment?: string;
+    };
+  };
+}
+
+const TXFEE_PER_BYTE = DUST_RELAY_FEE / 1000n;
+
 const Log = LogService("TxBuilder");
 
 export class TransactionBuilderError extends Error {}
@@ -56,27 +76,26 @@ export default function TransactionBuilderService(walletHash: string) {
 
   return {
     buildP2pkhTransaction,
+    buildStablecoinTransaction,
+    buildSendTokensTransactionWithFeePayingTokenCategory,
+    calculateTransactionHash,
   };
 
   // --------------------------------
 
-  function addressToLockingBytecode(addr) {
-    const { isBase58Address, address } = validateBchUri(addr);
-    const lockingBytecode = isBase58Address
-      ? base58AddressToLockingBytecode(address)
-      : cashAddressToLockingBytecode(address);
-
-    if (typeof lockingBytecode === "string") {
-      throw new Error(lockingBytecode);
-    }
-
-    return lockingBytecode.bytecode;
+  function calculateTransactionHash(tx_raw: Uint8Array): string {
+    const tx_hash = swapEndianness(binToHex(sha256.hash(sha256.hash(tx_raw))));
+    return tx_hash;
   }
 
-  function createTokenOutput(recipientAddress, token) {
+  function createTokenOutput(
+    recipientAddress,
+    token,
+    satsAmount = EXCESSIVE_SATOSHIS
+  ): LibauthOutput {
     const output = {
       lockingBytecode: addressToLockingBytecode(recipientAddress),
-      valueSatoshis: EXCESSIVE_SATOSHIS,
+      valueSatoshis: satsAmount,
       token: {
         ...token,
         category: hexToBin(token.category),
@@ -86,12 +105,14 @@ export default function TransactionBuilderService(walletHash: string) {
     Log.debug("createTokenOutput", output, token);
 
     const dustThreshold = getDustThreshold(output, DUST_RELAY_FEE);
-    output.valueSatoshis = dustThreshold;
+    if (satsAmount < dustThreshold || satsAmount === EXCESSIVE_SATOSHIS) {
+      output.valueSatoshis = dustThreshold;
+    }
 
     return output;
   }
 
-  function createCoinOutput(recipientAddress, amount) {
+  function createCoinOutput(recipientAddress, amount): LibauthOutput {
     const output = {
       lockingBytecode: addressToLockingBytecode(recipientAddress),
       valueSatoshis: amount,
@@ -100,12 +121,15 @@ export default function TransactionBuilderService(walletHash: string) {
     Log.debug("createCoinOutput", output);
     return output;
   }
+
   // prepare outputs
-  function prepareOutputsFromRecipients(recipients) {
+  function prepareOutputsFromRecipients(
+    recipients: Array<Recipient>
+  ): Array<LibauthOutput> {
     const coinRecipients = recipients.filter(
       (recipient) => recipient.token === undefined
     );
-    const coinVout: Array<Output> = coinRecipients.map((recipient) =>
+    const coinVout: Array<LibauthOutput> = coinRecipients.map((recipient) =>
       createCoinOutput(recipient.address, recipient.amount)
     );
 
@@ -113,8 +137,8 @@ export default function TransactionBuilderService(walletHash: string) {
     const tokenRecipients = recipients.filter(
       (recipient) => recipient.token !== undefined
     );
-    const tokenVout: Array<Output> = tokenRecipients.map((recipient) =>
-      createTokenOutput(recipient.address, recipient.token)
+    const tokenVout: Array<LibauthOutput> = tokenRecipients.map((recipient) =>
+      createTokenOutput(recipient.address, recipient.token, recipient.amount)
     );
 
     // calculate total amount to send for all recipients
@@ -130,18 +154,7 @@ export default function TransactionBuilderService(walletHash: string) {
     selection = [],
     nftSelection = [],
   }: {
-    recipients: Array<{
-      address: string;
-      amount: bigint;
-      token?: {
-        category: string;
-        amount: bigint;
-        nft?: {
-          capability: "none" | "mutable" | "minting";
-          commitment: Uint8Array;
-        };
-      };
-    }>;
+    recipients: Array<Recipient>;
     fee?: bigint;
     gas?: bigint;
     depth?: number;
@@ -200,14 +213,8 @@ export default function TransactionBuilderService(walletHash: string) {
 
     const tokenInputs = tokenCategories
       .map((category) => {
-        if (!tokenOutputAmountsByCategory.has(category)) {
-          return [];
-        }
-
-        return UtxoManager.selectTokens(
-          category,
-          tokenOutputAmountsByCategory.get(category)
-        );
+        const amount = tokenOutputAmountsByCategory.get(category);
+        return amount ? UtxoManager.selectTokens(category, amount) : [];
       })
       .flat();
 
@@ -221,7 +228,7 @@ export default function TransactionBuilderService(walletHash: string) {
     Log.debug("buildP2pkhTransaction using inputs:", inputs, inputTotal);
 
     if (inputTotal < sendTotal) {
-      return (inputTotal - sendTotal) * -1n;
+      return sendTotal;
     }
 
     const preparedTokenChange = prepareTokenChange(inputs, recipientVouts);
@@ -230,11 +237,11 @@ export default function TransactionBuilderService(walletHash: string) {
       0n
     );
 
-    const outputs = [
-      ...recipientVouts,
-      ...preparedTokenChange,
-      ...prepareSatsChange(inputs, recipientVouts, fee + tokenChangeAmount),
-    ];
+    const outputs = finalizeChange(
+      inputs,
+      [...recipientVouts, ...preparedTokenChange],
+      fee
+    );
 
     const finalOutputTotal = outputs.reduce(
       (sum, cur) => sum + cur.valueSatoshis,
@@ -257,8 +264,8 @@ export default function TransactionBuilderService(walletHash: string) {
     }
 
     // insufficient funds
-    if (inputTotal - fee < finalOutputTotal) {
-      const short = (inputTotal - fee - finalOutputTotal) * -1n;
+    if (inputTotal < finalOutputTotal) {
+      const short = finalOutputTotal - inputTotal;
       Log.debug(
         "buildP2pkhTransaction: insufficient funds",
         inputTotal,
@@ -287,7 +294,7 @@ export default function TransactionBuilderService(walletHash: string) {
 
     // ----------------
 
-    function prepareTokenChange(vin, vout) {
+    function prepareTokenChange(vin, vout): Array<LibauthOutput> {
       const tokenVin = vin.filter((input) => input.token_category !== null);
 
       const tokenOutputs = vout.filter(
@@ -295,10 +302,11 @@ export default function TransactionBuilderService(walletHash: string) {
       );
 
       // calculate total input amounts for each token category
-      const tokenCategoryInputAmounts = tokenVin.reduce(
+      const tokenCategoryInputAmounts: Map<string, bigint> = tokenVin.reduce(
         (tokenAmounts, input) => {
           const category = input.token_category;
 
+          // [!] this is probably wrong. can't we have ft amount and nft on one utxo?
           if (input.nft_capability !== null) {
             return tokenAmounts;
           }
@@ -312,8 +320,8 @@ export default function TransactionBuilderService(walletHash: string) {
       );
 
       // calculate total output amounts for each token category
-      const tokenCategoryOutputAmounts = tokenOutputs.reduce(
-        (amounts, output) => {
+      const tokenCategoryOutputAmounts: Map<string, bigint> =
+        tokenOutputs.reduce((amounts, output) => {
           if (!output.token || output.token.nft) {
             return amounts;
           }
@@ -325,9 +333,7 @@ export default function TransactionBuilderService(walletHash: string) {
           amounts.set(categoryHex, categoryAmount + amount);
 
           return amounts;
-        },
-        new Map<string, bigint>()
-      );
+        }, new Map<string, bigint>());
 
       Log.debug(
         "prepareTokenChange",
@@ -337,18 +343,30 @@ export default function TransactionBuilderService(walletHash: string) {
         tokenCategoryOutputAmounts
       );
 
+      // create token change outputs for each category
+      const categories: Array<string> = [
+        ...tokenCategoryOutputAmounts.keys(),
+        ...tokenCategoryInputAmounts.keys(),
+      ].reduce(
+        (acc, cur) => (acc.includes(cur) ? acc : [...acc, cur]),
+        [] as Array<string>
+      );
+
       // get change addresses
       const AddressManager = AddressManagerService(wallet.walletHash);
+      const AddressScanner = AddressScannerService(wallet);
+
+      AddressScanner.populateAddresses(categories.length + 1);
+
       const changeAddresses = AddressManager.getUnusedAddresses(
-        tokenCategories.length + 1,
+        categories.length + 1,
         1
       );
 
-      // create token change outputs for each category
-      const tokenChangeVouts = [];
-      while (tokenCategories.length > 0) {
+      const tokenChangeVouts: Array<LibauthOutput> = [];
+      while (categories.length > 0) {
         // each category gets its own change address
-        const category = tokenCategories.shift() as string;
+        const category = categories.shift() as string;
         const changeAddress = changeAddresses.shift() as AddressEntity;
 
         // get amount of tokens spent; remainder is change
@@ -372,11 +390,17 @@ export default function TransactionBuilderService(walletHash: string) {
       return tokenChangeVouts;
     }
 
-    function prepareSatsChange(vin, vout, txFee) {
+    function finalizeChange(vin, vout, txFee): Array<LibauthOutput> {
       const satsInputTotal = vin.reduce((sum, cur) => sum + cur.amount, 0n);
 
       const satsOutputTotal = vout.reduce(
         (sum, cur) => sum + cur.valueSatoshis,
+        0n
+      );
+
+      const tokenOutputTotal = vout.reduce(
+        (sum, cur) =>
+          cur.token_category !== null ? sum + cur.valueSatoshis : sum,
         0n
       );
 
@@ -392,15 +416,21 @@ export default function TransactionBuilderService(walletHash: string) {
         changeAmount
       );
 
-      const dustThreshold = getDustThreshold(changeOutput, DUST_RELAY_FEE);
+      const changeVouts: Array<LibauthOutput> = [];
+      const temp_vout = [...vout];
 
       // only add change to the tx if it isn't dust.
-      const changeVouts = [];
+      const dustThreshold = getDustThreshold(changeOutput, DUST_RELAY_FEE);
+
       if (changeAmount >= dustThreshold) {
         changeVouts.push(changeOutput);
+      } else if (changeAmount > txFee) {
+        const lastOutput = temp_vout.pop();
+        lastOutput.valueSatoshis += changeAmount;
+        temp_vout.push(lastOutput);
       }
 
-      return changeVouts;
+      return [...temp_vout, ...changeVouts];
     }
 
     // --------
@@ -539,9 +569,289 @@ export default function TransactionBuilderService(walletHash: string) {
 
     return 0;
   }
+
+  async function buildStablecoinTransaction(
+    recipients: Array<Recipient>,
+    tradeSats: bigint,
+    fee: bigint = 0n
+  ) {
+    const Cauldron = CauldronService();
+    const exchangeLab = new ExchangeLab();
+    const UtxoManager = UtxoManagerService(wallet.walletHash);
+
+    const inputPools = Cauldron.getPoolInputs(MUSD_TOKENID);
+
+    const recipientAmount = recipients.reduce(
+      (sum, cur) => sum + cur.amount,
+      0n
+    );
+
+    const price = Cauldron.getTokenPrice(MUSD_TOKENID);
+    Log.debug(`${price} sats per 0.01 MUSD`);
+
+    // recipientAmount denominated in stablecoin token
+    const tokenTotal = recipientAmount / price;
+
+    Log.debug("tokenTotal", tokenTotal, "(musd)");
+    Log.debug("recipientAmount", recipientAmount, "(sats)");
+    Log.debug("tradeSats", tradeSats, "(sats)");
+    Log.debug("estimated fee", fee, "(sats)");
+
+    const tradeResult = exchangeLab.constructTradeBestRateForTargetDemand(
+      MUSD_TOKENID,
+      "BCH",
+      tradeSats,
+      inputPools,
+      1n
+    );
+
+    let tradeTransaction = null;
+    try {
+      Log.debug("tradeResult", tradeResult);
+
+      const stablecoinUtxos = UtxoManager.selectTokens(
+        MUSD_TOKENID,
+        tradeResult.summary.supply
+      );
+      Log.debug("tokenUtxos", stablecoinUtxos);
+
+      const coinUtxos = UtxoManager.selectCoins(
+        recipientAmount - tradeSats + fee
+      );
+      Log.debug("coinUtxos", coinUtxos);
+
+      const inputs = [...stablecoinUtxos, ...coinUtxos];
+
+      const HdNode = HdNodeService(wallet);
+      const clabInputs: clab.SpendableCoin[] = inputs.map((input) => {
+        return {
+          type: clab.SpendableCoinType.P2PKH,
+          key: HdNode.getAddressPrivateKey(input.address),
+          output: {
+            locking_bytecode: addressToLockingBytecode(input.address),
+            token:
+              input.token_category !== null
+                ? {
+                    amount: BigInt(input.token_amount),
+                    token_id: input.token_category,
+                  }
+                : undefined,
+            amount: BigInt(input.amount),
+          },
+          outpoint: {
+            txhash: hexToBin(input.txid),
+            index: Number(input.tx_pos),
+          },
+        };
+      });
+
+      const AddressManager = AddressManagerService(wallet.walletHash);
+      const changeAddresses = AddressManager.getUnusedAddresses(2, 1);
+      let changeAddressIndex = 0;
+
+      const payoutRules: clab.PayoutRule[] = [
+        ...recipients.map((r) => ({
+          type: clab.PayoutAmountRuleType.FIXED,
+          locking_bytecode: addressToLockingBytecode(r.address),
+          amount: r.amount,
+          token: r.token
+            ? {
+                token_id: r.token.category,
+                amount: r.token.amount,
+              }
+            : undefined,
+        })),
+        {
+          type: clab.PayoutAmountRuleType.CHANGE,
+          generateChangeLockingBytecodeForOutput() {
+            const changeAddress = changeAddresses[changeAddressIndex];
+            if (changeAddressIndex + 1 < changeAddresses.length) {
+              changeAddressIndex += 1;
+            }
+            return addressToLockingBytecode(changeAddress.address);
+          },
+          allow_mixing_native_and_token_when_bch_change_is_dust: true,
+        },
+      ];
+
+      Log.debug("payoutRules", payoutRules);
+      tradeTransaction = exchangeLab.createTradeTx(
+        tradeResult.entries,
+        clabInputs,
+        payoutRules,
+        null,
+        TXFEE_PER_BYTE
+      );
+      Log.debug("tradeTransaction", tradeTransaction);
+    } catch (e) {
+      Log.debug(e);
+      if (!e.required_amount) {
+        throw e;
+      }
+
+      return buildStablecoinTransaction(
+        recipients,
+        tradeResult.summary.demand + tradeResult.summary.trade_fee,
+        e.required_amount
+      );
+    }
+
+    if (tradeTransaction === null) {
+      return false;
+    }
+
+    const tx_raw = tradeTransaction.txbin;
+    const tx_hex = binToHex(tx_raw);
+    const tx_hash = swapEndianness(binToHex(sha256.hash(sha256.hash(tx_raw))));
+
+    return {
+      tx_hex,
+      tx_hash,
+      tradeResult,
+      payouts_info: tradeTransaction.payouts_info,
+    };
+  }
+
+  function buildSendTokensTransactionWithFeePayingTokenCategory({
+    recipients,
+    selection,
+    exchangeLab,
+    inputPools,
+    feePayingTokenCategory,
+  }: {
+    recipients: Array<{
+      address: string;
+      token?: {
+        category: string;
+        amount: bigint;
+      };
+    }>;
+    selection?: Array<TransactionOutput>;
+    exchangeLab: cauldron.ExchangeLab;
+    inputPools: cauldron.PoolV0[];
+    feePayingTokenCategory: string;
+  }): {
+    tradeResult: cauldron.TradeResult;
+    tradeTransaction: cauldron.TradeTxResult;
+  } {
+    const UtxoManager = UtxoManagerService(wallet.walletHash);
+    const tokenOutputAmountsByCategory = recipients.reduce(
+      (amounts, output) => {
+        // calculate total output amounts for each token category
+        if (output.token == null) {
+          throw new clab.ValueError(`recipient.token is null`);
+        }
+        const { category, amount } = output.token;
+        const categoryAmount = amounts.get(category) || 0n;
+        amounts.set(category, categoryAmount + amount);
+        return amounts;
+      },
+      new Map<string, bigint>()
+    );
+    const tokenCategories = Array.from(tokenOutputAmountsByCategory.keys());
+    if (tokenCategories.length === 0) {
+      throw new clab.ValueError(
+        `Should at least send one token to a recipient.`
+      );
+    }
+    const inputs =
+      selection?.length > 0
+        ? selection
+        : tokenCategories
+            .map((category) => {
+              if (!tokenOutputAmountsByCategory.has(category)) {
+                return [];
+              }
+              return UtxoManager.selectTokens(
+                category,
+                tokenOutputAmountsByCategory.get(category)
+              ).filter((utxo) => utxo.nft_commitment == null);
+            })
+            .flat();
+    if (inputs.length === 0) {
+      throw new clab.InsufficientFunds(`No inputs found.`);
+    }
+    const HdNode = HdNodeService(wallet);
+    const inputCoins: clab.SpendableCoin[] = inputs.map((input) => {
+      return {
+        type: clab.SpendableCoinType.P2PKH,
+        key: HdNode.getAddressPrivateKey(input.address),
+        output: {
+          locking_bytecode: addressToLockingBytecode(input.address),
+          token: {
+            amount: BigInt(input.token_amount),
+            token_id: input.token_category,
+          },
+          amount: BigInt(input.amount),
+        },
+        outpoint: {
+          txhash: hexToBin(input.txid),
+          index: Number(input.tx_pos),
+        },
+      };
+    });
+    const AddressManager = AddressManagerService(wallet.walletHash);
+    const changeAddresses = AddressManager.getUnusedAddresses(
+      tokenCategories.length + 1,
+      1
+    );
+    let lastChangeAddressIndex = 0;
+    const payoutRules: clab.PayoutRule[] = [
+      ...recipients.map((r) => ({
+        type: clab.PayoutAmountRuleType.FIXED,
+        locking_bytecode: addressToLockingBytecode(r.address),
+        token: {
+          token_id: r.token.category,
+          amount: r.token.amount,
+        },
+        amount: -1n,
+      })),
+      {
+        type: clab.PayoutAmountRuleType.CHANGE,
+        /* eslint-disable @typescript-eslint/no-unused-vars */
+        generateChangeLockingBytecodeForOutput(output: clab.Output) {
+          const changeAddress = changeAddresses[lastChangeAddressIndex];
+          if (lastChangeAddressIndex + 1 < changeAddresses.length) {
+            lastChangeAddressIndex += 1;
+          }
+          return addressToLockingBytecode(changeAddress.address);
+        },
+        allow_mixing_native_and_token_when_bch_change_is_dust: true,
+      },
+    ];
+    let requiredBch = 2000n; // initial amount
+    const tradeResult = exchangeLab.constructTradeBestRateForTargetDemand(
+      feePayingTokenCategory,
+      "BCH",
+      requiredBch,
+      inputPools,
+      TXFEE_PER_BYTE
+    );
+    let maxTry = 5;
+    while (maxTry > 0) {
+      try {
+        const tradeTransaction = exchangeLab.createTradeTx(
+          tradeResult.entries,
+          inputCoins,
+          payoutRules,
+          null,
+          TXFEE_PER_BYTE
+        );
+        return { tradeResult, tradeTransaction };
+      } catch (err) {
+        if (err instanceof clab.InsufficientFunds) {
+          requiredBch += err.required_amount;
+        } else {
+          throw err;
+        }
+      }
+      maxTry -= 1;
+    }
+    throw new clab.ValueError(`max try attempts to construct a trade reached.`);
+  }
 }
 
-// TODO: Once Token support is added to Selene, add it to this function too.
+// TODO: Once Token support is added to CashStamps, add it to this function too.
 //       It will require more complex logic: An output will need to be added per each token.
 export function buildSweepTransaction(
   utxos: Array<ElectrumUtxo>,

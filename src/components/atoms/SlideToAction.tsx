@@ -23,24 +23,25 @@ export default function SlideToAction({
 
   const endX = useRef<number>(0);
 
-  const didConfirm = useRef<boolean>(false);
-
   const stopDragging = () => {
+    isDragging.current = false;
+
     document.body.classList.remove("cursor-grabbing");
     document.body.removeEventListener("pointermove", handlePointerMove);
     document.body.removeEventListener("pointerup", handlePointerUp);
-    isDragging.current = false;
-    if (didConfirm.current) return;
-    if (knobRef.current == null) return;
-    if (bannerRef.current == null) return;
+
+    if (knobRef.current === null) return;
+    if (bannerRef.current === null) return;
+
     knobRef.current.style.transform = `translateX(0)`;
-    knobRef.current.style.transition = `0.1s`;
+    knobRef.current.style.transition = `0.3s`;
     bannerRef.current.style.width = `0`;
   };
 
   const startDragging = (x: number) => {
-    if (knobRef.current == null) return;
-    if (knobRef.current.parentElement == null) return;
+    if (knobRef.current === null) return;
+    if (knobRef.current.parentElement === null) return;
+
     offsetX.current = x;
     endX.current =
       knobRef.current.parentElement.getBoundingClientRect().width -
@@ -53,27 +54,28 @@ export default function SlideToAction({
   };
 
   const handleConfirm = () => {
-    didConfirm.current = true;
     stopDragging();
     onSlide();
   };
   const handlePointerMove = (e) => {
     //e.preventDefault();
     if (!isDragging.current) return;
-    if (knobRef.current == null) return;
-    if (bannerRef.current == null) return;
+    if (knobRef.current === null) return;
+    if (bannerRef.current === null) return;
 
     const x = e.clientX;
 
     const transformX = Math.max(0, Math.min(endX.current, x - offsetX.current));
-    if (transformX === endX.current) {
-      handleConfirm();
-    }
     const knobWidth = knobRef.current.getBoundingClientRect().width;
+
     knobRef.current.style.transition = `none`;
     knobRef.current.style.transform = `translateX(${transformX}px)`;
     bannerRef.current.style.transition = `none`;
     bannerRef.current.style.width = `${transformX + knobWidth}px`;
+
+    if (transformX === endX.current) {
+      handleConfirm();
+    }
   };
 
   const handlePointerUp = (e) => {
@@ -97,10 +99,10 @@ export default function SlideToAction({
       <div
         ref={bannerRef}
         className="h-14 w-0 bg-primary/90 absolute rounded-full"
+        onPointerUp={handlePointerUp}
       />
       <div
         onPointerDown={handlePointerDown}
-        onPointerMove={handlePointerMove}
         ref={knobRef}
         className="h-16 w-16 relative z-10 flex items-center justify-center bg-primary p-0.5 rounded-full"
         style={{ touchAction: "none" }}

@@ -11,6 +11,7 @@ interface EditableProps {
   showConfirm?: boolean;
   placeholder?: string;
   invalid?: boolean;
+  confirmOnBlur?: boolean;
 }
 
 export default function Editable({
@@ -23,6 +24,7 @@ export default function Editable({
   showConfirm = true,
   placeholder = "",
   invalid = false,
+  confirmOnBlur = false,
 }: EditableProps) {
   const [input, setInput] = useState("");
   const [isEditing, setIsEditing] = useState(open);
@@ -51,6 +53,10 @@ export default function Editable({
 
   const handleBlur = async () => {
     await onBlur(input);
+
+    if (confirmOnBlur) {
+      handleEdit();
+    }
   };
 
   const handleFocus = async () => {

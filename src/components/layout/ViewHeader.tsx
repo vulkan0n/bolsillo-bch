@@ -7,6 +7,7 @@ interface Props {
   small?: boolean;
   back?: string | number;
   close?: string;
+  accessory?: React.ComponentType;
   className?: string;
 }
 
@@ -16,6 +17,7 @@ export default function ViewHeader({
   small = false,
   back = undefined,
   close = undefined,
+  accessory = () => null,
   className = undefined,
 }: Props) {
   const location = useLocation();
@@ -24,10 +26,11 @@ export default function ViewHeader({
     (location.pathname.split("/").length > 2 || back) && !close;
 
   const Icon = icon;
+  const Accessory = accessory;
 
   const sizeClasses = small
-    ? "bg-neutral-800 text-lg py-1 font-semibold text-neutral-50"
-    : "bg-neutral-900 text-xl text-neutral-25 font-bold py-3";
+    ? "bg-neutral-800 dark:bg-neutral-1000 text-lg py-1 font-semibold text-neutral-50"
+    : "bg-neutral-900 dark:bg-black text-xl text-neutral-25 font-bold py-3";
 
   const iconClasses = small ? "text-lg" : "text-2xl";
 
@@ -59,7 +62,9 @@ export default function ViewHeader({
         <Icon className={`mr-2 ${iconClasses}`} />
         {title}
       </div>
-      <div className="col-span-1">&nbsp;</div>
+      <div className="col-span-1 flex items-center justify-center">
+        <Accessory />
+      </div>
     </div>
   );
 }

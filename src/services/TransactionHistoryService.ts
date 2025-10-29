@@ -1,4 +1,3 @@
-import { Decimal } from "decimal.js";
 import { DateTime } from "luxon";
 import LogService from "@/services/LogService";
 import DatabaseService from "@/services/DatabaseService";
@@ -289,7 +288,7 @@ export default function TransactionHistoryService(
     const myOutputs = tx.vout.filter((out) => isMyUtxo(out));
 
     // sum reducer function
-    const amountReducer = (sum, cur) => sum.plus(cur.value);
+    const amountReducer = (sum, cur) => sum + cur.valueSatoshis;
     const tokenReducer = (tokens, cur) => {
       const result = tokens;
 
@@ -315,14 +314,14 @@ export default function TransactionHistoryService(
       return result;
     };
 
-    const receivedAmount = myOutputs.reduce(amountReducer, new Decimal(0));
-    const sentAmount = myInputs.reduce(amountReducer, new Decimal(0));
+    const receivedAmount: bigint = myOutputs.reduce(amountReducer, 0n);
+    const sentAmount: bigint = myInputs.reduce(amountReducer, 0n);
 
     const receivedTokens = myOutputs.reduce(tokenReducer, {});
     const sentTokens = myInputs.reduce(tokenReducer, {});
 
     // TODO: totalOutput - amount = fee
-    const amount = receivedAmount.minus(sentAmount).toNumber();
+    const amount = Number(receivedAmount - sentAmount);
 
     // get token counts
     // `Set` automatically de-duplicate entries by enforcing uniqueness

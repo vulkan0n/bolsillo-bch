@@ -6,6 +6,7 @@ import {
 } from "@reduxjs/toolkit";
 
 import { RootState } from "@/redux";
+import { selectIsSystemDarkMode } from "@/redux/device";
 import { ValidBchNetwork } from "@/util/electrum_servers";
 import { languageList } from "@/util/translations";
 import { DEFAULT_CURRENCY, currencyList } from "@/util/currency";
@@ -39,6 +40,8 @@ const defaultPreferences = {
   localCurrency: DEFAULT_CURRENCY.currency,
   preferLocalCurrency: "true",
   denomination: "bch",
+  includeTokenSats: "false",
+  stablecoinMode: "false", // TODO: move to wallet db
   // --------
   // Payment (move to wallet db?)
   allowInstantPay: "false",
@@ -52,7 +55,7 @@ const defaultPreferences = {
   // --------
   // UI
   displayExploreTab: "true",
-  displayExchangeRate: "false",
+  displayExchangeRate: "true",
   displaySyncCounter: "true",
   lastAssetsPath: "/assets/tokens",
   shouldConstrainViewport: "true",
@@ -135,6 +138,8 @@ function validatePreferences(preferences: ValidPreferences): boolean {
     "autoResolveBcmr",
     "showMemoCard",
     "showOutputsCard",
+    "stablecoinMode",
+    "includeTokenSats",
   ];
 
   const invalidBools = boolKeys.filter(
@@ -287,6 +292,8 @@ export const selectCurrencySettings = createSelector(
     localCurrency: preferences.localCurrency,
     denomination: preferences.denomination,
     shouldPreferLocalCurrency: preferences.preferLocalCurrency === "true",
+    shouldIncludeTokenSats: preferences.includeTokenSats === "true",
+    isStablecoinMode: preferences.stablecoinMode === "true",
   })
 );
 
@@ -363,6 +370,13 @@ export const selectShouldDisplaySyncCounter = createSelector(
   (preferences) => preferences.displaySyncCounter === "true"
 );
 
+export const selectIsDarkMode = createSelector(
+  (state) => state.preferences,
+  (preferences) =>
+    preferences.themeMode === "dark" ||
+    (preferences.themeMode === ThemeMode.System && selectIsSystemDarkMode())
+);
+
 export const selectPrivacySettings = createSelector(
   (state: RootState) => state.preferences,
   (preferences) => ({
@@ -419,4 +433,9 @@ export const selectShouldShowOutputsCard = createSelector(
 export const selectShouldShowMemoCard = createSelector(
   (state: RootState) => state.preferences,
   (preferences) => preferences.showMemoCard === "true"
+);
+
+export const selectIsStablecoinMode = createSelector(
+  (state: RootState) => state.preferences,
+  (preferences) => preferences.stablecoinMode === "true"
 );

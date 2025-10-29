@@ -1,4 +1,5 @@
 import { useSelector } from "react-redux";
+import { EyeInvisibleOutlined } from "@ant-design/icons";
 import { selectPrivacySettings } from "@/redux/preferences";
 import { TokenEntity } from "@/services/TokenManagerService";
 import { TokenHistoryEntity } from "@/services/TransactionHistoryService";
@@ -13,13 +14,25 @@ export default function TokenAmount({ token, nft = false }: TokenAmountProps) {
   const receiveStyle = "text-secondary";
   const sendStyle = "text-error";
 
-  const tokenColor = token.color || `#${token.category.slice(0, 6)}`;
+  const tokenColor =
+    token.color ||
+    `#${token.category?.slice(0, 6)}` ||
+    `#${token.token?.category.slice(0, 6)}`;
+
   const decimals = token.decimals || token.token?.decimals || 0;
 
   const { shouldHideBalance } = useSelector(selectPrivacySettings);
 
   return shouldHideBalance ? (
-    <div className="text-xs flex items-center font-mono" />
+    <div className="text-xs flex items-center font-mono">
+      <span
+        className="relative bottom-[1px] mr-1"
+        style={{ color: tokenColor }}
+      >
+        &#9679;
+      </span>
+      <EyeInvisibleOutlined className="opacity-80" />
+    </div>
   ) : (
     <>
       {nft && (

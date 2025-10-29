@@ -4,11 +4,13 @@ import {
   SendOutlined,
   ThunderboltOutlined,
   PropertySafetyOutlined,
+  MergeOutlined,
 } from "@ant-design/icons";
 
 import {
   selectInstantPaySettings,
   selectCurrencySettings,
+  selectIsExperimental,
 } from "@/redux/preferences";
 
 import { translate } from "@/util/translations";
@@ -28,9 +30,10 @@ export default function PaymentSettings() {
   const { isInstantPayEnabled, instantPayThreshold } = useSelector(
     selectInstantPaySettings
   );
-  const { localCurrency, shouldPreferLocalCurrency } = useSelector(
-    selectCurrencySettings
-  );
+  const { localCurrency, shouldPreferLocalCurrency, shouldIncludeTokenSats } =
+    useSelector(selectCurrencySettings);
+
+  const isExperimental = useSelector(selectIsExperimental);
 
   const Currency = CurrencyService(localCurrency);
 
@@ -81,15 +84,29 @@ export default function PaymentSettings() {
         label={translate(translations.instantPayLimit)}
         description={translate(translations.instantPayExplanation)}
       >
-        <span className="text-neutral-600 flex items-center">
-          <CurrencySymbol className="font-bold text-lg" />
+        <span className="text-neutral-600 flex items-center dark:text-neutral-300">
+          <CurrencySymbol className="font-bold text-lg mr-1" />
           <SatoshiInput
             satoshis={instantPaySatInput}
-            className="p-2 w-28 rounded mx-1 flex-1"
+            className="p-2 w-28 rounded flex-1 dark:bg-neutral-900 dark:text-neutral-100 dark:border-primarydark-400 border border-primary"
             onChange={handleInstantPayInput}
           />
         </span>
       </Accordion.Child>
+      {(isExperimental || shouldIncludeTokenSats) && (
+        <Accordion.Child
+          icon={MergeOutlined}
+          label="Allow spending from token UTXOs"
+        >
+          <input
+            type="checkbox"
+            checked={shouldIncludeTokenSats}
+            onChange={(event) =>
+              handleSettingsUpdate("includeTokenSats", event.target.checked)
+            }
+          />
+        </Accordion.Child>
+      )}
     </Accordion>
   );
 }

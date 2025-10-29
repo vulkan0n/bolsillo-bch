@@ -3,7 +3,7 @@ import { nodePolyfills } from "vite-plugin-node-polyfills";
 import topLevelAwait from "vite-plugin-top-level-await";
 import react from "@vitejs/plugin-react";
 import path from "path";
-import {visualizer} from "rollup-plugin-visualizer";
+import { visualizer } from "rollup-plugin-visualizer";
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -11,7 +11,9 @@ export default defineConfig({
   plugins: [
     visualizer(),
     react(),
-    nodePolyfills(),
+    nodePolyfills({
+      include: ["fs", "path", "crypto", "stream", "vm"], // required by sql.js
+    }),
     topLevelAwait({
       promiseExportName: "__tla",
       promiseImportName: (i) => `__tla_${i}`,

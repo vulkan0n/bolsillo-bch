@@ -7,7 +7,11 @@ import {
 } from "@reduxjs/toolkit";
 
 import { RootState } from "@/redux";
-import { setPreference, selectElectrumServer } from "@/redux/preferences";
+import {
+  setPreference,
+  selectElectrumServer,
+  selectIsStablecoinMode,
+} from "@/redux/preferences";
 import { syncConnect, syncClearAddresses } from "@/redux/sync";
 
 import { ValidBchNetwork } from "@/util/electrum_servers";
@@ -16,14 +20,21 @@ import WalletManagerService, {
   WalletEntity,
 } from "@/services/WalletManagerService";
 import ElectrumService from "@/services/ElectrumService";
+import CauldronService from "@/services/CauldronService";
 import AddressManagerService, {
   AddressEntity,
 } from "@/services/AddressManagerService";
 import AddressScannerService from "@/services/AddressScannerService";
+import UtxoManagerService from "@/services/UtxoManagerService";
+import TokenManagerService from "@/services/TokenManagerService";
 
 import ToastService from "@/services/ToastService";
+import LogService from "@/services/LogService";
 
 import { convertCashAddress } from "@/util/cashaddr";
+import { MUSD_TOKENID } from "@/util/tokens";
+
+const Log = LogService("redux/wallet");
 
 const initialState = {
   walletHash: "",
@@ -51,6 +62,9 @@ export const walletBoot = createAsyncThunk(
       setPreference({ key: "activeWalletHash", value: wallet.walletHash })
     );
 
+    const AddressScanner = AddressScannerService(wallet);
+    AddressScanner.populateAddresses();
+
     thunkApi.dispatch(syncClearAddresses());
     thunkApi.dispatch(walletReloadAddresses({ wallet }));
 
@@ -72,10 +86,16 @@ export const walletBoot = createAsyncThunk(
   }
 );
 
-export const walletBalanceUpdate = createAction(
-  "wallet/balanceUpdate",
-  (payload: { wallet: WalletEntity; isChange: boolean }) => {
-    const { wallet, isChange } = payload;
+export const walletSyncDiff = createAsyncThunk(
+  "wallet/syncDiff",
+  (
+    payload: {
+      wallet: WalletEntity;
+      utxoDiff: { diffIn: Array<string>; diffOut: Array<string> };
+    },
+    thunkApi
+  ) => {
+    const { wallet, utxoDiff } = payload;
 
     // address and wallet balances are automatically derived on SQL layer when UTXO entries are updated
     const sqlWallet = WalletManagerService().getWallet(wallet.walletHash);
@@ -84,18 +104,130 @@ export const walletBalanceUpdate = createAction(
     const currentBalance = BigInt(sqlWallet.balance);
     const currentSpendableBalance = BigInt(sqlWallet.spendable_balance);
 
-    // show receive notification
-    if (currentBalance > previousBalance && isChange === false) {
-      const difference = currentBalance - previousBalance;
-      ToastService().paymentReceived(difference);
+    if (currentBalance > previousBalance) {
+      thunkApi.dispatch(walletReceive({ wallet, utxoDiff }));
     }
 
     return {
-      payload: {
-        currentBalance: currentBalance.toString(),
-        currentSpendableBalance: currentSpendableBalance.toString(),
-      },
+      previousBalance: previousBalance.toString(),
+      currentBalance: currentBalance.toString(),
+      currentSpendableBalance: currentSpendableBalance.toString(),
+      //currentSpendableBalance: currentSpendableBalance.toString(),
     };
+  }
+);
+
+export const walletReceive = createAsyncThunk(
+  "wallet/receive",
+  async (
+    payload: {
+      wallet: WalletEntity;
+      utxoDiff: { diffIn: Array<string>; diffOut: Array<string> };
+    },
+    thunkApi
+  ) => {
+    const { wallet, utxoDiff } = payload;
+
+    const UtxoManager = UtxoManagerService(wallet.walletHash);
+    const utxoIn = utxoDiff.diffIn.map((utxo) => UtxoManager.getUtxo(utxo));
+    const utxoOut = utxoDiff.diffOut.map((utxo) => UtxoManager.getUtxo(utxo));
+
+    let satsDiff = 0n;
+    let tokenSats = 0n;
+    const tokenDiff = {};
+
+    Log.debug("walletReceive", utxoIn);
+
+    // iterate over all incoming UTXOs
+    while (utxoIn.length > 0) {
+      const utxo = utxoIn.shift()!;
+
+      satsDiff += utxo.amount;
+
+      const category = utxo.token_category;
+
+      // check for tokens, otherwise continue to next UTXO
+      if (!category) {
+        continue; // eslint-disable-line no-continue
+      }
+
+      if (!tokenDiff[category]) {
+        tokenDiff[category] = 0n;
+      }
+
+      tokenDiff[category] += utxo.token_amount;
+      tokenSats += utxo.amount;
+
+      // check for matching utxoOut entry
+      const outIndex = utxoOut.findIndex((u) => u.token_category === category);
+      if (outIndex > -1) {
+        const output = utxoOut.splice(outIndex, 1)[0];
+        tokenDiff[category] -= output?.token_amount || 0n;
+      }
+    }
+
+    // iterate over all spent UTXOs
+    while (utxoOut.length > 0) {
+      const utxo = utxoOut.shift()!;
+      satsDiff -= utxo.amount;
+    }
+
+    // receiving tokens
+    if (Object.keys(tokenDiff).length > 0) {
+      Log.debug("tokenDiff", tokenDiff);
+      const TokenManager = TokenManagerService(wallet.walletHash);
+
+      // spawn a receive popup for each token category
+      Object.keys(tokenDiff).forEach((category) => {
+        const tokenData = TokenManager.getToken(category);
+        const token = {
+          ...tokenData,
+          amount: tokenDiff[category],
+        };
+
+        ToastService().tokenReceived(token);
+      });
+    }
+
+    // need to swap to stablecoin in stablecoin mode
+    const isStablecoinMode = selectIsStablecoinMode(thunkApi.getState());
+    if (isStablecoinMode) {
+      const incomingSats = satsDiff - tokenSats;
+
+      Log.debug("incomingSats", incomingSats);
+
+      const Cauldron = CauldronService();
+
+      for (let i = 0; i < 3; i += 1) {
+        try {
+          /* eslint-disable no-await-in-loop */
+          const tradeTransaction = await Cauldron.prepareTrade(
+            "BCH",
+            MUSD_TOKENID,
+            incomingSats,
+            wallet,
+            true
+          );
+          Log.debug("tradeTransaction", tradeTransaction);
+          await Cauldron.broadcastTransaction(tradeTransaction.tx_hex);
+          const tokenData = TokenManagerService(wallet.walletHash).getToken(
+            MUSD_TOKENID
+          );
+          ToastService().tokenReceived({
+            ...tokenData,
+            amount: tradeTransaction.tradeResult.summary.demand,
+          });
+          return;
+        } catch (e) {
+          Log.warn(e);
+        }
+      }
+
+      Log.error("swap on receive failed!");
+      ToastService().paymentReceived(incomingSats);
+    } else {
+      ToastService().paymentReceived(satsDiff);
+    }
   }
 );
 
@@ -116,9 +248,6 @@ export const walletReloadAddresses = createAction(
   "wallet/reloadAddresses",
   (payload: { wallet: WalletEntity }) => {
     const AddressManager = AddressManagerService(payload.wallet.walletHash);
-    const AddressScanner = AddressScannerService(payload.wallet);
-
-    AddressScanner.populateAddresses();
 
     const myAddresses = [
       ...AddressManager.getReceiveAddresses(),
@@ -140,9 +269,9 @@ export const walletReducer = createReducer(initialState, (builder) => {
   builder
     .addCase(walletBoot.fulfilled, (state, action) => {
       const wallet = action.payload;
-      return wallet;
+      Object.assign(state, wallet);
     })
-    .addCase(walletBalanceUpdate, (state, action) => {
+    .addCase(walletSyncDiff.fulfilled, (state, action) => {
       state.balance = action.payload.currentBalance;
       state.spendable_balance = action.payload.currentSpendableBalance;
     })
@@ -158,7 +287,7 @@ const addressInitialState: Array<AddressEntity> = [];
 export const addressReducer = createReducer(addressInitialState, (builder) => {
   builder.addCase(walletReloadAddresses, (state, action) => {
     const addresses = action.payload;
-    return addresses;
+    Object.assign(state, addresses);
   });
 });
 
@@ -184,7 +313,10 @@ export const selectGenesisHeight = createSelector(
 
 export const selectActiveWalletBalance = createSelector(
   (state) => state.wallet,
-  (wallet) => wallet.spendable_balance
+  (wallet) => ({
+    balance: BigInt(wallet.balance),
+    spendable_balance: BigInt(wallet.spendable_balance),
+  })
 );
 
 export const selectActiveWalletName = createSelector(

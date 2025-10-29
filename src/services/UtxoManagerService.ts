@@ -22,6 +22,7 @@ export default function UtxoManagerService(walletHash: string) {
   const walletDb = Database.getWalletDatabase(walletHash);
 
   return {
+    getUtxo,
     registerUtxo,
     getWalletUtxos,
     getWalletCoins,
@@ -35,6 +36,18 @@ export default function UtxoManagerService(walletHash: string) {
     discardUtxo,
     discardAddressUtxos,
   };
+
+  function getUtxo(utxo_id: string): UtxoEntity {
+    const [txid, tx_pos] = utxo_id.split(":");
+
+    const result = walletDb.exec(
+      "SELECT * FROM address_utxos WHERE txid=? AND tx_pos=?",
+      [txid, tx_pos],
+      { useBigInt: true }
+    )[0];
+
+    return result;
+  }
 
   function registerUtxo(address, utxo) {
     //Log.debug("registerUtxo", utxo);
@@ -73,6 +86,7 @@ export default function UtxoManagerService(walletHash: string) {
           token_data.nft ? token_data.nft.commitment : null,
         ]
       );
+      //Log.debug("registerUtxo done");
     } catch (e) {
       Log.error(e);
     }
@@ -139,12 +153,19 @@ export default function UtxoManagerService(walletHash: string) {
 
   function selectTokens(category: string, amount: bigint) {
     const targetAmount = amount;
-    Log.debug("selectTokens", category, targetAmount);
 
     const tokenUtxos = getCategoryUtxos(category);
     const availableTokenSum = tokenUtxos.reduce(
       (sum, cur) => sum + cur.token_amount,
       0n
+    );
+
+    Log.debug(
+      "selectTokens",
+      category,
+      targetAmount,
+      tokenUtxos,
+      availableTokenSum
     );
 
     if (availableTokenSum < targetAmount || targetAmount === 0n) {
@@ -169,9 +190,9 @@ export default function UtxoManagerService(walletHash: string) {
         return [];
       }
 
-      if (!utxo.token) {
+      /*if (!utxo.token) {
         Log.warn(utxo);
-      }
+      }*/
 
       consumedUtxos.push(utxo);
       remainingAmount -= utxo.token_amount;
@@ -187,6 +208,7 @@ export default function UtxoManagerService(walletHash: string) {
 
     // get all available UTXOs (without tokens)
     const allAvailableCoins = getWalletCoins();
+    //const allAvailableCoins = getWalletUtxos();
 
     const availableCoinSum = allAvailableCoins.reduce(
       (sum, utxo) => sum + utxo.amount,

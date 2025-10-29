@@ -11,6 +11,9 @@ import { sha256 } from "@/util/hash";
 import { store } from "@/redux";
 import { selectBchNetwork } from "@/redux/preferences";
 
+import translations from "@/views/wallet/translations";
+import { translate } from "@/util/translations";
+
 const Log = LogService("WalletManager");
 
 // WalletStub: minimum data required to build a wallet
@@ -167,7 +170,9 @@ export default function WalletManagerService() {
       if (wallets.length > 0) {
         nextWalletHash = wallets[0].walletHash;
       } else {
-        nextWalletHash = (await createWallet("My Selene Wallet")).walletHash;
+        nextWalletHash = (
+          await createWallet(translate(translations.mySeleneWallet))
+        ).walletHash;
         Database.setKeepAlive(nextWalletHash);
       }
 
@@ -356,7 +361,7 @@ export default function WalletManagerService() {
   // clearWalletData: deletes all data associated with a wallet
   // does NOT delete the wallet; all data can be re-derived/resynced
   // preserves memos and historical fiat amounts
-  async function clearWalletData(walletHash) {
+  function clearWalletData(walletHash) {
     const walletDb = Database.getWalletDatabase(walletHash);
 
     // create temporary tables to preserve memos and fiat amounts
@@ -388,8 +393,17 @@ export default function WalletManagerService() {
 
   // restoreWalletData: restores memos and fiat amounts from temporary tables
   // called after wallet rebuild to restore user data
-  async function restoreWalletData(walletHash) {
+  function restoreWalletData(walletHash) {
     const walletDb = Database.getWalletDatabase(walletHash);
+
+    const hasTables = walletDb.exec(
+      "SELECT name FROM temp.sqlite_schema WHERE type='table' AND name='temp_address_memos'"
+    ).length;
+
+    if (hasTables === 0) {
+      Log.warn("no tables to restore");
+      return;
+    }
 
     // restore address memos
     walletDb.run(`UPDATE addresses

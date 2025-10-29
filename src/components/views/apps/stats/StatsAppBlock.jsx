@@ -57,10 +57,10 @@ export default function StatsAppBlock() {
   const isYearlyActiveIncrease = yearlyChange >= 0;
 
   return (
-    <div className="shadow rounded-lg p-2 bg-neutral-700 flex justify-between items-center border border-neutral-900">
-      <Link to="/apps/stats/#d">
+    <div className="p-2 rounded bg-primary-50 flex justify-between items-center border border-primary-300 dark:bg-neutral-800 dark:border-primarydark-200">
+      <Link to="#d">
         <div className="p-1 mx-1">
-          <div className="font-bold text-neutral-50">24h</div>
+          <div className="font-bold text-neutral-600 dark:text-neutral-200">24h</div>
           <div
             className={`${isDailyActiveIncrease ? "text-success" : "text-error"} text-lg font-semibold`}
           >
@@ -77,9 +77,9 @@ export default function StatsAppBlock() {
         </div>
       </Link>
 
-      <Link to="/apps/stats/#w">
+      <Link to="#w">
         <div className="p-1 mx-1">
-          <div className="font-bold text-neutral-50">7d</div>
+          <div className="font-bold text-neutral-600 dark:text-neutral-200">7d</div>
           <div
             className={`${isWeeklyActiveIncrease ? "text-primary" : "text-error"} text-lg font-semibold`}
           >
@@ -96,9 +96,9 @@ export default function StatsAppBlock() {
         </div>
       </Link>
 
-      <Link to="/apps/stats/#m">
+      <Link to="#m">
         <div className="p-1 mx-1">
-          <div className="font-bold text-neutral-100">30d</div>
+          <div className="font-bold text-neutral-600 dark:text-neutral-200">30d</div>
           <div
             className={`${isMonthlyActiveIncrease ? "text-primary" : "text-error"} text-lg font-semibold`}
           >
@@ -116,9 +116,9 @@ export default function StatsAppBlock() {
         </div>
       </Link>
 
-      <Link to="/apps/stats/#y">
+      <Link to="#y">
         <div className="p-1 mx-1">
-          <div className="font-bold text-neutral-100">1y</div>
+          <div className="font-bold text-neutral-600 dark:text-neutral-200">1y</div>
           <div
             className={`${isYearlyActiveIncrease ? "text-primary" : "text-error"} text-lg font-semibold`}
           >

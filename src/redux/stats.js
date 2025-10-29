@@ -2,14 +2,13 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import { DateTime } from "luxon";
 import { gql } from "@apollo/client";
 import LogService from "@/services/LogService";
-import WalletManagerService from "@/services/WalletManagerService";
 import { selectDeviceInfo } from "@/redux/device";
+import { selectGenesisHeight } from "@/redux/wallet";
 import {
   setPreference,
   selectLastCheckIn,
   selectPrivacySettings,
   selectIsOfflineMode,
-  selectActiveWalletHash,
 } from "@/redux/preferences";
 import apolloClient from "@/apolloClient";
 
@@ -43,12 +42,9 @@ export const triggerCheckIn = createAsyncThunk(
       return;
     }
 
-    const WalletManager = WalletManagerService();
-    const walletHash = selectActiveWalletHash(thunkApi.getState());
-    const hasGenesisHeight =
-      !!(await WalletManager.fetchGenesisHeight(walletHash));
+    const genesis_height = selectGenesisHeight(thunkApi.getState());
 
-    if (!hasGenesisHeight) {
+    if (!genesis_height) {
       Log.debug("stats/submitCheckIn blocked - no genesis height");
       return;
     }

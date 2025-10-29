@@ -2,11 +2,13 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "react-router";
 import { useQuery } from "@apollo/client";
+import { SyncOutlined } from "@ant-design/icons";
 
 import Button from "@/atoms/Button";
 import Card from "@/atoms/Card";
 import SeleneLogo from "@/atoms/SeleneLogo";
 import ActiveUsersChart from "./ActiveUsersChart";
+import StatsAppBlock from "./StatsAppBlock";
 import GET_ACTIVE_BITCOINERS from "./getActiveBitcoiners";
 import { ONE_SECOND, Period } from "@/util/time";
 import { translate } from "@/util/translations";
@@ -47,8 +49,8 @@ export default function StatsGraphCard() {
   const isReady = !isLoading && data && data.activeBitcoiners;
 
   return (
-    <Card>
-      <div className="flex items-center">
+    <Card className="rounded-none w-full border-0 shadow-none">
+      <div className="flex items-center mb-1.5">
         <SeleneLogo className="w-12 mr-1" />
         <div>
           <span className="text-xl font-bold text-neutral-900 dark:text-neutral-100">
@@ -60,12 +62,20 @@ export default function StatsGraphCard() {
         </div>
       </div>
 
-      <div className="bg-primary-50 dark:bg-primarydark-50 my-2 p-2 rounded">
-        {!isReady && <p>Loading chart...</p>}
+      <div className="my-1">
+        <StatsAppBlock />
+      </div>
+
+      <div className="bg-primary-50 dark:bg-primarydark-50 my-2 p-2 rounded border border-primary-300 dark:border-primarydark-200">
+        {!isReady && (
+          <div className="flex items-center justify-center">
+            <SyncOutlined className="text-4xl" spin />
+          </div>
+        )}
         {isReady && <ActiveUsersChart data={data} period={period} />}
       </div>
 
-      <div className="w-full flex justify-around items-center">
+      <div className="w-full flex justify-around items-center py-0.5">
         <Button
           label={translate(translations.daily)}
           labelSize="md"

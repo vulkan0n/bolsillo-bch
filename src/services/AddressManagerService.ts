@@ -41,7 +41,9 @@ export default function AddressManagerService(walletHash: string) {
     getWalletConnectAddress,
     getAddressTransactions,
     calculateAddressState,
+    nullifyAddressState,
     registerTransaction,
+    registerTransactions,
   };
 
   // --------------------------------
@@ -100,7 +102,7 @@ export default function AddressManagerService(walletHash: string) {
       [startIndex, endIndex, change]
     );
 
-    Log.debug("getAddressRange", startIndex, endIndex, result);
+    //Log.debug("getAddressRange", startIndex, endIndex, result);
 
     return result;
   }
@@ -231,6 +233,8 @@ export default function AddressManagerService(walletHash: string) {
   function calculateAddressState(address: string): string | null {
     const localHistory = getAddressTransactions(address);
 
+    //Log.debug("got localHistory", localHistory);
+
     // return null if address has no transactions
     if (
       localHistory.confirmed.length === 0 &&
@@ -250,6 +254,16 @@ export default function AddressManagerService(walletHash: string) {
 
     //Log.debug("calculateAddressState", stateHash, stateString, address);
     return stateHash;
+  }
+
+  function nullifyAddressState(address: string) {
+    try {
+      walletDb.run("UPDATE addresses SET state=NULL WHERE address=?", [
+        address,
+      ]);
+    } catch (e) {
+      Log.error("nullifyAddressState", e);
+    }
   }
 
   // AddressManager.registerTransaction: register a transaction with an address
@@ -304,5 +318,33 @@ export default function AddressManagerService(walletHash: string) {
     }
 
     //Log.debug("AddressManager.registerTransaction", address, tx);
+  }
+
+  function registerTransactions(transactions) {
+    //Log.debug("registerTransactions", transactions);
+    try {
+      const query = [
+        ...transactions.map(
+          (t) => `INSERT INTO address_transactions (
+          txid,
+          height,
+          address,
+          block_pos
+        ) VALUES ("${t.tx_hash}", ${t.height}, "${t.address}", ${t.block_pos})
+        ON CONFLICT DO 
+          UPDATE SET 
+            height=${t.height},
+            block_pos=${t.block_pos}
+          WHERE txid=excluded.txid;
+        `
+        ),
+      ].join("");
+      walletDb.run(query);
+
+      TransactionManagerService().setBlockPosBulk(transactions);
+    } catch (e) {
+      Log.error(e);
+      throw e;
+    }
   }
 }
