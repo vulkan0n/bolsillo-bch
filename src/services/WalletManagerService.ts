@@ -396,6 +396,15 @@ export default function WalletManagerService() {
   function restoreWalletData(walletHash) {
     const walletDb = Database.getWalletDatabase(walletHash);
 
+    const hasTables = walletDb.exec(
+      "SELECT name FROM temp.sqlite_schema WHERE type='table' AND name='temp_address_memos'"
+    ).length;
+
+    if (hasTables === 0) {
+      Log.warn("no tables to restore");
+      return;
+    }
+
     // restore address memos
     walletDb.run(`UPDATE addresses
       SET memo = (SELECT memo FROM temp_address_memos WHERE temp_address_memos.address = addresses.address)
