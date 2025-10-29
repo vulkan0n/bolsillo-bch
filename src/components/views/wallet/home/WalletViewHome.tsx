@@ -16,6 +16,7 @@ import {
   selectBchNetwork,
   selectQrCodeSettings,
   selectShouldUseTokenAddress,
+  selectIsStablecoinMode,
   setPreference,
 } from "@/redux/preferences";
 import { selectScannerIsScanning, selectKeyboardIsOpen } from "@/redux/device";
@@ -52,6 +53,8 @@ export default function WalletViewHome() {
 
   const isSyncing = useSelector(selectIsSyncing);
   const genesis_height = useSelector(selectGenesisHeight);
+
+  const isStablecoinMode = useSelector(selectIsStablecoinMode);
 
   const shouldUseTokenAddress = useSelector(selectShouldUseTokenAddress);
   const setShouldUseTokenAddress = (mode) =>
@@ -180,16 +183,21 @@ export default function WalletViewHome() {
                   onClick={() => setShouldShowRequestAmount(false)}
                 />
                 <span className="flex text-center grow items-center ml-1">
-                  <CurrencySymbol className="text-lg bg-primary-200 rounded-l px-1 text-neutral-500 font-semibold font-mono dark:bg-primarydark-500" />
+                  <CurrencySymbol
+                    className="text-lg bg-primary-200 rounded-l px-1 text-neutral-500 font-semibold font-mono dark:bg-primarydark-500"
+                    currency={isStablecoinMode ? "USD" : undefined}
+                  />
                   <SatoshiInput
                     satoshis={satoshiInput}
                     onChange={handleRequestAmountChange}
                     className="p-1 mr-1 w-full text-black/70 font-mono rounded-r dark:bg-primarydark-50 dark:text-neutral-100"
                     autoFocus
                   />
-                  <div className="flex items-center justify-center">
-                    <CurrencyFlip className="text-xl p-1" />
-                  </div>
+                  {!isStablecoinMode && (
+                    <div className="flex items-center justify-center">
+                      <CurrencyFlip className="text-xl p-1" />
+                    </div>
+                  )}
                 </span>
               </div>
             ) : (
