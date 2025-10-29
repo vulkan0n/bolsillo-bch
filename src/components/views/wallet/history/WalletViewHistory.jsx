@@ -100,7 +100,7 @@ export default function WalletViewHistory() {
             </div>
             <div className="flex justify-between">
               {tx.memo && (
-                <div className="grow text-sm text-neutral-500 mx-4">
+                <div className="grow text-sm text-neutral-500 dark:text-neutral-100 mx-4">
                   {tx.memo}
                 </div>
               )}
