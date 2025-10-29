@@ -43,6 +43,12 @@ interface MergedHistoryEntity extends HistoryEntity {
   tokens?: Array<TokenHistoryEntity>;
 }
 
+export interface PaginatedHistoryResult {
+  transactions: Array<MergedHistoryEntity>;
+  hasMore: boolean;
+  total: number;
+}
+
 export default function TransactionHistoryService(
   walletHash: string,
   fiatCurrency
@@ -67,30 +73,29 @@ export default function TransactionHistoryService(
     calculateTxAmount,
     setTransactionMemo,
     getTransactionMemo,
+    getTotalTransactionCount,
   };
 
-  function getTransactionHistory(start: number = 0): MergedHistoryEntity {
+  function getTransactionHistory(
+    start: number = 0,
+    limit: number = 20
+  ): Array<HistoryEntity> {
     // get all transactions that are registered with addresses
-    const address_transactions_confirmed = walletDb.exec(
-      `SELECT * FROM address_transactions
-          WHERE height > 0
+    // unconfirmed transactions come first, then confirmed
+    const address_transactions = walletDb
+      .exec(
+        `SELECT * FROM address_transactions
           GROUP BY txid
-          ORDER BY height DESC, block_pos ASC, time DESC, time_seen DESC
-          LIMIT 100 OFFSET ${start};
+          ORDER BY
+            (height > 0) ASC,
+            (height = -1) DESC,
+            height DESC,
+            block_pos DESC,
+            time DESC,
+            time_seen DESC
+          LIMIT ${limit} OFFSET ${start};
         `
-    );
-
-    const address_transactions_unconfirmed = walletDb.exec(
-      `SELECT * FROM address_transactions 
-          WHERE height <= 0
-          GROUP BY txid
-          ORDER BY height ASC, time DESC, time_seen DESC
-          LIMIT 100 OFFSET ${start};
-        `
-    );
-
-    const address_transactions = address_transactions_unconfirmed
-      .concat(address_transactions_confirmed)
+      )
       .map((at) => {
         let txTime = at.time;
         if (at.height <= 0) {
@@ -99,8 +104,7 @@ export default function TransactionHistoryService(
         return { ...at, time: txTime };
       });
 
-    const mergedHistory = mergeTokenHistory(address_transactions);
-    return mergedHistory;
+    return address_transactions;
   }
 
   function mergeTokenHistory(
@@ -153,13 +157,23 @@ export default function TransactionHistoryService(
     return mergedTransactions;
   }
 
-  async function resolveTransactionHistory(start: number = 0) {
+  async function resolveTransactionHistory(
+    start: number = 0,
+    limit: number = 20
+  ): Promise<PaginatedHistoryResult> {
     //Log.debug("resolveTransactionHistory");
-    const address_transactions = getTransactionHistory(start);
+    const total = getTotalTransactionCount();
+    const address_transactions = getTransactionHistory(start, limit);
     const mergedHistory = mergeTokenHistory(address_transactions);
 
+    const hasMore = start + limit < total;
+
     if (!ElectrumService().getIsConnected()) {
-      return mergedHistory;
+      return {
+        transactions: mergedHistory,
+        hasMore,
+        total,
+      };
     }
 
     // resolve amounts for transactions that don't have them
@@ -179,7 +193,11 @@ export default function TransactionHistoryService(
       )
     ).filter((tx) => tx !== null);
 
-    return txHistory;
+    return {
+      transactions: txHistory,
+      hasMore,
+      total,
+    };
   }
 
   async function resolveTransactionAmount(tx_hash) {
@@ -195,7 +213,8 @@ export default function TransactionHistoryService(
       }
 
       const tokenTxes = walletDb.exec(
-        `SELECT * FROM token_transactions WHERE txid="${tx_hash}";`
+        `SELECT * FROM token_transactions WHERE txid=?;`,
+        [tx_hash]
       );
 
       const categories = tokenTxes.map((ttx) => ttx.category);
@@ -236,16 +255,18 @@ export default function TransactionHistoryService(
       return isMine;
     };
 
+    // de-duplicate requested transaction ids
+    const vinTxHashes = tx.vin
+      .map((vin) => vin.txid)
+      .reduce(
+        (txes, txid) =>
+          !txes.find((t) => t === txid) ? [...txes, txid] : txes,
+        [] as Array<string>
+      );
+
     // resolve vins to real txos
-    const vinTxes = (
-      await Promise.all(
-        tx.vin.map((vin) => TransactionManager.resolveTransaction(vin.txid))
-      )
-    ).reduce(
-      // de-duplicate resolved transactions
-      (txes, vtx) =>
-        !txes.find((t) => t.txid === vtx.txid) ? [...txes, vtx] : txes,
-      [] as Array<TransactionEntity>
+    const vinTxes = await Promise.all(
+      vinTxHashes.map((txid) => TransactionManager.resolveTransaction(txid))
     );
 
     // for each input tx, get outputs.
@@ -373,7 +394,7 @@ export default function TransactionHistoryService(
     )[0];
 
     const result = walletDb.exec(
-      `UPDATE address_transactions SET 
+      `UPDATE address_transactions SET
           amount=?,
           fiat_amount=?,
           fiat_currency=?,
@@ -398,7 +419,20 @@ export default function TransactionHistoryService(
       throw new TransactionHistoryNotExistsError(tx_hash, walletHash);
     }
 
-    //Log.debug("getAddressTransaction", tx_hash, result);
     return result[0];
+  }
+
+  function getTotalTransactionCount(): number {
+    const confirmedCount =
+      walletDb.exec(
+        `SELECT COUNT(DISTINCT txid) as count FROM address_transactions WHERE height > 0;`
+      )[0]?.count || 0;
+
+    const unconfirmedCount =
+      walletDb.exec(
+        `SELECT COUNT(DISTINCT txid) as count FROM address_transactions WHERE height <= 0;`
+      )[0]?.count || 0;
+
+    return confirmedCount + unconfirmedCount;
   }
 }
