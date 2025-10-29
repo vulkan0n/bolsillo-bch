@@ -63,7 +63,7 @@ export default function Address({
 
   const myAddressStyle =
     color === "" && isMyAddress && myAddress.change === 0
-      ? "text-primary-900 dark:text-primary-100"
+      ? "text-primary-900 dark:text-primarydark-900"
       : "";
 
   const myChangeStyle =

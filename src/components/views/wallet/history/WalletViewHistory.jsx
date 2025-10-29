@@ -140,8 +140,16 @@ export default function WalletViewHistory() {
             </div>
           </div>
           <div className="flex justify-between">
-            <div className="grow text-sm text-neutral-500 mx-4">
-              {tx.memo ? tx.memo : tx.txid.slice(0, 8)}
+            <div className="grow mx-4">
+              {tx.memo ? (
+                <span className="text-neutral-500 dark:text-neutral-100 text-sm">
+                  tx.memo
+                </span>
+              ) : (
+                <span className="text-neutral-400 dark:text-neutral-400 font-mono text-sm tracking-tighter">
+                  {tx.txid.slice(0, 8)}
+                </span>
+              )}
             </div>
             {tx.tokens && !shouldHideBalance ? (
               <div className="flex flex-1 justify-end flex-wrap gap-x-2 mr-0.5">
