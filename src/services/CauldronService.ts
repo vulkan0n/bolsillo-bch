@@ -230,9 +230,11 @@ export default function CauldronService() {
       return 1n;
     }
 
-    const satsPerToken = BigInt(
-      Math.round(Number((satsSum * 100000000n) / tokenSum) / 100000000)
-    );
+    const q = satsSum / tokenSum;
+    const r = satsSum % tokenSum;
+    const half = tokenSum / 2n;
+    const satsPerToken = r >= half ? q + 1n : q;
+
     Log.debug("getTokenPrice", category, satsPerToken);
     return satsPerToken;
   }
@@ -297,47 +299,45 @@ export default function CauldronService() {
 
     const { walletHash } = wallet;
 
-    const AddressManager = AddressManagerService(walletHash);
-    const receiveAddress = AddressManager.getUnusedAddresses(1, 0)[0];
-    const changeAddress = AddressManager.getUnusedAddresses(1, 1)[0];
+    const attemptTrade = (fee: bigint) => {
+      const AddressManager = AddressManagerService(walletHash);
+      const receiveAddress = AddressManager.getUnusedAddresses(1, 0)[0];
+      const changeAddress = AddressManager.getUnusedAddresses(1, 1)[0];
 
-    // output demand token
-    const isDemandToken = supplyCategory === "BCH";
-    const demandTokenRule = isDemandToken
-      ? {
-          token: {
-            token_id: demandCategory,
-            amount: tradeResult.summary.demand,
-          },
-          amount: -1n,
-        }
-      : { amount: tradeResult.summary.demand };
+      // output demand token
+      const isDemandToken = supplyCategory === "BCH";
+      const demandTokenRule = isDemandToken
+        ? {
+            token: {
+              token_id: demandCategory,
+              amount: tradeResult.summary.demand,
+            },
+            amount: -1n,
+          }
+        : { amount: tradeResult.summary.demand - fee };
 
-    const payoutRules: PayoutRule[] = [
-      // trade payout address
-      {
-        type: PayoutAmountRuleType.FIXED,
-        locking_bytecode: addressToLockingBytecode(receiveAddress.address),
-        ...demandTokenRule,
-      },
-      // all of our change outputs to one address
-      {
-        type: PayoutAmountRuleType.CHANGE,
-        locking_bytecode: addressToLockingBytecode(changeAddress.address),
-        allow_mixing_native_and_token_when_bch_change_is_dust: true,
-      },
-      // cauldron utxo handled by cashlab
-    ];
+      const payoutRules: PayoutRule[] = [
+        // trade payout address
+        {
+          type: PayoutAmountRuleType.FIXED,
+          locking_bytecode: addressToLockingBytecode(receiveAddress.address),
+          ...demandTokenRule,
+        },
+        // all of our change outputs to one address
+        {
+          type: PayoutAmountRuleType.CHANGE,
+          locking_bytecode: addressToLockingBytecode(changeAddress.address),
+          allow_mixing_native_and_token_when_bch_change_is_dust: true,
+        },
+        // cauldron utxos handled by cashlab
+      ];
 
-    Log.debug("payoutRules", payoutRules);
+      Log.debug("payoutRules", payoutRules);
 
-    // input supply token
-    const UtxoManager = UtxoManagerService(walletHash);
-    const HdNode = HdNodeService(wallet);
+      // input supply token
+      const UtxoManager = UtxoManagerService(walletHash);
+      const HdNode = HdNodeService(wallet);
 
-    let tradeTx;
-    let fee = 0n;
-    for (let i = 0; i < 5; i += 1) {
       const supplyInputs = isDemandToken
         ? UtxoManager.selectCoins(tradeResult.summary.supply + fee)
         : [
@@ -371,7 +371,7 @@ export default function CauldronService() {
       });
 
       try {
-        tradeTx = exchangeLab.createTradeTx(
+        const tradeTx = exchangeLab.createTradeTx(
           tradeResult.entries,
           clabInputs,
           payoutRules,
@@ -379,17 +379,17 @@ export default function CauldronService() {
           TX_FEE_PER_BYTE
         );
         Log.debug("tradeTx", tradeTx);
-        break;
+        return tradeTx;
       } catch (e) {
         if (e.required_amount) {
-          fee += e.required_amount;
-        } else {
-          throw e;
+          return attemptTrade(fee + e.required_amount);
         }
+        throw e;
       }
-    }
+    };
 
+    const tradeTx = attemptTrade(0n);
     const tx_hex = binToHex(tradeTx.txbin);
-    return { tx_hex, tradeResult };
+    return { tx_hex, tradeResult, tradeTx };
   }
 }

@@ -104,8 +104,8 @@ export default function TransactionBuilderService(walletHash: string) {
 
     Log.debug("createTokenOutput", output, token);
 
-    if (satsAmount < 0 || satsAmount === EXCESSIVE_SATOSHIS) {
-      const dustThreshold = getDustThreshold(output, DUST_RELAY_FEE);
+    const dustThreshold = getDustThreshold(output, DUST_RELAY_FEE);
+    if (satsAmount < dustThreshold || satsAmount === EXCESSIVE_SATOSHIS) {
       output.valueSatoshis = dustThreshold;
     }
 
@@ -237,11 +237,11 @@ export default function TransactionBuilderService(walletHash: string) {
       0n
     );
 
-    const outputs = [
-      ...recipientVouts,
-      ...preparedTokenChange,
-      ...prepareSatsChange(inputs, recipientVouts, fee + tokenChangeAmount),
-    ];
+    const outputs = finalizeChange(
+      inputs,
+      [...recipientVouts, ...preparedTokenChange],
+      fee
+    );
 
     const finalOutputTotal = outputs.reduce(
       (sum, cur) => sum + cur.valueSatoshis,
@@ -289,7 +289,7 @@ export default function TransactionBuilderService(walletHash: string) {
         });
       }
 
-      return finalOutputTotal;
+      return short;
     }
 
     // ----------------
@@ -390,11 +390,17 @@ export default function TransactionBuilderService(walletHash: string) {
       return tokenChangeVouts;
     }
 
-    function prepareSatsChange(vin, vout, txFee): Array<LibauthOutput> {
+    function finalizeChange(vin, vout, txFee): Array<LibauthOutput> {
       const satsInputTotal = vin.reduce((sum, cur) => sum + cur.amount, 0n);
 
       const satsOutputTotal = vout.reduce(
         (sum, cur) => sum + cur.valueSatoshis,
+        0n
+      );
+
+      const tokenOutputTotal = vout.reduce(
+        (sum, cur) =>
+          cur.token_category !== null ? sum + cur.valueSatoshis : sum,
         0n
       );
 
@@ -410,15 +416,21 @@ export default function TransactionBuilderService(walletHash: string) {
         changeAmount
       );
 
-      const dustThreshold = getDustThreshold(changeOutput, DUST_RELAY_FEE);
+      const changeVouts: Array<LibauthOutput> = [];
+      const temp_vout = [...vout];
 
       // only add change to the tx if it isn't dust.
-      const changeVouts: Array<LibauthOutput> = [];
+      const dustThreshold = getDustThreshold(changeOutput, DUST_RELAY_FEE);
+
       if (changeAmount >= dustThreshold) {
         changeVouts.push(changeOutput);
+      } else if (changeAmount > txFee) {
+        const lastOutput = temp_vout.pop();
+        lastOutput.valueSatoshis += changeAmount;
+        temp_vout.push(lastOutput);
       }
 
-      return changeVouts;
+      return [...temp_vout, ...changeVouts];
     }
 
     // --------
@@ -560,7 +572,7 @@ export default function TransactionBuilderService(walletHash: string) {
 
   async function buildStablecoinTransaction(
     recipients: Array<Recipient>,
-    satsShort: bigint,
+    tradeSats: bigint,
     fee: bigint = 0n
   ) {
     const Cauldron = CauldronService();
@@ -582,19 +594,18 @@ export default function TransactionBuilderService(walletHash: string) {
 
     Log.debug("tokenTotal", tokenTotal, "(musd)");
     Log.debug("recipientAmount", recipientAmount, "(sats)");
-    Log.debug("satsShort", satsShort, "(sats)");
+    Log.debug("tradeSats", tradeSats, "(sats)");
     Log.debug("estimated fee", fee, "(sats)");
 
     const tradeResult = exchangeLab.constructTradeBestRateForTargetDemand(
       MUSD_TOKENID,
       "BCH",
-      satsShort,
+      tradeSats,
       inputPools,
       1n
     );
 
     let tradeTransaction = null;
-    let short = satsShort;
     try {
       Log.debug("tradeResult", tradeResult);
 
@@ -605,7 +616,7 @@ export default function TransactionBuilderService(walletHash: string) {
       Log.debug("tokenUtxos", stablecoinUtxos);
 
       const coinUtxos = UtxoManager.selectCoins(
-        tradeResult.summary.demand + fee
+        recipientAmount - tradeSats + fee
       );
       Log.debug("coinUtxos", coinUtxos);
 
@@ -642,7 +653,7 @@ export default function TransactionBuilderService(walletHash: string) {
         ...recipients.map((r) => ({
           type: clab.PayoutAmountRuleType.FIXED,
           locking_bytecode: addressToLockingBytecode(r.address),
-          amount: r.amount - fee,
+          amount: r.amount,
           token: r.token
             ? {
                 token_id: r.token.category,
@@ -659,7 +670,6 @@ export default function TransactionBuilderService(walletHash: string) {
             }
             return addressToLockingBytecode(changeAddress.address);
           },
-
           allow_mixing_native_and_token_when_bch_change_is_dust: true,
         },
       ];
@@ -681,8 +691,8 @@ export default function TransactionBuilderService(walletHash: string) {
 
       return buildStablecoinTransaction(
         recipients,
-        tradeResult.summary.demand,
-        fee + e.required_amount
+        tradeResult.summary.demand + tradeResult.summary.trade_fee,
+        e.required_amount
       );
     }
 
@@ -698,7 +708,7 @@ export default function TransactionBuilderService(walletHash: string) {
       tx_hex,
       tx_hash,
       tradeResult,
-      payout_rules: tradeTransaction.payout_rules,
+      payouts_info: tradeTransaction.payouts_info,
     };
   }
 

@@ -16,6 +16,7 @@ import {
 } from "@ant-design/icons";
 import {
   selectActiveWallet,
+  selectActiveWalletHash,
   selectActiveWalletBalance,
   selectWalletAddresses,
 } from "@/redux/wallet";
@@ -337,9 +338,11 @@ export default function WalletViewSend() {
       const Cauldron = CauldronService();
       const cauldronPrice = Cauldron.getTokenPrice(MUSD_TOKENID);
 
-      const fiatNeeded = BigInt(
-        Math.round(new Decimal(amount / cauldronPrice).toNumber())
-      );
+      const q = amount / cauldronPrice;
+      const r = amount % cauldronPrice;
+      const half = q / 2n;
+
+      const fiatNeeded = r >= half ? q + 1n : q;
 
       const AddressManager = AddressManagerService(walletHash);
       const tryAddress =
@@ -357,7 +360,7 @@ export default function WalletViewSend() {
             amount: -1n,
             token: { category: MUSD_TOKENID, amount: fiatNeeded },
           });
-        } else if (totalSpendableSats > amount) {
+        } else if (totalSpendableSats >= amount) {
           // cover the difference with raw sats if balance is available (hybrid output)
           const amountShort = fiatNeeded - stablecoinBalance;
           const satsShort = amountShort * cauldronPrice;
@@ -394,6 +397,12 @@ export default function WalletViewSend() {
   );
 
   const buildStablecoinTransaction = useCallback(async () => {
+    // true insufficient funds
+    if (satoshiInput > totalSpendableSats) {
+      handleInsufficientFunds();
+      return false;
+    }
+
     const recipients = prepareStablecoinRecipients(satoshiInput);
     const TransactionBuilder = TransactionBuilderService(walletHash);
     let transaction = TransactionBuilder.buildP2pkhTransaction({
@@ -403,12 +412,6 @@ export default function WalletViewSend() {
     Log.debug("buildStablecoinTransaction", recipients, transaction);
 
     if (typeof transaction === "bigint") {
-      // true insufficient funds
-      if (transaction > totalSpendableSats) {
-        handleInsufficientFunds();
-        return false;
-      }
-
       // we have enough stablecoin to attempt a swap-in-place
       const satsShort = transaction - spendable_balance;
       Log.debug(
@@ -548,60 +551,6 @@ export default function WalletViewSend() {
     setSatoshiInputKey(token_amount.toString());
   };
 
-  const handleSendMaxStablecoin = async () => {
-    Log.debug("HANDLEMAXSTABLECOIN?");
-    const TransactionBuilder = TransactionBuilderService(walletHash);
-
-    const tryRecipients = prepareStablecoinRecipients(totalSpendableSats);
-
-    const transaction = TransactionBuilder.buildP2pkhTransaction({
-      recipients: tryRecipients,
-    });
-
-    if (typeof transaction !== "bigint") {
-      setSatoshiInput(totalSpendableSats);
-      setSatoshiInputKey(totalSpendableSats.toString());
-      return;
-    }
-
-    const Cauldron = CauldronService();
-    const liquidationTrade = await Cauldron.prepareTrade(
-      MUSD_TOKENID,
-      "BCH",
-      stablecoinBalance,
-      wallet,
-      true
-    );
-
-    Log.debug("liquidation", liquidationTrade.tradeResult);
-
-    const liquidationFee = BigInt(
-      liquidationTrade.tradeResult.summary.trade_fee
-    );
-    const liquidationSats = BigInt(
-      liquidationTrade.tradeResult.summary.demand - liquidationFee
-    );
-
-    const totalSats = spendable_balance + liquidationSats;
-
-    const recipients = prepareStablecoinRecipients(totalSats);
-
-    const finalTransaction =
-      await TransactionBuilder.buildStablecoinTransaction(
-        recipients,
-        liquidationSats,
-        liquidationFee
-      );
-
-    Log.debug("handleSendMaxStablecoin", recipients, finalTransaction);
-
-    const newAmount = finalTransaction.payouts_info[0].output.amount;
-
-    setSatoshiInput(newAmount);
-    // force re-render of SatoshiInput component
-    setSatoshiInputKey(newAmount.toString());
-  };
-
   const handleSendMax = () => {
     let amount =
       selectionAmount > 0 ? BigInt(selectionAmount) : BigInt(spendable_balance);
@@ -631,6 +580,70 @@ export default function WalletViewSend() {
     setSatoshiInput(clampedAmount);
     // force re-render of SatoshiInput component
     setSatoshiInputKey(clampedAmount.toString());
+    Log.debug("max:", clampedAmount);
+  };
+
+  const handleSendMaxStablecoin = async () => {
+    Log.debug("HANDLEMAXSTABLECOIN?");
+    if (stablecoinBalance === 0n) {
+      handleSendMax();
+      return;
+    }
+
+    const Cauldron = CauldronService();
+    const liquidationTrade = await Cauldron.prepareTrade(
+      MUSD_TOKENID,
+      "BCH",
+      stablecoinBalance,
+      wallet,
+      true
+    );
+
+    const liquidationFee = BigInt(
+      liquidationTrade.tradeResult.summary.trade_fee
+    );
+    const liquidationSats = BigInt(liquidationTrade.tradeResult.summary.demand);
+
+    const txFee = liquidationTrade.tradeTx.txfee;
+
+    Log.debug(
+      "liquidating",
+      stablecoinBalance,
+      "MUSD ->",
+      liquidationSats,
+      "sats w/",
+      liquidationFee,
+      "trade fee and",
+      txFee,
+      "tx fee"
+    );
+
+    const totalSats =
+      spendable_balance + liquidationSats - liquidationFee - txFee;
+
+    const recipients = prepareStablecoinRecipients(totalSats);
+
+    const TransactionBuilder = TransactionBuilderService(walletHash);
+
+    const finalTransaction =
+      await TransactionBuilder.buildStablecoinTransaction(
+        recipients,
+        liquidationSats,
+        txFee
+      );
+
+    Log.debug("handleSendMaxStablecoin", recipients, finalTransaction);
+
+    const newAmount = finalTransaction.payouts_info.reduce(
+      (sum, cur) => sum + cur.output.amount,
+      0n
+    );
+
+    Log.debug("max:", newAmount);
+
+    setSatoshiInput(newAmount);
+    // force re-render of SatoshiInput component
+    setSatoshiInputKey(newAmount.toString());
   };
 
   // ----------------
