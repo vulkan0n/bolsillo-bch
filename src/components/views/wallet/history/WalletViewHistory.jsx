@@ -143,7 +143,7 @@ export default function WalletViewHistory() {
             <div className="grow mx-4">
               {tx.memo ? (
                 <span className="text-neutral-500 dark:text-neutral-100 text-sm">
-                  tx.memo
+                  {tx.memo}
                 </span>
               ) : (
                 <span className="text-neutral-400 dark:text-neutral-400 font-mono text-sm tracking-tighter">

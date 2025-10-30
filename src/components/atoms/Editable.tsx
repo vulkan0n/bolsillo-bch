@@ -48,6 +48,10 @@ export default function Editable({
       setIsInputDirty(false);
     } else {
       setIsEditing(true);
+
+      if (!isInputDirty) {
+        setInput(value);
+      }
     }
   };
 

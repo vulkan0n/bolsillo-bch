@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useMemo } from "react";
 import { useLoaderData, Link } from "react-router";
 import { useSelector } from "react-redux";
 import { DateTime } from "luxon";
@@ -44,10 +44,22 @@ export default function ExploreTransactionView() {
   const { localCurrency } = useSelector(selectCurrencySettings);
   const chaintip = useSelector(selectChaintip);
 
+  const TransactionHistory = useMemo(
+    () => TransactionHistoryService(walletHash, localCurrency),
+    [walletHash, localCurrency]
+  );
+
   const [memo, setMemo] = useState(
     TransactionHistoryService(walletHash, localCurrency).getTransactionMemo(
       tx.txid
     ) || ""
+  );
+
+  useEffect(
+    function refreshMemo() {
+      setMemo(TransactionHistory.getTransactionMemo(tx.txid));
+    },
+    [tx.txid, TransactionHistory]
   );
 
   const isConfirmed = tx.blockhash !== null;
@@ -123,6 +135,7 @@ export default function ExploreTransactionView() {
               value={memo}
               placeholder={translate(translations.setMemo)}
               onConfirm={handleSaveMemo}
+              confirmOnBlur
             />
           </div>
         </Card>
