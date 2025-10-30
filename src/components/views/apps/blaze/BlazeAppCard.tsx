@@ -30,7 +30,7 @@ function BlazeAppCard() {
 
   return (
     <Link
-      to={isDuring ? BCH_PODCAST_LIVE_URL : "/apps/blaze/about"}
+      to={isDuring ? BCH_PODCAST_LIVE_URL : "/apps/blaze"}
       className="bg-black h-full flex flex-col"
     >
       <img
