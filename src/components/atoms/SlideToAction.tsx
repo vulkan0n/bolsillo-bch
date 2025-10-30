@@ -116,20 +116,3 @@ export default function SlideToAction({
     </div>
   );
 }
-
-/*
- *
-    <div className="p-1 bg-neutral-100 rounded-full overflow-hidden">
-      <div
-        className={clsx(
-          className,
-          "bg-neutral-100 rounded-full flex items-center relative text-primary font-bold text-center",
-          {
-            "opacity-50 pointer-events-none": disabled,
-          }
-        )}
-      >
-        <div className="h-10 leading-10">{label}</div>
-      </div>
-    </div>
-  */

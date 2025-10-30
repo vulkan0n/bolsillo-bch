@@ -426,7 +426,7 @@ const translations = {
     ur: "تھیم موڈ",
     vi: "Chế độ chủ đề",
     zh: "主题模式",
-    zh_TW: "主題模式"
+    zh_TW: "主題模式",
   },
   themeModeLight: {
     ar: "ضوء",
@@ -465,7 +465,7 @@ const translations = {
     ur: "روشنی",
     vi: "Ánh sáng",
     zh: "光",
-    zh_TW: "光"
+    zh_TW: "光",
   },
   themeModeDark: {
     ar: "مظلم",
@@ -504,7 +504,7 @@ const translations = {
     ur: "اندھیرا",
     vi: "Tối tăm",
     zh: "黑暗的",
-    zh_TW: "黑暗的"
+    zh_TW: "黑暗的",
   },
   themeModeSystem: {
     ar: "نظام",
@@ -543,7 +543,7 @@ const translations = {
     ur: "سسٹم",
     vi: "Hệ thống",
     zh: "系统",
-    zh_TW: "系統"
+    zh_TW: "系統",
   },
   displayExchangeRate: {
     ar: "عرض سعر الصرف",
@@ -2342,6 +2342,12 @@ const translations = {
     zh: "启用时，所有传入的BCH都会通过Cauldron DEX自动转换为MUSD，除了作为交易费用保存为BCH的0.2%。显示的余额是MUSD，法定货币将变为USD。",
     zh_TW:
       "啟用時，所有傳入的BCH都會透過Cauldron DEX自動轉換為MUSD，除了作為交易費用儲存為BCH的0.2%。顯示的餘額將是MUSD，法定貨幣將變為USD。",
+  },
+  externalLinkTitle: {
+    en: "External Link",
+  },
+  externalLinkMessage: {
+    en: "This link will open in your browser. Proceed?",
   },
 };
 

@@ -15,11 +15,11 @@ import { useLongPress } from "@/hooks/useLongPress";
 export default function CreditsView() {
   const navigate = useNavigate();
 
-  const [shouldShowQr, setShouldShowQr] = useState(false);
+  const [shouldShowQr, setShouldShowQr] = useState(true);
 
   const longPressEvents = useLongPress(
     () => {
-      if (shouldShowQr) {
+      if (!shouldShowQr) {
         navigate("/debug");
       }
     },
@@ -62,11 +62,11 @@ export default function CreditsView() {
           <h2 className="text-xl font-bold">
             {translate(translations.developedWith)}
           </h2>
-          <h2 className="font-bold text-xl">
+          <h2 className="font-bold text-xl flex justify-center gap-x-1">
             <LinkExternal to="https://kallisti.io" className="underline">
               Kallisti.cash
-            </LinkExternal>{" "}
-            &amp;{" "}
+            </LinkExternal>
+            <span>&amp;</span>
             <LinkExternal
               to="https://bitcoincashpodcast.com"
               className="underline"
