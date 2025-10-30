@@ -26,7 +26,6 @@ import {
   setPreference,
 } from "@/redux/preferences";
 
-import { selectIsConnected } from "@/redux/sync";
 import { selectScannerIsScanning } from "@/redux/device";
 
 import AddressManagerService from "@/services/AddressManagerService";
@@ -35,7 +34,6 @@ import TransactionBuilderService, {
   Recipient,
 } from "@/services/TransactionBuilderService";
 import TokenManagerService from "@/services/TokenManagerService";
-import ToastService from "@/services/ToastService";
 import SecurityService, { AuthActions } from "@/services/SecurityService";
 import LogService from "@/services/LogService";
 import CauldronService from "@/services/CauldronService";
@@ -80,7 +78,6 @@ export default function WalletViewSend() {
 
   const wallet = useSelector(selectActiveWallet);
   const { walletHash } = wallet;
-  const isConnected = useSelector(selectIsConnected);
   const isScanning = useSelector(selectScannerIsScanning);
   const bchNetwork = useSelector(selectBchNetwork);
 
@@ -259,7 +256,6 @@ export default function WalletViewSend() {
       hasTokens,
       hasNft,
       isTokenAddress,
-      isConnected,
       isBase58Address,
       isInsufficientFunds,
       isInsufficientTokens,

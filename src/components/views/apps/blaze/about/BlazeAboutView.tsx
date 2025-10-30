@@ -37,9 +37,9 @@ function BlazeAboutView() {
           </h3>
         </div>
         <div className="p-2">{translate(translations.intro)}</div>
-          <div className="mt-1 rounded-md flex flex-col border dark:border-primarydark-400 border-primary-700 bg-white dark:bg-neutral-1000">
+        <div className="mt-1 rounded-md flex flex-col border dark:border-primarydark-400 border-primary-700 bg-white dark:bg-neutral-1000">
           <LinkExternal to={BLAZE_DORAHACKS_URL}>
-              <div className="text-primary-700 dark:text-primarydark flex items-center gap-2 w-full p-3 border-b border-[#ececec] last:border-b-0">
+            <div className="text-primary-700 dark:text-primarydark flex items-center gap-2 w-full p-3 border-b border-[#ececec] last:border-b-0">
               <LinkOutlined />{" "}
               <span className="flex-1 font-bold">
                 DoraHacks Sign Up & Information
