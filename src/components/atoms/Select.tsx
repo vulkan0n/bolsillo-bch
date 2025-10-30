@@ -1,4 +1,4 @@
-import { clsx } from "clsx";
+import { clsx } from "@/util/clsx";
 
 interface Props
   extends React.DetailedHTMLProps<

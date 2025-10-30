@@ -46,7 +46,6 @@
     "@walletconnect/utils": "^2.22.3",
     "bip39": "^3.0.4",
     "chart.js": "^4.3.3",
-    "clsx": "^2.1.1",
     "decimal.js": "^10.6.0",
     "graphql": "^16.8.0",
     "js-logger": "^1.6.1",
