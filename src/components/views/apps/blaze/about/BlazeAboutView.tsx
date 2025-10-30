@@ -1,11 +1,15 @@
 import { Interval } from "luxon";
-import { EmbeddedVideoCard } from "@/components/atoms/EmbeddedVideo";
+import { LinkOutlined } from "@ant-design/icons";
+
 import FullColumn from "@/layout/FullColumn";
+import LinkExternal from "@/components/atoms/LinkExternal";
+import Card from "@/components/atoms/Card";
+import { EmbeddedVideoCard } from "@/components/atoms/EmbeddedVideo";
+
 import { translate } from "@/util/translations";
 import translations from "../translations";
+
 import { BLAZE_EVENTS, SELENE_ASSETS_URL } from "../constants.jsx";
-import LinkItem from "@/components/atoms/LinkItem";
-import Card from "@/components/atoms/Card";
 
 const BLAZE_INFORMATION_STREAM_URL =
   "https://www.youtube.com/watch?v=EufKujsTQGc";
@@ -19,44 +23,55 @@ const interval = Interval.fromDateTimes(
 
 function BlazeAboutView() {
   return (
-    <FullColumn>
-      <div className="px-2 pt-2">
-        <Card className="mb-[5px]">
-          <h1 className="font-bliss text-2xl text-black dark:text-white">
+    <div className="p-2 flex flex-col gap-y-2">
+      <Card>
+        <div className="rounded-md bg-primary-50 dark:bg-neutral-700 p-2">
+          <h1 className="font-bliss text-2xl text-center font-bold bg-clip-text text-transparent bg-gradient-to-t from-neutral-600 to-[#f20e38]">
             BCH BLAZE
           </h1>
-          <div className=" text-lg">Online!</div>
-
-          <div className=" text-md">
+          <h2 className="text-center">Online Hackathon</h2>
+          <h3 className="text-md text-center font-semibold">
             {interval.toLocaleString({
               dateStyle: "long",
             })}
-          </div>
-          <div className="mt-1">{translate(translations.intro)}</div>
-          <div className="bg-neutral rounded-lg flex flex-col overflow-hidden">
-            <LinkItem
-              href={BLAZE_DORAHACKS_URL}
-              label="DoraHacks Sign Up & Information"
+          </h3>
+        </div>
+        <div className="p-2">{translate(translations.intro)}</div>
+          <div className="mt-1 rounded-md flex flex-col border dark:border-primarydark-400 border-primary-700 bg-white dark:bg-neutral-1000">
+          <LinkExternal to={BLAZE_DORAHACKS_URL}>
+              <div className="text-primary-700 dark:text-primarydark flex items-center gap-2 w-full p-3 border-b border-[#ececec] last:border-b-0">
+              <LinkOutlined />{" "}
+              <span className="flex-1 font-bold">
+                DoraHacks Sign Up & Information
+              </span>{" "}
+              <span>→</span>
+            </div>
+          </LinkExternal>
+        </div>
+      </Card>
+
+      <Card>
+        <h1 className="font-bliss text-2xl text-center font-bold bg-clip-text text-transparent bg-gradient-to-t from-neutral-600 to-[#f20e38] p-2">
+          BLAZE SCHEDULE
+        </h1>
+
+        <div className="rounded-md overflow-hidden">
+          <LinkExternal to={`${SELENE_ASSETS_URL}Schedule.png`}>
+            <img
+              src={`${SELENE_ASSETS_URL}Schedule.png`}
+              className="w-full h-64"
             />
-          </div>
-        </Card>
+          </LinkExternal>
+        </div>
+      </Card>
 
-        <Card>
-          <h2 className="font-bold text-xl mt-1">{"BLAZE Schedule"}</h2>
-
-          <img
-            src={`${SELENE_ASSETS_URL}Schedule.png`}
-            className="w-full h-64 pb-4"
-          />
-
-          <h2 className="font-bold text-xl mt-1">
-            {"BLAZE Information Session"}
-          </h2>
-          <EmbeddedVideoCard url={BLAZE_INFORMATION_STREAM_URL} />
-        </Card>
-        <div className="mt-4" />
-      </div>
-    </FullColumn>
+      <Card>
+        <h1 className="font-bliss text-2xl text-center font-bold bg-clip-text text-transparent bg-gradient-to-t from-neutral-600 to-[#f20e38] p-2">
+          BLAZE INFO SESSION
+        </h1>
+        <EmbeddedVideoCard url={BLAZE_INFORMATION_STREAM_URL} />
+      </Card>
+    </div>
   );
 }
 

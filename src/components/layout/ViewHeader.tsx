@@ -4,7 +4,7 @@ import { ArrowLeftOutlined, CloseOutlined } from "@ant-design/icons";
 import { selectIsExperimental } from "@/redux/preferences";
 
 interface Props {
-  title: string;
+  title: React.ReactNode;
   icon?: React.ComponentType;
   small?: boolean;
   back?: string | number;
