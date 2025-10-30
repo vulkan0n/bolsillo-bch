@@ -171,7 +171,7 @@ function StablecoinBalance() {
 }
 
 function Balance() {
-  const { balance, spendable_balance } = useSelector(selectActiveWalletBalance);
+  const { spendable_balance } = useSelector(selectActiveWalletBalance);
   const displayBalance = spendable_balance;
 
   const [balanceReceivedSpring, receiveSpringApi] = useSpring(() => ({

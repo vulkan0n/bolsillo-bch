@@ -4,13 +4,11 @@ import {
   SendOutlined,
   ThunderboltOutlined,
   PropertySafetyOutlined,
-  MergeOutlined,
 } from "@ant-design/icons";
 
 import {
   selectInstantPaySettings,
   selectCurrencySettings,
-  selectIsExperimental,
 } from "@/redux/preferences";
 
 import { translate } from "@/util/translations";
@@ -33,8 +31,6 @@ export default function PaymentSettings() {
   const { localCurrency, shouldPreferLocalCurrency } = useSelector(
     selectCurrencySettings
   );
-
-  const isExperimental = useSelector(selectIsExperimental);
 
   const Currency = CurrencyService(localCurrency);
 
