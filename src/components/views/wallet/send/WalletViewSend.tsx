@@ -542,6 +542,8 @@ export default function WalletViewSend() {
   };
 
   const handleSendMax = () => {
+    Log.debug("handleSendMax");
+
     let amount =
       selectionAmount > 0 ? BigInt(selectionAmount) : BigInt(spendable_balance);
 
@@ -557,8 +559,12 @@ export default function WalletViewSend() {
     });
 
     while (typeof transaction !== "object") {
-      const short = transaction - amount;
-      amount -= short;
+      if (selection.length === 0) {
+        const short = transaction - amount;
+        amount -= short;
+      } else {
+        amount -= transaction;
+      }
 
       transaction = TransactionBuilder.buildP2pkhTransaction({
         selection,
@@ -570,11 +576,11 @@ export default function WalletViewSend() {
     setSatoshiInput(clampedAmount);
     // force re-render of SatoshiInput component
     setSatoshiInputKey(clampedAmount.toString());
-    Log.debug("max:", clampedAmount);
+    Log.debug("handleSendMax:", clampedAmount);
   };
 
   const handleSendMaxStablecoin = async () => {
-    Log.debug("HANDLEMAXSTABLECOIN?");
+    Log.debug("handleSendMaxStablecoin");
     if (stablecoinBalance === 0n) {
       handleSendMax();
       return;
@@ -622,14 +628,17 @@ export default function WalletViewSend() {
         txFee
       );
 
-    Log.debug("handleSendMaxStablecoin", recipients, finalTransaction);
-
     const newAmount = finalTransaction.payouts_info.reduce(
       (sum, cur) => sum + cur.output.amount,
       0n
     );
 
-    Log.debug("max:", newAmount);
+    Log.debug(
+      "handleSendMaxStablecoin",
+      recipients,
+      finalTransaction,
+      newAmount
+    );
 
     setSatoshiInput(newAmount);
     // force re-render of SatoshiInput component

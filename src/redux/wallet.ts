@@ -112,7 +112,6 @@ export const walletSyncDiff = createAsyncThunk(
       previousBalance: previousBalance.toString(),
       currentBalance: currentBalance.toString(),
       currentSpendableBalance: currentSpendableBalance.toString(),
-      //currentSpendableBalance: currentSpendableBalance.toString(),
     };
   }
 );

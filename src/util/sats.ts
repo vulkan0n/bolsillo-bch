@@ -14,7 +14,7 @@ export function satsToBch(sats: bigint | string | number | Decimal): {
   bch: string;
 } {
   return {
-    sats: BigInt(new Decimal(sats).toString()),
+    sats: BigInt(sats.toString()),
     bch: new Decimal(sats).div(SATOSHI).toFixed(8, Decimal.ROUND_DOWN),
   };
 }

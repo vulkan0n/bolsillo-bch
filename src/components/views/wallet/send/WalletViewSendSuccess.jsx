@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useLocation, useNavigate } from "react-router";
 import {
   CopyOutlined,
@@ -50,11 +50,20 @@ function WalletViewSendSuccess() {
 
   const [memo, setMemo] = useState(prefillMemo || "");
 
+  const memoSaveRef = useRef(undefined);
+
   const handleMemoChange = (event) => {
+    clearTimeout(memoSaveRef.current);
+
     setMemo(event.target.value);
-    TransactionHistoryService(walletHash, localCurrency).setTransactionMemo(
-      tx.txid,
-      event.target.value
+
+    memoSaveRef.current = setTimeout(
+      () =>
+        TransactionHistoryService(walletHash, localCurrency).setTransactionMemo(
+          tx.txid,
+          event.target.value
+        ),
+      1250
     );
   };
 
@@ -86,7 +95,7 @@ function WalletViewSendSuccess() {
 
   return (
     <div
-      className="fixed top-0 left-0 w-screen h-screen z-50 bg-primary dark:bg-primarydark-100 overflow-y-auto overscroll-none"
+      className="absolute top-0 left-0 w-full h-full z-50 bg-primary dark:bg-primarydark-100 overflow-y-auto overscroll-none"
       onClick={() => navigate("/")}
     >
       <div
@@ -138,10 +147,10 @@ function WalletViewSendSuccess() {
             </span>
           </div>
           {shouldShowMemo && (
-            <div className="flex items-center bg-white dark:bg-neutral-500 text-primary dark:text-neutral-25 p-1 rounded-b-sm border border-t-0 border-primary-900">
+            <div className="flex items-center p-1 rounded-b-sm border border-t-0 border-primary-900">
               <input
                 type="text"
-                className="flex-1 rounded-sm p-1"
+                className="flex-1 rounded-sm p-1 bg-white dark:bg-neutral-700 text-primary dark:text-neutral-25"
                 value={memo}
                 onChange={handleMemoChange}
                 onFocus={() => setIsFocused(true)}
