@@ -30,8 +30,9 @@ export default function PaymentSettings() {
   const { isInstantPayEnabled, instantPayThreshold } = useSelector(
     selectInstantPaySettings
   );
-  const { localCurrency, shouldPreferLocalCurrency, shouldIncludeTokenSats } =
-    useSelector(selectCurrencySettings);
+  const { localCurrency, shouldPreferLocalCurrency } = useSelector(
+    selectCurrencySettings
+  );
 
   const isExperimental = useSelector(selectIsExperimental);
 
@@ -93,20 +94,6 @@ export default function PaymentSettings() {
           />
         </span>
       </Accordion.Child>
-      {(isExperimental || shouldIncludeTokenSats) && (
-        <Accordion.Child
-          icon={MergeOutlined}
-          label="Allow spending from token UTXOs"
-        >
-          <input
-            type="checkbox"
-            checked={shouldIncludeTokenSats}
-            onChange={(event) =>
-              handleSettingsUpdate("includeTokenSats", event.target.checked)
-            }
-          />
-        </Accordion.Child>
-      )}
     </Accordion>
   );
 }

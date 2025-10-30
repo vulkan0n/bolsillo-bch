@@ -172,8 +172,7 @@ function StablecoinBalance() {
 
 function Balance() {
   const { balance, spendable_balance } = useSelector(selectActiveWalletBalance);
-  const { shouldIncludeTokenSats } = useSelector(selectCurrencySettings);
-  const displayBalance = shouldIncludeTokenSats ? balance : spendable_balance;
+  const displayBalance = spendable_balance;
 
   const [balanceReceivedSpring, receiveSpringApi] = useSpring(() => ({
     from: { color: "#8dc451" },
