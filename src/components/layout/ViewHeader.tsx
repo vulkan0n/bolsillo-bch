@@ -1,5 +1,7 @@
 import { useLocation, useNavigate } from "react-router";
+import { useSelector } from "react-redux";
 import { ArrowLeftOutlined, CloseOutlined } from "@ant-design/icons";
+import { selectIsExperimental } from "@/redux/preferences";
 
 interface Props {
   title: string;
@@ -25,8 +27,10 @@ export default function ViewHeader({
   const shouldShowBackButton =
     (location.pathname.split("/").length > 2 || back) && !close;
 
+  const isExperimental = useSelector(selectIsExperimental);
+
   const Icon = icon;
-  const Accessory = accessory;
+  const Accessory = isExperimental ? accessory : () => null;
 
   const sizeClasses = small
     ? "bg-neutral-800 dark:bg-neutral-1000 text-lg py-1 font-semibold text-neutral-50"
