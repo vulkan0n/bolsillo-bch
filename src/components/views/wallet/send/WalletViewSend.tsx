@@ -219,11 +219,6 @@ export default function WalletViewSend() {
         return false;
       }
 
-      if (!isConnected) {
-        ToastService().disconnected();
-        return false;
-      }
-
       setIsSending(true);
 
       if (isBase58Address) {
@@ -694,7 +689,7 @@ export default function WalletViewSend() {
 
   if (isSending) {
     return (
-      <div className="p-2 flex flex-col items-center justify-center fixed top-1/3 w-full text-center">
+      <div className="p-2 flex flex-col items-center justify-center absolute top-1/3 w-full text-center">
         <SyncOutlined className="text-7xl" spin />
       </div>
     );

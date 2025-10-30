@@ -141,7 +141,11 @@ export default function TransactionManagerService() {
 
     const Electrum = ElectrumService(network);
     if (!Electrum.getIsConnected()) {
-      await Electrum.connect();
+      try {
+        await Electrum.connect();
+      } catch (e) {
+        throw new Error("Connection Timeout");
+      }
     }
 
     const result = await Electrum.broadcastTransaction(tx_hex);

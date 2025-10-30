@@ -93,7 +93,7 @@ export default function ElectrumService(bchNetwork = "mainnet") {
 
     // pre-configure the Electrum socket
     const parts = ElectrumServer.toParts(connectServer);
-    const socket = new ElectrumWebSocket(parts.host, parts.port);
+    const socket = new ElectrumWebSocket(parts.host, parts.port, true, 17500);
 
     const protocolVersion =
       bchNetwork === "cauldron"
