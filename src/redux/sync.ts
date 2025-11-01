@@ -19,6 +19,7 @@ import { selectNetworkStatus } from "@/redux/device";
 import {
   selectIsOfflineMode,
   selectIsStablecoinMode,
+  selectBchNetwork,
 } from "@/redux/preferences";
 
 import LogService from "@/services/LogService";
@@ -55,7 +56,9 @@ export const syncConnect = createAsyncThunk(
       return false;
     }
 
-    const Electrum = ElectrumService();
+    const bchNetwork = selectBchNetwork(thunkApi.getState());
+
+    const Electrum = ElectrumService(bchNetwork);
 
     Log.log("sync/connect", payload);
     let isSuccess = false;
