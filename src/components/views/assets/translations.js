@@ -36,7 +36,7 @@ const translations = {
     ur: "اثاثے",
     vi: "Tài sản",
     zh: "资产",
-    zh_TW: "資產",
+    zh_TW: "資產"
   },
   downloadingTokenData: {
     ar: "جاري تنزيل بيانات الرمز...",
@@ -75,7 +75,7 @@ const translations = {
     ur: "ٹوکن ڈیٹا ڈاؤن لوڈ ہو رہا ہے...",
     vi: "Đang tải xuống dữ liệu mã thông báo...",
     zh: "正在下载令牌数据...",
-    zh_TW: "正在下載令牌資料...",
+    zh_TW: "正在下載令牌資料..."
   },
   send: {
     ar: "يرسل",
@@ -114,7 +114,7 @@ const translations = {
     ur: "بھیجیں۔",
     vi: "Gửi",
     zh: "发送",
-    zh_TW: "傳送",
+    zh_TW: "傳送"
   },
   sendTokens: {
     ar: "إرسال الرموز",
@@ -153,7 +153,7 @@ const translations = {
     ur: "ٹوکن بھیجیں۔",
     vi: "Gửi Token",
     zh: "发送代币",
-    zh_TW: "發送代幣",
+    zh_TW: "發送代幣"
   },
   seeMore: {
     ar: "شاهد المزيد",
@@ -192,7 +192,7 @@ const translations = {
     ur: "مزید دیکھیں",
     vi: "Xem thêm",
     zh: "查看更多",
-    zh_TW: "看更多",
+    zh_TW: "看更多"
   },
   noTokens: {
     ar: "لا يوجد رموز",
@@ -231,7 +231,7 @@ const translations = {
     ur: "کوئی ٹوکن نہیں۔",
     vi: "Không có mã thông báo",
     zh: "无代币",
-    zh_TW: "無代幣",
+    zh_TW: "無代幣"
   },
   noCoins: {
     ar: "لا يوجد عملات معدنية",
@@ -270,7 +270,7 @@ const translations = {
     ur: "کوئی سکے نہیں۔",
     vi: "Không có đồng xu",
     zh: "没有硬币",
-    zh_TW: "沒有硬幣",
+    zh_TW: "沒有硬幣"
   },
   memo: {
     ar: "مذكرة",
@@ -309,7 +309,7 @@ const translations = {
     ur: "میمو",
     vi: "Bản ghi nhớ",
     zh: "备忘录",
-    zh_TW: "備忘錄",
+    zh_TW: "備忘錄"
   },
   cashBalance: {
     ar: "الرصيد النقدي",
@@ -348,7 +348,7 @@ const translations = {
     ur: "کیش بیلنس",
     vi: "Số dư tiền mặt",
     zh: "现金余额",
-    zh_TW: "現金餘額",
+    zh_TW: "現金餘額"
   },
   tokens: {
     ar: "الرموز",
@@ -387,7 +387,7 @@ const translations = {
     ur: "ٹوکنز",
     vi: "Mã thông báo",
     zh: "代币",
-    zh_TW: "代幣",
+    zh_TW: "代幣"
   },
   coins: {
     ar: "عملات معدنية",
@@ -426,11 +426,47 @@ const translations = {
     ur: "سکے",
     vi: "Tiền xu",
     zh: "硬币",
-    zh_TW: "硬幣",
+    zh_TW: "硬幣"
   },
   copiedTokenId: {
+    ar: "تم نسخ معرف الرمز المميز",
+    bn: "টোকেন আইডি কপি করা হয়েছে",
+    da: "Kopieret token-ID",
+    de: "Kopierte Token-ID",
+    el: "Αντιγραμμένο αναγνωριστικό διακριτικού",
     en: "Copied Token ID",
-  },
+    es: "ID de token copiado",
+    fa: "شناسه توکن کپی شده",
+    fil: "Kinopya ang Token ID",
+    fr: "ID du jeton copié",
+    ha: "Kwafi ID na Token",
+    hi: "कॉपी किया गया टोकन आईडी",
+    id: "ID Token yang Disalin",
+    it: "ID token copiato",
+    ja: "コピーされたトークンID",
+    jv: "ID Token sing disalin",
+    ko: "복사된 토큰 ID",
+    mr: "टोकन आयडी कॉपी केला",
+    ms: "ID Token yang disalin",
+    nb: "Kopiert token-ID",
+    nl: "Gekopieerde token-ID",
+    pa: "ਟੋਕਨ ਆਈਡੀ ਕਾਪੀ ਕੀਤੀ ਗਈ",
+    pl: "Skopiowany identyfikator tokena",
+    pt: "ID do token copiado",
+    ro: "ID-ul tokenului copiat",
+    ru: "Скопированный идентификатор токена",
+    sv: "Kopierat token-ID",
+    sw: "Kitambulisho cha Tokeni kimenakiliwa",
+    ta: "டோக்கன் ஐடி நகலெடுக்கப்பட்டது",
+    te: "టోకెన్ ID కాపీ చేయబడింది",
+    th: "คัดลอก ID โทเค็นแล้ว",
+    tr: "Kopyalanan Jeton Kimliği",
+    uk: "Скопійований ідентифікатор токена",
+    ur: "ٹوکن آئی ڈی کاپی کی گئی۔",
+    vi: "ID mã thông báo đã sao chép",
+    zh: "已复制令牌 ID",
+    zh_TW: "已複製令牌 ID"
+  }
 };
 
 export default translations;

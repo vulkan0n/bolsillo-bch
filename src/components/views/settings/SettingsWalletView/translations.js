@@ -36,7 +36,7 @@ const translations = {
     ur: "والیٹ کی معلومات",
     vi: "Thông tin ví",
     zh: "钱包信息",
-    zh_TW: "錢包資訊",
+    zh_TW: "錢包資訊"
   },
   advancedOptions: {
     ar: "أدوات",
@@ -75,7 +75,7 @@ const translations = {
     ur: "اوزار",
     vi: "Công cụ",
     zh: "工具",
-    zh_TW: "工具",
+    zh_TW: "工具"
   },
   additionalWalletInformation: {
     ar: "Additional Wallet Information",
@@ -114,7 +114,7 @@ const translations = {
     ur: "اضافی والیٹ معلومات",
     vi: "Thông tin ví tiền bổ sung",
     zh: "额外钱包信息",
-    zh_TW: "Additional Wallet Information",
+    zh_TW: "Additional Wallet Information"
   },
   created: {
     ar: "تم إنشاؤه في",
@@ -153,7 +153,7 @@ const translations = {
     ur: "پر تخلیق کیا گیا۔",
     vi: "Được tạo ra tại",
     zh: "创建于",
-    zh_TW: "創建於",
+    zh_TW: "創建於"
   },
   lastKnownBalance: {
     ar: "آخر رصيد معروف",
@@ -192,7 +192,7 @@ const translations = {
     ur: "آخری معروف بقیہ",
     vi: "Số dư cuối cùng đã biết",
     zh: "最后已知余额",
-    zh_TW: "最後已知餘額",
+    zh_TW: "最後已知餘額"
   },
   walletActive: {
     ar: "المحفظة نشطة",
@@ -231,7 +231,7 @@ const translations = {
     ur: "والٹ سرگرم",
     vi: "Ví hoạt động",
     zh: "钱包已激活",
-    zh_TW: "錢包活躍",
+    zh_TW: "錢包活躍"
   },
   activateWallet: {
     ar: "تنشيط المحفظة",
@@ -270,7 +270,7 @@ const translations = {
     ur: "والٹ چالو کریں",
     vi: "Kích hoạt ví",
     zh: "激活钱包",
-    zh_TW: "激活錢包",
+    zh_TW: "激活錢包"
   },
   deleteWallet: {
     ar: "حذف المحفظة",
@@ -309,7 +309,7 @@ const translations = {
     ur: "والٹ حذف کریں",
     vi: "Xóa ví",
     zh: "删除钱包",
-    zh_TW: "刪除錢包",
+    zh_TW: "刪除錢包"
   },
   areYouSure: {
     ar: "هل أنت متأكد؟ أموالك في خطر",
@@ -348,7 +348,7 @@ const translations = {
     ur: "کیا آپ یقینی ہیں؟ آپکا پیسہ خطرے میں ہے",
     vi: "BẠN CHẮC CHẮN? TIỀN CỦA BẠN ĐANG GẶP RỦI RO",
     zh: "您确定吗？您的资金有风险",
-    zh_TW: "你確定嗎？您的資金面臨風險",
+    zh_TW: "你確定嗎？您的資金面臨風險"
   },
   ensureRecoveryPhrase: {
     ar: "تأكد من كتابة عبارة الاسترداد الخاصة بك",
@@ -387,7 +387,7 @@ const translations = {
     ur: "یقینی بنائیں کہ آپ نے اپنا ریکوری فیز لکھ لیا ہے",
     vi: "HÃY CHẮC CHẮN RẰNG BẠN ĐÃ VIẾT CÂU KHÔI PHỤC CỦA MÌNH",
     zh: "请确保您已经写下了恢复短语",
-    zh_TW: "確保您已寫下恢復短語",
+    zh_TW: "確保您已寫下恢復短語"
   },
   confirmDelete: {
     ar: "نعم ، أريد الحذف",
@@ -426,7 +426,7 @@ const translations = {
     ur: "جی ہاں ، میں ڈیلیٹ کرنا چاہتا ہوں",
     vi: "Có, tôi muốn xóa",
     zh: "是的，我想删除",
-    zh_TW: "是的，我想刪除",
+    zh_TW: "是的，我想刪除"
   },
   keepSecret: {
     ar: "احتفظ بهذه الرسالة السرية",
@@ -465,7 +465,7 @@ const translations = {
     ur: "اس جملہ کو خفیہ رکھیں",
     vi: "GIỮ BÍ MẬT CÂU NÀY",
     zh: "保密此短语",
-    zh_TW: "保守這句話的秘密",
+    zh_TW: "保守這句話的秘密"
   },
   dontStoreDigitally: {
     ar: "لا تخزن رقميا",
@@ -504,7 +504,7 @@ const translations = {
     ur: "ڈیجیٹل طور پر ذخیرہ نہ کریں",
     vi: "KHÔNG LƯU TRỮ SỐ",
     zh: "不要以数字形式存储",
-    zh_TW: "不要以數字方式存儲",
+    zh_TW: "不要以數字方式存儲"
   },
   viewRecoveryPhrase: {
     ar: "عرض عبارة استرداد المحفظة",
@@ -543,7 +543,7 @@ const translations = {
     ur: "والیٹ ریکوری فریز دیکھیں",
     vi: "Xem Cụm từ Khôi phục Ví",
     zh: "查看钱包恢复短语",
-    zh_TW: "查看錢包恢復短語",
+    zh_TW: "查看錢包恢復短語"
   },
   copyToClipboardPromptTitle: {
     ar: "نسخ إلى الحافظة؟",
@@ -582,7 +582,7 @@ const translations = {
     ur: "کلپ بورڈ پر کاپی کریں؟",
     vi: "Sao chép vào bảng tạm?",
     zh: "复制到剪贴板？",
-    zh_TW: "複製到剪貼簿？",
+    zh_TW: "複製到剪貼簿？"
   },
   copyToClipboardPromptMessage: {
     ar: "قد يكون نسخ عبارة الاسترداد إلى الحافظة غير آمن! هل أنت متأكد من رغبتك في المتابعة؟",
@@ -621,7 +621,7 @@ const translations = {
     ur: "اپنے ریکوری فریز کو کلپ بورڈ پر کاپی کرنا غیر محفوظ ہو سکتا ہے! کیا آپ واقعی جاری رکھنا چاہتے ہیں؟",
     vi: "Sao chép Cụm từ khôi phục của bạn vào bảng tạm có thể không an toàn! Bạn có chắc chắn muốn tiếp tục không?",
     zh: "将恢复短语复制到剪贴板可能不安全！您确定要继续吗？",
-    zh_TW: "將您的恢復短語複製到剪貼簿可能不安全！您確定要繼續嗎？",
+    zh_TW: "將您的恢復短語複製到剪貼簿可能不安全！您確定要繼續嗎？"
   },
   copiedToClipboardSuccess: {
     ar: "تم نسخ عبارة الاسترداد إلى الحافظة",
@@ -660,7 +660,7 @@ const translations = {
     ur: "ریکوری کا جملہ کلپ بورڈ پر کاپی کیا گیا۔",
     vi: "Đã sao chép cụm từ khôi phục vào bảng tạm",
     zh: "已将恢复短语复制到剪贴板",
-    zh_TW: "已將恢復短語複製到剪貼簿",
+    zh_TW: "已將恢復短語複製到剪貼簿"
   },
   copiedToClipboardPassphrase: {
     ar: "تم تضمين عبارة المرور الخاصة بك",
@@ -699,7 +699,7 @@ const translations = {
     ur: "آپ کا پاسفریز شامل ہے۔",
     vi: "Mật khẩu của bạn đã được bao gồm",
     zh: "您的密码已包含在内",
-    zh_TW: "您的密碼已包含在內",
+    zh_TW: "您的密碼已包含在內"
   },
   passphrase: {
     ar: "عبارة المرور",
@@ -738,7 +738,7 @@ const translations = {
     ur: "پاس فریز",
     vi: "Mật khẩu",
     zh: "密码",
-    zh_TW: "密碼",
+    zh_TW: "密碼"
   },
   secretAndSecure: {
     ar: "تأكد من إبقائها سرية وآمنة!",
@@ -777,7 +777,7 @@ const translations = {
     ur: "یقینی بنائیں کہ یہ خفیہ اور محفوظ رکھیں!",
     vi: "Đảm bảo giữ nó bí mật và an toàn!",
     zh: "确保保密且安全！",
-    zh_TW: "確保保密且安全！",
+    zh_TW: "確保保密且安全！"
   },
   rebuildWallet: {
     ar: "إعادة إنشاء المحفظة",
@@ -816,7 +816,7 @@ const translations = {
     ur: "والیٹ دوبارہ تعمیر کریں",
     vi: "Xây dựng lại Ví tiền",
     zh: "重建钱包",
-    zh_TW: "重建錢包",
+    zh_TW: "重建錢包"
   },
   addressScanTool: {
     ar: "أداة مسح العناوين",
@@ -855,7 +855,7 @@ const translations = {
     ur: "ایڈریس اسکین ٹول",
     vi: "Công cụ quét địa chỉ",
     zh: "地址扫描工具",
-    zh_TW: "地址掃描工具",
+    zh_TW: "地址掃描工具"
   },
   importWallet: {
     ar: "استيراد ملف المحفظة",
@@ -894,7 +894,7 @@ const translations = {
     ur: "والیٹ فائل درآمد کریں۔",
     vi: "Nhập tệp ví",
     zh: "导入钱包文件",
-    zh_TW: "導入錢包文件",
+    zh_TW: "導入錢包文件"
   },
   exportWallet: {
     ar: "تصدير ملف المحفظة",
@@ -933,7 +933,7 @@ const translations = {
     ur: "والیٹ فائل برآمد کریں۔",
     vi: "Xuất tệp ví",
     zh: "导出钱包文件",
-    zh_TW: "匯出錢包文件",
+    zh_TW: "匯出錢包文件"
   },
   proceed: {
     ar: "يتابع",
@@ -972,11 +972,47 @@ const translations = {
     ur: "آگے بڑھیں۔",
     vi: "Tiếp tục",
     zh: "继续",
-    zh_TW: "繼續",
+    zh_TW: "繼續"
   },
   longPressToCopy: {
+    ar: "اضغط لفترة طويلة للنسخ إلى الحافظة",
+    bn: "ক্লিপবোর্ডে কপি করতে দীর্ঘক্ষণ টিপুন",
+    da: "Langt tryk for at kopiere til udklipsholderen",
+    de: "Langes Drücken zum Kopieren in die Zwischenablage",
+    el: "Πατήστε παρατεταμένα για αντιγραφή στο πρόχειρο",
     en: "Long press to copy to clipboard",
-  },
+    es: "Mantén pulsado para copiar al portapapeles.",
+    fa: "برای کپی کردن در کلیپ بورد، فشار طولانی دهید",
+    fil: "Pindutin nang matagal upang kopyahin sa clipboard",
+    fr: "Appuyez longuement pour copier dans le presse-papiers",
+    ha: "Dogon danna don kwafi zuwa allo",
+    hi: "क्लिपबोर्ड पर कॉपी करने के लिए देर तक दबाएँ",
+    id: "Tekan lama untuk menyalin ke papan klip",
+    it: "Premere a lungo per copiare negli appunti",
+    ja: "長押しするとクリップボードにコピーされます",
+    jv: "Pencet dawa kanggo nyalin menyang clipboard",
+    ko: "클립보드에 복사하려면 길게 누르세요",
+    mr: "क्लिपबोर्डवर कॉपी करण्यासाठी जास्त वेळ दाबा",
+    ms: "Tekan lama untuk menyalin ke papan keratan",
+    nb: "Langt trykk for å kopiere til utklippstavlen",
+    nl: "Lang indrukken om naar het klembord te kopiëren",
+    pa: "ਕਲਿੱਪਬੋਰਡ &#39;ਤੇ ਕਾਪੀ ਕਰਨ ਲਈ ਦੇਰ ਤੱਕ ਦਬਾਓ",
+    pl: "Naciśnij i przytrzymaj, aby skopiować do schowka",
+    pt: "Pressione e segure para copiar para a área de transferência.",
+    ro: "Apăsați lung pentru a copia în clipboard",
+    ru: "Длительное нажатие для копирования в буфер обмена",
+    sv: "Långt tryck för att kopiera till urklipp",
+    sw: "Bonyeza kwa muda mrefu ili kunakili kwenye ubao wa kunakili",
+    ta: "கிளிப்போர்டுக்கு நகலெடுக்க நீண்ட நேரம் அழுத்தவும்.",
+    te: "క్లిప్‌బోర్డ్‌కు కాపీ చేయడానికి ఎక్కువసేపు నొక్కి ఉంచండి",
+    th: "กดยาวเพื่อคัดลอกไปยังคลิปบอร์ด",
+    tr: "Panoya kopyalamak için uzun basın",
+    uk: "Тривале натискання для копіювання в буфер обміну",
+    ur: "کلپ بورڈ پر کاپی کرنے کے لیے دیر تک دبائیں۔",
+    vi: "Nhấn và giữ để sao chép vào bảng tạm",
+    zh: "长按复制到剪贴板",
+    zh_TW: "長按複製到剪貼簿"
+  }
 };
 
 export default translations;
