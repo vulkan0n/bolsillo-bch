@@ -27,7 +27,7 @@ export default function Address({
   const SUFFIX_LENGTH = 6;
 
   const convertedAddress = useMemo(
-    () => convertCashAddress(address, format),
+    () => convertCashAddress(address, format) || "",
     [address, format]
   );
 
