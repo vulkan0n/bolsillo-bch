@@ -196,6 +196,14 @@ export const walletReceive = createAsyncThunk(
       Log.debug("incomingSats", incomingSats);
 
       const Cauldron = CauldronService();
+      try {
+        // make sure pool UTXOs are loaded!
+        await Cauldron.fetchPools(MUSD_TOKENID);
+      } catch (e) {
+        Log.warn(e);
+        Log.error("swap on receive failed!");
+        ToastService().paymentReceived(incomingSats);
+      }
 
       for (let i = 0; i < 3; i += 1) {
         try {
