@@ -1759,6 +1759,9 @@ const translations = {
   walletConnectAddress: {
     en: "WalletConnect Address",
   },
+  cantSendTokensToNonTokenAddress: {
+    en: "Can't send tokens to non-token address!",
+  },
 };
 
 export default translations;

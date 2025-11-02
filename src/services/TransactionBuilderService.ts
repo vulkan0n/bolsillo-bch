@@ -575,14 +575,19 @@ export default function TransactionBuilderService(walletHash: string) {
       0n
     );
 
+    const recipientTokenAmount = recipients.reduce(
+      (sum, cur) => (cur.token ? sum + cur.token.amount : sum),
+      0n
+    );
+
     const price = Cauldron.getTokenPrice(MUSD_TOKENID);
     Log.debug(`${price} sats per 0.01 MUSD`);
 
     // recipientAmount denominated in stablecoin token
-    const tokenTotal = recipientAmount / price;
+    const tokenTotal = recipientAmount / price + recipientTokenAmount;
 
     Log.debug("tokenTotal", tokenTotal, "(musd)");
-    Log.debug("recipientAmount", recipientAmount, "(sats)");
+    Log.debug("recipientAmount", recipientAmount, "(sats only)");
     Log.debug("tradeSats", tradeSats, "(sats)");
     Log.debug("estimated fee", fee, "(sats)");
 
@@ -680,8 +685,8 @@ export default function TransactionBuilderService(walletHash: string) {
 
       return buildStablecoinTransaction(
         recipients,
-        tradeResult.summary.demand + tradeResult.summary.trade_fee,
-        e.required_amount
+        tradeSats + e.required_amount,
+        0n
       );
     }
 

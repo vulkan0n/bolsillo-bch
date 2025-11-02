@@ -212,7 +212,7 @@ export default function WalletViewSend() {
 
       if ((hasTokens || hasNft) && !isTokenAddress) {
         await Haptic.warn();
-        setMessage("Can't send tokens to non-token address!");
+        setMessage(translate(translations.cantSendTokensToNonTokenAddress));
         return false;
       }
 
@@ -332,7 +332,7 @@ export default function WalletViewSend() {
       const r = amount % cauldronPrice;
       const half = q / 2n;
 
-      const fiatNeeded = r >= half ? q + 1n : q;
+      const fiatNeeded = r >= half ? q : q;
 
       const AddressManager = AddressManagerService(walletHash);
       const tryAddress =
@@ -343,7 +343,7 @@ export default function WalletViewSend() {
       // to receive stablecoin token instead of raw sats
       if (isTokenAddress && stablecoinBalance > 0) {
         // one token output if stablecoin balance covers entire amount
-        if (stablecoinBalance > fiatNeeded) {
+        if (stablecoinBalance >= fiatNeeded) {
           Log.debug("stablecoin: direct token", fiatNeeded, stablecoinBalance);
           recipients.push({
             address: tryAddress,
