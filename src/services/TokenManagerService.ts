@@ -14,7 +14,7 @@ export interface TokenEntity extends IdentitySnapshot {
   symbol: string;
   name: string;
   color: string;
-  amount: number;
+  amount: bigint;
   nftCount: number;
   token: TokenCategory;
   fungible_amount?: bigint;
@@ -91,22 +91,14 @@ export default function TokenManagerService(walletHash: string) {
         ...resolvedTransactions[i],
       }))
       .sort((a, b) => {
-        if (a.time > b.time) {
-          return -1;
-        }
-
-        if (b.time <= a.time) {
-          return 1;
-        }
-
-        return 0;
+        return a.time - b.time;
       });
 
     //Log.debug("resolveTokenHistory", category, history);
     return history;
   }
 
-  function generateTokenIdentity(category: string) {
+  function generateTokenIdentity(category: string): IdentitySnapshot {
     const Bcmr = BcmrService();
     const categorySlice = category.slice(0, 6);
 
@@ -177,7 +169,7 @@ export default function TokenManagerService(walletHash: string) {
 
   function registerTokenHistory(
     tx_hash: string,
-    tokens: Array<{ category: string; amount: number; nftAmount: number }>
+    tokens: Array<{ category: string; amount: string; nftAmount: number }>
   ) {
     try {
       tokens.forEach((token) => {

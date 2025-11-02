@@ -16,6 +16,7 @@ import {
   SyncOutlined,
   ExportOutlined,
   LoadingOutlined,
+  ExperimentOutlined,
 } from "@ant-design/icons";
 
 import { selectBchNetwork, selectIsExperimental } from "@/redux/preferences";
@@ -204,21 +205,25 @@ export default function SettingsWalletView() {
       />
       <div className="p-1" key={walletHash}>
         <Card>
-          <div className="text-2xl flex justify-center items-center py-2 text-neutral-700 font-bold">
-            <Editable onConfirm={handleEditConfirm} value={wallet.name} />
+          <div className="text-2xl flex justify-center items-center py-2 text-neutral-700 dark:text-neutral-100 font-bold">
+            <Editable
+              onConfirm={handleEditConfirm}
+              value={wallet.name}
+              confirmOnBlur
+            />
           </div>
           <div className="flex gap-x-2 justify-between">
             <div className="flex-1 flex flex-col justify-around">
               <div>
-                <div className="text-md text-neutral-600 font-semibold">
+                <div className="text-md text-neutral-600 dark:text-neutral-200 font-semibold">
                   {translate(translations.created)}
                 </div>
-                <div className="text-neutral-500 text-sm">
+                <div className="text-neutral-500 dark:text-neutral-100 text-sm">
                   {new Date(wallet.created_at).toLocaleString(locale)}
                 </div>
               </div>
               <div>
-                <div className="text-md text-neutral-600 font-semibold">
+                <div className="text-md text-neutral-600 dark:text-neutral-200 font-semibold">
                   {translate(translations.lastKnownBalance)}
                 </div>
                 <div className="flex gap-x-1 text-sm">
@@ -289,6 +294,17 @@ export default function SettingsWalletView() {
                 WalletConnect
               </Link>
             </Accordion.Child>
+            {isExperimental && (
+              <Accordion.Child icon={null} label="">
+                <Link
+                  className="w-full text-left flex items-center"
+                  to="/apps/cauldron"
+                >
+                  <ExperimentOutlined className="text-xl mr-1" />
+                  Cauldron DEX
+                </Link>
+              </Accordion.Child>
+            )}
             {isExperimental && (
               <Accordion.Child icon={null} label="">
                 <Link className="w-full text-left flex items-center" to="scan">

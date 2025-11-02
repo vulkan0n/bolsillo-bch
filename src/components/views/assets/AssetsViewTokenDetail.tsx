@@ -28,6 +28,7 @@ import Button from "@/atoms/Button";
 import FullColumn from "@/layout/FullColumn";
 
 import { selectActiveWallet } from "@/redux/wallet";
+import { selectIsDarkMode } from "@/redux/preferences";
 
 //import LogService from "@/services/LogService";
 import TokenManagerService from "@/services/TokenManagerService";
@@ -46,6 +47,8 @@ import translations from "./translations";
 export default function AssetsViewTokenDetail() {
   const { tokenId: paramsTokenId } = useParams();
   const { walletHash } = useSelector(selectActiveWallet);
+
+  const isDarkMode = useSelector(selectIsDarkMode);
 
   const navigate = useNavigate();
   const { handleCopyToClipboard, getClipboardContents } = useClipboard();
@@ -138,78 +141,86 @@ export default function AssetsViewTokenDetail() {
   return (
     <FullColumn key={tokenData.category} className="justify-between">
       <div className="p-1">
-        <div className="border rounded border-primary p-1">
-          <div className="flex">
-            <div
-              className="border border-2 rounded-sm overflow-hidden shadow-sm w-fit h-fit"
-              style={{ borderColor: tokenData.color }}
-            >
-              <TokenIcon category={tokenData.category} size={96} />
-            </div>
-            <div className="flex flex-col flex-1 mx-1.5 justify-evenly">
-              <div>
-                <span
-                  className="font-mono text-md font-bold pr-1.5 mr-1.5 border-r border-neutral-400/90"
-                  style={{ color: tokenData.color }}
-                >
-                  {tokenData.token
-                    ? tokenData.token.symbol
-                    : tokenData.category.slice(0, 6)}
-                </span>
-                <span className="font-bold text-lg text-neutral-700">
-                  {tokenData.name}
-                </span>
-              </div>
-
-              <div className="flex items-center text-neutral-600 gap-x-2 text-md">
-                {tokenData.nftCount > 0 && (
-                  <TokenAmount token={tokenData} nft />
-                )}
-                {tokenData.amount > 0 && <TokenAmount token={tokenData} />}
-              </div>
-
-              <div className="flex flex-1 flex-wrap items-end gap-3 text-neutral-500 text-[1.667em]">
-                {tokenData.uris &&
-                  Object.entries(tokenData.uris)
-                    .filter(([k]) => !["icon", "image"].includes(k))
-                    .map(([k, v]) => {
-                      return (
-                        <Link to={v}>{uriIcons[k] || uriIcons.default}</Link>
-                      );
-                    })}
-              </div>
-            </div>
-          </div>
-          <div>
-            {tokenData.description && (
+        <div className="mt-1 border border-primary rounded bg-primary-50 dark:bg-neutral-800 dark:border-primarydark-400">
+          <div className="p-1">
+            <div className="flex">
               <div
-                className="p-1 text-md text-neutral-700 border-t border-dashed border-neutral-300/80 mt-1"
-                onClick={() =>
-                  setShouldShowFullDescription(!shouldShowFullDescription)
-                }
+                className="border border-2 rounded-sm overflow-hidden shadow-sm w-fit h-fit"
+                style={{ borderColor: tokenData.color }}
               >
-                {tokenData.description.length <= 140 ||
-                shouldShowFullDescription ? (
-                  tokenData.description
-                ) : (
-                  <>
-                    <div>{truncateProse(tokenData.description)}</div>
-                    <div className="text-right text-sm cursor-pointer flex justify-end">
-                      <span className="border-b border-dotted border-neutral-400 flex items-center shrink justify-end w-fit">
-                        {translate(translations.seeMore)}
-                        <ArrowRightOutlined className="ml-1" />
-                      </span>
-                    </div>
-                  </>
-                )}
+                <TokenIcon category={tokenData.category} size={96} />
               </div>
-            )}
+              <div className="flex flex-col flex-1 mx-1.5 justify-evenly">
+                <div>
+                  <span
+                    className="font-mono text-md font-bold pr-1.5 mr-1.5 border-r border-neutral-400/90"
+                    style={{ color: tokenData.color }}
+                  >
+                    {tokenData.token
+                      ? tokenData.token.symbol
+                      : tokenData.category.slice(0, 6)}
+                  </span>
+                  <span className="font-bold text-lg text-neutral-700 dark:text-neutral-100">
+                    {tokenData.name}
+                  </span>
+                </div>
+
+                <div className="flex items-center text-neutral-600 gap-x-2 text-md dark:text-neutral-200">
+                  {tokenData.nftCount > 0 && (
+                    <TokenAmount token={tokenData} nft />
+                  )}
+                  {tokenData.amount > 0 && <TokenAmount token={tokenData} />}
+                </div>
+
+                <div className="flex flex-1 flex-wrap items-end gap-3 text-neutral-500 dark:text-neutral-200 text-[1.667em]">
+                  {tokenData.uris &&
+                    Object.entries(tokenData.uris)
+                      .filter(([k]) => !["icon", "image"].includes(k))
+                      .map(([k, v]) => {
+                        return (
+                          <Link to={v}>{uriIcons[k] || uriIcons.default}</Link>
+                        );
+                      })}
+                </div>
+              </div>
+            </div>
+            <div>
+              {tokenData.description && (
+                <div
+                  className="p-1 text-md text-neutral-700 dark:text-neutral-100 border-t border-dashed border-neutral-300/80 mt-1"
+                  onClick={() =>
+                    setShouldShowFullDescription(!shouldShowFullDescription)
+                  }
+                >
+                  {tokenData.description.length <= 140 ||
+                  shouldShowFullDescription ? (
+                    tokenData.description
+                  ) : (
+                    <>
+                      <div>{truncateProse(tokenData.description)}</div>
+                      <div className="text-right text-sm cursor-pointer flex justify-end">
+                        <span className="border-b border-dotted border-neutral-400 flex items-center shrink justify-end w-fit">
+                          {translate(translations.seeMore)}
+                          <ArrowRightOutlined className="ml-1" />
+                        </span>
+                      </div>
+                    </>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
           <div
-            className="mt-1.5 pt-0.5 border-t border-dashed border-neutral-300/80 font-mono text-sm text-neutral-400/70 truncate"
+            className="pt-0.5 px-0.5 border-t border-dashed border-neutral-300/80 font-mono text-xs text-neutral-400/70 dark:text-white/65 truncate"
+            style={{
+              backgroundColor: `${tokenData.color}${isDarkMode ? "80" : "20"}`,
+            }}
             onClick={(e) => {
               e.stopPropagation();
-              handleCopyToClipboard(token.category);
+              handleCopyToClipboard(
+                tokenData.category,
+                translate(translations.copiedTokenId)
+              );
             }}
           >
             {tokenData.category}
@@ -217,7 +228,7 @@ export default function AssetsViewTokenDetail() {
         </div>
 
         {nfts.length > 0 ? (
-          <div className="mt-2 flex flex-wrap gap-1 justify-around">
+          <div className="mt-2 flex flex-wrap gap-1 justify-around dark:text-neutral-100">
             {nfts.map((utxo) => {
               const nftData = tokenData.token.nfts
                 ? tokenData.token.nfts.parse.types[utxo.nft_commitment]
@@ -273,7 +284,7 @@ export default function AssetsViewTokenDetail() {
             })}
           </div>
         ) : (
-          <div className="border rounded-sm border-neutral-300 shadow-inner mt-2">
+          <div className="border rounded-sm border-neutral-300 shadow-inner dark:text-neutral-100 mt-2">
             {tokenHistory.map(
               (h, i) =>
                 i < 50 && (
@@ -316,7 +327,7 @@ export default function AssetsViewTokenDetail() {
 
       {tokenData.amount > 0 && (
         <div className="sticky bottom-0 bg-black/80 w-full border-t-2 border-neutral-700 rounded-t shadow mt-1">
-          <div className="text-neutral-700 rounded-t bg-white/85 shadow-lg">
+          <div className="text-neutral-700 rounded-t bg-white/85 dark:bg-neutral-800 shadow-lg">
             <div className="flex items-center p-2 mb-1">
               <Button
                 icon={SendOutlined}

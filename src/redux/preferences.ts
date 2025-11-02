@@ -6,12 +6,19 @@ import {
 } from "@reduxjs/toolkit";
 
 import { RootState } from "@/redux";
+import { selectIsSystemDarkMode } from "@/redux/device";
 import { ValidBchNetwork } from "@/util/electrum_servers";
 import { languageList } from "@/util/translations";
 import { DEFAULT_CURRENCY, currencyList } from "@/util/currency";
 import { VALID_DENOMINATIONS } from "@/util/sats";
 import CurrencyService from "@/services/CurrencyService";
 import { AuthActions } from "@/services/SecurityService";
+
+export enum ThemeMode {
+  System = "system",
+  Light = "light",
+  Dark = "dark",
+}
 
 const defaultPreferences = {
   // global / wallet
@@ -33,6 +40,7 @@ const defaultPreferences = {
   localCurrency: DEFAULT_CURRENCY.currency,
   preferLocalCurrency: "true",
   denomination: "bch",
+  stablecoinMode: "false", // TODO: move to wallet db
   // --------
   // Payment (move to wallet db?)
   allowInstantPay: "false",
@@ -46,10 +54,13 @@ const defaultPreferences = {
   // --------
   // UI
   displayExploreTab: "true",
-  displayExchangeRate: "false",
+  displayExchangeRate: "true",
   displaySyncCounter: "true",
   lastAssetsPath: "/assets/tokens",
   shouldConstrainViewport: "true",
+  showMemoCard: "false",
+  showOutputsCard: "true",
+  themeMode: ThemeMode.System,
   // --------
   // Network
   // TODO #420: electrum peer db
@@ -124,6 +135,9 @@ function validatePreferences(preferences: ValidPreferences): boolean {
     "offlineMode",
     "useTokenAddress",
     "autoResolveBcmr",
+    "showMemoCard",
+    "showOutputsCard",
+    "stablecoinMode",
   ];
 
   const invalidBools = boolKeys.filter(
@@ -276,6 +290,7 @@ export const selectCurrencySettings = createSelector(
     localCurrency: preferences.localCurrency,
     denomination: preferences.denomination,
     shouldPreferLocalCurrency: preferences.preferLocalCurrency === "true",
+    isStablecoinMode: preferences.stablecoinMode === "true",
   })
 );
 
@@ -338,6 +353,7 @@ export const selectUiSettings = createSelector(
     shouldDisplayExploreTab: preferences.displayExploreTab === "true",
     shouldDisplaySyncCounter: preferences.displaySyncCounter === "true",
     shouldConstrainViewport: preferences.shouldConstrainViewport === "true",
+    themeMode: preferences.themeMode as ThemeMode,
   })
 );
 
@@ -349,6 +365,13 @@ export const selectShouldDisplayExchangeRate = createSelector(
 export const selectShouldDisplaySyncCounter = createSelector(
   (state) => state.preferences,
   (preferences) => preferences.displaySyncCounter === "true"
+);
+
+export const selectIsDarkMode = createSelector(
+  (state) => state.preferences,
+  (preferences) =>
+    preferences.themeMode === "dark" ||
+    (preferences.themeMode === ThemeMode.System && selectIsSystemDarkMode())
 );
 
 export const selectPrivacySettings = createSelector(
@@ -397,4 +420,19 @@ export const selectShouldConstrainViewport = createSelector(
   ({ preferences, device }) =>
     device.deviceInfo.platform === "web" &&
     preferences.shouldConstrainViewport === "true"
+);
+
+export const selectShouldShowOutputsCard = createSelector(
+  (state: RootState) => state.preferences,
+  (preferences) => preferences.showOutputsCard === "true"
+);
+
+export const selectShouldShowMemoCard = createSelector(
+  (state: RootState) => state.preferences,
+  (preferences) => preferences.showMemoCard === "true"
+);
+
+export const selectIsStablecoinMode = createSelector(
+  (state: RootState) => state.preferences,
+  (preferences) => preferences.stablecoinMode === "true"
 );

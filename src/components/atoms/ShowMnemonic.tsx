@@ -90,9 +90,15 @@ export default function ShowMnemonic({ walletHash }: { walletHash: string }) {
   const wallet = WalletManager.getWalletMeta(walletHash);
 
   const isKeyViewed = wallet.key_viewed_at !== null;
+  const hasWalletBalance = wallet.balance > 0;
+
+  const walletBalanceClasses = hasWalletBalance
+    ? "border-4 border-error bg-warn"
+    : "border-4 border-warn bg-warn/90";
+
   const keyNotViewedClasses = isKeyViewed
-    ? "bg-neutral-700"
-    : "border border-4 rounded-lg border-primary bg-primary";
+    ? "border-2 border-primary-700 bg-neutral-600"
+    : walletBalanceClasses;
 
   const handleLongPress = async () => {
     if (shouldShowRecoveryPhrase === false && isKeyViewed === false) return;
@@ -108,16 +114,16 @@ export default function ShowMnemonic({ walletHash }: { walletHash: string }) {
   return (
     <button
       type="button"
-      className={`w-full flex-col rounded-lg flex items-center justify-center my-2 px-2 py-4 cursor-pointer ${keyNotViewedClasses}`}
+      className={`w-full flex-col rounded-lg flex items-center justify-center my-2 px-2 py-4 cursor-pointer border rounded-lg ${keyNotViewedClasses}`}
       // eslint-disable-next-line
       {...longPressEvents}
     >
       {shouldShowRecoveryPhrase ? (
         <div className="flex flex-col justify-between items-center">
           <div className="text-center text-error text-xl font-bold">
-            <WarningFilled className="mr-2 text-warning" />
+            <WarningFilled className="mr-2 text-warn" />
             {translate(translations.keepSecret)}
-            <WarningFilled className="ml-2 text-warning" />
+            <WarningFilled className="ml-2 text-warn" />
           </div>
           <div className="text-center text-neutral-50 text-xl py-4 select-all grid gap-md grid-cols-3 gap-2 font-mono">
             {splitMnemonic.map((w, idx) => (
@@ -131,20 +137,26 @@ export default function ShowMnemonic({ walletHash }: { walletHash: string }) {
             ))}
           </div>
           <div className="text-center text-error text-xl font-bold">
-            <WarningFilled className="mr-2 text-warning" />
+            <WarningFilled className="mr-2 text-warn" />
             {translate(translations.dontStoreDigitally)}
-            <WarningFilled className="ml-2 text-warning" />
+            <WarningFilled className="ml-2 text-warn" />
           </div>
         </div>
       ) : (
         <>
           <EyeInvisibleOutlined className="text-8xl text-neutral-50" />
-          <div className="text-center text-neutral-50 text-xl">
+          <div className="text-center text-neutral-25 text-xl font-bold">
             {translate(translations.viewRecoveryPhrase)}
           </div>
-          <div className="text-center text-neutral-200 text-lg opacity-90">
-            ({translate(translations.secretAndSecure)})
-          </div>
+          {isKeyViewed ? (
+            <div className="text-center text-neutral-200 font-mono tracking-tight">
+              ({translate(translations.longPressToCopy)})
+            </div>
+          ) : (
+            <div className="text-center text-neutral-50 text-lg font-semibold">
+              ({translate(translations.secretAndSecure)})
+            </div>
+          )}
         </>
       )}
     </button>

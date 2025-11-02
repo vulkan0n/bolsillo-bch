@@ -27,7 +27,7 @@ export default function Address({
   const SUFFIX_LENGTH = 6;
 
   const convertedAddress = useMemo(
-    () => convertCashAddress(address, format),
+    () => convertCashAddress(address, format) || "",
     [address, format]
   );
 
@@ -63,7 +63,7 @@ export default function Address({
 
   const myAddressStyle =
     color === "" && isMyAddress && myAddress.change === 0
-      ? "text-primary-900"
+      ? "text-primary-900 dark:text-primarydark-900"
       : "";
 
   const myChangeStyle =

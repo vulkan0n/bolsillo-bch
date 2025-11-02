@@ -2,12 +2,14 @@ export type ValidBchNetwork = "mainnet" | "chipnet" | "testnet3" | "testnet4";
 
 export const DEFAULT_ELECTRUM_PORT = 50004;
 
+export const cauldron_servers: Array<string> = ["rostrum.cauldron.quest:50004"];
+
 const mainnet_servers: Array<string> = [
   "cashnode.bch.ninja:50004", // Kallisti / Selene Official
-  "fulcrum.jettscythe.xyz:50004", // Jett
+  //"fulcrum.jettscythe.xyz:50004", // Jett
   "bch.imaginary.cash:50004", // im_uname
   "bitcoincash.network:50004", // Dagur
-  "electroncash.dk:50004", // Georg
+  //"electroncash.dk:50004", // Georg
   "blackie.c3-soft.com:50004", // Calin
   "bch.loping.net:50004",
   "bch.soul-dev.com:50004",
@@ -17,7 +19,7 @@ const mainnet_servers: Array<string> = [
 
 const chipnet_servers: Array<string> = [
   "chipnet.bch.ninja:50004", // Kallisti
-  //"chipnet.imaginary.cash:50004", // im_uname
+  "chipnet.imaginary.cash:50004", // im_uname
   "chipnet.c3-soft.com:64004", // Calin
   //"electroncash.de:55004", // Georg
   //"cbch.loping.net:62104",
@@ -38,6 +40,7 @@ export const electrum_servers = {
   chipnet: chipnet_servers,
   testnet3: testnet3_servers,
   testnet4: testnet4_servers,
+  cauldron: cauldron_servers,
 };
 
 export class ElectrumServer {

@@ -6,9 +6,9 @@ import { selectActiveWalletHash, selectGenesisHeight } from "@/redux/wallet";
 import { selectScannerIsScanning } from "@/redux/device";
 import { selectIsConnected } from "@/redux/sync";
 import ElectrumService from "@/services/ElectrumService";
-import WalletViewBalance from "./WalletViewBalance";
-import SyncIndicator from "./SyncIndicator";
-import BalanceHideButton from "./BalanceHideButton";
+import WalletViewBalance from "@/views/wallet/home/WalletViewBalance";
+import SyncIndicator from "@/views/wallet/home/SyncIndicator";
+import BalanceHideButton from "@/views/wallet/home/BalanceHideButton";
 import FullColumn from "@/layout/FullColumn";
 
 export default function WalletView() {
@@ -19,6 +19,7 @@ export default function WalletView() {
   const navigate = useNavigate();
 
   useEffect(
+    // force wallet rebuild if genesis_height === null
     function initialWalletBuild() {
       if (
         genesis_height === null &&
@@ -39,7 +40,7 @@ export default function WalletView() {
   ) : (
     <FullColumn>
       {!isScanning && (
-        <div className="flex bg-neutral-900 justify-between">
+        <div className="flex bg-neutral-900 dark:bg-black justify-between">
           <div className="flex flex-col justify-center px-5">
             <BalanceHideButton className="text-xl" />
           </div>

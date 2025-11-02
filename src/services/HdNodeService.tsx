@@ -57,6 +57,7 @@ export default function HdNodeService(walletStub: WalletStub) {
     signInputs,
     signMessage,
     signTemplate,
+    getAddressPrivateKey: _deriveAddressPrivateKey,
   };
 
   // raw address generation function

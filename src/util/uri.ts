@@ -13,7 +13,7 @@ import { Haptic } from "@/util/haptic";
 import WalletManagerService from "@/services/WalletManagerService";
 
 // validateBchUri: validates all possible BCH URI formats
-export function validateBchUri(uri) {
+export function validateBchUri(uri: string) {
   const {
     isBip21,
     isCashAddress,
@@ -56,10 +56,13 @@ export function validateBchUri(uri) {
 }
 
 // validateBip21Uri: cashaddr, base58 addresses, and bip21 invoices (?amount=)
-export function validateBip21Uri(uri) {
-  const address = uri.split("?")[0];
-  const amountMatch = uri.match(/amount=([0-9]*\.?[0-9]{0,8})/);
-  const amount = amountMatch === null ? "0" : amountMatch[1];
+export function validateBip21Uri(uri: string) {
+  const uriSplit = uri.split("?");
+  const address = uriSplit[0];
+
+  const queryString = uriSplit[1] || "";
+  const searchParams = new URLSearchParams(queryString);
+  const amount = searchParams.get("amount") || "0";
 
   // various providers do stupid things with cashaddr that we must handle.
   // in the wild we've seen:
@@ -101,14 +104,18 @@ export function validateBip21Uri(uri) {
   };
 }
 
-// validatePaymentProtocolUri: BIP70/JSON Payment Protocol (https://)
-function validatePaymentProtocolUri(uri) {
-  // TODO: a better way that filters non-invoice URLs?
-  const requestMatch = uri.match(/(?:r=)?(https:\/\/[^?]*)(?:\?.+)?$/);
-  const requestUri = requestMatch !== null ? requestMatch[1] : null;
-  const isPaymentProtocol = requestUri !== null;
+// validatePaymentProtocolUri: BIP70/JSON Payment Protocol (bitcoincash:?r=https://)
+function validatePaymentProtocolUri(uri: string) {
+  if (!uri.startsWith("bitcoincash:?r=")) {
+    return { isPaymentProtocol: false };
+  }
 
-  return { isPaymentProtocol, requestUri };
+  const requestUri = uri.split("bitcoincash:?r=")[1];
+  const decodedUri = decodeURI(requestUri);
+
+  const isPaymentProtocol = decodedUri !== null;
+
+  return { isPaymentProtocol, requestUri: decodedUri };
 }
 
 // validateWifUri: Wallet Sweep (CashStamps) (bitcoincash: or bch-wif:)
@@ -181,7 +188,8 @@ export function validateWifUri(
   };
 }
 
-export function validateWalletConnectUri(uri) {
+// validateWalletConnectUri: Wallet Connect (wc:)
+export function validateWalletConnectUri(uri: string) {
   const parsedUri = URL.parse(uri);
   if (parsedUri === null) {
     return {
@@ -203,12 +211,14 @@ export function validateWalletConnectUri(uri) {
   };
 }
 
+// navigateOnValidUri: maps URI handlers to app routes
 export const navigateOnValidUri = async (
-  input
-): Promise<{ navTo: string; navState: object }> => {
+  input: string
+): Promise<{ navTo: string; navState: object; isTokenAddress: boolean }> => {
   // go to send screen when valid address is entered
   const {
     isValid,
+    isTokenAddress,
     isWalletConnect,
     isPaymentProtocol,
     isWif,
@@ -239,5 +249,5 @@ export const navigateOnValidUri = async (
     await Haptic.error();
   }
 
-  return { navTo, navState };
+  return { navTo, navState, isTokenAddress };
 };

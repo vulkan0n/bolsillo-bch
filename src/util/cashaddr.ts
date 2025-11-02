@@ -5,6 +5,8 @@ import {
   encodeBase58Address,
   CashAddressType,
   assertSuccess,
+  cashAddressToLockingBytecode,
+  base58AddressToLockingBytecode,
 } from "@bitauth/libauth";
 import { validateBip21Uri } from "@/util/uri";
 
@@ -52,4 +54,18 @@ export function convertCashAddress(
 
   const { address: encoded } = encodeAddress();
   return encoded;
+}
+
+// addressToLockingBytecode: convert any address format to locking bytecode
+export function addressToLockingBytecode(addr: string): Uint8Array {
+  const { isBase58Address, address } = validateBip21Uri(addr);
+  const lockingBytecode = isBase58Address
+    ? base58AddressToLockingBytecode(address)
+    : cashAddressToLockingBytecode(address);
+
+  if (typeof lockingBytecode === "string") {
+    throw new Error(lockingBytecode);
+  }
+
+  return lockingBytecode.bytecode;
 }

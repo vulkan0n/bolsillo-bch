@@ -63,18 +63,18 @@ export default function Button({
   submit = false,
   label = "",
   labelSize = "sm",
-  labelColor = "text-neutral-600",
-  activeLabelColor = "text-white",
+  labelColor = "text-neutral-600 dark:text-neutral-50/85",
+  activeLabelColor = "text-white dark:active:text-black",
   icon = NullComponent,
   iconSize = "2xl",
   iconClasses = "",
   outerLabel = "",
   outerLabelSize = "sm",
-  outerLabelColor = "text-neutral-700",
-  borderClasses = "border border-2 border-primary",
+  outerLabelColor = "text-neutral-700 dark:text-neutral-100",
+  borderClasses = "border border-2 border-primary dark:border-primarydark-400",
   rounded = "full",
-  bgColor = "bg-white",
-  activeBgColor = "bg-primary",
+  bgColor = "bg-white dark:bg-neutral-1000",
+  activeBgColor = "bg-primary dark:active:bg-primarydark",
   shadow = "md",
   padding = "3",
   justify = "center",
@@ -119,12 +119,12 @@ export default function Button({
           flex items-center justify-${justify}
           p-${padding} mx-auto
           ${fullWidth ? " w-full " : ""}
-          ${borderClasses} 
+          ${borderClasses}
           ${colorClasses}
           text-${labelSize}
           ${roundedClass}
           ${shadowClass}
-          opacity-90 
+          opacity-90
           active:shadow-none active:shadow-inner
           ${disabledClasses}
         `}

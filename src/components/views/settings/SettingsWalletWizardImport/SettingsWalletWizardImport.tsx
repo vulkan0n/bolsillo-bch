@@ -15,6 +15,8 @@ import translations from "./translations";
 
 import { DEFAULT_DERIVATION_PATH, DERIVATION_PATHS } from "@/util/derivation";
 
+import Select from "@/components/atoms/Select";
+
 const wordlist = bip39.wordlists.english;
 
 const Log = LogService("WizardImport");
@@ -31,7 +33,7 @@ function AutoSuggestions({
   onClickWord,
 }: AutoSuggestionsProps) {
   const wrapperClassname =
-    "min-h-8 text-center flex items-center justify-center gap-2 text-neutral-400";
+    "min-h-8 text-center flex items-center justify-center gap-2 text-neutral-400 dark:text-neutral-300";
   if (mnemonicInput === "" || mnemonicInput.endsWith(" ")) {
     return (
       <div className={wrapperClassname}>
@@ -174,12 +176,12 @@ export default function SettingsWalletWizardImport() {
 
   return (
     <>
-      <div className="text-2xl text-center text-neutral-900">
+      <div className="text-2xl text-center text-neutral-900 dark:text-neutral-100">
         {translate(translations.enterRecoveryPhrase)}
       </div>
       <div className="flex justify-center">
         {message === "" ? (
-          <ul className="list-disc list-inside p-2 text-left text-neutral-700">
+          <ul className="list-disc list-inside p-2 text-left text-neutral-700 dark:text-neutral-200">
             <li>{translate(translations.alsoKnownAs)}</li>
             <li>{translate(translations.exactly12Or24)}</li>
           </ul>
@@ -196,7 +198,7 @@ export default function SettingsWalletWizardImport() {
       <div className="rounded-md border-4 border-primary relative">
         <textarea
           ref={textareaRef}
-          className="w-full text-mono h-36 max-h-36 resize-none"
+          className="w-full text-mono h-36 max-h-36 resize-none bg-white dark:bg-neutral-700 text-primary dark:text-neutral-25"
           onChange={handleMnemonicInput}
           value={mnemonicInput}
           autoComplete="off"
@@ -204,10 +206,10 @@ export default function SettingsWalletWizardImport() {
       </div>
       <div className="my-1">
         <label>
-          <span className="font-bold">Wallet Name</span>
+          <span className="font-bold dark:text-neutral-100">Wallet Name</span>
           <input
             type="text"
-            className="w-full border border-primary border-2 rounded-sm p-1"
+            className="w-full border-primary border-2 rounded-sm p-1 bg-white dark:bg-neutral-700 text-primary dark:text-neutral-25"
             onChange={handleWalletNameInput}
             value={walletNameInput}
           />
@@ -218,19 +220,19 @@ export default function SettingsWalletWizardImport() {
           <Accordion.Child icon={() => null} label="Passphrase">
             <input
               type="text"
-              className="w-full border border-primary"
+              className="w-full border border-primary bg-white dark:bg-neutral-700 text-primary dark:text-neutral-25"
               onChange={handlePassphraseInput}
               value={passphraseInput}
               autoComplete="off"
             />
           </Accordion.Child>
           <Accordion.Child icon={() => null} label="Derivation Path">
-            <select onChange={handleDerivationSelect} value={derivationPath}>
+            <Select onChange={handleDerivationSelect} value={derivationPath}>
               <option value="auto">Auto</option>
               {DERIVATION_PATHS.map((path) => (
                 <option value={path}>{path}</option>
               ))}
-            </select>
+            </Select>
           </Accordion.Child>
         </Accordion>
       </div>

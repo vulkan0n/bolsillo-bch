@@ -1,13 +1,12 @@
 import { Filesystem, Directory } from "@capacitor/filesystem";
-import { Decimal } from "decimal.js";
 import {
   decodeTransaction,
   lockingBytecodeToCashAddress,
   TransactionCommon,
   assertSuccess,
   disassembleBytecodeBCH,
-  Output,
-  Input,
+  Output as LibauthOutput,
+  Input as LibauthInput,
 } from "@bitauth/libauth";
 
 import LogService from "@/services/LogService";
@@ -16,6 +15,7 @@ import ElectrumService from "@/services/ElectrumService";
 import WalletManagerService from "@/services/WalletManagerService";
 
 import { hexToBin, binToHex } from "@/util/hex";
+import { ValidBchNetwork } from "@/util/electrum_servers";
 
 const Log = LogService("TransactionManager");
 
@@ -35,7 +35,7 @@ export interface TransactionEntity extends TransactionStub {
   vout: Array<TransactionOutput>;
 }
 
-export interface TransactionInput extends Input {
+export interface TransactionInput extends LibauthInput {
   txid: string;
   vout: number;
 }
@@ -46,10 +46,9 @@ export interface VoutScriptPubKey {
   asm: string;
 }
 
-export interface TransactionOutput extends Output {
+export interface TransactionOutput extends LibauthOutput {
   n: number;
   scriptPubKey: VoutScriptPubKey;
-  value: string;
 }
 
 export class TransactionNotExistsError extends Error {
@@ -71,6 +70,7 @@ export default function TransactionManagerService() {
     deleteTransaction,
     purgeTransactions,
     setBlockPos,
+    setBlockPosBulk,
   };
 
   // --------------------------------
@@ -134,11 +134,20 @@ export default function TransactionManagerService() {
   }
 
   async function sendTransaction(
-    tx: TransactionStub
+    tx: TransactionStub,
+    network: ValidBchNetwork = "mainnet"
   ): Promise<{ isSuccess: boolean; result: string | null }> {
     const { txid: tx_hash, hex: tx_hex } = tx;
 
-    const Electrum = ElectrumService();
+    const Electrum = ElectrumService(network);
+    if (!Electrum.getIsConnected()) {
+      try {
+        await Electrum.connect();
+      } catch (e) {
+        throw new Error("Connection Timeout");
+      }
+    }
+
     const result = await Electrum.broadcastTransaction(tx_hex);
     const isSuccess = result === tx_hash;
 
@@ -360,8 +369,6 @@ export default function TransactionManagerService() {
     decodedTx: TransactionCommon
   ): Array<TransactionOutput> {
     return decodedTx.outputs.map((output, n) => {
-      const value = new Decimal(output.valueSatoshis.toString());
-
       const cashAddr = lockingBytecodeToCashAddress({
         prefix: WalletManager.getPrefix(),
         bytecode: output.lockingBytecode,
@@ -370,15 +377,14 @@ export default function TransactionManagerService() {
 
       const vout = {
         n,
+        lockingBytecode: output.lockingBytecode,
         scriptPubKey: {
           addresses: [typeof cashAddr !== "string" ? cashAddr.address : ""],
           hex: binToHex(output.lockingBytecode),
           asm: disassembleBytecodeBCH(output.lockingBytecode),
         },
-        value: value.toString(),
         token: output.token,
         valueSatoshis: output.valueSatoshis,
-        lockingBytecode: output.lockingBytecode,
       };
 
       return vout;
@@ -390,5 +396,25 @@ export default function TransactionManagerService() {
       blockPos,
       tx_hash,
     ]);
+  }
+
+  function setBlockPosBulk(transactions) {
+    try {
+      //Log.debug("setBlockPosBulk", transactions);
+      const query = [
+        "BEGIN TRANSACTION;",
+        ...transactions.map((t) =>
+          t.block_pos !== null
+            ? `UPDATE transactions SET block_pos=${t.block_pos} WHERE txid="${t.tx_hash}";`
+            : ""
+        ),
+        "COMMIT;",
+      ].join("");
+      APP_DB.run(query);
+      //Log.debug("setBlockPosBulk done");
+    } catch (e) {
+      Log.error(e);
+      throw e;
+    }
   }
 }

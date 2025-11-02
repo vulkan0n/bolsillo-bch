@@ -13,6 +13,7 @@ import {
   selectBchNetwork,
 } from "@/redux/preferences";
 import Accordion from "@/atoms/Accordion";
+import Select from "@/atoms/Select";
 import { translate } from "@/util/translations";
 import translations from "./translations";
 
@@ -46,12 +47,12 @@ export default function DebugSettings() {
         icon={ExperimentOutlined}
         label={translate(translations.bchNetwork)}
       >
-        <select onChange={handleSelectBchNetwork} value={bchNetwork}>
+        <Select onChange={handleSelectBchNetwork} value={bchNetwork}>
           <option value="mainnet">Mainnet</option>
           <option value="chipnet">Chipnet</option>
           <option value="testnet3">Testnet3</option>
           <option value="testnet4">Testnet4</option>
-        </select>
+        </Select>
       </Accordion.Child>
       <Accordion.Child
         icon={ForkOutlined}

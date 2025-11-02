@@ -49,10 +49,12 @@ export const wcSessionProposal = createAsyncThunk(
     const proposal = payload;
     Log.debug("session_proposal", proposal);
 
-    const { requiredNamespaces } = proposal.params;
+    const { requiredNamespaces, optionalNamespaces } = proposal.params;
+
     if (
-      !requiredNamespaces.bch ||
-      !Array.isArray(requiredNamespaces.bch.chains)
+      (!requiredNamespaces.bch ||
+        !Array.isArray(requiredNamespaces.bch.chains)) &&
+      (!optionalNamespaces.bch || !Array.isArray(optionalNamespaces.bch.chains))
     ) {
       Log.error("Unsupported blockchain", requiredNamespaces);
       throw new Error("Unsupported Blockchain");
@@ -61,7 +63,8 @@ export const wcSessionProposal = createAsyncThunk(
     const wallet = selectActiveWallet(thunkApi.getState());
 
     const proposalNetworkPrefix =
-      requiredNamespaces.bch.chains[0].split(":")[1];
+      requiredNamespaces?.bch?.chains?.[0]?.split(":")[1] ??
+      optionalNamespaces.bch.chains[0].split(":")[1];
 
     const targetNetwork =
       proposalNetworkPrefix === "bitcoincash" ? "mainnet" : "chipnet";
@@ -104,6 +107,7 @@ export const wcSessionRequest = createAsyncThunk(
           formatJsonRpcResult(id, sessionAddress)
         );
         break;
+
       case "bch_signTransaction":
         {
           const { transaction: unsignedTransaction, sourceOutputs } =
@@ -162,13 +166,25 @@ export const wcSessionRequest = createAsyncThunk(
           }
 
           const response = formatJsonRpcResult(id, result);
-          await WalletConnect.sessionResponse(topic, {
-            response,
-          });
+          await WalletConnect.sessionResponse(topic, response);
 
           Log.debug("sessionResponse success", response);
         }
         break;
+
+      case "bch_signMessage":
+        {
+          const { message } = destringify(JSON.stringify(methodParams));
+
+          const Hd = HdNodeService(wallet);
+          const signedMessage = Hd.signMessage(message, sessionAddress);
+          await WalletConnect.sessionResponse(
+            topic,
+            formatJsonRpcResult(id, signedMessage)
+          );
+        }
+        break;
+
       default:
         await WalletConnect.sessionResponse(topic, {
           response: formatJsonRpcError(id, `Unsupported method ${method}`),
@@ -184,9 +200,9 @@ export const wcSessionApprove = createAsyncThunk(
     const WalletConnect = WalletConnectService();
     const wallet = selectActiveWallet(thunkApi.getState());
 
-    // TODO: make walletconnect address configurable
     const AddressManager = AddressManagerService(wallet.walletHash);
-    const { address: sessionAddress } = AddressManager.getAddressRange(0, 0)[0];
+    const { address: sessionAddress } =
+      AddressManager.getWalletConnectAddress();
     Log.debug("wcSessionApprove", payload, sessionAddress);
     await WalletConnect.approveSession(payload, sessionAddress);
 
@@ -210,9 +226,8 @@ export const wcSessionDelete = createAsyncThunk(
   "walletConnect/sessionDelete",
   async (payload) => {
     Log.debug("wcSessionDelete", payload);
-    const { topic } = payload;
     const WalletConnect = WalletConnectService();
-    await WalletConnect.deleteSession(topic);
+    await WalletConnect.deleteSession(payload);
 
     const sessions = await WalletConnect.getSessions();
     return sessions;

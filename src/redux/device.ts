@@ -78,6 +78,14 @@ export const selectNetworkStatus = createSelector(
   })
 );
 
+export const selectIsSystemDarkMode = () => {
+  const isSystemDarkMode = window.matchMedia(
+    "(prefers-color-scheme: dark)"
+  ).matches;
+
+  return isSystemDarkMode;
+};
+
 async function initializeDevice(): Promise<DeviceState> {
   Log.log("* Initializing Device *");
   Log.time("initDevice");

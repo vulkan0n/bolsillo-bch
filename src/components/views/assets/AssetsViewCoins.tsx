@@ -1,12 +1,10 @@
 import { useState } from "react";
-import { useSelector } from "react-redux";
-import { useNavigate } from "react-router";
+import { useNavigate, useOutletContext } from "react-router";
 import {
   MoneyCollectOutlined,
   SendOutlined,
   CloseOutlined,
 } from "@ant-design/icons";
-import { selectActiveWallet } from "@/redux/wallet";
 import FullColumn from "@/layout/FullColumn";
 import Address from "@/atoms/Address";
 import Satoshi from "@/atoms/Satoshi";
@@ -25,7 +23,7 @@ import translations from "./translations";
 //const Log = LogService("AssetsViewCoins");
 
 export default function AssetsViewCoins() {
-  const wallet = useSelector(selectActiveWallet);
+  const wallet = useOutletContext();
   const navigate = useNavigate();
 
   const UtxoManager = UtxoManagerService(wallet.walletHash);
@@ -103,7 +101,7 @@ export default function AssetsViewCoins() {
     <FullColumn className="justify-between">
       <div className="m-1">
         <div
-          className="p-1 rounded bg-neutral-800 text-white text-center my-1"
+          className="p-1 rounded bg-neutral-800 text-white text-center mt-1 mb-2"
           onClick={handleFlipCurrency}
         >
           <div className="text-lg font-bold">
@@ -129,7 +127,7 @@ export default function AssetsViewCoins() {
         ))}
 
         {coinAddresses.length === 0 && (
-          <div className="text-center py-4 rounded text-2xl text-neutral-700/90">
+          <div className="text-center py-4 rounded text-2xl text-neutral-700/90 dark:text-neutral-200">
             {translate(translations.noCoins)}
             <div className="flex items-center justify-center mt-2">
               <SeleneLogo className="h-32" />
@@ -153,8 +151,8 @@ function CoinGroup({ address, coins, onCoinSelect }) {
   const isSelected = coins.every((coin) => coin.selected);
 
   const selectCss = isSelected
-    ? "bg-primary-500 border-2 border-primary-700 text-neutral-700"
-    : "bg-primary-300 text-neutral-600 border border-neutral-500";
+    ? "bg-primary-500 border-2 border-primary-700 text-neutral-700 dark:bg-primarydark-400 dark:border-primarydark-300"
+    : "bg-primary-300 text-neutral-600 border border-neutral-500 dark:bg-primarydark-200 dark:text-neutral-50 dark:border-neutral-700";
 
   const handleGroupSelection = () => {
     coins.forEach((coin) => onCoinSelect(coin.key, !isSelected));
@@ -176,8 +174,8 @@ function CoinGroup({ address, coins, onCoinSelect }) {
 
 function Coin({ coin, onSelect }) {
   const selectCss = coin.selected
-    ? "bg-primary-200 text-neutral-700 border border-primary-500"
-    : "bg-primary-100 text-neutral-700 border border-primary-200";
+    ? "bg-primary-200 text-neutral-700 border border-primary-500 dark:bg-primarydark-200 dark:text-neutral-50 dark:border-primarydark-100"
+    : "bg-primary-100 text-neutral-700 border border-primary-200 dark:bg-neutral-700 dark:border-primarydark-100 dark:text-neutral-100";
 
   const handleSelection = (event) => {
     onSelect(coin.key);
@@ -193,7 +191,7 @@ function Coin({ coin, onSelect }) {
         <MoneyCollectOutlined className="mr-1" />
         <div className="flex items-center justify-between w-full">
           <Satoshi value={coin.amount} />
-          <span className="text-sm opacity-75">
+          <span className="text-sm opacity-80">
             <Satoshi value={coin.amount} flip />
           </span>
         </div>
@@ -214,15 +212,14 @@ function SelectionDisplay({ selection, onConfirm, onCancel }) {
   };
 
   return (
-    <div className="sticky bottom-0 bg-primary-900 w-full border-t-2 border-neutral-900 rounded-t shadow mt-1">
-      <div className="text-neutral-700 rounded-t bg-neutral-100 shadow-lg px-2 py-1">
+    <div className="sticky bottom-0 bg-primary-900 w-full border-t-2 border-neutral-900 dark:border-primarydark-500 rounded-t shadow mt-1">
+      <div className="text-neutral-700 rounded-t bg-neutral-100 dark:bg-neutral-1000 dark:text-neutral-100 shadow-lg px-2 py-1">
         <div className="flex relative justify-between">
           <div className="flex items-center justify-start flex-1">
             <Button
               onClick={handleCancel}
               icon={CloseOutlined}
-              bgColor="bg-neutral-50"
-              activeBgColor="bg-primary-500"
+              activeBgColor="bg-primary-500 dark:active:bg-primarydark-400"
               borderClasses="border border-primary-400"
               shadow
             />

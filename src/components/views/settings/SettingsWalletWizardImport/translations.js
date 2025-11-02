@@ -220,7 +220,7 @@ const translations = {
     pl: "Dokładnie 12 lub dokładnie 24 słowa.",
     pt: "Exatamente 12 ou exatamente 24 palavras de comprimento.",
     ro: "Exact 12 sau exact 24 de cuvinte.",
-    ru: "Точно 12 или точно 24 слова в длину.",
+    ru: "Ровно 12 или ровно 24 слов в длину.",
     sv: "Exakt 12 eller exakt 24 ord lång.",
     sw: "Urefu wa maneno 12 au 24 haswa.",
     ta: "எற்றென்றும் 12 அல்லது எற்றென்றும் 24 வார்த்தைகள் நீளமானவை.",

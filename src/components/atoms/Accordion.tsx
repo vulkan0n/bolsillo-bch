@@ -21,7 +21,7 @@ export default function Accordion({
   const Icon = icon;
 
   return (
-    <div className="bg-neutral-700 rounded-lg p-2 my-1 text-neutral-50">
+    <div className="bg-neutral-700 rounded-lg p-2 my-1 text-neutral-50 dark:bg-neutral-900 dark:border dark:border-neutral-1000">
       <button
         type="button"
         tabIndex={0}
@@ -35,7 +35,7 @@ export default function Accordion({
         {isOpen ? <CaretDownOutlined /> : <CaretRightOutlined />}
       </button>
       {isOpen && (
-        <div className="mt-1 text-neutral-500 rounded-sm bg-primary-50 divide-y divide-neutral-100">
+        <div className="mt-2 text-neutral-500 dark:text-neutral-100 rounded-sm bg-primary-50 dark:bg-neutral-700 divide-y divide-neutral-100 dark:divide-primarydark-100 dark:border-primarydark-200 dark:border">
           {children}
         </div>
       )}

@@ -26,10 +26,14 @@ const replaceYadioRates = async (rates) => {
   const yadioUsdToVesRate = yadioData?.USD?.VES;
 
   const bchToUsdRate = rates.find((r) => r.currency === "USD")?.price;
-  const bchToUsdRateFloat = Number.parseFloat(bchToUsdRate);
 
-  const realBchToArsPrice = (bchToUsdRateFloat * yadioUsdToArsRate).toString();
-  const realBchToVesPrice = (bchToUsdRateFloat * yadioUsdToVesRate).toString();
+  const realBchToArsPrice = new Decimal(bchToUsdRate)
+    .times(new Decimal(yadioUsdToArsRate))
+    .toString();
+
+  const realBchToVesPrice = new Decimal(bchToUsdRate)
+    .times(new Decimal(yadioUsdToVesRate))
+    .toString();
 
   // Swap in the correct ARS rate
   const adjustedRates = rates.map((r) => {
@@ -123,7 +127,7 @@ export default function CurrencyService(
   function satsToFiat(sats) {
     return new Decimal(satsToBch(sats).bch)
       .times(getExchangeRate(fiatCurrency))
-      .toFixed(2)
+      .toFixed(getDecimals(fiatCurrency))
       .toString();
   }
 
@@ -134,6 +138,14 @@ export default function CurrencyService(
     );
 
     return index > -1 ? exchangeRates[index].price : 1;
+  }
+
+  function getDecimals(currency) {
+    const index = currencyList.findIndex(
+      (exchangeRate) => exchangeRate.currency === currency
+    );
+
+    return (index > -1 && currencyList[index].decimals) || 2;
   }
 
   function getSymbol(currency) {
