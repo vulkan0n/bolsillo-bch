@@ -10,7 +10,6 @@ import {
 import { RootState, AppDispatch } from "@/redux";
 import {
   walletSyncDiff,
-  selectActiveWalletHash,
   selectActiveWallet,
   walletReloadAddresses,
 } from "@/redux/wallet";
@@ -125,26 +124,32 @@ export const syncCauldronConnect = createAsyncThunk(
 export const syncReconnect = createAsyncThunk(
   "sync/reconnect",
   async (server: string | undefined, thunkApi) => {
-    const Electrum = ElectrumService();
+    const bchNetwork = selectBchNetwork(thunkApi.getState());
+    const Electrum = ElectrumService(bchNetwork);
     const connectServer = server || Electrum.getElectrumHost();
     Log.debug("reconnect:", connectServer);
     thunkApi.dispatch(syncConnect({ attempts: 0, server: connectServer }));
   }
 );
 
-export const syncDisconnect = createAsyncThunk("sync/disconnect", async () => {
-  const Electrum = ElectrumService();
-  const Cauldron = CauldronService();
+export const syncDisconnect = createAsyncThunk(
+  "sync/disconnect",
+  async (_, thunkApi) => {
+    const bchNetwork = selectBchNetwork(thunkApi.getState());
+    const Electrum = ElectrumService(bchNetwork);
+    const Cauldron = CauldronService();
 
-  Cauldron.disconnect();
-  return Electrum.disconnect(true);
-});
+    Cauldron.disconnect();
+    return Electrum.disconnect(true);
+  }
+);
 
 // syncConnectionUp: fired when electrum connection is up
 export const syncConnectionUp = createAsyncThunk(
   "sync/up",
   async (payload, thunkApi) => {
-    const Electrum = ElectrumService();
+    const bchNetwork = selectBchNetwork(thunkApi.getState());
+    const Electrum = ElectrumService(bchNetwork);
     // set up subscriptions on connect
     try {
       //Log.debug("syncConnectionUp");
@@ -164,7 +169,9 @@ export const syncConnectionDown = createAction("sync/down");
 export const syncSubscriptions = createAsyncThunk(
   "sync/subscriptions",
   async (payload, thunkApi) => {
-    const walletHash = selectActiveWalletHash(thunkApi.getState());
+    const { walletHash, network: bchNetwork } = selectActiveWallet(
+      thunkApi.getState()
+    );
 
     const AddressManager = AddressManagerService(walletHash);
     const UtxoManager = UtxoManagerService(walletHash);
@@ -214,7 +221,7 @@ export const syncSubscriptions = createAsyncThunk(
 
     Log.debug("syncSubscriptions", addresses.length);
 
-    const Electrum = ElectrumService();
+    const Electrum = ElectrumService(bchNetwork);
 
     Promise.all(
       addresses.map(async (address) => {
@@ -337,7 +344,7 @@ export const syncPopulateAddresses = createAsyncThunk(
 
     const generatedAddresses = AddressScanner.populateAddresses();
 
-    const Electrum = ElectrumService();
+    const Electrum = ElectrumService(wallet.network);
     await Promise.all(
       generatedAddresses.map(async (address) => {
         try {
@@ -392,7 +399,7 @@ export const syncHotRefresh = createAsyncThunk(
 
       Log.debug("hotRefresh", addressList.length);
 
-      const Electrum = ElectrumService();
+      const Electrum = ElectrumService(wallet.network);
       await Promise.all(
         addressList.map(async (address) => {
           try {
@@ -462,8 +469,9 @@ export const syncHotRefresh = createAsyncThunk(
 
 export const syncChaintip = createAsyncThunk(
   "sync/chaintip",
-  async (chaintip: { height: number; hex: string }) => {
-    const Blockchain = BlockchainService();
+  async (chaintip: { height: number; hex: string }, thunkApi) => {
+    const bchNetwork = selectBchNetwork(thunkApi.getState());
+    const Blockchain = BlockchainService(bchNetwork);
 
     const currentTip = await Blockchain.resolveChaintip();
 

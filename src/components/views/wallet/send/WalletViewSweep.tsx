@@ -5,7 +5,7 @@ import { ArrowLeftOutlined, SyncOutlined } from "@ant-design/icons";
 
 import { selectActiveWalletHash } from "@/redux/wallet";
 import { selectSyncState } from "@/redux/sync";
-import { selectIsOfflineMode } from "@/redux/preferences";
+import { selectIsOfflineMode, selectBchNetwork } from "@/redux/preferences";
 
 import LogService from "@/services/LogService";
 import AddressManagerService from "@/services/AddressManagerService";
@@ -39,6 +39,7 @@ export default function WalletViewSweep() {
   const walletHash = useSelector(selectActiveWalletHash);
   const sync = useSelector(selectSyncState);
   const isOfflineMode = useSelector(selectIsOfflineMode);
+  const bchNetwork = useSelector(selectBchNetwork);
 
   // Reload unused addresses when wallet data changes
   const unusedAddresses =
@@ -81,7 +82,8 @@ export default function WalletViewSweep() {
       }
 
       // Fetch the UTXOs from our Electrum Service.
-      const electrumUtxos = await ElectrumService().requestUtxos(wifAddress);
+      const electrumUtxos =
+        await ElectrumService(bchNetwork).requestUtxos(wifAddress);
 
       // Check if the response is an instance of Error (because Electrum Requests do not "throw" errors, they return them).
       if (utxos instanceof Error) {

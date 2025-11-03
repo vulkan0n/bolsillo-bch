@@ -15,7 +15,6 @@ import ViewHeader from "@/layout/ViewHeader";
 import Button from "@/atoms/Button";
 
 import LogService from "@/services/LogService";
-import ElectrumService from "@/services/ElectrumService";
 import WalletManagerService from "@/services/WalletManagerService";
 import AddressScannerService from "@/services/AddressScannerService";
 import HdNodeService from "@/services/HdNodeService";

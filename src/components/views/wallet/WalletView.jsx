@@ -5,6 +5,7 @@ import { SyncOutlined } from "@ant-design/icons";
 import { selectActiveWalletHash, selectGenesisHeight } from "@/redux/wallet";
 import { selectScannerIsScanning } from "@/redux/device";
 import { selectIsConnected } from "@/redux/sync";
+import { selectBchNetwork } from "@/redux/preferences";
 import ElectrumService from "@/services/ElectrumService";
 import WalletViewBalance from "@/views/wallet/home/WalletViewBalance";
 import SyncIndicator from "@/views/wallet/home/SyncIndicator";
@@ -16,6 +17,7 @@ export default function WalletView() {
   const genesis_height = useSelector(selectGenesisHeight);
   const isScanning = useSelector(selectScannerIsScanning);
   const isConnected = useSelector(selectIsConnected);
+  const bchNetwork = useSelector(selectBchNetwork);
   const navigate = useNavigate();
 
   useEffect(
@@ -23,14 +25,14 @@ export default function WalletView() {
     function initialWalletBuild() {
       if (
         genesis_height === null &&
-        (isConnected || ElectrumService().getIsConnected())
+        (isConnected || ElectrumService(bchNetwork).getIsConnected())
       ) {
         requestAnimationFrame(() =>
           navigate(`/settings/wallet/wizard/import/build/${walletHash}`)
         );
       }
     },
-    [isConnected, genesis_height, walletHash, navigate]
+    [isConnected, genesis_height, walletHash, navigate, bchNetwork]
   );
 
   return walletHash === "" ? (

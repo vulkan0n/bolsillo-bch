@@ -19,7 +19,11 @@ import { AddressEntity } from "@/services/AddressManagerService";
 import BlockchainService from "@/services/BlockchainService";
 
 //import { bchToSats } from "@/util/sats";
-import { electrum_servers, ElectrumServer } from "@/util/electrum_servers";
+import {
+  electrum_servers,
+  ElectrumServer,
+  ValidBchNetwork,
+} from "@/util/electrum_servers";
 
 const Log = LogService("Electrum");
 
@@ -44,7 +48,9 @@ const server_blacklist: Array<string> = [];
 const pendingTxRequests: Array<Promise<object>> = [];
 
 // ElectrumService: brokers interactions with electrum server
-export default function ElectrumService(bchNetwork = "mainnet") {
+export default function ElectrumService(
+  bchNetwork: ValidBchNetwork = "mainnet"
+) {
   let electrum: ElectrumClient<ElectrumClientEvents> | null =
     electrum_handles.get(bchNetwork) || null;
 
@@ -424,7 +430,9 @@ export default function ElectrumService(bchNetwork = "mainnet") {
       throw block;
     }
 
-    const blockhash = BlockchainService().calculateBlockhash(block.hex);
+    const blockhash = BlockchainService(bchNetwork).calculateBlockhash(
+      block.hex
+    );
 
     Log.debug("requestBlock", block, blockhash);
     return { ...block, blockhash };

@@ -43,7 +43,7 @@ export default function NetworkSettings() {
   const bchNetwork = useSelector(selectBchNetwork);
   const isOfflineMode = useSelector(selectIsOfflineMode);
 
-  const Electrum = ElectrumService();
+  const Electrum = ElectrumService(bchNetwork);
   const handleElectrumServerChoice = async (server) => {
     handleSettingsUpdate("electrumServer", server);
     dispatch(syncReconnect(server));

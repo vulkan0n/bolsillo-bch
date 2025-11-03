@@ -23,7 +23,7 @@ const SCAN_BATCH_SIZE = 3000;
 const Log = LogService("AddressScanner");
 
 export default function AddressScannerService(wallet: WalletEntity) {
-  const Electrum = ElectrumService();
+  const Electrum = ElectrumService(wallet.network);
   const WalletManager = WalletManagerService();
   const AddressManager = AddressManagerService(wallet.walletHash);
   const UtxoManager = UtxoManagerService(wallet.walletHash);

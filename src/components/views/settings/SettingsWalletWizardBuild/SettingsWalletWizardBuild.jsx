@@ -43,7 +43,7 @@ export default function SettingsWalletWizardBuild() {
         }
 
         if (isBuilding) {
-          if (ElectrumService().getIsConnected()) {
+          if (ElectrumService(bchNetwork).getIsConnected()) {
             await AddressScannerService(wallet).rebuildWallet((scanCount) =>
               requestAnimationFrame(() =>
                 setAddressesScanned((scanned) => scanned + scanCount)

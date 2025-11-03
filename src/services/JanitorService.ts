@@ -73,7 +73,7 @@ export default function JanitorService() {
       attemptFiles.map((file) => attemptMigration(file))
     );
 
-    // remove stale pre-2024.05  db dir AFTER attempting to recover the legacy databases
+    // remove stale pre-2024.05 db dir AFTER attempting to recover the legacy databases
     try {
       await Filesystem.rmdir({
         path: "/db",
@@ -86,7 +86,7 @@ export default function JanitorService() {
   }
 
   async function recoverWalletFiles() {
-    Log.debug("Searching for wallet files");
+    Log.log("Searching for wallet files");
 
     const { files: fileWallets } = await Filesystem.readdir({
       path: "/selene/wallets",
@@ -97,7 +97,7 @@ export default function JanitorService() {
 
     const metaWallets = WalletManager.listWallets();
 
-    Log.debug(
+    Log.log(
       `Found ${fileWallets.length} wallet files, ${metaWallets.length} in app database`
     );
 
@@ -124,6 +124,8 @@ export default function JanitorService() {
 
   // fsck: FileSystem Consistency Check
   async function fsck() {
+    // ----------------
+    // Check LIBRARY dirs
     try {
       await Filesystem.readdir({
         path: "/selene",
@@ -196,6 +198,8 @@ export default function JanitorService() {
       });
     }
 
+    // ----------------
+    // Check CACHE dirs
     try {
       await Filesystem.readdir({
         path: "/selene",
@@ -250,7 +254,7 @@ export default function JanitorService() {
   async function purgeStaleData() {
     await purgeLegacyTransactionFiles();
     await TransactionManagerService().purgeTransactions();
-    await BlockchainService().purgeBlocks();
+    await BlockchainService().purgeBlocks(); // BlockchainService does not need bchNetwork here
   }
 
   // resetDatabases: hard-resets all wallet databases and app database

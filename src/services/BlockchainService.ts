@@ -7,6 +7,7 @@ import ElectrumService from "@/services/ElectrumService";
 import { hexToBin, binToHex } from "@/util/hex";
 import { sha256 } from "@/util/hash";
 import { block_checkpoints } from "@/util/block_checkpoints";
+import { ValidBchNetwork } from "@/util/electrum_servers";
 
 const Log = LogService("Blockchain");
 
@@ -23,7 +24,9 @@ export interface BlockEntity {
 }
 
 // BlockchainService: brokers interactions with the block data
-export default function BlockchainService() {
+export default function BlockchainService(
+  bchNetwork: ValidBchNetwork = "mainnet"
+) {
   const APP_DB = DatabaseService().getAppDatabase();
 
   return {
@@ -148,7 +151,8 @@ export default function BlockchainService() {
     try {
       block = await getBlockByHash(blockhash);
     } catch {
-      const requestedBlock = await ElectrumService().requestBlock(blockhash);
+      const requestedBlock =
+        await ElectrumService(bchNetwork).requestBlock(blockhash);
       block = await registerBlock(requestedBlock);
     }
     return block;

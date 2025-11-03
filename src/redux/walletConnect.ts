@@ -13,6 +13,7 @@ import { Dialog } from "@capacitor/dialog";
 import { generateTransaction, encodeTransaction } from "@bitauth/libauth";
 
 import { selectActiveWallet } from "@/redux/wallet";
+import { selectBchNetwork } from "@/redux/preferences";
 
 import LogService from "@/services/LogService";
 import WalletConnectService from "@/services/WalletConnectService";
@@ -88,6 +89,8 @@ export const wcSessionRequest = createAsyncThunk(
     const { request } = params;
     const { method, params: methodParams } = request;
 
+    const bchNetwork = selectBchNetwork(thunkApi.getState());
+
     const WalletConnect = WalletConnectService();
 
     const wallet = selectActiveWallet(thunkApi.getState());
@@ -154,7 +157,7 @@ export const wcSessionRequest = createAsyncThunk(
 
           if (methodParams.broadcast) {
             try {
-              const Electrum = ElectrumService();
+              const Electrum = ElectrumService(bchNetwork);
               await Electrum.broadcastTransaction(result.signedTransaction);
             } catch (e) {
               Log.error(e);

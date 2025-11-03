@@ -72,7 +72,7 @@ export const walletBoot = createAsyncThunk(
 
     const server = isMainnet
       ? selectElectrumServer(thunkApi.getState())
-      : ElectrumService().selectFallbackServer("");
+      : ElectrumService(network).selectFallbackServer("");
 
     // connect to Electrum
     thunkApi.dispatch(
