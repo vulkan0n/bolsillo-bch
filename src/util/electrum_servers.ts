@@ -15,6 +15,7 @@ const mainnet_servers: Array<string> = [
   "bch.soul-dev.com:50004",
   "bitcoincash.stackwallet.com:50004", // Rehrar / Stack Wallet official
   "node.minisatoshi.cash:50004", // minisatoshi
+  "fulcrum.criptolayer.net:50004", // molecular
 ];
 
 const chipnet_servers: Array<string> = [
