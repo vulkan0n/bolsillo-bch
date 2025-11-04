@@ -1,7 +1,7 @@
 {
   "name": "selene-wallet",
   "private": true,
-  "version": "2025.11.00",
+  "version": "2025.11.01",
   "type": "module",
   "packageManager": "yarn@1.22.22",
   "scripts": {
