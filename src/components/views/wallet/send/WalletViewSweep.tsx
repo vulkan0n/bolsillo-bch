@@ -105,6 +105,7 @@ export default function WalletViewSweep() {
     wifAddress,
     isOfflineMode,
     navigate,
+    bchNetwork,
   ]);
 
   // Calculate the satoshi balance when our UTXOs change.

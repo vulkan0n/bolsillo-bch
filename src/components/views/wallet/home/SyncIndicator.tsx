@@ -99,7 +99,9 @@ export default function SyncIndicator() {
       className="cursor-pointer w-10 h-10 flex justify-center items-center"
       {...longPressEvents}
     >
-      {isOfflineMode && <DisconnectOutlined className="text-neutral-500 text-2xl text-center"/>}
+      {isOfflineMode && (
+        <DisconnectOutlined className="text-neutral-500 text-2xl text-center" />
+      )}
       {!isConnected && !isOfflineMode && (
         <DisconnectedIcon springs={{ ...disconnectSprings }} />
       )}

@@ -628,7 +628,7 @@ export const syncReducer = createReducer(initialState, (builder) => {
     .addCase(syncReconnect.pending, (state) => {
       state.isConnected = false;
     })
-    .addCase(syncAddressState, (state, action) => {
+    .addCase(syncAddressState, (state) => {
       state.isSyncComplete = false;
     })
     .addCase(txHistoryFetch.pending, (state) => {
