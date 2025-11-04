@@ -12,7 +12,7 @@ import {
   selectElectrumServer,
   selectIsStablecoinMode,
 } from "@/redux/preferences";
-import { syncConnect, syncClearAddresses } from "@/redux/sync";
+import { syncConnect, selectIsRebuilding } from "@/redux/sync";
 
 import { ValidBchNetwork } from "@/util/electrum_servers";
 
@@ -65,7 +65,6 @@ export const walletBoot = createAsyncThunk(
     const AddressScanner = AddressScannerService(wallet);
     AddressScanner.populateAddresses();
 
-    thunkApi.dispatch(syncClearAddresses());
     thunkApi.dispatch(walletReloadAddresses({ wallet }));
 
     const isMainnet = network === "mainnet";
@@ -131,6 +130,10 @@ export const walletReceive = createAsyncThunk(
     const utxoIn = utxoDiff.diffIn.map((utxo) => UtxoManager.getUtxo(utxo));
     const utxoOut = utxoDiff.diffOut.map((utxo) => UtxoManager.getUtxo(utxo));
 
+    if (utxoIn.length === 0) {
+      return;
+    }
+
     let satsDiff = 0n;
     let tokenSats = 0n;
     const tokenDiff = {};
@@ -190,7 +193,9 @@ export const walletReceive = createAsyncThunk(
 
     // need to swap to stablecoin in stablecoin mode
     const isStablecoinMode = selectIsStablecoinMode(thunkApi.getState());
-    if (isStablecoinMode) {
+    const isRebuilding = selectIsRebuilding(thunkApi.getState());
+
+    if (isStablecoinMode && !isRebuilding) {
       const incomingSats = satsDiff - tokenSats;
 
       Log.debug("incomingSats", incomingSats);

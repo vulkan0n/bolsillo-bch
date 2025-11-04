@@ -535,12 +535,13 @@ export const syncComplete = createAsyncThunk(
           })
         );
 
+        thunkApi.dispatch(walletReloadAddresses({ wallet }));
+
         thunkApi.dispatch(syncSetSaving(true));
         await WalletManagerService().saveWallet(wallet.walletHash);
         thunkApi.dispatch(syncSetSaving(false));
 
         thunkApi.dispatch(syncFlushDiff());
-        thunkApi.dispatch(walletReloadAddresses({ wallet }));
       }
       return true;
     }
@@ -590,7 +591,6 @@ interface SyncState {
   isSaving: boolean;
   chaintip: typeof initialChaintip;
   lastRefresh: number;
-  addresses: object;
   subscriptions: Array<AddressEntity>;
 }
 
@@ -603,7 +603,6 @@ const initialState: SyncState = {
   isSaving: false,
   chaintip: initialChaintip,
   lastRefresh: Date.now(),
-  addresses: {},
   subscriptions: [],
 };
 
@@ -631,8 +630,6 @@ export const syncReducer = createReducer(initialState, (builder) => {
     })
     .addCase(syncAddressState, (state, action) => {
       state.isSyncComplete = false;
-      const [address] = action.payload;
-      state.addresses[address] = address;
     })
     .addCase(txHistoryFetch.pending, (state) => {
       state.isSyncComplete = false;
@@ -667,9 +664,6 @@ export const syncReducer = createReducer(initialState, (builder) => {
     })
     .addCase(syncHotRefresh.rejected, (state) => {
       state.syncPending.hotRefresh -= 1;
-    })
-    .addCase(syncClearAddresses, (state) => {
-      state.addresses = initialState.addresses;
     })
     .addCase(syncSubscriptions.pending, (state) => {
       state.isSyncComplete = false;
@@ -728,6 +722,11 @@ export const selectSyncState = createSelector(
     isSyncing: selectIsSyncing({ sync }),
     syncCount: selectSyncCount({ sync }),
   })
+);
+
+export const selectIsRebuilding = createSelector(
+  (state: RootState) => state.sync,
+  (sync) => sync.syncPending.rebuild > 0
 );
 
 export const selectChaintip = createSelector(

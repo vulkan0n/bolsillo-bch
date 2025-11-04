@@ -18,6 +18,7 @@ import {
 import {
   selectShouldDisplaySyncCounter,
   selectIsExperimental,
+  selectIsOfflineMode,
 } from "@/redux/preferences";
 import { selectActiveWalletHash } from "@/redux/wallet";
 import ToastService from "@/services/ToastService";
@@ -29,6 +30,7 @@ export default function SyncIndicator() {
   const navigate = useNavigate();
   const walletHash = useSelector(selectActiveWalletHash);
   const isConnected = useSelector(selectIsConnected);
+  const isOfflineMode = useSelector(selectIsOfflineMode);
   const isSyncing = useSelector(selectIsSyncing);
   const isExperimental = useSelector(selectIsExperimental);
 
@@ -97,7 +99,10 @@ export default function SyncIndicator() {
       className="cursor-pointer w-10 h-10 flex justify-center items-center"
       {...longPressEvents}
     >
-      {!isConnected && <DisconnectedIcon springs={{ ...disconnectSprings }} />}
+      {isOfflineMode && <DisconnectOutlined className="text-neutral-500 text-2xl text-center"/>}
+      {!isConnected && !isOfflineMode && (
+        <DisconnectedIcon springs={{ ...disconnectSprings }} />
+      )}
       {isConnected &&
         (isSyncing ? (
           <div className="flex flex-col items-center">
