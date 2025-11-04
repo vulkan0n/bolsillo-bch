@@ -1,10 +1,4 @@
-import { useSelector } from "react-redux";
-import { InAppBrowser } from "@capacitor/inappbrowser";
-import { Dialog } from "@capacitor/dialog";
-import { selectDevicePlatform } from "@/redux/device";
-
-import { translate } from "@/util/translations";
-import translations from "@/views/settings/translations";
+import { useNavigateExternal } from "@/hooks/useNavigateExternal";
 
 export default function LinkExternal({
   to,
@@ -15,28 +9,11 @@ export default function LinkExternal({
   children: React.ReactNode;
   className?: string;
 }) {
-  const platform = useSelector(selectDevicePlatform);
+  const navigateExternal = useNavigateExternal();
 
-  const handleClick = async (e) => {
+  const handleClick = (e) => {
     e.stopPropagation();
-
-    const { value: shouldProceed } = await Dialog.confirm({
-      title: translate(translations.externalLinkTitle),
-      message: `${translate(translations.externalLinkMessage)}\n\n${to}`,
-    });
-
-    if (!shouldProceed) {
-      return;
-    }
-
-    if (platform === "web") {
-      window.open(to);
-      return;
-    }
-
-    await InAppBrowser.openInExternalBrowser({
-      url: to,
-    });
+    navigateExternal(to);
   };
 
   return (

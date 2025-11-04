@@ -5,12 +5,14 @@ interface Props {
   name: string;
   icon?: React.ComponentType;
   to?: string;
+  external?: boolean;
 }
 
 export default function ExploreApp({
   name,
   icon = () => null,
   to = "",
+  external = false,
 }: Props) {
   const label = (
     <span className="w-full flex justify-between items-center">
@@ -29,6 +31,7 @@ export default function ExploreApp({
       shadow="sm"
       fullWidth
       navigateTo={to}
+      external={external}
     />
   );
 }

@@ -5,7 +5,6 @@ import {
 } from "@ant-design/icons";
 
 import ExploreApp from "./ExploreApp";
-import LinkExternal from "@/atoms/LinkExternal";
 import SeleneLogo from "@/atoms/SeleneLogo";
 import Card from "@/atoms/Card";
 import StatsGraphCard from "@/apps/stats/StatsGraphCard";
@@ -36,24 +35,24 @@ export default function ExploreViewHome() {
             <SeleneLogo className="w-12 mr-1" />
             <span>{translate(translations.learnMore)}</span>
           </div>
-          <LinkExternal to="https://minisatoshi.cash/ecosystem" inAppBrowser>
-            <ExploreApp
-              icon={GlobalOutlined}
-              name={translate(translations.ecosystem)}
-            />
-          </LinkExternal>
-          <LinkExternal to="https://bitcoincashpodcast.com/faqs" inAppBrowser>
-            <ExploreApp
-              icon={QuestionCircleOutlined}
-              name={translate(translations.faqs)}
-            />
-          </LinkExternal>
-          <LinkExternal to="https://minisatoshi.cash/#_socials" inAppBrowser>
-            <ExploreApp
-              icon={LikeOutlined}
-              name={translate(translations.socialMedia)}
-            />
-          </LinkExternal>
+          <ExploreApp
+            icon={GlobalOutlined}
+            name={translate(translations.ecosystem)}
+            to="https://minisatoshi.cash/ecosystem"
+            external
+          />
+          <ExploreApp
+            icon={QuestionCircleOutlined}
+            name={translate(translations.faqs)}
+            to="https://bitcoincashpodcast.com/faqs"
+            external
+          />
+          <ExploreApp
+            icon={LikeOutlined}
+            name={translate(translations.socialMedia)}
+            to="https://minisatoshi.cash/#_socials"
+            external
+          />
         </div>
       </Card>
     </div>
