@@ -853,7 +853,7 @@ export function buildSweepTransaction(
   receivingAddress: string
 ): TransactionStub {
   // Convert the receiving address to locking bytecode.
-  const receivingBytecode = cashAddressToLockingBytecode(receivingAddress);
+  const receivingBytecode = addressToLockingBytecode(receivingAddress);
 
   // If we could not convert it successfully, throw an error.
   if (typeof receivingBytecode === "string") {
