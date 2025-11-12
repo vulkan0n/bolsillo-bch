@@ -7,7 +7,10 @@ import {
   CopyOutlined,
   HourglassOutlined,
   CheckCircleOutlined,
+  FilePdfOutlined,
+  FileImageOutlined,
 } from "@ant-design/icons";
+import toast from "react-hot-toast";
 import { selectCurrencySettings } from "@/redux/preferences";
 import { selectActiveWalletHash } from "@/redux/wallet";
 import { selectChaintip } from "@/redux/sync";
@@ -17,6 +20,9 @@ import TransactionManagerService, {
   TransactionOutput,
 } from "@/services/TransactionManagerService";
 import TokenManagerService from "@/services/TokenManagerService";
+import TransactionExportService, {
+  prepareTransactionExportData,
+} from "@/services/TransactionExportService";
 //import LogService from "@/services/LogService";
 
 import Address from "@/atoms/Address";
@@ -34,6 +40,7 @@ import { hexToUtf8, binToHex } from "@/util/hex";
 
 import { translate } from "@/util/translations";
 import translations from "./translations";
+import Button from "@/components/atoms/Button";
 
 //const Log = LogService("ExploreTransactionView");
 
@@ -48,6 +55,7 @@ export default function ExploreTransactionView() {
     () => TransactionHistoryService(walletHash, localCurrency),
     [walletHash, localCurrency]
   );
+  const [isExporting, setIsExporting] = useState(false);
 
   const [memo, setMemo] = useState(
     TransactionHistoryService(walletHash, localCurrency).getTransactionMemo(
@@ -82,12 +90,84 @@ export default function ExploreTransactionView() {
     );
   };
 
+  const handleExportAsPdf = async () => {
+    if (isExporting) return;
+
+    setIsExporting(true);
+    const loadingToast = toast.loading("Generating PDF...");
+
+    try {
+      const exportData = await prepareTransactionExportData(
+        tx,
+        chaintip,
+        memo,
+        walletHash
+      );
+
+      await TransactionExportService.exportAsPDF(
+        exportData,
+        `transaction-${tx.txid.slice(0, 8)}`
+      );
+      toast.success("PDF exported successfully", { id: loadingToast });
+    } catch (error) {
+      toast.error("Failed to export PDF", { id: loadingToast });
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
+  const handleExportAsPng = async () => {
+    if (isExporting) return;
+
+    setIsExporting(true);
+    const loadingToast = toast.loading("Generating PNG...");
+
+    try {
+      const exportData = await prepareTransactionExportData(
+        tx,
+        chaintip,
+        memo,
+        walletHash
+      );
+
+      await TransactionExportService.exportAsPNG(
+        exportData,
+        `transaction-${tx.txid.slice(0, 8)}`
+      );
+      toast.success("PNG exported successfully!", { id: loadingToast });
+    } catch (error) {
+      toast.error("Failed to export PNG", { id: loadingToast });
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
   //Log.debug(tx, confirmations);
 
   return (
     <>
       <ExploreSearchBar />
       <div className="p-1">
+        <div className="mb-2 flex gap-1">
+          <Button
+            icon={FilePdfOutlined}
+            label={translate(translations.exportPDF)}
+            onClick={handleExportAsPdf}
+            disabled={isExporting}
+            fullWidth
+            inverted
+          />
+          <Button
+            icon={FileImageOutlined}
+            label={translate(translations.exportPNG)}
+            onClick={handleExportAsPng}
+            disabled={isExporting}
+            fullWidth
+            inverted
+          />
+        </div>
+
+        {/* Transaction Details */}
         <div className="bg-neutral-700 rounded">
           <div className="font-semibold text-neutral-100 p-1.5">
             {translate(translations.transactionId)}

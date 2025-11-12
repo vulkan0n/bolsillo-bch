@@ -27,7 +27,7 @@ export interface TransactionStub {
 export interface TransactionEntity extends TransactionStub {
   blockhash: string | null;
   blocktime: number;
-  time: string;
+  time: number;
   size: string;
   version: number;
   height: number;
@@ -289,7 +289,7 @@ export default function TransactionManagerService() {
         height
       )
       VALUES ($txid, $size, $blockhash, $time, $blocktime, $version, $height)
-      ON CONFLICT DO 
+      ON CONFLICT DO
         UPDATE SET
           size=$size,
           blockhash=$blockhash,
