@@ -11,7 +11,10 @@ import {
   FileImageOutlined,
 } from "@ant-design/icons";
 import toast from "react-hot-toast";
-import { selectCurrencySettings } from "@/redux/preferences";
+import {
+  selectCurrencySettings,
+  selectIsExperimental,
+} from "@/redux/preferences";
 import { selectActiveWalletHash } from "@/redux/wallet";
 import { selectChaintip } from "@/redux/sync";
 
@@ -31,6 +34,7 @@ import Accordion from "@/atoms/Accordion";
 import Editable from "@/atoms/Editable";
 import TokenAmount from "@/atoms/TokenAmount";
 import Card from "@/atoms/Card";
+import Button from "@/components/atoms/Button";
 
 import ExploreSearchBar from "./ExploreSearchBar";
 
@@ -40,12 +44,13 @@ import { hexToUtf8, binToHex } from "@/util/hex";
 
 import { translate } from "@/util/translations";
 import translations from "./translations";
-import Button from "@/components/atoms/Button";
 
 //const Log = LogService("ExploreTransactionView");
 
 export default function ExploreTransactionView() {
   const tx = useLoaderData();
+
+  const isExperimental = useSelector(selectIsExperimental);
 
   const walletHash = useSelector(selectActiveWalletHash);
   const { localCurrency } = useSelector(selectCurrencySettings);
@@ -148,26 +153,6 @@ export default function ExploreTransactionView() {
     <>
       <ExploreSearchBar />
       <div className="p-1">
-        <div className="mb-2 flex gap-1">
-          <Button
-            icon={FilePdfOutlined}
-            label={translate(translations.exportPDF)}
-            onClick={handleExportAsPdf}
-            disabled={isExporting}
-            fullWidth
-            inverted
-          />
-          <Button
-            icon={FileImageOutlined}
-            label={translate(translations.exportPNG)}
-            onClick={handleExportAsPng}
-            disabled={isExporting}
-            fullWidth
-            inverted
-          />
-        </div>
-
-        {/* Transaction Details */}
         <div className="bg-neutral-700 rounded">
           <div className="font-semibold text-neutral-100 p-1.5">
             {translate(translations.transactionId)}
@@ -219,6 +204,29 @@ export default function ExploreTransactionView() {
             />
           </div>
         </Card>
+
+        {isExperimental && (
+          <div className="my-2 flex gap-1">
+            <Button
+              icon={FilePdfOutlined}
+              label={translate(translations.exportPDF)}
+              onClick={handleExportAsPdf}
+              disabled={isExporting}
+              rounded="lg"
+              fullWidth
+              inverted
+            />
+            <Button
+              icon={FileImageOutlined}
+              label={translate(translations.exportPNG)}
+              onClick={handleExportAsPng}
+              disabled={isExporting}
+              rounded="lg"
+              fullWidth
+              inverted
+            />
+          </div>
+        )}
 
         <div className="mt-1.5">
           <div className="rounded mb-2" onClick={(e) => e.stopPropagation()}>
