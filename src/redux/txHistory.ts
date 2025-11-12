@@ -3,6 +3,7 @@ import {
   createReducer,
   createSelector,
   createAsyncThunk,
+  createAction,
 } from "@reduxjs/toolkit";
 
 import { RootState } from "@/redux";
@@ -16,16 +17,48 @@ const Log = LogService("redux/txHistory");
 
 export const DEFAULT_HISTORY_PAGE_LENGTH = 20;
 
+// Filter and Sort Types
+export type SortField = "date" | "amount" | "address";
+export type SortDirection = "asc" | "desc";
+export type TransactionDirection = "all" | "incoming" | "outgoing";
+
+export interface TxHistoryFilters {
+  sortField: SortField;
+  sortDirection: SortDirection;
+  direction: TransactionDirection;
+  hasToken: boolean | null; // null = all, true = has tokens, false = no tokens
+  hasNFT: boolean | null; // null = all, true = has NFT, false = no NFT
+}
+
+export const setSearchQuery = createAction<string>("txHistory/setSearchQuery");
+export const setSortField = createAction<SortField>("txHistory/setSortField");
+export const setSortDirection = createAction<SortDirection>(
+  "txHistory/setSortDirection"
+);
+export const setDirection = createAction<TransactionDirection>(
+  "txHistory/setDirection"
+);
+export const setHasToken = createAction<boolean | null>(
+  "txHistory/setHasToken"
+);
+export const setHasNft = createAction<boolean | null>("txHistory/setHasNFT");
+export const resetFilters = createAction("txHistory/resetFilters");
+
 export const txHistoryFetch = createAsyncThunk(
   "txHistory/fetch",
   async (payload, thunkApi) => {
     const walletHash = selectActiveWalletHash(thunkApi.getState());
     const { localCurrency } = selectCurrencySettings(thunkApi.getState());
-
+    const { searchQuery = "", filters } = thunkApi.getState().txHistory;
     const txHistory = await TransactionHistoryService(
       walletHash,
       localCurrency
-    ).resolveTransactionHistory(0, DEFAULT_HISTORY_PAGE_LENGTH);
+    ).resolveTransactionHistory(
+      0,
+      DEFAULT_HISTORY_PAGE_LENGTH,
+      searchQuery,
+      filters
+    );
 
     Log.debug("txHistory resolved", txHistory);
 
@@ -38,7 +71,7 @@ export const txHistoryFetchMore = createAsyncThunk(
   async (payload: number, thunkApi) => {
     const walletHash = selectActiveWalletHash(thunkApi.getState());
     const { localCurrency } = selectCurrencySettings(thunkApi.getState());
-
+    const { searchQuery = "", filters } = thunkApi.getState().txHistory;
     const page = payload;
 
     const txHistory = await TransactionHistoryService(
@@ -46,7 +79,9 @@ export const txHistoryFetchMore = createAsyncThunk(
       localCurrency
     ).resolveTransactionHistory(
       page * DEFAULT_HISTORY_PAGE_LENGTH,
-      DEFAULT_HISTORY_PAGE_LENGTH
+      DEFAULT_HISTORY_PAGE_LENGTH,
+      searchQuery,
+      filters
     );
 
     Log.debug("txHistory fetchMore resolved", txHistory);
@@ -55,15 +90,46 @@ export const txHistoryFetchMore = createAsyncThunk(
   }
 );
 
+const initialFilters: TxHistoryFilters = {
+  sortField: "date",
+  sortDirection: "desc",
+  direction: "all",
+  hasToken: null,
+  hasNFT: null,
+};
+
 const initialState = {
   history: [],
   hasMore: false,
   total: 0,
+  searchQuery: "",
+  filters: initialFilters,
   isLoading: false,
 };
 
 export const txHistoryReducer = createReducer(initialState, (builder) => {
   builder
+    .addCase(setSearchQuery, (state, action) => {
+      state.searchQuery = action.payload;
+    })
+    .addCase(setSortField, (state, action) => {
+      state.filters.sortField = action.payload;
+    })
+    .addCase(setSortDirection, (state, action) => {
+      state.filters.sortDirection = action.payload;
+    })
+    .addCase(setDirection, (state, action) => {
+      state.filters.direction = action.payload;
+    })
+    .addCase(setHasToken, (state, action) => {
+      state.filters.hasToken = action.payload;
+    })
+    .addCase(setHasNft, (state, action) => {
+      state.filters.hasNFT = action.payload;
+    })
+    .addCase(resetFilters, (state) => {
+      state.filters = initialFilters;
+    })
     .addCase(txHistoryFetch.pending, (state) => {
       state.history = initialState.history;
       state.hasMore = initialState.hasMore;
@@ -74,6 +140,9 @@ export const txHistoryReducer = createReducer(initialState, (builder) => {
       state.history = action.payload.transactions;
       state.hasMore = action.payload.hasMore;
       state.total = action.payload.total;
+      state.isLoading = false;
+    })
+    .addCase(txHistoryFetch.rejected, (state) => {
       state.isLoading = false;
     })
     .addCase(txHistoryFetchMore.pending, (state) => {
@@ -92,6 +161,11 @@ export const txHistoryReducer = createReducer(initialState, (builder) => {
 
 const selectTxHistoryState = (state) => state.txHistory;
 
+export const selectTxHistoryFilters = createSelector(
+  selectTxHistoryState,
+  (txHistory) => txHistory.filters
+);
+
 export const selectTransactionHistory = createSelector(
   selectTxHistoryState,
   (txHistory) => txHistory.history
@@ -104,4 +178,9 @@ export const selectTransactionHistoryPagination = createSelector(
     total: txHistory.total,
     isLoading: txHistory.isLoading,
   })
+);
+
+export const selectSearchQuery = createSelector(
+  selectTxHistoryState,
+  (txHistory) => txHistory.searchQuery
 );

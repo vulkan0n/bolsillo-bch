@@ -19,7 +19,7 @@ class TransactionHistoryNotExistsError extends Error {
   }
 }
 
-interface HistoryEntity {
+export interface HistoryEntity {
   txid: string;
   height: number;
   address: string;
@@ -34,12 +34,21 @@ interface HistoryEntity {
 export interface TokenHistoryEntity {
   txid: string;
   category: string;
-  fungible_amount: bigint;
+  fungible_amount: number;
   nft_amount: number;
+  symbol: string;
 }
 
-interface MergedHistoryEntity extends HistoryEntity {
+export interface MergedHistoryEntity extends HistoryEntity {
   tokens?: Array<TokenHistoryEntity>;
+}
+
+export interface TransactionHistoryFilters {
+  direction?: "incoming" | "outgoing";
+  hasToken?: boolean;
+  hasNFT?: boolean;
+  sortField?: "date" | "amount" | "address";
+  sortDirection?: "asc" | "desc";
 }
 
 export interface PaginatedHistoryResult {
@@ -73,25 +82,128 @@ export default function TransactionHistoryService(
     setTransactionMemo,
     getTransactionMemo,
     getTotalTransactionCount,
+    searchTransactionHistory,
   };
 
   function getTransactionHistory(
     start: number = 0,
-    limit: number = 20
+    limit: number = 20,
+    searchQuery: string = "",
+    filters: TransactionHistoryFilters | null = null
   ): Array<HistoryEntity> {
-    // get all transactions that are registered with addresses
-    // unconfirmed transactions come first, then confirmed
+    // Build WHERE clause for search
+    let searchCondition = "";
+    if (searchQuery && searchQuery.trim() !== "") {
+      const query = searchQuery.trim();
+
+      // Try to convert address to different formats for searching
+      let addressVariants = [query];
+      try {
+        // If it's a valid address, add both cashaddr and tokenaddr formats
+        const cashAddr = convertCashAddress(query, "cashaddr");
+        const tokenAddr = convertCashAddress(query, "tokenaddr");
+        addressVariants = [query, cashAddr, tokenAddr];
+      } catch (e) {
+        // Not a valid address, just use the query as-is
+      }
+
+      // Build address search conditions for all variants (exact match)
+      const addressConditions = addressVariants
+        .map((addr) => `address LIKE '%${addr}%'`)
+        .join(" OR ");
+
+      // For address search, we need to search across all addresses in the transaction
+      // Create a subquery that finds all txids matching the search
+      searchCondition = `AND txid IN (
+        SELECT DISTINCT txid FROM address_transactions
+        WHERE txid LIKE '%${query}%'
+        OR memo LIKE '%${query}%'
+        OR ${addressConditions}
+      )`;
+    }
+
+    // Build filter conditions
+    let filterCondition = "";
+    if (filters) {
+      const conditions: Array<string> = [];
+
+      // Direction filter (incoming/outgoing)
+      if (filters.direction === "incoming") {
+        conditions.push("amount > 0");
+      } else if (filters.direction === "outgoing") {
+        conditions.push("amount < 0");
+      }
+
+      // Token filter (has tokens / no tokens)
+      if (filters.hasToken === true) {
+        conditions.push(
+          "txid IN (SELECT DISTINCT txid FROM token_transactions)"
+        );
+      } else if (filters.hasToken === false) {
+        conditions.push(
+          "txid NOT IN (SELECT DISTINCT txid FROM token_transactions)"
+        );
+      }
+
+      // NFT filter (has NFTs / no NFTs)
+      if (filters.hasNFT === true) {
+        conditions.push(
+          "txid IN (SELECT DISTINCT txid FROM token_transactions WHERE nft_amount > 0)"
+        );
+      } else if (filters.hasNFT === false) {
+        conditions.push(
+          "txid NOT IN (SELECT DISTINCT txid FROM token_transactions WHERE nft_amount > 0)"
+        );
+      }
+
+      if (conditions.length > 0) {
+        filterCondition = `AND ${conditions.join(" AND ")}`;
+      }
+    }
+
+    // Build ORDER BY clause
+    let orderBy = "";
+    if (!filters) {
+      // Default ordering - newest first (unconfirmed, then confirmed by height DESC)
+      orderBy = `ORDER BY
+        (height > 0) ASC,
+        (height = -1) DESC,
+        height DESC,
+        block_pos DESC,
+        time DESC,
+        time_seen DESC`;
+    }
+
+    const sortDir = filters?.sortDirection?.toUpperCase() ?? "DESC";
+
+    const sortStrategies = {
+      amount: () => `ORDER BY amount ${sortDir}`,
+      address: () => `ORDER BY address ${sortDir}`,
+      date: () => {
+        const isAscending = filters?.sortDirection === "asc";
+        return `ORDER BY
+          CASE WHEN height <= 0 THEN ${isAscending ? 1 : 0} ELSE ${isAscending ? 0 : 1} END ASC,
+          height ${sortDir},
+          block_pos ASC,
+          time ${sortDir},
+          time_seen ${sortDir}`;
+      },
+    };
+
+    orderBy = (
+      filters?.sortField
+        ? sortStrategies[filters.sortField]
+        : sortStrategies.date
+    )();
+
+    // Get all transactions in a single query with proper sorting
+    // We need to handle both confirmed and unconfirmed together for correct sorting
     const address_transactions = walletDb
       .exec(
         `SELECT * FROM address_transactions
+          WHERE 1=1 ${searchCondition} ${filterCondition}
           GROUP BY txid
-          ORDER BY
-            (height > 0) ASC,
-            (height = -1) DESC,
-            height DESC,
-            block_pos DESC,
-            time DESC,
-            time_seen DESC
+          ${orderBy}
           LIMIT ${limit} OFFSET ${start};
         `
       )
@@ -104,6 +216,93 @@ export default function TransactionHistoryService(
       });
 
     return address_transactions;
+  }
+
+  function searchTransactionHistory(
+    searchQuery: string,
+    filters: TransactionHistoryFilters | null = null
+  ): number {
+    // Count total results matching search query
+    if (!searchQuery || searchQuery.trim() === "") {
+      return getTotalTransactionCount(filters);
+    }
+
+    const query = searchQuery.trim();
+
+    // Try to convert address to different formats for searching
+    let addressVariants = [query];
+    try {
+      // If it's a valid address, add both cashaddr and tokenaddr formats
+      const cashAddr = convertCashAddress(query, "cashaddr");
+      const tokenAddr = convertCashAddress(query, "tokenaddr");
+      addressVariants = [query, cashAddr, tokenAddr];
+    } catch (e) {
+      // Not a valid address, just use the query as-is
+    }
+
+    // Build address search conditions for all variants
+    const addressConditions = addressVariants
+      .map((addr) => `address LIKE '%${addr}%'`)
+      .join(" OR ");
+
+    // Build filter conditions
+    let filterCondition = "";
+    if (filters) {
+      const conditions: Array<string> = [];
+
+      if (filters.direction === "incoming") {
+        conditions.push("amount > 0");
+      } else if (filters.direction === "outgoing") {
+        conditions.push("amount < 0");
+      }
+
+      // Token filter (has tokens / no tokens)
+      if (filters.hasToken === true) {
+        conditions.push(
+          "txid IN (SELECT DISTINCT txid FROM token_transactions)"
+        );
+      } else if (filters.hasToken === false) {
+        conditions.push(
+          "txid NOT IN (SELECT DISTINCT txid FROM token_transactions)"
+        );
+      }
+
+      // NFT filter (has NFTs / no NFTs)
+      if (filters.hasNFT === true) {
+        conditions.push(
+          "txid IN (SELECT DISTINCT txid FROM token_transactions WHERE nft_amount > 0)"
+        );
+      } else if (filters.hasNFT === false) {
+        conditions.push(
+          "txid NOT IN (SELECT DISTINCT txid FROM token_transactions WHERE nft_amount > 0)"
+        );
+      }
+
+      if (conditions.length > 0) {
+        filterCondition = `AND ${conditions.join(" AND ")}`;
+      }
+    }
+
+    const searchCondition = `WHERE txid IN (
+      SELECT DISTINCT txid FROM address_transactions
+      WHERE txid LIKE '%${query}%'
+      OR memo LIKE '%${query}%'
+      OR ${addressConditions}
+    )`;
+
+    const confirmedCount =
+      walletDb.exec(
+        `SELECT COUNT(DISTINCT txid) as count FROM address_transactions
+         ${searchCondition} ${filterCondition} AND height > 0;`
+      )[0]?.count || 0;
+
+    const unconfirmedCount =
+      walletDb.exec(
+        `SELECT COUNT(DISTINCT txid) as count FROM address_transactions
+         ${searchCondition} ${filterCondition} AND height <= 0;`
+      )[0]?.count || 0;
+
+    return confirmedCount + unconfirmedCount;
   }
 
   function mergeTokenHistory(
@@ -127,7 +326,7 @@ export default function TransactionHistoryService(
       // get a list of categories for our atx's token transactions
       const categories = tokenTxes.map((ttx) => ttx.category);
 
-      const tokens = categories.map((category) => {
+      const tokens = categories.flatMap((category) => {
         const token = TokenManager.getToken(category);
         const txes = tokenTxes
           .filter((ttx) => ttx.category === category)
@@ -158,11 +357,20 @@ export default function TransactionHistoryService(
 
   async function resolveTransactionHistory(
     start: number = 0,
-    limit: number = 20
+    limit: number = 20,
+    searchQuery: string = "",
+    filters: TransactionHistoryFilters | null = null
   ): Promise<PaginatedHistoryResult> {
     //Log.debug("resolveTransactionHistory");
-    const total = getTotalTransactionCount();
-    const address_transactions = getTransactionHistory(start, limit);
+    const total = searchQuery
+      ? searchTransactionHistory(searchQuery, filters)
+      : getTotalTransactionCount(filters);
+    const address_transactions = getTransactionHistory(
+      start,
+      limit,
+      searchQuery,
+      filters
+    );
     const mergedHistory = mergeTokenHistory(address_transactions);
 
     const hasMore = start + limit < total;
@@ -421,15 +629,55 @@ export default function TransactionHistoryService(
     return result[0];
   }
 
-  function getTotalTransactionCount(): number {
+  function getTotalTransactionCount(
+    filters: TransactionHistoryFilters | null = null
+  ): number {
+    // Build filter conditions
+    let filterCondition = "";
+    if (filters) {
+      const conditions: Array<string> = [];
+
+      if (filters.direction === "incoming") {
+        conditions.push("amount > 0");
+      } else if (filters.direction === "outgoing") {
+        conditions.push("amount < 0");
+      }
+
+      // Token filter (has tokens / no tokens)
+      if (filters.hasToken === true) {
+        conditions.push(
+          "txid IN (SELECT DISTINCT txid FROM token_transactions)"
+        );
+      } else if (filters.hasToken === false) {
+        conditions.push(
+          "txid NOT IN (SELECT DISTINCT txid FROM token_transactions)"
+        );
+      }
+
+      // NFT filter (has NFTs / no NFTs)
+      if (filters.hasNFT === true) {
+        conditions.push(
+          "txid IN (SELECT DISTINCT txid FROM token_transactions WHERE nft_amount > 0)"
+        );
+      } else if (filters.hasNFT === false) {
+        conditions.push(
+          "txid NOT IN (SELECT DISTINCT txid FROM token_transactions WHERE nft_amount > 0)"
+        );
+      }
+
+      if (conditions.length > 0) {
+        filterCondition = `AND ${conditions.join(" AND ")}`;
+      }
+    }
+
     const confirmedCount =
       walletDb.exec(
-        `SELECT COUNT(DISTINCT txid) as count FROM address_transactions WHERE height > 0;`
+        `SELECT COUNT(DISTINCT txid) as count FROM address_transactions WHERE height > 0 ${filterCondition};`
       )[0]?.count || 0;
 
     const unconfirmedCount =
       walletDb.exec(
-        `SELECT COUNT(DISTINCT txid) as count FROM address_transactions WHERE height <= 0;`
+        `SELECT COUNT(DISTINCT txid) as count FROM address_transactions WHERE height <= 0 ${filterCondition};`
       )[0]?.count || 0;
 
     return confirmedCount + unconfirmedCount;
