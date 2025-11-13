@@ -8,6 +8,9 @@ import TransactionManagerService, {
   TransactionEntity,
 } from "@/services/TransactionManagerService";
 import { binToHex } from "@/util/hex";
+import LogService from "@/services/LogService";
+
+const Log = LogService("TransactionExport");
 
 /**
  * Formats satoshis to BCH
@@ -220,8 +223,7 @@ class TransactionExportService {
       this.fontBase64 = btoa(binary);
       return this.fontBase64;
     } catch (error) {
-      // eslint-disable-next-line
-      console.error("Failed to load Chivo Mono font:", error);
+      Log.error("Failed to load Chivo Mono font:", error);
       return "";
     }
   }
@@ -258,8 +260,7 @@ class TransactionExportService {
         pdf.addFileToVFS("ChivoMono.ttf", fontBase64);
         pdf.addFont("ChivoMono.ttf", "ChivoMono", "normal");
       } catch (error) {
-        // eslint-disable-next-line
-        console.error("Failed to add Chivo Mono font to PDF:", error);
+        Log.error("Failed to add Chivo Mono font to PDF:", error);
       }
     }
 
@@ -279,8 +280,7 @@ class TransactionExportService {
         pdf.addImage(logoDataUrl, "PNG", margin, yPosition, 12, 12);
         yPosition += 24;
       } catch (error) {
-        // eslint-disable-next-line
-        console.error("Failed to add logo to PDF:", error);
+        Log.error("Failed to add logo to PDF:", error);
       }
     }
 
@@ -410,7 +410,7 @@ class TransactionExportService {
         pdf.setTextColor(tokenColor.r, tokenColor.g, tokenColor.b);
         const tokenLabel = output.token.symbol || output.token.name || "Token";
 
-        console.log("output", output.token);
+        Log.log("output", output.token);
 
         const isNft = output.token.nft;
         if (isNft) {
@@ -544,8 +544,7 @@ class TransactionExportService {
         pdf.save(`${filename}.pdf`);
       }
     } catch (error) {
-      // eslint-disable-next-line
-      console.error("Error exporting as PDF:", error);
+      Log.error("Error exporting as PDF:", error);
       throw new Error("Failed to export transaction as PDF");
     }
   }
@@ -617,8 +616,7 @@ class TransactionExportService {
           );
           yPosition += 18 * mmToPx;
         } catch (error) {
-          // eslint-disable-next-line
-          console.error("Failed to add logo to PNG:", error);
+          Log.error("Failed to add logo to PNG:", error);
         }
       }
 
@@ -926,8 +924,7 @@ class TransactionExportService {
         document.body.removeChild(link);
       }
     } catch (error) {
-      // eslint-disable-next-line
-      console.error("Error exporting as PNG:", error);
+      Log.error("Error exporting as PNG:", error);
       throw new Error("Failed to export transaction as PNG");
     }
   }

@@ -171,7 +171,7 @@ export default function WalletViewSweep() {
       );
 
       // Broadcast the transaction.
-      await TransactionManager.sendTransaction(transaction, walletHash);
+      await TransactionManager.sendTransaction(transaction, bchNetwork);
 
       // Wait for the transaction to resolve.
       const tx = await TransactionManager.resolveTransaction(transaction.txid);
