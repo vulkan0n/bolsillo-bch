@@ -2,6 +2,8 @@ import { useEffect, useState, useRef, useCallback } from "react";
 import { Link } from "react-router";
 import { useSelector, useDispatch } from "react-redux";
 import { DateTime } from "luxon";
+import toast from "react-hot-toast";
+
 import {
   SyncOutlined,
   HourglassOutlined,
@@ -11,6 +13,7 @@ import {
   FilterOutlined,
   SortAscendingOutlined,
   SortDescendingOutlined,
+  DownloadOutlined,
 } from "@ant-design/icons";
 import {
   selectTransactionHistory,
@@ -27,8 +30,12 @@ import {
   resetFilters,
   selectTransactionHistoryPagination,
 } from "@/redux/txHistory";
-import { selectSyncState } from "@/redux/sync";
-import { selectPrivacySettings } from "@/redux/preferences";
+import { selectChaintip, selectSyncState } from "@/redux/sync";
+import {
+  selectCurrencySettings,
+  selectPrivacySettings,
+  selectIsExperimental,
+} from "@/redux/preferences";
 import translations from "../translations";
 import { translate } from "@/util/translations";
 
@@ -38,6 +45,16 @@ import TokenAmount from "@/atoms/TokenAmount";
 import Button from "@/components/atoms/Button";
 import Select from "@/components/atoms/Select";
 import type { MergedHistoryEntity } from "@/services/TransactionHistoryService";
+import { selectActiveWalletHash } from "@/redux/wallet";
+import TransactionHistoryService from "@/services/TransactionHistoryService";
+import TransactionManagerService from "@/services/TransactionManagerService";
+import {
+  prepareTransactionExportData,
+  exportHistoryAsCsv,
+} from "@/services/TransactionExportService";
+import LogService from "@/services/LogService";
+
+const Log = LogService("WalletViewHistory");
 
 interface TransactionItemProps {
   tx: MergedHistoryEntity & { block_pos?: number };
@@ -183,7 +200,13 @@ export default function WalletViewHistory() {
   const [shouldShowFilters, setShouldShowFilters] = useState(false);
   const observerTarget = useRef(null);
 
+  const walletHash = useSelector(selectActiveWalletHash);
+  const { localCurrency } = useSelector(selectCurrencySettings);
+  const chaintip = useSelector(selectChaintip);
+  const [isExporting, setIsExporting] = useState(false);
+
   const { shouldHideBalance } = useSelector(selectPrivacySettings);
+  const isExperimental = useSelector(selectIsExperimental);
   const [nextPage, setNextPage] = useState(1);
 
   const handleLoadMore = useCallback(async () => {
@@ -233,6 +256,84 @@ export default function WalletViewHistory() {
     // and the others will always have their latest value accessible, regardless of deps
     // eslint-disable-next-line
   }, [handleLoadMore]);
+
+  const handleExportCsv = async () => {
+    if (isExporting) return;
+
+    setIsExporting(true);
+    const loadingToast = toast.loading("Preparing CSV export...");
+
+    try {
+      const HistoryService = TransactionHistoryService(
+        walletHash,
+        localCurrency
+      );
+      const TransactionManager = TransactionManagerService();
+
+      // Fetch all transactions from the database (not just the current page)
+      const allTransactions = await HistoryService.resolveTransactionHistory(
+        0,
+        Number.MAX_SAFE_INTEGER
+      );
+
+      if (allTransactions.transactions.length === 0) {
+        throw new Error("No transactions to export");
+      }
+
+      toast.loading(
+        `Preparing ${allTransactions.transactions.length} transactions...`,
+        { id: loadingToast }
+      );
+
+      // Prepare all transactions for export by resolving full transaction data
+      const exportPromises = allTransactions.transactions.map(async (tx) => {
+        try {
+          // Resolve full transaction data to get vin/vout
+          const fullTx = await TransactionManager.resolveTransaction(tx.txid);
+          const memo = HistoryService.getTransactionMemo(tx.txid);
+
+          // Create TransactionDetail object with time_seen
+          const txDetail = {
+            ...fullTx,
+            time_seen: tx.time_seen || fullTx.time.toString(),
+          };
+
+          return await prepareTransactionExportData(
+            txDetail,
+            chaintip,
+            memo,
+            walletHash,
+            tx.amount // Pass the wallet amount from history
+          );
+        } catch (error) {
+          Log.error(`Failed to prepare transaction ${tx.txid}:`, error);
+          return null;
+        }
+      });
+
+      const exportData = (await Promise.all(exportPromises)).filter(
+        (a) => a != null
+      );
+
+      if (exportData.length === 0) {
+        throw new Error("No transactions could be prepared for export");
+      }
+
+      await exportHistoryAsCsv(
+        exportData,
+        `transaction-history-${DateTime.now().toFormat("yyyy-MM-dd")}`
+      );
+
+      toast.success(`Exported ${exportData.length} transactions!`, {
+        id: loadingToast,
+      });
+    } catch (error) {
+      Log.error("CSV export error:", error);
+      toast.error("Failed to export CSV", { id: loadingToast });
+    } finally {
+      setIsExporting(false);
+    }
+  };
 
   return (
     <div className="flex flex-col justify-start">
@@ -514,7 +615,18 @@ export default function WalletViewHistory() {
           </div>
         )}
       </div>
-
+      {isExperimental && (
+        <div className="px-1 pt-1">
+          <Button
+            icon={DownloadOutlined}
+            label="Export CSV"
+            onClick={handleExportCsv}
+            disabled={isExporting || txHistory.length === 0}
+            fullWidth
+            inverted
+          />
+        </div>
+      )}
       <div className="pb-2">
         <ul className=" text-neutral-500 divide-y divide-neutral-300 dark:divide-neutral-700 rounded-b-sm shadow-inner h-full">
           {txHistory.length === 0 && (
