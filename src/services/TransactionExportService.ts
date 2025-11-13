@@ -23,13 +23,127 @@ const getNftIdentifier = (tokenLabel: string, categoryId: string) =>
   tokenLabel === categoryId ? tokenLabel : `${tokenLabel} (${categoryId})`;
 
 /**
+ * Escapes CSV field value
+ */
+function escapeCsvField(value: string | number | null | undefined): string {
+  if (value === null || value === undefined) return "";
+  const str = String(value);
+  // If field contains comma, quote, or newline, wrap in quotes and escape quotes
+  if (str.includes(",") || str.includes('"') || str.includes("\n")) {
+    return `"${str.replace(/"/g, '""')}"`;
+  }
+  return str;
+}
+
+/**
+ * Exports transaction history as CSV
+ * @param transactions Array of transaction data prepared for export
+ * @param filename Base filename without extension
+ */
+export async function exportHistoryAsCsv(
+  transactions: TransactionData[],
+  filename: string = "transaction-history"
+): Promise<void> {
+  try {
+    // CSV headers
+    const headers = [
+      "Date",
+      "Transaction ID",
+      "Status",
+      "Confirmations",
+      "Height",
+      "Memo",
+      "Total Input (BCH)",
+      "Total Output (BCH)",
+      "Net Amount (BCH)",
+    ];
+
+    // Build CSV rows
+    const rows = transactions.map((tx) => {
+      const totalInput = tx.vin.reduce((sum, input) => {
+        const value = input.value ? BigInt(input.value) : 0n;
+        return sum + value;
+      }, 0n);
+
+      const totalOutput = tx.vout.reduce((sum, output) => {
+        let value = 0n;
+        if (typeof output.value === "string") {
+          value = BigInt(output.value);
+        } else if (output.valueSatoshis !== undefined) {
+          value = BigInt(output.valueSatoshis);
+        }
+        return sum + value;
+      }, 0n);
+
+      const netAmount =
+        tx.walletAmount !== undefined
+          ? tx.walletAmount
+          : totalOutput - totalInput;
+
+      const status = tx.blockhash ? "Confirmed" : "Pending";
+
+      return [
+        escapeCsvField(tx.date),
+        escapeCsvField(tx.txid),
+        escapeCsvField(status),
+        escapeCsvField(tx.confirmations),
+        escapeCsvField(tx.height),
+        escapeCsvField(tx.memo || ""),
+        escapeCsvField(formatBch(Number(totalInput))),
+        escapeCsvField(formatBch(Number(totalOutput))),
+        escapeCsvField(formatBch(Number(netAmount))),
+      ].join(",");
+    });
+
+    // Combine headers and rows
+    const csvContent = [headers.join(","), ...rows].join("\n");
+
+    // Create blob and download
+    if (Capacitor.isNativePlatform()) {
+      const base64Data = btoa(unescape(encodeURIComponent(csvContent)));
+      const fileName = `${filename}.csv`;
+
+      const result = await Filesystem.writeFile({
+        path: fileName,
+        data: base64Data,
+        directory: Directory.Documents,
+      });
+
+      await Share.share({
+        title: "Transaction History",
+        text: "Transaction history exported as CSV",
+        url: result.uri,
+        dialogTitle: "Share Transaction History",
+      });
+    } else {
+      const blob = new Blob([csvContent], {
+        type: "text/csv;charset=utf-8;",
+      });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `${filename}.csv`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    }
+  } catch (error) {
+    // eslint-disable-next-line
+    console.error("Error exporting as CSV:", error);
+    throw new Error("Failed to export transaction history as CSV");
+  }
+}
+
+/**
  * Prepares transaction data for export by resolving input values
  */
 export async function prepareTransactionExportData(
   tx: TransactionEntity & { time_seen: string },
   chaintip: { height: number },
   memo?: string,
-  walletHash?: string
+  walletHash?: string,
+  walletAmount?: bigint
 ): Promise<TransactionData> {
   const isConfirmed = tx.blockhash !== null;
   const confirmations = isConfirmed ? chaintip.height - tx.height : 0;
@@ -46,7 +160,7 @@ export async function prepareTransactionExportData(
       const output = resolvedTx.vout.find((out) => out.n === input.vout);
       return {
         ...input,
-        value: output?.value,
+        value: output?.valueSatoshis?.toString(),
         address: output?.scriptPubKey?.addresses?.[0],
       };
     })
@@ -99,6 +213,7 @@ export async function prepareTransactionExportData(
     date: txDate,
     vout: voutWithTokens,
     vin: resolvedVin,
+    walletAmount,
   };
 }
 
@@ -113,7 +228,8 @@ interface TransactionData {
   date: string;
   vout: Array<{
     n: number;
-    value: string;
+    value?: string;
+    valueSatoshis?: bigint;
     scriptPubKey: {
       addresses?: string[] | undefined;
       asm: string;
@@ -133,6 +249,7 @@ interface TransactionData {
     value?: string;
     address?: string;
   }>;
+  walletAmount?: bigint;
 }
 
 /**
@@ -385,7 +502,9 @@ class TransactionExportService {
         pdf.text(output.scriptPubKey.addresses[0], margin + 10, yPosition);
       }
 
-      const outputAmount = formatBch(parseFloat(output.value));
+      const outputAmount = formatBch(
+        Number(output.valueSatoshis || output.value || 0)
+      );
       const outputAmountWidth = pdf.getTextWidth(outputAmount);
       pdf.text(outputAmount, pageWidth - margin - outputAmountWidth, yPosition);
 
@@ -752,7 +871,9 @@ class TransactionExportService {
           }
         }
 
-        const amount = formatBch(parseFloat(output.value));
+        const amount = formatBch(
+          Number(output.valueSatoshis || output.value || 0)
+        );
         ctx.fillText(`${amount} BCH`, margin, yPosition);
         yPosition += 3 * mmToPx;
 
