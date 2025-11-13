@@ -153,6 +153,7 @@ export default function TransactionManagerService() {
 
     if (!isSuccess) {
       Log.warn("transaction send failure", result);
+      throw result;
     }
 
     return { isSuccess, result };

@@ -193,8 +193,8 @@ export default function CauldronService() {
   }
 
   async function unsubscribe(category: string) {
-    const rostrum = Rostrum.getElectrumClient();
     try {
+      const rostrum = Rostrum.getElectrumClient();
       await rostrum.unsubscribe("cauldron.contract.unsubscribe", 2, category);
       subscriptions.set(category, []);
     } catch (e) {
