@@ -550,10 +550,7 @@ export const syncComplete = createAsyncThunk(
   }
 );
 
-export const syncPause = createAsyncThunk(
-  "sync/pause",
-  async (payload, thunkApi) => {}
-);
+export const syncPause = createAsyncThunk("sync/pause", async () => {});
 
 export const syncResume = createAsyncThunk(
   "sync/resume",
