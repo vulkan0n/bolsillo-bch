@@ -17,8 +17,8 @@ export default function LinkExternal({
   };
 
   return (
-    <div onClick={handleClick} className={`${className} cursor-pointer`}>
+    <span onClick={handleClick} className={`${className} cursor-pointer`}>
       {children}
-    </div>
+    </span>
   );
 }

@@ -441,17 +441,6 @@ export default function ElectrumService(
       throw new ElectrumNotConnectedError();
     }
 
-    if (electrum.status !== ConnectionStatus.CONNECTED) {
-      await connect();
-
-      return new Promise((resolve) => {
-        setTimeout(() => {
-          Log.debug("retry broadcast");
-          resolve(broadcastTransaction(tx_hex));
-        }, 120);
-      });
-    }
-
     const tx_hash = await electrum.request(
       "blockchain.transaction.broadcast",
       tx_hex

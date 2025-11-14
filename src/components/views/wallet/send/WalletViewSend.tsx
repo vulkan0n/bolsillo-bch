@@ -23,6 +23,7 @@ import {
   selectCurrencySettings,
   selectInstantPaySettings,
   selectBchNetwork,
+  selectShouldForceTokenAddress,
   setPreference,
 } from "@/redux/preferences";
 
@@ -119,6 +120,29 @@ export default function WalletViewSend() {
 
   // ----------------
 
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const querySats = searchParams.get("amount")
+    ? bchToSats(searchParams.get("amount"))
+    : BigInt(0);
+
+  const queryTokenCategory = searchParams.get("c");
+  const queryTokenAmount = queryTokenCategory
+    ? BigInt(searchParams.get("ft") || 0)
+    : 0n;
+
+  const [satoshiInput, setSatoshiInput] = useState(querySats);
+  // used to force re-render of SatoshiInput component with MAX button
+  const [satoshiInputKey, setSatoshiInputKey] = useState("satoshiInputKey");
+
+  const handleAmountInput = (satInput) => {
+    setSatoshiInput(satInput);
+    setSatoshiInputKey("satoshiInputKey");
+    setMessage("");
+  };
+
+  // ----------------
+
   const selection = useMemo(() => {
     const { state: sendState } = location;
     return sendState?.selection || [];
@@ -132,9 +156,13 @@ export default function WalletViewSend() {
   const tokenCategories = useMemo(() => {
     const { state: sendState } = location;
 
+    if (queryTokenAmount > 0) {
+      return [queryTokenCategory];
+    }
+
     const categories = sendState?.tokenCategories || [];
     return categories;
-  }, [location]);
+  }, [location, queryTokenAmount, queryTokenCategory]);
 
   const selectionAmount = selection.reduce((sum, cur) => sum + cur.amount, 0n);
 
@@ -143,27 +171,11 @@ export default function WalletViewSend() {
 
   Log.debug("selection", selection, tokenCategories);
 
-  // ----------------
-
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  const querySats = searchParams.get("amount")
-    ? bchToSats(searchParams.get("amount"))
-    : BigInt(0);
-
-  const [satoshiInput, setSatoshiInput] = useState(querySats);
-  // used to force re-render of SatoshiInput component with MAX button
-  const [satoshiInputKey, setSatoshiInputKey] = useState("satoshiInputKey");
-
-  const handleAmountInput = (satInput) => {
-    setSatoshiInput(satInput);
-    setSatoshiInputKey("satoshiInputKey");
-    setMessage("");
-  };
-
   // TODO: add ability to send additional BCH with tokens
   //const [isSendingAdditionalBch, setIsSendingAdditionalBch] = useState(false);
   const isSendingAdditionalBch = false;
+
+  const shouldForceTokenAddress = useSelector(selectShouldForceTokenAddress);
 
   // ----------------
 
@@ -210,7 +222,12 @@ export default function WalletViewSend() {
         return false;
       }
 
-      if ((hasTokens || hasNft) && !isTokenAddress) {
+      // can't send tokens to non-token address
+      if (
+        (hasTokens || hasNft) &&
+        !isTokenAddress &&
+        !shouldForceTokenAddress
+      ) {
         await Haptic.warn();
         setMessage(translate(translations.cantSendTokensToNonTokenAddress));
         return false;
@@ -259,6 +276,7 @@ export default function WalletViewSend() {
       isBase58Address,
       isInsufficientFunds,
       isInsufficientTokens,
+      shouldForceTokenAddress,
     ]
   );
 
@@ -437,6 +455,8 @@ export default function WalletViewSend() {
           },
           bchNetwork
         );
+
+        Log.debug("sendTransaction", result);
 
         if (isSuccess) {
           const tx = await TransactionManager.resolveTransaction(result);

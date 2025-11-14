@@ -140,14 +140,8 @@ export default function TransactionManagerService() {
     const { txid: tx_hash, hex: tx_hex } = tx;
 
     const Electrum = ElectrumService(network);
-    if (!Electrum.getIsConnected()) {
-      try {
-        await Electrum.connect();
-      } catch (e) {
-        throw new Error("Connection Timeout");
-      }
-    }
 
+    Log.debug("sendTransaction attempting broadcast");
     const result = await Electrum.broadcastTransaction(tx_hex);
     const isSuccess = result === tx_hash;
 

@@ -550,6 +550,23 @@ export const syncComplete = createAsyncThunk(
   }
 );
 
+export const syncPause = createAsyncThunk(
+  "sync/pause",
+  async (payload, thunkApi) => {}
+);
+
+export const syncResume = createAsyncThunk(
+  "sync/resume",
+  async (payload, thunkApi) => {
+    const bchNetwork = selectBchNetwork(thunkApi.getState());
+    const Electrum = ElectrumService(bchNetwork);
+
+    if (!Electrum.getIsConnected()) {
+      thunkApi.dispatch(syncReconnect());
+    }
+  }
+);
+
 export const syncFlushDiff = createAction("sync/flushDiff");
 
 syncMiddleware.startListening({
