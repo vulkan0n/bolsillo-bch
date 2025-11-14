@@ -21,6 +21,8 @@ export function validateBchUri(uri: string) {
     isBase58Address,
     address,
     amount,
+    tokenCategory,
+    tokenAmount,
   } = validateBip21Uri(uri);
 
   const { isPaymentProtocol, requestUri } = validatePaymentProtocolUri(uri);
@@ -35,7 +37,14 @@ export function validateBchUri(uri: string) {
     wifPayload.isWif ||
     wcPayload.isWalletConnect;
 
-  const query = new Decimal(amount).greaterThan(0) ? `?amount=${amount}` : "";
+  const query = `?${[
+    amount > 0 ? ["amount", amount] : false,
+    tokenCategory ? ["c", tokenCategory] : false,
+    tokenAmount > 0 ? ["ft", tokenAmount] : false,
+  ]
+    .filter((q) => q !== false)
+    .map((q) => `${q[0]}=${q[1]}`)
+    .join("&")}`;
 
   const payload = {
     address,
@@ -62,7 +71,9 @@ export function validateBip21Uri(uri: string) {
 
   const queryString = uriSplit[1] || "";
   const searchParams = new URLSearchParams(queryString);
-  const amount = searchParams.get("amount") || "0";
+  const amount = Number.parseFloat(searchParams.get("amount") || "0");
+  const tokenCategory = searchParams.get("c") || undefined;
+  const tokenAmount = BigInt(searchParams.get("ft") || "0");
 
   // various providers do stupid things with cashaddr that we must handle.
   // in the wild we've seen:
@@ -101,6 +112,8 @@ export function validateBip21Uri(uri: string) {
     isBase58Address,
     address: isBip21 ? prefixedAddress : "",
     amount,
+    tokenCategory,
+    tokenAmount,
   };
 }
 

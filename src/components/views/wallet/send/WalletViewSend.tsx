@@ -131,7 +131,9 @@ export default function WalletViewSend() {
     ? BigInt(searchParams.get("ft") || 0)
     : 0n;
 
-  const [satoshiInput, setSatoshiInput] = useState(querySats);
+  const [satoshiInput, setSatoshiInput] = useState(
+    queryTokenAmount || querySats
+  );
   // used to force re-render of SatoshiInput component with MAX button
   const [satoshiInputKey, setSatoshiInputKey] = useState("satoshiInputKey");
 
