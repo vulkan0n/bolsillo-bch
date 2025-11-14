@@ -9,9 +9,10 @@ export const useLongPress = <T>(
   const isLongPress = useRef<boolean>(false);
 
   const start = useCallback(
-    (event?: T) => {
+    (event) => {
       isLongPress.current = false; // Reset on each start
       if (event) {
+        event.stopPropagation();
         timerRef.current = setTimeout(() => {
           isLongPress.current = true;
           onLongPress(event);
