@@ -257,7 +257,7 @@ syncMiddleware.startListening({
   actionCreator: syncAddressState,
   effect: async (action, listenerApi) => {
     // collect syncAddressState actions over a short window
-    const batchTimeout = 20; // milliseconds
+    const batchTimeout = 100; // milliseconds
     const collectedActions: Array<ReturnType<typeof action>> = [];
 
     // use listenerApi.take to collect additional syncAddressState actions
