@@ -12,6 +12,7 @@ import {
   setPreference,
   selectShouldShowMemoCard,
   selectShouldShowOutputsCard,
+  selectBchNetwork,
 } from "@/redux/preferences";
 import { selectActiveWalletHash } from "@/redux/wallet";
 
@@ -47,6 +48,7 @@ function WalletViewSendSuccess() {
 
   const walletHash = useSelector(selectActiveWalletHash);
   const { localCurrency } = useSelector(selectCurrencySettings);
+  const bchNetwork = useSelector(selectBchNetwork);
 
   const [memo, setMemo] = useState(prefillMemo || "");
 
@@ -59,10 +61,11 @@ function WalletViewSendSuccess() {
 
     memoSaveRef.current = setTimeout(
       () =>
-        TransactionHistoryService(walletHash, localCurrency).setTransactionMemo(
-          tx.txid,
-          event.target.value
-        ),
+        TransactionHistoryService(
+          walletHash,
+          localCurrency,
+          bchNetwork
+        ).setTransactionMemo(tx.txid, event.target.value),
       1250
     );
   };

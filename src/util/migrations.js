@@ -103,10 +103,22 @@ const appdb_migrations = [
 
     return query.join("");
   },
-  /*function migrate_v4() {
+  function migrate_v4() {
     const query = [];
 
+    // add coinbase column to transaction table
+    query.push(
+      "ALTER TABLE transactions ADD COLUMN coinbase text default null;"
+    );
+
     query.push("PRAGMA user_version = 5;");
+
+    return query.join("");
+  },
+  /*function migrate_v5() {
+    const query = [];
+
+    query.push("PRAGMA user_version = 6;");
 
     return query.join("");
   },*/
