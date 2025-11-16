@@ -8,7 +8,7 @@ import {
 
 import { RootState } from "@/redux";
 import { selectActiveWalletHash } from "@/redux/wallet";
-import { selectCurrencySettings } from "@/redux/preferences";
+import { selectCurrencySettings, selectBchNetwork } from "@/redux/preferences";
 
 import LogService from "@/services/LogService";
 import TransactionHistoryService from "@/services/TransactionHistoryService";
@@ -48,11 +48,13 @@ export const txHistoryFetch = createAsyncThunk(
   "txHistory/fetch",
   async (payload, thunkApi) => {
     const walletHash = selectActiveWalletHash(thunkApi.getState());
+    const bchNetwork = selectBchNetwork(thunkApi.getState());
     const { localCurrency } = selectCurrencySettings(thunkApi.getState());
     const { searchQuery = "", filters } = thunkApi.getState().txHistory;
     const txHistory = await TransactionHistoryService(
       walletHash,
-      localCurrency
+      localCurrency,
+      bchNetwork
     ).resolveTransactionHistory(
       0,
       DEFAULT_HISTORY_PAGE_LENGTH,
@@ -70,13 +72,15 @@ export const txHistoryFetchMore = createAsyncThunk(
   "txHistory/fetchMore",
   async (payload: number, thunkApi) => {
     const walletHash = selectActiveWalletHash(thunkApi.getState());
+    const bchNetwork = selectBchNetwork(thunkApi.getState());
     const { localCurrency } = selectCurrencySettings(thunkApi.getState());
     const { searchQuery = "", filters } = thunkApi.getState().txHistory;
     const page = payload;
 
     const txHistory = await TransactionHistoryService(
       walletHash,
-      localCurrency
+      localCurrency,
+      bchNetwork
     ).resolveTransactionHistory(
       page * DEFAULT_HISTORY_PAGE_LENGTH,
       DEFAULT_HISTORY_PAGE_LENGTH,

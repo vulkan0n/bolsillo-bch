@@ -38,6 +38,7 @@ export interface TransactionEntity extends TransactionStub {
 export interface TransactionInput extends LibauthInput {
   txid: string;
   vout: number;
+  coinbase?: string;
 }
 
 export interface VoutScriptPubKey {
@@ -77,7 +78,8 @@ export default function TransactionManagerService() {
 
   // resolveTransaction: load transaction from db, fetch it from electrum if we don't have it
   async function resolveTransaction(
-    tx_hash: string
+    tx_hash: string,
+    network: ValidBchNetwork = "mainnet"
   ): Promise<TransactionEntity> {
     try {
       const localTx = await getTransactionByHash(tx_hash);
@@ -91,7 +93,7 @@ export default function TransactionManagerService() {
       return localTx;
     } catch (e) {
       // if there's any problem retrieving the tx locally, try to resolve it
-      const Electrum = ElectrumService();
+      const Electrum = ElectrumService(network);
       const remoteTx = await Electrum.requestTransaction(tx_hash);
       //Log.debug("resolveTransaction", "remote", tx_hash, remoteTx);
       const registeredTx = await _registerTransaction(remoteTx);
@@ -140,14 +142,8 @@ export default function TransactionManagerService() {
     const { txid: tx_hash, hex: tx_hex } = tx;
 
     const Electrum = ElectrumService(network);
-    if (!Electrum.getIsConnected()) {
-      try {
-        await Electrum.connect();
-      } catch (e) {
-        throw new Error("Connection Timeout");
-      }
-    }
 
+    Log.debug("sendTransaction attempting broadcast");
     const result = await Electrum.broadcastTransaction(tx_hex);
     const isSuccess = result === tx_hash;
 
@@ -278,6 +274,7 @@ export default function TransactionManagerService() {
     const blockhash = tx.blockhash ? tx.blockhash : null;
     const blocktime = tx.blocktime ? tx.blocktime : null;
     const time = tx.time ? tx.time : Math.floor(Date.now() / 1000);
+    const coinbase = tx.vin[0].coinbase || null;
 
     const result = APP_DB.exec(
       `INSERT INTO transactions (
@@ -287,9 +284,10 @@ export default function TransactionManagerService() {
         time,
         blocktime,
         version,
-        height
+        height,
+        coinbase
       )
-      VALUES ($txid, $size, $blockhash, $time, $blocktime, $version, $height)
+      VALUES ($txid, $size, $blockhash, $time, $blocktime, $version, $height, $coinbase)
       ON CONFLICT DO
         UPDATE SET
           size=$size,
@@ -307,6 +305,7 @@ export default function TransactionManagerService() {
         $blocktime: blocktime,
         $version: tx.version,
         $height: tx.height,
+        $coinbase: coinbase,
       }
     )[0];
 
@@ -317,6 +316,10 @@ export default function TransactionManagerService() {
 
     // reconstruct "vout" from raw hex
     const vout = getVoutFromDecodedTransaction(decodedTx);
+
+    if (coinbase !== null) {
+      vin[0].coinbase = coinbase;
+    }
 
     const finalTx = { ...result, vin, vout };
 
@@ -346,6 +349,10 @@ export default function TransactionManagerService() {
 
     // reconstruct "vout" from raw hex
     const vout = getVoutFromDecodedTransaction(decodedTx);
+
+    if (localTx.coinbase !== null) {
+      vin[0].coinbase = localTx.coinbase;
+    }
 
     const tx = { ...localTx, vin, vout };
 

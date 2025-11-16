@@ -35,6 +35,7 @@ import {
   selectCurrencySettings,
   selectPrivacySettings,
   selectIsExperimental,
+  selectBchNetwork,
 } from "@/redux/preferences";
 import translations from "../translations";
 import { translate } from "@/util/translations";
@@ -195,6 +196,7 @@ export default function WalletViewHistory() {
   const dispatch = useDispatch();
   const { txHistory, hasMore, isLoading } = useTransactionHistory();
   const { syncPending } = useSelector(selectSyncState);
+  const bchNetwork = useSelector(selectBchNetwork);
   const searchQuery = useSelector(selectSearchQuery);
   const filters = useSelector(selectTxHistoryFilters);
   const [shouldShowFilters, setShouldShowFilters] = useState(false);
@@ -266,7 +268,8 @@ export default function WalletViewHistory() {
     try {
       const HistoryService = TransactionHistoryService(
         walletHash,
-        localCurrency
+        localCurrency,
+        bchNetwork
       );
       const TransactionManager = TransactionManagerService();
 

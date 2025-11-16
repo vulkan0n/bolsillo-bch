@@ -5,6 +5,9 @@ import ExploreViewHome from "@/views/explore/ExploreViewHome";
 
 import TransactionManagerService from "@/services/TransactionManagerService";
 
+import { selectBchNetwork } from "@/redux/preferences";
+import { store } from "@/redux";
+
 export const routeExplore = [
   {
     path: "/explore",
@@ -23,7 +26,11 @@ export const routeExplore = [
           return { Component: ExploreTransactionView };
         },
         loader: async ({ params }) => {
-          return TransactionManagerService().resolveTransaction(params.txid);
+          const bchNetwork = selectBchNetwork(store.getState());
+          return TransactionManagerService().resolveTransaction(
+            params.txid,
+            bchNetwork
+          );
         },
       },
       /*{

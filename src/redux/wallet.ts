@@ -103,6 +103,8 @@ export const walletSyncDiff = createAsyncThunk(
     const currentBalance = BigInt(sqlWallet.balance);
     const currentSpendableBalance = BigInt(sqlWallet.spendable_balance);
 
+    Log.debug("wallet/syncDiff", previousBalance, currentBalance, utxoDiff);
+
     if (currentBalance > previousBalance) {
       thunkApi.dispatch(walletReceive({ wallet, utxoDiff }));
     }

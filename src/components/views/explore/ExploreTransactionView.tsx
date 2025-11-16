@@ -14,6 +14,7 @@ import toast from "react-hot-toast";
 import {
   selectCurrencySettings,
   selectIsExperimental,
+  selectBchNetwork,
 } from "@/redux/preferences";
 import { selectActiveWalletHash } from "@/redux/wallet";
 import { selectChaintip } from "@/redux/sync";
@@ -21,6 +22,7 @@ import { selectChaintip } from "@/redux/sync";
 import TransactionHistoryService from "@/services/TransactionHistoryService";
 import TransactionManagerService, {
   TransactionOutput,
+  TransactionEntity,
 } from "@/services/TransactionManagerService";
 import TokenManagerService from "@/services/TokenManagerService";
 import TransactionExportService, {
@@ -51,21 +53,20 @@ export default function ExploreTransactionView() {
   const tx = useLoaderData();
 
   const isExperimental = useSelector(selectIsExperimental);
+  const bchNetwork = useSelector(selectBchNetwork);
 
   const walletHash = useSelector(selectActiveWalletHash);
   const { localCurrency } = useSelector(selectCurrencySettings);
   const chaintip = useSelector(selectChaintip);
 
   const TransactionHistory = useMemo(
-    () => TransactionHistoryService(walletHash, localCurrency),
-    [walletHash, localCurrency]
+    () => TransactionHistoryService(walletHash, localCurrency, bchNetwork),
+    [walletHash, localCurrency, bchNetwork]
   );
   const [isExporting, setIsExporting] = useState(false);
 
   const [memo, setMemo] = useState(
-    TransactionHistoryService(walletHash, localCurrency).getTransactionMemo(
-      tx.txid
-    ) || ""
+    TransactionHistory.getTransactionMemo(tx.txid) || ""
   );
 
   useEffect(
@@ -89,10 +90,7 @@ export default function ExploreTransactionView() {
 
   const handleSaveMemo = (newMemo) => {
     setMemo(newMemo);
-    TransactionHistoryService(walletHash, localCurrency).setTransactionMemo(
-      tx.txid,
-      newMemo
-    );
+    TransactionHistory.setTransactionMemo(tx.txid, newMemo);
   };
 
   const handleExportAsPdf = async () => {
@@ -343,27 +341,43 @@ function OutputListItem({
 }
 
 function InputListItem({ input, i }) {
-  const zebraCss = i % 2 === 0 ? "bg-neutral-100" : "bg-neutral-50";
+  const bchNetwork = useSelector(selectBchNetwork);
+  const zebraCss =
+    i % 2 === 0
+      ? "bg-primary-100 dark:bg-primarydark-100 dark:text-neutral-100"
+      : "bg-primary-50 dark:bg-primarydark-50 dark:text-neutral-100";
 
-  const [inputTx, setInputTx] = useState(null);
+  const [inputTx, setInputTx] = useState<TransactionEntity | null>(null);
+
+  const isCoinbase = !!input.coinbase;
+  const coinbaseText = hexToUtf8(input.coinbase);
 
   useEffect(
     function resolveInput() {
       const resolve = async () => {
         const resolvedTx = await TransactionManagerService().resolveTransaction(
-          input.txid
+          input.txid,
+          bchNetwork
         );
         setInputTx(resolvedTx);
       };
-      resolve();
+
+      // coinbase txid is not a valid txid
+      if (!isCoinbase) {
+        resolve();
+      }
     },
-    [input.txid]
+    [input.txid, bchNetwork, isCoinbase]
   );
 
   const ResolvedInput = useCallback(() => {
     if (inputTx === null) {
-      return (
-        <div className={`p-1.5  ${zebraCss} truncate tracking-tight`}>
+      return isCoinbase ? (
+        <div className={`p-1.5 ${zebraCss} truncate font-bold font-mono`}>
+          &lt;COINBASE&gt; {coinbaseText}
+        </div>
+      ) : (
+        <div className={`p-1.5 ${zebraCss} truncate tracking-tight`}>
           <Link className="font-mono text-xs" to={`/explore/tx/${input.txid}`}>
             {input.txid}:{input.vout}
           </Link>
@@ -378,7 +392,7 @@ function InputListItem({ input, i }) {
         <OutputListItem output={output} i={i} />
       </Link>
     );
-  }, [inputTx, input.txid, zebraCss, i, input.vout]);
+  }, [inputTx, input.txid, zebraCss, i, input.vout, coinbaseText, isCoinbase]);
 
   return <ResolvedInput />;
 }

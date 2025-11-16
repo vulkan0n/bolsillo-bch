@@ -10,6 +10,7 @@ import {
   redux_pre_init,
   redux_post_init,
   redux_resume,
+  redux_pause,
 } from "@/redux";
 import Main from "@/Main";
 
@@ -71,5 +72,6 @@ async function app_resume() {
 
 function app_pause() {
   Log.time("APP_PAUSE");
+  redux_pause();
   Log.timeEnd("APP_PAUSE");
 }

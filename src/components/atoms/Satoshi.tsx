@@ -38,7 +38,7 @@ export default function Satoshi({
 
   const formatSatoshis = useCallback(
     (amount) => {
-      if (!amount && amount.toString() !== "0") {
+      if (!amount && amount?.toString() !== "0") {
         return {
           bch: "-",
           sats: "-",

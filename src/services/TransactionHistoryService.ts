@@ -10,6 +10,8 @@ import CurrencyService from "@/services/CurrencyService";
 import TokenManagerService from "@/services/TokenManagerService";
 import { binToHex } from "@/util/hex";
 import { convertCashAddress } from "@/util/cashaddr";
+import { COINBASE_TXID } from "@/util/blockchain";
+import { ValidBchNetwork } from "@/util/electrum_servers";
 
 const Log = LogService("TransactionHistoryService");
 
@@ -59,7 +61,8 @@ export interface PaginatedHistoryResult {
 
 export default function TransactionHistoryService(
   walletHash: string,
-  fiatCurrency
+  fiatCurrency,
+  network: ValidBchNetwork = "mainnet"
 ) {
   const Database = DatabaseService();
   const APP_DB = Database.getAppDatabase();
@@ -375,7 +378,7 @@ export default function TransactionHistoryService(
 
     const hasMore = start + limit < total;
 
-    if (!ElectrumService().getIsConnected()) {
+    if (!ElectrumService(network).getIsConnected()) {
       return {
         transactions: mergedHistory,
         hasMore,
@@ -437,7 +440,10 @@ export default function TransactionHistoryService(
 
       return addressTx;
     } catch (e) {
-      const tx = await TransactionManagerService().resolveTransaction(tx_hash);
+      const tx = await TransactionManagerService().resolveTransaction(
+        tx_hash,
+        network
+      );
       const { amount, tokens } = await calculateTxAmount(tx);
       const updatedAddressTx = updateTxAmount(tx.txid, amount);
       await TokenManager.registerTokenHistory(tx.txid, tokens);
@@ -464,6 +470,7 @@ export default function TransactionHistoryService(
 
     // de-duplicate requested transaction ids
     const vinTxHashes = tx.vin
+      .filter((vin) => vin.txid !== COINBASE_TXID) // filter coinbase inputs
       .map((vin) => vin.txid)
       .reduce(
         (txes, txid) =>
@@ -473,7 +480,9 @@ export default function TransactionHistoryService(
 
     // resolve vins to real txos
     const vinTxes = await Promise.all(
-      vinTxHashes.map((txid) => TransactionManager.resolveTransaction(txid))
+      vinTxHashes.map((txid) =>
+        TransactionManager.resolveTransaction(txid, network)
+      )
     );
 
     // for each input tx, get outputs.

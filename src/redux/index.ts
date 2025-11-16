@@ -7,7 +7,7 @@ import {
   preferencesInit,
 } from "./preferences";
 import { walletReducer, walletBoot, addressReducer } from "./wallet";
-import { syncReducer, syncMiddleware, syncReconnect } from "./sync";
+import { syncReducer, syncMiddleware, syncPause, syncResume } from "./sync";
 import { deviceReducer, deviceInit } from "./device";
 import { txHistoryReducer } from "./txHistory";
 import {
@@ -62,14 +62,19 @@ export async function redux_init() {
 export async function redux_post_init() {
   Log.debug("redux_post_init");
   store.dispatch(walletConnectInit());
-  store.dispatch(fetchExchangeRates(0));
   store.dispatch(triggerCheckIn());
+  store.dispatch(fetchExchangeRates(0));
 }
 
 export async function redux_resume() {
   Log.debug("redux_resume");
-  store.dispatch(syncReconnect());
+  store.dispatch(syncResume());
   store.dispatch(walletConnectInit());
-  store.dispatch(fetchExchangeRates(0));
   store.dispatch(triggerCheckIn());
+  store.dispatch(fetchExchangeRates(0));
+}
+
+export async function redux_pause() {
+  Log.debug("redux_pause");
+  store.dispatch(syncPause());
 }
