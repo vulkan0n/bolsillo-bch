@@ -909,7 +909,7 @@ export function buildSweepTransaction(
       inputs: inputDirectives,
       outputs: [
         {
-          lockingBytecode: receivingBytecode.bytecode,
+          lockingBytecode: receivingBytecode,
           valueSatoshis: totalSats - feeSats,
         },
       ],

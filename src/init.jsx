@@ -5,12 +5,12 @@ import LogService from "@/services/LogService";
 import JanitorService from "@/services/JanitorService";
 import DatabaseService from "@/services/DatabaseService";
 import BcmrService from "@/services/BcmrService";
-import ElectrumService from "@/services/ElectrumService";
 import {
   redux_init,
   redux_pre_init,
   redux_post_init,
   redux_resume,
+  redux_pause,
 } from "@/redux";
 import Main from "@/Main";
 
@@ -72,6 +72,6 @@ async function app_resume() {
 
 function app_pause() {
   Log.time("APP_PAUSE");
-  ElectrumService().disconnect(true);
+  redux_pause();
   Log.timeEnd("APP_PAUSE");
 }

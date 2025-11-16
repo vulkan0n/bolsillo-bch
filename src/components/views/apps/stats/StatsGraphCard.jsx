@@ -75,7 +75,7 @@ export default function StatsGraphCard() {
         {isReady && <ActiveUsersChart data={data} period={period} />}
       </div>
 
-      <div className="w-full flex justify-around items-center py-0.5">
+      <div className="w-full flex flex-wrap justify-around items-center py-0.5">
         <Button
           label={translate(translations.daily)}
           labelSize="md"

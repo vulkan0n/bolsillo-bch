@@ -62,7 +62,7 @@ export default function CreditsView() {
           <h2 className="text-xl font-bold">
             {translate(translations.developedWith)}
           </h2>
-          <h2 className="font-bold text-xl flex justify-center gap-x-1">
+          <h2 className="font-bold text-xl flex justify-center flex-wrap gap-x-1">
             <LinkExternal to="https://kallisti.io" className="underline">
               Kallisti.cash
             </LinkExternal>

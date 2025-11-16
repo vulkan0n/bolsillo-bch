@@ -164,7 +164,12 @@ export const syncConnectionUp = createAsyncThunk(
 );
 
 // syncConnectionDown: fired if electrum connection goes down
-export const syncConnectionDown = createAction("sync/down");
+export const syncConnectionDown = createAsyncThunk(
+  "sync/down",
+  async (payload, thunkApi) => {
+    thunkApi.dispatch(syncDisconnect());
+  }
+);
 
 export const syncSubscriptions = createAsyncThunk(
   "sync/subscriptions",
@@ -223,7 +228,7 @@ export const syncSubscriptions = createAsyncThunk(
 
     const Electrum = ElectrumService(bchNetwork);
 
-    Promise.all(
+    await Promise.all(
       addresses.map(async (address) => {
         try {
           await Electrum.subscribeToAddress(address);
@@ -257,7 +262,7 @@ syncMiddleware.startListening({
   actionCreator: syncAddressState,
   effect: async (action, listenerApi) => {
     // collect syncAddressState actions over a short window
-    const batchTimeout = 20; // milliseconds
+    const batchTimeout = 100; // milliseconds
     const collectedActions: Array<ReturnType<typeof action>> = [];
 
     // use listenerApi.take to collect additional syncAddressState actions
@@ -330,9 +335,9 @@ syncMiddleware.startListening({
         { diffIn: [] as string[], diffOut: [] as string[] }
       );
 
-    listenerApi.dispatch(syncUtxoDiffs(aggregateDiffs));
-    listenerApi.dispatch(syncSubscriptionCount(-addressStates.length));
-    listenerApi.dispatch(syncComplete());
+    await listenerApi.dispatch(syncUtxoDiffs(aggregateDiffs));
+    await listenerApi.dispatch(syncSubscriptionCount(-addressStates.length));
+    await listenerApi.dispatch(syncComplete());
   },
 });
 
@@ -550,6 +555,20 @@ export const syncComplete = createAsyncThunk(
   }
 );
 
+export const syncPause = createAsyncThunk("sync/pause", async () => {});
+
+export const syncResume = createAsyncThunk(
+  "sync/resume",
+  async (payload, thunkApi) => {
+    const bchNetwork = selectBchNetwork(thunkApi.getState());
+    const Electrum = ElectrumService(bchNetwork);
+
+    if (!Electrum.getIsConnected()) {
+      thunkApi.dispatch(syncReconnect());
+    }
+  }
+);
+
 export const syncFlushDiff = createAction("sync/flushDiff");
 
 syncMiddleware.startListening({
@@ -621,7 +640,7 @@ export const syncReducer = createReducer(initialState, (builder) => {
       state.isConnected = true;
       state.server = action.payload;
     })
-    .addCase(syncConnectionDown, (state) => {
+    .addCase(syncConnectionDown.fulfilled, (state) => {
       state.isConnected = false;
       state.syncPending = initialPending;
     })
@@ -667,10 +686,15 @@ export const syncReducer = createReducer(initialState, (builder) => {
     })
     .addCase(syncSubscriptions.pending, (state) => {
       state.isSyncComplete = false;
+      state.syncPending.subscription += 1;
       state.syncDiff = { ...initialDiff };
     })
     .addCase(syncSubscriptions.fulfilled, (state, action) => {
       state.subscriptions = action.payload;
+      state.syncPending.subscription -= 1;
+    })
+    .addCase(syncSubscriptions.rejected, (state) => {
+      state.syncPending.subscription -= 1;
     })
     .addCase(syncPopulateAddresses.pending, (state) => {
       state.syncPending.populate += 1;

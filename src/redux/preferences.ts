@@ -46,6 +46,7 @@ const defaultPreferences = {
   allowInstantPay: "false",
   instantPayThreshold: "2000000", // 0.02 BCH (~$9 USD @ $450)
   instantPayThresholdFiat: "10", // $10 USD (default)
+  forceTokenAddress: "false",
   // --------
   // QR Code (move to wallet db?)
   qrCodeLogo: "Selene",
@@ -138,6 +139,7 @@ function validatePreferences(preferences: ValidPreferences): boolean {
     "showMemoCard",
     "showOutputsCard",
     "stablecoinMode",
+    "forceTokenAddress",
   ];
 
   const invalidBools = boolKeys.filter(
@@ -408,6 +410,11 @@ export const selectLastCheckIn = createSelector(
 export const selectShouldUseTokenAddress = createSelector(
   (state: RootState) => state.preferences,
   (preferences) => preferences.useTokenAddress === "true"
+);
+
+export const selectShouldForceTokenAddress = createSelector(
+  (state: RootState) => state.preferences,
+  (preferences) => preferences.forceTokenAddress === "true"
 );
 
 export const selectLastAssetsPath = createSelector(

@@ -6,7 +6,7 @@ import DatabaseService from "@/services/DatabaseService";
 import ElectrumService from "@/services/ElectrumService";
 import { hexToBin, binToHex } from "@/util/hex";
 import { sha256 } from "@/util/hash";
-import { block_checkpoints } from "@/util/block_checkpoints";
+import { block_checkpoints } from "@/util/blockchain";
 import { ValidBchNetwork } from "@/util/electrum_servers";
 
 const Log = LogService("Blockchain");

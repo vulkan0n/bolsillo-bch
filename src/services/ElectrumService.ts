@@ -9,6 +9,7 @@ import { store } from "@/redux";
 import { setPreference } from "@/redux/preferences";
 import {
   syncConnectionUp,
+  syncConnectionDown,
   syncAddressState,
   syncChaintip,
   selectChaintip,
@@ -47,13 +48,16 @@ const electrum_handles = new Map<
 const server_blacklist: Array<string> = [];
 const pendingTxRequests: Array<Promise<object>> = [];
 
+interface WithListenersI {
+  connected: () => void;
+  notification: (data: unknown) => void;
+  disconnected: () => void;
+}
+
 // ElectrumService: brokers interactions with electrum server
 export default function ElectrumService(
-  bchNetwork: ValidBchNetwork = "mainnet"
+  bchNetwork: ValidBchNetwork | "cauldron" = "mainnet"
 ) {
-  let electrum: ElectrumClient<ElectrumClientEvents> | null =
-    electrum_handles.get(bchNetwork) || null;
-
   return {
     connect,
     disconnect,
@@ -63,7 +67,6 @@ export default function ElectrumService(
     //requestBalance,
     requestAddressState,
     requestAddressHistory,
-    requestScripthashHistory,
     requestUtxos,
     requestUtxoInfo,
     requestTransaction,
@@ -75,27 +78,23 @@ export default function ElectrumService(
     selectFallbackServer,
     getElectrumHost,
     getElectrumClient,
+    getElectrumHandle,
   };
 
   // connect: connect to an Electrum server
   // Creates a new ElectrumClient every time
-  async function connect(server?: string, withListeners = true) {
+  async function connect(server?: string, withListeners?: WithListenersI) {
     const server_list = electrum_servers[bchNetwork];
 
     const connectServer = server || server_list[0];
 
     Log.log("Connecting to", connectServer, bchNetwork);
 
-    if (electrum !== null) {
-      // force disconnect old electrum object to ensure all handlers are cleared
-      if (electrum.status !== ConnectionStatus.DISCONNECTED) {
-        await electrum.disconnect(true);
-      }
+    // force disconnect old electrum object to ensure all handlers are cleared
+    await disconnect(true);
 
-      // explicitly set electrum to null to prompt garbage collection
-      electrum = null;
-      electrum_handles.set(bchNetwork, null);
-    }
+    // explicitly nullify electrum handle to prompt garbage collection
+    electrum_handles.set(bchNetwork, null);
 
     // pre-configure the Electrum socket
     const parts = ElectrumServer.toParts(connectServer);
@@ -107,50 +106,55 @@ export default function ElectrumService(
         : ELECTRUM_PROTOCOL_VERSION;
 
     // create a new ElectrumClient every time to enable server switching
-    electrum = new ElectrumClient("Selene.cash", protocolVersion, socket);
+    const electrum = new ElectrumClient(
+      "Selene.cash",
+      protocolVersion,
+      socket,
+      { disableBrowserVisibilityHandling: true }
+    );
+
     electrum_handles.set(bchNetwork, electrum);
 
     // need to establish listeners every time we recreate the ElectrumClient
-    if (withListeners) {
-      electrum.addListener("connected", () => {
-        if (typeof withListeners.connected === "function") {
-          withListeners.connected();
-        } else {
-          Log.log("ELECTRUM CONNECTED", getElectrumHost());
-          store.dispatch(syncConnectionUp());
-        }
-      });
+    electrum.addListener("connected", () => {
+      Log.log("ELECTRUM CONNECTED", connectServer, bchNetwork);
+      if (withListeners && typeof withListeners.connected === "function") {
+        withListeners.connected();
+      } else {
+        store.dispatch(syncConnectionUp());
+      }
+    });
 
-      electrum.addListener("notification", (data) => {
-        if (typeof withListeners.notification === "function") {
-          withListeners.notification(data);
-        } else {
-          handleElectrumNotifications(data);
-        }
-      });
+    electrum.addListener("notification", (data) => {
+      if (withListeners && typeof withListeners.notification === "function") {
+        withListeners.notification(data);
+      } else {
+        handleElectrumNotifications(data);
+      }
+    });
 
-      electrum.addListener("disconnected", () => {
-        if (typeof withListeners.disconnected === "function") {
-          withListeners.disconnected();
-        } else {
-          Log.log("ELECTRUM DISCONNECTED");
-        }
-      });
+    electrum.addListener("disconnected", () => {
+      Log.log("ELECTRUM DISCONNECTED", bchNetwork);
+      if (withListeners && typeof withListeners.disconnected === "function") {
+        withListeners.disconnected();
+      } else {
+        store.dispatch(syncConnectionDown());
+      }
+    });
 
-      electrum.addListener("connecting", () => {
-        Log.debug("connecting...");
-      });
+    electrum.addListener("connecting", () => {
+      Log.debug(bchNetwork, "connecting...");
+    });
 
-      electrum.addListener("reconnecting", () => {
-        Log.debug("reconnecting...");
-      });
+    electrum.addListener("reconnecting", () => {
+      Log.debug(bchNetwork, "reconnecting...");
+    });
 
-      electrum.addListener("disconnecting", () => {
-        Log.debug("disconnecting...");
-      });
+    electrum.addListener("disconnecting", () => {
+      Log.debug(bchNetwork, "disconnecting...");
+    });
 
-      electrum.addListener("error", handleElectrumError);
-    }
+    electrum.addListener("error", handleElectrumError);
 
     try {
       await electrum.connect();
@@ -171,24 +175,24 @@ export default function ElectrumService(
 
   // disconnect: disconnect the Electrum instance
   async function disconnect(force: boolean) {
-    if (electrum !== null) {
+    const electrum = getElectrumHandle();
+    if (electrum) {
       Log.debug("electrum disconnect");
       return electrum.disconnect(force);
     }
 
-    electrum = null;
     return true;
   }
 
   function getIsConnected() {
-    return electrum !== null
-      ? electrum.status === ConnectionStatus.CONNECTED
-      : false;
+    const electrum = getElectrumHandle();
+    return electrum ? electrum.status === ConnectionStatus.CONNECTED : false;
   }
 
   // subscribeToAddress: listen for updates on an address
   async function subscribeToAddress(address: AddressEntity): Promise<void> {
-    if (electrum === null || electrum.status !== ConnectionStatus.CONNECTED) {
+    const electrum = getElectrumHandle();
+    if (!electrum || electrum.status !== ConnectionStatus.CONNECTED) {
       throw new ElectrumNotConnectedError();
     }
 
@@ -210,7 +214,8 @@ export default function ElectrumService(
   }
 
   async function subscribeToChaintip(): Promise<void> {
-    if (electrum === null || electrum.status !== ConnectionStatus.CONNECTED) {
+    const electrum = getElectrumHandle();
+    if (!electrum || electrum.status !== ConnectionStatus.CONNECTED) {
       throw new ElectrumNotConnectedError();
     }
 
@@ -251,9 +256,11 @@ export default function ElectrumService(
 
   // request the most up-to-date state hash for an address
   async function requestAddressState(address: string) {
-    if (electrum === null || electrum.status !== ConnectionStatus.CONNECTED) {
+    const electrum = getElectrumHandle();
+    if (!electrum || electrum.status !== ConnectionStatus.CONNECTED) {
       throw new ElectrumNotConnectedError();
     }
+
     const addressState = await electrum.request(
       "blockchain.address.subscribe",
       address
@@ -272,7 +279,8 @@ export default function ElectrumService(
     startHeight: number = 0,
     endHeight: number = -1
   ) {
-    if (electrum === null || electrum.status !== ConnectionStatus.CONNECTED) {
+    const electrum = getElectrumHandle();
+    if (!electrum || electrum.status !== ConnectionStatus.CONNECTED) {
       throw new ElectrumNotConnectedError();
     }
 
@@ -290,27 +298,10 @@ export default function ElectrumService(
     return history;
   }
 
-  // request the transaction history for a scripthash
-  async function requestScripthashHistory(scripthash: string) {
-    if (electrum === null || electrum.status !== ConnectionStatus.CONNECTED) {
-      throw new ElectrumNotConnectedError();
-    }
-
-    const history = await electrum.request(
-      "blockchain.scripthash.get_history",
-      scripthash
-    );
-
-    if (history instanceof Error) {
-      throw history;
-    }
-
-    return history;
-  }
-
   // request all current UTXOs for an address
   async function requestUtxos(address: string) {
-    if (electrum === null || electrum.status !== ConnectionStatus.CONNECTED) {
+    const electrum = getElectrumHandle();
+    if (!electrum || electrum.status !== ConnectionStatus.CONNECTED) {
       throw new ElectrumNotConnectedError();
     }
 
@@ -327,7 +318,8 @@ export default function ElectrumService(
   }
 
   async function requestUtxoInfo(tx_hash: string, tx_pos: number) {
-    if (electrum === null || electrum.status !== ConnectionStatus.CONNECTED) {
+    const electrum = getElectrumHandle();
+    if (!electrum || electrum.status !== ConnectionStatus.CONNECTED) {
       throw new ElectrumNotConnectedError();
     }
 
@@ -342,7 +334,8 @@ export default function ElectrumService(
 
   // request a transaction by its txid
   async function requestTransaction(tx_hash: string, verbose: boolean = true) {
-    if (electrum === null || electrum.status !== ConnectionStatus.CONNECTED) {
+    const electrum = getElectrumHandle();
+    if (!electrum || electrum.status !== ConnectionStatus.CONNECTED) {
       throw new ElectrumNotConnectedError();
     }
 
@@ -382,7 +375,8 @@ export default function ElectrumService(
 
   // requestMerkle: request merkle proof for a transaction
   async function requestMerkle(tx_hash, height) {
-    if (electrum === null || electrum.status !== ConnectionStatus.CONNECTED) {
+    const electrum = getElectrumHandle();
+    if (!electrum || electrum.status !== ConnectionStatus.CONNECTED) {
       throw new ElectrumNotConnectedError();
     }
 
@@ -401,7 +395,8 @@ export default function ElectrumService(
       throw new Error("height must be non-negative integer");
     }
 
-    if (electrum === null || electrum.status !== ConnectionStatus.CONNECTED) {
+    const electrum = getElectrumHandle();
+    if (!electrum || electrum.status !== ConnectionStatus.CONNECTED) {
       throw new ElectrumNotConnectedError();
     }
 
@@ -421,12 +416,17 @@ export default function ElectrumService(
 
   // requestBlock: request a block by height or hash
   async function requestBlock(blockhashOrHeight: string | number) {
+    const electrum = getElectrumHandle();
+    if (!electrum) {
+      throw new ElectrumNotConnectedError();
+    }
+
     const block = await electrum.request(
       "blockchain.header.get",
       blockhashOrHeight
     );
 
-    if (block instanceof Error) {
+    if (typeof block !== "object" || block instanceof Error) {
       throw block;
     }
 
@@ -439,17 +439,9 @@ export default function ElectrumService(
   }
 
   async function broadcastTransaction(tx_hex): Promise<string> {
-    if (electrum === null) {
+    const electrum = getElectrumHandle();
+    if (!electrum) {
       throw new ElectrumNotConnectedError();
-    }
-
-    if (electrum.status !== ConnectionStatus.CONNECTED) {
-      return new Promise((resolve) => {
-        setTimeout(() => {
-          Log.debug("retry broadcast");
-          resolve(broadcastTransaction(tx_hex));
-        }, 120);
-      });
     }
 
     const tx_hash = await electrum.request(
@@ -524,15 +516,22 @@ export default function ElectrumService(
   }
 
   function getElectrumHost(): string {
+    const electrum = getElectrumHandle();
     return electrum ? electrum.hostIdentifier : "";
   }
 
   function getElectrumClient() {
-    if (electrum === null) {
+    const electrum = getElectrumHandle();
+    if (!electrum) {
       throw new ElectrumNotConnectedError();
     }
 
     return electrum;
+  }
+
+  function getElectrumHandle(network?) {
+    const networkHandle = network || bchNetwork;
+    return electrum_handles.get(networkHandle);
   }
 }
 

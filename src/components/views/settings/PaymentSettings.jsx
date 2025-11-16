@@ -4,11 +4,14 @@ import {
   SendOutlined,
   ThunderboltOutlined,
   PropertySafetyOutlined,
+  AlertOutlined,
 } from "@ant-design/icons";
 
 import {
   selectInstantPaySettings,
   selectCurrencySettings,
+  selectIsExperimental,
+  selectShouldForceTokenAddress,
 } from "@/redux/preferences";
 
 import { translate } from "@/util/translations";
@@ -20,6 +23,7 @@ import CurrencyService from "@/services/CurrencyService";
 import SecurityService, { AuthActions } from "@/services/SecurityService";
 
 import Accordion from "@/atoms/Accordion";
+import Checkbox from "@/atoms/Checkbox";
 import CurrencySymbol from "@/atoms/CurrencySymbol";
 import { SatoshiInput } from "@/atoms/SatoshiInput";
 
@@ -31,6 +35,10 @@ export default function PaymentSettings() {
   const { localCurrency, shouldPreferLocalCurrency } = useSelector(
     selectCurrencySettings
   );
+
+  const isExperimental = useSelector(selectIsExperimental);
+
+  const shouldForceTokenAddress = useSelector(selectShouldForceTokenAddress);
 
   const Currency = CurrencyService(localCurrency);
 
@@ -59,8 +67,7 @@ export default function PaymentSettings() {
         icon={ThunderboltOutlined}
         label={translate(translations.allowInstantPay)}
       >
-        <input
-          type="checkbox"
+        <Checkbox
           checked={isInstantPayEnabled}
           onChange={async (event) => {
             const { checked: isChecked } = event.target;
@@ -90,6 +97,19 @@ export default function PaymentSettings() {
           />
         </span>
       </Accordion.Child>
+      {isExperimental && (
+        <Accordion.Child
+          icon={AlertOutlined}
+          label="Allow sending tokens to non-token addresses"
+        >
+          <Checkbox
+            checked={shouldForceTokenAddress}
+            onChange={(event) => {
+              handleSettingsUpdate("forceTokenAddress", event.target.checked);
+            }}
+          />
+        </Accordion.Child>
+      )}
     </Accordion>
   );
 }

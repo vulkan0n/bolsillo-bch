@@ -11,6 +11,7 @@ import {
   selectCurrencySettings,
   selectInstantPaySettings,
   selectIsOfflineMode,
+  selectBchNetwork,
 } from "@/redux/preferences";
 
 import TransactionManagerService from "@/services/TransactionManagerService";
@@ -50,6 +51,7 @@ export default function WalletViewPay() {
   );
   const isOfflineMode = useSelector(selectIsOfflineMode);
   const { localCurrency } = useSelector(selectCurrencySettings);
+  const bchNetwork = useSelector(selectBchNetwork);
 
   const [message, setMessage] = useState("");
   const [detailedMessage, setDetailedMessage] = useState("");
@@ -170,7 +172,8 @@ export default function WalletViewPay() {
         if (paymentResponse.memo.length > 0) {
           TransactionHistoryService(
             walletHash,
-            localCurrency
+            localCurrency,
+            bchNetwork
           ).setTransactionMemo(tx.txid, paymentResponse.memo);
         }
         navigate("/wallet/send/success", {
@@ -194,6 +197,7 @@ export default function WalletViewPay() {
       sync.isConnected,
       walletHash,
       localCurrency,
+      bchNetwork,
     ]
   );
 

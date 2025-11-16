@@ -1,7 +1,7 @@
 {
   "name": "selene-wallet",
   "private": true,
-  "version": "2025.11.02",
+  "version": "2025.11.04",
   "type": "module",
   "packageManager": "yarn@1.22.22",
   "scripts": {
@@ -50,6 +50,7 @@
     "decimal.js": "^10.6.0",
     "graphql": "^16.8.0",
     "js-logger": "^1.6.1",
+    "jspdf": "^3.0.3",
     "leaflet": "^1.9.4",
     "luxon": "^3.4.4",
     "prop-types": "^15.8.1",
@@ -99,5 +100,8 @@
     "vite": "^5.0.11",
     "vite-plugin-node-polyfills": "^0.24.0",
     "vite-plugin-top-level-await": "^1.2.4"
+  },
+  "resolutions": {
+    "@bitauth/libauth": "^3.0.0"
   }
 }

@@ -193,8 +193,8 @@ export default function CauldronService() {
   }
 
   async function unsubscribe(category: string) {
-    const rostrum = Rostrum.getElectrumClient();
     try {
+      const rostrum = Rostrum.getElectrumClient();
       await rostrum.unsubscribe("cauldron.contract.unsubscribe", 2, category);
       subscriptions.set(category, []);
     } catch (e) {
@@ -205,7 +205,7 @@ export default function CauldronService() {
 
   function getPoolInputs(category?: string): Array<PoolV0> {
     const exlab = new ExchangeLab();
-    Log.log("getPoolUtxos", poolUtxos, category);
+    //Log.log("getPoolUtxos", poolUtxos, category);
     return [...poolUtxos.values()]
       .filter((p) => category === undefined || p.token_id === category)
       .map((pool) => parsePoolFromRostrumNodeData(exlab, pool));
@@ -250,7 +250,7 @@ export default function CauldronService() {
       category
     );
 
-    Log.debug("fetchPools result", result);
+    //Log.debug("fetchPools result", result);
     handleCauldronSubscription([2, category, result]);
 
     return getPoolInputs(category);
@@ -269,7 +269,7 @@ export default function CauldronService() {
     const inputPools = getPoolInputs();
     const TX_FEE_PER_BYTE = 1n;
 
-    Log.debug("inputPools", inputPools);
+    //Log.debug("inputPools", inputPools);
     const tradeResult = isDemandFlipped
       ? exchangeLab.constructTradeBestRateForTargetSupply(
           supplyCategory,
