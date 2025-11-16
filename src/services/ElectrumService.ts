@@ -9,6 +9,7 @@ import { store } from "@/redux";
 import { setPreference } from "@/redux/preferences";
 import {
   syncConnectionUp,
+  syncConnectionDown,
   syncAddressState,
   syncChaintip,
   selectChaintip,
@@ -136,6 +137,8 @@ export default function ElectrumService(
       Log.log("ELECTRUM DISCONNECTED", bchNetwork);
       if (withListeners && typeof withListeners.disconnected === "function") {
         withListeners.disconnected();
+      } else {
+        store.dispatch(syncConnectionDown());
       }
     });
 

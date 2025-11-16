@@ -164,7 +164,12 @@ export const syncConnectionUp = createAsyncThunk(
 );
 
 // syncConnectionDown: fired if electrum connection goes down
-export const syncConnectionDown = createAction("sync/down");
+export const syncConnectionDown = createAsyncThunk(
+  "sync/down",
+  async (payload, thunkApi) => {
+    thunkApi.dispatch(syncDisconnect());
+  }
+);
 
 export const syncSubscriptions = createAsyncThunk(
   "sync/subscriptions",
@@ -635,7 +640,7 @@ export const syncReducer = createReducer(initialState, (builder) => {
       state.isConnected = true;
       state.server = action.payload;
     })
-    .addCase(syncConnectionDown, (state) => {
+    .addCase(syncConnectionDown.fulfilled, (state) => {
       state.isConnected = false;
       state.syncPending = initialPending;
     })
