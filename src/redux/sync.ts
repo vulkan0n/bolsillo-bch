@@ -223,7 +223,7 @@ export const syncSubscriptions = createAsyncThunk(
 
     const Electrum = ElectrumService(bchNetwork);
 
-    Promise.all(
+    await Promise.all(
       addresses.map(async (address) => {
         try {
           await Electrum.subscribeToAddress(address);
@@ -330,9 +330,9 @@ syncMiddleware.startListening({
         { diffIn: [] as string[], diffOut: [] as string[] }
       );
 
-    listenerApi.dispatch(syncUtxoDiffs(aggregateDiffs));
-    listenerApi.dispatch(syncSubscriptionCount(-addressStates.length));
-    listenerApi.dispatch(syncComplete());
+    await listenerApi.dispatch(syncUtxoDiffs(aggregateDiffs));
+    await listenerApi.dispatch(syncSubscriptionCount(-addressStates.length));
+    await listenerApi.dispatch(syncComplete());
   },
 });
 
@@ -681,10 +681,15 @@ export const syncReducer = createReducer(initialState, (builder) => {
     })
     .addCase(syncSubscriptions.pending, (state) => {
       state.isSyncComplete = false;
+      state.syncPending.subscription += 1;
       state.syncDiff = { ...initialDiff };
     })
     .addCase(syncSubscriptions.fulfilled, (state, action) => {
       state.subscriptions = action.payload;
+      state.syncPending.subscription -= 1;
+    })
+    .addCase(syncSubscriptions.rejected, (state) => {
+      state.syncPending.subscription -= 1;
     })
     .addCase(syncPopulateAddresses.pending, (state) => {
       state.syncPending.populate += 1;
