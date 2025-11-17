@@ -350,7 +350,7 @@ function InputListItem({ input, i }) {
   const [inputTx, setInputTx] = useState<TransactionEntity | null>(null);
 
   const isCoinbase = !!input.coinbase;
-  const coinbaseText = hexToUtf8(input.coinbase);
+  const coinbaseText = isCoinbase && hexToUtf8(input.coinbase);
 
   useEffect(
     function resolveInput() {
