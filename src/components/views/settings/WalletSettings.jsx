@@ -42,7 +42,7 @@ export default function WalletSettings() {
           replace
         >
           {w.walletHash === selectedWalletHash && (
-            <RightCircleOutlined className="text-xl mr-1 text-secondary" />
+            <RightCircleOutlined className="text-xl mr-1 text-primary-700" />
           )}
           {w.walletHash === activeWalletHash && (
             <CheckCircleFilled className="text-xl mr-1 text-primary" />

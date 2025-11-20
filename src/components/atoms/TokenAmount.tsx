@@ -11,7 +11,7 @@ interface TokenAmountProps {
 }
 
 export default function TokenAmount({ token, nft = false }: TokenAmountProps) {
-  const receiveStyle = "text-secondary";
+  const receiveStyle = "text-primary-700";
   const sendStyle = "text-error";
 
   const tokenColor =

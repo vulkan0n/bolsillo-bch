@@ -69,13 +69,13 @@ export default function ToastService() {
               <div>
                 <TokenAmount token={token} />
               </div>
-              <div className="text-secondary text-sm">
+              <div className="text-primary-700 text-sm">
                 +<Satoshi value={amount} fiat={false} />
               </div>
             </>
           ) : (
             <>
-              <div className="text-secondary">
+              <div className="text-primary-700">
                 +<Satoshi value={amount} />
               </div>
               <div className="text-neutral-500 font-mono text-sm">

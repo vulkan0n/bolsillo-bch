@@ -75,7 +75,7 @@ export default function Editable({
     <div className="flex items-center">
       <input
         type="text"
-        className={`rounded-lg bg-white dark:bg-neutral-500 text-primary dark:text-neutral-25 p-1 mx-1 w-full text-center border-2 ${borderColor}`}
+        className={`rounded-lg bg-white dark:bg-neutral-500 text-primary dark:text-neutral-25 p-1 w-full text-center border-2 ${borderColor}`}
         onChange={handleInputChange}
         onKeyDown={(e) => e.key === "Enter" && handleEdit()}
         onBlur={handleBlur}
@@ -86,8 +86,8 @@ export default function Editable({
       />
     </div>
   ) : (
-    <div className="flex items-center" onClick={handleEdit}>
-      <span className="text-center mx-2">{value || placeholder}</span>
+    <div className="flex items-center gap-x-1" onClick={handleEdit}>
+      <span className="text-center">{value || placeholder}</span>
       {showConfirm && (
         <span className="flex items-center justify-center opacity-90">
           {isInputConfirmed ? (

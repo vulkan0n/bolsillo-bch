@@ -63,14 +63,14 @@ export default function DailyTarget() {
     <div className="p-1">
       <div className="flex justify-between mb-1">
         <span className="text-base font-small text-neutral-400">
-          <div className="text-base font-medium text-secondary">
+          <div className="text-base font-medium text-primary-700">
             {translate(today)}
           </div>
           <div className="text-xs">
             ({hours}h {minutes}m {seconds}s {translate(remaining)})
           </div>
         </span>
-        <span className="text-sm font-medium text-secondary mt-5">
+        <span className="text-sm font-medium text-primary-700 mt-5">
           {isDataUnavailable ? "-" : dailyActiveUsersToday}{" "}
           <span className="text-neutral-400">{translate(of10million)} (</span>
           {isDataUnavailable ? "-" : fixedDailyActiveUsersTodayPercentage}%
@@ -88,10 +88,10 @@ export default function DailyTarget() {
         />
       </div>
       <div className="flex justify-between mb-1">
-        <span className="text-base font-medium text-secondary">
+        <span className="text-base font-medium text-primary-700">
           {translate(yesterday)}
         </span>
-        <span className="text-sm font-medium text-secondary">
+        <span className="text-sm font-medium text-primary-700">
           {isDataUnavailable ? "-" : dailyActiveUsersYesterday}{" "}
           <span className="text-neutral-400">{translate(of10million)} (</span>
           {isDataUnavailable ? "-" : fixedDailyActiveUsersYesterdayPercentage}%

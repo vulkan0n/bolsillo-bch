@@ -9,6 +9,7 @@ import {
   CheckCircleOutlined,
   FilePdfOutlined,
   FileImageOutlined,
+  ArrowRightOutlined,
 } from "@ant-design/icons";
 import toast from "react-hot-toast";
 import {
@@ -36,7 +37,8 @@ import Accordion from "@/atoms/Accordion";
 import Editable from "@/atoms/Editable";
 import TokenAmount from "@/atoms/TokenAmount";
 import Card from "@/atoms/Card";
-import Button from "@/components/atoms/Button";
+import Button from "@/atoms/Button";
+import LinkExternal from "@/atoms/LinkExternal";
 
 import ExploreSearchBar from "./ExploreSearchBar";
 
@@ -174,11 +176,12 @@ export default function ExploreTransactionView() {
             <div className="font-bold flex items-center justify-start">
               <span>{txDate}</span>
             </div>
+
             {isConfirmed ? (
               <div className="flex items-center font-bold text-neutral-500 dark:text-neutral-200 text-sm">
                 <span>
                   <span className="flex items-center">
-                    <CheckCircleOutlined className="text-secondary mr-1" />{" "}
+                    <CheckCircleOutlined className="text-primary mr-1" />
                     {translate(translations.confirmedInBlock)} #{tx.height} (
                     {confirmations} {translate(translations.blocks)})
                   </span>
@@ -186,13 +189,23 @@ export default function ExploreTransactionView() {
               </div>
             ) : (
               <div className="flex items-center font-bold text-neutral-500 dark:text-neutral-200 text-sm">
-                <HourglassOutlined className="text-neutral-500 dark:text-neutral-200 mr-1" />{" "}
+                <HourglassOutlined className="text-neutral-500 dark:text-neutral-200 mr-1" />
                 {translate(translations.pendingConfirmation)}
               </div>
             )}
+
+            <div className="py-1">
+              <LinkExternal to={`https://explorer.bch.ninja/tx/${tx.txid}`}>
+                <span className="flex items-center text-sm font-bold text-primary-700">
+                  View on external explorer{" "}
+                  <ArrowRightOutlined className="ml-1" />
+                </span>
+              </LinkExternal>
+            </div>
           </div>
+
           <div
-            className={`my-1 text-neutral-600 dark:text-neutral-100 text-sm ${memo ? "" : "underline"}`}
+            className={`p-1 text-neutral-600 dark:text-neutral-100 text-sm ${memo ? "" : "underline"}`}
           >
             <Editable
               value={memo}
