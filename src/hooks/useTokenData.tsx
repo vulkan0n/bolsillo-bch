@@ -1,11 +1,13 @@
 import { useSelector } from "react-redux";
 import { selectActiveWalletHash } from "@/redux/wallet";
+import { selectBchNetwork } from "@/redux/preferences";
 
 import TokenManagerService from "@/services/TokenManagerService";
 
 export function useTokenData(tokenId: string, withAmounts: boolean = false) {
   const walletHash = useSelector(selectActiveWalletHash);
-  const TokenManager = TokenManagerService(walletHash);
+  const bchNetwork = useSelector(selectBchNetwork);
+  const TokenManager = TokenManagerService(walletHash, bchNetwork);
 
   const amounts = withAmounts
     ? TokenManager.calculateTokenAmounts(tokenId)

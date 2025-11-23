@@ -28,7 +28,7 @@ import Button from "@/atoms/Button";
 import FullColumn from "@/layout/FullColumn";
 
 import { selectActiveWallet } from "@/redux/wallet";
-import { selectIsDarkMode } from "@/redux/preferences";
+import { selectIsDarkMode, selectBchNetwork } from "@/redux/preferences";
 
 //import LogService from "@/services/LogService";
 import TokenManagerService from "@/services/TokenManagerService";
@@ -47,6 +47,7 @@ import translations from "./translations";
 export default function AssetsViewTokenDetail() {
   const { tokenId: paramsTokenId } = useParams();
   const { walletHash } = useSelector(selectActiveWallet);
+  const bchNetwork = useSelector(selectBchNetwork);
 
   const isDarkMode = useSelector(selectIsDarkMode);
 
@@ -54,8 +55,8 @@ export default function AssetsViewTokenDetail() {
   const { handleCopyToClipboard, getClipboardContents } = useClipboard();
 
   const TokenManager = useMemo(
-    () => TokenManagerService(walletHash),
-    [walletHash]
+    () => TokenManagerService(walletHash, bchNetwork),
+    [walletHash, bchNetwork]
   );
 
   const tokenId = paramsTokenId || "";

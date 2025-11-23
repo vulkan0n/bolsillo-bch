@@ -6,6 +6,7 @@ import TransactionManagerService, {
   TransactionEntity,
 } from "@/services/TransactionManagerService";
 import LogService from "@/services/LogService";
+import { ValidBchNetwork } from "@/util/electrum_servers";
 
 const Log = LogService("TokenManagerService");
 
@@ -21,7 +22,10 @@ export interface TokenEntity extends IdentitySnapshot {
   nft_amount?: number;
 }
 
-export default function TokenManagerService(walletHash: string) {
+export default function TokenManagerService(
+  walletHash: string,
+  bchNetwork: ValidBchNetwork
+) {
   const Database = DatabaseService();
   const APP_DB = Database.getAppDatabase();
   const walletDb = Database.getWalletDatabase(walletHash);
@@ -82,7 +86,9 @@ export default function TokenManagerService(walletHash: string) {
 
     const TransactionManager = TransactionManagerService();
     const resolvedTransactions: Array<TransactionEntity> = await Promise.all(
-      token_txids.map((txid) => TransactionManager.resolveTransaction(txid))
+      token_txids.map((txid) =>
+        TransactionManager.resolveTransaction(txid, bchNetwork)
+      )
     );
 
     const history = token_txids

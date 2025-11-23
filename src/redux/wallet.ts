@@ -179,7 +179,10 @@ export const walletReceive = createAsyncThunk(
     // receiving tokens
     if (Object.keys(tokenDiff).length > 0) {
       Log.debug("tokenDiff", tokenDiff);
-      const TokenManager = TokenManagerService(wallet.walletHash);
+      const TokenManager = TokenManagerService(
+        wallet.walletHash,
+        wallet.network
+      );
 
       // spawn a receive popup for each token category
       Object.keys(tokenDiff).forEach((category) => {
@@ -224,9 +227,10 @@ export const walletReceive = createAsyncThunk(
           );
           Log.debug("tradeTransaction", tradeTransaction);
           await Cauldron.broadcastTransaction(tradeTransaction.tx_hex);
-          const tokenData = TokenManagerService(wallet.walletHash).getToken(
-            MUSD_TOKENID
-          );
+          const tokenData = TokenManagerService(
+            wallet.walletHash,
+            wallet.network
+          ).getToken(MUSD_TOKENID);
           ToastService().tokenReceived({
             ...tokenData,
             amount: tradeTransaction.tradeResult.summary.demand,

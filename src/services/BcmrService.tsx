@@ -19,6 +19,7 @@ import { sha256 } from "@/util/hash";
 import { hexToUtf8 } from "@/util/hex";
 import { ipfsFetch } from "@/util/ipfs";
 import { detectImageMime } from "@/util/mime";
+import { ValidBchNetwork } from "@/util/electrum_servers";
 
 import bcmrLocal from "@/assets/bcmr-selene-local.json";
 
@@ -58,7 +59,7 @@ function getDefaultRegistryUri(authbase: string): string {
   return registryUri;
 }
 
-export default function BcmrService() {
+export default function BcmrService(bchNetwork: ValidBchNetwork) {
   const Database = DatabaseService();
   const APP_DB = Database.getAppDatabase();
 
@@ -339,7 +340,10 @@ export default function BcmrService() {
     /* eslint-disable no-await-in-loop */
     /* eslint-disable-next-line no-constant-condition */
     while (true) {
-      const nextTx = await TransactionManager.resolveTransaction(nextTxHash);
+      const nextTx = await TransactionManager.resolveTransaction(
+        nextTxHash,
+        bchNetwork
+      );
       chain.push(nextTx);
 
       // check if output 0 is unspent (authHead condition)
@@ -383,7 +387,8 @@ export default function BcmrService() {
 
       const findMatchTxid = async (htx, findHash) => {
         const { vin } = await TransactionManager.resolveTransaction(
-          htx.tx_hash
+          htx.tx_hash,
+          bchNetwork
         );
         const matchUtxo = vin.find(
           (vn) => vn.txid === findHash && vn.vout === 0

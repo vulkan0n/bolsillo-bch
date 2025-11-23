@@ -274,6 +274,8 @@ function OutputListItem({
   output: TransactionOutput;
   i: number;
 }) {
+  const bchNetwork = useSelector(selectBchNetwork);
+
   const zebraCss =
     i % 2 === 0
       ? "bg-primary-100 dark:bg-primarydark-100 dark:text-neutral-100"
@@ -287,7 +289,7 @@ function OutputListItem({
   const addressFormat = output.token ? "tokenaddr" : undefined;
 
   const walletHash = useSelector(selectActiveWalletHash);
-  const TokenManager = TokenManagerService(walletHash);
+  const TokenManager = TokenManagerService(walletHash, bchNetwork);
   const tokenData = output.token
     ? TokenManager.getToken(binToHex(output.token.category))
     : undefined;

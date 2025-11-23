@@ -68,7 +68,7 @@ export default function AppCauldronDexView() {
   const location = useLocation();
 
   const wallet = useSelector(selectActiveWallet);
-  const { walletHash } = wallet;
+  const { walletHash, network: bchNetwork } = wallet;
 
   const [cauldronToken, setCauldronToken] = useState(MUSD_TOKENID);
   const [isFlipped, setIsFlipped] = useState(false);
@@ -79,7 +79,7 @@ export default function AppCauldronDexView() {
   const [satsInputKey, setSatsInputKey] = useState(satsInput);
   const [tokenInputKey, setTokenInputKey] = useState(tokenInput);
 
-  const TokenManager = TokenManagerService(walletHash);
+  const TokenManager = TokenManagerService(walletHash, bchNetwork);
   const cauldronTokenData = TokenManager.getToken(cauldronToken);
 
   const { Cauldron, utxos: cauldrons } = useCauldron(cauldronToken);

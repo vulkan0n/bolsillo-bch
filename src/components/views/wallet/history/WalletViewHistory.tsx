@@ -292,7 +292,10 @@ export default function WalletViewHistory() {
       const exportPromises = allTransactions.transactions.map(async (tx) => {
         try {
           // Resolve full transaction data to get vin/vout
-          const fullTx = await TransactionManager.resolveTransaction(tx.txid);
+          const fullTx = await TransactionManager.resolveTransaction(
+            tx.txid,
+            bchNetwork
+          );
           const memo = HistoryService.getTransactionMemo(tx.txid);
 
           // Create TransactionDetail object with time_seen

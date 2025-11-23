@@ -181,7 +181,7 @@ export default function WalletViewSend() {
 
   // ----------------
 
-  const TokenManager = TokenManagerService(walletHash);
+  const TokenManager = TokenManagerService(walletHash, bchNetwork);
   const tokenData = hasTokens
     ? tokenCategories.map((category) => TokenManager.getToken(category))[0] // TODO: support sending multiple token categories
     : null;
@@ -461,7 +461,10 @@ export default function WalletViewSend() {
         Log.debug("sendTransaction", result);
 
         if (isSuccess) {
-          const tx = await TransactionManager.resolveTransaction(result);
+          const tx = await TransactionManager.resolveTransaction(
+            result,
+            bchNetwork
+          );
           Log.debug("Transaction sent!", tx.txid);
           await Haptic.success();
           await navigate("/wallet/send/success", {

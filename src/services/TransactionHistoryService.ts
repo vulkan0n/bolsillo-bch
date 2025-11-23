@@ -77,7 +77,7 @@ export default function TransactionHistoryService(
     ...myAddresses.map((a) => convertCashAddress(a, "tokenaddr"))
   );
 
-  const TokenManager = TokenManagerService(walletHash);
+  const TokenManager = TokenManagerService(walletHash, network);
 
   return {
     resolveTransactionHistory,

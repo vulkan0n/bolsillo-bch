@@ -197,6 +197,7 @@ export default WalletViewSendSuccess;
 
 /* eslint-disable react/prop-types */
 function OutputListItem({ output, i }) {
+  const bchNetwork = useSelector(selectBchNetwork);
   const zebraCss =
     i % 2 === 0
       ? "bg-primary-100 dark:bg-primarydark-100"
@@ -206,7 +207,7 @@ function OutputListItem({ output, i }) {
   const addressFormat = output.token ? "tokenaddr" : undefined;
 
   const walletHash = useSelector(selectActiveWalletHash);
-  const TokenManager = TokenManagerService(walletHash);
+  const TokenManager = TokenManagerService(walletHash, bchNetwork);
   const tokenData = output.token
     ? TokenManager.getToken(binToHex(output.token.category))
     : undefined;

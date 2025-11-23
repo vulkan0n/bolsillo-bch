@@ -2,7 +2,11 @@ import { useState, useEffect, useMemo, useCallback } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate, useOutletContext } from "react-router";
 import { SendOutlined, SyncOutlined } from "@ant-design/icons";
-import { selectPrivacySettings, selectIsDarkMode } from "@/redux/preferences";
+import {
+  selectPrivacySettings,
+  selectIsDarkMode,
+  selectBchNetwork,
+} from "@/redux/preferences";
 //import LogService from "@/services/LogService";
 import TokenManagerService, {
   TokenEntity,
@@ -26,13 +30,14 @@ import translations from "./translations";
 
 export default function AssetsViewTokens() {
   const { walletHash } = useOutletContext();
+  const bchNetwork = useSelector(selectBchNetwork);
   const { shouldResolveBcmr } = useSelector(selectPrivacySettings);
 
   const navigate = useNavigate();
 
   const TokenManager = useMemo(
-    () => TokenManagerService(walletHash),
-    [walletHash]
+    () => TokenManagerService(walletHash, bchNetwork),
+    [walletHash, bchNetwork]
   );
 
   const tokenCategories = useMemo(() => {
