@@ -107,7 +107,7 @@ export const wcSessionRequest = createAsyncThunk(
       case "bch_getAccounts":
         await WalletConnect.sessionResponse(
           topic,
-          formatJsonRpcResult(id, sessionAddress)
+          formatJsonRpcResult(id, [sessionAddress])
         );
         break;
 
