@@ -13,9 +13,10 @@ const pad = (value: number) => value.toString().padStart(2, "0");
 function BlazeAppCard() {
   const now = useRealTime(1000);
 
-  const nextEvent =
-    BLAZE_EVENTS.filter((e) => now.valueOf() < e.endTime.valueOf())?.[0] ||
-    BLAZE_EVENTS[-1];
+  const filtered = BLAZE_EVENTS.filter(
+    (e) => now.valueOf() < e?.endTime.valueOf()
+  );
+  const nextEvent = filtered[0] || BLAZE_EVENTS[BLAZE_EVENTS.length - 1];
 
   const isDuring =
     now.valueOf() >= nextEvent.startTime.valueOf() &&

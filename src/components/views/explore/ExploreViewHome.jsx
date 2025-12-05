@@ -16,11 +16,11 @@ import translations from "./translations";
 //import BlissAppCard from "../apps/bliss/BlissAppCard";
 import BlazeAppCard from "../apps/blaze/BlazeAppCard";
 
-import { BLAZE_2025_HIDE_CARD_DATE } from "../apps/blaze/constants";
+import { BLAZE_2025_END_DATE } from "../apps/blaze/constants";
 
 export default function ExploreViewHome() {
   const now = useRealTime(1000);
-  const isBlazeOngoing = now.valueOf() <= BLAZE_2025_HIDE_CARD_DATE.valueOf();
+  const isBlazeOngoing = now.valueOf() <= BLAZE_2025_END_DATE.valueOf();
 
   return (
     <div className="p-1.5 flex flex-col gap-2">
