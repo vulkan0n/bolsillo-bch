@@ -174,7 +174,10 @@ export default function WalletViewSweep() {
       await TransactionManager.sendTransaction(transaction, bchNetwork);
 
       // Wait for the transaction to resolve.
-      const tx = await TransactionManager.resolveTransaction(transaction.txid, bchNetwork);
+      const tx = await TransactionManager.resolveTransaction(
+        transaction.txid,
+        bchNetwork
+      );
 
       // Show a notification.
       await Haptic.success();

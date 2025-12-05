@@ -296,10 +296,10 @@ export default function WalletViewSend() {
     const tokenRecipients: Array<Recipient> =
       hasTokens && satoshiInput > 0
         ? tokenCategories.map((category) => ({
-          address,
-          amount: 0n,
-          token: { category, amount: satoshiInput },
-        }))
+            address,
+            amount: 0n,
+            token: { category, amount: satoshiInput },
+          }))
         : [];
 
     const nftRecipients: Array<Recipient> = nftSelection.map((s) => ({
@@ -787,10 +787,11 @@ export default function WalletViewSend() {
                     onChange={handleAmountInput}
                     satoshis={satoshiInput}
                     size={1}
-                    className={`mr-1.5 p-1 flex-1 text-3xl rounded shadow-inner border-2 dark:bg-neutral-600 dark:text-neutral-100 ${isInsufficientFunds
-                      ? "text-error border-error/90"
-                      : "text-black/70 border-primary/80"
-                      }`}
+                    className={`mr-1.5 p-1 flex-1 text-3xl rounded shadow-inner border-2 dark:bg-neutral-600 dark:text-neutral-100 ${
+                      isInsufficientFunds
+                        ? "text-error border-error/90"
+                        : "text-black/70 border-primary/80"
+                    }`}
                     autoFocus={address !== ""}
                     ref={inputRef}
                     max={totalSpendableSats}
@@ -821,10 +822,11 @@ export default function WalletViewSend() {
                         onChange={handleAmountInput}
                         satoshis={satoshiInput}
                         size={1}
-                        className={`mx-1.5 p-1 flex-1 text-3xl rounded shadow-inner border-2 dark:bg-neutral-600 dark:text-neutral-100 ${isInsufficientTokens
-                          ? "text-error border-error/90"
-                          : "text-black/70 border-primary/80"
-                          }`}
+                        className={`mx-1.5 p-1 flex-1 text-3xl rounded shadow-inner border-2 dark:bg-neutral-600 dark:text-neutral-100 ${
+                          isInsufficientTokens
+                            ? "text-error border-error/90"
+                            : "text-black/70 border-primary/80"
+                        }`}
                         autoFocus={address !== ""}
                         ref={inputRef}
                         max={0n}
@@ -848,10 +850,11 @@ export default function WalletViewSend() {
                           onChange={handleAmountInput}
                           satoshis={satoshiInput}
                           size={1}
-                          className={`mr-1.5 p-1 flex-1 text-3xl rounded shadow-inner border-2 dark:bg-neutral-600 dark:text-neutral-100 ${isInsufficientFunds
-                            ? "text-error border-error/90"
-                            : "text-black/70 border-primary/80"
-                            }`}
+                          className={`mr-1.5 p-1 flex-1 text-3xl rounded shadow-inner border-2 dark:bg-neutral-600 dark:text-neutral-100 ${
+                            isInsufficientFunds
+                              ? "text-error border-error/90"
+                              : "text-black/70 border-primary/80"
+                          }`}
                           autoFocus={address !== ""}
                           ref={inputRef}
                           max={selectionAmount}
@@ -944,38 +947,38 @@ function InputSelection({ inputs }) {
       {inputs.some(
         (i) => i.nft_capability === null || i.token_category === null
       ) && (
-          <div className="mx-4 border border-primary rounded">
-            {coins.map((utxo) => (
-              <div className="p-1 text-sm dark:text-neutral-100 flex-1">
-                <div className="flex items-center">
-                  <MoneyCollectOutlined className="mr-1" />
-                  <div className="flex items-center justify-between w-full">
-                    <Satoshi value={utxo.amount} />
-                    <span className="text-sm opacity-75">
-                      <Satoshi value={utxo.amount} flip />
-                    </span>
-                  </div>
-                </div>
-              </div>
-            ))}
-            {tokens.map((token) => (
-              <div className="p-1.5 flex-1">
-                <div className="flex items-center gap-x-1">
-                  <TokenIcon size={32} category={token.category} />
-                  <span
-                    style={{ color: `#${token.category.slice(0, 6)}` }}
-                    className="font-mono text-sm mr-1"
-                  >
-                    {token.symbol}
-                  </span>
-                  <span className="text-sm grow flex justify-end">
-                    <TokenAmount token={token} />
+        <div className="mx-4 border border-primary rounded">
+          {coins.map((utxo) => (
+            <div className="p-1 text-sm dark:text-neutral-100 flex-1">
+              <div className="flex items-center">
+                <MoneyCollectOutlined className="mr-1" />
+                <div className="flex items-center justify-between w-full">
+                  <Satoshi value={utxo.amount} />
+                  <span className="text-sm opacity-75">
+                    <Satoshi value={utxo.amount} flip />
                   </span>
                 </div>
               </div>
-            ))}
-          </div>
-        )}
+            </div>
+          ))}
+          {tokens.map((token) => (
+            <div className="p-1.5 flex-1">
+              <div className="flex items-center gap-x-1">
+                <TokenIcon size={32} category={token.category} />
+                <span
+                  style={{ color: `#${token.category.slice(0, 6)}` }}
+                  className="font-mono text-sm mr-1"
+                >
+                  {token.symbol}
+                </span>
+                <span className="text-sm grow flex justify-end">
+                  <TokenAmount token={token} />
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </>
   );
 }
