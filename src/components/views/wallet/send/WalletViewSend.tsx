@@ -206,11 +206,9 @@ export default function WalletViewSend() {
 
   // When sending tokens, don't check BCH balance against token amount
   // Token balance is checked via isInsufficientTokens, and BCH fees are handled during transaction building
-  const isInsufficientFunds = hasTokens
-    ? false // Token sends don't need BCH balance check here (fees handled in transaction builder)
-    : isStablecoinMode
-      ? isInsufficientStable
-      : isInsufficientSats;
+  const isInsufficientFunds = isStablecoinMode
+    ? isInsufficientStable
+    : isInsufficientSats;
 
   const handleInsufficientFunds = async () => {
     await Haptic.warn();
@@ -267,7 +265,10 @@ export default function WalletViewSend() {
         return false;
       }
 
-      if ((hasTokens && isInsufficientTokens) || isInsufficientFunds) {
+      if (
+        (hasTokens && isInsufficientTokens) ||
+        (!hasTokens && isInsufficientFunds)
+      ) {
         await handleInsufficientFunds();
         return false;
       }
