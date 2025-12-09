@@ -3,14 +3,14 @@
   "private": true,
   "version": "2025.12.00",
   "type": "module",
-  "packageManager": "yarn@1.22.22",
   "scripts": {
+    "preinstall": "npx only-allow pnpm",
     "dev": "vite",
     "pretty": "npx prettier src/ --write",
     "lint": "npx prettier src/ --check && npx eslint --ext .js,.jsx,.ts,.tsx src/",
-    "build": "yarn test && vite build",
+    "build": "pnpm test && vite build",
     "preview": "vite preview",
-    "test": "yarn lint && jest"
+    "test": "pnpm lint && jest"
   },
   "dependencies": {
     "@ant-design/icons": "^5.0.1",
@@ -103,5 +103,6 @@
   },
   "resolutions": {
     "@bitauth/libauth": "^3.0.0"
-  }
+  },
+  "packageManager": "pnpm@10.25.0+sha512.5e82639027af37cf832061bcc6d639c219634488e0f2baebe785028a793de7b525ffcd3f7ff574f5e9860654e098fe852ba8ac5dd5cefe1767d23a020a92f501"
 }
