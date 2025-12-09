@@ -1,10 +1,9 @@
 import { clsx } from "@/util/clsx";
 
-interface Props
-  extends React.DetailedHTMLProps<
-    React.SelectHTMLAttributes<HTMLSelectElement>,
-    HTMLSelectElement
-  > {
+interface Props extends React.DetailedHTMLProps<
+  React.SelectHTMLAttributes<HTMLSelectElement>,
+  HTMLSelectElement
+> {
   className?: string;
 }
 

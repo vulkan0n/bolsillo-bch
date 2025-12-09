@@ -9,9 +9,8 @@ export const routeDebug = [
       {
         index: true,
         async lazy() {
-          const { default: DebugViewHome } = await import(
-            "@/views/debug/DebugViewHome"
-          );
+          const { default: DebugViewHome } =
+            await import("@/views/debug/DebugViewHome");
           return { Component: DebugViewHome };
         },
       },

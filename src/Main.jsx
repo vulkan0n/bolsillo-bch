@@ -39,9 +39,8 @@ export default function Main() {
         {
           path: "/credits",
           async lazy() {
-            const { default: CreditsView } = await import(
-              "@/views/credits/CreditsView"
-            );
+            const { default: CreditsView } =
+              await import("@/views/credits/CreditsView");
             return { Component: CreditsView };
           },
         },

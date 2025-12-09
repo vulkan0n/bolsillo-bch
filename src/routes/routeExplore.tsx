@@ -20,9 +20,8 @@ export const routeExplore = [
       {
         path: "tx/:txid",
         async lazy() {
-          const { default: ExploreTransactionView } = await import(
-            "@/views/explore/ExploreTransactionView"
-          );
+          const { default: ExploreTransactionView } =
+            await import("@/views/explore/ExploreTransactionView");
           return { Component: ExploreTransactionView };
         },
         loader: async ({ params }) => {
@@ -49,9 +48,8 @@ export const routeExplore = [
       {
         path: "contacts",
         async lazy() {
-          const { default: ExploreContactsView } = await import(
-            "@/views/explore/contacts/ExploreContactsView"
-          );
+          const { default: ExploreContactsView } =
+            await import("@/views/explore/contacts/ExploreContactsView");
           return { Component: ExploreContactsView };
         },
       },

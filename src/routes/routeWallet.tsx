@@ -37,9 +37,8 @@ export const routeWallet = [
       {
         path: "history",
         async lazy() {
-          const { default: WalletViewHistory } = await import(
-            "@/views/wallet/history/WalletViewHistory"
-          );
+          const { default: WalletViewHistory } =
+            await import("@/views/wallet/history/WalletViewHistory");
           return { Component: WalletViewHistory };
         },
       },
