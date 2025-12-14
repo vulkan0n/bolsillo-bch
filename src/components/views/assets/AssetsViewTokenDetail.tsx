@@ -2,33 +2,16 @@ import { useState, useMemo, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { useParams, Link, useNavigate } from "react-router";
 import { DateTime } from "luxon";
-import {
-  CloseOutlined,
-  LinkOutlined,
-  HomeOutlined,
-  CommentOutlined,
-  CodeOutlined,
-  QuestionCircleOutlined,
-  AuditOutlined,
-  DockerOutlined,
-  InstagramOutlined,
-  XOutlined,
-  DiscordFilled,
-  FacebookFilled,
-  RedditCircleFilled,
-  YoutubeFilled,
-  SendOutlined,
-  ArrowRightOutlined,
-} from "@ant-design/icons";
+import { CloseOutlined, SendOutlined } from "@ant-design/icons";
 
-import { TelegramFilled } from "@/icons/TelegramFilled";
 import TokenIcon from "@/atoms/TokenIcon";
 import TokenAmount from "@/atoms/TokenAmount";
 import Button from "@/atoms/Button";
 import FullColumn from "@/layout/FullColumn";
+import TokenCard from "@/composite/TokenCard";
 
 import { selectActiveWallet } from "@/redux/wallet";
-import { selectIsDarkMode, selectBchNetwork } from "@/redux/preferences";
+import { selectBchNetwork } from "@/redux/preferences";
 
 //import LogService from "@/services/LogService";
 import TokenManagerService from "@/services/TokenManagerService";
@@ -49,10 +32,8 @@ export default function AssetsViewTokenDetail() {
   const { walletHash } = useSelector(selectActiveWallet);
   const bchNetwork = useSelector(selectBchNetwork);
 
-  const isDarkMode = useSelector(selectIsDarkMode);
-
   const navigate = useNavigate();
-  const { handleCopyToClipboard, getClipboardContents } = useClipboard();
+  const { getClipboardContents } = useClipboard();
 
   const TokenManager = useMemo(
     () => TokenManagerService(walletHash, bchNetwork),
@@ -65,29 +46,7 @@ export default function AssetsViewTokenDetail() {
 
   //Log.debug(tokenData);
 
-  const [shouldShowFullDescription, setShouldShowFullDescription] =
-    useState(false);
-
   const [nftSelection, setNftSelection] = useState([]);
-
-  const uriIcons = {
-    default: <LinkOutlined />,
-    web: <LinkOutlined />,
-    app: <HomeOutlined />,
-    chat: <CommentOutlined />,
-    registry: <AuditOutlined />,
-    support: <QuestionCircleOutlined />,
-    discord: <DiscordFilled />,
-    facebook: <FacebookFilled />,
-    docker: <DockerOutlined />,
-    git: <CodeOutlined />,
-    instagram: <InstagramOutlined />,
-    twitter: <XOutlined />,
-    x: <XOutlined />,
-    telegram: <TelegramFilled />,
-    reddit: <RedditCircleFilled />,
-    youtube: <YoutubeFilled />,
-  };
 
   const [tokenHistory, setTokenHistory] = useState([]);
 
@@ -142,91 +101,7 @@ export default function AssetsViewTokenDetail() {
   return (
     <FullColumn key={tokenData.category} className="justify-between">
       <div className="p-1">
-        <div className="mt-1 border border-primary rounded bg-primary-50 dark:bg-neutral-800 dark:border-primarydark-400">
-          <div className="p-1">
-            <div className="flex">
-              <div
-                className="border border-2 rounded-sm overflow-hidden shadow-sm w-fit h-fit"
-                style={{ borderColor: tokenData.color }}
-              >
-                <TokenIcon category={tokenData.category} size={96} />
-              </div>
-              <div className="flex flex-col flex-1 mx-1.5 justify-evenly">
-                <div>
-                  <span
-                    className="font-mono text-md font-bold pr-1.5 mr-1.5 border-r border-neutral-400/90"
-                    style={{ color: tokenData.color }}
-                  >
-                    {tokenData.token
-                      ? tokenData.token.symbol
-                      : tokenData.category.slice(0, 6)}
-                  </span>
-                  <span className="font-bold text-lg text-neutral-700 dark:text-neutral-100">
-                    {tokenData.name}
-                  </span>
-                </div>
-
-                <div className="flex items-center text-neutral-600 gap-x-2 text-md dark:text-neutral-200">
-                  {tokenData.nftCount > 0 && (
-                    <TokenAmount token={tokenData} nft />
-                  )}
-                  {tokenData.amount > 0 && <TokenAmount token={tokenData} />}
-                </div>
-
-                <div className="flex flex-1 flex-wrap items-end gap-3 text-neutral-500 dark:text-neutral-200 text-[1.667em]">
-                  {tokenData.uris &&
-                    Object.entries(tokenData.uris)
-                      .filter(([k]) => !["icon", "image"].includes(k))
-                      .map(([k, v]) => {
-                        return (
-                          <Link to={v}>{uriIcons[k] || uriIcons.default}</Link>
-                        );
-                      })}
-                </div>
-              </div>
-            </div>
-            <div>
-              {tokenData.description && (
-                <div
-                  className="p-1 text-md text-neutral-700 dark:text-neutral-100 border-t border-dashed border-neutral-300/80 mt-1"
-                  onClick={() =>
-                    setShouldShowFullDescription(!shouldShowFullDescription)
-                  }
-                >
-                  {tokenData.description.length <= 140 ||
-                  shouldShowFullDescription ? (
-                    tokenData.description
-                  ) : (
-                    <>
-                      <div>{truncateProse(tokenData.description)}</div>
-                      <div className="text-right text-sm cursor-pointer flex justify-end">
-                        <span className="border-b border-dotted border-neutral-400 flex items-center shrink justify-end w-fit">
-                          {translate(translations.seeMore)}
-                          <ArrowRightOutlined className="ml-1" />
-                        </span>
-                      </div>
-                    </>
-                  )}
-                </div>
-              )}
-            </div>
-          </div>
-          <div
-            className="pt-0.5 px-0.5 border-t border-dashed border-neutral-300/80 font-mono text-xs text-neutral-400/70 dark:text-white/65 truncate"
-            style={{
-              backgroundColor: `${tokenData.color}${isDarkMode ? "80" : "20"}`,
-            }}
-            onClick={(e) => {
-              e.stopPropagation();
-              handleCopyToClipboard(
-                tokenData.category,
-                translate(translations.copiedTokenId)
-              );
-            }}
-          >
-            {tokenData.category}
-          </div>
-        </div>
+        <TokenCard token={tokenData} detail nftSelection={nftSelection} />
 
         {nfts.length > 0 ? (
           <div className="mt-2 flex flex-wrap gap-1 justify-around dark:text-neutral-100">
@@ -326,25 +201,6 @@ export default function AssetsViewTokenDetail() {
         )}
       </div>
 
-      {tokenData.amount > 0 && (
-        <div className="sticky bottom-0 bg-black/80 w-full border-t-2 border-neutral-700 rounded-t shadow mt-1">
-          <div className="text-neutral-700 rounded-t bg-white/85 dark:bg-neutral-800 shadow-lg">
-            <div className="flex items-center p-2 mb-1">
-              <Button
-                icon={SendOutlined}
-                iconSize="xl"
-                label={translate(translations.sendTokens)}
-                labelSize="lg"
-                borderClasses="border border-primary border-2"
-                rounded="md"
-                inverted
-                onClick={handleTokenSend}
-                fullWidth
-              />
-            </div>
-          </div>
-        </div>
-      )}
       {nftSelection.length > 0 && (
         <SelectionDisplay
           selection={nftSelection}
@@ -369,8 +225,8 @@ function SelectionDisplay({ selection, onConfirm, onCancel }) {
   };
 
   return (
-    <div className="sticky bottom-0 bg-black/70 w-full border-t-2 border-neutral-700 rounded-t shadow mt-1">
-      <div className="text-neutral-700 rounded-t bg-white/85 shadow-lg px-3 py-3">
+    <div className="sticky bottom-0 bg-primary-900 w-full border-t-2 border-neutral-900 dark:border-primarydark-500 rounded-t shadow mt-1">
+      <div className="text-neutral-700 rounded-t bg-neutral-100 dark:bg-neutral-1000 dark:text-neutral-100 shadow-lg px-2 py-1">
         <div className="flex relative justify-between">
           <div className="flex items-center justify-start flex-1">
             <Button
@@ -378,21 +234,25 @@ function SelectionDisplay({ selection, onConfirm, onCancel }) {
               icon={CloseOutlined}
               iconSize="lg"
               bgColor="transparent"
-              activeBgColor="x active:bg-neutral-100"
-              borderClasses="border border-transparent"
+              activeBgColor="bg-primary-500 dark:active:bg-primarydark-400"
+              borderClasses="border border-primary-400"
             />
           </div>
-          <div className="text-center grow flex items-center justify-center font-bold text-lg">
+          <div className="text-center grow flex items-center justify-center font-bold text-xl p-6">
             {selectedAmount} NFTs selected
           </div>
           <div className="flex items-center justify-end flex-1">
             <Button
               icon={SendOutlined}
-              iconSize="lg"
+              iconSize="xl"
               label="Send"
               padding="2"
               rounded="md"
               onClick={handleConfirm}
+              bgColor="bg-primary-700"
+              activeLabelColor="text-white"
+              labelColor="text-neutral-200"
+              borderClasses="border border-primary-700"
               inverted
             />
           </div>
