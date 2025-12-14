@@ -120,15 +120,16 @@ export default function AssetsViewTokens() {
               {translate(translations.downloadingTokenData)}
             </div>
           )}
-          {tokenData.map((token) => (
-            <div
-              key={token.category}
-              onClick={() => handleTokenNavigate(token.category)}
-              className="flex flex-col gap-y-1"
-            >
-              <TokenCard token={token} />
-            </div>
-          ))}
+          <div className="flex flex-col gap-y-1">
+            {tokenData.map((token) => (
+              <div
+                key={token.category}
+                onClick={() => handleTokenNavigate(token.category)}
+              >
+                <TokenCard token={token} />
+              </div>
+            ))}
+          </div>
         </>
       )}
     </div>

@@ -115,12 +115,17 @@ export default function AssetsViewTokenDetail() {
                   (nft) => nft.txid === utxo.txid && nft.tx_pos === utxo.tx_pos
                 ) > -1;
 
-              const bgClass = isSelected ? "bg-primary" : "";
-              const borderClass = isSelected ? "border-primary" : "";
+              const bgClass = isSelected
+                ? "bg-primary dark:bg-primary-700"
+                : "bg-primary-100 dark:bg-primarydark-50";
+
+              const borderClass = isSelected
+                ? "border-primary dark:border-primary-900"
+                : "";
 
               return (
                 <div
-                  className={`border rounded-t rounded-b-sm items-center w-full sm:max-w-[49%] ${borderClass}`}
+                  className={`border rounded-t rounded-b-sm items-center w-full sm:max-w-[49%] ${borderClass} ${bgClass}`}
                   style={isSelected ? {} : { borderColor: tokenData.color }}
                   onClick={() => handleNftSelect(utxo)}
                 >
@@ -137,23 +142,22 @@ export default function AssetsViewTokenDetail() {
                     )}
                   </div>
                   <div className="flex">
-                    <div className="p-0.5">
-                      <TokenIcon
-                        category={utxo.token_category}
-                        nft_commitment={utxo.nft_commitment}
-                      />
+                    <TokenIcon
+                      category={utxo.token_category}
+                      nft_commitment={utxo.nft_commitment}
+                    />
+                    <div className="flex flex-col justify-between w-full">
+                      <div className="flex truncate px-1">
+                        {nftData && nftData.description && (
+                          <span className="text-sm text-neutral-700 dark:text-neutral-100/90 text-wrap">
+                            {truncateProse(nftData.description)}
+                          </span>
+                        )}
+                      </div>
                     </div>
-                    <div className="truncate px-1">
-                      {nftData && nftData.description ? (
-                        <span className="text-sm text-neutral-700 text-wrap">
-                          {truncateProse(nftData.description)}
-                        </span>
-                      ) : (
-                        <span className="break-all text-wrap text-xs tracking-tight font-mono">
-                          {utxo.nft_commitment}
-                        </span>
-                      )}
-                    </div>
+                  </div>
+                  <div className="break-all text-wrap text-xs tracking-tight font-mono text-neutral-500 dark:text-neutral-200 text-center bg-neutral-50 dark:bg-neutral-700">
+                    {utxo.nft_commitment}
                   </div>
                 </div>
               );

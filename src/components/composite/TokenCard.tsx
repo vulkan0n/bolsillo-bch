@@ -1,8 +1,7 @@
 import { useState } from "react";
 import { useSelector } from "react-redux";
-import { useNavigate, Link } from "react-router";
+import { useNavigate } from "react-router";
 import {
-  CloseOutlined,
   LinkOutlined,
   HomeOutlined,
   CommentOutlined,
@@ -27,6 +26,8 @@ import { TokenEntity } from "@/services/TokenManagerService";
 import TokenIcon from "@/atoms/TokenIcon";
 import TokenAmount from "@/atoms/TokenAmount";
 import Button from "@/atoms/Button";
+import Card from "@/atoms/Card";
+import LinkExternal from "@/atoms/LinkExternal";
 import { useClipboard } from "@/hooks/useClipboard";
 
 import { truncateProse } from "@/util/string";
@@ -89,11 +90,9 @@ export default function TokenCard({
     youtube: <YoutubeFilled />,
   };
 
+  //className="w-full my-1 border border-primary rounded bg-primary-100 dark:bg-neutral-800 dark:border-primarydark-400"
   return (
-    <div
-      key={token.category}
-      className="w-full my-1 border border-primary rounded bg-primary-50 dark:bg-neutral-800 dark:border-primarydark-400"
-    >
+    <Card key={token.category} className="p-0">
       <div className="flex p-1">
         {detail ? (
           <div
@@ -107,62 +106,65 @@ export default function TokenCard({
             <TokenIcon category={token.category} size={72} rounded />
           </div>
         )}
-        <div className="flex-1 p-1">
-          <div className="flex items-center text-md mb-1 py-0.5">
-            <span
-              className="font-mono text-md font-bold pr-1.5 mr-1.5 border-r border-neutral-400/90"
-              style={{ color: token.color }}
-            >
-              {token.token ? token.token.symbol : token.category.slice(0, 6)}
-            </span>
-            <span className="font-bold text-lg text-neutral-700 dark:text-neutral-100">
-              {token.name || `Token ${token.category.slice(0, 6)}`}
-            </span>
-          </div>
-          <div className="flex text-neutral-600 dark:text-neutral-100">
-            <div className="flex-1">
-              {token.nftCount > 0 && <TokenAmount token={token} nft />}
+        <div className="flex-1">
+          <div className="flex flex-col">
+            <div className="flex items-center text-md py-1">
+              <span
+                className="font-mono text-md font-bold pr-1.5 mr-1.5 border-r border-neutral-400/90"
+                style={{ color: token.color }}
+              >
+                {token.token ? token.token.symbol : token.category.slice(0, 6)}
+              </span>
+              <span className="font-bold text-lg text-neutral-700 dark:text-neutral-100">
+                {token.name || `Token ${token.category.slice(0, 6)}`}
+              </span>
+            </div>
+            <div className="flex text-neutral-700 dark:text-neutral-100">
+              <div className="flex-1">
+                {token.nftCount > 0 && <TokenAmount token={token} nft />}
+                {token.amount > 0 && (
+                  <div className="flex flex-1 justify-between items-center">
+                    <TokenAmount token={token} />
+                  </div>
+                )}
+              </div>
+
               {token.amount > 0 && (
-                <div className="flex flex-1 justify-between items-center">
-                  <TokenAmount token={token} />
-                </div>
+                <Button
+                  icon={SendOutlined}
+                  iconSize="lg"
+                  label={translate(translations.send)}
+                  labelSize="md"
+                  borderClasses="border border-primary"
+                  rounded="md"
+                  shadow="sm"
+                  padding="1.5"
+                  onClick={handleTokenSend}
+                />
               )}
             </div>
-
-            {token.amount > 0 && (
-              <Button
-                icon={SendOutlined}
-                iconSize="lg"
-                label={translate(translations.send)}
-                labelSize="md"
-                borderClasses="border border-primary"
-                rounded="md"
-                shadow="sm"
-                padding="2"
-                onClick={handleTokenSend}
-              />
+            {detail && (
+              <div className="w-full flex flex-wrap gap-3 text-neutral-500 dark:text-neutral-200 text-[1.667em]">
+                {token.uris &&
+                  Object.entries(token.uris)
+                    .filter(([k]) => !["icon", "image"].includes(k))
+                    .map(([k, v]) => {
+                      return (
+                        <LinkExternal className="flex items-center" to={v}>
+                          {uriIcons[k] || uriIcons.default}
+                        </LinkExternal>
+                      );
+                    })}
+              </div>
             )}
           </div>
         </div>
       </div>
+
       <div>
-        {detail && (
-          <div className="px-2 py-1">
-            <div className="flex flex-1 flex-wrap items-end gap-3 text-neutral-500 dark:text-neutral-200 text-[1.667em]">
-              {token.uris &&
-                Object.entries(token.uris)
-                  .filter(([k]) => !["icon", "image"].includes(k))
-                  .map(([k, v]) => {
-                    return (
-                      <Link to={v}>{uriIcons[k] || uriIcons.default}</Link>
-                    );
-                  })}
-            </div>
-          </div>
-        )}
         {token.description && (
           <div
-            className="p-2 text-md text-neutral-700 dark:text-neutral-100 dark:bg-neutral-700 rounded-sm"
+            className="m-0.5 p-1.5 text-md text-neutral-700 bg-neutral-50/90 dark:text-neutral-100 dark:bg-neutral-700 rounded-sm"
             onClick={() => {
               if (detail) {
                 setShouldShowFullDescription(!shouldShowFullDescription);
@@ -188,6 +190,7 @@ export default function TokenCard({
           </div>
         )}
       </div>
+
       <div
         className="pt-0.5 px-0.5 border-t border-dashed border-neutral-300/80 font-mono text-xs text-neutral-400/70 dark:text-white/65 truncate"
         style={{ backgroundColor: `${token.color}${isDarkMode ? "80" : "20"}` }}
@@ -201,6 +204,6 @@ export default function TokenCard({
       >
         {token.category}
       </div>
-    </div>
+    </Card>
   );
 }
