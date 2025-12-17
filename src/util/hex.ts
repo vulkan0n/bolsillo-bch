@@ -1,5 +1,6 @@
 /* eslint-disable no-plusplus, no-bitwise */
 import { hexToBin, binToUtf8 } from "@bitauth/libauth";
+import { hexToRgb, rgbToHex } from "@/util/color";
 
 // initialize binToHex lookup tables
 const LUT_HEX_4B = [
@@ -43,3 +44,6 @@ export { hexToBin };
 export function hexToUtf8(hex: string) {
   return binToUtf8(hexToBin(hex));
 }
+
+// re-export internal hexToRgb and rgbToHex
+export { hexToRgb, rgbToHex };

@@ -43,6 +43,7 @@ import { translate } from "@/util/translations";
 import ViewHeader from "@/layout/ViewHeader";
 import Satoshi from "@/atoms/Satoshi";
 import TokenAmount from "@/atoms/TokenAmount";
+import TokenSymbol from "@/atoms/TokenSymbol";
 import Button from "@/components/atoms/Button";
 import Select from "@/components/atoms/Select";
 import type { MergedHistoryEntity } from "@/services/TransactionHistoryService";
@@ -161,7 +162,7 @@ function TransactionItem({
                     style={{ color: `#${token.category.slice(0, 6)}` }}
                     className="font-mono text-xs tracking-tighter font-bold"
                   >
-                    {token.symbol}
+                    <TokenSymbol token={token} />
                   </span>
                   {token.nft_amount !== 0 && <TokenAmount token={token} nft />}
                   {token.fungible_amount !== 0 && <TokenAmount token={token} />}

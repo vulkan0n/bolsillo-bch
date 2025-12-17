@@ -25,6 +25,7 @@ import { TokenEntity } from "@/services/TokenManagerService";
 
 import TokenIcon from "@/atoms/TokenIcon";
 import TokenAmount from "@/atoms/TokenAmount";
+import TokenSymbol from "@/atoms/TokenSymbol";
 import Button from "@/atoms/Button";
 import Card from "@/atoms/Card";
 import LinkExternal from "@/atoms/LinkExternal";
@@ -109,11 +110,8 @@ export default function TokenCard({
         <div className="flex-1">
           <div className="flex flex-col">
             <div className="flex items-center text-md py-1">
-              <span
-                className="font-mono text-md font-bold pr-1.5 mr-1.5 border-r border-neutral-400/90"
-                style={{ color: token.color }}
-              >
-                {token.token ? token.token.symbol : token.category.slice(0, 6)}
+              <span className="pr-1 mr-1 border-r border-neutral-400/90">
+                <TokenSymbol token={token} className="text-md font-bold" />
               </span>
               <span className="font-bold text-lg text-neutral-700 dark:text-neutral-100">
                 {token.name || `Token ${token.category.slice(0, 6)}`}
