@@ -36,8 +36,9 @@ build_sync:
   image: node:lts-alpine
   script:
     - "which git || (apk update && apk add git)"
-    - yarn install --frozen-lockfile
-    - yarn build
+    - corepack enable pnpm
+    - pnpm install --frozen-lockfile
+    - pnpm build
     - npx cap sync
   artifacts:
     paths:

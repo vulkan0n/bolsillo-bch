@@ -43,8 +43,10 @@ export function useScanner(onScan) {
           body: <span className="flex break-all text-sm">{content}</span>,
         });
 
+      const spawnInvalidScanToast = () => ToastService().invalidScan(content);
+
       await closeScanner();
-      await onScan(content, spawnScanToast);
+      await onScan(content, { spawnScanToast, spawnInvalidScanToast });
     },
     [dispatch, onScan, closeScanner]
   );

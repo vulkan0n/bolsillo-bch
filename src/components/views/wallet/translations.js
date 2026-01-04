@@ -233,6 +233,20 @@ const translations = {
     zh: "扫描内容",
     zh_TW: "掃描內容",
   },
+  invalidQrCode: {
+    en: "Invalid QR Code",
+    es: "Código QR inválido",
+    fr: "Code QR invalide",
+    de: "Ungültiger QR-Code",
+    ja: "無効なQRコード",
+  },
+  invalidQrMessage: {
+    en: "This content is not supported by Selene.",
+    es: "Este contenido no es compatible con Selene.",
+    fr: "Ce contenu n'est pas pris en charge par Selene.",
+    de: "Dieser Inhalt wird von Selene nicht unterstützt.",
+    ja: "このコンテンツはSeleneではサポートされていません。",
+  },
 
   noBchAddress: {
     ar: "لم يتم العثور على عنوان BCH",

@@ -20,6 +20,7 @@ export default function ToastService() {
     clipboardCopy,
     disconnected,
     authFail,
+    invalidScan,
   };
 
   function spawn({ header, body, icon, options = {} }) {
@@ -130,6 +131,22 @@ export default function ToastService() {
           {translate(translations.notApproved)}
         </span>
       ),
+    });
+  }
+
+  function invalidScan(content) {
+    spawn({
+      icon: <DisconnectOutlined className="text-4xl text-error" />,
+      header: translate(translations.invalidQrCode),
+      body: (
+        <span className="flex flex-col text-sm break-all">
+          <span className="mb-1">
+            {translate(translations.invalidQrMessage)}
+          </span>
+          <span className="font-mono opacity-60 italic">{content}</span>
+        </span>
+      ),
+      options: { id: "invalidScan", duration: 3000 },
     });
   }
 }
