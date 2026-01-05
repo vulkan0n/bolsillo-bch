@@ -48,6 +48,7 @@ import { hexToUtf8, binToHex } from "@/util/hex";
 
 import { translate } from "@/util/translations";
 import translations from "./translations";
+import { getTxExplorerUrl } from "@/util/electrum_servers";
 
 //const Log = LogService("ExploreTransactionView");
 
@@ -195,7 +196,7 @@ export default function ExploreTransactionView() {
             )}
 
             <div className="py-1">
-              <LinkExternal to={`https://explorer.bch.ninja/tx/${tx.txid}`}>
+              <LinkExternal to={getTxExplorerUrl(tx.txid, bchNetwork)}>
                 <span className="flex items-center text-sm font-bold text-primary-700">
                   View on external explorer{" "}
                   <ArrowRightOutlined className="ml-1" />
