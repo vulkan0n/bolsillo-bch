@@ -2,6 +2,7 @@ const translations = {
   somethingWrong: {
     ar: "هناك خطأ ما...",
     bn: "কিছু ভুল হয়েছে...",
+    cy: "Aeth rhywbeth o'i le...",
     da: "Noget gik galt...",
     de: "Etwas ist schief gelaufen...",
     el: "Κάτι πήγε στραβά...",
@@ -9,7 +10,7 @@ const translations = {
     es: "Algo salió mal...",
     fa: "مشکلی پیش آمد...",
     fil: "May nangyaring mali...",
-    fr: "Quelque chose s&#39;est mal passé...",
+    fr: "Quelque chose s'est mal passé...",
     ha: "Wani abu ya faru...",
     hi: "कुछ गलत हो गया...",
     id: "Ada yang salah...",
@@ -41,6 +42,7 @@ const translations = {
   hereCanTry: {
     ar: "إليك ما يمكنك تجربته",
     bn: "এখানে আপনি কি চেষ্টা করতে পারেন",
+    cy: "Gallwch chi roi cynnig ar hyn",
     da: "Her er hvad du kan prøve",
     de: "Folgendes können Sie versuchen",
     el: "Εδώ είναι τι μπορείτε να δοκιμάσετε",
@@ -80,6 +82,7 @@ const translations = {
   restartApp: {
     ar: "إعادة تشغيل التطبيق",
     bn: "অ্যাপ রিস্টার্ট করুন",
+    cy: "Ailgychwyn yr Ap",
     da: "Genstart app",
     de: "App neu starten",
     el: "Επανεκκινήστε την εφαρμογή",
@@ -87,11 +90,11 @@ const translations = {
     es: "Reiniciar aplicación",
     fa: "برنامه را مجددا راه اندازی کنید",
     fil: "I-restart ang App",
-    fr: "Redémarrer l&#39;application",
+    fr: "Redémarrer l'application",
     ha: "Sake kunna App",
     hi: "ऐप पुनः प्रारंभ करें",
     id: "Mulai ulang Aplikasi",
-    it: "Riavvia l&#39;app",
+    it: "Riavvia l'app",
     ja: "アプリを再起動",
     jv: "Wiwiti maneh App",
     ko: "앱 다시 시작",
@@ -119,6 +122,7 @@ const translations = {
   resetSettings: {
     ar: "اعادة الضبط",
     bn: "রিসেট সেটিংস",
+    cy: "Ailosod y Gosodiadau",
     da: "Nulstil indstillingerne",
     de: "Einstellungen zurücksetzen",
     el: "Επαναφορά ρυθμίσεων",
@@ -158,6 +162,7 @@ const translations = {
   rebuildWallet: {
     ar: "إعادة بناء المحفظة",
     bn: "ওয়ালেট পুনর্নির্মাণ করুন",
+    cy: "Ailadeiladu Waled",
     da: "Genopbyg tegnebogen",
     de: "Wallet neu aufbauen",
     el: "Ανακατασκευή Πορτοφολιού",
@@ -197,6 +202,7 @@ const translations = {
   errorMessage: {
     ar: "رسالة خطأ",
     bn: "ভুল বার্তা",
+    cy: "Neges Gwall",
     da: "Fejl besked",
     de: "Fehlermeldung",
     el: "Μήνυμα λάθους",
@@ -204,7 +210,7 @@ const translations = {
     es: "Mensaje de error",
     fa: "پیغام خطا",
     fil: "Maling mensahe",
-    fr: "Message d&#39;erreur",
+    fr: "Message d'erreur",
     ha: "Saƙon kuskure",
     hi: "त्रुटि संदेश",
     id: "Pesan eror",
@@ -236,6 +242,7 @@ const translations = {
   exportLogs: {
     ar: "سجلات التصدير",
     bn: "লগ রপ্তানি করুন",
+    cy: "Allyrru Logiau",
     da: "Eksporter logs",
     de: "Protokolle exportieren",
     el: "Εξαγωγή αρχείων καταγραφής",

@@ -2,6 +2,7 @@ const translations = {
   upcomingTournaments: {
     ar: "البطولات القادمة",
     bn: "আসন্ন টুর্নামেন্ট",
+    cy: "Twrnameintiau sydd i ddod",
     da: "Kommende turneringer",
     de: "Kommende Turniere",
     el: "Προσεχή Τουρνουά",
@@ -41,6 +42,7 @@ const translations = {
   startsIn: {
     ar: "يبدأ في",
     bn: "শুরু হয়",
+    cy: "Yn dechrau mewn",
     da: "Starter i",
     de: "Beginnt in",
     el: "Ξεκινά μέσα",
@@ -80,6 +82,7 @@ const translations = {
   underway: {
     ar: "قيد التنفيذ!",
     bn: "চলমান !",
+    cy: "Ar y gweill!",
     da: "I gang!",
     de: "Unterwegs!",
     el: "Σε εξέλιξη!",
@@ -119,6 +122,7 @@ const translations = {
   prizePool: {
     ar: "مجموع جوائز",
     bn: "পুরস্কার পুল",
+    cy: "Cronfa gwobrau",
     da: "Præmiepulje",
     de: "Preis Pool",
     el: "Βραβείο",
@@ -158,6 +162,7 @@ const translations = {
   playersText: {
     ar: "اللاعبين",
     bn: "খেলোয়াড়",
+    cy: "Chwaraewyr",
     da: "Spillere",
     de: "Spieler",
     el: "Παίκτες",
@@ -166,7 +171,7 @@ const translations = {
     fa: "بازیکنان",
     fil: "Mga manlalaro",
     fr: "Joueurs",
-    ha: "&#39;Yan wasa",
+    ha: "'Yan wasa",
     hi: "खिलाड़ियों",
     id: "Pemain",
     it: "Giocatori",
@@ -197,6 +202,7 @@ const translations = {
   description: {
     ar: "تنافس في دورات ألعاب الفيديو عبر الإنترنت، مع دفع رسوم الاشتراك والجوائز مباشرة بعملة Bitcoin Cash!",
     bn: "বিটকয়েন ক্যাশে সরাসরি প্রদত্ত এন্ট্রি ফি এবং পুরস্কার সহ অনলাইন ভিডিও গেম টুর্নামেন্টে প্রতিযোগিতা করুন!",
+    cy: "Cystadlwch mewn twrnameintiau gemau fideo ar-lein, gyda ffioedd mynediad a gwobrau'n cael eu talu'n uniongyrchol mewn Bitcoin Cash!",
     da: "Konkurrer i online videospilturneringer med adgangsgebyrer og præmier betalt direkte i Bitcoin Cash!",
     de: "Nehmen Sie an Online-Videospielturnieren teil, bei denen Teilnahmegebühren und Preise direkt in Bitcoin Cash ausgezahlt werden!",
     el: "Αγωνιστείτε σε διαδικτυακά τουρνουά βιντεοπαιχνιδιών, με εισιτήρια συμμετοχής και βραβεία που πληρώνονται απευθείας σε Bitcoin Cash!",
@@ -204,7 +210,7 @@ const translations = {
     es: "¡Compite en torneos de videojuegos en línea, con tarifas de inscripción y premios pagados directamente en Bitcoin Cash!",
     fa: "در مسابقات بازی های ویدیویی آنلاین، با هزینه ورود و جوایز که مستقیماً در بیت کوین کش پرداخت می شود، رقابت کنید!",
     fil: "Makipagkumpitensya sa mga online na video game tournament, na may mga entry fee at premyo na direktang binabayaran sa Bitcoin Cash!",
-    fr: "Participez à des tournois de jeux vidéo en ligne, avec des frais d&#39;entrée et des prix payés directement en Bitcoin Cash !",
+    fr: "Participez à des tournois de jeux vidéo en ligne, avec des frais d'entrée et des prix payés directement en Bitcoin Cash !",
     ha: "Gasa a cikin wasanni na bidiyo na kan layi, tare da kudaden shiga &amp; kyaututtuka da aka biya kai tsaye a cikin Bitcoin Cash!",
     hi: "ऑनलाइन वीडियो गेम टूर्नामेंट में प्रतिस्पर्धा करें, प्रवेश शुल्क और पुरस्कार सीधे बिटकॉइन कैश में भुगतान किए जाएंगे!",
     id: "Bersaing dalam turnamen video game online, dengan biaya masuk &amp; hadiah dibayarkan langsung dalam Bitcoin Cash!",
@@ -236,6 +242,7 @@ const translations = {
   signUp: {
     ar: "اشتراك",
     bn: "নিবন্ধন করুন",
+    cy: "Cofrestru",
     da: "Tilmelde",
     de: "Melden Sie sich an",
     el: "Εγγραφείτε",
@@ -243,7 +250,7 @@ const translations = {
     es: "Inscribirse",
     fa: "ثبت نام",
     fil: "Mag-sign Up",
-    fr: "S&#39;inscrire",
+    fr: "S'inscrire",
     ha: "Shiga",
     hi: "साइन अप करें",
     id: "Mendaftar",
@@ -275,6 +282,7 @@ const translations = {
   learnMore: {
     ar: "يتعلم أكثر",
     bn: "আরও জানুন",
+    cy: "Dysgu Mwy",
     da: "Lær mere",
     de: "Erfahren Sie mehr",
     el: "Μάθε περισσότερα",
@@ -314,6 +322,7 @@ const translations = {
   loadingText: {
     ar: "تحميل",
     bn: "লোড হচ্ছে",
+    cy: "Yn llwytho",
     da: "Indlæser",
     de: "Wird geladen",
     el: "Φόρτωση",

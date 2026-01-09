@@ -2,6 +2,7 @@ const translations = {
   debug: {
     ar: "تصحيح",
     bn: "ডিবাগ",
+    cy: "Dadfygio",
     da: "Fejlfinde",
     de: "Debuggen",
     el: "Εντοπισμός σφαλμάτων",
@@ -41,6 +42,7 @@ const translations = {
   debugOptions: {
     ar: "خيارات التصحيح",
     bn: "ডিবাগ বিকল্প",
+    cy: "Dewisiadau Dadfygio",
     da: "Fejlfindingsindstillinger",
     de: "Debug-Optionen",
     el: "Επιλογές εντοπισμού σφαλμάτων",
@@ -80,6 +82,7 @@ const translations = {
   enableExperimentalFeatures: {
     ar: "تمكين الميزات التجريبية",
     bn: "পরীক্ষামূলক বৈশিষ্ট্যগুলি সক্ষম করুন৷",
+    cy: "Galluogi Nodweddion Arbrofol",
     da: "Aktiver eksperimentelle funktioner",
     de: "Experimentelle Funktionen aktivieren",
     el: "Ενεργοποίηση πειραματικών δυνατοτήτων",
@@ -119,6 +122,7 @@ const translations = {
   experimentalDescription: {
     ar: "ميزات غير مستقرة قيد التطوير. مخصص للمطورين والمختبرين الداخليين فقط. توخي الحذر الشديد!!",
     bn: "অস্থির বৈশিষ্ট্য উন্নয়নের মধ্য দিয়ে। শুধুমাত্র বিকাশকারী এবং অভ্যন্তরীণ পরীক্ষকদের জন্য উদ্দিষ্ট। চরম সতর্কতা অবলম্বন করুন!!",
+    cy: "Mae nodweddion ansefydlog yn cael eu datblygu. At ddefnydd datblygwyr a phrofwyr mewnol yn unig. Byddwch yn ofalus iawn!!",
     da: "Ustabile funktioner under udvikling. Kun beregnet til udviklere og interne testere. Vær yderst forsigtig!!",
     de: "Instabile Funktionen in der Entwicklung. Nur für Entwickler und interne Tester bestimmt. Äußerste Vorsicht ist geboten!!",
     el: "Ασταθή χαρακτηριστικά υπό ανάπτυξη. Προορίζεται μόνο για προγραμματιστές και εσωτερικούς δοκιμαστές. Να είστε εξαιρετικά προσεκτικοί!!",
@@ -158,6 +162,7 @@ const translations = {
   enablePrereleaseFeatures: {
     ar: "تمكين ميزات الإصدار التجريبي",
     bn: "প্রি-রিলিজ বৈশিষ্ট্যগুলি সক্ষম করুন৷",
+    cy: "Galluogi Nodweddion Cyn eu Rhyddhau",
     da: "Aktiver Pre-release-funktioner",
     de: "Vorabversionsfunktionen aktivieren",
     el: "Ενεργοποιήστε τις λειτουργίες προέκδοσης",
@@ -197,6 +202,7 @@ const translations = {
   prereleaseDescription: {
     ar: "الميزات الثابتة المخطط لها للإصدار القادم. يمكن للمستخدمين المتقدمين إجراء التجربة قبل الإصدار، مع توخي الحذر المناسب وتوقع الأخطاء.",
     bn: "স্থিতিশীল বৈশিষ্ট্য আসন্ন প্রকাশের জন্য পরিকল্পনা করা হয়েছে। উন্নত ব্যবহারকারীরা রিলিজের আগে ট্রায়াল করতে পারে, যথাযথ সতর্কতা এবং বাগগুলির প্রত্যাশা সহ।",
+    cy: "Nodweddion sefydlog wedi eu cynllunio i'w rhyddhau yn fuan. Gall defnyddwyr uwch roi cynnig arnyn nhw cyn eu rhyddhau, gyda'r rhybudd diogelwch priodol a disgwyliad y bydd bygiau.",
     da: "Stabile funktioner er planlagt til kommende udgivelse. Avancerede brugere kan prøve før frigivelse, med passende forsigtighed og forventning om fejl.",
     de: "Stabile Funktionen sind für die kommende Version geplant. Fortgeschrittene Benutzer können die Version vor der Veröffentlichung testen, jedoch mit der gebotenen Vorsicht und unter Berücksichtigung von Fehlern.",
     el: "Σταθερά χαρακτηριστικά που έχουν προγραμματιστεί για την επερχόμενη κυκλοφορία. Οι προχωρημένοι χρήστες μπορούν να δοκιμάσουν πριν από την κυκλοφορία, με την κατάλληλη προσοχή και προσδοκία σφαλμάτων.",
@@ -204,7 +210,7 @@ const translations = {
     es: "Funciones estables previstas para el próximo lanzamiento. Los usuarios avanzados pueden realizar pruebas antes del lanzamiento, con la debida precaución y expectativa de errores.",
     fa: "ویژگی های پایدار برنامه ریزی شده برای انتشار آینده. کاربران پیشرفته ممکن است قبل از انتشار آزمایش کنند، با احتیاط مناسب و انتظار اشکالات.",
     fil: "Mga matatag na feature na binalak para sa paparating na release. Maaaring subukan ng mga advanced na user bago ilabas, nang may naaangkop na pag-iingat at pag-asa sa mga bug.",
-    fr: "Fonctionnalités stables prévues pour la prochaine version. Les utilisateurs avancés peuvent essayer avant la sortie, avec la prudence et l&#39;attente de bogues appropriés.",
+    fr: "Fonctionnalités stables prévues pour la prochaine version. Les utilisateurs avancés peuvent essayer avant la sortie, avec la prudence et l'attente de bogues appropriés.",
     ha: "Tsayayyen fasali da aka shirya don fitarwa mai zuwa. Nagartattun masu amfani na iya gwadawa kafin saki, tare da taka tsantsan da tsammanin kwari.",
     hi: "आगामी रिलीज़ के लिए स्थिर सुविधाओं की योजना बनाई गई है। उन्नत उपयोगकर्ता उचित सावधानी और बग की अपेक्षा के साथ रिलीज़ से पहले परीक्षण कर सकते हैं।",
     id: "Fitur stabil direncanakan untuk rilis mendatang. Pengguna tingkat lanjut dapat melakukan uji coba sebelum rilis, dengan hati-hati &amp; mengantisipasi bug.",
@@ -236,6 +242,7 @@ const translations = {
   throwAnError: {
     ar: "خطأ الرمي",
     bn: "ত্রুটি নিক্ষেপ",
+    cy: "Gwall Taflu",
     da: "Kast fejl",
     de: "Fehler werfen",
     el: "Σφάλμα ρίψης",
@@ -275,6 +282,7 @@ const translations = {
   bchNetwork: {
     ar: "شبكة BCH",
     bn: "বিসিএইচ নেটওয়ার্ক",
+    cy: "Rhwydwaith BCH",
     da: "BCH netværk",
     de: "BCH-Netzwerk",
     el: "Δίκτυο BCH",
@@ -314,6 +322,7 @@ const translations = {
   exportLogs: {
     ar: "تصدير السجلات",
     bn: "রপ্তানি লগ",
+    cy: "Allyrru Logiau",
     da: "Eksporter logs",
     de: "Protokolle exportieren",
     el: "Εξαγωγή αρχείων καταγραφής",

@@ -2,6 +2,7 @@ const translations = {
   seleneActiveUsers: {
     ar: "المستخدمين النشطين سيلين",
     bn: "সেলেন সক্রিয় ব্যবহারকারী",
+    cy: "Defnyddwyr Gweithredol Selene",
     da: "Selene aktive brugere",
     de: "Selene Aktive Benutzer",
     el: "Ενεργοί χρήστες Selene",

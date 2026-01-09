@@ -13,6 +13,7 @@ console.log("Adding additional languages...");
 export const ISO_639_1_LANGUAGES = [
   "ar",
   "bn",
+  "cy",
   "da",
   "de",
   "el",

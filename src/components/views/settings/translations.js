@@ -2,6 +2,7 @@ const translations = {
   settings: {
     ar: "إعدادات",
     bn: "সেটিংস",
+    cy: "Gosodiadau",
     da: "Indstillinger",
     de: "Einstellungen",
     el: "Ρυθμίσεις",
@@ -41,6 +42,7 @@ const translations = {
   walletSettings: {
     ar: "محافظ",
     bn: "ওয়ালেট",
+    cy: "Waledi",
     da: "Tegnebøger",
     de: "Geldbörsen",
     el: "Πορτοφόλια",
@@ -80,6 +82,7 @@ const translations = {
   createImportWallet: {
     ar: "إنشاء / استيراد المحفظة",
     bn: "ওয়ালেট তৈরি/আমদানি করুন",
+    cy: "Creu/Tynnu Waled i Mewn",
     da: "Opret/Importer Tegnebog",
     de: "Wallet erstellen/importieren",
     el: "Δημιουργία/Εισαγωγή πορτοφολιού",
@@ -119,6 +122,7 @@ const translations = {
   localizationSettings: {
     ar: "الموقع",
     bn: "লোকালাইজেশন",
+    cy: "Lleoleiddio",
     da: "Lokalisering",
     de: "Lokalisierung",
     el: "Τοπικοποίηση",
@@ -158,6 +162,7 @@ const translations = {
   language: {
     ar: "لغة",
     bn: "ভাষা",
+    cy: "Iaith",
     da: "Sprog",
     de: "Sprache",
     el: "Γλώσσα",
@@ -197,6 +202,7 @@ const translations = {
   currencySettings: {
     ar: "عملة",
     bn: "মুদ্রা",
+    cy: "Arian Cyfred (Currency)",
     da: "Valuta",
     de: "Währung",
     el: "Νόμισμα",
@@ -236,6 +242,7 @@ const translations = {
   localCurrency: {
     ar: "العملة المحلية",
     bn: "স্থানীয় মুদ্রা",
+    cy: "Arian cyfred (currency) lleol",
     da: "Lokal valuta",
     de: "Lokale Währung",
     el: "Τοπικό νόμισμα",
@@ -275,6 +282,7 @@ const translations = {
   preferLocalCurrency: {
     ar: "تفضل العملة المحلية",
     bn: "স্থানীয় মুদ্রায় পছন্দ করুন",
+    cy: "Ffafrio arian cyfred (currency) lleol",
     da: "Foretrækker lokal valuta",
     de: "Lokale Währung bevorzugen",
     el: "Προτίμηση τοπικού νομίσματος",
@@ -314,6 +322,7 @@ const translations = {
   hideAvailableBalance: {
     ar: "إخفاء الأرصدة",
     bn: "ব্যালেন্স লুকান",
+    cy: "Cuddio'r gweddillion",
     da: "Skjul saldi",
     de: "Guthaben ausblenden",
     el: "Απόκρυψη υπολοίπων",
@@ -322,7 +331,7 @@ const translations = {
     fa: "مخفی کردن موجودی ها",
     fil: "Itago ang mga balanse",
     fr: "Masquer les soldes",
-    ha: "Boye ma&#39;auni",
+    ha: "Boye ma'auni",
     hi: "शेष राशि छिपाएँ",
     id: "Sembunyikan saldo",
     it: "Nascondi i saldi",
@@ -353,6 +362,7 @@ const translations = {
   denominateInSats: {
     ar: "فئة",
     bn: "সংঘ",
+    cy: "Gwerth",
     da: "Pålydende",
     de: "Konfession",
     el: "Ονομασία",
@@ -392,6 +402,7 @@ const translations = {
   themeMode: {
     ar: "وضع الموضوع",
     bn: "থিম মোড",
+    cy: "Modd thema",
     da: "Tematilstand",
     de: "Themenmodus",
     el: "Λειτουργία θέματος",
@@ -431,6 +442,7 @@ const translations = {
   themeModeLight: {
     ar: "ضوء",
     bn: "আলো",
+    cy: "Golau",
     da: "Lys",
     de: "Licht",
     el: "Φως",
@@ -470,6 +482,7 @@ const translations = {
   themeModeDark: {
     ar: "مظلم",
     bn: "অন্ধকার",
+    cy: "Tywyll",
     da: "Mørk",
     de: "Dunkel",
     el: "Σκοτάδι",
@@ -509,6 +522,7 @@ const translations = {
   themeModeSystem: {
     ar: "نظام",
     bn: "সিস্টেম",
+    cy: "System",
     da: "System",
     de: "System",
     el: "Σύστημα",
@@ -548,6 +562,7 @@ const translations = {
   displayExchangeRate: {
     ar: "عرض سعر الصرف",
     bn: "বিনিময় হার প্রদর্শন করুন",
+    cy: "Dangos y gyfradd gyfnewid",
     da: "Vis valutakurs",
     de: "Wechselkurs anzeigen",
     el: "Εμφάνιση ισοτιμίας ανταλλαγής",
@@ -587,6 +602,7 @@ const translations = {
   paymentSettings: {
     ar: "قسط",
     bn: "পেমেন্ট",
+    cy: "Taliad",
     da: "Betaling",
     de: "Zahlung",
     el: "Πληρωμή",
@@ -626,6 +642,7 @@ const translations = {
   allowInstantPay: {
     ar: "السماح بالدفع الفوري",
     bn: "তাত্ক্ষণিক অর্থ প্রদানের অনুমতি দিন",
+    cy: "Caniatáu Instant Pay",
     da: "Tillad øjeblikkelig betaling",
     de: "Sofortige Zahlung zulassen",
     el: "Να επιτρέπεται η άμεση πληρωμή",
@@ -665,6 +682,7 @@ const translations = {
   instantPayExplanation: {
     ar: "مسح رمز QR للفاتورة يطلب مبلغًا أقل من حد الدفع الفوري يدفع على الفور دون نقرة إضافية للإرسال.",
     bn: "ইনভয়েস কিউআর কোড স্ক্যান করলে ইন্সট্যান্ট পে সীমা নীচে অর্থ চালাতে অতিরিক্ত ট্যাপ ছাড়াই সরাসরি পরিশোধ করে",
+    cy: "Mae sganio cod QR anfoneb sy'n gofyn am swm islaw trothwy Instant Pay yn ei thalu ar unwaith heb fod angen tap atodol i'w anfon.",
     da: "Scanning af en QR-kode der anmoder om et beløb under grænsen for øjeblikkelig betaling, betaler øjeblikkeligt uden et ekstra tryk for at sende.",
     de: "Das Scannen eines Rechnungs-QR-Codes, der einen Betrag unterhalb des Schwellenwerts für Sofortzahlungen anfordert, zahlt sofort ohne zusätzlichen Tipp zum Senden.",
     el: "Η σάρωση ενός QR κωδικού τιμολογίου που ζητεί ποσό κάτω από το όριο ταχείας πληρωμής πληρώνει αμέσως χωρίς επιπλέον πάτημα για αποστολή.",
@@ -704,6 +722,7 @@ const translations = {
   instantPayLimit: {
     ar: "حد الدفع الفوري",
     bn: "তাত্ক্ষণিক বেতন সীমা",
+    cy: "Uchafswm Instant Pay",
     da: "Øjeblikkelig betalingsgrænse",
     de: "Instant Pay-Limit",
     el: "Όριο άμεσης πληρωμής",
@@ -743,6 +762,7 @@ const translations = {
   qrCodeSettings: {
     ar: "رمز الاستجابة السريعة",
     bn: "কিউআর কোড",
+    cy: "Cod QR",
     da: "QR-kode",
     de: "QR-Code",
     el: "Κώδικας QR",
@@ -782,6 +802,7 @@ const translations = {
   logo: {
     ar: "شعار",
     bn: "লোগো",
+    cy: "Logo",
     da: "Logo",
     de: "Logo",
     el: "Λογότυπο",
@@ -821,6 +842,7 @@ const translations = {
   foregroundColor: {
     ar: "لون المقدمة",
     bn: "অগ্রভাগের রঙ",
+    cy: "Lliw'r blaendir",
     da: "Forgrundsfarve",
     de: "Vordergrundfarbe",
     el: "Χρώμα πρώτου πλάνου",
@@ -860,6 +882,7 @@ const translations = {
   backgroundColor: {
     ar: "لون الخلفية",
     bn: "পটভূমির রঙ",
+    cy: "Lliw'r cefndir",
     da: "Baggrundsfarve",
     de: "Hintergrundfarbe",
     el: "Χρώμα φόντου",
@@ -867,7 +890,7 @@ const translations = {
     es: "Color de fondo",
     fa: "رنگ پس زمینه",
     fil: "Kulay ng background",
-    fr: "Couleur d&#39;arrière-plan",
+    fr: "Couleur d'arrière-plan",
     ha: "Kalar bango",
     hi: "पृष्ठभूमि का रंग",
     id: "Warna latar belakang",
@@ -899,6 +922,7 @@ const translations = {
   resetColors: {
     ar: "إعادة تعيين الألوان",
     bn: "রং রিসেট করুন",
+    cy: "Ailosod y lliwiau",
     da: "Nulstil farver",
     de: "Farben zurücksetzen",
     el: "Επαναφορά χρωμάτων",
@@ -938,6 +962,7 @@ const translations = {
   network: {
     ar: "Network",
     bn: "নেটওয়ার্ক",
+    cy: "Rhwydwaith",
     da: "Netværk",
     de: "Netzwerk",
     el: "Δίκτυο",
@@ -977,6 +1002,7 @@ const translations = {
   translatedElectrumServer: {
     ar: "خادم اليكترون",
     bn: "ইলেকট্রাম সার্ভার",
+    cy: "Gweinydd Electrum",
     da: "Electrum server",
     de: "Electrum-Server",
     el: "Διακομιστής Electrum",
@@ -1016,6 +1042,7 @@ const translations = {
   electrumServerDescription: {
     ar: "اختر خادم Electrum من القائمة المتوفرة أو قم بالتجاوز عن طريق إدخال اسم خادم Electrum مخصص.",
     bn: "প্রদত্ত তালিকা থেকে ইলেক্ট্রাম সার্ভার নির্বাচন করুন অথবা কাস্টম ইলেক্ট্রাম সার্ভার নাম প্রবেশ করুন।",
+    cy: "Dewiswch weinydd Electrum o'r rhestr a ddarperir neu ei ddisodli trwy nodi enw gweinydd Electrum personol.",
     da: "Vælg en Electrum-server fra den medfølgende liste, eller tilsidesæt ved at indtaste et brugerdefineret navn for Electrum-server.",
     de: "Wählen Sie einen Electrum-Server aus der bereitgestellten Liste oder überschreiben Sie ihn, indem Sie einen benutzerdefinierten Electrum-Servernamen eingeben.",
     el: "Επιλέξτε έναν διακομιστή Electrum από την παρεχόμενη λίστα ή αντικαταστήστε τον εισάγοντας ένα προσαρμοσμένο όνομα διακομιστή Electrum.",
@@ -1024,7 +1051,7 @@ const translations = {
     fa: "یک سرور Electrum را از لیست ارائه شده انتخاب کنید یا با وارد کردن نام سرور Electrum سفارشی، آن را لغو کنید.",
     fil: "Pumili ng Electrum server mula sa ibinigay na listahan o i-override sa pamamagitan ng paglalagay ng custom na pangalan ng Electrum server.",
     fr: "Choisissez un serveur Electrum dans la liste fournie ou remplacez-le en saisissant un nom de serveur Electrum personnalisé.",
-    ha: "Zaɓi uwar garken Electrum daga lissafin da aka bayar ko soke ta shigar da sunan uwar garken Electrum na al&#39;ada.",
+    ha: "Zaɓi uwar garken Electrum daga lissafin da aka bayar ko soke ta shigar da sunan uwar garken Electrum na al'ada.",
     hi: "प्रदान की गई सूची से एक इलेक्ट्रम सर्वर चुनें या एक कस्टम इलेक्ट्रम सर्वर नाम द्वारा ओवरराइड करें।",
     id: "Pilih server Electrum dari daftar yang disediakan atau ganti dengan memasukkan nama server Electrum khusus.",
     it: "Scegli un server Electrum dalla lista fornita o sovrascrivilo inserendo un nome di server Electrum personalizzato.",
@@ -1055,6 +1082,7 @@ const translations = {
   server: {
     ar: "الخادم",
     bn: "সার্ভার",
+    cy: "Gweinydd",
     da: "Server",
     de: "Server",
     el: "Διακομιστής",
@@ -1094,6 +1122,7 @@ const translations = {
   customServer: {
     ar: "خادم مخصص",
     bn: "কাস্টম সার্ভার",
+    cy: "Gweinydd Personol",
     da: "Brugerdefineret Server",
     de: "Benutzerdefinierter Server",
     el: "Προσαρμοσμένος διακομιστής",
@@ -1133,6 +1162,7 @@ const translations = {
   uiSettings: {
     ar: "واجهة المستخدم",
     bn: "ব্যবহারকারী ইন্টারফেস",
+    cy: "Rhyngwyneb Defnyddiwr",
     da: "Brugergrænseflade",
     de: "Benutzeroberfläche",
     el: "Διεπαφή χρήστη",
@@ -1172,6 +1202,7 @@ const translations = {
   displayExploreTab: {
     ar: "عرض علامة التبويب &quot;استكشاف&quot;",
     bn: "এক্সপ্লোর ট্যাব প্রদর্শন করুন",
+    cy: "Dangos y tab Archwilio",
     da: "Vis fanen Udforsk",
     de: "Registerkarte „Erkunden“ anzeigen",
     el: "Εμφάνιση καρτέλας Εξερεύνηση",
@@ -1179,7 +1210,7 @@ const translations = {
     es: "Mostrar pestaña Explorar",
     fa: "تب کاوش را نمایش دهید",
     fil: "Display Explore tab",
-    fr: "Afficher l&#39;onglet Explorer",
+    fr: "Afficher l'onglet Explorer",
     ha: "Nuna Bincike shafin",
     hi: "एक्सप्लोर टैब प्रदर्शित करें",
     id: "Tampilkan tab Jelajahi",
@@ -1211,6 +1242,7 @@ const translations = {
   displaySyncCounter: {
     ar: "عرض عداد المزامنة",
     bn: "সিঙ্ক কাউন্টার প্রদর্শন করুন",
+    cy: "Dangos y rhifydd cydamserol",
     da: "Vis synkroniseringstæller",
     de: "Synchronisierungszähler anzeigen",
     el: "Εμφάνιση μετρητή συγχρονισμού",
@@ -1250,6 +1282,7 @@ const translations = {
   privacySettings: {
     ar: "خصوصية",
     bn: "গোপনীয়তা",
+    cy: "Preifatrwydd",
     da: "Privatliv",
     de: "Privatsphäre",
     el: "Μυστικότητα",
@@ -1289,6 +1322,7 @@ const translations = {
   sendDailyCheckIn: {
     ar: "إرسال تسجيل الدخول للإحصائيات",
     bn: "পরিসংখ্যান চেক-ইন পাঠান",
+    cy: "Cais i Anfon Ystadegau",
     da: "Send statistik check-in",
     de: "Senden Sie den Statistik-Check-in",
     el: "Αποστολή Stats check-in",
@@ -1328,6 +1362,7 @@ const translations = {
   security: {
     ar: "حماية",
     bn: "নিরাপত্তা",
+    cy: "Diogelwch",
     da: "Sikkerhed",
     de: "Sicherheit",
     el: "Ασφάλεια",
@@ -1367,6 +1402,7 @@ const translations = {
   securityMode: {
     ar: "وضع الأمان",
     bn: "নিরাপত্তা মোড",
+    cy: "Modd Diogelwch",
     da: "Sikkerhedstilstand",
     de: "Sicherheitsmodus",
     el: "Λειτουργία ασφαλείας",
@@ -1406,6 +1442,7 @@ const translations = {
   none: {
     ar: "لا أحد",
     bn: "কোনোটিই নয়",
+    cy: "Dim",
     da: "Ingen",
     de: "Keiner",
     el: "Κανένας",
@@ -1445,6 +1482,7 @@ const translations = {
   pin: {
     ar: "دبوس",
     bn: "পিন",
+    cy: "PIN",
     da: "STIFT",
     de: "STIFT",
     el: "ΚΑΡΦΙΤΣΑ",
@@ -1484,6 +1522,7 @@ const translations = {
   biometric: {
     ar: "البيانات الحيوية",
     bn: "বায়োমেট্রিক",
+    cy: "Biometrig",
     da: "Biometrisk",
     de: "Biometrische",
     el: "Βιομετρική",
@@ -1523,6 +1562,7 @@ const translations = {
   pinNotSet: {
     ar: "لم يتم تعيين رقم التعريف الشخصي (PIN)!",
     bn: "পিন সেট করা নেই!",
+    cy: "Nid yw'r PIN wedi ei osod!",
     da: "PIN-koden er ikke indstillet!",
     de: "PIN ist nicht festgelegt!",
     el: "Το PIN δεν έχει οριστεί!",
@@ -1530,7 +1570,7 @@ const translations = {
     es: "¡El PIN no está configurado!",
     fa: "پین تنظیم نشده است!",
     fil: "Hindi nakatakda ang PIN!",
-    fr: "Le code PIN n&#39;est pas défini !",
+    fr: "Le code PIN n'est pas défini !",
     ha: "Ba a saita PIN ba!",
     hi: "पिन सेट नहीं है!",
     id: "PIN belum ditetapkan!",
@@ -1562,6 +1602,7 @@ const translations = {
   pinSet: {
     ar: "تم تعيين رقم التعريف الشخصي (PIN)",
     bn: "পিন সেট করা আছে",
+    cy: "Mae'r PIN wedi ei osod",
     da: "PIN-koden er indstillet",
     de: "PIN ist gesetzt",
     el: "Το PIN έχει οριστεί",
@@ -1601,6 +1642,7 @@ const translations = {
   enterNewPin: {
     ar: "أدخل رقم التعريف الشخصي الجديد",
     bn: "নতুন পিন লিখুন",
+    cy: "Rhowch y PIN Newydd i mewn",
     da: "Indtast ny pinkode",
     de: "Neue PIN eingeben",
     el: "Εισαγάγετε νέο PIN",
@@ -1630,7 +1672,7 @@ const translations = {
     ta: "புதிய பின்னை உள்ளிடவும்",
     te: "కొత్త PINని నమోదు చేయండి",
     th: "กรอกรหัส PIN ใหม่",
-    tr: "Yeni PIN&#39;i girin",
+    tr: "Yeni PIN'i girin",
     uk: "Введіть новий PIN-код",
     ur: "نیا پن داخل کریں۔",
     vi: "Nhập mã PIN mới",
@@ -1640,6 +1682,7 @@ const translations = {
   enterNewPinMessage: {
     ar: "الرجاء إدخال رقم التعريف الشخصي **الجديد**.",
     bn: "অনুগ্রহ করে একটি **নতুন** পিন লিখুন।",
+    cy: "Rhowch PIN **newydd** i mewn.",
     da: "Indtast venligst en **ny** pinkode.",
     de: "Bitte geben Sie eine **neue** PIN ein.",
     el: "Εισαγάγετε ένα **νέο** PIN.",
@@ -1679,6 +1722,7 @@ const translations = {
   enterNewPinOkButtonTitle: {
     ar: "تعيين رقم التعريف الشخصي (PIN)",
     bn: "পিন সেট করুন",
+    cy: "Gosod y PIN",
     da: "Indstil pinkode",
     de: "PIN festlegen",
     el: "Ορισμός PIN",
@@ -1718,6 +1762,7 @@ const translations = {
   confirmNewPin: {
     ar: "تأكيد رقم التعريف الشخصي الجديد",
     bn: "নতুন পিন নিশ্চিত করুন",
+    cy: "Cadarnhau'r PIN Newydd",
     da: "Bekræft ny pinkode",
     de: "Neue PIN bestätigen",
     el: "Επιβεβαίωση νέου PIN",
@@ -1747,7 +1792,7 @@ const translations = {
     ta: "புதிய பின்னை உறுதிப்படுத்தவும்",
     te: "కొత్త PINని నిర్ధారించండి",
     th: "ยืนยันรหัส PIN ใหม่",
-    tr: "Yeni PIN&#39;i onayla",
+    tr: "Yeni PIN'i onayla",
     uk: "Підтвердьте новий PIN-код",
     ur: "نئے پن کی تصدیق کریں۔",
     vi: "Xác nhận mã PIN mới",
@@ -1757,6 +1802,7 @@ const translations = {
   confirmNewPinMessage: {
     ar: "يرجى تأكيد رقم التعريف الشخصي الجديد الخاص بك.",
     bn: "আপনার নতুন পিন নিশ্চিত করুন.",
+    cy: "Cadarnhewch eich PIN newydd.",
     da: "Bekræft venligst din nye PIN-kode.",
     de: "Bitte bestätigen Sie Ihre neue PIN.",
     el: "Επιβεβαιώστε το νέο σας PIN.",
@@ -1796,6 +1842,7 @@ const translations = {
   confirmNewPinOkButtonTitle: {
     ar: "تأكيد رقم التعريف الشخصي (PIN)",
     bn: "পিন নিশ্চিত করুন",
+    cy: "Cadarnhau'r PIN",
     da: "Bekræft PIN-kode",
     de: "PIN bestätigen",
     el: "Επιβεβαίωση PIN",
@@ -1825,7 +1872,7 @@ const translations = {
     ta: "பின்னை உறுதிப்படுத்தவும்",
     te: "PINని నిర్ధారించండి",
     th: "ยืนยันรหัส PIN",
-    tr: "PIN&#39;i onayla",
+    tr: "PIN'i onayla",
     uk: "Підтвердьте PIN-код",
     ur: "پن کی تصدیق کریں۔",
     vi: "Xác nhận mã PIN",
@@ -1835,6 +1882,7 @@ const translations = {
   pinConfirmationDidNotMatch: {
     ar: "لم يتطابق تأكيد رقم التعريف الشخصي (PIN)! لم يتم تعيين رقم التعريف الشخصي (PIN).",
     bn: "পিন নিশ্চিতকরণ মেলেনি! পিন সেট করা হয়নি।",
+    cy: "Nid oedd cadarnhad y PIN yn cyfateb! Ni osodwyd y PIN.",
     da: "PIN-bekræftelsen stemte ikke overens! PIN-koden blev ikke angivet.",
     de: "PIN-Bestätigung stimmt nicht überein! PIN wurde nicht festgelegt.",
     el: "Η επιβεβαίωση PIN δεν ταιριάζει! Το PIN δεν ορίστηκε.",
@@ -1842,7 +1890,7 @@ const translations = {
     es: "¡La confirmación del PIN no coincide! No se ha establecido el PIN.",
     fa: "تأیید پین مطابقت نداشت! پین تنظیم نشد.",
     fil: "Hindi tumugma ang kumpirmasyon ng PIN! Hindi naitakda ang PIN.",
-    fr: "La confirmation du code PIN ne correspond pas ! Le code PIN n&#39;a pas été défini.",
+    fr: "La confirmation du code PIN ne correspond pas ! Le code PIN n'a pas été défini.",
     ha: "Tabbatar da PIN bai dace ba! Ba a saita PIN ba.",
     hi: "पिन पुष्टि मेल नहीं खाती! पिन सेट नहीं किया गया था.",
     id: "Konfirmasi PIN tidak cocok! PIN tidak ditetapkan.",
@@ -1874,6 +1922,7 @@ const translations = {
   securityModeExplanation: {
     ar: "يجب استخدام رقم التعريف الشخصي (PIN)/المصادقة البيومترية لعرض عبارات المحفظة الأصلية وإظهار رصيد المحفظة وإرسال المعاملات (باستثناء الفواتير التي تقل عن حد الدفع الفوري).",
     bn: "মানিব্যাগের বীজ বাক্যাংশ দেখতে, ওয়ালেট ব্যালেন্স দেখাতে এবং লেনদেন পাঠাতে পিন/বায়োমেট্রিক প্রমাণীকরণ প্রয়োজন (তাত্ক্ষণিক বেতন সীমার নিচে চালান ব্যতীত)।",
+    cy: "Gofyn am ddilysiad PIN/Biometrig i weld ymadroddion hadu waled, datguddio'r gweddill mewn waled ac anfon trafodion (ac eithrio anfonebau islaw terfyn Instant Pay).",
     da: "Kræv PIN-kode/biometrisk godkendelse for at se wallet-seed-sætninger, vise wallet-saldo og sende transaktioner (undtagen for fakturaer under øjeblikkelig løngrænse).",
     de: "PIN-/biometrische Authentifizierung erforderlich, um Wallet-Seed-Phrasen anzuzeigen, den Wallet-Saldo sichtbar zu machen und Transaktionen zu senden (außer für Rechnungen unterhalb des Sofortzahlungslimits).",
     el: "Απαιτείται PIN/Βιομετρικός έλεγχος ταυτότητας για να δείτε τις βασικές φράσεις πορτοφολιού, να εμφανίσετε το υπόλοιπο πορτοφολιού και να στείλετε συναλλαγές (εκτός από τιμολόγια κάτω από το όριο άμεσης πληρωμής).",
@@ -1882,10 +1931,10 @@ const translations = {
     fa: "برای مشاهده عبارات اولیه کیف پول، نمایان کردن موجودی کیف پول و ارسال تراکنش ها (به جز فاکتورهای زیر سقف پرداخت فوری) به تأیید اعتبار پین/بیومتریک نیاز دارید.",
     fil: "Mangangailangan ng PIN/Biometric na pagpapatotoo upang tingnan ang mga parirala ng wallet seed, i-unhide ang balanse ng wallet at magpadala ng mga transaksyon (maliban sa mga invoice na mas mababa sa limitasyon ng Instant na suweldo).",
     fr: "Exiger une authentification PIN/biométrique pour afficher les phrases de départ du portefeuille, afficher le solde du portefeuille et envoyer des transactions (sauf pour les factures inférieures à la limite de paiement instantané).",
-    ha: "Bukatar tantancewar PIN/Biometric don duba jumlolin nau&#39;in walat, ɓoye ma&#39;auni na walat &amp; aika ma&#39;amaloli (sai dai rasiyoyin da ke ƙasa da iyakacin biya kai tsaye).",
+    ha: "Bukatar tantancewar PIN/Biometric don duba jumlolin nau'in walat, ɓoye ma'auni na walat &amp; aika ma'amaloli (sai dai rasiyoyin da ke ƙasa da iyakacin biya kai tsaye).",
     hi: "वॉलेट सीड वाक्यांशों को देखने, वॉलेट बैलेंस को दिखाने और लेनदेन भेजने के लिए पिन/बायोमेट्रिक प्रमाणीकरण की आवश्यकता होती है (तत्काल भुगतान सीमा से नीचे के चालानों को छोड़कर)।",
     id: "Memerlukan PIN/autentikasi biometrik untuk melihat frasa awal dompet, menampilkan saldo dompet, dan mengirim transaksi (kecuali untuk faktur di bawah batas Pembayaran Instan).",
-    it: "Richiedi l&#39;autenticazione PIN/biometrica per visualizzare le frasi iniziali del portafoglio, mostrare il saldo del portafoglio e inviare transazioni (ad eccezione delle fatture al di sotto del limite di pagamento immediato).",
+    it: "Richiedi l'autenticazione PIN/biometrica per visualizzare le frasi iniziali del portafoglio, mostrare il saldo del portafoglio e inviare transazioni (ad eccezione delle fatture al di sotto del limite di pagamento immediato).",
     ja: "ウォレットのシードフレーズを表示したり、ウォレットの残高を表示したり、トランザクションを送信したりするには、PIN/生体認証が必要です (即時支払いの制限を下回る請求書を除く)。",
     jv: "Mbutuhake otentikasi PIN / Biometrik kanggo ndeleng frase wiji dompet, ndhelikake imbangan dompet &amp; ngirim transaksi (kajaba invoice ing ngisor watesan mbayar cepet).",
     ko: "지갑 시드 문구를 보고, 지갑 잔액을 표시하고, 거래를 보내려면 PIN/생체 인증이 필요합니다(즉시 지불 한도 미만의 송장 제외).",
@@ -1913,6 +1962,7 @@ const translations = {
   authWalletActivate: {
     ar: "تفعيل المحفظة",
     bn: "ওয়ালেট সক্রিয় করুন",
+    cy: "Gweithredu waled",
     da: "Aktiver tegnebogen",
     de: "Wallet aktivieren",
     el: "Ενεργοποίηση πορτοφολιού",
@@ -1952,6 +2002,7 @@ const translations = {
   authSendTransaction: {
     ar: "إرسال المعاملة",
     bn: "লেনদেন পাঠান",
+    cy: "Anfon trafodiad",
     da: "Send transaktion",
     de: "Transaktion senden",
     el: "Αποστολή συναλλαγής",
@@ -1991,6 +2042,7 @@ const translations = {
   authInstantPay: {
     ar: "الدفع الفوري",
     bn: "তাত্ক্ষণিক বেতন",
+    cy: "Taliad Instant Pay",
     da: "Øjeblikkelig betaling",
     de: "Sofortige Bezahlung",
     el: "Άμεση πληρωμή",
@@ -2030,6 +2082,7 @@ const translations = {
   authRevealBalance: {
     ar: "كشف الأرصدة المخفية",
     bn: "লুকানো ব্যালেন্স প্রকাশ",
+    cy: "Datgelu gweddillion cudd",
     da: "Afslør skjulte balancer",
     de: "Versteckte Salden aufdecken",
     el: "Αποκαλύψτε κρυφές ισορροπίες",
@@ -2038,7 +2091,7 @@ const translations = {
     fa: "تعادل های پنهان را آشکار کنید",
     fil: "Ipakita ang mga nakatagong balanse",
     fr: "Révéler les soldes cachés",
-    ha: "Bayyana ma&#39;auni na ɓoye",
+    ha: "Bayyana ma'auni na ɓoye",
     hi: "छिपे हुए शेष राशि का खुलासा करें",
     id: "Mengungkapkan saldo tersembunyi",
     it: "Rivela i saldi nascosti",
@@ -2069,6 +2122,7 @@ const translations = {
   authRevealPrivateKeys: {
     ar: "كشف المفاتيح الخاصة",
     bn: "ব্যক্তিগত কী প্রকাশ করুন",
+    cy: "Datgelu allweddi preifat",
     da: "Afslør private nøgler",
     de: "Offenlegen privater Schlüssel",
     el: "Αποκαλύψτε τα ιδιωτικά κλειδιά",
@@ -2108,6 +2162,7 @@ const translations = {
   offlineMode: {
     ar: "الوضع غير المتصل",
     bn: "অফলাইন মোড",
+    cy: "Modd All-lein",
     da: "Offline tilstand",
     de: "Offline-Modus",
     el: "Λειτουργία εκτός σύνδεσης",
@@ -2147,6 +2202,7 @@ const translations = {
   resetPin: {
     ar: "إعادة تعيين رقم التعريف الشخصي (PIN)",
     bn: "পিন রিসেট করুন",
+    cy: "Ailosod y PIN",
     da: "Nulstil PIN-koden",
     de: "PIN zurücksetzen",
     el: "Επαναφορά PIN",
@@ -2176,7 +2232,7 @@ const translations = {
     ta: "பின்னை மீட்டமைக்கவும்",
     te: "PINని రీసెట్ చేయండి",
     th: "รีเซ็ตรหัส PIN",
-    tr: "PIN&#39;i sıfırla",
+    tr: "PIN'i sıfırla",
     uk: "Скинути PIN-код",
     ur: "پن کو دوبارہ ترتیب دیں۔",
     vi: "Đặt lại mã PIN",
@@ -2186,6 +2242,7 @@ const translations = {
   autoResolveBcmr: {
     ar: "حل بيانات التعريف الرمزية تلقائيًا",
     bn: "টোকেন মেটাডেটা স্বয়ংক্রিয়ভাবে সমাধান করুন",
+    cy: "Datrys metadata CashToken yn awtomatig",
     da: "Løs automatisk Token-metadata",
     de: "Token-Metadaten automatisch auflösen",
     el: "Αυτόματη επίλυση μεταδεδομένων Token",
@@ -2225,6 +2282,7 @@ const translations = {
   constrainViewport: {
     ar: "تقييد عرض التطبيق",
     bn: "অ্যাপ ভিউপোর্ট সীমাবদ্ধ করুন",
+    cy: "Cyfyngu Ardal Weladwy yr Ap",
     da: "Begræns app-viewport",
     de: "App-Ansichtsfenster einschränken",
     el: "Περιορισμός παραθύρου προβολής εφαρμογής",
@@ -2232,11 +2290,11 @@ const translations = {
     es: "Restringir la ventana gráfica de la aplicación",
     fa: "محدود کردن نمای برنامه",
     fil: "Limitahan ang App Viewport",
-    fr: "Contraindre la fenêtre d&#39;affichage de l&#39;application",
+    fr: "Contraindre la fenêtre d'affichage de l'application",
     ha: "Ƙaddamar da App Viewport",
     hi: "ऐप व्यूपोर्ट को सीमित करें",
     id: "Batasi Viewport Aplikasi",
-    it: "Limita la visualizzazione dell&#39;app",
+    it: "Limita la visualizzazione dell'app",
     ja: "アプリのビューポートを制限する",
     jv: "Watesi App Viewport",
     ko: "앱 뷰포트 제한",
@@ -2264,6 +2322,7 @@ const translations = {
   enableStablecoinMode: {
     ar: "تفعيل وضع العملة المستقرة",
     bn: "স্টেবলকয়েন মোড সক্ষম করুন",
+    cy: "Galluogi Modd Stablecoin",
     da: "Aktiver Stablecoin tilstand",
     de: "Stablecoin-Modus aktivieren",
     el: "Ενεργοποιήστε τη λειτουργία Stablecoin",
@@ -2303,6 +2362,7 @@ const translations = {
   stablecoinModeExplanation: {
     ar: "عند التفعيل، يتم تحويل كل العملات المستلمة إلى MUSD تلقائياً عبر Cauldron DEX، باستثناء 0.2% المحفوظة كـ BCH لرسوم المعاملات. الرصيد المعروض سيكون بـ MUSD والعملة المرجعية ستكون USD.",
     bn: "সক্ষম হলে, সমস্ত প্রাপ্ত BCH স্বয়ংক্রিয়ভাবে Cauldron DEX এর মাধ্যমে MUSD এ রূপান্তরিত হয়, লেনদেনের ফি হিসাবে BCH হিসাবে সংরক্ষিত 0.2% ব্যতীত। প্রদর্শিত ব্যালেন্স MUSD হবে এবং ফিয়াট মুদ্রা USD হয়ে যাবে।",
+    cy: "Pan fydd yn weithredol, caiff yr holl BCH sy'n dod i mewn eu trosi'n awtomatig i MUSD trwy Cauldron DEX, ac eithrio 0.2% a arbedir fel BCH ar gyfer ffioedd trafodion. Mewn MUSD fydd y gweddill a ddangosir a bydd cyfrededd arian gorchymyn (fiat currency) yn dod yn USD.",
     da: "Når aktiveret, konverteres al modtaget BCH automatisk til MUSD via Cauldron DEX, undtagen 0,2% gemt som BCH til transaktionsgebyrer. Den viste saldo vil være MUSD og fiat-valuta vil blive USD.",
     de: "Wenn aktiviert, werden alle erhaltenen BCH automatisch über Cauldron DEX in MUSD konvertiert, außer 0,2%, die als BCH für Transaktionsgebühren gespart werden. Der angezeigte Saldo wird MUSD sein und die Fiat-Währung wird USD.",
     el: "Όταν ενεργοποιηθεί, όλα τα εισερχόμενα BCH μετατρέπονται αυτόματα σε MUSD μέσω Cauldron DEX, εκτός από 0,2% που αποθηκεύονται ως BCH για χρεώσεις συναλλαγών. Το εμφανιζόμενο υπόλοιπο θα είναι MUSD και το νόμισμα fiat θα γίνει USD.",
@@ -2342,6 +2402,7 @@ const translations = {
   externalLinkTitle: {
     ar: "رابط خارجي",
     bn: "বাহ্যিক লিঙ্ক",
+    cy: "Dolen Allanol",
     da: "Eksternt link",
     de: "Externer Link",
     el: "Εξωτερικός σύνδεσμος",
@@ -2381,6 +2442,7 @@ const translations = {
   externalLinkMessage: {
     ar: "سيتم فتح هذا الرابط في متصفحك. هل تريد المتابعة؟",
     bn: "এই লিঙ্কটি আপনার ব্রাউজারে খুলবে। এগিয়ে যাবেন?",
+    cy: "Bydd y ddolen hon yn agor yn eich porwr. Bwrw ymlaen?",
     da: "Dette link åbner i din browser. Vil du fortsætte?",
     de: "Dieser Link wird sich in Ihrem Browser öffnen. Fortfahren?",
     el: "Αυτός ο σύνδεσμος θα ανοίξει στο πρόγραμμα περιήγησής σας. Θέλετε να συνεχίσετε;",
@@ -2388,7 +2450,7 @@ const translations = {
     es: "Este enlace se abrirá en tu navegador. ¿Continuar?",
     fa: "این لینک در مرورگر شما باز خواهد شد. ادامه دهید؟",
     fil: "Magbubukas ang link na ito sa iyong browser. Magpatuloy?",
-    fr: "Ce lien s&#39;ouvrira dans votre navigateur. Continuer ?",
+    fr: "Ce lien s'ouvrira dans votre navigateur. Continuer ?",
     ha: "Wannan hanyar haɗin za ta buɗe a cikin burauzar ku. Ci gaba?",
     hi: "यह लिंक आपके ब्राउज़र में खुलेगा। आगे बढ़ें?",
     id: "Tautan ini akan terbuka di peramban Anda. Lanjutkan?",

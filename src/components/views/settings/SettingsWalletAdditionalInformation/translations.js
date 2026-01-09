@@ -2,6 +2,7 @@ const translations = {
   additionalWalletInformation: {
     ar: "Additional Wallet Information",
     bn: "অতিরিক্ত ওয়ালেট তথ্য",
+    cy: "Gwybodaeth Ychwanegol am y Waled",
     da: "Mere Information Om Tegnebog",
     de: "Zusätzliche Wallet-Informationen",
     el: "Επιπρόσθετες πληροφορίες πορτοφολιού",
@@ -41,6 +42,7 @@ const translations = {
   activateToReveal: {
     ar: "Activate this wallet to view this information.",
     bn: "এই তথ্যটি দেখতে এই ওয়ালেট সক্রিয় করুন।",
+    cy: "Gwnewch y waled hon yn weithredol er mwyn gweld y wybodaeth hon.",
     da: "Aktiver denne tegnebog for at se disse oplysninger.",
     de: "Aktivieren Sie diese Brieftasche, um diese Informationen anzuzeigen.",
     el: "Ενεργοποιήστε αυτό το πορτοφόλι για να δείτε αυτές τις πληροφορίες.",
@@ -80,6 +82,7 @@ const translations = {
   derivationPathTitle: {
     ar: "Derivation Path",
     bn: "ডেরিভেশন পাথ",
+    cy: "Llwybr Deilliad",
     da: "Derivation Path",
     de: "Ableitungspfad",
     el: "Διαδρομή παραγωγής",
@@ -119,6 +122,7 @@ const translations = {
   derivationPathExplanation: {
     ar: "A wallet derivation path tells wallet software how to generate each successive new Bitcoin address from the initial seed phrase. When importing seed phrases from one wallet software into another, the correct derivation path is sometimes required to help it find any existing coins or transactions. It is best to store the derivation path if you plan to change wallets, but if not then it's always possible to try the limited number of standard derivation paths to recover your coins. The default Selene Wallet derivation path is",
     bn: "একটি ওয়ালেট প্রস্তুত পাথ ওয়ালেট সফ্টওয়্যারের প্রতিটি অনুক্রমিক নতুন বিটকয়েন ঠিকানা জেনারেট করতে কিভাবে আগের বীজ বাক্স থেকে প্রত্যায়ী করে। একটি ওয়ালেট সফ্টওয়্যার থেকে অন্য একটি ওয়ালেট সফ্টওয়্যারে বীজ বাক্স আমদানি করার সময়, কোরেক্ট প্রস্তুত পাথ প্রয়োজন হতে পারে তাকে কোনও বিদ্যমান কয়েন বা লেনদেন খুঁজে পেতে সাহায্য করতে। ওয়ালেট পরিবর্তন করতে প্রয়োজন হলে, তা সংরক্ষণ করা সেরা, কিন্তু যদি না হয় তবে সব সময় বিস্তৃত স্ট্যান্ডার্ড প্রস্তুত পাথ প্রয়োগ করতে আপনার কয়েনগুলি পুনরুদ্ধার করার চেষ্টা করা যায়। ডিফল্ট সেলেন ওয়ালেট প্রস্তুত পাথ হলো",
+    cy: "Mae llwybr deilliad waled yn dweud wrth feddalwedd y waled sut i gynhyrchu pob cyfeiriad Bitcoin newydd sy'n dilyn yn seiliedig ar yr ymadrodd hadu cychwynnol. Wrth dynnu ymadroddion hadu i mewn o un feddalwedd waled i un arall, weithiau mae angen llwybr deilliad cywir y waled i'w helpu i ddod o hyd i unrhyw ddarnau arian neu drafodion sy'n bodoli eisoes. Os ydy hi'n fwriad gennych i newid waledi, y dull gorau yw i storio'r llwybr deilliad, ond os na, yna mae hi bob amser yn bosibl i roi cynnig ar y nifer gyfyngedig o lwybrau deilliad safonol i adfer eich darnau arian. Llwybr deilliad rhagosodedig Waled Selene yw",
     da: "En derivation path fortæller softwaren bag tegnebogen, hvordan man genererer hver efterfølgende ny Bitcoin-adresse ud fra gendannelsessætningen. Når du importerer gendannelsessætninger fra en app til en anden, er den korrekte derivation path nogle gange påkrævet for at hjælpe med at lokalisere eksisterende mønter eller transaktioner. Det er bedst at gemme din derivation path, hvis du planlægger at skifte tegnebog, men hvis ikke er det altid muligt at prøve det begrænsede antal derivation paths, der er standard, for at genvinde dine mønter. Selene Wallets standard derivation path er",
     de: "Ein Wallet-Derivationspfad gibt der Wallet-Software an, wie jede aufeinanderfolgende neue Bitcoin-Adresse aus dem anfänglichen Seed-Phrase generiert wird. Beim Importieren von Seed-Phrasen von einer Wallet-Software in eine andere ist manchmal der korrekte Derivationspfad erforderlich, um bestehende Coins oder Transaktionen zu finden. Es ist ratsam, den Derivationspfad zu speichern, wenn Sie beabsichtigen, Wallets zu wechseln, aber wenn nicht, besteht immer die Möglichkeit, die begrenzte Anzahl der Standard-Derivationspfade auszuprobieren, um Ihre Coins wiederherzustellen. Der Standard Derivationspfad für das Selene Wallet ist",
     el: "Ο δρομολογητής παράγωγης πορείας πορτοφολιού λέει στο λογισμικό πορτοφολιού πώς να δημιουργήσει κάθε διαδοχική νέα διεύθυνση Bitcoin από την αρχική φράση σπόρου. Κατά την εισαγωγή φράσεων σπόρων από ένα λογισμικό πορτοφολιού σε άλλο, η σωστή πορεία παραγωγής είναι μερικές φορές απαραίτητη για να βρείτε τυχόν υπάρχοντα νομίσματα ή συναλλαγές. Είναι καλύτερο να αποθηκεύετε τη διαδρομή παραγωγής εάν σκοπεύετε να αλλάξετε πορτοφόλια, αλλά εάν όχι, τότε υπάρχει πάντα η δυνατότητα να δοκιμάσετε τον περιορισμένο αριθμό των προτυπωμένων διαδρομών παραγωγής για να ανακτήσετε τα νομίσματά σας. Η προεπιλεγμένη διαδρομή παραγωγής Selene Wallet είναι",
@@ -158,6 +162,7 @@ const translations = {
   xPubDescription1: {
     ar: "xPub is the root public address from which all other public addresses in the same wallet can be generated.",
     bn: "xPub হলো মূল পাবলিক ঠিকানা যা সমস্ত অন্যান্য পাবলিক ঠিকানা উপলব্ধ করা যায় একই ওয়ালেটে।",
+    cy: "Yr xPub yw'r cyfeiriad gwraidd cyhoeddus a ddefnyddir i gynhyrchu pob cyfeiriad cyhoeddus arall yn yr un waled.",
     da: "xPub er den offentlige rodadresse, hvorfra alle andre offentlige adresser i samme tegnebog kan genereres.",
     de: "xPub ist die Stamm-Öffentliche Adresse, von der alle anderen Öffentlichen Adressen in der gleichen Geldbörse generiert werden können.",
     el: "Το xPub είναι η ρίζα δημόσιας διεύθυνσης από την οποία μπορούν να παράγονται όλες οι άλλες δημόσιες διευθύνσεις στο ίδιο πορτοφόλι.",
@@ -197,6 +202,7 @@ const translations = {
   xPubDescription2: {
     ar: "Be VERY CAREFUL with this value.",
     bn: "এই মানটি খুব সাবধানে ব্যবহার করুন।",
+    cy: "Byddwch yn OFALUS IAWN gyda'r gwerth hwn.",
     da: "Vær MEGET FORSIGTIG med denne adresse.",
     de: "Mit diesem Wert SEHR VORSICHTIG sein.",
     el: "Να είστε ΠΟΛΥ ΠΡΟΣΕΚΤΙΚΟΣ με αυτήν την τιμή.",
@@ -236,6 +242,7 @@ const translations = {
   xPubDescription3: {
     ar: "Anyone with access to the xPub can observe every address ever generated (past or future) by this wallet!",
     bn: "যারা xPub এর প্রবেশের অনুমতি পেয়েছে তারা এই ওয়ালেট দ্বারা সৃজিত (অতীত বা ভবিষ্যতে) প্রত্যেকটি ঠিকানা অবলোকন করতে পারে!",
+    cy: "Gall unrhyw un sydd â mynediad i'r xPub weld pob cyfeiriad a gynhyrchwyd erioed (yn y gorffennol neu'r dyfodol) gan y waled hon!",
     da: "Enhver med adgang til din xPub kan se hver eneste adresse der nogensinde er genereret (tidligere eller fremtidige) af denne tegnebog!",
     de: "Jeder, der Zugriff auf das xPub hat, kann jede jemals von dieser Brieftasche generierte Adresse (Vergangenheit oder Zukunft) beobachten!",
     el: "Οποιοσδήποτε έχει πρόσβαση στο xPub μπορεί να παρατηρεί κάθε διεύθυνση που δημιουργήθηκε ποτέ (παρελθόν ή μέλλον) από αυτό το πορτοφόλι!",
@@ -275,6 +282,7 @@ const translations = {
   hideXpub: {
     ar: "Hide xPub",
     bn: "xPub লুকান",
+    cy: "Cuddio'r xPub",
     da: "Skjul xPub",
     de: "xPub verstecken",
     el: "Απόκρυψη xPub",
@@ -314,6 +322,7 @@ const translations = {
   revealXpub: {
     ar: "Reveal xPub",
     bn: "xPub প্রকাশ করুন",
+    cy: "Datgelu'r xPub",
     da: "Vis xPub",
     de: "xPub anzeigen",
     el: "Εμφάνιση xPub",
@@ -353,6 +362,7 @@ const translations = {
   xPrvDescription1: {
     ar: "xPrv is the root private key from which all other private keys in the same wallet can be generated.",
     bn: "xPrv একটি মূল ব্যক্তিগত কী, যার মাধ্যমে একই ওয়ালেটে অন্য সমস্ত ব্যক্তিগত কী তৈরি করা যাতে পারে।",
+    cy: "Yr xPrv yw'r allwedd wraidd breifat a ddefnyddir i gynhyrchu'r holl allweddi preifat eraill yn yr un waled.",
     da: "xPrv er den private rodnøgle, hvorfra alle andre private nøgler i samme tegnebog kan genereres.",
     de: "xPrv ist der Stamm-Privatschlüssel, aus dem alle anderen privaten Schlüssel in derselben Brieftasche generiert werden können.",
     el: "Το xPrv είναι το ριζικό ιδιωτικό κλειδί από το οποίο μπορούν να δημιουργηθούν όλα τα άλλα ιδιωτικά κλειδιά στο ίδιο πορτοφόλι.",
@@ -392,6 +402,7 @@ const translations = {
   xPrvDescription2: {
     ar: "Be VERY CAREFUL with this value.",
     bn: "এই মানটি দিয়ে অত্যন্ত সাবধান থাকুন।",
+    cy: "Byddwch yn OFALUS IAWN gyda'r gwerth hwn.",
     da: "Vær MEGET FORSIGTIG med denne adresse.",
     de: "Seien Sie SEHR VORSICHTIG mit diesem Wert.",
     el: "Να ΕΙΣΤΕ ΠΟΛΥ ΠΡΟΣΕΚΤΙΚΟΙ με αυτήν την τιμή.",
@@ -431,6 +442,7 @@ const translations = {
   xPrvDescription3: {
     ar: "Anyone with access to the xPrv can TAKE ALL FUNDS from every address ever generated (past or future) by this wallet!!",
     bn: "xPrv এর প্রবেশের অনুমতি পেয়েছে সে এই ওয়ালেট দ্বারা সৃজিত (অতীত বা ভবিষ্যতে) প্রত্যেকটি ঠিকানা থেকে সমস্ত ফান্ড নেওয়া যেতে পারে!!",
+    cy: "Gall unrhyw un sydd â mynediad i'r xPrv GYMRYD YR HOLL ARIAN o bob cyfeiriad a gynhyrchwyd erioed (yn y gorffennol neu'r dyfodol) gan y waled hon!!",
     da: "Enhver med adgang til din xPrv kan TAGE ENHVER PENGE fra hver eneste adresse, der nogensinde er genereret (tidligere eller fremtidige) af denne tegnebog!!",
     de: "Jeder, der Zugriff auf das xPrv hat, kann ALLE GELDER von jeder jemals von dieser Brieftasche generierten Adresse (Vergangenheit oder Zukunft) NEHMEN!!",
     el: "Οποιοσδήποτε έχει πρόσβαση στο xPrv μπορεί ΝΑ ΠΆΡΕΙ ΌΛΑ ΤΑ ΚΕΦΆΛΑΙΑ από κάθε διεύθυνση που δημιουργήθηκε ποτέ (παρελθόν ή μέλλον) από αυτό το πορτοφόλι!!",
@@ -470,6 +482,7 @@ const translations = {
   hideXprv: {
     ar: "Hide xPrv",
     bn: "xPrv লুকান",
+    cy: "Cuddio'r xPrv",
     da: "Skjul xPrv",
     de: "xPrv verbergen",
     el: "Απόκρυψη xPrv",
@@ -509,6 +522,7 @@ const translations = {
   revealXprv: {
     ar: "Reveal xPrv",
     bn: "xPrv প্রকাশ করুন",
+    cy: "Datgelu'r xPrv",
     da: "Vis xPrv",
     de: "xPrv anzeigen",
     el: "Αποκάλυψη xPrv",

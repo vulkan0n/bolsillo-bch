@@ -2,6 +2,7 @@ const translations = {
   credits: {
     ar: "الاعتمادات",
     bn: "ক্রেডিট",
+    cy: "Credydau",
     da: "Kredit",
     de: "Gutschrift",
     el: "Πίστωση",
@@ -41,6 +42,7 @@ const translations = {
   developedWith: {
     ar: "تم تطويره بواسطة 💚 بواسطه",
     bn: "সহজে তৈরি করেছে 💚",
+    cy: "Datblygwyd gyda 💚 gan",
     da: "Udviklet med 💚 af",
     de: "Entwickelt mit 💚 von",
     el: "Αναπτύχθηκε με 💚 από",
@@ -80,6 +82,7 @@ const translations = {
   flipstarterContributors: {
     ar: "المساهمون Flipstarter",
     bn: "ফ্লিপস্টার্টার অবদানকারীগণ",
+    cy: "Cyfranwyr Flipstarter",
     da: "Bidragydere fra flipstarter",
     de: "Flipstarter Unterstützer",
     el: "Συνεισφέροντες Flipstarter",
@@ -119,6 +122,7 @@ const translations = {
   developers: {
     ar: "مساهمات التنمية",
     bn: "উন্নয়ন অবদান",
+    cy: "Cyfraniadau Datblygu",
     da: "Udviklingsbidrag",
     de: "Entwicklungsbeiträge",
     el: "Αναπτυξιακές Συνεισφορές",
@@ -158,6 +162,7 @@ const translations = {
   translators: {
     ar: "المطورين المساهمين",
     bn: "অবদানকারী ডেভেলপারগণ",
+    cy: "Cyfieithwyr",
     da: "Medvirkende udviklere",
     de: "Mitwirkende Entwickler",
     el: "Συνεισφέροντες προγραμματιστές",
@@ -197,6 +202,7 @@ const translations = {
   specialThanks: {
     ar: "شكر خاص",
     bn: "বিশেষ কৃতজ্ঞতা",
+    cy: "Diolch arbennig i",
     da: "Specielt tak",
     de: "Besonderer Dank",
     el: "Ειδικές Ευχαριστίες",
@@ -236,6 +242,7 @@ const translations = {
   testers: {
     ar: "المُختبرين",
     bn: "পরীক্ষক",
+    cy: "Profwyr",
     da: "Testere",
     de: "Tester",
     el: "Δοκιμαστές",
@@ -275,6 +282,7 @@ const translations = {
   docs: {
     ar: "التوثيق",
     bn: "ডকুমেন্টেশন",
+    cy: "Dogfennau",
     da: "Dokumentation",
     de: "Dokumentation",
     el: "Απόδειξη με έγγραφα",

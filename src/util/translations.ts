@@ -59,6 +59,11 @@ export const languageList = [
     flag: "🇧🇩",
   },
   {
+    code: "cy",
+    name: "Cymraeg",
+    flag: "🏴󠁧󠁢󠁷󠁬󠁳󠁿",
+  },
+  {
     code: "da",
     name: "Dansk",
     flag: "🇩🇰️",

@@ -2,6 +2,7 @@ const translations = {
   createImportWallet: {
     ar: "إنشاء / استيراد المحفظة",
     bn: "বছর/আমদানি করুন ওয়ালেট",
+    cy: "Creu/Tynnu Waled i Mewn",
     da: "Opret/Importer Tegnebog",
     de: "Wallet erstellen/importieren",
     el: "Δημιουργία/Εισαγωγή πορτοφολιού",

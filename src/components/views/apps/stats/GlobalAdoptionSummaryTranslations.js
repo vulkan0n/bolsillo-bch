@@ -2,6 +2,7 @@ const translations = {
   globalAdoption: {
     ar: "اعتماد البيتكوين النقدي العالمي",
     bn: "গ্লোবাল বিটকয়েন নগদ গ্রহণ",
+    cy: "Defnydd Byd-eang Bitcoin Cash",
     da: "Global Bitcoin Cash Adoption",
     de: "Weltweite Einführung von Bitcoin Cash",
     el: "Παγκόσμια υιοθέτηση Bitcoin Cash",
@@ -41,6 +42,7 @@ const translations = {
   activeSeleneUsers: {
     ar: "مستخدمو سيلين النشطون",
     bn: "সক্রিয় সেলেন ব্যবহারকারী",
+    cy: "Defnyddwyr Gweithredol Selene",
     da: "Aktive Selene-brugere",
     de: "Aktive Selene-Benutzer",
     el: "Ενεργοί χρήστες Selene",
@@ -80,6 +82,7 @@ const translations = {
   daily: {
     ar: "يوميًا",
     bn: "দৈনিক",
+    cy: "DYDDIOL",
     da: "DAGLIGE",
     de: "TÄGLICH",
     el: "ΚΑΘΗΜΕΡΙΝΑ",
@@ -119,6 +122,7 @@ const translations = {
   weekly: {
     ar: "أسبوعي",
     bn: "সাপ্তাহিক",
+    cy: "WYTHNOSOL",
     da: "UGENTLIG",
     de: "WÖCHENTLICH",
     el: "ΕΒΔΟΜΑΔΙΑΙΟΣ",
@@ -158,6 +162,7 @@ const translations = {
   monthly: {
     ar: "شهريا",
     bn: "মাসিক",
+    cy: "MISOL",
     da: "MÅNEDLIGE",
     de: "MONATLICH",
     el: "ΜΗΝΙΑΙΟ",
@@ -197,6 +202,7 @@ const translations = {
   yearly: {
     ar: "سنوي",
     bn: "বার্ষিক",
+    cy: "BLYNYDDOL",
     da: "ÅRLIGT",
     de: "JÄHRLICH",
     el: "ΕΤΗΣΙΑ",
