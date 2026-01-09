@@ -2,6 +2,7 @@ const translations = {
   today: {
     ar: "اليوم",
     bn: "আজ",
+    cy: "Heddiw",
     da: "I dag",
     de: "Heute",
     el: "Σήμερα",
@@ -9,7 +10,7 @@ const translations = {
     es: "Hoy",
     fa: "امروز",
     fil: "Ngayong araw",
-    fr: "Aujourd&#39;hui",
+    fr: "Aujourd'hui",
     ha: "Yau",
     hi: "आज",
     id: "Hari ini",
@@ -41,6 +42,7 @@ const translations = {
   remaining: {
     ar: "متبقي",
     bn: "অবশিষ্ট",
+    cy: "sy'n weddill",
     da: "tilbage",
     de: "übrig",
     el: "παραμένων",
@@ -80,6 +82,7 @@ const translations = {
   of10million: {
     ar: "من 10 مليون",
     bn: "10 মিলিয়ন",
+    cy: "o 10 miliwn",
     da: "på 10 mio",
     de: "von 10 Millionen",
     el: "των 10 εκατομμυρίων",
@@ -119,6 +122,7 @@ const translations = {
   yesterday: {
     ar: "أمس",
     bn: "গতকাল",
+    cy: "Ddoe",
     da: "I går",
     de: "Gestern",
     el: "Εχθές",

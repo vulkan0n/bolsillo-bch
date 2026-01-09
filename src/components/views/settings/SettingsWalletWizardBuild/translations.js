@@ -2,6 +2,7 @@ const translations = {
   importingWallet: {
     ar: "استيراد المحفظة",
     bn: "ওয়ালেট আমদানি করা হচ্ছে",
+    cy: "Tynnu'r Waled i Mewn",
     da: "Importerer tegnebog",
     de: "Wallet importieren",
     el: "Εισαγωγή Πορτοφολιού",
@@ -41,6 +42,7 @@ const translations = {
   takesMinutes: {
     ar: "قد يستغرق هذا الأمر بضع دقائق بالنسبة للمحافظ التي لديها تاريخ كبير!",
     bn: "এটি একটি বড় ইতিহাস সহ ওয়ালেটের জন্য কয়েক মিনিট সময় নিতে পারে!",
+    cy: "Gall hyn gymryd ychydig funudau yn achos waledi â hanes swmpus!",
     da: "Dette kan tage et par minutter for tegnebøger med en stor historie!",
     de: "Dies kann bei Geldbörsen mit einer großen Historie einige Minuten dauern!",
     el: "Αυτό μπορεί να διαρκέσει μερικά λεπτά για πορτοφόλια με μεγάλο ιστορικό!",
@@ -49,7 +51,7 @@ const translations = {
     fa: "این ممکن است چند دقیقه برای کیف پول هایی با سابقه بزرگ طول بکشد!",
     fil: "Maaaring tumagal ito ng ilang minuto para sa mga wallet na may malaking kasaysayan!",
     fr: "Cela peut prendre quelques minutes pour les portefeuilles avec un grand historique !",
-    ha: "Wannan na iya ɗaukar &#39;yan mintoci kaɗan don walat ɗin da ke da babban tarihi!",
+    ha: "Wannan na iya ɗaukar 'yan mintoci kaɗan don walat ɗin da ke da babban tarihi!",
     hi: "बड़े इतिहास वाले वॉलेट्स के लिए इसमें कुछ मिनट लग सकते हैं!",
     id: "Ini mungkin memakan waktu beberapa menit untuk dompet dengan riwayat besar!",
     it: "Per i portafogli con una cronologia lunga, questa operazione potrebbe richiedere alcuni minuti!",

@@ -2,6 +2,7 @@ const translations = {
   startingIn: {
     ar: "ابتداء من",
     bn: "শুরু হচ্ছে",
+    cy: "Yn dechrau ymhen",
     da: "Starter i",
     de: "Beginnend in",
     el: "Ξεκινώντας μέσα",
@@ -41,6 +42,7 @@ const translations = {
   watchVideos: {
     ar: "فيديوهات BLISS متاحة",
     bn: "BLISS ভিডিও উপলব্ধ",
+    cy: "Fideos BLISS ar gael",
     da: "BLISS videoer tilgængelige",
     de: "BLISS-Videos verfügbar",
     el: "Διαθέσιμα βίντεο BLISS",
@@ -59,7 +61,7 @@ const translations = {
     mr: "आनंदाचे व्हिडिओ उपलब्ध आहेत",
     ms: "Video BLISS tersedia",
     nb: "BLISS-videoer tilgjengelig",
-    nl: "BLISS-video&#39;s beschikbaar",
+    nl: "BLISS-video's beschikbaar",
     pa: "BLISS ਵੀਡੀਓ ਉਪਲਬਧ ਹਨ",
     pl: "Dostępne filmy BLISS",
     pt: "Vídeos BLISS disponíveis",
@@ -80,6 +82,7 @@ const translations = {
   watchLive: {
     ar: "شاهد البث المباشر",
     bn: "লাইভ স্ট্রিমটি দেখুন",
+    cy: "Gwylio'r ffrwd fyw",
     da: "Se livestreamen",
     de: "Livestream ansehen",
     el: "Παρακολουθήστε τη ζωντανή ροή",
@@ -119,6 +122,7 @@ const translations = {
   intro: {
     ar: "هاكاثون افتراضي مُصمم لتحفيز الابتكار في منظومة بيتكوين كاش (BCH)! تنافسوا للفوز بجوائز بقيمة 10 بيتكوين كاش، بالإضافة إلى تذاكر حصرية لفعالية BLISS 2026 ومزايا أخرى شيقة!",
     bn: "বিটকয়েনক্যাশ (BCH) ইকোসিস্টেমে উদ্ভাবনকে জাগিয়ে তোলার জন্য তৈরি একটি ভার্চুয়াল হ্যাকাথন! ১০ BCH পুরস্কারের ভাগ, BLISS 2026-এর এক্সক্লুসিভ টিকিট এবং অন্যান্য আকর্ষণীয় সুযোগ-সুবিধার জন্য প্রতিযোগিতা করুন!",
+    cy: "Hacathon rhithwir wedi ei gynllunio i danio arloesedd yn ecosystem BitcoinCash (BCH)! Cystadlwch am gyfran o 10 BCH mewn gwobrau, ynghyd â thocynnau unigryw i BLISS 2026 a manteision cyffrous eraill!",
     da: "Et virtuelt hackathon designet til at anspore innovation i BitcoinCash (BCH) økosystemet! Konkurrer om en del af 10 BCH i præmier, plus eksklusive billetter til BLISS 2026 og andre spændende fordele!",
     de: "Ein virtueller Hackathon, der Innovationen im Bitcoin Cash (BCH)-Ökosystem anstoßen soll! Gewinnen Sie einen Anteil von 10 BCH an Preisen, exklusive Tickets für BLISS 2026 und weitere spannende Vorteile!",
     el: "Ένα εικονικό hackathon σχεδιασμένο για να πυροδοτήσει την καινοτομία στο οικοσύστημα BitcoinCash (BCH)! Διαγωνιστείτε για ένα μερίδιο από 10 BCH σε βραβεία, καθώς και αποκλειστικά εισιτήρια για το BLISS 2026 και άλλα συναρπαστικά προνόμια!",
@@ -126,11 +130,11 @@ const translations = {
     es: "¡Un hackathon virtual diseñado para impulsar la innovación en el ecosistema de Bitcoin Cash (BCH)! ¡Compite por una parte de los 10 BCH en premios, además de entradas exclusivas para BLISS 2026 y otras ventajas increíbles!",
     fa: "یک هکاتون مجازی که برای ایجاد نوآوری در اکوسیستم بیت‌کوین‌کش (BCH) طراحی شده است! برای سهمی از 10 جایزه BCH، به علاوه بلیط‌های اختصاصی برای BLISS 2026 و سایر مزایای هیجان‌انگیز رقابت کنید!",
     fil: "Isang virtual hackathon na idinisenyo upang mag-apoy ng inobasyon sa BitcoinCash (BCH) ecosystem! Makipagkumpitensya para sa isang bahagi ng 10 BCH sa mga premyo, kasama ang mga eksklusibong tiket sa BLISS 2026 at iba pang kapana-panabik na mga perks!",
-    fr: "Un hackathon virtuel conçu pour stimuler l&#39;innovation dans l&#39;écosystème Bitcoin Cash (BCH) ! Tentez de remporter une part des 10 BCH mis en jeu, ainsi que des billets exclusifs pour BLISS 2026 et d&#39;autres avantages exceptionnels !",
-    ha: "Hackathon kama-da-wane da aka ƙera don kunna ƙima a cikin yanayin yanayin BitcoinCash (BCH)! Yi gasa don rabon 10 BCH a cikin kyaututtuka, da tikiti na musamman zuwa BLISS 2026 da sauran fa&#39;idodi masu ban sha&#39;awa!",
+    fr: "Un hackathon virtuel conçu pour stimuler l'innovation dans l'écosystème Bitcoin Cash (BCH) ! Tentez de remporter une part des 10 BCH mis en jeu, ainsi que des billets exclusifs pour BLISS 2026 et d'autres avantages exceptionnels !",
+    ha: "Hackathon kama-da-wane da aka ƙera don kunna ƙima a cikin yanayin yanayin BitcoinCash (BCH)! Yi gasa don rabon 10 BCH a cikin kyaututtuka, da tikiti na musamman zuwa BLISS 2026 da sauran fa'idodi masu ban sha'awa!",
     hi: "बिटकॉइनकैश (BCH) इकोसिस्टम में नवाचार को बढ़ावा देने के लिए डिज़ाइन किया गया एक वर्चुअल हैकथॉन! 10 BCH पुरस्कारों में हिस्सेदारी के लिए प्रतिस्पर्धा करें, साथ ही BLISS 2026 के विशेष टिकट और अन्य रोमांचक लाभ भी पाएँ!",
     id: "Hackathon virtual yang dirancang untuk memicu inovasi dalam ekosistem BitcoinCash (BCH)! Bersainglah untuk memenangkan hadiah senilai 10 BCH, plus tiket eksklusif ke BLISS 2026 dan berbagai keuntungan menarik lainnya!",
-    it: "Un hackathon virtuale progettato per stimolare l&#39;innovazione nell&#39;ecosistema BitcoinCash (BCH)! Partecipa per vincere una quota di 10 BCH in premi, oltre a biglietti esclusivi per BLISS 2026 e altri fantastici vantaggi!",
+    it: "Un hackathon virtuale progettato per stimolare l'innovazione nell'ecosistema BitcoinCash (BCH)! Partecipa per vincere una quota di 10 BCH in premi, oltre a biglietti esclusivi per BLISS 2026 e altri fantastici vantaggi!",
     ja: "BitcoinCash（BCH）エコシステムのイノベーションを活性化させることを目的としたバーチャルハッカソン！賞金10BCHに加え、BLISS 2026の限定チケットなど、豪華特典をゲットしよう！",
     jv: "Hackathon virtual sing dirancang kanggo ngobong inovasi ing ekosistem BitcoinCash (BCH)! Saingan kanggo nuduhake 10 BCH ing hadiah, plus tiket eksklusif kanggo BLISS 2026 lan tunjangan macem liyane!",
     ko: "비트코인캐시(BCH) 생태계의 혁신을 촉진하기 위해 고안된 가상 해커톤! 10 BCH 상금과 BLISS 2026 특별 티켓, 그리고 다양한 혜택을 놓고 경쟁하세요!",
@@ -148,7 +152,7 @@ const translations = {
     ta: "BitcoinCash (BCH) சுற்றுச்சூழல் அமைப்பில் புதுமையைத் தூண்டுவதற்காக வடிவமைக்கப்பட்ட ஒரு மெய்நிகர் ஹேக்கத்தான்! பரிசுகளில் 10 BCH பங்குக்கும், BLISS 2026க்கான பிரத்யேக டிக்கெட்டுகள் மற்றும் பிற அற்புதமான சலுகைகளுக்கும் போட்டியிடுங்கள்!",
     te: "బిట్‌కాయిన్‌కాష్ (BCH) పర్యావరణ వ్యవస్థలో ఆవిష్కరణలను రేకెత్తించడానికి రూపొందించబడిన వర్చువల్ హ్యాకథాన్! బహుమతులలో 10 BCH వాటా కోసం పోటీపడండి, అలాగే BLISS 2026కి ప్రత్యేక టిక్కెట్లు మరియు ఇతర ఉత్తేజకరమైన పెర్క్‌లు!",
     th: "แฮ็กกาธอนเสมือนจริงที่ออกแบบมาเพื่อจุดประกายนวัตกรรมในระบบนิเวศ BitcoinCash (BCH)! ร่วมชิงรางวัลมูลค่า 10 BCH พร้อมตั๋วสุดพิเศษเข้าร่วมงาน BLISS 2026 และสิทธิพิเศษอื่นๆ อีกมากมาย!",
-    tr: "BitcoinCash (BCH) ekosisteminde inovasyonu ateşlemek için tasarlanmış sanal bir hackathon! 10 BCH ödülden pay almak, ayrıca BLISS 2026&#39;ya özel biletler ve diğer heyecan verici avantajlar için yarışın!",
+    tr: "BitcoinCash (BCH) ekosisteminde inovasyonu ateşlemek için tasarlanmış sanal bir hackathon! 10 BCH ödülden pay almak, ayrıca BLISS 2026'ya özel biletler ve diğer heyecan verici avantajlar için yarışın!",
     uk: "Віртуальний хакатон, розроблений для стимулювання інновацій в екосистемі BitcoinCash (BCH)! Змагайтеся за частину призів у розмірі 10 BCH, а також за ексклюзивні квитки на BLISS 2026 та інші захопливі бонуси!",
     ur: "BitcoinCash (BCH) ماحولیاتی نظام میں جدت پیدا کرنے کے لیے ڈیزائن کیا گیا ایک ورچوئل ہیکاتھون! انعامات میں 10 BCH کے حصہ کے ساتھ ساتھ BLISS 2026 کے خصوصی ٹکٹس اور دیگر دلچسپ فوائد کے لیے مقابلہ کریں!",
     vi: "Cuộc thi hackathon ảo được thiết kế để khơi dậy sự đổi mới trong hệ sinh thái BitcoinCash (BCH)! Hãy tranh tài để giành giải thưởng trị giá 10 BCH, cùng vé độc quyền tham dự BLISS 2026 và nhiều đặc quyền hấp dẫn khác!",
@@ -158,6 +162,7 @@ const translations = {
   tickets: {
     ar: "التذاكر",
     bn: "টিকিট",
+    cy: "Tocynnau",
     da: "Billetter",
     de: "Tickets",
     el: "Εισιτήρια",
@@ -197,6 +202,7 @@ const translations = {
   about: {
     ar: "نبذة عن بليس",
     bn: "BLISS সম্পর্কে",
+    cy: "Ynglŷn â BLISS",
     da: "Om BLISS",
     de: "Über BLISS",
     el: "Σχετικά με το BLISS",
@@ -236,6 +242,7 @@ const translations = {
   velmaUpgrade: {
     ar: "ترقية VELMA",
     bn: "VELMA আপগ্রেড",
+    cy: "Uwchraddiad VELMA",
     da: "VELMA-opgraderingen",
     de: "Das VELMA-Upgrade",
     el: "Η αναβάθμιση VELMA",
@@ -247,7 +254,7 @@ const translations = {
     ha: "Haɓaka VELMA",
     hi: "वेल्मा अपग्रेड",
     id: "Peningkatan VELMA",
-    it: "L&#39;aggiornamento VELMA",
+    it: "L'aggiornamento VELMA",
     ja: "VELMAアップグレード",
     jv: "Nganyarke VELMA",
     ko: "VELMA 업그레이드",
@@ -275,6 +282,7 @@ const translations = {
   howToTicketsTitle: {
     ar: "كيفية شراء التذاكر",
     bn: "কিভাবে টিকিট কিনবেন",
+    cy: "Sut i brynu tocynnau",
     da: "Sådan køber du billetter",
     de: "So kaufen Sie Tickets",
     el: "Πώς να αγοράσετε εισιτήρια",
@@ -314,6 +322,7 @@ const translations = {
   howToTicketsStepOne: {
     ar: "تثبيت محفظة متوافقة مع CashTokens",
     bn: "একটি CashTokens-সামঞ্জস্যপূর্ণ ওয়ালেট ইনস্টল করুন",
+    cy: "Gosod waled sy'n gweithio gyda CashTokens",
     da: "Installer en CashTokens-kompatibel tegnebog",
     de: "Installieren Sie eine CashTokens-kompatible Brieftasche",
     el: "Εγκαταστήστε ένα πορτοφόλι συμβατό με CashTokens",
@@ -353,6 +362,7 @@ const translations = {
   howToTicketsStepTwo: {
     ar: "تحويل الأموال إلى المحفظة",
     bn: "ওয়ালেটে তহবিল স্থানান্তর করুন",
+    cy: "Trosglwyddo arian i'r waled",
     da: "Overfør penge til tegnebogen",
     de: "Geld auf das Wallet überweisen",
     el: "Μεταφορά χρημάτων στο πορτοφόλι",
@@ -392,6 +402,7 @@ const translations = {
   howToTicketsStepThree: {
     ar: "اذهب الى",
     bn: "যাও",
+    cy: "Ewch i",
     da: "Gå til",
     de: "Gehe zu",
     el: "Μεταβείτε στο",
@@ -431,6 +442,7 @@ const translations = {
   howToTicketsStepFour: {
     ar: "ربط المحفظة عبر WalletConnect",
     bn: "WalletConnect এর মাধ্যমে ওয়ালেট সংযোগ করুন",
+    cy: "Cysylltu'r waled trwy WalletConnect",
     da: "Tilslut tegnebogen via WalletConnect",
     de: "Wallet über WalletConnect verbinden",
     el: "Σύνδεση πορτοφολιού μέσω WalletConnect",
@@ -470,6 +482,7 @@ const translations = {
   howToTicketsStepFive: {
     ar: "اختر واشتري تذكرتك",
     bn: "আপনার টিকিট বেছে নিন এবং কিনুন",
+    cy: "Dewiswch eich tocyn a'i brynu",
     da: "Vælg og køb din billet",
     de: "Wählen und kaufen Sie Ihr Ticket",
     el: "Επιλέξτε και αγοράστε το εισιτήριό σας",
@@ -509,6 +522,7 @@ const translations = {
   howToTicketsReadMore: {
     ar: "اقرأ المزيد",
     bn: "আরও পড়ুন",
+    cy: "Darllen mwy",
     da: "Læs mere",
     de: "Mehr lesen",
     el: "Διαβάστε περισσότερα",

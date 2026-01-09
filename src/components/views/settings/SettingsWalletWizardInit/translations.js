@@ -2,6 +2,7 @@ const translations = {
   newWallet: {
     ar: "المحفظة الجديدة",
     bn: "নতুন ওয়ালেট",
+    cy: "Waled Newydd",
     da: "Ny Tegnebog",
     de: "Neue Brieftasche",
     el: "Νέο πορτοφόλι",
@@ -41,6 +42,7 @@ const translations = {
   createNewWallet: {
     ar: "إنشاء محفظة جديدة",
     bn: "নতুন ওয়ালেট তৈরি করুন",
+    cy: "Creu Waled Newydd",
     da: "Opret Ny Tegnebog",
     de: "Neues Wallet erstellen",
     el: "Δημιουργία νέου πορτοφολιού",
@@ -80,6 +82,7 @@ const translations = {
   importWalletFromPhrase: {
     ar: "استيراد المحفظة من عبارة الاسترداد",
     bn: "রিকভারি ফ্রেজ থেকে ওয়ালেট ইমপোর্ট করুন",
+    cy: "Tynnu Waled i Mewn o Ymadrodd Adfer",
     da: "Importer Tegnebog Fra Gendannelsessætning",
     de: "Wallet aus dem Wiederherstellungsschlüssel importieren",
     el: "Εισαγωγή πορτοφολιού από το φράση ανάκτησης",

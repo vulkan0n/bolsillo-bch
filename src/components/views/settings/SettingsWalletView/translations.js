@@ -2,6 +2,7 @@ const translations = {
   walletSettings: {
     ar: "معلومات المحفظة",
     bn: "ওয়ালেট তথ্য",
+    cy: "Gwybodaeth y Waled",
     da: "Pung info",
     de: "Informationen zur Geldbörse",
     el: "Πληροφορίες Πορτοφολιού",
@@ -41,6 +42,7 @@ const translations = {
   advancedOptions: {
     ar: "أدوات",
     bn: "টুলস",
+    cy: "Offer",
     da: "Værktøjer",
     de: "Werkzeuge",
     el: "Εργαλεία",
@@ -80,6 +82,7 @@ const translations = {
   additionalWalletInformation: {
     ar: "Additional Wallet Information",
     bn: "অতিরিক্ত ওয়ালেট তথ্য",
+    cy: "Gwybodaeth Ychwanegol am y Waled",
     da: "Mere Information Om Tegnebog",
     de: "Zusätzliche Wallet-Informationen",
     el: "Επιπρόσθετες πληροφορίες πορτοφολιού",
@@ -119,6 +122,7 @@ const translations = {
   created: {
     ar: "تم إنشاؤه في",
     bn: "তৈরি করা হয়েছে",
+    cy: "Crëwyd Yn",
     da: "Oprettet ved",
     de: "Erstellt am",
     el: "Δημιουργήθηκε στις",
@@ -158,6 +162,7 @@ const translations = {
   lastKnownBalance: {
     ar: "آخر رصيد معروف",
     bn: "সর্বশেষ পরিচিত ব্যালেন্স",
+    cy: "Y Gweddill Hysbys Diweddaraf",
     da: "Sidst Kendte Saldo",
     de: "Letzter bekannter Kontostand",
     el: "Τελευταίο γνωστό υπόλοιπο",
@@ -166,7 +171,7 @@ const translations = {
     fa: "آخرین موجودی شناخته شده",
     fil: "Huling Kilalang Balanse",
     fr: "Dernier solde connu",
-    ha: "Ma&#39;auni Na Ƙarshe na Ƙarshe",
+    ha: "Ma'auni Na Ƙarshe na Ƙarshe",
     hi: "सबसे नया बैलेंस",
     id: "Saldo Terakhir Diketahui",
     it: "Ultimo saldo conosciuto",
@@ -197,6 +202,7 @@ const translations = {
   walletActive: {
     ar: "المحفظة نشطة",
     bn: "ওয়ালেট সক্রিয়",
+    cy: "Waled Weithredol",
     da: "Tegnebog Aktiv",
     de: "Aktive Brieftasche",
     el: "Ενεργό πορτοφόλι",
@@ -236,6 +242,7 @@ const translations = {
   activateWallet: {
     ar: "تنشيط المحفظة",
     bn: "ওয়ালেট সক্রিয় করুন",
+    cy: "Gweithredu'r Waled",
     da: "Aktiver Tegnebog",
     de: "Wallet aktivieren",
     el: "Ενεργοποίηση πορτοφολιού",
@@ -275,6 +282,7 @@ const translations = {
   deleteWallet: {
     ar: "حذف المحفظة",
     bn: "ওয়ালেট মুছুন",
+    cy: "Dileu'r Waled",
     da: "Slet Tegnebog",
     de: "Wallet löschen",
     el: "Διαγραφή πορτοφολιού",
@@ -314,6 +322,7 @@ const translations = {
   areYouSure: {
     ar: "هل أنت متأكد؟ أموالك في خطر",
     bn: "আপনি কি নিশ্চিত? আপনার টাকা ঝুঁকিতে আছে",
+    cy: "YDYCH CHI'N SIŴR? MAE EICH ARIAN MEWN PERYGL",
     da: "ER DU SIKKER? DINE PENGE ER I FARE",
     de: "Bist du sicher? Dein Geld ist in Gefahr",
     el: "Είστε σίγουρος/η; Τα χρήματά σας βρίσκονται σε κίνδυνο",
@@ -353,6 +362,7 @@ const translations = {
   ensureRecoveryPhrase: {
     ar: "تأكد من كتابة عبارة الاسترداد الخاصة بك",
     bn: "নিশ্চিত হউন যে আপনি আপনার পুনরুদ্ধার পদক্ষেপটি লিখেছেন",
+    cy: "GWNEWCH YN SIŴR EICH BOD CHI WEDI NODI EICH YMADRODD ADFER YN YSGRIFENEDIG",
     da: "SØRG FOR AT DU HAR SKREVET DIN GENDANNELSESSÆTNING NED",
     de: "STELLEN SIE SICHER, DASS SIE IHREN WIEDERHERSTELLUNGSSATZ GESCHRIEBEN HABEN",
     el: "ΒΕΒΑΙΩΘΕΙΤΕ ΌΤΙ ΈΧΕΤΕ ΓΡΆΨΕΙ ΤΗΝ ΑΠΟΚΑΤΑΣΤΑΣΗ ΣΑΣ ΦΡΆΣΗ",
@@ -392,6 +402,7 @@ const translations = {
   confirmDelete: {
     ar: "نعم ، أريد الحذف",
     bn: "হ্যাঁ, আমি মুছে ফেলতে চাই",
+    cy: "Ydw, rydw i eisiau dileu",
     da: "Ja, jeg vil slette",
     de: "Ja, ich möchte löschen",
     el: "Ναι, θέλω να διαγράψω",
@@ -431,6 +442,7 @@ const translations = {
   keepSecret: {
     ar: "احتفظ بهذه الرسالة السرية",
     bn: "এই বাক্যটি গোপন রাখুন",
+    cy: "CADWCH YR YMADRODD HWN YN GYFRINACHOL",
     da: "BEHOLD DENNE SÆTNING HEMMELIG",
     de: "BEHALTEN SIE DIESEN SATZ GEHEIM",
     el: "ΔΙΑΤΗΡΗΣΤΕ ΑΥΤΗΝ ΤΗΝ ΦΡΑΣΗ ΜΥΣΤΙΚΗ",
@@ -470,6 +482,7 @@ const translations = {
   dontStoreDigitally: {
     ar: "لا تخزن رقميا",
     bn: "ইলেক্ট্রনিক রূপে সংরক্ষণ করবেন না",
+    cy: "PEIDIWCH Â'I STORIO'N DDIGIDOL",
     da: "OPBEVAR IKKE DIGITALT",
     de: "NICHT DIGITAL SPEICHERN",
     el: "ΜΗΝ ΑΠΟΘΗΚΕΎΕΤΕ ΨΗΦΙΑΚΆ",
@@ -509,6 +522,7 @@ const translations = {
   viewRecoveryPhrase: {
     ar: "عرض عبارة استرداد المحفظة",
     bn: "ওয়ালেট পুনরুদ্ধার ফ্রেজ দেখুন",
+    cy: "Gweld Ymadrodd Adfer y Waled",
     da: "Vis Gendannelsessætning For Tegnebog",
     de: "Wiederherstellungssatz der Geldbörse anzeigen",
     el: "Προβολή φράσης επαναφοράς πορτοφολιού",
@@ -548,6 +562,7 @@ const translations = {
   copyToClipboardPromptTitle: {
     ar: "نسخ إلى الحافظة؟",
     bn: "ক্লিপবোর্ডে কপি করবেন?",
+    cy: "Copïo i'r clipfwrdd?",
     da: "Vil du kopiere til udklipsholderen?",
     de: "In die Zwischenablage kopieren?",
     el: "Αντιγραφή στο πρόχειρο;",
@@ -567,7 +582,7 @@ const translations = {
     ms: "Salin ke papan keratan?",
     nb: "Vil du kopiere til utklippstavlen?",
     nl: "Kopiëren naar klembord?",
-    pa: "ਕੀ ਕਲਿੱਪਬੋਰਡ &#39;ਤੇ ਕਾਪੀ ਕਰਨਾ ਹੈ?",
+    pa: "ਕੀ ਕਲਿੱਪਬੋਰਡ 'ਤੇ ਕਾਪੀ ਕਰਨਾ ਹੈ?",
     pl: "Skopiować do schowka?",
     pt: "Copiar para a área de transferência?",
     ro: "Copiați în clipboard?",
@@ -587,6 +602,7 @@ const translations = {
   copyToClipboardPromptMessage: {
     ar: "قد يكون نسخ عبارة الاسترداد إلى الحافظة غير آمن! هل أنت متأكد من رغبتك في المتابعة؟",
     bn: "আপনার পুনরুদ্ধার বাক্যাংশটি ক্লিপবোর্ডে অনুলিপি করা অনিরাপদ হতে পারে! আপনি কি নিশ্চিত যে আপনি চালিয়ে যেতে চান?",
+    cy: "Gall copïo eich Ymadrodd Adfer i'r clipfwrdd fod yn beryglus! Ydych chi' n siŵr eich bod chi eisiau bwrw ymlaen?",
     da: "Det kan være usikkert at kopiere din gendannelsessætning til udklipsholderen! Er du sikker på, at du vil fortsætte?",
     de: "Das Kopieren Ihrer Wiederherstellungsphrase in die Zwischenablage ist möglicherweise unsicher! Möchten Sie wirklich fortfahren?",
     el: "Η αντιγραφή της φράσης ανάκτησης στο πρόχειρο ενδέχεται να μην είναι ασφαλής! Είστε βέβαιοι ότι θέλετε να συνεχίσετε;",
@@ -606,7 +622,7 @@ const translations = {
     ms: "Menyalin Frasa Pemulihan anda ke papan keratan mungkin tidak selamat! Adakah anda pasti mahu meneruskan?",
     nb: "Det kan være utrygt å kopiere gjenopprettingsfrasen til utklippstavlen! Er du sikker på at du vil fortsette?",
     nl: "Het kopiëren van uw herstelzin naar het klembord kan onveilig zijn! Weet u zeker dat u wilt doorgaan?",
-    pa: "ਆਪਣੇ ਰਿਕਵਰੀ ਵਾਕੰਸ਼ ਨੂੰ ਕਲਿੱਪਬੋਰਡ &#39;ਤੇ ਕਾਪੀ ਕਰਨਾ ਅਸੁਰੱਖਿਅਤ ਹੋ ਸਕਦਾ ਹੈ! ਕੀ ਤੁਸੀਂ ਯਕੀਨੀ ਤੌਰ &#39;ਤੇ ਜਾਰੀ ਰੱਖਣਾ ਚਾਹੁੰਦੇ ਹੋ?",
+    pa: "ਆਪਣੇ ਰਿਕਵਰੀ ਵਾਕੰਸ਼ ਨੂੰ ਕਲਿੱਪਬੋਰਡ 'ਤੇ ਕਾਪੀ ਕਰਨਾ ਅਸੁਰੱਖਿਅਤ ਹੋ ਸਕਦਾ ਹੈ! ਕੀ ਤੁਸੀਂ ਯਕੀਨੀ ਤੌਰ 'ਤੇ ਜਾਰੀ ਰੱਖਣਾ ਚਾਹੁੰਦੇ ਹੋ?",
     pl: "Kopiowanie Recovery Phrase do schowka może być niebezpieczne! Czy na pewno chcesz kontynuować?",
     pt: "Copiar sua Frase de Recuperação para a área de transferência pode ser inseguro! Tem certeza de que deseja continuar?",
     ro: "Copierea expresiei de recuperare în clipboard poate fi nesigură! Sigur vrei să continui?",
@@ -626,6 +642,7 @@ const translations = {
   copiedToClipboardSuccess: {
     ar: "تم نسخ عبارة الاسترداد إلى الحافظة",
     bn: "ক্লিপবোর্ডে পুনরুদ্ধার বাক্যাংশ অনুলিপি করা হয়েছে",
+    cy: "Mae'r Ymadrodd Adfer wedi ei gopïo i'r Clipfwrdd",
     da: "Kopierede gendannelsessætning til udklipsholder",
     de: "Wiederherstellungsphrase in die Zwischenablage kopiert",
     el: "Αντιγράφηκε η φράση ανάκτησης στο πρόχειρο",
@@ -645,7 +662,7 @@ const translations = {
     ms: "Menyalin Frasa Pemulihan ke Papan Klip",
     nb: "Kopiert gjenopprettingsfrase til utklippstavlen",
     nl: "Herstelzin gekopieerd naar klembord",
-    pa: "ਰਿਕਵਰੀ ਵਾਕੰਸ਼ ਨੂੰ ਕਲਿੱਪਬੋਰਡ &#39;ਤੇ ਕਾਪੀ ਕੀਤਾ ਗਿਆ",
+    pa: "ਰਿਕਵਰੀ ਵਾਕੰਸ਼ ਨੂੰ ਕਲਿੱਪਬੋਰਡ 'ਤੇ ਕਾਪੀ ਕੀਤਾ ਗਿਆ",
     pl: "Skopiowano frazę odzyskiwania do schowka",
     pt: "Frase de recuperação copiada para a área de transferência",
     ro: "Expresia de recuperare a fost copiată în Clipboard",
@@ -665,6 +682,7 @@ const translations = {
   copiedToClipboardPassphrase: {
     ar: "تم تضمين عبارة المرور الخاصة بك",
     bn: "আপনার পাসফ্রেজ অন্তর্ভুক্ত করা হয়েছে",
+    cy: "Mae eich cyfrinair wedi ei gynnwys",
     da: "Din adgangssætning er inkluderet",
     de: "Ihre Passphrase ist enthalten",
     el: "Η φράση πρόσβασής σας περιλαμβάνεται",
@@ -704,6 +722,7 @@ const translations = {
   passphrase: {
     ar: "عبارة المرور",
     bn: "পাসফ্রেজ",
+    cy: "Cyfrinair",
     da: "Adgangssætning",
     de: "Passphrase",
     el: "Φράση πρόσβασης",
@@ -743,6 +762,7 @@ const translations = {
   secretAndSecure: {
     ar: "تأكد من إبقائها سرية وآمنة!",
     bn: "এটি গোপন এবং নিরাপদে রাখতে নিশ্চিত হোন!",
+    cy: "Gwnewch yn siŵr eich bod yn ei gadw'n gyfrinachol ac yn ddiogel!",
     da: "Sørg for at holde den hemmelig og sikkert!",
     de: "Stellen Sie sicher, dass Sie es geheim und sicher aufbewahren!",
     el: "Βεβαιωθείτε ότι το κρατάτε μυστικό και ασφαλές!",
@@ -782,6 +802,7 @@ const translations = {
   rebuildWallet: {
     ar: "إعادة إنشاء المحفظة",
     bn: "ওয়ালেট পুনর্নির্মাণ করুন",
+    cy: "Ailadeiladu'r Waled",
     da: "Genopbyg Tegnebog",
     de: "Wallet neu erstellen",
     el: "Ανακατασκευή πορτοφολιού",
@@ -821,6 +842,7 @@ const translations = {
   addressScanTool: {
     ar: "أداة مسح العناوين",
     bn: "ঠিকানা স্ক্যান টুল",
+    cy: "Offeryn Sganio Cyfeiriadau",
     da: "Adressescanningsværktøj",
     de: "Adress-Scan-Tool",
     el: "Εργαλείο σάρωσης διευθύνσεων",
@@ -828,7 +850,7 @@ const translations = {
     es: "Herramienta de escaneo de direcciones",
     fa: "ابزار اسکن آدرس",
     fil: "Tool sa Pag-scan ng Address",
-    fr: "Outil d&#39;analyse d&#39;adresse",
+    fr: "Outil d'analyse d'adresse",
     ha: "Kayan aikin duba adireshin",
     hi: "पता स्कैन उपकरण",
     id: "Alat Pemindai Alamat",
@@ -860,6 +882,7 @@ const translations = {
   importWallet: {
     ar: "استيراد ملف المحفظة",
     bn: "ওয়ালেট ফাইল আমদানি করুন",
+    cy: "Tynnu Ffeil y Waled i mewn",
     da: "Importer tegnebogsfil",
     de: "Wallet-Datei importieren",
     el: "Εισαγωγή αρχείου Πορτοφολιού",
@@ -899,6 +922,7 @@ const translations = {
   exportWallet: {
     ar: "تصدير ملف المحفظة",
     bn: "ওয়ালেট ফাইল রপ্তানি করুন",
+    cy: "Allyrru Ffeil y Waled",
     da: "Eksporter tegnebogsfil",
     de: "Wallet-Datei exportieren",
     el: "Εξαγωγή αρχείου πορτοφολιού",
@@ -938,6 +962,7 @@ const translations = {
   proceed: {
     ar: "يتابع",
     bn: "এগিয়ে যান",
+    cy: "Bwrw ymlaen",
     da: "Fortsætte",
     de: "Fortfahren",
     el: "Προχωρώ",
@@ -977,6 +1002,7 @@ const translations = {
   longPressToCopy: {
     ar: "اضغط لفترة طويلة للنسخ إلى الحافظة",
     bn: "ক্লিপবোর্ডে কপি করতে দীর্ঘক্ষণ টিপুন",
+    cy: "Pwyswch yn hir i gopïo i'r clipfwrdd",
     da: "Langt tryk for at kopiere til udklipsholderen",
     de: "Langes Drücken zum Kopieren in die Zwischenablage",
     el: "Πατήστε παρατεταμένα για αντιγραφή στο πρόχειρο",
@@ -996,7 +1022,7 @@ const translations = {
     ms: "Tekan lama untuk menyalin ke papan keratan",
     nb: "Langt trykk for å kopiere til utklippstavlen",
     nl: "Lang indrukken om naar het klembord te kopiëren",
-    pa: "ਕਲਿੱਪਬੋਰਡ &#39;ਤੇ ਕਾਪੀ ਕਰਨ ਲਈ ਦੇਰ ਤੱਕ ਦਬਾਓ",
+    pa: "ਕਲਿੱਪਬੋਰਡ 'ਤੇ ਕਾਪੀ ਕਰਨ ਲਈ ਦੇਰ ਤੱਕ ਦਬਾਓ",
     pl: "Naciśnij i przytrzymaj, aby skopiować do schowka",
     pt: "Pressione e segure para copiar para a área de transferência.",
     ro: "Apăsați lung pentru a copia în clipboard",

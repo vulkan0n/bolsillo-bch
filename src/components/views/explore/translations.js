@@ -2,6 +2,7 @@ const translations = {
   exploreBch: {
     ar: "يستكشف",
     bn: "অন্বেষণ করুন",
+    cy: "Archwilio",
     da: "Udforske",
     de: "Erkunden",
     el: "Εξερευνώ",
@@ -36,11 +37,12 @@ const translations = {
     ur: "دریافت کریں۔",
     vi: "Khám phá",
     zh: "探索",
-    zh_TW: "探索",
+    zh_TW: "探索"
   },
   statistics: {
     ar: "إحصائيات",
     bn: "পরিসংখ্যান",
+    cy: "Ystadegau",
     da: "Statistikker",
     de: "Statistiken",
     el: "Στατιστική",
@@ -75,11 +77,12 @@ const translations = {
     ur: "شماریات",
     vi: "Số liệu thống kê",
     zh: "统计数据",
-    zh_TW: "統計數據",
+    zh_TW: "統計數據"
   },
   socialMedia: {
     ar: "وسائل التواصل الاجتماعي",
     bn: "সামাজিক মাধ্যম",
+    cy: "Y Cyfryngau Cymdeithasol",
     da: "Sociale medier",
     de: "Sozialen Medien",
     el: "Μεσα ΚΟΙΝΩΝΙΚΗΣ ΔΙΚΤΥΩΣΗΣ",
@@ -114,11 +117,12 @@ const translations = {
     ur: "سوشل میڈیا",
     vi: "Truyền thông xã hội",
     zh: "社交媒体",
-    zh_TW: "社群媒體",
+    zh_TW: "社群媒體"
   },
   chronology: {
     ar: "التسلسل الزمني",
     bn: "কালানুক্রম",
+    cy: "Cronoleg",
     da: "Kronologi",
     de: "Chronologie",
     el: "ιστορική αναδρομή",
@@ -153,11 +157,12 @@ const translations = {
     ur: "تاریخ نامہ",
     vi: "Niên đại",
     zh: "年表",
-    zh_TW: "年表",
+    zh_TW: "年表"
   },
   faqs: {
     ar: "الأسئلة الشائعة حول بيتكوين كاش",
     bn: "বিটকয়েন ক্যাশ সম্পর্কে প্রায়শই জিজ্ঞাসিত প্রশ্নাবলী",
+    cy: "Cwestiynau Cyffredin am Bitcoin Cash",
     da: "Ofte stillede spørgsmål om Bitcoin Cash",
     de: "Bitcoin Cash FAQs",
     el: "Συχνές ερωτήσεις για το Bitcoin Cash",
@@ -192,11 +197,12 @@ const translations = {
     ur: "بٹ کوائن کیش کے عمومی سوالات",
     vi: "Câu hỏi thường gặp về Bitcoin Cash",
     zh: "比特币现金常见问题解答",
-    zh_TW: "比特幣現金常見問題解答",
+    zh_TW: "比特幣現金常見問題解答"
   },
   back: {
     ar: "خلف",
     bn: "পিছনে",
+    cy: "Yn ôl",
     da: "Tilbage",
     de: "Zurück",
     el: "Πίσω",
@@ -231,11 +237,12 @@ const translations = {
     ur: "واپس",
     vi: "Quay lại",
     zh: "返回",
-    zh_TW: "後退",
+    zh_TW: "後退"
   },
   transactionId: {
     ar: "معرف المعاملة",
     bn: "লেনদেন আইডি",
+    cy: "ID y Gweithrediad",
     da: "Transaktions-id",
     de: "Transaktions-ID",
     el: "Αναγνωριστικό συναλλαγής",
@@ -270,11 +277,12 @@ const translations = {
     ur: "ٹرانزیکشن ID",
     vi: "Mã giao dịch",
     zh: "交易编号",
-    zh_TW: "交易編號",
+    zh_TW: "交易編號"
   },
   copiedTxid: {
     ar: "تم نسخ معرف المعاملة إلى الحافظة",
     bn: "ক্লিপবোর্ডে লেনদেন আইডি কপি করা হয়েছে",
+    cy: "ID y Trafodiad wedi ei gopïo i'r Clipfwrdd",
     da: "Kopierede transaktions-id til udklipsholder",
     de: "Transaktions-ID in die Zwischenablage kopiert",
     el: "Αντιγράφηκε το αναγνωριστικό συναλλαγής στο Πρόχειρο",
@@ -283,7 +291,7 @@ const translations = {
     fa: "شناسه تراکنش در کلیپ بورد کپی شد",
     fil: "Kinopya ang Transaction ID sa Clipboard",
     fr: "ID de transaction copié dans le presse-papiers",
-    ha: "Kwafi ID na Ma&#39;amala zuwa Clipboard",
+    ha: "Kwafi ID na Ma'amala zuwa Clipboard",
     hi: "लेनदेन आईडी को क्लिपबोर्ड पर कॉपी किया गया",
     id: "Menyalin ID Transaksi ke Clipboard",
     it: "ID transazione copiato negli appunti",
@@ -294,7 +302,7 @@ const translations = {
     ms: "ID Transaksi yang disalin ke Papan Klip",
     nb: "Kopiert transaksjons-ID til utklippstavlen",
     nl: "Transactie-ID naar klembord gekopieerd",
-    pa: "ਟ੍ਰਾਂਜੈਕਸ਼ਨ ਆਈਡੀ ਨੂੰ ਕਲਿੱਪਬੋਰਡ &#39;ਤੇ ਕਾਪੀ ਕੀਤਾ ਗਿਆ",
+    pa: "ਟ੍ਰਾਂਜੈਕਸ਼ਨ ਆਈਡੀ ਨੂੰ ਕਲਿੱਪਬੋਰਡ 'ਤੇ ਕਾਪੀ ਕੀਤਾ ਗਿਆ",
     pl: "Skopiowano ID transakcji do schowka",
     pt: "ID da transação copiada para a área de transferência",
     ro: "ID-ul tranzacției a fost copiat în Clipboard",
@@ -309,11 +317,12 @@ const translations = {
     ur: "ٹرانزیکشن ID کو کلپ بورڈ پر کاپی کیا گیا۔",
     vi: "Đã sao chép ID giao dịch vào Bảng tạm",
     zh: "已将交易 ID 复制到剪贴板",
-    zh_TW: "已將交易 ID 複製到剪貼簿",
+    zh_TW: "已將交易 ID 複製到剪貼簿"
   },
   ecosystem: {
     ar: "دليل النظام البيئي",
     bn: "ইকোসিস্টেম ডিরেক্টরি",
+    cy: "Cyfeiriadur yr Ecosystem",
     da: "Økosystemkatalog",
     de: "Ökosystemverzeichnis",
     el: "Κατάλογος Οικοσυστημάτων",
@@ -348,11 +357,12 @@ const translations = {
     ur: "ایکو سسٹم ڈائرکٹری",
     vi: "Thư mục hệ sinh thái",
     zh: "生态系统目录",
-    zh_TW: "生態系目錄",
+    zh_TW: "生態系目錄"
   },
   help: {
     ar: "دليل المستخدم",
     bn: "ব্যবহারবিধি",
+    cy: "Llawlyfr Defnyddwyr",
     da: "Brugermanual",
     de: "Bedienungsanleitung",
     el: "Εγχειρίδιο χρήστη",
@@ -360,7 +370,7 @@ const translations = {
     es: "Manual del usuario",
     fa: "دفترچه راهنمای کاربر",
     fil: "User Manual",
-    fr: "Manuel d&#39;utilisation",
+    fr: "Manuel d'utilisation",
     ha: "Manual mai amfani",
     hi: "उपयोगकर्ता पुस्तिका",
     id: "Panduan Pengguna",
@@ -387,11 +397,12 @@ const translations = {
     ur: "صارف دستی",
     vi: "Hướng dẫn sử dụng",
     zh: "用户手册",
-    zh_TW: "使用者手冊",
+    zh_TW: "使用者手冊"
   },
   info: {
     ar: "المساعدة والمعلومات",
     bn: "সাহায্য ও তথ্য",
+    cy: "Cymorth a Gwybodaeth",
     da: "Hjælp og information",
     de: "Hilfe &amp; Informationen",
     el: "Βοήθεια και πληροφορίες",
@@ -426,11 +437,12 @@ const translations = {
     ur: "مدد اور معلومات",
     vi: "Trợ giúp &amp; Thông tin",
     zh: "帮助和信息",
-    zh_TW: "幫助和資訊",
+    zh_TW: "幫助和資訊"
   },
   outputs: {
     ar: "المخرجات",
     bn: "আউটপুট",
+    cy: "Allbynnau",
     da: "Udgange",
     de: "Ausgänge",
     el: "Έξοδοι",
@@ -465,11 +477,12 @@ const translations = {
     ur: "آؤٹ پٹس",
     vi: "Đầu ra",
     zh: "输出",
-    zh_TW: "輸出",
+    zh_TW: "輸出"
   },
   inputs: {
     ar: "المدخلات",
     bn: "ইনপুট",
+    cy: "Mewnbynnau",
     da: "Indgange",
     de: "Eingänge",
     el: "Είσοδοι",
@@ -504,11 +517,12 @@ const translations = {
     ur: "ان پٹ",
     vi: "Đầu vào",
     zh: "输入",
-    zh_TW: "輸入",
+    zh_TW: "輸入"
   },
   learnMore: {
     ar: "يتعلم أكثر",
     bn: "আরও জানুন",
+    cy: "Dysgu Mwy",
     da: "Lær mere",
     de: "Mehr erfahren",
     el: "Μάθετε περισσότερα",
@@ -543,11 +557,12 @@ const translations = {
     ur: "مزید جانیں",
     vi: "Tìm hiểu thêm",
     zh: "了解更多",
-    zh_TW: "了解更多",
+    zh_TW: "了解更多"
   },
   confirmedInBlock: {
     ar: "تم التأكيد في الكتلة",
     bn: "ব্লকে নিশ্চিত করা হয়েছে",
+    cy: "Cadarnhawyd yn y bloc",
     da: "Bekræftet i blokken",
     de: "Im Block bestätigt",
     el: "Επιβεβαιώθηκε στο μπλοκ",
@@ -582,11 +597,12 @@ const translations = {
     ur: "بلاک میں تصدیق شدہ",
     vi: "Đã xác nhận trong khối",
     zh: "已在区块中确认",
-    zh_TW: "已在區塊中確認",
+    zh_TW: "已在區塊中確認"
   },
   blocks: {
     ar: "كتل",
     bn: "ব্লক",
+    cy: "blociau",
     da: "blokke",
     de: "Blöcke",
     el: "μπλοκ",
@@ -621,11 +637,12 @@ const translations = {
     ur: "بلاکس",
     vi: "khối",
     zh: "积木",
-    zh_TW: "積木",
+    zh_TW: "積木"
   },
   pendingConfirmation: {
     ar: "في انتظار التأكيد",
     bn: "নিশ্চিতকরণ মুলতুবি আছে",
+    cy: "Yn Disgwyl Cadarnhad",
     da: "Afventer bekræftelse",
     de: "Bestätigung ausstehend",
     el: "Εκκρεμεί επιβεβαίωση",
@@ -660,11 +677,12 @@ const translations = {
     ur: "زیر التوا تصدیق",
     vi: "Đang chờ xác nhận",
     zh: "待确认",
-    zh_TW: "待確認",
+    zh_TW: "待確認"
   },
   setMemo: {
     ar: "تعيين المذكرة...",
     bn: "মেমো সেট করুন...",
+    cy: "Gosod Cofnod...",
     da: "Indstil memo...",
     de: "Memo einstellen...",
     el: "Ορισμός σημείωσης...",
@@ -699,11 +717,12 @@ const translations = {
     ur: "میمو سیٹ کریں...",
     vi: "Đặt ghi nhớ...",
     zh: "设置备忘录...",
-    zh_TW: "設定備忘錄...",
+    zh_TW: "設定備忘錄..."
   },
   dailyUsers: {
     ar: "المستخدمون اليوميون",
     bn: "দৈনিক ব্যবহারকারী",
+    cy: "Defnyddwyr Dyddiol",
     da: "Daglige brugere",
     de: "Tägliche Nutzer",
     el: "Καθημερινοί χρήστες",
@@ -738,11 +757,12 @@ const translations = {
     ur: "روزانہ صارفین",
     vi: "Người dùng hàng ngày",
     zh: "日活跃用户",
-    zh_TW: "日活躍用戶",
+    zh_TW: "日活躍用戶"
   },
   monthlyUsers: {
     ar: "المستخدمون الشهريون",
     bn: "মাসিক ব্যবহারকারী",
+    cy: "Defnyddwyr Misol",
     da: "Månedlige brugere",
     de: "Monatliche Nutzer",
     el: "Μηνιαίοι χρήστες",
@@ -777,11 +797,12 @@ const translations = {
     ur: "ماہانہ صارفین",
     vi: "Người dùng hàng tháng",
     zh: "月度用户",
-    zh_TW: "每月用戶",
+    zh_TW: "每月用戶"
   },
   pdfExportSuccess: {
     ar: "تم تصدير ملف PDF بنجاح",
     bn: "পিডিএফ সফলভাবে এক্সপোর্ট করা হয়েছে",
+    cy: "Allyrrwyd y PDF yn llwyddiannus",
     da: "PDF-filen blev eksporteret",
     de: "PDF erfolgreich exportiert",
     el: "Το PDF εξήχθη με επιτυχία.",
@@ -816,19 +837,20 @@ const translations = {
     ur: "PDF کامیابی کے ساتھ برآمد ہو گئی۔",
     vi: "Đã xuất PDF thành công",
     zh: "PDF 导出成功",
-    zh_TW: "PDF 匯出成功",
+    zh_TW: "PDF 匯出成功"
   },
   pdfExportError: {
     ar: "فشل تصدير ملف PDF",
     bn: "PDF এক্সপোর্ট করা যায়নি",
-    da: "Kunne ikke eksportere PDF&#39;en",
+    cy: "Methwyd allyrru'r PDF",
+    da: "Kunne ikke eksportere PDF'en",
     de: "PDF konnte nicht exportiert werden",
     el: "Αποτυχία εξαγωγής PDF",
     en: "Failed to export PDF",
     es: "Error al exportar PDF",
     fa: "خروجی گرفتن از PDF ناموفق بود",
     fil: "Nabigong i-export ang PDF",
-    fr: "Échec de l&#39;exportation du PDF",
+    fr: "Échec de l'exportation du PDF",
     ha: "An kasa fitarwa PDF",
     hi: "PDF निर्यात करने में विफल",
     id: "Gagal mengekspor PDF",
@@ -855,11 +877,12 @@ const translations = {
     ur: "PDF برآمد کرنے میں ناکام",
     vi: "Không xuất được PDF",
     zh: "导出 PDF 失败",
-    zh_TW: "匯出 PDF 失敗",
+    zh_TW: "匯出 PDF 失敗"
   },
   pdfExportGenerating: {
     ar: "جاري إنشاء ملف PDF...",
     bn: "পিডিএফ তৈরি করা হচ্ছে...",
+    cy: "Wrthi'n cynhyrchu'r PDF...",
     da: "Genererer PDF...",
     de: "PDF wird erstellt...",
     el: "Δημιουργία PDF...",
@@ -894,11 +917,12 @@ const translations = {
     ur: "پی ڈی ایف تیار کر رہا ہے...",
     vi: "Đang tạo PDF...",
     zh: "正在生成 PDF...",
-    zh_TW: "正在生成 PDF...",
+    zh_TW: "正在生成 PDF..."
   },
   pngExportSuccess: {
     ar: "تم تصدير PNG بنجاح",
     bn: "PNG সফলভাবে রপ্তানি করা হয়েছে",
+    cy: "Allyrrwyd y PNG yn llwyddiannus",
     da: "PNG-eksporten er gennemført",
     de: "PNG erfolgreich exportiert",
     el: "Η εξαγωγή PNG έγινε με επιτυχία.",
@@ -933,11 +957,12 @@ const translations = {
     ur: "PNG کامیابی کے ساتھ برآمد ہو گیا۔",
     vi: "PNG đã xuất thành công",
     zh: "PNG 导出成功",
-    zh_TW: "PNG 匯出成功",
+    zh_TW: "PNG 匯出成功"
   },
   pngExportError: {
     ar: "فشل تصدير PNG",
     bn: "PNG এক্সপোর্ট করা যায়নি",
+    cy: "Methwyd allyrru'r PNG",
     da: "Kunne ikke eksportere PNG",
     de: "PNG konnte nicht exportiert werden",
     el: "Αποτυχία εξαγωγής PNG",
@@ -945,7 +970,7 @@ const translations = {
     es: "No se pudo exportar PNG",
     fa: "خروجی PNG ناموفق بود",
     fil: "Nabigong i-export ang PNG",
-    fr: "Échec de l&#39;exportation du PNG",
+    fr: "Échec de l'exportation du PNG",
     ha: "An kasa fitarwa PNG",
     hi: "PNG निर्यात करने में विफल",
     id: "Gagal mengekspor PNG",
@@ -972,11 +997,12 @@ const translations = {
     ur: "PNG برآمد کرنے میں ناکام",
     vi: "Không xuất được PNG",
     zh: "无法导出 PNG",
-    zh_TW: "無法導出 PNG",
+    zh_TW: "無法導出 PNG"
   },
   pngExportGenerating: {
     ar: "جاري إنشاء PNG...",
     bn: "PNG তৈরি করা হচ্ছে...",
+    cy: "Wrthi'n cynhyrchu'r PNG...",
     da: "Genererer PNG...",
     de: "PNG wird generiert...",
     el: "Δημιουργία PNG...",
@@ -1011,11 +1037,12 @@ const translations = {
     ur: "PNG تیار کر رہا ہے...",
     vi: "Đang tạo PNG...",
     zh: "正在生成 PNG...",
-    zh_TW: "正在產生 PNG...",
+    zh_TW: "正在產生 PNG..."
   },
   exportPDF: {
     ar: "تصدير ملف PDF",
     bn: "পিডিএফ রপ্তানি করুন",
+    cy: "Allyrru'r PDF",
     da: "Eksporter PDF",
     de: "PDF exportieren",
     el: "Εξαγωγή PDF",
@@ -1045,16 +1072,17 @@ const translations = {
     ta: "PDF ஐ ஏற்றுமதி செய்",
     te: "PDF ని ఎగుమతి చేయండి",
     th: "ส่งออก PDF",
-    tr: "PDF&#39;yi dışa aktar",
+    tr: "PDF'yi dışa aktar",
     uk: "Експорт PDF-файлу",
     ur: "پی ڈی ایف ایکسپورٹ کریں۔",
     vi: "Xuất PDF",
     zh: "导出 PDF",
-    zh_TW: "匯出 PDF",
+    zh_TW: "匯出 PDF"
   },
   exportPNG: {
     ar: "تصدير PNG",
     bn: "পিএনজি রপ্তানি করুন",
+    cy: "Allyrru'r PNG",
     da: "Eksportér PNG",
     de: "PNG exportieren",
     el: "Εξαγωγή PNG",
@@ -1084,13 +1112,13 @@ const translations = {
     ta: "PNG-ஐ ஏற்றுமதி செய்",
     te: "PNG ని ఎగుమతి చేయండి",
     th: "ส่งออก PNG",
-    tr: "PNG&#39;yi dışa aktar",
+    tr: "PNG'yi dışa aktar",
     uk: "Експорт PNG",
     ur: "PNG برآمد کریں۔",
     vi: "Xuất PNG",
     zh: "导出 PNG",
-    zh_TW: "導出 PNG",
-  },
+    zh_TW: "導出 PNG"
+  }
 };
 
 export default translations;

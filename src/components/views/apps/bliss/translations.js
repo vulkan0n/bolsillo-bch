@@ -2,6 +2,7 @@ const translations = {
   startingIn: {
     ar: "ابتداء من",
     bn: "শুরু হচ্ছে",
+    cy: "Yn dechrau ymhen",
     da: "Starter i",
     de: "Beginnend in",
     el: "Ξεκινώντας μέσα",
@@ -41,6 +42,7 @@ const translations = {
   watchVideos: {
     ar: "فيديوهات BLISS متاحة",
     bn: "BLISS ভিডিও উপলব্ধ",
+    cy: "Fideos BLISS ar gael",
     da: "BLISS videoer tilgængelige",
     de: "BLISS-Videos verfügbar",
     el: "Διαθέσιμα βίντεο BLISS",
@@ -59,7 +61,7 @@ const translations = {
     mr: "आनंदाचे व्हिडिओ उपलब्ध आहेत",
     ms: "Video BLISS tersedia",
     nb: "BLISS-videoer tilgjengelig",
-    nl: "BLISS-video&#39;s beschikbaar",
+    nl: "BLISS-video's beschikbaar",
     pa: "BLISS ਵੀਡੀਓ ਉਪਲਬਧ ਹਨ",
     pl: "Dostępne filmy BLISS",
     pt: "Vídeos BLISS disponíveis",
@@ -80,6 +82,7 @@ const translations = {
   watchLive: {
     ar: "شاهد البث المباشر",
     bn: "লাইভ স্ট্রিমটি দেখুন",
+    cy: "Gwylio'r ffrwd fyw",
     da: "Se livestreamen",
     de: "Livestream ansehen",
     el: "Παρακολουθήστε τη ζωντανή ροή",
@@ -119,6 +122,7 @@ const translations = {
   intro: {
     ar: "يعود مؤتمر BCH الرائد في دورته الثالثة! انضموا إلى عشاق BCH من جميع أنحاء العالم للاحتفال بتحديث بيتكوين كاش &quot;ليلى&quot; من خلال عروض تقديمية، وجلسات نقاش، وأجنحة مشاريع، وفعاليات اجتماعية، وغيرها الكثير.",
     bn: "প্রিমিয়ার BCH সম্মেলনটি তার তৃতীয় বছরে ফিরে এসেছে! উপস্থাপনা, প্যানেল, প্রকল্প বুথ, সামাজিক অনুষ্ঠান এবং আরও অনেক কিছুর মাধ্যমে বিটকয়েন ক্যাশ &quot;লায়লা&quot; আপগ্রেড উদযাপন করতে বিশ্বজুড়ে BCH উত্সাহীদের সাথে যোগ দিন।",
+    cy: "Mae prif gynhadledd BCH yn ôl am ei thrydedd flwyddyn! Ymunwch â selogion BCH o bob cwr o'r byd i ddathlu uwchraddiad &quot;Layla&quot; Bitcoin Cash gyda chyflwyniadau, paneli, stondinau prosiect, digwyddiadau cymdeithasol a mwy.",
     da: "Den førende BCH-konference er tilbage for tredje år! Deltag i BCH-entusiaster fra hele verden for at fejre Bitcoin Cash &quot;Layla&quot;-opgraderingen med præsentationer, paneler, projektboder, sociale arrangementer og meget mere.",
     de: "Die führende BCH-Konferenz findet bereits zum dritten Mal statt! Feiern Sie gemeinsam mit BCH-Begeisterten aus aller Welt das Bitcoin Cash „Layla“-Upgrade mit Präsentationen, Podiumsdiskussionen, Projektständen, geselligen Veranstaltungen und vielem mehr.",
     el: "Το κορυφαίο συνέδριο BCH επιστρέφει για τρίτη χρονιά! Ελάτε μαζί με τους λάτρεις του BCH από όλο τον κόσμο για να γιορτάσετε την αναβάθμιση &quot;Layla&quot; του Bitcoin Cash με παρουσιάσεις, πάνελ, περίπτερα έργων, κοινωνικές εκδηλώσεις και πολλά άλλα.",
@@ -127,10 +131,10 @@ const translations = {
     fa: "اولین کنفرانس BCH برای سومین سال خود بازگشته است! به علاقه‌مندان به BCH از سراسر جهان بپیوندید تا ارتقاء بیت‌کوین کش &quot;لیلا&quot; را با ارائه‌ها، پنل‌ها، غرفه‌های پروژه، رویدادهای اجتماعی و موارد دیگر جشن بگیرید.",
     fil: "Ang premiere BCH conference ay bumalik para sa ikatlong taon nito! Samahan ang mga mahilig sa BCH mula sa buong mundo upang ipagdiwang ang pag-upgrade ng Bitcoin Cash &quot;Layla&quot; na may mga presentasyon, panel, project booth, social event at higit pa.",
     fr: "La conférence BCH de référence est de retour pour sa troisième édition ! Rejoignez les passionnés de BCH du monde entier pour célébrer la mise à jour « Layla » de Bitcoin Cash avec des présentations, des tables rondes, des stands de projets, des événements conviviaux et bien plus encore.",
-    ha: "Taron farko na BCH ya dawo shekara ta uku! Haɗa masu sha&#39;awar BCH daga ko&#39;ina cikin duniya don yin bikin haɓaka Bitcoin Cash &quot;Layla&quot; tare da gabatarwa, bangarori, rumfunan aiki, abubuwan zamantakewa &amp; ƙari.",
+    ha: "Taron farko na BCH ya dawo shekara ta uku! Haɗa masu sha'awar BCH daga ko'ina cikin duniya don yin bikin haɓaka Bitcoin Cash &quot;Layla&quot; tare da gabatarwa, bangarori, rumfunan aiki, abubuwan zamantakewa &amp; ƙari.",
     hi: "प्रीमियर BCH सम्मेलन अपने तीसरे वर्ष में वापस आ गया है! बिटकॉइन कैश &quot;लैला&quot; अपग्रेड का जश्न मनाने के लिए दुनिया भर के BCH उत्साही लोगों के साथ प्रस्तुतियों, पैनल, प्रोजेक्ट बूथ, सामाजिक कार्यक्रमों और अन्य कार्यक्रमों के साथ जुड़ें।",
     id: "Konferensi perdana BCH kembali untuk tahun ketiganya! Bergabunglah dengan para penggemar BCH dari seluruh dunia untuk merayakan pembaruan Bitcoin Cash &quot;Layla&quot; dengan presentasi, panel, stan proyek, acara sosial, dan banyak lagi.",
-    it: "La prestigiosa conferenza BCH torna per il terzo anno! Unisciti agli appassionati di BCH da tutto il mondo per celebrare l&#39;aggiornamento &quot;Layla&quot; di Bitcoin Cash con presentazioni, panel, stand di progetto, eventi sociali e molto altro.",
+    it: "La prestigiosa conferenza BCH torna per il terzo anno! Unisciti agli appassionati di BCH da tutto il mondo per celebrare l'aggiornamento &quot;Layla&quot; di Bitcoin Cash con presentazioni, panel, stand di progetto, eventi sociali e molto altro.",
     ja: "プレミアBCHカンファレンスが3年目を迎えて復活！世界中のBCHファンと共に、プレゼンテーション、パネルディスカッション、プロジェクトブース、ソーシャルイベントなどを通して、ビットコインキャッシュ「Layla」アップグレードを祝いましょう。",
     jv: "Konferensi BCH perdana bali kanggo taun katelu! Gabung karo penggemar BCH saka sak ndonya kanggo ngrayakake upgrade Bitcoin Cash &quot;Layla&quot; kanthi presentasi, panel, booth proyek, acara sosial &amp; liyane.",
     ko: "최고의 BCH 컨퍼런스가 3년째 돌아왔습니다! 전 세계 BCH 팬들과 함께 비트코인 캐시 &quot;Layla&quot; 업그레이드를 기념하며 프레젠테이션, 패널 토론, 프로젝트 부스, 소셜 이벤트 등 다채로운 행사를 즐겨보세요.",
@@ -149,7 +153,7 @@ const translations = {
     te: "ప్రీమియర్ BCH సమావేశం మూడవ సంవత్సరం తిరిగి వచ్చింది! ప్రెజెంటేషన్లు, ప్యానెల్లు, ప్రాజెక్ట్ బూత్‌లు, సామాజిక కార్యక్రమాలు మరియు మరిన్నింటితో బిట్‌కాయిన్ క్యాష్ &quot;లయలా&quot; అప్‌గ్రేడ్‌ను జరుపుకోవడానికి ప్రపంచవ్యాప్తంగా ఉన్న BCH ఔత్సాహికులతో చేరండి.",
     th: "งานประชุม BCH ครั้งแรกกลับมาอีกครั้งเป็นปีที่ 3! มาร่วมเฉลิมฉลองการอัปเกรด Bitcoin Cash &quot;Layla&quot; ไปกับเหล่าผู้ที่ชื่นชอบ BCH จากทั่วโลก พบกับการนำเสนอ การอภิปราย บูธโครงการ กิจกรรมทางสังคม และอื่นๆ อีกมากมาย",
     tr: "En önemli BCH konferansı üçüncü yılı için geri döndü! Dünyanın dört bir yanından BCH meraklılarıyla birlikte sunumlar, paneller, proje stantları, sosyal etkinlikler ve daha fazlasıyla Bitcoin Cash &quot;Layla&quot; yükseltmesini kutlayın.",
-    uk: "Прем&#39;єрна конференція BCH повертається вже третій рік поспіль! Приєднуйтесь до ентузіастів BCH з усього світу, щоб відсвяткувати оновлення Bitcoin Cash &quot;Layla&quot; за допомогою презентацій, панельних дискусій, проектних стендів, соціальних заходів тощо.",
+    uk: "Прем'єрна конференція BCH повертається вже третій рік поспіль! Приєднуйтесь до ентузіастів BCH з усього світу, щоб відсвяткувати оновлення Bitcoin Cash &quot;Layla&quot; за допомогою презентацій, панельних дискусій, проектних стендів, соціальних заходів тощо.",
     ur: "پریمیئر BCH کانفرنس اپنے تیسرے سال کے لیے واپس آ گئی ہے! پریزنٹیشنز، پینلز، پروجیکٹ بوتھس، سماجی تقریبات اور بہت کچھ کے ساتھ بٹ کوائن کیش &quot;لیلا&quot; اپ گریڈ کا جشن منانے کے لیے دنیا بھر سے BCH کے شوقین افراد کے ساتھ شامل ہوں۔",
     vi: "Hội nghị BCH hàng đầu đã trở lại năm thứ ba! Hãy cùng những người đam mê BCH trên toàn thế giới chào đón bản nâng cấp Bitcoin Cash &quot;Layla&quot; với các bài thuyết trình, hội thảo, gian hàng dự án, sự kiện xã hội và nhiều hoạt động khác.",
     zh: "首届 BCH 大会强势回归，迎来第三届！与来自世界各地的 BCH 爱好者齐聚一堂，共同庆祝比特币现金“Layla”升级，届时将有演讲、小组讨论、项目展位、社交活动等精彩内容。",
@@ -158,6 +162,7 @@ const translations = {
   tickets: {
     ar: "التذاكر",
     bn: "টিকিট",
+    cy: "Tocynnau",
     da: "Billetter",
     de: "Tickets",
     el: "Εισιτήρια",
@@ -197,6 +202,7 @@ const translations = {
   about: {
     ar: "نبذة عن بليس",
     bn: "BLISS সম্পর্কে",
+    cy: "Ynglŷn â BLISS",
     da: "Om BLISS",
     de: "Über BLISS",
     el: "Σχετικά με το BLISS",
@@ -236,6 +242,7 @@ const translations = {
   velmaUpgrade: {
     ar: "ترقية VELMA",
     bn: "VELMA আপগ্রেড",
+    cy: "Uwchraddiad VELMA",
     da: "VELMA-opgraderingen",
     de: "Das VELMA-Upgrade",
     el: "Η αναβάθμιση VELMA",
@@ -247,7 +254,7 @@ const translations = {
     ha: "Haɓaka VELMA",
     hi: "वेल्मा अपग्रेड",
     id: "Peningkatan VELMA",
-    it: "L&#39;aggiornamento VELMA",
+    it: "L'aggiornamento VELMA",
     ja: "VELMAアップグレード",
     jv: "Nganyarke VELMA",
     ko: "VELMA 업그레이드",
@@ -275,6 +282,7 @@ const translations = {
   howToTicketsTitle: {
     ar: "كيفية شراء التذاكر",
     bn: "কিভাবে টিকিট কিনবেন",
+    cy: "Sut i brynu tocynnau",
     da: "Sådan køber du billetter",
     de: "So kaufen Sie Tickets",
     el: "Πώς να αγοράσετε εισιτήρια",
@@ -314,6 +322,7 @@ const translations = {
   howToTicketsStepOne: {
     ar: "تثبيت محفظة متوافقة مع CashTokens",
     bn: "একটি CashTokens-সামঞ্জস্যপূর্ণ ওয়ালেট ইনস্টল করুন",
+    cy: "Gosod waled sy'n gweithio gyda CashTokens",
     da: "Installer en CashTokens-kompatibel tegnebog",
     de: "Installieren Sie eine CashTokens-kompatible Brieftasche",
     el: "Εγκαταστήστε ένα πορτοφόλι συμβατό με CashTokens",
@@ -353,6 +362,7 @@ const translations = {
   howToTicketsStepTwo: {
     ar: "تحويل الأموال إلى المحفظة",
     bn: "ওয়ালেটে তহবিল স্থানান্তর করুন",
+    cy: "Trosglwyddo arian i'r waled",
     da: "Overfør penge til tegnebogen",
     de: "Geld auf das Wallet überweisen",
     el: "Μεταφορά χρημάτων στο πορτοφόλι",
@@ -392,6 +402,7 @@ const translations = {
   howToTicketsStepThree: {
     ar: "اذهب الى",
     bn: "যাও",
+    cy: "Ewch i",
     da: "Gå til",
     de: "Gehe zu",
     el: "Μεταβείτε στο",
@@ -431,6 +442,7 @@ const translations = {
   howToTicketsStepFour: {
     ar: "ربط المحفظة عبر WalletConnect",
     bn: "WalletConnect এর মাধ্যমে ওয়ালেট সংযোগ করুন",
+    cy: "Cysylltu'r waled trwy WalletConnect",
     da: "Tilslut tegnebogen via WalletConnect",
     de: "Wallet über WalletConnect verbinden",
     el: "Σύνδεση πορτοφολιού μέσω WalletConnect",
@@ -470,6 +482,7 @@ const translations = {
   howToTicketsStepFive: {
     ar: "اختر واشتري تذكرتك",
     bn: "আপনার টিকিট বেছে নিন এবং কিনুন",
+    cy: "Dewiswch eich tocyn a'i brynu",
     da: "Vælg og køb din billet",
     de: "Wählen und kaufen Sie Ihr Ticket",
     el: "Επιλέξτε και αγοράστε το εισιτήριό σας",
@@ -509,6 +522,7 @@ const translations = {
   howToTicketsReadMore: {
     ar: "اقرأ المزيد",
     bn: "আরও পড়ুন",
+    cy: "Darllen mwy",
     da: "Læs mere",
     de: "Mehr lesen",
     el: "Διαβάστε περισσότερα",

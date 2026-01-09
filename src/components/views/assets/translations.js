@@ -2,6 +2,7 @@ const translations = {
   assets: {
     ar: "أصول",
     bn: "সম্পদ",
+    cy: "Asedau",
     da: "Aktiver",
     de: "Vermögenswerte",
     el: "Ακίνητη περιουσία",
@@ -41,6 +42,7 @@ const translations = {
   downloadingTokenData: {
     ar: "جاري تنزيل بيانات الرمز...",
     bn: "টোকেন ডেটা ডাউনলোড করা হচ্ছে...",
+    cy: "Lawrlwytho Data'r CashToken...",
     da: "Downloader tokendata...",
     de: "Token-Daten werden heruntergeladen …",
     el: "Λήψη δεδομένων διακριτικού...",
@@ -80,6 +82,7 @@ const translations = {
   send: {
     ar: "يرسل",
     bn: "পাঠান",
+    cy: "Anfon",
     da: "Sende",
     de: "Schicken",
     el: "Στέλνω",
@@ -119,6 +122,7 @@ const translations = {
   sendTokens: {
     ar: "إرسال الرموز",
     bn: "টোকেন পাঠান",
+    cy: "Anfon CashTokens",
     da: "Send tokens",
     de: "Token senden",
     el: "Αποστολή διακριτικών",
@@ -158,6 +162,7 @@ const translations = {
   seeMore: {
     ar: "شاهد المزيد",
     bn: "আরও দেখুন",
+    cy: "Gweld Mwy",
     da: "Se mere",
     de: "Mehr anzeigen",
     el: "Δείτε περισσότερα",
@@ -197,6 +202,7 @@ const translations = {
   noTokens: {
     ar: "لا يوجد رموز",
     bn: "কোনও টোকেন নেই",
+    cy: "Dim CashTokens",
     da: "Ingen tokens",
     de: "Keine Token",
     el: "Χωρίς διακριτικά",
@@ -236,6 +242,7 @@ const translations = {
   noCoins: {
     ar: "لا يوجد عملات معدنية",
     bn: "কোন কয়েন নেই",
+    cy: "Dim Darnau Arian",
     da: "Ingen mønter",
     de: "Keine Münzen",
     el: "Χωρίς νομίσματα",
@@ -275,6 +282,7 @@ const translations = {
   memo: {
     ar: "مذكرة",
     bn: "স্মারকলিপি",
+    cy: "Nodyn",
     da: "Memo",
     de: "Memo",
     el: "Σημείωμα",
@@ -305,7 +313,7 @@ const translations = {
     te: "మెమో",
     th: "บันทึก",
     tr: "Hafıza",
-    uk: "Пам&#39;ятка",
+    uk: "Пам'ятка",
     ur: "میمو",
     vi: "Bản ghi nhớ",
     zh: "备忘录",
@@ -314,6 +322,7 @@ const translations = {
   cashBalance: {
     ar: "الرصيد النقدي",
     bn: "নগদ ব্যালেন্স",
+    cy: "Gweddill Bitcoin Cash",
     da: "Kassebeholdning",
     de: "Kassenbestand",
     el: "Υπόλοιπο μετρητών",
@@ -353,6 +362,7 @@ const translations = {
   tokens: {
     ar: "الرموز",
     bn: "টোকেন",
+    cy: "CashTokens",
     da: "Poletter",
     de: "Token",
     el: "Μαρτυρίες",
@@ -392,6 +402,7 @@ const translations = {
   coins: {
     ar: "عملات معدنية",
     bn: "কয়েন",
+    cy: "Darnau arian",
     da: "Mønter",
     de: "Münzen",
     el: "Νομίσματα",
@@ -431,6 +442,7 @@ const translations = {
   copiedTokenId: {
     ar: "تم نسخ معرف الرمز المميز",
     bn: "টোকেন আইডি কপি করা হয়েছে",
+    cy: "ID CashToken wedi ei gopïo",
     da: "Kopieret token-ID",
     de: "Kopierte Token-ID",
     el: "Αντιγραμμένο αναγνωριστικό διακριτικού",

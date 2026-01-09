@@ -2,6 +2,7 @@ const translations = {
   wallet: {
     ar: "محفظة",
     bn: "ওয়ালেট",
+    cy: "Waled",
     da: "Tegnebog",
     de: "Brieftasche",
     el: "Πορτοφόλι",
@@ -41,6 +42,7 @@ const translations = {
   explore: {
     ar: "يستكشف",
     bn: "অন্বেষণ",
+    cy: "Archwilio",
     da: "Udforske",
     de: "Erkunden",
     el: "Εξερευνώ",
@@ -80,6 +82,7 @@ const translations = {
   settings: {
     ar: "إعدادات",
     bn: "সেটিংস",
+    cy: "Gosodiadau",
     da: "Indstillinger",
     de: "Einstellungen",
     el: "Ρυθμίσεις",
@@ -119,6 +122,7 @@ const translations = {
   assets: {
     ar: "أصول",
     bn: "সম্পদ",
+    cy: "Asedau",
     da: "Aktiver",
     de: "Vermögenswerte",
     el: "Ακίνητη περιουσία",
