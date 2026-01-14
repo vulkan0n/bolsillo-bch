@@ -122,7 +122,7 @@ const translations = {
   localizationSettings: {
     ar: "الموقع",
     bn: "লোকালাইজেশন",
-    cy: "Lleoleiddio",
+    cy: "Lleoli",
     da: "Lokalisering",
     de: "Lokalisierung",
     el: "Τοπικοποίηση",
@@ -1162,7 +1162,7 @@ const translations = {
   uiSettings: {
     ar: "واجهة المستخدم",
     bn: "ব্যবহারকারী ইন্টারফেস",
-    cy: "Rhyngwyneb Defnyddiwr",
+    cy: "Rhyngwyneb Defnyddwyr",
     da: "Brugergrænseflade",
     de: "Benutzeroberfläche",
     el: "Διεπαφή χρήστη",

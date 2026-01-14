@@ -247,6 +247,7 @@ export default function CreditsView() {
         <ul className="list-inside list-disc">
           <li>Marius Kjærstad (GitLab: @sandakersmann)</li>
           <li>Prashant Singh Pawar (GitLab: @prashantpawar)</li>
+          <li>Luned Whelan (Welsh - https://lunedwhelan.co.uk/)</li>
         </ul>
 
         <h2 className="font-bold text-2xl mt-4">
