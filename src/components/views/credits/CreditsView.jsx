@@ -251,6 +251,13 @@ export default function CreditsView() {
         </ul>
 
         <h2 className="font-bold text-2xl mt-4">
+          {translate(translations.introVideo)}
+        </h2>
+        <ul className="list-inside list-disc">
+          <li>Duncan (Dunconomics.com)</li>
+        </ul>
+
+        <h2 className="font-bold text-2xl mt-4">
           {translate(translations.specialThanks)}
         </h2>
         <ul className="list-inside list-disc">

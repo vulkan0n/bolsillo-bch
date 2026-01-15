@@ -319,6 +319,9 @@ const translations = {
     zh: "文档",
     zh_TW: "文件",
   },
+  introVideo: {
+    en: "Introduction Video",
+  },
 };
 
 export default translations;
