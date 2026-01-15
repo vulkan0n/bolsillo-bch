@@ -358,13 +358,13 @@ export default function WalletViewHistory() {
               placeholder={translate(translations.searchPlaceholder)}
               value={searchQuery}
               onChange={handleSearchChange}
-              className="rounded bg-white dark:bg-neutral-500 p-2 w-full focus:outline-none"
+              className="rounded bg-white dark:bg-neutral-500 p-2 pr-8 w-full focus:outline-none"
             />
             {searchQuery && (
               <button
                 type="button"
                 onClick={() => dispatch(setSearchQuery(""))}
-                className="inline-flex absolute right-2 top-[50%] -translate-y-[8px]"
+                className="inline-flex absolute right-2 top-1/2 -translate-y-1/2"
                 aria-label={translate(translations.clearSearch)}
               >
                 <CloseCircleOutlined size={16} />

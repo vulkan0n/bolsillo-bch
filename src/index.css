@@ -61,6 +61,18 @@ main {
   overscroll-behavior: none;
 }
 
+#scannerOutput {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+#scannerOutput video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  background-color: black;
+}
+
 #ios-top {
   width: 100vw;
   height: env(safe-area-inset-top);

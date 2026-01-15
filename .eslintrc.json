@@ -77,7 +77,8 @@
           "UPPER_CASE",
           "snake_case",
           "StrictPascalCase"
-        ]
+        ],
+        "leadingUnderscore": "allow"
       },
       {
         "selector": "function",

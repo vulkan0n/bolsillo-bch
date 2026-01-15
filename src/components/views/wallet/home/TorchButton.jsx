@@ -1,36 +1,31 @@
 /* eslint-disable react/jsx-props-no-spreading */
-import { useState, useEffect } from "react";
-import { BarcodeScanner } from "@capacitor-community/barcode-scanner";
+import { useSelector, useDispatch } from "react-redux";
 import { BulbOutlined } from "@ant-design/icons";
-import Button from "@/atoms/Button";
-import translations from "@/views/wallet/translations";
-import { translate } from "@/util/translations";
 
-const { torch } = translations;
+import { selectTorchIsEnabled, setTorchIsEnabled } from "@/redux/device";
+
+import LogService from "@/services/LogService";
+
+import Button from "@/atoms/Button";
+
+import { translate } from "@/util/translations";
+import translations from "@/views/wallet/translations";
+
+const Log = LogService("TorchButton");
 
 export default function TorchButton(props) {
-  const [isTorchEnabled, setIsTorchEnabled] = useState(false);
-
-  useEffect(function initializeTorchState() {
-    const getTorchState = async () => {
-      setIsTorchEnabled((await BarcodeScanner.getTorchState()).isEnabled);
-    };
-
-    getTorchState();
-  }, []);
+  const dispatch = useDispatch();
+  const isTorchEnabled = useSelector(selectTorchIsEnabled);
 
   const handleTorchButton = async () => {
-    await (isTorchEnabled
-      ? BarcodeScanner.disableTorch()
-      : BarcodeScanner.enableTorch());
-
-    setIsTorchEnabled(!isTorchEnabled);
+    Log.debug("handleTorchButton", isTorchEnabled, "to", !isTorchEnabled);
+    dispatch(setTorchIsEnabled(!isTorchEnabled));
   };
 
   return (
     <Button
       icon={BulbOutlined}
-      outerLabel={translate(torch)}
+      outerLabel={translate(translations.torch)}
       onClick={handleTorchButton}
       inverted={isTorchEnabled}
       {...props}

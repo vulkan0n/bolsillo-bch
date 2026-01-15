@@ -128,14 +128,20 @@ export default function MainLayout() {
 
   // [!] see index.css for #container and <main> styles
   return (
-    <div
-      id="container"
-      className={`${isScanning ? "bg-transparent" : "bg-primary-50 dark:bg-primarydark-50 dark:text-neutral-50"}`}
-    >
-      <main>
-        <Outlet />
-      </main>
-      <BottomNavigation />
-    </div>
+    <>
+      <div
+        id="scannerOutput"
+        className={`${!isScanning ? "opacity-0" : ""} bg-transparent`}
+      />
+      <div
+        id="container"
+        className={`${isScanning ? "bg-transparent" : "bg-primary-50 dark:bg-primarydark-50 dark:text-neutral-50"}`}
+      >
+        <main>
+          <Outlet />
+        </main>
+        <BottomNavigation />
+      </div>
+    </>
   );
 }
