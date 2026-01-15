@@ -10,6 +10,7 @@ import ImageSelectButton from "./ImageSelectButton";
 
 import { useClipboard } from "@/hooks/useClipboard";
 import { navigateOnValidUri } from "@/util/uri";
+import { extractBchAddresses } from "@/util/cashaddr";
 
 import translations from "@/views/wallet/translations";
 import { translate } from "@/util/translations";
@@ -21,7 +22,8 @@ export default function WalletViewButtons() {
   const { getClipboardContents } = useClipboard();
 
   const forwardOnValidAddress = async (input) => {
-    const { navTo, navState } = await navigateOnValidUri(input);
+    const extracted = extractBchAddresses(input)[0] || input;
+    const { navTo, navState } = await navigateOnValidUri(extracted);
     if (navTo) {
       navigate(navTo, { state: navState });
     }
@@ -29,7 +31,8 @@ export default function WalletViewButtons() {
 
   const pasteAddressFromClipboard = async () => {
     const { paste, spawnPasteToast } = await getClipboardContents();
-    const { navTo, navState } = await navigateOnValidUri(paste);
+    const extracted = extractBchAddresses(paste)[0] || paste;
+    const { navTo, navState } = await navigateOnValidUri(extracted);
     if (navTo !== "") {
       spawnPasteToast();
       navigate(navTo, { state: navState });
