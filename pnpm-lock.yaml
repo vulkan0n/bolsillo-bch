@@ -20,9 +20,6 @@ importers:
       '@bitauth/libauth':
         specifier: ^3.0.0
         version: 3.0.0
-      '@capacitor-community/barcode-scanner':
-        specifier: ^4.0.1
-        version: 4.0.1(@capacitor/core@7.4.4)
       '@capacitor/android':
         specifier: ^7.4.4
         version: 7.4.4(@capacitor/core@7.4.4)
@@ -71,6 +68,9 @@ importers:
       '@capacitor/splash-screen':
         specifier: ^7.0.4
         version: 7.0.4(@capacitor/core@7.4.4)
+      '@capawesome/capacitor-torch':
+        specifier: ^8.0.0
+        version: 8.0.0(@capacitor/core@7.4.4)
       '@capgo/capacitor-native-biometric':
         specifier: ^7.6.0
         version: 7.6.0(@capacitor/core@7.4.4)
@@ -503,11 +503,6 @@ packages:
     resolution: {integrity: sha512-3yoL31XpnhAnf5nDVMFk4xPqebxDwXrgYAwpa31ARJnV5A/eXWlpNYvCd6FTZPFM4VvKfjCBi+jRCrw1hOZ0Jg==}
     engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
 
-  '@capacitor-community/barcode-scanner@4.0.1':
-    resolution: {integrity: sha512-acuhDU2mqskSeCIQMc5TGNnDszXXs4IqEES+3C2JDiq+MkJMTr+B2Dhq4k55hlkRFMOumMhlnbr2R9G6qyFPhw==}
-    peerDependencies:
-      '@capacitor/core': ^5.0.0
-
   '@capacitor/android@7.4.4':
     resolution: {integrity: sha512-y8knfV1JXNrd6XZZLZireGT+EBCN0lvOo+HZ/s7L8LkrPBu4nY5UZn0Wxz4yOezItEII9rqYJSHsS5fMJG9gdw==}
     peerDependencies:
@@ -603,6 +598,11 @@ packages:
 
   '@capacitor/synapse@1.0.4':
     resolution: {integrity: sha512-/C1FUo8/OkKuAT4nCIu/34ny9siNHr9qtFezu4kxm6GY1wNFxrCFWjfYx5C1tUhVGz3fxBABegupkpjXvjCHrw==}
+
+  '@capawesome/capacitor-torch@8.0.0':
+    resolution: {integrity: sha512-uaz9CmdflZ9ZBBKn9WFIWxokpQ8BdFy0Im+FxHNwZC8HnMZ3R5yswThrgPd4q3MfUcCO/3p1916wUPvmJ4Pwgw==}
+    peerDependencies:
+      '@capacitor/core': '>=8.0.0'
 
   '@capgo/capacitor-native-biometric@7.6.0':
     resolution: {integrity: sha512-ZQ+Nc+uS2sT8TED/REYlmGV34ASFsBe30YdABBQIRL+A2iVbWtdiL0FbX+1sKKXzrS2DGf+mD657Qwl1jGSDLg==}
@@ -1612,18 +1612,6 @@ packages:
   '@xmldom/xmldom@0.8.11':
     resolution: {integrity: sha512-cQzWCtO6C8TQiYl1ruKNn2U6Ao4o4WBBcbL61yJl84x+j5sOWWFU9X7DpND8XZG3daDppSsigMdfAIl2upQBRw==}
     engines: {node: '>=10.0.0'}
-
-  '@zxing/browser@0.1.5':
-    resolution: {integrity: sha512-4Lmrn/il4+UNb87Gk8h1iWnhj39TASEHpd91CwwSJtY5u+wa0iH9qS0wNLAWbNVYXR66WmT5uiMhZ7oVTrKfxw==}
-    peerDependencies:
-      '@zxing/library': ^0.21.0
-
-  '@zxing/library@0.20.0':
-    resolution: {integrity: sha512-6Ev6rcqVjMakZFIDvbUf0dtpPGeZMTfyxYg4HkVWioWeN7cRcnUWT3bU6sdohc82O1nPXcjq6WiGfXX2Pnit6A==}
-    engines: {node: '>= 10.4.0'}
-
-  '@zxing/text-encoding@0.9.0':
-    resolution: {integrity: sha512-U/4aVJ2mxI0aDNI8Uq0wEhMgY+u4CNtEb0om3+y3+niDAsoTCOB33UF0sxpzqzdqXLqmvc+vZyAt4O8pPdfkwA==}
 
   JSONStream@1.3.5:
     resolution: {integrity: sha512-E+iruNOY8VV9s4JEbe1aNEm6MiszPRr/UfcHMz0TQh1BXSxHK+ASV1R6W4HpjBhSeS+54PIsAMCBmwD06LLsqQ==}
@@ -4953,10 +4941,6 @@ packages:
     peerDependencies:
       typescript: '>=4.8.4'
 
-  ts-custom-error@3.3.1:
-    resolution: {integrity: sha512-5OX1tzOjxWEgsr/YEUWSuPrQ00deKLh6D7OTWcvNHm12/7QPyRh8SYpyWvA4IZv8H/+GQWQEh/kwo95Q9OVW1A==}
-    engines: {node: '>=14.0.0'}
-
   ts-interface-checker@0.1.13:
     resolution: {integrity: sha512-Y/arvbn+rrz3JCKl9C4kVNfTfSm2/mEp5FSz5EsZSANGPSlQrpRI5M4PKF+mJnE52jOO90PnPSc3Ur3bTQw0gA==}
 
@@ -5659,12 +5643,6 @@ snapshots:
 
   '@bitauth/libauth@3.0.0': {}
 
-  '@capacitor-community/barcode-scanner@4.0.1(@capacitor/core@7.4.4)':
-    dependencies:
-      '@capacitor/core': 7.4.4
-      '@zxing/browser': 0.1.5(@zxing/library@0.20.0)
-      '@zxing/library': 0.20.0
-
   '@capacitor/android@7.4.4(@capacitor/core@7.4.4)':
     dependencies:
       '@capacitor/core': 7.4.4
@@ -5800,6 +5778,10 @@ snapshots:
       '@capacitor/core': 7.4.4
 
   '@capacitor/synapse@1.0.4': {}
+
+  '@capawesome/capacitor-torch@8.0.0(@capacitor/core@7.4.4)':
+    dependencies:
+      '@capacitor/core': 7.4.4
 
   '@capgo/capacitor-native-biometric@7.6.0(@capacitor/core@7.4.4)':
     dependencies:
@@ -7271,21 +7253,6 @@ snapshots:
   '@xmldom/xmldom@0.7.13': {}
 
   '@xmldom/xmldom@0.8.11': {}
-
-  '@zxing/browser@0.1.5(@zxing/library@0.20.0)':
-    dependencies:
-      '@zxing/library': 0.20.0
-    optionalDependencies:
-      '@zxing/text-encoding': 0.9.0
-
-  '@zxing/library@0.20.0':
-    dependencies:
-      ts-custom-error: 3.3.1
-    optionalDependencies:
-      '@zxing/text-encoding': 0.9.0
-
-  '@zxing/text-encoding@0.9.0':
-    optional: true
 
   JSONStream@1.3.5:
     dependencies:
@@ -11264,8 +11231,6 @@ snapshots:
   ts-api-utils@2.4.0(typescript@5.9.3):
     dependencies:
       typescript: 5.9.3
-
-  ts-custom-error@3.3.1: {}
 
   ts-interface-checker@0.1.13: {}
 

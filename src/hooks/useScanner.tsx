@@ -1,36 +1,66 @@
-import { useEffect, useCallback } from "react";
+import { useEffect, useCallback, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { Dialog } from "@capacitor/dialog";
 import { ScanOutlined } from "@ant-design/icons";
-import {
-  BarcodeScanner,
-  SupportedFormat,
-} from "@capacitor-community/barcode-scanner";
+import QrScanner from "qr-scanner";
+import { Torch } from "@capawesome/capacitor-torch";
 
 import {
-  selectDeviceInfo,
   setScannerIsScanning,
   selectScannerIsScanning,
+  selectTorchIsEnabled,
 } from "@/redux/device";
 
 import ToastService from "@/services/ToastService";
+import LogService from "@/services/LogService";
 
 import { translate } from "@/util/translations";
 import translations from "@/views/wallet/translations";
 
+const Log = LogService("useScanner");
+
+// QrScanner singleton for performance (avoids 300ms recreation delay)
+let _scanner: QrScanner | null = null;
+let _currentScanCallback: ((data: string) => void) | null = null;
+
+/* eslint-disable-next-line react-refresh/only-export-components */
+function ScannerHelper(onScan) {
+  _currentScanCallback = onScan;
+
+  if (_scanner === null) {
+    const video = document.createElement("video");
+    // Use transparent 1x1 pixel as poster to hide default placeholder
+    video.poster =
+      "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
+
+    const scannerContainer = document.querySelector(
+      "#scannerOutput"
+    ) as HTMLDivElement;
+    scannerContainer.appendChild(video);
+
+    _scanner = new QrScanner(
+      video,
+      (result) => _currentScanCallback?.(result.data),
+      {
+        returnDetailedScanResult: true,
+        maxScansPerSecond: 10,
+        highlightScanRegion: false,
+        highlightCodeOutline: true,
+      }
+    );
+    // Scan both dark-on-light and light-on-dark QR codes
+    _scanner.setInversionMode("both");
+    Log.debug("initScanner");
+  }
+
+  return _scanner;
+}
+
 export function useScanner(onScan) {
   const dispatch = useDispatch();
-  const deviceInfo = useSelector(selectDeviceInfo);
   const isScanning = useSelector(selectScannerIsScanning);
+  const isTorchEnabled = useSelector(selectTorchIsEnabled);
 
-  const closeScanner = useCallback(async () => {
-    if (deviceInfo.platform === "web") {
-      return;
-    }
-
-    await BarcodeScanner.stopScan();
-    await BarcodeScanner.showBackground();
-  }, [deviceInfo.platform]);
+  const hasScanContent = useRef(false);
 
   const handleScanContent = useCallback(
     async (content) => {
@@ -45,65 +75,70 @@ export function useScanner(onScan) {
 
       const spawnInvalidScanToast = () => ToastService().invalidScan(content);
 
-      await closeScanner();
-      await onScan(content, { spawnScanToast, spawnInvalidScanToast });
+      if (!hasScanContent.current) {
+        hasScanContent.current = true;
+        await onScan(content, { spawnScanToast, spawnInvalidScanToast });
+      }
     },
-    [dispatch, onScan, closeScanner]
+    [onScan, dispatch]
   );
 
-  const startScan = useCallback(async () => {
-    if (deviceInfo.platform === "web") {
-      return;
-    }
+  const scanner = ScannerHelper(handleScanContent);
 
-    const status = await BarcodeScanner.checkPermission({ force: true });
-
-    if (status.denied) {
-      // we hit this code path if user says "never ask again or Ask Every Time"
-      const { value: hasConsent } = await Dialog.confirm({
-        title: translate(translations.permissionTitle),
-        message: translate(translations.permissionMessage),
-      });
-
-      if (hasConsent) {
-        BarcodeScanner.openAppSettings();
-        return;
+  const startScanner = useCallback(async () => {
+    try {
+      hasScanContent.current = false;
+      await scanner.start();
+    } catch (e) {
+      // Squelch error that arises from trying to change srcVideo abruptly
+      // Simply restart the camera if this happens
+      if (e instanceof DOMException) {
+        startScanner();
+      } else {
+        throw e;
       }
     }
+  }, [scanner]);
 
-    BarcodeScanner.hideBackground();
-    const result = await BarcodeScanner.startScan({
-      targetedFormats: [SupportedFormat.QR_CODE],
-    });
-
-    if (result.hasContent) {
-      await handleScanContent(result.content);
-    }
-  }, [deviceInfo.platform, handleScanContent]);
-
-  useEffect(
-    function cleanupScanner() {
-      return () => {
-        closeScanner();
-      };
-    },
-    [closeScanner]
-  );
+  const stopScanner = useCallback(() => {
+    scanner.stop();
+  }, [scanner]);
 
   useEffect(
     function resetScanner() {
-      if (isScanning) {
-        startScan();
-      } else {
-        closeScanner();
+      if (scanner === null) {
+        throw new Error("Scanner unavailable!");
       }
+
+      if (isScanning) {
+        startScanner();
+      } else {
+        stopScanner();
+      }
+
+      return () => {
+        if (scanner !== null && isScanning) {
+          stopScanner();
+        }
+      };
     },
-    [isScanning, closeScanner, startScan]
+    [scanner, isScanning, startScanner, stopScanner]
   );
 
-  const toggleScanner = () => {
-    dispatch(setScannerIsScanning(!isScanning));
-  };
+  useEffect(
+    function resetTorch() {
+      if (scanner !== null) {
+        if (isTorchEnabled) {
+          Torch.enable();
+        }
+      }
 
-  return { toggleScanner, handleScanContent };
+      return () => {
+        if (scanner !== null) {
+          Torch.disable();
+        }
+      };
+    },
+    [scanner, isTorchEnabled]
+  );
 }

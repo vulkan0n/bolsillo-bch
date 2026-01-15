@@ -26,6 +26,7 @@ type DeviceInfo = CapacitorDeviceInfo & {
 interface DeviceState {
   scanner: {
     isScanning: boolean;
+    isTorchEnabled: boolean;
   };
   keyboard: {
     isOpen: boolean;
@@ -43,6 +44,9 @@ export const deviceInit = createAsyncThunk("device/init", async () => {
 export const setScannerIsScanning = createAction<boolean>(
   "device/setScannerIsScanning"
 );
+export const setTorchIsEnabled = createAction<boolean>(
+  "device/setTorchIsEnabled"
+);
 export const setKeyboardIsOpen = createAction<boolean>(
   "device/setKeyboardIsOpen"
 );
@@ -51,8 +55,12 @@ export const setNetworkStatus = createAction<ConnectionStatus>(
 );
 
 export const selectScannerIsScanning = createSelector(
-  (state: RootState) => state.device,
-  (device): boolean => device.scanner.isScanning
+  (state: RootState) => state.device.scanner,
+  (scanner): boolean => scanner.isScanning
+);
+export const selectTorchIsEnabled = createSelector(
+  (state: RootState) => state.device.scanner,
+  (scanner): boolean => scanner.isTorchEnabled
 );
 
 export const selectKeyboardIsOpen = createSelector(
@@ -99,7 +107,7 @@ async function initializeDevice(): Promise<DeviceState> {
   const networkStatus = await Network.getStatus();
 
   const deviceState: DeviceState = {
-    scanner: { isScanning: false },
+    scanner: { isScanning: false, isTorchEnabled: false },
     keyboard: { isOpen: false },
     deviceInfo: {
       ...deviceInfo,
@@ -166,7 +174,7 @@ async function initializeDevice(): Promise<DeviceState> {
 
 // top-level Device initialization
 const initialState: DeviceState = {
-  scanner: { isScanning: false },
+  scanner: { isScanning: false, isTorchEnabled: false },
   keyboard: { isOpen: false },
   deviceInfo: {
     model: "null",
@@ -197,6 +205,9 @@ export const deviceReducer = createReducer(initialState, (builder) => {
 
     .addCase(setScannerIsScanning, (state, action) => {
       state.scanner.isScanning = action.payload;
+    })
+    .addCase(setTorchIsEnabled, (state, action) => {
+      state.scanner.isTorchEnabled = action.payload;
     })
     .addCase(setKeyboardIsOpen, (state, action) => {
       state.keyboard.isOpen = action.payload;

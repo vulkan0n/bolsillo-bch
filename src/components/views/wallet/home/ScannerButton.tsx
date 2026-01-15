@@ -1,18 +1,13 @@
-import { useNavigate, useLocation } from "react-router";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import { ScanOutlined, CloseOutlined } from "@ant-design/icons";
 
-import { selectScannerIsScanning } from "@/redux/device";
+import { selectScannerIsScanning, setScannerIsScanning } from "@/redux/device";
 
 import Button, { ValidSizes } from "@/atoms/Button";
 
-import { navigateOnValidUri } from "@/util/uri";
-
 import translations from "@/views/wallet/translations";
 import { translate } from "@/util/translations";
-
-import { useScanner } from "@/hooks/useScanner";
 
 export default function ScannerButton({
   label = true,
@@ -23,24 +18,12 @@ export default function ScannerButton({
   size?: ValidSizes;
   padding?: string;
 }) {
-  const navigate = useNavigate();
-  const location = useLocation();
+  const dispatch = useDispatch();
   const isScanning = useSelector(selectScannerIsScanning);
 
-  const handleScan = async (
-    scanContent,
-    { spawnScanToast, spawnInvalidScanToast }
-  ) => {
-    const { navTo, navState } = await navigateOnValidUri(scanContent);
-    if (navTo !== "") {
-      spawnScanToast();
-      navigate(navTo, { state: { ...location.state, ...navState } });
-    } else {
-      spawnInvalidScanToast();
-    }
+  const toggleScanner = () => {
+    dispatch(setScannerIsScanning(!isScanning));
   };
-
-  const { toggleScanner } = useScanner(handleScan);
 
   const ScanIcon = isScanning ? CloseOutlined : ScanOutlined;
   const closeTranslation = translate(translations.close);
