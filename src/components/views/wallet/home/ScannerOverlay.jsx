@@ -11,6 +11,7 @@ import WalletViewButtons from "@/views/wallet/home/WalletViewButtons";
 import { useScanner } from "@/hooks/useScanner";
 
 import { navigateOnValidUri } from "@/util/uri";
+import { extractBchAddresses } from "@/util/cashaddr";
 
 export default function ScannerOverlay() {
   const navigate = useNavigate();
@@ -18,7 +19,8 @@ export default function ScannerOverlay() {
 
   const handleScan = useCallback(
     async (scanContent, { spawnScanToast, spawnInvalidScanToast }) => {
-      const { navTo, navState } = await navigateOnValidUri(scanContent);
+      const extracted = extractBchAddresses(scanContent)[0] || scanContent;
+      const { navTo, navState } = await navigateOnValidUri(extracted);
       if (navTo !== "") {
         spawnScanToast();
         navigate(navTo, { state: { ...location.state, ...navState } });

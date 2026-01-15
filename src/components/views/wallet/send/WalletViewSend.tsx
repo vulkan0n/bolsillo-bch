@@ -61,6 +61,7 @@ import { Haptic } from "@/util/haptic";
 import { bchToSats } from "@/util/sats";
 import { MUSD_TOKENID } from "@/util/tokens";
 import { validateBchUri, navigateOnValidUri } from "@/util/uri";
+import { extractBchAddresses } from "@/util/cashaddr";
 import { truncateProse } from "@/util/string";
 import { translate } from "@/util/translations";
 import translations from "@/views/wallet/translations";
@@ -693,7 +694,8 @@ export default function WalletViewSend() {
   // ----------------
 
   const handleAddressInput = async (input: string) => {
-    const { navTo } = await navigateOnValidUri(input);
+    const extracted = extractBchAddresses(input)[0] || input;
+    const { navTo } = await navigateOnValidUri(extracted);
     if (navTo !== "") {
       const { state: sendState } = location;
       navigate(navTo, { state: sendState });
