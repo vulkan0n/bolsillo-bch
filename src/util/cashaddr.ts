@@ -12,11 +12,11 @@ import { validateBip21Uri } from "@/util/uri";
 
 // Regex patterns for detecting potential BCH addresses embedded in text
 // Legacy: starts with 1 or 3, followed by base58 chars
-// Cashaddr: optional prefix, then q/p/z followed by bech32 chars
+// Cashaddr: optional prefix, then q/p/z/r followed by bech32 chars
 const bchAddressPatterns = {
   legacy: /[13][a-km-zA-HJ-NP-Z1-9]{25,34}/g,
   cashaddr:
-    /(?:(?:bitcoincash|bchtest|bchreg):)?[qpz][qpzry9x8gf2tvdw0s3jn54khce6mua7l]{41,}/gi,
+    /(?:(?:bitcoincash|bchtest|bchreg):)?[qpzr][qpzry9x8gf2tvdw0s3jn54khce6mua7l]{41}/gi,
 };
 
 // sanitizeBchAddress: strip all characters invalid in BCH addresses
