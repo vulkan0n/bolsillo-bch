@@ -721,7 +721,7 @@ export default function WalletViewSend() {
   // ----------------
 
   if (isScanning) {
-    return <ScannerOverlay />;
+    return <ScannerOverlay prefilledAmount={satoshiInput} />;
   }
 
   if (isSending) {
