@@ -559,6 +559,9 @@ const translations = {
     zh: "了解更多",
     zh_TW: "了解更多"
   },
+  introductionVideo: {
+    en: "Introduction Video",
+  },
   confirmedInBlock: {
     ar: "تم التأكيد في الكتلة",
     bn: "ব্লকে নিশ্চিত করা হয়েছে",

@@ -2,6 +2,7 @@ import {
   LikeOutlined,
   GlobalOutlined,
   QuestionCircleOutlined,
+  PlayCircleOutlined,
 } from "@ant-design/icons";
 
 import ExploreApp from "./ExploreApp";
@@ -35,6 +36,11 @@ export default function ExploreViewHome() {
             <SeleneLogo className="w-12 mr-1" />
             <span>{translate(translations.learnMore)}</span>
           </div>
+          <ExploreApp
+            icon={PlayCircleOutlined}
+            name={translate(translations.introductionVideo)}
+            to="/apps/intro"
+          />
           <ExploreApp
             icon={GlobalOutlined}
             name={translate(translations.ecosystem)}

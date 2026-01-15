@@ -12,6 +12,14 @@ export const routeApps = [
     element: <AppsView />,
   },
   {
+    path: "/apps/intro",
+    async lazy() {
+      const { default: AppIntroVideoView } =
+        await import("@/views/apps/intro/AppIntroVideoView");
+      return { Component: AppIntroVideoView };
+    },
+  },
+  {
     path: "/apps/stats",
     async lazy() {
       const { default: AppStatsView } =
