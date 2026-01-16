@@ -20,7 +20,7 @@ export enum ThemeMode {
   Dark = "dark",
 }
 
-const defaultPreferences = {
+export const defaultPreferences = {
   // global / wallet
   activeWalletHash: "",
   bchNetwork: "mainnet",
@@ -74,11 +74,11 @@ const defaultPreferences = {
   autoResolveBcmr: "true",
 };
 
-type ValidPreferences = typeof defaultPreferences;
+export type ValidPreferences = typeof defaultPreferences;
 
 // validatePreferences: ensures loaded preferences object won't lead to broken app state on load
 // returns true/false
-function validatePreferences(preferences: ValidPreferences): boolean {
+export function validatePreferences(preferences: ValidPreferences): boolean {
   // lastExchangeRate must be numeric
   if (Number.isNaN(Number.parseFloat(preferences.lastExchangeRate))) {
     return false;

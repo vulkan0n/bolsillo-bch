@@ -71,3 +71,22 @@ vi.mock("@/util/haptic", () => ({
     heavy: vi.fn(),
   },
 }));
+
+// Mock sql.js to avoid WASM loading issues in tests
+vi.mock("sql.js", () => ({
+  default: vi.fn(() =>
+    Promise.resolve({
+      Database: vi.fn(() => ({
+        run: vi.fn(),
+        exec: vi.fn(() => []),
+        prepare: vi.fn(() => ({
+          bind: vi.fn(),
+          step: vi.fn(),
+          getAsObject: vi.fn(),
+          free: vi.fn(),
+        })),
+        close: vi.fn(),
+      })),
+    })
+  ),
+}));
