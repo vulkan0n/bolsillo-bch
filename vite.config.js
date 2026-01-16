@@ -1,3 +1,4 @@
+/// <reference types="vitest" />
 import { defineConfig } from "vite";
 import { nodePolyfills } from "vite-plugin-node-polyfills";
 import topLevelAwait from "vite-plugin-top-level-await";
@@ -28,5 +29,10 @@ export default defineConfig({
       "@/apps": path.resolve(__dirname, "./src/components/views/apps"),
       "@": path.resolve(__dirname, "./src"),
     },
+  },
+  test: {
+    globals: true,
+    environment: "node",
+    setupFiles: "./src/setupTests.js",
   },
 });
