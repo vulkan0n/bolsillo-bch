@@ -169,6 +169,21 @@ describe("uri.ts", () => {
       const result = validateWalletConnectUri("https://example.com");
       expect(result.isWalletConnect).toBe(false);
     });
+
+    it("handles empty string without throwing", () => {
+      const result = validateWalletConnectUri("");
+      expect(result.isWalletConnect).toBe(false);
+    });
+
+    it("handles malformed/garbage input without throwing", () => {
+      // These inputs would throw with new URL() - we must catch gracefully
+      const malformedInputs = ["not a uri at all", ":::invalid:::", " "];
+
+      for (const input of malformedInputs) {
+        const result = validateWalletConnectUri(input);
+        expect(result.isWalletConnect).toBe(false);
+      }
+    });
   });
 
   describe("validateBchUri (combined validator)", () => {

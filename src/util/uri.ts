@@ -202,8 +202,10 @@ export function validateWifUri(
 
 // validateWalletConnectUri: Wallet Connect (wc:)
 export function validateWalletConnectUri(uri: string) {
-  const parsedUri = URL.parse(uri);
-  if (parsedUri === null) {
+  let parsedUri;
+  try {
+    parsedUri = new URL(uri);
+  } catch {
     return {
       isWalletConnect: false,
     };
