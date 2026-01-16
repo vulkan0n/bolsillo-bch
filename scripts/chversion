@@ -29,8 +29,10 @@ update_android_version() {
 update_ios_version() {
     local version=$1
     local version_code=$2
-    /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString $version" ios/App/App/Info.plist
-    /usr/libexec/PlistBuddy -c "Set :CFBundleVersion $version_code" ios/App/App/Info.plist
+    # Update MARKETING_VERSION and CURRENT_PROJECT_VERSION in project.pbxproj
+    # Info.plist uses $(MARKETING_VERSION) and $(CURRENT_PROJECT_VERSION) variables
+    sed -i.bak "s/MARKETING_VERSION = [^;]*;/MARKETING_VERSION = $version;/" ios/App/App.xcodeproj/project.pbxproj && rm -f ios/App/App.xcodeproj/project.pbxproj.bak
+    sed -i.bak "s/CURRENT_PROJECT_VERSION = [^;]*;/CURRENT_PROJECT_VERSION = $version_code;/" ios/App/App.xcodeproj/project.pbxproj && rm -f ios/App/App.xcodeproj/project.pbxproj.bak
 }
 
 
@@ -54,7 +56,7 @@ update_ios_version $VERSION $VERSION_CODE
 
 git add package.json
 git add android/app/build.gradle
-git add ios/App/App/Info.plist
+git add ios/App/App.xcodeproj/project.pbxproj
 
 git commit -m "bump version to $VERSION ($VERSION_CODE)"
 
