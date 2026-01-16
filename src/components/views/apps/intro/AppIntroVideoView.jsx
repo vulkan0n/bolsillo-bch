@@ -38,25 +38,25 @@ export default function AppIntroVideoView() {
             </div>
             <ExploreApp
               icon={TelegramFilled}
-              name={translations.telegram}
+              name={translate(translations.telegram)}
               to="https://t.me/SeleneWallet"
               external
             />
             <ExploreApp
               icon={MailOutlined}
-              name={translations.email}
+              name={translate(translations.email)}
               to="mailto:support@selene.cash"
               external
             />
             <ExploreApp
               icon={GlobalOutlined}
-              name={translations.website}
+              name={translate(translations.website)}
               to="https://selene.cash"
               external
             />
             <ExploreApp
               icon={XOutlined}
-              name={translations.xtwitter}
+              name={translate(translations.xtwitter)}
               to="https://x.com/SeleneWallet"
               external
             />
