@@ -1,0 +1,70 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:git.xulu.tech)",
+      "Bash(glab issue list:*)",
+      "Bash(glab issue view:*)",
+      "Bash(glab issue close:*)",
+      "Bash(glab issue note:*)",
+      "Bash(glab issue update:*)",
+      "Bash(glab mr view:*)",
+      "Bash(glab mr diff:*)",
+      "Bash(glab milestone list:*)",
+      "Bash(glab label list:*)",
+      "Bash(glab api:*)",
+      "Bash(for page in {1..5})",
+      "Bash(for page in 1 2 3 4 5 6 7 8)",
+      "Bash(do glab api \"projects/selene.cash%2Fselene-wallet/issues?state=opened&per_page=100&page=$page\")",
+      "Bash(do glab api \"projects/selene.cash%2Fselene-wallet/issues?state=all&per_page=100&page=$page\")",
+      "Bash(done)",
+      "Bash(cut:*)",
+      "Bash(sort:*)",
+      "Bash(pnpm lint:*)",
+      "Bash(npx prettier:*)",
+      "Bash(pnpm test:*)",
+      "Bash(ls:*)",
+      "Bash(find:*)",
+      "Bash(pnpm audit:*)",
+      "WebSearch",
+      "WebFetch(domain:capacitorjs.com)",
+      "Bash(node --version:*)",
+      "Bash(npm view:*)",
+      "Bash(npx cap sync:*)",
+      "WebFetch(domain:flipstarter.selene.cash)",
+      "WebFetch(domain:fundme.cash)",
+      "Bash(open:*)",
+      "Bash(pnpm jest:*)",
+      "Bash(pnpm vitest run:*)",
+      "Bash(pnpm pretty:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(./scripts/gitlab-sync.sh:*)",
+      "Bash(./scripts/gitlab-priorities.sh:*)",
+      "Bash(./scripts/gitlab-close-issue.sh:*)"
+    ]
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .claude/hooks/session-start.sh"
+          }
+        ]
+      }
+    ],
+    "PostCommit": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .claude/hooks/post-commit.sh"
+          }
+        ]
+      }
+    ]
+  }
+}

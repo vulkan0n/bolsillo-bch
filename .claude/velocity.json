@@ -1,0 +1,10 @@
+{
+  "sessions": [],
+  "averageVelocity": {
+    "trivial": 0.5,
+    "easy": 1.5,
+    "medium": 5,
+    "hard": 12
+  },
+  "lastUpdated": "2026-01-16 15:34"
+}
