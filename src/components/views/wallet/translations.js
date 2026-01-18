@@ -1758,6 +1758,9 @@ const translations = {
   cantSendTokensToNonTokenAddress: {
     en: "Can't send tokens to non-token address!",
   },
+  focusedQrWarning: {
+    en: "Only send Bitcoin Cash (BCH) to this address",
+  },
 };
 
 export default translations;
