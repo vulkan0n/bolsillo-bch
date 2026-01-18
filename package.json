@@ -16,6 +16,7 @@
     "@ant-design/icons": "^5.6.1",
     "@apollo/client": "^3.14.0",
     "@bitauth/libauth": "^3.0.0",
+    "@capacitor-community/keep-awake": "^8.0.0",
     "@capacitor/android": "^8.0.0",
     "@capacitor/app": "^8.0.0",
     "@capacitor/camera": "^8.0.0",
