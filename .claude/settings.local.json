@@ -54,17 +54,6 @@
           }
         ]
       }
-    ],
-    "PostCommit": [
-      {
-        "matcher": "*",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash .claude/hooks/post-commit.sh"
-          }
-        ]
-      }
     ]
   }
 }
