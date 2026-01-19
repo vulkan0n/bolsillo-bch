@@ -19,6 +19,7 @@ import SecurityService, { AuthActions } from "@/services/SecurityService";
 
 import Satoshi from "@/atoms/Satoshi";
 import CurrencyFlip from "@/atoms/CurrencyFlip";
+import { useCurrencyFlip } from "@/hooks/useCurrencyFlip";
 import { useLongPress } from "@/hooks/useLongPress";
 import { logos } from "@/util/logos";
 import { satsToBch } from "@/util/sats";
@@ -55,6 +56,8 @@ export default function VendorModeView() {
   }, [address, satoshiAmount]);
 
   const qrLogoImage = logos[qrCodeSettings.logo.toLowerCase()].img;
+
+  const handleCurrencyFlip = useCurrencyFlip();
 
   // Dynamic font size based on display length
   const getAmountFontSize = (): string => {
@@ -128,12 +131,14 @@ export default function VendorModeView() {
 
         {/* Amount display */}
         <div className="mt-4 text-center">
-          <div
-            className={`${getAmountFontSize()} font-bold text-neutral-800 dark:text-neutral-100 flex items-center justify-center gap-3`}
+          <button
+            type="button"
+            onClick={handleCurrencyFlip}
+            className={`${getAmountFontSize()} font-bold text-neutral-800 dark:text-neutral-100 flex items-center justify-center gap-3 cursor-pointer`}
           >
             <Satoshi value={satoshiAmount} forceVisible />
             <CurrencyFlip className="text-lg text-neutral-500" />
-          </div>
+          </button>
         </div>
       </div>
 

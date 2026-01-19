@@ -1,4 +1,5 @@
 import { App } from "@capacitor/app";
+import { ScreenOrientation } from "@capacitor/screen-orientation";
 import { useEffect, useMemo } from "react";
 import { useSelector } from "react-redux";
 import { Outlet, useNavigate } from "react-router";
@@ -85,6 +86,19 @@ export default function MainLayout() {
       };
     },
     [platform, shouldConstrainViewport, isVendorModeActive, html, body]
+  );
+
+  // Lock to portrait unless in vendor mode (which handles its own landscape lock)
+  useEffect(
+    function lockPortraitOrientation() {
+      if (platform === "web") return;
+
+      // When not in vendor mode, lock to portrait
+      if (!isVendorModeActive) {
+        ScreenOrientation.lock({ orientation: "portrait" });
+      }
+    },
+    [platform, isVendorModeActive]
   );
 
   const isScanning = useSelector(selectScannerIsScanning);
