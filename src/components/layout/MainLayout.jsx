@@ -2,7 +2,7 @@ import { App } from "@capacitor/app";
 import { ScreenOrientation } from "@capacitor/screen-orientation";
 import { useEffect, useMemo } from "react";
 import { useSelector } from "react-redux";
-import { Outlet, useNavigate } from "react-router";
+import { Outlet, useNavigate, useLocation } from "react-router";
 import { selectScannerIsScanning, selectDevicePlatform } from "@/redux/device";
 import {
   selectShouldConstrainViewport,
@@ -16,6 +16,7 @@ import useScrollToTop from "@/hooks/useScrollToTop";
 
 export default function MainLayout() {
   const navigate = useNavigate();
+  const location = useLocation();
   useScrollToTop();
 
   const platform = useSelector(selectDevicePlatform);
@@ -99,6 +100,16 @@ export default function MainLayout() {
       }
     },
     [platform, isVendorModeActive]
+  );
+
+  // Redirect to vendor mode if active but not on vendor path
+  useEffect(
+    function redirectToVendorMode() {
+      if (isVendorModeActive && location.pathname !== "/wallet/vendor") {
+        navigate("/wallet/vendor");
+      }
+    },
+    [isVendorModeActive, location.pathname, navigate]
   );
 
   const isScanning = useSelector(selectScannerIsScanning);
