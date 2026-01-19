@@ -72,6 +72,10 @@ export const defaultPreferences = {
   hideAvailableBalance: "false",
   enableDailyCheckIn: "true",
   autoResolveBcmr: "true",
+  // --------
+  // Vendor Mode
+  vendorModeActive: "false",
+  vendorModeKeepAwake: "true",
 };
 
 export type ValidPreferences = typeof defaultPreferences;
@@ -140,6 +144,8 @@ export function validatePreferences(preferences: ValidPreferences): boolean {
     "showOutputsCard",
     "stablecoinMode",
     "forceTokenAddress",
+    "vendorModeActive",
+    "vendorModeKeepAwake",
   ];
 
   const invalidBools = boolKeys.filter(
@@ -442,4 +448,14 @@ export const selectShouldShowMemoCard = createSelector(
 export const selectIsStablecoinMode = createSelector(
   (state: RootState) => state.preferences,
   (preferences) => preferences.stablecoinMode === "true"
+);
+
+export const selectIsVendorModeActive = createSelector(
+  (state: RootState) => state.preferences,
+  (preferences) => preferences.vendorModeActive === "true"
+);
+
+export const selectIsVendorModeKeepAwake = createSelector(
+  (state: RootState) => state.preferences,
+  (preferences) => preferences.vendorModeKeepAwake === "true"
 );

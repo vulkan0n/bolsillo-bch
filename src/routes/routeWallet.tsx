@@ -42,6 +42,14 @@ export const routeWallet = [
           return { Component: WalletViewHistory };
         },
       },
+      {
+        path: "vendor",
+        async lazy() {
+          const { default: VendorModeView } =
+            await import("@/views/wallet/vendormode/VendorModeView");
+          return { Component: VendorModeView };
+        },
+      },
     ],
   },
 ];

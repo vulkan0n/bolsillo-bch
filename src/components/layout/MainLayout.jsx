@@ -6,6 +6,7 @@ import { selectScannerIsScanning, selectDevicePlatform } from "@/redux/device";
 import {
   selectShouldConstrainViewport,
   selectIsDarkMode,
+  selectIsVendorModeActive,
 } from "@/redux/preferences";
 import { validateBchUri } from "@/util/uri";
 import BottomNavigation from "./BottomNavigation";
@@ -18,6 +19,7 @@ export default function MainLayout() {
 
   const platform = useSelector(selectDevicePlatform);
   const shouldConstrainViewport = useSelector(selectShouldConstrainViewport);
+  const isVendorModeActive = useSelector(selectIsVendorModeActive);
 
   const isDarkMode = useSelector(selectIsDarkMode);
 
@@ -60,8 +62,14 @@ export default function MainLayout() {
           "shadow-xl"
         );
 
-        body.style.maxWidth = "480px";
-        body.style.maxHeight = "960px";
+        // Use landscape dimensions for vendor mode, portrait otherwise
+        if (isVendorModeActive) {
+          body.style.maxWidth = "960px";
+          body.style.maxHeight = "480px";
+        } else {
+          body.style.maxWidth = "480px";
+          body.style.maxHeight = "960px";
+        }
       }
 
       return () => {
@@ -76,7 +84,7 @@ export default function MainLayout() {
         body.style.maxHeight = "";
       };
     },
-    [platform, shouldConstrainViewport, html, body]
+    [platform, shouldConstrainViewport, isVendorModeActive, html, body]
   );
 
   const isScanning = useSelector(selectScannerIsScanning);

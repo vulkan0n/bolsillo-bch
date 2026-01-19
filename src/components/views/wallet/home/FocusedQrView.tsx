@@ -1,7 +1,14 @@
 import { QRCode } from "react-qrcode-logo";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { useNavigate } from "react-router";
 
-import { selectBchNetwork, selectQrCodeSettings } from "@/redux/preferences";
+import {
+  selectBchNetwork,
+  selectQrCodeSettings,
+  setPreference,
+} from "@/redux/preferences";
+
+import SecurityService, { AuthActions } from "@/services/SecurityService";
 
 import Overlay from "@/atoms/Overlay";
 
@@ -22,12 +29,25 @@ export default function FocusedQrView({
   isTokenAddress,
   onClose,
 }: FocusedQrViewProps) {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
   const bchNetwork = useSelector(selectBchNetwork);
   const qrCodeSettings = useSelector(selectQrCodeSettings);
 
   const { handleCopyToClipboard } = useClipboard();
   const copyAddress = () => {
     handleCopyToClipboard(address, translate(translations.copiedAddress));
+  };
+
+  const enterVendorMode = async () => {
+    const isAuthorized = await SecurityService().authorize(
+      AuthActions.VendorMode
+    );
+    if (!isAuthorized) return;
+
+    dispatch(setPreference({ key: "vendorModeActive", value: "true" }));
+    navigate("/wallet/vendor");
   };
 
   const qrLogoImage = isTokenAddress
@@ -77,6 +97,15 @@ export default function FocusedQrView({
         <div className="mt-4 text-center text-sm text-neutral-600 dark:text-neutral-300 max-w-[280px]">
           {translate(translations.focusedQrWarning)}
         </div>
+
+        {/* Vendor Mode Button */}
+        <button
+          type="button"
+          onClick={enterVendorMode}
+          className="mt-4 px-4 py-2 bg-primary-600 dark:bg-primarydark-400 text-white rounded-lg text-sm font-medium active:bg-primary-700 dark:active:bg-primarydark-500"
+        >
+          {translate(translations.vendorMode)}
+        </button>
       </div>
     </Overlay>
   );

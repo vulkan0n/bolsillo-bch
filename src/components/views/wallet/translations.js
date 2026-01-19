@@ -1761,6 +1761,9 @@ const translations = {
   focusedQrWarning: {
     en: "Only send Bitcoin Cash (BCH) to this address",
   },
+  vendorMode: {
+    en: "Vendor Mode",
+  },
 };
 
 export default translations;

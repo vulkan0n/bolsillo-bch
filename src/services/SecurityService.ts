@@ -17,6 +17,7 @@ export enum AuthActions {
   InstantPay = "InstantPay",
   RevealBalance = "RevealBalance",
   RevealPrivateKeys = "RevealPrivateKeys",
+  VendorMode = "VendorMode",
 }
 
 const authText = {
@@ -28,6 +29,7 @@ const authText = {
   [AuthActions.InstantPay]: "Instant Pay",
   [AuthActions.RevealBalance]: "Reveal Balances",
   [AuthActions.RevealPrivateKeys]: "Reveal Private Keys",
+  [AuthActions.VendorMode]: "Enter/Exit Vendor Mode",
 };
 
 export default function SecurityService() {
