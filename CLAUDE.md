@@ -340,7 +340,6 @@ The following scripts automatically sync GitLab state:
 Located in `.claude/`:
 - **gitlab-state.md** - Current snapshot of open issues, milestones, bugs
 - **priorities.md** - Computed priority rankings
-- **velocity.json** - Tracks issue completion velocity over time
 
 ### GitLab Automation Patterns
 
@@ -434,3 +433,21 @@ service.doSomething();
   },
 }
 ```
+
+## 🧠 Lessons Learned
+
+### Capacitor Plugin Naming
+Not all Capacitor plugins are official. Community plugins use `@capacitor-community/` prefix:
+- `@capacitor/screen-orientation` - Official
+- `@capacitor-community/keep-awake` - Community (NOT `@capacitor/keep-awake`)
+
+Always verify plugin exists before installing: `npm view @capacitor/plugin-name`
+
+### MR Targeting (CRITICAL)
+**Always target `staging` branch for MRs, never `main`.** This is enforced by contributor guidelines.
+
+### Translation Workflow
+When adding new translations:
+1. Add only the English (`en`) key initially
+2. Translations for other languages are run separately via the translation script
+3. Don't try to manually add translations for all languages

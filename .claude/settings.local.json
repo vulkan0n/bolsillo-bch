@@ -7,8 +7,11 @@
       "Bash(glab issue close:*)",
       "Bash(glab issue note:*)",
       "Bash(glab issue update:*)",
+      "Bash(glab issue comment:*)",
       "Bash(glab mr view:*)",
       "Bash(glab mr diff:*)",
+      "Bash(glab mr create:*)",
+      "Bash(glab mr update:*)",
       "Bash(glab milestone list:*)",
       "Bash(glab label list:*)",
       "Bash(glab api:*)",
@@ -40,7 +43,8 @@
       "Bash(git commit:*)",
       "Bash(./scripts/gitlab-sync.sh:*)",
       "Bash(./scripts/gitlab-priorities.sh:*)",
-      "Bash(./scripts/gitlab-close-issue.sh:*)"
+      "Bash(./scripts/gitlab-close-issue.sh:*)",
+      "Bash(npm search:*)"
     ]
   },
   "hooks": {
