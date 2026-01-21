@@ -159,7 +159,7 @@ export default function TransactionManagerService() {
     try {
       await Filesystem.deleteFile({
         path: `/selene/tx/${tx_hash}.raw`,
-        directory: Directory.Library,
+        directory: Directory.Cache,
       });
     } catch (e) {
       //Log.warn(e);
@@ -202,7 +202,7 @@ export default function TransactionManagerService() {
     const fileTxHashes = (
       await Filesystem.readdir({
         path: "/selene/tx",
-        directory: Directory.Library,
+        directory: Directory.Cache,
       })
     ).files
       .map((file) => file.name.split(".")[0])
@@ -228,7 +228,7 @@ export default function TransactionManagerService() {
     try {
       const txFile = await Filesystem.readFile({
         path: `/selene/tx/${tx_hash}.raw`,
-        directory: Directory.Library,
+        directory: Directory.Cache,
       });
 
       const txData = txFile.data.toString();
@@ -252,7 +252,7 @@ export default function TransactionManagerService() {
 
     const result = await Filesystem.writeFile({
       path: `/selene/tx/${tx_hash}.raw`,
-      directory: Directory.Library,
+      directory: Directory.Cache,
       recursive: true,
       data,
     });
