@@ -164,18 +164,6 @@ export default function JanitorService() {
 
     try {
       await Filesystem.readdir({
-        path: "/selene/tx",
-        directory: Directory.Library,
-      });
-    } catch (e) {
-      await Filesystem.mkdir({
-        path: "/selene/tx",
-        directory: Directory.Library,
-      });
-    }
-
-    try {
-      await Filesystem.readdir({
         path: "/selene/blocks",
         directory: Directory.Library,
       });
@@ -235,6 +223,18 @@ export default function JanitorService() {
         directory: Directory.Cache,
       });
     }
+
+    try {
+      await Filesystem.readdir({
+        path: "/selene/tx",
+        directory: Directory.Cache,
+      });
+    } catch (e) {
+      await Filesystem.mkdir({
+        path: "/selene/tx",
+        directory: Directory.Cache,
+      });
+    }
   }
 
   async function purgeLegacyTransactionFiles() {
@@ -242,6 +242,18 @@ export default function JanitorService() {
     try {
       await Filesystem.rmdir({
         path: "/tx",
+        directory: Directory.Library,
+        recursive: true,
+      });
+    } catch (e) {
+      // pass
+    }
+
+    // remove pre-2026.02 /selene/tx from Library (now in Cache)
+    // tx data is just a cache - will be re-fetched from Electrum as needed
+    try {
+      await Filesystem.rmdir({
+        path: "/selene/tx",
         directory: Directory.Library,
         recursive: true,
       });
