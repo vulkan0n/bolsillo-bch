@@ -7,7 +7,7 @@ import {
   selectShouldConstrainViewport,
   selectIsDarkMode,
 } from "@/redux/preferences";
-import { validateBchUri } from "@/util/uri";
+import { navigateOnValidUri } from "@/util/uri";
 import BottomNavigation from "./BottomNavigation";
 
 import useScrollToTop from "@/hooks/useScrollToTop";
@@ -101,28 +101,10 @@ export default function MainLayout() {
     [isScanning, html]
   );
 
-  App.addListener("appUrlOpen", ({ url }) => {
-    const {
-      isValid,
-      isPaymentProtocol,
-      isWif,
-      address,
-      query,
-      requestUri,
-      wif,
-    } = validateBchUri(url);
-
-    if (isValid) {
-      let navTo;
-      if (isPaymentProtocol) {
-        navTo = `/wallet/pay/?r=${requestUri}`;
-      } else if (isWif) {
-        navTo = `/wallet/sweep/${wif}`;
-      } else {
-        navTo = `/wallet/send/${address}${query}`;
-      }
-
-      navigate(navTo);
+  App.addListener("appUrlOpen", async ({ url }) => {
+    const { navTo, navState } = await navigateOnValidUri(url);
+    if (navTo) {
+      navigate(navTo, { state: navState });
     }
   });
 

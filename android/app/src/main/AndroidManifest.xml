@@ -28,6 +28,7 @@
 
                 <data android:scheme="bitcoincash" />
                 <data android:scheme="bch-wif" />
+                <data android:scheme="wc" />
             </intent-filter>
         </activity>
 
