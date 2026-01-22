@@ -6,6 +6,7 @@ import { Decimal } from "decimal.js";
 import { selectCurrencySettings } from "@/redux/preferences";
 import { selectDeviceInfo } from "@/redux/device";
 import { satsToBch, bchToSats, MAX_SATOSHI } from "@/util/sats";
+import { getMaxDecimals, truncateDecimals } from "@/util/currency";
 
 import CurrencyService from "@/services/CurrencyService";
 
@@ -125,52 +126,15 @@ export function SatoshiInput({
 
   // --------------------------------
 
-  const getMaxDecimals = (): number => {
-    if (
-      isStablecoinMode ||
-      (shouldPreferLocalCurrency && denomination !== "token")
-    ) {
-      // fiat mode gets 2 decimals
-      return 2;
-    }
-
-    switch (denomination) {
-      case "token":
-        return tokenDecimals || 0;
-      case "sats":
-        return 0;
-      case "bits":
-        return 2;
-      case "mbch":
-        return 5;
-      case "bch":
-      default:
-        return 8;
-    }
+  const currencySettings = {
+    shouldPreferLocalCurrency,
+    isStablecoinMode,
+    denomination,
+    localCurrency,
+    tokenDecimals,
   };
 
-  const numDecimalPlaces = (num): number => {
-    const split = num.split(".");
-    const major = split[0]; // eslint-disable-line @typescript-eslint/no-unused-vars
-    const minor = split.length > 1 ? split[1] : "";
-
-    return minor.length;
-  };
-
-  const truncateDecimals = (value): string => {
-    const maxDecimals = getMaxDecimals();
-    const decimals = numDecimalPlaces(value);
-
-    const valueDecimal = new Decimal(Number.parseFloat(value) || 0);
-
-    // limit decimal places and round down
-    const amount = valueDecimal.toFixed(
-      Math.min(decimals, maxDecimals),
-      Decimal.ROUND_DOWN
-    );
-
-    return amount;
-  };
+  const maxDecimals = getMaxDecimals(currencySettings);
 
   // --------------------------------
   // Input Handling
@@ -209,12 +173,11 @@ export function SatoshiInput({
         !isStablecoinMode &&
         denomination === "sats")
     ) {
-      newInput = truncateDecimals(newInput);
+      newInput = truncateDecimals(newInput, maxDecimals);
     }
 
     // double press "." to pad rest of number with max decimal places
     if (sanitizedInput.split(".").length > 2) {
-      const maxDecimals = getMaxDecimals();
       newInput = new Decimal(prevInput).toFixed(maxDecimals);
     }
 

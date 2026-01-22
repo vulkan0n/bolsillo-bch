@@ -10,6 +10,7 @@ import {
   SendOutlined,
   ThunderboltOutlined,
   KeyOutlined,
+  ShopOutlined,
 } from "@ant-design/icons";
 import { setPreference, selectSecuritySettings } from "@/redux/preferences";
 import { selectActiveWallet } from "@/redux/wallet";
@@ -206,6 +207,16 @@ export default function SecuritySettings() {
               onChange={() =>
                 handleSetAuthActions(AuthActions.RevealPrivateKeys)
               }
+            />
+          </Accordion.Child>
+          <Accordion.Child
+            icon={ShopOutlined}
+            label={translate(translations.authVendorMode)}
+          >
+            <input
+              type="checkbox"
+              checked={authActions.includes(AuthActions.VendorMode)}
+              onChange={() => handleSetAuthActions(AuthActions.VendorMode)}
             />
           </Accordion.Child>
         </>

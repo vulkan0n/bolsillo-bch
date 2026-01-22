@@ -15,6 +15,7 @@ import {
   selectLanguageCode,
   selectUiSettings,
   selectLastAssetsPath,
+  selectIsVendorModeActive,
 } from "@/redux/preferences";
 import { selectKeyboardIsOpen, selectScannerIsScanning } from "@/redux/device";
 
@@ -24,6 +25,7 @@ import { translate } from "@/util/translations";
 export default function BottomNavigation() {
   const isKeyboardOpen = useSelector(selectKeyboardIsOpen);
   const isScanning = useSelector(selectScannerIsScanning);
+  const isVendorModeActive = useSelector(selectIsVendorModeActive);
   const { shouldDisplayExploreTab } = useSelector(selectUiSettings);
 
   // Ensure component reloads when language preferences are changed
@@ -31,7 +33,11 @@ export default function BottomNavigation() {
 
   const lastAssetsPath = useSelector(selectLastAssetsPath);
 
-  return !isKeyboardOpen ? (
+  if (isKeyboardOpen || isVendorModeActive) {
+    return null;
+  }
+
+  return (
     <div
       className={`w-full flex items-center justify-around z-30 ${isScanning ? "opacity-0" : ""}`}
     >
@@ -64,7 +70,7 @@ export default function BottomNavigation() {
         label={translate(translations.settings)}
       />
     </div>
-  ) : null;
+  );
 }
 
 interface NavButtonProps {

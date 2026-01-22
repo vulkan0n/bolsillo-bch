@@ -2159,6 +2159,9 @@ const translations = {
     zh: "泄露私钥",
     zh_TW: "洩漏私鑰"
   },
+  authVendorMode: {
+    en: "Enter/Exit Vendor Mode",
+  },
   offlineMode: {
     ar: "الوضع غير المتصل",
     bn: "অফলাইন মোড",

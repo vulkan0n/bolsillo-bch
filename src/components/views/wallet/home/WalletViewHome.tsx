@@ -31,8 +31,10 @@ import CurrencyFlip from "@/atoms/CurrencyFlip";
 import KeyWarning from "@/atoms/KeyWarning/KeyWarning";
 import WalletViewButtons from "./WalletViewButtons";
 import ScannerOverlay from "./ScannerOverlay";
+import FocusedQrView from "./FocusedQrView";
 
 import { useClipboard } from "@/hooks/useClipboard";
+import { useLongPress } from "@/hooks/useLongPress";
 
 import { logos } from "@/util/logos";
 import { satsToBch } from "@/util/sats";
@@ -90,6 +92,9 @@ export default function WalletViewHome() {
   const [shouldShowRequestAmount, setShouldShowRequestAmount] = useState(false);
   const [satoshiInput, setSatoshiInput] = useState(0n);
 
+  // Focused QR view state
+  const [shouldShowFocusedQr, setShouldShowFocusedQr] = useState(false);
+
   const handleRequestAmountChange = (satInput) => {
     setSatoshiInput(satInput);
   };
@@ -113,6 +118,11 @@ export default function WalletViewHome() {
     handleCopyToClipboard(qrRequest, translate(translations.copiedAddress));
   };
 
+  // Long press QR to show focused view, tap to copy
+  const qrLongPressEvents = useLongPress(function handleQrLongPress() {
+    setShouldShowFocusedQr(true);
+  }, copyAddressToClipboard);
+
   // force red QR code border if connected to chipnet
   const qrCodeBorder =
     bchNetwork !== "mainnet"
@@ -133,8 +143,8 @@ export default function WalletViewHome() {
           <div className="w-fit mx-auto">
             <button
               type="button"
-              className={`border-4 cursor-pointer active:bg-primary shadow-inner shadow-lg active:shadow-none active:shadow-inner active:scale-[0.98] ${qrCodeBorder}`}
-              onClick={copyAddressToClipboard}
+              className={`border-4 cursor-pointer active:bg-primary shadow-inner shadow-lg active:shadow-none active:shadow-inner active:scale-[0.98] select-none ${qrCodeBorder}`}
+              {...qrLongPressEvents}
             >
               <QRCode
                 value={qrRequest}
@@ -232,6 +242,13 @@ export default function WalletViewHome() {
         {genesis_height > 0 && <KeyWarning walletHash={walletHash} />}
       </div>
       {!isKeyboardOpen && <WalletViewButtons />}
+      {shouldShowFocusedQr && (
+        <FocusedQrView
+          address={address}
+          isTokenAddress={shouldUseTokenAddress}
+          onClose={() => setShouldShowFocusedQr(false)}
+        />
+      )}
     </FullColumn>
   );
 }
