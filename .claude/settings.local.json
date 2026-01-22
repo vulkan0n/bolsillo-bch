@@ -44,7 +44,24 @@
       "Bash(./scripts/gitlab-sync.sh:*)",
       "Bash(./scripts/gitlab-priorities.sh:*)",
       "Bash(./scripts/gitlab-close-issue.sh:*)",
-      "Bash(npm search:*)"
+      "Bash(npm search:*)",
+      "Bash(date:*)",
+      "Bash(echo:*)",
+      "Bash(cat:*)",
+      "Bash(ls:*)",
+      "Bash(mkdir:*)",
+      "Bash(wc:*)",
+      "Bash(head:*)",
+      "Bash(tail:*)",
+      "Bash(sort:*)",
+      "Bash(grep:*)",
+      "Bash(tr:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git status:*)",
+      "Bash(git log:*)",
+      "Bash(git diff:*)",
+      "Bash(git tag:*)"
     ]
   },
   "hooks": {
