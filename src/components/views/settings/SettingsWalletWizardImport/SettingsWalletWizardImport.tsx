@@ -2,7 +2,7 @@ import { useMemo, useRef, useState } from "react";
 
 import { useNavigate } from "react-router";
 import { ImportOutlined } from "@ant-design/icons";
-import * as bip39 from "bip39";
+import { bip39WordListEnglish, decodeBip39Mnemonic } from "@bitauth/libauth";
 import Button from "@/components/atoms/Button";
 import Accordion from "@/components/atoms/Accordion";
 import WalletManagerService from "@/kernel/wallet/WalletManagerService";
@@ -17,7 +17,7 @@ import { DEFAULT_DERIVATION_PATH, DERIVATION_PATHS } from "@/util/derivation";
 
 import Select from "@/components/atoms/Select";
 
-const wordlist = bip39.wordlists.english;
+const wordlist = bip39WordListEnglish;
 
 const Log = LogService("WizardImport");
 
@@ -109,7 +109,8 @@ export default function SettingsWalletWizardImport() {
       return;
     }
 
-    const isValidMnemonic = bip39.validateMnemonic(trimmedInput);
+    const isValidMnemonic =
+      typeof decodeBip39Mnemonic(trimmedInput) !== "string";
 
     if (isValidMnemonic) {
       try {

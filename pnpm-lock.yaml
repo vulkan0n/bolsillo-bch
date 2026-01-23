@@ -113,9 +113,6 @@ importers:
       '@walletconnect/utils':
         specifier: ^2.23.1
         version: 2.23.1(@capacitor/preferences@8.0.0(@capacitor/core@8.0.1))(typescript@5.9.3)
-      bip39:
-        specifier: ^3.1.0
-        version: 3.1.0
       chart.js:
         specifier: ^4.5.1
         version: 4.5.1
@@ -1880,9 +1877,6 @@ packages:
   binary-extensions@2.3.0:
     resolution: {integrity: sha512-Ceh+7ox5qe7LJuLHoY0feh3pHuUDHAcRUeyL2VYghZwfpkNIy/+8Ocg0a3UuSoYzavmylwuLWQOf3hl0jjMMIw==}
     engines: {node: '>=8'}
-
-  bip39@3.1.0:
-    resolution: {integrity: sha512-c9kiwdk45Do5GL0vJMe7tS95VjCii65mYAH7DfWl3uW8AVzXKQVUm64i3hzVybBDMp9r7j9iNxR85+ul8MdN/A==}
 
   bl@4.1.0:
     resolution: {integrity: sha512-1W07cM9gS6DcLperZfFSj+bWLtaPGSOHWhPiGzXmvVJbRLdG82sH/Kn8EtW1VqWVA54AKf2h5k5BbnIbwF3h6w==}
@@ -7110,10 +7104,6 @@ snapshots:
   big-integer@1.6.52: {}
 
   binary-extensions@2.3.0: {}
-
-  bip39@3.1.0:
-    dependencies:
-      '@noble/hashes': 1.8.0
 
   bl@4.1.0:
     dependencies:

@@ -1,5 +1,5 @@
-import * as bip39 from "bip39";
 import {
+  deriveSeedFromBip39Mnemonic,
   deriveHdPrivateNodeFromSeed,
   deriveHdPrivateNodeChild,
   deriveHdPath,
@@ -36,11 +36,11 @@ export default function HdNodeService(walletStub: WalletStub) {
   const walletHash = WalletManager.calculateWalletHash(walletStub);
   const { mnemonic, derivation, passphrase } = walletStub;
 
-  // bip39.mnemonicToSeedSync is expensive (according to profiling)
+  // deriveSeedFromBip39Mnemonic is expensive (according to profiling)
   // so we make sure we only run once per seed material
   const seedKey = `${mnemonic}:${passphrase}`;
   if (!seedCache.has(seedKey)) {
-    const derivedSeed = bip39.mnemonicToSeedSync(mnemonic, passphrase);
+    const derivedSeed = deriveSeedFromBip39Mnemonic(mnemonic, { passphrase });
     seedCache.set(seedKey, derivedSeed);
   }
 

@@ -12,8 +12,8 @@ import {
   KeyOutlined,
 } from "@ant-design/icons";
 
-import * as bip39 from "bip39";
 import {
+  deriveSeedFromBip39Mnemonic,
   deriveHdPrivateNodeFromSeed,
   encodeHdPrivateKey,
   deriveHdPublicNode,
@@ -47,7 +47,9 @@ export default function SettingsWalletAdditionalInformation() {
 
   const derivationPath = wallet.derivation;
 
-  const seed = bip39.mnemonicToSeedSync(wallet.mnemonic, wallet.passphrase);
+  const seed = deriveSeedFromBip39Mnemonic(wallet.mnemonic, {
+    passphrase: wallet.passphrase,
+  });
   const hdMaster = deriveHdPrivateNodeFromSeed(seed);
 
   const hdPrivate = deriveHdPath(hdMaster, `${derivationPath}`);

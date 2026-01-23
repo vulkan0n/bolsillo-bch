@@ -1,5 +1,5 @@
 import { Filesystem, Directory, Encoding } from "@capacitor/filesystem";
-import * as bip39 from "bip39";
+import { generateBip39Mnemonic } from "@bitauth/libauth";
 import LogService from "@/kernel/app/LogService";
 import DatabaseService from "@/kernel/app/DatabaseService";
 import { ValidBchNetwork } from "@/util/electrum_servers";
@@ -194,7 +194,7 @@ export default function WalletManagerService() {
     passphrase: string = "",
     derivation: ValidDerivationPath = DEFAULT_DERIVATION_PATH
   ): Promise<WalletEntity> {
-    const mnemonic = bip39.generateMnemonic();
+    const mnemonic = generateBip39Mnemonic();
 
     const walletHash = calculateWalletHash({
       mnemonic,
