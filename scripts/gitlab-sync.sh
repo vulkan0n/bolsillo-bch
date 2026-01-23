@@ -17,7 +17,6 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 OUTPUT_FILE="$PROJECT_ROOT/.claude/gitlab-state.md"
-VELOCITY_FILE="$PROJECT_ROOT/.claude/velocity.json"
 REPO="selene.cash/selene-wallet"
 QUIET=${1:-""}
 
@@ -197,26 +196,5 @@ echo "| Closed (7 days) | $RECENT_COUNT |" >> "$OUTPUT_FILE"
 echo "" >> "$OUTPUT_FILE"
 
 log "GitLab state written to $OUTPUT_FILE"
-
-# Initialize velocity.json if it doesn't exist
-if [[ ! -f "$VELOCITY_FILE" ]]; then
-    log "Initializing velocity.json..."
-    cat > "$VELOCITY_FILE" << 'VELOCITY'
-{
-  "sessions": [],
-  "averageVelocity": {
-    "trivial": 0.5,
-    "easy": 1.5,
-    "medium": 5,
-    "hard": 12
-  },
-  "lastUpdated": null
-}
-VELOCITY
-fi
-
-# Update velocity lastUpdated timestamp
-TMP_FILE=$(mktemp)
-jq --arg ts "$TIMESTAMP" '.lastUpdated = $ts' "$VELOCITY_FILE" > "$TMP_FILE" && mv "$TMP_FILE" "$VELOCITY_FILE"
 
 log "Done!"
