@@ -23,6 +23,8 @@ import { useCurrencyFlip } from "@/hooks/useCurrencyFlip";
 import { useLongPress } from "@/hooks/useLongPress";
 import { logos } from "@/util/logos";
 import { satsToBch } from "@/util/sats";
+import { translate } from "@/util/translations";
+import translations from "@/views/wallet/translations";
 
 import VendorNumpad from "./VendorNumpad";
 
@@ -149,7 +151,7 @@ export default function VendorModeView() {
         </div>
         {/* Long press hint */}
         <div className="mt-2 text-xs text-neutral-400 dark:text-neutral-500">
-          Long press QR to exit
+          {translate(translations.vendorModeExitHint)}
         </div>
       </div>
     </div>

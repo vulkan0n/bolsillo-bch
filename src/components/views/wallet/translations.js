@@ -1764,6 +1764,9 @@ const translations = {
   vendorMode: {
     en: "Vendor Mode",
   },
+  vendorModeExitHint: {
+    en: "Long press QR to exit",
+  },
 };
 
 export default translations;
