@@ -6,7 +6,7 @@ import QrScanner from "qr-scanner";
 import { Haptic } from "@/util/haptic";
 
 import { setScannerIsScanning } from "@/redux/device";
-import ToastService from "@/kernel/app/NotificationService";
+import NotificationService from "@/kernel/app/NotificationService";
 
 import Button, { ButtonProps } from "@/atoms/Button";
 import translations from "@/views/wallet/translations";
@@ -65,7 +65,7 @@ export default function ImageSelectButton({
         });
 
         // Show scan content toast
-        ToastService().spawn({
+        NotificationService().spawn({
           icon: <ScanOutlined className="text-4xl" />,
           header: translate(translations.scanContents),
           body: <span className="flex break-all text-sm">{result.data}</span>,
@@ -75,7 +75,7 @@ export default function ImageSelectButton({
       } catch (e) {
         // No QR code found - show invalid scan toast with error
         const errorMessage = e?.message || "No QR code found";
-        ToastService().invalidScan(errorMessage);
+        NotificationService().invalidScan(errorMessage);
         await Haptic.error();
         onSelection("");
       }

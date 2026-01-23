@@ -28,7 +28,7 @@ import AddressScannerService from "@/kernel/wallet/AddressScannerService";
 import UtxoManagerService from "@/kernel/wallet/UtxoManagerService";
 import TokenManagerService from "@/kernel/wallet/TokenManagerService";
 
-import ToastService from "@/kernel/app/NotificationService";
+import NotificationService from "@/kernel/app/NotificationService";
 import LogService from "@/kernel/app/LogService";
 
 import { convertCashAddress } from "@/util/cashaddr";
@@ -192,7 +192,7 @@ export const walletReceive = createAsyncThunk(
           amount: tokenDiff[category],
         };
 
-        ToastService().tokenReceived(token);
+        NotificationService().tokenReceived(token);
       });
     }
 
@@ -212,7 +212,7 @@ export const walletReceive = createAsyncThunk(
       } catch (e) {
         Log.warn(e);
         Log.error("swap on receive failed!");
-        ToastService().paymentReceived(incomingSats);
+        NotificationService().paymentReceived(incomingSats);
       }
 
       for (let i = 0; i < 3; i += 1) {
@@ -231,7 +231,7 @@ export const walletReceive = createAsyncThunk(
             wallet.walletHash,
             wallet.network
           ).getToken(MUSD_TOKENID);
-          ToastService().tokenReceived({
+          NotificationService().tokenReceived({
             ...tokenData,
             amount: tradeTransaction.tradeResult.summary.demand,
           });
@@ -242,9 +242,9 @@ export const walletReceive = createAsyncThunk(
       }
 
       Log.error("swap on receive failed!");
-      ToastService().paymentReceived(incomingSats);
+      NotificationService().paymentReceived(incomingSats);
     } else {
-      ToastService().paymentReceived(satsDiff);
+      NotificationService().paymentReceived(satsDiff);
     }
   }
 );

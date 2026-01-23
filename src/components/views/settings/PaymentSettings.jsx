@@ -5,6 +5,7 @@ import {
   ThunderboltOutlined,
   PropertySafetyOutlined,
   AlertOutlined,
+  QrcodeOutlined,
 } from "@ant-design/icons";
 
 import {
@@ -12,6 +13,7 @@ import {
   selectCurrencySettings,
   selectIsExperimental,
   selectShouldForceTokenAddress,
+  selectShouldUseLegacyBip21,
 } from "@/redux/preferences";
 
 import { translate } from "@/util/translations";
@@ -39,6 +41,7 @@ export default function PaymentSettings() {
   const isExperimental = useSelector(selectIsExperimental);
 
   const shouldForceTokenAddress = useSelector(selectShouldForceTokenAddress);
+  const shouldUseLegacyBip21 = useSelector(selectShouldUseLegacyBip21);
 
   const Currency = CurrencyService(localCurrency);
 
@@ -96,6 +99,18 @@ export default function PaymentSettings() {
             onChange={handleInstantPayInput}
           />
         </span>
+      </Accordion.Child>
+      <Accordion.Child
+        icon={QrcodeOutlined}
+        label={translate(translations.useLegacyBip21)}
+        description={translate(translations.useLegacyBip21Description)}
+      >
+        <Checkbox
+          checked={shouldUseLegacyBip21}
+          onChange={(event) => {
+            handleSettingsUpdate("useLegacyBip21", event.target.checked);
+          }}
+        />
       </Accordion.Child>
       {isExperimental && (
         <Accordion.Child

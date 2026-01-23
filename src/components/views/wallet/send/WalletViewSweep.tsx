@@ -15,7 +15,7 @@ import {
   ElectrumUtxo,
   buildSweepTransaction,
 } from "@/kernel/bch/TransactionBuilderService";
-import ToastService from "@/kernel/app/NotificationService";
+import NotificationService from "@/kernel/app/NotificationService";
 
 import Satoshi from "@/atoms/Satoshi";
 import Button from "@/atoms/Button";
@@ -76,7 +76,7 @@ export default function WalletViewSweep() {
   useEffect(() => {
     const requestUtxos = async () => {
       if (isOfflineMode) {
-        ToastService().disconnected();
+        NotificationService().disconnected();
         navigate("/");
         return;
       }
@@ -154,7 +154,7 @@ export default function WalletViewSweep() {
     setIsSweeping(true);
 
     if (!sync.isConnected) {
-      ToastService().disconnected();
+      NotificationService().disconnected();
       setIsSweeping(false);
       return;
     }

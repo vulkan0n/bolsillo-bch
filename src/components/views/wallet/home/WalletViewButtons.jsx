@@ -9,6 +9,7 @@ import TorchButton from "./TorchButton";
 import ImageSelectButton from "./ImageSelectButton";
 
 import { useClipboard } from "@/hooks/useClipboard";
+import NotificationService from "@/kernel/app/NotificationService";
 import { navigateOnValidUri } from "@/util/uri";
 import { extractBchAddresses } from "@/util/cashaddr";
 
@@ -23,8 +24,10 @@ export default function WalletViewButtons() {
 
   const forwardOnValidAddress = async (input) => {
     const extracted = extractBchAddresses(input)[0] || input;
-    const { navTo, navState } = await navigateOnValidUri(extracted);
-    if (navTo) {
+    const { navTo, navState, isExpired } = await navigateOnValidUri(extracted);
+    if (isExpired) {
+      NotificationService().expiredPayment();
+    } else if (navTo) {
       navigate(navTo, { state: navState });
     }
   };
@@ -32,8 +35,10 @@ export default function WalletViewButtons() {
   const pasteAddressFromClipboard = async () => {
     const { paste, spawnPasteToast } = await getClipboardContents();
     const extracted = extractBchAddresses(paste)[0] || paste;
-    const { navTo, navState } = await navigateOnValidUri(extracted);
-    if (navTo !== "") {
+    const { navTo, navState, isExpired } = await navigateOnValidUri(extracted);
+    if (isExpired) {
+      NotificationService().expiredPayment();
+    } else if (navTo !== "") {
       spawnPasteToast();
       navigate(navTo, { state: navState });
     } else {

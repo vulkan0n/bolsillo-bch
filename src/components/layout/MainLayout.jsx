@@ -10,6 +10,7 @@ import {
   selectIsVendorModeActive,
 } from "@/redux/preferences";
 import { navigateOnValidUri } from "@/util/uri";
+import NotificationService from "@/kernel/app/NotificationService";
 import BottomNavigation from "./BottomNavigation";
 
 import useScrollToTop from "@/hooks/useScrollToTop";
@@ -135,8 +136,10 @@ export default function MainLayout() {
   );
 
   App.addListener("appUrlOpen", async ({ url }) => {
-    const { navTo, navState } = await navigateOnValidUri(url);
-    if (navTo) {
+    const { navTo, navState, isExpired } = await navigateOnValidUri(url);
+    if (isExpired) {
+      NotificationService().expiredPayment();
+    } else if (navTo) {
       navigate(navTo, { state: navState });
     }
   });

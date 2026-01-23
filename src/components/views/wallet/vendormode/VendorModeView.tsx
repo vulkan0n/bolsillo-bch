@@ -10,6 +10,7 @@ import {
   selectBchNetwork,
   selectQrCodeSettings,
   selectIsVendorModeKeepAwake,
+  selectShouldUseLegacyBip21,
   setPreference,
 } from "@/redux/preferences";
 import { selectDeviceInfo } from "@/redux/device";
@@ -23,6 +24,7 @@ import { useCurrencyFlip } from "@/hooks/useCurrencyFlip";
 import { useLongPress } from "@/hooks/useLongPress";
 import { logos } from "@/util/logos";
 import { satsToBch } from "@/util/sats";
+import { toAlphanumericUri } from "@/util/uri";
 import { translate } from "@/util/translations";
 import translations from "@/views/wallet/translations";
 
@@ -37,6 +39,7 @@ export default function VendorModeView() {
   const qrCodeSettings = useSelector(selectQrCodeSettings);
   const deviceInfo = useSelector(selectDeviceInfo);
   const isKeepAwake = useSelector(selectIsVendorModeKeepAwake);
+  const shouldUseLegacyBip21 = useSelector(selectShouldUseLegacyBip21);
 
   // Get receive address
   const AddressManager = useMemo(
@@ -52,10 +55,15 @@ export default function VendorModeView() {
   const [satoshiAmount, setSatoshiAmount] = useState(0n);
 
   // Generate BIP21 URI for QR code
+  // PayPro CHIP-2023-05: use ?s= (satoshis) by default, ?amount= (BCH) for legacy
+  // PayPro format uses alphanumeric encoding for more efficient QR codes
   const qrValue = useMemo(() => {
     if (satoshiAmount === 0n) return address;
-    return `${address}?amount=${satsToBch(satoshiAmount).bch}`;
-  }, [address, satoshiAmount]);
+    if (shouldUseLegacyBip21) {
+      return `${address}?amount=${satsToBch(satoshiAmount).bch}`;
+    }
+    return toAlphanumericUri(`${address}?s=${satoshiAmount}`);
+  }, [address, satoshiAmount, shouldUseLegacyBip21]);
 
   const qrLogoImage = logos[qrCodeSettings.logo.toLowerCase()].img;
 

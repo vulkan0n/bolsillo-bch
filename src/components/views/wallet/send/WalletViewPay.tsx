@@ -17,7 +17,7 @@ import {
 import TransactionManagerService from "@/kernel/bch/TransactionManagerService";
 import TransactionBuilderService from "@/kernel/bch/TransactionBuilderService";
 import TransactionHistoryService from "@/kernel/wallet/TransactionHistoryService";
-import ToastService from "@/kernel/app/NotificationService";
+import NotificationService from "@/kernel/app/NotificationService";
 import SecurityService, { AuthActions } from "@/kernel/app/SecurityService";
 import LogService from "@/kernel/app/LogService";
 
@@ -120,7 +120,7 @@ export default function WalletViewPay() {
         }
 
         if (!sync.isConnected) {
-          ToastService().disconnected();
+          NotificationService().disconnected();
           throw new Error(translate(translations.walletDisconnected));
         }
 
@@ -255,7 +255,7 @@ export default function WalletViewPay() {
       const fetchPaymentRequest = async () => {
         try {
           if (isOfflineMode) {
-            ToastService().disconnected();
+            NotificationService().disconnected();
             navigate("/");
             return;
           }

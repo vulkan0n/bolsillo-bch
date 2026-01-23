@@ -10,7 +10,7 @@ import {
   selectTorchIsEnabled,
 } from "@/redux/device";
 
-import ToastService from "@/kernel/app/NotificationService";
+import NotificationService from "@/kernel/app/NotificationService";
 import LogService from "@/kernel/app/LogService";
 
 import { translate } from "@/util/translations";
@@ -67,13 +67,14 @@ export function useScanner(onScan) {
       dispatch(setScannerIsScanning(false));
 
       const spawnScanToast = () =>
-        ToastService().spawn({
+        NotificationService().spawn({
           icon: <ScanOutlined className="text-4xl" />,
           header: translate(translations.scanContents),
           body: <span className="flex break-all text-sm">{content}</span>,
         });
 
-      const spawnInvalidScanToast = () => ToastService().invalidScan(content);
+      const spawnInvalidScanToast = () =>
+        NotificationService().invalidScan(content);
 
       if (!hasScanContent.current) {
         hasScanContent.current = true;

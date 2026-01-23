@@ -9,6 +9,7 @@ import Overlay from "@/atoms/Overlay";
 import WalletViewButtons from "@/views/wallet/home/WalletViewButtons";
 
 import { useScanner } from "@/hooks/useScanner";
+import NotificationService from "@/kernel/app/NotificationService";
 
 import { navigateOnValidUri, validateBip21Uri } from "@/util/uri";
 import { extractBchAddresses } from "@/util/cashaddr";
@@ -37,8 +38,11 @@ export default function ScannerOverlay({
         extracted = `${extracted}?amount=${amountBch}`;
       }
 
-      const { navTo, navState } = await navigateOnValidUri(extracted);
-      if (navTo !== "") {
+      const { navTo, navState, isExpired } =
+        await navigateOnValidUri(extracted);
+      if (isExpired) {
+        NotificationService().expiredPayment();
+      } else if (navTo !== "") {
         spawnScanToast();
         navigate(navTo, { state: { ...location.state, ...navState } });
       } else {

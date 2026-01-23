@@ -61,6 +61,7 @@ import { Haptic } from "@/util/haptic";
 import { bchToSats } from "@/util/sats";
 import { MUSD_TOKENID } from "@/util/tokens";
 import { validateBchUri, navigateOnValidUri } from "@/util/uri";
+import NotificationService from "@/kernel/app/NotificationService";
 import { extractBchAddresses } from "@/util/cashaddr";
 import { truncateProse } from "@/util/string";
 import { translate } from "@/util/translations";
@@ -123,14 +124,27 @@ export default function WalletViewSend() {
 
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const querySats = searchParams.get("amount")
-    ? bchToSats(searchParams.get("amount"))
-    : BigInt(0);
+  // PayPro CHIP-2023-05: prefer 's' (satoshis) over 'amount' (BCH)
+  const hasSatsParam = !!searchParams.get("s");
+  const querySatsParam = searchParams.get("s") || searchParams.get("amount");
+  const querySats =
+    (hasSatsParam ? BigInt(querySatsParam) : bchToSats(querySatsParam)) ||
+    BigInt(0);
 
   const queryTokenCategory = searchParams.get("c");
+  // PayPro CHIP-2023-05: prefer 'f' over 'ft' for fungible token amount
   const queryTokenAmount = queryTokenCategory
-    ? BigInt(searchParams.get("ft") || 0)
+    ? BigInt(searchParams.get("f") || searchParams.get("ft") || 0)
     : 0n;
+
+  // PayPro CHIP-2023-05: NFT commitment (n parameter)
+  // undefined = not specified, "" = any NFT of category, "hex..." = specific NFT
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const queryNftCommitment = searchParams.get("n");
+
+  // PayPro CHIP-2023-05: payment message/memo
+  const queryMessage =
+    searchParams.get("m") || searchParams.get("message") || "";
 
   const [satoshiInput, setSatoshiInput] = useState(
     queryTokenAmount || querySats
@@ -158,14 +172,15 @@ export default function WalletViewSend() {
 
   const tokenCategories = useMemo(() => {
     const { state: sendState } = location;
+    const stateCategories = sendState?.tokenCategories || [];
 
-    if (queryTokenAmount > 0) {
-      return [queryTokenCategory];
+    // Include token category from URL if present (PayPro CHIP-2023-05)
+    if (queryTokenCategory && !stateCategories.includes(queryTokenCategory)) {
+      return [queryTokenCategory, ...stateCategories];
     }
 
-    const categories = sendState?.tokenCategories || [];
-    return categories;
-  }, [location, queryTokenAmount, queryTokenCategory]);
+    return stateCategories;
+  }, [location, queryTokenCategory]);
 
   const selectionAmount = selection.reduce((sum, cur) => sum + cur.amount, 0n);
 
@@ -695,8 +710,10 @@ export default function WalletViewSend() {
 
   const handleAddressInput = async (input: string) => {
     const extracted = extractBchAddresses(input)[0] || input;
-    const { navTo } = await navigateOnValidUri(extracted);
-    if (navTo !== "") {
+    const { navTo, isExpired } = await navigateOnValidUri(extracted);
+    if (isExpired) {
+      NotificationService().expiredPayment();
+    } else if (navTo !== "") {
       const { state: sendState } = location;
       navigate(navTo, { state: sendState });
     } else {
@@ -780,6 +797,16 @@ export default function WalletViewSend() {
 
       <FullColumn>
         <div className="flex flex-col h-full justify-evenly">
+          {queryMessage && (
+            <div className="mx-2 mt-2 p-2 bg-neutral-100 dark:bg-neutral-700 rounded-md border border-neutral-300 dark:border-neutral-600">
+              <div className="text-sm text-neutral-600 dark:text-neutral-300 font-medium">
+                {translate(translations.paymentMessage)}
+              </div>
+              <div className="text-neutral-800 dark:text-neutral-100">
+                {queryMessage}
+              </div>
+            </div>
+          )}
           <div className="p-2 w-full grow flex flex-col justify-center ">
             {isStablecoinMode && !hasTokens && selection.length === 0 ? (
               <div className="py-4 px-2 rounded-md shadow-md bg-primary/95 dark:bg-primarydark-200 text-white">

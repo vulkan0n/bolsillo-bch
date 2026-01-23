@@ -755,6 +755,12 @@ const translations = {
     zh: "资金不足",
     zh_TW: "不充足的資金",
   },
+  paymentMessage: {
+    en: "Payment Request",
+  },
+  paymentExpired: {
+    en: "Payment Request Expired",
+  },
   notEnoughFee: {
     ar: "فشلت العملية -  لا يوجد رصيد كافٍ لرسوم المنقّب",
     bn: "লেনদেন ব্যর্থ - মাইনার ফির জন্য যথাযথ মাত্রা অপর্যাপ্ত",

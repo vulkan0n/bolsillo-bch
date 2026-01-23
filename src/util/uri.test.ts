@@ -14,6 +14,8 @@ import {
   validateWifUri,
   validateWalletConnectUri,
   validateBchUri,
+  toAlphanumericUri,
+  fromAlphanumericUri,
 } from "./uri";
 
 // Valid test addresses
@@ -53,28 +55,28 @@ describe("uri.ts", () => {
     });
 
     describe("BIP21 amount parsing", () => {
-      it("parses amount from query string", () => {
+      it("parses amount and converts to satoshis", () => {
         const uri = `${VALID_CASHADDR}?amount=1.5`;
         const result = validateBip21Uri(uri);
         expect(result.isBip21).toBe(true);
-        expect(result.amount).toBe(1.5);
+        expect(result.satoshis).toBe(150000000n);
       });
 
       it("handles zero amount", () => {
         const uri = `${VALID_CASHADDR}?amount=0`;
         const result = validateBip21Uri(uri);
-        expect(result.amount).toBe(0);
+        expect(result.satoshis).toBe(0n);
       });
 
       it("handles missing amount", () => {
         const result = validateBip21Uri(VALID_CASHADDR);
-        expect(result.amount).toBe(0);
+        expect(result.satoshis).toBe(undefined);
       });
 
       it("parses fractional BCH amounts", () => {
         const uri = `${VALID_CASHADDR}?amount=0.00001`;
         const result = validateBip21Uri(uri);
-        expect(result.amount).toBe(0.00001);
+        expect(result.satoshis).toBe(1000n);
       });
     });
 
@@ -216,6 +218,205 @@ describe("uri.ts", () => {
     it("rejects completely invalid input", () => {
       const result = validateBchUri("hello world");
       expect(result.isValid).toBe(false);
+    });
+  });
+
+  describe("PayPro CHIP-2023-05 parameters", () => {
+    describe("satoshi amount (s parameter)", () => {
+      it("parses satoshi amount from s parameter", () => {
+        const uri = `${VALID_CASHADDR}?s=100000`;
+        const result = validateBip21Uri(uri);
+        expect(result.satoshis).toBe(100000n);
+      });
+
+      it("prefers s over amount when both present", () => {
+        const uri = `${VALID_CASHADDR}?amount=1.0&s=50000`;
+        const result = validateBip21Uri(uri);
+        expect(result.satoshis).toBe(50000n);
+      });
+
+      it("falls back to converted amount when s not present", () => {
+        const uri = `${VALID_CASHADDR}?amount=1.0`;
+        const result = validateBip21Uri(uri);
+        expect(result.satoshis).toBe(100000000n); // 1 BCH = 100,000,000 sats
+      });
+    });
+
+    describe("fungible token amount (f parameter)", () => {
+      it("parses f parameter for fungible tokens", () => {
+        const tokenCategory =
+          "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef";
+        const uri = `${VALID_CASHADDR}?c=${tokenCategory}&f=1000`;
+        const result = validateBip21Uri(uri);
+        expect(result.tokenAmount).toBe(1000n);
+      });
+
+      it("accepts ft for backward compatibility", () => {
+        const tokenCategory =
+          "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef";
+        const uri = `${VALID_CASHADDR}?c=${tokenCategory}&ft=500`;
+        const result = validateBip21Uri(uri);
+        expect(result.tokenAmount).toBe(500n);
+      });
+
+      it("prefers f over ft when both present", () => {
+        const tokenCategory =
+          "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef";
+        const uri = `${VALID_CASHADDR}?c=${tokenCategory}&f=1000&ft=500`;
+        const result = validateBip21Uri(uri);
+        expect(result.tokenAmount).toBe(1000n);
+      });
+    });
+
+    describe("NFT commitment (n parameter)", () => {
+      it("parses specific NFT commitment", () => {
+        const tokenCategory =
+          "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef";
+        const commitment = "deadbeef";
+        const uri = `${VALID_CASHADDR}?c=${tokenCategory}&n=${commitment}`;
+        const result = validateBip21Uri(uri);
+        expect(result.nftCommitment).toBe(commitment);
+      });
+
+      it("parses empty string as any NFT", () => {
+        const tokenCategory =
+          "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef";
+        const uri = `${VALID_CASHADDR}?c=${tokenCategory}&n=`;
+        const result = validateBip21Uri(uri);
+        expect(result.nftCommitment).toBe("");
+      });
+
+      it("returns undefined when n parameter not present", () => {
+        const tokenCategory =
+          "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef";
+        const uri = `${VALID_CASHADDR}?c=${tokenCategory}`;
+        const result = validateBip21Uri(uri);
+        expect(result.nftCommitment).toBe(undefined);
+      });
+    });
+
+    describe("message/memo (m parameter)", () => {
+      it("parses message parameter", () => {
+        const uri = `${VALID_CASHADDR}?m=Coffee`;
+        const result = validateBip21Uri(uri);
+        expect(result.message).toBe("Coffee");
+      });
+
+      it("accepts message as alias for m", () => {
+        const uri = `${VALID_CASHADDR}?message=Payment%20for%20lunch`;
+        const result = validateBip21Uri(uri);
+        expect(result.message).toBe("Payment for lunch");
+      });
+
+      it("prefers m over message when both present", () => {
+        const uri = `${VALID_CASHADDR}?m=Coffee&message=Tea`;
+        const result = validateBip21Uri(uri);
+        expect(result.message).toBe("Coffee");
+      });
+
+      it("returns undefined when message not present", () => {
+        const result = validateBip21Uri(VALID_CASHADDR);
+        expect(result.message).toBe(undefined);
+      });
+    });
+
+    describe("expiration (e parameter)", () => {
+      it("parses expiration timestamp", () => {
+        const futureTime = Math.floor(Date.now() / 1000) + 3600; // 1 hour in future
+        const uri = `${VALID_CASHADDR}?e=${futureTime}`;
+        const result = validateBip21Uri(uri);
+        expect(result.expiration).toBe(futureTime);
+        expect(result.isExpired).toBe(false);
+      });
+
+      it("detects expired URIs", () => {
+        const pastTime = Math.floor(Date.now() / 1000) - 3600; // 1 hour in past
+        const uri = `${VALID_CASHADDR}?e=${pastTime}`;
+        const result = validateBip21Uri(uri);
+        expect(result.expiration).toBe(pastTime);
+        expect(result.isExpired).toBe(true);
+      });
+
+      it("returns undefined expiration when not present", () => {
+        const result = validateBip21Uri(VALID_CASHADDR);
+        expect(result.expiration).toBe(undefined);
+        expect(result.isExpired).toBe(false);
+      });
+    });
+  });
+
+  describe("alphanumeric URI encoding (CHIP-2023-05)", () => {
+    describe("toAlphanumericUri", () => {
+      it("encodes URI to alphanumeric format", () => {
+        const uri = "bitcoincash:qtest?s=100000&m=coffee";
+        const expected = "BITCOINCASH:QTEST:S-100000+M-COFFEE";
+        expect(toAlphanumericUri(uri)).toBe(expected);
+      });
+
+      it("encodes address-only URI", () => {
+        const uri = "bitcoincash:qtest";
+        const expected = "BITCOINCASH:QTEST";
+        expect(toAlphanumericUri(uri)).toBe(expected);
+      });
+
+      it("encodes URI with multiple parameters", () => {
+        const uri = "bitcoincash:qtest?s=100000&m=coffee&e=1234567890";
+        const expected = "BITCOINCASH:QTEST:S-100000+M-COFFEE+E-1234567890";
+        expect(toAlphanumericUri(uri)).toBe(expected);
+      });
+    });
+
+    describe("fromAlphanumericUri", () => {
+      it("decodes alphanumeric QR format", () => {
+        const alphanumeric = "BITCOINCASH:QTEST:S-100000+M-COFFEE";
+        const expected = "bitcoincash:qtest?s=100000&m=coffee";
+        expect(fromAlphanumericUri(alphanumeric)).toBe(expected);
+      });
+
+      it("decodes address-only URI", () => {
+        const alphanumeric = "BITCOINCASH:QTEST";
+        const expected = "bitcoincash:qtest";
+        expect(fromAlphanumericUri(alphanumeric)).toBe(expected);
+      });
+
+      it("decodes URI with multiple parameters", () => {
+        const alphanumeric = "BITCOINCASH:QTEST:S-100000+M-COFFEE+E-1234567890";
+        const expected = "bitcoincash:qtest?s=100000&m=coffee&e=1234567890";
+        expect(fromAlphanumericUri(alphanumeric)).toBe(expected);
+      });
+
+      it("passes through mixed-case URIs unchanged", () => {
+        const uri = "bitcoinCash:qtest?s=100000";
+        expect(fromAlphanumericUri(uri)).toBe(uri);
+      });
+
+      it("passes through lowercase URIs unchanged", () => {
+        const uri = "bitcoincash:qtest?s=100000";
+        expect(fromAlphanumericUri(uri)).toBe(uri);
+      });
+    });
+
+    describe("roundtrip", () => {
+      it("roundtrips correctly with query parameters", () => {
+        const original = "bitcoincash:qtest?s=100000&m=coffee";
+        const encoded = toAlphanumericUri(original);
+        const decoded = fromAlphanumericUri(encoded);
+        expect(decoded).toBe(original);
+      });
+
+      it("roundtrips correctly without query parameters", () => {
+        const original = "bitcoincash:qtest";
+        const encoded = toAlphanumericUri(original);
+        const decoded = fromAlphanumericUri(encoded);
+        expect(decoded).toBe(original);
+      });
+
+      it("roundtrips with real cashaddr", () => {
+        const original = `${VALID_CASHADDR}?s=50000&m=donation`;
+        const encoded = toAlphanumericUri(original);
+        const decoded = fromAlphanumericUri(encoded);
+        expect(decoded).toBe(original);
+      });
     });
   });
 });

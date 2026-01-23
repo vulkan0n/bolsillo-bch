@@ -423,6 +423,13 @@ export const selectShouldForceTokenAddress = createSelector(
   (preferences) => preferences.forceTokenAddress === "true"
 );
 
+// Legacy BIP21 format (amount, ft) vs PayPro CHIP-2023-05 (s, f, n, m, e)
+// Default to false (use modern PayPro format)
+export const selectShouldUseLegacyBip21 = createSelector(
+  (state: RootState) => state.preferences,
+  (preferences) => preferences.useLegacyBip21 === "true"
+);
+
 export const selectLastAssetsPath = createSelector(
   (state: RootState) => state.preferences,
   (preferences) => preferences.lastAssetsPath

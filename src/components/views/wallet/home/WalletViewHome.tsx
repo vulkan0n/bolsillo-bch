@@ -17,6 +17,7 @@ import {
   selectQrCodeSettings,
   selectShouldUseTokenAddress,
   selectIsStablecoinMode,
+  selectShouldUseLegacyBip21,
   setPreference,
 } from "@/redux/preferences";
 import { selectScannerIsScanning, selectKeyboardIsOpen } from "@/redux/device";
@@ -39,6 +40,7 @@ import { useLongPress } from "@/hooks/useLongPress";
 import { logos } from "@/util/logos";
 import { satsToBch } from "@/util/sats";
 import { convertCashAddress } from "@/util/cashaddr";
+import { toAlphanumericUri } from "@/util/uri";
 
 import { translate } from "@/util/translations";
 import translations from "@/views/wallet/translations";
@@ -57,6 +59,7 @@ export default function WalletViewHome() {
   const genesis_height = useSelector(selectGenesisHeight);
 
   const isStablecoinMode = useSelector(selectIsStablecoinMode);
+  const shouldUseLegacyBip21 = useSelector(selectShouldUseLegacyBip21);
 
   const shouldUseTokenAddress = useSelector(selectShouldUseTokenAddress);
   const setShouldUseTokenAddress = (mode) =>
@@ -100,13 +103,17 @@ export default function WalletViewHome() {
   };
 
   // generate bip21 uri for QR code
-  const qrRequest = useMemo(
-    () =>
-      shouldShowRequestAmount && satoshiInput > 0
-        ? `${address}?amount=${satsToBch(satoshiInput).bch}`
-        : address,
-    [shouldShowRequestAmount, satoshiInput, address]
-  );
+  // PayPro CHIP-2023-05: use ?s= (satoshis) by default, ?amount= (BCH) for legacy
+  // PayPro format uses alphanumeric encoding for more efficient QR codes
+  const qrRequest = useMemo(() => {
+    if (!shouldShowRequestAmount || satoshiInput <= 0) {
+      return address;
+    }
+    if (shouldUseLegacyBip21) {
+      return `${address}?amount=${satsToBch(satoshiInput).bch}`;
+    }
+    return toAlphanumericUri(`${address}?s=${satoshiInput}`);
+  }, [shouldShowRequestAmount, satoshiInput, address, shouldUseLegacyBip21]);
 
   const qrLogoImage = useMemo(() => {
     const logo = qrCodeSettings.logo.toLowerCase();

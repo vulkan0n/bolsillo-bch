@@ -759,6 +759,12 @@ const translations = {
     zh: "即时支付限额",
     zh_TW: "即時支付限額"
   },
+  useLegacyBip21: {
+    en: "Use Legacy payment request format",
+  },
+  useLegacyBip21Description: {
+    en: "Generate QR codes using legacy format (BIP21) for compatibility with older wallets.",
+  },
   qrCodeSettings: {
     ar: "رمز الاستجابة السريعة",
     bn: "কিউআর কোড",

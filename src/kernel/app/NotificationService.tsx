@@ -12,7 +12,7 @@ import TokenAmount from "@/atoms/TokenAmount";
 import translations from "@/views/wallet/translations";
 import { translate } from "@/util/translations";
 
-export default function ToastService() {
+export default function NotificationService() {
   return {
     spawn,
     paymentReceived,
@@ -21,6 +21,7 @@ export default function ToastService() {
     disconnected,
     authFail,
     invalidScan,
+    expiredPayment,
   };
 
   function spawn({ header, body, icon, options = {} }) {
@@ -147,6 +148,15 @@ export default function ToastService() {
         </span>
       ),
       options: { id: "invalidScan", duration: 3000 },
+    });
+  }
+
+  function expiredPayment() {
+    spawn({
+      icon: <DisconnectOutlined className="text-4xl text-error" />,
+      header: translate(translations.paymentExpired),
+      body: null,
+      options: { id: "expiredPayment", duration: 3000 },
     });
   }
 }

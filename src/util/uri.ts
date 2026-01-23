@@ -8,8 +8,50 @@ import {
   assertSuccess,
 } from "@bitauth/libauth";
 import { sha256, ripemd160 } from "@/util/hash";
+import { bchToSats } from "@/util/sats";
 import { Haptic } from "@/util/haptic";
 import WalletManagerService from "@/kernel/wallet/WalletManagerService";
+
+/**
+ * Encode URI to alphanumeric QR format (CHIP-2023-05)
+ * QR codes in alphanumeric mode use uppercase and substitute:
+ * ? -> : (for query string start)
+ * = -> - (for key=value)
+ * & -> + (for parameter separation)
+ */
+export function toAlphanumericUri(uri: string): string {
+  return uri
+    .toUpperCase()
+    .replace(/\?/g, ":")
+    .replace(/=/g, "-")
+    .replace(/&/g, "+");
+}
+
+/**
+ * Decode alphanumeric QR format (CHIP-2023-05)
+ * Reverses the encoding from toAlphanumericUri.
+ * Note: The first colon is the cashaddr prefix separator and must be preserved.
+ */
+export function fromAlphanumericUri(uri: string): string {
+  // Only process if entirely uppercase (indicates alphanumeric QR mode)
+  if (uri !== uri.toUpperCase()) return uri;
+
+  // Find the first colon (cashaddr prefix separator)
+  const firstColonIndex = uri.indexOf(":");
+  if (firstColonIndex === -1) return uri.toLowerCase();
+
+  // Keep prefix:address, decode the rest
+  const prefix = uri.slice(0, firstColonIndex + 1);
+  const rest = uri.slice(firstColonIndex + 1);
+
+  // In the rest, the first colon (if any) is the query separator
+  const decoded = rest
+    .replace(/:/, "?") // Only first : becomes ?
+    .replace(/-/g, "=")
+    .replace(/\+/g, "&");
+
+  return (prefix + decoded).toLowerCase();
+}
 
 // validateBchUri: validates all possible BCH URI formats
 export function validateBchUri(uri: string) {
@@ -19,9 +61,13 @@ export function validateBchUri(uri: string) {
     isTokenAddress,
     isBase58Address,
     address,
-    amount,
+    satoshis,
     tokenCategory,
     tokenAmount,
+    nftCommitment,
+    message,
+    expiration,
+    isExpired,
   } = validateBip21Uri(uri);
 
   const { isPaymentProtocol, requestUri } = validatePaymentProtocolUri(uri);
@@ -36,10 +82,14 @@ export function validateBchUri(uri: string) {
     wifPayload.isWif ||
     wcPayload.isWalletConnect;
 
+  // Build query string using PayPro params (s, f, c, n, m, e)
   const query = `?${[
-    amount > 0 ? ["amount", amount] : false,
+    satoshis !== undefined ? ["s", satoshis.toString()] : false,
     tokenCategory ? ["c", tokenCategory] : false,
-    tokenAmount > 0 ? ["ft", tokenAmount] : false,
+    tokenAmount > 0 ? ["f", tokenAmount.toString()] : false,
+    nftCommitment !== undefined ? ["n", nftCommitment] : false,
+    message ? ["m", encodeURIComponent(message)] : false,
+    expiration !== undefined ? ["e", expiration] : false,
   ]
     .filter((q) => q !== false)
     .map((q) => `${q[0]}=${q[1]}`)
@@ -47,7 +97,7 @@ export function validateBchUri(uri: string) {
 
   const payload = {
     address,
-    amount,
+    satoshis,
     query,
     requestUri,
     isValid,
@@ -56,6 +106,12 @@ export function validateBchUri(uri: string) {
     isTokenAddress,
     isBase58Address,
     isPaymentProtocol,
+    tokenCategory,
+    tokenAmount,
+    nftCommitment,
+    message,
+    expiration,
+    isExpired,
     ...wifPayload,
     ...wcPayload,
   };
@@ -70,9 +126,39 @@ export function validateBip21Uri(uri: string) {
 
   const queryString = uriSplit[1] || "";
   const searchParams = new URLSearchParams(queryString);
-  const amount = Number.parseFloat(searchParams.get("amount") || "0");
+
+  // Parse legacy BIP21 amount (BCH) and convert to satoshis
+  const amountParam = searchParams.get("amount");
+  const amountSatoshis =
+    amountParam !== null ? bchToSats(amountParam) : undefined;
+
+  // PayPro CHIP-2023-05: satoshi amount (s parameter, preferred over amount)
+  const sParam = searchParams.get("s");
+  const satoshis = sParam !== null ? BigInt(sParam) : amountSatoshis;
+
+  // Token category
   const tokenCategory = searchParams.get("c") || undefined;
-  const tokenAmount = BigInt(searchParams.get("ft") || "0");
+
+  // PayPro CHIP-2023-05: fungible token amount (f preferred, ft for backward compat)
+  const fParam = searchParams.get("f");
+  const ftParam = searchParams.get("ft");
+  const tokenAmount = BigInt(fParam || ftParam || "0");
+
+  // PayPro CHIP-2023-05: NFT commitment (n parameter)
+  // undefined = not specified, "" = any NFT of category, "hex..." = specific NFT
+  const nParam = searchParams.get("n");
+  const nftCommitment = nParam !== null ? nParam : undefined;
+
+  // PayPro CHIP-2023-05: message/memo (m preferred, message for backward compat)
+  const mParam = searchParams.get("m");
+  const messageParam = searchParams.get("message");
+  const message = mParam || messageParam || undefined;
+
+  // PayPro CHIP-2023-05: expiration timestamp (e parameter)
+  const eParam = searchParams.get("e");
+  const expiration = eParam !== null ? Number.parseInt(eParam) : undefined;
+  const isExpired =
+    expiration !== undefined && expiration < Math.floor(Date.now() / 1000);
 
   // various providers do stupid things with cashaddr that we must handle.
   // in the wild we've seen:
@@ -110,9 +196,13 @@ export function validateBip21Uri(uri: string) {
     isTokenAddress,
     isBase58Address,
     address: isBip21 ? prefixedAddress : "",
-    amount,
+    satoshis,
     tokenCategory,
     tokenAmount,
+    nftCommitment,
+    message,
+    expiration,
+    isExpired,
   };
 }
 
@@ -228,7 +318,15 @@ export function validateWalletConnectUri(uri: string) {
 // navigateOnValidUri: maps URI handlers to app routes
 export const navigateOnValidUri = async (
   input: string
-): Promise<{ navTo: string; navState: object; isTokenAddress: boolean }> => {
+): Promise<{
+  navTo: string;
+  navState: object;
+  isTokenAddress: boolean;
+  isExpired: boolean;
+}> => {
+  // Decode alphanumeric QR format if detected (CHIP-2023-05)
+  const decodedInput = fromAlphanumericUri(input);
+
   // go to send screen when valid address is entered
   const {
     isValid,
@@ -236,17 +334,24 @@ export const navigateOnValidUri = async (
     isWalletConnect,
     isPaymentProtocol,
     isWif,
+    isExpired,
     address,
     query,
     requestUri,
     wif,
     wcUri,
-  } = validateBchUri(input);
+  } = validateBchUri(decodedInput);
 
   let navTo = "";
   let navState;
 
   if (isValid) {
+    // Check expiration before proceeding
+    if (isExpired) {
+      await Haptic.error();
+      return { navTo: "", navState: {}, isTokenAddress, isExpired: true };
+    }
+
     await Haptic.success();
 
     if (isWalletConnect) {
@@ -263,5 +368,5 @@ export const navigateOnValidUri = async (
     await Haptic.error();
   }
 
-  return { navTo, navState, isTokenAddress };
+  return { navTo, navState, isTokenAddress, isExpired: isExpired || false };
 };

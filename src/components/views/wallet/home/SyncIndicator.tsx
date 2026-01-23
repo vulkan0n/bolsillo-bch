@@ -21,7 +21,7 @@ import {
   selectIsOfflineMode,
 } from "@/redux/preferences";
 import { selectActiveWalletHash } from "@/redux/wallet";
-import ToastService from "@/kernel/app/NotificationService";
+import NotificationService from "@/kernel/app/NotificationService";
 
 import { useLongPress } from "@/hooks/useLongPress";
 
@@ -73,7 +73,7 @@ export default function SyncIndicator() {
         dispatch(syncHotRefresh({ force: false }));
       } else {
         disconnectApi.start();
-        ToastService().disconnected();
+        NotificationService().disconnected();
         dispatch(syncReconnect());
       }
     },
