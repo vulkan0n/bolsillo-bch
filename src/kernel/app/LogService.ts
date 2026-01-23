@@ -1,6 +1,6 @@
 import Logger from "js-logger";
 import { SELENE_WALLET_VERSION } from "@/util/version";
-import ConsoleService from "@/services/ConsoleService";
+import ConsoleService from "@/kernel/app/ConsoleService";
 
 // eslint-disable-next-line react-hooks/rules-of-hooks
 Logger.useDefaults();

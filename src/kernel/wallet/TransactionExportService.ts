@@ -6,9 +6,9 @@ import { DateTime } from "luxon";
 import { Output } from "@bitauth/libauth";
 import TransactionManagerService, {
   TransactionEntity,
-} from "@/services/TransactionManagerService";
+} from "@/kernel/bch/TransactionManagerService";
 import { binToHex } from "@/util/hex";
-import LogService from "@/services/LogService";
+import LogService from "@/kernel/app/LogService";
 
 const Log = LogService("TransactionExport");
 
@@ -168,8 +168,9 @@ export async function prepareTransactionExportData(
 
   let voutWithTokens = tx.vout;
   if (walletHash) {
-    const TokenManagerService = (await import("@/services/TokenManagerService"))
-      .default;
+    const TokenManagerService = (
+      await import("@/kernel/wallet/TokenManagerService")
+    ).default;
     const TokenManager = TokenManagerService(walletHash);
 
     voutWithTokens = tx.vout.map((output) => {

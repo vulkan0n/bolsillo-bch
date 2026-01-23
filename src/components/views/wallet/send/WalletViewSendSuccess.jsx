@@ -16,8 +16,8 @@ import {
 } from "@/redux/preferences";
 import { selectActiveWalletHash } from "@/redux/wallet";
 
-import TransactionHistoryService from "@/services/TransactionHistoryService";
-import TokenManagerService from "@/services/TokenManagerService";
+import TransactionHistoryService from "@/kernel/wallet/TransactionHistoryService";
+import TokenManagerService from "@/kernel/wallet/TokenManagerService";
 
 import Address from "@/atoms/Address";
 import Satoshi from "@/atoms/Satoshi";
@@ -30,7 +30,7 @@ import translations from "@/views/wallet/translations";
 import { useClipboard } from "@/hooks/useClipboard";
 import { binToHex } from "@/util/hex";
 
-import LogService from "@/services/LogService";
+import LogService from "@/kernel/app/LogService";
 
 const Log = LogService("WalletViewSendSuccess");
 

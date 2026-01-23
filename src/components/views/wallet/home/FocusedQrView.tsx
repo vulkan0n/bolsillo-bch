@@ -8,7 +8,7 @@ import {
   setPreference,
 } from "@/redux/preferences";
 
-import SecurityService, { AuthActions } from "@/services/SecurityService";
+import SecurityService, { AuthActions } from "@/kernel/app/SecurityService";
 
 import Overlay from "@/atoms/Overlay";
 

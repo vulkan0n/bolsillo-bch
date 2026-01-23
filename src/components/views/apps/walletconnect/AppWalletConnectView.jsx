@@ -16,9 +16,9 @@ import { WalletConnectFilled } from "@/icons/WalletConnectFilled";
 
 import { useClipboard } from "@/hooks/useClipboard";
 
-import WalletConnectService from "@/services/WalletConnectService";
-import AddressManagerService from "@/services/AddressManagerService";
-import LogService from "@/services/LogService";
+import WalletConnectService from "@/kernel/bch/WalletConnectService";
+import AddressManagerService from "@/kernel/wallet/AddressManagerService";
+import LogService from "@/kernel/app/LogService";
 
 import { convertCashAddress } from "@/util/cashaddr";
 import { translate } from "@/util/translations";

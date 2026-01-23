@@ -12,7 +12,7 @@ import "@testing-library/jest-dom/vitest";
 
 // Mock WalletManagerService for tests that use validateBip21Uri
 // This is needed because validateBip21Uri calls WalletManagerService().getPrefix()
-vi.mock("@/services/WalletManagerService", () => ({
+vi.mock("@/kernel/wallet/WalletManagerService", () => ({
   default: () => ({
     getPrefix: () => "bitcoincash",
     getNetwork: () => "mainnet",

@@ -14,11 +14,11 @@ import { syncHotRefresh, selectSyncState } from "@/redux/sync";
 import ViewHeader from "@/layout/ViewHeader";
 import Button from "@/atoms/Button";
 
-import LogService from "@/services/LogService";
-import WalletManagerService from "@/services/WalletManagerService";
-import AddressScannerService from "@/services/AddressScannerService";
-import HdNodeService from "@/services/HdNodeService";
-import AddressManagerService from "@/services/AddressManagerService";
+import LogService from "@/kernel/app/LogService";
+import WalletManagerService from "@/kernel/wallet/WalletManagerService";
+import AddressScannerService from "@/kernel/wallet/AddressScannerService";
+import HdNodeService from "@/kernel/wallet/HdNodeService";
+import AddressManagerService from "@/kernel/wallet/AddressManagerService";
 
 import AssetsViewAddresses from "@/views/assets/AssetsViewAddresses";
 

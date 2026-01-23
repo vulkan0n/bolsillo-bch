@@ -29,15 +29,15 @@ import {
 
 import { selectScannerIsScanning } from "@/redux/device";
 
-import AddressManagerService from "@/services/AddressManagerService";
-import TransactionManagerService from "@/services/TransactionManagerService";
+import AddressManagerService from "@/kernel/wallet/AddressManagerService";
+import TransactionManagerService from "@/kernel/bch/TransactionManagerService";
 import TransactionBuilderService, {
   Recipient,
-} from "@/services/TransactionBuilderService";
-import TokenManagerService from "@/services/TokenManagerService";
-import SecurityService, { AuthActions } from "@/services/SecurityService";
-import LogService from "@/services/LogService";
-import CauldronService from "@/services/CauldronService";
+} from "@/kernel/bch/TransactionBuilderService";
+import TokenManagerService from "@/kernel/wallet/TokenManagerService";
+import SecurityService, { AuthActions } from "@/kernel/app/SecurityService";
+import LogService from "@/kernel/app/LogService";
+import CauldronService from "@/kernel/bch/CauldronService";
 
 import { useStablecoinBalance } from "@/hooks/useStablecoinBalance";
 

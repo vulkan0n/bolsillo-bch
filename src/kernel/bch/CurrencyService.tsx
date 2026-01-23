@@ -1,6 +1,6 @@
 import { Decimal } from "decimal.js";
 import { Device } from "@capacitor/device";
-import LogService from "@/services/LogService";
+import LogService from "@/kernel/app/LogService";
 import { bchToSats, satsToBch } from "@/util/sats";
 import {
   DEFAULT_CURRENCY,

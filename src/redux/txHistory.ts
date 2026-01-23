@@ -10,8 +10,8 @@ import { RootState } from "@/redux";
 import { selectActiveWalletHash } from "@/redux/wallet";
 import { selectCurrencySettings, selectBchNetwork } from "@/redux/preferences";
 
-import LogService from "@/services/LogService";
-import TransactionHistoryService from "@/services/TransactionHistoryService";
+import LogService from "@/kernel/app/LogService";
+import TransactionHistoryService from "@/kernel/wallet/TransactionHistoryService";
 
 const Log = LogService("redux/txHistory");
 

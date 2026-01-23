@@ -1,13 +1,13 @@
 import { DateTime } from "luxon";
-import LogService from "@/services/LogService";
-import DatabaseService from "@/services/DatabaseService";
-import ElectrumService from "@/services/ElectrumService";
-import AddressManagerService from "@/services/AddressManagerService";
+import LogService from "@/kernel/app/LogService";
+import DatabaseService from "@/kernel/app/DatabaseService";
+import ElectrumService from "@/kernel/bch/ElectrumService";
+import AddressManagerService from "@/kernel/wallet/AddressManagerService";
 import TransactionManagerService, {
   TransactionEntity,
-} from "@/services/TransactionManagerService";
-import CurrencyService from "@/services/CurrencyService";
-import TokenManagerService from "@/services/TokenManagerService";
+} from "@/kernel/bch/TransactionManagerService";
+import CurrencyService from "@/kernel/bch/CurrencyService";
+import TokenManagerService from "@/kernel/wallet/TokenManagerService";
 import { binToHex } from "@/util/hex";
 import { convertCashAddress } from "@/util/cashaddr";
 import { COINBASE_TXID } from "@/util/blockchain";

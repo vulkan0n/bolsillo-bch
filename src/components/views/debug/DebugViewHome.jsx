@@ -11,11 +11,11 @@ import {
 import { selectSecuritySettings } from "@/redux/preferences";
 import Button from "@/atoms/Button";
 
-import LogService from "@/services/LogService";
-import SecurityService, { AuthActions } from "@/services/SecurityService";
-import JanitorService from "@/services/JanitorService";
-import ConsoleService from "@/services/ConsoleService";
-import BcmrService from "@/services/BcmrService";
+import LogService from "@/kernel/app/LogService";
+import SecurityService, { AuthActions } from "@/kernel/app/SecurityService";
+import JanitorService from "@/kernel/app/JanitorService";
+import ConsoleService from "@/kernel/app/ConsoleService";
+import BcmrService from "@/kernel/bch/BcmrService";
 
 import { translate } from "@/util/translations";
 import translations from "./translations";

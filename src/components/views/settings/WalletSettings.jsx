@@ -14,7 +14,7 @@ import { translate } from "@/util/translations";
 import translations from "./translations";
 
 import Accordion from "@/atoms/Accordion";
-import WalletManagerService from "@/services/WalletManagerService";
+import WalletManagerService from "@/kernel/wallet/WalletManagerService";
 
 export default function WalletSettings() {
   const walletList = WalletManagerService().listWallets();

@@ -9,10 +9,10 @@ import {
   Input as LibauthInput,
 } from "@bitauth/libauth";
 
-import LogService from "@/services/LogService";
-import DatabaseService from "@/services/DatabaseService";
-import ElectrumService from "@/services/ElectrumService";
-import WalletManagerService from "@/services/WalletManagerService";
+import LogService from "@/kernel/app/LogService";
+import DatabaseService from "@/kernel/app/DatabaseService";
+import ElectrumService from "@/kernel/bch/ElectrumService";
+import WalletManagerService from "@/kernel/wallet/WalletManagerService";
 
 import { hexToBin, binToHex } from "@/util/hex";
 import { ValidBchNetwork } from "@/util/electrum_servers";

@@ -21,7 +21,7 @@ import {
   selectIsOfflineMode,
 } from "@/redux/preferences";
 import { selectActiveWalletHash } from "@/redux/wallet";
-import ToastService from "@/services/ToastService";
+import ToastService from "@/kernel/app/NotificationService";
 
 import { useLongPress } from "@/hooks/useLongPress";
 

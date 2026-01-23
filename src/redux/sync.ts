@@ -21,20 +21,20 @@ import {
   selectBchNetwork,
 } from "@/redux/preferences";
 
-import LogService from "@/services/LogService";
+import LogService from "@/kernel/app/LogService";
 import ElectrumService, {
   ElectrumVersionMismatchError,
-} from "@/services/ElectrumService";
-import CauldronService from "@/services/CauldronService";
-import BlockchainService from "@/services/BlockchainService";
-import WalletManagerService from "@/services/WalletManagerService";
+} from "@/kernel/bch/ElectrumService";
+import CauldronService from "@/kernel/bch/CauldronService";
+import BlockchainService from "@/kernel/bch/BlockchainService";
+import WalletManagerService from "@/kernel/wallet/WalletManagerService";
 import AddressManagerService, {
   AddressEntity,
   AddressStub,
-} from "@/services/AddressManagerService";
-import AddressScannerService from "@/services/AddressScannerService";
-import UtxoManagerService from "@/services/UtxoManagerService";
-import JanitorService from "@/services/JanitorService";
+} from "@/kernel/wallet/AddressManagerService";
+import AddressScannerService from "@/kernel/wallet/AddressScannerService";
+import UtxoManagerService from "@/kernel/wallet/UtxoManagerService";
+import JanitorService from "@/kernel/app/JanitorService";
 
 const Log = LogService("redux/sync");
 

@@ -8,7 +8,7 @@ import { selectDeviceInfo } from "@/redux/device";
 import { satsToBch, bchToSats, MAX_SATOSHI } from "@/util/sats";
 import { getMaxDecimals, truncateDecimals } from "@/util/currency";
 
-import CurrencyService from "@/services/CurrencyService";
+import CurrencyService from "@/kernel/bch/CurrencyService";
 
 interface SatoshiInputProps {
   ref?: Ref<HTMLInputElement>;

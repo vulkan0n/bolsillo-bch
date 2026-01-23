@@ -15,11 +15,11 @@ import { generateTransaction, encodeTransaction } from "@bitauth/libauth";
 import { selectActiveWallet } from "@/redux/wallet";
 import { selectBchNetwork } from "@/redux/preferences";
 
-import LogService from "@/services/LogService";
-import WalletConnectService from "@/services/WalletConnectService";
-import AddressManagerService from "@/services/AddressManagerService";
-import HdNodeService from "@/services/HdNodeService";
-import ElectrumService from "@/services/ElectrumService";
+import LogService from "@/kernel/app/LogService";
+import WalletConnectService from "@/kernel/bch/WalletConnectService";
+import AddressManagerService from "@/kernel/wallet/AddressManagerService";
+import HdNodeService from "@/kernel/wallet/HdNodeService";
+import ElectrumService from "@/kernel/bch/ElectrumService";
 
 import { binToHex } from "@/util/hex";
 import { sha256 } from "@/util/hash";

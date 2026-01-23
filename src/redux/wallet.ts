@@ -18,18 +18,18 @@ import { ValidBchNetwork } from "@/util/electrum_servers";
 
 import WalletManagerService, {
   WalletEntity,
-} from "@/services/WalletManagerService";
-import ElectrumService from "@/services/ElectrumService";
-import CauldronService from "@/services/CauldronService";
+} from "@/kernel/wallet/WalletManagerService";
+import ElectrumService from "@/kernel/bch/ElectrumService";
+import CauldronService from "@/kernel/bch/CauldronService";
 import AddressManagerService, {
   AddressEntity,
-} from "@/services/AddressManagerService";
-import AddressScannerService from "@/services/AddressScannerService";
-import UtxoManagerService from "@/services/UtxoManagerService";
-import TokenManagerService from "@/services/TokenManagerService";
+} from "@/kernel/wallet/AddressManagerService";
+import AddressScannerService from "@/kernel/wallet/AddressScannerService";
+import UtxoManagerService from "@/kernel/wallet/UtxoManagerService";
+import TokenManagerService from "@/kernel/wallet/TokenManagerService";
 
-import ToastService from "@/services/ToastService";
-import LogService from "@/services/LogService";
+import ToastService from "@/kernel/app/NotificationService";
+import LogService from "@/kernel/app/LogService";
 
 import { convertCashAddress } from "@/util/cashaddr";
 import { MUSD_TOKENID } from "@/util/tokens";

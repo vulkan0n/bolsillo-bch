@@ -21,7 +21,7 @@ import {
 
 import { TelegramFilled } from "@/icons/TelegramFilled";
 import { selectIsDarkMode } from "@/redux/preferences";
-import { TokenEntity } from "@/services/TokenManagerService";
+import { TokenEntity } from "@/kernel/wallet/TokenManagerService";
 
 import TokenIcon from "@/atoms/TokenIcon";
 import TokenAmount from "@/atoms/TokenAmount";

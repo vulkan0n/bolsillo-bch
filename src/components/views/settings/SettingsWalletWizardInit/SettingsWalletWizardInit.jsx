@@ -3,7 +3,7 @@ import { PlusCircleOutlined, ImportOutlined } from "@ant-design/icons";
 
 import Button from "@/atoms/Button";
 
-import WalletManagerService from "@/services/WalletManagerService";
+import WalletManagerService from "@/kernel/wallet/WalletManagerService";
 
 import { translate } from "@/util/translations";
 import translations from "./translations";

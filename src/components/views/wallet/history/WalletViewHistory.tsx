@@ -46,15 +46,15 @@ import TokenAmount from "@/atoms/TokenAmount";
 import TokenSymbol from "@/atoms/TokenSymbol";
 import Button from "@/components/atoms/Button";
 import Select from "@/components/atoms/Select";
-import type { MergedHistoryEntity } from "@/services/TransactionHistoryService";
+import type { MergedHistoryEntity } from "@/kernel/wallet/TransactionHistoryService";
 import { selectActiveWalletHash } from "@/redux/wallet";
-import TransactionHistoryService from "@/services/TransactionHistoryService";
-import TransactionManagerService from "@/services/TransactionManagerService";
+import TransactionHistoryService from "@/kernel/wallet/TransactionHistoryService";
+import TransactionManagerService from "@/kernel/bch/TransactionManagerService";
 import {
   prepareTransactionExportData,
   exportHistoryAsCsv,
-} from "@/services/TransactionExportService";
-import LogService from "@/services/LogService";
+} from "@/kernel/wallet/TransactionExportService";
+import LogService from "@/kernel/app/LogService";
 
 const Log = LogService("WalletViewHistory");
 

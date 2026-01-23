@@ -14,12 +14,12 @@ import {
   selectBchNetwork,
 } from "@/redux/preferences";
 
-import TransactionManagerService from "@/services/TransactionManagerService";
-import TransactionBuilderService from "@/services/TransactionBuilderService";
-import TransactionHistoryService from "@/services/TransactionHistoryService";
-import ToastService from "@/services/ToastService";
-import SecurityService, { AuthActions } from "@/services/SecurityService";
-import LogService from "@/services/LogService";
+import TransactionManagerService from "@/kernel/bch/TransactionManagerService";
+import TransactionBuilderService from "@/kernel/bch/TransactionBuilderService";
+import TransactionHistoryService from "@/kernel/wallet/TransactionHistoryService";
+import ToastService from "@/kernel/app/NotificationService";
+import SecurityService, { AuthActions } from "@/kernel/app/SecurityService";
+import LogService from "@/kernel/app/LogService";
 
 import Button from "@/atoms/Button";
 import SlideToAction from "@/atoms/SlideToAction";

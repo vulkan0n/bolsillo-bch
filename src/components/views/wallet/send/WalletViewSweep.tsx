@@ -7,15 +7,15 @@ import { selectActiveWalletHash } from "@/redux/wallet";
 import { selectSyncState } from "@/redux/sync";
 import { selectIsOfflineMode, selectBchNetwork } from "@/redux/preferences";
 
-import LogService from "@/services/LogService";
-import AddressManagerService from "@/services/AddressManagerService";
-import ElectrumService from "@/services/ElectrumService";
-import TransactionManagerService from "@/services/TransactionManagerService";
+import LogService from "@/kernel/app/LogService";
+import AddressManagerService from "@/kernel/wallet/AddressManagerService";
+import ElectrumService from "@/kernel/bch/ElectrumService";
+import TransactionManagerService from "@/kernel/bch/TransactionManagerService";
 import {
   ElectrumUtxo,
   buildSweepTransaction,
-} from "@/services/TransactionBuilderService";
-import ToastService from "@/services/ToastService";
+} from "@/kernel/bch/TransactionBuilderService";
+import ToastService from "@/kernel/app/NotificationService";
 
 import Satoshi from "@/atoms/Satoshi";
 import Button from "@/atoms/Button";

@@ -6,7 +6,7 @@ import QrScanner from "qr-scanner";
 import { Haptic } from "@/util/haptic";
 
 import { setScannerIsScanning } from "@/redux/device";
-import ToastService from "@/services/ToastService";
+import ToastService from "@/kernel/app/NotificationService";
 
 import Button, { ButtonProps } from "@/atoms/Button";
 import translations from "@/views/wallet/translations";

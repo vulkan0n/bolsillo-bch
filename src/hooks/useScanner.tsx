@@ -10,8 +10,8 @@ import {
   selectTorchIsEnabled,
 } from "@/redux/device";
 
-import ToastService from "@/services/ToastService";
-import LogService from "@/services/LogService";
+import ToastService from "@/kernel/app/NotificationService";
+import LogService from "@/kernel/app/LogService";
 
 import { translate } from "@/util/translations";
 import translations from "@/views/wallet/translations";

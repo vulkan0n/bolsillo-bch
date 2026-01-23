@@ -2,7 +2,7 @@ import { Core } from "@walletconnect/core";
 import { getSdkError } from "@walletconnect/utils";
 import { WalletKit } from "@reown/walletkit";
 
-import LogService from "@/services/LogService";
+import LogService from "@/kernel/app/LogService";
 
 const Log = LogService("WalletConnect");
 

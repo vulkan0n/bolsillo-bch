@@ -9,7 +9,7 @@ import {
   selectBchNetwork,
   selectIsVendorModeActive,
 } from "@/redux/preferences";
-import ElectrumService from "@/services/ElectrumService";
+import ElectrumService from "@/kernel/bch/ElectrumService";
 import WalletViewBalance from "@/views/wallet/home/WalletViewBalance";
 import SyncIndicator from "@/views/wallet/home/SyncIndicator";
 import BalanceHideButton from "@/views/wallet/home/BalanceHideButton";

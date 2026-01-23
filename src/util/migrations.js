@@ -1,4 +1,4 @@
-import LogService from "@/services/LogService";
+import LogService from "@/kernel/app/LogService";
 import { DEFAULT_DERIVATION_PATH } from "@/util/derivation";
 
 const Log = LogService("migrations");

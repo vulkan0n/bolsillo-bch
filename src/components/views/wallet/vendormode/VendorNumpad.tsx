@@ -1,7 +1,7 @@
 import { useState, useCallback } from "react";
 import { useSelector } from "react-redux";
 import { selectCurrencySettings } from "@/redux/preferences";
-import CurrencyService from "@/services/CurrencyService";
+import CurrencyService from "@/kernel/bch/CurrencyService";
 import { bchToSats } from "@/util/sats";
 import { getMaxDecimals } from "@/util/currency";
 

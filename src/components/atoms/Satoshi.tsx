@@ -7,7 +7,7 @@ import {
   selectPrivacySettings,
 } from "@/redux/preferences";
 
-import CurrencyService from "@/services/CurrencyService";
+import CurrencyService from "@/kernel/bch/CurrencyService";
 import { satsToBch } from "@/util/sats";
 
 interface Props {

@@ -1,6 +1,6 @@
-import LogService from "@/services/LogService";
-import DatabaseService from "@/services/DatabaseService";
-import TransactionManagerService from "@/services/TransactionManagerService";
+import LogService from "@/kernel/app/LogService";
+import DatabaseService from "@/kernel/app/DatabaseService";
+import TransactionManagerService from "@/kernel/bch/TransactionManagerService";
 import { sha256 } from "@/util/hash";
 
 const Log = LogService("AddressManager");

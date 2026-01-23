@@ -1,9 +1,9 @@
 /* eslint-disable max-classes-per-file */
 import { swapEndianness } from "@bitauth/libauth";
 import { Filesystem, Directory } from "@capacitor/filesystem";
-import LogService from "@/services/LogService";
-import DatabaseService from "@/services/DatabaseService";
-import ElectrumService from "@/services/ElectrumService";
+import LogService from "@/kernel/app/LogService";
+import DatabaseService from "@/kernel/app/DatabaseService";
+import ElectrumService from "@/kernel/bch/ElectrumService";
 import { hexToBin, binToHex } from "@/util/hex";
 import { sha256 } from "@/util/hash";
 import { block_checkpoints } from "@/util/blockchain";

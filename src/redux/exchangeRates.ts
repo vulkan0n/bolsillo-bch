@@ -13,8 +13,8 @@ import {
   selectCurrencySettings,
   selectIsOfflineMode,
 } from "@/redux/preferences";
-import CurrencyService from "@/services/CurrencyService";
-import LogService from "@/services/LogService";
+import CurrencyService from "@/kernel/bch/CurrencyService";
+import LogService from "@/kernel/app/LogService";
 import { currencyList } from "@/util/currency";
 
 const Log = LogService("redux/exchangeRates");

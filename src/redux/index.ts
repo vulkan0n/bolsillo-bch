@@ -1,5 +1,5 @@
 import { configureStore, combineReducers } from "@reduxjs/toolkit";
-import LogService from "@/services/LogService";
+import LogService from "@/kernel/app/LogService";
 import {
   preferencesReducer,
   selectActiveWalletHash,

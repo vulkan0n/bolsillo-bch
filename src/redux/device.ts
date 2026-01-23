@@ -11,7 +11,7 @@ import { Network, ConnectionStatus } from "@capacitor/network";
 import { NativeBiometric } from "@capgo/capacitor-native-biometric";
 import { store, RootState } from "@/redux";
 //import { syncReconnect } from "@/redux/sync";
-import LogService from "@/services/LogService";
+import LogService from "@/kernel/app/LogService";
 import { sha256 } from "@/util/hash";
 
 const Log = LogService("Device");

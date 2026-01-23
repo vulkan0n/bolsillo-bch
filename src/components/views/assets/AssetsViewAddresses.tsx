@@ -5,8 +5,8 @@ import { MoneyCollectOutlined } from "@ant-design/icons";
 import { selectActiveWalletHash } from "@/redux/wallet";
 import AddressManagerService, {
   AddressEntity,
-} from "@/services/AddressManagerService";
-import UtxoManagerService from "@/services/UtxoManagerService";
+} from "@/kernel/wallet/AddressManagerService";
+import UtxoManagerService from "@/kernel/wallet/UtxoManagerService";
 import Address from "@/atoms/Address";
 import Satoshi from "@/atoms/Satoshi";
 

@@ -23,7 +23,7 @@ import {
   selectCurrencySettings,
 } from "@/redux/preferences";
 import { selectCurrentPriceString } from "@/redux/exchangeRates";
-import SecurityService, { AuthActions } from "@/services/SecurityService";
+import SecurityService, { AuthActions } from "@/kernel/app/SecurityService";
 
 import Satoshi from "@/atoms/Satoshi";
 import NumberFormat from "@/atoms/NumberFormat";

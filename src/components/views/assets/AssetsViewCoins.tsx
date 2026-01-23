@@ -17,9 +17,9 @@ import TokenIcon from "@/atoms/TokenIcon";
 import TokenAmount from "@/atoms/TokenAmount";
 import TokenSymbol from "@/atoms/TokenSymbol";
 
-import UtxoManagerService from "@/services/UtxoManagerService";
-import TokenManagerService from "@/services/TokenManagerService";
-import LogService from "@/services/LogService";
+import UtxoManagerService from "@/kernel/wallet/UtxoManagerService";
+import TokenManagerService from "@/kernel/wallet/TokenManagerService";
+import LogService from "@/kernel/app/LogService";
 import { useCurrencyFlip } from "@/hooks/useCurrencyFlip";
 
 import { translate } from "@/util/translations";

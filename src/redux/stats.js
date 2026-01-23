@@ -1,7 +1,7 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { DateTime } from "luxon";
 import { gql } from "@apollo/client";
-import LogService from "@/services/LogService";
+import LogService from "@/kernel/app/LogService";
 import { selectDeviceInfo } from "@/redux/device";
 import { selectGenesisHeight } from "@/redux/wallet";
 import {

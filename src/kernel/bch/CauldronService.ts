@@ -5,12 +5,12 @@ import {
   SpendableCoinType,
 } from "@cashlab/common";
 import { ExchangeLab, PoolV0, PoolV0Parameters } from "@cashlab/cauldron";
-import LogService from "@/services/LogService";
-import ElectrumService from "@/services/ElectrumService";
-import { WalletEntity } from "@/services/WalletManagerService";
-import AddressManagerService from "@/services/AddressManagerService";
-import UtxoManagerService from "@/services/UtxoManagerService";
-import HdNodeService from "@/services/HdNodeService";
+import LogService from "@/kernel/app/LogService";
+import ElectrumService from "@/kernel/bch/ElectrumService";
+import { WalletEntity } from "@/kernel/wallet/WalletManagerService";
+import AddressManagerService from "@/kernel/wallet/AddressManagerService";
+import UtxoManagerService from "@/kernel/wallet/UtxoManagerService";
+import HdNodeService from "@/kernel/wallet/HdNodeService";
 import { hexToBin, binToHex } from "@/util/hex";
 import { addressToLockingBytecode } from "@/util/cashaddr";
 

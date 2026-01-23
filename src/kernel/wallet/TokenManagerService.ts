@@ -1,11 +1,11 @@
 import { IdentitySnapshot, TokenCategory } from "@bitauth/libauth";
-import UtxoManagerService from "@/services/UtxoManagerService";
-import BcmrService from "@/services/BcmrService";
-import DatabaseService from "@/services/DatabaseService";
+import UtxoManagerService from "@/kernel/wallet/UtxoManagerService";
+import BcmrService from "@/kernel/bch/BcmrService";
+import DatabaseService from "@/kernel/app/DatabaseService";
 import TransactionManagerService, {
   TransactionEntity,
-} from "@/services/TransactionManagerService";
-import LogService from "@/services/LogService";
+} from "@/kernel/bch/TransactionManagerService";
+import LogService from "@/kernel/app/LogService";
 import { ValidBchNetwork } from "@/util/electrum_servers";
 
 const Log = LogService("TokenManagerService");

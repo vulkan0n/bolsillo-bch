@@ -21,11 +21,11 @@ import {
 import { hexToBin, binToHex } from "@/util/hex";
 import { sha256, ripemd160 } from "@/util/hash";
 
-import LogService from "@/services/LogService";
-import AddressManagerService from "@/services/AddressManagerService";
+import LogService from "@/kernel/app/LogService";
+import AddressManagerService from "@/kernel/wallet/AddressManagerService";
 import WalletManagerService, {
   WalletStub,
-} from "@/services/WalletManagerService";
+} from "@/kernel/wallet/WalletManagerService";
 
 const Log = LogService("HdNode");
 

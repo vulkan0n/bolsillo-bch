@@ -14,7 +14,7 @@ import {
 } from "@/redux/sync";
 import { selectBchNetwork, selectIsOfflineMode } from "@/redux/preferences";
 
-import ElectrumService from "@/services/ElectrumService";
+import ElectrumService from "@/kernel/bch/ElectrumService";
 import Button from "@/atoms/Button";
 
 import { translate } from "@/util/translations";

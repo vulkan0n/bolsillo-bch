@@ -3,7 +3,7 @@
 import ExploreView from "@/views/explore/ExploreView";
 import ExploreViewHome from "@/views/explore/ExploreViewHome";
 
-import TransactionManagerService from "@/services/TransactionManagerService";
+import TransactionManagerService from "@/kernel/bch/TransactionManagerService";
 
 import { selectBchNetwork } from "@/redux/preferences";
 import { store } from "@/redux";

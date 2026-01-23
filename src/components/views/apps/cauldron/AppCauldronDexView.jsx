@@ -21,10 +21,10 @@ import WalletViewBalance from "@/views/wallet/home/WalletViewBalance";
 
 import { useClipboard } from "@/hooks/useClipboard";
 
-import AddressManagerService from "@/services/AddressManagerService";
-import TokenManagerService from "@/services/TokenManagerService";
-import LogService from "@/services/LogService";
-import CauldronService from "@/services/CauldronService";
+import AddressManagerService from "@/kernel/wallet/AddressManagerService";
+import TokenManagerService from "@/kernel/wallet/TokenManagerService";
+import LogService from "@/kernel/app/LogService";
+import CauldronService from "@/kernel/bch/CauldronService";
 
 import { MUSD_TOKENID } from "@/util/tokens";
 

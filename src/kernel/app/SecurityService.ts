@@ -1,7 +1,7 @@
 import { Dialog } from "@capacitor/dialog";
 import { NativeBiometric } from "@capgo/capacitor-native-biometric";
-import LogService from "@/services/LogService";
-import ToastService from "@/services/ToastService";
+import LogService from "@/kernel/app/LogService";
+import ToastService from "@/kernel/app/NotificationService";
 import { store } from "@/redux";
 import { selectSecuritySettings } from "@/redux/preferences";
 import { sha256 } from "@/util/hash";

@@ -5,9 +5,9 @@ import { SyncOutlined, DisconnectOutlined } from "@ant-design/icons";
 import { selectBchNetwork } from "@/redux/preferences";
 import { walletBoot } from "@/redux/wallet";
 import { selectSyncState } from "@/redux/sync";
-import WalletManagerService from "@/services/WalletManagerService";
-import AddressScannerService from "@/services/AddressScannerService";
-import ElectrumService from "@/services/ElectrumService";
+import WalletManagerService from "@/kernel/wallet/WalletManagerService";
+import AddressScannerService from "@/kernel/wallet/AddressScannerService";
+import ElectrumService from "@/kernel/bch/ElectrumService";
 
 import { translate } from "@/util/translations";
 import translations from "./translations";

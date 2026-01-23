@@ -8,7 +8,7 @@ import {
 } from "@ant-design/icons";
 import { selectPrivacySettings } from "@/redux/preferences";
 import Accordion from "@/atoms/Accordion";
-import SecurityService, { AuthActions } from "@/services/SecurityService";
+import SecurityService, { AuthActions } from "@/kernel/app/SecurityService";
 import { translate } from "@/util/translations";
 import translations from "./translations";
 import { SettingsContext } from "./SettingsContext";

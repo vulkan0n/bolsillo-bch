@@ -6,9 +6,9 @@ import Accordion from "@/components/atoms/Accordion";
 import ShowMnemonic from "@/components/atoms/ShowMnemonic";
 import Button from "@/components/atoms/Button";
 
-import LogService from "@/services/LogService";
-import ConsoleService from "@/services/ConsoleService";
-import WalletManagerService from "@/services/WalletManagerService";
+import LogService from "@/kernel/app/LogService";
+import ConsoleService from "@/kernel/app/ConsoleService";
+import WalletManagerService from "@/kernel/wallet/WalletManagerService";
 
 import { selectActiveWallet } from "@/redux/wallet";
 import { resetPreferences } from "@/redux/preferences";

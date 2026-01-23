@@ -1,10 +1,10 @@
 import { App } from "@capacitor/app";
 import { createRoot } from "react-dom/client";
 import { SplashScreen } from "@capacitor/splash-screen";
-import LogService from "@/services/LogService";
-import JanitorService from "@/services/JanitorService";
-import DatabaseService from "@/services/DatabaseService";
-import BcmrService from "@/services/BcmrService";
+import LogService from "@/kernel/app/LogService";
+import JanitorService from "@/kernel/app/JanitorService";
+import DatabaseService from "@/kernel/app/DatabaseService";
+import BcmrService from "@/kernel/bch/BcmrService";
 import {
   redux_init,
   redux_pre_init,

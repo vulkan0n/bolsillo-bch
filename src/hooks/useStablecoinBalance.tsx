@@ -1,9 +1,9 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { useSelector } from "react-redux";
 import { selectActiveWalletBalance } from "@/redux/wallet";
-import UtxoManagerService from "@/services/UtxoManagerService";
-import CauldronService from "@/services/CauldronService";
-import CurrencyService from "@/services/CurrencyService";
+import UtxoManagerService from "@/kernel/wallet/UtxoManagerService";
+import CauldronService from "@/kernel/bch/CauldronService";
+import CurrencyService from "@/kernel/bch/CurrencyService";
 import { MUSD_TOKENID } from "@/util/tokens";
 
 export function useStablecoinBalance(walletHash) {

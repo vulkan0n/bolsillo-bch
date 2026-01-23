@@ -11,8 +11,8 @@ import { ValidBchNetwork } from "@/util/electrum_servers";
 import { languageList } from "@/util/translations";
 import { DEFAULT_CURRENCY, currencyList } from "@/util/currency";
 import { VALID_DENOMINATIONS } from "@/util/sats";
-import CurrencyService from "@/services/CurrencyService";
-import { AuthActions } from "@/services/SecurityService";
+import CurrencyService from "@/kernel/bch/CurrencyService";
+import { AuthActions } from "@/kernel/app/SecurityService";
 
 export enum ThemeMode {
   System = "system",

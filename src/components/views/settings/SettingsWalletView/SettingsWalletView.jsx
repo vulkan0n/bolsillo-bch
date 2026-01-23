@@ -29,8 +29,8 @@ import { selectLocale } from "@/redux/device";
 
 import ViewHeader from "@/layout/ViewHeader";
 
-import WalletManagerService from "@/services/WalletManagerService";
-import SecurityService, { AuthActions } from "@/services/SecurityService";
+import WalletManagerService from "@/kernel/wallet/WalletManagerService";
+import SecurityService, { AuthActions } from "@/kernel/app/SecurityService";
 
 import { WalletConnectFilled } from "@/icons/WalletConnectFilled";
 import KeyWarning from "@/atoms/KeyWarning/KeyWarning";

@@ -20,16 +20,16 @@ import {
 import { selectActiveWalletHash } from "@/redux/wallet";
 import { selectChaintip } from "@/redux/sync";
 
-import TransactionHistoryService from "@/services/TransactionHistoryService";
+import TransactionHistoryService from "@/kernel/wallet/TransactionHistoryService";
 import TransactionManagerService, {
   TransactionOutput,
   TransactionEntity,
-} from "@/services/TransactionManagerService";
-import TokenManagerService from "@/services/TokenManagerService";
+} from "@/kernel/bch/TransactionManagerService";
+import TokenManagerService from "@/kernel/wallet/TokenManagerService";
 import TransactionExportService, {
   prepareTransactionExportData,
-} from "@/services/TransactionExportService";
-//import LogService from "@/services/LogService";
+} from "@/kernel/wallet/TransactionExportService";
+//import LogService from "@/kernel/app/LogService";
 
 import Address from "@/atoms/Address";
 import Satoshi from "@/atoms/Satoshi";

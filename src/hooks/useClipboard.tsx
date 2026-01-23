@@ -1,7 +1,7 @@
 import { useCallback } from "react";
 import { Clipboard } from "@capacitor/clipboard";
 import { SnippetsOutlined } from "@ant-design/icons";
-import ToastService from "@/services/ToastService";
+import ToastService from "@/kernel/app/NotificationService";
 
 import { translate } from "@/util/translations";
 import translations from "@/views/wallet/translations";

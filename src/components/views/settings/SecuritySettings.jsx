@@ -16,7 +16,7 @@ import { setPreference, selectSecuritySettings } from "@/redux/preferences";
 import { selectActiveWallet } from "@/redux/wallet";
 import { selectDeviceInfo } from "@/redux/device";
 import { SettingsContext } from "./SettingsContext";
-import SecurityService, { AuthActions } from "@/services/SecurityService";
+import SecurityService, { AuthActions } from "@/kernel/app/SecurityService";
 import Accordion from "@/atoms/Accordion";
 import Button from "@/atoms/Button";
 import KeyWarning from "@/atoms/KeyWarning/KeyWarning";

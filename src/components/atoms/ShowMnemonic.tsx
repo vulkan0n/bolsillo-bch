@@ -4,8 +4,8 @@ import { WarningFilled, EyeInvisibleOutlined } from "@ant-design/icons";
 import { Dialog } from "@capacitor/dialog";
 
 import { walletSetKeyViewed } from "@/redux/wallet";
-import WalletManagerService from "@/services/WalletManagerService";
-import SecurityService, { AuthActions } from "@/services/SecurityService";
+import WalletManagerService from "@/kernel/wallet/WalletManagerService";
+import SecurityService, { AuthActions } from "@/kernel/app/SecurityService";
 
 import { useLongPress } from "@/hooks/useLongPress";
 import { useClipboard } from "@/hooks/useClipboard";

@@ -1,14 +1,14 @@
-import ElectrumService from "@/services/ElectrumService";
-import HdNodeService from "@/services/HdNodeService";
+import ElectrumService from "@/kernel/bch/ElectrumService";
+import HdNodeService from "@/kernel/wallet/HdNodeService";
 import AddressManagerService, {
   AddressStub,
   AddressEntity,
-} from "@/services/AddressManagerService";
-import UtxoManagerService from "@/services/UtxoManagerService";
-import LogService from "@/services/LogService";
+} from "@/kernel/wallet/AddressManagerService";
+import UtxoManagerService from "@/kernel/wallet/UtxoManagerService";
+import LogService from "@/kernel/app/LogService";
 import WalletManagerService, {
   WalletEntity,
-} from "@/services/WalletManagerService";
+} from "@/kernel/wallet/WalletManagerService";
 
 import {
   DEFAULT_DERIVATION_PATH,

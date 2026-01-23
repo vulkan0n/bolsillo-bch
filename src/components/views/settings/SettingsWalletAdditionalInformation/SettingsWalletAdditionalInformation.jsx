@@ -21,8 +21,8 @@ import {
   deriveHdPath,
 } from "@bitauth/libauth";
 
-import WalletManagerService from "@/services/WalletManagerService";
-import SecurityService, { AuthActions } from "@/services/SecurityService";
+import WalletManagerService from "@/kernel/wallet/WalletManagerService";
+import SecurityService, { AuthActions } from "@/kernel/app/SecurityService";
 
 import ViewHeader from "@/layout/ViewHeader";
 import Accordion from "@/atoms/Accordion";

@@ -19,8 +19,8 @@ import translations from "./translations";
 
 import { SettingsContext } from "./SettingsContext";
 
-import CurrencyService from "@/services/CurrencyService";
-import SecurityService, { AuthActions } from "@/services/SecurityService";
+import CurrencyService from "@/kernel/bch/CurrencyService";
+import SecurityService, { AuthActions } from "@/kernel/app/SecurityService";
 
 import Accordion from "@/atoms/Accordion";
 import Checkbox from "@/atoms/Checkbox";

@@ -4,7 +4,7 @@ import { BulbOutlined } from "@ant-design/icons";
 
 import { selectTorchIsEnabled, setTorchIsEnabled } from "@/redux/device";
 
-import LogService from "@/services/LogService";
+import LogService from "@/kernel/app/LogService";
 
 import Button from "@/atoms/Button";
 

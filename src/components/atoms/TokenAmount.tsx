@@ -1,8 +1,8 @@
 import { useSelector } from "react-redux";
 import { EyeInvisibleOutlined } from "@ant-design/icons";
 import { selectPrivacySettings } from "@/redux/preferences";
-import { TokenEntity } from "@/services/TokenManagerService";
-import { TokenHistoryEntity } from "@/services/TransactionHistoryService";
+import { TokenEntity } from "@/kernel/wallet/TokenManagerService";
+import { TokenHistoryEntity } from "@/kernel/wallet/TransactionHistoryService";
 import NumberFormat from "@/atoms/NumberFormat";
 
 interface TokenAmountProps {

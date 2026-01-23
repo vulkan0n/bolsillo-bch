@@ -15,9 +15,9 @@ import {
   selectChaintip,
 } from "@/redux/sync";
 
-import LogService from "@/services/LogService";
-import { AddressEntity } from "@/services/AddressManagerService";
-import BlockchainService from "@/services/BlockchainService";
+import LogService from "@/kernel/app/LogService";
+import { AddressEntity } from "@/kernel/wallet/AddressManagerService";
+import BlockchainService from "@/kernel/bch/BlockchainService";
 
 //import { bchToSats } from "@/util/sats";
 import {

@@ -21,7 +21,7 @@ import {
 } from "@/redux/preferences";
 import { selectScannerIsScanning, selectKeyboardIsOpen } from "@/redux/device";
 
-import AddressManagerService from "@/services/AddressManagerService";
+import AddressManagerService from "@/kernel/wallet/AddressManagerService";
 
 import FullColumn from "@/layout/FullColumn";
 import { SatoshiInput } from "@/atoms/SatoshiInput";

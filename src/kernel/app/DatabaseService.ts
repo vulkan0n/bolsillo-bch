@@ -5,7 +5,7 @@ import {
   run_walletdb_migrations,
 } from "@/util/migrations";
 import { resultToJson } from "@/util/sql";
-import LogService from "@/services/LogService";
+import LogService from "@/kernel/app/LogService";
 
 const Log = LogService("Database");
 

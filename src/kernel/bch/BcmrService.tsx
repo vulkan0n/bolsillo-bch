@@ -8,12 +8,12 @@ import {
   RegistryTimestampKeyedValues,
   binToBase64,
 } from "@bitauth/libauth";
-import LogService from "@/services/LogService";
-import ElectrumService from "@/services/ElectrumService";
+import LogService from "@/kernel/app/LogService";
+import ElectrumService from "@/kernel/bch/ElectrumService";
 import TransactionManagerService, {
   TransactionEntity,
-} from "@/services/TransactionManagerService";
-import DatabaseService from "@/services/DatabaseService";
+} from "@/kernel/bch/TransactionManagerService";
+import DatabaseService from "@/kernel/app/DatabaseService";
 
 import { sha256 } from "@/util/hash";
 import { hexToUtf8 } from "@/util/hex";

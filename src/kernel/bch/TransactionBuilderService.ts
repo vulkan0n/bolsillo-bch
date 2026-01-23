@@ -14,19 +14,19 @@ import {
 import * as clab from "@cashlab/common";
 import * as cauldron from "@cashlab/cauldron";
 import { ExchangeLab } from "@cashlab/cauldron";
-import LogService from "@/services/LogService";
-import UtxoManagerService from "@/services/UtxoManagerService";
+import LogService from "@/kernel/app/LogService";
+import UtxoManagerService from "@/kernel/wallet/UtxoManagerService";
 import AddressManagerService, {
   AddressEntity,
-} from "@/services/AddressManagerService";
-import AddressScannerService from "@/services/AddressScannerService";
-import HdNodeService from "@/services/HdNodeService";
-import WalletManagerService from "@/services/WalletManagerService";
-import CauldronService from "@/services/CauldronService";
+} from "@/kernel/wallet/AddressManagerService";
+import AddressScannerService from "@/kernel/wallet/AddressScannerService";
+import HdNodeService from "@/kernel/wallet/HdNodeService";
+import WalletManagerService from "@/kernel/wallet/WalletManagerService";
+import CauldronService from "@/kernel/bch/CauldronService";
 import {
   TransactionStub,
   TransactionOutput,
-} from "@/services/TransactionManagerService";
+} from "@/kernel/bch/TransactionManagerService";
 
 import { DUST_RELAY_FEE, EXCESSIVE_SATOSHIS } from "@/util/sats";
 import { binToHex, hexToBin } from "@/util/hex";

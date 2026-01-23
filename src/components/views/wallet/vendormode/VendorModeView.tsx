@@ -14,8 +14,8 @@ import {
 } from "@/redux/preferences";
 import { selectDeviceInfo } from "@/redux/device";
 
-import AddressManagerService from "@/services/AddressManagerService";
-import SecurityService, { AuthActions } from "@/services/SecurityService";
+import AddressManagerService from "@/kernel/wallet/AddressManagerService";
+import SecurityService, { AuthActions } from "@/kernel/app/SecurityService";
 
 import Satoshi from "@/atoms/Satoshi";
 import CurrencyFlip from "@/atoms/CurrencyFlip";

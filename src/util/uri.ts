@@ -9,7 +9,7 @@ import {
 } from "@bitauth/libauth";
 import { sha256, ripemd160 } from "@/util/hash";
 import { Haptic } from "@/util/haptic";
-import WalletManagerService from "@/services/WalletManagerService";
+import WalletManagerService from "@/kernel/wallet/WalletManagerService";
 
 // validateBchUri: validates all possible BCH URI formats
 export function validateBchUri(uri: string) {

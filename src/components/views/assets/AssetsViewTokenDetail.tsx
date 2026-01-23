@@ -13,8 +13,8 @@ import TokenCard from "@/composite/TokenCard";
 import { selectActiveWallet } from "@/redux/wallet";
 import { selectBchNetwork } from "@/redux/preferences";
 
-//import LogService from "@/services/LogService";
-import TokenManagerService from "@/services/TokenManagerService";
+//import LogService from "@/kernel/app/LogService";
+import TokenManagerService from "@/kernel/wallet/TokenManagerService";
 
 import { truncateProse } from "@/util/string";
 import { validateBchUri } from "@/util/uri";
