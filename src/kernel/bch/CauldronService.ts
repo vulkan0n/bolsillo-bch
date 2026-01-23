@@ -10,7 +10,7 @@ import ElectrumService from "@/kernel/bch/ElectrumService";
 import { WalletEntity } from "@/kernel/wallet/WalletManagerService";
 import AddressManagerService from "@/kernel/wallet/AddressManagerService";
 import UtxoManagerService from "@/kernel/wallet/UtxoManagerService";
-import HdNodeService from "@/kernel/wallet/HdNodeService";
+import KeyManagerService from "@/kernel/wallet/KeyManagerService";
 import { hexToBin, binToHex } from "@/util/hex";
 import { addressToLockingBytecode } from "@/util/cashaddr";
 
@@ -336,7 +336,7 @@ export default function CauldronService() {
 
       // input supply token
       const UtxoManager = UtxoManagerService(walletHash);
-      const HdNode = HdNodeService(wallet);
+      const KeyManager = KeyManagerService(wallet);
 
       const supplyInputs = isDemandToken
         ? UtxoManager.selectCoins(tradeResult.summary.supply + fee)
@@ -351,7 +351,7 @@ export default function CauldronService() {
       const clabInputs: SpendableCoin[] = supplyInputs.map((input) => {
         return {
           type: SpendableCoinType.P2PKH,
-          key: HdNode.getAddressPrivateKey(input.address),
+          key: KeyManager.getAddressPrivateKey(input.address),
           output: {
             locking_bytecode: addressToLockingBytecode(input.address),
             token:

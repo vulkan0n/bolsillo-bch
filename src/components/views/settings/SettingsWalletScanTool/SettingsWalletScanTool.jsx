@@ -17,7 +17,7 @@ import Button from "@/atoms/Button";
 import LogService from "@/kernel/app/LogService";
 import WalletManagerService from "@/kernel/wallet/WalletManagerService";
 import AddressScannerService from "@/kernel/wallet/AddressScannerService";
-import HdNodeService from "@/kernel/wallet/HdNodeService";
+import KeyManagerService from "@/kernel/wallet/KeyManagerService";
 import AddressManagerService from "@/kernel/wallet/AddressManagerService";
 
 import AssetsViewAddresses from "@/views/assets/AssetsViewAddresses";

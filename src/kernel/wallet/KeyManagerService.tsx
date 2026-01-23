@@ -27,11 +27,11 @@ import WalletManagerService, {
   WalletStub,
 } from "@/kernel/wallet/WalletManagerService";
 
-const Log = LogService("HdNode");
+const Log = LogService("KeyManager");
 
 const seedCache = new Map();
 
-export default function HdNodeService(walletStub: WalletStub) {
+export default function KeyManagerService(walletStub: WalletStub) {
   const WalletManager = WalletManagerService();
   const walletHash = WalletManager.calculateWalletHash(walletStub);
   const { mnemonic, derivation, passphrase } = walletStub;

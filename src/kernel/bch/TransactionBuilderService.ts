@@ -20,7 +20,7 @@ import AddressManagerService, {
   AddressEntity,
 } from "@/kernel/wallet/AddressManagerService";
 import AddressScannerService from "@/kernel/wallet/AddressScannerService";
-import HdNodeService from "@/kernel/wallet/HdNodeService";
+import KeyManagerService from "@/kernel/wallet/KeyManagerService";
 import WalletManagerService from "@/kernel/wallet/WalletManagerService";
 import CauldronService from "@/kernel/bch/CauldronService";
 import {
@@ -431,8 +431,8 @@ export default function TransactionBuilderService(walletHash: string) {
       const compiler = walletTemplateToCompilerBCH(template);
 
       // sign inputs
-      const HdNode = HdNodeService(wallet);
-      const signedInputs = HdNode.signInputs(
+      const KeyManager = KeyManagerService(wallet);
+      const signedInputs = KeyManager.signInputs(
         vin.sort(bip69SortInputs),
         compiler
       );
@@ -616,11 +616,11 @@ export default function TransactionBuilderService(walletHash: string) {
 
       const inputs = [...stablecoinUtxos, ...coinUtxos];
 
-      const HdNode = HdNodeService(wallet);
+      const KeyManager = KeyManagerService(wallet);
       const clabInputs: clab.SpendableCoin[] = inputs.map((input) => {
         return {
           type: clab.SpendableCoinType.P2PKH,
-          key: HdNode.getAddressPrivateKey(input.address),
+          key: KeyManager.getAddressPrivateKey(input.address),
           output: {
             locking_bytecode: addressToLockingBytecode(input.address),
             token:
@@ -765,11 +765,11 @@ export default function TransactionBuilderService(walletHash: string) {
     if (inputs.length === 0) {
       throw new clab.InsufficientFunds(`No inputs found.`);
     }
-    const HdNode = HdNodeService(wallet);
+    const KeyManager = KeyManagerService(wallet);
     const inputCoins: clab.SpendableCoin[] = inputs.map((input) => {
       return {
         type: clab.SpendableCoinType.P2PKH,
-        key: HdNode.getAddressPrivateKey(input.address),
+        key: KeyManager.getAddressPrivateKey(input.address),
         output: {
           locking_bytecode: addressToLockingBytecode(input.address),
           token: {

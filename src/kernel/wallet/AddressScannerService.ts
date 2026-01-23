@@ -1,5 +1,5 @@
 import ElectrumService from "@/kernel/bch/ElectrumService";
-import HdNodeService from "@/kernel/wallet/HdNodeService";
+import KeyManagerService from "@/kernel/wallet/KeyManagerService";
 import AddressManagerService, {
   AddressStub,
   AddressEntity,
@@ -27,7 +27,7 @@ export default function AddressScannerService(wallet: WalletEntity) {
   const WalletManager = WalletManagerService();
   const AddressManager = AddressManagerService(wallet.walletHash);
   const UtxoManager = UtxoManagerService(wallet.walletHash);
-  const Hd = HdNodeService(wallet);
+  const Hd = KeyManagerService(wallet);
 
   return {
     populateAddresses,
@@ -96,7 +96,7 @@ export default function AddressScannerService(wallet: WalletEntity) {
           ...wallet,
           derivation: path,
         });
-        const tempHd = HdNodeService(tempWallet);
+        const tempHd = KeyManagerService(tempWallet);
 
         // generate addresses for each change path
         const addresses: Array<string> = [];

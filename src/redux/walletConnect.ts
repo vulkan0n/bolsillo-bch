@@ -18,7 +18,7 @@ import { selectBchNetwork } from "@/redux/preferences";
 import LogService from "@/kernel/app/LogService";
 import WalletConnectService from "@/kernel/bch/WalletConnectService";
 import AddressManagerService from "@/kernel/wallet/AddressManagerService";
-import HdNodeService from "@/kernel/wallet/HdNodeService";
+import KeyManagerService from "@/kernel/wallet/KeyManagerService";
 import ElectrumService from "@/kernel/bch/ElectrumService";
 
 import { binToHex } from "@/util/hex";
@@ -129,7 +129,7 @@ export const wcSessionRequest = createAsyncThunk(
           }
 
           const txTemplate = { ...unsignedTransaction };
-          const Hd = HdNodeService(wallet);
+          const Hd = KeyManagerService(wallet);
           const signedTemplate = Hd.signTemplate(
             txTemplate,
             sourceOutputs,
@@ -179,7 +179,7 @@ export const wcSessionRequest = createAsyncThunk(
         {
           const { message } = destringify(JSON.stringify(methodParams));
 
-          const Hd = HdNodeService(wallet);
+          const Hd = KeyManagerService(wallet);
           const signedMessage = Hd.signMessage(message, sessionAddress);
           await WalletConnect.sessionResponse(
             topic,

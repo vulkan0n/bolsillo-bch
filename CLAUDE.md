@@ -64,7 +64,7 @@ Singleton pattern with dependency injection:
 |---------|---------|
 | WalletManagerService | Wallet CRUD, hashing, activation |
 | DatabaseService | SQLite management (sql.js) |
-| HdNodeService | BIP39/BIP44 key derivation (@bitauth/libauth) |
+| KeyManagerService | BIP39/BIP44 key derivation (@bitauth/libauth) |
 | AddressManagerService | Address derivation |
 | UtxoManagerService | UTXO tracking, balance calculations |
 | TransactionBuilderService | Build BCH transactions |
@@ -80,7 +80,7 @@ Singleton pattern with dependency injection:
 ```
 User initiates send
   → TransactionBuilderService.buildTransaction() (UTXO selection, fees)
-  → HdNodeService.signInputs() (key derivation, signing)
+  → KeyManagerService.signInputs() (key derivation, signing)
   → ElectrumService.broadcastTransaction()
   → TransactionManagerService.resolveTransaction() (poll confirmation)
 ```
@@ -238,8 +238,8 @@ Translations colocated in component files as `const translations = {...}`.
 ### Security (Address Before Production)
 
 1. **Unsalted PIN hash** - `SecurityService.ts:127` - vulnerable to rainbow tables
-2. **Seed in memory** - `HdNodeService.tsx:32-47` - never cleared
-3. **Private keys logged** - `HdNodeService.tsx:160` - signatures to console
+2. **Seed in memory** - `KeyManagerService.tsx:32-47` - never cleared
+3. **Private keys logged** - `KeyManagerService.tsx:160` - signatures to console
 4. **Unencrypted databases** - Seed phrases in plaintext SQLite
 
 ### Tech Debt
