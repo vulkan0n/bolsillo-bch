@@ -10,6 +10,7 @@
 
 import { describe, it, expect } from "vitest";
 import {
+  isIntStr,
   validateBip21Uri,
   validateWifUri,
   validateWalletConnectUri,
@@ -27,6 +28,35 @@ const VALID_LEGACY = "1BvBMSEYstWetqTFn5Au4m4GFg7xJaNVN2";
 const VALID_WIF = "5HueCGU8rMjxEXxiPuD5BDku4MkFqeZyd4dZ1jvhTVqvbTLvyTJ";
 
 describe("uri.ts", () => {
+  describe("isIntStr", () => {
+    it.each(["0", "1", "123", "9007199254740993", "-1", "-123", "-0"])(
+      "accepts valid integer string: %s",
+      (input) => {
+        expect(isIntStr(input)).toBe(true);
+      }
+    );
+
+    it.each([
+      "",
+      " ",
+      "1.5",
+      "1e5",
+      "0xff",
+      "0x1",
+      "abc",
+      "12abc",
+      "1 2",
+      " 123",
+      "123 ",
+      "+1",
+      "1_000",
+      "Infinity",
+      "NaN",
+    ])("rejects non-integer string: %s", (input) => {
+      expect(isIntStr(input)).toBe(false);
+    });
+  });
+
   describe("validateBip21Uri", () => {
     describe("cashaddr validation", () => {
       it("validates cashaddr with prefix", () => {
@@ -177,15 +207,13 @@ describe("uri.ts", () => {
       expect(result.isWalletConnect).toBe(false);
     });
 
-    it("handles malformed/garbage input without throwing", () => {
-      // These inputs would throw with new URL() - we must catch gracefully
-      const malformedInputs = ["not a uri at all", ":::invalid:::", " "];
-
-      for (const input of malformedInputs) {
+    it.each(["not a uri at all", ":::invalid:::", " "])(
+      "rejects malformed input without throwing: %s",
+      (input) => {
         const result = validateWalletConnectUri(input);
         expect(result.isWalletConnect).toBe(false);
       }
-    });
+    );
   });
 
   describe("validateBchUri (combined validator)", () => {
@@ -385,6 +413,10 @@ describe("uri.ts", () => {
         expect(fromAlphanumericUri(alphanumeric)).toBe(expected);
       });
 
+      it("lowercases all-uppercase input with no colon", () => {
+        expect(fromAlphanumericUri("JUSTUPPERCASE")).toBe("justuppercase");
+      });
+
       it("passes through mixed-case URIs unchanged", () => {
         const uri = "bitcoinCash:qtest?s=100000";
         expect(fromAlphanumericUri(uri)).toBe(uri);
@@ -393,6 +425,68 @@ describe("uri.ts", () => {
       it("passes through lowercase URIs unchanged", () => {
         const uri = "bitcoincash:qtest?s=100000";
         expect(fromAlphanumericUri(uri)).toBe(uri);
+      });
+    });
+
+    describe("malicious input (BigInt guard)", () => {
+      it("rejects non-numeric s parameter", () => {
+        const uri = `${VALID_CASHADDR}?s=abc`;
+        const result = validateBip21Uri(uri);
+        expect(result.satoshis).toBe(undefined);
+      });
+
+      it("rejects decimal s parameter", () => {
+        const uri = `${VALID_CASHADDR}?s=12.5`;
+        const result = validateBip21Uri(uri);
+        expect(result.satoshis).toBe(undefined);
+      });
+
+      it("rejects scientific notation s parameter", () => {
+        const uri = `${VALID_CASHADDR}?s=1e5`;
+        const result = validateBip21Uri(uri);
+        expect(result.satoshis).toBe(undefined);
+      });
+
+      it("rejects hex s parameter", () => {
+        const uri = `${VALID_CASHADDR}?s=0xff`;
+        const result = validateBip21Uri(uri);
+        expect(result.satoshis).toBe(undefined);
+      });
+
+      it("falls back to amount when s is invalid", () => {
+        const uri = `${VALID_CASHADDR}?amount=1.0&s=evil`;
+        const result = validateBip21Uri(uri);
+        expect(result.satoshis).toBe(100000000n);
+      });
+
+      it("handles large BigInt s values safely", () => {
+        const uri = `${VALID_CASHADDR}?s=9007199254740993`;
+        const result = validateBip21Uri(uri);
+        expect(result.satoshis).toBe(9007199254740993n);
+      });
+
+      it("rejects non-numeric f parameter", () => {
+        const uri = `${VALID_CASHADDR}?f=abc`;
+        const result = validateBip21Uri(uri);
+        expect(result.tokenAmount).toBe(0n);
+      });
+
+      it("rejects decimal f parameter", () => {
+        const uri = `${VALID_CASHADDR}?f=12.5`;
+        const result = validateBip21Uri(uri);
+        expect(result.tokenAmount).toBe(0n);
+      });
+
+      it("rejects non-numeric ft parameter", () => {
+        const uri = `${VALID_CASHADDR}?ft=abc`;
+        const result = validateBip21Uri(uri);
+        expect(result.tokenAmount).toBe(0n);
+      });
+
+      it("accepts negative s parameter", () => {
+        const uri = `${VALID_CASHADDR}?s=-100`;
+        const result = validateBip21Uri(uri);
+        expect(result.satoshis).toBe(-100n);
       });
     });
 

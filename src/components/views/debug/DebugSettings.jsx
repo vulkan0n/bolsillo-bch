@@ -28,6 +28,8 @@ export default function DebugSettings() {
   const handleSelectBchNetwork = (event) => {
     const newNetwork = event.target.value;
     dispatch(setPreference({ key: "bchNetwork", value: newNetwork }));
+    // Clear stale wallet hash - the new network will select/create its own wallet
+    dispatch(setPreference({ key: "activeWalletHash", value: "" }));
     window.location.assign("/");
   };
 

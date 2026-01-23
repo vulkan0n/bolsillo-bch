@@ -166,7 +166,7 @@ export default function TransactionManagerService() {
     }
 
     //Log.debug("deleteTransaction", tx_hash);
-    APP_DB.run(`DELETE FROM transactions WHERE txid="${tx_hash}";`);
+    APP_DB.run("DELETE FROM transactions WHERE txid=?;", [tx_hash]);
   }
 
   async function purgeTransactions(): Promise<void> {
@@ -181,24 +181,27 @@ export default function TransactionManagerService() {
           const history_txids = walletDb.exec(
             "SELECT txid FROM address_transactions"
           );
-
-          const cat_txids = [
-            ...utxo_txids.map(({ txid }) => `"${txid}"`),
-            ...history_txids.map(({ txid }) => `"${txid}"`),
-          ].join(",");
-
-          return cat_txids;
+          return [
+            ...utxo_txids.map(({ txid }) => txid),
+            ...history_txids.map(({ txid }) => txid),
+          ];
         })
       )
-    )
-      .filter((txid) => txid !== "")
-      .join(",");
+    ).flat();
 
-    const purgeHashes = APP_DB.exec(
-      `SELECT txid FROM transactions WHERE txid NOT IN ($live_txids)`,
-      { $live_txids: live_txids }
-    ).map(({ txid }) => txid);
+    const liveTxidSet = new Set(live_txids);
 
+    // Find transaction records not in any wallet's live set
+    const purgeHashes =
+      live_txids.length > 0
+        ? APP_DB.exec(
+            `SELECT txid FROM transactions WHERE txid NOT IN (${live_txids.map(() => "?").join(", ")})`,
+            live_txids
+          ).map(({ txid }) => txid)
+        : APP_DB.exec("SELECT txid FROM transactions").map(({ txid }) => txid);
+
+    // Find orphaned transaction files
+    const purgeHashSet = new Set(purgeHashes);
     const fileTxHashes = (
       await Filesystem.readdir({
         path: "/selene/tx",
@@ -206,9 +209,7 @@ export default function TransactionManagerService() {
       })
     ).files
       .map((file) => file.name.split(".")[0])
-      .filter(
-        (txid) => !live_txids.includes(txid) && !purgeHashes.includes(txid) // purgeHashes already included
-      );
+      .filter((txid) => !liveTxidSet.has(txid) && !purgeHashSet.has(txid));
 
     const tx_hashes = [...purgeHashes, ...fileTxHashes];
 
@@ -330,9 +331,9 @@ export default function TransactionManagerService() {
   async function getTransactionByHash(
     tx_hash: string
   ): Promise<TransactionEntity> {
-    const result = APP_DB.exec(
-      `SELECT * FROM transactions WHERE txid="${tx_hash}"`
-    );
+    const result = APP_DB.exec("SELECT * FROM transactions WHERE txid=?", [
+      tx_hash,
+    ]);
 
     if (result.length < 1) {
       throw new TransactionNotExistsError(tx_hash);
@@ -409,16 +410,19 @@ export default function TransactionManagerService() {
   function setBlockPosBulk(transactions) {
     try {
       //Log.debug("setBlockPosBulk", transactions);
-      const query = [
-        "BEGIN TRANSACTION;",
-        ...transactions.map((t) =>
-          t.block_pos !== null
-            ? `UPDATE transactions SET block_pos=${t.block_pos} WHERE txid="${t.tx_hash}";`
-            : ""
-        ),
-        "COMMIT;",
-      ].join("");
-      APP_DB.run(query);
+      const valid = transactions.filter((t) => t.block_pos !== null);
+      if (valid.length > 0) {
+        const setClauses = valid.map(() => "WHEN ? THEN ?").join(" ");
+        const whereIn = valid.map(() => "?").join(", ");
+        const params = [
+          ...valid.flatMap((t) => [t.tx_hash, t.block_pos]),
+          ...valid.map((t) => t.tx_hash),
+        ];
+        APP_DB.run(
+          `UPDATE transactions SET block_pos = CASE txid ${setClauses} END WHERE txid IN (${whereIn});`,
+          params
+        );
+      }
       //Log.debug("setBlockPosBulk done");
     } catch (e) {
       Log.error(e);

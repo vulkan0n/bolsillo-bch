@@ -30,7 +30,7 @@ export default function ExploreViewHome() {
         {/* <BlissAppCard /> */}
         <StatsGraphCard />
       </Carousel>
-      <Card>
+      <Card className="p-2">
         <div className="flex flex-col gap-2">
           <div className="flex items-center text-xl font-bold">
             <SeleneLogo className="w-12 mr-1" />

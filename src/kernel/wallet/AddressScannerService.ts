@@ -213,26 +213,21 @@ export default function AddressScannerService(wallet: WalletEntity) {
     // for each address with state, register it if we don't have it.
     // [Kludge] We have to use raw SQL here instead of AddressManager.registerAddress
     // [K] so that we can batch all of the writes into one transction for performance
-    let query = [
-      "BEGIN TRANSACTION;",
-      ...needsRegistrationAddresses.map(
-        (stub) =>
-          `INSERT OR IGNORE INTO addresses (
-            address,
-            hd_index,
-            change
-          )
-          VALUES (
-            "${stub.address}",
-            "${stub.hd_index}",
-            "${stub.change}"
-          );`
-      ),
-      "COMMIT;",
-    ].join("");
     try {
-      //Log.debug(query);
-      walletDb.exec(query);
+      if (needsRegistrationAddresses.length > 0) {
+        const placeholders = needsRegistrationAddresses
+          .map(() => "(?, ?, ?)")
+          .join(", ");
+        const params = needsRegistrationAddresses.flatMap((stub) => [
+          stub.address,
+          stub.hd_index,
+          stub.change,
+        ]);
+        walletDb.run(
+          `INSERT OR IGNORE INTO addresses (address, hd_index, change) VALUES ${placeholders};`,
+          params
+        );
+      }
     } catch (e) {
       Log.error("scanAddresses:", e);
     }
@@ -277,19 +272,20 @@ export default function AddressScannerService(wallet: WalletEntity) {
       )
     ).map((settled) => (settled.status === "fulfilled" ? settled.value : null));
 
-    query = [
-      "BEGIN TRANSACTION;",
-      ...stateUpdates.map((update) =>
-        Array.isArray(update)
-          ? `UPDATE addresses SET state="${update[1]}" WHERE address="${update[0]}";`
-          : ""
-      ),
-      "COMMIT;",
-    ].join("");
-
     try {
-      //Log.debug(query);
-      walletDb.exec(query);
+      const validUpdates = stateUpdates.filter(Array.isArray);
+      if (validUpdates.length > 0) {
+        const setClauses = validUpdates.map(() => "WHEN ? THEN ?").join(" ");
+        const whereIn = validUpdates.map(() => "?").join(", ");
+        const params = [
+          ...validUpdates.flatMap((u) => [u[0], u[1]]),
+          ...validUpdates.map((u) => u[0]),
+        ];
+        walletDb.run(
+          `UPDATE addresses SET state = CASE address ${setClauses} END WHERE address IN (${whereIn});`,
+          params
+        );
+      }
     } catch (e) {
       Log.error("scanAddresses:", e);
     }

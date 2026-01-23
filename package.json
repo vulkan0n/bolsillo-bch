@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "preinstall": "npx only-allow pnpm",
+    "postinstall": "",
     "dev": "vite",
     "pretty": "npx prettier src/ --write",
     "lint": "npx prettier src/ --check && npx eslint --ext .js,.jsx,.ts,.tsx src/",
@@ -35,7 +36,6 @@
     "@capacitor/share": "^8.0.0",
     "@capacitor/splash-screen": "^8.0.0",
     "@capawesome/capacitor-torch": "^8.0.0",
-    "@capgo/capacitor-native-biometric": "^8.2.0",
     "@cashlab/cauldron": "^1.0.2",
     "@cashlab/common": "1.0.4",
     "@electrum-cash/network": "^4.1.4",
@@ -47,6 +47,7 @@
     "@walletconnect/core": "^2.23.1",
     "@walletconnect/jsonrpc-utils": "^1.0.8",
     "@walletconnect/utils": "^2.23.1",
+    "capacitor-plugin-simple-encryption": "https://git.xulu.tech/selene.cash/capacitor-plugin-simple-encryption.git#v0.2.0",
     "chart.js": "^4.5.1",
     "decimal.js": "^10.6.0",
     "graphql": "^16.12.0",

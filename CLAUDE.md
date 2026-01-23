@@ -4,7 +4,7 @@ This file provides guidance to Claude Code when working with this repository.
 
 ## Project Overview
 
-Selene Wallet is a self-custodial Bitcoin Cash (BCH) wallet built with React 19, Vite 5, and Capacitor 8 for cross-platform mobile deployment. Uses SQLite (sql.js) for storage, Electrum protocol over WebSocket for blockchain communication.
+Selene Wallet is a self-custodial Bitcoin Cash (BCH) wallet built with React 19, Vite 5, and Capacitor 8 for cross-platform mobile deployment. Uses SQLite (sql.js) for storage with native encryption, Electrum protocol over WebSocket for blockchain communication.
 
 - **Repository:** https://git.xulu.tech/selene.cash/selene-wallet
 - **Website:** https://selene.cash
@@ -22,6 +22,12 @@ pnpm test             # Lint + Vitest
 pnpm vitest           # Tests in watch mode
 pnpm build            # Production build
 
+# Capacitor Plugin (standalone repo: git.xulu.tech/selene.cash/capacitor-plugin-simple-encryption)
+# Plugin is consumed as a git dependency. To update after upstream changes:
+pnpm update capacitor-plugin-simple-encryption
+# To pin a specific version tag:
+#   "capacitor-plugin-simple-encryption": "https://git.xulu.tech/selene.cash/capacitor-plugin-simple-encryption.git#v0.1.0"
+
 # Mobile
 pnpm build && npx cap sync && npx cap run ios
 pnpm build && npx cap sync && npx cap run android
@@ -35,45 +41,130 @@ glab mr view <n> --repo selene.cash/selene-wallet
 ./scripts/gitlab-close-issue.sh <n>  # Close issue with commit ref
 ```
 
+## Build Targets
+
+| Platform | Target |
+|----------|--------|
+| Vite/esbuild | es2020, chrome87, safari14, firefox78, edge88 |
+| TypeScript | esnext (lib: dom, dom.iterable, esnext) |
+| Android | minSdk 26, compileSdk 36, targetSdk 36 |
+| iOS | deployment target 15.0, iPhone + iPad |
+
+**Important:** Do NOT use ES2022+ features that require runtime support (e.g., `Error.cause` constructor option, `Array.at()`, `Object.hasOwn()`). The Vite build target is es2020/chrome87/safari14 — features beyond this are silently broken on older WebViews. TypeScript lib is esnext for type checking only; it does not polyfill runtime behavior.
+
 ## Architecture
 
-### Three-Phase Initialization
+### Initialization Flow
 
 ```
-PRE_INIT: JanitorService.fsck() → DatabaseService.initAppDatabase() → redux_pre_init()
-APP_INIT: Capacitor listeners → redux_init() → render(<Main />)
-POST_INIT: SplashScreen.hide() → BcmrService.preloadMetadataRegistries()
+initialize_app() [src/init.jsx]:
+  JanitorService.fsck() → DatabaseService.initAppDatabase()
+  → SecurityService().isEncryptionReady()?
+    YES → boot() → render <Main /> → SplashScreen.hide() → postBoot()
+    NO  → render <Main /> (shows AppLockScreen) → SplashScreen.hide()
+
+boot() [called after encryption ready, from init or AppLockScreen]:
+  completeInitAfterPin()
+  → migrateLegacyDatabases() + redux_pre_init() [parallel]
+  → AuthMigrationService().migrateIfNeeded()
+  → recoverWalletFiles() → redux_init() → App listeners (pause/resume)
+
+postBoot() [non-blocking background]:
+  redux_post_init() (WalletConnect, stats, exchange rates)
+  → BcmrService.preloadMetadataRegistries() (token metadata)
 ```
+
+**Main.jsx gates the UI:** Shows `AppLockScreen` (PIN/biometric) when encryption is not ready, `ErrorBoundary` on startup failure, or the full app when ready. Pre-auth screens use `MemoryRouter` (no URL changes); full app uses `RouterProvider`.
 
 ### State Management (Redux Toolkit)
 
 Slices in `src/redux/`:
 - **wallet.ts** - Active wallet, balances, addresses, UTXOs
 - **sync.ts** - Electrum connection, blockchain sync status
-- **preferences.ts** - User settings (theme, currency, language, network)
+- **preferences.ts** - User settings (theme, currency, language, network, encryption)
 - **device.ts** - Platform info, scanner state, network status
 - **txHistory.ts** - Transaction history with filtering
 - **exchangeRates.ts** - BCH/fiat rates
 - **walletConnect.ts** - WalletConnect v2 sessions
+- **stats.js** - User stats, check-ins
 
-### Services (src/services/)
+### Services (src/kernel/)
 
-Singleton pattern with dependency injection:
+Singleton pattern via function calls (always available, no initialization order dependency). Organized into subdirectories:
+
+**`kernel/app/`** - Core application services:
 
 | Service | Purpose |
 |---------|---------|
-| WalletManagerService | Wallet CRUD, hashing, activation |
-| DatabaseService | SQLite management (sql.js) |
-| KeyManagerService | BIP39/BIP44 key derivation (@bitauth/libauth) |
-| AddressManagerService | Address derivation |
-| UtxoManagerService | UTXO tracking, balance calculations |
-| TransactionBuilderService | Build BCH transactions |
-| TransactionManagerService | Broadcast, resolution |
-| ElectrumService | Electrum WebSocket client |
-| SecurityService | PIN/biometric auth |
-| BcmrService | Token metadata (BCMR) |
-| WalletConnectService | WalletConnect v2 |
-| CauldronService | Cauldron DEX |
+| AuthMigrationService.ts | Migrate legacy PIN/biometric auth to encryption plugin |
+| ConsoleService.ts | Debug console |
+| DatabaseService.ts | SQLite management (sql.js), encryption, re-encryption |
+| JanitorService.ts | Filesystem recovery, migrations, fsck, nuclear wipe |
+| LogService.ts | Console logging |
+| NotificationService.tsx | In-app notifications |
+| SecurityService.ts | PIN/biometric auth, encryption state authority |
+
+**`kernel/bch/`** - Blockchain services:
+
+| Service | Purpose |
+|---------|---------|
+| BcmrService.tsx | Token metadata (BCMR) |
+| BlockchainService.ts | Block management |
+| CauldronService.ts | Cauldron DEX |
+| CurrencyService.tsx | Exchange rate management |
+| ElectrumService.ts | Electrum WebSocket client |
+| TransactionBuilderService.ts | Build BCH transactions (UTXO selection, fees) |
+| TransactionManagerService.ts | Broadcast, resolution, parameterized SQL |
+| WalletConnectService.tsx | WalletConnect v2 |
+
+**`kernel/wallet/`** - Wallet services:
+
+| Service | Purpose |
+|---------|---------|
+| AddressManagerService.ts | Address derivation |
+| AddressScannerService.ts | Gap-limit address scanning |
+| KeyManagerService.tsx | BIP39/BIP44 key derivation (historical .tsx, no JSX) |
+| TokenManagerService.ts | CashToken management |
+| TransactionExportService.ts | Export to CSV/PDF |
+| TransactionHistoryService.ts | Tx history queries |
+| UtxoManagerService.ts | UTXO tracking, balance calculations |
+| WalletManagerService.ts | Wallet CRUD, hashing, activation |
+
+### Encryption Architecture
+
+**Plugin:** `plugins/capacitor-plugin-simple-encryption/` (Capacitor plugin, iOS + Android + web stub)
+
+```
+SecurityService (authority)          ← UI, init.jsx, Main.jsx, AuthMigration
+  └→ DatabaseService (state holder)  ← getEncryptionState(), setEncryptionPinConfigured()
+       └→ SimpleEncryption plugin    ← native iOS/Android AES-256-GCM
+```
+
+**SecurityService** is the authoritative API for encryption/auth state. All consumers use SecurityService — never call `getEncryptionState()` or `setEncryptionPinConfigured()` directly outside SecurityService.
+
+**SecurityService public API:**
+- `isEncryptionReady()` — Is the encryption key loaded and ready?
+- `isPinConfigured()` — Is a PIN set in the encryption plugin?
+- `setPinConfigured(value)` — Update PIN configuration state
+- `authorize(action)` — Authorize user per their preference (bio/pin/none)
+- `authorizeBio(action)` — Biometric authorization specifically
+
+**SimpleEncryption plugin capabilities:**
+- PIN-derived key via PBKDF2 (100k iterations for unlock, 600k for backup export)
+- Biometric unlock via platform keychain/keystore
+- `loadKeyIntoMemory` for biometric unlock without exposing key to JS
+- Key export/import for encrypted backup and recovery
+- Brute-force lockout with exponential backoff (persistent across restarts)
+- Secure key zeroing in memory after use
+- Nuclear reset (wipe all keys and data)
+- Web stub provides no-op encryption (development only)
+
+**Database encryption:**
+- On native: all `.db` files encrypted via plugin before writing to filesystem
+- Auto-detect: encrypted files have base64-encoded SQLite header, legacy files have CSV header
+- Atomic flush: write-to-temp-then-rename prevents corruption
+- Re-encryption: full data migration when importing a new encryption key
+- `DecryptionFailedError` propagated (not silently creating empty DB)
 
 ### Transaction Flow
 
@@ -88,25 +179,36 @@ User initiates send
 ### Storage
 
 ```
-/selene/db/app.db              # Shared: wallets, blocks, bcmr_registries
-/selene/db/{walletHash}.db     # Per-wallet: addresses, utxos, tokens, transactions
+/selene/db/app.db              # Shared: wallets, blocks, bcmr_registries (encrypted on native)
+/selene/db/{walletHash}.db     # Per-wallet: addresses, utxos, tokens, transactions (encrypted)
 /selene/blocks/{blockhash}.raw # Raw block hex
+/selene/wallets/{walletHash}.json  # Wallet backup files
 ```
+
+Android backup exclusion rules prevent cloud sync of encryption keys (`android/app/src/main/res/xml/backup_rules.xml`).
 
 ### Component Organization
 
 ```
 src/components/
-├── layout/     # MainLayout, BottomNavigation, ViewHeader, ErrorBoundary
-├── atoms/      # Button, Card, Address, TokenIcon, etc.
-├── composite/  # Mid-level UI components
+├── layout/     # MainLayout, BottomNavigation, ViewHeader, ErrorBoundary.tsx,
+│               # BottomButtons, FullColumn, NavTab
+├── atoms/      # Button, Card, Address, TokenIcon, Satoshi, ~30 components
+├── composite/  # TokenCard
 └── views/      # Page-level (lazy-loaded)
-    ├── wallet/   # home, send, history
-    ├── assets/   # Token/NFT management
-    ├── explore/  # contacts, map
-    ├── settings/ # configuration, wallet wizard
-    └── apps/     # blaze, bliss, cauldron, walletconnect
+    ├── wallet/   # home, send, pay, sweep, history, vendormode
+    ├── assets/   # tokens, NFTs, coins, addresses, token detail
+    ├── explore/  # search, transactions, contacts, map
+    ├── security/ # AppLockScreen.tsx, ForgotPinScreen.tsx (pre-auth, no router)
+    ├── settings/ # SecuritySettings, currency, network, intl, qrcode, privacy,
+    │             # payment, UI, wallet settings
+    ├── apps/     # afog, blaze, bliss, cauldron, intro, price,
+    │             # qrgen, stats, walletconnect
+    ├── debug/    # console, settings
+    └── credits/  # CreditsView
 ```
+
+**Pre-auth views** (`views/security/`): `AppLockScreen` and `ForgotPinScreen` render outside the router using `LockScreenWrapper` (shared layout component with optional back button). They cannot use `ViewHeader` or any hook requiring router context.
 
 ### Import Aliases (vite.config.js)
 
@@ -116,6 +218,7 @@ src/components/
 - `@/atoms` → `src/components/atoms`
 - `@/icons` → `src/components/atoms/icons`
 - `@/apps` → `src/components/views/apps`
+- `@/composite` → `src/components/composite`
 
 ## Code Conventions
 
@@ -132,6 +235,7 @@ src/components/
 
 - Prettier enforced (80 char width, 2 spaces, double quotes, semicolons)
 - ESLint: Airbnb + TypeScript + Prettier
+- No `for...of` loops (linter disallows; use `.forEach()`, `.map()`, `Promise.all()`)
 
 ### Patterns
 
@@ -141,7 +245,7 @@ useEffect(function handleWalletSync() {
   // ...
 }, [dependency]);
 
-// Service singleton pattern
+// Service singleton pattern (always available, just call)
 export default function MyService() {
   const Database = DatabaseService();
   return {
@@ -174,7 +278,7 @@ import translations from "./translations";
 
 ## Translation System
 
-Translations colocated in component files as `const translations = {...}`.
+Translations colocated in component directories as `translations.js` files.
 
 - Add only English (`en`) key initially
 - Run `GOOGLE_TRANSLATE_API_KEY="xxx" node ./automation/addLanguages.js` for other languages
@@ -183,21 +287,55 @@ Translations colocated in component files as `const translations = {...}`.
 
 ## Testing
 
-**Framework:** Vitest (colocated test files: `*.test.ts`)
+**Framework:** Vitest 4.0 (colocated test files: `*.test.ts`, `*.test.js`)
 
-**What's testable:**
-- Pure utilities in `src/util/` (sats.ts, cashaddr.ts, uri.ts)
-- Validation functions
+**Test files:**
+- `src/util/sats.test.ts` - satoshi conversion, bchToSats input validation
+- `src/util/uri.test.ts` - BIP21 URI parsing, isIntStr, BigInt guards
+- `src/util/cashaddr.test.ts` - CashAddr encoding/decoding
+- `src/util/currency.test.ts` - decimal formatting, locale handling
+- `src/util/color.test.js` - HSL/hex conversion, gradient generation
+- `src/redux/preferences.test.ts` - preference validation
 
-**What's hard to test:**
-- Service layer (tightly coupled to IO)
-- Pure algorithms inside services not exported
+**What's testable:** Pure utilities in `src/util/`, validation/formatting functions, preference validation
+
+**What's hard to test:** Service layer (IO-coupled), components (no test infra), encryption (native plugin)
 
 **Type inconsistency across boundaries:**
 | Field | Electrum | SQLite | libauth |
 |-------|----------|--------|---------|
 | txid | `tx_hash` | `txid` | - |
 | amount | `value` (number) | `amount` (bigint) | `valueSatoshis` (bigint) |
+
+## Security
+
+### Content Security Policy
+
+CSP enforced via meta tag in `index.html`:
+- `script-src 'self'` — no inline scripts, no eval
+- `connect-src 'self' wss: https:` — Electrum WebSocket + HTTPS APIs
+- `style-src 'self' 'unsafe-inline'` — required for Tailwind
+- `object-src 'none'` — no plugins/embeds
+
+### Known Issues
+
+1. **Unsalted PIN hash** - `SecurityService.ts` legacy fallback only (new PINs use plugin with PBKDF2 + lockout)
+2. **Seed in memory** - `KeyManagerService.tsx` - JS provides no reliable memory zeroing; native platforms DO zero key material
+
+### Tech Debt
+
+- Type inconsistencies across Electrum/SQLite/libauth boundaries
+- Merkle proof validation not implemented (trusts Electrum server)
+- No transaction fee calculation in history
+- Exchange rates not cached per-block
+- Large components: WalletViewSend (1067 lines), TransactionBuilderService (937 lines), SecuritySettings (591 lines)
+
+### Fragile Areas
+
+- Address scanning sequential (should be parallel)
+- BCMR loading blocks sync
+- Full history fetch on wallet activation (no pagination)
+- Database not indexed
 
 ## Contributing
 
@@ -214,11 +352,16 @@ Translations colocated in component files as `const translations = {...}`.
 
 | Package | Version | Purpose |
 |---------|---------|---------|
+| react | 19.2.3 | UI framework |
+| vite | 5.4.21 | Build tool |
+| @capacitor/core | 8.0.0 | Native bridge |
 | @bitauth/libauth | 3.0.0 | BCH cryptography |
 | @electrum-cash/network | 4.1.4 | Electrum protocol |
 | sql.js | 1.13.0 | SQLite WASM |
 | @walletconnect/core | 2.23.1 | WalletConnect v2 |
 | @cashlab/cauldron | 1.0.2 | Cauldron DEX |
+| typescript | 5.9.3 | Type checking |
+| vitest | 4.0.17 | Testing |
 
 ## External Integrations
 
@@ -232,30 +375,6 @@ Translations colocated in component files as `const translations = {...}`.
 
 - **Mainnet:** `bitcoincash:` prefix
 - **Chipnet/Testnet:** `bchtest:` prefix
-
-## Known Issues & Tech Debt
-
-### Security (Address Before Production)
-
-1. **Unsalted PIN hash** - `SecurityService.ts:127` - vulnerable to rainbow tables
-2. **Seed in memory** - `KeyManagerService.tsx:32-47` - never cleared
-3. **Private keys logged** - `KeyManagerService.tsx:160` - signatures to console
-4. **Unencrypted databases** - Seed phrases in plaintext SQLite
-
-### Tech Debt
-
-- Type inconsistencies across Electrum/SQLite/libauth boundaries
-- Merkle proof validation not implemented (trusts Electrum server)
-- No transaction fee calculation in history
-- Exchange rates not cached per-block
-- Large components: WalletViewSend (1038 lines), TransactionBuilderService (937 lines)
-
-### Fragile Areas
-
-- Address scanning sequential (should be parallel)
-- BCMR loading blocks sync
-- Full history fetch on wallet activation (no pagination)
-- Database not indexed
 
 ## GitLab Automation
 

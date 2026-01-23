@@ -3,7 +3,6 @@ import { useSelector } from "react-redux";
 import { useNavigate, useOutletContext } from "react-router";
 import { SyncOutlined } from "@ant-design/icons";
 import { selectPrivacySettings, selectBchNetwork } from "@/redux/preferences";
-//import LogService from "@/kernel/app/LogService";
 import TokenManagerService from "@/kernel/wallet/TokenManagerService";
 import DatabaseService from "@/kernel/app/DatabaseService";
 import KeyWarning from "@/atoms/KeyWarning/KeyWarning";

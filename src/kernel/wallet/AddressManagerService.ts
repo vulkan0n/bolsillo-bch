@@ -323,23 +323,25 @@ export default function AddressManagerService(walletHash: string) {
   function registerTransactions(transactions) {
     //Log.debug("registerTransactions", transactions);
     try {
-      const query = [
-        ...transactions.map(
-          (t) => `INSERT INTO address_transactions (
-          txid,
-          height,
-          address,
-          block_pos
-        ) VALUES ("${t.tx_hash}", ${t.height}, "${t.address}", ${t.block_pos})
-        ON CONFLICT DO 
-          UPDATE SET 
-            height=${t.height},
-            block_pos=${t.block_pos}
-          WHERE txid=excluded.txid;
-        `
-        ),
-      ].join("");
-      walletDb.run(query);
+      if (transactions.length > 0) {
+        const placeholders = transactions.map(() => "(?, ?, ?, ?)").join(", ");
+        const params = transactions.flatMap((t) => [
+          t.tx_hash,
+          t.height,
+          t.address,
+          t.block_pos,
+        ]);
+        walletDb.run(
+          `INSERT INTO address_transactions (txid, height, address, block_pos)
+          VALUES ${placeholders}
+          ON CONFLICT DO
+            UPDATE SET
+              height=excluded.height,
+              block_pos=excluded.block_pos
+            WHERE txid=excluded.txid;`,
+          params
+        );
+      }
 
       TransactionManagerService().setBlockPosBulk(transactions);
     } catch (e) {

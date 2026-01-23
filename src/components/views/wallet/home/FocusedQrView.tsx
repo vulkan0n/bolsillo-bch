@@ -44,7 +44,9 @@ export default function FocusedQrView({
     const isAuthorized = await SecurityService().authorize(
       AuthActions.VendorMode
     );
-    if (!isAuthorized) return;
+    if (!isAuthorized) {
+      return;
+    }
 
     dispatch(setPreference({ key: "vendorModeActive", value: "true" }));
     navigate("/wallet/vendor");

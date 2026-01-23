@@ -101,7 +101,9 @@ export default function ShowMnemonic({ walletHash }: { walletHash: string }) {
     : walletBalanceClasses;
 
   const handleLongPress = async () => {
-    if (shouldShowRecoveryPhrase === false && isKeyViewed === false) return;
+    if (shouldShowRecoveryPhrase === false && isKeyViewed === false) {
+      return;
+    }
     await handleClipboardCopy();
   };
 

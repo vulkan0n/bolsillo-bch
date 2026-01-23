@@ -19,13 +19,13 @@ import TokenSymbol from "@/atoms/TokenSymbol";
 
 import UtxoManagerService from "@/kernel/wallet/UtxoManagerService";
 import TokenManagerService from "@/kernel/wallet/TokenManagerService";
-import LogService from "@/kernel/app/LogService";
+//import LogService from "@/kernel/app/LogService";
 import { useCurrencyFlip } from "@/hooks/useCurrencyFlip";
 
 import { translate } from "@/util/translations";
 import translations from "./translations";
 
-const Log = LogService("AssetsViewCoins");
+//const Log = LogService("AssetsViewCoins");
 
 export default function AssetsViewCoins() {
   const wallet = useOutletContext();
@@ -49,11 +49,12 @@ export default function AssetsViewCoins() {
 
   const TokenManager = TokenManagerService(wallet.walletHash, wallet.network);
 
-  const tokenData = tokenCategories.reduce((data, category) => {
-    /* eslint-disable-next-line no-param-reassign */
-    data[category] = TokenManager.getToken(category);
-    return data;
-  }, {});
+  const tokenData = Object.fromEntries(
+    tokenCategories.map((category) => [
+      category,
+      TokenManager.getToken(category),
+    ])
+  );
 
   const mapUtxos = (map, utxo) => {
     if (!map[utxo.address]) {
@@ -265,7 +266,7 @@ function Token({ coin, tokenData, onSelect }) {
     event.stopPropagation();
   };
 
-  const tokenColor = `#${coin.token_category.slice(0, 6)}`;
+  //const tokenColor = `#${coin.token_category.slice(0, 6)}`;
 
   return (
     <div

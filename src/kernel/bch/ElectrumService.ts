@@ -46,7 +46,7 @@ const electrum_handles = new Map<
 >();
 
 const server_blacklist: Array<string> = [];
-const pendingTxRequests: Array<Promise<object>> = [];
+const pendingTxRequests: Map<string, Promise<object>> = new Map();
 
 interface WithListenersI {
   connected: () => void;
@@ -340,9 +340,10 @@ export default function ElectrumService(
     }
 
     // de-duplicate transaction requests
-    if (pendingTxRequests[tx_hash]) {
+    const pending = pendingTxRequests.get(tx_hash);
+    if (pending) {
       Log.warn("waiting on resolution for", tx_hash);
-      return pendingTxRequests[tx_hash];
+      return pending;
     }
 
     const txRequest = electrum
@@ -360,15 +361,16 @@ export default function ElectrumService(
 
         //Log.debug("height", height, tx_hash, tx.confirmations);
 
-        delete pendingTxRequests[tx_hash];
+        pendingTxRequests.delete(tx_hash);
         return { ...tx, height };
       })
       .catch((e) => {
+        pendingTxRequests.delete(tx_hash);
         Log.error("txRequest failed", e);
         throw e;
       });
 
-    pendingTxRequests[tx_hash] = txRequest;
+    pendingTxRequests.set(tx_hash, txRequest);
 
     return txRequest;
   }

@@ -1,7 +1,9 @@
+import { introductionVideo } from "@/translations/common";
+
 const translations = {
-  introductionVideo: {
-    en: "Introduction Video",
-  },
+  // Imported from common
+  introductionVideo,
+
   telegram: {
     en: "Telegram",
   },

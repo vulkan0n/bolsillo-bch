@@ -1,4 +1,10 @@
+import { learnMore } from "@/translations/common";
+
 const translations = {
+  // Imported from common
+  learnMore,
+
+
   upcomingTournaments: {
     ar: "البطولات القادمة",
     bn: "আসন্ন টুর্নামেন্ট",
@@ -278,46 +284,6 @@ const translations = {
     vi: "Đăng ký",
     zh: "报名",
     zh_TW: "報名"
-  },
-  learnMore: {
-    ar: "يتعلم أكثر",
-    bn: "আরও জানুন",
-    cy: "Dysgu Mwy",
-    da: "Lær mere",
-    de: "Erfahren Sie mehr",
-    el: "Μάθε περισσότερα",
-    en: "Learn More",
-    es: "Aprende más",
-    fa: "بیشتر بدانید",
-    fil: "Matuto pa",
-    fr: "Apprendre encore plus",
-    ha: "Ƙara Koyi",
-    hi: "और अधिक जानें",
-    id: "Belajarlah lagi",
-    it: "Saperne di più",
-    ja: "もっと詳しく知る",
-    jv: "Sinau luwih lengkap",
-    ko: "더 알아보기",
-    mr: "अधिक जाणून घ्या",
-    ms: "Ketahui Lebih Lanjut",
-    nb: "Lære mer",
-    nl: "Kom meer te weten",
-    pa: "ਜਿਆਦਾ ਜਾਣੋ",
-    pl: "Ucz się więcej",
-    pt: "Saber mais",
-    ro: "Află mai multe",
-    ru: "Узнать больше",
-    sv: "Läs mer",
-    sw: "Jifunze zaidi",
-    ta: "மேலும் அறிக",
-    te: "ఇంకా నేర్చుకో",
-    th: "เรียนรู้เพิ่มเติม",
-    tr: "Daha fazla bilgi edin",
-    uk: "Вивчайте більше",
-    ur: "اورجانیے",
-    vi: "Tìm hiểu thêm",
-    zh: "了解更多",
-    zh_TW: "了解更多"
   },
   loadingText: {
     ar: "تحميل",

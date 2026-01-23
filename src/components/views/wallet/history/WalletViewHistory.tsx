@@ -213,7 +213,9 @@ export default function WalletViewHistory() {
   const [nextPage, setNextPage] = useState(1);
 
   const handleLoadMore = useCallback(async () => {
-    if (isLoading || !hasMore) return;
+    if (isLoading || !hasMore) {
+      return;
+    }
     await dispatch(txHistoryFetchMore(nextPage));
     setNextPage(nextPage + 1);
   }, [dispatch, isLoading, hasMore, nextPage]);
@@ -261,7 +263,9 @@ export default function WalletViewHistory() {
   }, [handleLoadMore]);
 
   const handleExportCsv = async () => {
-    if (isExporting) return;
+    if (isExporting) {
+      return;
+    }
 
     setIsExporting(true);
     const loadingToast = toast.loading("Preparing CSV export...");
@@ -336,7 +340,9 @@ export default function WalletViewHistory() {
       });
     } catch (error) {
       Log.error("CSV export error:", error);
-      toast.error("Failed to export CSV", { id: loadingToast });
+      toast.error(translate(translations.failedToExportCsv), {
+        id: loadingToast,
+      });
     } finally {
       setIsExporting(false);
     }

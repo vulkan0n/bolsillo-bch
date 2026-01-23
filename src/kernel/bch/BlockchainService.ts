@@ -236,7 +236,7 @@ export default function BlockchainService(
 
   async function deleteBlock(blockhash: string): Promise<void> {
     await deleteBlockFile(blockhash);
-    APP_DB.run(`DELETE FROM blockchain WHERE blockhash="${blockhash}";`);
+    APP_DB.run("DELETE FROM blockchain WHERE blockhash=?;", [blockhash]);
     //Log.debug("deleteBlock", blockhash);
   }
 

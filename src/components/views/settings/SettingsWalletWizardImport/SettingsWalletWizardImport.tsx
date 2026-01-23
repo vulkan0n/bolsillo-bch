@@ -158,10 +158,14 @@ export default function SettingsWalletWizardImport() {
   };
 
   const inputSuggestions = useMemo(() => {
-    if (mnemonicInput === "" || mnemonicInput.endsWith(" ")) return [];
+    if (mnemonicInput === "" || mnemonicInput.endsWith(" ")) {
+      return [];
+    }
     const words = mnemonicInput.split(" ");
     const lastWord = words[words.length - 1].toLowerCase();
-    if (lastWord === "") return [];
+    if (lastWord === "") {
+      return [];
+    }
     const suggestions = wordlist.filter((word) => word.startsWith(lastWord));
     return suggestions.slice(0, 4);
   }, [mnemonicInput]);

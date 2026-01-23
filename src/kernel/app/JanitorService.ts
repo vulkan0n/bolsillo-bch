@@ -1,19 +1,30 @@
 import { Filesystem, Directory } from "@capacitor/filesystem";
+import { Preferences } from "@capacitor/preferences";
 import DatabaseService, { _dbOpen } from "@/kernel/app/DatabaseService";
 import LogService from "@/kernel/app/LogService";
+import SecurityService, { AuthActions } from "@/kernel/app/SecurityService";
 import WalletManagerService from "@/kernel/wallet/WalletManagerService";
 import TransactionManagerService from "@/kernel/bch/TransactionManagerService";
 import BlockchainService from "@/kernel/bch/BlockchainService";
+import { store } from "@/redux";
+import {
+  selectSecuritySettings,
+  selectPreferences,
+  setPreference,
+} from "@/redux/preferences";
+import { selectDeviceInfo } from "@/redux/device";
 
 const Log = LogService("Janitor");
 
 export default function JanitorService() {
   return {
     migrateLegacyDatabases,
+    handleAuthMigration,
     recoverWalletFiles,
     fsck,
     purgeStaleData,
     resetDatabases,
+    nuclearWipe,
   };
 
   async function migrateLegacyDatabases() {
@@ -60,7 +71,7 @@ export default function JanitorService() {
           directory: Directory.Library,
         });
         Log.log("Migrated legacy database file", filename, deleteResult);
-      } catch (e) {
+      } catch {
         // pass
       }
     };
@@ -80,9 +91,49 @@ export default function JanitorService() {
         directory: Directory.Library,
         recursive: true,
       });
-    } catch (e) {
+    } catch {
       // pass
     }
+  }
+
+  // Remove after 99% of userbase is verified to have version 2026.03+
+  async function handleAuthMigration(): Promise<void> {
+    const state = store.getState();
+    const { authMode, authActions } = selectSecuritySettings(state);
+    const { pinHash } = selectPreferences(state);
+    const { hasBiometric } = selectDeviceInfo(state);
+
+    if (pinHash === "") {
+      return;
+    }
+
+    const Security = SecurityService();
+
+    if (!Security.isPinConfigured()) {
+      const pin = await Security.authorizeLegacyPin(pinHash);
+      await Security.setPin(pin);
+      Log.log("PIN migrated to encryption plugin");
+    }
+
+    if (authMode === "bio" && hasBiometric) {
+      try {
+        await Security.storeBiometricKeyFromCurrent();
+        Log.log("Biometric key stored during migration");
+      } catch (e) {
+        Log.warn("Failed to store biometric key during migration", e);
+      }
+    }
+
+    const actionsToAdd = [AuthActions.AppOpen, AuthActions.AppResume].filter(
+      (a) => !authActions.includes(a)
+    );
+    if (actionsToAdd.length > 0) {
+      const updated = [...actionsToAdd, ...authActions].join(";");
+      await store.dispatch(
+        setPreference({ key: "authActions", value: updated })
+      );
+    }
+    await store.dispatch(setPreference({ key: "pinHash", value: "" }));
   }
 
   async function recoverWalletFiles() {
@@ -124,116 +175,61 @@ export default function JanitorService() {
 
   // fsck: FileSystem Consistency Check
   async function fsck() {
-    // ----------------
-    // Check LIBRARY dirs
-    try {
-      await Filesystem.readdir({
-        path: "/selene",
-        directory: Directory.Library,
-      });
-    } catch (e) {
-      await Filesystem.mkdir({
-        path: "/selene",
-        directory: Directory.Library,
-      });
-    }
+    const libraryDirs = [
+      "/selene",
+      "/selene/db",
+      "/selene/wallets",
+      "/selene/blocks",
+      "/selene/bcmr",
+    ];
+    const cacheDirs = [
+      "/selene",
+      "/selene/icons",
+      "/selene/images",
+      "/selene/tx",
+    ];
 
-    try {
-      await Filesystem.readdir({
-        path: "/selene/db",
-        directory: Directory.Library,
-      });
-    } catch (e) {
-      await Filesystem.mkdir({
-        path: "/selene/db",
-        directory: Directory.Library,
-      });
-    }
+    await libraryDirs.reduce(
+      (chain, path) => chain.then(() => ensureDir(path, Directory.Library)),
+      Promise.resolve()
+    );
+    await cacheDirs.reduce(
+      (chain, path) => chain.then(() => ensureDir(path, Directory.Cache)),
+      Promise.resolve()
+    );
 
-    try {
-      await Filesystem.readdir({
-        path: "/selene/wallets",
-        directory: Directory.Library,
-      });
-    } catch (e) {
-      await Filesystem.mkdir({
-        path: "/selene/wallets",
-        directory: Directory.Library,
-      });
-    }
+    // Clean up stale .tmp files from interrupted atomic writes
+    const tmpCleanupDirs = ["/selene/db", "/selene/wallets"];
+    const tmpFiles: string[] = [];
+    await Promise.all(
+      tmpCleanupDirs.map(async (dir) => {
+        try {
+          const { files } = await Filesystem.readdir({
+            path: dir,
+            directory: Directory.Library,
+          });
+          files
+            .filter((f) => f.name.endsWith(".tmp"))
+            .forEach((f) => tmpFiles.push(`${dir}/${f.name}`));
+        } catch {
+          // pass
+        }
+      })
+    );
+    await Promise.all(
+      tmpFiles.map((path) =>
+        Filesystem.deleteFile({ path, directory: Directory.Library }).catch(
+          () => {}
+        )
+      )
+    );
+  }
 
+  async function ensureDir(path: string, directory: Directory) {
     try {
-      await Filesystem.readdir({
-        path: "/selene/blocks",
-        directory: Directory.Library,
-      });
-    } catch (e) {
-      await Filesystem.mkdir({
-        path: "/selene/blocks",
-        directory: Directory.Library,
-      });
-    }
-
-    try {
-      await Filesystem.readdir({
-        path: "/selene/bcmr",
-        directory: Directory.Library,
-      });
-    } catch (e) {
-      await Filesystem.mkdir({
-        path: "/selene/bcmr",
-        directory: Directory.Library,
-      });
-    }
-
-    // ----------------
-    // Check CACHE dirs
-    try {
-      await Filesystem.readdir({
-        path: "/selene",
-        directory: Directory.Cache,
-      });
-    } catch (e) {
-      await Filesystem.mkdir({
-        path: "/selene",
-        directory: Directory.Cache,
-      });
-    }
-
-    try {
-      await Filesystem.readdir({
-        path: "/selene/icons",
-        directory: Directory.Cache,
-      });
-    } catch (e) {
-      await Filesystem.mkdir({
-        path: "/selene/icons",
-        directory: Directory.Cache,
-      });
-    }
-
-    try {
-      await Filesystem.readdir({
-        path: "/selene/images",
-        directory: Directory.Cache,
-      });
-    } catch (e) {
-      await Filesystem.mkdir({
-        path: "/selene/images",
-        directory: Directory.Cache,
-      });
-    }
-
-    try {
-      await Filesystem.readdir({
-        path: "/selene/tx",
-        directory: Directory.Cache,
-      });
-    } catch (e) {
-      await Filesystem.mkdir({
-        path: "/selene/tx",
-        directory: Directory.Cache,
-      });
+      await Filesystem.readdir({ path, directory });
+    } catch {
+      await Filesystem.mkdir({ path, directory });
     }
   }
 
@@ -245,7 +241,7 @@ export default function JanitorService() {
         directory: Directory.Library,
         recursive: true,
       });
-    } catch (e) {
+    } catch {
       // pass
     }
 
@@ -257,7 +253,7 @@ export default function JanitorService() {
         directory: Directory.Library,
         recursive: true,
       });
-    } catch (e) {
+    } catch {
       // pass
     }
   }
@@ -269,8 +265,53 @@ export default function JanitorService() {
     await BlockchainService().purgeBlocks(); // BlockchainService does not need bchNetwork here
   }
 
+  // nuclearWipe: scorched earth reset that works WITHOUT any database access.
+  // Deletes all databases, wallet files, encryption state, and preferences.
+  // Used for "forgot PIN" recovery when the database cannot be decrypted.
+  // Never throws — best-effort wipe; even partial wipe should proceed to restart.
+  async function nuclearWipe() {
+    Log.log("*** NUCLEAR WIPE ***");
+
+    try {
+      const rmrf = (path: string, directory: typeof Directory.Library) =>
+        Filesystem.rmdir({ path, directory, recursive: true }).catch((e) =>
+          Log.warn(`nuclearWipe: failed to delete ${path}`, e)
+        );
+
+      // Delete data directories
+      const dataDirs = [
+        "/selene/db",
+        "/selene/wallets",
+        "/selene/blocks",
+        "/selene/bcmr",
+      ];
+      await Promise.all(dataDirs.map((dir) => rmrf(dir, Directory.Library)));
+
+      // Delete cache directories
+      const cacheDirs = ["/selene/icons", "/selene/images", "/selene/tx"];
+      await Promise.all(cacheDirs.map((dir) => rmrf(dir, Directory.Cache)));
+
+      // Clear encryption plugin state (keys, salt, biometric key)
+      try {
+        await SecurityService().resetEncryption();
+      } catch (e) {
+        Log.warn("nuclearWipe: failed to reset encryption", e);
+      }
+
+      // Clear Capacitor Preferences (redux persist)
+      try {
+        await Preferences.clear();
+      } catch (e) {
+        Log.warn("nuclearWipe: failed to clear preferences", e);
+      }
+    } catch (e) {
+      Log.error("nuclearWipe: unexpected error (continuing anyway)", e);
+    }
+  }
+
   // resetDatabases: hard-resets all wallet databases and app database
   // [!] does NOT delete wallet FILES - DOES drop walletDb tables!
+  // Caller is responsible for reloading the app after this completes.
   async function resetDatabases() {
     const Database = DatabaseService();
     const WalletManager = WalletManagerService();
@@ -288,8 +329,5 @@ export default function JanitorService() {
     // reset appDb
     APP_DB.exec("PRAGMA user_version = 0;");
     await Database.flushDatabase("app");
-
-    // hard-reset app!
-    window.location.assign("/");
   }
 }

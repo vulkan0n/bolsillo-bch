@@ -1,5 +1,6 @@
 import { configureStore, combineReducers } from "@reduxjs/toolkit";
 import LogService from "@/kernel/app/LogService";
+import BcmrService from "@/kernel/bch/BcmrService";
 import {
   preferencesReducer,
   selectActiveWalletHash,
@@ -8,7 +9,7 @@ import {
 } from "./preferences";
 import { walletReducer, walletBoot, addressReducer } from "./wallet";
 import { syncReducer, syncMiddleware, syncPause, syncResume } from "./sync";
-import { deviceReducer, deviceInit } from "./device";
+import { deviceReducer, deviceInit, selectIsLocked } from "./device";
 import { txHistoryReducer } from "./txHistory";
 import {
   exchangeRateReducer,
@@ -51,22 +52,23 @@ export async function redux_pre_init() {
 export async function redux_init() {
   Log.debug("redux_init");
   await store.dispatch(exchangeRateInit());
+
+  const network = selectBchNetwork(store.getState());
   await store.dispatch(
     walletBoot({
       walletHash: selectActiveWalletHash(store.getState()),
-      network: selectBchNetwork(store.getState()),
+      network,
     })
   );
+
+  BcmrService(network).preloadMetadataRegistries();
 }
 
-export async function redux_post_init() {
-  Log.debug("redux_post_init");
-  store.dispatch(walletConnectInit());
-  store.dispatch(triggerCheckIn());
-  store.dispatch(fetchExchangeRates(0));
-}
-
-export async function redux_resume() {
+export function redux_resume() {
+  if (selectIsLocked(store.getState())) {
+    Log.debug("redux_resume blocked by lock screen");
+    return;
+  }
   Log.debug("redux_resume");
   store.dispatch(syncResume());
   store.dispatch(walletConnectInit());
@@ -74,7 +76,7 @@ export async function redux_resume() {
   store.dispatch(fetchExchangeRates(0));
 }
 
-export async function redux_pause() {
+export function redux_pause() {
   Log.debug("redux_pause");
   store.dispatch(syncPause());
 }

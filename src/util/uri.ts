@@ -12,6 +12,9 @@ import { bchToSats } from "@/util/sats";
 import { Haptic } from "@/util/haptic";
 import WalletManagerService from "@/kernel/wallet/WalletManagerService";
 
+/** Test if a string represents an integer (for safe BigInt conversion). */
+export const isIntStr = (s: string) => /^-?\d+$/.test(s);
+
 /**
  * Encode URI to alphanumeric QR format (CHIP-2023-05)
  * QR codes in alphanumeric mode use uppercase and substitute:
@@ -34,11 +37,15 @@ export function toAlphanumericUri(uri: string): string {
  */
 export function fromAlphanumericUri(uri: string): string {
   // Only process if entirely uppercase (indicates alphanumeric QR mode)
-  if (uri !== uri.toUpperCase()) return uri;
+  if (uri !== uri.toUpperCase()) {
+    return uri;
+  }
 
   // Find the first colon (cashaddr prefix separator)
   const firstColonIndex = uri.indexOf(":");
-  if (firstColonIndex === -1) return uri.toLowerCase();
+  if (firstColonIndex === -1) {
+    return uri.toLowerCase();
+  }
 
   // Keep prefix:address, decode the rest
   const prefix = uri.slice(0, firstColonIndex + 1);
@@ -134,7 +141,8 @@ export function validateBip21Uri(uri: string) {
 
   // PayPro CHIP-2023-05: satoshi amount (s parameter, preferred over amount)
   const sParam = searchParams.get("s");
-  const satoshis = sParam !== null ? BigInt(sParam) : amountSatoshis;
+  const satoshis =
+    sParam !== null && isIntStr(sParam) ? BigInt(sParam) : amountSatoshis;
 
   // Token category
   const tokenCategory = searchParams.get("c") || undefined;
@@ -142,7 +150,9 @@ export function validateBip21Uri(uri: string) {
   // PayPro CHIP-2023-05: fungible token amount (f preferred, ft for backward compat)
   const fParam = searchParams.get("f");
   const ftParam = searchParams.get("ft");
-  const tokenAmount = BigInt(fParam || ftParam || "0");
+  const rawTokenAmt = fParam || ftParam;
+  const tokenAmount =
+    rawTokenAmt && isIntStr(rawTokenAmt) ? BigInt(rawTokenAmt) : 0n;
 
   // PayPro CHIP-2023-05: NFT commitment (n parameter)
   // undefined = not specified, "" = any NFT of category, "hex..." = specific NFT

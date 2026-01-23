@@ -31,7 +31,9 @@ export default function VendorNumpad({ onChange }: VendorNumpadProps) {
   // Convert display amount to satoshis (adapted from SatoshiInput)
   const amountToSats = useCallback(
     (amount: number): bigint => {
-      if (amount === 0) return 0n;
+      if (amount === 0) {
+        return 0n;
+      }
 
       if (isStablecoinMode) {
         return CurrencyService("USD").fiatToSats(amount);
@@ -58,7 +60,9 @@ export default function VendorNumpad({ onChange }: VendorNumpadProps) {
     // Limit decimal places
     if (decimalIndex !== -1) {
       const currentDecimals = displayValue.length - decimalIndex - 1;
-      if (currentDecimals >= maxDecimals) return;
+      if (currentDecimals >= maxDecimals) {
+        return;
+      }
     }
 
     const newDisplay = displayValue === "0" ? digit : `${displayValue}${digit}`;
@@ -66,7 +70,9 @@ export default function VendorNumpad({ onChange }: VendorNumpadProps) {
   };
 
   const handleDecimal = () => {
-    if (maxDecimals === 0) return; // No decimals for sats
+    if (maxDecimals === 0) {
+      return; // No decimals for sats
+    }
     if (!displayValue.includes(".")) {
       updateValue(`${displayValue}.`);
     }

@@ -15,6 +15,8 @@ import { translate } from "@/util/translations";
 export default function NotificationService() {
   return {
     spawn,
+    error,
+    success,
     paymentReceived,
     tokenReceived,
     clipboardCopy,
@@ -23,6 +25,22 @@ export default function NotificationService() {
     invalidScan,
     expiredPayment,
   };
+
+  function error(header, body?) {
+    spawn({
+      icon: <DisconnectOutlined className="text-4xl text-error" />,
+      header,
+      body: body ? <span>{body}</span> : null,
+    });
+  }
+
+  function success(header, body?) {
+    spawn({
+      icon: <InsuranceOutlined className="text-4xl text-primary" />,
+      header,
+      body: body ? <span>{body}</span> : null,
+    });
+  }
 
   function spawn({ header, body, icon, options = {} }) {
     toast.custom((t) => {

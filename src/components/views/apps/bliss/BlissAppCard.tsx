@@ -67,7 +67,9 @@ function BlissAppCard() {
           </div>
 
           <div className="leading-[1rem] mt-4">
-            {isBefore && <span>{"Tickets available now"}</span>}
+            {isBefore && (
+              <span>{translate(translations.ticketsAvailableNow)}</span>
+            )}
           </div>
         </div>
         <ArrowRightOutlined className="text-xl" />

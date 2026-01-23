@@ -77,9 +77,6 @@ importers:
       '@capawesome/capacitor-torch':
         specifier: ^8.0.0
         version: 8.0.0(@capacitor/core@8.0.1)
-      '@capgo/capacitor-native-biometric':
-        specifier: ^8.2.0
-        version: 8.2.0(@capacitor/core@8.0.1)
       '@cashlab/cauldron':
         specifier: ^1.0.2
         version: 1.0.2
@@ -113,6 +110,9 @@ importers:
       '@walletconnect/utils':
         specifier: ^2.23.1
         version: 2.23.1(@capacitor/preferences@8.0.0(@capacitor/core@8.0.1))(typescript@5.9.3)
+      capacitor-plugin-simple-encryption:
+        specifier: https://git.xulu.tech/selene.cash/capacitor-plugin-simple-encryption.git#v0.2.0
+        version: git+https://git.xulu.tech/selene.cash/capacitor-plugin-simple-encryption.git#cb673fc345599a3e415f094d4ecad7e8f72f9bcb(@capacitor/core@8.0.1)
       chart.js:
         specifier: ^4.5.1
         version: 4.5.1
@@ -533,11 +533,6 @@ packages:
 
   '@capawesome/capacitor-torch@8.0.0':
     resolution: {integrity: sha512-uaz9CmdflZ9ZBBKn9WFIWxokpQ8BdFy0Im+FxHNwZC8HnMZ3R5yswThrgPd4q3MfUcCO/3p1916wUPvmJ4Pwgw==}
-    peerDependencies:
-      '@capacitor/core': '>=8.0.0'
-
-  '@capgo/capacitor-native-biometric@8.2.0':
-    resolution: {integrity: sha512-FBQnLWTBTEGvRoTLbfmUgv+Hj2u/9+bn9VXULO9ds0euWARBS9Hlh+4Vzt6c8Y0EZMnJx7kgsUcW1HPmfoqT5Q==}
     peerDependencies:
       '@capacitor/core': '>=8.0.0'
 
@@ -1799,8 +1794,8 @@ packages:
     resolution: {integrity: sha512-wvUjBtSGN7+7SjNpq/9M2Tg350UZD3q62IFZLbRAR1bSMlCo1ZaeW+BJ+D090e4hIIZLBcTDWe4Mh4jvUDajzQ==}
     engines: {node: '>= 0.4'}
 
-  axe-core@4.11.0:
-    resolution: {integrity: sha512-ilYanEU8vxxBexpJd8cWM4ElSQq4QctCLKih0TSfjIfCQTeyH/6zVrmIJfLPrKTKJRbiG+cfnZbQIjAlJmF1jQ==}
+  axe-core@4.11.1:
+    resolution: {integrity: sha512-BASOg+YwO2C+346x3LZOeoovTIoTrRqEsqMa6fmfAV0P+U9mFr9NsyOEpiYvFjbc64NMrSswhV50WdXzdb/Z5A==}
     engines: {node: '>=4'}
 
   axobject-query@4.1.0:
@@ -2001,6 +1996,12 @@ packages:
   canvg@3.0.11:
     resolution: {integrity: sha512-5ON+q7jCTgMp9cjpu4Jo6XbvfYwSB2Ow3kzHKfIyJfaCAOHLbdKPQqGKgfED/R5B+3TFFfe8pegYA+b423SRyA==}
     engines: {node: '>=10.0.0'}
+
+  capacitor-plugin-simple-encryption@git+https://git.xulu.tech/selene.cash/capacitor-plugin-simple-encryption.git#cb673fc345599a3e415f094d4ecad7e8f72f9bcb:
+    resolution: {commit: cb673fc345599a3e415f094d4ecad7e8f72f9bcb, repo: https://git.xulu.tech/selene.cash/capacitor-plugin-simple-encryption.git, type: git}
+    version: 0.1.0
+    peerDependencies:
+      '@capacitor/core': ^8.0.0
 
   chai@6.2.2:
     resolution: {integrity: sha512-NUPRluOfOiTKBKvWPtSD4PhFvWCqOi0BGStNWs57X9js7XGTprSmFoz5F0tWhR4WPjNeR9jXqdC7/UpSJTnlRg==}
@@ -3474,6 +3475,9 @@ packages:
 
   minimatch@3.1.2:
     resolution: {integrity: sha512-J7p63hRiAjw1NDEww1W7i37+ByIrOWO5XQQAzZ3VOcL0PNybwpfmV/N05zFAzwQ9USyEcX6t3UO+K5aqBQOIHw==}
+
+  minimatch@3.1.5:
+    resolution: {integrity: sha512-VgjWUsnnT6n+NUk6eZq77zeFdpW2LWDzP6zFGrCbHXiYNul5Dzqk2HHQ5uFH2DNW5Xbp8+jVzaeNt94ssEEl4w==}
 
   minimatch@8.0.4:
     resolution: {integrity: sha512-W0Wvr9HyFXZRGIDgCicunpQ299OKXs9RgZfaukz4qAW/pJhcpUfupc9c+OObPOFueNy8VSrZgEmDtk6Kh4WzDA==}
@@ -5474,10 +5478,6 @@ snapshots:
     dependencies:
       '@capacitor/core': 8.0.1
 
-  '@capgo/capacitor-native-biometric@8.2.0(@capacitor/core@8.0.1)':
-    dependencies:
-      '@capacitor/core': 8.0.1
-
   '@cashlab/cauldron@1.0.2':
     dependencies:
       '@cashlab/common': 1.0.5
@@ -7047,7 +7047,7 @@ snapshots:
     dependencies:
       possible-typed-array-names: 1.1.0
 
-  axe-core@4.11.0: {}
+  axe-core@4.11.1: {}
 
   axobject-query@4.1.0: {}
 
@@ -7265,6 +7265,10 @@ snapshots:
       stackblur-canvas: 2.7.0
       svg-pathdata: 6.0.3
     optional: true
+
+  capacitor-plugin-simple-encryption@git+https://git.xulu.tech/selene.cash/capacitor-plugin-simple-encryption.git#cb673fc345599a3e415f094d4ecad7e8f72f9bcb(@capacitor/core@8.0.1):
+    dependencies:
+      '@capacitor/core': 8.0.1
 
   chai@6.2.2: {}
 
@@ -8055,7 +8059,7 @@ snapshots:
       array-includes: 3.1.9
       array.prototype.flatmap: 1.3.3
       ast-types-flow: 0.0.8
-      axe-core: 4.11.0
+      axe-core: 4.11.1
       axobject-query: 4.1.0
       damerau-levenshtein: 1.0.8
       emoji-regex: 9.2.2
@@ -8063,7 +8067,7 @@ snapshots:
       hasown: 2.0.2
       jsx-ast-utils: 3.3.5
       language-tags: 1.0.9
-      minimatch: 3.1.2
+      minimatch: 3.1.5
       object.fromentries: 2.0.8
       safe-regex-test: 1.1.0
       string.prototype.includes: 2.0.1
@@ -8994,6 +8998,10 @@ snapshots:
       brace-expansion: 1.1.12
 
   minimatch@3.1.2:
+    dependencies:
+      brace-expansion: 1.1.12
+
+  minimatch@3.1.5:
     dependencies:
       brace-expansion: 1.1.12
 

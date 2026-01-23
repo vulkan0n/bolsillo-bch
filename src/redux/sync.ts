@@ -543,8 +543,11 @@ export const syncComplete = createAsyncThunk(
         thunkApi.dispatch(walletReloadAddresses({ wallet }));
 
         thunkApi.dispatch(syncSetSaving(true));
-        await WalletManagerService().saveWallet(wallet.walletHash);
-        thunkApi.dispatch(syncSetSaving(false));
+        try {
+          await WalletManagerService().saveWallet(wallet.walletHash);
+        } finally {
+          thunkApi.dispatch(syncSetSaving(false));
+        }
 
         thunkApi.dispatch(syncFlushDiff());
       }
@@ -555,7 +558,10 @@ export const syncComplete = createAsyncThunk(
   }
 );
 
-export const syncPause = createAsyncThunk("sync/pause", async () => {});
+export const syncPause = createAsyncThunk("sync/pause", async (_, thunkApi) => {
+  const bchNetwork = selectBchNetwork(thunkApi.getState());
+  await ElectrumService(bchNetwork).disconnect(true);
+});
 
 export const syncResume = createAsyncThunk(
   "sync/resume",

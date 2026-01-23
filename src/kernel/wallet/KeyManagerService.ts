@@ -8,6 +8,7 @@ import {
   CashAddressType,
   utf8ToBin,
   binToBase64,
+  bigIntToCompactUint,
   SigningSerializationFlag,
   generateSigningSerializationBCH,
   CompilationContextBCH,
@@ -21,15 +22,26 @@ import {
 import { hexToBin, binToHex } from "@/util/hex";
 import { sha256, ripemd160 } from "@/util/hash";
 
-import LogService from "@/kernel/app/LogService";
+//import LogService from "@/kernel/app/LogService";
 import AddressManagerService from "@/kernel/wallet/AddressManagerService";
 import WalletManagerService, {
   WalletStub,
 } from "@/kernel/wallet/WalletManagerService";
 
-const Log = LogService("KeyManager");
+//const Log = LogService("KeyManager");
 
 const seedCache = new Map();
+
+// Note: Map.clear() releases references but does NOT zero the seed bytes in
+// V8 heap memory. JavaScript provides no reliable way to overwrite GC-managed
+// memory. On native platforms, key material is zeroed via memset_s (iOS) and
+// ByteArray.fill(0) (Android). This JS-side clear is best-effort only.
+export function clearSeedCache() {
+  seedCache.forEach((seed) => {
+    if (seed instanceof Uint8Array) seed.fill(0);
+  });
+  seedCache.clear();
+}
 
 export default function KeyManagerService(walletStub: WalletStub) {
   const WalletManager = WalletManagerService();
@@ -38,13 +50,11 @@ export default function KeyManagerService(walletStub: WalletStub) {
 
   // deriveSeedFromBip39Mnemonic is expensive (according to profiling)
   // so we make sure we only run once per seed material
-  const seedKey = `${mnemonic}:${passphrase}`;
-  if (!seedCache.has(seedKey)) {
-    const derivedSeed = deriveSeedFromBip39Mnemonic(mnemonic, { passphrase });
-    seedCache.set(seedKey, derivedSeed);
+  let seed = seedCache.get(walletHash);
+  if (!seed) {
+    seed = deriveSeedFromBip39Mnemonic(mnemonic, { passphrase });
+    seedCache.set(walletHash, seed);
   }
-
-  const seed = seedCache.get(seedKey);
 
   const hdMaster = deriveHdPrivateNodeFromSeed(seed);
   const hdMain = deriveHdPath(hdMaster, `${derivation}/0`);
@@ -134,11 +144,11 @@ export default function KeyManagerService(walletStub: WalletStub) {
     const privateKey = _deriveAddressPrivateKey(address);
 
     const magic = `\x18Bitcoin Signed Message:\n`;
-    const length = payload.length.toString(16);
+    const messageBytes = utf8ToBin(payload);
     const preimage = new Uint8Array([
       ...utf8ToBin(magic),
-      ...hexToBin(length),
-      ...utf8ToBin(payload),
+      ...bigIntToCompactUint(BigInt(messageBytes.length)),
+      ...messageBytes,
     ]);
     const messageHash = sha256.hash(sha256.hash(preimage));
 
@@ -157,7 +167,7 @@ export default function KeyManagerService(walletStub: WalletStub) {
     ]);
 
     const base64Signature = binToBase64(signature);
-    Log.log("signMessage", address, base64Signature, payload);
+    //Log.log("signMessage", address, base64Signature, payload);
 
     return base64Signature;
   }

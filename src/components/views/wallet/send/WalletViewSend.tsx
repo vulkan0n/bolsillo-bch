@@ -60,7 +60,7 @@ import { hexToBin } from "@/util/hex";
 import { Haptic } from "@/util/haptic";
 import { bchToSats } from "@/util/sats";
 import { MUSD_TOKENID } from "@/util/tokens";
-import { validateBchUri, navigateOnValidUri } from "@/util/uri";
+import { validateBchUri, navigateOnValidUri, isIntStr } from "@/util/uri";
 import NotificationService from "@/kernel/app/NotificationService";
 import { extractBchAddresses } from "@/util/cashaddr";
 import { truncateProse } from "@/util/string";
@@ -127,20 +127,22 @@ export default function WalletViewSend() {
   // PayPro CHIP-2023-05: prefer 's' (satoshis) over 'amount' (BCH)
   const hasSatsParam = !!searchParams.get("s");
   const querySatsParam = searchParams.get("s") || searchParams.get("amount");
-  const querySats =
-    (hasSatsParam ? BigInt(querySatsParam) : bchToSats(querySatsParam)) ||
-    BigInt(0);
+  let querySats = 0n;
+  if (querySatsParam && hasSatsParam && isIntStr(querySatsParam)) {
+    querySats = BigInt(querySatsParam);
+  } else if (querySatsParam) {
+    querySats = bchToSats(querySatsParam);
+  }
 
   const queryTokenCategory = searchParams.get("c");
   // PayPro CHIP-2023-05: prefer 'f' over 'ft' for fungible token amount
-  const queryTokenAmount = queryTokenCategory
-    ? BigInt(searchParams.get("f") || searchParams.get("ft") || 0)
-    : 0n;
+  const rawFt = searchParams.get("f") || searchParams.get("ft");
+  const queryTokenAmount =
+    queryTokenCategory && rawFt && isIntStr(rawFt) ? BigInt(rawFt) : 0n;
 
   // PayPro CHIP-2023-05: NFT commitment (n parameter)
   // undefined = not specified, "" = any NFT of category, "hex..." = specific NFT
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const queryNftCommitment = searchParams.get("n");
+  // const queryNftCommitment = searchParams.get("n");
 
   // PayPro CHIP-2023-05: payment message/memo
   const queryMessage =

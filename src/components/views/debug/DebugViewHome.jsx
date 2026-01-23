@@ -72,6 +72,7 @@ export default function DebugView() {
 
   const handleResetDatabases = async () => {
     await JanitorService().resetDatabases();
+    window.location.assign("/");
   };
 
   return (

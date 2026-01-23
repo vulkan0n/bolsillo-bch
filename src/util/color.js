@@ -7,7 +7,7 @@ export function hexToRgb(hex) {
       .join("");
 
   const n = parseInt(h, 16);
-  /* eslint-disable-next-line no-bitwise */
+  // eslint-disable-next-line no-bitwise
   return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
 }
 
@@ -20,8 +20,8 @@ export function rgbToHex(r, g, b) {
 export function getLuminance(r, g, b) {
   return [r, g, b]
     .map((c) => {
-      c /= 255;
-      return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
+      const v = c / 255;
+      return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4;
     })
     .reduce((a, v, i) => a + v * [0.2126, 0.7152, 0.0722][i], 0);
 }

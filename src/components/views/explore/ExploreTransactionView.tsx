@@ -97,10 +97,14 @@ export default function ExploreTransactionView() {
   };
 
   const handleExportAsPdf = async () => {
-    if (isExporting) return;
+    if (isExporting) {
+      return;
+    }
 
     setIsExporting(true);
-    const loadingToast = toast.loading("Generating PDF...");
+    const loadingToast = toast.loading(
+      translate(translations.pdfExportGenerating)
+    );
 
     try {
       const exportData = await prepareTransactionExportData(
@@ -114,19 +118,27 @@ export default function ExploreTransactionView() {
         exportData,
         `transaction-${tx.txid.slice(0, 8)}`
       );
-      toast.success("PDF exported successfully", { id: loadingToast });
+      toast.success(translate(translations.pdfExportSuccess), {
+        id: loadingToast,
+      });
     } catch (error) {
-      toast.error("Failed to export PDF", { id: loadingToast });
+      toast.error(translate(translations.pdfExportError), {
+        id: loadingToast,
+      });
     } finally {
       setIsExporting(false);
     }
   };
 
   const handleExportAsPng = async () => {
-    if (isExporting) return;
+    if (isExporting) {
+      return;
+    }
 
     setIsExporting(true);
-    const loadingToast = toast.loading("Generating PNG...");
+    const loadingToast = toast.loading(
+      translate(translations.pngExportGenerating)
+    );
 
     try {
       const exportData = await prepareTransactionExportData(
@@ -140,9 +152,13 @@ export default function ExploreTransactionView() {
         exportData,
         `transaction-${tx.txid.slice(0, 8)}`
       );
-      toast.success("PNG exported successfully!", { id: loadingToast });
+      toast.success(translate(translations.pngExportSuccess), {
+        id: loadingToast,
+      });
     } catch (error) {
-      toast.error("Failed to export PNG", { id: loadingToast });
+      toast.error(translate(translations.pngExportError), {
+        id: loadingToast,
+      });
     } finally {
       setIsExporting(false);
     }

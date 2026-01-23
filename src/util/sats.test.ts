@@ -9,6 +9,7 @@
  * - Different input types (number, string, bigint)
  */
 
+import { describe, it, expect } from "vitest";
 import {
   satsToBch,
   bchToSats,
@@ -110,6 +111,22 @@ describe("sats.ts", () => {
     it("handles string with sats denomination", () => {
       const result = bchToSats("99999", "sats");
       expect(result).toBe(99999n);
+    });
+
+    it("throws on null input", () => {
+      expect(() => bchToSats(null)).toThrow("input is required");
+    });
+
+    it("throws on undefined input", () => {
+      expect(() => bchToSats(undefined)).toThrow("input is required");
+    });
+
+    it("throws on empty string input", () => {
+      expect(() => bchToSats("")).toThrow("input is required");
+    });
+
+    it("throws on non-numeric string input", () => {
+      expect(() => bchToSats("abc")).toThrow();
     });
   });
 

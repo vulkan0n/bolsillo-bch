@@ -115,7 +115,7 @@ export default function PaymentSettings() {
       {isExperimental && (
         <Accordion.Child
           icon={AlertOutlined}
-          label="Allow sending tokens to non-token addresses"
+          label={translate(translations.allowTokensToNonTokenAddresses)}
         >
           <Checkbox
             checked={shouldForceTokenAddress}

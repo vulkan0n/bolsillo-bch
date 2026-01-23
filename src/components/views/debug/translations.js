@@ -1,4 +1,9 @@
+import { exportLogs } from "@/translations/common";
+
 const translations = {
+  // Imported from common
+  exportLogs,
+
   debug: {
     ar: "تصحيح",
     bn: "ডিবাগ",
@@ -318,46 +323,6 @@ const translations = {
     vi: "Mạng lưới BCH",
     zh: "BCH网络",
     zh_TW: "生物資訊安全所網絡"
-  },
-  exportLogs: {
-    ar: "تصدير السجلات",
-    bn: "রপ্তানি লগ",
-    cy: "Allyrru Logiau",
-    da: "Eksporter logs",
-    de: "Protokolle exportieren",
-    el: "Εξαγωγή αρχείων καταγραφής",
-    en: "Export Logs",
-    es: "Exportar registros",
-    fa: "صادرات سیاهههای مربوط",
-    fil: "I-export ang mga Log",
-    fr: "Exporter les journaux",
-    ha: "Fitar da Logs",
-    hi: "लॉग निर्यात करें",
-    id: "Ekspor Log",
-    it: "Esporta registri",
-    ja: "ログのエクスポート",
-    jv: "Ekspor Log",
-    ko: "로그 내보내기",
-    mr: "नोंदी निर्यात करा",
-    ms: "Eksport Log",
-    nb: "Eksporter logger",
-    nl: "Logboeken exporteren",
-    pa: "ਲੌਗ ਐਕਸਪੋਰਟ ਕਰੋ",
-    pl: "Eksportuj dzienniki",
-    pt: "Exportar Logs",
-    ro: "Exportă jurnalele",
-    ru: "Экспорт журнала",
-    sv: "Exportera loggar",
-    sw: "Hamisha Kumbukumbu",
-    ta: "ஏற்றுமதி பதிவுகள்",
-    te: "లాగ్‌లను ఎగుమతి చేయండి",
-    th: "การส่งออกบันทึก",
-    tr: "İhracat Günlükleri",
-    uk: "Експорт журналів",
-    ur: "لاگز برآمد کریں۔",
-    vi: "Xuất Nhật Ký",
-    zh: "导出日志",
-    zh_TW: "匯出日誌"
   }
 };
 

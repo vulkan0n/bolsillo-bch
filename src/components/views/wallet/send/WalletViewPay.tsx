@@ -121,7 +121,7 @@ export default function WalletViewPay() {
 
         if (!sync.isConnected) {
           NotificationService().disconnected();
-          throw new Error(translate(translations.walletDisconnected));
+          throw new Error(translate(translations.unableWhileDisconnected));
         }
 
         // Format the outputs into correct format for the Transaction Builder.
@@ -263,7 +263,7 @@ export default function WalletViewPay() {
           setIsLoading(true);
           setPaymentData(await jppClient.paymentRequest(requestUri));
         } catch (error) {
-          setMessage("Invalid invoice");
+          setMessage(translate(translations.invalidInvoice));
           setDetailedMessage(`${error}`);
         } finally {
           setIsLoading(false);

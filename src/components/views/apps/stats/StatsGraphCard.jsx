@@ -49,7 +49,7 @@ export default function StatsGraphCard() {
   const isReady = !isLoading && data && data.activeBitcoiners;
 
   return (
-    <Card className="rounded-none w-full border-0 shadow-none">
+    <Card className="rounded-none w-full border-0 shadow-none p-2">
       <div className="flex items-center mb-1.5">
         <SeleneLogo className="w-12 mr-1" />
         <div>

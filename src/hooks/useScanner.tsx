@@ -22,8 +22,7 @@ const Log = LogService("useScanner");
 let _scanner: QrScanner | null = null;
 let _currentScanCallback: ((data: string) => void) | null = null;
 
-/* eslint-disable-next-line react-refresh/only-export-components */
-function ScannerHelper(onScan) {
+function initScanner(onScan) {
   _currentScanCallback = onScan;
 
   if (_scanner === null) {
@@ -84,7 +83,7 @@ export function useScanner(onScan) {
     [onScan, dispatch]
   );
 
-  const scanner = ScannerHelper(handleScanContent);
+  const scanner = initScanner(handleScanContent);
 
   const startScanner = useCallback(async () => {
     try {

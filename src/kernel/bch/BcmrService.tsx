@@ -659,11 +659,18 @@ export default function BcmrService(bchNetwork: ValidBchNetwork) {
         await Filesystem.readFile({
           path: `/selene/${iconPath}`,
           directory: Directory.Cache,
-          encoding: Encoding.UTF8,
         })
       ).data;
 
       const mime = detectImageMime(iconBase64);
+      if (mime === null) {
+        // Cached file may use old encoding format; delete and re-fetch
+        await Filesystem.deleteFile({
+          path: `/selene/${iconPath}`,
+          directory: Directory.Cache,
+        }).catch(() => {});
+        throw new Error("Invalid cached icon format");
+      }
       iconDataUri = `data:${mime};base64,${iconBase64}`;
     } catch (e) {
       if (
@@ -703,12 +710,10 @@ export default function BcmrService(bchNetwork: ValidBchNetwork) {
             path: `/selene/${dir}/${filename}`,
             directory: Directory.Cache,
             data: iconData,
-            encoding: Encoding.UTF8,
           });
 
           const { data } = await Filesystem.readFile({
             path: iconUri,
-            encoding: Encoding.UTF8,
           });
 
           iconBase64 = data;

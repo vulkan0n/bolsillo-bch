@@ -29,6 +29,8 @@ export default defineConfig({
       "@/icons": path.resolve(__dirname, "./src/components/atoms/icons"),
       "@/apps": path.resolve(__dirname, "./src/components/views/apps"),
       "@": path.resolve(__dirname, "./src"),
+      // Dedupe @capacitor/core for linked plugins
+      "@capacitor/core": path.resolve(__dirname, "./node_modules/@capacitor/core"),
     },
   },
   test: {

@@ -58,7 +58,9 @@ export default function VendorModeView() {
   // PayPro CHIP-2023-05: use ?s= (satoshis) by default, ?amount= (BCH) for legacy
   // PayPro format uses alphanumeric encoding for more efficient QR codes
   const qrValue = useMemo(() => {
-    if (satoshiAmount === 0n) return address;
+    if (satoshiAmount === 0n) {
+      return address;
+    }
     if (shouldUseLegacyBip21) {
       return `${address}?amount=${satsToBch(satoshiAmount).bch}`;
     }
@@ -73,8 +75,12 @@ export default function VendorModeView() {
   const getAmountFontSize = (): string => {
     const bchString = satsToBch(satoshiAmount).bch.toString();
     const len = bchString.length;
-    if (len > 16) return "text-2xl";
-    if (len > 12) return "text-3xl";
+    if (len > 16) {
+      return "text-2xl";
+    }
+    if (len > 12) {
+      return "text-3xl";
+    }
     return "text-4xl";
   };
 
@@ -83,7 +89,9 @@ export default function VendorModeView() {
     const isAuthorized = await SecurityService().authorize(
       AuthActions.VendorMode
     );
-    if (!isAuthorized) return;
+    if (!isAuthorized) {
+      return;
+    }
 
     dispatch(setPreference({ key: "vendorModeActive", value: "false" }));
     navigate("/wallet");

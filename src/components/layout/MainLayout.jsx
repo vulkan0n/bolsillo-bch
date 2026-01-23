@@ -93,7 +93,9 @@ export default function MainLayout() {
   // Lock to portrait unless in vendor mode (which handles its own landscape lock)
   useEffect(
     function lockPortraitOrientation() {
-      if (platform === "web") return;
+      if (platform === "web") {
+        return;
+      }
 
       // When not in vendor mode, lock to portrait
       if (!isVendorModeActive) {
@@ -135,14 +137,23 @@ export default function MainLayout() {
     [isScanning, html]
   );
 
-  App.addListener("appUrlOpen", async ({ url }) => {
-    const { navTo, navState, isExpired } = await navigateOnValidUri(url);
-    if (isExpired) {
-      NotificationService().expiredPayment();
-    } else if (navTo) {
-      navigate(navTo, { state: navState });
-    }
-  });
+  useEffect(
+    function registerAppUrlListener() {
+      const listener = App.addListener("appUrlOpen", async ({ url }) => {
+        const { navTo, navState, isExpired } = await navigateOnValidUri(url);
+        if (isExpired) {
+          NotificationService().expiredPayment();
+        } else if (navTo) {
+          navigate(navTo, { state: navState });
+        }
+      });
+
+      return () => {
+        listener.then((l) => l.remove());
+      };
+    },
+    [navigate]
+  );
 
   // [!] see index.css for #container and <main> styles
   return (

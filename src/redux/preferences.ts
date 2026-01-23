@@ -13,6 +13,7 @@ import { DEFAULT_CURRENCY, currencyList } from "@/util/currency";
 import { VALID_DENOMINATIONS } from "@/util/sats";
 import CurrencyService from "@/kernel/bch/CurrencyService";
 import { AuthActions } from "@/kernel/app/SecurityService";
+import { REENCRYPTION_KEY } from "@/kernel/app/DatabaseService";
 
 export enum ThemeMode {
   System = "system",
@@ -76,6 +77,11 @@ export const defaultPreferences = {
   // Vendor Mode
   vendorModeActive: "false",
   vendorModeKeepAwake: "true",
+  // --------
+  // Encryption
+  encryptionDeviceOnly: "false", // false = cloud sync enabled (default for new users)
+  lastKeyBackupExport: "", // ISO timestamp of last key backup export
+  useLegacyBip21: "true", // true = use legacy BIP21 format (modern PayPro not deployed yet)
 };
 
 export type ValidPreferences = typeof defaultPreferences;
@@ -146,6 +152,8 @@ export function validatePreferences(preferences: ValidPreferences): boolean {
     "forceTokenAddress",
     "vendorModeActive",
     "vendorModeKeepAwake",
+    "encryptionDeviceOnly",
+    "useLegacyBip21",
   ];
 
   const invalidBools = boolKeys.filter(
@@ -159,20 +167,32 @@ export function validatePreferences(preferences: ValidPreferences): boolean {
   return true;
 }
 
-// cleanupPreferences: removes all unknown/invalid preferences
-async function cleanupPreferences(): Promise<void[]> {
-  const knownKeys = (await Preferences.keys()).keys;
-  const validKeys = Object.keys(defaultPreferences);
+// Remove stale keys not in defaultPreferences, preserving REENCRYPTION_KEY
+async function cleanupPreferences(): Promise<void> {
+  const allKeys = (await Preferences.keys()).keys;
+  const keepKeys = [...Object.keys(defaultPreferences), REENCRYPTION_KEY];
+  const staleKeys = allKeys.filter((key) => !keepKeys.includes(key));
+  await Promise.all(staleKeys.map((key) => Preferences.remove({ key })));
+}
 
-  const invalidKeys = knownKeys.filter(
-    (known) => validKeys.indexOf(known) === -1
+// Reset all preferences to defaults, preserving auth state and REENCRYPTION_KEY
+async function resetToDefaults(): Promise<ValidPreferences> {
+  const authMode =
+    (await Preferences.get({ key: "authMode" })).value ||
+    defaultPreferences.authMode;
+  const pinHash =
+    (await Preferences.get({ key: "pinHash" })).value ||
+    defaultPreferences.pinHash;
+  const defaults = await tweakDefaultPreferences();
+  await Promise.all(
+    Object.keys(defaults).map((key) =>
+      Preferences.set({ key, value: defaults[key] })
+    )
   );
-
-  return Promise.all(
-    invalidKeys.map(async (key) => {
-      await Preferences.remove({ key });
-    })
-  );
+  await Preferences.set({ key: "authMode", value: authMode });
+  await Preferences.set({ key: "pinHash", value: pinHash });
+  await cleanupPreferences();
+  return defaults;
 }
 
 // tweakDefaultPreferences: dynamically change defaults for first-run/preferences reset
@@ -212,10 +232,9 @@ async function retrievePreferences(): Promise<ValidPreferences> {
     return { ...acc, ...cur };
   }, {}) as ValidPreferences;
 
-  const isValidPreferences = await validatePreferences(preferences);
+  const isValidPreferences = validatePreferences(preferences);
   if (!isValidPreferences) {
-    await Preferences.clear();
-    return retrievePreferences();
+    return resetToDefaults();
   }
 
   return preferences;
@@ -251,21 +270,7 @@ export const setPreference = createAsyncThunk(
 export const resetPreferences = createAsyncThunk(
   "preferences/reset",
   async () => {
-    // do not reset authMode or pinHash as that would allow adversaries to trivially bypass SecurityService
-    const authMode =
-      (await Preferences.get({ key: "authMode" })).value ||
-      defaultPreferences.authMode;
-    const pinHash =
-      (await Preferences.get({ key: "pinHash" })).value ||
-      defaultPreferences.pinHash;
-
-    await Preferences.clear();
-
-    await Preferences.set({ key: "authMode", value: authMode });
-    await Preferences.set({ key: "pinHash", value: pinHash });
-
-    const preferences = await retrievePreferences();
-    return preferences;
+    return resetToDefaults();
   }
 );
 
@@ -349,7 +354,6 @@ export const selectSecuritySettings = createSelector(
   (state: RootState) => state.preferences,
   (preferences) => ({
     authMode: preferences.authMode,
-    pinHash: preferences.pinHash,
     authActions: preferences.authActions.split(";"),
   })
 );
@@ -424,7 +428,6 @@ export const selectShouldForceTokenAddress = createSelector(
 );
 
 // Legacy BIP21 format (amount, ft) vs PayPro CHIP-2023-05 (s, f, n, m, e)
-// Default to false (use modern PayPro format)
 export const selectShouldUseLegacyBip21 = createSelector(
   (state: RootState) => state.preferences,
   (preferences) => preferences.useLegacyBip21 === "true"
@@ -465,4 +468,12 @@ export const selectIsVendorModeActive = createSelector(
 export const selectIsVendorModeKeepAwake = createSelector(
   (state: RootState) => state.preferences,
   (preferences) => preferences.vendorModeKeepAwake === "true"
+);
+
+export const selectEncryptionSettings = createSelector(
+  (state: RootState) => state.preferences,
+  (preferences) => ({
+    isDeviceOnly: preferences.encryptionDeviceOnly === "true",
+    lastKeyBackupExport: preferences.lastKeyBackupExport,
+  })
 );

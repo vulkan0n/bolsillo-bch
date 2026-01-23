@@ -1,5 +1,6 @@
 import { Filesystem, Directory, Encoding } from "@capacitor/filesystem";
 import { generateBip39Mnemonic } from "@bitauth/libauth";
+import { SimpleEncryption } from "capacitor-plugin-simple-encryption";
 import LogService from "@/kernel/app/LogService";
 import DatabaseService from "@/kernel/app/DatabaseService";
 import { ValidBchNetwork } from "@/util/electrum_servers";
@@ -470,11 +471,15 @@ export default function WalletManagerService() {
       name,
     };
 
+    let data = JSON.stringify(walletData);
+
+    ({ data } = await SimpleEncryption.encrypt({ data }));
+
     const result = await Filesystem.writeFile({
       path: `/selene/wallets/${walletHash}.wallet.json`,
       directory: Directory.Library,
       recursive: true,
-      data: JSON.stringify(walletData),
+      data,
       encoding: Encoding.UTF8,
     });
 
@@ -489,10 +494,17 @@ export default function WalletManagerService() {
       encoding: Encoding.UTF8,
     });
 
-    //Log.debug("importWalletFile", walletHash, JSON.stringify(walletFile));
+    let fileData = walletFile.data.toString();
+
+    // Decrypt if encrypted (not plain JSON — web stub is a passthrough)
+    if (!fileData.startsWith("{")) {
+      ({ data: fileData } = await SimpleEncryption.decrypt({
+        data: fileData,
+      }));
+    }
 
     await Database.openWalletDatabase(walletHash, network);
-    const walletData = JSON.parse(walletFile.data.toString());
+    const walletData = JSON.parse(fileData);
 
     try {
       await importWallet(walletData);

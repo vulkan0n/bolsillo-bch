@@ -20,6 +20,10 @@ export function satsToBch(sats: bigint | string | number | Decimal): {
 }
 
 export function bchToSats(bch, denomination = "bch"): bigint {
+  if (bch === null || bch === undefined || bch === "") {
+    throw new Error("bchToSats: input is required");
+  }
+
   switch (denomination) {
     case "sats":
       return BigInt(bch.toString());

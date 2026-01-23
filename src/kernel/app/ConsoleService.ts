@@ -6,7 +6,7 @@ import { Filesystem, Directory, Encoding } from "@capacitor/filesystem";
 
 let lines: Array<{ level: number; message: string }> = [];
 const timers = {};
-const denyLoggers = ["WalletManager"];
+const denyLoggers = ["WalletManager", "KeyManager"];
 
 function ConsoleService() {
   return {

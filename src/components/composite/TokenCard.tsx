@@ -93,8 +93,8 @@ export default function TokenCard({
 
   //className="w-full my-1 border border-primary rounded bg-primary-100 dark:bg-neutral-800 dark:border-primarydark-400"
   return (
-    <Card key={token.category} className="p-0">
-      <div className="flex p-1">
+    <Card key={token.category} className="overflow-auto">
+      <div className="flex p-2 bg-primary-50 dark:bg-neutral-800">
         {detail ? (
           <div
             className="w-fit h-fit mr-1 border border-2 rounded-sm overflow-hidden shadow-sm"
@@ -142,7 +142,7 @@ export default function TokenCard({
               )}
             </div>
             {detail && (
-              <div className="w-full flex flex-wrap gap-3 text-neutral-500 dark:text-neutral-200 text-[1.667em]">
+              <div className="w-full flex flex-wrap gap-3 text-neutral-500 dark:text-primarydark-400 mt-1 text-[1.667em]">
                 {token.uris &&
                   Object.entries(token.uris)
                     .filter(([k]) => !["icon", "image"].includes(k))
@@ -162,7 +162,7 @@ export default function TokenCard({
       <div>
         {token.description && (
           <div
-            className="m-0.5 p-1.5 text-md text-neutral-700 bg-neutral-50/90 dark:text-neutral-100 dark:bg-neutral-700 rounded-sm"
+            className="p-1.5 text-md text-neutral-700 bg-primary-100 dark:text-neutral-100 dark:bg-neutral-700 rounded-sm"
             onClick={() => {
               if (detail) {
                 setShouldShowFullDescription(!shouldShowFullDescription);

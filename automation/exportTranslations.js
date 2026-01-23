@@ -18,10 +18,10 @@ if (!languageCode) {
 
 // Validate language code format (2-5 characters, may include underscore)
 if (!/^[a-z]{2}(_[A-Z]{2})?$/i.test(languageCode)) {
+  console.error(`Error: Invalid language code format: "${languageCode}"`);
   console.error(
-    `Error: Invalid language code format: "${languageCode}"`
+    "Expected format: 2-letter code (e.g., 'es', 'fr') or regional code (e.g., 'zh_TW')"
   );
-  console.error("Expected format: 2-letter code (e.g., 'es', 'fr') or regional code (e.g., 'zh_TW')");
   process.exit(1);
 }
 
@@ -59,7 +59,11 @@ function extractTranslations(obj, prefix = "", results = []) {
           english: englishText,
           translation: targetText,
         });
-      } else if (typeof item === "object" && item !== null && !Array.isArray(item)) {
+      } else if (
+        typeof item === "object" &&
+        item !== null &&
+        !Array.isArray(item)
+      ) {
         // Recursively process nested objects
         extractTranslations(item, fullKey, results);
       }
@@ -75,14 +79,22 @@ for (const filePath of filesWithTranslations) {
   try {
     const fileContent = fs.readFileSync(filePath, "utf8");
 
+    // Strip prefix (imports) before const translations =
+    const constIdx = fileContent.indexOf("const translations =");
+    const afterConst =
+      constIdx > 0 ? fileContent.substring(constIdx) : fileContent;
+
     // Process the file into valid JSON (similar to processFile.js)
-    const originalJSON = fileContent
+    const originalJSON = afterConst
       // Remove "const translations = " from the start
       .replace(/^const translations = /, "")
       // Remove "; export default translations;" from the end
       .replace(/export default translations;/, "")
       // Remove excess end keys
       .replace(/;\n\n\n/, "")
+      // Remove imported-reference lines (shorthand `back,` or aliased `key: varName,`)
+      .replace(/^\s+\w+,\s*$/gm, "")
+      .replace(/^\s+\w+:\s+\w+,\s*$/gm, "")
       // Add double quotes around keys
       .replace(/(\w+):/g, '"$1":')
       // Remove trailing commas
@@ -92,10 +104,7 @@ for (const filePath of filesWithTranslations) {
     const translations = extractTranslations(translationObject);
 
     // Add file path info to each translation
-    const relativePath = path.relative(
-      path.resolve(directoryPath),
-      filePath
-    );
+    const relativePath = path.relative(path.resolve(directoryPath), filePath);
     translations.forEach((t) => {
       t.file = relativePath;
     });
@@ -158,4 +167,3 @@ const missingCount = allTranslations.filter(
 if (missingCount > 0) {
   console.log(`  ⚠ Missing translations: ${missingCount}`);
 }
-

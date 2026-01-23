@@ -3,6 +3,7 @@ import { GlobalOutlined, FlagOutlined } from "@ant-design/icons";
 
 import { translate, languageList } from "@/util/translations";
 import translations from "./translations";
+import { sameAsDevice } from "@/translations/common";
 
 import { SettingsContext } from "./SettingsContext";
 
@@ -29,7 +30,9 @@ export default function IntlSettings() {
         >
           {languageList.map(({ flag, code, name }) => (
             <option key={code} value={code}>
-              {flag} {code.toUpperCase()} - {name}
+              {code
+                ? `${flag} ${code.toUpperCase()} - ${name}`
+                : translate(sameAsDevice)}
             </option>
           ))}
         </Select>
