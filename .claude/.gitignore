@@ -1,9 +1,0 @@
-# Ignore session files to avoid cluttering repo
-# But keep in working directory for resume capability
-session-*.md
-
-# Auto-generated GitLab state files (refreshed on session start)
-gitlab-state.md
-priorities.md
-
-settings.local.json
