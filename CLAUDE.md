@@ -38,7 +38,7 @@ npx cap open android  # Open Android Studio
 glab issue view <n> --repo selene.cash/selene-wallet
 glab mr view <n> --repo selene.cash/selene-wallet
 ./scripts/gitlab-sync.sh       # Refresh .claude/gitlab-state.md
-./scripts/gitlab-close-issue.sh <n>  # Close issue with commit ref
+glab issue close <n> --repo selene.cash/selene-wallet  # Close issue
 ```
 
 ## Build Targets
@@ -383,7 +383,7 @@ Session start hook runs `./scripts/gitlab-sync.sh` to refresh `.claude/gitlab-st
 **Commands:**
 - "sync gitlab" → Run `./scripts/gitlab-sync.sh`
 - "what should I work on?" → Read `.claude/priorities.md`
-- "close #X" → Run `./scripts/gitlab-close-issue.sh X`
+- "close #X" → Run `glab issue close X --repo selene.cash/selene-wallet`
 
 ## Lessons Learned
 
