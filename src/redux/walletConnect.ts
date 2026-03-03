@@ -129,8 +129,8 @@ export const wcSessionRequest = createAsyncThunk(
           }
 
           const txTemplate = { ...unsignedTransaction };
-          const Hd = KeyManagerService(wallet);
-          const signedTemplate = Hd.signTemplate(
+          const KeyManager = KeyManagerService(wallet);
+          const signedTemplate = KeyManager.signTemplate(
             txTemplate,
             sourceOutputs,
             sessionAddress
@@ -179,8 +179,8 @@ export const wcSessionRequest = createAsyncThunk(
         {
           const { message } = destringify(JSON.stringify(methodParams));
 
-          const Hd = KeyManagerService(wallet);
-          const signedMessage = Hd.signMessage(message, sessionAddress);
+          const KeyManager = KeyManagerService(wallet);
+          const signedMessage = KeyManager.signMessage(message, sessionAddress);
           await WalletConnect.sessionResponse(
             topic,
             formatJsonRpcResult(id, signedMessage)
