@@ -138,7 +138,9 @@ export const walletReceive = createAsyncThunk(
 
     let satsDiff = 0n;
     let tokenSats = 0n;
-    const tokenDiff = {};
+    const tokenDiff: Record<string, bigint> = {};
+    const nftDiff: Record<string, number> = {};
+    const nftCommitments: Record<string, string[]> = {};
 
     Log.debug("walletReceive", utxoIn);
 
@@ -161,6 +163,15 @@ export const walletReceive = createAsyncThunk(
 
       tokenDiff[category] += utxo.token_amount;
       tokenSats += utxo.amount;
+
+      // track NFTs separately
+      if (utxo.nft_capability !== null && utxo.nft_capability !== undefined) {
+        nftDiff[category] = (nftDiff[category] || 0) + 1;
+        if (utxo.nft_commitment) {
+          nftCommitments[category] = nftCommitments[category] || [];
+          nftCommitments[category].push(utxo.nft_commitment);
+        }
+      }
 
       // check for matching utxoOut entry
       const outIndex = utxoOut.findIndex((u) => u.token_category === category);
@@ -187,12 +198,47 @@ export const walletReceive = createAsyncThunk(
       // spawn a receive popup for each token category
       Object.keys(tokenDiff).forEach((category) => {
         const tokenData = TokenManager.getToken(category);
-        const token = {
-          ...tokenData,
-          amount: tokenDiff[category],
-        };
+        const nftCount = nftDiff[category] || 0;
+        const commitments = nftCommitments[category] || [];
+        const isNft = nftCount > 0;
 
-        NotificationService().tokenReceived(token);
+        if (isNft && commitments.length > 0) {
+          // spawn one notification per NFT with its own thumbnail
+          commitments.forEach((commitment) => {
+            NotificationService().tokenReceived(
+              {
+                ...tokenData,
+                amount: 0n,
+                nftCount: 1,
+                nft_commitment: commitment,
+              },
+              true
+            );
+          });
+          // if there's also a fungible amount, show a separate notification
+          if (tokenDiff[category] > 0n) {
+            NotificationService().tokenReceived({
+              ...tokenData,
+              amount: tokenDiff[category],
+            });
+          }
+        } else if (isNft) {
+          // NFT without commitment
+          NotificationService().tokenReceived(
+            {
+              ...tokenData,
+              amount: tokenDiff[category],
+              nftCount,
+            },
+            true
+          );
+        } else {
+          // fungible token only
+          NotificationService().tokenReceived({
+            ...tokenData,
+            amount: tokenDiff[category],
+          });
+        }
       });
     }
 

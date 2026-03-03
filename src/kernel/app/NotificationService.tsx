@@ -111,11 +111,18 @@ export default function NotificationService() {
     });
   }
 
-  function tokenReceived(token) {
+  function tokenReceived(token, isNft = false) {
     spawn({
-      icon: <TokenIcon category={token.category} size={64} />,
+      icon: (
+        <TokenIcon
+          category={token.category}
+          nft_commitment={token.nft_commitment}
+          size={64}
+          toggleable={false}
+        />
+      ),
       header: `${token.symbol} ${translate(translations.received)}`,
-      body: <TokenAmount token={token} />,
+      body: <TokenAmount token={token} nft={isNft} />,
       options: {
         duration: 3000,
       },
