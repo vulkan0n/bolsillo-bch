@@ -484,10 +484,21 @@ export default function WalletViewSend() {
         Log.debug("sendTransaction", result);
 
         if (isSuccess) {
-          const tx = await TransactionManager.resolveTransaction(
-            result,
-            bchNetwork
-          );
+          let tx;
+          try {
+            tx = await Promise.race([
+              TransactionManager.resolveTransaction(result, bchNetwork),
+              new Promise((_, reject) => {
+                setTimeout(
+                  () => reject(new Error("mempool confirmation timeout")),
+                  10000
+                );
+              }),
+            ]);
+          } catch (e) {
+            Log.warn("resolveTransaction failed after broadcast", result, e);
+            tx = { txid: result };
+          }
           Log.debug("Transaction sent!", tx.txid);
           await Haptic.success();
           await navigate("/wallet/send/success", {
@@ -809,7 +820,7 @@ export default function WalletViewSend() {
               </div>
             </div>
           )}
-          <div className="p-2 w-full grow flex flex-col justify-center ">
+          <div className="p-2 w-full grow flex flex-col justify-center overflow-y-auto">
             {isStablecoinMode && !hasTokens && selection.length === 0 ? (
               <div className="py-4 px-2 rounded-md shadow-md bg-primary/95 dark:bg-primarydark-200 text-white">
                 <div className="flex items-center justify-center">
@@ -839,7 +850,7 @@ export default function WalletViewSend() {
               <>
                 {selectionAmount > 0 && <InputSelection inputs={selection} />}
                 {hasNft && <InputSelection inputs={nftSelection} />}
-                {tokenCategories.length > 0 && (
+                {tokenCategories.length > 0 && !hasNft && (
                   <InputSelection inputs={tokenSelection} />
                 )}
                 {tokenData !== null && nftSelection.length === 0 && (
@@ -848,7 +859,11 @@ export default function WalletViewSend() {
                     style={{ backgroundColor: tokenData.color }}
                   >
                     <div className="flex items-center justify-center">
-                      <TokenIcon category={tokenCategories[0]} size={48} />
+                      <TokenIcon
+                        category={tokenCategories[0]}
+                        size={48}
+                        toggleable={false}
+                      />
                       <SatoshiInput
                         key={satoshiInputKey}
                         onChange={handleAmountInput}
@@ -913,7 +928,7 @@ export default function WalletViewSend() {
             )}
           </div>
 
-          <div className="flex flex-col justify-end shrink my-6">
+          <div className="flex flex-col justify-end shrink-0 my-6">
             <div className="flex w-full justify-around items-center px-2 gap-x-2">
               <div className="mx-2">
                 <Button
@@ -996,7 +1011,11 @@ function InputSelection({ inputs }) {
           {tokens.map((token) => (
             <div className="p-1.5 flex-1">
               <div className="flex items-center gap-x-1">
-                <TokenIcon size={32} category={token.category} />
+                <TokenIcon
+                  size={32}
+                  category={token.category}
+                  toggleable={false}
+                />
                 <span
                   style={{ color: `#${token.category.slice(0, 6)}` }}
                   className="font-mono text-sm mr-1"
@@ -1045,11 +1064,12 @@ function NftSelectionDisplay({ nftUtxos }) {
                 <TokenIcon
                   category={utxo.token_category}
                   nft_commitment={utxo.nft_commitment}
+                  toggleable={false}
                 />
               </div>
-              <div className="truncate px-1">
+              <div className="truncate px-1 max-h-20 overflow-y-auto">
                 {nftData && nftData.description ? (
-                  <span className="text-sm text-neutral-700 text-wrap">
+                  <span className="text-sm text-neutral-700 dark:text-neutral-300 text-wrap">
                     {truncateProse(nftData.description)}
                   </span>
                 ) : (
