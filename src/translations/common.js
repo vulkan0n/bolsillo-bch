@@ -650,9 +650,6 @@ const translations = {
   authRevealPrivateKeys: {
     en: "Reveal Private Keys",
   },
-  authVendorMode: {
-    en: "Enter/Exit Vendor Mode",
-  },
   exportedAsCsv: {
     en: "Transaction history exported as CSV",
   },
@@ -746,7 +743,6 @@ export const {
   authInstantPay,
   authRevealBalances,
   authRevealPrivateKeys,
-  authVendorMode,
   exportedAsCsv,
   exportedAsPdf,
   exportedAsPng,

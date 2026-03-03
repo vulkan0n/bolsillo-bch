@@ -1544,15 +1544,6 @@ const translations = {
   cantSendTokensToNonTokenAddress: {
     en: "Can't send tokens to non-token address!",
   },
-  focusedQrWarning: {
-    en: "Only send Bitcoin Cash (BCH) to this address",
-  },
-  vendorMode: {
-    en: "Vendor Mode",
-  },
-  vendorModeExitHint: {
-    en: "Long press QR to exit",
-  },
   failedToExportCsv: {
     en: "Failed to export CSV",
   },

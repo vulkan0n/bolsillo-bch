@@ -1,13 +1,4 @@
-import { Decimal } from "decimal.js";
-
-export interface CurrencyInfo {
-  currency: string;
-  countryCode: string;
-  symbol: string;
-  decimals?: number;
-}
-
-export const currencyList: CurrencyInfo[] = [
+export const currencyList = [
   { currency: "USD", countryCode: "US", symbol: "$" },
   { currency: "BCH", countryCode: "BCH", symbol: "₿", decimals: 8 },
   { currency: "SATS", countryCode: "SATS", symbol: "Ꞩ", decimals: 0 },
@@ -58,14 +49,8 @@ export const currencyList: CurrencyInfo[] = [
 ];
 
 export const DEFAULT_CURRENCY = currencyList[0];
-
-export interface EuroZoneCountry {
-  country: string;
-  countryCode: string;
-}
-
 // https://european-union.europa.eu/institutions-law-budget/euro/countries-using-euro_en
-export const euroZoneCountryList: EuroZoneCountry[] = [
+export const euroZoneCountryList = [
   { country: "Austria", countryCode: "AT" },
   { country: "Belgium", countryCode: "BE" },
   { country: "Croatia", countryCode: "HR" },
@@ -87,82 +72,3 @@ export const euroZoneCountryList: EuroZoneCountry[] = [
   { country: "Slovenia", countryCode: "SI" },
   { country: "Spain", countryCode: "ES" },
 ];
-
-// --------------------------------
-// Decimal handling utilities
-// --------------------------------
-
-export interface CurrencyInputSettings {
-  shouldPreferLocalCurrency: boolean;
-  isStablecoinMode: boolean;
-  denomination: string;
-  localCurrency?: string;
-  tokenDecimals?: number;
-}
-
-/**
- * Get decimals for a currency from currencyList (defaults to 2 for fiat)
- */
-export function getCurrencyDecimals(currency: string): number {
-  const currencyInfo = currencyList.find((c) => c.currency === currency);
-  return currencyInfo?.decimals ?? 2;
-}
-
-/**
- * Get maximum decimal places for given currency settings
- */
-export function getMaxDecimals(settings: CurrencyInputSettings): number {
-  const {
-    shouldPreferLocalCurrency,
-    isStablecoinMode,
-    denomination,
-    localCurrency,
-    tokenDecimals,
-  } = settings;
-
-  if (
-    isStablecoinMode ||
-    (shouldPreferLocalCurrency && denomination !== "token")
-  ) {
-    return getCurrencyDecimals(localCurrency || "USD");
-  }
-
-  switch (denomination) {
-    case "token":
-      return tokenDecimals || 0;
-    case "sats":
-      return 0;
-    case "bits":
-      return 2;
-    case "mbch":
-      return 5;
-    case "bch":
-    default:
-      return 8;
-  }
-}
-
-/**
- * Count decimal places in a numeric string
- */
-export function numDecimalPlaces(num: string): number {
-  const split = num.split(".");
-  const minor = split.length > 1 ? split[1] : "";
-  return minor.length;
-}
-
-/**
- * Truncate decimal places and round down
- */
-export function truncateDecimals(value: string, maxDecimals: number): string {
-  const decimals = numDecimalPlaces(value);
-  const valueDecimal = new Decimal(Number.parseFloat(value) || 0);
-
-  // limit decimal places and round down
-  const amount = valueDecimal.toFixed(
-    Math.min(decimals, maxDecimals),
-    Decimal.ROUND_DOWN
-  );
-
-  return amount;
-}
