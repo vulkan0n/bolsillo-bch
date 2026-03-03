@@ -89,14 +89,16 @@ export default function TransactionManagerService() {
         throw new Error("Transaction Unconfirmed");
       }
 
-      //Log.debug("resolveTransaction", "local", tx_hash, localTx);
+      Log.debug("resolveTransaction", "local hit", tx_hash);
       return localTx;
     } catch (e) {
       // if there's any problem retrieving the tx locally, try to resolve it
+      Log.debug("resolveTransaction", "fetching remote", tx_hash, e);
       const Electrum = ElectrumService(network);
       const remoteTx = await Electrum.requestTransaction(tx_hash);
-      //Log.debug("resolveTransaction", "remote", tx_hash, remoteTx);
+      Log.debug("resolveTransaction", "remote fetched", tx_hash);
       const registeredTx = await _registerTransaction(remoteTx);
+      Log.debug("resolveTransaction", "registered", tx_hash);
       return registeredTx;
     }
   }

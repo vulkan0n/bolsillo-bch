@@ -173,11 +173,26 @@ export default function WalletViewSweep() {
       // Broadcast the transaction.
       await TransactionManager.sendTransaction(transaction, bchNetwork);
 
-      // Wait for the transaction to resolve.
-      const tx = await TransactionManager.resolveTransaction(
-        transaction.txid,
-        bchNetwork
-      );
+      // Wait for the transaction to resolve (with safety timeout).
+      let tx;
+      try {
+        tx = await Promise.race([
+          TransactionManager.resolveTransaction(transaction.txid, bchNetwork),
+          new Promise((_, reject) => {
+            setTimeout(
+              () => reject(new Error("mempool confirmation timeout")),
+              10000
+            );
+          }),
+        ]);
+      } catch (e) {
+        Log.warn(
+          "resolveTransaction failed after broadcast",
+          transaction.txid,
+          e
+        );
+        tx = { txid: transaction.txid };
+      }
 
       // Show a notification.
       await Haptic.success();

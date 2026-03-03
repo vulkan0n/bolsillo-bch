@@ -161,11 +161,30 @@ export default function WalletViewPay() {
           }
         );
 
-        // Wait until we actually see the transaction on our node.
+        // Wait until we actually see the transaction on our node (with safety timeout).
         const TransactionManager = TransactionManagerService();
-        const tx = await TransactionManager.waitForTransactionToResolve(
-          transaction.tx_hash
-        );
+        let tx;
+        try {
+          tx = await Promise.race([
+            TransactionManager.resolveTransaction(
+              transaction.tx_hash,
+              bchNetwork
+            ),
+            new Promise((_, reject) => {
+              setTimeout(
+                () => reject(new Error("mempool confirmation timeout")),
+                10000
+              );
+            }),
+          ]);
+        } catch (e) {
+          Log.warn(
+            "resolveTransaction failed after broadcast",
+            transaction.tx_hash,
+            e
+          );
+          tx = { txid: transaction.tx_hash };
+        }
 
         // Show a success notification and route the user to the success page.
         await Haptic.success();
