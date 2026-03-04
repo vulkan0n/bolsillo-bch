@@ -105,6 +105,7 @@ describe("validatePreferences", () => {
         "InstantPay",
         "RevealBalance",
         "RevealPrivateKeys",
+        "VendorMode",
       ];
       allActions.forEach((action) => {
         expect(

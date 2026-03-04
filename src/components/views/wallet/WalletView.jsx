@@ -4,10 +4,12 @@ import { Outlet, useNavigate } from "react-router";
 import { SyncOutlined } from "@ant-design/icons";
 
 import { selectScannerIsScanning } from "@/redux/device";
-import { selectBchNetwork } from "@/redux/preferences";
+import {
+  selectBchNetwork,
+  selectIsVendorModeActive,
+} from "@/redux/preferences";
 import { selectIsConnected } from "@/redux/sync";
 import { selectActiveWalletHash, selectGenesisHeight } from "@/redux/wallet";
-
 import ElectrumService from "@/kernel/bch/ElectrumService";
 
 import BalanceHideButton from "@/views/wallet/home/BalanceHideButton";
@@ -21,6 +23,7 @@ export default function WalletView() {
   const isScanning = useSelector(selectScannerIsScanning);
   const isConnected = useSelector(selectIsConnected);
   const bchNetwork = useSelector(selectBchNetwork);
+  const isVendorModeActive = useSelector(selectIsVendorModeActive);
   const navigate = useNavigate();
 
   useEffect(
@@ -44,7 +47,7 @@ export default function WalletView() {
     </div>
   ) : (
     <FullColumn>
-      {!isScanning && (
+      {!isScanning && !isVendorModeActive && (
         <div className="flex bg-neutral-900 dark:bg-black justify-between">
           <div className="flex flex-col justify-center px-5">
             <BalanceHideButton className="text-xl" />

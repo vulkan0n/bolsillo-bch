@@ -1,6 +1,6 @@
 import { Toaster } from "react-hot-toast";
 import { useSelector } from "react-redux";
-import { createBrowserRouter, Navigate } from "react-router";
+import { createBrowserRouter } from "react-router";
 import { RouterProvider } from "react-router/dom";
 import { ApolloProvider } from "@apollo/client";
 
@@ -9,6 +9,7 @@ import { selectIsLocked } from "@/redux/device";
 import SecurityService from "@/kernel/app/SecurityService";
 
 import AppLockScreen from "@/views/security/AppLockScreen";
+import IndexRoute from "@/layout/IndexRoute";
 import ErrorBoundary from "@/layout/ErrorBoundary";
 import MainLayout from "@/layout/MainLayout";
 
@@ -30,7 +31,7 @@ const routes = [
     children: [
       {
         path: "/",
-        element: <Navigate to="/wallet" />,
+        element: <IndexRoute />,
       },
       ...routeWallet,
       ...routeAssets,
@@ -38,6 +39,14 @@ const routes = [
       ...routeSettings,
       ...routeApps,
       ...routeDebug,
+      {
+        path: "/vendor",
+        async lazy() {
+          const { default: VendorModeView } =
+            await import("@/views/vendor/VendorModeView");
+          return { Component: VendorModeView };
+        },
+      },
       {
         path: "/credits",
         async lazy() {

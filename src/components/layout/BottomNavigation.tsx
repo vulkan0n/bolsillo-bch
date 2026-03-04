@@ -16,6 +16,7 @@ import {
   selectLanguageCode,
   selectUiSettings,
   selectLastAssetsPath,
+  selectIsVendorModeActive,
 } from "@/redux/preferences";
 
 import { translate } from "@/util/translations";
@@ -25,6 +26,7 @@ import translations from "./bottomNavigationTranslations";
 export default function BottomNavigation() {
   const isKeyboardOpen = useSelector(selectKeyboardIsOpen);
   const isScanning = useSelector(selectScannerIsScanning);
+  const isVendorModeActive = useSelector(selectIsVendorModeActive);
   const { shouldDisplayExploreTab } = useSelector(selectUiSettings);
 
   // Ensure component reloads when language preferences are changed
@@ -32,7 +34,7 @@ export default function BottomNavigation() {
 
   const lastAssetsPath = useSelector(selectLastAssetsPath);
 
-  if (isKeyboardOpen) {
+  if (isKeyboardOpen || isVendorModeActive) {
     return null;
   }
 
