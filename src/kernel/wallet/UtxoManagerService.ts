@@ -1,5 +1,5 @@
 import LogService from "@/kernel/app/LogService";
-import DatabaseService from "@/kernel/app/DatabaseService";
+import DatabaseService, { SqlJsDatabase } from "@/kernel/app/DatabaseService";
 
 const Log = LogService("UtxoManager");
 
@@ -17,9 +17,12 @@ export interface UtxoEntity {
   nft_commitment: string | null;
 }
 
-export default function UtxoManagerService(walletHash: string) {
-  const Database = DatabaseService();
-  const walletDb = Database.getWalletDatabase(walletHash);
+export default function UtxoManagerService(
+  walletHash: string,
+  injectedDb?: SqlJsDatabase
+) {
+  const walletDb =
+    injectedDb ?? DatabaseService().getWalletDatabase(walletHash);
 
   return {
     getUtxo,

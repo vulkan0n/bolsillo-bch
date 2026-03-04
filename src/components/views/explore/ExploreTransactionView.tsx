@@ -48,7 +48,7 @@ import { hexToUtf8, binToHex } from "@/util/hex";
 
 import { translate } from "@/util/translations";
 import translations from "./translations";
-import { getTxExplorerUrl } from "@/util/electrum_servers";
+import { getTxExplorerUrl } from "@/util/network";
 
 //const Log = LogService("ExploreTransactionView");
 

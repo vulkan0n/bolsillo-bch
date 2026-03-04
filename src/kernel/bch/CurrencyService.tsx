@@ -59,7 +59,8 @@ const replaceYadioRates = async (rates) => {
 };
 
 export default function CurrencyService(
-  fiatCurrency = DEFAULT_CURRENCY.currency
+  fiatCurrency = DEFAULT_CURRENCY.currency,
+  injectedRates?: Array<{ currency: string; price: string }>
 ) {
   return {
     fiatToSats,
@@ -132,7 +133,8 @@ export default function CurrencyService(
   }
 
   function getExchangeRate(currency, rates = undefined) {
-    const exchangeRates = rates || selectExchangeRates(store.getState());
+    const exchangeRates =
+      rates || injectedRates || selectExchangeRates(store.getState());
     const index = exchangeRates.findIndex(
       (exchangeRate) => exchangeRate.currency === currency
     );

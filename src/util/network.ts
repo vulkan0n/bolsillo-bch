@@ -1,5 +1,9 @@
 export type ValidBchNetwork = "mainnet" | "chipnet" | "testnet3" | "testnet4";
 
+export function getPrefix(network: ValidBchNetwork): string {
+  return network === "mainnet" ? "bitcoincash" : "bchtest";
+}
+
 export const DEFAULT_ELECTRUM_PORT = 50004;
 
 export const cauldron_servers: Array<string> = ["rostrum.cauldron.quest:50004"];

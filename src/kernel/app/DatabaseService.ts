@@ -38,7 +38,7 @@ export class DecryptionFailedError extends Error {
   }
 }
 
-interface SqlJsDatabase {
+export interface SqlJsDatabase {
   exec: (...args: unknown[]) => unknown;
   export: () => Uint8Array;
   close: () => void;

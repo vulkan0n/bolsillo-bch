@@ -10,13 +10,14 @@
 import { vi } from "vitest";
 import "@testing-library/jest-dom/vitest";
 
-// Mock WalletManagerService for tests that use validateBip21Uri
-// This is needed because validateBip21Uri calls WalletManagerService().getPrefix()
-vi.mock("@/kernel/wallet/WalletManagerService", () => ({
-  default: () => ({
-    getPrefix: () => "bitcoincash",
-    getNetwork: () => "mainnet",
-  }),
+// Mock Redux store for tests that read network preferences (e.g. uri.ts getPrefix)
+vi.mock("@/redux", () => ({
+  store: { getState: () => ({}) },
+}));
+
+vi.mock("@/redux/preferences", async (importOriginal) => ({
+  ...(await importOriginal()),
+  selectBchNetwork: () => "mainnet",
 }));
 
 // Mock Capacitor plugins that don't exist in Node environment

@@ -11,7 +11,7 @@ import TokenManagerService from "@/kernel/wallet/TokenManagerService";
 import { binToHex } from "@/util/hex";
 import { convertCashAddress } from "@/util/cashaddr";
 import { COINBASE_TXID } from "@/util/blockchain";
-import { ValidBchNetwork } from "@/util/electrum_servers";
+import { ValidBchNetwork } from "@/util/network";
 
 const Log = LogService("TransactionHistoryService");
 

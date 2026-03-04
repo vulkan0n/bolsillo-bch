@@ -2,8 +2,8 @@ import { Filesystem, Directory, Encoding } from "@capacitor/filesystem";
 import { generateBip39Mnemonic } from "@bitauth/libauth";
 import { SimpleEncryption } from "capacitor-plugin-simple-encryption";
 import LogService from "@/kernel/app/LogService";
-import DatabaseService from "@/kernel/app/DatabaseService";
-import { ValidBchNetwork } from "@/util/electrum_servers";
+import DatabaseService, { SqlJsDatabase } from "@/kernel/app/DatabaseService";
+import { ValidBchNetwork, getPrefix as getNetworkPrefix } from "@/util/network";
 import {
   ValidDerivationPath,
   DEFAULT_DERIVATION_PATH,
@@ -47,10 +47,13 @@ export class WalletNotExistsError extends Error {
   }
 }
 
-export default function WalletManagerService() {
+export default function WalletManagerService(injectedDeps?: {
+  appDb?: SqlJsDatabase;
+  network?: ValidBchNetwork;
+}) {
   const Database = DatabaseService();
-  const APP_DB = Database.getAppDatabase();
-  const network = selectBchNetwork(store.getState());
+  const APP_DB = injectedDeps?.appDb ?? Database.getAppDatabase();
+  const network = injectedDeps?.network ?? selectBchNetwork(store.getState());
 
   return {
     listWallets,
@@ -570,6 +573,6 @@ export default function WalletManagerService() {
   }
 
   function getPrefix() {
-    return network === "mainnet" ? "bitcoincash" : "bchtest";
+    return getNetworkPrefix(network);
   }
 }

@@ -14,7 +14,7 @@ import {
 } from "@/redux/preferences";
 import { syncConnect, selectIsRebuilding } from "@/redux/sync";
 
-import { ValidBchNetwork } from "@/util/electrum_servers";
+import { ValidBchNetwork } from "@/util/network";
 
 import WalletManagerService, {
   WalletEntity,

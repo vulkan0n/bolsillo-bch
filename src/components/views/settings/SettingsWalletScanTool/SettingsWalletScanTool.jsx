@@ -23,7 +23,7 @@ import AddressManagerService from "@/kernel/wallet/AddressManagerService";
 import AssetsViewAddresses from "@/views/assets/AssetsViewAddresses";
 
 import { DEFAULT_DERIVATION_PATH, DERIVATION_PATHS } from "@/util/derivation";
-import { DEFAULT_ELECTRUM_PORT, ElectrumServer } from "@/util/electrum_servers";
+import { DEFAULT_ELECTRUM_PORT, ElectrumServer } from "@/util/network";
 
 export default function SettingsWalletScanTool() {
   const { walletHash } = useParams();

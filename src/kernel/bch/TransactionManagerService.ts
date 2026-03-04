@@ -15,7 +15,9 @@ import ElectrumService from "@/kernel/bch/ElectrumService";
 import WalletManagerService from "@/kernel/wallet/WalletManagerService";
 
 import { hexToBin, binToHex } from "@/util/hex";
-import { ValidBchNetwork } from "@/util/electrum_servers";
+import { ValidBchNetwork, getPrefix } from "@/util/network";
+import { selectBchNetwork } from "@/redux/preferences";
+import { store } from "@/redux";
 
 const Log = LogService("TransactionManager");
 
@@ -381,7 +383,7 @@ export default function TransactionManagerService() {
   ): Array<TransactionOutput> {
     return decodedTx.outputs.map((output, n) => {
       const cashAddr = lockingBytecodeToCashAddress({
-        prefix: WalletManager.getPrefix(),
+        prefix: getPrefix(selectBchNetwork(store.getState())),
         bytecode: output.lockingBytecode,
         tokenSupport: !!output.token,
       });

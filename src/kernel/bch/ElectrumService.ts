@@ -24,7 +24,7 @@ import {
   electrum_servers,
   ElectrumServer,
   ValidBchNetwork,
-} from "@/util/electrum_servers";
+} from "@/util/network";
 
 const Log = LogService("Electrum");
 

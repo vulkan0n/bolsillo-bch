@@ -21,6 +21,9 @@ import {
 
 import { hexToBin, binToHex } from "@/util/hex";
 import { sha256, ripemd160 } from "@/util/hash";
+import { getPrefix } from "@/util/network";
+import { selectBchNetwork } from "@/redux/preferences";
+import { store } from "@/redux";
 
 //import LogService from "@/kernel/app/LogService";
 import AddressManagerService from "@/kernel/wallet/AddressManagerService";
@@ -60,7 +63,7 @@ export default function KeyManagerService(walletStub: WalletStub) {
   const hdMain = deriveHdPath(hdMaster, `${derivation}/0`);
   const hdChange = deriveHdPath(hdMaster, `${derivation}/1`);
 
-  const walletPrefix = WalletManager.getPrefix();
+  const walletPrefix = getPrefix(selectBchNetwork(store.getState()));
 
   return {
     generateAddress,

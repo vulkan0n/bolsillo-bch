@@ -6,7 +6,7 @@ import TransactionManagerService, {
   TransactionEntity,
 } from "@/kernel/bch/TransactionManagerService";
 import LogService from "@/kernel/app/LogService";
-import { ValidBchNetwork } from "@/util/electrum_servers";
+import { ValidBchNetwork } from "@/util/network";
 
 const Log = LogService("TokenManagerService");
 

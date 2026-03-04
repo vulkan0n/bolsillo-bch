@@ -10,7 +10,9 @@ import {
 import { sha256, ripemd160 } from "@/util/hash";
 import { bchToSats } from "@/util/sats";
 import { Haptic } from "@/util/haptic";
-import WalletManagerService from "@/kernel/wallet/WalletManagerService";
+import { getPrefix } from "@/util/network";
+import { selectBchNetwork } from "@/redux/preferences";
+import { store } from "@/redux";
 
 /** Test if a string represents an integer (for safe BigInt conversion). */
 export const isIntStr = (s: string) => /^-?\d+$/.test(s);
@@ -186,7 +188,7 @@ export function validateBip21Uri(uri: string) {
 
   // only prefix the address if it's cashaddr, not base58.
   // prefix is dependent on currently-connected network (mainnet/chipnet)
-  const prefix = WalletManagerService().getPrefix();
+  const prefix = getPrefix(selectBchNetwork(store.getState()));
   const prefixedAddress = isBase58Address
     ? noPrefixAddress
     : `${prefix}:${noPrefixAddress}`;

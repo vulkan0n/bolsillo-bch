@@ -7,7 +7,7 @@ import ElectrumService from "@/kernel/bch/ElectrumService";
 import { hexToBin, binToHex } from "@/util/hex";
 import { sha256 } from "@/util/hash";
 import { block_checkpoints } from "@/util/blockchain";
-import { ValidBchNetwork } from "@/util/electrum_servers";
+import { ValidBchNetwork } from "@/util/network";
 
 const Log = LogService("Blockchain");
 
