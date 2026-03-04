@@ -10,12 +10,14 @@ import {
   Output as LibauthOutput,
   assertSuccess,
 } from "@bitauth/libauth";
-
 import * as clab from "@cashlab/common";
 import * as cauldron from "@cashlab/cauldron";
 import { ExchangeLab } from "@cashlab/cauldron";
+
 import LogService from "@/kernel/app/LogService";
-import UtxoManagerService from "@/kernel/wallet/UtxoManagerService";
+import UtxoManagerService, {
+  UtxoEntity,
+} from "@/kernel/wallet/UtxoManagerService";
 import AddressManagerService, {
   AddressEntity,
 } from "@/kernel/wallet/AddressManagerService";
@@ -29,26 +31,10 @@ import {
 } from "@/kernel/bch/TransactionManagerService";
 
 import { DUST_RELAY_FEE, EXCESSIVE_SATOSHIS } from "@/util/sats";
-import { binToHex, hexToBin } from "@/util/hex";
+import { binToHex, hexToBin, compareBytes } from "@/util/hex";
 import { sha256 } from "@/util/hash";
 import { addressToLockingBytecode } from "@/util/cashaddr";
 import { MUSD_TOKENID } from "@/util/tokens";
-
-// NOTE: Couldn't find this type defined elsewhere, so have added it here.
-export type ElectrumUtxo = {
-  height: number;
-  token_data?: {
-    amount: string;
-    category: string;
-    nft?: {
-      capability: string;
-      commitment: string;
-    };
-  };
-  tx_hash: string;
-  tx_pos: number;
-  value: number;
-};
 
 export interface Recipient {
   address: string;
@@ -223,7 +209,7 @@ export default function TransactionBuilderService(walletHash: string) {
       ? selection
       : [...nftSelection, ...tokenInputs, ...coinInputs];
 
-    const inputTotal = inputs.reduce((sum, cur) => sum + cur.amount, 0n);
+    const inputTotal = inputs.reduce((sum, cur) => sum + cur.valueSatoshis, 0n);
     Log.debug("buildP2pkhTransaction using inputs:", inputs, inputTotal);
 
     if (inputTotal < sendTotal) {
@@ -386,7 +372,10 @@ export default function TransactionBuilderService(walletHash: string) {
     }
 
     function finalizeChange(vin, vout, txFee): Array<LibauthOutput> {
-      const satsInputTotal = vin.reduce((sum, cur) => sum + cur.amount, 0n);
+      const satsInputTotal = vin.reduce(
+        (sum, cur) => sum + cur.valueSatoshis,
+        0n
+      );
 
       const satsOutputTotal = vout.reduce(
         (sum, cur) => sum + cur.valueSatoshis,
@@ -422,7 +411,7 @@ export default function TransactionBuilderService(walletHash: string) {
       return [...temp_vout, ...changeVouts];
     }
 
-    // --------
+    // ----------------
     function compileP2pkhTransaction(vin, vout) {
       // initialize transaction compiler
       const template = assertSuccess(
@@ -466,97 +455,56 @@ export default function TransactionBuilderService(walletHash: string) {
   }
 
   function bip69SortInputs(a, b) {
-    const aId = `${a.tx_hash}:${a.tx_pos}`;
-    const bId = `${b.tx_hash}:${b.tx_pos}`;
-
-    if (aId < bId) {
-      return -1;
-    }
-
-    if (aId > bId) {
-      return 1;
-    }
-
-    return 0;
+    // BIP69: compare tx_hash as hex strings, then tx_pos as numbers
+    if (a.tx_hash < b.tx_hash) return -1;
+    if (a.tx_hash > b.tx_hash) return 1;
+    return a.tx_pos - b.tx_pos;
   }
 
+  // CashTokens BIP69 output sort (CHIP-2022-02-CashTokens §Transaction Order)
   function bip69SortOutputs(a, b) {
-    if (a.amount < b.amount) {
-      return -1;
-    }
+    // 1. value ascending
+    if (a.valueSatoshis < b.valueSatoshis) return -1;
+    if (a.valueSatoshis > b.valueSatoshis) return 1;
 
-    if (a.amount > b.amount) {
-      return 1;
-    }
+    // 2. locking bytecode — byte-by-byte lexicographic
+    const lockCmp = compareBytes(a.lockingBytecode, b.lockingBytecode);
+    if (lockCmp !== 0) return lockCmp;
 
-    if (a.lockingBytecode < b.lockingBytecode) {
-      return -1;
-    }
+    // 3. token presence (no tokens < has tokens)
+    if (!a.token && b.token) return -1;
+    if (a.token && !b.token) return 1;
+    if (!a.token && !b.token) return 0;
 
-    if (a.lockingBytecode > b.lockingBytecode) {
-      return 1;
-    }
+    // 4. fungible token amount ascending
+    if (a.token.amount < b.token.amount) return -1;
+    if (a.token.amount > b.token.amount) return 1;
 
-    // token-aware bip69
-    if (!a.token && b.token) {
-      return -1;
-    }
+    // 5. NFT presence (false < true)
+    if (!a.token.nft && b.token.nft) return -1;
+    if (a.token.nft && !b.token.nft) return 1;
 
-    if (a.token && !b.token) {
-      return 1;
-    }
-
-    if (a.token.token_amount < b.token.token_amount) {
-      return -1;
-    }
-
-    if (a.token.token_amount > b.token.token_amount) {
-      return 1;
-    }
-
-    if (!a.token.nft && b.token.nft) {
-      return -1;
-    }
-
-    if (a.token.nft && !b.token.nft) {
-      return -1;
-    }
-
+    // 6. NFT fields
     if (a.token.nft && b.token.nft) {
-      const capabilityRank = ["none", "mutable", "minting"];
-      const aRank = capabilityRank.findIndex(
-        (c) => a.token.nft.capability === c
+      // 6a. capability: none < mutable < minting
+      const capabilityRank = { none: 0, mutable: 1, minting: 2 };
+      const aRank = capabilityRank[a.token.nft.capability] ?? 0;
+      const bRank = capabilityRank[b.token.nft.capability] ?? 0;
+      if (aRank < bRank) return -1;
+      if (aRank > bRank) return 1;
+
+      // 6b. commitment — byte-by-byte lexicographic
+      const commitCmp = compareBytes(
+        a.token.nft.commitment,
+        b.token.nft.commitment
       );
-      const bRank = capabilityRank.findIndex(
-        (c) => b.token.nft.capability === c
-      );
-
-      if (aRank < bRank) {
-        return -1;
-      }
-
-      if (aRank > bRank) {
-        return 1;
-      }
-
-      if (a.token.nft.commitment < b.token.nft.commitment) {
-        return -1;
-      }
-
-      if (a.token.nft.commitment > b.token.nft.commitment) {
-        return 1;
-      }
+      if (commitCmp !== 0) return commitCmp;
     }
 
-    if (a.token.category < b.token.category) {
-      return -1;
-    }
-
-    if (a.token.category > b.token.category) {
-      return 1;
-    }
-
-    return 0;
+    // 7. category — little-endian byte order (reverse libauth's big-endian)
+    const categoryA = a.token.category.slice().reverse();
+    const categoryB = b.token.category.slice().reverse();
+    return compareBytes(categoryA, categoryB);
   }
 
   async function buildStablecoinTransaction(
@@ -626,15 +574,15 @@ export default function TransactionBuilderService(walletHash: string) {
             token:
               input.token_category !== null
                 ? {
-                    amount: BigInt(input.token_amount),
+                    amount: input.token_amount,
                     token_id: input.token_category,
                   }
                 : undefined,
-            amount: BigInt(input.amount),
+            amount: input.valueSatoshis,
           },
           outpoint: {
-            txhash: hexToBin(input.txid),
-            index: Number(input.tx_pos),
+            txhash: hexToBin(input.tx_hash),
+            index: input.tx_pos,
           },
         };
       });
@@ -773,14 +721,14 @@ export default function TransactionBuilderService(walletHash: string) {
         output: {
           locking_bytecode: addressToLockingBytecode(input.address),
           token: {
-            amount: BigInt(input.token_amount),
+            amount: input.token_amount,
             token_id: input.token_category,
           },
-          amount: BigInt(input.amount),
+          amount: input.valueSatoshis,
         },
         outpoint: {
-          txhash: hexToBin(input.txid),
-          index: Number(input.tx_pos),
+          txhash: hexToBin(input.tx_hash),
+          index: input.tx_pos,
         },
       };
     });
@@ -848,7 +796,7 @@ export default function TransactionBuilderService(walletHash: string) {
 // TODO: Once Token support is added to CashStamps, add it to this function too.
 //       It will require more complex logic: An output will need to be added per each token.
 export function buildSweepTransaction(
-  utxos: Array<ElectrumUtxo>,
+  utxos: Array<UtxoEntity>,
   privateKey: Uint8Array,
   receivingAddress: string
 ): TransactionStub {
@@ -874,7 +822,7 @@ export function buildSweepTransaction(
         keys: { privateKeys: { key: privateKey } },
       },
       script: "unlock",
-      valueSatoshis: BigInt(unspent.value),
+      valueSatoshis: unspent.valueSatoshis,
     },
   }));
 
@@ -923,15 +871,15 @@ export function buildSweepTransaction(
     encodedTransaction = encodeTransaction(generatedTransaction.transaction);
   }
 
-  // Calculate the txid and convert the transaction to hex format.
-  const txid = swapEndianness(
+  // Calculate the tx_hash and convert the transaction to hex format.
+  const tx_hash = swapEndianness(
     binToHex(sha256.hash(sha256.hash(encodedTransaction)))
   );
   const hex = binToHex(encodedTransaction);
 
   // Return the transaction.
   return {
-    txid,
+    tx_hash,
     hex,
   };
 }

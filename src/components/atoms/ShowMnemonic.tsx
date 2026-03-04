@@ -1,17 +1,19 @@
 import { useState, useRef } from "react";
 import { useDispatch } from "react-redux";
-import { WarningFilled, EyeInvisibleOutlined } from "@ant-design/icons";
 import { Dialog } from "@capacitor/dialog";
+import { WarningFilled, EyeInvisibleOutlined } from "@ant-design/icons";
 
 import { walletSetKeyViewed } from "@/redux/wallet";
+
 import WalletManagerService from "@/kernel/wallet/WalletManagerService";
 import SecurityService, { AuthActions } from "@/kernel/app/SecurityService";
+
+import translations from "@/components/views/settings/SettingsWalletView/translations";
 
 import { useLongPress } from "@/hooks/useLongPress";
 import { useClipboard } from "@/hooks/useClipboard";
 
 import { translate } from "@/util/translations";
-import translations from "@/components/views/settings/SettingsWalletView/translations";
 
 export default function ShowMnemonic({ walletHash }: { walletHash: string }) {
   const dispatch = useDispatch();

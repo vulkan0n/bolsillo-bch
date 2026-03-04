@@ -2,14 +2,16 @@ import { useCallback } from "react";
 import { useNavigate, useLocation } from "react-router";
 import { useSelector } from "react-redux";
 import { QrcodeOutlined } from "@ant-design/icons";
+
 import { selectInstantPaySettings } from "@/redux/preferences";
 
+import NotificationService from "@/kernel/app/NotificationService";
+
+import WalletViewButtons from "@/views/wallet/home/WalletViewButtons";
 import Satoshi from "@/atoms/Satoshi";
 import Overlay from "@/atoms/Overlay";
-import WalletViewButtons from "@/views/wallet/home/WalletViewButtons";
 
 import { useScanner } from "@/hooks/useScanner";
-import NotificationService from "@/kernel/app/NotificationService";
 
 import { navigateOnValidUri, validateBip21Uri } from "@/util/uri";
 import { extractBchAddresses } from "@/util/cashaddr";

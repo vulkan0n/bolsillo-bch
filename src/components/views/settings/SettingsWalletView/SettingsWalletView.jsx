@@ -3,7 +3,6 @@ import { useParams, useNavigate, Link } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
 import { Share } from "@capacitor/share";
 import { Filesystem, Directory } from "@capacitor/filesystem";
-
 import {
   WalletOutlined,
   LoginOutlined,
@@ -18,6 +17,7 @@ import {
   LoadingOutlined,
   ExperimentOutlined,
 } from "@ant-design/icons";
+import { WalletConnectFilled } from "@/icons/WalletConnectFilled";
 
 import { selectBchNetwork, selectIsExperimental } from "@/redux/preferences";
 import {
@@ -27,12 +27,11 @@ import {
 } from "@/redux/wallet";
 import { selectLocale } from "@/redux/device";
 
-import ViewHeader from "@/layout/ViewHeader";
-
 import WalletManagerService from "@/kernel/wallet/WalletManagerService";
 import SecurityService, { AuthActions } from "@/kernel/app/SecurityService";
 
-import { WalletConnectFilled } from "@/icons/WalletConnectFilled";
+import WalletSettings from "@/views/settings/WalletSettings";
+import ViewHeader from "@/layout/ViewHeader";
 import KeyWarning from "@/atoms/KeyWarning/KeyWarning";
 import ShowMnemonic from "@/atoms/ShowMnemonic";
 import Accordion from "@/atoms/Accordion";
@@ -40,8 +39,6 @@ import Satoshi from "@/atoms/Satoshi";
 import Editable from "@/atoms/Editable";
 import Button from "@/atoms/Button";
 import Card from "@/atoms/Card";
-
-import WalletSettings from "@/views/settings/WalletSettings";
 
 import { translate } from "@/util/translations";
 import translations from "./translations";

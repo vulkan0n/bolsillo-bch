@@ -18,8 +18,9 @@ import {
 } from "@/redux/preferences";
 import { selectKeyboardIsOpen, selectScannerIsScanning } from "@/redux/device";
 
-import translations from "./bottomNavigationTranslations";
 import { translate } from "@/util/translations";
+
+import translations from "./bottomNavigationTranslations";
 
 export default function BottomNavigation() {
   const isKeyboardOpen = useSelector(selectKeyboardIsOpen);

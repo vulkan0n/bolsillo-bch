@@ -1,4 +1,5 @@
 export function hexToRgb(hex) {
+  if (!hex) return [0, 0, 0];
   let h = hex.replace(/^#/, "");
   if (h.length === 3)
     h = h

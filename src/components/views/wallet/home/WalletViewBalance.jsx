@@ -8,6 +8,7 @@ import {
   WarningFilled,
   DollarCircleOutlined,
 } from "@ant-design/icons";
+
 import {
   selectActiveWallet,
   selectActiveWalletHash,
@@ -23,11 +24,13 @@ import {
   selectCurrencySettings,
 } from "@/redux/preferences";
 import { selectCurrentPriceString } from "@/redux/exchangeRates";
+
 import SecurityService, { AuthActions } from "@/kernel/app/SecurityService";
 
 import Satoshi from "@/atoms/Satoshi";
 import NumberFormat from "@/atoms/NumberFormat";
 import CurrencyFlip from "@/atoms/CurrencyFlip";
+
 import { useCurrencyFlip } from "@/hooks/useCurrencyFlip";
 import { useStablecoinBalance } from "@/hooks/useStablecoinBalance";
 

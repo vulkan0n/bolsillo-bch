@@ -13,32 +13,42 @@ import LogService from "@/kernel/app/LogService";
 import DatabaseService from "@/kernel/app/DatabaseService";
 import ElectrumService from "@/kernel/bch/ElectrumService";
 import WalletManagerService from "@/kernel/wallet/WalletManagerService";
+import UtxoManagerService from "@/kernel/wallet/UtxoManagerService";
+import AddressManagerService from "@/kernel/wallet/AddressManagerService";
 
 import { hexToBin, binToHex } from "@/util/hex";
-import { ValidBchNetwork, getPrefix } from "@/util/network";
-import { selectBchNetwork } from "@/redux/preferences";
-import { store } from "@/redux";
+import { ValidBchNetwork } from "@/util/electrum_servers";
 
 const Log = LogService("TransactionManager");
 
 export interface TransactionStub {
-  txid: string;
+  tx_hash: string;
   hex: string;
+}
+
+export interface NormalizedTransaction extends TransactionStub {
+  size?: number;
+  blockhash?: string | null;
+  blocktime?: number | null;
+  time?: number | null;
+  version?: number;
+  height?: number | null; // null = broadcast; 0 = in mempool; >0 = confirmed
+  coinbase?: string | null;
 }
 
 export interface TransactionEntity extends TransactionStub {
   blockhash: string | null;
   blocktime: number;
   time: number;
-  size: string;
+  size: number;
   version: number;
-  height: number;
+  height: number | null; // null = broadcast, not verified; 0 = in mempool; >0 = confirmed
   vin: Array<TransactionInput>;
   vout: Array<TransactionOutput>;
 }
 
 export interface TransactionInput extends LibauthInput {
-  txid: string;
+  tx_hash: string;
   vout: number;
   coinbase?: string;
 }
@@ -70,10 +80,14 @@ export default function TransactionManagerService() {
     resolveTransaction,
     waitForTransactionToResolve,
     sendTransaction,
+    registerTransaction,
     deleteTransaction,
     purgeTransactions,
+    getUnresolvedTransactions,
+    rebroadcastUnresolved,
     setBlockPos,
     setBlockPosBulk,
+    applyOptimisticUtxoUpdate,
   };
 
   // --------------------------------
@@ -99,7 +113,7 @@ export default function TransactionManagerService() {
       const Electrum = ElectrumService(network);
       const remoteTx = await Electrum.requestTransaction(tx_hash);
       Log.debug("resolveTransaction", "remote fetched", tx_hash);
-      const registeredTx = await _registerTransaction(remoteTx);
+      const registeredTx = await registerTransaction(remoteTx);
       Log.debug("resolveTransaction", "registered", tx_hash);
       return registeredTx;
     }
@@ -139,24 +153,29 @@ export default function TransactionManagerService() {
     });
   }
 
+  // Broadcast via Electrum and register locally.
   async function sendTransaction(
     tx: TransactionStub,
-    network: ValidBchNetwork = "mainnet"
-  ): Promise<{ isSuccess: boolean; result: string | null }> {
-    const { txid: tx_hash, hex: tx_hex } = tx;
-
+    network: ValidBchNetwork = "mainnet",
+    walletHash?: string
+  ): Promise<TransactionEntity> {
     const Electrum = ElectrumService(network);
 
     Log.debug("sendTransaction attempting broadcast");
-    const result = await Electrum.broadcastTransaction(tx_hex);
-    const isSuccess = result === tx_hash;
+    const result = await Electrum.broadcastTransaction(tx.hex);
 
-    if (!isSuccess) {
+    if (result !== tx.tx_hash) {
       Log.warn("transaction send failure", result);
       throw result;
     }
 
-    return { isSuccess, result };
+    const registeredTx = await registerTransaction(tx);
+
+    if (walletHash) {
+      applyOptimisticUtxoUpdate(walletHash, registeredTx);
+    }
+
+    return registeredTx;
   }
 
   async function deleteTransaction(tx_hash: string): Promise<void> {
@@ -170,24 +189,24 @@ export default function TransactionManagerService() {
     }
 
     //Log.debug("deleteTransaction", tx_hash);
-    APP_DB.run("DELETE FROM transactions WHERE txid=?;", [tx_hash]);
+    APP_DB.run("DELETE FROM transactions WHERE tx_hash=?;", [tx_hash]);
   }
 
   async function purgeTransactions(): Promise<void> {
     const wallets = WalletManager.listWallets();
 
-    // get list of txids associated with our utxos or history (for ALL wallets)
+    // get list of tx_hashes associated with our utxos or history (for ALL wallets)
     const live_txids = (
       await Promise.all(
         wallets.map(async ({ walletHash }) => {
           const walletDb = await WalletManager.openWalletDatabase(walletHash);
-          const utxo_txids = walletDb.exec("SELECT txid FROM address_utxos");
+          const utxo_txids = walletDb.exec("SELECT tx_hash FROM address_utxos");
           const history_txids = walletDb.exec(
-            "SELECT txid FROM address_transactions"
+            "SELECT tx_hash FROM address_transactions"
           );
           return [
-            ...utxo_txids.map(({ txid }) => txid),
-            ...history_txids.map(({ txid }) => txid),
+            ...utxo_txids.map(({ tx_hash }) => tx_hash),
+            ...history_txids.map(({ tx_hash }) => tx_hash),
           ];
         })
       )
@@ -196,13 +215,9 @@ export default function TransactionManagerService() {
     const liveTxidSet = new Set(live_txids);
 
     // Find transaction records not in any wallet's live set
-    const purgeHashes =
-      live_txids.length > 0
-        ? APP_DB.exec(
-            `SELECT txid FROM transactions WHERE txid NOT IN (${live_txids.map(() => "?").join(", ")})`,
-            live_txids
-          ).map(({ txid }) => txid)
-        : APP_DB.exec("SELECT txid FROM transactions").map(({ txid }) => txid);
+    const purgeHashes = APP_DB.exec("SELECT tx_hash FROM transactions")
+      .map(({ tx_hash }) => tx_hash)
+      .filter((hash) => !liveTxidSet.has(hash));
 
     // Find orphaned transaction files
     const purgeHashSet = new Set(purgeHashes);
@@ -213,14 +228,44 @@ export default function TransactionManagerService() {
       })
     ).files
       .map((file) => file.name.split(".")[0])
-      .filter((txid) => !liveTxidSet.has(txid) && !purgeHashSet.has(txid));
+      .filter((hash) => !liveTxidSet.has(hash) && !purgeHashSet.has(hash));
 
     const tx_hashes = [...purgeHashes, ...fileTxHashes];
 
     Log.time("purgeTransactions");
-    await Promise.all(tx_hashes.map((txid) => deleteTransaction(txid)));
+    await Promise.all(tx_hashes.map((hash) => deleteTransaction(hash)));
     Log.debug("purgeTransactions", tx_hashes);
     Log.timeEnd("purgeTransactions");
+  }
+
+  // Returns tx_hashes of transactions we broadcast but haven't verified in the mempool yet.
+  function getUnresolvedTransactions(): Array<string> {
+    return APP_DB.exec(
+      "SELECT tx_hash FROM transactions WHERE height IS NULL"
+    ).map(({ tx_hash }) => tx_hash);
+  }
+
+  // Rebroadcast and re-resolve all unverified transactions.
+  async function rebroadcastUnresolved(
+    network: ValidBchNetwork = "mainnet"
+  ): Promise<void> {
+    const txHashes = getUnresolvedTransactions();
+    if (txHashes.length === 0) return;
+
+    Log.debug("rebroadcastUnresolved", txHashes);
+    const Electrum = ElectrumService(network);
+
+    await Promise.all(
+      txHashes.map(async (tx_hash) => {
+        try {
+          const hex = await _loadTxData(tx_hash);
+          await Electrum.broadcastTransaction(hex);
+          await resolveTransaction(tx_hash, network);
+        } catch (e) {
+          Log.warn("rebroadcast failed", tx_hash, e);
+        }
+      })
+    );
   }
 
   // --------------------------------
@@ -267,8 +312,8 @@ export default function TransactionManagerService() {
 
   // --------------------------------
 
-  async function _registerTransaction(
-    tx: TransactionEntity
+  async function registerTransaction(
+    tx: NormalizedTransaction
   ): Promise<TransactionEntity> {
     const decodedTx = decodeTransaction(hexToBin(tx.hex));
 
@@ -276,14 +321,9 @@ export default function TransactionManagerService() {
       throw new Error(decodedTx);
     }
 
-    const blockhash = tx.blockhash ? tx.blockhash : null;
-    const blocktime = tx.blocktime ? tx.blocktime : null;
-    const time = tx.time ? tx.time : Math.floor(Date.now() / 1000);
-    const coinbase = tx.vin[0].coinbase || null;
-
     const result = APP_DB.exec(
       `INSERT INTO transactions (
-        txid,
+        tx_hash,
         size,
         blockhash,
         time,
@@ -292,7 +332,7 @@ export default function TransactionManagerService() {
         height,
         coinbase
       )
-      VALUES ($txid, $size, $blockhash, $time, $blocktime, $version, $height, $coinbase)
+      VALUES ($tx_hash, $size, $blockhash, $time, $blocktime, $version, $height, $coinbase)
       ON CONFLICT DO
         UPDATE SET
           size=$size,
@@ -303,39 +343,80 @@ export default function TransactionManagerService() {
       RETURNING *;
       `,
       {
-        $txid: tx.txid,
-        $size: tx.size,
-        $blockhash: blockhash,
-        $time: time,
-        $blocktime: blocktime,
-        $version: tx.version,
-        $height: tx.height,
-        $coinbase: coinbase,
+        $tx_hash: tx.tx_hash,
+        $size: tx.size ?? tx.hex.length / 2,
+        $blockhash: tx.blockhash ?? null,
+        $time: tx.time ?? null,
+        $blocktime: tx.blocktime ?? null,
+        $version: tx.version ?? 2,
+        $height: tx.height ?? null,
+        $coinbase: tx.coinbase ?? null,
       }
     )[0];
 
-    await _writeTxData(tx.txid, tx.hex);
+    await _writeTxData(tx.tx_hash, tx.hex);
 
-    // reconstruct "vin" from raw hex
     const vin = getVinFromDecodedTransaction(decodedTx);
-
-    // reconstruct "vout" from raw hex
     const vout = getVoutFromDecodedTransaction(decodedTx);
 
-    if (coinbase !== null) {
-      vin[0].coinbase = coinbase;
+    if (tx.coinbase != null) {
+      vin[0].coinbase = tx.coinbase;
     }
 
     const finalTx = { ...result, vin, vout };
-
-    //Log.debug("_registerTransaction", tx, time, blockhash);
     return finalTx;
+  }
+
+  // Optimistically update the UTXO set after a successful broadcast:
+  // discard spent inputs and register change outputs that belong to our wallet.
+  function applyOptimisticUtxoUpdate(
+    walletHash: string,
+    tx: TransactionEntity
+  ): void {
+    const UtxoManager = UtxoManagerService(walletHash);
+    const AddressManager = AddressManagerService(walletHash);
+
+    // Discard spent inputs
+    tx.vin.forEach((input) => {
+      UtxoManager.discardUtxo({
+        tx_hash: input.tx_hash,
+        tx_pos: input.vout,
+      });
+    });
+
+    // Register change outputs (outputs that belong to our wallet)
+    tx.vout.forEach((output) => {
+      const outputAddress = output.scriptPubKey.addresses?.[0];
+      if (!outputAddress) return;
+
+      try {
+        AddressManager.getAddress(outputAddress);
+      } catch {
+        return; // not our address
+      }
+
+      UtxoManager.registerUtxo({
+        address: outputAddress,
+        tx_hash: tx.tx_hash,
+        tx_pos: output.n,
+        valueSatoshis: output.valueSatoshis,
+        memo: null,
+        token_category: output.token?.category
+          ? binToHex(output.token.category)
+          : null,
+        token_amount: output.token?.amount ?? null,
+        nft_capability: output.token?.nft?.capability ?? null,
+        nft_commitment: output.token?.nft?.commitment
+          ? binToHex(output.token.nft.commitment)
+          : null,
+      });
+    });
   }
 
   async function getTransactionByHash(
     tx_hash: string
   ): Promise<TransactionEntity> {
-    const result = APP_DB.exec("SELECT * FROM transactions WHERE txid=?", [
+    const result = APP_DB.exec("SELECT * FROM transactions WHERE tx_hash=?", [
       tx_hash,
     ]);
 
@@ -369,7 +450,7 @@ export default function TransactionManagerService() {
     decodedTx: TransactionCommon
   ): Array<TransactionInput> {
     return decodedTx.inputs.map((input) => ({
-      txid: binToHex(input.outpointTransactionHash),
+      tx_hash: binToHex(input.outpointTransactionHash),
       vout: input.outpointIndex,
       outpointIndex: input.outpointIndex,
       outpointTransactionHash: input.outpointTransactionHash,
@@ -383,7 +464,7 @@ export default function TransactionManagerService() {
   ): Array<TransactionOutput> {
     return decodedTx.outputs.map((output, n) => {
       const cashAddr = lockingBytecodeToCashAddress({
-        prefix: getPrefix(selectBchNetwork(store.getState())),
+        prefix: WalletManager.getPrefix(),
         bytecode: output.lockingBytecode,
         tokenSupport: !!output.token,
       });
@@ -405,7 +486,7 @@ export default function TransactionManagerService() {
   }
 
   function setBlockPos(tx_hash: string, blockPos: number) {
-    APP_DB.run("UPDATE transactions SET block_pos=? WHERE txid=?", [
+    APP_DB.run("UPDATE transactions SET block_pos=? WHERE tx_hash=?", [
       blockPos,
       tx_hash,
     ]);
@@ -415,15 +496,18 @@ export default function TransactionManagerService() {
     try {
       //Log.debug("setBlockPosBulk", transactions);
       const valid = transactions.filter((t) => t.block_pos !== null);
-      if (valid.length > 0) {
-        const setClauses = valid.map(() => "WHEN ? THEN ?").join(" ");
-        const whereIn = valid.map(() => "?").join(", ");
+      // 3 params per row (2 for CASE WHEN, 1 for WHERE IN); SQLite limit is 999
+      const BATCH_SIZE = 333;
+      for (let i = 0; i < valid.length; i += BATCH_SIZE) {
+        const batch = valid.slice(i, i + BATCH_SIZE);
+        const setClauses = batch.map(() => "WHEN ? THEN ?").join(" ");
+        const whereIn = batch.map(() => "?").join(", ");
         const params = [
-          ...valid.flatMap((t) => [t.tx_hash, t.block_pos]),
-          ...valid.map((t) => t.tx_hash),
+          ...batch.flatMap((t) => [t.tx_hash, t.block_pos]),
+          ...batch.map((t) => t.tx_hash),
         ];
         APP_DB.run(
-          `UPDATE transactions SET block_pos = CASE txid ${setClauses} END WHERE txid IN (${whereIn});`,
+          `UPDATE transactions SET block_pos = CASE tx_hash ${setClauses} END WHERE tx_hash IN (${whereIn});`,
           params
         );
       }

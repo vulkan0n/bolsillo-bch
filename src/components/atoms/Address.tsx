@@ -1,6 +1,8 @@
 import { useMemo } from "react";
 import { useSelector } from "react-redux";
+
 import { selectWalletAddresses } from "@/redux/wallet";
+
 import { truncate } from "@/util/string";
 import { convertCashAddress } from "@/util/cashaddr";
 

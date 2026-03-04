@@ -1,19 +1,24 @@
 import { Dialog } from "@capacitor/dialog";
 import { SimpleEncryption } from "capacitor-plugin-simple-encryption";
-import LogService from "@/kernel/app/LogService";
-import NotificationService from "@/kernel/app/NotificationService";
+
 import { store } from "@/redux";
 import { selectSecuritySettings } from "@/redux/preferences";
 import { setIsLocked } from "@/redux/device";
-import { sha256 } from "@/util/hash";
-import { translate } from "@/util/translations";
-import common from "@/translations/common";
-import securityTranslations from "@/views/security/translations";
+
+import LogService from "@/kernel/app/LogService";
+import NotificationService from "@/kernel/app/NotificationService";
 import DatabaseService, {
   DecryptionFailedError,
 } from "@/kernel/app/DatabaseService";
 import { clearSeedCache } from "@/kernel/wallet/KeyManagerService";
 import WalletManagerService from "@/kernel/wallet/WalletManagerService";
+
+import securityTranslations from "@/views/security/translations";
+
+import { sha256 } from "@/util/hash";
+
+import common from "@/translations/common";
+import { translate } from "@/util/translations";
 
 const Log = LogService("SecurityService");
 

@@ -7,11 +7,14 @@ import { SyncOutlined } from "@ant-design/icons";
 import Button from "@/atoms/Button";
 import Card from "@/atoms/Card";
 import SeleneLogo from "@/atoms/SeleneLogo";
+
+import { ONE_SECOND, Period } from "@/util/time";
+
+import { translate } from "@/util/translations";
+
 import ActiveUsersChart from "./ActiveUsersChart";
 import StatsAppBlock from "./StatsAppBlock";
 import GET_ACTIVE_BITCOINERS from "./getActiveBitcoiners";
-import { ONE_SECOND, Period } from "@/util/time";
-import { translate } from "@/util/translations";
 import translations from "./GlobalAdoptionSummaryTranslations";
 
 export default function StatsGraphCard() {

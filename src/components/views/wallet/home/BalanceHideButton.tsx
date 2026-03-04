@@ -1,7 +1,9 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import { useSelector, useDispatch } from "react-redux";
 import { EyeOutlined, EyeInvisibleOutlined } from "@ant-design/icons";
+
 import { selectPrivacySettings, setPreference } from "@/redux/preferences";
+
 import SecurityService, { AuthActions } from "@/kernel/app/SecurityService";
 
 export default function BalanceHideButton({

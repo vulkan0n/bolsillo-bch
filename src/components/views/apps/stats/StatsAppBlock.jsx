@@ -1,11 +1,14 @@
 import { useEffect } from "react";
 import { Link } from "react-router";
 import { useQuery } from "@apollo/client";
+
 import { THIRTY_SECONDS } from "@/util/time";
-import GET_ACTIVE_BITCOINERS_SUMMARY from "./getActiveBitcoinersSummary";
-import DailyTarget from "./DailyTarget";
+
 import { translate } from "@/util/translations";
 import translations from "./translations";
+
+import GET_ACTIVE_BITCOINERS_SUMMARY from "./getActiveBitcoinersSummary";
+import DailyTarget from "./DailyTarget";
 
 const { seleneActiveUsers } = translations;
 

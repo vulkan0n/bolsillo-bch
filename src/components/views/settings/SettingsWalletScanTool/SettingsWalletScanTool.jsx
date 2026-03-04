@@ -11,9 +11,6 @@ import {
 import { selectBchNetwork, selectIsOfflineMode } from "@/redux/preferences";
 import { syncHotRefresh, selectSyncState } from "@/redux/sync";
 
-import ViewHeader from "@/layout/ViewHeader";
-import Button from "@/atoms/Button";
-
 import LogService from "@/kernel/app/LogService";
 import WalletManagerService from "@/kernel/wallet/WalletManagerService";
 import AddressScannerService from "@/kernel/wallet/AddressScannerService";
@@ -21,9 +18,11 @@ import KeyManagerService from "@/kernel/wallet/KeyManagerService";
 import AddressManagerService from "@/kernel/wallet/AddressManagerService";
 
 import AssetsViewAddresses from "@/views/assets/AssetsViewAddresses";
+import ViewHeader from "@/layout/ViewHeader";
+import Button from "@/atoms/Button";
 
 import { DEFAULT_DERIVATION_PATH, DERIVATION_PATHS } from "@/util/derivation";
-import { DEFAULT_ELECTRUM_PORT, ElectrumServer } from "@/util/network";
+import { DEFAULT_ELECTRUM_PORT, ElectrumServer } from "@/util/electrum_servers";
 
 export default function SettingsWalletScanTool() {
   const { walletHash } = useParams();

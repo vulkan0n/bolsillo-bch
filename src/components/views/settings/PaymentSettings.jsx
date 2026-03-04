@@ -16,11 +16,6 @@ import {
   selectShouldUseLegacyBip21,
 } from "@/redux/preferences";
 
-import { translate } from "@/util/translations";
-import translations from "./translations";
-
-import { SettingsContext } from "./SettingsContext";
-
 import CurrencyService from "@/kernel/bch/CurrencyService";
 import SecurityService, { AuthActions } from "@/kernel/app/SecurityService";
 
@@ -28,6 +23,11 @@ import Accordion from "@/atoms/Accordion";
 import Checkbox from "@/atoms/Checkbox";
 import CurrencySymbol from "@/atoms/CurrencySymbol";
 import { SatoshiInput } from "@/atoms/SatoshiInput";
+
+import { translate } from "@/util/translations";
+import translations from "./translations";
+
+import { SettingsContext } from "./SettingsContext";
 
 export default function PaymentSettings() {
   const { handleSettingsUpdate } = useContext(SettingsContext);

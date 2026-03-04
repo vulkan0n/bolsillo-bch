@@ -28,6 +28,12 @@ describe("hexToRgb", () => {
     expect(hexToRgb("#000000")).toEqual([0, 0, 0]);
     expect(hexToRgb("#ffffff")).toEqual([255, 255, 255]);
   });
+
+  it("returns black for undefined/null input", () => {
+    expect(hexToRgb(undefined)).toEqual([0, 0, 0]);
+    expect(hexToRgb(null)).toEqual([0, 0, 0]);
+    expect(hexToRgb("")).toEqual([0, 0, 0]);
+  });
 });
 
 describe("rgbToHex", () => {

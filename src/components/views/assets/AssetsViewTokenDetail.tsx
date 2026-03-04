@@ -4,23 +4,23 @@ import { useParams, Link, useNavigate } from "react-router";
 import { DateTime } from "luxon";
 import { CloseOutlined, SendOutlined } from "@ant-design/icons";
 
-import TokenIcon from "@/atoms/TokenIcon";
-import TokenAmount from "@/atoms/TokenAmount";
-import Button from "@/atoms/Button";
-import FullColumn from "@/layout/FullColumn";
-import TokenCard from "@/composite/TokenCard";
-
 import { selectActiveWallet } from "@/redux/wallet";
 import { selectBchNetwork } from "@/redux/preferences";
 
 //import LogService from "@/kernel/app/LogService";
 import TokenManagerService from "@/kernel/wallet/TokenManagerService";
 
-import { truncateProse } from "@/util/string";
-import { validateBchUri } from "@/util/uri";
+import FullColumn from "@/layout/FullColumn";
+import TokenIcon from "@/atoms/TokenIcon";
+import TokenAmount from "@/atoms/TokenAmount";
+import Button from "@/atoms/Button";
+import TokenCard from "@/composite/TokenCard";
 
 import { useTokenData } from "@/hooks/useTokenData";
 import { useClipboard } from "@/hooks/useClipboard";
+
+import { truncateProse } from "@/util/string";
+import { validateBchUri } from "@/util/uri";
 
 import { translate } from "@/util/translations";
 import translations from "./translations";
@@ -84,7 +84,7 @@ export default function AssetsViewTokenDetail() {
 
   const handleNftSelect = (utxo) => {
     const selectIndex = nftSelection.findIndex(
-      (nft) => nft.txid === utxo.txid && nft.tx_pos === utxo.tx_pos
+      (nft) => nft.tx_hash === utxo.tx_hash && nft.tx_pos === utxo.tx_pos
     );
     if (selectIndex > -1) {
       const newSelection = nftSelection.toSpliced(selectIndex, 1);
@@ -112,7 +112,8 @@ export default function AssetsViewTokenDetail() {
 
               const isSelected =
                 nftSelection.findIndex(
-                  (nft) => nft.txid === utxo.txid && nft.tx_pos === utxo.tx_pos
+                  (nft) =>
+                    nft.tx_hash === utxo.tx_hash && nft.tx_pos === utxo.tx_pos
                 ) > -1;
 
               const bgClass = isSelected
@@ -168,8 +169,8 @@ export default function AssetsViewTokenDetail() {
             {tokenHistory.map(
               (h, i) =>
                 i < 50 && (
-                  <div key={h.txid} className="py-1">
-                    <Link to={`/explore/tx/${h.txid}`}>
+                  <div key={h.tx_hash} className="py-1">
+                    <Link to={`/explore/tx/${h.tx_hash}`}>
                       <div className="flex text-sm p-1">
                         <div className="flex-1">
                           {(h.height <= 0 || !h.time
@@ -181,7 +182,7 @@ export default function AssetsViewTokenDetail() {
                         </div>
                         <div className="text-right">
                           {h.nft_amount !== 0 && <TokenAmount token={h} nft />}
-                          {h.fungible_amount !== 0 && (
+                          {h.fungible_amount !== 0n && (
                             <div className="font-mono">
                               <span className="text-sm font-mono flex items-center justify-end">
                                 <TokenAmount

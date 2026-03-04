@@ -1,11 +1,6 @@
 import { Filesystem, Directory } from "@capacitor/filesystem";
 import { Preferences } from "@capacitor/preferences";
-import DatabaseService, { _dbOpen } from "@/kernel/app/DatabaseService";
-import LogService from "@/kernel/app/LogService";
-import SecurityService, { AuthActions } from "@/kernel/app/SecurityService";
-import WalletManagerService from "@/kernel/wallet/WalletManagerService";
-import TransactionManagerService from "@/kernel/bch/TransactionManagerService";
-import BlockchainService from "@/kernel/bch/BlockchainService";
+
 import { store } from "@/redux";
 import {
   selectSecuritySettings,
@@ -13,6 +8,13 @@ import {
   setPreference,
 } from "@/redux/preferences";
 import { selectDeviceInfo } from "@/redux/device";
+
+import DatabaseService, { _dbOpen } from "@/kernel/app/DatabaseService";
+import LogService from "@/kernel/app/LogService";
+import SecurityService, { AuthActions } from "@/kernel/app/SecurityService";
+import WalletManagerService from "@/kernel/wallet/WalletManagerService";
+import TransactionManagerService from "@/kernel/bch/TransactionManagerService";
+import BlockchainService from "@/kernel/bch/BlockchainService";
 
 const Log = LogService("Janitor");
 

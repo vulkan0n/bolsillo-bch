@@ -19,17 +19,15 @@ import {
   encodeLockingBytecodeP2pkh,
 } from "@bitauth/libauth";
 
-import { hexToBin, binToHex } from "@/util/hex";
-import { sha256, ripemd160 } from "@/util/hash";
-import { getPrefix } from "@/util/network";
-import { selectBchNetwork } from "@/redux/preferences";
-import { store } from "@/redux";
-
 //import LogService from "@/kernel/app/LogService";
 import AddressManagerService from "@/kernel/wallet/AddressManagerService";
 import WalletManagerService, {
   WalletStub,
 } from "@/kernel/wallet/WalletManagerService";
+
+import { hexToBin, binToHex } from "@/util/hex";
+import { sha256, ripemd160 } from "@/util/hash";
+import { utxoToTokenPrefix } from "@/util/normalize";
 
 //const Log = LogService("KeyManager");
 
@@ -63,7 +61,7 @@ export default function KeyManagerService(walletStub: WalletStub) {
   const hdMain = deriveHdPath(hdMaster, `${derivation}/0`);
   const hdChange = deriveHdPath(hdMaster, `${derivation}/1`);
 
-  const walletPrefix = getPrefix(selectBchNetwork(store.getState()));
+  const walletPrefix = WalletManager.getPrefix();
 
   return {
     generateAddress,
@@ -109,13 +107,13 @@ export default function KeyManagerService(walletStub: WalletStub) {
 
   function signInputs(inputs, compiler) {
     return inputs.map((input) => ({
-      outpointTransactionHash: hexToBin(input.txid),
-      outpointIndex: Number(input.tx_pos), // Can't be BigInt! Being selected as bigint from db.
+      outpointTransactionHash: hexToBin(input.tx_hash),
+      outpointIndex: input.tx_pos,
       sequenceNumber: 0,
       unlockingBytecode: {
         compiler,
         script: "unlock",
-        valueSatoshis: BigInt(input.amount),
+        valueSatoshis: input.valueSatoshis,
         data: {
           keys: {
             privateKeys: {
@@ -123,22 +121,7 @@ export default function KeyManagerService(walletStub: WalletStub) {
             },
           },
         },
-        token:
-          input.token_category === null
-            ? undefined
-            : {
-                category: hexToBin(input.token_category),
-                amount: input.token_amount,
-                nft:
-                  input.nft_capability === null
-                    ? undefined
-                    : {
-                        capability: input.nft_capability,
-                        commitment: input.nft_commitment
-                          ? hexToBin(input.nft_commitment)
-                          : undefined,
-                      },
-              },
+        token: utxoToTokenPrefix(input),
       },
     }));
   }

@@ -2,20 +2,22 @@ import { useRouteError, useNavigate } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
 import { Dialog } from "@capacitor/dialog";
 import { BugOutlined } from "@ant-design/icons";
-import SeleneLogo from "@/components/atoms/SeleneLogo";
-import Accordion from "@/components/atoms/Accordion";
-import ShowMnemonic from "@/components/atoms/ShowMnemonic";
-import Button from "@/components/atoms/Button";
+
+import { selectActiveWallet } from "@/redux/wallet";
+import { resetPreferences } from "@/redux/preferences";
 
 import LogService from "@/kernel/app/LogService";
 import ConsoleService from "@/kernel/app/ConsoleService";
 import WalletManagerService from "@/kernel/wallet/WalletManagerService";
 import JanitorService from "@/kernel/app/JanitorService";
 
-import { selectActiveWallet } from "@/redux/wallet";
-import { resetPreferences } from "@/redux/preferences";
+import SeleneLogo from "@/components/atoms/SeleneLogo";
+import Accordion from "@/components/atoms/Accordion";
+import ShowMnemonic from "@/components/atoms/ShowMnemonic";
+import Button from "@/components/atoms/Button";
 
 import { translate } from "@/util/translations";
+
 import translations from "./ErrorBoundaryTranslations";
 
 const Log = LogService("ErrorBoundary");

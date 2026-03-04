@@ -2,11 +2,14 @@ import { useEffect } from "react";
 import { Outlet, useNavigate } from "react-router";
 import { useSelector } from "react-redux";
 import { SyncOutlined } from "@ant-design/icons";
+
 import { selectActiveWalletHash, selectGenesisHeight } from "@/redux/wallet";
 import { selectScannerIsScanning } from "@/redux/device";
 import { selectIsConnected } from "@/redux/sync";
 import { selectBchNetwork } from "@/redux/preferences";
+
 import ElectrumService from "@/kernel/bch/ElectrumService";
+
 import WalletViewBalance from "@/views/wallet/home/WalletViewBalance";
 import SyncIndicator from "@/views/wallet/home/SyncIndicator";
 import BalanceHideButton from "@/views/wallet/home/BalanceHideButton";

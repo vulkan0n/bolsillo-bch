@@ -1,9 +1,11 @@
 import { useSelector } from "react-redux";
+
 import { selectIsDarkMode } from "@/redux/preferences";
+
 import { getHighContrastBackground } from "@/util/color";
 
 interface TokenSymbolProps {
-  token: { color: string; symbol: string };
+  token: { color: string; symbol: string; category?: string };
   lightBg?: string;
   darkBg?: string;
   className?: string;

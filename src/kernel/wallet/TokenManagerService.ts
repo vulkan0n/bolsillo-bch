@@ -1,4 +1,5 @@
 import { IdentitySnapshot, TokenCategory } from "@bitauth/libauth";
+
 import UtxoManagerService from "@/kernel/wallet/UtxoManagerService";
 import BcmrService from "@/kernel/bch/BcmrService";
 import DatabaseService from "@/kernel/app/DatabaseService";
@@ -6,7 +7,8 @@ import TransactionManagerService, {
   TransactionEntity,
 } from "@/kernel/bch/TransactionManagerService";
 import LogService from "@/kernel/app/LogService";
-import { ValidBchNetwork } from "@/util/network";
+
+import { ValidBchNetwork } from "@/util/electrum_servers";
 
 const Log = LogService("TokenManagerService");
 
@@ -79,22 +81,24 @@ export default function TokenManagerService(
   async function resolveTokenHistory(category: string) {
     const tokenTransactions = walletDb.exec(
       "SELECT * FROM token_transactions WHERE category=?;",
-      [category]
+      [category],
+      { useBigInt: true }
     );
 
-    const token_txids = tokenTransactions.map((ttx) => ttx.txid);
+    const token_txids = tokenTransactions.map((ttx) => ttx.tx_hash);
 
     const TransactionManager = TransactionManagerService();
     const resolvedTransactions: Array<TransactionEntity> = await Promise.all(
-      token_txids.map((txid) =>
-        TransactionManager.resolveTransaction(txid, bchNetwork)
+      token_txids.map((hash) =>
+        TransactionManager.resolveTransaction(hash, bchNetwork)
       )
     );
 
     const history = token_txids
-      .map((txid, i) => ({
+      .map((tx_hash, i) => ({
         ...tokenTransactions[i],
         ...resolvedTransactions[i],
+        nft_amount: Number(tokenTransactions[i].nft_amount),
       }))
       .sort((a, b) => {
         return a.time - b.time;
@@ -181,10 +185,10 @@ export default function TokenManagerService(
       tokens.forEach((token) => {
         walletDb.exec(
           `INSERT OR IGNORE INTO token_transactions (
-        txid, category, fungible_amount, nft_amount
-      ) VALUES ($txid, $category, $fungible_amount, $nft_amount);`,
+        tx_hash, category, fungible_amount, nft_amount
+      ) VALUES ($tx_hash, $category, $fungible_amount, $nft_amount);`,
           {
-            $txid: tx_hash,
+            $tx_hash: tx_hash,
             $category: token.category,
             $fungible_amount: token.amount,
             $nft_amount: token.nftAmount,

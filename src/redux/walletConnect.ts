@@ -1,4 +1,6 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
+import { Dialog } from "@capacitor/dialog";
+import { generateTransaction, encodeTransaction } from "@bitauth/libauth";
 import {
   createReducer,
   createSelector,
@@ -9,8 +11,6 @@ import {
   formatJsonRpcError,
 } from "@walletconnect/jsonrpc-utils";
 import { getSdkError } from "@walletconnect/utils";
-import { Dialog } from "@capacitor/dialog";
-import { generateTransaction, encodeTransaction } from "@bitauth/libauth";
 
 import { selectActiveWallet } from "@/redux/wallet";
 import { selectBchNetwork } from "@/redux/preferences";

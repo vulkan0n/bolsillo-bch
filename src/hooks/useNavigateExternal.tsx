@@ -1,10 +1,12 @@
 import { useSelector } from "react-redux";
 import { InAppBrowser } from "@capacitor/inappbrowser";
 import { Dialog } from "@capacitor/dialog";
+
 import { selectDevicePlatform } from "@/redux/device";
 
-import { translate } from "@/util/translations";
 import translations from "@/views/settings/translations";
+
+import { translate } from "@/util/translations";
 
 export function useNavigateExternal() {
   const platform = useSelector(selectDevicePlatform);

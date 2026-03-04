@@ -1,18 +1,22 @@
 import { Filesystem, Directory, Encoding } from "@capacitor/filesystem";
-import { generateBip39Mnemonic } from "@bitauth/libauth";
 import { SimpleEncryption } from "capacitor-plugin-simple-encryption";
+import { generateBip39Mnemonic } from "@bitauth/libauth";
+
+import { store } from "@/redux";
+import { selectBchNetwork } from "@/redux/preferences";
+
 import LogService from "@/kernel/app/LogService";
-import DatabaseService, { SqlJsDatabase } from "@/kernel/app/DatabaseService";
-import { ValidBchNetwork, getPrefix as getNetworkPrefix } from "@/util/network";
+import DatabaseService from "@/kernel/app/DatabaseService";
+
+import translations from "@/views/wallet/translations";
+
+import { ValidBchNetwork } from "@/util/electrum_servers";
 import {
   ValidDerivationPath,
   DEFAULT_DERIVATION_PATH,
 } from "@/util/derivation";
 import { sha256 } from "@/util/hash";
-import { store } from "@/redux";
-import { selectBchNetwork } from "@/redux/preferences";
 
-import translations from "@/views/wallet/translations";
 import { translate } from "@/util/translations";
 
 const Log = LogService("WalletManager");
@@ -47,13 +51,10 @@ export class WalletNotExistsError extends Error {
   }
 }
 
-export default function WalletManagerService(injectedDeps?: {
-  appDb?: SqlJsDatabase;
-  network?: ValidBchNetwork;
-}) {
+export default function WalletManagerService() {
   const Database = DatabaseService();
-  const APP_DB = injectedDeps?.appDb ?? Database.getAppDatabase();
-  const network = injectedDeps?.network ?? selectBchNetwork(store.getState());
+  const APP_DB = Database.getAppDatabase();
+  const network = selectBchNetwork(store.getState());
 
   return {
     listWallets,
@@ -79,13 +80,15 @@ export default function WalletManagerService(injectedDeps?: {
     getPrefix,
   };
 
-  // ----------------------------
+  // --------------------------------
 
   // listWallets: return a list of all wallets in the app database
   function listWallets(): WalletMeta[] {
-    const result = APP_DB.exec("SELECT * FROM wallets WHERE network=?", [
-      network,
-    ]);
+    const result = APP_DB.exec(
+      "SELECT * FROM wallets WHERE network=?",
+      [network],
+      { useBigInt: true }
+    );
 
     //Log.debug("listWallets", result);
     return result;
@@ -98,7 +101,9 @@ export default function WalletManagerService(injectedDeps?: {
     }
 
     const walletDb = Database.getWalletDatabase(walletHash);
-    const result = walletDb.exec("SELECT * FROM wallet", { useBigInt: true });
+    const result = walletDb.exec("SELECT * FROM wallet", null, {
+      useBigInt: true,
+    });
 
     if (result.length === 0) {
       throw new WalletNotExistsError(walletHash);
@@ -112,6 +117,10 @@ export default function WalletManagerService(injectedDeps?: {
     wallet.prefix = network === "mainnet" ? "bitcoincash" : "bchtest";
 
     wallet.nonce = 0;
+
+    // useBigInt: true returns all ints as BigInt — convert small-int fields
+    wallet.genesis_height =
+      wallet.genesis_height != null ? Number(wallet.genesis_height) : null;
 
     return wallet;
   }
@@ -136,7 +145,7 @@ export default function WalletManagerService(injectedDeps?: {
     return walletMeta;
   }
 
-  // ----------------------------
+  // --------------------------------
 
   // boot: load a wallet, create a wallet if none exist
   async function boot(walletHash): Promise<WalletEntity> {
@@ -189,7 +198,7 @@ export default function WalletManagerService(injectedDeps?: {
     return wallet;
   }
 
-  // ----------------------------
+  // --------------------------------
 
   // createWallet: generate a new wallet from a randomly generated seed phrase
   // persist the new wallet in the database
@@ -373,12 +382,12 @@ export default function WalletManagerService(injectedDeps?: {
       SELECT address, memo FROM addresses WHERE memo IS NOT NULL`);
 
     walletDb.run(`CREATE TEMP TABLE IF NOT EXISTS temp_transaction_data AS
-      SELECT txid, address, memo, fiat_amount, fiat_currency
+      SELECT tx_hash, address, memo, fiat_amount, fiat_currency
       FROM address_transactions
       WHERE memo IS NOT NULL OR fiat_amount IS NOT NULL`);
 
     walletDb.run(`CREATE TEMP TABLE IF NOT EXISTS temp_utxo_memos AS
-      SELECT address, txid, tx_pos, memo
+      SELECT address, tx_hash, tx_pos, memo
       FROM address_utxos
       WHERE memo IS NOT NULL`);
 
@@ -417,22 +426,22 @@ export default function WalletManagerService(injectedDeps?: {
     // restore transaction memos and fiat amounts
     walletDb.run(`UPDATE address_transactions
       SET
-        memo = (SELECT memo FROM temp_transaction_data WHERE temp_transaction_data.txid = address_transactions.txid AND temp_transaction_data.address = address_transactions.address),
-        fiat_amount = (SELECT fiat_amount FROM temp_transaction_data WHERE temp_transaction_data.txid = address_transactions.txid AND temp_transaction_data.address = address_transactions.address),
-        fiat_currency = (SELECT fiat_currency FROM temp_transaction_data WHERE temp_transaction_data.txid = address_transactions.txid AND temp_transaction_data.address = address_transactions.address)
+        memo = (SELECT memo FROM temp_transaction_data WHERE temp_transaction_data.tx_hash = address_transactions.tx_hash AND temp_transaction_data.address = address_transactions.address),
+        fiat_amount = (SELECT fiat_amount FROM temp_transaction_data WHERE temp_transaction_data.tx_hash = address_transactions.tx_hash AND temp_transaction_data.address = address_transactions.address),
+        fiat_currency = (SELECT fiat_currency FROM temp_transaction_data WHERE temp_transaction_data.tx_hash = address_transactions.tx_hash AND temp_transaction_data.address = address_transactions.address)
       WHERE EXISTS (
         SELECT 1 FROM temp_transaction_data
-        WHERE temp_transaction_data.txid = address_transactions.txid
+        WHERE temp_transaction_data.tx_hash = address_transactions.tx_hash
         AND temp_transaction_data.address = address_transactions.address
       )`);
 
     // restore UTXO memos
     walletDb.run(`UPDATE address_utxos
-      SET memo = (SELECT memo FROM temp_utxo_memos WHERE temp_utxo_memos.address = address_utxos.address AND temp_utxo_memos.txid = address_utxos.txid AND temp_utxo_memos.tx_pos = address_utxos.tx_pos)
+      SET memo = (SELECT memo FROM temp_utxo_memos WHERE temp_utxo_memos.address = address_utxos.address AND temp_utxo_memos.tx_hash = address_utxos.tx_hash AND temp_utxo_memos.tx_pos = address_utxos.tx_pos)
       WHERE EXISTS (
         SELECT 1 FROM temp_utxo_memos
         WHERE temp_utxo_memos.address = address_utxos.address
-        AND temp_utxo_memos.txid = address_utxos.txid
+        AND temp_utxo_memos.tx_hash = address_utxos.tx_hash
         AND temp_utxo_memos.tx_pos = address_utxos.tx_pos
       )`);
 
@@ -534,7 +543,9 @@ export default function WalletManagerService(injectedDeps?: {
     Log.debug("saveWallet", walletHash);
     const walletDb = Database.getWalletDatabase(walletHash);
 
-    const wallet = walletDb.exec("SELECT * FROM wallet")[0];
+    const wallet = walletDb.exec("SELECT * FROM wallet", null, {
+      useBigInt: true,
+    })[0];
     const { name, created_at, key_viewed_at, balance } = wallet;
 
     APP_DB.run(
@@ -573,6 +584,6 @@ export default function WalletManagerService(injectedDeps?: {
   }
 
   function getPrefix() {
-    return getNetworkPrefix(network);
+    return network === "mainnet" ? "bitcoincash" : "bchtest";
   }
 }

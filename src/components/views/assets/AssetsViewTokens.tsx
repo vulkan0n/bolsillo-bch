@@ -2,9 +2,12 @@ import { useState, useEffect, useMemo, useCallback } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate, useOutletContext } from "react-router";
 import { SyncOutlined } from "@ant-design/icons";
+
 import { selectPrivacySettings, selectBchNetwork } from "@/redux/preferences";
+
 import TokenManagerService from "@/kernel/wallet/TokenManagerService";
 import DatabaseService from "@/kernel/app/DatabaseService";
+
 import KeyWarning from "@/atoms/KeyWarning/KeyWarning";
 import SeleneLogo from "@/atoms/SeleneLogo";
 import TokenCard from "@/composite/TokenCard";

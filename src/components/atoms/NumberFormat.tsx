@@ -1,5 +1,6 @@
-import { Decimal } from "decimal.js";
 import { useSelector } from "react-redux";
+import { Decimal } from "decimal.js";
+
 import { selectLocale } from "@/redux/device";
 
 export default function NumberFormat({

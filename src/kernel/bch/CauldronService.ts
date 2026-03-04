@@ -5,12 +5,14 @@ import {
   SpendableCoinType,
 } from "@cashlab/common";
 import { ExchangeLab, PoolV0, PoolV0Parameters } from "@cashlab/cauldron";
+
 import LogService from "@/kernel/app/LogService";
 import ElectrumService from "@/kernel/bch/ElectrumService";
 import { WalletEntity } from "@/kernel/wallet/WalletManagerService";
 import AddressManagerService from "@/kernel/wallet/AddressManagerService";
 import UtxoManagerService from "@/kernel/wallet/UtxoManagerService";
 import KeyManagerService from "@/kernel/wallet/KeyManagerService";
+
 import { hexToBin, binToHex } from "@/util/hex";
 import { addressToLockingBytecode } from "@/util/cashaddr";
 
@@ -357,15 +359,15 @@ export default function CauldronService() {
             token:
               input.token_amount > 0
                 ? {
-                    amount: BigInt(input.token_amount),
+                    amount: input.token_amount,
                     token_id: input.token_category,
                   }
                 : undefined,
-            amount: BigInt(input.amount),
+            amount: input.valueSatoshis,
           },
           outpoint: {
-            txhash: hexToBin(input.txid),
-            index: Number(input.tx_pos),
+            txhash: hexToBin(input.tx_hash),
+            index: input.tx_pos,
           },
         };
       });

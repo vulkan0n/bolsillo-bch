@@ -17,6 +17,7 @@ import {
   ImportOutlined,
   InfoCircleOutlined,
 } from "@ant-design/icons";
+
 import {
   setPreference,
   selectSecuritySettings,
@@ -24,16 +25,20 @@ import {
 } from "@/redux/preferences";
 import { selectActiveWallet } from "@/redux/wallet";
 import { selectDeviceInfo } from "@/redux/device";
-import { SettingsContext } from "./SettingsContext";
+
 import SecurityService, { AuthActions } from "@/kernel/app/SecurityService";
 import NotificationService from "@/kernel/app/NotificationService";
+
 import Accordion from "@/atoms/Accordion";
 import Button from "@/atoms/Button";
 import Checkbox from "@/atoms/Checkbox";
 import KeyWarning from "@/atoms/KeyWarning/KeyWarning";
+import Select from "@/components/atoms/Select";
+
 import { translate } from "@/util/translations";
 import translations from "./translations";
-import Select from "@/components/atoms/Select";
+
+import { SettingsContext } from "./SettingsContext";
 
 export default function SecuritySettings() {
   const dispatch = useDispatch();

@@ -1,14 +1,17 @@
-import { Decimal } from "decimal.js";
 import { Device } from "@capacitor/device";
+import { Decimal } from "decimal.js";
+
+import { selectExchangeRates } from "@/redux/exchangeRates";
+import { store } from "@/redux";
+
 import LogService from "@/kernel/app/LogService";
+
 import { bchToSats, satsToBch } from "@/util/sats";
 import {
   DEFAULT_CURRENCY,
   currencyList,
   euroZoneCountryList,
 } from "@/util/currency";
-import { selectExchangeRates } from "@/redux/exchangeRates";
-import { store } from "@/redux";
 
 const Log = LogService("Currency");
 
@@ -59,8 +62,7 @@ const replaceYadioRates = async (rates) => {
 };
 
 export default function CurrencyService(
-  fiatCurrency = DEFAULT_CURRENCY.currency,
-  injectedRates?: Array<{ currency: string; price: string }>
+  fiatCurrency = DEFAULT_CURRENCY.currency
 ) {
   return {
     fiatToSats,
@@ -133,8 +135,7 @@ export default function CurrencyService(
   }
 
   function getExchangeRate(currency, rates = undefined) {
-    const exchangeRates =
-      rates || injectedRates || selectExchangeRates(store.getState());
+    const exchangeRates = rates || selectExchangeRates(store.getState());
     const index = exchangeRates.findIndex(
       (exchangeRate) => exchangeRate.currency === currency
     );

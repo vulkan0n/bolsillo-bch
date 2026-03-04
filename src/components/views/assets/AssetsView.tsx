@@ -7,6 +7,7 @@ import {
   DeploymentUnitOutlined,
   SettingOutlined,
 } from "@ant-design/icons";
+
 import { setPreference } from "@/redux/preferences";
 import { selectActiveWallet } from "@/redux/wallet";
 

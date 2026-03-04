@@ -1,16 +1,19 @@
-import JsPDF from "jspdf";
 import { Filesystem, Directory } from "@capacitor/filesystem";
 import { Share } from "@capacitor/share";
 import { Capacitor } from "@capacitor/core";
-import { DateTime } from "luxon";
 import { Output } from "@bitauth/libauth";
+import JsPDF from "jspdf";
+import { DateTime } from "luxon";
+
 import TransactionManagerService, {
   TransactionEntity,
 } from "@/kernel/bch/TransactionManagerService";
-import { binToHex } from "@/util/hex";
 import LogService from "@/kernel/app/LogService";
-import { translate } from "@/util/translations";
+
+import { binToHex } from "@/util/hex";
+
 import common from "@/translations/common";
+import { translate } from "@/util/translations";
 
 const Log = LogService("TransactionExport");
 
@@ -88,7 +91,7 @@ export async function exportHistoryAsCsv(
 
       return [
         escapeCsvField(tx.date),
-        escapeCsvField(tx.txid),
+        escapeCsvField(tx.tx_hash),
         escapeCsvField(status),
         escapeCsvField(tx.confirmations),
         escapeCsvField(tx.height),
@@ -159,7 +162,7 @@ export async function prepareTransactionExportData(
   const resolvedVin = await Promise.all(
     tx.vin.map(async (input) => {
       const resolvedTx = await TransactionManagerService().resolveTransaction(
-        input.txid
+        input.tx_hash
       );
       const output = resolvedTx.vout.find((out) => out.n === input.vout);
       return {
@@ -208,7 +211,7 @@ export async function prepareTransactionExportData(
   }
 
   return {
-    txid: tx.txid,
+    tx_hash: tx.tx_hash,
     blockhash: tx.blockhash,
     height: tx.height,
     time: tx.time,
@@ -223,7 +226,7 @@ export async function prepareTransactionExportData(
 }
 
 interface TransactionData {
-  txid: string;
+  tx_hash: string;
   blockhash: string | null;
   height: number;
   time: number;
@@ -249,7 +252,7 @@ interface TransactionData {
     };
   }>;
   vin: Array<{
-    txid: string;
+    tx_hash: string;
     vout: number;
     value?: string;
     address?: string;
@@ -386,7 +389,6 @@ class TransactionExportService {
       }
     }
 
-    // Helper to add new page if needed
     const checkPageBreak = (neededSpace: number) => {
       if (yPosition + neededSpace > pageHeight - margin) {
         pdf.addPage();
@@ -447,7 +449,7 @@ class TransactionExportService {
       }
     };
 
-    addRow("Transaction ID", transactionData.txid, true);
+    addRow("Transaction ID", transactionData.tx_hash, true);
     addRow("Date & Time", transactionData.date);
 
     const statusText = transactionData.blockhash
@@ -595,7 +597,7 @@ class TransactionExportService {
       pdf.text(`${i}`, margin, yPosition);
 
       // Display address if available, otherwise show source transaction reference
-      const address = input.address || `${input.txid}:${input.vout}`;
+      const address = input.address || `${input.tx_hash}:${input.vout}`;
       pdf.text(address, margin + 10, yPosition);
 
       const amount = input.value
@@ -804,7 +806,7 @@ class TransactionExportService {
         }
       };
 
-      addRow("Transaction ID", transactionData.txid, true);
+      addRow("Transaction ID", transactionData.tx_hash, true);
       addRow("Date & Time", transactionData.date);
       const statusText = transactionData.blockhash
         ? `Block #${transactionData.height} (${transactionData.confirmations} conf.)`
@@ -945,7 +947,7 @@ class TransactionExportService {
         yPosition += 3 * mmToPx;
 
         ctx.fillStyle = valueColor;
-        const address = input.address || `${input.txid}:${input.vout}`;
+        const address = input.address || `${input.tx_hash}:${input.vout}`;
 
         // Wrap long addresses
         const maxWidth = pageWidth * mmToPx - 2 * margin;

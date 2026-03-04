@@ -1,5 +1,4 @@
 import { Filesystem, Directory, Encoding } from "@capacitor/filesystem";
-import { DateTime } from "luxon";
 import {
   importMetadataRegistry,
   MetadataRegistry,
@@ -8,6 +7,8 @@ import {
   RegistryTimestampKeyedValues,
   binToBase64,
 } from "@bitauth/libauth";
+import { DateTime } from "luxon";
+
 import LogService from "@/kernel/app/LogService";
 import ElectrumService from "@/kernel/bch/ElectrumService";
 import TransactionManagerService, {
@@ -19,8 +20,7 @@ import { sha256 } from "@/util/hash";
 import { hexToUtf8 } from "@/util/hex";
 import { ipfsFetch } from "@/util/ipfs";
 import { detectImageMime } from "@/util/mime";
-import { ValidBchNetwork } from "@/util/network";
-
+import { ValidBchNetwork } from "@/util/electrum_servers";
 import bcmrLocal from "@/assets/bcmr-selene-local.json";
 
 const Log = LogService("BcmrService");
@@ -391,7 +391,7 @@ export default function BcmrService(bchNetwork: ValidBchNetwork) {
           bchNetwork
         );
         const matchUtxo = vin.find(
-          (vn) => vn.txid === findHash && vn.vout === 0
+          (vn) => vn.tx_hash === findHash && vn.vout === 0
         );
 
         if (!matchUtxo) {

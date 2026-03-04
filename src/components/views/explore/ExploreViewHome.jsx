@@ -5,18 +5,19 @@ import {
   PlayCircleOutlined,
 } from "@ant-design/icons";
 
-import ExploreApp from "./ExploreApp";
+import StatsGraphCard from "@/apps/stats/StatsGraphCard";
 import SeleneLogo from "@/atoms/SeleneLogo";
 import Card from "@/atoms/Card";
-import StatsGraphCard from "@/apps/stats/StatsGraphCard";
 import Carousel from "@/atoms/Carousel";
+
 import useRealTime from "@/hooks/useRealTime";
 
 import { translate } from "@/util/translations";
 import translations from "./translations";
+
+import ExploreApp from "./ExploreApp";
 //import BlissAppCard from "../apps/bliss/BlissAppCard";
 import BlazeAppCard from "../apps/blaze/BlazeAppCard";
-
 import { BLAZE_2025_END_DATE } from "../apps/blaze/constants";
 
 export default function ExploreViewHome() {

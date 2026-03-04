@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
+import { Preferences } from "@capacitor/preferences";
 import Logger from "js-logger";
 import {
   createReducer,
@@ -6,15 +7,15 @@ import {
   createAsyncThunk,
 } from "@reduxjs/toolkit";
 
-import { Preferences } from "@capacitor/preferences";
-
 import {
   setPreference,
   selectCurrencySettings,
   selectIsOfflineMode,
 } from "@/redux/preferences";
+
 import CurrencyService from "@/kernel/bch/CurrencyService";
 import LogService from "@/kernel/app/LogService";
+
 import { currencyList } from "@/util/currency";
 
 const Log = LogService("redux/exchangeRates");

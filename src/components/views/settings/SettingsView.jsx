@@ -1,6 +1,5 @@
 import { useMemo, useCallback } from "react";
 import { useSelector, useDispatch } from "react-redux";
-
 import { SettingOutlined } from "@ant-design/icons";
 
 import {
@@ -15,13 +14,12 @@ import KeyWarning from "@/atoms/KeyWarning/KeyWarning";
 import Button from "@/atoms/Button";
 import SeleneLogo from "@/atoms/SeleneLogo";
 
+import { SELENE_WALLET_VERSION } from "@/util/version";
+
 import { translate } from "@/util/translations";
 import translations from "./translations";
 
-import { SELENE_WALLET_VERSION } from "@/util/version";
-
 import { SettingsContext } from "./SettingsContext";
-
 import WalletSettings from "./WalletSettings";
 import CurrencySettings from "./CurrencySettings";
 import PaymentSettings from "./PaymentSettings";

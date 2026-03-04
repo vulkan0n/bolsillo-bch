@@ -1,12 +1,12 @@
 //import { Geolocation } from "@capacitor/geolocation";
 
-import ExploreView from "@/views/explore/ExploreView";
-import ExploreViewHome from "@/views/explore/ExploreViewHome";
+import { selectBchNetwork } from "@/redux/preferences";
+import { store } from "@/redux";
 
 import TransactionManagerService from "@/kernel/bch/TransactionManagerService";
 
-import { selectBchNetwork } from "@/redux/preferences";
-import { store } from "@/redux";
+import ExploreView from "@/views/explore/ExploreView";
+import ExploreViewHome from "@/views/explore/ExploreViewHome";
 
 export const routeExplore = [
   {
@@ -18,7 +18,7 @@ export const routeExplore = [
         element: <ExploreViewHome />,
       },
       {
-        path: "tx/:txid",
+        path: "tx/:tx_hash",
         async lazy() {
           const { default: ExploreTransactionView } =
             await import("@/views/explore/ExploreTransactionView");
@@ -27,7 +27,7 @@ export const routeExplore = [
         loader: async ({ params }) => {
           const bchNetwork = selectBchNetwork(store.getState());
           return TransactionManagerService().resolveTransaction(
-            params.txid,
+            params.tx_hash,
             bchNetwork
           );
         },

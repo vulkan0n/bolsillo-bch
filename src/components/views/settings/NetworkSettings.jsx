@@ -15,21 +15,21 @@ import {
 import { selectBchNetwork, selectIsOfflineMode } from "@/redux/preferences";
 
 import ElectrumService from "@/kernel/bch/ElectrumService";
-import Button from "@/atoms/Button";
 
-import { translate } from "@/util/translations";
-import translations from "./translations";
+import Button from "@/atoms/Button";
+import Accordion from "@/atoms/Accordion";
+import Select from "@/components/atoms/Select";
 
 import {
   electrum_servers,
   ElectrumServer,
   DEFAULT_ELECTRUM_PORT,
-} from "@/util/network";
+} from "@/util/electrum_servers";
+
+import { translate } from "@/util/translations";
+import translations from "./translations";
 
 import { SettingsContext } from "./SettingsContext";
-
-import Accordion from "@/atoms/Accordion";
-import Select from "@/components/atoms/Select";
 
 export default function NetworkSettings() {
   const { handleSettingsUpdate, preferences, dispatch } =

@@ -1,5 +1,7 @@
 import LogService from "@/kernel/app/LogService";
-import DatabaseService, { SqlJsDatabase } from "@/kernel/app/DatabaseService";
+import DatabaseService from "@/kernel/app/DatabaseService";
+
+import { normalizeUtxoRow } from "@/util/normalize";
 
 const Log = LogService("UtxoManager");
 
@@ -7,9 +9,9 @@ type TokenNftCapability = "none" | "mutable" | "minting";
 
 export interface UtxoEntity {
   address: string;
-  txid: string;
+  tx_hash: string;
   tx_pos: number;
-  amount: bigint;
+  valueSatoshis: bigint;
   memo: string | null;
   token_category: string | null;
   token_amount: bigint | null;
@@ -17,12 +19,9 @@ export interface UtxoEntity {
   nft_commitment: string | null;
 }
 
-export default function UtxoManagerService(
-  walletHash: string,
-  injectedDb?: SqlJsDatabase
-) {
-  const walletDb =
-    injectedDb ?? DatabaseService().getWalletDatabase(walletHash);
+export default function UtxoManagerService(walletHash: string) {
+  const Database = DatabaseService();
+  const walletDb = Database.getWalletDatabase(walletHash);
 
   return {
     getUtxo,
@@ -41,52 +40,41 @@ export default function UtxoManagerService(
   };
 
   function getUtxo(utxo_id: string): UtxoEntity {
-    const [txid, tx_pos] = utxo_id.split(":");
+    const [tx_hash, tx_pos] = utxo_id.split(":");
 
     const result = walletDb.exec(
-      "SELECT * FROM address_utxos WHERE txid=? AND tx_pos=?",
-      [txid, tx_pos],
+      "SELECT * FROM address_utxos WHERE tx_hash=? AND tx_pos=?",
+      [tx_hash, tx_pos],
       { useBigInt: true }
     )[0];
 
-    return result;
+    return normalizeUtxoRow(result);
   }
 
-  function registerUtxo(address, utxo) {
+  function registerUtxo(utxo: UtxoEntity) {
     //Log.debug("registerUtxo", utxo);
-
-    const token_data = utxo.token_data
-      ? utxo.token_data
-      : {
-          category: null,
-          amount: null,
-          nft: {
-            capability: null,
-            commitment: null,
-          },
-        };
 
     try {
       walletDb.run(
         `INSERT INTO address_utxos (
         address,
-        txid,
+        tx_hash,
         tx_pos,
-        amount,
+        valueSatoshis,
         token_category,
         token_amount,
         nft_capability,
         nft_commitment
       ) VALUES (?, ?, ?, ?, ?, ?, ?, ?);`,
         [
-          address,
+          utxo.address,
           utxo.tx_hash,
           utxo.tx_pos,
-          utxo.value,
-          token_data.category,
-          token_data.amount,
-          token_data.nft ? token_data.nft.capability : null,
-          token_data.nft ? token_data.nft.commitment : null,
+          utxo.valueSatoshis,
+          utxo.token_category,
+          utxo.token_amount,
+          utxo.nft_capability,
+          utxo.nft_commitment,
         ]
       );
       //Log.debug("registerUtxo done");
@@ -101,7 +89,7 @@ export default function UtxoManagerService(
       useBigInt: true,
     });
     //Log.debug(result);
-    return result;
+    return result.map(normalizeUtxoRow);
   }
 
   // returns all non-token UTXOs for the wallet
@@ -111,7 +99,7 @@ export default function UtxoManagerService(
       null,
       { useBigInt: true }
     );
-    return result;
+    return result.map(normalizeUtxoRow);
   }
 
   // returns all token UTXOs for the wallet
@@ -121,27 +109,27 @@ export default function UtxoManagerService(
       null,
       { useBigInt: true }
     );
-    return result;
+    return result.map(normalizeUtxoRow);
   }
 
   // returns all UTXOs for an address in the wallet
   function getAddressUtxos(address: string): Array<UtxoEntity> {
     const result = walletDb.exec(
-      `SELECT * FROM address_utxos WHERE address=? ORDER BY amount ASC`,
+      `SELECT * FROM address_utxos WHERE address=? ORDER BY valueSatoshis ASC`,
       [address],
       { useBigInt: true }
     );
-    return result;
+    return result.map(normalizeUtxoRow);
   }
 
   // returns all non-token UTXOs for an address in the wallet
   function getAddressCoins(address: string) {
     const result = walletDb.exec(
-      `SELECT * FROM address_utxos WHERE address=? AND token_category IS NULL ORDER BY amount ASC`,
+      `SELECT * FROM address_utxos WHERE address=? AND token_category IS NULL ORDER BY valueSatoshis ASC`,
       [address],
       { useBigInt: true }
     );
-    return result;
+    return result.map(normalizeUtxoRow);
   }
 
   function getCategoryUtxos(category: string) {
@@ -151,7 +139,7 @@ export default function UtxoManagerService(
       { useBigInt: true }
     );
 
-    return result;
+    return result.map(normalizeUtxoRow);
   }
 
   function selectTokens(category: string, amount: bigint) {
@@ -159,7 +147,7 @@ export default function UtxoManagerService(
 
     const tokenUtxos = getCategoryUtxos(category);
     const availableTokenSum = tokenUtxos.reduce(
-      (sum, cur) => sum + cur.token_amount,
+      (sum, cur) => sum + (cur.token_amount ?? 0n),
       0n
     );
 
@@ -176,7 +164,7 @@ export default function UtxoManagerService(
     }
 
     const thresholdUtxo = tokenUtxos
-      .filter((u) => u.token_amount >= targetAmount)
+      .filter((u) => (u.token_amount ?? 0n) >= targetAmount)
       .pop();
 
     if (thresholdUtxo) {
@@ -198,7 +186,7 @@ export default function UtxoManagerService(
       }*/
 
       consumedUtxos.push(utxo);
-      remainingAmount -= utxo.token_amount;
+      remainingAmount -= utxo.token_amount ?? 0n;
     }
 
     return consumedUtxos;
@@ -214,7 +202,7 @@ export default function UtxoManagerService(
     //const allAvailableCoins = getWalletUtxos();
 
     const availableCoinSum = allAvailableCoins.reduce(
-      (sum, utxo) => sum + utxo.amount,
+      (sum, utxo) => sum + utxo.valueSatoshis,
       0n
     );
 
@@ -226,7 +214,7 @@ export default function UtxoManagerService(
 
     // 1. if there's an exact UTXO, use that UTXO *and* its address-mates (for privacy)
     const exactCoins = allAvailableCoins.filter(
-      (utxo) => utxo.amount === targetAmount
+      (utxo) => utxo.valueSatoshis === targetAmount
     );
     if (exactCoins.length > 0) {
       Log.debug("selectCoins exactCoin", exactCoins[0].address);
@@ -237,11 +225,12 @@ export default function UtxoManagerService(
     // consider all addresses with balance >= amount
     // in ASCENDING order so smallest address over threshold is first (for privacy)
     const eligibleAddresses = walletDb.exec(
-      `SELECT * FROM addresses 
-          WHERE 
+      `SELECT * FROM addresses
+          WHERE
             balance >= ?
           ORDER BY balance ASC`,
-      [targetAmount.toString()]
+      [targetAmount.toString()],
+      { useBigInt: true }
     );
 
     Log.debug("eligibleAddresses", eligibleAddresses);
@@ -267,7 +256,7 @@ export default function UtxoManagerService(
       );
 
       const addressCoinSum = addressCoins.selection.reduce(
-        (sum, cur) => sum + cur.amount,
+        (sum, cur) => sum + cur.valueSatoshis,
         0n
       );
 
@@ -295,7 +284,7 @@ export default function UtxoManagerService(
 
   function targetUtxos(utxos, targetAmount) {
     Log.log("targetUtxos trying", utxos, targetAmount);
-    const utxoSum = utxos.reduce((sum, utxo) => sum + utxo.amount, 0n);
+    const utxoSum = utxos.reduce((sum, utxo) => sum + utxo.valueSatoshis, 0n);
     if (utxoSum < targetAmount) {
       return { selection: [] };
     }
@@ -307,7 +296,7 @@ export default function UtxoManagerService(
     while (remainingAmount > 0 && utxos.length > 0) {
       const utxo = utxos.shift();
       selection.push(utxo);
-      remainingAmount -= utxo.amount;
+      remainingAmount -= utxo.valueSatoshis;
     }
 
     // negative remainingAmount is change that needs to be returned to wallet
@@ -317,8 +306,8 @@ export default function UtxoManagerService(
     return { selection, changeAmount };
   }
 
-  function discardUtxo(utxo) {
-    walletDb.run(`DELETE FROM address_utxos WHERE txid=? AND tx_pos=?;`, [
+  function discardUtxo(utxo: { tx_hash: string; tx_pos: number }) {
+    walletDb.run(`DELETE FROM address_utxos WHERE tx_hash=? AND tx_pos=?;`, [
       utxo.tx_hash,
       utxo.tx_pos,
     ]);

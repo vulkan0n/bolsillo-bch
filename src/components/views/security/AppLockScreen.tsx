@@ -1,12 +1,18 @@
 import { useState, useEffect, useCallback } from "react";
 import { MemoryRouter, Routes, Route, useNavigate } from "react-router";
 import { LockOutlined } from "@ant-design/icons";
-import SeleneLogo from "@/atoms/SeleneLogo";
-import Button from "@/atoms/Button";
+
 import SecurityService from "@/kernel/app/SecurityService";
 import LogService from "@/kernel/app/LogService";
-import { translate } from "@/util/translations";
+
+import SeleneLogo from "@/atoms/SeleneLogo";
+import Button from "@/atoms/Button";
+
 import { onUnlocked } from "@/init";
+
+import { translate } from "@/util/translations";
+import translations from "./translations";
+
 import {
   ForgotPinMenu,
   ImportBackupScreen,
@@ -14,7 +20,6 @@ import {
   LockScreenWrapper,
   primaryButtonProps,
 } from "./ForgotPinScreen";
-import translations from "./translations";
 
 const Security = SecurityService();
 

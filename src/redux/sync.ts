@@ -27,6 +27,7 @@ import ElectrumService, {
 } from "@/kernel/bch/ElectrumService";
 import CauldronService from "@/kernel/bch/CauldronService";
 import BlockchainService from "@/kernel/bch/BlockchainService";
+import TransactionManagerService from "@/kernel/bch/TransactionManagerService";
 import WalletManagerService from "@/kernel/wallet/WalletManagerService";
 import AddressManagerService, {
   AddressEntity,
@@ -394,7 +395,7 @@ export const syncHotRefresh = createAsyncThunk(
 
       // don't resync fully spent change addresses
       const filteredChangeAddresses = changeAddresses.filter(
-        (address) => !(address.state !== null && address.balance === 0)
+        (address) => !(address.state !== null && address.balance === 0n)
       );
 
       // concatenate full list of addresses
@@ -500,6 +501,14 @@ export const syncChaintip = createAsyncThunk(
         await Janitor.purgeStaleData();
       });
     }
+
+    // Rebroadcast any transactions we sent but haven't verified in the mempool.
+    // height IS NULL means we broadcast but never confirmed it landed.
+    queueMicrotask(() => {
+      TransactionManagerService()
+        .rebroadcastUnresolved(bchNetwork)
+        .catch((e) => Log.warn("rebroadcastUnresolved failed", e));
+    });
 
     return block;
   }

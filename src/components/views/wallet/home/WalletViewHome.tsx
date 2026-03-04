@@ -1,6 +1,5 @@
 import { useState, useRef, useMemo } from "react";
 import { useSelector, useDispatch } from "react-redux";
-
 import { QRCode } from "react-qrcode-logo";
 import {
   FormOutlined,
@@ -24,14 +23,13 @@ import { selectScannerIsScanning, selectKeyboardIsOpen } from "@/redux/device";
 
 import AddressManagerService from "@/kernel/wallet/AddressManagerService";
 
+import translations from "@/views/wallet/translations";
 import FullColumn from "@/layout/FullColumn";
 import { SatoshiInput } from "@/atoms/SatoshiInput";
 import Address from "@/atoms/Address";
 import CurrencySymbol from "@/atoms/CurrencySymbol";
 import CurrencyFlip from "@/atoms/CurrencyFlip";
 import KeyWarning from "@/atoms/KeyWarning/KeyWarning";
-import WalletViewButtons from "./WalletViewButtons";
-import ScannerOverlay from "./ScannerOverlay";
 
 import { useClipboard } from "@/hooks/useClipboard";
 
@@ -41,7 +39,9 @@ import { convertCashAddress } from "@/util/cashaddr";
 import { toAlphanumericUri } from "@/util/uri";
 
 import { translate } from "@/util/translations";
-import translations from "@/views/wallet/translations";
+
+import WalletViewButtons from "./WalletViewButtons";
+import ScannerOverlay from "./ScannerOverlay";
 
 export default function WalletViewHome() {
   const dispatch = useDispatch();

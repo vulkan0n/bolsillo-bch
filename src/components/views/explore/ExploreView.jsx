@@ -1,10 +1,13 @@
 import { Outlet, Link } from "react-router";
 import { CompassOutlined, SettingOutlined } from "@ant-design/icons";
+
 import ViewHeader from "@/layout/ViewHeader";
 import FullColumn from "@/layout/FullColumn";
-//import ExploreSearchBar from "./ExploreSearchBar";
+
 import { translate } from "@/util/translations";
 import translations from "./translations";
+
+//import ExploreSearchBar from "./ExploreSearchBar";
 
 function ExploreViewAccessory() {
   return (

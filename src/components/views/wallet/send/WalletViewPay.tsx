@@ -2,6 +2,7 @@ import { useState, useCallback, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router";
 import { useSelector } from "react-redux";
 import { ArrowLeftOutlined, SyncOutlined } from "@ant-design/icons";
+
 import {
   selectActiveWalletHash,
   selectActiveWalletBalance,
@@ -21,6 +22,7 @@ import NotificationService from "@/kernel/app/NotificationService";
 import SecurityService, { AuthActions } from "@/kernel/app/SecurityService";
 import LogService from "@/kernel/app/LogService";
 
+import translations from "@/views/wallet/translations";
 import Button from "@/atoms/Button";
 import SlideToAction from "@/atoms/SlideToAction";
 import CountdownTimer from "@/components/atoms/CountdownTimer";
@@ -30,11 +32,9 @@ import Satoshi from "@/atoms/Satoshi";
 import { useCurrencyFlip } from "@/hooks/useCurrencyFlip";
 
 import { Haptic } from "@/util/haptic";
-
 import { PaymentRequestResponse, JppV2Client } from "@/util/payment_protocol";
 
 import { translate } from "@/util/translations";
-import translations from "@/views/wallet/translations";
 
 const Log = LogService("WalletViewPay");
 const jppClient = new JppV2Client();
@@ -161,42 +161,50 @@ export default function WalletViewPay() {
           }
         );
 
-        // Wait until we actually see the transaction on our node (with safety timeout).
+        // Rebroadcast to guarantee mempool presence. If it succeeds,
+        // the payment server failed to broadcast and we saved the user.
+        // If Electrum rejects (already in mempool), fall back to
+        // register-only — the rejection confirms the tx exists.
         const TransactionManager = TransactionManagerService();
         let tx;
         try {
-          tx = await Promise.race([
-            TransactionManager.resolveTransaction(
-              transaction.tx_hash,
-              bchNetwork
-            ),
-            new Promise((_, reject) => {
-              setTimeout(
-                () => reject(new Error("mempool confirmation timeout")),
-                10000
-              );
-            }),
-          ]);
-        } catch (e) {
-          Log.warn(
-            "resolveTransaction failed after broadcast",
-            transaction.tx_hash,
-            e
+          tx = await TransactionManager.sendTransaction(
+            {
+              tx_hash: transaction.tx_hash,
+              hex: transaction.tx_hex,
+            },
+            bchNetwork,
+            walletHash
           );
-          tx = { txid: transaction.tx_hash };
+        } catch {
+          tx = await TransactionManager.registerTransaction({
+            tx_hash: transaction.tx_hash,
+            hex: transaction.tx_hex,
+          });
+          TransactionManager.applyOptimisticUtxoUpdate(walletHash, tx);
         }
 
         // Show a success notification and route the user to the success page.
         await Haptic.success();
+
+        // Update blockhash/height when confirmed
+        TransactionManager.resolveTransaction(tx.tx_hash, bchNetwork).catch(
+          (e) => Log.warn("resolveTransaction failed", tx.tx_hash, e)
+        );
+
         if (paymentResponse.memo.length > 0) {
           TransactionHistoryService(
             walletHash,
             localCurrency,
             bchNetwork
-          ).setTransactionMemo(tx.txid, paymentResponse.memo);
+          ).setTransactionMemo(tx.tx_hash, paymentResponse.memo);
         }
         navigate("/wallet/send/success", {
-          state: { tx, prefillMemo: paymentResponse.memo || "" },
+          state: {
+            tx_hash: tx.tx_hash,
+            tx,
+            prefillMemo: paymentResponse.memo || "",
+          },
           replace: true,
         });
       } catch (error) {

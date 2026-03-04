@@ -1,6 +1,7 @@
 /* eslint-disable react/no-array-index-key */
 import { useState, useEffect, Children } from "react";
 import { LeftOutlined, RightOutlined } from "@ant-design/icons";
+
 import Button from "@/atoms/Button";
 
 interface CarouselProps {
