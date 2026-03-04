@@ -30,7 +30,6 @@ export default function AddressManagerService(walletHash: string) {
   const Database = DatabaseService();
   const walletDb = Database.getWalletDatabase(walletHash);
 
-  /** Normalize raw SQL row (useBigInt: true) → AddressEntity */
   const normalizeAddress = (row): AddressEntity => ({
     ...row,
     hd_index: Number(row.hd_index),

@@ -28,8 +28,6 @@ import {
   ValidBchNetwork,
 } from "@/util/electrum_servers";
 
-/** Electrum wire protocol types — reflect JSON responses from Fulcrum/Rostrum */
-
 export type ElectrumUtxo = {
   height: number;
   token_data?: {
@@ -117,7 +115,6 @@ const electrum_handles = new Map<
 const server_blacklist: Array<string> = [];
 const pendingTxRequests: Map<string, Promise<object>> = new Map();
 
-/** Electrum verbose tx → NormalizedTransaction */
 function normalizeTransaction(
   tx: ElectrumVerboseTransaction & { height: number }
 ): NormalizedTransaction {
@@ -135,7 +132,6 @@ function normalizeTransaction(
   };
 }
 
-/** Electrum wire UTXO → UtxoEntity */
 function normalizeUtxo(address: string, u: ElectrumUtxo): UtxoEntity {
   return {
     address,
