@@ -3,23 +3,23 @@ import { configureStore, combineReducers, isPlain } from "@reduxjs/toolkit";
 import LogService from "@/kernel/app/LogService";
 import BcmrService from "@/kernel/bch/BcmrService";
 
+import { deviceReducer, deviceInit, selectIsLocked } from "./device";
+import {
+  exchangeRateReducer,
+  fetchExchangeRates,
+  exchangeRateInit,
+} from "./exchangeRates";
 import {
   preferencesReducer,
   selectActiveWalletHash,
   selectBchNetwork,
   preferencesInit,
 } from "./preferences";
-import { walletReducer, walletBoot, addressReducer } from "./wallet";
-import { syncReducer, syncMiddleware, syncPause, syncResume } from "./sync";
-import { deviceReducer, deviceInit, selectIsLocked } from "./device";
-import { txHistoryReducer } from "./txHistory";
-import {
-  exchangeRateReducer,
-  fetchExchangeRates,
-  exchangeRateInit,
-} from "./exchangeRates";
-import { walletConnectReducer, walletConnectInit } from "./walletConnect";
 import { triggerCheckIn } from "./stats";
+import { syncReducer, syncMiddleware, syncPause, syncResume } from "./sync";
+import { txHistoryReducer } from "./txHistory";
+import { walletReducer, walletBoot, addressReducer } from "./wallet";
+import { walletConnectReducer, walletConnectInit } from "./walletConnect";
 
 const Log = LogService("redux");
 

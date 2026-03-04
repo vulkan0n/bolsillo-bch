@@ -1,17 +1,17 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import { useState } from "react";
-import { useNavigate } from "react-router";
 import { QRCode } from "react-qrcode-logo";
+import { useNavigate } from "react-router";
 
-import ViewHeader from "@/layout/ViewHeader";
 import FullColumn from "@/layout/FullColumn";
-import SeleneLogo from "@/components/atoms/SeleneLogo";
+import ViewHeader from "@/layout/ViewHeader";
 import LinkExternal from "@/components/atoms/LinkExternal";
+import SeleneLogo from "@/components/atoms/SeleneLogo";
 
 import { useLongPress } from "@/hooks/useLongPress";
 
-import { SELENE_WALLET_VERSION } from "@/util/version";
 import { logos } from "@/util/logos";
+import { SELENE_WALLET_VERSION } from "@/util/version";
 
 import { translate } from "@/util/translations";
 

@@ -1,5 +1,5 @@
-import { Share } from "@capacitor/share";
 import { Filesystem, Directory, Encoding } from "@capacitor/filesystem";
+import { Share } from "@capacitor/share";
 import { stringify } from "@bitauth/libauth";
 import Logger from "js-logger";
 import { DateTime } from "luxon";

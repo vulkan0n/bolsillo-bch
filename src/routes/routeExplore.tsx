@@ -1,7 +1,7 @@
 //import { Geolocation } from "@capacitor/geolocation";
 
-import { selectBchNetwork } from "@/redux/preferences";
 import { store } from "@/redux";
+import { selectBchNetwork } from "@/redux/preferences";
 
 import TransactionManagerService from "@/kernel/bch/TransactionManagerService";
 

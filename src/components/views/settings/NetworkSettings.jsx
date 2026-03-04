@@ -7,17 +7,17 @@ import {
   DisconnectOutlined,
 } from "@ant-design/icons";
 
+import { selectBchNetwork, selectIsOfflineMode } from "@/redux/preferences";
 import {
   syncReconnect,
   syncDisconnect,
   selectElectrumServer,
 } from "@/redux/sync";
-import { selectBchNetwork, selectIsOfflineMode } from "@/redux/preferences";
 
 import ElectrumService from "@/kernel/bch/ElectrumService";
 
-import Button from "@/atoms/Button";
 import Accordion from "@/atoms/Accordion";
+import Button from "@/atoms/Button";
 import Select from "@/components/atoms/Select";
 
 import {

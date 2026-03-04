@@ -17,8 +17,8 @@ import DatabaseService, {
 import JanitorService from "@/kernel/app/JanitorService";
 import LogService from "@/kernel/app/LogService";
 
-import SeleneLogo from "@/atoms/SeleneLogo";
 import Button from "@/atoms/Button";
+import SeleneLogo from "@/atoms/SeleneLogo";
 
 import { translate } from "@/util/translations";
 import translations from "./translations";

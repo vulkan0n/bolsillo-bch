@@ -3,9 +3,9 @@ import { useSelector } from "react-redux";
 
 import { selectActiveWalletBalance } from "@/redux/wallet";
 
-import UtxoManagerService from "@/kernel/wallet/UtxoManagerService";
 import CauldronService from "@/kernel/bch/CauldronService";
 import CurrencyService from "@/kernel/bch/CurrencyService";
+import UtxoManagerService from "@/kernel/wallet/UtxoManagerService";
 
 import { MUSD_TOKENID } from "@/util/tokens";
 

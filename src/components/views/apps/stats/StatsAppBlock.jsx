@@ -7,8 +7,8 @@ import { THIRTY_SECONDS } from "@/util/time";
 import { translate } from "@/util/translations";
 import translations from "./translations";
 
-import GET_ACTIVE_BITCOINERS_SUMMARY from "./getActiveBitcoinersSummary";
 import DailyTarget from "./DailyTarget";
+import GET_ACTIVE_BITCOINERS_SUMMARY from "./getActiveBitcoinersSummary";
 
 const { seleneActiveUsers } = translations;
 

@@ -2,11 +2,11 @@ import { useState, useEffect, useCallback } from "react";
 import { MemoryRouter, Routes, Route, useNavigate } from "react-router";
 import { LockOutlined } from "@ant-design/icons";
 
-import SecurityService from "@/kernel/app/SecurityService";
 import LogService from "@/kernel/app/LogService";
+import SecurityService from "@/kernel/app/SecurityService";
 
-import SeleneLogo from "@/atoms/SeleneLogo";
 import Button from "@/atoms/Button";
+import SeleneLogo from "@/atoms/SeleneLogo";
 
 import { onUnlocked } from "@/init";
 

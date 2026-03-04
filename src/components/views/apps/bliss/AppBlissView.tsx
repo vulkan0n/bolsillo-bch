@@ -1,5 +1,5 @@
-import { Outlet } from "react-router";
 import { useSelector } from "react-redux";
+import { Outlet } from "react-router";
 import {
   BankOutlined,
   MoneyCollectOutlined,
@@ -8,9 +8,9 @@ import {
 
 import { selectActiveWallet } from "@/redux/wallet";
 
+import NavTab from "@/components/layout/NavTab";
 import FullColumn from "@/layout/FullColumn";
 import ViewHeader from "@/layout/ViewHeader";
-import NavTab from "@/components/layout/NavTab";
 
 import { translate } from "@/util/translations";
 import translations from "./translations";

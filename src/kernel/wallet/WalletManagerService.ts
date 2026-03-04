@@ -5,16 +5,16 @@ import { generateBip39Mnemonic } from "@bitauth/libauth";
 import { store } from "@/redux";
 import { selectBchNetwork } from "@/redux/preferences";
 
-import LogService from "@/kernel/app/LogService";
 import DatabaseService from "@/kernel/app/DatabaseService";
+import LogService from "@/kernel/app/LogService";
 
 import translations from "@/views/wallet/translations";
 
-import { ValidBchNetwork } from "@/util/electrum_servers";
 import {
   ValidDerivationPath,
   DEFAULT_DERIVATION_PATH,
 } from "@/util/derivation";
+import { ValidBchNetwork } from "@/util/electrum_servers";
 import { sha256 } from "@/util/hash";
 
 import { translate } from "@/util/translations";

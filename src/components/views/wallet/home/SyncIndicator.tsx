@@ -10,17 +10,17 @@ import {
 } from "@ant-design/icons";
 
 import {
+  selectShouldDisplaySyncCounter,
+  selectIsExperimental,
+  selectIsOfflineMode,
+} from "@/redux/preferences";
+import {
   selectIsConnected,
   selectIsSyncing,
   selectSyncCount,
   syncHotRefresh,
   syncReconnect,
 } from "@/redux/sync";
-import {
-  selectShouldDisplaySyncCounter,
-  selectIsExperimental,
-  selectIsOfflineMode,
-} from "@/redux/preferences";
 import { selectActiveWalletHash } from "@/redux/wallet";
 
 import NotificationService from "@/kernel/app/NotificationService";

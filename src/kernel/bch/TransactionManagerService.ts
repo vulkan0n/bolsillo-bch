@@ -9,15 +9,15 @@ import {
   Input as LibauthInput,
 } from "@bitauth/libauth";
 
-import LogService from "@/kernel/app/LogService";
 import DatabaseService from "@/kernel/app/DatabaseService";
+import LogService from "@/kernel/app/LogService";
 import ElectrumService from "@/kernel/bch/ElectrumService";
-import WalletManagerService from "@/kernel/wallet/WalletManagerService";
-import UtxoManagerService from "@/kernel/wallet/UtxoManagerService";
 import AddressManagerService from "@/kernel/wallet/AddressManagerService";
+import UtxoManagerService from "@/kernel/wallet/UtxoManagerService";
+import WalletManagerService from "@/kernel/wallet/WalletManagerService";
 
-import { hexToBin, binToHex } from "@/util/hex";
 import { ValidBchNetwork } from "@/util/electrum_servers";
+import { hexToBin, binToHex } from "@/util/hex";
 
 const Log = LogService("TransactionManager");
 

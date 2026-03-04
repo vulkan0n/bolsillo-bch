@@ -7,8 +7,8 @@ import {
 
 import translations from "@/views/wallet/translations";
 import Satoshi from "@/atoms/Satoshi";
-import TokenIcon from "@/atoms/TokenIcon";
 import TokenAmount from "@/atoms/TokenAmount";
+import TokenIcon from "@/atoms/TokenIcon";
 
 import { logos } from "@/util/logos";
 

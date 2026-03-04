@@ -2,14 +2,14 @@ import { Dialog } from "@capacitor/dialog";
 import { SimpleEncryption } from "capacitor-plugin-simple-encryption";
 
 import { store } from "@/redux";
-import { selectSecuritySettings } from "@/redux/preferences";
 import { setIsLocked } from "@/redux/device";
+import { selectSecuritySettings } from "@/redux/preferences";
 
-import LogService from "@/kernel/app/LogService";
-import NotificationService from "@/kernel/app/NotificationService";
 import DatabaseService, {
   DecryptionFailedError,
 } from "@/kernel/app/DatabaseService";
+import LogService from "@/kernel/app/LogService";
+import NotificationService from "@/kernel/app/NotificationService";
 import { clearSeedCache } from "@/kernel/wallet/KeyManagerService";
 import WalletManagerService from "@/kernel/wallet/WalletManagerService";
 

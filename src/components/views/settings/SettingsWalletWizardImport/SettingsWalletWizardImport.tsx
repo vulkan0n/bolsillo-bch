@@ -3,17 +3,17 @@ import { useNavigate } from "react-router";
 import { bip39WordListEnglish, decodeBip39Mnemonic } from "@bitauth/libauth";
 import { ImportOutlined } from "@ant-design/icons";
 
-import WalletManagerService from "@/kernel/wallet/WalletManagerService";
-import AddressScannerService from "@/kernel/wallet/AddressScannerService";
 import DatabaseService from "@/kernel/app/DatabaseService";
 import LogService from "@/kernel/app/LogService";
+import AddressScannerService from "@/kernel/wallet/AddressScannerService";
+import WalletManagerService from "@/kernel/wallet/WalletManagerService";
 
-import Button from "@/components/atoms/Button";
 import Accordion from "@/components/atoms/Accordion";
+import Button from "@/components/atoms/Button";
 import Select from "@/components/atoms/Select";
 
-import { Haptic } from "@/util/haptic";
 import { DEFAULT_DERIVATION_PATH, DERIVATION_PATHS } from "@/util/derivation";
+import { Haptic } from "@/util/haptic";
 
 import { translate } from "@/util/translations";
 import translations from "./translations";

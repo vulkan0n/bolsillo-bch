@@ -14,22 +14,22 @@ import {
 } from "@/redux/preferences";
 import { syncConnect, selectIsRebuilding } from "@/redux/sync";
 
-import WalletManagerService, {
-  WalletEntity,
-} from "@/kernel/wallet/WalletManagerService";
-import ElectrumService from "@/kernel/bch/ElectrumService";
+import LogService from "@/kernel/app/LogService";
+import NotificationService from "@/kernel/app/NotificationService";
 import CauldronService from "@/kernel/bch/CauldronService";
+import ElectrumService from "@/kernel/bch/ElectrumService";
 import AddressManagerService, {
   AddressEntity,
 } from "@/kernel/wallet/AddressManagerService";
 import AddressScannerService from "@/kernel/wallet/AddressScannerService";
-import UtxoManagerService from "@/kernel/wallet/UtxoManagerService";
 import TokenManagerService from "@/kernel/wallet/TokenManagerService";
-import NotificationService from "@/kernel/app/NotificationService";
-import LogService from "@/kernel/app/LogService";
+import UtxoManagerService from "@/kernel/wallet/UtxoManagerService";
+import WalletManagerService, {
+  WalletEntity,
+} from "@/kernel/wallet/WalletManagerService";
 
-import { ValidBchNetwork } from "@/util/electrum_servers";
 import { convertCashAddress } from "@/util/cashaddr";
+import { ValidBchNetwork } from "@/util/electrum_servers";
 import { MUSD_TOKENID } from "@/util/tokens";
 
 const Log = LogService("redux/wallet");

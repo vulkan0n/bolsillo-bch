@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef, useCallback } from "react";
-import { Link } from "react-router";
-import { useSelector, useDispatch } from "react-redux";
 import toast from "react-hot-toast";
+import { useSelector, useDispatch } from "react-redux";
+import { Link } from "react-router";
 import { DateTime } from "luxon";
 import {
   SyncOutlined,
@@ -15,6 +15,13 @@ import {
   DownloadOutlined,
 } from "@ant-design/icons";
 
+import {
+  selectCurrencySettings,
+  selectPrivacySettings,
+  selectIsExperimental,
+  selectBchNetwork,
+} from "@/redux/preferences";
+import { selectChaintip, selectSyncState } from "@/redux/sync";
 import {
   selectTransactionHistory,
   selectSearchQuery,
@@ -30,23 +37,16 @@ import {
   resetFilters,
   selectTransactionHistoryPagination,
 } from "@/redux/txHistory";
-import { selectChaintip, selectSyncState } from "@/redux/sync";
-import {
-  selectCurrencySettings,
-  selectPrivacySettings,
-  selectIsExperimental,
-  selectBchNetwork,
-} from "@/redux/preferences";
 import { selectActiveWalletHash } from "@/redux/wallet";
 
-import type { MergedHistoryEntity } from "@/kernel/wallet/TransactionHistoryService";
-import TransactionHistoryService from "@/kernel/wallet/TransactionHistoryService";
+import LogService from "@/kernel/app/LogService";
 import TransactionManagerService from "@/kernel/bch/TransactionManagerService";
 import {
   prepareTransactionExportData,
   exportHistoryAsCsv,
 } from "@/kernel/wallet/TransactionExportService";
-import LogService from "@/kernel/app/LogService";
+import type { MergedHistoryEntity } from "@/kernel/wallet/TransactionHistoryService";
+import TransactionHistoryService from "@/kernel/wallet/TransactionHistoryService";
 
 import ViewHeader from "@/layout/ViewHeader";
 import Satoshi from "@/atoms/Satoshi";

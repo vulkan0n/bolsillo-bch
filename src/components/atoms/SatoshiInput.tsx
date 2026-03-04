@@ -4,13 +4,13 @@ import { useSelector } from "react-redux";
 import { Keyboard } from "@capacitor/keyboard";
 import { Decimal } from "decimal.js";
 
-import { selectCurrencySettings } from "@/redux/preferences";
 import { selectDeviceInfo } from "@/redux/device";
+import { selectCurrencySettings } from "@/redux/preferences";
 
 import CurrencyService from "@/kernel/bch/CurrencyService";
 
-import { satsToBch, bchToSats, MAX_SATOSHI } from "@/util/sats";
 import { getMaxDecimals, truncateDecimals } from "@/util/currency";
+import { satsToBch, bchToSats, MAX_SATOSHI } from "@/util/sats";
 
 interface SatoshiInputProps {
   ref?: Ref<HTMLInputElement>;

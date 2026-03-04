@@ -12,17 +12,17 @@ import {
 } from "@walletconnect/jsonrpc-utils";
 import { getSdkError } from "@walletconnect/utils";
 
-import { selectActiveWallet } from "@/redux/wallet";
 import { selectBchNetwork } from "@/redux/preferences";
+import { selectActiveWallet } from "@/redux/wallet";
 
 import LogService from "@/kernel/app/LogService";
+import ElectrumService from "@/kernel/bch/ElectrumService";
 import WalletConnectService from "@/kernel/bch/WalletConnectService";
 import AddressManagerService from "@/kernel/wallet/AddressManagerService";
 import KeyManagerService from "@/kernel/wallet/KeyManagerService";
-import ElectrumService from "@/kernel/bch/ElectrumService";
 
-import { binToHex } from "@/util/hex";
 import { sha256 } from "@/util/hash";
+import { binToHex } from "@/util/hex";
 import { destringify } from "@/util/json";
 
 const Log = LogService("redux/walletConnect");

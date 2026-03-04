@@ -1,30 +1,30 @@
 import { useState, useEffect, useMemo } from "react";
-import { useParams, useNavigate } from "react-router";
 import { useSelector } from "react-redux";
+import { useParams, useNavigate } from "react-router";
 import { ArrowLeftOutlined, SyncOutlined } from "@ant-design/icons";
 
-import { selectActiveWalletHash } from "@/redux/wallet";
-import { selectSyncState } from "@/redux/sync";
 import { selectIsOfflineMode, selectBchNetwork } from "@/redux/preferences";
+import { selectSyncState } from "@/redux/sync";
+import { selectActiveWalletHash } from "@/redux/wallet";
 
 import LogService from "@/kernel/app/LogService";
-import AddressManagerService from "@/kernel/wallet/AddressManagerService";
-import ElectrumService from "@/kernel/bch/ElectrumService";
-import TransactionManagerService from "@/kernel/bch/TransactionManagerService";
-import { buildSweepTransaction } from "@/kernel/bch/TransactionBuilderService";
-import type { UtxoEntity } from "@/kernel/wallet/UtxoManagerService";
 import NotificationService from "@/kernel/app/NotificationService";
+import ElectrumService from "@/kernel/bch/ElectrumService";
+import { buildSweepTransaction } from "@/kernel/bch/TransactionBuilderService";
+import TransactionManagerService from "@/kernel/bch/TransactionManagerService";
+import AddressManagerService from "@/kernel/wallet/AddressManagerService";
+import type { UtxoEntity } from "@/kernel/wallet/UtxoManagerService";
 
 import translations from "@/views/wallet/translations";
-import Satoshi from "@/atoms/Satoshi";
-import Button from "@/atoms/Button";
 import Address from "@/atoms/Address";
+import Button from "@/atoms/Button";
 import CurrencyFlip from "@/atoms/CurrencyFlip";
+import Satoshi from "@/atoms/Satoshi";
 
 import { useCurrencyFlip } from "@/hooks/useCurrencyFlip";
 
-import { validateWifUri } from "@/util/uri";
 import { Haptic } from "@/util/haptic";
+import { validateWifUri } from "@/util/uri";
 
 import { translate } from "@/util/translations";
 

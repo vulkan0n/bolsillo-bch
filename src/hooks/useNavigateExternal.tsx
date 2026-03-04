@@ -1,6 +1,6 @@
 import { useSelector } from "react-redux";
-import { InAppBrowser } from "@capacitor/inappbrowser";
 import { Dialog } from "@capacitor/dialog";
+import { InAppBrowser } from "@capacitor/inappbrowser";
 
 import { selectDevicePlatform } from "@/redux/device";
 

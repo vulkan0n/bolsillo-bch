@@ -4,20 +4,20 @@ import { useParams, Link, useNavigate } from "react-router";
 import { DateTime } from "luxon";
 import { CloseOutlined, SendOutlined } from "@ant-design/icons";
 
-import { selectActiveWallet } from "@/redux/wallet";
 import { selectBchNetwork } from "@/redux/preferences";
+import { selectActiveWallet } from "@/redux/wallet";
 
 //import LogService from "@/kernel/app/LogService";
 import TokenManagerService from "@/kernel/wallet/TokenManagerService";
 
 import FullColumn from "@/layout/FullColumn";
-import TokenIcon from "@/atoms/TokenIcon";
-import TokenAmount from "@/atoms/TokenAmount";
 import Button from "@/atoms/Button";
+import TokenAmount from "@/atoms/TokenAmount";
+import TokenIcon from "@/atoms/TokenIcon";
 import TokenCard from "@/composite/TokenCard";
 
-import { useTokenData } from "@/hooks/useTokenData";
 import { useClipboard } from "@/hooks/useClipboard";
+import { useTokenData } from "@/hooks/useTokenData";
 
 import { truncateProse } from "@/util/string";
 import { validateBchUri } from "@/util/uri";

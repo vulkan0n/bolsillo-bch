@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
 import { Preferences } from "@capacitor/preferences";
-import Logger from "js-logger";
 import {
   createReducer,
   createSelector,
   createAsyncThunk,
 } from "@reduxjs/toolkit";
+import Logger from "js-logger";
 
 import {
   setPreference,
@@ -13,8 +13,8 @@ import {
   selectIsOfflineMode,
 } from "@/redux/preferences";
 
-import CurrencyService from "@/kernel/bch/CurrencyService";
 import LogService from "@/kernel/app/LogService";
+import CurrencyService from "@/kernel/bch/CurrencyService";
 
 import { currencyList } from "@/util/currency";
 

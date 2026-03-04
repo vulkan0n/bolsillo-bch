@@ -264,7 +264,7 @@ Imports are sorted into groups with a blank line between each group:
 // 9. Relative: ./* and ../* (excluding translations)
 ```
 
-Enforced by `python3 /tmp/sort_imports.py` (or regenerate from convention above).
+Enforced by `node scripts/sort-imports.js`.
 
 ### Patterns
 

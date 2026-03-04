@@ -10,30 +10,30 @@ import {
   Output as LibauthOutput,
   assertSuccess,
 } from "@bitauth/libauth";
-import * as clab from "@cashlab/common";
 import * as cauldron from "@cashlab/cauldron";
 import { ExchangeLab } from "@cashlab/cauldron";
+import * as clab from "@cashlab/common";
 
 import LogService from "@/kernel/app/LogService";
-import UtxoManagerService, {
-  UtxoEntity,
-} from "@/kernel/wallet/UtxoManagerService";
-import AddressManagerService, {
-  AddressEntity,
-} from "@/kernel/wallet/AddressManagerService";
-import AddressScannerService from "@/kernel/wallet/AddressScannerService";
-import KeyManagerService from "@/kernel/wallet/KeyManagerService";
-import WalletManagerService from "@/kernel/wallet/WalletManagerService";
 import CauldronService from "@/kernel/bch/CauldronService";
 import {
   TransactionStub,
   TransactionOutput,
 } from "@/kernel/bch/TransactionManagerService";
+import AddressManagerService, {
+  AddressEntity,
+} from "@/kernel/wallet/AddressManagerService";
+import AddressScannerService from "@/kernel/wallet/AddressScannerService";
+import KeyManagerService from "@/kernel/wallet/KeyManagerService";
+import UtxoManagerService, {
+  UtxoEntity,
+} from "@/kernel/wallet/UtxoManagerService";
+import WalletManagerService from "@/kernel/wallet/WalletManagerService";
 
-import { DUST_RELAY_FEE, EXCESSIVE_SATOSHIS } from "@/util/sats";
-import { binToHex, hexToBin, compareBytes } from "@/util/hex";
-import { sha256 } from "@/util/hash";
 import { addressToLockingBytecode } from "@/util/cashaddr";
+import { sha256 } from "@/util/hash";
+import { binToHex, hexToBin, compareBytes } from "@/util/hex";
+import { DUST_RELAY_FEE, EXCESSIVE_SATOSHIS } from "@/util/sats";
 import { MUSD_TOKENID } from "@/util/tokens";
 
 export interface Recipient {

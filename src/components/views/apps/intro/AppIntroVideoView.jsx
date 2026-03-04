@@ -10,9 +10,9 @@ import {
 import ExploreApp from "@/views/explore/ExploreApp";
 import FullColumn from "@/layout/FullColumn";
 import ViewHeader from "@/layout/ViewHeader";
-import { TelegramFilled } from "@/atoms/icons/TelegramFilled";
 import Card from "@/atoms/Card";
 import EmbeddedVideo from "@/atoms/EmbeddedVideo";
+import { TelegramFilled } from "@/atoms/icons/TelegramFilled";
 import SeleneLogo from "@/atoms/SeleneLogo";
 
 import { translate } from "@/util/translations";

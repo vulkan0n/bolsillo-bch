@@ -1,6 +1,6 @@
 /* eslint-disable max-classes-per-file */
-import { Filesystem, Directory, Encoding } from "@capacitor/filesystem";
 import { Capacitor } from "@capacitor/core";
+import { Filesystem, Directory, Encoding } from "@capacitor/filesystem";
 import { Preferences } from "@capacitor/preferences";
 import { SimpleEncryption } from "capacitor-plugin-simple-encryption";
 import { binToBase64, base64ToBin } from "@bitauth/libauth";

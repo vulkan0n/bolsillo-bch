@@ -16,8 +16,8 @@ import {
   selectShouldUseLegacyBip21,
 } from "@/redux/preferences";
 
-import CurrencyService from "@/kernel/bch/CurrencyService";
 import SecurityService, { AuthActions } from "@/kernel/app/SecurityService";
+import CurrencyService from "@/kernel/bch/CurrencyService";
 
 import Accordion from "@/atoms/Accordion";
 import Checkbox from "@/atoms/Checkbox";

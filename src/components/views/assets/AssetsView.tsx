@@ -11,9 +11,9 @@ import {
 import { setPreference } from "@/redux/preferences";
 import { selectActiveWallet } from "@/redux/wallet";
 
-import ViewHeader from "@/layout/ViewHeader";
 import FullColumn from "@/layout/FullColumn";
 import NavTab from "@/layout/NavTab";
+import ViewHeader from "@/layout/ViewHeader";
 
 import { translate } from "@/util/translations";
 import translations from "./translations";

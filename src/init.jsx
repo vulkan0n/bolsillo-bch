@@ -13,11 +13,11 @@ import {
 } from "@/redux";
 import { selectSecuritySettings } from "@/redux/preferences";
 
-import LogService from "@/kernel/app/LogService";
-import JanitorService from "@/kernel/app/JanitorService";
 import DatabaseService, {
   DecryptionFailedError,
 } from "@/kernel/app/DatabaseService";
+import JanitorService from "@/kernel/app/JanitorService";
+import LogService from "@/kernel/app/LogService";
 import SecurityService, { AuthActions } from "@/kernel/app/SecurityService";
 
 import ErrorBoundary from "@/layout/ErrorBoundary";

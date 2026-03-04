@@ -13,9 +13,9 @@ import { ONE_SECOND, Period } from "@/util/time";
 import { translate } from "@/util/translations";
 
 import ActiveUsersChart from "./ActiveUsersChart";
-import StatsAppBlock from "./StatsAppBlock";
 import GET_ACTIVE_BITCOINERS from "./getActiveBitcoiners";
 import translations from "./GlobalAdoptionSummaryTranslations";
+import StatsAppBlock from "./StatsAppBlock";
 
 export default function StatsGraphCard() {
   const { hash: locationHash } = useLocation();

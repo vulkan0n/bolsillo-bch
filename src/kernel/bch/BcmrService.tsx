@@ -9,18 +9,18 @@ import {
 } from "@bitauth/libauth";
 import { DateTime } from "luxon";
 
+import DatabaseService from "@/kernel/app/DatabaseService";
 import LogService from "@/kernel/app/LogService";
 import ElectrumService from "@/kernel/bch/ElectrumService";
 import TransactionManagerService, {
   TransactionEntity,
 } from "@/kernel/bch/TransactionManagerService";
-import DatabaseService from "@/kernel/app/DatabaseService";
 
+import { ValidBchNetwork } from "@/util/electrum_servers";
 import { sha256 } from "@/util/hash";
 import { hexToUtf8 } from "@/util/hex";
 import { ipfsFetch } from "@/util/ipfs";
 import { detectImageMime } from "@/util/mime";
-import { ValidBchNetwork } from "@/util/electrum_servers";
 import bcmrLocal from "@/assets/bcmr-selene-local.json";
 
 const Log = LogService("BcmrService");

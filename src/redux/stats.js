@@ -1,15 +1,15 @@
+import { gql } from "@apollo/client";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { DateTime } from "luxon";
-import { gql } from "@apollo/client";
 
 import { selectDeviceInfo } from "@/redux/device";
-import { selectGenesisHeight } from "@/redux/wallet";
 import {
   setPreference,
   selectLastCheckIn,
   selectPrivacySettings,
   selectIsOfflineMode,
 } from "@/redux/preferences";
+import { selectGenesisHeight } from "@/redux/wallet";
 
 import LogService from "@/kernel/app/LogService";
 

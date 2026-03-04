@@ -5,13 +5,13 @@ import { WarningFilled, EyeInvisibleOutlined } from "@ant-design/icons";
 
 import { walletSetKeyViewed } from "@/redux/wallet";
 
-import WalletManagerService from "@/kernel/wallet/WalletManagerService";
 import SecurityService, { AuthActions } from "@/kernel/app/SecurityService";
+import WalletManagerService from "@/kernel/wallet/WalletManagerService";
 
 import translations from "@/components/views/settings/SettingsWalletView/translations";
 
-import { useLongPress } from "@/hooks/useLongPress";
 import { useClipboard } from "@/hooks/useClipboard";
+import { useLongPress } from "@/hooks/useLongPress";
 
 import { translate } from "@/util/translations";
 

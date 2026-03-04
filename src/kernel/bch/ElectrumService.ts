@@ -17,10 +17,10 @@ import {
 } from "@/redux/sync";
 
 import LogService from "@/kernel/app/LogService";
-import { AddressEntity } from "@/kernel/wallet/AddressManagerService";
-import type { UtxoEntity } from "@/kernel/wallet/UtxoManagerService";
 import BlockchainService from "@/kernel/bch/BlockchainService";
 import type { NormalizedTransaction } from "@/kernel/bch/TransactionManagerService";
+import { AddressEntity } from "@/kernel/wallet/AddressManagerService";
+import type { UtxoEntity } from "@/kernel/wallet/UtxoManagerService";
 
 import {
   electrum_servers,

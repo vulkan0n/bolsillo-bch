@@ -7,8 +7,8 @@ import {
 } from "@reduxjs/toolkit";
 
 import { RootState } from "@/redux";
-import { selectActiveWalletHash } from "@/redux/wallet";
 import { selectCurrencySettings, selectBchNetwork } from "@/redux/preferences";
+import { selectActiveWalletHash } from "@/redux/wallet";
 
 import LogService from "@/kernel/app/LogService";
 import TransactionHistoryService from "@/kernel/wallet/TransactionHistoryService";

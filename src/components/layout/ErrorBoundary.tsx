@@ -1,20 +1,20 @@
-import { useRouteError, useNavigate } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
+import { useRouteError, useNavigate } from "react-router";
 import { Dialog } from "@capacitor/dialog";
 import { BugOutlined } from "@ant-design/icons";
 
-import { selectActiveWallet } from "@/redux/wallet";
 import { resetPreferences } from "@/redux/preferences";
+import { selectActiveWallet } from "@/redux/wallet";
 
-import LogService from "@/kernel/app/LogService";
 import ConsoleService from "@/kernel/app/ConsoleService";
-import WalletManagerService from "@/kernel/wallet/WalletManagerService";
 import JanitorService from "@/kernel/app/JanitorService";
+import LogService from "@/kernel/app/LogService";
+import WalletManagerService from "@/kernel/wallet/WalletManagerService";
 
-import SeleneLogo from "@/components/atoms/SeleneLogo";
 import Accordion from "@/components/atoms/Accordion";
-import ShowMnemonic from "@/components/atoms/ShowMnemonic";
 import Button from "@/components/atoms/Button";
+import SeleneLogo from "@/components/atoms/SeleneLogo";
+import ShowMnemonic from "@/components/atoms/ShowMnemonic";
 
 import { translate } from "@/util/translations";
 

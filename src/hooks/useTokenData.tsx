@@ -1,7 +1,7 @@
 import { useSelector } from "react-redux";
 
-import { selectActiveWalletHash } from "@/redux/wallet";
 import { selectBchNetwork } from "@/redux/preferences";
+import { selectActiveWalletHash } from "@/redux/wallet";
 
 import TokenManagerService from "@/kernel/wallet/TokenManagerService";
 

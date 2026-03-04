@@ -3,8 +3,8 @@ import { useSelector } from "react-redux";
 
 import { selectWalletAddresses } from "@/redux/wallet";
 
-import { truncate } from "@/util/string";
 import { convertCashAddress } from "@/util/cashaddr";
+import { truncate } from "@/util/string";
 
 interface AddressProps {
   address?: string;

@@ -1,6 +1,6 @@
 import { useState, useRef, useMemo } from "react";
-import { useSelector, useDispatch } from "react-redux";
 import { QRCode } from "react-qrcode-logo";
+import { useSelector, useDispatch } from "react-redux";
 import {
   FormOutlined,
   CaretRightOutlined,
@@ -9,8 +9,7 @@ import {
   CopyOutlined,
 } from "@ant-design/icons";
 
-import { selectActiveWalletHash, selectGenesisHeight } from "@/redux/wallet";
-import { selectIsSyncing } from "@/redux/sync";
+import { selectScannerIsScanning, selectKeyboardIsOpen } from "@/redux/device";
 import {
   selectBchNetwork,
   selectQrCodeSettings,
@@ -19,29 +18,30 @@ import {
   selectShouldUseLegacyBip21,
   setPreference,
 } from "@/redux/preferences";
-import { selectScannerIsScanning, selectKeyboardIsOpen } from "@/redux/device";
+import { selectIsSyncing } from "@/redux/sync";
+import { selectActiveWalletHash, selectGenesisHeight } from "@/redux/wallet";
 
 import AddressManagerService from "@/kernel/wallet/AddressManagerService";
 
 import translations from "@/views/wallet/translations";
 import FullColumn from "@/layout/FullColumn";
-import { SatoshiInput } from "@/atoms/SatoshiInput";
 import Address from "@/atoms/Address";
-import CurrencySymbol from "@/atoms/CurrencySymbol";
 import CurrencyFlip from "@/atoms/CurrencyFlip";
+import CurrencySymbol from "@/atoms/CurrencySymbol";
 import KeyWarning from "@/atoms/KeyWarning/KeyWarning";
+import { SatoshiInput } from "@/atoms/SatoshiInput";
 
 import { useClipboard } from "@/hooks/useClipboard";
 
+import { convertCashAddress } from "@/util/cashaddr";
 import { logos } from "@/util/logos";
 import { satsToBch } from "@/util/sats";
-import { convertCashAddress } from "@/util/cashaddr";
 import { toAlphanumericUri } from "@/util/uri";
 
 import { translate } from "@/util/translations";
 
-import WalletViewButtons from "./WalletViewButtons";
 import ScannerOverlay from "./ScannerOverlay";
+import WalletViewButtons from "./WalletViewButtons";
 
 export default function WalletViewHome() {
   const dispatch = useDispatch();

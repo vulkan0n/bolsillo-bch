@@ -8,34 +8,34 @@ import {
 } from "@reduxjs/toolkit";
 
 import { RootState, AppDispatch } from "@/redux";
-import {
-  walletSyncDiff,
-  selectActiveWallet,
-  walletReloadAddresses,
-} from "@/redux/wallet";
-import { txHistoryFetch } from "@/redux/txHistory";
 import { selectNetworkStatus } from "@/redux/device";
 import {
   selectIsOfflineMode,
   selectIsStablecoinMode,
   selectBchNetwork,
 } from "@/redux/preferences";
+import { txHistoryFetch } from "@/redux/txHistory";
+import {
+  walletSyncDiff,
+  selectActiveWallet,
+  walletReloadAddresses,
+} from "@/redux/wallet";
 
+import JanitorService from "@/kernel/app/JanitorService";
 import LogService from "@/kernel/app/LogService";
+import BlockchainService from "@/kernel/bch/BlockchainService";
+import CauldronService from "@/kernel/bch/CauldronService";
 import ElectrumService, {
   ElectrumVersionMismatchError,
 } from "@/kernel/bch/ElectrumService";
-import CauldronService from "@/kernel/bch/CauldronService";
-import BlockchainService from "@/kernel/bch/BlockchainService";
 import TransactionManagerService from "@/kernel/bch/TransactionManagerService";
-import WalletManagerService from "@/kernel/wallet/WalletManagerService";
 import AddressManagerService, {
   AddressEntity,
   AddressStub,
 } from "@/kernel/wallet/AddressManagerService";
 import AddressScannerService from "@/kernel/wallet/AddressScannerService";
 import UtxoManagerService from "@/kernel/wallet/UtxoManagerService";
-import JanitorService from "@/kernel/app/JanitorService";
+import WalletManagerService from "@/kernel/wallet/WalletManagerService";
 
 const Log = LogService("redux/sync");
 

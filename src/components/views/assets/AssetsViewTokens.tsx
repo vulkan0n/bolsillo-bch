@@ -5,8 +5,8 @@ import { SyncOutlined } from "@ant-design/icons";
 
 import { selectPrivacySettings, selectBchNetwork } from "@/redux/preferences";
 
-import TokenManagerService from "@/kernel/wallet/TokenManagerService";
 import DatabaseService from "@/kernel/app/DatabaseService";
+import TokenManagerService from "@/kernel/wallet/TokenManagerService";
 
 import KeyWarning from "@/atoms/KeyWarning/KeyWarning";
 import SeleneLogo from "@/atoms/SeleneLogo";

@@ -1,5 +1,5 @@
-import { NavLink } from "react-router";
 import { useSelector } from "react-redux";
+import { NavLink } from "react-router";
 import {
   WalletOutlined,
   WalletFilled,
@@ -11,12 +11,12 @@ import {
   SettingFilled,
 } from "@ant-design/icons";
 
+import { selectKeyboardIsOpen, selectScannerIsScanning } from "@/redux/device";
 import {
   selectLanguageCode,
   selectUiSettings,
   selectLastAssetsPath,
 } from "@/redux/preferences";
-import { selectKeyboardIsOpen, selectScannerIsScanning } from "@/redux/device";
 
 import { translate } from "@/util/translations";
 

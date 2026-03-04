@@ -1,11 +1,11 @@
+import LogService from "@/kernel/app/LogService";
 import ElectrumService from "@/kernel/bch/ElectrumService";
-import KeyManagerService from "@/kernel/wallet/KeyManagerService";
 import AddressManagerService, {
   AddressStub,
   AddressEntity,
 } from "@/kernel/wallet/AddressManagerService";
+import KeyManagerService from "@/kernel/wallet/KeyManagerService";
 import UtxoManagerService from "@/kernel/wallet/UtxoManagerService";
-import LogService from "@/kernel/app/LogService";
 import WalletManagerService, {
   WalletEntity,
 } from "@/kernel/wallet/WalletManagerService";

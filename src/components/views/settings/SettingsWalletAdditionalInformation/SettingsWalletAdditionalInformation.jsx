@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { useParams } from "react-router";
 import { useSelector } from "react-redux";
+import { useParams } from "react-router";
 import {
   deriveSeedFromBip39Mnemonic,
   deriveHdPrivateNodeFromSeed,
@@ -21,8 +21,8 @@ import {
 
 import { selectBchNetwork } from "@/redux/preferences";
 
-import WalletManagerService from "@/kernel/wallet/WalletManagerService";
 import SecurityService, { AuthActions } from "@/kernel/app/SecurityService";
+import WalletManagerService from "@/kernel/wallet/WalletManagerService";
 
 import ViewHeader from "@/layout/ViewHeader";
 import Accordion from "@/atoms/Accordion";

@@ -10,8 +10,8 @@ import {
   selectTorchIsEnabled,
 } from "@/redux/device";
 
-import NotificationService from "@/kernel/app/NotificationService";
 import LogService from "@/kernel/app/LogService";
+import NotificationService from "@/kernel/app/NotificationService";
 
 import translations from "@/views/wallet/translations";
 

@@ -25,12 +25,12 @@ import { selectIsDarkMode } from "@/redux/preferences";
 import { TokenEntity } from "@/kernel/wallet/TokenManagerService";
 
 import translations from "@/views/assets/translations";
-import TokenIcon from "@/atoms/TokenIcon";
-import TokenAmount from "@/atoms/TokenAmount";
-import TokenSymbol from "@/atoms/TokenSymbol";
 import Button from "@/atoms/Button";
 import Card from "@/atoms/Card";
 import LinkExternal from "@/atoms/LinkExternal";
+import TokenAmount from "@/atoms/TokenAmount";
+import TokenIcon from "@/atoms/TokenIcon";
+import TokenSymbol from "@/atoms/TokenSymbol";
 
 import { useClipboard } from "@/hooks/useClipboard";
 

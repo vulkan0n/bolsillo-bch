@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect, useCallback } from "react";
-import { useLocation } from "react-router";
 import { useSelector, useDispatch } from "react-redux";
+import { useLocation } from "react-router";
 import { Decimal } from "decimal.js";
 import {
   CloseOutlined,
@@ -11,20 +11,20 @@ import {
 
 import { selectActiveWallet } from "@/redux/wallet";
 
-import AddressManagerService from "@/kernel/wallet/AddressManagerService";
-import TokenManagerService from "@/kernel/wallet/TokenManagerService";
 import LogService from "@/kernel/app/LogService";
 import CauldronService from "@/kernel/bch/CauldronService";
+import AddressManagerService from "@/kernel/wallet/AddressManagerService";
+import TokenManagerService from "@/kernel/wallet/TokenManagerService";
 
 import WalletViewBalance from "@/views/wallet/home/WalletViewBalance";
 import FullColumn from "@/layout/FullColumn";
 import ViewHeader from "@/layout/ViewHeader";
 import Button from "@/atoms/Button";
 import Card from "@/atoms/Card";
-import TokenIcon from "@/atoms/TokenIcon";
 import NumberFormat from "@/atoms/NumberFormat";
 import Satoshi from "@/atoms/Satoshi";
 import { SatoshiInput } from "@/atoms/SatoshiInput";
+import TokenIcon from "@/atoms/TokenIcon";
 
 import { useClipboard } from "@/hooks/useClipboard";
 

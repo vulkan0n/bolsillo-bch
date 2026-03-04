@@ -25,8 +25,8 @@ import WalletManagerService, {
   WalletStub,
 } from "@/kernel/wallet/WalletManagerService";
 
-import { hexToBin, binToHex } from "@/util/hex";
 import { sha256, ripemd160 } from "@/util/hash";
+import { hexToBin, binToHex } from "@/util/hex";
 import { utxoToTokenPrefix } from "@/util/normalize";
 
 //const Log = LogService("KeyManager");

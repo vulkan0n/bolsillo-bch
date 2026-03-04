@@ -1,5 +1,5 @@
-import LogService from "@/kernel/app/LogService";
 import DatabaseService from "@/kernel/app/DatabaseService";
+import LogService from "@/kernel/app/LogService";
 import TransactionManagerService from "@/kernel/bch/TransactionManagerService";
 
 import { sha256 } from "@/util/hash";

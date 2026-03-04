@@ -1,33 +1,33 @@
 import { useState, useCallback, useEffect } from "react";
-import { useNavigate, useSearchParams } from "react-router";
 import { useSelector } from "react-redux";
+import { useNavigate, useSearchParams } from "react-router";
 import { ArrowLeftOutlined, SyncOutlined } from "@ant-design/icons";
 
-import {
-  selectActiveWalletHash,
-  selectActiveWalletBalance,
-} from "@/redux/wallet";
-import { selectSyncState } from "@/redux/sync";
 import {
   selectCurrencySettings,
   selectInstantPaySettings,
   selectIsOfflineMode,
   selectBchNetwork,
 } from "@/redux/preferences";
+import { selectSyncState } from "@/redux/sync";
+import {
+  selectActiveWalletHash,
+  selectActiveWalletBalance,
+} from "@/redux/wallet";
 
-import TransactionManagerService from "@/kernel/bch/TransactionManagerService";
-import TransactionBuilderService from "@/kernel/bch/TransactionBuilderService";
-import TransactionHistoryService from "@/kernel/wallet/TransactionHistoryService";
+import LogService from "@/kernel/app/LogService";
 import NotificationService from "@/kernel/app/NotificationService";
 import SecurityService, { AuthActions } from "@/kernel/app/SecurityService";
-import LogService from "@/kernel/app/LogService";
+import TransactionBuilderService from "@/kernel/bch/TransactionBuilderService";
+import TransactionManagerService from "@/kernel/bch/TransactionManagerService";
+import TransactionHistoryService from "@/kernel/wallet/TransactionHistoryService";
 
 import translations from "@/views/wallet/translations";
 import Button from "@/atoms/Button";
-import SlideToAction from "@/atoms/SlideToAction";
-import CountdownTimer from "@/components/atoms/CountdownTimer";
 import CurrencyFlip from "@/atoms/CurrencyFlip";
 import Satoshi from "@/atoms/Satoshi";
+import SlideToAction from "@/atoms/SlideToAction";
+import CountdownTimer from "@/components/atoms/CountdownTimer";
 
 import { useCurrencyFlip } from "@/hooks/useCurrencyFlip";
 

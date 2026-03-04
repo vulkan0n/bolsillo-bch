@@ -1,11 +1,11 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import {
   useParams,
   useSearchParams,
   useNavigate,
   useLocation,
 } from "react-router";
-import { useSelector, useDispatch } from "react-redux";
 import { Dialog } from "@capacitor/dialog";
 import {
   ArrowLeftOutlined,
@@ -14,12 +14,7 @@ import {
   DollarCircleOutlined,
 } from "@ant-design/icons";
 
-import {
-  selectActiveWallet,
-  selectActiveWalletHash,
-  selectActiveWalletBalance,
-  selectWalletAddresses,
-} from "@/redux/wallet";
+import { selectScannerIsScanning } from "@/redux/device";
 import {
   selectCurrencySettings,
   selectInstantPaySettings,
@@ -27,43 +22,48 @@ import {
   selectShouldForceTokenAddress,
   setPreference,
 } from "@/redux/preferences";
-import { selectScannerIsScanning } from "@/redux/device";
+import {
+  selectActiveWallet,
+  selectActiveWalletHash,
+  selectActiveWalletBalance,
+  selectWalletAddresses,
+} from "@/redux/wallet";
 
-import AddressManagerService from "@/kernel/wallet/AddressManagerService";
-import TransactionManagerService from "@/kernel/bch/TransactionManagerService";
+import LogService from "@/kernel/app/LogService";
+import NotificationService from "@/kernel/app/NotificationService";
+import SecurityService, { AuthActions } from "@/kernel/app/SecurityService";
+import CauldronService from "@/kernel/bch/CauldronService";
 import TransactionBuilderService, {
   Recipient,
 } from "@/kernel/bch/TransactionBuilderService";
+import TransactionManagerService from "@/kernel/bch/TransactionManagerService";
+import AddressManagerService from "@/kernel/wallet/AddressManagerService";
 import TokenManagerService from "@/kernel/wallet/TokenManagerService";
-import SecurityService, { AuthActions } from "@/kernel/app/SecurityService";
-import LogService from "@/kernel/app/LogService";
-import CauldronService from "@/kernel/bch/CauldronService";
-import NotificationService from "@/kernel/app/NotificationService";
 
 import ScannerButton from "@/views/wallet/home/ScannerButton";
 import ScannerOverlay from "@/views/wallet/home/ScannerOverlay";
 import translations from "@/views/wallet/translations";
 import FullColumn from "@/layout/FullColumn";
-import { SatoshiInput } from "@/atoms/SatoshiInput";
-import Satoshi from "@/atoms/Satoshi";
-import Button from "@/atoms/Button";
-import Editable from "@/atoms/Editable";
 import Address from "@/atoms/Address";
-import CurrencySymbol from "@/atoms/CurrencySymbol";
+import Button from "@/atoms/Button";
 import CurrencyFlip from "@/atoms/CurrencyFlip";
-import TokenIcon from "@/atoms/TokenIcon";
+import CurrencySymbol from "@/atoms/CurrencySymbol";
+import Editable from "@/atoms/Editable";
+import Satoshi from "@/atoms/Satoshi";
+import { SatoshiInput } from "@/atoms/SatoshiInput";
 import TokenAmount from "@/atoms/TokenAmount";
+import TokenIcon from "@/atoms/TokenIcon";
 import SlideToAction from "@/components/atoms/SlideToAction";
 
 import { useStablecoinBalance } from "@/hooks/useStablecoinBalance";
 
-import { hexToBin } from "@/util/hex";
+import { extractBchAddresses } from "@/util/cashaddr";
 import { Haptic } from "@/util/haptic";
+import { hexToBin } from "@/util/hex";
 import { bchToSats } from "@/util/sats";
+import { truncateProse } from "@/util/string";
 import { MUSD_TOKENID } from "@/util/tokens";
 import { validateBchUri, navigateOnValidUri, isIntStr } from "@/util/uri";
-import { extractBchAddresses } from "@/util/cashaddr";
-import { truncateProse } from "@/util/string";
 
 import { translate } from "@/util/translations";
 

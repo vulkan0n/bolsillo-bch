@@ -10,9 +10,9 @@ import {
 
 import WalletManagerService from "@/kernel/wallet/WalletManagerService";
 
+import { Haptic } from "@/util/haptic";
 import { sha256, ripemd160 } from "@/util/hash";
 import { bchToSats } from "@/util/sats";
-import { Haptic } from "@/util/haptic";
 
 /** Test if a string represents an integer (for safe BigInt conversion). */
 export const isIntStr = (s: string) => /^-?\d+$/.test(s);

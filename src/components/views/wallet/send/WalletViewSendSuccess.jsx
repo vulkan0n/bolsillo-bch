@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
-import { useLocation, useNavigate } from "react-router";
 import { useSelector, useDispatch } from "react-redux";
+import { useLocation, useNavigate } from "react-router";
 import {
   CopyOutlined,
   CheckCircleFilled,
@@ -17,9 +17,9 @@ import {
 } from "@/redux/preferences";
 import { selectActiveWalletHash } from "@/redux/wallet";
 
-import TransactionHistoryService from "@/kernel/wallet/TransactionHistoryService";
-import TokenManagerService from "@/kernel/wallet/TokenManagerService";
 import LogService from "@/kernel/app/LogService";
+import TokenManagerService from "@/kernel/wallet/TokenManagerService";
+import TransactionHistoryService from "@/kernel/wallet/TransactionHistoryService";
 
 import translations from "@/views/wallet/translations";
 import Address from "@/atoms/Address";

@@ -18,16 +18,16 @@ import {
   InfoCircleOutlined,
 } from "@ant-design/icons";
 
+import { selectDeviceInfo } from "@/redux/device";
 import {
   setPreference,
   selectSecuritySettings,
   selectEncryptionSettings,
 } from "@/redux/preferences";
 import { selectActiveWallet } from "@/redux/wallet";
-import { selectDeviceInfo } from "@/redux/device";
 
-import SecurityService, { AuthActions } from "@/kernel/app/SecurityService";
 import NotificationService from "@/kernel/app/NotificationService";
+import SecurityService, { AuthActions } from "@/kernel/app/SecurityService";
 
 import Accordion from "@/atoms/Accordion";
 import Button from "@/atoms/Button";

@@ -6,8 +6,8 @@
  * - Mock implementations for browser/native APIs
  * - Extended matchers
  */
-import { vi } from "vitest";
 import "@testing-library/jest-dom/vitest";
+import { vi } from "vitest";
 
 // Mock WalletManagerService for tests that use validateBip21Uri
 // This is needed because validateBip21Uri calls WalletManagerService().getPrefix()

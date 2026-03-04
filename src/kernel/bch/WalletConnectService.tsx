@@ -1,6 +1,6 @@
+import { WalletKit } from "@reown/walletkit";
 import { Core } from "@walletconnect/core";
 import { getSdkError } from "@walletconnect/utils";
-import { WalletKit } from "@reown/walletkit";
 
 import LogService from "@/kernel/app/LogService";
 

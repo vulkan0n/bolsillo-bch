@@ -9,13 +9,7 @@ import {
   DollarCircleOutlined,
 } from "@ant-design/icons";
 
-import {
-  selectActiveWallet,
-  selectActiveWalletHash,
-  selectActiveWalletName,
-  selectActiveWalletBalance,
-  selectKeyViewedAt,
-} from "@/redux/wallet";
+import { selectCurrentPriceString } from "@/redux/exchangeRates";
 import {
   setPreference,
   selectBchNetwork,
@@ -23,13 +17,19 @@ import {
   selectShouldHideBalance,
   selectCurrencySettings,
 } from "@/redux/preferences";
-import { selectCurrentPriceString } from "@/redux/exchangeRates";
+import {
+  selectActiveWallet,
+  selectActiveWalletHash,
+  selectActiveWalletName,
+  selectActiveWalletBalance,
+  selectKeyViewedAt,
+} from "@/redux/wallet";
 
 import SecurityService, { AuthActions } from "@/kernel/app/SecurityService";
 
-import Satoshi from "@/atoms/Satoshi";
-import NumberFormat from "@/atoms/NumberFormat";
 import CurrencyFlip from "@/atoms/CurrencyFlip";
+import NumberFormat from "@/atoms/NumberFormat";
+import Satoshi from "@/atoms/Satoshi";
 
 import { useCurrencyFlip } from "@/hooks/useCurrencyFlip";
 import { useStablecoinBalance } from "@/hooks/useStablecoinBalance";

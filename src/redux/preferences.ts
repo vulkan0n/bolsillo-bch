@@ -8,12 +8,12 @@ import {
 import { RootState } from "@/redux";
 import { selectIsSystemDarkMode } from "@/redux/device";
 
-import CurrencyService from "@/kernel/bch/CurrencyService";
-import { AuthActions } from "@/kernel/app/SecurityService";
 import { REENCRYPTION_KEY } from "@/kernel/app/DatabaseService";
+import { AuthActions } from "@/kernel/app/SecurityService";
+import CurrencyService from "@/kernel/bch/CurrencyService";
 
-import { ValidBchNetwork } from "@/util/electrum_servers";
 import { DEFAULT_CURRENCY, currencyList } from "@/util/currency";
+import { ValidBchNetwork } from "@/util/electrum_servers";
 import { VALID_DENOMINATIONS } from "@/util/sats";
 
 import { languageList } from "@/util/translations";

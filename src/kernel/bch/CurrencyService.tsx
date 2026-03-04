@@ -1,17 +1,17 @@
 import { Device } from "@capacitor/device";
 import { Decimal } from "decimal.js";
 
-import { selectExchangeRates } from "@/redux/exchangeRates";
 import { store } from "@/redux";
+import { selectExchangeRates } from "@/redux/exchangeRates";
 
 import LogService from "@/kernel/app/LogService";
 
-import { bchToSats, satsToBch } from "@/util/sats";
 import {
   DEFAULT_CURRENCY,
   currencyList,
   euroZoneCountryList,
 } from "@/util/currency";
+import { bchToSats, satsToBch } from "@/util/sats";
 
 const Log = LogService("Currency");
 
