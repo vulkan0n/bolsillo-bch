@@ -26,7 +26,7 @@ import {
   electrum_servers,
   ElectrumServer,
   ValidBchNetwork,
-} from "@/util/electrum_servers";
+} from "@/util/network";
 
 export type ElectrumUtxo = {
   height: number;

@@ -16,11 +16,11 @@ import TransactionManagerService, {
   TransactionEntity,
 } from "@/kernel/bch/TransactionManagerService";
 
-import { ValidBchNetwork } from "@/util/electrum_servers";
 import { sha256 } from "@/util/hash";
 import { hexToUtf8 } from "@/util/hex";
 import { ipfsFetch } from "@/util/ipfs";
 import { detectImageMime } from "@/util/mime";
+import { ValidBchNetwork } from "@/util/network";
 import bcmrLocal from "@/assets/bcmr-selene-local.json";
 
 const Log = LogService("BcmrService");

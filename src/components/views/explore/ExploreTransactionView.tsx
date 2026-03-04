@@ -43,8 +43,8 @@ import TokenAmount from "@/atoms/TokenAmount";
 
 import { useClipboard } from "@/hooks/useClipboard";
 
-import { getTxExplorerUrl } from "@/util/electrum_servers";
 import { hexToUtf8, binToHex } from "@/util/hex";
+import { getTxExplorerUrl } from "@/util/network";
 
 import { translate } from "@/util/translations";
 import translations from "./translations";

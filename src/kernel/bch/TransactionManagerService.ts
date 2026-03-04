@@ -16,8 +16,8 @@ import AddressManagerService from "@/kernel/wallet/AddressManagerService";
 import UtxoManagerService from "@/kernel/wallet/UtxoManagerService";
 import WalletManagerService from "@/kernel/wallet/WalletManagerService";
 
-import { ValidBchNetwork } from "@/util/electrum_servers";
 import { hexToBin, binToHex } from "@/util/hex";
+import { ValidBchNetwork } from "@/util/network";
 
 const Log = LogService("TransactionManager");
 

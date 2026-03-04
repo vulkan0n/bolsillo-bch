@@ -29,7 +29,7 @@ import WalletManagerService, {
 } from "@/kernel/wallet/WalletManagerService";
 
 import { convertCashAddress } from "@/util/cashaddr";
-import { ValidBchNetwork } from "@/util/electrum_servers";
+import { ValidBchNetwork } from "@/util/network";
 import { MUSD_TOKENID } from "@/util/tokens";
 
 const Log = LogService("redux/wallet");

@@ -8,7 +8,7 @@ import TransactionManagerService, {
 } from "@/kernel/bch/TransactionManagerService";
 import UtxoManagerService from "@/kernel/wallet/UtxoManagerService";
 
-import { ValidBchNetwork } from "@/util/electrum_servers";
+import { ValidBchNetwork } from "@/util/network";
 
 const Log = LogService("TokenManagerService");
 

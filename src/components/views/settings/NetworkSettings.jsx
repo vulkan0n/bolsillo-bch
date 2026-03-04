@@ -24,7 +24,7 @@ import {
   electrum_servers,
   ElectrumServer,
   DEFAULT_ELECTRUM_PORT,
-} from "@/util/electrum_servers";
+} from "@/util/network";
 
 import { translate } from "@/util/translations";
 import translations from "./translations";

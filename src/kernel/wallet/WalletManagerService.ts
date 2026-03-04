@@ -14,8 +14,8 @@ import {
   ValidDerivationPath,
   DEFAULT_DERIVATION_PATH,
 } from "@/util/derivation";
-import { ValidBchNetwork } from "@/util/electrum_servers";
 import { sha256 } from "@/util/hash";
+import { ValidBchNetwork, getPrefix as getNetworkPrefix } from "@/util/network";
 
 import { translate } from "@/util/translations";
 
@@ -587,6 +587,6 @@ export default function WalletManagerService(injectedDeps?: {
   }
 
   function getPrefix() {
-    return network === "mainnet" ? "bitcoincash" : "bchtest";
+    return getNetworkPrefix(network);
   }
 }
