@@ -5,7 +5,7 @@ import { generateBip39Mnemonic } from "@bitauth/libauth";
 import { store } from "@/redux";
 import { selectBchNetwork } from "@/redux/preferences";
 
-import DatabaseService from "@/kernel/app/DatabaseService";
+import DatabaseService, { SqlJsDatabase } from "@/kernel/app/DatabaseService";
 import LogService from "@/kernel/app/LogService";
 
 import translations from "@/views/wallet/translations";
@@ -51,10 +51,13 @@ export class WalletNotExistsError extends Error {
   }
 }
 
-export default function WalletManagerService() {
+export default function WalletManagerService(injectedDeps?: {
+  appDb?: SqlJsDatabase;
+  network?: ValidBchNetwork;
+}) {
   const Database = DatabaseService();
-  const APP_DB = Database.getAppDatabase();
-  const network = selectBchNetwork(store.getState());
+  const APP_DB = injectedDeps?.appDb ?? Database.getAppDatabase();
+  const network = injectedDeps?.network ?? selectBchNetwork(store.getState());
 
   return {
     listWallets,
