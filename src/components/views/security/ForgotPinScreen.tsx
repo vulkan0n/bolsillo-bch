@@ -9,14 +9,17 @@ import {
   FileTextOutlined,
   WarningOutlined,
 } from "@ant-design/icons";
-import SeleneLogo from "@/atoms/SeleneLogo";
-import Button from "@/atoms/Button";
+
 import ConsoleService from "@/kernel/app/ConsoleService";
 import DatabaseService, {
   DecryptionFailedError,
 } from "@/kernel/app/DatabaseService";
 import JanitorService from "@/kernel/app/JanitorService";
 import LogService from "@/kernel/app/LogService";
+
+import Button from "@/atoms/Button";
+import SeleneLogo from "@/atoms/SeleneLogo";
+
 import { translate } from "@/util/translations";
 import translations from "./translations";
 

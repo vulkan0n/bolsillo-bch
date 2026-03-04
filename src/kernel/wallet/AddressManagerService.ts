@@ -1,6 +1,7 @@
-import LogService from "@/kernel/app/LogService";
 import DatabaseService from "@/kernel/app/DatabaseService";
+import LogService from "@/kernel/app/LogService";
 import TransactionManagerService from "@/kernel/bch/TransactionManagerService";
+
 import { sha256 } from "@/util/hash";
 
 const Log = LogService("AddressManager");
@@ -13,7 +14,7 @@ export interface AddressStub {
 }
 
 export interface AddressEntity extends AddressStub {
-  balance: number;
+  balance: bigint;
   memo: string;
 }
 
@@ -28,6 +29,12 @@ export default function AddressManagerService(walletHash: string) {
   //Log.debug("AddressManagerService", wallet);
   const Database = DatabaseService();
   const walletDb = Database.getWalletDatabase(walletHash);
+
+  const normalizeAddress = (row): AddressEntity => ({
+    ...row,
+    hd_index: Number(row.hd_index),
+    change: Number(row.change),
+  });
 
   return {
     registerAddress,
@@ -59,17 +66,18 @@ export default function AddressManagerService(walletHash: string) {
     try {
       const result = walletDb.exec(
         `INSERT INTO addresses (
-          address, 
+          address,
           hd_index,
           change
-        ) 
+        )
         VALUES (?, ?, ?)
         RETURNING *;`,
-        [address, hd_index, change]
+        [address, hd_index, change],
+        { useBigInt: true }
       )[0];
 
       //Log.debug("registerAddress", result);
-      return result;
+      return normalizeAddress(result);
     } catch (e) {
       Log.error(e);
       throw e;
@@ -77,15 +85,17 @@ export default function AddressManagerService(walletHash: string) {
   }
 
   function getAddress(address: string): AddressEntity {
-    const result = walletDb.exec("SELECT * FROM addresses WHERE address=?", [
-      address,
-    ]);
+    const result = walletDb.exec(
+      "SELECT * FROM addresses WHERE address=?",
+      [address],
+      { useBigInt: true }
+    );
 
     if (result.length < 1) {
       throw new AddressNotExistsError(address);
     }
 
-    return result[0];
+    return normalizeAddress(result[0]);
   }
 
   function getAddressRange(
@@ -99,27 +109,30 @@ export default function AddressManagerService(walletHash: string) {
           AND hd_index <= ?
           AND change=?
         ;`,
-      [startIndex, endIndex, change]
+      [startIndex, endIndex, change],
+      { useBigInt: true }
     );
 
     //Log.debug("getAddressRange", startIndex, endIndex, result);
 
-    return result;
+    return result.map(normalizeAddress);
   }
 
   // getReceiveAddresses: get all active receive addresses for this wallet
   // in DESCENDING order so we can get latest index with limit 1
   function getReceiveAddresses(limit: number = 0): Array<AddressEntity> {
     const result = walletDb.exec(
-      `SELECT * FROM addresses 
-          WHERE change='0' 
-          ORDER BY hd_index DESC 
+      `SELECT * FROM addresses
+          WHERE change='0'
+          ORDER BY hd_index DESC
           ${limit > 0 ? `LIMIT ${limit}` : ""}
-        ;`
+        ;`,
+      null,
+      { useBigInt: true }
     );
 
     //Log.log("getReceiveAddresses", limit, result);
-    return result;
+    return result.map(normalizeAddress);
   }
 
   // getChangeAddresses: get all active change addresses for this wallet
@@ -128,15 +141,17 @@ export default function AddressManagerService(walletHash: string) {
   // instead use getUnusedAddress(limit, 1)
   function getChangeAddresses(limit: number = 0): Array<AddressEntity> {
     const result = walletDb.exec(
-      `SELECT * FROM addresses 
-          WHERE change="1" 
-          ORDER BY hd_index DESC 
+      `SELECT * FROM addresses
+          WHERE change="1"
+          ORDER BY hd_index DESC
           ${limit > 0 ? `LIMIT ${limit}` : ""}
-        ;`
+        ;`,
+      null,
+      { useBigInt: true }
     );
 
     //Log.log("getChangeAddresses", limit, result);
-    return result;
+    return result.map(normalizeAddress);
   }
 
   // getUnusedAddresess: get the lowest-index unused recv addresses for wallet
@@ -146,42 +161,47 @@ export default function AddressManagerService(walletHash: string) {
     change: number = 0
   ): Array<AddressEntity> {
     const result = walletDb.exec(
-      `SELECT * FROM addresses 
-          WHERE state IS NULL 
+      `SELECT * FROM addresses
+          WHERE state IS NULL
           AND change=?
-          ORDER BY hd_index ASC 
+          ORDER BY hd_index ASC
           ${limit > 0 ? `LIMIT ${limit}` : ""}
         ;`,
-      [change]
+      [change],
+      { useBigInt: true }
     );
 
     //Log.debug("getUnusedAddress", limit, result);
-    return result;
+    return result.map(normalizeAddress);
   }
 
   function getReusedAddresses(): Array<AddressEntity> {
     const result = walletDb.exec(
       `SELECT * FROM addresses a
         WHERE (
-          SELECT COUNT(*) FROM address_transactions t 
+          SELECT COUNT(*) FROM address_transactions t
             WHERE t.address = a.address
-        ) > 3;`
+        ) > 3;`,
+      null,
+      { useBigInt: true }
     );
 
     //Log.debug("getReusedAddresses", result);
-    return result;
+    return result.map(normalizeAddress);
   }
 
   function getWalletConnectAddress(): AddressEntity {
     const result = walletDb.exec(
-      "SELECT * FROM addresses WHERE hd_index=0 AND change=0"
+      "SELECT * FROM addresses WHERE hd_index=0 AND change=0",
+      null,
+      { useBigInt: true }
     );
 
     if (result.length < 1) {
       throw new AddressNotExistsError("walletconnect");
     }
 
-    return result[0];
+    return normalizeAddress(result[0]);
   }
 
   /*
@@ -208,22 +228,34 @@ export default function AddressManagerService(walletHash: string) {
   */
 
   function getAddressTransactions(address: string) {
-    const confirmed = walletDb.exec(
-      `SELECT * FROM address_transactions
+    const toHistoryRow = (row) => ({
+      ...row,
+      height: Number(row.height),
+      block_pos: row.block_pos != null ? Number(row.block_pos) : null,
+    });
+
+    const confirmed = walletDb
+      .exec(
+        `SELECT * FROM address_transactions
           WHERE address=?
           AND height > 0
           ORDER BY height ASC, block_pos ASC
         ;`,
-      [address]
-    );
+        [address],
+        { useBigInt: true }
+      )
+      .map(toHistoryRow);
 
-    const unconfirmed = walletDb.exec(
-      `SELECT * FROM address_transactions
+    const unconfirmed = walletDb
+      .exec(
+        `SELECT * FROM address_transactions
           WHERE address=?
           AND height <= 0
         ;`,
-      [address]
-    );
+        [address],
+        { useBigInt: true }
+      )
+      .map(toHistoryRow);
 
     //Log.log("getAddressTransactions", confirmed, unconfirmed, address);
     return { confirmed, unconfirmed };
@@ -243,7 +275,7 @@ export default function AddressManagerService(walletHash: string) {
       return null;
     }
 
-    const txToState = (tx) => `${tx.txid}:${tx.height}:`;
+    const txToState = (tx) => `${tx.tx_hash}:${tx.height}:`;
 
     const stateString = localHistory.confirmed
       .map(txToState)
@@ -274,7 +306,7 @@ export default function AddressManagerService(walletHash: string) {
   ): void {
     try {
       const existing = walletDb.exec(
-        "SELECT * FROM address_transactions WHERE txid=? AND address=?",
+        "SELECT * FROM address_transactions WHERE tx_hash=? AND address=?",
         [tx.tx_hash, address]
       );
 
@@ -285,16 +317,16 @@ export default function AddressManagerService(walletHash: string) {
       ) {
         walletDb.run(
           `INSERT INTO address_transactions (
-          txid,
+          tx_hash,
           height,
           address,
           block_pos
         ) VALUES ($tx_hash, $tx_height, $address, $block_pos)
-        ON CONFLICT DO 
-          UPDATE SET 
+        ON CONFLICT DO
+          UPDATE SET
             height=$tx_height,
             block_pos=$block_pos
-          WHERE txid=excluded.txid;
+          WHERE tx_hash=excluded.tx_hash;
         `,
           {
             $tx_hash: tx.tx_hash,
@@ -307,7 +339,7 @@ export default function AddressManagerService(walletHash: string) {
     } catch (e) {
       Log.error(e);
       const r = walletDb.exec(
-        "SELECT * FROM address_transactions WHERE txid=? AND address=?",
+        "SELECT * FROM address_transactions WHERE tx_hash=? AND address=?",
         [tx.tx_hash, address]
       );
       Log.warn(r[0]);
@@ -323,22 +355,25 @@ export default function AddressManagerService(walletHash: string) {
   function registerTransactions(transactions) {
     //Log.debug("registerTransactions", transactions);
     try {
-      if (transactions.length > 0) {
-        const placeholders = transactions.map(() => "(?, ?, ?, ?)").join(", ");
-        const params = transactions.flatMap((t) => [
+      // 4 params per row; SQLite limit is 999 variables
+      const BATCH_SIZE = 249;
+      for (let i = 0; i < transactions.length; i += BATCH_SIZE) {
+        const batch = transactions.slice(i, i + BATCH_SIZE);
+        const placeholders = batch.map(() => "(?, ?, ?, ?)").join(", ");
+        const params = batch.flatMap((t) => [
           t.tx_hash,
           t.height,
           t.address,
           t.block_pos,
         ]);
         walletDb.run(
-          `INSERT INTO address_transactions (txid, height, address, block_pos)
+          `INSERT INTO address_transactions (tx_hash, height, address, block_pos)
           VALUES ${placeholders}
           ON CONFLICT DO
             UPDATE SET
               height=excluded.height,
               block_pos=excluded.block_pos
-            WHERE txid=excluded.txid;`,
+            WHERE tx_hash=excluded.tx_hash;`,
           params
         );
       }

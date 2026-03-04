@@ -1,4 +1,5 @@
 import { useState, useRef } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import { useLocation, useNavigate } from "react-router";
 import {
   CopyOutlined,
@@ -6,7 +7,7 @@ import {
   CaretRightOutlined,
   CaretDownOutlined,
 } from "@ant-design/icons";
-import { useSelector, useDispatch } from "react-redux";
+
 import {
   selectCurrencySettings,
   setPreference,
@@ -16,21 +17,21 @@ import {
 } from "@/redux/preferences";
 import { selectActiveWalletHash } from "@/redux/wallet";
 
-import TransactionHistoryService from "@/kernel/wallet/TransactionHistoryService";
+import LogService from "@/kernel/app/LogService";
 import TokenManagerService from "@/kernel/wallet/TokenManagerService";
+import TransactionHistoryService from "@/kernel/wallet/TransactionHistoryService";
 
+import translations from "@/views/wallet/translations";
 import Address from "@/atoms/Address";
 import Satoshi from "@/atoms/Satoshi";
 import SeleneLogo from "@/atoms/SeleneLogo";
 import TokenAmount from "@/atoms/TokenAmount";
 
-import { translate } from "@/util/translations";
-import translations from "@/views/wallet/translations";
-
 import { useClipboard } from "@/hooks/useClipboard";
+
 import { binToHex } from "@/util/hex";
 
-import LogService from "@/kernel/app/LogService";
+import { translate } from "@/util/translations";
 
 const Log = LogService("WalletViewSendSuccess");
 
@@ -38,13 +39,13 @@ function WalletViewSendSuccess() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const location = useLocation();
-  const { tx, header, prefillMemo } = location.state;
+  const { tx_hash, tx, header, prefillMemo } = location.state;
   const [isFocused, setIsFocused] = useState(false);
 
   const shouldShowOutputs = useSelector(selectShouldShowOutputsCard);
   const shouldShowMemo = useSelector(selectShouldShowMemoCard);
 
-  Log.debug(tx);
+  Log.debug(tx_hash, tx);
 
   const walletHash = useSelector(selectActiveWalletHash);
   const { localCurrency } = useSelector(selectCurrencySettings);
@@ -65,7 +66,7 @@ function WalletViewSendSuccess() {
           walletHash,
           localCurrency,
           bchNetwork
-        ).setTransactionMemo(tx.txid, event.target.value),
+        ).setTransactionMemo(tx_hash, event.target.value),
       1250
     );
   };
@@ -74,7 +75,7 @@ function WalletViewSendSuccess() {
 
   const handleCopyTransactionId = async (event) => {
     event.stopPropagation();
-    handleCopyToClipboard(tx.txid, translate(translations.transactionId));
+    handleCopyToClipboard(tx_hash, translate(translations.transactionId));
   };
 
   const toggleOutputsVisibility = async (event) => {
@@ -131,7 +132,7 @@ function WalletViewSendSuccess() {
           </div>
           <div className="bg-primary-100 p-1 rounded-b-sm border border-t-0 border-primary-900">
             <span className="font-mono text-neutral-600 text-sm tracking-tighter break-all select-none">
-              {tx.txid}
+              {tx_hash}
             </span>
           </div>
         </div>

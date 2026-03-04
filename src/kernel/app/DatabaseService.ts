@@ -1,16 +1,18 @@
 /* eslint-disable max-classes-per-file */
-import { Filesystem, Directory, Encoding } from "@capacitor/filesystem";
 import { Capacitor } from "@capacitor/core";
+import { Filesystem, Directory, Encoding } from "@capacitor/filesystem";
 import { Preferences } from "@capacitor/preferences";
 import { SimpleEncryption } from "capacitor-plugin-simple-encryption";
 import { binToBase64, base64ToBin } from "@bitauth/libauth";
 import initSqlJs from "sql.js";
+
+import LogService from "@/kernel/app/LogService";
+
 import {
   run_appdb_migrations,
   run_walletdb_migrations,
 } from "@/util/migrations";
 import { resultToJson } from "@/util/sql";
-import LogService from "@/kernel/app/LogService";
 
 const Log = LogService("Database");
 
@@ -38,7 +40,7 @@ export class DecryptionFailedError extends Error {
   }
 }
 
-interface SqlJsDatabase {
+export interface SqlJsDatabase {
   exec: (...args: unknown[]) => unknown;
   export: () => Uint8Array;
   close: () => void;

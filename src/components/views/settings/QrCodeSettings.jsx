@@ -8,16 +8,16 @@ import {
   UndoOutlined,
 } from "@ant-design/icons";
 
+import Accordion from "@/atoms/Accordion";
+import Button from "@/atoms/Button";
+import Select from "@/components/atoms/Select";
+
+import { logos } from "@/util/logos";
+
 import { translate } from "@/util/translations";
 import translations from "./translations";
 
 import { SettingsContext } from "./SettingsContext";
-
-import Accordion from "@/atoms/Accordion";
-import Button from "@/atoms/Button";
-
-import { logos } from "@/util/logos";
-import Select from "@/components/atoms/Select";
 
 export default function QrCodeSettings() {
   const { handleSettingsUpdate, preferences } = useContext(SettingsContext);

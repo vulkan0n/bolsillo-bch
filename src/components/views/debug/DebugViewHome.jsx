@@ -8,20 +8,22 @@ import {
   ExportOutlined,
   FireOutlined,
 } from "@ant-design/icons";
-import { selectSecuritySettings } from "@/redux/preferences";
-import Button from "@/atoms/Button";
 
+import { selectSecuritySettings } from "@/redux/preferences";
+
+import ConsoleService from "@/kernel/app/ConsoleService";
+import JanitorService from "@/kernel/app/JanitorService";
 import LogService from "@/kernel/app/LogService";
 import SecurityService, { AuthActions } from "@/kernel/app/SecurityService";
-import JanitorService from "@/kernel/app/JanitorService";
-import ConsoleService from "@/kernel/app/ConsoleService";
 import BcmrService from "@/kernel/bch/BcmrService";
+
+import Button from "@/atoms/Button";
 
 import { translate } from "@/util/translations";
 import translations from "./translations";
 
-import DebugSettings from "./DebugSettings";
 import DebugConsole from "./DebugConsole";
+import DebugSettings from "./DebugSettings";
 
 const Log = LogService("DebugViewHome");
 

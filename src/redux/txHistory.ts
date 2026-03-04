@@ -7,8 +7,8 @@ import {
 } from "@reduxjs/toolkit";
 
 import { RootState } from "@/redux";
-import { selectActiveWalletHash } from "@/redux/wallet";
 import { selectCurrencySettings, selectBchNetwork } from "@/redux/preferences";
+import { selectActiveWalletHash } from "@/redux/wallet";
 
 import LogService from "@/kernel/app/LogService";
 import TransactionHistoryService from "@/kernel/wallet/TransactionHistoryService";
@@ -153,7 +153,11 @@ export const txHistoryReducer = createReducer(initialState, (builder) => {
       state.isLoading = true;
     })
     .addCase(txHistoryFetchMore.fulfilled, (state: RootState, action) => {
-      state.history = [...state.history, ...action.payload.transactions];
+      const existing = new Set(state.history.map((tx) => tx.tx_hash));
+      const newTxs = action.payload.transactions.filter(
+        (tx) => !existing.has(tx.tx_hash)
+      );
+      state.history = [...state.history, ...newTxs];
       state.hasMore = action.payload.hasMore;
       state.total = action.payload.total;
       state.isLoading = false;

@@ -1,16 +1,21 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import { useState } from "react";
-import { useNavigate } from "react-router";
 import { QRCode } from "react-qrcode-logo";
-import ViewHeader from "@/layout/ViewHeader";
+import { useNavigate } from "react-router";
+
 import FullColumn from "@/layout/FullColumn";
-import SeleneLogo from "@/components/atoms/SeleneLogo";
+import ViewHeader from "@/layout/ViewHeader";
 import LinkExternal from "@/components/atoms/LinkExternal";
-import { SELENE_WALLET_VERSION } from "@/util/version";
-import { translate } from "@/util/translations";
-import translations from "./CreditsViewTranslations";
-import { logos } from "@/util/logos";
+import SeleneLogo from "@/components/atoms/SeleneLogo";
+
 import { useLongPress } from "@/hooks/useLongPress";
+
+import { logos } from "@/util/logos";
+import { SELENE_WALLET_VERSION } from "@/util/version";
+
+import { translate } from "@/util/translations";
+
+import translations from "./CreditsViewTranslations";
 
 export default function CreditsView() {
   const navigate = useNavigate();

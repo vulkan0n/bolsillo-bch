@@ -5,21 +5,23 @@ import {
   SendOutlined,
   CloseOutlined,
 } from "@ant-design/icons";
+
+//import LogService from "@/kernel/app/LogService";
+import TokenManagerService from "@/kernel/wallet/TokenManagerService";
+import UtxoManagerService from "@/kernel/wallet/UtxoManagerService";
+
 import FullColumn from "@/layout/FullColumn";
 import Address from "@/atoms/Address";
-import Satoshi from "@/atoms/Satoshi";
 import Button from "@/atoms/Button";
+import Card from "@/atoms/Card";
 import CurrencyFlip from "@/atoms/CurrencyFlip";
 import KeyWarning from "@/atoms/KeyWarning/KeyWarning";
+import Satoshi from "@/atoms/Satoshi";
 import SeleneLogo from "@/atoms/SeleneLogo";
-import Card from "@/atoms/Card";
-import TokenIcon from "@/atoms/TokenIcon";
 import TokenAmount from "@/atoms/TokenAmount";
+import TokenIcon from "@/atoms/TokenIcon";
 import TokenSymbol from "@/atoms/TokenSymbol";
 
-import UtxoManagerService from "@/kernel/wallet/UtxoManagerService";
-import TokenManagerService from "@/kernel/wallet/TokenManagerService";
-//import LogService from "@/kernel/app/LogService";
 import { useCurrencyFlip } from "@/hooks/useCurrencyFlip";
 
 import { translate } from "@/util/translations";
@@ -64,7 +66,7 @@ export default function AssetsViewCoins() {
 
     if (!utxo.key) {
       /* eslint-disable-next-line no-param-reassign */
-      utxo.key = `${utxo.txid}:${utxo.tx_pos}`;
+      utxo.key = `${utxo.tx_hash}:${utxo.tx_pos}`;
     }
 
     return {
@@ -246,9 +248,9 @@ function Coin({ coin, onSelect }) {
       <div className="flex items-center">
         <MoneyCollectOutlined className="mr-1" />
         <div className="flex items-center justify-between w-full">
-          <Satoshi value={coin.amount} />
+          <Satoshi value={coin.valueSatoshis} />
           <span className="text-sm opacity-80">
-            <Satoshi value={coin.amount} flip />
+            <Satoshi value={coin.valueSatoshis} flip />
           </span>
         </div>
       </div>
@@ -265,8 +267,6 @@ function Token({ coin, tokenData, onSelect }) {
     onSelect(coin.key);
     event.stopPropagation();
   };
-
-  //const tokenColor = `#${coin.token_category.slice(0, 6)}`;
 
   return (
     <div
@@ -290,7 +290,10 @@ function Token({ coin, tokenData, onSelect }) {
 }
 
 function SelectionDisplay({ selection, onConfirm, onCancel }) {
-  const selectedAmount = selection.reduce((sum, coin) => sum + coin.amount, 0n);
+  const selectedAmount = selection.reduce(
+    (sum, coin) => sum + coin.valueSatoshis,
+    0n
+  );
 
   const handleConfirm = () => {
     onConfirm();

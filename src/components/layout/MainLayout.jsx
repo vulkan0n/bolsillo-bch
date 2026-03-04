@@ -1,17 +1,21 @@
-import { App } from "@capacitor/app";
 import { useEffect, useMemo } from "react";
 import { useSelector } from "react-redux";
 import { Outlet, useNavigate } from "react-router";
+import { App } from "@capacitor/app";
+
 import { selectScannerIsScanning, selectDevicePlatform } from "@/redux/device";
 import {
   selectShouldConstrainViewport,
   selectIsDarkMode,
 } from "@/redux/preferences";
-import { navigateOnValidUri } from "@/util/uri";
+
 import NotificationService from "@/kernel/app/NotificationService";
-import BottomNavigation from "./BottomNavigation";
 
 import useScrollToTop from "@/hooks/useScrollToTop";
+
+import { navigateOnValidUri } from "@/util/uri";
+
+import BottomNavigation from "./BottomNavigation";
 
 export default function MainLayout() {
   const navigate = useNavigate();

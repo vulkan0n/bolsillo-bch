@@ -1,12 +1,11 @@
 import { useDispatch, useSelector } from "react-redux";
-
 import { ScanOutlined, CloseOutlined } from "@ant-design/icons";
 
 import { selectScannerIsScanning, setScannerIsScanning } from "@/redux/device";
 
+import translations from "@/views/wallet/translations";
 import Button, { ValidSizes } from "@/atoms/Button";
 
-import translations from "@/views/wallet/translations";
 import { translate } from "@/util/translations";
 
 export default function ScannerButton({

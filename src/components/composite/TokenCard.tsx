@@ -18,24 +18,26 @@ import {
   SendOutlined,
   ArrowRightOutlined,
 } from "@ant-design/icons";
-
 import { TelegramFilled } from "@/icons/TelegramFilled";
+
 import { selectIsDarkMode } from "@/redux/preferences";
+
 import { TokenEntity } from "@/kernel/wallet/TokenManagerService";
 
-import TokenIcon from "@/atoms/TokenIcon";
-import TokenAmount from "@/atoms/TokenAmount";
-import TokenSymbol from "@/atoms/TokenSymbol";
+import translations from "@/views/assets/translations";
 import Button from "@/atoms/Button";
 import Card from "@/atoms/Card";
 import LinkExternal from "@/atoms/LinkExternal";
+import TokenAmount from "@/atoms/TokenAmount";
+import TokenIcon from "@/atoms/TokenIcon";
+import TokenSymbol from "@/atoms/TokenSymbol";
+
 import { useClipboard } from "@/hooks/useClipboard";
 
 import { truncateProse } from "@/util/string";
 import { validateBchUri } from "@/util/uri";
 
 import { translate } from "@/util/translations";
-import translations from "@/views/assets/translations";
 
 export default function TokenCard({
   token,

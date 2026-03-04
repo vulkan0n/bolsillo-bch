@@ -1,4 +1,5 @@
 import { DoubleRightOutlined } from "@ant-design/icons";
+
 import Button from "@/atoms/Button";
 
 interface Props {

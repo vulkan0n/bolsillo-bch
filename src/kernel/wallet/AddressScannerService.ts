@@ -1,11 +1,11 @@
+import LogService from "@/kernel/app/LogService";
 import ElectrumService from "@/kernel/bch/ElectrumService";
-import KeyManagerService from "@/kernel/wallet/KeyManagerService";
 import AddressManagerService, {
   AddressStub,
   AddressEntity,
 } from "@/kernel/wallet/AddressManagerService";
+import KeyManagerService from "@/kernel/wallet/KeyManagerService";
 import UtxoManagerService from "@/kernel/wallet/UtxoManagerService";
-import LogService from "@/kernel/app/LogService";
 import WalletManagerService, {
   WalletEntity,
 } from "@/kernel/wallet/WalletManagerService";
@@ -274,12 +274,15 @@ export default function AddressScannerService(wallet: WalletEntity) {
 
     try {
       const validUpdates = stateUpdates.filter(Array.isArray);
-      if (validUpdates.length > 0) {
-        const setClauses = validUpdates.map(() => "WHEN ? THEN ?").join(" ");
-        const whereIn = validUpdates.map(() => "?").join(", ");
+      // 3 params per row; SQLite limit is 999 variables
+      const BATCH_SIZE = 333;
+      for (let i = 0; i < validUpdates.length; i += BATCH_SIZE) {
+        const batch = validUpdates.slice(i, i + BATCH_SIZE);
+        const setClauses = batch.map(() => "WHEN ? THEN ?").join(" ");
+        const whereIn = batch.map(() => "?").join(", ");
         const params = [
-          ...validUpdates.flatMap((u) => [u[0], u[1]]),
-          ...validUpdates.map((u) => u[0]),
+          ...batch.flatMap((u) => [u[0], u[1]]),
+          ...batch.map((u) => u[0]),
         ];
         walletDb.run(
           `UPDATE addresses SET state = CASE address ${setClauses} END WHERE address IN (${whereIn});`,
@@ -398,7 +401,7 @@ export default function AddressScannerService(wallet: WalletEntity) {
 
     const localUtxos = UtxoManager.getAddressUtxos(address);
     const localUtxoList = localUtxos
-      .map((utxo) => `${utxo.txid}:${utxo.tx_pos}`)
+      .map((utxo) => `${utxo.tx_hash}:${utxo.tx_pos}`)
       .sort();
 
     const utxoDiffIn = remoteUtxoList.reduce(
@@ -421,7 +424,7 @@ export default function AddressScannerService(wallet: WalletEntity) {
       UtxoManager.discardAddressUtxos(address);
 
       remoteUtxos.forEach((utxo) => {
-        UtxoManager.registerUtxo(address, utxo);
+        UtxoManager.registerUtxo(utxo);
         /*
         // TODO: validate that the UTXOs pass merkle inclusion
         // for now we just trust that fulcrum isn't lying to us

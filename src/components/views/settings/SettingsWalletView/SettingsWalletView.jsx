@@ -1,9 +1,8 @@
 import { useState, useRef, useCallback, useEffect } from "react";
-import { useParams, useNavigate, Link } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
-import { Share } from "@capacitor/share";
+import { useParams, useNavigate, Link } from "react-router";
 import { Filesystem, Directory } from "@capacitor/filesystem";
-
+import { Share } from "@capacitor/share";
 import {
   WalletOutlined,
   LoginOutlined,
@@ -18,30 +17,28 @@ import {
   LoadingOutlined,
   ExperimentOutlined,
 } from "@ant-design/icons";
+import { WalletConnectFilled } from "@/icons/WalletConnectFilled";
 
+import { selectLocale } from "@/redux/device";
 import { selectBchNetwork, selectIsExperimental } from "@/redux/preferences";
 import {
   walletBoot,
   walletSetName,
   selectActiveWalletHash,
 } from "@/redux/wallet";
-import { selectLocale } from "@/redux/device";
 
-import ViewHeader from "@/layout/ViewHeader";
-
-import WalletManagerService from "@/kernel/wallet/WalletManagerService";
 import SecurityService, { AuthActions } from "@/kernel/app/SecurityService";
-
-import { WalletConnectFilled } from "@/icons/WalletConnectFilled";
-import KeyWarning from "@/atoms/KeyWarning/KeyWarning";
-import ShowMnemonic from "@/atoms/ShowMnemonic";
-import Accordion from "@/atoms/Accordion";
-import Satoshi from "@/atoms/Satoshi";
-import Editable from "@/atoms/Editable";
-import Button from "@/atoms/Button";
-import Card from "@/atoms/Card";
+import WalletManagerService from "@/kernel/wallet/WalletManagerService";
 
 import WalletSettings from "@/views/settings/WalletSettings";
+import ViewHeader from "@/layout/ViewHeader";
+import Accordion from "@/atoms/Accordion";
+import Button from "@/atoms/Button";
+import Card from "@/atoms/Card";
+import Editable from "@/atoms/Editable";
+import KeyWarning from "@/atoms/KeyWarning/KeyWarning";
+import Satoshi from "@/atoms/Satoshi";
+import ShowMnemonic from "@/atoms/ShowMnemonic";
 
 import { translate } from "@/util/translations";
 import translations from "./translations";

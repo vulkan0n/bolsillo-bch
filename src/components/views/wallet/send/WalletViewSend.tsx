@@ -1,11 +1,11 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import {
   useParams,
   useSearchParams,
   useNavigate,
   useLocation,
 } from "react-router";
-import { useSelector, useDispatch } from "react-redux";
 import { Dialog } from "@capacitor/dialog";
 import {
   ArrowLeftOutlined,
@@ -13,12 +13,8 @@ import {
   MoneyCollectOutlined,
   DollarCircleOutlined,
 } from "@ant-design/icons";
-import {
-  selectActiveWallet,
-  selectActiveWalletHash,
-  selectActiveWalletBalance,
-  selectWalletAddresses,
-} from "@/redux/wallet";
+
+import { selectScannerIsScanning } from "@/redux/device";
 import {
   selectCurrencySettings,
   selectInstantPaySettings,
@@ -26,46 +22,50 @@ import {
   selectShouldForceTokenAddress,
   setPreference,
 } from "@/redux/preferences";
+import {
+  selectActiveWallet,
+  selectActiveWalletHash,
+  selectActiveWalletBalance,
+  selectWalletAddresses,
+} from "@/redux/wallet";
 
-import { selectScannerIsScanning } from "@/redux/device";
-
-import AddressManagerService from "@/kernel/wallet/AddressManagerService";
-import TransactionManagerService from "@/kernel/bch/TransactionManagerService";
+import LogService from "@/kernel/app/LogService";
+import NotificationService from "@/kernel/app/NotificationService";
+import SecurityService, { AuthActions } from "@/kernel/app/SecurityService";
+import CauldronService from "@/kernel/bch/CauldronService";
 import TransactionBuilderService, {
   Recipient,
 } from "@/kernel/bch/TransactionBuilderService";
+import TransactionManagerService from "@/kernel/bch/TransactionManagerService";
+import AddressManagerService from "@/kernel/wallet/AddressManagerService";
 import TokenManagerService from "@/kernel/wallet/TokenManagerService";
-import SecurityService, { AuthActions } from "@/kernel/app/SecurityService";
-import LogService from "@/kernel/app/LogService";
-import CauldronService from "@/kernel/bch/CauldronService";
+
+import ScannerButton from "@/views/wallet/home/ScannerButton";
+import ScannerOverlay from "@/views/wallet/home/ScannerOverlay";
+import translations from "@/views/wallet/translations";
+import FullColumn from "@/layout/FullColumn";
+import Address from "@/atoms/Address";
+import Button from "@/atoms/Button";
+import CurrencyFlip from "@/atoms/CurrencyFlip";
+import CurrencySymbol from "@/atoms/CurrencySymbol";
+import Editable from "@/atoms/Editable";
+import Satoshi from "@/atoms/Satoshi";
+import { SatoshiInput } from "@/atoms/SatoshiInput";
+import TokenAmount from "@/atoms/TokenAmount";
+import TokenIcon from "@/atoms/TokenIcon";
+import SlideToAction from "@/components/atoms/SlideToAction";
 
 import { useStablecoinBalance } from "@/hooks/useStablecoinBalance";
 
-import FullColumn from "@/layout/FullColumn";
-
-import { SatoshiInput } from "@/atoms/SatoshiInput";
-import Satoshi from "@/atoms/Satoshi";
-import Button from "@/atoms/Button";
-import Editable from "@/atoms/Editable";
-import Address from "@/atoms/Address";
-import CurrencySymbol from "@/atoms/CurrencySymbol";
-import CurrencyFlip from "@/atoms/CurrencyFlip";
-import TokenIcon from "@/atoms/TokenIcon";
-import TokenAmount from "@/atoms/TokenAmount";
-import SlideToAction from "@/components/atoms/SlideToAction";
-import ScannerButton from "@/views/wallet/home/ScannerButton";
-import ScannerOverlay from "@/views/wallet/home/ScannerOverlay";
-
-import { hexToBin } from "@/util/hex";
+import { extractBchAddresses } from "@/util/cashaddr";
 import { Haptic } from "@/util/haptic";
+import { hexToBin } from "@/util/hex";
 import { bchToSats } from "@/util/sats";
+import { truncateProse } from "@/util/string";
 import { MUSD_TOKENID } from "@/util/tokens";
 import { validateBchUri, navigateOnValidUri, isIntStr } from "@/util/uri";
-import NotificationService from "@/kernel/app/NotificationService";
-import { extractBchAddresses } from "@/util/cashaddr";
-import { truncateProse } from "@/util/string";
+
 import { translate } from "@/util/translations";
-import translations from "@/views/wallet/translations";
 
 const Log = LogService("WalletViewSend");
 
@@ -77,7 +77,7 @@ export default function WalletViewSend() {
   const params = useParams();
   const [searchParams] = useSearchParams();
 
-  // ----------------
+  // --------
 
   const wallet = useSelector(selectActiveWallet);
   const { walletHash } = wallet;
@@ -87,7 +87,7 @@ export default function WalletViewSend() {
   const [isSending, setIsSending] = useState(false);
   const [message, setMessage] = useState("");
 
-  // ----------------
+  // --------
 
   const { isInstantPayEnabled, instantPayThreshold } = useSelector(
     selectInstantPaySettings
@@ -99,7 +99,7 @@ export default function WalletViewSend() {
     params.address || ""
   );
 
-  // ----------------
+  // --------
 
   const { shouldPreferLocalCurrency, isStablecoinMode } = useSelector(
     selectCurrencySettings
@@ -110,7 +110,7 @@ export default function WalletViewSend() {
   const { stablecoinBalance, totalSpendableSats } =
     useStablecoinBalance(walletHash);
 
-  // ----------------
+  // --------
 
   const myAddresses = useSelector(selectWalletAddresses);
   const isMyAddress =
@@ -120,7 +120,7 @@ export default function WalletViewSend() {
     address !== "" && !isValid
   );
 
-  // ----------------
+  // --------
 
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -160,7 +160,7 @@ export default function WalletViewSend() {
     setMessage("");
   };
 
-  // ----------------
+  // --------
 
   const selection = useMemo(() => {
     const { state: sendState } = location;
@@ -184,7 +184,10 @@ export default function WalletViewSend() {
     return stateCategories;
   }, [location, queryTokenCategory]);
 
-  const selectionAmount = selection.reduce((sum, cur) => sum + cur.amount, 0n);
+  const selectionAmount = selection.reduce(
+    (sum, cur) => sum + cur.valueSatoshis,
+    0n
+  );
 
   const hasTokens = tokenCategories.length > 0;
   const hasNft = nftSelection.length > 0;
@@ -197,7 +200,7 @@ export default function WalletViewSend() {
 
   const shouldForceTokenAddress = useSelector(selectShouldForceTokenAddress);
 
-  // ----------------
+  // --------
 
   const TokenManager = TokenManagerService(walletHash, bchNetwork);
   const tokenData = hasTokens
@@ -236,7 +239,7 @@ export default function WalletViewSend() {
     setMessage(insufficientFundsTranslation);
   };
 
-  // ----------------
+  // --------
 
   const validateSendConditions = useCallback(
     async (isInstantPay: boolean = false) => {
@@ -473,41 +476,27 @@ export default function WalletViewSend() {
     async (transaction) => {
       try {
         const TransactionManager = TransactionManagerService();
-        const { isSuccess, result } = await TransactionManager.sendTransaction(
+        const tx = await TransactionManager.sendTransaction(
           {
-            txid: transaction.tx_hash,
+            tx_hash: transaction.tx_hash,
             hex: transaction.tx_hex,
           },
-          bchNetwork
+          bchNetwork,
+          walletHash
         );
 
-        Log.debug("sendTransaction", result);
+        Log.debug("Transaction sent!", tx.tx_hash);
+        await Haptic.success();
 
-        if (isSuccess) {
-          let tx;
-          try {
-            tx = await Promise.race([
-              TransactionManager.resolveTransaction(result, bchNetwork),
-              new Promise((_, reject) => {
-                setTimeout(
-                  () => reject(new Error("mempool confirmation timeout")),
-                  10000
-                );
-              }),
-            ]);
-          } catch (e) {
-            Log.warn("resolveTransaction failed after broadcast", result, e);
-            tx = { txid: result };
-          }
-          Log.debug("Transaction sent!", tx.txid);
-          await Haptic.success();
-          await navigate("/wallet/send/success", {
-            state: { tx },
-            replace: true,
-          });
-        } else {
-          throw new Error(result?.toString());
-        }
+        // Update blockhash/height when confirmed
+        TransactionManager.resolveTransaction(tx.tx_hash, bchNetwork).catch(
+          (e) => Log.warn("resolveTransaction failed", tx.tx_hash, e)
+        );
+
+        await navigate("/wallet/send/success", {
+          state: { tx_hash: tx.tx_hash, tx },
+          replace: true,
+        });
       } catch (e) {
         const err = `${translate(translations.transactionFailed)}: ${e}`;
         Log.warn(err);
@@ -517,7 +506,7 @@ export default function WalletViewSend() {
         isInstantPayPending.current = false;
       }
     },
-    [navigate, bchNetwork]
+    [navigate, bchNetwork, walletHash]
   );
 
   const confirmSend = useCallback(
@@ -553,7 +542,7 @@ export default function WalletViewSend() {
     ]
   );
 
-  // ----------------
+  // --------
 
   useEffect(
     function handleInstantPay() {
@@ -592,7 +581,7 @@ export default function WalletViewSend() {
     ]
   );
 
-  // ----------------
+  // --------
 
   const handleSendMaxTokens = () => {
     setSatoshiInput(token_amount);
@@ -704,7 +693,7 @@ export default function WalletViewSend() {
     setSatoshiInputKey(newAmount.toString());
   };
 
-  // ----------------
+  // --------
 
   const handleFlipCurrency = () => {
     dispatch(
@@ -719,7 +708,7 @@ export default function WalletViewSend() {
     }
   };
 
-  // ----------------
+  // --------
 
   const handleAddressInput = async (input: string) => {
     const extracted = extractBchAddresses(input)[0] || input;
@@ -748,7 +737,7 @@ export default function WalletViewSend() {
     setIsAddressInvalid(false);
   };
 
-  // ----------------
+  // --------
 
   if (isScanning) {
     return <ScannerOverlay prefilledAmount={satoshiInput} />;
@@ -1000,9 +989,9 @@ function InputSelection({ inputs }) {
               <div className="flex items-center">
                 <MoneyCollectOutlined className="mr-1" />
                 <div className="flex items-center justify-between w-full">
-                  <Satoshi value={utxo.amount} />
+                  <Satoshi value={utxo.valueSatoshis} />
                   <span className="text-sm opacity-75">
-                    <Satoshi value={utxo.amount} flip />
+                    <Satoshi value={utxo.valueSatoshis} flip />
                   </span>
                 </div>
               </div>

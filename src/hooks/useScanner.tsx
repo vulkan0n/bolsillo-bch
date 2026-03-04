@@ -1,8 +1,8 @@
 import { useEffect, useCallback, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { ScanOutlined } from "@ant-design/icons";
-import QrScanner from "qr-scanner";
 import { Torch } from "@capawesome/capacitor-torch";
+import QrScanner from "qr-scanner";
+import { ScanOutlined } from "@ant-design/icons";
 
 import {
   setScannerIsScanning,
@@ -10,11 +10,12 @@ import {
   selectTorchIsEnabled,
 } from "@/redux/device";
 
-import NotificationService from "@/kernel/app/NotificationService";
 import LogService from "@/kernel/app/LogService";
+import NotificationService from "@/kernel/app/NotificationService";
+
+import translations from "@/views/wallet/translations";
 
 import { translate } from "@/util/translations";
-import translations from "@/views/wallet/translations";
 
 const Log = LogService("useScanner");
 

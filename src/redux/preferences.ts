@@ -7,13 +7,16 @@ import {
 
 import { RootState } from "@/redux";
 import { selectIsSystemDarkMode } from "@/redux/device";
-import { ValidBchNetwork } from "@/util/electrum_servers";
-import { languageList } from "@/util/translations";
-import { DEFAULT_CURRENCY, currencyList } from "@/util/currency";
-import { VALID_DENOMINATIONS } from "@/util/sats";
-import CurrencyService from "@/kernel/bch/CurrencyService";
-import { AuthActions } from "@/kernel/app/SecurityService";
+
 import { REENCRYPTION_KEY } from "@/kernel/app/DatabaseService";
+import { AuthActions } from "@/kernel/app/SecurityService";
+import CurrencyService from "@/kernel/bch/CurrencyService";
+
+import { DEFAULT_CURRENCY, currencyList } from "@/util/currency";
+import { ValidBchNetwork } from "@/util/network";
+import { VALID_DENOMINATIONS } from "@/util/sats";
+
+import { languageList } from "@/util/translations";
 
 export enum ThemeMode {
   System = "system",

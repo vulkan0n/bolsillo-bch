@@ -5,19 +5,20 @@ import {
   PlayCircleOutlined,
 } from "@ant-design/icons";
 
-import ExploreApp from "./ExploreApp";
-import SeleneLogo from "@/atoms/SeleneLogo";
-import Card from "@/atoms/Card";
 import StatsGraphCard from "@/apps/stats/StatsGraphCard";
+import Card from "@/atoms/Card";
 import Carousel from "@/atoms/Carousel";
+import SeleneLogo from "@/atoms/SeleneLogo";
+
 import useRealTime from "@/hooks/useRealTime";
 
 import { translate } from "@/util/translations";
 import translations from "./translations";
-//import BlissAppCard from "../apps/bliss/BlissAppCard";
-import BlazeAppCard from "../apps/blaze/BlazeAppCard";
 
+import BlazeAppCard from "../apps/blaze/BlazeAppCard";
 import { BLAZE_2025_END_DATE } from "../apps/blaze/constants";
+//import BlissAppCard from "../apps/bliss/BlissAppCard";
+import ExploreApp from "./ExploreApp";
 
 export default function ExploreViewHome() {
   const now = useRealTime(1000);

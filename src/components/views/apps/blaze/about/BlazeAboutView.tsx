@@ -2,9 +2,9 @@ import { Interval } from "luxon";
 import { LinkOutlined } from "@ant-design/icons";
 
 import FullColumn from "@/layout/FullColumn";
-import LinkExternal from "@/components/atoms/LinkExternal";
 import Card from "@/components/atoms/Card";
 import { EmbeddedVideoCard } from "@/components/atoms/EmbeddedVideo";
+import LinkExternal from "@/components/atoms/LinkExternal";
 
 import { translate } from "@/util/translations";
 import translations from "../translations";

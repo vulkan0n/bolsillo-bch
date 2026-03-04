@@ -1,10 +1,10 @@
+//import { BankOutlined, InfoCircleOutlined } from "@ant-design/icons";
+
+//import NavTab from "@/components/layout/NavTab";
 import FullColumn from "@/layout/FullColumn";
 import ViewHeader from "@/layout/ViewHeader";
 
-//import NavTab from "@/components/layout/NavTab";
 import BlazeAboutView from "./about/BlazeAboutView";
-
-//import { BankOutlined, InfoCircleOutlined } from "@ant-design/icons";
 
 function AppBlazeView() {
   return (

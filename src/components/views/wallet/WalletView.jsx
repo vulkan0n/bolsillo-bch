@@ -1,15 +1,18 @@
 import { useEffect } from "react";
-import { Outlet, useNavigate } from "react-router";
 import { useSelector } from "react-redux";
+import { Outlet, useNavigate } from "react-router";
 import { SyncOutlined } from "@ant-design/icons";
-import { selectActiveWalletHash, selectGenesisHeight } from "@/redux/wallet";
+
 import { selectScannerIsScanning } from "@/redux/device";
-import { selectIsConnected } from "@/redux/sync";
 import { selectBchNetwork } from "@/redux/preferences";
+import { selectIsConnected } from "@/redux/sync";
+import { selectActiveWalletHash, selectGenesisHeight } from "@/redux/wallet";
+
 import ElectrumService from "@/kernel/bch/ElectrumService";
-import WalletViewBalance from "@/views/wallet/home/WalletViewBalance";
-import SyncIndicator from "@/views/wallet/home/SyncIndicator";
+
 import BalanceHideButton from "@/views/wallet/home/BalanceHideButton";
+import SyncIndicator from "@/views/wallet/home/SyncIndicator";
+import WalletViewBalance from "@/views/wallet/home/WalletViewBalance";
 import FullColumn from "@/layout/FullColumn";
 
 export default function WalletView() {

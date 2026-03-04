@@ -114,7 +114,7 @@ Singleton pattern via function calls (always available, no initialization order 
 | CurrencyService.tsx | Exchange rate management |
 | ElectrumService.ts | Electrum WebSocket client |
 | TransactionBuilderService.ts | Build BCH transactions (UTXO selection, fees) |
-| TransactionManagerService.ts | Broadcast, resolution, parameterized SQL |
+| TransactionManagerService.ts | Broadcast, resolution, optimistic UTXO updates, parameterized SQL |
 | WalletConnectService.tsx | WalletConnect v2 |
 
 **`kernel/wallet/`** - Wallet services:
@@ -230,12 +230,41 @@ src/components/
 - **Booleans:** Must prefix with `is`, `should`, `has`, `can`, `did`, `will`
 - **Types:** StrictPascalCase (`WalletEntity`, `ButtonProps`)
 - **Private members:** Leading underscore (`_database`)
+- **Boundary conversions:** `normalize*` prefix (`normalizeAddress`, `normalizeTransaction`, `normalizeUtxo`) for converting wire/DB formats to canonical internal types
 
 ### Formatting
 
 - Prettier enforced (80 char width, 2 spaces, double quotes, semicolons)
 - ESLint: Airbnb + TypeScript + Prettier
+- Strict equality only (`===`/`!==`), never loose (`==`/`!=`)
 - No `for...of` loops (linter disallows; use `.forEach()`, `.map()`, `Promise.all()`)
+
+### Section Dividers
+
+Dash lengths are multiples of 8 and denote context shift magnitude:
+
+- `// --------` (8) — minor grouping: preference categories, adjacent state/hook declarations
+- `// ----------------` (16) — mid-level sections: sub-functions within a method, component sections (state, handlers, render)
+- `// --------------------------------` (32) — major sections: method groups in services, top-level module sections, redux slice vs thunk boundary
+
+### Import Ordering
+
+Imports are sorted into groups with a blank line between each group:
+
+```
+// 1. Externals: react → react-* → @capacitor/@capawesome → decimal.js
+//    → @bitauth/libauth → other 3rd-party → @ant-design/icons → @/icons/*
+// 2. @/redux/*
+// 3. @/kernel/*
+// 4. Components (one group): @/views/* → @/layout/* → @/atoms/* → @/composite/*
+// 5. @/hooks/*
+// 6. @/util/* and other @/* (apolloClient, etc.)
+// 7. @/routes/*
+// 8. Translations (one group): @/translations/*, @/util/translations, ./translations
+// 9. Relative: ./* and ../* (excluding translations)
+```
+
+Enforced by `node scripts/sort-imports.js`.
 
 ### Patterns
 
