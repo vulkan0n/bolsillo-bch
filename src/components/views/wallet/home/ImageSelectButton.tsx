@@ -1,15 +1,18 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import { useDispatch } from "react-redux";
-import { PictureOutlined, ScanOutlined } from "@ant-design/icons";
 import { Camera, CameraResultType, CameraSource } from "@capacitor/camera";
 import QrScanner from "qr-scanner";
-import { Haptic } from "@/util/haptic";
+import { PictureOutlined, ScanOutlined } from "@ant-design/icons";
 
 import { setScannerIsScanning } from "@/redux/device";
+
 import NotificationService from "@/kernel/app/NotificationService";
 
-import Button, { ButtonProps } from "@/atoms/Button";
 import translations from "@/views/wallet/translations";
+import Button, { ButtonProps } from "@/atoms/Button";
+
+import { Haptic } from "@/util/haptic";
+
 import { translate } from "@/util/translations";
 
 interface ImageSelectButtonProps extends ButtonProps {

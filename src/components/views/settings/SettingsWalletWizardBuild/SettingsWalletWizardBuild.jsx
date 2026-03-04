@@ -1,13 +1,15 @@
 import { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate, useParams } from "react-router";
 import { SyncOutlined, DisconnectOutlined } from "@ant-design/icons";
+
 import { selectBchNetwork } from "@/redux/preferences";
-import { walletBoot } from "@/redux/wallet";
 import { selectSyncState } from "@/redux/sync";
-import WalletManagerService from "@/kernel/wallet/WalletManagerService";
-import AddressScannerService from "@/kernel/wallet/AddressScannerService";
+import { walletBoot } from "@/redux/wallet";
+
 import ElectrumService from "@/kernel/bch/ElectrumService";
+import AddressScannerService from "@/kernel/wallet/AddressScannerService";
+import WalletManagerService from "@/kernel/wallet/WalletManagerService";
 
 import { translate } from "@/util/translations";
 import translations from "./translations";

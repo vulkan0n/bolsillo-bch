@@ -8,13 +8,17 @@ import {
   MobileOutlined,
   SunFilled,
 } from "@ant-design/icons";
-import { selectUiSettings, ThemeMode } from "@/redux/preferences";
+
 import { selectDevicePlatform } from "@/redux/device";
+import { selectUiSettings, ThemeMode } from "@/redux/preferences";
+
 import Accordion from "@/atoms/Accordion";
+import Select from "@/components/atoms/Select";
+
 import { translate } from "@/util/translations";
 import translations from "./translations";
+
 import { SettingsContext } from "./SettingsContext";
-import Select from "@/components/atoms/Select";
 
 export default function UiSettings() {
   const { handleSettingsUpdate } = useContext(SettingsContext);

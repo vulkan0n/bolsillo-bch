@@ -1,5 +1,6 @@
-import Logger from "js-logger";
 import { useState, useEffect, useRef } from "react";
+import Logger from "js-logger";
+
 import ConsoleService from "@/kernel/app/ConsoleService";
 
 export default function DebugConsole() {

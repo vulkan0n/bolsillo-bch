@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { QRCode } from "react-qrcode-logo";
 import { QrcodeOutlined } from "@ant-design/icons";
+
 import FullColumn from "@/layout/FullColumn";
 import ViewHeader from "@/layout/ViewHeader";
 import Button from "@/atoms/Button";

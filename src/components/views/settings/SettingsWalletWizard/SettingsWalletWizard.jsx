@@ -2,7 +2,9 @@ import { Outlet } from "react-router";
 import { PlusCircleOutlined } from "@ant-design/icons";
 
 import ViewHeader from "@/layout/ViewHeader";
+
 import { logos } from "@/util/logos";
+
 import { translate } from "@/util/translations";
 import translations from "./translations";
 

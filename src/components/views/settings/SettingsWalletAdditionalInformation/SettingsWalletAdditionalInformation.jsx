@@ -1,7 +1,14 @@
 import { useState } from "react";
-import { useParams } from "react-router";
 import { useSelector } from "react-redux";
-
+import { useParams } from "react-router";
+import {
+  deriveSeedFromBip39Mnemonic,
+  deriveHdPrivateNodeFromSeed,
+  encodeHdPrivateKey,
+  deriveHdPublicNode,
+  encodeHdPublicKey,
+  deriveHdPath,
+} from "@bitauth/libauth";
 import {
   EyeOutlined,
   EyeInvisibleOutlined,
@@ -12,26 +19,18 @@ import {
   KeyOutlined,
 } from "@ant-design/icons";
 
-import {
-  deriveSeedFromBip39Mnemonic,
-  deriveHdPrivateNodeFromSeed,
-  encodeHdPrivateKey,
-  deriveHdPublicNode,
-  encodeHdPublicKey,
-  deriveHdPath,
-} from "@bitauth/libauth";
+import { selectBchNetwork } from "@/redux/preferences";
 
-import WalletManagerService from "@/kernel/wallet/WalletManagerService";
 import SecurityService, { AuthActions } from "@/kernel/app/SecurityService";
+import WalletManagerService from "@/kernel/wallet/WalletManagerService";
 
 import ViewHeader from "@/layout/ViewHeader";
 import Accordion from "@/atoms/Accordion";
 
-import { selectBchNetwork } from "@/redux/preferences";
+import { DEFAULT_DERIVATION_PATH } from "@/util/derivation";
 
 import { translate } from "@/util/translations";
 import translations from "./translations";
-import { DEFAULT_DERIVATION_PATH } from "@/util/derivation";
 
 export default function SettingsWalletAdditionalInformation() {
   const { walletHash } = useParams();

@@ -1,9 +1,9 @@
 import { StrictMode } from "react";
-import { App } from "@capacitor/app";
 import { createRoot } from "react-dom/client";
 import { Provider } from "react-redux";
+import { App } from "@capacitor/app";
 import { SplashScreen } from "@capacitor/splash-screen";
-import LogService from "@/kernel/app/LogService";
+
 import {
   store,
   redux_init,
@@ -11,13 +11,16 @@ import {
   redux_resume,
   redux_pause,
 } from "@/redux";
-import JanitorService from "@/kernel/app/JanitorService";
+import { selectSecuritySettings } from "@/redux/preferences";
+
 import DatabaseService, {
   DecryptionFailedError,
 } from "@/kernel/app/DatabaseService";
+import JanitorService from "@/kernel/app/JanitorService";
+import LogService from "@/kernel/app/LogService";
 import SecurityService, { AuthActions } from "@/kernel/app/SecurityService";
+
 import ErrorBoundary from "@/layout/ErrorBoundary";
-import { selectSecuritySettings } from "@/redux/preferences";
 
 import Main from "@/Main";
 

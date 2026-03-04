@@ -3,12 +3,14 @@ import { useState, useEffect, useCallback, Ref } from "react";
 import { useSelector } from "react-redux";
 import { Keyboard } from "@capacitor/keyboard";
 import { Decimal } from "decimal.js";
-import { selectCurrencySettings } from "@/redux/preferences";
+
 import { selectDeviceInfo } from "@/redux/device";
-import { satsToBch, bchToSats, MAX_SATOSHI } from "@/util/sats";
-import { getMaxDecimals, truncateDecimals } from "@/util/currency";
+import { selectCurrencySettings } from "@/redux/preferences";
 
 import CurrencyService from "@/kernel/bch/CurrencyService";
+
+import { getMaxDecimals, truncateDecimals } from "@/util/currency";
+import { satsToBch, bchToSats, MAX_SATOSHI } from "@/util/sats";
 
 interface SatoshiInputProps {
   ref?: Ref<HTMLInputElement>;
@@ -45,7 +47,7 @@ export function SatoshiInput({
   // use deviceInfo for deviceInfo.platform
   const deviceInfo = useSelector(selectDeviceInfo);
 
-  // --------------------------------
+  // ----------------
   const satsToDisplayAmount = useCallback(
     (sats): string => {
       if (!sats || new Decimal(sats).equals(0)) {
@@ -98,7 +100,7 @@ export function SatoshiInput({
     return bchToSats(amount, denomination);
   };
 
-  // --------------------------------
+  // ----------------
   // State
 
   const [displayValue, setDisplayValue] = useState(
@@ -124,7 +126,7 @@ export function SatoshiInput({
     [didCurrencyFlip, satoshis, satsToDisplayAmount]
   );
 
-  // --------------------------------
+  // ----------------
 
   const currencySettings = {
     shouldPreferLocalCurrency,
@@ -136,7 +138,7 @@ export function SatoshiInput({
 
   const maxDecimals = getMaxDecimals(currencySettings);
 
-  // --------------------------------
+  // ----------------
   // Input Handling
 
   // fired BEFORE HTML text input is rendered, updated, or validated

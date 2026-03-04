@@ -12,8 +12,10 @@ import {
   selectIsPrerelease,
   selectBchNetwork,
 } from "@/redux/preferences";
+
 import Accordion from "@/atoms/Accordion";
 import Select from "@/atoms/Select";
+
 import { translate } from "@/util/translations";
 import translations from "./translations";
 

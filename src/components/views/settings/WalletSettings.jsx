@@ -10,11 +10,12 @@ import {
 
 import { selectActiveWalletHash } from "@/redux/preferences";
 
-import { translate } from "@/util/translations";
-import translations from "./translations";
+import WalletManagerService from "@/kernel/wallet/WalletManagerService";
 
 import Accordion from "@/atoms/Accordion";
-import WalletManagerService from "@/kernel/wallet/WalletManagerService";
+
+import { translate } from "@/util/translations";
+import translations from "./translations";
 
 export default function WalletSettings() {
   const walletList = WalletManagerService().listWallets();

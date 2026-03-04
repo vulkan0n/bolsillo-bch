@@ -1,10 +1,10 @@
 //import BlissTicketsView from "@/components/views/apps/bliss/tickets/BlissTicketsView";
 //import BlissTokenHuntView from "@/components/views/apps/bliss/tokenHunt/BlissTokenHuntView";
 import AppsView from "@/views/apps/AppsView";
-//import AppBlissView from "@/views/apps/bliss/AppBlissView";
+//import BlazeAboutView from "@/views/apps/blaze/about/BlazeAboutView";
 import AppBlazeView from "@/views/apps/blaze/AppBlazeView";
 //import BlissAboutView from "@/views/apps/bliss/about/BlissAboutView";
-//import BlazeAboutView from "@/views/apps/blaze/about/BlazeAboutView";
+//import AppBlissView from "@/views/apps/bliss/AppBlissView";
 
 export const routeApps = [
   {

@@ -6,10 +6,10 @@ import { selectTorchIsEnabled, setTorchIsEnabled } from "@/redux/device";
 
 import LogService from "@/kernel/app/LogService";
 
+import translations from "@/views/wallet/translations";
 import Button from "@/atoms/Button";
 
 import { translate } from "@/util/translations";
-import translations from "@/views/wallet/translations";
 
 const Log = LogService("TorchButton");
 

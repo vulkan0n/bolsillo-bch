@@ -5,6 +5,7 @@ import {
   ElectrumClientEvents,
 } from "@electrum-cash/network";
 import { ElectrumWebSocket } from "@electrum-cash/web-socket";
+
 import { store } from "@/redux";
 import { setPreference } from "@/redux/preferences";
 import {
@@ -16,15 +17,83 @@ import {
 } from "@/redux/sync";
 
 import LogService from "@/kernel/app/LogService";
-import { AddressEntity } from "@/kernel/wallet/AddressManagerService";
 import BlockchainService from "@/kernel/bch/BlockchainService";
+import type { NormalizedTransaction } from "@/kernel/bch/TransactionManagerService";
+import { AddressEntity } from "@/kernel/wallet/AddressManagerService";
+import type { UtxoEntity } from "@/kernel/wallet/UtxoManagerService";
 
-//import { bchToSats } from "@/util/sats";
 import {
   electrum_servers,
   ElectrumServer,
   ValidBchNetwork,
-} from "@/util/network";
+} from "@/util/electrum_servers";
+
+/** Electrum wire protocol types — reflect JSON responses from Fulcrum/Rostrum */
+
+export type ElectrumUtxo = {
+  height: number;
+  token_data?: {
+    amount: string;
+    category: string;
+    nft?: { capability: string; commitment: string };
+  };
+  tx_hash: string;
+  tx_pos: number;
+  value: number;
+};
+
+export type ElectrumHistoryEntry = {
+  tx_hash: string;
+  height: number;
+  fee?: number;
+};
+
+export type ElectrumVerboseTransaction = {
+  txid: string;
+  hash: string;
+  hex: string;
+  size: number;
+  version: number;
+  locktime: number;
+  vin: Array<{
+    txid: string;
+    vout: number;
+    scriptSig: { asm: string; hex: string };
+    sequence: number;
+    coinbase?: string;
+  }>;
+  vout: Array<{
+    value: number;
+    n: number;
+    scriptPubKey: {
+      addresses?: string[];
+      hex: string;
+      asm: string;
+      type?: string;
+    };
+  }>;
+  blockhash?: string;
+  blocktime?: number;
+  time?: number;
+  confirmations?: number;
+};
+
+export type ElectrumMerkleProof = {
+  pos: number;
+  merkle: string[];
+  block_height: number;
+};
+
+export type ElectrumUtxoInfo = {
+  confirmed_height: number;
+  scripthash: string;
+  value: number;
+};
+
+export type ElectrumBlockHeader = {
+  hex: string;
+  height: number;
+};
 
 const Log = LogService("Electrum");
 
@@ -47,6 +116,39 @@ const electrum_handles = new Map<
 
 const server_blacklist: Array<string> = [];
 const pendingTxRequests: Map<string, Promise<object>> = new Map();
+
+/** Electrum verbose tx → NormalizedTransaction */
+function normalizeTransaction(
+  tx: ElectrumVerboseTransaction & { height: number }
+): NormalizedTransaction {
+  return {
+    // Electrum verbose tx uses `txid` for the transaction hash, but our normalized name is `tx_hash`
+    tx_hash: tx.txid,
+    hex: tx.hex,
+    size: tx.size,
+    blockhash: tx.blockhash ?? null,
+    blocktime: tx.blocktime ?? null,
+    time: tx.time ?? null,
+    version: tx.version,
+    height: tx.height,
+    coinbase: tx.vin[0]?.coinbase ?? null,
+  };
+}
+
+/** Electrum wire UTXO → UtxoEntity */
+function normalizeUtxo(address: string, u: ElectrumUtxo): UtxoEntity {
+  return {
+    address,
+    tx_hash: u.tx_hash,
+    tx_pos: u.tx_pos,
+    valueSatoshis: BigInt(u.value),
+    memo: null,
+    token_category: u.token_data?.category ?? null,
+    token_amount: u.token_data ? BigInt(u.token_data.amount) : null,
+    nft_capability: u.token_data?.nft?.capability ?? null,
+    nft_commitment: u.token_data?.nft?.commitment ?? null,
+  };
+}
 
 interface WithListenersI {
   connected: () => void;
@@ -278,7 +380,7 @@ export default function ElectrumService(
     address: string,
     startHeight: number = 0,
     endHeight: number = -1
-  ) {
+  ): Promise<ElectrumHistoryEntry[]> {
     const electrum = getElectrumHandle();
     if (!electrum || electrum.status !== ConnectionStatus.CONNECTED) {
       throw new ElectrumNotConnectedError();
@@ -295,11 +397,11 @@ export default function ElectrumService(
       throw history;
     }
 
-    return history;
+    return history as ElectrumHistoryEntry[];
   }
 
   // request all current UTXOs for an address
-  async function requestUtxos(address: string) {
+  async function requestUtxos(address: string): Promise<UtxoEntity[]> {
     const electrum = getElectrumHandle();
     if (!electrum || electrum.status !== ConnectionStatus.CONNECTED) {
       throw new ElectrumNotConnectedError();
@@ -314,10 +416,13 @@ export default function ElectrumService(
       throw utxos;
     }
 
-    return utxos;
+    return (utxos as ElectrumUtxo[]).map((u) => normalizeUtxo(address, u));
   }
 
-  async function requestUtxoInfo(tx_hash: string, tx_pos: number) {
+  async function requestUtxoInfo(
+    tx_hash: string,
+    tx_pos: number
+  ): Promise<ElectrumUtxoInfo | null> {
     const electrum = getElectrumHandle();
     if (!electrum || electrum.status !== ConnectionStatus.CONNECTED) {
       throw new ElectrumNotConnectedError();
@@ -329,11 +434,13 @@ export default function ElectrumService(
       tx_pos
     );
 
-    return utxoInfo;
+    return utxoInfo as ElectrumUtxoInfo | null;
   }
 
   // request a transaction by its txid
-  async function requestTransaction(tx_hash: string, verbose: boolean = true) {
+  async function requestTransaction(
+    tx_hash: string
+  ): Promise<NormalizedTransaction> {
     const electrum = getElectrumHandle();
     if (!electrum || electrum.status !== ConnectionStatus.CONNECTED) {
       throw new ElectrumNotConnectedError();
@@ -343,11 +450,11 @@ export default function ElectrumService(
     const pending = pendingTxRequests.get(tx_hash);
     if (pending) {
       Log.warn("waiting on resolution for", tx_hash);
-      return pending;
+      return pending as Promise<NormalizedTransaction>;
     }
 
     const txRequest = electrum
-      .request("blockchain.transaction.get", tx_hash, verbose)
+      .request("blockchain.transaction.get", tx_hash, true)
       .then((tx) => {
         //Log.debug(tx);
         if (tx instanceof Error) {
@@ -356,13 +463,13 @@ export default function ElectrumService(
         // [Kludge?] I don't like accessing redux here but not certain SQL chaintip is reliable
         const chaintip = selectChaintip(store.getState());
         const height = tx.confirmations
-          ? chaintip.height - tx.confirmations
+          ? chaintip.height - tx.confirmations + 1
           : 0;
 
         //Log.debug("height", height, tx_hash, tx.confirmations);
 
         pendingTxRequests.delete(tx_hash);
-        return { ...tx, height };
+        return normalizeTransaction({ ...tx, height });
       })
       .catch((e) => {
         pendingTxRequests.delete(tx_hash);
@@ -372,11 +479,14 @@ export default function ElectrumService(
 
     pendingTxRequests.set(tx_hash, txRequest);
 
-    return txRequest;
+    return txRequest as Promise<NormalizedTransaction>;
   }
 
   // requestMerkle: request merkle proof for a transaction
-  async function requestMerkle(tx_hash, height) {
+  async function requestMerkle(
+    tx_hash: string,
+    height: number
+  ): Promise<ElectrumMerkleProof> {
     const electrum = getElectrumHandle();
     if (!electrum || electrum.status !== ConnectionStatus.CONNECTED) {
       throw new ElectrumNotConnectedError();
@@ -388,11 +498,14 @@ export default function ElectrumService(
       height
     );
 
-    return merkle;
+    return merkle as ElectrumMerkleProof;
   }
 
   // requestBlockHeader: request a block by height
-  async function requestBlockHeader(height, checkpoint_height = 0) {
+  async function requestBlockHeader(
+    height: number,
+    checkpoint_height: number = 0
+  ): Promise<string> {
     if (height < 0 || checkpoint_height < 0) {
       throw new Error("height must be non-negative integer");
     }
@@ -413,11 +526,13 @@ export default function ElectrumService(
     }
 
     Log.debug("requestBlockHeader", header, height);
-    return header;
+    return header as string;
   }
 
   // requestBlock: request a block by height or hash
-  async function requestBlock(blockhashOrHeight: string | number) {
+  async function requestBlock(
+    blockhashOrHeight: string | number
+  ): Promise<ElectrumBlockHeader & { blockhash: string }> {
     const electrum = getElectrumHandle();
     if (!electrum) {
       throw new ElectrumNotConnectedError();

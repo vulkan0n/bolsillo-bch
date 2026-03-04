@@ -1,26 +1,27 @@
+import { Toaster } from "react-hot-toast";
+import { useSelector } from "react-redux";
 import { createBrowserRouter, Navigate } from "react-router";
 import { RouterProvider } from "react-router/dom";
-import { useSelector } from "react-redux";
-
-import { Toaster } from "react-hot-toast";
 import { ApolloProvider } from "@apollo/client";
-import apolloClient from "@/apolloClient";
 
-import "./index.css";
-
-import MainLayout from "@/layout/MainLayout";
-import ErrorBoundary from "@/layout/ErrorBoundary";
-
-import { routeWallet } from "@/routes/routeWallet";
-import { routeAssets } from "@/routes/routeAssets";
-import { routeExplore } from "@/routes/routeExplore";
-import { routeSettings } from "@/routes/routeSettings";
-import { routeApps } from "@/routes/routeApps";
-import { routeDebug } from "@/routes/routeDebug";
+import { selectIsLocked } from "@/redux/device";
 
 import SecurityService from "@/kernel/app/SecurityService";
-import { selectIsLocked } from "@/redux/device";
+
 import AppLockScreen from "@/views/security/AppLockScreen";
+import ErrorBoundary from "@/layout/ErrorBoundary";
+import MainLayout from "@/layout/MainLayout";
+
+import apolloClient from "@/apolloClient";
+
+import { routeApps } from "@/routes/routeApps";
+import { routeAssets } from "@/routes/routeAssets";
+import { routeDebug } from "@/routes/routeDebug";
+import { routeExplore } from "@/routes/routeExplore";
+import { routeSettings } from "@/routes/routeSettings";
+import { routeWallet } from "@/routes/routeWallet";
+
+import "./index.css";
 
 const routes = [
   {

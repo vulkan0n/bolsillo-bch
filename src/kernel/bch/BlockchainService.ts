@@ -1,13 +1,15 @@
 /* eslint-disable max-classes-per-file */
-import { swapEndianness } from "@bitauth/libauth";
 import { Filesystem, Directory } from "@capacitor/filesystem";
-import LogService from "@/kernel/app/LogService";
+import { swapEndianness } from "@bitauth/libauth";
+
 import DatabaseService from "@/kernel/app/DatabaseService";
+import LogService from "@/kernel/app/LogService";
 import ElectrumService from "@/kernel/bch/ElectrumService";
-import { hexToBin, binToHex } from "@/util/hex";
-import { sha256 } from "@/util/hash";
+
 import { block_checkpoints } from "@/util/blockchain";
-import { ValidBchNetwork } from "@/util/network";
+import { ValidBchNetwork } from "@/util/electrum_servers";
+import { sha256 } from "@/util/hash";
+import { hexToBin, binToHex } from "@/util/hex";
 
 const Log = LogService("Blockchain");
 

@@ -11,7 +11,6 @@ interface TimeLeft {
   seconds: number;
 }
 
-// Helper function to calculate the time left
 const calculateTimeLeft = (expiryDate: string): TimeLeft => {
   const now = new Date();
   const difference = new Date(expiryDate).getTime() - now.getTime();

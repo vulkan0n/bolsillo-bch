@@ -1,5 +1,6 @@
 /* eslint-disable no-plusplus, no-bitwise */
 import { hexToBin, binToUtf8 } from "@bitauth/libauth";
+
 import { hexToRgb, rgbToHex } from "@/util/color";
 
 // initialize binToHex lookup tables
@@ -47,3 +48,13 @@ export function hexToUtf8(hex: string) {
 
 // re-export internal hexToRgb and rgbToHex
 export { hexToRgb, rgbToHex };
+
+// Lexicographic byte-by-byte comparison for Uint8Array (sort comparator)
+export function compareBytes(a: Uint8Array, b: Uint8Array): number {
+  const len = Math.min(a.length, b.length);
+  for (let idx = 0; idx < len; idx++) {
+    if (a[idx] < b[idx]) return -1;
+    if (a[idx] > b[idx]) return 1;
+  }
+  return a.length - b.length;
+}

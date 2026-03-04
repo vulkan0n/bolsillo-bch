@@ -4,12 +4,14 @@ import {
   DisconnectOutlined,
   InsuranceOutlined,
 } from "@ant-design/icons";
-import { logos } from "@/util/logos";
-import Satoshi from "@/atoms/Satoshi";
-import TokenIcon from "@/atoms/TokenIcon";
-import TokenAmount from "@/atoms/TokenAmount";
 
 import translations from "@/views/wallet/translations";
+import Satoshi from "@/atoms/Satoshi";
+import TokenAmount from "@/atoms/TokenAmount";
+import TokenIcon from "@/atoms/TokenIcon";
+
+import { logos } from "@/util/logos";
+
 import { translate } from "@/util/translations";
 
 export default function NotificationService() {

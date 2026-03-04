@@ -2,11 +2,14 @@
 import { useState } from "react";
 import { useSelector } from "react-redux";
 import { MoneyCollectOutlined } from "@ant-design/icons";
+
 import { selectActiveWalletHash } from "@/redux/wallet";
+
 import AddressManagerService, {
   AddressEntity,
 } from "@/kernel/wallet/AddressManagerService";
 import UtxoManagerService from "@/kernel/wallet/UtxoManagerService";
+
 import Address from "@/atoms/Address";
 import Satoshi from "@/atoms/Satoshi";
 
@@ -109,7 +112,7 @@ function AddressAccordion({ a, i }: AddressAccordionProps) {
       {isOpen && a.balance > 0 && (
         <div className="bg-neutral-50 rounded-sm shadow-inner text-sm mt-1 flex flex-wrap gap-1 justify-between">
           {coins.map((coin) => (
-            <Coin key={`${coin.txid}:${coin.tx_pos}`} coin={coin} />
+            <Coin key={`${coin.tx_hash}:${coin.tx_pos}`} coin={coin} />
           ))}
         </div>
       )}
@@ -140,10 +143,10 @@ function Coin({ coin }) {
         </div>
         <div>
           <div className="font-mono">
-            <Satoshi value={coin.amount} />
+            <Satoshi value={coin.valueSatoshis} />
           </div>
           <div className="text-sm opacity-80">
-            <Satoshi value={coin.amount} flip />
+            <Satoshi value={coin.valueSatoshis} flip />
           </div>
         </div>
       </div>

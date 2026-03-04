@@ -5,12 +5,14 @@ import {
   LineChartOutlined,
   QrcodeOutlined,
 } from "@ant-design/icons";
+
 import { selectIsExperimental } from "@/redux/preferences";
-import ViewHeader from "@/layout/ViewHeader";
+
 import ExploreApp from "@/views/explore/ExploreApp";
+import translations from "@/views/explore/translations";
+import ViewHeader from "@/layout/ViewHeader";
 
 import { translate } from "@/util/translations";
-import translations from "@/views/explore/translations";
 
 export default function AppsView() {
   const isExperimental = useSelector(selectIsExperimental);

@@ -14,24 +14,22 @@ import {
 } from "@/redux/preferences";
 import { syncConnect, selectIsRebuilding } from "@/redux/sync";
 
-import { ValidBchNetwork } from "@/util/network";
-
-import WalletManagerService, {
-  WalletEntity,
-} from "@/kernel/wallet/WalletManagerService";
-import ElectrumService from "@/kernel/bch/ElectrumService";
+import LogService from "@/kernel/app/LogService";
+import NotificationService from "@/kernel/app/NotificationService";
 import CauldronService from "@/kernel/bch/CauldronService";
+import ElectrumService from "@/kernel/bch/ElectrumService";
 import AddressManagerService, {
   AddressEntity,
 } from "@/kernel/wallet/AddressManagerService";
 import AddressScannerService from "@/kernel/wallet/AddressScannerService";
-import UtxoManagerService from "@/kernel/wallet/UtxoManagerService";
 import TokenManagerService from "@/kernel/wallet/TokenManagerService";
-
-import NotificationService from "@/kernel/app/NotificationService";
-import LogService from "@/kernel/app/LogService";
+import UtxoManagerService from "@/kernel/wallet/UtxoManagerService";
+import WalletManagerService, {
+  WalletEntity,
+} from "@/kernel/wallet/WalletManagerService";
 
 import { convertCashAddress } from "@/util/cashaddr";
+import { ValidBchNetwork } from "@/util/electrum_servers";
 import { MUSD_TOKENID } from "@/util/tokens";
 
 const Log = LogService("redux/wallet");
@@ -148,7 +146,7 @@ export const walletReceive = createAsyncThunk(
     while (utxoIn.length > 0) {
       const utxo = utxoIn.shift()!;
 
-      satsDiff += utxo.amount;
+      satsDiff += utxo.valueSatoshis;
 
       const category = utxo.token_category;
 
@@ -162,7 +160,7 @@ export const walletReceive = createAsyncThunk(
       }
 
       tokenDiff[category] += utxo.token_amount;
-      tokenSats += utxo.amount;
+      tokenSats += utxo.valueSatoshis;
 
       // track NFTs separately
       if (utxo.nft_capability !== null && utxo.nft_capability !== undefined) {
@@ -184,7 +182,7 @@ export const walletReceive = createAsyncThunk(
     // iterate over all spent UTXOs
     while (utxoOut.length > 0) {
       const utxo = utxoOut.shift()!;
-      satsDiff -= utxo.amount;
+      satsDiff -= utxo.valueSatoshis;
     }
 
     // receiving tokens

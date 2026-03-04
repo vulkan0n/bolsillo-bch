@@ -1,8 +1,8 @@
-import Logger from "js-logger";
-import { stringify } from "@bitauth/libauth";
-import { DateTime } from "luxon";
-import { Share } from "@capacitor/share";
 import { Filesystem, Directory, Encoding } from "@capacitor/filesystem";
+import { Share } from "@capacitor/share";
+import { stringify } from "@bitauth/libauth";
+import Logger from "js-logger";
+import { DateTime } from "luxon";
 
 let lines: Array<{ level: number; message: string }> = [];
 const timers = {};

@@ -11,18 +11,18 @@ import {
   selectCurrencySettings,
   selectIsPrerelease,
 } from "@/redux/preferences";
-
 import { syncCauldronConnect } from "@/redux/sync";
+
+import Accordion from "@/atoms/Accordion";
+import Select from "@/components/atoms/Select";
+
+import { currencyList } from "@/util/currency";
+import { VALID_DENOMINATIONS } from "@/util/sats";
 
 import { translate } from "@/util/translations";
 import translations from "./translations";
 
 import { SettingsContext } from "./SettingsContext";
-import { currencyList } from "@/util/currency";
-import { VALID_DENOMINATIONS } from "@/util/sats";
-
-import Accordion from "@/atoms/Accordion";
-import Select from "@/components/atoms/Select";
 
 export default function CurrencySettings() {
   const { handleSettingsUpdate } = useContext(SettingsContext);

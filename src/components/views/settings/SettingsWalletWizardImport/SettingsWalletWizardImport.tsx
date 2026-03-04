@@ -1,21 +1,22 @@
 import { useMemo, useRef, useState } from "react";
-
 import { useNavigate } from "react-router";
-import { ImportOutlined } from "@ant-design/icons";
 import { bip39WordListEnglish, decodeBip39Mnemonic } from "@bitauth/libauth";
-import Button from "@/components/atoms/Button";
-import Accordion from "@/components/atoms/Accordion";
-import WalletManagerService from "@/kernel/wallet/WalletManagerService";
-import AddressScannerService from "@/kernel/wallet/AddressScannerService";
+import { ImportOutlined } from "@ant-design/icons";
+
 import DatabaseService from "@/kernel/app/DatabaseService";
 import LogService from "@/kernel/app/LogService";
-import { Haptic } from "@/util/haptic";
-import { translate } from "@/util/translations";
-import translations from "./translations";
+import AddressScannerService from "@/kernel/wallet/AddressScannerService";
+import WalletManagerService from "@/kernel/wallet/WalletManagerService";
+
+import Accordion from "@/components/atoms/Accordion";
+import Button from "@/components/atoms/Button";
+import Select from "@/components/atoms/Select";
 
 import { DEFAULT_DERIVATION_PATH, DERIVATION_PATHS } from "@/util/derivation";
+import { Haptic } from "@/util/haptic";
 
-import Select from "@/components/atoms/Select";
+import { translate } from "@/util/translations";
+import translations from "./translations";
 
 const wordlist = bip39WordListEnglish;
 
