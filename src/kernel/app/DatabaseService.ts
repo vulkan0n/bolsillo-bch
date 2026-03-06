@@ -48,6 +48,7 @@ export interface SqlJsDatabase {
 }
 
 const db_handles = new Map<string, SqlJsDatabase>();
+const db_flushing = new Set<string>();
 let db_keepalive: string | null = null;
 
 // Connect to SQLite Database
@@ -299,13 +300,19 @@ export default function DatabaseService() {
   // and will be retried on the next flush cycle.
   // flushDatabase → encrypt + atomicWrite (can throw on I/O or encryption failure)
   async function flushDatabase(handle = "app") {
-    Log.time(`flushDatabase ${handle}`);
+    if (db_flushing.has(handle)) {
+      Log.debug("flushDatabase: already flushing, skipping", handle);
+      return;
+    }
+
     const db_handle = db_handles.get(handle);
     if (!db_handle) {
       Log.warn("flushDatabase: handle not open, skipping", handle);
       return;
     }
 
+    db_flushing.add(handle);
+    Log.time(`flushDatabase ${handle}`);
     try {
       // Export database as base64 string
       let data = binToBase64(db_handle.export());
@@ -318,6 +325,7 @@ export default function DatabaseService() {
     } catch (e) {
       Log.error("flushDatabase failed", handle, e);
     } finally {
+      db_flushing.delete(handle);
       Log.timeEnd(`flushDatabase ${handle}`);
     }
   }

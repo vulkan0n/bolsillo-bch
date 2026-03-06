@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback, useEffect } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { useParams, Link, useNavigate } from "react-router";
 import { DateTime } from "luxon";
@@ -94,7 +94,7 @@ export default function AssetsViewTokenDetail() {
     });
   };
 
-  const handleNftSelect = useCallback((utxo) => {
+  const handleNftSelect = (utxo) => {
     setNftSelection((prev) => {
       const selectIndex = prev.findIndex(
         (nft) => nft.tx_hash === utxo.tx_hash && nft.tx_pos === utxo.tx_pos
@@ -104,33 +104,27 @@ export default function AssetsViewTokenDetail() {
       }
       return [...prev, utxo];
     });
-  }, []);
+  };
 
-  const handleNftOpenDetail = useCallback((utxo) => {
+  const handleNftOpenDetail = (utxo) => {
     setModalNft(utxo);
-  }, []);
+  };
 
-  const handleNftTap = useCallback(
-    (utxo) => {
-      if (nftSelection.length > 0) {
-        handleNftSelect(utxo);
-      } else {
-        handleNftOpenDetail(utxo);
-      }
-    },
-    [nftSelection.length, handleNftSelect, handleNftOpenDetail]
-  );
+  const handleNftTap = (utxo) => {
+    if (nftSelection.length > 0) {
+      handleNftSelect(utxo);
+    } else {
+      handleNftOpenDetail(utxo);
+    }
+  };
 
-  const handleNftLongPress = useCallback(
-    (utxo) => {
-      if (nftSelection.length > 0) {
-        handleNftOpenDetail(utxo);
-      } else {
-        handleNftSelect(utxo);
-      }
-    },
-    [nftSelection.length, handleNftOpenDetail, handleNftSelect]
-  );
+  const handleNftLongPress = (utxo) => {
+    if (nftSelection.length > 0) {
+      handleNftOpenDetail(utxo);
+    } else {
+      handleNftSelect(utxo);
+    }
+  };
 
   const handleSelectionCancel = () => setNftSelection([]);
   const handleSelectionConfirm = handleTokenSend;

@@ -28,6 +28,8 @@ import WalletManagerService, {
   WalletEntity,
 } from "@/kernel/wallet/WalletManagerService";
 
+import { resolveNftType } from "@/util/token";
+
 import { convertCashAddress } from "@/util/cashaddr";
 import { ValidBchNetwork } from "@/util/network";
 import { MUSD_TOKENID } from "@/util/tokens";
@@ -203,6 +205,11 @@ export const walletReceive = createAsyncThunk(
         if (isNft && commitments.length > 0) {
           // spawn one notification per NFT with its own thumbnail
           commitments.forEach((commitment) => {
+            const parsed = resolveNftType(
+              tokenData.token?.nfts,
+              commitment,
+              category
+            );
             NotificationService().tokenReceived(
               {
                 ...tokenData,
@@ -210,7 +217,9 @@ export const walletReceive = createAsyncThunk(
                 nftCount: 1,
                 nft_commitment: commitment,
               },
-              true
+              true,
+              parsed.nftType?.name,
+              parsed.nftType?.description
             );
           });
           // if there's also a fungible amount, show a separate notification
