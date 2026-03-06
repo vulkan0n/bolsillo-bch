@@ -34,6 +34,7 @@ import { addressToLockingBytecode } from "@/util/cashaddr";
 import { sha256 } from "@/util/hash";
 import { binToHex, hexToBin, compareBytes } from "@/util/hex";
 import { DUST_RELAY_FEE, EXCESSIVE_SATOSHIS } from "@/util/sats";
+import { findUnmatchedNftInputs } from "@/util/token";
 import { MUSD_TOKENID } from "@/util/tokens";
 
 export interface Recipient {
@@ -44,7 +45,7 @@ export interface Recipient {
     amount: bigint;
     nft?: {
       capability: "minting" | "mutable" | "none";
-      commitment?: string;
+      commitment?: Uint8Array;
     };
   };
 }
@@ -287,11 +288,6 @@ export default function TransactionBuilderService(walletHash: string) {
         (tokenAmounts, input) => {
           const category = input.token_category;
 
-          // [!] this is probably wrong. can't we have ft amount and nft on one utxo?
-          if (input.nft_capability !== null) {
-            return tokenAmounts;
-          }
-
           const mapAmount = tokenAmounts.get(category) || 0n;
           tokenAmounts.set(category, mapAmount + input.token_amount);
 
@@ -333,14 +329,18 @@ export default function TransactionBuilderService(walletHash: string) {
         [] as Array<string>
       );
 
+      // Find NFT inputs with no matching recipient output (need change)
+      const unmatchedNftInputs = findUnmatchedNftInputs(tokenVin, vout);
+
       // get change addresses
+      const addressCount = categories.length + unmatchedNftInputs.length + 1;
       const AddressManager = AddressManagerService(wallet.walletHash);
       const AddressScanner = AddressScannerService(wallet);
 
-      AddressScanner.populateAddresses(categories.length + 1);
+      AddressScanner.populateAddresses(addressCount);
 
       const changeAddresses = AddressManager.getUnusedAddresses(
-        categories.length + 1,
+        addressCount,
         1
       );
 
@@ -366,6 +366,22 @@ export default function TransactionBuilderService(walletHash: string) {
           tokenChangeVouts.push(tokenChangeOutput);
         }
       }
+
+      // Forward unmatched NFT inputs as change
+      unmatchedNftInputs.forEach((input) => {
+        const changeAddress = changeAddresses.shift() as AddressEntity;
+        const nftChangeOutput = createTokenOutput(changeAddress.address, {
+          category: input.token_category,
+          amount: 0n,
+          nft: {
+            capability: input.nft_capability,
+            commitment: input.nft_commitment
+              ? hexToBin(input.nft_commitment)
+              : new Uint8Array(),
+          },
+        });
+        tokenChangeVouts.push(nftChangeOutput);
+      });
 
       Log.debug("tokenChangeVouts", tokenChangeVouts);
       return tokenChangeVouts;

@@ -8,7 +8,9 @@ function makeUtxo(
   tx_pos: number,
   valueSatoshis: bigint,
   tokenCategory: string | null = null,
-  tokenAmount: bigint | null = null
+  tokenAmount: bigint | null = null,
+  nftCapability: string | null = null,
+  nftCommitment: string | null = null
 ) {
   return {
     address,
@@ -18,8 +20,8 @@ function makeUtxo(
     memo: null,
     token_category: tokenCategory,
     token_amount: tokenAmount,
-    nft_capability: null,
-    nft_commitment: null,
+    nft_capability: nftCapability,
+    nft_commitment: nftCommitment,
   };
 }
 
@@ -162,6 +164,107 @@ describe("UtxoManagerService", () => {
       const total = result.reduce((s, u) => s + (u.token_amount ?? 0n), 0n);
       expect(total).toBeGreaterThanOrEqual(60n);
     });
+
+    // ── hybrid UTXO preference ────────────────────────────────────────
+    it("prefers pure-FT over hybrid when pure-FT is sufficient", () => {
+      // Pure-FT: 200, Hybrid: 500 (NFT+FT). Target 100.
+      // Should pick the pure-FT (200) not the hybrid (500).
+      const db = makeMockDb({
+        coins: [
+          makeUtxo("a", "t1", 0, 546n, "cat1", 500n, "none", "ab"),
+          makeUtxo("a", "t2", 0, 546n, "cat1", 200n),
+        ],
+      });
+      const svc = UtxoManagerService("test", db);
+      const result = svc.selectTokens("cat1", 100n);
+      expect(result).toHaveLength(1);
+      expect(result[0].nft_capability).toBeNull();
+      expect(result[0].token_amount).toBe(200n);
+    });
+
+    it("falls back to hybrid when pure-FT is insufficient", () => {
+      // Pure-FT: 50, Hybrid: 500 (NFT+FT). Target 100.
+      // Pure-FT can't cover it, so must use hybrid.
+      const db = makeMockDb({
+        coins: [
+          makeUtxo("a", "t1", 0, 546n, "cat1", 500n, "none", "ab"),
+          makeUtxo("a", "t2", 0, 546n, "cat1", 50n),
+        ],
+      });
+      const svc = UtxoManagerService("test", db);
+      const result = svc.selectTokens("cat1", 100n);
+      expect(result).toHaveLength(1);
+      expect(result[0].nft_capability).toBe("none");
+    });
+
+    it("accumulates pure-FT before touching hybrid", () => {
+      // Two pure-FT: 60 + 60 = 120. Hybrid: 300. Target 100.
+      // Should accumulate both pure-FT, not use hybrid.
+      const db = makeMockDb({
+        coins: [
+          makeUtxo("a", "t1", 0, 546n, "cat1", 300n, "mutable", null),
+          makeUtxo("a", "t2", 0, 546n, "cat1", 60n),
+          makeUtxo("a", "t3", 0, 546n, "cat1", 60n),
+        ],
+      });
+      const svc = UtxoManagerService("test", db);
+      const result = svc.selectTokens("cat1", 100n);
+      expect(result).toHaveLength(2);
+      result.forEach((u) => expect(u.nft_capability).toBeNull());
+    });
+
+    it("works when only hybrid UTXOs exist", () => {
+      const db = makeMockDb({
+        coins: [
+          makeUtxo("a", "t1", 0, 546n, "cat1", 300n, "none", "01"),
+          makeUtxo("a", "t2", 0, 546n, "cat1", 200n, "none", "02"),
+        ],
+      });
+      const svc = UtxoManagerService("test", db);
+      const result = svc.selectTokens("cat1", 100n);
+      expect(result).toHaveLength(1);
+      const total = result.reduce((s, u) => s + (u.token_amount ?? 0n), 0n);
+      expect(total).toBeGreaterThanOrEqual(100n);
+    });
+
+    // ── send max ──────────────────────────────────────────────────────
+    it("send max: selects all pure-FT UTXOs when target equals total", () => {
+      const db = makeMockDb({
+        coins: [
+          makeUtxo("a", "t1", 0, 546n, "cat1", 300n),
+          makeUtxo("a", "t2", 0, 546n, "cat1", 200n),
+          makeUtxo("a", "t3", 0, 546n, "cat1", 100n),
+        ],
+      });
+      const svc = UtxoManagerService("test", db);
+      const result = svc.selectTokens("cat1", 600n);
+      const total = result.reduce((s, u) => s + (u.token_amount ?? 0n), 0n);
+      expect(total).toBe(600n);
+    });
+
+    it("send max: includes hybrid UTXOs when needed for full amount", () => {
+      // Pure-FT: 200, Hybrid: 300+NFT. Total = 500. Target = 500.
+      const db = makeMockDb({
+        coins: [
+          makeUtxo("a", "t1", 0, 546n, "cat1", 300n, "none", "ab"),
+          makeUtxo("a", "t2", 0, 546n, "cat1", 200n),
+        ],
+      });
+      const svc = UtxoManagerService("test", db);
+      const result = svc.selectTokens("cat1", 500n);
+      const total = result.reduce((s, u) => s + (u.token_amount ?? 0n), 0n);
+      expect(total).toBe(500n);
+    });
+
+    it("send max: single UTXO threshold still works at exact amount", () => {
+      const db = makeMockDb({
+        coins: [makeUtxo("a", "t1", 0, 546n, "cat1", 100n)],
+      });
+      const svc = UtxoManagerService("test", db);
+      const result = svc.selectTokens("cat1", 100n);
+      expect(result).toHaveLength(1);
+      expect(result[0].token_amount).toBe(100n);
+    });
   });
 
   // ── selectCoins: multi-strategy UTXO selection ─────────────────────
@@ -247,6 +350,37 @@ describe("UtxoManagerService", () => {
       const result = svc.selectCoins(7000n);
       expect(result).toHaveLength(1);
       expect(result[0].address).toBe("addr1");
+    });
+
+    // ── send max ──────────────────────────────────────────────────────
+    it("send max: selects all UTXOs when target equals total balance", () => {
+      const coins = [
+        makeUtxo("a", "t1", 0, 3000n),
+        makeUtxo("a", "t2", 0, 4000n),
+        makeUtxo("a", "t3", 0, 2000n),
+      ];
+      const db = makeMockDb({
+        coins,
+        addresses: [{ address: "a", balance: 9000n }],
+        addressCoins: { a: coins },
+      });
+      const svc = UtxoManagerService("test", db);
+      const result = svc.selectCoins(9000n);
+      const total = result.reduce((s, u) => s + u.valueSatoshis, 0n);
+      expect(total).toBe(9000n);
+    });
+
+    it("send max: single UTXO wallet spends entire balance", () => {
+      const coins = [makeUtxo("a", "t1", 0, 50000n)];
+      const db = makeMockDb({
+        coins,
+        addresses: [{ address: "a", balance: 50000n }],
+        addressCoins: { a: coins },
+      });
+      const svc = UtxoManagerService("test", db);
+      const result = svc.selectCoins(50000n);
+      expect(result).toHaveLength(1);
+      expect(result[0].valueSatoshis).toBe(50000n);
     });
   });
 
@@ -422,6 +556,26 @@ describe("UtxoManagerService", () => {
         { numRuns: 200 }
       );
     });
+
+    it("send max: target === total always selects enough", () => {
+      fc.assert(
+        fc.property(utxoSetArb, (utxoData) => {
+          const utxos = utxoData.map((u) =>
+            makeUtxo(u.address, u.tx_hash, u.tx_pos, u.valueSatoshis)
+          );
+          const total = utxos.reduce((s, u) => s + u.valueSatoshis, 0n);
+          if (total === 0n) return;
+
+          const db = buildCoinMock(utxos);
+          const svc = UtxoManagerService("test", db);
+          const result = svc.selectCoins(total);
+
+          const selectedSum = result.reduce((s, u) => s + u.valueSatoshis, 0n);
+          expect(selectedSum).toBeGreaterThanOrEqual(total);
+        }),
+        { numRuns: 200 }
+      );
+    });
   });
 
   describe("property: selectTokens", () => {
@@ -519,6 +673,162 @@ describe("UtxoManagerService", () => {
             expect(result[0].token_amount).toBe(smallestEligible);
           }
         ),
+        { numRuns: 200 }
+      );
+    });
+
+    it("send max: target === total always selects enough", () => {
+      fc.assert(
+        fc.property(
+          fc.array(fc.bigInt({ min: 1n, max: 1_000_000n }), {
+            minLength: 1,
+            maxLength: 10,
+          }),
+          (tokenAmounts) => {
+            const total = tokenAmounts.reduce((s, a) => s + a, 0n);
+
+            const sorted = [...tokenAmounts].sort((a, b) =>
+              a > b ? -1 : a < b ? 1 : 0
+            );
+            const utxos = sorted.map((amt, i) =>
+              makeUtxo("a", `tx${i}`, 0, 546n, "cat1", amt)
+            );
+
+            const db = makeMockDb({ coins: utxos });
+            const svc = UtxoManagerService("test", db);
+            const result = svc.selectTokens("cat1", total);
+
+            const selectedSum = result.reduce(
+              (s, u) => s + (u.token_amount ?? 0n),
+              0n
+            );
+            expect(selectedSum).toBe(total);
+          }
+        ),
+        { numRuns: 200 }
+      );
+    });
+  });
+
+  // ── Property: hybrid UTXO selection ─────────────────────────────────
+
+  const nftCapabilityArb = fc.constantFrom("none", "mutable", "minting");
+
+  const tokenUtxoArb = fc.record({
+    amount: fc.bigInt({ min: 1n, max: 1_000_000n }),
+    isHybrid: fc.boolean(),
+    capability: nftCapabilityArb,
+  });
+
+  const tokenUtxoSetArb = fc.array(tokenUtxoArb, {
+    minLength: 1,
+    maxLength: 15,
+  });
+
+  function buildTokenPool(
+    utxoData: { amount: bigint; isHybrid: boolean; capability: string }[]
+  ) {
+    const sorted = [...utxoData].sort((a, b) =>
+      a.amount > b.amount ? -1 : a.amount < b.amount ? 1 : 0
+    );
+    return sorted.map((u, i) =>
+      makeUtxo(
+        "a",
+        `tx${i}`,
+        0,
+        546n,
+        "cat1",
+        u.amount,
+        u.isHybrid ? u.capability : null,
+        u.isHybrid ? `${i.toString(16).padStart(2, "0")}` : null
+      )
+    );
+  }
+
+  describe("property: selectTokens with hybrid UTXOs", () => {
+    it("sufficient tokens always selects enough (mixed pool)", () => {
+      fc.assert(
+        fc.property(
+          tokenUtxoSetArb,
+          fc.bigInt({ min: 1n, max: 500_000n }),
+          (utxoData, target) => {
+            const sum = utxoData.reduce((s, u) => s + u.amount, 0n);
+            if (sum < target) return;
+
+            const utxos = buildTokenPool(utxoData);
+            const db = makeMockDb({ coins: utxos });
+            const svc = UtxoManagerService("test", db);
+            const result = svc.selectTokens("cat1", target);
+
+            const selectedSum = result.reduce(
+              (s, u) => s + (u.token_amount ?? 0n),
+              0n
+            );
+            expect(selectedSum).toBeGreaterThanOrEqual(target);
+          }
+        ),
+        { numRuns: 200 }
+      );
+    });
+
+    it("never selects hybrid UTXOs when pure-FT alone suffices", () => {
+      fc.assert(
+        fc.property(
+          tokenUtxoSetArb,
+          fc.bigInt({ min: 1n, max: 500_000n }),
+          (utxoData, target) => {
+            const pureFtSum = utxoData
+              .filter((u) => !u.isHybrid)
+              .reduce((s, u) => s + u.amount, 0n);
+            if (pureFtSum < target) return;
+
+            const utxos = buildTokenPool(utxoData);
+            const db = makeMockDb({ coins: utxos });
+            const svc = UtxoManagerService("test", db);
+            const result = svc.selectTokens("cat1", target);
+
+            result.forEach((u) => {
+              expect(u.nft_capability).toBeNull();
+            });
+          }
+        ),
+        { numRuns: 200 }
+      );
+    });
+
+    it("insufficient tokens always returns empty (mixed pool)", () => {
+      fc.assert(
+        fc.property(tokenUtxoSetArb, (utxoData) => {
+          const sum = utxoData.reduce((s, u) => s + u.amount, 0n);
+          const target = sum + 1n;
+
+          const utxos = buildTokenPool(utxoData);
+          const db = makeMockDb({ coins: utxos });
+          const svc = UtxoManagerService("test", db);
+          const result = svc.selectTokens("cat1", target);
+
+          expect(result).toEqual([]);
+        }),
+        { numRuns: 100 }
+      );
+    });
+
+    it("send max: target === total always selects enough (mixed pool)", () => {
+      fc.assert(
+        fc.property(tokenUtxoSetArb, (utxoData) => {
+          const total = utxoData.reduce((s, u) => s + u.amount, 0n);
+
+          const utxos = buildTokenPool(utxoData);
+          const db = makeMockDb({ coins: utxos });
+          const svc = UtxoManagerService("test", db);
+          const result = svc.selectTokens("cat1", total);
+
+          const selectedSum = result.reduce(
+            (s, u) => s + (u.token_amount ?? 0n),
+            0n
+          );
+          expect(selectedSum).toBe(total);
+        }),
         { numRuns: 200 }
       );
     });

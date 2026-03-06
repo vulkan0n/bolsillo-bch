@@ -166,6 +166,39 @@ export default function UtxoManagerService(
       return [];
     }
 
+    // Prefer pure-FT UTXOs to avoid pulling in NFTs unnecessarily
+    const pureFt = tokenUtxos.filter((u) => u.nft_capability === null);
+    const pureFtSum = pureFt.reduce(
+      (sum, cur) => sum + (cur.token_amount ?? 0n),
+      0n
+    );
+
+    // Try to fulfill from pure-FT UTXOs first
+    if (pureFtSum >= targetAmount) {
+      const thresholdUtxo = pureFt
+        .filter((u) => (u.token_amount ?? 0n) >= targetAmount)
+        .pop();
+
+      if (thresholdUtxo) {
+        return [thresholdUtxo];
+      }
+
+      let remainingAmount = targetAmount;
+      const consumedUtxos: Array<UtxoEntity> = [];
+      const pool = [...pureFt];
+      while (remainingAmount > 0n && pool.length > 0) {
+        const utxo = pool.shift();
+        if (!utxo) break;
+        consumedUtxos.push(utxo);
+        remainingAmount -= utxo.token_amount ?? 0n;
+      }
+
+      if (remainingAmount <= 0n) {
+        return consumedUtxos;
+      }
+    }
+
+    // Fall back to all UTXOs (including hybrid FT+NFT)
     const thresholdUtxo = tokenUtxos
       .filter((u) => (u.token_amount ?? 0n) >= targetAmount)
       .pop();
@@ -175,18 +208,13 @@ export default function UtxoManagerService(
     }
 
     let remainingAmount = targetAmount;
-    const consumedUtxos = [];
-    while (remainingAmount > 0) {
+    const consumedUtxos: Array<UtxoEntity> = [];
+    while (remainingAmount > 0n) {
       const utxo = tokenUtxos.shift();
 
-      // insufficient tokens
       if (!utxo) {
         return [];
       }
-
-      /*if (!utxo.token) {
-        Log.warn(utxo);
-      }*/
 
       consumedUtxos.push(utxo);
       remainingAmount -= utxo.token_amount ?? 0n;

@@ -9,6 +9,7 @@
  */
 
 import { describe, it, expect } from "vitest";
+import fc from "fast-check";
 import {
   isIntStr,
   validateBip21Uri,
@@ -510,6 +511,56 @@ describe("uri.ts", () => {
         const encoded = toAlphanumericUri(original);
         const decoded = fromAlphanumericUri(encoded);
         expect(decoded).toBe(original);
+      });
+    });
+
+    // ── Property-based roundtrip ────────────────────────────────────
+    describe("property: alphanumeric roundtrip", () => {
+      const safeValueArb = fc.stringMatching(/^[a-z0-9]{1,20}$/);
+
+      it("roundtrips address-only URIs", () => {
+        fc.assert(
+          fc.property(safeValueArb, (addr) => {
+            const uri = `bitcoincash:${addr}`;
+            const decoded = fromAlphanumericUri(toAlphanumericUri(uri));
+            expect(decoded).toBe(uri);
+          }),
+          { numRuns: 200 }
+        );
+      });
+
+      it("roundtrips URIs with all parameter combinations", () => {
+        fc.assert(
+          fc.property(
+            safeValueArb,
+            fc.bigInt({ min: 0n, max: 2100000000000000n }),
+            safeValueArb,
+            fc.option(safeValueArb),
+            (addr, sats, msg, cat) => {
+              let uri = `bitcoincash:${addr}?s=${sats}&m=${msg}`;
+              if (cat !== null) {
+                uri += `&c=${cat}`;
+              }
+              const decoded = fromAlphanumericUri(toAlphanumericUri(uri));
+              expect(decoded).toBe(uri);
+            }
+          ),
+          { numRuns: 200 }
+        );
+      });
+
+      it("send-max: full balance amount survives roundtrip", () => {
+        fc.assert(
+          fc.property(
+            fc.bigInt({ min: 546n, max: 2100000000000000n }),
+            (sats) => {
+              const uri = `bitcoincash:qtest?s=${sats}`;
+              const decoded = fromAlphanumericUri(toAlphanumericUri(uri));
+              expect(decoded).toBe(uri);
+            }
+          ),
+          { numRuns: 300 }
+        );
       });
     });
   });

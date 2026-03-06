@@ -249,6 +249,42 @@ const translations = {
     zh: "硬币",
     zh_TW: "硬幣"
   },
+  nftCapability: {
+    en: "Capability",
+  },
+  nftCapabilityNone: {
+    en: "Immutable",
+  },
+  nftCapabilityMutable: {
+    en: "Mutable",
+  },
+  nftCapabilityMinting: {
+    en: "Minting",
+  },
+  nftCommitment: {
+    en: "Commitment",
+  },
+  nftCategory: {
+    en: "Category",
+  },
+  showAttributes: {
+    en: "Show Attributes",
+  },
+  hideAttributes: {
+    en: "Hide Attributes",
+  },
+  nftsSelected: {
+    en: "NFTs selected",
+  },
+  nftFields: {
+    en: "Fields",
+  },
+  nftDescription: {
+    en: "Description",
+  },
+  copiedCommitment: {
+    en: "Copied Commitment",
+  },
   copiedTokenId: {
     ar: "تم نسخ معرف الرمز المميز",
     bn: "টোকেন আইডি কপি করা হয়েছে",

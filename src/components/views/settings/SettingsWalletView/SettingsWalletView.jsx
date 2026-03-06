@@ -201,7 +201,7 @@ export default function SettingsWalletView() {
         title={translate(translations.walletSettings)}
       />
       <div className="p-1" key={walletHash}>
-        <Card>
+        <Card className="p-2">
           <div className="text-2xl flex justify-center items-center py-2 text-neutral-700 dark:text-neutral-100 font-bold">
             <Editable
               onConfirm={handleEditConfirm}

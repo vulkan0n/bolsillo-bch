@@ -62,6 +62,7 @@ import { Haptic } from "@/util/haptic";
 import { hexToBin } from "@/util/hex";
 import { bchToSats } from "@/util/sats";
 import { truncateProse } from "@/util/string";
+import { resolveNftType } from "@/util/token";
 import { MUSD_TOKENID } from "@/util/tokens";
 import { validateBchUri, navigateOnValidUri, isIntStr } from "@/util/uri";
 
@@ -212,7 +213,9 @@ export default function WalletViewSend() {
     : { amount: 0n };
 
   const tokenSelection = hasTokens
-    ? TokenManager.getTokenUtxos(tokenData.category)
+    ? TokenManager.getTokenUtxos(tokenData.category).filter(
+        (utxo) => hasNft || utxo.nft_capability === null
+      )
     : [];
 
   const isInsufficientTokens =
@@ -1025,15 +1028,19 @@ function InputSelection({ inputs }) {
 
 function NftSelectionDisplay({ nftUtxos }) {
   const walletHash = useSelector(selectActiveWalletHash);
-  const TokenManager = TokenManagerService(walletHash);
+  const bchNetwork = useSelector(selectBchNetwork);
+  const TokenManager = TokenManagerService(walletHash, bchNetwork);
   return (
     <div className="mt-1 pb-3 flex flex-wrap gap-1 justify-around">
       {nftUtxos.map((utxo) => {
         const tokenData = TokenManager.getToken(utxo.token_category);
 
-        const nftData = tokenData.token.nfts
-          ? tokenData.token.nfts.parse.types[utxo.nft_commitment]
-          : null;
+        const parsed = resolveNftType(
+          tokenData.token.nfts,
+          utxo.nft_commitment,
+          utxo.token_category
+        );
+        const nftData = parsed.nftType || null;
 
         return (
           <div

@@ -11,6 +11,7 @@ import TokenAmount from "@/atoms/TokenAmount";
 import TokenIcon from "@/atoms/TokenIcon";
 
 import { logos } from "@/util/logos";
+import { truncateProse } from "@/util/string";
 
 import { translate } from "@/util/translations";
 
@@ -113,7 +114,7 @@ export default function NotificationService() {
     });
   }
 
-  function tokenReceived(token, isNft = false) {
+  function tokenReceived(token, isNft = false, nftName?, nftDescription?) {
     spawn({
       icon: (
         <TokenIcon
@@ -124,7 +125,18 @@ export default function NotificationService() {
         />
       ),
       header: `${token.symbol} ${translate(translations.received)}`,
-      body: <TokenAmount token={token} nft={isNft} />,
+      body: nftName ? (
+        <div className="flex flex-col">
+          <span className="font-semibold">{nftName}</span>
+          {nftDescription && (
+            <span className="text-sm text-neutral-500">
+              {truncateProse(nftDescription)}
+            </span>
+          )}
+        </div>
+      ) : (
+        <TokenAmount token={token} nft={isNft} />
+      ),
       options: {
         duration: 3000,
       },
