@@ -41,10 +41,10 @@ describe("validatePreferences", () => {
 
     it("accepts all currencies currently in currencyList", () => {
       currencyList.forEach((c) => {
-        const result = validatePreferences(
-          makePrefs({ localCurrency: c.currency })
-        );
-        expect(result, `${c.currency} should be valid`).toBe(true);
+        expect(
+          validatePreferences(makePrefs({ localCurrency: c.currency })),
+          `${c.currency} should be valid`
+        ).toBe(true);
       });
     });
   });
@@ -58,10 +58,10 @@ describe("validatePreferences", () => {
 
     it("accepts all languages currently in languageList", () => {
       languageList.forEach((lang) => {
-        const result = validatePreferences(
-          makePrefs({ languageCode: lang.code })
-        );
-        expect(result, `${lang.code} should be valid`).toBe(true);
+        expect(
+          validatePreferences(makePrefs({ languageCode: lang.code })),
+          `${lang.code} should be valid`
+        ).toBe(true);
       });
     });
   });
@@ -75,11 +75,73 @@ describe("validatePreferences", () => {
 
     it("accepts all valid denominations", () => {
       VALID_DENOMINATIONS.forEach((denom) => {
-        const result = validatePreferences(
-          makePrefs({ denomination: denom.toLowerCase() })
-        );
-        expect(result, `${denom} should be valid`).toBe(true);
+        expect(
+          validatePreferences(makePrefs({ denomination: denom.toLowerCase() })),
+          `${denom} should be valid`
+        ).toBe(true);
       });
+    });
+  });
+
+  describe("auth actions (encryption MR additions)", () => {
+    it("accepts AppOpen and AppResume auth actions", () => {
+      expect(
+        validatePreferences(
+          makePrefs({
+            authActions: "Any;AppOpen;AppResume;SendTransaction",
+          })
+        )
+      ).toBe(true);
+    });
+
+    it("accepts all AuthActions values individually", () => {
+      const allActions = [
+        "Any",
+        "Debug",
+        "AppOpen",
+        "AppResume",
+        "WalletActivate",
+        "SendTransaction",
+        "InstantPay",
+        "RevealBalance",
+        "RevealPrivateKeys",
+        "VendorMode",
+      ];
+      allActions.forEach((action) => {
+        expect(
+          validatePreferences(makePrefs({ authActions: action })),
+          `${action} should be a valid auth action`
+        ).toBe(true);
+      });
+    });
+  });
+
+  describe("encryption preference keys", () => {
+    it("rejects corrupted encryptionDeviceOnly", () => {
+      expect(
+        validatePreferences(
+          makePrefs({ encryptionDeviceOnly: "yes" as "true" | "false" })
+        )
+      ).toBe(false);
+    });
+
+    it("rejects corrupted useLegacyBip21", () => {
+      expect(
+        validatePreferences(
+          makePrefs({ useLegacyBip21: "1" as "true" | "false" })
+        )
+      ).toBe(false);
+    });
+
+    it("accepts valid encryption boolean values", () => {
+      expect(
+        validatePreferences(
+          makePrefs({
+            encryptionDeviceOnly: "true",
+            useLegacyBip21: "false",
+          })
+        )
+      ).toBe(true);
     });
   });
 

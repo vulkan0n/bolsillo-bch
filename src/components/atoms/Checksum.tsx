@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+
 import { sha256 } from "@/util/hash";
 
 interface ChecksumProps {

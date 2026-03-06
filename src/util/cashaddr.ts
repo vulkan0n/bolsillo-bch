@@ -8,6 +8,7 @@ import {
   cashAddressToLockingBytecode,
   base58AddressToLockingBytecode,
 } from "@bitauth/libauth";
+
 import { validateBip21Uri } from "@/util/uri";
 
 // Regex patterns for detecting potential BCH addresses embedded in text

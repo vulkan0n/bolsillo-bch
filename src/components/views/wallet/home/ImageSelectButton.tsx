@@ -1,15 +1,18 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import { useDispatch } from "react-redux";
-import { PictureOutlined, ScanOutlined } from "@ant-design/icons";
 import { Camera, CameraResultType, CameraSource } from "@capacitor/camera";
 import QrScanner from "qr-scanner";
-import { Haptic } from "@/util/haptic";
+import { PictureOutlined, ScanOutlined } from "@ant-design/icons";
 
 import { setScannerIsScanning } from "@/redux/device";
-import ToastService from "@/services/ToastService";
 
-import Button, { ButtonProps } from "@/atoms/Button";
+import NotificationService from "@/kernel/app/NotificationService";
+
 import translations from "@/views/wallet/translations";
+import Button, { ButtonProps } from "@/atoms/Button";
+
+import { Haptic } from "@/util/haptic";
+
 import { translate } from "@/util/translations";
 
 interface ImageSelectButtonProps extends ButtonProps {
@@ -65,7 +68,7 @@ export default function ImageSelectButton({
         });
 
         // Show scan content toast
-        ToastService().spawn({
+        NotificationService().spawn({
           icon: <ScanOutlined className="text-4xl" />,
           header: translate(translations.scanContents),
           body: <span className="flex break-all text-sm">{result.data}</span>,
@@ -75,7 +78,7 @@ export default function ImageSelectButton({
       } catch (e) {
         // No QR code found - show invalid scan toast with error
         const errorMessage = e?.message || "No QR code found";
-        ToastService().invalidScan(errorMessage);
+        NotificationService().invalidScan(errorMessage);
         await Haptic.error();
         onSelection("");
       }

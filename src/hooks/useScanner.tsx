@@ -1,8 +1,8 @@
 import { useEffect, useCallback, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { ScanOutlined } from "@ant-design/icons";
-import QrScanner from "qr-scanner";
 import { Torch } from "@capawesome/capacitor-torch";
+import QrScanner from "qr-scanner";
+import { ScanOutlined } from "@ant-design/icons";
 
 import {
   setScannerIsScanning,
@@ -10,11 +10,12 @@ import {
   selectTorchIsEnabled,
 } from "@/redux/device";
 
-import ToastService from "@/services/ToastService";
-import LogService from "@/services/LogService";
+import LogService from "@/kernel/app/LogService";
+import NotificationService from "@/kernel/app/NotificationService";
+
+import translations from "@/views/wallet/translations";
 
 import { translate } from "@/util/translations";
-import translations from "@/views/wallet/translations";
 
 const Log = LogService("useScanner");
 
@@ -22,8 +23,7 @@ const Log = LogService("useScanner");
 let _scanner: QrScanner | null = null;
 let _currentScanCallback: ((data: string) => void) | null = null;
 
-/* eslint-disable-next-line react-refresh/only-export-components */
-function ScannerHelper(onScan) {
+function initScanner(onScan) {
   _currentScanCallback = onScan;
 
   if (_scanner === null) {
@@ -67,13 +67,14 @@ export function useScanner(onScan) {
       dispatch(setScannerIsScanning(false));
 
       const spawnScanToast = () =>
-        ToastService().spawn({
+        NotificationService().spawn({
           icon: <ScanOutlined className="text-4xl" />,
           header: translate(translations.scanContents),
           body: <span className="flex break-all text-sm">{content}</span>,
         });
 
-      const spawnInvalidScanToast = () => ToastService().invalidScan(content);
+      const spawnInvalidScanToast = () =>
+        NotificationService().invalidScan(content);
 
       if (!hasScanContent.current) {
         hasScanContent.current = true;
@@ -83,7 +84,7 @@ export function useScanner(onScan) {
     [onScan, dispatch]
   );
 
-  const scanner = ScannerHelper(handleScanContent);
+  const scanner = initScanner(handleScanContent);
 
   const startScanner = useCallback(async () => {
     try {

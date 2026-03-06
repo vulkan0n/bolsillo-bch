@@ -1,23 +1,31 @@
-import { App } from "@capacitor/app";
 import { useEffect, useMemo } from "react";
 import { useSelector } from "react-redux";
-import { Outlet, useNavigate } from "react-router";
+import { Outlet, useNavigate, useLocation } from "react-router";
+import { App } from "@capacitor/app";
+import { ScreenOrientation } from "@capacitor/screen-orientation";
 import { selectScannerIsScanning, selectDevicePlatform } from "@/redux/device";
 import {
   selectShouldConstrainViewport,
   selectIsDarkMode,
+  selectIsVendorModeActive,
 } from "@/redux/preferences";
-import { navigateOnValidUri } from "@/util/uri";
-import BottomNavigation from "./BottomNavigation";
+
+import NotificationService from "@/kernel/app/NotificationService";
 
 import useScrollToTop from "@/hooks/useScrollToTop";
 
+import { navigateOnValidUri } from "@/util/uri";
+
+import BottomNavigation from "./BottomNavigation";
+
 export default function MainLayout() {
   const navigate = useNavigate();
+  const location = useLocation();
   useScrollToTop();
 
   const platform = useSelector(selectDevicePlatform);
   const shouldConstrainViewport = useSelector(selectShouldConstrainViewport);
+  const isVendorModeActive = useSelector(selectIsVendorModeActive);
 
   const isDarkMode = useSelector(selectIsDarkMode);
 
@@ -60,8 +68,14 @@ export default function MainLayout() {
           "shadow-xl"
         );
 
-        body.style.maxWidth = "480px";
-        body.style.maxHeight = "960px";
+        // Use landscape dimensions for vendor mode, portrait otherwise
+        if (isVendorModeActive) {
+          body.style.maxWidth = "960px";
+          body.style.maxHeight = "480px";
+        } else {
+          body.style.maxWidth = "480px";
+          body.style.maxHeight = "960px";
+        }
       }
 
       return () => {
@@ -76,7 +90,32 @@ export default function MainLayout() {
         body.style.maxHeight = "";
       };
     },
-    [platform, shouldConstrainViewport, html, body]
+    [platform, shouldConstrainViewport, isVendorModeActive, html, body]
+  );
+
+  // Lock to portrait unless in vendor mode (which handles its own landscape lock)
+  useEffect(
+    function lockPortraitOrientation() {
+      if (platform === "web") {
+        return;
+      }
+
+      // When not in vendor mode, lock to portrait
+      if (!isVendorModeActive) {
+        ScreenOrientation.lock({ orientation: "portrait" });
+      }
+    },
+    [platform, isVendorModeActive]
+  );
+
+  // Enforce vendor mode — redirect back if user somehow navigates away
+  useEffect(
+    function enforceVendorMode() {
+      if (isVendorModeActive && location.pathname !== "/vendor") {
+        navigate("/vendor");
+      }
+    },
+    [isVendorModeActive, location.pathname, navigate]
   );
 
   const isScanning = useSelector(selectScannerIsScanning);
@@ -101,12 +140,23 @@ export default function MainLayout() {
     [isScanning, html]
   );
 
-  App.addListener("appUrlOpen", async ({ url }) => {
-    const { navTo, navState } = await navigateOnValidUri(url);
-    if (navTo) {
-      navigate(navTo, { state: navState });
-    }
-  });
+  useEffect(
+    function registerAppUrlListener() {
+      const listener = App.addListener("appUrlOpen", async ({ url }) => {
+        const { navTo, navState, isExpired } = await navigateOnValidUri(url);
+        if (isExpired) {
+          NotificationService().expiredPayment();
+        } else if (navTo) {
+          navigate(navTo, { state: navState });
+        }
+      });
+
+      return () => {
+        listener.then((l) => l.remove());
+      };
+    },
+    [navigate]
+  );
 
   // [!] see index.css for #container and <main> styles
   return (

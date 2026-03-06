@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
-import BcmrService from "@/services/BcmrService";
+
+import BcmrService from "@/kernel/bch/BcmrService";
+
 import Checksum from "@/atoms/Checksum";
 import SeleneLogo from "@/atoms/SeleneLogo";
 
@@ -9,12 +11,14 @@ export default function TokenIcon({
   size = 64,
   rounded = false,
   returnImage = false,
+  toggleable = true,
 }: {
   category: string;
   nft_commitment?: string;
   size?: number;
   rounded?: boolean;
   returnImage?: boolean;
+  toggleable?: boolean;
 }) {
   const [toggleState, setToggleState] = useState(0);
   const [icon, setIcon] = useState<string | null>(null);
@@ -77,7 +81,7 @@ export default function TokenIcon({
             <SeleneLogo cashtokens className="saturate-30 opacity-90" />
           </div>
         ) : (
-          <img src={icon} />
+          <img src={icon} className="w-full h-full object-cover" />
         ))}
     </div>,
     <div
@@ -102,7 +106,7 @@ export default function TokenIcon({
   ];
 
   return (
-    <div onClick={handleSetToggle}>
+    <div onClick={toggleable ? handleSetToggle : undefined}>
       {isResolving && icon === null
         ? toggleStateRenderables[nft_commitment ? 1 : 2]
         : toggleStateRenderables[toggleState]}

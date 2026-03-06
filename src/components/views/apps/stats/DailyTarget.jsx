@@ -3,12 +3,14 @@ import { useState, useEffect } from "react";
 import { useQuery } from "@apollo/client";
 import { DateTime } from "luxon";
 
-import { THIRTY_SECONDS, Period } from "@/util/time";
 import { ONE_HUNDRED, TEN_MILLION } from "@/util/numbers";
-import { useCountdown } from "./useCountdown";
-import GET_ACTIVE_BITCOINERS from "./getActiveBitcoiners";
+import { THIRTY_SECONDS, Period } from "@/util/time";
+
 import { translate } from "@/util/translations";
+
 import translations from "./DailyTargetTranslations";
+import GET_ACTIVE_BITCOINERS from "./getActiveBitcoiners";
+import { useCountdown } from "./useCountdown";
 
 const { today, remaining, of10million, yesterday } = translations;
 

@@ -1,8 +1,8 @@
 import { Outlet } from "react-router";
 import { BugOutlined } from "@ant-design/icons";
 
-import ViewHeader from "@/layout/ViewHeader";
 import FullColumn from "@/layout/FullColumn";
+import ViewHeader from "@/layout/ViewHeader";
 
 import { translate } from "@/util/translations";
 import translations from "./translations";

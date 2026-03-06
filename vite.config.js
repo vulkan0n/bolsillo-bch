@@ -22,12 +22,15 @@ export default defineConfig({
   ],
   resolve: {
     alias: {
+      "@/composite": path.resolve(__dirname, "./src/components/composite"),
       "@/layout": path.resolve(__dirname, "./src/components/layout"),
       "@/views": path.resolve(__dirname, "./src/components/views"),
       "@/atoms": path.resolve(__dirname, "./src/components/atoms"),
       "@/icons": path.resolve(__dirname, "./src/components/atoms/icons"),
       "@/apps": path.resolve(__dirname, "./src/components/views/apps"),
       "@": path.resolve(__dirname, "./src"),
+      // Dedupe @capacitor/core for linked plugins
+      "@capacitor/core": path.resolve(__dirname, "./node_modules/@capacitor/core"),
     },
   },
   test: {

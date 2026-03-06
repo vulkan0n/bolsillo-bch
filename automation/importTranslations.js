@@ -32,21 +32,26 @@ console.log(`Reading translations from: ${resolvedInputPath}`);
 function parseTranslationFile(filePath) {
   const content = fs.readFileSync(filePath, "utf8");
   const lines = content.split("\n");
-  
+
   const translations = [];
   let currentFile = null;
   let currentKey = null;
   let currentEnglish = null;
   let currentTranslation = null;
   let currentLanguage = null;
-  
+
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i].trim();
-    
+
     // Skip empty lines and separators
     if (!line || line.startsWith("=") || line.startsWith("-")) {
       // If we have a complete entry, save it
-      if (currentKey && currentEnglish && currentTranslation && currentLanguage) {
+      if (
+        currentKey &&
+        currentEnglish &&
+        currentTranslation &&
+        currentLanguage
+      ) {
         translations.push({
           file: currentFile,
           key: currentKey,
@@ -62,25 +67,25 @@ function parseTranslationFile(filePath) {
       }
       continue;
     }
-    
+
     // Parse file header
     if (line.startsWith("File: ")) {
       currentFile = line.replace(/^File: /, "").trim();
       continue;
     }
-    
+
     // Parse key
     if (line.startsWith("Key: ")) {
       currentKey = line.replace(/^Key: /, "").trim();
       continue;
     }
-    
+
     // Parse English
     if (line.startsWith("English: ")) {
       currentEnglish = line.replace(/^English: /, "").trim();
       continue;
     }
-    
+
     // Parse translation (format: "LANG: translation")
     const translationMatch = line.match(/^([A-Z_]+):\s*(.+)$/);
     if (translationMatch) {
@@ -89,7 +94,7 @@ function parseTranslationFile(filePath) {
       continue;
     }
   }
-  
+
   // Handle last entry if file doesn't end with empty line
   if (currentKey && currentEnglish && currentTranslation && currentLanguage) {
     translations.push({
@@ -100,7 +105,7 @@ function parseTranslationFile(filePath) {
       language: currentLanguage,
     });
   }
-  
+
   return translations;
 }
 
@@ -115,7 +120,9 @@ if (translationsToImport.length === 0) {
 // Extract language code from first entry
 const targetLanguage = translationsToImport[0].language;
 console.log(`Target language: ${targetLanguage}`);
-console.log(`Found ${translationsToImport.length} translation entries to import\n`);
+console.log(
+  `Found ${translationsToImport.length} translation entries to import\n`
+);
 
 // Find all translation files
 const directoryPath = "..";
@@ -134,29 +141,49 @@ for (const filePath of filesWithTranslations) {
 }
 
 // Function to find and update a translation in a file
-function updateTranslationInFile(filePath, keyPath, englishText, newTranslation, languageCode) {
+function updateTranslationInFile(
+  filePath,
+  keyPath,
+  englishText,
+  newTranslation,
+  languageCode
+) {
   const fileContent = fs.readFileSync(filePath, "utf8");
-  
+
+  // Strip prefix (imports) before const translations =
+  const constIdx = fileContent.indexOf("const translations =");
+  const prefix = constIdx > 0 ? fileContent.substring(0, constIdx) : "";
+  const afterConst =
+    constIdx > 0 ? fileContent.substring(constIdx) : fileContent;
+
+  // Extract imported-reference lines to re-insert later
+  const refLinePattern = /^\s+(\w+,|\w+:\s+\w+,)\s*$/gm;
+  const refLines = [];
+  const cleanedContent = afterConst.replace(refLinePattern, (match) => {
+    refLines.push(match);
+    return "";
+  });
+
   // Parse to JSON (same approach as processFile.js)
   let parsedJSON;
   try {
-    const originalJSON = fileContent
+    const originalJSON = cleanedContent
       .replace(/^const translations = /, "")
       .replace(/export default translations;/, "")
       .replace(/;\n\n\n/, "")
       .replace(/(\w+):/g, '"$1":')
       .replace(/,\s+}/g, "}");
-    
+
     parsedJSON = JSON.parse(originalJSON);
   } catch (err) {
     console.error(`  ⚠ Error parsing file: ${err.message}`);
     return false;
   }
-  
+
   // Navigate to the key (handle nested keys)
   const keyParts = keyPath.split(".");
   let currentObj = parsedJSON;
-  
+
   for (let i = 0; i < keyParts.length; i++) {
     const part = keyParts[i];
     if (!currentObj[part]) {
@@ -168,7 +195,7 @@ function updateTranslationInFile(filePath, keyPath, englishText, newTranslation,
     } else {
       // Last part - this should be the translation object
       const translationObj = currentObj[part];
-      
+
       // Verify English text matches
       if (translationObj.en !== englishText) {
         console.error(`  ⚠ English text mismatch for key "${keyPath}":`);
@@ -176,10 +203,10 @@ function updateTranslationInFile(filePath, keyPath, englishText, newTranslation,
         console.error(`     Found: "${translationObj.en}"`);
         return false;
       }
-      
+
       // Update the translation
       translationObj[languageCode] = newTranslation;
-      
+
       // Sort language keys alphabetically (same as processFile.js does)
       const sortedKeys = Object.keys(translationObj).sort();
       const sortedTranslationObj = {};
@@ -187,7 +214,7 @@ function updateTranslationInFile(filePath, keyPath, englishText, newTranslation,
         sortedTranslationObj[key] = translationObj[key];
       });
       currentObj[part] = sortedTranslationObj;
-      
+
       // Convert back to file format (same as processFile.js)
       const startFile = "const translations = ";
       const endFile = ";\n\nexport default translations;\n";
@@ -195,14 +222,23 @@ function updateTranslationInFile(filePath, keyPath, englishText, newTranslation,
         /"([^"]+)"(?=:)/g,
         "$1"
       ); // Strip doublequotes from key values for prettier
-      const fullFile = startFile + formattedJson + endFile;
-      
+
+      // Re-insert imported reference lines after opening brace
+      let finalJson = formattedJson;
+      if (refLines.length > 0) {
+        const jsonLines = finalJson.split("\n");
+        jsonLines.splice(1, 0, ...refLines.map((r) => r.trimEnd()));
+        finalJson = jsonLines.join("\n");
+      }
+
+      const fullFile = prefix + startFile + finalJson + endFile;
+
       // Write back to file
       fs.writeFileSync(filePath, fullFile, "utf8");
       return true;
     }
   }
-  
+
   return false;
 }
 
@@ -218,9 +254,9 @@ for (const translation of translationsToImport) {
     skippedCount++;
     continue;
   }
-  
+
   const filePath = fileMap.get(translation.file);
-  
+
   if (!filePath) {
     console.error(`  ✗ File not found: ${translation.file}`);
     errorCount++;
@@ -231,9 +267,9 @@ for (const translation of translationsToImport) {
     });
     continue;
   }
-  
+
   console.log(`  Processing: ${translation.file} -> ${translation.key}`);
-  
+
   const success = updateTranslationInFile(
     filePath,
     translation.key,
@@ -241,7 +277,7 @@ for (const translation of translationsToImport) {
     translation.translation,
     translation.language
   );
-  
+
   if (success) {
     successCount++;
     console.log(`    ✓ Updated`);
@@ -270,4 +306,3 @@ if (errors.length > 0) {
     console.log(`  - ${err.file} -> ${err.key}: ${err.error}`);
   });
 }
-

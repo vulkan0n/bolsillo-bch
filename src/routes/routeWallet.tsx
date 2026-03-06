@@ -1,9 +1,9 @@
-import WalletView from "@/views/wallet/WalletView";
 import WalletViewHome from "@/views/wallet/home/WalletViewHome";
-import WalletViewSend from "@/views/wallet/send/WalletViewSend";
 import WalletViewPay from "@/views/wallet/send/WalletViewPay";
-import WalletViewSweep from "@/views/wallet/send/WalletViewSweep";
+import WalletViewSend from "@/views/wallet/send/WalletViewSend";
 import WalletViewSendSuccess from "@/views/wallet/send/WalletViewSendSuccess";
+import WalletViewSweep from "@/views/wallet/send/WalletViewSweep";
+import WalletView from "@/views/wallet/WalletView";
 
 export const routeWallet = [
   {

@@ -1,22 +1,25 @@
-import { configureStore, combineReducers } from "@reduxjs/toolkit";
-import LogService from "@/services/LogService";
+import { configureStore, combineReducers, isPlain } from "@reduxjs/toolkit";
+
+import LogService from "@/kernel/app/LogService";
+import BcmrService from "@/kernel/bch/BcmrService";
+
+import { deviceReducer, deviceInit, selectIsLocked } from "./device";
+import {
+  exchangeRateReducer,
+  fetchExchangeRates,
+  exchangeRateInit,
+} from "./exchangeRates";
 import {
   preferencesReducer,
   selectActiveWalletHash,
   selectBchNetwork,
   preferencesInit,
 } from "./preferences";
-import { walletReducer, walletBoot, addressReducer } from "./wallet";
-import { syncReducer, syncMiddleware, syncPause, syncResume } from "./sync";
-import { deviceReducer, deviceInit } from "./device";
-import { txHistoryReducer } from "./txHistory";
-import {
-  exchangeRateReducer,
-  fetchExchangeRates,
-  exchangeRateInit,
-} from "./exchangeRates";
-import { walletConnectReducer, walletConnectInit } from "./walletConnect";
 import { triggerCheckIn } from "./stats";
+import { syncReducer, syncMiddleware, syncPause, syncResume } from "./sync";
+import { txHistoryReducer } from "./txHistory";
+import { walletReducer, walletBoot, addressReducer } from "./wallet";
+import { walletConnectReducer, walletConnectInit } from "./walletConnect";
 
 const Log = LogService("redux");
 
@@ -34,7 +37,12 @@ const rootReducer = combineReducers({
 export const store = configureStore({
   reducer: rootReducer,
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().prepend(syncMiddleware.middleware),
+    getDefaultMiddleware({
+      serializableCheck: {
+        isSerializable: (value: unknown) =>
+          typeof value === "bigint" || isPlain(value),
+      },
+    }).prepend(syncMiddleware.middleware),
 });
 
 export type RootState = ReturnType<typeof rootReducer>;
@@ -51,22 +59,23 @@ export async function redux_pre_init() {
 export async function redux_init() {
   Log.debug("redux_init");
   await store.dispatch(exchangeRateInit());
+
+  const network = selectBchNetwork(store.getState());
   await store.dispatch(
     walletBoot({
       walletHash: selectActiveWalletHash(store.getState()),
-      network: selectBchNetwork(store.getState()),
+      network,
     })
   );
+
+  BcmrService(network).preloadMetadataRegistries();
 }
 
-export async function redux_post_init() {
-  Log.debug("redux_post_init");
-  store.dispatch(walletConnectInit());
-  store.dispatch(triggerCheckIn());
-  store.dispatch(fetchExchangeRates(0));
-}
-
-export async function redux_resume() {
+export function redux_resume() {
+  if (selectIsLocked(store.getState())) {
+    Log.debug("redux_resume blocked by lock screen");
+    return;
+  }
   Log.debug("redux_resume");
   store.dispatch(syncResume());
   store.dispatch(walletConnectInit());
@@ -74,7 +83,7 @@ export async function redux_resume() {
   store.dispatch(fetchExchangeRates(0));
 }
 
-export async function redux_pause() {
+export function redux_pause() {
   Log.debug("redux_pause");
   store.dispatch(syncPause());
 }

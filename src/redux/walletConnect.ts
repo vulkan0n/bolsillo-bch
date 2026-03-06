@@ -1,4 +1,6 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
+import { Dialog } from "@capacitor/dialog";
+import { generateTransaction, encodeTransaction } from "@bitauth/libauth";
 import {
   createReducer,
   createSelector,
@@ -9,20 +11,18 @@ import {
   formatJsonRpcError,
 } from "@walletconnect/jsonrpc-utils";
 import { getSdkError } from "@walletconnect/utils";
-import { Dialog } from "@capacitor/dialog";
-import { generateTransaction, encodeTransaction } from "@bitauth/libauth";
 
-import { selectActiveWallet } from "@/redux/wallet";
 import { selectBchNetwork } from "@/redux/preferences";
+import { selectActiveWallet } from "@/redux/wallet";
 
-import LogService from "@/services/LogService";
-import WalletConnectService from "@/services/WalletConnectService";
-import AddressManagerService from "@/services/AddressManagerService";
-import HdNodeService from "@/services/HdNodeService";
-import ElectrumService from "@/services/ElectrumService";
+import LogService from "@/kernel/app/LogService";
+import ElectrumService from "@/kernel/bch/ElectrumService";
+import WalletConnectService from "@/kernel/bch/WalletConnectService";
+import AddressManagerService from "@/kernel/wallet/AddressManagerService";
+import KeyManagerService from "@/kernel/wallet/KeyManagerService";
 
-import { binToHex } from "@/util/hex";
 import { sha256 } from "@/util/hash";
+import { binToHex } from "@/util/hex";
 import { destringify } from "@/util/json";
 
 const Log = LogService("redux/walletConnect");
@@ -129,8 +129,8 @@ export const wcSessionRequest = createAsyncThunk(
           }
 
           const txTemplate = { ...unsignedTransaction };
-          const Hd = HdNodeService(wallet);
-          const signedTemplate = Hd.signTemplate(
+          const KeyManager = KeyManagerService(wallet);
+          const signedTemplate = KeyManager.signTemplate(
             txTemplate,
             sourceOutputs,
             sessionAddress
@@ -179,8 +179,8 @@ export const wcSessionRequest = createAsyncThunk(
         {
           const { message } = destringify(JSON.stringify(methodParams));
 
-          const Hd = HdNodeService(wallet);
-          const signedMessage = Hd.signMessage(message, sessionAddress);
+          const KeyManager = KeyManagerService(wallet);
+          const signedMessage = KeyManager.signMessage(message, sessionAddress);
           await WalletConnect.sessionResponse(
             topic,
             formatJsonRpcResult(id, signedMessage)

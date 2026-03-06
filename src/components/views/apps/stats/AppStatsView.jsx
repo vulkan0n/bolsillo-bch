@@ -1,9 +1,11 @@
 import FullColumn from "@/layout/FullColumn";
 import ViewHeader from "@/layout/ViewHeader";
-import StatsAppBlock from "./StatsAppBlock";
-import StatsGraphCard from "./StatsGraphCard";
+
 import { translate } from "@/util/translations";
 import translations from "./translations";
+
+import StatsAppBlock from "./StatsAppBlock";
+import StatsGraphCard from "./StatsGraphCard";
 
 export default function AppStatsView() {
   return (

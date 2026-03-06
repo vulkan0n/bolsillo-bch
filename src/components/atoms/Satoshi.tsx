@@ -1,13 +1,15 @@
-import { Decimal } from "decimal.js";
 import { useCallback } from "react";
 import { useSelector } from "react-redux";
+import { Decimal } from "decimal.js";
+
 import { selectLocale } from "@/redux/device";
 import {
   selectCurrencySettings,
   selectPrivacySettings,
 } from "@/redux/preferences";
 
-import CurrencyService from "@/services/CurrencyService";
+import CurrencyService from "@/kernel/bch/CurrencyService";
+
 import { satsToBch } from "@/util/sats";
 
 interface Props {

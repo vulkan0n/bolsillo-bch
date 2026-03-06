@@ -1,7 +1,6 @@
 import { useState, useRef, useMemo } from "react";
-import { useSelector, useDispatch } from "react-redux";
-
 import { QRCode } from "react-qrcode-logo";
+import { useSelector, useDispatch } from "react-redux";
 import {
   FormOutlined,
   CaretRightOutlined,
@@ -10,36 +9,41 @@ import {
   CopyOutlined,
 } from "@ant-design/icons";
 
-import { selectActiveWalletHash, selectGenesisHeight } from "@/redux/wallet";
-import { selectIsSyncing } from "@/redux/sync";
+import { selectScannerIsScanning, selectKeyboardIsOpen } from "@/redux/device";
 import {
   selectBchNetwork,
   selectQrCodeSettings,
   selectShouldUseTokenAddress,
   selectIsStablecoinMode,
+  selectShouldUseLegacyBip21,
   setPreference,
 } from "@/redux/preferences";
-import { selectScannerIsScanning, selectKeyboardIsOpen } from "@/redux/device";
+import { selectIsSyncing } from "@/redux/sync";
+import { selectActiveWalletHash, selectGenesisHeight } from "@/redux/wallet";
 
-import AddressManagerService from "@/services/AddressManagerService";
+import AddressManagerService from "@/kernel/wallet/AddressManagerService";
 
+import translations from "@/views/wallet/translations";
 import FullColumn from "@/layout/FullColumn";
-import { SatoshiInput } from "@/atoms/SatoshiInput";
 import Address from "@/atoms/Address";
-import CurrencySymbol from "@/atoms/CurrencySymbol";
 import CurrencyFlip from "@/atoms/CurrencyFlip";
+import CurrencySymbol from "@/atoms/CurrencySymbol";
 import KeyWarning from "@/atoms/KeyWarning/KeyWarning";
-import WalletViewButtons from "./WalletViewButtons";
-import ScannerOverlay from "./ScannerOverlay";
+import { SatoshiInput } from "@/atoms/SatoshiInput";
 
 import { useClipboard } from "@/hooks/useClipboard";
+import { useLongPress } from "@/hooks/useLongPress";
 
+import { convertCashAddress } from "@/util/cashaddr";
 import { logos } from "@/util/logos";
 import { satsToBch } from "@/util/sats";
-import { convertCashAddress } from "@/util/cashaddr";
+import { toAlphanumericUri } from "@/util/uri";
 
 import { translate } from "@/util/translations";
-import translations from "@/views/wallet/translations";
+
+import FocusedQrView from "./FocusedQrView";
+import ScannerOverlay from "./ScannerOverlay";
+import WalletViewButtons from "./WalletViewButtons";
 
 export default function WalletViewHome() {
   const dispatch = useDispatch();
@@ -55,6 +59,7 @@ export default function WalletViewHome() {
   const genesis_height = useSelector(selectGenesisHeight);
 
   const isStablecoinMode = useSelector(selectIsStablecoinMode);
+  const shouldUseLegacyBip21 = useSelector(selectShouldUseLegacyBip21);
 
   const shouldUseTokenAddress = useSelector(selectShouldUseTokenAddress);
   const setShouldUseTokenAddress = (mode) =>
@@ -90,18 +95,25 @@ export default function WalletViewHome() {
   const [shouldShowRequestAmount, setShouldShowRequestAmount] = useState(false);
   const [satoshiInput, setSatoshiInput] = useState(0n);
 
+  // Focused QR view state
+  const [shouldShowFocusedQr, setShouldShowFocusedQr] = useState(false);
+
   const handleRequestAmountChange = (satInput) => {
     setSatoshiInput(satInput);
   };
 
   // generate bip21 uri for QR code
-  const qrRequest = useMemo(
-    () =>
-      shouldShowRequestAmount && satoshiInput > 0
-        ? `${address}?amount=${satsToBch(satoshiInput).bch}`
-        : address,
-    [shouldShowRequestAmount, satoshiInput, address]
-  );
+  // PayPro CHIP-2023-05: use ?s= (satoshis) by default, ?amount= (BCH) for legacy
+  // PayPro format uses alphanumeric encoding for more efficient QR codes
+  const qrRequest = useMemo(() => {
+    if (!shouldShowRequestAmount || satoshiInput <= 0) {
+      return address;
+    }
+    if (shouldUseLegacyBip21) {
+      return `${address}?amount=${satsToBch(satoshiInput).bch}`;
+    }
+    return toAlphanumericUri(`${address}?s=${satoshiInput}`);
+  }, [shouldShowRequestAmount, satoshiInput, address, shouldUseLegacyBip21]);
 
   const qrLogoImage = useMemo(() => {
     const logo = qrCodeSettings.logo.toLowerCase();
@@ -112,6 +124,11 @@ export default function WalletViewHome() {
   const copyAddressToClipboard = async () => {
     handleCopyToClipboard(qrRequest, translate(translations.copiedAddress));
   };
+
+  // Long press QR to show focused view, tap to copy
+  const qrLongPressEvents = useLongPress(function handleQrLongPress() {
+    setShouldShowFocusedQr(true);
+  }, copyAddressToClipboard);
 
   // force red QR code border if connected to chipnet
   const qrCodeBorder =
@@ -133,8 +150,8 @@ export default function WalletViewHome() {
           <div className="w-fit mx-auto">
             <button
               type="button"
-              className={`border-4 cursor-pointer active:bg-primary shadow-inner shadow-lg active:shadow-none active:shadow-inner active:scale-[0.98] ${qrCodeBorder}`}
-              onClick={copyAddressToClipboard}
+              className={`border-4 cursor-pointer active:bg-primary shadow-inner shadow-lg active:shadow-none active:shadow-inner active:scale-[0.98] select-none ${qrCodeBorder}`}
+              {...qrLongPressEvents}
             >
               <QRCode
                 value={qrRequest}
@@ -232,6 +249,13 @@ export default function WalletViewHome() {
         {genesis_height > 0 && <KeyWarning walletHash={walletHash} />}
       </div>
       {!isKeyboardOpen && <WalletViewButtons />}
+      {shouldShowFocusedQr && (
+        <FocusedQrView
+          address={address}
+          isTokenAddress={shouldUseTokenAddress}
+          onClose={() => setShouldShowFocusedQr(false)}
+        />
+      )}
     </FullColumn>
   );
 }

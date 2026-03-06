@@ -1,9 +1,8 @@
 import { useState, useRef, useCallback, useEffect } from "react";
-import { useParams, useNavigate, Link } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
-import { Share } from "@capacitor/share";
+import { useParams, useNavigate, Link } from "react-router";
 import { Filesystem, Directory } from "@capacitor/filesystem";
-
+import { Share } from "@capacitor/share";
 import {
   WalletOutlined,
   LoginOutlined,
@@ -18,30 +17,28 @@ import {
   LoadingOutlined,
   ExperimentOutlined,
 } from "@ant-design/icons";
+import { WalletConnectFilled } from "@/icons/WalletConnectFilled";
 
+import { selectLocale } from "@/redux/device";
 import { selectBchNetwork, selectIsExperimental } from "@/redux/preferences";
 import {
   walletBoot,
   walletSetName,
   selectActiveWalletHash,
 } from "@/redux/wallet";
-import { selectLocale } from "@/redux/device";
 
-import ViewHeader from "@/layout/ViewHeader";
-
-import WalletManagerService from "@/services/WalletManagerService";
-import SecurityService, { AuthActions } from "@/services/SecurityService";
-
-import { WalletConnectFilled } from "@/icons/WalletConnectFilled";
-import KeyWarning from "@/atoms/KeyWarning/KeyWarning";
-import ShowMnemonic from "@/atoms/ShowMnemonic";
-import Accordion from "@/atoms/Accordion";
-import Satoshi from "@/atoms/Satoshi";
-import Editable from "@/atoms/Editable";
-import Button from "@/atoms/Button";
-import Card from "@/atoms/Card";
+import SecurityService, { AuthActions } from "@/kernel/app/SecurityService";
+import WalletManagerService from "@/kernel/wallet/WalletManagerService";
 
 import WalletSettings from "@/views/settings/WalletSettings";
+import ViewHeader from "@/layout/ViewHeader";
+import Accordion from "@/atoms/Accordion";
+import Button from "@/atoms/Button";
+import Card from "@/atoms/Card";
+import Editable from "@/atoms/Editable";
+import KeyWarning from "@/atoms/KeyWarning/KeyWarning";
+import Satoshi from "@/atoms/Satoshi";
+import ShowMnemonic from "@/atoms/ShowMnemonic";
 
 import { translate } from "@/util/translations";
 import translations from "./translations";
@@ -204,7 +201,7 @@ export default function SettingsWalletView() {
         title={translate(translations.walletSettings)}
       />
       <div className="p-1" key={walletHash}>
-        <Card>
+        <Card className="p-2">
           <div className="text-2xl flex justify-center items-center py-2 text-neutral-700 dark:text-neutral-100 font-bold">
             <Editable
               onConfirm={handleEditConfirm}

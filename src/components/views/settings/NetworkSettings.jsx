@@ -7,29 +7,29 @@ import {
   DisconnectOutlined,
 } from "@ant-design/icons";
 
+import { selectBchNetwork, selectIsOfflineMode } from "@/redux/preferences";
 import {
   syncReconnect,
   syncDisconnect,
   selectElectrumServer,
 } from "@/redux/sync";
-import { selectBchNetwork, selectIsOfflineMode } from "@/redux/preferences";
 
-import ElectrumService from "@/services/ElectrumService";
+import ElectrumService from "@/kernel/bch/ElectrumService";
+
+import Accordion from "@/atoms/Accordion";
 import Button from "@/atoms/Button";
-
-import { translate } from "@/util/translations";
-import translations from "./translations";
+import Select from "@/components/atoms/Select";
 
 import {
   electrum_servers,
   ElectrumServer,
   DEFAULT_ELECTRUM_PORT,
-} from "@/util/electrum_servers";
+} from "@/util/network";
+
+import { translate } from "@/util/translations";
+import translations from "./translations";
 
 import { SettingsContext } from "./SettingsContext";
-
-import Accordion from "@/atoms/Accordion";
-import Select from "@/components/atoms/Select";
 
 export default function NetworkSettings() {
   const { handleSettingsUpdate, preferences, dispatch } =

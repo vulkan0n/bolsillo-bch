@@ -1,77 +1,127 @@
-import { App } from "@capacitor/app";
+import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
+import { Provider } from "react-redux";
+import { App } from "@capacitor/app";
 import { SplashScreen } from "@capacitor/splash-screen";
-import LogService from "@/services/LogService";
-import JanitorService from "@/services/JanitorService";
-import DatabaseService from "@/services/DatabaseService";
-import BcmrService from "@/services/BcmrService";
+
 import {
+  store,
   redux_init,
   redux_pre_init,
-  redux_post_init,
   redux_resume,
   redux_pause,
 } from "@/redux";
+import { selectSecuritySettings } from "@/redux/preferences";
+
+import DatabaseService, {
+  DecryptionFailedError,
+} from "@/kernel/app/DatabaseService";
+import JanitorService from "@/kernel/app/JanitorService";
+import LogService from "@/kernel/app/LogService";
+import SecurityService, { AuthActions } from "@/kernel/app/SecurityService";
+
+import ErrorBoundary from "@/layout/ErrorBoundary";
+
 import Main from "@/Main";
 
 // Top-Level execution for entire app starts here!
 // eslint-disable-next-line react-refresh/only-export-components
 const Log = LogService("init");
 
-// big green START button for the whole app
+// 1. Cold start
 async function initialize_app() {
   Log.time("INIT");
-  await pre_init();
-  await app_init();
-  await post_init();
+
+  let startupError = null;
+  try {
+    await JanitorService().fsck();
+    await SecurityService().initEncryption();
+
+    if (SecurityService().isEncryptionReady()) {
+      await boot();
+      redux_resume(); // walletConnect, stats, exchange rates
+    }
+  } catch (e) {
+    if (e instanceof DecryptionFailedError) {
+      Log.error("Decryption failed, routing to lock screen", e);
+      await SecurityService().lock();
+    } else {
+      Log.error("INIT FAILED", e);
+      startupError = e;
+    }
+  }
+
+  App.addListener("pause", app_pause);
+  App.addListener("resume", app_resume);
+
+  const root = createRoot(document.getElementById("root"));
+
+  if (startupError) {
+    root.render(
+      <StrictMode>
+        <ErrorBoundary startupError={startupError} />
+      </StrictMode>
+    );
+    await SplashScreen.hide();
+    return;
+  }
+
+  root.render(
+    <StrictMode>
+      <Provider store={store}>
+        <Main />
+      </Provider>
+    </StrictMode>
+  );
+
+  await SplashScreen.hide();
+
   Log.timeEnd("INIT");
 }
 
-initialize_app();
+// 2. Boot: open DBs, migrations, load wallet
+async function boot() {
+  Log.log("* BOOT *");
+  Log.time("boot");
 
-// ----------------
+  await DatabaseService().openAppDatabase();
 
-// initialize app state and render UI
-async function app_init() {
-  Log.log("* APP_INIT *");
-  App.addListener("pause", app_pause);
-  App.addListener("resume", app_resume);
-  await redux_init();
-  Log.debug("render <Main>");
-  createRoot(document.getElementById("root")).render(<Main />);
+  await Promise.all([
+    JanitorService().migrateLegacyDatabases(),
+    redux_pre_init(),
+  ]);
+
+  await JanitorService().handleAuthMigration();
+
+  await JanitorService().recoverWalletFiles();
+  await redux_init(); // walletBoot -> syncConnect
+
+  Log.timeEnd("boot");
 }
 
-// actions to perform before initializing app state or rendering UI
-async function pre_init() {
-  Log.log("* PRE_INIT *");
-  const Janitor = JanitorService();
-  const Database = DatabaseService();
-  await Janitor.fsck();
-  await Database.initAppDatabase();
-  await Janitor.migrateLegacyDatabases();
-  await Janitor.recoverWalletFiles();
-  await redux_pre_init();
+// Called by AppLockScreen after successful PIN/biometric auth
+export async function onUnlocked() {
+  await boot();
+  SecurityService().unlock();
+  redux_resume();
 }
 
-// actions to perform after UI is rendered
-async function post_init() {
-  Log.log("* POST_INIT *");
-  await SplashScreen.hide();
-  redux_post_init();
-
-  const Bcmr = BcmrService();
-  Bcmr.preloadMetadataRegistries();
+// Lifecycle handlers
+async function app_pause() {
+  Log.time("APP_PAUSE");
+  const { authMode, authActions } = selectSecuritySettings(store.getState());
+  if (authMode !== "none" && authActions.includes(AuthActions.AppResume)) {
+    await SecurityService().lock();
+  }
+  await redux_pause();
+  Log.timeEnd("APP_PAUSE");
 }
 
-// actions to perform after app is resumed from sleep state
-async function app_resume() {
+function app_resume() {
   Log.time("APP_RESUME");
   redux_resume();
   Log.timeEnd("APP_RESUME");
 }
 
-function app_pause() {
-  Log.time("APP_PAUSE");
-  redux_pause();
-  Log.timeEnd("APP_PAUSE");
-}
+// Go!
+initialize_app();

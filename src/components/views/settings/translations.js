@@ -1,44 +1,15 @@
+import {
+  createImportWallet,
+  importKeyBackup,
+  settings,
+} from "@/translations/common";
+
 const translations = {
-  settings: {
-    ar: "إعدادات",
-    bn: "সেটিংস",
-    cy: "Gosodiadau",
-    da: "Indstillinger",
-    de: "Einstellungen",
-    el: "Ρυθμίσεις",
-    en: "Settings",
-    es: "Configuración",
-    fa: "تنظیمات",
-    fil: "Mga setting",
-    fr: "Paramètres",
-    ha: "Saituna",
-    hi: "सेटिंग्स",
-    id: "Pengaturan",
-    it: "Impostazioni",
-    ja: "設定",
-    jv: "Setelan",
-    ko: "설정",
-    mr: "सेटिंग्ज",
-    ms: "Tetapan",
-    nb: "Innstillinger",
-    nl: "Instellingen",
-    pa: "ਸੈਟਿੰਗਜ਼",
-    pl: "Ustawienia",
-    pt: "Configurações",
-    ro: "Setări",
-    ru: "Настройки",
-    sv: "Inställningar",
-    sw: "Mipangilio",
-    ta: "அமைப்புகள்",
-    te: "సెట్టింగ్స్",
-    th: "การตั้งค่า",
-    tr: "Ayarlar",
-    uk: "Налаштування",
-    ur: "ترتیبات",
-    vi: "Cài đặt",
-    zh: "设置",
-    zh_TW: "設置"
-  },
+  // Imported from common
+  settings,
+  createImportWallet,
+  importKeyBackup,
+
   walletSettings: {
     ar: "محافظ",
     bn: "ওয়ালেট",
@@ -78,46 +49,6 @@ const translations = {
     vi: "Ví",
     zh: "钱包",
     zh_TW: "錢包"
-  },
-  createImportWallet: {
-    ar: "إنشاء / استيراد المحفظة",
-    bn: "ওয়ালেট তৈরি/আমদানি করুন",
-    cy: "Creu/Tynnu Waled i Mewn",
-    da: "Opret/Importer Tegnebog",
-    de: "Wallet erstellen/importieren",
-    el: "Δημιουργία/Εισαγωγή πορτοφολιού",
-    en: "Create/Import Wallet",
-    es: "Crear/Importar billetera",
-    fa: "ایجاد/وارد کردن کیف پول",
-    fil: "Lumikha/Mag-import ng Wallet",
-    fr: "Créer/Importer un portefeuille",
-    ha: "Ƙirƙiri/Shigo da Wallet",
-    hi: "नया बटुआ बनाएं या पुराने बटुए को पुनर्स्थापित करे",
-    id: "Buat/Impor Dompet",
-    it: "Crea/Importa portafoglio",
-    ja: "ウォレットの作成/インポート",
-    jv: "Gawe/Impor Wallet",
-    ko: "지갑 생성/가져오기",
-    mr: "वॉलेट तयार करा/आयात करा",
-    ms: "Cipta/Import Wallet",
-    nb: "Opprett/Importer Lommebok",
-    nl: "Portemonnee maken/importeren",
-    pa: "ਵਾਲੇਟ ਬਣਾਓ/ਆਮਦਨੀ ਕਰੋ",
-    pl: "Utwórz/importuj portfel",
-    pt: "Criar/Importar carteira",
-    ro: "Creați/Importați portofel",
-    ru: "Создать/Импортировать кошелек",
-    sv: "Skapa/Importera Plånbok",
-    sw: "Unda/Leta Wallet",
-    ta: "வலைப்பை உருவாக்கு/இறக்குமதி செய்",
-    te: "వాలెట్ సృష్టించండి/దిగుమతి చేయండి",
-    th: "สร้าง / นำเข้ากระเป๋าเงิน",
-    tr: "Cüzdan Oluştur/İçeri Al",
-    uk: "Створити/імпортувати гаманець",
-    ur: "والیٹ بنائیں/داخل کریں",
-    vi: "Tạo/Nhập ví",
-    zh: "创建/导入钱包",
-    zh_TW: "創建/導入錢包"
   },
   localizationSettings: {
     ar: "الموقع",
@@ -758,6 +689,12 @@ const translations = {
     vi: "Giới hạn thanh toán ngay",
     zh: "即时支付限额",
     zh_TW: "即時支付限額"
+  },
+  useLegacyBip21: {
+    en: "Use Legacy payment request format",
+  },
+  useLegacyBip21Description: {
+    en: "Generate QR codes using legacy format (BIP21) for compatibility with older wallets.",
   },
   qrCodeSettings: {
     ar: "رمز الاستجابة السريعة",
@@ -2159,6 +2096,9 @@ const translations = {
     zh: "泄露私钥",
     zh_TW: "洩漏私鑰"
   },
+  authVendorMode: {
+    en: "Enter/Exit Vendor Mode",
+  },
   offlineMode: {
     ar: "الوضع غير المتصل",
     bn: "অফলাইন মোড",
@@ -2478,7 +2418,131 @@ const translations = {
     vi: "Liên kết này sẽ mở trong trình duyệt của bạn. Tiếp tục chứ?",
     zh: "此链接将在浏览器中打开。是否继续？",
     zh_TW: "此連結將在瀏覽器中開啟。是否繼續？"
-  }
+  },
+  // Encryption Settings
+  encryptionSettings: {
+    en: "Encryption"
+  },
+  deviceOnlyKeys: {
+    en: "Device-Only Keys"
+  },
+  deviceOnlyKeysDescription: {
+    en: "When enabled, encryption keys will not sync via iCloud or Google backup"
+  },
+  deviceOnlyEnableWarning: {
+    en: "Enabling device-only mode means your encryption key will NOT sync to other devices. If you lose this device, you will need a manual backup to recover your data. Continue?"
+  },
+  deviceOnlyDisableWarning: {
+    en: "Disabling device-only mode will allow your encryption key to sync via iCloud or Google backup. This makes recovery easier but means your key is stored in the cloud. Continue?"
+  },
+  exportKeyBackup: {
+    en: "Export Key Backup"
+  },
+  exportKeyBackupDescription: {
+    en: "Create a password-protected backup of your encryption key"
+  },
+  exportKeyBackupMessage: {
+    en: "Enter a strong password to protect your backup. You will need this password to restore the backup."
+  },
+  importKeyBackupDescription: {
+    en: "Restore encryption key from a backup"
+  },
+  importKeyBackupMessage: {
+    en: "Paste the backup data you exported previously."
+  },
+  enterPassword: {
+    en: "Enter password"
+  },
+  confirmPassword: {
+    en: "Confirm Password"
+  },
+  confirmPasswordMessage: {
+    en: "Re-enter your password to confirm."
+  },
+  passwordTooShort: {
+    en: "Password must be at least 8 characters"
+  },
+  passwordMismatch: {
+    en: "Passwords do not match"
+  },
+  backupCopiedToClipboard: {
+    en: "Backup data copied to clipboard"
+  },
+  pasteBackupData: {
+    en: "Paste backup data"
+  },
+  enterBackupPassword: {
+    en: "Enter Backup Password"
+  },
+  enterBackupPasswordMessage: {
+    en: "Enter the password you used when creating this backup."
+  },
+  exportButton: {
+    en: "Export"
+  },
+  importButton: {
+    en: "Import"
+  },
+  error: {
+    en: "Error"
+  },
+  enterCurrentPin: {
+    en: "Enter Current PIN"
+  },
+  enterCurrentPinMessage: {
+    en: "Please enter your current PIN to continue."
+  },
+  removePinMessage: {
+    en: "Enter your current PIN to remove PIN protection from your encryption key."
+  },
+  ok: {
+    en: "OK"
+  },
+  webEncryptionWarning: {
+    en: "Encryption is not available on web. Use the iOS or Android app for maximum security."
+  },
+  appLock: {
+    en: "App Open"
+  },
+  appLockDescription: {
+    en: "Require authorization when opening the app"
+  },
+  appResume: {
+    en: "App Resume",
+  },
+  appResumeDescription: {
+    en: "Require authorization when resuming from background",
+  },
+  lastKeyBackup: {
+    en: "Last backup"
+  },
+  seedPhraseNotViewed: {
+    en: "Please view your seed phrase for all wallets before enabling device-only mode"
+  },
+  backupRequiredForDeviceOnly: {
+    en: "You must export a key backup before enabling device-only mode"
+  },
+  reencryptionSuccess: {
+    en: "All data re-encrypted successfully"
+  },
+  reencryptionPartialFailure: {
+    en: "Re-encryption incomplete. Some files failed and will retry on next launch.",
+  },
+  warning: {
+    en: "Warning",
+  },
+  keyMismatch: {
+    en: "This backup key does not match your existing databases. The import has been rolled back.",
+  },
+  requireAuthorizationFor: {
+    en: "Require authorization for"
+  },
+  encryptionKeyBackupTitle: {
+    en: "Selene Encryption Key Backup"
+  },
+  allowTokensToNonTokenAddresses: {
+    en: "Allow sending tokens to non-token addresses",
+  },
 };
 
 export default translations;

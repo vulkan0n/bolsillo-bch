@@ -1,10 +1,12 @@
 import { useCallback } from "react";
 import { Clipboard } from "@capacitor/clipboard";
 import { SnippetsOutlined } from "@ant-design/icons";
-import ToastService from "@/services/ToastService";
+
+import NotificationService from "@/kernel/app/NotificationService";
+
+import translations from "@/views/wallet/translations";
 
 import { translate } from "@/util/translations";
-import translations from "@/views/wallet/translations";
 
 export function useClipboard() {
   const handleCopyToClipboard = useCallback(
@@ -15,7 +17,7 @@ export function useClipboard() {
       isPrivate?: boolean
     ) => {
       await Clipboard.write({ string });
-      ToastService().clipboardCopy(
+      NotificationService().clipboardCopy(
         header,
         message !== undefined ? message : !isPrivate && string
       );
@@ -31,7 +33,7 @@ export function useClipboard() {
     try {
       const { value: paste } = await Clipboard.read();
 
-      const Toast = ToastService();
+      const Toast = NotificationService();
       const spawnPasteToast = () =>
         Toast.spawn({
           icon: <SnippetsOutlined className="text-primary text-4xl" />,

@@ -6,7 +6,7 @@ function findFilesWithTranslations(directoryPath) {
 
   function checkFile(filePath) {
     const fileContent = fs.readFileSync(filePath, "utf8");
-    if (fileContent.startsWith("const translations =")) {
+    if (fileContent.includes("const translations =")) {
       filesWithTranslations.push(filePath);
     }
   }

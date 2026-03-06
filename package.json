@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "preinstall": "npx only-allow pnpm",
+    "postinstall": "",
     "dev": "vite",
     "pretty": "npx prettier src/ --write",
     "lint": "npx prettier src/ --check && npx eslint --ext .js,.jsx,.ts,.tsx src/",
@@ -16,6 +17,7 @@
     "@ant-design/icons": "^5.6.1",
     "@apollo/client": "^3.14.0",
     "@bitauth/libauth": "^3.0.0",
+    "@capacitor-community/keep-awake": "^8.0.0",
     "@capacitor/android": "^8.0.0",
     "@capacitor/app": "^8.0.0",
     "@capacitor/camera": "^8.0.0",
@@ -30,10 +32,10 @@
     "@capacitor/keyboard": "^8.0.0",
     "@capacitor/network": "^8.0.0",
     "@capacitor/preferences": "^8.0.0",
+    "@capacitor/screen-orientation": "^8.0.0",
     "@capacitor/share": "^8.0.0",
     "@capacitor/splash-screen": "^8.0.0",
     "@capawesome/capacitor-torch": "^8.0.0",
-    "@capgo/capacitor-native-biometric": "^8.2.0",
     "@cashlab/cauldron": "^1.0.2",
     "@cashlab/common": "1.0.4",
     "@electrum-cash/network": "^4.1.4",
@@ -45,7 +47,7 @@
     "@walletconnect/core": "^2.23.1",
     "@walletconnect/jsonrpc-utils": "^1.0.8",
     "@walletconnect/utils": "^2.23.1",
-    "bip39": "^3.1.0",
+    "capacitor-plugin-simple-encryption": "https://git.xulu.tech/selene.cash/capacitor-plugin-simple-encryption.git#v0.2.0",
     "chart.js": "^4.5.1",
     "decimal.js": "^10.6.0",
     "graphql": "^16.12.0",
@@ -91,6 +93,7 @@
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^4.6.2",
     "eslint-plugin-react-refresh": "^0.4.26",
+    "fast-check": "^4.5.3",
     "node-fetch": "^3.3.2",
     "postcss": "^8.5.6",
     "prettier": "^3.7.4",
@@ -105,5 +108,5 @@
   "resolutions": {
     "@bitauth/libauth": "^3.0.0"
   },
-  "packageManager": "pnpm@10.27.0+sha512.72d699da16b1179c14ba9e64dc71c9a40988cbdc65c264cb0e489db7de917f20dcf4d64d8723625f2969ba52d4b7e2a1170682d9ac2a5dcaeaab732b7e16f04a"
+  "packageManager": "pnpm@10.28.1+sha512.7d7dbbca9e99447b7c3bf7a73286afaaf6be99251eb9498baefa7d406892f67b879adb3a1d7e687fc4ccc1a388c7175fbaae567a26ab44d1067b54fcb0d6a316"
 }

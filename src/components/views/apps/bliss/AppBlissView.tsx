@@ -1,18 +1,19 @@
-import FullColumn from "@/layout/FullColumn";
-import ViewHeader from "@/layout/ViewHeader";
-import { translate } from "@/util/translations";
-import translations from "./translations";
-
-import NavTab from "@/components/layout/NavTab";
-import { Outlet } from "react-router";
 import { useSelector } from "react-redux";
-import { selectActiveWallet } from "@/redux/wallet";
-
+import { Outlet } from "react-router";
 import {
   BankOutlined,
   MoneyCollectOutlined,
   DeploymentUnitOutlined,
 } from "@ant-design/icons";
+
+import { selectActiveWallet } from "@/redux/wallet";
+
+import NavTab from "@/components/layout/NavTab";
+import FullColumn from "@/layout/FullColumn";
+import ViewHeader from "@/layout/ViewHeader";
+
+import { translate } from "@/util/translations";
+import translations from "./translations";
 
 function AppBlissView() {
   const wallet = useSelector(selectActiveWallet);

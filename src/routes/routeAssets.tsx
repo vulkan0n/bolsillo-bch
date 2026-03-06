@@ -1,7 +1,7 @@
 import AssetsView from "@/views/assets/AssetsView";
 import AssetsViewCoins from "@/views/assets/AssetsViewCoins";
-import AssetsViewTokens from "@/views/assets/AssetsViewTokens";
 import AssetsViewTokenDetail from "@/views/assets/AssetsViewTokenDetail";
+import AssetsViewTokens from "@/views/assets/AssetsViewTokens";
 
 export const routeAssets = [
   {

@@ -26,13 +26,19 @@ export function detectImageMime(base64) {
     return "image/png";
 
   // GIF: GIF87a or GIF89a
-  if (str(6) === "GIF87a" || str(6) === "GIF89a") return "image/gif";
+  if (str(6) === "GIF87a" || str(6) === "GIF89a") {
+    return "image/gif";
+  }
 
   // WEBP: RIFF .... WEBP
-  if (str(4) === "RIFF" && str(12).slice(8) === "WEBP") return "image/webp";
+  if (str(4) === "RIFF" && str(12).slice(8) === "WEBP") {
+    return "image/webp";
+  }
 
   // BMP: BM
-  if (str(2) === "BM") return "image/bmp";
+  if (str(2) === "BM") {
+    return "image/bmp";
+  }
 
   // ICO: 00 00 01 00
   if (
@@ -44,6 +50,9 @@ export function detectImageMime(base64) {
     return "image/x-icon";
 
   // SVG: Decode full if UTF-8 valid, check for <svg or <?xml...><svg
+  // SECURITY: SVG can contain <script> and event handlers. Only safe when
+  // rendered via <img src> (browser sandboxes scripts). NEVER render as
+  // inline SVG, <object>, <embed>, or <iframe> — scripts WILL execute.
   try {
     const text = new TextDecoder("utf-8", { fatal: true }).decode(bytes).trim();
     if (

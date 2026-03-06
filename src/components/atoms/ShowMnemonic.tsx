@@ -1,17 +1,19 @@
 import { useState, useRef } from "react";
 import { useDispatch } from "react-redux";
-import { WarningFilled, EyeInvisibleOutlined } from "@ant-design/icons";
 import { Dialog } from "@capacitor/dialog";
+import { WarningFilled, EyeInvisibleOutlined } from "@ant-design/icons";
 
 import { walletSetKeyViewed } from "@/redux/wallet";
-import WalletManagerService from "@/services/WalletManagerService";
-import SecurityService, { AuthActions } from "@/services/SecurityService";
 
-import { useLongPress } from "@/hooks/useLongPress";
+import SecurityService, { AuthActions } from "@/kernel/app/SecurityService";
+import WalletManagerService from "@/kernel/wallet/WalletManagerService";
+
+import translations from "@/components/views/settings/SettingsWalletView/translations";
+
 import { useClipboard } from "@/hooks/useClipboard";
+import { useLongPress } from "@/hooks/useLongPress";
 
 import { translate } from "@/util/translations";
-import translations from "@/components/views/settings/SettingsWalletView/translations";
 
 export default function ShowMnemonic({ walletHash }: { walletHash: string }) {
   const dispatch = useDispatch();
@@ -101,7 +103,9 @@ export default function ShowMnemonic({ walletHash }: { walletHash: string }) {
     : walletBalanceClasses;
 
   const handleLongPress = async () => {
-    if (shouldShowRecoveryPhrase === false && isKeyViewed === false) return;
+    if (shouldShowRecoveryPhrase === false && isKeyViewed === false) {
+      return;
+    }
     await handleClipboardCopy();
   };
 

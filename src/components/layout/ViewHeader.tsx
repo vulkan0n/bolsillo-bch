@@ -1,6 +1,7 @@
-import { useLocation, useNavigate } from "react-router";
 import { useSelector } from "react-redux";
+import { useLocation, useNavigate } from "react-router";
 import { ArrowLeftOutlined, CloseOutlined } from "@ant-design/icons";
+
 import { selectIsExperimental } from "@/redux/preferences";
 
 interface Props {

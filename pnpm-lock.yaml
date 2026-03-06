@@ -20,6 +20,9 @@ importers:
       '@bitauth/libauth':
         specifier: ^3.0.0
         version: 3.0.0
+      '@capacitor-community/keep-awake':
+        specifier: ^8.0.0
+        version: 8.0.0(@capacitor/core@8.0.1)
       '@capacitor/android':
         specifier: ^8.0.0
         version: 8.0.1(@capacitor/core@8.0.1)
@@ -62,6 +65,9 @@ importers:
       '@capacitor/preferences':
         specifier: ^8.0.0
         version: 8.0.0(@capacitor/core@8.0.1)
+      '@capacitor/screen-orientation':
+        specifier: ^8.0.0
+        version: 8.0.0(@capacitor/core@8.0.1)
       '@capacitor/share':
         specifier: ^8.0.0
         version: 8.0.0(@capacitor/core@8.0.1)
@@ -71,9 +77,6 @@ importers:
       '@capawesome/capacitor-torch':
         specifier: ^8.0.0
         version: 8.0.0(@capacitor/core@8.0.1)
-      '@capgo/capacitor-native-biometric':
-        specifier: ^8.2.0
-        version: 8.2.0(@capacitor/core@8.0.1)
       '@cashlab/cauldron':
         specifier: ^1.0.2
         version: 1.0.2
@@ -107,9 +110,9 @@ importers:
       '@walletconnect/utils':
         specifier: ^2.23.1
         version: 2.23.1(@capacitor/preferences@8.0.0(@capacitor/core@8.0.1))(typescript@5.9.3)
-      bip39:
-        specifier: ^3.1.0
-        version: 3.1.0
+      capacitor-plugin-simple-encryption:
+        specifier: https://git.xulu.tech/selene.cash/capacitor-plugin-simple-encryption.git#v0.2.0
+        version: git+https://git.xulu.tech/selene.cash/capacitor-plugin-simple-encryption.git#cb673fc345599a3e415f094d4ecad7e8f72f9bcb(@capacitor/core@8.0.1)
       chart.js:
         specifier: ^4.5.1
         version: 4.5.1
@@ -240,6 +243,9 @@ importers:
       eslint-plugin-react-refresh:
         specifier: ^0.4.26
         version: 0.4.26(eslint@8.57.1)
+      fast-check:
+        specifier: ^4.5.3
+        version: 4.5.3
       node-fetch:
         specifier: ^3.3.2
         version: 3.3.2
@@ -422,6 +428,11 @@ packages:
     resolution: {integrity: sha512-3yoL31XpnhAnf5nDVMFk4xPqebxDwXrgYAwpa31ARJnV5A/eXWlpNYvCd6FTZPFM4VvKfjCBi+jRCrw1hOZ0Jg==}
     engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
 
+  '@capacitor-community/keep-awake@8.0.0':
+    resolution: {integrity: sha512-+bNAILA4R8PU+rm6OuKfgW6T4N24oAb2Idut5whfX5JAz09j7UBKFBEmT5C0QFJ7S8NZzp9d/yBsbIhLj+JkAA==}
+    peerDependencies:
+      '@capacitor/core': '>=8.0.0'
+
   '@capacitor/android@8.0.1':
     resolution: {integrity: sha512-Mrk2MFKSg9YA4BPLKm03wwFnGKcvzNBERUTcxjW1NkLrF6YhJwygAT69f/YGopFvOhhqdnDPsuZuASUfmpkSpw==}
     peerDependencies:
@@ -505,6 +516,11 @@ packages:
     peerDependencies:
       '@capacitor/core': '>=8.0.0'
 
+  '@capacitor/screen-orientation@8.0.0':
+    resolution: {integrity: sha512-wjIYtDuNAbbg+rovOQPL9jYXBBNy8YJCKzicAZA9AKfHUubREuxrLmkuE2K95kckFfHuWtZ45wzr0Yapmn2c5A==}
+    peerDependencies:
+      '@capacitor/core': '>=8.0.0'
+
   '@capacitor/share@8.0.0':
     resolution: {integrity: sha512-VU+xT4LFwr4keIC0UKDqGQVAiNlAHwoTMQg8wVVSxtn/k32VOvvtqFfu63qnXr40WKytZWrxJfVESvRjd761yg==}
     peerDependencies:
@@ -520,11 +536,6 @@ packages:
 
   '@capawesome/capacitor-torch@8.0.0':
     resolution: {integrity: sha512-uaz9CmdflZ9ZBBKn9WFIWxokpQ8BdFy0Im+FxHNwZC8HnMZ3R5yswThrgPd4q3MfUcCO/3p1916wUPvmJ4Pwgw==}
-    peerDependencies:
-      '@capacitor/core': '>=8.0.0'
-
-  '@capgo/capacitor-native-biometric@8.2.0':
-    resolution: {integrity: sha512-FBQnLWTBTEGvRoTLbfmUgv+Hj2u/9+bn9VXULO9ds0euWARBS9Hlh+4Vzt6c8Y0EZMnJx7kgsUcW1HPmfoqT5Q==}
     peerDependencies:
       '@capacitor/core': '>=8.0.0'
 
@@ -1786,8 +1797,8 @@ packages:
     resolution: {integrity: sha512-wvUjBtSGN7+7SjNpq/9M2Tg350UZD3q62IFZLbRAR1bSMlCo1ZaeW+BJ+D090e4hIIZLBcTDWe4Mh4jvUDajzQ==}
     engines: {node: '>= 0.4'}
 
-  axe-core@4.11.0:
-    resolution: {integrity: sha512-ilYanEU8vxxBexpJd8cWM4ElSQq4QctCLKih0TSfjIfCQTeyH/6zVrmIJfLPrKTKJRbiG+cfnZbQIjAlJmF1jQ==}
+  axe-core@4.11.1:
+    resolution: {integrity: sha512-BASOg+YwO2C+346x3LZOeoovTIoTrRqEsqMa6fmfAV0P+U9mFr9NsyOEpiYvFjbc64NMrSswhV50WdXzdb/Z5A==}
     engines: {node: '>=4'}
 
   axobject-query@4.1.0:
@@ -1864,9 +1875,6 @@ packages:
   binary-extensions@2.3.0:
     resolution: {integrity: sha512-Ceh+7ox5qe7LJuLHoY0feh3pHuUDHAcRUeyL2VYghZwfpkNIy/+8Ocg0a3UuSoYzavmylwuLWQOf3hl0jjMMIw==}
     engines: {node: '>=8'}
-
-  bip39@3.1.0:
-    resolution: {integrity: sha512-c9kiwdk45Do5GL0vJMe7tS95VjCii65mYAH7DfWl3uW8AVzXKQVUm64i3hzVybBDMp9r7j9iNxR85+ul8MdN/A==}
 
   bl@4.1.0:
     resolution: {integrity: sha512-1W07cM9gS6DcLperZfFSj+bWLtaPGSOHWhPiGzXmvVJbRLdG82sH/Kn8EtW1VqWVA54AKf2h5k5BbnIbwF3h6w==}
@@ -1991,6 +1999,12 @@ packages:
   canvg@3.0.11:
     resolution: {integrity: sha512-5ON+q7jCTgMp9cjpu4Jo6XbvfYwSB2Ow3kzHKfIyJfaCAOHLbdKPQqGKgfED/R5B+3TFFfe8pegYA+b423SRyA==}
     engines: {node: '>=10.0.0'}
+
+  capacitor-plugin-simple-encryption@git+https://git.xulu.tech/selene.cash/capacitor-plugin-simple-encryption.git#cb673fc345599a3e415f094d4ecad7e8f72f9bcb:
+    resolution: {commit: cb673fc345599a3e415f094d4ecad7e8f72f9bcb, repo: https://git.xulu.tech/selene.cash/capacitor-plugin-simple-encryption.git, type: git}
+    version: 0.1.0
+    peerDependencies:
+      '@capacitor/core': ^8.0.0
 
   chai@6.2.2:
     resolution: {integrity: sha512-NUPRluOfOiTKBKvWPtSD4PhFvWCqOi0BGStNWs57X9js7XGTprSmFoz5F0tWhR4WPjNeR9jXqdC7/UpSJTnlRg==}
@@ -2690,6 +2704,10 @@ packages:
   expect-type@1.3.0:
     resolution: {integrity: sha512-knvyeauYhqjOYvQ66MznSMs83wmHrCycNEN6Ao+2AeYEfxUIkuiVxdEa1qlGEPK+We3n0THiDciYSsCcgW/DoA==}
     engines: {node: '>=12.0.0'}
+
+  fast-check@4.5.3:
+    resolution: {integrity: sha512-IE9csY7lnhxBnA8g/WI5eg/hygA6MGWJMSNfFRrBlXUciADEhS1EDB0SIsMSvzubzIlOBbVITSsypCsW717poA==}
+    engines: {node: '>=12.17.0'}
 
   fast-deep-equal@3.1.3:
     resolution: {integrity: sha512-f3qQ9oQy9j2AhBe/H9VC91wLmKBCCU/gDOnKNAYG5hswO7BLKj09Hc5HYNz9cGI++xlpDCIgDaitVs03ATR84Q==}
@@ -3465,6 +3483,9 @@ packages:
   minimatch@3.1.2:
     resolution: {integrity: sha512-J7p63hRiAjw1NDEww1W7i37+ByIrOWO5XQQAzZ3VOcL0PNybwpfmV/N05zFAzwQ9USyEcX6t3UO+K5aqBQOIHw==}
 
+  minimatch@3.1.5:
+    resolution: {integrity: sha512-VgjWUsnnT6n+NUk6eZq77zeFdpW2LWDzP6zFGrCbHXiYNul5Dzqk2HHQ5uFH2DNW5Xbp8+jVzaeNt94ssEEl4w==}
+
   minimatch@8.0.4:
     resolution: {integrity: sha512-W0Wvr9HyFXZRGIDgCicunpQ299OKXs9RgZfaukz4qAW/pJhcpUfupc9c+OObPOFueNy8VSrZgEmDtk6Kh4WzDA==}
     engines: {node: '>=16 || 14 >=14.17'}
@@ -3942,6 +3963,9 @@ packages:
   punycode@2.3.1:
     resolution: {integrity: sha512-vYt7UD1U9Wg6138shLtLOvdAu+8DsC/ilFtEVHcH+wydcSpNE20AfSOduf6MkRFahL5FY7X1oU7nKVZFtfq8Fg==}
     engines: {node: '>=6'}
+
+  pure-rand@7.0.1:
+    resolution: {integrity: sha512-oTUZM/NAZS8p7ANR3SHh30kXB+zK2r2BPcEn/awJIbOvq82WoMN4p62AWWp3Hhw50G0xMsw1mhIBLqHw64EcNQ==}
 
   q@1.5.1:
     resolution: {integrity: sha512-kV/CThkXo6xyFEZUugw/+pIOywXcDbFYgSct5cT3gqlbkBE1SJdwy6UQoZvodiWF/ckQLZyDE/Bu1M6gVu5lVw==}
@@ -5316,6 +5340,10 @@ snapshots:
 
   '@bitauth/libauth@3.0.0': {}
 
+  '@capacitor-community/keep-awake@8.0.0(@capacitor/core@8.0.1)':
+    dependencies:
+      '@capacitor/core': 8.0.1
+
   '@capacitor/android@8.0.1(@capacitor/core@8.0.1)':
     dependencies:
       '@capacitor/core': 8.0.1
@@ -5442,6 +5470,10 @@ snapshots:
     dependencies:
       '@capacitor/core': 8.0.1
 
+  '@capacitor/screen-orientation@8.0.0(@capacitor/core@8.0.1)':
+    dependencies:
+      '@capacitor/core': 8.0.1
+
   '@capacitor/share@8.0.0(@capacitor/core@8.0.1)':
     dependencies:
       '@capacitor/core': 8.0.1
@@ -5453,10 +5485,6 @@ snapshots:
   '@capacitor/synapse@1.0.4': {}
 
   '@capawesome/capacitor-torch@8.0.0(@capacitor/core@8.0.1)':
-    dependencies:
-      '@capacitor/core': 8.0.1
-
-  '@capgo/capacitor-native-biometric@8.2.0(@capacitor/core@8.0.1)':
     dependencies:
       '@capacitor/core': 8.0.1
 
@@ -7029,7 +7057,7 @@ snapshots:
     dependencies:
       possible-typed-array-names: 1.1.0
 
-  axe-core@4.11.0: {}
+  axe-core@4.11.1: {}
 
   axobject-query@4.1.0: {}
 
@@ -7086,10 +7114,6 @@ snapshots:
   big-integer@1.6.52: {}
 
   binary-extensions@2.3.0: {}
-
-  bip39@3.1.0:
-    dependencies:
-      '@noble/hashes': 1.8.0
 
   bl@4.1.0:
     dependencies:
@@ -7251,6 +7275,10 @@ snapshots:
       stackblur-canvas: 2.7.0
       svg-pathdata: 6.0.3
     optional: true
+
+  capacitor-plugin-simple-encryption@git+https://git.xulu.tech/selene.cash/capacitor-plugin-simple-encryption.git#cb673fc345599a3e415f094d4ecad7e8f72f9bcb(@capacitor/core@8.0.1):
+    dependencies:
+      '@capacitor/core': 8.0.1
 
   chai@6.2.2: {}
 
@@ -8041,7 +8069,7 @@ snapshots:
       array-includes: 3.1.9
       array.prototype.flatmap: 1.3.3
       ast-types-flow: 0.0.8
-      axe-core: 4.11.0
+      axe-core: 4.11.1
       axobject-query: 4.1.0
       damerau-levenshtein: 1.0.8
       emoji-regex: 9.2.2
@@ -8049,7 +8077,7 @@ snapshots:
       hasown: 2.0.2
       jsx-ast-utils: 3.3.5
       language-tags: 1.0.9
-      minimatch: 3.1.2
+      minimatch: 3.1.5
       object.fromentries: 2.0.8
       safe-regex-test: 1.1.0
       string.prototype.includes: 2.0.1
@@ -8206,6 +8234,10 @@ snapshots:
   expand-template@2.0.3: {}
 
   expect-type@1.3.0: {}
+
+  fast-check@4.5.3:
+    dependencies:
+      pure-rand: 7.0.1
 
   fast-deep-equal@3.1.3: {}
 
@@ -8983,6 +9015,10 @@ snapshots:
     dependencies:
       brace-expansion: 1.1.12
 
+  minimatch@3.1.5:
+    dependencies:
+      brace-expansion: 1.1.12
+
   minimatch@8.0.4:
     dependencies:
       brace-expansion: 2.0.2
@@ -9511,6 +9547,8 @@ snapshots:
   punycode@1.4.1: {}
 
   punycode@2.3.1: {}
+
+  pure-rand@7.0.1: {}
 
   q@1.5.1: {}
 

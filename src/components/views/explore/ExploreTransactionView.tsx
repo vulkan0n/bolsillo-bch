@@ -1,7 +1,8 @@
 /* eslint-disable react/prop-types */
 import { useState, useCallback, useEffect, useMemo } from "react";
-import { useLoaderData, Link } from "react-router";
+import toast from "react-hot-toast";
 import { useSelector } from "react-redux";
+import { useLoaderData, Link } from "react-router";
 import { DateTime } from "luxon";
 import {
   CopyOutlined,
@@ -11,44 +12,44 @@ import {
   FileImageOutlined,
   ArrowRightOutlined,
 } from "@ant-design/icons";
-import toast from "react-hot-toast";
+
 import {
   selectCurrencySettings,
   selectIsExperimental,
   selectBchNetwork,
 } from "@/redux/preferences";
-import { selectActiveWalletHash } from "@/redux/wallet";
 import { selectChaintip } from "@/redux/sync";
+import { selectActiveWalletHash } from "@/redux/wallet";
 
-import TransactionHistoryService from "@/services/TransactionHistoryService";
+//import LogService from "@/kernel/app/LogService";
 import TransactionManagerService, {
   TransactionOutput,
   TransactionEntity,
-} from "@/services/TransactionManagerService";
-import TokenManagerService from "@/services/TokenManagerService";
+} from "@/kernel/bch/TransactionManagerService";
+import TokenManagerService from "@/kernel/wallet/TokenManagerService";
 import TransactionExportService, {
   prepareTransactionExportData,
-} from "@/services/TransactionExportService";
-//import LogService from "@/services/LogService";
+} from "@/kernel/wallet/TransactionExportService";
+import TransactionHistoryService from "@/kernel/wallet/TransactionHistoryService";
 
-import Address from "@/atoms/Address";
-import Satoshi from "@/atoms/Satoshi";
 import Accordion from "@/atoms/Accordion";
-import Editable from "@/atoms/Editable";
-import TokenAmount from "@/atoms/TokenAmount";
-import Card from "@/atoms/Card";
+import Address from "@/atoms/Address";
 import Button from "@/atoms/Button";
+import Card from "@/atoms/Card";
+import Editable from "@/atoms/Editable";
 import LinkExternal from "@/atoms/LinkExternal";
-
-import ExploreSearchBar from "./ExploreSearchBar";
+import Satoshi from "@/atoms/Satoshi";
+import TokenAmount from "@/atoms/TokenAmount";
 
 import { useClipboard } from "@/hooks/useClipboard";
 
 import { hexToUtf8, binToHex } from "@/util/hex";
+import { getTxExplorerUrl } from "@/util/network";
 
 import { translate } from "@/util/translations";
 import translations from "./translations";
-import { getTxExplorerUrl } from "@/util/electrum_servers";
+
+import ExploreSearchBar from "./ExploreSearchBar";
 
 //const Log = LogService("ExploreTransactionView");
 
@@ -69,14 +70,14 @@ export default function ExploreTransactionView() {
   const [isExporting, setIsExporting] = useState(false);
 
   const [memo, setMemo] = useState(
-    TransactionHistory.getTransactionMemo(tx.txid) || ""
+    TransactionHistory.getTransactionMemo(tx.tx_hash) || ""
   );
 
   useEffect(
     function refreshMemo() {
-      setMemo(TransactionHistory.getTransactionMemo(tx.txid));
+      setMemo(TransactionHistory.getTransactionMemo(tx.tx_hash));
     },
-    [tx.txid, TransactionHistory]
+    [tx.tx_hash, TransactionHistory]
   );
 
   const isConfirmed = tx.blockhash !== null;
@@ -88,19 +89,23 @@ export default function ExploreTransactionView() {
 
   const { handleCopyToClipboard } = useClipboard();
   const handleCopyTransactionId = async () => {
-    handleCopyToClipboard(tx.txid, translate(translations.transactionId));
+    handleCopyToClipboard(tx.tx_hash, translate(translations.transactionId));
   };
 
   const handleSaveMemo = (newMemo) => {
     setMemo(newMemo);
-    TransactionHistory.setTransactionMemo(tx.txid, newMemo);
+    TransactionHistory.setTransactionMemo(tx.tx_hash, newMemo);
   };
 
   const handleExportAsPdf = async () => {
-    if (isExporting) return;
+    if (isExporting) {
+      return;
+    }
 
     setIsExporting(true);
-    const loadingToast = toast.loading("Generating PDF...");
+    const loadingToast = toast.loading(
+      translate(translations.pdfExportGenerating)
+    );
 
     try {
       const exportData = await prepareTransactionExportData(
@@ -112,21 +117,29 @@ export default function ExploreTransactionView() {
 
       await TransactionExportService.exportAsPDF(
         exportData,
-        `transaction-${tx.txid.slice(0, 8)}`
+        `transaction-${tx.tx_hash.slice(0, 8)}`
       );
-      toast.success("PDF exported successfully", { id: loadingToast });
+      toast.success(translate(translations.pdfExportSuccess), {
+        id: loadingToast,
+      });
     } catch (error) {
-      toast.error("Failed to export PDF", { id: loadingToast });
+      toast.error(translate(translations.pdfExportError), {
+        id: loadingToast,
+      });
     } finally {
       setIsExporting(false);
     }
   };
 
   const handleExportAsPng = async () => {
-    if (isExporting) return;
+    if (isExporting) {
+      return;
+    }
 
     setIsExporting(true);
-    const loadingToast = toast.loading("Generating PNG...");
+    const loadingToast = toast.loading(
+      translate(translations.pngExportGenerating)
+    );
 
     try {
       const exportData = await prepareTransactionExportData(
@@ -138,11 +151,15 @@ export default function ExploreTransactionView() {
 
       await TransactionExportService.exportAsPNG(
         exportData,
-        `transaction-${tx.txid.slice(0, 8)}`
+        `transaction-${tx.tx_hash.slice(0, 8)}`
       );
-      toast.success("PNG exported successfully!", { id: loadingToast });
+      toast.success(translate(translations.pngExportSuccess), {
+        id: loadingToast,
+      });
     } catch (error) {
-      toast.error("Failed to export PNG", { id: loadingToast });
+      toast.error(translate(translations.pngExportError), {
+        id: loadingToast,
+      });
     } finally {
       setIsExporting(false);
     }
@@ -165,14 +182,14 @@ export default function ExploreTransactionView() {
             <div className="w-full p-2 bg-neutral-100 dark:bg-neutral-900 text-neutral-700 dark:text-neutral-100 border-2 border-primary rounded flex items-center justify-center active:bg-primary">
               <CopyOutlined className="mr-1" />
               <div className="font-mono text-xs flex flex-col items-center w-full">
-                <span>{tx.txid.slice(0, 32)}</span>
-                <span>{tx.txid.slice(32)}</span>
+                <span>{tx.tx_hash.slice(0, 32)}</span>
+                <span>{tx.tx_hash.slice(32)}</span>
               </div>
             </div>
           </div>
         </div>
 
-        <Card className="my-1">
+        <Card className="my-1 p-2">
           <div className="p-1">
             <div className="font-bold flex items-center justify-start">
               <span>{txDate}</span>
@@ -196,7 +213,7 @@ export default function ExploreTransactionView() {
             )}
 
             <div className="py-1">
-              <LinkExternal to={getTxExplorerUrl(tx.txid, bchNetwork)}>
+              <LinkExternal to={getTxExplorerUrl(tx.tx_hash, bchNetwork)}>
                 <span className="flex items-center text-sm font-bold text-primary-700">
                   View on external explorer{" "}
                   <ArrowRightOutlined className="ml-1" />
@@ -256,7 +273,7 @@ export default function ExploreTransactionView() {
           <Accordion title={translate(translations.inputs)}>
             {tx.vin.map((input, i) => (
               <InputListItem
-                key={`${input.txid}:${input.vout}`}
+                key={`${input.tx_hash}:${input.vout}`}
                 input={input}
                 i={i}
               />
@@ -372,18 +389,18 @@ function InputListItem({ input, i }) {
     function resolveInput() {
       const resolve = async () => {
         const resolvedTx = await TransactionManagerService().resolveTransaction(
-          input.txid,
+          input.tx_hash,
           bchNetwork
         );
         setInputTx(resolvedTx);
       };
 
-      // coinbase txid is not a valid txid
+      // coinbase tx_hash is not a valid tx_hash
       if (!isCoinbase) {
         resolve();
       }
     },
-    [input.txid, bchNetwork, isCoinbase]
+    [input.tx_hash, bchNetwork, isCoinbase]
   );
 
   const ResolvedInput = useCallback(() => {
@@ -394,8 +411,11 @@ function InputListItem({ input, i }) {
         </div>
       ) : (
         <div className={`p-1.5 ${zebraCss} truncate tracking-tight`}>
-          <Link className="font-mono text-xs" to={`/explore/tx/${input.txid}`}>
-            {input.txid}:{input.vout}
+          <Link
+            className="font-mono text-xs"
+            to={`/explore/tx/${input.tx_hash}`}
+          >
+            {input.tx_hash}:{input.vout}
           </Link>
         </div>
       );
@@ -404,11 +424,19 @@ function InputListItem({ input, i }) {
     const output = inputTx.vout.find((out) => out.n === input.vout);
 
     return (
-      <Link to={`/explore/tx/${input.txid}`}>
+      <Link to={`/explore/tx/${input.tx_hash}`}>
         <OutputListItem output={output} i={i} />
       </Link>
     );
-  }, [inputTx, input.txid, zebraCss, i, input.vout, coinbaseText, isCoinbase]);
+  }, [
+    inputTx,
+    input.tx_hash,
+    zebraCss,
+    i,
+    input.vout,
+    coinbaseText,
+    isCoinbase,
+  ]);
 
   return <ResolvedInput />;
 }

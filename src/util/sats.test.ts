@@ -9,6 +9,8 @@
  * - Different input types (number, string, bigint)
  */
 
+import { describe, it, expect } from "vitest";
+import fc from "fast-check";
 import {
   satsToBch,
   bchToSats,
@@ -111,6 +113,22 @@ describe("sats.ts", () => {
       const result = bchToSats("99999", "sats");
       expect(result).toBe(99999n);
     });
+
+    it("throws on null input", () => {
+      expect(() => bchToSats(null)).toThrow("input is required");
+    });
+
+    it("throws on undefined input", () => {
+      expect(() => bchToSats(undefined)).toThrow("input is required");
+    });
+
+    it("throws on empty string input", () => {
+      expect(() => bchToSats("")).toThrow("input is required");
+    });
+
+    it("throws on non-numeric string input", () => {
+      expect(() => bchToSats("abc")).toThrow();
+    });
   });
 
   describe("constants", () => {
@@ -150,6 +168,49 @@ describe("sats.ts", () => {
         const bch = satsToBch(sats);
         expect(bch.bch).toBe(amount);
       });
+    });
+  });
+
+  // ── Property-based tests ────────────────────────────────────────────
+
+  describe("property: sats roundtrip", () => {
+    it("sats -> bch -> sats is lossless for all valid amounts", () => {
+      fc.assert(
+        fc.property(fc.bigInt({ min: 0n, max: MAX_SATOSHI }), (sats) => {
+          const { bch } = satsToBch(sats);
+          const back = bchToSats(bch);
+          expect(back).toBe(sats);
+        }),
+        { numRuns: 500 }
+      );
+    });
+
+    it("send-max: bchToSats(satsToBch(totalBalance)) === totalBalance", () => {
+      fc.assert(
+        fc.property(fc.bigInt({ min: 0n, max: MAX_SATOSHI }), (balance) => {
+          const displayed = satsToBch(balance).bch;
+          const sentBack = bchToSats(displayed);
+          expect(sentBack).toBe(balance);
+        }),
+        { numRuns: 300 }
+      );
+    });
+
+    it("truncation never rounds up", () => {
+      fc.assert(
+        fc.property(
+          fc.bigInt({ min: 0n, max: MAX_SATOSHI }),
+          fc.integer({ min: 1, max: 99 }),
+          (sats, extra) => {
+            // Add sub-satoshi fraction via string: "X.YYYYYYYY9Z"
+            const bchStr = satsToBch(sats).bch;
+            const withExtra = `${bchStr}${extra}`;
+            const result = bchToSats(withExtra);
+            expect(result).toBe(sats);
+          }
+        ),
+        { numRuns: 200 }
+      );
     });
   });
 });

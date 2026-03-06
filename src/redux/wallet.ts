@@ -14,24 +14,24 @@ import {
 } from "@/redux/preferences";
 import { syncConnect, selectIsRebuilding } from "@/redux/sync";
 
-import { ValidBchNetwork } from "@/util/electrum_servers";
-
-import WalletManagerService, {
-  WalletEntity,
-} from "@/services/WalletManagerService";
-import ElectrumService from "@/services/ElectrumService";
-import CauldronService from "@/services/CauldronService";
+import LogService from "@/kernel/app/LogService";
+import NotificationService from "@/kernel/app/NotificationService";
+import CauldronService from "@/kernel/bch/CauldronService";
+import ElectrumService from "@/kernel/bch/ElectrumService";
 import AddressManagerService, {
   AddressEntity,
-} from "@/services/AddressManagerService";
-import AddressScannerService from "@/services/AddressScannerService";
-import UtxoManagerService from "@/services/UtxoManagerService";
-import TokenManagerService from "@/services/TokenManagerService";
+} from "@/kernel/wallet/AddressManagerService";
+import AddressScannerService from "@/kernel/wallet/AddressScannerService";
+import TokenManagerService from "@/kernel/wallet/TokenManagerService";
+import UtxoManagerService from "@/kernel/wallet/UtxoManagerService";
+import WalletManagerService, {
+  WalletEntity,
+} from "@/kernel/wallet/WalletManagerService";
 
-import ToastService from "@/services/ToastService";
-import LogService from "@/services/LogService";
+import { resolveNftType } from "@/util/token";
 
 import { convertCashAddress } from "@/util/cashaddr";
+import { ValidBchNetwork } from "@/util/network";
 import { MUSD_TOKENID } from "@/util/tokens";
 
 const Log = LogService("redux/wallet");
@@ -138,7 +138,9 @@ export const walletReceive = createAsyncThunk(
 
     let satsDiff = 0n;
     let tokenSats = 0n;
-    const tokenDiff = {};
+    const tokenDiff: Record<string, bigint> = {};
+    const nftDiff: Record<string, number> = {};
+    const nftCommitments: Record<string, string[]> = {};
 
     Log.debug("walletReceive", utxoIn);
 
@@ -146,7 +148,7 @@ export const walletReceive = createAsyncThunk(
     while (utxoIn.length > 0) {
       const utxo = utxoIn.shift()!;
 
-      satsDiff += utxo.amount;
+      satsDiff += utxo.valueSatoshis;
 
       const category = utxo.token_category;
 
@@ -160,7 +162,16 @@ export const walletReceive = createAsyncThunk(
       }
 
       tokenDiff[category] += utxo.token_amount;
-      tokenSats += utxo.amount;
+      tokenSats += utxo.valueSatoshis;
+
+      // track NFTs separately
+      if (utxo.nft_capability !== null && utxo.nft_capability !== undefined) {
+        nftDiff[category] = (nftDiff[category] || 0) + 1;
+        if (utxo.nft_commitment) {
+          nftCommitments[category] = nftCommitments[category] || [];
+          nftCommitments[category].push(utxo.nft_commitment);
+        }
+      }
 
       // check for matching utxoOut entry
       const outIndex = utxoOut.findIndex((u) => u.token_category === category);
@@ -173,7 +184,7 @@ export const walletReceive = createAsyncThunk(
     // iterate over all spent UTXOs
     while (utxoOut.length > 0) {
       const utxo = utxoOut.shift()!;
-      satsDiff -= utxo.amount;
+      satsDiff -= utxo.valueSatoshis;
     }
 
     // receiving tokens
@@ -187,12 +198,54 @@ export const walletReceive = createAsyncThunk(
       // spawn a receive popup for each token category
       Object.keys(tokenDiff).forEach((category) => {
         const tokenData = TokenManager.getToken(category);
-        const token = {
-          ...tokenData,
-          amount: tokenDiff[category],
-        };
+        const nftCount = nftDiff[category] || 0;
+        const commitments = nftCommitments[category] || [];
+        const isNft = nftCount > 0;
 
-        ToastService().tokenReceived(token);
+        if (isNft && commitments.length > 0) {
+          // spawn one notification per NFT with its own thumbnail
+          commitments.forEach((commitment) => {
+            const parsed = resolveNftType(
+              tokenData.token?.nfts,
+              commitment,
+              category
+            );
+            NotificationService().tokenReceived(
+              {
+                ...tokenData,
+                amount: 0n,
+                nftCount: 1,
+                nft_commitment: commitment,
+              },
+              true,
+              parsed.nftType?.name,
+              parsed.nftType?.description
+            );
+          });
+          // if there's also a fungible amount, show a separate notification
+          if (tokenDiff[category] > 0n) {
+            NotificationService().tokenReceived({
+              ...tokenData,
+              amount: tokenDiff[category],
+            });
+          }
+        } else if (isNft) {
+          // NFT without commitment
+          NotificationService().tokenReceived(
+            {
+              ...tokenData,
+              amount: tokenDiff[category],
+              nftCount,
+            },
+            true
+          );
+        } else {
+          // fungible token only
+          NotificationService().tokenReceived({
+            ...tokenData,
+            amount: tokenDiff[category],
+          });
+        }
       });
     }
 
@@ -212,7 +265,7 @@ export const walletReceive = createAsyncThunk(
       } catch (e) {
         Log.warn(e);
         Log.error("swap on receive failed!");
-        ToastService().paymentReceived(incomingSats);
+        NotificationService().paymentReceived(incomingSats);
       }
 
       for (let i = 0; i < 3; i += 1) {
@@ -231,7 +284,7 @@ export const walletReceive = createAsyncThunk(
             wallet.walletHash,
             wallet.network
           ).getToken(MUSD_TOKENID);
-          ToastService().tokenReceived({
+          NotificationService().tokenReceived({
             ...tokenData,
             amount: tradeTransaction.tradeResult.summary.demand,
           });
@@ -242,9 +295,9 @@ export const walletReceive = createAsyncThunk(
       }
 
       Log.error("swap on receive failed!");
-      ToastService().paymentReceived(incomingSats);
+      NotificationService().paymentReceived(incomingSats);
     } else {
-      ToastService().paymentReceived(satsDiff);
+      NotificationService().paymentReceived(satsDiff);
     }
   }
 );

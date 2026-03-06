@@ -5,6 +5,7 @@ import {
   ThunderboltOutlined,
   PropertySafetyOutlined,
   AlertOutlined,
+  QrcodeOutlined,
 } from "@ant-design/icons";
 
 import {
@@ -12,20 +13,21 @@ import {
   selectCurrencySettings,
   selectIsExperimental,
   selectShouldForceTokenAddress,
+  selectShouldUseLegacyBip21,
 } from "@/redux/preferences";
 
-import { translate } from "@/util/translations";
-import translations from "./translations";
-
-import { SettingsContext } from "./SettingsContext";
-
-import CurrencyService from "@/services/CurrencyService";
-import SecurityService, { AuthActions } from "@/services/SecurityService";
+import SecurityService, { AuthActions } from "@/kernel/app/SecurityService";
+import CurrencyService from "@/kernel/bch/CurrencyService";
 
 import Accordion from "@/atoms/Accordion";
 import Checkbox from "@/atoms/Checkbox";
 import CurrencySymbol from "@/atoms/CurrencySymbol";
 import { SatoshiInput } from "@/atoms/SatoshiInput";
+
+import { translate } from "@/util/translations";
+import translations from "./translations";
+
+import { SettingsContext } from "./SettingsContext";
 
 export default function PaymentSettings() {
   const { handleSettingsUpdate } = useContext(SettingsContext);
@@ -39,6 +41,7 @@ export default function PaymentSettings() {
   const isExperimental = useSelector(selectIsExperimental);
 
   const shouldForceTokenAddress = useSelector(selectShouldForceTokenAddress);
+  const shouldUseLegacyBip21 = useSelector(selectShouldUseLegacyBip21);
 
   const Currency = CurrencyService(localCurrency);
 
@@ -97,10 +100,22 @@ export default function PaymentSettings() {
           />
         </span>
       </Accordion.Child>
+      <Accordion.Child
+        icon={QrcodeOutlined}
+        label={translate(translations.useLegacyBip21)}
+        description={translate(translations.useLegacyBip21Description)}
+      >
+        <Checkbox
+          checked={shouldUseLegacyBip21}
+          onChange={(event) => {
+            handleSettingsUpdate("useLegacyBip21", event.target.checked);
+          }}
+        />
+      </Accordion.Child>
       {isExperimental && (
         <Accordion.Child
           icon={AlertOutlined}
-          label="Allow sending tokens to non-token addresses"
+          label={translate(translations.allowTokensToNonTokenAddresses)}
         >
           <Checkbox
             checked={shouldForceTokenAddress}

@@ -1,17 +1,20 @@
+import { App } from "@capacitor/app";
+import { Device, DeviceInfo as CapacitorDeviceInfo } from "@capacitor/device";
+import { Keyboard } from "@capacitor/keyboard";
+import { Network, ConnectionStatus } from "@capacitor/network";
+import { SimpleEncryption } from "capacitor-plugin-simple-encryption";
 import {
   createAction,
   createReducer,
   createSelector,
   createAsyncThunk,
 } from "@reduxjs/toolkit";
-import { App } from "@capacitor/app";
-import { Device, DeviceInfo as CapacitorDeviceInfo } from "@capacitor/device";
-import { Keyboard } from "@capacitor/keyboard";
-import { Network, ConnectionStatus } from "@capacitor/network";
-import { NativeBiometric } from "@capgo/capacitor-native-biometric";
+
 import { store, RootState } from "@/redux";
 //import { syncReconnect } from "@/redux/sync";
-import LogService from "@/services/LogService";
+
+import LogService from "@/kernel/app/LogService";
+
 import { sha256 } from "@/util/hash";
 
 const Log = LogService("Device");
@@ -31,6 +34,7 @@ interface DeviceState {
   keyboard: {
     isOpen: boolean;
   };
+  isLocked: boolean;
   deviceInfo: DeviceInfo;
   locale: string;
   network: ConnectionStatus;
@@ -53,6 +57,7 @@ export const setKeyboardIsOpen = createAction<boolean>(
 export const setNetworkStatus = createAction<ConnectionStatus>(
   "device/setNetworkStatus"
 );
+export const setIsLocked = createAction<boolean>("device/setIsLocked");
 
 export const selectScannerIsScanning = createSelector(
   (state: RootState) => state.device.scanner,
@@ -76,6 +81,11 @@ export const selectDeviceInfo = createSelector(
 export const selectLocale = createSelector(
   (state: RootState) => state.device,
   (device): string => device.locale
+);
+
+export const selectIsLocked = createSelector(
+  (state: RootState) => state.device,
+  (device): boolean => device.isLocked
 );
 
 export const selectNetworkStatus = createSelector(
@@ -109,6 +119,7 @@ async function initializeDevice(): Promise<DeviceState> {
   const deviceState: DeviceState = {
     scanner: { isScanning: false, isTorchEnabled: false },
     keyboard: { isOpen: false },
+    isLocked: false,
     deviceInfo: {
       ...deviceInfo,
       deviceId,
@@ -123,8 +134,8 @@ async function initializeDevice(): Promise<DeviceState> {
   if (deviceState.deviceInfo.platform !== "web") {
     // report biometric authorization capability
     deviceState.deviceInfo.hasBiometric = (
-      await NativeBiometric.isAvailable()
-    ).isAvailable;
+      await SimpleEncryption.isBiometricAvailable()
+    ).value;
 
     // global back button behavior
     App.addListener("backButton", (canGoBack) => {
@@ -176,6 +187,7 @@ async function initializeDevice(): Promise<DeviceState> {
 const initialState: DeviceState = {
   scanner: { isScanning: false, isTorchEnabled: false },
   keyboard: { isOpen: false },
+  isLocked: false,
   deviceInfo: {
     model: "null",
     operatingSystem: "unknown",
@@ -214,6 +226,9 @@ export const deviceReducer = createReducer(initialState, (builder) => {
     })
     .addCase(setNetworkStatus, (state, action) => {
       state.network = action.payload;
+    })
+    .addCase(setIsLocked, (state, action) => {
+      state.isLocked = action.payload;
     });
 });
 

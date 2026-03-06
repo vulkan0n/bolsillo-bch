@@ -15,6 +15,9 @@ dist-ssr
 # This contains secrets, don't store in source control
 .env
 
+# Claude Code
+.claude
+
 # Editor directories and files
 .vscode
 .vscode/*
@@ -40,3 +43,7 @@ ios/App/App.*.zip
 **/fastlane/Preview.html
 **/fastlane/report.xml
 **/fastlane/test_output
+
+# ios artifacts
+*.xcuserdata
+**/xcuserdata/
