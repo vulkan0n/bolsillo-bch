@@ -18,6 +18,7 @@ import TransactionManagerService, {
 
 import { sha256 } from "@/util/hash";
 import { hexToUtf8 } from "@/util/hex";
+import { resolveNftType } from "@/util/token";
 import { ipfsFetch } from "@/util/ipfs";
 import { detectImageMime } from "@/util/mime";
 import { ValidBchNetwork } from "@/util/network";
@@ -619,19 +620,13 @@ export default function BcmrService(bchNetwork: ValidBchNetwork) {
     } catch (e) {
       return null;
     }
-    const hasNftMetadata = !!(
-      nft_commitment &&
-      identity.token.nfts &&
-      identity.token.nfts.parse.types[nft_commitment]
+    const parsed = resolveNftType(
+      identity.token?.nfts,
+      nft_commitment,
+      authbase
     );
-
-    //Log.debug("hasNftMetadata?", hasNftMetadata);
-
-    const identityNft = hasNftMetadata
-      ? identity.token.nfts.parse.types[nft_commitment]
-      : null;
-
-    //Log.debug("identityNft?", identityNft);
+    const hasNftMetadata = parsed.isSuccess && !!parsed.nftType;
+    const identityNft = parsed.nftType || null;
 
     const hasUris = !!identity.uris;
     const hasIcon = hasUris && identity.uris.icon;
@@ -640,8 +635,10 @@ export default function BcmrService(bchNetwork: ValidBchNetwork) {
     const hasNftUris = hasNftMetadata && identityNft && identityNft.uris;
     const hasNftIcon = hasNftMetadata && hasNftUris && identityNft.uris.icon;
     const hasNftImage = hasNftMetadata && hasNftUris && identityNft.uris.image;
+
+    // Use typeId for cache key so all NFTs of the same type share one icon
     const filename = hasNftMetadata
-      ? sha256.text(`${authbase}${nft_commitment}`)
+      ? sha256.text(`${authbase}${parsed.typeId}`)
       : authbase;
 
     const dir = returnImage ? "images" : "icons";
@@ -673,29 +670,25 @@ export default function BcmrService(bchNetwork: ValidBchNetwork) {
       }
       iconDataUri = `data:${mime};base64,${iconBase64}`;
     } catch (e) {
-      if (
-        (!hasUris && !hasNftUris) ||
-        (hasNftMetadata
-          ? !hasNftUris || (!hasNftIcon && !hasNftImage)
-          : !hasIcon && !hasImage)
-      ) {
+      // Prefer NFT type URIs, fall back to category URIs
+      const shouldPreferNftUri =
+        hasNftMetadata && hasNftUris && (hasNftIcon || hasNftImage);
+
+      if (!shouldPreferNftUri && !hasIcon && !hasImage) {
         ICON_CACHE.set(iconPath, null);
         return null;
       }
 
-      /* eslint-disable-next-line no-nested-ternary */
-      const nftUri = hasNftMetadata
-        ? (returnImage && hasNftImage) || (!hasNftIcon && hasNftImage)
-          ? identityNft.uris.image
-          : identityNft.uris.icon
-        : "";
-
-      const categoryUri =
-        (returnImage && hasImage) || (!hasIcon && hasImage)
-          ? identity.uris.image
-          : identity.uris.icon;
-
-      const fetchUri = decodeURI(hasNftMetadata ? nftUri : categoryUri);
+      const fetchUri = decodeURI(
+        /* eslint-disable-next-line no-nested-ternary */
+        shouldPreferNftUri
+          ? (returnImage && hasNftImage) || (!hasNftIcon && hasNftImage)
+            ? identityNft.uris.image
+            : identityNft.uris.icon
+          : (returnImage && hasImage) || (!hasIcon && hasImage)
+            ? identity.uris.image
+            : identity.uris.icon
+      );
 
       if (fetchUri.startsWith("data:")) {
         iconDataUri = fetchUri;

@@ -1,5 +1,5 @@
 /* eslint-disable no-plusplus, no-bitwise */
-import { hexToBin, binToUtf8 } from "@bitauth/libauth";
+import { hexToBin, binToUtf8, vmNumberToBigInt } from "@bitauth/libauth";
 
 import { hexToRgb, rgbToHex } from "@/util/color";
 
@@ -57,4 +57,14 @@ export function compareBytes(a: Uint8Array, b: Uint8Array): number {
     if (a[idx] > b[idx]) return 1;
   }
   return a.length - b.length;
+}
+
+/** Decode a hex string as a VM number, returning undefined on failure. */
+export function hexToVmNumber(hex: string): bigint | undefined {
+  const bytes = hexToBin(hex);
+  const result = vmNumberToBigInt(bytes, {
+    maximumVmNumberByteLength: Math.max(bytes.length, 1),
+    requireMinimalEncoding: false,
+  });
+  return typeof result === "string" ? undefined : result;
 }
