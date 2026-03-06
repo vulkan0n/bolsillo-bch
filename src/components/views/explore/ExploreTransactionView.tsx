@@ -189,7 +189,7 @@ export default function ExploreTransactionView() {
           </div>
         </div>
 
-        <Card className="my-1">
+        <Card className="my-1 p-2">
           <div className="p-1">
             <div className="font-bold flex items-center justify-start">
               <span>{txDate}</span>

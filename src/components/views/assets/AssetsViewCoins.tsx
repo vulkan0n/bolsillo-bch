@@ -160,20 +160,25 @@ export default function AssetsViewCoins() {
           </div>
         </Card>
 
-        <Card className="p-0 overflow-hidden">
-          <div className="p-1">
-            {tokenAddresses.map((address) => (
-              <CoinGroup
-                address={address}
-                coins={tokenMap[address]}
-                tokenData={tokenData}
-                onCoinSelect={handleCoinSelection}
-              />
-            ))}
-          </div>
-        </Card>
+        {tokenAddresses.length > 0 && (
+          <Card className="p-0 overflow-hidden">
+            <div className="p-1 rounded bg-neutral-800 text-white text-center">
+              <div className="text-lg font-bold">Tokens</div>
+            </div>
+            <div className="p-1">
+              {tokenAddresses.map((address) => (
+                <CoinGroup
+                  address={address}
+                  coins={tokenMap[address]}
+                  tokenData={tokenData}
+                  onCoinSelect={handleCoinSelection}
+                />
+              ))}
+            </div>
+          </Card>
+        )}
 
-        {coinAddresses.length === 0 && (
+        {coinAddresses.length === 0 && tokenAddresses.length === 0 && (
           <div className="text-center py-4 rounded text-2xl text-neutral-700/90 dark:text-neutral-200">
             {translate(translations.noCoins)}
             <div className="flex items-center justify-center mt-2">
@@ -277,11 +282,12 @@ function Token({ coin, tokenData, onSelect }) {
         <TokenIcon category={coin.token_category} size={18} />
         <div className="flex items-center justify-between w-full">
           <TokenSymbol token={tokenData} />
-          <span className="text-sm opacity-80">
+          <span className="text-sm opacity-80 flex items-center">
             <TokenAmount
               token={{ ...tokenData, amount: coin.token_amount }}
               nft={coin.nft_capability !== null}
             />
+            <span className="text-xs font-mono">{coin.nft_commitment}</span>
           </span>
         </div>
       </div>

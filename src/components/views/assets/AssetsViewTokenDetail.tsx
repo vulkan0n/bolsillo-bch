@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { useParams, Link, useNavigate } from "react-router";
 import { DateTime } from "luxon";
@@ -7,7 +7,6 @@ import { CloseOutlined, SendOutlined } from "@ant-design/icons";
 import { selectBchNetwork } from "@/redux/preferences";
 import { selectActiveWallet } from "@/redux/wallet";
 
-//import LogService from "@/kernel/app/LogService";
 import TokenManagerService from "@/kernel/wallet/TokenManagerService";
 
 import FullColumn from "@/layout/FullColumn";
@@ -17,15 +16,19 @@ import TokenIcon from "@/atoms/TokenIcon";
 import TokenCard from "@/composite/TokenCard";
 
 import { useClipboard } from "@/hooks/useClipboard";
+import { useLongPress } from "@/hooks/useLongPress";
 import { useTokenData } from "@/hooks/useTokenData";
 
 import { truncateProse } from "@/util/string";
+import { resolveNftType, compareNftCommitments } from "@/util/token";
 import { validateBchUri } from "@/util/uri";
 
 import { translate } from "@/util/translations";
 import translations from "./translations";
 
-//const Log = LogService("AssetsViewTokenDetail");
+import NftDetailModal from "./NftDetailModal";
+
+// --------------------------------
 
 export default function AssetsViewTokenDetail() {
   const { tokenId: paramsTokenId } = useParams();
@@ -44,10 +47,8 @@ export default function AssetsViewTokenDetail() {
 
   const tokenData = useTokenData(tokenId, true);
 
-  //Log.debug(tokenData);
-
   const [nftSelection, setNftSelection] = useState([]);
-
+  const [modalNft, setModalNft] = useState(null);
   const [tokenHistory, setTokenHistory] = useState([]);
 
   useEffect(
@@ -62,9 +63,20 @@ export default function AssetsViewTokenDetail() {
   );
 
   const tokenUtxos = TokenManager.getTokenUtxos(tokenId);
-  const nfts = tokenUtxos.filter((utxo) => utxo.nft_capability !== null);
+  const nfts = tokenUtxos
+    .filter((utxo) => utxo.nft_capability !== null)
+    .sort((a, b) =>
+      compareNftCommitments(
+        tokenData.token?.nfts,
+        a.nft_commitment || "",
+        b.nft_commitment || "",
+        tokenId
+      )
+    );
 
-  const handleTokenSend = async () => {
+  // ----------------
+
+  const handleTokenSend = async (nft) => {
     const { paste, spawnPasteToast } = await getClipboardContents();
     const { isBip21, address, query } = validateBchUri(paste);
 
@@ -76,27 +88,54 @@ export default function AssetsViewTokenDetail() {
 
     navigate(navTo, {
       state: {
-        nftSelection,
+        nftSelection: nft ? [nft] : nftSelection,
         tokenCategories: [tokenId],
       },
     });
   };
 
-  const handleNftSelect = (utxo) => {
-    const selectIndex = nftSelection.findIndex(
-      (nft) => nft.tx_hash === utxo.tx_hash && nft.tx_pos === utxo.tx_pos
-    );
-    if (selectIndex > -1) {
-      const newSelection = nftSelection.toSpliced(selectIndex, 1);
-      setNftSelection(newSelection);
-      return;
-    }
+  const handleNftSelect = useCallback((utxo) => {
+    setNftSelection((prev) => {
+      const selectIndex = prev.findIndex(
+        (nft) => nft.tx_hash === utxo.tx_hash && nft.tx_pos === utxo.tx_pos
+      );
+      if (selectIndex > -1) {
+        return [...prev.slice(0, selectIndex), ...prev.slice(selectIndex + 1)];
+      }
+      return [...prev, utxo];
+    });
+  }, []);
 
-    setNftSelection([...nftSelection, utxo]);
-  };
+  const handleNftOpenDetail = useCallback((utxo) => {
+    setModalNft(utxo);
+  }, []);
+
+  const handleNftTap = useCallback(
+    (utxo) => {
+      if (nftSelection.length > 0) {
+        handleNftSelect(utxo);
+      } else {
+        handleNftOpenDetail(utxo);
+      }
+    },
+    [nftSelection.length, handleNftSelect, handleNftOpenDetail]
+  );
+
+  const handleNftLongPress = useCallback(
+    (utxo) => {
+      if (nftSelection.length > 0) {
+        handleNftOpenDetail(utxo);
+      } else {
+        handleNftSelect(utxo);
+      }
+    },
+    [nftSelection.length, handleNftOpenDetail, handleNftSelect]
+  );
 
   const handleSelectionCancel = () => setNftSelection([]);
   const handleSelectionConfirm = handleTokenSend;
+
+  // ----------------
 
   return (
     <FullColumn key={tokenData.category} className="justify-between">
@@ -106,61 +145,21 @@ export default function AssetsViewTokenDetail() {
         {nfts.length > 0 ? (
           <div className="mt-2 flex flex-wrap gap-1 justify-around dark:text-neutral-100">
             {nfts.map((utxo) => {
-              const nftData = tokenData.token.nfts
-                ? tokenData.token.nfts.parse.types[utxo.nft_commitment]
-                : null;
-
               const isSelected =
                 nftSelection.findIndex(
                   (nft) =>
                     nft.tx_hash === utxo.tx_hash && nft.tx_pos === utxo.tx_pos
                 ) > -1;
 
-              const bgClass = isSelected
-                ? "bg-primary dark:bg-primary-700"
-                : "bg-primary-100 dark:bg-primarydark-50";
-
-              const borderClass = isSelected
-                ? "border-primary dark:border-primary-900"
-                : "";
-
               return (
-                <div
-                  className={`border rounded-t rounded-b-sm items-center w-full sm:max-w-[49%] ${borderClass} ${bgClass}`}
-                  style={isSelected ? {} : { borderColor: tokenData.color }}
-                  onClick={() => handleNftSelect(utxo)}
-                >
-                  <div
-                    style={
-                      isSelected
-                        ? {}
-                        : { backgroundColor: `${tokenData.color}AA` }
-                    }
-                    className={`truncate text-white font-semibold px-0.5 text-stroke ${bgClass}`}
-                  >
-                    {nftData && nftData.name && (
-                      <span className="px-0.5">{nftData.name}</span>
-                    )}
-                  </div>
-                  <div className="flex">
-                    <TokenIcon
-                      category={utxo.token_category}
-                      nft_commitment={utxo.nft_commitment}
-                    />
-                    <div className="flex flex-col justify-between w-full">
-                      <div className="flex truncate px-1">
-                        {nftData && nftData.description && (
-                          <span className="text-sm text-neutral-700 dark:text-neutral-100/90 text-wrap">
-                            {truncateProse(nftData.description)}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                  <div className="break-all text-wrap text-xs tracking-tight font-mono text-neutral-500 dark:text-neutral-200 text-center bg-neutral-50 dark:bg-neutral-700">
-                    {utxo.nft_commitment}
-                  </div>
-                </div>
+                <NftCard
+                  key={`${utxo.tx_hash}:${utxo.tx_pos}`}
+                  utxo={utxo}
+                  tokenData={tokenData}
+                  isSelected={isSelected}
+                  onTap={handleNftTap}
+                  onLongPress={handleNftLongPress}
+                />
               );
             })}
           </div>
@@ -213,9 +212,111 @@ export default function AssetsViewTokenDetail() {
           onCancel={handleSelectionCancel}
         />
       )}
+
+      {modalNft && (
+        <NftDetailModal
+          category={tokenId}
+          nft_commitment={modalNft.nft_commitment}
+          nft_capability={modalNft.nft_capability}
+          nftData={
+            tokenData.token?.nfts
+              ? resolveNftType(
+                  tokenData.token.nfts,
+                  modalNft.nft_commitment,
+                  tokenData.category
+                ).nftType || null
+              : null
+          }
+          onClose={() => setModalNft(null)}
+          onSend={() => handleTokenSend(modalNft)}
+          nfts={nfts}
+          modalNft={modalNft}
+          onNavigate={setModalNft}
+        />
+      )}
     </FullColumn>
   );
 }
+
+// --------------------------------
+
+/* eslint-disable react/prop-types */
+function NftCard({ utxo, tokenData, isSelected, onTap, onLongPress }) {
+  const longPressEvents = useLongPress(
+    () => onLongPress(utxo),
+    () => onTap(utxo)
+  );
+
+  const parsed = resolveNftType(
+    tokenData.token?.nfts,
+    utxo.nft_commitment,
+    tokenData.category
+  );
+  const nftData = parsed.nftType || null;
+
+  const bgClass = isSelected
+    ? "bg-primary dark:bg-primary-700"
+    : "bg-primary-100 dark:bg-primarydark-50";
+
+  const borderClass = isSelected
+    ? "border-primary dark:border-primary-900"
+    : "";
+
+  return (
+    <div
+      className={`border rounded-t rounded-b-sm items-center w-full sm:max-w-[49%] ${borderClass} ${bgClass}`}
+      style={isSelected ? {} : { borderColor: tokenData.color }}
+      {...longPressEvents}
+    >
+      <div
+        style={isSelected ? {} : { backgroundColor: `${tokenData.color}AA` }}
+        className={`truncate text-white font-semibold px-0.5 text-stroke ${bgClass}`}
+      >
+        {nftData && nftData.name && (
+          <span className="px-0.5">{nftData.name}</span>
+        )}
+      </div>
+      <div className="flex">
+        <TokenIcon
+          category={utxo.token_category}
+          nft_commitment={utxo.nft_commitment}
+          toggleable={false}
+        />
+        <div className="flex flex-col justify-between w-full">
+          <div className="flex truncate px-1">
+            {nftData && nftData.description ? (
+              <span className="text-sm text-neutral-700 dark:text-neutral-100/90 text-wrap">
+                {truncateProse(nftData.description)}
+              </span>
+            ) : (
+              utxo.nft_commitment && (
+                <span className="text-xs font-mono text-neutral-500 dark:text-neutral-200 break-all text-wrap">
+                  {utxo.nft_commitment}
+                </span>
+              )
+            )}
+          </div>
+        </div>
+      </div>
+      {parsed.fields.length > 0 && (
+        <div className="px-1 text-xs">
+          {parsed.fields.map((field) => (
+            <div key={field.name} className="flex justify-between py-0.5">
+              <span className="text-neutral-500 dark:text-neutral-400">
+                {field.name}
+              </span>
+              <span className="font-mono text-neutral-700 dark:text-neutral-200">
+                {field.displayValue}
+              </span>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// --------------------------------
 
 /* eslint-disable react/prop-types */
 function SelectionDisplay({ selection, onConfirm, onCancel }) {
@@ -244,7 +345,7 @@ function SelectionDisplay({ selection, onConfirm, onCancel }) {
             />
           </div>
           <div className="text-center grow flex items-center justify-center font-bold text-xl p-6">
-            {selectedAmount} NFTs selected
+            {selectedAmount} {translate(translations.nftsSelected)}
           </div>
           <div className="flex items-center justify-end flex-1">
             <Button
