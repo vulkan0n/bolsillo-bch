@@ -4,21 +4,16 @@ import { BulbOutlined } from "@ant-design/icons";
 
 import { selectTorchIsEnabled, setTorchIsEnabled } from "@/redux/device";
 
-import LogService from "@/kernel/app/LogService";
-
 import translations from "@/views/wallet/translations";
 import Button from "@/atoms/Button";
 
 import { translate } from "@/util/translations";
-
-const Log = LogService("TorchButton");
 
 export default function TorchButton(props) {
   const dispatch = useDispatch();
   const isTorchEnabled = useSelector(selectTorchIsEnabled);
 
   const handleTorchButton = async () => {
-    Log.debug("handleTorchButton", isTorchEnabled, "to", !isTorchEnabled);
     dispatch(setTorchIsEnabled(!isTorchEnabled));
   };
 
