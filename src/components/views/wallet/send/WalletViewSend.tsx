@@ -758,7 +758,10 @@ export default function WalletViewSend() {
     <FullColumn>
       <div className="tracking-wide text-center text-white">
         {message === "" ? (
-          <div className="bg-primary dark:bg-primarydark-200 px-2 py-1">
+          <div
+            data-testid="send-header"
+            className="bg-primary dark:bg-primarydark-200 px-2 py-1"
+          >
             <div className="text-lg font-bold flex items-center justify-center">
               {translate(translations.sendingTo)}
               {isMyAddress && <span>&nbsp;{translate(translations.self)}</span>}
@@ -794,7 +797,7 @@ export default function WalletViewSend() {
             </div>
           </div>
         ) : (
-          <div className="bg-error p-2">
+          <div data-testid="send-error" className="bg-error p-2">
             <div className="text-xl font-bold">{message}</div>
           </div>
         )}

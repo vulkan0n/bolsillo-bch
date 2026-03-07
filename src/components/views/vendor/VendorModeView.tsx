@@ -139,7 +139,10 @@ export default function VendorModeView() {
           onClick={handleCurrencyFlip}
           className="mt-4 text-center cursor-pointer"
         >
-          <div className="text-4xl font-bold text-neutral-800 dark:text-neutral-100">
+          <div
+            data-testid="vendor-amount"
+            className="text-4xl font-bold text-neutral-800 dark:text-neutral-100"
+          >
             <Satoshi value={satoshiAmount} forceVisible />
           </div>
           <div className="text-lg text-neutral-500 dark:text-neutral-400">

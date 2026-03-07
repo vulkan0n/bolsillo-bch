@@ -6,9 +6,8 @@ import {
   CloseOutlined,
 } from "@ant-design/icons";
 
-//import LogService from "@/kernel/app/LogService";
-import TokenManagerService from "@/kernel/wallet/TokenManagerService";
 import UtxoManagerService from "@/kernel/wallet/UtxoManagerService";
+import TokenManagerService from "@/kernel/wallet/TokenManagerService";
 
 import FullColumn from "@/layout/FullColumn";
 import Address from "@/atoms/Address";
@@ -26,8 +25,6 @@ import { useCurrencyFlip } from "@/hooks/useCurrencyFlip";
 
 import { translate } from "@/util/translations";
 import translations from "./translations";
-
-//const Log = LogService("AssetsViewCoins");
 
 export default function AssetsViewCoins() {
   const wallet = useOutletContext();

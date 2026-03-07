@@ -95,6 +95,7 @@ export default function SlideToAction({
 
   return (
     <div
+      data-testid="slide-to-action"
       className={`border border-primary-200 shadow-inner rounded-full h-12 flex items-center relative ${disabledClasses}`}
     >
       <div

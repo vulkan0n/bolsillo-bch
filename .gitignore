@@ -47,3 +47,8 @@ ios/App/App.*.zip
 # ios artifacts
 *.xcuserdata
 **/xcuserdata/
+
+# Playwright
+playwright-report/
+test-results/
+.env.e2e

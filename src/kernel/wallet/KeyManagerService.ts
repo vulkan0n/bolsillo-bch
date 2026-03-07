@@ -19,7 +19,6 @@ import {
   encodeLockingBytecodeP2pkh,
 } from "@bitauth/libauth";
 
-//import LogService from "@/kernel/app/LogService";
 import AddressManagerService from "@/kernel/wallet/AddressManagerService";
 import WalletManagerService, {
   WalletStub,
@@ -28,8 +27,6 @@ import WalletManagerService, {
 import { sha256, ripemd160 } from "@/util/hash";
 import { hexToBin, binToHex } from "@/util/hex";
 import { utxoToTokenPrefix } from "@/util/normalize";
-
-//const Log = LogService("KeyManager");
 
 const seedCache = new Map();
 

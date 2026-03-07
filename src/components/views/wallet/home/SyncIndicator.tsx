@@ -99,6 +99,8 @@ export default function SyncIndicator() {
   return (
     <div
       className="cursor-pointer w-10 h-10 flex justify-center items-center"
+      data-testid="sync-indicator"
+      data-syncing={isSyncing ? "true" : "false"}
       {...longPressEvents}
     >
       {isOfflineMode && (
