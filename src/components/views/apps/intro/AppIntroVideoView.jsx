@@ -29,10 +29,10 @@ export default function AppIntroVideoView() {
         close="/explore"
       />
       <div className="flex flex-col gap-2 p-1.5">
-        <Card>
+        <Card className="p-2">
           <EmbeddedVideo url={INTRODUCTION_VIDEO_URL} />
         </Card>
-        <Card>
+        <Card className="p-2">
           <div className="flex flex-col gap-2">
             <div className="flex items-center text-xl font-bold">
               <SeleneLogo className="w-12 mr-1" />

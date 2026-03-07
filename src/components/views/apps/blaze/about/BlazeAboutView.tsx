@@ -24,7 +24,7 @@ const interval = Interval.fromDateTimes(
 function BlazeAboutView() {
   return (
     <div className="p-2 flex flex-col gap-y-2">
-      <Card>
+      <Card className="p-2">
         <div className="rounded-md bg-primary-50 dark:bg-neutral-700 p-2">
           <h1 className="font-bliss text-2xl text-center font-bold bg-clip-text text-transparent bg-gradient-to-t from-neutral-600 to-[#f20e38]">
             BCH BLAZE

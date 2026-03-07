@@ -233,7 +233,7 @@ export default function AppCauldronDexView() {
         <WalletViewBalance />
       </div>
       <div className="p-4">
-        <Card>
+        <Card className="p-2">
           <select
             className="w-full p-2 bg-primary-100 text-lg"
             onChange={handleTokenCategorySelect}
@@ -245,7 +245,7 @@ export default function AppCauldronDexView() {
           </select>
         </Card>
 
-        <Card>
+        <Card className="p-2">
           <div className="flex flex-col justify-center p-2">
             {supplyDemandRender()[0]}
             <div className="">
@@ -271,7 +271,7 @@ export default function AppCauldronDexView() {
           />
         </div>
 
-        <Card>
+        <Card className="p-2">
           <ul>
             <li>{cauldrons.length} pools</li>
             <li>
