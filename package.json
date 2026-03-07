@@ -10,8 +10,11 @@
     "pretty": "npx prettier src/ --write",
     "lint": "npx prettier src/ --check && npx eslint --ext .js,.jsx,.ts,.tsx src/",
     "build": "pnpm test && vite build",
+    "build:ci": "vite build",
     "preview": "vite preview",
-    "test": "pnpm lint && vitest run"
+    "test": "pnpm lint && vitest run",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui"
   },
   "dependencies": {
     "@ant-design/icons": "^5.6.1",
@@ -72,6 +75,7 @@
   "devDependencies": {
     "@capacitor/assets": "^3.0.5",
     "@capacitor/cli": "^8.0.0",
+    "@playwright/test": "^1.58.2",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^14.3.1",
     "@types/luxon": "^3.7.1",
@@ -81,6 +85,7 @@
     "@typescript-eslint/parser": "^8.51.0",
     "@vitejs/plugin-react": "^4.7.0",
     "autoprefixer": "^10.4.23",
+    "dotenv": "^17.3.1",
     "eslint": "^8.57.1",
     "eslint-config-airbnb": "^19.0.4",
     "eslint-config-airbnb-base": "15.0.0",

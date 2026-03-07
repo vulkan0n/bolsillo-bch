@@ -22,6 +22,10 @@ import translations from "./ErrorBoundaryTranslations";
 
 const Log = LogService("ErrorBoundary");
 
+function restartApp() {
+  window.location.assign("/");
+}
+
 interface StartupErrorBoundaryProps {
   error: Error | null;
 }
@@ -42,7 +46,7 @@ function StartupErrorBoundary({ error }: StartupErrorBoundaryProps) {
     }
 
     await JanitorService().nuclearWipe();
-    window.location.assign("/");
+    restartApp();
   };
 
   const handleExportLogs = () => ConsoleService().exportLogs();
@@ -63,7 +67,7 @@ function StartupErrorBoundary({ error }: StartupErrorBoundaryProps) {
           <div className="flex items-center gap-x-1 flex-wrap">
             <Button
               className="bg-primary rounded text-white p-1 flex-1"
-              onClick={() => window.location.assign("/")}
+              onClick={restartApp}
               label={translate(translations.restartApp)}
             />
             <Button
@@ -128,7 +132,7 @@ function RouteErrorBoundary() {
           <div className="flex items-center gap-x-1">
             <Button
               className="bg-primary rounded text-white p-1 flex-1"
-              onClick={() => window.location.assign("/")}
+              onClick={restartApp}
               label={translate(translations.restartApp)}
             />
             <Button

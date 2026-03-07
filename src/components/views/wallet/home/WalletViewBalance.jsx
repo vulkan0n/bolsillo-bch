@@ -85,6 +85,7 @@ export default function WalletViewBalance() {
       <div className="font-bold text-neutral-300 text-md tracking-wide">
         <Link
           to={`/settings/wallet/${walletHash}`}
+          data-testid="wallet-name-link"
           className={`flex justify-center items-center ${!isKeyViewed && "text-warn"}`}
         >
           {bchNetwork === "chipnet" && "[CHIP] "}
@@ -100,6 +101,8 @@ export default function WalletViewBalance() {
       </div>
       <button
         type="button"
+        data-testid="balance-area"
+        data-hidden={shouldHideBalance ? "true" : "false"}
         className={`cursor-pointer w-full ${hiddenBalanceClasses}`}
         onClick={shouldHideBalance ? handleHideBalance : handleFlipCurrency}
       >

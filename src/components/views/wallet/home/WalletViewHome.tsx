@@ -150,6 +150,7 @@ export default function WalletViewHome() {
           <div className="w-fit mx-auto">
             <button
               type="button"
+              data-testid="qr-button"
               className={`border-4 cursor-pointer active:bg-primary shadow-inner shadow-lg active:shadow-none active:shadow-inner active:scale-[0.98] select-none ${qrCodeBorder}`}
               {...qrLongPressEvents}
             >
@@ -175,6 +176,7 @@ export default function WalletViewHome() {
           </div>
           <button
             type="button"
+            data-testid="address-display"
             onClick={copyAddressToClipboard}
             className="flex items-center justify-center w-full py-2 text-xs text-center cursor-pointer slashed-zero select-none active:bg-primary-700 active:shadow-inner"
           >
@@ -218,7 +220,10 @@ export default function WalletViewHome() {
                 </span>
               </div>
             ) : (
-              <div className="flex items-center justify-center cursor-pointer">
+              <div
+                data-testid="request-amount"
+                className="flex items-center justify-center cursor-pointer"
+              >
                 <FormOutlined className="mr-1 font-bold" />
                 <span className="truncate">
                   {translate(translations.requestAmount)}
@@ -238,6 +243,7 @@ export default function WalletViewHome() {
               {translate(translations.receiveTokens)}&nbsp;
               <input
                 type="checkbox"
+                data-testid="receive-tokens"
                 checked={shouldUseTokenAddress}
                 onChange={() =>
                   setShouldUseTokenAddress(!shouldUseTokenAddress)

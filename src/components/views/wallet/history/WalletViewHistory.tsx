@@ -355,7 +355,7 @@ export default function WalletViewHistory() {
   };
 
   return (
-    <div className="flex flex-col justify-start">
+    <div data-testid="history-view" className="flex flex-col justify-start">
       <ViewHeader
         icon={HistoryOutlined}
         title={translate(translations.recentTransactions)}
