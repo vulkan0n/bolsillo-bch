@@ -108,8 +108,8 @@ importers:
         specifier: ^2.23.1
         version: 2.23.1(@capacitor/preferences@8.0.0(@capacitor/core@8.0.1))(typescript@5.9.3)
       capacitor-plugin-simple-encryption:
-        specifier: https://git.xulu.tech/selene.cash/capacitor-plugin-simple-encryption.git#v0.2.0
-        version: git+https://git.xulu.tech/selene.cash/capacitor-plugin-simple-encryption.git#cb673fc345599a3e415f094d4ecad7e8f72f9bcb(@capacitor/core@8.0.1)
+        specifier: https://git.xulu.tech/selene.cash/capacitor-plugin-simple-encryption.git#v0.2.3
+        version: git+https://git.xulu.tech/selene.cash/capacitor-plugin-simple-encryption.git#52e965843707d37abe1678c031f681f4b245a812(@capacitor/core@8.0.1)
       chart.js:
         specifier: ^4.5.1
         version: 4.5.1
@@ -1984,8 +1984,8 @@ packages:
     resolution: {integrity: sha512-5ON+q7jCTgMp9cjpu4Jo6XbvfYwSB2Ow3kzHKfIyJfaCAOHLbdKPQqGKgfED/R5B+3TFFfe8pegYA+b423SRyA==}
     engines: {node: '>=10.0.0'}
 
-  capacitor-plugin-simple-encryption@git+https://git.xulu.tech/selene.cash/capacitor-plugin-simple-encryption.git#cb673fc345599a3e415f094d4ecad7e8f72f9bcb:
-    resolution: {commit: cb673fc345599a3e415f094d4ecad7e8f72f9bcb, repo: https://git.xulu.tech/selene.cash/capacitor-plugin-simple-encryption.git, type: git}
+  capacitor-plugin-simple-encryption@git+https://git.xulu.tech/selene.cash/capacitor-plugin-simple-encryption.git#52e965843707d37abe1678c031f681f4b245a812:
+    resolution: {commit: 52e965843707d37abe1678c031f681f4b245a812, repo: https://git.xulu.tech/selene.cash/capacitor-plugin-simple-encryption.git, type: git}
     version: 0.1.0
     peerDependencies:
       '@capacitor/core': ^8.0.0
@@ -7252,7 +7252,7 @@ snapshots:
       svg-pathdata: 6.0.3
     optional: true
 
-  capacitor-plugin-simple-encryption@git+https://git.xulu.tech/selene.cash/capacitor-plugin-simple-encryption.git#cb673fc345599a3e415f094d4ecad7e8f72f9bcb(@capacitor/core@8.0.1):
+  capacitor-plugin-simple-encryption@git+https://git.xulu.tech/selene.cash/capacitor-plugin-simple-encryption.git#52e965843707d37abe1678c031f681f4b245a812(@capacitor/core@8.0.1):
     dependencies:
       '@capacitor/core': 8.0.1
 
