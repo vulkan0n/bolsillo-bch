@@ -35,9 +35,9 @@ async function initialize_app() {
   let startupError = null;
   try {
     await JanitorService().fsck();
-    await SecurityService().initEncryption();
+    const isKeyLoaded = await SecurityService().initEncryption();
 
-    if (SecurityService().isEncryptionReady()) {
+    if (isKeyLoaded) {
       if (await boot()) {
         redux_resume(); // walletConnect, stats, exchange rates
       } else {

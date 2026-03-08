@@ -5,8 +5,6 @@ import { RouterProvider } from "react-router/dom";
 
 import { selectIsLocked } from "@/redux/device";
 
-import SecurityService from "@/kernel/app/SecurityService";
-
 import AppLockScreen from "@/views/security/AppLockScreen";
 import IndexRoute from "@/layout/IndexRoute";
 import ErrorBoundary from "@/layout/ErrorBoundary";
@@ -61,7 +59,7 @@ const router = createBrowserRouter(routes);
 export default function Main() {
   const isLocked = useSelector(selectIsLocked);
 
-  if (!SecurityService().isEncryptionReady() || isLocked) {
+  if (isLocked) {
     return <AppLockScreen />;
   }
 

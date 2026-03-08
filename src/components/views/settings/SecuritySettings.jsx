@@ -55,8 +55,6 @@ export default function SecuritySettings() {
   const { isDeviceOnly, lastKeyBackupExport } = useSelector(
     selectEncryptionSettings
   );
-  const isEncryptionReady = Security.isEncryptionReady();
-
   const activeWallet = useSelector(selectActiveWallet);
 
   const handleSetPin = async () => {
@@ -216,33 +214,76 @@ export default function SecuritySettings() {
     }
   };
 
-  const handleAuthModeChange = async (event) => {
-    const { value } = event.target;
+  const promptForNewPin = async () => {
+    const { value: pin } = await Dialog.prompt({
+      title: translate(translations.enterNewPin),
+      message: translate(translations.enterNewPinMessage),
+      okButtonTitle: translate(translations.enterNewPinOkButtonTitle),
+    });
+    if (!pin) return null;
 
+    const { value: confirmPin } = await Dialog.prompt({
+      title: translate(translations.confirmNewPin),
+      message: translate(translations.confirmNewPinMessage),
+      okButtonTitle: translate(translations.confirmNewPinOkButtonTitle),
+    });
+
+    if (pin !== confirmPin) {
+      Notification.error(translate(translations.pinConfirmationDidNotMatch));
+      return null;
+    }
+    return pin;
+  };
+
+  const handleAuthModeChange = async (event) => {
+    const newMode = event.target.value;
+    if (newMode === authMode) return;
+
+    // Auth gate
     let isAuthorized = false;
-    // force biometric prompt if switching to bio
-    if (hasBiometric && value === "bio") {
+    if (hasBiometric && newMode === "bio") {
       isAuthorized = await Security.authorizeBio(AuthActions.Any);
     } else {
       isAuthorized = await Security.authorize(AuthActions.Any);
     }
+    if (!isAuthorized) return;
 
-    if (!isAuthorized) {
-      return;
-    }
-
-    // If switching away from PIN mode, remove PIN from plugin.
-    // Biometric key (if any) is stored independently in platform keychain.
-    if (authMode === "pin" && value !== "pin" && isPinConfigured) {
-      try {
-        await Security.removePin();
-        setIsPinConfigured(false);
-      } catch (e) {
-        Notification.error(translate(translations.error), String(e));
-        return;
+    try {
+      // Target: none — full teardown
+      if (newMode === "none") {
+        await Security.removeBiometricKey();
+        if (isPinConfigured) {
+          await Security.removePin();
+          setIsPinConfigured(false);
+        }
       }
+
+      // Target: pin — need PIN, no bio key
+      if (newMode === "pin") {
+        await Security.removeBiometricKey();
+        if (!isPinConfigured) {
+          const pin = await promptForNewPin();
+          if (!pin) return;
+          await Security.setPin(pin);
+          setIsPinConfigured(true);
+        }
+      }
+
+      // Target: bio — PIN wraps key at rest, bio is fast unlock
+      if (newMode === "bio") {
+        if (!isPinConfigured) {
+          const pin = await promptForNewPin();
+          if (!pin) return;
+          await Security.setPin(pin);
+          setIsPinConfigured(true);
+        }
+        await Security.storeBiometricKeyFromCurrent();
+      }
+
+      handleSettingsUpdate("authMode", newMode);
+    } catch (e) {
+      Notification.error(translate(translations.error), String(e));
     }
-    handleSettingsUpdate("authMode", value);
   };
 
   const handleExportBackup = async () => {
@@ -439,7 +480,7 @@ export default function SecuritySettings() {
           <span>{translate(translations.webEncryptionWarning)}</span>
         </div>
       )}
-      {platform !== "web" && isEncryptionReady && (
+      {platform !== "web" && (
         <>
           <div className="text-lg font-semibold bg-neutral-600 text-neutral-100 p-1 mt-4">
             {translate(translations.encryptionSettings)}

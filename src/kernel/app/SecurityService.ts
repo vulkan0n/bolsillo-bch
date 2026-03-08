@@ -22,7 +22,6 @@ import { translate } from "@/util/translations";
 
 const Log = LogService("SecurityService");
 
-let isReady = false;
 let hasPinConfigured = false;
 
 export interface ImportKeyBackupResult {
@@ -67,7 +66,6 @@ export default function SecurityService() {
     authorize,
     authorizeBio,
     authorizeLegacyPin,
-    isEncryptionReady,
     isPinConfigured,
     setPinConfigured,
     initEncryption,
@@ -79,6 +77,7 @@ export default function SecurityService() {
     removePin,
     // Biometric (composite operations)
     hasBiometricKey,
+    removeBiometricKey,
     unlockWithBiometric,
     verifyBiometric,
     storeBiometricKeyFromCurrent,
@@ -95,15 +94,10 @@ export default function SecurityService() {
   // Initialize encryption and cache the result in module state.
   // Called from init.jsx (no pin) and from AppLockScreen (with pin).
   async function initEncryption(pin?: string): Promise<boolean> {
-    const { isReady: isNowReady, hasPinConfigured: hasPin } =
+    const { isReady: isKeyLoaded, hasPinConfigured: hasPin } =
       await DatabaseService().initEncryption(pin);
-    isReady = isNowReady;
     hasPinConfigured = hasPin;
-    return isNowReady;
-  }
-
-  function isEncryptionReady(): boolean {
-    return isReady;
+    return isKeyLoaded;
   }
 
   function isPinConfigured(): boolean {
@@ -118,14 +112,13 @@ export default function SecurityService() {
     hasPinConfigured = value;
   }
 
-  // Lock: flush databases, close all handles, clear native key, mark not ready.
+  // Lock: flush databases, close all handles, clear native key.
   // The Redux lock flag is set first so the lock screen shows immediately.
   async function lock(): Promise<void> {
     store.dispatch(setIsLocked(true));
     clearSeedCache();
     await DatabaseService().closeAllDatabases();
     await SimpleEncryption.clearKeyFromMemory();
-    isReady = false;
   }
 
   // authorize user according to user preference
@@ -260,6 +253,11 @@ export default function SecurityService() {
     return hasBioKey;
   }
 
+  /** Remove biometric key from platform storage. No-op if none exists. */
+  async function removeBiometricKey(): Promise<void> {
+    await SimpleEncryption.removeBiometricKey();
+  }
+
   /**
    * Full biometric unlock: load biometric key + load into plugin memory.
    * Keeps raw key out of UI code.
@@ -370,7 +368,6 @@ export default function SecurityService() {
   /** Reset all encryption state in the plugin. */
   async function resetEncryption(): Promise<void> {
     await SimpleEncryption.resetAll();
-    isReady = false;
     hasPinConfigured = false;
   }
 }
