@@ -38,8 +38,11 @@ async function initialize_app() {
     await SecurityService().initEncryption();
 
     if (SecurityService().isEncryptionReady()) {
-      await boot();
-      redux_resume(); // walletConnect, stats, exchange rates
+      if (await boot()) {
+        redux_resume(); // walletConnect, stats, exchange rates
+      } else {
+        SecurityService().lock();
+      }
     }
   } catch (e) {
     if (e instanceof DecryptionFailedError) {
@@ -91,17 +94,24 @@ async function boot() {
     redux_pre_init(),
   ]);
 
-  await JanitorService().handleAuthMigration();
+  if (!(await JanitorService().handleAuthMigration())) {
+    Log.timeEnd("boot");
+    return false;
+  }
 
   await JanitorService().recoverWalletFiles();
   await redux_init(); // walletBoot -> syncConnect
 
   Log.timeEnd("boot");
+  return true;
 }
 
 // Called by AppLockScreen after successful PIN/biometric auth
 export async function onUnlocked() {
-  await boot();
+  if (!(await boot())) {
+    SecurityService().lock();
+    return;
+  }
   SecurityService().unlock();
   redux_resume();
 }

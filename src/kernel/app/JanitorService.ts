@@ -99,20 +99,23 @@ export default function JanitorService() {
   }
 
   // Remove after 99% of userbase is verified to have version 2026.03+
-  async function handleAuthMigration(): Promise<void> {
+  async function handleAuthMigration(): Promise<boolean> {
     const state = store.getState();
     const { authMode, authActions } = selectSecuritySettings(state);
     const { pinHash } = selectPreferences(state);
     const { hasBiometric } = selectDeviceInfo(state);
 
     if (pinHash === "") {
-      return;
+      return true;
     }
 
     const Security = SecurityService();
 
     if (!Security.isPinConfigured()) {
       const pin = await Security.authorizeLegacyPin(pinHash);
+      if (pin === null) {
+        return false;
+      }
       await Security.setPin(pin);
       Log.log("PIN migrated to encryption plugin");
     }
@@ -136,6 +139,7 @@ export default function JanitorService() {
       );
     }
     await store.dispatch(setPreference({ key: "pinHash", value: "" }));
+    return true;
   }
 
   async function recoverWalletFiles() {
