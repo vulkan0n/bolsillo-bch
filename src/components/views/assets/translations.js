@@ -49,46 +49,6 @@ const translations = {
     zh: "正在下载令牌数据...",
     zh_TW: "正在下載令牌資料..."
   },
-  sendTokens: {
-    ar: "إرسال الرموز",
-    bn: "টোকেন পাঠান",
-    cy: "Anfon CashTokens",
-    da: "Send tokens",
-    de: "Token senden",
-    el: "Αποστολή διακριτικών",
-    en: "Send Tokens",
-    es: "Enviar tokens",
-    fa: "ارسال توکن",
-    fil: "Magpadala ng mga Token",
-    fr: "Envoyer des jetons",
-    ha: "Aika Alamu",
-    hi: "टोकन भेजें",
-    id: "Kirim Token",
-    it: "Invia token",
-    ja: "トークンを送信",
-    jv: "Kirim Token",
-    ko: "토큰 보내기",
-    mr: "टोकन पाठवा",
-    ms: "Hantar Token",
-    nb: "Send tokens",
-    nl: "Tokens verzenden",
-    pa: "ਟੋਕਨ ਭੇਜੋ",
-    pl: "Wyślij tokeny",
-    pt: "Enviar Tokens",
-    ro: "Trimiteți jetoane",
-    ru: "Отправить токены",
-    sv: "Skicka tokens",
-    sw: "Tuma Ishara",
-    ta: "டோக்கன்களை அனுப்பு",
-    te: "టోకెన్లను పంపండి",
-    th: "ส่งโทเค็น",
-    tr: "Jeton Gönder",
-    uk: "Надіслати токени",
-    ur: "ٹوکن بھیجیں۔",
-    vi: "Gửi Token",
-    zh: "发送代币",
-    zh_TW: "發送代幣"
-  },
   seeMore: {
     ar: "شاهد المزيد",
     bn: "আরও দেখুন",
@@ -264,9 +224,6 @@ const translations = {
   nftCommitment: {
     en: "Commitment",
   },
-  nftCategory: {
-    en: "Category",
-  },
   showAttributes: {
     en: "Show Attributes",
   },
@@ -276,14 +233,8 @@ const translations = {
   nftsSelected: {
     en: "NFTs selected",
   },
-  nftFields: {
-    en: "Fields",
-  },
   nftDescription: {
     en: "Description",
-  },
-  copiedCommitment: {
-    en: "Copied Commitment",
   },
   copiedTokenId: {
     ar: "تم نسخ معرف الرمز المميز",

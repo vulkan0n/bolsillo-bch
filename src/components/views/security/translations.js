@@ -1,14 +1,19 @@
-import { back, importKeyBackup, incorrectPin } from "@/translations/common";
+import {
+  back,
+  enterPin,
+  importKeyBackup,
+  incorrectPin,
+} from "@/translations/common";
 
 const translations = {
   // Imported from common
   back,
+  enterPin,
   importKeyBackup,
   incorrectPin,
 
   // AppLockScreen
   enterPinPrompt: { en: "Enter PIN to unlock your wallet" },
-  enterPin: { en: "Enter PIN" },
   failedToUnlock: { en: "Failed to unlock encryption" },
   unlocking: { en: "Unlocking..." },
   unlock: { en: "Unlock" },
@@ -51,15 +56,27 @@ const translations = {
   importWarning: {
     en: "Importing a backup will replace your current encryption key. This cannot be undone.",
   },
+  // LegacyRevealScreen
+  emergencyRevealTitle: { en: "Emergency Recovery" },
+  emergencyRevealWarning: {
+    en: "This will reveal your seed phrase. Write it down on paper immediately. After viewing, this wallet will be permanently wiped and you will need your seed phrase to recover your funds.",
+  },
+  confirmWrittenDown: { en: "I have written down my seed phrase" },
+  wipeAfterReveal: { en: "Wipe Wallet" },
+  wipeConfirmMessage: {
+    en: "This will permanently delete all wallet data. This cannot be undone.",
+  },
+  revealRecoveryPhrase: { en: "Reveal Recovery Phrase" },
+  revealDescription: {
+    en: "View your seed phrase, then wipe the wallet (one-time only)",
+  },
+  noWalletFound: { en: "No wallet found in database." },
   // Legacy auth migration (JanitorService)
   securityUpgrade: { en: "Security Upgrade" },
   enterPinToUpgrade: {
     en: "Enter your current PIN to complete the security upgrade.",
   },
   upgrade: { en: "Upgrade" },
-  incorrectPinTryAgain: {
-    en: "The PIN you entered is incorrect. Please try again.",
-  },
 };
 
 export default translations;
