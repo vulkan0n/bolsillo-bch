@@ -517,10 +517,8 @@ export default function TransactionBuilderService(walletHash: string) {
       if (commitCmp !== 0) return commitCmp;
     }
 
-    // 7. category — little-endian byte order (reverse libauth's big-endian)
-    const categoryA = a.token.category.slice().reverse();
-    const categoryB = b.token.category.slice().reverse();
-    return compareBytes(categoryA, categoryB);
+    // 7. category — already little-endian from libauth
+    return compareBytes(a.token.category, b.token.category);
   }
 
   async function buildStablecoinTransaction(
