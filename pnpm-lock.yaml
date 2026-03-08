@@ -98,9 +98,6 @@ importers:
       '@reown/walletkit':
         specifier: ^1.4.1
         version: 1.4.1(@capacitor/preferences@8.0.0(@capacitor/core@8.0.1))(typescript@5.9.3)
-      '@use-gesture/react':
-        specifier: ^10.3.1
-        version: 10.3.1(react@19.2.3)
       '@walletconnect/core':
         specifier: ^2.23.1
         version: 2.23.1(@capacitor/preferences@8.0.0(@capacitor/core@8.0.1))(typescript@5.9.3)
@@ -128,9 +125,6 @@ importers:
       jspdf:
         specifier: ^3.0.4
         version: 3.0.4
-      leaflet:
-        specifier: ^1.9.4
-        version: 1.9.4
       luxon:
         specifier: ^3.7.2
         version: 3.7.2
@@ -152,9 +146,6 @@ importers:
       react-hot-toast:
         specifier: ^2.6.0
         version: 2.6.0(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
-      react-leaflet:
-        specifier: ^4.2.1
-        version: 4.2.1(leaflet@1.9.4)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       react-player:
         specifier: ^2.16.1
         version: 2.16.1(react@19.2.3)
@@ -167,9 +158,6 @@ importers:
       react-router:
         specifier: ^7.11.0
         version: 7.11.0(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
-      react-vertical-timeline-component:
-        specifier: ^3.6.0
-        version: 3.6.0(react@19.2.3)
       sql.js:
         specifier: ^1.13.0
         version: 1.13.0
@@ -1039,13 +1027,6 @@ packages:
   '@prettier/plugin-xml@2.2.0':
     resolution: {integrity: sha512-UWRmygBsyj4bVXvDiqSccwT1kmsorcwQwaIy30yVh8T+Gspx4OlC0shX1y+ZuwXZvgnafmpRYKks0bAu9urJew==}
 
-  '@react-leaflet/core@2.1.0':
-    resolution: {integrity: sha512-Qk7Pfu8BSarKGqILj4x7bCSZ1pjuAPZ+qmRwH5S7mDS91VSbVVsJSrW4qA+GPrro8t69gFYVMWb1Zc4yFmPiVg==}
-    peerDependencies:
-      leaflet: ^1.9.0
-      react: ^18.0.0
-      react-dom: ^18.0.0
-
   '@react-spring/animated@10.0.3':
     resolution: {integrity: sha512-7MrxADV3vaUADn2V9iYhaIL6iOWRx9nCJjYrsk2AHD2kwPr6fg7Pt0v+deX5RnCDmCKNnD6W5fasiyM8D+wzJQ==}
     peerDependencies:
@@ -1493,14 +1474,6 @@ packages:
 
   '@ungap/structured-clone@1.3.0':
     resolution: {integrity: sha512-WmoN8qaIAo7WTYWbAZuG8PYEhn5fkz7dZrqTBZ7dtt//lL2Gwms1IcnQ5yHqjDfX8Ft5j4YzDM23f87zBfDe9g==}
-
-  '@use-gesture/core@10.3.1':
-    resolution: {integrity: sha512-WcINiDt8WjqBdUXye25anHiNxPc0VOrlT8F6LLkU6cycrOGUDyY/yyFmsg3k8i5OLvv25llc0QC45GhR/C8llw==}
-
-  '@use-gesture/react@10.3.1':
-    resolution: {integrity: sha512-Yy19y6O2GJq8f7CHf7L0nxL8bf4PZCPaVOCgJrusOeFHY1LvHgYXnmnXg6N5iwAnbgbZCDjo60SiM6IPJi9C5g==}
-    peerDependencies:
-      react: '>= 16.8.0'
 
   '@vitejs/plugin-react@4.7.0':
     resolution: {integrity: sha512-gUu9hwfWvvEDBBmgtAowQCojwZmJ5mcLn3aufeCsitijs3+f2NsrPtlAWIR6OPiqljl96GVCUbLe0HyqIpVaoA==}
@@ -3361,9 +3334,6 @@ packages:
     resolution: {integrity: sha512-MbjN408fEndfiQXbFQ1vnd+1NoLDsnQW41410oQBXiyXDMYH5z505juWa4KUE1LqxRC7DgOgZDbKLxHIwm27hA==}
     engines: {node: '>=0.10'}
 
-  leaflet@1.9.4:
-    resolution: {integrity: sha512-nxS1ynzJOmOlHp+iL3FyWqK89GtNL8U8rvlMOsQdTTssxZwCXh8N2NB3GDQOL+YR3XnWyZAxwQixURb+FA74PA==}
-
   levn@0.4.1:
     resolution: {integrity: sha512-+bT2uH4E5LGE7h/n3evcS/sQlJXCpIp6ym8OWJ5eV6+67Dsql/LaaT7qJBAt2rzfoa/5QBGBhxDix1dMt2kQKQ==}
     engines: {node: '>= 0.8.0'}
@@ -4072,11 +4042,6 @@ packages:
       react: '>=16'
       react-dom: '>=16'
 
-  react-intersection-observer@8.34.0:
-    resolution: {integrity: sha512-TYKh52Zc0Uptp5/b4N91XydfSGKubEhgZRtcg1rhTKABXijc4Sdr1uTp5lJ8TN27jwUsdXxjHXtHa0kPj704sw==}
-    peerDependencies:
-      react: ^15.0.0 || ^16.0.0 || ^17.0.0|| ^18.0.0
-
   react-is@16.13.1:
     resolution: {integrity: sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==}
 
@@ -4085,13 +4050,6 @@ packages:
 
   react-is@18.3.1:
     resolution: {integrity: sha512-/LLMVyas0ljjAtoYiPqYiL8VWXzUUdThrmU5+n20DZv+a+ClRoevUzw5JxU+Ieh5/c87ytoTBV9G1FiKfNJdmg==}
-
-  react-leaflet@4.2.1:
-    resolution: {integrity: sha512-p9chkvhcKrWn/H/1FFeVSqLdReGwn2qmiobOQGO3BifX+/vV/39qhY8dGqbdcPh1e6jxh/QHriLXr7a4eLFK4Q==}
-    peerDependencies:
-      leaflet: ^1.9.0
-      react: ^18.0.0
-      react-dom: ^18.0.0
 
   react-player@2.16.1:
     resolution: {integrity: sha512-mxP6CqjSWjidtyDoMOSHVPdhX0pY16aSvw5fVr44EMaT7X5Xz46uQ4b/YBm1v2x+3hHkB9PmjEEkmbHb9PXQ4w==}
@@ -4129,9 +4087,6 @@ packages:
     peerDependenciesMeta:
       react-dom:
         optional: true
-
-  react-vertical-timeline-component@3.6.0:
-    resolution: {integrity: sha512-l9zulqjIGlRuaQeplGzV4r/tG2RYBpYt84Il8w4IxnJze2cDIGI04MKo3F7f1sHT0Sih1ohEFts8UV23AJS15Q==}
 
   react@19.2.3:
     resolution: {integrity: sha512-Ku/hhYbVjOQnXDZFv2+RibmLFGwFdeeKHFcOTlrt7xplBnya5OGn/hIRDsqDiSUcfORsDC7MPxwork8jBwsIWA==}
@@ -5959,12 +5914,6 @@ snapshots:
       '@xml-tools/parser': 1.0.11
       prettier: 3.7.4
 
-  '@react-leaflet/core@2.1.0(leaflet@1.9.4)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)':
-    dependencies:
-      leaflet: 1.9.4
-      react: 19.2.3
-      react-dom: 19.2.3(react@19.2.3)
-
   '@react-spring/animated@10.0.3(react@19.2.3)':
     dependencies:
       '@react-spring/shared': 10.0.3(react@19.2.3)
@@ -6448,13 +6397,6 @@ snapshots:
       eslint-visitor-keys: 4.2.1
 
   '@ungap/structured-clone@1.3.0': {}
-
-  '@use-gesture/core@10.3.1': {}
-
-  '@use-gesture/react@10.3.1(react@19.2.3)':
-    dependencies:
-      '@use-gesture/core': 10.3.1
-      react: 19.2.3
 
   '@vitejs/plugin-react@4.7.0(vite@5.4.21(@types/node@25.0.3))':
     dependencies:
@@ -8919,8 +8861,6 @@ snapshots:
     dependencies:
       language-subtag-registry: 0.3.23
 
-  leaflet@1.9.4: {}
-
   levn@0.4.1:
     dependencies:
       prelude-ls: 1.2.1
@@ -9666,22 +9606,11 @@ snapshots:
       react: 19.2.3
       react-dom: 19.2.3(react@19.2.3)
 
-  react-intersection-observer@8.34.0(react@19.2.3):
-    dependencies:
-      react: 19.2.3
-
   react-is@16.13.1: {}
 
   react-is@17.0.2: {}
 
   react-is@18.3.1: {}
-
-  react-leaflet@4.2.1(leaflet@1.9.4)(react-dom@19.2.3(react@19.2.3))(react@19.2.3):
-    dependencies:
-      '@react-leaflet/core': 2.1.0(leaflet@1.9.4)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
-      leaflet: 1.9.4
-      react: 19.2.3
-      react-dom: 19.2.3(react@19.2.3)
 
   react-player@2.16.1(react@19.2.3):
     dependencies:
@@ -9717,14 +9646,6 @@ snapshots:
       set-cookie-parser: 2.7.2
     optionalDependencies:
       react-dom: 19.2.3(react@19.2.3)
-
-  react-vertical-timeline-component@3.6.0(react@19.2.3):
-    dependencies:
-      classnames: 2.5.1
-      prop-types: 15.8.1
-      react-intersection-observer: 8.34.0(react@19.2.3)
-    transitivePeerDependencies:
-      - react
 
   react@19.2.3: {}
 

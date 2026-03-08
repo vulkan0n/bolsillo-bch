@@ -2,7 +2,6 @@ import { Toaster } from "react-hot-toast";
 import { useSelector } from "react-redux";
 import { createBrowserRouter } from "react-router";
 import { RouterProvider } from "react-router/dom";
-import { ApolloProvider } from "@apollo/client";
 
 import { selectIsLocked } from "@/redux/device";
 
@@ -12,8 +11,6 @@ import AppLockScreen from "@/views/security/AppLockScreen";
 import IndexRoute from "@/layout/IndexRoute";
 import ErrorBoundary from "@/layout/ErrorBoundary";
 import MainLayout from "@/layout/MainLayout";
-
-import apolloClient from "@/apolloClient";
 
 import { routeApps } from "@/routes/routeApps";
 import { routeAssets } from "@/routes/routeAssets";
@@ -69,10 +66,10 @@ export default function Main() {
   }
 
   return (
-    <ApolloProvider client={apolloClient}>
+    <>
       {/* Note: Duration has an inbuilt extra 1000ms dismissal delay */}
       <Toaster toastOptions={{ duration: 1250 }} containerClassName="toaster" />
       <RouterProvider router={router} />
-    </ApolloProvider>
+    </>
   );
 }

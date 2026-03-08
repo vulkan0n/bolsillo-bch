@@ -6,11 +6,6 @@ import {
   createSelector,
   createAsyncThunk,
 } from "@reduxjs/toolkit";
-import {
-  formatJsonRpcResult,
-  formatJsonRpcError,
-} from "@walletconnect/jsonrpc-utils";
-import { getSdkError } from "@walletconnect/utils";
 
 import { selectBchNetwork } from "@/redux/preferences";
 import { selectActiveWallet } from "@/redux/wallet";
@@ -92,6 +87,12 @@ export const wcSessionRequest = createAsyncThunk(
     const bchNetwork = selectBchNetwork(thunkApi.getState());
 
     const WalletConnect = WalletConnectService();
+
+    const [{ formatJsonRpcResult, formatJsonRpcError }, { getSdkError }] =
+      await Promise.all([
+        import("@walletconnect/jsonrpc-utils"),
+        import("@walletconnect/utils"),
+      ]);
 
     const wallet = selectActiveWallet(thunkApi.getState());
     const AddressManager = AddressManagerService(wallet.walletHash);

@@ -2,7 +2,6 @@
 //import BlissTokenHuntView from "@/components/views/apps/bliss/tokenHunt/BlissTokenHuntView";
 import AppsView from "@/views/apps/AppsView";
 //import BlazeAboutView from "@/views/apps/blaze/about/BlazeAboutView";
-import AppBlazeView from "@/views/apps/blaze/AppBlazeView";
 //import BlissAboutView from "@/views/apps/bliss/about/BlissAboutView";
 //import AppBlissView from "@/views/apps/bliss/AppBlissView";
 
@@ -45,7 +44,11 @@ export const routeApps = [
   },
   {
     path: "/apps/blaze",
-    element: <AppBlazeView />,
+    async lazy() {
+      const { default: AppBlazeView } =
+        await import("@/views/apps/blaze/AppBlazeView");
+      return { Component: AppBlazeView };
+    },
   },
   /*{
     path: "/apps/bliss",

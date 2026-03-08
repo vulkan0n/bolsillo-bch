@@ -1,5 +1,3 @@
-@import url("leaflet/dist/leaflet.css");
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -101,10 +99,6 @@ main {
 
 .toaster {
   margin-top: env(safe-area-inset-top);
-}
-
-.leaflet-container {
-  height: 70vh;
 }
 
 .anticon {

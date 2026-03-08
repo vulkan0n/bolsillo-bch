@@ -1,7 +1,3 @@
-import { WalletKit } from "@reown/walletkit";
-import { Core } from "@walletconnect/core";
-import { getSdkError } from "@walletconnect/utils";
-
 import LogService from "@/kernel/app/LogService";
 
 const Log = LogService("WalletConnect");
@@ -30,6 +26,12 @@ export default function WalletConnectService() {
     }
 
     Log.log("Initializing WalletConnect");
+
+    const [{ Core }, { WalletKit }] = await Promise.all([
+      import("@walletconnect/core"),
+      import("@reown/walletkit"),
+    ]);
+
     const core = new Core({
       projectId: "953f3fbfdc425848d3d9693a6c927cda",
     });
@@ -100,6 +102,7 @@ export default function WalletConnectService() {
   }
 
   async function rejectSession(proposal) {
+    const { getSdkError } = await import("@walletconnect/utils");
     return walletKit.rejectSession({
       id: proposal.id,
       reason: getSdkError("USER_REJECTED"),
@@ -111,6 +114,7 @@ export default function WalletConnectService() {
     const pairings = await getPairings();
 
     if (Object.keys(sessions).includes(sessionId)) {
+      const { getSdkError } = await import("@walletconnect/utils");
       await walletKit.disconnectSession({
         topic: sessionId,
         reason: getSdkError("USER_DISCONNECTED"),
