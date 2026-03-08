@@ -198,18 +198,25 @@ export default function SecurityService() {
   }
 
   // Remove after 99% of userbase is verified to have version 2026.03+
-  async function authorizeLegacyPin(pinHash: string): Promise<string> {
-    const result = await Dialog.prompt({
-      title: translate(securityTranslations.securityUpgrade),
-      message: translate(securityTranslations.enterPinToUpgrade),
-      okButtonTitle: translate(securityTranslations.upgrade),
-    });
+  async function authorizeLegacyPin(pinHash: string): Promise<string | null> {
+    /* eslint-disable no-constant-condition, no-await-in-loop */
+    while (true) {
+      const result = await Dialog.prompt({
+        title: translate(securityTranslations.securityUpgrade),
+        message: translate(securityTranslations.enterPinToUpgrade),
+        okButtonTitle: translate(securityTranslations.upgrade),
+      });
 
-    if (result.value && sha256.text(result.value) === pinHash) {
-      return result.value;
+      // User dismissed the dialog — return to lock screen
+      if (!result.value) {
+        return null;
+      }
+
+      if (sha256.text(result.value) === pinHash) {
+        return result.value;
+      }
     }
-
-    return authorizeLegacyPin(pinHash);
+    /* eslint-enable no-constant-condition, no-await-in-loop */
   }
 
   // --- PIN management  ---
@@ -363,5 +370,7 @@ export default function SecurityService() {
   /** Reset all encryption state in the plugin. */
   async function resetEncryption(): Promise<void> {
     await SimpleEncryption.resetAll();
+    isReady = false;
+    hasPinConfigured = false;
   }
 }
