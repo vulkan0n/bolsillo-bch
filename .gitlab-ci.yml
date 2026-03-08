@@ -120,6 +120,7 @@ deploy_android_edge:
     - echo "$SSH_KNOWN_HOSTS_BASE64" | base64 -d > ~/.ssh/known_hosts
     - echo "Uploading selene-edge.apk"
     - sha256sum android/app/build/outputs/apk/debug/app-debug.apk
+    - ssh selene@warpgate.selene.technology "mkdir -p /srv/www/selene.cash/public/download"
     - scp android/app/build/outputs/apk/debug/app-debug.apk selene@warpgate.selene.technology:/srv/www/selene.cash/public/download/selene-edge.apk
   only:
     - edge
@@ -249,6 +250,7 @@ deploy_web_edge:
     - eval $(ssh-agent -s)
     - echo "$SELENE_SSH_KEY_BASE64" | base64 -d | ssh-add - > /dev/null 2>&1
     - echo "$SSH_KNOWN_HOSTS_BASE64" | base64 -d > ~/.ssh/known_hosts
+    - ssh selene@warpgate.selene.technology "mkdir -p /srv/www/edge.selene.cash/dist"
     - scp -r dist/* selene@warpgate.selene.technology:/srv/www/edge.selene.cash/dist/
   only:
     - edge
