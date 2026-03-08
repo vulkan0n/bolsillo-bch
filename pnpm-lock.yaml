@@ -29,6 +29,9 @@ importers:
       '@capacitor/app':
         specifier: ^8.0.0
         version: 8.0.0(@capacitor/core@8.0.1)
+      '@capacitor/browser':
+        specifier: ^8.0.2
+        version: 8.0.2(@capacitor/core@8.0.1)
       '@capacitor/camera':
         specifier: ^8.0.0
         version: 8.0.0(@capacitor/core@8.0.1)
@@ -50,9 +53,6 @@ importers:
       '@capacitor/haptics':
         specifier: ^8.0.0
         version: 8.0.0(@capacitor/core@8.0.1)
-      '@capacitor/inappbrowser':
-        specifier: ^3.0.0
-        version: 3.0.0(@capacitor/core@8.0.1)
       '@capacitor/ios':
         specifier: ^8.0.0
         version: 8.0.1(@capacitor/core@8.0.1)
@@ -442,6 +442,11 @@ packages:
     engines: {node: '>=10.3.0'}
     hasBin: true
 
+  '@capacitor/browser@8.0.2':
+    resolution: {integrity: sha512-oJEtVP5huwPJ8GgOCH3OewhsBPTW6aVtWg8hU6g65MxBdhkcAKyzYrhsyXupC5GaMxltqLf1JzKETMmGkh6tDw==}
+    peerDependencies:
+      '@capacitor/core': '>=8.0.0'
+
   '@capacitor/camera@8.0.0':
     resolution: {integrity: sha512-Iu8j2oxoIhY2mLuoEckbL7PFgw1XFm1nqmeWdIkILpcT3H9A+BrSDUDlzWqM/EeaDKo6JnhR59tYHwUhOdXaUg==}
     peerDependencies:
@@ -482,11 +487,6 @@ packages:
 
   '@capacitor/haptics@8.0.0':
     resolution: {integrity: sha512-DY1IUOjke1T4ITl7mFHQIKCaJJyHYAYRYHG9bVApU7PDOZiMVGMp48Yjzdqjya+wv/AHS5mDabSTUmhJ5uDvBA==}
-    peerDependencies:
-      '@capacitor/core': '>=8.0.0'
-
-  '@capacitor/inappbrowser@3.0.0':
-    resolution: {integrity: sha512-DwBGv8I61VWbBVpLIS+q7fM/HZaKfRr3b2Rc3D5nTaoCd1yZ3sC9IvLPzHYOFCrbWuZKZ1d0+2K4td5xRnZQwA==}
     peerDependencies:
       '@capacitor/core': '>=8.0.0'
 
@@ -5362,6 +5362,10 @@ snapshots:
       - supports-color
       - typescript
 
+  '@capacitor/browser@8.0.2(@capacitor/core@8.0.1)':
+    dependencies:
+      '@capacitor/core': 8.0.1
+
   '@capacitor/camera@8.0.0(@capacitor/core@8.0.1)':
     dependencies:
       '@capacitor/core': 8.0.1
@@ -5432,10 +5436,6 @@ snapshots:
       '@capacitor/synapse': 1.0.4
 
   '@capacitor/haptics@8.0.0(@capacitor/core@8.0.1)':
-    dependencies:
-      '@capacitor/core': 8.0.1
-
-  '@capacitor/inappbrowser@3.0.0(@capacitor/core@8.0.1)':
     dependencies:
       '@capacitor/core': 8.0.1
 
