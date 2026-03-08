@@ -1,14 +1,19 @@
 /* eslint-disable react-refresh/only-export-components */
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import { useSelector } from "react-redux";
 import { useNavigate } from "react-router";
 import { SimpleEncryption } from "capacitor-plugin-simple-encryption";
+import { Dialog } from "@capacitor/dialog";
 import {
   ArrowLeftOutlined,
   ImportOutlined,
   DeleteOutlined,
+  EyeOutlined,
   FileTextOutlined,
   WarningOutlined,
 } from "@ant-design/icons";
+
+import { selectPreferences } from "@/redux/preferences";
 
 import ConsoleService from "@/kernel/app/ConsoleService";
 import DatabaseService, {
@@ -16,9 +21,12 @@ import DatabaseService, {
 } from "@/kernel/app/DatabaseService";
 import JanitorService from "@/kernel/app/JanitorService";
 import LogService from "@/kernel/app/LogService";
+import SecurityService from "@/kernel/app/SecurityService";
+import WalletManagerService from "@/kernel/wallet/WalletManagerService";
 
 import Button from "@/atoms/Button";
 import SeleneLogo from "@/atoms/SeleneLogo";
+import ShowMnemonic from "@/atoms/ShowMnemonic";
 
 import { translate } from "@/util/translations";
 import translations from "./translations";
@@ -257,6 +265,95 @@ export function NuclearWipeScreen() {
   );
 }
 
+export function LegacyRevealScreen() {
+  const [hasConfirmed, setHasConfirmed] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isAllViewed, setIsAllViewed] = useState(false);
+
+  const wallets = useMemo(() => {
+    try {
+      return WalletManagerService().listWallets();
+    } catch {
+      return [];
+    }
+  }, []);
+
+  const handleRevealCheck = () => {
+    setIsAllViewed(SecurityService().allWalletsSeedViewed());
+  };
+
+  const handleWipeAfterReveal = async () => {
+    const { value: isConfirmed } = await Dialog.confirm({
+      title: translate(translations.wipeAfterReveal),
+      message: translate(translations.wipeConfirmMessage),
+    });
+    if (!isConfirmed) {
+      return;
+    }
+    setIsLoading(true);
+    await JanitorService().nuclearWipe();
+    restartApp();
+  };
+
+  if (wallets.length === 0) {
+    return (
+      <LockScreenWrapper showBack>
+        <p className="text-center text-neutral-600 dark:text-neutral-400">
+          {translate(translations.noWalletFound)}
+        </p>
+      </LockScreenWrapper>
+    );
+  }
+
+  return (
+    <LockScreenWrapper showBack>
+      <div className="flex items-center gap-2 mb-4">
+        <WarningOutlined className="text-red-500 text-xl" />
+        <h2 className="text-lg font-bold text-red-600 dark:text-red-400">
+          {translate(translations.emergencyRevealTitle)}
+        </h2>
+      </div>
+
+      <div className="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded p-3 mb-4">
+        <p className="text-sm text-red-700 dark:text-red-300">
+          {translate(translations.emergencyRevealWarning)}
+        </p>
+      </div>
+
+      {wallets.map((w) => (
+        <ShowMnemonic
+          key={w.walletHash}
+          walletHash={w.walletHash}
+          onReveal={handleRevealCheck}
+        />
+      ))}
+
+      <div className="mt-4">
+        <label className="flex items-center gap-2 text-sm text-neutral-600 dark:text-neutral-400 mb-3">
+          <input
+            type="checkbox"
+            checked={hasConfirmed}
+            onChange={(e) => setHasConfirmed(e.target.checked)}
+            disabled={!isAllViewed}
+          />
+          {translate(translations.confirmWrittenDown)}
+        </label>
+
+        <Button
+          {...dangerButtonProps}
+          label={
+            isLoading
+              ? translate(translations.wiping)
+              : translate(translations.wipeAfterReveal)
+          }
+          onClick={handleWipeAfterReveal}
+          disabled={!isAllViewed || !hasConfirmed || isLoading}
+        />
+      </div>
+    </LockScreenWrapper>
+  );
+}
+
 const menuButtonProps = {
   fullWidth: true,
   justify: "start" as const,
@@ -271,6 +368,8 @@ const menuButtonProps = {
 
 export function ForgotPinMenu() {
   const navigate = useNavigate();
+  const { pinHash } = useSelector(selectPreferences);
+  const hasLegacyPin = pinHash !== "";
 
   return (
     <LockScreenWrapper showBack>
@@ -320,6 +419,26 @@ export function ForgotPinMenu() {
             </div>
           }
         />
+
+        {hasLegacyPin && (
+          <Button
+            {...menuButtonProps}
+            onClick={() => navigate("/forgot-pin/reveal")}
+            icon={EyeOutlined}
+            iconClasses="text-amber-500"
+            iconSize="lg"
+            label={
+              <div className="text-left">
+                <div className="font-semibold text-neutral-900 dark:text-neutral-100">
+                  {translate(translations.revealRecoveryPhrase)}
+                </div>
+                <div className="text-xs text-neutral-500 dark:text-neutral-400">
+                  {translate(translations.revealDescription)}
+                </div>
+              </div>
+            }
+          />
+        )}
 
         <Button
           {...menuButtonProps}

@@ -16,6 +16,7 @@ import translations from "./translations";
 import {
   ForgotPinMenu,
   ImportBackupScreen,
+  LegacyRevealScreen,
   NuclearWipeScreen,
   LockScreenWrapper,
   primaryButtonProps,
@@ -174,6 +175,7 @@ export default function AppLockScreen() {
         <Route path="/" element={<PinLockScreen />} />
         <Route path="/forgot-pin" element={<ForgotPinMenu />} />
         <Route path="/forgot-pin/import" element={<ImportBackupScreen />} />
+        <Route path="/forgot-pin/reveal" element={<LegacyRevealScreen />} />
         <Route path="/forgot-pin/wipe" element={<NuclearWipeScreen />} />
       </Routes>
     </MemoryRouter>

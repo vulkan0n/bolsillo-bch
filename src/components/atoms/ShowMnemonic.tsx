@@ -15,7 +15,13 @@ import { useLongPress } from "@/hooks/useLongPress";
 
 import { translate } from "@/util/translations";
 
-export default function ShowMnemonic({ walletHash }: { walletHash: string }) {
+export default function ShowMnemonic({
+  walletHash,
+  onReveal = undefined,
+}: {
+  walletHash: string;
+  onReveal?: () => void;
+}) {
   const dispatch = useDispatch();
   const WalletManager = WalletManagerService();
 
@@ -49,6 +55,7 @@ export default function ShowMnemonic({ walletHash }: { walletHash: string }) {
 
       setShouldShowRecoveryPhrase(true);
       dispatch(walletSetKeyViewed({ walletHash }));
+      onReveal?.();
     } else {
       mnemonic.current = "";
       setShouldShowRecoveryPhrase(false);
