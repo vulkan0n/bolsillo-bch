@@ -95,7 +95,7 @@ package_android_edge:
     - cd android/
     - bundle install
     - bundle exec fastlane package_debug
-    - sha256sum android/app/build/outputs/apk/debug/app-debug.apk
+    - sha256sum app/build/outputs/apk/debug/app-debug.apk
   artifacts:
     paths:
       - android/app/build/outputs/apk/debug/app-debug.apk
@@ -108,6 +108,8 @@ package_android_edge:
 deploy_android_edge:
   stage: release
   image: alpine:latest
+  needs:
+    - package_android_edge
   dependencies:
     - package_android_edge
   script:
@@ -237,6 +239,8 @@ deploy_web:
 deploy_web_edge:
   stage: release
   image: alpine:latest
+  needs:
+    - build_sync
   dependencies:
     - build_sync
   script:
