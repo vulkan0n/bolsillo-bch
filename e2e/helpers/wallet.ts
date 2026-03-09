@@ -2,7 +2,7 @@
  * Wallet helpers for E2E tests.
  * Handles wallet import, network switching, and sync waiting.
  */
-import { type Page, expect } from "@playwright/test";
+import { type Page, type Locator, expect } from "@playwright/test";
 import { nav } from "./selectors";
 
 /** Read mainnet mnemonic; returns undefined if not set (tests should skip). */
@@ -87,17 +87,14 @@ export async function importWallet(
   await importBtn.click();
   await page.waitForURL("**/settings/wallet/wizard/import**");
 
-  const mnemonicInput = page.locator("textarea");
+  const mnemonicInput = page.locator('[data-testid="mnemonic-input"]');
   await mnemonicInput.fill(mnemonic);
 
   const confirmBtn = page.getByRole("button", { name: /Import Wallet/i });
   await confirmBtn.click();
 
   // Wait for wallet build — the app navigates away from wizard when done
-  await page.waitForFunction(
-    () => !window.location.pathname.includes("/wizard"),
-    { timeout: 30_000 }
-  );
+  await expect(page).not.toHaveURL(/\/wizard/, { timeout: 30_000 });
   await waitForSync(page);
 
   await page.click(nav.wallet);
@@ -113,9 +110,11 @@ export async function goToWallet(page: Page): Promise<void> {
 
 /**
  * Get the currently displayed address text from the wallet view.
+ * Waits for the address to be non-empty before returning.
  */
 export async function getDisplayedAddress(page: Page): Promise<string> {
   const addressEl = page.locator('[data-testid="address-display"]');
+  await expect(addressEl).not.toHaveText("", { timeout: 5_000 });
   return (await addressEl.textContent()) || "";
 }
 
@@ -135,4 +134,25 @@ export function accordionControl(
     .getByText(labelText, { exact: false })
     .locator("../..")
     .locator(controlSelector);
+}
+
+/**
+ * Toggle a checkbox and verify the state changed using web-first assertions.
+ * Restores the original state after verification.
+ */
+export async function expectToggle(checkbox: Locator): Promise<void> {
+  const wasChecked = await checkbox.isChecked();
+  await checkbox.click();
+  if (wasChecked) {
+    await expect(checkbox).not.toBeChecked();
+  } else {
+    await expect(checkbox).toBeChecked();
+  }
+  // Restore
+  await checkbox.click();
+  if (wasChecked) {
+    await expect(checkbox).toBeChecked();
+  } else {
+    await expect(checkbox).not.toBeChecked();
+  }
 }

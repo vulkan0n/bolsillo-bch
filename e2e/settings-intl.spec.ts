@@ -23,10 +23,9 @@ test.describe("Settings: Localization", () => {
   });
 
   test("switching language updates UI text", async ({ appPage: page }) => {
-    // Use structural selector — label text changes when language switches
-    const langSelect = page
-      .locator('[data-testid="settings-view"] select')
-      .first();
+    // Use structural selector — label text changes when language switches.
+    // Language is typically the first select in the Localization accordion.
+    const langSelect = accordionControl(page, "Language", "select");
     await expect(langSelect).toBeVisible();
 
     // Switch to Spanish

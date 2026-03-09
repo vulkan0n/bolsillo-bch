@@ -219,6 +219,7 @@ export function SatoshiInput({
       type="text"
       ref={ref}
       inputMode="decimal"
+      data-testid="satoshi-input"
       className={className}
       placeholder="0"
       size={size}

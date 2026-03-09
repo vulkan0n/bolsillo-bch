@@ -1,6 +1,6 @@
 import { test, expect } from "./helpers/fixtures";
 import { nav } from "./helpers/selectors";
-import { accordionControl } from "./helpers/wallet";
+import { accordionControl, expectToggle } from "./helpers/wallet";
 
 test.describe("Settings: Payment", () => {
   test.beforeEach(async ({ appPage: page }) => {
@@ -26,7 +26,7 @@ test.describe("Settings: Payment", () => {
     const limitLabel = page.getByText("Instant Pay limit", { exact: false });
     await expect(limitLabel).toBeVisible();
 
-    const limitInput = page.locator('input[inputmode="decimal"]');
+    const limitInput = page.locator('[data-testid="satoshi-input"]');
     await expect(limitInput.first()).toBeVisible();
   });
 
@@ -39,12 +39,6 @@ test.describe("Settings: Payment", () => {
     await checkbox.scrollIntoViewIfNeeded();
     await expect(checkbox).toBeVisible({ timeout: 3_000 });
 
-    const wasBefore = await checkbox.isChecked();
-    await checkbox.click();
-    expect(await checkbox.isChecked()).toBe(!wasBefore);
-
-    // Restore
-    await checkbox.click();
-    expect(await checkbox.isChecked()).toBe(wasBefore);
+    await expectToggle(checkbox);
   });
 });

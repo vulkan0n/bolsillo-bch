@@ -1,6 +1,6 @@
 import { test, expect } from "./helpers/fixtures";
 import { nav } from "./helpers/selectors";
-import { accordionControl } from "./helpers/wallet";
+import { accordionControl, expectToggle } from "./helpers/wallet";
 
 test.describe("Settings: User Interface", () => {
   test.beforeEach(async ({ appPage: page }) => {
@@ -39,12 +39,7 @@ test.describe("Settings: User Interface", () => {
     );
     await expect(checkbox).toBeVisible({ timeout: 3_000 });
 
-    const wasBefore = await checkbox.isChecked();
-    await checkbox.click();
-    expect(await checkbox.isChecked()).toBe(!wasBefore);
-
-    // Restore
-    await checkbox.click();
+    await expectToggle(checkbox);
   });
 
   test("display sync counter toggle works", async ({ appPage: page }) => {
@@ -55,11 +50,6 @@ test.describe("Settings: User Interface", () => {
     );
     await expect(checkbox).toBeVisible({ timeout: 3_000 });
 
-    const wasBefore = await checkbox.isChecked();
-    await checkbox.click();
-    expect(await checkbox.isChecked()).toBe(!wasBefore);
-
-    // Restore
-    await checkbox.click();
+    await expectToggle(checkbox);
   });
 });

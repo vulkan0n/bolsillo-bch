@@ -28,11 +28,11 @@ test.describe("Send Deep Link", () => {
     await expect(header).toBeVisible({ timeout: 10_000 });
 
     // The Editable input should be in edit mode (open, ready for input)
-    const addressInput = page.locator("input").first();
+    const addressInput = page.locator(sendPage.addressInput);
     await expect(addressInput).toBeVisible();
 
     // Amount input should also be present
-    const amountInput = page.locator('input[inputMode="decimal"]').first();
+    const amountInput = page.locator(sendPage.amountInput).first();
     await expect(amountInput).toBeVisible();
   });
 });

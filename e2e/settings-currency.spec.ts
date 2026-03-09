@@ -68,11 +68,20 @@ test.describe("Settings: Currency", () => {
     );
     await expect(checkbox).toBeVisible({ timeout: 3_000 });
 
-    const wasBefore = await checkbox.isChecked();
+    const wasChecked = await checkbox.isChecked();
     await checkbox.click();
-    expect(await checkbox.isChecked()).toBe(!wasBefore);
+    if (wasChecked) {
+      await expect(checkbox).not.toBeChecked();
+    } else {
+      await expect(checkbox).toBeChecked();
+    }
 
     // Restore
     await checkbox.click();
+    if (wasChecked) {
+      await expect(checkbox).toBeChecked();
+    } else {
+      await expect(checkbox).not.toBeChecked();
+    }
   });
 });

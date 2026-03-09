@@ -20,7 +20,7 @@ export const walletView = {
   qrButton: '[data-testid="qr-button"]',
   addressDisplay: '[data-testid="address-display"]',
   requestAmountTrigger: '[data-testid="request-amount"]',
-  requestAmountInput: 'input[inputMode="decimal"]',
+  requestAmountInput: '[data-testid="satoshi-input"]',
   receiveTokensCheckbox: '[data-testid="receive-tokens"]',
   historyButton: '[role="img"][aria-label="history"]',
   scannerButton: '[role="img"][aria-label="scan"]',
@@ -31,7 +31,8 @@ export const walletView = {
 export const sendPage = {
   header: '[data-testid="send-header"]',
   error: '[data-testid="send-error"]',
-  amountInput: 'input[inputMode="decimal"]',
+  amountInput: '[data-testid="satoshi-input"]',
+  addressInput: '[data-testid="editable-input"]',
   slideToSend: '[data-testid="slide-to-action"]',
   backButton: '[role="img"][aria-label="arrow-left"]',
 };
@@ -61,4 +62,9 @@ export const assetsPage = {
 // Scanner overlay
 export const scanner = {
   closeButton: '[role="img"][aria-label="close"]',
+};
+
+// Sweep page
+export const sweepPage = {
+  error: '[data-testid="sweep-error"]',
 };

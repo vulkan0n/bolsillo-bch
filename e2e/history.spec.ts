@@ -49,7 +49,7 @@ test.describe("History", () => {
 
     // Filter panel should not be visible initially
     const sortByLabel = page.getByText("Sort By", { exact: false });
-    await expect(sortByLabel).not.toBeVisible();
+    await expect(sortByLabel).toBeHidden();
 
     // Click filter button to open panel
     await filterBtn.click();
@@ -57,7 +57,7 @@ test.describe("History", () => {
 
     // Click again to close
     await filterBtn.click();
-    await expect(sortByLabel).not.toBeVisible();
+    await expect(sortByLabel).toBeHidden();
   });
 
   test("filter panel has sort controls", async ({ appPage: page }) => {
@@ -177,12 +177,14 @@ test.describe("History", () => {
 
   test("empty wallet shows empty state", async ({ appPage: page }) => {
     // On a fresh default wallet with no transactions, the list should show
-    // the empty state marker (either "-----" or a sync spinner)
+    // the empty state marker or a syncing indicator
     const emptyMarker = page.getByText("-----");
-    const syncSpinner = page.locator(".anticon-sync.anticon-spin");
+    const syncIndicator = page.locator(
+      '[data-testid="sync-indicator"][data-syncing="true"]'
+    );
 
     // One of these should be visible
-    await expect(emptyMarker.or(syncSpinner).first()).toBeVisible({
+    await expect(emptyMarker.or(syncIndicator).first()).toBeVisible({
       timeout: 5_000,
     });
   });

@@ -8,7 +8,7 @@ test.describe("Security", () => {
     const pinInput = page.locator(
       'input[type="password"][inputmode="numeric"]'
     );
-    await expect(pinInput).not.toBeVisible();
+    await expect(pinInput).toBeHidden();
   });
 
   test("security accordion is accessible", async ({ appPage: page }) => {
@@ -42,24 +42,15 @@ test.describe("Security", () => {
     ).toBeVisible({ timeout: 3_000 });
   });
 
-  test.skip(
-    "forgot pin has import/reset options",
-    async ({ appPage: page }) => {
-      // Web stub cannot show lock screen (encryption always ready)
-    }
-  );
+  test.skip("forgot pin has import/reset options", () => {
+    // Web stub cannot show lock screen (encryption always ready)
+  });
 
-  test.skip(
-    "nuclear wipe requires confirmation",
-    async ({ appPage: page }) => {
-      // Web stub cannot show lock screen (encryption always ready)
-    }
-  );
+  test.skip("nuclear wipe requires confirmation", () => {
+    // Web stub cannot show lock screen (encryption always ready)
+  });
 
-  test.skip(
-    "import backup has fields",
-    async ({ appPage: page }) => {
-      // Web stub cannot show lock screen (encryption always ready)
-    }
-  );
+  test.skip("import backup has fields", () => {
+    // Web stub cannot show lock screen (encryption always ready)
+  });
 });

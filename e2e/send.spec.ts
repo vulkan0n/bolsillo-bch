@@ -18,7 +18,7 @@ test.describe("Send", () => {
     appPage: page,
   }) => {
     // Address Editable input should be present (open by default)
-    const addressInput = page.locator("input").first();
+    const addressInput = page.locator(sendPage.addressInput);
     await expect(addressInput).toBeVisible();
 
     // Amount input should also be present
@@ -36,12 +36,12 @@ test.describe("Send", () => {
     ).toBeVisible();
   });
 
-  test("large amount shows error styling", async ({ appPage: page }) => {
+  test("large amount shows error state", async ({ appPage: page }) => {
     const amountInput = page.locator(sendPage.amountInput).first();
     await expect(amountInput).toBeVisible();
     await amountInput.fill("999999999");
-    // Insufficient funds should add text-error class to the input
-    await expect(amountInput).toHaveClass(/text-error/);
+    // Insufficient funds should show the send error element
+    await expect(page.locator(sendPage.error)).toBeVisible();
   });
 
   test("slide-to-send visible", async ({ appPage: page }) => {

@@ -16,26 +16,26 @@ test.describe("Send: Advanced Interactions", () => {
   }) => {
     // When navigating with a valid address, the Address component renders it
     const addressDisplay = page.getByText("qpm2qs", { exact: false });
-    await expect(addressDisplay).toBeVisible({ timeout: 5_000 });
+    await expect(addressDisplay).toBeVisible();
   });
 
   test("tapping displayed address re-opens edit mode", async ({
     appPage: page,
   }) => {
     const addressDisplay = page.getByText("qpm2qs", { exact: false });
-    await expect(addressDisplay).toBeVisible({ timeout: 5_000 });
+    await expect(addressDisplay).toBeVisible();
 
     // Clicking the address should switch to edit mode (Editable input)
     await addressDisplay.click();
-    const editableInput = page.locator("input").first();
-    await expect(editableInput).toBeVisible({ timeout: 3_000 });
+    const editableInput = page.locator(sendPage.addressInput);
+    await expect(editableInput).toBeVisible();
   });
 
   test("MAX button fills maximum sendable amount", async ({
     appPage: page,
   }) => {
     const maxBtn = page.getByText("MAX", { exact: true });
-    await expect(maxBtn).toBeVisible({ timeout: 5_000 });
+    await expect(maxBtn).toBeVisible();
 
     // Click MAX — on empty wallet this will be 0, but the click should not crash
     const amountInput = page.locator(sendPage.amountInput).first();
@@ -50,7 +50,7 @@ test.describe("Send: Advanced Interactions", () => {
   test("scanner button opens scanner overlay", async ({ appPage: page }) => {
     // ScannerButton renders ScanOutlined icon with aria-label="scan"
     const scanBtn = page.locator('[role="img"][aria-label="scan"]').first();
-    await expect(scanBtn).toBeVisible({ timeout: 3_000 });
+    await expect(scanBtn).toBeVisible();
 
     await scanBtn.click();
 

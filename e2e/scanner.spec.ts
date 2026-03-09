@@ -20,11 +20,11 @@ test.describe("Scanner", () => {
     ).toBeVisible({ timeout: 5_000 });
   });
 
-  test.skip("scanner torch works", async ({ appPage: page }) => {
+  test.skip("scanner torch works", () => {
     // Scanner torch requires native Capacitor plugin - skip in headless
   });
 
-  test.skip("image select scan works", async ({ appPage: page }) => {
+  test.skip("image select scan works", () => {
     // Image select requires file picker / native camera - skip in headless
   });
 });

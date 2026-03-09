@@ -1,6 +1,6 @@
 import { test, expect } from "./helpers/fixtures";
 import { nav } from "./helpers/selectors";
-import { accordionControl } from "./helpers/wallet";
+import { accordionControl, expectToggle } from "./helpers/wallet";
 
 test.describe("Settings: Privacy", () => {
   test.beforeEach(async ({ appPage: page }) => {
@@ -56,12 +56,7 @@ test.describe("Settings: Privacy", () => {
     );
     await expect(checkbox).toBeVisible({ timeout: 3_000 });
 
-    const wasBefore = await checkbox.isChecked();
-    await checkbox.click();
-    expect(await checkbox.isChecked()).toBe(!wasBefore);
-
-    // Restore
-    await checkbox.click();
+    await expectToggle(checkbox);
   });
 
   test("auto-resolve token metadata toggle works", async ({ appPage: page }) => {
@@ -72,11 +67,6 @@ test.describe("Settings: Privacy", () => {
     );
     await expect(checkbox).toBeVisible({ timeout: 3_000 });
 
-    const wasBefore = await checkbox.isChecked();
-    await checkbox.click();
-    expect(await checkbox.isChecked()).toBe(!wasBefore);
-
-    // Restore
-    await checkbox.click();
+    await expectToggle(checkbox);
   });
 });

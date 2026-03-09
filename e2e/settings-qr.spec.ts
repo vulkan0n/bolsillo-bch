@@ -19,11 +19,10 @@ test.describe("Settings: QR Code", () => {
     const count = await logoSelect.locator("option").count();
     expect(count).toBeGreaterThanOrEqual(2);
 
-    // Change logo
+    // Change logo — select a different option and verify it changed
     const originalValue = await logoSelect.inputValue();
     await logoSelect.selectOption({ index: 1 });
-    const newValue = await logoSelect.inputValue();
-    expect(newValue).not.toBe(originalValue);
+    await expect(logoSelect).not.toHaveValue(originalValue);
   });
 
   test("foreground color input works", async ({ appPage: page }) => {

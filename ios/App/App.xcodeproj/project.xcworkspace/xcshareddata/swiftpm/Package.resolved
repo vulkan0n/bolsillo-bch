@@ -6,8 +6,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/ionic-team/capacitor-swift-pm.git",
       "state" : {
-        "branch" : "main",
-        "revision" : "d79a663cf0a4d133de3c60804914d3a2d5798aa1"
+        "revision" : "3e7ccfb8ab4d321ffcbd4e490234758e139f8a09",
+        "version" : "8.0.1"
       }
     },
     {
@@ -17,15 +17,6 @@
       "state" : {
         "revision" : "dd9052cfb55b70771d04deb427f94e19ea31c372",
         "version" : "1.0.1"
-      }
-    },
-    {
-      "identity" : "osinappbrowserlib-ios",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/OutSystems/OSInAppBrowserLib-iOS.git",
-      "state" : {
-        "revision" : "02077543fe499b68dd2e636bb1c2a40521e67d6a",
-        "version" : "2.3.1"
       }
     }
   ],

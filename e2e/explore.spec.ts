@@ -48,7 +48,7 @@ test.describe("Explore", () => {
     // Uncheck — explore tab should disappear
     await checkbox.click();
     await expect(checkbox).not.toBeChecked();
-    await expect(page.locator(nav.explore)).not.toBeVisible();
+    await expect(page.locator(nav.explore)).toBeHidden();
 
     // Re-check — explore tab should reappear
     await checkbox.click();

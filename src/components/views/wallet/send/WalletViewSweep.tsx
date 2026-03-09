@@ -205,7 +205,7 @@ export default function WalletViewSweep() {
     <div className="flex flex-col justify-start h-full">
       <div className="tracking-wide text-center text-white">
         {message !== "" ? (
-          <div className="bg-error p-2">
+          <div data-testid="sweep-error" className="bg-error p-2">
             <div className="text-xl font-bold">{message}</div>
           </div>
         ) : (

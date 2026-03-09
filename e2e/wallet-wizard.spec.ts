@@ -39,7 +39,7 @@ test.describe("Wallet Wizard", () => {
     await page.waitForURL("**/settings/wallet/wizard/import**");
 
     // Import form should have a textarea for mnemonic
-    const textarea = page.locator("textarea");
+    const textarea = page.locator('[data-testid="mnemonic-input"]');
     await expect(textarea).toBeVisible();
   });
 
@@ -49,7 +49,7 @@ test.describe("Wallet Wizard", () => {
     await page.waitForURL("**/settings/wallet/wizard/import**");
 
     // Type 5 random words
-    const textarea = page.locator("textarea");
+    const textarea = page.locator('[data-testid="mnemonic-input"]');
     await textarea.fill("apple banana cherry dog elephant");
 
     // Submit
@@ -68,7 +68,7 @@ test.describe("Wallet Wizard", () => {
     await page.waitForURL("**/settings/wallet/wizard/import**");
 
     // Type 12 non-BIP39 words
-    const textarea = page.locator("textarea");
+    const textarea = page.locator('[data-testid="mnemonic-input"]');
     await textarea.fill(
       "alpha bravo charlie delta echo foxtrot golf hotel india juliet kilo lima"
     );

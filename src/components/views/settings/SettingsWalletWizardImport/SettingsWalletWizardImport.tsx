@@ -204,6 +204,7 @@ export default function SettingsWalletWizardImport() {
       <div className="rounded-md border-4 border-primary relative">
         <textarea
           ref={textareaRef}
+          data-testid="mnemonic-input"
           className="w-full text-mono h-36 max-h-36 resize-none bg-white dark:bg-neutral-700 text-primary dark:text-neutral-25"
           onChange={handleMnemonicInput}
           value={mnemonicInput}

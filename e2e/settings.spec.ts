@@ -35,7 +35,7 @@ test.describe("Settings", () => {
 
     // Click again to collapse
     await walletsBtn.click();
-    await expect(content).not.toBeVisible();
+    await expect(content).toBeHidden();
   });
 
   test("network settings shows server selector", async ({

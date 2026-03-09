@@ -14,11 +14,11 @@ test.describe("Pay (Invoice)", () => {
     });
   });
 
-  test.skip("instant pay works if enabled", async ({ appPage: page }) => {
+  test.skip("instant pay works if enabled", () => {
     // Requires instant pay to be enabled and a valid invoice below threshold
   });
 
-  test.skip("send works on pay page", async ({ appPage: page }) => {
+  test.skip("send works on pay page", () => {
     // Requires a valid invoice and sufficient funds
   });
 });

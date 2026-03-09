@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-import { walletView } from "./helpers/selectors";
+import { walletView, sendPage } from "./helpers/selectors";
 import {
   waitForAppReady,
   waitForSync,
@@ -43,34 +43,39 @@ test.describe("Chipnet Network Tests", () => {
     // Navigate to send page with own address
     await page.goto(`/wallet/send/${encodeURIComponent(address)}`);
     await expect(
-      page.locator('[data-testid="send-header"]')
+      page.locator(sendPage.header)
     ).toBeVisible({ timeout: 10_000 });
 
     // Enter a small amount (1000 sats)
-    const amountInput = page.locator('input[inputMode="decimal"]').first();
+    const amountInput = page.locator(sendPage.amountInput).first();
     await expect(amountInput).toBeVisible();
     await amountInput.fill("1000");
 
-    // Slide to send
-    const slideEl = page.locator("[data-testid='slide-to-action']");
+    // Slide to send — use retry wrapper for gesture reliability
+    const slideEl = page.locator(sendPage.slideToSend);
     await expect(slideEl).toBeVisible({ timeout: 5_000 });
-    const box = await slideEl.boundingBox();
-    expect(box).not.toBeNull();
+    await slideEl.scrollIntoViewIfNeeded();
 
-    await page.mouse.move(box!.x + 10, box!.y + box!.height / 2);
-    await page.mouse.down();
-    await page.mouse.move(
-      box!.x + box!.width - 10,
-      box!.y + box!.height / 2,
-      { steps: 20 }
-    );
-    await page.mouse.up();
+    await expect(async () => {
+      const box = await slideEl.boundingBox();
+      expect(box).not.toBeNull();
 
-    // Wait for success or error — either is a valid outcome
-    const successText = page.getByText("Success", { exact: false });
-    const errorText = page.locator('[data-testid="send-error"]');
-    await expect(successText.or(errorText).first()).toBeVisible({
-      timeout: 15_000,
-    });
+      // Perform the slide gesture
+      await page.mouse.move(box!.x + 10, box!.y + box!.height / 2);
+      await page.mouse.down();
+      await page.mouse.move(
+        box!.x + box!.width - 10,
+        box!.y + box!.height / 2,
+        { steps: 30 }
+      );
+      await page.mouse.up();
+
+      // Verify the slide registered (success or error — both prove it worked)
+      const successText = page.getByText("Success", { exact: false });
+      const errorText = page.locator(sendPage.error);
+      await expect(successText.or(errorText).first()).toBeVisible({
+        timeout: 2_000,
+      });
+    }).toPass({ timeout: 15_000 });
   });
 });
