@@ -124,6 +124,10 @@ deploy_android_edge:
     - ssh selene@warpgate.selene.technology "mkdir -p /srv/www/selene.cash/public/download"
     - scp android/app/build/outputs/apk/debug/app-debug.apk selene@warpgate.selene.technology:/srv/www/selene.cash/public/download/selene-edge-v$SELENE_VERSION.apk
     - scp android/app/build/outputs/apk/debug/app-debug.apk selene@warpgate.selene.technology:/srv/www/selene.cash/public/download/selene-edge.apk
+    - echo ""
+    - echo "=== Edge APK deployed ==="
+    - echo "https://selene.cash/download/selene-edge-v$SELENE_VERSION.apk"
+    - echo "https://selene.cash/download/selene-edge.apk"
   only:
     - edge
 
