@@ -309,10 +309,11 @@ import translations from "./translations";
 
 Translations colocated in component directories as `translations.js` files.
 
-- Add only English (`en`) key initially
+- Add only English (`en`) key initially: `myKey: { en: "Hello" }`
 - Run `GOOGLE_TRANSLATE_API_KEY="xxx" node ./automation/addLanguages.js` for other languages
-- **Constraints:** No `:` or `'` in strings (use `-` and backtick)
-- **Bug:** WalletViewSend "notEnoughFee" key - save/restore manually when running script
+- The script finds all leaf-level `{ en: "..." }` objects and expands them in-place with Google Translate
+- Files with imported refs, comments, and destructured exports are handled correctly
+- Language list is in `automation/languages.js` — keep in sync with `src/util/translations.js`
 
 ## Testing
 
