@@ -68,11 +68,14 @@ async function translateText(text, targetLang, GOOGLE_TRANSLATE_API_KEY) {
     }
 
     const data = await response.json();
-    const originalTranslation = data.data.translations[0].translatedText
-    // Translate script confuses ":", """ & "'" as elements of JSON
-    // So these need to be sanitised
-    const sanitisiedTranslation = originalTranslation.replace(/:/g, " - ").replace(/'/g, "`").replace(/"/g, "`");
-    return sanitisiedTranslation;
+    const translated = data.data.translations[0].translatedText;
+    // Google Translate returns HTML entities — decode them
+    return translated
+      .replace(/&#39;/g, "'")
+      .replace(/&quot;/g, '"')
+      .replace(/&amp;/g, "&")
+      .replace(/&lt;/g, "<")
+      .replace(/&gt;/g, ">");
   } catch (error) {
     console.error(`Translation error for ${targetLang}: ${error.message}`);
     return text;
