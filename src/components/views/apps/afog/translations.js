@@ -135,6 +135,7 @@ const translations = {
     en: "Prize pool",
     es: "Bolsa de premios",
     fa: "استخر جایزه",
+    fil: "Punong-puno ng premyo",
     fr: "cagnotte",
     ha: "Wajan kyauta",
     hi: "कीमत पूल",
@@ -162,7 +163,7 @@ const translations = {
     ur: "پرائز پول",
     vi: "Giải thưởng",
     zh: "奖池",
-    zh_TW: "獎金池"
+    zh_TW: "獎金池",
   },
   playersText: {
     ar: "اللاعبين",

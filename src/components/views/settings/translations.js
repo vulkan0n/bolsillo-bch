@@ -595,6 +595,7 @@ const translations = {
     id: "Izinkan Pembayaran Instan",
     it: "Consenti pagamento immediato",
     ja: "即時支払いを許可する",
+    jv: "Ngidini Pembayaran Cepet",
     ko: "즉시 지불 허용",
     mr: "झटपट पगाराची परवानगी द्या",
     ms: "Benarkan Pembayaran Segera",
@@ -615,7 +616,7 @@ const translations = {
     ur: "فوری ادائیگی کی اجازت دیں۔",
     vi: "Cho phép thanh toán ngay lập tức",
     zh: "允许即时支付",
-    zh_TW: "允許即時付款"
+    zh_TW: "允許即時付款",
   },
   instantPayExplanation: {
     ar: "مسح رمز QR للفاتورة يطلب مبلغًا أقل من حد الدفع الفوري يدفع على الفور دون نقرة إضافية للإرسال.",
@@ -685,6 +686,7 @@ const translations = {
     pt: "Limite de pagamento instantâneo",
     ro: "Limită de plată instantanee",
     ru: "Лимит мгновенной оплаты",
+    sv: "Gräns för direktbetalning",
     sw: "Kikomo cha malipo ya papo hapo",
     ta: "உடனடி ஊதிய வரம்பு",
     te: "తక్షణ చెల్లింపు పరిమితి",
@@ -694,7 +696,7 @@ const translations = {
     ur: "فوری ادائیگی کی حد",
     vi: "Giới hạn thanh toán ngay",
     zh: "即时支付限额",
-    zh_TW: "即時支付限額"
+    zh_TW: "即時支付限額",
   },
   useLegacyBip21: {
     ar: "استخدم تنسيق طلب الدفع القديم",
@@ -786,6 +788,7 @@ const translations = {
     en: "QR Code",
     es: "Código QR",
     fa: "کد QR",
+    fil: "QR Code",
     fr: "Code QR",
     ha: "Lambar QR",
     hi: "क्यूआर कोड",
@@ -813,7 +816,7 @@ const translations = {
     ur: "کیو آر کوڈ",
     vi: "Mã QR",
     zh: "二维码",
-    zh_TW: "二維碼"
+    zh_TW: "二維碼",
   },
   logo: {
     ar: "شعار",
@@ -1145,6 +1148,7 @@ const translations = {
     en: "User Interface",
     es: "Interfaz de usuario",
     fa: "رابط کاربری",
+    fil: "Interface ng Gumagamit",
     fr: "Interface utilisateur",
     ha: "Interface mai amfani",
     hi: "प्रयोक्ता इंटरफ़ेस",
@@ -1172,7 +1176,7 @@ const translations = {
     ur: "یوزر انٹرفیس",
     vi: "Giao diện người dùng",
     zh: "用户界面",
-    zh_TW: "使用者介面"
+    zh_TW: "使用者介面",
   },
   displayExploreTab: {
     ar: "عرض علامة التبويب &quot;استكشاف&quot;",
@@ -1184,6 +1188,7 @@ const translations = {
     en: "Display Explore tab",
     es: "Mostrar pestaña Explorar",
     fa: "تب کاوش را نمایش دهید",
+    fil: "Ipakita ang tab na Paggalugad",
     fr: "Afficher l'onglet Explorer",
     ha: "Nuna Bincike shafin",
     hi: "एक्सप्लोर टैब प्रदर्शित करें",
@@ -1211,7 +1216,7 @@ const translations = {
     ur: "ایکسپلور ٹیب کو ڈسپلے کریں۔",
     vi: "Hiển thị tab Khám phá",
     zh: "显示“浏览”选项卡",
-    zh_TW: "顯示探索標籤"
+    zh_TW: "顯示探索標籤",
   },
   displaySyncCounter: {
     ar: "عرض عداد المزامنة",

@@ -254,6 +254,7 @@ const translations = {
     en: "Throw Error",
     es: "Lanzar error",
     fa: "خطای پرتاب",
+    fil: "Error sa Paghagis",
     fr: "Erreur de lancer",
     ha: "Kuskuren jefa",
     hi: "त्रुटि फेंको",
@@ -281,7 +282,7 @@ const translations = {
     ur: "تھرو ایرر",
     vi: "Lỗi ném",
     zh: "抛出错误",
-    zh_TW: "拋出錯誤"
+    zh_TW: "拋出錯誤",
   },
   bchNetwork: {
     ar: "شبكة BCH",

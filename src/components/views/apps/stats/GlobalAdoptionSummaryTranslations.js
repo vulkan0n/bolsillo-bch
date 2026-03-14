@@ -20,12 +20,14 @@ const translations = {
     ko: "글로벌 비트코인 캐시 채택",
     mr: "जागतिक बिटकॉइन रोख दत्तक",
     ms: "Penerimaan Bitcoin Cash Global",
+    nb: "Global Bitcoin Cash-adopsjon",
     nl: "Wereldwijde adoptie van Bitcoin Cash",
     pa: "ਗਲੋਬਲ ਬਿਟਕੋਇਨ ਕੈਸ਼ ਅਡਾਪਸ਼ਨ",
     pl: "Globalne przyjęcie Bitcoin Cash",
     pt: "Adoção global do Bitcoin Cash",
     ro: "Adopția globală a Bitcoin Cash",
     ru: "Глобальное принятие Bitcoin Cash",
+    sv: "Global Bitcoin Cash-användning",
     sw: "Upitishaji wa Bitcoin Cash ya Ulimwenguni",
     ta: "உலகளாவிய பிட்காயின் பண தத்தெடுப்பு",
     te: "గ్లోబల్ బిట్‌కాయిన్ నగదు స్వీకరణ",
@@ -35,7 +37,7 @@ const translations = {
     ur: "گلوبل بٹ کوائن کیش اپنانا",
     vi: "Việc áp dụng tiền mặt Bitcoin toàn cầu",
     zh: "全球比特币现金采用情况",
-    zh_TW: "全球比特幣現金採用率"
+    zh_TW: "全球比特幣現金採用率",
   },
   activeSeleneUsers: {
     ar: "مستخدمو Selene النشطون",
