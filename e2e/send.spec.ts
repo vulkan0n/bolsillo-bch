@@ -40,8 +40,8 @@ test.describe("Send", () => {
     const amountInput = page.locator(sendPage.amountInput).first();
     await expect(amountInput).toBeVisible();
     await amountInput.fill("999999999");
-    // Insufficient funds should show the send error element
-    await expect(page.locator(sendPage.error)).toBeVisible();
+    // Insufficient funds turns the input border red (error styling)
+    await expect(amountInput).toHaveClass(/border-error/);
   });
 
   test("slide-to-send visible", async ({ appPage: page }) => {

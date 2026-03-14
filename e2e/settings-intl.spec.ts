@@ -23,14 +23,15 @@ test.describe("Settings: Localization", () => {
   });
 
   test("switching language updates UI text", async ({ appPage: page }) => {
-    // Use structural selector — label text changes when language switches.
-    // Language is typically the first select in the Localization accordion.
     const langSelect = accordionControl(page, "Language", "select");
     await expect(langSelect).toBeVisible();
 
-    // Switch to Spanish
+    // Switch to Spanish — label text changes so re-query by structure
     await langSelect.selectOption({ value: "es" });
-    await expect(langSelect).toHaveValue("es");
+    const select = page
+      .locator('[data-testid="settings-view"] select')
+      .first();
+    await expect(select).toHaveValue("es");
 
     // The English accordion label "Wallets" should now show as "Billeteras"
     await expect(
@@ -38,7 +39,7 @@ test.describe("Settings: Localization", () => {
     ).toContainText("Billeteras");
 
     // Restore to device default
-    await langSelect.selectOption({ value: "" });
-    await expect(langSelect).toHaveValue("");
+    await select.selectOption({ value: "" });
+    await expect(select).toHaveValue("");
   });
 });
