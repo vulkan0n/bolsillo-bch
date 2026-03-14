@@ -118,9 +118,11 @@ deploy_android_edge:
     - eval $(ssh-agent -s)
     - echo "$SELENE_SSH_KEY_BASE64" | base64 -d | ssh-add - > /dev/null 2>&1
     - echo "$SSH_KNOWN_HOSTS_BASE64" | base64 -d > ~/.ssh/known_hosts
-    - echo "Uploading selene-edge.apk"
+    - export SELENE_VERSION=$(grep -o 'versionName "[^"]*"' android/app/build.gradle | sed 's/versionName "//;s/"//')
+    - echo "Uploading selene-edge-v$SELENE_VERSION.apk"
     - sha256sum android/app/build/outputs/apk/debug/app-debug.apk
     - ssh selene@warpgate.selene.technology "mkdir -p /srv/www/selene.cash/public/download"
+    - scp android/app/build/outputs/apk/debug/app-debug.apk selene@warpgate.selene.technology:/srv/www/selene.cash/public/download/selene-edge-v$SELENE_VERSION.apk
     - scp android/app/build/outputs/apk/debug/app-debug.apk selene@warpgate.selene.technology:/srv/www/selene.cash/public/download/selene-edge.apk
   only:
     - edge
