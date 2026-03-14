@@ -609,6 +609,7 @@ const translations = {
     zh_TW: "Additional Wallet Information",
   },
   introductionVideo: {
+    cy: "Fideo Cyflwyniad",
     en: "Introduction Video",
   },
   sameAsDevice: {
@@ -636,6 +637,7 @@ const translations = {
     en: "Resume App",
   },
   authActivateWallet: {
+    cy: "Gweithredu waled",
     en: "Activate Wallet",
   },
   authSendTransaction: {

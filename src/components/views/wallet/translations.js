@@ -1317,6 +1317,7 @@ const translations = {
     en: "Outgoing",
   },
   filterTokens: {
+    cy: "CashTokens",
     en: "Tokens",
   },
   filterTokensAll: {
@@ -1326,6 +1327,7 @@ const translations = {
     en: "Has Tokens",
   },
   filterTokensNone: {
+    cy: "Dim CashTokens",
     en: "No Tokens",
   },
   filterNFTs: {
