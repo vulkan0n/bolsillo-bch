@@ -330,7 +330,7 @@ const translations = {
     es: "Vídeo de introducción",
     fa: "ویدیوی معرفی",
     fil: "Panimulang Bidyo",
-    fr: "Vidéo d&#39;introduction",
+    fr: "Vidéo d'introduction",
     ha: "Bidiyon Gabatarwa",
     hi: "परिचय वीडियो",
     id: "Video Pengantar",
