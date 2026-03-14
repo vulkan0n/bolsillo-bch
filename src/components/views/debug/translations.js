@@ -254,7 +254,6 @@ const translations = {
     en: "Throw Error",
     es: "Lanzar error",
     fa: "خطای پرتاب",
-    fil: "Throw Error",
     fr: "Erreur de lancer",
     ha: "Kuskuren jefa",
     hi: "त्रुटि फेंको",

@@ -135,7 +135,6 @@ const translations = {
     en: "Prize pool",
     es: "Bolsa de premios",
     fa: "استخر جایزه",
-    fil: "Prize pool",
     fr: "cagnotte",
     ha: "Wajan kyauta",
     hi: "कीमत पूल",
