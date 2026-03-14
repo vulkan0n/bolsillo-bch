@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import toast from "react-hot-toast";
+import NotificationService from "@/kernel/app/NotificationService";
 import { useSelector, useDispatch } from "react-redux";
 import { Link } from "react-router";
 import { DateTime } from "luxon";
@@ -341,14 +342,14 @@ export default function WalletViewHistory() {
         `transaction-history-${DateTime.now().toFormat("yyyy-MM-dd")}`
       );
 
-      toast.success(`Exported ${exportData.length} transactions!`, {
-        id: loadingToast,
-      });
+      toast.dismiss(loadingToast);
+      NotificationService().success(
+        `Exported ${exportData.length} transactions!`
+      );
     } catch (error) {
       Log.error("CSV export error:", error);
-      toast.error(translate(translations.failedToExportCsv), {
-        id: loadingToast,
-      });
+      toast.dismiss(loadingToast);
+      NotificationService().error(translate(translations.failedToExportCsv));
     } finally {
       setIsExporting(false);
     }

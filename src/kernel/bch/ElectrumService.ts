@@ -430,6 +430,7 @@ export default function ElectrumService(
       tx_pos
     );
 
+    if (utxoInfo instanceof Error) throw utxoInfo;
     return utxoInfo as ElectrumUtxoInfo | null;
   }
 
