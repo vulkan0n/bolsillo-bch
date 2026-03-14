@@ -1,6 +1,7 @@
 /* eslint-disable react/prop-types */
 import { useState, useCallback, useEffect, useMemo } from "react";
 import toast from "react-hot-toast";
+import NotificationService from "@/kernel/app/NotificationService";
 import { useSelector } from "react-redux";
 import { useLoaderData, Link } from "react-router";
 import { DateTime } from "luxon";
@@ -119,13 +120,11 @@ export default function ExploreTransactionView() {
         exportData,
         `transaction-${tx.tx_hash.slice(0, 8)}`
       );
-      toast.success(translate(translations.pdfExportSuccess), {
-        id: loadingToast,
-      });
+      toast.dismiss(loadingToast);
+      NotificationService().success(translate(translations.pdfExportSuccess));
     } catch (error) {
-      toast.error(translate(translations.pdfExportError), {
-        id: loadingToast,
-      });
+      toast.dismiss(loadingToast);
+      NotificationService().error(translate(translations.pdfExportError));
     } finally {
       setIsExporting(false);
     }
@@ -153,13 +152,11 @@ export default function ExploreTransactionView() {
         exportData,
         `transaction-${tx.tx_hash.slice(0, 8)}`
       );
-      toast.success(translate(translations.pngExportSuccess), {
-        id: loadingToast,
-      });
+      toast.dismiss(loadingToast);
+      NotificationService().success(translate(translations.pngExportSuccess));
     } catch (error) {
-      toast.error(translate(translations.pngExportError), {
-        id: loadingToast,
-      });
+      toast.dismiss(loadingToast);
+      NotificationService().error(translate(translations.pngExportError));
     } finally {
       setIsExporting(false);
     }

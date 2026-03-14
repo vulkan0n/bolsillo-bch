@@ -2,15 +2,6 @@ import type { UtxoEntity } from "@/kernel/wallet/UtxoManagerService";
 
 import { hexToBin } from "@/util/hex";
 
-// ── DB row → normalized (useBigInt: true boundary) ──────────────────
-
-/** sql.js row → UtxoEntity (converts tx_pos from BigInt to number) */
-export function normalizeUtxoRow(row: Record<string, unknown>): UtxoEntity {
-  return { ...row, tx_pos: Number(row.tx_pos) } as UtxoEntity;
-}
-
-// ── Normalized → libauth ────────────────────────────────────────────
-
 /** UtxoEntity → libauth Output['token'] (token prefix for signing) */
 export function utxoToTokenPrefix(utxo: UtxoEntity) {
   if (!utxo.token_category) return undefined;

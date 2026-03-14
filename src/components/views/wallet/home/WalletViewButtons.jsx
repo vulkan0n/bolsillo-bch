@@ -4,7 +4,7 @@ import { SendOutlined, HistoryOutlined } from "@ant-design/icons";
 
 import { selectScannerIsScanning } from "@/redux/device";
 
-import NotificationService from "@/kernel/app/NotificationService";
+
 
 import translations from "@/views/wallet/translations";
 import Button from "@/atoms/Button";
@@ -28,10 +28,8 @@ export default function WalletViewButtons() {
 
   const forwardOnValidAddress = async (input) => {
     const extracted = extractBchAddresses(input)[0] || input;
-    const { navTo, navState, isExpired } = await navigateOnValidUri(extracted);
-    if (isExpired) {
-      NotificationService().expiredPayment();
-    } else if (navTo) {
+    const { navTo, navState } = await navigateOnValidUri(extracted);
+    if (navTo) {
       navigate(navTo, { state: navState });
     }
   };
@@ -39,10 +37,8 @@ export default function WalletViewButtons() {
   const pasteAddressFromClipboard = async () => {
     const { paste, spawnPasteToast } = await getClipboardContents();
     const extracted = extractBchAddresses(paste)[0] || paste;
-    const { navTo, navState, isExpired } = await navigateOnValidUri(extracted);
-    if (isExpired) {
-      NotificationService().expiredPayment();
-    } else if (navTo !== "") {
+    const { navTo, navState } = await navigateOnValidUri(extracted);
+    if (navTo !== "") {
       spawnPasteToast();
       navigate(navTo, { state: navState });
     } else {

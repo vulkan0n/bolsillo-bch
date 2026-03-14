@@ -5,7 +5,7 @@ import { QrcodeOutlined } from "@ant-design/icons";
 
 import { selectInstantPaySettings } from "@/redux/preferences";
 
-import NotificationService from "@/kernel/app/NotificationService";
+
 
 import WalletViewButtons from "@/views/wallet/home/WalletViewButtons";
 import Overlay from "@/atoms/Overlay";
@@ -40,11 +40,8 @@ export default function ScannerOverlay({
         extracted = `${extracted}?amount=${amountBch}`;
       }
 
-      const { navTo, navState, isExpired } =
-        await navigateOnValidUri(extracted);
-      if (isExpired) {
-        NotificationService().expiredPayment();
-      } else if (navTo !== "") {
+      const { navTo, navState } = await navigateOnValidUri(extracted);
+      if (navTo !== "") {
         spawnScanToast();
         navigate(navTo, { state: { ...location.state, ...navState } });
       } else {

@@ -101,14 +101,6 @@ export interface CurrencyInputSettings {
 }
 
 /**
- * Get decimals for a currency from currencyList (defaults to 2 for fiat)
- */
-export function getCurrencyDecimals(currency: string): number {
-  const currencyInfo = currencyList.find((c) => c.currency === currency);
-  return currencyInfo?.decimals ?? 2;
-}
-
-/**
  * Get maximum decimal places for given currency settings
  */
 export function getMaxDecimals(settings: CurrencyInputSettings): number {
@@ -124,7 +116,8 @@ export function getMaxDecimals(settings: CurrencyInputSettings): number {
     isStablecoinMode ||
     (shouldPreferLocalCurrency && denomination !== "token")
   ) {
-    return getCurrencyDecimals(localCurrency || "USD");
+    const info = currencyList.find((c) => c.currency === (localCurrency || "USD"));
+    return info?.decimals ?? 2;
   }
 
   switch (denomination) {

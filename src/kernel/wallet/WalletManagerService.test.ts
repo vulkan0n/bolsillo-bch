@@ -34,14 +34,10 @@ describe("WalletManagerService", () => {
       derivation: "m/44'/145'/0'" as const,
     };
 
-    it("is deterministic", () => {
+    it("returns known-good hash for test mnemonic", () => {
       expect(svc.calculateWalletHash(baseStub)).toBe(
-        svc.calculateWalletHash(baseStub)
+        "89005387c3e19649501ce8be1b2768ef9951922e77f4732775238c5d528a41a2"
       );
-    });
-
-    it("returns a 64-char hex string (sha256)", () => {
-      expect(svc.calculateWalletHash(baseStub)).toMatch(/^[0-9a-f]{64}$/);
     });
 
     it("varies with mnemonic", () => {

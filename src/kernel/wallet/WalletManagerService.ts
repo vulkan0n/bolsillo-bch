@@ -544,11 +544,8 @@ export default function WalletManagerService(injectedDeps?: {
 
   async function saveWallet(walletHash) {
     Log.debug("saveWallet", walletHash);
-    const walletDb = Database.getWalletDatabase(walletHash);
 
-    const wallet = walletDb.exec("SELECT * FROM wallet", null, {
-      useBigInt: true,
-    })[0];
+    const wallet = getWallet(walletHash);
     const { name, created_at, key_viewed_at, balance } = wallet;
 
     APP_DB.run(

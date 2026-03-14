@@ -1,8 +1,6 @@
 import DatabaseService, { SqlJsDatabase } from "@/kernel/app/DatabaseService";
 import LogService from "@/kernel/app/LogService";
 
-import { normalizeUtxoRow } from "@/util/normalize";
-
 const Log = LogService("UtxoManager");
 
 type TokenNftCapability = "none" | "mutable" | "minting";
@@ -17,6 +15,11 @@ export interface UtxoEntity {
   token_amount: bigint | null;
   nft_capability: TokenNftCapability | null;
   nft_commitment: string | null;
+}
+
+/** sql.js row → UtxoEntity (converts tx_pos from BigInt to number) */
+function normalizeUtxoRow(row: Record<string, unknown>): UtxoEntity {
+  return { ...row, tx_pos: Number(row.tx_pos) } as UtxoEntity;
 }
 
 export default function UtxoManagerService(

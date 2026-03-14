@@ -8,6 +8,7 @@ import {
   assertSuccess,
 } from "@bitauth/libauth";
 
+import NotificationService from "@/kernel/app/NotificationService";
 import WalletManagerService from "@/kernel/wallet/WalletManagerService";
 
 import { Haptic } from "@/util/haptic";
@@ -361,6 +362,7 @@ export const navigateOnValidUri = async (
     // Check expiration before proceeding
     if (isExpired) {
       await Haptic.error();
+      NotificationService().expiredPayment();
       return { navTo: "", navState: {}, isTokenAddress, isExpired: true };
     }
 

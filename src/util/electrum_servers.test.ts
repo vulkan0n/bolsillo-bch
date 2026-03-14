@@ -82,7 +82,7 @@ describe("electrum_servers.ts", () => {
 
     it("returns mainnet explorer URL", () => {
       expect(getTxExplorerUrl(txid, "mainnet")).toBe(
-        `https://explorer.bch.ninja/tx/${txid}`
+        `https://bchexplorer.cash/tx/${txid}`
       );
     });
 
@@ -106,7 +106,7 @@ describe("electrum_servers.ts", () => {
 
     it("falls back to mainnet for unknown network", () => {
       expect(getTxExplorerUrl(txid, "unknown" as any)).toBe(
-        `https://explorer.bch.ninja/tx/${txid}`
+        `https://bchexplorer.cash/tx/${txid}`
       );
     });
   });

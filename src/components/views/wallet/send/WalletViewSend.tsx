@@ -30,7 +30,7 @@ import {
 } from "@/redux/wallet";
 
 import LogService from "@/kernel/app/LogService";
-import NotificationService from "@/kernel/app/NotificationService";
+
 import SecurityService, { AuthActions } from "@/kernel/app/SecurityService";
 import CauldronService from "@/kernel/bch/CauldronService";
 import TransactionBuilderService, {
@@ -715,10 +715,8 @@ export default function WalletViewSend() {
 
   const handleAddressInput = async (input: string) => {
     const extracted = extractBchAddresses(input)[0] || input;
-    const { navTo, isExpired } = await navigateOnValidUri(extracted);
-    if (isExpired) {
-      NotificationService().expiredPayment();
-    } else if (navTo !== "") {
+    const { navTo } = await navigateOnValidUri(extracted);
+    if (navTo !== "") {
       const { state: sendState } = location;
       navigate(navTo, { state: sendState });
     } else {

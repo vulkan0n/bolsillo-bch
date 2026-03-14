@@ -1,10 +1,5 @@
 import { describe, it, expect } from "vitest";
-import {
-  numDecimalPlaces,
-  truncateDecimals,
-  getCurrencyDecimals,
-  getMaxDecimals,
-} from "./currency";
+import { numDecimalPlaces, truncateDecimals, getMaxDecimals } from "./currency";
 
 describe("numDecimalPlaces", () => {
   it("returns 0 for integer strings", () => {
@@ -47,32 +42,6 @@ describe("truncateDecimals", () => {
   it("handles empty or invalid input", () => {
     expect(truncateDecimals("", 2)).toBe("0");
     expect(truncateDecimals("abc", 2)).toBe("0");
-  });
-});
-
-describe("getCurrencyDecimals", () => {
-  it("returns 2 for standard fiat currencies", () => {
-    expect(getCurrencyDecimals("USD")).toBe(2);
-    expect(getCurrencyDecimals("EUR")).toBe(2);
-    expect(getCurrencyDecimals("GBP")).toBe(2);
-  });
-
-  it("returns 8 for BCH", () => {
-    expect(getCurrencyDecimals("BCH")).toBe(8);
-  });
-
-  it("returns 0 for SATS", () => {
-    expect(getCurrencyDecimals("SATS")).toBe(0);
-  });
-
-  it("returns 3 for three-decimal currencies", () => {
-    expect(getCurrencyDecimals("BHD")).toBe(3);
-    expect(getCurrencyDecimals("KWD")).toBe(3);
-  });
-
-  it("defaults to 2 for unknown currencies", () => {
-    expect(getCurrencyDecimals("UNKNOWN")).toBe(2);
-    expect(getCurrencyDecimals("")).toBe(2);
   });
 });
 

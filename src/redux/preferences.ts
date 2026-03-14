@@ -51,6 +51,7 @@ export const defaultPreferences = {
   instantPayThreshold: "2000000", // 0.02 BCH (~$9 USD @ $450)
   instantPayThresholdFiat: "10", // $10 USD (default)
   forceTokenAddress: "false",
+  useLegacyBip21: "true", // true = use legacy BIP21 format (modern PayPro not deployed yet)
   // --------
   // QR Code (move to wallet db?)
   qrCodeLogo: "Selene",
@@ -84,7 +85,6 @@ export const defaultPreferences = {
   // Encryption
   encryptionDeviceOnly: "false", // false = cloud sync enabled (default for new users)
   lastKeyBackupExport: "", // ISO timestamp of last key backup export
-  useLegacyBip21: "true", // true = use legacy BIP21 format (modern PayPro not deployed yet)
 };
 
 export type ValidPreferences = typeof defaultPreferences;

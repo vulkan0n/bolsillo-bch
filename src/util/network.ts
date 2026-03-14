@@ -84,7 +84,7 @@ export class ElectrumServer {
 export const getTxExplorerUrl = (txid: string, network: ValidBchNetwork) => {
   switch (network) {
     case "mainnet":
-      return `https://explorer.bch.ninja/tx/${txid}`;
+      return `https://bchexplorer.cash/tx/${txid}`;
     case "testnet3":
       return `https://tbch.loping.net/tx/${txid}`;
     case "testnet4":
@@ -92,6 +92,6 @@ export const getTxExplorerUrl = (txid: string, network: ValidBchNetwork) => {
     case "chipnet":
       return `https://chipnet.bch.ninja/tx/${txid}`;
     default:
-      return `https://explorer.bch.ninja/tx/${txid}`;
+      return `https://bchexplorer.cash/tx/${txid}`;
   }
 };
