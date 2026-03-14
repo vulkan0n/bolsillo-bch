@@ -127,7 +127,7 @@ const translations = {
     ro: "Întrebări frecvente despre Bitcoin Cash",
     ru: "Часто задаваемые вопросы о Bitcoin Cash",
     sv: "Vanliga frågor om Bitcoin Cash",
-    sw: "Maswali Yanayoulizwa Mara kwa Mara ya Fedha ya Bitcoin",
+    sw: "Maswali Yanayoulizwa Mara kwa Mara ya Bitcoin Cash",
     ta: "பிட்காயின் ரொக்கம் அடிக்கடி கேட்கப்படும் கேள்விகள்",
     te: "బిట్‌కాయిన్ క్యాష్ తరచుగా అడిగే ప్రశ్నలు",
     th: "คำถามที่พบบ่อยเกี่ยวกับ Bitcoin Cash",
