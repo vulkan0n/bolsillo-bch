@@ -196,8 +196,8 @@ const translations = {
     uk: "Також може бути відома як «початкова фраза» або «мнемонічна фраза».",
     ur: "یہ بھی 'بیج جملہ' یا 'منمونک جملہ' کے طور پر معروف ہو سکتا ہے۔",
     vi: "Cũng có thể được biết đến như là 'seed phrase' hoặc 'mnemonic phrase'.",
-    zh: "也可能被称为“种子短语”或“助记短语”。",
-    zh_TW: "也可能稱為“種子短語”或“助記詞短語”。"
+    zh: "也可能被称为“助记词”或“助记短语”。",
+    zh_TW: "也可能稱為“助記詞”或“助記詞短語”。"
   },
   exactly12Or24: {
     ar: "12 كلمة بالضبط أو 24 كلمة بالضبط.",
@@ -295,7 +295,7 @@ const translations = {
     hi: "आयातित वॉलेट",
     id: "Dompet Impor",
     it: "Portafoglio importato",
-    ja: "輸入財布",
+    ja: "インポートされたウォレット",
     jv: "Dompet sing diimpor",
     ko: "수입 지갑",
     mr: "इंपोर्टेड वॉलेट",

@@ -51,12 +51,15 @@ const PROTECTED_TERMS = [
   "Bitcoin Cash",
   "Selene",
   "BCH",
+  "PIN",
   "CashTokens",
   "CashFusion",
   "WalletConnect",
   "Cauldron",
   "BCMR",
   "BChat",
+  "NFT",
+  "NFTs",
 ];
 
 async function translateText(text, targetLang, GOOGLE_TRANSLATE_API_KEY) {
