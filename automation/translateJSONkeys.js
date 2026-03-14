@@ -44,11 +44,38 @@ async function translateJSONKeys(jsonObject, targetLanguages) {
   return sortedTranslations;
 }
 
+// Brand names and terms that must never be translated or transliterated.
+// Each entry is replaced with a numbered placeholder before sending to
+// Google Translate, then restored in the result.
+const PROTECTED_TERMS = [
+  "Bitcoin Cash",
+  "Selene",
+  "BCH",
+  "CashTokens",
+  "CashFusion",
+  "WalletConnect",
+  "Cauldron",
+  "BCMR",
+  "BChat",
+];
+
 async function translateText(text, targetLang, GOOGLE_TRANSLATE_API_KEY) {
   try {
+    // Replace protected terms with placeholders
+    const replacements = [];
+    let safeText = text;
+    PROTECTED_TERMS.forEach((term, i) => {
+      const re = new RegExp(term.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "g");
+      if (re.test(safeText)) {
+        const placeholder = `__BRAND${i}__`;
+        replacements.push({ placeholder, term });
+        safeText = safeText.replace(re, placeholder);
+      }
+    });
+
     const url = `https://translation.googleapis.com/language/translate/v2?key=${GOOGLE_TRANSLATE_API_KEY}`;
     const requestBody = {
-      q: text,
+      q: safeText,
       source: "en",
       target: targetLang,
     };
@@ -63,19 +90,26 @@ async function translateText(text, targetLang, GOOGLE_TRANSLATE_API_KEY) {
 
     if (!response.ok) {
       console.error(await response.json());
-      console.log(GOOGLE_TRANSLATE_API_KEY);
       throw new Error("Translation request failed");
     }
 
     const data = await response.json();
-    const translated = data.data.translations[0].translatedText;
-    // Google Translate returns HTML entities — decode them
-    return translated
+    let translated = data.data.translations[0].translatedText;
+
+    // Decode HTML entities
+    translated = translated
       .replace(/&#39;/g, "'")
       .replace(/&quot;/g, '"')
       .replace(/&amp;/g, "&")
       .replace(/&lt;/g, "<")
       .replace(/&gt;/g, ">");
+
+    // Restore protected terms
+    replacements.forEach(({ placeholder, term }) => {
+      translated = translated.replace(new RegExp(placeholder, "g"), term);
+    });
+
+    return translated;
   } catch (error) {
     console.error(`Translation error for ${targetLang}: ${error.message}`);
     return text;
