@@ -5,6 +5,10 @@ import {
   PlayCircleOutlined,
 } from "@ant-design/icons";
 
+import { ApolloProvider } from "@apollo/client";
+
+import apolloClient from "@/apolloClient";
+
 import StatsGraphCard from "@/apps/stats/StatsGraphCard";
 import Card from "@/atoms/Card";
 import Carousel from "@/atoms/Carousel";
@@ -29,7 +33,9 @@ export default function ExploreViewHome() {
       <Carousel autoRotateInterval={10000}>
         {isBlazeOngoing && <BlazeAppCard />}
         {/* <BlissAppCard /> */}
-        <StatsGraphCard />
+        <ApolloProvider client={apolloClient}>
+          <StatsGraphCard />
+        </ApolloProvider>
       </Carousel>
       <Card className="p-2">
         <div className="flex flex-col gap-2">
