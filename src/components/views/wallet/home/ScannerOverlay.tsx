@@ -5,8 +5,6 @@ import { QrcodeOutlined } from "@ant-design/icons";
 
 import { selectInstantPaySettings } from "@/redux/preferences";
 
-
-
 import WalletViewButtons from "@/views/wallet/home/WalletViewButtons";
 import Overlay from "@/atoms/Overlay";
 import Satoshi from "@/atoms/Satoshi";

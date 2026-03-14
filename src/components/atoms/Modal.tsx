@@ -1,5 +1,5 @@
-import Overlay from "@/atoms/Overlay";
 import Card from "@/atoms/Card";
+import Overlay from "@/atoms/Overlay";
 
 interface ModalProps {
   children: React.ReactNode;

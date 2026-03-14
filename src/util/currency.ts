@@ -116,7 +116,9 @@ export function getMaxDecimals(settings: CurrencyInputSettings): number {
     isStablecoinMode ||
     (shouldPreferLocalCurrency && denomination !== "token")
   ) {
-    const info = currencyList.find((c) => c.currency === (localCurrency || "USD"));
+    const info = currencyList.find(
+      (c) => c.currency === (localCurrency || "USD")
+    );
     return info?.decimals ?? 2;
   }
 

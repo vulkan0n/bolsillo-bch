@@ -10,13 +10,14 @@ import {
 
 import SecurityService, { AuthActions } from "@/kernel/app/SecurityService";
 
+import translations from "@/views/wallet/translations";
 import Modal from "@/atoms/Modal";
 
 import { useClipboard } from "@/hooks/useClipboard";
 
 import { logos } from "@/util/logos";
+
 import { translate } from "@/util/translations";
-import translations from "@/views/wallet/translations";
 
 interface FocusedQrViewProps {
   address: string;

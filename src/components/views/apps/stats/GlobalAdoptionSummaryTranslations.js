@@ -77,7 +77,7 @@ const translations = {
     ur: "فعال Selene صارفین",
     vi: "Người dùng Selene đang hoạt động",
     zh: "活跃的Selene用户",
-    zh_TW: "活躍的 Selene 用戶"
+    zh_TW: "活躍的 Selene 用戶",
   },
   daily: {
     ar: "يوميًا",
@@ -117,7 +117,7 @@ const translations = {
     ur: "روزانہ",
     vi: "HẰNG NGÀY",
     zh: "日常的",
-    zh_TW: "日常的"
+    zh_TW: "日常的",
   },
   weekly: {
     ar: "أسبوعي",
@@ -157,7 +157,7 @@ const translations = {
     ur: "ہفتہ وار",
     vi: "HÀNG TUẦN",
     zh: "每周",
-    zh_TW: "每週"
+    zh_TW: "每週",
   },
   monthly: {
     ar: "شهريا",
@@ -197,7 +197,7 @@ const translations = {
     ur: "ماہانہ",
     vi: "HÀNG THÁNG",
     zh: "每月",
-    zh_TW: "每月"
+    zh_TW: "每月",
   },
   yearly: {
     ar: "سنوي",
@@ -237,8 +237,8 @@ const translations = {
     ur: "سالانہ",
     vi: "HÀNG NĂM",
     zh: "每年",
-    zh_TW: "每年"
-  }
+    zh_TW: "每年",
+  },
 };
 
 export default translations;

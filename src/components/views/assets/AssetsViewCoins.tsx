@@ -6,8 +6,8 @@ import {
   CloseOutlined,
 } from "@ant-design/icons";
 
-import UtxoManagerService from "@/kernel/wallet/UtxoManagerService";
 import TokenManagerService from "@/kernel/wallet/TokenManagerService";
+import UtxoManagerService from "@/kernel/wallet/UtxoManagerService";
 
 import FullColumn from "@/layout/FullColumn";
 import Address from "@/atoms/Address";

@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import { useSelector } from "react-redux";
 import {
   AppstoreOutlined,
   CloseOutlined,
@@ -8,18 +9,17 @@ import {
   SendOutlined,
 } from "@ant-design/icons";
 
-import { useSelector } from "react-redux";
-
 import { selectBchNetwork } from "@/redux/preferences";
 
 import BcmrService from "@/kernel/bch/BcmrService";
 
-import Overlay from "@/atoms/Overlay";
 import Button from "@/atoms/Button";
+import Overlay from "@/atoms/Overlay";
 
 import { useSwipe } from "@/hooks/useSwipe";
 
 import { getNftCapabilityKey } from "@/util/token";
+
 import { translate } from "@/util/translations";
 import translations from "./translations";
 

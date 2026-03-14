@@ -28,10 +28,9 @@ import WalletManagerService, {
   WalletEntity,
 } from "@/kernel/wallet/WalletManagerService";
 
-import { resolveNftType } from "@/util/token";
-
 import { convertCashAddress } from "@/util/cashaddr";
 import { ValidBchNetwork } from "@/util/network";
+import { resolveNftType } from "@/util/token";
 import { MUSD_TOKENID } from "@/util/tokens";
 
 const Log = LogService("redux/wallet");

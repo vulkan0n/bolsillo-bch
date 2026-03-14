@@ -2,8 +2,8 @@
 import { useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router";
-import { SimpleEncryption } from "capacitor-plugin-simple-encryption";
 import { Dialog } from "@capacitor/dialog";
+import { SimpleEncryption } from "capacitor-plugin-simple-encryption";
 import {
   ArrowLeftOutlined,
   ImportOutlined,

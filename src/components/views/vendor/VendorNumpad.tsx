@@ -1,9 +1,12 @@
 import { useState, useCallback } from "react";
 import { useSelector } from "react-redux";
+
 import { selectCurrencySettings } from "@/redux/preferences";
+
 import CurrencyService from "@/kernel/bch/CurrencyService";
-import { bchToSats } from "@/util/sats";
+
 import { getMaxDecimals } from "@/util/currency";
+import { bchToSats } from "@/util/sats";
 
 interface VendorNumpadProps {
   onChange: (satoshis: bigint) => void;

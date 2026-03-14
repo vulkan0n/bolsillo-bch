@@ -30,7 +30,6 @@ import {
 } from "@/redux/wallet";
 
 import LogService from "@/kernel/app/LogService";
-
 import SecurityService, { AuthActions } from "@/kernel/app/SecurityService";
 import CauldronService from "@/kernel/bch/CauldronService";
 import TransactionBuilderService, {

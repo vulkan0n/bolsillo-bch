@@ -1,5 +1,5 @@
-import { Navigate } from "react-router";
 import { useSelector } from "react-redux";
+import { Navigate } from "react-router";
 
 import { selectIsVendorModeActive } from "@/redux/preferences";
 

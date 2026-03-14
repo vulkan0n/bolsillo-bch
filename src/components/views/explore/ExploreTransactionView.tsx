@@ -1,7 +1,6 @@
 /* eslint-disable react/prop-types */
 import { useState, useCallback, useEffect, useMemo } from "react";
 import toast from "react-hot-toast";
-import NotificationService from "@/kernel/app/NotificationService";
 import { useSelector } from "react-redux";
 import { useLoaderData, Link } from "react-router";
 import { DateTime } from "luxon";
@@ -23,6 +22,7 @@ import { selectChaintip } from "@/redux/sync";
 import { selectActiveWalletHash } from "@/redux/wallet";
 
 //import LogService from "@/kernel/app/LogService";
+import NotificationService from "@/kernel/app/NotificationService";
 import TransactionManagerService, {
   TransactionOutput,
   TransactionEntity,

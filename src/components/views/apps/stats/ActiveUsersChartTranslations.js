@@ -37,8 +37,8 @@ const translations = {
     ur: "فعال Selene صارفین",
     vi: "Người dùng Selene đang hoạt động",
     zh: "活跃的Selene用户",
-    zh_TW: "活躍的 Selene 用戶"
-  }
+    zh_TW: "活躍的 Selene 用戶",
+  },
 };
 
 export default translations;

@@ -1,6 +1,5 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import toast from "react-hot-toast";
-import NotificationService from "@/kernel/app/NotificationService";
 import { useSelector, useDispatch } from "react-redux";
 import { Link } from "react-router";
 import { DateTime } from "luxon";
@@ -41,6 +40,7 @@ import {
 import { selectActiveWalletHash } from "@/redux/wallet";
 
 import LogService from "@/kernel/app/LogService";
+import NotificationService from "@/kernel/app/NotificationService";
 import TransactionManagerService from "@/kernel/bch/TransactionManagerService";
 import {
   prepareTransactionExportData,

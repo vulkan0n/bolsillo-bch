@@ -1,11 +1,11 @@
 import { useState, useEffect, useMemo } from "react";
+import { QRCode } from "react-qrcode-logo";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
-import { QRCode } from "react-qrcode-logo";
 import { ScreenOrientation } from "@capacitor/screen-orientation";
 import { KeepAwake } from "@capacitor-community/keep-awake";
 
-import { selectActiveWalletHash } from "@/redux/wallet";
+import { selectDeviceInfo } from "@/redux/device";
 import {
   selectBchNetwork,
   selectQrCodeSettings,
@@ -13,19 +13,22 @@ import {
   selectShouldUseLegacyBip21,
   setPreference,
 } from "@/redux/preferences";
-import { selectDeviceInfo } from "@/redux/device";
+import { selectActiveWalletHash } from "@/redux/wallet";
 
-import AddressManagerService from "@/kernel/wallet/AddressManagerService";
 import SecurityService, { AuthActions } from "@/kernel/app/SecurityService";
+import AddressManagerService from "@/kernel/wallet/AddressManagerService";
 
+import translations from "@/views/wallet/translations";
 import Satoshi from "@/atoms/Satoshi";
+
 import { useCurrencyFlip } from "@/hooks/useCurrencyFlip";
 import { useLongPress } from "@/hooks/useLongPress";
+
 import { logos } from "@/util/logos";
 import { satsToBch } from "@/util/sats";
 import { toAlphanumericUri } from "@/util/uri";
+
 import { translate } from "@/util/translations";
-import translations from "@/views/wallet/translations";
 
 import VendorNumpad from "./VendorNumpad";
 

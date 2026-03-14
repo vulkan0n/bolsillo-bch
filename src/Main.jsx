@@ -5,8 +5,8 @@ import { RouterProvider } from "react-router/dom";
 
 import { selectIsLocked } from "@/redux/device";
 
-import AppLockScreen from "@/views/security/AppLockScreen";
 import IndexRoute from "@/views/IndexRoute";
+import AppLockScreen from "@/views/security/AppLockScreen";
 import ErrorBoundary from "@/layout/ErrorBoundary";
 import MainLayout from "@/layout/MainLayout";
 

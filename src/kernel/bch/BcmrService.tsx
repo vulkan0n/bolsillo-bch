@@ -18,10 +18,10 @@ import TransactionManagerService, {
 
 import { sha256 } from "@/util/hash";
 import { hexToUtf8 } from "@/util/hex";
-import { resolveNftType } from "@/util/token";
 import { ipfsFetch } from "@/util/ipfs";
 import { detectImageMime } from "@/util/mime";
 import { ValidBchNetwork } from "@/util/network";
+import { resolveNftType } from "@/util/token";
 import bcmrLocal from "@/assets/bcmr-selene-local.json";
 
 const Log = LogService("BcmrService");

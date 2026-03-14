@@ -3,6 +3,7 @@ import { useSelector } from "react-redux";
 import { Outlet, useNavigate, useLocation } from "react-router";
 import { App } from "@capacitor/app";
 import { ScreenOrientation } from "@capacitor/screen-orientation";
+
 import { selectScannerIsScanning, selectDevicePlatform } from "@/redux/device";
 import {
   selectShouldConstrainViewport,

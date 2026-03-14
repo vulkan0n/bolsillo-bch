@@ -4,8 +4,6 @@ import { SendOutlined, HistoryOutlined } from "@ant-design/icons";
 
 import { selectScannerIsScanning } from "@/redux/device";
 
-
-
 import translations from "@/views/wallet/translations";
 import Button from "@/atoms/Button";
 

@@ -10,6 +10,7 @@ import {
 } from "@/redux/preferences";
 import { selectIsConnected } from "@/redux/sync";
 import { selectActiveWalletHash, selectGenesisHeight } from "@/redux/wallet";
+
 import ElectrumService from "@/kernel/bch/ElectrumService";
 
 import BalanceHideButton from "@/views/wallet/home/BalanceHideButton";
