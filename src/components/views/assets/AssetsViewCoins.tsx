@@ -125,7 +125,7 @@ export default function AssetsViewCoins() {
   };
 
   return (
-    <FullColumn className="justify-between">
+    <FullColumn className="justify-start">
       <KeyWarning walletHash={wallet.walletHash} />
 
       <div className="my-1 flex flex-col gap-y-1">
