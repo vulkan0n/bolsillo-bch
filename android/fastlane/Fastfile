@@ -56,9 +56,11 @@ platform :android do
     )
   end
 
-  desc "Generates screenshots"
-  lane :screenshots do
-    gradle(task: "test")
+  desc "Generates store screenshots via Playwright"
+  lane :snapshot do
+    Dir.chdir("..") do
+      sh("npx playwright test --project=screenshots")
+    end
   end
 
   desc "Submit a new Release Candidate to Google Play Beta Track"

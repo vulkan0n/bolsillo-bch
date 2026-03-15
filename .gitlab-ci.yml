@@ -152,7 +152,7 @@ deploy_android_release:
   allow_failure: true
   dependencies:
     - package_android
-    - screenshots_android
+    - screenshots
   script:
     - cd android/
     - bundle install
@@ -200,7 +200,7 @@ deploy_ios_release:
   allow_failure: true
   dependencies:
     - package_ios
-    - screenshots_ios
+    - screenshots
   script:
     - cd ios/App/
     - bundle install
@@ -299,31 +299,19 @@ deploy_gitlab_release:
   only:
     - main
 
-# Screenshots
-screenshots_android:
+# Screenshots (Playwright generates store-quality images)
+screenshots:
   stage: screenshots
+  image: mcr.microsoft.com/playwright:v1.58.2-noble
+  dependencies:
+    - build_sync
   script:
-    - cd android/
-    - bundle install
-    - bundle exec fastlane snapshot
+    - corepack enable pnpm
+    - pnpm install --frozen-lockfile
+    - npx playwright test --project=screenshots
   artifacts:
     paths:
-      - android/fastlane/screenshots
+      - android/fastlane/metadata/android/en-US/images/phoneScreenshots/
+    expire_in: 1 year
   only:
     - main
-  tags:
-    - macos
-
-screenshots_ios:
-  stage: screenshots
-  script:
-    - cd ios/App/
-    - bundle install
-    - bundle exec fastlane snapshot
-  artifacts:
-    paths:
-      - ios/App/fastlane/screenshots
-  only:
-    - main
-  tags:
-    - macos

@@ -26,6 +26,20 @@ export default defineConfig({
         ...devices["iPhone 14"],
         defaultBrowserType: "chromium",
       },
+      testIgnore: /screenshots\.spec/,
+    },
+    {
+      name: "screenshots",
+      testMatch: /screenshots\.spec/,
+      use: {
+        browserName: "chromium",
+        // 360x800 @ 4x = 1440x3200 (Google Play phone screenshot size)
+        // Viewport must be under 480px to avoid web viewport constraint
+        viewport: { width: 360, height: 800 },
+        deviceScaleFactor: 4,
+        isMobile: true,
+        hasTouch: true,
+      },
     },
   ],
 
