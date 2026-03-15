@@ -2,7 +2,7 @@
  * App Store / Play Store screenshot generation via Playwright.
  *
  * Run:   npx playwright test e2e/screenshots.spec.ts
- * Output: fastlane screenshot directories
+ * Output: android/metadata screenshot directories
  *
  * Uses 2x device pixel ratio to produce store-quality images.
  * Android: 1440x3200 (720x1600 viewport @ 2x)
@@ -17,7 +17,7 @@ import { fileURLToPath } from "url";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ANDROID_DIR = path.join(
   __dirname,
-  "../android/fastlane/metadata/android/en-US/images/phoneScreenshots"
+  "../android/metadata/android/en-US/images/phoneScreenshots"
 );
 
 const test = base.extend<{ appPage: Page }>({

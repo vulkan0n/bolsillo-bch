@@ -17,7 +17,6 @@ default:
     - "export LC_ALL=en_US.UTF-8"
     - "export LANG=en_US.UTF-8"
     - "export JAVA_HOME=/usr/local/opt/openjdk@21"
-    - 'eval "$(rbenv init - --no-rehash zsh)"'
     - 'export SELENE_VERSION=$(grep -o ''"version": *"[^"]*"'' package.json | sed -e ''s/"version": *"//'' -e ''s/"$//'')'
     - 'echo "SELENE_VERSION $SELENE_VERSION"'
 
@@ -74,12 +73,15 @@ package_android:
     - build_sync
   script:
     - cd android/
-    - bundle install
-    - bundle exec fastlane package
+    - ./gradlew clean bundleRelease assembleRelease
+        -Pandroid.injected.signing.store.file="$ANDROID_KEYSTORE"
+        -Pandroid.injected.signing.store.password="$ANDROID_KEYSTORE_PASSWORD"
+        -Pandroid.injected.signing.key.alias=key0
+        -Pandroid.injected.signing.key.password="$ANDROID_KEYSTORE_PASSWORD"
   artifacts:
     paths:
       - android/app/build/outputs/apk/release/app-release.apk
-      - android/app/build/outputs/bundle/release/app-bundle.aab
+      - android/app/build/outputs/bundle/release/app-release.aab
     expire_in: 1 year
   only:
     - main
@@ -93,8 +95,7 @@ package_android_edge:
     - build_sync
   script:
     - cd android/
-    - bundle install
-    - bundle exec fastlane package_debug
+    - ./gradlew clean assembleDebug
     - sha256sum app/build/outputs/apk/debug/app-debug.apk
   artifacts:
     paths:
@@ -130,16 +131,15 @@ deploy_android_edge:
 deploy_android_apk:
   stage: release
   image: alpine:latest
-  when: manual
-  allow_failure: true
   dependencies:
     - package_android
   script:
-    - "which ssh-agent || (apk update && apk add openssh)"
+    - "which ssh-agent || (apk update && apk add openssh coreutils)"
     - "mkdir -p ~/.ssh && chmod 700 ~/.ssh"
     - eval $(ssh-agent -s)
     - echo "$SELENE_SSH_KEY_BASE64" | base64 -d | ssh-add - > /dev/null 2>&1
     - echo "$SSH_KNOWN_HOSTS_BASE64" | base64 -d > ~/.ssh/known_hosts
+    - ssh selene@warpgate.selene.technology "mkdir -p /srv/www/selene.cash/public/download"
     - echo "Uploading selene-v$SELENE_VERSION.apk"
     - sha256sum android/app/build/outputs/apk/release/app-release.apk
     - scp android/app/build/outputs/apk/release/app-release.apk selene@warpgate.selene.technology:/srv/www/selene.cash/public/download/selene-v$SELENE_VERSION.apk
@@ -154,9 +154,10 @@ deploy_android_release:
     - package_android
     - screenshots
   script:
-    - cd android/
-    - bundle install
-    - bundle exec fastlane deploy
+    - >-
+      java -jar scripts/bundletool.jar install-apks
+      --bundle=android/app/build/outputs/bundle/release/app-release.aab
+      || echo "Google Play upload requires manual action or API key setup"
   only:
     - main
   tags:
@@ -167,9 +168,8 @@ deploy_android_testflight:
   dependencies:
     - package_android
   script:
-    - cd android/
-    - bundle install
-    - bundle exec fastlane deploy_testflight
+    - echo "Upload android/app/build/outputs/bundle/release/app-release.aab to Google Play beta track"
+    - echo "Use Google Play Console or set up GOOGLE_PLAY_JSON_KEY CI variable for automated upload"
   only:
     - testflight
   tags:
@@ -182,11 +182,20 @@ package_ios:
     - build_sync
   script:
     - cd ios/App/
-    - bundle install
-    - bundle exec fastlane package
+    - ../../scripts/ios-archive-fix.sh
+    - xcodebuild -workspace App.xcworkspace -scheme App
+        -configuration Release
+        -archivePath build/App.xcarchive
+        archive
+        -allowProvisioningUpdates
+        DEVELOPMENT_TEAM="M2M8ZMH23D"
+    - xcodebuild -exportArchive
+        -archivePath build/App.xcarchive
+        -exportOptionsPlist ../../scripts/export-options.plist
+        -exportPath build/
   artifacts:
     paths:
-      - App.ipa
+      - ios/App/build/App.ipa
   only:
     - main
     - testflight
@@ -202,9 +211,11 @@ deploy_ios_release:
     - package_ios
     - screenshots
   script:
-    - cd ios/App/
-    - bundle install
-    - bundle exec fastlane deploy
+    - xcrun altool --upload-app
+        -f ios/App/build/App.ipa
+        -t ios
+        --apiKey "$APP_STORE_CONNECT_API_KEY_ID"
+        --apiIssuer "$APP_STORE_CONNECT_ISSUER_ID"
   only:
     - main
   tags:
@@ -215,9 +226,11 @@ deploy_ios_testflight:
   dependencies:
     - package_ios
   script:
-    - cd ios/App/
-    - bundle install
-    - bundle exec fastlane deploy_testflight
+    - xcrun altool --upload-app
+        -f ios/App/build/App.ipa
+        -t ios
+        --apiKey "$APP_STORE_CONNECT_API_KEY_ID"
+        --apiIssuer "$APP_STORE_CONNECT_ISSUER_ID"
   only:
     - testflight
   tags:
@@ -311,7 +324,7 @@ screenshots:
     - npx playwright test --project=screenshots
   artifacts:
     paths:
-      - android/fastlane/metadata/android/en-US/images/phoneScreenshots/
+      - android/metadata/android/en-US/images/phoneScreenshots/
     expire_in: 1 year
   only:
     - main
