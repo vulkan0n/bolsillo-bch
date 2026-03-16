@@ -71,6 +71,7 @@ export default function SecurityService() {
     initEncryption,
     lock,
     unlock,
+    securePause,
     // PIN management (state-coupled: setPinConfigured must follow)
     verifyPin,
     setPin,
@@ -116,6 +117,14 @@ export default function SecurityService() {
   // The Redux lock flag is set first so the lock screen shows immediately.
   async function lock(): Promise<void> {
     store.dispatch(setIsLocked(true));
+    clearSeedCache();
+    await DatabaseService().closeAllDatabases();
+    await SimpleEncryption.clearKeyFromMemory();
+  }
+
+  // Clear sensitive material without dispatching Redux state.
+  // Called by BootProvider on pause — phase transition handles UI, not Redux.
+  async function securePause(): Promise<void> {
     clearSeedCache();
     await DatabaseService().closeAllDatabases();
     await SimpleEncryption.clearKeyFromMemory();

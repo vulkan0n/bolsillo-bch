@@ -1,14 +1,15 @@
 import { Toaster } from "react-hot-toast";
-import { useSelector } from "react-redux";
+import { Provider } from "react-redux";
 import { createBrowserRouter } from "react-router";
 import { RouterProvider } from "react-router/dom";
 
-import { selectIsLocked } from "@/redux/device";
+import { store } from "@/redux";
 
 import IndexRoute from "@/views/IndexRoute";
-import AppLockScreen from "@/views/security/AppLockScreen";
 import ErrorBoundary from "@/layout/ErrorBoundary";
 import MainLayout from "@/layout/MainLayout";
+
+import BootProvider from "@/boot/BootProvider";
 
 import { routeApps } from "@/routes/routeApps";
 import { routeAssets } from "@/routes/routeAssets";
@@ -57,17 +58,16 @@ const routes = [
 const router = createBrowserRouter(routes);
 
 export default function Main() {
-  const isLocked = useSelector(selectIsLocked);
-
-  if (isLocked) {
-    return <AppLockScreen />;
-  }
-
   return (
-    <>
-      {/* Note: Duration has an inbuilt extra 1000ms dismissal delay */}
-      <Toaster toastOptions={{ duration: 1250 }} containerClassName="toaster" />
-      <RouterProvider router={router} />
-    </>
+    <Provider store={store}>
+      <BootProvider>
+        {/* Note: Duration has an inbuilt extra 1000ms dismissal delay */}
+        <Toaster
+          toastOptions={{ duration: 1250 }}
+          containerClassName="toaster"
+        />
+        <RouterProvider router={router} />
+      </BootProvider>
+    </Provider>
   );
 }

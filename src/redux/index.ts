@@ -3,7 +3,7 @@ import { configureStore, combineReducers, isPlain } from "@reduxjs/toolkit";
 import LogService from "@/kernel/app/LogService";
 import BcmrService from "@/kernel/bch/BcmrService";
 
-import { deviceReducer, deviceInit, selectIsLocked } from "./device";
+import { deviceReducer, deviceInit } from "./device";
 import {
   exchangeRateReducer,
   fetchExchangeRates,
@@ -72,10 +72,6 @@ export async function redux_init() {
 }
 
 export function redux_resume() {
-  if (selectIsLocked(store.getState())) {
-    Log.debug("redux_resume blocked by lock screen");
-    return;
-  }
   Log.debug("redux_resume");
   store.dispatch(syncResume());
   store.dispatch(walletConnectInit());

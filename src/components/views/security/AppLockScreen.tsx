@@ -8,8 +8,6 @@ import SecurityService from "@/kernel/app/SecurityService";
 import Button from "@/atoms/Button";
 import SeleneLogo from "@/atoms/SeleneLogo";
 
-import { onUnlocked } from "@/init";
-
 import { translate } from "@/util/translations";
 import translations from "./translations";
 
@@ -26,17 +24,25 @@ const Security = SecurityService();
 
 const Log = LogService("AppLockScreen");
 
-function PinLockScreen() {
+interface AppLockScreenProps {
+  boot: () => Promise<void>;
+}
+
+function PinLockScreen({ boot }: AppLockScreenProps) {
   const navigate = useNavigate();
   const [pin, setPin] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  const completeUnlock = useCallback(async function completeUnlock() {
-    await onUnlocked();
-  }, []);
+  const completeUnlock = useCallback(
+    async function completeUnlock() {
+      await boot();
+    },
+    [boot]
+  );
 
-  // Auto-trigger biometric on mount if available
+  // Auto-trigger biometric on mount.
+  // Safe: lock screen only mounts when app IS visible (never during pause).
   useEffect(
     function attemptBiometricUnlock() {
       let isCancelled = false;
@@ -168,11 +174,11 @@ function PinLockScreen() {
   );
 }
 
-export default function AppLockScreen() {
+export default function AppLockScreen({ boot }: AppLockScreenProps) {
   return (
     <MemoryRouter>
       <Routes>
-        <Route path="/" element={<PinLockScreen />} />
+        <Route path="/" element={<PinLockScreen boot={boot} />} />
         <Route path="/forgot-pin" element={<ForgotPinMenu />} />
         <Route path="/forgot-pin/import" element={<ImportBackupScreen />} />
         <Route path="/forgot-pin/reveal" element={<LegacyRevealScreen />} />
