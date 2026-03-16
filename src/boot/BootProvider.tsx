@@ -46,12 +46,12 @@ export default function BootProvider({ children }: BootProviderProps) {
   phaseRef.current = phase;
 
   // ----------------
-  // boot: open DBs, migrations, load wallet, start sync
+  // boot: open DBs, migrations, load wallet, start sync.
+  // Does NOT set intermediate phase — caller controls what shows during boot
+  // (cold start shows BOOTING/null with splash; lock screen stays LOCKED).
   const boot = useCallback(async function boot() {
     Log.log("* BOOT *");
     Log.time("boot");
-    setPhase("BOOTING");
-    phaseRef.current = "BOOTING";
 
     try {
       await DatabaseService().openAppDatabase();
@@ -96,7 +96,22 @@ export default function BootProvider({ children }: BootProviderProps) {
           const isKeyLoaded = await SecurityService().initEncryption();
 
           if (isKeyLoaded) {
-            await boot();
+            // Check if AppOpen auth is required before booting
+            const { authMode, authActions } = selectSecuritySettings(
+              store.getState()
+            );
+            const isAppOpenRequired =
+              authMode !== "none" && authActions.includes(AuthActions.AppOpen);
+
+            if (isAppOpenRequired) {
+              setPhase("LOCKED");
+              phaseRef.current = "LOCKED";
+            } else {
+              // No auth needed — boot behind splash
+              setPhase("BOOTING");
+              phaseRef.current = "BOOTING";
+              await boot();
+            }
           } else {
             setPhase("LOCKED");
             phaseRef.current = "LOCKED";
