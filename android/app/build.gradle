@@ -17,6 +17,9 @@ android {
         }
     }
     buildTypes {
+        debug {
+            applicationIdSuffix ".edge"
+        }
         release {
             minifyEnabled true
             shrinkResources true
