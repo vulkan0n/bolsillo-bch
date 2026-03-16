@@ -43,7 +43,7 @@ function LockScreen({ boot }: AppLockScreenProps) {
 
   const isPasswordMode = authMode === "password";
   const shouldShowPin = isPinConfigured;
-  const shouldShowBio = hasBiometric;
+  const shouldShowBio = authMode === "bio" && hasBiometric;
 
   // ----------------
   const tryBiometric = useCallback(
