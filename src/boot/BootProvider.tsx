@@ -96,23 +96,12 @@ export default function BootProvider({ children }: BootProviderProps) {
           const isKeyLoaded = await SecurityService().initEncryption();
 
           if (isKeyLoaded) {
-            // Check if AppOpen auth is required before booting
-            const { authMode, authActions } = selectSecuritySettings(
-              store.getState()
-            );
-            const isAppOpenRequired =
-              authMode !== "none" && authActions.includes(AuthActions.AppOpen);
-
-            if (isAppOpenRequired) {
-              setPhase("LOCKED");
-              phaseRef.current = "LOCKED";
-            } else {
-              // No auth needed — boot behind splash
-              setPhase("BOOTING");
-              phaseRef.current = "BOOTING";
-              await boot();
-            }
+            // No auth configured — boot behind splash
+            setPhase("BOOTING");
+            phaseRef.current = "BOOTING";
+            await boot();
           } else {
+            // Plugin requires auth (PIN or biometric) before key loads
             setPhase("LOCKED");
             phaseRef.current = "LOCKED";
           }
