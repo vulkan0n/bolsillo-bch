@@ -31,14 +31,18 @@ interface AppLockScreenProps {
   boot: () => Promise<void>;
 }
 
-function PinLockScreen({ boot }: AppLockScreenProps) {
+function LockScreen({ boot }: AppLockScreenProps) {
   const navigate = useNavigate();
   const { hasBiometric } = useSelector(selectDeviceInfo);
+  const isPinConfigured = Security.isPinConfigured();
   const [pin, setPin] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [isBioAvailable, setIsBioAvailable] = useState(false);
 
+  const shouldShowPin = isPinConfigured;
+  const shouldShowBio = hasBiometric;
+
+  // ----------------
   const tryBiometric = useCallback(
     async function tryBiometric() {
       try {
@@ -46,10 +50,9 @@ function PinLockScreen({ boot }: AppLockScreenProps) {
         const hasBioKey = await Security.hasBiometricKey();
 
         if (hasBioKey) {
-          // Normal unlock: load bio key into memory
           await Security.unlockWithBiometric();
         } else {
-          // Migration: key already in memory, store it with bio protection
+          // Migration: key in memory, store with bio protection
           await Security.storeBiometricKeyFromCurrent();
         }
 
@@ -68,24 +71,14 @@ function PinLockScreen({ boot }: AppLockScreenProps) {
   // Safe: lock screen only mounts when app IS visible (never during pause).
   useEffect(
     function attemptBiometricUnlock() {
-      let isCancelled = false;
-
-      async function attempt() {
-        const didUnlock = await tryBiometric();
-        if (!isCancelled && !didUnlock && hasBiometric) {
-          setIsBioAvailable(true);
-        }
+      if (shouldShowBio) {
+        tryBiometric();
       }
-
-      attempt();
-
-      return () => {
-        isCancelled = true;
-      };
     },
-    [tryBiometric, hasBiometric]
+    [tryBiometric, shouldShowBio]
   );
 
+  // ----------------
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!pin || isLoading) {
@@ -116,6 +109,7 @@ function PinLockScreen({ boot }: AppLockScreenProps) {
     }
   };
 
+  // --------------------------------
   return (
     <LockScreenWrapper>
       <div className="flex flex-col items-center mb-6">
@@ -130,46 +124,62 @@ function PinLockScreen({ boot }: AppLockScreenProps) {
         <span>{translate(translations.enterPinPrompt)}</span>
       </div>
 
-      <form onSubmit={handleSubmit}>
-        <input
-          type="password"
-          inputMode="numeric"
-          pattern="[0-9]*"
-          value={pin}
-          onChange={(e) => setPin(e.target.value)}
-          placeholder={translate(translations.enterPin)}
-          className="w-full p-3 mb-4 border border-neutral-300 dark:border-neutral-600 rounded-lg bg-neutral-50 dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 text-center text-xl tracking-widest"
-          autoFocus
-          disabled={isLoading}
-        />
+      {shouldShowPin && (
+        <form onSubmit={handleSubmit}>
+          <input
+            type="password"
+            inputMode="numeric"
+            pattern="[0-9]*"
+            value={pin}
+            onChange={(e) => setPin(e.target.value)}
+            placeholder={translate(translations.enterPin)}
+            className="w-full p-3 mb-4 border border-neutral-300 dark:border-neutral-600 rounded-lg bg-neutral-50 dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 text-center text-xl tracking-widest"
+            autoFocus
+            disabled={isLoading}
+          />
 
-        {error && (
-          <div className="mb-4 p-2 bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-200 rounded text-center text-sm">
-            {error}
-          </div>
-        )}
+          {error && (
+            <div className="mb-4 p-2 bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-200 rounded text-center text-sm">
+              {error}
+            </div>
+          )}
 
-        <Button
-          submit
-          {...primaryButtonProps}
-          label={
-            isLoading
-              ? translate(translations.unlocking)
-              : translate(translations.unlock)
-          }
-          disabled={!pin || isLoading}
-        />
-      </form>
+          <Button
+            submit
+            {...primaryButtonProps}
+            label={
+              isLoading
+                ? translate(translations.unlocking)
+                : translate(translations.unlock)
+            }
+            disabled={!pin || isLoading}
+          />
+        </form>
+      )}
 
-      {isBioAvailable && (
-        <div className="mt-3">
+      {shouldShowBio && (
+        <div className={shouldShowPin ? "mt-3" : ""}>
           <Button
             fullWidth
             {...primaryButtonProps}
-            bgColor="bg-neutral-200 dark:bg-neutral-700 hover:bg-neutral-300 dark:hover:bg-neutral-600"
-            activeBgColor="bg-neutral-300 dark:bg-neutral-600"
-            labelColor="text-neutral-900 dark:text-neutral-100 font-semibold"
-            activeLabelColor="text-neutral-900 dark:text-neutral-100"
+            bgColor={
+              shouldShowPin
+                ? "bg-neutral-200 dark:bg-neutral-700 hover:bg-neutral-300 dark:hover:bg-neutral-600"
+                : undefined
+            }
+            activeBgColor={
+              shouldShowPin ? "bg-neutral-300 dark:bg-neutral-600" : undefined
+            }
+            labelColor={
+              shouldShowPin
+                ? "text-neutral-900 dark:text-neutral-100 font-semibold"
+                : undefined
+            }
+            activeLabelColor={
+              shouldShowPin
+                ? "text-neutral-900 dark:text-neutral-100"
+                : undefined
+            }
             label={translate(translations.useBiometric)}
             onClick={tryBiometric}
             disabled={isLoading}
@@ -193,9 +203,11 @@ function PinLockScreen({ boot }: AppLockScreenProps) {
         />
       </div>
 
-      <p className="mt-4 text-xs text-neutral-500 dark:text-neutral-400 text-center">
-        {translate(translations.pinProtectionInfo)}
-      </p>
+      {shouldShowPin && (
+        <p className="mt-4 text-xs text-neutral-500 dark:text-neutral-400 text-center">
+          {translate(translations.pinProtectionInfo)}
+        </p>
+      )}
     </LockScreenWrapper>
   );
 }
@@ -204,7 +216,7 @@ export default function AppLockScreen({ boot }: AppLockScreenProps) {
   return (
     <MemoryRouter>
       <Routes>
-        <Route path="/" element={<PinLockScreen boot={boot} />} />
+        <Route path="/" element={<LockScreen boot={boot} />} />
         <Route path="/forgot-pin" element={<ForgotPinMenu />} />
         <Route path="/forgot-pin/import" element={<ImportBackupScreen />} />
         <Route path="/forgot-pin/reveal" element={<LegacyRevealScreen />} />
