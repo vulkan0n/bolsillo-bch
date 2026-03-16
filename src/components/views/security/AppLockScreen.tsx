@@ -156,7 +156,7 @@ function LockScreen({ boot }: AppLockScreenProps) {
                 ? translate(translations.unlocking)
                 : translate(translations.unlock)
             }
-            disabled={!pin || isLoading}
+            disabled={isLoading}
           />
         </form>
       )}
