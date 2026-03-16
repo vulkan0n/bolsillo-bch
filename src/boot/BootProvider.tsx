@@ -55,11 +55,7 @@ export default function BootProvider({ children }: BootProviderProps) {
 
     try {
       await DatabaseService().openAppDatabase();
-
-      await Promise.all([
-        JanitorService().migrateLegacyDatabases(),
-        redux_pre_init(),
-      ]);
+      await JanitorService().migrateLegacyDatabases();
 
       if (!(await JanitorService().handleAuthMigration())) {
         Log.timeEnd("boot");
@@ -93,6 +89,7 @@ export default function BootProvider({ children }: BootProviderProps) {
 
         try {
           await JanitorService().fsck();
+          await redux_pre_init();
           const isKeyLoaded = await SecurityService().initEncryption();
 
           if (isKeyLoaded) {

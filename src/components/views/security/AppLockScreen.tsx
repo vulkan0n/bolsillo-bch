@@ -2,8 +2,8 @@ import { useState, useEffect, useCallback } from "react";
 import { MemoryRouter, Routes, Route, useNavigate } from "react-router";
 import { useSelector } from "react-redux";
 import { LockOutlined } from "@ant-design/icons";
-import { SimpleEncryption } from "capacitor-plugin-simple-encryption";
 
+import { selectDeviceInfo } from "@/redux/device";
 import { selectSecuritySettings } from "@/redux/preferences";
 
 import LogService from "@/kernel/app/LogService";
@@ -35,8 +35,8 @@ interface AppLockScreenProps {
 function LockScreen({ boot }: AppLockScreenProps) {
   const navigate = useNavigate();
   const { authMode } = useSelector(selectSecuritySettings);
+  const { hasBiometric } = useSelector(selectDeviceInfo);
   const isPinConfigured = Security.isPinConfigured();
-  const [hasBiometric, setHasBiometric] = useState(false);
   const [pin, setPin] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -44,14 +44,6 @@ function LockScreen({ boot }: AppLockScreenProps) {
   const isPasswordMode = authMode === "password";
   const shouldShowPin = isPinConfigured;
   const shouldShowBio = hasBiometric;
-
-  // Check biometric availability directly from plugin (not Redux).
-  // Lock screen can mount before deviceInit runs.
-  useEffect(function checkBiometric() {
-    SimpleEncryption.isBiometricAvailable().then(({ value }) => {
-      setHasBiometric(value);
-    });
-  }, []);
 
   // ----------------
   const tryBiometric = useCallback(
