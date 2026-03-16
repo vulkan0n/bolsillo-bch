@@ -127,6 +127,14 @@ export default function BootProvider({ children }: BootProviderProps) {
   useEffect(function setupLifecycleListeners() {
     async function handlePause() {
       Log.time("APP_PAUSE");
+
+      // Only pause when the app is fully running
+      if (phaseRef.current !== "RUNNING") {
+        Log.debug("APP_PAUSE ignored (phase:", phaseRef.current, ")");
+        Log.timeEnd("APP_PAUSE");
+        return;
+      }
+
       const { authMode, authActions } = selectSecuritySettings(
         store.getState()
       );
