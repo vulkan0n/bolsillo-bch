@@ -1,3 +1,4 @@
+import { ApolloProvider } from "@apollo/client";
 import {
   LikeOutlined,
   GlobalOutlined,
@@ -5,16 +6,14 @@ import {
   PlayCircleOutlined,
 } from "@ant-design/icons";
 
-import { ApolloProvider } from "@apollo/client";
-
-import apolloClient from "@/apolloClient";
-
 import StatsGraphCard from "@/apps/stats/StatsGraphCard";
 import Card from "@/atoms/Card";
 import Carousel from "@/atoms/Carousel";
 import SeleneLogo from "@/atoms/SeleneLogo";
 
 import useRealTime from "@/hooks/useRealTime";
+
+import apolloClient from "@/apolloClient";
 
 import { translate } from "@/util/translations";
 import translations from "./translations";

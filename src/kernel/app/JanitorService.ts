@@ -105,30 +105,40 @@ export default function JanitorService() {
     const { pinHash } = selectPreferences(state);
     const { hasBiometric } = selectDeviceInfo(state);
 
-    if (pinHash === "") {
-      return true;
-    }
-
     const Security = SecurityService();
+    const isPinSet = Security.isPinConfigured();
+    const hasBioKey = await Security.hasBiometricKey();
 
-    if (!Security.isPinConfigured()) {
+    // Already migrated or no auth configured
+    if (authMode === "none") return true;
+    if (isPinSet || hasBioKey) return true;
+
+    Log.log("Auth migration needed", { authMode, hasPinHash: pinHash !== "" });
+
+    // PIN migration: legacy pinHash → encryption plugin PIN
+    if (pinHash !== "") {
       const pin = await Security.authorizeLegacyPin(pinHash);
       if (pin === null) {
         return false;
       }
       await Security.setPin(pin);
+      await store.dispatch(setPreference({ key: "pinHash", value: "" }));
       Log.log("PIN migrated to encryption plugin");
     }
 
+    // Biometric migration: store current key in biometric-protected storage
+    Log.log("Bio migration check", { authMode, hasBiometric });
     if (authMode === "bio" && hasBiometric) {
       try {
+        Log.log("Attempting storeBiometricKeyFromCurrent...");
         await Security.storeBiometricKeyFromCurrent();
         Log.log("Biometric key stored during migration");
       } catch (e) {
-        Log.warn("Failed to store biometric key during migration", e);
+        Log.error("FAILED to store biometric key during migration", e);
       }
     }
 
+    // Ensure AppOpen/AppResume are in authActions
     const actionsToAdd = [AuthActions.AppOpen, AuthActions.AppResume].filter(
       (a) => !authActions.includes(a)
     );
@@ -138,7 +148,7 @@ export default function JanitorService() {
         setPreference({ key: "authActions", value: updated })
       );
     }
-    await store.dispatch(setPreference({ key: "pinHash", value: "" }));
+
     return true;
   }
 
