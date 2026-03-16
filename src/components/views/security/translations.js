@@ -253,6 +253,7 @@ const translations = {
     zh: "您的加密密钥受PIN码保护。请输入您的PIN码以解密您的钱包数据。",
     zh_TW: "您的加密金鑰受PIN碼保護。請輸入您的PIN碼以解密您的錢包資料。",
   },
+  useBiometric: { en: "Use Biometric" },
   // ForgotPinScreen
   importKeyBackupInfo: {
     ar: "ألصق بيانات النسخ الاحتياطي وأدخل كلمة المرور التي استخدمتها عند إنشاء النسخة الاحتياطية.",

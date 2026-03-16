@@ -1,6 +1,9 @@
 import { useState, useEffect, useCallback } from "react";
 import { MemoryRouter, Routes, Route, useNavigate } from "react-router";
+import { useSelector } from "react-redux";
 import { LockOutlined } from "@ant-design/icons";
+
+import { selectDeviceInfo } from "@/redux/device";
 
 import LogService from "@/kernel/app/LogService";
 import SecurityService from "@/kernel/app/SecurityService";
@@ -30,13 +33,29 @@ interface AppLockScreenProps {
 
 function PinLockScreen({ boot }: AppLockScreenProps) {
   const navigate = useNavigate();
+  const { hasBiometric } = useSelector(selectDeviceInfo);
   const [pin, setPin] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isBioAvailable, setIsBioAvailable] = useState(false);
 
-  const completeUnlock = useCallback(
-    async function completeUnlock() {
-      await boot();
+  const tryBiometric = useCallback(
+    async function tryBiometric() {
+      try {
+        const hasBioKey = await Security.hasBiometricKey();
+        if (!hasBioKey) {
+          return false;
+        }
+
+        setIsLoading(true);
+        await Security.unlockWithBiometric();
+        await boot();
+        return true;
+      } catch (e) {
+        Log.debug("Biometric unlock failed or cancelled", e);
+        setIsLoading(false);
+        return false;
+      }
     },
     [boot]
   );
@@ -47,33 +66,20 @@ function PinLockScreen({ boot }: AppLockScreenProps) {
     function attemptBiometricUnlock() {
       let isCancelled = false;
 
-      async function tryBiometric() {
-        try {
-          const hasBioKey = await Security.hasBiometricKey();
-          if (!hasBioKey || isCancelled) {
-            return;
-          }
-
-          setIsLoading(true);
-
-          await Security.unlockWithBiometric();
-
-          if (!isCancelled) await completeUnlock();
-        } catch (e) {
-          Log.debug("Biometric unlock failed or cancelled", e);
-          if (!isCancelled) {
-            setIsLoading(false);
-          }
+      async function attempt() {
+        const didUnlock = await tryBiometric();
+        if (!isCancelled && !didUnlock && hasBiometric) {
+          setIsBioAvailable(true);
         }
       }
 
-      tryBiometric();
+      attempt();
 
       return () => {
         isCancelled = true;
       };
     },
-    [completeUnlock]
+    [tryBiometric, hasBiometric]
   );
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -92,7 +98,7 @@ function PinLockScreen({ boot }: AppLockScreenProps) {
         return;
       }
       Log.log("PIN unlock successful");
-      await completeUnlock();
+      await boot();
     } catch (err) {
       Log.error("PIN unlock failed", err);
       setError(
@@ -150,6 +156,22 @@ function PinLockScreen({ boot }: AppLockScreenProps) {
           disabled={!pin || isLoading}
         />
       </form>
+
+      {isBioAvailable && (
+        <div className="mt-3">
+          <Button
+            fullWidth
+            {...primaryButtonProps}
+            bgColor="bg-neutral-200 dark:bg-neutral-700 hover:bg-neutral-300 dark:hover:bg-neutral-600"
+            activeBgColor="bg-neutral-300 dark:bg-neutral-600"
+            labelColor="text-neutral-900 dark:text-neutral-100 font-semibold"
+            activeLabelColor="text-neutral-900 dark:text-neutral-100"
+            label={translate(translations.useBiometric)}
+            onClick={tryBiometric}
+            disabled={isLoading}
+          />
+        </div>
+      )}
 
       <div className="mt-4">
         <Button

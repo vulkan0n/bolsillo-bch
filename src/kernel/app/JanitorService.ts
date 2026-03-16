@@ -135,6 +135,7 @@ export default function JanitorService() {
         Log.log("Biometric key stored during migration");
       } catch (e) {
         Log.error("FAILED to store biometric key during migration", e);
+        return false;
       }
     }
 
