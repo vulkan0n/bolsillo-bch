@@ -42,13 +42,17 @@ function PinLockScreen({ boot }: AppLockScreenProps) {
   const tryBiometric = useCallback(
     async function tryBiometric() {
       try {
+        setIsLoading(true);
         const hasBioKey = await Security.hasBiometricKey();
-        if (!hasBioKey) {
-          return false;
+
+        if (hasBioKey) {
+          // Normal unlock: load bio key into memory
+          await Security.unlockWithBiometric();
+        } else {
+          // Migration: key already in memory, store it with bio protection
+          await Security.storeBiometricKeyFromCurrent();
         }
 
-        setIsLoading(true);
-        await Security.unlockWithBiometric();
         await boot();
         return true;
       } catch (e) {
