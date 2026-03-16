@@ -1498,6 +1498,7 @@ const translations = {
     zh: "PIN",
     zh_TW: "PIN",
   },
+  password: { en: "Password" },
   biometric: {
     ar: "البيانات الحيوية",
     bn: "বায়োমেট্রিক",
@@ -1858,6 +1859,7 @@ const translations = {
     zh: "确认 PIN",
     zh_TW: "確認密碼"
   },
+  passwordTooShort: { en: "Password must be at least 8 characters" },
   pinConfirmationDidNotMatch: {
     ar: "لم يتطابق تأكيد رقم التعريف الشخصي (PIN)! لم يتم تعيين رقم التعريف الشخصي (PIN).",
     bn: "পিন নিশ্চিতকরণ মেলেনি! পিন সেট করা হয়নি।",

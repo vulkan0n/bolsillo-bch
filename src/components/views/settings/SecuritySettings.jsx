@@ -214,13 +214,18 @@ export default function SecuritySettings() {
     }
   };
 
-  const promptForNewPin = async () => {
+  const promptForNewPin = async (isPassword = false) => {
     const { value: pin } = await Dialog.prompt({
       title: translate(translations.enterNewPin),
       message: translate(translations.enterNewPinMessage),
       okButtonTitle: translate(translations.enterNewPinOkButtonTitle),
     });
     if (!pin) return null;
+
+    if (isPassword && pin.length < 8) {
+      Notification.error(translate(translations.passwordTooShort));
+      return null;
+    }
 
     const { value: confirmPin } = await Dialog.prompt({
       title: translate(translations.confirmNewPin),
@@ -258,11 +263,11 @@ export default function SecuritySettings() {
         }
       }
 
-      // Target: pin — need PIN, no bio key
-      if (newMode === "pin") {
+      // Target: pin or password — need PIN/password, no bio key
+      if (newMode === "pin" || newMode === "password") {
         await Security.removeBiometricKey();
         if (!isPinConfigured) {
-          const pin = await promptForNewPin();
+          const pin = await promptForNewPin(newMode === "password");
           if (!pin) return;
           await Security.setPin(pin);
           setIsPinConfigured(true);
@@ -364,13 +369,14 @@ export default function SecuritySettings() {
           >
             <option value="none">{translate(translations.none)}</option>
             <option value="pin">{translate(translations.pin)}</option>
+            <option value="password">{translate(translations.password)}</option>
             {hasBiometric && (
               <option value="bio">{translate(translations.biometric)}</option>
             )}
           </Select>
         )}
       </Accordion.Child>
-      {authMode === "pin" && (
+      {(authMode === "pin" || authMode === "password") && (
         <Accordion.Child>
           <div className="flex items-center justify-between w-full">
             {!isPinConfigured ? (

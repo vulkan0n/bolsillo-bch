@@ -150,6 +150,7 @@ export default function SecurityService() {
         break;
 
       case "pin":
+      case "password":
         isAuthorized = await authorizePin(action);
         break;
 

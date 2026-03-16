@@ -1,7 +1,10 @@
 import { useState, useEffect, useCallback } from "react";
 import { MemoryRouter, Routes, Route, useNavigate } from "react-router";
+import { useSelector } from "react-redux";
 import { LockOutlined } from "@ant-design/icons";
 import { SimpleEncryption } from "capacitor-plugin-simple-encryption";
+
+import { selectSecuritySettings } from "@/redux/preferences";
 
 import LogService from "@/kernel/app/LogService";
 import SecurityService from "@/kernel/app/SecurityService";
@@ -31,12 +34,14 @@ interface AppLockScreenProps {
 
 function LockScreen({ boot }: AppLockScreenProps) {
   const navigate = useNavigate();
+  const { authMode } = useSelector(selectSecuritySettings);
   const isPinConfigured = Security.isPinConfigured();
   const [hasBiometric, setHasBiometric] = useState(false);
   const [pin, setPin] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
+  const isPasswordMode = authMode === "password";
   const shouldShowPin = isPinConfigured;
   const shouldShowBio = hasBiometric;
 
@@ -134,8 +139,8 @@ function LockScreen({ boot }: AppLockScreenProps) {
         <form onSubmit={handleSubmit}>
           <input
             type="password"
-            inputMode="numeric"
-            pattern="[0-9]*"
+            inputMode={isPasswordMode ? undefined : "numeric"}
+            pattern={isPasswordMode ? undefined : "[0-9]*"}
             value={pin}
             onChange={(e) => setPin(e.target.value)}
             placeholder={translate(translations.enterPin)}
