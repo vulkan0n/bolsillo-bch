@@ -4,9 +4,9 @@
 # For more information, see: https://docs.gitlab.com/ee/ci/yaml/index.html#stages
 
 stages:
-  - version
   - build
   - test
+  - release_web
   - package
   - screenshots
   - testflight
@@ -18,17 +18,6 @@ default:
     - "export LANG=en_US.UTF-8"
     - 'export SELENE_VERSION=$(grep -o ''"version": *"[^"]*"'' package.json | sed -e ''s/"version": *"//'' -e ''s/"$//'')'
     - 'echo "SELENE_VERSION $SELENE_VERSION"'
-
-# Version Bump (runs before build on main)
-version:
-  stage: version
-  script:
-    - scripts/chversion
-  only:
-    - main
-    - testflight
-  tags:
-    - macos
 
 # Build
 build_sync:
@@ -241,7 +230,7 @@ deploy_ios_testflight:
 
 # Web Deployment
 deploy_web:
-  stage: release
+  stage: release_web
   image: alpine:latest
   dependencies:
     - build_sync
@@ -256,7 +245,7 @@ deploy_web:
     - main
 
 deploy_web_edge:
-  stage: release
+  stage: release_web
   image: alpine:latest
   needs:
     - build_sync
@@ -275,7 +264,7 @@ deploy_web_edge:
 
 # GitLab Release
 deploy_gitlab_release:
-  stage: release
+  stage: release_web
   image: alpine:latest
   script:
     - apk add git curl jq
