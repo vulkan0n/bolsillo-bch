@@ -128,7 +128,7 @@ export default function AssetsViewCoins() {
     <FullColumn className="justify-start">
       <KeyWarning walletHash={wallet.walletHash} />
 
-      <div className="my-1 flex flex-col gap-y-1">
+      <div className="my-1 flex flex-1 flex-col gap-y-1">
         <Card className="p-0 overflow-hidden">
           <div
             className="p-1 rounded bg-neutral-800 text-white text-center"
@@ -284,7 +284,9 @@ function Token({ coin, tokenData, onSelect }) {
               token={{ ...tokenData, amount: coin.token_amount }}
               nft={coin.nft_capability !== null}
             />
-            <span className="text-xs font-mono">{coin.nft_commitment}</span>
+            <span className="text-xs font-mono truncate max-w-32">
+              {coin.nft_commitment}
+            </span>
           </span>
         </div>
       </div>
