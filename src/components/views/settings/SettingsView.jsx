@@ -1,6 +1,5 @@
 import { useMemo, useCallback } from "react";
 import { useSelector, useDispatch } from "react-redux";
-
 import { SettingOutlined } from "@ant-design/icons";
 
 import {
@@ -9,28 +8,27 @@ import {
   selectActiveWalletHash,
 } from "@/redux/preferences";
 
-import ViewHeader from "@/layout/ViewHeader";
 import FullColumn from "@/layout/FullColumn";
-import KeyWarning from "@/atoms/KeyWarning/KeyWarning";
+import ViewHeader from "@/layout/ViewHeader";
 import Button from "@/atoms/Button";
+import KeyWarning from "@/atoms/KeyWarning/KeyWarning";
 import SeleneLogo from "@/atoms/SeleneLogo";
+
+import { SELENE_WALLET_VERSION } from "@/util/version";
 
 import { translate } from "@/util/translations";
 import translations from "./translations";
 
-import { SELENE_WALLET_VERSION } from "@/util/version";
-
-import { SettingsContext } from "./SettingsContext";
-
-import WalletSettings from "./WalletSettings";
 import CurrencySettings from "./CurrencySettings";
-import PaymentSettings from "./PaymentSettings";
-import QrCodeSettings from "./QrCodeSettings";
 import IntlSettings from "./IntlSettings";
 import NetworkSettings from "./NetworkSettings";
-import SecuritySettings from "./SecuritySettings";
-import UiSettings from "./UiSettings";
+import PaymentSettings from "./PaymentSettings";
 import PrivacySettings from "./PrivacySettings";
+import QrCodeSettings from "./QrCodeSettings";
+import SecuritySettings from "./SecuritySettings";
+import { SettingsContext } from "./SettingsContext";
+import UiSettings from "./UiSettings";
+import WalletSettings from "./WalletSettings";
 
 export default function SettingsView() {
   const dispatch = useDispatch();
@@ -60,7 +58,7 @@ export default function SettingsView() {
         icon={SettingOutlined}
         title={translate(translations.settings)}
       />
-      <div className="p-1">
+      <div data-testid="settings-view" className="p-1">
         <SettingsContext.Provider value={settingsContext}>
           <KeyWarning walletHash={activeWalletHash} />
           <WalletSettings />

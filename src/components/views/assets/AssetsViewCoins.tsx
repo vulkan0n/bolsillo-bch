@@ -5,22 +5,26 @@ import {
   SendOutlined,
   CloseOutlined,
 } from "@ant-design/icons";
+
+import TokenManagerService from "@/kernel/wallet/TokenManagerService";
+import UtxoManagerService from "@/kernel/wallet/UtxoManagerService";
+
 import FullColumn from "@/layout/FullColumn";
 import Address from "@/atoms/Address";
-import Satoshi from "@/atoms/Satoshi";
 import Button from "@/atoms/Button";
+import Card from "@/atoms/Card";
 import CurrencyFlip from "@/atoms/CurrencyFlip";
 import KeyWarning from "@/atoms/KeyWarning/KeyWarning";
+import Satoshi from "@/atoms/Satoshi";
 import SeleneLogo from "@/atoms/SeleneLogo";
+import TokenAmount from "@/atoms/TokenAmount";
+import TokenIcon from "@/atoms/TokenIcon";
+import TokenSymbol from "@/atoms/TokenSymbol";
 
-import UtxoManagerService from "@/services/UtxoManagerService";
-//import LogService from "@/services/LogService";
 import { useCurrencyFlip } from "@/hooks/useCurrencyFlip";
 
 import { translate } from "@/util/translations";
 import translations from "./translations";
-
-//const Log = LogService("AssetsViewCoins");
 
 export default function AssetsViewCoins() {
   const wallet = useOutletContext();
@@ -28,41 +32,64 @@ export default function AssetsViewCoins() {
 
   const UtxoManager = UtxoManagerService(wallet.walletHash);
   const coins = UtxoManager.getWalletCoins();
+  const tokens = UtxoManager.getWalletTokens();
 
   const [selection, setSelection] = useState([]);
 
   const handleFlipCurrency = useCurrencyFlip();
 
-  const coinMap = coins.reduce((map, coin) => {
-    if (!map[coin.address]) {
+  const tokenCategories = tokens.reduce(
+    (categories, utxo) =>
+      categories.includes(utxo.token_category)
+        ? categories
+        : [...categories, utxo.token_category],
+    []
+  );
+
+  const TokenManager = TokenManagerService(wallet.walletHash, wallet.network);
+
+  const tokenData = Object.fromEntries(
+    tokenCategories.map((category) => [
+      category,
+      TokenManager.getToken(category),
+    ])
+  );
+
+  const mapUtxos = (map, utxo) => {
+    if (!map[utxo.address]) {
       /* eslint-disable-next-line no-param-reassign */
-      map[coin.address] = [];
+      map[utxo.address] = [];
     }
 
-    if (!coin.key) {
+    if (!utxo.key) {
       /* eslint-disable-next-line no-param-reassign */
-      coin.key = `${coin.txid}:${coin.tx_pos}`;
+      utxo.key = `${utxo.tx_hash}:${utxo.tx_pos}`;
     }
 
     return {
       ...map,
-      [coin.address]: [
-        ...map[coin.address],
+      [utxo.address]: [
+        ...map[utxo.address],
         {
-          ...coin,
-          selected: selection.findIndex((s) => s.key === coin.key) > -1,
+          ...utxo,
+          selected: selection.findIndex((s) => s.key === utxo.key) > -1,
         },
       ],
     };
-  }, {});
+  };
 
-  //Log.debug("coinMap", coinMap, selection);
+  const coinMap = coins.reduce(mapUtxos, {});
+  const tokenMap = tokens.reduce(mapUtxos, {});
+  //Log.debug("coinMap", coins, coinMap, selection);
+  //Log.debug("tokenMap", tokens, tokenMap, selection);
 
   const coinAddresses = Object.keys(coinMap);
+  const tokenAddresses = Object.keys(tokenMap);
 
   const handleCoinSelection = (key, forceSelect) => {
     setSelection((currentSelection) => {
       const selectCoin = Object.values(coinMap)
+        .concat(Object.values(tokenMap))
         .flat()
         .find((coin) => coin.key === key);
 
@@ -98,35 +125,57 @@ export default function AssetsViewCoins() {
   };
 
   return (
-    <FullColumn className="justify-between">
-      <div className="m-1">
-        <div
-          className="p-1 rounded bg-neutral-800 text-white text-center mt-1 mb-2"
-          onClick={handleFlipCurrency}
-        >
-          <div className="text-lg font-bold">
-            {translate(translations.cashBalance)}
-          </div>
-          <div>
-            <Satoshi value={wallet.spendable_balance} />
-          </div>
-          <div className="text-sm flex items-center justify-center">
-            <Satoshi value={wallet.spendable_balance} flip />
-            <CurrencyFlip className="ml-1" />
-          </div>
-        </div>
+    <FullColumn className="justify-start">
+      <KeyWarning walletHash={wallet.walletHash} />
 
-        <KeyWarning walletHash={wallet.walletHash} />
+      <div className="my-1 flex flex-col gap-y-1">
+        <Card className="p-0 overflow-hidden">
+          <div
+            className="p-1 rounded bg-neutral-800 text-white text-center"
+            onClick={handleFlipCurrency}
+          >
+            <div className="text-lg font-bold">
+              {translate(translations.cashBalance)}
+            </div>
+            <div>
+              <Satoshi value={wallet.spendable_balance} />
+            </div>
+            <div className="text-sm flex items-center justify-center">
+              <Satoshi value={wallet.spendable_balance} flip />
+              <CurrencyFlip className="ml-1" />
+            </div>
+          </div>
 
-        {coinAddresses.map((address) => (
-          <CoinGroup
-            address={address}
-            coins={coinMap[address]}
-            onCoinSelect={handleCoinSelection}
-          />
-        ))}
+          <div className="p-1">
+            {coinAddresses.map((address) => (
+              <CoinGroup
+                address={address}
+                coins={coinMap[address]}
+                onCoinSelect={handleCoinSelection}
+              />
+            ))}
+          </div>
+        </Card>
 
-        {coinAddresses.length === 0 && (
+        {tokenAddresses.length > 0 && (
+          <Card className="p-0 overflow-hidden">
+            <div className="p-1 rounded bg-neutral-800 text-white text-center">
+              <div className="text-lg font-bold">Tokens</div>
+            </div>
+            <div className="p-1">
+              {tokenAddresses.map((address) => (
+                <CoinGroup
+                  address={address}
+                  coins={tokenMap[address]}
+                  tokenData={tokenData}
+                  onCoinSelect={handleCoinSelection}
+                />
+              ))}
+            </div>
+          </Card>
+        )}
+
+        {coinAddresses.length === 0 && tokenAddresses.length === 0 && (
           <div className="text-center py-4 rounded text-2xl text-neutral-700/90 dark:text-neutral-200">
             {translate(translations.noCoins)}
             <div className="flex items-center justify-center mt-2">
@@ -147,7 +196,7 @@ export default function AssetsViewCoins() {
 }
 
 /* eslint-disable react/prop-types */
-function CoinGroup({ address, coins, onCoinSelect }) {
+function CoinGroup({ address, coins, tokenData, onCoinSelect }) {
   const isSelected = coins.every((coin) => coin.selected);
 
   const selectCss = isSelected
@@ -158,15 +207,26 @@ function CoinGroup({ address, coins, onCoinSelect }) {
     coins.forEach((coin) => onCoinSelect(coin.key, !isSelected));
   };
 
+  const format = tokenData !== undefined ? "tokenaddr" : "cashaddr";
+
   return (
     <div className={`rounded my-1 ${selectCss}`} onClick={handleGroupSelection}>
       <div className="py-0.5 px-1 font-mono text-xs tracking-tight">
-        <Address address={address} color="white" />
+        <Address address={address} color="white" format={format} />
       </div>
       <div className="m-0.5 border-1 border-primary-700 rounded-sm">
-        {coins.map((coin) => (
-          <Coin key={coin.key} coin={coin} onSelect={onCoinSelect} />
-        ))}
+        {coins.map((coin) =>
+          coin.token_category !== null ? (
+            <Token
+              key={coin.key}
+              coin={coin}
+              tokenData={tokenData[coin.token_category]}
+              onSelect={onCoinSelect}
+            />
+          ) : (
+            <Coin key={coin.key} coin={coin} onSelect={onCoinSelect} />
+          )
+        )}
       </div>
     </div>
   );
@@ -190,9 +250,41 @@ function Coin({ coin, onSelect }) {
       <div className="flex items-center">
         <MoneyCollectOutlined className="mr-1" />
         <div className="flex items-center justify-between w-full">
-          <Satoshi value={coin.amount} />
+          <Satoshi value={coin.valueSatoshis} />
           <span className="text-sm opacity-80">
-            <Satoshi value={coin.amount} flip />
+            <Satoshi value={coin.valueSatoshis} flip />
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Token({ coin, tokenData, onSelect }) {
+  const selectCss = coin.selected
+    ? "bg-primary-200 text-neutral-700 border border-primary-500 dark:bg-primarydark-200 dark:text-neutral-50 dark:border-primarydark-100"
+    : "bg-primary-100 text-neutral-700 border border-primary-200 dark:bg-neutral-700 dark:border-primarydark-100 dark:text-neutral-100";
+
+  const handleSelection = (event) => {
+    onSelect(coin.key);
+    event.stopPropagation();
+  };
+
+  return (
+    <div
+      className={`p-1 text-sm flex-1 ${selectCss}`}
+      onClick={handleSelection}
+    >
+      <div className="flex items-center">
+        <TokenIcon category={coin.token_category} size={18} />
+        <div className="flex items-center justify-between w-full">
+          <TokenSymbol token={tokenData} />
+          <span className="text-sm opacity-80 flex items-center">
+            <TokenAmount
+              token={{ ...tokenData, amount: coin.token_amount }}
+              nft={coin.nft_capability !== null}
+            />
+            <span className="text-xs font-mono">{coin.nft_commitment}</span>
           </span>
         </div>
       </div>
@@ -201,7 +293,10 @@ function Coin({ coin, onSelect }) {
 }
 
 function SelectionDisplay({ selection, onConfirm, onCancel }) {
-  const selectedAmount = selection.reduce((sum, coin) => sum + coin.amount, 0n);
+  const selectedAmount = selection.reduce(
+    (sum, coin) => sum + coin.valueSatoshis,
+    0n
+  );
 
   const handleConfirm = () => {
     onConfirm();

@@ -1,18 +1,22 @@
-import { useNavigate } from "react-router";
 import { useSelector } from "react-redux";
+import { useNavigate } from "react-router";
 import { SendOutlined, HistoryOutlined } from "@ant-design/icons";
+
 import { selectScannerIsScanning } from "@/redux/device";
 
+import translations from "@/views/wallet/translations";
 import Button from "@/atoms/Button";
-import ScannerButton from "./ScannerButton";
-import TorchButton from "./TorchButton";
-import ImageSelectButton from "./ImageSelectButton";
 
 import { useClipboard } from "@/hooks/useClipboard";
+
+import { extractBchAddresses } from "@/util/cashaddr";
 import { navigateOnValidUri } from "@/util/uri";
 
-import translations from "@/views/wallet/translations";
 import { translate } from "@/util/translations";
+
+import ImageSelectButton from "./ImageSelectButton";
+import ScannerButton from "./ScannerButton";
+import TorchButton from "./TorchButton";
 
 export default function WalletViewButtons() {
   const navigate = useNavigate();
@@ -21,7 +25,8 @@ export default function WalletViewButtons() {
   const { getClipboardContents } = useClipboard();
 
   const forwardOnValidAddress = async (input) => {
-    const { navTo, navState } = await navigateOnValidUri(input);
+    const extracted = extractBchAddresses(input)[0] || input;
+    const { navTo, navState } = await navigateOnValidUri(extracted);
     if (navTo) {
       navigate(navTo, { state: navState });
     }
@@ -29,7 +34,8 @@ export default function WalletViewButtons() {
 
   const pasteAddressFromClipboard = async () => {
     const { paste, spawnPasteToast } = await getClipboardContents();
-    const { navTo, navState } = await navigateOnValidUri(paste);
+    const extracted = extractBchAddresses(paste)[0] || paste;
+    const { navTo, navState } = await navigateOnValidUri(extracted);
     if (navTo !== "") {
       spawnPasteToast();
       navigate(navTo, { state: navState });

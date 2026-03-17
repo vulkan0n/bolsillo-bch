@@ -75,6 +75,7 @@ export default function Editable({
     <div className="flex items-center">
       <input
         type="text"
+        data-testid="editable-input"
         className={`rounded-lg bg-white dark:bg-neutral-500 text-primary dark:text-neutral-25 p-1 w-full text-center border-2 ${borderColor}`}
         onChange={handleInputChange}
         onKeyDown={(e) => e.key === "Enter" && handleEdit()}

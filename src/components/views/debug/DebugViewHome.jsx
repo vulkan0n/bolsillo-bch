@@ -8,20 +8,22 @@ import {
   ExportOutlined,
   FireOutlined,
 } from "@ant-design/icons";
-import { selectSecuritySettings } from "@/redux/preferences";
-import Button from "@/atoms/Button";
 
-import LogService from "@/services/LogService";
-import SecurityService, { AuthActions } from "@/services/SecurityService";
-import JanitorService from "@/services/JanitorService";
-import ConsoleService from "@/services/ConsoleService";
-import BcmrService from "@/services/BcmrService";
+import { selectSecuritySettings } from "@/redux/preferences";
+
+import ConsoleService from "@/kernel/app/ConsoleService";
+import JanitorService from "@/kernel/app/JanitorService";
+import LogService from "@/kernel/app/LogService";
+import SecurityService, { AuthActions } from "@/kernel/app/SecurityService";
+import BcmrService from "@/kernel/bch/BcmrService";
+
+import Button from "@/atoms/Button";
 
 import { translate } from "@/util/translations";
 import translations from "./translations";
 
-import DebugSettings from "./DebugSettings";
 import DebugConsole from "./DebugConsole";
+import DebugSettings from "./DebugSettings";
 
 const Log = LogService("DebugViewHome");
 
@@ -72,6 +74,7 @@ export default function DebugView() {
 
   const handleResetDatabases = async () => {
     await JanitorService().resetDatabases();
+    window.location.assign("/");
   };
 
   return (

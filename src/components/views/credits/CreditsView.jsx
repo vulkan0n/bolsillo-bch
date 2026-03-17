@@ -1,16 +1,21 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import { useState } from "react";
-import { useNavigate } from "react-router";
 import { QRCode } from "react-qrcode-logo";
-import ViewHeader from "@/layout/ViewHeader";
+import { useNavigate } from "react-router";
+
 import FullColumn from "@/layout/FullColumn";
-import SeleneLogo from "@/components/atoms/SeleneLogo";
+import ViewHeader from "@/layout/ViewHeader";
 import LinkExternal from "@/components/atoms/LinkExternal";
-import { SELENE_WALLET_VERSION } from "@/util/version";
-import { translate } from "@/util/translations";
-import translations from "./CreditsViewTranslations";
-import { logos } from "@/util/logos";
+import SeleneLogo from "@/components/atoms/SeleneLogo";
+
 import { useLongPress } from "@/hooks/useLongPress";
+
+import { logos } from "@/util/logos";
+import { SELENE_WALLET_VERSION } from "@/util/version";
+
+import { translate } from "@/util/translations";
+
+import translations from "./CreditsViewTranslations";
 
 export default function CreditsView() {
   const navigate = useNavigate();
@@ -247,6 +252,14 @@ export default function CreditsView() {
         <ul className="list-inside list-disc">
           <li>Marius Kjærstad (GitLab: @sandakersmann)</li>
           <li>Prashant Singh Pawar (GitLab: @prashantpawar)</li>
+          <li>Luned Whelan (Welsh - https://lunedwhelan.co.uk/)</li>
+        </ul>
+
+        <h2 className="font-bold text-2xl mt-4">
+          {translate(translations.introVideo)}
+        </h2>
+        <ul className="list-inside list-disc">
+          <li>Duncan (Dunconomics.com)</li>
         </ul>
 
         <h2 className="font-bold text-2xl mt-4">

@@ -1,11 +1,11 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import {
   useParams,
   useSearchParams,
   useNavigate,
   useLocation,
 } from "react-router";
-import { useSelector, useDispatch } from "react-redux";
 import { Dialog } from "@capacitor/dialog";
 import {
   ArrowLeftOutlined,
@@ -13,12 +13,8 @@ import {
   MoneyCollectOutlined,
   DollarCircleOutlined,
 } from "@ant-design/icons";
-import {
-  selectActiveWallet,
-  selectActiveWalletHash,
-  selectActiveWalletBalance,
-  selectWalletAddresses,
-} from "@/redux/wallet";
+
+import { selectScannerIsScanning } from "@/redux/device";
 import {
   selectCurrencySettings,
   selectInstantPaySettings,
@@ -26,44 +22,50 @@ import {
   selectShouldForceTokenAddress,
   setPreference,
 } from "@/redux/preferences";
+import {
+  selectActiveWallet,
+  selectActiveWalletHash,
+  selectActiveWalletBalance,
+  selectWalletAddresses,
+} from "@/redux/wallet";
 
-import { selectScannerIsScanning } from "@/redux/device";
-
-import AddressManagerService from "@/services/AddressManagerService";
-import TransactionManagerService from "@/services/TransactionManagerService";
+import LogService from "@/kernel/app/LogService";
+import SecurityService, { AuthActions } from "@/kernel/app/SecurityService";
+import CauldronService from "@/kernel/bch/CauldronService";
 import TransactionBuilderService, {
   Recipient,
-} from "@/services/TransactionBuilderService";
-import TokenManagerService from "@/services/TokenManagerService";
-import SecurityService, { AuthActions } from "@/services/SecurityService";
-import LogService from "@/services/LogService";
-import CauldronService from "@/services/CauldronService";
+} from "@/kernel/bch/TransactionBuilderService";
+import TransactionManagerService from "@/kernel/bch/TransactionManagerService";
+import AddressManagerService from "@/kernel/wallet/AddressManagerService";
+import TokenManagerService from "@/kernel/wallet/TokenManagerService";
+
+import ScannerButton from "@/views/wallet/home/ScannerButton";
+import ScannerOverlay from "@/views/wallet/home/ScannerOverlay";
+import translations from "@/views/wallet/translations";
+import FullColumn from "@/layout/FullColumn";
+import Address from "@/atoms/Address";
+import Button from "@/atoms/Button";
+import CurrencyFlip from "@/atoms/CurrencyFlip";
+import CurrencySymbol from "@/atoms/CurrencySymbol";
+import Editable from "@/atoms/Editable";
+import Satoshi from "@/atoms/Satoshi";
+import { SatoshiInput } from "@/atoms/SatoshiInput";
+import TokenAmount from "@/atoms/TokenAmount";
+import TokenIcon from "@/atoms/TokenIcon";
+import SlideToAction from "@/components/atoms/SlideToAction";
 
 import { useStablecoinBalance } from "@/hooks/useStablecoinBalance";
 
-import FullColumn from "@/layout/FullColumn";
-
-import { SatoshiInput } from "@/atoms/SatoshiInput";
-import Satoshi from "@/atoms/Satoshi";
-import Button from "@/atoms/Button";
-import Editable from "@/atoms/Editable";
-import Address from "@/atoms/Address";
-import CurrencySymbol from "@/atoms/CurrencySymbol";
-import CurrencyFlip from "@/atoms/CurrencyFlip";
-import TokenIcon from "@/atoms/TokenIcon";
-import TokenAmount from "@/atoms/TokenAmount";
-import SlideToAction from "@/components/atoms/SlideToAction";
-import ScannerButton from "@/views/wallet/home/ScannerButton";
-import ScannerOverlay from "@/views/wallet/home/ScannerOverlay";
-
-import { hexToBin } from "@/util/hex";
+import { extractBchAddresses } from "@/util/cashaddr";
 import { Haptic } from "@/util/haptic";
+import { hexToBin } from "@/util/hex";
 import { bchToSats } from "@/util/sats";
-import { MUSD_TOKENID } from "@/util/tokens";
-import { validateBchUri, navigateOnValidUri } from "@/util/uri";
 import { truncateProse } from "@/util/string";
+import { resolveNftType } from "@/util/token";
+import { MUSD_TOKENID } from "@/util/tokens";
+import { validateBchUri, navigateOnValidUri, isIntStr } from "@/util/uri";
+
 import { translate } from "@/util/translations";
-import translations from "@/views/wallet/translations";
 
 const Log = LogService("WalletViewSend");
 
@@ -75,7 +77,7 @@ export default function WalletViewSend() {
   const params = useParams();
   const [searchParams] = useSearchParams();
 
-  // ----------------
+  // --------
 
   const wallet = useSelector(selectActiveWallet);
   const { walletHash } = wallet;
@@ -85,7 +87,7 @@ export default function WalletViewSend() {
   const [isSending, setIsSending] = useState(false);
   const [message, setMessage] = useState("");
 
-  // ----------------
+  // --------
 
   const { isInstantPayEnabled, instantPayThreshold } = useSelector(
     selectInstantPaySettings
@@ -97,7 +99,7 @@ export default function WalletViewSend() {
     params.address || ""
   );
 
-  // ----------------
+  // --------
 
   const { shouldPreferLocalCurrency, isStablecoinMode } = useSelector(
     selectCurrencySettings
@@ -108,7 +110,7 @@ export default function WalletViewSend() {
   const { stablecoinBalance, totalSpendableSats } =
     useStablecoinBalance(walletHash);
 
-  // ----------------
+  // --------
 
   const myAddresses = useSelector(selectWalletAddresses);
   const isMyAddress =
@@ -118,18 +120,33 @@ export default function WalletViewSend() {
     address !== "" && !isValid
   );
 
-  // ----------------
+  // --------
 
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const querySats = searchParams.get("amount")
-    ? bchToSats(searchParams.get("amount"))
-    : BigInt(0);
+  // PayPro CHIP-2023-05: prefer 's' (satoshis) over 'amount' (BCH)
+  const hasSatsParam = !!searchParams.get("s");
+  const querySatsParam = searchParams.get("s") || searchParams.get("amount");
+  let querySats = 0n;
+  if (querySatsParam && hasSatsParam && isIntStr(querySatsParam)) {
+    querySats = BigInt(querySatsParam);
+  } else if (querySatsParam) {
+    querySats = bchToSats(querySatsParam);
+  }
 
   const queryTokenCategory = searchParams.get("c");
-  const queryTokenAmount = queryTokenCategory
-    ? BigInt(searchParams.get("ft") || 0)
-    : 0n;
+  // PayPro CHIP-2023-05: prefer 'f' over 'ft' for fungible token amount
+  const rawFt = searchParams.get("f") || searchParams.get("ft");
+  const queryTokenAmount =
+    queryTokenCategory && rawFt && isIntStr(rawFt) ? BigInt(rawFt) : 0n;
+
+  // PayPro CHIP-2023-05: NFT commitment (n parameter)
+  // undefined = not specified, "" = any NFT of category, "hex..." = specific NFT
+  // const queryNftCommitment = searchParams.get("n");
+
+  // PayPro CHIP-2023-05: payment message/memo
+  const queryMessage =
+    searchParams.get("m") || searchParams.get("message") || "";
 
   const [satoshiInput, setSatoshiInput] = useState(
     queryTokenAmount || querySats
@@ -143,7 +160,7 @@ export default function WalletViewSend() {
     setMessage("");
   };
 
-  // ----------------
+  // --------
 
   const selection = useMemo(() => {
     const { state: sendState } = location;
@@ -157,16 +174,20 @@ export default function WalletViewSend() {
 
   const tokenCategories = useMemo(() => {
     const { state: sendState } = location;
+    const stateCategories = sendState?.tokenCategories || [];
 
-    if (queryTokenAmount > 0) {
-      return [queryTokenCategory];
+    // Include token category from URL if present (PayPro CHIP-2023-05)
+    if (queryTokenCategory && !stateCategories.includes(queryTokenCategory)) {
+      return [queryTokenCategory, ...stateCategories];
     }
 
-    const categories = sendState?.tokenCategories || [];
-    return categories;
-  }, [location, queryTokenAmount, queryTokenCategory]);
+    return stateCategories;
+  }, [location, queryTokenCategory]);
 
-  const selectionAmount = selection.reduce((sum, cur) => sum + cur.amount, 0n);
+  const selectionAmount = selection.reduce(
+    (sum, cur) => sum + cur.valueSatoshis,
+    0n
+  );
 
   const hasTokens = tokenCategories.length > 0;
   const hasNft = nftSelection.length > 0;
@@ -179,7 +200,7 @@ export default function WalletViewSend() {
 
   const shouldForceTokenAddress = useSelector(selectShouldForceTokenAddress);
 
-  // ----------------
+  // --------
 
   const TokenManager = TokenManagerService(walletHash, bchNetwork);
   const tokenData = hasTokens
@@ -191,7 +212,9 @@ export default function WalletViewSend() {
     : { amount: 0n };
 
   const tokenSelection = hasTokens
-    ? TokenManager.getTokenUtxos(tokenData.category)
+    ? TokenManager.getTokenUtxos(tokenData.category).filter(
+        (utxo) => hasNft || utxo.nft_capability === null
+      )
     : [];
 
   const isInsufficientTokens =
@@ -218,7 +241,7 @@ export default function WalletViewSend() {
     setMessage(insufficientFundsTranslation);
   };
 
-  // ----------------
+  // --------
 
   const validateSendConditions = useCallback(
     async (isInstantPay: boolean = false) => {
@@ -455,30 +478,27 @@ export default function WalletViewSend() {
     async (transaction) => {
       try {
         const TransactionManager = TransactionManagerService();
-        const { isSuccess, result } = await TransactionManager.sendTransaction(
+        const tx = await TransactionManager.sendTransaction(
           {
-            txid: transaction.tx_hash,
+            tx_hash: transaction.tx_hash,
             hex: transaction.tx_hex,
           },
-          bchNetwork
+          bchNetwork,
+          walletHash
         );
 
-        Log.debug("sendTransaction", result);
+        Log.debug("Transaction sent!", tx.tx_hash);
+        await Haptic.success();
 
-        if (isSuccess) {
-          const tx = await TransactionManager.resolveTransaction(
-            result,
-            bchNetwork
-          );
-          Log.debug("Transaction sent!", tx.txid);
-          await Haptic.success();
-          await navigate("/wallet/send/success", {
-            state: { tx },
-            replace: true,
-          });
-        } else {
-          throw new Error(result?.toString());
-        }
+        // Update blockhash/height when confirmed
+        TransactionManager.resolveTransaction(tx.tx_hash, bchNetwork).catch(
+          (e) => Log.warn("resolveTransaction failed", tx.tx_hash, e)
+        );
+
+        await navigate("/wallet/send/success", {
+          state: { tx_hash: tx.tx_hash, tx },
+          replace: true,
+        });
       } catch (e) {
         const err = `${translate(translations.transactionFailed)}: ${e}`;
         Log.warn(err);
@@ -488,7 +508,7 @@ export default function WalletViewSend() {
         isInstantPayPending.current = false;
       }
     },
-    [navigate, bchNetwork]
+    [navigate, bchNetwork, walletHash]
   );
 
   const confirmSend = useCallback(
@@ -524,7 +544,7 @@ export default function WalletViewSend() {
     ]
   );
 
-  // ----------------
+  // --------
 
   useEffect(
     function handleInstantPay() {
@@ -563,7 +583,7 @@ export default function WalletViewSend() {
     ]
   );
 
-  // ----------------
+  // --------
 
   const handleSendMaxTokens = () => {
     setSatoshiInput(token_amount);
@@ -675,7 +695,7 @@ export default function WalletViewSend() {
     setSatoshiInputKey(newAmount.toString());
   };
 
-  // ----------------
+  // --------
 
   const handleFlipCurrency = () => {
     dispatch(
@@ -690,10 +710,11 @@ export default function WalletViewSend() {
     }
   };
 
-  // ----------------
+  // --------
 
   const handleAddressInput = async (input: string) => {
-    const { navTo } = await navigateOnValidUri(input);
+    const extracted = extractBchAddresses(input)[0] || input;
+    const { navTo } = await navigateOnValidUri(extracted);
     if (navTo !== "") {
       const { state: sendState } = location;
       navigate(navTo, { state: sendState });
@@ -716,10 +737,10 @@ export default function WalletViewSend() {
     setIsAddressInvalid(false);
   };
 
-  // ----------------
+  // --------
 
   if (isScanning) {
-    return <ScannerOverlay />;
+    return <ScannerOverlay prefilledAmount={satoshiInput} />;
   }
 
   if (isSending) {
@@ -734,7 +755,10 @@ export default function WalletViewSend() {
     <FullColumn>
       <div className="tracking-wide text-center text-white">
         {message === "" ? (
-          <div className="bg-primary dark:bg-primarydark-200 px-2 py-1">
+          <div
+            data-testid="send-header"
+            className="bg-primary dark:bg-primarydark-200 px-2 py-1"
+          >
             <div className="text-lg font-bold flex items-center justify-center">
               {translate(translations.sendingTo)}
               {isMyAddress && <span>&nbsp;{translate(translations.self)}</span>}
@@ -770,7 +794,7 @@ export default function WalletViewSend() {
             </div>
           </div>
         ) : (
-          <div className="bg-error p-2">
+          <div data-testid="send-error" className="bg-error p-2">
             <div className="text-xl font-bold">{message}</div>
           </div>
         )}
@@ -778,7 +802,17 @@ export default function WalletViewSend() {
 
       <FullColumn>
         <div className="flex flex-col h-full justify-evenly">
-          <div className="p-2 w-full grow flex flex-col justify-center ">
+          {queryMessage && (
+            <div className="mx-2 mt-2 p-2 bg-neutral-100 dark:bg-neutral-700 rounded-md border border-neutral-300 dark:border-neutral-600">
+              <div className="text-sm text-neutral-600 dark:text-neutral-300 font-medium">
+                {translate(translations.paymentMessage)}
+              </div>
+              <div className="text-neutral-800 dark:text-neutral-100">
+                {queryMessage}
+              </div>
+            </div>
+          )}
+          <div className="p-2 w-full grow flex flex-col justify-center overflow-y-auto">
             {isStablecoinMode && !hasTokens && selection.length === 0 ? (
               <div className="py-4 px-2 rounded-md shadow-md bg-primary/95 dark:bg-primarydark-200 text-white">
                 <div className="flex items-center justify-center">
@@ -808,7 +842,7 @@ export default function WalletViewSend() {
               <>
                 {selectionAmount > 0 && <InputSelection inputs={selection} />}
                 {hasNft && <InputSelection inputs={nftSelection} />}
-                {tokenCategories.length > 0 && (
+                {tokenCategories.length > 0 && !hasNft && (
                   <InputSelection inputs={tokenSelection} />
                 )}
                 {tokenData !== null && nftSelection.length === 0 && (
@@ -817,7 +851,11 @@ export default function WalletViewSend() {
                     style={{ backgroundColor: tokenData.color }}
                   >
                     <div className="flex items-center justify-center">
-                      <TokenIcon category={tokenCategories[0]} size={48} />
+                      <TokenIcon
+                        category={tokenCategories[0]}
+                        size={48}
+                        toggleable={false}
+                      />
                       <SatoshiInput
                         key={satoshiInputKey}
                         onChange={handleAmountInput}
@@ -882,7 +920,7 @@ export default function WalletViewSend() {
             )}
           </div>
 
-          <div className="flex flex-col justify-end shrink my-6">
+          <div className="flex flex-col justify-end shrink-0 my-6">
             <div className="flex w-full justify-around items-center px-2 gap-x-2">
               <div className="mx-2">
                 <Button
@@ -954,9 +992,9 @@ function InputSelection({ inputs }) {
               <div className="flex items-center">
                 <MoneyCollectOutlined className="mr-1" />
                 <div className="flex items-center justify-between w-full">
-                  <Satoshi value={utxo.amount} />
+                  <Satoshi value={utxo.valueSatoshis} />
                   <span className="text-sm opacity-75">
-                    <Satoshi value={utxo.amount} flip />
+                    <Satoshi value={utxo.valueSatoshis} flip />
                   </span>
                 </div>
               </div>
@@ -965,7 +1003,11 @@ function InputSelection({ inputs }) {
           {tokens.map((token) => (
             <div className="p-1.5 flex-1">
               <div className="flex items-center gap-x-1">
-                <TokenIcon size={32} category={token.category} />
+                <TokenIcon
+                  size={32}
+                  category={token.category}
+                  toggleable={false}
+                />
                 <span
                   style={{ color: `#${token.category.slice(0, 6)}` }}
                   className="font-mono text-sm mr-1"
@@ -986,15 +1028,19 @@ function InputSelection({ inputs }) {
 
 function NftSelectionDisplay({ nftUtxos }) {
   const walletHash = useSelector(selectActiveWalletHash);
-  const TokenManager = TokenManagerService(walletHash);
+  const bchNetwork = useSelector(selectBchNetwork);
+  const TokenManager = TokenManagerService(walletHash, bchNetwork);
   return (
     <div className="mt-1 pb-3 flex flex-wrap gap-1 justify-around">
       {nftUtxos.map((utxo) => {
         const tokenData = TokenManager.getToken(utxo.token_category);
 
-        const nftData = tokenData.token.nfts
-          ? tokenData.token.nfts.parse.types[utxo.nft_commitment]
-          : null;
+        const parsed = resolveNftType(
+          tokenData.token.nfts,
+          utxo.nft_commitment,
+          utxo.token_category
+        );
+        const nftData = parsed.nftType || null;
 
         return (
           <div
@@ -1014,11 +1060,12 @@ function NftSelectionDisplay({ nftUtxos }) {
                 <TokenIcon
                   category={utxo.token_category}
                   nft_commitment={utxo.nft_commitment}
+                  toggleable={false}
                 />
               </div>
-              <div className="truncate px-1">
+              <div className="truncate px-1 max-h-20 overflow-y-auto">
                 {nftData && nftData.description ? (
-                  <span className="text-sm text-neutral-700 text-wrap">
+                  <span className="text-sm text-neutral-700 dark:text-neutral-300 text-wrap">
                     {truncateProse(nftData.description)}
                   </span>
                 ) : (

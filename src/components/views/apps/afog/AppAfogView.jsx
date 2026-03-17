@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react";
 import { DateTime } from "luxon";
 import { LaptopOutlined } from "@ant-design/icons";
+
 import AppHero from "@/apps/AppHero/AppHero";
 import EmbeddedVideo from "@/atoms/EmbeddedVideo";
+
 import { translate } from "@/util/translations";
 import translations from "./translations";
 

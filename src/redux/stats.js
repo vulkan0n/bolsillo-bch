@@ -1,26 +1,18 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { DateTime } from "luxon";
-import { gql } from "@apollo/client";
-import LogService from "@/services/LogService";
+
 import { selectDeviceInfo } from "@/redux/device";
-import { selectGenesisHeight } from "@/redux/wallet";
 import {
   setPreference,
   selectLastCheckIn,
   selectPrivacySettings,
   selectIsOfflineMode,
 } from "@/redux/preferences";
-import apolloClient from "@/apolloClient";
+import { selectGenesisHeight } from "@/redux/wallet";
+
+import LogService from "@/kernel/app/LogService";
 
 const Log = LogService("redux/stats");
-
-const SEND_DAILY_CHECK_IN = gql`
-  mutation SendCheckIn($hashedDeviceId: String!, $date: String!) {
-    sendCheckIn(hashedDeviceId: $hashedDeviceId, date: $date) {
-      status
-    }
-  }
-`;
 
 // triggerCheckIn: run a daily check in, if current time UTC is on a date later than previous check in
 // TODO: check-in interval should be enforced server-side per device ID
@@ -82,6 +74,19 @@ export const triggerCheckIn = createAsyncThunk(
     });
 
     const nowFormatted = now.toFormat("yyyyLLdd"); // LL is month, 2 digit padded
+
+    const [{ gql }, { default: apolloClient }] = await Promise.all([
+      import("@apollo/client"),
+      import("@/apolloClient"),
+    ]);
+
+    const SEND_DAILY_CHECK_IN = gql`
+      mutation SendCheckIn($hashedDeviceId: String!, $date: String!) {
+        sendCheckIn(hashedDeviceId: $hashedDeviceId, date: $date) {
+          status
+        }
+      }
+    `;
 
     const result = await apolloClient.mutate({
       mutation: SEND_DAILY_CHECK_IN,

@@ -1,9 +1,8 @@
 import { useEffect, useState, useRef, useCallback } from "react";
-import { Link } from "react-router";
-import { useSelector, useDispatch } from "react-redux";
-import { DateTime } from "luxon";
 import toast from "react-hot-toast";
-
+import { useSelector, useDispatch } from "react-redux";
+import { Link } from "react-router";
+import { DateTime } from "luxon";
 import {
   SyncOutlined,
   HourglassOutlined,
@@ -15,6 +14,14 @@ import {
   SortDescendingOutlined,
   DownloadOutlined,
 } from "@ant-design/icons";
+
+import {
+  selectCurrencySettings,
+  selectPrivacySettings,
+  selectIsExperimental,
+  selectBchNetwork,
+} from "@/redux/preferences";
+import { selectChaintip, selectSyncState } from "@/redux/sync";
 import {
   selectTransactionHistory,
   selectSearchQuery,
@@ -30,30 +37,27 @@ import {
   resetFilters,
   selectTransactionHistoryPagination,
 } from "@/redux/txHistory";
-import { selectChaintip, selectSyncState } from "@/redux/sync";
+import { selectActiveWalletHash } from "@/redux/wallet";
+
+import LogService from "@/kernel/app/LogService";
+import NotificationService from "@/kernel/app/NotificationService";
+import TransactionManagerService from "@/kernel/bch/TransactionManagerService";
 import {
-  selectCurrencySettings,
-  selectPrivacySettings,
-  selectIsExperimental,
-  selectBchNetwork,
-} from "@/redux/preferences";
-import translations from "../translations";
-import { translate } from "@/util/translations";
+  prepareTransactionExportData,
+  exportHistoryAsCsv,
+} from "@/kernel/wallet/TransactionExportService";
+import type { MergedHistoryEntity } from "@/kernel/wallet/TransactionHistoryService";
+import TransactionHistoryService from "@/kernel/wallet/TransactionHistoryService";
 
 import ViewHeader from "@/layout/ViewHeader";
 import Satoshi from "@/atoms/Satoshi";
 import TokenAmount from "@/atoms/TokenAmount";
+import TokenSymbol from "@/atoms/TokenSymbol";
 import Button from "@/components/atoms/Button";
 import Select from "@/components/atoms/Select";
-import type { MergedHistoryEntity } from "@/services/TransactionHistoryService";
-import { selectActiveWalletHash } from "@/redux/wallet";
-import TransactionHistoryService from "@/services/TransactionHistoryService";
-import TransactionManagerService from "@/services/TransactionManagerService";
-import {
-  prepareTransactionExportData,
-  exportHistoryAsCsv,
-} from "@/services/TransactionExportService";
-import LogService from "@/services/LogService";
+
+import { translate } from "@/util/translations";
+import translations from "../translations";
 
 const Log = LogService("WalletViewHistory");
 
@@ -114,10 +118,10 @@ function TransactionItem({
 
   return (
     <li
-      key={`${tx.txid}${tx.address}${tx.block_pos}`}
-      className={`p-2 ${zebraCss[index % 2][(tx.amount > 0).toString()]}`}
+      key={`${tx.tx_hash}${tx.address}${tx.block_pos}`}
+      className={`p-2 ${zebraCss[index % 2][(tx.valueSatoshis > 0).toString()]}`}
     >
-      <Link to={`/explore/tx/${tx.txid}`}>
+      <Link to={`/explore/tx/${tx.tx_hash}`}>
         <div className="flex text-sm">
           <div className="shrink flex flex-col items-center justify-center mr-1 text-xs">
             {tx.height <= 0 ? (
@@ -127,7 +131,9 @@ function TransactionItem({
             )}
           </div>
           <div className="flex-1">
-            <div className={`${tx.amount > 0 ? receiveStyle : sendStyle}`}>
+            <div
+              className={`${tx.valueSatoshis > 0 ? receiveStyle : sendStyle}`}
+            >
               {txDateTime.toLocaleString(DateTime.DATE_SHORT)}
             </div>
             <div>{txDateTime.toLocaleString(DateTime.TIME_WITH_SECONDS)}</div>
@@ -135,14 +141,14 @@ function TransactionItem({
           <div className="flex-1 text-right">
             <div
               className={`font-mono ${
-                tx.amount > 0 ? receiveStyle : sendStyle
+                tx.valueSatoshis > 0 ? receiveStyle : sendStyle
               }`}
             >
-              {tx.amount > 0 && "+"}
-              <Satoshi value={tx.amount} />
+              {tx.valueSatoshis > 0 && "+"}
+              <Satoshi value={tx.valueSatoshis} />
             </div>
             <div>
-              <Satoshi value={tx.amount} flip />
+              <Satoshi value={tx.valueSatoshis} flip />
             </div>
           </div>
         </div>
@@ -154,17 +160,19 @@ function TransactionItem({
             <div className="flex flex-1 justify-end flex-wrap gap-x-2 mr-0.5">
               {tx.tokens.map((token) => (
                 <div
-                  key={`${token.category}-${tx.txid}`}
+                  key={`${token.category}-${tx.tx_hash}`}
                   className="flex justify-end items-center text-right text-sm"
                 >
                   <span
                     style={{ color: `#${token.category.slice(0, 6)}` }}
                     className="font-mono text-xs tracking-tighter font-bold"
                   >
-                    {token.symbol}
+                    <TokenSymbol token={token} />
                   </span>
                   {token.nft_amount !== 0 && <TokenAmount token={token} nft />}
-                  {token.fungible_amount !== 0 && <TokenAmount token={token} />}
+                  {token.fungible_amount !== 0n && (
+                    <TokenAmount token={token} />
+                  )}
                 </div>
               ))}
             </div>
@@ -212,7 +220,9 @@ export default function WalletViewHistory() {
   const [nextPage, setNextPage] = useState(1);
 
   const handleLoadMore = useCallback(async () => {
-    if (isLoading || !hasMore) return;
+    if (isLoading || !hasMore) {
+      return;
+    }
     await dispatch(txHistoryFetchMore(nextPage));
     setNextPage(nextPage + 1);
   }, [dispatch, isLoading, hasMore, nextPage]);
@@ -260,7 +270,9 @@ export default function WalletViewHistory() {
   }, [handleLoadMore]);
 
   const handleExportCsv = async () => {
-    if (isExporting) return;
+    if (isExporting) {
+      return;
+    }
 
     setIsExporting(true);
     const loadingToast = toast.loading("Preparing CSV export...");
@@ -293,10 +305,10 @@ export default function WalletViewHistory() {
         try {
           // Resolve full transaction data to get vin/vout
           const fullTx = await TransactionManager.resolveTransaction(
-            tx.txid,
+            tx.tx_hash,
             bchNetwork
           );
-          const memo = HistoryService.getTransactionMemo(tx.txid);
+          const memo = HistoryService.getTransactionMemo(tx.tx_hash);
 
           // Create TransactionDetail object with time_seen
           const txDetail = {
@@ -309,10 +321,10 @@ export default function WalletViewHistory() {
             chaintip,
             memo,
             walletHash,
-            tx.amount // Pass the wallet amount from history
+            tx.valueSatoshis // Pass the wallet amount from history
           );
         } catch (error) {
-          Log.error(`Failed to prepare transaction ${tx.txid}:`, error);
+          Log.error(`Failed to prepare transaction ${tx.tx_hash}:`, error);
           return null;
         }
       });
@@ -330,19 +342,21 @@ export default function WalletViewHistory() {
         `transaction-history-${DateTime.now().toFormat("yyyy-MM-dd")}`
       );
 
-      toast.success(`Exported ${exportData.length} transactions!`, {
-        id: loadingToast,
-      });
+      toast.dismiss(loadingToast);
+      NotificationService().success(
+        `Exported ${exportData.length} transactions!`
+      );
     } catch (error) {
       Log.error("CSV export error:", error);
-      toast.error("Failed to export CSV", { id: loadingToast });
+      toast.dismiss(loadingToast);
+      NotificationService().error(translate(translations.failedToExportCsv));
     } finally {
       setIsExporting(false);
     }
   };
 
   return (
-    <div className="flex flex-col justify-start">
+    <div data-testid="history-view" className="flex flex-col justify-start">
       <ViewHeader
         icon={HistoryOutlined}
         title={translate(translations.recentTransactions)}
@@ -358,13 +372,13 @@ export default function WalletViewHistory() {
               placeholder={translate(translations.searchPlaceholder)}
               value={searchQuery}
               onChange={handleSearchChange}
-              className="rounded bg-white dark:bg-neutral-500 p-2 w-full focus:outline-none"
+              className="rounded bg-white dark:bg-neutral-500 p-2 pr-8 w-full focus:outline-none"
             />
             {searchQuery && (
               <button
                 type="button"
                 onClick={() => dispatch(setSearchQuery(""))}
-                className="inline-flex absolute right-2 top-[50%] -translate-y-[8px]"
+                className="inline-flex absolute right-2 top-1/2 -translate-y-1/2"
                 aria-label={translate(translations.clearSearch)}
               >
                 <CloseCircleOutlined size={16} />
@@ -645,7 +659,7 @@ export default function WalletViewHistory() {
           )}
           {txHistory.map((tx, i) => (
             <TransactionItem
-              key={`${tx.txid}${tx.address}${tx.block_pos}`}
+              key={`${tx.tx_hash}${tx.address}${tx.block_pos}`}
               tx={tx}
               index={i}
               shouldHideBalance={shouldHideBalance}

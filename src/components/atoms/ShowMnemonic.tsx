@@ -1,19 +1,27 @@
 import { useState, useRef } from "react";
 import { useDispatch } from "react-redux";
-import { WarningFilled, EyeInvisibleOutlined } from "@ant-design/icons";
 import { Dialog } from "@capacitor/dialog";
+import { WarningFilled, EyeInvisibleOutlined } from "@ant-design/icons";
 
 import { walletSetKeyViewed } from "@/redux/wallet";
-import WalletManagerService from "@/services/WalletManagerService";
-import SecurityService, { AuthActions } from "@/services/SecurityService";
 
-import { useLongPress } from "@/hooks/useLongPress";
-import { useClipboard } from "@/hooks/useClipboard";
+import SecurityService, { AuthActions } from "@/kernel/app/SecurityService";
+import WalletManagerService from "@/kernel/wallet/WalletManagerService";
 
-import { translate } from "@/util/translations";
 import translations from "@/components/views/settings/SettingsWalletView/translations";
 
-export default function ShowMnemonic({ walletHash }: { walletHash: string }) {
+import { useClipboard } from "@/hooks/useClipboard";
+import { useLongPress } from "@/hooks/useLongPress";
+
+import { translate } from "@/util/translations";
+
+export default function ShowMnemonic({
+  walletHash,
+  onReveal = undefined,
+}: {
+  walletHash: string;
+  onReveal?: () => void;
+}) {
   const dispatch = useDispatch();
   const WalletManager = WalletManagerService();
 
@@ -47,6 +55,7 @@ export default function ShowMnemonic({ walletHash }: { walletHash: string }) {
 
       setShouldShowRecoveryPhrase(true);
       dispatch(walletSetKeyViewed({ walletHash }));
+      onReveal?.();
     } else {
       mnemonic.current = "";
       setShouldShowRecoveryPhrase(false);
@@ -101,7 +110,9 @@ export default function ShowMnemonic({ walletHash }: { walletHash: string }) {
     : walletBalanceClasses;
 
   const handleLongPress = async () => {
-    if (shouldShowRecoveryPhrase === false && isKeyViewed === false) return;
+    if (shouldShowRecoveryPhrase === false && isKeyViewed === false) {
+      return;
+    }
     await handleClipboardCopy();
   };
 

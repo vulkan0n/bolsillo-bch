@@ -1,17 +1,20 @@
+import { App } from "@capacitor/app";
+import { Device, DeviceInfo as CapacitorDeviceInfo } from "@capacitor/device";
+import { Keyboard } from "@capacitor/keyboard";
+import { Network, ConnectionStatus } from "@capacitor/network";
+import { SimpleEncryption } from "capacitor-plugin-simple-encryption";
 import {
   createAction,
   createReducer,
   createSelector,
   createAsyncThunk,
 } from "@reduxjs/toolkit";
-import { App } from "@capacitor/app";
-import { Device, DeviceInfo as CapacitorDeviceInfo } from "@capacitor/device";
-import { Keyboard } from "@capacitor/keyboard";
-import { Network, ConnectionStatus } from "@capacitor/network";
-import { NativeBiometric } from "@capgo/capacitor-native-biometric";
+
 import { store, RootState } from "@/redux";
 //import { syncReconnect } from "@/redux/sync";
-import LogService from "@/services/LogService";
+
+import LogService from "@/kernel/app/LogService";
+
 import { sha256 } from "@/util/hash";
 
 const Log = LogService("Device");
@@ -26,10 +29,12 @@ type DeviceInfo = CapacitorDeviceInfo & {
 interface DeviceState {
   scanner: {
     isScanning: boolean;
+    isTorchEnabled: boolean;
   };
   keyboard: {
     isOpen: boolean;
   };
+  isLocked: boolean;
   deviceInfo: DeviceInfo;
   locale: string;
   network: ConnectionStatus;
@@ -43,16 +48,24 @@ export const deviceInit = createAsyncThunk("device/init", async () => {
 export const setScannerIsScanning = createAction<boolean>(
   "device/setScannerIsScanning"
 );
+export const setTorchIsEnabled = createAction<boolean>(
+  "device/setTorchIsEnabled"
+);
 export const setKeyboardIsOpen = createAction<boolean>(
   "device/setKeyboardIsOpen"
 );
 export const setNetworkStatus = createAction<ConnectionStatus>(
   "device/setNetworkStatus"
 );
+export const setIsLocked = createAction<boolean>("device/setIsLocked");
 
 export const selectScannerIsScanning = createSelector(
-  (state: RootState) => state.device,
-  (device): boolean => device.scanner.isScanning
+  (state: RootState) => state.device.scanner,
+  (scanner): boolean => scanner.isScanning
+);
+export const selectTorchIsEnabled = createSelector(
+  (state: RootState) => state.device.scanner,
+  (scanner): boolean => scanner.isTorchEnabled
 );
 
 export const selectKeyboardIsOpen = createSelector(
@@ -68,6 +81,11 @@ export const selectDeviceInfo = createSelector(
 export const selectLocale = createSelector(
   (state: RootState) => state.device,
   (device): string => device.locale
+);
+
+export const selectIsLocked = createSelector(
+  (state: RootState) => state.device,
+  (device): boolean => device.isLocked
 );
 
 export const selectNetworkStatus = createSelector(
@@ -99,8 +117,9 @@ async function initializeDevice(): Promise<DeviceState> {
   const networkStatus = await Network.getStatus();
 
   const deviceState: DeviceState = {
-    scanner: { isScanning: false },
+    scanner: { isScanning: false, isTorchEnabled: false },
     keyboard: { isOpen: false },
+    isLocked: false,
     deviceInfo: {
       ...deviceInfo,
       deviceId,
@@ -115,8 +134,8 @@ async function initializeDevice(): Promise<DeviceState> {
   if (deviceState.deviceInfo.platform !== "web") {
     // report biometric authorization capability
     deviceState.deviceInfo.hasBiometric = (
-      await NativeBiometric.isAvailable()
-    ).isAvailable;
+      await SimpleEncryption.isBiometricAvailable()
+    ).value;
 
     // global back button behavior
     App.addListener("backButton", (canGoBack) => {
@@ -166,8 +185,9 @@ async function initializeDevice(): Promise<DeviceState> {
 
 // top-level Device initialization
 const initialState: DeviceState = {
-  scanner: { isScanning: false },
+  scanner: { isScanning: false, isTorchEnabled: false },
   keyboard: { isOpen: false },
+  isLocked: false,
   deviceInfo: {
     model: "null",
     operatingSystem: "unknown",
@@ -198,11 +218,17 @@ export const deviceReducer = createReducer(initialState, (builder) => {
     .addCase(setScannerIsScanning, (state, action) => {
       state.scanner.isScanning = action.payload;
     })
+    .addCase(setTorchIsEnabled, (state, action) => {
+      state.scanner.isTorchEnabled = action.payload;
+    })
     .addCase(setKeyboardIsOpen, (state, action) => {
       state.keyboard.isOpen = action.payload;
     })
     .addCase(setNetworkStatus, (state, action) => {
       state.network = action.payload;
+    })
+    .addCase(setIsLocked, (state, action) => {
+      state.isLocked = action.payload;
     });
 });
 

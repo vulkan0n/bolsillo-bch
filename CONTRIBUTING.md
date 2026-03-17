@@ -118,6 +118,21 @@ As relevant to the issue at hand, screen designs or non-functional UI scaffold b
 
 These points aren't set out to discourage contributors, but to appropriately set expectations that Selene is aiming to maintain a high standard of engineering and bounty payouts will be granted in alignment with that.
 
+#### Points assignment
+
+```
+0.16 = quick fix = 1/2 hour
+1 = half a day = 3 hours
+2 = one day = 6 hours
+3 = a couple of days = 12 hours
+5 = a week = 30 hours
+8 = two weeks = 60 hours
+... larger features will of course be broken down into tickets for an epic, or negotiated separately.
+```
+
+Selene indicates assigned bounty-points in a Fibonnaci style sequence (which roughly approximates the estimated hours required / complexity / difficulty of task). These are noted in the issue ticket title with a preceding number in square brackets. e.g. `[5] Create a Selene static homepage`. Some time for testing, adapting to review etc. is considered in the initial estimation. Payment per bounty point is negotiated on a case-by-case basis depending on a number of factors (such as historical reliability in delivering Selene tickets and working with the Selene team, agreements about batch jobs of tickets etc.). There is some leeway for some tickets (especially 2 points or less) possibly being completeable faster than the indicated hours, and some longer tickets being a little more - this averages out over time for regular contributors. Tickets are paid based on points, not time to complete, regardless.
+
+#### Code review
 
 - Selene reviewers will use a system of "ASCII annotations" to prefix comments. This system comes from commercial experience with developers creating conflict over the severity or intent of context-less and tone-free typed review comments. See [these Google Slides](https://docs.google.com/presentation/d/1AA-ddE828xhXMaGKUp21vBMx20q9xOArw2-TuzkL3xM/edit?usp=sharing) for examples/details.
 

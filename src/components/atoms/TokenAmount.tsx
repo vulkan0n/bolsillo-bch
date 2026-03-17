@@ -1,8 +1,11 @@
 import { useSelector } from "react-redux";
 import { EyeInvisibleOutlined } from "@ant-design/icons";
+
 import { selectPrivacySettings } from "@/redux/preferences";
-import { TokenEntity } from "@/services/TokenManagerService";
-import { TokenHistoryEntity } from "@/services/TransactionHistoryService";
+
+import { TokenEntity } from "@/kernel/wallet/TokenManagerService";
+import { TokenHistoryEntity } from "@/kernel/wallet/TransactionHistoryService";
+
 import NumberFormat from "@/atoms/NumberFormat";
 
 interface TokenAmountProps {
@@ -11,13 +14,10 @@ interface TokenAmountProps {
 }
 
 export default function TokenAmount({ token, nft = false }: TokenAmountProps) {
-  const receiveStyle = "text-primary-700";
+  const receiveStyle = "text-primary-700 dark:text-primary-300";
   const sendStyle = "text-error";
 
-  const tokenColor =
-    token.color ||
-    `#${token.category?.slice(0, 6)}` ||
-    `#${token.token?.category.slice(0, 6)}`;
+  const tokenColor = token.color;
 
   const decimals = token.decimals || token.token?.decimals || 0;
 

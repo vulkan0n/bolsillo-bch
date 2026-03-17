@@ -6,7 +6,7 @@ function findFilesWithTranslations(directoryPath) {
 
   function checkFile(filePath) {
     const fileContent = fs.readFileSync(filePath, "utf8");
-    if (fileContent.startsWith("const translations =")) {
+    if (fileContent.includes("const translations =")) {
       filesWithTranslations.push(filePath);
     }
   }
@@ -16,9 +16,14 @@ function findFilesWithTranslations(directoryPath) {
 
     for (const file of files) {
       const fullPath = path.join(directoryPath, file);
-      const stat = fs.statSync(fullPath);
+      let stat;
+      try {
+        stat = fs.statSync(fullPath);
+      } catch {
+        continue;
+      }
 
-      if (stat.isDirectory()) {
+      if (stat.isDirectory() && file !== "node_modules") {
         checkDirectory(fullPath);
       } else if (
         stat.isFile() &&

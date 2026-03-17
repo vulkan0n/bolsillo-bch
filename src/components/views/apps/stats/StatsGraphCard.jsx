@@ -7,12 +7,15 @@ import { SyncOutlined } from "@ant-design/icons";
 import Button from "@/atoms/Button";
 import Card from "@/atoms/Card";
 import SeleneLogo from "@/atoms/SeleneLogo";
-import ActiveUsersChart from "./ActiveUsersChart";
-import StatsAppBlock from "./StatsAppBlock";
-import GET_ACTIVE_BITCOINERS from "./getActiveBitcoiners";
+
 import { ONE_SECOND, Period } from "@/util/time";
+
 import { translate } from "@/util/translations";
+
+import ActiveUsersChart from "./ActiveUsersChart";
+import GET_ACTIVE_BITCOINERS from "./getActiveBitcoiners";
 import translations from "./GlobalAdoptionSummaryTranslations";
+import StatsAppBlock from "./StatsAppBlock";
 
 export default function StatsGraphCard() {
   const { hash: locationHash } = useLocation();
@@ -49,7 +52,7 @@ export default function StatsGraphCard() {
   const isReady = !isLoading && data && data.activeBitcoiners;
 
   return (
-    <Card className="rounded-none w-full border-0 shadow-none">
+    <Card className="rounded-none w-full border-0 shadow-none p-2">
       <div className="flex items-center mb-1.5">
         <SeleneLogo className="w-12 mr-1" />
         <div>

@@ -1,7 +1,7 @@
 import { Link } from "react-router";
 import { WarningFilled } from "@ant-design/icons";
 
-import WalletManagerService from "@/services/WalletManagerService";
+import WalletManagerService from "@/kernel/wallet/WalletManagerService";
 
 import { translate } from "@/util/translations";
 import translations from "./translations";

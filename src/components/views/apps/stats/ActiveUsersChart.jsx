@@ -1,5 +1,6 @@
 /* eslint-disable react/prop-types */
 import { useMemo } from "react";
+import { Line } from "react-chartjs-2";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -10,10 +11,12 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
-import { Line } from "react-chartjs-2";
 import { DateTime } from "luxon";
+
 import { Period } from "@/util/time";
+
 import { translate } from "@/util/translations";
+
 import translations from "./ActiveUsersChartTranslations";
 
 ChartJS.register(

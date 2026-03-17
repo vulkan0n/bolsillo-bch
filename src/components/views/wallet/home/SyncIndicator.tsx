@@ -2,12 +2,18 @@
 import { useCallback } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
+import { animated, useSpring } from "@react-spring/web";
 import {
   DisconnectOutlined,
   CheckCircleFilled,
   SyncOutlined,
 } from "@ant-design/icons";
-import { animated, useSpring } from "@react-spring/web";
+
+import {
+  selectShouldDisplaySyncCounter,
+  selectIsExperimental,
+  selectIsOfflineMode,
+} from "@/redux/preferences";
 import {
   selectIsConnected,
   selectIsSyncing,
@@ -15,13 +21,9 @@ import {
   syncHotRefresh,
   syncReconnect,
 } from "@/redux/sync";
-import {
-  selectShouldDisplaySyncCounter,
-  selectIsExperimental,
-  selectIsOfflineMode,
-} from "@/redux/preferences";
 import { selectActiveWalletHash } from "@/redux/wallet";
-import ToastService from "@/services/ToastService";
+
+import NotificationService from "@/kernel/app/NotificationService";
 
 import { useLongPress } from "@/hooks/useLongPress";
 
@@ -73,7 +75,7 @@ export default function SyncIndicator() {
         dispatch(syncHotRefresh({ force: false }));
       } else {
         disconnectApi.start();
-        ToastService().disconnected();
+        NotificationService().disconnected();
         dispatch(syncReconnect());
       }
     },
@@ -97,6 +99,8 @@ export default function SyncIndicator() {
   return (
     <div
       className="cursor-pointer w-10 h-10 flex justify-center items-center"
+      data-testid="sync-indicator"
+      data-syncing={isSyncing ? "true" : "false"}
       {...longPressEvents}
     >
       {isOfflineMode && (

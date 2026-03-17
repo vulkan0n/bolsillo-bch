@@ -1,5 +1,6 @@
 import { useCallback } from "react";
 import { useSelector, useDispatch } from "react-redux";
+
 import { setPreference, selectCurrencySettings } from "@/redux/preferences";
 
 export function useCurrencyFlip() {

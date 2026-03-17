@@ -1,23 +1,24 @@
 import { useMemo, useRef, useState } from "react";
-
 import { useNavigate } from "react-router";
+import { bip39WordListEnglish, decodeBip39Mnemonic } from "@bitauth/libauth";
 import { ImportOutlined } from "@ant-design/icons";
-import * as bip39 from "bip39";
-import Button from "@/components/atoms/Button";
+
+import DatabaseService from "@/kernel/app/DatabaseService";
+import LogService from "@/kernel/app/LogService";
+import AddressScannerService from "@/kernel/wallet/AddressScannerService";
+import WalletManagerService from "@/kernel/wallet/WalletManagerService";
+
 import Accordion from "@/components/atoms/Accordion";
-import WalletManagerService from "@/services/WalletManagerService";
-import AddressScannerService from "@/services/AddressScannerService";
-import DatabaseService from "@/services/DatabaseService";
-import LogService from "@/services/LogService";
+import Button from "@/components/atoms/Button";
+import Select from "@/components/atoms/Select";
+
+import { DEFAULT_DERIVATION_PATH, DERIVATION_PATHS } from "@/util/derivation";
 import { Haptic } from "@/util/haptic";
+
 import { translate } from "@/util/translations";
 import translations from "./translations";
 
-import { DEFAULT_DERIVATION_PATH, DERIVATION_PATHS } from "@/util/derivation";
-
-import Select from "@/components/atoms/Select";
-
-const wordlist = bip39.wordlists.english;
+const wordlist = bip39WordListEnglish;
 
 const Log = LogService("WizardImport");
 
@@ -109,7 +110,8 @@ export default function SettingsWalletWizardImport() {
       return;
     }
 
-    const isValidMnemonic = bip39.validateMnemonic(trimmedInput);
+    const isValidMnemonic =
+      typeof decodeBip39Mnemonic(trimmedInput) !== "string";
 
     if (isValidMnemonic) {
       try {
@@ -157,10 +159,14 @@ export default function SettingsWalletWizardImport() {
   };
 
   const inputSuggestions = useMemo(() => {
-    if (mnemonicInput === "" || mnemonicInput.endsWith(" ")) return [];
+    if (mnemonicInput === "" || mnemonicInput.endsWith(" ")) {
+      return [];
+    }
     const words = mnemonicInput.split(" ");
     const lastWord = words[words.length - 1].toLowerCase();
-    if (lastWord === "") return [];
+    if (lastWord === "") {
+      return [];
+    }
     const suggestions = wordlist.filter((word) => word.startsWith(lastWord));
     return suggestions.slice(0, 4);
   }, [mnemonicInput]);
@@ -198,6 +204,7 @@ export default function SettingsWalletWizardImport() {
       <div className="rounded-md border-4 border-primary relative">
         <textarea
           ref={textareaRef}
+          data-testid="mnemonic-input"
           className="w-full text-mono h-36 max-h-36 resize-none bg-white dark:bg-neutral-700 text-primary dark:text-neutral-25"
           onChange={handleMnemonicInput}
           value={mnemonicInput}

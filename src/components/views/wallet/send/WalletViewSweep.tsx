@@ -1,34 +1,32 @@
 import { useState, useEffect, useMemo } from "react";
-import { useParams, useNavigate } from "react-router";
 import { useSelector } from "react-redux";
+import { useParams, useNavigate } from "react-router";
 import { ArrowLeftOutlined, SyncOutlined } from "@ant-design/icons";
 
-import { selectActiveWalletHash } from "@/redux/wallet";
-import { selectSyncState } from "@/redux/sync";
 import { selectIsOfflineMode, selectBchNetwork } from "@/redux/preferences";
+import { selectSyncState } from "@/redux/sync";
+import { selectActiveWalletHash } from "@/redux/wallet";
 
-import LogService from "@/services/LogService";
-import AddressManagerService from "@/services/AddressManagerService";
-import ElectrumService from "@/services/ElectrumService";
-import TransactionManagerService from "@/services/TransactionManagerService";
-import {
-  ElectrumUtxo,
-  buildSweepTransaction,
-} from "@/services/TransactionBuilderService";
-import ToastService from "@/services/ToastService";
+import LogService from "@/kernel/app/LogService";
+import NotificationService from "@/kernel/app/NotificationService";
+import ElectrumService from "@/kernel/bch/ElectrumService";
+import { buildSweepTransaction } from "@/kernel/bch/TransactionBuilderService";
+import TransactionManagerService from "@/kernel/bch/TransactionManagerService";
+import AddressManagerService from "@/kernel/wallet/AddressManagerService";
+import type { UtxoEntity } from "@/kernel/wallet/UtxoManagerService";
 
-import Satoshi from "@/atoms/Satoshi";
-import Button from "@/atoms/Button";
+import translations from "@/views/wallet/translations";
 import Address from "@/atoms/Address";
+import Button from "@/atoms/Button";
 import CurrencyFlip from "@/atoms/CurrencyFlip";
+import Satoshi from "@/atoms/Satoshi";
 
 import { useCurrencyFlip } from "@/hooks/useCurrencyFlip";
 
-import { validateWifUri } from "@/util/uri";
 import { Haptic } from "@/util/haptic";
+import { validateWifUri } from "@/util/uri";
 
 import { translate } from "@/util/translations";
-import translations from "@/views/wallet/translations";
 
 const Log = LogService("WalletViewSweep");
 
@@ -52,7 +50,7 @@ export default function WalletViewSweep() {
   const [isFetchingUtxos, setIsFetchingUtxos] = useState(true);
   const [isSweeping, setIsSweeping] = useState(false);
   const [message, setMessage] = useState("");
-  const [utxos, setUtxos] = useState<Array<ElectrumUtxo>>([]);
+  const [utxos, setUtxos] = useState<Array<UtxoEntity>>([]);
   const [isSweepable, setIsSweepable] = useState(false);
 
   const handleFlipCurrency = useCurrencyFlip();
@@ -76,7 +74,7 @@ export default function WalletViewSweep() {
   useEffect(() => {
     const requestUtxos = async () => {
       if (isOfflineMode) {
-        ToastService().disconnected();
+        NotificationService().disconnected();
         navigate("/");
         return;
       }
@@ -91,7 +89,7 @@ export default function WalletViewSweep() {
       }
 
       // Set the UTXOs.
-      setUtxos(electrumUtxos as Array<ElectrumUtxo>);
+      setUtxos(electrumUtxos);
       setIsFetchingUtxos(false);
     };
 
@@ -110,14 +108,14 @@ export default function WalletViewSweep() {
 
   // Calculate the satoshi balance when our UTXOs change.
   const wifSatoshiBalance = useMemo(() => {
-    return utxos.reduce((total, utxo) => total + utxo.value, 0);
+    return utxos.reduce((total, utxo) => total + utxo.valueSatoshis, 0n);
   }, [utxos]);
 
   // Determine whether the WIF contains tokens so that we can display an unsupported message.
   // NOTE: This will not be functional until our Electrum Protocol uses >= V1.5.
   //       For Electrum Protocol < V1.5 UTXOs containing tokens will just be ignored (not swept).
   const didWifContainTokens = useMemo(() => {
-    return utxos.some((utxo) => utxo.token_data);
+    return utxos.some((utxo) => utxo.token_category);
   }, [utxos]);
 
   // Set message based on WIF state (empty or contains tokens).
@@ -154,7 +152,7 @@ export default function WalletViewSweep() {
     setIsSweeping(true);
 
     if (!sync.isConnected) {
-      ToastService().disconnected();
+      NotificationService().disconnected();
       setIsSweeping(false);
       return;
     }
@@ -170,21 +168,28 @@ export default function WalletViewSweep() {
         receivingAddress
       );
 
-      // Broadcast the transaction.
-      await TransactionManager.sendTransaction(transaction, bchNetwork);
-
-      // Wait for the transaction to resolve.
-      const tx = await TransactionManager.resolveTransaction(
-        transaction.txid,
-        bchNetwork
+      // Broadcast and register locally.
+      const tx = await TransactionManager.sendTransaction(
+        transaction,
+        bchNetwork,
+        walletHash
       );
 
       // Show a notification.
       await Haptic.success();
 
+      // Update blockhash/height when confirmed
+      TransactionManager.resolveTransaction(tx.tx_hash, bchNetwork).catch((e) =>
+        Log.warn("resolveTransaction failed", tx.tx_hash, e)
+      );
+
       // Navigate to the "Sweep Successful" page.
       navigate("/wallet/send/success", {
-        state: { tx, header: translate(translations.walletSwept) },
+        state: {
+          tx_hash: tx.tx_hash,
+          tx,
+          header: translate(translations.walletSwept),
+        },
         replace: true,
       });
     } catch (error) {
@@ -200,7 +205,7 @@ export default function WalletViewSweep() {
     <div className="flex flex-col justify-start h-full">
       <div className="tracking-wide text-center text-white">
         {message !== "" ? (
-          <div className="bg-error p-2">
+          <div data-testid="sweep-error" className="bg-error p-2">
             <div className="text-xl font-bold">{message}</div>
           </div>
         ) : (

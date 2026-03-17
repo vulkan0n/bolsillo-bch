@@ -2,6 +2,7 @@ const translations = {
   backUpWallet: {
     ar: "يرجى الاحتفاظ بنسخة احتياطية من صفحة استرداد محفظتك",
     bn: "দয়া করে আপনার ওয়ালেট পুনরুদ্ধার ফ্রেজ ব্যাকআপ করুন",
+    cy: "GWNEWCH GOPI WRTH GEFN O'CH YMADRODDION ADFER WALED",
     da: "VENLIGST SIKKERHEDSKOPIER DIN GENDANNELSESSÆTNING FOR TEGNEBOGEN",
     de: "BITTE SICHERN SIE IHRE WALLET-WIEDERHERSTELLUNGSPHRASE",
     el: "ΠΑΡΑΚΑΛΩ ΔΗΜΙΟΥΡΓΗΣΤΕ ΑΝΤΙΓΡΑΦΟ ΑΣΦΑΛΕΙΑΣ ΤΟΥ ΦΡΑΣΗ ΑΝΑΚΤΗΣΗΣ ΤΟΥ ΠΟΡΤΟΦΟΛΙΟΥ ΣΑΣ",

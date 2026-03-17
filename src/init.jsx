@@ -1,77 +1,10 @@
-import { App } from "@capacitor/app";
+import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { SplashScreen } from "@capacitor/splash-screen";
-import LogService from "@/services/LogService";
-import JanitorService from "@/services/JanitorService";
-import DatabaseService from "@/services/DatabaseService";
-import BcmrService from "@/services/BcmrService";
-import {
-  redux_init,
-  redux_pre_init,
-  redux_post_init,
-  redux_resume,
-  redux_pause,
-} from "@/redux";
+
 import Main from "@/Main";
 
-// Top-Level execution for entire app starts here!
-// eslint-disable-next-line react-refresh/only-export-components
-const Log = LogService("init");
-
-// big green START button for the whole app
-async function initialize_app() {
-  Log.time("INIT");
-  await pre_init();
-  await app_init();
-  await post_init();
-  Log.timeEnd("INIT");
-}
-
-initialize_app();
-
-// ----------------
-
-// initialize app state and render UI
-async function app_init() {
-  Log.log("* APP_INIT *");
-  App.addListener("pause", app_pause);
-  App.addListener("resume", app_resume);
-  await redux_init();
-  Log.debug("render <Main>");
-  createRoot(document.getElementById("root")).render(<Main />);
-}
-
-// actions to perform before initializing app state or rendering UI
-async function pre_init() {
-  Log.log("* PRE_INIT *");
-  const Janitor = JanitorService();
-  const Database = DatabaseService();
-  await Janitor.fsck();
-  await Database.initAppDatabase();
-  await Janitor.migrateLegacyDatabases();
-  await Janitor.recoverWalletFiles();
-  await redux_pre_init();
-}
-
-// actions to perform after UI is rendered
-async function post_init() {
-  Log.log("* POST_INIT *");
-  await SplashScreen.hide();
-  redux_post_init();
-
-  const Bcmr = BcmrService();
-  Bcmr.preloadMetadataRegistries();
-}
-
-// actions to perform after app is resumed from sleep state
-async function app_resume() {
-  Log.time("APP_RESUME");
-  redux_resume();
-  Log.timeEnd("APP_RESUME");
-}
-
-function app_pause() {
-  Log.time("APP_PAUSE");
-  redux_pause();
-  Log.timeEnd("APP_PAUSE");
-}
+createRoot(document.getElementById("root")).render(
+  <StrictMode>
+    <Main />
+  </StrictMode>
+);

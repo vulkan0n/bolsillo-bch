@@ -6,7 +6,9 @@ function replaceWithVariables(
   text: string,
   variables?: Record<string, unknown>
 ) {
-  if (variables == null) return text;
+  if (variables == null) {
+    return text;
+  }
   const replacedText = text.replace(/\{([^}]+)\}/g, (_, key) => {
     return variables[key] ?? key;
   });
@@ -57,6 +59,11 @@ export const languageList = [
     code: "bn",
     name: "বাংলা",
     flag: "🇧🇩",
+  },
+  {
+    code: "cy",
+    name: "Cymraeg",
+    flag: "🏴󠁧󠁢󠁷󠁬󠁳󠁿",
   },
   {
     code: "da",

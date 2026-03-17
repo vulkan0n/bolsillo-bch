@@ -3,11 +3,14 @@ import { useState, useEffect, useCallback, Ref } from "react";
 import { useSelector } from "react-redux";
 import { Keyboard } from "@capacitor/keyboard";
 import { Decimal } from "decimal.js";
-import { selectCurrencySettings } from "@/redux/preferences";
-import { selectDeviceInfo } from "@/redux/device";
-import { satsToBch, bchToSats, MAX_SATOSHI } from "@/util/sats";
 
-import CurrencyService from "@/services/CurrencyService";
+import { selectDeviceInfo } from "@/redux/device";
+import { selectCurrencySettings } from "@/redux/preferences";
+
+import CurrencyService from "@/kernel/bch/CurrencyService";
+
+import { getMaxDecimals, truncateDecimals } from "@/util/currency";
+import { satsToBch, bchToSats, MAX_SATOSHI } from "@/util/sats";
 
 interface SatoshiInputProps {
   ref?: Ref<HTMLInputElement>;
@@ -44,7 +47,7 @@ export function SatoshiInput({
   // use deviceInfo for deviceInfo.platform
   const deviceInfo = useSelector(selectDeviceInfo);
 
-  // --------------------------------
+  // ----------------
   const satsToDisplayAmount = useCallback(
     (sats): string => {
       if (!sats || new Decimal(sats).equals(0)) {
@@ -97,7 +100,7 @@ export function SatoshiInput({
     return bchToSats(amount, denomination);
   };
 
-  // --------------------------------
+  // ----------------
   // State
 
   const [displayValue, setDisplayValue] = useState(
@@ -123,56 +126,19 @@ export function SatoshiInput({
     [didCurrencyFlip, satoshis, satsToDisplayAmount]
   );
 
-  // --------------------------------
+  // ----------------
 
-  const getMaxDecimals = (): number => {
-    if (
-      isStablecoinMode ||
-      (shouldPreferLocalCurrency && denomination !== "token")
-    ) {
-      // fiat mode gets 2 decimals
-      return 2;
-    }
-
-    switch (denomination) {
-      case "token":
-        return tokenDecimals || 0;
-      case "sats":
-        return 0;
-      case "bits":
-        return 2;
-      case "mbch":
-        return 5;
-      case "bch":
-      default:
-        return 8;
-    }
+  const currencySettings = {
+    shouldPreferLocalCurrency,
+    isStablecoinMode,
+    denomination,
+    localCurrency,
+    tokenDecimals,
   };
 
-  const numDecimalPlaces = (num): number => {
-    const split = num.split(".");
-    const major = split[0]; // eslint-disable-line @typescript-eslint/no-unused-vars
-    const minor = split.length > 1 ? split[1] : "";
+  const maxDecimals = getMaxDecimals(currencySettings);
 
-    return minor.length;
-  };
-
-  const truncateDecimals = (value): string => {
-    const maxDecimals = getMaxDecimals();
-    const decimals = numDecimalPlaces(value);
-
-    const valueDecimal = new Decimal(Number.parseFloat(value) || 0);
-
-    // limit decimal places and round down
-    const amount = valueDecimal.toFixed(
-      Math.min(decimals, maxDecimals),
-      Decimal.ROUND_DOWN
-    );
-
-    return amount;
-  };
-
-  // --------------------------------
+  // ----------------
   // Input Handling
 
   // fired BEFORE HTML text input is rendered, updated, or validated
@@ -209,12 +175,11 @@ export function SatoshiInput({
         !isStablecoinMode &&
         denomination === "sats")
     ) {
-      newInput = truncateDecimals(newInput);
+      newInput = truncateDecimals(newInput, maxDecimals);
     }
 
     // double press "." to pad rest of number with max decimal places
     if (sanitizedInput.split(".").length > 2) {
-      const maxDecimals = getMaxDecimals();
       newInput = new Decimal(prevInput).toFixed(maxDecimals);
     }
 
@@ -254,6 +219,7 @@ export function SatoshiInput({
       type="text"
       ref={ref}
       inputMode="decimal"
+      data-testid="satoshi-input"
       className={className}
       placeholder="0"
       size={size}

@@ -1,28 +1,31 @@
 import { useState, useMemo } from "react";
-import { useLocation } from "react-router";
 import { useSelector, useDispatch } from "react-redux";
+import { useLocation } from "react-router";
 import { CloseOutlined, CopyOutlined } from "@ant-design/icons";
+import { WalletConnectFilled } from "@/icons/WalletConnectFilled";
+
+import { selectActiveWalletHash } from "@/redux/wallet";
 import {
   selectWcSessions,
   wcSessionDelete,
   wcSessionReject,
 } from "@/redux/walletConnect";
-import { selectActiveWalletHash } from "@/redux/wallet";
+
+import LogService from "@/kernel/app/LogService";
+import WalletConnectService from "@/kernel/bch/WalletConnectService";
+import AddressManagerService from "@/kernel/wallet/AddressManagerService";
+
+import translations from "@/views/wallet/translations";
 import FullColumn from "@/layout/FullColumn";
 import ViewHeader from "@/layout/ViewHeader";
-import Button from "@/atoms/Button";
 import Address from "@/atoms/Address";
-import { WalletConnectFilled } from "@/icons/WalletConnectFilled";
+import Button from "@/atoms/Button";
 
 import { useClipboard } from "@/hooks/useClipboard";
 
-import WalletConnectService from "@/services/WalletConnectService";
-import AddressManagerService from "@/services/AddressManagerService";
-import LogService from "@/services/LogService";
-
 import { convertCashAddress } from "@/util/cashaddr";
+
 import { translate } from "@/util/translations";
-import translations from "@/views/wallet/translations";
 
 const Log = LogService("AppWalletConnectView");
 

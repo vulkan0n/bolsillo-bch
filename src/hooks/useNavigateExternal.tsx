@@ -1,10 +1,12 @@
 import { useSelector } from "react-redux";
-import { InAppBrowser } from "@capacitor/inappbrowser";
+import { Browser } from "@capacitor/browser";
 import { Dialog } from "@capacitor/dialog";
+
 import { selectDevicePlatform } from "@/redux/device";
 
-import { translate } from "@/util/translations";
 import translations from "@/views/settings/translations";
+
+import { translate } from "@/util/translations";
 
 export function useNavigateExternal() {
   const platform = useSelector(selectDevicePlatform);
@@ -22,9 +24,7 @@ export function useNavigateExternal() {
     if (platform === "web") {
       window.open(to);
     } else {
-      await InAppBrowser.openInExternalBrowser({
-        url: to,
-      });
+      await Browser.open({ url: to });
     }
   };
 }

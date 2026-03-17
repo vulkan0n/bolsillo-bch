@@ -1,5 +1,4 @@
 // TODO: Once @xocash/json-payment-protocol-v2 is released, consider replacing this file with that package.
-
 import {
   binsAreEqual,
   hexToBin,

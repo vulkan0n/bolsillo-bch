@@ -13,7 +13,8 @@ export default function LinkExternal({
 
   const handleClick = (e) => {
     e.stopPropagation();
-    navigateExternal(to);
+    const url = /^[a-zA-Z][a-zA-Z0-9+.-]*:/.test(to) ? to : `https://${to}`;
+    navigateExternal(url);
   };
 
   return (

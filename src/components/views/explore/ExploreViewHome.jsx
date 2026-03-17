@@ -1,22 +1,27 @@
+import { ApolloProvider } from "@apollo/client";
 import {
   LikeOutlined,
   GlobalOutlined,
   QuestionCircleOutlined,
+  PlayCircleOutlined,
 } from "@ant-design/icons";
 
-import ExploreApp from "./ExploreApp";
-import SeleneLogo from "@/atoms/SeleneLogo";
-import Card from "@/atoms/Card";
 import StatsGraphCard from "@/apps/stats/StatsGraphCard";
+import Card from "@/atoms/Card";
 import Carousel from "@/atoms/Carousel";
+import SeleneLogo from "@/atoms/SeleneLogo";
+
 import useRealTime from "@/hooks/useRealTime";
+
+import apolloClient from "@/apolloClient";
 
 import { translate } from "@/util/translations";
 import translations from "./translations";
-//import BlissAppCard from "../apps/bliss/BlissAppCard";
-import BlazeAppCard from "../apps/blaze/BlazeAppCard";
 
+import BlazeAppCard from "../apps/blaze/BlazeAppCard";
 import { BLAZE_2025_END_DATE } from "../apps/blaze/constants";
+//import BlissAppCard from "../apps/bliss/BlissAppCard";
+import ExploreApp from "./ExploreApp";
 
 export default function ExploreViewHome() {
   const now = useRealTime(1000);
@@ -27,14 +32,21 @@ export default function ExploreViewHome() {
       <Carousel autoRotateInterval={10000}>
         {isBlazeOngoing && <BlazeAppCard />}
         {/* <BlissAppCard /> */}
-        <StatsGraphCard />
+        <ApolloProvider client={apolloClient}>
+          <StatsGraphCard />
+        </ApolloProvider>
       </Carousel>
-      <Card>
+      <Card className="p-2">
         <div className="flex flex-col gap-2">
           <div className="flex items-center text-xl font-bold">
             <SeleneLogo className="w-12 mr-1" />
             <span>{translate(translations.learnMore)}</span>
           </div>
+          <ExploreApp
+            icon={PlayCircleOutlined}
+            name={translate(translations.introductionVideo)}
+            to="/apps/intro"
+          />
           <ExploreApp
             icon={GlobalOutlined}
             name={translate(translations.ecosystem)}

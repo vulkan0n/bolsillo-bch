@@ -1,4 +1,5 @@
-import LogService from "@/services/LogService";
+import LogService from "@/kernel/app/LogService";
+
 import { DEFAULT_DERIVATION_PATH } from "@/util/derivation";
 
 const Log = LogService("migrations");
@@ -115,10 +116,54 @@ const appdb_migrations = [
 
     return query.join("");
   },
-  /*function migrate_v5() {
+  function migrate_v5() {
     const query = [];
 
+    // Recreate transactions: rename txid → tx_hash, make height nullable
+    // height: null = broadcast, not verified in mempool; 0 = in mempool; >0 = confirmed
+    // Column order after v0+v1+v3+v4: txid, time_seen, time, blocktime, blockhash, size, version, height, block_pos, coinbase
+    query.push(
+      `CREATE TABLE transactions_new (
+        tx_hash text primary key not null,
+        time_seen default ( strftime('%Y-%m-%dT%H:%M:%SZ') ),
+        time int,
+        blocktime int,
+        blockhash text,
+        size int,
+        version int,
+        height int default null,
+        block_pos int default null,
+        coinbase text default null
+      );`
+    );
+    query.push("INSERT INTO transactions_new SELECT * FROM transactions;");
+    query.push("DROP TABLE transactions;");
+    query.push("ALTER TABLE transactions_new RENAME TO transactions;");
+
+    // wallets: balance int → bigint (needs table recreation)
+    query.push(
+      `CREATE TABLE wallets_new (
+        walletHash text not null,
+        name text default "" not null,
+        balance bigint default 0,
+        created_at text default ( strftime('%Y-%m-%dT%H:%M:%SZ') ),
+        key_viewed_at text default null,
+        network text not null CHECK(network IN ("mainnet","chipnet","testnet3","testnet4")) default "mainnet",
+        UNIQUE(walletHash, network)
+      );`
+    );
+    query.push("INSERT INTO wallets_new SELECT * FROM wallets;");
+    query.push("DROP TABLE wallets;");
+    query.push("ALTER TABLE wallets_new RENAME TO wallets;");
+
     query.push("PRAGMA user_version = 6;");
+
+    return query.join("");
+  },
+  /*function migrate_v6() {
+    const query = [];
+
+    query.push("PRAGMA user_version = 7;");
 
     return query.join("");
   },*/
@@ -356,10 +401,178 @@ const walletdb_migrations = [
 
     return query.join("");
   },
-  /*function migrate_v8() {
+  function migrate_v8() {
     const query = [];
 
+    // Recreate ALL 5 tables: rename txid→tx_hash, amount→valueSatoshis, int→bigint
+
+    // 1. Drop ALL triggers and indexes first
+    query.push("DROP TRIGGER IF EXISTS balance_update;");
+    query.push("DROP TRIGGER IF EXISTS utxo_balance_delete;");
+    query.push("DROP TRIGGER IF EXISTS utxo_balance_insert;");
+    query.push("DROP TRIGGER IF EXISTS spendable_balance_update;");
+    query.push("DROP INDEX IF EXISTS idx_address_utxos;");
+    query.push("DROP INDEX IF EXISTS idx_address_transactions;");
+    query.push("DROP INDEX IF EXISTS idx_addresses_unused;");
+
+    // 2. wallet table (balance, spendable_balance → bigint)
+    query.push(
+      `CREATE TABLE wallet_new (
+        walletHash text primary key not null,
+        mnemonic text not null,
+        passphrase text default "" not null,
+        derivation text default "${DEFAULT_DERIVATION_PATH}" not null,
+        name text not null,
+        balance bigint default 0 not null,
+        genesis_height int default null,
+        created_at text default ( strftime('%Y-%m-%dT%H:%M:%SZ') ),
+        key_viewed_at text default null,
+        key_verified_at text default null,
+        spendable_balance bigint default 0
+      );`
+    );
+    query.push("INSERT INTO wallet_new SELECT * FROM wallet;");
+    query.push("DROP TABLE wallet;");
+    query.push("ALTER TABLE wallet_new RENAME TO wallet;");
+
+    // 3. addresses table (balance → bigint)
+    query.push(
+      `CREATE TABLE addresses_new (
+        address text primary key not null,
+        hd_index int not null,
+        balance bigint default 0 not null,
+        change int default 0 not null,
+        state text default null,
+        memo text default null
+      );`
+    );
+    query.push("INSERT INTO addresses_new SELECT * FROM addresses;");
+    query.push("DROP TABLE addresses;");
+    query.push("ALTER TABLE addresses_new RENAME TO addresses;");
+    query.push(
+      "CREATE INDEX idx_addresses_unused ON addresses (change, state, hd_index);"
+    );
+
+    // 4. address_utxos (txid→tx_hash, amount→valueSatoshis, token_amount→bigint)
+    query.push(
+      `CREATE TABLE address_utxos_new (
+        address text not null,
+        tx_hash text not null,
+        tx_pos int not null,
+        valueSatoshis bigint not null,
+        memo text default null,
+        token_category text default null,
+        token_amount bigint default null,
+        nft_capability text default null,
+        nft_commitment text default null
+      );`
+    );
+    query.push("INSERT INTO address_utxos_new SELECT * FROM address_utxos;");
+    query.push("DROP TABLE address_utxos;");
+    query.push("ALTER TABLE address_utxos_new RENAME TO address_utxos;");
+    query.push("CREATE INDEX idx_address_utxos ON address_utxos (address);");
+
+    // 5. address_transactions (txid→tx_hash, amount→valueSatoshis, fix column order)
+    // Old column order (after v0+v1+v7): txid, height, address, time_seen,
+    //   amount, fiat_amount, fiat_currency, memo, time(end!), block_pos
+    query.push(
+      `CREATE TABLE address_transactions_new (
+        tx_hash text not null,
+        height int default 0 not null,
+        address text not null,
+        time int default null,
+        time_seen text default ( strftime('%Y-%m-%dT%H:%M:%SZ') ),
+        valueSatoshis bigint,
+        fiat_amount text,
+        fiat_currency text,
+        memo text default null,
+        block_pos int default null,
+        UNIQUE(tx_hash, address)
+      );`
+    );
+    // Explicit column mapping (can't use SELECT * — column order changed)
+    query.push(
+      `INSERT INTO address_transactions_new
+        (tx_hash, height, address, time, time_seen, valueSatoshis, fiat_amount, fiat_currency, memo, block_pos)
+      SELECT txid, height, address, time, time_seen, amount, fiat_amount, fiat_currency, memo, block_pos
+      FROM address_transactions;`
+    );
+    query.push("DROP TABLE address_transactions;");
+    query.push(
+      "ALTER TABLE address_transactions_new RENAME TO address_transactions;"
+    );
+    query.push(
+      "CREATE INDEX idx_address_transactions ON address_transactions (address);"
+    );
+
+    // 6. token_transactions (txid→tx_hash, fungible_amount→bigint, nft_amount stays int)
+    query.push(
+      `CREATE TABLE token_transactions_new (
+        tx_hash text not null,
+        category text not null,
+        fungible_amount bigint,
+        nft_amount int,
+        UNIQUE(category, tx_hash)
+      );`
+    );
+    query.push(
+      "INSERT INTO token_transactions_new SELECT * FROM token_transactions;"
+    );
+    query.push("DROP TABLE token_transactions;");
+    query.push(
+      "ALTER TABLE token_transactions_new RENAME TO token_transactions;"
+    );
+
+    // 7. Recreate ALL triggers with new column names
+    query.push(
+      `CREATE TRIGGER IF NOT EXISTS balance_update AFTER UPDATE ON addresses
+        BEGIN
+          UPDATE wallet SET
+            balance=(SELECT SUM(balance) FROM addresses);
+        END;`
+    );
+
+    query.push(
+      `CREATE TRIGGER IF NOT EXISTS utxo_balance_delete AFTER DELETE ON address_utxos
+        BEGIN
+          UPDATE addresses SET
+            balance=(
+              SELECT COALESCE(SUM(valueSatoshis),0) FROM address_utxos
+              WHERE address=OLD.address
+            ) WHERE address=OLD.address;
+        END;`
+    );
+
+    query.push(
+      `CREATE TRIGGER IF NOT EXISTS utxo_balance_insert AFTER INSERT ON address_utxos
+        BEGIN
+          UPDATE addresses SET
+            balance=(
+              SELECT COALESCE(SUM(valueSatoshis),0) FROM address_utxos
+              WHERE address=NEW.address
+            ) WHERE address=NEW.address;
+        END;`
+    );
+
+    query.push(
+      `CREATE TRIGGER IF NOT EXISTS spendable_balance_update AFTER UPDATE OF balance ON wallet
+        BEGIN
+          UPDATE wallet SET
+            spendable_balance=(
+              SELECT COALESCE(SUM(valueSatoshis),0) FROM address_utxos
+              WHERE token_category IS NULL
+            );
+        END;`
+    );
+
     query.push("PRAGMA user_version = 9;");
+
+    return query.join("");
+  },
+  /*function migrate_v9() {
+    const query = [];
+
+    query.push("PRAGMA user_version = 10;");
 
     return query.join("");
   },*/

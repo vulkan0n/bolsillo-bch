@@ -1,13 +1,14 @@
 import { useContext } from "react";
 import { GlobalOutlined, FlagOutlined } from "@ant-design/icons";
 
+import Accordion from "@/atoms/Accordion";
+import Select from "@/components/atoms/Select";
+
+import { sameAsDevice } from "@/translations/common";
 import { translate, languageList } from "@/util/translations";
 import translations from "./translations";
 
 import { SettingsContext } from "./SettingsContext";
-
-import Accordion from "@/atoms/Accordion";
-import Select from "@/components/atoms/Select";
 
 export default function IntlSettings() {
   const { handleSettingsUpdate, preferences } = useContext(SettingsContext);
@@ -29,7 +30,9 @@ export default function IntlSettings() {
         >
           {languageList.map(({ flag, code, name }) => (
             <option key={code} value={code}>
-              {flag} {code.toUpperCase()} - {name}
+              {code
+                ? `${flag} ${code.toUpperCase()} - ${name}`
+                : translate(sameAsDevice)}
             </option>
           ))}
         </Select>

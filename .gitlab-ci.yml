@@ -4,8 +4,9 @@
 # For more information, see: https://docs.gitlab.com/ee/ci/yaml/index.html#stages
 
 stages:
-  #- version
+  - version
   - build
+  - test
   - package
   - screenshots
   - testflight
@@ -15,20 +16,20 @@ default:
   before_script:
     - "export LC_ALL=en_US.UTF-8"
     - "export LANG=en_US.UTF-8"
-    - "export JAVA_HOME=/usr/local/opt/openjdk@21"
-    - 'eval "$(rbenv init - --no-rehash zsh)"'
+    - "export JAVA_HOME=/opt/homebrew/opt/openjdk@21"
     - 'export SELENE_VERSION=$(grep -o ''"version": *"[^"]*"'' package.json | sed -e ''s/"version": *"//'' -e ''s/"$//'')'
     - 'echo "SELENE_VERSION $SELENE_VERSION"'
 
-#version:
-#  stage: version
-#  script:
-#    - scripts/chversion
-#  only:
-#    - main
-#    - testflight
-#  tags:
-#    - macos
+# Version Bump (runs before build on main)
+version:
+  stage: version
+  script:
+    - scripts/chversion
+  only:
+    - main
+    - testflight
+  tags:
+    - macos
 
 # Build
 build_sync:
@@ -36,8 +37,10 @@ build_sync:
   image: node:lts-alpine
   script:
     - "which git || (apk update && apk add git)"
-    - yarn install --frozen-lockfile
-    - yarn build
+    - corepack enable pnpm
+    - pnpm install --frozen-lockfile
+    - pnpm test
+    - pnpm run build:ci
     - npx cap sync
   artifacts:
     paths:
@@ -46,6 +49,23 @@ build_sync:
       - "android/"
       - "ios/"
 
+# E2E Tests
+test_e2e:
+  stage: test
+  image: mcr.microsoft.com/playwright:v1.58.2-noble
+  dependencies:
+    - build_sync
+  script:
+    - corepack enable pnpm
+    - pnpm install --frozen-lockfile
+    - npx playwright test
+  artifacts:
+    when: on_failure
+    paths:
+      - playwright-report/
+      - test-results/
+    expire_in: 7 days
+
 # Android Packaging
 package_android:
   stage: package
@@ -53,12 +73,15 @@ package_android:
     - build_sync
   script:
     - cd android/
-    - bundle install
-    - bundle exec fastlane package
+    - ./gradlew clean bundleRelease assembleRelease
+        -Pandroid.injected.signing.store.file="$ANDROID_KEYSTORE"
+        -Pandroid.injected.signing.store.password="$ANDROID_KEYSTORE_PASSWORD"
+        -Pandroid.injected.signing.key.alias=key0
+        -Pandroid.injected.signing.key.password="$ANDROID_KEYSTORE_PASSWORD"
   artifacts:
     paths:
       - android/app/build/outputs/apk/release/app-release.apk
-      - android/app/build/outputs/bundle/release/app-bundle.aab
+      - android/app/build/outputs/bundle/release/app-release.aab
     expire_in: 1 year
   only:
     - main
@@ -72,9 +95,8 @@ package_android_edge:
     - build_sync
   script:
     - cd android/
-    - bundle install
-    - bundle exec fastlane package_debug
-    - sha256sum android/app/build/outputs/apk/debug/app-debug.apk
+    - ./gradlew clean assembleDebug
+    - sha256sum app/build/outputs/apk/debug/app-debug.apk
   artifacts:
     paths:
       - android/app/build/outputs/apk/debug/app-debug.apk
@@ -87,6 +109,8 @@ package_android_edge:
 deploy_android_edge:
   stage: release
   image: alpine:latest
+  needs:
+    - package_android_edge
   dependencies:
     - package_android_edge
   script:
@@ -95,9 +119,16 @@ deploy_android_edge:
     - eval $(ssh-agent -s)
     - echo "$SELENE_SSH_KEY_BASE64" | base64 -d | ssh-add - > /dev/null 2>&1
     - echo "$SSH_KNOWN_HOSTS_BASE64" | base64 -d > ~/.ssh/known_hosts
-    - echo "Uploading selene-edge.apk"
+    - export SELENE_VERSION=$(grep -o 'versionName "[^"]*"' android/app/build.gradle | sed 's/versionName "//;s/"//')
+    - echo "Uploading selene-edge-v$SELENE_VERSION.apk"
     - sha256sum android/app/build/outputs/apk/debug/app-debug.apk
+    - ssh selene@warpgate.selene.technology "mkdir -p /srv/www/selene.cash/public/download"
+    - scp android/app/build/outputs/apk/debug/app-debug.apk selene@warpgate.selene.technology:/srv/www/selene.cash/public/download/selene-edge-v$SELENE_VERSION.apk
     - scp android/app/build/outputs/apk/debug/app-debug.apk selene@warpgate.selene.technology:/srv/www/selene.cash/public/download/selene-edge.apk
+    - echo ""
+    - echo "=== Edge APK deployed ==="
+    - echo "https://selene.cash/download/selene-edge-v$SELENE_VERSION.apk"
+    - echo "https://selene.cash/download/selene-edge.apk"
   only:
     - edge
 
@@ -107,27 +138,30 @@ deploy_android_apk:
   dependencies:
     - package_android
   script:
-    - "which ssh-agent || (apk update && apk add openssh)"
+    - "which ssh-agent || (apk update && apk add openssh coreutils)"
     - "mkdir -p ~/.ssh && chmod 700 ~/.ssh"
     - eval $(ssh-agent -s)
     - echo "$SELENE_SSH_KEY_BASE64" | base64 -d | ssh-add - > /dev/null 2>&1
     - echo "$SSH_KNOWN_HOSTS_BASE64" | base64 -d > ~/.ssh/known_hosts
+    - ssh selene@warpgate.selene.technology "mkdir -p /srv/www/selene.cash/public/download"
     - echo "Uploading selene-v$SELENE_VERSION.apk"
     - sha256sum android/app/build/outputs/apk/release/app-release.apk
-    - scp android/build/app/outputs/apk/release/app-release.apk selene@warpgate.selene.technology:/srv/www/selene.cash/public/download/selene-v$SELENE_VERSION.apk
-    # update remote nginx config here
+    - scp android/app/build/outputs/apk/release/app-release.apk selene@warpgate.selene.technology:/srv/www/selene.cash/public/download/selene-v$SELENE_VERSION.apk
   only:
     - main
 
 deploy_android_release:
   stage: release
+  when: manual
+  allow_failure: true
   dependencies:
     - package_android
-    - screenshots_android
+    - screenshots
   script:
-    - cd android/
-    - bundle install
-    - bundle exec fastlane deploy
+    - >-
+      java -jar scripts/bundletool.jar install-apks
+      --bundle=android/app/build/outputs/bundle/release/app-release.aab
+      || echo "Google Play upload requires manual action or API key setup"
   only:
     - main
   tags:
@@ -138,9 +172,8 @@ deploy_android_testflight:
   dependencies:
     - package_android
   script:
-    - cd android/
-    - bundle install
-    - bundle exec fastlane deploy_testflight
+    - echo "Upload android/app/build/outputs/bundle/release/app-release.aab to Google Play beta track"
+    - echo "Use Google Play Console or set up GOOGLE_PLAY_JSON_KEY CI variable for automated upload"
   only:
     - testflight
   tags:
@@ -153,11 +186,20 @@ package_ios:
     - build_sync
   script:
     - cd ios/App/
-    - bundle install
-    - bundle exec fastlane package
+    - ../../scripts/ios-archive-fix.sh
+    - xcodebuild -workspace App.xcworkspace -scheme App
+        -configuration Release
+        -archivePath build/App.xcarchive
+        archive
+        -allowProvisioningUpdates
+        DEVELOPMENT_TEAM="M2M8ZMH23D"
+    - xcodebuild -exportArchive
+        -archivePath build/App.xcarchive
+        -exportOptionsPlist ../../scripts/export-options.plist
+        -exportPath build/
   artifacts:
     paths:
-      - App.ipa
+      - ios/App/build/App.ipa
   only:
     - main
     - testflight
@@ -167,13 +209,17 @@ package_ios:
 # iOS Deployment
 deploy_ios_release:
   stage: release
+  when: manual
+  allow_failure: true
   dependencies:
     - package_ios
-    - screenshots_ios
+    - screenshots
   script:
-    - cd ios/App/
-    - bundle install
-    - bundle exec fastlane deploy
+    - xcrun altool --upload-app
+        -f ios/App/build/App.ipa
+        -t ios
+        --apiKey "$APP_STORE_CONNECT_API_KEY_ID"
+        --apiIssuer "$APP_STORE_CONNECT_ISSUER_ID"
   only:
     - main
   tags:
@@ -184,48 +230,105 @@ deploy_ios_testflight:
   dependencies:
     - package_ios
   script:
-    - cd ios/App/
-    - bundle install
-    - bundle exec fastlane deploy_testflight
+    - xcrun altool --upload-app
+        -f ios/App/build/App.ipa
+        -t ios
+        --apiKey "$APP_STORE_CONNECT_API_KEY_ID"
+        --apiIssuer "$APP_STORE_CONNECT_ISSUER_ID"
   only:
     - testflight
   tags:
     - macos
 
-# Gitlab Release
+# Web Deployment
+deploy_web:
+  stage: release
+  image: alpine:latest
+  dependencies:
+    - build_sync
+  script:
+    - "which ssh-agent || (apk update && apk add openssh)"
+    - "mkdir -p ~/.ssh && chmod 700 ~/.ssh"
+    - eval $(ssh-agent -s)
+    - echo "$SELENE_SSH_KEY_BASE64" | base64 -d | ssh-add - > /dev/null 2>&1
+    - echo "$SSH_KNOWN_HOSTS_BASE64" | base64 -d > ~/.ssh/known_hosts
+    - scp -r dist/* selene@warpgate.selene.technology:/srv/www/app.selene.cash/dist/
+  only:
+    - main
+
+deploy_web_edge:
+  stage: release
+  image: alpine:latest
+  needs:
+    - build_sync
+  dependencies:
+    - build_sync
+  script:
+    - "which ssh-agent || (apk update && apk add openssh)"
+    - "mkdir -p ~/.ssh && chmod 700 ~/.ssh"
+    - eval $(ssh-agent -s)
+    - echo "$SELENE_SSH_KEY_BASE64" | base64 -d | ssh-add - > /dev/null 2>&1
+    - echo "$SSH_KNOWN_HOSTS_BASE64" | base64 -d > ~/.ssh/known_hosts
+    - ssh selene@warpgate.selene.technology "mkdir -p /srv/www/edge.selene.cash/dist"
+    - scp -r dist/* selene@warpgate.selene.technology:/srv/www/edge.selene.cash/dist/
+  only:
+    - edge
+
+# Website Rebuild + Deploy
+deploy_website:
+  stage: release
+  when: manual
+  allow_failure: true
+  script:
+    - cd ../selene-website || git clone git@git.xulu.tech:selene.cash/selene-website.git ../selene-website
+    - cd ../selene-website
+    - yarn install --frozen-lockfile
+    - yarn build
+    - eval $(ssh-agent -s)
+    - echo "$SELENE_SSH_KEY_BASE64" | base64 -d | ssh-add - > /dev/null 2>&1
+    - echo "$SSH_KNOWN_HOSTS_BASE64" | base64 -d > ~/.ssh/known_hosts
+    - scp -r dist/* selene@warpgate.selene.technology:/srv/www/selene.cash/public/
+  only:
+    - main
+  tags:
+    - macos
+
+# GitLab Release
 deploy_gitlab_release:
   stage: release
+  image: alpine:latest
   script:
+    - apk add git curl jq
     - git tag -a $SELENE_VERSION -m "Version $SELENE_VERSION"
     - git push origin $SELENE_VERSION
+    - PREV_TAG=$(git describe --tags --abbrev=0 HEAD~1 2>/dev/null || echo "")
+    - |
+      if [ -n "$PREV_TAG" ]; then
+        CHANGELOG=$(git log $PREV_TAG..HEAD --pretty=format:"- %s" --no-merges)
+      else
+        CHANGELOG="Initial release"
+      fi
+    - |
+      curl --header "PRIVATE-TOKEN: $CI_JOB_TOKEN" \
+        --data-urlencode "tag_name=$SELENE_VERSION" \
+        --data-urlencode "description=$CHANGELOG" \
+        "$CI_API_V4_URL/projects/$CI_PROJECT_ID/releases"
   only:
     - main
 
-# Screenshots
-screenshots_android:
+# Screenshots (Playwright generates store-quality images)
+screenshots:
   stage: screenshots
+  image: mcr.microsoft.com/playwright:v1.58.2-noble
+  dependencies:
+    - build_sync
   script:
-    - cd android/
-    - bundle install
-    - bundle exec fastlane snapshot
+    - corepack enable pnpm
+    - pnpm install --frozen-lockfile
+    - npx playwright test --project=screenshots
   artifacts:
     paths:
-      - android/fastlane/screenshots
+      - android/metadata/android/en-US/images/phoneScreenshots/
+    expire_in: 1 year
   only:
     - main
-  tags:
-    - macos
-
-screenshots_ios:
-  stage: screenshots
-  script:
-    - cd ios/App/
-    - bundle install
-    - bundle exec fastlane snapshot
-  artifacts:
-    paths:
-      - ios/App/fastlane/screenshots
-  only:
-    - main
-  tags:
-    - macos
