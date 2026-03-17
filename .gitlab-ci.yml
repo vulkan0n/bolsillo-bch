@@ -16,7 +16,6 @@ default:
   before_script:
     - "export LC_ALL=en_US.UTF-8"
     - "export LANG=en_US.UTF-8"
-    - "export JAVA_HOME=/opt/homebrew/opt/openjdk@21"
     - 'export SELENE_VERSION=$(grep -o ''"version": *"[^"]*"'' package.json | sed -e ''s/"version": *"//'' -e ''s/"$//'')'
     - 'echo "SELENE_VERSION $SELENE_VERSION"'
 
@@ -273,25 +272,6 @@ deploy_web_edge:
     - scp -r dist/* selene@warpgate.selene.technology:/srv/www/edge.selene.cash/dist/
   only:
     - edge
-
-# Website Rebuild + Deploy
-deploy_website:
-  stage: release
-  when: manual
-  allow_failure: true
-  script:
-    - cd ../selene-website || git clone git@git.xulu.tech:selene.cash/selene-website.git ../selene-website
-    - cd ../selene-website
-    - yarn install --frozen-lockfile
-    - yarn build
-    - eval $(ssh-agent -s)
-    - echo "$SELENE_SSH_KEY_BASE64" | base64 -d | ssh-add - > /dev/null 2>&1
-    - echo "$SSH_KNOWN_HOSTS_BASE64" | base64 -d > ~/.ssh/known_hosts
-    - scp -r dist/* selene@warpgate.selene.technology:/srv/www/selene.cash/public/
-  only:
-    - main
-  tags:
-    - macos
 
 # GitLab Release
 deploy_gitlab_release:
