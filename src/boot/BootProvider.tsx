@@ -41,6 +41,7 @@ export default function BootProvider({ children }: BootProviderProps) {
   const [phase, setPhase] = useState<Phase>("PREFLIGHT");
   const [startupError, setStartupError] = useState<Error | null>(null);
   const phaseRef = useRef<Phase>("PREFLIGHT");
+  const pausePromiseRef = useRef<Promise<void> | null>(null);
 
   // Keep ref in sync so Capacitor listeners see current phase
   phaseRef.current = phase;
@@ -52,6 +53,13 @@ export default function BootProvider({ children }: BootProviderProps) {
   const boot = useCallback(async function boot() {
     Log.log("* BOOT *");
     Log.time("boot");
+
+    // Wait for any in-flight pause to finish (close DBs, clear key)
+    // before we try to reopen everything.
+    if (pausePromiseRef.current) {
+      await pausePromiseRef.current;
+      pausePromiseRef.current = null;
+    }
 
     try {
       await DatabaseService().openAppDatabase();
@@ -139,14 +147,30 @@ export default function BootProvider({ children }: BootProviderProps) {
       const { authMode, authActions } = selectSecuritySettings(
         store.getState()
       );
+      const shouldLock =
+        authMode !== "none" && authActions.includes(AuthActions.AppResume);
 
-      await redux_pause();
-
-      if (authMode !== "none" && authActions.includes(AuthActions.AppResume)) {
-        await SecurityService().securePause();
+      // Transition phase synchronously BEFORE async work.
+      // This eliminates the race where resume fires mid-pause.
+      if (shouldLock) {
         setPhase("PAUSED");
         phaseRef.current = "PAUSED";
       }
+
+      // Track async cleanup so boot() can await it if resume is fast.
+      const cleanup = (async () => {
+        try {
+          await redux_pause();
+
+          if (shouldLock) {
+            await SecurityService().securePause();
+          }
+        } catch (e) {
+          Log.error("APP_PAUSE failed", e);
+        }
+      })();
+      pausePromiseRef.current = cleanup;
+      await cleanup;
 
       Log.timeEnd("APP_PAUSE");
     }
@@ -191,14 +215,14 @@ export default function BootProvider({ children }: BootProviderProps) {
     return <ErrorBoundary startupError={startupError} />;
   }
 
-  if (phase === "PREFLIGHT" || phase === "BOOTING") {
-    return null; // native splash covers
+  if (phase === "PREFLIGHT" || phase === "BOOTING" || phase === "PAUSED") {
+    return null; // native splash covers; PAUSED = cleanup in progress
   }
 
   if (phase === "LOCKED") {
     return <AppLockScreen boot={boot} />;
   }
 
-  // RUNNING or PAUSED — show the app
+  // RUNNING — show the app
   return children;
 }

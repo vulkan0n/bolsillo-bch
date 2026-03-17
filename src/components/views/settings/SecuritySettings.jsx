@@ -24,6 +24,7 @@ import {
   setPreference,
   selectSecuritySettings,
   selectEncryptionSettings,
+  selectIsExperimental,
 } from "@/redux/preferences";
 import { selectActiveWallet } from "@/redux/wallet";
 
@@ -56,6 +57,7 @@ export default function SecuritySettings() {
     selectEncryptionSettings
   );
   const activeWallet = useSelector(selectActiveWallet);
+  const isExperimental = useSelector(selectIsExperimental);
 
   const handleSetPin = async () => {
     if (isPinConfigured) {
@@ -244,14 +246,11 @@ export default function SecuritySettings() {
     const newMode = event.target.value;
     if (newMode === authMode) return;
 
-    // Auth gate
-    let isAuthorized = false;
-    if (hasBiometric && newMode === "bio") {
-      isAuthorized = await Security.authorizeBio(AuthActions.Any);
-    } else {
-      isAuthorized = await Security.authorize(AuthActions.Any);
+    // Auth gate — skip for bio target since storeBiometricKey prompts itself
+    if (newMode !== "bio") {
+      const isAuthorized = await Security.authorize(AuthActions.Any);
+      if (!isAuthorized) return;
     }
-    if (!isAuthorized) return;
 
     try {
       // Target: none — full teardown
@@ -328,7 +327,8 @@ export default function SecuritySettings() {
     }
 
     try {
-      const result = await Security.importKeyBackup(data, password);
+      const cleanData = data.replace(/[^A-Za-z0-9+/=]/g, "");
+      const result = await Security.importKeyBackup(cleanData, password);
 
       if (result.isKeyMismatch) {
         Notification.error(
@@ -486,7 +486,7 @@ export default function SecuritySettings() {
           <span>{translate(translations.webEncryptionWarning)}</span>
         </div>
       )}
-      {platform !== "web" && (
+      {platform !== "web" && isExperimental && (
         <>
           <div className="text-lg font-semibold bg-neutral-600 text-neutral-100 p-1 mt-4">
             {translate(translations.encryptionSettings)}

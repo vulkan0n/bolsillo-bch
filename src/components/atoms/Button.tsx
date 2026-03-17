@@ -101,7 +101,7 @@ export default function Button({
   const shadowClass = shadow === true ? "shadow" : `shadow-${shadow}`;
 
   const disabledClasses = disabled
-    ? `opacity-[.5] shadow-none active:shadow-none`
+    ? `opacity-50 shadow-none active:shadow-none`
     : "cursor-pointer";
 
   const navigate = useNavigate();

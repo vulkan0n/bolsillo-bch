@@ -3,24 +3,18 @@ import { useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router";
 import { Dialog } from "@capacitor/dialog";
-import { SimpleEncryption } from "capacitor-plugin-simple-encryption";
 import {
   ArrowLeftOutlined,
-  ImportOutlined,
   DeleteOutlined,
   EyeOutlined,
   FileTextOutlined,
   WarningOutlined,
 } from "@ant-design/icons";
 
-import { selectPreferences } from "@/redux/preferences";
+import { selectIsDarkMode, selectPreferences } from "@/redux/preferences";
 
 import ConsoleService from "@/kernel/app/ConsoleService";
-import DatabaseService, {
-  DecryptionFailedError,
-} from "@/kernel/app/DatabaseService";
 import JanitorService from "@/kernel/app/JanitorService";
-import LogService from "@/kernel/app/LogService";
 import SecurityService from "@/kernel/app/SecurityService";
 import WalletManagerService from "@/kernel/wallet/WalletManagerService";
 
@@ -30,8 +24,6 @@ import ShowMnemonic from "@/atoms/ShowMnemonic";
 
 import { translate } from "@/util/translations";
 import translations from "./translations";
-
-const Log = LogService("ForgotPinScreen");
 
 function restartApp() {
   window.location.assign("/");
@@ -46,7 +38,7 @@ const lockScreenButtonProps = {
 
 export const primaryButtonProps = {
   ...lockScreenButtonProps,
-  bgColor: "bg-primary-600 hover:bg-primary-700",
+  bgColor: "bg-primary-500 hover:bg-primary-700",
   activeBgColor: "bg-primary-700",
   labelColor: "text-white font-semibold",
   activeLabelColor: "text-white",
@@ -54,8 +46,8 @@ export const primaryButtonProps = {
 
 export const dangerButtonProps = {
   ...lockScreenButtonProps,
-  bgColor: "bg-red-600 hover:bg-red-700",
-  activeBgColor: "bg-red-700",
+  bgColor: "bg-error hover:bg-error-dark",
+  activeBgColor: "bg-error-dark",
   labelColor: "text-white font-semibold",
   activeLabelColor: "text-white",
 } as const;
@@ -70,6 +62,16 @@ export function LockScreenWrapper({
   showBack?: boolean;
 }) {
   const navigate = useNavigate();
+  const isDarkMode = useSelector(selectIsDarkMode);
+
+  // Apply dark class to <html> for pre-auth screens (MainLayout isn't mounted yet)
+  const html = document.documentElement;
+  if (isDarkMode) {
+    html.classList.add("dark");
+  } else {
+    html.classList.remove("dark");
+  }
+
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-neutral-100 dark:bg-neutral-900 p-4">
       <div className="w-full max-w-sm bg-white dark:bg-neutral-800 rounded-lg shadow-lg p-6">
@@ -88,166 +90,51 @@ export function LockScreenWrapper({
   );
 }
 
-function ErrorMessage({ error }: { error: string }) {
-  if (!error) {
-    return null;
-  }
-  return (
-    <div className="mb-3 p-2 bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-200 rounded text-center text-sm">
-      {error}
-    </div>
-  );
-}
-
-export function ImportBackupScreen() {
-  const [backupData, setBackupData] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+export function NuclearWipeScreen() {
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleImportBackup = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!backupData || !password || isLoading) {
-      return;
-    }
+  const handleNuclearWipe = async () => {
+    if (isLoading) return;
+
+    const { value: isConfirmed } = await Dialog.confirm({
+      title: translate(translations.resetEverything),
+      message: translate(translations.deleteWarning),
+    });
+
+    if (!isConfirmed) return;
 
     setIsLoading(true);
-    setError("");
-
     try {
-      // Calls plugin directly (bypassing SecurityService) because this screen
-      // operates pre-auth when no encryption key is loaded.
-      await SimpleEncryption.importKeyBackup({ data: backupData, password });
-      setPassword("");
-      setBackupData("");
-      Log.log("Key backup imported successfully from forgot PIN screen");
-
-      // Verify the imported key can decrypt existing databases
-      try {
-        await DatabaseService().testDecryptAppDb();
-      } catch (verifyErr) {
-        if (verifyErr instanceof DecryptionFailedError) {
-          Log.error("Imported key does not match databases", verifyErr);
-          setError(translate(translations.keyMismatch));
-          setIsLoading(false);
-          return;
-        }
-        // Non-decryption error (file missing etc.) — key might still be valid
-        Log.warn("Could not verify key against app.db", verifyErr);
-      }
-
-      // Restart the app to re-initialize with the new key
+      await JanitorService().nuclearWipe();
       restartApp();
-    } catch (err) {
-      Log.error("Key import failed", err);
-      setError(
-        err instanceof Error
-          ? err.message
-          : translate(translations.importFailed)
-      );
+    } catch (e) {
       setIsLoading(false);
     }
   };
 
   return (
     <LockScreenWrapper showBack>
-      <h2 className="text-lg font-bold text-neutral-900 dark:text-neutral-100 mb-2">
-        {translate(translations.importKeyBackup)}
-      </h2>
-      <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-4">
-        {translate(translations.importKeyBackupInfo)}
-      </p>
-
-      <div className="mb-4 p-2 bg-amber-50 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-800 rounded text-sm text-amber-700 dark:text-amber-300">
-        <WarningOutlined className="mr-1" />
-        {translate(translations.importWarning)}
-      </div>
-
-      <form onSubmit={handleImportBackup}>
-        <textarea
-          value={backupData}
-          onChange={(e) => setBackupData(e.target.value)}
-          placeholder={translate(translations.pasteBackupData)}
-          className="w-full p-3 mb-3 border border-neutral-300 dark:border-neutral-600 rounded-lg bg-neutral-50 dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 text-sm h-24 resize-none"
-          disabled={isLoading}
-        />
-        <input
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          placeholder={translate(translations.backupPassword)}
-          className="w-full p-3 mb-3 border border-neutral-300 dark:border-neutral-600 rounded-lg bg-neutral-50 dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100"
-          disabled={isLoading}
-        />
-
-        <ErrorMessage error={error} />
-
-        <Button
-          submit
-          {...primaryButtonProps}
-          label={
-            isLoading
-              ? translate(translations.importing)
-              : translate(translations.importAndRestart)
-          }
-          disabled={!backupData || !password || isLoading}
-        />
-      </form>
-    </LockScreenWrapper>
-  );
-}
-
-export function NuclearWipeScreen() {
-  const [wipeConfirmText, setWipeConfirmText] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-
-  const handleNuclearWipe = async () => {
-    if (wipeConfirmText !== translate(translations.deleteAllData) || isLoading)
-      return;
-
-    setIsLoading(true);
-    await JanitorService().nuclearWipe();
-    restartApp();
-  };
-
-  return (
-    <LockScreenWrapper showBack>
       <div className="flex items-center gap-2 mb-4">
-        <WarningOutlined className="text-red-500 text-xl" />
-        <h2 className="text-lg font-bold text-red-600 dark:text-red-400">
+        <WarningOutlined className="text-error text-xl" />
+        <h2 className="text-lg font-bold text-error dark:text-error-light">
           {translate(translations.resetEverything)}
         </h2>
       </div>
 
-      <div className="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded p-3 mb-4">
-        <p className="text-sm text-red-700 dark:text-red-300 mb-2">
+      <div className="bg-error-light/20 dark:bg-error-dark/30 border border-error-light dark:border-error-dark rounded p-3 mb-4">
+        <p className="text-sm text-error dark:text-error-light mb-2">
           {translate(translations.deleteWarning)}
         </p>
-        <ul className="text-sm text-red-600 dark:text-red-400 list-disc list-inside">
+        <ul className="text-sm text-error dark:text-error-light list-disc list-inside">
           <li>{translate(translations.allWalletDatabases)}</li>
           <li>{translate(translations.allEncryptionKeys)}</li>
           <li>{translate(translations.allAppSettings)}</li>
           <li>{translate(translations.allTransactionHistory)}</li>
         </ul>
-        <p className="text-sm text-red-700 dark:text-red-300 mt-2 font-semibold">
+        <p className="text-sm text-error dark:text-error-light mt-2 font-semibold">
           {translate(translations.seedPhraseWarning)}
         </p>
       </div>
-
-      <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-2">
-        {translate(translations.typeToConfirm)}{" "}
-        <span className="font-mono font-bold">
-          {translate(translations.deleteAllData)}
-        </span>
-      </p>
-      <input
-        type="text"
-        value={wipeConfirmText}
-        onChange={(e) => setWipeConfirmText(e.target.value)}
-        placeholder={translate(translations.deleteAllData)}
-        className="w-full p-3 mb-3 border border-red-300 dark:border-red-600 rounded-lg bg-neutral-50 dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 text-center font-mono"
-        disabled={isLoading}
-      />
 
       <Button
         {...dangerButtonProps}
@@ -257,9 +144,7 @@ export function NuclearWipeScreen() {
             : translate(translations.resetEverything)
         }
         onClick={handleNuclearWipe}
-        disabled={
-          wipeConfirmText !== translate(translations.deleteAllData) || isLoading
-        }
+        disabled={isLoading}
       />
     </LockScreenWrapper>
   );
@@ -308,14 +193,14 @@ export function LegacyRevealScreen() {
   return (
     <LockScreenWrapper showBack>
       <div className="flex items-center gap-2 mb-4">
-        <WarningOutlined className="text-red-500 text-xl" />
-        <h2 className="text-lg font-bold text-red-600 dark:text-red-400">
+        <WarningOutlined className="text-error text-xl" />
+        <h2 className="text-lg font-bold text-error dark:text-error-light">
           {translate(translations.emergencyRevealTitle)}
         </h2>
       </div>
 
-      <div className="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded p-3 mb-4">
-        <p className="text-sm text-red-700 dark:text-red-300">
+      <div className="bg-error-light/20 dark:bg-error-dark/30 border border-error-light dark:border-error-dark rounded p-3 mb-4">
+        <p className="text-sm text-error dark:text-error-light">
           {translate(translations.emergencyRevealWarning)}
         </p>
       </div>
@@ -386,27 +271,9 @@ export function ForgotPinMenu() {
       <div className="space-y-3">
         <Button
           {...menuButtonProps}
-          onClick={() => navigate("/forgot-pin/import")}
-          icon={ImportOutlined}
-          iconClasses="text-primary-500"
-          iconSize="lg"
-          label={
-            <div className="text-left">
-              <div className="font-semibold text-neutral-900 dark:text-neutral-100">
-                {translate(translations.importKeyBackup)}
-              </div>
-              <div className="text-xs text-neutral-500 dark:text-neutral-400">
-                {translate(translations.restoreFromBackup)}
-              </div>
-            </div>
-          }
-        />
-
-        <Button
-          {...menuButtonProps}
           onClick={() => navigate("/forgot-pin/wipe")}
           icon={DeleteOutlined}
-          iconClasses="text-red-500"
+          iconClasses="text-error"
           iconSize="lg"
           label={
             <div className="text-left">

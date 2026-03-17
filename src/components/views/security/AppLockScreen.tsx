@@ -17,7 +17,6 @@ import translations from "./translations";
 
 import {
   ForgotPinMenu,
-  ImportBackupScreen,
   LegacyRevealScreen,
   NuclearWipeScreen,
   LockScreenWrapper,
@@ -143,7 +142,7 @@ function LockScreen({ boot }: AppLockScreenProps) {
           />
 
           {error && (
-            <div className="mb-4 p-2 bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-200 rounded text-center text-sm">
+            <div className="mb-4 p-2 bg-error-light/20 dark:bg-error-dark/30 text-error dark:text-error-light rounded text-center text-sm">
               {error}
             </div>
           )}
@@ -222,7 +221,6 @@ export default function AppLockScreen({ boot }: AppLockScreenProps) {
       <Routes>
         <Route path="/" element={<LockScreen boot={boot} />} />
         <Route path="/forgot-pin" element={<ForgotPinMenu />} />
-        <Route path="/forgot-pin/import" element={<ImportBackupScreen />} />
         <Route path="/forgot-pin/reveal" element={<LegacyRevealScreen />} />
         <Route path="/forgot-pin/wipe" element={<NuclearWipeScreen />} />
       </Routes>
