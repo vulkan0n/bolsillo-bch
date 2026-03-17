@@ -27,7 +27,8 @@ let package = Package(
         .package(name: "CapacitorScreenOrientation", path: "../../../node_modules/.pnpm/@capacitor+screen-orientation@8.0.0_@capacitor+core@8.0.1/node_modules/@capacitor/screen-orientation"),
         .package(name: "CapacitorShare", path: "../../../node_modules/.pnpm/@capacitor+share@8.0.0_@capacitor+core@8.0.1/node_modules/@capacitor/share"),
         .package(name: "CapacitorSplashScreen", path: "../../../node_modules/.pnpm/@capacitor+splash-screen@8.0.0_@capacitor+core@8.0.1/node_modules/@capacitor/splash-screen"),
-        .package(name: "CapawesomeCapacitorTorch", path: "../../../node_modules/.pnpm/@capawesome+capacitor-torch@8.0.0_@capacitor+core@8.0.1/node_modules/@capawesome/capacitor-torch")
+        .package(name: "CapawesomeCapacitorTorch", path: "../../../node_modules/.pnpm/@capawesome+capacitor-torch@8.0.0_@capacitor+core@8.0.1/node_modules/@capawesome/capacitor-torch"),
+        .package(name: "CapacitorPluginSimpleEncryption", path: "../../../node_modules/.pnpm/capacitor-plugin-simple-encryption@git+https+++git.xulu.tech+selene.cash+capacitor-plug_3611ac25a1d9e23907d61e41bd1fc02c/node_modules/capacitor-plugin-simple-encryption")
     ],
     targets: [
         .target(
@@ -50,7 +51,8 @@ let package = Package(
                 .product(name: "CapacitorScreenOrientation", package: "CapacitorScreenOrientation"),
                 .product(name: "CapacitorShare", package: "CapacitorShare"),
                 .product(name: "CapacitorSplashScreen", package: "CapacitorSplashScreen"),
-                .product(name: "CapawesomeCapacitorTorch", package: "CapawesomeCapacitorTorch")
+                .product(name: "CapawesomeCapacitorTorch", package: "CapawesomeCapacitorTorch"),
+                .product(name: "CapacitorPluginSimpleEncryption", package: "CapacitorPluginSimpleEncryption")
             ]
         )
     ]
