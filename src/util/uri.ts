@@ -15,54 +15,6 @@ import { Haptic } from "@/util/haptic";
 import { sha256, ripemd160 } from "@/util/hash";
 import { bchToSats } from "@/util/sats";
 
-/** Test if a string represents an integer (for safe BigInt conversion). */
-export const isIntStr = (s: string) => /^-?\d+$/.test(s);
-
-/**
- * Encode URI to alphanumeric QR format (CHIP-2023-05)
- * QR codes in alphanumeric mode use uppercase and substitute:
- * ? -> : (for query string start)
- * = -> - (for key=value)
- * & -> + (for parameter separation)
- */
-export function toAlphanumericUri(uri: string): string {
-  return uri
-    .toUpperCase()
-    .replace(/\?/g, ":")
-    .replace(/=/g, "-")
-    .replace(/&/g, "+");
-}
-
-/**
- * Decode alphanumeric QR format (CHIP-2023-05)
- * Reverses the encoding from toAlphanumericUri.
- * Note: The first colon is the cashaddr prefix separator and must be preserved.
- */
-export function fromAlphanumericUri(uri: string): string {
-  // Only process if entirely uppercase (indicates alphanumeric QR mode)
-  if (uri !== uri.toUpperCase()) {
-    return uri;
-  }
-
-  // Find the first colon (cashaddr prefix separator)
-  const firstColonIndex = uri.indexOf(":");
-  if (firstColonIndex === -1) {
-    return uri.toLowerCase();
-  }
-
-  // Keep prefix:address, decode the rest
-  const prefix = uri.slice(0, firstColonIndex + 1);
-  const rest = uri.slice(firstColonIndex + 1);
-
-  // In the rest, the first colon (if any) is the query separator
-  const decoded = rest
-    .replace(/:/, "?") // Only first : becomes ?
-    .replace(/-/g, "=")
-    .replace(/\+/g, "&");
-
-  return (prefix + decoded).toLowerCase();
-}
-
 // validateBchUri: validates all possible BCH URI formats
 export function validateBchUri(uri: string) {
   const {
@@ -128,6 +80,9 @@ export function validateBchUri(uri: string) {
 
   return payload;
 }
+
+// safety check for BigInt conversion
+export const isIntStr = (s: string) => /^-?\d+$/.test(s);
 
 // validateBip21Uri: cashaddr, base58 addresses, and bip21 invoices (?amount=)
 export function validateBip21Uri(uri: string) {
@@ -384,3 +339,48 @@ export const navigateOnValidUri = async (
 
   return { navTo, navState, isTokenAddress, isExpired: isExpired || false };
 };
+
+/**
+ * Encode URI to alphanumeric QR format (CHIP-2023-05)
+ * QR codes in alphanumeric mode use uppercase and substitute:
+ * ? -> : (for query string start)
+ * = -> - (for key=value)
+ * & -> + (for parameter separation)
+ */
+export function toAlphanumericUri(uri: string): string {
+  return uri
+    .toUpperCase()
+    .replace(/\?/g, ":")
+    .replace(/=/g, "-")
+    .replace(/&/g, "+");
+}
+
+/**
+ * Decode alphanumeric QR format (CHIP-2023-05)
+ * Reverses the encoding from toAlphanumericUri.
+ * Note: The first colon is the cashaddr prefix separator and must be preserved.
+ */
+export function fromAlphanumericUri(uri: string): string {
+  // Only process if entirely uppercase (indicates alphanumeric QR mode)
+  if (uri !== uri.toUpperCase()) {
+    return uri;
+  }
+
+  // Find the first colon (cashaddr prefix separator)
+  const firstColonIndex = uri.indexOf(":");
+  if (firstColonIndex === -1) {
+    return uri.toLowerCase();
+  }
+
+  // Keep prefix:address, decode the rest
+  const prefix = uri.slice(0, firstColonIndex + 1);
+  const rest = uri.slice(firstColonIndex + 1);
+
+  // In the rest, the first colon (if any) is the query separator
+  const decoded = rest
+    .replace(/:/, "?") // Only first : becomes ?
+    .replace(/-/g, "=")
+    .replace(/\+/g, "&");
+
+  return (prefix + decoded).toLowerCase();
+}
