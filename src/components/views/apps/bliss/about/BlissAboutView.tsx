@@ -1,7 +1,13 @@
-/*import { Interval } from "luxon";
+import { Interval } from "luxon";
 import { LinkOutlined } from "@ant-design/icons";
-import { EmbeddedVideoCard } from "@/components/atoms/EmbeddedVideo";
-import FullColumn from "@/layout/FullColumn";
+
+import Card from "@/atoms/Card";
+import { EmbeddedVideoCard } from "@/atoms/EmbeddedVideo";
+import LinkExternal from "@/atoms/LinkExternal";
+
+import { translate } from "@/util/translations";
+import translations from "../translations";
+
 import {
   BLISS_2026_END_DATE,
   BLISS_2026_START_DATE,
@@ -9,13 +15,8 @@ import {
   VELMA_VIDEO_URL,
   BLISS_HOME_URL,
   TAPSWAP_TICKETS_URL,
+  TAPSWAP_TUTORIAL_VIDEO_URL,
 } from "../constants.jsx";
-import { translate } from "@/util/translations";
-import translations from "../translations";
-import LinkItem from "@/components/atoms/LinkItem.js";
-
-import { useSelector } from "react-redux";
-import { selectActiveWallet } from "@/redux/wallet";
 
 const interval = Interval.fromDateTimes(
   BLISS_2026_START_DATE,
@@ -23,42 +24,63 @@ const interval = Interval.fromDateTimes(
 );
 
 function BlissAboutView() {
-  const wallet = useSelector(selectActiveWallet);
-
   return (
-    <FullColumn>
-      <div className="px-2 py-4">
-        <h1 className="font-bliss text-2xl text-[#e8078c] bg-[linear-gradient(to_bottom,_rgb(232,_7,_140),_rgb(160,_137,_191))] bg-clip-text text-transparent">
-          BLISS 2026
-        </h1>
-        <div className=" text-lg">Dublin, Ireland</div>
+    <div className="p-2 flex flex-col gap-y-2">
+      <Card className="p-2">
+        <div className="rounded-md bg-primary-50 dark:bg-neutral-700 p-2">
+          <h1 className="font-bliss text-2xl text-center bg-[linear-gradient(to_bottom,_rgb(232,_7,_140),_rgb(160,_137,_191))] bg-clip-text text-transparent">
+            BLISS 2026: Layla
+          </h1>
+          <h2 className="text-center">Ljubljana, Slovenia</h2>
+          <h3 className="text-md text-center font-semibold">
+            {interval.toLocaleString({
+              dateStyle: "long",
+            })}
+          </h3>
+        </div>
+        <div className="p-2">{translate(translations.intro)}</div>
+        <div className="mt-1 rounded-md flex flex-col border dark:border-primarydark-400 border-primary-700 bg-white dark:bg-neutral-1000">
+          <LinkExternal to={BLISS_HOME_URL}>
+            <div className="text-primary-700 dark:text-primarydark flex items-center gap-2 w-full p-3 border-b border-[#ececec] last:border-b-0">
+              <LinkOutlined />
+              <span className="flex-1 font-bold">bliss.cash</span>
+              <span>→</span>
+            </div>
+          </LinkExternal>
+          <LinkExternal to={TAPSWAP_TICKETS_URL}>
+            <div className="text-primary-700 dark:text-primarydark flex items-center gap-2 w-full p-3 border-b border-[#ececec] last:border-b-0">
+              <LinkOutlined />
+              <span className="flex-1 font-bold">
+                {translate(translations.tickets)}
+              </span>
+              <span>→</span>
+            </div>
+          </LinkExternal>
+        </div>
+      </Card>
 
-        <div className=" text-md">
-          {interval.toLocaleString({
-            dateStyle: "long",
-          })}
-        </div>
-        <div className="mt-2">{translate(translations.intro)}</div>
-        <div className="bg-neutral rounded-lg  mt-6 flex flex-col overflow-hidden">
-          <LinkItem href={BLISS_HOME_URL} label="bliss.cash" />
-          <LinkItem
-            href={TAPSWAP_TICKETS_URL}
-            label={translate(translations.tickets)}
-          />
-        </div>
-        <div className="mt-4" />
-        <h2 className="font-bold text-xl mt-6 mb-4 ">
+      <Card className="p-2">
+        <h2 className="font-bold text-xl text-center p-2">
           {translate(translations.about)}
         </h2>
         <EmbeddedVideoCard url={BLISS_ABOUT_VIDEO_URL} />
-        <h2 className="font-bold text-xl mt-6 mb-4 ">
+      </Card>
+
+      <Card className="p-2">
+        <h2 className="font-bold text-xl text-center p-2">
+          {translate(translations.howToTicketsTitle)}
+        </h2>
+        <EmbeddedVideoCard url={TAPSWAP_TUTORIAL_VIDEO_URL} />
+      </Card>
+
+      <Card className="p-2">
+        <h2 className="font-bold text-xl text-center p-2">
           {translate(translations.velmaUpgrade)}
         </h2>
         <EmbeddedVideoCard url={VELMA_VIDEO_URL} />
-      </div>
-    </FullColumn>
+      </Card>
+    </div>
   );
 }
 
 export default BlissAboutView;
-*/

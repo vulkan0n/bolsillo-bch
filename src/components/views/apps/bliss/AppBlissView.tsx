@@ -17,11 +17,14 @@ import translations from "./translations";
 
 function AppBlissView() {
   const wallet = useSelector(selectActiveWallet);
+  // const now = useRealTime(1000);
+  // const isTokenHuntAvailable =
+  //   now.valueOf() >= BLISS_2026_TOKEN_HUNT_START_DATE.valueOf();
 
   return (
     <FullColumn>
       <ViewHeader icon={BankOutlined} title={"BLISS 2026"} close="/explore" />
-      <div className="flex">
+      {/* <div className="flex">
         <NavTab
           to="/apps/bliss/about"
           label={"About"}
@@ -34,13 +37,15 @@ function AppBlissView() {
           icon={MoneyCollectOutlined}
           activeIcon={MoneyCollectOutlined}
         />
-        <NavTab
-          to="/apps/bliss/tokenHunt"
-          label={"Token Hunt"}
-          icon={MoneyCollectOutlined}
-          activeIcon={MoneyCollectOutlined}
-        />
-      </div>
+        {isTokenHuntAvailable && (
+          <NavTab
+            to="/apps/bliss/tokenHunt"
+            label={"Token Hunt"}
+            icon={MoneyCollectOutlined}
+            activeIcon={MoneyCollectOutlined}
+          />
+        )}
+      </div> */}
       <Outlet context={wallet} />
     </FullColumn>
   );

@@ -12,6 +12,9 @@ export const BLISS_2026_GRACE_PERIOD = DateTime.fromJSDate(
 ).plus({
   weeks: 3,
 });
+export const BLISS_2026_TOKEN_HUNT_START_DATE = new Date(
+  "2026-05-14T12:00:00+02:00"
+);
 
 export const BLISS_ABOUT_VIDEO_URL =
   "https://www.youtube.com/watch?v=ddVj8LepAPs&pp=0gcJCX4JAYcqIYzv";
