@@ -1,4 +1,3 @@
-import { ApolloProvider } from "@apollo/client";
 import {
   LikeOutlined,
   GlobalOutlined,
@@ -13,28 +12,26 @@ import SeleneLogo from "@/atoms/SeleneLogo";
 
 import useRealTime from "@/hooks/useRealTime";
 
-import apolloClient from "@/apolloClient";
-
 import { translate } from "@/util/translations";
 import translations from "./translations";
 
 import BlazeAppCard from "../apps/blaze/BlazeAppCard";
 import { BLAZE_2025_END_DATE } from "../apps/blaze/constants";
-//import BlissAppCard from "../apps/bliss/BlissAppCard";
+import BlissAppCard from "../apps/bliss/BlissAppCard";
+import { BLISS_2026_END_DATE } from "../apps/bliss/constants";
 import ExploreApp from "./ExploreApp";
 
 export default function ExploreViewHome() {
   const now = useRealTime(1000);
   const isBlazeOngoing = now.valueOf() <= BLAZE_2025_END_DATE.valueOf();
+  const isBlissOngoing = now.valueOf() <= BLISS_2026_END_DATE.valueOf();
 
   return (
     <div className="p-1.5 flex flex-col gap-2">
       <Carousel autoRotateInterval={10000}>
         {isBlazeOngoing && <BlazeAppCard />}
-        {/* <BlissAppCard /> */}
-        <ApolloProvider client={apolloClient}>
-          <StatsGraphCard />
-        </ApolloProvider>
+        {isBlissOngoing && <BlissAppCard />}
+        <StatsGraphCard />
       </Carousel>
       <Card className="p-2">
         <div className="flex flex-col gap-2">
