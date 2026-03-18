@@ -1,22 +1,22 @@
-import { useState, useRef, useMemo } from "react";
+import { useMemo, useRef, useState } from "react";
 import { QRCode } from "react-qrcode-logo";
-import { useSelector, useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router";
 import {
-  FormOutlined,
   CaretRightOutlined,
   CloseOutlined,
   CopyOutlined,
+  FormOutlined,
   ShopOutlined,
 } from "@ant-design/icons";
 
-import { selectScannerIsScanning, selectKeyboardIsOpen } from "@/redux/device";
+import { selectKeyboardIsOpen, selectScannerIsScanning } from "@/redux/device";
 import {
   selectBchNetwork,
-  selectQrCodeSettings,
-  selectShouldUseTokenAddress,
   selectIsStablecoinMode,
+  selectQrCodeSettings,
   selectShouldUseLegacyBip21,
+  selectShouldUseTokenAddress,
   setPreference,
 } from "@/redux/preferences";
 import { selectIsSyncing } from "@/redux/sync";

@@ -1,9 +1,9 @@
 import {
-  LikeOutlined,
   GlobalOutlined,
-  QuestionCircleOutlined,
-  PlayCircleOutlined,
+  LikeOutlined,
   MailOutlined,
+  PlayCircleOutlined,
+  QuestionCircleOutlined,
   XOutlined,
 } from "@ant-design/icons";
 import { TelegramFilled } from "@/icons/TelegramFilled";

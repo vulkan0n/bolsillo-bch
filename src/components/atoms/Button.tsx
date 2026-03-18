@@ -1,4 +1,4 @@
-import { useNavigate, To } from "react-router";
+import { To, useNavigate } from "react-router";
 
 import NullComponent from "@/atoms/NullComponent";
 

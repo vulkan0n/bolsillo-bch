@@ -1,8 +1,8 @@
 import { Preferences } from "@capacitor/preferences";
 import {
+  createAsyncThunk,
   createReducer,
   createSelector,
-  createAsyncThunk,
 } from "@reduxjs/toolkit";
 
 import { RootState } from "@/redux";
@@ -12,7 +12,7 @@ import { REENCRYPTION_KEY } from "@/kernel/app/DatabaseService";
 import { AuthActions } from "@/kernel/app/SecurityService";
 import CurrencyService from "@/kernel/bch/CurrencyService";
 
-import { DEFAULT_CURRENCY, currencyList } from "@/util/currency";
+import { currencyList, DEFAULT_CURRENCY } from "@/util/currency";
 import { ValidBchNetwork } from "@/util/network";
 import { VALID_DENOMINATIONS } from "@/util/sats";
 

@@ -1,12 +1,12 @@
 import { useContext } from "react";
 import { useSelector } from "react-redux";
 import {
-  ControlOutlined,
   CompassOutlined,
-  SyncOutlined,
-  StockOutlined,
+  ControlOutlined,
   MobileOutlined,
+  StockOutlined,
   SunFilled,
+  SyncOutlined,
 } from "@ant-design/icons";
 
 import { selectDevicePlatform } from "@/redux/device";

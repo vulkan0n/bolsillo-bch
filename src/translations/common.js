@@ -919,6 +919,12 @@ const translations = {
     zh: "请输入密码",
     zh_TW: "請輸入密碼",
   },
+  enterPassword: {
+    en: "Enter Password",
+  },
+  pleaseEnterYourPassword: {
+    en: "Please enter your password.",
+  },
   pleaseEnterYourPin: {
     ar: "يرجى إدخال رقم التعريف الشخصي (PIN).",
     bn: "আপনার পিন লিখুন।",
@@ -1626,7 +1632,9 @@ export const {
   authorizeThisAction,
   pleaseAuthorizeThisAction,
   enterPin,
+  enterPassword,
   pleaseEnterYourPin,
+  pleaseEnterYourPassword,
   authorizeAction,
   authOpenApp,
   authResumeApp,

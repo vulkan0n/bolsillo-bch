@@ -3,8 +3,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { Link, Outlet, useLocation } from "react-router";
 import {
   BankOutlined,
-  MoneyCollectOutlined,
   DeploymentUnitOutlined,
+  MoneyCollectOutlined,
   SettingOutlined,
 } from "@ant-design/icons";
 

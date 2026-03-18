@@ -1,4 +1,4 @@
-import { Filesystem, Directory, Encoding } from "@capacitor/filesystem";
+import { Directory, Encoding, Filesystem } from "@capacitor/filesystem";
 import { SimpleEncryption } from "capacitor-plugin-simple-encryption";
 import { generateBip39Mnemonic } from "@bitauth/libauth";
 
@@ -11,11 +11,11 @@ import LogService from "@/kernel/app/LogService";
 import translations from "@/views/wallet/translations";
 
 import {
-  ValidDerivationPath,
   DEFAULT_DERIVATION_PATH,
+  ValidDerivationPath,
 } from "@/util/derivation";
 import { sha256 } from "@/util/hash";
-import { ValidBchNetwork, getPrefix as getNetworkPrefix } from "@/util/network";
+import { getPrefix as getNetworkPrefix, ValidBchNetwork } from "@/util/network";
 
 import { translate } from "@/util/translations";
 

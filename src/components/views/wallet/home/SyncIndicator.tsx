@@ -1,18 +1,18 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import { useCallback } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router";
 import { animated, useSpring } from "@react-spring/web";
 import {
-  DisconnectOutlined,
   CheckCircleFilled,
+  DisconnectOutlined,
   SyncOutlined,
 } from "@ant-design/icons";
 
 import {
-  selectShouldDisplaySyncCounter,
   selectIsExperimental,
   selectIsOfflineMode,
+  selectShouldDisplaySyncCounter,
 } from "@/redux/preferences";
 import {
   selectIsConnected,

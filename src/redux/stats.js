@@ -3,10 +3,10 @@ import { DateTime } from "luxon";
 
 import { selectDeviceInfo } from "@/redux/device";
 import {
-  setPreference,
+  selectIsOfflineMode,
   selectLastCheckIn,
   selectPrivacySettings,
-  selectIsOfflineMode,
+  setPreference,
 } from "@/redux/preferences";
 import { selectGenesisHeight } from "@/redux/wallet";
 

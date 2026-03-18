@@ -1,41 +1,41 @@
-import { useEffect, useState, useRef, useCallback } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
-import { useSelector, useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router";
 import { DateTime } from "luxon";
 import {
-  SyncOutlined,
-  HourglassOutlined,
   CheckCircleOutlined,
-  HistoryOutlined,
   CloseCircleOutlined,
+  DownloadOutlined,
   FilterOutlined,
+  HistoryOutlined,
+  HourglassOutlined,
   SortAscendingOutlined,
   SortDescendingOutlined,
-  DownloadOutlined,
+  SyncOutlined,
 } from "@ant-design/icons";
 
 import {
-  selectCurrencySettings,
-  selectPrivacySettings,
-  selectIsExperimental,
   selectBchNetwork,
+  selectCurrencySettings,
+  selectIsExperimental,
+  selectPrivacySettings,
 } from "@/redux/preferences";
 import { selectChaintip, selectSyncState } from "@/redux/sync";
 import {
-  selectTransactionHistory,
+  resetFilters,
   selectSearchQuery,
+  selectTransactionHistory,
+  selectTransactionHistoryPagination,
   selectTxHistoryFilters,
+  setDirection,
+  setHasNft,
+  setHasToken,
+  setSearchQuery,
+  setSortDirection,
+  setSortField,
   txHistoryFetch,
   txHistoryFetchMore,
-  setSearchQuery,
-  setSortField,
-  setSortDirection,
-  setDirection,
-  setHasToken,
-  setHasNft,
-  resetFilters,
-  selectTransactionHistoryPagination,
 } from "@/redux/txHistory";
 import { selectActiveWalletHash } from "@/redux/wallet";
 
@@ -43,8 +43,8 @@ import LogService from "@/kernel/app/LogService";
 import NotificationService from "@/kernel/app/NotificationService";
 import TransactionManagerService from "@/kernel/bch/TransactionManagerService";
 import {
-  prepareTransactionExportData,
   exportHistoryAsCsv,
+  prepareTransactionExportData,
 } from "@/kernel/wallet/TransactionExportService";
 import type { MergedHistoryEntity } from "@/kernel/wallet/TransactionHistoryService";
 import TransactionHistoryService from "@/kernel/wallet/TransactionHistoryService";

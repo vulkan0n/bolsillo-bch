@@ -1,5 +1,6 @@
 import {
   back,
+  enterPassword,
   enterPin,
   importKeyBackup,
   incorrectPin,
@@ -9,10 +10,14 @@ const translations = {
   // Imported from common
   back,
   enterPin,
+  enterPassword,
   importKeyBackup,
   incorrectPin,
 
   // AppLockScreen
+  enterPasswordPrompt: {
+    en: "Enter password to unlock your wallet"
+  },
   enterPinPrompt: {
     ar: "أدخل رمز PIN لفتح محفظتك",
     bn: "আপনার ওয়ালেট আনলক করতে পিন লিখুন",

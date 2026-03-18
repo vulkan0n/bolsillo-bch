@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
-import { useState, useEffect, useCallback, Ref } from "react";
+import { Ref, useCallback, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Keyboard } from "@capacitor/keyboard";
 import { Decimal } from "decimal.js";
@@ -10,7 +10,7 @@ import { selectCurrencySettings } from "@/redux/preferences";
 import CurrencyService from "@/kernel/bch/CurrencyService";
 
 import { getMaxDecimals, truncateDecimals } from "@/util/currency";
-import { satsToBch, bchToSats, MAX_SATOSHI } from "@/util/sats";
+import { bchToSats, MAX_SATOSHI, satsToBch } from "@/util/sats";
 
 interface SatoshiInputProps {
   ref?: Ref<HTMLInputElement>;

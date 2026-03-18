@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
-import { useRouteError, useNavigate } from "react-router";
+import { useNavigate, useRouteError } from "react-router";
 import { Dialog } from "@capacitor/dialog";
 import { BugOutlined } from "@ant-design/icons";
 

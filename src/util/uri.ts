@@ -1,18 +1,18 @@
 import {
-  decodeCashAddress,
+  assertSuccess,
+  CashAddressType,
   decodeBase58Address,
+  decodeCashAddress,
   decodePrivateKeyWif,
   encodeCashAddress,
   secp256k1,
-  CashAddressType,
-  assertSuccess,
 } from "@bitauth/libauth";
 
 import NotificationService from "@/kernel/app/NotificationService";
 import WalletManagerService from "@/kernel/wallet/WalletManagerService";
 
 import { Haptic } from "@/util/haptic";
-import { sha256, ripemd160 } from "@/util/hash";
+import { ripemd160, sha256 } from "@/util/hash";
 import { bchToSats } from "@/util/sats";
 
 // validateBchUri: validates all possible BCH URI formats

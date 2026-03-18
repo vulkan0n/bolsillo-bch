@@ -1,9 +1,9 @@
 /* eslint-disable max-classes-per-file */
 import { Capacitor } from "@capacitor/core";
-import { Filesystem, Directory, Encoding } from "@capacitor/filesystem";
+import { Directory, Encoding, Filesystem } from "@capacitor/filesystem";
 import { Preferences } from "@capacitor/preferences";
 import { SimpleEncryption } from "capacitor-plugin-simple-encryption";
-import { binToBase64, base64ToBin } from "@bitauth/libauth";
+import { base64ToBin, binToBase64 } from "@bitauth/libauth";
 import initSqlJs from "sql.js";
 
 import LogService from "@/kernel/app/LogService";

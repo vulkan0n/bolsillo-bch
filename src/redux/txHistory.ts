@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
 import {
+  createAction,
+  createAsyncThunk,
   createReducer,
   createSelector,
-  createAsyncThunk,
-  createAction,
 } from "@reduxjs/toolkit";
 
 import { RootState } from "@/redux";
-import { selectCurrencySettings, selectBchNetwork } from "@/redux/preferences";
+import { selectBchNetwork, selectCurrencySettings } from "@/redux/preferences";
 import { selectActiveWalletHash } from "@/redux/wallet";
 
 import LogService from "@/kernel/app/LogService";

@@ -2178,6 +2178,15 @@ const translations = {
     zh: "重置 PIN",
     zh_TW: "重設密碼"
   },
+  passwordNotSet: {
+    en: "Password is not set!"
+  },
+  passwordSet: {
+    en: "Password is set"
+  },
+  resetPassword: {
+    en: "Reset Password"
+  },
   autoResolveBcmr: {
     ar: "حل بيانات التعريف الرمزية تلقائيًا",
     bn: "টোকেন মেটাডেটা স্বয়ংক্রিয়ভাবে সমাধান করুন",

@@ -1,22 +1,22 @@
 import { useSelector } from "react-redux";
 import { NavLink } from "react-router";
 import {
-  WalletOutlined,
-  WalletFilled,
-  CompassOutlined,
-  CompassFilled,
-  BankOutlined,
   BankFilled,
-  SettingOutlined,
+  BankOutlined,
+  CompassFilled,
+  CompassOutlined,
   SettingFilled,
+  SettingOutlined,
+  WalletFilled,
+  WalletOutlined,
 } from "@ant-design/icons";
 
 import { selectKeyboardIsOpen, selectScannerIsScanning } from "@/redux/device";
 import {
-  selectLanguageCode,
-  selectUiSettings,
-  selectLastAssetsPath,
   selectIsVendorModeActive,
+  selectLanguageCode,
+  selectLastAssetsPath,
+  selectUiSettings,
 } from "@/redux/preferences";
 
 import { translate } from "@/util/translations";

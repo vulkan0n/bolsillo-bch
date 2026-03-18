@@ -1,30 +1,30 @@
-import { useState, useRef, useCallback, useEffect } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useParams, useNavigate, Link } from "react-router";
-import { Filesystem, Directory } from "@capacitor/filesystem";
+import { Link, useNavigate, useParams } from "react-router";
+import { Directory, Filesystem } from "@capacitor/filesystem";
 import { Share } from "@capacitor/share";
 import {
-  WalletOutlined,
-  LoginOutlined,
-  DeleteOutlined,
   CheckCircleOutlined,
-  WarningFilled,
-  ToolOutlined,
-  MedicineBoxOutlined,
-  InfoCircleOutlined,
-  SyncOutlined,
-  ExportOutlined,
-  LoadingOutlined,
+  DeleteOutlined,
   ExperimentOutlined,
+  ExportOutlined,
+  InfoCircleOutlined,
+  LoadingOutlined,
+  LoginOutlined,
+  MedicineBoxOutlined,
+  SyncOutlined,
+  ToolOutlined,
+  WalletOutlined,
+  WarningFilled,
 } from "@ant-design/icons";
 import { WalletConnectFilled } from "@/icons/WalletConnectFilled";
 
 import { selectLocale } from "@/redux/device";
 import { selectBchNetwork, selectIsExperimental } from "@/redux/preferences";
 import {
+  selectActiveWalletHash,
   walletBoot,
   walletSetName,
-  selectActiveWalletHash,
 } from "@/redux/wallet";
 
 import SecurityService, { AuthActions } from "@/kernel/app/SecurityService";

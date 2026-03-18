@@ -1,13 +1,13 @@
-import { useEffect, useCallback, useRef } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import { useCallback, useEffect, useRef } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { Torch } from "@capawesome/capacitor-torch";
 import QrScanner from "qr-scanner";
 import { ScanOutlined } from "@ant-design/icons";
 
 import {
-  setScannerIsScanning,
   selectScannerIsScanning,
   selectTorchIsEnabled,
+  setScannerIsScanning,
 } from "@/redux/device";
 
 import LogService from "@/kernel/app/LogService";

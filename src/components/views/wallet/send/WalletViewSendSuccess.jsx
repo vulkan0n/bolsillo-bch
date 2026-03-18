@@ -1,19 +1,19 @@
-import { useState, useRef } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import { useRef, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router";
 import {
-  CopyOutlined,
-  CheckCircleFilled,
-  CaretRightOutlined,
   CaretDownOutlined,
+  CaretRightOutlined,
+  CheckCircleFilled,
+  CopyOutlined,
 } from "@ant-design/icons";
 
 import {
+  selectBchNetwork,
   selectCurrencySettings,
-  setPreference,
   selectShouldShowMemoCard,
   selectShouldShowOutputsCard,
-  selectBchNetwork,
+  setPreference,
 } from "@/redux/preferences";
 import { selectActiveWalletHash } from "@/redux/wallet";
 

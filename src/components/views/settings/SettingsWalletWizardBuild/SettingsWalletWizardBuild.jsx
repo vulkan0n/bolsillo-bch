@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router";
-import { SyncOutlined, DisconnectOutlined } from "@ant-design/icons";
+import { DisconnectOutlined, SyncOutlined } from "@ant-design/icons";
 
 import { selectBchNetwork } from "@/redux/preferences";
 import { selectSyncState } from "@/redux/sync";

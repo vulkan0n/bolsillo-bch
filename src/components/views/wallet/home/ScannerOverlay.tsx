@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 import { useSelector } from "react-redux";
-import { useNavigate, useLocation } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 import { QrcodeOutlined } from "@ant-design/icons";
 
 import { selectInstantPaySettings } from "@/redux/preferences";

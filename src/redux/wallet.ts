@@ -1,18 +1,18 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
 import {
   createAction,
+  createAsyncThunk,
   createReducer,
   createSelector,
-  createAsyncThunk,
 } from "@reduxjs/toolkit";
 
 import { RootState } from "@/redux";
 import {
-  setPreference,
   selectElectrumServer,
   selectIsStablecoinMode,
+  setPreference,
 } from "@/redux/preferences";
-import { syncConnect, selectIsRebuilding } from "@/redux/sync";
+import { selectIsRebuilding, syncConnect } from "@/redux/sync";
 
 import LogService from "@/kernel/app/LogService";
 import NotificationService from "@/kernel/app/NotificationService";

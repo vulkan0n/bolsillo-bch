@@ -1,8 +1,8 @@
 import toast from "react-hot-toast";
 import {
-  SnippetsFilled,
   DisconnectOutlined,
   InsuranceOutlined,
+  SnippetsFilled,
 } from "@ant-design/icons";
 
 import translations from "@/views/wallet/translations";

@@ -1,6 +1,6 @@
-import { useState, useEffect, useCallback } from "react";
-import { MemoryRouter, Routes, Route, useNavigate } from "react-router";
+import { useCallback, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
+import { MemoryRouter, Route, Routes, useNavigate } from "react-router";
 import { LockOutlined } from "@ant-design/icons";
 
 import { selectDeviceInfo } from "@/redux/device";
@@ -18,8 +18,8 @@ import translations from "./translations";
 import {
   ForgotPinMenu,
   LegacyRevealScreen,
-  NuclearWipeScreen,
   LockScreenWrapper,
+  NuclearWipeScreen,
   primaryButtonProps,
 } from "./ForgotPinScreen";
 
@@ -124,7 +124,13 @@ function LockScreen({ boot }: AppLockScreenProps) {
 
       <div className="flex items-center gap-2 mb-4 text-neutral-700 dark:text-neutral-300">
         <LockOutlined />
-        <span>{translate(translations.enterPinPrompt)}</span>
+        <span>
+          {translate(
+            isPasswordMode
+              ? translations.enterPasswordPrompt
+              : translations.enterPinPrompt
+          )}
+        </span>
       </div>
 
       {shouldShowPin && (
@@ -135,7 +141,11 @@ function LockScreen({ boot }: AppLockScreenProps) {
             pattern={isPasswordMode ? undefined : "[0-9]*"}
             value={pin}
             onChange={(e) => setPin(e.target.value)}
-            placeholder={translate(translations.enterPin)}
+            placeholder={translate(
+              isPasswordMode
+                ? translations.enterPassword
+                : translations.enterPin
+            )}
             className="w-full p-3 mb-4 border border-neutral-300 dark:border-neutral-600 rounded-lg bg-neutral-50 dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 text-center text-xl tracking-widest"
             autoFocus
             disabled={isLoading}

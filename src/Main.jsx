@@ -1,3 +1,5 @@
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
 import { Toaster } from "react-hot-toast";
 import { Provider } from "react-redux";
 import { createBrowserRouter } from "react-router";
@@ -5,11 +7,11 @@ import { RouterProvider } from "react-router/dom";
 
 import { store } from "@/redux";
 
+import AppProvider from "@/kernel/app/AppProvider";
+
 import IndexRoute from "@/views/IndexRoute";
 import ErrorBoundary from "@/layout/ErrorBoundary";
 import MainLayout from "@/layout/MainLayout";
-
-import BootProvider from "@/boot/BootProvider";
 
 import { routeApps } from "@/routes/routeApps";
 import { routeAssets } from "@/routes/routeAssets";
@@ -57,17 +59,23 @@ const routes = [
 
 const router = createBrowserRouter(routes);
 
-export default function Main() {
+function Main() {
   return (
     <Provider store={store}>
-      <BootProvider>
+      <AppProvider>
         {/* Note: Duration has an inbuilt extra 1000ms dismissal delay */}
         <Toaster
           toastOptions={{ duration: 1250 }}
           containerClassName="toaster"
         />
         <RouterProvider router={router} />
-      </BootProvider>
+      </AppProvider>
     </Provider>
   );
 }
+
+createRoot(document.getElementById("root")).render(
+  <StrictMode>
+    <Main />
+  </StrictMode>
+);

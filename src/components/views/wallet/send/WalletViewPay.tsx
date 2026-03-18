@@ -1,18 +1,18 @@
-import { useState, useCallback, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate, useSearchParams } from "react-router";
 import { ArrowLeftOutlined, SyncOutlined } from "@ant-design/icons";
 
 import {
+  selectBchNetwork,
   selectCurrencySettings,
   selectInstantPaySettings,
   selectIsOfflineMode,
-  selectBchNetwork,
 } from "@/redux/preferences";
 import { selectSyncState } from "@/redux/sync";
 import {
-  selectActiveWalletHash,
   selectActiveWalletBalance,
+  selectActiveWalletHash,
 } from "@/redux/wallet";
 
 import LogService from "@/kernel/app/LogService";
@@ -32,7 +32,7 @@ import CountdownTimer from "@/components/atoms/CountdownTimer";
 import { useCurrencyFlip } from "@/hooks/useCurrencyFlip";
 
 import { Haptic } from "@/util/haptic";
-import { PaymentRequestResponse, JppV2Client } from "@/util/payment_protocol";
+import { JppV2Client, PaymentRequestResponse } from "@/util/payment_protocol";
 
 import { translate } from "@/util/translations";
 

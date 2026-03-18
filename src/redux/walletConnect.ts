@@ -1,16 +1,16 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
-import { Dialog } from "@capacitor/dialog";
-import { generateTransaction, encodeTransaction } from "@bitauth/libauth";
+import { encodeTransaction, generateTransaction } from "@bitauth/libauth";
 import {
+  createAsyncThunk,
   createReducer,
   createSelector,
-  createAsyncThunk,
 } from "@reduxjs/toolkit";
 
 import { selectBchNetwork } from "@/redux/preferences";
 import { selectActiveWallet } from "@/redux/wallet";
 
 import LogService from "@/kernel/app/LogService";
+import ModalService from "@/kernel/app/ModalService";
 import ElectrumService from "@/kernel/bch/ElectrumService";
 import WalletConnectService from "@/kernel/bch/WalletConnectService";
 import AddressManagerService from "@/kernel/wallet/AddressManagerService";
@@ -118,9 +118,10 @@ export const wcSessionRequest = createAsyncThunk(
             destringify(JSON.stringify(methodParams));
           Log.debug("bch_signTransaction", unsignedTransaction, sourceOutputs);
 
-          const { value: isApproved } = await Dialog.confirm({
-            message: `${peer.metadata.name} - ${methodParams.userPrompt}\n${event.verifyContext.verified.origin}`,
-            okButtonTitle: "Approve",
+          const isApproved = await ModalService().showConfirm({
+            title: peer.metadata.name,
+            message: `${methodParams.userPrompt}\n${event.verifyContext.verified.origin}`,
+            confirmLabel: "Approve",
           });
 
           if (!isApproved) {

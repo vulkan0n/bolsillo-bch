@@ -1,8 +1,8 @@
 import {
-  LikeOutlined,
   GlobalOutlined,
-  QuestionCircleOutlined,
+  LikeOutlined,
   PlayCircleOutlined,
+  QuestionCircleOutlined,
 } from "@ant-design/icons";
 
 import StatsGraphCard from "@/apps/stats/StatsGraphCard";

@@ -1,20 +1,24 @@
-import { useState, useMemo, useEffect, useCallback } from "react";
-import { useOutletContext, useNavigate } from "react-router";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
+import { useNavigate, useOutletContext } from "react-router";
 import {
-  CaretRightOutlined,
   CaretDownOutlined,
-  SyncOutlined,
+  CaretRightOutlined,
   CheckCircleOutlined,
+  SyncOutlined,
 } from "@ant-design/icons";
-import FullColumn from "@/layout/FullColumn";
+
 import { selectBchNetwork, selectPrivacySettings } from "@/redux/preferences";
-import TokenManagerService from "@/kernel/wallet/TokenManagerService";
+
 import DatabaseService from "@/kernel/app/DatabaseService";
+import TokenManagerService from "@/kernel/wallet/TokenManagerService";
 import UtxoManagerService from "@/kernel/wallet/UtxoManagerService";
-import TokenIcon from "@/atoms/TokenIcon";
+
+import FullColumn from "@/layout/FullColumn";
 import TokenAmount from "@/atoms/TokenAmount";
-import { TOKEN_DETAILS, PRIZE_DESCRIPTIONS } from "./constants";
+import TokenIcon from "@/atoms/TokenIcon";
+
+import { PRIZE_DESCRIPTIONS, TOKEN_DETAILS } from "./constants";
 
 function BlissTokenHuntView() {
   const navigate = useNavigate();

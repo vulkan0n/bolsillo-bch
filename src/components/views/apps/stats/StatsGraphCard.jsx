@@ -1,16 +1,15 @@
 /* eslint-disable no-unsafe-optional-chaining */
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useLocation } from "react-router";
 import { ApolloProvider, useQuery } from "@apollo/client";
 import { SyncOutlined } from "@ant-design/icons";
-
-import apolloClient from "@/apolloClient";
 
 import Button from "@/atoms/Button";
 import Card from "@/atoms/Card";
 import SeleneLogo from "@/atoms/SeleneLogo";
 
 import { ONE_SECOND, Period } from "@/util/time";
+import apolloClient from "@/apolloClient";
 
 import { translate } from "@/util/translations";
 

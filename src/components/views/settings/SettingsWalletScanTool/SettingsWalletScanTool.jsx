@@ -1,15 +1,15 @@
 /* eslint-disable */
-import { useState, useEffect } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import { useParams, useLocation } from "react-router";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useLocation, useParams } from "react-router";
 import {
+  DisconnectOutlined,
   SyncOutlined,
   WifiOutlined,
-  DisconnectOutlined,
 } from "@ant-design/icons";
 
 import { selectBchNetwork, selectIsOfflineMode } from "@/redux/preferences";
-import { syncHotRefresh, selectSyncState } from "@/redux/sync";
+import { selectSyncState, syncHotRefresh } from "@/redux/sync";
 
 import LogService from "@/kernel/app/LogService";
 import AddressManagerService from "@/kernel/wallet/AddressManagerService";

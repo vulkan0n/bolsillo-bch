@@ -1,13 +1,13 @@
-import { useState, useEffect, useRef, useCallback, ReactNode } from "react";
+import { ReactNode, useCallback, useEffect, useRef, useState } from "react";
 import { App } from "@capacitor/app";
 import { SplashScreen } from "@capacitor/splash-screen";
 
 import {
-  store,
   redux_init,
+  redux_pause,
   redux_pre_init,
   redux_resume,
-  redux_pause,
+  store,
 } from "@/redux";
 import { selectSecuritySettings } from "@/redux/preferences";
 
@@ -21,7 +21,7 @@ import SecurityService, { AuthActions } from "@/kernel/app/SecurityService";
 import AppLockScreen from "@/views/security/AppLockScreen";
 import ErrorBoundary from "@/layout/ErrorBoundary";
 
-const Log = LogService("BootProvider");
+const Log = LogService("AppProvider");
 
 // --------------------------------
 
@@ -33,11 +33,9 @@ type Phase =
   | "PAUSED"
   | "STARTUP_ERROR";
 
-interface BootProviderProps {
-  children: ReactNode;
-}
+// --------------------------------
 
-export default function BootProvider({ children }: BootProviderProps) {
+function useAppLifecycle() {
   const [phase, setPhase] = useState<Phase>("PREFLIGHT");
   const [startupError, setStartupError] = useState<Error | null>(null);
   const phaseRef = useRef<Phase>("PREFLIGHT");
@@ -45,6 +43,11 @@ export default function BootProvider({ children }: BootProviderProps) {
 
   // Keep ref in sync so Capacitor listeners see current phase
   phaseRef.current = phase;
+
+  function handlePhaseTransition(next: Phase) {
+    setPhase(next);
+    phaseRef.current = next;
+  }
 
   // ----------------
   // boot: open DBs, migrations, load wallet, start sync.
@@ -67,8 +70,7 @@ export default function BootProvider({ children }: BootProviderProps) {
 
       if (!(await JanitorService().handleAuthMigration())) {
         Log.timeEnd("boot");
-        setPhase("LOCKED");
-        phaseRef.current = "LOCKED";
+        handlePhaseTransition("LOCKED");
         return;
       }
 
@@ -76,14 +78,12 @@ export default function BootProvider({ children }: BootProviderProps) {
       await redux_init();
       redux_resume();
 
-      setPhase("RUNNING");
-      phaseRef.current = "RUNNING";
+      handlePhaseTransition("RUNNING");
       Log.timeEnd("boot");
     } catch (e) {
       Log.error("BOOT FAILED", e);
-      setStartupError(e instanceof Error ? e : new Error(String(e)));
-      setPhase("STARTUP_ERROR");
-      phaseRef.current = "STARTUP_ERROR";
+      setStartupError(new Error(String(e)));
+      handlePhaseTransition("STARTUP_ERROR");
       Log.timeEnd("boot");
     }
   }, []);
@@ -102,24 +102,20 @@ export default function BootProvider({ children }: BootProviderProps) {
 
           if (isKeyLoaded) {
             // No auth configured — boot behind splash
-            setPhase("BOOTING");
-            phaseRef.current = "BOOTING";
+            handlePhaseTransition("BOOTING");
             await boot();
           } else {
             // Plugin requires auth (PIN or biometric) before key loads
-            setPhase("LOCKED");
-            phaseRef.current = "LOCKED";
+            handlePhaseTransition("LOCKED");
           }
         } catch (e) {
           if (e instanceof DecryptionFailedError) {
             Log.error("Decryption failed, routing to lock screen", e);
-            setPhase("LOCKED");
-            phaseRef.current = "LOCKED";
+            handlePhaseTransition("LOCKED");
           } else {
             Log.error("INIT FAILED", e);
-            setStartupError(e instanceof Error ? e : new Error(String(e)));
-            setPhase("STARTUP_ERROR");
-            phaseRef.current = "STARTUP_ERROR";
+            setStartupError(new Error(String(e)));
+            handlePhaseTransition("STARTUP_ERROR");
           }
         }
 
@@ -153,8 +149,7 @@ export default function BootProvider({ children }: BootProviderProps) {
       // Transition phase synchronously BEFORE async work.
       // This eliminates the race where resume fires mid-pause.
       if (shouldLock) {
-        setPhase("PAUSED");
-        phaseRef.current = "PAUSED";
+        handlePhaseTransition("PAUSED");
       }
 
       // Track async cleanup so boot() can await it if resume is fast.
@@ -181,8 +176,7 @@ export default function BootProvider({ children }: BootProviderProps) {
 
       if (current === "PAUSED") {
         // Transition to LOCKED — lock screen mounts, biometric auto-triggers
-        setPhase("LOCKED");
-        phaseRef.current = "LOCKED";
+        handlePhaseTransition("LOCKED");
       } else if (current === "RUNNING") {
         redux_resume();
       }
@@ -209,20 +203,33 @@ export default function BootProvider({ children }: BootProviderProps) {
     [phase]
   );
 
-  // --------------------------------
-  // Render based on phase
-  if (phase === "STARTUP_ERROR") {
-    return <ErrorBoundary startupError={startupError} />;
-  }
+  return { phase, startupError, boot };
+}
 
-  if (phase === "PREFLIGHT" || phase === "BOOTING" || phase === "PAUSED") {
-    return null; // native splash covers; PAUSED = cleanup in progress
-  }
+// --------------------------------
 
-  if (phase === "LOCKED") {
-    return <AppLockScreen boot={boot} />;
-  }
+interface AppProviderProps {
+  children: ReactNode;
+}
 
-  // RUNNING — show the app
-  return children;
+export default function AppProvider({ children }: AppProviderProps) {
+  const { phase, startupError, boot } = useAppLifecycle();
+
+  switch (phase) {
+    case "PREFLIGHT":
+    case "BOOTING":
+    case "PAUSED":
+      return null; // native splash covers; PAUSED = cleanup in progress
+    case "LOCKED":
+      return <AppLockScreen boot={boot} />;
+    case "RUNNING":
+      return children;
+    case "STARTUP_ERROR":
+    default:
+      return (
+        <ErrorBoundary
+          startupError={startupError ?? new Error(`Unknown phase: ${phase}`)}
+        />
+      );
+  }
 }

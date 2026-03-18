@@ -2,8 +2,8 @@ import { useSelector } from "react-redux";
 import { Outlet } from "react-router";
 import {
   BankOutlined,
-  MoneyCollectOutlined,
   DeploymentUnitOutlined,
+  MoneyCollectOutlined,
 } from "@ant-design/icons";
 
 import { selectActiveWallet } from "@/redux/wallet";

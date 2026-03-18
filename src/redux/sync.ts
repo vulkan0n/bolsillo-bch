@@ -1,24 +1,24 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
 import {
   createAction,
-  createReducer,
-  createSelector,
   createAsyncThunk,
   createListenerMiddleware,
+  createReducer,
+  createSelector,
 } from "@reduxjs/toolkit";
 
-import { RootState, AppDispatch } from "@/redux";
+import { AppDispatch, RootState } from "@/redux";
 import { selectNetworkStatus } from "@/redux/device";
 import {
+  selectBchNetwork,
   selectIsOfflineMode,
   selectIsStablecoinMode,
-  selectBchNetwork,
 } from "@/redux/preferences";
 import { txHistoryFetch } from "@/redux/txHistory";
 import {
-  walletSyncDiff,
   selectActiveWallet,
   walletReloadAddresses,
+  walletSyncDiff,
 } from "@/redux/wallet";
 
 import JanitorService from "@/kernel/app/JanitorService";

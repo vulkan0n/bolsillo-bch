@@ -1,7 +1,7 @@
 import {
+  binToUtf8,
   createVirtualMachineBCH,
   vmNumberToBigInt,
-  binToUtf8,
 } from "@bitauth/libauth";
 import type {
   NftCategory,
@@ -10,7 +10,7 @@ import type {
   ParsableNftCollection,
 } from "@bitauth/libauth";
 
-import { hexToBin, binToHex, hexToVmNumber } from "@/util/hex";
+import { binToHex, hexToBin, hexToVmNumber } from "@/util/hex";
 
 // -------------------------------- NFT capability
 

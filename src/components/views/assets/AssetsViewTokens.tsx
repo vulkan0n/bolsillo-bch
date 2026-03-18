@@ -1,9 +1,9 @@
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate, useOutletContext } from "react-router";
 import { SyncOutlined } from "@ant-design/icons";
 
-import { selectPrivacySettings, selectBchNetwork } from "@/redux/preferences";
+import { selectBchNetwork, selectPrivacySettings } from "@/redux/preferences";
 
 import DatabaseService from "@/kernel/app/DatabaseService";
 import TokenManagerService from "@/kernel/wallet/TokenManagerService";

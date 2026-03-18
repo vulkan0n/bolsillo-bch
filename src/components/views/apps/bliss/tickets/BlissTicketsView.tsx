@@ -6,8 +6,8 @@ import translations from "../translations";
 
 import {
   TAPSWAP_TICKETS_URL,
-  TICKETS_READ_MORE_URL,
   TAPSWAP_TUTORIAL_VIDEO_URL,
+  TICKETS_READ_MORE_URL,
 } from "../constants.jsx";
 
 function BlissTicketsView() {

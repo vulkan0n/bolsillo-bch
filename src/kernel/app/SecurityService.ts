@@ -1,4 +1,3 @@
-import { Dialog } from "@capacitor/dialog";
 import { SimpleEncryption } from "capacitor-plugin-simple-encryption";
 
 import { store } from "@/redux";
@@ -9,6 +8,7 @@ import DatabaseService, {
   DecryptionFailedError,
 } from "@/kernel/app/DatabaseService";
 import LogService from "@/kernel/app/LogService";
+import ModalService from "@/kernel/app/ModalService";
 import NotificationService from "@/kernel/app/NotificationService";
 import { clearSeedCache } from "@/kernel/wallet/KeyManagerService";
 import WalletManagerService from "@/kernel/wallet/WalletManagerService";
@@ -187,10 +187,22 @@ export default function SecurityService() {
       return true;
     }
 
-    const { value: pin } = await Dialog.prompt({
-      title: getAuthText(action) || translate(common.enterPin),
-      message: translate(common.pleaseEnterYourPin),
-      okButtonTitle: `${translate(common.authorizeAction)} ${getAuthText(action)}`,
+    const { authMode } = selectSecuritySettings(store.getState());
+
+    const isPasswordMode = authMode === "password";
+
+    const pin = await ModalService().showPrompt({
+      title:
+        getAuthText(action) ||
+        translate(isPasswordMode ? common.enterPassword : common.enterPin),
+      message: translate(
+        isPasswordMode
+          ? common.pleaseEnterYourPassword
+          : common.pleaseEnterYourPin
+      ),
+      inputType: "password",
+      inputMode: isPasswordMode ? "text" : "numeric",
+      submitLabel: `${translate(common.authorizeAction)} ${getAuthText(action)}`,
     });
 
     if (!pin) {
@@ -204,19 +216,21 @@ export default function SecurityService() {
   async function authorizeLegacyPin(pinHash: string): Promise<string | null> {
     /* eslint-disable no-constant-condition, no-await-in-loop */
     while (true) {
-      const result = await Dialog.prompt({
+      const pin = await ModalService().showPrompt({
         title: translate(securityTranslations.securityUpgrade),
         message: translate(securityTranslations.enterPinToUpgrade),
-        okButtonTitle: translate(securityTranslations.upgrade),
+        inputType: "password",
+        inputMode: "numeric",
+        submitLabel: translate(securityTranslations.upgrade),
       });
 
-      // User dismissed the dialog — return to lock screen
-      if (!result.value) {
+      // User dismissed the modal — return to lock screen
+      if (!pin) {
         return null;
       }
 
-      if (sha256.text(result.value) === pinHash) {
-        return result.value;
+      if (sha256.text(pin) === pinHash) {
+        return pin;
       }
     }
     /* eslint-enable no-constant-condition, no-await-in-loop */

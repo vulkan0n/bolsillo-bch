@@ -1,7 +1,7 @@
 /* eslint-disable max-classes-per-file */
 import {
-  ElectrumClient,
   ConnectionStatus,
+  ElectrumClient,
   ElectrumClientEvents,
 } from "@electrum-cash/network";
 import { ElectrumWebSocket } from "@electrum-cash/web-socket";
@@ -9,11 +9,11 @@ import { ElectrumWebSocket } from "@electrum-cash/web-socket";
 import { store } from "@/redux";
 import { setPreference } from "@/redux/preferences";
 import {
-  syncConnectionUp,
-  syncConnectionDown,
+  selectChaintip,
   syncAddressState,
   syncChaintip,
-  selectChaintip,
+  syncConnectionDown,
+  syncConnectionUp,
 } from "@/redux/sync";
 
 import LogService from "@/kernel/app/LogService";

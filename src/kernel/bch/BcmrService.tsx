@@ -1,11 +1,11 @@
-import { Filesystem, Directory, Encoding } from "@capacitor/filesystem";
+import { Directory, Encoding, Filesystem } from "@capacitor/filesystem";
 import {
+  binToBase64,
+  IdentityHistory,
+  IdentitySnapshot,
   importMetadataRegistry,
   MetadataRegistry,
-  IdentitySnapshot,
-  IdentityHistory,
   RegistryTimestampKeyedValues,
-  binToBase64,
 } from "@bitauth/libauth";
 import { DateTime } from "luxon";
 

@@ -1,35 +1,35 @@
-import { useState, useEffect, useRef, useCallback, useMemo } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import {
+  useLocation,
+  useNavigate,
   useParams,
   useSearchParams,
-  useNavigate,
-  useLocation,
 } from "react-router";
-import { Dialog } from "@capacitor/dialog";
 import {
   ArrowLeftOutlined,
-  SyncOutlined,
-  MoneyCollectOutlined,
   DollarCircleOutlined,
+  MoneyCollectOutlined,
+  SyncOutlined,
 } from "@ant-design/icons";
 
 import { selectScannerIsScanning } from "@/redux/device";
 import {
+  selectBchNetwork,
   selectCurrencySettings,
   selectInstantPaySettings,
-  selectBchNetwork,
   selectShouldForceTokenAddress,
   setPreference,
 } from "@/redux/preferences";
 import {
   selectActiveWallet,
-  selectActiveWalletHash,
   selectActiveWalletBalance,
+  selectActiveWalletHash,
   selectWalletAddresses,
 } from "@/redux/wallet";
 
 import LogService from "@/kernel/app/LogService";
+import ModalService from "@/kernel/app/ModalService";
 import SecurityService, { AuthActions } from "@/kernel/app/SecurityService";
 import CauldronService from "@/kernel/bch/CauldronService";
 import TransactionBuilderService, {
@@ -63,7 +63,7 @@ import { bchToSats } from "@/util/sats";
 import { truncateProse } from "@/util/string";
 import { resolveNftType } from "@/util/token";
 import { MUSD_TOKENID } from "@/util/tokens";
-import { validateBchUri, navigateOnValidUri, isIntStr } from "@/util/uri";
+import { isIntStr, navigateOnValidUri, validateBchUri } from "@/util/uri";
 
 import { translate } from "@/util/translations";
 
@@ -264,10 +264,10 @@ export default function WalletViewSend() {
 
       if (isBase58Address) {
         await Haptic.warn();
-        const { value: isLegacyAddressConfirmed } = await Dialog.confirm({
+        const isLegacyAddressConfirmed = await ModalService().showConfirm({
           title: translate(translations.base58WarningTitle),
           message: translate(translations.base58WarningMessage),
-          okButtonTitle: translate(translations.base58WarningOk),
+          confirmLabel: translate(translations.base58WarningOk),
         });
 
         if (!isLegacyAddressConfirmed) {

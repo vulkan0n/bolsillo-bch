@@ -2,9 +2,9 @@ import { useContext } from "react";
 import { useSelector } from "react-redux";
 import {
   AreaChartOutlined,
-  EyeOutlined,
-  EyeInvisibleOutlined,
   DeliveredProcedureOutlined,
+  EyeInvisibleOutlined,
+  EyeOutlined,
 } from "@ant-design/icons";
 
 import { selectPrivacySettings } from "@/redux/preferences";

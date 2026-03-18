@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useCallback, useState } from "react";
 import { useSelector } from "react-redux";
 
 import { selectCurrencySettings } from "@/redux/preferences";

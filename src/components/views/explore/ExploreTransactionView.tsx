@@ -1,22 +1,22 @@
 /* eslint-disable react/prop-types */
-import { useState, useCallback, useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import { useSelector } from "react-redux";
-import { useLoaderData, Link } from "react-router";
+import { Link, useLoaderData } from "react-router";
 import { DateTime } from "luxon";
 import {
-  CopyOutlined,
-  HourglassOutlined,
-  CheckCircleOutlined,
-  FilePdfOutlined,
-  FileImageOutlined,
   ArrowRightOutlined,
+  CheckCircleOutlined,
+  CopyOutlined,
+  FileImageOutlined,
+  FilePdfOutlined,
+  HourglassOutlined,
 } from "@ant-design/icons";
 
 import {
+  selectBchNetwork,
   selectCurrencySettings,
   selectIsExperimental,
-  selectBchNetwork,
 } from "@/redux/preferences";
 import { selectChaintip } from "@/redux/sync";
 import { selectActiveWalletHash } from "@/redux/wallet";
@@ -44,7 +44,7 @@ import TokenAmount from "@/atoms/TokenAmount";
 
 import { useClipboard } from "@/hooks/useClipboard";
 
-import { hexToUtf8, binToHex } from "@/util/hex";
+import { binToHex, hexToUtf8 } from "@/util/hex";
 import { getTxExplorerUrl } from "@/util/network";
 
 import { translate } from "@/util/translations";
