@@ -10,7 +10,7 @@ export const useLongPress = <T>(
 
   const start = useCallback(
     (event) => {
-      isLongPress.current = false; // Reset on each start
+      isLongPress.current = false;
       if (event) {
         event.stopPropagation();
         timerRef.current = setTimeout(() => {
@@ -34,16 +34,22 @@ export const useLongPress = <T>(
         return;
       }
 
-      // If it wasn't a long press, it's a click
-      if (event && !isLongPress.current) {
-        onClick(event);
+      // If it was a long press, suppress the pointerup
+      if (isLongPress.current) {
+        (event as PointerEvent).preventDefault?.();
+        return;
       }
+
+      onClick(event);
     },
     [onClick]
   );
 
+  const preventContextMenu = useCallback((event: Event) => {
+    event.preventDefault();
+  }, []);
+
   useEffect(() => {
-    // Cleanup on unmount
     return () => clear();
   }, [clear]);
 
@@ -51,8 +57,9 @@ export const useLongPress = <T>(
     () => ({
       onPointerDown: start,
       onPointerUp: clear,
+      onContextMenu: preventContextMenu,
     }),
-    [start, clear]
+    [start, clear, preventContextMenu]
   );
 
   return events;

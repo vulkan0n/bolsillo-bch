@@ -55,8 +55,8 @@ export default function ScannerOverlay({
     selectInstantPaySettings
   );
   return (
-    <Overlay transparent>
-      <div className="flex flex-col justify-center items-center w-full h-full">
+    <Overlay transparent blur={false}>
+      <div className="pointer-events-auto flex flex-col justify-center items-center w-full h-full">
         {isInstantPayEnabled && (
           <div className="mb-4 bg-black/50 text-white/80 rounded-sm z-10 text-center p-3 rounded-xl">
             <div className="text-3xl font-bold">Instant Pay Enabled</div>
@@ -81,7 +81,7 @@ export default function ScannerOverlay({
         </div>
       </div>
 
-      <div className="align-end mb-[64px]">
+      <div className="pointer-events-auto align-end mb-[64px]">
         <WalletViewButtons />
       </div>
     </Overlay>

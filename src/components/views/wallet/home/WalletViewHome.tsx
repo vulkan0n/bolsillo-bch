@@ -1,12 +1,13 @@
 import { useState, useRef, useMemo } from "react";
 import { QRCode } from "react-qrcode-logo";
 import { useSelector, useDispatch } from "react-redux";
+import { useNavigate } from "react-router";
 import {
   FormOutlined,
   CaretRightOutlined,
-  CaretDownOutlined,
   CloseOutlined,
   CopyOutlined,
+  ShopOutlined,
 } from "@ant-design/icons";
 
 import { selectScannerIsScanning, selectKeyboardIsOpen } from "@/redux/device";
@@ -21,12 +22,12 @@ import {
 import { selectIsSyncing } from "@/redux/sync";
 import { selectActiveWalletHash, selectGenesisHeight } from "@/redux/wallet";
 
+import SecurityService, { AuthActions } from "@/kernel/app/SecurityService";
 import AddressManagerService from "@/kernel/wallet/AddressManagerService";
 
 import translations from "@/views/wallet/translations";
 import FullColumn from "@/layout/FullColumn";
 import Address from "@/atoms/Address";
-import CurrencyFlip from "@/atoms/CurrencyFlip";
 import CurrencySymbol from "@/atoms/CurrencySymbol";
 import KeyWarning from "@/atoms/KeyWarning/KeyWarning";
 import { SatoshiInput } from "@/atoms/SatoshiInput";
@@ -47,6 +48,7 @@ import WalletViewButtons from "./WalletViewButtons";
 
 export default function WalletViewHome() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const walletHash = useSelector(selectActiveWalletHash);
   const isKeyboardOpen = useSelector(selectKeyboardIsOpen);
@@ -130,6 +132,18 @@ export default function WalletViewHome() {
     setShouldShowFocusedQr(true);
   }, copyAddressToClipboard);
 
+  const handleEnterVendorMode = async () => {
+    const isAuthorized = await SecurityService().authorize(
+      AuthActions.VendorMode
+    );
+    if (!isAuthorized) {
+      return;
+    }
+
+    dispatch(setPreference({ key: "vendorModeActive", value: "true" }));
+    navigate("/vendor");
+  };
+
   // force red QR code border if connected to chipnet
   const qrCodeBorder =
     bchNetwork !== "mainnet"
@@ -188,38 +202,44 @@ export default function WalletViewHome() {
             />
           </button>
         </div>
-        <div className="flex justify-evenly items-center rounded-b-sm text-sm">
-          <div
-            className={`font-sans flex-1 px-1 py-1.5 text-nowrap truncate ${!shouldShowRequestAmount ? "bg-primary-400 dark:bg-primarydark-100 active:bg-primary-700 active:shadow-inner" : "text-primary-50 bg-primary-700"}`}
-            onClick={() =>
-              !shouldShowRequestAmount && setShouldShowRequestAmount(true)
-            }
-          >
-            {shouldShowRequestAmount ? (
-              <div className="flex w-full justify-between items-center">
-                <CloseOutlined
-                  className="p-1 font-bold text-lg"
-                  onClick={() => setShouldShowRequestAmount(false)}
+        {shouldShowRequestAmount ? (
+          <div className="flex justify-evenly items-center rounded-b-sm text-sm">
+            <div className="flex w-full justify-between items-center text-primary-50 bg-primary-700">
+              <CloseOutlined
+                className="p-1 font-bold text-lg"
+                onClick={() => setShouldShowRequestAmount(false)}
+              />
+              <span className="flex text-center grow items-center ml-1">
+                <CurrencySymbol
+                  className="text-lg bg-primary-200 rounded-l px-1 text-neutral-500 font-semibold font-mono dark:bg-primarydark-500"
+                  currency={isStablecoinMode ? "USD" : undefined}
                 />
-                <span className="flex text-center grow items-center ml-1">
-                  <CurrencySymbol
-                    className="text-lg bg-primary-200 rounded-l px-1 text-neutral-500 font-semibold font-mono dark:bg-primarydark-500"
-                    currency={isStablecoinMode ? "USD" : undefined}
-                  />
-                  <SatoshiInput
-                    satoshis={satoshiInput}
-                    onChange={handleRequestAmountChange}
-                    className="p-1 mr-1 w-full text-black/70 font-mono rounded-r dark:bg-primarydark-50 dark:text-neutral-100"
-                    autoFocus
-                  />
-                  {!isStablecoinMode && (
-                    <div className="flex items-center justify-center">
-                      <CurrencyFlip className="text-xl p-1" />
-                    </div>
-                  )}
-                </span>
-              </div>
-            ) : (
+                <SatoshiInput
+                  satoshis={satoshiInput}
+                  onChange={handleRequestAmountChange}
+                  className="p-1 mr-1 w-full text-black/70 font-mono rounded-r dark:bg-primarydark-50 dark:text-neutral-100"
+                  autoFocus
+                />
+              </span>
+
+              <label
+                className="bg-primary-400 dark:bg-primarydark-100 px-1.5 py-1.5 border-l border-primary-400 dark:border-primarydark-100 text-nowrap truncate flex items-center justify-between"
+                onClick={handleEnterVendorMode}
+              >
+                <ShopOutlined className="mr-1" />
+                {translate(translations.vendorMode)}
+                <CaretRightOutlined className="ml-1" />
+              </label>
+            </div>
+          </div>
+        ) : (
+          <div className="flex justify-evenly items-center rounded-b-sm text-sm">
+            <div
+              className={`grow font-sans px-1 py-1.5 text-nowrap truncate ${!shouldShowRequestAmount ? "bg-primary-400 dark:bg-primarydark-100 active:bg-primary-700 active:shadow-inner" : "text-primary-50 bg-primary-700"}`}
+              onClick={() =>
+                !shouldShowRequestAmount && setShouldShowRequestAmount(true)
+              }
+            >
               <div
                 data-testid="request-amount"
                 className="flex items-center justify-center cursor-pointer"
@@ -228,15 +248,9 @@ export default function WalletViewHome() {
                 <span className="truncate">
                   {translate(translations.requestAmount)}
                 </span>
-                {shouldShowRequestAmount ? (
-                  <CaretDownOutlined className="ml-1" />
-                ) : (
-                  <CaretRightOutlined className="ml-1" />
-                )}
+                <CaretRightOutlined className="ml-1" />
               </div>
-            )}
-          </div>
-          {!shouldShowRequestAmount && (
+            </div>
             <label
               className={`${shouldUseTokenAddress ? "bg-primary-700 dark:bg-primarydark-200" : "bg-primary-400 dark:bg-primarydark-100"} px-1.5 py-1.5 border-l border-primary-400 dark:border-primarydark-100 text-nowrap truncate flex items-center justify-between`}
             >
@@ -250,14 +264,14 @@ export default function WalletViewHome() {
                 }
               />
             </label>
-          )}
-        </div>
+          </div>
+        )}
         {genesis_height > 0 && <KeyWarning walletHash={walletHash} />}
       </div>
       {!isKeyboardOpen && <WalletViewButtons />}
       {shouldShowFocusedQr && (
         <FocusedQrView
-          address={address}
+          qrRequest={qrRequest}
           isTokenAddress={shouldUseTokenAddress}
           onClose={() => setShouldShowFocusedQr(false)}
         />
