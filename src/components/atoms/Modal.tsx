@@ -1,3 +1,5 @@
+import { CloseOutlined } from "@ant-design/icons";
+
 import Card from "@/atoms/Card";
 import Overlay from "@/atoms/Overlay";
 
@@ -13,9 +15,15 @@ export default function Modal({
   className = "",
 }: ModalProps) {
   return (
-    <Overlay className="items-center justify-center">
-      <div className="absolute inset-0 backdrop-blur-sm" onClick={onClose} />
-      <Card className={className}>{children}</Card>
+    <Overlay className="items-center justify-center" onClose={onClose}>
+      <Card className={`pointer-events-auto p-2 ${className}`}>{children}</Card>
+      <button
+        type="button"
+        className="pointer-events-auto absolute top-3 right-3 w-8 h-8 flex items-center justify-center rounded-full bg-neutral-900/50 text-white cursor-pointer"
+        onClick={onClose}
+      >
+        <CloseOutlined />
+      </button>
     </Overlay>
   );
 }

@@ -257,7 +257,7 @@ export default function WalletViewHome() {
       {!isKeyboardOpen && <WalletViewButtons />}
       {shouldShowFocusedQr && (
         <FocusedQrView
-          address={address}
+          qrRequest={qrRequest}
           isTokenAddress={shouldUseTokenAddress}
           onClose={() => setShouldShowFocusedQr(false)}
         />
