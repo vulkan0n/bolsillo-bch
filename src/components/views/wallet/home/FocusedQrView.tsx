@@ -1,12 +1,7 @@
 import { QRCode } from "react-qrcode-logo";
 import { useSelector } from "react-redux";
-// import { useDispatch } from "react-redux";
-// import { useNavigate } from "react-router";
 
 import { selectBchNetwork, selectQrCodeSettings } from "@/redux/preferences";
-// import { setPreference } from "@/redux/preferences";
-
-// import SecurityService, { AuthActions } from "@/kernel/app/SecurityService";
 
 import translations from "@/views/wallet/translations";
 import Address from "@/atoms/Address";
@@ -29,9 +24,6 @@ export default function FocusedQrView({
   qrRequest,
   onClose,
 }: FocusedQrViewProps) {
-  // const dispatch = useDispatch();
-  // const navigate = useNavigate();
-
   const bchNetwork = useSelector(selectBchNetwork);
   const qrCodeSettings = useSelector(selectQrCodeSettings);
 
@@ -41,18 +33,6 @@ export default function FocusedQrView({
   const copyAddress = () => {
     handleCopyToClipboard(qrRequest, translate(translations.copiedAddress));
   };
-
-  // const enterVendorMode = async () => {
-  //   const isAuthorized = await SecurityService().authorize(
-  //     AuthActions.VendorMode
-  //   );
-  //   if (!isAuthorized) {
-  //     return;
-  //   }
-  //
-  //   dispatch(setPreference({ key: "vendorModeActive", value: "true" }));
-  //   navigate("/vendor");
-  // };
 
   const qrLogoImage = isTokenAddress
     ? logos[qrCodeSettings.logo.toLowerCase()].img_tokens
