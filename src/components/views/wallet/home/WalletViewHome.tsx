@@ -235,7 +235,7 @@ export default function WalletViewHome() {
         ) : (
           <div className="flex justify-evenly items-center rounded-b-sm text-sm">
             <div
-              className={`font-sans flex-1 px-1 py-1.5 text-nowrap truncate ${!shouldShowRequestAmount ? "bg-primary-400 dark:bg-primarydark-100 active:bg-primary-700 active:shadow-inner" : "text-primary-50 bg-primary-700"}`}
+              className={`grow font-sans px-1 py-1.5 text-nowrap truncate ${!shouldShowRequestAmount ? "bg-primary-400 dark:bg-primarydark-100 active:bg-primary-700 active:shadow-inner" : "text-primary-50 bg-primary-700"}`}
               onClick={() =>
                 !shouldShowRequestAmount && setShouldShowRequestAmount(true)
               }
