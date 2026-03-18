@@ -1,9 +1,4 @@
-//import BlissTicketsView from "@/components/views/apps/bliss/tickets/BlissTicketsView";
-//import BlissTokenHuntView from "@/components/views/apps/bliss/tokenHunt/BlissTokenHuntView";
 import AppsView from "@/views/apps/AppsView";
-//import BlazeAboutView from "@/views/apps/blaze/about/BlazeAboutView";
-//import BlissAboutView from "@/views/apps/bliss/about/BlissAboutView";
-//import AppBlissView from "@/views/apps/bliss/AppBlissView";
 
 export const routeApps = [
   {
@@ -50,24 +45,32 @@ export const routeApps = [
       return { Component: AppBlazeView };
     },
   },
-  /*{
+  {
     path: "/apps/bliss",
-    element: <AppBlissView />,
+    async lazy() {
+      const { default: AppBlissView } =
+        await import("@/views/apps/bliss/AppBlissView");
+      return { Component: AppBlissView };
+    },
     children: [
       {
         path: "about/",
-        element: <BlissAboutView />,
+        async lazy() {
+          const { default: BlissAboutView } =
+            await import("@/views/apps/bliss/about/BlissAboutView");
+          return { Component: BlissAboutView };
+        },
       },
-      {
-        path: "tickets/",
-        element: <BlissTicketsView />,
-      },
-      {
-        path: "tokenHunt",
-        element: <BlissTokenHuntView />,
-      },
+      // {
+      //   path: "tickets/",
+      //   async lazy() {
+      //     const { default: BlissTicketsView } =
+      //       await import("@/views/apps/bliss/tickets/BlissTicketsView");
+      //     return { Component: BlissTicketsView };
+      //   },
+      // },
     ],
-    },*/
+  },
   {
     path: "/apps/cauldron",
     async lazy() {

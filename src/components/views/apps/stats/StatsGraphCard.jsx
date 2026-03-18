@@ -1,8 +1,10 @@
 /* eslint-disable no-unsafe-optional-chaining */
 import { useState, useEffect } from "react";
 import { useLocation } from "react-router";
-import { useQuery } from "@apollo/client";
+import { ApolloProvider, useQuery } from "@apollo/client";
 import { SyncOutlined } from "@ant-design/icons";
+
+import apolloClient from "@/apolloClient";
 
 import Button from "@/atoms/Button";
 import Card from "@/atoms/Card";
@@ -17,7 +19,7 @@ import GET_ACTIVE_BITCOINERS from "./getActiveBitcoiners";
 import translations from "./GlobalAdoptionSummaryTranslations";
 import StatsAppBlock from "./StatsAppBlock";
 
-export default function StatsGraphCard() {
+function StatsGraphCard() {
   const { hash: locationHash } = useLocation();
 
   const periodHashMap = {
@@ -109,5 +111,13 @@ export default function StatsGraphCard() {
         />
       </div>
     </Card>
+  );
+}
+
+export default function StatsGraphCardWithProvider() {
+  return (
+    <ApolloProvider client={apolloClient}>
+      <StatsGraphCard />
+    </ApolloProvider>
   );
 }

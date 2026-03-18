@@ -656,7 +656,7 @@ const translations = {
     ur: "PNG برآمد کریں۔",
     vi: "Xuất PNG",
     zh: "导出 PNG",
-    zh_TW: "導出 PNG"
+    zh_TW: "導出 PNG",
   }
 };
 

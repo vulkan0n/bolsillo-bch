@@ -45,14 +45,14 @@ function BlissAppCard() {
   return (
     <Link
       to={isDuring ? BCH_PODCAST_LIVE_URL : "/apps/bliss/about"}
-      className="shadow rounded-xl overflow-hidden relative bg-black h-96"
+      className="block relative"
     >
       <img
         src={`${SELENE_ASSETS_URL}bliss-layla.png`}
-        className="w-full h-96"
+        className="w-full object-cover object-top max-h-96"
       />
-      <div className="absolute bottom-0 left-0 right-0 bg-[rgba(0,0,0,0.8)] text-white p-6 flex justify-between gap-4 h-32 rounded-b-xl">
-        <div>
+      <div className="absolute bottom-0 left-0 right-0 bg-black/60 backdrop-blur-sm text-neutral-50 p-6 flex justify-between items-center">
+        <div className="h-fit">
           <div className="font-bold text-xl mb-2">
             <span className="font-bliss">BLISS 2026</span>
           </div>
