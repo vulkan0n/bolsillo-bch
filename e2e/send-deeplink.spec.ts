@@ -3,16 +3,11 @@ import { sendPage } from "./helpers/selectors";
 
 test.describe("Send Deep Link", () => {
   test("deep-link to send page with address", async ({ appPage: page }) => {
-    // Navigate directly to send page with a valid-format cashaddr
     await page.goto(
       "/wallet/send/qpm2qsznhks23z7629mms6s4cwef74vcwvy22gdx6a"
     );
 
-    // The send header should be visible (proves the page mounted with address)
-    const header = page.locator(sendPage.header);
-    await expect(header).toBeVisible({ timeout: 10_000 });
-
-    // "Sending to" text should be visible (normal header, not error)
+    await expect(sendPage.header(page)).toBeVisible({ timeout: 10_000 });
     await expect(
       page.getByText("Sending to", { exact: false })
     ).toBeVisible();
@@ -23,16 +18,8 @@ test.describe("Send Deep Link", () => {
   }) => {
     await page.goto("/wallet/send/");
 
-    // Send header should be visible
-    const header = page.locator(sendPage.header);
-    await expect(header).toBeVisible({ timeout: 10_000 });
-
-    // The Editable input should be in edit mode (open, ready for input)
-    const addressInput = page.locator(sendPage.addressInput);
-    await expect(addressInput).toBeVisible();
-
-    // Amount input should also be present
-    const amountInput = page.locator(sendPage.amountInput).first();
-    await expect(amountInput).toBeVisible();
+    await expect(sendPage.header(page)).toBeVisible({ timeout: 10_000 });
+    await expect(sendPage.addressInput(page)).toBeVisible();
+    await expect(sendPage.amountInput(page).first()).toBeVisible();
   });
 });

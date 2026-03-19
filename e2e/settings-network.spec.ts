@@ -4,10 +4,10 @@ import { accordionControl } from "./helpers/wallet";
 
 test.describe("Settings: Network", () => {
   test.beforeEach(async ({ appPage: page }) => {
-    await page.click(nav.settings);
+    await nav.settings(page).click();
     await page.waitForURL("**/settings**");
 
-    const networkBtn = page.locator("button", { hasText: "Network" });
+    const networkBtn = page.getByRole("button", { name: "Network" });
     await expect(networkBtn).toBeVisible();
     await networkBtn.click();
   });
@@ -18,7 +18,7 @@ test.describe("Settings: Network", () => {
     const serverSelect = accordionControl(page, "Electrum Server", "select");
     await expect(serverSelect).toBeVisible({ timeout: 3_000 });
 
-    const count = await serverSelect.locator("option").count();
+    const count = await serverSelect.getByRole("option").count();
     expect(count).toBeGreaterThanOrEqual(2);
   });
 
@@ -26,21 +26,28 @@ test.describe("Settings: Network", () => {
     appPage: page,
   }) => {
     const plusBtn = page
-      .locator("button")
+      .getByRole("button")
       .filter({
-        has: page.locator('[role="img"][aria-label="plus-circle"]'),
+        has: page.getByRole("img", { name: "plus-circle" }),
       });
     await expect(plusBtn).toBeVisible({ timeout: 3_000 });
     await plusBtn.click();
 
-    const serverInput = accordionControl(page, "Custom Server", "input[type='text']");
+    const serverInput = accordionControl(
+      page,
+      "Custom Server",
+      "input[type='text']"
+    );
     await expect(serverInput).toBeVisible({ timeout: 3_000 });
-
     await serverInput.fill("not-a-valid-server");
   });
 
   test("offline mode toggle works", async ({ appPage: page }) => {
-    const checkbox = accordionControl(page, "Offline", "input[type='checkbox']");
+    const checkbox = accordionControl(
+      page,
+      "Offline",
+      "input[type='checkbox']"
+    );
     await expect(checkbox).toBeVisible({ timeout: 3_000 });
 
     // Enable offline mode

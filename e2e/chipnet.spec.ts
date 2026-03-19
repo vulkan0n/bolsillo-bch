@@ -28,7 +28,7 @@ test.describe("Chipnet Network Tests", () => {
   test("chipnet wallet syncs and shows history", async ({ page }) => {
     await waitForSync(page);
 
-    const historyBtn = page.locator(walletView.historyButton);
+    const historyBtn = walletView.historyButton(page);
     await expect(historyBtn).toBeVisible();
     await historyBtn.click();
     await page.waitForURL("**/wallet/history**");
@@ -40,19 +40,14 @@ test.describe("Chipnet Network Tests", () => {
     const address = await getDisplayedAddress(page);
     expect(address).toMatch(/^q[a-z0-9]+$/);
 
-    // Navigate to send page with own address
     await page.goto(`/wallet/send/${encodeURIComponent(address)}`);
-    await expect(
-      page.locator(sendPage.header)
-    ).toBeVisible({ timeout: 10_000 });
+    await expect(sendPage.header(page)).toBeVisible({ timeout: 10_000 });
 
-    // Enter a small amount (1000 sats)
-    const amountInput = page.locator(sendPage.amountInput).first();
+    const amountInput = sendPage.amountInput(page).first();
     await expect(amountInput).toBeVisible();
     await amountInput.fill("1000");
 
-    // Slide to send — use retry wrapper for gesture reliability
-    const slideEl = page.locator(sendPage.slideToSend);
+    const slideEl = sendPage.slideToSend(page);
     await expect(slideEl).toBeVisible({ timeout: 5_000 });
     await slideEl.scrollIntoViewIfNeeded();
 
@@ -60,7 +55,6 @@ test.describe("Chipnet Network Tests", () => {
       const box = await slideEl.boundingBox();
       expect(box).not.toBeNull();
 
-      // Perform the slide gesture
       await page.mouse.move(box!.x + 10, box!.y + box!.height / 2);
       await page.mouse.down();
       await page.mouse.move(
@@ -70,9 +64,8 @@ test.describe("Chipnet Network Tests", () => {
       );
       await page.mouse.up();
 
-      // Verify the slide registered (success or error — both prove it worked)
       const successText = page.getByText("Success", { exact: false });
-      const errorText = page.locator(sendPage.error);
+      const errorText = sendPage.error(page);
       await expect(successText.or(errorText).first()).toBeVisible({
         timeout: 2_000,
       });

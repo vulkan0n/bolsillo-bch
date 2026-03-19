@@ -4,10 +4,10 @@ import { accordionControl, expectToggle } from "./helpers/wallet";
 
 test.describe("Settings: User Interface", () => {
   test.beforeEach(async ({ appPage: page }) => {
-    await page.click(nav.settings);
+    await nav.settings(page).click();
     await page.waitForURL("**/settings**");
 
-    const uiBtn = page.locator("button", { hasText: "User Interface" });
+    const uiBtn = page.getByRole("button", { name: "User Interface" });
     await expect(uiBtn).toBeVisible();
     await uiBtn.click();
   });
@@ -16,16 +16,25 @@ test.describe("Settings: User Interface", () => {
     const themeSelect = accordionControl(page, "Theme mode", "select");
     await expect(themeSelect).toBeVisible({ timeout: 3_000 });
 
-    const options = themeSelect.locator("option");
-    expect(await options.count()).toBe(3);
+    await expect(themeSelect.getByRole("option")).toHaveCount(3);
 
-    // Switch to dark
+    // Switch to dark — verify via document.documentElement
     await themeSelect.selectOption({ index: 2 });
-    await expect(page.locator("html")).toHaveClass(/dark/, { timeout: 2_000 });
+    await expect(async () => {
+      const isDark = await page.evaluate(() =>
+        document.documentElement.classList.contains("dark")
+      );
+      expect(isDark).toBe(true);
+    }).toPass({ timeout: 2_000 });
 
     // Switch to light
     await themeSelect.selectOption({ index: 1 });
-    await expect(page.locator("html")).not.toHaveClass(/dark/, { timeout: 2_000 });
+    await expect(async () => {
+      const isDark = await page.evaluate(() =>
+        document.documentElement.classList.contains("dark")
+      );
+      expect(isDark).toBe(false);
+    }).toPass({ timeout: 2_000 });
 
     // Restore to system
     await themeSelect.selectOption({ index: 0 });

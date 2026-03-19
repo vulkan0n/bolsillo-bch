@@ -1,70 +1,87 @@
 /**
  * Page object selectors for Selene Wallet E2E tests.
- * Uses data-testid attributes and ARIA roles for stability.
+ *
+ * Locator factories return Playwright Locator objects using
+ * getByRole / getByTestId to satisfy playwright/no-raw-locators.
  */
+import type { Page } from "@playwright/test";
 
+// --------
 // Bottom navigation tabs
+
 export const nav = {
-  wallet: 'a[href="/wallet"]',
-  assets: 'a[href*="/assets"]',
-  explore: 'a[href="/explore"]',
-  settings: 'a[href="/settings"]',
+  wallet: (page: Page) => page.getByRole("link", { name: "Wallet" }),
+  assets: (page: Page) => page.getByRole("link", { name: "Assets" }),
+  explore: (page: Page) => page.getByRole("link", { name: "Explore" }),
+  settings: (page: Page) => page.getByRole("link", { name: "Settings" }),
 };
 
+// --------
 // Wallet view (receive/home screen)
+
 export const walletView = {
-  balanceHideButton:
-    '[role="img"][aria-label="eye"], [role="img"][aria-label="eye-invisible"]',
-  balanceArea: '[data-testid="balance-area"]',
-  walletNameLink: '[data-testid="wallet-name-link"]',
-  qrButton: '[data-testid="qr-button"]',
-  addressDisplay: '[data-testid="address-display"]',
-  requestAmountTrigger: '[data-testid="request-amount"]',
-  requestAmountInput: '[data-testid="satoshi-input"]',
-  receiveTokensCheckbox: '[data-testid="receive-tokens"]',
-  historyButton: '[role="img"][aria-label="history"]',
-  scannerButton: '[role="img"][aria-label="scan"]',
-  sendButton: '[role="img"][aria-label="send"]',
+  balanceHideButton: (page: Page) =>
+    page.getByRole("img", { name: /^eye(-invisible)?$/ }),
+  balanceArea: (page: Page) => page.getByTestId("balance-area"),
+  walletNameLink: (page: Page) => page.getByTestId("wallet-name-link"),
+  qrButton: (page: Page) => page.getByTestId("qr-button"),
+  addressDisplay: (page: Page) => page.getByTestId("address-display"),
+  requestAmountTrigger: (page: Page) => page.getByTestId("request-amount"),
+  requestAmountInput: (page: Page) => page.getByTestId("satoshi-input"),
+  historyButton: (page: Page) =>
+    page.getByRole("img", { name: "history" }),
+  scannerButton: (page: Page) =>
+    page.getByRole("img", { name: "scan" }),
+  sendButton: (page: Page) =>
+    page.getByRole("img", { name: "send" }),
 };
 
+// --------
 // Send page
+
 export const sendPage = {
-  header: '[data-testid="send-header"]',
-  error: '[data-testid="send-error"]',
-  amountInput: '[data-testid="satoshi-input"]',
-  addressInput: '[data-testid="editable-input"]',
-  slideToSend: '[data-testid="slide-to-action"]',
-  backButton: '[role="img"][aria-label="arrow-left"]',
+  header: (page: Page) => page.getByTestId("send-header"),
+  error: (page: Page) => page.getByTestId("send-error"),
+  amountInput: (page: Page) => page.getByTestId("satoshi-input"),
+  addressInput: (page: Page) => page.getByTestId("editable-input"),
+  slideToSend: (page: Page) => page.getByTestId("slide-to-action"),
+  backButton: (page: Page) =>
+    page.getByRole("img", { name: "arrow-left" }),
 };
 
+// --------
 // History page
+
 export const historyPage = {
-  container: '[data-testid="history-view"]',
-  transactionLink: 'a[href*="/explore/tx/"]',
+  container: (page: Page) => page.getByTestId("history-view"),
 };
 
+// --------
 // Settings page
+
 export const settingsPage = {
-  container: '[data-testid="settings-view"]',
+  container: (page: Page) => page.getByTestId("settings-view"),
 };
 
-// Wallet settings
-export const walletSettings = {
-  walletNameInput: 'input[type="text"]',
-};
-
+// --------
 // Assets page
+
 export const assetsPage = {
-  tokensTab: 'a[href*="/assets/tokens"]',
-  coinsTab: 'a[href*="/assets/coins"]',
+  tokensTab: (page: Page) => page.getByRole("link", { name: "Tokens" }),
+  coinsTab: (page: Page) => page.getByRole("link", { name: "Coins" }),
 };
 
+// --------
 // Scanner overlay
+
 export const scanner = {
-  closeButton: '[role="img"][aria-label="close"]',
+  closeButton: (page: Page) =>
+    page.getByRole("img", { name: "close" }),
 };
 
+// --------
 // Sweep page
+
 export const sweepPage = {
-  error: '[data-testid="sweep-error"]',
+  error: (page: Page) => page.getByTestId("sweep-error"),
 };

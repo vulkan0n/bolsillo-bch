@@ -1,13 +1,13 @@
 import { test, expect } from "./helpers/fixtures";
-import { nav } from "./helpers/selectors";
+import { nav, settingsPage } from "./helpers/selectors";
 import { accordionControl } from "./helpers/wallet";
 
 test.describe("Settings: Localization", () => {
   test.beforeEach(async ({ appPage: page }) => {
-    await page.click(nav.settings);
+    await nav.settings(page).click();
     await page.waitForURL("**/settings**");
 
-    const intlBtn = page.locator("button", { hasText: "Localization" });
+    const intlBtn = page.getByRole("button", { name: "Localization" });
     await expect(intlBtn).toBeVisible();
     await intlBtn.click();
   });
@@ -18,7 +18,7 @@ test.describe("Settings: Localization", () => {
     const langSelect = accordionControl(page, "Language", "select");
     await expect(langSelect).toBeVisible({ timeout: 3_000 });
 
-    const count = await langSelect.locator("option").count();
+    const count = await langSelect.getByRole("option").count();
     expect(count).toBeGreaterThan(5);
   });
 
@@ -26,17 +26,14 @@ test.describe("Settings: Localization", () => {
     const langSelect = accordionControl(page, "Language", "select");
     await expect(langSelect).toBeVisible();
 
-    // Switch to Spanish — label text changes so re-query by structure
+    // Switch to Spanish
     await langSelect.selectOption({ value: "es" });
-    const select = page
-      .locator('[data-testid="settings-view"] select')
-      .first();
+    const settingsContainer = settingsPage.container(page);
+    const select = settingsContainer.getByRole("combobox").first();
     await expect(select).toHaveValue("es");
 
-    // The English accordion label "Wallets" should now show as "Billeteras"
-    await expect(
-      page.locator('[data-testid="settings-view"]')
-    ).toContainText("Billeteras");
+    // "Wallets" should now show as "Billeteras"
+    await expect(settingsContainer).toContainText("Billeteras");
 
     // Restore to device default
     await select.selectOption({ value: "" });

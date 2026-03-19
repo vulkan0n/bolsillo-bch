@@ -30,6 +30,9 @@ export default function AddressManagerService(walletHash: string) {
   const Database = DatabaseService();
   const walletDb = Database.getWalletDatabase(walletHash);
 
+  // ~10 days of blocks at ~144 blocks/day
+  const RECENT_BLOCK_WINDOW = 1440;
+
   const normalizeAddress = (row): AddressEntity => ({
     ...row,
     hd_index: Number(row.hd_index),
@@ -44,7 +47,7 @@ export default function AddressManagerService(walletHash: string) {
     getChangeAddresses,
     getUnusedAddresses,
     getReusedAddresses,
-    //getRecentAddresses,
+    getRecentlyActiveAddresses,
     getWalletConnectAddress,
     getAddressTransactions,
     calculateAddressState,
@@ -181,13 +184,33 @@ export default function AddressManagerService(walletHash: string) {
         WHERE (
           SELECT COUNT(*) FROM address_transactions t
             WHERE t.address = a.address
-        ) > 3;`,
+        ) >= 3`,
       null,
       { useBigInt: true }
     );
 
-    //Log.debug("getReusedAddresses", result);
     return result.map(normalizeAddress);
+  }
+
+  function getRecentlyActiveAddresses(tipHeight: number): Array<AddressEntity> {
+    if (tipHeight <= 0) return [];
+    try {
+      const minHeight = tipHeight - RECENT_BLOCK_WINDOW;
+      const result = walletDb.exec(
+        `SELECT * FROM addresses a
+          WHERE (
+            SELECT MAX(height) FROM address_transactions t
+              WHERE t.address = a.address
+          ) >= ?`,
+        [minHeight],
+        { useBigInt: true }
+      );
+
+      return result.map(normalizeAddress);
+    } catch (e) {
+      Log.warn("getRecentlyActiveAddresses failed:", e);
+      return [];
+    }
   }
 
   function getWalletConnectAddress(): AddressEntity {

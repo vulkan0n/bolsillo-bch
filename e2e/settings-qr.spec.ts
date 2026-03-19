@@ -4,10 +4,10 @@ import { accordionControl } from "./helpers/wallet";
 
 test.describe("Settings: QR Code", () => {
   test.beforeEach(async ({ appPage: page }) => {
-    await page.click(nav.settings);
+    await nav.settings(page).click();
     await page.waitForURL("**/settings**");
 
-    const qrBtn = page.locator("button", { hasText: "QR Code" });
+    const qrBtn = page.getByRole("button", { name: "QR Code" });
     await expect(qrBtn).toBeVisible();
     await qrBtn.click();
   });
@@ -16,10 +16,9 @@ test.describe("Settings: QR Code", () => {
     const logoSelect = accordionControl(page, "Logo", "select");
     await expect(logoSelect).toBeVisible({ timeout: 3_000 });
 
-    const count = await logoSelect.locator("option").count();
+    const count = await logoSelect.getByRole("option").count();
     expect(count).toBeGreaterThanOrEqual(2);
 
-    // Change logo — select a different option and verify it changed
     const originalValue = await logoSelect.inputValue();
     await logoSelect.selectOption({ index: 1 });
     await expect(logoSelect).not.toHaveValue(originalValue);
@@ -55,7 +54,6 @@ test.describe("Settings: QR Code", () => {
     await expect(resetBtn).toBeVisible({ timeout: 3_000 });
     await resetBtn.click();
 
-    // Foreground should be black, background white
     const fgInput = accordionControl(
       page,
       "Foreground color",

@@ -185,9 +185,13 @@ export const syncSubscriptions = createAsyncThunk(
     // we should subscribe to all unused receive addresses
     const unusedReceiveAddresses = AddressManager.getUnusedAddresses(0, 0);
 
-    // we should subscribe to addresses with n > 2 transactions in history
-    // these may be donation addresses or some other static payment address
+    // subscribe to heavily reused addresses (donation/static)
     const reusedReceiveAddresses = AddressManager.getReusedAddresses();
+
+    // subscribe to recently active addresses (~10 days of blocks)
+    const tipHeight = Number(selectChaintip(thunkApi.getState())?.height ?? 0);
+    const recentlyActiveAddresses =
+      AddressManager.getRecentlyActiveAddresses(tipHeight);
 
     // we should subscribe to a few unused change addresses for instant updates if we spend elsewhere
     const unusedChangeAddresses = AddressManager.getUnusedAddresses(0, 1);
@@ -205,6 +209,7 @@ export const syncSubscriptions = createAsyncThunk(
       ...hotAddresses,
       ...unusedReceiveAddresses,
       ...reusedReceiveAddresses,
+      ...recentlyActiveAddresses,
       ...filteredUnusedChangeAddresses,
     ]
       // de-duplicate subscription list
