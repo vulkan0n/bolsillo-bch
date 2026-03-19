@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 
 import Button from "@/atoms/Button";
 import Modal from "@/atoms/Modal";
@@ -50,12 +50,6 @@ export default function PromptModal({
   onCancel,
 }: PromptModalProps) {
   const [value, setValue] = useState("");
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(function focusInput() {
-    const timer = setTimeout(() => inputRef.current?.focus(), 50);
-    return () => clearTimeout(timer);
-  }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -79,8 +73,8 @@ export default function PromptModal({
 
         <form onSubmit={handleSubmit}>
           <input
-            ref={inputRef}
             type={inputType}
+            autoFocus
             inputMode={inputMode === "numeric" ? "numeric" : undefined}
             pattern={pattern}
             value={value}

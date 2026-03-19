@@ -20,6 +20,9 @@ import { sha256 } from "@/util/hash";
 import { binToHex } from "@/util/hex";
 import { destringify } from "@/util/json";
 
+import common from "@/translations/common";
+import { translate } from "@/util/translations";
+
 const Log = LogService("redux/walletConnect");
 
 export const walletConnectInit = createAsyncThunk(
@@ -121,7 +124,7 @@ export const wcSessionRequest = createAsyncThunk(
           const isApproved = await ModalService().showConfirm({
             title: peer.metadata.name,
             message: `${methodParams.userPrompt}\n${event.verifyContext.verified.origin}`,
-            confirmLabel: "Approve",
+            confirmLabel: translate(common.approve),
           });
 
           if (!isApproved) {

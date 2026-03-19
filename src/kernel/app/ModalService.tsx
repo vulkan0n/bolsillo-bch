@@ -1,7 +1,6 @@
 import { ReactNode, useCallback, useRef, useState } from "react";
 
 import ConfirmModal from "@/composite/ConfirmModal";
-import PinInputModal from "@/composite/PinInputModal";
 import PromptModal from "@/composite/PromptModal";
 
 // --------------------------------
@@ -26,20 +25,11 @@ interface PromptOptions {
   pattern?: string;
 }
 
-interface PinInputOptions {
-  isPasswordMode: boolean;
-}
-
 type ModalEntry =
   | { type: "confirm"; options: ConfirmOptions; resolve: (v: boolean) => void }
   | {
       type: "prompt";
       options: PromptOptions;
-      resolve: (v: string | null) => void;
-    }
-  | {
-      type: "pin";
-      options: PinInputOptions;
       resolve: (v: string | null) => void;
     };
 
@@ -70,15 +60,6 @@ export default function ModalService() {
         pushModal!({ type: "prompt", options, resolve });
       });
     },
-
-    showPinInput(options: PinInputOptions): Promise<string | null> {
-      if (!pushModal) {
-        throw new Error("ModalProvider not mounted");
-      }
-      return new Promise((resolve) => {
-        pushModal!({ type: "pin", options, resolve });
-      });
-    },
   };
 }
 
@@ -99,10 +80,8 @@ export function ModalProvider() {
     setModals(modalsRef.current);
   }, []);
 
-  // Register the push function so the imperative API can use it
   pushModal = push;
 
-  // Only render the topmost modal (stack support — last in, first out)
   const current = modals.length > 0 ? modals[modals.length - 1] : null;
   const currentIndex = modals.length - 1;
 
@@ -131,21 +110,6 @@ export function ModalProvider() {
           onSubmit={(value) => {
             dismiss(currentIndex);
             current.resolve(value);
-          }}
-          onCancel={() => {
-            dismiss(currentIndex);
-            current.resolve(null);
-          }}
-        />
-      );
-
-    case "pin":
-      return (
-        <PinInputModal
-          isPasswordMode={current.options.isPasswordMode}
-          onComplete={(pin) => {
-            dismiss(currentIndex);
-            current.resolve(pin);
           }}
           onCancel={() => {
             dismiss(currentIndex);

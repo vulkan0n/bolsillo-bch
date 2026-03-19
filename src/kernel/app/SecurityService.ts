@@ -82,7 +82,8 @@ export default function SecurityService() {
     unlockWithBiometric,
     verifyBiometric,
     storeBiometricKeyFromCurrent,
-    // Composite operations (extracted from SecuritySettings)
+    // Composite operations
+    promptForNewPin,
     changePinAndUpdateBiometric,
     exportKeyBackup,
     importKeyBackup,
@@ -267,6 +268,60 @@ export default function SecurityService() {
   async function removePin(): Promise<void> {
     await SimpleEncryption.removePin();
     setPinConfigured(false);
+  }
+
+  /** Prompt user to enter and confirm a new PIN or password. Returns null if cancelled.
+   *  Reads authMode from preferences by default. Pass forcePassword=true for backup export. */
+  async function promptForNewPin(
+    forcePassword = false
+  ): Promise<string | null> {
+    const { authMode } = selectSecuritySettings(store.getState());
+    const isPasswordMode = forcePassword || authMode === "password";
+    const Modal = ModalService();
+    const MIN_PASSWORD_LENGTH = 8;
+
+    const pin = await Modal.showPrompt({
+      title: isPasswordMode
+        ? translate(common.enterNewPassword)
+        : translate(common.enterNewPin),
+      message: isPasswordMode ? translate(common.minimumCharacters) : undefined,
+      inputType: "password",
+      inputMode: isPasswordMode ? "text" : "numeric",
+      placeholder: isPasswordMode
+        ? translate(common.enterPassword)
+        : translate(common.enterPin),
+      submitLabel: translate(common.next),
+      pattern: isPasswordMode ? undefined : "[0-9]*",
+    });
+
+    if (!pin) return null;
+
+    if (isPasswordMode && pin.length < MIN_PASSWORD_LENGTH) {
+      NotificationService().error(translate(common.passwordMinLength));
+      return null;
+    }
+
+    const confirmPin = await Modal.showPrompt({
+      title: isPasswordMode
+        ? translate(common.confirmPassword)
+        : translate(common.confirmPin),
+      inputType: "password",
+      inputMode: isPasswordMode ? "text" : "numeric",
+      placeholder: isPasswordMode
+        ? translate(common.enterPassword)
+        : translate(common.enterPin),
+      submitLabel: translate(common.confirm),
+      pattern: isPasswordMode ? undefined : "[0-9]*",
+    });
+
+    if (!confirmPin) return null;
+
+    if (pin !== confirmPin) {
+      NotificationService().error(translate(common.valuesDoNotMatch));
+      return null;
+    }
+
+    return pin;
   }
 
   // --- Biometric  ---

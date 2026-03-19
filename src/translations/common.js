@@ -1568,6 +1568,9 @@ const translations = {
   ok: {
     en: "OK",
   },
+  approve: {
+    en: "Approve",
+  },
   cancel: {
     en: "Cancel",
   },
@@ -1643,6 +1646,7 @@ export const {
   automaticallyGenerated,
   pendingConfirmation,
   ok,
+  approve,
   cancel,
   confirm,
   next,

@@ -69,9 +69,7 @@ export default function SecuritySettings() {
       }
     }
 
-    const pin = await Modal.showPinInput({
-      isPasswordMode: authMode === "password",
-    });
+    const pin = await Security.promptForNewPin();
     if (!pin) return;
 
     try {
@@ -108,7 +106,7 @@ export default function SecuritySettings() {
   // Shared helper: prompt for password, export key backup, share/copy result.
   // Returns true on success, false if user cancelled or export failed.
   const performKeyBackupExport = async () => {
-    const password = await Modal.showPinInput({ isPasswordMode: true });
+    const password = await Security.promptForNewPin(/* forcePassword */ true);
     if (!password) return false;
 
     try {
@@ -179,9 +177,7 @@ export default function SecuritySettings() {
     }
   };
 
-  const promptForNewPin = async (isPassword = false) => {
-    return Modal.showPinInput({ isPasswordMode: isPassword });
-  };
+  const promptForNewPin = () => Security.promptForNewPin();
 
   const handleAuthModeChange = async (event) => {
     const newMode = event.target.value;
@@ -207,7 +203,7 @@ export default function SecuritySettings() {
       if (newMode === "pin" || newMode === "password") {
         await Security.removeBiometricKey();
         if (!isPinConfigured) {
-          const pin = await promptForNewPin(newMode === "password");
+          const pin = await promptForNewPin();
           if (!pin) return;
           await Security.setPin(pin);
           setIsPinConfigured(true);
