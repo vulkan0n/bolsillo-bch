@@ -1,6 +1,9 @@
 import Button from "@/atoms/Button";
 import Modal from "@/atoms/Modal";
 
+import common from "@/translations/common";
+import { translate } from "@/util/translations";
+
 interface ConfirmModalProps {
   title?: string;
   message: React.ReactNode;
@@ -45,8 +48,8 @@ const dangerButtonProps = {
 export default function ConfirmModal({
   title = undefined,
   message,
-  confirmLabel = "OK",
-  cancelLabel = "Cancel",
+  confirmLabel = translate(common.ok),
+  cancelLabel = translate(common.cancel),
   isDanger = false,
   showCancel = true,
   onConfirm,

@@ -3,6 +3,9 @@ import { useEffect, useRef, useState } from "react";
 import Button from "@/atoms/Button";
 import Modal from "@/atoms/Modal";
 
+import common from "@/translations/common";
+import { translate } from "@/util/translations";
+
 interface PromptModalProps {
   title?: string;
   message?: string;
@@ -41,7 +44,7 @@ export default function PromptModal({
   inputType = "text",
   inputMode = "text",
   placeholder = undefined,
-  submitLabel = "OK",
+  submitLabel = translate(common.ok),
   pattern = undefined,
   onSubmit,
   onCancel,
@@ -96,7 +99,7 @@ export default function PromptModal({
             <Button
               {...cancelButtonProps}
               fullWidth
-              label="Cancel"
+              label={translate(common.cancel)}
               onClick={onCancel}
             />
           </div>

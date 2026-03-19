@@ -3,6 +3,9 @@ import { useEffect, useRef, useState } from "react";
 import Button from "@/atoms/Button";
 import Modal from "@/atoms/Modal";
 
+import common from "@/translations/common";
+import { translate } from "@/util/translations";
+
 interface PinInputModalProps {
   isPasswordMode: boolean;
   onComplete: (pin: string) => void;
@@ -60,7 +63,7 @@ export default function PinInputModal({
 
     if (step === "enter") {
       if (isPasswordMode && value.length < MIN_PASSWORD_LENGTH) {
-        setError(`Password must be at least ${MIN_PASSWORD_LENGTH} characters`);
+        setError(translate(common.passwordMinLength));
         return;
       }
       setFirstValue(value);
@@ -72,7 +75,7 @@ export default function PinInputModal({
 
     // step === "confirm"
     if (value !== firstValue) {
-      setError("Values do not match. Please try again.");
+      setError(translate(common.valuesDoNotMatch));
       setValue("");
       return;
     }
@@ -81,9 +84,22 @@ export default function PinInputModal({
   };
 
   // ----------------
-  const title = isPasswordMode ? "Password" : "PIN";
-  const stepTitle =
-    step === "enter" ? `Enter new ${title}` : `Confirm ${title}`;
+  let stepTitle;
+  if (isPasswordMode) {
+    stepTitle =
+      step === "enter"
+        ? translate(common.enterNewPassword)
+        : translate(common.confirmPassword);
+  } else {
+    stepTitle =
+      step === "enter"
+        ? translate(common.enterNewPin)
+        : translate(common.confirmPin);
+  }
+
+  const placeholder = isPasswordMode
+    ? translate(common.enterPassword)
+    : translate(common.enterPin);
 
   return (
     <Modal className="max-w-sm mx-4">
@@ -94,7 +110,7 @@ export default function PinInputModal({
 
         {step === "enter" && isPasswordMode && (
           <p className="text-neutral-800 dark:text-neutral-200 mb-4">
-            Minimum {MIN_PASSWORD_LENGTH} characters
+            {translate(common.minimumCharacters)}
           </p>
         )}
 
@@ -109,11 +125,7 @@ export default function PinInputModal({
               setValue(e.target.value);
               if (error) setError("");
             }}
-            placeholder={
-              step === "enter"
-                ? `Enter ${title.toLowerCase()}`
-                : `Confirm ${title.toLowerCase()}`
-            }
+            placeholder={placeholder}
             className="w-full p-3 mb-2 border border-neutral-300 dark:border-neutral-600 rounded-lg bg-neutral-50 dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 text-center text-xl tracking-widest"
           />
 
@@ -129,12 +141,16 @@ export default function PinInputModal({
               fullWidth
               submit
               disabled={!value}
-              label={step === "enter" ? "Next" : "Confirm"}
+              label={
+                step === "enter"
+                  ? translate(common.next)
+                  : translate(common.confirm)
+              }
             />
             <Button
               {...cancelButtonProps}
               fullWidth
-              label="Cancel"
+              label={translate(common.cancel)}
               onClick={onCancel}
             />
           </div>
