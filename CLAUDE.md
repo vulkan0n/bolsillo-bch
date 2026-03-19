@@ -196,7 +196,8 @@ src/components/
 ├── atoms/      # Button, Card, Address, TokenIcon, Satoshi, ~30 components
 ├── composite/  # TokenCard
 └── views/      # Page-level (lazy-loaded)
-    ├── wallet/   # home, send, pay, sweep, history, vendormode
+    ├── wallet/   # home, send, pay, sweep, history
+    ├── vendor/   # VendorModeView, VendorNumpad (landscape POS mode)
     ├── assets/   # tokens, NFTs, coins, addresses, token detail
     ├── explore/  # search, transactions, contacts, map
     ├── security/ # AppLockScreen.tsx, ForgotPinScreen.tsx (pre-auth, no router)

@@ -37,16 +37,16 @@ export default function PaymentReceivedToast({
           <div>
             <TokenAmount token={token} />
           </div>
-          <div className="text-primary-700 text-sm">
+          <div className="text-primary-900 dark:text-primarydark-400 text-sm">
             +<Satoshi value={amount} fiat={false} />
           </div>
         </>
       ) : (
         <>
-          <div className="text-primary-700">
+          <div className="text-primary-900 dark:text-primarydark-400">
             +<Satoshi value={amount} />
           </div>
-          <div className="text-neutral-500 font-mono text-sm">
+          <div className="text-neutral-700 dark:text-neutral-300 font-mono text-sm">
             <Satoshi value={amount} flip />
           </div>
         </>

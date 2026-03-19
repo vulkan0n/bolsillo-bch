@@ -32,11 +32,11 @@ export default function ToastCard({
         <div className="flex items-center justify-center">{icon}</div>
       </div>
       <div className="p-1 break-words">
-        <div className="text-lg font-bold text-neutral-800 dark:text-neutral-100">
+        <div className="text-lg font-bold text-neutral-900 dark:text-neutral-50">
           {header}
         </div>
         {body && (
-          <div className="text-base text-neutral-700 dark:text-neutral-200 flex">
+          <div className="text-base text-neutral-800 dark:text-neutral-100 flex">
             {body}
           </div>
         )}

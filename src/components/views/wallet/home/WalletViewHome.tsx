@@ -141,7 +141,7 @@ export default function WalletViewHome() {
     }
 
     dispatch(setPreference({ key: "vendorModeActive", value: "true" }));
-    navigate("/vendor");
+    navigate("/vendor", { replace: true });
   };
 
   // force red QR code border if connected to chipnet

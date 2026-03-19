@@ -321,8 +321,6 @@ export const navigateOnValidUri = async (
       return { navTo: "", navState: {}, isTokenAddress, isExpired: true };
     }
 
-    Notification.success(decodedInput);
-
     if (isWalletConnect) {
       navTo = `/apps/walletconnect`;
       navState = { wcUri };

@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
 import { QRCode } from "react-qrcode-logo";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router";
+import { useBlocker, useNavigate } from "react-router";
 import { ScreenOrientation } from "@capacitor/screen-orientation";
 import { KeepAwake } from "@capacitor-community/keep-awake";
+import { CloseOutlined } from "@ant-design/icons";
 
 import { selectDeviceInfo } from "@/redux/device";
 import {
@@ -18,17 +19,14 @@ import { selectActiveWalletHash } from "@/redux/wallet";
 import SecurityService, { AuthActions } from "@/kernel/app/SecurityService";
 import AddressManagerService from "@/kernel/wallet/AddressManagerService";
 
-import translations from "@/views/wallet/translations";
+import CurrencyFlip from "@/atoms/CurrencyFlip";
 import Satoshi from "@/atoms/Satoshi";
 
 import { useCurrencyFlip } from "@/hooks/useCurrencyFlip";
-import { useLongPress } from "@/hooks/useLongPress";
 
 import { logos } from "@/util/logos";
 import { satsToBch } from "@/util/sats";
 import { toAlphanumericUri } from "@/util/uri";
-
-import { translate } from "@/util/translations";
 
 import VendorNumpad from "./VendorNumpad";
 
@@ -73,20 +71,32 @@ export default function VendorModeView() {
 
   const handleCurrencyFlip = useCurrencyFlip();
 
-  // Exit vendor mode
-  const exitVendorMode = async () => {
-    const isAuthorized = await SecurityService().authorize(
-      AuthActions.VendorMode
-    );
-    if (!isAuthorized) {
-      return;
-    }
+  // Block navigation out of vendor mode until auth passes
+  const blocker = useBlocker(true);
 
-    dispatch(setPreference({ key: "vendorModeActive", value: "false" }));
-    navigate("/wallet");
-  };
+  useEffect(
+    function handleVendorModeExit() {
+      if (blocker.state !== "blocked") {
+        return;
+      }
 
-  const qrLongPress = useLongPress(exitVendorMode, () => {}, 1000);
+      SecurityService()
+        .authorize(AuthActions.VendorMode)
+        .then((isAuthorized) => {
+          if (isAuthorized) {
+            dispatch(
+              setPreference({ key: "vendorModeActive", value: "false" })
+            );
+            blocker.proceed();
+          } else {
+            blocker.reset();
+          }
+        });
+    },
+    [blocker, dispatch]
+  );
+
+  const exitVendorMode = () => navigate("/wallet");
 
   // Lock orientation and keep awake on mount
   useEffect(
@@ -116,13 +126,20 @@ export default function VendorModeView() {
   const qrFgColor = isTestnet ? "#000000" : qrCodeSettings.foreground;
 
   return (
-    <div className="flex h-full w-full bg-white dark:bg-neutral-900">
+    <div className="relative flex h-full w-full bg-white dark:bg-neutral-900">
+      {/* Exit button */}
+      <button
+        type="button"
+        onClick={exitVendorMode}
+        className="absolute top-3 right-3 z-10 p-2 cursor-pointer text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200"
+      >
+        <CloseOutlined className="text-xl" />
+      </button>
+
       {/* Left side - QR Code */}
       <div className="flex-1 flex flex-col items-center justify-center p-4">
-        <button
-          type="button"
-          className={`border-4 cursor-pointer ${isTestnet ? "border-[#ff0000]" : "border-primary-700 dark:border-primarydark-200"}`}
-          {...qrLongPress}
+        <div
+          className={`border-4 ${isTestnet ? "border-[#ff0000]" : "border-primary-700 dark:border-primarydark-200"}`}
         >
           <QRCode
             value={qrValue}
@@ -134,7 +151,7 @@ export default function VendorModeView() {
             logoWidth={48}
             logoHeight={48}
           />
-        </button>
+        </div>
 
         {/* Amount display - both currencies, tap to swap */}
         <button
@@ -148,8 +165,9 @@ export default function VendorModeView() {
           >
             <Satoshi value={satoshiAmount} forceVisible />
           </div>
-          <div className="text-lg text-neutral-500 dark:text-neutral-400">
+          <div className="text-lg text-neutral-500 dark:text-neutral-400 flex items-center justify-center">
             <Satoshi value={satoshiAmount} forceVisible flip />
+            <CurrencyFlip className="ml-1.5 text-sm" />
           </div>
         </button>
       </div>
@@ -158,10 +176,6 @@ export default function VendorModeView() {
       <div className="flex-1 flex flex-col items-center justify-center p-4">
         <div className="w-full max-w-xs h-full max-h-80">
           <VendorNumpad onChange={setSatoshiAmount} />
-        </div>
-        {/* Long press hint */}
-        <div className="mt-2 text-xs text-neutral-400 dark:text-neutral-500">
-          {translate(translations.vendorModeExitHint)}
         </div>
       </div>
     </div>
