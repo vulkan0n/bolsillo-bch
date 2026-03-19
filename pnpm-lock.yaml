@@ -131,9 +131,6 @@ importers:
       luxon:
         specifier: ^3.7.2
         version: 3.7.2
-      prop-types:
-        specifier: ^15.8.1
-        version: 15.8.1
       qr-scanner:
         specifier: ^1.4.2
         version: 1.4.2

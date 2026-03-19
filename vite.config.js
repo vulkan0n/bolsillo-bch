@@ -13,7 +13,7 @@ export default defineConfig({
     visualizer(),
     react(),
     nodePolyfills({
-      include: ["fs", "path", "crypto", "stream", "vm"], // required by sql.js
+      include: ["fs", "path"], // sql.js needs fs/path stubs only
     }),
     topLevelAwait({
       promiseExportName: "__tla",
