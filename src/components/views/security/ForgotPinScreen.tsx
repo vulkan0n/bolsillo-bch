@@ -1,5 +1,4 @@
 /* eslint-disable react-refresh/only-export-components */
-/* eslint-disable react-refresh/only-export-components */
 import { useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router";
@@ -19,6 +18,11 @@ import ModalService from "@/kernel/app/ModalService";
 import SecurityService from "@/kernel/app/SecurityService";
 import WalletManagerService from "@/kernel/wallet/WalletManagerService";
 
+import {
+  confirmButtonProps,
+  dangerButtonProps,
+} from "@/composite/modals/modalButtonStyles";
+
 import Button from "@/atoms/Button";
 import SeleneLogo from "@/atoms/SeleneLogo";
 import ShowMnemonic from "@/atoms/ShowMnemonic";
@@ -32,26 +36,17 @@ function restartApp() {
 
 const lockScreenButtonProps = {
   fullWidth: true,
-  borderClasses: "",
-  rounded: "lg" as const,
-  shadow: "none" as const,
   labelSize: "md" as const,
 } as const;
 
 export const primaryButtonProps = {
+  ...confirmButtonProps,
   ...lockScreenButtonProps,
-  bgColor: "bg-primary-500 hover:bg-primary-700",
-  activeBgColor: "bg-primary-700",
-  labelColor: "text-white font-semibold",
-  activeLabelColor: "text-white",
 } as const;
 
-export const dangerButtonProps = {
+const lockScreenDangerButtonProps = {
+  ...dangerButtonProps,
   ...lockScreenButtonProps,
-  bgColor: "bg-error hover:bg-error-dark",
-  activeBgColor: "bg-error-dark",
-  labelColor: "text-white font-semibold",
-  activeLabelColor: "text-white",
 } as const;
 
 // Centered card layout for the lock screen flow.
@@ -131,7 +126,7 @@ export function NuclearWipeScreen() {
       </div>
 
       <Button
-        {...dangerButtonProps}
+        {...lockScreenDangerButtonProps}
         label={
           isLoading
             ? translate(translations.wiping)
@@ -220,7 +215,7 @@ export function LegacyRevealScreen() {
         </label>
 
         <Button
-          {...dangerButtonProps}
+          {...lockScreenDangerButtonProps}
           label={
             isLoading
               ? translate(translations.wiping)

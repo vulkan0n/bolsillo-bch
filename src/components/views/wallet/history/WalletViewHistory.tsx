@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router";
 import { DateTime } from "luxon";
@@ -275,7 +274,8 @@ export default function WalletViewHistory() {
     }
 
     setIsExporting(true);
-    const loadingToast = toast.loading("Preparing CSV export...");
+    const Notification = NotificationService();
+    let dismissLoading = Notification.loading("Preparing CSV export...");
 
     try {
       const HistoryService = TransactionHistoryService(
@@ -295,9 +295,9 @@ export default function WalletViewHistory() {
         throw new Error("No transactions to export");
       }
 
-      toast.loading(
-        `Preparing ${allTransactions.transactions.length} transactions...`,
-        { id: loadingToast }
+      dismissLoading();
+      dismissLoading = Notification.loading(
+        `Preparing ${allTransactions.transactions.length} transactions...`
       );
 
       // Prepare all transactions for export by resolving full transaction data
@@ -342,14 +342,12 @@ export default function WalletViewHistory() {
         `transaction-history-${DateTime.now().toFormat("yyyy-MM-dd")}`
       );
 
-      toast.dismiss(loadingToast);
-      NotificationService().success(
-        `Exported ${exportData.length} transactions!`
-      );
+      dismissLoading();
+      Notification.success(`Exported ${exportData.length} transactions!`);
     } catch (error) {
       Log.error("CSV export error:", error);
-      toast.dismiss(loadingToast);
-      NotificationService().error(translate(translations.failedToExportCsv));
+      dismissLoading();
+      Notification.error(translate(translations.failedToExportCsv));
     } finally {
       setIsExporting(false);
     }

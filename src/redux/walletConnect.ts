@@ -71,6 +71,7 @@ export const wcSessionProposal = createAsyncThunk(
     // if current network is not target network, reject session
     if (wallet.network !== targetNetwork) {
       thunkApi.dispatch(wcSessionReject(proposal));
+      return;
     }
 
     thunkApi.dispatch(wcSessionApprove(proposal));
@@ -131,6 +132,7 @@ export const wcSessionRequest = createAsyncThunk(
             await WalletConnect.sessionResponse(topic, {
               response: formatJsonRpcError(id, getSdkError("USER_REJECTED")),
             });
+            return;
           }
 
           const txTemplate = { ...unsignedTransaction };
@@ -183,6 +185,19 @@ export const wcSessionRequest = createAsyncThunk(
       case "bch_signMessage":
         {
           const { message } = destringify(JSON.stringify(methodParams));
+
+          const isApproved = await ModalService().showConfirm({
+            title: peer.metadata.name,
+            message: `${translate(common.signMessage)}\n\n${message.substring(0, 200)}${message.length > 200 ? "..." : ""}\n\n${event.verifyContext.verified.origin}`,
+            confirmLabel: translate(common.approve),
+          });
+
+          if (!isApproved) {
+            await WalletConnect.sessionResponse(topic, {
+              response: formatJsonRpcError(id, getSdkError("USER_REJECTED")),
+            });
+            return;
+          }
 
           const KeyManager = KeyManagerService(wallet);
           const signedMessage = KeyManager.signMessage(message, sessionAddress);

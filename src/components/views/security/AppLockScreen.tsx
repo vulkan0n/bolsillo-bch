@@ -6,7 +6,6 @@ import { selectDeviceInfo } from "@/redux/device";
 import { selectSecuritySettings } from "@/redux/preferences";
 
 import LogService from "@/kernel/app/LogService";
-import { ModalProvider } from "@/kernel/app/ModalService";
 import SecurityService from "@/kernel/app/SecurityService";
 
 import Button from "@/atoms/Button";
@@ -26,6 +25,15 @@ import {
 const Security = SecurityService();
 
 const Log = LogService("AppLockScreen");
+
+const secondaryButtonProps = {
+  ...primaryButtonProps,
+  bgColor:
+    "bg-neutral-200 dark:bg-neutral-700 hover:bg-neutral-300 dark:hover:bg-neutral-600",
+  activeBgColor: "bg-neutral-300 dark:bg-neutral-600",
+  labelColor: "text-neutral-900 dark:text-neutral-100 font-semibold",
+  activeLabelColor: "text-neutral-900 dark:text-neutral-100",
+} as const;
 
 interface AppLockScreenProps {
   boot: () => Promise<void>;
@@ -161,25 +169,7 @@ function LockScreen({ boot }: AppLockScreenProps) {
       {shouldShowBio && (
         <div className={shouldShowPin ? "mt-3" : ""}>
           <Button
-            {...primaryButtonProps}
-            bgColor={
-              shouldShowPin
-                ? "bg-neutral-200 dark:bg-neutral-700 hover:bg-neutral-300 dark:hover:bg-neutral-600"
-                : undefined
-            }
-            activeBgColor={
-              shouldShowPin ? "bg-neutral-300 dark:bg-neutral-600" : undefined
-            }
-            labelColor={
-              shouldShowPin
-                ? "text-neutral-900 dark:text-neutral-100 font-semibold"
-                : undefined
-            }
-            activeLabelColor={
-              shouldShowPin
-                ? "text-neutral-900 dark:text-neutral-100"
-                : undefined
-            }
+            {...(shouldShowPin ? secondaryButtonProps : primaryButtonProps)}
             label={translate(translations.useBiometric)}
             onClick={tryBiometric}
             disabled={isLoading}
@@ -220,7 +210,6 @@ export default function AppLockScreen({ boot }: AppLockScreenProps) {
         <Route path="/forgot-pin/reveal" element={<LegacyRevealScreen />} />
         <Route path="/forgot-pin/wipe" element={<NuclearWipeScreen />} />
       </Routes>
-      <ModalProvider />
     </MemoryRouter>
   );
 }

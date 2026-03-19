@@ -1571,6 +1571,12 @@ const translations = {
   approve: {
     en: "Approve",
   },
+  signMessage: {
+    en: "Sign Message",
+  },
+  debug: {
+    en: "Debug",
+  },
   cancel: {
     en: "Cancel",
   },
@@ -1647,6 +1653,8 @@ export const {
   pendingConfirmation,
   ok,
   approve,
+  signMessage,
+  debug,
   cancel,
   confirm,
   next,

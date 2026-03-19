@@ -17,6 +17,8 @@ import DatabaseService, {
 } from "@/kernel/app/DatabaseService";
 import JanitorService from "@/kernel/app/JanitorService";
 import LogService from "@/kernel/app/LogService";
+import { ModalProvider } from "@/kernel/app/ModalService";
+import { NotificationProvider } from "@/kernel/app/NotificationService";
 import SecurityService, { AuthActions } from "@/kernel/app/SecurityService";
 
 import AppLockScreen from "@/views/security/AppLockScreen";
@@ -77,7 +79,7 @@ function useAppLifecycle() {
         Log.timeEnd("boot");
       } catch (e) {
         Log.error("BOOT FAILED", e);
-        setStartupError(new Error(String(e)));
+        setStartupError(e instanceof Error ? e : new Error(String(e)));
         go("STARTUP_ERROR");
         Log.timeEnd("boot");
       }
@@ -113,7 +115,7 @@ function useAppLifecycle() {
           go("LOCKED");
         } else {
           Log.error("INIT FAILED", e);
-          setStartupError(new Error(String(e)));
+          setStartupError(e instanceof Error ? e : new Error(String(e)));
           go("STARTUP_ERROR");
         }
       }
@@ -209,7 +211,8 @@ export default function AppProvider({ children }: AppProviderProps) {
   const { phase, startupError, boot } = useAppLifecycle();
   const isDarkMode = useSelector(selectIsDarkMode);
 
-  // Apply dark class to <html> globally — covers pre-auth and post-auth screens
+  // Apply dark class to <html> synchronously — must run before paint to avoid flash.
+  // This is intentionally in the render body, not useEffect.
   const html = document.documentElement;
   if (isDarkMode) {
     html.classList.add("dark");
@@ -217,20 +220,32 @@ export default function AppProvider({ children }: AppProviderProps) {
     html.classList.remove("dark");
   }
 
+  let content: ReactNode = null;
   switch (phase) {
     case "PREFLIGHT":
     case "PAUSED":
-      return null; // native splash covers; PAUSED = cleanup in progress
+      break; // native splash covers; PAUSED = cleanup in progress
     case "LOCKED":
-      return <AppLockScreen boot={boot} />;
+      content = <AppLockScreen boot={boot} />;
+      break;
     case "RUNNING":
-      return children;
+      content = children;
+      break;
     case "STARTUP_ERROR":
     default:
-      return (
+      content = (
         <ErrorBoundary
           startupError={startupError ?? new Error(`Unknown phase: ${phase}`)}
         />
       );
+      break;
   }
+
+  return (
+    <>
+      {content}
+      <ModalProvider />
+      <NotificationProvider />
+    </>
+  );
 }

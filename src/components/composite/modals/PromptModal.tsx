@@ -3,6 +3,11 @@ import { useState } from "react";
 import Button from "@/atoms/Button";
 import Modal from "@/atoms/Modal";
 
+import {
+  cancelButtonProps,
+  confirmButtonProps,
+} from "@/composite/modals/modalButtonStyles";
+
 import common from "@/translations/common";
 import { translate } from "@/util/translations";
 
@@ -17,26 +22,6 @@ interface PromptModalProps {
   onSubmit: (value: string) => void;
   onCancel: () => void;
 }
-
-const cancelButtonProps = {
-  bgColor: "bg-neutral-200 dark:bg-neutral-700",
-  activeBgColor: "bg-neutral-300 dark:bg-neutral-600",
-  labelColor: "text-neutral-800 dark:text-neutral-100 font-medium",
-  activeLabelColor: "text-neutral-900 dark:text-neutral-50",
-  borderClasses: "",
-  rounded: "lg" as const,
-  shadow: "none" as const,
-} as const;
-
-const submitButtonProps = {
-  bgColor: "bg-primary-500 hover:bg-primary-700",
-  activeBgColor: "bg-primary-700",
-  labelColor: "text-white font-semibold",
-  activeLabelColor: "text-white",
-  borderClasses: "",
-  rounded: "lg" as const,
-  shadow: "none" as const,
-} as const;
 
 export default function PromptModal({
   title = undefined,
@@ -53,6 +38,7 @@ export default function PromptModal({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!value.trim()) return;
     onSubmit(value);
   };
 
@@ -75,7 +61,7 @@ export default function PromptModal({
           <input
             type={inputType}
             autoFocus
-            inputMode={inputMode === "numeric" ? "numeric" : undefined}
+            inputMode={inputMode}
             pattern={pattern}
             value={value}
             onChange={(e) => setValue(e.target.value)}
@@ -85,9 +71,10 @@ export default function PromptModal({
 
           <div className="flex gap-3">
             <Button
-              {...submitButtonProps}
+              {...confirmButtonProps}
               fullWidth
               submit
+              disabled={!value.trim()}
               label={submitLabel}
             />
             <Button

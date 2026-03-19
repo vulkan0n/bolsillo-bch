@@ -1,7 +1,7 @@
 import { ReactNode, useCallback, useRef, useState } from "react";
 
-import ConfirmModal from "@/composite/ConfirmModal";
-import PromptModal from "@/composite/PromptModal";
+import ConfirmModal from "@/composite/modals/ConfirmModal";
+import PromptModal from "@/composite/modals/PromptModal";
 
 // --------------------------------
 // Types
@@ -48,7 +48,7 @@ export default function ModalService() {
         throw new Error("ModalProvider not mounted");
       }
       return new Promise((resolve) => {
-        pushModal!({ type: "confirm", options, resolve });
+        pushModal({ type: "confirm", options, resolve });
       });
     },
 
@@ -57,7 +57,7 @@ export default function ModalService() {
         throw new Error("ModalProvider not mounted");
       }
       return new Promise((resolve) => {
-        pushModal!({ type: "prompt", options, resolve });
+        pushModal({ type: "prompt", options, resolve });
       });
     },
   };
@@ -82,8 +82,8 @@ export function ModalProvider() {
 
   pushModal = push;
 
-  const current = modals.length > 0 ? modals[modals.length - 1] : null;
-  const currentIndex = modals.length - 1;
+  // FIFO: first pushed = first shown, dismiss reveals next in queue
+  const current = modals.length > 0 ? modals[0] : null;
 
   if (!current) return null;
 
@@ -93,11 +93,11 @@ export function ModalProvider() {
         <ConfirmModal
           {...current.options}
           onConfirm={() => {
-            dismiss(currentIndex);
+            dismiss(0);
             current.resolve(true);
           }}
           onCancel={() => {
-            dismiss(currentIndex);
+            dismiss(0);
             current.resolve(false);
           }}
         />
@@ -108,11 +108,11 @@ export function ModalProvider() {
         <PromptModal
           {...current.options}
           onSubmit={(value) => {
-            dismiss(currentIndex);
+            dismiss(0);
             current.resolve(value);
           }}
           onCancel={() => {
-            dismiss(currentIndex);
+            dismiss(0);
             current.resolve(null);
           }}
         />

@@ -177,8 +177,6 @@ export default function SecuritySettings() {
     }
   };
 
-  const promptForNewPin = () => Security.promptForNewPin();
-
   const handleAuthModeChange = async (event) => {
     const newMode = event.target.value;
     if (newMode === authMode) return;
@@ -203,7 +201,7 @@ export default function SecuritySettings() {
       if (newMode === "pin" || newMode === "password") {
         await Security.removeBiometricKey();
         if (!isPinConfigured) {
-          const pin = await promptForNewPin();
+          const pin = await Security.promptForNewPin();
           if (!pin) return;
           await Security.setPin(pin);
           setIsPinConfigured(true);
@@ -213,7 +211,7 @@ export default function SecuritySettings() {
       // Target: bio — PIN wraps key at rest, bio is fast unlock
       if (newMode === "bio") {
         if (!isPinConfigured) {
-          const pin = await promptForNewPin();
+          const pin = await Security.promptForNewPin();
           if (!pin) return;
           await Security.setPin(pin);
           setIsPinConfigured(true);

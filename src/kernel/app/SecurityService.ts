@@ -21,6 +21,7 @@ import common from "@/translations/common";
 import { translate } from "@/util/translations";
 
 const Log = LogService("SecurityService");
+const MIN_PASSWORD_LENGTH = 8;
 
 let hasPinConfigured = false;
 
@@ -45,7 +46,7 @@ export enum AuthActions {
 
 const authTextKeys: Record<AuthActions, Record<string, string> | null> = {
   [AuthActions.Any]: null,
-  [AuthActions.Debug]: { en: "Debug" },
+  [AuthActions.Debug]: common.debug,
   [AuthActions.AppOpen]: common.authOpenApp,
   [AuthActions.AppResume]: common.authResumeApp,
   [AuthActions.WalletActivate]: common.authActivateWallet,
@@ -124,7 +125,7 @@ export default function SecurityService() {
   }
 
   // Clear sensitive material without dispatching Redux state.
-  // Called by BootProvider on pause — phase transition handles UI, not Redux.
+  // Called by AppProvider on pause — phase transition handles UI, not Redux.
   async function securePause(): Promise<void> {
     clearSeedCache();
     await DatabaseService().closeAllDatabases();
@@ -233,11 +234,13 @@ export default function SecurityService() {
       if (sha256.text(pin) === pinHash) {
         return pin;
       }
+
+      NotificationService().error(translate(common.incorrectPin));
     }
     /* eslint-enable no-constant-condition, no-await-in-loop */
   }
 
-  // --- PIN management  ---
+  // --------------------------------
 
   /**
    * Verify a PIN against the encryption plugin.
@@ -278,7 +281,6 @@ export default function SecurityService() {
     const { authMode } = selectSecuritySettings(store.getState());
     const isPasswordMode = forcePassword || authMode === "password";
     const Modal = ModalService();
-    const MIN_PASSWORD_LENGTH = 8;
 
     const pin = await Modal.showPrompt({
       title: isPasswordMode
@@ -324,7 +326,7 @@ export default function SecurityService() {
     return pin;
   }
 
-  // --- Biometric  ---
+  // --------------------------------
 
   /** Check if a biometric key exists in platform storage. */
   async function hasBiometricKey(): Promise<boolean> {

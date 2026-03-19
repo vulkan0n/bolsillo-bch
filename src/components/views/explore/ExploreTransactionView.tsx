@@ -1,6 +1,5 @@
 /* eslint-disable react/prop-types */
 import { useCallback, useEffect, useMemo, useState } from "react";
-import toast from "react-hot-toast";
 import { useSelector } from "react-redux";
 import { Link, useLoaderData } from "react-router";
 import { DateTime } from "luxon";
@@ -104,7 +103,8 @@ export default function ExploreTransactionView() {
     }
 
     setIsExporting(true);
-    const loadingToast = toast.loading(
+    const Notification = NotificationService();
+    const dismissLoading = Notification.loading(
       translate(translations.pdfExportGenerating)
     );
 
@@ -120,11 +120,11 @@ export default function ExploreTransactionView() {
         exportData,
         `transaction-${tx.tx_hash.slice(0, 8)}`
       );
-      toast.dismiss(loadingToast);
-      NotificationService().success(translate(translations.pdfExportSuccess));
+      dismissLoading();
+      Notification.success(translate(translations.pdfExportSuccess));
     } catch (error) {
-      toast.dismiss(loadingToast);
-      NotificationService().error(translate(translations.pdfExportError));
+      dismissLoading();
+      Notification.error(translate(translations.pdfExportError));
     } finally {
       setIsExporting(false);
     }
@@ -136,7 +136,8 @@ export default function ExploreTransactionView() {
     }
 
     setIsExporting(true);
-    const loadingToast = toast.loading(
+    const Notification = NotificationService();
+    const dismissLoading = Notification.loading(
       translate(translations.pngExportGenerating)
     );
 
@@ -152,11 +153,11 @@ export default function ExploreTransactionView() {
         exportData,
         `transaction-${tx.tx_hash.slice(0, 8)}`
       );
-      toast.dismiss(loadingToast);
-      NotificationService().success(translate(translations.pngExportSuccess));
+      dismissLoading();
+      Notification.success(translate(translations.pngExportSuccess));
     } catch (error) {
-      toast.dismiss(loadingToast);
-      NotificationService().error(translate(translations.pngExportError));
+      dismissLoading();
+      Notification.error(translate(translations.pngExportError));
     } finally {
       setIsExporting(false);
     }

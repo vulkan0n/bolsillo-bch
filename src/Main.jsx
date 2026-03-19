@@ -1,6 +1,5 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { Toaster } from "react-hot-toast";
 import { Provider } from "react-redux";
 import { createBrowserRouter } from "react-router";
 import { RouterProvider } from "react-router/dom";
@@ -63,11 +62,6 @@ function Main() {
   return (
     <Provider store={store}>
       <AppProvider>
-        {/* Note: Duration has an inbuilt extra 1000ms dismissal delay */}
-        <Toaster
-          toastOptions={{ duration: 1250 }}
-          containerClassName="toaster"
-        />
         <RouterProvider router={router} />
       </AppProvider>
     </Provider>

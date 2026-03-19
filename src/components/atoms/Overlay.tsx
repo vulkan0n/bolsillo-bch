@@ -9,6 +9,7 @@ export default function Overlay({
   blur = true,
   onClose,
 }) {
+  // #root fallback: pre-auth screens (AppLockScreen, ForgotPinScreen) where #container isn't mounted
   const rootNode =
     document.querySelector("#container") ?? document.querySelector("#root")!;
 

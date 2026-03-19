@@ -1,25 +1,56 @@
-import toast from "react-hot-toast";
+import { ReactNode, useCallback, useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import {
-  DisconnectOutlined,
-  InsuranceOutlined,
+  CheckCircleOutlined,
+  CloseCircleOutlined,
   SnippetsFilled,
 } from "@ant-design/icons";
 
-import translations from "@/views/wallet/translations";
-import Satoshi from "@/atoms/Satoshi";
-import TokenAmount from "@/atoms/TokenAmount";
-import TokenIcon from "@/atoms/TokenIcon";
+import ToastCard from "@/composite/toasts/ToastCard";
+import LoadingToast from "@/composite/toasts/LoadingToast";
+import PaymentReceivedToast from "@/composite/toasts/PaymentReceivedToast";
+import TokenReceivedToast from "@/composite/toasts/TokenReceivedToast";
 
-import { logos } from "@/util/logos";
-import { truncateProse } from "@/util/string";
+import translations from "@/views/wallet/translations";
 
 import { translate } from "@/util/translations";
+
+// --------------------------------
+// Types
+
+interface ToastEntry {
+  id: string;
+  content: (onDismiss: () => void) => ReactNode;
+  duration: number;
+}
+
+interface ToastState extends ToastEntry {
+  isDismissing: boolean;
+}
+
+const FADE_OUT_MS = 300;
+
+// --------------------------------
+// Module-level refs to the provider's push/dismiss functions
+
+let pushToast: ((entry: ToastEntry) => void) | null = null;
+let dismissToast: ((id: string) => void) | null = null;
+
+let nextId = 0;
+function generateId(): string {
+  nextId += 1;
+  return `toast-${nextId}`;
+}
+
+// --------------------------------
+// Service API — callable from anywhere
 
 export default function NotificationService() {
   return {
     spawn,
     error,
     success,
+    loading,
     paymentReceived,
     tokenReceived,
     clipboardCopy,
@@ -29,141 +60,131 @@ export default function NotificationService() {
     expiredPayment,
   };
 
-  function error(header, body?) {
-    spawn({
-      icon: <DisconnectOutlined className="text-4xl text-error" />,
-      header,
-      body: body ? <span>{body}</span> : null,
-    });
-  }
+  // ----------------
+  // Generic methods
 
-  function success(header, body?) {
-    spawn({
-      icon: <InsuranceOutlined className="text-4xl text-primary" />,
-      header,
-      body: body ? <span>{body}</span> : null,
-    });
-  }
-
-  function spawn({ header, body, icon, options = {} }) {
-    toast.custom((t) => {
-      // Toasts should theoretically be removed after 3 seconds
-      // because of the duration option
-      // but sometimes aren't, so this ensures they are cleaned up
-      setTimeout(() => {
-        toast.remove(t.id);
-      }, 3000);
-
-      return (
-        <div
-          className="relative opacity-95 w-full bg-white shadow-lg rounded-lg flex ring-1 ring-black ring-opacity-5 p-2"
-          onClick={() => {
-            toast.remove(t.id);
-          }}
-        >
-          <div className="my-auto p-2">
-            <div className="flex items-center justify-center">{icon}</div>
-          </div>
-          <div className="p-1 break-word">
-            <div className="text-lg font-bold text-neutral-800">{header}</div>
-            <div className="text-base text-neutral-600 flex">{body}</div>
-          </div>
-        </div>
-      );
-    }, options);
-  }
-
-  function paymentReceived(amount, token?) {
-    spawn({
-      icon: token ? (
-        <TokenIcon category={token.category} size={64} />
-      ) : (
-        <img
-          src={logos.selene.img}
-          style={{ width: "64px", height: "64px" }}
-          alt=""
+  function spawn({
+    icon = <CheckCircleOutlined className="text-4xl text-primary" />,
+    header,
+    body,
+    id,
+    duration = 3000,
+  }: {
+    icon?: ReactNode;
+    header: ReactNode;
+    body?: ReactNode;
+    id?: string;
+    duration?: number;
+  }) {
+    push({
+      id: id ?? generateId(),
+      duration,
+      content: (onDismiss) => (
+        <ToastCard
+          icon={icon}
+          header={header}
+          body={body}
+          onDismiss={onDismiss}
         />
       ),
-      header: translate(translations.paymentReceived),
-      body: (
-        <div className="flex flex-col">
-          {token ? (
-            <>
-              <div>
-                <TokenAmount token={token} />
-              </div>
-              <div className="text-primary-700 text-sm">
-                +<Satoshi value={amount} fiat={false} />
-              </div>
-            </>
-          ) : (
-            <>
-              <div className="text-primary-700">
-                +<Satoshi value={amount} />
-              </div>
-              <div className="text-neutral-500 font-mono text-sm">
-                <Satoshi value={amount} flip />
-              </div>
-            </>
-          )}
-        </div>
-      ),
-      options: {
-        duration: 3000,
-      },
     });
   }
 
-  function tokenReceived(token, isNft = false, nftName?, nftDescription?) {
+  function error(header: string, body?: string) {
     spawn({
-      icon: (
-        <TokenIcon
-          category={token.category}
-          nft_commitment={token.nft_commitment}
-          size={64}
-          toggleable={false}
+      icon: <CloseCircleOutlined className="text-4xl text-error" />,
+      header,
+      body: body ? <span>{body}</span> : undefined,
+    });
+  }
+
+  function success(header: string, body?: string) {
+    spawn({
+      icon: <CheckCircleOutlined className="text-4xl text-primary" />,
+      header,
+      body: body ? <span>{body}</span> : undefined,
+    });
+  }
+
+  function loading(message: string): () => void {
+    const id = generateId();
+    push({
+      id,
+      duration: Infinity,
+      content: (onDismiss) => (
+        <LoadingToast message={message} onDismiss={onDismiss} />
+      ),
+    });
+    return () => dismiss(id);
+  }
+
+  // ----------------
+  // Domain methods
+
+  function paymentReceived(amount: bigint, token?: { category: string }) {
+    const id = generateId();
+    push({
+      id,
+      duration: 3000,
+      content: (onDismiss) => (
+        <PaymentReceivedToast
+          amount={amount}
+          token={token}
+          onDismiss={onDismiss}
         />
       ),
-      header: `${token.symbol} ${translate(translations.received)}`,
-      body: nftName ? (
-        <div className="flex flex-col">
-          <span className="font-semibold">{nftName}</span>
-          {nftDescription && (
-            <span className="text-sm text-neutral-500">
-              {truncateProse(nftDescription)}
-            </span>
-          )}
-        </div>
-      ) : (
-        <TokenAmount token={token} nft={isNft} />
-      ),
-      options: {
-        duration: 3000,
-      },
     });
   }
 
-  function clipboardCopy(header, payload) {
+  function tokenReceived(
+    token: {
+      category: string;
+      symbol: string;
+      nft_commitment?: string;
+      amount?: bigint;
+    },
+    isNft = false,
+    nftName?: string,
+    nftDescription?: string
+  ) {
+    const id = generateId();
+    push({
+      id,
+      duration: 3000,
+      content: (onDismiss) => (
+        <TokenReceivedToast
+          token={token}
+          isNft={isNft}
+          nftName={nftName}
+          nftDescription={nftDescription}
+          onDismiss={onDismiss}
+        />
+      ),
+    });
+  }
+
+  function clipboardCopy(header: string, payload: ReactNode) {
     spawn({
       icon: <SnippetsFilled className="text-4xl text-primary" />,
       header,
       body: <span className="flex text-sm break-all">{payload}</span>,
-      options: { id: "clipboardCopy", duration: 2400 },
+      id: "clipboardCopy",
+      duration: 2400,
     });
   }
 
   function disconnected() {
     spawn({
-      icon: <DisconnectOutlined className="text-4xl text-error" />,
+      icon: <CloseCircleOutlined className="text-4xl text-error" />,
       header: translate(translations.notConnected),
       body: <span>{translate(translations.unableWhileDisconnected)}</span>,
-      options: { id: "disconnected" },
+      id: "disconnected",
     });
   }
 
-  function authFail(actionText) {
+  function authFail(actionText: string) {
     spawn({
-      icon: <InsuranceOutlined className="text-4xl text-error" />,
+      icon: <CloseCircleOutlined className="text-4xl text-error" />,
       header: translate(translations.authFail),
       body: (
         <span>
@@ -174,9 +195,9 @@ export default function NotificationService() {
     });
   }
 
-  function invalidScan(content) {
+  function invalidScan(content: string) {
     spawn({
-      icon: <DisconnectOutlined className="text-4xl text-error" />,
+      icon: <CloseCircleOutlined className="text-4xl text-error" />,
       header: translate(translations.invalidQrCode),
       body: (
         <span className="flex flex-col text-sm break-all">
@@ -186,16 +207,125 @@ export default function NotificationService() {
           <span className="font-mono opacity-60 italic">{content}</span>
         </span>
       ),
-      options: { id: "invalidScan", duration: 3000 },
+      id: "invalidScan",
+      duration: 3000,
     });
   }
 
   function expiredPayment() {
     spawn({
-      icon: <DisconnectOutlined className="text-4xl text-error" />,
+      icon: <CloseCircleOutlined className="text-4xl text-error" />,
       header: translate(translations.paymentExpired),
-      body: null,
-      options: { id: "expiredPayment", duration: 3000 },
+      id: "expiredPayment",
+      duration: 3000,
     });
   }
+}
+
+// --------------------------------
+// Internal push/dismiss helpers
+
+function push(entry: ToastEntry) {
+  if (!pushToast) {
+    throw new Error("NotificationProvider not mounted");
+  }
+  pushToast(entry);
+}
+
+function dismiss(id: string) {
+  if (dismissToast) {
+    dismissToast(id);
+  }
+}
+
+// --------------------------------
+// React provider — mount once at app root
+
+export function NotificationProvider() {
+  const [toasts, setToasts] = useState<ToastState[]>([]);
+  const timersRef = useRef<Map<string, ReturnType<typeof setTimeout>>>(
+    new Map()
+  );
+
+  // Remove a toast from state (final cleanup after fade-out)
+  const remove = useCallback(function remove(id: string) {
+    setToasts((prev) => prev.filter((t) => t.id !== id));
+  }, []);
+
+  // Begin fade-out, then remove after transition
+  const handleDismiss = useCallback(
+    function handleDismiss(id: string) {
+      // Clear any pending auto-dismiss timer
+      const timer = timersRef.current.get(id);
+      if (timer) {
+        clearTimeout(timer);
+        timersRef.current.delete(id);
+      }
+
+      setToasts((prev) =>
+        prev.map((t) => (t.id === id ? { ...t, isDismissing: true } : t))
+      );
+      setTimeout(() => remove(id), FADE_OUT_MS);
+    },
+    [remove]
+  );
+
+  const handlePush = useCallback(
+    function handlePush(entry: ToastEntry) {
+      setToasts((prev) => {
+        // Dedup: replace existing toast with same ID
+        const filtered = prev.filter((t) => t.id !== entry.id);
+        return [...filtered, { ...entry, isDismissing: false }];
+      });
+
+      // Clear existing timer for this ID
+      const existing = timersRef.current.get(entry.id);
+      if (existing) {
+        clearTimeout(existing);
+      }
+
+      // Set auto-dismiss timer
+      if (entry.duration !== Infinity) {
+        const timer = setTimeout(() => {
+          handleDismiss(entry.id);
+        }, entry.duration);
+        timersRef.current.set(entry.id, timer);
+      }
+    },
+    [handleDismiss]
+  );
+
+  // Register module-level refs
+  pushToast = handlePush;
+  dismissToast = handleDismiss;
+
+  // Cleanup timers on unmount
+  useEffect(function cleanupTimers() {
+    const timers = timersRef.current;
+    return () => {
+      timers.forEach((timer) => clearTimeout(timer));
+      timers.clear();
+    };
+  }, []);
+
+  if (toasts.length === 0) return null;
+
+  // #root fallback: pre-auth screens where #container isn't mounted
+  const rootNode =
+    document.querySelector("#container") ?? document.querySelector("#root")!;
+
+  return createPortal(
+    <div className="absolute top-0 left-0 right-0 z-[60] flex flex-col items-center gap-2 p-4 pointer-events-none">
+      {toasts.map((entry) => (
+        <div
+          key={entry.id}
+          className="w-full max-w-md pointer-events-auto transition-opacity duration-300"
+          style={{ opacity: entry.isDismissing ? 0 : 1 }}
+        >
+          {entry.content(() => handleDismiss(entry.id))}
+        </div>
+      ))}
+    </div>,
+    rootNode
+  );
 }

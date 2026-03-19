@@ -97,10 +97,6 @@ main {
   background-color: #000000;
 }
 
-.toaster {
-  margin-top: env(safe-area-inset-top);
-}
-
 .anticon {
   line-height: 0;
   vertical-align: 1px;

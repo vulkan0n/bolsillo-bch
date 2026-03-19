@@ -1,6 +1,9 @@
+import { useNavigate } from "react-router";
 import { DoubleRightOutlined } from "@ant-design/icons";
 
 import Button from "@/atoms/Button";
+
+import { useNavigateExternal } from "@/hooks/useNavigateExternal";
 
 interface Props {
   name: string;
@@ -15,6 +18,9 @@ export default function ExploreApp({
   to = "",
   external = false,
 }: Props) {
+  const navigate = useNavigate();
+  const navigateExternal = useNavigateExternal();
+
   const label = (
     <span className="w-full flex justify-between items-center">
       <span>{name}</span>
@@ -31,8 +37,7 @@ export default function ExploreApp({
       justify="start"
       shadow="sm"
       fullWidth
-      navigateTo={to}
-      external={external}
+      onClick={() => (external ? navigateExternal(to) : navigate(to))}
     />
   );
 }
