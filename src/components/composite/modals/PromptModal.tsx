@@ -2,7 +2,6 @@ import { useState } from "react";
 
 import Button from "@/atoms/Button";
 import Modal from "@/atoms/Modal";
-
 import {
   cancelButtonProps,
   confirmButtonProps,

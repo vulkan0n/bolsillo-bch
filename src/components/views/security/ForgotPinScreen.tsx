@@ -18,14 +18,13 @@ import ModalService from "@/kernel/app/ModalService";
 import SecurityService from "@/kernel/app/SecurityService";
 import WalletManagerService from "@/kernel/wallet/WalletManagerService";
 
+import Button from "@/atoms/Button";
+import SeleneLogo from "@/atoms/SeleneLogo";
+import ShowMnemonic from "@/atoms/ShowMnemonic";
 import {
   confirmButtonProps,
   dangerButtonProps,
 } from "@/composite/modals/modalButtonStyles";
-
-import Button from "@/atoms/Button";
-import SeleneLogo from "@/atoms/SeleneLogo";
-import ShowMnemonic from "@/atoms/ShowMnemonic";
 
 import { translate } from "@/util/translations";
 import translations from "./translations";

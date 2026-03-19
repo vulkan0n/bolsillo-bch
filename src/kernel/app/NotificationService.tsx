@@ -6,14 +6,14 @@ import {
   SnippetsFilled,
 } from "@ant-design/icons";
 
-import ToastCard from "@/composite/toasts/ToastCard";
+import translations from "@/views/wallet/translations";
 import LoadingToast from "@/composite/toasts/LoadingToast";
 import PaymentReceivedToast from "@/composite/toasts/PaymentReceivedToast";
+import ToastCard from "@/composite/toasts/ToastCard";
 import TokenReceivedToast from "@/composite/toasts/TokenReceivedToast";
 
-import translations from "@/views/wallet/translations";
-
 import { Haptic } from "@/util/haptic";
+
 import { translate } from "@/util/translations";
 
 // --------------------------------

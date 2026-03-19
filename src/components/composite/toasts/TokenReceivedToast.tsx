@@ -1,9 +1,8 @@
+import translations from "@/views/wallet/translations";
 import TokenAmount from "@/atoms/TokenAmount";
 import TokenIcon from "@/atoms/TokenIcon";
 
 import { truncateProse } from "@/util/string";
-
-import translations from "@/views/wallet/translations";
 
 import { translate } from "@/util/translations";
 
