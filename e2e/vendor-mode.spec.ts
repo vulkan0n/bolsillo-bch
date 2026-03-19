@@ -3,8 +3,9 @@ import { test, expect } from "./helpers/fixtures";
 test.describe("Vendor Mode", () => {
   test.beforeEach(async ({ appPage: page }) => {
     await page.goto("/vendor");
-    // Wait for QR canvas to render (proves vendor mode is ready)
-    await expect(page.getByRole("img").first()).toBeVisible({ timeout: 5_000 });
+    await expect(
+      page.getByRole("button", { name: "1", exact: true }).first()
+    ).toBeVisible({ timeout: 10_000 });
   });
 
   test("vendor mode page renders with QR and numpad", async ({

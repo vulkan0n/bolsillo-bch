@@ -1,14 +1,16 @@
 import { useEffect, useMemo } from "react";
 import { useSelector } from "react-redux";
-import { Outlet, useLocation, useNavigate } from "react-router";
+import { Outlet, useNavigate } from "react-router";
 import { App } from "@capacitor/app";
+import { SystemBars } from "@capacitor/core";
 import { ScreenOrientation } from "@capacitor/screen-orientation";
 
-import { selectDevicePlatform, selectScannerIsScanning } from "@/redux/device";
 import {
-  selectIsVendorModeActive,
-  selectShouldConstrainViewport,
-} from "@/redux/preferences";
+  selectDevicePlatform,
+  selectOrientationLock,
+  selectScannerIsScanning,
+} from "@/redux/device";
+import { selectShouldConstrainViewport } from "@/redux/preferences";
 
 import useScrollToTop from "@/hooks/useScrollToTop";
 
@@ -18,12 +20,11 @@ import BottomNavigation from "./BottomNavigation";
 
 export default function MainLayout() {
   const navigate = useNavigate();
-  const location = useLocation();
   useScrollToTop();
 
   const platform = useSelector(selectDevicePlatform);
+  const orientationLock = useSelector(selectOrientationLock);
   const shouldConstrainViewport = useSelector(selectShouldConstrainViewport);
-  const isVendorModeActive = useSelector(selectIsVendorModeActive);
 
   const html = useMemo(() => document.querySelector("html"), []);
   const body = useMemo(() => document.querySelector("body"), []);
@@ -36,7 +37,26 @@ export default function MainLayout() {
         return () => {};
       }
 
-      // add fake "phone" border on web if window is larger than 480px wide
+      // --------
+      // Fullscreen + orientation lock
+      if (orientationLock === "landscape") {
+        html.classList.add("fullscreen");
+      } else {
+        html.classList.remove("fullscreen");
+      }
+
+      if (platform !== "web") {
+        ScreenOrientation.lock({ orientation: orientationLock });
+
+        if (orientationLock === "landscape") {
+          SystemBars.hide().catch(() => {});
+        } else {
+          SystemBars.show().catch(() => {});
+        }
+      }
+
+      // --------
+      // Fake "phone" border on web if window is larger than 480px wide
       if (
         platform === "web" &&
         html.clientWidth > 480 &&
@@ -49,8 +69,7 @@ export default function MainLayout() {
           "shadow-xl"
         );
 
-        // Use landscape dimensions for vendor mode, portrait otherwise
-        if (isVendorModeActive) {
+        if (orientationLock === "landscape") {
           body.style.maxWidth = "960px";
           body.style.maxHeight = "480px";
         } else {
@@ -60,6 +79,12 @@ export default function MainLayout() {
       }
 
       return () => {
+        html.classList.remove("fullscreen");
+
+        if (platform !== "web") {
+          SystemBars.show().catch(() => {});
+        }
+
         body.classList.remove(
           "border-8",
           "border-neutral-1000",
@@ -71,32 +96,7 @@ export default function MainLayout() {
         body.style.maxHeight = "";
       };
     },
-    [platform, shouldConstrainViewport, isVendorModeActive, html, body]
-  );
-
-  // Lock to portrait unless in vendor mode (which handles its own landscape lock)
-  useEffect(
-    function lockPortraitOrientation() {
-      if (platform === "web") {
-        return;
-      }
-
-      // When not in vendor mode, lock to portrait
-      if (!isVendorModeActive) {
-        ScreenOrientation.lock({ orientation: "portrait" });
-      }
-    },
-    [platform, isVendorModeActive]
-  );
-
-  // Enforce vendor mode — redirect back if user somehow navigates away
-  useEffect(
-    function enforceVendorMode() {
-      if (isVendorModeActive && location.pathname !== "/vendor") {
-        navigate("/vendor");
-      }
-    },
-    [isVendorModeActive, location.pathname, navigate]
+    [platform, shouldConstrainViewport, orientationLock, html, body]
   );
 
   const isScanning = useSelector(selectScannerIsScanning);
