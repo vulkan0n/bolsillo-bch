@@ -1,17 +1,17 @@
 import {
-  startingIn,
-  watchVideos,
-  watchLive,
-  tickets,
   about,
-  velmaUpgrade,
-  howToTicketsTitle,
-  howToTicketsStepOne,
-  howToTicketsStepTwo,
-  howToTicketsStepThree,
-  howToTicketsStepFour,
-  howToTicketsStepFive,
   howToTicketsReadMore,
+  howToTicketsStepFive,
+  howToTicketsStepFour,
+  howToTicketsStepOne,
+  howToTicketsStepThree,
+  howToTicketsStepTwo,
+  howToTicketsTitle,
+  startingIn,
+  tickets,
+  velmaUpgrade,
+  watchLive,
+  watchVideos,
 } from "../shared/eventTranslations";
 
 const translations = {

@@ -1,14 +1,14 @@
 import {
+  assertSuccess,
   encodeTransaction,
   generateTransaction,
-  swapEndianness,
+  getDustThreshold,
+  getMinimumFee,
   importWalletTemplate,
+  Output as LibauthOutput,
+  swapEndianness,
   walletTemplateP2pkhNonHd,
   walletTemplateToCompilerBCH,
-  getMinimumFee,
-  getDustThreshold,
-  Output as LibauthOutput,
-  assertSuccess,
 } from "@bitauth/libauth";
 import * as cauldron from "@cashlab/cauldron";
 import { ExchangeLab } from "@cashlab/cauldron";
@@ -17,8 +17,8 @@ import * as clab from "@cashlab/common";
 import LogService from "@/kernel/app/LogService";
 import CauldronService from "@/kernel/bch/CauldronService";
 import {
-  TransactionStub,
   TransactionOutput,
+  TransactionStub,
 } from "@/kernel/bch/TransactionManagerService";
 import AddressManagerService, {
   AddressEntity,
@@ -32,7 +32,7 @@ import WalletManagerService from "@/kernel/wallet/WalletManagerService";
 
 import { addressToLockingBytecode } from "@/util/cashaddr";
 import { sha256 } from "@/util/hash";
-import { binToHex, hexToBin, compareBytes } from "@/util/hex";
+import { binToHex, compareBytes, hexToBin } from "@/util/hex";
 import { DUST_RELAY_FEE, EXCESSIVE_SATOSHIS } from "@/util/sats";
 import { findUnmatchedNftInputs } from "@/util/token";
 import { MUSD_TOKENID } from "@/util/tokens";

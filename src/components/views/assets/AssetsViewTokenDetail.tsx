@@ -1,6 +1,6 @@
-import { useState, useMemo, useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
-import { useParams, Link, useNavigate } from "react-router";
+import { Link, useNavigate, useParams } from "react-router";
 import { DateTime } from "luxon";
 import { CloseOutlined, SendOutlined } from "@ant-design/icons";
 
@@ -20,7 +20,7 @@ import { useLongPress } from "@/hooks/useLongPress";
 import { useTokenData } from "@/hooks/useTokenData";
 
 import { truncateProse } from "@/util/string";
-import { resolveNftType, compareNftCommitments } from "@/util/token";
+import { compareNftCommitments, resolveNftType } from "@/util/token";
 import { validateBchUri } from "@/util/uri";
 
 import { translate } from "@/util/translations";

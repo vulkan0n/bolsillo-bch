@@ -1,16 +1,16 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
-import { Dialog } from "@capacitor/dialog";
-import { generateTransaction, encodeTransaction } from "@bitauth/libauth";
+import { encodeTransaction, generateTransaction } from "@bitauth/libauth";
 import {
+  createAsyncThunk,
   createReducer,
   createSelector,
-  createAsyncThunk,
 } from "@reduxjs/toolkit";
 
 import { selectBchNetwork } from "@/redux/preferences";
 import { selectActiveWallet } from "@/redux/wallet";
 
 import LogService from "@/kernel/app/LogService";
+import ModalService from "@/kernel/app/ModalService";
 import ElectrumService from "@/kernel/bch/ElectrumService";
 import WalletConnectService from "@/kernel/bch/WalletConnectService";
 import AddressManagerService from "@/kernel/wallet/AddressManagerService";
@@ -19,6 +19,9 @@ import KeyManagerService from "@/kernel/wallet/KeyManagerService";
 import { sha256 } from "@/util/hash";
 import { binToHex } from "@/util/hex";
 import { destringify } from "@/util/json";
+
+import common from "@/translations/common";
+import { translate } from "@/util/translations";
 
 const Log = LogService("redux/walletConnect");
 
@@ -68,6 +71,7 @@ export const wcSessionProposal = createAsyncThunk(
     // if current network is not target network, reject session
     if (wallet.network !== targetNetwork) {
       thunkApi.dispatch(wcSessionReject(proposal));
+      return;
     }
 
     thunkApi.dispatch(wcSessionApprove(proposal));
@@ -118,15 +122,17 @@ export const wcSessionRequest = createAsyncThunk(
             destringify(JSON.stringify(methodParams));
           Log.debug("bch_signTransaction", unsignedTransaction, sourceOutputs);
 
-          const { value: isApproved } = await Dialog.confirm({
-            message: `${peer.metadata.name} - ${methodParams.userPrompt}\n${event.verifyContext.verified.origin}`,
-            okButtonTitle: "Approve",
+          const isApproved = await ModalService().showConfirm({
+            title: peer.metadata.name,
+            message: `${methodParams.userPrompt}\n${event.verifyContext.verified.origin}`,
+            confirmLabel: translate(common.approve),
           });
 
           if (!isApproved) {
             await WalletConnect.sessionResponse(topic, {
               response: formatJsonRpcError(id, getSdkError("USER_REJECTED")),
             });
+            return;
           }
 
           const txTemplate = { ...unsignedTransaction };
@@ -179,6 +185,19 @@ export const wcSessionRequest = createAsyncThunk(
       case "bch_signMessage":
         {
           const { message } = destringify(JSON.stringify(methodParams));
+
+          const isApproved = await ModalService().showConfirm({
+            title: peer.metadata.name,
+            message: `${translate(common.signMessage)}\n\n${message.substring(0, 200)}${message.length > 200 ? "..." : ""}\n\n${event.verifyContext.verified.origin}`,
+            confirmLabel: translate(common.approve),
+          });
+
+          if (!isApproved) {
+            await WalletConnect.sessionResponse(topic, {
+              response: formatJsonRpcError(id, getSdkError("USER_REJECTED")),
+            });
+            return;
+          }
 
           const KeyManager = KeyManagerService(wallet);
           const signedMessage = KeyManager.signMessage(message, sessionAddress);

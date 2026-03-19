@@ -222,9 +222,51 @@ function parseFile(filepath) {
   return { preamble, imports, rest };
 }
 
+function alphabetizeSpecifiers(impLines) {
+  const text = impLines.join("");
+
+  // Match destructured imports: import { A, B, C } from "..."
+  // Also handles multi-line: import {\n  A,\n  B,\n} from "..."
+  const match = text.match(
+    /^(import\s+(?:type\s+)?)\{([^}]+)\}(\s+from\s+.+)$/s
+  );
+  if (!match) return impLines;
+
+  const [, prefix, specBlock, suffix] = match;
+  const isMultiLine = specBlock.includes("\n");
+
+  // Parse specifiers, preserving "as" aliases
+  const specifiers = specBlock
+    .split(",")
+    .map((s) => s.trim())
+    .filter((s) => s.length > 0);
+
+  if (specifiers.length <= 1) return impLines;
+
+  // Sort by the imported name (before "as")
+  specifiers.sort((a, b) => {
+    const nameA = a.split(/\s+as\s+/)[0].trim();
+    const nameB = b.split(/\s+as\s+/)[0].trim();
+    return nameA.localeCompare(nameB);
+  });
+
+  let result;
+  if (isMultiLine) {
+    const joined = specifiers.map((s) => `  ${s},`).join("\n");
+    result = `${prefix}{\n${joined}\n}${suffix}`;
+  } else {
+    result = `${prefix}{ ${specifiers.join(", ")} }${suffix}`;
+  }
+
+  return result.split("\n").map((l, i, arr) => {
+    return i < arr.length - 1 ? l + "\n" : l;
+  });
+}
+
 function sortImports(imports) {
   const tagged = imports.map((impLines) => {
-    const text = impLines.join("");
+    const sorted = alphabetizeSpecifiers(impLines);
+    const text = sorted.join("");
     let importPath;
     if (text.trimStart().startsWith("//import")) {
       const uncommented = text.replace(/^\/+/, "").trimStart();
@@ -233,7 +275,7 @@ function sortImports(imports) {
       importPath = getImportPath(text);
     }
     const prio = priority(importPath);
-    return { prio, importPath: importPath || "", impLines };
+    return { prio, importPath: importPath || "", impLines: sorted };
   });
 
   // Sort by priority, then alphabetically by import path within group

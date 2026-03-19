@@ -1,27 +1,27 @@
-import { useEffect, useMemo, useCallback } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import { useCallback, useEffect, useMemo } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router";
 import { animated, useSpring } from "@react-spring/web";
 import {
-  StockOutlined,
-  SettingFilled,
-  WarningFilled,
   DollarCircleOutlined,
+  SettingFilled,
+  StockOutlined,
+  WarningFilled,
 } from "@ant-design/icons";
 
 import { selectCurrentPriceString } from "@/redux/exchangeRates";
 import {
-  setPreference,
   selectBchNetwork,
+  selectCurrencySettings,
   selectShouldDisplayExchangeRate,
   selectShouldHideBalance,
-  selectCurrencySettings,
+  setPreference,
 } from "@/redux/preferences";
 import {
   selectActiveWallet,
+  selectActiveWalletBalance,
   selectActiveWalletHash,
   selectActiveWalletName,
-  selectActiveWalletBalance,
   selectKeyViewedAt,
 } from "@/redux/wallet";
 

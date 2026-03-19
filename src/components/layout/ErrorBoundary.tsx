@@ -1,6 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
-import { useRouteError, useNavigate } from "react-router";
-import { Dialog } from "@capacitor/dialog";
+import { useNavigate, useRouteError } from "react-router";
 import { BugOutlined } from "@ant-design/icons";
 
 import { resetPreferences } from "@/redux/preferences";
@@ -9,6 +8,7 @@ import { selectActiveWallet } from "@/redux/wallet";
 import ConsoleService from "@/kernel/app/ConsoleService";
 import JanitorService from "@/kernel/app/JanitorService";
 import LogService from "@/kernel/app/LogService";
+import ModalService from "@/kernel/app/ModalService";
 import WalletManagerService from "@/kernel/wallet/WalletManagerService";
 
 import Accordion from "@/components/atoms/Accordion";
@@ -37,9 +37,10 @@ interface ErrorBoundaryProps {
 // Startup error mode: minimal context (no Router, no Redux)
 function StartupErrorBoundary({ error }: StartupErrorBoundaryProps) {
   const handleNuclearWipe = async () => {
-    const { value: isConfirmed } = await Dialog.confirm({
+    const isConfirmed = await ModalService().showConfirm({
       title: translate(translations.resetAll),
       message: translate(translations.nuclearWipeConfirm),
+      isDanger: true,
     });
     if (!isConfirmed) {
       return;

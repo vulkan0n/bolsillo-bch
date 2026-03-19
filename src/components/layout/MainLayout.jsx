@@ -1,14 +1,13 @@
 import { useEffect, useMemo } from "react";
 import { useSelector } from "react-redux";
-import { Outlet, useNavigate, useLocation } from "react-router";
+import { Outlet, useLocation, useNavigate } from "react-router";
 import { App } from "@capacitor/app";
 import { ScreenOrientation } from "@capacitor/screen-orientation";
 
-import { selectScannerIsScanning, selectDevicePlatform } from "@/redux/device";
+import { selectDevicePlatform, selectScannerIsScanning } from "@/redux/device";
 import {
-  selectShouldConstrainViewport,
-  selectIsDarkMode,
   selectIsVendorModeActive,
+  selectShouldConstrainViewport,
 } from "@/redux/preferences";
 
 import useScrollToTop from "@/hooks/useScrollToTop";
@@ -26,27 +25,10 @@ export default function MainLayout() {
   const shouldConstrainViewport = useSelector(selectShouldConstrainViewport);
   const isVendorModeActive = useSelector(selectIsVendorModeActive);
 
-  const isDarkMode = useSelector(selectIsDarkMode);
-
   const html = useMemo(() => document.querySelector("html"), []);
   const body = useMemo(() => document.querySelector("body"), []);
 
-  useEffect(
-    function setDarkModeCss() {
-      if (!html) {
-        return () => {};
-      }
-
-      if (isDarkMode) {
-        html.classList.add("dark");
-      }
-
-      return () => {
-        html.classList.remove("dark");
-      };
-    },
-    [html, isDarkMode]
-  );
+  // Dark mode is handled by AppProvider (global, all phases)
 
   useEffect(
     function setPlatformCss() {

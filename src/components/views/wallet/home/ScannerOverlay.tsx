@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 import { useSelector } from "react-redux";
-import { useNavigate, useLocation } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 import { QrcodeOutlined } from "@ant-design/icons";
 
 import { selectInstantPaySettings } from "@/redux/preferences";
@@ -24,7 +24,7 @@ export default function ScannerOverlay({
   const location = useLocation();
 
   const handleScan = useCallback(
-    async (scanContent, { spawnScanToast, spawnInvalidScanToast }) => {
+    async (scanContent) => {
       let extracted = extractBchAddresses(scanContent)[0] || scanContent;
 
       // Append prefilled amount if:
@@ -40,10 +40,7 @@ export default function ScannerOverlay({
 
       const { navTo, navState } = await navigateOnValidUri(extracted);
       if (navTo !== "") {
-        spawnScanToast();
         navigate(navTo, { state: { ...location.state, ...navState } });
-      } else {
-        spawnInvalidScanToast();
       }
     },
     [location.state, navigate, prefilledAmount]

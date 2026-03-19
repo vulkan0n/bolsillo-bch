@@ -1,10 +1,10 @@
 /* eslint-disable no-unsafe-optional-chaining */
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useQuery } from "@apollo/client";
 import { DateTime } from "luxon";
 
 import { ONE_HUNDRED, TEN_MILLION } from "@/util/numbers";
-import { THIRTY_SECONDS, Period } from "@/util/time";
+import { Period, THIRTY_SECONDS } from "@/util/time";
 
 import { translate } from "@/util/translations";
 

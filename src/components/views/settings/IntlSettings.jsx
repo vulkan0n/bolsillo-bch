@@ -1,11 +1,11 @@
 import { useContext } from "react";
-import { GlobalOutlined, FlagOutlined } from "@ant-design/icons";
+import { FlagOutlined, GlobalOutlined } from "@ant-design/icons";
 
 import Accordion from "@/atoms/Accordion";
 import Select from "@/components/atoms/Select";
 
 import { sameAsDevice } from "@/translations/common";
-import { translate, languageList } from "@/util/translations";
+import { languageList, translate } from "@/util/translations";
 import translations from "./translations";
 
 import { SettingsContext } from "./SettingsContext";

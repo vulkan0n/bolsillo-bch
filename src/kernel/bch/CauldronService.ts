@@ -1,7 +1,7 @@
 import { ExchangeLab, PoolV0, PoolV0Parameters } from "@cashlab/cauldron";
 import {
-  PayoutRule,
   PayoutAmountRuleType,
+  PayoutRule,
   SpendableCoin,
   SpendableCoinType,
 } from "@cashlab/common";
@@ -14,7 +14,7 @@ import UtxoManagerService from "@/kernel/wallet/UtxoManagerService";
 import { WalletEntity } from "@/kernel/wallet/WalletManagerService";
 
 import { addressToLockingBytecode } from "@/util/cashaddr";
-import { hexToBin, binToHex } from "@/util/hex";
+import { binToHex, hexToBin } from "@/util/hex";
 
 const Log = LogService("CauldronService");
 

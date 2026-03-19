@@ -1,33 +1,31 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
 import {
   createAction,
-  createReducer,
-  createSelector,
   createAsyncThunk,
   createListenerMiddleware,
+  createReducer,
+  createSelector,
 } from "@reduxjs/toolkit";
 
-import { RootState, AppDispatch } from "@/redux";
+import { AppDispatch, RootState } from "@/redux";
 import { selectNetworkStatus } from "@/redux/device";
 import {
+  selectBchNetwork,
   selectIsOfflineMode,
   selectIsStablecoinMode,
-  selectBchNetwork,
 } from "@/redux/preferences";
 import { txHistoryFetch } from "@/redux/txHistory";
 import {
-  walletSyncDiff,
   selectActiveWallet,
   walletReloadAddresses,
+  walletSyncDiff,
 } from "@/redux/wallet";
 
 import JanitorService from "@/kernel/app/JanitorService";
 import LogService from "@/kernel/app/LogService";
 import BlockchainService from "@/kernel/bch/BlockchainService";
 import CauldronService from "@/kernel/bch/CauldronService";
-import ElectrumService, {
-  ElectrumVersionMismatchError,
-} from "@/kernel/bch/ElectrumService";
+import ElectrumService from "@/kernel/bch/ElectrumService";
 import TransactionManagerService from "@/kernel/bch/TransactionManagerService";
 import AddressManagerService, {
   AddressEntity,
@@ -72,25 +70,16 @@ export const syncConnect = createAsyncThunk(
       // if connection fails, destroy the client and try again
       await Electrum.disconnect(true);
 
-      // try a different server if there's a protocol version mismatch
-      const isProtocolVersionMismatch =
-        e instanceof ElectrumVersionMismatchError;
-
-      // try multiple servers only if device reports active network connection
       const { isConnected: isNetworkConnected } = selectNetworkStatus(
         thunkApi.getState()
       );
 
-      // attempt to connect 3 times before failover
-      const shouldFailover =
-        isNetworkConnected &&
-        (isProtocolVersionMismatch || payload.attempts > 2);
-
-      if (shouldFailover) {
-        // try a different server
+      // Immediate failover: try a different server on first failure
+      if (isNetworkConnected) {
         const newServer = Electrum.selectFallbackServer(payload.server);
         thunkApi.dispatch(syncConnect({ server: newServer, attempts: 0 }));
       } else {
+        // No network — retry same server after delay
         setTimeout(
           () =>
             thunkApi.dispatch(

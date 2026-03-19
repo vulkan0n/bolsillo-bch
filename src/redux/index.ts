@@ -1,25 +1,25 @@
-import { configureStore, combineReducers, isPlain } from "@reduxjs/toolkit";
+import { combineReducers, configureStore, isPlain } from "@reduxjs/toolkit";
 
 import LogService from "@/kernel/app/LogService";
 import BcmrService from "@/kernel/bch/BcmrService";
 
-import { deviceReducer, deviceInit } from "./device";
+import { deviceInit, deviceReducer } from "./device";
 import {
+  exchangeRateInit,
   exchangeRateReducer,
   fetchExchangeRates,
-  exchangeRateInit,
 } from "./exchangeRates";
 import {
+  preferencesInit,
   preferencesReducer,
   selectActiveWalletHash,
   selectBchNetwork,
-  preferencesInit,
 } from "./preferences";
 import { triggerCheckIn } from "./stats";
-import { syncReducer, syncMiddleware, syncPause, syncResume } from "./sync";
+import { syncMiddleware, syncPause, syncReducer, syncResume } from "./sync";
 import { txHistoryReducer } from "./txHistory";
-import { walletReducer, walletBoot, addressReducer } from "./wallet";
-import { walletConnectReducer, walletConnectInit } from "./walletConnect";
+import { addressReducer, walletBoot, walletReducer } from "./wallet";
+import { walletConnectInit, walletConnectReducer } from "./walletConnect";
 
 const Log = LogService("redux");
 
@@ -60,14 +60,13 @@ export async function redux_init() {
   Log.debug("redux_init");
   await store.dispatch(exchangeRateInit());
 
-  const network = selectBchNetwork(store.getState());
   await store.dispatch(
     walletBoot({
       walletHash: selectActiveWalletHash(store.getState()),
-      network,
     })
   );
 
+  const network = selectBchNetwork(store.getState());
   BcmrService(network).preloadMetadataRegistries();
 }
 

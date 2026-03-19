@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
-import { ScanOutlined, CloseOutlined } from "@ant-design/icons";
+import { CloseOutlined, ScanOutlined } from "@ant-design/icons";
 
 import { selectScannerIsScanning, setScannerIsScanning } from "@/redux/device";
 

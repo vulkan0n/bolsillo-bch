@@ -1,9 +1,9 @@
-import { useState, useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
-import { useParams, useNavigate } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import { ArrowLeftOutlined, SyncOutlined } from "@ant-design/icons";
 
-import { selectIsOfflineMode, selectBchNetwork } from "@/redux/preferences";
+import { selectBchNetwork, selectIsOfflineMode } from "@/redux/preferences";
 import { selectSyncState } from "@/redux/sync";
 import { selectActiveWalletHash } from "@/redux/wallet";
 

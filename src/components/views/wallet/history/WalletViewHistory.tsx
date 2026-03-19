@@ -1,41 +1,40 @@
-import { useEffect, useState, useRef, useCallback } from "react";
-import toast from "react-hot-toast";
-import { useSelector, useDispatch } from "react-redux";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router";
 import { DateTime } from "luxon";
 import {
-  SyncOutlined,
-  HourglassOutlined,
   CheckCircleOutlined,
-  HistoryOutlined,
   CloseCircleOutlined,
+  DownloadOutlined,
   FilterOutlined,
+  HistoryOutlined,
+  HourglassOutlined,
   SortAscendingOutlined,
   SortDescendingOutlined,
-  DownloadOutlined,
+  SyncOutlined,
 } from "@ant-design/icons";
 
 import {
-  selectCurrencySettings,
-  selectPrivacySettings,
-  selectIsExperimental,
   selectBchNetwork,
+  selectCurrencySettings,
+  selectIsExperimental,
+  selectPrivacySettings,
 } from "@/redux/preferences";
 import { selectChaintip, selectSyncState } from "@/redux/sync";
 import {
-  selectTransactionHistory,
+  resetFilters,
   selectSearchQuery,
+  selectTransactionHistory,
+  selectTransactionHistoryPagination,
   selectTxHistoryFilters,
+  setDirection,
+  setHasNft,
+  setHasToken,
+  setSearchQuery,
+  setSortDirection,
+  setSortField,
   txHistoryFetch,
   txHistoryFetchMore,
-  setSearchQuery,
-  setSortField,
-  setSortDirection,
-  setDirection,
-  setHasToken,
-  setHasNft,
-  resetFilters,
-  selectTransactionHistoryPagination,
 } from "@/redux/txHistory";
 import { selectActiveWalletHash } from "@/redux/wallet";
 
@@ -43,8 +42,8 @@ import LogService from "@/kernel/app/LogService";
 import NotificationService from "@/kernel/app/NotificationService";
 import TransactionManagerService from "@/kernel/bch/TransactionManagerService";
 import {
-  prepareTransactionExportData,
   exportHistoryAsCsv,
+  prepareTransactionExportData,
 } from "@/kernel/wallet/TransactionExportService";
 import type { MergedHistoryEntity } from "@/kernel/wallet/TransactionHistoryService";
 import TransactionHistoryService from "@/kernel/wallet/TransactionHistoryService";
@@ -275,7 +274,8 @@ export default function WalletViewHistory() {
     }
 
     setIsExporting(true);
-    const loadingToast = toast.loading("Preparing CSV export...");
+    const Notification = NotificationService();
+    let dismissLoading = Notification.loading("Preparing CSV export...");
 
     try {
       const HistoryService = TransactionHistoryService(
@@ -295,9 +295,9 @@ export default function WalletViewHistory() {
         throw new Error("No transactions to export");
       }
 
-      toast.loading(
-        `Preparing ${allTransactions.transactions.length} transactions...`,
-        { id: loadingToast }
+      dismissLoading();
+      dismissLoading = Notification.loading(
+        `Preparing ${allTransactions.transactions.length} transactions...`
       );
 
       // Prepare all transactions for export by resolving full transaction data
@@ -342,14 +342,12 @@ export default function WalletViewHistory() {
         `transaction-history-${DateTime.now().toFormat("yyyy-MM-dd")}`
       );
 
-      toast.dismiss(loadingToast);
-      NotificationService().success(
-        `Exported ${exportData.length} transactions!`
-      );
+      dismissLoading();
+      Notification.success(`Exported ${exportData.length} transactions!`);
     } catch (error) {
       Log.error("CSV export error:", error);
-      toast.dismiss(loadingToast);
-      NotificationService().error(translate(translations.failedToExportCsv));
+      dismissLoading();
+      Notification.error(translate(translations.failedToExportCsv));
     } finally {
       setIsExporting(false);
     }

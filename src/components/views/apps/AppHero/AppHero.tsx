@@ -1,5 +1,5 @@
 import { ReactNode, useState } from "react";
-import { UpSquareOutlined, DownSquareOutlined } from "@ant-design/icons";
+import { DownSquareOutlined, UpSquareOutlined } from "@ant-design/icons";
 
 interface Props {
   icon: ReactNode;

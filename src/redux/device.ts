@@ -1,16 +1,16 @@
 import { App } from "@capacitor/app";
 import { Device, DeviceInfo as CapacitorDeviceInfo } from "@capacitor/device";
 import { Keyboard } from "@capacitor/keyboard";
-import { Network, ConnectionStatus } from "@capacitor/network";
+import { ConnectionStatus, Network } from "@capacitor/network";
 import { SimpleEncryption } from "capacitor-plugin-simple-encryption";
 import {
   createAction,
+  createAsyncThunk,
   createReducer,
   createSelector,
-  createAsyncThunk,
 } from "@reduxjs/toolkit";
 
-import { store, RootState } from "@/redux";
+import { RootState, store } from "@/redux";
 //import { syncReconnect } from "@/redux/sync";
 
 import LogService from "@/kernel/app/LogService";

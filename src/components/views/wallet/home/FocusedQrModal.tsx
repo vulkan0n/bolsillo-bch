@@ -1,5 +1,7 @@
+import { useEffect, useRef } from "react";
 import { QRCode } from "react-qrcode-logo";
 import { useSelector } from "react-redux";
+import { ScreenBrightness } from "@capacitor-community/screen-brightness";
 
 import { selectBchNetwork, selectQrCodeSettings } from "@/redux/preferences";
 
@@ -15,15 +17,15 @@ import { validateBip21Uri } from "@/util/uri";
 
 import { translate } from "@/util/translations";
 
-interface FocusedQrViewProps {
+interface FocusedQrModalProps {
   qrRequest: string;
   onClose: () => void;
 }
 
-export default function FocusedQrView({
+export default function FocusedQrModal({
   qrRequest,
   onClose,
-}: FocusedQrViewProps) {
+}: FocusedQrModalProps) {
   const bchNetwork = useSelector(selectBchNetwork);
   const qrCodeSettings = useSelector(selectQrCodeSettings);
 
@@ -42,6 +44,26 @@ export default function FocusedQrView({
   const isTestnet = bchNetwork !== "mainnet";
   const qrBgColor = isTestnet ? "#ffffff" : qrCodeSettings.background;
   const qrFgColor = isTestnet ? "#000000" : qrCodeSettings.foreground;
+
+  // -------- Brightness boost
+  const previousBrightness = useRef<number | null>(null);
+
+  useEffect(function boostBrightness() {
+    ScreenBrightness.getBrightness()
+      .then(({ brightness }) => {
+        previousBrightness.current = brightness;
+        return ScreenBrightness.setBrightness({ brightness: 1.0 });
+      })
+      .catch(() => {});
+
+    return () => {
+      if (previousBrightness.current !== null) {
+        ScreenBrightness.setBrightness({
+          brightness: previousBrightness.current,
+        }).catch(() => {});
+      }
+    };
+  }, []);
 
   return (
     <Modal onClose={onClose} className="text-center">

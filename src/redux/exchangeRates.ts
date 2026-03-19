@@ -1,16 +1,16 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
 import { Preferences } from "@capacitor/preferences";
 import {
+  createAsyncThunk,
   createReducer,
   createSelector,
-  createAsyncThunk,
 } from "@reduxjs/toolkit";
 import Logger from "js-logger";
 
 import {
-  setPreference,
   selectCurrencySettings,
   selectIsOfflineMode,
+  setPreference,
 } from "@/redux/preferences";
 
 import LogService from "@/kernel/app/LogService";

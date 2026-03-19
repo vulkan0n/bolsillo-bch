@@ -1,6 +1,6 @@
 /* eslint-disable react/jsx-props-no-spreading */
-import { useSelector, useDispatch } from "react-redux";
-import { EyeOutlined, EyeInvisibleOutlined } from "@ant-design/icons";
+import { useDispatch, useSelector } from "react-redux";
+import { EyeInvisibleOutlined, EyeOutlined } from "@ant-design/icons";
 
 import { selectPrivacySettings, setPreference } from "@/redux/preferences";
 

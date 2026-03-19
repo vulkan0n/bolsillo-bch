@@ -33,9 +33,8 @@ export function useClipboard() {
     try {
       const { value: paste } = await Clipboard.read();
 
-      const Toast = NotificationService();
       const spawnPasteToast = () =>
-        Toast.spawn({
+        NotificationService().spawn({
           icon: <SnippetsOutlined className="text-primary text-4xl" />,
           header: translate(translations.pastedFromClipboard),
           body: <span className="flex break-all text-sm">{paste}</span>,

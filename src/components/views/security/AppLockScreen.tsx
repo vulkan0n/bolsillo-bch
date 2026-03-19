@@ -1,7 +1,6 @@
-import { useState, useEffect, useCallback } from "react";
-import { MemoryRouter, Routes, Route, useNavigate } from "react-router";
+import { useCallback, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { LockOutlined } from "@ant-design/icons";
+import { MemoryRouter, Route, Routes, useNavigate } from "react-router";
 
 import { selectDeviceInfo } from "@/redux/device";
 import { selectSecuritySettings } from "@/redux/preferences";
@@ -18,14 +17,23 @@ import translations from "./translations";
 import {
   ForgotPinMenu,
   LegacyRevealScreen,
-  NuclearWipeScreen,
   LockScreenWrapper,
+  NuclearWipeScreen,
   primaryButtonProps,
 } from "./ForgotPinScreen";
 
 const Security = SecurityService();
 
 const Log = LogService("AppLockScreen");
+
+const secondaryButtonProps = {
+  ...primaryButtonProps,
+  bgColor:
+    "bg-neutral-200 dark:bg-neutral-700 hover:bg-neutral-300 dark:hover:bg-neutral-600",
+  activeBgColor: "bg-neutral-300 dark:bg-neutral-600",
+  labelColor: "text-neutral-900 dark:text-neutral-100 font-semibold",
+  activeLabelColor: "text-neutral-900 dark:text-neutral-100",
+} as const;
 
 interface AppLockScreenProps {
   boot: () => Promise<void>;
@@ -70,8 +78,7 @@ function LockScreen({ boot }: AppLockScreenProps) {
     [boot]
   );
 
-  // Auto-trigger biometric on mount.
-  // Safe: lock screen only mounts when app IS visible (never during pause).
+  // Auto-trigger biometric on mount
   useEffect(
     function attemptBiometricUnlock() {
       if (shouldShowBio) {
@@ -115,28 +122,27 @@ function LockScreen({ boot }: AppLockScreenProps) {
   // --------------------------------
   return (
     <LockScreenWrapper>
-      <div className="flex flex-col items-center mb-6">
-        <SeleneLogo className="w-16 h-16 mb-4" />
-        <h1 className="text-xl font-bold text-neutral-900 dark:text-neutral-100">
+      <div className="flex flex-col items-center">
+        <SeleneLogo className="w-32 h-32" />
+        <h1 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100">
           Selene Wallet
         </h1>
       </div>
 
-      <div className="flex items-center gap-2 mb-4 text-neutral-700 dark:text-neutral-300">
-        <LockOutlined />
-        <span>{translate(translations.enterPinPrompt)}</span>
-      </div>
-
       {shouldShowPin && (
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} className="p-2 my-4 flex flex-col gap-2">
           <input
             type="password"
             inputMode={isPasswordMode ? undefined : "numeric"}
             pattern={isPasswordMode ? undefined : "[0-9]*"}
             value={pin}
             onChange={(e) => setPin(e.target.value)}
-            placeholder={translate(translations.enterPin)}
-            className="w-full p-3 mb-4 border border-neutral-300 dark:border-neutral-600 rounded-lg bg-neutral-50 dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 text-center text-xl tracking-widest"
+            placeholder={translate(
+              isPasswordMode
+                ? translations.enterPassword
+                : translations.enterPin
+            )}
+            className="w-full p-3 border border-neutral-300 dark:border-neutral-600 rounded-lg bg-neutral-50 dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 text-center text-xl tracking-widest"
             autoFocus
             disabled={isLoading}
           />
@@ -163,26 +169,7 @@ function LockScreen({ boot }: AppLockScreenProps) {
       {shouldShowBio && (
         <div className={shouldShowPin ? "mt-3" : ""}>
           <Button
-            fullWidth
-            {...primaryButtonProps}
-            bgColor={
-              shouldShowPin
-                ? "bg-neutral-200 dark:bg-neutral-700 hover:bg-neutral-300 dark:hover:bg-neutral-600"
-                : undefined
-            }
-            activeBgColor={
-              shouldShowPin ? "bg-neutral-300 dark:bg-neutral-600" : undefined
-            }
-            labelColor={
-              shouldShowPin
-                ? "text-neutral-900 dark:text-neutral-100 font-semibold"
-                : undefined
-            }
-            activeLabelColor={
-              shouldShowPin
-                ? "text-neutral-900 dark:text-neutral-100"
-                : undefined
-            }
+            {...(shouldShowPin ? secondaryButtonProps : primaryButtonProps)}
             label={translate(translations.useBiometric)}
             onClick={tryBiometric}
             disabled={isLoading}
@@ -192,10 +179,9 @@ function LockScreen({ boot }: AppLockScreenProps) {
 
       <div className="mt-4">
         <Button
-          fullWidth
           label={translate(translations.forgotPin)}
           onClick={() => navigate("/forgot-pin")}
-          labelSize="sm"
+          labelSize="md"
           labelColor="text-primary-500"
           activeLabelColor="text-primary-600"
           bgColor="bg-transparent"
@@ -207,7 +193,7 @@ function LockScreen({ boot }: AppLockScreenProps) {
       </div>
 
       {shouldShowPin && (
-        <p className="mt-4 text-xs text-neutral-500 dark:text-neutral-400 text-center">
+        <p className="mt-4 text-neutral-600 dark:text-neutral-400 text-center">
           {translate(translations.pinProtectionInfo)}
         </p>
       )}

@@ -1,16 +1,16 @@
-import { useState, useContext } from "react";
+import { useContext, useState } from "react";
 import { useSelector } from "react-redux";
 import {
+  AlertOutlined,
+  PropertySafetyOutlined,
+  QrcodeOutlined,
   SendOutlined,
   ThunderboltOutlined,
-  PropertySafetyOutlined,
-  AlertOutlined,
-  QrcodeOutlined,
 } from "@ant-design/icons";
 
 import {
-  selectInstantPaySettings,
   selectCurrencySettings,
+  selectInstantPaySettings,
   selectIsExperimental,
   selectShouldForceTokenAddress,
   selectShouldUseLegacyBip21,

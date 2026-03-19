@@ -1,4 +1,4 @@
-import { Outlet, Link } from "react-router";
+import { Link, Outlet } from "react-router";
 import { CompassOutlined, SettingOutlined } from "@ant-design/icons";
 
 import FullColumn from "@/layout/FullColumn";

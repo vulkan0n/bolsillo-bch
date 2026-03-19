@@ -1,11 +1,11 @@
-import { Filesystem, Directory } from "@capacitor/filesystem";
+import { Directory, Filesystem } from "@capacitor/filesystem";
 import { Preferences } from "@capacitor/preferences";
 
 import { store } from "@/redux";
 import { selectDeviceInfo } from "@/redux/device";
 import {
-  selectSecuritySettings,
   selectPreferences,
+  selectSecuritySettings,
   setPreference,
 } from "@/redux/preferences";
 

@@ -5,9 +5,9 @@ import { ArrowRightOutlined } from "@ant-design/icons";
 import useRealTime from "@/hooks/useRealTime";
 
 import {
-  SELENE_ASSETS_URL,
-  BLAZE_EVENTS,
   BCH_PODCAST_LIVE_URL,
+  BLAZE_EVENTS,
+  SELENE_ASSETS_URL,
 } from "./constants.jsx";
 
 const pad = (value: number) => value.toString().padStart(2, "0");

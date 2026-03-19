@@ -1,5 +1,5 @@
 /* eslint-disable react/no-array-index-key */
-import { useState, useEffect, Children } from "react";
+import { Children, useEffect, useState } from "react";
 import { LeftOutlined, RightOutlined } from "@ant-design/icons";
 
 import Button from "@/atoms/Button";

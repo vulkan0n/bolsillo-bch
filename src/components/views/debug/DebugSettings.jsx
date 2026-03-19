@@ -2,15 +2,15 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   BugOutlined,
   ExperimentOutlined,
-  RocketOutlined,
   ForkOutlined,
+  RocketOutlined,
 } from "@ant-design/icons";
 
 import {
-  setPreference,
+  selectBchNetwork,
   selectIsExperimental,
   selectIsPrerelease,
-  selectBchNetwork,
+  setPreference,
 } from "@/redux/preferences";
 
 import Accordion from "@/atoms/Accordion";

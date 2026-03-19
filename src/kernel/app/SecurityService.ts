@@ -1,4 +1,3 @@
-import { Dialog } from "@capacitor/dialog";
 import { SimpleEncryption } from "capacitor-plugin-simple-encryption";
 
 import { store } from "@/redux";
@@ -9,6 +8,7 @@ import DatabaseService, {
   DecryptionFailedError,
 } from "@/kernel/app/DatabaseService";
 import LogService from "@/kernel/app/LogService";
+import ModalService from "@/kernel/app/ModalService";
 import NotificationService from "@/kernel/app/NotificationService";
 import { clearSeedCache } from "@/kernel/wallet/KeyManagerService";
 import WalletManagerService from "@/kernel/wallet/WalletManagerService";
@@ -21,6 +21,7 @@ import common from "@/translations/common";
 import { translate } from "@/util/translations";
 
 const Log = LogService("SecurityService");
+const MIN_PASSWORD_LENGTH = 8;
 
 let hasPinConfigured = false;
 
@@ -45,7 +46,7 @@ export enum AuthActions {
 
 const authTextKeys: Record<AuthActions, Record<string, string> | null> = {
   [AuthActions.Any]: null,
-  [AuthActions.Debug]: { en: "Debug" },
+  [AuthActions.Debug]: common.debug,
   [AuthActions.AppOpen]: common.authOpenApp,
   [AuthActions.AppResume]: common.authResumeApp,
   [AuthActions.WalletActivate]: common.authActivateWallet,
@@ -82,7 +83,8 @@ export default function SecurityService() {
     unlockWithBiometric,
     verifyBiometric,
     storeBiometricKeyFromCurrent,
-    // Composite operations (extracted from SecuritySettings)
+    // Composite operations
+    promptForNewPin,
     changePinAndUpdateBiometric,
     exportKeyBackup,
     importKeyBackup,
@@ -123,7 +125,7 @@ export default function SecurityService() {
   }
 
   // Clear sensitive material without dispatching Redux state.
-  // Called by BootProvider on pause — phase transition handles UI, not Redux.
+  // Called by AppProvider on pause — phase transition handles UI, not Redux.
   async function securePause(): Promise<void> {
     clearSeedCache();
     await DatabaseService().closeAllDatabases();
@@ -187,10 +189,22 @@ export default function SecurityService() {
       return true;
     }
 
-    const { value: pin } = await Dialog.prompt({
-      title: getAuthText(action) || translate(common.enterPin),
-      message: translate(common.pleaseEnterYourPin),
-      okButtonTitle: `${translate(common.authorizeAction)} ${getAuthText(action)}`,
+    const { authMode } = selectSecuritySettings(store.getState());
+
+    const isPasswordMode = authMode === "password";
+
+    const pin = await ModalService().showPrompt({
+      title:
+        getAuthText(action) ||
+        translate(isPasswordMode ? common.enterPassword : common.enterPin),
+      message: translate(
+        isPasswordMode
+          ? common.pleaseEnterYourPassword
+          : common.pleaseEnterYourPin
+      ),
+      inputType: "password",
+      inputMode: isPasswordMode ? "text" : "numeric",
+      submitLabel: translate(common.authorizeAction),
     });
 
     if (!pin) {
@@ -204,25 +218,29 @@ export default function SecurityService() {
   async function authorizeLegacyPin(pinHash: string): Promise<string | null> {
     /* eslint-disable no-constant-condition, no-await-in-loop */
     while (true) {
-      const result = await Dialog.prompt({
+      const pin = await ModalService().showPrompt({
         title: translate(securityTranslations.securityUpgrade),
         message: translate(securityTranslations.enterPinToUpgrade),
-        okButtonTitle: translate(securityTranslations.upgrade),
+        inputType: "password",
+        inputMode: "numeric",
+        submitLabel: translate(securityTranslations.upgrade),
       });
 
-      // User dismissed the dialog — return to lock screen
-      if (!result.value) {
+      // User dismissed the modal — return to lock screen
+      if (!pin) {
         return null;
       }
 
-      if (sha256.text(result.value) === pinHash) {
-        return result.value;
+      if (sha256.text(pin) === pinHash) {
+        return pin;
       }
+
+      NotificationService().error(translate(common.incorrectPin));
     }
     /* eslint-enable no-constant-condition, no-await-in-loop */
   }
 
-  // --- PIN management  ---
+  // --------------------------------
 
   /**
    * Verify a PIN against the encryption plugin.
@@ -255,7 +273,60 @@ export default function SecurityService() {
     setPinConfigured(false);
   }
 
-  // --- Biometric  ---
+  /** Prompt user to enter and confirm a new PIN or password. Returns null if cancelled.
+   *  Reads authMode from preferences by default. Pass forcePassword=true for backup export. */
+  async function promptForNewPin(
+    forcePassword = false
+  ): Promise<string | null> {
+    const { authMode } = selectSecuritySettings(store.getState());
+    const isPasswordMode = forcePassword || authMode === "password";
+    const Modal = ModalService();
+
+    const pin = await Modal.showPrompt({
+      title: isPasswordMode
+        ? translate(common.enterNewPassword)
+        : translate(common.enterNewPin),
+      message: isPasswordMode ? translate(common.minimumCharacters) : undefined,
+      inputType: "password",
+      inputMode: isPasswordMode ? "text" : "numeric",
+      placeholder: isPasswordMode
+        ? translate(common.enterPassword)
+        : translate(common.enterPin),
+      submitLabel: translate(common.next),
+      pattern: isPasswordMode ? undefined : "[0-9]*",
+    });
+
+    if (!pin) return null;
+
+    if (isPasswordMode && pin.length < MIN_PASSWORD_LENGTH) {
+      NotificationService().error(translate(common.passwordMinLength));
+      return null;
+    }
+
+    const confirmPin = await Modal.showPrompt({
+      title: isPasswordMode
+        ? translate(common.confirmPassword)
+        : translate(common.confirmPin),
+      inputType: "password",
+      inputMode: isPasswordMode ? "text" : "numeric",
+      placeholder: isPasswordMode
+        ? translate(common.enterPassword)
+        : translate(common.enterPin),
+      submitLabel: translate(common.confirm),
+      pattern: isPasswordMode ? undefined : "[0-9]*",
+    });
+
+    if (!confirmPin) return null;
+
+    if (pin !== confirmPin) {
+      NotificationService().error(translate(common.valuesDoNotMatch));
+      return null;
+    }
+
+    return pin;
+  }
+
+  // --------------------------------
 
   /** Check if a biometric key exists in platform storage. */
   async function hasBiometricKey(): Promise<boolean> {

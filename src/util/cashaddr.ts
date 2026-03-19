@@ -1,12 +1,12 @@
 import {
-  decodeCashAddress,
-  encodeCashAddress,
-  decodeBase58Address,
-  encodeBase58Address,
-  CashAddressType,
   assertSuccess,
-  cashAddressToLockingBytecode,
   base58AddressToLockingBytecode,
+  cashAddressToLockingBytecode,
+  CashAddressType,
+  decodeBase58Address,
+  decodeCashAddress,
+  encodeBase58Address,
+  encodeCashAddress,
 } from "@bitauth/libauth";
 
 import { validateBip21Uri } from "@/util/uri";

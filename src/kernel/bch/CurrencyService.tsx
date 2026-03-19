@@ -7,8 +7,8 @@ import { selectExchangeRates } from "@/redux/exchangeRates";
 import LogService from "@/kernel/app/LogService";
 
 import {
-  DEFAULT_CURRENCY,
   currencyList,
+  DEFAULT_CURRENCY,
   euroZoneCountryList,
 } from "@/util/currency";
 import { bchToSats, satsToBch } from "@/util/sats";

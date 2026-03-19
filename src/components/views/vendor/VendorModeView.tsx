@@ -1,6 +1,6 @@
-import { useState, useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { QRCode } from "react-qrcode-logo";
-import { useSelector, useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router";
 import { ScreenOrientation } from "@capacitor/screen-orientation";
 import { KeepAwake } from "@capacitor-community/keep-awake";
@@ -8,8 +8,8 @@ import { KeepAwake } from "@capacitor-community/keep-awake";
 import { selectDeviceInfo } from "@/redux/device";
 import {
   selectBchNetwork,
-  selectQrCodeSettings,
   selectIsVendorModeKeepAwake,
+  selectQrCodeSettings,
   selectShouldUseLegacyBip21,
   setPreference,
 } from "@/redux/preferences";

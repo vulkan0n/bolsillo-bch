@@ -23,6 +23,9 @@ importers:
       '@capacitor-community/keep-awake':
         specifier: ^8.0.0
         version: 8.0.0(@capacitor/core@8.0.1)
+      '@capacitor-community/screen-brightness':
+        specifier: ^8.0.0
+        version: 8.0.0(@capacitor/core@8.0.1)
       '@capacitor/android':
         specifier: ^8.0.0
         version: 8.0.1(@capacitor/core@8.0.1)
@@ -108,8 +111,8 @@ importers:
         specifier: ^2.23.1
         version: 2.23.1(@capacitor/preferences@8.0.0(@capacitor/core@8.0.1))(typescript@5.9.3)
       capacitor-plugin-simple-encryption:
-        specifier: https://git.xulu.tech/selene.cash/capacitor-plugin-simple-encryption.git#v0.2.7
-        version: git+https://git.xulu.tech/selene.cash/capacitor-plugin-simple-encryption.git#094146e631218285544d1e7363dcc6205612fb50(@capacitor/core@8.0.1)
+        specifier: https://git.xulu.tech/selene.cash/capacitor-plugin-simple-encryption.git#v0.2.8
+        version: git+https://git.xulu.tech/selene.cash/capacitor-plugin-simple-encryption.git#7016ab591e95300d9d24d94a3f4630e02b3f84ea(@capacitor/core@8.0.1)
       chart.js:
         specifier: ^4.5.1
         version: 4.5.1
@@ -143,9 +146,6 @@ importers:
       react-dom:
         specifier: ^19.2.3
         version: 19.2.3(react@19.2.3)
-      react-hot-toast:
-        specifier: ^2.6.0
-        version: 2.6.0(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       react-player:
         specifier: ^2.16.1
         version: 2.16.1(react@19.2.3)
@@ -427,6 +427,11 @@ packages:
 
   '@capacitor-community/keep-awake@8.0.0':
     resolution: {integrity: sha512-+bNAILA4R8PU+rm6OuKfgW6T4N24oAb2Idut5whfX5JAz09j7UBKFBEmT5C0QFJ7S8NZzp9d/yBsbIhLj+JkAA==}
+    peerDependencies:
+      '@capacitor/core': '>=8.0.0'
+
+  '@capacitor-community/screen-brightness@8.0.0':
+    resolution: {integrity: sha512-gR0GPofqSSzaFhOYcv89RfTOldDUH+7A77+iIpZXxBe5tW60H0BEvl5H6S3dtfbljCGgsddXoIBtJ3GXp+aUJA==}
     peerDependencies:
       '@capacitor/core': '>=8.0.0'
 
@@ -1987,8 +1992,8 @@ packages:
     resolution: {integrity: sha512-5ON+q7jCTgMp9cjpu4Jo6XbvfYwSB2Ow3kzHKfIyJfaCAOHLbdKPQqGKgfED/R5B+3TFFfe8pegYA+b423SRyA==}
     engines: {node: '>=10.0.0'}
 
-  capacitor-plugin-simple-encryption@git+https://git.xulu.tech/selene.cash/capacitor-plugin-simple-encryption.git#094146e631218285544d1e7363dcc6205612fb50:
-    resolution: {commit: 094146e631218285544d1e7363dcc6205612fb50, repo: https://git.xulu.tech/selene.cash/capacitor-plugin-simple-encryption.git, type: git}
+  capacitor-plugin-simple-encryption@git+https://git.xulu.tech/selene.cash/capacitor-plugin-simple-encryption.git#7016ab591e95300d9d24d94a3f4630e02b3f84ea:
+    resolution: {commit: 7016ab591e95300d9d24d94a3f4630e02b3f84ea, repo: https://git.xulu.tech/selene.cash/capacitor-plugin-simple-encryption.git, type: git}
     version: 0.1.0
     peerDependencies:
       '@capacitor/core': ^8.0.0
@@ -2921,11 +2926,6 @@ packages:
   globby@11.1.0:
     resolution: {integrity: sha512-jhIXaOzy1sb8IyocaruWSn1TjmnBVs8Ayhcy83rmxNJ8q2uWKCAj3CnJY+KpGSXCueAPc0i05kVvVKtP1t9S3g==}
     engines: {node: '>=10'}
-
-  goober@2.1.18:
-    resolution: {integrity: sha512-2vFqsaDVIT9Gz7N6kAL++pLpp41l3PfDuusHcjnGLfR6+huZkl6ziX+zgVC3ZxpqWhzH6pyDdGrCeDhMIvwaxw==}
-    peerDependencies:
-      csstype: ^3.0.10
 
   gopd@1.2.0:
     resolution: {integrity: sha512-ZUKRh6/kUFoAiTAtTYPZJ3hw9wNxx+BIBOijnlG9PnrJsCcSjs1wyyD6vJpaYtgnzDrKYRSqf3OO6Rfa93xsRg==}
@@ -4047,13 +4047,6 @@ packages:
 
   react-fast-compare@3.2.2:
     resolution: {integrity: sha512-nsO+KSNgo1SbJqJEYRE9ERzo7YtYbou/OqjSQKxV7jcKox7+usiUVZOAC+XnDOABXggQTno0Y1CpVnuWEc1boQ==}
-
-  react-hot-toast@2.6.0:
-    resolution: {integrity: sha512-bH+2EBMZ4sdyou/DPrfgIouFpcRLCJ+HoCA32UoAYHn6T3Ur5yfcDCeSr5mwldl6pFOsiocmrXMuoCJ1vV8bWg==}
-    engines: {node: '>=10'}
-    peerDependencies:
-      react: '>=16'
-      react-dom: '>=16'
 
   react-is@16.13.1:
     resolution: {integrity: sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==}
@@ -5339,6 +5332,10 @@ snapshots:
   '@bitauth/libauth@3.0.0': {}
 
   '@capacitor-community/keep-awake@8.0.0(@capacitor/core@8.0.1)':
+    dependencies:
+      '@capacitor/core': 8.0.1
+
+  '@capacitor-community/screen-brightness@8.0.0(@capacitor/core@8.0.1)':
     dependencies:
       '@capacitor/core': 8.0.1
 
@@ -7265,7 +7262,7 @@ snapshots:
       svg-pathdata: 6.0.3
     optional: true
 
-  capacitor-plugin-simple-encryption@git+https://git.xulu.tech/selene.cash/capacitor-plugin-simple-encryption.git#094146e631218285544d1e7363dcc6205612fb50(@capacitor/core@8.0.1):
+  capacitor-plugin-simple-encryption@git+https://git.xulu.tech/selene.cash/capacitor-plugin-simple-encryption.git#7016ab591e95300d9d24d94a3f4630e02b3f84ea(@capacitor/core@8.0.1):
     dependencies:
       '@capacitor/core': 8.0.1
 
@@ -8485,10 +8482,6 @@ snapshots:
       merge2: 1.4.1
       slash: 3.0.0
 
-  goober@2.1.18(csstype@3.2.3):
-    dependencies:
-      csstype: 3.2.3
-
   gopd@1.2.0: {}
 
   graceful-fs@4.2.11: {}
@@ -9618,13 +9611,6 @@ snapshots:
       scheduler: 0.27.0
 
   react-fast-compare@3.2.2: {}
-
-  react-hot-toast@2.6.0(react-dom@19.2.3(react@19.2.3))(react@19.2.3):
-    dependencies:
-      csstype: 3.2.3
-      goober: 2.1.18(csstype@3.2.3)
-      react: 19.2.3
-      react-dom: 19.2.3(react@19.2.3)
 
   react-is@16.13.1: {}
 
