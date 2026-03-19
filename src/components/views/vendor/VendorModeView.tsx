@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { QRCode } from "react-qrcode-logo";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router";
 import { App } from "@capacitor/app";
 import { KeepAwake } from "@capacitor-community/keep-awake";
 import { ScreenBrightness } from "@capacitor-community/screen-brightness";
@@ -33,6 +34,7 @@ import VendorNumpad from "./VendorNumpad";
 
 export default function VendorModeView() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const walletHash = useSelector(selectActiveWalletHash);
   const bchNetwork = useSelector(selectBchNetwork);
@@ -84,8 +86,9 @@ export default function VendorModeView() {
     );
     if (isAuthorized) {
       dispatch(setPreference({ key: "vendorModeActive", value: "false" }));
+      navigate("/wallet");
     }
-  }, [dispatch]);
+  }, [dispatch, navigate]);
 
   // Intercept Android hardware back button
   useEffect(
