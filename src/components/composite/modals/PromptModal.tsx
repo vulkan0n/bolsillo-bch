@@ -17,6 +17,7 @@ interface PromptModalProps {
   inputMode?: "numeric" | "text";
   placeholder?: string;
   submitLabel?: string;
+  cancelLabel?: string;
   pattern?: string;
   onSubmit: (value: string) => void;
   onCancel: () => void;
@@ -29,6 +30,7 @@ export default function PromptModal({
   inputMode = "text",
   placeholder = undefined,
   submitLabel = translate(common.ok),
+  cancelLabel = translate(common.cancel),
   pattern = undefined,
   onSubmit,
   onCancel,
@@ -79,7 +81,7 @@ export default function PromptModal({
             <Button
               {...cancelButtonProps}
               fullWidth
-              label={translate(common.cancel)}
+              label={cancelLabel}
               onClick={onCancel}
             />
           </div>

@@ -1,3 +1,5 @@
+import { ReactNode } from "react";
+
 import Button from "@/atoms/Button";
 import Modal from "@/atoms/Modal";
 import {
@@ -11,7 +13,7 @@ import { translate } from "@/util/translations";
 
 interface ConfirmModalProps {
   title?: string;
-  message: React.ReactNode;
+  message: ReactNode;
   confirmLabel?: string;
   cancelLabel?: string;
   isDanger?: boolean;

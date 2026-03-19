@@ -1,4 +1,4 @@
-import { ReactNode, useCallback, useRef, useState } from "react";
+import { ReactNode, useCallback, useEffect, useState } from "react";
 
 import ConfirmModal from "@/composite/modals/ConfirmModal";
 import PromptModal from "@/composite/modals/PromptModal";
@@ -22,6 +22,7 @@ interface PromptOptions {
   inputMode?: "numeric" | "text";
   placeholder?: string;
   submitLabel?: string;
+  cancelLabel?: string;
   pattern?: string;
 }
 
@@ -68,19 +69,25 @@ export default function ModalService() {
 
 export function ModalProvider() {
   const [modals, setModals] = useState<ModalEntry[]>([]);
-  const modalsRef = useRef<ModalEntry[]>([]);
 
   const push = useCallback(function push(entry: ModalEntry) {
-    modalsRef.current = [...modalsRef.current, entry];
-    setModals(modalsRef.current);
+    setModals((prev) => [...prev, entry]);
   }, []);
 
-  const dismiss = useCallback(function dismiss(index: number) {
-    modalsRef.current = modalsRef.current.filter((_, i) => i !== index);
-    setModals(modalsRef.current);
+  const dismiss = useCallback(function dismiss() {
+    setModals((prev) => prev.slice(1));
   }, []);
 
-  pushModal = push;
+  // Register/cleanup module-level ref
+  useEffect(
+    function registerPush() {
+      pushModal = push;
+      return () => {
+        pushModal = null;
+      };
+    },
+    [push]
+  );
 
   // FIFO: first pushed = first shown, dismiss reveals next in queue
   const current = modals.length > 0 ? modals[0] : null;
@@ -93,11 +100,11 @@ export function ModalProvider() {
         <ConfirmModal
           {...current.options}
           onConfirm={() => {
-            dismiss(0);
+            dismiss();
             current.resolve(true);
           }}
           onCancel={() => {
-            dismiss(0);
+            dismiss();
             current.resolve(false);
           }}
         />
@@ -108,11 +115,11 @@ export function ModalProvider() {
         <PromptModal
           {...current.options}
           onSubmit={(value) => {
-            dismiss(0);
+            dismiss();
             current.resolve(value);
           }}
           onCancel={() => {
-            dismiss(0);
+            dismiss();
             current.resolve(null);
           }}
         />

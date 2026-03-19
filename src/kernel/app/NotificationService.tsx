@@ -3,6 +3,7 @@ import { createPortal } from "react-dom";
 import {
   CheckCircleOutlined,
   CloseCircleOutlined,
+  InfoCircleOutlined,
   SnippetsFilled,
 } from "@ant-design/icons";
 
@@ -65,7 +66,7 @@ export default function NotificationService() {
   // Generic methods
 
   function spawn({
-    icon = <CheckCircleOutlined className="text-4xl text-primary" />,
+    icon = <InfoCircleOutlined className="text-4xl text-primary" />,
     header,
     body,
     variant = "default",
@@ -103,7 +104,7 @@ export default function NotificationService() {
     spawn({
       icon: <CloseCircleOutlined className="text-4xl text-error" />,
       header,
-      body: body ? <span>{body}</span> : undefined,
+      body,
       variant: "error",
       ...options,
     });
@@ -118,7 +119,7 @@ export default function NotificationService() {
     spawn({
       icon: <CheckCircleOutlined className="text-4xl text-primary" />,
       header,
-      body: body ? <span>{body}</span> : undefined,
+      body,
       variant: "success",
       ...options,
     });
@@ -194,8 +195,10 @@ export default function NotificationService() {
   function disconnected() {
     error(
       translate(translations.notConnected),
-      <span>{translate(translations.unableWhileDisconnected)}</span>,
-      { id: "disconnected" }
+      translate(translations.unableWhileDisconnected),
+      {
+        id: "disconnected",
+      }
     );
   }
 
@@ -301,9 +304,18 @@ export function NotificationProvider() {
     [handleDismiss]
   );
 
-  // Register module-level refs
-  pushToast = handlePush;
-  dismissToast = handleDismiss;
+  // Register/cleanup module-level refs
+  useEffect(
+    function registerRefs() {
+      pushToast = handlePush;
+      dismissToast = handleDismiss;
+      return () => {
+        pushToast = null;
+        dismissToast = null;
+      };
+    },
+    [handlePush, handleDismiss]
+  );
 
   // Cleanup timers on unmount
   useEffect(function cleanupTimers() {
