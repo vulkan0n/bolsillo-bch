@@ -9,7 +9,8 @@ export default function Overlay({
   blur = true,
   onClose,
 }) {
-  const rootNode = document.querySelector("#container")!;
+  const rootNode =
+    document.querySelector("#container") ?? document.querySelector("#root")!;
 
   const bgClass = transparent ? "bg-transparent" : "bg-neutral-1000/50";
 

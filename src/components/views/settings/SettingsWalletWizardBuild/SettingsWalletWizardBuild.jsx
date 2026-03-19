@@ -36,9 +36,7 @@ export default function SettingsWalletWizardBuild() {
         const wallet = WalletManager.getWallet(walletHash);
 
         if (isBuildDone) {
-          await dispatch(
-            walletBoot({ walletHash: wallet.walletHash, network: bchNetwork })
-          );
+          await dispatch(walletBoot({ walletHash: wallet.walletHash }));
 
           navigate("/");
           return;

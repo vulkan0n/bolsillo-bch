@@ -202,7 +202,7 @@ export default function SecurityService() {
       ),
       inputType: "password",
       inputMode: isPasswordMode ? "text" : "numeric",
-      submitLabel: `${translate(common.authorizeAction)} ${getAuthText(action)}`,
+      submitLabel: translate(common.authorizeAction),
     });
 
     if (!pin) {

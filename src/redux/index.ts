@@ -60,14 +60,13 @@ export async function redux_init() {
   Log.debug("redux_init");
   await store.dispatch(exchangeRateInit());
 
-  const network = selectBchNetwork(store.getState());
   await store.dispatch(
     walletBoot({
       walletHash: selectActiveWalletHash(store.getState()),
-      network,
     })
   );
 
+  const network = selectBchNetwork(store.getState());
   BcmrService(network).preloadMetadataRegistries();
 }
 

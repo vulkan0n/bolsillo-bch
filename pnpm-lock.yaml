@@ -108,8 +108,8 @@ importers:
         specifier: ^2.23.1
         version: 2.23.1(@capacitor/preferences@8.0.0(@capacitor/core@8.0.1))(typescript@5.9.3)
       capacitor-plugin-simple-encryption:
-        specifier: https://git.xulu.tech/selene.cash/capacitor-plugin-simple-encryption.git#v0.2.7
-        version: git+https://git.xulu.tech/selene.cash/capacitor-plugin-simple-encryption.git#094146e631218285544d1e7363dcc6205612fb50(@capacitor/core@8.0.1)
+        specifier: file:../capacitor-plugin-simple-encryption
+        version: file:../capacitor-plugin-simple-encryption(@capacitor/core@8.0.1)
       chart.js:
         specifier: ^4.5.1
         version: 4.5.1
@@ -1987,9 +1987,8 @@ packages:
     resolution: {integrity: sha512-5ON+q7jCTgMp9cjpu4Jo6XbvfYwSB2Ow3kzHKfIyJfaCAOHLbdKPQqGKgfED/R5B+3TFFfe8pegYA+b423SRyA==}
     engines: {node: '>=10.0.0'}
 
-  capacitor-plugin-simple-encryption@git+https://git.xulu.tech/selene.cash/capacitor-plugin-simple-encryption.git#094146e631218285544d1e7363dcc6205612fb50:
-    resolution: {commit: 094146e631218285544d1e7363dcc6205612fb50, repo: https://git.xulu.tech/selene.cash/capacitor-plugin-simple-encryption.git, type: git}
-    version: 0.1.0
+  capacitor-plugin-simple-encryption@file:../capacitor-plugin-simple-encryption:
+    resolution: {directory: ../capacitor-plugin-simple-encryption, type: directory}
     peerDependencies:
       '@capacitor/core': ^8.0.0
 
@@ -7265,7 +7264,7 @@ snapshots:
       svg-pathdata: 6.0.3
     optional: true
 
-  capacitor-plugin-simple-encryption@git+https://git.xulu.tech/selene.cash/capacitor-plugin-simple-encryption.git#094146e631218285544d1e7363dcc6205612fb50(@capacitor/core@8.0.1):
+  capacitor-plugin-simple-encryption@file:../capacitor-plugin-simple-encryption(@capacitor/core@8.0.1):
     dependencies:
       '@capacitor/core': 8.0.1
 

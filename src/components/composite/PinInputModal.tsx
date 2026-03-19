@@ -16,8 +16,8 @@ const MIN_PASSWORD_LENGTH = 8;
 const cancelButtonProps = {
   bgColor: "bg-neutral-200 dark:bg-neutral-700",
   activeBgColor: "bg-neutral-300 dark:bg-neutral-600",
-  labelColor: "text-neutral-600 dark:text-neutral-300 font-medium",
-  activeLabelColor: "text-neutral-700 dark:text-neutral-200",
+  labelColor: "text-neutral-800 dark:text-neutral-100 font-medium",
+  activeLabelColor: "text-neutral-900 dark:text-neutral-50",
   borderClasses: "",
   rounded: "lg" as const,
   shadow: "none" as const,
@@ -86,14 +86,14 @@ export default function PinInputModal({
     step === "enter" ? `Enter new ${title}` : `Confirm ${title}`;
 
   return (
-    <Modal onClose={onCancel} className="max-w-sm mx-4">
+    <Modal className="max-w-sm mx-4">
       <div className="p-4">
-        <h2 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100 mb-2">
+        <h2 className="text-lg font-bold text-neutral-900 dark:text-neutral-100 mb-2">
           {stepTitle}
         </h2>
 
         {step === "enter" && isPasswordMode && (
-          <p className="text-sm text-neutral-500 dark:text-neutral-400 mb-4">
+          <p className="text-neutral-800 dark:text-neutral-200 mb-4">
             Minimum {MIN_PASSWORD_LENGTH} characters
           </p>
         )}
@@ -123,13 +123,19 @@ export default function PinInputModal({
             </p>
           )}
 
-          <div className="flex gap-3 justify-end mt-4">
-            <Button {...cancelButtonProps} label="Cancel" onClick={onCancel} />
+          <div className="flex gap-3 mt-4">
             <Button
               {...submitButtonProps}
+              fullWidth
               submit
               disabled={!value}
               label={step === "enter" ? "Next" : "Confirm"}
+            />
+            <Button
+              {...cancelButtonProps}
+              fullWidth
+              label="Cancel"
+              onClick={onCancel}
             />
           </div>
         </form>

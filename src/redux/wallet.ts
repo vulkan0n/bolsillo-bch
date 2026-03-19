@@ -7,17 +7,12 @@ import {
 } from "@reduxjs/toolkit";
 
 import { RootState } from "@/redux";
-import {
-  selectElectrumServer,
-  selectIsStablecoinMode,
-  setPreference,
-} from "@/redux/preferences";
-import { selectIsRebuilding, syncConnect } from "@/redux/sync";
+import { selectIsStablecoinMode, setPreference } from "@/redux/preferences";
+import { selectIsRebuilding } from "@/redux/sync";
 
 import LogService from "@/kernel/app/LogService";
 import NotificationService from "@/kernel/app/NotificationService";
 import CauldronService from "@/kernel/bch/CauldronService";
-import ElectrumService from "@/kernel/bch/ElectrumService";
 import AddressManagerService, {
   AddressEntity,
 } from "@/kernel/wallet/AddressManagerService";
@@ -29,7 +24,6 @@ import WalletManagerService, {
 } from "@/kernel/wallet/WalletManagerService";
 
 import { convertCashAddress } from "@/util/cashaddr";
-import { ValidBchNetwork } from "@/util/network";
 import { resolveNftType } from "@/util/token";
 import { MUSD_TOKENID } from "@/util/tokens";
 
@@ -45,16 +39,13 @@ const initialState = {
 
 // --------------------------------
 
-// walletBoot: loads wallet by walletHash and initializes Electrum connection
+// walletBoot: loads wallet by walletHash, populates addresses.
+// Does NOT connect to Electrum — redux_resume() handles that.
 export const walletBoot = createAsyncThunk(
   "wallet/boot",
-  async (
-    payload: { walletHash: string; network: ValidBchNetwork },
-    thunkApi
-  ) => {
-    const { walletHash, network } = payload;
+  async (payload: { walletHash: string }, thunkApi) => {
+    const { walletHash } = payload;
 
-    // load Wallet from database
     const wallet = await WalletManagerService().boot(walletHash);
 
     thunkApi.dispatch(
@@ -65,20 +56,6 @@ export const walletBoot = createAsyncThunk(
     AddressScanner.populateAddresses();
 
     thunkApi.dispatch(walletReloadAddresses({ wallet }));
-
-    const isMainnet = network === "mainnet";
-
-    const server = isMainnet
-      ? selectElectrumServer(thunkApi.getState())
-      : ElectrumService(network).selectFallbackServer("");
-
-    // connect to Electrum
-    thunkApi.dispatch(
-      syncConnect({
-        attempts: 0,
-        server,
-      })
-    );
 
     return wallet;
   }

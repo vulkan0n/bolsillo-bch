@@ -20,7 +20,7 @@ import {
 import { WalletConnectFilled } from "@/icons/WalletConnectFilled";
 
 import { selectLocale } from "@/redux/device";
-import { selectBchNetwork, selectIsExperimental } from "@/redux/preferences";
+import { selectIsExperimental } from "@/redux/preferences";
 import {
   selectActiveWalletHash,
   walletBoot,
@@ -46,8 +46,6 @@ import translations from "./translations";
 export default function SettingsWalletView() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
-  const bchNetwork = useSelector(selectBchNetwork);
 
   const { walletHash } = useParams();
 
@@ -90,9 +88,7 @@ export default function SettingsWalletView() {
       }
 
       await WalletManager.deleteWallet(wallet.walletHash);
-      dispatch(walletBoot({ walletHash: "", network: bchNetwork })).then(() =>
-        navigate("/")
-      );
+      dispatch(walletBoot({ walletHash: "" })).then(() => navigate("/"));
     } else {
       // if user hesitates, reset the counter
       clearTimeout(deleteRef.current);
@@ -117,9 +113,7 @@ export default function SettingsWalletView() {
 
     setIsActivating(true);
 
-    dispatch(
-      walletBoot({ walletHash: wallet.walletHash, network: bchNetwork })
-    ).then(async () => {
+    dispatch(walletBoot({ walletHash: wallet.walletHash })).then(async () => {
       navigate("/");
     });
   };

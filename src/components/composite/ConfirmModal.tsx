@@ -15,8 +15,8 @@ interface ConfirmModalProps {
 const cancelButtonProps = {
   bgColor: "bg-neutral-200 dark:bg-neutral-700",
   activeBgColor: "bg-neutral-300 dark:bg-neutral-600",
-  labelColor: "text-neutral-600 dark:text-neutral-300 font-medium",
-  activeLabelColor: "text-neutral-700 dark:text-neutral-200",
+  labelColor: "text-neutral-800 dark:text-neutral-100 font-medium",
+  activeLabelColor: "text-neutral-900 dark:text-neutral-50",
   borderClasses: "",
   rounded: "lg" as const,
   shadow: "none" as const,
@@ -53,33 +53,33 @@ export default function ConfirmModal({
   onCancel,
 }: ConfirmModalProps) {
   return (
-    <Modal onClose={onCancel} className="max-w-sm mx-4">
+    <Modal className="max-w-sm mx-4">
       <div className="p-4">
         {title && (
-          <h2 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100 mb-2">
+          <h2 className="text-lg font-bold text-neutral-900 dark:text-neutral-100 mb-2">
             {title}
           </h2>
         )}
 
-        <div className="text-sm text-neutral-700 dark:text-neutral-300 mb-6 whitespace-pre-line break-words">
+        <div className="text-neutral-800 dark:text-neutral-200 mb-6 whitespace-pre-line break-words">
           {message}
         </div>
 
-        <div
-          className={`flex gap-3 ${showCancel ? "justify-end" : "justify-center"}`}
-        >
+        <div className="flex gap-3">
+          <Button
+            {...(isDanger ? dangerButtonProps : confirmButtonProps)}
+            fullWidth
+            label={confirmLabel}
+            onClick={onConfirm}
+          />
           {showCancel && (
             <Button
               {...cancelButtonProps}
+              fullWidth
               label={cancelLabel}
               onClick={onCancel}
             />
           )}
-          <Button
-            {...(isDanger ? dangerButtonProps : confirmButtonProps)}
-            label={confirmLabel}
-            onClick={onConfirm}
-          />
         </div>
       </div>
     </Modal>

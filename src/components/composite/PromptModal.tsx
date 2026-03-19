@@ -18,8 +18,8 @@ interface PromptModalProps {
 const cancelButtonProps = {
   bgColor: "bg-neutral-200 dark:bg-neutral-700",
   activeBgColor: "bg-neutral-300 dark:bg-neutral-600",
-  labelColor: "text-neutral-600 dark:text-neutral-300 font-medium",
-  activeLabelColor: "text-neutral-700 dark:text-neutral-200",
+  labelColor: "text-neutral-800 dark:text-neutral-100 font-medium",
+  activeLabelColor: "text-neutral-900 dark:text-neutral-50",
   borderClasses: "",
   rounded: "lg" as const,
   shadow: "none" as const,
@@ -60,16 +60,16 @@ export default function PromptModal({
   };
 
   return (
-    <Modal onClose={onCancel} className="max-w-sm mx-4">
+    <Modal className="max-w-sm mx-4">
       <div className="p-4">
         {title && (
-          <h2 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100 mb-2">
+          <h2 className="text-lg font-bold text-neutral-900 dark:text-neutral-100 mb-2">
             {title}
           </h2>
         )}
 
         {message && (
-          <p className="text-sm text-neutral-700 dark:text-neutral-300 mb-4">
+          <p className="text-neutral-800 dark:text-neutral-200 mb-4">
             {message}
           </p>
         )}
@@ -86,9 +86,19 @@ export default function PromptModal({
             className="w-full p-3 mb-4 border border-neutral-300 dark:border-neutral-600 rounded-lg bg-neutral-50 dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 text-center text-xl tracking-widest"
           />
 
-          <div className="flex gap-3 justify-end">
-            <Button {...cancelButtonProps} label="Cancel" onClick={onCancel} />
-            <Button {...submitButtonProps} submit label={submitLabel} />
+          <div className="flex gap-3">
+            <Button
+              {...submitButtonProps}
+              fullWidth
+              submit
+              label={submitLabel}
+            />
+            <Button
+              {...cancelButtonProps}
+              fullWidth
+              label="Cancel"
+              onClick={onCancel}
+            />
           </div>
         </form>
       </div>

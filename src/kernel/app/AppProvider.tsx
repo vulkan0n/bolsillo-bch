@@ -1,4 +1,5 @@
-import { ReactNode, useCallback, useEffect, useRef, useState } from "react";
+import { ReactNode, useEffect, useRef, useState } from "react";
+import { useSelector } from "react-redux";
 import { App } from "@capacitor/app";
 import { SplashScreen } from "@capacitor/splash-screen";
 
@@ -9,7 +10,7 @@ import {
   redux_resume,
   store,
 } from "@/redux";
-import { selectSecuritySettings } from "@/redux/preferences";
+import { selectIsDarkMode, selectSecuritySettings } from "@/redux/preferences";
 
 import DatabaseService, {
   DecryptionFailedError,
@@ -25,13 +26,7 @@ const Log = LogService("AppProvider");
 
 // --------------------------------
 
-type Phase =
-  | "PREFLIGHT"
-  | "LOCKED"
-  | "BOOTING"
-  | "RUNNING"
-  | "PAUSED"
-  | "STARTUP_ERROR";
+type Phase = "PREFLIGHT" | "LOCKED" | "RUNNING" | "PAUSED" | "STARTUP_ERROR";
 
 // --------------------------------
 
@@ -40,100 +35,98 @@ function useAppLifecycle() {
   const [startupError, setStartupError] = useState<Error | null>(null);
   const phaseRef = useRef<Phase>("PREFLIGHT");
   const pausePromiseRef = useRef<Promise<void> | null>(null);
+  const bootRef = useRef<() => Promise<void>>();
 
-  // Keep ref in sync so Capacitor listeners see current phase
+  // Keeps phaseRef in sync after renders; go() sets it eagerly for mid-async reads
   phaseRef.current = phase;
 
-  function handlePhaseTransition(next: Phase) {
-    setPhase(next);
-    phaseRef.current = next;
-  }
-
   // ----------------
-  // boot: open DBs, migrations, load wallet, start sync.
-  // Does NOT set intermediate phase — caller controls what shows during boot
-  // (cold start shows BOOTING/null with splash; lock screen stays LOCKED).
-  const boot = useCallback(async function boot() {
-    Log.log("* BOOT *");
-    Log.time("boot");
-
-    // Wait for any in-flight pause to finish (close DBs, clear key)
-    // before we try to reopen everything.
-    if (pausePromiseRef.current) {
-      await pausePromiseRef.current;
-      pausePromiseRef.current = null;
+  // Mount-only: cold start + lifecycle listeners.
+  // All lifecycle functions defined inside the effect — no dep array issues.
+  useEffect(function mount() {
+    function go(next: Phase) {
+      setPhase(next);
+      phaseRef.current = next;
     }
 
-    try {
-      await DatabaseService().openAppDatabase();
-      await JanitorService().migrateLegacyDatabases();
+    // --------
+    async function boot() {
+      Log.log("* BOOT *");
+      Log.time("boot");
 
-      if (!(await JanitorService().handleAuthMigration())) {
-        Log.timeEnd("boot");
-        handlePhaseTransition("LOCKED");
-        return;
+      if (pausePromiseRef.current) {
+        await pausePromiseRef.current;
+        pausePromiseRef.current = null;
       }
 
-      await JanitorService().recoverWalletFiles();
-      await redux_init();
-      redux_resume();
+      try {
+        await DatabaseService().openAppDatabase();
+        await JanitorService().migrateLegacyDatabases();
 
-      handlePhaseTransition("RUNNING");
-      Log.timeEnd("boot");
-    } catch (e) {
-      Log.error("BOOT FAILED", e);
-      setStartupError(new Error(String(e)));
-      handlePhaseTransition("STARTUP_ERROR");
-      Log.timeEnd("boot");
-    }
-  }, []);
-
-  // ----------------
-  // Cold start: fsck → initEncryption → decide phase
-  useEffect(
-    function coldStart() {
-      async function run() {
-        Log.time("INIT");
-
-        try {
-          await JanitorService().fsck();
-          await redux_pre_init();
-          const isKeyLoaded = await SecurityService().initEncryption();
-
-          if (isKeyLoaded) {
-            // No auth configured — boot behind splash
-            handlePhaseTransition("BOOTING");
-            await boot();
-          } else {
-            // Plugin requires auth (PIN or biometric) before key loads
-            handlePhaseTransition("LOCKED");
-          }
-        } catch (e) {
-          if (e instanceof DecryptionFailedError) {
-            Log.error("Decryption failed, routing to lock screen", e);
-            handlePhaseTransition("LOCKED");
-          } else {
-            Log.error("INIT FAILED", e);
-            setStartupError(new Error(String(e)));
-            handlePhaseTransition("STARTUP_ERROR");
-          }
+        if (!(await JanitorService().handleAuthMigration())) {
+          Log.timeEnd("boot");
+          go("LOCKED");
+          return;
         }
 
-        Log.timeEnd("INIT");
+        await JanitorService().recoverWalletFiles();
+        await redux_init();
+        redux_resume();
+
+        go("RUNNING");
+        Log.timeEnd("boot");
+      } catch (e) {
+        Log.error("BOOT FAILED", e);
+        setStartupError(new Error(String(e)));
+        go("STARTUP_ERROR");
+        Log.timeEnd("boot");
+      }
+    }
+
+    bootRef.current = boot;
+
+    // --------
+    async function coldStart() {
+      Log.time("INIT");
+
+      try {
+        await JanitorService().fsck();
+        await redux_pre_init();
+
+        const { authMode, authActions } = selectSecuritySettings(
+          store.getState()
+        );
+
+        const isKeyLoaded = await SecurityService().initEncryption();
+        const shouldLock =
+          !isKeyLoaded ||
+          (authMode !== "none" && authActions.includes(AuthActions.AppOpen));
+
+        if (shouldLock) {
+          go("LOCKED");
+        } else {
+          await boot();
+        }
+      } catch (e) {
+        if (e instanceof DecryptionFailedError) {
+          Log.error("Decryption failed, routing to lock screen", e);
+          go("LOCKED");
+        } else {
+          Log.error("INIT FAILED", e);
+          setStartupError(new Error(String(e)));
+          go("STARTUP_ERROR");
+        }
       }
 
-      run();
-    },
-    [boot]
-  );
+      Log.timeEnd("INIT");
+    }
 
-  // ----------------
-  // Capacitor pause/resume listeners
-  useEffect(function setupLifecycleListeners() {
+    coldStart();
+
+    // --------
     async function handlePause() {
       Log.time("APP_PAUSE");
 
-      // Only pause when the app is fully running
       if (phaseRef.current !== "RUNNING") {
         Log.debug("APP_PAUSE ignored (phase:", phaseRef.current, ")");
         Log.timeEnd("APP_PAUSE");
@@ -146,17 +139,14 @@ function useAppLifecycle() {
       const shouldLock =
         authMode !== "none" && authActions.includes(AuthActions.AppResume);
 
-      // Transition phase synchronously BEFORE async work.
-      // This eliminates the race where resume fires mid-pause.
+      // Transition synchronously BEFORE async work to prevent resume race
       if (shouldLock) {
-        handlePhaseTransition("PAUSED");
+        go("PAUSED");
       }
 
-      // Track async cleanup so boot() can await it if resume is fast.
       const cleanup = (async () => {
         try {
           await redux_pause();
-
           if (shouldLock) {
             await SecurityService().securePause();
           }
@@ -175,8 +165,7 @@ function useAppLifecycle() {
       const { current } = phaseRef;
 
       if (current === "PAUSED") {
-        // Transition to LOCKED — lock screen mounts, biometric auto-triggers
-        handlePhaseTransition("LOCKED");
+        go("LOCKED");
       } else if (current === "RUNNING") {
         redux_resume();
       }
@@ -195,7 +184,7 @@ function useAppLifecycle() {
   // ----------------
   // Hide splash on first transition out of PREFLIGHT
   useEffect(
-    function hideSplashWhenReady() {
+    function hideSplash() {
       if (phase !== "PREFLIGHT") {
         SplashScreen.hide();
       }
@@ -203,7 +192,11 @@ function useAppLifecycle() {
     [phase]
   );
 
-  return { phase, startupError, boot };
+  return {
+    phase,
+    startupError,
+    boot: () => bootRef.current?.() ?? Promise.resolve(),
+  };
 }
 
 // --------------------------------
@@ -214,10 +207,18 @@ interface AppProviderProps {
 
 export default function AppProvider({ children }: AppProviderProps) {
   const { phase, startupError, boot } = useAppLifecycle();
+  const isDarkMode = useSelector(selectIsDarkMode);
+
+  // Apply dark class to <html> globally — covers pre-auth and post-auth screens
+  const html = document.documentElement;
+  if (isDarkMode) {
+    html.classList.add("dark");
+  } else {
+    html.classList.remove("dark");
+  }
 
   switch (phase) {
     case "PREFLIGHT":
-    case "BOOTING":
     case "PAUSED":
       return null; // native splash covers; PAUSED = cleanup in progress
     case "LOCKED":
