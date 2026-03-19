@@ -10,10 +10,14 @@ import type { Page } from "@playwright/test";
 // Bottom navigation tabs
 
 export const nav = {
-  wallet: (page: Page) => page.getByRole("link", { name: "Wallet" }),
-  assets: (page: Page) => page.getByRole("link", { name: "Assets" }),
-  explore: (page: Page) => page.getByRole("link", { name: "Explore" }),
-  settings: (page: Page) => page.getByRole("link", { name: "Settings" }),
+  wallet: (page: Page) =>
+    page.getByTestId("nav-bottom").getByRole("link", { name: /Wallet/ }),
+  assets: (page: Page) =>
+    page.getByTestId("nav-bottom").getByRole("link", { name: /Assets/ }),
+  explore: (page: Page) =>
+    page.getByTestId("nav-bottom").getByRole("link", { name: /Explore/ }),
+  settings: (page: Page) =>
+    page.getByTestId("nav-bottom").getByRole("link", { name: /Settings/ }),
 };
 
 // --------

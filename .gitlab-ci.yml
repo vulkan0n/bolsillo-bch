@@ -50,7 +50,9 @@ test_e2e:
     when: on_failure
     paths:
       - playwright-report/
-      - test-results/
+    exclude:
+      - playwright-report/**/*.png
+      - playwright-report/**/*.zip
     expire_in: 7 days
 
 # Android Packaging

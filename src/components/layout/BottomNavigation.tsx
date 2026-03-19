@@ -39,7 +39,8 @@ export default function BottomNavigation() {
   }
 
   return (
-    <div
+    <nav
+      data-testid="nav-bottom"
       className={`w-full flex items-center justify-around z-30 ${isScanning ? "opacity-0" : ""}`}
     >
       <NavButton
@@ -70,7 +71,7 @@ export default function BottomNavigation() {
         icon={SettingOutlined}
         label={translate(translations.settings)}
       />
-    </div>
+    </nav>
   );
 }
 
