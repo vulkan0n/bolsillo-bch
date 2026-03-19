@@ -4,7 +4,6 @@
 # For more information, see: https://docs.gitlab.com/ee/ci/yaml/index.html#stages
 
 stages:
-  - version
   - build
   - test
   - package
@@ -18,17 +17,6 @@ default:
     - "export LANG=en_US.UTF-8"
     - 'export SELENE_VERSION=$(grep -o ''"version": *"[^"]*"'' package.json | sed -e ''s/"version": *"//'' -e ''s/"$//'')'
     - 'echo "SELENE_VERSION $SELENE_VERSION"'
-
-# Version Bump (runs before build on main)
-version:
-  stage: version
-  script:
-    - scripts/chversion
-  only:
-    - main
-    - testflight
-  tags:
-    - macos
 
 # Build
 build_sync:
@@ -62,7 +50,9 @@ test_e2e:
     when: on_failure
     paths:
       - playwright-report/
-      - test-results/
+    exclude:
+      - playwright-report/**/*.png
+      - playwright-report/**/*.zip
     expire_in: 7 days
 
 # Android Packaging
@@ -279,18 +269,26 @@ deploy_gitlab_release:
   image: alpine:latest
   script:
     - apk add git curl jq
-    - git tag -a $SELENE_VERSION -m "Version $SELENE_VERSION"
-    - git push origin $SELENE_VERSION
-    - PREV_TAG=$(git describe --tags --abbrev=0 HEAD~1 2>/dev/null || echo "")
+    - git config user.email "ci@selene.cash"
+    - git config user.name "Selene CI"
+    - |
+      if ! git rev-parse "$SELENE_VERSION" >/dev/null 2>&1; then
+        git tag -a "$SELENE_VERSION" -m "Version $SELENE_VERSION"
+        git push origin "$SELENE_VERSION"
+      else
+        echo "Tag $SELENE_VERSION already exists, skipping tag creation"
+      fi
+    - PREV_TAG=$(git tag --sort=-creatordate | sed -n '2p')
     - |
       if [ -n "$PREV_TAG" ]; then
-        CHANGELOG=$(git log $PREV_TAG..HEAD --pretty=format:"- %s" --no-merges)
+        CHANGELOG=$(git log "$PREV_TAG".."$SELENE_VERSION" --pretty=format:"- %s" --no-merges)
       else
         CHANGELOG="Initial release"
       fi
     - |
-      curl --header "PRIVATE-TOKEN: $CI_JOB_TOKEN" \
+      curl --fail --header "PRIVATE-TOKEN: $CI_JOB_TOKEN" \
         --data-urlencode "tag_name=$SELENE_VERSION" \
+        --data-urlencode "name=v$SELENE_VERSION" \
         --data-urlencode "description=$CHANGELOG" \
         "$CI_API_V4_URL/projects/$CI_PROJECT_ID/releases"
   only:

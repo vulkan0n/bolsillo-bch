@@ -1,3 +1,4 @@
+import { lazy, Suspense } from "react";
 import {
   GlobalOutlined,
   LikeOutlined,
@@ -5,7 +6,6 @@ import {
   QuestionCircleOutlined,
 } from "@ant-design/icons";
 
-import StatsGraphCard from "@/apps/stats/StatsGraphCard";
 import Card from "@/atoms/Card";
 import Carousel from "@/atoms/Carousel";
 import SeleneLogo from "@/atoms/SeleneLogo";
@@ -21,6 +21,8 @@ import BlissAppCard from "../apps/bliss/BlissAppCard";
 import { BLISS_2026_END_DATE } from "../apps/bliss/constants";
 import ExploreApp from "./ExploreApp";
 
+const StatsGraphCard = lazy(() => import("@/apps/stats/StatsGraphCard"));
+
 export default function ExploreViewHome() {
   const now = useRealTime(1000);
   const isBlazeOngoing = now.valueOf() <= BLAZE_2025_END_DATE.valueOf();
@@ -31,7 +33,9 @@ export default function ExploreViewHome() {
       <Carousel autoRotateInterval={10000}>
         {isBlazeOngoing && <BlazeAppCard />}
         {isBlissOngoing && <BlissAppCard />}
-        <StatsGraphCard />
+        <Suspense>
+          <StatsGraphCard />
+        </Suspense>
       </Carousel>
       <Card className="p-2">
         <div className="flex flex-col gap-2">

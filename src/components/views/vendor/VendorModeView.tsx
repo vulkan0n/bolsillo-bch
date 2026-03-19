@@ -1,12 +1,13 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { QRCode } from "react-qrcode-logo";
 import { useDispatch, useSelector } from "react-redux";
-import { useBlocker, useNavigate } from "react-router";
-import { ScreenOrientation } from "@capacitor/screen-orientation";
+import { useNavigate } from "react-router";
+import { App } from "@capacitor/app";
 import { KeepAwake } from "@capacitor-community/keep-awake";
+import { ScreenBrightness } from "@capacitor-community/screen-brightness";
 import { CloseOutlined } from "@ant-design/icons";
 
-import { selectDeviceInfo } from "@/redux/device";
+import { selectDeviceInfo, setOrientationLock } from "@/redux/device";
 import {
   selectBchNetwork,
   selectIsVendorModeKeepAwake,
@@ -14,6 +15,7 @@ import {
   selectShouldUseLegacyBip21,
   setPreference,
 } from "@/redux/preferences";
+import { selectIsSyncing } from "@/redux/sync";
 import { selectActiveWalletHash } from "@/redux/wallet";
 
 import SecurityService, { AuthActions } from "@/kernel/app/SecurityService";
@@ -40,16 +42,21 @@ export default function VendorModeView() {
   const deviceInfo = useSelector(selectDeviceInfo);
   const isKeepAwake = useSelector(selectIsVendorModeKeepAwake);
   const shouldUseLegacyBip21 = useSelector(selectShouldUseLegacyBip21);
+  const isSyncing = useSelector(selectIsSyncing);
 
-  // Get receive address
+  // Get receive address — re-query when sync finishes
   const AddressManager = useMemo(
     () => AddressManagerService(walletHash),
     [walletHash]
   );
-  const address = useMemo(
-    () => AddressManager.getUnusedAddresses(1)[0].address,
-    [AddressManager]
-  );
+  const addressRef = useRef("");
+  const address = useMemo(() => {
+    if (!isSyncing) {
+      const unused = AddressManager.getUnusedAddresses(1);
+      addressRef.current = unused.length > 0 ? unused[0].address : "";
+    }
+    return addressRef.current;
+  }, [AddressManager, isSyncing]);
 
   // Amount state (in satoshis)
   const [satoshiAmount, setSatoshiAmount] = useState(0n);
@@ -71,54 +78,76 @@ export default function VendorModeView() {
 
   const handleCurrencyFlip = useCurrencyFlip();
 
-  // Block navigation out of vendor mode until auth passes
-  const blocker = useBlocker(true);
+  // ----------------
+  // Auth-gated exit: X button and back button share this handler
+  const handleExit = useCallback(async () => {
+    const isAuthorized = await SecurityService().authorize(
+      AuthActions.VendorMode
+    );
+    if (isAuthorized) {
+      dispatch(setPreference({ key: "vendorModeActive", value: "false" }));
+      navigate("/wallet");
+    }
+  }, [dispatch, navigate]);
 
+  // Intercept Android hardware back button
   useEffect(
-    function handleVendorModeExit() {
-      if (blocker.state !== "blocked") {
-        return;
-      }
-
-      SecurityService()
-        .authorize(AuthActions.VendorMode)
-        .then((isAuthorized) => {
-          if (isAuthorized) {
-            dispatch(
-              setPreference({ key: "vendorModeActive", value: "false" })
-            );
-            blocker.proceed();
-          } else {
-            blocker.reset();
-          }
-        });
-    },
-    [blocker, dispatch]
-  );
-
-  const exitVendorMode = () => navigate("/wallet");
-
-  // Lock orientation and keep awake on mount
-  useEffect(
-    function handleVendorModeLifecycle() {
-      async function setup() {
-        if (deviceInfo.platform !== "web") {
-          await ScreenOrientation.lock({ orientation: "landscape" });
-          if (isKeepAwake) {
-            await KeepAwake.keepAwake();
-          }
-        }
-      }
-      setup();
+    function handleBackButton() {
+      const listener = App.addListener("backButton", () => {
+        handleExit();
+      });
 
       return function cleanup() {
+        listener.then((l) => l.remove());
+      };
+    },
+    [handleExit]
+  );
+
+  // ----------------
+  // Vendor mode lifecycle: orientation, brightness, keep awake
+  const previousBrightness = useRef<number | null>(null);
+  const MIN_VENDOR_BRIGHTNESS = 0.5;
+
+  useEffect(
+    function handleVendorModeLifecycle() {
+      dispatch(setOrientationLock("landscape"));
+
+      if (deviceInfo.platform !== "web") {
+        if (isKeepAwake) {
+          KeepAwake.keepAwake();
+        }
+
+        (async () => {
+          try {
+            const { brightness } = await ScreenBrightness.getBrightness();
+            previousBrightness.current = brightness;
+            if (brightness < MIN_VENDOR_BRIGHTNESS) {
+              await ScreenBrightness.setBrightness({
+                brightness: MIN_VENDOR_BRIGHTNESS,
+              });
+            }
+          } catch {
+            // brightness API unavailable
+          }
+        })();
+      }
+
+      return function cleanup() {
+        dispatch(setOrientationLock("portrait"));
+
         if (deviceInfo.platform !== "web") {
-          ScreenOrientation.unlock();
           KeepAwake.allowSleep();
+
+          if (previousBrightness.current !== null) {
+            ScreenBrightness.setBrightness({
+              brightness: previousBrightness.current,
+            }).catch(() => {});
+          }
         }
       };
     },
-    [deviceInfo.platform, isKeepAwake]
+    [dispatch, deviceInfo.platform, isKeepAwake]
   );
 
   const isTestnet = bchNetwork !== "mainnet";
@@ -130,7 +159,7 @@ export default function VendorModeView() {
       {/* Exit button */}
       <button
         type="button"
-        onClick={exitVendorMode}
+        onClick={handleExit}
         className="absolute top-3 right-3 z-10 p-2 cursor-pointer text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200"
       >
         <CloseOutlined className="text-xl" />
