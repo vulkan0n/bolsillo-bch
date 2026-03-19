@@ -13,6 +13,7 @@ import TokenReceivedToast from "@/composite/toasts/TokenReceivedToast";
 
 import translations from "@/views/wallet/translations";
 
+import { Haptic } from "@/util/haptic";
 import { translate } from "@/util/translations";
 
 // --------------------------------
@@ -67,12 +68,14 @@ export default function NotificationService() {
     icon = <CheckCircleOutlined className="text-4xl text-primary" />,
     header,
     body,
+    variant = "default",
     id,
     duration = 3000,
   }: {
     icon?: ReactNode;
     header: ReactNode;
     body?: ReactNode;
+    variant?: "default" | "success" | "error";
     id?: string;
     duration?: number;
   }) {
@@ -84,25 +87,40 @@ export default function NotificationService() {
           icon={icon}
           header={header}
           body={body}
+          variant={variant}
           onDismiss={onDismiss}
         />
       ),
     });
   }
 
-  function error(header: string, body?: string) {
+  function error(
+    header: string,
+    body?: ReactNode,
+    options?: { id?: string; duration?: number }
+  ) {
+    Haptic.error();
     spawn({
       icon: <CloseCircleOutlined className="text-4xl text-error" />,
       header,
       body: body ? <span>{body}</span> : undefined,
+      variant: "error",
+      ...options,
     });
   }
 
-  function success(header: string, body?: string) {
+  function success(
+    header: string,
+    body?: ReactNode,
+    options?: { id?: string; duration?: number }
+  ) {
+    Haptic.success();
     spawn({
       icon: <CheckCircleOutlined className="text-4xl text-primary" />,
       header,
       body: body ? <span>{body}</span> : undefined,
+      variant: "success",
+      ...options,
     });
   }
 
@@ -174,48 +192,36 @@ export default function NotificationService() {
   }
 
   function disconnected() {
-    spawn({
-      icon: <CloseCircleOutlined className="text-4xl text-error" />,
-      header: translate(translations.notConnected),
-      body: <span>{translate(translations.unableWhileDisconnected)}</span>,
-      id: "disconnected",
-    });
+    error(
+      translate(translations.notConnected),
+      <span>{translate(translations.unableWhileDisconnected)}</span>,
+      { id: "disconnected" }
+    );
   }
 
   function authFail(actionText: string) {
-    spawn({
-      icon: <CloseCircleOutlined className="text-4xl text-error" />,
-      header: translate(translations.authFail),
-      body: (
-        <span>
-          {actionText ? `"${actionText}"` : ""}{" "}
-          {translate(translations.notApproved)}
-        </span>
-      ),
-    });
+    error(
+      translate(translations.authFail),
+      <span>
+        {actionText ? `"${actionText}"` : ""}{" "}
+        {translate(translations.notApproved)}
+      </span>
+    );
   }
 
   function invalidScan(content: string) {
-    spawn({
-      icon: <CloseCircleOutlined className="text-4xl text-error" />,
-      header: translate(translations.invalidQrCode),
-      body: (
-        <span className="flex flex-col text-sm break-all">
-          <span className="mb-1">
-            {translate(translations.invalidQrMessage)}
-          </span>
-          <span className="font-mono opacity-60 italic">{content}</span>
-        </span>
-      ),
-      id: "invalidScan",
-      duration: 3000,
-    });
+    error(
+      translate(translations.invalidQrCode),
+      <span className="flex flex-col text-sm break-all">
+        <span className="mb-1">{translate(translations.invalidQrMessage)}</span>
+        <span className="font-mono opacity-60 italic">{content}</span>
+      </span>,
+      { id: "invalidScan", duration: 3000 }
+    );
   }
 
   function expiredPayment() {
-    spawn({
-      icon: <CloseCircleOutlined className="text-4xl text-error" />,
-      header: translate(translations.paymentExpired),
+    error(translate(translations.paymentExpired), undefined, {
       id: "expiredPayment",
       duration: 3000,
     });

@@ -11,8 +11,6 @@ import NotificationService from "@/kernel/app/NotificationService";
 import translations from "@/views/wallet/translations";
 import Button, { ButtonProps } from "@/atoms/Button";
 
-import { Haptic } from "@/util/haptic";
-
 import { translate } from "@/util/translations";
 
 interface ImageSelectButtonProps extends ButtonProps {
@@ -79,7 +77,6 @@ export default function ImageSelectButton({
         // No QR code found - show invalid scan toast with error
         const errorMessage = e?.message || "No QR code found";
         NotificationService().invalidScan(errorMessage);
-        await Haptic.error();
         onSelection("");
       }
 

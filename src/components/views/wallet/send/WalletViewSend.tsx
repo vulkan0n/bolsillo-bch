@@ -245,10 +245,6 @@ export default function WalletViewSend() {
 
   const validateSendConditions = useCallback(
     async (isInstantPay: boolean = false) => {
-      if (isSending) {
-        return false;
-      }
-
       // can't send tokens to non-token address
       if (
         (hasTokens || hasNft) &&
@@ -259,8 +255,6 @@ export default function WalletViewSend() {
         setMessage(translate(translations.cantSendTokensToNonTokenAddress));
         return false;
       }
-
-      setIsSending(true);
 
       if (isBase58Address) {
         await Haptic.warn();
@@ -299,7 +293,6 @@ export default function WalletViewSend() {
       return true;
     },
     [
-      isSending,
       hasTokens,
       hasNft,
       isTokenAddress,
@@ -513,13 +506,14 @@ export default function WalletViewSend() {
 
   const confirmSend = useCallback(
     async (isInstantPay: boolean = false) => {
+      if (isSending) return;
+      setIsSending(true);
+
       const isValidSend = await validateSendConditions(isInstantPay);
       if (!isValidSend) {
         setIsSending(false);
         return;
       }
-
-      setIsSending(true);
 
       const transaction =
         isStablecoinMode && !hasTokens
@@ -535,6 +529,7 @@ export default function WalletViewSend() {
       broadcastTransaction(transaction);
     },
     [
+      isSending,
       validateSendConditions,
       isStablecoinMode,
       hasTokens,

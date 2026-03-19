@@ -2,7 +2,6 @@ import { useCallback, useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Torch } from "@capawesome/capacitor-torch";
 import QrScanner from "qr-scanner";
-import { ScanOutlined } from "@ant-design/icons";
 
 import {
   selectScannerIsScanning,
@@ -11,11 +10,6 @@ import {
 } from "@/redux/device";
 
 import LogService from "@/kernel/app/LogService";
-import NotificationService from "@/kernel/app/NotificationService";
-
-import translations from "@/views/wallet/translations";
-
-import { translate } from "@/util/translations";
 
 const Log = LogService("useScanner");
 
@@ -66,19 +60,9 @@ export function useScanner(onScan) {
     async (content) => {
       dispatch(setScannerIsScanning(false));
 
-      const spawnScanToast = () =>
-        NotificationService().spawn({
-          icon: <ScanOutlined className="text-4xl" />,
-          header: translate(translations.scanContents),
-          body: <span className="flex break-all text-sm">{content}</span>,
-        });
-
-      const spawnInvalidScanToast = () =>
-        NotificationService().invalidScan(content);
-
       if (!hasScanContent.current) {
         hasScanContent.current = true;
-        await onScan(content, { spawnScanToast, spawnInvalidScanToast });
+        await onScan(content);
       }
     },
     [onScan, dispatch]

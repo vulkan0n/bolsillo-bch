@@ -11,7 +11,6 @@ import {
 import NotificationService from "@/kernel/app/NotificationService";
 import WalletManagerService from "@/kernel/wallet/WalletManagerService";
 
-import { Haptic } from "@/util/haptic";
 import { ripemd160, sha256 } from "@/util/hash";
 import { bchToSats } from "@/util/sats";
 
@@ -313,15 +312,16 @@ export const navigateOnValidUri = async (
   let navTo = "";
   let navState;
 
+  const Notification = NotificationService();
+
   if (isValid) {
     // Check expiration before proceeding
     if (isExpired) {
-      await Haptic.error();
-      NotificationService().expiredPayment();
+      Notification.expiredPayment();
       return { navTo: "", navState: {}, isTokenAddress, isExpired: true };
     }
 
-    await Haptic.success();
+    Notification.success(decodedInput);
 
     if (isWalletConnect) {
       navTo = `/apps/walletconnect`;
@@ -334,7 +334,7 @@ export const navigateOnValidUri = async (
       navTo = `/wallet/send/${address}${query}`;
     }
   } else {
-    await Haptic.error();
+    Notification.invalidScan(decodedInput);
   }
 
   return { navTo, navState, isTokenAddress, isExpired: isExpired || false };
