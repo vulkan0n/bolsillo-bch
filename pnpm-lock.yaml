@@ -23,6 +23,9 @@ importers:
       '@capacitor-community/keep-awake':
         specifier: ^8.0.0
         version: 8.0.0(@capacitor/core@8.0.1)
+      '@capacitor-community/screen-brightness':
+        specifier: ^8.0.0
+        version: 8.0.0(@capacitor/core@8.0.1)
       '@capacitor/android':
         specifier: ^8.0.0
         version: 8.0.1(@capacitor/core@8.0.1)
@@ -424,6 +427,11 @@ packages:
 
   '@capacitor-community/keep-awake@8.0.0':
     resolution: {integrity: sha512-+bNAILA4R8PU+rm6OuKfgW6T4N24oAb2Idut5whfX5JAz09j7UBKFBEmT5C0QFJ7S8NZzp9d/yBsbIhLj+JkAA==}
+    peerDependencies:
+      '@capacitor/core': '>=8.0.0'
+
+  '@capacitor-community/screen-brightness@8.0.0':
+    resolution: {integrity: sha512-gR0GPofqSSzaFhOYcv89RfTOldDUH+7A77+iIpZXxBe5tW60H0BEvl5H6S3dtfbljCGgsddXoIBtJ3GXp+aUJA==}
     peerDependencies:
       '@capacitor/core': '>=8.0.0'
 
@@ -5323,6 +5331,10 @@ snapshots:
   '@bitauth/libauth@3.0.0': {}
 
   '@capacitor-community/keep-awake@8.0.0(@capacitor/core@8.0.1)':
+    dependencies:
+      '@capacitor/core': 8.0.1
+
+  '@capacitor-community/screen-brightness@8.0.0(@capacitor/core@8.0.1)':
     dependencies:
       '@capacitor/core': 8.0.1
 

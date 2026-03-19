@@ -42,7 +42,7 @@ import { toAlphanumericUri } from "@/util/uri";
 
 import { translate } from "@/util/translations";
 
-import FocusedQrView from "./FocusedQrView";
+import FocusedQrModal from "./FocusedQrModal";
 import ScannerOverlay from "./ScannerOverlay";
 import WalletViewButtons from "./WalletViewButtons";
 
@@ -270,9 +270,8 @@ export default function WalletViewHome() {
       </div>
       {!isKeyboardOpen && <WalletViewButtons />}
       {shouldShowFocusedQr && (
-        <FocusedQrView
+        <FocusedQrModal
           qrRequest={qrRequest}
-          isTokenAddress={shouldUseTokenAddress}
           onClose={() => setShouldShowFocusedQr(false)}
         />
       )}
