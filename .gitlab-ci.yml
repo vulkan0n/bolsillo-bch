@@ -135,6 +135,7 @@ package_ios:
         -archivePath build/App.xcarchive
         -exportOptionsPlist ../../scripts/export-options.plist
         -exportPath build/
+        -allowProvisioningUpdates
   artifacts:
     paths:
       - ios/App/build/App.ipa
