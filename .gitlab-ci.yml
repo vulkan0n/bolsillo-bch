@@ -322,7 +322,7 @@ deploy_gitlab_release:
       else
         echo "Tag $SELENE_VERSION already exists"
       fi
-    - PREV_TAG=$(git tag --sort=-creatordate | grep -v "^$SELENE_VERSION$" | head -1)
+    - PREV_TAG=$(git tag --sort=-creatordate | grep -v "^$SELENE_VERSION$" | head -1 || true)
     - |
       if [ -n "$PREV_TAG" ]; then
         CHANGELOG=$(git log "$PREV_TAG".."$SELENE_VERSION" --pretty=format:"- %s" --no-merges)
