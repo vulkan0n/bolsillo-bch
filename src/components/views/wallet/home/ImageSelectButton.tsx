@@ -11,6 +11,8 @@ import NotificationService from "@/kernel/app/NotificationService";
 import translations from "@/views/wallet/translations";
 import Button, { ButtonProps } from "@/atoms/Button";
 
+import { Haptic } from "@/util/haptic";
+
 import { translate } from "@/util/translations";
 
 interface ImageSelectButtonProps extends ButtonProps {
@@ -66,6 +68,7 @@ export default function ImageSelectButton({
         });
 
         // Show scan content toast
+        Haptic.success();
         NotificationService().spawn({
           icon: <ScanOutlined className="text-4xl" />,
           header: translate(translations.scanContents),

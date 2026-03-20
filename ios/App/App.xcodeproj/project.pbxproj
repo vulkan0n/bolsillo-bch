@@ -306,7 +306,7 @@
 				CURRENT_PROJECT_VERSION = 260304;
 				DEVELOPMENT_TEAM = M2M8ZMH23D;
 				INFOPLIST_FILE = App/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "Selene Wallet";
+				INFOPLIST_KEY_CFBundleDisplayName = "Selene Wallet (Edge)";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.finance";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -315,7 +315,7 @@
 				);
 				MARKETING_VERSION = 2026.03.04;
 				OTHER_SWIFT_FLAGS = "$(inherited) \"-D\" \"COCOAPODS\" \"-DDEBUG\"";
-				PRODUCT_BUNDLE_IDENTIFIER = cash.selene.app;
+				PRODUCT_BUNDLE_IDENTIFIER = cash.selene.app.edge;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_VERSION = 5.0;

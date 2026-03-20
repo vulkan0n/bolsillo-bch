@@ -28,7 +28,13 @@ const Log = LogService("AppProvider");
 
 // --------------------------------
 
-type Phase = "PREFLIGHT" | "LOCKED" | "RUNNING" | "PAUSED" | "STARTUP_ERROR";
+type Phase =
+  | "PREFLIGHT"
+  | "MIGRATING"
+  | "LOCKED"
+  | "RUNNING"
+  | "PAUSED"
+  | "STARTUP_ERROR";
 
 // --------------------------------
 
@@ -64,14 +70,13 @@ function useAppLifecycle() {
       try {
         await DatabaseService().openAppDatabase();
         await JanitorService().migrateLegacyDatabases();
+        await JanitorService().recoverWalletFiles();
 
         if (!(await JanitorService().handleAuthMigration())) {
           Log.timeEnd("boot");
           go("LOCKED");
           return;
         }
-
-        await JanitorService().recoverWalletFiles();
         await redux_init();
         redux_resume();
 
@@ -107,6 +112,7 @@ function useAppLifecycle() {
         if (shouldLock) {
           go("LOCKED");
         } else {
+          go("MIGRATING");
           await boot();
         }
       } catch (e) {
@@ -225,6 +231,8 @@ export default function AppProvider({ children }: AppProviderProps) {
     case "PREFLIGHT":
     case "PAUSED":
       break; // native splash covers; PAUSED = cleanup in progress
+    case "MIGRATING":
+      break; // splash hidden, migration in progress (modal/bio prompt overlays)
     case "LOCKED":
       content = <AppLockScreen boot={boot} />;
       break;
@@ -242,10 +250,10 @@ export default function AppProvider({ children }: AppProviderProps) {
   }
 
   return (
-    <>
+    <div id="container">
       {content}
       <ModalProvider />
       <NotificationProvider />
-    </>
+    </div>
   );
 }

@@ -1,8 +1,8 @@
 import { Directory, Filesystem } from "@capacitor/filesystem";
 import { Preferences } from "@capacitor/preferences";
+import { SimpleEncryption } from "capacitor-plugin-simple-encryption";
 
 import { store } from "@/redux";
-import { selectDeviceInfo } from "@/redux/device";
 import {
   selectPreferences,
   selectSecuritySettings,
@@ -11,10 +11,15 @@ import {
 
 import DatabaseService, { _dbOpen } from "@/kernel/app/DatabaseService";
 import LogService from "@/kernel/app/LogService";
+import NotificationService from "@/kernel/app/NotificationService";
 import SecurityService, { AuthActions } from "@/kernel/app/SecurityService";
 import BlockchainService from "@/kernel/bch/BlockchainService";
 import TransactionManagerService from "@/kernel/bch/TransactionManagerService";
 import WalletManagerService from "@/kernel/wallet/WalletManagerService";
+
+import securityTranslations from "@/views/security/translations";
+
+import { translate } from "@/util/translations";
 
 const Log = LogService("Janitor");
 
@@ -103,7 +108,6 @@ export default function JanitorService() {
     const state = store.getState();
     const { authMode, authActions } = selectSecuritySettings(state);
     const { pinHash } = selectPreferences(state);
-    const { hasBiometric } = selectDeviceInfo(state);
 
     const Security = SecurityService();
     const isPinSet = Security.isPinConfigured();
@@ -111,6 +115,18 @@ export default function JanitorService() {
 
     // Already migrated or no auth configured
     if (authMode === "none") return true;
+
+    // Ensure AppOpen/AppResume are in authActions (idempotent)
+    const actionsToAdd = [AuthActions.AppOpen, AuthActions.AppResume].filter(
+      (a) => !authActions.includes(a)
+    );
+    if (actionsToAdd.length > 0) {
+      const updated = [...actionsToAdd, ...authActions].join(";");
+      await store.dispatch(
+        setPreference({ key: "authActions", value: updated })
+      );
+    }
+
     if (isPinSet || hasBioKey) return true;
 
     Log.log("Auth migration needed", { authMode, hasPinHash: pinHash !== "" });
@@ -123,33 +139,59 @@ export default function JanitorService() {
       }
       await Security.setPin(pin);
       await store.dispatch(setPreference({ key: "pinHash", value: "" }));
-      Log.log("PIN migrated to encryption plugin");
+
+      // Set input mode based on credential type
+      const isNumeric = /^\d+$/.test(pin);
+      await store.dispatch(
+        setPreference({
+          key: "pinInputMode",
+          value: isNumeric ? "true" : "false",
+        })
+      );
+
+      if (authMode === "pin" && !isNumeric) {
+        await store.dispatch(
+          setPreference({ key: "authMode", value: "password" })
+        );
+        Log.log("PIN migrated as password (non-numeric credential)");
+      } else {
+        Log.log("PIN migrated to encryption plugin");
+      }
     }
 
     // Biometric migration: store current key in biometric-protected storage
-    Log.log("Bio migration check", { authMode, hasBiometric });
-    if (authMode === "bio" && hasBiometric) {
+    // Re-check biometric availability live (user may have changed permissions)
+    const { value: isBioAvailable } =
+      await SimpleEncryption.isBiometricAvailable();
+    Log.log("Bio migration check", { authMode, isBioAvailable });
+    if (authMode === "bio") {
+      if (!isBioAvailable) {
+        await Security.promptBiometricPermission();
+        return false;
+      }
+
       try {
         Log.log("Attempting storeBiometricKeyFromCurrent...");
         await Security.storeBiometricKeyFromCurrent();
         Log.log("Biometric key stored during migration");
       } catch (e) {
         Log.error("FAILED to store biometric key during migration", e);
+
+        // Re-check — user may have denied permission during prompt
+        const { value: isStillAvailable } =
+          await SimpleEncryption.isBiometricAvailable();
+        if (!isStillAvailable) {
+          await Security.promptBiometricPermission();
+        }
         return false;
       }
     }
 
-    // Ensure AppOpen/AppResume are in authActions
-    const actionsToAdd = [AuthActions.AppOpen, AuthActions.AppResume].filter(
-      (a) => !authActions.includes(a)
+    Log.log("Auth migration complete");
+    NotificationService().success(
+      translate(securityTranslations.securityUpgradeSuccessful),
+      translate(securityTranslations.walletEncryptionInitialized)
     );
-    if (actionsToAdd.length > 0) {
-      const updated = [...actionsToAdd, ...authActions].join(";");
-      await store.dispatch(
-        setPreference({ key: "authActions", value: updated })
-      );
-    }
-
     return true;
   }
 

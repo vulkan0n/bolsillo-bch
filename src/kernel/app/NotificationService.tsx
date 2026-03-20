@@ -337,7 +337,7 @@ export function NotificationProvider() {
       {toasts.map((entry) => (
         <div
           key={entry.id}
-          className="w-full max-w-md pointer-events-auto transition-opacity duration-300"
+          className="w-full max-w-md pointer-events-auto transition-opacity duration-300 transform-gpu"
           style={{ opacity: entry.isDismissing ? 0 : 1 }}
         >
           {entry.content(() => handleDismiss(entry.id))}

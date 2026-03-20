@@ -145,8 +145,7 @@ export default function MainLayout() {
         className={`${!isScanning ? "opacity-0" : ""} bg-transparent`}
       />
       <div
-        id="container"
-        className={`${isScanning ? "bg-transparent" : "bg-primary-50 dark:bg-primarydark-50 dark:text-neutral-50"}`}
+        className={`flex flex-col h-full ${isScanning ? "bg-transparent" : "bg-primary-50 dark:bg-primarydark-50 dark:text-neutral-50"}`}
       >
         <main>
           <Outlet />
