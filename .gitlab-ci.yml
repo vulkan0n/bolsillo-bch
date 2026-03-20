@@ -34,13 +34,13 @@ build_web:
     - "which git || (apk update && apk add git)"
     - corepack enable pnpm
     - pnpm install --frozen-lockfile
-    - pnpm test
+    - pnpm test 2>&1 | tail -50
     - pnpm run build:ci
   artifacts:
     paths:
       - "dist/"
-      - "node_modules/"
       - "package.json"
+      - "pnpm-lock.yaml"
 
 # ----------------------------------------------------------------
 # Test
@@ -73,6 +73,8 @@ package_android:
   dependencies:
     - build_web
   script:
+    - corepack enable pnpm
+    - pnpm install --frozen-lockfile
     - npx cap sync android
     - cd android/
     - ./gradlew clean bundleRelease assembleRelease
@@ -96,6 +98,8 @@ package_android_edge:
   dependencies:
     - build_web
   script:
+    - corepack enable pnpm
+    - pnpm install --frozen-lockfile
     - npx cap sync android
     - cd android/
     - ./gradlew clean assembleDebug
@@ -117,6 +121,8 @@ package_ios:
   dependencies:
     - build_web
   script:
+    - corepack enable pnpm
+    - pnpm install --frozen-lockfile
     - npx cap sync ios
     - cd ios/App/
     - xcodebuild -project App.xcodeproj -scheme App
