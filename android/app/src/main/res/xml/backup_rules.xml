@@ -1,17 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Android 12+ (API 31+) backup rules -->
+<!-- Only include what we want backed up; everything else is excluded by default -->
 <data-extraction-rules>
     <cloud-backup>
         <include domain="sharedpref" path="SimpleEncryptionPrefs.xml"/>
-        <!-- Exclude lockout state so brute-force protection survives cloud restore -->
-        <exclude domain="sharedpref" path="SimpleEncryptionLockout.xml"/>
         <include domain="root" path="files/selene/wallets/"/>
-        <exclude domain="root" path="files/selene/db/"/>
     </cloud-backup>
     <device-transfer>
         <include domain="sharedpref" path="SimpleEncryptionPrefs.xml"/>
-        <!-- Exclude lockout state so brute-force protection survives cloud restore -->
-        <exclude domain="sharedpref" path="SimpleEncryptionLockout.xml"/>
         <include domain="root" path="files/selene/wallets/"/>
         <include domain="root" path="files/selene/db/"/>
     </device-transfer>
