@@ -50,7 +50,7 @@
     "@walletconnect/core": "^2.23.1",
     "@walletconnect/jsonrpc-utils": "^1.0.8",
     "@walletconnect/utils": "^2.23.1",
-    "capacitor-plugin-simple-encryption": "https://git.xulu.tech/selene.cash/capacitor-plugin-simple-encryption.git#v0.2.8",
+    "capacitor-plugin-simple-encryption": "https://git.xulu.tech/selene.cash/capacitor-plugin-simple-encryption.git#v0.2.9",
     "chart.js": "^4.5.1",
     "decimal.js": "^10.6.0",
     "graphql": "^16.12.0",

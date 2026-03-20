@@ -18,9 +18,11 @@ import { translate } from "@/util/translations";
 export default function ShowMnemonic({
   walletHash,
   onReveal = undefined,
+  disableLongPress = false,
 }: {
   walletHash: string;
   onReveal?: () => void;
+  disableLongPress?: boolean;
 }) {
   const dispatch = useDispatch();
   const WalletManager = WalletManagerService();
@@ -118,7 +120,7 @@ export default function ShowMnemonic({
 
   const longPressEvents = useLongPress<
     React.TouchEvent<HTMLButtonElement> | React.MouseEvent
-  >(handleLongPress, handleShowMnemonic);
+  >(disableLongPress ? () => {} : handleLongPress, handleShowMnemonic);
 
   const splitMnemonic = mnemonic.current.split(" ");
 

@@ -38,6 +38,7 @@ export const defaultPreferences = {
   // Security
   authMode: "none",
   pinHash: "",
+  pinInputMode: "false",
   authActions: "Any;Debug;RevealPrivateKeys;RevealBalance;SendTransaction",
   // --------
   // Currency
@@ -157,6 +158,7 @@ export function validatePreferences(preferences: ValidPreferences): boolean {
     "vendorModeKeepAwake",
     "encryptionDeviceOnly",
     "useLegacyBip21",
+    "pinInputMode",
   ];
 
   const invalidBools = boolKeys.filter(
@@ -358,6 +360,7 @@ export const selectSecuritySettings = createSelector(
   (preferences) => ({
     authMode: preferences.authMode,
     authActions: preferences.authActions.split(";"),
+    isNumericPin: preferences.pinInputMode === "true",
   })
 );
 

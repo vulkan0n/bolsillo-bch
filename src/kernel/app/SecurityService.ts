@@ -22,6 +22,7 @@ import { translate } from "@/util/translations";
 
 const Log = LogService("SecurityService");
 const MIN_PASSWORD_LENGTH = 8;
+const MIN_PIN_LENGTH = 4;
 
 let hasPinConfigured = false;
 
@@ -83,6 +84,7 @@ export default function SecurityService() {
     unlockWithBiometric,
     verifyBiometric,
     storeBiometricKeyFromCurrent,
+    promptBiometricPermission,
     // Composite operations
     promptForNewPin,
     changePinAndUpdateBiometric,
@@ -189,9 +191,8 @@ export default function SecurityService() {
       return true;
     }
 
-    const { authMode } = selectSecuritySettings(store.getState());
-
-    const isPasswordMode = authMode === "password";
+    const { isNumericPin } = selectSecuritySettings(store.getState());
+    const isPasswordMode = !isNumericPin;
 
     const pin = await ModalService().showPrompt({
       title:
@@ -220,9 +221,9 @@ export default function SecurityService() {
     while (true) {
       const pin = await ModalService().showPrompt({
         title: translate(securityTranslations.securityUpgrade),
-        message: translate(securityTranslations.enterPinToUpgrade),
+        message: translate(securityTranslations.enterPinOrPasswordToUpgrade),
         inputType: "password",
-        inputMode: "numeric",
+        inputMode: "text",
         submitLabel: translate(securityTranslations.upgrade),
       });
 
@@ -274,12 +275,13 @@ export default function SecurityService() {
   }
 
   /** Prompt user to enter and confirm a new PIN or password. Returns null if cancelled.
-   *  Reads authMode from preferences by default. Pass forcePassword=true for backup export. */
+   *  isPasswordMode: true=text keyboard, false=numeric, undefined=read from prefs */
   async function promptForNewPin(
-    forcePassword = false
+    isPasswordOverride?: boolean
   ): Promise<string | null> {
-    const { authMode } = selectSecuritySettings(store.getState());
-    const isPasswordMode = forcePassword || authMode === "password";
+    const { isNumericPin } = selectSecuritySettings(store.getState());
+    const isPasswordMode =
+      isPasswordOverride !== undefined ? isPasswordOverride : !isNumericPin;
     const Modal = ModalService();
 
     const pin = await Modal.showPrompt({
@@ -300,6 +302,11 @@ export default function SecurityService() {
 
     if (isPasswordMode && pin.length < MIN_PASSWORD_LENGTH) {
       NotificationService().error(translate(common.passwordMinLength));
+      return null;
+    }
+
+    if (!isPasswordMode && pin.length < MIN_PIN_LENGTH) {
+      NotificationService().error(translate(common.pinMinLength));
       return null;
     }
 
@@ -365,6 +372,18 @@ export default function SecurityService() {
   async function storeBiometricKeyFromCurrent(): Promise<void> {
     const { key } = await SimpleEncryption.exportCurrentKey();
     await SimpleEncryption.storeBiometricKey({ key });
+  }
+
+  /** Prompt user to open app settings when biometric permission is denied. */
+  async function promptBiometricPermission(): Promise<void> {
+    const shouldOpen = await ModalService().showConfirm({
+      title: translate(securityTranslations.biometricPermissionRequired),
+      message: translate(securityTranslations.biometricNotEnabled),
+      confirmLabel: translate(securityTranslations.openSettings),
+    });
+    if (shouldOpen) {
+      await SimpleEncryption.openAppSettings();
+    }
   }
 
   /** Set or change PIN and update biometric key if available. Key must already be loaded. */

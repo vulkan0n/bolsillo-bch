@@ -29,7 +29,7 @@ let package = Package(
         .package(name: "CapacitorShare", path: "../../../node_modules/.pnpm/@capacitor+share@8.0.0_@capacitor+core@8.0.1/node_modules/@capacitor/share"),
         .package(name: "CapacitorSplashScreen", path: "../../../node_modules/.pnpm/@capacitor+splash-screen@8.0.0_@capacitor+core@8.0.1/node_modules/@capacitor/splash-screen"),
         .package(name: "CapawesomeCapacitorTorch", path: "../../../node_modules/.pnpm/@capawesome+capacitor-torch@8.0.0_@capacitor+core@8.0.1/node_modules/@capawesome/capacitor-torch"),
-        .package(name: "CapacitorPluginSimpleEncryption", path: "../../../node_modules/.pnpm/capacitor-plugin-simple-encryption@git+https+++git.xulu.tech+selene.cash+capacitor-plug_cfb59ea2144ce372ef9d9dfa02d1d36e/node_modules/capacitor-plugin-simple-encryption")
+        .package(name: "CapacitorPluginSimpleEncryption", path: "../../../node_modules/.pnpm/capacitor-plugin-simple-encryption@git+https+++git.xulu.tech+selene.cash+capacitor-plug_3e4f066af978a490e02a888c0cb2bf98/node_modules/capacitor-plugin-simple-encryption")
     ],
     targets: [
         .target(

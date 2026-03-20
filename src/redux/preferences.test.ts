@@ -116,6 +116,25 @@ describe("validatePreferences", () => {
     });
   });
 
+  describe("pinInputMode validation", () => {
+    it("rejects corrupted pinInputMode", () => {
+      expect(
+        validatePreferences(
+          makePrefs({ pinInputMode: "numeric" as "true" | "false" })
+        )
+      ).toBe(false);
+    });
+
+    it("accepts valid pinInputMode values", () => {
+      expect(validatePreferences(makePrefs({ pinInputMode: "true" }))).toBe(
+        true
+      );
+      expect(validatePreferences(makePrefs({ pinInputMode: "false" }))).toBe(
+        true
+      );
+    });
+  });
+
   describe("encryption preference keys", () => {
     it("rejects corrupted encryptionDeviceOnly", () => {
       expect(

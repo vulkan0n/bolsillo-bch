@@ -110,11 +110,21 @@ async function translateText(text, targetLang, GOOGLE_TRANSLATE_API_KEY) {
       .replace(/&lt;/g, "<")
       .replace(/&gt;/g, ">");
 
-    // Restore protected terms (Google Translate may add spaces around tags)
+    // Restore protected terms with proper spacing.
+    // Google Translate may strip or add spaces around XML placeholders.
+    // We ensure exactly one space on each side unless the term is at
+    // the start/end of the string or adjacent to punctuation.
     replacements.forEach(({ placeholder, term }) => {
       const escaped = placeholder.replace(/[.*+?^${}()|[\]\\\/]/g, "\\$&");
       const re = new RegExp(`\\s*${escaped}\\s*`, "g");
-      translated = translated.replace(re, term);
+      translated = translated.replace(re, (match, offset) => {
+        const before = translated[offset - 1] || "";
+        const afterIdx = offset + match.length;
+        const after = translated[afterIdx] || "";
+        const needsLeadingSpace = before && !/[\s(]/.test(before);
+        const needsTrailingSpace = after && !/[\s.,;:!?)/]/.test(after);
+        return (needsLeadingSpace ? " " : "") + term + (needsTrailingSpace ? " " : "");
+      });
     });
 
     return translated;

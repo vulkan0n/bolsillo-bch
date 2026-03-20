@@ -53,7 +53,9 @@ export default function SecuritySettings() {
   const [isPinConfigured, setIsPinConfigured] = useState(
     Security.isPinConfigured()
   );
-  const { authMode, authActions } = useSelector(selectSecuritySettings);
+  const { authMode, authActions, isNumericPin } = useSelector(
+    selectSecuritySettings
+  );
   const { hasBiometric, platform } = useSelector(selectDeviceInfo);
   const { isDeviceOnly, lastKeyBackupExport } = useSelector(
     selectEncryptionSettings
@@ -200,10 +202,20 @@ export default function SecuritySettings() {
       // Target: pin or password — need PIN/password, no bio key
       if (newMode === "pin" || newMode === "password") {
         await Security.removeBiometricKey();
-        if (!isPinConfigured) {
-          const pin = await Security.promptForNewPin();
+        const isPasswordMode = newMode === "password";
+        const shouldPromptCredential =
+          !isPinConfigured || isPasswordMode === isNumericPin;
+
+        if (shouldPromptCredential) {
+          const pin = await Security.promptForNewPin(isPasswordMode);
           if (!pin) return;
           await Security.setPin(pin);
+          dispatch(
+            setPreference({
+              key: "pinInputMode",
+              value: isPasswordMode ? "false" : "true",
+            })
+          );
           setIsPinConfigured(true);
         }
       }
@@ -310,29 +322,47 @@ export default function SecuritySettings() {
           </Select>
         )}
       </Accordion.Child>
-      {(authMode === "pin" || authMode === "password") && (
-        <Accordion.Child>
+      {authMode !== "none" && (
+        <Accordion.Child
+          icon={PushpinOutlined}
+          label={
+            authMode === "bio"
+              ? translate(
+                  isNumericPin
+                    ? translations.pinFallback
+                    : translations.passwordFallback
+                )
+              : undefined
+          }
+        >
           <div className="flex items-center justify-between w-full">
-            {!isPinConfigured ? (
-              <span className="text-error font-semibold">
-                {authMode === "password"
-                  ? translate(translations.passwordNotSet)
-                  : translate(translations.pinNotSet)}
-              </span>
-            ) : (
-              <span className="text-success-dark font-semibold">
-                {authMode === "password"
-                  ? translate(translations.passwordSet)
-                  : translate(translations.pinSet)}
-              </span>
-            )}
+            <div className="flex-1">
+              {authMode !== "bio" &&
+                (!isPinConfigured ? (
+                  <span className="text-error font-semibold">
+                    {translate(
+                      isNumericPin
+                        ? translations.pinNotSet
+                        : translations.passwordNotSet
+                    )}
+                  </span>
+                ) : (
+                  <span className="text-success-dark font-semibold">
+                    {translate(
+                      isNumericPin
+                        ? translations.pinSet
+                        : translations.passwordSet
+                    )}
+                  </span>
+                ))}
+            </div>
             <Button
               onClick={handleSetPin}
               icon={PushpinOutlined}
               label={
-                authMode === "password"
-                  ? translate(translations.resetPassword)
-                  : translate(translations.resetPin)
+                isNumericPin
+                  ? translate(translations.resetPin)
+                  : translate(translations.resetPassword)
               }
             />
           </div>
@@ -350,7 +380,7 @@ export default function SecuritySettings() {
           >
             <Checkbox
               checked={authActions.includes(AuthActions.AppOpen)}
-              onChange={() => handleSetAuthActions(AuthActions.AppOpen)}
+              disabled
             />
           </Accordion.Child>
           <Accordion.Child
