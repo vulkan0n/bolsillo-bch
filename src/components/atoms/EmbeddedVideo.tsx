@@ -1,9 +1,10 @@
 import ReactPlayer from "react-player/youtube";
 import { useSelector } from "react-redux";
-import { Browser } from "@capacitor/browser";
 import PlayCircleFilled from "@ant-design/icons/PlayCircleFilled";
 
 import { selectDevicePlatform } from "@/redux/device";
+
+import { useNavigateExternal } from "@/hooks/useNavigateExternal";
 
 // --------------------------------
 
@@ -36,6 +37,7 @@ interface Props {
  * Show a thumbnail + play button that opens in Safari View Controller.
  */
 function IosThumbnail({ url }: Props) {
+  const navigateExternal = useNavigateExternal();
   const videoId = getYouTubeId(url);
   const thumbnail = videoId
     ? `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`
@@ -47,7 +49,7 @@ function IosThumbnail({ url }: Props) {
     <button
       type="button"
       className="relative w-full aspect-video bg-black cursor-pointer group"
-      onClick={() => Browser.open({ url })}
+      onClick={() => navigateExternal(url)}
     >
       <img
         src={thumbnail}
