@@ -1,3 +1,4 @@
+import ReactPlayer from "react-player/youtube";
 import { useSelector } from "react-redux";
 import { Browser } from "@capacitor/browser";
 import PlayCircleFilled from "@ant-design/icons/PlayCircleFilled";
@@ -23,22 +24,18 @@ function getYouTubeId(url: string): string | null {
   return result;
 }
 
-function openVideo(url: string, platform: string) {
-  if (platform === "web") {
-    window.open(url, "_blank");
-  } else {
-    Browser.open({ url });
-  }
-}
-
 // --------------------------------
 
 interface Props {
   url: string;
 }
 
-function VideoThumbnail({ url }: Props) {
-  const platform = useSelector(selectDevicePlatform);
+/**
+ * iOS fallback: YouTube iframes fail on WKWebView (Error 153) because
+ * the capacitor:// origin doesn't send valid Referer headers.
+ * Show a thumbnail + play button that opens in Safari View Controller.
+ */
+function IosThumbnail({ url }: Props) {
   const videoId = getYouTubeId(url);
   const thumbnail = videoId
     ? `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`
@@ -50,7 +47,7 @@ function VideoThumbnail({ url }: Props) {
     <button
       type="button"
       className="relative w-full aspect-video bg-black cursor-pointer group"
-      onClick={() => openVideo(url, platform)}
+      onClick={() => Browser.open({ url })}
     >
       <img
         src={thumbnail}
@@ -69,18 +66,42 @@ function VideoThumbnail({ url }: Props) {
 
 // --------------------------------
 
+function EmbeddedVideoCardWrapper({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="aspect-video rounded-lg overflow-hidden">{children}</div>
+  );
+}
+
 export default function EmbeddedVideo({ url }: Props) {
+  const platform = useSelector(selectDevicePlatform);
+
+  if (platform === "ios") {
+    return (
+      <div className="w-full flex justify-center">
+        <IosThumbnail url={url} />
+      </div>
+    );
+  }
+
   return (
     <div className="w-full flex justify-center">
-      <VideoThumbnail url={url} />
+      <ReactPlayer url={url} width="100%" />
     </div>
   );
 }
 
 export function EmbeddedVideoCard({ url }: Props) {
+  const platform = useSelector(selectDevicePlatform);
+
+  if (platform === "ios") {
+    return (
+      <div className="aspect-video rounded-lg overflow-hidden">
+        <IosThumbnail url={url} />
+      </div>
+    );
+  }
+
   return (
-    <div className="aspect-video rounded-lg overflow-hidden">
-      <VideoThumbnail url={url} />
-    </div>
+    <ReactPlayer url={url} width="100%" wrapper={EmbeddedVideoCardWrapper} />
   );
 }
