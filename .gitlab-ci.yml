@@ -1,14 +1,19 @@
-# A pipeline is composed of independent jobs that run scripts, grouped into stages.
-# Stages run in sequential order, but jobs within stages run in parallel.
+# Selene Wallet CI/CD Pipeline
 #
-# For more information, see: https://docs.gitlab.com/ee/ci/yaml/index.html#stages
+# Runners:
+#   - Docker (default): build, test, deploy_web, deploy_gitlab_release
+#   - macOS (tag: macos): package_android, package_ios, deploy_*_release
+#
+# Branches:
+#   - main: full pipeline (build → test → package → deploy)
+#   - edge: build → test → debug APK → edge deploy
+#   - testflight: build → package → store upload
 
 stages:
   - build
   - test
   - package
   - screenshots
-  - testflight
   - release
 
 default:
@@ -16,10 +21,13 @@ default:
     - "export LC_ALL=en_US.UTF-8"
     - "export LANG=en_US.UTF-8"
     - 'export SELENE_VERSION=$(grep -o ''"version": *"[^"]*"'' package.json | sed -e ''s/"version": *"//'' -e ''s/"$//'')'
-    - 'echo "SELENE_VERSION $SELENE_VERSION"'
+    - 'echo "SELENE_VERSION=$SELENE_VERSION"'
 
+# ----------------------------------------------------------------
 # Build
-build_sync:
+# ----------------------------------------------------------------
+
+build_web:
   stage: build
   image: node:lts-alpine
   script:
@@ -28,20 +36,21 @@ build_sync:
     - pnpm install --frozen-lockfile
     - pnpm test
     - pnpm run build:ci
-    - npx cap sync
   artifacts:
     paths:
       - "dist/"
-      - "node_modules/**/*capacitor*"
-      - "android/"
-      - "ios/"
+      - "node_modules/"
+      - "package.json"
 
-# E2E Tests
+# ----------------------------------------------------------------
+# Test
+# ----------------------------------------------------------------
+
 test_e2e:
   stage: test
   image: mcr.microsoft.com/playwright:v1.58.2-noble
   dependencies:
-    - build_sync
+    - build_web
   script:
     - corepack enable pnpm
     - pnpm install --frozen-lockfile
@@ -55,12 +64,16 @@ test_e2e:
       - playwright-report/**/*.zip
     expire_in: 7 days
 
+# ----------------------------------------------------------------
 # Android Packaging
+# ----------------------------------------------------------------
+
 package_android:
   stage: package
   dependencies:
-    - build_sync
+    - build_web
   script:
+    - npx cap sync android
     - cd android/
     - ./gradlew clean bundleRelease assembleRelease
         -Pandroid.injected.signing.store.file="$ANDROID_KEYSTORE"
@@ -81,8 +94,9 @@ package_android:
 package_android_edge:
   stage: package
   dependencies:
-    - build_sync
+    - build_web
   script:
+    - npx cap sync android
     - cd android/
     - ./gradlew clean assembleDebug
     - sha256sum app/build/outputs/apk/debug/app-debug.apk
@@ -94,7 +108,61 @@ package_android_edge:
   tags:
     - macos
 
+# ----------------------------------------------------------------
+# iOS Packaging
+# ----------------------------------------------------------------
+
+package_ios:
+  stage: package
+  dependencies:
+    - build_web
+  script:
+    - npx cap sync ios
+    - cd ios/App/
+    - xcodebuild -project App.xcodeproj -scheme App
+        -configuration Release
+        -archivePath build/App.xcarchive
+        archive
+        -allowProvisioningUpdates
+        DEVELOPMENT_TEAM="M2M8ZMH23D"
+    - xcodebuild -exportArchive
+        -archivePath build/App.xcarchive
+        -exportOptionsPlist ../../scripts/export-options.plist
+        -exportPath build/
+  artifacts:
+    paths:
+      - ios/App/build/App.ipa
+    expire_in: 1 year
+  only:
+    - main
+    - testflight
+  tags:
+    - macos
+
+# ----------------------------------------------------------------
+# Screenshots (for store listings)
+# ----------------------------------------------------------------
+
+screenshots:
+  stage: screenshots
+  image: mcr.microsoft.com/playwright:v1.58.2-noble
+  dependencies:
+    - build_web
+  script:
+    - corepack enable pnpm
+    - pnpm install --frozen-lockfile
+    - npx playwright test --project=screenshots
+  artifacts:
+    paths:
+      - android/metadata/android/en-US/images/phoneScreenshots/
+    expire_in: 1 year
+  only:
+    - main
+
+# ----------------------------------------------------------------
 # Android Deployment
+# ----------------------------------------------------------------
+
 deploy_android_edge:
   stage: release
   image: alpine:latest
@@ -147,56 +215,17 @@ deploy_android_release:
     - package_android
     - screenshots
   script:
-    - >-
-      java -jar scripts/bundletool.jar install-apks
-      --bundle=android/app/build/outputs/bundle/release/app-release.aab
-      || echo "Google Play upload requires manual action or API key setup"
+    - echo "Upload android/app/build/outputs/bundle/release/app-release.aab to Google Play"
+    - echo "Use Google Play Console or set up ANDROID_JSON_KEY_FILE CI variable for automated upload"
   only:
     - main
   tags:
     - macos
 
-deploy_android_testflight:
-  stage: testflight
-  dependencies:
-    - package_android
-  script:
-    - echo "Upload android/app/build/outputs/bundle/release/app-release.aab to Google Play beta track"
-    - echo "Use Google Play Console or set up GOOGLE_PLAY_JSON_KEY CI variable for automated upload"
-  only:
-    - testflight
-  tags:
-    - macos
-
-# iOS Packaging
-package_ios:
-  stage: package
-  dependencies:
-    - build_sync
-  script:
-    - cd ios/App/
-    - pod install
-    - ../../scripts/ios-archive-fix.sh
-    - xcodebuild -workspace App.xcworkspace -scheme App
-        -configuration Release
-        -archivePath build/App.xcarchive
-        archive
-        -allowProvisioningUpdates
-        DEVELOPMENT_TEAM="M2M8ZMH23D"
-    - xcodebuild -exportArchive
-        -archivePath build/App.xcarchive
-        -exportOptionsPlist ../../scripts/export-options.plist
-        -exportPath build/
-  artifacts:
-    paths:
-      - ios/App/build/App.ipa
-  only:
-    - main
-    - testflight
-  tags:
-    - macos
-
+# ----------------------------------------------------------------
 # iOS Deployment
+# ----------------------------------------------------------------
+
 deploy_ios_release:
   stage: release
   when: manual
@@ -230,12 +259,15 @@ deploy_ios_testflight:
   tags:
     - macos
 
+# ----------------------------------------------------------------
 # Web Deployment
+# ----------------------------------------------------------------
+
 deploy_web:
   stage: release
   image: alpine:latest
   dependencies:
-    - build_sync
+    - build_web
   script:
     - "which ssh-agent || (apk update && apk add openssh)"
     - "mkdir -p ~/.ssh && chmod 700 ~/.ssh"
@@ -250,9 +282,9 @@ deploy_web_edge:
   stage: release
   image: alpine:latest
   needs:
-    - build_sync
+    - build_web
   dependencies:
-    - build_sync
+    - build_web
   script:
     - "which ssh-agent || (apk update && apk add openssh)"
     - "mkdir -p ~/.ssh && chmod 700 ~/.ssh"
@@ -264,12 +296,16 @@ deploy_web_edge:
   only:
     - edge
 
-# GitLab Release
+# ----------------------------------------------------------------
+# GitLab Release (creates tag + release for badge)
+# ----------------------------------------------------------------
+
 deploy_gitlab_release:
   stage: release
   image: alpine:latest
   script:
     - apk add git curl jq
+    - git fetch --tags --unshallow || git fetch --tags
     - git config user.email "ci@selene.cash"
     - git config user.name "Selene CI"
     - |
@@ -277,9 +313,9 @@ deploy_gitlab_release:
         git tag -a "$SELENE_VERSION" -m "Version $SELENE_VERSION"
         git push origin "$SELENE_VERSION"
       else
-        echo "Tag $SELENE_VERSION already exists, skipping tag creation"
+        echo "Tag $SELENE_VERSION already exists"
       fi
-    - PREV_TAG=$(git tag --sort=-creatordate | sed -n '2p')
+    - PREV_TAG=$(git tag --sort=-creatordate | grep -v "^$SELENE_VERSION$" | head -1)
     - |
       if [ -n "$PREV_TAG" ]; then
         CHANGELOG=$(git log "$PREV_TAG".."$SELENE_VERSION" --pretty=format:"- %s" --no-merges)
@@ -287,27 +323,11 @@ deploy_gitlab_release:
         CHANGELOG="Initial release"
       fi
     - |
-      curl --fail --header "PRIVATE-TOKEN: $CI_JOB_TOKEN" \
-        --data-urlencode "tag_name=$SELENE_VERSION" \
-        --data-urlencode "name=v$SELENE_VERSION" \
-        --data-urlencode "description=$CHANGELOG" \
-        "$CI_API_V4_URL/projects/$CI_PROJECT_ID/releases"
-  only:
-    - main
-
-# Screenshots (Playwright generates store-quality images)
-screenshots:
-  stage: screenshots
-  image: mcr.microsoft.com/playwright:v1.58.2-noble
-  dependencies:
-    - build_sync
-  script:
-    - corepack enable pnpm
-    - pnpm install --frozen-lockfile
-    - npx playwright test --project=screenshots
-  artifacts:
-    paths:
-      - android/metadata/android/en-US/images/phoneScreenshots/
-    expire_in: 1 year
+      curl --fail --header "JOB-TOKEN: $CI_JOB_TOKEN" \
+        --header "Content-Type: application/json" \
+        --data "$(jq -n --arg tag "$SELENE_VERSION" --arg name "v$SELENE_VERSION" --arg desc "$CHANGELOG" \
+          '{tag_name: $tag, name: $name, description: $desc}')" \
+        "$CI_API_V4_URL/projects/$CI_PROJECT_ID/releases" \
+      || echo "Release creation failed (may already exist)"
   only:
     - main

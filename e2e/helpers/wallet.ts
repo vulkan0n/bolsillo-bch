@@ -64,10 +64,13 @@ export async function switchToChipnet(page: Page): Promise<void> {
 
 /**
  * Import a wallet from mnemonic via the wallet wizard.
+ * @param derivationPath - Optional derivation path (e.g. "m/44'/0'/0'").
+ *   Defaults to "auto" which scans all supported paths.
  */
 export async function importWallet(
   page: Page,
-  mnemonic: string
+  mnemonic: string,
+  derivationPath?: string
 ): Promise<void> {
   await nav.settings(page).click();
   await page.waitForURL("**/settings");
@@ -86,6 +89,13 @@ export async function importWallet(
 
   const mnemonicInput = page.getByTestId("mnemonic-input");
   await mnemonicInput.fill(mnemonic);
+
+  // Select derivation path if specified
+  if (derivationPath) {
+    await expandAccordion(page, "Additional Options");
+    const derivSelect = page.getByRole("combobox").first();
+    await derivSelect.selectOption(derivationPath);
+  }
 
   const confirmBtn = page.getByRole("button", { name: /Import Wallet/i });
   await confirmBtn.click();

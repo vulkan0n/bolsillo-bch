@@ -476,8 +476,7 @@ export default function WalletViewSend() {
             tx_hash: transaction.tx_hash,
             hex: transaction.tx_hex,
           },
-          bchNetwork,
-          walletHash
+          bchNetwork
         );
 
         Log.debug("Transaction sent!", tx.tx_hash);
@@ -501,7 +500,7 @@ export default function WalletViewSend() {
         isInstantPayPending.current = false;
       }
     },
-    [navigate, bchNetwork, walletHash]
+    [navigate, bchNetwork]
   );
 
   const confirmSend = useCallback(

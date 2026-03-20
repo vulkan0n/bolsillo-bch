@@ -17,7 +17,7 @@ test.describe("Mainnet Smoke Test", () => {
   test.beforeEach(async ({ page }) => {
     await page.goto("/");
     await waitForAppReady(page);
-    await importWallet(page, mainnetMnemonic!);
+    await importWallet(page, mainnetMnemonic!, "m/44'/0'/0'");
   });
 
   test("import mainnet wallet and verify sync", async ({ page }) => {

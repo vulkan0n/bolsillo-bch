@@ -156,8 +156,7 @@ export default function TransactionManagerService() {
   // Broadcast via Electrum and register locally.
   async function sendTransaction(
     tx: TransactionStub,
-    network: ValidBchNetwork = "mainnet",
-    walletHash?: string
+    network: ValidBchNetwork = "mainnet"
   ): Promise<TransactionEntity> {
     const Electrum = ElectrumService(network);
 
@@ -171,9 +170,11 @@ export default function TransactionManagerService() {
 
     const registeredTx = await registerTransaction(tx);
 
-    if (walletHash) {
-      applyOptimisticUtxoUpdate(walletHash, registeredTx);
-    }
+    // NOTE: Do NOT call applyOptimisticUtxoUpdate here.
+    // Optimistic UTXO discard races the Electrum subscription sync,
+    // causing scanUtxos to see an empty diff (spent inputs already
+    // gone, change already registered). This breaks payment received
+    // toasts and balance updates. Let the subscription sync handle it.
 
     return registeredTx;
   }
@@ -392,7 +393,7 @@ export default function TransactionManagerService() {
       try {
         AddressManager.getAddress(outputAddress);
       } catch {
-        return; // not our address
+        return; // not our address (includes token z-prefix addresses)
       }
 
       UtxoManager.registerUtxo({

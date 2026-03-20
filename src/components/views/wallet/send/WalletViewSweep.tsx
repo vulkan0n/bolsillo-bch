@@ -171,8 +171,7 @@ export default function WalletViewSweep() {
       // Broadcast and register locally.
       const tx = await TransactionManager.sendTransaction(
         transaction,
-        bchNetwork,
-        walletHash
+        bchNetwork
       );
 
       // Show a notification.

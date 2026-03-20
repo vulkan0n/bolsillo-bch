@@ -24,6 +24,7 @@ import WalletManagerService, {
   WalletStub,
 } from "@/kernel/wallet/WalletManagerService";
 
+import { convertCashAddress } from "@/util/cashaddr";
 import { ripemd160, sha256 } from "@/util/hash";
 import { binToHex, hexToBin } from "@/util/hex";
 import { utxoToTokenPrefix } from "@/util/normalize";
@@ -92,7 +93,9 @@ export default function KeyManagerService(walletStub: WalletStub) {
 
   function _deriveAddressPrivateKey(address: string) {
     const AddressManager = AddressManagerService(walletHash);
-    const { hd_index, change } = AddressManager.getAddress(address);
+    const { hd_index, change } = AddressManager.getAddress(
+      convertCashAddress(address, "cashaddr")
+    );
 
     const { privateKey } = deriveHdPrivateNodeChild(
       change ? hdChange : hdMain,

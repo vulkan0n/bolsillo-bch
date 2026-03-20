@@ -173,8 +173,7 @@ export default function WalletViewPay() {
               tx_hash: transaction.tx_hash,
               hex: transaction.tx_hex,
             },
-            bchNetwork,
-            walletHash
+            bchNetwork
           );
         } catch {
           tx = await TransactionManager.registerTransaction({
