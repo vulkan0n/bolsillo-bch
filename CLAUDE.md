@@ -54,27 +54,32 @@ glab issue close <n> --repo selene.cash/selene-wallet  # Close issue
 
 ## Architecture
 
-### Initialization Flow
+### Initialization Flow (AppProvider)
+
+Boot lifecycle is managed by `AppProvider.tsx` as a React context with phase-based state machine:
 
 ```
-initialize_app() [src/init.jsx]:
-  JanitorService.fsck() → DatabaseService.initAppDatabase()
-  → SecurityService().isEncryptionReady()?
-    YES → boot() → render <Main /> → SplashScreen.hide() → postBoot()
-    NO  → render <Main /> (shows AppLockScreen) → SplashScreen.hide()
+Phases: PREFLIGHT → LOCKED or MIGRATING → RUNNING ↔ PAUSED → STARTUP_ERROR
 
-boot() [called after encryption ready, from init or AppLockScreen]:
-  completeInitAfterPin()
-  → migrateLegacyDatabases() + redux_pre_init() [parallel]
-  → AuthMigrationService().migrateIfNeeded()
-  → recoverWalletFiles() → redux_init() → App listeners (pause/resume)
+coldStart() [mount effect]:
+  JanitorService.fsck() → redux_pre_init()
+  → SecurityService().initEncryption()
+  → shouldLock? → LOCKED (show AppLockScreen)
+  → else → MIGRATING → boot()
 
-postBoot() [non-blocking background]:
-  redux_post_init() (WalletConnect, stats, exchange rates)
-  → BcmrService.preloadMetadataRegistries() (token metadata)
+boot() [called from coldStart or after unlock]:
+  DatabaseService().openAppDatabase()
+  → JanitorService().migrateLegacyDatabases()
+  → JanitorService().recoverWalletFiles()
+  → JanitorService().handleAuthMigration()
+  → redux_init() → redux_resume() → RUNNING
+
+Pause/Resume:
+  handlePause(): RUNNING → PAUSED (if auth required) + redux_pause() + securePause()
+  handleResume(): PAUSED → LOCKED (re-auth), RUNNING → redux_resume()
 ```
 
-**Main.jsx gates the UI:** Shows `AppLockScreen` (PIN/biometric) when encryption is not ready, `ErrorBoundary` on startup failure, or the full app when ready. Pre-auth screens use `MemoryRouter` (no URL changes); full app uses `RouterProvider`.
+**AppProvider gates the UI:** Renders `AppLockScreen` (PIN/biometric) when LOCKED/PAUSED, `ErrorBoundary` on STARTUP_ERROR, splash during PREFLIGHT/MIGRATING, or the full app when RUNNING. Pre-auth screens use `LockScreenWrapper` (no router context); full app uses `RouterProvider`.
 
 ### State Management (Redux Toolkit)
 
@@ -96,12 +101,13 @@ Singleton pattern via function calls (always available, no initialization order 
 
 | Service | Purpose |
 |---------|---------|
-| AuthMigrationService.ts | Migrate legacy PIN/biometric auth to encryption plugin |
+| AppProvider.tsx | React boot context — manages boot lifecycle, encryption readiness, app state |
 | ConsoleService.ts | Debug console |
 | DatabaseService.ts | SQLite management (sql.js), encryption, re-encryption |
 | JanitorService.ts | Filesystem recovery, migrations, fsck, nuclear wipe |
 | LogService.ts | Console logging |
-| NotificationService.tsx | In-app notifications |
+| ModalService.tsx | In-app modal system (replaced Capacitor Dialog) |
+| NotificationService.tsx | In-app toast notifications |
 | SecurityService.ts | PIN/biometric auth, encryption state authority |
 
 **`kernel/bch/`** - Blockchain services:
@@ -123,7 +129,7 @@ Singleton pattern via function calls (always available, no initialization order 
 |---------|---------|
 | AddressManagerService.ts | Address derivation |
 | AddressScannerService.ts | Gap-limit address scanning |
-| KeyManagerService.tsx | BIP39/BIP44 key derivation (historical .tsx, no JSX) |
+| KeyManagerService.ts | BIP39/BIP44 key derivation |
 | TokenManagerService.ts | CashToken management |
 | TransactionExportService.ts | Export to CSV/PDF |
 | TransactionHistoryService.ts | Tx history queries |
@@ -135,7 +141,7 @@ Singleton pattern via function calls (always available, no initialization order 
 **Plugin:** `plugins/capacitor-plugin-simple-encryption/` (Capacitor plugin, iOS + Android + web stub)
 
 ```
-SecurityService (authority)          ← UI, init.jsx, Main.jsx, AuthMigration
+SecurityService (authority)          ← UI, AppProvider, Main.jsx
   └→ DatabaseService (state holder)  ← getEncryptionState(), setEncryptionPinConfigured()
        └→ SimpleEncryption plugin    ← native iOS/Android AES-256-GCM
 ```
@@ -320,23 +326,27 @@ Translations colocated in component directories as `translations.js` files.
 
 **Framework:** Vitest 4.0 (colocated test files: `*.test.ts`, `*.test.js`)
 
-**Test files:**
+**Test files (16 files, 368 tests):**
 - `src/util/sats.test.ts` - satoshi conversion, bchToSats input validation
 - `src/util/uri.test.ts` - BIP21 URI parsing, isIntStr, BigInt guards
 - `src/util/cashaddr.test.ts` - CashAddr encoding/decoding
 - `src/util/currency.test.ts` - decimal formatting, locale handling
 - `src/util/color.test.js` - HSL/hex conversion, gradient generation
+- `src/util/hex.test.ts` - hex encoding/decoding
+- `src/util/string.test.ts` - string utilities
+- `src/util/clsx.test.js` - class name utility
+- `src/util/mime.test.js` - MIME type utilities
+- `src/util/sql.test.js` - SQL utilities
+- `src/util/token.test.ts` - CashToken utilities
+- `src/util/electrum_servers.test.ts` - Electrum server config
 - `src/redux/preferences.test.ts` - preference validation
+- `src/kernel/bch/CurrencyService.test.ts` - exchange rate logic
+- `src/kernel/wallet/UtxoManagerService.test.ts` - UTXO selection (property-based fuzz tests)
+- `src/kernel/wallet/WalletManagerService.test.ts` - wallet management
 
-**What's testable:** Pure utilities in `src/util/`, validation/formatting functions, preference validation
+**What's testable:** Pure utilities in `src/util/`, validation/formatting functions, preference validation, UTXO selection logic
 
-**What's hard to test:** Service layer (IO-coupled), components (no test infra), encryption (native plugin)
-
-**Type inconsistency across boundaries:**
-| Field | Electrum | SQLite | libauth |
-|-------|----------|--------|---------|
-| txid | `tx_hash` | `txid` | - |
-| amount | `value` (number) | `amount` (bigint) | `valueSatoshis` (bigint) |
+**What's hard to test:** Most service layer (IO-coupled), components (no test infra), encryption (native plugin)
 
 ## Security
 
@@ -351,15 +361,14 @@ CSP enforced via meta tag in `index.html`:
 ### Known Issues
 
 1. **Unsalted PIN hash** - `SecurityService.ts` legacy fallback only (new PINs use plugin with PBKDF2 + lockout)
-2. **Seed in memory** - `KeyManagerService.tsx` - JS provides no reliable memory zeroing; native platforms DO zero key material
+2. **Seed in memory** - `KeyManagerService.ts` - JS provides no reliable memory zeroing; native platforms DO zero key material
 
 ### Tech Debt
 
-- Type inconsistencies across Electrum/SQLite/libauth boundaries
 - Merkle proof validation not implemented (trusts Electrum server)
 - No transaction fee calculation in history
 - Exchange rates not cached per-block
-- Large components: WalletViewSend (1067 lines), TransactionBuilderService (937 lines), SecuritySettings (591 lines)
+- Large components: WalletViewSend (1078 lines), TransactionBuilderService (909 lines), SecuritySettings (512 lines)
 
 ### Fragile Areas
 
