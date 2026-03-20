@@ -1,6 +1,6 @@
 // TODO: refactor this component it kinda sucks too
 import { useState } from "react";
-import { CaretRightOutlined, CaretDownOutlined } from "@ant-design/icons";
+import { CaretDownOutlined, CaretRightOutlined } from "@ant-design/icons";
 
 import NullComponent from "@/atoms/NullComponent";
 

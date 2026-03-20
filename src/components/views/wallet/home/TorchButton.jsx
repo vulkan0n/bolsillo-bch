@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-props-no-spreading */
-import { useSelector, useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { BulbOutlined } from "@ant-design/icons";
 
 import { selectTorchIsEnabled, setTorchIsEnabled } from "@/redux/device";

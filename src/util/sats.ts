@@ -1,5 +1,5 @@
 import { Decimal } from "decimal.js";
-import { excessiveSatoshis, binToValueSatoshis } from "@bitauth/libauth";
+import { binToValueSatoshis, excessiveSatoshis } from "@bitauth/libauth";
 
 export const SATOSHI = 100000000n; // sats per 1 BCH
 export const MAX_SATOSHI = SATOSHI * 21000000n; // 21 million

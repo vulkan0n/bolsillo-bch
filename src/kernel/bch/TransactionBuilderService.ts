@@ -1,24 +1,36 @@
 import {
+  assertSuccess,
   encodeTransaction,
   generateTransaction,
-  swapEndianness,
+  getDustThreshold,
+  getMinimumFee,
   importWalletTemplate,
+  Output as LibauthOutput,
+  swapEndianness,
   walletTemplateP2pkhNonHd,
   walletTemplateToCompilerBCH,
-  getMinimumFee,
-  getDustThreshold,
-  Output as LibauthOutput,
-  assertSuccess,
 } from "@bitauth/libauth";
-import * as cauldron from "@cashlab/cauldron";
-import { ExchangeLab } from "@cashlab/cauldron";
-import * as clab from "@cashlab/common";
+import {
+  ExchangeLab,
+  type PoolV0,
+  type TradeResult,
+  type TradeTxResult,
+} from "@cashlab/cauldron";
+import {
+  InsufficientFunds,
+  PayoutAmountRuleType,
+  SpendableCoinType,
+  type Output,
+  type PayoutRule,
+  type SpendableCoin,
+  ValueError,
+} from "@cashlab/common";
 
 import LogService from "@/kernel/app/LogService";
 import CauldronService from "@/kernel/bch/CauldronService";
 import {
-  TransactionStub,
   TransactionOutput,
+  TransactionStub,
 } from "@/kernel/bch/TransactionManagerService";
 import AddressManagerService, {
   AddressEntity,
@@ -32,7 +44,7 @@ import WalletManagerService from "@/kernel/wallet/WalletManagerService";
 
 import { addressToLockingBytecode } from "@/util/cashaddr";
 import { sha256 } from "@/util/hash";
-import { binToHex, hexToBin, compareBytes } from "@/util/hex";
+import { binToHex, compareBytes, hexToBin } from "@/util/hex";
 import { DUST_RELAY_FEE, EXCESSIVE_SATOSHIS } from "@/util/sats";
 import { findUnmatchedNftInputs } from "@/util/token";
 import { MUSD_TOKENID } from "@/util/tokens";
@@ -579,9 +591,9 @@ export default function TransactionBuilderService(walletHash: string) {
       const inputs = [...stablecoinUtxos, ...coinUtxos];
 
       const KeyManager = KeyManagerService(wallet);
-      const clabInputs: clab.SpendableCoin[] = inputs.map((input) => {
+      const clabInputs: SpendableCoin[] = inputs.map((input) => {
         return {
-          type: clab.SpendableCoinType.P2PKH,
+          type: SpendableCoinType.P2PKH,
           key: KeyManager.getAddressPrivateKey(input.address),
           output: {
             locking_bytecode: addressToLockingBytecode(input.address),
@@ -605,9 +617,9 @@ export default function TransactionBuilderService(walletHash: string) {
       const changeAddresses = AddressManager.getUnusedAddresses(2, 1);
       let changeAddressIndex = 0;
 
-      const payoutRules: clab.PayoutRule[] = [
+      const payoutRules: PayoutRule[] = [
         ...recipients.map((r) => ({
-          type: clab.PayoutAmountRuleType.FIXED,
+          type: PayoutAmountRuleType.FIXED,
           locking_bytecode: addressToLockingBytecode(r.address),
           amount: r.amount,
           token: r.token
@@ -618,7 +630,7 @@ export default function TransactionBuilderService(walletHash: string) {
             : undefined,
         })),
         {
-          type: clab.PayoutAmountRuleType.CHANGE,
+          type: PayoutAmountRuleType.CHANGE,
           generateChangeLockingBytecodeForOutput() {
             const changeAddress = changeAddresses[changeAddressIndex];
             if (changeAddressIndex + 1 < changeAddresses.length) {
@@ -683,19 +695,19 @@ export default function TransactionBuilderService(walletHash: string) {
       };
     }>;
     selection?: Array<TransactionOutput>;
-    exchangeLab: cauldron.ExchangeLab;
-    inputPools: cauldron.PoolV0[];
+    exchangeLab: ExchangeLab;
+    inputPools: PoolV0[];
     feePayingTokenCategory: string;
   }): {
-    tradeResult: cauldron.TradeResult;
-    tradeTransaction: cauldron.TradeTxResult;
+    tradeResult: TradeResult;
+    tradeTransaction: TradeTxResult;
   } {
     const UtxoManager = UtxoManagerService(wallet.walletHash);
     const tokenOutputAmountsByCategory = recipients.reduce(
       (amounts, output) => {
         // calculate total output amounts for each token category
         if (output.token == null) {
-          throw new clab.ValueError(`recipient.token is null`);
+          throw new ValueError(`recipient.token is null`);
         }
         const { category, amount } = output.token;
         const categoryAmount = amounts.get(category) || 0n;
@@ -706,9 +718,7 @@ export default function TransactionBuilderService(walletHash: string) {
     );
     const tokenCategories = Array.from(tokenOutputAmountsByCategory.keys());
     if (tokenCategories.length === 0) {
-      throw new clab.ValueError(
-        `Should at least send one token to a recipient.`
-      );
+      throw new ValueError(`Should at least send one token to a recipient.`);
     }
     const inputs =
       selection?.length > 0
@@ -725,12 +735,12 @@ export default function TransactionBuilderService(walletHash: string) {
             })
             .flat();
     if (inputs.length === 0) {
-      throw new clab.InsufficientFunds(`No inputs found.`);
+      throw new InsufficientFunds(`No inputs found.`);
     }
     const KeyManager = KeyManagerService(wallet);
-    const inputCoins: clab.SpendableCoin[] = inputs.map((input) => {
+    const inputCoins: SpendableCoin[] = inputs.map((input) => {
       return {
-        type: clab.SpendableCoinType.P2PKH,
+        type: SpendableCoinType.P2PKH,
         key: KeyManager.getAddressPrivateKey(input.address),
         output: {
           locking_bytecode: addressToLockingBytecode(input.address),
@@ -752,9 +762,9 @@ export default function TransactionBuilderService(walletHash: string) {
       1
     );
     let lastChangeAddressIndex = 0;
-    const payoutRules: clab.PayoutRule[] = [
+    const payoutRules: PayoutRule[] = [
       ...recipients.map((r) => ({
-        type: clab.PayoutAmountRuleType.FIXED,
+        type: PayoutAmountRuleType.FIXED,
         locking_bytecode: addressToLockingBytecode(r.address),
         token: {
           token_id: r.token.category,
@@ -763,9 +773,9 @@ export default function TransactionBuilderService(walletHash: string) {
         amount: -1n,
       })),
       {
-        type: clab.PayoutAmountRuleType.CHANGE,
+        type: PayoutAmountRuleType.CHANGE,
         /* eslint-disable @typescript-eslint/no-unused-vars */
-        generateChangeLockingBytecodeForOutput(output: clab.Output) {
+        generateChangeLockingBytecodeForOutput(output: Output) {
           const changeAddress = changeAddresses[lastChangeAddressIndex];
           if (lastChangeAddressIndex + 1 < changeAddresses.length) {
             lastChangeAddressIndex += 1;
@@ -795,7 +805,7 @@ export default function TransactionBuilderService(walletHash: string) {
         );
         return { tradeResult, tradeTransaction };
       } catch (err) {
-        if (err instanceof clab.InsufficientFunds) {
+        if (err instanceof InsufficientFunds) {
           requiredBch += err.required_amount;
         } else {
           throw err;
@@ -803,7 +813,7 @@ export default function TransactionBuilderService(walletHash: string) {
       }
       maxTry -= 1;
     }
-    throw new clab.ValueError(`max try attempts to construct a trade reached.`);
+    throw new ValueError(`max try attempts to construct a trade reached.`);
   }
 }
 

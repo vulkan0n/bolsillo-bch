@@ -1,11 +1,12 @@
-import { useMemo, useCallback } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import { useCallback, useMemo } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router";
 import { SettingOutlined } from "@ant-design/icons";
 
 import {
+  selectActiveWalletHash,
   selectPreferences,
   setPreference,
-  selectActiveWalletHash,
 } from "@/redux/preferences";
 
 import FullColumn from "@/layout/FullColumn";
@@ -31,6 +32,7 @@ import UiSettings from "./UiSettings";
 import WalletSettings from "./WalletSettings";
 
 export default function SettingsView() {
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const preferences = useSelector(selectPreferences);
 
@@ -74,7 +76,7 @@ export default function SettingsView() {
       </div>
       <div className="flex gap-x-2 justify-center items-center p-1 pb-4 mx-1">
         <Button
-          navigateTo="/credits"
+          onClick={() => navigate("/credits")}
           label={
             <span className="font-semibold">
               Selene Wallet v{SELENE_WALLET_VERSION}

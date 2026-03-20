@@ -1,10 +1,10 @@
-import { useState, useRef } from "react";
+import { useRef, useState } from "react";
 import { useDispatch } from "react-redux";
-import { Dialog } from "@capacitor/dialog";
-import { WarningFilled, EyeInvisibleOutlined } from "@ant-design/icons";
+import { EyeInvisibleOutlined, WarningFilled } from "@ant-design/icons";
 
 import { walletSetKeyViewed } from "@/redux/wallet";
 
+import ModalService from "@/kernel/app/ModalService";
 import SecurityService, { AuthActions } from "@/kernel/app/SecurityService";
 import WalletManagerService from "@/kernel/wallet/WalletManagerService";
 
@@ -18,9 +18,11 @@ import { translate } from "@/util/translations";
 export default function ShowMnemonic({
   walletHash,
   onReveal = undefined,
+  disableLongPress = false,
 }: {
   walletHash: string;
   onReveal?: () => void;
+  disableLongPress?: boolean;
 }) {
   const dispatch = useDispatch();
   const WalletManager = WalletManagerService();
@@ -63,10 +65,10 @@ export default function ShowMnemonic({
   };
 
   const handleClipboardCopy = async () => {
-    const { value: hasConsent } = await Dialog.confirm({
+    const hasConsent = await ModalService().showConfirm({
       title: translate(translations.copyToClipboardPromptTitle),
       message: translate(translations.copyToClipboardPromptMessage),
-      okButtonTitle: translate(translations.proceed),
+      confirmLabel: translate(translations.proceed),
     });
     if (!hasConsent) {
       return;
@@ -118,7 +120,7 @@ export default function ShowMnemonic({
 
   const longPressEvents = useLongPress<
     React.TouchEvent<HTMLButtonElement> | React.MouseEvent
-  >(handleLongPress, handleShowMnemonic);
+  >(disableLongPress ? () => {} : handleLongPress, handleShowMnemonic);
 
   const splitMnemonic = mnemonic.current.split(" ");
 

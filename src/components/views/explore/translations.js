@@ -295,8 +295,8 @@ const translations = {
     uk: "блоки",
     ur: "بلاکس",
     vi: "khối",
-    zh: "积木",
-    zh_TW: "積木"
+    zh: "区块",
+    zh_TW: "區塊"
   },
   setMemo: {
     ar: "تعيين المذكرة...",

@@ -10,7 +10,7 @@ test.describe("Wallet View (Receive Screen)", () => {
   });
 
   test("address is displayed", async ({ appPage: page }) => {
-    const addressEl = page.locator(walletView.addressDisplay);
+    const addressEl = walletView.addressDisplay(page);
     await expect(addressEl).toBeVisible();
     const address = await getDisplayedAddress(page);
     expect(address.length).toBeGreaterThan(0);
@@ -25,8 +25,7 @@ test.describe("Wallet View (Receive Screen)", () => {
   });
 
   test("QR code is displayed", async ({ appPage: page }) => {
-    const qrBtn = page.locator(walletView.qrButton);
-    await expect(qrBtn).toBeVisible();
+    await expect(walletView.qrButton(page)).toBeVisible();
   });
 
   test("receive tokens toggle updates address", async ({
@@ -34,12 +33,12 @@ test.describe("Wallet View (Receive Screen)", () => {
   }) => {
     const addressBefore = await getDisplayedAddress(page);
 
-    const checkbox = page.locator(walletView.receiveTokensCheckbox);
+    const checkbox = page.getByTestId("receive-tokens");
     await expect(checkbox).toBeVisible();
     await checkbox.click();
 
     // Wait for address to change (token address differs from standard)
-    const addressEl = page.locator(walletView.addressDisplay);
+    const addressEl = walletView.addressDisplay(page);
     await expect(addressEl).not.toHaveText(addressBefore);
 
     const addressAfter = await getDisplayedAddress(page);
@@ -51,21 +50,21 @@ test.describe("Wallet View (Receive Screen)", () => {
   });
 
   test("request amount shows input", async ({ appPage: page }) => {
-    const trigger = page.locator(walletView.requestAmountTrigger);
+    const trigger = walletView.requestAmountTrigger(page);
     await expect(trigger).toBeVisible();
     await trigger.click();
 
-    const input = page.locator(walletView.requestAmountInput).first();
+    const input = walletView.requestAmountInput(page).first();
     await expect(input).toBeVisible();
   });
 
   test("eyeball button toggles privacy mode", async ({ appPage: page }) => {
-    const hideBtn = page.locator(walletView.balanceHideButton).first();
+    const hideBtn = walletView.balanceHideButton(page).first();
     await expect(hideBtn).toBeVisible();
     await hideBtn.click();
 
     // Balance should be hidden
-    const balanceArea = page.locator(walletView.balanceArea);
+    const balanceArea = walletView.balanceArea(page);
     await expect(balanceArea).toHaveAttribute("data-hidden", "true");
 
     // Click balance area to undo privacy mode
@@ -76,7 +75,7 @@ test.describe("Wallet View (Receive Screen)", () => {
   test("tapping balance swaps currency display", async ({
     appPage: page,
   }) => {
-    const balanceArea = page.locator(walletView.balanceArea);
+    const balanceArea = walletView.balanceArea(page);
     await expect(balanceArea).toBeVisible();
     const textBefore = await balanceArea.textContent();
     await balanceArea.click();
@@ -86,21 +85,21 @@ test.describe("Wallet View (Receive Screen)", () => {
   test("wallet name navigates to wallet settings", async ({
     appPage: page,
   }) => {
-    const walletNameLink = page.locator(walletView.walletNameLink);
+    const walletNameLink = walletView.walletNameLink(page);
     await expect(walletNameLink).toBeVisible();
     await walletNameLink.click();
     await page.waitForURL("**/settings/wallet/**");
   });
 
   test("history button navigates", async ({ appPage: page }) => {
-    const historyBtn = page.locator(walletView.historyButton);
+    const historyBtn = walletView.historyButton(page);
     await expect(historyBtn).toBeVisible();
     await historyBtn.click();
     await page.waitForURL("**/wallet/history");
   });
 
   test("send button navigates", async ({ appPage: page }) => {
-    const sendBtn = page.locator(walletView.sendButton);
+    const sendBtn = walletView.sendButton(page);
     await expect(sendBtn).toBeVisible();
     await sendBtn.click();
     await page.waitForURL("**/wallet/send**");

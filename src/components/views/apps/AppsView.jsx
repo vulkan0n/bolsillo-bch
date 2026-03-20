@@ -1,8 +1,8 @@
 import { useSelector } from "react-redux";
 import {
-  ProductOutlined,
   LaptopOutlined,
   LineChartOutlined,
+  ProductOutlined,
   QrcodeOutlined,
 } from "@ant-design/icons";
 

@@ -322,7 +322,7 @@ const translations = {
     ur: "بی سی ایچ نیٹ ورک",
     vi: "Mạng lưới BCH",
     zh: "BCH网络",
-    zh_TW: "生物資訊安全所網絡"
+    zh_TW: "BCH 網絡"
   }
 };
 

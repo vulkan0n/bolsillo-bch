@@ -3,15 +3,13 @@ import { nav } from "./helpers/selectors";
 
 test.describe("Wallet Wizard", () => {
   test.beforeEach(async ({ appPage: page }) => {
-    await page.click(nav.settings);
+    await nav.settings(page).click();
     await page.waitForURL("**/settings**");
 
-    // Expand Wallets accordion
-    const walletsBtn = page.locator("button", { hasText: "Wallets" });
+    const walletsBtn = page.getByRole("button", { name: "Wallets" });
     await expect(walletsBtn).toBeVisible();
     await walletsBtn.click();
 
-    // Click New Wallet
     const newWalletBtn = page.getByText("Create/Import Wallet", {
       exact: false,
     });
@@ -21,7 +19,6 @@ test.describe("Wallet Wizard", () => {
   });
 
   test("wizard page renders", async ({ appPage: page }) => {
-    // Should show the Create and Import buttons
     await expect(
       page.getByRole("button", { name: /Create New Wallet/i })
     ).toBeVisible();
@@ -38,8 +35,7 @@ test.describe("Wallet Wizard", () => {
     await importBtn.click();
     await page.waitForURL("**/settings/wallet/wizard/import**");
 
-    // Import form should have a textarea for mnemonic
-    const textarea = page.locator('[data-testid="mnemonic-input"]');
+    const textarea = page.getByTestId("mnemonic-input");
     await expect(textarea).toBeVisible();
   });
 
@@ -48,15 +44,12 @@ test.describe("Wallet Wizard", () => {
     await importBtn.click();
     await page.waitForURL("**/settings/wallet/wizard/import**");
 
-    // Type 5 random words
-    const textarea = page.locator('[data-testid="mnemonic-input"]');
+    const textarea = page.getByTestId("mnemonic-input");
     await textarea.fill("apple banana cherry dog elephant");
 
-    // Submit
     const submitBtn = page.getByRole("button", { name: /Import Wallet/i });
     await submitBtn.click();
 
-    // Should show validation error about word count
     await expect(
       page.getByText("exactly 12", { exact: false })
     ).toBeVisible({ timeout: 3_000 });
@@ -67,21 +60,16 @@ test.describe("Wallet Wizard", () => {
     await importBtn.click();
     await page.waitForURL("**/settings/wallet/wizard/import**");
 
-    // Type 12 non-BIP39 words
-    const textarea = page.locator('[data-testid="mnemonic-input"]');
+    const textarea = page.getByTestId("mnemonic-input");
     await textarea.fill(
       "alpha bravo charlie delta echo foxtrot golf hotel india juliet kilo lima"
     );
 
-    // Submit
     const submitBtn = page.getByRole("button", { name: /Import Wallet/i });
     await submitBtn.click();
 
-    // Should show invalid mnemonic error
     await expect(
-      page.getByText("invalid", { exact: false }).or(
-        page.getByText("Invalid", { exact: false })
-      )
+      page.getByText("invalid", { exact: false })
     ).toBeVisible({ timeout: 3_000 });
   });
 });

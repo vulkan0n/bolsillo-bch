@@ -1,4 +1,4 @@
-import { Filesystem, Directory, Encoding } from "@capacitor/filesystem";
+import { Directory, Encoding, Filesystem } from "@capacitor/filesystem";
 import { Share } from "@capacitor/share";
 import { stringify } from "@bitauth/libauth";
 import Logger from "js-logger";

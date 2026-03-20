@@ -1,17 +1,17 @@
-import { useState, useContext } from "react";
+import { useContext, useState } from "react";
 import { useSelector } from "react-redux";
 import {
-  PlusCircleFilled,
   ApiOutlined,
   CloudServerOutlined,
   DisconnectOutlined,
+  PlusCircleFilled,
 } from "@ant-design/icons";
 
 import { selectBchNetwork, selectIsOfflineMode } from "@/redux/preferences";
 import {
-  syncReconnect,
-  syncDisconnect,
   selectElectrumServer,
+  syncDisconnect,
+  syncReconnect,
 } from "@/redux/sync";
 
 import ElectrumService from "@/kernel/bch/ElectrumService";
@@ -21,9 +21,9 @@ import Button from "@/atoms/Button";
 import Select from "@/components/atoms/Select";
 
 import {
+  DEFAULT_ELECTRUM_PORT,
   electrum_servers,
   ElectrumServer,
-  DEFAULT_ELECTRUM_PORT,
 } from "@/util/network";
 
 import { translate } from "@/util/translations";

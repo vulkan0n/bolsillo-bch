@@ -15,7 +15,7 @@ export function getMainnetMnemonic(): string | undefined {
  * On web stub, encryption is a no-op, so the app boots directly.
  */
 export async function waitForAppReady(page: Page): Promise<void> {
-  await page.waitForSelector(nav.wallet, { timeout: 30_000 });
+  await nav.wallet(page).waitFor({ timeout: 30_000 });
 }
 
 /**
@@ -23,8 +23,10 @@ export async function waitForAppReady(page: Page): Promise<void> {
  * Looks for the sync indicator to stop spinning.
  */
 export async function waitForSync(page: Page): Promise<void> {
-  const indicator = page.locator('[data-testid="sync-indicator"]');
-  const isPresent = await indicator.isVisible({ timeout: 5_000 }).catch(() => false);
+  const indicator = page.getByTestId("sync-indicator");
+  const isPresent = await indicator
+    .isVisible({ timeout: 5_000 })
+    .catch(() => false);
   if (isPresent) {
     await expect(indicator).toHaveAttribute("data-syncing", "false", {
       timeout: 30_000,
@@ -37,7 +39,7 @@ export async function waitForSync(page: Page): Promise<void> {
  * Accordion titles are rendered inside <button> elements.
  */
 async function expandAccordion(page: Page, title: string): Promise<void> {
-  const accordion = page.locator("button", { hasText: title });
+  const accordion = page.getByRole("button", { name: title });
   await accordion.click();
 }
 
@@ -47,22 +49,16 @@ async function expandAccordion(page: Page, title: string): Promise<void> {
  * After selecting chipnet, the app reloads via window.location.assign("/").
  */
 export async function switchToChipnet(page: Page): Promise<void> {
-  // Navigate to debug page where network switching is available
   await page.goto("/debug");
 
-  // Expand "Debug Options" accordion
-  const debugAccordion = page.locator("button", { hasText: "Debug Options" });
+  const debugAccordion = page.getByRole("button", { name: "Debug Options" });
   await expect(debugAccordion).toBeVisible({ timeout: 10_000 });
   await debugAccordion.click();
 
-  // Change network to chipnet via the BCH Network select dropdown
-  const networkSelect = page.locator("select").first();
+  const networkSelect = page.getByRole("combobox").first();
   await expect(networkSelect).toBeVisible({ timeout: 5_000 });
-
-  // Selecting chipnet triggers window.location.assign("/") causing a reload
   await networkSelect.selectOption("chipnet");
 
-  // Wait for the app to fully reboot after network change
   await waitForAppReady(page);
 }
 
@@ -73,13 +69,14 @@ export async function importWallet(
   page: Page,
   mnemonic: string
 ): Promise<void> {
-  await page.click(nav.settings);
+  await nav.settings(page).click();
   await page.waitForURL("**/settings");
 
-  // Expand "Wallets" accordion to reveal "Create/Import Wallet" link
   await expandAccordion(page, "Wallets");
 
-  const newWalletBtn = page.getByText("Create/Import Wallet", { exact: false });
+  const newWalletBtn = page.getByText("Create/Import Wallet", {
+    exact: false,
+  });
   await newWalletBtn.click();
   await page.waitForURL("**/settings/wallet/wizard**");
 
@@ -87,24 +84,23 @@ export async function importWallet(
   await importBtn.click();
   await page.waitForURL("**/settings/wallet/wizard/import**");
 
-  const mnemonicInput = page.locator('[data-testid="mnemonic-input"]');
+  const mnemonicInput = page.getByTestId("mnemonic-input");
   await mnemonicInput.fill(mnemonic);
 
   const confirmBtn = page.getByRole("button", { name: /Import Wallet/i });
   await confirmBtn.click();
 
-  // Wait for wallet build — the app navigates away from wizard when done
   await expect(page).not.toHaveURL(/\/wizard/, { timeout: 30_000 });
   await waitForSync(page);
 
-  await page.click(nav.wallet);
+  await nav.wallet(page).click();
 }
 
 /**
  * Navigate to the wallet view (home/receive screen).
  */
 export async function goToWallet(page: Page): Promise<void> {
-  await page.click(nav.wallet);
+  await nav.wallet(page).click();
   await page.waitForURL("**/wallet**");
 }
 
@@ -113,7 +109,7 @@ export async function goToWallet(page: Page): Promise<void> {
  * Waits for the address to be non-empty before returning.
  */
 export async function getDisplayedAddress(page: Page): Promise<string> {
-  const addressEl = page.locator('[data-testid="address-display"]');
+  const addressEl = page.getByTestId("address-display");
   await expect(addressEl).not.toHaveText("", { timeout: 5_000 });
   return (await addressEl.textContent()) || "";
 }
@@ -130,10 +126,11 @@ export function accordionControl(
   labelText: string,
   controlSelector: string
 ) {
-  return page
-    .getByText(labelText, { exact: false })
-    .locator("../..")
-    .locator(controlSelector);
+  // AccordionChild uses raw CSS selectors for control targeting because
+  // the control type varies (select, input[type=checkbox], input[type=color], etc.)
+  // and there's no accessible role/label pattern to match generically.
+  // eslint-disable-next-line playwright/no-raw-locators
+  return page.getByText(labelText, { exact: false }).locator("../..").locator(controlSelector);
 }
 
 /**
@@ -142,17 +139,18 @@ export function accordionControl(
  */
 export async function expectToggle(checkbox: Locator): Promise<void> {
   const wasChecked = await checkbox.isChecked();
+
+  // Toggle: state should flip
   await checkbox.click();
-  if (wasChecked) {
-    await expect(checkbox).not.toBeChecked();
-  } else {
-    await expect(checkbox).toBeChecked();
-  }
-  // Restore
+  const flipped = wasChecked
+    ? expect(checkbox).not.toBeChecked()
+    : expect(checkbox).toBeChecked();
+  await flipped;
+
+  // Restore: state should return to original
   await checkbox.click();
-  if (wasChecked) {
-    await expect(checkbox).toBeChecked();
-  } else {
-    await expect(checkbox).not.toBeChecked();
-  }
+  const restored = wasChecked
+    ? expect(checkbox).toBeChecked()
+    : expect(checkbox).not.toBeChecked();
+  await restored;
 }

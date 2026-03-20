@@ -1,4 +1,4 @@
-import { explore, settings, assets } from "@/translations/common";
+import { assets, explore, settings } from "@/translations/common";
 
 const translations = {
   // Imported from common

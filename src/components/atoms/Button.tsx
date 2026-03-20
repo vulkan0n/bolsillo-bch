@@ -1,8 +1,4 @@
-import { useNavigate, To } from "react-router";
-
 import NullComponent from "@/atoms/NullComponent";
-
-import { useNavigateExternal } from "@/hooks/useNavigateExternal";
 
 export type ValidSizes =
   | "none"
@@ -58,9 +54,7 @@ export interface ButtonProps {
   disabled?: boolean;
   className?: string;
   style?: React.CSSProperties;
-  navigateTo?: To;
   submit?: boolean;
-  external?: boolean;
 }
 
 export default function Button({
@@ -88,8 +82,6 @@ export default function Button({
   disabled = false,
   className = "",
   style = {},
-  navigateTo = undefined,
-  external = false,
 }: ButtonProps) {
   const Icon = icon;
   // tailwindcss dynamic classes don't work here, the tokenizer needs to see the whole string, they're computed at build time, not runtime!
@@ -104,20 +96,9 @@ export default function Button({
     ? `opacity-50 shadow-none active:shadow-none`
     : "cursor-pointer";
 
-  const navigate = useNavigate();
-  const navigateExternal = useNavigateExternal();
-
   const handleOnClick = async (event) => {
     event.stopPropagation();
     onClick(event);
-
-    if (navigateTo) {
-      if (!external) {
-        navigate(navigateTo);
-      } else {
-        navigateExternal(navigateTo);
-      }
-    }
   };
 
   return (

@@ -1,18 +1,17 @@
 import {
-  decodeCashAddress,
+  assertSuccess,
+  CashAddressType,
   decodeBase58Address,
+  decodeCashAddress,
   decodePrivateKeyWif,
   encodeCashAddress,
   secp256k1,
-  CashAddressType,
-  assertSuccess,
 } from "@bitauth/libauth";
 
 import NotificationService from "@/kernel/app/NotificationService";
 import WalletManagerService from "@/kernel/wallet/WalletManagerService";
 
-import { Haptic } from "@/util/haptic";
-import { sha256, ripemd160 } from "@/util/hash";
+import { ripemd160, sha256 } from "@/util/hash";
 import { bchToSats } from "@/util/sats";
 
 // validateBchUri: validates all possible BCH URI formats
@@ -313,15 +312,14 @@ export const navigateOnValidUri = async (
   let navTo = "";
   let navState;
 
+  const Notification = NotificationService();
+
   if (isValid) {
     // Check expiration before proceeding
     if (isExpired) {
-      await Haptic.error();
-      NotificationService().expiredPayment();
+      Notification.expiredPayment();
       return { navTo: "", navState: {}, isTokenAddress, isExpired: true };
     }
-
-    await Haptic.success();
 
     if (isWalletConnect) {
       navTo = `/apps/walletconnect`;
@@ -334,7 +332,7 @@ export const navigateOnValidUri = async (
       navTo = `/wallet/send/${address}${query}`;
     }
   } else {
-    await Haptic.error();
+    Notification.invalidScan(decodedInput);
   }
 
   return { navTo, navState, isTokenAddress, isExpired: isExpired || false };

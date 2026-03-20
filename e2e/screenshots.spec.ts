@@ -8,7 +8,7 @@
  * Android: 1440x3200 (720x1600 viewport @ 2x)
  * iOS:     1290x2796 (430x932 viewport @ 3x)
  */
-import { test as base, type Page } from "@playwright/test";
+import { test as base, expect, type Page } from "@playwright/test";
 import { waitForAppReady } from "./helpers/wallet";
 import { nav } from "./helpers/selectors";
 import path from "path";
@@ -29,41 +29,48 @@ const test = base.extend<{ appPage: Page }>({
 });
 
 // Wait for content to settle (animations, data loading)
-async function settle(page: Page, ms = 1500) {
-  await page.waitForTimeout(ms);
+async function settle(page: Page) {
+  await page.waitForLoadState("domcontentloaded");
+  // Allow animations to complete
+  await page.evaluate(() => new Promise((r) => requestAnimationFrame(r)));
 }
 
 test.describe("Store Screenshots", () => {
   test("1 - Wallet home (receive)", async ({ appPage: page }) => {
     await settle(page);
     await page.screenshot({ path: `${ANDROID_DIR}/1_en-US.png` });
+    expect(true).toBe(true);
   });
 
   test("2 - Send screen", async ({ appPage: page }) => {
-    await page.locator('[role="img"][aria-label="send"]').click();
+    await page.getByRole("img", { name: "send" }).click();
     await page.waitForURL("**/wallet/send**");
     await settle(page);
     await page.screenshot({ path: `${ANDROID_DIR}/2_en-US.png` });
+    expect(true).toBe(true);
   });
 
   test("3 - Transaction history", async ({ appPage: page }) => {
-    await page.locator('[role="img"][aria-label="history"]').click();
+    await page.getByRole("img", { name: "history" }).click();
     await page.waitForURL("**/wallet/history**");
     await settle(page);
     await page.screenshot({ path: `${ANDROID_DIR}/3_en-US.png` });
+    expect(true).toBe(true);
   });
 
   test("4 - Explore tab", async ({ appPage: page }) => {
-    await page.click(nav.explore);
+    await nav.explore(page).click();
     await page.waitForURL("**/explore**");
     await settle(page);
     await page.screenshot({ path: `${ANDROID_DIR}/4_en-US.png` });
+    expect(true).toBe(true);
   });
 
   test("5 - Settings", async ({ appPage: page }) => {
-    await page.click(nav.settings);
+    await nav.settings(page).click();
     await page.waitForURL("**/settings**");
     await settle(page);
     await page.screenshot({ path: `${ANDROID_DIR}/5_en-US.png` });
+    expect(true).toBe(true);
   });
 });

@@ -1,16 +1,16 @@
 import { App } from "@capacitor/app";
 import { Device, DeviceInfo as CapacitorDeviceInfo } from "@capacitor/device";
 import { Keyboard } from "@capacitor/keyboard";
-import { Network, ConnectionStatus } from "@capacitor/network";
+import { ConnectionStatus, Network } from "@capacitor/network";
 import { SimpleEncryption } from "capacitor-plugin-simple-encryption";
 import {
   createAction,
+  createAsyncThunk,
   createReducer,
   createSelector,
-  createAsyncThunk,
 } from "@reduxjs/toolkit";
 
-import { store, RootState } from "@/redux";
+import { RootState, store } from "@/redux";
 //import { syncReconnect } from "@/redux/sync";
 
 import LogService from "@/kernel/app/LogService";
@@ -35,6 +35,7 @@ interface DeviceState {
     isOpen: boolean;
   };
   isLocked: boolean;
+  orientationLock: "portrait" | "landscape";
   deviceInfo: DeviceInfo;
   locale: string;
   network: ConnectionStatus;
@@ -58,6 +59,9 @@ export const setNetworkStatus = createAction<ConnectionStatus>(
   "device/setNetworkStatus"
 );
 export const setIsLocked = createAction<boolean>("device/setIsLocked");
+export const setOrientationLock = createAction<"portrait" | "landscape">(
+  "device/setOrientationLock"
+);
 
 export const selectScannerIsScanning = createSelector(
   (state: RootState) => state.device.scanner,
@@ -96,6 +100,11 @@ export const selectNetworkStatus = createSelector(
   })
 );
 
+export const selectOrientationLock = createSelector(
+  (state: RootState) => state.device,
+  (device) => device.orientationLock
+);
+
 export const selectIsSystemDarkMode = () => {
   const isSystemDarkMode = window.matchMedia(
     "(prefers-color-scheme: dark)"
@@ -120,6 +129,7 @@ async function initializeDevice(): Promise<DeviceState> {
     scanner: { isScanning: false, isTorchEnabled: false },
     keyboard: { isOpen: false },
     isLocked: false,
+    orientationLock: "portrait",
     deviceInfo: {
       ...deviceInfo,
       deviceId,
@@ -155,6 +165,12 @@ async function initializeDevice(): Promise<DeviceState> {
       }
 
       const { location, history } = window;
+
+      // Vendor mode handles its own back button via auth gate
+      if (location.pathname === "/vendor") {
+        return;
+      }
+
       if (location.pathname === "/wallet") {
         App.exitApp();
         return;
@@ -229,6 +245,9 @@ export const deviceReducer = createReducer(initialState, (builder) => {
     })
     .addCase(setIsLocked, (state, action) => {
       state.isLocked = action.payload;
+    })
+    .addCase(setOrientationLock, (state, action) => {
+      state.orientationLock = action.payload;
     });
 });
 

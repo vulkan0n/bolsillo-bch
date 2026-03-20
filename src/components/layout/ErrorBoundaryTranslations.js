@@ -1,4 +1,4 @@
-import { rebuildWallet, exportLogs } from "@/translations/common";
+import { exportLogs, rebuildWallet } from "@/translations/common";
 
 const translations = {
   // Imported from common

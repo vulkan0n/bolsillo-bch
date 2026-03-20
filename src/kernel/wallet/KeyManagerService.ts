@@ -1,22 +1,22 @@
 import {
-  deriveSeedFromBip39Mnemonic,
-  deriveHdPrivateNodeFromSeed,
-  deriveHdPrivateNodeChild,
-  deriveHdPath,
-  encodeCashAddress,
-  secp256k1,
-  CashAddressType,
-  utf8ToBin,
-  binToBase64,
-  bigIntToCompactUint,
-  SigningSerializationFlag,
-  generateSigningSerializationBCH,
-  CompilationContextBCH,
   assertSuccess,
+  bigIntToCompactUint,
+  binToBase64,
+  CashAddressType,
+  CompilationContextBCH,
+  deriveHdPath,
+  deriveHdPrivateNodeChild,
+  deriveHdPrivateNodeFromSeed,
+  deriveSeedFromBip39Mnemonic,
+  encodeCashAddress,
+  encodeLockingBytecodeP2pkh,
+  generateSigningSerializationBCH,
+  importWalletTemplate,
+  secp256k1,
+  SigningSerializationFlag,
+  utf8ToBin,
   walletTemplateP2pkhNonHd,
   walletTemplateToCompilerBCH,
-  importWalletTemplate,
-  encodeLockingBytecodeP2pkh,
 } from "@bitauth/libauth";
 
 import AddressManagerService from "@/kernel/wallet/AddressManagerService";
@@ -24,8 +24,8 @@ import WalletManagerService, {
   WalletStub,
 } from "@/kernel/wallet/WalletManagerService";
 
-import { sha256, ripemd160 } from "@/util/hash";
-import { hexToBin, binToHex } from "@/util/hex";
+import { ripemd160, sha256 } from "@/util/hash";
+import { binToHex, hexToBin } from "@/util/hex";
 import { utxoToTokenPrefix } from "@/util/normalize";
 
 const seedCache = new Map();

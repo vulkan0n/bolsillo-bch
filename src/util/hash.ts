@@ -1,7 +1,7 @@
 import {
+  ripemd160,
   sha256 as _sha256,
   Sha256 as _Sha256,
-  ripemd160,
 } from "@bitauth/libauth";
 
 import { binToHex } from "@/util/hex";

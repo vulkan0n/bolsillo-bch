@@ -1,5 +1,5 @@
 /* eslint-disable no-plusplus, no-bitwise */
-import { hexToBin, binToUtf8, vmNumberToBigInt } from "@bitauth/libauth";
+import { binToUtf8, hexToBin, vmNumberToBigInt } from "@bitauth/libauth";
 
 import { hexToRgb, rgbToHex } from "@/util/color";
 

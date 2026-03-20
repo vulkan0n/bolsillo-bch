@@ -12,10 +12,10 @@ import {
   BLISS_2026_END_DATE,
   BLISS_2026_START_DATE,
   BLISS_ABOUT_VIDEO_URL,
-  VELMA_VIDEO_URL,
   BLISS_HOME_URL,
   TAPSWAP_TICKETS_URL,
   TAPSWAP_TUTORIAL_VIDEO_URL,
+  VELMA_VIDEO_URL,
 } from "../constants.jsx";
 
 const interval = Interval.fromDateTimes(

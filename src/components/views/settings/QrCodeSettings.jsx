@@ -1,10 +1,10 @@
 import { useContext } from "react";
 import {
-  QrcodeOutlined,
-  BorderOuterOutlined,
   BgColorsOutlined,
-  SettingFilled,
+  BorderOuterOutlined,
   FormatPainterOutlined,
+  QrcodeOutlined,
+  SettingFilled,
   UndoOutlined,
 } from "@ant-design/icons";
 

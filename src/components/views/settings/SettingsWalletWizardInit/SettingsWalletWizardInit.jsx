@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router";
-import { PlusCircleOutlined, ImportOutlined } from "@ant-design/icons";
+import { ImportOutlined, PlusCircleOutlined } from "@ant-design/icons";
 
 import WalletManagerService from "@/kernel/wallet/WalletManagerService";
 

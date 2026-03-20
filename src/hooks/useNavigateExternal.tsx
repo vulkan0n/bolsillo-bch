@@ -1,8 +1,9 @@
 import { useSelector } from "react-redux";
 import { Browser } from "@capacitor/browser";
-import { Dialog } from "@capacitor/dialog";
 
 import { selectDevicePlatform } from "@/redux/device";
+
+import ModalService from "@/kernel/app/ModalService";
 
 import translations from "@/views/settings/translations";
 
@@ -12,7 +13,7 @@ export function useNavigateExternal() {
   const platform = useSelector(selectDevicePlatform);
 
   return async (to: string) => {
-    const { value: shouldProceed } = await Dialog.confirm({
+    const shouldProceed = await ModalService().showConfirm({
       title: translate(translations.externalLinkTitle),
       message: `${translate(translations.externalLinkMessage)}\n\n${to}`,
     });

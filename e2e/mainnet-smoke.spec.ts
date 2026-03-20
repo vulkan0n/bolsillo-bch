@@ -35,7 +35,7 @@ test.describe("Mainnet Smoke Test", () => {
 
   test("mainnet balance displays", async ({ page }) => {
     await waitForSync(page);
-    const balanceArea = page.locator(walletView.balanceArea);
+    const balanceArea = walletView.balanceArea(page);
     await expect(balanceArea).toBeVisible();
     const content = await balanceArea.textContent();
     expect(content!.length).toBeGreaterThan(0);

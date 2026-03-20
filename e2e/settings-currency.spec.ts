@@ -1,13 +1,13 @@
 import { test, expect } from "./helpers/fixtures";
 import { nav, walletView } from "./helpers/selectors";
-import { accordionControl } from "./helpers/wallet";
+import { accordionControl, expectToggle } from "./helpers/wallet";
 
 test.describe("Settings: Currency", () => {
   test.beforeEach(async ({ appPage: page }) => {
-    await page.click(nav.settings);
+    await nav.settings(page).click();
     await page.waitForURL("**/settings**");
 
-    const currencyBtn = page.locator("button", { hasText: "Currency" });
+    const currencyBtn = page.getByRole("button", { name: "Currency" });
     await expect(currencyBtn).toBeVisible();
     await currencyBtn.click();
   });
@@ -18,8 +18,7 @@ test.describe("Settings: Currency", () => {
     const denomSelect = accordionControl(page, "Denomination", "select");
     await expect(denomSelect).toBeVisible({ timeout: 3_000 });
 
-    // Verify options include BCH and sats
-    const options = denomSelect.locator("option");
+    const options = denomSelect.getByRole("option");
     const optionTexts = await options.allTextContents();
     expect(optionTexts.some((t) => /bch/i.test(t))).toBe(true);
     expect(optionTexts.some((t) => /sat/i.test(t))).toBe(true);
@@ -29,14 +28,13 @@ test.describe("Settings: Currency", () => {
     await denomSelect.selectOption({ label: satsLabel });
 
     // Verify balance area is still functional
-    await page.click(nav.wallet);
-    const balanceArea = page.locator(walletView.balanceArea);
-    await expect(balanceArea).toBeVisible();
+    await nav.wallet(page).click();
+    await expect(walletView.balanceArea(page)).toBeVisible();
 
     // Restore to BCH
-    await page.click(nav.settings);
+    await nav.settings(page).click();
     await page.waitForURL("**/settings**");
-    await page.locator("button", { hasText: "Currency" }).click();
+    await page.getByRole("button", { name: "Currency" }).click();
     const denomSelect2 = accordionControl(page, "Denomination", "select");
     const bchLabel = optionTexts.find((t) => /bch/i.test(t))!;
     await denomSelect2.selectOption({ label: bchLabel });
@@ -45,14 +43,20 @@ test.describe("Settings: Currency", () => {
   test("local currency select changes fiat currency", async ({
     appPage: page,
   }) => {
-    const currencySelect = accordionControl(page, "Local currency", "select").first();
+    const currencySelect = accordionControl(
+      page,
+      "Local currency",
+      "select"
+    ).first();
     await expect(currencySelect).toBeVisible({ timeout: 3_000 });
 
-    // Should have many currencies
-    const count = await currencySelect.locator("option").count();
+    const options = currencySelect.getByRole("option");
+    await expect(options).toHaveCount(
+      await options.count()
+    );
+    const count = await options.count();
     expect(count).toBeGreaterThan(10);
 
-    // Select EUR
     await currencySelect.selectOption({ value: "EUR" });
     await expect(currencySelect).toHaveValue("EUR");
 
@@ -68,20 +72,6 @@ test.describe("Settings: Currency", () => {
     );
     await expect(checkbox).toBeVisible({ timeout: 3_000 });
 
-    const wasChecked = await checkbox.isChecked();
-    await checkbox.click();
-    if (wasChecked) {
-      await expect(checkbox).not.toBeChecked();
-    } else {
-      await expect(checkbox).toBeChecked();
-    }
-
-    // Restore
-    await checkbox.click();
-    if (wasChecked) {
-      await expect(checkbox).toBeChecked();
-    } else {
-      await expect(checkbox).not.toBeChecked();
-    }
+    await expectToggle(checkbox);
   });
 });

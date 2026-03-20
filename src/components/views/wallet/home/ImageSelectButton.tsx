@@ -68,6 +68,7 @@ export default function ImageSelectButton({
         });
 
         // Show scan content toast
+        Haptic.success();
         NotificationService().spawn({
           icon: <ScanOutlined className="text-4xl" />,
           header: translate(translations.scanContents),
@@ -79,7 +80,6 @@ export default function ImageSelectButton({
         // No QR code found - show invalid scan toast with error
         const errorMessage = e?.message || "No QR code found";
         NotificationService().invalidScan(errorMessage);
-        await Haptic.error();
         onSelection("");
       }
 

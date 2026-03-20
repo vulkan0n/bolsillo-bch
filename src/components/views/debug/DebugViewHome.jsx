@@ -1,12 +1,11 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { Dialog } from "@capacitor/dialog";
 import {
-  ExceptionOutlined,
-  UnlockOutlined,
   ClearOutlined,
+  ExceptionOutlined,
   ExportOutlined,
   FireOutlined,
+  UnlockOutlined,
 } from "@ant-design/icons";
 
 import { selectSecuritySettings } from "@/redux/preferences";
@@ -14,6 +13,7 @@ import { selectSecuritySettings } from "@/redux/preferences";
 import ConsoleService from "@/kernel/app/ConsoleService";
 import JanitorService from "@/kernel/app/JanitorService";
 import LogService from "@/kernel/app/LogService";
+import ModalService from "@/kernel/app/ModalService";
 import SecurityService, { AuthActions } from "@/kernel/app/SecurityService";
 import BcmrService from "@/kernel/bch/BcmrService";
 
@@ -54,9 +54,10 @@ export default function DebugView() {
   const handleAuthorize = async () => {
     const isAuthorized = await SecurityService().authorize(AuthActions.Debug);
     Log.log("SecurityService authorize", isAuthorized);
-    Dialog.alert({
+    ModalService().showConfirm({
       title: "SecurityService",
       message: `Security mode: ${authMode}\nisAuthorized ${isAuthorized}\nauthActions ${authActions.join(";")}`,
+      showCancel: false,
     });
   };
 

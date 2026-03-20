@@ -60,6 +60,8 @@ const PROTECTED_TERMS = [
   "BChat",
   "NFT",
   "NFTs",
+  "Telegram",
+  "Electrum",
 ];
 
 async function translateText(text, targetLang, GOOGLE_TRANSLATE_API_KEY) {
@@ -70,7 +72,7 @@ async function translateText(text, targetLang, GOOGLE_TRANSLATE_API_KEY) {
     PROTECTED_TERMS.forEach((term, i) => {
       const re = new RegExp(term.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "g");
       if (re.test(safeText)) {
-        const placeholder = `__BRAND${i}__`;
+        const placeholder = `<x id="${i}"/>`;
         replacements.push({ placeholder, term });
         safeText = safeText.replace(re, placeholder);
       }
@@ -81,6 +83,7 @@ async function translateText(text, targetLang, GOOGLE_TRANSLATE_API_KEY) {
       q: safeText,
       source: "en",
       target: targetLang,
+      format: "html",
     };
 
     const response = await fetch(url, {
@@ -107,9 +110,21 @@ async function translateText(text, targetLang, GOOGLE_TRANSLATE_API_KEY) {
       .replace(/&lt;/g, "<")
       .replace(/&gt;/g, ">");
 
-    // Restore protected terms
+    // Restore protected terms with proper spacing.
+    // Google Translate may strip or add spaces around XML placeholders.
+    // We ensure exactly one space on each side unless the term is at
+    // the start/end of the string or adjacent to punctuation.
     replacements.forEach(({ placeholder, term }) => {
-      translated = translated.replace(new RegExp(placeholder, "g"), term);
+      const escaped = placeholder.replace(/[.*+?^${}()|[\]\\\/]/g, "\\$&");
+      const re = new RegExp(`\\s*${escaped}\\s*`, "g");
+      translated = translated.replace(re, (match, offset) => {
+        const before = translated[offset - 1] || "";
+        const afterIdx = offset + match.length;
+        const after = translated[afterIdx] || "";
+        const needsLeadingSpace = before && !/[\s(]/.test(before);
+        const needsTrailingSpace = after && !/[\s.,;:!?)/]/.test(after);
+        return (needsLeadingSpace ? " " : "") + term + (needsTrailingSpace ? " " : "");
+      });
     });
 
     return translated;

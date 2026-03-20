@@ -1,13 +1,13 @@
 import { test, expect } from "./helpers/fixtures";
-import { nav } from "./helpers/selectors";
+import { nav, walletView } from "./helpers/selectors";
 import { accordionControl, expectToggle } from "./helpers/wallet";
 
 test.describe("Settings: Privacy", () => {
   test.beforeEach(async ({ appPage: page }) => {
-    await page.click(nav.settings);
+    await nav.settings(page).click();
     await page.waitForURL("**/settings**");
 
-    const privacyBtn = page.locator("button", { hasText: "Privacy" });
+    const privacyBtn = page.getByRole("button", { name: "Privacy" });
     await expect(privacyBtn).toBeVisible();
     await privacyBtn.click();
   });
@@ -22,23 +22,21 @@ test.describe("Settings: Privacy", () => {
     );
     await expect(checkbox).toBeVisible({ timeout: 3_000 });
 
-    // Enable hide balance
-    if (!(await checkbox.isChecked())) {
-      await checkbox.click();
-    }
+    // Ensure hide balance is enabled (toggle on if not already)
+    await checkbox.check();
     await expect(checkbox).toBeChecked();
 
     // Go to wallet — balance should be hidden
-    await page.click(nav.wallet);
-    const balanceArea = page.locator('[data-testid="balance-area"]');
+    await nav.wallet(page).click();
+    const balanceArea = walletView.balanceArea(page);
     await expect(balanceArea).toHaveAttribute("data-hidden", "true", {
       timeout: 3_000,
     });
 
     // Disable hide balance
-    await page.click(nav.settings);
+    await nav.settings(page).click();
     await page.waitForURL("**/settings**");
-    await page.locator("button", { hasText: "Privacy" }).click();
+    await page.getByRole("button", { name: "Privacy" }).click();
     const checkbox2 = accordionControl(
       page,
       "Hide balances",
@@ -59,7 +57,9 @@ test.describe("Settings: Privacy", () => {
     await expectToggle(checkbox);
   });
 
-  test("auto-resolve token metadata toggle works", async ({ appPage: page }) => {
+  test("auto-resolve token metadata toggle works", async ({
+    appPage: page,
+  }) => {
     const checkbox = accordionControl(
       page,
       "resolve Token metadata",

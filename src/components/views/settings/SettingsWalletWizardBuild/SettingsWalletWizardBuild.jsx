@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router";
-import { SyncOutlined, DisconnectOutlined } from "@ant-design/icons";
+import { DisconnectOutlined, SyncOutlined } from "@ant-design/icons";
 
 import { selectBchNetwork } from "@/redux/preferences";
 import { selectSyncState } from "@/redux/sync";
@@ -36,9 +36,7 @@ export default function SettingsWalletWizardBuild() {
         const wallet = WalletManager.getWallet(walletHash);
 
         if (isBuildDone) {
-          await dispatch(
-            walletBoot({ walletHash: wallet.walletHash, network: bchNetwork })
-          );
+          await dispatch(walletBoot({ walletHash: wallet.walletHash }));
 
           navigate("/");
           return;

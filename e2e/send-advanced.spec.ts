@@ -1,5 +1,5 @@
 import { test, expect } from "./helpers/fixtures";
-import { sendPage } from "./helpers/selectors";
+import { sendPage, scanner } from "./helpers/selectors";
 
 test.describe("Send: Advanced Interactions", () => {
   // Satoshi's genesis address — known valid cashaddr
@@ -7,14 +7,12 @@ test.describe("Send: Advanced Interactions", () => {
 
   test.beforeEach(async ({ appPage: page }) => {
     await page.goto(`/wallet/send/${TEST_ADDR}`);
-    const header = page.locator(sendPage.header);
-    await expect(header).toBeVisible({ timeout: 10_000 });
+    await expect(sendPage.header(page)).toBeVisible({ timeout: 10_000 });
   });
 
   test("navigating with address shows address display", async ({
     appPage: page,
   }) => {
-    // When navigating with a valid address, the Address component renders it
     const addressDisplay = page.getByText("qpm2qs", { exact: false });
     await expect(addressDisplay).toBeVisible();
   });
@@ -25,10 +23,8 @@ test.describe("Send: Advanced Interactions", () => {
     const addressDisplay = page.getByText("qpm2qs", { exact: false });
     await expect(addressDisplay).toBeVisible();
 
-    // Clicking the address should switch to edit mode (Editable input)
     await addressDisplay.click();
-    const editableInput = page.locator(sendPage.addressInput);
-    await expect(editableInput).toBeVisible();
+    await expect(sendPage.addressInput(page)).toBeVisible();
   });
 
   test("MAX button fills maximum sendable amount", async ({
@@ -37,25 +33,20 @@ test.describe("Send: Advanced Interactions", () => {
     const maxBtn = page.getByText("MAX", { exact: true });
     await expect(maxBtn).toBeVisible();
 
-    // Click MAX — on empty wallet this will be 0, but the click should not crash
-    const amountInput = page.locator(sendPage.amountInput).first();
+    const amountInput = sendPage.amountInput(page).first();
     await expect(amountInput).toBeVisible();
     await maxBtn.click();
 
-    // The amount input should have a value (even "0" is valid for empty wallet)
-    const value = await amountInput.inputValue();
-    expect(value).toBeDefined();
+    // On empty wallet the input may be "0" or empty — just verify click didn't crash
+    await expect(amountInput).toBeVisible();
   });
 
   test("scanner button opens scanner overlay", async ({ appPage: page }) => {
-    // ScannerButton renders ScanOutlined icon with aria-label="scan"
-    const scanBtn = page.locator('[role="img"][aria-label="scan"]').first();
+    const scanBtn = page.getByRole("img", { name: "scan" }).first();
     await expect(scanBtn).toBeVisible();
-
     await scanBtn.click();
 
-    // Scanner overlay should appear with a close button (CloseOutlined)
-    const closeBtn = page.locator('[role="img"][aria-label="close"]').first();
+    const closeBtn = scanner.closeButton(page).first();
     await expect(closeBtn).toBeVisible({ timeout: 5_000 });
     await closeBtn.click();
   });

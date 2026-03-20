@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { useNavigate, useOutletContext } from "react-router";
 import {
+  CloseOutlined,
   MoneyCollectOutlined,
   SendOutlined,
-  CloseOutlined,
 } from "@ant-design/icons";
 
 import TokenManagerService from "@/kernel/wallet/TokenManagerService";

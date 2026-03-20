@@ -3,10 +3,9 @@ import { nav } from "./helpers/selectors";
 
 test.describe("Credits", () => {
   test("credits page shows version", async ({ appPage: page }) => {
-    await page.click(nav.settings);
+    await nav.settings(page).click();
     await page.waitForURL("**/settings");
 
-    // Click the version button at bottom of settings
     const versionBtn = page.getByText("Selene Wallet v", { exact: false });
     await expect(versionBtn).toBeVisible();
     await versionBtn.click();

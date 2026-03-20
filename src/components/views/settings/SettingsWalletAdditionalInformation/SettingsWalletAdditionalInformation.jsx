@@ -2,21 +2,21 @@ import { useState } from "react";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router";
 import {
-  deriveSeedFromBip39Mnemonic,
-  deriveHdPrivateNodeFromSeed,
-  encodeHdPrivateKey,
-  deriveHdPublicNode,
-  encodeHdPublicKey,
   deriveHdPath,
+  deriveHdPrivateNodeFromSeed,
+  deriveHdPublicNode,
+  deriveSeedFromBip39Mnemonic,
+  encodeHdPrivateKey,
+  encodeHdPublicKey,
 } from "@bitauth/libauth";
 import {
-  EyeOutlined,
-  EyeInvisibleOutlined,
-  InfoCircleOutlined,
   BranchesOutlined,
-  LockOutlined,
   ContainerOutlined,
+  EyeInvisibleOutlined,
+  EyeOutlined,
+  InfoCircleOutlined,
   KeyOutlined,
+  LockOutlined,
 } from "@ant-design/icons";
 
 import { selectBchNetwork } from "@/redux/preferences";

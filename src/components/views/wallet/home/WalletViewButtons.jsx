@@ -1,6 +1,6 @@
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router";
-import { SendOutlined, HistoryOutlined } from "@ant-design/icons";
+import { HistoryOutlined, SendOutlined } from "@ant-design/icons";
 
 import { selectScannerIsScanning } from "@/redux/device";
 

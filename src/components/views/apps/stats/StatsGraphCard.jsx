@@ -1,16 +1,15 @@
 /* eslint-disable no-unsafe-optional-chaining */
-import { useState, useEffect } from "react";
-import { useLocation } from "react-router";
+import { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router";
 import { ApolloProvider, useQuery } from "@apollo/client";
 import { SyncOutlined } from "@ant-design/icons";
-
-import apolloClient from "@/apolloClient";
 
 import Button from "@/atoms/Button";
 import Card from "@/atoms/Card";
 import SeleneLogo from "@/atoms/SeleneLogo";
 
 import { ONE_SECOND, Period } from "@/util/time";
+import apolloClient from "@/apolloClient";
 
 import { translate } from "@/util/translations";
 
@@ -20,6 +19,7 @@ import translations from "./GlobalAdoptionSummaryTranslations";
 import StatsAppBlock from "./StatsAppBlock";
 
 function StatsGraphCard() {
+  const navigate = useNavigate();
   const { hash: locationHash } = useLocation();
 
   const periodHashMap = {
@@ -86,28 +86,28 @@ function StatsGraphCard() {
           labelSize="md"
           rounded="lg"
           padding="2"
-          navigateTo="#d"
+          onClick={() => navigate("#d")}
         />
         <Button
           label={translate(translations.weekly)}
           labelSize="md"
           rounded="lg"
           padding="2"
-          navigateTo="#w"
+          onClick={() => navigate("#w")}
         />
         <Button
           label={translate(translations.monthly)}
           labelSize="md"
           rounded="lg"
           padding="2"
-          navigateTo="#m"
+          onClick={() => navigate("#m")}
         />
         <Button
           label={translate(translations.yearly)}
           labelSize="md"
           rounded="lg"
           padding="2"
-          navigateTo="#y"
+          onClick={() => navigate("#y")}
         />
       </div>
     </Card>

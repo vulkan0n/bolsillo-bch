@@ -9,7 +9,9 @@ export default function Overlay({
   blur = true,
   onClose,
 }) {
-  const rootNode = document.querySelector("#container")!;
+  // #root fallback: pre-auth screens (AppLockScreen, ForgotPinScreen) where #container isn't mounted
+  const rootNode =
+    document.querySelector("#container") ?? document.querySelector("#root")!;
 
   const bgClass = transparent ? "bg-transparent" : "bg-neutral-1000/50";
 

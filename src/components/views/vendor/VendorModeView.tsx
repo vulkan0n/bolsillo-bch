@@ -1,34 +1,34 @@
-import { useState, useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { QRCode } from "react-qrcode-logo";
-import { useSelector, useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router";
-import { ScreenOrientation } from "@capacitor/screen-orientation";
+import { App } from "@capacitor/app";
 import { KeepAwake } from "@capacitor-community/keep-awake";
+import { ScreenBrightness } from "@capacitor-community/screen-brightness";
+import { CloseOutlined } from "@ant-design/icons";
 
-import { selectDeviceInfo } from "@/redux/device";
+import { selectDeviceInfo, setOrientationLock } from "@/redux/device";
 import {
   selectBchNetwork,
-  selectQrCodeSettings,
   selectIsVendorModeKeepAwake,
+  selectQrCodeSettings,
   selectShouldUseLegacyBip21,
   setPreference,
 } from "@/redux/preferences";
+import { selectIsSyncing } from "@/redux/sync";
 import { selectActiveWalletHash } from "@/redux/wallet";
 
 import SecurityService, { AuthActions } from "@/kernel/app/SecurityService";
 import AddressManagerService from "@/kernel/wallet/AddressManagerService";
 
-import translations from "@/views/wallet/translations";
+import CurrencyFlip from "@/atoms/CurrencyFlip";
 import Satoshi from "@/atoms/Satoshi";
 
 import { useCurrencyFlip } from "@/hooks/useCurrencyFlip";
-import { useLongPress } from "@/hooks/useLongPress";
 
 import { logos } from "@/util/logos";
 import { satsToBch } from "@/util/sats";
 import { toAlphanumericUri } from "@/util/uri";
-
-import { translate } from "@/util/translations";
 
 import VendorNumpad from "./VendorNumpad";
 
@@ -42,16 +42,21 @@ export default function VendorModeView() {
   const deviceInfo = useSelector(selectDeviceInfo);
   const isKeepAwake = useSelector(selectIsVendorModeKeepAwake);
   const shouldUseLegacyBip21 = useSelector(selectShouldUseLegacyBip21);
+  const isSyncing = useSelector(selectIsSyncing);
 
-  // Get receive address
+  // Get receive address — re-query when sync finishes
   const AddressManager = useMemo(
     () => AddressManagerService(walletHash),
     [walletHash]
   );
-  const address = useMemo(
-    () => AddressManager.getUnusedAddresses(1)[0].address,
-    [AddressManager]
-  );
+  const addressRef = useRef("");
+  const address = useMemo(() => {
+    if (!isSyncing) {
+      const unused = AddressManager.getUnusedAddresses(1);
+      addressRef.current = unused.length > 0 ? unused[0].address : "";
+    }
+    return addressRef.current;
+  }, [AddressManager, isSyncing]);
 
   // Amount state (in satoshis)
   const [satoshiAmount, setSatoshiAmount] = useState(0n);
@@ -73,42 +78,76 @@ export default function VendorModeView() {
 
   const handleCurrencyFlip = useCurrencyFlip();
 
-  // Exit vendor mode
-  const exitVendorMode = async () => {
+  // ----------------
+  // Auth-gated exit: X button and back button share this handler
+  const handleExit = useCallback(async () => {
     const isAuthorized = await SecurityService().authorize(
       AuthActions.VendorMode
     );
-    if (!isAuthorized) {
-      return;
+    if (isAuthorized) {
+      dispatch(setPreference({ key: "vendorModeActive", value: "false" }));
+      navigate("/wallet");
     }
+  }, [dispatch, navigate]);
 
-    dispatch(setPreference({ key: "vendorModeActive", value: "false" }));
-    navigate("/wallet");
-  };
-
-  const qrLongPress = useLongPress(exitVendorMode, () => {}, 1000);
-
-  // Lock orientation and keep awake on mount
+  // Intercept Android hardware back button
   useEffect(
-    function handleVendorModeLifecycle() {
-      async function setup() {
-        if (deviceInfo.platform !== "web") {
-          await ScreenOrientation.lock({ orientation: "landscape" });
-          if (isKeepAwake) {
-            await KeepAwake.keepAwake();
-          }
-        }
-      }
-      setup();
+    function handleBackButton() {
+      const listener = App.addListener("backButton", () => {
+        handleExit();
+      });
 
       return function cleanup() {
+        listener.then((l) => l.remove());
+      };
+    },
+    [handleExit]
+  );
+
+  // ----------------
+  // Vendor mode lifecycle: orientation, brightness, keep awake
+  const previousBrightness = useRef<number | null>(null);
+  const MIN_VENDOR_BRIGHTNESS = 0.5;
+
+  useEffect(
+    function handleVendorModeLifecycle() {
+      dispatch(setOrientationLock("landscape"));
+
+      if (deviceInfo.platform !== "web") {
+        if (isKeepAwake) {
+          KeepAwake.keepAwake();
+        }
+
+        (async () => {
+          try {
+            const { brightness } = await ScreenBrightness.getBrightness();
+            previousBrightness.current = brightness;
+            if (brightness < MIN_VENDOR_BRIGHTNESS) {
+              await ScreenBrightness.setBrightness({
+                brightness: MIN_VENDOR_BRIGHTNESS,
+              });
+            }
+          } catch {
+            // brightness API unavailable
+          }
+        })();
+      }
+
+      return function cleanup() {
+        dispatch(setOrientationLock("portrait"));
+
         if (deviceInfo.platform !== "web") {
-          ScreenOrientation.unlock();
           KeepAwake.allowSleep();
+
+          if (previousBrightness.current !== null) {
+            ScreenBrightness.setBrightness({
+              brightness: previousBrightness.current,
+            }).catch(() => {});
+          }
         }
       };
     },
-    [deviceInfo.platform, isKeepAwake]
+    [dispatch, deviceInfo.platform, isKeepAwake]
   );
 
   const isTestnet = bchNetwork !== "mainnet";
@@ -116,13 +155,20 @@ export default function VendorModeView() {
   const qrFgColor = isTestnet ? "#000000" : qrCodeSettings.foreground;
 
   return (
-    <div className="flex h-full w-full bg-white dark:bg-neutral-900">
+    <div className="relative flex h-full w-full bg-white dark:bg-neutral-900">
+      {/* Exit button */}
+      <button
+        type="button"
+        onClick={handleExit}
+        className="absolute top-3 right-3 z-10 p-2 cursor-pointer text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200"
+      >
+        <CloseOutlined className="text-xl" />
+      </button>
+
       {/* Left side - QR Code */}
       <div className="flex-1 flex flex-col items-center justify-center p-4">
-        <button
-          type="button"
-          className={`border-4 cursor-pointer ${isTestnet ? "border-[#ff0000]" : "border-primary-700 dark:border-primarydark-200"}`}
-          {...qrLongPress}
+        <div
+          className={`border-4 ${isTestnet ? "border-[#ff0000]" : "border-primary-700 dark:border-primarydark-200"}`}
         >
           <QRCode
             value={qrValue}
@@ -134,7 +180,7 @@ export default function VendorModeView() {
             logoWidth={48}
             logoHeight={48}
           />
-        </button>
+        </div>
 
         {/* Amount display - both currencies, tap to swap */}
         <button
@@ -148,8 +194,9 @@ export default function VendorModeView() {
           >
             <Satoshi value={satoshiAmount} forceVisible />
           </div>
-          <div className="text-lg text-neutral-500 dark:text-neutral-400">
+          <div className="text-lg text-neutral-500 dark:text-neutral-400 flex items-center justify-center">
             <Satoshi value={satoshiAmount} forceVisible flip />
+            <CurrencyFlip className="ml-1.5 text-sm" />
           </div>
         </button>
       </div>
@@ -158,10 +205,6 @@ export default function VendorModeView() {
       <div className="flex-1 flex flex-col items-center justify-center p-4">
         <div className="w-full max-w-xs h-full max-h-80">
           <VendorNumpad onChange={setSatoshiAmount} />
-        </div>
-        {/* Long press hint */}
-        <div className="mt-2 text-xs text-neutral-400 dark:text-neutral-500">
-          {translate(translations.vendorModeExitHint)}
         </div>
       </div>
     </div>

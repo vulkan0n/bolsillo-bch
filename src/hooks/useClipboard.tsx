@@ -6,6 +6,8 @@ import NotificationService from "@/kernel/app/NotificationService";
 
 import translations from "@/views/wallet/translations";
 
+import { Haptic } from "@/util/haptic";
+
 import { translate } from "@/util/translations";
 
 export function useClipboard() {
@@ -33,13 +35,14 @@ export function useClipboard() {
     try {
       const { value: paste } = await Clipboard.read();
 
-      const Toast = NotificationService();
-      const spawnPasteToast = () =>
-        Toast.spawn({
+      const spawnPasteToast = () => {
+        Haptic.success();
+        NotificationService().spawn({
           icon: <SnippetsOutlined className="text-primary text-4xl" />,
           header: translate(translations.pastedFromClipboard),
           body: <span className="flex break-all text-sm">{paste}</span>,
         });
+      };
       return { paste, spawnPasteToast };
     } catch (e) {
       return { paste: "", spawnPasteToast: () => {} };

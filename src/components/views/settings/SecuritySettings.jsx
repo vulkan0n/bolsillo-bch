@@ -1,33 +1,34 @@
 import { useContext, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Clipboard } from "@capacitor/clipboard";
-import { Dialog } from "@capacitor/dialog";
 import { Share } from "@capacitor/share";
 import {
-  LockOutlined,
-  PushpinOutlined,
-  VerifiedOutlined,
-  WalletOutlined,
-  EyeInvisibleOutlined,
-  SendOutlined,
-  ThunderboltOutlined,
-  KeyOutlined,
-  ShopOutlined,
   CloudSyncOutlined,
+  CoffeeOutlined,
   ExportOutlined,
+  EyeInvisibleOutlined,
   ImportOutlined,
   InfoCircleOutlined,
+  KeyOutlined,
+  LockOutlined,
+  PushpinOutlined,
+  SendOutlined,
+  ShopOutlined,
+  ThunderboltOutlined,
+  VerifiedOutlined,
+  WalletOutlined,
 } from "@ant-design/icons";
 
 import { selectDeviceInfo } from "@/redux/device";
 import {
-  setPreference,
-  selectSecuritySettings,
   selectEncryptionSettings,
   selectIsExperimental,
+  selectSecuritySettings,
+  setPreference,
 } from "@/redux/preferences";
 import { selectActiveWallet } from "@/redux/wallet";
 
+import ModalService from "@/kernel/app/ModalService";
 import NotificationService from "@/kernel/app/NotificationService";
 import SecurityService, { AuthActions } from "@/kernel/app/SecurityService";
 
@@ -46,12 +47,15 @@ export default function SecuritySettings() {
   const dispatch = useDispatch();
   const { handleSettingsUpdate } = useContext(SettingsContext);
 
+  const Modal = ModalService();
   const Security = SecurityService();
   const Notification = NotificationService();
   const [isPinConfigured, setIsPinConfigured] = useState(
     Security.isPinConfigured()
   );
-  const { authMode, authActions } = useSelector(selectSecuritySettings);
+  const { authMode, authActions, isNumericPin } = useSelector(
+    selectSecuritySettings
+  );
   const { hasBiometric, platform } = useSelector(selectDeviceInfo);
   const { isDeviceOnly, lastKeyBackupExport } = useSelector(
     selectEncryptionSettings
@@ -67,32 +71,16 @@ export default function SecuritySettings() {
       }
     }
 
-    const { value: pin } = await Dialog.prompt({
-      title: translate(translations.enterNewPin),
-      message: translate(translations.enterNewPinMessage),
-      okButtonTitle: translate(translations.enterNewPinOkButtonTitle),
-    });
-    if (!pin) {
+    const pin = await Security.promptForNewPin();
+    if (!pin) return;
+
+    try {
+      await Security.changePinAndUpdateBiometric(pin, hasBiometric);
+    } catch (e) {
+      Notification.error(translate(translations.error), String(e));
       return;
     }
-
-    const { value: confirmPin } = await Dialog.prompt({
-      title: translate(translations.confirmNewPin),
-      message: translate(translations.confirmNewPinMessage),
-      okButtonTitle: translate(translations.confirmNewPinOkButtonTitle),
-    });
-
-    if (pin === confirmPin) {
-      try {
-        await Security.changePinAndUpdateBiometric(pin, hasBiometric);
-      } catch (e) {
-        Notification.error(translate(translations.error), String(e));
-        return;
-      }
-      setIsPinConfigured(true);
-    } else {
-      Notification.error(translate(translations.pinConfirmationDidNotMatch));
-    }
+    setIsPinConfigured(true);
   };
 
   const handleSetAuthActions = async (action) => {
@@ -119,32 +107,9 @@ export default function SecuritySettings() {
 
   // Shared helper: prompt for password, export key backup, share/copy result.
   // Returns true on success, false if user cancelled or export failed.
-  const performKeyBackupExport = async (promptMessage) => {
-    const { value: password } = await Dialog.prompt({
-      title: translate(translations.exportKeyBackup),
-      message: promptMessage,
-      inputPlaceholder: translate(translations.enterPassword),
-    });
-
-    if (!password) {
-      return false;
-    }
-
-    if (password.length < 8) {
-      Notification.error(translate(translations.passwordTooShort));
-      return false;
-    }
-
-    const { value: confirmPassword } = await Dialog.prompt({
-      title: translate(translations.confirmPassword),
-      message: translate(translations.confirmPasswordMessage),
-      inputPlaceholder: translate(translations.enterPassword),
-    });
-
-    if (password !== confirmPassword) {
-      Notification.error(translate(translations.passwordMismatch));
-      return false;
-    }
+  const performKeyBackupExport = async () => {
+    const password = await Security.promptForNewPin(/* forcePassword */ true);
+    if (!password) return false;
 
     try {
       const data = await Security.exportKeyBackup(password);
@@ -183,9 +148,7 @@ export default function SecuritySettings() {
       }
 
       // Gate 2: Force key backup export
-      const isExported = await performKeyBackupExport(
-        translate(translations.backupRequiredForDeviceOnly)
-      );
+      const isExported = await performKeyBackupExport();
       if (!isExported) {
         return;
       }
@@ -196,7 +159,7 @@ export default function SecuritySettings() {
       ? translate(translations.deviceOnlyEnableWarning)
       : translate(translations.deviceOnlyDisableWarning);
 
-    const { value: isConfirmed } = await Dialog.confirm({
+    const isConfirmed = await Modal.showConfirm({
       title: translate(translations.deviceOnlyKeys),
       message: warningMessage,
     });
@@ -214,32 +177,6 @@ export default function SecuritySettings() {
         Notification.error(translate(translations.error), String(e));
       }
     }
-  };
-
-  const promptForNewPin = async (isPassword = false) => {
-    const { value: pin } = await Dialog.prompt({
-      title: translate(translations.enterNewPin),
-      message: translate(translations.enterNewPinMessage),
-      okButtonTitle: translate(translations.enterNewPinOkButtonTitle),
-    });
-    if (!pin) return null;
-
-    if (isPassword && pin.length < 8) {
-      Notification.error(translate(translations.passwordTooShort));
-      return null;
-    }
-
-    const { value: confirmPin } = await Dialog.prompt({
-      title: translate(translations.confirmNewPin),
-      message: translate(translations.confirmNewPinMessage),
-      okButtonTitle: translate(translations.confirmNewPinOkButtonTitle),
-    });
-
-    if (pin !== confirmPin) {
-      Notification.error(translate(translations.pinConfirmationDidNotMatch));
-      return null;
-    }
-    return pin;
   };
 
   const handleAuthModeChange = async (event) => {
@@ -265,10 +202,20 @@ export default function SecuritySettings() {
       // Target: pin or password — need PIN/password, no bio key
       if (newMode === "pin" || newMode === "password") {
         await Security.removeBiometricKey();
-        if (!isPinConfigured) {
-          const pin = await promptForNewPin(newMode === "password");
+        const isPasswordMode = newMode === "password";
+        const shouldPromptCredential =
+          !isPinConfigured || isPasswordMode === isNumericPin;
+
+        if (shouldPromptCredential) {
+          const pin = await Security.promptForNewPin(isPasswordMode);
           if (!pin) return;
           await Security.setPin(pin);
+          dispatch(
+            setPreference({
+              key: "pinInputMode",
+              value: isPasswordMode ? "false" : "true",
+            })
+          );
           setIsPinConfigured(true);
         }
       }
@@ -276,7 +223,7 @@ export default function SecuritySettings() {
       // Target: bio — PIN wraps key at rest, bio is fast unlock
       if (newMode === "bio") {
         if (!isPinConfigured) {
-          const pin = await promptForNewPin();
+          const pin = await Security.promptForNewPin();
           if (!pin) return;
           await Security.setPin(pin);
           setIsPinConfigured(true);
@@ -295,9 +242,7 @@ export default function SecuritySettings() {
     if (!isAuthorized) {
       return;
     }
-    await performKeyBackupExport(
-      translate(translations.exportKeyBackupMessage)
-    );
+    await performKeyBackupExport();
   };
 
   const handleImportBackup = async () => {
@@ -306,20 +251,21 @@ export default function SecuritySettings() {
       return;
     }
 
-    const { value: data } = await Dialog.prompt({
+    const data = await Modal.showPrompt({
       title: translate(translations.importKeyBackup),
       message: translate(translations.importKeyBackupMessage),
-      inputPlaceholder: translate(translations.pasteBackupData),
+      placeholder: translate(translations.pasteBackupData),
     });
 
     if (!data) {
       return;
     }
 
-    const { value: password } = await Dialog.prompt({
+    const password = await Modal.showPrompt({
       title: translate(translations.enterBackupPassword),
       message: translate(translations.enterBackupPasswordMessage),
-      inputPlaceholder: translate(translations.enterPassword),
+      inputType: "password",
+      placeholder: translate(translations.enterPassword),
     });
 
     if (!password) {
@@ -376,22 +322,48 @@ export default function SecuritySettings() {
           </Select>
         )}
       </Accordion.Child>
-      {(authMode === "pin" || authMode === "password") && (
-        <Accordion.Child>
+      {authMode !== "none" && (
+        <Accordion.Child
+          icon={PushpinOutlined}
+          label={
+            authMode === "bio"
+              ? translate(
+                  isNumericPin
+                    ? translations.pinFallback
+                    : translations.passwordFallback
+                )
+              : undefined
+          }
+        >
           <div className="flex items-center justify-between w-full">
-            {!isPinConfigured ? (
-              <span className="text-error font-semibold">
-                {translate(translations.pinNotSet)}
-              </span>
-            ) : (
-              <span className="text-success-dark font-semibold">
-                {translate(translations.pinSet)}
-              </span>
-            )}
+            <div className="flex-1">
+              {authMode !== "bio" &&
+                (!isPinConfigured ? (
+                  <span className="text-error font-semibold">
+                    {translate(
+                      isNumericPin
+                        ? translations.pinNotSet
+                        : translations.passwordNotSet
+                    )}
+                  </span>
+                ) : (
+                  <span className="text-success-dark font-semibold">
+                    {translate(
+                      isNumericPin
+                        ? translations.pinSet
+                        : translations.passwordSet
+                    )}
+                  </span>
+                ))}
+            </div>
             <Button
               onClick={handleSetPin}
               icon={PushpinOutlined}
-              label={translate(translations.resetPin)}
+              label={
+                isNumericPin
+                  ? translate(translations.resetPin)
+                  : translate(translations.resetPassword)
+              }
             />
           </div>
         </Accordion.Child>
@@ -408,11 +380,11 @@ export default function SecuritySettings() {
           >
             <Checkbox
               checked={authActions.includes(AuthActions.AppOpen)}
-              onChange={() => handleSetAuthActions(AuthActions.AppOpen)}
+              disabled
             />
           </Accordion.Child>
           <Accordion.Child
-            icon={LockOutlined}
+            icon={CoffeeOutlined}
             label={translate(translations.appResume)}
             description={translate(translations.appResumeDescription)}
           >

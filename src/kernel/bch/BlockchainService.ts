@@ -1,5 +1,5 @@
 /* eslint-disable max-classes-per-file */
-import { Filesystem, Directory } from "@capacitor/filesystem";
+import { Directory, Filesystem } from "@capacitor/filesystem";
 import { swapEndianness } from "@bitauth/libauth";
 
 import DatabaseService from "@/kernel/app/DatabaseService";
@@ -8,7 +8,7 @@ import ElectrumService from "@/kernel/bch/ElectrumService";
 
 import { block_checkpoints } from "@/util/blockchain";
 import { sha256 } from "@/util/hash";
-import { hexToBin, binToHex } from "@/util/hex";
+import { binToHex, hexToBin } from "@/util/hex";
 import { ValidBchNetwork } from "@/util/network";
 
 const Log = LogService("Blockchain");

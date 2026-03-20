@@ -1,10 +1,10 @@
 import { useContext } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
+  AccountBookOutlined,
   DollarCircleOutlined,
   EuroCircleOutlined,
   TransactionOutlined,
-  AccountBookOutlined,
 } from "@ant-design/icons";
 
 import {

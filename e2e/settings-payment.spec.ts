@@ -4,10 +4,10 @@ import { accordionControl, expectToggle } from "./helpers/wallet";
 
 test.describe("Settings: Payment", () => {
   test.beforeEach(async ({ appPage: page }) => {
-    await page.click(nav.settings);
+    await nav.settings(page).click();
     await page.waitForURL("**/settings**");
 
-    const paymentBtn = page.locator("button", { hasText: "Payment" });
+    const paymentBtn = page.getByRole("button", { name: "Payment" });
     await expect(paymentBtn).toBeVisible();
     await paymentBtn.click();
   });
@@ -22,11 +22,10 @@ test.describe("Settings: Payment", () => {
     );
     await expect(checkbox).toBeVisible({ timeout: 3_000 });
 
-    // The instant pay limit input should be visible (always rendered)
     const limitLabel = page.getByText("Instant Pay limit", { exact: false });
     await expect(limitLabel).toBeVisible();
 
-    const limitInput = page.locator('[data-testid="satoshi-input"]');
+    const limitInput = page.getByTestId("satoshi-input");
     await expect(limitInput.first()).toBeVisible();
   });
 
