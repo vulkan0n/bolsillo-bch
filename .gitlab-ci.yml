@@ -175,6 +175,7 @@ package_ios:
     - build_sync
   script:
     - cd ios/App/
+    - pod install
     - ../../scripts/ios-archive-fix.sh
     - xcodebuild -workspace App.xcworkspace -scheme App
         -configuration Release
