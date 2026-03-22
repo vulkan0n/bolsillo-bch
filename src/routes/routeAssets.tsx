@@ -1,24 +1,34 @@
-import AssetsView from "@/views/assets/AssetsView";
-import AssetsViewCoins from "@/views/assets/AssetsViewCoins";
-import AssetsViewTokenDetail from "@/views/assets/AssetsViewTokenDetail";
-import AssetsViewTokens from "@/views/assets/AssetsViewTokens";
-
 export const routeAssets = [
   {
     path: "/assets",
-    element: <AssetsView />,
+    async lazy() {
+      const { default: AssetsView } = await import("@/views/assets/AssetsView");
+      return { Component: AssetsView };
+    },
     children: [
       {
         path: "coins/",
-        element: <AssetsViewCoins />,
+        async lazy() {
+          const { default: AssetsViewCoins } =
+            await import("@/views/assets/AssetsViewCoins");
+          return { Component: AssetsViewCoins };
+        },
       },
       {
         path: "tokens/",
-        element: <AssetsViewTokens />,
+        async lazy() {
+          const { default: AssetsViewTokens } =
+            await import("@/views/assets/AssetsViewTokens");
+          return { Component: AssetsViewTokens };
+        },
       },
       {
         path: "tokens/:tokenId",
-        element: <AssetsViewTokenDetail />,
+        async lazy() {
+          const { default: AssetsViewTokenDetail } =
+            await import("@/views/assets/AssetsViewTokenDetail");
+          return { Component: AssetsViewTokenDetail };
+        },
       },
     ],
   },

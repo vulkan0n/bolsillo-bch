@@ -8,7 +8,6 @@ import { visualizer } from "rollup-plugin-visualizer";
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  target: ["es2020", "chrome87", "safari14", "firefox78", "edge88"],
   plugins: [
     visualizer(),
     react(),
@@ -20,6 +19,9 @@ export default defineConfig({
       promiseImportName: (i) => `__tla_${i}`,
     }),
   ],
+  build: {
+    target: ["es2020", "chrome87", "safari14", "firefox78", "edge88"],
+  },
   resolve: {
     alias: {
       "@/composite": path.resolve(__dirname, "./src/components/composite"),

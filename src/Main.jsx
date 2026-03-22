@@ -58,7 +58,7 @@ const routes = [
 
 const router = createBrowserRouter(routes);
 
-function Main() {
+export default function Main() {
   return (
     <Provider store={store}>
       <AppProvider>

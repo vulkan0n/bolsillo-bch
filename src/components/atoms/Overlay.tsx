@@ -13,12 +13,13 @@ export default function Overlay({
   const rootNode =
     document.querySelector("#container") ?? document.querySelector("#root")!;
 
-  const bgClass = transparent ? "bg-transparent" : "bg-neutral-1000/50";
+  const bgClass = transparent ? "bg-transparent" : "bg-neutral-1000/60";
+  const blurClass = blur ? "backdrop-blur-md" : "";
 
   return createPortal(
     <div className="absolute top-0 left-0 w-full h-full z-50">
       <div
-        className={`absolute inset-0 ${bgClass} ${blur ? "backdrop-blur-sm" : ""}`}
+        className={`absolute inset-0 ${bgClass} ${blurClass}`}
         onClick={onClose}
       />
       <FullColumn className={`relative pointer-events-none ${className}`}>

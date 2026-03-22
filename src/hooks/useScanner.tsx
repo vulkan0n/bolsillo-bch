@@ -36,12 +36,37 @@ function initScanner(onScan) {
       (result) => _currentScanCallback?.(result.data),
       {
         returnDetailedScanResult: true,
-        maxScansPerSecond: 10,
+        maxScansPerSecond: 4,
         highlightScanRegion: false,
-        highlightCodeOutline: true,
+        highlightCodeOutline: false,
+        calculateScanRegion: (v) => {
+          // Scan the device's shortest side, mapped to video pixels via object-fit:cover
+          const viewportW = v.clientWidth || v.videoWidth;
+          const viewportH = v.clientHeight || v.videoHeight;
+          const scale = Math.max(
+            viewportW / v.videoWidth,
+            viewportH / v.videoHeight
+          );
+          const shortSide = Math.min(viewportW, viewportH);
+          const clampedSize = Math.min(
+            Math.round(shortSide / scale),
+            v.videoWidth,
+            v.videoHeight
+          );
+
+          const downScaled = Math.min(clampedSize, 480);
+
+          return {
+            x: Math.round((v.videoWidth - clampedSize) / 2),
+            y: Math.round((v.videoHeight - clampedSize) / 2),
+            width: clampedSize,
+            height: clampedSize,
+            downScaledWidth: downScaled,
+            downScaledHeight: downScaled,
+          };
+        },
       }
     );
-    // Scan both dark-on-light and light-on-dark QR codes
     _scanner.setInversionMode("both");
     Log.debug("initScanner");
   }

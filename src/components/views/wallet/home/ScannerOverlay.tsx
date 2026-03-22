@@ -11,9 +11,7 @@ import Satoshi from "@/atoms/Satoshi";
 
 import { useScanner } from "@/hooks/useScanner";
 
-import { extractBchAddresses } from "@/util/cashaddr";
-import { satsToBch } from "@/util/sats";
-import { navigateOnValidUri, validateBip21Uri } from "@/util/uri";
+import { navigateOnValidUri } from "@/util/uri";
 
 export default function ScannerOverlay({
   prefilledAmount = 0n,
@@ -25,20 +23,13 @@ export default function ScannerOverlay({
 
   const handleScan = useCallback(
     async (scanContent) => {
-      let extracted = extractBchAddresses(scanContent)[0] || scanContent;
+      let uri = scanContent;
 
-      // Append prefilled amount if:
-      // - We have a prefilled amount
-      // - Scanned URI doesn't already have an amount
-      // - Scanned address is a non-token address (q address)
-      const { isTokenAddress } = validateBip21Uri(extracted);
-      const hasNoAmount = !scanContent.includes("?amount=");
-      if (prefilledAmount > 0n && hasNoAmount && !isTokenAddress) {
-        const amountBch = satsToBch(prefilledAmount).bch;
-        extracted = `${extracted}?amount=${amountBch}`;
+      if (prefilledAmount > 0n && !uri.includes("?")) {
+        uri = `${uri}?s=${prefilledAmount}`;
       }
 
-      const { navTo, navState } = await navigateOnValidUri(extracted);
+      const { navTo, navState } = await navigateOnValidUri(uri);
       if (navTo !== "") {
         navigate(navTo, { state: { ...location.state, ...navState } });
       }
@@ -68,7 +59,7 @@ export default function ScannerOverlay({
           </div>
         )}
         <div
-          className="w-72 h-72 rounded-xl flex items-center justify-center border border-4 border-primary opacity-90"
+          className="w-[80%] aspect-square rounded-xl flex items-center justify-center border border-4 border-primary opacity-90"
           style={{ boxShadow: "0 0 0 100vh #232323" }}
         >
           <QrcodeOutlined

@@ -7,16 +7,24 @@ interface ModalProps {
   children: React.ReactNode;
   onClose?: () => void;
   className?: string;
+  blur?: boolean;
 }
 
 export default function Modal({
   children,
   onClose = undefined,
   className = "",
+  blur = true,
 }: ModalProps) {
   return (
-    <Overlay className="items-center justify-center" onClose={onClose}>
-      <Card className={`pointer-events-auto p-2 ${className}`}>{children}</Card>
+    <Overlay
+      className="items-center justify-center"
+      onClose={onClose}
+      blur={blur}
+    >
+      <Card className={`pointer-events-auto p-2 min-w-[40%] ${className}`}>
+        {children}
+      </Card>
       {onClose && (
         <button
           type="button"

@@ -97,14 +97,14 @@ function useAppLifecycle() {
       Log.time("INIT");
 
       try {
-        await JanitorService().fsck();
-        await redux_pre_init();
+        await Promise.all([JanitorService().fsck(), redux_pre_init()]);
 
         const { authMode, authActions } = selectSecuritySettings(
           store.getState()
         );
 
         const isKeyLoaded = await SecurityService().initEncryption();
+
         const shouldLock =
           !isKeyLoaded ||
           (authMode !== "none" && authActions.includes(AuthActions.AppOpen));

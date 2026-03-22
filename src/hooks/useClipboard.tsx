@@ -35,12 +35,16 @@ export function useClipboard() {
     try {
       const { value: paste } = await Clipboard.read();
 
-      const spawnPasteToast = () => {
+      const spawnPasteToast = (displayText?: string) => {
         Haptic.success();
         NotificationService().spawn({
           icon: <SnippetsOutlined className="text-primary text-4xl" />,
           header: translate(translations.pastedFromClipboard),
-          body: <span className="flex break-all text-sm">{paste}</span>,
+          body: (
+            <span className="flex break-all text-sm">
+              {displayText || paste}
+            </span>
+          ),
         });
       };
       return { paste, spawnPasteToast };

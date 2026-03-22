@@ -1,8 +1,8 @@
 /* eslint-disable react/jsx-props-no-spreading */
+import { useRef } from "react";
 import { useDispatch } from "react-redux";
-import { Camera, CameraResultType, CameraSource } from "@capacitor/camera";
 import QrScanner from "qr-scanner";
-import { PictureOutlined, ScanOutlined } from "@ant-design/icons";
+import { PictureOutlined } from "@ant-design/icons";
 
 import { setScannerIsScanning } from "@/redux/device";
 
@@ -10,8 +10,6 @@ import NotificationService from "@/kernel/app/NotificationService";
 
 import translations from "@/views/wallet/translations";
 import Button, { ButtonProps } from "@/atoms/Button";
-
-import { Haptic } from "@/util/haptic";
 
 import { translate } from "@/util/translations";
 
@@ -24,8 +22,9 @@ export default function ImageSelectButton({
   ...rest
 }: ImageSelectButtonProps) {
   const dispatch = useDispatch();
-  // function to downscale images (helps QR codes read better)
-  const scaleImage = (image) => {
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const scaleImage = (image: HTMLImageElement) => {
     const maxWidth = 1920;
     const maxHeight = 1080;
     const scaleRatio = Math.min(
@@ -42,57 +41,70 @@ export default function ImageSelectButton({
     canvas.height = height;
 
     const ctx = canvas.getContext("2d");
+    if (!ctx) return canvas;
     ctx.drawImage(image, 0, 0, width, height);
 
     return canvas;
   };
 
-  const handleImageSelectButton = async () => {
-    // open OS image picker
-    const { dataUrl } = await Camera.getPhoto({
-      quality: 100,
-      allowEditing: false,
-      resultType: CameraResultType.DataUrl,
-      source: CameraSource.Photos,
-    });
+  const handleFileSelected = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
 
-    // load and scan the chosen image
-    const image = new Image();
-    image.src = dataUrl;
-    image.onload = async () => {
-      const scaledImage = scaleImage(image);
+    // Reset input so the same file can be selected again
+    if (fileInputRef.current) fileInputRef.current.value = "";
 
-      try {
-        const result = await QrScanner.scanImage(scaledImage, {
-          returnDetailedScanResult: true,
-        });
-
-        // Show scan content toast
-        Haptic.success();
-        NotificationService().spawn({
-          icon: <ScanOutlined className="text-4xl" />,
-          header: translate(translations.scanContents),
-          body: <span className="flex break-all text-sm">{result.data}</span>,
-        });
-
-        onSelection(result.data);
-      } catch (e) {
-        // No QR code found - show invalid scan toast with error
-        const errorMessage = e?.message || "No QR code found";
-        NotificationService().invalidScan(errorMessage);
-        onSelection("");
-      }
-
-      dispatch(setScannerIsScanning(false));
+    const handleError = () => {
+      onSelection("");
     };
+
+    const reader = new FileReader();
+    reader.onerror = handleError;
+    reader.onload = () => {
+      const image = new Image();
+      image.src = reader.result as string;
+      image.onerror = handleError;
+      image.onload = async () => {
+        const scaledImage = scaleImage(image);
+
+        try {
+          const result = await QrScanner.scanImage(scaledImage, {
+            returnDetailedScanResult: true,
+          });
+
+          NotificationService().success(
+            translate(translations.scanContents),
+            result.data
+          );
+
+          onSelection(result.data);
+        } catch (err) {
+          const errorMessage = err?.message || "No QR code found";
+          NotificationService().invalidScan(errorMessage);
+          onSelection("");
+        }
+
+        dispatch(setScannerIsScanning(false));
+      };
+    };
+    reader.readAsDataURL(file);
   };
 
   return (
-    <Button
-      icon={PictureOutlined}
-      outerLabel={translate(translations.imageText)}
-      onClick={handleImageSelectButton}
-      {...rest}
-    />
+    <>
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        className="hidden"
+        onChange={handleFileSelected}
+      />
+      <Button
+        icon={PictureOutlined}
+        outerLabel={translate(translations.imageText)}
+        onClick={() => fileInputRef.current?.click()}
+        {...rest}
+      />
+    </>
   );
 }

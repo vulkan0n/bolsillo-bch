@@ -9,7 +9,6 @@ import Button from "@/atoms/Button";
 
 import { useClipboard } from "@/hooks/useClipboard";
 
-import { extractBchAddresses } from "@/util/cashaddr";
 import { navigateOnValidUri } from "@/util/uri";
 
 import { translate } from "@/util/translations";
@@ -25,8 +24,7 @@ export default function WalletViewButtons() {
   const { getClipboardContents } = useClipboard();
 
   const forwardOnValidAddress = async (input) => {
-    const extracted = extractBchAddresses(input)[0] || input;
-    const { navTo, navState } = await navigateOnValidUri(extracted);
+    const { navTo, navState } = await navigateOnValidUri(input);
     if (navTo) {
       navigate(navTo, { state: navState });
     }
@@ -34,10 +32,9 @@ export default function WalletViewButtons() {
 
   const pasteAddressFromClipboard = async () => {
     const { paste, spawnPasteToast } = await getClipboardContents();
-    const extracted = extractBchAddresses(paste)[0] || paste;
-    const { navTo, navState } = await navigateOnValidUri(extracted);
+    const { navTo, navState, extractedUri } = await navigateOnValidUri(paste);
     if (navTo !== "") {
-      spawnPasteToast();
+      spawnPasteToast(extractedUri);
       navigate(navTo, { state: navState });
     } else {
       navigate("/wallet/send/");

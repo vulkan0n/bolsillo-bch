@@ -11,6 +11,7 @@ import {
 import NotificationService from "@/kernel/app/NotificationService";
 import WalletManagerService from "@/kernel/wallet/WalletManagerService";
 
+import { extractBchAddresses } from "@/util/cashaddr";
 import { ripemd160, sha256 } from "@/util/hash";
 import { bchToSats } from "@/util/sats";
 
@@ -282,6 +283,16 @@ export function validateWalletConnectUri(uri: string) {
   };
 }
 
+// extractBchUri: finds a BCH address in freeform text and returns the full URI (address + query params)
+function extractBchUri(text: string): string | undefined {
+  const address = extractBchAddresses(text)[0];
+  if (!address) return undefined;
+  const idx = text.toLowerCase().indexOf(address.toLowerCase());
+  const fromAddress = text.slice(idx);
+  const end = fromAddress.search(/\s/);
+  return end === -1 ? fromAddress : fromAddress.slice(0, end);
+}
+
 // navigateOnValidUri: maps URI handlers to app routes
 export const navigateOnValidUri = async (
   input: string
@@ -290,11 +301,11 @@ export const navigateOnValidUri = async (
   navState: object;
   isTokenAddress: boolean;
   isExpired: boolean;
+  extractedUri: string;
 }> => {
-  // Decode alphanumeric QR format if detected (CHIP-2023-05)
   const decodedInput = fromAlphanumericUri(input);
+  const uri = extractBchUri(decodedInput) || decodedInput;
 
-  // go to send screen when valid address is entered
   const {
     isValid,
     isTokenAddress,
@@ -307,7 +318,7 @@ export const navigateOnValidUri = async (
     requestUri,
     wif,
     wcUri,
-  } = validateBchUri(decodedInput);
+  } = validateBchUri(uri);
 
   let navTo = "";
   let navState;
@@ -318,7 +329,13 @@ export const navigateOnValidUri = async (
     // Check expiration before proceeding
     if (isExpired) {
       Notification.expiredPayment();
-      return { navTo: "", navState: {}, isTokenAddress, isExpired: true };
+      return {
+        navTo: "",
+        navState: {},
+        isTokenAddress,
+        isExpired: true,
+        extractedUri: uri,
+      };
     }
 
     if (isWalletConnect) {
@@ -335,7 +352,13 @@ export const navigateOnValidUri = async (
     Notification.invalidScan(decodedInput);
   }
 
-  return { navTo, navState, isTokenAddress, isExpired: isExpired || false };
+  return {
+    navTo,
+    navState,
+    isTokenAddress,
+    isExpired: isExpired || false,
+    extractedUri: uri,
+  };
 };
 
 /**

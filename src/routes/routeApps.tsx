@@ -1,9 +1,10 @@
-import AppsView from "@/views/apps/AppsView";
-
 export const routeApps = [
   {
     path: "/apps",
-    element: <AppsView />,
+    async lazy() {
+      const { default: AppsView } = await import("@/views/apps/AppsView");
+      return { Component: AppsView };
+    },
   },
   {
     path: "/apps/intro",
@@ -61,14 +62,6 @@ export const routeApps = [
           return { Component: BlissAboutView };
         },
       },
-      // {
-      //   path: "tickets/",
-      //   async lazy() {
-      //     const { default: BlissTicketsView } =
-      //       await import("@/views/apps/bliss/tickets/BlissTicketsView");
-      //     return { Component: BlissTicketsView };
-      //   },
-      // },
     ],
   },
   {
