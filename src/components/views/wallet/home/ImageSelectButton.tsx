@@ -54,16 +54,16 @@ export default function ImageSelectButton({
     // Reset input so the same file can be selected again
     if (fileInputRef.current) fileInputRef.current.value = "";
 
-    const handleError = () => {
-      onSelection("");
-    };
-
     const reader = new FileReader();
-    reader.onerror = handleError;
+    reader.onerror = () => {
+      NotificationService().invalidScan("Failed to read image file");
+    };
     reader.onload = () => {
       const image = new Image();
       image.src = reader.result as string;
-      image.onerror = handleError;
+      image.onerror = () => {
+        NotificationService().invalidScan("Failed to decode image");
+      };
       image.onload = async () => {
         const scaledImage = scaleImage(image);
 
@@ -79,9 +79,9 @@ export default function ImageSelectButton({
 
           onSelection(result.data);
         } catch (err) {
-          const errorMessage = err?.message || "No QR code found";
+          const errorMessage =
+            err instanceof Error ? err.message : "No QR code found";
           NotificationService().invalidScan(errorMessage);
-          onSelection("");
         }
 
         dispatch(setScannerIsScanning(false));

@@ -156,7 +156,6 @@ export default function VendorModeView() {
 
   return (
     <div className="relative flex h-full w-full bg-white dark:bg-neutral-900">
-      {/* Exit button */}
       <button
         type="button"
         onClick={handleExit}
@@ -165,8 +164,7 @@ export default function VendorModeView() {
         <CloseOutlined className="text-xl" />
       </button>
 
-      {/* Left side - QR Code */}
-      <div className="flex-1 flex flex-col items-center justify-center p-4">
+      <div className="flex-1 flex flex-col items-center justify-center p-8">
         <div
           className={`border-4 ${isTestnet ? "border-[#ff0000]" : "border-primary-700 dark:border-primarydark-200"}`}
         >
@@ -181,8 +179,6 @@ export default function VendorModeView() {
             logoHeight={48}
           />
         </div>
-
-        {/* Amount display - both currencies, tap to swap */}
         <button
           type="button"
           onClick={handleCurrencyFlip}
@@ -201,7 +197,6 @@ export default function VendorModeView() {
         </button>
       </div>
 
-      {/* Right side - Numpad */}
       <div className="flex-1 flex flex-col items-center justify-center p-4">
         <div className="w-full max-w-xs h-full max-h-80">
           <VendorNumpad onChange={setSatoshiAmount} />
