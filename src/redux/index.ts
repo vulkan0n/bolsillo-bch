@@ -3,7 +3,7 @@ import { combineReducers, configureStore, isPlain } from "@reduxjs/toolkit";
 import LogService from "@/kernel/app/LogService";
 import BcmrService from "@/kernel/bch/BcmrService";
 
-import { deviceInit, deviceReducer } from "./device";
+import { deviceInit, deviceReducer, setScannerIsScanning } from "./device";
 import {
   exchangeRateInit,
   exchangeRateReducer,
@@ -80,5 +80,6 @@ export function redux_resume() {
 
 export function redux_pause() {
   Log.debug("redux_pause");
+  store.dispatch(setScannerIsScanning(false));
   store.dispatch(syncPause());
 }

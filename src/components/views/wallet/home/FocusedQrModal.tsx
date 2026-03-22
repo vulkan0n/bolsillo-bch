@@ -10,8 +10,6 @@ import Address from "@/atoms/Address";
 import Modal from "@/atoms/Modal";
 import Satoshi from "@/atoms/Satoshi";
 
-import { useClipboard } from "@/hooks/useClipboard";
-
 import { logos } from "@/util/logos";
 import { validateBip21Uri } from "@/util/uri";
 
@@ -31,11 +29,6 @@ export default function FocusedQrModal({
 
   const { address, satoshis, isTokenAddress } = validateBip21Uri(qrRequest);
 
-  const { handleCopyToClipboard } = useClipboard();
-  const copyAddress = () => {
-    handleCopyToClipboard(qrRequest, translate(translations.copiedAddress));
-  };
-
   const qrLogoImage = isTokenAddress
     ? logos[qrCodeSettings.logo.toLowerCase()].img_tokens
     : logos[qrCodeSettings.logo.toLowerCase()].img;
@@ -52,7 +45,10 @@ export default function FocusedQrModal({
     ScreenBrightness.getBrightness()
       .then(({ brightness }) => {
         previousBrightness.current = brightness;
-        return ScreenBrightness.setBrightness({ brightness: 1.0 });
+        // Scale relative to current brightness (proxy for ambient light).
+        // Boost by 30%, clamp to 0.5–1.0 range.
+        const target = Math.min(1.0, Math.max(0.5, brightness * 1.3));
+        return ScreenBrightness.setBrightness({ brightness: target });
       })
       .catch(() => {});
 
@@ -66,9 +62,12 @@ export default function FocusedQrModal({
   }, []);
 
   return (
-    <Modal onClose={onClose} className="text-center">
+    <Modal
+      onClose={onClose}
+      className="justify-center items-center bg-primary-200 dark:bg-primarydark-100 dark:text-neutral-100"
+    >
       {satoshis && (
-        <div className="mt-1">
+        <div className="mt-1 text-center">
           <div className="font-bold text-2xl">
             {translate(translations.requestAmount)}
           </div>
@@ -78,31 +77,26 @@ export default function FocusedQrModal({
         </div>
       )}
 
-      <button
-        type="button"
-        onClick={copyAddress}
-        className={`mx-4 my-2 border-4 cursor-pointer active:scale-[0.98] ${isTestnet ? "border-[#ff0000]" : "border-primary-700 dark:border-primarydark-200"}`}
-      >
-        <QRCode
-          value={qrRequest}
-          size={280}
-          quietZone={16}
-          bgColor={qrBgColor}
-          fgColor={qrFgColor}
-          logoImage={qrLogoImage}
-          logoWidth={72}
-          logoHeight={72}
-        />
-      </button>
-
-      <div className="w-full p-1 text-sm">
-        <button
-          type="button"
-          onClick={copyAddress}
-          className="cursor-pointer active:text-neutral-600 dark:active:text-neutral-300"
+      <div className="m-2 flex items-center justify-center">
+        <div
+          className={`border-4 ${isTestnet ? "border-[#ff0000]" : "border-primary-700 dark:border-primarydark-400"}`}
         >
-          <Address address={address} className="break-all" />
-        </button>
+          <QRCode
+            value={qrRequest}
+            ecLevel="L"
+            size={220}
+            quietZone={16}
+            bgColor={qrBgColor}
+            fgColor={qrFgColor}
+            logoImage={qrLogoImage}
+            logoWidth={48}
+            logoHeight={48}
+          />
+        </div>
+      </div>
+
+      <div className="w-full p-1 text-sm text-center">
+        <Address address={address} className="break-all" />
       </div>
     </Modal>
   );

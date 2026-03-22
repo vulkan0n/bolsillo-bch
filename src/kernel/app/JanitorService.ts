@@ -1,3 +1,4 @@
+import { Capacitor } from "@capacitor/core";
 import { Directory, Filesystem } from "@capacitor/filesystem";
 import { Preferences } from "@capacitor/preferences";
 import { SimpleEncryption } from "capacitor-plugin-simple-encryption";
@@ -198,10 +199,15 @@ export default function JanitorService() {
   async function recoverWalletFiles() {
     Log.log("Searching for wallet files");
 
-    const { files: fileWallets } = await Filesystem.readdir({
-      path: "/selene/wallets",
-      directory: Directory.Library,
-    });
+    let fileWallets;
+    try {
+      ({ files: fileWallets } = await Filesystem.readdir({
+        path: "/selene/wallets",
+        directory: Directory.Library,
+      }));
+    } catch {
+      return undefined; // Directory doesn't exist yet (first boot)
+    }
 
     const WalletManager = WalletManagerService();
 
@@ -248,14 +254,23 @@ export default function JanitorService() {
       "/selene/tx",
     ];
 
-    await libraryDirs.reduce(
-      (chain, path) => chain.then(() => ensureDir(path, Directory.Library)),
-      Promise.resolve()
-    );
-    await cacheDirs.reduce(
-      (chain, path) => chain.then(() => ensureDir(path, Directory.Cache)),
-      Promise.resolve()
-    );
+    if (Capacitor.isNativePlatform()) {
+      // Native filesystem handles concurrent mkdir safely
+      await Promise.all([
+        ...libraryDirs.map((path) => ensureDir(path, Directory.Library)),
+        ...cacheDirs.map((path) => ensureDir(path, Directory.Cache)),
+      ]);
+    } else {
+      // Web stub's IndexedDB races on parallel mkdir — must be sequential
+      await libraryDirs.reduce(
+        (chain, path) => chain.then(() => ensureDir(path, Directory.Library)),
+        Promise.resolve()
+      );
+      await cacheDirs.reduce(
+        (chain, path) => chain.then(() => ensureDir(path, Directory.Cache)),
+        Promise.resolve()
+      );
+    }
 
     // Clean up stale .tmp files from interrupted atomic writes
     const tmpCleanupDirs = ["/selene/db", "/selene/wallets"];

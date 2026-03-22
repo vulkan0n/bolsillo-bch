@@ -1,17 +1,23 @@
 import { useCallback, useEffect, useMemo, useRef } from "react";
 
+const MOVE_THRESHOLD = 10;
+
 export const useLongPress = <T>(
   onLongPress: (e?: T) => void = () => {},
   onClick: (e?: T) => void = () => {},
   ms = 500
 ) => {
-  const timerRef = useRef<NodeJS.Timeout | null>(setTimeout(() => {}, 0));
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
   const isLongPress = useRef<boolean>(false);
+  const isDragging = useRef<boolean>(false);
+  const startPos = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
 
   const start = useCallback(
     (event) => {
       isLongPress.current = false;
+      isDragging.current = false;
       if (event) {
+        startPos.current = { x: event.clientX, y: event.clientY };
         event.stopPropagation();
         timerRef.current = setTimeout(() => {
           isLongPress.current = true;
@@ -21,6 +27,18 @@ export const useLongPress = <T>(
     },
     [onLongPress, ms]
   );
+
+  const cancelOnMove = useCallback((event: PointerEvent) => {
+    const dx = event.clientX - startPos.current.x;
+    const dy = event.clientY - startPos.current.y;
+    if (dx * dx + dy * dy > MOVE_THRESHOLD * MOVE_THRESHOLD) {
+      isDragging.current = true;
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+        timerRef.current = null;
+      }
+    }
+  }, []);
 
   const clear = useCallback(
     (event?: T) => {
@@ -34,8 +52,8 @@ export const useLongPress = <T>(
         return;
       }
 
-      // If it was a long press, suppress the pointerup
-      if (isLongPress.current) {
+      // Suppress click if it was a long press or a drag/scroll
+      if (isLongPress.current || isDragging.current) {
         (event as PointerEvent).preventDefault?.();
         return;
       }
@@ -57,9 +75,11 @@ export const useLongPress = <T>(
     () => ({
       onPointerDown: start,
       onPointerUp: clear,
+      onPointerMove: cancelOnMove,
+      onPointerCancel: clear,
       onContextMenu: preventContextMenu,
     }),
-    [start, clear, preventContextMenu]
+    [start, clear, cancelOnMove, preventContextMenu]
   );
 
   return events;

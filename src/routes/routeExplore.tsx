@@ -1,21 +1,24 @@
-//import { Geolocation } from "@capacitor/geolocation";
-
 import { store } from "@/redux";
 import { selectBchNetwork } from "@/redux/preferences";
 
 import TransactionManagerService from "@/kernel/bch/TransactionManagerService";
 
-import ExploreView from "@/views/explore/ExploreView";
-import ExploreViewHome from "@/views/explore/ExploreViewHome";
-
 export const routeExplore = [
   {
     path: "/explore",
-    element: <ExploreView />,
+    async lazy() {
+      const { default: ExploreView } =
+        await import("@/views/explore/ExploreView");
+      return { Component: ExploreView };
+    },
     children: [
       {
         index: true,
-        element: <ExploreViewHome />,
+        async lazy() {
+          const { default: ExploreViewHome } =
+            await import("@/views/explore/ExploreViewHome");
+          return { Component: ExploreViewHome };
+        },
       },
       {
         path: "tx/:tx_hash",
@@ -32,19 +35,6 @@ export const routeExplore = [
           );
         },
       },
-      /*{
-        path: "map",
-        async lazy() {
-          const { default: ExploreMapView } = await import(
-            "@/views/explore/map/ExploreMapView"
-          );
-          return { Component: ExploreMapView };
-        },
-        loader: async () =>
-          Geolocation.getCurrentPosition({
-            enableHighAccuracy: true,
-          }),
-      },*/
       {
         path: "contacts",
         async lazy() {

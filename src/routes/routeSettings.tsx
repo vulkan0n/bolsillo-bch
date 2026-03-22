@@ -1,14 +1,19 @@
-import SettingsView from "@/views/settings/SettingsView";
-import SettingsWalletView from "@/views/settings/SettingsWalletView/SettingsWalletView";
-
 export const routeSettings = [
   {
     path: "/settings",
-    element: <SettingsView />,
+    async lazy() {
+      const { default: SettingsView } =
+        await import("@/views/settings/SettingsView");
+      return { Component: SettingsView };
+    },
   },
   {
     path: "/settings/wallet/:walletHash",
-    element: <SettingsWalletView />,
+    async lazy() {
+      const { default: SettingsWalletView } =
+        await import("@/views/settings/SettingsWalletView/SettingsWalletView");
+      return { Component: SettingsWalletView };
+    },
   },
   {
     path: "/settings/wallet/:walletHash/additionalInformation",

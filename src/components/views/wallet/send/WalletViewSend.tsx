@@ -56,7 +56,6 @@ import SlideToAction from "@/components/atoms/SlideToAction";
 
 import { useStablecoinBalance } from "@/hooks/useStablecoinBalance";
 
-import { extractBchAddresses } from "@/util/cashaddr";
 import { Haptic } from "@/util/haptic";
 import { hexToBin } from "@/util/hex";
 import { bchToSats } from "@/util/sats";
@@ -707,8 +706,7 @@ export default function WalletViewSend() {
   // --------
 
   const handleAddressInput = async (input: string) => {
-    const extracted = extractBchAddresses(input)[0] || input;
-    const { navTo } = await navigateOnValidUri(extracted);
+    const { navTo } = await navigateOnValidUri(input);
     if (navTo !== "") {
       const { state: sendState } = location;
       navigate(navTo, { state: sendState });

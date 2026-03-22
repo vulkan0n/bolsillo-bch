@@ -11,37 +11,29 @@ import {
 
 import { validateBip21Uri } from "@/util/uri";
 
-// Regex patterns for detecting potential BCH addresses embedded in text
+// Regex patterns for detecting potential BCH addresses/URIs embedded in text
 // Legacy: starts with 1 or 3, followed by base58 chars
-// Cashaddr: optional prefix, then q/p/z/r followed by bech32 chars
+// Cashaddr: optional prefix, then q/p/z/r followed by bech32 chars, optional BIP21 query
 const bchAddressPatterns = {
   legacy: /[13][a-km-zA-HJ-NP-Z1-9]{25,34}/g,
   cashaddr:
     /(?:(?:bitcoincash|bchtest|bchreg):)?[qpzr][qpzry9x8gf2tvdw0s3jn54khce6mua7l]{41}/gi,
 };
 
-// sanitizeBchAddress: strip all characters invalid in BCH addresses
-// Keeps: a-z, A-Z, 0-9, : (for prefix separator)
-function sanitizeBchAddress(input: string): string {
-  return input.replace(/[^a-zA-Z0-9:]/g, "");
-}
-
-// extractBchAddresses: finds and extracts valid BCH addresses from text
-// Returns array of valid addresses found (deduplicated)
+// extractBchAddresses: finds and extracts valid BCH addresses/URIs from text
+// Preserves BIP21 query params (?amount=, ?s=, etc.) when present
 export function extractBchAddresses(text: string): string[] {
   const matches: Set<string> = new Set();
 
   // Find legacy address patterns
   const legacyMatches = text.match(bchAddressPatterns.legacy) || [];
-  legacyMatches.forEach((match) => matches.add(sanitizeBchAddress(match)));
+  legacyMatches.forEach((match) => matches.add(match));
 
   // Find cashaddr patterns (normalize to lowercase)
   const cashaddrMatches = text.match(bchAddressPatterns.cashaddr) || [];
-  cashaddrMatches.forEach((match) =>
-    matches.add(sanitizeBchAddress(match).toLowerCase())
-  );
+  cashaddrMatches.forEach((match) => matches.add(match.toLowerCase()));
 
-  // Filter to only addresses that pass validation
+  // Filter to only URIs with a valid address
   const validAddresses = Array.from(matches).filter((potential) => {
     const { isBip21 } = validateBip21Uri(potential);
     return isBip21;
