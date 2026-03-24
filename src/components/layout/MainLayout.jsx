@@ -46,13 +46,14 @@ export default function MainLayout() {
       }
 
       if (platform !== "web") {
-        ScreenOrientation.lock({ orientation: orientationLock });
-
-        if (orientationLock === "landscape") {
-          SystemBars.hide().catch(() => {});
-        } else {
-          SystemBars.show().catch(() => {});
-        }
+        (async () => {
+          await ScreenOrientation.lock({ orientation: orientationLock });
+          if (orientationLock === "landscape") {
+            await SystemBars.hide();
+          } else {
+            await SystemBars.show();
+          }
+        })();
       }
 
       // --------

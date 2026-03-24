@@ -159,7 +159,7 @@ export default function VendorModeView() {
       <button
         type="button"
         onClick={handleExit}
-        className="absolute top-3 right-3 z-10 p-2 cursor-pointer text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200"
+        className="absolute top-3 left-3 z-10 p-2 cursor-pointer text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200"
       >
         <CloseOutlined className="text-xl" />
       </button>
