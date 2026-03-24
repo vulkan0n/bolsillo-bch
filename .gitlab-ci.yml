@@ -222,8 +222,13 @@ deploy_android_release:
     - package_android
     - screenshots
   script:
-    - echo "Upload android/app/build/outputs/bundle/release/app-release.aab to Google Play"
-    - echo "Use Google Play Console or set up ANDROID_JSON_KEY_FILE CI variable for automated upload"
+    - export SELENE_VERSION=$(grep -o '"version": *"[^"]*"' package.json | sed -e 's/"version": *"//' -e 's/"$//')
+    - echo "SELENE_VERSION=$SELENE_VERSION"
+    - node scripts/upload-google-play.js
+        --aab android/app/build/outputs/bundle/release/app-release.aab
+        --track production
+        --changelog "$(ls -t android/metadata/android/en-US/changelogs/*.txt | head -1)"
+        --json-key "$ANDROID_JSON_KEY_FILE"
   only:
     - main
   tags:
@@ -241,11 +246,15 @@ deploy_ios_release:
     - package_ios
     - screenshots
   script:
+    - mkdir -p ~/.appstoreconnect/private_keys
+    - echo "$APP_STORE_CONNECT_API_KEY" | base64 -d > ~/.appstoreconnect/private_keys/AuthKey_${APP_STORE_CONNECT_API_KEY_ID}.p8
     - xcrun altool --upload-app
         -f ios/App/build/App.ipa
         -t ios
         --apiKey "$APP_STORE_CONNECT_API_KEY_ID"
         --apiIssuer "$APP_STORE_CONNECT_ISSUER_ID"
+  after_script:
+    - rm -f ~/.appstoreconnect/private_keys/AuthKey_${APP_STORE_CONNECT_API_KEY_ID}.p8
   only:
     - main
   tags:
@@ -256,11 +265,15 @@ deploy_ios_testflight:
   dependencies:
     - package_ios
   script:
+    - mkdir -p ~/.appstoreconnect/private_keys
+    - echo "$APP_STORE_CONNECT_API_KEY" | base64 -d > ~/.appstoreconnect/private_keys/AuthKey_${APP_STORE_CONNECT_API_KEY_ID}.p8
     - xcrun altool --upload-app
         -f ios/App/build/App.ipa
         -t ios
         --apiKey "$APP_STORE_CONNECT_API_KEY_ID"
         --apiIssuer "$APP_STORE_CONNECT_ISSUER_ID"
+  after_script:
+    - rm -f ~/.appstoreconnect/private_keys/AuthKey_${APP_STORE_CONNECT_API_KEY_ID}.p8
   only:
     - testflight
   tags:
