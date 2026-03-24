@@ -224,7 +224,7 @@ deploy_android_release:
   script:
     - export SELENE_VERSION=$(node -p "require('./package.json').version")
     - echo "SELENE_VERSION=$SELENE_VERSION"
-    - node scripts/upload-google-play.js
+    - node scripts/upload-google-play.cjs
         --aab android/app/build/outputs/bundle/release/app-release.aab
         --track production
         --changelog "$(ls -t android/metadata/android/en-US/changelogs/*.txt | head -1)"
