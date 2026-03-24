@@ -222,7 +222,7 @@ deploy_android_release:
     - package_android
     - screenshots
   script:
-    - export SELENE_VERSION=$(grep -o '"version": *"[^"]*"' package.json | sed -e 's/"version": *"//' -e 's/"$//')
+    - export SELENE_VERSION=$(node -p "require('./package.json').version")
     - echo "SELENE_VERSION=$SELENE_VERSION"
     - node scripts/upload-google-play.js
         --aab android/app/build/outputs/bundle/release/app-release.aab
