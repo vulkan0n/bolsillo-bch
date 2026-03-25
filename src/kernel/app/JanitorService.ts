@@ -301,9 +301,9 @@ export default function JanitorService() {
 
   async function ensureDir(path: string, directory: Directory) {
     try {
-      await Filesystem.readdir({ path, directory });
+      await Filesystem.mkdir({ path, directory, recursive: true });
     } catch {
-      await Filesystem.mkdir({ path, directory });
+      // Already exists — ignore
     }
   }
 
