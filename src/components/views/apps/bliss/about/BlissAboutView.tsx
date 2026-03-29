@@ -13,9 +13,7 @@ import {
   BLISS_2026_START_DATE,
   BLISS_ABOUT_VIDEO_URL,
   BLISS_HOME_URL,
-  TAPSWAP_TICKETS_URL,
-  TAPSWAP_TUTORIAL_VIDEO_URL,
-  VELMA_VIDEO_URL,
+  LAYLA_VIDEO_URL,
 } from "../constants.jsx";
 
 const interval = Interval.fromDateTimes(
@@ -47,15 +45,6 @@ function BlissAboutView() {
               <span>→</span>
             </div>
           </LinkExternal>
-          <LinkExternal to={TAPSWAP_TICKETS_URL}>
-            <div className="text-primary-700 dark:text-primarydark flex items-center gap-2 w-full p-3 border-b border-[#ececec] last:border-b-0">
-              <LinkOutlined />
-              <span className="flex-1 font-bold">
-                {translate(translations.tickets)}
-              </span>
-              <span>→</span>
-            </div>
-          </LinkExternal>
         </div>
       </Card>
 
@@ -68,16 +57,9 @@ function BlissAboutView() {
 
       <Card className="p-2">
         <h2 className="font-bold text-xl text-center p-2">
-          {translate(translations.howToTicketsTitle)}
+          {translate(translations.laylaUpgrade)}
         </h2>
-        <EmbeddedVideoCard url={TAPSWAP_TUTORIAL_VIDEO_URL} />
-      </Card>
-
-      <Card className="p-2">
-        <h2 className="font-bold text-xl text-center p-2">
-          {translate(translations.velmaUpgrade)}
-        </h2>
-        <EmbeddedVideoCard url={VELMA_VIDEO_URL} />
+        <EmbeddedVideoCard url={LAYLA_VIDEO_URL} />
       </Card>
     </div>
   );

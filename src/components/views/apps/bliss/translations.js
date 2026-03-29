@@ -1,15 +1,8 @@
 import {
   about,
-  howToTicketsReadMore,
-  howToTicketsStepFive,
-  howToTicketsStepFour,
-  howToTicketsStepOne,
-  howToTicketsStepThree,
-  howToTicketsStepTwo,
-  howToTicketsTitle,
   startingIn,
   tickets,
-  velmaUpgrade,
+  laylaUpgrade,
   watchLive,
   watchVideos,
 } from "../shared/eventTranslations";
@@ -21,14 +14,7 @@ const translations = {
   watchLive,
   tickets,
   about,
-  velmaUpgrade,
-  howToTicketsTitle,
-  howToTicketsStepOne,
-  howToTicketsStepTwo,
-  howToTicketsStepThree,
-  howToTicketsStepFour,
-  howToTicketsStepFive,
-  howToTicketsReadMore,
+  laylaUpgrade,
 
   ticketsAvailableNow: {
     ar: "التذاكر متوفرة الآن",

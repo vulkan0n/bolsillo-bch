@@ -1,15 +1,8 @@
 import {
   about,
-  howToTicketsReadMore,
-  howToTicketsStepFive,
-  howToTicketsStepFour,
-  howToTicketsStepOne,
-  howToTicketsStepThree,
-  howToTicketsStepTwo,
-  howToTicketsTitle,
   startingIn,
   tickets,
-  velmaUpgrade,
+  laylaUpgrade,
   watchLive,
   watchVideos,
 } from "../shared/eventTranslations";
@@ -21,15 +14,7 @@ const translations = {
   watchLive,
   tickets,
   about,
-  velmaUpgrade,
-  howToTicketsTitle,
-  howToTicketsStepOne,
-  howToTicketsStepTwo,
-  howToTicketsStepThree,
-  howToTicketsStepFour,
-  howToTicketsStepFive,
-  howToTicketsReadMore,
-
+  laylaUpgrade,
   intro: {
     ar: "هاكاثون افتراضي مُصمم لتحفيز الابتكار في منظومة بيتكوين كاش (BCH)! تنافسوا للفوز بجوائز بقيمة 10 بيتكوين كاش، بالإضافة إلى تذاكر حصرية لفعالية BLISS 2026 ومزايا أخرى شيقة!",
     bn: "বিটকয়েনক্যাশ (BCH) ইকোসিস্টেমে উদ্ভাবনকে জাগিয়ে তোলার জন্য তৈরি একটি ভার্চুয়াল হ্যাকাথন! ১০ BCH পুরস্কারের ভাগ, BLISS 2026-এর এক্সক্লুসিভ টিকিট এবং অন্যান্য আকর্ষণীয় সুযোগ-সুবিধার জন্য প্রতিযোগিতা করুন!",
