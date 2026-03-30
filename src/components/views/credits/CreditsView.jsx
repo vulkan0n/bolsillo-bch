@@ -23,11 +23,7 @@ export default function CreditsView() {
   const [shouldShowQr, setShouldShowQr] = useState(true);
 
   const longPressEvents = useLongPress(
-    () => {
-      if (!shouldShowQr) {
-        navigate("/debug");
-      }
-    },
+    () => navigate("/debug"),
     () => setShouldShowQr(!shouldShowQr),
     1674
   );

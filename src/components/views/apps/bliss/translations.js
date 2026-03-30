@@ -1,8 +1,8 @@
 import {
   about,
+  laylaUpgrade,
   startingIn,
   tickets,
-  laylaUpgrade,
   watchLive,
   watchVideos,
 } from "../shared/eventTranslations";

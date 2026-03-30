@@ -33,15 +33,15 @@ export default function ConfirmModal({
   onCancel,
 }: ConfirmModalProps) {
   return (
-    <Modal className="max-w-sm mx-4">
-      <div className="p-4">
+    <Modal className="max-w-sm max-h-[60%] mx-4">
+      <div className="p-4 flex flex-col min-h-0">
         {title && (
           <h2 className="text-lg font-bold text-neutral-900 dark:text-neutral-100 mb-2">
             {title}
           </h2>
         )}
 
-        <div className="text-neutral-800 dark:text-neutral-200 mb-6 whitespace-pre-line break-words">
+        <div className="text-neutral-800 dark:text-neutral-200 mb-6 whitespace-pre-line break-words overflow-y-auto min-h-0">
           {message}
         </div>
 

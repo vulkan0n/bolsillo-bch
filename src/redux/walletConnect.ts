@@ -188,7 +188,7 @@ export const wcSessionRequest = createAsyncThunk(
 
           const isApproved = await ModalService().showConfirm({
             title: peer.metadata.name,
-            message: `${translate(common.signMessage)}\n\n${message.substring(0, 200)}${message.length > 200 ? "..." : ""}\n\n${event.verifyContext.verified.origin}`,
+            message: `${translate(common.signMessage)}\n\n${message}\n\n${event.verifyContext.verified.origin}`,
             confirmLabel: translate(common.approve),
           });
 
