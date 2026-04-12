@@ -3,8 +3,6 @@ import { NavLink } from "react-router";
 import {
   BankFilled,
   BankOutlined,
-  CompassFilled,
-  CompassOutlined,
   SettingFilled,
   SettingOutlined,
   WalletFilled,
@@ -16,7 +14,6 @@ import {
   selectIsVendorModeActive,
   selectLanguageCode,
   selectLastAssetsPath,
-  selectUiSettings,
 } from "@/redux/preferences";
 
 import { translate } from "@/util/translations";
@@ -27,8 +24,6 @@ export default function BottomNavigation() {
   const isKeyboardOpen = useSelector(selectKeyboardIsOpen);
   const isScanning = useSelector(selectScannerIsScanning);
   const isVendorModeActive = useSelector(selectIsVendorModeActive);
-  const { shouldDisplayExploreTab } = useSelector(selectUiSettings);
-
   // Ensure component reloads when language preferences are changed
   useSelector(selectLanguageCode);
 
@@ -57,14 +52,7 @@ export default function BottomNavigation() {
         label={translate(translations.assets)}
       />
 
-      {shouldDisplayExploreTab && (
-        <NavButton
-          to="/explore"
-          activeIcon={CompassFilled}
-          icon={CompassOutlined}
-          label={translate(translations.explore)}
-        />
-      )}
+
       <NavButton
         to="/settings"
         activeIcon={SettingFilled}
