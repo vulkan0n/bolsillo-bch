@@ -201,3 +201,30 @@ selene-wallet/
   (El Salvador, Filipinas)
 - **Wallets con social recovery en producción:** Valora Wallet
   (Celo), Coinbase Wallet (backup en iCloud/Google Drive)
+
+---
+
+## Estado del fork (2026-04-12)
+
+### Configuración del repo
+- Raíz del proyecto: contenido de selene-wallet movido directamente a `bolsillo-bch/`
+- `origin` → https://github.com/vulkan0n/bolsillo-bch
+- `upstream` → https://git.xulu.tech/selene.cash/selene-wallet
+- Claude Code configurado sin Co-Authored-By en commits (`~/.claude/settings.json`)
+
+### Entorno de desarrollo
+- Node via fnm, pnpm obligatorio
+- JDK 21 (necesario para Gradle 8.13 — el 17 no alcanza)
+- Android Studio con SDK API 36 y Build-Tools 35
+- Build APK debug: `pnpm build:ci && npx cap sync android && cd android && ./gradlew assembleDebug`
+- APK de salida: `android/app/build/outputs/apk/debug/app-debug.apk`
+
+### Cambios realizados
+- Logo reemplazado: `src/assets/selene-logo.svg`
+- Tab "Explore" eliminada de la navegación (`src/components/layout/BottomNavigation.tsx`)
+
+### Próximos pasos pendientes
+- Modo comerciante: pantalla de cobro con monto en ARS → QR BCH
+- Denominación dual ARS + BCH en la vista de balance
+- Onboarding progresivo (simplificar el flujo de las 12 palabras)
+- Cambiar nombre/branding de "Selene" a "Bolsillo BCH" en la UI

@@ -2,6 +2,22 @@
 
 This file provides guidance to Claude Code when working with this repository.
 
+## ⚠️ Este es un fork — Bolsillo BCH
+
+Este repositorio es un fork de Selene Wallet adaptado para comercios argentinos.
+
+- **Repo del fork:** https://github.com/vulkan0n/bolsillo-bch
+- **Upstream (Selene):** https://git.xulu.tech/selene.cash/selene-wallet (remote `upstream`)
+- **Notas del proyecto:** ver `NOTAS-BOLSILLO.md` en la raíz
+
+**Objetivo:** wallet BCH simplificada para comercios no cripto-entusiastas. Foco en UX:
+modo comerciante con precios en ARS, onboarding progresivo, recuperación vía Google Drive.
+
+**Qué se modifica:** capa de UX/presentación (`src/`).
+**Qué NO se toca:** lógica de protocolo BCH (libauth, electrum, servicios en `kernel/`).
+
+---
+
 ## Project Overview
 
 Selene Wallet is a self-custodial Bitcoin Cash (BCH) wallet built with React 19, Vite 5, and Capacitor 8 for cross-platform mobile deployment. Uses SQLite (sql.js) for storage with native encryption, Electrum protocol over WebSocket for blockchain communication.
