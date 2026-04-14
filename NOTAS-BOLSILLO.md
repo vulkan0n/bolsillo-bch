@@ -224,7 +224,85 @@ selene-wallet/
 - Tab "Explore" eliminada de la navegación (`src/components/layout/BottomNavigation.tsx`)
 
 ### Próximos pasos pendientes
-- Modo comerciante: pantalla de cobro con monto en ARS → QR BCH
 - Denominación dual ARS + BCH en la vista de balance
 - Onboarding progresivo (simplificar el flujo de las 12 palabras)
 - Cambiar nombre/branding de "Selene" a "Bolsillo BCH" en la UI
+- Modo Estable: ajustes sobre la implementación upstream (ver sección abajo)
+- Modo comerciante: pantalla de cobro con monto en ARS → QR BCH (baja prioridad)
+
+---
+
+## Modo Estable (stablecoin mode)
+
+### Estado de la implementación upstream
+
+El upstream Selene ya tiene `stablecoinMode` casi completamente implementado.
+**No hay que construirlo desde cero.** Lo que existe:
+
+| Componente | Archivo |
+|---|---|
+| Preferencia `stablecoinMode` + selector `selectIsStablecoinMode` | `src/redux/preferences.ts:48` |
+| Auto-swap BCH→MUSD al recibir pago | `src/redux/wallet.ts:228-277` |
+| Auto-swap MUSD→BCH al enviar (swap atómico + pago) | `src/components/views/wallet/send/WalletViewSend.tsx` |
+| Lógica de transacción con swap embebido | `src/kernel/bch/TransactionBuilderService.ts:536` |
+| Hook de balance MUSD (`useStablecoinBalance`) | `src/hooks/useStablecoinBalance.tsx` |
+| Conexión automática a Cauldron al activar el modo | `src/redux/sync.ts:97-111` |
+| Toggle en Currency Settings | `src/components/views/settings/CurrencySettings.jsx` |
+| Constante del token MUSD | `src/util/tokens.ts` → `MUSD_TOKENID` |
+
+**Token MUSD:** `b38a33f750f84c5c169a6f23cb873e6e79605021585d4f3408789689ed87f366`
+
+**DEX utilizado:** Cauldron (`@cashlab/cauldron` v1.0.2), ya integrado en `src/kernel/bch/CauldronService.ts`
+
+### Cómo funciona el diseño upstream (100% swap)
+
+**Al recibir BCH:**
+1. Se detecta el saldo nuevo en `redux/wallet.ts`
+2. Se llama a `Cauldron.fetchPools(MUSD_TOKENID)` para obtener liquidez actualizada
+3. Se swapea el 100% del BCH recibido a MUSD via `Cauldron.prepareTrade("BCH", MUSD_TOKENID, incomingSats, wallet, true)`
+4. La fee de red del swap se descuenta del mismo BCH recibido (dentro de `prepareTrade`)
+5. Resultado: wallet con 0 BCH y X MUSD
+
+**Al enviar (con 0 BCH en wallet):**
+1. `buildP2pkhTransaction()` falla porque no hay BCH → retorna un `bigint` con los sats que faltan
+2. Se llama a `buildStablecoinTransaction(recipients, satsShort)` en `TransactionBuilderService.ts`
+3. Se construye una **transacción atómica** que en un solo TX: swapea MUSD→BCH + paga al destinatario + paga fees de red
+4. El destinatario recibe BCH directamente (no MUSD)
+
+### Problema del diseño 100%: fragilidad ante Cauldron
+
+| Situación | Resultado |
+|---|---|
+| Cauldron tiene liquidez | Funciona correctamente |
+| Pool de MUSD sin liquidez | **No se puede enviar nada** |
+| Cauldron caído o lento | **Wallet paralizada** |
+| Transacción rechazada | Se pierde la fee del swap fallido |
+
+Además, cada envío paga **dos fees**: fee de red + spread del DEX (~0.3% de Cauldron).
+
+### Ajuste pendiente: reserva del 1% como BCH
+
+Para Bolsillo BCH se propone swapear solo el **99%** del BCH recibido, manteniendo 1% como reserva:
+
+- Transacciones pequeñas se pagan con el BCH reservado sin tocar Cauldron
+- Solo envíos grandes necesitan liquidar MUSD
+- Si Cauldron está caído, las transacciones chicas siguen funcionando
+- La reserva crece con cada pago recibido
+
+**Cambio a implementar** en `src/redux/wallet.ts` (línea ~233):
+```ts
+// Upstream (actual):
+const incomingSats = satsDiff - tokenSats;  // 100% al swap
+
+// Bolsillo BCH:
+const totalIncoming = satsDiff - tokenSats;
+const swapAmount = (totalIncoming * 99n) / 100n;  // 99% → MUSD, 1% queda como BCH
+```
+
+El porcentaje (99%) es configurable a futuro — el usuario lo revisará.
+
+### Pendiente de UI
+
+- Renombrar "Stablecoin Mode" → "Modo Estable" en la interfaz
+- Mover el toggle a un lugar más visible (actualmente está en Currency Settings)
+- Adaptar la descripción al contexto de ARS
