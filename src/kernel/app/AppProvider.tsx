@@ -10,7 +10,11 @@ import {
   redux_resume,
   store,
 } from "@/redux";
-import { selectIsDarkMode, selectSecuritySettings } from "@/redux/preferences";
+import {
+  selectActiveWalletHash,
+  selectIsDarkMode,
+  selectSecuritySettings,
+} from "@/redux/preferences";
 
 import DatabaseService, {
   DecryptionFailedError,
@@ -22,6 +26,7 @@ import { NotificationProvider } from "@/kernel/app/NotificationService";
 import SecurityService, { AuthActions } from "@/kernel/app/SecurityService";
 
 import AppLockScreen from "@/views/security/AppLockScreen";
+import WelcomeView from "@/views/onboarding/WelcomeView";
 import ErrorBoundary from "@/layout/ErrorBoundary";
 
 const Log = LogService("AppProvider");
@@ -30,6 +35,7 @@ const Log = LogService("AppProvider");
 
 type Phase =
   | "PREFLIGHT"
+  | "ONBOARDING"
   | "MIGRATING"
   | "LOCKED"
   | "RUNNING"
@@ -98,6 +104,13 @@ function useAppLifecycle() {
 
       try {
         await Promise.all([JanitorService().fsck(), redux_pre_init()]);
+
+        // Primera vez: si no hay wallet activa, mostrar onboarding con Google Sign-In
+        const activeWalletHash = selectActiveWalletHash(store.getState());
+        if (!activeWalletHash) {
+          go("ONBOARDING");
+          return;
+        }
 
         const { authMode, authActions } = selectSecuritySettings(
           store.getState()
@@ -231,6 +244,9 @@ export default function AppProvider({ children }: AppProviderProps) {
     case "PREFLIGHT":
     case "PAUSED":
       break; // native splash covers; PAUSED = cleanup in progress
+    case "ONBOARDING":
+      content = <WelcomeView boot={boot} />;
+      break;
     case "MIGRATING":
       break; // splash hidden, migration in progress (modal/bio prompt overlays)
     case "LOCKED":
