@@ -314,6 +314,79 @@ El porcentaje (99%) es configurable a futuro — el usuario lo revisará.
 - Mover el toggle a un lugar más visible (actualmente está en Currency Settings)
 - Adaptar la descripción al contexto de ARS
 
+---
+
+## Backup en Google Drive (onboarding sin seed visible)
+
+### Objetivo
+
+El usuario abre la app, se loguea con Google, y la wallet se crea y respalda automáticamente. Sin 12 palabras visibles, sin contraseña extra, sin backend propio.
+
+### Referencia: Valora Wallet
+
+Se analizó el código de Valora Wallet (`valora-inc/wallet`). Valora usa un esquema de dos keyshares (Torus + backend propio) con AES-256-GCM. **No usan Google Drive** — guardan el mnemónico encriptado en su propio servidor (CAB). Requiere backend + integración con Torus. Demasiado complejo para nuestro caso.
+
+Lo que sí se reutiliza de Valora: el patrón de encriptación (`AES-256-GCM` + `HKDF-SHA256`).
+
+### Diseño elegido para Bolsillo BCH
+
+Sin backend. Sin contraseña. Solo Google.
+
+```
+Google Sign-In → Google User ID (sub)
+    ↓
+HKDF(sub + app_salt) → clave AES-256
+    ↓
+AES-256-GCM(mnemonic) → archivo JSON encriptado
+    ↓
+Google Drive App Data folder (privado, invisible al usuario)
+```
+
+**Al restaurar en otro dispositivo:**
+
+```
+Google Sign-In (misma cuenta) → mismo sub
+    ↓
+HKDF(sub + app_salt) → misma clave AES-256
+    ↓
+Descargar archivo de Drive → desencriptar → importar wallet
+```
+
+### Por qué es seguro
+
+- El archivo en Drive es inútil sin la cuenta Google (la clave se deriva del `sub`)
+- `sub` es un ID opaco de Google, no el email — no adivinable
+- AES-256-GCM autentica el ciphertext (detecta tampering)
+- Google Drive App Data es una carpeta privada por app — no visible en el Drive del usuario
+- Si el usuario pierde acceso a su cuenta Google → puede recuperar desde otro backup manual (opción avanzada)
+
+### Implementación planeada
+
+**Librerías:**
+- `@codetrix-studio/capacitor-google-auth` — Google Sign-In en Capacitor
+- `futoin-hkdf` — derivación de clave (HKDF-SHA256, mismo que Valora)
+- `@noble/ciphers` o Web Crypto API — AES-256-GCM (disponible en WebView)
+- Google Drive REST API — llamadas HTTP directas con el `accessToken`
+
+**Archivos a crear:**
+- `src/kernel/backup/GoogleAuthService.ts` — Sign-In, obtener sub + accessToken
+- `src/kernel/backup/CloudEncryption.ts` — HKDF + AES-256-GCM (basado en Valora)
+- `src/kernel/backup/GoogleDriveService.ts` — upload/download al App Data folder
+- `src/kernel/backup/CloudBackupService.ts` — orquestación: crear backup, restaurar
+- `src/components/views/onboarding/WelcomeView.tsx` — pantalla inicial con botón Google
+
+**Archivos a modificar:**
+- `src/kernel/app/AppProvider.tsx` — interceptar "no hay wallet" → mostrar WelcomeView
+- rutas — agregar `/welcome`
+
+### Scope de OAuth requerido
+
+```
+https://www.googleapis.com/auth/drive.appdata
+```
+
+Solo acceso a la carpeta privada de la app en Drive. No puede leer el Drive del usuario.
+
 ### Datos Google Cloud
 
 > El Client Secret va en `.env.local` (gitignoreado), nunca en este archivo.
