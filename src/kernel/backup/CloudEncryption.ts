@@ -25,12 +25,17 @@ export interface EncryptedBackup {
  * Deriva una clave AES-256 determinística a partir del Google User ID.
  * Misma cuenta → misma clave → puede desencriptar en cualquier dispositivo.
  */
-function deriveKey(googleUserId: string): Buffer {
-  return hkdf(Buffer.from(googleUserId, "utf8"), 32, {
+function deriveKey(googleUserId: string): ArrayBuffer {
+  const buf: Buffer = hkdf(Buffer.from(googleUserId, "utf8"), 32, {
     salt: APP_SALT,
     info: APP_INFO,
     hash: "SHA-256",
   });
+  // Slice produces a plain ArrayBuffer (no SharedArrayBuffer) requerido por Web Crypto
+  return buf.buffer.slice(
+    buf.byteOffset,
+    buf.byteOffset + buf.byteLength
+  ) as ArrayBuffer;
 }
 
 // ----------------
