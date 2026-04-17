@@ -38,6 +38,7 @@
     "@capacitor/screen-orientation": "^8.0.0",
     "@capacitor/share": "^8.0.0",
     "@capacitor/splash-screen": "^8.0.0",
+    "@capawesome/capacitor-google-sign-in": "^0.1.2",
     "@capawesome/capacitor-torch": "^8.0.0",
     "@cashlab/cauldron": "^1.0.2",
     "@cashlab/common": "1.0.4",
@@ -52,6 +53,7 @@
     "capacitor-plugin-simple-encryption": "https://git.xulu.tech/selene.cash/capacitor-plugin-simple-encryption.git#v0.2.9",
     "chart.js": "^4.5.1",
     "decimal.js": "^10.6.0",
+    "futoin-hkdf": "^1.5.3",
     "graphql": "^16.12.0",
     "js-logger": "^1.6.1",
     "jspdf": "^3.0.4",
@@ -106,7 +108,11 @@
     "vitest": "^4.0.17"
   },
   "pnpm": {
-    "onlyBuiltDependencies": ["esbuild", "@swc/core", "sharp"]
+    "onlyBuiltDependencies": [
+      "esbuild",
+      "@swc/core",
+      "sharp"
+    ]
   },
   "resolutions": {
     "@bitauth/libauth": "^3.0.0"

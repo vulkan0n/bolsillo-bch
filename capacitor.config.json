@@ -11,6 +11,9 @@
     },
     "CapacitorHttp": {
       "enabled": true
+    },
+    "GoogleSignIn": {
+      "serverClientId": "695566586090-7820ks7je4iuo1orf3voba9vfg0tkcq1.apps.googleusercontent.com"
     }
   }
 }

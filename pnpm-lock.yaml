@@ -74,6 +74,9 @@ importers:
       '@capacitor/splash-screen':
         specifier: ^8.0.0
         version: 8.0.0(@capacitor/core@8.0.1)
+      '@capawesome/capacitor-google-sign-in':
+        specifier: ^0.1.2
+        version: 0.1.2(@capacitor/core@8.0.1)
       '@capawesome/capacitor-torch':
         specifier: ^8.0.0
         version: 8.0.0(@capacitor/core@8.0.1)
@@ -116,6 +119,9 @@ importers:
       decimal.js:
         specifier: ^10.6.0
         version: 10.6.0
+      futoin-hkdf:
+        specifier: ^1.5.3
+        version: 1.5.3
       graphql:
         specifier: ^16.12.0
         version: 16.12.0
@@ -524,6 +530,11 @@ packages:
 
   '@capacitor/synapse@1.0.4':
     resolution: {integrity: sha512-/C1FUo8/OkKuAT4nCIu/34ny9siNHr9qtFezu4kxm6GY1wNFxrCFWjfYx5C1tUhVGz3fxBABegupkpjXvjCHrw==}
+
+  '@capawesome/capacitor-google-sign-in@0.1.2':
+    resolution: {integrity: sha512-41Z5LBVZJQ/20lEbzQJUtjfm7rCUhiq0EsfKmytTfKjqUjQB4zy0zlDMowe/z5CtetL8u7WGvERtyRYil2exww==}
+    peerDependencies:
+      '@capacitor/core': '>=8.0.0'
 
   '@capawesome/capacitor-torch@8.0.0':
     resolution: {integrity: sha512-uaz9CmdflZ9ZBBKn9WFIWxokpQ8BdFy0Im+FxHNwZC8HnMZ3R5yswThrgPd4q3MfUcCO/3p1916wUPvmJ4Pwgw==}
@@ -2827,6 +2838,10 @@ packages:
 
   functions-have-names@1.2.3:
     resolution: {integrity: sha512-xckBUXyTIqT97tq2x2AMb+g163b5JFysYk0x4qxNFwbfQkmNZoiRHb6sPzI9/QV33WeuvVYBUIiD4NzNIyqaRQ==}
+
+  futoin-hkdf@1.5.3:
+    resolution: {integrity: sha512-SewY5KdMpaoCeh7jachEWFsh1nNlaDjNHZXWqL5IGwtpEYHTgkr2+AMCgNwKWkcc0wpSYrZfR7he4WdmHFtDxQ==}
+    engines: {node: '>=8'}
 
   generator-function@2.0.1:
     resolution: {integrity: sha512-SFdFmIJi+ybC0vjlHN0ZGVGHc3lgE0DxPAT0djjVg+kjOnSqclqmj0KQ7ykTOLP6YxoqOvuAODGdcHJn+43q3g==}
@@ -5463,6 +5478,10 @@ snapshots:
       '@capacitor/core': 8.0.1
 
   '@capacitor/synapse@1.0.4': {}
+
+  '@capawesome/capacitor-google-sign-in@0.1.2(@capacitor/core@8.0.1)':
+    dependencies:
+      '@capacitor/core': 8.0.1
 
   '@capawesome/capacitor-torch@8.0.0(@capacitor/core@8.0.1)':
     dependencies:
@@ -8351,6 +8370,8 @@ snapshots:
       is-callable: 1.2.7
 
   functions-have-names@1.2.3: {}
+
+  futoin-hkdf@1.5.3: {}
 
   generator-function@2.0.1: {}
 

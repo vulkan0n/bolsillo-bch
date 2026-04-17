@@ -4,4 +4,5 @@
     <string name="title_activity_main">Selene Wallet</string>
     <string name="package_name">cash.selene.app</string>
     <string name="custom_url_scheme">cash.selene.app</string>
+    <string name="server_client_id">695566586090-7820ks7je4iuo1orf3voba9vfg0tkcq1.apps.googleusercontent.com</string>
 </resources>
