@@ -207,12 +207,14 @@ selene-wallet/
 ## Estado del fork (2026-04-12)
 
 ### Configuración del repo
+
 - Raíz del proyecto: contenido de selene-wallet movido directamente a `bolsillo-bch/`
 - `origin` → https://github.com/vulkan0n/bolsillo-bch
 - `upstream` → https://git.xulu.tech/selene.cash/selene-wallet
 - Claude Code configurado sin Co-Authored-By en commits (`~/.claude/settings.json`)
 
 ### Entorno de desarrollo
+
 - Node via fnm, pnpm obligatorio
 - JDK 21 (necesario para Gradle 8.13 — el 17 no alcanza)
 - Android Studio con SDK API 36 y Build-Tools 35
@@ -220,10 +222,12 @@ selene-wallet/
 - APK de salida: `android/app/build/outputs/apk/debug/app-debug.apk`
 
 ### Cambios realizados
+
 - Logo reemplazado: `src/assets/selene-logo.svg`
 - Tab "Explore" eliminada de la navegación (`src/components/layout/BottomNavigation.tsx`)
 
 ### Próximos pasos pendientes
+
 - Denominación dual ARS + BCH en la vista de balance
 - Onboarding progresivo (simplificar el flujo de las 12 palabras)
 - Cambiar nombre/branding de "Selene" a "Bolsillo BCH" en la UI
@@ -239,16 +243,16 @@ selene-wallet/
 El upstream Selene ya tiene `stablecoinMode` casi completamente implementado.
 **No hay que construirlo desde cero.** Lo que existe:
 
-| Componente | Archivo |
-|---|---|
-| Preferencia `stablecoinMode` + selector `selectIsStablecoinMode` | `src/redux/preferences.ts:48` |
-| Auto-swap BCH→MUSD al recibir pago | `src/redux/wallet.ts:228-277` |
-| Auto-swap MUSD→BCH al enviar (swap atómico + pago) | `src/components/views/wallet/send/WalletViewSend.tsx` |
-| Lógica de transacción con swap embebido | `src/kernel/bch/TransactionBuilderService.ts:536` |
-| Hook de balance MUSD (`useStablecoinBalance`) | `src/hooks/useStablecoinBalance.tsx` |
-| Conexión automática a Cauldron al activar el modo | `src/redux/sync.ts:97-111` |
-| Toggle en Currency Settings | `src/components/views/settings/CurrencySettings.jsx` |
-| Constante del token MUSD | `src/util/tokens.ts` → `MUSD_TOKENID` |
+| Componente                                                       | Archivo                                               |
+| ---------------------------------------------------------------- | ----------------------------------------------------- |
+| Preferencia `stablecoinMode` + selector `selectIsStablecoinMode` | `src/redux/preferences.ts:48`                         |
+| Auto-swap BCH→MUSD al recibir pago                               | `src/redux/wallet.ts:228-277`                         |
+| Auto-swap MUSD→BCH al enviar (swap atómico + pago)               | `src/components/views/wallet/send/WalletViewSend.tsx` |
+| Lógica de transacción con swap embebido                          | `src/kernel/bch/TransactionBuilderService.ts:536`     |
+| Hook de balance MUSD (`useStablecoinBalance`)                    | `src/hooks/useStablecoinBalance.tsx`                  |
+| Conexión automática a Cauldron al activar el modo                | `src/redux/sync.ts:97-111`                            |
+| Toggle en Currency Settings                                      | `src/components/views/settings/CurrencySettings.jsx`  |
+| Constante del token MUSD                                         | `src/util/tokens.ts` → `MUSD_TOKENID`                 |
 
 **Token MUSD:** `b38a33f750f84c5c169a6f23cb873e6e79605021585d4f3408789689ed87f366`
 
@@ -257,6 +261,7 @@ El upstream Selene ya tiene `stablecoinMode` casi completamente implementado.
 ### Cómo funciona el diseño upstream (100% swap)
 
 **Al recibir BCH:**
+
 1. Se detecta el saldo nuevo en `redux/wallet.ts`
 2. Se llama a `Cauldron.fetchPools(MUSD_TOKENID)` para obtener liquidez actualizada
 3. Se swapea el 100% del BCH recibido a MUSD via `Cauldron.prepareTrade("BCH", MUSD_TOKENID, incomingSats, wallet, true)`
@@ -264,6 +269,7 @@ El upstream Selene ya tiene `stablecoinMode` casi completamente implementado.
 5. Resultado: wallet con 0 BCH y X MUSD
 
 **Al enviar (con 0 BCH en wallet):**
+
 1. `buildP2pkhTransaction()` falla porque no hay BCH → retorna un `bigint` con los sats que faltan
 2. Se llama a `buildStablecoinTransaction(recipients, satsShort)` en `TransactionBuilderService.ts`
 3. Se construye una **transacción atómica** que en un solo TX: swapea MUSD→BCH + paga al destinatario + paga fees de red
@@ -271,12 +277,12 @@ El upstream Selene ya tiene `stablecoinMode` casi completamente implementado.
 
 ### Problema del diseño 100%: fragilidad ante Cauldron
 
-| Situación | Resultado |
-|---|---|
-| Cauldron tiene liquidez | Funciona correctamente |
-| Pool de MUSD sin liquidez | **No se puede enviar nada** |
-| Cauldron caído o lento | **Wallet paralizada** |
-| Transacción rechazada | Se pierde la fee del swap fallido |
+| Situación                 | Resultado                         |
+| ------------------------- | --------------------------------- |
+| Cauldron tiene liquidez   | Funciona correctamente            |
+| Pool de MUSD sin liquidez | **No se puede enviar nada**       |
+| Cauldron caído o lento    | **Wallet paralizada**             |
+| Transacción rechazada     | Se pierde la fee del swap fallido |
 
 Además, cada envío paga **dos fees**: fee de red + spread del DEX (~0.3% de Cauldron).
 
@@ -290,13 +296,14 @@ Para Bolsillo BCH se propone swapear solo el **99%** del BCH recibido, mantenien
 - La reserva crece con cada pago recibido
 
 **Cambio a implementar** en `src/redux/wallet.ts` (línea ~233):
+
 ```ts
 // Upstream (actual):
-const incomingSats = satsDiff - tokenSats;  // 100% al swap
+const incomingSats = satsDiff - tokenSats; // 100% al swap
 
 // Bolsillo BCH:
 const totalIncoming = satsDiff - tokenSats;
-const swapAmount = (totalIncoming * 99n) / 100n;  // 99% → MUSD, 1% queda como BCH
+const swapAmount = (totalIncoming * 99n) / 100n; // 99% → MUSD, 1% queda como BCH
 ```
 
 El porcentaje (99%) es configurable a futuro — el usuario lo revisará.
@@ -306,3 +313,15 @@ El porcentaje (99%) es configurable a futuro — el usuario lo revisará.
 - Renombrar "Stablecoin Mode" → "Modo Estable" en la interfaz
 - Mover el toggle a un lugar más visible (actualmente está en Currency Settings)
 - Adaptar la descripción al contexto de ARS
+
+### Datos Google Cloud
+
+> El Client Secret va en `.env.local` (gitignoreado), nunca en este archivo.
+
+| Dato | Valor |
+|---|---|
+| Proyecto | bolsillo-bch |
+| Web Client ID | `695566586090-7820ks7je4iuo1orf3voba9vfg0tkcq1.apps.googleusercontent.com` |
+| Android Client ID | `695566586090-u6ethsk823nv2oceqg8idpvnvajbl5n9.apps.googleusercontent.com` |
+| SHA1 (debug keystore) | `93:68:CA:05:9F:72:B1:CD:C1:1F:47:9C:D6:6C:92:55:C5:BE:F1:BF` |
+| Client Secret | en `.env.local` → `GOOGLE_CLIENT_SECRET` |
