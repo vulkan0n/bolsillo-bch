@@ -52,3 +52,4 @@ ios/App/App.*.zip
 playwright-report/
 test-results/
 .env.e2e
+stats.html
