@@ -18,6 +18,9 @@ dist-ssr
 # Claude Code
 .claude
 
+# TypeScript build cache
+tsconfig.tsbuildinfo
+
 # Editor directories and files
 .vscode
 .vscode/*
