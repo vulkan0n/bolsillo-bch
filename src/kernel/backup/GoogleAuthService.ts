@@ -11,8 +11,7 @@ const WEB_CLIENT_ID =
 
 // Scope requerido para acceder al App Data folder de Google Drive.
 // Este scope solo da acceso a la carpeta privada de la app — no al Drive completo.
-const DRIVE_APPDATA_SCOPE =
-  "https://www.googleapis.com/auth/drive.appdata";
+const DRIVE_APPDATA_SCOPE = "https://www.googleapis.com/auth/drive.appdata";
 
 // ----------------
 

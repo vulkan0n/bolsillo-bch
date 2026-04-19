@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 import LogService from "@/kernel/app/LogService";
 
 import type { EncryptedBackup } from "./CloudEncryption";
@@ -27,9 +28,7 @@ interface DriveFile {
  * Busca el archivo de backup en el App Data folder.
  * Retorna el archivo más reciente, o null si no existe.
  */
-async function findBackupFile(
-  accessToken: string
-): Promise<DriveFile | null> {
+async function findBackupFile(accessToken: string): Promise<DriveFile | null> {
   const params = new URLSearchParams({
     spaces: "appDataFolder",
     fields: "files(id,name,modifiedTime)",
@@ -164,12 +163,9 @@ export async function downloadBackup(
     `Downloading backup file: ${file.id} (modified: ${file.modifiedTime})`
   );
 
-  const response = await fetch(
-    `${DRIVE_API}/files/${file.id}?alt=media`,
-    {
-      headers: { Authorization: `Bearer ${accessToken}` },
-    }
-  );
+  const response = await fetch(`${DRIVE_API}/files/${file.id}?alt=media`, {
+    headers: { Authorization: `Bearer ${accessToken}` },
+  });
 
   if (!response.ok) {
     throw new Error(

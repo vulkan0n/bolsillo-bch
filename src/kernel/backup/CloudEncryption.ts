@@ -71,9 +71,7 @@ export async function encryptMnemonic(
     version: "1",
     algorithm: "AES-256-GCM",
     iv: btoa(String.fromCharCode(...iv)),
-    ciphertext: btoa(
-      String.fromCharCode(...new Uint8Array(ciphertextBuffer))
-    ),
+    ciphertext: btoa(String.fromCharCode(...new Uint8Array(ciphertextBuffer))),
   };
 }
 

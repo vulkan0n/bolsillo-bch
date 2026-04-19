@@ -52,7 +52,6 @@ export default function BottomNavigation() {
         label={translate(translations.assets)}
       />
 
-
       <NavButton
         to="/settings"
         activeIcon={SettingFilled}
