@@ -1,5 +1,3 @@
-import hkdf from "futoin-hkdf";
-
 // --------------------------------
 
 // Salt fijo de la app — no es un secreto, su función es separar el dominio
@@ -24,21 +22,37 @@ export interface EncryptedBackup {
 /**
  * Deriva una clave AES-256 determinística a partir del Google User ID.
  * Misma cuenta → misma clave → puede desencriptar en cualquier dispositivo.
+ * Usa Web Crypto HKDF (SHA-256) — no depende de Node.js crypto.
  */
-function deriveKey(googleUserId: string): ArrayBuffer {
-  const buf: Buffer = hkdf(Buffer.from(googleUserId, "utf8"), 32, {
-    salt: APP_SALT,
-    info: APP_INFO,
-    hash: "SHA-256",
-  });
-  // Slice produces a plain ArrayBuffer (no SharedArrayBuffer) requerido por Web Crypto
-  return buf.buffer.slice(
-    buf.byteOffset,
-    buf.byteOffset + buf.byteLength
-  ) as ArrayBuffer;
+async function deriveKey(
+  googleUserId: string,
+  usage: KeyUsage[]
+): Promise<CryptoKey> {
+  const enc = new TextEncoder();
+
+  const baseKey = await globalThis.crypto.subtle.importKey(
+    "raw",
+    enc.encode(googleUserId),
+    "HKDF",
+    false,
+    ["deriveKey"]
+  );
+
+  return globalThis.crypto.subtle.deriveKey(
+    {
+      name: "HKDF",
+      hash: "SHA-256",
+      salt: enc.encode(APP_SALT),
+      info: enc.encode(APP_INFO),
+    },
+    baseKey,
+    { name: "AES-GCM", length: 256 },
+    false,
+    usage
+  );
 }
 
-// ----------------
+// --------------------------------
 
 /**
  * Encripta el mnemónico con AES-256-GCM.
@@ -48,15 +62,7 @@ export async function encryptMnemonic(
   mnemonic: string,
   googleUserId: string
 ): Promise<EncryptedBackup> {
-  const keyBytes = deriveKey(googleUserId);
-
-  const cryptoKey = await globalThis.crypto.subtle.importKey(
-    "raw",
-    keyBytes,
-    { name: "AES-GCM" },
-    false,
-    ["encrypt"]
-  );
+  const cryptoKey = await deriveKey(googleUserId, ["encrypt"]);
 
   const iv = globalThis.crypto.getRandomValues(new Uint8Array(12));
   const encoded = new TextEncoder().encode(mnemonic);
@@ -85,15 +91,7 @@ export async function decryptMnemonic(
   backup: EncryptedBackup,
   googleUserId: string
 ): Promise<string> {
-  const keyBytes = deriveKey(googleUserId);
-
-  const cryptoKey = await globalThis.crypto.subtle.importKey(
-    "raw",
-    keyBytes,
-    { name: "AES-GCM" },
-    false,
-    ["decrypt"]
-  );
+  const cryptoKey = await deriveKey(googleUserId, ["decrypt"]);
 
   const iv = Uint8Array.from(atob(backup.iv), (c) => c.charCodeAt(0));
   const ciphertext = Uint8Array.from(atob(backup.ciphertext), (c) =>

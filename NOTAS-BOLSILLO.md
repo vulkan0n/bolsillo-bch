@@ -398,3 +398,77 @@ Solo acceso a la carpeta privada de la app en Drive. No puede leer el Drive del 
 | Android Client ID | `695566586090-u6ethsk823nv2oceqg8idpvnvajbl5n9.apps.googleusercontent.com` |
 | SHA1 (debug keystore) | `93:68:CA:05:9F:72:B1:CD:C1:1F:47:9C:D6:6C:92:55:C5:BE:F1:BF` |
 | Client Secret | en `.env.local` → `GOOGLE_CLIENT_SECRET` |
+
+### Estado final (2026-04-20)
+
+Backup/restore probado y confirmado en dispositivo físico (Xiaomi, Android API 36).
+Ciclo completo: nuevo usuario → Google Sign-In → wallet creada → backup subido →
+desinstalar app → reinstalar → mismo Google Sign-In → wallet restaurada con balance correcto.
+
+### Lecciones aprendidas de la implementación
+
+#### 1. `futoin-hkdf` NO funciona en Capacitor/WebView
+
+`futoin-hkdf` es una librería Node.js que usa `crypto.createHmac` internamente.
+Vite la incluye en el bundle pero la minifica (ej: `NK`). En el Android WebView
+no existe `node:crypto`, así que en runtime falla con `NK is not a function`.
+
+**Solución:** usar la Web Crypto API nativa del browser (disponible en WebView):
+
+```ts
+// ❌ No usar:
+import hkdf from "futoin-hkdf";
+const keyBytes = hkdf(userId, 32, { salt, info, hash: "SHA-256" });
+
+// ✅ Usar:
+const baseKey = await crypto.subtle.importKey("raw", enc.encode(userId), "HKDF", false, ["deriveKey"]);
+const cryptoKey = await crypto.subtle.deriveKey({ name: "HKDF", hash: "SHA-256", salt, info }, baseKey, { name: "AES-GCM", length: 256 }, false, ["encrypt"]);
+```
+
+**Regla general:** cualquier librería que importe de `crypto`, `stream`, u otros
+módulos de Node.js es incompatible con el build de Capacitor. Preferir siempre
+las APIs nativas del browser (Web Crypto, fetch, etc.).
+
+#### 2. Gradle puede servir assets obsoletos (build incremental)
+
+`npx cap sync android` + `./gradlew assembleDebug` puede ejecutar muy pocos
+tasks (ej: "1 executed") y generar un APK con el bundle web anterior.
+
+**Síntoma:** los logs de la app muestran comportamiento viejo aunque el código cambió.
+
+**Diagnóstico:** comparar el nombre del bundle en `dist/assets/` vs
+`android/app/src/main/assets/public/assets/`. Si no coinciden, el sync no funcionó.
+
+**Solución:** usar `./gradlew clean assembleDebug` para forzar reconstrucción completa.
+
+#### 3. Inicialización de cifrado en el flujo de onboarding
+
+`AppProvider.coldStart()` llama a `SecurityService().initEncryption()` en el path
+normal, pero cuando no hay wallet activa salta directo a `go("ONBOARDING")` sin
+inicializar el cifrado. Cuando `WelcomeView` llama a `boot()` → `walletBoot()` →
+`WalletManagerService().createWallet()` → `flushDatabase()` → el plugin de cifrado
+falla con `"Encryption key not loaded. Call initialize() first"`.
+
+**Solución:** agregar `await SecurityService().initEncryption()` antes de `go("ONBOARDING")`.
+
+#### 4. Leer logcat en dispositivos Android
+
+`adb logcat > /tmp/bolsillo-logcat.log` genera output binario. Para extraer los
+logs de la app usar:
+
+```bash
+strings /tmp/bolsillo-logcat.log | grep "Capacitor/Console"
+```
+
+O directamente filtrar en tiempo real:
+
+```bash
+adb logcat | grep "Capacitor/Console"
+```
+
+#### 5. Balance con 0-conf en Selene
+
+Selene actualiza el balance con transacciones 0-conf (no confirmadas). Si el
+balance no aparece inmediatamente, cerrar y reabrir la app fuerza un refresh del
+estado Redux. El cambio de address al recibir un UTXO es comportamiento esperado
+(BIP44: rotación de address de recepción).

@@ -50,6 +50,12 @@ pnpm build && npx cap sync && npx cap run android
 npx cap open ios      # Open Xcode
 npx cap open android  # Open Android Studio
 
+# Android APK (debug, for adb install)
+pnpm build:ci && npx cap sync android && cd android && ./gradlew assembleDebug
+# APK output: android/app/build/outputs/apk/debug/app-debug.apk
+# If Gradle runs very few tasks (stale), use: ./gradlew clean assembleDebug
+# Verify bundle filenames match: dist/assets/ vs android/app/src/main/assets/public/assets/
+
 # GitLab
 glab issue view <n> --repo selene.cash/selene-wallet
 glab mr view <n> --repo selene.cash/selene-wallet

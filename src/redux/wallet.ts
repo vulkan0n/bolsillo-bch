@@ -10,7 +10,6 @@ import { RootState } from "@/redux";
 import { selectIsStablecoinMode, setPreference } from "@/redux/preferences";
 import { selectIsRebuilding } from "@/redux/sync";
 
-import LogService from "@/kernel/app/LogService";
 import NotificationService from "@/kernel/app/NotificationService";
 import CauldronService from "@/kernel/bch/CauldronService";
 import AddressManagerService, {
@@ -26,8 +25,6 @@ import WalletManagerService, {
 import { convertCashAddress } from "@/util/cashaddr";
 import { resolveNftType } from "@/util/token";
 import { MUSD_TOKENID } from "@/util/tokens";
-
-const Log = LogService("redux/wallet");
 
 const initialState = {
   walletHash: "",

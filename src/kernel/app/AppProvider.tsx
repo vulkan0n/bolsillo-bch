@@ -108,6 +108,7 @@ function useAppLifecycle() {
         // Primera vez: si no hay wallet activa, mostrar onboarding con Google Sign-In
         const activeWalletHash = selectActiveWalletHash(store.getState());
         if (!activeWalletHash) {
+          await SecurityService().initEncryption();
           go("ONBOARDING");
           return;
         }
