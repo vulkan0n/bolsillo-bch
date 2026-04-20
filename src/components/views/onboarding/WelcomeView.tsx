@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import { store } from "@/redux";
 import { setPreference } from "@/redux/preferences";
@@ -9,8 +9,10 @@ import LogService from "@/kernel/app/LogService";
 import {
   backupActiveWallet,
   checkHasBackup,
+  googleHandleRedirectCallback,
   googleSignIn,
   restoreFromBackup,
+  type GoogleUser,
 } from "@/kernel/backup/CloudBackupService";
 
 import FullColumn from "@/layout/FullColumn";
@@ -37,64 +39,71 @@ export default function WelcomeView({ boot }: WelcomeViewProps) {
 
   // ----------------
 
+  // En web, Google redirige de vuelta con #id_token en la URL.
+  // Capturamos ese token al montar el componente.
+  useEffect(function handleWebRedirectCallback() {
+    if (!window.location.hash.includes("id_token")) return;
+
+    async function processRedirect() {
+      setStep("signing-in");
+      try {
+        const user = await googleHandleRedirectCallback();
+        if (!user) return;
+        await continueAfterSignIn(user);
+      } catch (e) {
+        const msg = e instanceof Error ? e.message : String(e);
+        Log.error("Redirect callback error:", msg);
+        setErrorMessage(msg);
+        setStep("error");
+      }
+    }
+
+    processRedirect();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // ----------------
+
+  async function continueAfterSignIn(user: GoogleUser) {
+    if (!user.accessToken) {
+      throw new Error("No se obtuvo acceso a Google Drive. Intentá de nuevo.");
+    }
+
+    setStep("checking");
+    const hasBackup = await checkHasBackup(user.accessToken);
+
+    if (hasBackup) {
+      Log.info("Backup found — restoring wallet");
+      setStep("restoring");
+      await DatabaseService().openAppDatabase();
+      await JanitorService().migrateLegacyDatabases();
+      const result = await restoreFromBackup(user.userId, user.accessToken);
+      if (!result.isSuccess || !result.walletHash) {
+        throw new Error(
+          result.error ?? "Error al restaurar la wallet desde el backup."
+        );
+      }
+      store.dispatch(
+        setPreference({ key: "activeWalletHash", value: result.walletHash })
+      );
+      await boot();
+    } else {
+      Log.info("No backup found — creating new wallet");
+      await boot();
+      backupActiveWallet(user.userId, user.accessToken).catch((e) => {
+        Log.warn("Background backup failed (non-critical):", e);
+      });
+    }
+  }
+
+  // ----------------
+
   const handleGoogleSignIn = useCallback(
     async function handleGoogleSignIn() {
       setStep("signing-in");
       setErrorMessage("");
-
       try {
-        // 1. Google Sign-In — obtiene userId y accessToken con scope drive.appdata
         const user = await googleSignIn();
-
-        if (!user.accessToken) {
-          throw new Error(
-            "No se obtuvo acceso a Google Drive. Intentá de nuevo."
-          );
-        }
-
-        setStep("checking");
-
-        // 2. ¿Hay backup en Drive para esta cuenta?
-        const hasBackup = await checkHasBackup(user.accessToken);
-
-        if (hasBackup) {
-          // ── Camino de restauración ──
-          Log.info("Backup found — restoring wallet");
-          setStep("restoring");
-
-          // Necesitamos la DB abierta para importar la wallet
-          await DatabaseService().openAppDatabase();
-          await JanitorService().migrateLegacyDatabases();
-
-          const result = await restoreFromBackup(user.userId, user.accessToken);
-
-          if (!result.isSuccess || !result.walletHash) {
-            throw new Error(
-              result.error ?? "Error al restaurar la wallet desde el backup."
-            );
-          }
-
-          // Activar el walletHash restaurado para que boot() lo encuentre
-          store.dispatch(
-            setPreference({
-              key: "activeWalletHash",
-              value: result.walletHash,
-            })
-          );
-
-          await boot();
-        } else {
-          // ── Camino de wallet nueva ──
-          Log.info("No backup found — creating new wallet");
-
-          // boot() crea la wallet automáticamente si activeWalletHash está vacío
-          await boot();
-
-          // Backup asíncrono — no bloqueamos al usuario
-          backupActiveWallet(user.userId, user.accessToken).catch((e) => {
-            Log.warn("Background backup failed (non-critical):", e);
-          });
-        }
+        await continueAfterSignIn(user);
       } catch (e) {
         const msg = e instanceof Error ? e.message : String(e);
         Log.error("WelcomeView error:", msg);
@@ -102,7 +111,7 @@ export default function WelcomeView({ boot }: WelcomeViewProps) {
         setStep("error");
       }
     },
-    [boot]
+    [boot] // eslint-disable-line react-hooks/exhaustive-deps
   );
 
   // ----------------

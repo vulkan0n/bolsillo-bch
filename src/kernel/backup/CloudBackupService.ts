@@ -6,7 +6,12 @@ import WalletManagerService from "@/kernel/wallet/WalletManagerService";
 
 import { encryptMnemonic, decryptMnemonic } from "./CloudEncryption";
 import { uploadBackup, downloadBackup, hasBackup } from "./GoogleDriveService";
-import { signIn, signOut, type GoogleUser } from "./GoogleAuthService";
+import {
+  signIn,
+  signOut,
+  handleRedirectCallback,
+  type GoogleUser,
+} from "./GoogleAuthService";
 
 const Log = LogService("CloudBackup");
 
@@ -37,6 +42,8 @@ export async function googleSignIn(): Promise<GoogleUser> {
 // ----------------
 
 export { signOut as googleSignOut };
+export { handleRedirectCallback as googleHandleRedirectCallback };
+export type { GoogleUser };
 
 // --------------------------------
 
