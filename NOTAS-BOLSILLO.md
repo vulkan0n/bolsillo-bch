@@ -233,6 +233,9 @@ selene-wallet/
 - Cambiar nombre/branding de "Selene" a "Bolsillo BCH" en la UI
 - Modo Estable: ajustes sobre la implementación upstream (ver sección abajo)
 - Modo comerciante: pantalla de cobro con monto en ARS → QR BCH (baja prioridad)
+- Agregar el botón de cerrar sesion
+- Diseño minimalista
+- Localizacion, todo en español y ARS por default
 
 ---
 
