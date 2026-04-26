@@ -27,11 +27,9 @@ import {
 
 import SecurityService, { AuthActions } from "@/kernel/app/SecurityService";
 
-import CurrencyFlip from "@/atoms/CurrencyFlip";
 import NumberFormat from "@/atoms/NumberFormat";
 import Satoshi from "@/atoms/Satoshi";
 
-import { useCurrencyFlip } from "@/hooks/useCurrencyFlip";
 import { useStablecoinBalance } from "@/hooks/useStablecoinBalance";
 
 export default function WalletViewBalance() {
@@ -47,8 +45,6 @@ export default function WalletViewBalance() {
   const bchNetwork = useSelector(selectBchNetwork);
 
   const isKeyViewed = key_viewed_at !== null;
-
-  const handleFlipCurrency = useCurrencyFlip();
 
   const shouldDisplayExchangeRate = useSelector(
     selectShouldDisplayExchangeRate
@@ -104,7 +100,7 @@ export default function WalletViewBalance() {
         data-testid="balance-area"
         data-hidden={shouldHideBalance ? "true" : "false"}
         className={`cursor-pointer w-full ${hiddenBalanceClasses}`}
-        onClick={shouldHideBalance ? handleHideBalance : handleFlipCurrency}
+        onClick={shouldHideBalance ? handleHideBalance : undefined}
       >
         {isStablecoinMode ? <StablecoinBalance /> : <Balance />}
       </button>
@@ -202,13 +198,12 @@ function Balance() {
     <>
       <div className="text-2xl text-neutral-50 tabular-nums flex justify-center items-center">
         <animated.span style={{ ...balanceReceivedSpring }}>
-          <Satoshi value={displayBalance} />
+          <Satoshi value={displayBalance} fiat />
         </animated.span>
       </div>
 
       <div className="text-md text-neutral-300 flex items-center justify-center">
-        <Satoshi value={displayBalance} flip />
-        <CurrencyFlip className="ml-1" />
+        <Satoshi value={displayBalance} fiat={false} />
       </div>
     </>
   );
