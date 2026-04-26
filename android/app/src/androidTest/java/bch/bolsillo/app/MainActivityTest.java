@@ -1,4 +1,4 @@
-package cash.selene.app;
+package bch.bolsillo.app;
 
 
 import static androidx.test.espresso.Espresso.onView;

@@ -231,7 +231,7 @@ selene-wallet/
 - Denominación dual ARS + BCH en la vista de balance
 - Onboarding progresivo (simplificar el flujo de las 12 palabras)
 - Cambiar nombre/branding de "Selene" a "Bolsillo BCH" en la UI
-- Modo Estable: ajustes sobre la implementación upstream (ver sección abajo)
+- Modo Estable: bloqueado — MUSD tiene vulnerabilidad pendiente de fix por el equipo de Moria (ver sección abajo)
 - Modo comerciante: pantalla de cobro con monto en ARS → QR BCH (baja prioridad)
 - Agregar el botón de cerrar sesion
 - Diseño minimalista
@@ -311,7 +311,18 @@ const swapAmount = (totalIncoming * 99n) / 100n; // 99% → MUSD, 1% queda como 
 
 El porcentaje (99%) es configurable a futuro — el usuario lo revisará.
 
-### Pendiente de UI
+### Estado actual (2026-04-26) — bloqueado
+
+El equipo de Moria encontró una vulnerabilidad en el token MUSD y van a actualizar el token.
+**No implementar Modo Estable hasta que el nuevo token esté desplegado y auditado.**
+Cuando salga el nuevo token, actualizar `MUSD_TOKENID` en `src/util/tokens.ts`.
+
+### Alternativa futura: ParyionUSD (PUSD)
+
+Otra stablecoin en BCH en desarrollo: https://paryonusd.com/
+Aún no está desplegada. Tener en cuenta como alternativa a MUSD.
+
+### Pendiente de UI (cuando se desbloquee)
 
 - Renombrar "Stablecoin Mode" → "Modo Estable" en la interfaz
 - Mover el toggle a un lugar más visible (actualmente está en Currency Settings)

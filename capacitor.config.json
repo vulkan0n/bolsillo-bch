@@ -1,6 +1,6 @@
 {
-  "appId": "cash.selene.app",
-  "appName": "Selene Wallet",
+  "appId": "bch.bolsillo.app",
+  "appName": "Bolsillo BCH",
   "webDir": "dist",
   "plugins": {
     "Keyboard": {

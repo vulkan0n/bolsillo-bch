@@ -1,10 +1,10 @@
 apply plugin: 'com.android.application'
 
 android {
-    namespace "cash.selene.app"
+    namespace "bch.bolsillo.app"
     compileSdk rootProject.ext.compileSdkVersion
     defaultConfig {
-        applicationId "cash.selene.app"
+        applicationId "bch.bolsillo.app"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 260308

@@ -4,14 +4,14 @@ import { selectActiveWalletHash } from "@/redux/wallet";
 import LogService from "@/kernel/app/LogService";
 import WalletManagerService from "@/kernel/wallet/WalletManagerService";
 
-import { encryptMnemonic, decryptMnemonic } from "./CloudEncryption";
-import { uploadBackup, downloadBackup, hasBackup } from "./GoogleDriveService";
+import { decryptMnemonic, encryptMnemonic } from "./CloudEncryption";
 import {
+  handleRedirectCallback,
   signIn,
   signOut,
-  handleRedirectCallback,
   type GoogleUser,
 } from "./GoogleAuthService";
+import { downloadBackup, hasBackup, uploadBackup } from "./GoogleDriveService";
 
 const Log = LogService("CloudBackup");
 

@@ -1,4 +1,4 @@
-package cash.selene.app;
+package bch.bolsillo.app;
 
 import com.getcapacitor.BridgeActivity;
 

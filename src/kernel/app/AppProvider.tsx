@@ -25,8 +25,8 @@ import { ModalProvider } from "@/kernel/app/ModalService";
 import { NotificationProvider } from "@/kernel/app/NotificationService";
 import SecurityService, { AuthActions } from "@/kernel/app/SecurityService";
 
-import AppLockScreen from "@/views/security/AppLockScreen";
 import WelcomeView from "@/views/onboarding/WelcomeView";
+import AppLockScreen from "@/views/security/AppLockScreen";
 import ErrorBoundary from "@/layout/ErrorBoundary";
 
 const Log = LogService("AppProvider");
