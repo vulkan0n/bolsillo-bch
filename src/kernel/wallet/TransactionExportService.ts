@@ -283,7 +283,7 @@ class TransactionExportService {
     }
 
     try {
-      const response = await fetch("/src/assets/selene-logo.svg");
+      const response = await fetch("/src/assets/bolsillo-logo.svg");
       const svgText = await response.text();
 
       // Create an image element and load the SVG
