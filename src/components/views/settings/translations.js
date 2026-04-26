@@ -3619,6 +3619,7 @@ const translations = {
     zh: "允许向非令牌地址发送令牌",
     zh_TW: "允許向非令牌地址發送令牌",
   },
+  signOut: { en: "Sign out", es: "Cerrar sesión" },
 };
 
 export default translations;

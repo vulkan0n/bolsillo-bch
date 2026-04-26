@@ -1,13 +1,15 @@
 import { useCallback, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router";
-import { SettingOutlined } from "@ant-design/icons";
+import { LogoutOutlined, SettingOutlined } from "@ant-design/icons";
 
 import {
   selectActiveWalletHash,
   selectPreferences,
   setPreference,
 } from "@/redux/preferences";
+
+import { googleSignOut } from "@/kernel/backup/CloudBackupService";
 
 import FullColumn from "@/layout/FullColumn";
 import ViewHeader from "@/layout/ViewHeader";
@@ -54,6 +56,16 @@ export default function SettingsView() {
 
   const activeWalletHash = useSelector(selectActiveWalletHash);
 
+  const handleLogout = useCallback(async () => {
+    try {
+      await googleSignOut();
+    } catch (_e) {
+      // not signed in or web env — continue
+    }
+    dispatch(setPreference({ key: "activeWalletHash", value: "" }));
+    window.location.reload();
+  }, [dispatch]);
+
   return (
     <FullColumn>
       <ViewHeader
@@ -74,12 +86,23 @@ export default function SettingsView() {
           <IntlSettings />
         </SettingsContext.Provider>
       </div>
-      <div className="flex gap-x-2 justify-center items-center p-1 pb-4 mx-1">
+      <div className="flex flex-col gap-2 p-1 pb-4 mx-1">
+        <Button
+          onClick={handleLogout}
+          label={
+            <span className="font-semibold">
+              {translate(translations.signOut)}
+            </span>
+          }
+          icon={LogoutOutlined}
+          padding="1"
+          fullWidth
+        />
         <Button
           onClick={() => navigate("/credits")}
           label={
             <span className="font-semibold">
-              Selene Wallet v{SELENE_WALLET_VERSION}
+              Bolsillo BCH v{SELENE_WALLET_VERSION}
             </span>
           }
           icon={SeleneLogo}
