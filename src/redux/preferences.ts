@@ -28,7 +28,7 @@ export const defaultPreferences = {
   // global / wallet
   activeWalletHash: "",
   bchNetwork: "mainnet",
-  languageCode: languageList[0].code,
+  languageCode: "es",
   enableExperimental: "false",
   enablePrerelease: "false",
   lastCheckIn: "",

@@ -57,7 +57,8 @@ export const currencyList: CurrencyInfo[] = [
   { currency: "ZAR", countryCode: "ZA", symbol: "R" },
 ];
 
-export const DEFAULT_CURRENCY = currencyList[0];
+export const DEFAULT_CURRENCY =
+  currencyList.find((c) => c.currency === "ARS") ?? currencyList[0];
 
 export interface EuroZoneCountry {
   country: string;
