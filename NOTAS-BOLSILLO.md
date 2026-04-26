@@ -204,7 +204,7 @@ selene-wallet/
 
 ---
 
-## Estado del fork (2026-04-12)
+## Estado del fork (2026-04-26)
 
 ### Configuración del repo
 
@@ -220,22 +220,34 @@ selene-wallet/
 - Android Studio con SDK API 36 y Build-Tools 35
 - Build APK debug: `pnpm build:ci && npx cap sync android && cd android && ./gradlew assembleDebug`
 - APK de salida: `android/app/build/outputs/apk/debug/app-debug.apk`
+- **Nota:** `capacitor-assets generate --android` genera un `drawable/splash.png` que conflictúa con el `splash.xml` existente. Borrarlo después: `rm android/app/src/main/res/drawable/splash.png`
 
 ### Cambios realizados
 
-- Logo reemplazado: `src/assets/selene-logo.svg`
-- Tab "Explore" eliminada de la navegación (`src/components/layout/BottomNavigation.tsx`)
+- Logo de la app reemplazado: `src/assets/bolsillo-logo.svg` (íconos Android regenerados)
+- Tab "Explore" eliminada de la navegación
+- **Localización:** idioma default → español (`es`), moneda default → ARS
+- **Branding:** "Selene" → "Bolsillo BCH" en toda la UI (traducciones, logos, footer)
+- **Package ID:** `cash.selene.app` → `bch.bolsillo.app` (Android + capacitor.config.json)
+- **Backup Google Drive:** ciclo completo probado en dispositivo físico (ver sección de backup)
+- **Balance dual:** ARS arriba (grande) + BCH abajo siempre visibles, sin toggle
+- **Logout:** botón "Cerrar sesión" en Settings — cierra sesión Google y vuelve a WelcomeView
+
+### Google Cloud OAuth
+
+- Proyecto: `bolsillo-bch`
+- Web Client ID: `695566586090-7820ks7je4iuo1orf3voba9vfg0tkcq1.apps.googleusercontent.com`
+- Android Client ID (release): registrado para `bch.bolsillo.app`
+- Android Client ID (debug): registrado para `bch.bolsillo.app.edge`
+- SHA1 debug keystore: `93:68:CA:05:9F:72:B1:CD:C1:1F:47:9C:D6:6C:92:55:C5:BE:F1:BF`
+- App en modo prueba → agregar emails en: OAuth consent screen → Test users
 
 ### Próximos pasos pendientes
 
-- Denominación dual ARS + BCH en la vista de balance
 - Onboarding progresivo (simplificar el flujo de las 12 palabras)
-- Cambiar nombre/branding de "Selene" a "Bolsillo BCH" en la UI
 - Modo Estable: bloqueado — MUSD tiene vulnerabilidad pendiente de fix por el equipo de Moria (ver sección abajo)
 - Modo comerciante: pantalla de cobro con monto en ARS → QR BCH (baja prioridad)
-- Agregar el botón de cerrar sesion
 - Diseño minimalista
-- Localizacion, todo en español y ARS por default
 
 ---
 
