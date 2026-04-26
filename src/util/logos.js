@@ -6,7 +6,11 @@ import seleneLogo from "@/assets/selene-logo.svg";
 
 // logo keys must be all lowercase
 export const logos = {
-  selene: { name: "Selene", img: seleneLogo, img_tokens: seleneCashtokensLogo },
+  selene: {
+    name: "Bolsillo BCH",
+    img: seleneLogo,
+    img_tokens: seleneCashtokensLogo,
+  },
   bch: { name: "BCH", img: bchLogo, img_tokens: bchCashtokensLogo },
   none: { name: "None", img: "", img_tokens: "" },
 };
