@@ -19,6 +19,7 @@ import { routeExplore } from "@/routes/routeExplore";
 import { routeSettings } from "@/routes/routeSettings";
 import { routeWallet } from "@/routes/routeWallet";
 
+import "@fontsource-variable/inter";
 import "./index.css";
 
 const routes = [

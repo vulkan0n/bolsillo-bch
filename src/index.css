@@ -118,14 +118,7 @@ main {
   -webkit-text-stroke-width: 0.25px;
 }
 
-@font-face {
-  font-family: "Archivo";
-  src: url("./assets/Archivo-VariableFont_wdth,wght.woff2") format("woff2");
-}
-@font-face {
-  font-family: "Chivo Mono";
-  src: url("./assets/ChivoMono-VariableFont_wght.woff2") format("woff2");
-}
+/* Inter Variable se carga vía @fontsource-variable/inter (importado en Main.jsx) */
 
 @font-face {
   font-family: "TAN NIMBUS";
@@ -136,4 +129,8 @@ main {
 
 .font-bliss {
   font-family: "TAN NIMBUS";
+}
+
+.tabular {
+  font-variant-numeric: tabular-nums;
 }

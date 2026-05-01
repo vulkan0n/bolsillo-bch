@@ -12,10 +12,8 @@ module.exports = {
       md: '640px',
     },
     fontFamily: {
-      sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
-      // Inter cubre montos también via tabular-nums; mantenemos mono por si algún
-      // componente legado lo necesita, apuntando también a Inter para consistencia.
-      mono: ['Inter', 'ui-monospace', 'monospace'],
+      sans: ['Inter Variable', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+      mono: ['Inter Variable', 'ui-monospace', 'monospace'],
     },
     extend: {
       colors: {
