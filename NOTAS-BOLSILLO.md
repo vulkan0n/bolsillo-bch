@@ -339,6 +339,11 @@ Aún no está desplegada. Tener en cuenta como alternativa a MUSD.
 - Renombrar "Stablecoin Mode" → "Modo Estable" en la interfaz
 - Mover el toggle a un lugar más visible (actualmente está en Currency Settings)
 - Adaptar la descripción al contexto de ARS
+- **Avatar en HomeHeader**: hoy muestra la inicial del nombre del wallet activo.
+  Mejorar para usar el `displayName` de Google cuando el usuario tiene sesión
+  activa. Requiere guardar el `GoogleUser` en Redux al hacer Sign-In y llamar
+  al plugin al arrancar la app para recuperar la sesión existente.
+  Ver `GoogleAuthService.ts` y `CloudBackupService.ts`.
 
 ---
 
