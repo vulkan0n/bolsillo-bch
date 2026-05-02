@@ -80,7 +80,7 @@ function TransactionRowInline({ tx, onClick }: TransactionRowProps) {
         <p className="text-body-md text-neutral-900 dark:text-neutral-100 truncate">
           {isReceived ? "Recibido" : "Enviado"}
         </p>
-        <p className="text-xs text-neutral-400">
+        <p className="text-xs text-neutral-500">
           {formatRelativeTime(tx.time, tx.time_seen)}
         </p>
       </div>

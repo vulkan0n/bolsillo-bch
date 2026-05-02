@@ -20,7 +20,7 @@ export default function WalletViewHome() {
   const { fiatAmount, fiatCurrency, bchAmount } = useFormattedBalance();
 
   return (
-    <div className="bg-neutral-25 dark:bg-neutral-25 pb-24 overflow-y-auto">
+    <div className="bg-neutral-25 dark:bg-neutral-25 pb-24 min-h-full">
       <HomeHeader />
 
       {genesisHeight > 0 && (
@@ -42,17 +42,32 @@ export default function WalletViewHome() {
       <div className="px-5 mt-8">
         <div className="grid grid-cols-3 gap-4 max-w-xs mx-auto">
           <ActionButton
-            icon={<ArrowDown className="w-6 h-6" strokeWidth={1.75} />}
+            icon={
+              <ArrowDown
+                className="w-6 h-6 text-neutral-800 dark:text-neutral-100"
+                strokeWidth={1.75}
+              />
+            }
             label="Recibir"
             onClick={() => navigate("/wallet/receive")}
           />
           <ActionButton
-            icon={<ArrowUp className="w-6 h-6" strokeWidth={1.75} />}
+            icon={
+              <ArrowUp
+                className="w-6 h-6 text-neutral-800 dark:text-neutral-100"
+                strokeWidth={1.75}
+              />
+            }
             label="Enviar"
             onClick={() => navigate("/wallet/send")}
           />
           <ActionButton
-            icon={<ScanLine className="w-6 h-6" strokeWidth={1.75} />}
+            icon={
+              <ScanLine
+                className="w-6 h-6 text-neutral-800 dark:text-neutral-100"
+                strokeWidth={1.75}
+              />
+            }
             label="Escanear"
             onClick={() => navigate("/wallet/scan")}
           />
