@@ -17,7 +17,7 @@ export default function PocketBalance({
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-14 h-14 rounded-full bg-brand-500 flex items-center justify-center z-10">
         <svg
           viewBox="0 0 788 788"
-          className="w-8 h-8 text-white"
+          className="w-11 h-11 text-white"
           aria-hidden="true"
         >
           <path
