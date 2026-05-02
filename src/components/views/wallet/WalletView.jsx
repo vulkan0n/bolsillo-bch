@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useSelector } from "react-redux";
-import { Outlet, useNavigate } from "react-router";
+import { Outlet, useLocation, useNavigate } from "react-router";
 import { SyncOutlined } from "@ant-design/icons";
 
 import { selectScannerIsScanning } from "@/redux/device";
@@ -26,6 +26,9 @@ export default function WalletView() {
   const bchNetwork = useSelector(selectBchNetwork);
   const isVendorModeActive = useSelector(selectIsVendorModeActive);
   const navigate = useNavigate();
+  const location = useLocation();
+  const isHome =
+    location.pathname === "/wallet" || location.pathname === "/wallet/";
 
   useEffect(
     // force wallet rebuild if genesis_height === null
@@ -48,7 +51,7 @@ export default function WalletView() {
     </div>
   ) : (
     <FullColumn>
-      {!isScanning && !isVendorModeActive && (
+      {!isScanning && !isVendorModeActive && !isHome && (
         <div className="flex bg-neutral-900 dark:bg-black justify-between">
           <div className="flex flex-col justify-center px-5">
             <BalanceHideButton className="text-xl" />

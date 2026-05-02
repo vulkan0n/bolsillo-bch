@@ -42,6 +42,22 @@ export const routeWallet = [
           return { Component: WalletViewHistory };
         },
       },
+      {
+        path: "receive",
+        async lazy() {
+          const { default: WalletViewReceive } =
+            await import("@/views/wallet/receive/WalletViewReceive");
+          return { Component: WalletViewReceive };
+        },
+      },
+      {
+        path: "scan",
+        async lazy() {
+          const { default: WalletViewScan } =
+            await import("@/views/wallet/scan/WalletViewScan");
+          return { Component: WalletViewScan };
+        },
+      },
     ],
   },
 ];
