@@ -1,151 +1,149 @@
-# Design System — BCH Wallet Redesign
+# Design System — Bolsillo (BCH Wallet)
 
 > Documento de referencia para el rediseño visual de la wallet.
 > Cualquier cambio de UI debe seguir estos lineamientos.
-> Inspiración: estética minimalista tipo fintech moderna, paleta derivada del logo de la app.
+> Inspiración: estética minimalista con metáfora visual de "bolsillo" como elemento de marca.
 
 ---
 
-## 1. Filosofía de diseño
+## 1. Identidad y filosofía
 
-**Minimalismo plano y aireado.**
+### Nombre
+La app se llama **Bolsillo**. La metáfora del bolsillo es el corazón de la marca: tu BCH vive en tu bolsillo, accesible y tuyo.
 
-- **Plano, no skeumórfico.** Sin sombras pesadas, sin gradientes innecesarios, sin texturas. Como mucho, una sombra sutil para elevar cards principales.
-- **Aire antes que contenido.** El espacio en blanco es un elemento de diseño. Si una pantalla se siente apretada, sacar elementos antes de achicar padding.
-- **Jerarquía por tamaño y peso, no por color.** El color se reserva para acciones y estados, no para decorar.
-- **Una sola acción primaria por pantalla.** El usuario no debería tener que pensar cuál es el botón más importante.
+### Filosofía de diseño
+
+**Minimalismo plano con un elemento de marca distintivo.**
+
+- **Plano, no skeumórfico.** Sin sombras pesadas, sin gradientes, sin texturas.
+- **Aire antes que contenido.** El espacio en blanco es un elemento de diseño.
+- **Jerarquía por tamaño y peso, no por color.**
+- **Una sola acción primaria por pantalla.**
 - **Consistencia obsesiva.** Mismo radio, mismo padding, mismo tamaño de ícono en todos lados.
+- **El bolsillo es exclusivo del Home.** Es el momento de marca; el resto de la app es funcional y sobrio.
 
 ---
 
 ## 2. Paleta de colores
 
-### 2.1 Celeste — color protagonista (rol "marca de fondo")
+### 2.1 Verde BCH — protagonista (rol "marca y acción")
 
-Usado en: header del Home, fondos de íconos de acción, fondos de pantallas destacadas.
-
-| Token         | Light            | Dark            | Uso                                        |
-|---------------|------------------|-----------------|--------------------------------------------|
-| `sky-50`      | `#F0F7FF`        | `#0E1A2B`       | Fondo de círculos de íconos, chips suaves  |
-| `sky-100`     | `#DCEBFB`        | `#15263D`       | Hover de íconos, fondos secundarios        |
-| `sky-200`     | `#BCD9F5`        | `#1E3654`       | Bordes suaves, dividers de marca           |
-| `sky-300`     | `#9BC7EE`        | `#2A4870`       | Acento medio                               |
-| `sky-400`     | `#7AB3E5`        | `#3A5E8C`       | Hover de fondos celeste                    |
-| `sky-500`     | `#5FA0DB`        | `#5FA0DB`       | Color celeste de marca (pleno)             |
-| `sky-600`     | `#4585C4`        | `#7AB3E5`       | Texto sobre celeste claro, links           |
-| `sky-700`     | `#356CA6`        | `#9BC7EE`       | Hover de links                             |
-
-**Color de marca celeste:** `#5FA0DB` (token `sky-500`).
-Derivado del bolsillo del logo, ajustado a una saturación más equilibrada que funcione tanto plano como en dark mode.
-
-### 2.2 Verde BCH — color de acción
-
-Usado en: botones primarios, montos positivos (recibido), badges de éxito, ícono de la app.
+Usado en: ícono/moneda BCH, botones primarios, montos recibidos, nombre "Bolsillo" en header, indicador activo de bottom nav.
 
 | Token         | Light            | Dark            | Uso                                        |
 |---------------|------------------|-----------------|--------------------------------------------|
-| `brand-50`    | `#E6F7F0`        | `#0E2A1F`       | Fondos suaves de éxito                     |
+| `brand-50`    | `#E6F7F0`        | `#0E2A1F`       | Fondos suaves de éxito, badges             |
 | `brand-100`   | `#C2EBD8`        | `#143A2C`       | Chips de "recibido"                        |
 | `brand-200`   | `#94DCBC`        | `#1C5040`       | Bordes de cards de tx entrantes            |
-| `brand-300`   | `#5EC99B`        | `#2D6E5A`       | —                                          |
+| `brand-300`   | `#5EC99B`        | `#2D6E5A`       | Acento medio                               |
 | `brand-400`   | `#3BB783`        | `#3BB783`       | Hover de botón primario                    |
-| `brand-500`   | `#23A06D`        | `#3BB783`       | **Botón primario, marca BCH**              |
-| `brand-600`   | `#1B8459`        | `#5EC99B`       | Pressed state                              |
+| `brand-500`   | `#23A06D`        | `#3BB783`       | **Botón primario, marca BCH, moneda**      |
+| `brand-600`   | `#1B8459`        | `#5EC99B`       | Pressed state, header "Bolsillo"           |
 | `brand-700`   | `#156945`        | `#94DCBC`       | Texto sobre fondos brand-50                |
 
 **Color de marca BCH:** `#23A06D` (token `brand-500`).
-Derivado del verde menta del símbolo Bitcoin Cash del logo, ajustado para mejor contraste sobre blanco que el verde original.
 
-### 2.3 Neutros — grises azulados (fríos, NO los beige actuales)
+### 2.2 Celeste — acento de marca (rol "fondo del bolsillo")
 
-Usado en: textos, fondos, bordes, todo lo no-marca.
+Usado en: fondo del componente PocketBalance en Home, secundariamente en chips informativos. **NO se usa en headers, botones, ni elementos estructurales.**
+
+| Token         | Light            | Dark            | Uso                                        |
+|---------------|------------------|-----------------|--------------------------------------------|
+| `sky-50`      | `#F0F5FF`        | `#0E1A2B`       | —                                          |
+| `sky-100`     | `#E2EAFB`        | `#15263D`       | **Fondo del Bolsillo (light/dark)**        |
+| `sky-200`     | `#C9D5F5`        | `#1E3654`       | Borde punteado del Bolsillo (light)        |
+| `sky-300`     | `#9BC7EE`        | `#2A4870`       | —                                          |
+| `sky-400`     | `#7AB3E5`        | `#3A5E8C`       | Borde punteado del Bolsillo (dark)         |
+| `sky-500`     | `#5FA0DB`        | `#5FA0DB`       | Texto "TU BOLSILLO"                        |
+| `sky-600`     | `#4585C4`        | `#7AB3E5`       | —                                          |
+
+### 2.3 Neutros — gris azulado
 
 | Token        | Light       | Dark        | Uso                                              |
 |--------------|-------------|-------------|--------------------------------------------------|
-| `neutral-0`  | `#FFFFFF`   | `#0B0F14`   | Fondo de cards (light) / fondo app (dark)        |
-| `neutral-50` | `#F7F8FA`   | `#11161D`   | Fondo de app (light) / fondo de cards (dark)     |
-| `neutral-100`| `#EEF1F5`   | `#1A2029`   | Hover sobre cards, dividers gruesos              |
-| `neutral-200`| `#E2E6EC`   | `#252C37`   | Bordes, dividers                                 |
-| `neutral-300`| `#CBD2DB`   | `#333B47`   | Bordes activos, placeholders                     |
+| `neutral-0`  | `#FFFFFF`   | `#0B1018`   | Fondo de cards (light) / fondo app (dark)        |
+| `neutral-25` | `#FBFCFD`   | `#0E131C`   | Fondo de app (light)                             |
+| `neutral-50` | `#F7F8FA`   | `#131923`   | Fondo app (light) / cards (dark)                 |
+| `neutral-100`| `#EEF1F5`   | `#1A2231`   | Hover, dividers gruesos                          |
+| `neutral-200`| `#E2E6EC`   | `#252E3F`   | Bordes, dividers, círculos de íconos de acción   |
+| `neutral-300`| `#CBD2DB`   | `#333D50`   | Bordes activos, placeholders                     |
 | `neutral-400`| `#9AA3B0`   | `#525B68`   | Texto muted, íconos secundarios                  |
 | `neutral-500`| `#6B7280`   | `#7A8493`   | Texto secundario                                 |
 | `neutral-600`| `#4B5563`   | `#9DA6B3`   | Texto body en dark                               |
-| `neutral-700`| `#374151`   | `#C4CBD5`   | Texto principal en dark                          |
+| `neutral-700`| `#374151`   | `#C4CBD5`   | Texto principal en dark, íconos                  |
 | `neutral-800`| `#1F2937`   | `#E1E5EB`   | Texto principal en light                         |
-| `neutral-900`| `#0F172A`   | `#F2F4F7`   | Texto enfático, headings                         |
+| `neutral-900`| `#0F172A`   | `#F2F4F7`   | Texto enfático, balance, headings                |
 
 ### 2.4 Semánticos
 
 | Token       | Light       | Dark        | Uso                            |
 |-------------|-------------|-------------|--------------------------------|
-| `success`   | `#23A06D`   | `#3BB783`   | Igual que brand (mismo verde)  |
-| `success-bg`| `#E6F7F0`   | `#0E2A1F`   | Fondo de toasts/banners éxito  |
-| `error`     | `#DC2626`   | `#F87171`   | Errores, montos enviados       |
-| `error-bg`  | `#FEE2E2`   | `#3B0F0F`   | Fondo de banners de error      |
+| `success`   | `#23A06D`   | `#3BB783`   | Igual que brand                |
+| `success-bg`| `#E6F7F0`   | `#0E2A1F`   | Fondos de toasts/banners éxito |
+| `error`     | `#DC2626`   | `#F87171`   | Errores                        |
+| `error-bg`  | `#FEE2E2`   | `#3B0F0F`   | Fondos de banners de error     |
 | `warn`      | `#D97706`   | `#FBBF24`   | Warnings, pending              |
-| `warn-bg`   | `#FEF3C7`   | `#3B2A0A`   | Fondo de banners de warn       |
-| `info`      | `#5FA0DB`   | `#7AB3E5`   | Info (igual que sky-500)       |
+| `warn-bg`   | `#FEF3C7`   | `#3B2A0A`   | Fondos de banners de warn      |
 
 ### 2.5 Reglas de uso del color
 
-- **Celeste** → estructura y marca. Headers, círculos de íconos, fondos destacados. Nunca botones primarios.
-- **Verde brand** → acción y éxito. Botón principal, montos recibidos, confirmaciones. Reservado, no decorativo.
-- **Neutros** → 80% de la app. Texto, fondos, bordes.
-- **Rojo error** → solo errores reales y montos enviados (negativos).
-- **Nunca usar verde y rojo juntos en el mismo componente** salvo en el historial de transacciones.
+- **Verde brand** → marca, acción primaria, estados de éxito, montos recibidos.
+- **Celeste** → exclusivamente como fondo del componente Bolsillo en Home. No usar como color estructural en otras pantallas.
+- **Neutros** → 80% de la app.
+- **Rojo error** → solo errores reales. Los montos enviados van en `neutral-900`, NO en rojo.
+- **Verde y rojo nunca juntos** salvo en historial (recibido vs error real).
 
 ---
 
 ## 3. Tipografía
 
-**Familia única:** `Inter` (variable font).
-Reemplaza Archivo + Chivo Mono. Inter tiene variante tabular para los números, así que no necesitamos una fuente mono separada para los montos.
+**Familia única:** `Inter` (variable font), pesos 400 / 500 / 600 / 700.
+Reemplaza Archivo + Chivo Mono. Inter con `tabular-nums` cubre los montos.
 
 ### Escala
 
-| Token           | Tamaño    | Line-height | Peso     | Uso                              |
-|-----------------|-----------|-------------|----------|----------------------------------|
-| `text-display`  | 40px      | 44px        | 700      | Balance principal                |
-| `text-h1`       | 28px      | 34px        | 700      | Títulos de pantalla              |
-| `text-h2`       | 22px      | 28px        | 600      | Títulos de sección               |
-| `text-h3`       | 18px      | 24px        | 600      | Subtítulos, nombres de cards     |
-| `text-body`     | 16px      | 24px        | 400      | Texto general                    |
-| `text-body-md`  | 16px      | 24px        | 500      | Texto general enfático           |
-| `text-sm`       | 14px      | 20px        | 400      | Labels, metadata                 |
-| `text-xs`       | 12px      | 16px        | 500      | Tags, captions, timestamps       |
+| Token             | Tamaño  | Line-height | Peso  | Uso                              |
+|-------------------|---------|-------------|-------|----------------------------------|
+| `text-display`    | 48px    | 52px        | 700   | Balance principal del Home       |
+| `text-display-sm` | 36px    | 40px        | 700   | Montos en pantallas Send/Receive |
+| `text-h1`         | 28px    | 34px        | 700   | Títulos de pantalla              |
+| `text-h2`         | 22px    | 28px        | 600   | Títulos de sección               |
+| `text-h3`         | 18px    | 24px        | 600   | Subtítulos, nombres en lista     |
+| `text-body-md`    | 16px    | 24px        | 500   | Texto enfático                   |
+| `text-body`       | 16px    | 24px        | 400   | Texto general                    |
+| `text-sm`         | 14px    | 20px        | 400   | Labels, metadata                 |
+| `text-xs`         | 12px    | 16px        | 500   | Tags, captions, timestamps       |
+| `text-overline`   | 11px    | 16px        | 600   | "TU BOLSILLO", letter-spacing wide |
 
 ### Reglas
 
-- **Montos siempre con `font-variant-numeric: tabular-nums`** para que las cifras no bailen.
-- **Nunca usar más de 3 tamaños tipográficos en una misma pantalla.**
-- **Letter-spacing en mayúsculas:** los labels todo-mayúscula (raros, solo en tags) llevan `tracking-wider`.
-- **Headings nunca en celeste o verde**, solo neutros.
+- **Montos siempre con `font-variant-numeric: tabular-nums`**.
+- **Balance principal**: 48px, peso 700, color `neutral-900`. Símbolo `$` en `neutral-400`.
+- **"TU BOLSILLO"**: `text-overline`, mayúsculas, color `sky-500`, `tracking-wider`.
+- **Nunca más de 3 tamaños tipográficos por pantalla.**
 
 ---
 
 ## 4. Espaciado
 
-Sistema base **4px**. Toda medida es múltiplo de 4.
+Sistema base **4px**.
 
 | Token  | Px   | Uso                                     |
 |--------|------|-----------------------------------------|
-| `0.5`  | 2px  | Gaps mínimos                            |
-| `1`    | 4px  | Gap entre ícono y label corto           |
+| `1`    | 4px  | Gap mínimo                              |
 | `2`    | 8px  | Padding interno chico                   |
 | `3`    | 12px | Gap entre items de lista                |
 | `4`    | 16px | Padding estándar de card                |
-| `5`    | 20px | Padding de card grande                  |
+| `5`    | 20px | Padding de pantalla                     |
 | `6`    | 24px | Margen entre secciones                  |
 | `8`    | 32px | Margen entre bloques mayores            |
 | `10`   | 40px | Padding superior de pantalla            |
-| `12`   | 48px | Separación grande                       |
 
 ### Reglas
 
-- **Padding lateral de pantalla:** `px-5` (20px) en mobile.
-- **Padding interno de card:** `p-5` (20px).
-- **Gap entre cards:** `gap-3` (12px) o `gap-4` (16px).
-- **Bottom padding del scroll:** siempre `pb-24` para que el bottom nav no tape contenido.
+- **Padding lateral de pantalla:** `px-5` (20px).
+- **Padding interno de card:** `p-4` o `p-5`.
+- **Bottom padding del scroll:** `pb-24`.
 
 ---
 
@@ -155,249 +153,273 @@ Sistema base **4px**. Toda medida es múltiplo de 4.
 
 | Token         | Px   | Uso                                |
 |---------------|------|------------------------------------|
-| `rounded-sm`  | 6px  | Tags, chips chicos                 |
 | `rounded-md`  | 10px | Inputs, botones chicos             |
 | `rounded-lg`  | 14px | Botones medianos                   |
-| `rounded-xl`  | 18px | Botones primarios, cards chicas    |
-| `rounded-2xl` | 22px | Cards estándar                     |
-| `rounded-3xl` | 28px | Cards principales (Home), modales  |
-| `rounded-full`| 9999 | Círculos de ícono, avatars         |
+| `rounded-xl`  | 18px | Botones primarios                  |
+| `rounded-2xl` | 22px | Cards, items de historial          |
+| `rounded-3xl` | 28px | Bolsillo, modales, cards grandes   |
+| `rounded-full`| 9999 | Círculos                           |
 
 ### Bordes
 
-- **Por defecto, sin borde.** La separación se hace con espacio o cambio de fondo.
-- Cuando se necesita borde: `border border-neutral-200` en light, `border-neutral-200` en dark (que mapea a un gris oscuro).
-- **Nunca borde de color de marca decorativo.**
+- **Por defecto sin borde.**
+- Bolsillo: `border-2 border-dashed border-sky-200` (light) / `border-sky-400/40` (dark).
+- Action buttons del Home: `border border-neutral-200`.
+- Items de historial: sin borde.
 
 ### Sombras
 
 - `shadow-none` por default.
-- `shadow-card`: `0 1px 2px rgba(15, 23, 42, 0.04), 0 1px 3px rgba(15, 23, 42, 0.06)` — solo para cards principales del Home.
-- `shadow-elevated`: `0 4px 16px rgba(15, 23, 42, 0.08)` — para modales y bottom sheets.
-- **En dark mode, sombras prácticamente invisibles** — la elevación se sugiere con cambio de fondo (card más clara que el fondo).
+- **Sin sombras en el Bolsillo.**
+- `shadow-card` solo modales/bottom sheets.
 
 ---
 
 ## 6. Iconografía
 
-- **Estilo:** line icons, stroke 1.5px, monocromos.
-- **Librería recomendada:** `lucide-react` (ya tiene la estética correcta y es liviana).
-- **Tamaños estándar:** 20px (inline), 24px (botones), 28px (íconos de acción en círculos), 40px (íconos hero).
+- **Estilo:** line icons, stroke 1.75-2px, monocromos.
+- **Librería:** `lucide-react`.
+- **Tamaños:** 20px (inline, lista), 24px (botones de acción), 28px (íconos hero).
 - **Color por defecto:** `neutral-700` en light, `neutral-300` en dark.
-- **Íconos de acción primaria** (los que van en círculos celeste): siempre en `sky-600` sobre fondo `sky-50`.
+- **Action buttons del Home:** `neutral-800` en light, `neutral-100` en dark.
 
 ---
 
 ## 7. Componentes core
 
-### 7.1 Button
+### 7.1 PocketBalance — el componente de marca
 
-**Variantes:**
+**El componente más importante de la app. Solo vive en `WalletViewHome.tsx`. NO reutilizar en otras pantallas.**
 
-| Variante        | Background        | Texto             | Borde                | Cuándo usar                   |
-|-----------------|-------------------|-------------------|----------------------|-------------------------------|
-| `primary`       | `brand-500`       | `white`           | —                    | Acción principal de pantalla  |
-| `secondary`     | `neutral-100`     | `neutral-800`     | —                    | Acción secundaria             |
-| `outline`       | `transparent`     | `neutral-800`     | `neutral-300`        | Acción terciaria              |
-| `ghost`         | `transparent`     | `neutral-700`     | —                    | En toolbars, headers          |
-| `destructive`   | `error`           | `white`           | —                    | Confirmar borrado, etc.       |
+Estructura:
 
-**Tamaños:**
-- `sm`: `h-9 px-3 text-sm rounded-md`
-- `md` (default): `h-12 px-5 text-body-md rounded-xl`
-- `lg`: `h-14 px-6 text-body-md rounded-xl` — botón principal de pantalla, full width
+```
+        ┌──────┐                  ← Moneda BCH (verde, círculo sólido)
+        │  Ƀ   │                     Sobresale por arriba del bolsillo
+        └──┬───┘
+   ╭───────┴────────────╮
+   │                    │           ← Bolsillo: rounded-3xl, bg-sky-100,
+   │    TU BOLSILLO     │             border-2 border-dashed border-sky-200
+   │                    │
+   │   $ 1,247.30       │           ← Balance: text-display, neutral-900
+   │   0.03867 BCH      │           ← Sub: text-sm, neutral-400, tabular
+   │                    │
+   ╰────────────────────╯
+```
+
+Specs:
+- Wrapper: `relative pt-7` (deja espacio para que la moneda sobresalga).
+- Bolsillo: `bg-sky-100`, `border-2 border-dashed border-sky-200 dark:border-sky-400/40`, `rounded-3xl`, `px-6 py-7`.
+- Moneda: `absolute top-0 left-1/2 -translate-x-1/2`, `w-14 h-14 rounded-full bg-brand-500`, símbolo BCH blanco adentro centrado.
+- Label "TU BOLSILLO": `text-overline text-sky-500 text-center tracking-wider mt-2`.
+- Balance: `$` en `text-3xl text-neutral-400 mr-1 font-medium`, número en `text-display text-neutral-900 tabular-nums`.
+- Sub BCH: `text-sm text-neutral-400 mt-1 tabular-nums text-center`.
+
+### 7.2 ActionButton (Home — Enviar/Recibir/Escanear)
+
+```
+[Círculo blanco con borde, ícono adentro]
+            label
+```
+
+- Container: `flex flex-col items-center gap-2`.
+- Círculo: `w-14 h-14 rounded-full bg-neutral-0 dark:bg-neutral-50 border border-neutral-200`.
+- Ícono: 24×24, `text-neutral-800 dark:text-neutral-100`, strokeWidth 1.75.
+- Label: `text-sm text-neutral-700 dark:text-neutral-300 mt-2`.
+- Active: `active:bg-neutral-50 dark:active:bg-neutral-100 active:scale-[0.98] transition-all duration-100`.
+- Layout en Home: `grid grid-cols-3 gap-4`.
+
+### 7.3 Button (botones rectangulares)
+
+| Variante      | Background    | Texto         | Borde         | Cuándo usar                   |
+|---------------|---------------|---------------|---------------|-------------------------------|
+| `primary`     | `brand-500`   | `white`       | —             | Acción principal de pantalla  |
+| `secondary`   | `neutral-100` | `neutral-800` | —             | Acción secundaria             |
+| `outline`     | `transparent` | `neutral-800` | `neutral-300` | Acción terciaria              |
+| `ghost`       | `transparent` | `neutral-700` | —             | Toolbars, headers             |
+| `destructive` | `error`       | `white`       | —             | Confirmar borrado             |
+
+**Tamaños:** `sm` (h-9, rounded-md), `md` default (h-12, rounded-xl), `lg` (h-14, rounded-xl, fullWidth).
 
 **Reglas:**
-- Una sola `primary` visible por pantalla.
-- Botón de acción principal de pantalla (Enviar, Confirmar): siempre `lg`, full width, fijo abajo con `pb-safe`.
+- Una `primary` visible por pantalla.
+- Botón principal de subpantalla: `lg`, fullWidth, fijo abajo con `pb-safe`.
 
-### 7.2 Card
-
-```
-className="bg-neutral-0 dark:bg-neutral-50 rounded-3xl p-5 shadow-card"
-```
-
-- Sin borde por defecto.
-- En dark mode, la card es **más clara** que el fondo (no más oscura).
-- Cards anidadas: la interna usa `bg-neutral-50` (light) / `bg-neutral-100` (dark) y `rounded-2xl`.
-
-### 7.3 IconButton (círculo de acción tipo MP)
-
-El componente clave del Home. Reemplaza los 4 botones grandes actuales.
+### 7.4 Card
 
 ```
-<button className="flex flex-col items-center gap-2">
-  <span className="w-14 h-14 rounded-full bg-sky-50 dark:bg-sky-50 flex items-center justify-center">
-    <Icon className="w-6 h-6 text-sky-600" strokeWidth={1.5} />
-  </span>
-  <span className="text-sm text-neutral-700 dark:text-neutral-300">Enviar</span>
-</button>
+className="bg-neutral-0 dark:bg-neutral-50 rounded-2xl p-4"
 ```
 
-- Círculo: 56×56 (`w-14 h-14`).
-- Ícono: 24×24, color `sky-600`.
-- Label debajo, `text-sm`, neutro.
-- Gap label-círculo: 8px.
+- Sin borde por defecto. En dark, card más clara que fondo.
 
-### 7.4 Input
+### 7.5 Input
 
 ```
-className="h-12 px-4 rounded-xl bg-neutral-50 border border-transparent
-           focus:border-sky-500 focus:bg-neutral-0
+className="h-12 px-4 rounded-xl bg-neutral-50 dark:bg-neutral-50 
+           border border-transparent
+           focus:border-brand-500 focus:bg-neutral-0
            text-body text-neutral-900 placeholder:text-neutral-400"
 ```
 
-- Fondo gris suave en reposo, blanco al enfocarse.
-- Borde aparece solo al enfocarse, en celeste.
-- Sin labels flotantes — label arriba en `text-sm text-neutral-600`.
+- **Borde de foco en verde brand**, NO celeste.
+- Label arriba en `text-sm text-neutral-600`.
 
-### 7.5 ListItem (para historial de transacciones)
-
-Estructura horizontal:
+### 7.6 TransactionItem
 
 ```
-[Ícono circular 40px] [Título + subtítulo (timestamp)] [Monto + token]
+[Ícono circular 40px] [Nombre + timestamp] [Monto fiat / Monto BCH]
 ```
 
-- Sin bordes entre items, solo `gap-3` o divider muy sutil (`border-neutral-100`).
-- Monto recibido: `text-brand-600` con `+` adelante.
-- Monto enviado: `text-neutral-900` (NO rojo, el rojo es solo para errores) con `−` adelante.
-- Timestamp en `text-xs text-neutral-400`.
+- Container: `flex items-center gap-3 px-4 py-3 rounded-2xl bg-neutral-0 dark:bg-neutral-50`.
+- Ícono recibido: círculo `bg-brand-50`, flecha down en `brand-600 dark:brand-300`.
+- Ícono enviado: círculo `bg-neutral-100`, flecha up en `neutral-600 dark:neutral-400`.
+- Nombre: `text-body-md text-neutral-900`.
+- Timestamp: `text-xs text-neutral-400`.
+- Monto fiat (derecha): `text-body-md tabular-nums`.
+  - Recibido: `text-brand-600 dark:text-brand-400`, prefijo `+`.
+  - Enviado: `text-neutral-900`, prefijo `−`.
+- Monto BCH debajo: `text-xs text-neutral-400 tabular-nums`, también con `+` o `−`.
 
-### 7.6 BottomNavigation
+### 7.7 BottomNavigation
 
-Inspirada en MP pero más sobria:
-
-- 4 items (no 5) — Home, Historial, Comerciante, Settings.
-- Sin botón central destacado tipo MP. La acción "Enviar/Recibir" vive en el Home, no en la nav.
-- Item activo: ícono `sky-600` + label `sky-600` `font-medium`.
-- Item inactivo: ícono y label `neutral-400`.
-- Background `neutral-0` con `border-t border-neutral-100`. Sin sombra.
+- **3 items**: Inicio, Movimientos, Ajustes.
+- Item activo: ícono + label en **`brand-600 dark:brand-400`**.
+- Item inactivo: `neutral-400`.
+- Background `neutral-0 dark:neutral-50`, `border-t border-neutral-100`.
 - Altura: `h-16` + `pb-safe`.
+- Sin botón central destacado.
 
-### 7.7 Header de pantalla
+### 7.8 Header
 
-Dos variantes:
+**Variante "Home":**
+- Fondo `neutral-25 dark:neutral-25` (mismo que app).
+- Izquierda: ícono mini de bolsillo (24px) + texto "Bolsillo" en `text-h3 text-brand-600 dark:text-brand-400 font-semibold`.
+- Derecha: avatar circular `w-9 h-9 rounded-full bg-brand-500 text-white text-sm font-semibold flex items-center justify-center`.
+- Padding: `px-5 pt-safe pb-3`.
 
-**Variante "Home" (con identidad de marca):**
-- Fondo `sky-50` (light) o `sky-50` mapeado dark.
-- Logo a la izquierda, ícono de notificaciones/settings a la derecha.
-- Sin texto "Hola, [nombre]" — minimalista.
-- Se funde con la card del balance abajo.
-
-**Variante "Subpantalla" (Send, Settings, etc.):**
-- Fondo `neutral-50` (mismo que app).
-- Botón back a la izquierda, título centrado en `text-h2`, acción a la derecha si la hay.
-- Sin border bottom.
+**Variante "Subpantalla":**
+- Fondo igual que app.
+- Izquierda: chevron-left, `neutral-700`, 24px.
+- Centro: título `text-h2 text-neutral-900`.
+- Derecha: opcional acción (ghost button).
 
 ---
 
 ## 8. Patrones de pantalla
 
-### 8.1 Pantalla Home
-
-Estructura vertical, sin sidebar ni tabs:
+### 8.1 Home
 
 ```
-┌──────────────────────────────┐
-│  [logo]              [⚙]    │ ← Header celeste suave (sky-50)
-│                              │
-│  Balance disponible          │
-│  $ 0,00345  BCH              │ ← text-display
-│  ≈ ARS 12.450                │ ← text-sm muted
-│                              │
-│  [↑ Enviar] [↓ Recibir]      │ ← IconButtons en círculos celeste
-│  [⚡ Pagar]  [🏪 Vender]     │
-│                              │
-├──────────────────────────────┤ ← Cambio a fondo neutral-50
-│                              │
-│  Movimientos     Ver todo →  │
-│                              │
-│  ┌────────────────────────┐ │
-│  │ ↓ Recibido   +0.0001   │ │
-│  │   hace 2h    BCH       │ │
-│  └────────────────────────┘ │
-│  ...                         │
-└──────────────────────────────┘
-[ Bottom nav ]
+┌──────────────────────────────────┐
+│  [bolsillo] Bolsillo        [A]  │
+│                                  │
+│           ┌──────┐               │
+│           │  Ƀ   │               │
+│           └──┬───┘               │
+│      ╭───────┴──────────╮        │
+│      │  TU BOLSILLO     │        │
+│      │  $ 1,247.30      │        │
+│      │  0.03867 BCH     │        │
+│      ╰──────────────────╯        │
+│                                  │
+│   [↑]      [↓]      [⊞]          │
+│  Enviar  Recibir  Escanear       │
+│                                  │
+│  Esta semana                     │
+│  ┌────────────────────────────┐  │
+│  │ ↓ María L.    +$24.50      │  │
+│  │   Hace 2h     +0.00076 BCH │  │
+│  └────────────────────────────┘  │
+│  ...                             │
+└──────────────────────────────────┘
+[Inicio] [Movimientos] [Ajustes]
 ```
-
-Diferencias vs. MP:
-- **Sin tarjeta promo / banner** (la app de wallet no necesita venderle nada al usuario).
-- **Solo 4 acciones**, no 8. Si aparecen más features, se agrupan dentro de un "Más" en bottom nav.
-- **Sin notificaciones en el header** salvo que haya algo realmente urgente.
 
 ### 8.2 Send / Pay
 
-- Una sola pantalla por paso, sin acordeón.
-- Input grande del monto centrado, tipografía display.
-- Conversión de moneda debajo, con toggle entre BCH/ARS.
-- Botón primario fijo abajo `lg`, full width.
+- Subpantalla con header de back.
+- Input grande del monto centrado, `text-display-sm`.
+- Toggle BCH ↔ fiat debajo.
+- Campo "Para" abajo.
+- Botón primario `lg` fullWidth fijo en bottom.
 
 ### 8.3 Receive
 
-- QR centrado, grande (mínimo 280×280).
-- Address debajo, con botón "Copiar" inline.
-- Sin opciones de monto/expiry visibles por defecto, en un acordeón "Opciones avanzadas".
+- QR centrado, mínimo 280×280.
+- Address debajo, monoespaciada, con botón "Copiar" inline.
+- Acordeón "Opciones avanzadas".
 
-### 8.4 History
+### 8.4 Escanear
 
-- Sin filtros visibles por defecto. Botón filtro arriba a la derecha.
-- Items agrupados por día con headers `text-xs text-neutral-400 uppercase tracking-wider`.
-- Tap en item → bottom sheet con detalle, no nueva pantalla.
+- Pantalla full-screen con cámara.
+- Marco de scan en el centro (esquinas redondeadas, líneas verde brand).
+- Overlay oscuro alrededor.
+- Botón de cerrar arriba a la derecha.
+
+### 8.5 Movimientos (History)
+
+- Lista agrupada por día con headers `text-xs text-neutral-400 uppercase tracking-wider`.
+- Cada item es un `TransactionItem`.
+- Tap → bottom sheet con detalle.
+
+### 8.6 Ajustes (Settings)
+
+- Lista de filas con ícono izquierdo, label, chevron derecho.
+- Agrupadas por sección.
 
 ---
 
 ## 9. Dark mode
 
-**Filosofía:** "Off-black con cards más claras" (no negro puro, no inversión literal).
+**Filosofía:** "Off-black con cards más claras". Sin negro puro, sin inversión literal.
 
-- Fondo de app: `#0B0F14` (token `neutral-0` en dark).
-- Cards: `#11161D` (un escalón más claro que el fondo).
-- Cards anidadas: `#1A2029`.
-- El celeste se mantiene visible pero **menos saturado** en dark.
-- El verde brand se aclara levemente para mantener contraste sobre fondos oscuros.
-- **Sin bordes brillantes** — separación por contraste de luminosidad.
-
-### Reglas de migración
-
-Cuando un componente actualmente usa `bg-white`, mapear a `bg-neutral-0` (que automáticamente cambia con `dark:`).
-Mismo criterio para todos los colores: usar siempre tokens, nunca valores HEX directos en JSX.
+- Fondo de app: `#0B1018`.
+- Cards: `#131923` (un escalón más claro).
+- Cards anidadas: `#1A2231`.
+- El bolsillo en dark usa `bg-sky-100` (que mapea a `#15263D` — azul oscuro saturado).
+- Borde punteado en dark: `border-sky-400/40`.
+- Verde brand se aclara levemente (`brand-400` en lugar de `brand-500`).
+- **Sin sombras en dark.**
 
 ---
 
 ## 10. Animaciones
 
-Mínimas, funcionales:
-
 - **Transiciones de estado:** `transition-colors duration-150 ease-out`.
+- **Tap feedback:** `active:scale-[0.98] transition-transform duration-100`.
 - **Apertura de modales:** slide-up desde abajo, 250ms.
-- **Loading:** skeleton shimmer en `neutral-100`, no spinner salvo en acciones de red.
-- **NO animaciones decorativas** (bouncing, pulsing, etc.) salvo el latido del balance al refrescar.
+- **Loading:** skeleton shimmer en `neutral-100`.
+- **Sin animaciones decorativas.**
 
 ---
 
 ## 11. Migración desde el estado actual
 
-Resumen de lo que va a cambiar:
+Resumen de cambios:
 
-| Elemento actual                         | Cambia a                                     |
-|-----------------------------------------|----------------------------------------------|
-| Verde lima `rgba(148,195,82,1)`         | Verde BCH `#23A06D` (brand-500)              |
-| Neutrales beige/cálidos                 | Neutrales gris azulado (fríos)               |
-| Sin color celeste                       | Celeste protagonista en headers e íconos     |
-| Archivo + Chivo Mono                    | Inter (única familia, con tabular-nums)      |
-| Botones grandes con texto e ícono       | IconButtons circulares + label debajo        |
-| Bordes y dividers marcados              | Mayormente sin bordes, separación por aire   |
-| Sombras (si hay)                        | Sombras casi imperceptibles                  |
+| Elemento actual                         | Cambia a                                              |
+|-----------------------------------------|-------------------------------------------------------|
+| Verde lima `rgba(148,195,82,1)`         | Verde BCH `#23A06D` (brand-500)                       |
+| Neutrales beige/cálidos                 | Neutrales gris azulado                                |
+| Sin elemento de marca distintivo        | Componente PocketBalance en Home                      |
+| Header genérico                         | Header con "Bolsillo" en verde + avatar               |
+| Archivo + Chivo Mono                    | Inter (única familia, tabular-nums)                   |
+| 4 botones de acción                     | 3 botones (Enviar/Recibir/Escanear)                   |
+| Botones grandes con texto e ícono       | ActionButton circular blanco con borde                |
+| Bordes y dividers marcados              | Mayormente sin bordes, separación por aire            |
+| Bottom nav 4-5 items                    | Bottom nav 3 items (Inicio/Movimientos/Ajustes)       |
 
-**Orden de migración recomendado:**
+**Orden de migración:**
 
-1. Reemplazar `tailwind.config.cjs` (cambia colores y fonts globalmente).
-2. Importar Inter desde Google Fonts en el `index.html` o `index.css`.
-3. Crear/actualizar `Button.tsx` y crear `IconButton.tsx`.
-4. Refactor de `MainLayout.jsx` y `BottomNavigation.tsx`.
-5. Refactor de `WalletViewHome.tsx` (la pantalla más visible) usando los nuevos componentes.
-6. Iterar pantalla por pantalla en este orden: Send → Receive → History → Settings → resto.
+1. Reemplazar `tailwind.config.cjs`.
+2. Importar Inter en index.html / index.css.
+3. Crear `PocketBalance.tsx` (componente nuevo, solo Home).
+4. Crear `ActionButton.tsx`.
+5. Refactor de `Button.tsx`.
+6. Refactor de `BottomNavigation` (3 items + colores brand).
+7. Refactor de `MainLayout` y header del Home.
+8. Refactor de `WalletViewHome.tsx` integrando todo.
+9. Iterar pantallas: Send → Receive → Escanear (nueva) → Movimientos → Ajustes → resto.
 
-Cada PR debe tocar **una sola pantalla**. Cualquier cambio que afecte componentes globales va en su PR separado, antes de las pantallas que lo usan.
+Cada PR toca **una sola pantalla o componente**.
