@@ -11,7 +11,10 @@ export default function HomeHeader() {
   const initial = walletName?.trim().charAt(0).toUpperCase() || "B";
 
   return (
-    <header className="flex items-center justify-between px-5 pt-safe-top pb-3 bg-neutral-25 dark:bg-neutral-25">
+    <header
+      className="flex items-center justify-between px-5 pb-3 bg-neutral-25 dark:bg-neutral-1000"
+      style={{ paddingTop: "max(env(safe-area-inset-top), 16px)" }}
+    >
       <div className="flex items-center">
         <Wallet
           size={24}

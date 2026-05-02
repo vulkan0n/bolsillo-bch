@@ -54,13 +54,13 @@ function TransactionRowInline({ tx, onClick }: TransactionRowProps) {
     <button
       type="button"
       onClick={onClick}
-      className="flex items-center gap-3 px-4 py-3 rounded-2xl bg-neutral-0 dark:bg-neutral-50 active:bg-neutral-50 dark:active:bg-neutral-100 transition-colors duration-150 w-full text-left"
+      className="flex items-center gap-3 px-4 py-3 rounded-2xl bg-neutral-0 dark:bg-neutral-800 active:bg-neutral-50 dark:active:bg-neutral-700 transition-colors duration-150 w-full text-left"
     >
       <div
         className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${
           isReceived
-            ? "bg-brand-50 dark:bg-brand-50"
-            : "bg-neutral-100 dark:bg-neutral-100"
+            ? "bg-brand-50 dark:bg-brand-900"
+            : "bg-neutral-100 dark:bg-neutral-700"
         }`}
       >
         {isReceived ? (
@@ -80,7 +80,7 @@ function TransactionRowInline({ tx, onClick }: TransactionRowProps) {
         <p className="text-body-md text-neutral-900 dark:text-neutral-100 truncate">
           {isReceived ? "Recibido" : "Enviado"}
         </p>
-        <p className="text-xs text-neutral-500">
+        <p className="text-xs text-neutral-500 dark:text-neutral-400">
           {formatRelativeTime(tx.time, tx.time_seen)}
         </p>
       </div>
@@ -95,7 +95,7 @@ function TransactionRowInline({ tx, onClick }: TransactionRowProps) {
         >
           {fiatDisplay}
         </p>
-        <p className="text-xs text-neutral-400 tabular-nums">
+        <p className="text-xs text-neutral-400 dark:text-neutral-500 tabular-nums">
           {sign}
           {bchFormatted} BCH
         </p>
@@ -109,7 +109,9 @@ function TransactionRowInline({ tx, onClick }: TransactionRowProps) {
 function EmptyState() {
   return (
     <div className="px-4 py-8 text-center">
-      <p className="text-sm text-neutral-400">Todavía no tenés movimientos</p>
+      <p className="text-sm text-neutral-400 dark:text-neutral-500">
+        Todavía no tenés movimientos
+      </p>
     </div>
   );
 }

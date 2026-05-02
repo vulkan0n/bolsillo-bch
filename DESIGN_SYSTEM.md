@@ -215,18 +215,22 @@ Specs:
 - Balance: `$` en `text-3xl text-neutral-400 mr-1 font-medium`, número en `text-display text-neutral-900 tabular-nums`.
 - Sub BCH: `text-sm text-neutral-400 mt-1 tabular-nums text-center`.
 
-### 7.2 ActionButton (Home — Enviar/Recibir/Escanear)
+### 7.2 ActionButton (Home — Recibir/Enviar/Escanear)
 
 ```
-[Círculo blanco con borde, ícono adentro]
+[Círculo verde suave con borde, ícono adentro]
             label
 ```
 
 - Container: `flex flex-col items-center gap-2`.
-- Círculo: `w-14 h-14 rounded-full bg-neutral-0 dark:bg-neutral-50 border border-neutral-200`.
-- Ícono: 24×24, `text-neutral-800 dark:text-neutral-100`, strokeWidth 1.75.
-- Label: `text-sm text-neutral-700 dark:text-neutral-300 mt-2`.
-- Active: `active:bg-neutral-50 dark:active:bg-neutral-100 active:scale-[0.98] transition-all duration-100`.
+- Círculo: `w-14 h-14 rounded-full`
+  - Light: `bg-brand-50`, `border-[1.5px] border-brand-300`
+  - Dark: `bg-brand-900`, `border-[1.5px] border-brand-700`
+- Ícono: 24×24, strokeWidth 1.75
+  - Light: `text-brand-700`
+  - Dark: `text-brand-200`
+- Label: `text-sm text-neutral-700 dark:text-neutral-300`, mt-2.
+- Active: `active:bg-brand-100 dark:active:bg-brand-800`, `active:scale-[0.98] transition-all duration-100`.
 - Layout en Home: `grid grid-cols-3 gap-4`.
 
 ### 7.3 Button (botones rectangulares)
@@ -303,6 +307,15 @@ className="h-12 px-4 rounded-xl bg-neutral-50 dark:bg-neutral-50
 - Izquierda: chevron-left, `neutral-700`, 24px.
 - Centro: título `text-h2 text-neutral-900`.
 - Derecha: opcional acción (ghost button).
+
+---
+
+> **Nota sobre tokens `sky-*` en dark mode:** Los colores `sky-*` del
+> config son valores estáticos (no tienen variante automática por dark
+> mode). Para el efecto "azul navy oscuro" del bolsillo en dark mode,
+> usar `dark:bg-sky-900` (`#1B3A5C`) y `dark:border-sky-700`
+> (`#356CA6`) explícitamente. NO asumir que `sky-100` cambia
+> automáticamente en dark — no lo hace.
 
 ---
 

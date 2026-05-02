@@ -5,6 +5,50 @@
 
 ---
 
+## Estado de avance
+
+✅ Paso 0 — Preparación (rama redesign-v2)
+✅ Paso 1 — tailwind.config.cjs
+✅ Paso 2 — Inter
+✅ Paso 3 — PocketBalance.tsx
+✅ Paso 4 — ActionButton.tsx (versión final: verde suave brand-50/900)
+⚠️  Paso 5 — Button.tsx — POSPUESTO. El Button viejo sigue intacto.
+    El nuevo se hará como AppButton.tsx justo antes del Paso 10 (Send).
+✅ Paso 6 — BottomNavigation (3 items, brand activo)
+✅ Paso 7 — HomeHeader.tsx
+✅ Paso 8 — Refactor de WalletViewHome.tsx
+   - Incluye useFormattedBalance.ts (hook nuevo)
+   - Incluye HomeRecentTransactions.tsx (componente nuevo)
+   - WalletViewBalance.jsx y WalletViewButtons.jsx están deprecados
+     (no borrados todavía, dejar de usar)
+   - Placeholder de /wallet/receive y /wallet/scan creados
+✅ Paso 8.5/8.6/8.7 — Fixes visuales del Home (dark mode, padding,
+   visibilidad de ActionButtons)
+
+## Próximo: Pantalla de Login
+
+Antes del Paso 9 oficial, hacer la pantalla de login. Es un PR aparte
+que NO estaba en el plan original pero ya está priorizado.
+
+## Pendientes futuros (anotados durante el redesign)
+
+- Crear AppButton.tsx con variantes primary/secondary/outline/ghost/
+  destructive. Hacer antes del Paso 10 (Send).
+- Implementar la pantalla de Recibir real (hoy es placeholder).
+- Implementar la pantalla de Escanear real (hoy es placeholder).
+- Crear TransactionItem atómico (hoy hay TransactionRowInline local
+  en HomeRecentTransactions.tsx que hay que reemplazar). Paso 9.
+- Borrar WalletViewBalance.jsx y WalletViewButtons.jsx una vez
+  confirmado que no los usa nadie.
+- BUG/CONFIG: La divisa por defecto está en USD pero debería ser ARS.
+  Ajustar en preferences/onboarding (NO es del redesign, fix funcional).
+- BUG/UI: el balance display (text-display 48px) se rompe con montos
+  grandes (ej $1.234.567,89). Habría que ajustar el font-size
+  responsive según longitud del string, o reducir a 40px si supera
+  cierto threshold.
+
+---
+
 ## Paso 0 — Preparación (vos, sin Claude Code)
 
 ```bash

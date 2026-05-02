@@ -20,7 +20,7 @@ export default function WalletViewHome() {
   const { fiatAmount, fiatCurrency, bchAmount } = useFormattedBalance();
 
   return (
-    <div className="bg-neutral-25 dark:bg-neutral-25 pb-24 min-h-full">
+    <div className="bg-neutral-25 dark:bg-neutral-1000 pb-24 min-h-full">
       <HomeHeader />
 
       {genesisHeight > 0 && (
@@ -44,7 +44,7 @@ export default function WalletViewHome() {
           <ActionButton
             icon={
               <ArrowDown
-                className="w-6 h-6 text-neutral-800 dark:text-neutral-50"
+                className="w-6 h-6 text-brand-700 dark:text-brand-200"
                 strokeWidth={1.75}
               />
             }
@@ -54,7 +54,7 @@ export default function WalletViewHome() {
           <ActionButton
             icon={
               <ArrowUp
-                className="w-6 h-6 text-neutral-800 dark:text-neutral-50"
+                className="w-6 h-6 text-brand-700 dark:text-brand-200"
                 strokeWidth={1.75}
               />
             }
@@ -64,7 +64,7 @@ export default function WalletViewHome() {
           <ActionButton
             icon={
               <ScanLine
-                className="w-6 h-6 text-neutral-800 dark:text-neutral-50"
+                className="w-6 h-6 text-brand-700 dark:text-brand-200"
                 strokeWidth={1.75}
               />
             }

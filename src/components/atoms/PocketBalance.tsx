@@ -14,7 +14,7 @@ export default function PocketBalance({
   return (
     <div className="relative pt-7">
       {/* Moneda BCH sobresaliendo por arriba */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-14 h-14 rounded-full bg-brand-500 flex items-center justify-center z-10">
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-14 h-14 rounded-full bg-brand-500 ring-4 ring-neutral-25 dark:ring-neutral-1000 flex items-center justify-center z-10">
         <svg
           viewBox="0 0 788 788"
           className="w-11 h-11 text-white"
@@ -28,7 +28,7 @@ export default function PocketBalance({
       </div>
 
       {/* Bolsillo */}
-      <div className="bg-sky-100 dark:bg-sky-100 border-2 border-dashed border-sky-200 dark:border-sky-400/40 rounded-3xl px-6 py-7">
+      <div className="bg-sky-100 dark:bg-sky-900 border-2 border-dashed border-sky-200 dark:border-sky-700 rounded-3xl px-6 py-7">
         {/* Label */}
         <p className="text-overline uppercase text-sky-500 tracking-wider text-center mb-3">
           {label}
@@ -36,16 +36,16 @@ export default function PocketBalance({
 
         {/* Balance fiat */}
         <div className="flex items-baseline justify-center">
-          <span className="text-3xl text-neutral-400 mr-1 font-medium">
+          <span className="text-3xl text-neutral-400 dark:text-neutral-500 mr-1 font-medium">
             {fiatCurrency}
           </span>
-          <span className="text-display text-neutral-900 dark:text-neutral-900 tabular">
+          <span className="text-display text-neutral-900 dark:text-neutral-100 tabular">
             {fiatAmount}
           </span>
         </div>
 
         {/* Sub BCH */}
-        <p className="text-sm text-neutral-400 mt-1 tabular text-center">
+        <p className="text-sm text-neutral-400 dark:text-neutral-500 mt-1 tabular text-center">
           {bchAmount} BCH
         </p>
       </div>

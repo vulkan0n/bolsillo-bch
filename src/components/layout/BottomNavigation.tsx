@@ -17,7 +17,7 @@ export default function BottomNavigation() {
   return (
     <nav
       data-testid="nav-bottom"
-      className={`w-full flex items-center justify-around h-16 pb-safe-bottom bg-neutral-0 dark:bg-neutral-50 border-t border-neutral-100 dark:border-neutral-200 z-30 ${isScanning ? "opacity-0" : ""}`}
+      className={`w-full flex items-center justify-around h-16 pb-safe-bottom bg-neutral-0 dark:bg-neutral-800 border-t border-neutral-100 dark:border-neutral-700 z-30 ${isScanning ? "opacity-0" : ""}`}
     >
       <NavTab to="/wallet" icon={Home} label="Inicio" />
       <NavTab to="/wallet/history" icon={Receipt} label="Movimientos" />
@@ -51,11 +51,11 @@ function NavTab({ to, icon, label }: NavTabProps) {
             className={
               isActive
                 ? "text-brand-600 dark:text-brand-400"
-                : "text-neutral-400"
+                : "text-neutral-400 dark:text-neutral-500"
             }
           />
           <span
-            className={`text-xs ${isActive ? "text-brand-600 dark:text-brand-400 font-medium" : "text-neutral-400"}`}
+            className={`text-xs ${isActive ? "text-brand-600 dark:text-brand-400 font-medium" : "text-neutral-400 dark:text-neutral-500"}`}
           >
             {label}
           </span>
