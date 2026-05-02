@@ -13,7 +13,7 @@ export default function ActionButton({
   label,
   onClick,
   disabled = false,
-  ariaLabel,
+  ariaLabel = undefined,
 }: ActionButtonProps) {
   return (
     <button
