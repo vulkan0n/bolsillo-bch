@@ -44,7 +44,7 @@ export default function WalletViewHome() {
           <ActionButton
             icon={
               <ArrowDown
-                className="w-6 h-6 text-neutral-800 dark:text-neutral-100"
+                className="w-6 h-6 text-neutral-800 dark:text-neutral-50"
                 strokeWidth={1.75}
               />
             }
@@ -54,7 +54,7 @@ export default function WalletViewHome() {
           <ActionButton
             icon={
               <ArrowUp
-                className="w-6 h-6 text-neutral-800 dark:text-neutral-100"
+                className="w-6 h-6 text-neutral-800 dark:text-neutral-50"
                 strokeWidth={1.75}
               />
             }
@@ -64,7 +64,7 @@ export default function WalletViewHome() {
           <ActionButton
             icon={
               <ScanLine
-                className="w-6 h-6 text-neutral-800 dark:text-neutral-100"
+                className="w-6 h-6 text-neutral-800 dark:text-neutral-50"
                 strokeWidth={1.75}
               />
             }
