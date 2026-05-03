@@ -24,11 +24,16 @@
    - Placeholder de /wallet/receive y /wallet/scan creados
 ✅ Paso 8.5/8.6/8.7 — Fixes visuales del Home (dark mode, padding,
    visibilidad de ActionButtons)
+✅ Pantalla de Login — WelcomeView.tsx (PR fuera del plan original)
+   - Layout centrado con safe area (pt-safe-top / pb-safe-bottom)
+   - Fondo bg-neutral-25 dark:bg-neutral-1000
+   - Logo PNG 96px (reemplaza SVG auto-trazado de 165k tokens)
+   - Tipografía del design system (text-h1, text-body)
+   - Botón brand-500 h-56px, labelSize lg, sin borde
+   - Copy del subtítulo corregido (no menciona pesos)
+   - Todos los estados preservados: idle / loading x3 / error
 
-## Próximo: Pantalla de Login
-
-Antes del Paso 9 oficial, hacer la pantalla de login. Es un PR aparte
-que NO estaba en el plan original pero ya está priorizado.
+## Próximo: Paso 9 — TransactionItem
 
 ## Pendientes futuros (anotados durante el redesign)
 
