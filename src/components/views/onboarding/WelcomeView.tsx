@@ -130,46 +130,45 @@ export default function WelcomeView({ boot }: WelcomeViewProps) {
   // --------------------------------
 
   return (
-    <FullColumn className="justify-center items-center bg-neutral-100 dark:bg-neutral-900 p-6">
-      <div className="flex flex-col items-center w-full max-w-sm gap-8">
-        {/* Logo */}
-        <SeleneLogo className="w-28 h-28" />
+    <FullColumn className="justify-center items-center bg-neutral-25 dark:bg-neutral-1000 px-6 pt-safe-top pb-safe-bottom">
+      <div className="flex flex-col items-center w-full max-w-sm">
+        <SeleneLogo className="w-24 h-24 mb-8" />
 
-        {/* Título */}
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100 mb-2">
-            Bolsillo BCH
-          </h1>
-          <p className="text-sm text-neutral-500 dark:text-neutral-400">
-            Tu billetera de Bitcoin Cash para cobros en pesos
-          </p>
-        </div>
+        <h1 className="text-h1 text-neutral-900 dark:text-neutral-100 text-center mb-2">
+          Bolsillo BCH
+        </h1>
 
-        {/* Botón Google */}
-        <div className="w-full flex flex-col gap-3">
+        <p className="text-body text-neutral-500 dark:text-neutral-400 text-center mb-10">
+          Enviá y recibí Bitcoin Cash de forma simple, sin bancos, sin esperas.
+        </p>
+
+        <div className="w-full mb-6">
+          {/* TODO: migrar a AppButton.tsx cuando exista (Paso ~10).
+               Por ahora se fuerza altura via style porque Button viejo no tiene size prop. */}
           <Button
             label={stepLabel[step]}
             disabled={isLoading}
-            bgColor="bg-white dark:bg-neutral-800 hover:bg-neutral-50 dark:hover:bg-neutral-700"
-            activeBgColor="bg-neutral-100 dark:bg-neutral-700"
-            labelColor="text-neutral-800 dark:text-neutral-100 font-semibold"
-            activeLabelColor="text-neutral-700 dark:text-neutral-200"
-            borderClasses="border border-neutral-300 dark:border-neutral-600"
+            bgColor="bg-brand-500"
+            activeBgColor="bg-brand-600"
+            labelColor="text-white font-semibold"
+            activeLabelColor="text-white"
+            borderClasses=""
             rounded="xl"
-            padding="px-4 py-3"
+            labelSize="lg"
+            padding="4"
+            fullWidth
+            style={{ height: "56px" }}
             onClick={handleGoogleSignIn}
           />
 
-          {/* Error */}
           {step === "error" && errorMessage && (
-            <p className="text-sm text-center text-red-500 dark:text-red-400 px-2">
+            <p className="text-sm text-error text-center mt-3">
               {errorMessage}
             </p>
           )}
         </div>
 
-        {/* Nota de privacidad */}
-        <p className="text-xs text-center text-neutral-400 dark:text-neutral-500 px-4">
+        <p className="text-sm text-neutral-400 dark:text-neutral-400 text-center leading-relaxed max-w-xs">
           Tu billetera se guarda de forma encriptada en tu Google Drive privado.
           Nadie más puede acceder a tus fondos.
         </p>
