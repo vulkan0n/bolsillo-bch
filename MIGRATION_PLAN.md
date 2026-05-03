@@ -32,8 +32,14 @@
    - Botón brand-500 h-56px, labelSize lg, sin borde
    - Copy del subtítulo corregido (no menciona pesos)
    - Todos los estados preservados: idle / loading x3 / error
+✅ Paso 9 — TransactionItem.tsx (átomo nuevo)
+   - Extracción pura de TransactionRowInline de HomeRecentTransactions
+   - Firma de 6 props explícitas (sin pasar MergedHistoryEntity completo)
+   - formatRelativeTime privada al componente
+   - formatBch movida a src/util/format.ts (nuevo)
+   - HomeRecentTransactions simplificado: 165 → 60 líneas
 
-## Próximo: Paso 9 — TransactionItem
+## Próximo: Paso 10 — AppButton.tsx + WalletViewSend
 
 ## Pendientes futuros (anotados durante el redesign)
 
