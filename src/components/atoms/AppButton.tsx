@@ -45,7 +45,7 @@ const VARIANT_CLASSES: Record<AppButtonVariant, string> = {
 const SIZE_CLASSES: Record<AppButtonSize, string> = {
   sm: "h-9 px-3 rounded-md text-sm",
   md: "h-12 px-5 rounded-xl text-body-md",
-  lg: "h-14 px-6 rounded-xl text-body-md",
+  lg: "h-14 px-6 rounded-xl text-base font-semibold",
 };
 
 const SPINNER_SIZE: Record<AppButtonSize, number> = {

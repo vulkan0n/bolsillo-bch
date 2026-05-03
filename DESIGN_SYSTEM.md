@@ -243,7 +243,10 @@ Specs:
 | `ghost`       | `transparent` | `neutral-700` | —             | Toolbars, headers             |
 | `destructive` | `error`       | `white`       | —             | Confirmar borrado             |
 
-**Tamaños:** `sm` (h-9, rounded-md), `md` default (h-12, rounded-xl), `lg` (h-14, rounded-xl, fullWidth).
+**Tamaños:**
+- `sm`: h-9, px-3, rounded-md, text-sm, font-medium
+- `md` (default): h-12, px-5, rounded-xl, text-body-md, font-medium
+- `lg`: h-14, px-6, rounded-xl, text-base, font-semibold — típicamente fullWidth (CTA principal de pantalla)
 
 **Reglas:**
 - Una `primary` visible por pantalla.
