@@ -47,8 +47,6 @@
   destructive. Hacer antes del Paso 10 (Send).
 - Implementar la pantalla de Recibir real (hoy es placeholder).
 - Implementar la pantalla de Escanear real (hoy es placeholder).
-- Crear TransactionItem atómico (hoy hay TransactionRowInline local
-  en HomeRecentTransactions.tsx que hay que reemplazar). Paso 9.
 - Borrar WalletViewBalance.jsx y WalletViewButtons.jsx una vez
   confirmado que no los usa nadie.
 - BUG/CONFIG: La divisa por defecto está en USD pero debería ser ARS.
@@ -57,6 +55,36 @@
   grandes (ej $1.234.567,89). Habría que ajustar el font-size
   responsive según longitud del string, o reducir a 40px si supera
   cierto threshold.
+
+---
+
+## Post-redesign: Simplificación de Send
+
+Una vez terminada la migración visual completa (todos los pasos del
+redesign), abrir un PR aparte de SIMPLIFICACIÓN DE LÓGICA DE NEGOCIO
+en WalletViewSend.tsx.
+
+Objetivo: alinear la funcionalidad del Send con la propuesta del
+producto (wallet minimalista para usuarios nuevos de BCH).
+
+Funcionalidad a evaluar para sacar / esconder:
+- Stablecoin mode.
+- Selección manual de UTXOs.
+- Flujo de envío de tokens (CashTokens).
+- Flujo de envío de NFTs.
+
+Decisiones a tomar en ese PR (NO ahora):
+- ¿Sacar entero o esconder detrás de un "modo avanzado" en Ajustes?
+- ¿Qué pasa con usuarios existentes que ya tienen tokens/NFTs en su
+  wallet? ¿Se ocultan en la UI pero el saldo sigue ahí? ¿Se migran
+  a otra vista?
+- ¿Stablecoin mode se mantiene o se elimina? (evaluar aparte de
+  tokens/NFTs porque puede ser central para algunos usuarios).
+
+Importante: este PR NO es parte del redesign. Es trabajo de producto,
+no visual. Requiere su propia conversación de diseño y probablemente
+se descomponga en varios sub-PRs (ej: primero esconder NFTs, después
+tokens, después UTXOs avanzados).
 
 ---
 
