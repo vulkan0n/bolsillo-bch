@@ -16,7 +16,7 @@ import {
 } from "@/kernel/backup/CloudBackupService";
 
 import FullColumn from "@/layout/FullColumn";
-import Button from "@/atoms/Button";
+import AppButton from "@/atoms/AppButton";
 import SeleneLogo from "@/atoms/SeleneLogo";
 
 const Log = LogService("WelcomeView");
@@ -143,23 +143,15 @@ export default function WelcomeView({ boot }: WelcomeViewProps) {
         </p>
 
         <div className="w-full mb-6">
-          {/* TODO: migrar a AppButton.tsx cuando exista (Paso ~10).
-               Por ahora se fuerza altura via style porque Button viejo no tiene size prop. */}
-          <Button
-            label={stepLabel[step]}
-            disabled={isLoading}
-            bgColor="bg-brand-500"
-            activeBgColor="bg-brand-600"
-            labelColor="text-white font-semibold"
-            activeLabelColor="text-white"
-            borderClasses=""
-            rounded="xl"
-            labelSize="lg"
-            padding="4"
+          <AppButton
+            variant="primary"
+            size="lg"
             fullWidth
-            style={{ height: "56px" }}
+            loading={isLoading}
             onClick={handleGoogleSignIn}
-          />
+          >
+            {stepLabel[step]}
+          </AppButton>
 
           {step === "error" && errorMessage && (
             <p className="text-sm text-error text-center mt-3">
