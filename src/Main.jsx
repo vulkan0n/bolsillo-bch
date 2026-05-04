@@ -39,14 +39,6 @@ const routes = [
       ...routeApps,
       ...routeDebug,
       {
-        path: "/vendor",
-        async lazy() {
-          const { default: VendorModeView } =
-            await import("@/views/vendor/VendorModeView");
-          return { Component: VendorModeView };
-        },
-      },
-      {
         path: "/credits",
         async lazy() {
           const { default: CreditsView } =

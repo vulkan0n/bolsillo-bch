@@ -166,11 +166,6 @@ async function initializeDevice(): Promise<DeviceState> {
 
       const { location, history } = window;
 
-      // Vendor mode handles its own back button via auth gate
-      if (location.pathname === "/vendor") {
-        return;
-      }
-
       if (location.pathname === "/wallet") {
         App.exitApp();
         return;

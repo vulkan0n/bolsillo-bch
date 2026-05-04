@@ -2,7 +2,6 @@ import {
   authInstantPay,
   authRevealPrivateKeys,
   authSendTransaction,
-  authVendorMode,
   createImportWallet,
   importKeyBackup,
   settings,
@@ -16,7 +15,6 @@ const translations = {
   authSendTransaction,
   authInstantPay,
   authRevealPrivateKeys,
-  authVendorMode,
 
   walletSettings: {
     ar: "محافظ",

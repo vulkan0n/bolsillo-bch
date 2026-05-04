@@ -3,14 +3,12 @@ import { NavLink } from "react-router";
 import { Home, Receipt, Settings } from "lucide-react";
 
 import { selectKeyboardIsOpen, selectScannerIsScanning } from "@/redux/device";
-import { selectIsVendorModeActive } from "@/redux/preferences";
 
 export default function BottomNavigation() {
   const isKeyboardOpen = useSelector(selectKeyboardIsOpen);
   const isScanning = useSelector(selectScannerIsScanning);
-  const isVendorModeActive = useSelector(selectIsVendorModeActive);
 
-  if (isKeyboardOpen || isVendorModeActive) {
+  if (isKeyboardOpen) {
     return null;
   }
 

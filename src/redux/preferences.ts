@@ -79,10 +79,6 @@ export const defaultPreferences = {
   enableDailyCheckIn: "true",
   autoResolveBcmr: "true",
   // --------
-  // Vendor Mode
-  vendorModeActive: "false",
-  vendorModeKeepAwake: "true",
-  // --------
   // Encryption
   encryptionDeviceOnly: "false", // false = cloud sync enabled (default for new users)
   lastKeyBackupExport: "", // ISO timestamp of last key backup export
@@ -154,8 +150,6 @@ export function validatePreferences(preferences: ValidPreferences): boolean {
     "showOutputsCard",
     "stablecoinMode",
     "forceTokenAddress",
-    "vendorModeActive",
-    "vendorModeKeepAwake",
     "encryptionDeviceOnly",
     "useLegacyBip21",
     "pinInputMode",
@@ -464,16 +458,6 @@ export const selectShouldShowMemoCard = createSelector(
 export const selectIsStablecoinMode = createSelector(
   (state: RootState) => state.preferences,
   (preferences) => preferences.stablecoinMode === "true"
-);
-
-export const selectIsVendorModeActive = createSelector(
-  (state: RootState) => state.preferences,
-  (preferences) => preferences.vendorModeActive === "true"
-);
-
-export const selectIsVendorModeKeepAwake = createSelector(
-  (state: RootState) => state.preferences,
-  (preferences) => preferences.vendorModeKeepAwake === "true"
 );
 
 export const selectEncryptionSettings = createSelector(
