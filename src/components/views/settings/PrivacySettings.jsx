@@ -2,7 +2,6 @@ import { useContext } from "react";
 import { useSelector } from "react-redux";
 import {
   AreaChartOutlined,
-  DeliveredProcedureOutlined,
   EyeInvisibleOutlined,
   EyeOutlined,
 } from "@ant-design/icons";
@@ -20,7 +19,7 @@ import { SettingsContext } from "./SettingsContext";
 
 export default function PrivacySettings() {
   const { handleSettingsUpdate } = useContext(SettingsContext);
-  const { shouldHideBalance, isDailyCheckInEnabled, shouldResolveBcmr } =
+  const { shouldHideBalance, isDailyCheckInEnabled } =
     useSelector(selectPrivacySettings);
 
   return (
@@ -57,19 +56,6 @@ export default function PrivacySettings() {
           onChange={(event) => {
             const { checked: isChecked } = event.target;
             handleSettingsUpdate("enableDailyCheckIn", isChecked);
-          }}
-        />
-      </Accordion.Child>
-      <Accordion.Child
-        icon={DeliveredProcedureOutlined}
-        label={translate(translations.autoResolveBcmr)}
-      >
-        <input
-          type="checkbox"
-          checked={shouldResolveBcmr}
-          onChange={(event) => {
-            const { checked: isChecked } = event.target;
-            handleSettingsUpdate("autoResolveBcmr", isChecked);
           }}
         />
       </Accordion.Child>

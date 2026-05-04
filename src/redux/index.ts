@@ -1,8 +1,6 @@
 import { combineReducers, configureStore, isPlain } from "@reduxjs/toolkit";
 
 import LogService from "@/kernel/app/LogService";
-import BcmrService from "@/kernel/bch/BcmrService";
-
 import { deviceInit, deviceReducer, setScannerIsScanning } from "./device";
 import {
   exchangeRateInit,
@@ -66,8 +64,6 @@ export async function redux_init() {
     })
   );
 
-  const network = selectBchNetwork(store.getState());
-  BcmrService(network).preloadMetadataRegistries();
 }
 
 export function redux_resume() {

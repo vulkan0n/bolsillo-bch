@@ -12,7 +12,6 @@ import { selectNetworkStatus } from "@/redux/device";
 import {
   selectBchNetwork,
   selectIsOfflineMode,
-  selectIsStablecoinMode,
 } from "@/redux/preferences";
 import { txHistoryFetch } from "@/redux/txHistory";
 import {
@@ -24,7 +23,6 @@ import {
 import JanitorService from "@/kernel/app/JanitorService";
 import LogService from "@/kernel/app/LogService";
 import BlockchainService from "@/kernel/bch/BlockchainService";
-import CauldronService from "@/kernel/bch/CauldronService";
 import ElectrumService from "@/kernel/bch/ElectrumService";
 import TransactionManagerService from "@/kernel/bch/TransactionManagerService";
 import AddressManagerService, {
@@ -61,7 +59,6 @@ export const syncConnect = createAsyncThunk(
     Log.log("sync/connect", payload);
     let isSuccess = false;
     try {
-      thunkApi.dispatch(syncCauldronConnect());
       await Electrum.connect(payload.server);
       isSuccess = true;
     } catch (e) {
@@ -94,22 +91,6 @@ export const syncConnect = createAsyncThunk(
   }
 );
 
-export const syncCauldronConnect = createAsyncThunk(
-  "sync/cauldronConnect",
-  async (payload, thunkApi) => {
-    const isStablecoinMode = selectIsStablecoinMode(thunkApi.getState());
-    if (!isStablecoinMode) {
-      Log.log("sync/cauldronConnect blocked - not in stablecoin mode");
-      return;
-    }
-
-    const Cauldron = CauldronService();
-    await Cauldron.connect();
-
-    //Cauldron.subscribe(MUSD_TOKENID);
-  }
-);
-
 // syncReconnect: attempt fresh connection to server
 export const syncReconnect = createAsyncThunk(
   "sync/reconnect",
@@ -127,9 +108,6 @@ export const syncDisconnect = createAsyncThunk(
   async (_, thunkApi) => {
     const bchNetwork = selectBchNetwork(thunkApi.getState());
     const Electrum = ElectrumService(bchNetwork);
-    const Cauldron = CauldronService();
-
-    Cauldron.disconnect();
     return Electrum.disconnect(true);
   }
 );

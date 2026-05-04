@@ -137,17 +137,13 @@ export default function NotificationService() {
   // ----------------
   // Domain methods
 
-  function paymentReceived(amount: bigint, token?: { category: string }) {
+  function paymentReceived(amount: bigint) {
     const id = generateId();
     push({
       id,
       duration: 3000,
       content: (onDismiss) => (
-        <PaymentReceivedToast
-          amount={amount}
-          token={token}
-          onDismiss={onDismiss}
-        />
+        <PaymentReceivedToast amount={amount} onDismiss={onDismiss} />
       ),
     });
   }

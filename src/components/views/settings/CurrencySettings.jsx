@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import {
   AccountBookOutlined,
   DollarCircleOutlined,
@@ -7,11 +7,7 @@ import {
   TransactionOutlined,
 } from "@ant-design/icons";
 
-import {
-  selectCurrencySettings,
-  selectIsPrerelease,
-} from "@/redux/preferences";
-import { syncCauldronConnect } from "@/redux/sync";
+import { selectCurrencySettings } from "@/redux/preferences";
 
 import Accordion from "@/atoms/Accordion";
 import Select from "@/components/atoms/Select";
@@ -26,27 +22,9 @@ import { SettingsContext } from "./SettingsContext";
 
 export default function CurrencySettings() {
   const { handleSettingsUpdate } = useContext(SettingsContext);
-  const dispatch = useDispatch();
 
-  const {
-    shouldPreferLocalCurrency,
-    localCurrency,
-    denomination,
-    isStablecoinMode,
-  } = useSelector(selectCurrencySettings);
-
-  const isPrerelease = useSelector(selectIsPrerelease);
-
-  const selectedCurrency = isStablecoinMode ? "USD" : localCurrency || "";
-
-  const handleToggleStablecoinMode = (event) => {
-    const isChecked = event.target.checked;
-    handleSettingsUpdate("stablecoinMode", event.target.checked);
-
-    if (isChecked) {
-      setTimeout(() => dispatch(syncCauldronConnect()), 200);
-    }
-  };
+  const { shouldPreferLocalCurrency, localCurrency, denomination } =
+    useSelector(selectCurrencySettings);
 
   return (
     <Accordion
@@ -59,8 +37,7 @@ export default function CurrencySettings() {
       >
         <Select
           className="w-fit"
-          value={selectedCurrency}
-          disabled={isStablecoinMode}
+          value={localCurrency || ""}
           onChange={(event) =>
             handleSettingsUpdate("localCurrency", event.target.value)
           }
@@ -112,19 +89,6 @@ export default function CurrencySettings() {
           ))}
         </Select>
       </Accordion.Child>
-      {(isPrerelease || isStablecoinMode) && (
-        <Accordion.Child
-          icon={DollarCircleOutlined}
-          label={translate(translations.enableStablecoinMode)}
-          description={translate(translations.stablecoinModeExplanation)}
-        >
-          <input
-            type="checkbox"
-            checked={isStablecoinMode}
-            onChange={handleToggleStablecoinMode}
-          />
-        </Accordion.Child>
-      )}
     </Accordion>
   );
 }

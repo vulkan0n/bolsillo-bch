@@ -26,8 +26,6 @@ export interface TxHistoryFilters {
   sortField: SortField;
   sortDirection: SortDirection;
   direction: TransactionDirection;
-  hasToken: boolean | null; // null = all, true = has tokens, false = no tokens
-  hasNFT: boolean | null; // null = all, true = has NFT, false = no NFT
 }
 
 export const setSearchQuery = createAction<string>("txHistory/setSearchQuery");
@@ -38,10 +36,6 @@ export const setSortDirection = createAction<SortDirection>(
 export const setDirection = createAction<TransactionDirection>(
   "txHistory/setDirection"
 );
-export const setHasToken = createAction<boolean | null>(
-  "txHistory/setHasToken"
-);
-export const setHasNft = createAction<boolean | null>("txHistory/setHasNFT");
 export const resetFilters = createAction("txHistory/resetFilters");
 
 export const txHistoryFetch = createAsyncThunk(
@@ -98,8 +92,6 @@ const initialFilters: TxHistoryFilters = {
   sortField: "date",
   sortDirection: "desc",
   direction: "all",
-  hasToken: null,
-  hasNFT: null,
 };
 
 const initialState = {
@@ -124,12 +116,6 @@ export const txHistoryReducer = createReducer(initialState, (builder) => {
     })
     .addCase(setDirection, (state, action) => {
       state.filters.direction = action.payload;
-    })
-    .addCase(setHasToken, (state, action) => {
-      state.filters.hasToken = action.payload;
-    })
-    .addCase(setHasNft, (state, action) => {
-      state.filters.hasNFT = action.payload;
     })
     .addCase(resetFilters, (state) => {
       state.filters = initialFilters;

@@ -1,7 +1,6 @@
 import { useContext, useState } from "react";
 import { useSelector } from "react-redux";
 import {
-  AlertOutlined,
   PropertySafetyOutlined,
   QrcodeOutlined,
   SendOutlined,
@@ -11,8 +10,6 @@ import {
 import {
   selectCurrencySettings,
   selectInstantPaySettings,
-  selectIsExperimental,
-  selectShouldForceTokenAddress,
   selectShouldUseLegacyBip21,
 } from "@/redux/preferences";
 
@@ -22,7 +19,6 @@ import CurrencyService from "@/kernel/bch/CurrencyService";
 import Accordion from "@/atoms/Accordion";
 import Checkbox from "@/atoms/Checkbox";
 import CurrencySymbol from "@/atoms/CurrencySymbol";
-import { SatoshiInput } from "@/atoms/SatoshiInput";
 
 import { translate } from "@/util/translations";
 import translations from "./translations";
@@ -38,9 +34,6 @@ export default function PaymentSettings() {
     selectCurrencySettings
   );
 
-  const isExperimental = useSelector(selectIsExperimental);
-
-  const shouldForceTokenAddress = useSelector(selectShouldForceTokenAddress);
   const shouldUseLegacyBip21 = useSelector(selectShouldUseLegacyBip21);
 
   const Currency = CurrencyService(localCurrency);
@@ -93,8 +86,9 @@ export default function PaymentSettings() {
       >
         <span className="text-neutral-600 flex items-center dark:text-neutral-300">
           <CurrencySymbol className="font-bold text-lg mr-1" />
-          <SatoshiInput
-            satoshis={instantPaySatInput}
+          <input
+            type="number"
+            value={instantPaySatInput}
             className="p-2 w-28 rounded flex-1 dark:bg-neutral-900 dark:text-neutral-100 dark:border-primarydark-400 border border-primary"
             onChange={handleInstantPayInput}
           />
@@ -112,19 +106,6 @@ export default function PaymentSettings() {
           }}
         />
       </Accordion.Child>
-      {isExperimental && (
-        <Accordion.Child
-          icon={AlertOutlined}
-          label={translate(translations.allowTokensToNonTokenAddresses)}
-        >
-          <Checkbox
-            checked={shouldForceTokenAddress}
-            onChange={(event) => {
-              handleSettingsUpdate("forceTokenAddress", event.target.checked);
-            }}
-          />
-        </Accordion.Child>
-      )}
     </Accordion>
   );
 }

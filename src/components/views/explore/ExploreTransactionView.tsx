@@ -26,7 +26,6 @@ import TransactionManagerService, {
   TransactionOutput,
   TransactionEntity,
 } from "@/kernel/bch/TransactionManagerService";
-import TokenManagerService from "@/kernel/wallet/TokenManagerService";
 import TransactionExportService, {
   prepareTransactionExportData,
 } from "@/kernel/wallet/TransactionExportService";
@@ -39,11 +38,10 @@ import Card from "@/atoms/Card";
 import Editable from "@/atoms/Editable";
 import LinkExternal from "@/atoms/LinkExternal";
 import Satoshi from "@/atoms/Satoshi";
-import TokenAmount from "@/atoms/TokenAmount";
 
 import { useClipboard } from "@/hooks/useClipboard";
 
-import { binToHex, hexToUtf8 } from "@/util/hex";
+import { hexToUtf8 } from "@/util/hex";
 import { getTxExplorerUrl } from "@/util/network";
 
 import { translate } from "@/util/translations";
@@ -301,23 +299,6 @@ function OutputListItem({
   const isOpReturn = asmSplit[0] === "OP_RETURN";
   const opReturnData = hexToUtf8(asmSplit.slice(2).join()); // OP_RETURN OP_PUSHDATA_X ...
 
-  // Determine address format based on whether tokens are present
-  const addressFormat = output.token ? "tokenaddr" : undefined;
-
-  const walletHash = useSelector(selectActiveWalletHash);
-  const TokenManager = TokenManagerService(walletHash, bchNetwork);
-  const tokenData = output.token
-    ? TokenManager.getToken(binToHex(output.token.category))
-    : undefined;
-
-  const token = tokenData
-    ? {
-        ...tokenData,
-        amount: output.token!.amount,
-        nftCount: output.token.nft ? 1 : 0,
-      }
-    : undefined;
-
   return (
     <div className={`p-1.5 ${zebraCss}`}>
       <div className="flex text-sm items-center">
@@ -328,7 +309,6 @@ function OutputListItem({
         ) : (
           <Address
             address={output.scriptPubKey.addresses![0]}
-            format={addressFormat}
             className="tracking-tight"
           />
         )}
@@ -352,20 +332,6 @@ function OutputListItem({
             </span>
           )}
         </div>
-        {token && (
-          <span className="flex items-center justify-end">
-            <span
-              style={{ color: token.color }}
-              className="font-mono text-xs tracking-tighter font-bold mr-0.5"
-            >
-              {token.symbol}
-            </span>
-            <span className="flex items-baseline gap-x-0.5 text-sm">
-              {token.amount > 0 && <TokenAmount token={token} />}
-              {token.nftCount > 0 && <TokenAmount token={token} nft />}
-            </span>
-          </span>
-        )}
       </div>
     </div>
   );
