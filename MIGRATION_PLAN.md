@@ -39,12 +39,23 @@
    - formatBch movida a src/util/format.ts (nuevo)
    - HomeRecentTransactions simplificado: 165 → 60 líneas
 
-## Próximo: Paso 10 — AppButton.tsx + WalletViewSend
+✅ Sub-paso 10A — AppButton.tsx (componente nuevo)
+   - Variantes: primary / secondary / outline / ghost / destructive
+   - Tamaños: sm / md / lg (lg → text-base font-semibold h-14)
+   - Loading state con Loader2 spinner
+   - aria-label, fullWidth, className extra
+   - JSDoc documenta ausencia de tailwind-merge
+
+✅ Sub-paso 10B — Migrar WelcomeView.tsx a AppButton
+   - Reemplaza Button viejo (con props ad-hoc) por AppButton variant="primary" size="lg"
+   - Elimina style={{ height: "56px" }} hardcodeado
+   - Loading state via prop loading={isLoading}
+
+## Próximo: Sub-paso 10C — WalletViewSend (auditoría previa)
 
 ## Pendientes futuros (anotados durante el redesign)
 
-- Crear AppButton.tsx con variantes primary/secondary/outline/ghost/
-  destructive. Hacer antes del Paso 10 (Send).
+- ~~Crear AppButton.tsx~~ ✅ Hecho en Sub-paso 10A.
 - Implementar la pantalla de Recibir real (hoy es placeholder).
 - Implementar la pantalla de Escanear real (hoy es placeholder).
 - Borrar WalletViewBalance.jsx y WalletViewButtons.jsx una vez
