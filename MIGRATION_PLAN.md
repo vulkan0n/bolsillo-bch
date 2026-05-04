@@ -51,6 +51,14 @@
    - Elimina style={{ height: "56px" }} hardcodeado
    - Loading state via prop loading={isLoading}
 
+✅ Sub-paso 10B.6 — Eliminar header global de subpantallas (WalletView.jsx)
+   - Eliminado el div con BalanceHideButton + WalletViewBalance + SyncIndicator
+     que aparecía en todas las subrutas de /wallet/* excepto el Home
+   - Limpiados imports y selectores huérfanos (isScanning, isVendorModeActive,
+     isHome, useLocation)
+   - Borrados BalanceHideButton.tsx y SyncIndicator.tsx (sin otros importadores)
+   - WalletViewBalance.jsx conservado (lo usa AppCauldronDexView.jsx)
+
 ## Próximo: Sub-paso 10C — WalletViewSend (auditoría previa)
 
 ## Pendientes futuros (anotados durante el redesign)
@@ -62,6 +70,17 @@
   confirmado que no los usa nadie.
 - BUG/CONFIG: La divisa por defecto está en USD pero debería ser ARS.
   Ajustar en preferences/onboarding (NO es del redesign, fix funcional).
+- Limpieza post-redesign: el header global de subpantallas fue eliminado en
+  10B.6. Los componentes BalanceHideButton.tsx y SyncIndicator.tsx ya fueron
+  borrados. WalletViewBalance.jsx sigue como código vivo solo por Cauldron DEX.
+- Decisión de producto (10B.6): se eliminó SyncIndicator del header global. Si
+  la conexión Electrum se cae, la app no muestra feedback visual permanente.
+  Considerar manejar errores de conexión en el flujo de cada operación (Send,
+  Receive) si se vuelve un problema.
+- Revisar si Cauldron DEX (AppCauldronDexView.jsx) tiene lugar en la app
+  minimalista. Es feature avanzada en el espíritu de los tokens/NFTs/stablecoin
+  del Send. Si se decide eliminar, también se elimina su uso de
+  WalletViewBalance.jsx y se puede borrar ese componente.
 - BUG/UI: el balance display (text-display 48px) se rompe con montos
   grandes (ej $1.234.567,89). Habría que ajustar el font-size
   responsive según longitud del string, o reducir a 40px si supera
