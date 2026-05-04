@@ -47,14 +47,6 @@ export const routeApps = [
     },
   },
   {
-    path: "/apps/cauldron",
-    async lazy() {
-      const { default: AppCauldronDexView } =
-        await import("@/views/apps/cauldron/AppCauldronDexView");
-      return { Component: AppCauldronDexView };
-    },
-  },
-  {
     path: "/apps/qrgen",
     async lazy() {
       const { default: AppQrgenView } =
