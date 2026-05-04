@@ -1,6 +1,6 @@
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router";
-import { ArrowDown, ArrowUp, ScanLine } from "lucide-react";
+import { ArrowDown, ArrowUp } from "lucide-react";
 
 import { selectActiveWalletHash, selectGenesisHeight } from "@/redux/wallet";
 
@@ -40,7 +40,7 @@ export default function WalletViewHome() {
       </div>
 
       <div className="px-5 mt-8">
-        <div className="grid grid-cols-3 gap-4 max-w-xs mx-auto">
+        <div className="grid grid-cols-2 gap-4 max-w-xs mx-auto">
           <ActionButton
             icon={
               <ArrowDown
@@ -60,16 +60,6 @@ export default function WalletViewHome() {
             }
             label="Enviar"
             onClick={() => navigate("/wallet/send")}
-          />
-          <ActionButton
-            icon={
-              <ScanLine
-                className="w-6 h-6 text-brand-700 dark:text-brand-200"
-                strokeWidth={1.75}
-              />
-            }
-            label="Escanear"
-            onClick={() => navigate("/wallet/scan")}
           />
         </div>
       </div>

@@ -1,7 +1,5 @@
 import WalletViewHome from "@/views/wallet/home/WalletViewHome";
 import WalletViewPay from "@/views/wallet/send/WalletViewPay";
-import WalletViewSend from "@/views/wallet/send/WalletViewSend";
-import WalletViewSendSuccess from "@/views/wallet/send/WalletViewSendSuccess";
 import WalletViewSweep from "@/views/wallet/send/WalletViewSweep";
 import WalletView from "@/views/wallet/WalletView";
 
@@ -15,20 +13,8 @@ export const routeWallet = [
         element: <WalletViewHome />,
       },
       {
-        path: "send/",
-        element: <WalletViewSend />,
-      },
-      {
-        path: "send/:address",
-        element: <WalletViewSend />,
-      },
-      {
         path: "pay/",
         element: <WalletViewPay />,
-      },
-      {
-        path: "send/success",
-        element: <WalletViewSendSuccess />,
       },
       {
         path: "sweep/:wif",
@@ -48,14 +34,6 @@ export const routeWallet = [
           const { default: WalletViewReceive } =
             await import("@/views/wallet/receive/WalletViewReceive");
           return { Component: WalletViewReceive };
-        },
-      },
-      {
-        path: "scan",
-        async lazy() {
-          const { default: WalletViewScan } =
-            await import("@/views/wallet/scan/WalletViewScan");
-          return { Component: WalletViewScan };
         },
       },
     ],
