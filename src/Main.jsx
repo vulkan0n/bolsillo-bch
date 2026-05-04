@@ -13,7 +13,6 @@ import ErrorBoundary from "@/layout/ErrorBoundary";
 import MainLayout from "@/layout/MainLayout";
 
 import { routeApps } from "@/routes/routeApps";
-import { routeAssets } from "@/routes/routeAssets";
 import { routeDebug } from "@/routes/routeDebug";
 import { routeExplore } from "@/routes/routeExplore";
 import { routeSettings } from "@/routes/routeSettings";
@@ -35,7 +34,6 @@ const routes = [
         element: <IndexRoute />,
       },
       ...routeWallet,
-      ...routeAssets,
       ...routeExplore,
       ...routeSettings,
       ...routeApps,

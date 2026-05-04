@@ -11,8 +11,6 @@ import translations from "@/views/wallet/translations";
 import LoadingToast from "@/composite/toasts/LoadingToast";
 import PaymentReceivedToast from "@/composite/toasts/PaymentReceivedToast";
 import ToastCard from "@/composite/toasts/ToastCard";
-import TokenReceivedToast from "@/composite/toasts/TokenReceivedToast";
-
 import { Haptic } from "@/util/haptic";
 
 import { translate } from "@/util/translations";
@@ -54,7 +52,6 @@ export default function NotificationService() {
     success,
     loading,
     paymentReceived,
-    tokenReceived,
     clipboardCopy,
     disconnected,
     authFail,
@@ -149,33 +146,6 @@ export default function NotificationService() {
         <PaymentReceivedToast
           amount={amount}
           token={token}
-          onDismiss={onDismiss}
-        />
-      ),
-    });
-  }
-
-  function tokenReceived(
-    token: {
-      category: string;
-      symbol: string;
-      nft_commitment?: string;
-      amount?: bigint;
-    },
-    isNft = false,
-    nftName?: string,
-    nftDescription?: string
-  ) {
-    const id = generateId();
-    push({
-      id,
-      duration: 3000,
-      content: (onDismiss) => (
-        <TokenReceivedToast
-          token={token}
-          isNft={isNft}
-          nftName={nftName}
-          nftDescription={nftDescription}
           onDismiss={onDismiss}
         />
       ),
