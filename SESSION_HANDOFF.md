@@ -26,7 +26,8 @@
 | 10B.5 | AppButton lg tipografía | ✅ | text-base font-semibold (ajuste post-validación visual en device) |
 | 10B.6 | Eliminar header global | ✅ | WalletView.jsx sin header de balance en subpantallas; borrados BalanceHideButton + SyncIndicator |
 | 10C | WalletViewSend — auditoría | ✅ | Diagnóstico completo: mapa, lógica vs presentación, regiones JSX, acoplamiento |
-| 10D | WalletViewSend — refactor | ⬜ | Pendiente. Ver Sección 5 — el alcance cambió. |
+| — | Pre-Paso 10 — Cleanup agresivo | ✅ | Borrado: Bliss, Cauldron, Assets, Send viejo, VendorMode, stablecoin, tokens/NFTs. Ver MIGRATION_PLAN. |
+| 10D | WalletViewSend — refactor | ⬜ | Redefinido: Send viejo borrado en Pre-Paso 10. Paso 10 es construcción desde cero del flujo multi-pantalla. |
 | 11 | WalletViewPay (Receive) | ⬜ | Hoy es placeholder. Pendiente implementar pantalla real. |
 | 12 | WalletViewScan | ⬜ | Hoy es placeholder. Pendiente implementar. |
 | 13 | WalletViewHistory | ⬜ | Pendiente. |
@@ -79,9 +80,6 @@
 | `tailwind-merge` no instalado | `AppButton.tsx` (JSDoc lo documenta) | Instalar es un commit de dependencia separado; no se quiso mezclar con los commits de componentes |
 | `formatBch(0n)` devuelve `"0.00"` — la versión original del Paso 9 tenía una guard `if (abs === 0n) return "0"` que se eliminó | `src/util/format.ts` | Se eliminó la guard por fidelidad al refactor de extracción — la versión inline original devolvía `"0.00"` y la guard introducía un cambio de comportamiento. Coherencia con la regla de extracción pura, no opinión sobre formato correcto. |
 | `CurrencyService(x).getSymbol(x)` — argumento duplicado | `TransactionItem.tsx` línea 48 | Patrón heredado de la codebase; no se quiso cambiar la firma del servicio |
-| `WalletViewBalance.jsx` queda como archivo vivo solo por Cauldron DEX | `src/components/views/wallet/home/WalletViewBalance.jsx` | Depende de decisión de producto sobre Cauldron (ver Sección 4) |
-| Botón "MAX" (x3) y botón "Volver" en WalletViewSend usan Button viejo | `WalletViewSend.tsx` líneas 826, 866, 892, 918 | Pendientes de migrar a AppButton en los sub-pasos del Send |
-| `WalletViewButtons.jsx` deprecado (no borrado) | `src/components/views/wallet/home/` | Se anotó en Paso 8 como "dejar de usar", no borrado. Verificar y borrar en limpieza post-redesign |
 
 ---
 
@@ -89,8 +87,9 @@
 
 Estas decisiones NO son del redesign visual. Se identificaron durante el trabajo y se anotaron para PRs separados de simplificación de producto.
 
-- **Flujos avanzados del Send:** evaluar si stablecoin mode, selección manual de UTXOs, envío de CashTokens (fungibles y NFTs) tienen lugar en la propuesta minimalista. Si se eliminan, `WalletViewSend.tsx` se reduce drásticamente (de 1078 líneas a ~300).
-- **Cauldron DEX (`AppCauldronDexView.jsx`):** feature avanzada (swap de tokens). Probablemente no encaja en la wallet minimalista para comerciantes. Si se elimina, también se elimina el último uso de `WalletViewBalance.jsx` y ese componente se puede borrar.
+- ✅ **Stablecoin mode visible:** eliminado en Pre-Paso 10 (cleanup).
+- ✅ **Tokens, NFTs, CashTokens visibles:** eliminados en Pre-Paso 10. `WalletViewSend.tsx` también borrado.
+- ✅ **Cauldron DEX (`AppCauldronDexView.jsx`):** eliminado en Pre-Paso 10. `WalletViewBalance.jsx` también borrado.
 - **Divisa por defecto:** está en USD, debería ser ARS. Fix funcional en preferences/onboarding, no visual.
 - **Bug display de balance:** `text-display` (48px) se rompe con montos grandes (ej: `$1.234.567,89`). Ajustar font-size responsive según longitud de string, o cap en 40px.
 - **SyncIndicator eliminado:** si la conexión Electrum se cae, no hay feedback visual permanente. Manejar errores de conexión en el flujo de cada operación (Send, Receive) si se vuelve un problema real.
@@ -112,26 +111,32 @@ Se hizo la auditoría completa del archivo (`WalletViewSend.tsx`, 1078 líneas):
 
 | Decisión | Estado |
 |----------|--------|
-| Alcance: flujo nuevo multi-pantalla (`Escanear → Monto → Confirmar → Éxito`), no refactor visual del Send actual | ✅ |
-| Caso de uso primario: comerciante / persona-a-persona, escanear primero (no dirección primero) | ✅ |
+| Flujo multi-pantalla (Escanear → Monto → Confirmar → Éxito) | ✅ |
+| Caso de uso primario: comerciante / persona-a-persona | ✅ |
 | Destinatario: dirección truncada (`qrn8...92x`), sin sistema de contactos | ✅ |
-| Confirmación: mantener SlideToAction (no "mantener pulsado" ni tap simple) | ✅ |
+| Confirmación: SlideToAction | ✅ |
+| El Send nuevo es REEMPLAZO TOTAL del viejo, no convivencia | ✅ |
+| App es "modo comerciante por default", no hay modo separado | ✅ |
 
-### Decisiones de detalle pendientes
+### Decisiones de detalle cerradas
 
-| Pregunta | Estado |
+| Decisión | Estado |
 |----------|--------|
-| ¿Rutas separadas o estado interno entre pasos? | ⬜ |
-| QR BIP21 con monto: ¿saltar el paso de monto? | ⬜ |
-| Fallback sin cámara / sin permisos | ⬜ |
-| ¿Cámara abierta al entrar a Send, o botón para abrir? | ⬜ |
-| BCH-first vs fiat-first en el input | ⬜ |
-| Chips de monto rápido (sí/no, qué montos en ARS) | ⬜ |
-| Memo opcional | ⬜ |
-| ¿Qué muestra la pantalla de confirmación? | ⬜ |
-| Comportamiento de "Compartir" y "Listo" en la pantalla de éxito | ⬜ |
+| Estado entre rutas: Redux slice `sendDraft` (rutas separadas) | ✅ |
+| QR BIP21 con monto: saltar a Confirmar | ✅ |
+| Fallback sin cámara: botón manual siempre visible | ✅ |
+| Permiso de cámara: pedir al entrar directo | ✅ |
+| Cámara abierta directo desde el botón Enviar del Home | ✅ |
+| Botón Escanear eliminado del Home (ya hecho en cleanup) | ✅ |
+| Input fiat-first con cartelito de cotización vieja (>10min) | ✅ |
+| Chips: $1.000, $2.000, $5.000, $10.000 (deuda: revisar por inflación cada N meses) | ✅ |
+| Memo opcional siempre + prefilled desde QR + cartel "memo público" | ✅ |
+| Confirmación: mínima + advertencia de irreversibilidad | ✅ |
+| Botón "Listo" → Home; sin botón Compartir | ✅ |
+| Si cotización falla: mantener fiat-first con última conocida + cartel | ✅ |
+| Modificar `exchangeRates` slice para guardar timestamp | ✅ |
 
-**Acción al retomar:** resolver las 9 preguntas de detalle y escribir `SEND_FLOW_SPEC.md`. Solo después de ese documento OK arrancar el código.
+**Acción al retomar:** armar `SEND_FLOW_SPEC.md` con estas decisiones aterrizadas en arquitectura y especificaciones de cada pantalla. Solo después de ese documento OK arrancar el código.
 
 ---
 

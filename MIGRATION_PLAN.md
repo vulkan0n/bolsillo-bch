@@ -59,7 +59,10 @@
    - Borrados BalanceHideButton.tsx y SyncIndicator.tsx (sin otros importadores)
    - WalletViewBalance.jsx conservado (lo usa AppCauldronDexView.jsx)
 
-## Próximo: Sub-paso 10C — WalletViewSend (auditoría previa)
+✅ Pre-Paso 10 — Cleanup de tokens/NFTs/Cauldron/Vendor/Stablecoin
+   (rama cleanup-tokens, mergeada a redesign-v2 — ver sección debajo)
+
+## Próximo: Paso 10 — Flujo Send rediseñado (construcción desde cero)
 
 ## Pendientes futuros (anotados durante el redesign)
 
@@ -88,33 +91,11 @@
 
 ---
 
-## Post-redesign: Simplificación de Send
+### Post-redesign: Simplificación de producto
 
-Una vez terminada la migración visual completa (todos los pasos del
-redesign), abrir un PR aparte de SIMPLIFICACIÓN DE LÓGICA DE NEGOCIO
-en WalletViewSend.tsx.
-
-Objetivo: alinear la funcionalidad del Send con la propuesta del
-producto (wallet minimalista para usuarios nuevos de BCH).
-
-Funcionalidad a evaluar para sacar / esconder:
-- Stablecoin mode.
-- Selección manual de UTXOs.
-- Flujo de envío de tokens (CashTokens).
-- Flujo de envío de NFTs.
-
-Decisiones a tomar en ese PR (NO ahora):
-- ¿Sacar entero o esconder detrás de un "modo avanzado" en Ajustes?
-- ¿Qué pasa con usuarios existentes que ya tienen tokens/NFTs en su
-  wallet? ¿Se ocultan en la UI pero el saldo sigue ahí? ¿Se migran
-  a otra vista?
-- ¿Stablecoin mode se mantiene o se elimina? (evaluar aparte de
-  tokens/NFTs porque puede ser central para algunos usuarios).
-
-Importante: este PR NO es parte del redesign. Es trabajo de producto,
-no visual. Requiere su propia conversación de diseño y probablemente
-se descomponga en varios sub-PRs (ej: primero esconder NFTs, después
-tokens, después UTXOs avanzados).
+✅ Ejecutado en Pre-Paso 10 (`cleanup-tokens`, mergeado a `redesign-v2`). Las
+decisiones de eliminar stablecoin mode, tokens, NFTs y Cauldron DEX se tomaron y
+se ejecutaron juntas. Ver sección "Pre-Paso 10" abajo para el detalle.
 
 ---
 
@@ -412,21 +393,55 @@ ANTES:
 
 ---
 
+## Pre-Paso 10 — Cleanup de tokens/NFTs/Cauldron/Vendor/Stablecoin
+✅ Completado (rama `cleanup-tokens`, mergeada a `redesign-v2`)
+
+Limpieza agresiva pre-redesign del Send. Decisión basada en que la app no tenía
+usuarios en producción y la propuesta minimalista no contempla esas features.
+
+**Borrado:**
+- Toda la sección Bliss (apps de eventos)
+- Cauldron DEX
+- Sección Assets (tokens, NFTs, monedas/UTXOs)
+- Send viejo (`WalletViewSend.tsx`, `WalletViewSendSuccess`, scanners)
+- VendorMode (modo comerciante dedicado — toda la app es para comerciantes ahora)
+- Stablecoin mode visible (preferencia + toggles + lógica)
+- Átomos de tokens (`TokenAmount`, `TokenIcon`, `TokenSymbol`)
+- Hooks de tokens (`useTokenData`, `useStablecoinBalance`)
+- Servicios de tokens (`TokenManager`, `BcmrService`, `CauldronService`)
+- Utils de tokens (`util/token.ts`, `util/tokens.ts`)
+
+**Limpiado (conservado pero sin lógica de tokens):**
+- `TransactionBuilderService` (BCH-only)
+- `TransactionHistoryService` (sin merge de token history)
+- `redux/wallet.ts`, `redux/sync.ts`, `redux/preferences.ts`, `redux/txHistory.ts`
+- `PaymentReceivedToast` (BCH puro)
+- Settings (`Currency`, `Payment`, `Privacy`)
+- `DebugViewHome` (sin botones BCMR)
+- `SeleneLogo`, `util/logos`
+
+**Conservado intacto:**
+- `PaymentReceivedToast` como feature útil de BCH
+- Lógica BCH-only en `TransactionBuilderService`
+- Infraestructura de protocolo BCH genérica
+
+> Si en el futuro se quiere reimplementar modo estable, recuperar desde git history
+> (rama `cleanup-tokens` conserva el código viejo).
+
+---
+
 ## Paso 10 en adelante — Pantalla por pantalla
 
 Para cada pantalla, repetir el patrón:
 
-| # | Pantalla | Sección DESIGN_SYSTEM |
-|---|----------|----------------------|
-| 10 | Send → `WalletViewSend.tsx` | 8.2 |
-| 11 | Receive → `WalletViewPay.tsx` | 8.3 |
-| 12 | **Escanear (nueva)** → `WalletViewScan.tsx` | 8.4 |
-| 13 | Movimientos → `WalletViewHistory.tsx` | 8.5 |
-| 14 | Ajustes → `SettingsView.jsx` | 8.6 |
-| 15 | Modo Comerciante → `VendorModeView.tsx` | — adaptar criterio |
-| 16 | Onboarding → `WelcomeView.tsx` | — adaptar criterio |
-| 17 | Lock screen → `AppLockScreen.tsx` | — adaptar criterio |
-| 18 | Assets → `AssetsView.tsx` | — adaptar criterio |
+| # | Pantalla | Estado |
+|---|----------|--------|
+| 10 | Send → flujo nuevo multi-pantalla (construcción desde cero) | ⬜ |
+| 11 | Receive → `WalletViewPay.tsx` | ⬜ |
+| 13 | Movimientos → `WalletViewHistory.tsx` | ⬜ |
+| 14 | Ajustes → `SettingsView.jsx` | ⬜ |
+| 16 | Onboarding → `WelcomeView.tsx` | ⬜ |
+| 17 | Lock screen → `AppLockScreen.tsx` | ⬜ |
 
 **Plantilla de prompt:**
 
