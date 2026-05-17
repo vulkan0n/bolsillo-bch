@@ -18,6 +18,7 @@ import { syncMiddleware, syncPause, syncReducer, syncResume } from "./sync";
 import { txHistoryReducer } from "./txHistory";
 import { addressReducer, walletBoot, walletReducer } from "./wallet";
 import { walletConnectInit, walletConnectReducer } from "./walletConnect";
+import { sendDraftReducer } from "./sendDraft";
 
 const Log = LogService("redux");
 
@@ -30,6 +31,7 @@ const rootReducer = combineReducers({
   txHistory: txHistoryReducer,
   addresses: addressReducer,
   walletConnect: walletConnectReducer,
+  sendDraft: sendDraftReducer,
 });
 
 export const store = configureStore({

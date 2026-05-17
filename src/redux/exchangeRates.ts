@@ -18,18 +18,35 @@ import CurrencyService from "@/kernel/bch/CurrencyService";
 
 import { currencyList } from "@/util/currency";
 
+interface ExchangeRateItem {
+  currency: string;
+  countryCode: string;
+  symbol: string;
+  decimals?: number;
+  price: string;
+}
+
+interface ExchangeRatesState {
+  rates: ExchangeRateItem[];
+  lastUpdatedAt: number | null;
+}
+
 const Log = LogService("redux/exchangeRates");
 
 export const fetchExchangeRates = createAsyncThunk(
   "exchangeRates/fetch",
   // eslint-disable-next-line @typescript-eslint/default-param-last
   async (attempts: number = 0, thunkApi) => {
-    const storedExchangeRates = selectExchangeRates(thunkApi.getState());
+    const storedRates = selectExchangeRates(thunkApi.getState());
+    const storedFull = (thunkApi.getState() as any).exchangeRates;
 
     const isOfflineMode = selectIsOfflineMode(thunkApi.getState());
     if (isOfflineMode) {
       Log.debug("exchangeRates/fetch blocked by offline mode");
-      return storedExchangeRates;
+      return {
+        rates: storedRates,
+        lastUpdatedAt: storedFull?.lastUpdatedAt ?? null,
+      };
     }
 
     const { localCurrency } = selectCurrencySettings(thunkApi.getState());
@@ -51,14 +68,26 @@ export const fetchExchangeRates = createAsyncThunk(
         })
       );
 
-      return fetchedExchangeRates;
+      const now = Date.now();
+      await Preferences.set({
+        key: "lastExchangeRateTimestamp",
+        value: String(now),
+      });
+
+      return {
+        rates: fetchedExchangeRates,
+        lastUpdatedAt: now,
+      };
     } catch (e) {
       Logger.error("fetchExchangeRates failed", e);
       setTimeout(
         () => thunkApi.dispatch(fetchExchangeRates(attempts + 1)),
         30000 * (attempts + 1)
       );
-      return storedExchangeRates;
+      return {
+        rates: storedRates,
+        lastUpdatedAt: storedFull?.lastUpdatedAt ?? null,
+      };
     }
   }
 );
@@ -67,36 +96,58 @@ export const exchangeRateInit = createAsyncThunk(
   "exchangeRate/init",
   async () => {
     const lastExchangeRate =
-      (await Preferences.get({ key: "lastExchangeRate" })).value || 1;
+      (await Preferences.get({ key: "lastExchangeRate" })).value || "1";
+    const lastUpdatedAtStr =
+      (await Preferences.get({ key: "lastExchangeRateTimestamp" })).value;
 
-    const exchangeRateState = currencyList.map((currency) => ({
+    const rates = currencyList.map((currency) => ({
       ...currency,
       price: lastExchangeRate,
     }));
 
     Log.debug("lastExchangeRate", lastExchangeRate);
-    return exchangeRateState;
+    return {
+      rates,
+      lastUpdatedAt: lastUpdatedAtStr ? Number(lastUpdatedAtStr) : null,
+    };
   }
 );
 
-const initialState = currencyList.map((currency) => ({
-  ...currency,
-  price: 1,
-}));
+const initialState: ExchangeRatesState = {
+  rates: currencyList.map((currency) => ({
+    ...currency,
+    price: "1",
+  })),
+  lastUpdatedAt: null,
+};
 
-export const exchangeRateReducer = createReducer(initialState, (builder) => {
-  builder
-    .addCase(fetchExchangeRates.fulfilled, (state, action) => {
-      return action.payload;
-    })
-    .addCase(exchangeRateInit.fulfilled, (state, action) => {
-      return action.payload;
-    });
-});
+export const exchangeRateReducer = createReducer(
+  initialState as ExchangeRatesState,
+  (builder) => {
+    builder
+      .addCase(fetchExchangeRates.fulfilled, (_state, action) => {
+        return {
+          rates: action.payload.rates,
+          lastUpdatedAt: action.payload.lastUpdatedAt,
+        } as ExchangeRatesState;
+      })
+      .addCase(exchangeRateInit.fulfilled, (_state, action) => {
+        return {
+          rates: action.payload.rates,
+          lastUpdatedAt: action.payload.lastUpdatedAt,
+        } as ExchangeRatesState;
+      });
+  }
+);
 
 export const selectExchangeRates = createSelector(
   (state) => state,
-  (state) => state.exchangeRates
+  (state) => state.exchangeRates.rates
+);
+
+export const selectLastUpdatedAt = createSelector(
+  (state) => state,
+  (state) => state.exchangeRates.lastUpdatedAt
 );
 
 export function stripArsPostDecimal(localCurrency, fiatString) {
