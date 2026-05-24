@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
 import { X } from "lucide-react";
@@ -26,6 +27,7 @@ export default function SendScanView() {
 
       if (!result.isBip21) {
         NotificationService().invalidScan(content);
+        dispatch(setScannerIsScanning(true));
         return;
       }
 
@@ -34,6 +36,7 @@ export default function SendScanView() {
           "Dirección no soportada",
           "Usá una dirección CashAddr (bitcoincash:...) en vez de formato legacy."
         );
+        dispatch(setScannerIsScanning(true));
         return;
       }
 
@@ -87,88 +90,84 @@ export default function SendScanView() {
     navigate("/wallet/send/amount");
   }
 
-  return (
-    <div className="fixed inset-0 bg-black z-50">
-      {/* Camera output — full viewport */}
-      <div id="scannerOutput" className="absolute inset-0" />
+  const rootNode =
+    document.querySelector("#container") ?? document.querySelector("#root")!;
 
-      {/* Overlay mask: box-shadow cutout lets camera show through center */}
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-        <div className="w-72 h-72 rounded-2xl shadow-[0_0_0_9999px_rgba(0,0,0,0.7)]" />
+  return createPortal(
+    <div className="absolute top-0 left-0 w-full h-full z-50 bg-transparent">
+      {/* Scan frame with box-shadow cutout — darkens everything except center */}
+      <div className="w-full h-full flex items-center justify-center">
+        <div
+          className="w-72 h-72 rounded-2xl border-2 border-brand-500"
+          style={{ boxShadow: "0 0 0 100vh rgba(0,0,0,0.7)" }}
+        />
       </div>
 
-      {/* Scan frame border */}
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-        <div className="w-72 h-72 rounded-2xl border-2 border-brand-500" />
-      </div>
+      {/* Close button */}
+      <button
+        type="button"
+        onClick={() => navigate("/wallet")}
+        className="absolute top-safe-top right-5 w-10 h-10 flex items-center justify-center"
+        aria-label="Cerrar"
+      >
+        <X className="w-7 h-7 text-white" />
+      </button>
 
-      {/* UI layer */}
-      <div className="absolute inset-0 pointer-events-none">
-        {/* Close button */}
-        <button
-          type="button"
-          onClick={() => navigate("/wallet")}
-          className="pointer-events-auto absolute top-safe-top right-5 w-10 h-10 flex items-center justify-center"
-          aria-label="Cerrar"
-        >
-          <X className="w-7 h-7 text-white" />
-        </button>
+      {/* Camera state overlays */}
+      {cameraState === "loading" && (
+        <div className="absolute inset-0 flex items-center justify-center bg-black">
+          <div className="w-8 h-8 border-2 border-brand-500 border-t-transparent rounded-full animate-spin" />
+        </div>
+      )}
 
-        {/* Camera state overlays */}
-        {cameraState === "loading" && (
-          <div className="absolute inset-0 flex items-center justify-center bg-black pointer-events-auto">
-            <div className="w-8 h-8 border-2 border-brand-500 border-t-transparent rounded-full animate-spin" />
-          </div>
-        )}
+      {cameraState === "denied" && (
+        <div className="absolute inset-0 flex flex-col items-center justify-center bg-black px-5 gap-4">
+          <p className="text-white text-body text-center">
+            Necesitamos acceso a la cámara para escanear códigos QR
+          </p>
+          <AppButton
+            variant="primary"
+            size="lg"
+            fullWidth
+            onClick={handleManualEntry}
+          >
+            Ingresar dirección manualmente
+          </AppButton>
+        </div>
+      )}
 
-        {cameraState === "denied" && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center bg-black px-5 gap-4 pointer-events-auto">
-            <p className="text-white text-body text-center">
-              Necesitamos acceso a la cámara para escanear códigos QR
-            </p>
-            <AppButton
-              variant="primary"
-              size="lg"
-              fullWidth
-              onClick={handleManualEntry}
-            >
-              Ingresar dirección manualmente
-            </AppButton>
-          </div>
-        )}
+      {cameraState === "no-camera" && (
+        <div className="absolute inset-0 flex flex-col items-center justify-center bg-black px-5 gap-4">
+          <p className="text-white text-body text-center">
+            No se detectó una cámara en este dispositivo
+          </p>
+          <AppButton
+            variant="primary"
+            size="lg"
+            fullWidth
+            onClick={handleManualEntry}
+          >
+            Ingresar dirección manualmente
+          </AppButton>
+        </div>
+      )}
 
-        {cameraState === "no-camera" && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center bg-black px-5 gap-4 pointer-events-auto">
-            <p className="text-white text-body text-center">
-              No se detectó una cámara en este dispositivo
-            </p>
-            <AppButton
-              variant="primary"
-              size="lg"
-              fullWidth
-              onClick={handleManualEntry}
-            >
-              Ingresar dirección manualmente
-            </AppButton>
-          </div>
-        )}
-
-        {/* Hint text + manual entry button */}
-        {cameraState === "active" && (
-          <>
-            <p className="absolute bottom-28 left-0 right-0 text-center text-white text-body">
-              Apuntá al código QR
-            </p>
-            <button
-              type="button"
-              onClick={handleManualEntry}
-              className="pointer-events-auto absolute bottom-16 left-0 right-0 mx-auto w-fit text-white text-sm underline underline-offset-2"
-            >
-              Ingresar dirección manualmente
-            </button>
-          </>
-        )}
-      </div>
-    </div>
+      {/* Hint text + manual entry button */}
+      {cameraState === "active" && (
+        <>
+          <p className="absolute bottom-28 left-0 right-0 text-center text-white text-body">
+            Apuntá al código QR
+          </p>
+          <button
+            type="button"
+            onClick={handleManualEntry}
+            className="absolute bottom-16 left-0 right-0 mx-auto w-fit text-white text-sm underline underline-offset-2"
+          >
+            Ingresar dirección manualmente
+          </button>
+        </>
+      )}
+    </div>,
+    rootNode
   );
 }

@@ -44,6 +44,30 @@ export const routeWallet = [
           return { Component: SendScanView };
         },
       },
+      {
+        path: "send/amount",
+        async lazy() {
+          const { default: SendPlaceholder } =
+            await import("@/views/wallet/send/SendPlaceholder");
+          return { Component: SendPlaceholder };
+        },
+      },
+      {
+        path: "send/confirm",
+        async lazy() {
+          const { default: SendPlaceholder } =
+            await import("@/views/wallet/send/SendPlaceholder");
+          return { Component: SendPlaceholder };
+        },
+      },
+      {
+        path: "send/success",
+        async lazy() {
+          const { default: SendPlaceholder } =
+            await import("@/views/wallet/send/SendPlaceholder");
+          return { Component: SendPlaceholder };
+        },
+      },
     ],
   },
 ];
