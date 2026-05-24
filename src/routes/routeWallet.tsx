@@ -36,6 +36,14 @@ export const routeWallet = [
           return { Component: WalletViewReceive };
         },
       },
+      {
+        path: "send/scan",
+        async lazy() {
+          const { default: SendScanView } =
+            await import("@/views/wallet/send/SendScanView");
+          return { Component: SendScanView };
+        },
+      },
     ],
   },
 ];

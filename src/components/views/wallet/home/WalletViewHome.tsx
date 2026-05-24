@@ -59,7 +59,7 @@ export default function WalletViewHome() {
               />
             }
             label="Enviar"
-            onClick={() => navigate("/wallet/send")}
+            onClick={() => navigate("/wallet/send/scan")}
           />
         </div>
       </div>
