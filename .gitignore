@@ -64,3 +64,4 @@ scripts/deploy-android.sh
 LOCAL-NOTES.md
 # Local Pi runtime state
 .atl/
+.pi/
