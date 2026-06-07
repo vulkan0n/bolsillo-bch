@@ -56,3 +56,6 @@ playwright-report/
 test-results/
 .env.e2e
 stats.html
+
+# Local notes
+LOCAL-NOTES.md
