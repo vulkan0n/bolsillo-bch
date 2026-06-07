@@ -1,119 +1,158 @@
-/* eslint-disable @typescript-eslint/no-use-before-define */
-import { useRef } from "react";
-import { ArrowRightOutlined } from "@ant-design/icons";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { ArrowRight, Loader2 } from "lucide-react";
 
-import SeleneLogo from "./SeleneLogo";
-
-interface Props {
-  label: string;
-  onSlide: () => void;
+interface SlideToActionProps {
+  onComplete: () => void | Promise<void>;
+  label?: string;
+  loadingLabel?: string;
   disabled?: boolean;
 }
 
 export default function SlideToAction({
-  label,
-  onSlide,
+  onComplete,
+  label = "Deslizá para enviar",
+  loadingLabel = "Enviando...",
   disabled = false,
-}: Props) {
-  const knobRef = useRef<HTMLDivElement>(null);
-  const bannerRef = useRef<HTMLDivElement>(null);
+}: SlideToActionProps) {
+  const trackRef = useRef<HTMLDivElement>(null);
+  const [progress, setProgress] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [hasCompleted, setHasCompleted] = useState(false);
 
-  const isDragging = useRef(false);
-
-  const offsetX = useRef<number>(0);
-
-  const endX = useRef<number>(0);
-
-  const stopDragging = () => {
-    isDragging.current = false;
-
-    document.body.classList.remove("cursor-grabbing");
-    document.body.removeEventListener("pointermove", handlePointerMove);
-    document.body.removeEventListener("pointerup", handlePointerUp);
-
-    if (knobRef.current === null) return;
-    if (bannerRef.current === null) return;
-
-    knobRef.current.style.transform = `translateX(0)`;
-    knobRef.current.style.transition = `0.3s`;
-    bannerRef.current.style.width = `0`;
-  };
-
-  const startDragging = (x: number) => {
-    if (knobRef.current === null) return;
-    if (knobRef.current.parentElement === null) return;
-
-    offsetX.current = x;
-    endX.current =
-      knobRef.current.parentElement.getBoundingClientRect().width -
-      knobRef.current.getBoundingClientRect().width / 1.2;
-
-    isDragging.current = true;
-    document.body.addEventListener("pointermove", handlePointerMove);
-    document.body.addEventListener("pointerup", handlePointerUp);
-    document.body.classList.add("cursor-grabbing");
-  };
-
-  const handleConfirm = () => {
-    stopDragging();
-    onSlide();
-  };
-  const handlePointerMove = (e) => {
-    //e.preventDefault();
-    if (!isDragging.current) return;
-    if (knobRef.current === null) return;
-    if (bannerRef.current === null) return;
-
-    const x = e.clientX;
-
-    const transformX = Math.max(0, Math.min(endX.current, x - offsetX.current));
-    const knobWidth = knobRef.current.getBoundingClientRect().width;
-
-    knobRef.current.style.transition = `none`;
-    knobRef.current.style.transform = `translateX(${transformX}px)`;
-    bannerRef.current.style.transition = `none`;
-    bannerRef.current.style.width = `${transformX + knobWidth}px`;
-
-    if (transformX === endX.current) {
-      handleConfirm();
+  // Reset progress when disabled changes (e.g. after error)
+  useEffect(() => {
+    if (!disabled && !isDragging) {
+      setProgress(0);
     }
-  };
+  }, [disabled, isDragging]);
 
-  const handlePointerUp = (e) => {
-    e.preventDefault();
-    stopDragging();
-  };
+  const getPosition = useCallback(
+    (clientX: number) => {
+      if (!trackRef.current) return 0;
+      const rect = trackRef.current.getBoundingClientRect();
+      const x = clientX - rect.left;
+      const pct = Math.min(Math.max(x / rect.width, 0), 1);
+      return pct;
+    },
+    []
+  );
 
-  const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    startDragging(e.clientX);
-  };
+  const handleStart = useCallback(
+    (clientX: number) => {
+      if (disabled || isLoading || hasCompleted) return;
+      setIsDragging(true);
+      setProgress(getPosition(clientX));
+    },
+    [disabled, isLoading, hasCompleted, getPosition]
+  );
 
-  const disabledClasses = disabled
-    ? "bg-neutral-200 opacity-50 pointer-events-none"
-    : "bg-primary-200";
+  const handleMove = useCallback(
+    (clientX: number) => {
+      if (!isDragging) return;
+      const pct = getPosition(clientX);
+      setProgress(pct);
+    },
+    [isDragging, getPosition]
+  );
+
+  const handleEnd = useCallback(async () => {
+    if (!isDragging) return;
+    setIsDragging(false);
+
+    if (progress >= 0.9) {
+      setHasCompleted(true);
+      setIsLoading(true);
+      try {
+        await onComplete();
+      } finally {
+        setIsLoading(false);
+      }
+    } else {
+      setProgress(0);
+    }
+  }, [isDragging, progress, onComplete]);
+
+  // -------- Touch events
+
+  const onTouchStart = useCallback(
+    (e: React.TouchEvent) => handleStart(e.touches[0].clientX),
+    [handleStart]
+  );
+  const onTouchMove = useCallback(
+    (e: React.TouchEvent) => handleMove(e.touches[0].clientX),
+    [handleMove]
+  );
+
+  // -------- Mouse events (for desktop testing)
+
+  const onMouseDown = useCallback(
+    (e: React.MouseEvent) => {
+      handleStart(e.clientX);
+      // Attach global listeners to track drag outside element
+      const onMouseMove = (ev: globalThis.MouseEvent) =>
+        handleMove(ev.clientX);
+      const onMouseUp = () => {
+        handleEnd();
+        window.removeEventListener("mousemove", onMouseMove);
+        window.removeEventListener("mouseup", onMouseUp);
+      };
+      window.addEventListener("mousemove", onMouseMove);
+      window.addEventListener("mouseup", onMouseUp);
+    },
+    [handleStart, handleMove, handleEnd]
+  );
+
+  // Touch end doesn't bubble reliably, attach to window
+  useEffect(() => {
+    const onTouchEnd = () => handleEnd();
+    window.addEventListener("touchend", onTouchEnd);
+    return () => window.removeEventListener("touchend", onTouchEnd);
+  }, [handleEnd]);
+
+  const thumbX = progress * 100;
 
   return (
     <div
-      data-testid="slide-to-action"
-      className={`border border-primary-200 shadow-inner rounded-full h-12 flex items-center relative ${disabledClasses}`}
+      ref={trackRef}
+      onTouchStart={onTouchStart}
+      onTouchMove={onTouchMove}
+      onMouseDown={onMouseDown}
+      className={`relative w-full h-14 rounded-xl select-none overflow-hidden
+        ${disabled ? "opacity-50" : "cursor-pointer"}
+        ${isLoading ? "bg-brand-600" : "bg-brand-500"}`}
     >
-      <div
-        ref={bannerRef}
-        className="h-14 w-0 bg-primary/90 absolute rounded-full"
-        onPointerUp={handlePointerUp}
-      />
-      <div
-        onPointerDown={handlePointerDown}
-        ref={knobRef}
-        className="h-16 w-16 relative z-10 flex items-center justify-center bg-primary p-0.5 rounded-full"
-        style={{ touchAction: "none" }}
+      {/* Label */}
+      <span
+        className={`absolute inset-0 flex items-center justify-center text-white text-base font-semibold transition-opacity duration-150 ${
+          progress > 0.15 ? "opacity-0" : "opacity-100"
+        }`}
       >
-        <SeleneLogo className="w-full h-full" />
-      </div>
-      <div className="text-lg font-bold text-primary-900 flex flex-1 items-center justify-evenly">
-        <span>{label}</span>
-        <ArrowRightOutlined className="ml-1 font-bold text-xl" />
+        {isLoading ? (
+          <span className="flex items-center gap-2">
+            <Loader2 className="w-5 h-5 animate-spin" />
+            {loadingLabel}
+          </span>
+        ) : (
+          label
+        )}
+      </span>
+
+      {/* Thumb */}
+      <div
+        className={`absolute top-1 left-1 w-12 h-12 rounded-full bg-white flex items-center justify-center
+          shadow-md transition-shadow duration-150
+          ${isDragging ? "" : "transition-transform duration-300 ease-out"}
+          ${isLoading ? "bg-brand-100" : ""}`}
+        style={{
+          transform: `translateX(${thumbX > 94 ? 94 : thumbX}%)`,
+        }}
+      >
+        {isLoading ? (
+          <Loader2 className="w-5 h-5 text-brand-600 animate-spin" />
+        ) : (
+          <ArrowRight className="w-5 h-5 text-brand-600" strokeWidth={2.5} />
+        )}
       </div>
     </div>
   );

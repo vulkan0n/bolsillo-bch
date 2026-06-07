@@ -55,17 +55,17 @@ export const routeWallet = [
       {
         path: "send/confirm",
         async lazy() {
-          const { default: SendPlaceholder } =
-            await import("@/views/wallet/send/SendPlaceholder");
-          return { Component: SendPlaceholder };
+          const { default: SendConfirmView } =
+            await import("@/views/wallet/send/SendConfirmView");
+          return { Component: SendConfirmView };
         },
       },
       {
         path: "send/success",
         async lazy() {
-          const { default: SendPlaceholder } =
-            await import("@/views/wallet/send/SendPlaceholder");
-          return { Component: SendPlaceholder };
+          const { default: SendSuccessView } =
+            await import("@/views/wallet/send/SendSuccessView");
+          return { Component: SendSuccessView };
         },
       },
     ],
