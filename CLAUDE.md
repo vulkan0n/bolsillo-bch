@@ -401,14 +401,14 @@ CSP enforced via meta tag in `index.html`:
 
 ## Contributing
 
-1. Base branches off `staging` (NOT main)
+1. Base branches off `main`
 2. Branch naming: `###-short-description` (e.g., `446-persist-memos`)
 3. Minimize changes to only what's required
 4. Self-review diff before submitting
 5. Package installation = separate commit
 6. Use pnpm (enforced)
 
-**MR Target: Always `staging`, never `main`**
+**MR Target: Always `main`**
 
 ## Key Dependencies
 
