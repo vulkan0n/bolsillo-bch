@@ -47,9 +47,9 @@ export const routeWallet = [
       {
         path: "send/amount",
         async lazy() {
-          const { default: SendPlaceholder } =
-            await import("@/views/wallet/send/SendPlaceholder");
-          return { Component: SendPlaceholder };
+          const { default: SendAmountView } =
+            await import("@/views/wallet/send/SendAmountView");
+          return { Component: SendAmountView };
         },
       },
       {
