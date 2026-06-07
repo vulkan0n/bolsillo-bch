@@ -173,43 +173,6 @@ export async function prepareTransactionExportData(
     })
   );
 
-  let voutWithTokens = tx.vout;
-  if (walletHash) {
-    const TokenManagerService = (
-      await import("@/kernel/wallet/TokenManagerService")
-    ).default;
-    const TokenManager = TokenManagerService(walletHash);
-
-    voutWithTokens = tx.vout.map((output) => {
-      if (output.token) {
-        try {
-          const categoryHex = binToHex(output.token.category);
-          const tokenInfo = TokenManager.getToken(categoryHex);
-          return {
-            ...output,
-            token: {
-              ...output.token,
-              symbol: tokenInfo.symbol,
-              name: tokenInfo.name,
-              color: tokenInfo.color || `#${categoryHex.slice(0, 6)}`,
-            },
-          };
-        } catch (error) {
-          // If token info not found, use default color from category
-          const categoryHex = binToHex(output.token.category);
-          return {
-            ...output,
-            token: {
-              ...output.token,
-              color: `#${categoryHex.slice(0, 6)}`,
-            },
-          };
-        }
-      }
-      return output;
-    });
-  }
-
   return {
     tx_hash: tx.tx_hash,
     blockhash: tx.blockhash,
@@ -219,7 +182,7 @@ export async function prepareTransactionExportData(
     confirmations,
     memo,
     date: txDate,
-    vout: voutWithTokens,
+    vout: tx.vout,
     vin: resolvedVin,
     walletAmount,
   };

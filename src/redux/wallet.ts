@@ -7,24 +7,19 @@ import {
 } from "@reduxjs/toolkit";
 
 import { RootState } from "@/redux";
-import { selectIsStablecoinMode, setPreference } from "@/redux/preferences";
-import { selectIsRebuilding } from "@/redux/sync";
+import { setPreference } from "@/redux/preferences";
 
 import NotificationService from "@/kernel/app/NotificationService";
-import CauldronService from "@/kernel/bch/CauldronService";
 import AddressManagerService, {
   AddressEntity,
 } from "@/kernel/wallet/AddressManagerService";
 import AddressScannerService from "@/kernel/wallet/AddressScannerService";
-import TokenManagerService from "@/kernel/wallet/TokenManagerService";
 import UtxoManagerService from "@/kernel/wallet/UtxoManagerService";
 import WalletManagerService, {
   WalletEntity,
 } from "@/kernel/wallet/WalletManagerService";
 
 import { convertCashAddress } from "@/util/cashaddr";
-import { resolveNftType } from "@/util/token";
-import { MUSD_TOKENID } from "@/util/tokens";
 
 const initialState = {
   walletHash: "",
@@ -110,168 +105,20 @@ export const walletReceive = createAsyncThunk(
     }
 
     let satsDiff = 0n;
-    let tokenSats = 0n;
-    const tokenDiff: Record<string, bigint> = {};
-    const nftDiff: Record<string, number> = {};
-    const nftCommitments: Record<string, string[]> = {};
 
     Log.debug("walletReceive", utxoIn);
 
-    // iterate over all incoming UTXOs
     while (utxoIn.length > 0) {
       const utxo = utxoIn.shift()!;
-
       satsDiff += utxo.valueSatoshis;
-
-      const category = utxo.token_category;
-
-      // check for tokens, otherwise continue to next UTXO
-      if (!category) {
-        continue; // eslint-disable-line no-continue
-      }
-
-      if (!tokenDiff[category]) {
-        tokenDiff[category] = 0n;
-      }
-
-      tokenDiff[category] += utxo.token_amount;
-      tokenSats += utxo.valueSatoshis;
-
-      // track NFTs separately
-      if (utxo.nft_capability !== null && utxo.nft_capability !== undefined) {
-        nftDiff[category] = (nftDiff[category] || 0) + 1;
-        if (utxo.nft_commitment) {
-          nftCommitments[category] = nftCommitments[category] || [];
-          nftCommitments[category].push(utxo.nft_commitment);
-        }
-      }
-
-      // check for matching utxoOut entry
-      const outIndex = utxoOut.findIndex((u) => u.token_category === category);
-      if (outIndex > -1) {
-        const output = utxoOut.splice(outIndex, 1)[0];
-        tokenDiff[category] -= output?.token_amount || 0n;
-      }
     }
 
-    // iterate over all spent UTXOs
     while (utxoOut.length > 0) {
       const utxo = utxoOut.shift()!;
       satsDiff -= utxo.valueSatoshis;
     }
 
-    // receiving tokens
-    if (Object.keys(tokenDiff).length > 0) {
-      Log.debug("tokenDiff", tokenDiff);
-      const TokenManager = TokenManagerService(
-        wallet.walletHash,
-        wallet.network
-      );
-
-      // spawn a receive popup for each token category
-      Object.keys(tokenDiff).forEach((category) => {
-        const tokenData = TokenManager.getToken(category);
-        const nftCount = nftDiff[category] || 0;
-        const commitments = nftCommitments[category] || [];
-        const isNft = nftCount > 0;
-
-        if (isNft && commitments.length > 0) {
-          // spawn one notification per NFT with its own thumbnail
-          commitments.forEach((commitment) => {
-            const parsed = resolveNftType(
-              tokenData.token?.nfts,
-              commitment,
-              category
-            );
-            NotificationService().tokenReceived(
-              {
-                ...tokenData,
-                amount: 0n,
-                nftCount: 1,
-                nft_commitment: commitment,
-              },
-              true,
-              parsed.nftType?.name,
-              parsed.nftType?.description
-            );
-          });
-          // if there's also a fungible amount, show a separate notification
-          if (tokenDiff[category] > 0n) {
-            NotificationService().tokenReceived({
-              ...tokenData,
-              amount: tokenDiff[category],
-            });
-          }
-        } else if (isNft) {
-          // NFT without commitment
-          NotificationService().tokenReceived(
-            {
-              ...tokenData,
-              amount: tokenDiff[category],
-              nftCount,
-            },
-            true
-          );
-        } else {
-          // fungible token only
-          NotificationService().tokenReceived({
-            ...tokenData,
-            amount: tokenDiff[category],
-          });
-        }
-      });
-    }
-
-    // need to swap to stablecoin in stablecoin mode
-    const isStablecoinMode = selectIsStablecoinMode(thunkApi.getState());
-    const isRebuilding = selectIsRebuilding(thunkApi.getState());
-
-    if (isStablecoinMode && !isRebuilding) {
-      const incomingSats = satsDiff - tokenSats;
-
-      Log.debug("incomingSats", incomingSats);
-
-      const Cauldron = CauldronService();
-      try {
-        // make sure pool UTXOs are loaded!
-        await Cauldron.fetchPools(MUSD_TOKENID);
-      } catch (e) {
-        Log.warn(e);
-        Log.error("swap on receive failed!");
-        NotificationService().paymentReceived(incomingSats);
-      }
-
-      for (let i = 0; i < 3; i += 1) {
-        try {
-          /* eslint-disable no-await-in-loop */
-          const tradeTransaction = await Cauldron.prepareTrade(
-            "BCH",
-            MUSD_TOKENID,
-            incomingSats,
-            wallet,
-            true
-          );
-          Log.debug("tradeTransaction", tradeTransaction);
-          await Cauldron.broadcastTransaction(tradeTransaction.tx_hex);
-          const tokenData = TokenManagerService(
-            wallet.walletHash,
-            wallet.network
-          ).getToken(MUSD_TOKENID);
-          NotificationService().tokenReceived({
-            ...tokenData,
-            amount: tradeTransaction.tradeResult.summary.demand,
-          });
-          return;
-        } catch (e) {
-          Log.warn(e);
-        }
-      }
-
-      Log.error("swap on receive failed!");
-      NotificationService().paymentReceived(incomingSats);
-    } else {
-      NotificationService().paymentReceived(satsDiff);
-    }
+    NotificationService().paymentReceived(satsDiff);
   }
 );
 

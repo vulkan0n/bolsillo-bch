@@ -29,9 +29,7 @@ export default function FocusedQrModal({
 
   const { address, satoshis, isTokenAddress } = validateBip21Uri(qrRequest);
 
-  const qrLogoImage = isTokenAddress
-    ? logos[qrCodeSettings.logo.toLowerCase()].img_tokens
-    : logos[qrCodeSettings.logo.toLowerCase()].img;
+  const qrLogoImage = logos[qrCodeSettings.logo.toLowerCase()].img;
 
   // Force red border/bg for non-mainnet
   const isTestnet = bchNetwork !== "mainnet";

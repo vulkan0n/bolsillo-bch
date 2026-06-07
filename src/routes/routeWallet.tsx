@@ -1,7 +1,5 @@
 import WalletViewHome from "@/views/wallet/home/WalletViewHome";
 import WalletViewPay from "@/views/wallet/send/WalletViewPay";
-import WalletViewSend from "@/views/wallet/send/WalletViewSend";
-import WalletViewSendSuccess from "@/views/wallet/send/WalletViewSendSuccess";
 import WalletViewSweep from "@/views/wallet/send/WalletViewSweep";
 import WalletView from "@/views/wallet/WalletView";
 
@@ -15,20 +13,8 @@ export const routeWallet = [
         element: <WalletViewHome />,
       },
       {
-        path: "send/",
-        element: <WalletViewSend />,
-      },
-      {
-        path: "send/:address",
-        element: <WalletViewSend />,
-      },
-      {
         path: "pay/",
         element: <WalletViewPay />,
-      },
-      {
-        path: "send/success",
-        element: <WalletViewSendSuccess />,
       },
       {
         path: "sweep/:wif",
@@ -40,6 +26,46 @@ export const routeWallet = [
           const { default: WalletViewHistory } =
             await import("@/views/wallet/history/WalletViewHistory");
           return { Component: WalletViewHistory };
+        },
+      },
+      {
+        path: "receive",
+        async lazy() {
+          const { default: WalletViewReceive } =
+            await import("@/views/wallet/receive/WalletViewReceive");
+          return { Component: WalletViewReceive };
+        },
+      },
+      {
+        path: "send/scan",
+        async lazy() {
+          const { default: SendScanView } =
+            await import("@/views/wallet/send/SendScanView");
+          return { Component: SendScanView };
+        },
+      },
+      {
+        path: "send/amount",
+        async lazy() {
+          const { default: SendAmountView } =
+            await import("@/views/wallet/send/SendAmountView");
+          return { Component: SendAmountView };
+        },
+      },
+      {
+        path: "send/confirm",
+        async lazy() {
+          const { default: SendConfirmView } =
+            await import("@/views/wallet/send/SendConfirmView");
+          return { Component: SendConfirmView };
+        },
+      },
+      {
+        path: "send/success",
+        async lazy() {
+          const { default: SendSuccessView } =
+            await import("@/views/wallet/send/SendSuccessView");
+          return { Component: SendSuccessView };
         },
       },
     ],

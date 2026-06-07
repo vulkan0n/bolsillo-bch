@@ -13,7 +13,6 @@ import {
   LockOutlined,
   PushpinOutlined,
   SendOutlined,
-  ShopOutlined,
   ThunderboltOutlined,
   VerifiedOutlined,
   WalletOutlined,
@@ -439,15 +438,6 @@ export default function SecuritySettings() {
               onChange={() =>
                 handleSetAuthActions(AuthActions.RevealPrivateKeys)
               }
-            />
-          </Accordion.Child>
-          <Accordion.Child
-            icon={ShopOutlined}
-            label={translate(translations.authVendorMode)}
-          >
-            <Checkbox
-              checked={authActions.includes(AuthActions.VendorMode)}
-              onChange={() => handleSetAuthActions(AuthActions.VendorMode)}
             />
           </Accordion.Child>
         </>

@@ -42,7 +42,6 @@ export enum AuthActions {
   InstantPay = "InstantPay",
   RevealBalance = "RevealBalance",
   RevealPrivateKeys = "RevealPrivateKeys",
-  VendorMode = "VendorMode",
 }
 
 const authTextKeys: Record<AuthActions, Record<string, string> | null> = {
@@ -55,7 +54,6 @@ const authTextKeys: Record<AuthActions, Record<string, string> | null> = {
   [AuthActions.InstantPay]: common.authInstantPay,
   [AuthActions.RevealBalance]: common.authRevealBalances,
   [AuthActions.RevealPrivateKeys]: common.authRevealPrivateKeys,
-  [AuthActions.VendorMode]: common.authVendorMode,
 };
 
 function getAuthText(action: AuthActions): string {

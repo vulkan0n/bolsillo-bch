@@ -339,6 +339,11 @@ Aún no está desplegada. Tener en cuenta como alternativa a MUSD.
 - Renombrar "Stablecoin Mode" → "Modo Estable" en la interfaz
 - Mover el toggle a un lugar más visible (actualmente está en Currency Settings)
 - Adaptar la descripción al contexto de ARS
+- **Avatar en HomeHeader**: hoy muestra la inicial del nombre del wallet activo.
+  Mejorar para usar el `displayName` de Google cuando el usuario tiene sesión
+  activa. Requiere guardar el `GoogleUser` en Redux al hacer Sign-In y llamar
+  al plugin al arrancar la app para recuperar la sesión existente.
+  Ver `GoogleAuthService.ts` y `CloudBackupService.ts`.
 
 ---
 
@@ -498,3 +503,57 @@ Selene actualiza el balance con transacciones 0-conf (no confirmadas). Si el
 balance no aparece inmediatamente, cerrar y reabrir la app fuerza un refresh del
 estado Redux. El cambio de address al recibir un UTXO es comportamiento esperado
 (BIP44: rotación de address de recepción).
+
+### Notas - futuras consultas login:
+
+Auditoría rápida de la pantalla de login antes del refactor. NO 
+modifiques nada, solo reportá:
+
+1. ¿Cuál es el archivo de la pantalla de login actual? (la que muestra 
+   "Entrar con Google" antes del Home). Probables paths:
+   - src/views/onboarding/WelcomeView.tsx
+   - src/views/auth/LoginView.tsx
+   - src/views/Login.tsx
+   - O similar.
+   Mostrame el archivo completo.
+
+2. ¿Cómo se implementa el login con Google? Mostrame el código del 
+   handler de "Entrar con Google" y qué librería usa (Firebase, 
+   Google Identity Services, OAuth manual, etc.).
+
+3. ¿Hay un componente de logo de la app ya creado? Buscá:
+   - Logo, AppLogo, BolsilloLogo, BrandLogo
+   - Algún SVG del bolsillo + moneda BCH en assets/, public/, o 
+     src/components/
+   Mostrame qué encontraste.
+
+4. ¿La pantalla actual tiene links a términos y condiciones / política 
+   de privacidad? Si sí, mostrame los textos y URLs.
+
+5. ¿Hay algún copy o texto institucional que deba preservarse? 
+   ("Bolsillo BCH", "Tu billetera de Bitcoin Cash para cobros en pesos", 
+   etc.)
+
+6. ¿Qué pasa después de un login exitoso? ¿A qué ruta navega? 
+   ¿Hay loading state mientras Google responde?
+
+7. ¿Hay manejo de error visible en la pantalla actual? (ej. "Error al 
+   conectar con Google", retry, etc.)
+
+Reportá todo en un solo mensaje sin tocar código.
+
+---
+
+### Prompt de inicio para la próxima sesión (redesign)
+
+```
+Continuamos el redesign de Bolsillo (BCH wallet). Antes de empezar:
+
+1. Leé los archivos actualizados de contexto:
+   - DESIGN_SYSTEM.md
+   - MIGRATION_PLAN.md (sección "Estado de avance" tiene el progreso)
+
+2. Confirmame en qué paso estamos y qué viene a continuación.
+
+3. NO modifiques nada hasta que te confirme la tarea de hoy.
+```

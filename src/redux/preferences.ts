@@ -45,13 +45,11 @@ export const defaultPreferences = {
   localCurrency: DEFAULT_CURRENCY.currency,
   preferLocalCurrency: "true",
   denomination: "bch",
-  stablecoinMode: "false", // TODO: move to wallet db
   // --------
   // Payment (move to wallet db?)
   allowInstantPay: "false",
   instantPayThreshold: "2000000", // 0.02 BCH (~$9 USD @ $450)
   instantPayThresholdFiat: "10", // $10 USD (default)
-  forceTokenAddress: "false",
   useLegacyBip21: "true", // true = use legacy BIP21 format (modern PayPro not deployed yet)
   // --------
   // QR Code (move to wallet db?)
@@ -63,10 +61,7 @@ export const defaultPreferences = {
   displayExploreTab: "true",
   displayExchangeRate: "true",
   displaySyncCounter: "true",
-  lastAssetsPath: "/assets/tokens",
   shouldConstrainViewport: "true",
-  showMemoCard: "false",
-  showOutputsCard: "true",
   themeMode: ThemeMode.System,
   // --------
   // Network
@@ -77,11 +72,6 @@ export const defaultPreferences = {
   // Privacy
   hideAvailableBalance: "false",
   enableDailyCheckIn: "true",
-  autoResolveBcmr: "true",
-  // --------
-  // Vendor Mode
-  vendorModeActive: "false",
-  vendorModeKeepAwake: "true",
   // --------
   // Encryption
   encryptionDeviceOnly: "false", // false = cloud sync enabled (default for new users)
@@ -148,14 +138,6 @@ export function validatePreferences(preferences: ValidPreferences): boolean {
     "shouldConstrainViewport",
     "enableDailyCheckIn",
     "offlineMode",
-    "useTokenAddress",
-    "autoResolveBcmr",
-    "showMemoCard",
-    "showOutputsCard",
-    "stablecoinMode",
-    "forceTokenAddress",
-    "vendorModeActive",
-    "vendorModeKeepAwake",
     "encryptionDeviceOnly",
     "useLegacyBip21",
     "pinInputMode",
@@ -308,7 +290,6 @@ export const selectCurrencySettings = createSelector(
     localCurrency: preferences.localCurrency,
     denomination: preferences.denomination,
     shouldPreferLocalCurrency: preferences.preferLocalCurrency === "true",
-    isStablecoinMode: preferences.stablecoinMode === "true",
   })
 );
 
@@ -397,7 +378,6 @@ export const selectPrivacySettings = createSelector(
   (preferences) => ({
     shouldHideBalance: preferences.hideAvailableBalance === "true",
     isDailyCheckInEnabled: preferences.enableDailyCheckIn === "true",
-    shouldResolveBcmr: preferences.autoResolveBcmr === "true",
   })
 );
 
@@ -428,20 +408,10 @@ export const selectShouldUseTokenAddress = createSelector(
   (preferences) => preferences.useTokenAddress === "true"
 );
 
-export const selectShouldForceTokenAddress = createSelector(
-  (state: RootState) => state.preferences,
-  (preferences) => preferences.forceTokenAddress === "true"
-);
-
 // Legacy BIP21 format (amount, ft) vs PayPro CHIP-2023-05 (s, f, n, m, e)
 export const selectShouldUseLegacyBip21 = createSelector(
   (state: RootState) => state.preferences,
   (preferences) => preferences.useLegacyBip21 === "true"
-);
-
-export const selectLastAssetsPath = createSelector(
-  (state: RootState) => state.preferences,
-  (preferences) => preferences.lastAssetsPath
 );
 
 export const selectShouldConstrainViewport = createSelector(
@@ -449,31 +419,6 @@ export const selectShouldConstrainViewport = createSelector(
   ({ preferences, device }) =>
     device.deviceInfo.platform === "web" &&
     preferences.shouldConstrainViewport === "true"
-);
-
-export const selectShouldShowOutputsCard = createSelector(
-  (state: RootState) => state.preferences,
-  (preferences) => preferences.showOutputsCard === "true"
-);
-
-export const selectShouldShowMemoCard = createSelector(
-  (state: RootState) => state.preferences,
-  (preferences) => preferences.showMemoCard === "true"
-);
-
-export const selectIsStablecoinMode = createSelector(
-  (state: RootState) => state.preferences,
-  (preferences) => preferences.stablecoinMode === "true"
-);
-
-export const selectIsVendorModeActive = createSelector(
-  (state: RootState) => state.preferences,
-  (preferences) => preferences.vendorModeActive === "true"
-);
-
-export const selectIsVendorModeKeepAwake = createSelector(
-  (state: RootState) => state.preferences,
-  (preferences) => preferences.vendorModeKeepAwake === "true"
 );
 
 export const selectEncryptionSettings = createSelector(

@@ -1,8 +1,6 @@
 import { combineReducers, configureStore, isPlain } from "@reduxjs/toolkit";
 
 import LogService from "@/kernel/app/LogService";
-import BcmrService from "@/kernel/bch/BcmrService";
-
 import { deviceInit, deviceReducer, setScannerIsScanning } from "./device";
 import {
   exchangeRateInit,
@@ -20,6 +18,7 @@ import { syncMiddleware, syncPause, syncReducer, syncResume } from "./sync";
 import { txHistoryReducer } from "./txHistory";
 import { addressReducer, walletBoot, walletReducer } from "./wallet";
 import { walletConnectInit, walletConnectReducer } from "./walletConnect";
+import { sendDraftReducer } from "./sendDraft";
 
 const Log = LogService("redux");
 
@@ -32,6 +31,7 @@ const rootReducer = combineReducers({
   txHistory: txHistoryReducer,
   addresses: addressReducer,
   walletConnect: walletConnectReducer,
+  sendDraft: sendDraftReducer,
 });
 
 export const store = configureStore({
@@ -66,8 +66,6 @@ export async function redux_init() {
     })
   );
 
-  const network = selectBchNetwork(store.getState());
-  BcmrService(network).preloadMetadataRegistries();
 }
 
 export function redux_resume() {

@@ -1,4 +1,3 @@
-import type { TokenCategory } from "@bitauth/libauth";
 import { DateTime } from "luxon";
 
 import DatabaseService from "@/kernel/app/DatabaseService";
@@ -9,11 +8,9 @@ import TransactionManagerService, {
   TransactionEntity,
 } from "@/kernel/bch/TransactionManagerService";
 import AddressManagerService from "@/kernel/wallet/AddressManagerService";
-import TokenManagerService from "@/kernel/wallet/TokenManagerService";
 
 import { COINBASE_TXID } from "@/util/blockchain";
 import { convertCashAddress } from "@/util/cashaddr";
-import { binToHex } from "@/util/hex";
 import { ValidBchNetwork } from "@/util/network";
 
 const Log = LogService("TransactionHistoryService");
@@ -36,32 +33,10 @@ export interface HistoryEntity {
   memo: string;
 }
 
-export interface TokenHistoryEntity {
-  tx_hash: string;
-  category: string;
-  fungible_amount: bigint;
-  nft_amount: number;
-  symbol: string;
-}
-
-/** The merged token object that history views actually receive */
-export interface TokenHistoryMerged extends TokenHistoryEntity {
-  color: string;
-  name: string;
-  amount: bigint;
-  nftCount: number;
-  decimals?: number;
-  token?: TokenCategory;
-}
-
-export interface MergedHistoryEntity extends HistoryEntity {
-  tokens?: Array<TokenHistoryMerged>;
-}
+export type MergedHistoryEntity = HistoryEntity;
 
 export interface TransactionHistoryFilters {
   direction?: "incoming" | "outgoing";
-  hasToken?: boolean;
-  hasNFT?: boolean;
   sortField?: "date" | "amount" | "address";
   sortDirection?: "asc" | "desc";
 }
@@ -89,8 +64,6 @@ export default function TransactionHistoryService(
   myAddresses.push(
     ...myAddresses.map((a) => convertCashAddress(a, "tokenaddr"))
   );
-
-  const TokenManager = TokenManagerService(walletHash, network);
 
   return {
     resolveTransactionHistory,
@@ -149,28 +122,6 @@ export default function TransactionHistoryService(
         conditions.push("valueSatoshis > 0");
       } else if (filters.direction === "outgoing") {
         conditions.push("valueSatoshis < 0");
-      }
-
-      // Token filter (has tokens / no tokens)
-      if (filters.hasToken === true) {
-        conditions.push(
-          "tx_hash IN (SELECT DISTINCT tx_hash FROM token_transactions)"
-        );
-      } else if (filters.hasToken === false) {
-        conditions.push(
-          "tx_hash NOT IN (SELECT DISTINCT tx_hash FROM token_transactions)"
-        );
-      }
-
-      // NFT filter (has NFTs / no NFTs)
-      if (filters.hasNFT === true) {
-        conditions.push(
-          "tx_hash IN (SELECT DISTINCT tx_hash FROM token_transactions WHERE nft_amount > 0)"
-        );
-      } else if (filters.hasNFT === false) {
-        conditions.push(
-          "tx_hash NOT IN (SELECT DISTINCT tx_hash FROM token_transactions WHERE nft_amount > 0)"
-        );
       }
 
       if (conditions.length > 0) {
@@ -281,28 +232,6 @@ export default function TransactionHistoryService(
         conditions.push("valueSatoshis < 0");
       }
 
-      // Token filter (has tokens / no tokens)
-      if (filters.hasToken === true) {
-        conditions.push(
-          "tx_hash IN (SELECT DISTINCT tx_hash FROM token_transactions)"
-        );
-      } else if (filters.hasToken === false) {
-        conditions.push(
-          "tx_hash NOT IN (SELECT DISTINCT tx_hash FROM token_transactions)"
-        );
-      }
-
-      // NFT filter (has NFTs / no NFTs)
-      if (filters.hasNFT === true) {
-        conditions.push(
-          "tx_hash IN (SELECT DISTINCT tx_hash FROM token_transactions WHERE nft_amount > 0)"
-        );
-      } else if (filters.hasNFT === false) {
-        conditions.push(
-          "tx_hash NOT IN (SELECT DISTINCT tx_hash FROM token_transactions WHERE nft_amount > 0)"
-        );
-      }
-
       if (conditions.length > 0) {
         filterCondition = `AND ${conditions.join(" AND ")}`;
       }
@@ -333,59 +262,6 @@ export default function TransactionHistoryService(
     return confirmedCount + unconfirmedCount;
   }
 
-  function mergeTokenHistory(
-    address_transactions: Array<HistoryEntity>
-  ): Array<MergedHistoryEntity> {
-    const tx_hashes = address_transactions.map((at) => at.tx_hash);
-    const placeholders = tx_hashes.map(() => "?").join(",");
-
-    // get token amounts for each historical transaction
-    const tokenTransactions = walletDb.exec(
-      `SELECT * FROM token_transactions WHERE tx_hash IN (${placeholders});`,
-      tx_hashes,
-      { useBigInt: true }
-    );
-
-    // for each historical transaction, merge in the token data
-    const mergedTransactions = address_transactions.reduce((merged, atx) => {
-      // from all token transactions, get the ones for this atx
-      const tokenTxes = tokenTransactions.filter(
-        (ttx) => ttx.tx_hash === atx.tx_hash
-      );
-
-      // get a list of categories for our atx's token transactions
-      const categories = tokenTxes.map((ttx) => ttx.category);
-
-      const tokens = categories.flatMap((category) => {
-        const token = TokenManager.getToken(category);
-        const txes = tokenTxes
-          .filter((ttx) => ttx.category === category)
-          .map((tx) => ({
-            ...token,
-            ...tx,
-            nft_amount: Number(tx.nft_amount),
-          }));
-
-        return txes;
-      });
-
-      if (tokenTxes.length > 0) {
-        return [
-          ...merged,
-          {
-            ...atx,
-            tokens,
-          },
-        ];
-      }
-
-      return [...merged, atx];
-    }, [] as Array<MergedHistoryEntity>);
-
-    //Log.debug("mergedTransactions", mergedTransactions);
-    return mergedTransactions;
-  }
-
   async function resolveTransactionHistory(
     start: number = 0,
     limit: number = 20,
@@ -402,13 +278,12 @@ export default function TransactionHistoryService(
       searchQuery,
       filters
     );
-    const mergedHistory = mergeTokenHistory(address_transactions);
 
     const hasMore = start + limit < total;
 
     if (!ElectrumService(network).getIsConnected()) {
       return {
-        transactions: mergedHistory,
+        transactions: address_transactions,
         hasMore,
         total,
       };
@@ -450,37 +325,15 @@ export default function TransactionHistoryService(
         throw new TransactionHistoryNotExistsError(tx_hash, walletHash);
       }
 
-      const tokenTxes = walletDb.exec(
-        `SELECT * FROM token_transactions WHERE tx_hash=?;`,
-        [tx_hash],
-        { useBigInt: true }
-      );
-
-      const categories = tokenTxes.map((ttx) => ttx.category);
-
-      const tokens = categories.map((category) => {
-        const ttx = tokenTxes.find((t) => t.category === category);
-        return {
-          ...TokenManager.getToken(category),
-          ...ttx,
-          nft_amount: Number(ttx?.nft_amount ?? 0),
-        };
-      });
-
-      if (tokenTxes.length > 0) {
-        return { ...addressTx, tokens };
-      }
-
       return addressTx;
     } catch (e) {
       const tx = await TransactionManagerService().resolveTransaction(
         tx_hash,
         network
       );
-      const { amount, tokens } = await calculateTxAmount(tx);
+      const { amount } = await calculateTxAmount(tx);
       const updatedAddressTx = updateTxAmount(tx.tx_hash, amount);
-      await TokenManager.registerTokenHistory(tx.tx_hash, tokens);
-      return { ...updatedAddressTx, tokens };
+      return updatedAddressTx;
     }
   }
 
@@ -537,76 +390,14 @@ export default function TransactionHistoryService(
     // any outputs that belong to us are incoming money
     const myOutputs = tx.vout.filter((out) => isMyUtxo(out));
 
-    // sum reducer function
     const amountReducer = (sum, cur) => sum + cur.valueSatoshis;
-    const tokenReducer = (tokens, cur) => {
-      const result = tokens;
-
-      if (!cur.token) {
-        return result;
-      }
-
-      const category = binToHex(cur.token.category);
-
-      if (!result[category]) {
-        result[category] = {
-          amount: 0n,
-          nftAmount: 0,
-        };
-      }
-
-      result[category].amount = tokens[category].amount + cur.token.amount;
-
-      result[category].nftAmount = cur.token.nft
-        ? tokens[category].nftAmount + 1
-        : 0;
-
-      return result;
-    };
 
     const receivedAmount: bigint = myOutputs.reduce(amountReducer, 0n);
     const sentAmount: bigint = myInputs.reduce(amountReducer, 0n);
 
-    const receivedTokens = myOutputs.reduce(tokenReducer, {});
-    const sentTokens = myInputs.reduce(tokenReducer, {});
-
-    // TODO: totalOutput - amount = fee
     const amount = receivedAmount - sentAmount;
 
-    // get token counts
-    // `Set` automatically de-duplicate entries by enforcing uniqueness
-    const uniqueCategories: Array<string> = [
-      ...new Set([...Object.keys(receivedTokens), ...Object.keys(sentTokens)]),
-    ];
-
-    const tokens = uniqueCategories.map((category) => {
-      if (!receivedTokens[category]) {
-        receivedTokens[category] = {
-          amount: 0n,
-          nftAmount: 0,
-        };
-      }
-
-      if (!sentTokens[category]) {
-        sentTokens[category] = {
-          amount: 0n,
-          nftAmount: 0,
-        };
-      }
-
-      const { amount: receivedTokenAmount, nftAmount: receivedNftAmount } =
-        receivedTokens[category];
-      const { amount: sentTokenAmount, nftAmount: sentNftAmount } =
-        sentTokens[category];
-
-      return {
-        category,
-        amount: (receivedTokenAmount - sentTokenAmount).toString(),
-        nftAmount: receivedNftAmount - sentNftAmount,
-      };
-    });
-
-    return { amount, tokens };
+    return { amount };
   }
 
   function setTransactionMemo(tx_hash: string, memo: string): void {
@@ -696,28 +487,6 @@ export default function TransactionHistoryService(
         conditions.push("valueSatoshis > 0");
       } else if (filters.direction === "outgoing") {
         conditions.push("valueSatoshis < 0");
-      }
-
-      // Token filter (has tokens / no tokens)
-      if (filters.hasToken === true) {
-        conditions.push(
-          "tx_hash IN (SELECT DISTINCT tx_hash FROM token_transactions)"
-        );
-      } else if (filters.hasToken === false) {
-        conditions.push(
-          "tx_hash NOT IN (SELECT DISTINCT tx_hash FROM token_transactions)"
-        );
-      }
-
-      // NFT filter (has NFTs / no NFTs)
-      if (filters.hasNFT === true) {
-        conditions.push(
-          "tx_hash IN (SELECT DISTINCT tx_hash FROM token_transactions WHERE nft_amount > 0)"
-        );
-      } else if (filters.hasNFT === false) {
-        conditions.push(
-          "tx_hash NOT IN (SELECT DISTINCT tx_hash FROM token_transactions WHERE nft_amount > 0)"
-        );
       }
 
       if (conditions.length > 0) {

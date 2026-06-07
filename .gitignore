@@ -56,3 +56,11 @@ playwright-report/
 test-results/
 .env.e2e
 stats.html
+
+# Local development scripts
+scripts/deploy-android.sh
+
+# Local notes
+LOCAL-NOTES.md
+# Local Pi runtime state
+.atl/

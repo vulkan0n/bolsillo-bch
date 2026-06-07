@@ -47,32 +47,6 @@ export const routeApps = [
     },
   },
   {
-    path: "/apps/bliss",
-    async lazy() {
-      const { default: AppBlissView } =
-        await import("@/views/apps/bliss/AppBlissView");
-      return { Component: AppBlissView };
-    },
-    children: [
-      {
-        path: "about/",
-        async lazy() {
-          const { default: BlissAboutView } =
-            await import("@/views/apps/bliss/about/BlissAboutView");
-          return { Component: BlissAboutView };
-        },
-      },
-    ],
-  },
-  {
-    path: "/apps/cauldron",
-    async lazy() {
-      const { default: AppCauldronDexView } =
-        await import("@/views/apps/cauldron/AppCauldronDexView");
-      return { Component: AppCauldronDexView };
-    },
-  },
-  {
     path: "/apps/qrgen",
     async lazy() {
       const { default: AppQrgenView } =

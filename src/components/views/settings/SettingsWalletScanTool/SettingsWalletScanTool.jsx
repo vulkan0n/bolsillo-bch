@@ -17,7 +17,6 @@ import AddressScannerService from "@/kernel/wallet/AddressScannerService";
 import KeyManagerService from "@/kernel/wallet/KeyManagerService";
 import WalletManagerService from "@/kernel/wallet/WalletManagerService";
 
-import AssetsViewAddresses from "@/views/assets/AssetsViewAddresses";
 import ViewHeader from "@/layout/ViewHeader";
 import Button from "@/atoms/Button";
 
@@ -269,7 +268,6 @@ export default function SettingsWalletScanTool() {
       </div>
       {foundPath !== "" && <div>Found addresses on {foundPath}</div>}
       {scanCount !== 0 && <div>Scanned {scanCount} addresses</div>}
-      <AssetsViewAddresses />
     </>
   );
 }

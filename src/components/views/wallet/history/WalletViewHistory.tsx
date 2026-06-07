@@ -28,8 +28,6 @@ import {
   selectTransactionHistoryPagination,
   selectTxHistoryFilters,
   setDirection,
-  setHasNft,
-  setHasToken,
   setSearchQuery,
   setSortDirection,
   setSortField,
@@ -50,8 +48,6 @@ import TransactionHistoryService from "@/kernel/wallet/TransactionHistoryService
 
 import ViewHeader from "@/layout/ViewHeader";
 import Satoshi from "@/atoms/Satoshi";
-import TokenAmount from "@/atoms/TokenAmount";
-import TokenSymbol from "@/atoms/TokenSymbol";
 import Button from "@/components/atoms/Button";
 import Select from "@/components/atoms/Select";
 
@@ -151,32 +147,9 @@ function TransactionItem({
             </div>
           </div>
         </div>
-        <div className="flex justify-between">
-          {tx.memo && (
-            <div className="grow text-sm text-neutral-500 mx-4">{tx.memo}</div>
-          )}
-          {tx.tokens && !shouldHideBalance ? (
-            <div className="flex flex-1 justify-end flex-wrap gap-x-2 mr-0.5">
-              {tx.tokens.map((token) => (
-                <div
-                  key={`${token.category}-${tx.tx_hash}`}
-                  className="flex justify-end items-center text-right text-sm"
-                >
-                  <span
-                    style={{ color: `#${token.category.slice(0, 6)}` }}
-                    className="font-mono text-xs tracking-tighter font-bold"
-                  >
-                    <TokenSymbol token={token} />
-                  </span>
-                  {token.nft_amount !== 0 && <TokenAmount token={token} nft />}
-                  {token.fungible_amount !== 0n && (
-                    <TokenAmount token={token} />
-                  )}
-                </div>
-              ))}
-            </div>
-          ) : null}
-        </div>
+        {tx.memo && (
+          <div className="text-sm text-neutral-500 mx-4">{tx.memo}</div>
+        )}
       </Link>
     </li>
   );
@@ -491,132 +464,6 @@ export default function WalletViewHistory() {
                   />
                   <span className="text-sm">
                     {translate(translations.filterDirectionOutgoing)}
-                  </span>
-                </label>
-              </div>
-            </div>
-
-            {/* Token Filter */}
-            <div>
-              <label className="block text-sm font-medium mb-1.5 text-neutral-700 dark:text-neutral-300">
-                {translate(translations.filterTokens)}
-              </label>
-              <div className="space-y-2">
-                <label
-                  className={`flex items-center cursor-pointer px-3 py-2 rounded transition-colors ${
-                    filters.hasToken === null
-                      ? "bg-primary-500 text-white"
-                      : "bg-white dark:bg-neutral-700 hover:bg-neutral-100 dark:hover:bg-neutral-600"
-                  }`}
-                >
-                  <input
-                    type="radio"
-                    name="hasToken"
-                    checked={filters.hasToken === null}
-                    onChange={() => dispatch(setHasToken(null))}
-                    className="mr-2"
-                  />
-                  <span className="text-sm">
-                    {translate(translations.filterTokensAll)}
-                  </span>
-                </label>
-                <label
-                  className={`flex items-center cursor-pointer px-3 py-2 rounded transition-colors ${
-                    filters.hasToken === true
-                      ? "bg-primary-500 text-white"
-                      : "bg-white dark:bg-neutral-700 hover:bg-neutral-100 dark:hover:bg-neutral-600"
-                  }`}
-                >
-                  <input
-                    type="radio"
-                    name="hasToken"
-                    checked={filters.hasToken === true}
-                    onChange={() => dispatch(setHasToken(true))}
-                    className="mr-2"
-                  />
-                  <span className="text-sm">
-                    {translate(translations.filterTokensHas)}
-                  </span>
-                </label>
-                <label
-                  className={`flex items-center cursor-pointer px-3 py-2 rounded transition-colors ${
-                    filters.hasToken === false
-                      ? "bg-primary-500 text-white"
-                      : "bg-white dark:bg-neutral-700 hover:bg-neutral-100 dark:hover:bg-neutral-600"
-                  }`}
-                >
-                  <input
-                    type="radio"
-                    name="hasToken"
-                    checked={filters.hasToken === false}
-                    onChange={() => dispatch(setHasToken(false))}
-                    className="mr-2"
-                  />
-                  <span className="text-sm">
-                    {translate(translations.filterTokensNone)}
-                  </span>
-                </label>
-              </div>
-            </div>
-
-            {/* NFT Filter */}
-            <div>
-              <label className="block text-sm font-medium mb-1.5 text-neutral-700 dark:text-neutral-300">
-                {translate(translations.filterNFTs)}
-              </label>
-              <div className="space-y-2">
-                <label
-                  className={`flex items-center cursor-pointer px-3 py-2 rounded transition-colors ${
-                    filters.hasNFT === null
-                      ? "bg-primary-500 text-white"
-                      : "bg-white dark:bg-neutral-700 hover:bg-neutral-100 dark:hover:bg-neutral-600"
-                  }`}
-                >
-                  <input
-                    type="radio"
-                    name="hasNFT"
-                    checked={filters.hasNFT === null}
-                    onChange={() => dispatch(setHasNft(null))}
-                    className="mr-2"
-                  />
-                  <span className="text-sm">
-                    {translate(translations.filterNFTsAll)}
-                  </span>
-                </label>
-                <label
-                  className={`flex items-center cursor-pointer px-3 py-2 rounded transition-colors ${
-                    filters.hasNFT === true
-                      ? "bg-primary-500 text-white"
-                      : "bg-white dark:bg-neutral-700 hover:bg-neutral-100 dark:hover:bg-neutral-600"
-                  }`}
-                >
-                  <input
-                    type="radio"
-                    name="hasNFT"
-                    checked={filters.hasNFT === true}
-                    onChange={() => dispatch(setHasNft(true))}
-                    className="mr-2"
-                  />
-                  <span className="text-sm">
-                    {translate(translations.filterNFTsHas)}
-                  </span>
-                </label>
-                <label
-                  className={`flex items-center cursor-pointer px-3 py-2 rounded transition-colors ${
-                    filters.hasNFT === false
-                      ? "bg-primary-500 text-white"
-                      : "bg-white dark:bg-neutral-700 hover:bg-neutral-100 dark:hover:bg-neutral-600"
-                  }`}
-                >
-                  <input
-                    type="radio"
-                    name="hasNFT"
-                    checked={filters.hasNFT === false}
-                    onChange={() => dispatch(setHasNft(false))}
-                    className="mr-2"
-                  />
-                  <span className="text-sm">
-                    {translate(translations.filterNFTsNone)}
                   </span>
                 </label>
               </div>

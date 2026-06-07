@@ -1,101 +1,62 @@
 import { useSelector } from "react-redux";
 import { NavLink } from "react-router";
-import {
-  BankFilled,
-  BankOutlined,
-  SettingFilled,
-  SettingOutlined,
-  WalletFilled,
-  WalletOutlined,
-} from "@ant-design/icons";
+import { Home, Receipt, Settings } from "lucide-react";
 
 import { selectKeyboardIsOpen, selectScannerIsScanning } from "@/redux/device";
-import {
-  selectIsVendorModeActive,
-  selectLanguageCode,
-  selectLastAssetsPath,
-} from "@/redux/preferences";
-
-import { translate } from "@/util/translations";
-
-import translations from "./bottomNavigationTranslations";
 
 export default function BottomNavigation() {
   const isKeyboardOpen = useSelector(selectKeyboardIsOpen);
   const isScanning = useSelector(selectScannerIsScanning);
-  const isVendorModeActive = useSelector(selectIsVendorModeActive);
-  // Ensure component reloads when language preferences are changed
-  useSelector(selectLanguageCode);
 
-  const lastAssetsPath = useSelector(selectLastAssetsPath);
-
-  if (isKeyboardOpen || isVendorModeActive) {
+  if (isKeyboardOpen) {
     return null;
   }
 
   return (
     <nav
       data-testid="nav-bottom"
-      className={`w-full flex items-center justify-around z-30 ${isScanning ? "opacity-0" : ""}`}
+      className={`w-full flex items-center justify-around h-16 pb-safe-bottom bg-neutral-0 dark:bg-neutral-800 border-t border-neutral-100 dark:border-neutral-700 z-30 ${isScanning ? "opacity-0" : ""}`}
     >
-      <NavButton
-        to="/wallet"
-        activeIcon={WalletFilled}
-        icon={WalletOutlined}
-        label={translate(translations.wallet)}
-      />
-
-      <NavButton
-        to={lastAssetsPath}
-        activeIcon={BankFilled}
-        icon={BankOutlined}
-        label={translate(translations.assets)}
-      />
-
-      <NavButton
-        to="/settings"
-        activeIcon={SettingFilled}
-        icon={SettingOutlined}
-        label={translate(translations.settings)}
-      />
+      <NavTab to="/wallet" icon={Home} label="Inicio" />
+      <NavTab to="/wallet/history" icon={Receipt} label="Movimientos" />
+      <NavTab to="/settings" icon={Settings} label="Ajustes" />
     </nav>
   );
 }
 
-interface NavButtonProps {
+interface NavTabProps {
   to: string;
-  icon: React.ComponentType;
-  activeIcon: React.ComponentType;
+  icon: React.ComponentType<{
+    size?: number;
+    strokeWidth?: number;
+    className?: string;
+  }>;
   label: string;
 }
 
-function NavButton({ to, icon, activeIcon, label }: NavButtonProps) {
+function NavTab({ to, icon, label }: NavTabProps) {
   const Icon = icon;
-  const ActiveIcon = activeIcon;
-
-  const baseClasses =
-    "bg-neutral-900 dark:bg-black text-primary border-primary w-full h-16 p-2 pt-3 flex flex-col justify-center items-center";
-  const activeClasses =
-    "active shadow-[inset_0_4px_0_0_currentColor] font-semibold";
-  const iconClasses = "text-2xl";
-
   return (
     <NavLink
       to={to}
-      className={({ isActive }) =>
-        isActive ? `${baseClasses} ${activeClasses}` : `${baseClasses}`
-      }
+      className="flex-1 flex flex-col items-center justify-center gap-1 h-full"
     >
       {({ isActive }) => (
         <>
-          <div className="text-center">
-            {isActive ? (
-              <ActiveIcon className={iconClasses} />
-            ) : (
-              <Icon className={iconClasses} />
-            )}
-          </div>
-          <div className="text-center text-sm">{label}</div>
+          <Icon
+            size={24}
+            strokeWidth={1.75}
+            className={
+              isActive
+                ? "text-brand-600 dark:text-brand-400"
+                : "text-neutral-400 dark:text-neutral-500"
+            }
+          />
+          <span
+            className={`text-xs ${isActive ? "text-brand-600 dark:text-brand-400 font-medium" : "text-neutral-400 dark:text-neutral-500"}`}
+          >
+            {label}
+          </span>
         </>
       )}
     </NavLink>

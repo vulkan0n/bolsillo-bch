@@ -15,8 +15,6 @@ import JanitorService from "@/kernel/app/JanitorService";
 import LogService from "@/kernel/app/LogService";
 import ModalService from "@/kernel/app/ModalService";
 import SecurityService, { AuthActions } from "@/kernel/app/SecurityService";
-import BcmrService from "@/kernel/bch/BcmrService";
-
 import Button from "@/atoms/Button";
 
 import { translate } from "@/util/translations";
@@ -65,14 +63,6 @@ export default function DebugView() {
     await JanitorService().purgeStaleData();
   };
 
-  const handlePurgeBcmr = async () => {
-    await BcmrService().purgeBcmrData();
-  };
-
-  const handleExportBcmr = async () => {
-    await BcmrService().exportLocalBcmr();
-  };
-
   const handleResetDatabases = async () => {
     await JanitorService().resetDatabases();
     window.location.assign("/");
@@ -90,11 +80,6 @@ export default function DebugView() {
             onClick={handleExportLogs}
           />
           <Button
-            icon={ExportOutlined}
-            label="Export BCMR Data"
-            onClick={handleExportBcmr}
-          />
-          <Button
             icon={UnlockOutlined}
             label="AuthAction"
             onClick={handleAuthorize}
@@ -108,11 +93,6 @@ export default function DebugView() {
             icon={ClearOutlined}
             label="Purge Stale Data"
             onClick={handlePurgeData}
-          />
-          <Button
-            icon={ClearOutlined}
-            label="Purge BCMR Data"
-            onClick={handlePurgeBcmr}
           />
           <Button
             icon={FireOutlined}
