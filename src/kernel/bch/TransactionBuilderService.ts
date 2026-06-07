@@ -211,14 +211,14 @@ export default function TransactionBuilderService(walletHash: string) {
       Log.debug("compileP2pkhTransaction", vin, vout, generatedTx);
 
       const tx_raw = encodeTransaction(generatedTx.transaction);
-      const tx_hex = binToHex(tx_raw);
+      const hex = binToHex(tx_raw);
       const tx_hash = swapEndianness(
         binToHex(sha256.hash(sha256.hash(tx_raw)))
       );
 
       const minimumFee = getMinimumFee(BigInt(tx_raw.length), DUST_RELAY_FEE);
 
-      return { tx_hash, tx_hex, minimumFee };
+      return { tx_hash, hex, minimumFee };
     }
 
     return transaction;

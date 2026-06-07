@@ -11,11 +11,11 @@ import {
 } from "@/redux/sendDraft";
 import { selectActiveWalletBalance, selectActiveWalletHash } from "@/redux/wallet";
 import { selectBchNetwork } from "@/redux/preferences";
-import { selectIsConnected } from "@/redux/sync";
+import { selectIsConnected, syncHotRefresh } from "@/redux/sync";
 
 import CurrencyService from "@/kernel/bch/CurrencyService";
 import TransactionBuilderService from "@/kernel/bch/TransactionBuilderService";
-import ElectrumService from "@/kernel/bch/ElectrumService";
+import TransactionManagerService from "@/kernel/bch/TransactionManagerService";
 import NotificationService from "@/kernel/app/NotificationService";
 
 import SlideToAction from "@/atoms/SlideToAction";
@@ -94,7 +94,10 @@ export default function SendConfirmView() {
         throw new Error("Sin conexión al servidor Electrum");
       }
 
-      await ElectrumService(bchNetwork).broadcastTransaction(txStub.hex);
+      await TransactionManagerService().sendTransaction(txStub, bchNetwork);
+
+      // Trigger immediate balance refresh
+      dispatch(syncHotRefresh({ force: true }));
 
       navigate("/wallet/send/success");
     } catch (e) {
@@ -106,7 +109,7 @@ export default function SendConfirmView() {
     } finally {
       isBroadcasting.current = false;
     }
-  }, [txStub, isConnected, bchNetwork, navigate]);
+  }, [txStub, isConnected, bchNetwork, navigate, dispatch]);
 
   // -------- Derived display
 
