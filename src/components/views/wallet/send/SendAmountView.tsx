@@ -119,7 +119,8 @@ export default function SendAmountView() {
   const prettyAddress = useMemo(() => {
     const addr = draft.address || validatedAddress || "";
     if (!addr) return "";
-    return `${addr.slice(0, 8)}…${addr.slice(-4)}`;
+    const hash = addr.includes(":") ? addr.split(":").pop()! : addr;
+    return `${hash.slice(0, 6)}…${hash.slice(-6)}`;
   }, [draft.address, validatedAddress]);
 
   const selectedChip = CHIPS.find((c) => String(c) === rawInput);

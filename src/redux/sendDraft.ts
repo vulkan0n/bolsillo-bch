@@ -22,7 +22,7 @@ const sendDraftSlice = createSlice({
       state.address = action.payload.address;
       state.amountFiat = action.payload.amountFiat ?? null;
       state.memo = action.payload.memo ?? null;
-      state.amountSats = null;
+      state.amountSats = action.payload.amountSats ?? null;
     },
     setAmountFiat(state, action) {
       state.amountFiat = action.payload;

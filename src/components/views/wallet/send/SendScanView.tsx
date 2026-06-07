@@ -5,7 +5,7 @@ import { useNavigate } from "react-router";
 import { X } from "lucide-react";
 
 import { setScannerIsScanning } from "@/redux/device";
-import { initSendDraft } from "@/redux/sendDraft";
+import { clearSendDraft, initSendDraft } from "@/redux/sendDraft";
 
 import { useScanner } from "@/hooks/useScanner";
 
@@ -87,6 +87,7 @@ export default function SendScanView() {
   );
 
   function handleManualEntry() {
+    dispatch(clearSendDraft());
     navigate("/wallet/send/amount");
   }
 

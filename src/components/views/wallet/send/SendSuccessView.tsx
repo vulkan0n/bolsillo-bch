@@ -29,7 +29,12 @@ export default function SendSuccessView() {
   }, [draft.amountSats, Currency]);
 
   const prettyAddress = draft.address
-    ? `${draft.address.slice(0, 8)}…${draft.address.slice(-4)}`
+    ? (() => {
+        const hash = draft.address.includes(":")
+          ? draft.address.split(":").pop()!
+          : draft.address;
+        return `${hash.slice(0, 6)}…${hash.slice(-6)}`;
+      })()
     : "";
 
   const symbol = Currency.getSymbol(localCurrency) || "$";

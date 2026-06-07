@@ -23,7 +23,7 @@ describe("sendDraft slice", () => {
   });
 
   describe("initSendDraft", () => {
-    it("sets address and resets other fields", () => {
+    it("resets fields when only address is provided", () => {
       const state = sendDraftReducer(
         {
           address: "old",
@@ -41,19 +41,20 @@ describe("sendDraft slice", () => {
       });
     });
 
-    it("sets amountFiat and memo when provided", () => {
+    it("sets amountFiat, amountSats and memo when provided", () => {
       const state = sendDraftReducer(
         initialState,
         initSendDraft({
           address: "qrn8abc",
           amountFiat: "1500",
+          amountSats: 150000n,
           memo: "pago almuerzo",
         })
       );
       expect(state).toEqual({
         address: "qrn8abc",
         amountFiat: "1500",
-        amountSats: null,
+        amountSats: 150000n,
         memo: "pago almuerzo",
       });
     });

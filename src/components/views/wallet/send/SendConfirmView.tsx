@@ -16,7 +16,6 @@ import { selectIsConnected } from "@/redux/sync";
 import CurrencyService from "@/kernel/bch/CurrencyService";
 import TransactionBuilderService from "@/kernel/bch/TransactionBuilderService";
 import ElectrumService from "@/kernel/bch/ElectrumService";
-import TransactionManagerService from "@/kernel/bch/TransactionManagerService";
 import NotificationService from "@/kernel/app/NotificationService";
 
 import SlideToAction from "@/atoms/SlideToAction";
@@ -47,7 +46,7 @@ export default function SendConfirmView() {
   const [txError, setTxError] = useState<string | null>(null);
   const [isVerifying, setIsVerifying] = useState(true);
 
-  // -------- On mount: build the transaction to verify + get fee
+  // -------- On mount: build the transaction to verify
 
   useEffect(() => {
     if (!draft.address || !draft.amountSats || !walletHash) {
@@ -131,7 +130,12 @@ export default function SendConfirmView() {
   }, [draft.amountSats, CoinCurrency]);
 
   const prettyAddress = draft.address
-    ? `${draft.address.slice(0, 8)}…${draft.address.slice(-4)}`
+    ? (() => {
+        const hash = draft.address.includes(":")
+          ? draft.address.split(":").pop()!
+          : draft.address;
+        return `${hash.slice(0, 6)}…${hash.slice(-6)}`;
+      })()
     : "";
 
   const minutesSinceUpdate = useMemo(() => {
@@ -189,20 +193,27 @@ export default function SendConfirmView() {
 
         {/* Normal state */}
         {!txError && (
-          <>
-            {/* Summary */}
-            <div className="flex-1 flex flex-col items-center justify-center -mt-10">
-              <p className="text-sm text-neutral-500 dark:text-neutral-400 mb-1">
-                Vas a enviar
-              </p>
-              <p className="text-display-sm text-neutral-900 dark:text-neutral-100 tabular-nums">
-                {symbol} {amountFiat}
-              </p>
-              <p className="text-body text-neutral-400 dark:text-neutral-500 tabular-nums mt-1">
-                {formatBch(amountSats)} BCH
-              </p>
+          <div className="flex-1 flex flex-col justify-center -mt-10">
+            {/* Card de confirmación */}
+            <div className="rounded-2xl bg-neutral-200 dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 px-5 py-6">
+              {/* Amount */}
+              <div className="text-center">
+                <p className="text-sm text-neutral-500 dark:text-neutral-400 mb-1">
+                  Vas a enviar
+                </p>
+                <p className="text-display-sm text-neutral-900 dark:text-neutral-100 tabular-nums">
+                  {symbol} {amountFiat}
+                </p>
+                <p className="text-body text-neutral-400 dark:text-neutral-500 tabular-nums mt-1">
+                  {formatBch(amountSats)} BCH
+                </p>
+              </div>
 
-              <div className="w-full mt-8 space-y-3">
+              {/* Separator */}
+              <hr className="my-5 border-t border-neutral-100 dark:border-neutral-700" />
+
+              {/* Details */}
+              <div className="space-y-3">
                 {/* Address */}
                 <div className="flex items-baseline gap-2">
                   <span className="text-sm text-neutral-500 dark:text-neutral-400 w-12 shrink-0">
@@ -253,7 +264,7 @@ export default function SendConfirmView() {
                 </p>
               </div>
             </div>
-          </>
+          </div>
         )}
       </div>
 
