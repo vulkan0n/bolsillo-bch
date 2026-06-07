@@ -162,7 +162,8 @@ export default function SendConfirmView() {
         <button
           type="button"
           onClick={() => navigate("/wallet/send/amount")}
-          className="w-10 h-10 flex items-center justify-center -ml-2"
+          className="w-12 h-12 flex items-center justify-center rounded-xl shrink-0
+                     active:bg-neutral-200 dark:active:bg-neutral-800"
           aria-label="Volver"
         >
           <ArrowLeft className="w-6 h-6 text-neutral-700 dark:text-neutral-300" />
@@ -193,7 +194,7 @@ export default function SendConfirmView() {
 
         {/* Normal state */}
         {!txError && (
-          <div className="flex-1 flex flex-col justify-center -mt-10">
+          <div className="flex-1 flex flex-col justify-center">
             {/* Card de confirmación */}
             <div className="rounded-2xl bg-neutral-200 dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 px-5 py-6">
               {/* Amount */}

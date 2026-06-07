@@ -132,7 +132,8 @@ export default function SendAmountView() {
         <button
           type="button"
           onClick={() => navigate("/wallet/send/scan")}
-          className="w-10 h-10 flex items-center justify-center -ml-2"
+          className="w-12 h-12 flex items-center justify-center rounded-xl shrink-0
+                     active:bg-neutral-200 dark:active:bg-neutral-800"
           aria-label="Volver"
         >
           <ArrowLeft className="w-6 h-6 text-neutral-700 dark:text-neutral-300" />
