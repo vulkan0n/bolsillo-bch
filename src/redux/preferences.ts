@@ -53,9 +53,9 @@ export const defaultPreferences = {
   useLegacyBip21: "true", // true = use legacy BIP21 format (modern PayPro not deployed yet)
   // --------
   // QR Code (move to wallet db?)
-  qrCodeLogo: "Selene",
+  qrCodeLogo: "bch",
   qrCodeBackground: "#ffffff",
-  qrCodeForeground: "#000000",
+  qrCodeForeground: "#23A06D",
   // --------
   // UI
   displayExploreTab: "true",
