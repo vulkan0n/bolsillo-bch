@@ -18,11 +18,15 @@ export function useClipboard() {
       message?: string,
       isPrivate?: boolean
     ) => {
-      await Clipboard.write({ string });
-      NotificationService().clipboardCopy(
-        header,
-        message !== undefined ? message : !isPrivate && string
-      );
+      try {
+        await Clipboard.write({ string });
+        NotificationService().clipboardCopy(
+          header,
+          message !== undefined ? message : !isPrivate && string
+        );
+      } catch {
+        // Clipboard unavailable (web/native) — fail silently
+      }
     },
     []
   );
