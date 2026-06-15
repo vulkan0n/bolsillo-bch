@@ -67,7 +67,6 @@ la capa de UX/presentación sin reinventar la arquitectura de protocolo.
 Tu fork (modificás)               Selene (no tocás)
 ────────────────────────          ──────────────────────────────
 Pantallas de onboarding      →    Derivación de seed (BIP39/44)
-Flujo de cobro para comercio →    Firma y broadcast de txs
 Denominación en ARS + BCH    →    Comunicación con nodos Electrum
 Mensajes de error amigables  →    Validación de direcciones
 Settings simplificados       →    Lógica UTXO / libauth
@@ -78,8 +77,6 @@ Settings simplificados       →    Lógica UTXO / libauth
 - **Onboarding progresivo:** el usuario empieza a usar la wallet
   de inmediato; las 12 palabras se introducen en un segundo paso,
   explicadas como "tu contraseña maestra de respaldo".
-- **Modo comerciante:** pantalla de cobro con monto en ARS →
-  genera QR con equivalente en BCH → confirmación al recibir pago.
 - **Denominación local:** mostrar siempre el equivalente en ARS
   junto al valor en BCH.
 - **Settings simplificados:** opciones avanzadas (derivation path,
@@ -244,10 +241,15 @@ selene-wallet/
 
 ### Próximos pasos pendientes
 
-- Onboarding progresivo (simplificar el flujo de las 12 palabras)
+- ~~Onboarding progresivo~~ ✅ **completado:** Google Sign-In → wallet creada automáticamente → backup cifrado en Google Drive. El flujo de las 12 palabras está disponible en Settings (ver abajo) pero nunca se muestra al usuario nuevo.
+- Settings simplificados: mover el backup de seed a un lugar más directo (hoy está 3 niveles adentro: Settings → Wallet Settings → [wallet] → ShowMnemonic). Opciones avanzadas (NetworkSettings, WalletConnect, Cauldron, rebuild wallet) ocultas bajo toggle "Modo experto".
+- Notificaciones push al recibir BCH: que la app notifique aunque esté en segundo plano o cerrada. Sin servidor propio — usar local notifications vía Capacitor (`@capacitor/local-notifications`) + detección de txs entrantes desde Electrum WebSocket. Si es viable, registrar FCM para push real en background killing.
 - Modo Estable: bloqueado — MUSD tiene vulnerabilidad pendiente de fix por el equipo de Moria (ver sección abajo)
-- Modo comerciante: pantalla de cobro con monto en ARS → QR BCH (baja prioridad)
 - Diseño minimalista
+
+### ✂️ Features descartados
+
+- ~~Modo comerciante:~~ se descartó. La app apunta a usuario consumidor, no al comerciante.
 
 ---
 
