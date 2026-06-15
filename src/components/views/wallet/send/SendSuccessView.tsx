@@ -9,6 +9,7 @@ import { clearSendDraft, selectSendDraft } from "@/redux/sendDraft";
 import CurrencyService from "@/kernel/bch/CurrencyService";
 
 import AppButton from "@/atoms/AppButton";
+
 import { formatBch } from "@/util/format";
 
 export default function SendSuccessView() {

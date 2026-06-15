@@ -10,6 +10,7 @@ import {
   walletTemplateP2pkhNonHd,
   walletTemplateToCompilerBCH,
 } from "@bitauth/libauth";
+
 import LogService from "@/kernel/app/LogService";
 import {
   TransactionOutput,

@@ -12,8 +12,8 @@ import {
 import { selectActiveWalletHash } from "@/redux/wallet";
 
 import LogService from "@/kernel/app/LogService";
-import AddressManagerService from "@/kernel/wallet/AddressManagerService";
 import NotificationService from "@/kernel/app/NotificationService";
+import AddressManagerService from "@/kernel/wallet/AddressManagerService";
 import TransactionHistoryService from "@/kernel/wallet/TransactionHistoryService";
 
 import { useClipboard } from "@/hooks/useClipboard";

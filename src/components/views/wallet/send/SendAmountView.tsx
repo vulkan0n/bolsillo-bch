@@ -17,6 +17,7 @@ import { selectActiveWalletBalance } from "@/redux/wallet";
 import CurrencyService from "@/kernel/bch/CurrencyService";
 
 import AppButton from "@/atoms/AppButton";
+
 import { formatBch } from "@/util/format";
 import { validateBip21Uri } from "@/util/uri";
 

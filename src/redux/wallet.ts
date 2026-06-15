@@ -9,6 +9,7 @@ import {
 import { RootState } from "@/redux";
 import { setPreference } from "@/redux/preferences";
 
+import LogService from "@/kernel/app/LogService";
 import NotificationService from "@/kernel/app/NotificationService";
 import AddressManagerService, {
   AddressEntity,
@@ -20,6 +21,8 @@ import WalletManagerService, {
 } from "@/kernel/wallet/WalletManagerService";
 
 import { convertCashAddress } from "@/util/cashaddr";
+
+const Log = LogService("redux/wallet");
 
 const initialState = {
   walletHash: "",

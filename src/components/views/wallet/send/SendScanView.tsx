@@ -7,12 +7,13 @@ import { X } from "lucide-react";
 import { setScannerIsScanning } from "@/redux/device";
 import { clearSendDraft, initSendDraft } from "@/redux/sendDraft";
 
+import NotificationService from "@/kernel/app/NotificationService";
+
+import AppButton from "@/atoms/AppButton";
+
 import { useScanner } from "@/hooks/useScanner";
 
 import { validateBip21Uri } from "@/util/uri";
-
-import AppButton from "@/atoms/AppButton";
-import NotificationService from "@/kernel/app/NotificationService";
 
 export default function SendScanView() {
   const navigate = useNavigate();

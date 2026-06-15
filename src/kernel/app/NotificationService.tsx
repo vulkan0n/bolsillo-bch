@@ -11,6 +11,7 @@ import translations from "@/views/wallet/translations";
 import LoadingToast from "@/composite/toasts/LoadingToast";
 import PaymentReceivedToast from "@/composite/toasts/PaymentReceivedToast";
 import ToastCard from "@/composite/toasts/ToastCard";
+
 import { Haptic } from "@/util/haptic";
 
 import { translate } from "@/util/translations";

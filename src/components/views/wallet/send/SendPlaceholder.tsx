@@ -1,6 +1,7 @@
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router";
 import { ArrowLeft } from "lucide-react";
-import { useDispatch, useSelector } from "react-redux";
+
 import { clearSendDraft, selectSendDraft } from "@/redux/sendDraft";
 
 import AppButton from "@/atoms/AppButton";

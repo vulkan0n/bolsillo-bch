@@ -5,20 +5,21 @@ import { ArrowLeft, Clock } from "lucide-react";
 
 import { selectLastUpdatedAt } from "@/redux/exchangeRates";
 import { selectCurrencySettings } from "@/redux/preferences";
+import { selectBchNetwork } from "@/redux/preferences";
 import {
   clearSendDraft,
   selectSendDraft,
 } from "@/redux/sendDraft";
-import { selectActiveWalletBalance, selectActiveWalletHash } from "@/redux/wallet";
-import { selectBchNetwork } from "@/redux/preferences";
 import { selectIsConnected, syncHotRefresh } from "@/redux/sync";
+import { selectActiveWalletBalance, selectActiveWalletHash } from "@/redux/wallet";
 
+import NotificationService from "@/kernel/app/NotificationService";
 import CurrencyService from "@/kernel/bch/CurrencyService";
 import TransactionBuilderService from "@/kernel/bch/TransactionBuilderService";
 import TransactionManagerService from "@/kernel/bch/TransactionManagerService";
-import NotificationService from "@/kernel/app/NotificationService";
 
 import SlideToAction from "@/atoms/SlideToAction";
+
 import { formatBch } from "@/util/format";
 
 const ESTIMATED_FEE_SATS = 300n;

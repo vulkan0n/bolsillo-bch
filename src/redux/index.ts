@@ -1,6 +1,7 @@
 import { combineReducers, configureStore, isPlain } from "@reduxjs/toolkit";
 
 import LogService from "@/kernel/app/LogService";
+
 import { deviceInit, deviceReducer, setScannerIsScanning } from "./device";
 import {
   exchangeRateInit,
@@ -13,12 +14,12 @@ import {
   selectActiveWalletHash,
   selectBchNetwork,
 } from "./preferences";
+import { sendDraftReducer } from "./sendDraft";
 import { triggerCheckIn } from "./stats";
 import { syncMiddleware, syncPause, syncReducer, syncResume } from "./sync";
 import { txHistoryReducer } from "./txHistory";
 import { addressReducer, walletBoot, walletReducer } from "./wallet";
 import { walletConnectInit, walletConnectReducer } from "./walletConnect";
-import { sendDraftReducer } from "./sendDraft";
 
 const Log = LogService("redux");
 
