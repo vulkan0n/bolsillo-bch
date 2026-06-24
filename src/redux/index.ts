@@ -1,5 +1,6 @@
 import { combineReducers, configureStore, isPlain } from "@reduxjs/toolkit";
 
+import LocalNotificationService from "@/kernel/app/LocalNotificationService";
 import LogService from "@/kernel/app/LogService";
 
 import { deviceInit, deviceReducer, setScannerIsScanning } from "./device";
@@ -75,10 +76,25 @@ export function redux_resume() {
   store.dispatch(walletConnectInit());
   store.dispatch(triggerCheckIn());
   store.dispatch(fetchExchangeRates(0));
+
+  // After sync has time to reconnect and process missed transactions,
+  // check if any arrived while the app was paused and fire aggregated notification
+  setTimeout(() => {
+    const state = store.getState();
+    const currentBalance = BigInt(state.wallet.balance);
+    LocalNotificationService().checkResumeNotification(currentBalance);
+  }, 5000);
 }
 
 export function redux_pause() {
   Log.debug("redux_pause");
+
+  // Capture balance snapshot before disconnect for resume notification comparison
+  const state = store.getState();
+  LocalNotificationService().captureBalanceSnapshot(
+    BigInt(state.wallet.balance)
+  );
+
   store.dispatch(setScannerIsScanning(false));
   store.dispatch(syncPause());
 }

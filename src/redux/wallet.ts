@@ -6,10 +6,13 @@ import {
   createSelector,
 } from "@reduxjs/toolkit";
 
+import { App } from "@capacitor/app";
+
 import { RootState } from "@/redux";
 import { setPreference } from "@/redux/preferences";
 
 import LogService from "@/kernel/app/LogService";
+import LocalNotificationService from "@/kernel/app/LocalNotificationService";
 import NotificationService from "@/kernel/app/NotificationService";
 import AddressManagerService, {
   AddressEntity,
@@ -122,6 +125,21 @@ export const walletReceive = createAsyncThunk(
     }
 
     NotificationService().paymentReceived(satsDiff);
+
+    // Fire local notification if app is in background, accumulate for resume aggregation
+    if (satsDiff > 546n) {
+      const lns = LocalNotificationService();
+      App.getState().then((state) => {
+        if (state.isActive) {
+          // Foreground: in-app toast already fires — nothing more to do here
+          return;
+        }
+
+        // Background: increment pending counter and fire local notification
+        lns.incrementPendingTx(satsDiff);
+        lns.schedulePaymentReceived(satsDiff);
+      });
+    }
   }
 );
 

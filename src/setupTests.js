@@ -50,6 +50,25 @@ vi.mock("@capacitor/filesystem", () => ({
   },
 }));
 
+vi.mock("@capacitor/app", () => ({
+  App: {
+    getState: vi.fn(() => Promise.resolve({ isActive: true })),
+    addListener: vi.fn(),
+    removeAllListeners: vi.fn(),
+  },
+}));
+
+vi.mock("@capacitor/local-notifications", () => ({
+  LocalNotifications: {
+    schedule: vi.fn(() => Promise.resolve()),
+    checkPermissions: vi.fn(() => Promise.resolve({ display: "granted" })),
+    requestPermissions: vi.fn(() =>
+      Promise.resolve({ display: "granted" })
+    ),
+    createChannel: vi.fn(() => Promise.resolve()),
+  },
+}));
+
 vi.mock("@capacitor/preferences", () => ({
   Preferences: {
     get: vi.fn(),
