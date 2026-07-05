@@ -71,7 +71,7 @@ export const defaultPreferences = {
   // --------
   // Privacy
   hideAvailableBalance: "false",
-  enableDailyCheckIn: "true",
+  enableDailyCheckIn: "false",
   // --------
   // Encryption
   encryptionDeviceOnly: "false", // false = cloud sync enabled (default for new users)
