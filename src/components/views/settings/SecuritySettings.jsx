@@ -22,6 +22,7 @@ import { selectDeviceInfo } from "@/redux/device";
 import {
   selectEncryptionSettings,
   selectIsExperimental,
+  selectIsExpertMode,
   selectSecuritySettings,
   setPreference,
 } from "@/redux/preferences";
@@ -36,6 +37,8 @@ import Button from "@/atoms/Button";
 import Checkbox from "@/atoms/Checkbox";
 import KeyWarning from "@/atoms/KeyWarning/KeyWarning";
 import Select from "@/components/atoms/Select";
+
+import ShowMnemonic from "@/atoms/ShowMnemonic";
 
 import { translate } from "@/util/translations";
 import translations from "./translations";
@@ -61,6 +64,7 @@ export default function SecuritySettings() {
   );
   const activeWallet = useSelector(selectActiveWallet);
   const isExperimental = useSelector(selectIsExperimental);
+  const isExpertMode = useSelector(selectIsExpertMode);
 
   const handleSetPin = async () => {
     if (isPinConfigured) {
@@ -367,7 +371,9 @@ export default function SecuritySettings() {
           </div>
         </Accordion.Child>
       )}
-      {authMode !== "none" && (isPinConfigured || authMode === "bio") && (
+      {isExpertMode &&
+        authMode !== "none" &&
+        (isPinConfigured || authMode === "bio") && (
         <>
           <div className="text-lg font-semibold bg-neutral-600 text-neutral-100 p-1">
             {translate(translations.requireAuthorizationFor)}
@@ -448,7 +454,7 @@ export default function SecuritySettings() {
           <span>{translate(translations.webEncryptionWarning)}</span>
         </div>
       )}
-      {platform !== "web" && isExperimental && (
+      {isExpertMode && platform !== "web" && isExperimental && (
         <>
           <div className="text-lg font-semibold bg-neutral-600 text-neutral-100 p-1 mt-4">
             {translate(translations.encryptionSettings)}
@@ -496,6 +502,12 @@ export default function SecuritySettings() {
             </Accordion.Child>
           )}
         </>
+      )}
+      {activeWallet && (
+        <ShowMnemonic
+          key={activeWallet.walletHash}
+          walletHash={activeWallet.walletHash}
+        />
       )}
     </Accordion>
   );

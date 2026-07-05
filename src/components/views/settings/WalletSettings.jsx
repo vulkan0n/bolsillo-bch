@@ -2,7 +2,6 @@ import { useSelector } from "react-redux";
 import { Link, useParams } from "react-router";
 import {
   CheckCircleFilled,
-  PlusCircleFilled,
   RightCircleOutlined,
   WalletOutlined,
   WarningFilled,
@@ -28,13 +27,6 @@ export default function WalletSettings() {
       icon={WalletOutlined}
       title={translate(translations.walletSettings)}
     >
-      <Link
-        to="/settings/wallet/wizard"
-        className="w-full block p-2 flex items-center"
-      >
-        <PlusCircleFilled className="text-xl mr-1" />
-        {translate(translations.createImportWallet)}
-      </Link>
       {walletList.map((w) => (
         <Link
           key={w.walletHash}

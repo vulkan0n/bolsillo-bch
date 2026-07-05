@@ -7,7 +7,10 @@ import {
   TransactionOutlined,
 } from "@ant-design/icons";
 
-import { selectCurrencySettings } from "@/redux/preferences";
+import {
+  selectCurrencySettings,
+  selectIsExpertMode,
+} from "@/redux/preferences";
 
 import Accordion from "@/atoms/Accordion";
 import Select from "@/components/atoms/Select";
@@ -22,6 +25,7 @@ import { SettingsContext } from "./SettingsContext";
 
 export default function CurrencySettings() {
   const { handleSettingsUpdate } = useContext(SettingsContext);
+  const isExpertMode = useSelector(selectIsExpertMode);
 
   const { shouldPreferLocalCurrency, localCurrency, denomination } =
     useSelector(selectCurrencySettings);
@@ -31,31 +35,33 @@ export default function CurrencySettings() {
       icon={DollarCircleOutlined}
       title={translate(translations.currencySettings)}
     >
-      <Accordion.Child
-        icon={EuroCircleOutlined}
-        label={translate(translations.localCurrency)}
-      >
-        <Select
-          className="w-fit"
-          value={localCurrency || ""}
-          onChange={(event) =>
-            handleSettingsUpdate("localCurrency", event.target.value)
-          }
+      {isExpertMode && (
+        <Accordion.Child
+          icon={EuroCircleOutlined}
+          label={translate(translations.localCurrency)}
         >
-          {currencyList
-            .filter(
-              (c) =>
-                VALID_DENOMINATIONS.find(
-                  (d) => d.toLowerCase() === c.currency.toLowerCase()
-                ) === undefined
-            )
-            .map((c) => (
-              <option key={c.currency} value={c.currency}>
-                {c.currency} {c.symbol}
-              </option>
-            ))}
-        </Select>
-      </Accordion.Child>
+          <Select
+            className="w-fit"
+            value={localCurrency || ""}
+            onChange={(event) =>
+              handleSettingsUpdate("localCurrency", event.target.value)
+            }
+          >
+            {currencyList
+              .filter(
+                (c) =>
+                  VALID_DENOMINATIONS.find(
+                    (d) => d.toLowerCase() === c.currency.toLowerCase()
+                  ) === undefined
+              )
+              .map((c) => (
+                <option key={c.currency} value={c.currency}>
+                  {c.currency} {c.symbol}
+                </option>
+              ))}
+          </Select>
+        </Accordion.Child>
+      )}
       <Accordion.Child
         icon={TransactionOutlined}
         label={translate(translations.preferLocalCurrency)}
@@ -68,27 +74,29 @@ export default function CurrencySettings() {
           }
         />
       </Accordion.Child>
-      <Accordion.Child
-        icon={AccountBookOutlined}
-        label={translate(translations.denominateInSats)}
-      >
-        <Select
-          className="w-24"
-          value={denomination}
-          onChange={(event) =>
-            handleSettingsUpdate(
-              "denomination",
-              event.target.value.toLowerCase()
-            )
-          }
+      {isExpertMode && (
+        <Accordion.Child
+          icon={AccountBookOutlined}
+          label={translate(translations.denominateInSats)}
         >
-          {VALID_DENOMINATIONS.map((d) => (
-            <option key={d} id={d} value={d.toLowerCase()}>
-              {d}
-            </option>
-          ))}
-        </Select>
-      </Accordion.Child>
+          <Select
+            className="w-24"
+            value={denomination}
+            onChange={(event) =>
+              handleSettingsUpdate(
+                "denomination",
+                event.target.value.toLowerCase()
+              )
+            }
+          >
+            {VALID_DENOMINATIONS.map((d) => (
+              <option key={d} id={d} value={d.toLowerCase()}>
+                {d}
+              </option>
+            ))}
+          </Select>
+        </Accordion.Child>
+      )}
     </Accordion>
   );
 }

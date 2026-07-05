@@ -1,12 +1,11 @@
 import { useContext } from "react";
 import { useSelector } from "react-redux";
 import {
-  AreaChartOutlined,
   EyeInvisibleOutlined,
   EyeOutlined,
 } from "@ant-design/icons";
 
-import { selectPrivacySettings } from "@/redux/preferences";
+import { selectShouldHideBalance } from "@/redux/preferences";
 
 import SecurityService, { AuthActions } from "@/kernel/app/SecurityService";
 
@@ -19,8 +18,7 @@ import { SettingsContext } from "./SettingsContext";
 
 export default function PrivacySettings() {
   const { handleSettingsUpdate } = useContext(SettingsContext);
-  const { shouldHideBalance, isDailyCheckInEnabled } =
-    useSelector(selectPrivacySettings);
+  const shouldHideBalance = useSelector(selectShouldHideBalance);
 
   return (
     <Accordion
@@ -43,19 +41,6 @@ export default function PrivacySettings() {
             if (isAuthorized) {
               handleSettingsUpdate("hideAvailableBalance", isChecked);
             }
-          }}
-        />
-      </Accordion.Child>
-      <Accordion.Child
-        icon={AreaChartOutlined}
-        label={translate(translations.sendDailyCheckIn)}
-      >
-        <input
-          type="checkbox"
-          checked={isDailyCheckInEnabled}
-          onChange={(event) => {
-            const { checked: isChecked } = event.target;
-            handleSettingsUpdate("enableDailyCheckIn", isChecked);
           }}
         />
       </Accordion.Child>

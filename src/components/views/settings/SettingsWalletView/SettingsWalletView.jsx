@@ -38,8 +38,6 @@ import Card from "@/atoms/Card";
 import Editable from "@/atoms/Editable";
 import KeyWarning from "@/atoms/KeyWarning/KeyWarning";
 import Satoshi from "@/atoms/Satoshi";
-import ShowMnemonic from "@/atoms/ShowMnemonic";
-
 import { translate } from "@/util/translations";
 import translations from "./translations";
 
@@ -261,7 +259,6 @@ export default function SettingsWalletView() {
 
         <WalletSettings />
         <KeyWarning walletHash={wallet.walletHash} />
-        <ShowMnemonic key={wallet.walletHash} walletHash={wallet.walletHash} />
         {shouldShowAdvancedOptions && (
           <Accordion
             icon={ToolOutlined}

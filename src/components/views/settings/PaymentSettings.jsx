@@ -10,6 +10,7 @@ import {
 import {
   selectCurrencySettings,
   selectInstantPaySettings,
+  selectIsExpertMode,
   selectShouldUseLegacyBip21,
 } from "@/redux/preferences";
 
@@ -27,6 +28,7 @@ import { SettingsContext } from "./SettingsContext";
 
 export default function PaymentSettings() {
   const { handleSettingsUpdate } = useContext(SettingsContext);
+  const isExpertMode = useSelector(selectIsExpertMode);
   const { isInstantPayEnabled, instantPayThreshold } = useSelector(
     selectInstantPaySettings
   );
@@ -94,18 +96,20 @@ export default function PaymentSettings() {
           />
         </span>
       </Accordion.Child>
-      <Accordion.Child
-        icon={QrcodeOutlined}
-        label={translate(translations.useLegacyBip21)}
-        description={translate(translations.useLegacyBip21Description)}
-      >
-        <Checkbox
-          checked={shouldUseLegacyBip21}
-          onChange={(event) => {
-            handleSettingsUpdate("useLegacyBip21", event.target.checked);
-          }}
-        />
-      </Accordion.Child>
+      {isExpertMode && (
+        <Accordion.Child
+          icon={QrcodeOutlined}
+          label={translate(translations.useLegacyBip21)}
+          description={translate(translations.useLegacyBip21Description)}
+        >
+          <Checkbox
+            checked={shouldUseLegacyBip21}
+            onChange={(event) => {
+              handleSettingsUpdate("useLegacyBip21", event.target.checked);
+            }}
+          />
+        </Accordion.Child>
+      )}
     </Accordion>
   );
 }
