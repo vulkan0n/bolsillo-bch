@@ -76,6 +76,9 @@ export const defaultPreferences = {
   // Encryption
   encryptionDeviceOnly: "false", // false = cloud sync enabled (default for new users)
   lastKeyBackupExport: "", // ISO timestamp of last key backup export
+  // --------
+  // Expert Mode
+  expertMode: "false",
 };
 
 export type ValidPreferences = typeof defaultPreferences;
@@ -141,6 +144,7 @@ export function validatePreferences(preferences: ValidPreferences): boolean {
     "encryptionDeviceOnly",
     "useLegacyBip21",
     "pinInputMode",
+    "expertMode",
   ];
 
   const invalidBools = boolKeys.filter(
@@ -396,6 +400,11 @@ export const selectIsPrerelease = createSelector(
   (preferences): boolean =>
     preferences.enablePrerelease === "true" ||
     selectIsExperimental({ preferences })
+);
+
+export const selectIsExpertMode = createSelector(
+  (state: RootState) => state.preferences,
+  (preferences): boolean => preferences.expertMode === "true"
 );
 
 export const selectLastCheckIn = createSelector(
