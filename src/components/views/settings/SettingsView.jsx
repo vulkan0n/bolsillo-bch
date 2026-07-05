@@ -1,21 +1,23 @@
-import { useCallback, useMemo } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router";
 import { LogoutOutlined, SettingOutlined } from "@ant-design/icons";
 
 import {
   selectActiveWalletHash,
+  selectIsExpertMode,
   selectPreferences,
   setPreference,
 } from "@/redux/preferences";
 
 import { googleSignOut } from "@/kernel/backup/CloudBackupService";
+import NotificationService from "@/kernel/app/NotificationService";
 
 import FullColumn from "@/layout/FullColumn";
 import ViewHeader from "@/layout/ViewHeader";
 import Button from "@/atoms/Button";
 import KeyWarning from "@/atoms/KeyWarning/KeyWarning";
 import SeleneLogo from "@/atoms/SeleneLogo";
+import Accordion from "@/atoms/Accordion";
 
 import { SELENE_WALLET_VERSION } from "@/util/version";
 
@@ -33,10 +35,33 @@ import { SettingsContext } from "./SettingsContext";
 import UiSettings from "./UiSettings";
 import WalletSettings from "./WalletSettings";
 
+const VERSION_TAP_THRESHOLD = 7;
+
 export default function SettingsView() {
-  const navigate = useNavigate();
   const dispatch = useDispatch();
   const preferences = useSelector(selectPreferences);
+  const isExpertMode = useSelector(selectIsExpertMode);
+
+  const [versionTapCount, setVersionTapCount] = useState(0);
+
+  // Reset tap counter after 3s of inactivity
+  useEffect(() => {
+    if (versionTapCount === 0) return;
+    const timer = setTimeout(() => setVersionTapCount(0), 3000);
+    return () => clearTimeout(timer);
+  }, [versionTapCount]);
+
+  const handleVersionTap = useCallback(() => {
+    const newCount = versionTapCount + 1;
+    setVersionTapCount(newCount);
+    if (newCount >= VERSION_TAP_THRESHOLD) {
+      dispatch(setPreference({ key: "expertMode", value: "true" }));
+      setVersionTapCount(0);
+      NotificationService().success(
+        translate(translations.modoAvanzadoActivado)
+      );
+    }
+  }, [versionTapCount, dispatch]);
 
   const handleSettingsUpdate = useCallback(
     (key, value) => {
@@ -45,14 +70,11 @@ export default function SettingsView() {
     [dispatch]
   );
 
-  const settingsContext = useMemo(
-    () => ({
-      handleSettingsUpdate,
-      preferences,
-      dispatch,
-    }),
-    [dispatch, preferences, handleSettingsUpdate]
-  );
+  const settingsContext = {
+    handleSettingsUpdate,
+    preferences,
+    dispatch,
+  };
 
   const activeWalletHash = useSelector(selectActiveWalletHash);
 
@@ -75,15 +97,30 @@ export default function SettingsView() {
       <div data-testid="settings-view" className="p-1">
         <SettingsContext.Provider value={settingsContext}>
           <KeyWarning walletHash={activeWalletHash} />
-          <WalletSettings />
+
+          {/*
+           * Default sections (4) — always visible
+           */}
           <SecuritySettings />
           <CurrencySettings />
           <PaymentSettings />
-          <QrCodeSettings />
-          <UiSettings />
-          <NetworkSettings />
-          <PrivacySettings />
           <IntlSettings />
+
+          {/*
+           * ⚙️ Avanzado section — only visible in expert mode
+           */}
+          {isExpertMode && (
+            <Accordion
+              icon={SettingOutlined}
+              title={translate(translations.avanzado)}
+            >
+              <NetworkSettings />
+              <QrCodeSettings />
+              <UiSettings />
+              <PrivacySettings />
+              <WalletSettings />
+            </Accordion>
+          )}
         </SettingsContext.Provider>
       </div>
       <div className="flex flex-col gap-2 p-1 pb-4 mx-1">
@@ -98,19 +135,12 @@ export default function SettingsView() {
           padding="1"
           fullWidth
         />
-        <Button
-          onClick={() => navigate("/credits")}
-          label={
-            <span className="font-semibold">
-              Bolsillo BCH v{SELENE_WALLET_VERSION}
-            </span>
-          }
-          icon={SeleneLogo}
-          iconClasses="w-[44px] h-[44px]"
-          padding="1"
-          inverted
-          fullWidth
-        />
+        <span
+          onClick={handleVersionTap}
+          className="w-full text-center text-sm text-neutral-400 dark:text-neutral-600 cursor-default select-none py-2"
+        >
+          Bolsillo BCH v{SELENE_WALLET_VERSION}
+        </span>
       </div>
     </FullColumn>
   );
