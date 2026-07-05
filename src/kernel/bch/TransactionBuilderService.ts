@@ -237,7 +237,6 @@ export default function TransactionBuilderService(walletHash: string) {
     if (a.valueSatoshis > b.valueSatoshis) return 1;
     return compareBytes(a.lockingBytecode, b.lockingBytecode);
   }
-
 }
 
 // TODO: Once Token support is added to CashStamps, add it to this function too.

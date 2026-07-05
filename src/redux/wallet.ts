@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
+import { App } from "@capacitor/app";
 import {
   createAction,
   createAsyncThunk,
@@ -6,13 +7,11 @@ import {
   createSelector,
 } from "@reduxjs/toolkit";
 
-import { App } from "@capacitor/app";
-
 import { RootState } from "@/redux";
 import { setPreference } from "@/redux/preferences";
 
-import LogService from "@/kernel/app/LogService";
 import LocalNotificationService from "@/kernel/app/LocalNotificationService";
+import LogService from "@/kernel/app/LogService";
 import NotificationService from "@/kernel/app/NotificationService";
 import AddressManagerService, {
   AddressEntity,

@@ -74,7 +74,10 @@ export default function WalletViewHome() {
     // syncComplete skips walletSyncDiff when isSyncComplete is true,
     // so we must dispatch it explicitly to keep Redux in sync.
     dispatch(
-      walletSyncDiff({ wallet: activeWallet, utxoDiff: { diffIn: [], diffOut: [] } })
+      walletSyncDiff({
+        wallet: activeWallet,
+        utxoDiff: { diffIn: [], diffOut: [] },
+      })
     );
     const elapsed = Date.now() - refreshStartTime.current;
     const remaining = Math.max(0, MIN_DISPLAY_MS - elapsed);

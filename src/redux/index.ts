@@ -67,7 +67,6 @@ export async function redux_init() {
       walletHash: selectActiveWalletHash(store.getState()),
     })
   );
-
 }
 
 export function redux_resume() {

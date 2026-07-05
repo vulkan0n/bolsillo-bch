@@ -38,6 +38,7 @@ import Card from "@/atoms/Card";
 import Editable from "@/atoms/Editable";
 import KeyWarning from "@/atoms/KeyWarning/KeyWarning";
 import Satoshi from "@/atoms/Satoshi";
+
 import { translate } from "@/util/translations";
 import translations from "./translations";
 

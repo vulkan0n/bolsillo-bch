@@ -36,9 +36,8 @@ import Accordion from "@/atoms/Accordion";
 import Button from "@/atoms/Button";
 import Checkbox from "@/atoms/Checkbox";
 import KeyWarning from "@/atoms/KeyWarning/KeyWarning";
-import Select from "@/components/atoms/Select";
-
 import ShowMnemonic from "@/atoms/ShowMnemonic";
+import Select from "@/components/atoms/Select";
 
 import { translate } from "@/util/translations";
 import translations from "./translations";
