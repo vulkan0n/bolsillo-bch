@@ -246,7 +246,7 @@ selene-wallet/
 - ~~Notificaciones push al recibir BCH~~ ✅ **completado**
 - Recuperación sin PIN: en `ForgotPinScreen`, cuando el PIN está configurado, las únicas opciones son "Eliminar todo" o "Exportar logs". No hay forma de recuperar la wallet. Habría que permitir revelar la seed con autorización (biométrica o Google Sign-In) para que el usuario pueda recuperar su wallet en otro lado sin tener que borrar todo.
 - Educar sobre importación de seed: el usuario novato no entiende por qué anotar la seed ni que puede restaurar su wallet en otro software. Mejorar la descripción en la sección de Frase de Recuperación explicando que esas 12 palabras sirven para recuperar los fondos en cualquier wallet BCH (Selene, Electron Cash, etc.), no solo en Bolsillo.
-- Send Max: agregar botón "Enviar todo" en el flujo de envío para mandar el saldo completo de la wallet (descontando fee de red).
+- ~~Send Max: agregar botón "Enviar todo" en el flujo de envío para mandar el saldo completo de la wallet (descontando fee de red)~~ ✅ **completado**: botón MAX en chips, maneja fee dinámicamente con retry loop, input sin decimales para edición fluida
 - Modo Estable: bloqueado — MUSD tiene vulnerabilidad pendiente de fix por el equipo de Moria (ver sección abajo)
 - ~~Diseño minimalista~~ ✅ **completado** (Settings simplificado, modo experto, UI limpia)
 
