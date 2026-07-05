@@ -241,11 +241,14 @@ selene-wallet/
 
 ### Próximos pasos pendientes
 
-- ~~Onboarding progresivo~~ ✅ **completado:** Google Sign-In → wallet creada automáticamente → backup cifrado en Google Drive. El flujo de las 12 palabras está disponible en Settings (ver abajo) pero nunca se muestra al usuario nuevo.
-- Settings simplificados: mover el backup de seed a un lugar más directo (hoy está 3 niveles adentro: Settings → Wallet Settings → [wallet] → ShowMnemonic). Opciones avanzadas (NetworkSettings, WalletConnect, Cauldron, rebuild wallet) ocultas bajo toggle "Modo experto".
-- Notificaciones push al recibir BCH: que la app notifique aunque esté en segundo plano o cerrada. Sin servidor propio — usar local notifications vía Capacitor (`@capacitor/local-notifications`) + detección de txs entrantes desde Electrum WebSocket. Si es viable, registrar FCM para push real en background killing.
+- ~~Onboarding progresivo~~ ✅ **completado**
+- ~~Settings simplificados~~ ✅ **completado:** pantalla limpia con 4 secciones (Moneda, Personalizar, Pagos, Seguridad), modo experto oculto al tocar la versión 7 veces, seed movida a Seguridad con descripción educativa, sección Pagos solo visible con PIN, toda opción técnica bajo "Avanzado"
+- ~~Notificaciones push al recibir BCH~~ ✅ **completado**
+- Recuperación sin PIN: en `ForgotPinScreen`, cuando el PIN está configurado, las únicas opciones son "Eliminar todo" o "Exportar logs". No hay forma de recuperar la wallet. Habría que permitir revelar la seed con autorización (biométrica o Google Sign-In) para que el usuario pueda recuperar su wallet en otro lado sin tener que borrar todo.
+- Educar sobre importación de seed: el usuario novato no entiende por qué anotar la seed ni que puede restaurar su wallet en otro software. Mejorar la descripción en la sección de Frase de Recuperación explicando que esas 12 palabras sirven para recuperar los fondos en cualquier wallet BCH (Selene, Electron Cash, etc.), no solo en Bolsillo.
+- Send Max: agregar botón "Enviar todo" en el flujo de envío para mandar el saldo completo de la wallet (descontando fee de red).
 - Modo Estable: bloqueado — MUSD tiene vulnerabilidad pendiente de fix por el equipo de Moria (ver sección abajo)
-- Diseño minimalista
+- ~~Diseño minimalista~~ ✅ **completado** (Settings simplificado, modo experto, UI limpia)
 
 ### ✂️ Features descartados
 

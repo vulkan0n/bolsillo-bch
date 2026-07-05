@@ -416,7 +416,7 @@ const translations = {
     de: "BEHALTEN SIE DIESEN SATZ GEHEIM",
     el: "ΔΙΑΤΗΡΗΣΤΕ ΑΥΤΗΝ ΤΗΝ ΦΡΑΣΗ ΜΥΣΤΙΚΗ",
     en: "KEEP THIS PHRASE SECRET",
-    es: "MANTENGA ESTA FRASE EN SECRETO",
+    es: "Anote la frase en un lugar seguro",
     fa: "این عبارت را مخفی نگه دارید",
     fil: "PANATILIHIN ANG PARIRALAANG ITO",
     fr: "GARDEZ CETTE PHRASE SECRÈTE",

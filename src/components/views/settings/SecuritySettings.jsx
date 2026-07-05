@@ -374,80 +374,84 @@ export default function SecuritySettings() {
       {isExpertMode &&
         authMode !== "none" &&
         (isPinConfigured || authMode === "bio") && (
-        <>
-          <div className="text-lg font-semibold bg-neutral-600 text-neutral-100 p-1">
-            {translate(translations.requireAuthorizationFor)}
-          </div>
-          <Accordion.Child
-            icon={LockOutlined}
-            label={translate(translations.appLock)}
-            description={translate(translations.appLockDescription)}
-          >
-            <Checkbox
-              checked={authActions.includes(AuthActions.AppOpen)}
-              disabled
-            />
-          </Accordion.Child>
-          <Accordion.Child
-            icon={CoffeeOutlined}
-            label={translate(translations.appResume)}
-            description={translate(translations.appResumeDescription)}
-          >
-            <Checkbox
-              checked={authActions.includes(AuthActions.AppResume)}
-              onChange={() => handleSetAuthActions(AuthActions.AppResume)}
-            />
-          </Accordion.Child>
-          <Accordion.Child
-            icon={WalletOutlined}
-            label={translate(translations.authWalletActivate)}
-          >
-            <Checkbox
-              checked={authActions.includes(AuthActions.WalletActivate)}
-              onChange={() => handleSetAuthActions(AuthActions.WalletActivate)}
-            />
-          </Accordion.Child>
-          <Accordion.Child
-            icon={EyeInvisibleOutlined}
-            label={translate(translations.authRevealBalance)}
-          >
-            <Checkbox
-              checked={authActions.includes(AuthActions.RevealBalance)}
-              onChange={() => handleSetAuthActions(AuthActions.RevealBalance)}
-            />
-          </Accordion.Child>
-          <Accordion.Child
-            icon={SendOutlined}
-            label={translate(translations.authSendTransaction)}
-          >
-            <Checkbox
-              checked={authActions.includes(AuthActions.SendTransaction)}
-              onChange={() => handleSetAuthActions(AuthActions.SendTransaction)}
-            />
-          </Accordion.Child>
-          <Accordion.Child
-            icon={ThunderboltOutlined}
-            label={translate(translations.authInstantPay)}
-          >
-            <Checkbox
-              checked={authActions.includes(AuthActions.InstantPay)}
-              onChange={() => handleSetAuthActions(AuthActions.InstantPay)}
-            />
-          </Accordion.Child>
-          <Accordion.Child
-            icon={KeyOutlined}
-            label={translate(translations.authRevealPrivateKeys)}
-          >
-            <Checkbox
-              checked={authActions.includes(AuthActions.RevealPrivateKeys)}
-              disabled={authActions.includes(AuthActions.RevealPrivateKeys)}
-              onChange={() =>
-                handleSetAuthActions(AuthActions.RevealPrivateKeys)
-              }
-            />
-          </Accordion.Child>
-        </>
-      )}
+          <>
+            <div className="text-lg font-semibold bg-neutral-600 text-neutral-100 p-1">
+              {translate(translations.requireAuthorizationFor)}
+            </div>
+            <Accordion.Child
+              icon={LockOutlined}
+              label={translate(translations.appLock)}
+              description={translate(translations.appLockDescription)}
+            >
+              <Checkbox
+                checked={authActions.includes(AuthActions.AppOpen)}
+                disabled
+              />
+            </Accordion.Child>
+            <Accordion.Child
+              icon={CoffeeOutlined}
+              label={translate(translations.appResume)}
+              description={translate(translations.appResumeDescription)}
+            >
+              <Checkbox
+                checked={authActions.includes(AuthActions.AppResume)}
+                onChange={() => handleSetAuthActions(AuthActions.AppResume)}
+              />
+            </Accordion.Child>
+            <Accordion.Child
+              icon={WalletOutlined}
+              label={translate(translations.authWalletActivate)}
+            >
+              <Checkbox
+                checked={authActions.includes(AuthActions.WalletActivate)}
+                onChange={() =>
+                  handleSetAuthActions(AuthActions.WalletActivate)
+                }
+              />
+            </Accordion.Child>
+            <Accordion.Child
+              icon={EyeInvisibleOutlined}
+              label={translate(translations.authRevealBalance)}
+            >
+              <Checkbox
+                checked={authActions.includes(AuthActions.RevealBalance)}
+                onChange={() => handleSetAuthActions(AuthActions.RevealBalance)}
+              />
+            </Accordion.Child>
+            <Accordion.Child
+              icon={SendOutlined}
+              label={translate(translations.authSendTransaction)}
+            >
+              <Checkbox
+                checked={authActions.includes(AuthActions.SendTransaction)}
+                onChange={() =>
+                  handleSetAuthActions(AuthActions.SendTransaction)
+                }
+              />
+            </Accordion.Child>
+            <Accordion.Child
+              icon={ThunderboltOutlined}
+              label={translate(translations.authInstantPay)}
+            >
+              <Checkbox
+                checked={authActions.includes(AuthActions.InstantPay)}
+                onChange={() => handleSetAuthActions(AuthActions.InstantPay)}
+              />
+            </Accordion.Child>
+            <Accordion.Child
+              icon={KeyOutlined}
+              label={translate(translations.authRevealPrivateKeys)}
+            >
+              <Checkbox
+                checked={authActions.includes(AuthActions.RevealPrivateKeys)}
+                disabled={authActions.includes(AuthActions.RevealPrivateKeys)}
+                onChange={() =>
+                  handleSetAuthActions(AuthActions.RevealPrivateKeys)
+                }
+              />
+            </Accordion.Child>
+          </>
+        )}
       {platform === "web" && (
         <div className="flex items-center gap-2 p-2 m-1 mt-4 bg-amber-100 dark:bg-amber-900 text-amber-800 dark:text-amber-200 rounded text-sm">
           <InfoCircleOutlined />
@@ -503,6 +507,13 @@ export default function SecuritySettings() {
           )}
         </>
       )}
+      <hr className="my-3 border-neutral-300 dark:border-neutral-600" />
+      <div className="text-lg font-semibold bg-neutral-600 text-neutral-100 p-1">
+        {translate(translations.recoveryPhrase)}
+      </div>
+      <p className="text-sm text-neutral-600 dark:text-neutral-400 px-2 py-1 leading-relaxed">
+        {translate(translations.recoveryPhraseDescription)}
+      </p>
       {activeWallet && (
         <ShowMnemonic
           key={activeWallet.walletHash}

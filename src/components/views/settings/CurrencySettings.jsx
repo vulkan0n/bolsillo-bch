@@ -34,34 +34,34 @@ export default function CurrencySettings() {
     <Accordion
       icon={DollarCircleOutlined}
       title={translate(translations.currencySettings)}
+      open
+      locked
     >
-      {isExpertMode && (
-        <Accordion.Child
-          icon={EuroCircleOutlined}
-          label={translate(translations.localCurrency)}
+      <Accordion.Child
+        icon={EuroCircleOutlined}
+        label={translate(translations.localCurrency)}
+      >
+        <Select
+          className="w-fit"
+          value={localCurrency || ""}
+          onChange={(event) =>
+            handleSettingsUpdate("localCurrency", event.target.value)
+          }
         >
-          <Select
-            className="w-fit"
-            value={localCurrency || ""}
-            onChange={(event) =>
-              handleSettingsUpdate("localCurrency", event.target.value)
-            }
-          >
-            {currencyList
-              .filter(
-                (c) =>
-                  VALID_DENOMINATIONS.find(
-                    (d) => d.toLowerCase() === c.currency.toLowerCase()
-                  ) === undefined
-              )
-              .map((c) => (
-                <option key={c.currency} value={c.currency}>
-                  {c.currency} {c.symbol}
-                </option>
-              ))}
-          </Select>
-        </Accordion.Child>
-      )}
+          {currencyList
+            .filter(
+              (c) =>
+                VALID_DENOMINATIONS.find(
+                  (d) => d.toLowerCase() === c.currency.toLowerCase()
+                ) === undefined
+            )
+            .map((c) => (
+              <option key={c.currency} value={c.currency}>
+                {c.currency} {c.symbol}
+              </option>
+            ))}
+        </Select>
+      </Accordion.Child>
       <Accordion.Child
         icon={TransactionOutlined}
         label={translate(translations.preferLocalCurrency)}

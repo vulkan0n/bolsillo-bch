@@ -1,10 +1,6 @@
 import { useContext } from "react";
 import { useSelector } from "react-redux";
-import {
-  FlagOutlined,
-  GlobalOutlined,
-  SunFilled,
-} from "@ant-design/icons";
+import { FlagOutlined, GlobalOutlined, SunFilled } from "@ant-design/icons";
 import { EyeInvisibleOutlined, EyeOutlined } from "@ant-design/icons";
 
 import { selectShouldHideBalance, ThemeMode } from "@/redux/preferences";
@@ -29,6 +25,8 @@ export default function IntlSettings() {
     <Accordion
       icon={GlobalOutlined}
       title={translate(translations.personalizar)}
+      open
+      locked
     >
       <Accordion.Child
         icon={SunFilled}

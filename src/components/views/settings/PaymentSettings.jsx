@@ -11,6 +11,7 @@ import {
   selectCurrencySettings,
   selectInstantPaySettings,
   selectIsExpertMode,
+  selectSecuritySettings,
   selectShouldUseLegacyBip21,
 } from "@/redux/preferences";
 
@@ -27,7 +28,7 @@ import translations from "./translations";
 import { SettingsContext } from "./SettingsContext";
 
 export default function PaymentSettings() {
-  const { handleSettingsUpdate } = useContext(SettingsContext);
+  const { handleSettingsUpdate, preferences } = useContext(SettingsContext);
   const isExpertMode = useSelector(selectIsExpertMode);
   const { isInstantPayEnabled, instantPayThreshold } = useSelector(
     selectInstantPaySettings
@@ -36,34 +37,47 @@ export default function PaymentSettings() {
     selectCurrencySettings
   );
 
+  const { authMode } = useSelector(selectSecuritySettings);
+  const hasAuthConfigured = authMode !== "none";
+
   const shouldUseLegacyBip21 = useSelector(selectShouldUseLegacyBip21);
 
   const Currency = CurrencyService(localCurrency);
 
-  const [instantPaySatInput, setInstantPaySatInput] =
-    useState(instantPayThreshold);
+  // Show value in fiat when preferLocalCurrency is on, in sats otherwise
+  const initialDisplayValue = shouldPreferLocalCurrency
+    ? preferences.instantPayThresholdFiat
+    : instantPayThreshold;
 
-  const handleInstantPayInput = (satInput) => {
+  const [instantPayDisplayInput, setInstantPayDisplayInput] =
+    useState(initialDisplayValue);
+
+  const handleInstantPayInput = (inputValue) => {
     const instantPaySettingsKey = shouldPreferLocalCurrency
       ? "instantPayThresholdFiat"
       : "instantPayThreshold";
 
     const instantPaySettingsValue = shouldPreferLocalCurrency
-      ? Currency.satsToFiat(satInput)
-      : satInput;
+      ? inputValue
+      : inputValue;
 
-    setInstantPaySatInput(satInput);
+    setInstantPayDisplayInput(inputValue);
     handleSettingsUpdate(instantPaySettingsKey, instantPaySettingsValue);
   };
+
+  if (!hasAuthConfigured) return null;
 
   return (
     <Accordion
       icon={SendOutlined}
       title={translate(translations.paymentSettings)}
+      open
+      locked
     >
       <Accordion.Child
         icon={ThunderboltOutlined}
         label={translate(translations.allowInstantPay)}
+        description={translate(translations.allowInstantPayDescription)}
       >
         <Checkbox
           checked={isInstantPayEnabled}
@@ -90,9 +104,9 @@ export default function PaymentSettings() {
           <CurrencySymbol className="font-bold text-lg mr-1" />
           <input
             type="number"
-            value={instantPaySatInput}
+            value={instantPayDisplayInput}
             className="p-2 w-28 rounded flex-1 dark:bg-neutral-900 dark:text-neutral-100 dark:border-primarydark-400 border border-primary"
-            onChange={handleInstantPayInput}
+            onChange={(e) => handleInstantPayInput(e.target.value)}
           />
         </span>
       </Accordion.Child>

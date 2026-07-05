@@ -8,6 +8,7 @@ interface AccordionProps {
   icon?: React.ComponentType<{ className?: string }>;
   title?: string;
   open?: boolean;
+  locked?: boolean;
   children: React.ReactNode;
 }
 
@@ -15,6 +16,7 @@ export default function Accordion({
   icon = NullComponent,
   title = "",
   open = false,
+  locked = false,
   children,
 }: AccordionProps) {
   const [isOpen, setIsOpen] = useState(open);
@@ -26,13 +28,13 @@ export default function Accordion({
         type="button"
         tabIndex={0}
         className="text-lg font-medium p-1 flex items-center w-full"
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={() => !locked && setIsOpen(!isOpen)}
       >
         <span className="flex-1 flex items-center">
           <Icon className="text-xl text-primary mr-1.5" />
           <span>{title}</span>
         </span>
-        {isOpen ? <CaretDownOutlined /> : <CaretRightOutlined />}
+        {!locked && (isOpen ? <CaretDownOutlined /> : <CaretRightOutlined />)}
       </button>
       {isOpen && (
         <div className="mt-2 text-neutral-500 dark:text-neutral-100 rounded-sm bg-primary-50 dark:bg-neutral-700 divide-y divide-neutral-100 dark:divide-primarydark-100 dark:border-primarydark-200 dark:border">

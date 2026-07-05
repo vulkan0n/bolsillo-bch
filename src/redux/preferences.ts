@@ -49,7 +49,7 @@ export const defaultPreferences = {
   // Payment (move to wallet db?)
   allowInstantPay: "false",
   instantPayThreshold: "2000000", // 0.02 BCH (~$9 USD @ $450)
-  instantPayThresholdFiat: "10", // $10 USD (default)
+  instantPayThresholdFiat: "10000", // $10000 ARS or $10 USD (default)
   useLegacyBip21: "true", // true = use legacy BIP21 format (modern PayPro not deployed yet)
   // --------
   // QR Code (move to wallet db?)

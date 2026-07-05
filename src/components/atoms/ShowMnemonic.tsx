@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 import { useDispatch } from "react-redux";
-import { EyeInvisibleOutlined, WarningFilled } from "@ant-design/icons";
+import { EyeInvisibleOutlined } from "@ant-design/icons";
 
 import { walletSetKeyViewed } from "@/redux/wallet";
 
@@ -104,11 +104,11 @@ export default function ShowMnemonic({
   const hasWalletBalance = wallet.balance > 0;
 
   const walletBalanceClasses = hasWalletBalance
-    ? "border-4 border-error bg-warn"
-    : "border-4 border-warn bg-warn/90";
+    ? "border-2 border-warn bg-warn/30"
+    : "border-2 border-warn bg-warn/20";
 
   const keyNotViewedClasses = isKeyViewed
-    ? "border-2 border-primary-700 bg-neutral-600"
+    ? "border border-primary-700 bg-neutral-700/50"
     : walletBalanceClasses;
 
   const handleLongPress = async () => {
@@ -133,10 +133,8 @@ export default function ShowMnemonic({
     >
       {shouldShowRecoveryPhrase ? (
         <div className="flex flex-col justify-between items-center">
-          <div className="text-center text-error text-xl font-bold">
-            <WarningFilled className="mr-2 text-warn" />
-            {translate(translations.keepSecret)}
-            <WarningFilled className="ml-2 text-warn" />
+          <div className="text-center text-warn text-md font-semibold mb-2">
+            ⚠️ {translate(translations.keepSecret)}
           </div>
           <div className="text-center text-neutral-50 text-xl py-4 select-all grid gap-md grid-cols-3 gap-2 font-mono">
             {splitMnemonic.map((w, idx) => (
@@ -148,11 +146,6 @@ export default function ShowMnemonic({
                 <span className="flex-1 text-center">{w}</span>
               </div>
             ))}
-          </div>
-          <div className="text-center text-error text-xl font-bold">
-            <WarningFilled className="mr-2 text-warn" />
-            {translate(translations.dontStoreDigitally)}
-            <WarningFilled className="ml-2 text-warn" />
           </div>
         </div>
       ) : (
