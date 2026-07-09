@@ -1,6 +1,10 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { InfoCircleOutlined, LogoutOutlined, SettingOutlined } from "@ant-design/icons";
+import {
+  InfoCircleOutlined,
+  LogoutOutlined,
+  SettingOutlined,
+} from "@ant-design/icons";
 
 import {
   selectActiveWalletHash,
@@ -9,16 +13,16 @@ import {
   setPreference,
 } from "@/redux/preferences";
 
-import { googleSignOut } from "@/kernel/backup/CloudBackupService";
 import ModalService from "@/kernel/app/ModalService";
 import NotificationService from "@/kernel/app/NotificationService";
+import { googleSignOut } from "@/kernel/backup/CloudBackupService";
 
 import FullColumn from "@/layout/FullColumn";
 import ViewHeader from "@/layout/ViewHeader";
+import Accordion from "@/atoms/Accordion";
 import Button from "@/atoms/Button";
 import KeyWarning from "@/atoms/KeyWarning/KeyWarning";
 import SeleneLogo from "@/atoms/SeleneLogo";
-import Accordion from "@/atoms/Accordion";
 
 import { SELENE_WALLET_VERSION } from "@/util/version";
 
@@ -87,12 +91,12 @@ export default function SettingsView() {
           Wallet, adaptada para quienes recién empiezan con Bitcoin Cash.
         </p>
         <p>
-          Está pensada para recibir y enviar BCH de forma sencilla, sin
-          opciones técnicas complejas.
+          Está pensada para recibir y enviar BCH de forma sencilla, sin opciones
+          técnicas complejas.
         </p>
         <p>
-          Si te interesó BCH y querés explorar una wallet más completa con
-          todas las funcionalidades, te recomendamos{" "}
+          Si te interesó BCH y querés explorar una wallet más completa con todas
+          las funcionalidades, te recomendamos{" "}
           <a
             href="https://play.google.com/store/apps/details?id=cash.selene.app"
             target="_blank"
@@ -104,10 +108,10 @@ export default function SettingsView() {
           , la wallet original en la que se basa esta app.
         </p>
         <p className="text-neutral-500 dark:text-neutral-400 text-xs">
-          Nota: Bolsillo BCH guarda las claves privadas cifradas en Google
-          Drive para facilitar la recuperación. Esto va en contra de la
-          filosofía de autocustodia total de BCH — si priorizás la seguridad
-          absoluta, usá Selene Wallet u otra wallet de autocustodia.
+          Nota: Bolsillo BCH guarda las claves privadas cifradas en Google Drive
+          para facilitar la recuperación. Esto va en contra de la filosofía de
+          autocustodia total de BCH — si priorizás la seguridad absoluta, usá
+          Selene Wallet u otra wallet de autocustodia.
         </p>
       </div>
     ),
@@ -185,11 +189,7 @@ export default function SettingsView() {
       <div className="flex flex-col gap-2 p-1 pb-4 mx-1">
         <Button
           onClick={handleInfoClick}
-          label={
-            <span className="font-semibold">
-              Información
-            </span>
-          }
+          label={<span className="font-semibold">Información</span>}
           icon={InfoCircleOutlined}
           padding="1"
           inverted

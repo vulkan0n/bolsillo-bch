@@ -5,10 +5,10 @@ import { EyeInvisibleOutlined, EyeOutlined } from "@ant-design/icons";
 
 import { selectShouldHideBalance, ThemeMode } from "@/redux/preferences";
 
+import SecurityService, { AuthActions } from "@/kernel/app/SecurityService";
+
 import Accordion from "@/atoms/Accordion";
 import Select from "@/components/atoms/Select";
-
-import SecurityService, { AuthActions } from "@/kernel/app/SecurityService";
 
 import { sameAsDevice } from "@/translations/common";
 import { languageList, translate } from "@/util/translations";

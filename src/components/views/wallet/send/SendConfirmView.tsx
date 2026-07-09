@@ -6,12 +6,12 @@ import { ArrowLeft, Clock } from "lucide-react";
 import { selectLastUpdatedAt } from "@/redux/exchangeRates";
 import { selectCurrencySettings } from "@/redux/preferences";
 import { selectBchNetwork } from "@/redux/preferences";
-import {
-  clearSendDraft,
-  selectSendDraft,
-} from "@/redux/sendDraft";
+import { clearSendDraft, selectSendDraft } from "@/redux/sendDraft";
 import { selectIsConnected, syncHotRefresh } from "@/redux/sync";
-import { selectActiveWalletBalance, selectActiveWalletHash } from "@/redux/wallet";
+import {
+  selectActiveWalletBalance,
+  selectActiveWalletHash,
+} from "@/redux/wallet";
 
 import NotificationService from "@/kernel/app/NotificationService";
 import CurrencyService from "@/kernel/bch/CurrencyService";
@@ -21,8 +21,6 @@ import TransactionManagerService from "@/kernel/bch/TransactionManagerService";
 import SlideToAction from "@/atoms/SlideToAction";
 
 import { formatBch } from "@/util/format";
-
-const ESTIMATED_FEE_SATS = 300n;
 
 export default function SendConfirmView() {
   const navigate = useNavigate();
@@ -46,8 +44,9 @@ export default function SendConfirmView() {
   } | null>(null);
   const [txError, setTxError] = useState<string | null>(null);
   const [isVerifying, setIsVerifying] = useState(true);
+  const [effectiveAmount, setEffectiveAmount] = useState(0n);
 
-  // -------- On mount: build the transaction to verify
+  // -------- On mount: build the transaction to verify (with retry for fees)
 
   useEffect(() => {
     if (!draft.address || !draft.amountSats || !walletHash) {
@@ -55,33 +54,59 @@ export default function SendConfirmView() {
       return;
     }
 
-    const amount = draft.amountSats;
-    if (amount > spendable_balance) {
+    if (!draft.amountSats || draft.amountSats <= 0n) {
+      setTxError("Saldo insuficiente para cubrir el envío y la fee de red");
+      setIsVerifying(false);
+      return;
+    }
+
+    if (draft.amountSats > spendable_balance) {
       setTxError("Saldo insuficiente para cubrir el envío");
       setIsVerifying(false);
       return;
     }
 
-    try {
-      const TxBuilder = TransactionBuilderService(walletHash);
-      const result = TxBuilder.buildP2pkhTransaction({
-        recipients: [{ address: draft.address, amount }],
-        fee: 0n,
-      });
+    const TxBuilder = TransactionBuilderService(walletHash);
 
-      if (typeof result === "bigint") {
-        setTxError("Saldo insuficiente para cubrir el envío y la fee de red");
+    function attemptBuild(tryAmount: bigint) {
+      try {
+        const result = TxBuilder.buildP2pkhTransaction({
+          recipients: [{ address: draft.address, amount: tryAmount }],
+          fee: 0n,
+        });
+
+        if (typeof result !== "bigint") {
+          setEffectiveAmount(tryAmount);
+          setTxStub(result);
+          setTxError(null);
+          setIsVerifying(false);
+          return;
+        }
+
+        // Amount + fee exceeds available UTXOs — reduce amount by the fee found
+        const feeFound = result - tryAmount;
+
+        if (feeFound <= 0n) {
+          setTxError("Saldo insuficiente para cubrir el envío y la fee de red");
+          setIsVerifying(false);
+          return;
+        }
+
+        const reduced = tryAmount - feeFound - 100n;
+        if (reduced <= 0n) {
+          setTxError("Saldo insuficiente para cubrir el envío y la fee de red");
+          setIsVerifying(false);
+          return;
+        }
+
+        attemptBuild(reduced);
+      } catch (e) {
+        setTxError("No pudimos preparar la transacción. Intentá de nuevo.");
         setIsVerifying(false);
-        return;
       }
-
-      setTxStub(result);
-      setTxError(null);
-    } catch (e) {
-      setTxError("No pudimos preparar la transacción. Intentá de nuevo.");
-    } finally {
-      setIsVerifying(false);
     }
+
+    attemptBuild(draft.amountSats);
   }, [draft, walletHash, spendable_balance, navigate]);
 
   // -------- Broadcast
@@ -114,24 +139,16 @@ export default function SendConfirmView() {
 
   // -------- Derived display
 
-  const amountSats = draft.amountSats ?? 0n;
-
-  const feeFiat = useMemo(() => {
-    const fiat = CoinCurrency.satsToFiat(ESTIMATED_FEE_SATS);
-    return Number.parseFloat(fiat).toLocaleString("es-AR", {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    });
-  }, [CoinCurrency]);
+  const amountSats = effectiveAmount;
 
   const amountFiat = useMemo(() => {
-    if (!draft.amountSats) return "0";
-    const fiat = CoinCurrency.satsToFiat(draft.amountSats);
+    if (!amountSats) return "0";
+    const fiat = CoinCurrency.satsToFiat(amountSats);
     return Number.parseFloat(fiat).toLocaleString("es-AR", {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     });
-  }, [draft.amountSats, CoinCurrency]);
+  }, [amountSats, CoinCurrency]);
 
   const prettyAddress = draft.address
     ? (() => {
@@ -247,7 +264,7 @@ export default function SendConfirmView() {
                     Fee
                   </span>
                   <span className="text-body-md text-neutral-700 dark:text-neutral-300 tabular-nums">
-                    ~{symbol} {feeFiat} ({formatBch(ESTIMATED_FEE_SATS)} BCH)
+                    Incluida en el envío
                   </span>
                 </div>
               </div>

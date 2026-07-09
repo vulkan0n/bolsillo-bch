@@ -3666,6 +3666,32 @@ const translations = {
     es: "Salir del modo avanzado",
   },
   signOut: { en: "Sign out", es: "Cerrar sesión" },
+
+  // Security question
+  securityQuestionConfigured: {
+    en: "Security question is configured. You can recover your PIN with it.",
+    es: "La pregunta de seguridad está configurada. Podés recuperar tu PIN con ella.",
+  },
+  securityQuestionNotConfigured: {
+    en: "No security question configured. Set one to recover your PIN if you forget it.",
+    es: "No hay pregunta de seguridad. Configurá una para recuperar tu PIN si lo olvidás.",
+  },
+  setupNow: {
+    en: "Set up now",
+    es: "Configurar ahora",
+  },
+  reconfigure: {
+    en: "Change",
+    es: "Cambiar",
+  },
+  remove: {
+    en: "Remove",
+    es: "Eliminar",
+  },
+  removeSecurityQuestionDescription: {
+    en: "This will remove your security question. You will lose the ability to recover your PIN with it.",
+    es: "Esto eliminará tu pregunta de seguridad. Ya no podrás recuperar tu PIN con ella.",
+  },
 };
 
 export default translations;

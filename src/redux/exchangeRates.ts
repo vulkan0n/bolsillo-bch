@@ -97,8 +97,9 @@ export const exchangeRateInit = createAsyncThunk(
   async () => {
     const lastExchangeRate =
       (await Preferences.get({ key: "lastExchangeRate" })).value || "1";
-    const lastUpdatedAtStr =
-      (await Preferences.get({ key: "lastExchangeRateTimestamp" })).value;
+    const lastUpdatedAtStr = (
+      await Preferences.get({ key: "lastExchangeRateTimestamp" })
+    ).value;
 
     const rates = currencyList.map((currency) => ({
       ...currency,

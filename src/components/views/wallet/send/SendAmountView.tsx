@@ -37,6 +37,7 @@ export default function SendAmountView() {
 
   const [rawInput, setRawInput] = useState(draft.amountFiat ?? "");
   const [memoInput, setMemoInput] = useState(draft.memo ?? "");
+  const [sendMaxActive, setSendMaxActive] = useState(false);
 
   // Manual address entry state (when coming from "Ingresar dirección manualmente")
   const [manualAddress, setManualAddress] = useState("");
@@ -48,7 +49,8 @@ export default function SendAmountView() {
     return result.isCashAddress ? result.address : null;
   }, [draft.address, manualAddress]);
 
-  const isValidating = manualAddress.trim().length > 0 && validatedAddress === null;
+  const isValidating =
+    manualAddress.trim().length > 0 && validatedAddress === null;
   const hasValidAddress = draft.address !== null || validatedAddress !== null;
 
   // -------- Computed values
@@ -59,8 +61,13 @@ export default function SendAmountView() {
   );
 
   const amountSats = useMemo(
-    () => (numericValue > 0 ? Currency.fiatToSats(numericValue) : 0n),
-    [numericValue, Currency]
+    () =>
+      sendMaxActive
+        ? spendable_balance
+        : numericValue > 0
+          ? Currency.fiatToSats(numericValue)
+          : 0n,
+    [numericValue, Currency, sendMaxActive, spendable_balance]
   );
 
   const bchDisplay = useMemo(
@@ -78,20 +85,21 @@ export default function SendAmountView() {
   const isStale = minutesSinceUpdate !== null && minutesSinceUpdate > 10;
 
   const canContinue =
-    numericValue > 0 && !isInsufficient && lastUpdatedAt !== null && hasValidAddress;
+    numericValue > 0 &&
+    !isInsufficient &&
+    lastUpdatedAt !== null &&
+    hasValidAddress;
 
   // -------- Handlers
 
-  const handleInput = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const val = e.target.value;
-      // eslint-disable-next-line prefer-regex-literals
-      if (/^[\d,]*$/.test(val) && (val.match(/,/g) || []).length <= 1) {
-        setRawInput(val);
-      }
-    },
-    []
-  );
+  const handleInput = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    // eslint-disable-next-line prefer-regex-literals
+    if (/^[\d,]*$/.test(val) && (val.match(/,/g) || []).length <= 1) {
+      setRawInput(val);
+      setSendMaxActive(false);
+    }
+  }, []);
 
   const handleAddressInput = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -102,7 +110,15 @@ export default function SendAmountView() {
 
   const handleChip = useCallback((value: number) => {
     setRawInput(String(value));
+    setSendMaxActive(false);
   }, []);
+
+  const handleSendMax = useCallback(() => {
+    const fiat = Currency.satsToFiat(spendable_balance);
+    // Round down to integer so the input stays editable (no decimal points)
+    setRawInput(String(Math.floor(Number.parseFloat(fiat))));
+    setSendMaxActive(true);
+  }, [Currency, spendable_balance]);
 
   const handleContinue = useCallback(() => {
     // If manual address, init draft first
@@ -113,7 +129,15 @@ export default function SendAmountView() {
     dispatch(setAmountSats(amountSats));
     dispatch(setMemo(memoInput));
     navigate("/wallet/send/confirm");
-  }, [dispatch, draft.address, validatedAddress, rawInput, amountSats, memoInput, navigate]);
+  }, [
+    dispatch,
+    draft.address,
+    validatedAddress,
+    rawInput,
+    amountSats,
+    memoInput,
+    navigate,
+  ]);
 
   // -------- Derived display
 
@@ -139,7 +163,9 @@ export default function SendAmountView() {
         >
           <ArrowLeft className="w-6 h-6 text-neutral-700 dark:text-neutral-300" />
         </button>
-        <h1 className="text-h2 text-neutral-900 dark:text-neutral-100 ml-2">Enviar</h1>
+        <h1 className="text-h2 text-neutral-900 dark:text-neutral-100 ml-2">
+          Enviar
+        </h1>
       </div>
 
       {/* -------- Content */}
@@ -147,14 +173,19 @@ export default function SendAmountView() {
         {/* Address: read-only from scan | editable from manual entry */}
         {draft.address ? (
           <div className="flex items-baseline gap-2 mb-6">
-            <span className="text-sm text-neutral-500 dark:text-neutral-400">Para</span>
+            <span className="text-sm text-neutral-500 dark:text-neutral-400">
+              Para
+            </span>
             <span className="text-body-md text-neutral-800 dark:text-neutral-200 tabular-nums truncate">
               {prettyAddress}
             </span>
           </div>
         ) : (
           <div className="mb-6">
-            <label htmlFor="manual-address" className="text-sm text-neutral-500 dark:text-neutral-400 mb-1.5 block">
+            <label
+              htmlFor="manual-address"
+              className="text-sm text-neutral-500 dark:text-neutral-400 mb-1.5 block"
+            >
               Dirección
             </label>
             <div className="flex items-center gap-2 px-3 py-2.5 rounded-xl bg-neutral-250 dark:bg-neutral-800">
@@ -181,7 +212,8 @@ export default function SendAmountView() {
             </div>
             {isValidating && (
               <p className="text-xs text-error mt-1.5">
-                Dirección inválida. Ingresá una dirección CashAddr (bitcoincash:...)
+                Dirección inválida. Ingresá una dirección CashAddr
+                (bitcoincash:...)
               </p>
             )}
           </div>
@@ -226,34 +258,66 @@ export default function SendAmountView() {
           )}
         </div>
 
-        {/* -------- Chips */}
-        <div className="flex justify-center gap-2 mb-6">
-          {CHIPS.map((chip) => {
-            const isSelected = selectedChip === chip;
-            return (
-              <button
-                key={chip}
-                type="button"
-                onClick={() => handleChip(chip)}
-                className={`px-3.5 py-1.5 rounded-lg text-body-md transition-all duration-100
-                  active:scale-[0.97]
-                  focus-visible:outline-2 focus-visible:outline-brand-500 outline-offset-2
-                  ${
-                    isSelected
-                      ? "bg-neutral-900 dark:bg-neutral-0 text-white dark:text-neutral-900 font-medium"
-                      : "bg-neutral-250 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400"
-                  }`}
-              >
-                ${chip.toLocaleString("es-AR")}
-              </button>
-            );
-          })}
+        {/* -------- Chips + Send Max */}
+        <div className="flex flex-col items-center gap-3 mb-6">
+          <div className="flex justify-center gap-3">
+            {CHIPS.slice(0, 3).map((chip) => {
+              const isSelected = selectedChip === chip;
+              return (
+                <button
+                  key={chip}
+                  type="button"
+                  onClick={() => handleChip(chip)}
+                  className={`px-4 py-2 rounded-lg text-body-md transition-all duration-100
+                    active:scale-[0.97]
+                    focus-visible:outline-2 focus-visible:outline-brand-500 outline-offset-2
+                    ${
+                      isSelected
+                        ? "bg-neutral-900 dark:bg-neutral-0 text-white dark:text-neutral-900 font-medium"
+                        : "bg-neutral-250 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400"
+                    }`}
+                >
+                  ${chip.toLocaleString("es-AR")}
+                </button>
+              );
+            })}
+          </div>
+          <div className="flex justify-center gap-3">
+            <button
+              key={CHIPS[3]}
+              type="button"
+              onClick={() => handleChip(CHIPS[3])}
+              className={`px-4 py-2 rounded-lg text-body-md transition-all duration-100
+                active:scale-[0.97]
+                focus-visible:outline-2 focus-visible:outline-brand-500 outline-offset-2
+                ${
+                  selectedChip === CHIPS[3]
+                    ? "bg-neutral-900 dark:bg-neutral-0 text-white dark:text-neutral-900 font-medium"
+                    : "bg-neutral-250 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400"
+                }`}
+            >
+              ${CHIPS[3].toLocaleString("es-AR")}
+            </button>
+            <button
+              type="button"
+              onClick={handleSendMax}
+              className={`px-4 py-2 rounded-lg text-body-md transition-all duration-100
+                active:scale-[0.97]
+                focus-visible:outline-2 focus-visible:outline-brand-500 outline-offset-2
+                bg-neutral-250 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400`}
+            >
+              MAX
+            </button>
+          </div>
         </div>
 
         {/* -------- Memo */}
         <div className="mb-6">
           <div className="flex items-center gap-2 px-3 py-2.5 rounded-xl bg-neutral-250 dark:bg-neutral-800">
-            <Pencil className="w-4 h-4 text-neutral-400 dark:text-neutral-500 shrink-0" strokeWidth={1.75} />
+            <Pencil
+              className="w-4 h-4 text-neutral-400 dark:text-neutral-500 shrink-0"
+              strokeWidth={1.75}
+            />
             <input
               id="send-memo"
               type="text"

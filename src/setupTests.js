@@ -62,9 +62,7 @@ vi.mock("@capacitor/local-notifications", () => ({
   LocalNotifications: {
     schedule: vi.fn(() => Promise.resolve()),
     checkPermissions: vi.fn(() => Promise.resolve({ display: "granted" })),
-    requestPermissions: vi.fn(() =>
-      Promise.resolve({ display: "granted" })
-    ),
+    requestPermissions: vi.fn(() => Promise.resolve({ display: "granted" })),
     createChannel: vi.fn(() => Promise.resolve()),
   },
 }));

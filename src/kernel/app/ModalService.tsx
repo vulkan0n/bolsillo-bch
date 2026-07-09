@@ -24,6 +24,9 @@ interface PromptOptions {
   submitLabel?: string;
   cancelLabel?: string;
   pattern?: string;
+  footerLink?: { label: string; onClick: () => void };
+  /** Called when the cancel button is clicked (NOT when X/outside-tap dismisses) */
+  cancelButtonClick?: () => void;
 }
 
 type ModalEntry =

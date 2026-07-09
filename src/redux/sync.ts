@@ -9,10 +9,7 @@ import {
 
 import { AppDispatch, RootState } from "@/redux";
 import { selectNetworkStatus } from "@/redux/device";
-import {
-  selectBchNetwork,
-  selectIsOfflineMode,
-} from "@/redux/preferences";
+import { selectBchNetwork, selectIsOfflineMode } from "@/redux/preferences";
 import { txHistoryFetch } from "@/redux/txHistory";
 import {
   selectActiveWallet,

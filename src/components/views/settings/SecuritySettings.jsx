@@ -31,17 +31,20 @@ import { selectActiveWallet } from "@/redux/wallet";
 import ModalService from "@/kernel/app/ModalService";
 import NotificationService from "@/kernel/app/NotificationService";
 import SecurityService, { AuthActions } from "@/kernel/app/SecurityService";
+import { encryptWithAnswer } from "@/kernel/backup/SecurityQuestionEncryption";
 
 import Accordion from "@/atoms/Accordion";
 import Button from "@/atoms/Button";
 import Checkbox from "@/atoms/Checkbox";
 import KeyWarning from "@/atoms/KeyWarning/KeyWarning";
-import Select from "@/components/atoms/Select";
-
 import ShowMnemonic from "@/atoms/ShowMnemonic";
+import Select from "@/components/atoms/Select";
 
 import { translate } from "@/util/translations";
 import translations from "./translations";
+import securityTranslations from "@/views/security/translations";
+import SecurityQuestionSetup from "@/views/security/SecurityQuestionSetup";
+import SecurityQuestionRow from "./SecurityQuestionRow";
 
 import { SettingsContext } from "./SettingsContext";
 
@@ -55,6 +58,8 @@ export default function SecuritySettings() {
   const [isPinConfigured, setIsPinConfigured] = useState(
     Security.isPinConfigured()
   );
+  const [isSecurityQuestionSetupVisible, setSecurityQuestionSetupVisible] =
+    useState(false);
   const { authMode, authActions, isNumericPin } = useSelector(
     selectSecuritySettings
   );
@@ -65,6 +70,28 @@ export default function SecuritySettings() {
   const activeWallet = useSelector(selectActiveWallet);
   const isExperimental = useSelector(selectIsExperimental);
   const isExpertMode = useSelector(selectIsExpertMode);
+
+  const handleSecurityQuestionSetupComplete = async (result) => {
+    setSecurityQuestionSetupVisible(false);
+
+    try {
+      const mnemonic = Security.getMnemonicForRecovery();
+      const blob = await encryptWithAnswer(mnemonic, result.answer);
+
+      const data = {
+        question: result.question,
+        questionCustom: result.questionCustom,
+        blob,
+        failedAttempts: 0,
+        lockedUntil: null,
+      };
+
+      await Security.setSecurityQuestionData(data);
+      Notification.success(translate(securityTranslations.securityQuestion));
+    } catch (e) {
+      Notification.error(translate(translations.error), String(e));
+    }
+  };
 
   const handleSetPin = async () => {
     if (isPinConfigured) {
@@ -84,6 +111,12 @@ export default function SecuritySettings() {
       return;
     }
     setIsPinConfigured(true);
+
+    // Show security question setup after PIN is set (skip if already configured)
+    const hasQuestion = await Security.hasSecurityQuestion();
+    if (!hasQuestion) {
+      setSecurityQuestionSetupVisible(true);
+    }
   };
 
   const handleSetAuthActions = async (action) => {
@@ -196,6 +229,7 @@ export default function SecuritySettings() {
       // Target: none — full teardown
       if (newMode === "none") {
         await Security.removeBiometricKey();
+        await Security.clearSecurityQuestionData();
         if (isPinConfigured) {
           await Security.removePin();
           setIsPinConfigured(false);
@@ -209,6 +243,8 @@ export default function SecuritySettings() {
         const shouldPromptCredential =
           !isPinConfigured || isPasswordMode === isNumericPin;
 
+        const isAlreadyConfigured = isPinConfigured;
+
         if (shouldPromptCredential) {
           const pin = await Security.promptForNewPin(isPasswordMode);
           if (!pin) return;
@@ -221,10 +257,20 @@ export default function SecuritySettings() {
           );
           setIsPinConfigured(true);
         }
+
+        // Show security question setup after PIN is newly created
+        if (!isAlreadyConfigured && shouldPromptCredential) {
+          const hasQuestion = await Security.hasSecurityQuestion();
+          if (!hasQuestion) {
+            setSecurityQuestionSetupVisible(true);
+          }
+        }
       }
 
       // Target: bio — PIN wraps key at rest, bio is fast unlock
       if (newMode === "bio") {
+        const hasPinConfiguredBefore = isPinConfigured;
+
         if (!isPinConfigured) {
           const pin = await Security.promptForNewPin();
           if (!pin) return;
@@ -232,6 +278,14 @@ export default function SecuritySettings() {
           setIsPinConfigured(true);
         }
         await Security.storeBiometricKeyFromCurrent();
+
+        // Show security question setup after PIN is newly created for bio
+        if (!hasPinConfiguredBefore) {
+          const hasQuestion = await Security.hasSecurityQuestion();
+          if (!hasQuestion) {
+            setSecurityQuestionSetupVisible(true);
+          }
+        }
       }
 
       handleSettingsUpdate("authMode", newMode);
@@ -507,6 +561,13 @@ export default function SecuritySettings() {
           )}
         </>
       )}
+      {/* Security question recovery */}
+      {authMode !== "none" && (
+        <SecurityQuestionRow
+          onSetup={() => setSecurityQuestionSetupVisible(true)}
+        />
+      )}
+
       <hr className="my-3 border-neutral-300 dark:border-neutral-600" />
       <div className="text-lg font-semibold bg-neutral-600 text-neutral-100 p-1">
         {translate(translations.recoveryPhrase)}
@@ -519,6 +580,16 @@ export default function SecuritySettings() {
           key={activeWallet.walletHash}
           walletHash={activeWallet.walletHash}
         />
+      )}
+
+      {/* Security question setup modal overlay */}
+      {isSecurityQuestionSetupVisible && (
+        <div className="fixed inset-0 z-50 bg-neutral-100 dark:bg-neutral-900">
+          <SecurityQuestionSetup
+            onComplete={handleSecurityQuestionSetupComplete}
+            onCancel={() => setSecurityQuestionSetupVisible(false)}
+          />
+        </div>
       )}
     </Accordion>
   );

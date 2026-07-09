@@ -62,30 +62,21 @@ describe("sendDraft slice", () => {
 
   describe("setAmountFiat", () => {
     it("updates fiat amount", () => {
-      const state = sendDraftReducer(
-        initialState,
-        setAmountFiat("2500")
-      );
+      const state = sendDraftReducer(initialState, setAmountFiat("2500"));
       expect(state.amountFiat).toBe("2500");
     });
   });
 
   describe("setAmountSats", () => {
     it("updates sats amount", () => {
-      const state = sendDraftReducer(
-        initialState,
-        setAmountSats(250000n)
-      );
+      const state = sendDraftReducer(initialState, setAmountSats(250000n));
       expect(state.amountSats).toBe(250000n);
     });
   });
 
   describe("setMemo", () => {
     it("updates memo", () => {
-      const state = sendDraftReducer(
-        initialState,
-        setMemo("nuevo memo")
-      );
+      const state = sendDraftReducer(initialState, setMemo("nuevo memo"));
       expect(state.memo).toBe("nuevo memo");
     });
   });

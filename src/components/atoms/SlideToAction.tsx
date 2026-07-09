@@ -49,12 +49,15 @@ export default function SlideToAction({
   // Max pixels the thumb can travel
   const maxTravel = trackWidth - THUMB_SIZE - PADDING * 2;
 
-  const getProgress = useCallback((clientX: number) => {
-    if (!trackRef.current || maxTravel <= 0) return 0;
-    const rect = trackRef.current.getBoundingClientRect();
-    const x = clientX - rect.left - PADDING;
-    return Math.min(Math.max(x / maxTravel, 0), 1);
-  }, [maxTravel]);
+  const getProgress = useCallback(
+    (clientX: number) => {
+      if (!trackRef.current || maxTravel <= 0) return 0;
+      const rect = trackRef.current.getBoundingClientRect();
+      const x = clientX - rect.left - PADDING;
+      return Math.min(Math.max(x / maxTravel, 0), 1);
+    },
+    [maxTravel]
+  );
 
   // -------- End drag
 
