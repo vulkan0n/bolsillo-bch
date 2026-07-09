@@ -12,6 +12,8 @@ import { SimpleEncryption } from "capacitor-plugin-simple-encryption";
 
 import { selectSecuritySettings } from "@/redux/preferences";
 
+import { EyeInvisibleOutlined, EyeOutlined } from "@ant-design/icons";
+
 import LogService from "@/kernel/app/LogService";
 import SecurityService from "@/kernel/app/SecurityService";
 
@@ -27,6 +29,7 @@ import {
   LegacyRevealScreen,
   primaryButtonProps,
 } from "./ForgotPinScreen";
+import SecurityQuestionRecoveryScreen from "./SecurityQuestionRecoveryScreen";
 
 const Security = SecurityService();
 
@@ -51,6 +54,7 @@ function LockScreen({ boot }: AppLockScreenProps) {
 
   const isPinConfigured = Security.isPinConfigured();
   const [pin, setPin] = useState("");
+  const [showPin, setShowPin] = useState(false);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
@@ -187,7 +191,7 @@ function LockScreen({ boot }: AppLockScreenProps) {
         <div className="flex flex-col items-center">
           <SeleneLogo className="w-32 h-32" />
           <h1 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100">
-            Selene Wallet
+            Bolsillo BCH
           </h1>
         </div>
 
@@ -207,26 +211,36 @@ function LockScreen({ boot }: AppLockScreenProps) {
           </div>
         )}
 
-        {shouldShowPin && (
+          {shouldShowPin && (
           <form
             onSubmit={handleSubmit}
             className="p-2 my-4 flex flex-col gap-2"
           >
-            <input
-              type="password"
-              inputMode={isPasswordMode ? undefined : "numeric"}
-              pattern={isPasswordMode ? undefined : "[0-9]*"}
-              value={pin}
-              onChange={(e) => setPin(e.target.value)}
-              placeholder={translate(
-                isPasswordMode
-                  ? translations.enterPassword
-                  : translations.enterPin
-              )}
-              className="w-full p-3 border border-neutral-300 dark:border-neutral-600 rounded-lg bg-neutral-50 dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 text-center text-xl tracking-widest"
-              autoFocus
-              disabled={isLoading}
-            />
+            <div className="relative">
+              <input
+                type={showPin ? "text" : "password"}
+                inputMode={isPasswordMode ? undefined : "numeric"}
+                pattern={isPasswordMode ? undefined : "[0-9]*"}
+                value={pin}
+                onChange={(e) => setPin(e.target.value)}
+                placeholder={translate(
+                  isPasswordMode
+                    ? translations.enterPassword
+                    : translations.enterPin
+                )}
+                className="w-full p-3 pr-12 border border-neutral-300 dark:border-neutral-600 rounded-lg bg-neutral-50 dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 text-center text-xl tracking-widest"
+                autoFocus
+                disabled={isLoading}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPin((prev) => !prev)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200"
+                tabIndex={-1}
+              >
+                {showPin ? <EyeInvisibleOutlined /> : <EyeOutlined />}
+              </button>
+            </div>
 
             {error && (
               <div className="mb-4 p-2 bg-error-light/20 dark:bg-error-dark/30 text-error dark:text-error-light rounded text-center text-sm">
@@ -308,6 +322,10 @@ export default function AppLockScreen({ boot }: AppLockScreenProps) {
         <Route path="/" element={<LockScreen boot={boot} />} />
         <Route path="/forgot-pin" element={<ForgotPinMenu />} />
         <Route path="/forgot-pin/reveal" element={<LegacyRevealScreen />} />
+        <Route
+          path="/forgot-pin/security-question"
+          element={<SecurityQuestionRecoveryScreen boot={boot} />}
+        />
       </Routes>
     </MemoryRouter>
   );

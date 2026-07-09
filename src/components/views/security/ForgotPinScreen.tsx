@@ -1,17 +1,12 @@
 /* eslint-disable react-refresh/only-export-components */
 import { useEffect, useMemo, useState } from "react";
-import { useSelector } from "react-redux";
 import { useNavigate } from "react-router";
 import {
-  DeleteOutlined,
-  EyeOutlined,
-  FileTextOutlined,
+  InfoCircleOutlined,
+  QuestionCircleOutlined,
   WarningOutlined,
 } from "@ant-design/icons";
 
-import { selectSecuritySettings } from "@/redux/preferences";
-
-import ConsoleService from "@/kernel/app/ConsoleService";
 import JanitorService from "@/kernel/app/JanitorService";
 import ModalService from "@/kernel/app/ModalService";
 import SecurityService from "@/kernel/app/SecurityService";
@@ -165,28 +160,10 @@ const menuButtonProps = {
 
 export function ForgotPinMenu() {
   const navigate = useNavigate();
-  const { authMode } = useSelector(selectSecuritySettings);
-  const isPinConfigured = SecurityService().isPinConfigured();
-  const [hasBioKey, setHasBioKey] = useState(false);
-  useEffect(function checkBioKey() {
-    SecurityService().hasBiometricKey().then(setHasBioKey);
+  const [hasSecurityQuestion, setHasSecurityQuestion] = useState(false);
+  useEffect(function checkSecurityQuestion() {
+    SecurityService().hasSecurityQuestion().then(setHasSecurityQuestion);
   }, []);
-  // Auth mode not fully configured — user may need emergency recovery
-  const isRecoveryNeeded =
-    (authMode === "bio" && !hasBioKey) ||
-    (authMode !== "none" && !isPinConfigured && !hasBioKey);
-
-  const handleNuclearWipe = async () => {
-    const isConfirmed = await ModalService().showConfirm({
-      title: translate(translations.resetEverything),
-      message: translate(translations.deleteWarning),
-      isDanger: true,
-    });
-    if (!isConfirmed) return;
-    await JanitorService().nuclearWipe();
-    restartApp();
-  };
-
   return (
     <FullColumn className="bg-neutral-100 dark:bg-neutral-900">
       <ViewHeader title={translate(translations.forgotPinTitle)} back={-1} />
@@ -199,61 +176,32 @@ export function ForgotPinMenu() {
         </div>
 
         <div className="space-y-3">
-          <Button
-            {...menuButtonProps}
-            onClick={handleNuclearWipe}
-            icon={DeleteOutlined}
-            iconClasses="text-error mr-2"
-            iconSize="2xl"
-            label={
-              <div className="text-left">
-                <div className="font-semibold text-neutral-900 dark:text-neutral-100">
-                  {translate(translations.resetEverything)}
-                </div>
-                <div className="text-neutral-700 dark:text-neutral-300">
-                  {translate(translations.wipeDescription)}
-                </div>
-              </div>
-            }
-          />
-
-          {isRecoveryNeeded && (
+          {hasSecurityQuestion ? (
             <Button
               {...menuButtonProps}
-              onClick={() => navigate("/forgot-pin/reveal")}
-              icon={EyeOutlined}
-              iconClasses="text-warn mr-2"
+              onClick={() => navigate("/forgot-pin/security-question")}
+              icon={QuestionCircleOutlined}
+              iconClasses="text-primary-500 mr-2"
               iconSize="2xl"
               label={
                 <div className="text-left">
                   <div className="font-semibold text-neutral-900 dark:text-neutral-100">
-                    {translate(translations.revealRecoveryPhrase)}
+                    {translate(translations.answerSecurityQuestion)}
                   </div>
                   <div className="text-neutral-700 dark:text-neutral-300">
-                    {translate(translations.revealDescription)}
+                    {translate(translations.answerSecurityQuestionDescription)}
                   </div>
                 </div>
               }
             />
+          ) : (
+            <div className="flex flex-col items-center gap-4 py-6">
+              <InfoCircleOutlined className="text-4xl text-neutral-400" />
+              <p className="text-neutral-600 dark:text-neutral-400 text-center">
+                {translate(translations.noRecoveryAvailable)}
+              </p>
+            </div>
           )}
-
-          <Button
-            {...menuButtonProps}
-            onClick={() => ConsoleService().exportLogs()}
-            icon={FileTextOutlined}
-            iconClasses="text-neutral-400 mr-2"
-            iconSize="2xl"
-            label={
-              <div className="text-left">
-                <div className="font-semibold text-neutral-900 dark:text-neutral-100">
-                  {translate(translations.exportDiagnosticLogs)}
-                </div>
-                <div className="text-neutral-700 dark:text-neutral-300">
-                  {translate(translations.exportLogsDescription)}
-                </div>
-              </div>
-            }
-          />
         </div>
       </div>
     </FullColumn>

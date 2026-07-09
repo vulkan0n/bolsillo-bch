@@ -1,3 +1,4 @@
+import { Preferences } from "@capacitor/preferences";
 import { SimpleEncryption } from "capacitor-plugin-simple-encryption";
 
 import { store } from "@/redux";
@@ -20,11 +21,22 @@ import { sha256 } from "@/util/hash";
 import common from "@/translations/common";
 import { translate } from "@/util/translations";
 
+import {
+  decryptWithAnswer,
+  getBackoffMs,
+  getRemainingLockoutSeconds,
+  isLockedOut,
+  type SecurityQuestionData,
+} from "@/kernel/backup/SecurityQuestionEncryption";
+
 const Log = LogService("SecurityService");
 const MIN_PASSWORD_LENGTH = 8;
 const MIN_PIN_LENGTH = 4;
+export const SECURITY_QUESTION_PREF_KEY = "securityQuestionRecovery";
 
 let hasPinConfigured = false;
+/** Tracks whether the user clicked the "Forgot PIN" button */
+let didClickForgotPin = false;
 
 export interface ImportKeyBackupResult {
   isSuccess: boolean;
@@ -90,6 +102,12 @@ export default function SecurityService() {
     importKeyBackup,
     setDeviceOnlyMode,
     allWalletsSeedViewed,
+    // Security question recovery
+    getSecurityQuestionData,
+    setSecurityQuestionData,
+    clearSecurityQuestionData,
+    hasSecurityQuestion,
+    getMnemonicForRecovery,
     // Reset (state-coupled: must clear all auth state)
     resetEncryption,
   };
@@ -192,25 +210,120 @@ export default function SecurityService() {
     const { isNumericPin } = selectSecuritySettings(store.getState());
     const isPasswordMode = !isNumericPin;
 
-    const pin = await ModalService().showPrompt({
-      title:
-        getAuthText(action) ||
-        translate(isPasswordMode ? common.enterPassword : common.enterPin),
-      message: translate(
-        isPasswordMode
-          ? common.pleaseEnterYourPassword
-          : common.pleaseEnterYourPin
+    // Check if security question recovery is available
+    const hasRecovery = await hasSecurityQuestion();
+    didClickForgotPin = false;
+
+    const promptOptions: {
+      title: string;
+      inputType: "password";
+      inputMode: "text" | "numeric";
+      submitLabel: string;
+      cancelLabel?: string;
+      cancelButtonClick?: () => void;
+    } = {
+      title: translate(
+        isPasswordMode ? common.enterPassword : common.enterPin
       ),
       inputType: "password",
       inputMode: isPasswordMode ? "text" : "numeric",
       submitLabel: translate(common.authorizeAction),
-    });
+    };
+
+    if (hasRecovery) {
+      promptOptions.cancelLabel = translate(securityTranslations.forgotPin);
+      promptOptions.cancelButtonClick = () => {
+        didClickForgotPin = true;
+      };
+    }
+
+    const pin = await ModalService().showPrompt(promptOptions);
 
     if (!pin) {
+      if (didClickForgotPin) {
+        didClickForgotPin = false;
+        return handleForgotPinRecovery(true /* skipConfirm */);
+      }
       return false;
     }
 
     return verifyPin(pin);
+  }
+
+  /**
+   * Handle "Forgot PIN" flow: prompt for security question answer,
+   * decrypt to verify. Returns true if correct (auth granted),
+   * false if cancelled, wrong answer, or locked out.
+   */
+  async function handleForgotPinRecovery(
+    skipConfirm = false
+  ): Promise<boolean> {
+    const questionData = await getSecurityQuestionData();
+    if (!questionData) return false;
+
+    // Check if currently locked out
+    if (questionData.lockedUntil && isLockedOut(questionData.lockedUntil)) {
+      const remaining = getRemainingLockoutSeconds(questionData.lockedUntil);
+      NotificationService().error(
+        translate(securityTranslations.tooManyAttempts, {
+          seconds: String(remaining),
+        })
+      );
+      return false;
+    }
+
+    if (!skipConfirm) {
+      const wantsRecovery = await ModalService().showConfirm({
+        title: translate(securityTranslations.forgotPin),
+        message: translate(securityTranslations.recoverWithSecurityQuestion),
+        confirmLabel: translate(securityTranslations.recover),
+        cancelLabel: translate(common.cancel),
+      });
+      if (!wantsRecovery) return false;
+    }
+
+    const answer = await ModalService().showPrompt({
+      title: questionData.question,
+      inputType: "password",
+      submitLabel: translate(common.authorizeAction),
+      cancelLabel: translate(common.cancel),
+    });
+    if (!answer) return false;
+
+    try {
+      await decryptWithAnswer(questionData.blob, answer);
+
+      // Reset attempts on success
+      questionData.failedAttempts = 0;
+      questionData.lockedUntil = null;
+      await setSecurityQuestionData(questionData);
+
+      return true;
+    } catch {
+      // GCM auth tag mismatch — wrong answer
+      const newAttempts = questionData.failedAttempts + 1;
+      const backoffMs = getBackoffMs(newAttempts);
+      const lockedUntil = new Date(Date.now() + backoffMs).toISOString();
+
+      questionData.failedAttempts = newAttempts;
+      questionData.lockedUntil = lockedUntil;
+      await setSecurityQuestionData(questionData);
+
+      if (backoffMs > 0) {
+        const remaining = getRemainingLockoutSeconds(lockedUntil);
+        NotificationService().error(
+          translate(securityTranslations.tooManyAttempts, {
+            seconds: String(remaining),
+          })
+        );
+      } else {
+        NotificationService().error(
+          translate(securityTranslations.wrongAnswer)
+        );
+      }
+    }
+
+    return false;
   }
 
   // Remove after 99% of userbase is verified to have version 2026.03+
@@ -461,6 +574,72 @@ export default function SecurityService() {
   function allWalletsSeedViewed(): boolean {
     const allWallets = WalletManagerService().listWallets();
     return allWallets.every((w) => w.key_viewed_at !== null);
+  }
+
+  // --------------------------------
+  // Security Question Recovery
+  // --------------------------------
+
+  /**
+   * Read the stored security question data from Capacitor Preferences.
+   * Returns null if none exists.
+   */
+  async function getSecurityQuestionData(): Promise<SecurityQuestionData | null> {
+    try {
+      const { value } = await Preferences.get({
+        key: SECURITY_QUESTION_PREF_KEY,
+      });
+      if (!value) return null;
+      return JSON.parse(value) as SecurityQuestionData;
+    } catch (e) {
+      Log.warn("Failed to read security question data:", e);
+      return null;
+    }
+  }
+
+  /**
+   * Save security question data to Capacitor Preferences.
+   */
+  async function setSecurityQuestionData(
+    data: SecurityQuestionData
+  ): Promise<void> {
+    await Preferences.set({
+      key: SECURITY_QUESTION_PREF_KEY,
+      value: JSON.stringify(data),
+    });
+  }
+
+  /**
+   * Remove security question data from Capacitor Preferences.
+   */
+  async function clearSecurityQuestionData(): Promise<void> {
+    await Preferences.remove({ key: SECURITY_QUESTION_PREF_KEY });
+  }
+
+  /**
+   * Check if a security question has been configured.
+   */
+  async function hasSecurityQuestion(): Promise<boolean> {
+    const data = await getSecurityQuestionData();
+    return data !== null;
+  }
+
+  /**
+   * Get the mnemonic of the currently active wallet for recovery encryption.
+   * Requires database to be open — call only during setup (not during recovery).
+   */
+  function getMnemonicForRecovery(): string {
+    const WalletManager = WalletManagerService();
+    const state = store.getState();
+    const walletHash = state.wallet.walletHash;
+    if (!walletHash) {
+      throw new Error("No active wallet found");
+    }
+    const wallet = WalletManager.getWallet(walletHash);
+    if (!wallet.mnemonic) {
+      throw new Error("No mnemonic found for active wallet");
+    }
+    return wallet.mnemonic;
   }
 
   /** Reset all encryption state in the plugin. */

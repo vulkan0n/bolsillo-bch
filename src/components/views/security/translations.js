@@ -1320,6 +1320,98 @@ const translations = {
   enterPinToEnableBiometric: {
     en: "Enter your PIN first to enable biometric unlock.",
   },
+
+  // ----------------
+  // Security Question Recovery
+  // ----------------
+  securityQuestion: {
+    en: "Security Question",
+    es: "Pregunta de seguridad",
+  },
+  securityQuestionDescription: {
+    en: "Set a security question and answer to recover your wallet if you forget your PIN.",
+    es: "Configura una pregunta de seguridad para recuperar tu billetera si olvidas tu PIN.",
+  },
+  setupSecurityQuestion: {
+    en: "Set Security Question",
+    es: "Configurar pregunta de seguridad",
+  },
+  updateSecurityQuestion: {
+    en: "Update Security Question",
+    es: "Actualizar pregunta de seguridad",
+  },
+  skipSecurityQuestion: {
+    en: "Skip",
+    es: "Omitir",
+  },
+  selectQuestion: {
+    en: "Select a security question",
+    es: "Selecciona una pregunta de seguridad",
+  },
+  customQuestion: {
+    en: "Custom question",
+    es: "Personalizada",
+  },
+  customQuestionPlaceholder: {
+    en: "Type your own question",
+    es: "Escribe tu propia pregunta",
+  },
+  enterAnswer: {
+    en: "Enter your answer",
+    es: "Ingresa tu respuesta",
+  },
+  confirmAnswer: {
+    en: "Confirm your answer",
+    es: "Confirma tu respuesta",
+  },
+  answersDoNotMatch: {
+    en: "Answers do not match",
+    es: "Las respuestas no coinciden",
+  },
+  answerRequired: {
+    en: "Please enter an answer",
+    es: "Por favor ingresa una respuesta",
+  },
+  questionRequired: {
+    en: "Please select or enter a question",
+    es: "Por favor selecciona o escribe una pregunta",
+  },
+  answerSecurityQuestion: {
+    en: "Answer security question",
+    es: "Responder pregunta de seguridad",
+  },
+  answerSecurityQuestionDescription: {
+    en: "Answer your security question to reveal your seed phrase",
+    es: "Responde tu pregunta de seguridad para desbloquear tu billetera",
+  },
+  wrongAnswer: {
+    en: "Wrong answer. Please try again.",
+    es: "Respuesta incorrecta. Intenta de nuevo.",
+  },
+  recoverWithSecurityQuestion: {
+    en: "Recover with Security Question",
+    es: "Recuperar con pregunta de seguridad",
+  },
+  recover: {
+    en: "Recover",
+    es: "Recuperar",
+  },
+  tooManyAttempts: {
+    en: "Too many attempts. Try again in {seconds} seconds.",
+    es: "Demasiados intentos. Intenta de nuevo en {seconds} segundos.",
+  },
+  revealSeed: {
+    en: "Reveal Seed Phrase",
+    es: "Desbloquear",
+  },
+  questionRecoveryTitle: {
+    en: "Recover with Security Question",
+    es: "Recuperar con pregunta de seguridad",
+  },
+  noRecoveryAvailable: {
+    en: "You don't have a security question configured. The only way to unlock is to remember your PIN or password.",
+    es: "No configuraste una pregunta de seguridad. La única forma de desbloquear es recordar tu PIN o contraseña.",
+  },
 };
 
 export default translations;
