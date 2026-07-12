@@ -245,7 +245,7 @@ selene-wallet/
 - ~~Settings simplificados~~ ✅ **completado:** pantalla limpia con 4 secciones (Moneda, Personalizar, Pagos, Seguridad), modo experto oculto al tocar la versión 7 veces, seed movida a Seguridad con descripción educativa, sección Pagos solo visible con PIN, toda opción técnica bajo "Avanzado"
 - ~~Notificaciones push al recibir BCH~~ ✅ **completado**
 - ~~Recuperación sin PIN~~ ✅ **completado** — implementado vía Security Question Recovery (pregunta de seguridad + PBKDF2-AES-256-GCM). El usuario responde correctamente desde la lock screen y se desbloquea la app.
-- Educar sobre importación de seed: el usuario novato no entiende por qué anotar la seed ni que puede restaurar su wallet en otro software. Mejorar la descripción en la sección de Frase de Recuperación explicando que esas 12 palabras sirven para recuperar los fondos en cualquier wallet BCH (Selene, Electron Cash, etc.), no solo en Bolsillo.
+- ~~Educar sobre importación de seed~~ ✅ **completado** — agregada línea sobre portabilidad en `recoveryPhraseDescription` (EN + ES): "These 12 words work with any Bitcoin Cash wallet — they are not exclusive to Bolsillo."
 - ~~Send Max: agregar botón "Enviar todo" en el flujo de envío para mandar el saldo completo de la wallet (descontando fee de red)~~ ✅ **completado**: botón MAX en chips, maneja fee dinámicamente con retry loop, input sin decimales para edición fluida
 - Modo Estable: pendiente — ver sección actualizada abajo (ParyonUSD/PUSD)
 - ~~Diseño minimalista~~ ✅ **completado** (Settings simplificado, modo experto, UI limpia)
