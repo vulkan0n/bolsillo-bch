@@ -1,12 +1,26 @@
-# Selene Wallet: Join the Cash Economy!
+# Bolsillo BCH
 
-[![Latest Release](https://git.xulu.tech/selene.cash/selene-wallet/-/badges/release.svg)](https://git.xulu.tech/selene.cash/selene-wallet/-/releases)
+Wallet BCH simplificada para usuarios argentinos. Fork de [Selene Wallet](https://selene.cash).
 
-Website: https://selene.cash
+**Bolsillo** es una billetera de Bitcoin Cash pensada para usuarios que **no son cripto-entusiastas**: onboarding progresivo, backup automático en Google Drive, denominación en ARS, y una interfaz minimalista sin ruido técnico.
 
-Documentation: https://docs.selene.cash
+---
 
-We are fulfilling the mission of making Bitcoin Cash (BCH) the [global reserve currency](https://bitcoincashpodcast.com/faqs/Global-Reserve-Currency/what-do-you-mean-global-reserve-currency) by building a sleek, robust, user-friendly wallet that makes joining the BCH economy as easy and compelling as possible.
+## Diferencias con Selene Wallet
+
+| Aspecto | Selene | Bolsillo BCH |
+|---------|--------|--------------|
+| Usuario target | Cripto-usuario global | Comercios argentinos |
+| Idioma default | Inglés | Español (`es`) |
+| Moneda default | USD | ARS |
+| Onboarding | Seed visible | Google Drive backup automático |
+| Settings | 9 secciones | 4 esenciales + modo experto oculto |
+| Recuperación | Solo PIN/biométrico | Pregunta de seguridad + PIN |
+| Home | Balance simple | Balance dual ARS (grande) + BCH |
+| Navegación | 4-5 tabs | 3 tabs (Inicio/Movimientos/Ajustes) |
+| Branding | Selene | Bolsillo BCH |
+
+---
 
 ## Tech Stack
 
@@ -19,68 +33,67 @@ We are fulfilling the mission of making Bitcoin Cash (BCH) the [global reserve c
 - **libauth** — BCH cryptography and transaction building
 - **Electrum protocol** — Blockchain communication over WebSocket
 
+---
+
 ## Developer Quick Start
 
-1. `git clone https://git.xulu.tech/selene.cash/selene-wallet`
-2. `cd selene-wallet`
-3. `pnpm install`
-4. `pnpm dev`
-5. http://localhost:5173
-
-### Selene Server
-
-You may also wish to run the [Selene Server](https://git.xulu.tech/selene.cash/selene-server) locally for statistics and other features, but the production server is fine for most purposes.
-
-If you are running Selene Server locally, make sure to update the server URL in `src/apolloClient.tsx`.
-
-## Building for Android
-
-1. Install [Android Studio](https://developer.android.com/studio)
-2. `pnpm build && npx cap sync`
-3. `npx cap run android`
-4. (optional) `npx cap open android` to open the app in Android Studio
-
-## Building for iOS
-
-1. Install [Xcode](https://developer.apple.com/xcode/)
-2. `pnpm build && npx cap sync`
-3. `npx cap run ios`
-4. (optional) `npx cap open ios` to open the app in Xcode
-
-## Contribution and Contact
-
-Questions: [Telegram group](https://t.me/SeleneWallet)
-
-Contributors: [Contributing](./CONTRIBUTING.md)
-
-## Dev Notes
-
-### For merging from PRs to mirror
-
-```
-$ git remote add gitlabMirror https://gitlab.com/selene.cash/selene-wallet.git
-# Replace the merge request number & choose a branch name
-$ git fetch gitlabMirror merge-requests/1111111/head:MY_NEW_BRANCH
-# Now that branch is local and can be merged as usual
-$ git merge MY_NEW_BRANCH
+```bash
+pnpm install
+pnpm dev
+open http://localhost:5173
 ```
 
-### Auto-translations
+### Building for Android
 
-Manually managing translations got super tiresome and unwieldy with so many languages, so it has been automated.
-
-```
-# Use a valid API key
-$ GOOGLE_TRANSLATE_API_KEY="XXXXXXXXX" node ./automation/addLanguages.js
-# Please read below about the cost of API credits!!
+```bash
+pnpm build:ci && npx cap sync android
+cd android && ./gradlew assembleDebug
+# APK: android/app/build/outputs/apk/debug/app-debug.apk
 ```
 
-Translation files are colocated with the file needing the translation strings. The script scans the entire `src` folder for `.js`/`.jsx` files containing `const translations = {`. For every found file, it finds leaf-level objects containing an `en` key (e.g. `{ en: "Hello" }`), translates into every supported language (skipping any already present), and overwrites the original file with values sorted alphabetically by language key.
+Para deployar a un celular por USB/Wi-Fi:
+```bash
+./scripts/deploy-android.sh
+```
 
-Brand names (Bitcoin Cash, Selene, BCH, PIN, CashTokens, etc.) are automatically protected from translation via placeholder substitution. Common HTML entities (`&#39;`, `&quot;`, etc.) are auto-decoded in translated output.
+### Building for iOS
 
-NOTE: Translation string values should not include `:` as it can confuse the parser. Prefer `-` instead.
+```bash
+pnpm build && npx cap sync
+npx cap run ios
+```
 
-Translations use the Google Cloud Translation API. It isn't super expensive, but it does cost money per translation. The script skips existing translations and only fills in missing ones, but if you're adding new text please don't run up the bill by running it unnecessarily. Decide on the English versions as part of concluding your feature merge request, prepare the translation files, then run the script once to fill everything out.
+---
 
-There is also an export script so you can give a .txt file to somebody willing to review and update translations in a specific language `node automation/exportTranslations.js es`, which can be reimported using the import script (provide pathname to the updated file).
+## Project Structure
+
+```
+src/
+├── components/
+│   ├── layout/       # MainLayout, BottomNavigation, ErrorBoundary
+│   ├── atoms/        # Button, Card, Address, TokenIcon, Satoshi
+│   ├── composite/    # TokenCard, modals
+│   └── views/        # Page-level views (lazy-loaded)
+├── kernel/
+│   ├── app/          # AppProvider, DatabaseService, SecurityService
+│   ├── bch/          # ElectrumService, TransactionBuilderService
+│   └── wallet/       # KeyManagerService, WalletManagerService, UtxoManagerService
+├── redux/            # Redux Toolkit slices
+├── hooks/            # Custom hooks
+├── util/             # Pure utilities, formatting, validation
+└── routes/           # Route definitions
+```
+
+---
+
+## Acknowledgments
+
+Este proyecto es un fork de [Selene Wallet](https://selene.cash) (`BSD-3 License`), desarrollada por Kallisti.cash y The Bitcoin Cash Podcast. Todo el crédito de la arquitectura de protocolo BCH, el sistema de cifrado, y las bases de la app les pertenece.
+
+Las modificaciones de Bolsillo BCH se limitan a la capa de UX/presentación y servicios de backup/recuperación.
+
+---
+
+## License
+
+BSD-3 (misma que Selene Wallet)

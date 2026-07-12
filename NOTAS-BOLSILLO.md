@@ -244,10 +244,10 @@ selene-wallet/
 - ~~Onboarding progresivo~~ ✅ **completado**
 - ~~Settings simplificados~~ ✅ **completado:** pantalla limpia con 4 secciones (Moneda, Personalizar, Pagos, Seguridad), modo experto oculto al tocar la versión 7 veces, seed movida a Seguridad con descripción educativa, sección Pagos solo visible con PIN, toda opción técnica bajo "Avanzado"
 - ~~Notificaciones push al recibir BCH~~ ✅ **completado**
-- Recuperación sin PIN: en `ForgotPinScreen`, cuando el PIN está configurado, las únicas opciones son "Eliminar todo" o "Exportar logs". No hay forma de recuperar la wallet. Habría que permitir revelar la seed con autorización (biométrica o Google Sign-In) para que el usuario pueda recuperar su wallet en otro lado sin tener que borrar todo.
+- ~~Recuperación sin PIN~~ ✅ **completado** — implementado vía Security Question Recovery (pregunta de seguridad + PBKDF2-AES-256-GCM). El usuario responde correctamente desde la lock screen y se desbloquea la app.
 - Educar sobre importación de seed: el usuario novato no entiende por qué anotar la seed ni que puede restaurar su wallet en otro software. Mejorar la descripción en la sección de Frase de Recuperación explicando que esas 12 palabras sirven para recuperar los fondos en cualquier wallet BCH (Selene, Electron Cash, etc.), no solo en Bolsillo.
 - ~~Send Max: agregar botón "Enviar todo" en el flujo de envío para mandar el saldo completo de la wallet (descontando fee de red)~~ ✅ **completado**: botón MAX en chips, maneja fee dinámicamente con retry loop, input sin decimales para edición fluida
-- Modo Estable: bloqueado — MUSD tiene vulnerabilidad pendiente de fix por el equipo de Moria (ver sección abajo)
+- Modo Estable: pendiente — ver sección actualizada abajo (ParyonUSD/PUSD)
 - ~~Diseño minimalista~~ ✅ **completado** (Settings simplificado, modo experto, UI limpia)
 
 ### ✂️ Features descartados
@@ -328,16 +328,55 @@ const swapAmount = (totalIncoming * 99n) / 100n; // 99% → MUSD, 1% queda como 
 
 El porcentaje (99%) es configurable a futuro — el usuario lo revisará.
 
-### Estado actual (2026-04-26) — bloqueado
+### Estado actual (2026-07-12) — apuntamos a ParyonUSD (PUSD)
 
-El equipo de Moria encontró una vulnerabilidad en el token MUSD y van a actualizar el token.
-**No implementar Modo Estable hasta que el nuevo token esté desplegado y auditado.**
-Cuando salga el nuevo token, actualizar `MUSD_TOKENID` en `src/util/tokens.ts`.
+El enfoque upstream (MUSD vía Cauldron DEX) queda descartado. El token MUSD tiene una vulnerabilidad sin fix claro, y la dependencia de un DEX centralizado introduce fragilidad (liquidez, disponibilidad).
 
-### Alternativa futura: ParyionUSD (PUSD)
+**Nuevo objetivo: ParyonUSD (PUSD)** — una stablecoin descentralizada, over-collateralized, nativa de Bitcoin Cash con contratos auditados.
 
-Otra stablecoin en BCH en desarrollo: https://paryonusd.com/
-Aún no está desplegada. Tener en cuenta como alternativa a MUSD.
+| Aspecto | MUSD (descartado) | PUSD (nuevo objetivo) |
+|---------|-------------------|----------------------|
+| Tipo | DEX swap (Cauldron) | Over-collateralized loans |
+| Mecanismo | Swap BCH↔MUSD vía AMM | Mint PUSD contra colateral BCH |
+| Dependencia | Cauldron DEX (liquidez, uptime) | Contratos CashScript inmutables |
+| Fees | 0.3% spread + red | 0.5% one-time borrowing + red |
+| Estado | Vulnerabilidad sin fix | Auditado, desplegado, en producción |
+| Docs | — | https://paryonusd.com/docs |
+
+**Referencias PUSD:**
+- Docs: https://paryonusd.com/docs
+- GitHub: https://github.com/ParyonUSD
+- Stats: https://stats.paryonusd.com/
+- App: https://paryonusd.com/app
+- Contratos: 26 CashScript contracts, auditados por terceros
+- Token type: CashToken (SPL-like, nativo BCH)
+- Conectividad: Electrum + WalletConnect + TypeScript library propia
+
+### Implicancias de migrar a PUSD
+
+La integración es **distinta** a lo que hace Selene con MUSD/Cauldron:
+
+**Lo que NO sirve del upstream (hay que reemplazar):**
+- `CauldronService.ts` — no aplica, PUSD no usa DEX
+- Cauldron pools, fetchPools, prepareTrade — no existen en PUSD
+- `buildStablecoinTransaction()` en `TransactionBuilderService.ts` — el swap atómico MUSD→BCH no aplica
+- Auto-swap BCH→MUSD en `redux/wallet.ts` — ahora sería mint PUSD con colateral
+
+**Lo que SÍ se reutiliza del upstream:**
+- Preferencia `stablecoinMode` + `selectIsStablecoinMode` en Redux
+- `useStablecoinBalance()` hook (adaptando a PUSD balance query)
+- UI toggle en Currency Settings (o donde se mueva)
+- Concepto de mostrar balance en stablecoin
+- Conexión automática a PUSD al activar modo (reemplazar Cauldron por PUSD client)
+
+**Arquitectura propuesta:**
+1. Agregar `ParyonService.ts` en `src/kernel/bch/` — wrapper del SDK de PUSD
+2. Adaptar `redux/wallet.ts` para detectar depósitos BCH y sugerir mint PUSD (no automático como MUSD)
+3. Adaptar `useStablecoinBalance` para leer balance PUSD via ParyonService
+4. UI: toggle en Settings, mostrar balance PUSD en Home
+5. No hay swap automático al enviar — el usuario decide si redeems PUSD→BCH o paga directo con BCH
+
+> ⚠️ A diferencia del upstream, PUSD no hace swap automático. El stablecoin mode sería más conservador: **recibís BCH, lo podés mintear a PUSD manualmente**. Ideal para comercios que quieren mantener valor en USD sin exponerse a la volatilidad de BCH.
 
 ### Pendiente de UI (cuando se desbloquee)
 
