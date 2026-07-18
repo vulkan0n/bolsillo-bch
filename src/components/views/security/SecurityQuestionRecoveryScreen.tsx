@@ -1,14 +1,13 @@
 import { useCallback, useEffect, useState } from "react";
+import { EyeInvisibleOutlined, EyeOutlined } from "@ant-design/icons";
 
+import SecurityService from "@/kernel/app/SecurityService";
 import {
   decryptWithAnswer,
   getBackoffMs,
   getRemainingLockoutSeconds,
   isLockedOut,
 } from "@/kernel/backup/SecurityQuestionEncryption";
-import SecurityService from "@/kernel/app/SecurityService";
-
-import { EyeInvisibleOutlined, EyeOutlined } from "@ant-design/icons";
 
 import FullColumn from "@/layout/FullColumn";
 import ViewHeader from "@/layout/ViewHeader";

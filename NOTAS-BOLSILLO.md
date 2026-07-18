@@ -274,7 +274,9 @@ El upstream Selene ya tiene `stablecoinMode` casi completamente implementado.
 | Toggle en Currency Settings                                      | `src/components/views/settings/CurrencySettings.jsx`  |
 | Constante del token MUSD                                         | `src/util/tokens.ts` → `MUSD_TOKENID`                 |
 
+
 **Token MUSD:** `b38a33f750f84c5c169a6f23cb873e6e79605021585d4f3408789689ed87f366`
+**Token PUSD:** `2469acc5afa4b10cb5b5c04afb89c3a3ffd61c5da9c01e26d00951cae2a02544`
 
 **DEX utilizado:** Cauldron (`@cashlab/cauldron` v1.0.2), ya integrado en `src/kernel/bch/CauldronService.ts`
 

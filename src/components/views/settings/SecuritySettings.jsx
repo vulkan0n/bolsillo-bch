@@ -33,6 +33,8 @@ import NotificationService from "@/kernel/app/NotificationService";
 import SecurityService, { AuthActions } from "@/kernel/app/SecurityService";
 import { encryptWithAnswer } from "@/kernel/backup/SecurityQuestionEncryption";
 
+import SecurityQuestionSetup from "@/views/security/SecurityQuestionSetup";
+import securityTranslations from "@/views/security/translations";
 import Accordion from "@/atoms/Accordion";
 import Button from "@/atoms/Button";
 import Checkbox from "@/atoms/Checkbox";
@@ -42,10 +44,8 @@ import Select from "@/components/atoms/Select";
 
 import { translate } from "@/util/translations";
 import translations from "./translations";
-import securityTranslations from "@/views/security/translations";
-import SecurityQuestionSetup from "@/views/security/SecurityQuestionSetup";
-import SecurityQuestionRow from "./SecurityQuestionRow";
 
+import SecurityQuestionRow from "./SecurityQuestionRow";
 import { SettingsContext } from "./SettingsContext";
 
 export default function SecuritySettings() {

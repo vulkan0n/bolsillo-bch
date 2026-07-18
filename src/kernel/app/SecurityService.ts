@@ -11,6 +11,13 @@ import DatabaseService, {
 import LogService from "@/kernel/app/LogService";
 import ModalService from "@/kernel/app/ModalService";
 import NotificationService from "@/kernel/app/NotificationService";
+import {
+  decryptWithAnswer,
+  getBackoffMs,
+  getRemainingLockoutSeconds,
+  isLockedOut,
+  type SecurityQuestionData,
+} from "@/kernel/backup/SecurityQuestionEncryption";
 import { clearSeedCache } from "@/kernel/wallet/KeyManagerService";
 import WalletManagerService from "@/kernel/wallet/WalletManagerService";
 
@@ -20,14 +27,6 @@ import { sha256 } from "@/util/hash";
 
 import common from "@/translations/common";
 import { translate } from "@/util/translations";
-
-import {
-  decryptWithAnswer,
-  getBackoffMs,
-  getRemainingLockoutSeconds,
-  isLockedOut,
-  type SecurityQuestionData,
-} from "@/kernel/backup/SecurityQuestionEncryption";
 
 const Log = LogService("SecurityService");
 const MIN_PASSWORD_LENGTH = 8;
@@ -222,9 +221,7 @@ export default function SecurityService() {
       cancelLabel?: string;
       cancelButtonClick?: () => void;
     } = {
-      title: translate(
-        isPasswordMode ? common.enterPassword : common.enterPin
-      ),
+      title: translate(isPasswordMode ? common.enterPassword : common.enterPin),
       inputType: "password",
       inputMode: isPasswordMode ? "text" : "numeric",
       submitLabel: translate(common.authorizeAction),
