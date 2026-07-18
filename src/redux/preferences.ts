@@ -9,7 +9,10 @@ import { RootState } from "@/redux";
 import { selectIsSystemDarkMode } from "@/redux/device";
 
 import { REENCRYPTION_KEY } from "@/kernel/app/DatabaseService";
-import { AuthActions, SECURITY_QUESTION_PREF_KEY } from "@/kernel/app/SecurityService";
+import {
+  AuthActions,
+  SECURITY_QUESTION_PREF_KEY,
+} from "@/kernel/app/SecurityService";
 import CurrencyService from "@/kernel/bch/CurrencyService";
 
 import { currencyList, DEFAULT_CURRENCY } from "@/util/currency";
@@ -45,6 +48,7 @@ export const defaultPreferences = {
   localCurrency: DEFAULT_CURRENCY.currency,
   preferLocalCurrency: "true",
   denomination: "bch",
+  stablecoinMode: "false", // TODO: move to wallet db
   // --------
   // Payment (move to wallet db?)
   allowInstantPay: "false",
@@ -145,6 +149,7 @@ export function validatePreferences(preferences: ValidPreferences): boolean {
     "useLegacyBip21",
     "pinInputMode",
     "expertMode",
+    "stablecoinMode",
   ];
 
   const invalidBools = boolKeys.filter(
@@ -161,7 +166,11 @@ export function validatePreferences(preferences: ValidPreferences): boolean {
 // Remove stale keys not in defaultPreferences, preserving REENCRYPTION_KEY
 async function cleanupPreferences(): Promise<void> {
   const allKeys = (await Preferences.keys()).keys;
-  const keepKeys = [...Object.keys(defaultPreferences), REENCRYPTION_KEY, SECURITY_QUESTION_PREF_KEY];
+  const keepKeys = [
+    ...Object.keys(defaultPreferences),
+    REENCRYPTION_KEY,
+    SECURITY_QUESTION_PREF_KEY,
+  ];
   const staleKeys = allKeys.filter((key) => !keepKeys.includes(key));
   await Promise.all(staleKeys.map((key) => Preferences.remove({ key })));
 }
@@ -405,6 +414,11 @@ export const selectIsPrerelease = createSelector(
 export const selectIsExpertMode = createSelector(
   (state: RootState) => state.preferences,
   (preferences): boolean => preferences.expertMode === "true"
+);
+
+export const selectIsStablecoinMode = createSelector(
+  (state: RootState) => state.preferences,
+  (preferences): boolean => preferences.stablecoinMode === "true"
 );
 
 export const selectLastCheckIn = createSelector(

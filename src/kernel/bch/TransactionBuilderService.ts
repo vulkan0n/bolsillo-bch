@@ -246,6 +246,15 @@ export function buildSweepTransaction(
   privateKey: Uint8Array,
   receivingAddress: string
 ): TransactionStub {
+  // Filter out token-bearing UTXOs — sweep only supports BCH.
+  const bchUtxos = utxos.filter((u) => u.token_category === null);
+  if (bchUtxos.length !== utxos.length) {
+    const skipped = utxos.length - bchUtxos.length;
+    Log.warn(
+      `buildSweepTransaction: skipped ${skipped} token UTXO(s) — sweep only supports BCH`
+    );
+  }
+
   // Convert the receiving address to locking bytecode.
   const receivingBytecode = addressToLockingBytecode(receivingAddress);
 
@@ -257,8 +266,8 @@ export function buildSweepTransaction(
   // Create our P2PKH Compiler.
   const compilerP2pkh = walletTemplateToCompilerBCH(walletTemplateP2pkhNonHd);
 
-  // Compile our inputs.
-  const inputDirectives = utxos.map((unspent) => ({
+  // Compile our inputs (token UTXOs already filtered above).
+  const inputDirectives = bchUtxos.map((unspent) => ({
     outpointIndex: unspent.tx_pos,
     outpointTransactionHash: hexToBin(unspent.tx_hash),
     sequenceNumber: 0,
