@@ -1,15 +1,15 @@
 import { useEffect, useState } from "react";
 import { QuestionCircleOutlined } from "@ant-design/icons";
 
-import SecurityService, { AuthActions } from "@/kernel/app/SecurityService";
 import ModalService from "@/kernel/app/ModalService";
+import SecurityService, { AuthActions } from "@/kernel/app/SecurityService";
 
+import securityTranslations from "@/views/security/translations";
 import Button from "@/atoms/Button";
 
 import common from "@/translations/common";
 import { translate } from "@/util/translations";
 import translations from "./translations";
-import securityTranslations from "@/views/security/translations";
 
 interface SecurityQuestionRowProps {
   onSetup: () => void;

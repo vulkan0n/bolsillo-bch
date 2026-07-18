@@ -9,10 +9,9 @@ import {
 } from "react-router";
 import { App as CapApp } from "@capacitor/app";
 import { SimpleEncryption } from "capacitor-plugin-simple-encryption";
+import { EyeInvisibleOutlined, EyeOutlined } from "@ant-design/icons";
 
 import { selectSecuritySettings } from "@/redux/preferences";
-
-import { EyeInvisibleOutlined, EyeOutlined } from "@ant-design/icons";
 
 import LogService from "@/kernel/app/LogService";
 import SecurityService from "@/kernel/app/SecurityService";
@@ -211,7 +210,7 @@ function LockScreen({ boot }: AppLockScreenProps) {
           </div>
         )}
 
-          {shouldShowPin && (
+        {shouldShowPin && (
           <form
             onSubmit={handleSubmit}
             className="p-2 my-4 flex flex-col gap-2"

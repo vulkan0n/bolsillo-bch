@@ -6,8 +6,8 @@ import {
   EyeOutlined,
 } from "@ant-design/icons";
 
-import Button from "@/atoms/Button";
 import FullColumn from "@/layout/FullColumn";
+import Button from "@/atoms/Button";
 
 import { translate } from "@/util/translations";
 import translations from "./translations";
