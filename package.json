@@ -42,7 +42,7 @@
     "@capawesome/capacitor-google-sign-in": "^0.1.2",
     "@capawesome/capacitor-torch": "^8.0.0",
     "@cashlab/cauldron": "^1.0.2",
-    "@cashlab/common": "1.0.4",
+    "@cashlab/common": "1.0.5",
     "@electrum-cash/network": "^4.1.4",
     "@electrum-cash/web-socket": "^1.0.3",
     "@fontsource/inter": "^5.2.8",
