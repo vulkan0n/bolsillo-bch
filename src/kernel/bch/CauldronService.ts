@@ -1,4 +1,5 @@
 import { ExchangeLab, PoolV0, PoolV0Parameters } from "@cashlab/cauldron";
+import type { TradeResult } from "@cashlab/cauldron";
 import {
   PayoutAmountRuleType,
   PayoutRule,
@@ -218,7 +219,7 @@ export default function CauldronService() {
     amount: bigint,
     wallet: WalletEntity,
     isDemandFlipped = false
-  ): { tx_hex: string } {
+  ): { tx_hex: string; tradeResult: TradeResult } {
     const inputPools = getPoolInputs();
     const TX_FEE_PER_BYTE = 1n;
 
