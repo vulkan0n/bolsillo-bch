@@ -144,16 +144,22 @@ describe("calcTokenPrice", () => {
     expect(calcTokenPrice(pools)).toBe(2000n);
   });
 
-  it("rounds to nearest integer", () => {
-    // 10 sats / 3 tokens = 3.333... → rounding: half of 3 = 1. r=1, half=1, r>=half → 4
+  it("rounds down when remainder below half", () => {
+    // 10 sats / 3 tokens = 3.333... → q=3, r=1, r*2=2 < 3 → 3n
     const pools = [makePoolUtxo({ sats: 10, token_amount: 3 })];
-    expect(calcTokenPrice(pools)).toBe(4n);
+    expect(calcTokenPrice(pools)).toBe(3n);
   });
 
-  it("rounds down when remainder below half", () => {
-    // 10 sats / 4 tokens = 2.5 → q=2, r=2, half=2, r>=half → 3
+  it("rounds up at exact half", () => {
+    // 10 sats / 4 tokens = 2.5 → q=2, r=2, r*2=4 >= 4 → 3n (half-up)
     const pools = [makePoolUtxo({ sats: 10, token_amount: 4 })];
     expect(calcTokenPrice(pools)).toBe(3n);
+  });
+
+  it("rounds up when remainder exceeds half", () => {
+    // 11 sats / 3 tokens = 3.666... → q=3, r=2, r*2=4 >= 3 → 4n
+    const pools = [makePoolUtxo({ sats: 11, token_amount: 3 })];
+    expect(calcTokenPrice(pools)).toBe(4n);
   });
 });
 

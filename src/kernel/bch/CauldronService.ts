@@ -5,7 +5,6 @@ import {
   TradeResult,
 } from "@cashlab/cauldron";
 import {
-  InsufficientFunds,
   PayoutAmountRuleType,
   PayoutRule,
   SpendableCoin,
@@ -96,9 +95,9 @@ export function calcTokenPrice(pools: CauldronPoolUtxo[]): bigint {
   }
   const q = satsSum / tokenSum;
   const r = satsSum % tokenSum;
-  const half = tokenSum / 2n;
-  // Round to nearest integer
-  return r >= half ? q + 1n : q;
+  // Half-up rounding: multiply remainder by 2 and compare to denominator
+  // to avoid bias when remainder equals half of tokenSum
+  return r * 2n >= tokenSum ? q + 1n : q;
 }
 
 // -------- Service --------
@@ -174,9 +173,14 @@ export default function CauldronService() {
     if (!Rostrum.getIsConnected()) {
       await connect();
     }
-    // Clear stale pools for this category before fetching fresh ones.
-    // The Rostrum initial subscription returns all current pool UTXOs
-    // for the requested token category.
+    const client = Rostrum.getElectrumClient();
+    const result = await client.request(
+      "cauldron.contract.subscribe",
+      2,
+      category
+    );
+    // Clear stale pools for this category only after a successful fetch,
+    // so a network failure doesn't wipe the pool registry.
     const staleKeys: string[] = [];
     poolUtxos.forEach((pool, key) => {
       if (pool.token_id === category) {
@@ -184,12 +188,6 @@ export default function CauldronService() {
       }
     });
     staleKeys.forEach((key) => poolUtxos.delete(key));
-    const client = Rostrum.getElectrumClient();
-    const result = await client.request(
-      "cauldron.contract.subscribe",
-      2,
-      category
-    );
     handleCauldronSubscription([2, category, result]);
     return getPoolInputs(category);
   }
@@ -320,9 +318,11 @@ export default function CauldronService() {
         return tradeTx;
       } catch (e) {
         if (
-          e instanceof InsufficientFunds &&
-          e.required_amount != null &&
-          retries < MAX_RETRIES
+          retries < MAX_RETRIES &&
+          typeof e === "object" &&
+          e !== null &&
+          "required_amount" in e &&
+          e.required_amount != null
         ) {
           retries += 1;
           Log.warn(
