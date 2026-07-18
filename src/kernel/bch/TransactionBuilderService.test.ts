@@ -7,8 +7,9 @@
 
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
-import { buildSweepTransaction } from "./TransactionBuilderService";
 import type { UtxoEntity } from "@/kernel/wallet/UtxoManagerService";
+
+import { buildSweepTransaction } from "./TransactionBuilderService";
 
 // vi.hoisted ensures warnMock is defined before vi.mock factories run.
 const warnMock = vi.hoisted(() => vi.fn());
@@ -114,6 +115,26 @@ describe("buildSweepTransaction token filter", () => {
       )
     ).not.toThrow();
     expect(warnMock).not.toHaveBeenCalled();
+  });
+
+  it("excludes NFT-only UTXOs (token_category set, no amount)", () => {
+    const bchUtxo = makeUtxo("aaa", 50000n, null);
+    const nftUtxo: UtxoEntity = {
+      ...makeUtxo("bbb", 10000n, "nft_token_id"),
+      token_amount: null,
+      nft_capability: "mutable",
+    };
+
+    const result = buildSweepTransaction(
+      [bchUtxo, nftUtxo],
+      new Uint8Array(32),
+      "bchtest:qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq"
+    );
+
+    expect(result).toHaveProperty("tx_hash");
+    expect(warnMock).toHaveBeenCalledWith(
+      expect.stringContaining("skipped 1 token UTXO")
+    );
   });
 
   it("filters all UTXOs when all carry tokens and warns", () => {
