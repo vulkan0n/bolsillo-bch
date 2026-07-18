@@ -5,7 +5,7 @@
 
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
-import { InsufficientFunds } from "@cashlab/common";
+import { ValueError } from "@cashlab/common";
 
 import CauldronService, {
   calcTokenPrice,
@@ -156,6 +156,12 @@ describe("calcTokenPrice", () => {
     expect(calcTokenPrice(pools)).toBe(3n);
   });
 
+  it("rounds up when remainder equals half of tokenSum", () => {
+    // 5 sats / 2 tokens = 2.5 → q=2, r=1, r*2=2 >= 2 → 3n (half-up)
+    const pools = [makePoolUtxo({ sats: 5, token_amount: 2 })];
+    expect(calcTokenPrice(pools)).toBe(3n);
+  });
+
   it("rounds up when remainder exceeds half", () => {
     // 11 sats / 3 tokens = 3.666... → q=3, r=2, r*2=4 >= 3 → 4n
     const pools = [makePoolUtxo({ sats: 11, token_amount: 3 })];
@@ -256,7 +262,7 @@ describe("CauldronService", () => {
       expect(pools).toHaveLength(0);
     });
 
-    it("replaces old pools with updated ones (spent utxo semantics)", async () => {
+    it("replaces old pools with fresh data on re-fetch", async () => {
       // First fetch: two pools
       const utxo1 = makePoolUtxo({
         new_utxo_hash: "hash1",
@@ -317,9 +323,9 @@ describe("CauldronService", () => {
     });
   });
 
-  // ---------------- prepareTrade retry ----------------
+  // ---------------- prepareTrade errors ----------------
 
-  describe("prepareTrade retry", () => {
+  describe("prepareTrade error propagation", () => {
     const mockWallet = {
       walletHash: "test-hash",
       mnemonic: "test mnemonic",
@@ -348,12 +354,10 @@ describe("CauldronService", () => {
       mockSelectTokens.mockReturnValue([]);
     });
 
-    it("retries on InsufficientFunds with bumped fee and succeeds", async () => {
-      // Mock pools populated
+    it("throws real library errors (ValueError) from createTradeTx", async () => {
       const pool = makePoolUtxo({ token_id: "test-category" });
       mockRequest.mockResolvedValueOnce({ utxos: [pool] });
 
-      // Mock trade construction
       mockConstructDemand.mockReturnValue({
         entries: [],
         summary: {
@@ -364,43 +368,25 @@ describe("CauldronService", () => {
         },
       });
 
-      // First call to createTradeTx throws InsufficientFunds, second succeeds
-      const insufficientErr = new InsufficientFunds("insufficient", {
-        required_amount: 500n,
+      // The real library throws ValueError (not InsufficientFunds) from
+      // createTradeTx when validation fails or funding is insufficient.
+      mockCreateTradeTx.mockImplementation(() => {
+        throw new ValueError(
+          "Not enough funding provided, token: 0000000000000000000000000000000000000000000000000000000000000000, required funding: 1000000"
+        );
       });
-      const tradeTxResult = {
-        txbin: new Uint8Array(128),
-        txfee: 1500n,
-        libauth_source_outputs: [],
-        libauth_generated_transaction: { inputs: [], outputs: [] },
-        payouts_info: [],
-        token_burns: [],
-      };
-      mockCreateTradeTx
-        .mockImplementationOnce(() => {
-          throw insufficientErr;
-        })
-        .mockReturnValueOnce(tradeTxResult);
 
       const svc = CauldronService();
-      // Populate pools
       await svc.fetchPools("test-category");
-      // Execute trade
-      const result = await svc.prepareTrade(
-        "BCH",
-        "test-category",
-        500n,
-        mockWallet,
-        false
-      );
 
-      // createTradeTx called twice: first fails (retry), second succeeds
-      expect(mockCreateTradeTx).toHaveBeenCalledTimes(2);
-      expect(result).toHaveProperty("tx_hex");
-      expect(result).toHaveProperty("tradeResult");
+      expect(() =>
+        svc.prepareTrade("BCH", "test-category", 500n, mockWallet, false)
+      ).toThrow(ValueError);
+
+      expect(mockCreateTradeTx).toHaveBeenCalledTimes(1);
     });
 
-    it("throws after max retries exhausted", async () => {
+    it("propagates generic errors immediately (no retry)", async () => {
       const pool = makePoolUtxo({ token_id: "test-category" });
       mockRequest.mockResolvedValueOnce({ utxos: [pool] });
 
@@ -414,50 +400,16 @@ describe("CauldronService", () => {
         },
       });
 
-      // Always throw InsufficientFunds
-      const insufficientErr = new InsufficientFunds("insufficient", {
-        required_amount: 500n,
-      });
       mockCreateTradeTx.mockImplementation(() => {
-        throw insufficientErr;
+        throw new Error("network error");
       });
 
       const svc = CauldronService();
       await svc.fetchPools("test-category");
 
-      await expect(
+      expect(() =>
         svc.prepareTrade("BCH", "test-category", 500n, mockWallet, false)
-      ).rejects.toThrow(InsufficientFunds);
-
-      // createTradeTx called 4 times (initial + 3 retries = MAX_RETRIES=3)
-      expect(mockCreateTradeTx).toHaveBeenCalledTimes(4);
-    });
-
-    it("throws non-InsufficientFunds errors immediately", async () => {
-      const pool = makePoolUtxo({ token_id: "test-category" });
-      mockRequest.mockResolvedValueOnce({ utxos: [pool] });
-
-      mockConstructDemand.mockReturnValue({
-        entries: [],
-        summary: {
-          demand: 500n,
-          supply: 1000000n,
-          rate: { numerator: 2000n, denominator: 10000000000000n },
-          trade_fee: 0n,
-        },
-      });
-
-      const regularError = new Error("network error");
-      mockCreateTradeTx.mockImplementation(() => {
-        throw regularError;
-      });
-
-      const svc = CauldronService();
-      await svc.fetchPools("test-category");
-
-      await expect(
-        svc.prepareTrade("BCH", "test-category", 500n, mockWallet, false)
-      ).rejects.toThrow("network error");
+      ).toThrow("network error");
 
       expect(mockCreateTradeTx).toHaveBeenCalledTimes(1);
     });

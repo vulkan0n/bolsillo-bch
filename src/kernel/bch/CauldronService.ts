@@ -1,9 +1,4 @@
-import {
-  ExchangeLab,
-  PoolV0,
-  PoolV0Parameters,
-  TradeResult,
-} from "@cashlab/cauldron";
+import { ExchangeLab, PoolV0, PoolV0Parameters } from "@cashlab/cauldron";
 import {
   PayoutAmountRuleType,
   PayoutRule,
@@ -22,6 +17,10 @@ import { addressToLockingBytecode } from "@/util/cashaddr";
 import { binToHex, hexToBin } from "@/util/hex";
 
 const Log = LogService("CauldronService");
+
+// -------- Module-level ExchangeLab singleton --------
+
+const exchangeLab = new ExchangeLab();
 
 // -------- Types --------
 
@@ -193,10 +192,9 @@ export default function CauldronService() {
   }
 
   function getPoolInputs(category?: string): PoolV0[] {
-    const exlab = new ExchangeLab();
     return [...poolUtxos.values()]
       .filter((p) => category === undefined || p.token_id === category)
-      .map((pool) => parsePoolFromRostrumNodeData(exlab, pool))
+      .map((pool) => parsePoolFromRostrumNodeData(exchangeLab, pool))
       .filter((p): p is PoolV0 => p !== null);
   }
 
@@ -214,14 +212,13 @@ export default function CauldronService() {
 
   // ---------------- Trade preparation ----------------
 
-  async function prepareTrade(
+  function prepareTrade(
     supplyCategory: string,
     demandCategory: string,
     amount: bigint,
     wallet: WalletEntity,
     isDemandFlipped = false
-  ): Promise<{ tx_hex: string; tradeResult: TradeResult }> {
-    const exchangeLab = new ExchangeLab();
+  ): { tx_hex: string } {
     const inputPools = getPoolInputs();
     const TX_FEE_PER_BYTE = 1n;
 
@@ -242,10 +239,8 @@ export default function CauldronService() {
         );
 
     const { walletHash } = wallet;
-    let retries = 0;
-    const MAX_RETRIES = 3;
 
-    function attemptTrade(fee: bigint) {
+    const attemptTrade = (fee: bigint) => {
       const AddressManager = AddressManagerService(walletHash);
       const receiveAddress = AddressManager.getUnusedAddresses(1, 0)[0];
       const changeAddress = AddressManager.getUnusedAddresses(1, 1)[0];
@@ -307,34 +302,15 @@ export default function CauldronService() {
         },
       }));
 
-      try {
-        const tradeTx = exchangeLab.createTradeTx(
-          tradeResult.entries,
-          clabInputs,
-          payoutRules,
-          null,
-          TX_FEE_PER_BYTE
-        );
-        return tradeTx;
-      } catch (e) {
-        if (
-          retries < MAX_RETRIES &&
-          typeof e === "object" &&
-          e !== null &&
-          "required_amount" in e &&
-          e.required_amount != null
-        ) {
-          retries += 1;
-          Log.warn(
-            "InsufficientFunds on trade tx, retrying",
-            retries,
-            e.required_amount
-          );
-          return attemptTrade(fee + e.required_amount);
-        }
-        throw e;
-      }
-    }
+      const tradeTx = exchangeLab.createTradeTx(
+        tradeResult.entries,
+        clabInputs,
+        payoutRules,
+        null,
+        TX_FEE_PER_BYTE
+      );
+      return tradeTx;
+    };
 
     const tradeTx = attemptTrade(0n);
     const tx_hex = binToHex(tradeTx.txbin);
