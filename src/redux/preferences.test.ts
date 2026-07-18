@@ -163,6 +163,29 @@ describe("validatePreferences", () => {
     });
   });
 
+  describe("stablecoinMode preference", () => {
+    it("accepts valid stablecoinMode values", () => {
+      expect(validatePreferences(makePrefs({ stablecoinMode: "true" }))).toBe(
+        true
+      );
+      expect(validatePreferences(makePrefs({ stablecoinMode: "false" }))).toBe(
+        true
+      );
+    });
+
+    it("rejects corrupted stablecoinMode", () => {
+      expect(
+        validatePreferences(
+          makePrefs({ stablecoinMode: "1" as "true" | "false" })
+        )
+      ).toBe(false);
+    });
+
+    it("defaults to false", () => {
+      expect(defaultPreferences.stablecoinMode).toBe("false");
+    });
+  });
+
   describe("corrupted data from storage", () => {
     // These test what happens when Capacitor Preferences returns garbage
 
