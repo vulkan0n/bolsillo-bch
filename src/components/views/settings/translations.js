@@ -3692,6 +3692,47 @@ const translations = {
     en: "This will remove your security question. You will lose the ability to recover your PIN with it.",
     es: "Esto eliminará tu pregunta de seguridad. Ya no podrás recuperar tu PIN con ella.",
   },
+  // -------- Modo Estable --------
+  modoEstable: {
+    en: "Modo Estable",
+    es: "Modo Estable",
+  },
+  modoEstableDescription: {
+    en: "Protect your balance from BCH volatility. Incoming payments are automatically converted to a stable currency (PUSD) and converted back when sending.",
+    es: "Protegé tu saldo de la volatilidad de BCH. Los pagos entrantes se convierten automáticamente a una moneda estable (PUSD) y se reconvierten al enviar.",
+  },
+  modoEstableActivationTitle: {
+    en: "Activate Modo Estable",
+    es: "Activar Modo Estable",
+  },
+  modoEstableActivationMessage: {
+    en: "When you activate Modo Estable, your BCH balance will be converted to PUSD (except a 1% reserve for fees).",
+    es: "Al activar Modo Estable, tu saldo de BCH se convertirá a PUSD (excepto una reserva del 1% para comisiones).",
+  },
+  modoEstableActivationSuccess: {
+    en: "Modo Estable activated",
+    es: "Modo Estable activado",
+  },
+  modoEstableActivationFailed: {
+    en: "Could not stabilize now. We'll retry automatically.",
+    es: "No se pudo estabilizar ahora. Reintentaremos automáticamente.",
+  },
+  modoEstableDeactivationTitle: {
+    en: "Deactivate Modo Estable",
+    es: "Desactivar Modo Estable",
+  },
+  modoEstableDeactivationMessage: {
+    en: "When you deactivate Modo Estable, all your PUSD will be converted back to BCH.",
+    es: "Al desactivar Modo Estable, todo tu PUSD se convertirá de vuelta a BCH.",
+  },
+  modoEstableDeactivationSuccess: {
+    en: "Modo Estable deactivated",
+    es: "Modo Estable desactivado",
+  },
+  modoEstableDeactivationFailed: {
+    en: "Could not deactivate now. Try again later.",
+    es: "No se pudo desactivar ahora. Reintentá más tarde.",
+  },
 };
 
 export default translations;

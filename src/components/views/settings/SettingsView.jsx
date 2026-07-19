@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   InfoCircleOutlined,
   LogoutOutlined,
+  SafetyCertificateOutlined,
   SettingOutlined,
 } from "@ant-design/icons";
 
@@ -37,6 +38,7 @@ import PrivacySettings from "./PrivacySettings";
 import QrCodeSettings from "./QrCodeSettings";
 import SecuritySettings from "./SecuritySettings";
 import { SettingsContext } from "./SettingsContext";
+import StableSettings from "./StableSettings";
 import UiSettings from "./UiSettings";
 import WalletSettings from "./WalletSettings";
 
@@ -154,6 +156,12 @@ export default function SettingsView() {
           <CurrencySettings />
           <IntlSettings />
           <PaymentSettings />
+          <Accordion
+            icon={SafetyCertificateOutlined}
+            title={translate(translations.modoEstable)}
+          >
+            <StableSettings />
+          </Accordion>
           <SecuritySettings />
 
           {/*
