@@ -13,6 +13,7 @@ const initialState = {
   amountFiat: null,
   amountSats: null,
   memo: null,
+  isSendMax: false,
 };
 
 describe("sendDraft slice", () => {
@@ -38,6 +39,7 @@ describe("sendDraft slice", () => {
         amountFiat: null,
         amountSats: null,
         memo: null,
+        isSendMax: false,
       });
     });
 
@@ -56,6 +58,7 @@ describe("sendDraft slice", () => {
         amountFiat: "1500",
         amountSats: 150000n,
         memo: "pago almuerzo",
+        isSendMax: false,
       });
     });
   });

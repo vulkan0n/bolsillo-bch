@@ -4,8 +4,11 @@ import { useNavigate } from "react-router";
 import { ArrowLeft, Clock } from "lucide-react";
 
 import { selectLastUpdatedAt } from "@/redux/exchangeRates";
-import { selectCurrencySettings } from "@/redux/preferences";
-import { selectBchNetwork } from "@/redux/preferences";
+import {
+  selectCurrencySettings,
+  selectBchNetwork,
+  selectIsStablecoinMode,
+} from "@/redux/preferences";
 import { clearSendDraft, selectSendDraft } from "@/redux/sendDraft";
 import { selectIsConnected, syncHotRefresh } from "@/redux/sync";
 import {
@@ -13,10 +16,14 @@ import {
   selectActiveWalletHash,
 } from "@/redux/wallet";
 
+import CauldronService from "@/kernel/bch/CauldronService";
 import NotificationService from "@/kernel/app/NotificationService";
 import CurrencyService from "@/kernel/bch/CurrencyService";
 import TransactionBuilderService from "@/kernel/bch/TransactionBuilderService";
 import TransactionManagerService from "@/kernel/bch/TransactionManagerService";
+import UtxoManagerService from "@/kernel/wallet/UtxoManagerService";
+
+import { PUSD_TOKENID } from "@/util/tokens";
 
 import SlideToAction from "@/atoms/SlideToAction";
 
@@ -30,6 +37,7 @@ export default function SendConfirmView() {
   const walletHash = useSelector(selectActiveWalletHash);
   const bchNetwork = useSelector(selectBchNetwork);
   const isConnected = useSelector(selectIsConnected);
+  const isStablecoinMode = useSelector(selectIsStablecoinMode);
   const { spendable_balance } = useSelector(selectActiveWalletBalance);
   const lastUpdatedAt = useSelector(selectLastUpdatedAt);
 
@@ -45,6 +53,11 @@ export default function SendConfirmView() {
   const [txError, setTxError] = useState<string | null>(null);
   const [isVerifying, setIsVerifying] = useState(true);
   const [effectiveAmount, setEffectiveAmount] = useState(0n);
+  const [stableSwapInfo, setStableSwapInfo] = useState<{
+    pusdAmount: string;
+    executionPrice: string;
+  } | null>(null);
+  const [isCauldronDown, setIsCauldronDown] = useState(false);
 
   // -------- On mount: build the transaction to verify (with retry for fees)
 
@@ -60,14 +73,83 @@ export default function SendConfirmView() {
       return;
     }
 
-    if (draft.amountSats > spendable_balance) {
-      setTxError("Saldo insuficiente para cubrir el envío");
-      setIsVerifying(false);
-      return;
-    }
-
     const TxBuilder = TransactionBuilderService(walletHash);
 
+    // --------------------------------
+    // Stablecoin mode path: shortfall or Send Max triggers PUSD→BCH swap
+    // --------------------------------
+    async function attemptStableBuild() {
+      try {
+        const Cauldron = CauldronService();
+        await Cauldron.fetchPools(PUSD_TOKENID);
+
+        const UtxoManager = UtxoManagerService(walletHash);
+        const pusdUtxos = UtxoManager.getCategoryUtxos(PUSD_TOKENID);
+        const pusdBalance = pusdUtxos.reduce(
+          (sum, u) => sum + (u.token_amount ?? 0n),
+          0n
+        );
+        const price = Cauldron.getTokenPrice(PUSD_TOKENID); // sats per 0.01 PUSD unit
+
+        // Calculate total PUSD value in BCH (PUSD has 2 decimals: balance/100 * price)
+        const pusdValueInBch = (pusdBalance * price) / 100n;
+
+        // Determine tradeSats: how much BCH we need from the swap
+        // For Send Max (draft.isSendMax): swap ALL PUSD
+        // For shortfall (amount > spendable_balance): swap just enough
+        const { isSendMax } = draft;
+        const tradeSats = isSendMax
+          ? pusdValueInBch
+          : draft.amountSats - spendable_balance;
+
+        // Insufficient PUSD + reserve
+        if (
+          pusdValueInBch <= 0n ||
+          tradeSats > pusdValueInBch + spendable_balance
+        ) {
+          setTxError(
+            "Saldo insuficiente. No tenés suficientes PUSD ni BCH de reserva."
+          );
+          setIsVerifying(false);
+          return;
+        }
+
+        const recipientAmount = isSendMax
+          ? spendable_balance + pusdValueInBch
+          : draft.amountSats;
+
+        const result = await TxBuilder.buildStablecoinTransaction({
+          recipients: [{ address: draft.address, amount: recipientAmount }],
+          tradeSats,
+          fee: 0n,
+        });
+
+        if (typeof result === "bigint") {
+          setTxError(
+            "Saldo insuficiente. No tenés suficientes PUSD ni BCH de reserva."
+          );
+          setIsVerifying(false);
+          return;
+        }
+
+        setTxStub(result);
+        setStableSwapInfo({
+          pusdAmount: result.tradeResult.summary.supply.toString(),
+          executionPrice: price.toString(),
+        });
+        setEffectiveAmount(recipientAmount);
+        setIsVerifying(false);
+      } catch (e) {
+        // Cauldron down — handled via isCauldronDown state and user-facing error
+        setIsCauldronDown(true);
+        setTxError("No se pudo completar el envío, reintentá más tarde.");
+        setIsVerifying(false);
+      }
+    }
+
+    // --------------------------------
+    // Normal buildP2pkhTransaction path
+    // --------------------------------
     function attemptBuild(tryAmount: bigint) {
       try {
         const result = TxBuilder.buildP2pkhTransaction({
@@ -106,8 +188,22 @@ export default function SendConfirmView() {
       }
     }
 
-    attemptBuild(draft.amountSats);
-  }, [draft, walletHash, spendable_balance, navigate]);
+    // --------------------------------
+    // Entry: decide which path to take
+    // --------------------------------
+    if (
+      isStablecoinMode &&
+      (draft.isSendMax || draft.amountSats > spendable_balance)
+    ) {
+      // Stable path: insufficient BCH → swap PUSD, or Send Max liquidate all
+      attemptStableBuild();
+    } else if (draft.amountSats > spendable_balance) {
+      setTxError("Saldo insuficiente para cubrir el envío");
+      setIsVerifying(false);
+    } else {
+      attemptBuild(draft.amountSats);
+    }
+  }, [draft, walletHash, spendable_balance, navigate, isStablecoinMode]);
 
   // -------- Broadcast
 
@@ -200,6 +296,15 @@ export default function SendConfirmView() {
         {txError && (
           <div className="flex-1 flex flex-col items-center justify-center gap-4">
             <p className="text-body text-error text-center">{txError}</p>
+            {/* Cauldron-down persistent banner */}
+            {isCauldronDown && (
+              <div className="w-full px-4 py-3 rounded-xl bg-warn-light dark:bg-warn/10 border border-warn/30">
+                <p className="text-xs text-warn-dark dark:text-warn text-center">
+                  Cauldron no está disponible. El envío requiere el servicio de
+                  intercambio. Reintentá más tarde.
+                </p>
+              </div>
+            )}
             <button
               type="button"
               onClick={() => {
@@ -267,6 +372,29 @@ export default function SendConfirmView() {
                     Incluida en el envío
                   </span>
                 </div>
+
+                {/* Swap info (stablecoin mode only) */}
+                {stableSwapInfo && (
+                  <>
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-sm text-neutral-500 dark:text-neutral-400 w-12 shrink-0">
+                        Swap
+                      </span>
+                      <span className="text-body-md text-neutral-700 dark:text-neutral-300 tabular-nums">
+                        {stableSwapInfo.pusdAmount} PUSD → BCH
+                      </span>
+                    </div>
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-sm text-neutral-500 dark:text-neutral-400 w-12 shrink-0">
+                        Precio
+                      </span>
+                      <span className="text-body-md text-neutral-700 dark:text-neutral-300 tabular-nums">
+                        1 PUSD ≈{" "}
+                        {formatBch(BigInt(stableSwapInfo.executionPrice))} BCH
+                      </span>
+                    </div>
+                  </>
+                )}
               </div>
 
               {/* Stale rate */}
