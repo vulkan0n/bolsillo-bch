@@ -5,6 +5,7 @@ export interface SendDraftState {
   amountFiat: string | null;
   amountSats: bigint | null;
   memo: string | null;
+  isSendMax: boolean;
 }
 
 const initialState: SendDraftState = {
@@ -12,6 +13,7 @@ const initialState: SendDraftState = {
   amountFiat: null,
   amountSats: null,
   memo: null,
+  isSendMax: false,
 };
 
 const sendDraftSlice = createSlice({
@@ -23,6 +25,7 @@ const sendDraftSlice = createSlice({
       state.amountFiat = action.payload.amountFiat ?? null;
       state.memo = action.payload.memo ?? null;
       state.amountSats = action.payload.amountSats ?? null;
+      state.isSendMax = false;
     },
     setAmountFiat(state, action) {
       state.amountFiat = action.payload;
@@ -36,6 +39,9 @@ const sendDraftSlice = createSlice({
     clearSendDraft() {
       return initialState;
     },
+    setSendMax(state, action) {
+      state.isSendMax = action.payload;
+    },
   },
 });
 
@@ -45,6 +51,7 @@ export const {
   setAmountSats,
   setMemo,
   clearSendDraft,
+  setSendMax,
 } = sendDraftSlice.actions;
 
 export const sendDraftReducer = sendDraftSlice.reducer;

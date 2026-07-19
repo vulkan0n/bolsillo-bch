@@ -11,6 +11,7 @@ import {
   setAmountFiat,
   setAmountSats,
   setMemo,
+  setSendMax,
 } from "@/redux/sendDraft";
 import { selectActiveWalletBalance } from "@/redux/wallet";
 
@@ -118,7 +119,8 @@ export default function SendAmountView() {
     // Round down to integer so the input stays editable (no decimal points)
     setRawInput(String(Math.floor(Number.parseFloat(fiat))));
     setSendMaxActive(true);
-  }, [Currency, spendable_balance]);
+    dispatch(setSendMax(true));
+  }, [Currency, spendable_balance, dispatch]);
 
   const handleContinue = useCallback(() => {
     // If manual address, init draft first

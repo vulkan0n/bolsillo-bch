@@ -10,8 +10,17 @@ import {
   walletTemplateP2pkhNonHd,
   walletTemplateToCompilerBCH,
 } from "@bitauth/libauth";
+import { ExchangeLab } from "@cashlab/cauldron";
+import type { TradeResult } from "@cashlab/cauldron";
+import {
+  PayoutAmountRuleType,
+  SpendableCoin,
+  SpendableCoinType,
+} from "@cashlab/common";
+import type { PayoutRule } from "@cashlab/common";
 
 import LogService from "@/kernel/app/LogService";
+import CauldronService from "@/kernel/bch/CauldronService";
 import {
   TransactionOutput,
   TransactionStub,
@@ -27,11 +36,16 @@ import { addressToLockingBytecode } from "@/util/cashaddr";
 import { sha256 } from "@/util/hash";
 import { binToHex, compareBytes, hexToBin } from "@/util/hex";
 import { DUST_RELAY_FEE } from "@/util/sats";
+import { PUSD_TOKENID } from "@/util/tokens";
 
 export interface Recipient {
   address: string;
   amount: bigint;
 }
+
+export type StablecoinTransactionStub = TransactionStub & {
+  tradeResult: TradeResult;
+};
 
 const TXFEE_PER_BYTE = DUST_RELAY_FEE / 1000n;
 
@@ -45,6 +59,7 @@ export default function TransactionBuilderService(walletHash: string) {
 
   return {
     buildP2pkhTransaction,
+    buildStablecoinTransaction,
     calculateTransactionHash,
   };
 
@@ -223,6 +238,242 @@ export default function TransactionBuilderService(walletHash: string) {
     }
 
     return transaction;
+  }
+
+  // -------------------------------- (64)
+  // buildStablecoinTransaction: Atomic PUSD→BCH swap + BCH payment
+  // Called when stablecoinMode is ON and spendable_balance < recipient amount.
+  // Constructs a single transaction that:
+  //   1. Swaps PUSD tokens → BCH via Cauldron ExchangeLab
+  //   2. Pays the recipient in BCH
+  //   3. Returns PUSD change (excess tokens) and BCH change to the wallet
+  // --------------------------------
+
+  async function buildStablecoinTransaction({
+    recipients,
+    tradeSats,
+    totalValue,
+    depth = 0,
+  }: {
+    recipients: Array<Recipient>;
+    tradeSats: bigint;
+    totalValue?: bigint;
+    depth?: number;
+  }): Promise<StablecoinTransactionStub | bigint> {
+    if (depth > 5) {
+      throw new TransactionBuilderError(
+        "buildStablecoinTransaction: max recursion depth exceeded"
+      );
+    }
+
+    const Cauldron = CauldronService();
+    const exchangeLab = new ExchangeLab();
+    const UtxoManager = UtxoManagerService(wallet.walletHash);
+
+    // 1. Get fresh pool data from the Cauldron registry
+    //    (fetchPools must be called before calling buildStablecoinTransaction)
+    const inputPools = Cauldron.getPoolInputs(PUSD_TOKENID);
+    if (inputPools.length === 0) {
+      throw new TransactionBuilderError(
+        "Cauldron pool unavailable — no PUSD pool data"
+      );
+    }
+
+    const recipientAmount = recipients.reduce(
+      (sum, cur) => sum + cur.amount,
+      0n
+    );
+
+    const price = Cauldron.getTokenPrice(PUSD_TOKENID);
+    Log.debug(
+      `buildStablecoinTransaction: price=${price} sats/unit, recipientAmount=${recipientAmount}, tradeSats=${tradeSats}`
+    );
+
+    // 2. Construct trade: supply PUSD → demand BCH for `tradeSats`
+    let tradeResult;
+    try {
+      tradeResult = exchangeLab.constructTradeBestRateForTargetDemand(
+        PUSD_TOKENID,
+        "BCH",
+        tradeSats,
+        inputPools,
+        1n
+      );
+    } catch (e) {
+      Log.warn("buildStablecoinTransaction: trade construction failed", e);
+      return recipientAmount + 1n;
+    }
+
+    // 3. Select token UTXOs to cover the supply side of the trade
+    const stablecoinUtxos = UtxoManager.selectTokens(
+      PUSD_TOKENID,
+      tradeResult.summary.supply
+    );
+    if (stablecoinUtxos.length === 0) {
+      Log.debug("buildStablecoinTransaction: insufficient PUSD UTXOs");
+      return recipientAmount + 1n;
+    }
+
+    // 4. Select BCH coin UTXOs for the reserve (use max reserve for Send Max)
+    const isSendMax = totalValue !== undefined;
+    const maxReserveSats = isSendMax
+      ? totalValue - tradeSats
+      : recipientAmount - tradeSats;
+    const coinUtxos = UtxoManager.selectCoins(maxReserveSats);
+    const inputs = [...stablecoinUtxos, ...coinUtxos];
+
+    // 5. Build SpendableCoin inputs for ExchangeLab
+    const KeyManager = KeyManagerService(wallet);
+    const clabInputs: SpendableCoin[] = inputs.map((input) => ({
+      type: SpendableCoinType.P2PKH,
+      key: KeyManager.getAddressPrivateKey(input.address),
+      output: {
+        locking_bytecode: addressToLockingBytecode(input.address),
+        token:
+          (input.token_amount ?? 0n) > 0n
+            ? {
+                amount: input.token_amount,
+                token_id: input.token_category,
+              }
+            : undefined,
+        amount: input.valueSatoshis,
+      },
+      outpoint: {
+        txhash: hexToBin(input.tx_hash),
+        index: input.tx_pos,
+      },
+    }));
+
+    // 6. Build payout rules: recipient (fixed BCH) + change outputs
+    const AddressManager = AddressManagerService(wallet.walletHash);
+    const changeAddresses = AddressManager.getUnusedAddresses(2, 1);
+    if (changeAddresses.length === 0) {
+      throw new TransactionBuilderError(
+        "buildStablecoinTransaction: no unused change addresses available"
+      );
+    }
+
+    function createPayoutRules(recBch: bigint): PayoutRule[] {
+      let changeAddressIndex = 0;
+      return [
+        // Recipient receives BCH (no tokens — plain P2PKH output)
+        {
+          type: PayoutAmountRuleType.FIXED,
+          locking_bytecode: addressToLockingBytecode(recipients[0].address),
+          amount: recBch,
+        },
+        // Change: handles both BCH dust and excess PUSD tokens
+        {
+          type: PayoutAmountRuleType.CHANGE,
+          generateChangeLockingBytecodeForOutput() {
+            const changeAddress = changeAddresses[changeAddressIndex];
+            if (changeAddressIndex + 1 < changeAddresses.length) {
+              changeAddressIndex += 1;
+            }
+            return addressToLockingBytecode(changeAddress.address);
+          },
+          allow_mixing_native_and_token_when_bch_change_is_dust: true,
+        },
+      ];
+    }
+
+    // 7. Fee convergence loop for Send Max (totalValue provided)
+    if (isSendMax) {
+      let feeEstimate = 0n;
+      for (let iteration = 0; iteration < 3; iteration += 1) {
+        const adjustedRecipient = totalValue - feeEstimate;
+        if (adjustedRecipient <= 0n) {
+          return totalValue;
+        }
+
+        const payoutRules = createPayoutRules(adjustedRecipient);
+        try {
+          const tradeTx = exchangeLab.createTradeTx(
+            tradeResult.entries,
+            clabInputs,
+            payoutRules,
+            null,
+            TXFEE_PER_BYTE
+          );
+          if (!tradeTx) {
+            return totalValue;
+          }
+          if (tradeTx.txfee <= feeEstimate || iteration >= 2) {
+            const tx_raw = tradeTx.txbin;
+            const hex = binToHex(tx_raw);
+            const tx_hash = swapEndianness(
+              binToHex(sha256.hash(sha256.hash(tx_raw)))
+            );
+            return { hex, tx_hash, tradeResult };
+          }
+          feeEstimate = tradeTx.txfee;
+        } catch (e) {
+          if (
+            e &&
+            typeof e === "object" &&
+            "required_amount" in e &&
+            e.required_amount
+          ) {
+            feeEstimate += e.required_amount as bigint;
+          } else {
+            Log.warn("buildStablecoinTransaction: createTradeTx failed", e);
+            return totalValue;
+          }
+        }
+      }
+      return totalValue;
+    }
+
+    // --------------------------------
+    // Normal path (non-Send Max): build with the requested recipient amount
+    // --------------------------------
+    const payoutRules = createPayoutRules(recipientAmount);
+    let tradeTx;
+    try {
+      tradeTx = exchangeLab.createTradeTx(
+        tradeResult.entries,
+        clabInputs,
+        payoutRules,
+        null,
+        TXFEE_PER_BYTE
+      );
+    } catch (e) {
+      // If InsufficientFunds has required_amount, retry with bumped fee
+      if (
+        e &&
+        typeof e === "object" &&
+        "required_amount" in e &&
+        e.required_amount
+      ) {
+        Log.debug(
+          "buildStablecoinTransaction: retry with bumped fee",
+          e.required_amount
+        );
+        return buildStablecoinTransaction({
+          recipients,
+          tradeSats: tradeSats + (e.required_amount as bigint),
+          depth: depth + 1,
+        });
+      }
+      Log.warn("buildStablecoinTransaction: createTradeTx failed", e);
+      return recipientAmount + 1n;
+    }
+
+    if (!tradeTx) {
+      Log.debug("buildStablecoinTransaction: no transaction returned");
+      return recipientAmount + 1n;
+    }
+
+    // 8. Encode and return
+    const tx_raw = tradeTx.txbin;
+    const hex = binToHex(tx_raw);
+    const tx_hash = swapEndianness(binToHex(sha256.hash(sha256.hash(tx_raw))));
+
+    return {
+      hex,
+      tx_hash,
+      tradeResult,
+    };
   }
 
   function bip69SortInputs(a, b) {

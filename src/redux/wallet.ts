@@ -9,29 +9,28 @@ import {
 } from "@reduxjs/toolkit";
 
 import { RootState } from "@/redux";
+import { selectExchangeRates } from "@/redux/exchangeRates";
 import {
   selectCurrencySettings,
   selectIsStablecoinMode,
   setPreference,
 } from "@/redux/preferences";
-import { selectExchangeRates } from "@/redux/exchangeRates";
 import { selectIsRebuilding } from "@/redux/sync";
 
 import LocalNotificationService from "@/kernel/app/LocalNotificationService";
 import LogService from "@/kernel/app/LogService";
 import NotificationService from "@/kernel/app/NotificationService";
+import CauldronService from "@/kernel/bch/CauldronService";
+import CurrencyService from "@/kernel/bch/CurrencyService";
 import AddressManagerService, {
   AddressEntity,
 } from "@/kernel/wallet/AddressManagerService";
 import AddressScannerService from "@/kernel/wallet/AddressScannerService";
+import TransactionHistoryService from "@/kernel/wallet/TransactionHistoryService";
 import UtxoManagerService from "@/kernel/wallet/UtxoManagerService";
 import WalletManagerService, {
   WalletEntity,
 } from "@/kernel/wallet/WalletManagerService";
-
-import CauldronService from "@/kernel/bch/CauldronService";
-import CurrencyService from "@/kernel/bch/CurrencyService";
-import TransactionHistoryService from "@/kernel/wallet/TransactionHistoryService";
 
 import { convertCashAddress } from "@/util/cashaddr";
 import { MIN_SWAP_SATS, PUSD_TOKENID } from "@/util/tokens";
