@@ -1,4 +1,3 @@
-import { useMemo } from "react";
 import { useSelector } from "react-redux";
 
 import { selectExchangeRates } from "@/redux/exchangeRates";
@@ -30,15 +29,17 @@ export function useStableBalance(walletHash: string): StableBalance {
 
   // -------- PUSD token balance
 
-  const pusdBaseUnits = useMemo(() => {
-    try {
-      const UtxoManager = UtxoManagerService(walletHash);
-      const pusdUtxos = UtxoManager.getCategoryUtxos(PUSD_TOKENID);
-      return pusdUtxos.reduce((sum, u) => sum + (u.token_amount ?? 0n), 0n);
-    } catch {
-      return 0n;
-    }
-  }, [walletHash]);
+  let pusdBaseUnits: bigint;
+  try {
+    const UtxoManager = UtxoManagerService(walletHash);
+    const pusdUtxos = UtxoManager.getCategoryUtxos(PUSD_TOKENID);
+    pusdBaseUnits = pusdUtxos.reduce(
+      (sum, u) => sum + (u.token_amount ?? 0n),
+      0n
+    );
+  } catch {
+    pusdBaseUnits = 0n;
+  }
 
   // -------- Convert PUSD to local currency
   // 1 PUSD = 1 USD. Derive USD→localCurrency from BCH exchange rates.

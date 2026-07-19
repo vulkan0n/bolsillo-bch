@@ -132,6 +132,24 @@ describe("useStableBalance", () => {
     expect(result.current.pusdAmount).toBe("1.00");
   });
 
+  it("recomputes PUSD balance when UTXOs change on re-render", () => {
+    mockPusdUtxos = [{ token_amount: 5000n }];
+
+    const { result, rerender } = renderHook(() =>
+      useStableBalance("test-wallet")
+    );
+
+    expect(result.current.pusdAmount).toBe("50.00");
+
+    // Simulate new PUSD UTXOs landing after a Cauldron swap
+    mockPusdUtxos = [{ token_amount: 10000n }];
+
+    // Re-render with same walletHash — must reflect new balance
+    rerender();
+
+    expect(result.current.pusdAmount).toBe("100.00");
+  });
+
   it("handles UtxoManager error gracefully", () => {
     utxoManagerThrow = true;
 
