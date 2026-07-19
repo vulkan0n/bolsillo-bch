@@ -3,6 +3,8 @@ export interface PocketBalanceProps {
   fiatCurrency?: string;
   bchAmount: string;
   label?: string;
+  /** When set, replaces "BCH" in the sub-label (e.g. "PUSD") */
+  subLabel?: string;
 }
 
 export default function PocketBalance({
@@ -10,6 +12,7 @@ export default function PocketBalance({
   fiatCurrency = "$",
   bchAmount,
   label = "TU BOLSILLO",
+  subLabel = "BCH",
 }: PocketBalanceProps) {
   return (
     <div className="relative pt-7">
@@ -44,9 +47,9 @@ export default function PocketBalance({
           </span>
         </div>
 
-        {/* Sub BCH */}
+        {/* Sub amount (BCH or PUSD) */}
         <p className="text-sm text-neutral-400 dark:text-neutral-500 mt-1 tabular text-center">
-          {bchAmount} BCH
+          {bchAmount} {subLabel}
         </p>
       </div>
     </div>

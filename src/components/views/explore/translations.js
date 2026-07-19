@@ -656,8 +656,15 @@ const translations = {
     ur: "PNG برآمد کریں۔",
     vi: "Xuất PNG",
     zh: "导出 PNG",
-    zh_TW: "導出 PNG",
-  }
+    zh_TW: "導出 PNG"
+  },
+
+  // -------- Swap detail (Modo Estable)
+
+  swapDetail: { en: "Swap detail (Modo Estable)", es: "Detalle del swap (Modo Estable)" },
+  swappedAmount: { en: "Swapped amount", es: "Monto intercambiado" },
+  executionPrice: { en: "Execution price", es: "Precio de ejecución" },
+  bchFee: { en: "Fee (BCH)", es: "Comisión (BCH)" },
 };
 
 export default translations;

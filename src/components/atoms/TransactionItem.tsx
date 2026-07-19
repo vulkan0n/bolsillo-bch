@@ -29,6 +29,8 @@ export interface TransactionItemProps {
   fiat_amount: string;
   fiat_currency: string;
   onClick: () => void;
+  /** When set, overrides the BCH line with a PUSD amount (stable mode) */
+  pusdAmount?: string;
 }
 
 // --------------------------------
@@ -40,6 +42,7 @@ export default function TransactionItem({
   fiat_amount,
   fiat_currency,
   onClick,
+  pusdAmount = undefined,
 }: TransactionItemProps) {
   const isReceived = valueSatoshis > 0n;
   const sign = isReceived ? "+" : "−";
@@ -48,6 +51,10 @@ export default function TransactionItem({
     CurrencyService(fiat_currency).getSymbol(fiat_currency) || "$";
   const fiatDisplay = fiat_amount
     ? `${sign}${fiatSymbol}${fiat_amount}`
+    : `${sign}${bchFormatted} BCH`;
+
+  const secondaryDisplay = pusdAmount
+    ? `${sign}${pusdAmount} PUSD`
     : `${sign}${bchFormatted} BCH`;
 
   // ----------------
@@ -98,8 +105,7 @@ export default function TransactionItem({
           {fiatDisplay}
         </p>
         <p className="text-xs text-neutral-400 dark:text-neutral-500 tabular-nums">
-          {sign}
-          {bchFormatted} BCH
+          {secondaryDisplay}
         </p>
       </div>
     </button>
