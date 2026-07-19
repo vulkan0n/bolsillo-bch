@@ -87,8 +87,8 @@ importers:
         specifier: ^1.0.2
         version: 1.0.2
       '@cashlab/common':
-        specifier: 1.0.4
-        version: 1.0.4
+        specifier: 1.0.5
+        version: 1.0.5
       '@electrum-cash/network':
         specifier: ^4.1.4
         version: 4.1.4
@@ -579,9 +579,6 @@ packages:
 
   '@cashlab/cauldron@1.0.2':
     resolution: {integrity: sha512-fCZeNCmh65+gKBkE1j8UcRRKbZCpdWwFUXsb/RT66BinyY/WiVv3v5ecWplki6zw3nvvMahkR09cPf9yN7d+cQ==}
-
-  '@cashlab/common@1.0.4':
-    resolution: {integrity: sha512-XkT0rFeyo3p0CPHVOKvG2SnBHM0U2gp6TA7aIserlRhJNoQ0xWz8UJ0hXHKEtXqECq/EDtuoK1Uy1VIKactYuQ==}
 
   '@cashlab/common@1.0.5':
     resolution: {integrity: sha512-qMzoOJSkWyWdttNn956MRb1dZHqVaB4s0HmQyn+4jOm4ipgLhazsRdJoa6elZeHSA6ofMEZpTXjXUQRSeTYjmw==}
@@ -5701,10 +5698,6 @@ snapshots:
   '@cashlab/cauldron@1.0.2':
     dependencies:
       '@cashlab/common': 1.0.5
-
-  '@cashlab/common@1.0.4':
-    dependencies:
-      '@bitauth/libauth': 3.0.0
 
   '@cashlab/common@1.0.5':
     dependencies:
