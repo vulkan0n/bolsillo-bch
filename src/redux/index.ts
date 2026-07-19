@@ -19,7 +19,13 @@ import { sendDraftReducer } from "./sendDraft";
 import { triggerCheckIn } from "./stats";
 import { syncMiddleware, syncPause, syncReducer, syncResume } from "./sync";
 import { txHistoryReducer } from "./txHistory";
-import { addressReducer, walletBoot, walletReducer } from "./wallet";
+import {
+  addressReducer,
+  rehydratePendingSwap,
+  retryPendingSwap,
+  walletBoot,
+  walletReducer,
+} from "./wallet";
 import { walletConnectInit, walletConnectReducer } from "./walletConnect";
 
 const Log = LogService("redux");
@@ -67,6 +73,8 @@ export async function redux_init() {
       walletHash: selectActiveWalletHash(store.getState()),
     })
   );
+
+  await store.dispatch(rehydratePendingSwap());
 }
 
 export function redux_resume() {
@@ -75,6 +83,11 @@ export function redux_resume() {
   store.dispatch(walletConnectInit());
   store.dispatch(triggerCheckIn());
   store.dispatch(fetchExchangeRates(0));
+
+  // Retry any pending stablecoin swap after sync reconnects
+  setTimeout(() => {
+    store.dispatch(retryPendingSwap());
+  }, 2000);
 
   // After sync has time to reconnect and process missed transactions,
   // check if any arrived while the app was paused and fire aggregated notification
