@@ -21,6 +21,7 @@ import { syncMiddleware, syncPause, syncReducer, syncResume } from "./sync";
 import { txHistoryReducer } from "./txHistory";
 import {
   addressReducer,
+  rehydratePendingSwap,
   retryPendingSwap,
   walletBoot,
   walletReducer,
@@ -72,6 +73,8 @@ export async function redux_init() {
       walletHash: selectActiveWalletHash(store.getState()),
     })
   );
+
+  await store.dispatch(rehydratePendingSwap());
 }
 
 export function redux_resume() {

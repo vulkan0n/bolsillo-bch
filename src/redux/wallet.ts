@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
 import { App } from "@capacitor/app";
+import { Preferences } from "@capacitor/preferences";
 import {
   createAction,
   createAsyncThunk,
@@ -36,6 +37,9 @@ import { convertCashAddress } from "@/util/cashaddr";
 import { MIN_SWAP_SATS, PUSD_TOKENID } from "@/util/tokens";
 
 const Log = LogService("redux/wallet");
+
+const PENDING_SWAP_STORAGE_KEY = "pendingSwap";
+let isRetryingSwap = false;
 
 const initialState = {
   walletHash: "",
@@ -152,7 +156,15 @@ export const walletReceive = createAsyncThunk(
           parseFloat(Currency.satsToFiat(bchIncomingSats)) >= 200;
 
         if (isAboveThreshold) {
-          const swapSats = (bchIncomingSats * 99n) / 100n;
+          const { swapSats } = calcSwapAmount(bchIncomingSats);
+
+          // ------------------------
+          // S3: Guard against zero
+          // ------------------------
+          if (swapSats === 0n) {
+            Log.warn("Auto-swap: zero swap amount, skipping");
+            return;
+          }
 
           try {
             const Cauldron = CauldronService();
@@ -180,12 +192,17 @@ export const walletReceive = createAsyncThunk(
             Log.log("Auto-swap succeeded", txHash, price);
           } catch (e) {
             Log.warn("Auto-swap failed, scheduling retry", e);
-            thunkApi.dispatch(
-              setPendingSwap({
-                sats: swapSats.toString(),
-                retryCount: 0,
-              })
-            );
+
+            const swapPayload = {
+              sats: swapSats.toString(),
+              retryCount: 0,
+            };
+            thunkApi.dispatch(setPendingSwap(swapPayload));
+            // W2: Persist for crash recovery
+            await Preferences.set({
+              key: PENDING_SWAP_STORAGE_KEY,
+              value: JSON.stringify(swapPayload),
+            });
             NotificationService().error(
               "Modo Estable",
               "No se pudo estabilizar. Abrí la app de nuevo para reintentar."
@@ -238,22 +255,61 @@ export const clearPendingSwap = createAction("wallet/clearPendingSwap");
 export const retryPendingSwap = createAsyncThunk(
   "wallet/retryPendingSwap",
   async (_, thunkApi) => {
+    // -------------------------------------------------------
+    // W3: In-flight guard — no concurrent retries
+    // -------------------------------------------------------
+    if (isRetryingSwap) return;
+    isRetryingSwap = true;
+
     const state = thunkApi.getState() as RootState;
     const { pendingSwap } = state.wallet;
-    if (!pendingSwap) return;
+    if (!pendingSwap) {
+      isRetryingSwap = false;
+      return;
+    }
+
+    // -------------------------------------------------------
+    // W1: Flag gate — if stablecoinMode is OFF, clear pending
+    // -------------------------------------------------------
+    if (!selectIsStablecoinMode(state)) {
+      Log.log("retryPendingSwap: stablecoinMode OFF, clearing pending");
+      thunkApi.dispatch(clearPendingSwap());
+      await Preferences.remove({ key: PENDING_SWAP_STORAGE_KEY });
+      isRetryingSwap = false;
+      return;
+    }
 
     if (pendingSwap.retryCount >= 3) {
       thunkApi.dispatch(clearPendingSwap());
+      await Preferences.remove({ key: PENDING_SWAP_STORAGE_KEY });
+      isRetryingSwap = false;
       return;
     }
 
     const wallet = WalletManagerService().getWallet(state.wallet.walletHash);
-    if (!wallet.walletHash) return;
+    if (!wallet.walletHash) {
+      thunkApi.dispatch(clearPendingSwap());
+      await Preferences.remove({ key: PENDING_SWAP_STORAGE_KEY });
+      isRetryingSwap = false;
+      return;
+    }
 
     try {
       const Cauldron = CauldronService();
       await Cauldron.fetchPools(PUSD_TOKENID);
       const swapSats = BigInt(pendingSwap.sats);
+
+      // -------------------------------------------------------
+      // S3: Defensive zero guard
+      // -------------------------------------------------------
+      if (swapSats === 0n) {
+        Log.warn("retryPendingSwap: zero swap amount, clearing");
+        thunkApi.dispatch(clearPendingSwap());
+        await Preferences.remove({ key: PENDING_SWAP_STORAGE_KEY });
+        isRetryingSwap = false;
+        return;
+      }
+
       const trade = Cauldron.prepareTrade(
         "BCH",
         PUSD_TOKENID,
@@ -277,10 +333,56 @@ export const retryPendingSwap = createAsyncThunk(
         "Estabilización completada."
       );
       Log.log("Retry swap succeeded", txHash);
+
+      // W2: Clear persisted pending on success
+      await Preferences.remove({ key: PENDING_SWAP_STORAGE_KEY });
+      isRetryingSwap = false;
     } catch (e) {
       Log.warn("Retry swap failed", e);
+
+      // W2: Persist updated retry count (reducer will bump in-memory +1)
+      const newRetryCount = pendingSwap.retryCount + 1;
+      if (newRetryCount >= 3) {
+        await Preferences.remove({ key: PENDING_SWAP_STORAGE_KEY });
+      } else {
+        await Preferences.set({
+          key: PENDING_SWAP_STORAGE_KEY,
+          value: JSON.stringify({
+            sats: pendingSwap.sats,
+            retryCount: newRetryCount,
+          }),
+        });
+      }
+
+      isRetryingSwap = false;
       // eslint-disable-next-line @typescript-eslint/only-throw-error
       throw e;
+    }
+  }
+);
+
+export const rehydratePendingSwap = createAsyncThunk(
+  "wallet/rehydratePendingSwap",
+  async (_, thunkApi) => {
+    const stored = await Preferences.get({ key: PENDING_SWAP_STORAGE_KEY });
+    if (stored.value) {
+      try {
+        const parsed = JSON.parse(stored.value) as {
+          sats: string;
+          retryCount: number;
+        };
+        if (
+          parsed &&
+          typeof parsed.sats === "string" &&
+          typeof parsed.retryCount === "number"
+        ) {
+          thunkApi.dispatch(
+            setPendingSwap({ sats: parsed.sats, retryCount: parsed.retryCount })
+          );
+        }
+      } catch {
+        await Preferences.remove({ key: PENDING_SWAP_STORAGE_KEY });
+      }
     }
   }
 );
@@ -391,3 +493,28 @@ export const selectPendingSwap = createSelector(
   (state: RootState) => state.wallet,
   (wallet) => wallet.pendingSwap
 );
+
+// --------------------------------
+// Pure helpers (exported for testing)
+// --------------------------------
+
+export function calcSwapAmount(bchSatsIn: bigint): {
+  swapSats: bigint;
+  reserveSats: bigint;
+} {
+  const swapSats = (bchSatsIn * 99n) / 100n;
+  return { swapSats, reserveSats: bchSatsIn - swapSats };
+}
+
+export function isAboveMinThreshold(
+  bchSatsIn: bigint,
+  localCurrency: string,
+  rates: Array<{ currency: string; price: string }>
+): boolean {
+  if (bchSatsIn < MIN_SWAP_SATS) return false;
+  const rate = rates.find((r) => r.currency === localCurrency)?.price;
+  if (!rate) return false;
+  const bchAmount = Number(bchSatsIn) / 100_000_000;
+  const fiatValue = bchAmount * Number(rate);
+  return fiatValue >= 200;
+}

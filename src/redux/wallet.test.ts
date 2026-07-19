@@ -14,41 +14,63 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
 import {
+  calcSwapAmount,
   clearPendingSwap,
-  setPendingSwap,
-  walletReducer,
+  isAboveMinThreshold,
+  rehydratePendingSwap,
   selectPendingSwap,
+  setPendingSwap,
+  walletReceive,
+  walletReducer,
 } from "./wallet";
 
 // ---------------------------------------------------------------------------
-// Pure helpers (exported from the module for testing)
+// Mock services for behavioral tests
 // ---------------------------------------------------------------------------
 
-// calcSwapAmount: 99/1 split of incoming BCH sats
-function calcSwapAmount(bchSatsIn: bigint): {
-  swapSats: bigint;
-  reserveSats: bigint;
-} {
-  const swapSats = (bchSatsIn * 99n) / 100n;
-  return { swapSats, reserveSats: bchSatsIn - swapSats };
-}
+const mockCauldron = vi.hoisted(() => ({
+  fetchPools: vi.fn(),
+  prepareTrade: vi.fn(),
+  broadcastTransaction: vi.fn(),
+  getTokenPrice: vi.fn(() => 100n),
+}));
 
-// isAboveMinThreshold: BCH ≥ MIN_SWAP_SATS AND fiat value ≥ 200
-function isAboveMinThreshold(
-  bchSatsIn: bigint,
-  localCurrency: string,
-  rates: Array<{ currency: string; price: string }>
-): boolean {
-  // Inline minimal version of the threshold check.
-  // The real threshold in walletReceive uses CurrencyService.satsToFiat.
-  // Here we use the same logic: sats -> BCH -> fiat via exchange rate.
-  if (bchSatsIn < 5000n) return false; // MIN_SWAP_SATS
-  const rate = rates.find((r) => r.currency === localCurrency)?.price;
-  if (!rate) return false;
-  const bchAmount = Number(bchSatsIn) / 100_000_000;
-  const fiatValue = bchAmount * Number(rate);
-  return fiatValue >= 200;
-}
+vi.mock("@/kernel/bch/CauldronService", () => ({
+  default: () => mockCauldron,
+}));
+
+vi.mock("@/kernel/wallet/UtxoManagerService", () => ({
+  default: () => ({
+    getUtxo: vi.fn(() => ({
+      utxo_id: "test-utxo",
+      valueSatoshis: 100000n,
+      token_category: null,
+    })),
+  }),
+}));
+
+vi.mock("@/kernel/app/NotificationService", () => ({
+  default: () => ({
+    paymentReceived: vi.fn(),
+    error: vi.fn(),
+    success: vi.fn(),
+  }),
+}));
+
+vi.mock("@/kernel/app/LocalNotificationService", () => ({
+  default: () => ({
+    incrementPendingTx: vi.fn(),
+    schedulePaymentReceived: vi.fn(),
+    captureBalanceSnapshot: vi.fn(),
+    checkResumeNotification: vi.fn(),
+  }),
+}));
+
+vi.mock("@capacitor/app", () => ({
+  App: {
+    getState: vi.fn(() => Promise.resolve({ isActive: true })),
+  },
+}));
 
 // ---------------------------------------------------------------------------
 // Split calculation: 99/1 with BigInt, rounding, zero
@@ -215,21 +237,96 @@ describe("walletReducer (pendingSwap)", () => {
 });
 
 // ---------------------------------------------------------------------------
-// Flag-OFF invariant: structural verification
+// Flag-OFF invariant: behavioral verification
 // ---------------------------------------------------------------------------
 
 describe("Flag-OFF invariant", () => {
-  it("auto-swap block is gated by selectIsStablecoinMode", () => {
-    // The auto-swap code in walletReceive is inside:
-    //   if (selectIsStablecoinMode(state) && !selectIsRebuilding(state)) { ... }
-    // When stablecoinMode is "false", selectIsStablecoinMode returns false,
-    // so the auto-swap block is entirely skipped.
-    // Verified by reading the source: the gate is at line ~142.
-    const source = require("fs").readFileSync(
-      require("path").resolve(__dirname, "./wallet.ts"),
-      "utf8"
-    );
-    expect(source).toContain("selectIsStablecoinMode(state)");
-    expect(source).toContain("!selectIsRebuilding(state)");
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("does not call CauldronService when stablecoinMode is off", async () => {
+    // Build a RootState-like shape with stablecoinMode="false"
+    const state = {
+      wallet: {
+        walletHash: "test-hash",
+        balance: "0",
+        spendable_balance: "0",
+        name: "-",
+        key_viewed_at: "",
+        pendingSwap: null,
+      },
+      preferences: {
+        stablecoinMode: "false",
+        localCurrency: "ARS",
+        preferLocalCurrency: "true",
+        denomination: "bch",
+        authMode: "none",
+        pinHash: "",
+        pinInputMode: "false",
+        authActions: "Any",
+        activeWalletHash: "test-hash",
+        bchNetwork: "mainnet",
+        languageCode: "es",
+        enableExperimental: "false",
+        enablePrerelease: "false",
+        lastCheckIn: "",
+        lastExchangeRate: "1",
+        useTokenAddress: "false",
+        allowInstantPay: "false",
+        instantPayThreshold: "2000000",
+        instantPayThresholdFiat: "10000",
+        useLegacyBip21: "true",
+        qrCodeLogo: "bch",
+        qrCodeBackground: "#ffffff",
+        qrCodeForeground: "#23A06D",
+        displayExploreTab: "true",
+        displayExchangeRate: "true",
+        displaySyncCounter: "true",
+        shouldConstrainViewport: "true",
+        themeMode: "system",
+        electrumServer: "",
+        offlineMode: "false",
+        hideAvailableBalance: "false",
+        enableDailyCheckIn: "false",
+        encryptionDeviceOnly: "false",
+        lastKeyBackupExport: "",
+        expertMode: "false",
+      },
+      sync: {
+        isRebuilding: false,
+        isConnected: false,
+        currentBlockHeight: 0,
+        syncPercent: 0,
+        lastSyncAt: 0,
+        serverUrl: "",
+        serverConnected: false,
+        initialSyncDone: false,
+      },
+      exchangeRates: {
+        rates: [],
+        lastFetch: 0,
+      },
+    } as any;
+
+    // Dispatch walletReceive with a valid-looking UTXO diff
+    const dispatch = vi.fn();
+    const done = walletReceive({
+      wallet: {
+        walletHash: "test-hash",
+        name: "test",
+        balance: "0",
+        spendable_balance: "0",
+      } as any,
+      utxoDiff: { diffIn: ["utxo1"], diffOut: [] },
+    })(dispatch, () => state, undefined);
+
+    // walletReceive calls NotificationService().paymentReceived unconditionally
+    // so the thunk completes even with stablecoinMode off
+    await expect(done).resolves.not.toThrow();
+
+    // CauldronService must NOT have been called — the flag gate prevents it
+    expect(mockCauldron.fetchPools).not.toHaveBeenCalled();
+    expect(mockCauldron.prepareTrade).not.toHaveBeenCalled();
   });
 });
