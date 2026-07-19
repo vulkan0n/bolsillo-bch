@@ -10,7 +10,6 @@ import {
   walletTemplateP2pkhNonHd,
   walletTemplateToCompilerBCH,
 } from "@bitauth/libauth";
-
 import { ExchangeLab } from "@cashlab/cauldron";
 import type { TradeResult } from "@cashlab/cauldron";
 import {
@@ -20,8 +19,8 @@ import {
 } from "@cashlab/common";
 import type { PayoutRule } from "@cashlab/common";
 
-import CauldronService from "@/kernel/bch/CauldronService";
 import LogService from "@/kernel/app/LogService";
+import CauldronService from "@/kernel/bch/CauldronService";
 import {
   TransactionOutput,
   TransactionStub,
@@ -253,12 +252,20 @@ export default function TransactionBuilderService(walletHash: string) {
   async function buildStablecoinTransaction({
     recipients,
     tradeSats,
-    fee = 0n,
+    totalValue,
+    depth = 0,
   }: {
     recipients: Array<Recipient>;
     tradeSats: bigint;
-    fee?: bigint;
+    totalValue?: bigint;
+    depth?: number;
   }): Promise<StablecoinTransactionStub | bigint> {
+    if (depth > 5) {
+      throw new TransactionBuilderError(
+        "buildStablecoinTransaction: max recursion depth exceeded"
+      );
+    }
+
     const Cauldron = CauldronService();
     const exchangeLab = new ExchangeLab();
     const UtxoManager = UtxoManagerService(wallet.walletHash);
@@ -307,9 +314,12 @@ export default function TransactionBuilderService(walletHash: string) {
       return recipientAmount + 1n;
     }
 
-    // 4. Select BCH coin UTXOs for the reserve (recipient amount minus swapped sats + fee)
-    const reserveSats = recipientAmount - tradeSats + fee;
-    const coinUtxos = UtxoManager.selectCoins(reserveSats);
+    // 4. Select BCH coin UTXOs for the reserve (use max reserve for Send Max)
+    const isSendMax = totalValue !== undefined;
+    const maxReserveSats = isSendMax
+      ? totalValue - tradeSats
+      : recipientAmount - tradeSats;
+    const coinUtxos = UtxoManager.selectCoins(maxReserveSats);
     const inputs = [...stablecoinUtxos, ...coinUtxos];
 
     // 5. Build SpendableCoin inputs for ExchangeLab
@@ -337,30 +347,82 @@ export default function TransactionBuilderService(walletHash: string) {
     // 6. Build payout rules: recipient (fixed BCH) + change outputs
     const AddressManager = AddressManagerService(wallet.walletHash);
     const changeAddresses = AddressManager.getUnusedAddresses(2, 1);
-    let changeAddressIndex = 0;
 
-    const payoutRules: PayoutRule[] = [
-      // Recipient receives BCH (no tokens — plain P2PKH output)
-      {
-        type: PayoutAmountRuleType.FIXED,
-        locking_bytecode: addressToLockingBytecode(recipients[0].address),
-        amount: recipientAmount,
-      },
-      // Change: handles both BCH dust and excess PUSD tokens
-      {
-        type: PayoutAmountRuleType.CHANGE,
-        generateChangeLockingBytecodeForOutput() {
-          const changeAddress = changeAddresses[changeAddressIndex];
-          if (changeAddressIndex + 1 < changeAddresses.length) {
-            changeAddressIndex += 1;
-          }
-          return addressToLockingBytecode(changeAddress.address);
+    function createPayoutRules(recBch: bigint): PayoutRule[] {
+      let changeAddressIndex = 0;
+      return [
+        // Recipient receives BCH (no tokens — plain P2PKH output)
+        {
+          type: PayoutAmountRuleType.FIXED,
+          locking_bytecode: addressToLockingBytecode(recipients[0].address),
+          amount: recBch,
         },
-        allow_mixing_native_and_token_when_bch_change_is_dust: true,
-      },
-    ];
+        // Change: handles both BCH dust and excess PUSD tokens
+        {
+          type: PayoutAmountRuleType.CHANGE,
+          generateChangeLockingBytecodeForOutput() {
+            const changeAddress = changeAddresses[changeAddressIndex];
+            if (changeAddressIndex + 1 < changeAddresses.length) {
+              changeAddressIndex += 1;
+            }
+            return addressToLockingBytecode(changeAddress.address);
+          },
+          allow_mixing_native_and_token_when_bch_change_is_dust: true,
+        },
+      ];
+    }
 
-    // 7. Build the combined swap + pay transaction
+    // 7. Fee convergence loop for Send Max (totalValue provided)
+    if (isSendMax) {
+      let feeEstimate = 0n;
+      for (let iteration = 0; iteration < 3; iteration += 1) {
+        const adjustedRecipient = totalValue - feeEstimate;
+        if (adjustedRecipient <= 0n) {
+          return totalValue;
+        }
+
+        const payoutRules = createPayoutRules(adjustedRecipient);
+        try {
+          const tradeTx = exchangeLab.createTradeTx(
+            tradeResult.entries,
+            clabInputs,
+            payoutRules,
+            null,
+            TXFEE_PER_BYTE
+          );
+          if (!tradeTx) {
+            return totalValue;
+          }
+          if (tradeTx.txfee <= feeEstimate || iteration >= 2) {
+            const tx_raw = tradeTx.txbin;
+            const hex = binToHex(tx_raw);
+            const tx_hash = swapEndianness(
+              binToHex(sha256.hash(sha256.hash(tx_raw)))
+            );
+            return { hex, tx_hash, tradeResult };
+          }
+          feeEstimate = tradeTx.txfee;
+        } catch (e) {
+          if (
+            e &&
+            typeof e === "object" &&
+            "required_amount" in e &&
+            e.required_amount
+          ) {
+            feeEstimate += e.required_amount as bigint;
+          } else {
+            Log.warn("buildStablecoinTransaction: createTradeTx failed", e);
+            return totalValue;
+          }
+        }
+      }
+      return totalValue;
+    }
+
+    // --------------------------------
+    // Normal path (non-Send Max): build with the requested recipient amount
+    // --------------------------------
+    const payoutRules = createPayoutRules(recipientAmount);
     let tradeTx;
     try {
       tradeTx = exchangeLab.createTradeTx(
@@ -385,7 +447,7 @@ export default function TransactionBuilderService(walletHash: string) {
         return buildStablecoinTransaction({
           recipients,
           tradeSats: tradeSats + (e.required_amount as bigint),
-          fee: 0n,
+          depth: depth + 1,
         });
       }
       Log.warn("buildStablecoinTransaction: createTradeTx failed", e);

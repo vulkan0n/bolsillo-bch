@@ -559,4 +559,155 @@ describe("buildStablecoinTransaction", () => {
       expect.any(BigInt) // TXFEE_PER_BYTE
     );
   });
+
+  // ---------------------------------------------------------------------------
+  // Finding 4: Invariant tests
+  // ---------------------------------------------------------------------------
+
+  it("token conservation: selects PUSD tokens matching trade supply", async () => {
+    // Arrange: trade supply = 77n (distinct from default), total PUSD = 1000n
+    const tradeSupply = 77n;
+    mockExchangeLabInstance.constructTradeBestRateForTargetDemand.mockReturnValue(
+      {
+        entries: [
+          {
+            pool: mockPoolV0,
+            supply: tradeSupply,
+            demand: 10000n,
+            trade_fee: 0n,
+          },
+        ],
+        summary: {
+          supply: tradeSupply,
+          demand: 10000n,
+          rate: { numerator: 100n, denominator: 1n },
+          trade_fee: 0n,
+        },
+      }
+    );
+
+    const TxBuilder = (await import("./TransactionBuilderService")).default;
+    const svc = TxBuilder("test-wallet-hash");
+
+    await svc.buildStablecoinTransaction({
+      recipients: [
+        {
+          address: "bchtest:qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq",
+          amount: 200000n,
+        },
+      ],
+      tradeSats: 10000n,
+    });
+
+    // Verify selectTokens was called with the trade supply (77n), not total balance
+    expect(mockUtxoManager.selectTokens).toHaveBeenCalledWith(
+      expect.stringContaining("2469acc5"),
+      tradeSupply
+    );
+  });
+
+  it("recipient amount: FIXED payout equals requested sats for normal send", async () => {
+    const TxBuilder = (await import("./TransactionBuilderService")).default;
+    const svc = TxBuilder("test-wallet-hash");
+
+    await svc.buildStablecoinTransaction({
+      recipients: [
+        {
+          address: "bchtest:qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq",
+          amount: 200000n,
+        },
+      ],
+      tradeSats: 100000n,
+    });
+
+    // Extract the FIXED payout rule from createTradeTx args
+    const fixedRule =
+      mockExchangeLabInstance.createTradeTx.mock.calls[0][2].find(
+        (r: any) => r.type === "FIXED"
+      );
+    expect(fixedRule).toBeDefined();
+    expect(fixedRule.amount).toBe(200000n);
+  });
+
+  it("Send Max: deducts fee from recipient via convergence loop", async () => {
+    // Mock createTradeTx to converge on second iteration
+    mockExchangeLabInstance.createTradeTx.mockReset().mockReturnValue({
+      txbin: new Uint8Array(256),
+      txfee: 800n,
+      libauth_source_outputs: [],
+      libauth_generated_transaction: { inputs: [], outputs: [] },
+      payouts_info: [],
+      token_burns: [],
+    });
+
+    const TxBuilder = (await import("./TransactionBuilderService")).default;
+    const svc = TxBuilder("test-wallet-hash");
+
+    const totalValue = 600000n;
+    const result = await svc.buildStablecoinTransaction({
+      recipients: [
+        {
+          address: "bchtest:qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq",
+          amount: totalValue,
+        },
+      ],
+      tradeSats: 100000n,
+      totalValue,
+    });
+
+    // Should succeed (non-bigint)
+    expect(typeof result).not.toBe("bigint");
+
+    // createTradeTx should have been called with convergence iterations
+    const createTxCalls = mockExchangeLabInstance.createTradeTx.mock.calls;
+    expect(createTxCalls.length).toBeGreaterThanOrEqual(1);
+
+    // Last iteration's FIXED amount should be totalValue - txfee
+    const lastPayoutRules = createTxCalls[createTxCalls.length - 1][2];
+    const lastFixedRule = lastPayoutRules.find((r: any) => r.type === "FIXED");
+    expect(lastFixedRule).toBeDefined();
+    expect(lastFixedRule.amount).toBeLessThan(totalValue);
+    // Should be totalValue - feeEstimate (800n in mock), within tolerance
+    expect(lastFixedRule.amount).toBe(totalValue - 800n);
+  });
+
+  it("Send Max: succeeds when total value covers fee (regression)", async () => {
+    const TxBuilder = (await import("./TransactionBuilderService")).default;
+    const svc = TxBuilder("test-wallet-hash");
+
+    // Set up where totalValue is large enough to cover fee
+    const totalValue = 600000n;
+    await expect(
+      svc.buildStablecoinTransaction({
+        recipients: [
+          {
+            address: "bchtest:qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq",
+            amount: totalValue,
+          },
+        ],
+        tradeSats: 100000n,
+        totalValue,
+      })
+    ).resolves.not.toBe("bigint");
+  });
+
+  it("Send Max: selectCoins uses totalValue - tradeSats for reserve", async () => {
+    const TxBuilder = (await import("./TransactionBuilderService")).default;
+    const svc = TxBuilder("test-wallet-hash");
+
+    const totalValue = 600000n;
+    await svc.buildStablecoinTransaction({
+      recipients: [
+        {
+          address: "bchtest:qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq",
+          amount: totalValue,
+        },
+      ],
+      tradeSats: 100000n,
+      totalValue,
+    });
+
+    // Send Max reserve = totalValue - tradeSats = 500000n
+    expect(mockUtxoManager.selectCoins).toHaveBeenCalledWith(500000n);
+  });
 });

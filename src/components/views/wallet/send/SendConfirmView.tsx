@@ -5,8 +5,8 @@ import { ArrowLeft, Clock } from "lucide-react";
 
 import { selectLastUpdatedAt } from "@/redux/exchangeRates";
 import {
-  selectCurrencySettings,
   selectBchNetwork,
+  selectCurrencySettings,
   selectIsStablecoinMode,
 } from "@/redux/preferences";
 import { clearSendDraft, selectSendDraft } from "@/redux/sendDraft";
@@ -16,18 +16,17 @@ import {
   selectActiveWalletHash,
 } from "@/redux/wallet";
 
-import CauldronService from "@/kernel/bch/CauldronService";
 import NotificationService from "@/kernel/app/NotificationService";
+import CauldronService from "@/kernel/bch/CauldronService";
 import CurrencyService from "@/kernel/bch/CurrencyService";
 import TransactionBuilderService from "@/kernel/bch/TransactionBuilderService";
 import TransactionManagerService from "@/kernel/bch/TransactionManagerService";
 import UtxoManagerService from "@/kernel/wallet/UtxoManagerService";
 
-import { PUSD_TOKENID } from "@/util/tokens";
-
 import SlideToAction from "@/atoms/SlideToAction";
 
 import { formatBch } from "@/util/format";
+import { PUSD_TOKENID } from "@/util/tokens";
 
 export default function SendConfirmView() {
   const navigate = useNavigate();
@@ -114,14 +113,17 @@ export default function SendConfirmView() {
           return;
         }
 
-        const recipientAmount = isSendMax
-          ? spendable_balance + pusdValueInBch
-          : draft.amountSats;
+        const totalValue = spendable_balance + pusdValueInBch;
 
         const result = await TxBuilder.buildStablecoinTransaction({
-          recipients: [{ address: draft.address, amount: recipientAmount }],
+          recipients: [
+            {
+              address: draft.address,
+              amount: isSendMax ? totalValue : draft.amountSats,
+            },
+          ],
           tradeSats,
-          fee: 0n,
+          ...(isSendMax ? { totalValue } : {}),
         });
 
         if (typeof result === "bigint") {
@@ -390,7 +392,10 @@ export default function SendConfirmView() {
                       </span>
                       <span className="text-body-md text-neutral-700 dark:text-neutral-300 tabular-nums">
                         1 PUSD ≈{" "}
-                        {formatBch(BigInt(stableSwapInfo.executionPrice))} BCH
+                        {formatBch(
+                          BigInt(stableSwapInfo.executionPrice) * 100n
+                        )}{" "}
+                        BCH
                       </span>
                     </div>
                   </>
