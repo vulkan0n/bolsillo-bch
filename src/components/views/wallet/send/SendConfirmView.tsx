@@ -102,10 +102,7 @@ export default function SendConfirmView() {
           : draft.amountSats - spendable_balance;
 
         // Insufficient PUSD + reserve
-        if (
-          pusdValueInBch <= 0n ||
-          tradeSats > pusdValueInBch + spendable_balance
-        ) {
+        if (pusdValueInBch <= 0n || tradeSats > pusdValueInBch) {
           setTxError(
             "Saldo insuficiente. No tenés suficientes PUSD ni BCH de reserva."
           );
@@ -135,8 +132,12 @@ export default function SendConfirmView() {
         }
 
         setTxStub(result);
+        const rawSupply = result.tradeResult.summary.supply;
+        const pusdFormatted = `${rawSupply / 100n}.${String(
+          rawSupply % 100n
+        ).padStart(2, "0")}`;
         setStableSwapInfo({
-          pusdAmount: result.tradeResult.summary.supply.toString(),
+          pusdAmount: pusdFormatted,
           executionPrice: price.toString(),
         });
         setEffectiveAmount(recipientAmount);

@@ -347,6 +347,11 @@ export default function TransactionBuilderService(walletHash: string) {
     // 6. Build payout rules: recipient (fixed BCH) + change outputs
     const AddressManager = AddressManagerService(wallet.walletHash);
     const changeAddresses = AddressManager.getUnusedAddresses(2, 1);
+    if (changeAddresses.length === 0) {
+      throw new TransactionBuilderError(
+        "buildStablecoinTransaction: no unused change addresses available"
+      );
+    }
 
     function createPayoutRules(recBch: bigint): PayoutRule[] {
       let changeAddressIndex = 0;

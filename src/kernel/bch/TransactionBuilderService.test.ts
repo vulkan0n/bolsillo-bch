@@ -380,6 +380,29 @@ describe("buildStablecoinTransaction", () => {
     expect((result as bigint) > 0n).toBe(true);
   });
 
+  it("returns bigint (shortfall) when tradeSats exceeds available PUSD value", async () => {
+    // Scenario: amount=120000, spendable=60000, PUSD value=50000
+    // tradeSats=60000 > pusdValueInBch=50000 → upfront UI check should reject
+    // At the service layer, selectTokens returns empty when PUSD is insufficient
+    mockUtxoManager.selectTokens.mockReturnValue([]);
+
+    const TxBuilder = (await import("./TransactionBuilderService")).default;
+    const svc = TxBuilder("test-wallet-hash");
+
+    const result = await svc.buildStablecoinTransaction({
+      recipients: [
+        {
+          address: "bchtest:qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq",
+          amount: 120000n,
+        },
+      ],
+      tradeSats: 60000n,
+    });
+
+    expect(typeof result).toBe("bigint");
+    expect((result as bigint) > 0n).toBe(true);
+  });
+
   it("throws TransactionBuilderError when no pool data available", async () => {
     mockCauldron.getPoolInputs.mockReturnValue([]);
 
