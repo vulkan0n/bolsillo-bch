@@ -163,6 +163,27 @@ export default function ExploreTransactionView() {
 
   //Log.debug(tx, confirmations);
 
+  // -------- Parse swap annotation from memo JSON --------
+  const swapMeta = useMemo(() => {
+    if (!memo || !memo.startsWith("{")) return null;
+    try {
+      const parsed = JSON.parse(memo);
+      if (parsed && parsed.__swap) {
+        return parsed as {
+          __swap: boolean;
+          price?: string;
+          pusdAmount?: string;
+          feeSats?: string;
+        };
+      }
+      return null;
+    } catch {
+      return null;
+    }
+  }, [memo]);
+
+  // -------- Render --------
+
   return (
     <>
       <ExploreSearchBar />
@@ -250,6 +271,44 @@ export default function ExploreTransactionView() {
               fullWidth
               inverted
             />
+          </div>
+        )}
+
+        {/* -------- Swap breakdown ---------- */}
+        {swapMeta && (
+          <div className="mt-1.5">
+            <Accordion title={translate(translations.swapDetail)}>
+              <div className="p-3 space-y-2 text-sm bg-primary-50 dark:bg-primarydark-50 rounded-b">
+                <div className="flex justify-between">
+                  <span className="text-neutral-600 dark:text-neutral-400">
+                    {translate(translations.swappedAmount)}
+                  </span>
+                  <span className="font-mono tabular-nums text-neutral-900 dark:text-neutral-100">
+                    {swapMeta.pusdAmount ? `${(Number(swapMeta.pusdAmount) / 100).toFixed(2)} PUSD` : "—"}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-neutral-600 dark:text-neutral-400">
+                    {translate(translations.executionPrice)}
+                  </span>
+                  <span className="font-mono tabular-nums text-neutral-900 dark:text-neutral-100">
+                    {swapMeta.price
+                      ? `${(Number(swapMeta.price) / 100).toFixed(2)} sats / PUSD`
+                      : "—"}
+                  </span>
+                </div>
+                {swapMeta.feeSats && (
+                  <div className="flex justify-between">
+                    <span className="text-neutral-600 dark:text-neutral-400">
+                      {translate(translations.bchFee)}
+                    </span>
+                    <span className="font-mono tabular-nums text-neutral-900 dark:text-neutral-100">
+                      {(Number(swapMeta.feeSats) / 1e8).toFixed(8)} BCH
+                    </span>
+                  </div>
+                )}
+              </div>
+            </Accordion>
           </div>
         )}
 

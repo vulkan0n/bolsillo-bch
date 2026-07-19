@@ -7,15 +7,17 @@ import {
 } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router";
-import { ArrowDown, ArrowUp } from "lucide-react";
+import { AlertTriangle, ArrowDown, ArrowUp } from "lucide-react";
 
 import { fetchExchangeRates } from "@/redux/exchangeRates";
+import { selectIsStablecoinMode } from "@/redux/preferences";
 import { syncHotRefresh } from "@/redux/sync";
 import { txHistoryFetch } from "@/redux/txHistory";
 import {
   selectActiveWallet,
   selectActiveWalletHash,
   selectGenesisHeight,
+  selectPendingSwap,
   walletSyncDiff,
 } from "@/redux/wallet";
 
@@ -26,6 +28,7 @@ import PocketBalance from "@/atoms/PocketBalance";
 import PullIndicator from "@/atoms/PullIndicator";
 
 import { useFormattedBalance } from "@/hooks/useFormattedBalance";
+import { useStableBalance } from "@/hooks/useStableBalance";
 
 import {
   computePullDistance,
@@ -42,7 +45,25 @@ export default function WalletViewHome() {
   const walletHash = useSelector(selectActiveWalletHash);
   const activeWallet = useSelector(selectActiveWallet);
   const genesisHeight = useSelector(selectGenesisHeight);
+  const isStablecoinMode = useSelector(selectIsStablecoinMode);
+  const pendingSwap = useSelector(selectPendingSwap);
+
+  // -------- Balance display: stable or normal
+
   const { fiatAmount, fiatCurrency, bchAmount } = useFormattedBalance();
+  const stableBalance = useStableBalance(walletHash);
+
+  const pocketLabel = isStablecoinMode ? "MODO ESTABLE" : undefined;
+  const pocketFiatAmount = isStablecoinMode
+    ? stableBalance.totalFiatFormatted
+    : fiatAmount;
+  const pocketFiatSymbol = isStablecoinMode
+    ? stableBalance.fiatSymbol
+    : fiatCurrency;
+  const pocketSubAmount = isStablecoinMode
+    ? stableBalance.pusdAmount
+    : bchAmount;
+  const pocketSubLabel = isStablecoinMode ? "PUSD" : undefined;
 
   // ---------------- Pull-to-refresh state
 
@@ -169,15 +190,37 @@ export default function WalletViewHome() {
           </div>
         )}
 
+        {/* ---------- Degraded banner (stable mode + Cauldron down) ---------- */}
+        {isStablecoinMode && pendingSwap && (
+          <div className="px-5 mt-3">
+            <div className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-amber-50 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-700">
+              <AlertTriangle className="w-4 h-4 text-amber-600 dark:text-amber-400 flex-shrink-0" />
+              <p className="text-xs text-amber-700 dark:text-amber-300">
+                No se pudo estabilizar. Abrí la app de nuevo para reintentar.
+              </p>
+            </div>
+          </div>
+        )}
+
         <div className="px-5 mt-4">
           <div className="max-w-xs mx-auto">
             <PocketBalance
-              fiatAmount={fiatAmount}
-              fiatCurrency={fiatCurrency}
-              bchAmount={bchAmount}
+              fiatAmount={pocketFiatAmount}
+              fiatCurrency={pocketFiatSymbol}
+              bchAmount={pocketSubAmount}
+              label={pocketLabel}
+              subLabel={pocketSubLabel}
             />
           </div>
         </div>
+
+        {isStablecoinMode && (
+          <div className="px-5 mt-2">
+            <p className="text-xs text-neutral-400 dark:text-neutral-500 text-center">
+              Saldo unificado: PUSD + reserva BCH
+            </p>
+          </div>
+        )}
 
         <div className="px-5 mt-8">
           <div className="grid grid-cols-2 gap-4 max-w-xs mx-auto">
