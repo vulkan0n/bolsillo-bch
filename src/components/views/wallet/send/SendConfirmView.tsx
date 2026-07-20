@@ -21,6 +21,7 @@ import CauldronService from "@/kernel/bch/CauldronService";
 import CurrencyService from "@/kernel/bch/CurrencyService";
 import TransactionBuilderService from "@/kernel/bch/TransactionBuilderService";
 import TransactionManagerService from "@/kernel/bch/TransactionManagerService";
+import TransactionHistoryService from "@/kernel/wallet/TransactionHistoryService";
 import UtxoManagerService from "@/kernel/wallet/UtxoManagerService";
 
 import SlideToAction from "@/atoms/SlideToAction";
@@ -55,6 +56,7 @@ export default function SendConfirmView() {
   const [stableSwapInfo, setStableSwapInfo] = useState<{
     pusdAmount: string;
     executionPrice: string;
+    rawSupply: string;
   } | null>(null);
   const [isCauldronDown, setIsCauldronDown] = useState(false);
 
@@ -139,8 +141,9 @@ export default function SendConfirmView() {
         setStableSwapInfo({
           pusdAmount: pusdFormatted,
           executionPrice: price.toString(),
+          rawSupply: rawSupply.toString(),
         });
-        setEffectiveAmount(recipientAmount);
+        setEffectiveAmount(isSendMax ? totalValue : draft.amountSats);
         setIsVerifying(false);
       } catch (e) {
         // Cauldron down — handled via isCauldronDown state and user-facing error
@@ -221,6 +224,18 @@ export default function SendConfirmView() {
 
       await TransactionManagerService().sendTransaction(txStub, bchNetwork);
 
+      // Mark stable swap transactions in history (only if no user memo)
+      if (stableSwapInfo && !draft.memo) {
+        TransactionHistoryService(walletHash).setTransactionMemo(
+          txStub.tx_hash,
+          JSON.stringify({
+            __swap: true,
+            price: stableSwapInfo.executionPrice,
+            pusdAmount: stableSwapInfo.rawSupply,
+          })
+        );
+      }
+
       // Trigger immediate balance refresh
       dispatch(syncHotRefresh({ force: true }));
 
@@ -234,7 +249,16 @@ export default function SendConfirmView() {
     } finally {
       isBroadcasting.current = false;
     }
-  }, [txStub, isConnected, bchNetwork, navigate, dispatch]);
+  }, [
+    txStub,
+    isConnected,
+    bchNetwork,
+    navigate,
+    dispatch,
+    stableSwapInfo,
+    draft.memo,
+    walletHash,
+  ]);
 
   // -------- Derived display
 

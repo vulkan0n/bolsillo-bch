@@ -3,8 +3,14 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router";
 import { ArrowLeft, Clock, Pencil, QrCode } from "lucide-react";
 
-import { selectLastUpdatedAt } from "@/redux/exchangeRates";
-import { selectCurrencySettings } from "@/redux/preferences";
+import {
+  selectExchangeRates,
+  selectLastUpdatedAt,
+} from "@/redux/exchangeRates";
+import {
+  selectCurrencySettings,
+  selectIsStablecoinMode,
+} from "@/redux/preferences";
 import {
   initSendDraft,
   selectSendDraft,
@@ -13,13 +19,18 @@ import {
   setMemo,
   setSendMax,
 } from "@/redux/sendDraft";
-import { selectActiveWalletBalance } from "@/redux/wallet";
+import {
+  selectActiveWalletBalance,
+  selectActiveWalletHash,
+} from "@/redux/wallet";
 
 import CurrencyService from "@/kernel/bch/CurrencyService";
+import UtxoManagerService from "@/kernel/wallet/UtxoManagerService";
 
 import AppButton from "@/atoms/AppButton";
 
 import { formatBch } from "@/util/format";
+import { PUSD_TOKENID } from "@/util/tokens";
 import { validateBip21Uri } from "@/util/uri";
 
 const CHIPS = [1000, 2000, 5000, 10000];
@@ -30,6 +41,9 @@ export default function SendAmountView() {
   const draft = useSelector(selectSendDraft);
   const { localCurrency } = useSelector(selectCurrencySettings);
   const { spendable_balance } = useSelector(selectActiveWalletBalance);
+  const walletHash = useSelector(selectActiveWalletHash);
+  const isStablecoinMode = useSelector(selectIsStablecoinMode);
+  const rates = useSelector(selectExchangeRates);
   const lastUpdatedAt = useSelector(selectLastUpdatedAt);
 
   const Currency = CurrencyService(localCurrency);
@@ -38,7 +52,7 @@ export default function SendAmountView() {
 
   const [rawInput, setRawInput] = useState(draft.amountFiat ?? "");
   const [memoInput, setMemoInput] = useState(draft.memo ?? "");
-  const [sendMaxActive, setSendMaxActive] = useState(false);
+  const [isSendMaxActive, setSendMaxActive] = useState(false);
 
   // Manual address entry state (when coming from "Ingresar dirección manualmente")
   const [manualAddress, setManualAddress] = useState("");
@@ -61,22 +75,46 @@ export default function SendAmountView() {
     [rawInput]
   );
 
-  const amountSats = useMemo(
-    () =>
-      sendMaxActive
-        ? spendable_balance
-        : numericValue > 0
-          ? Currency.fiatToSats(numericValue)
-          : 0n,
-    [numericValue, Currency, sendMaxActive, spendable_balance]
-  );
+  const amountSats = useMemo(() => {
+    if (isSendMaxActive) return spendable_balance;
+    if (numericValue > 0) return Currency.fiatToSats(numericValue);
+    return 0n;
+  }, [numericValue, Currency, isSendMaxActive, spendable_balance]);
 
   const bchDisplay = useMemo(
     () => (amountSats > 0n ? formatBch(amountSats) : "0.00"),
     [amountSats]
   );
 
-  const isInsufficient = amountSats > spendable_balance;
+  // -------- Stable mode: PUSD value in sats for folded balance check
+
+  const pusdValueSats = useMemo(() => {
+    if (!isStablecoinMode) return 0n;
+    try {
+      const UtxoManager = UtxoManagerService(walletHash);
+      const pusdUtxos = UtxoManager.getCategoryUtxos(PUSD_TOKENID);
+      const pusdBalance = pusdUtxos.reduce(
+        (sum, u) => sum + (u.token_amount ?? 0n),
+        0n
+      );
+      if (pusdBalance === 0n) return 0n;
+      // 1 PUSD = 1 USD; convert to sats via BCH/USD exchange rate.
+      // Approximation for UX gate — authoritative check is in SendConfirmView.
+      const usdRate = rates.find((r) => r.currency === "USD")?.price;
+      if (!usdRate) return 0n;
+      const pusdUnits = Number(pusdBalance) / 100;
+      const bchValue = pusdUnits / Number(usdRate);
+      return BigInt(Math.round(bchValue * 100_000_000));
+    } catch {
+      return 0n;
+    }
+  }, [isStablecoinMode, walletHash, rates]);
+
+  const availableSats = isStablecoinMode
+    ? spendable_balance + pusdValueSats
+    : spendable_balance;
+
+  const isInsufficient = amountSats > availableSats;
 
   const minutesSinceUpdate = useMemo(() => {
     if (!lastUpdatedAt) return null;
@@ -115,12 +153,12 @@ export default function SendAmountView() {
   }, []);
 
   const handleSendMax = useCallback(() => {
-    const fiat = Currency.satsToFiat(spendable_balance);
+    const fiat = Currency.satsToFiat(availableSats);
     // Round down to integer so the input stays editable (no decimal points)
     setRawInput(String(Math.floor(Number.parseFloat(fiat))));
     setSendMaxActive(true);
     dispatch(setSendMax(true));
-  }, [Currency, spendable_balance, dispatch]);
+  }, [Currency, availableSats, dispatch]);
 
   const handleContinue = useCallback(() => {
     // If manual address, init draft first
