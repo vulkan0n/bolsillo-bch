@@ -223,24 +223,44 @@ export default function SendConfirmView() {
         throw new Error("Sin conexión al servidor Electrum");
       }
 
+      // Snapshot swap memo data before navigating (component state
+      // is lost after navigation). The memo must be written AFTER
+      // sync because address_transactions rows are created by sync.
+      const swapMemoPayload =
+        stableSwapInfo && !draft.memo
+          ? {
+              txHash: txStub.tx_hash,
+              walletHash,
+              memoJson: JSON.stringify({
+                __swap: true,
+                price: stableSwapInfo.executionPrice,
+                pusdAmount: stableSwapInfo.rawSupply,
+              }),
+            }
+          : null;
+
       await TransactionManagerService().sendTransaction(txStub, bchNetwork);
 
-      // Mark stable swap transactions in history (only if no user memo)
-      if (stableSwapInfo && !draft.memo) {
-        TransactionHistoryService(walletHash).setTransactionMemo(
-          txStub.tx_hash,
-          JSON.stringify({
-            __swap: true,
-            price: stableSwapInfo.executionPrice,
-            pusdAmount: stableSwapInfo.rawSupply,
-          })
-        );
-      }
-
-      // Trigger immediate balance refresh
-      dispatch(syncHotRefresh({ force: true }));
-
+      // Navigate immediately — don't make user wait for sync
       navigate("/wallet/send/success");
+
+      // Persist __swap memo after sync discovers the transaction on-chain.
+      // setTransactionMemo does UPDATE address_transactions WHERE tx_hash=?,
+      // and the row only exists after sync scans the wallet's addresses.
+      if (swapMemoPayload) {
+        dispatch(syncHotRefresh({ force: true }))
+          .then(() => {
+            TransactionHistoryService(
+              swapMemoPayload.walletHash
+            ).setTransactionMemo(
+              swapMemoPayload.txHash,
+              swapMemoPayload.memoJson
+            );
+          })
+          .catch(() => {}); // memo persistence is best-effort
+      } else {
+        dispatch(syncHotRefresh({ force: true }));
+      }
     } catch (e) {
       NotificationService().error(
         "Error al enviar",
