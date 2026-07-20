@@ -21,6 +21,7 @@ import CauldronService from "@/kernel/bch/CauldronService";
 import CurrencyService from "@/kernel/bch/CurrencyService";
 import TransactionBuilderService from "@/kernel/bch/TransactionBuilderService";
 import TransactionManagerService from "@/kernel/bch/TransactionManagerService";
+import TransactionHistoryService from "@/kernel/wallet/TransactionHistoryService";
 import UtxoManagerService from "@/kernel/wallet/UtxoManagerService";
 
 import SlideToAction from "@/atoms/SlideToAction";
@@ -55,6 +56,7 @@ export default function SendConfirmView() {
   const [stableSwapInfo, setStableSwapInfo] = useState<{
     pusdAmount: string;
     executionPrice: string;
+    rawSupply: string;
   } | null>(null);
   const [isCauldronDown, setIsCauldronDown] = useState(false);
 
@@ -90,8 +92,9 @@ export default function SendConfirmView() {
         );
         const price = Cauldron.getTokenPrice(PUSD_TOKENID); // sats per 0.01 PUSD unit
 
-        // Calculate total PUSD value in BCH (PUSD has 2 decimals: balance/100 * price)
-        const pusdValueInBch = (pusdBalance * price) / 100n;
+        // PUSD value in BCH sats: price is sats per base unit (0.01 PUSD),
+        // so total = balance (base units) × price (sats/unit)
+        const pusdValueInBch = pusdBalance * price;
 
         // Determine tradeSats: how much BCH we need from the swap
         // For Send Max (draft.isSendMax): swap ALL PUSD
@@ -139,8 +142,9 @@ export default function SendConfirmView() {
         setStableSwapInfo({
           pusdAmount: pusdFormatted,
           executionPrice: price.toString(),
+          rawSupply: rawSupply.toString(),
         });
-        setEffectiveAmount(recipientAmount);
+        setEffectiveAmount(isSendMax ? totalValue : draft.amountSats);
         setIsVerifying(false);
       } catch (e) {
         // Cauldron down — handled via isCauldronDown state and user-facing error
@@ -219,12 +223,44 @@ export default function SendConfirmView() {
         throw new Error("Sin conexión al servidor Electrum");
       }
 
+      // Snapshot swap memo data before navigating (component state
+      // is lost after navigation). The memo must be written AFTER
+      // sync because address_transactions rows are created by sync.
+      const swapMemoPayload =
+        stableSwapInfo && !draft.memo
+          ? {
+              txHash: txStub.tx_hash,
+              walletHash,
+              memoJson: JSON.stringify({
+                __swap: true,
+                price: stableSwapInfo.executionPrice,
+                pusdAmount: stableSwapInfo.rawSupply,
+              }),
+            }
+          : null;
+
       await TransactionManagerService().sendTransaction(txStub, bchNetwork);
 
-      // Trigger immediate balance refresh
-      dispatch(syncHotRefresh({ force: true }));
-
+      // Navigate immediately — don't make user wait for sync
       navigate("/wallet/send/success");
+
+      // Persist __swap memo after sync discovers the transaction on-chain.
+      // setTransactionMemo does UPDATE address_transactions WHERE tx_hash=?,
+      // and the row only exists after sync scans the wallet's addresses.
+      if (swapMemoPayload) {
+        dispatch(syncHotRefresh({ force: true }))
+          .then(() => {
+            TransactionHistoryService(
+              swapMemoPayload.walletHash
+            ).setTransactionMemo(
+              swapMemoPayload.txHash,
+              swapMemoPayload.memoJson
+            );
+          })
+          .catch(() => {}); // memo persistence is best-effort
+      } else {
+        dispatch(syncHotRefresh({ force: true }));
+      }
     } catch (e) {
       NotificationService().error(
         "Error al enviar",
@@ -234,7 +270,16 @@ export default function SendConfirmView() {
     } finally {
       isBroadcasting.current = false;
     }
-  }, [txStub, isConnected, bchNetwork, navigate, dispatch]);
+  }, [
+    txStub,
+    isConnected,
+    bchNetwork,
+    navigate,
+    dispatch,
+    stableSwapInfo,
+    draft.memo,
+    walletHash,
+  ]);
 
   // -------- Derived display
 

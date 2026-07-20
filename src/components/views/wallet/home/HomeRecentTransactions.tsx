@@ -2,7 +2,6 @@ import { useEffect, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router";
 
-import { selectExchangeRates } from "@/redux/exchangeRates";
 import { selectIsStablecoinMode } from "@/redux/preferences";
 import { selectTransactionHistory, txHistoryFetch } from "@/redux/txHistory";
 
@@ -22,17 +21,18 @@ function EmptyState() {
 
 // --------------------------------
 
-/** Compute the PUSD equivalent of a BCH amount at the current exchange rate. */
-function satsToPusd(
-  valueSatoshis: bigint,
-  rates: Array<{ currency: string; price: string }>
-): string {
-  const usdRate = rates.find((r) => r.currency === "USD")?.price;
-  if (!usdRate) return "";
-  const absSats = valueSatoshis < 0n ? -valueSatoshis : valueSatoshis;
-  const bchAmount = Number(absSats) / 100_000_000;
-  const usdValue = bchAmount * Number(usdRate);
-  return usdValue.toFixed(2);
+/** Extract PUSD display amount from a swap memo, or null if not a swap tx. */
+function parseSwapPusd(memo: string): string | null {
+  if (!memo || !memo.startsWith("{")) return null;
+  try {
+    const parsed = JSON.parse(memo);
+    if (parsed && parsed.__swap && parsed.pusdAmount) {
+      return (Number(parsed.pusdAmount) / 100).toFixed(2);
+    }
+  } catch {
+    // not a swap memo
+  }
+  return null;
 }
 
 // --------------------------------
@@ -42,7 +42,6 @@ export default function HomeRecentTransactions() {
   const navigate = useNavigate();
   const txHistory = useSelector(selectTransactionHistory);
   const isStablecoinMode = useSelector(selectIsStablecoinMode);
-  const rates = useSelector(selectExchangeRates);
 
   useEffect(
     function loadHistory() {
@@ -53,11 +52,12 @@ export default function HomeRecentTransactions() {
 
   const recent = txHistory.slice(0, 5);
 
-  // Pre-compute PUSD values for each tx when in stable mode
+  // Pre-compute PUSD values only for transactions that were actual swaps.
+  // Historical pure-BCH transactions keep their original BCH display.
   const pusdValues = useMemo(() => {
     if (!isStablecoinMode) return null;
-    return recent.map((tx) => satsToPusd(tx.valueSatoshis, rates));
-  }, [recent, isStablecoinMode, rates]);
+    return recent.map((tx) => parseSwapPusd(tx.memo));
+  }, [recent, isStablecoinMode]);
 
   return (
     <section className="px-5 mt-6">
