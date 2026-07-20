@@ -206,6 +206,13 @@ export const walletReceive = createAsyncThunk(
               "Modo Estable",
               "No se pudo estabilizar. Abrí la app de nuevo para reintentar."
             );
+
+            // Schedule automatic retry after sync stabilizes and
+            // Cauldron pool data becomes available (resume-triggered
+            // retryPendingSwap fires at t+2s, too early for sync).
+            setTimeout(() => {
+              thunkApi.dispatch(retryPendingSwap());
+            }, 15000);
           }
         }
       }
