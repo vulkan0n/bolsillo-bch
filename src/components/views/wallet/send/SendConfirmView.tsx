@@ -92,8 +92,9 @@ export default function SendConfirmView() {
         );
         const price = Cauldron.getTokenPrice(PUSD_TOKENID); // sats per 0.01 PUSD unit
 
-        // Calculate total PUSD value in BCH (PUSD has 2 decimals: balance/100 * price)
-        const pusdValueInBch = (pusdBalance * price) / 100n;
+        // PUSD value in BCH sats: price is sats per base unit (0.01 PUSD),
+        // so total = balance (base units) × price (sats/unit)
+        const pusdValueInBch = pusdBalance * price;
 
         // Determine tradeSats: how much BCH we need from the swap
         // For Send Max (draft.isSendMax): swap ALL PUSD
