@@ -54,12 +54,17 @@ export default function StableSettings() {
 
         if (pusdBalance > 0n) {
           await Cauldron.fetchPools(PUSD_TOKENID);
+          // Provide BCH for transaction fees — the wallet's PUSD UTXO dust
+          // alone is insufficient for deactivation (PUSD→BCH needs a BCH
+          // change output with min 693 sat dust + ~500 sat tx fee).
+          const feeBuffer = BigInt(activeWallet.spendable_balance);
           const trade = Cauldron.prepareTrade(
             PUSD_TOKENID,
             "BCH",
             pusdBalance,
             activeWallet,
-            false
+            false,
+            feeBuffer
           );
           await Cauldron.broadcastTransaction(trade.tx_hex);
         }
