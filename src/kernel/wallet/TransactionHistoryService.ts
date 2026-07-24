@@ -426,7 +426,9 @@ export default function TransactionHistoryService(
 
   function updateTxAmount(tx_hash: string, amount: bigint) {
     //Log.debug("updateTxAmount", tx_hash);
-    const fiat_amount = CurrencyService(fiatCurrency).satsToFiat(amount);
+    const fiat_amount = CurrencyService(fiatCurrency)
+      .satsToFiat(amount)
+      .replace(/^-/, ""); // strip sign — TransactionItem handles it
 
     const tx = APP_DB.exec(
       "SELECT time, height FROM transactions WHERE tx_hash=?;",
