@@ -1,4 +1,4 @@
-import { useCallback, useContext } from "react";
+import { useCallback, useContext, useState } from "react";
 import { useSelector } from "react-redux";
 
 import { selectIsStablecoinMode } from "@/redux/preferences";
@@ -25,9 +25,12 @@ export default function StableSettings() {
   const activeWallet = useSelector(selectActiveWallet);
   const Modal = ModalService();
   const Notification = NotificationService();
+  const [isToggling, setIsToggling] = useState(false);
 
   const handleToggle = useCallback(async () => {
     if (!activeWallet) return;
+
+    setIsToggling(true);
 
     if (isStablecoinMode) {
       // ---------------- Deactivation ----------------
@@ -35,7 +38,10 @@ export default function StableSettings() {
         title: translate(translations.modoEstableDeactivationTitle),
         message: translate(translations.modoEstableDeactivationMessage),
       });
-      if (!isConfirmed) return;
+      if (!isConfirmed) {
+        setIsToggling(false);
+        return;
+      }
 
       handleSettingsUpdate("stablecoinMode", "false");
       Notification.success(
@@ -54,16 +60,16 @@ export default function StableSettings() {
 
         if (pusdBalance > 0n) {
           await Cauldron.fetchPools(PUSD_TOKENID);
-          // Provide BCH for transaction fees — the wallet's PUSD UTXO dust
-          // alone is insufficient for deactivation (PUSD→BCH needs a BCH
-          // change output with min 693 sat dust + ~500 sat tx fee).
+          // Use isDemandFlipped=true to call constructTradeBestRateForTargetSupply
+          // so amount=pusdBalance is correctly treated as PUSD supply (not BCH demand).
+          // Fee buffer provides BCH coins for miner fee + PUSD change output dust.
           const feeBuffer = BigInt(activeWallet.spendable_balance);
           const trade = Cauldron.prepareTrade(
             PUSD_TOKENID,
             "BCH",
             pusdBalance,
             activeWallet,
-            false,
+            true,
             feeBuffer
           );
           await Cauldron.broadcastTransaction(trade.tx_hex);
@@ -79,7 +85,10 @@ export default function StableSettings() {
         title: translate(translations.modoEstableActivationTitle),
         message: translate(translations.modoEstableActivationMessage),
       });
-      if (!isConfirmed) return;
+      if (!isConfirmed) {
+        setIsToggling(false);
+        return;
+      }
 
       handleSettingsUpdate("stablecoinMode", "true");
       Notification.success(
@@ -107,6 +116,8 @@ export default function StableSettings() {
         Notification.error(translate(translations.modoEstableActivationFailed));
       }
     }
+
+    setIsToggling(false);
   }, [
     activeWallet,
     isStablecoinMode,
@@ -121,7 +132,16 @@ export default function StableSettings() {
       label={translate(translations.modoEstable)}
       description={translate(translations.modoEstableDescription)}
     >
-      <Checkbox checked={isStablecoinMode} onChange={handleToggle} />
+      <Checkbox
+        checked={isStablecoinMode}
+        onChange={handleToggle}
+        disabled={isToggling}
+      />
+      {isToggling && (
+        <span className="text-xs text-neutral-400 ml-1">
+          Procesando swap...
+        </span>
+      )}
     </Accordion.Child>
   );
 }
