@@ -218,7 +218,8 @@ export default function CauldronService() {
     demandCategory: string,
     amount: bigint,
     wallet: WalletEntity,
-    isDemandFlipped = false
+    isDemandFlipped = false,
+    feeBuffer: bigint = 0n
   ): { tx_hex: string; tradeResult: TradeResult } {
     const inputPools = getPoolInputs();
     const TX_FEE_PER_BYTE = 1n;
@@ -313,7 +314,7 @@ export default function CauldronService() {
       return tradeTx;
     };
 
-    const tradeTx = attemptTrade(0n);
+    const tradeTx = attemptTrade(feeBuffer);
     const tx_hex = binToHex(tradeTx.txbin);
     return { tx_hex, tradeResult };
   }
