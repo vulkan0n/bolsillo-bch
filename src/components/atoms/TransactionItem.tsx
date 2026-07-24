@@ -50,7 +50,7 @@ export default function TransactionItem({
   const fiatSymbol =
     CurrencyService(fiat_currency).getSymbol(fiat_currency) || "$";
   const fiatDisplay = fiat_amount
-    ? `${sign}${fiatSymbol}${fiat_amount}`
+    ? `${sign}${fiatSymbol}${fiat_amount.replace(/^-/, "")}`
     : `${sign}${bchFormatted} BCH`;
 
   const secondaryDisplay = pusdAmount
