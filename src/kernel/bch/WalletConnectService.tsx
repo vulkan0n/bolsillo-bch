@@ -37,11 +37,11 @@ export default function WalletConnectService() {
     });
 
     const metadata = {
-      name: "Selene Wallet",
-      description: "Selene Wallet for Bitcoin Cash (BCH)",
-      url: "https://app.selene.cash",
+      name: "Bolsillo BCH",
+      description: "Bolsillo BCH - Billetera Bitcoin Cash para comercios",
+      url: "https://github.com/vulkan0n/bolsillo-bch",
       icons: [
-        "https://git.xulu.tech/selene.cash/selene-wallet/-/raw/main/src/assets/selene-logo.svg",
+        "https://raw.githubusercontent.com/vulkan0n/bolsillo-bch/main/src/assets/bolsillo-logo.png",
       ],
     };
 

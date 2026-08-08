@@ -12,6 +12,8 @@ import TransactionManagerService, {
 
 import { binToHex } from "@/util/hex";
 
+import bolsilloLogoUrl from "@/assets/bolsillo-logo.png";
+
 import common from "@/translations/common";
 import { translate } from "@/util/translations";
 
@@ -238,7 +240,7 @@ class TransactionExportService {
   };
 
   /**
-   * Loads the logo and converts SVG to PNG data URL for embedding
+   * Loads the logo and converts PNG to data URL for embedding
    */
   private async _loadLogo(): Promise<string> {
     if (this.logoDataUrl) {
@@ -246,19 +248,16 @@ class TransactionExportService {
     }
 
     try {
-      const response = await fetch("/src/assets/bolsillo-logo.svg");
-      const svgText = await response.text();
+      const response = await fetch(bolsilloLogoUrl);
+      const blob = await response.blob();
 
-      // Create an image element and load the SVG
+      // Load the PNG into an image element
       const img = new Image();
-      const svgBlob = new Blob([svgText], {
-        type: "image/svg+xml;charset=utf-8",
-      });
-      const url = URL.createObjectURL(svgBlob);
+      const url = URL.createObjectURL(blob);
 
       return await new Promise((resolve, reject) => {
         img.onload = () => {
-          // Create canvas and draw the SVG
+          // Create canvas and draw the PNG
           const canvas = document.createElement("canvas");
           canvas.width = 200;
           canvas.height = 200;
@@ -280,7 +279,7 @@ class TransactionExportService {
 
         img.onerror = () => {
           URL.revokeObjectURL(url);
-          reject(new Error("Failed to load SVG image"));
+          reject(new Error("Failed to load PNG image"));
         };
 
         img.src = url;
