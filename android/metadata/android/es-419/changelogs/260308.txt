@@ -1,0 +1,6 @@
+- Bolsillo BCH: billetera Bitcoin Cash optimizada para comercios argentinos
+- Modo Estable: pagos entrantes convertidos automáticamente a moneda estable (PUSD)
+- Almacenamiento encriptado (AES-256-GCM)
+- Recuperación vía Google Drive
+- Soporte para WalletConnect
+- Escaneo de QR mejorado

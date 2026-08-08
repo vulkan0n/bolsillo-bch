@@ -1,3 +1,19 @@
-Selene Wallet es una aplicación de billetera rápida, simple y segura para la criptomoneda Bitcoin Cash (BCH).
+Bolsillo BCH es una billetera simple y minimalista para la criptomoneda Bitcoin Cash (BCH).
 
-Estamos cumpliendo la misión de hacer de Bitcoin Cash (BCH) la moneda de reserva global al crear una billetera elegante, robusta y fácil de usar que hace que unirse a la economía de BCH sea lo más fácil y convincente posible.
+Tus BCH bajo tu propio control, con autocustodia total. Sin cuentas, sin intermediarios: solo tus claves, solo tus monedas.
+
+SIMPLE POR DISEÑO
+- Interfaz limpia y minimalista, fácil de entender de un vistazo.
+- Envía y recibe BCH en segundos con códigos QR.
+- Seguimiento del saldo en tiempo real con soporte para varias billeteras.
+
+PENSADA PARA TODOS
+- Valor mostrado en tu moneda local para que sepas siempre cuánto tienes.
+- Control total de tus fondos en todo momento.
+- Código abierto y revisado por la comunidad.
+
+Segura por defecto:
+- Bloqueo con PIN y biometría (huella dactilar / desbloqueo facial).
+- Copia de seguridad cifrada opcional en Google Drive para recuperar tu billetera en un dispositivo nuevo.
+
+Bolsillo BCH: la forma más simple de conservar y usar Bitcoin Cash.
