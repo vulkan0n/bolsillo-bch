@@ -1,6 +1,6 @@
 import { ApolloClient, InMemoryCache } from "@apollo/client";
 
-const PRODUCTION_SERVER = "https://stats.selene.cash/";
+const PRODUCTION_SERVER = "https://stats.selene.cash/"; // TODO: replace with bolsillo stats server when available
 
 //const LOCALHOST_SERVER = "http://localhost:4000/";
 

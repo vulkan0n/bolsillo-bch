@@ -17,7 +17,7 @@ Logger.setHandler((messages, context) => {
 
 Logger.setLevel(Logger.DEBUG);
 Logger.info(
-  `** Selene Wallet v${SELENE_WALLET_VERSION} :: https://selene.cash **`
+  `** Bolsillo BCH v${SELENE_WALLET_VERSION} :: https://github.com/vulkan0n/bolsillo-bch **`
 );
 
 function LogService(name: string) {

@@ -284,7 +284,9 @@ export default function ExploreTransactionView() {
                     {translate(translations.swappedAmount)}
                   </span>
                   <span className="font-mono tabular-nums text-neutral-900 dark:text-neutral-100">
-                    {swapMeta.pusdAmount ? `${(Number(swapMeta.pusdAmount) / 100).toFixed(2)} PUSD` : "—"}
+                    {swapMeta.pusdAmount
+                      ? `${(Number(swapMeta.pusdAmount) / 100).toFixed(2)} PUSD`
+                      : "—"}
                   </span>
                 </div>
                 <div className="flex justify-between">
