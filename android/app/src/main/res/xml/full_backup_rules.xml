@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Android 6-11 (API 23-30) backup rules -->
-<!-- Only include what we want backed up; everything else is excluded by default -->
+<!-- Exclude everything: the wallet is recovered via Google Drive App Data folder (per-user),
+     never via Android Auto Backup (which would mix wallets across Google accounts). -->
 <full-backup-content>
-    <include domain="sharedpref" path="SimpleEncryptionPrefs.xml"/>
-    <include domain="root" path="files/selene/wallets/"/>
+    <exclude domain="root" path="."/>
 </full-backup-content>
