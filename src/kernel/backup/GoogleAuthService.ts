@@ -8,7 +8,7 @@ const Log = LogService("GoogleAuth");
 // --------------------------------
 
 const WEB_CLIENT_ID =
-  "695566586090-7820ks7je4iuo1orf3voba9vfg0tkcq1.apps.googleusercontent.com";
+  "508614111965-imvqdlbkvks0jmauqslr29g9m104b7tv.apps.googleusercontent.com";
 
 // Scope requerido para acceder al App Data folder de Google Drive.
 // Este scope solo da acceso a la carpeta privada de la app — no al Drive completo.
