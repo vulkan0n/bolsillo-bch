@@ -22,6 +22,7 @@ export default function WalletView() {
     // force wallet rebuild if genesis_height === null
     function initialWalletBuild() {
       if (
+        walletHash &&
         genesis_height === null &&
         (isConnected || ElectrumService(bchNetwork).getIsConnected())
       ) {

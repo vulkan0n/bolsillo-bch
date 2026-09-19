@@ -14,6 +14,7 @@ import {
   setPreference,
 } from "@/redux/preferences";
 
+import JanitorService from "@/kernel/app/JanitorService";
 import ModalService from "@/kernel/app/ModalService";
 import NotificationService from "@/kernel/app/NotificationService";
 import { googleSignOut } from "@/kernel/backup/CloudBackupService";
@@ -135,7 +136,11 @@ export default function SettingsView() {
     } catch (_e) {
       // not signed in or web env — continue
     }
-    dispatch(setPreference({ key: "activeWalletHash", value: "" }));
+    // Remove this account's wallet data from the device so a different Google
+    // account can't inherit it (same balance) or re-upload it to the wrong
+    // Drive. The wallet stays backed up in Drive and restores on next sign-in.
+    await JanitorService().wipeLocalWallets();
+    await dispatch(setPreference({ key: "activeWalletHash", value: "" }));
     window.location.reload();
   }, [dispatch]);
 

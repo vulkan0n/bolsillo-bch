@@ -32,8 +32,19 @@ export default function SettingsWalletWizardBuild() {
     function startBuild() {
       const scan = async () => {
         const WalletManager = WalletManagerService();
-        await WalletManager.openWalletDatabase(walletHash);
-        const wallet = WalletManager.getWallet(walletHash);
+
+        // If the wallet this build targets no longer exists (e.g. after an
+        // account switch), recover by booting a fresh wallet instead of
+        // crashing into the route error boundary.
+        let wallet;
+        try {
+          await WalletManager.openWalletDatabase(walletHash);
+          wallet = WalletManager.getWallet(walletHash);
+        } catch {
+          await dispatch(walletBoot({ walletHash: "" }));
+          navigate("/");
+          return;
+        }
 
         if (isBuildDone) {
           await dispatch(walletBoot({ walletHash: wallet.walletHash }));

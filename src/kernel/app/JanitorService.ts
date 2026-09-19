@@ -32,6 +32,7 @@ export default function JanitorService() {
     fsck,
     purgeStaleData,
     resetDatabases,
+    wipeLocalWallets,
     nuclearWipe,
   };
 
@@ -337,6 +338,51 @@ export default function JanitorService() {
     await purgeLegacyTransactionFiles();
     await TransactionManagerService().purgeTransactions();
     await BlockchainService().purgeBlocks(); // BlockchainService does not need bchNetwork here
+  }
+
+  // wipeLocalWallets: removes ALL local wallet data (per-wallet DBs, wallet
+  // files, and metadata) from the device. Used on logout so a different Google
+  // account can't inherit the previous wallet — leftover wallets were being
+  // re-activated on boot and even re-uploaded to the new account's Drive.
+  // Backups live in Drive, so the wallet is recoverable by signing in again.
+  // Never throws — best-effort; even a partial wipe proceeds to reload.
+  async function wipeLocalWallets() {
+    Log.log("*** WIPE LOCAL WALLETS ***");
+
+    const Database = DatabaseService();
+    const WalletManager = WalletManagerService();
+
+    // Release the keepalive so per-wallet DB handles can be closed
+    Database.setKeepAlive(null);
+
+    // Delete wallets known to the app database (meta row + per-wallet DB + file)
+    const metaWallets = WalletManager.listWallets();
+    await Promise.all(
+      metaWallets.map((wallet) => WalletManager.deleteWallet(wallet.walletHash))
+    );
+
+    // Sweep any remaining wallet files (e.g. from other networks) so
+    // recoverWalletFiles() can't re-import them on the next boot
+    try {
+      const { files } = await Filesystem.readdir({
+        path: "/selene/wallets",
+        directory: Directory.Library,
+      });
+      await Promise.all(
+        files
+          .filter((file) => file.type === "file")
+          .map((file) =>
+            Filesystem.deleteFile({
+              path: `/selene/wallets/${file.name}`,
+              directory: Directory.Library,
+            }).catch(() => {})
+          )
+      );
+    } catch {
+      // wallets directory may not exist yet
+    }
+
+    await Database.flushDatabase("app");
   }
 
   // nuclearWipe: scorched earth reset that works WITHOUT any database access.

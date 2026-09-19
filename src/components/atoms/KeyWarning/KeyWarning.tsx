@@ -7,7 +7,14 @@ import { translate } from "@/util/translations";
 import translations from "./translations";
 
 export default function KeyWarning({ walletHash }: { walletHash: string }) {
-  const wallet = WalletManagerService().getWalletMeta(walletHash);
+  // The active wallet may be mid-boot (or gone after an account switch).
+  // Never crash the route if its metadata isn't available yet.
+  let wallet;
+  try {
+    wallet = WalletManagerService().getWalletMeta(walletHash);
+  } catch {
+    return null;
+  }
 
   const isKeyViewed = wallet.key_viewed_at !== null;
   const hasWalletBalance = wallet.balance > 0;

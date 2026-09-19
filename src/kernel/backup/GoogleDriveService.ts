@@ -42,6 +42,14 @@ async function findBackupFile(accessToken: string): Promise<DriveFile | null> {
   });
 
   if (!response.ok) {
+    if (response.status === 403) {
+      throw new Error(
+        "Google Drive rechazó el acceso (403). Al iniciar sesión, autorizá a " +
+          "Bolsillo BCH a usar tu Drive; si ya habías iniciado sesión antes " +
+          "sin ese permiso, revocá el acceso en myaccount.google.com/permissions " +
+          "y volvé a entrar."
+      );
+    }
     throw new Error(
       `Drive list failed: ${response.status} ${response.statusText}`
     );

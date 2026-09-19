@@ -6,6 +6,7 @@ import { setPreference } from "@/redux/preferences";
 import DatabaseService from "@/kernel/app/DatabaseService";
 import JanitorService from "@/kernel/app/JanitorService";
 import LogService from "@/kernel/app/LogService";
+import NotificationService from "@/kernel/app/NotificationService";
 import {
   backupActiveWallet,
   checkHasBackup,
@@ -82,16 +83,28 @@ export default function WelcomeView({ boot }: WelcomeViewProps) {
           result.error ?? "Error al restaurar la wallet desde el backup."
         );
       }
-      store.dispatch(
+      await store.dispatch(
         setPreference({ key: "activeWalletHash", value: result.walletHash })
       );
       await boot();
     } else {
       Log.info("No backup found — creating new wallet");
       await boot();
-      backupActiveWallet(user.userId, user.accessToken).catch((e) => {
-        Log.warn("Background backup failed (non-critical):", e);
-      });
+
+      // Await the initial backup so we know it succeeded. If it fails, the
+      // wallet only exists on this device and a later logout would lose it —
+      // surface the failure so the user can act (retry, save the seed).
+      const backupResult = await backupActiveWallet(
+        user.userId,
+        user.accessToken
+      );
+      if (!backupResult.isSuccess) {
+        Log.error("Initial backup failed:", backupResult.error);
+        NotificationService().error(
+          "No se pudo respaldar tu billetera en Google Drive",
+          "Escribí tus 12 palabras de respaldo en Seguridad antes de cerrar sesión."
+        );
+      }
     }
   }
 
