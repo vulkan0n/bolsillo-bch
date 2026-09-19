@@ -66,7 +66,7 @@ export const defaultPreferences = {
   displayExchangeRate: "true",
   displaySyncCounter: "true",
   shouldConstrainViewport: "true",
-  themeMode: ThemeMode.System,
+  themeMode: ThemeMode.Light,
   // --------
   // Network
   // TODO #420: electrum peer db
@@ -199,9 +199,9 @@ async function resetToDefaults(): Promise<ValidPreferences> {
 async function tweakDefaultPreferences() {
   const defaults = { ...defaultPreferences };
 
-  // change default fiat currency based on device locale
-  defaults.localCurrency =
-    await CurrencyService().getCurrencyFromDeviceLocale();
+  // Bolsillo BCH apunta a Argentina: la moneda local por defecto es ARS,
+  // no la del locale del dispositivo (que en celulares en-US daba USD).
+  // defaultPreferences.localCurrency ya es DEFAULT_CURRENCY.currency (ARS).
 
   return defaults;
 }
