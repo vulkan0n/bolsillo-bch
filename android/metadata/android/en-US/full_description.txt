@@ -1,19 +1,18 @@
-Bolsillo BCH is a simple, minimalist Bitcoin Cash (BCH) wallet.
+Bolsillo BCH is a simple, minimalist Bitcoin Cash (BCH) wallet built for people who want to use crypto without the hassle.
 
-Keep your BCH under your own control with full self-custody. No accounts, no intermediaries - just your keys, your coins.
+YOUR BCH UNDER YOUR CONTROL
+- Full self-custody: only your keys, your coins. No accounts, no intermediaries.
+- Real-time balance tracking, always shown in your local currency (ARS) with the BCH equivalent.
+- Support for multiple wallets.
 
-SIMPLE BY DESIGN
-- Clean, minimal interface that is easy to understand at a glance.
+NO COMPLICATIONS
+- Sign in with your Google account: your wallet is created and backed up automatically, encrypted in Google Drive.
 - Send and receive BCH in seconds with QR codes.
-- Real-time balance tracking with support for multiple wallets.
+- Notifications when you receive payments, plus a "send all" button to move your balance in one tap.
 
-BUILT FOR EVERYONE
-- Value shown in local currency so you always know what you have.
-- Full control over your funds at all times.
-- Open source and community reviewed.
-
-Secure by default:
+SECURE BY DEFAULT
 - PIN and biometric lock (fingerprint / face unlock).
-- Optional encrypted backup to Google Drive to recover your wallet on a new device.
+- Automatic encrypted cloud backup and PIN-less recovery via a security question.
+- Built on open source (BSD-3).
 
 Bolsillo BCH: the simplest way to hold and use Bitcoin Cash.

@@ -1,19 +1,18 @@
-Bolsillo BCH es una billetera de Bitcoin Cash (BCH) simple y minimalista.
+Bolsillo BCH es una billetera de Bitcoin Cash (BCH) simple y minimalista, pensada para quienes quieren usar criptomonedas sin complicaciones.
 
-Tus BCH bajo tu control, con autocustodia total. Sin cuentas, sin intermediarios: solo tus claves, tus monedas.
+TUS BCH BAJO TU CONTROL
+- Autocustodia total: solo tus claves, tus monedas. Sin cuentas, sin intermediarios.
+- Seguimiento de saldo en tiempo real, con el valor siempre visible en moneda local (ARS) y su equivalente en BCH.
+- Soporte para múltiples billeteras.
 
-SIMPLE POR DISEÑO
-- Interfaz limpia y minimalista, fácil de entender de un vistazo.
+SIN COMPLICACIONES
+- Entrá con tu cuenta de Google: tu billetera se crea y se respalda automáticamente, encriptada en Google Drive.
 - Enviá y recibí BCH en segundos con códigos QR.
-- Seguimiento de saldo en tiempo real y soporte para múltiples billeteras.
+- Notificaciones al recibir pagos y botón "enviar todo" para mover tu saldo en un toque.
 
-PARA TODOS
-- Valor mostrado en moneda local para saber siempre cuánto tenés.
-- Control total de tus fondos en todo momento.
-- Código abierto y revisado por la comunidad.
-
-Segura por defecto:
-- Bloqueo con PIN y biometría (huella / desbloqueo facial).
-- Backup encriptado opcional en Google Drive para recuperar tu billetera en un device nuevo.
+SEGURA POR DEFECTO
+- Bloqueo con PIN y biometría (huella o desbloqueo facial).
+- Respaldo automático encriptado en la nube y recuperación sin PIN mediante pregunta de seguridad.
+- Basada en código abierto (BSD-3).
 
 Bolsillo BCH: la forma más simple de guardar y usar Bitcoin Cash.
