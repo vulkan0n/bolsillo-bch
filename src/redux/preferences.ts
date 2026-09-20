@@ -83,6 +83,9 @@ export const defaultPreferences = {
   // --------
   // Expert Mode
   expertMode: "false",
+  // --------
+  // One-time defaults migration flag
+  defaultsMigrated: "false",
 };
 
 export type ValidPreferences = typeof defaultPreferences;
@@ -206,6 +209,40 @@ async function tweakDefaultPreferences() {
   return defaults;
 }
 
+// One-time migration of the old defaults (v2026.03.13+): existing installs keep
+// their persisted values, so switching the app defaults does not affect them.
+// Migrate only values that still match the previous auto-default (i.e. the user
+// never chose them explicitly):
+// - themeMode "system" (old default) → "light"
+// - localCurrency equal to the old device-locale default → "ARS"
+async function migrateDefaults(
+  preferences: ValidPreferences
+): Promise<ValidPreferences> {
+  const migrated = { ...preferences };
+
+  const { value: alreadyMigrated } = await Preferences.get({
+    key: "defaultsMigrated",
+  });
+  if (alreadyMigrated === "true") return migrated;
+
+  if (migrated.themeMode === ThemeMode.System) {
+    await Preferences.set({ key: "themeMode", value: ThemeMode.Light });
+    migrated.themeMode = ThemeMode.Light;
+  }
+
+  const autoCurrency = await CurrencyService().getCurrencyFromDeviceLocale();
+  if (
+    migrated.localCurrency === autoCurrency &&
+    migrated.localCurrency !== "ARS"
+  ) {
+    await Preferences.set({ key: "localCurrency", value: "ARS" });
+    migrated.localCurrency = "ARS";
+  }
+
+  await Preferences.set({ key: "defaultsMigrated", value: "true" });
+  return migrated;
+}
+
 async function retrievePreferences(): Promise<ValidPreferences> {
   // Preferences.clear();
 
@@ -232,12 +269,14 @@ async function retrievePreferences(): Promise<ValidPreferences> {
     return { ...acc, ...cur };
   }, {}) as ValidPreferences;
 
-  const isValidPreferences = validatePreferences(preferences);
+  const migratedPreferences = await migrateDefaults(preferences);
+
+  const isValidPreferences = validatePreferences(migratedPreferences);
   if (!isValidPreferences) {
     return resetToDefaults();
   }
 
-  return preferences;
+  return migratedPreferences;
 }
 
 const initialState = { ...defaultPreferences };
