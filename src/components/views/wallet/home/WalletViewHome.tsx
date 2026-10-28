@@ -172,7 +172,7 @@ export default function WalletViewHome() {
   // ---------------- Render
 
   return (
-    <div onTouchStart={onTouchStart}>
+    <div className="min-h-full" onTouchStart={onTouchStart}>
       <PullIndicator pullDistance={pullDistance} isRefreshing={isRefreshing} />
 
       <div

@@ -141,7 +141,7 @@ export default function SettingsView() {
     // Drive. The wallet stays backed up in Drive and restores on next sign-in.
     await JanitorService().wipeLocalWallets();
     await dispatch(setPreference({ key: "activeWalletHash", value: "" }));
-    window.location.reload();
+    window.location.replace("/");
   }, [dispatch]);
 
   return (
