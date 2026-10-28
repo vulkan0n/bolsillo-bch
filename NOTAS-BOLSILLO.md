@@ -233,11 +233,19 @@ selene-wallet/
 ### Google Cloud OAuth
 
 - Proyecto: `bolsillo-bch`
-- Web Client ID: `695566586090-7820ks7je4iuo1orf3voba9vfg0tkcq1.apps.googleusercontent.com`
-- Android Client ID (release): registrado para `bch.bolsillo.app`
-- Android Client ID (debug): registrado para `bch.bolsillo.app.edge`
-- SHA1 debug keystore: `93:68:CA:05:9F:72:B1:CD:C1:1F:47:9C:D6:6C:92:55:C5:BE:F1:BF`
-- App en modo prueba → agregar emails en: OAuth consent screen → Test users
+- **Project number: `508614111965`** — es el prefijo de todos los Client ID. El proyecto viejo `695566586090` quedó deprecado el **2026-09-04** (commit `b53fcfa9`).
+- Web Client ID: `508614111965-imvqdlbkvks0jmauqslr29g9m104b7tv.apps.googleusercontent.com`
+- Android Client IDs existentes (proyecto `508614111965`, creados 2026-09-04). Todos tienen package `bch.bolsillo.app` y quedaron marcados como **obsoletos** (ninguno tiene el SHA-1 del keystore de release):
+  | Cliente | Client ID | SHA-1 | Estado |
+  |---|---|---|---|
+  | Android #1 | `508614111965-od0196ng57c8la6d5ip768r9nie3k1sb` | `97:B3:7D:18:5E:AE:B4:0A:F6:7B:77:F9:D8:27:0E:F4:23:F5:E6:DD` | obsoleto |
+  | Android #2 | `508614111965-d14ddoqcj0l1skuiie0350lgv0j0t7d0` | `45:1F:E9:81:47:A0:83:F9:95:E4:8F:02:26:14:87:2F:6F:08:26:55` | obsoleto |
+  | Android #3 | `508614111965-te00m668lsg7rt83i93dnqbe4eo92atn` | `B3:EC:E5:10:81:9A:19:AD:1E:B7:CC:65:60:AD:54:B9:53:1A:89:53` | obsoleto |
+  (todos con sufijo `.apps.googleusercontent.com`)
+- **Android OAuth client para F-Droid (release):** `508614111965-46o7gj1r4vj7c272o6ubejbbvecala05` — package `bch.bolsillo.app` + SHA-1 de release `FC:AC:2C:51:C9:AE:98:74:83:84:6A:B8:3E:EE:1B:AF:54:BD:9F:28`. Creado 2026-10-28.
+- **No hay client para `bch.bolsillo.app.edge` (debug).** Si se necesita Google Sign-In en debug, crear uno con el SHA-1 del debug keystore `93:68:CA:05:9F:72:B1:CD:C1:1F:47:9C:D6:6C:92:55:C5:BE:F1:BF`.
+- SHA1 release keystore (`android/bolsillo-release.keystore`): `FC:AC:2C:51:C9:AE:98:74:83:84:6A:B8:3E:EE:1B:AF:54:BD:9F:28`
+- **Estado: OAuth publicado en producción (2026-10-24).** Falta brand verification para que el consent screen muestre nombre y logo en vez de solo el dominio.
 
 ### Próximos pasos pendientes
 
@@ -471,9 +479,12 @@ Solo acceso a la carpeta privada de la app en Drive. No puede leer el Drive del 
 | Dato | Valor |
 |---|---|
 | Proyecto | bolsillo-bch |
-| Web Client ID | `695566586090-7820ks7je4iuo1orf3voba9vfg0tkcq1.apps.googleusercontent.com` |
-| Android Client ID | `695566586090-u6ethsk823nv2oceqg8idpvnvajbl5n9.apps.googleusercontent.com` |
+| Project number | `508614111965` |
+| Web Client ID | `508614111965-imvqdlbkvks0jmauqslr29g9m104b7tv.apps.googleusercontent.com` |
+| Android Client IDs (obsoletos) | `508614111965-te00m668lsg7rt83i93dnqbe4eo92atn`, `508614111965-d14ddoqcj0l1skuiie0350lgv0j0t7d0`, `508614111965-od0196ng57c8la6d5ip768r9nie3k1sb` (prefijo `.apps.googleusercontent.com`) |
+| Android Client ID (F-Droid release) | `508614111965-46o7gj1r4vj7c272o6ubejbbvecala05` — package `bch.bolsillo.app` + SHA-1 `FC:AC:2C:51:C9:AE:98:74:83:84:6A:B8:3E:EE:1B:AF:54:BD:9F:28` |
 | SHA1 (debug keystore) | `93:68:CA:05:9F:72:B1:CD:C1:1F:47:9C:D6:6C:92:55:C5:BE:F1:BF` |
+| SHA1 (release keystore) | `FC:AC:2C:51:C9:AE:98:74:83:84:6A:B8:3E:EE:1B:AF:54:BD:9F:28` |
 | Client Secret | en `.env.local` → `GOOGLE_CLIENT_SECRET` |
 
 ### Estado final (2026-04-20)
