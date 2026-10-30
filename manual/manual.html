@@ -1,0 +1,531 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Bolsillo BCH — Guía de instalación y uso</title>
+<style>
+  :root {
+    --brand: #1b8459;
+    --brand-dark: #0f5136;
+    --brand-light: #e6f4ea;
+    --sky: #e2eafb;
+    --ink: #1a1a2e;
+    --muted: #5b6472;
+    --line: #dfe4ea;
+    --warn: #b45309;
+    --warn-bg: #fff7ed;
+    --note: #1d4ed8;
+    --note-bg: #eff6ff;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-size: 10.5pt;
+    line-height: 1.55;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  @page { size: A4; }
+
+  .page { break-before: page; }
+  .page:first-child { break-before: auto; }
+
+  h1, h2, h3 { line-height: 1.2; margin: 0; }
+  h1 { font-size: 26pt; letter-spacing: -0.02em; }
+  h2 { font-size: 17pt; margin-bottom: 3mm; }
+  h3 { font-size: 11.5pt; margin: 5mm 0 1.5mm; }
+  p { margin: 0 0 3mm; }
+  ul, ol { margin: 0 0 3mm; padding-left: 5.5mm; }
+  li { margin-bottom: 1.6mm; }
+  strong { font-weight: 700; }
+  code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 8.5pt;
+    background: #f3f5f8;
+    padding: 1px 4px;
+    border-radius: 4px;
+    word-break: break-all;
+  }
+
+  .kicker {
+    color: var(--brand);
+    font-weight: 700;
+    font-size: 9pt;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    margin-bottom: 2mm;
+  }
+
+  .lead { font-size: 12pt; color: var(--muted); margin-bottom: 6mm; }
+
+  .toc { margin-top: 4mm; border-top: 1px solid var(--line); }
+  .toc-row { display: flex; justify-content: space-between; padding: 2.6mm 0; border-bottom: 1px solid var(--line); }
+  .toc-row .n { color: var(--brand); font-weight: 700; width: 8mm; }
+  .toc-row .t { flex: 1; }
+
+  .step-head { display: flex; align-items: flex-start; gap: 4mm; margin-bottom: 5mm; }
+  .step-num {
+    flex: 0 0 12mm;
+    height: 12mm;
+    border-radius: 4mm;
+    background: var(--brand);
+    color: #fff;
+    font-size: 16pt;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .step-head h2 { margin: 0; }
+  .step-head .hint { color: var(--muted); font-size: 9pt; margin-top: 1mm; }
+
+  .cols { display: grid; grid-template-columns: 1fr 62mm; gap: 7mm; align-items: start; }
+  .cols.reverse { grid-template-columns: 62mm 1fr; }
+
+  .shot { margin: 0; }
+  .shot img { width: 100%; max-height: 118mm; object-fit: contain; border-radius: 5mm; border: 1px solid var(--line); box-shadow: 0 2mm 6mm rgba(20,30,50,.08); }
+  .shot figcaption { font-size: 8pt; color: var(--muted); margin-top: 1.5mm; text-align: center; }
+
+  .callout {
+    border-radius: 4mm;
+    padding: 3.5mm 4mm;
+    margin: 4mm 0;
+    font-size: 9.5pt;
+    border: 1px solid transparent;
+  }
+  .callout .label { font-weight: 700; display: block; margin-bottom: 1mm; font-size: 8.5pt; letter-spacing: .04em; text-transform: uppercase; }
+  .callout.tip { background: var(--brand-light); border-color: #c7e6d3; color: #14532d; }
+  .callout.warn { background: var(--warn-bg); border-color: #fed7aa; color: #7c2d12; }
+  .callout.note { background: var(--note-bg); border-color: #bfdbfe; color: #1e3a8a; }
+
+  .qr-box {
+    display: flex;
+    gap: 6mm;
+    align-items: center;
+    background: #f8fafc;
+    border: 1px solid var(--line);
+    border-radius: 4mm;
+    padding: 5mm;
+    margin: 4mm 0;
+  }
+  .qr-box img { width: 38mm; height: 38mm; image-rendering: pixelated; }
+  .qr-box .fp { font-size: 8pt; color: var(--muted); }
+  .qr-box .url { font-size: 9pt; }
+
+  .kv { width: 100%; border-collapse: collapse; margin: 3mm 0; }
+  .kv td { padding: 2mm 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+  .kv td:first-child { width: 38mm; color: var(--muted); font-weight: 600; }
+
+  .faq h3 { margin-top: 4.5mm; }
+  .faq p { margin-bottom: 2mm; }
+
+  .back {
+    margin-top: 8mm;
+    border-top: 2px solid var(--brand);
+    padding-top: 5mm;
+    text-align: center;
+    color: var(--muted);
+    font-size: 9pt;
+  }
+  .back img { width: 40mm; height: 40mm; margin: 0 auto 3mm; display: block; }
+
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 6mm; }
+
+  .small { font-size: 9pt; color: var(--muted); }
+  .no-break { break-inside: avoid; }
+</style>
+</head>
+<body>
+
+  <!-- ============ INTRO / TOC ============ -->
+  <section class="page">
+    <div class="kicker">Antes de empezar</div>
+    <h1 style="font-size:22pt;">Qué es Bolsillo y qué necesitás</h1>
+    <p class="lead">Bolsillo es una billetera de autocustodia: las claves de tu dinero viven en tu teléfono, no en un servidor nuestro. Vos sos el dueño.</p>
+
+    <div class="two-col">
+      <div>
+        <h3>Necesitás</h3>
+        <ul>
+          <li>Un teléfono Android 8.0 o superior.</li>
+          <li>Conexión a internet.</li>
+          <li>Una cuenta de Google (para el respaldo automático).</li>
+          <li>10 minutos y un lugar seguro para anotar 12 palabras.</li>
+        </ul>
+      </div>
+      <div>
+        <h3>Qué vas a instalar</h3>
+        <ul>
+          <li><strong>F-Droid</strong>: una tienda de apps libres, sin cuenta ni publicidad.</li>
+          <li><strong>Bolsillo BCH</strong>: la billetera, desde el repositorio oficial.</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3>Contenido</h3>
+    <div class="toc">
+      <div class="toc-row"><span class="n">1</span><span class="t">Instalar F-Droid</span></div>
+      <div class="toc-row"><span class="n">2</span><span class="t">Agregar el repositorio de Bolsillo</span></div>
+      <div class="toc-row"><span class="n">3</span><span class="t">Instalar y entrar</span></div>
+      <div class="toc-row"><span class="n">4</span><span class="t">Recibir y enviar</span></div>
+      <div class="toc-row"><span class="n">5</span><span class="t">Modo Estable</span></div>
+      <div class="toc-row"><span class="n">6</span><span class="t">Respaldo y recuperación</span></div>
+      <div class="toc-row"><span class="n">7</span><span class="t">Preguntas frecuentes</span></div>
+      <div class="toc-row"><span class="n">8</span><span class="t">Seguridad</span></div>
+    </div>
+  </section>
+
+  <!-- ============ STEP 1 ============ -->
+  <section class="page">
+    <div class="step-head">
+      <div class="step-num">1</div>
+      <div>
+        <h2>Instalar F-Droid</h2>
+        <div class="hint">La tienda desde donde vas a instalar Bolsillo.</div>
+      </div>
+    </div>
+
+    <div class="cols">
+      <div>
+        <ol>
+          <li>Abrí el navegador del teléfono y entrá a <strong>f-droid.org</strong>.</li>
+          <li>Tocá el botón para <strong>descargar F-Droid</strong> (archivo APK).</li>
+          <li>Cuando Android pregunte, permití instalar apps desde el navegador. El camino exacto depende de la versión: <em>Ajustes → Apps → Acceso especial → Instalar apps desconocidas</em>.</li>
+          <li>Si Play Protect muestra un aviso, elegí <strong>“Instalar de todos modos”</strong>. F-Droid es una app libre y conocida; el aviso es porque no viene de Play Store.</li>
+          <li>Abrí F-Droid.</li>
+        </ol>
+      </div>
+
+      <figure class="shot">
+        <img src="assets/screens/01-fdroid-web.png" alt="Descargar F-Droid desde el sitio oficial" />
+        <figcaption>Descargá F-Droid solo desde f-droid.org.</figcaption>
+      </figure>
+    </div>
+
+    <figure class="shot" style="width:50mm; margin-top:5mm;">
+      <img src="assets/screens/02-permitir-instalacion.png" alt="Permitir instalar apps desde el navegador" />
+      <figcaption>Ejemplo: activá el permiso para el navegador o F-Droid.</figcaption>
+    </figure>
+  </section>
+  <section class="page">
+    <div class="step-head">
+      <div class="step-num">2</div>
+      <div>
+        <h2>Agregar el repositorio de Bolsillo</h2>
+        <div class="hint">F-Droid necesita saber dónde está la app.</div>
+      </div>
+    </div>
+
+    <div class="cols reverse">
+      <figure class="shot">
+        <img src="assets/screens/03-fdroid-home.png" alt="F-Droid: ícono de Repositorios" />
+        <figcaption>El ícono de la caja (al lado del engranaje) abre Repositorios.</figcaption>
+      </figure>
+
+      <div>
+        <ol>
+          <li>En F-Droid, tocá el ícono de la <strong>caja</strong> (Repositorios), al lado del engranaje.</li>
+          <li>Dentro de Repositorios, tocá el <strong>+</strong>.</li>
+          <li>Elegí <strong>Escanear QR</strong> y apuntá al código de abajo. También podés pegar la URL.</li>
+          <li>Verificá que la huella coincida y guardá.</li>
+          <li>Volvé a la pantalla principal y actualizá el repositorio.</li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="qr-box no-break">
+      <img src="assets/fdroid-qr.png" alt="QR del repositorio F-Droid de Bolsillo BCH" />
+      <div>
+        <div class="url"><strong>URL del repositorio</strong><br/><code>https://vulkan0n.github.io/fdroid/repo/</code></div>
+        <div class="fp" style="margin-top:3mm;"><strong>Huella (SHA-256)</strong><br/><code>9B:64:30:59:F7:46:6E:DC:9F:29:0B:15:1F:A7:D1:ED<br/>AA:61:A9:CB:31:A8:A2:74:45:09:CF:80:4E:C6:28:9B</code></div>
+      </div>
+    </div>
+
+    <div class="callout tip">
+      <span class="label">Si el QR no funciona</span>
+      En el campo de URL pegá <code>https://vulkan0n.github.io/fdroid/repo/?fingerprint=9B643059F7466EDC9F290B151FA7D1EDAA61A9CB31A8A2744509CF804EC6289B</code>. La huella evita que agregues un repositorio falso.
+    </div>
+
+    <div class="callout note">
+      <span class="label">Capturas en inglés</span>
+      Las capturas de F-Droid están en inglés. En un teléfono en español, los botones son <strong>Repositorios</strong>, <strong>Escanear QR</strong> e <strong>Instalar</strong>.
+    </div>
+  </section>
+
+  <!-- ============ STEP 3 ============ -->
+  <section class="page">
+    <div class="step-head">
+      <div class="step-num">3</div>
+      <div>
+        <h2>Instalar y entrar</h2>
+        <div class="hint">Instalá Bolsillo y creá tu billetera con Google.</div>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <div>
+        <h3>Instalar Bolsillo BCH</h3>
+        <figure class="shot" style="width:50mm; margin:0 auto 3mm;">
+          <img src="assets/screens/05-instalar-bolsillo.png" alt="F-Droid: instalar Bolsillo BCH" />
+          <figcaption>F-Droid → Bolsillo BCH → Instalar.</figcaption>
+        </figure>
+        <ol>
+          <li>Volvé a F-Droid y esperá a que actualice.</li>
+          <li>Buscá <strong>“Bolsillo BCH”</strong>.</li>
+          <li>Tocá <strong>Instalar</strong>.</li>
+          <li>Permití a F-Droid instalar apps.</li>
+          <li>Cuando termine, tocá <strong>Abrir</strong>.</li>
+        </ol>
+      </div>
+      <div>
+        <h3>Crear tu billetera</h3>
+        <figure class="shot" style="width:50mm; margin:0 auto 3mm;">
+          <img src="assets/screens/06-login.png" alt="Pantalla de inicio de sesión con Google" />
+          <figcaption>“Entrar con Google” crea y respalda tu billetera.</figcaption>
+        </figure>
+        <ol>
+          <li>Tocá <strong>“Entrar con Google”</strong>.</li>
+          <li>Elegí la cuenta que vas a usar siempre.</li>
+          <li>Bolsillo crea la billetera y la respalda en tu Drive.</li>
+          <li>Andá a <strong>Ajustes → Seguridad → Frase de recuperación</strong> y anotá las 12 palabras.</li>
+          <li>Configurá un <strong>PIN</strong> en <strong>Ajustes → Seguridad</strong>.</li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="callout note">
+      <span class="label">Qué ve Google</span>
+      Bolsillo solo accede a la carpeta privada de la app (<code>drive.appdata</code>), no al resto de tu Drive. El archivo de respaldo está cifrado.
+    </div>
+
+    <div class="callout warn">
+      <span class="label">No compartas las 12 palabras</span>
+      Cualquiera que las tenga puede vaciar la billetera. No las saques en fotos, no las mandes por WhatsApp y no las escribas en sitios web. Si alguien te las pide diciendo que es “soporte de Bolsillo”, es una estafa.
+    </div>
+  </section>
+
+  <!-- ============ STEP 4 ============ -->
+  <section class="page">
+    <div class="step-head">
+      <div class="step-num">4</div>
+      <div>
+        <h2>Recibir y enviar</h2>
+        <div class="hint">Cobrar y pagar con Bitcoin Cash.</div>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <div>
+        <h3>Recibir</h3>
+        <figure class="shot" style="width:50mm; margin:0 auto 3mm;">
+          <img src="assets/screens/08-recibir.png" alt="Pantalla Recibir de Bolsillo" />
+          <figcaption>Inicio → Recibir.</figcaption>
+        </figure>
+        <ol>
+          <li>En <strong>Inicio</strong>, tocá <strong>Recibir</strong>.</li>
+          <li>Mostrá el código QR o copiá la dirección.</li>
+          <li>Compartila con quien te va a pagar.</li>
+          <li>Esperá la confirmación; el saldo se actualiza solo.</li>
+        </ol>
+      </div>
+      <div>
+        <h3>Enviar</h3>
+        <figure class="shot" style="width:50mm; margin:0 auto 3mm;">
+          <img src="assets/screens/09-enviar.png" alt="Pantalla Enviar de Bolsillo" />
+          <figcaption>Inicio → Enviar.</figcaption>
+        </figure>
+        <ol>
+          <li>En <strong>Inicio</strong>, tocá <strong>Enviar</strong>.</li>
+          <li>Escaneá el QR o pegá la dirección.</li>
+          <li>Escribí el monto en pesos o BCH.</li>
+          <li>Revisá la dirección y el monto.</li>
+          <li>Confirmá con PIN.</li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="callout note">
+      <span class="label">Solo Bitcoin Cash</span>
+      La dirección es de la red Bitcoin Cash (BCH). No la uses para Bitcoin (BTC) ni otras redes.
+    </div>
+
+    <div class="callout warn">
+      <span class="label">Las transacciones no se revierten</span>
+      Verificá la dirección y el monto antes de confirmar. Si es la primera vez que le pagás a alguien, empezá con un monto chico.
+    </div>
+  </section>
+
+  <!-- ============ STEP 5 ============ -->
+  <section class="page">
+    <div class="step-head">
+      <div class="step-num">5</div>
+      <div>
+        <h2>Modo Estable</h2>
+        <div class="hint">Protegé tu saldo de la volatilidad del BCH.</div>
+      </div>
+    </div>
+
+    <div class="cols" style="grid-template-columns: 1fr 78mm;">
+      <div>
+        <ol>
+          <li>Andá a <strong>Ajustes → Modo Estable</strong>.</li>
+          <li>Activá el interruptor y confirmá.</li>
+          <li>Bolsillo convierte tu saldo de BCH a <strong>PUSD</strong>, una moneda estable, dejando una reserva del <strong>1%</strong> en BCH para comisiones.</li>
+          <li>Para desactivarlo, apagá el interruptor. Bolsillo vuelve a convertir el PUSD a BCH.</li>
+        </ol>
+
+        <div class="callout note">
+          <span class="label">Qué es PUSD</span>
+          PUSD es una moneda estable emitida como token sobre Bitcoin Cash. Su objetivo es mantener un valor cercano al dólar. No es un depósito bancario ni está garantizada por un banco.
+        </div>
+
+        <div class="callout warn">
+          <span class="label">Necesita internet y puede tener comisiones</span>
+          El cambio se hace contra un exchange descentralizado (Cauldron). Si la red o el servicio no están disponibles, el saldo puede quedar temporalmente en BCH o PUSD. Cada conversión paga la comisión de la red.
+        </div>
+      </div>
+
+      <figure class="shot">
+        <img src="assets/screens/10-modo-estable.png" alt="Modo Estable en Ajustes" />
+        <figcaption>Ajustes → Modo Estable.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- ============ STEP 6 ============ -->
+  <section class="page">
+    <div class="step-head">
+      <div class="step-num">6</div>
+      <div>
+        <h2>Respaldo y recuperación</h2>
+        <div class="hint">Dos respaldos: Google Drive y las 12 palabras.</div>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <div>
+        <h3>Respaldo automático en Drive</h3>
+        <p>Cuando creás la billetera, Bolsillo guarda una copia cifrada en la carpeta privada de la app en tu cuenta de Google. Se actualiza con el uso normal.</p>
+        <ul>
+          <li>Para restaurar en un teléfono nuevo: instalá Bolsillo, tocá “Entrar con Google” y usá <strong>la misma cuenta</strong>.</li>
+          <li>Cada cuenta de Google tiene su propia billetera. Si entrás con otra cuenta, vas a ver otra billetera (o una vacía).</li>
+        </ul>
+      </div>
+      <div>
+        <h3>Las 12 palabras</h3>
+        <p>Son la llave maestra. Sirven para recuperar la billetera en cualquier app compatible con Bitcoin Cash, aunque pierdas el teléfono o la cuenta de Google.</p>
+        <ul>
+          <li>Anotalas en papel, en orden, sin errores.</li>
+          <li>Guardalas en un lugar seguro y seco.</li>
+          <li>No las compartas con nadie.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="callout tip">
+      <span class="label">Dónde están</span>
+      <strong>Ajustes → Seguridad → Frase de recuperación.</strong> La app puede pedirte PIN antes de mostrarlas.
+    </div>
+
+    <div class="callout warn">
+      <span class="label">Si desinstalás la app</span>
+      La billetera no se borra de la red: sigue en tu respaldo de Drive y en tus 12 palabras. Para volver, reinstalá Bolsillo y entrá con la misma cuenta de Google.
+    </div>
+
+    <figure class="shot" style="width:70mm; margin-top:2mm;">
+      <img src="assets/screens/11-seed.png" alt="Frase de recuperación en Ajustes → Seguridad" />
+      <figcaption>Anotá las 12 palabras en papel.</figcaption>
+    </figure>
+  </section>
+
+  <!-- ============ STEP 7 ============ -->
+  <section class="page faq">
+    <div class="step-head">
+      <div class="step-num">7</div>
+      <div>
+        <h2>Preguntas frecuentes</h2>
+        <div class="hint">Lo que suele pasar en la instalación y el uso.</div>
+      </div>
+    </div>
+
+    <h3>No aparece el repositorio o no encuentra Bolsillo</h3>
+    <p>En F-Droid, entrá a <strong>Ajustes → Repositorios</strong>, verificá que el repositorio de Bolsillo esté ahí y actualizalo. Si no está, agregalo de nuevo con el QR de esta guía.</p>
+
+    <h3>Error al actualizar el repositorio</h3>
+    <p>Tocá de nuevo “Actualizar”. Si sigue, quitá el repositorio y agregalo otra vez con el QR. Verificá que la huella coincida con la de esta guía.</p>
+
+    <h3>Android no me deja instalar la app</h3>
+    <p>Falta el permiso de “instalar apps desconocidas”. En Android 8 o superior se da por app: <em>Ajustes → Apps → Acceso especial → Instalar apps desconocidas</em> y habilitá el navegador (para F-Droid) o F-Droid (para Bolsillo).</p>
+
+    <h3>El login con Google falla</h3>
+    <p>Revisá la conexión, actualizá Bolsillo desde F-Droid y probá de nuevo. Si el error menciona “developer error”, la app está desactualizada o el cliente OAuth no está disponible: escribinos a <a href="mailto:superbchat.cash@gmail.com">superbchat.cash@gmail.com</a>.</p>
+
+    <h3>¿Bolsillo puede ver o tocar mis fondos?</h3>
+    <p>No. Es una billetera de autocustodia: las claves se generan y se guardan en tu teléfono. Nosotros no tenemos acceso a tus fondos ni a tu frase semilla.</p>
+
+    <h3>¿Es gratis?</h3>
+    <p>Sí. Bolsillo no cobra comisión por usarla. Solo pagás la comisión de la red Bitcoin Cash cuando enviás o convertís, y las comisiones del exchange si usás Modo Estable.</p>
+
+    <h3>¿Qué pasa si pierdo el teléfono?</h3>
+    <p>Instalá Bolsillo en otro teléfono y entrá con la misma cuenta de Google para restaurar desde el respaldo. Si no tenés la cuenta, usá las 12 palabras.</p>
+
+    <h3>¿Puedo usar la app sin Google?</h3>
+    <p>Esta versión usa Google para el respaldo automático. Las 12 palabras siguen siendo tu respaldo manual y funcionan en cualquier billetera compatible con Bitcoin Cash.</p>
+  </section>
+
+  <!-- ============ STEP 8 ============ -->
+  <section class="page">
+    <div class="step-head">
+      <div class="step-num">8</div>
+      <div>
+        <h2>Seguridad</h2>
+        <div class="hint">Reglas simples que evitan casi todos los problemas.</div>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <div>
+        <h3>Hacé</h3>
+        <ul>
+          <li>Anotá las 12 palabras en papel.</li>
+          <li>Usá PIN.</li>
+          <li>Verificá la huella del repositorio antes de agregarlo.</li>
+          <li>Descargá F-Droid solo desde f-droid.org.</li>
+          <li>Mantené el teléfono actualizado.</li>
+        </ul>
+      </div>
+      <div>
+        <h3>No hagas</h3>
+        <ul>
+          <li>No compartas las 12 palabras.</li>
+          <li>No las saques en fotos ni las mandes por chat.</li>
+          <li>No instales Bolsillo desde links de terceros.</li>
+          <li>No confíes en “soporte” que te escribe primero.</li>
+          <li>No pagues a alguien que no conocés sin verificar.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="callout warn" style="margin-top:6mm;">
+      <span class="label">Regla de oro</span>
+      Si alguien tiene tus 12 palabras, tiene tus fondos. No hay banco, soporte ni “recuperación de cuenta” que pueda evitarlo. Guardalas como guardarías la llave de tu casa.
+    </div>
+
+    <div class="back">
+      <img src="assets/fdroid-qr.png" alt="QR del repositorio F-Droid" />
+      <p><strong>Repositorio oficial</strong><br/><code>https://vulkan0n.github.io/fdroid/repo/</code></p>
+      <p><strong>Política de privacidad</strong><br/><code>https://vulkan0n.github.io/bolsillo-bch-site/</code></p>
+      <p><strong>Consultas y quejas</strong><br/><a href="mailto:superbchat.cash@gmail.com">superbchat.cash@gmail.com</a></p>
+      <p class="small">Bolsillo BCH es software libre (licencia BSD-3-Clause).<br/>Guía versión 2026.03.16 · Octubre 2026.</p>
+    </div>
+  </section>
+
+</body>
+</html>
