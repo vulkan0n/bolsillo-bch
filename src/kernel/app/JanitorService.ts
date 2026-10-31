@@ -45,7 +45,9 @@ export default function JanitorService() {
             path: "/selene",
             directory: Directory.Library,
           })
-        ).files.filter((file) => file.type === "file");
+        ).files.filter(
+          (file) => file.type === "file" && file.name.endsWith(".db.bak")
+        );
 
         return backupFiles.map((file) => `/selene/${file.name}`);
       } catch (e) {
