@@ -32,9 +32,12 @@ Huella de la clave del repo (SHA-256):
 Editar `android/app/build.gradle`:
 
 ```gradle
-versionCode 260316        // +1 respecto de la versión publicada
-versionName "2026.03.16"
+versionCode 260317        // +1 respecto de la versión publicada
+versionName "2026.03.17"
 ```
+
+Actualizá también `package.json` (`version`) a la misma versión: el footer de
+Ajustes usa esa constante (`src/util/version.ts`).
 
 ## 2. Build del APK release
 
@@ -43,7 +46,7 @@ pnpm install --frozen-lockfile
 pnpm build:ci
 npx cap sync android
 cd android
-./gradlew clean assembleRelease
+./gradlew assembleRelease   # sin clean; usalo solo si el build queda raro
 ```
 
 Salida: `android/app/build/outputs/apk/release/app-release.apk`.
