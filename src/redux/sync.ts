@@ -274,7 +274,15 @@ syncMiddleware.startListening({
           }
 
           const utxoDiff = await AddressScanner.scanUtxos(address);
-          const [, calculatedState] = await AddressScanner.scanHistory(address);
+
+          let calculatedState: string | null;
+          try {
+            [, calculatedState] = await AddressScanner.scanHistory(address);
+          } catch (e) {
+            Log.warn("address history sync fail:", e, address);
+            AddressManager.nullifyAddressState(address);
+            return { address, utxoDiff };
+          }
 
           if (calculatedState !== state) {
             Log.warn(

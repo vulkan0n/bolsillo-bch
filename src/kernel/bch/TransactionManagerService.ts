@@ -12,8 +12,6 @@ import {
 import DatabaseService from "@/kernel/app/DatabaseService";
 import LogService from "@/kernel/app/LogService";
 import ElectrumService from "@/kernel/bch/ElectrumService";
-import AddressManagerService from "@/kernel/wallet/AddressManagerService";
-import UtxoManagerService from "@/kernel/wallet/UtxoManagerService";
 import WalletManagerService from "@/kernel/wallet/WalletManagerService";
 
 import { binToHex, hexToBin } from "@/util/hex";
@@ -87,7 +85,6 @@ export default function TransactionManagerService() {
     rebroadcastUnresolved,
     setBlockPos,
     setBlockPosBulk,
-    applyOptimisticUtxoUpdate,
   };
 
   // --------------------------------
@@ -366,52 +363,6 @@ export default function TransactionManagerService() {
 
     const finalTx = { ...result, vin, vout };
     return finalTx;
-  }
-
-  // Optimistically update the UTXO set after a successful broadcast:
-  // discard spent inputs and register change outputs that belong to our wallet.
-  function applyOptimisticUtxoUpdate(
-    walletHash: string,
-    tx: TransactionEntity
-  ): void {
-    const UtxoManager = UtxoManagerService(walletHash);
-    const AddressManager = AddressManagerService(walletHash);
-
-    // Discard spent inputs
-    tx.vin.forEach((input) => {
-      UtxoManager.discardUtxo({
-        tx_hash: input.tx_hash,
-        tx_pos: input.vout,
-      });
-    });
-
-    // Register change outputs (outputs that belong to our wallet)
-    tx.vout.forEach((output) => {
-      const outputAddress = output.scriptPubKey.addresses?.[0];
-      if (!outputAddress) return;
-
-      try {
-        AddressManager.getAddress(outputAddress);
-      } catch {
-        return; // not our address (includes token z-prefix addresses)
-      }
-
-      UtxoManager.registerUtxo({
-        address: outputAddress,
-        tx_hash: tx.tx_hash,
-        tx_pos: output.n,
-        valueSatoshis: output.valueSatoshis,
-        memo: null,
-        token_category: output.token?.category
-          ? binToHex(output.token.category)
-          : null,
-        token_amount: output.token?.amount ?? null,
-        nft_capability: output.token?.nft?.capability ?? null,
-        nft_commitment: output.token?.nft?.commitment
-          ? binToHex(output.token.nft.commitment)
-          : null,
-      });
-    });
   }
 
   async function getTransactionByHash(

@@ -447,17 +447,15 @@ export default function AddressScannerService(wallet: WalletEntity) {
     const history = await Electrum.requestAddressHistory(address);
     const transactions = await Promise.all(
       history.map(async (historyTx) => {
-        const merkle = await Electrum.requestMerkle(
-          historyTx.tx_hash,
-          historyTx.height
-        );
-
-        // TODO: verify merkles
+        const merkle =
+          historyTx.height > 0
+            ? await Electrum.requestMerkle(historyTx.tx_hash, historyTx.height)
+            : null;
 
         return {
           address,
           ...historyTx,
-          block_pos: merkle.pos || null,
+          block_pos: merkle?.pos || null,
         };
       })
     );

@@ -180,7 +180,6 @@ export default function WalletViewPay() {
             tx_hash: transaction.tx_hash,
             hex: transaction.tx_hex,
           });
-          TransactionManager.applyOptimisticUtxoUpdate(walletHash, tx);
         }
 
         // Show a success notification and route the user to the success page.
